@@ -24,6 +24,7 @@ from codex_harness.adapters.isolated_worker import IsolationError, load_isolatio
 from codex_harness.application.fleet import LaunchRefused
 from codex_harness.domain.fleet import classify_outcome
 from codex_harness.domain.model import canonical
+from codex_harness.domain.usage_policy import exhausted
 
 LANE_KEYS = ("REPOSITORY", "RUNTIME_DIR", "REDIS_NAMESPACE", "DATABASE_URL")
 DEFAULT_ARGV = (sys.executable, "-m", "codex_harness.cli")
@@ -92,10 +93,10 @@ class LaneLauncher:
         self.lanes = {lane["id"]: lane for lane in config["lanes"]}
 
     def budget_exhausted(self, budget: dict) -> bool:
-        """Counts only: the ledger is reserved by the child's operation, immediately before its
+        """Counts only, under the shared usage policy (finite ceilings, or subscription: readable
+        ledger only): the ledger is reserved by the child's operation, immediately before its
         actual provider start, never here."""
-        counts = self.budget.counts()
-        return counts["this_host"] >= budget["per_host"] or counts["all_hosts"] >= budget["total"]
+        return exhausted(budget, self.budget.counts())
 
     def launch(self, job: dict) -> dict:
         lane = self.lanes[job["lane"]]

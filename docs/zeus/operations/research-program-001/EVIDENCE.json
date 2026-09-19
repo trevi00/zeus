@@ -1,0 +1,149 @@
+{
+    "files":  [
+                  {
+                      "sha256":  "4f80da519c6fd4236bf23d71ccc18b3b6c07bad16742531d53027f1241e12d43",
+                      "file":  "review.json",
+                      "bytes":  23373
+                  },
+                  {
+                      "sha256":  "d6b63ad47e4f09ff661a3704dd728e453332da4381f29dc0be27d11e79259619",
+                      "file":  "review2.json",
+                      "bytes":  18694
+                  },
+                  {
+                      "sha256":  "03aecfbfe49de764d3eeeafc2b84b2976cb094cf78dd3bbe3a29c74286962240",
+                      "file":  "owner-check2.json",
+                      "bytes":  211
+                  },
+                  {
+                      "sha256":  "7c31bc3a1f0c2efda9af44512881ed88734326e10c91443d8af25d75f3f4cfa3",
+                      "file":  "focused-pg2.log",
+                      "bytes":  102
+                  },
+                  {
+                      "sha256":  "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+                      "file":  "lint2.log",
+                      "bytes":  19
+                  },
+                  {
+                      "sha256":  "92b6fc72f6627a1f68f4dd3b3ba0adb750d13e84e11507261b98a9af772ccef9",
+                      "file":  "capture-check2.json",
+                      "bytes":  277
+                  },
+                  {
+                      "sha256":  "bc1770f39b0128432e856b2c153de735a0177d40b68da0f034838f4fe5b12367",
+                      "file":  "test_owner_log_failure.py",
+                      "bytes":  1109
+                  },
+                  {
+                      "sha256":  "341c3f1ca0020304dfa9e26eca262ba43fce41018c609fb4bd54079c961f9795",
+                      "file":  "owner-log-failure.log",
+                      "bytes":  202
+                  },
+                  {
+                      "sha256":  "9cd007fc28787752804e5c0e379b3cba0d33b2f45eb5bf3f63544c88afea013f",
+                      "file":  "source-preflight.json",
+                      "bytes":  391
+                  },
+                  {
+                      "sha256":  "c187b7a6caedb16b7ccce62b8680564975de407dade22ca46e07946d50d3ec84",
+                      "file":  "grant178.json",
+                      "bytes":  270
+                  },
+                  {
+                      "sha256":  "46eb094019e4f7e7c7d5a20a9ce218893482a47bd60d0dd37822457e5e37cbd3",
+                      "file":  "live-config.json",
+                      "bytes":  3862
+                  },
+                  {
+                      "sha256":  "a5c18a9e9197a18915f87841e2c157e3faa28fcaaafe550e079cf5e500bc5418",
+                      "file":  "live-receipt.json",
+                      "bytes":  1109
+                  },
+                  {
+                      "sha256":  "1727b8e0d3b75b1236052fddd76a2e19080a89d71e42cb39d6b30c47ae53ed9c",
+                      "file":  "live-run.json",
+                      "bytes":  619
+                  },
+                  {
+                      "sha256":  "2421e0b6a63164e4a84f2b695c98ac415d07f5e1e697cc6332d93b2de19c9562",
+                      "file":  "live-status.json",
+                      "bytes":  3961
+                  },
+                  {
+                      "sha256":  "7f37e600b1df1d7c44e98dd8bdc0e7334f4723856f3e2baa49cf650800f0fbff",
+                      "file":  "live-authoritative.json",
+                      "bytes":  27627
+                  },
+                  {
+                      "sha256":  "f69e42b4db7cb9ba99d081ff490bfc900564f197b26691f5c89781370b1cc43a",
+                      "file":  "packet-diagnosis.json",
+                      "bytes":  513
+                  },
+                  {
+                      "sha256":  "604bc6be68437ae5922130f3ee2fa03a7df79845770243de3fb62ab744a058db",
+                      "file":  "live/research-program/research-live-001/events.jsonl",
+                      "bytes":  1418
+                  },
+                  {
+                      "sha256":  "28345064259b09c8dd705bbc8a607cb537b80f919fffee3125fd28a69e581ca3",
+                      "file":  "live/research-program/research-live-001/report.md",
+                      "bytes":  1017
+                  },
+                  {
+                      "sha256":  "8da172854fd28d8aa19802b159a312640d7730afcbc53c0f55e803d6e1d4e6d7",
+                      "file":  "operation3.json",
+                      "bytes":  2313
+                  },
+                  {
+                      "sha256":  "4b6aba271b627f7d826e7dfd6f97d6cac2a667ed74992af6227968f50517b6d2",
+                      "file":  "prepared3.json",
+                      "bytes":  1399
+                  },
+                  {
+                      "sha256":  "33627c9145f068ab8756c93564883a3c2fc8d2093747ee1357da6ed9f2208e67",
+                      "file":  "result3.json",
+                      "bytes":  21750
+                  },
+                  {
+                      "sha256":  "50e6800ed9940ae69e4ff8c6aee92a803fcb801511542c8906bf4dd8278ad758",
+                      "file":  "candidate3.json",
+                      "bytes":  583
+                  },
+                  {
+                      "sha256":  "50963c5d2bc3e8b958892fec27a655ef921efc966e802509486094b4ee4f4f72",
+                      "file":  "worker3.json",
+                      "bytes":  13845
+                  },
+                  {
+                      "sha256":  "fd35a9ded3df7a2be8ca89a845e9e5da25d97b1e84869ec317fcf0f873ee4838",
+                      "file":  "owner-check3.json",
+                      "bytes":  211
+                  },
+                  {
+                      "sha256":  "15e71686274232b077eed2dfa79d4e3f2b362d936deae09659f8e70ff441eb55",
+                      "file":  "focused-pg3.log",
+                      "bytes":  184
+                  },
+                  {
+                      "sha256":  "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+                      "file":  "lint3.log",
+                      "bytes":  19
+                  }
+              ],
+    "root":  "D:/workspaces/zeus/artifacts/research-program-001",
+    "live_event_counts":  [
+                              {
+                                  "count":  2,
+                                  "category":  "general"
+                              },
+                              {
+                                  "count":  3,
+                                  "category":  "development"
+                              },
+                              {
+                                  "count":  1,
+                                  "category":  "operations"
+                              }
+                          ]
+}

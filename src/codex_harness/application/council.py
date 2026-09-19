@@ -11,8 +11,18 @@ workflow verified the persisted task result; a freshness and integrity guard on 
 observation before every downstream role and before the implementation (no refresh mid-debate); and
 a promotion recheck of the DBA binding, the snapshot and the report next to the unchanged worker and
 reviewer gates. A v1 manifest handed to this class runs the v1 flow untouched.
+
+Bounded inline input (`domain/council_input.py`, urn:zeus:council-input:2): the frozen packet is admitted
+right after `_freeze_packet` and before the snapshot or the DBA, the normalized DBA report before the relay
+and either lead, and each lead's complete derived proposal before `sessions.submit` or the next role, each
+against the exact prefix committed so far (shared pool, ordered future reservations; a pure calculation with
+no run-level credit). An overflow ends the run with the precise `needs_scope_split:<section>:<observed>/<limit>`
+reason (status `failed`, the existing enum); the original role evidence, task rows and artifacts stay as
+recorded and nothing is retried, summarized, dropped or resized.
 """
 from __future__ import annotations
+
+import re
 
 from codex_harness.application.autonomous import (
     BLOCKER_RULE,
@@ -30,6 +40,7 @@ from codex_harness.domain.autonomous import (
     evidence_ref_for,
     independent_roles,
     role_binding,
+    role_message_id,
 )
 from codex_harness.domain.council import (
     CONDUCTOR_ROLE,
@@ -50,10 +61,28 @@ from codex_harness.domain.council import (
     snapshot_selection,
     validate_snapshot,
 )
+from codex_harness.domain.council_input import (
+    DBA_REPORT,
+    IMPROVEMENT_PROPOSAL,
+    PACKET,
+    REASON,
+    RESEARCH_PROPOSAL,
+    CouncilInputOverflow,
+    admit,
+)
 from codex_harness.domain.model import ContractError, canonical, require, utcnow
 
 SNAPSHOT_SOURCE = "council-snapshot:"
 SNAPSHOT_REFUSALS = {"snapshot_unavailable", "snapshot_corrupt", "snapshot_mismatch", "snapshot_stale"}
+# urn:zeus:council-input:2 producer gates: which lead proposal is bounded before it is submitted or handed on.
+PROPOSAL_SECTION = {RESEARCH_LEAD: RESEARCH_PROPOSAL, IMPROVEMENT_LEAD: IMPROVEMENT_PROPOSAL}
+# A consumer-side overflow reaches the run as a role task whose error is the executor's typed refusal; only this
+# exact safe shape (section, digits) is lifted into the run's reason code, never free text. The executor records
+# its own pre-entry refusal through `Workflow.fail(..., retryable=True)` (the provider never started), so the row
+# is `retry`; a failure the workflow settled as not retryable is `failed`. Both are legitimate carriers of the
+# typed reason and neither is re-dispatched here.
+CONSUMER_OVERFLOW = re.compile(r"^CouncilInputOverflow: (" + re.escape(REASON) + r":[a-z_]+:\d+/\d+)$")
+CONSUMER_REFUSAL_OUTCOMES = {"role_failed", "role_retry"}
 
 
 class CouncilRun(AutonomousRun):
@@ -70,6 +99,13 @@ class CouncilRun(AutonomousRun):
         run_id, base, correlation = row["id"], manifest["base_revision"], row["correlation_id"]
         research, frozen, sessions, digest_value = self._freeze_packet(manifest, goal, row, wrapped)
         packet = frozen["packet"]
+        # urn:zeus:council-input:2: the frozen packet is admitted BEFORE the snapshot or any DBA start; the
+        # researcher's raw evidence and the packet itself stay exactly as recorded, the run stops with the reason.
+        # `committed` is the exact ordered prefix every later admission is measured against: the very values
+        # the downstream roles receive inline, extended only after each one is admitted.
+        committed = {}
+        self._admit(PACKET, packet, committed)
+        committed[PACKET] = packet
         claim_ids = {c["id"] for c in packet["claims"]}
         # ----- one read-only observation, frozen before any DBA start ----------------------------------
         self._transition(run_id, "packet", "snapshot")
@@ -85,6 +121,8 @@ class CouncilRun(AutonomousRun):
             report = report_from_dba(dba["answer"], snapshot_digest_value=observed["sha256"], claim_ids=claim_ids)
         except ContractError as exc:
             raise AutonomousRefused("report_invalid") from exc
+        self._admit(DBA_REPORT, report, committed)  # the normalized report, before the relay and before either lead
+        committed[DBA_REPORT] = report
         relay = self._relay(correlation, dba["task_id"], COUNCIL_AGENTS[DBA])
         frozen_report = {"task_id": dba["task_id"], "sha256": report_digest(report), "snapshot_digest": observed["sha256"],
                          "execution_ref": dba["execution_ref"], "input_ref": evidence_ref_for(dba_details), "relay_message_id": relay}
@@ -108,8 +146,17 @@ class CouncilRun(AutonomousRun):
             try:
                 independent_roles(bindings)
                 derived = council_output(role, binding["answer"], identities, claim_ids)
+                if role in PROPOSAL_SECTION:
+                    # The complete derived proposal (the value the next role receives inline) is admitted
+                    # against the committed prefix before sessions.submit and before any downstream role; the
+                    # typed overflow is caught ahead of the generic ContractError mapping so the run names
+                    # needs_scope_split. The prefix grows only once the proposal is admitted.
+                    admit(PROPOSAL_SECTION[role], derived["proposal"], committed)
+                    committed[PROPOSAL_SECTION[role]] = derived["proposal"]
                 event = event_from_role(INTERNAL_SLOT[role], derived["event_payload"], digest_value, version, binding["task_id"])
                 recorded = sessions.submit(row["session_id"], event, owner=run_id, binding=_safe_binding(binding))
+            except CouncilInputOverflow as exc:
+                raise AutonomousRefused(exc.reason_code) from exc
             except DgeRefused as exc:
                 raise AutonomousRefused("debate_refused:" + exc.reason_code) from exc
             except ContractError as exc:
@@ -125,6 +172,34 @@ class CouncilRun(AutonomousRun):
             manifest, identity, goal, row, wrapped, research, prior, recorded["session"], CONDUCTOR_ROLE,
             council=lambda tx: self._recheck(tx, manifest, row, observed, frozen_report, claim_ids),
             before_implementation=lambda: self._guard(manifest, row, observed))
+
+    # ----- bounded input (urn:zeus:council-input:2) -----------------------------------------
+    @staticmethod
+    def _admit(section: str, value, committed: dict) -> int:
+        """Producer gate: the section's canonical UTF-8 bytes against its allowance after the exact committed
+        prefix (future reservations held), or the run ends with the precise `needs_scope_split:<section>:
+        <observed>/<allowance>` reason. No retry, summary, drop or resize."""
+        try:
+            return admit(section, value, committed)
+        except CouncilInputOverflow as exc:
+            raise AutonomousRefused(exc.reason_code) from exc
+
+    def _role(self, manifest, row, wrapped, role, details) -> dict:
+        """The executor's own consumer gate (projection or final prompt over the policy) refuses the role task
+        before any provider entry (`retry`, or `failed` once settled as not retryable); the run reports that exact
+        needs_scope_split reason instead of `role_retry`/`role_failed` and never retries the role. Any other
+        outcome, and any error text outside the safe shape, keeps the unchanged code."""
+        try:
+            return super()._role(manifest, row, wrapped, role, details)
+        except AutonomousRefused as exc:
+            if exc.reason_code not in CONSUMER_REFUSAL_OUTCOMES:
+                raise
+            with self.service.store.transaction() as tx:
+                task = tx.get("tasks", role_message_id(manifest, role)) or {}
+            matched = CONSUMER_OVERFLOW.match(task.get("error") or "") if isinstance(task.get("error"), str) else None
+            if matched is None:
+                raise
+            raise AutonomousRefused(matched.group(1)) from exc
 
     # ----- snapshot -----------------------------------------------------------------------
     def _observe(self, manifest, row) -> dict:

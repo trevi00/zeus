@@ -18,6 +18,7 @@ import time
 
 from codex_harness.application.dge import SESSIONS, DebateSessions, DgeRefused
 from codex_harness.application.evidence_inspection import EvidenceInspections
+from codex_harness.application.execution_notices import receive_foreign as receive_foreign_notice
 from codex_harness.application.local_cycle import (
     MESSAGE_DRAIN,
     flush_outbox,
@@ -279,20 +280,28 @@ class AutonomousRun:
             tx.put("outbox", message["message_id"], {"message": message, "sent": False})
         self._log(role, run_id, "started")
         started = time.monotonic()
-        flush_outbox(self.service, self.bus, self.observer)
+        # Implementation015: this run's own assignment is published by correlation, independent of
+        # the global cursor and of unrelated queue history; an unfinished publication refuses here.
+        if not flush_outbox(self.service, self.bus, self.observer, correlation)["complete"]:
+            raise AutonomousRefused("publication_incomplete")
         self._deliver(agent, correlation)
         expected = {"id": message["message_id"], "correlation_id": correlation, "statuses": {"queued"}}
+        self._require_admitted(expected)
         try:
             result = wrapped.execute_one(agent, expected=expected)
         except BudgetRefused as exc:
             raise AutonomousRefused("budget_exhausted") from exc
-        flush_outbox(self.service, self.bus, self.observer)
+        published = flush_outbox(self.service, self.bus, self.observer, correlation)
         if any(not s["settled"] for s in wrapped.slots):
             raise AutonomousRefused("settlement_failed")
         if result is None:
             raise AutonomousRefused("no_execution_claimed")
         if result.get("status") != "succeeded":
             raise AutonomousRefused("role_" + str(result.get("status")))
+        if not published["complete"]:
+            # The role's own result/commands are committed but unproven on the transport; the run
+            # stops with a named reason rather than handing an unpublished report to the next role.
+            raise AutonomousRefused("publication_incomplete")
         with self.service.store.transaction() as tx:
             task = tx.get("tasks", message["message_id"])
             invocations = [r for r in tx.scan(RESERVATIONS) if r.get("task_id") == message["message_id"]]
@@ -310,6 +319,21 @@ class AutonomousRun:
                                 "durations": {role: time.monotonic() - started}})
         self._log(role, run_id, "succeeded")
         return binding
+
+    def _require_admitted(self, expected) -> None:
+        """Delivery is not admission (Implementation015). Before BudgetedExecutor reserves a slot,
+        the exact expected row must exist in the consumer database, under this correlation, still
+        queued. Anything else is a named safe refusal with zero reservations and zero provider
+        calls; the atomic claim guard inside the claim transaction remains the race protection."""
+        with self.service.store.transaction() as tx:
+            task = tx.get("tasks", expected["id"])
+        if not isinstance(task, dict):
+            raise AutonomousRefused("expected_execution_missing")
+        message = task.get("message") if isinstance(task.get("message"), dict) else {}
+        if message.get("correlation_id") != expected["correlation_id"]:
+            raise AutonomousRefused("expected_execution_foreign")
+        if task.get("status") not in expected["statuses"]:
+            raise AutonomousRefused("expected_execution_not_queued")
 
     def _verify_execution(self, tx, record, bucket, stage, basis_revision, evidence_ref=None, *, exact=False) -> dict:
         """Load the execution artifact through the injected port and check it against the record and
@@ -337,7 +361,9 @@ class AutonomousRun:
 
     def _deliver(self, agent: str, correlation: str) -> list:
         """Existing serve semantics for the dedicated lead: handle, relay outbox, ACK. A foreign message
-        is left pending and stops the run; nothing is dead-lettered on its behalf. Returns the handled
+        is left pending and stops the run; nothing is dead-lettered on its behalf. The one exception is
+        a foreign `execution.notice` the shared execution store proves (Implementation014): it is
+        committed as informational and ACKed, never handled by this run's workflow. Returns the handled
         messages so a caller can prove a specific report went through the workflow."""
         consumer, handled = agent + ":autonomous", []
         for _ in range(MESSAGE_DRAIN):
@@ -356,11 +382,29 @@ class AutonomousRun:
                 observe_rejected(self.observer, entry_id, message, type(exc).__name__, dead_letter=True)
                 continue
             if message["correlation_id"] != correlation:
+                if message["type"] == "execution.notice":
+                    # Proof + inbox binding committed before the ACK; an unproven or conflicting notice
+                    # keeps the existing refusal (pending, no ACK, fixed code, no source text). A store
+                    # failure propagates unACKed like every other store failure in this run.
+                    try:
+                        result = receive_foreign_notice(self.service.store, message)
+                    except ContractError as exc:
+                        observe_rejected(self.observer, entry_id, message, "foreign_message", dead_letter=False)
+                        raise AutonomousRefused("foreign_message") from exc
+                    observe_accepted(self.observer, message, result)
+                    self.bus.ack(agent, entry_id)
+                    observe_acknowledged(self.observer, entry_id, message)
+                    continue  # informational only: not in `handled`, nothing of this run advances
                 observe_rejected(self.observer, entry_id, message, "foreign_message", dead_letter=False)
                 raise AutonomousRefused("foreign_message")
             result = self.workflow.handle(message)
             observe_accepted(self.observer, message, result)
-            flush_outbox(self.service, self.bus, self.observer)
+            # Implementation015: the commands the workflow generated from this report belong to the
+            # same correlation and are published here. An unfinished publication stops the run with
+            # the named reason, before the ACK and before any further role, reservation or provider
+            # entry; the handled result stays committed and the message stays pending, never retried.
+            if not flush_outbox(self.service, self.bus, self.observer, correlation)["complete"]:
+                raise AutonomousRefused("publication_incomplete")
             self.bus.ack(agent, entry_id)
             observe_acknowledged(self.observer, entry_id, message)
             handled.append(message)

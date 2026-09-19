@@ -646,6 +646,23 @@ unsupported is refused by name when present. Every request records which of its 
 effect verified here and which were left to the provider, so a spend ceiling is never read back as
 a spend guarantee.
 
+The usage-accounting mode of the machine ledger (`domain.usage_policy`: `finite`, the legacy
+default, or explicit `subscription`) also decides whether the `claude_cli` dollar cap is forwarded
+at all. It is read from one explicit host setting per transport (`ZEUS_CLAUDE_ACCOUNTING_MODE` for
+`claude_cli`; `zeus operate run` always sets it from the manifest budget, so a host environment
+value never decides an operation's mode); absent or `finite` yields the byte-identical legacy
+configuration, digest and command; any other value refuses the configuration whole. Under
+`subscription` the `max_budget_usd` control is still validated by the same rules when present but
+is retained metadata: it is not required, it is absent from the assignment's `controls`, the
+configuration digest differs, the selected runtime carries `accounting_mode`, the request options
+omit the cap (never a null), the command passes no `--max-budget-usd` and the CLI preflight does
+not require that option, and the command receipt records `max_budget_usd: null` with the named
+`accounting_mode`. A runtime told `subscription` refuses a configured ceiling and an unknown mode
+before any probe or process; finite still requires and passes a positive ceiling exactly as
+before. None of this is a provider allowance, a billing change, a remaining-usage claim, a retry or
+a change to auth, timeouts, schema, model, permissions, isolation or the isolated request protocol
+(the mode travels in the `runtime` dictionary the request already serializes).
+
 The prompt reaches a provider over its input stream, never through an argument vector or a shell
 string, and the recorded command replaces every value that could carry schema, context or
 configuration text with its digest. Both output streams are drained concurrently under a per-line
@@ -749,8 +766,10 @@ start, only for worker:implementation tasks or lead:improvement review_lead deci
 taken and an in-flight marker recorded in one transaction before the executor starts; a marker
 found by another step refuses execution and is never released automatically. Any outcome other
 than success (retry, failed, blocked, expired, exception, no claim), a pending diagnose decision,
-a received execution notice, a message or queued work under another correlation, or running
-residue in the ledger stops the cycle with a recorded reason. The candidate is chosen outside the
+a received execution notice of this correlation, a message or queued work under another
+correlation (except a durably proven foreign execution notice, INV-OPERATION-FINALIZATION-001,
+which is informational and does not touch the cycle), or running residue in the ledger stops the
+cycle with a recorded reason. The candidate is chosen outside the
 claim transaction, so the step passes an optional execution guard (row id, correlation, allowed
 statuses) into the existing `Workflow.claim` / `decide_one` selection; the guard is validated inside
 the claim transaction before the fence, the lease and any provider entry, and a mismatch (for
@@ -835,9 +854,12 @@ authority, and no report, comparison or binding grants completion, permission, m
 point; `operate status ID` is its read-only receipt. The manifest (`urn:zeus:operation:1`) is
 strict: exact fields `id`, 40-hex `base_revision`, `goal` (relative Markdown path, sha256,
 criterion, rationale), `plan` (objective, acceptance_criteria, allowed_paths), `budget` (per_host,
-total) and `claude` (model, timeout_seconds, max_budget_usd); unknown fields, wrong types,
-booleans as integers, nonfinite numbers, traversal, `.git` or absolute paths and empty values are
-refused, and the claude controls are validated by the existing provider policy validators. The one
+total and an optional `mode` of `finite` or `subscription` under `domain.usage_policy`; the finite
+canonical form is the unchanged legacy shape) and `claude` (model, timeout_seconds, a positive
+finite max_budget_usd that under subscription is retained metadata, never an active ceiling);
+unknown fields, wrong types, booleans as integers, nonfinite numbers, traversal, `.git` or absolute
+paths and empty values are refused, and the claude controls are validated by the existing provider
+policy validators with the budget's accounting mode bound in (INV-CLAUDE-WORKER-001). The one
 path grammar (`safe_relative_path`, shared by goal.path, allowed_paths, the research packet sources
 and the autonomous search scope) is forward-slash relative, at most 1024 characters, each segment
 an alphanumeric start followed by ASCII letters, digits, `.`, `_` or `-` up to 255 characters, with
@@ -980,6 +1002,81 @@ scope, never truth of prose, merged code or product acceptance; `knowledge=False
 execution and `index_python`/`project_runtime` never touch the promoted namespace. Status reads the
 store only and prints digests, codes and counts.
 
+Packet producer alignment (`adapters/autonomous_roles.py`, research-program-001 cycle 1). The
+model-facing researcher schema states the packet consumer's LOCAL rules as typed alternatives under a
+nested `anyOf` with the same field sets and the same domain constants (`enum` always next to an explicit
+`type`, `minItems`; never `if`/`then`/`allOf`): a claim of kind fact/inference cites at least one source
+id and an unknown claim any list; an answered question cites at least one claim id with either
+`blocking` value and an unknown question is `blocking` false with any list. The cross-array rule that an
+answered question cites only fact/inference claims, existence and distinctness of cited ids and every
+other packet check stay exactly `domain.dge` (INV-DGE-001): the schema cannot see the claims array, so an
+output the schema admits is not an accepted packet, and the researcher objective carries that rule as
+guidance with a self-check, the two honest forms of a "what remains unknown" question (answered from a
+sourced fact about a documented limitation next to a separate nonblocking unknown, or unknown itself)
+and the instruction to report a truly blocking design choice as a blocking unknown even though it is
+refused. A refused output, at the schema (`schema_mismatch`, owner `agent_output`) or at the packet
+(`PacketError`), is the stop of that run: nothing relabels, repairs, retries or spends another entry.
+Fixture tests prove the schema and consumer behaviour on synthetic outputs, not that a live model follows
+the guidance.
+
+Conductor delivery (research-program-001 run003). A `dge_role` execution receives `role_context`
+(pre-implementation, read-only at base, no candidate/worker/verifier asserted) instead of the candidate
+`review_context`, and the App Server read-only instructions are phase-neutral. The council debate roles
+(research_lead, improvement_lead, conductor) receive `required.council_delivery`: a deterministic
+lossless deep copy of the task's packet, packet digest, DBA report, snapshot/report digests, relay,
+acceptance criteria, blocker rule and available proposals, with `ssot` and `prior_outputs` reachable only
+by exact RFC 6901 pointer on the unchanged hash-bound task artifact; the raw task is then not duplicated
+as optional evidence. A missing mandatory input or a required block over the existing compiler budget
+refuses before any provider entry; nothing is summarized, truncated, persisted as a packet or repaired.
+
+Bounded inline council input `urn:zeus:council-input:2` (`domain/council_input.py`, research-program-001
+Implementation013: shared pool with ordered future reservations; supersedes the v1 isolated section ceilings of
+implementation011/012, whose historical receipts and files keep their original meaning under the name
+`urn:zeus:council-input:1`). One domain module owns the policy; the unit is the UTF-8 length of the canonical
+JSON of each value (escaping and multi-byte text count; local bytes, never model tokens or capacity). The four
+payload components share ONE pool of 32768 bytes in the declared production order packet, dba_report,
+research_proposal, improvement_proposal with default RESERVATIONS 16384/4096/4096/8192 that are held for a
+component until it is produced, not ceilings: for every nonempty contiguous prefix, the actual canonical bytes of
+the prefix plus the reservations of the absent later components must not exceed 32768, so the allowance of the
+current component is 32768 minus the actual earlier bytes minus the later reservations. Earlier unused capacity
+is available downstream; future capacity is never spent twice; a producer's allowance depends only on the exact
+earlier values (re-admitted, never trusted), never on a value that does not exist yet, and a pure calculation
+carries no credit between calls or runs. Holes, unknown keys, out-of-order stage arguments, a missing earlier
+value (never treated as empty) and a component beyond a consumer role's prefix are distinct `ContractError`s,
+never overflows. Unchanged fixed limits: `council_delivery` wrapper (serialized projection minus its present
+payload components) 4096; host overhead (complete rendered ContextPacket outside the serialized delivery,
+measured after recovery/skills assembly with actual ids, paths and evidence) 4096; required total 40960 =
+32768 + 4096 + 4096 = council compiler window 49152 minus reserved 8192. The legacy non-council budget
+(28000/6000) is unchanged and every other execution keeps it. Producers gate in `CouncilRun` against the exact
+prefix committed so far: the frozen packet right after `_freeze_packet` and before the snapshot or the DBA, the
+normalized report before the relay and either lead, each lead's complete derived proposal before
+`sessions.submit` or the next role; the run ends `failed` with the precise
+`needs_scope_split:<section>:<observed>/<allowance>` reason, original role evidence retained, no retry, summary,
+drop or resize. Consumers recheck under the SAME rule with role-specific contiguous prefixes (research_lead:
+packet+report with 12288 still reserved; improvement_lead adds research_proposal with 8192 reserved; conductor
+the complete prefix spending the pool without per-component ceilings): `council_delivery` admits the role's
+projection (role-required fields, exact prefix, no injected future component, wrapper), the executor grants the
+council window only to an admitted delivery (actual read-only `dge_role`, matching debate role, stage
+`dge:<role>` and real agent, and the exact deterministic projection of this task's details; a foreign, trimmed,
+inflated or future-injected delivery is refused), preflights the complete required envelope (the identical
+snapshot and required dict the compiler receives, rendered through `ContextPacket` before `compile_context`)
+so a whole-prompt or host overflow is the typed refusal and never the generic budget error, and then admits
+the final rendered prompt (evidence included) before any provider. A consumer refusal is recorded on the role
+task with the typed reason: `retry` when the executor's own pre-entry gate refused (the provider never
+started), `failed` when the workflow settled it as not retryable; `CouncilRun` lifts either into the run reason
+only in its safe shape and never re-dispatches the role. Telemetry is additive: the execution receipt carries
+`context_measurement` (policy `urn:zeus:council-input:2`, window, reserved, usable, rendered bytes; for council
+prompts the named section bytes, pool spend `payload_bytes`, held `reserved_bytes`, delivery overhead, host
+overhead and limit) and `estimated_tokens` keeps its old meaning; the `development.provider_started` log event
+keeps its registered attributes unchanged; `policy_manifest()` names the numbers as reservations, not limits.
+Producer objectives (`autonomous_roles.role_objective`) state the allowance computed by the same domain function
+from the earlier payloads in the task details (the researcher's initial 16384 statically), say that the limit
+covers the normalized or derived value rather than raw prose alone, and keep the rule that concision never drops
+a finding or an unknown. Not guaranteed: that arbitrary research fits (the pool is a bounded supported
+workload); a council delivery with recovery evidence items currently exceeds the host allowance and is refused
+before the provider; the live005 sizes (11965/1677/4260 with 8192 still reserved) are covered by a synthetic
+size-equivalent test only, the owner's replay of the retained raw inputs is separate.
+
 ## INV-COUNCIL-001
 
 `urn:zeus:autonomous:2` is the opt-in topic-bound council; `urn:zeus:autonomous:1` keeps its validator,
@@ -1010,7 +1107,10 @@ task/artifact/reservation/stage/input binding as v1, with its real agent; roles 
 thread are refused. The only hierarchy exception is the conductor's self-addressed `dge_role` task with
 `details.role == "conductor"` and its `task.result`; other self-assignment, lead-to-lead assignment or
 report and worker approval stay refused. The DBA `task.result` must pass the conductor's workflow
-before the verified report is handed to both leads (`report_not_relayed`). The DBA report names the
+before the verified report is handed to both leads (`report_not_relayed`); a persisted
+`execution.notice` of an older execution on the conductor stream is consumed as informational only
+under the proof of INV-OPERATION-FINALIZATION-001 and never counts as a relayed report, while any
+other foreign message still stops the run with `foreign_message`. The DBA report names the
 snapshot digest and known packet claim ids and is interpretation, never a Git-supported fact. Both
 leads and the conductor echo the same snapshot and report digests (`council_identity_mismatch`) and may
 cite only known packet claim ids, including in the improvement alternative that never reaches the DGE
@@ -1226,6 +1326,26 @@ parked receipt, then ACKs and continues within the existing `MESSAGE_DRAIN` boun
 foreign message, including a body that conflicts with its id's binding, keeps the refusal (no ACK,
 no dead letter, stop `foreign_correlation`, the refusal type in the receipt), and a replay after the
 commit but before the ACK returns the identical disposition without an executor start.
+Informational notices on the shared transport (research-program-001 Implementation014): the outbox
+and the execution store are shared, so a persisted `execution.notice` of an older execution can
+reach the stream a current run drains under another correlation. `AutonomousRun._deliver` (the
+council conductor relay included) and `LocalCycle._deliver` consume a foreign `execution.notice`
+only through `execution_notices.receive_foreign`: after the existing recipient check and route
+authorization, the same proof as `receive` (stored `execution_notices` row whose transition digest
+is the notice id and whose message equals the delivered bytes, idempotent `workflow_inbox` binding)
+runs in its own transaction and commits BEFORE the ACK; the receipt is `informational_only`
+(`general.message_accepted` then `general.message_acknowledged`), the message is never handed to
+the current run's workflow or listed among its handled reports, the drain continues within
+`MESSAGE_DRAIN`, and the current run, cycle row, tasks, decisions, reservations and promotion are
+unchanged. The terminal-operation parking above is never a substitute for that proof: a foreign
+notice with terminal operation metadata is refused, not parked, unless the store proves it. A
+missing or tampered stored notice, a conflicting body under the same id, or an unknown notice keeps
+the existing refusal (no ACK, no dead letter, no inbox row, `foreign_message` for the autonomous
+run, `foreign_correlation` with the refusal type in the cycle receipt); a route or schema rejection
+keeps the existing dead letter; a store failure propagates with nothing written and nothing ACKed,
+so a later delivery can retry the informational persistence only. Foreign `task.assign`,
+`task.result`, `review.result` and `hook.required` keep the refusal or the parking above, and a
+notice of the run's own correlation keeps the existing `Workflow.handle` path.
 Observation (INV-OBSERVATION-001): `Operation`, `LocalCycle` and `AutonomousRun` accept an optional
 observer, wired from `operate run`, `cycle step` and the autonomous CLI; `general.message_received`
 follows a validated decode, `general.message_accepted` follows durable handling,
@@ -1234,3 +1354,91 @@ error type with `dead_letter` false for a foreign refusal, `operations.operation
 and `operations.operation_finalized` carry identifiers, counts and codes only, and every affected
 outbox flush audits through `observer.audit_system`; an absent observer keeps every prior caller
 unchanged, and an observation failure never alters handling, the ACK or the outcome.
+Correlation-scoped publication (research-program-001 Implementation015, INV-MESSAGE-001): a current
+run's publication is not a side effect of the global batch. `outbox.relay`, `Harness.flush_outbox`
+and the shared `local_cycle.flush_outbox` helper take an optional `correlation_id`. Default None is
+the unchanged global background batch: one page from the shared `outbox_control` cursor, the cursor
+advance and the `health/outbox` last-batch row; generic CLI, supervisor and background callers stay
+unscoped. A non-empty correlation selects only UNSENT records of exactly that correlation, ordered
+and bounded by the same limit 1..1000 (default 100), independent of the cursor and of unrelated sent
+history; selection walks the outbox in ordered `entries` pages, so its read cost grows with the
+table size and is not a claim of indexed scalability. The scoped batch reuses the same
+prepare/publish transactions, content and identity binding, route authorization, retry, poison
+quarantine and audit rows; the correlation is rechecked inside the prepare transaction and again
+before the publish, so a scope changed between selection and send is counted `out_of_scope` or
+superseded with the attempt evidence kept. It never advances the global cursor, never publishes,
+marks sent or quarantines a foreign record, never writes the global health row, and keeps the
+existing idempotent semantics for an already delivered own record. It returns `unfinished` (own
+records of the batch still unsent), `remaining` (the whole unsent scoped backlog) and `complete`, so
+`examined` is never read as published. Every role, operation and cycle seam publishes with the
+active correlation: `AutonomousRun._role` (assignment before delivery, result and commands after the
+execution) and `_deliver`, `Operation.run` before every cycle turn, and `LocalCycle._flush` and
+`_deliver`. An unfinished scoped publication is a named safe refusal, never a retry and never idle
+success: the role raises `publication_incomplete`, the operation ends `failed:publication_incomplete`
+before any further reservation, and the cycle stops with `publication_incomplete`. In the delivery
+seam that refusal happens after the workflow durably handled the report and before the ACK, so the
+derived command keeps its intent and attempt evidence and the message stays pending for the existing
+at-least-once redelivery; no candidate is chosen and no slot or provider entry follows. After delivery and
+before `BudgetedExecutor` reserves a slot, a council role verifies the exact expected task row in the
+consumer database (same id, same correlation, still queued); a missing, foreign or unadmitted row
+refuses with `expected_execution_missing` / `expected_execution_foreign` /
+`expected_execution_not_queued` and zero slots and provider calls. That preflight is additional: the
+atomic `check_expected` / `require_expected` guard inside the claim transaction remains the race
+protection, and a proven foreign notice keeps the Implementation014 handling above.
+
+## INV-RESEARCH-PROGRAM-001
+
+`zeus research-program register|run|status|pause|resume` is the finite discovery-to-council program
+over the existing collectors, store and council. One strict config (`urn:zeus:research-program:1`:
+id, base_revision, aware deadline, positive interval_seconds, max_cycles 1..100, max_adoptions
+0..max_cycles, machine `budget`, 1..20 topics with lowercase keywords, at most 100 local candidates
+with a regular tracked path and exact sha256 at base, and one complete `urn:zeus:autonomous:2`
+template with the SAME base and budget) is validated by the existing council and operation
+validators, its template goal bound at base and every local candidate verified through the dge Git
+verifier before the row exists. Registration stores the canonical config with the digest of
+config+resolved repository identity in `research_programs`; the identical registration is cached,
+any other config, id or repository is `registration_conflict`; the row's config, digest and counters
+are never rewritten by a tick and never reset. Programs start `paused`; `resume` moves paused to
+`active` only (completed and blocked are refused; no repair); `pause` blocks new ticks while an owned
+cycle finishes. Every tick reserves the next cycle number with a fresh owner token in ONE store
+transaction before any fetch (`busy` while a cycle is owned, `paused`, `deadline_expired` and
+`max_cycles_reached` completing the program, `not_due` without increment); no transaction spans a
+fetch, Git command or the council. Discovery is read-only and model-free: local rows re-verified at
+base, BOTH live feeds through `ResearchSources`, each source recorded ok/unavailable with an
+exception type or dge code only (degraded, never empty). Candidates dedup across ticks in
+`research_program_candidates` by `local:<path>` or `url:<https url without fragment>`; relevance is
+a deterministic keyword match in bounded title/summary with a recorded reason, never a semantic
+judgement; the stable order is local first, then topic/id/url. At most one eligible unclaimed
+candidate is claimed per tick, in the same transaction that counts the adoption, only when the
+adoption cap and the machine ledger headroom (>= 7 remaining on both ceilings, unreadable counts are
+not free) allow; otherwise the fixed no-selection reason is recorded and collection still counts.
+For a selection the bounded snapshot JSON goes to the artifact store and to a NEW detached commit on
+the immutable base in the same object database (temporary index, hash-object/update-index/
+write-tree/commit-tree, fixed argv, synthetic author, one new `refs/zeus/research/<program>/<cycle>`
+created with an empty old value): the checkout, index, HEAD and branches are never read or moved,
+an existing target path or ref is refused, and captures are unverified source data. The council
+manifest is derived only: deterministic id `<program>.c<NNN>`, base = capture commit, deadline =
+min(program, template), template goal/plan/budget/claude/current_state byte-identical, snapshot path
+appended to the research scope with one bounded question naming the lead as untrusted; it is
+persisted and its start recorded in `research_program_cycles` before `autonomous_cli.run` executes
+it under the existing CouncilRun, CallBudget and promotion. The result is read from the
+authoritative `autonomous_runs` row (id and manifest digest must match) and is exactly
+accepted/rejected/failed/unknown; stdout, return values and exceptions are never authority; a
+missing row after a refusal is `failed`. failed/unknown block the program and keep the claim;
+rejected stays rejected. Capture, manifest or Git failures persist stage and code, count the cycle
+and block the program. Review001 corrections: (R1) `reserve_cycle` takes the CURRENT repository
+identity and raises `repository_mismatch` inside the reservation transaction when it differs from
+the registered one, before any log, fetch, capture or model effect; (R2) the post-capture
+pre-provider phase (`capture_record`, `manifest_derive`, `manifest_artifact`, `manifest_file`,
+`council_start`) is stage-tracked, a failure records the blocked cycle with the capture reference
+retained in `failure.capture` and runs no council, and if that record cannot be committed the
+receipt says `recorded: false`, the cycle stays owned and nothing is cleared or retried;
+(R3) the capture blob is written from exact UTF-8 bytes through an owned binary file with
+`hash-object --no-filters`, its id must equal the content-addressed SHA-1 and the commit's blob
+must read back byte-identical through `GitSource.blob` before the ref is created.
+`status`, the additive read-only monitor source `research_programs`
+(`urn:zeus:research-program-monitor:1`, at most 20 programs, `truncated` explicit) and the bounded
+`runtime/research-program/<id>/report.md` project counts, states, codes and outcomes from the store
+only; the local JSONL event log carries general/development/operations records with identifiers,
+counts and codes; none of them carry configs, feed bodies, exception text, credentials or DSNs.
+No retry, merge, deploy, service install, budget grant, scope change or generated goal.

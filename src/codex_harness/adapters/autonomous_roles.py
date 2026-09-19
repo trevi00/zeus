@@ -15,6 +15,12 @@ and the provider's structured output is refused at the model boundary instead of
 same boundary (live canary autonomous-ssot-canary-002, claim c6): the packet consumer requires
 source_ids for every kind except unknown, so the model-facing claim is a nested anyOf of typed
 variants, sourced fact/inference with minItems 1 and unknown with any list, never if/then or allOf.
+Question shape is the same boundary again (research-program-001 live cycle 1, question q3): the packet
+consumer requires nonempty claim_ids for an answered question and refuses a blocking unknown one, so
+the model-facing question is a nested anyOf of typed variants, answered with minItems 1 and either
+blocking value, unknown with blocking false and any list. What no local schema can state is the
+cross-array rule that an answered question cites only fact/inference claims: that stays the domain
+validator's authority (`domain.dge._questions`) and is carried to the model as guidance only.
 The consumers are not loosened and no output is coerced or repaired here.
 """
 from __future__ import annotations
@@ -34,6 +40,16 @@ from codex_harness.domain.council import (
     IMPROVEMENT_LEAD,
     RESEARCH_LEAD,
 )
+from codex_harness.domain.council_input import (
+    DBA_REPORT,
+    IMPROVEMENT_PROPOSAL,
+    PACKET,
+    RESEARCH_PROPOSAL,
+    admit_delivery,
+    output_limit,
+    preceding,
+)
+from codex_harness.domain.council_input import SCHEMA as INPUT_POLICY
 from codex_harness.domain.dge import CLAIM_KINDS, DECISIONS, QUESTION_STATUSES, SEVERITIES, VERDICTS
 from codex_harness.domain.model import require
 
@@ -68,8 +84,22 @@ def _claim(kinds, source_ids: dict) -> dict:
 
 
 CLAIM = {"anyOf": [_claim(SOURCED_KINDS, CITED), _claim({UNSOURCED_KIND}, STRINGS)]}
-QUESTION = _object({"id": TEXT, "question": TEXT, "blocking": {"type": "boolean"}, "status": _enum(QUESTION_STATUSES),
-                    "claim_ids": STRINGS})
+# `domain.dge._questions` demands nonempty claim_ids for an answered question and refuses a blocking unknown one
+# (INV-DGE-001: research first). The model-facing question states those two LOCAL rules as typed variants under
+# the same nested anyOf: answered keeps an ordinary boolean, unknown is pinned to blocking false with a typed
+# single-value enum (the subset requires an explicit type next to enum). Neither variant can see the claims
+# array, so "answered cites only non-unknown claims" remains the packet consumer's check, not a schema promise.
+UNRESOLVED_STATUS = "unknown"
+ANSWERED_STATUSES = QUESTION_STATUSES - {UNRESOLVED_STATUS}
+BOOLEAN = {"type": "boolean"}
+NONBLOCKING = {"type": "boolean", "enum": [False]}
+
+
+def _question(statuses, blocking: dict, claim_ids: dict) -> dict:
+    return _object({"id": TEXT, "question": TEXT, "blocking": blocking, "status": _enum(statuses), "claim_ids": claim_ids})
+
+
+QUESTION = {"anyOf": [_question(ANSWERED_STATUSES, BOOLEAN, CITED), _question({UNRESOLVED_STATUS}, NONBLOCKING, STRINGS)]}
 TRANSITION = {"type": ["object", "null"], "additionalProperties": False,
               "properties": {"compatibility": TEXT, "rollback": TEXT, "retirement": TEXT},
               "required": ["compatibility", "rollback", "retirement"]}
@@ -120,7 +150,20 @@ OBJECTIVES = {
                  "unknown stops the debate for more research. Tests of the future implementation that have not "
                  "run yet are not unknown design questions: the fix does not exist at base, so record the "
                  "expected verification as an inference or evidence, not as an unknown. You are read-only and "
-                 "are not asked to certify that the future fix works."),
+                 "are not asked to certify that the future fix works. "
+                 "Question references are checked across both arrays and the whole packet is refused, never "
+                 "repaired, on one bad reference: an answered question cites at least one claim id and only "
+                 + _listed(SOURCED_KINDS) + " claims, never an unknown claim; an unknown question has blocking false "
+                 "and cites an unknown claim or nothing. Self-check every answered question before you return: each "
+                 "cited id exists in claims and its kind is fact or inference. Never relabel an unknown claim as "
+                 "fact or inference, and never drop or invent a citation, so that a question can pass as answered: "
+                 "unknown evidence stays unknown. A question such as 'what remains unknown?' has two honest forms: "
+                 "answered, citing a fact or inference about a DOCUMENTED limitation (a source at base records it) "
+                 "while the uncertainty itself stays a separate nonblocking unknown question citing its unknown "
+                 "claim; or unknown itself, blocking false, citing that unknown claim. A design choice you truly "
+                 "cannot settle is status unknown with blocking true: the output is refused and research continues; "
+                 "do not mark it nonblocking or answered to pass the check. In a council (urn:zeus:autonomous:2) run: "
+                 + output_limit(PACKET, {})),  # the first component: its allowance is the initial reservation
     "proposer": "Propose the design for the fixed plan citing packet claims only; do not change the plan.",
     "attacker": ("Identify only material blockers as critical: concrete reachable trigger, cited packet claims, the "
                  "exact fixed criterion, material impact and minimal mitigation. Everything else is minor. "
@@ -142,14 +185,119 @@ OBJECTIVES = {
                        "claim ids, plus findings under the existing rule: only material blockers are critical (concrete "
                        "reachable trigger, cited claims, exact fixed criterion, impact, minimal mitigation); everything "
                        "else is minor, and no objection is compulsory. Echo the snapshot_digest and report_digest."),
-    CONDUCTOR_ROLE: ("Arbitrate the research lead proposal and the improvement lead alternative with the existing rules: "
-                     "name every finding exactly once, never defer a critical finding, accept only without blockers; a "
-                     "verdict is exactly one of " + _listed(VERDICTS) + " and a disposition decision one of "
-                     + _listed(DECISIONS) + ". Echo the snapshot_digest and report_digest."),
+    # Measured whole-layout revision (SPEC "Prepared whole-layout batch"): the conductor objective is concise; the
+    # phase rule lives once in council_delivery.guidance, the enums stay listed as the schema declares them.
+    CONDUCTOR_ROLE: ("Arbitrate the supplied proposals. Account for every finding; never defer a critical finding. "
+                     "Verdict is one of " + _listed(VERDICTS) + ", a disposition decision one of " + _listed(DECISIONS)
+                     + "; echo snapshot_digest and report_digest. Decide from council_delivery."),
 }
 
 
 CRITERION_ROLES = ("attacker", IMPROVEMENT_LEAD)
+# urn:zeus:council-input:2 producers whose allowance depends on the earlier payloads their task details carry
+# (the researcher produces the first component, so its objective above states the initial reservation statically).
+PRODUCED = {DBA: DBA_REPORT, RESEARCH_LEAD: RESEARCH_PROPOSAL, IMPROVEMENT_LEAD: IMPROVEMENT_PROPOSAL}
+
+
+def role_objective(role: str, details: dict) -> str:
+    """The objective one role execution receives: the static role text plus, for a council producer, the output
+    allowance computed by the domain rule from the EXACT earlier payloads in this task's details (the same
+    values the run admitted and the consumer rechecks). A missing earlier payload is a contract error here,
+    never an allowance computed as if it were empty; every other role keeps its static objective."""
+    objective = OBJECTIVES[role]
+    section = PRODUCED.get(role)
+    if section is None:
+        return objective
+    require(isinstance(details, dict), "Role details must be an object")
+    return objective + " " + output_limit(section, {k: details[k] for k in preceding(section) if k in details})
+
+# Conductor delivery (research-program-001 run003): the council debate roles receive their meeting inputs
+# as REQUIRED context, a deterministic lossless projection of the immutable task details, instead of the
+# whole raw task as optional evidence that the compiler may drop (`omitted: budget`). The raw artifact stays
+# the hash-bound authority (external_context); `ssot` and `prior_outputs` are not inline but reachable by
+# exact RFC 6901 pointer on that artifact. Nothing here summarizes, truncates, renames or persists a packet.
+# The complete compiled prompt is the budget denominator (CONDUCTOR-REVIEW-001: the retained run003 conductor
+# input compiled to 23377 bytes against 22000 while its projection alone was 17819), so every advisory
+# sentence around the data is stated once: the phase rule lives in `guidance`, the reader rule in the
+# executor's `artifact_reader` block, and the read-only rule in `role_context`. The executor also omits an
+# empty task_contract and compacts an empty recovery block for this delivery path only.
+COUNCIL_DEBATE_ROLES = (RESEARCH_LEAD, IMPROVEMENT_LEAD, CONDUCTOR_ROLE)
+INLINE_DELIVERY = ("role", "run_id", "base_revision", "round", "packet", "packet_digest", "dba_report",
+                   "snapshot_digest", "report_digest", "relay", "acceptance_criteria", "blocker_rule")
+PROPOSAL_DELIVERY = {RESEARCH_LEAD: (), IMPROVEMENT_LEAD: ("research_proposal",),
+                     CONDUCTOR_ROLE: ("research_proposal", "improvement_proposal")}
+POINTER_DELIVERY = ("ssot", "prior_outputs")
+DELIVERY_GUIDANCE = {
+    RESEARCH_LEAD: "Propose from the inline packet and DBA report; cite only packet claim ids.",
+    IMPROVEMENT_LEAD: "Answer the inline research_proposal with the alternative; cite only packet claim ids.",
+    CONDUCTOR_ROLE: ("Packet, DBA report, research proposal and improvement alternative are complete inline: decide "
+                     "from them, keep unknowns as unknowns, and read the pointers only for a material gap."),
+}
+READING = ("Read not_inline from the original external_context artifact: reader_argv_prefix plus operation; "
+           "follow artifact_reader rules.")
+
+
+def council_delivery(role: str, details: dict) -> dict:
+    """The required inline projection for one council debate role, or a ContractError before any provider.
+
+    Every inline field is a deep copy of the exact task value (no text edits, no dropped findings, no
+    rewritten ids); a missing mandatory field refuses the execution. The pointer fields name the RFC 6901
+    location on the ORIGINAL hash-bound artifact (`external_context`), whose body is the canonical task details."""
+    require(role in COUNCIL_DEBATE_ROLES, "Council delivery is defined for the debate roles only")
+    require(isinstance(details, dict) and details.get("role") == role, "Council delivery role mismatch")
+    fields = INLINE_DELIVERY + PROPOSAL_DELIVERY[role]
+    missing = sorted(k for k in fields + POINTER_DELIVERY if k not in details)
+    require(not missing, "Council delivery input missing: " + ", ".join(missing))
+    require(isinstance(details["packet"], dict) and isinstance(details["dba_report"], dict),
+            "Council delivery packet and dba_report must be objects")
+    inline = {k: copy.deepcopy(details[k]) for k in fields}
+    pointers = {k: {"pointer": "/" + k,
+                    "operation": ["pointer", "--pointer", "/" + k, "--cursor", "0", "--limit", "8000"]}
+                for k in POINTER_DELIVERY}
+    delivery = {"schema": "urn:zeus:council-delivery:1", "input_policy": INPUT_POLICY, "inline": inline,
+                "not_inline": pointers, "reading": READING, "guidance": DELIVERY_GUIDANCE[role]}
+    # urn:zeus:council-input:2 consumer gate: the role's contiguous payload prefix under the shared-pool rule
+    # (future reservations held for the early roles) and the wrapper within the policy, or the typed
+    # needs_scope_split refusal before any provider (distinct from the missing-field error above).
+    admit_delivery(delivery, role)
+    return delivery
+
+
+def admitted_delivery(agent: str, action: str | None, read_only: bool, stage: str | None, details: dict, delivery) -> dict:
+    """The executor's admission of a supplied delivery before it grants the council compiler budget: only an
+    actual read-only `dge_role` execution of a debate role on that role's real agent and stage, and only the
+    exact deterministic projection of THIS task's details. A caller cannot hand in a foreign, trimmed or
+    inflated delivery to obtain the larger window. Returns the policy measurements of the projection."""
+    require(action == "dge_role" and read_only is True, "Council delivery requires a read-only dge_role execution")
+    role = delivery["inline"].get("role") if isinstance(delivery, dict) and isinstance(delivery.get("inline"), dict) else None
+    require(role in COUNCIL_DEBATE_ROLES, "Council delivery names no debate role")
+    require(stage == "dge:" + role and agent == AGENTS[role], "Council delivery role, stage and agent must agree")
+    require(delivery == council_delivery(role, details), "Council delivery is not the projection of this task")
+    return admit_delivery(delivery, role)
+
+
+def isolation_reference(config: dict | None) -> dict | None:
+    """The identity of a host isolation configuration, not its full worker container configuration: a
+    pre-implementation role runs no container, so only mode and the digest that binds the whole
+    configuration (INV-ISOLATED-WORKER-001) are carried."""
+    if config is None:
+        return None
+    require(isinstance(config, dict) and isinstance(config.get("digest"), str) and bool(config["digest"]),
+            "Isolation configuration carries no digest")
+    return {"mode": config["mode"], "digest": config["digest"]}
+
+
+def role_context(isolation: dict | None = None) -> dict:
+    """What a `dge_role` execution is told about its phase: a clean checkout at the pinned base, before any
+    implementation. No candidate, diff, worker or verifier exists yet, so none is asserted (the instruction
+    states it; no null candidate/worker/verifier fields repeat it). The read-only rule is the same one the
+    executor checks afterwards (clean status, unchanged HEAD); the checkout path is the turn's cwd and the
+    read-only checkout rule is stated once more only in the App Server developer instructions. Phase,
+    isolation identity and instruction are the whole context (measured whole-layout revision)."""
+    return {"phase": "pre_implementation",
+            "isolation": isolation_reference(isolation),
+            "instruction": ("Read-only at the pinned base; no candidate, worker or verifier has run. Do not execute "
+                            "code/tests/scripts or change files. Return structured output only.")}
 
 
 def role_schema(role: str, details: dict) -> dict:
@@ -180,11 +328,16 @@ def execute_role(executor, task: dict, heartbeat) -> dict:
     cwd = executor.git.review_workspace(base, task["id"])
     require(executor.git._git("rev-parse", "HEAD", cwd=cwd) == base, "Role checkout is not at base")
     stage = "dge:" + role
-    result = executor._run(task["agent"], task["id"], OBJECTIVES[role], details, cwd, role_schema(role, details), True, heartbeat, task,
-                           stage=stage, workload="design", action="dge_role", max_handoffs=MAX_ROLE_ENTRIES)
+    # Debate roles: the lossless projection is REQUIRED context (refused before the provider when a mandatory
+    # input is missing or the required block exceeds the compiler budget); other roles keep the raw task inline.
+    delivery = council_delivery(role, details) if role in COUNCIL_DEBATE_ROLES else None
+    result = executor._run(task["agent"], task["id"], role_objective(role, details), details, cwd, role_schema(role, details), True,
+                           heartbeat, task, stage=stage, workload="design", action="dge_role", max_handoffs=MAX_ROLE_ENTRIES,
+                           delivery=delivery)
     require(not executor.git._git("status", "--porcelain", cwd=cwd), "Role execution modified its checkout")
     require(executor.git._git("rev-parse", "HEAD", cwd=cwd) == base, "Role execution changed its commit")
     if role in DEBATE_ROLES:
         require(details.get("packet_digest") == (details.get("packet_digest") or ""), "Packet digest required")
-    result["role_execution"] = {"role": role, "stage": stage, "read_only": True, "provider_entries_cap": MAX_ROLE_ENTRIES}
+    result["role_execution"] = {"role": role, "stage": stage, "read_only": True, "provider_entries_cap": MAX_ROLE_ENTRIES,
+                                "input_policy": INPUT_POLICY if delivery is not None else None}
     return result

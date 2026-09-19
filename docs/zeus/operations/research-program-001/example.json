@@ -1,0 +1,38 @@
+{
+  "schema": "urn:zeus:research-program:1",
+  "id": "research-program-001",
+  "base_revision": "2edbcb2d3f9bb5291c5d99993dcb38469e47ee72",
+  "deadline": "2026-10-01T00:00:00+00:00",
+  "interval_seconds": 21600,
+  "max_cycles": 2,
+  "max_adoptions": 1,
+  "budget": {"per_host": 9, "total": 9},
+  "topics": [
+    {"id": "research-report", "keywords": ["research", "report", "rss", "feed", "trending"]},
+    {"id": "storage", "keywords": ["postgres", "advisory lock", "transaction"]}
+  ],
+  "local_candidates": [
+    {"id": "research-standard", "topic": "research-report", "path": "docs/research-standard.md",
+     "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+     "rationale": "Existing local research residual: adoption standard not yet connected to the live collectors."}
+  ],
+  "template": {
+    "schema": "urn:zeus:autonomous:2",
+    "id": "research-program-001-template",
+    "base_revision": "2edbcb2d3f9bb5291c5d99993dcb38469e47ee72",
+    "goal": {"path": "docs/zeus/operations/research-program-001/SPEC.md",
+             "sha256": "89bdc13348a24a5c54b857f2c07749035dcd4cd7d8313f7996c692feb491d933",
+             "criterion": "Finite local/external discovery program connected to existing real council with durable bounds and truthful reports",
+             "rationale": "Scoped research/report improvement from a recorded discovery lead; no headline adoption mandate."},
+    "plan": {"objective": "Improve the research-program report or research documentation within the allowed paths from the recorded lead, or report why it must be deferred.",
+             "acceptance_criteria": ["Focused tests and lint pass", "No scope, budget or goal change", "Primary evidence cited from Git at base or deferred explicitly"],
+             "allowed_paths": ["docs/zeus/operations/research-program-001/RUNBOOK.md", "docs/research-standard.md"]},
+    "budget": {"per_host": 9, "total": 9},
+    "claude": {"model": "claude-fixture-model", "timeout_seconds": 1200, "max_budget_usd": 4},
+    "deadline": "2026-10-01T00:00:00+00:00",
+    "research": {"topic": "research program report improvement",
+                 "questions": ["Which existing module owns the research report and how is it tested?"],
+                 "search_scope": ["src/codex_harness/adapters/research_program.py", "docs/zeus/operations/research-program-001"]},
+    "current_state": {"records": [{"bucket": "autonomous_runs", "id": "research-program-001.c001"}], "max_age_seconds": 600}
+  }
+}

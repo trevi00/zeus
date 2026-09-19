@@ -329,6 +329,14 @@ def fleet_facts(store):
     return Fleet(store).status()
 
 
+def research_program_facts(store):
+    """INV-RESEARCH-PROGRAM-001 projection (`urn:zeus:research-program-monitor:1`) from store reads
+    only: program states, cycle/adoption counts, outcomes and stop reasons for at most 20 programs
+    with `truncated` explicit; never configs, feed bodies, paths or raw errors."""
+    from codex_harness.application.research_program import ResearchProgram
+    return ResearchProgram(store).monitor()
+
+
 def scope_label(repository, label=None):
     """ZEUS_MONITOR_SCOPE names what is observed; the default is the repository name. It is a
     label for the page toolbar, not a status or success claim."""
@@ -353,7 +361,9 @@ def collect(service, artifacts, repository, redis_url, containers=None, scope=No
             'docker': lambda: docker_facts(repository, containers),
             'redis': lambda: redis_facts(redis_url, service.org.agents),
             # Additive fleet envelope (INV-FLEET-001): same read-only store, fails independently.
-            'fleet': lambda: fleet_facts(service.store)}
+            'fleet': lambda: fleet_facts(service.store),
+            # Additive research-program envelope (INV-RESEARCH-PROGRAM-001): same read-only store, fails independently.
+            'research_programs': lambda: research_program_facts(service.store)}
     if runtime is not None:
         jobs['observations'] = lambda: observation_facts(service.store, runtime)
     with ThreadPoolExecutor(max_workers=4) as pool:

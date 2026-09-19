@@ -9,10 +9,12 @@ import pytest
 from jsonschema import Draft202012Validator
 
 from codex_harness.adapters.autonomous_roles import (
+    ANSWERED_STATUSES,
     CONSUMER_ENUMS,
     OBJECTIVES,
     SCHEMAS,
     SOURCED_KINDS,
+    UNRESOLVED_STATUS,
     UNSOURCED_KIND,
 )
 from codex_harness.adapters.execution_output import completed_output
@@ -80,8 +82,16 @@ LIVE_REJECTED_STATUS = "open - depends on the future CI run"
 # Live canary autonomous-ssot-canary-002 (researcher e8152929, base 490c5d4): valid enums, but claim c6 was a fact
 # about the run's own execution environment with source_ids=[]; packet_from_research refused it. Compact fixture.
 LIVE_UNCITED_FACT = {"id": "c6", "kind": "fact", "text": "the execution environment observed during this run", "source_ids": []}
+# research-program-001 live cycle 1 (execution artifact sha256:8e4f8990..., capture c63c303f): the researcher's real
+# output passed the execution schema, then packet_from_research refused it because answered question q3 cited
+# claim c11 of kind unknown. SYNTHETIC fixture reproducing only that q3/c11 relationship, never the saved answer,
+# which stays unchanged in its artifact (RESULT.md); the id, text and citation names below are placeholders.
+LIVE_UNKNOWN_CITED_CLAIM = {"id": "c11", "kind": "unknown", "text": "whether the lead's primary source exists", "source_ids": []}
+LIVE_ANSWERED_WITH_UNKNOWN = {"id": "q3", "question": "what remains unknown about the lead?", "blocking": False,
+                              "status": "answered", "claim_ids": ["c11"]}
 PACKET_DIGEST = "1" * 64
 CLAIM_VARIANTS = SCHEMAS["researcher"]["properties"]["claims"]["items"]["anyOf"]
+QUESTION_VARIANTS = SCHEMAS["researcher"]["properties"]["questions"]["items"]["anyOf"]
 
 
 def schema_check(role, output):
@@ -103,8 +113,11 @@ def test_every_role_schema_enum_is_the_consumer_constant_and_passes_preflight():
     # The claim kind is split across the two typed anyOf variants; together they are exactly CLAIM_KINDS.
     sourced, unsourced = CLAIM_VARIANTS
     claim_kind = {"type": "string", "enum": sourced["properties"]["kind"]["enum"] + unsourced["properties"]["kind"]["enum"]}
+    # The question status is split the same way across its two typed anyOf variants; together exactly QUESTION_STATUSES.
+    answered, unresolved = QUESTION_VARIANTS
+    question_status = {"type": "string", "enum": answered["properties"]["status"]["enum"] + unresolved["properties"]["status"]["enum"]}
     located = {"claim.kind": claim_kind,
-               "question.status": schemas["researcher"]["properties"]["questions"]["items"]["properties"]["status"],
+               "question.status": question_status,
                "ssot.decision": schemas["researcher"]["properties"]["ssot"]["properties"]["decision"],
                "finding.severity": schemas["attacker"]["properties"]["findings"]["items"]["properties"]["severity"],
                "arbiter.verdict": schemas["arbiter"]["properties"]["verdict"],
@@ -132,6 +145,98 @@ def test_claim_variants_state_the_consumer_citation_rule_with_typed_anyof_and_mi
         assert variant["type"] == "object" and variant["additionalProperties"] is False
         assert variant["required"] == ["id", "kind", "text", "source_ids"] and variant["properties"]["kind"]["type"] == "string"
     assert set(SCHEMAS["researcher"]["properties"]["claims"]["items"]) == {"anyOf"}
+
+
+def test_question_variants_state_the_two_local_consumer_rules_with_typed_anyof_and_never_the_cross_array_rule():
+    # Consumer rules (domain.dge._questions): nonempty claim_ids when answered; no blocking unknown. The producer
+    # states exactly those two LOCAL rules as two closed object variants with the same field set and constants.
+    # The third consumer rule (answered cites only non-unknown claims) needs the claims array and is deliberately
+    # absent: no variant names a claim kind, so schema admission never implies consumer acceptance of a reference.
+    answered, unresolved = QUESTION_VARIANTS
+    assert ANSWERED_STATUSES | {UNRESOLVED_STATUS} == QUESTION_STATUSES and UNRESOLVED_STATUS not in ANSWERED_STATUSES
+    assert set(answered["properties"]["status"]["enum"]) == ANSWERED_STATUSES and unresolved["properties"]["status"]["enum"] == [UNRESOLVED_STATUS]
+    assert answered["properties"]["claim_ids"] == {"type": "array", "items": {"type": "string"}, "minItems": 1}
+    assert unresolved["properties"]["claim_ids"] == {"type": "array", "items": {"type": "string"}}
+    assert answered["properties"]["blocking"] == {"type": "boolean"}
+    assert unresolved["properties"]["blocking"] == {"type": "boolean", "enum": [False]}, "typed single-value enum, no const/if"
+    for variant in QUESTION_VARIANTS:
+        assert variant["type"] == "object" and variant["additionalProperties"] is False
+        assert variant["required"] == ["id", "question", "blocking", "status", "claim_ids"]
+        assert variant["properties"]["status"]["type"] == "string"
+        assert "kind" not in json.dumps(variant), "the schema cannot see claim kinds"
+    assert set(SCHEMAS["researcher"]["properties"]["questions"]["items"]) == {"anyOf"}
+
+
+@pytest.mark.parametrize("status", sorted(QUESTION_STATUSES))
+@pytest.mark.parametrize("blocking", [False, True], ids=["nonblocking", "blocking"])
+@pytest.mark.parametrize("claim_ids", [[], ["c1"]], ids=["empty", "cited"])
+def test_every_local_question_shape_is_admitted_exactly_when_the_consumer_accepts_it(status, blocking, claim_ids):
+    # Local matrix: answered needs nonempty refs (either blocking value); unknown needs blocking false (any refs).
+    # The cited reference is a fact (c1) so that only the LOCAL rules decide here; cross-array cases are separate.
+    question = {"id": "q9", "question": "one more question", "blocking": blocking, "status": status, "claim_ids": claim_ids}
+    output = {**RESEARCH, "questions": RESEARCH["questions"] + [question]}
+    result = schema_check("researcher", output)
+    admitted = (status == "answered" and bool(claim_ids)) or (status == UNRESOLVED_STATUS and not blocking)
+    if admitted:
+        assert result["answer"] == output, result.get("failure")
+        packet = packet_from_research(MANIFEST, output)["packet"]
+        assert packet["questions"][-1] == question, "an unknown may cite an unknown claim, a fact, or nothing"
+        return
+    assert result["answer"] is None and result["failure"]["output_reason"] == "schema_mismatch"
+    assert result["failure"]["owner"] == "agent_output" and result["failure"]["instance_path"] == ["questions", 2]
+    assert "one more question" not in str(result["failure"]), "no output text is echoed"
+    refusal = "must be a list of distinct ids" if status == "answered" else "blocking unresolved"
+    with pytest.raises(PacketError, match=refusal):
+        packet_from_research(MANIFEST, output)
+
+
+@pytest.mark.parametrize("claim_ids, refusal", [
+    (["c3"], "cites only non-unknown claims"),
+    (["c1", "c3"], "cites only non-unknown claims"),
+    (["c404"], "references an unknown id"),
+    (["c1", "c1"], "must be a list of distinct ids"),
+], ids=["unknown-kind", "mixed-known-and-unknown", "missing-id", "duplicate-id"])
+def test_relational_reference_limits_pass_the_schema_and_stay_consumer_refused(claim_ids, refusal):
+    # Schema capability versus consumer proof: every answered question below is well-formed for the model-facing
+    # schema (nonempty string ids) and every one is refused by the unchanged packet validator. The local schema
+    # cannot state these rules; passing it is not evidence that the packet will be accepted.
+    question = {"id": "q9", "question": "which claims settle it?", "blocking": True, "status": "answered", "claim_ids": claim_ids}
+    output = {**RESEARCH, "questions": RESEARCH["questions"] + [question]}
+    result = schema_check("researcher", output)
+    assert result["answer"] == output and result["structural"]["checks"]["schema"] == "checked", result.get("failure")
+    with pytest.raises(PacketError, match=refusal):
+        packet_from_research(MANIFEST, output)
+
+
+def test_live_answered_question_citing_an_unknown_claim_fixture_is_still_refused_and_the_honest_forms_pass():
+    # Labelled SYNTHETIC recurrence of research-program-001 cycle 1: q3 answered, citing c11 of kind unknown.
+    # Before and after this batch the schema admits it (the reference is nonempty) and only the unchanged packet
+    # validator refuses it; nothing coerces, relabels or retries, and the saved live answer is not touched.
+    live = {**RESEARCH, "claims": RESEARCH["claims"] + [LIVE_UNKNOWN_CITED_CLAIM],
+            "questions": RESEARCH["questions"] + [LIVE_ANSWERED_WITH_UNKNOWN]}
+    assert schema_check("researcher", live)["answer"] == live, "schema capability, not consumer proof"
+    with pytest.raises(PacketError, match="answered question cites only non-unknown claims"):
+        packet_from_research(MANIFEST, live)
+    # Control 1: the honest nonblocking unknown. Same question, same citation, status unknown, blocking false.
+    honest_unknown = {**live, "questions": RESEARCH["questions"] + [{**LIVE_ANSWERED_WITH_UNKNOWN, "status": UNRESOLVED_STATUS}]}
+    assert schema_check("researcher", honest_unknown)["answer"] == honest_unknown
+    consumed = packet_from_research(MANIFEST, honest_unknown)["packet"]
+    assert consumed["questions"][-1] == {**LIVE_ANSWERED_WITH_UNKNOWN, "status": UNRESOLVED_STATUS}
+    assert consumed["claims"][-1] == LIVE_UNKNOWN_CITED_CLAIM, "the unknown claim is kept as unknown, never relabelled"
+    # Control 2: the sourced-limitation form. q3 is answered by a fact about a DOCUMENTED limitation (cited to a
+    # source at base) and the uncertainty itself stays a separate nonblocking unknown question citing c11.
+    documented = {"id": "c12", "kind": "fact", "text": "the capture record states the primary source was not fetched", "source_ids": ["s1"]}
+    sourced_limitation = {**live, "claims": live["claims"] + [documented],
+                          "questions": RESEARCH["questions"] + [{**LIVE_ANSWERED_WITH_UNKNOWN, "claim_ids": ["c12"]},
+                                                                {"id": "q4", "question": "does the primary source exist?",
+                                                                 "blocking": False, "status": UNRESOLVED_STATUS, "claim_ids": ["c11"]}]}
+    assert schema_check("researcher", sourced_limitation)["answer"] == sourced_limitation
+    consumed = packet_from_research(MANIFEST, sourced_limitation)["packet"]
+    assert [(q["status"], q["claim_ids"]) for q in consumed["questions"][-2:]] == [("answered", ["c12"]), ("unknown", ["c11"])]
+    # Coercion that would have "passed" the live answer is not a control: relabelling c11 as a fact with no source is
+    # refused at the schema (claims rule), and relabelling it as a cited fact would be an invented citation.
+    relabelled = {**live, "claims": RESEARCH["claims"] + [{**LIVE_UNKNOWN_CITED_CLAIM, "kind": "fact"}]}
+    assert schema_check("researcher", relabelled)["failure"]["instance_path"] == ["claims", 3]
 
 
 @pytest.mark.parametrize("kind", sorted(CLAIM_KINDS))
@@ -181,6 +286,15 @@ def test_prompts_name_the_finite_values_and_separate_design_unknowns_from_future
     assert "runtime, test run or clean checkout" in researcher and "never invent a citation" in researcher
     assert "have not run yet are not unknown design questions" in researcher
     assert "not asked to certify" in researcher, "a read-only researcher never certifies the future fix"
+    # Packet producer alignment (research-program-001 q3/c11): the cross-array rule the schema cannot state.
+    assert "checked across both arrays" in researcher and "refused, never repaired" in researcher
+    assert "answered question cites at least one claim id and only fact/inference claims, never an unknown claim" in researcher
+    assert "unknown question has blocking false" in researcher
+    assert "Self-check every answered question before you return" in researcher
+    assert "Never relabel an unknown claim as fact or inference" in researcher and "unknown evidence stays unknown" in researcher
+    assert "'what remains unknown?'" in researcher and "DOCUMENTED limitation" in researcher
+    assert "separate nonblocking unknown question" in researcher
+    assert "status unknown with blocking true" in researcher and "do not mark it nonblocking or answered to pass the check" in researcher
     assert all(v in OBJECTIVES["attacker"] for v in SEVERITIES) and "Everything else is minor" in OBJECTIVES["attacker"]
     assert all(v in OBJECTIVES["arbiter"] for v in VERDICTS | DECISIONS) and "never defer a critical" in OBJECTIVES["arbiter"]
 
@@ -216,8 +330,9 @@ def test_invalid_finite_values_are_refused_at_the_model_boundary_and_by_the_cons
     node[pointer[-1]] = bad
     result = schema_check(role, document)
     assert result["answer"] is None and result["failure"]["output_reason"] == "schema_mismatch"
-    # A claim is refused at the claim itself: both anyOf variants fail on the kind, so the best match is the anyOf.
-    reported = list(pointer[:2]) if pointer[0] == "claims" else list(pointer)
+    # A claim or question is refused at the item itself: both anyOf variants fail on the finite field, so the best
+    # match is the anyOf.
+    reported = list(pointer[:2]) if pointer[0] in ("claims", "questions") else list(pointer)
     assert result["failure"]["owner"] == "agent_output" and result["failure"]["instance_path"] == reported
     assert bad not in str(result["failure"]), "no value is echoed"
     with pytest.raises((PacketError, EventError, ContractError)):
@@ -238,13 +353,15 @@ def test_live_rejected_claim_kinds_and_question_status_fixture_is_refused_before
     with pytest.raises(PacketError, match="known kind"):
         packet_from_research(MANIFEST, live)
     only_status = {**RESEARCH, "questions": [{**RESEARCH["questions"][0], "status": LIVE_REJECTED_STATUS}]}
-    assert schema_check("researcher", only_status)["failure"]["instance_path"] == ["questions", 0, "status"]
+    assert schema_check("researcher", only_status)["failure"]["instance_path"] == ["questions", 0]
     with pytest.raises(PacketError, match="answered or unknown"):
         packet_from_research(MANIFEST, only_status)
-    # The consumer is unchanged: a blocking design unknown is still refused (research first), while a
-    # non-blocking unknown about a future test is carried as an unknown claim.
+    # The consumer is unchanged: a blocking design unknown is still refused (research first); since the question
+    # alignment the model boundary refuses it too (owner agent_output, no retry), while a non-blocking unknown
+    # about a future test is carried as an unknown claim.
     blocking_unknown = {**RESEARCH, "questions": [{**RESEARCH["questions"][1], "blocking": True}]}
-    assert schema_check("researcher", blocking_unknown)["answer"] == blocking_unknown
+    refused = schema_check("researcher", blocking_unknown)
+    assert refused["answer"] is None and refused["failure"]["instance_path"] == ["questions", 0]
     with pytest.raises(PacketError, match="blocking unresolved"):
         packet_from_research(MANIFEST, blocking_unknown)
 

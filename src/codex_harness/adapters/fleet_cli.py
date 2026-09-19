@@ -11,6 +11,7 @@ from codex_harness.adapters.providers import packaged_policy
 from codex_harness.application.fleet import Fleet, FleetRunner
 from codex_harness.domain.fleet import FleetRefused, lane_of, validate_config
 from codex_harness.domain.operation import validate_manifest
+from codex_harness.domain.usage_policy import MODES
 
 __all__ = ["add_parser", "execute", "refusal"]
 
@@ -33,6 +34,9 @@ def add_parser(commands) -> None:
     grant.add_argument("--total", type=int, required=True)
     grant.add_argument("--expected-total", type=int, required=True, dest="expected_total",
                        help="The current effective total; refused when it no longer matches")
+    grant.add_argument("--mode", choices=list(MODES), default=None,
+                       help="Accounting mode for new work: finite (numbers are ceilings) or subscription "
+                            "(every call recorded, numbers retained as migration metadata); omitted keeps the current mode")
     sub.add_parser("status", help="Read the fleet projection; store read only")
 
 
@@ -96,6 +100,7 @@ def execute(service, args) -> dict:
     if command == "resume":
         return {**Fleet(service.store).resume(), "exit_code": 0}
     if command == "authorize-budget":
-        grant = Fleet(service.store).authorize_budget(args.per_host, args.total, args.expected_total)
+        grant = Fleet(service.store).authorize_budget(args.per_host, args.total, args.expected_total,
+                                                      mode=getattr(args, "mode", None))
         return {**grant, "exit_code": 0}
     return status(service, args)

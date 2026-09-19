@@ -54,6 +54,7 @@ from codex_harness.domain.model import ContractError, canonical, digest, require
 from codex_harness.domain.observation import redact_text
 from codex_harness.domain.policy import POLICY
 from codex_harness.domain.provider_stream import ClaudeStream
+from codex_harness.domain.usage_policy import FINITE, MODES, SUBSCRIPTION
 
 IDENTITY = ClaudeStream.identity
 TRANSPORT = ClaudeStream.transport
@@ -143,6 +144,15 @@ class ClaudeCodeRuntime:
         self.model = model.strip()
         self.runtime = dict(runtime or {})
         self.executable = resolve_claude(executable)
+        # Research program001 batch008: the selected runtime names the usage-accounting mode. Finite
+        # (the absent-key legacy) requires and passes the spend ceiling exactly as before; explicit
+        # subscription passes none and refuses a configured one, so the command and the receipt can
+        # never disagree about a ceiling. Anything else is refused here, before any probe or process.
+        self.accounting_mode = self.runtime.get("accounting_mode", FINITE)
+        require(type(self.accounting_mode) is str and self.accounting_mode in MODES,
+                "Claude runtime accounting_mode must be one of " + ", ".join(MODES))
+        require(self.accounting_mode == FINITE or max_budget_usd is None,
+                "Subscription accounting forwards no spend ceiling; a configured max_budget_usd is refused")
         self.max_budget_usd = max_budget_usd
         self.settings_document = settings_document
         self.environment_source = environment
@@ -219,7 +229,10 @@ class ClaudeCodeRuntime:
     # ---- command construction -------------------------------------------------------------------
     def _planned_flags(self) -> list:
         flags = ["--print", "--output-format", "--input-format", "--model", "--session-id",
-                 "--permission-mode", "--max-budget-usd", "--json-schema"]
+                 "--permission-mode", "--json-schema"]
+        if self.accounting_mode == FINITE:
+            # Only an option the command will actually pass is required of the installed CLI.
+            flags.append("--max-budget-usd")
         if self.runtime.get("verbose", True):
             flags.append("--verbose")
         if self.runtime.get("permission_prompts"):
@@ -265,7 +278,8 @@ class ClaudeCodeRuntime:
                  settings_document: dict | None = None) -> tuple[list, list]:
         """Return (argv, manifest). The manifest is what may be written to a log: every element
         that can carry schema, context or configuration text is replaced by its digest."""
-        require(self.max_budget_usd is not None, "Claude execution requires a configured spend ceiling")
+        require(self.accounting_mode == SUBSCRIPTION or self.max_budget_usd is not None,
+                "Claude execution requires a configured spend ceiling")
         if settings_document is None:
             settings_document = self.settings_document
         argv = [*self.launcher, self.executable]
@@ -301,7 +315,8 @@ class ClaudeCodeRuntime:
         if self._system_prompt() is not None:
             # The document travels as a value; the log keeps its digest (INV-WORKER-PROFILE-001).
             add("--append-system-prompt", self._system_prompt(), sensitive_from=1)
-        add("--max-budget-usd", format(float(self.max_budget_usd), ".2f"))
+        if self.accounting_mode == FINITE:
+            add("--max-budget-usd", format(float(self.max_budget_usd), ".2f"))
         add("--json-schema", canonical(schema), sensitive_from=1)
         return argv, manifest
 
@@ -365,7 +380,10 @@ class ClaudeCodeRuntime:
                    "launcher": list(self.launcher),
                    "measurement": ("fixture interpreter in front of the executable; a protocol test, "
                                    "not a provider measurement") if self.launcher else "host executable",
-                   "max_budget_usd": float(self.max_budget_usd), "limits": limits,
+                   # Null under subscription: no ceiling was passed, and this is not a claim about
+                   # remaining subscription usage; the mode says why the cap is absent.
+                   "max_budget_usd": float(self.max_budget_usd) if self.max_budget_usd is not None else None,
+                   "accounting_mode": self.accounting_mode, "limits": limits,
                    "environment": environment_report,
                    "uncontrolled_inheritance": list(self.runtime.get("uncontrolled_inheritance", []))}
 
