@@ -991,3 +991,58 @@ restart binding, and source retention. No global budget raise, summarization, to
 retry. Current v1 guard remains in force; this recommendation is NOT implemented and has NOT passed a live run.
 No further model call in005. Acceptance stays complete real cycle plus tick2/stop; do not call early refusal
 an operational success. Keep successful code/CI evidence and move only this changed policy assumption forward.
+
+### Implementation013: shared pool with ordered future reservations (owner decision)
+
+Outcome/authority: complete the unchanged bounded unattended acceptance; Claude implements, Codex reviews.
+This replaces v1 independent payload ceilings with urn:zeus:council-input:2. No global allowance increase.
+No further research needed: the exact live005 measurement above discriminates the failed design assumption.
+Historical v1 receipts/files stay unchanged; new manifests/receipts truthfully name v2. Old pinned revisions
+keep old behavior; do not reinterpret old evidence as v2 or build a second runtime policy unnecessarily.
+
+Affected path: frozen packet -> snapshot/DBA -> normalized report -> research lead -> complete research
+proposal -> improvement lead -> complete alternative -> conductor -> existing implementation/review/promotion.
+Producer admission is a pure ordered-prefix calculation; no mutable global budget or cross-run credit.
+Order is packet, dba_report, research_proposal, improvement_proposal; reservations16384/4096/4096/8192.
+For any nonempty contiguous prefix, sum(canonical bytes of actual prefix) + reservations of absent future
+components must be <=32768. Reject holes, unknown payload keys, and out-of-order explicit stage arguments.
+Compute current-stage allowance =32768 - actual earlier bytes - reservations of later components. Typed
+safe overflow names the current component and actual/available bytes. Never admit a missing earlier value
+by pretending it is empty. Future values must not affect a producer's current allowance.
+
+Consumer projections are role-specific contiguous prefixes: research_lead gets packet+report;
+improvement_lead adds research_proposal; conductor adds improvement_proposal. Check role-required fields,
+exact projection binding and the SAME prefix reservation rule (including future reservations for early
+roles). Final complete prefix spends the pool without per-component ceilings. Wrapper<=4096 and
+host<=4096, required<=40960 and compiler49152-8192 remain unchanged. No trust in producer admission alone.
+Production callers must all stop using isolated per-section v1 admission. Remove/replace the old isolated
+API rather than leave two contradictory policies. New manifest calls numbers reservations, not limits.
+
+Producer instructions must not continue asserting4096 as a hard research cap. Where earlier payloads exist,
+report the calculated allowance using the same domain function; researcher initial allowance16384. DBA
+report normalization and derived proposals add structure, so say explicitly the limit covers the normalized
+or derived value, not merely raw prose. Keep every finding/unknown; original evidence must not be rewritten.
+Do not weaken compiler guard, snapshot freshness, action/role binding, acceptance schemas, ledger, auth,
+isolation, source privacy or promotion. No summary, tool-context bypass, automatic retry or model call.
+
+Acceptance matrix (one batch):
+- Each of four producer prefixes: exact aggregate reservation bound passes, one byte over refuses before
+  downstream submission/provider. Earlier unused bytes can be spent later; future reservations preserved.
+- Actual live005 sizes11965/1677/4260 pass with future8192 reserved; later8192 remains admissible. Synthetic
+  size-equivalent case is labelled as such; owner replays actual raw data separately.
+- Unicode/JSON escaping counted as canonical UTF8, not characters/tokens; originals and hashes unchanged.
+- Missing/holey prefix, wrong role or supplied projection, future-component injection are contract errors;
+  overflow remains precise needs_scope_split and safe for existing retry/failed mapping.
+- All three full executor role projections fit at their largest admitted prefix with overhead reservations;
+  oversized wrapper, host/recovery and complete envelope still refuse before provider.
+- Keep legacy non-council limits and source/attempt identity tests. Pure calculations introduce no new shared
+  state; repeated independent calls must not borrow credit. Existing restart/freshness gates unchanged.
+- Timeout/cancel/platform/cleanup architecture unchanged, use existing coverage, do not create new subsystems.
+
+Allowed changes: domain/council_input.py, application/council.py, adapters/autonomous_roles.py,
+adapters/executor.py only if required, tests/test_council_input.py, tests/test_council_delivery.py,
+tests/test_council.py, tests/test_council_roles.py, docs/contracts.md. Update obsolete v1 assertions as policy
+migration; preserve their safety purpose. Worker runs focused four files and ruff only; owner full suite/CI.
+Return one completed candidate with exact checks and limitations. One actual new canary only after acceptance
+and CI: max2 collection ticks/1 council, fail-stop, no automatic merge/deploy. Success requires full accepted
+cycle plus bounded second tick/stop; local-asset absorption and project view stay operational follow-up work.
