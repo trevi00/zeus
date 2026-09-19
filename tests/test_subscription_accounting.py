@@ -9,6 +9,9 @@ import threading
 from types import SimpleNamespace
 
 import pytest
+from test_claude_cli_process import CHILD, SCHEMA, observation
+from test_fleet import GOAL, config, manifest
+from test_research_program_fixtures import config as program_config
 
 from codex_harness.adapters import isolated_worker as iw
 from codex_harness.adapters import isolated_worker_entry as entry
@@ -28,9 +31,6 @@ from codex_harness.domain.providers import parse_configuration, select_execution
 from codex_harness.domain.research_program import ProgramRefused, headroom, select_candidate
 from codex_harness.domain.research_program import validate_config as validate_program
 from codex_harness.domain.usage_policy import UsagePolicyError, accounting_mode, validate_budget
-from tests.test_claude_cli_process import CHILD, SCHEMA, observation
-from tests.test_fleet import GOAL, config, manifest
-from tests.test_research_program_fixtures import config as program_config
 
 FINITE, SUB = {"per_host": 2, "total": 4}, {"mode": "subscription", "per_host": 2, "total": 4}
 BASE = "a" * 40
