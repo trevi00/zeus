@@ -1172,3 +1172,14 @@ Implementation015 attempt disposition: actual Claude provider returned Fable sub
 source reading, is_error=true; no changed files/candidate/review, slot216->217 settled, container removed.
 This is an availability constraint, not evidence against the015 design. No further provider call or model
 substitution. Preserve the completed013/014 acceptance; resume exactly015 when model availability permits.
+
+
+Model allocation update (2026-09-19, explicit user instruction): Claude Fable is reserved for
+major design and judgment; other Claude work uses Opus 5 (claude-opus-5). Codex retains design
+and independent acceptance ownership. Implementation015 already has an accepted design, so resume
+with Opus 5, existing subscription authentication and unchanged bounded operation controls.
+This supersedes the preceding wait/no-substitution disposition; preserve failed015 evidence.
+Local inspection: ~/.claude/settings.json uses opus[1m], agent definitions use opus;
+scripts/lib/model_router.py remains opt-in haiku/sonnet/opus with old IDs. These inspected files
+do not establish existing Fable/Opus routing. Do not copy obsolete IDs or silently modify local settings.
+Official identifier: https://www.anthropic.com/news/claude-opus-5 (2026-07-24, read 2026-09-19).
