@@ -560,3 +560,105 @@ retain materiality obligations, isolation identity and all source/critical/unkno
 contracts. Keep recovery and other reviewers unchanged. Same matrix/test inputs; no budget
 increase or semantic compression. See CONDUCTOR-FINAL-SLOT.md and raw design-projection.json.
 Current call budget exhausted189/189; paused. No further model execution is authorized here.
+
+
+### Prepared whole-layout batch (authorization pending)
+
+Outcome: satisfy the unchanged complete council-input acceptance matrix in one implementation
+batch. No live council, merge, deploy, reconciliation, guard relaxation or extra automatic retry.
+Current authorization exhausted at189; proposed ceiling190 is NOT granted by this document.
+Codex owns this design and direct independent review; Claude implements once only if approved.
+
+Preserved timed-out edits are staged in51de57e, not accepted runtime. Apply the measured proposal
+from final-fix/design-projection.json together, instead of guessing another local wording cut:
+- Conductor objective: Arbitrate the supplied proposals. Account for every finding; never defer
+  a critical finding. Use the declared verdict/disposition enums and echo snapshot/report digests.
+- Council preimplementation role_context retains phase and isolation(mode,digest); instruction:
+  Read-only at the pinned base; no candidate, worker or verifier has run. Do not execute
+  code/tests/scripts or change files. Return structured output only.
+- Council delivery reading: Read not_inline from the original external_context artifact:
+  reader_argv_prefix plus operation; follow artifact_reader rules.
+- Omit an empty task_contract only; empty recovery sources may use {sources:{}}. Nonempty
+  recovery retains its complete reader catalogue. Candidate-review and generic paths unchanged.
+
+Complete inline meeting data, original artifact identity, pointer arrays, required digests,
+critical-finding/materiality and unknown rules, safe argv, cursor and output bounds remain exact.
+Advisory representation assertions may change only to equivalent invariants. Do not alter the
+representative fixture input, projection>=17819 or complete-prompt<=22000. The measured proposal
+was21690bytes on the labelled synthetic fixture, not a production proof or guaranteed margin.
+
+Allowed implementation: adapters/autonomous_roles.py, adapters/executor.py, delivery regression
+file and CONDUCTOR-DELIVERY.md. Check the full failing fixture first, then six focused modules:
+test_council_delivery, test_autonomous_roles, test_council_roles, test_external_context,
+test_app_server, test_context_recovery; ruff. Owner performs retained-input no-model replay and
+required full validation/CI separately. Existing matrix remains fixed; no additional exploration.
+
+A single remaining slot cannot complete Fleet worker+automatic reviewer. Preserve Fleet's true
+terminal status; owner direct review is distinct and must not fabricate a PG review decision.
+Stop after the one worker attempt and owner checks, with actual result, remaining limits and
+source hashes. Failed/timeout evidence stays retained. No second provider call is authorized.
+
+
+### User direction: subscription-aware autonomous operation (2026-09-19)
+
+User authorizes resolving the remaining operation conditions without per-call permission prompts.
+Usage is recorded for token efficiency; the Claude worker uses subscription OAuth. This does not
+claim unlimited provider allowance or change account extra-usage settings. For the immediate
+prepared implementation, move the legacy ceiling189 to190 as a compatibility control, execute one
+worker, and review directly in the owner session. This supersedes the pending numeric approval
+above; it is not the future operation policy. No automatic merge or deployment.
+
+Remaining bounded delivery: (1) accept the complete-input correction; (2) replace cumulative
+experiment admission with subscription-aware run policy, retaining usage ledger, time/concurrency,
+no-progress/failed-attempt stops and provider-limit wait; (3) execute one real full council cycle
+and report its actual result. Do not start repeated live cycles to chase success.
+
+Local asset absorption is a PROJECT to execute under that operation, not a prerequisite that must
+finish before launch. Track complete inventory, semantic-review coverage and accepted migrations
+without claiming inventory equals absorption. Project observability should reuse existing Fleet
+and report SSOT: goal, owner/team, phase, accepted progress, blockers, usage and evidence links.
+Do not build a second project ledger or expand this correction into UI work. Establish the existing
+project-view seam while the worker implements; schedule its bounded extension after launch gates.
+
+
+### Subscription policy seam and launch acceptance (owner analysis, 2026-09-19)
+
+Evidence: CallBudget.reserve fixes storage and atomically reserves lifetime-count slots; Operation
+BudgetedExecutor reserves before both worker/reviewer; Fleet ProcessLauncher and research-program
+headroom independently compare those totals. Thus changing only one comparison cannot migrate
+admission. Existing absolute deadlines, max_starts, max_cycles/adoptions, lane ownership and
+terminal unknown handling already bound work and must survive. Fleet monitor already projects
+jobs/goals/dependencies from PG; it is not yet a cross-project progress page.
+
+Primary sources opened2026-09-19: official Claude Pro/Max usage guide
+https://support.claude.com/en/articles/11145838-use-claude-code-with-your-pro-or-max-plan
+supports subscription allocation shared with Claude Code and waiting for reset; API credits are
+a separate choice. https://code.claude.com/docs/en/headless documents structured stream events
+and API retry error categories; it does NOT prove our pinned CLI supplies reliable reset times.
+Local claude_cli currently classifies generic error_result; no proven durable rate-limit resume.
+Do not infer API bill from reported estimated USD or infer subscription remaining from token count.
+
+Next implementation design after input acceptance: explicit operator-selected subscription
+accounting mode, preserving legacy finite mode. One shared policy contract must govern manifest
+validation, ledger reservation, Fleet admission and program headroom; no huge numeric sentinel,
+no reset of lifetime ledger, no silently renewed user quota. Persist mode/policy identity with
+observations. Subscription mode records counts without a lifetime admission ceiling; deadline,
+max_starts/cycles/adoptions, concurrency and fail-closed ownership remain enforceable. Mode change
+is idle/atomic/audited; manifests must agree with the effective policy. Scope it to configured
+subscription providers, with no API-key fallback or account billing-setting changes.
+
+Acceptance: legacy policy unchanged; prior high lifetime count does not block subscription mode;
+concurrent reservations still unique and recorded; unreadable/write-failed ledger refuses starts;
+mode mismatch/unknown refuses; crash leaves counted reservation and ownership; elapsed deadline
+and repeated failed cycle stop; provider-limit evidence leads to a visible wait/block state,
+not task success or automatic replay of uncertain effects. Never invent reset_at. A confirmed
+future reset may admit NEW safe work only under original deadline; unknown reset or ambiguous
+execution remains blocked and reported. Real reset is not yet observed. Validate control-plane
+and frontend read-only projection as a single contract, using labelled injected limit events.
+
+Operational acceptance remains one actual complete seven-stage cycle followed by bounded stop.
+Synthetic input/limit tests establish their injected paths, not actual subscription reset or
+production reliability. Current unresolved log-recovery limitation remains explicitly reported;
+it must not be hidden by an accepted input-size test. Project UI/asset inventory are next project
+work, not new launch gates. Completion evidence must separate prepared, implemented, tested,
+actually executed and independently accepted states.

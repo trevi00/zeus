@@ -19,13 +19,18 @@ from codex_harness.domain.model import ContractError, canonical, require
 from codex_harness.domain.policy import POLICY
 
 NAMESPACE_DENIAL = "bwrap: No permissions to create a new namespace"
+# Phase-neutral: the same clean-checkout rule for every read-only turn. Whether this is a candidate review
+# (review_context) or a pre-implementation role at base (role_context) is stated by the assignment itself;
+# this text asserts no candidate, worker or verifier (research-program-001 conductor delivery).
 READ_ONLY_INSTRUCTIONS = (
-    "This is an independent review of a clean checkout at the candidate commit. Inspect and run tests, "
-    "but do not create, modify or delete any file in this checkout, tracked or untracked: no frame files, "
-    "logs, notes or redirected test output; do not commit, push, merge or deploy. Collect test output from "
-    "stdout. Record one concise review frame and verdict in your response and tool stdout, which Zeus "
-    "preserves in its artifact store outside the checkout. Inspect only the assigned review input; full "
-    "re-verification belongs to the named owner or CI.")
+    "This is a read-only assignment in a clean checkout at its pinned revision. Inspect it, and run tests "
+    "only when the assignment's review_context names the interpreter and checkout for them, but do not "
+    "create, modify or delete any file in this checkout, tracked or untracked: no frame files, logs, notes "
+    "or redirected test output; do not commit, push, merge or deploy. Collect any test output from stdout. "
+    "Record your answer (for a review, one concise review frame and verdict) in your response and tool "
+    "stdout, which Zeus preserves in its artifact store outside the checkout. Inspect only the assigned "
+    "input; the assignment states which phase this is and whether any candidate, worker or verifier "
+    "exists; full re-verification belongs to the named owner or CI.")
 
 
 def namespace_failure(event: object) -> bool:

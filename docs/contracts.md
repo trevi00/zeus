@@ -997,6 +997,16 @@ refused. A refused output, at the schema (`schema_mismatch`, owner `agent_output
 Fixture tests prove the schema and consumer behaviour on synthetic outputs, not that a live model follows
 the guidance.
 
+Conductor delivery (research-program-001 run003). A `dge_role` execution receives `role_context`
+(pre-implementation, read-only at base, no candidate/worker/verifier asserted) instead of the candidate
+`review_context`, and the App Server read-only instructions are phase-neutral. The council debate roles
+(research_lead, improvement_lead, conductor) receive `required.council_delivery`: a deterministic
+lossless deep copy of the task's packet, packet digest, DBA report, snapshot/report digests, relay,
+acceptance criteria, blocker rule and available proposals, with `ssot` and `prior_outputs` reachable only
+by exact RFC 6901 pointer on the unchanged hash-bound task artifact; the raw task is then not duplicated
+as optional evidence. A missing mandatory input or a required block over the existing compiler budget
+refuses before any provider entry; nothing is summarized, truncated, persisted as a packet or repaired.
+
 ## INV-COUNCIL-001
 
 `urn:zeus:autonomous:2` is the opt-in topic-bound council; `urn:zeus:autonomous:1` keeps its validator,

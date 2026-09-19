@@ -174,14 +174,85 @@ OBJECTIVES = {
                        "claim ids, plus findings under the existing rule: only material blockers are critical (concrete "
                        "reachable trigger, cited claims, exact fixed criterion, impact, minimal mitigation); everything "
                        "else is minor, and no objection is compulsory. Echo the snapshot_digest and report_digest."),
-    CONDUCTOR_ROLE: ("Arbitrate the research lead proposal and the improvement lead alternative with the existing rules: "
-                     "name every finding exactly once, never defer a critical finding, accept only without blockers; a "
-                     "verdict is exactly one of " + _listed(VERDICTS) + " and a disposition decision one of "
-                     + _listed(DECISIONS) + ". Echo the snapshot_digest and report_digest."),
+    # Measured whole-layout revision (SPEC "Prepared whole-layout batch"): the conductor objective is concise; the
+    # phase rule lives once in council_delivery.guidance, the enums stay listed as the schema declares them.
+    CONDUCTOR_ROLE: ("Arbitrate the supplied proposals. Account for every finding; never defer a critical finding. "
+                     "Verdict is one of " + _listed(VERDICTS) + ", a disposition decision one of " + _listed(DECISIONS)
+                     + "; echo snapshot_digest and report_digest. Decide from council_delivery."),
 }
 
 
 CRITERION_ROLES = ("attacker", IMPROVEMENT_LEAD)
+
+# Conductor delivery (research-program-001 run003): the council debate roles receive their meeting inputs
+# as REQUIRED context, a deterministic lossless projection of the immutable task details, instead of the
+# whole raw task as optional evidence that the compiler may drop (`omitted: budget`). The raw artifact stays
+# the hash-bound authority (external_context); `ssot` and `prior_outputs` are not inline but reachable by
+# exact RFC 6901 pointer on that artifact. Nothing here summarizes, truncates, renames or persists a packet.
+# The complete compiled prompt is the budget denominator (CONDUCTOR-REVIEW-001: the retained run003 conductor
+# input compiled to 23377 bytes against 22000 while its projection alone was 17819), so every advisory
+# sentence around the data is stated once: the phase rule lives in `guidance`, the reader rule in the
+# executor's `artifact_reader` block, and the read-only rule in `role_context`. The executor also omits an
+# empty task_contract and compacts an empty recovery block for this delivery path only.
+COUNCIL_DEBATE_ROLES = (RESEARCH_LEAD, IMPROVEMENT_LEAD, CONDUCTOR_ROLE)
+INLINE_DELIVERY = ("role", "run_id", "base_revision", "round", "packet", "packet_digest", "dba_report",
+                   "snapshot_digest", "report_digest", "relay", "acceptance_criteria", "blocker_rule")
+PROPOSAL_DELIVERY = {RESEARCH_LEAD: (), IMPROVEMENT_LEAD: ("research_proposal",),
+                     CONDUCTOR_ROLE: ("research_proposal", "improvement_proposal")}
+POINTER_DELIVERY = ("ssot", "prior_outputs")
+DELIVERY_GUIDANCE = {
+    RESEARCH_LEAD: "Propose from the inline packet and DBA report; cite only packet claim ids.",
+    IMPROVEMENT_LEAD: "Answer the inline research_proposal with the alternative; cite only packet claim ids.",
+    CONDUCTOR_ROLE: ("Packet, DBA report, research proposal and improvement alternative are complete inline: decide "
+                     "from them, keep unknowns as unknowns, and read the pointers only for a material gap."),
+}
+READING = ("Read not_inline from the original external_context artifact: reader_argv_prefix plus operation; "
+           "follow artifact_reader rules.")
+
+
+def council_delivery(role: str, details: dict) -> dict:
+    """The required inline projection for one council debate role, or a ContractError before any provider.
+
+    Every inline field is a deep copy of the exact task value (no text edits, no dropped findings, no
+    rewritten ids); a missing mandatory field refuses the execution. The pointer fields name the RFC 6901
+    location on the ORIGINAL hash-bound artifact (`external_context`), whose body is the canonical task details."""
+    require(role in COUNCIL_DEBATE_ROLES, "Council delivery is defined for the debate roles only")
+    require(isinstance(details, dict) and details.get("role") == role, "Council delivery role mismatch")
+    fields = INLINE_DELIVERY + PROPOSAL_DELIVERY[role]
+    missing = sorted(k for k in fields + POINTER_DELIVERY if k not in details)
+    require(not missing, "Council delivery input missing: " + ", ".join(missing))
+    require(isinstance(details["packet"], dict) and isinstance(details["dba_report"], dict),
+            "Council delivery packet and dba_report must be objects")
+    inline = {k: copy.deepcopy(details[k]) for k in fields}
+    pointers = {k: {"pointer": "/" + k,
+                    "operation": ["pointer", "--pointer", "/" + k, "--cursor", "0", "--limit", "8000"]}
+                for k in POINTER_DELIVERY}
+    return {"schema": "urn:zeus:council-delivery:1", "inline": inline, "not_inline": pointers,
+            "reading": READING, "guidance": DELIVERY_GUIDANCE[role]}
+
+
+def isolation_reference(config: dict | None) -> dict | None:
+    """The identity of a host isolation configuration, not its full worker container configuration: a
+    pre-implementation role runs no container, so only mode and the digest that binds the whole
+    configuration (INV-ISOLATED-WORKER-001) are carried."""
+    if config is None:
+        return None
+    require(isinstance(config, dict) and isinstance(config.get("digest"), str) and bool(config["digest"]),
+            "Isolation configuration carries no digest")
+    return {"mode": config["mode"], "digest": config["digest"]}
+
+
+def role_context(isolation: dict | None = None) -> dict:
+    """What a `dge_role` execution is told about its phase: a clean checkout at the pinned base, before any
+    implementation. No candidate, diff, worker or verifier exists yet, so none is asserted (the instruction
+    states it; no null candidate/worker/verifier fields repeat it). The read-only rule is the same one the
+    executor checks afterwards (clean status, unchanged HEAD); the checkout path is the turn's cwd and the
+    read-only checkout rule is stated once more only in the App Server developer instructions. Phase,
+    isolation identity and instruction are the whole context (measured whole-layout revision)."""
+    return {"phase": "pre_implementation",
+            "isolation": isolation_reference(isolation),
+            "instruction": ("Read-only at the pinned base; no candidate, worker or verifier has run. Do not execute "
+                            "code/tests/scripts or change files. Return structured output only.")}
 
 
 def role_schema(role: str, details: dict) -> dict:
@@ -212,8 +283,11 @@ def execute_role(executor, task: dict, heartbeat) -> dict:
     cwd = executor.git.review_workspace(base, task["id"])
     require(executor.git._git("rev-parse", "HEAD", cwd=cwd) == base, "Role checkout is not at base")
     stage = "dge:" + role
+    # Debate roles: the lossless projection is REQUIRED context (refused before the provider when a mandatory
+    # input is missing or the required block exceeds the compiler budget); other roles keep the raw task inline.
+    delivery = council_delivery(role, details) if role in COUNCIL_DEBATE_ROLES else None
     result = executor._run(task["agent"], task["id"], OBJECTIVES[role], details, cwd, role_schema(role, details), True, heartbeat, task,
-                           stage=stage, workload="design", action="dge_role", max_handoffs=MAX_ROLE_ENTRIES)
+                           stage=stage, workload="design", action="dge_role", max_handoffs=MAX_ROLE_ENTRIES, delivery=delivery)
     require(not executor.git._git("status", "--porcelain", cwd=cwd), "Role execution modified its checkout")
     require(executor.git._git("rev-parse", "HEAD", cwd=cwd) == base, "Role execution changed its commit")
     if role in DEBATE_ROLES:
