@@ -47,6 +47,10 @@ CONTROL = re.compile(r"[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]")
 
 ANSWER_AUTHORITY = ("model_answer; unverified conversation context, not an approval, "
                     "specification or operation manifest")
+# What one turn copies out of the machine call ledger for its own accounting receipt: identities
+# and settlement facts only, never a ceiling, a cost or a provider credential.
+SLOT_FIELDS = ("id", "kind", "agent", "provider", "outcome", "settled", "settle_error",
+               "accounting_mode")
 
 
 class DeskRefused(ContractError):
@@ -184,6 +188,39 @@ def validate_answer(document) -> dict:
             "authority": ANSWER_AUTHORITY}
 
 
+def slot_view(slot: dict) -> dict:
+    """What this turn records about one machine call slot: the ledger's own identities and
+    settlement facts, copied read-only. The machine ledger itself is never edited from here."""
+    return {key: slot.get(key) for key in SLOT_FIELDS}
+
+
+def new_receipt(row: dict, task_id, slots: list[dict], published: bool, now: str) -> dict:
+    """The per-turn accounting receipt: ONLY the slots this turn's own call created.
+
+    It is written after the call and before the terminal status, so a restart can tell a settled,
+    bound and published turn from an unknown one. A crash between the settlement and this receipt
+    leaves no receipt, and that stays unknown rather than becoming a success.
+    """
+    views = [slot_view(slot) for slot in slots]
+    return {"id": row["id"], "request_id": row["id"], "session_id": row["session_id"],
+            "correlation_id": row["correlation_id"], "message_id": row["message_id"],
+            "task_id": task_id if isinstance(task_id, str) else None, "sequence": row["sequence"],
+            "calls": {"reserved": len(views), "settled": sum(1 for view in views if view["settled"]),
+                      "slots": views},
+            "settled": all(view["settled"] for view in views), "published": bool(published),
+            "recorded_at": now}
+
+
+def receipt_proves(receipt, row: dict, task_id: str) -> bool:
+    """A durable receipt proves this turn's accounting only when it is THIS request's receipt, it
+    binds THIS task and correlation, every slot it counted settled, and its publication succeeded."""
+    return (isinstance(receipt, dict) and receipt.get("request_id") == row["id"]
+            and receipt.get("correlation_id") == row["correlation_id"]
+            and receipt.get("message_id") == row["message_id"]
+            and receipt.get("task_id") == task_id
+            and receipt.get("settled") is True and receipt.get("published") is True)
+
+
 def prior_turns(rows: list[dict]) -> dict:
     """The last completed turns of one session as bounded model evidence.
 
@@ -246,7 +283,7 @@ def session_projection(session: dict, rows: list[dict]) -> dict:
 __all__ = ["ANSWERED", "CONSULT", "DISPATCHING", "FAILED", "INTENTS", "MAX_BODY_BYTES",
            "MAX_REQUESTS_PER_SESSION", "MAX_SESSIONS", "NEEDS_RECONCILIATION", "NEEDS_SPEC", "OPEN",
            "QUEUED", "REQUEST", "SCHEMA", "SUCCESS_STATE", "TERMINAL", "DeskRefused", "identifier",
-           "intent", "message_document", "new_request", "new_session", "prior_turns",
-           "request_view", "revision", "safe_code", "session_document", "session_projection",
-           "session_view", "sessions_projection", "submission_binding", "text", "title",
-           "validate_answer"]
+           "intent", "message_document", "new_receipt", "new_request", "new_session", "prior_turns",
+           "receipt_proves", "request_view", "revision", "safe_code", "session_document",
+           "session_projection", "session_view", "sessions_projection", "slot_view",
+           "submission_binding", "text", "title", "validate_answer"]
