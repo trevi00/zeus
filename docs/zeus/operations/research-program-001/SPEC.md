@@ -1102,3 +1102,67 @@ Allowed: application/autonomous.py, local_cycle.py, execution_notices.py; direct
 file if needed); docs/contracts.md. Claude runs related focused tests plus ruff, owner full suite/CI.
 One consolidated completed candidate, no research expansion. Actual006 stays terminal and untouched.
 Any next live execution is a new run after acceptance, same2ticks/1council/fail-stop/no merge/deploy.
+
+### Live007 reframe / Implementation015: current-run publication is not a global batch side effect
+
+Preserve accepted013/014 evidence.014 candidate b584552 / runtime9892d49: independent review accepted,
+owner75passed4skipped focused,2277passed455skipped full, lint, actual006 notice replay0 extra tasks/decisions;
+all required CI attempt1. Actual007 researcher succeeded, DBA stopped exception:ClaimGuardRefused before
+provider. PG outbox108 records, current DBA assignment30e16b8a-f1f9-5c38-9faf-5d30d5a459ad sent=false,
+no delivery row, no task row, empty DBA Redis stream; cursorfed20020... . Calls214->216 include the counted
+pre-claim slot, not two proven provider completions. Program blocked/Fleet paused/active0. No retry/tick2.
+
+Fact/code: outbox.relay publishes only one global100-row page using shared cursor; _role flushes once,
+then delivers, then reserves an executor slot assuming its assignment exists. The108-record synthetic
+reproducer in run007/dispatch-reproducer.py uses real relay/claim guard:97 historical sent rows examined,
+0published, current target still absent, expected_execution_missing. This discriminates scheduling absence
+from a provider/model failure.006 and007 invalidate the SAME assumption that a dedicated Redis namespace
+plus a shared, unscoped PG outbox delivers only and all the current work. Stop patching individual symptoms.
+
+One complete bounded path: role/operation intent persisted -> scoped publication -> consumer DB admission
+-> exact expected queued row verified -> budget reservation + existing atomic claim -> provider -> completion
+and result intent committed -> scoped result publication -> proof/ACK -> next role/review/promotion.
+Informational foreign notices use accepted014 handling; workflow messages still cannot cross correlations.
+
+Design: add optional explicit correlation scope to existing relay/service/flush helper, default None preserves
+background relay behavior and global cursor. Scoped relay selects only UNSENT intents with exact correlation,
+independent of global cursor and unrelated sent history. Reuse existing _prepare/_publish transactions,
+content/identity binding, authorization, retries, poison quarantine and audit, not a second publishing algorithm.
+Recheck expected correlation in the prepare/publish transaction (scope cannot be changed between selection
+and send). Never advance global cursor, mark foreign rows sent, quarantine them, or publish them into the
+caller's namespace. Already-delivered own records retain idempotent semantics. Validate nonempty scope.
+A bounded batch retains limit100 (no cap increase); return truthful scoped remaining/unfinished evidence so
+caller can fail safely on backlog or failed delivery rather than equating examined with completed publication.
+Existing Store.scan may select current unsent rows for this bounded batch; document its database-size cost,
+not a claim of indexed/million-row scalability. Index optimization is not this launch gate.
+
+Wire every publication seam of AutonomousRun._role/_deliver, OperationRun.run and LocalCycle._flush/_deliver
+with the active correlation: assignments AND results AND workflow-generated commands. Do not leave one
+post-result global flush or rely on global cursor wrapping. Generic CLI/background callers remain unscoped.
+Before BudgetedExecutor on a council role, explicitly verify exact expected task id/correlation/queued state
+AFTER delivery; absent/unadmitted work yields a named safe delivery refusal and ZERO call slots/providers.
+Keep atomic check_expected/require_expected in the claim (do not replace race protection with preflight).
+LocalCycle already selects admitted rows; preserve its guarded claim and own notice handling. A scoped
+publish retry/quarantine/unavailable transport or bounded backlog must not trigger provider retries or idle
+success. Preserve original intent/attempt evidence and fail-stop. Do not clean production queues.
+
+Acceptance matrix, one batch:
+- >100 and >1000 historical sent/foreign unsent records, target before/after/end of global cursor: own role
+  assignment and completion result delivered; foreign unsent untouched and global cursor unchanged.
+- Same with actual operation worker/review transport (labelled fake executor, no model); all seams scoped.
+- Mixed current/foreign commands/notices: only current publication; already-arrived proven foreign notice
+  remains informational under014; unproven/foreign workflow messages retain guards.
+- Missing expected task/transport refusal/quarantine/scoped backlog: no new budget reservation/provider;
+  safe named reason, no false success or automatic retry. Normal path still uses atomic guarded claim.
+- Scope mutation between selection/preparation/publication, duplicate or uncertain publication/commit and
+  concurrent scoped/global publishers retain current hash/idempotency/at-least-once semantics. Reuse existing
+  relay regressions rather than asserting exactly-once transport. Failed/unproven delivery not completion.
+- Default global mode unchanged: cursor, recovery, poison isolation, transaction audit and finite batch.
+- No new process/timeout/cleanup model; deadlines unchanged. Windows/Linux existing CI applies.
+
+Allowed application/outbox.py, service.py, local_cycle.py, autonomous.py, operation.py; related existing
+outbox/autonomous/council/local_cycle/operation tests plus one focused tests/test_scoped_outbox.py;
+docs/contracts.md. No schema, provider, isolation, budget limits or input policy changes. Worker focused
+pytest and ruff only; owner full suite and CI. Do not rerun actual007 or clear its pending assignment.
+One complete Claude implementation plus independent review; no further live run until this entire matrix
+passes. Next actual run remains2ticks/1council/fail-stop/no merge or deploy, not a loop until green.
