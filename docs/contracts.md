@@ -1042,12 +1042,17 @@ the precise `needs_scope_split:<section>:<observed>/<limit>` reason, original ro
 retry, summary, drop or resize. Consumers recheck: `council_delivery` admits the full projection, the
 executor grants the council window only to an admitted delivery (actual read-only `dge_role`, matching debate
 role, stage `dge:<role>` and real agent, and the exact deterministic projection of this task's details; a
-foreign, trimmed or inflated delivery is refused) and then admits the final rendered prompt before any
-provider. A consumer refusal fails the role task with the typed reason, which `CouncilRun` lifts into the run
-reason only in its safe shape. A missing mandatory field stays a distinct `ContractError`. Telemetry is
-additive: the execution receipt carries `context_measurement` (policy, window, reserved, usable, rendered
-bytes; for council prompts the named section bytes, delivery overhead, host overhead and limit) and
-`estimated_tokens` keeps its old meaning. Producer objectives state each role's own limit and the rule that
+foreign, trimmed or inflated delivery is refused), preflights the complete required envelope (the identical
+snapshot and required dict the compiler receives, rendered through `ContextPacket` before `compile_context`)
+so a whole-prompt or host overflow is the typed refusal and never the generic budget error, and then admits
+the final rendered prompt (evidence included) before any provider. A consumer refusal is recorded on the role
+task with the typed reason: `retry` when the executor's own pre-entry gate refused (the provider never
+started), `failed` when the workflow settled it as not retryable; `CouncilRun` lifts either into the run reason
+only in its safe shape and never re-dispatches the role. A missing mandatory field stays a distinct
+`ContractError`. Telemetry is additive: the execution receipt carries `context_measurement` (policy, window,
+reserved, usable, rendered bytes; for council prompts the named section bytes, delivery overhead, host
+overhead and limit) and `estimated_tokens` keeps its old meaning; the `development.provider_started` log
+event keeps its registered attributes unchanged. Producer objectives state each role's own limit and the rule that
 concision never drops a finding or an unknown. Not guaranteed: that arbitrary research fits (these limits are
 a bounded supported workload); a council delivery with recovery evidence items currently exceeds the host
 allowance and is refused before the provider.

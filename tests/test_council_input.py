@@ -11,10 +11,18 @@ import json
 
 import pytest
 import test_council
-import test_council_delivery
 from test_autonomous import RESEARCH, ROLE_OUTPUTS
 from test_council import DBA_REPORT, IMPROVEMENT, CouncilExecutor, build, valid
-from test_council_delivery import BASE, KOREAN, deliver, details_for, harness, task_for
+from test_council_delivery import (  # noqa: F401  `representative` is a pytest fixture: importing it registers it here
+    BASE,
+    CONDUCTOR_ANSWER,
+    KOREAN,
+    deliver,
+    details_for,
+    harness,
+    representative,
+    task_for,
+)
 from test_operation import BOUND_GOAL, IDENTITY
 
 from codex_harness.adapters.autonomous_roles import (
@@ -43,6 +51,7 @@ from codex_harness.domain.council_input import (
     policy_manifest,
 )
 from codex_harness.domain.model import ContractError, canonical
+from codex_harness.domain.observation import REGISTRY, check_attributes
 
 ESCAPED = 'quote " backslash \\ newline \n tab \t '  # JSON escaping adds bytes the caps must count
 PAYLOAD = ("packet", "dba_report", "research_proposal", "improvement_proposal")
@@ -241,12 +250,15 @@ def test_normal_council_cycle_still_promotes_under_the_policy_control():
 
 
 class ConsumerOverflowExecutor(CouncilExecutor):
-    """FIXTURE: the conductor task fails the way the real executor fails it when its own consumer gate refuses
-    (task error = exception type + ': ' + the typed reason); every other role runs as the council fixture does."""
+    """FIXTURE: the conductor task ends the way the real executor records its own consumer-gate refusal
+    (task error = exception type + ': ' + the typed reason). The real executor's pre-entry refusal goes through
+    `Workflow.fail(..., retryable=True)`, so the row is `retry`; a settled non-retryable failure is `failed`.
+    Every other role runs as the council fixture does."""
 
-    def __init__(self, svc, artifacts, error="CouncilInputOverflow: needs_scope_split:host_overhead:4721/4096", **kwargs):
+    def __init__(self, svc, artifacts, error="CouncilInputOverflow: needs_scope_split:host_overhead:4721/4096",
+                 status="retry", **kwargs):
         super().__init__(svc, artifacts, **kwargs)
-        self.error = error
+        self.error, self.status = error, status
 
     def execute_one(self, agent, expected=None):
         with self.svc.store.transaction() as tx:
@@ -255,24 +267,32 @@ class ConsumerOverflowExecutor(CouncilExecutor):
             return super().execute_one(agent, expected)
         self.calls.append(agent)
         with self.svc.store.transaction() as tx:
-            task.update(attempt=1, generation=1, lease_owner="fixture", status="failed", error=self.error)
+            task.update(attempt=1, generation=1, lease_owner="fixture", status=self.status, error=self.error)
             tx.put("tasks", task["id"], task)
         return task
 
 
-@pytest.mark.parametrize("error, reason", [
-    ("CouncilInputOverflow: needs_scope_split:host_overhead:4721/4096", "needs_scope_split:host_overhead:4721/4096"),
-    ("CouncilInputOverflow: needs_scope_split:required:40961/40960", "needs_scope_split:required:40961/40960"),
-    ("CouncilInputOverflow: needs_scope_split:packet:<script>/16384", "role_failed"),  # not the safe shape: not lifted
-    ("RuntimeError: needs_scope_split:packet:1/1", "role_failed"),  # another failure type: unchanged code
-    ("ContractError: Council delivery input missing: packet", "role_failed"),  # missing field stays distinct
+@pytest.mark.parametrize("status", ["retry", "failed"])
+@pytest.mark.parametrize("error, lifted", [
+    ("CouncilInputOverflow: needs_scope_split:host_overhead:4721/4096", True),
+    ("CouncilInputOverflow: needs_scope_split:required:40961/40960", True),
+    ("CouncilInputOverflow: needs_scope_split:packet:<script>/16384", False),  # not the safe shape: not lifted
+    ("RuntimeError: needs_scope_split:packet:1/1", False),  # another failure type: unchanged code
+    ("ContractError: Council delivery input missing: packet", False),  # missing field stays distinct
 ])
-def test_consumer_gate_refusal_reaches_the_run_as_the_precise_reason_only_in_its_safe_shape(monkeypatch, error, reason):
-    monkeypatch.setattr(test_council, "CouncilExecutor", lambda svc, artifacts, **kw: ConsumerOverflowExecutor(svc, artifacts, error, **kw))
+def test_consumer_gate_refusal_reaches_the_run_as_the_precise_reason_only_in_its_safe_shape(monkeypatch, error, lifted, status):
+    # Both legitimate role outcomes of an executor refusal (`retry`: the real pre-entry path; `failed`) surface the
+    # typed reason; an unrelated failure keeps the plain role_<status> code. The run never re-dispatches the role.
+    reason = error.split(": ", 1)[1] if lifted else "role_" + status
+    monkeypatch.setattr(test_council, "CouncilExecutor",
+                        lambda svc, artifacts, **kw: ConsumerOverflowExecutor(svc, artifacts, error, status, **kw))
     svc, run, executor, budget, port = build()
     receipt = run.run(valid(), IDENTITY, BOUND_GOAL)
     assert receipt["status"] == "failed" and receipt["reason_code"] == reason
     assert executor.calls[-1] == "conductor" and len(executor.calls) == 5 and receipt["promotion"] is None
+    assert executor.calls.count("conductor") == 1, "no automatic retry of the refused role"
+    [task] = [t for t in rows(svc, "tasks") if t["agent"] == "conductor"]
+    assert (task["status"], task["error"]) == (status, error), "the role's own failure record stays as recorded"
 
 
 # ----- consumer gates under the actual Executor and compiler (fake runtime records the prompt) ---------
@@ -291,7 +311,8 @@ def largest_details(role):
 
 
 @pytest.mark.parametrize("role", COUNCIL_DEBATE_ROLES)
-def test_largest_admitted_payloads_with_representative_metadata_reach_the_prompt_whole_and_cap_plus_one_never_reaches_a_provider(representative, role):
+def test_largest_admitted_payloads_with_representative_metadata_reach_the_prompt_whole_and_cap_plus_one_never_reaches_a_provider(
+        representative, role):  # noqa: F811  the parameter is pytest's injection of the imported fixture
     executor, artifacts, prompts, config = representative
     details = largest_details(role)
     frozen = copy.deepcopy(details)
@@ -376,6 +397,62 @@ def test_legacy_budget_and_receipt_are_unchanged_for_non_council_executions(tmp_
     big = {"plan": {"objective": "o" * 23000, "acceptance_criteria": ["a"], "allowed_paths": ["docs"]}}
     with pytest.raises(ContractError, match="Required contract exceeds budget"):
         other._run("lead:improvement", "plan-1", "Plan", big, str(second), VERDICT, read_only=True)
+
+
+def test_provider_start_event_keeps_its_registered_log_schema_and_the_receipt_carries_the_byte_telemetry(tmp_path, monkeypatch):
+    # The executor's default observer is the real Observer over an in-memory spool: an attribute the registry does
+    # not declare makes build_event refuse and Observer.emit return None, losing the whole normal start event.
+    # The start event must therefore carry exactly the registered attributes; the byte telemetry is additive in the
+    # execution receipt's context_measurement only.
+    details = details_for("conductor")
+    executor, artifacts, prompts = harness(tmp_path, monkeypatch, answer=CONDUCTOR_ANSWER)
+    result = deliver(executor, "conductor", details)
+    records = executor.observer.spool.records()
+    [started] = [r for r in records if r["event_type"] == "development.provider_started"]
+    assert not [r for r in records if r["event_type"] == "operations.observation_refused"], "no refused emission"
+    assert check_attributes("development.provider_started", started["attributes"]) == started["attributes"]
+    assert set(started["attributes"]) == set(REGISTRY["development.provider_started"])
+    assert started["attributes"]["read_only"] is True and started["attributes"]["context_ref"].startswith("sha256:")
+    assert "context_bytes" not in started["attributes"] and "context_policy" not in started["attributes"]
+    assert [r["event_type"] for r in records if r["event_type"].startswith("development.provider_")] == \
+        ["development.provider_started", "development.provider_finished"]
+    [prompt] = prompts
+    receipt = json.loads(artifacts._body(result["execution_ref"]))["context_measurement"]
+    assert receipt["policy"] == SCHEMA and receipt["rendered_bytes"] == receipt["required_bytes"] == canonical_bytes(prompt)
+    assert receipt["limit_bytes"] == 40960 and set(receipt["sections"]) == set(PAYLOAD)
+
+
+def test_complete_required_envelope_over_the_whole_window_is_the_typed_refusal_before_the_generic_compiler_rule(tmp_path, monkeypatch):
+    # INJECTED: the largest admitted conductor payloads (every section exactly at its cap; measured in this batch
+    # the serialized delivery is 34044 bytes, the wrapper well under its cap) and a host objective grown by 8000
+    # bytes: a REQUIRED host input outside the delivery, the only one a `_run` caller supplies. The COMPLETE
+    # required envelope is then over the whole 40960 window, the case the generic compiler rule ("Required
+    # contract exceeds budget") used to catch first. The executor preflights the actual required envelope through
+    # ContextPacket before compile_context, so the refusal is the typed needs_scope_split with safe named
+    # diagnostics, before any provider entry, and the raw task artifact is stored untouched.
+    details = largest_details("conductor")
+    frozen = copy.deepcopy(details)
+    delivery = council_delivery("conductor", details)
+    delivery_bytes = canonical_bytes(delivery)
+    executor, artifacts, prompts = harness(tmp_path, monkeypatch, entered=False)
+    objective = OBJECTIVES["conductor"] + " " + "o" * 8000
+    with pytest.raises(CouncilInputOverflow) as info:
+        executor._run(AGENTS["conductor"], "task-conductor", objective, details, str(executor.git.root),
+                      role_schema("conductor", details), True, None, None, stage="dge:conductor", workload="design",
+                      action="dge_role", max_handoffs=1, delivery=delivery)
+    exc = info.value
+    assert "exceeds budget" not in str(exc) and str(exc) == exc.reason_code
+    # Arithmetic of the policy: 32768 + 4096 + 4096 = 40960, so a whole envelope over the window with an admitted
+    # delivery is always a host overflow; that is the section named, with observed and limit bytes only.
+    assert exc.section == "host_overhead" and exc.limit == 4096 < exc.observed
+    assert exc.observed + delivery_bytes > LIMITS["required"] == 40960, "the whole required envelope was over the window"
+    assert exc.diagnostics() == {"schema": SCHEMA, "reason": "needs_scope_split", "section": "host_overhead",
+                                 "observed_bytes": exc.observed, "limit_bytes": 4096, "unit": UNIT}
+    assert "한" not in json.dumps(exc.diagnostics(), ensure_ascii=False) and "yyyy" not in str(exc)
+    assert prompts == [], "provider entries: 0"
+    assert details == frozen and delivery == council_delivery("conductor", details), "nothing resized or dropped"
+    raw = "sha256:" + hashlib.sha256(canonical(details).encode("utf-8")).hexdigest()
+    assert artifacts._body(raw) == canonical(details), "raw task artifact stored and untouched"
 
 
 def test_recovery_sources_that_exceed_the_host_allowance_fail_safely_before_the_provider(tmp_path, monkeypatch):

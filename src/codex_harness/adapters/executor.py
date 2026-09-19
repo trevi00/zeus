@@ -58,6 +58,7 @@ from codex_harness.domain.council_input import admit_required, council_budget
 from codex_harness.domain.invocation import classify_result, parse_request, usage_record
 from codex_harness.domain.model import (
     ContextItem,
+    ContextPacket,
     ContractError,
     ExecutionFailure,
     canonical,
@@ -417,12 +418,20 @@ class Executor:
                               else {"sources": recovery_refs,
                                     "instruction": "Before repeating tools, inspect recovery sources with the "
                                     "artifact_reader argv recipe."})
-            packet = compile_context(agent, key, self.workflow.snapshot(),
-                {**required, 'project_skills': {**skill_selection,
-                    'included': skill_selection['selected'], 'omitted': skill_selection['selected']},
-                    "artifact_reader": reader,
-                    "recovery": recovery_block},
-                items + recovery_items, window, reserved)
+            snapshot = self.workflow.snapshot()
+            contract = {**required, 'project_skills': {**skill_selection,
+                            'included': skill_selection['selected'], 'omitted': skill_selection['selected']},
+                        "artifact_reader": reader,
+                        "recovery": recovery_block}
+            if council is not None:
+                # urn:zeus:council-input:1 preflight: the COMPLETE required envelope (the identical snapshot and
+                # required dict the compiler receives below, actual ids, paths, recovery and skills included) is
+                # rendered through the same ContextPacket before compile_context, so a host or whole-prompt
+                # overflow is the typed needs_scope_split refusal and never the generic budget ContractError.
+                # The compiler itself is unchanged; the final rendered guard after evidence assembly stays.
+                admit_required(len(ContextPacket(agent, key, snapshot, contract).render().encode("utf-8")),
+                               council["delivery_bytes"])
+            packet = compile_context(agent, key, snapshot, contract, items + recovery_items, window, reserved)
             before_counts = packet.estimated_tokens
             included = sum(item['id'].startswith('project-skill:') for item in packet.evidence)
             packet.required['project_skills'].update(
@@ -602,11 +611,12 @@ class Executor:
                 self.observer.emit("development.provider_started", "started",
                                    execution=observed_execution(reservation_id),
                                    correlation_id=correlation, causation_id=key,
+                                   # The registered log schema exactly (domain.observation REGISTRY): an undeclared
+                                   # attribute makes the observer refuse the whole start event. The byte
+                                   # telemetry is additive in the execution receipt's context_measurement only.
                                    attributes={"reservation_id": reservation_id, "transport": assignment.transport,
                                                "requested_model": requested_model, "read_only": read_only,
-                                               "timeout_seconds": float(timeout), "context_ref": context_ref["ref"],
-                                               "context_bytes": context_measurement["rendered_bytes"],
-                                               "context_policy": context_measurement["policy"]})
+                                               "timeout_seconds": float(timeout), "context_ref": context_ref["ref"]})
 
             try:
                 # INV-INVOCATION-001 / INV-BREAKER-001: capacity refusal must not take a

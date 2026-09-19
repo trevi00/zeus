@@ -75,9 +75,13 @@ SNAPSHOT_SOURCE = "council-snapshot:"
 SNAPSHOT_REFUSALS = {"snapshot_unavailable", "snapshot_corrupt", "snapshot_mismatch", "snapshot_stale"}
 # urn:zeus:council-input:1 producer gates: which lead proposal is bounded before it is submitted or handed on.
 PROPOSAL_SECTION = {RESEARCH_LEAD: RESEARCH_PROPOSAL, IMPROVEMENT_LEAD: IMPROVEMENT_PROPOSAL}
-# A consumer-side overflow reaches the run as a failed role task whose error is the executor's typed refusal;
-# only this exact safe shape (section, digits) is lifted into the run's reason code, never free text.
+# A consumer-side overflow reaches the run as a role task whose error is the executor's typed refusal; only this
+# exact safe shape (section, digits) is lifted into the run's reason code, never free text. The executor records
+# its own pre-entry refusal through `Workflow.fail(..., retryable=True)` (the provider never started), so the row
+# is `retry`; a failure the workflow settled as not retryable is `failed`. Both are legitimate carriers of the
+# typed reason and neither is re-dispatched here.
 CONSUMER_OVERFLOW = re.compile(r"^CouncilInputOverflow: (" + re.escape(REASON) + r":[a-z_]+:\d+/\d+)$")
+CONSUMER_REFUSAL_OUTCOMES = {"role_failed", "role_retry"}
 
 
 class CouncilRun(AutonomousRun):
@@ -172,12 +176,14 @@ class CouncilRun(AutonomousRun):
             raise AutonomousRefused(exc.reason_code) from exc
 
     def _role(self, manifest, row, wrapped, role, details) -> dict:
-        """The executor's own consumer gate (projection or final prompt over the policy) fails the role task
-        before any provider entry; the run reports that exact needs_scope_split reason instead of `role_failed`."""
+        """The executor's own consumer gate (projection or final prompt over the policy) refuses the role task
+        before any provider entry (`retry`, or `failed` once settled as not retryable); the run reports that exact
+        needs_scope_split reason instead of `role_retry`/`role_failed` and never retries the role. Any other
+        outcome, and any error text outside the safe shape, keeps the unchanged code."""
         try:
             return super()._role(manifest, row, wrapped, role, details)
         except AutonomousRefused as exc:
-            if exc.reason_code != "role_failed":
+            if exc.reason_code not in CONSUMER_REFUSAL_OUTCOMES:
                 raise
             with self.service.store.transaction() as tx:
                 task = tx.get("tasks", role_message_id(manifest, role)) or {}
