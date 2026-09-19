@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useId, useRef, useState } from "react"
+import { useCallback, useEffect, useId, useRef, useState, type ReactNode } from "react"
 import { AlertTriangle, CircleHelp, Inbox, MessageSquare, Plus, RefreshCw, Send, ShieldCheck, Users } from "lucide-react"
 
 import { StatusBadge } from "@/components/status-badge"
@@ -7,9 +7,10 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import {
-  DESK_POLL_MS, DESK_TEXT_MAX, DESK_TITLE_MAX, createSession, listSessions, loadPending, loadSelected,
-  newId, readSessionDetail, savePending, saveSelected, submitMessage,
-  type DeskIntent, type DeskRequest, type DeskResult, type DeskSession, type DeskSessionDetail, type PendingSubmission,
+  DESK_POLL_MS, DESK_TEXT_MAX, DESK_TITLE_MAX, createSession, listSessions, loadPending, loadPendingCreation,
+  loadSelected, newId, readSessionDetail, savePending, savePendingCreation, saveSelected, submitMessage,
+  type DeskIntent, type DeskRequest, type DeskResult, type DeskSession, type DeskSessionDetail,
+  type PendingCreation, type PendingSubmission,
 } from "@/lib/desk"
 import { formatTime } from "@/lib/snapshot"
 import type { Tone } from "@/lib/tones"
@@ -25,14 +26,30 @@ import type { Tone } from "@/lib/tones"
  *   specification and the existing Fleet admission before any work happens;
  * - a stored answer is unverified conversation context (the server says so in `authority`), not an
  *   approval, a specification or an operation manifest;
- * - nothing is called "sent" or "succeeded" without an authoritative server response. A rejected
- *   or timed-out fetch keeps its identity and body locally and is retried with the SAME id, so the
- *   desk replays the stored row instead of creating a second request or a second provider call;
+ * - nothing is called "sent" or "succeeded" without an authoritative server response. Anything that
+ *   is not an explicit 4xx — a rejected fetch, the deadline, a 503 — leaves the outcome unknown, so
+ *   BOTH a message (id + body) and a session creation (id + title) are frozen in local storage
+ *   before the POST and retried unchanged, and the desk replays its stored row instead of creating
+ *   a second request or a second provider call. There is no way to drop an unresolved identity
+ *   here: only the server's own answer ends it;
  * - the flow picture marks only stages the server actually recorded; later stages stay 예정/미확인;
  * - no model, base revision, command or budget control exists here. The base revision is the
- *   owner's configured one, captured per request and shown as provenance only.
+ *   owner's configured one, captured per request and shown as provenance only;
+ * - history reads (poll, manual refresh, post-send) run one at a time on a single chain and each
+ *   carries a number, so an older answer can never replace newer history, and an unmounted screen
+ *   is never written to.
  */
-type Notice = { tone: Tone; title: string; text: string }
+type Notice = { tone: Tone; title: string; text: string; detail?: string }
+
+/** What is currently shown for one session, kept per session id so a selection never clears it. */
+type SessionHistory = { session_id: string; detail: DeskSessionDetail | null; notice: Notice | null }
+
+const STORAGE_NOTICE: Notice = {
+  tone: "error",
+  title: "보내지 않았습니다",
+  text: "이 브라우저가 요청 내용을 저장하지 못해 보내지 않았습니다. 저장을 막는 설정(시크릿 모드·사이트 데이터 차단·저장 공간 부족)을 풀고 다시 시도하세요.",
+  detail: "식별자와 내용을 새로고침 후에도 남길 수 없으면, 같은 요청을 다시 보내는 것이 안전하지 않습니다.",
+}
 
 const STATUS_INFO: Record<string, { label: string; tone: Tone; note: string }> = {
   queued: { label: "접수됨 · 대기", tone: "warning", note: "PG 에 저장됨 · 창구 실행기가 순서대로 처리 · 자동 재시도 없음" },
@@ -51,6 +68,29 @@ const INTENTS: Array<{ id: DeskIntent; label: string; note: string }> = [
   { id: "consult", label: "상담", note: "질문하고 답변을 받습니다. 작업이 만들어지지 않습니다." },
   { id: "request", label: "요청", note: "하고 싶은 일을 제안으로 접수합니다. 바로 구현되지 않으며 목표·수용 기준 초안을 받습니다." },
 ]
+
+/** Identifiers, reason codes and server wording live here, out of the plain sentence above them. */
+function Details({ children }: { children: ReactNode }) {
+  return (
+    <details className="mt-1 min-w-0 text-xs text-muted-foreground">
+      <summary className="cursor-pointer">자세히</summary>
+      <div className="mt-1 flex min-w-0 flex-col gap-1 break-words">{children}</div>
+    </details>
+  )
+}
+
+function NoticeAlert({ notice, icon, live }: { notice: Notice; icon?: ReactNode; live?: boolean }) {
+  return (
+    <Alert variant={notice.tone === "error" ? "destructive" : "default"} aria-live={live ? "polite" : undefined}>
+      {icon}
+      <AlertTitle>{notice.title}</AlertTitle>
+      <AlertDescription className="break-words">
+        {notice.text}
+        {notice.detail ? <Details>{notice.detail}</Details> : null}
+      </AlertDescription>
+    </Alert>
+  )
+}
 
 /** The five conversation stages; only the first ones are recorded by this desk. */
 function Flow({ request }: { request: DeskRequest | null }) {
@@ -118,12 +158,17 @@ function Turn({ request }: { request: DeskRequest }) {
               {answer.questions.length ? (
                 <div className="text-xs"><span className="font-medium">확인이 필요한 질문</span><ul className="list-disc pl-4">{answer.questions.map((item) => <li key={item} className="break-words">{item}</li>)}</ul></div>
               ) : null}
-              <p className="text-xs text-unknown break-words">{answer.authority || "모델 답변 · 검증되지 않은 대화 맥락 · 승인·명세 아님"}</p>
+              <p className="text-xs text-unknown break-words">검증되지 않은 대화 맥락 · 승인·명세 아님</p>
             </div>
           ) : (
             <p className="text-xs text-muted-foreground">저장된 답변 없음 {request.status === "queued" || request.status === "dispatching" ? "· 아직 처리 중" : "· 이 요청에는 답변이 기록되지 않았습니다"}</p>
           )}
-          <Provenance request={request} />
+          {/* Receipt identifiers and the server's own authority wording stay folded away. */}
+          <Details>
+            {answer?.authority ? <span>{answer.authority}</span> : null}
+            <span className="font-mono break-all">요청 ID {request.request_id}</span>
+            <Provenance request={request} />
+          </Details>
         </CardContent>
       </Card>
     </li>
@@ -136,142 +181,198 @@ export function DeskView() {
   const [sessions, setSessions] = useState<DeskSession[] | null>(null)
   const [listNotice, setListNotice] = useState<Notice | null>(null)
   const [selected, setSelected] = useState<string | null>(() => loadSelected())
-  const [detail, setDetail] = useState<DeskSessionDetail | null>(null)
-  const [detailNotice, setDetailNotice] = useState<Notice | null>(null)
+  const [history, setHistory] = useState<SessionHistory | null>(null)
   const [pending, setPending] = useState<PendingSubmission | null>(() => loadPending())
+  const [creation, setCreation] = useState<PendingCreation | null>(() => loadPendingCreation())
   const [notice, setNotice] = useState<Notice | null>(null)
   const [title, setTitle] = useState("")
   const [text, setText] = useState("")
   const [intent, setIntent] = useState<DeskIntent>("consult")
   const [busy, setBusy] = useState(false)
-  // Stable identities: the same id is reused for every attempt of the same content, so an uncertain
-  // submission is repeated, never duplicated. A new id is minted only after an authoritative outcome.
-  const requestIdRef = useRef(pending?.request_id ?? newId())
-  const sessionIdRef = useRef(newId())
-  // The selection a response must still match before it is written into the screen.
-  const selectedRef = useRef(selected)
-  selectedRef.current = selected
-  // The unresolved submission as the async callbacks must see it, without stale closures.
+
+  // Refs are written in effects and handlers only, never while rendering.
+  const alive = useRef(true)
   const pendingRef = useRef(pending)
-  pendingRef.current = pending
+  const creationRef = useRef(creation)
+  // Every history read takes the next number and runs after the previous one on this single chain,
+  // so reads never overlap and an older answer is dropped instead of replacing newer history.
+  const issued = useRef(0)
+  const applied = useRef(0)
+  const chain = useRef<Promise<void>>(Promise.resolve())
+
+  useEffect(() => { alive.current = true; return () => { alive.current = false } }, [])
+  useEffect(() => { pendingRef.current = pending }, [pending])
+  useEffect(() => { creationRef.current = creation }, [creation])
+
+  /** Run `task` after every earlier read; it therefore never touches state synchronously. */
+  const enqueue = useCallback((task: () => Promise<void>): Promise<void> => {
+    const settled = chain.current.then(task, task).catch(() => {})
+    chain.current = settled
+    return settled
+  }, [])
 
   const refuse = useCallback((result: Extract<DeskResult<unknown>, { ok: false }>, title_: string): Notice => ({
     tone: result.kind === "refused" ? "error" : "unknown",
-    title: `${title_} · ${result.status ?? "응답 없음"}`,
-    text: result.kind === "refused" ? `${result.message} (사유 ${result.code})` : `${result.message} 서버가 저장했는지 알 수 없습니다.`,
+    title: title_,
+    text: result.message,
+    detail: `사유 ${result.code} · 상태 ${result.status ?? "응답 없음"}`,
   }), [])
 
-  const loadSessions = useCallback(async () => {
+  const loadSessions = useCallback(() => enqueue(async () => {
     const result = await listSessions()
+    if (!alive.current) return
     if (result.ok) {
       setSessions(result.value.sessions)
       setListNotice(result.value.truncated ? { tone: "warning", title: "대화 목록이 잘렸습니다", text: "최근 50개까지만 표시합니다. 이전 대화는 서버에 그대로 남아 있습니다." } : null)
+      // A creation the server already holds is decided: the frozen identity is released.
+      const held = creationRef.current
+      if (held && result.value.sessions.some((session) => session.session_id === held.session_id)) {
+        savePendingCreation(null)
+        creationRef.current = null
+        setCreation(null)
+      }
       return
     }
     // The previous list stays on screen; it is explicitly marked as not current.
     setListNotice(refuse(result, "대화 목록을 갱신하지 못했습니다"))
-  }, [refuse])
+  }), [enqueue, refuse])
 
-  const loadDetail = useCallback(async (sessionId: string, signal?: AbortSignal) => {
-    const result = await readSessionDetail(sessionId, signal)
-    if (selectedRef.current !== sessionId) return
-    if (result.ok) {
-      setDetail(result.value)
-      setDetailNotice(null)
-      // A pending submission that the server already holds is authoritative: stop retrying it.
-      const current = pendingRef.current
-      if (current && current.session_id === sessionId
-        && result.value.requests.some((request) => request.request_id === current.request_id)) {
-        savePending(null)
-        setPending(null)
-        requestIdRef.current = newId()
+  const readHistory = useCallback((sessionId: string, signal?: AbortSignal) => {
+    const seq = ++issued.current
+    return enqueue(async () => {
+      if (!alive.current || signal?.aborted || seq <= applied.current) return
+      const result = await readSessionDetail(sessionId, signal)
+      if (!alive.current || signal?.aborted || seq <= applied.current) return
+      applied.current = seq
+      if (!result.ok) {
+        // The last records stay visible for this session, marked as not current.
+        setHistory((previous) => ({ session_id: sessionId, detail: previous?.session_id === sessionId ? previous.detail : null,
+          notice: refuse(result, "대화를 갱신하지 못했습니다") }))
+        return
       }
-      return
-    }
-    setDetailNotice(refuse(result, "대화를 갱신하지 못했습니다"))
-  }, [refuse])
+      setHistory({ session_id: sessionId, detail: result.value, notice: null })
+      // A pending submission that the server already holds is authoritative: stop retrying it.
+      const held = pendingRef.current
+      if (held && held.session_id === sessionId
+        && result.value.requests.some((request) => request.request_id === held.request_id)) {
+        savePending(null)
+        pendingRef.current = null
+        setPending(null)
+      }
+    })
+  }, [enqueue, refuse])
 
   useEffect(() => { void loadSessions() }, [loadSessions])
 
-  // Poll the selected session only, only while the page is visible, and abort on a changed
-  // selection so a stale response can never overwrite a newer one.
+  // Poll the selected session only, only while the page is visible. The cleanup aborts the call in
+  // flight and stops the timer, so an unmounted or re-selected screen is never written to.
   useEffect(() => {
-    if (!selected) { setDetail(null); setDetailNotice(null); return }
+    if (!selected) return
     const controller = new AbortController()
     let timer: number | undefined
-    let cancelled = false
-    const tick = async () => {
-      if (cancelled) return
-      // One call at a time: the next tick is scheduled only after this one settles, so polls
-      // never overlap, and after the cleanup nothing is scheduled at all.
-      if (!document.hidden) await loadDetail(selected, controller.signal)
-      if (cancelled) return
-      timer = window.setTimeout(() => void tick(), DESK_POLL_MS)
+    let stopped = false
+    const tick = () => {
+      if (stopped) return
+      const read = document.hidden ? Promise.resolve() : readHistory(selected, controller.signal)
+      void read.then(() => {
+        if (stopped) return
+        timer = window.setTimeout(tick, DESK_POLL_MS)
+      })
     }
-    void tick()
-    return () => { cancelled = true; controller.abort(); if (timer) window.clearTimeout(timer) }
-  }, [selected, loadDetail])
+    tick()
+    return () => { stopped = true; controller.abort(); if (timer !== undefined) window.clearTimeout(timer) }
+  }, [selected, readHistory])
 
   const select = (sessionId: string | null) => {
     setSelected(sessionId)
     saveSelected(sessionId)
-    setDetail(null)
     setNotice(null)
   }
 
-  const onCreate = async () => {
-    const wanted = title.trim()
-    if (!wanted || busy) return
+  const create = async (submission: PendingCreation) => {
     setBusy(true)
-    const result = await createSession(sessionIdRef.current, wanted)
-    setBusy(false)
-    if (result.ok) {
-      // A 200 replay of the same id and title is the same durable session, not a second one.
-      sessionIdRef.current = newId()
-      setTitle("")
-      select(result.value.session_id)
-      setNotice({ tone: "success", title: result.replayed ? "이미 있는 대화입니다 (같은 기록 재생)" : "대화를 만들었습니다", text: `${result.value.title} · 서버에 저장됨` })
-      void loadSessions()
+    // Frozen before the POST: id AND title survive a reload while the outcome is unknown.
+    if (!savePendingCreation(submission)) {
+      setBusy(false)
+      setNotice(STORAGE_NOTICE)
       return
     }
-    // The id is kept on an uncertain outcome so the retry is the same creation, not a new one.
-    if (result.kind === "refused") sessionIdRef.current = newId()
-    setNotice(refuse(result, "대화를 만들지 못했습니다"))
-  }
-
-  const send = async (submission: PendingSubmission) => {
-    setBusy(true)
-    // Persisted BEFORE the call: a reload during an unknown outcome still finds the identity and body.
-    savePending(submission)
-    setPending(submission)
-    const result = await submitMessage(submission)
+    creationRef.current = submission
+    setCreation(submission)
+    const result = await createSession(submission.session_id, submission.title)
+    if (!alive.current) return
     setBusy(false)
+    const release = () => { savePendingCreation(null); creationRef.current = null; setCreation(null) }
     if (result.ok) {
-      savePending(null)
-      setPending(null)
-      requestIdRef.current = newId()
-      setText("")
-      setNotice({ tone: "success", title: result.replayed ? "이미 접수된 요청입니다 (같은 기록 재생)" : "접수되었습니다", text: submission.intent === "request" ? "제안으로 접수되었습니다. 구현이 시작된 것이 아니며, 목표·수용 기준 초안을 기다립니다." : "상담으로 접수되었습니다. 답변을 기다립니다." })
-      void loadDetail(submission.session_id)
+      // A 200 replay of the same id and title is the same durable session, not a second one.
+      release()
+      setTitle("")
+      select(result.value.session_id)
+      setNotice({ tone: "success", title: result.replayed ? "이미 있는 대화입니다" : "대화를 만들었습니다", text: result.value.title,
+        detail: result.replayed ? "같은 식별자의 기록이 재생되었습니다 (새 대화가 생기지 않음)." : undefined })
       void loadSessions()
       return
     }
     if (result.kind === "refused") {
-      // Authoritative: the server decided. Nothing is retried under this identity.
-      savePending(null)
-      setPending(null)
-      if (result.code === "request_conflict") requestIdRef.current = newId()
+      // Only an explicit 4xx decides it; then the identity is released for a corrected title.
+      release()
+      setNotice(refuse(result, "대화를 만들지 못했습니다"))
+      return
+    }
+    setNotice({ tone: "unknown", title: "대화가 만들어졌는지 알 수 없습니다",
+      text: "같은 이름으로 다시 시도하세요. 서버가 이미 저장했다면 그 대화가 그대로 보이고 두 개가 되지 않습니다.",
+      detail: `${result.message} (사유 ${result.code}${result.status != null ? ` · 상태 ${result.status}` : ""}) · 대화 ID ${submission.session_id}` })
+  }
+
+  const onCreate = () => {
+    if (busy) return
+    const held = creationRef.current
+    const wanted = held?.title ?? title.trim()
+    if (!wanted) return
+    void create(held
+      ? { ...held, attempts: held.attempts + 1 }
+      : { session_id: newId(), title: wanted, attempts: 1, first_attempt_at: new Date().toISOString() })
+  }
+
+  const send = async (submission: PendingSubmission) => {
+    setBusy(true)
+    // Frozen before the POST: a reload during an unknown outcome still finds the identity and body.
+    if (!savePending(submission)) {
+      setBusy(false)
+      setNotice(STORAGE_NOTICE)
+      return
+    }
+    pendingRef.current = submission
+    setPending(submission)
+    const result = await submitMessage(submission)
+    if (!alive.current) return
+    setBusy(false)
+    const release = () => { savePending(null); pendingRef.current = null; setPending(null) }
+    if (result.ok) {
+      release()
+      setText("")
+      setNotice({ tone: "success", title: result.replayed ? "이미 접수된 요청입니다" : "접수되었습니다",
+        text: submission.intent === "request" ? "제안으로 접수되었습니다. 구현이 시작된 것은 아니며 목표·수용 기준 초안을 기다립니다." : "상담으로 접수되었습니다. 답변을 기다립니다.",
+        detail: `요청 ID ${submission.request_id}${result.replayed ? " · 같은 기록이 재생되었습니다 (새 호출 없음)" : ""}` })
+      void readHistory(submission.session_id)
+      void loadSessions()
+      return
+    }
+    if (result.kind === "refused") {
+      // Authoritative: the server read the body and decided. Nothing is retried under this identity.
+      release()
       setNotice(refuse(result, "접수되지 않았습니다"))
       return
     }
     setNotice({ tone: "unknown", title: "전송 결과를 알 수 없습니다",
-      text: `${result.message} 같은 식별자와 같은 내용으로만 다시 보낼 수 있습니다. 서버가 이미 저장했다면 같은 기록이 재생되고 새 호출은 생기지 않습니다.` })
+      text: "저장되었을 수도 있습니다. 아래 버튼으로 같은 내용을 다시 보내면 중복 접수되지 않습니다.",
+      detail: `${result.message} (사유 ${result.code}${result.status != null ? ` · 상태 ${result.status}` : ""}) · 요청 ID ${submission.request_id}` })
   }
 
   const onSend = () => {
     const body = text.trim()
-    if (!selected || !body || busy) return
-    void send({ session_id: selected, request_id: requestIdRef.current, intent, text: body,
+    if (!selected || !body || busy || pending) return
+    void send({ session_id: selected, request_id: newId(), intent, text: body,
       attempts: 1, first_attempt_at: new Date().toISOString() })
   }
 
@@ -280,6 +381,9 @@ export function DeskView() {
     void send({ ...pending, attempts: pending.attempts + 1 })
   }
 
+  const current = history && history.session_id === selected ? history : null
+  const detail = current?.detail ?? null
+  const detailNotice = current?.notice ?? null
   const selectedSession = detail?.session ?? sessions?.find((session) => session.session_id === selected) ?? null
   const requests = detail?.requests ?? []
   const latest = requests.length ? requests[requests.length - 1] : null
@@ -291,40 +395,51 @@ export function DeskView() {
       <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
         <div className="min-w-0">
           <h2 className="text-lg font-semibold inline-flex items-center gap-2"><MessageSquare aria-hidden="true" className="size-4" />대화 창구</h2>
-          <p className="text-sm text-muted-foreground break-words">이 컴퓨터에서만 쓰는 창구입니다. 요청은 제안으로 접수될 뿐 바로 구현되지 않으며, 답변은 검증된 사실이 아니라 대화 맥락입니다. 모델·기준·명령·예산을 고르는 항목은 없습니다.</p>
+          <p className="text-sm text-muted-foreground break-words">이 컴퓨터에서만 쓰는 창구입니다. 요청은 제안으로 접수될 뿐 바로 구현되지 않으며, 답변은 검증된 사실이 아니라 대화 맥락입니다.</p>
         </div>
-        <Button size="sm" variant="outline" onClick={() => { void loadSessions(); if (selected) void loadDetail(selected) }} disabled={busy} aria-busy={busy}>
+        <Button size="sm" variant="outline" onClick={() => { void loadSessions(); if (selected) void readHistory(selected) }} disabled={busy} aria-busy={busy}>
           <RefreshCw aria-hidden="true" />지금 갱신
         </Button>
       </div>
 
       {pending ? (
-        <Alert><AlertTriangle aria-hidden="true" /><AlertTitle>보낸 결과가 확정되지 않은 요청이 있습니다</AlertTitle>
+        <Alert><AlertTriangle aria-hidden="true" /><AlertTitle>결과가 확정되지 않은 요청이 있습니다</AlertTitle>
           <AlertDescription className="break-words">
-            이 요청은 저장되었을 수도, 되지 않았을 수도 있습니다. 같은 식별자와 같은 내용으로만 다시 보냅니다 (시도 {pending.attempts}회 · 최초 {formatTime(pending.first_attempt_at)}).
+            저장되었는지 알 수 없어, 같은 내용으로만 다시 보냅니다. 서버가 이미 받았다면 그 기록이 그대로 보이고 두 번 접수되지 않습니다.
             <span className="mt-2 flex flex-wrap gap-2">
               <Button size="sm" onClick={onRetry} disabled={busy}>같은 요청 다시 보내기</Button>
-              <Button size="sm" variant="outline" onClick={() => { savePending(null); setPending(null) }} disabled={busy}>이 화면에서 지우기 (서버 상태는 그대로)</Button>
             </span>
+            <Details>
+              <span className="font-mono break-all">요청 ID {pending.request_id}</span>
+              <span>시도 {pending.attempts}회 · 최초 {formatTime(pending.first_attempt_at)}</span>
+              <span>서버가 이 요청을 기록한 것이 확인되면 이 안내는 저절로 사라집니다.</span>
+            </Details>
           </AlertDescription></Alert>
       ) : null}
-      {notice ? (
-        <Alert variant={notice.tone === "error" ? "destructive" : "default"} aria-live="polite">
-          <AlertTitle>{notice.title}</AlertTitle><AlertDescription className="break-words">{notice.text}</AlertDescription></Alert>
-      ) : null}
-      {listNotice ? (
-        <Alert variant={listNotice.tone === "error" ? "destructive" : "default"}><CircleHelp aria-hidden="true" />
-          <AlertTitle>{listNotice.title}</AlertTitle><AlertDescription className="break-words">{listNotice.text}</AlertDescription></Alert>
-      ) : null}
+      {notice ? <NoticeAlert notice={notice} live /> : null}
+      {listNotice ? <NoticeAlert notice={listNotice} icon={<CircleHelp aria-hidden="true" />} /> : null}
 
       <div className="grid min-w-0 grid-cols-1 gap-4 lg:grid-cols-[minmax(0,280px)_minmax(0,1fr)]">
         <section aria-label="대화 목록" className="flex min-w-0 flex-col gap-2">
+          {creation ? (
+            <Alert><AlertTriangle aria-hidden="true" /><AlertTitle>대화가 만들어졌는지 확인되지 않았습니다</AlertTitle>
+              <AlertDescription className="break-words">
+                같은 이름으로만 다시 시도합니다. 서버가 이미 저장했다면 그 대화가 그대로 보이고 두 개가 되지 않습니다.
+                <Details>
+                  <span className="font-mono break-all">대화 ID {creation.session_id}</span>
+                  <span>제목 {creation.title} · 시도 {creation.attempts}회 · 최초 {formatTime(creation.first_attempt_at)}</span>
+                </Details>
+              </AlertDescription></Alert>
+          ) : null}
           <div className="flex flex-wrap items-end gap-2">
             <div className="min-w-0 flex-1">
               <label htmlFor={titleId} className="text-xs text-muted-foreground">새 대화 제목 (최대 {DESK_TITLE_MAX}자)</label>
-              <Input id={titleId} value={title} maxLength={DESK_TITLE_MAX} onChange={(event) => setTitle(event.target.value)} placeholder="예: 관측소 화면 정리" />
+              <Input id={titleId} value={creation ? creation.title : title} maxLength={DESK_TITLE_MAX} disabled={creation != null}
+                onChange={(event) => setTitle(event.target.value)} placeholder="예: 관측소 화면 정리" />
             </div>
-            <Button onClick={() => void onCreate()} disabled={busy || !title.trim()} aria-busy={busy}><Plus aria-hidden="true" />만들기</Button>
+            <Button onClick={onCreate} disabled={busy || (creation == null && !title.trim())} aria-busy={busy}>
+              <Plus aria-hidden="true" />{creation ? "다시 만들기" : "만들기"}
+            </Button>
           </div>
           {sessions === null ? (
             <p className="rounded-lg border p-3 text-sm text-unknown">대화 목록을 아직 읽지 못했습니다 (0개가 아니라 확인 불가).</p>
@@ -360,9 +475,9 @@ export function DeskView() {
                 {detail?.max_requests != null ? <span className="text-xs text-muted-foreground">요청 {requests.length} / 상한 {detail.max_requests}</span> : null}
               </div>
               {detailNotice ? (
-                <Alert variant={detailNotice.tone === "error" ? "destructive" : "default"}>
-                  <AlertTitle>{detailNotice.title}</AlertTitle>
-                  <AlertDescription className="break-words">{detailNotice.text}{detail ? " 아래 내용은 마지막으로 받은 기록이며 현재 상태가 아닙니다." : ""}</AlertDescription></Alert>
+                <NoticeAlert notice={detail
+                  ? { ...detailNotice, text: `${detailNotice.text} 아래 내용은 마지막으로 받은 기록이며 현재 상태가 아닙니다.` }
+                  : detailNotice} />
               ) : null}
 
               <Card size="sm" className="min-w-0">
@@ -407,7 +522,7 @@ export function DeskView() {
       </div>
 
       <p className="text-xs text-muted-foreground break-words">
-        읽는 법: '접수됨'은 서버에 저장되었다는 뜻이고 '요청 접수 · 명세 필요'는 제안이 받아들여졌다는 뜻이지 구현이 배정되었다는 뜻이 아닙니다. 답변은 검증되지 않은 대화 맥락이며 승인·명세·지식이 되지 않습니다. 전송 결과가 확정되지 않은 경우에는 같은 식별자와 같은 내용으로만 다시 보내며, 새로 호출하지 않습니다. 대화 기록은 PG 에 남아 새로고침 후에도 그대로 보입니다.
+        읽는 법: '접수됨'은 서버에 저장되었다는 뜻이고, '요청 접수 · 명세 필요'는 제안이 받아들여졌다는 뜻이지 구현이 배정되었다는 뜻이 아닙니다. 답변은 검증되지 않은 대화 맥락입니다. 결과가 확정되지 않은 요청은 같은 내용으로만 다시 보내며, 대화 기록은 새로고침 후에도 그대로 남습니다.
       </p>
     </div>
   )
