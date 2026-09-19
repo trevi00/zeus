@@ -943,3 +943,27 @@ Claude allowed paths: new domain/council_input.py; application/council.py; adapt
 adapters/executor.py; tests/test_council_input.py and directly affected council-delivery tests;
 docs/contracts.md. Do not change global model.py serialization, provider limits, source/privacy gates,
 auth, budgets, snapshot freshness, deadlines, consumer evidence or PR-review artifacts. No extra model calls.
+
+
+### Completion012 after011 timeout: one consolidated owner review
+
+011 ended with claude-provider-timeout, no terminal answer/candidate or automated review. Owner preserved
+all seven files byte-for-byte then committed7bdbd54. Actual retained-input replay4/4 passed no-model,
+including current conductor23122/40960; accepted proof only for delivery, not semantic execution.
+Owner focused75passed/3errors: maximum input cases never ran because representative fixture absent.
+No broad redesign or deadline increase. Complete the existing implementation in one short bounded batch:
+1. Import/reuse test_council_delivery.representative properly (pytest fixture registration, no tests. imports)
+   and execute the three max-input cases, not just collection. Preserve assertions; fix real failures.
+2. Remove context_bytes/context_policy additions to development.provider_started attributes. Registry rejects
+   both keys and Observer.emit returnsNone, losing the entire normal start event. Keep the unchanged existing
+   log schema; context_measurement in execution receipt already carries additive telemetry. Test start-event
+   attributes with actual check_attributes or real Observer, not a permissive fake. No observation.py edits.
+3. CouncilRun._role currently unwraps only role_failed; real executor pre-entry refusals produce role_retry.
+   Safely surface typed needs_scope_split for both legitimate statuses (no automatic retry), while unrelated
+   failures stay unchanged. Replace/extend injected failed-only test with retry outcome and verify run code.
+   Final complete-required overflow must also raise typed CouncilInputOverflow before generic compiler error:
+   preflight actual required envelope through ContextPacket before compile_context; share identical snapshot
+   and required dict with compiler. Keep current final rendered/host guard; no cap changes, no global compiler
+   edits. Add a required-host input that exceeds whole40960 and verify named safe diagnostics/provider0.
+4. Run focused tests and lint; return structured result promptly, do not perform full suite (owner/CI does).
+This completes existing input gate acceptance and log compatibility; no new requirement outside touched path.
