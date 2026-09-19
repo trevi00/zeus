@@ -1183,3 +1183,17 @@ Local inspection: ~/.claude/settings.json uses opus[1m], agent definitions use o
 scripts/lib/model_router.py remains opt-in haiku/sonnet/opus with old IDs. These inspected files
 do not establish existing Fable/Opus routing. Do not copy obsolete IDs or silently modify local settings.
 Official identifier: https://www.anthropic.com/news/claude-opus-5 (2026-07-24, read 2026-09-19).
+
+
+Implementation015 continuation (Opus attempt016 timed out): preserved five application files,
+contracts and tests/test_scoped_outbox.py. Owner focused check:124 passed/15 skipped; not acceptance.
+Effective timeout is min(RuntimePolicy.task_seconds=900, provider ceiling=1200, remaining lease
+deadline), as executor.py shows. This is a policy ceiling, not a transport defect. Keep900 seconds
+and set next manifest to900 truthfully; no unbounded extension or reset of failed016.
+Finish from preserved draft snapshot, not from scratch: inspect current diff/test file, complete
+whole015 matrix, run focused pytest and ruff, return structured completion promptly. Inspect
+_deliver workflow-generated flush results as well as role and operation pre/post flushes: every
+unfinished publication must stop safely rather than be silently ignored. Distinguish a review
+question from a proven defect. No unrelated expansion, provider calls, full suite or deployment.
+Owner will independently review FULL diff from691f12f, including retained016 code, then full tests
+and CI. The new automated reviewer reviews the continuation delta; that alone cannot accept draft016.

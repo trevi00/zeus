@@ -204,7 +204,10 @@ class Harness:
             tx.put("sessions", agent, record)
             return record
 
-    def flush_outbox(self, bus: MessageBus, limit: int = 100, audit=None) -> dict:
+    def flush_outbox(self, bus: MessageBus, limit: int = 100, audit=None,
+                     correlation_id: str | None = None) -> dict:
+        """Default (correlation_id None): the global background batch, unchanged. A correlation
+        restricts the batch to that run's own unsent records (INV-MESSAGE-001, Implementation015)."""
         from codex_harness.application.outbox import relay
 
-        return relay(self.store, self.org, bus, limit, audit)
+        return relay(self.store, self.org, bus, limit, audit, correlation_id)

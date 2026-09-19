@@ -33,7 +33,7 @@ CANDIDATE_FIELDS = ("base", "revision", "tree", "diff_hash")
 # The stored stopped_reason may carry a raw detail suffix (`failed:<error>`); the projection emits
 # only a finite code and a digest of the whole string. Any other text, or a non-string, is `unknown`.
 FIXED_REASONS = STOP_STATES | {"budget_exhausted", "foreign_correlation", "in_flight_residue", "diagnose_pending",
-                               "claim_guard_refused", "no_execution_claimed"}
+                               "claim_guard_refused", "no_execution_claimed", "publication_incomplete"}
 PREFIX_REASONS = {"exception", "foreign_queue", "unsupported_phase", "execution_notice"}
 EXECUTION_STATUSES = {"queued", "pending", "retry", "running", "succeeded", "failed", "blocked", "expired",
                       "superseded", "inspection_blocked", "cancelled"}
@@ -123,6 +123,7 @@ class LocalCycle:
         if not candidate.get("agent"):
             return {"cycle": cycle, "action": "none", "messages": messages, "reason": "idle"}
         agent, kind, target = candidate["agent"], candidate["kind"], candidate["id"]
+        correlation = cycle["correlation_id"]
         require(self.executor is not None, "Executor required for a cycle step")
         with self.service.store.transaction() as tx:
             current = tx.get("local_cycles", cycle_id)
@@ -149,26 +150,34 @@ class LocalCycle:
         except ClaimGuardRefused as exc:
             cycle = self._settle(cycle_id, {"agent": agent, "kind": kind, "id": target, "status": "refused",
                                             "error": str(exc)}, "claim_guard_refused")
-            self._flush()
+            self._flush(correlation)
             return {"cycle": cycle, "action": "refused", "messages": messages, "reason": cycle["stopped_reason"]}
         except Exception as exc:  # the executor already recorded the task outcome; the cycle only stops
             cycle = self._settle(cycle_id, {"agent": agent, "kind": kind, "id": target, "status": "exception",
                                             "error": type(exc).__name__}, "exception:" + type(exc).__name__)
-            self._flush()
+            self._flush(correlation)
             return {"cycle": cycle, "action": "executed", "messages": messages, "reason": cycle["stopped_reason"]}
-        self._flush()
+        publication = self._flush(correlation)
         summary = {"agent": agent, "kind": kind, "id": target,
                    "status": result.get("status") if isinstance(result, dict) else None,
                    "claimed": result is not None, "result_id": result.get("id") if isinstance(result, dict) else None}
         stop, state = self._outcome(result, kind)
+        if stop is None and publication is not None and not publication["complete"]:
+            # The result intent of this execution is committed but not proven published: a retry,
+            # quarantine or backlog in this correlation stops the cycle here. It is never a success
+            # and never a provider retry (INV-MESSAGE-001, Implementation015).
+            stop, state = "publication_incomplete", None
         cycle = self._settle(cycle_id, summary, stop, state)
-        return {"cycle": cycle, "action": "executed", "messages": messages,
+        return {"cycle": cycle, "action": "executed", "messages": messages, "publication": publication,
                 "reason": cycle["stopped_reason"] or cycle["status"], "execution": summary}
 
     # ----- helpers ------------------------------------------------------------------------
-    def _flush(self):
-        if self.bus is not None:
-            flush_outbox(self.service, self.bus, self.observer)
+    def _flush(self, correlation_id=None):
+        """Publish this cycle's own unsent intents (Implementation015); None only when there is no
+        bus. Returns the scoped relay evidence, or None when nothing was published here."""
+        if self.bus is None:
+            return None
+        return flush_outbox(self.service, self.bus, self.observer, correlation_id)
 
     def _deliver(self, cycle) -> list[dict]:
         """Existing serve semantics: handle, relay outbox, then ACK. A foreign message is left
@@ -222,7 +231,17 @@ class LocalCycle:
                 else:
                     result = workflow.handle(message)
                 observe_accepted(observer, message, result)
-                flush_outbox(self.service, self.bus, observer)
+                publication = flush_outbox(self.service, self.bus, observer, cycle["correlation_id"])
+                if not publication["complete"]:
+                    # Implementation015: the commands this report generated are committed but not
+                    # proven published. The cycle stops here, before the ACK and before any candidate
+                    # is chosen, so no reservation or provider entry follows an unpublished command.
+                    # It is never an idle success and never a publication or provider retry.
+                    receipts.append({"entry_id": entry_id, "message_id": message["message_id"],
+                                     "type": message["type"], "handled": bool(result),
+                                     "publication": "incomplete"})
+                    self._stop(cycle["id"], "publication_incomplete")
+                    return receipts
                 self.bus.ack(agent, entry_id)
                 observe_acknowledged(observer, entry_id, message)
                 receipts.append({"entry_id": entry_id, "message_id": message["message_id"],
@@ -331,11 +350,15 @@ def _correlation(row) -> str | None:
 
 
 # ----- message observation (INV-OBSERVATION-001), shared by cycle and autonomous paths --------
-def flush_outbox(service, bus, observer=None) -> dict:
-    """The existing relay; with an observer its publication audits land in the relay transaction."""
+def flush_outbox(service, bus, observer=None, correlation_id=None) -> dict:
+    """The existing relay; with an observer its publication audits land in the relay transaction.
+
+    `correlation_id` (Implementation015) publishes only the caller's own unsent intents and reports
+    `complete`/`remaining`; None keeps the unscoped global batch of every generic caller.
+    """
     if observer is None:
-        return service.flush_outbox(bus)
-    return service.flush_outbox(bus, audit=observer.audit_system)
+        return service.flush_outbox(bus, correlation_id=correlation_id)
+    return service.flush_outbox(bus, audit=observer.audit_system, correlation_id=correlation_id)
 
 
 def observe_received(observer, entry_id, message) -> None:

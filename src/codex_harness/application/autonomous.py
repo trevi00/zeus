@@ -280,20 +280,28 @@ class AutonomousRun:
             tx.put("outbox", message["message_id"], {"message": message, "sent": False})
         self._log(role, run_id, "started")
         started = time.monotonic()
-        flush_outbox(self.service, self.bus, self.observer)
+        # Implementation015: this run's own assignment is published by correlation, independent of
+        # the global cursor and of unrelated queue history; an unfinished publication refuses here.
+        if not flush_outbox(self.service, self.bus, self.observer, correlation)["complete"]:
+            raise AutonomousRefused("publication_incomplete")
         self._deliver(agent, correlation)
         expected = {"id": message["message_id"], "correlation_id": correlation, "statuses": {"queued"}}
+        self._require_admitted(expected)
         try:
             result = wrapped.execute_one(agent, expected=expected)
         except BudgetRefused as exc:
             raise AutonomousRefused("budget_exhausted") from exc
-        flush_outbox(self.service, self.bus, self.observer)
+        published = flush_outbox(self.service, self.bus, self.observer, correlation)
         if any(not s["settled"] for s in wrapped.slots):
             raise AutonomousRefused("settlement_failed")
         if result is None:
             raise AutonomousRefused("no_execution_claimed")
         if result.get("status") != "succeeded":
             raise AutonomousRefused("role_" + str(result.get("status")))
+        if not published["complete"]:
+            # The role's own result/commands are committed but unproven on the transport; the run
+            # stops with a named reason rather than handing an unpublished report to the next role.
+            raise AutonomousRefused("publication_incomplete")
         with self.service.store.transaction() as tx:
             task = tx.get("tasks", message["message_id"])
             invocations = [r for r in tx.scan(RESERVATIONS) if r.get("task_id") == message["message_id"]]
@@ -311,6 +319,21 @@ class AutonomousRun:
                                 "durations": {role: time.monotonic() - started}})
         self._log(role, run_id, "succeeded")
         return binding
+
+    def _require_admitted(self, expected) -> None:
+        """Delivery is not admission (Implementation015). Before BudgetedExecutor reserves a slot,
+        the exact expected row must exist in the consumer database, under this correlation, still
+        queued. Anything else is a named safe refusal with zero reservations and zero provider
+        calls; the atomic claim guard inside the claim transaction remains the race protection."""
+        with self.service.store.transaction() as tx:
+            task = tx.get("tasks", expected["id"])
+        if not isinstance(task, dict):
+            raise AutonomousRefused("expected_execution_missing")
+        message = task.get("message") if isinstance(task.get("message"), dict) else {}
+        if message.get("correlation_id") != expected["correlation_id"]:
+            raise AutonomousRefused("expected_execution_foreign")
+        if task.get("status") not in expected["statuses"]:
+            raise AutonomousRefused("expected_execution_not_queued")
 
     def _verify_execution(self, tx, record, bucket, stage, basis_revision, evidence_ref=None, *, exact=False) -> dict:
         """Load the execution artifact through the injected port and check it against the record and
@@ -376,7 +399,12 @@ class AutonomousRun:
                 raise AutonomousRefused("foreign_message")
             result = self.workflow.handle(message)
             observe_accepted(self.observer, message, result)
-            flush_outbox(self.service, self.bus, self.observer)
+            # Implementation015: the commands the workflow generated from this report belong to the
+            # same correlation and are published here. An unfinished publication stops the run with
+            # the named reason, before the ACK and before any further role, reservation or provider
+            # entry; the handled result stays committed and the message stays pending, never retried.
+            if not flush_outbox(self.service, self.bus, self.observer, correlation)["complete"]:
+                raise AutonomousRefused("publication_incomplete")
             self.bus.ack(agent, entry_id)
             observe_acknowledged(self.observer, entry_id, message)
             handled.append(message)

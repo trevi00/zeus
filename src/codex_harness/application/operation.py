@@ -268,7 +268,14 @@ class Operation:
         try:
             for _ in range(MAX_STEPS):
                 if self.bus is not None:
-                    flush_outbox(self.service, self.bus, self.observer)
+                    # Implementation015: only this operation's own unsent intents (the assignment,
+                    # the worker's result and the workflow's commands) are published here, never a
+                    # page of the shared queue. An unfinished scoped publication stops the run
+                    # before any further reservation or provider entry; it is not a retry.
+                    publication = flush_outbox(self.service, self.bus, self.observer, row["correlation_id"])
+                    if not publication["complete"]:
+                        outcome = {"status": "failed", "reason_code": "publication_incomplete"}
+                        break
                 step = cycle.step(row["cycle_id"])
                 steps.append({"action": step["action"], "reason": _code(step.get("reason"))})
                 outcome = self._classify(step, wrapped)
@@ -302,7 +309,8 @@ class Operation:
             if reason == "exception:DeadlineRefused":
                 return {"status": "failed", "reason_code": "deadline_expired"}
             if reason.startswith("execution_") or reason.startswith("exception:") or reason in {
-                    "retry", "failed", "blocked", "expired", "superseded", "inspection_blocked", "cancelled"}:
+                    "retry", "failed", "blocked", "expired", "superseded", "inspection_blocked", "cancelled",
+                    "publication_incomplete"}:
                 return {"status": "failed", "reason_code": reason}
             return {"status": "unknown", "reason_code": reason}
         return {"status": "running", "reason_code": None}

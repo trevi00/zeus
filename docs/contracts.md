@@ -1354,6 +1354,37 @@ error type with `dead_letter` false for a foreign refusal, `operations.operation
 and `operations.operation_finalized` carry identifiers, counts and codes only, and every affected
 outbox flush audits through `observer.audit_system`; an absent observer keeps every prior caller
 unchanged, and an observation failure never alters handling, the ACK or the outcome.
+Correlation-scoped publication (research-program-001 Implementation015, INV-MESSAGE-001): a current
+run's publication is not a side effect of the global batch. `outbox.relay`, `Harness.flush_outbox`
+and the shared `local_cycle.flush_outbox` helper take an optional `correlation_id`. Default None is
+the unchanged global background batch: one page from the shared `outbox_control` cursor, the cursor
+advance and the `health/outbox` last-batch row; generic CLI, supervisor and background callers stay
+unscoped. A non-empty correlation selects only UNSENT records of exactly that correlation, ordered
+and bounded by the same limit 1..1000 (default 100), independent of the cursor and of unrelated sent
+history; selection walks the outbox in ordered `entries` pages, so its read cost grows with the
+table size and is not a claim of indexed scalability. The scoped batch reuses the same
+prepare/publish transactions, content and identity binding, route authorization, retry, poison
+quarantine and audit rows; the correlation is rechecked inside the prepare transaction and again
+before the publish, so a scope changed between selection and send is counted `out_of_scope` or
+superseded with the attempt evidence kept. It never advances the global cursor, never publishes,
+marks sent or quarantines a foreign record, never writes the global health row, and keeps the
+existing idempotent semantics for an already delivered own record. It returns `unfinished` (own
+records of the batch still unsent), `remaining` (the whole unsent scoped backlog) and `complete`, so
+`examined` is never read as published. Every role, operation and cycle seam publishes with the
+active correlation: `AutonomousRun._role` (assignment before delivery, result and commands after the
+execution) and `_deliver`, `Operation.run` before every cycle turn, and `LocalCycle._flush` and
+`_deliver`. An unfinished scoped publication is a named safe refusal, never a retry and never idle
+success: the role raises `publication_incomplete`, the operation ends `failed:publication_incomplete`
+before any further reservation, and the cycle stops with `publication_incomplete`. In the delivery
+seam that refusal happens after the workflow durably handled the report and before the ACK, so the
+derived command keeps its intent and attempt evidence and the message stays pending for the existing
+at-least-once redelivery; no candidate is chosen and no slot or provider entry follows. After delivery and
+before `BudgetedExecutor` reserves a slot, a council role verifies the exact expected task row in the
+consumer database (same id, same correlation, still queued); a missing, foreign or unadmitted row
+refuses with `expected_execution_missing` / `expected_execution_foreign` /
+`expected_execution_not_queued` and zero slots and provider calls. That preflight is additional: the
+atomic `check_expected` / `require_expected` guard inside the claim transaction remains the race
+protection, and a proven foreign notice keeps the Implementation014 handling above.
 
 ## INV-RESEARCH-PROGRAM-001
 
