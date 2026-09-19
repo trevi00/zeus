@@ -66,7 +66,9 @@
   `digest_matches` and `within_limit`. Exit 0: the manifest matches. Exit 1: stale digest, overlong
   document or a named input failure (the computed facts are still reported when they exist).
   Exit 2: arguments were passed.
-- The command is read-only and fixed to those two cwd-relative files. The profile grants this one
+- The command is read-only and fixed to the document, manifest and packaged hook at their three
+  cwd-relative paths. It also reports `hook_sha256`, `hook_digest_matches` and `hook_status`;
+  an undeclared hook remains explicitly `not_declared`, not a profile-validity verdict. The profile grants this one
   exact command and the evidence policy replays this one exact argv: no arbitrary Python
   (`python -c`, scripts, other modules), no arguments and no other paths. It observes metadata only;
   `worker_profile.load_profile` and the profile tests remain the authority over the final bytes.

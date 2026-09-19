@@ -106,6 +106,33 @@
       "pinned_sha256": "a19c8bfc8148b0a5247112398eef14f790f5752542c570406835c172a1a4ec58",
       "scope": "Evidence-bound bounded continuation principles rewritten for existing worker-v1; no upstream execution or behavior guarantee",
       "disposition": "Adapt goal, verified evidence, remaining work and scoped next action; reject forced clear, numeric thresholds, fallback task invention and prose authority"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/lib/repeat_error_tracker.py",
+      "commit": "7f2d97dab465aa1670267137354d0d44c51fb688",
+      "blob": "bb4c86a0db994cefd978c61efac9017f037dac98",
+      "pinned_sha256": "a4d9ee2045bbdc7970494fcf3e1ff01e3b60a5f49dc8c3d97abd50a4a5fa2657",
+      "scope": "Selected two-strike research-first policy and caller inspection; upstream tests not run",
+      "disposition": "Adapt session-level normalized symptom detection and bounded research handoff; replace shared temp JSON with session SQLite; no auto-dispatch, automatic writeback or verified-cause inference"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/lib/strike_dispatcher.py",
+      "commit": "7f2d97dab465aa1670267137354d0d44c51fb688",
+      "blob": "90185248b5d150745654cb695b72894552516b1b",
+      "pinned_sha256": "b49175c6a1635120e719812a68456453ee235007963460366fead5c92c707877",
+      "scope": "Selected two-strike research-first policy and caller inspection; upstream tests not run",
+      "disposition": "Adapt session-level normalized symptom detection and bounded research handoff; replace shared temp JSON with session SQLite; no auto-dispatch, automatic writeback or verified-cause inference"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/cli/strike_research_consume.py",
+      "commit": "7f2d97dab465aa1670267137354d0d44c51fb688",
+      "blob": "a9870918406c9b79e371c9ea29976b107d3860ec",
+      "pinned_sha256": "4c27943aeb7db3251c6ba288971dbfde07c736ed87d992339687ef5cdfab314b",
+      "scope": "Selected two-strike research-first policy and caller inspection; upstream tests not run",
+      "disposition": "Adapt session-level normalized symptom detection and bounded research handoff; replace shared temp JSON with session SQLite; no auto-dispatch, automatic writeback or verified-cause inference"
     }
   ],
   "note": "Selected only by runtime.worker_profile; assignment messages and model output never choose it. The document is delivered, adherence is not judged by delivery."

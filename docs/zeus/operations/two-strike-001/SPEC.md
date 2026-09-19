@@ -88,3 +88,17 @@ Owner checks focused worker/profile/isolation tests, root ruff, CI full suite; n
 unrelated Docker readiness research. Root independently reviews candidate and preserves evidence.
 Completion is tested/pinned implementation and truthful delivery report; operational runtime switch
 must identify its pin separately. Source inventory counts are not changed to imply full absorption.
+
+## Owner continuation after the first actual execution
+The first Claude execution stopped at its 900-second deadline without a terminal answer.
+Its seven changed files were preserved at 35de992; no acceptance or automatic retry was inferred.
+The assumption that implementation plus reporting would fit that call was false. Owner inspection
+found a complete testable draft: 60 focused tests passed, 1 platform skip, root ruff passed.
+Continue by verifying this preserved draft, not restarting implementation or expanding scope.
+The owner supplies source provenance and packaging documentation; no second implementation call
+is necessary unless the remaining checks reveal a material failure.
+
+Projection terminology: `counted_failures` currently means counted receipt observations (replays
+can produce another receipt), not unique invocations. Individual `distinct_failures` counters and
+research triggers are deduplicated in SQLite. Do not use the receipt-observation count as a
+cross-job recurrence metric. A future Projects aggregation must retain this distinction.
