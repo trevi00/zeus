@@ -894,8 +894,9 @@ class Executor:
                 result = execute_role(self, task, heartbeat)
             elif action == "frontdesk":
                 # local-operations-desk-001: one read-only conversational turn in a clean checkout
-                # at the request's base. The answer is conversation content; no candidate, approval,
-                # knowledge write or follow-up assignment comes out of it.
+                # at the request's base, with the sanitized owner-runtime monitoring capture as
+                # evidence. The answer is conversation content; no candidate, approval, knowledge
+                # write or follow-up assignment comes out of it.
                 from codex_harness.adapters.frontdesk import execute_frontdesk
                 result = execute_frontdesk(self, task, heartbeat)
             elif action == "rebase":
