@@ -4,6 +4,7 @@ import { KeyValue, StatCard } from "@/components/stat-card"
 import { StatusBadge } from "@/components/status-badge"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { ACCOUNTING_TITLE, accountingDisplay, interpretAccounting } from "@/lib/accounting"
 import { FLEET_SCHEMA, fleetFreshness, formatNumber, formatSeconds, formatTime, type FleetData, type FleetJob, type FleetLane, type FleetRegistered, type Snapshot } from "@/lib/snapshot"
 import { freshnessTone, type Tone } from "@/lib/tones"
 
@@ -14,7 +15,10 @@ import { freshnessTone, type Tone } from "@/lib/tones"
  * - no response / envelope absent (older collector) / collector failure / uninterpretable data /
  *   invalid observation time / stale observation are all "확인 불가" flavours, never zero;
  * - `registered:false` is empty (등록 없음), not unknown;
- * - job `unknown` retains ownership and exclusion; `accepted` means review accepted, not deployed;
+ * - job `unknown` retains ownership and exclusion; `accepted` means review accepted, not deployed,
+ *   and owner merge/deploy records are not connected to this screen at all (not merely absent);
+ * - the usage-accounting mode comes from the shared reading of lib/accounting.ts: subscription is
+ *   never drawn as an active call ceiling, and a contradictory or off-contract mode is unknown;
  * - `truncated` bounds every count to the sample of at most 100 jobs;
  * - `updated_at` is the last recorded execution fact, never a heartbeat.
  * Fleet is not in SOURCE_NAMES, so the source strip, header warnings, retained map and the pinned
@@ -31,7 +35,7 @@ const JOB_STATUS: Record<string, JobStatusInfo> = {
   accepted: { label: "검토 수락", tone: "success", note: "독립 검토가 후보를 수락함 · 병합·배포 아님" },
   rejected: { label: "검토 거부", tone: "error", note: "독립 검토가 후보를 거부함" },
   failed: { label: "실패", tone: "error", note: "정확한 실패 기록 · 자동 재시도 없음" },
-  exhausted: { label: "예산 소진", tone: "error", note: "호출 예산 상한 도달 · 자동 상향 없음" },
+  exhausted: { label: "예산 소진", tone: "error", note: "예산 소진으로 기록된 상태 · 기록 당시 기준 · 자동 상향 없음" },
   unknown: { label: "알 수 없음", tone: "unknown", note: "시작·종료·PG 읽기 불확실 · 예약·용량·경로 배제 유지 · 자동 인계 없음" },
 }
 const JOB_STATUS_ORDER = ["queued", "dispatching", "accepted", "rejected", "failed", "exhausted", "unknown"]
@@ -65,6 +69,9 @@ function readFleet(data: unknown): Parsed {
     data: {
       schema: FLEET_SCHEMA, registered: true, id: record.id, paused: record.paused, max_parallel: record.max_parallel,
       budget: { per_host: budget.per_host, total: budget.total },
+      // Both mode statements are read here, never discarded: an off-contract or contradictory mode
+      // is `unknown` in the shared reading and still renders the rest of the projection.
+      accounting: interpretAccounting(record.accounting_mode, budget.mode),
       lanes: lanes.map((lane) => ({ id: lane.id, team: lane.team, active_job: typeof lane.active_job === "string" ? lane.active_job : null })),
       jobs: jobs.map((job) => ({
         id: job.id, lane: typeof job.lane === "string" ? job.lane : "", team: typeof job.team === "string" ? job.team : "", status: job.status,
@@ -230,6 +237,11 @@ export function FleetView({ snapshot, now }: Props) {
   const queuedDependencyStates = registered.jobs.filter((job) => job.status === "queued" && job.dependencies.length).map((job) => dependencyState(job, jobsById))
   const confirmedUnmet = queuedDependencyStates.filter((state) => state === "confirmed_unmet").length
   const dependencyUnknown = queuedDependencyStates.filter((state) => state === "unknown").length
+  // One shared reading for the strip, the notice and the reading guide below: the numbers are the
+  // wire values in every mode, but only finite mode calls them ceilings.
+  const accounting = registered.accounting
+  const budgetNumbers = `${formatNumber(registered.budget.per_host)} / ${formatNumber(registered.budget.total)}`
+  const accountingCard = accountingDisplay(accounting, budgetNumbers)
 
   return (
     <div className="flex min-w-0 flex-col gap-4">
@@ -249,6 +261,10 @@ export function FleetView({ snapshot, now }: Props) {
             {activeOutsideSample.length ? ` 표본 밖 활성 작업: ${activeOutsideSample.map((lane) => `${lane.id} → ${lane.active_job}`).join(", ")} (목록에 없음).` : ""}
           </AlertDescription></Alert>
       ) : null}
+      {accounting.mode === "unknown" ? (
+        <Alert><CircleHelp aria-hidden="true" /><AlertTitle>호출 회계 방식 확인 불가</AlertTitle>
+          <AlertDescription className="break-words">{accounting.detail} 아래 호출 수치를 적용 중인 상한으로 읽지 마세요. 확인 불가이며 상한 없음도 아닙니다. 다른 항목(admission·레인·작업)은 그대로 표시합니다.</AlertDescription></Alert>
+      ) : null}
       {registered.truncated ? (
         <Alert><AlertTriangle aria-hidden="true" /><AlertTitle>작업 목록이 잘렸습니다</AlertTitle><AlertDescription>최근 100건까지만 읽었습니다. 아래 건수와 팀별 분포는 표본 기준이며 전체 합계가 아닙니다. 레인의 활성 작업은 표본 밖도 포함합니다. 표본 밖 선행 작업의 상태는 알 수 없음이며 의존성 미충족으로 세지 않습니다.</AlertDescription></Alert>
       ) : null}
@@ -256,8 +272,8 @@ export function FleetView({ snapshot, now }: Props) {
       <div className="grid grid-cols-2 gap-2 lg:grid-cols-4">
         <StatCard title="admission" value={registered.paused ? "일시 정지" : "열림"} note={registered.paused ? "신규 배정 차단 · 실행 중 완료 허용" : "열림 ≠ 서비스 실행 중 · 생존 신호 없음"} icon={registered.paused ? <Pause className="size-4" /> : <Workflow className="size-4" />} />
         <StatCard title="동시 실행 상한" value={`${formatNumber(activeLanes.length)} / ${formatNumber(registered.max_parallel)}`} note={`활성 레인 / max_parallel · 레인 ${formatNumber(registered.lanes.length)}개`} icon={<Layers className="size-4" />} />
-        <StatCard title="호출 예산 상한" value={`${formatNumber(registered.budget.per_host)} / ${formatNumber(registered.budget.total)}`} note="호스트당 / 전체 상한(호출 수) · 남은 금액 아님 · 실제 적용은 실행 직전 CallBudget" icon={<ShieldCheck className="size-4" />} />
-        <StatCard title="검토 수락 (표본)" value={current ? formatNumber(counts.accepted ?? 0) : <Unknown>{formatNumber(counts.accepted ?? 0)} · 현재 아님</Unknown>} note="독립 검토 수락 · 병합·배포·완료 아님" icon={<ListChecks className="size-4" />} />
+        <StatCard title={`${ACCOUNTING_TITLE} · ${accounting.label}`} value={accountingCard.value ?? <Unknown>회계 방식 확인 불가</Unknown>} note={accountingCard.note} icon={<ShieldCheck className="size-4" />} />
+        <StatCard title="검토 수락 (표본)" value={current ? formatNumber(counts.accepted ?? 0) : <Unknown>{formatNumber(counts.accepted ?? 0)} · 현재 아님</Unknown>} note="독립 검토 수락 · 병합·배포·완료 아님 · 소유자 병합·배포 기록은 이 화면에 연결되지 않음(미연결 · 미배포 증거 아님)" icon={<ListChecks className="size-4" />} />
       </div>
 
       <Card size="sm" className="min-w-0">
@@ -280,7 +296,7 @@ export function FleetView({ snapshot, now }: Props) {
               <FlowNode icon={GitBranch} title="3. 레인 실행" tone={activeLanes.length ? "warning" : "neutral"} badge={`활성 레인 ${formatNumber(activeLanes.length)} / ${formatNumber(registered.max_parallel)}`} lines={["기존 `zeus operate run` · 격리 컨테이너 · 소유 토큰", "자식 출력만으로 수락 판정 없음"]} />
             </li>
             <li className="contents"><FlowArrow />
-              <FlowNode icon={ShieldCheck} title="4. 독립 검토 → 종단 상태" tone={counts.unknown ? "unknown" : (counts.failed || counts.rejected || counts.exhausted) ? "error" : counts.accepted ? "success" : "neutral"} badge={statusSummary(registered.jobs.filter((job) => !["queued", "dispatching"].includes(job.status)))} lines={["수락 = 종료 코드 0 + 레인 운영 기록 일치 + 검토 수락", "병합·배포 아님 · 자동 재시도 없음"]} />
+              <FlowNode icon={ShieldCheck} title="4. 독립 검토 → 종단 상태" tone={counts.unknown ? "unknown" : (counts.failed || counts.rejected || counts.exhausted) ? "error" : counts.accepted ? "success" : "neutral"} badge={statusSummary(registered.jobs.filter((job) => !["queued", "dispatching"].includes(job.status)))} lines={["수락 = 종료 코드 0 + 레인 운영 기록 일치 + 검토 수락", "병합·배포 아님 · 자동 재시도 없음", "소유자 병합·배포 기록: 이 출처에 미연결 · 확인 불가"]} />
             </li>
             <li className="contents"><FlowArrow />
               <FlowNode icon={ListChecks} title="5. 읽기 전용 투영 (이 화면)" tone={freshnessTone(fresh.state)} badge={fresh.state === "fresh" ? "최신" : fresh.state === "stale" ? "오래됨 · 현재 아님" : "시각 무효"} lines={[`관측 ${formatTime(fresh.observed_at)}`, "PG 만 읽음 · 쓰기·예약·제공자 연결 없음"]} />
@@ -382,7 +398,12 @@ export function FleetView({ snapshot, now }: Props) {
       </section>
 
       <p className="text-xs text-muted-foreground break-words">
-        읽는 법: '확인 불가'는 값을 읽지 못한 것이고 '비어 있음'은 읽었더니 없었다는 뜻입니다. '검토 수락'은 독립 검토가 후보를 수락했다는 뜻이며 병합·배포·완료가 아닙니다. '알 수 없음'은 0건이 아니며 소유권과 예약을 그대로 유지합니다. 마지막 기록 시각은 하트비트가 아닙니다. 예산 값은 호출 수 상한이며 남은 금액이 아닙니다.
+        읽는 법: '확인 불가'는 값을 읽지 못한 것이고 '비어 있음'은 읽었더니 없었다는 뜻입니다. '검토 수락'은 독립 검토가 후보를 수락했다는 뜻이며 병합·배포·완료가 아닙니다. 소유자의 병합·배포 기록은 아직 이 화면에 연결되지 않았으므로, 여기서는 배포 여부를 확인할 수도 부정할 수도 없습니다. '알 수 없음'은 0건이 아니며 소유권과 예약을 그대로 유지합니다. 마지막 기록 시각은 하트비트가 아닙니다.
+        {accounting.mode === "finite"
+          ? " 이 fleet 은 유한 회계이므로 호출 수치는 실제 호출 수 상한이며 남은 금액이 아닙니다."
+          : accounting.mode === "subscription"
+            ? " 이 fleet 은 구독 사용량 기록이므로 호출 수 상한이 적용되지 않습니다. 표시된 수치는 보존된 이관 메타데이터이며 남은 호출·금액이나 제공자 허용량이 아닙니다."
+            : " 회계 방식을 확정하지 못했으므로 표시된 호출 수치가 상한인지 알 수 없습니다."}
       </p>
     </div>
   )

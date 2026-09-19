@@ -3,6 +3,7 @@ import { AlertTriangle, ArrowDown, ArrowLeftRight, ArrowRight, CircleHelp, Flag,
 
 import { StatusBadge } from "@/components/status-badge"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { ACCOUNTING_TITLE, accountingDisplay, accountingTone } from "@/lib/accounting"
 import type { ReportFleet, Story, StoryControl, StoryJob, StoryTeam, StoryVerdict } from "@/lib/report"
 import { STATE_LABELS, formatNumber, formatSeconds, formatTime } from "@/lib/snapshot"
 import { freshnessTone, type Tone } from "@/lib/tones"
@@ -18,8 +19,11 @@ import { freshnessTone, type Tone } from "@/lib/tones"
  *   `registered:false` is 비어 있음; stale or invalid observation time is labelled on the header;
  * - every node carries stored facts only (criterion, id, team/lane, status, reason, calls,
  *   created/updated); the four stages are conceptual, so no per-stage time is shown;
- * - 검토 수락 is a review-accepted candidate: merge and deploy are unknown here, not implied;
- * - ceilings are declared call limits, not a remaining balance; sample sums are not the machine total;
+ * - 검토 수락 is a review-accepted candidate: merge and deploy are unknown here, not implied, and
+ *   the owner's delivery records are not connected to this report yet (their absence proves nothing);
+ * - the call numbers are read through the captured accounting mode (lib/accounting.ts): declared
+ *   ceilings in finite mode, retained migration metadata in subscription mode, and neither when the
+ *   mode is unknown; sample sums are never the machine total;
  * - the before/after card is a UI design comparison of this screen, not a measured improvement.
  */
 type Props = { story: Story; fleet: ReportFleet }
@@ -86,7 +90,7 @@ function JobLanes({ job }: { job: StoryJob }) {
           <div>호출 예약 {callsText(job.calls.reserved)} · 정산 {callsText(job.calls.settled)}</div>
         </Node>
         <Arrow />
-        <Node icon={Flag} title="남은 것" tone={tone} badge={job.verdict === "accepted" ? "후보 수락 · 병합 알 수 없음" : job.verdict === "unknown" ? "소유자 조정 필요" : job.verdict === "queued" ? "대기 · 기록된 사유" : job.verdict === "dispatching" ? "종료 기록 없음" : job.verdict === "undefined" ? "해석 불가" : "소유자 다음 결정"}>
+        <Node icon={Flag} title="남은 것" tone={tone} badge={job.verdict === "accepted" ? "후보 수락 · 배포 기록 미연결" :job.verdict === "unknown" ? "소유자 조정 필요" : job.verdict === "queued" ? "대기 · 기록된 사유" : job.verdict === "dispatching" ? "종료 기록 없음" : job.verdict === "undefined" ? "해석 불가" : "소유자 다음 결정"}>
           <div>{job.remaining}</div>
           {job.dependencies.length ? (
             <div className="flex min-w-0 flex-wrap items-center gap-1">
@@ -122,17 +126,22 @@ function TeamLane({ team }: { team: StoryTeam }) {
 
 function ControlStrip({ control, fleet }: { control: StoryControl; fleet: ReportFleet }) {
   const listId = useId()
+  // The captured accounting reading decides what the two budget numbers are called here; the
+  // strip never presents a subscription fleet (or an unknown mode) as an active call ceiling.
+  const accounting = control.accounting
+  const budgetNumbers = `${formatNumber(control.budget.per_host)} / ${formatNumber(control.budget.total)}`
+  const accountingCell = accountingDisplay(accounting, budgetNumbers)
   const items: Array<{ key: string; icon: LucideIcon; title: string; value: React.ReactNode; note: string; tone: Tone }> = [
     { key: "admission", icon: control.admission === "paused" ? Pause : Workflow, title: "admission", value: control.admission === "paused" ? "일시 정지" : "열림", note: control.admission === "paused" ? "신규 배정 차단 · 배정된 작업은 완료까지 진행" : "열림 ≠ 서비스 실행 중 · 생존 신호 없음", tone: control.admission === "paused" ? "warning" : "neutral" },
     { key: "lanes", icon: Layers, title: "활성 레인 / 동시 실행 상한", value: `${formatNumber(control.active_lanes)} / ${formatNumber(control.max_parallel)}`, note: `레인 ${formatNumber(control.lanes_total)}개 · 레인당 1개 · 표본 밖 활성 ${formatNumber(control.active_outside_sample.length)}건`, tone: control.active_lanes ? "warning" : "neutral" },
-    { key: "budget", icon: ShieldCheck, title: "호출 상한 (호스트당 / 전체)", value: `${formatNumber(control.budget.per_host)} / ${formatNumber(control.budget.total)}`, note: "선언된 호출 수 상한 · 남은 호출·금액·실제 지출 아님 · 기계 장부 없음", tone: "neutral" },
+    { key: "accounting", icon: ShieldCheck, title: `${ACCOUNTING_TITLE} · ${accounting.label}`, value: accountingCell.value ?? <Unknown>회계 방식 확인 불가</Unknown>, note: accountingCell.note, tone: accountingTone(accounting) },
     { key: "calls", icon: Lock, title: "표본 작업 예약 / 정산 합계", value: control.sample_calls.reserved == null && control.sample_calls.settled == null ? <Unknown /> : `${callsText(control.sample_calls.reserved)} / ${callsText(control.sample_calls.settled)}`, note: `표본 ${formatNumber(fleet.sample.count)}건의 합계 · 기계 전체 아님${control.sample_calls.partial ? ` · 확인 불가 ${formatNumber(control.sample_calls.jobs_unknown)}건 제외한 부분 합계` : ""}`, tone: control.sample_calls.partial ? "unknown" : "neutral" },
     { key: "sample", icon: AlertTriangle, title: "표본 · 관측 시각", value: `${formatNumber(fleet.sample.count)}건 · ${fleet.sample.truncated ? "잘림" : "잘리지 않음"}`, note: `최근 ${formatNumber(fleet.sample.limit)}건 상한 · 관측 ${formatTime(fleet.observed_at)} · 경과 ${fleet.age_seconds == null ? "알 수 없음" : formatSeconds(fleet.age_seconds * 1000)} (캡처 기준 · 하트비트 아님)`, tone: fleet.sample.truncated ? "warning" : freshnessTone(fleet.freshness) },
   ]
   return (
     <Card size="sm" className="min-w-0">
       <CardHeader>
-        <CardTitle id={listId}>유한 운영 띠</CardTitle>
+        <CardTitle id={listId}>운영 한계 띠</CardTitle>
         <CardDescription className="flex flex-wrap items-center gap-2">
           {control.policy.map((line) => <StatusBadge key={line} tone="neutral">{line}</StatusBadge>)}
         </CardDescription>
@@ -227,7 +236,7 @@ export function ReportStory({ story, fleet }: Props) {
         <Card size="sm" className="min-w-0">
           <CardHeader>
             <CardTitle id={outcomesId}>결과 (표본)</CardTitle>
-            <CardDescription>{registered ? `작업 ${formatNumber(fleet.sample.count)}건의 저장된 상태별 건수 · 검토 수락은 후보 수락 · 병합·배포 아님` : story.state === "unregistered" ? "등록된 fleet 없음 · 비어 있음" : "fleet 출처 확인 불가 · 건수 없음 (0건 아님)"}</CardDescription>
+            <CardDescription>{registered ? `작업 ${formatNumber(fleet.sample.count)}건의 저장된 상태별 건수 · 검토 수락은 후보 수락 · 병합·배포 아님 · 소유자 배포 기록 미연결` :story.state === "unregistered" ? "등록된 fleet 없음 · 비어 있음" : "fleet 출처 확인 불가 · 건수 없음 (0건 아님)"}</CardDescription>
           </CardHeader>
           <CardContent>
             {!registered ? (

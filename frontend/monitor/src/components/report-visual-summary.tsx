@@ -20,7 +20,11 @@ import { freshnessTone, severityTone, type Tone } from "@/lib/tones"
  * - empty (source ok, zero rows) renders "0건 · 비어 있음";
  * - stale/failed/invalid sources keep their freshness label and observed time on the diagram;
  * - sample truncation, uninterpretable values and capture times sit on the diagram nodes;
- * - the source-to-report path is labelled conceptual: it is not a trace of individual records.
+ * - the source-to-report path is labelled conceptual: it is not a trace of individual records;
+ * - explicitly recorded current states (pending terminations, local pending alerts and unreadable
+ *   termination files, observation freshness) are shown above the aggregate and kept apart from it:
+ *   stored critical/error and alert totals are history whose outcome is unresolved or unknown here.
+ *   No historical record is dropped, no absent value becomes zero, and age never implies resolution.
  */
 type Props = { report: Report }
 
@@ -133,6 +137,13 @@ export function ReportVisualSummary({ report }: Props) {
   const sample = report.completeness.sample
   const unknownValues = report.completeness.unknown
   const operations = report.explanation.operations
+  // Current explicit states of the same pinned capture. A missing or unreadable source stays
+  // unknown here: it never becomes zero, and an old record never becomes a resolved one.
+  const terminations = report.counts.terminations
+  const local = report.completeness.local
+  const localOk = local && local.status === "ok" ? local : null
+  const localReason = local && local.status !== "ok" ? local.reason : null
+  const observationsState = (report.sources.observations?.freshness ?? "unavailable") as FreshState
   const transportTone: Tone = report.transport.state === "ok" ? "success" : report.transport.state === "pending" ? "warning" : "error"
 
   const categoryChart = countChart(report.counts.by_category, report.counts.events_total, CATEGORY_ORDER, CATEGORY_LABELS, () => "neutral")
@@ -143,18 +154,33 @@ export function ReportVisualSummary({ report }: Props) {
   const sampleLabel = sample ? `버킷당 ${formatNumber(sample.limit_per_bucket)}행 · ${sample.truncated ? "잘림" : "잘리지 않음"}` : "샘플 한계 확인 불가"
 
   return (
-    <section aria-label="집계 요약 (샘플)" className="flex min-w-0 flex-col gap-3">
-      {/* Aggregate picture: sits below the goal/team/verdict story (report-story.tsx) and reads the same pinned report. */}
-      <h3 className="text-base font-semibold">집계 요약 (샘플) <span className="text-xs font-normal text-muted-foreground">· 위 팀 작업 이야기와 같은 캡처 · 관측 로그 출처 기준 · fleet 출처와 별개</span></h3>
+    <section aria-label="현재 상태와 집계 요약 (샘플)" className="flex min-w-0 flex-col gap-3">
+      {/*
+        Sits below the goal/team/verdict story (report-story.tsx) and reads the same pinned report.
+        Explicit current states come first; the aggregate below them is history, on its own axis.
+      */}
+      <h3 className="text-base font-semibold">현재 상태 (명시적 기록) <span className="text-xs font-normal text-muted-foreground">· 현재 상태가 기록된 항목만 · 아래 집계 이력과 다른 축 · 같은 고정 캡처</span></h3>
+      <div className="grid grid-cols-2 gap-2 lg:grid-cols-4">
+        <StatCard title="미확정 종료 기록" value={terminations == null ? <Unknown /> : formatNumber(terminations.pending)}
+          note={terminations == null ? "확인 불가 · 관측 출처 없음 · 0 아님" : "pending_reconciliation·unconfirmed · 해당 작업의 재실행·복구만 차단 · 전체 실행 차단 아님 · 운영자 조정 전까지 유지"} />
+        <StatCard title="로컬 대기 경보" value={localOk == null ? <Unknown /> : formatNumber(localOk.pending_alerts)}
+          note={localOk == null ? `로컬 스풀 확인 불가${localReason ? ` · ${localReason}` : ""} · 0 아님` : "로컬 스풀 파일 기준 · 수집기 재생 전"} />
+        <StatCard title="판독 불가 로컬 종료 기록" value={localOk == null ? <Unknown /> : formatNumber(localOk.unreadable_terminations)}
+          note={localOk == null ? `로컬 스풀 확인 불가${localReason ? ` · ${localReason}` : ""} · 0 아님` : `로컬 종료 기록 ${formatNumber(localOk.pending_terminations)}건 중 · 내용 확인 불가 · 해결 여부 알 수 없음`} />
+        <StatCard title="관측 로그 신선도" value={STATE_LABELS[observationsState] ?? observationsState}
+          note={observationsState === "fresh" ? `관측 ${formatTime(report.sources.observations?.observed_at ?? null)} · 캡처 시점 기준` : `관측 ${formatTime(report.sources.observations?.observed_at ?? null)} · 현재 상태가 아님 · 이후 변화는 이 보고서에 없음`} />
+      </div>
+
+      <h3 className="text-base font-semibold">집계 요약 (샘플 · 기록 이력) <span className="text-xs font-normal text-muted-foreground">· 저장된 과거 기록 · 현재 미해결·해결 어느 쪽의 증거도 아님 · 위 팀 작업 이야기와 같은 캡처 · 관측 로그 출처 기준 · fleet 출처와 별개</span></h3>
       <div className="grid grid-cols-2 gap-2 lg:grid-cols-4">
         <StatCard title="이벤트 (샘플)" value={report.counts.events_total == null ? <Unknown /> : formatNumber(report.counts.events_total)}
           note={unknownObservations ? "관측 출처 확인 불가 · 0 아님" : sampleLabel} />
-        <StatCard title="치명·오류" value={report.critical_events_total == null ? <Unknown /> : formatNumber(report.critical_events_total)}
-          note={report.critical_events == null ? "확인 불가 · 0 아님" : report.critical_events_total === 0 ? "샘플 안에서 없음 · 비어 있음" : `상위 ${formatNumber(report.critical_events.length)}건 목록은 아래 상세`} />
-        <StatCard title="운영 결과" value={operations.denominator == null ? <Unknown /> : formatNumber(operations.denominator)}
-          note={operations.state === "unknown" ? "확인 불가 · 0 아님" : operations.state === "empty" ? "샘플 안에 기록 없음 · 비어 있음" : `수락됨 ${formatNumber(operations.bars.find((bar) => bar.status === "accepted")?.count ?? 0)}건 · 작업 완료와 다름`} />
-        <StatCard title="경보 기록" value={report.counts.alerts == null ? <Unknown /> : formatNumber(report.counts.alerts.recorded)}
-          note={report.counts.alerts == null ? "확인 불가 · 0 아님" : report.counts.alerts.recorded === 0 ? "샘플 안에서 없음 · 비어 있음" : Object.entries(report.counts.alerts.by_status).map(([k, v]) => `${k} ${formatNumber(v)}`).join(" · ")} />
+        <StatCard title="치명·오류 (기록 이력)" value={report.critical_events_total == null ? <Unknown /> : formatNumber(report.critical_events_total)}
+          note={report.critical_events == null ? "확인 불가 · 0 아님" : report.critical_events_total === 0 ? "샘플 안에서 없음 · 비어 있음" : `상위 ${formatNumber(report.critical_events.length)}건 목록은 아래 상세 · 저장된 과거 기록 · 결과 미확정·알 수 없음`} />
+        <StatCard title="운영 결과 (기록 이력)" value={operations.denominator == null ? <Unknown /> : formatNumber(operations.denominator)}
+          note={operations.state === "unknown" ? "확인 불가 · 0 아님" : operations.state === "empty" ? "샘플 안에 기록 없음 · 비어 있음" : `수락됨 ${formatNumber(operations.bars.find((bar) => bar.status === "accepted")?.count ?? 0)}건 · 작업 완료와 다름 · 저장된 과거 결과`} />
+        <StatCard title="경보 기록 (기록 이력)" value={report.counts.alerts == null ? <Unknown /> : formatNumber(report.counts.alerts.recorded)}
+          note={report.counts.alerts == null ? "확인 불가 · 0 아님" : report.counts.alerts.recorded === 0 ? "샘플 안에서 없음 · 비어 있음" : `${Object.entries(report.counts.alerts.by_status).map(([k, v]) => `${k} ${formatNumber(v)}`).join(" · ")} · 현재 상태로 해석하지 않음`} />
       </div>
 
       <Card size="sm" className="min-w-0">

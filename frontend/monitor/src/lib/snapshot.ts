@@ -1,6 +1,8 @@
 // Snapshot contract of /api/status (harness-monitor.v1 + observatory-001 `observations` envelope).
 // Freshness rules are the accepted ones: 20s window, invalid/future(>5s) timestamps never fresh.
 
+import type { Accounting } from "./accounting"
+
 export const FRESH_MS = 20_000
 export const FUTURE_TOLERANCE_MS = 5_000
 export const REQUEST_TIMEOUT_MS = 5_000
@@ -49,7 +51,14 @@ export type FleetRegistered = {
   id: string
   paused: boolean
   max_parallel: number
+  /** The two wire numbers only. What they mean in this capture is `accounting`, never assumed here. */
   budget: { per_host: number; total: number }
+  /**
+   * Shared reading of the wire fields `accounting_mode` and `budget.mode` (lib/accounting.ts).
+   * Both decoders (this view lane and the pinned report) fill it from the same function, so the
+   * live screen and the captured report never disagree about the mode.
+   */
+  accounting: Accounting
   lanes: FleetLane[]
   jobs: FleetJob[]
   truncated: boolean

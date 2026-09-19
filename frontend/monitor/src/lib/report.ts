@@ -1,3 +1,4 @@
+import { interpretAccounting, type Accounting } from "./accounting"
 import { FLEET_SCHEMA, SOURCE_LABELS, SOURCE_NAMES, STATE_LABELS, fleetFreshness, formatNumber, formatTime, freshness, type EventRow, type FleetData, type FleetJob, type FleetLane, type FleetRegistered, type FreshState, type Observations, type Snapshot } from "./snapshot"
 import type { Transport } from "./use-snapshot"
 
@@ -26,6 +27,14 @@ import type { Transport } from "./use-snapshot"
  * status/reason, call reservations, dependencies and two timestamps; it carries no per-stage
  * timestamps, reviewer findings, patches, merge/deploy facts or a machine call ledger, so none of
  * those are derived here.
+ *
+ * v5 (local-operations-desk-001, Part A): the captured fleet copy and `story.control` carry the
+ * shared usage-accounting reading (`lib/accounting.ts`) instead of dropping the wire mode, so the
+ * pinned report never presents a subscription fleet as an active call ceiling and an off-contract
+ * or contradictory mode stays unknown. `next_actions` keeps its type but each line now states its own
+ * scope: an explicit current state, a stored historical record whose outcome is unresolved or
+ * unknown, or a limit/unknown of this capture. No v4 field is removed or renamed, no historical
+ * count is dropped, no absent value becomes zero and no incident state is inferred from age.
  */
 export type ExplanationFact = { label: string; value: string; known: boolean }
 export type ExplanationStep = { key: string; title: string; description: string; facts: ExplanationFact[] }
@@ -118,8 +127,14 @@ export type StoryControl = {
   lanes_total: number
   active_lanes: number
   active_outside_sample: string[]
-  /** Declared call ceilings from the fleet definition: not a remaining balance and not a spend ledger. */
+  /** The two wire numbers of the fleet definition; `accounting` says whether they are ceilings at all. */
   budget: { per_host: number; total: number }
+  /**
+   * Captured usage-accounting reading (lib/accounting.ts), identical to the live 팀 작업 view for
+   * the same envelope. In subscription mode the numbers above are retained migration metadata, not
+   * an active ceiling; a contradictory or off-contract mode stays unknown.
+   */
+  accounting: Accounting
   /** Sum of the sampled jobs' reservations only; `partial` when any sampled value was null. Not the machine total. */
   sample_calls: { reserved: number | null; settled: number | null; partial: boolean; jobs_unknown: number }
   policy: string[]
@@ -141,7 +156,7 @@ export type Story = {
 }
 
 export type Report = {
-  schema: "zeus-observatory-report.v4"
+  schema: "zeus-observatory-report.v5"
   generated_at: string
   scope: Snapshot["scope"] | null
   collected_at: string | null
@@ -194,6 +209,9 @@ const READING_GUIDE: string[] = [
   "0건은 '샘플 안에서 보이지 않음'이지 '모든 기대 이벤트가 기록됨'이 아닙니다. 빈 큐나 빈 스풀도 수집 완전성을 증명하지 않습니다.",
   "'확인 불가'는 값을 읽지 못한 상태이고, '0' 또는 '비어 있음'은 읽었더니 없었다는 뜻입니다. 이 보고서는 두 상태를 항상 구분해 적습니다.",
   "작업(task)이 끝났다는 것과 운영(operation)이 수락되었다는 것은 다릅니다. 운영 결과는 operations 버킷에 저장된 상태 값 그대로 셉니다.",
+  "저장된 치명·오류·경보·격리 건수는 '기록 이력'입니다. 지금도 미해결이라는 뜻이 아니고, 해결되었다는 뜻도 아닙니다(결과 미확정 · 알 수 없음). 기록이 오래되었다는 이유로 해결로 바꾸지 않습니다.",
+  "'현재 상태'로 적는 것은 미확정 종료 기록처럼 현재 상태가 명시적으로 기록된 항목뿐입니다. 미확정 종료가 막는 범위는 그 작업의 재실행·복구이며 전체 실행 중단이 아닙니다.",
+  "'검토 수락'은 후보 수락입니다. 소유자의 병합·배포 기록은 아직 이 보고서에 연결되어 있지 않으므로, 배포 여부는 확인할 수도 부정할 수도 없습니다.",
   "설명 방식은 DreambigOu/ELI5 저장소의 원칙(목적 먼저, 친숙한 말, 단계별 상세)을 참고했습니다. 그 저장소는 데이터 출처나 검증 도구가 아닙니다.",
 ]
 
@@ -243,7 +261,12 @@ export function buildExplanation(
     summary.push(
       high === 0
         ? `저장된 샘플에서 이벤트 ${formatNumber(observations.events.total)}건을 읽었고, 그중 치명·오류는 0건입니다(샘플 안에서 없음 · 기록 완전성과는 별개).`
-        : `저장된 샘플에서 이벤트 ${formatNumber(observations.events.total)}건을 읽었고, 그중 치명·오류는 ${formatNumber(high)}건입니다.`,
+        : `저장된 샘플에서 이벤트 ${formatNumber(observations.events.total)}건을 읽었고, 그중 치명·오류는 ${formatNumber(high)}건입니다. 이는 저장된 과거 기록이며, 지금 미해결이라는 뜻도 해결되었다는 뜻도 아닙니다(결과 미확정·알 수 없음).`,
+    )
+    summary.push(
+      observations.terminations.pending > 0
+        ? `현재 상태로 명시된 항목: 미확정 종료 기록 ${formatNumber(observations.terminations.pending)}건. 해당 작업의 재실행·복구만 막히며 전체 실행이 차단된다는 뜻이 아닙니다. 운영자 조정 전까지 그대로 남습니다.`
+        : "현재 상태로 명시된 미확정 종료 기록은 0건입니다(저장된 샘플 기준 · 완전성 보장 아님).",
     )
     const bars = operationBars(observations.operations).filter((bar) => bar.count > 0)
     summary.push(
@@ -269,6 +292,7 @@ export function buildExplanation(
         fact("로컬 스풀 세그먼트", !local ? null : local.status === "ok" ? `${formatNumber(local.segments)}개` : `확인 불가 · ${local.reason}`, local?.status === "ok"),
         fact("미확인 바이트", local?.status === "ok" ? `${formatNumber(local.unacknowledged_bytes)} 바이트` : null),
         fact("로컬 대기 경보", local?.status === "ok" ? `${formatNumber(local.pending_alerts)}건` : null),
+        fact("로컬 종료 기록 파일", local?.status === "ok" ? `${formatNumber(local.pending_terminations)}건 · 판독 불가 ${formatNumber(local.unreadable_terminations)}건` : null),
       ],
     },
     {
@@ -358,23 +382,55 @@ export function buildExplanation(
   }
 }
 
+/** Scope prefixes of `next_actions`: the line itself says what kind of fact it stands on. */
+export const ACTION_CURRENT = "현재 상태"
+export const ACTION_HISTORY = "기록 이력"
+export const ACTION_UNKNOWN = "확인 불가"
+
+/**
+ * Three kinds of line, never mixed (SPEC Part A "Separate historical ... from current known action
+ * conditions"):
+ * - `현재 상태`: an explicitly recorded current condition (pending terminations, local pending
+ *   alerts/unreadable files, unacknowledged spool bytes). Its count is kept exactly as stored.
+ * - `기록 이력`: stored records of past events. Their outcome is unresolved or unknown here; they
+ *   are neither deleted nor reconciled, and their age proves nothing about the present.
+ * - `확인 불가`: a source, freshness or sample limit of this capture.
+ */
 export function nextActions(observations: Observations | null, unavailable: string[]): string[] {
-  const actions: string[] = []
-  if (unavailable.length) actions.push(`수집 실패 출처 확인: ${unavailable.join(", ")}`)
-  if (!observations) return actions.length ? actions : ["관측 로그 출처가 없어 조치 판단 불가"]
-  if (observations.terminations.pending > 0) actions.push(`미확정 종료 기록 ${observations.terminations.pending}건 운영자 조정 필요`)
-  if (observations.alerts.recorded > 0) actions.push(`기록된 경보 ${observations.alerts.recorded}건 검토`)
-  if (observations.quarantine.total > 0) actions.push(`격리 기록 ${observations.quarantine.total}건 원인 확인`)
-  if (observations.local.status === "ok") {
-    if (observations.local.pending_alerts > 0) actions.push(`로컬 대기 경보 ${observations.local.pending_alerts}건 · 수집기 재생 확인`)
-    if (observations.local.unacknowledged_bytes > 0) actions.push(`스풀 미확인 ${observations.local.unacknowledged_bytes} 바이트 · 수집기 동작 확인`)
-  } else {
-    actions.push(`로컬 스풀 상태 확인 불가 (${observations.local.reason})`)
+  const current: string[] = []
+  const history: string[] = []
+  const unknown: string[] = []
+  if (unavailable.length) unknown.push(`${ACTION_UNKNOWN} · 최신이 아니거나 읽지 못한 출처 확인: ${unavailable.join(", ")} · 이 출처의 값은 0이 아니라 알 수 없음`)
+  if (!observations) {
+    unknown.push(`${ACTION_UNKNOWN} · 관측 로그 출처를 읽지 못해 현재 상태·이력 모두 판단 불가 · 0건 아님`)
+    return unknown
   }
-  if (observations.sample.truncated) actions.push("샘플이 잘렸으므로 합계는 저장 전체가 아님 · 직접 조회 필요")
+  if (observations.terminations.pending > 0) {
+    current.push(`${ACTION_CURRENT} · 미확정 종료 기록 ${formatNumber(observations.terminations.pending)}건 (pending_reconciliation·unconfirmed) · 해당 작업의 재실행·복구만 막힘 · 전체 실행 차단 아님 · 운영자 조정 필요`)
+  }
+  if (observations.local.status === "ok") {
+    if (observations.local.pending_alerts > 0) current.push(`${ACTION_CURRENT} · 로컬 대기 경보 ${formatNumber(observations.local.pending_alerts)}건 (로컬 스풀 파일) · 수집기 재생 확인`)
+    if (observations.local.unreadable_terminations > 0) current.push(`${ACTION_CURRENT} · 판독 불가 로컬 종료 기록 ${formatNumber(observations.local.unreadable_terminations)}건 · 내용 확인 불가 · 해결 여부 알 수 없음`)
+    if (observations.local.pending_terminations > 0) current.push(`${ACTION_CURRENT} · 로컬 종료 기록 파일 ${formatNumber(observations.local.pending_terminations)}건 · 싱크 도달 여부는 이 값으로 알 수 없음`)
+    if (observations.local.unacknowledged_bytes > 0) current.push(`${ACTION_CURRENT} · 스풀 미확인 ${formatNumber(observations.local.unacknowledged_bytes)} 바이트 · 수집기 동작 확인`)
+  } else {
+    unknown.push(`${ACTION_UNKNOWN} · 로컬 스풀 상태 확인 불가 (${observations.local.reason}) · 대기 경보·종료 기록 파일 수는 0이 아니라 알 수 없음`)
+  }
+  if (observations.events.high_severity_total > 0) {
+    history.push(`${ACTION_HISTORY} · 치명·오류 이벤트 ${formatNumber(observations.events.high_severity_total)}건 (표본 기준) · 저장된 과거 기록 · 현재 미해결 증거 아님 · 해결 증거도 아님`)
+  }
+  if (observations.alerts.recorded > 0) history.push(`${ACTION_HISTORY} · 기록된 경보 ${formatNumber(observations.alerts.recorded)}건 검토 · 상태별 ${Object.entries(observations.alerts.by_status).map(([s, n]) => `${s} ${n}`).join(" · ") || "상태 기록 없음"} · 현재 상태로 해석하지 않음`)
+  if (observations.quarantine.total > 0) history.push(`${ACTION_HISTORY} · 격리 기록 ${formatNumber(observations.quarantine.total)}건 원인 확인 · 저장된 과거 기록`)
   const failed = Object.entries(observations.operations.by_status).filter(([status]) => ["failed", "rejected", "exhausted", "unknown"].includes(status))
-  if (failed.length) actions.push(`운영 결과 확인: ${failed.map(([s, n]) => `${s} ${n}`).join(", ")}`)
-  return actions.length ? actions : ["샘플 범위 안에서 즉시 조치 항목 없음 · 완전성은 보장되지 않음"]
+  if (failed.length) history.push(`${ACTION_HISTORY} · 운영 결과 확인: ${failed.map(([s, n]) => `${s} ${n}`).join(", ")} · 저장된 결과 그대로 · 후속 조치 여부는 이 출처에 없음`)
+  if (observations.sample.truncated) unknown.push(`${ACTION_UNKNOWN} · 샘플이 잘렸으므로 합계는 저장 전체가 아님 · 직접 조회 필요`)
+  if (observations.events.unknown.severity + observations.events.unknown.category + observations.events.unknown.observed_at > 0) {
+    unknown.push(`${ACTION_UNKNOWN} · 해석 불가 값 (심각도 ${observations.events.unknown.severity} · 분류 ${observations.events.unknown.category} · 시각 ${observations.events.unknown.observed_at}) · 정상으로도 이상으로도 세지 않음`)
+  }
+  if (current.length === 0) {
+    current.push(`${ACTION_CURRENT} · 명시적으로 기록된 현재 조치 상태 없음 · 저장된 샘플 기준이며 완전성 보장 아님 · 아래 이력 항목은 그대로 남아 있음`)
+  }
+  return [...current, ...history, ...unknown]
 }
 
 /** Labels and meanings of the INV-FLEET-001 job states, as the 팀 작업 view words them; anything else is `undefined`. */
@@ -384,14 +440,14 @@ const VERDICTS: Record<StoryVerdict, { label: string; meaning: string }> = {
   accepted: { label: "검토 수락", meaning: "독립 검토가 후보를 수락함 · 병합·배포 아님" },
   rejected: { label: "검토 거부", meaning: "독립 검토가 후보를 거부함" },
   failed: { label: "실패", meaning: "정확한 실패 기록 · 자동 재시도 없음" },
-  exhausted: { label: "예산 소진", meaning: "호출 예산 상한 도달 · 자동 상향 없음" },
+  exhausted: { label: "예산 소진", meaning: "예산 소진으로 기록된 상태 · 기록 당시 기준 · 자동 상향 없음" },
   unknown: { label: "알 수 없음", meaning: "시작·종료·PG 읽기 불확실 · 예약·용량·경로 배제 유지 · 자동 인계 없음" },
   undefined: { label: "정의되지 않은 상태", meaning: "이 보고서가 모르는 상태 값 · 저장된 그대로 표시" },
 }
 const VERDICT_ORDER: StoryVerdict[] = ["accepted", "dispatching", "queued", "unknown", "rejected", "failed", "exhausted", "undefined"]
 /** 무엇이 남았는가 per verdict (SPEC "결과와 잔여"): recorded facts and the next owner decision only. */
 const VERDICT_REMAINING: Record<StoryVerdict, string> = {
-  accepted: "후보 수락됨 · 병합·배포 여부는 이 출처로 알 수 없음 · 다음은 소유자 통합 결정",
+  accepted: "후보 수락됨 · 병합·배포 여부는 이 출처로 알 수 없음(소유자 기록 미연결) · 다음은 소유자 통합 결정",
   dispatching: "배정됨 · 종료 기록 없음 · 결과 알 수 없음 · 자동 시간 초과 없음",
   queued: "admission 대기 · 기록된 사유와 의존성 판정 그대로 · 소유자 개입 없이는 배정 순서만 기다림",
   unknown: "소유자 reconciliation 필요 · 소유권·예약 유지 · 성공도 실패도 아님",
@@ -425,7 +481,7 @@ const UI_COMPARISON: Story["comparison"] = {
   after: [
     "목표 → 팀 → 판정 → 잔여 이야기 그림이 집계보다 먼저 · 접히지 않음",
     "작업별 실제 goal.criterion · 짧은 ID · 상태 · 사유 · 호출 예약/정산을 노드에 직접 표기",
-    "유한 운영 띠: 호출 상한 · 활성 레인/동시 실행 상한 · 일시 정지 · 표본·잘림 · 관측 시각",
+    "운영 한계 띠: 캡처된 호출 회계 방식(유한 상한 또는 구독 기록 또는 확인 불가) · 활성 레인/동시 실행 상한 · 일시 정지 · 표본·잘림 · 관측 시각",
     "이전 집계·차트·상세 섹션은 그대로 아래에 유지 · JSON·인쇄에 같은 이야기 포함",
   ],
 }
@@ -435,7 +491,10 @@ type ParsedFleet = { ok: true; data: FleetData } | { ok: false; reason: string }
 /**
  * Same narrowing rules as `readFleet` in views/fleet.tsx (fleet-001 wire contract): anything off
  * contract is invalid, never empty. Kept here because that function is view-local and unexported;
- * the objects built are new, so the report holds a copy detached from the live snapshot.
+ * the objects built are new, so the report holds a copy detached from the live snapshot. The
+ * accounting mode is the one place the two decoders do share: both call `interpretAccounting`, so a
+ * subscription, finite or contradictory mode reads the same way live and in the pinned report. An
+ * off-contract mode makes the reading unknown; it never invalidates the whole envelope.
  */
 function parseFleet(data: unknown): ParsedFleet {
   if (!data || typeof data !== "object") return { ok: false, reason: "data 없음" }
@@ -458,6 +517,9 @@ function parseFleet(data: unknown): ParsedFleet {
     data: {
       schema: FLEET_SCHEMA, registered: true, id: record.id, paused: record.paused, max_parallel: record.max_parallel,
       budget: { per_host: budget.per_host, total: budget.total },
+      // Same shared reading as the live 팀 작업 decoder (lib/accounting.ts): the mode is captured
+      // once here and the poll never rewrites it, so screen, print and JSON agree.
+      accounting: interpretAccounting(record.accounting_mode, budget.mode),
       lanes: lanes.map((lane) => ({ id: lane.id, team: lane.team, active_job: typeof lane.active_job === "string" ? lane.active_job : null })),
       jobs: jobs.map((job) => ({
         id: job.id, lane: typeof job.lane === "string" ? job.lane : "", team: typeof job.team === "string" ? job.team : "", status: job.status,
@@ -600,6 +662,7 @@ export function buildStory(fleet: ReportFleet): Story {
     active_lanes: activeLanes.length,
     active_outside_sample: activeLanes.filter((lane) => lane.active_job != null && !jobsById.has(lane.active_job)).map((lane) => `${lane.id} → ${lane.active_job}`),
     budget: { per_host: data.budget.per_host, total: data.budget.total },
+    accounting: data.accounting,
     sample_calls: {
       reserved: reservedKnown.length ? reservedKnown.reduce((acc, job) => acc + (job.calls.reserved ?? 0), 0) : null,
       settled: settledKnown.length ? settledKnown.reduce((acc, job) => acc + (job.calls.settled ?? 0), 0) : null,
@@ -609,7 +672,7 @@ export function buildStory(fleet: ReportFleet): Story {
     policy: [
       "명시적으로 넣은 작업만 실행 · 생성된 백로그 없음",
       "다음 예산은 소유자만 부여 · 자동 상향·재시도 없음",
-      "상한 값은 선언된 호출 수 상한 · 남은 호출·금액·실제 지출 장부 아님",
+      `${data.accounting.label} · ${data.accounting.numbers_note}`,
     ],
   }
 
@@ -625,7 +688,7 @@ export function buildStory(fleet: ReportFleet): Story {
   if (decided) remaining.push(`실패·거부·예산 소진 ${formatNumber(decided)}건 · 사유는 노드에 기록 · 소유자 다음 결정 필요`)
   if (counts.dispatching) remaining.push(`배정됨 ${formatNumber(counts.dispatching)}건 · 종료 기록 없음 · 결과 알 수 없음`)
   if (counts.queued) remaining.push(`대기 ${formatNumber(counts.queued)}건 · admission 과 의존성 판정 대기`)
-  if (counts.accepted) remaining.push(`검토 수락 ${formatNumber(counts.accepted)}건 · 후보 수락 · 병합·배포 여부는 이 출처로 알 수 없음 · 소유자 통합 결정`)
+  if (counts.accepted) remaining.push(`검토 수락 ${formatNumber(counts.accepted)}건 · 후보 수락 · 소유자 병합·배포 기록 미연결이라 배포 여부는 확인 불가 · 소유자 통합 결정`)
   if (counts.undefined) remaining.push(`정의되지 않은 상태 ${formatNumber(counts.undefined)}건 · 해석하지 않음`)
   if (jobs.length === 0) remaining.push("표본 안에 작업 없음 · 등록됨 · 비어 있음 · 확인 불가 아님")
 
@@ -635,7 +698,10 @@ export function buildStory(fleet: ReportFleet): Story {
   if (control.active_outside_sample.length) caveats.push(`표본 밖 활성 작업: ${control.active_outside_sample.join(", ")} (목록에 없음)`)
   if (jobsUnknownCalls) caveats.push(`호출 예약/정산 확인 불가 작업 ${formatNumber(jobsUnknownCalls)}건 · 표본 합계는 부분 합계`)
   if (jobs.some((job) => job.dependency_state === "unknown")) caveats.push("표본 밖 선행 작업은 알 수 없음 · 미충족으로 세지 않음 · 충족도 아님")
+  if (data.accounting.mode === "unknown") caveats.push(`호출 회계 방식 확인 불가 · ${data.accounting.detail} · 기록된 호출 수치를 적용 중인 상한으로 읽지 않음`)
+  if (data.accounting.mode === "subscription") caveats.push(`구독 사용량 기록 · ${data.accounting.numbers_note}`)
   caveats.push("단계별 시각·검토 세부 소견·패치·병합·배포 사실은 fleet 출처에 없음 · 표시하지 않음 · 마지막 기록 시각은 생존 신호 아님")
+  caveats.push("소유자의 병합·배포 기록은 아직 이 보고서에 연결되지 않음 · '검토 수락'에서 배포를 추론하지 않으며, 기록이 없다는 것이 미배포의 증거도 아님")
 
   return { ...empty, fleet_id: data.id, control, teams, outcomes, remaining, caveats }
 }
@@ -659,7 +725,7 @@ export function buildReport(snapshot: Snapshot | null, transport: Transport, now
   const transportRecord: Report["transport"] = { state: transport.state, detail: transport.detail || null, last_ok_at: transport.ok_at }
   const fleet = captureFleet(snapshot, now)
   return {
-    schema: "zeus-observatory-report.v4",
+    schema: "zeus-observatory-report.v5",
     generated_at: generatedAt,
     scope: snapshot?.scope ?? null,
     collected_at: snapshot?.collected_at ?? null,
