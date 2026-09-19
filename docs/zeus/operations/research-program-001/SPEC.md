@@ -790,3 +790,109 @@ A successful small fixture alone cannot close this issue. No implementation sele
 Next implementation remains Claude's responsibility under one consolidated owner specification; Codex
 reviews the complete delivery path. No new live retry in004. Completion criteria remain accepted full
 cycle plus tick2/stop; absorption and project page are queued operational projects, not launch blockers.
+
+
+### Delivery research and owner recommendation (2026-09-19; research only)
+
+Outcome: choose a coherent JSON delivery architecture after live004. No runtime edits, model calls,
+resumption, merge or deployment in this research batch. Preserve prior accepted results and raw evidence.
+Questions that change the decision: is22000 a provider limit; what existing reader can be reused; does
+paging actually reduce total context; what delivery evidence can the host verify? Research stops here:
+these decisions are supported; exact new capacity and receipt integration need implementation evidence.
+
+#### Sources opened, supported claims and limits
+
+| Source / version | Supported fact | Does not establish |
+|---|---|---|
+| [Anthropic context engineering](https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents), article2025-09-29, accessed2026-09-19 | Lightweight references and just-in-time tools can complement upfront context; retrieval costs latency and compaction can lose important details | Zeus latency, completeness or receipt guarantees |
+| [Microsoft Claim-Check](https://learn.microsoft.com/en-us/azure/architecture/patterns/claim-check), living architecture guidance accessed2026-09-19 | Put large payload in storage and send its retrieval reference in the message | Smaller eventual LLM context or semantic comprehension |
+| [RFC6901](https://www.rfc-editor.org/rfc/rfc6901.html), April2013 | JSON Pointer identifies a value; unresolved pointers are errors | Hash integrity, authorization, pagination or delivery receipts |
+| [MCP pagination](https://modelcontextprotocol.io/specification/2025-06-18/server/utilities/pagination),2025-06-18 | Cursor pagination applies to specified list operations | Automatic resources/read body pagination; Zeus reader is a custom contract |
+| [OpenAI prompt caching](https://developers.openai.com/api/docs/guides/prompt-caching), living API guidance accessed2026-09-19 | Reuse stable prefixes and measure reported cached/input tokens; caching behavior depends on model and configuration | Codex CLI exposes those API controls, quota relief, or bypass of Zeus preflight |
+
+These are design sources, not claims that Zeus uses those vendors' managed products. No new MQ,
+vector database, MCP server or provider migration is required by this recommendation.
+
+#### Current complete path and facts
+
+Six-W message -> council task details -> content-addressed raw artifact -> council_delivery inline
+projection -> Executor required envelope -> compile_context -> AppServer -> structured role result ->
+existing council validators and PG runtime state. Redis transport is distinct from the model prompt.
+Git owns definitions; PG owns execution state; immutable artifacts own the referenced evidence bytes.
+Evidence may be persisted as unverified evidence; persistence is not approved knowledge/ontology promotion.
+
+At source3091f1f, executor.py calls compile_context(...,28000,6000). domain/model.py compares UTF-8 byte
+length against their difference22000. The field estimated_tokens contains that byte estimate, not measured
+provider tokens. Provider runtime separately observes modelContextWindow/tokenUsage. Therefore the live004
+failure is a local admission-policy failure, not proof of model context exhaustion or Redis size limits.
+Do not silently relabel historical observations. A future version should name byte estimates and observed
+tokens distinctly, retaining compatibility for old receipts.
+
+Existing artifact_reader validates raw SHA256 and exposes index/page/pointer/search; artifact_query uses
+character cursors and response-character limits. AppServer retains tool events, but inspected code does not
+require complete mandatory-page coverage before accepting an answer. A file existing, a command exiting0,
+or a model saying it read everything does not establish that every required result reached this attempt.
+This is an identified implementation gap for the proposed reference mode, not a newly proven live defect.
+
+Offline discriminating check used live004 exact raw SHA256 e334ba8749970226d3b4e7268d3b8aee9ff9156ed76136df374efdfecfaab4a9.
+Existing pointer() reconstructed packet, DBA report and both proposals exactly in5 pages at limit8000.
+Responses total21128 UTF-8 bytes versus18917 bytes for those four original serialized values. One page
+contains5119 characters but5125 bytes. Thus paging works for lossless retrieval locally, but adds wrapper
+bytes and does not establish context/token savings. No provider, shell-reader delivery or receipt test ran.
+
+#### Options and recommendation
+
+| Option | Benefit | Main limit | Owner decision |
+|---|---|---|---|
+| Shorter keys/new serialization or repeated wording cuts | Small local savings | Variable semantic content still has no joint bound; migration cost | Do not use as the main fix; keep JSON |
+| Larger hardcoded cap alone | Would admit this sample if raised enough | No general bound/quality evidence | Do not claim structural resolution |
+| Validated role-specific inline envelope | Few tool round trips; every required value explicitly delivered | Requires declared aggregate producer/output limits and measured headroom | Preferred first operational path for bounded meetings |
+| Manifest plus lossless required reads | Reuses artifact SSOT; larger evidence need not travel in every MQ message | Read completeness, tool latency and cumulative context need control | Extension for larger evidence, not an automatic22KB bypass |
+| Model summary as sole decision input | Potential compression | Could remove objection/unknown/qualification | Summaries are navigation aids, not replacements for mandatory evidence |
+
+Recommended architecture: keep the six-W JSON envelope and immutable raw originals. Build a versioned,
+role-specific meeting manifest naming goal/criteria, revision, attempt, complete mandatory item IDs and
+hash-bound references. Deliver small mandatory material once inline; keep large source logs/history as
+on-demand evidence. Hash-reference cache is not provider prompt cache and neither is verified knowledge.
+
+For the immediate bounded council, prefer an explicit producer-to-consumer INLINE size contract over
+adding a new read-receipt subsystem just to save1055 bytes. Compute the maximum admitted serialized
+packet + DBA + proposals + all findings + host/recovery/schema/tool allowances across the whole path;
+choose and document a role-specific capacity from that bound and pinned runtime observations. The fixed
+22000 is not sacred, but replacing it needs a reasoned policy/versioned contract, not a huge sentinel.
+Validate aggregate bytes at producer boundaries (Unicode/escaping included); never truncate valid output.
+If a topic cannot fit, return one needs_scope_split outcome with remaining work preserved; no automatic
+recursive debate/retry. Exact numerical capacities are not selected by this research and no limit changed.
+
+For later reference delivery, mandatory reads are host-controlled/observed and bound to attempt, manifest,
+artifact hash, pointer, cursor range, successful complete output and final cursor. Missing coverage blocks
+approval. Receipt proves transport, not model understanding; citation/finding checks and independent review
+remain. Count cumulative bytes/tokens and latency including pages; do not move data to tools to evade limits.
+Repeated identical reads do not increase coverage; stale receipts cannot satisfy a new attempt. Retain
+artifacts while referenced by active work/review. Additional findings and unknowns cannot vanish in summaries.
+
+#### One future implementation batch and acceptance matrix
+
+Codex first finalizes the numeric inline admission contract from admitted producer shapes; Claude implements
+that contract, versioned measurement fields and explicit overflow outcome in existing components. Codex
+reviews once across this matrix. Reference receipt mode is deferred unless the bounded inline approach
+cannot satisfy an actual required use case; do not implement both paths speculatively.
+
+| Path | Acceptance evidence required |
+|---|---|
+| Normal | Run003/004 exact raw inputs and maximum admitted shapes reach complete required prompt unchanged |
+| Failure/unknown | Oversized/missing/malformed producer output stops before downstream provider; no silent omissions |
+| Unicode | Bytes, characters and provider tokens reported separately; escaped text/long IDs included in bound |
+| Timeout/cancel | Existing deadline and stop contract unchanged; incomplete role is not approved |
+| Concurrency/restart | Existing attempt/revision/hash binding preserved; no receipt or output borrowing |
+| Platform | Windows/Linux deterministic serialization and existing reader/path behavior retained |
+| Cleanup | Evidence remains accessible through review; no new temporary store or GC policy in inline batch |
+| Optional reference mode | Deferred; all mandatory page output coverage and cumulative budget must pass before enabling |
+
+Metrics: initial prompt bytes; observed input/output/cached tokens when available; unknown explicitly when
+absent; required-item coverage; duplicate material/read bytes; tool turns; stage latency; admission failures;
+end-to-end accepted cycles. Provider cost estimates are not subscription invoices. Page reads are not model
+comprehension metrics. Completion remains one accepted full council and second bounded tick/stop after CI;
+local absorption and project monitoring are operational projects, not extra launch prerequisites.
+
+Offline evidence: `D:\workspaces\zeus\artifacts\research-program-001\delivery-research\paging-measurement.json`; SHA256 `dcebc7a51d3abbb7e114b263e83f89d12755d829525d4ae2e8c5d4adc353196e`.
