@@ -1,11 +1,13 @@
 """Read-only packaging metadata for the worker profile (INV-WORKER-PROFILE-001, issue 124).
 
-`python -m codex_harness.adapters.worker_profile_metadata` takes no argument. It reads exactly two
-cwd-relative files, the worker-v1 document and its manifest, and prints one JSON observation: the
-normalized character count, the limit, the computed `document_sha256` and whether the manifest
-agrees. A stale digest or an overlong document still reports the computed facts (exit 1) so the
-worker can repair the manifest with Edit. It writes nothing, follows no path named by the manifest
-and never prints file content or exception text.
+`python -m codex_harness.adapters.worker_profile_metadata` takes no argument. It reads exactly three
+cwd-relative files, the worker-v1 document, its packaged hook and its manifest, and prints one JSON
+observation: the normalized character count, the limit, the computed `document_sha256`, the computed
+`hook_sha256` and whether the manifest agrees with both. A stale digest or an overlong document
+still reports the computed facts (exit 1) so the worker can repair the manifest with Edit. A
+manifest that names no hook is reported as `hook_status: not_declared` and decides nothing. It
+writes nothing, follows no path named by the manifest and never prints file content or exception
+text.
 
 This verifies packaging metadata only. It does not certify the hook, the sources or the rest of the
 manifest: `worker_profile.load_profile` remains the final authority over the actual final bytes.
@@ -24,10 +26,12 @@ PROFILE_ID = "worker-v1"
 RESOURCE_DIRECTORY = ("src", "codex_harness", "resources")
 MANIFEST_NAME = PROFILES[PROFILE_ID]
 DOCUMENT_NAME = "worker-profile-v1.md"
+HOOK_NAME = "worker_profile_hook.py"
 # Finite read bounds. 6000 characters are at most 24000 UTF-8 bytes (30000 with CRLF line ends);
 # the document bound leaves room to measure an overlong candidate instead of only refusing it.
 MAX_DOCUMENT_BYTES = 262144
 MAX_MANIFEST_BYTES = 262144
+MAX_HOOK_BYTES = 262144
 EXIT_OK, EXIT_FAILED, EXIT_INVOCATION = 0, 1, 2
 
 
@@ -65,6 +69,31 @@ def _read_text(cwd: Path, name: str, limit: int) -> str:
         raise _Refusal("invalid_utf8", name) from exc
 
 
+def _hook(cwd: Path, manifest: dict) -> dict:
+    """The hook facts, reported beside the document ones (two-strike-001).
+
+    The hook digest is computed exactly as `worker_profile.load_profile` computes it, so the worker
+    can repair a stale `hook_sha256` with Edit after changing the packaged hook. A manifest that
+    declares no hook is an observation about that manifest, not a failure of this command: only a
+    declared hook that is missing, unreadable or different decides `mismatch`.
+    """
+    declared = manifest.get("hook")
+    if declared is None:
+        return {"hook": None, "hook_sha256": None, "hook_digest_matches": None,
+                "hook_status": "not_declared"}
+    if declared != HOOK_NAME:
+        return {"hook": HOOK_NAME, "hook_sha256": None, "hook_digest_matches": False,
+                "hook_status": "wrong_hook"}
+    try:
+        computed = _sha256(_read_text(cwd, HOOK_NAME, MAX_HOOK_BYTES))
+    except _Refusal as refusal:
+        return {"hook": HOOK_NAME, "hook_sha256": None, "hook_digest_matches": False,
+                "hook_status": refusal.kind}
+    matches = manifest.get("hook_sha256") == computed
+    return {"hook": HOOK_NAME, "hook_sha256": computed, "hook_digest_matches": matches,
+            "hook_status": "verified" if matches else "stale_digest"}
+
+
 def observe(cwd: Path) -> dict:
     """The metadata observation for the checkout at `cwd`; every defect is a `_Refusal`."""
     cwd = cwd.resolve()
@@ -86,11 +115,13 @@ def observe(cwd: Path) -> dict:
     computed = _sha256(document)
     digest_matches = manifest.get("document_sha256") == computed
     within_limit = len(document) <= MAX_CHARACTERS
-    return {"schema": SCHEMA, "status": "ok" if digest_matches and within_limit else "mismatch",
+    hook = _hook(cwd, manifest)
+    agreed = digest_matches and within_limit and hook["hook_digest_matches"] is not False
+    return {"schema": SCHEMA, "status": "ok" if agreed else "mismatch",
             "profile": PROFILE_ID, "document": DOCUMENT_NAME, "manifest": MANIFEST_NAME,
             "characters": len(document), "character_limit": MAX_CHARACTERS,
             "document_sha256": computed, "digest_matches": digest_matches,
-            "within_limit": within_limit,
+            "within_limit": within_limit, **hook,
             "authority": "metadata observation only; worker_profile.load_profile decides validity"}
 
 
