@@ -1027,35 +1027,53 @@ by exact RFC 6901 pointer on the unchanged hash-bound task artifact; the raw tas
 as optional evidence. A missing mandatory input or a required block over the existing compiler budget
 refuses before any provider entry; nothing is summarized, truncated, persisted as a packet or repaired.
 
-Bounded inline council input `urn:zeus:council-input:1` (`domain/council_input.py`, research-program-001
-delivery implementation011). One domain module owns the policy: caps are UTF-8 lengths of the canonical JSON of
-each value (escaping and multi-byte text count; the unit is local bytes, never model tokens or capacity):
-packet 16384, normalized DBA report 4096, complete research proposal 4096, complete improvement proposal
-including every finding 8192 (payload total 32768); `council_delivery` wrapper (serialized projection minus
-its present payload components) 4096; host overhead (complete rendered ContextPacket outside the serialized
-delivery, measured after recovery/skills assembly with actual ids, paths and evidence) 4096; required total
-40960 = council compiler window 49152 minus reserved 8192. The legacy non-council budget (28000/6000) is
-unchanged and every other execution keeps it. Producers gate in `CouncilRun`: the frozen packet right after
-`_freeze_packet` and before the snapshot or the DBA, the normalized report before the relay and either lead,
-each lead's complete derived proposal before `sessions.submit` or the next role; the run ends `failed` with
-the precise `needs_scope_split:<section>:<observed>/<limit>` reason, original role evidence retained, no
-retry, summary, drop or resize. Consumers recheck: `council_delivery` admits the full projection, the
-executor grants the council window only to an admitted delivery (actual read-only `dge_role`, matching debate
-role, stage `dge:<role>` and real agent, and the exact deterministic projection of this task's details; a
-foreign, trimmed or inflated delivery is refused), preflights the complete required envelope (the identical
+Bounded inline council input `urn:zeus:council-input:2` (`domain/council_input.py`, research-program-001
+Implementation013: shared pool with ordered future reservations; supersedes the v1 isolated section ceilings of
+implementation011/012, whose historical receipts and files keep their original meaning under the name
+`urn:zeus:council-input:1`). One domain module owns the policy; the unit is the UTF-8 length of the canonical
+JSON of each value (escaping and multi-byte text count; local bytes, never model tokens or capacity). The four
+payload components share ONE pool of 32768 bytes in the declared production order packet, dba_report,
+research_proposal, improvement_proposal with default RESERVATIONS 16384/4096/4096/8192 that are held for a
+component until it is produced, not ceilings: for every nonempty contiguous prefix, the actual canonical bytes of
+the prefix plus the reservations of the absent later components must not exceed 32768, so the allowance of the
+current component is 32768 minus the actual earlier bytes minus the later reservations. Earlier unused capacity
+is available downstream; future capacity is never spent twice; a producer's allowance depends only on the exact
+earlier values (re-admitted, never trusted), never on a value that does not exist yet, and a pure calculation
+carries no credit between calls or runs. Holes, unknown keys, out-of-order stage arguments, a missing earlier
+value (never treated as empty) and a component beyond a consumer role's prefix are distinct `ContractError`s,
+never overflows. Unchanged fixed limits: `council_delivery` wrapper (serialized projection minus its present
+payload components) 4096; host overhead (complete rendered ContextPacket outside the serialized delivery,
+measured after recovery/skills assembly with actual ids, paths and evidence) 4096; required total 40960 =
+32768 + 4096 + 4096 = council compiler window 49152 minus reserved 8192. The legacy non-council budget
+(28000/6000) is unchanged and every other execution keeps it. Producers gate in `CouncilRun` against the exact
+prefix committed so far: the frozen packet right after `_freeze_packet` and before the snapshot or the DBA, the
+normalized report before the relay and either lead, each lead's complete derived proposal before
+`sessions.submit` or the next role; the run ends `failed` with the precise
+`needs_scope_split:<section>:<observed>/<allowance>` reason, original role evidence retained, no retry, summary,
+drop or resize. Consumers recheck under the SAME rule with role-specific contiguous prefixes (research_lead:
+packet+report with 12288 still reserved; improvement_lead adds research_proposal with 8192 reserved; conductor
+the complete prefix spending the pool without per-component ceilings): `council_delivery` admits the role's
+projection (role-required fields, exact prefix, no injected future component, wrapper), the executor grants the
+council window only to an admitted delivery (actual read-only `dge_role`, matching debate role, stage
+`dge:<role>` and real agent, and the exact deterministic projection of this task's details; a foreign, trimmed,
+inflated or future-injected delivery is refused), preflights the complete required envelope (the identical
 snapshot and required dict the compiler receives, rendered through `ContextPacket` before `compile_context`)
 so a whole-prompt or host overflow is the typed refusal and never the generic budget error, and then admits
 the final rendered prompt (evidence included) before any provider. A consumer refusal is recorded on the role
 task with the typed reason: `retry` when the executor's own pre-entry gate refused (the provider never
 started), `failed` when the workflow settled it as not retryable; `CouncilRun` lifts either into the run reason
-only in its safe shape and never re-dispatches the role. A missing mandatory field stays a distinct
-`ContractError`. Telemetry is additive: the execution receipt carries `context_measurement` (policy, window,
-reserved, usable, rendered bytes; for council prompts the named section bytes, delivery overhead, host
-overhead and limit) and `estimated_tokens` keeps its old meaning; the `development.provider_started` log
-event keeps its registered attributes unchanged. Producer objectives state each role's own limit and the rule that
-concision never drops a finding or an unknown. Not guaranteed: that arbitrary research fits (these limits are
-a bounded supported workload); a council delivery with recovery evidence items currently exceeds the host
-allowance and is refused before the provider.
+only in its safe shape and never re-dispatches the role. Telemetry is additive: the execution receipt carries
+`context_measurement` (policy `urn:zeus:council-input:2`, window, reserved, usable, rendered bytes; for council
+prompts the named section bytes, pool spend `payload_bytes`, held `reserved_bytes`, delivery overhead, host
+overhead and limit) and `estimated_tokens` keeps its old meaning; the `development.provider_started` log event
+keeps its registered attributes unchanged; `policy_manifest()` names the numbers as reservations, not limits.
+Producer objectives (`autonomous_roles.role_objective`) state the allowance computed by the same domain function
+from the earlier payloads in the task details (the researcher's initial 16384 statically), say that the limit
+covers the normalized or derived value rather than raw prose alone, and keep the rule that concision never drops
+a finding or an unknown. Not guaranteed: that arbitrary research fits (the pool is a bounded supported
+workload); a council delivery with recovery evidence items currently exceeds the host allowance and is refused
+before the provider; the live005 sizes (11965/1677/4260 with 8192 still reserved) are covered by a synthetic
+size-equivalent test only, the owner's replay of the retained raw inputs is separate.
 
 ## INV-COUNCIL-001
 

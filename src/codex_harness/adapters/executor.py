@@ -296,9 +296,10 @@ class Executor:
         # Conductor delivery: with a required projection the raw task is not duplicated as optional inline
         # evidence; the hash-bound artifact stays reachable through external_context and its pointers. A task
         # contract field the projection already carries verbatim (acceptance_criteria) is stated once, inline.
-        # urn:zeus:council-input:1: the council compiler budget is granted only to an admitted delivery (actual
-        # read-only dge_role, matching debate role/stage/agent, the exact projection of this task); every other
-        # execution keeps the legacy 28000/6000 budget exactly. `council` holds the projection measurements.
+        # urn:zeus:council-input:2: the council compiler budget is granted only to an admitted delivery (actual
+        # read-only dge_role, matching debate role/stage/agent, the exact projection of this task, the role's
+        # payload prefix under the shared-pool rule); every other execution keeps the legacy 28000/6000 budget
+        # exactly. `council` holds the projection measurements.
         council = admitted_delivery(agent, action, read_only, stage, evidence, delivery) if delivery is not None else None
         window, reserved = council_budget() if council is not None else (28000, 6000)
         if delivery is not None:
@@ -424,7 +425,7 @@ class Executor:
                         "artifact_reader": reader,
                         "recovery": recovery_block}
             if council is not None:
-                # urn:zeus:council-input:1 preflight: the COMPLETE required envelope (the identical snapshot and
+                # urn:zeus:council-input:2 preflight: the COMPLETE required envelope (the identical snapshot and
                 # required dict the compiler receives below, actual ids, paths, recovery and skills included) is
                 # rendered through the same ContextPacket before compile_context, so a host or whole-prompt
                 # overflow is the typed needs_scope_split refusal and never the generic budget ContractError.
@@ -441,13 +442,15 @@ class Executor:
             # Named byte measurements of the FINAL rendered prompt (actual ids, paths, recovery, skills and
             # evidence included). `estimated_tokens` keeps its old meaning (rendered UTF-8 bytes); these are
             # additive and never a token estimate. For an admitted council delivery the host overhead outside
-            # the serialized delivery and the whole required prompt are checked here, before any provider.
+            # the serialized delivery and the whole required prompt are checked here, before any provider; the
+            # receipt names the v2 pool spend and the bytes still reserved for the components not yet produced.
             context_measurement = {"policy": COUNCIL_INPUT_POLICY if council is not None else "legacy",
                                    "unit": "utf8_bytes", "window": window, "reserved": reserved,
                                    "usable": window - reserved, "rendered_bytes": packet.estimated_tokens}
             if council is not None:
                 context_measurement.update(admit_required(packet.estimated_tokens, council["delivery_bytes"]),
-                                           sections=council["sections"],
+                                           sections=council["sections"], payload_bytes=council["payload_bytes"],
+                                           reserved_bytes=council["reserved_bytes"],
                                            delivery_overhead_bytes=council["delivery_overhead_bytes"])
             context_ref = self.artifacts.put(canonical(asdict(packet)), "context:" + key)
             history_recording = None

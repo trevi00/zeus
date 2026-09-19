@@ -21,6 +21,7 @@ from codex_harness.adapters.autonomous_roles import (
     council_delivery,
     execute_role,
     role_context,
+    role_objective,
     role_schema,
 )
 from codex_harness.adapters.executor import (
@@ -104,7 +105,7 @@ def harness(tmp_path, monkeypatch, answer=None, entered=None):
         def __exit__(self, *args): pass
         def run(self, prompt, cwd, schema, timeout, **kwargs):
             prompts.append(json.loads(prompt))
-            # urn:zeus:council-input:1: the council window minus its reserve (49152 - 8192); legacy prompts keep 22000.
+            # urn:zeus:council-input:2: the council window minus its reserve (49152 - 8192); legacy prompts keep 22000.
             assert len(prompt.encode("utf-8")) <= 40960, "the council window minus reserve"
             return {"answer": answer, "events": [], "thread_id": "thread", "turn_id": "turn", "usage": None,
                     "rotate": False, "interrupted": False, "requested_model": kwargs.get("model")}
@@ -119,9 +120,10 @@ def harness(tmp_path, monkeypatch, answer=None, entered=None):
 
 
 def deliver(executor, role, details):
-    """The exact `_run` call execute_role makes, without a store-owned lease (this unit harness has no claimed
-    task row); the lease-bound wiring is exercised by the refusal tests through execute_role itself."""
-    return executor._run(AGENTS[role], "task-" + role, OBJECTIVES[role], details, str(executor.git.root),
+    """The exact `_run` call execute_role makes (the role objective computed from THIS task's details), without a
+    store-owned lease (this unit harness has no claimed task row); the lease-bound wiring is exercised by the
+    refusal tests through execute_role itself."""
+    return executor._run(AGENTS[role], "task-" + role, role_objective(role, details), details, str(executor.git.root),
                          role_schema(role, details), True, None, None, stage="dge:" + role, workload="design",
                          action="dge_role", max_handoffs=1, delivery=council_delivery(role, details))
 
@@ -228,7 +230,7 @@ def test_size_matched_synthetic_conductor_case_keeps_required_fields_inline_with
 # Owner replay of the retained run003 conductor input (CONDUCTOR-REVIEW-001): projection 17819 bytes, complete
 # required context 23377 bytes against the then 22000 budget. The deciding regression measures the COMPLETE
 # compiled prompt, not the projected dictionary alone; the budget is now the council usable window
-# (urn:zeus:council-input:1: 49152 - 8192), whose host allowance outside the delivery is checked separately.
+# (urn:zeus:council-input:2: 49152 - 8192), whose host allowance outside the delivery is checked separately.
 OWNER_PROJECTION_BYTES = 17819
 BUDGET = 40960
 
@@ -268,8 +270,12 @@ def test_complete_compiled_prompt_with_representative_metadata_fits_the_budget_f
     assert details == frozen
     # Additive byte telemetry in the execution receipt: the measured complete prompt against the named policy.
     measured = json.loads(artifacts._body(result["execution_ref"]))["context_measurement"]
-    assert measured["policy"] == "urn:zeus:council-input:1" and measured["required_bytes"] == len(rendered)
+    assert measured["policy"] == "urn:zeus:council-input:2" and measured["required_bytes"] == len(rendered)
     assert measured["host_overhead_bytes"] == len(rendered) - sizes["council_delivery"] <= 4096 and measured["limit_bytes"] == BUDGET
+    # v2 telemetry: the pool spend of this role's prefix and the reservations still held for later components.
+    assert measured["payload_bytes"] == sum(measured["sections"].values()) <= 32768 - measured["reserved_bytes"]
+    assert measured["reserved_bytes"] == {"research_lead": 12288, "improvement_lead": 8192, "conductor": 0}[role]
+    assert prompt["required"]["objective"] == role_objective(role, details), "the objective is the one the real path builds"
     inline = prompt["required"]["council_delivery"]["inline"]
     for key in ("packet", "dba_report", "acceptance_criteria", "blocker_rule", "relay"):
         assert inline[key] == details[key], key
@@ -292,9 +298,10 @@ def test_missing_mandatory_council_input_is_refused_before_the_provider(tmp_path
 
 
 def test_required_projection_overflow_is_refused_before_the_provider_with_nothing_omitted(tmp_path, monkeypatch):
-    # INJECTED oversize: the packet alone exceeds its urn:zeus:council-input:1 cap; the typed needs_scope_split
-    # refusal (section, observed and limit bytes only) stops the execution before any provider instead of
-    # silently dropping semantic content. The raw task details are untouched.
+    # INJECTED oversize: the packet alone exceeds its urn:zeus:council-input:2 initial allowance (its 16384
+    # reservation: the first component has no earlier bytes to spend); the typed needs_scope_split refusal
+    # (section, observed and limit bytes only) stops the execution before any provider instead of silently
+    # dropping semantic content. The raw task details are untouched.
     details = details_for("conductor", claims=200, text_bytes=120)
     frozen = copy.deepcopy(details)
     executor, _, _ = harness(tmp_path, monkeypatch, entered=False)
@@ -330,7 +337,7 @@ def test_projection_is_a_deep_copy_and_pointers_are_exact_argv_lists():
 
 def test_delivery_with_injected_recovery_sources_is_refused_by_the_host_allowance_before_the_provider(tmp_path, monkeypatch):
     # INJECTED: a bound checkpoint and progress row for the same conductor task (a retried attempt). Under the
-    # urn:zeus:council-input:1 host allowance (4096 bytes outside the serialized delivery) the recovery evidence
+    # urn:zeus:council-input:2 host allowance (4096 bytes outside the serialized delivery, unchanged) the recovery evidence
     # items plus the full reader catalogue they bring back overflow: measured in this batch at 4721 bytes even with
     # these minimal rows. The SPEC fixes this as "current recovery overflow explicitly fails safely": the typed
     # refusal happens before any provider entry, nothing is omitted or resized, and no prompt is produced.

@@ -47,6 +47,7 @@ from codex_harness.domain.council_input import (
     RESEARCH_PROPOSAL,
     admit_delivery,
     output_limit,
+    preceding,
 )
 from codex_harness.domain.council_input import SCHEMA as INPUT_POLICY
 from codex_harness.domain.dge import CLAIM_KINDS, DECISIONS, QUESTION_STATUSES, SEVERITIES, VERDICTS
@@ -162,7 +163,7 @@ OBJECTIVES = {
                  "claim; or unknown itself, blocking false, citing that unknown claim. A design choice you truly "
                  "cannot settle is status unknown with blocking true: the output is refused and research continues; "
                  "do not mark it nonblocking or answered to pass the check. In a council (urn:zeus:autonomous:2) run: "
-                 + output_limit(PACKET)),
+                 + output_limit(PACKET, {})),  # the first component: its allowance is the initial reservation
     "proposer": "Propose the design for the fixed plan citing packet claims only; do not change the plan.",
     "attacker": ("Identify only material blockers as critical: concrete reachable trigger, cited packet claims, the "
                  "exact fixed criterion, material impact and minimal mitigation. Everything else is minor. "
@@ -176,17 +177,14 @@ OBJECTIVES = {
           "Name the exact snapshot_digest, summarize what the selected records show (found/missing/unknown and "
           "their whitelisted status fields), cite only packet claim ids, and list unknowns. A missing key is absent "
           "at that snapshot in the explicit scope only; an unknown record is not a success. Your report is an "
-          "interpretation, never a new Git-supported fact and never a substitute for the observation. "
-          + output_limit(DBA_REPORT)),
+          "interpretation, never a new Git-supported fact and never a substitute for the observation."),
     RESEARCH_LEAD: ("Propose the design for the fixed plan from the packet AND the frozen DBA report, citing packet "
-                    "claims only; echo the snapshot_digest and report_digest you worked from; do not change the plan. "
-                    + output_limit(RESEARCH_PROPOSAL)),
+                    "claims only; echo the snapshot_digest and report_digest you worked from; do not change the plan."),
     IMPROVEMENT_LEAD: ("Respond with a constructive alternative: summary, decision (" + _listed(SSOT_DECISIONS) + "), "
                        "rationale, transition (compatibility, rollback, retirement for improve/migrate, null otherwise), "
                        "claim ids, plus findings under the existing rule: only material blockers are critical (concrete "
                        "reachable trigger, cited claims, exact fixed criterion, impact, minimal mitigation); everything "
-                       "else is minor, and no objection is compulsory. Echo the snapshot_digest and report_digest. "
-                       + output_limit(IMPROVEMENT_PROPOSAL)),
+                       "else is minor, and no objection is compulsory. Echo the snapshot_digest and report_digest."),
     # Measured whole-layout revision (SPEC "Prepared whole-layout batch"): the conductor objective is concise; the
     # phase rule lives once in council_delivery.guidance, the enums stay listed as the schema declares them.
     CONDUCTOR_ROLE: ("Arbitrate the supplied proposals. Account for every finding; never defer a critical finding. "
@@ -196,6 +194,22 @@ OBJECTIVES = {
 
 
 CRITERION_ROLES = ("attacker", IMPROVEMENT_LEAD)
+# urn:zeus:council-input:2 producers whose allowance depends on the earlier payloads their task details carry
+# (the researcher produces the first component, so its objective above states the initial reservation statically).
+PRODUCED = {DBA: DBA_REPORT, RESEARCH_LEAD: RESEARCH_PROPOSAL, IMPROVEMENT_LEAD: IMPROVEMENT_PROPOSAL}
+
+
+def role_objective(role: str, details: dict) -> str:
+    """The objective one role execution receives: the static role text plus, for a council producer, the output
+    allowance computed by the domain rule from the EXACT earlier payloads in this task's details (the same
+    values the run admitted and the consumer rechecks). A missing earlier payload is a contract error here,
+    never an allowance computed as if it were empty; every other role keeps its static objective."""
+    objective = OBJECTIVES[role]
+    section = PRODUCED.get(role)
+    if section is None:
+        return objective
+    require(isinstance(details, dict), "Role details must be an object")
+    return objective + " " + output_limit(section, {k: details[k] for k in preceding(section) if k in details})
 
 # Conductor delivery (research-program-001 run003): the council debate roles receive their meeting inputs
 # as REQUIRED context, a deterministic lossless projection of the immutable task details, instead of the
@@ -242,9 +256,10 @@ def council_delivery(role: str, details: dict) -> dict:
                 for k in POINTER_DELIVERY}
     delivery = {"schema": "urn:zeus:council-delivery:1", "input_policy": INPUT_POLICY, "inline": inline,
                 "not_inline": pointers, "reading": READING, "guidance": DELIVERY_GUIDANCE[role]}
-    # urn:zeus:council-input:1 consumer gate: every payload component and the wrapper within the policy, or the
-    # typed needs_scope_split refusal before any provider (distinct from the missing-field error above).
-    admit_delivery(delivery)
+    # urn:zeus:council-input:2 consumer gate: the role's contiguous payload prefix under the shared-pool rule
+    # (future reservations held for the early roles) and the wrapper within the policy, or the typed
+    # needs_scope_split refusal before any provider (distinct from the missing-field error above).
+    admit_delivery(delivery, role)
     return delivery
 
 
@@ -258,7 +273,7 @@ def admitted_delivery(agent: str, action: str | None, read_only: bool, stage: st
     require(role in COUNCIL_DEBATE_ROLES, "Council delivery names no debate role")
     require(stage == "dge:" + role and agent == AGENTS[role], "Council delivery role, stage and agent must agree")
     require(delivery == council_delivery(role, details), "Council delivery is not the projection of this task")
-    return admit_delivery(delivery)
+    return admit_delivery(delivery, role)
 
 
 def isolation_reference(config: dict | None) -> dict | None:
@@ -316,8 +331,9 @@ def execute_role(executor, task: dict, heartbeat) -> dict:
     # Debate roles: the lossless projection is REQUIRED context (refused before the provider when a mandatory
     # input is missing or the required block exceeds the compiler budget); other roles keep the raw task inline.
     delivery = council_delivery(role, details) if role in COUNCIL_DEBATE_ROLES else None
-    result = executor._run(task["agent"], task["id"], OBJECTIVES[role], details, cwd, role_schema(role, details), True, heartbeat, task,
-                           stage=stage, workload="design", action="dge_role", max_handoffs=MAX_ROLE_ENTRIES, delivery=delivery)
+    result = executor._run(task["agent"], task["id"], role_objective(role, details), details, cwd, role_schema(role, details), True,
+                           heartbeat, task, stage=stage, workload="design", action="dge_role", max_handoffs=MAX_ROLE_ENTRIES,
+                           delivery=delivery)
     require(not executor.git._git("status", "--porcelain", cwd=cwd), "Role execution modified its checkout")
     require(executor.git._git("rev-parse", "HEAD", cwd=cwd) == base, "Role execution changed its commit")
     if role in DEBATE_ROLES:
