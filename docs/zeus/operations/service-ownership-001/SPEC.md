@@ -101,3 +101,47 @@ no whole suite or OS/service/Docker commands. Owner runs native focused tests, s
 required full suite and repository CI. Preserve dirty C files, immutable evidence and previous
 acceptance. Denied worker shell requests are protection events, not a request to weaken permissions.
 Other asset absorption resumes after this observed restart problem is addressed.
+
+## Consolidated correction, 2026-09-19
+
+First operation ended rejected; counts229->231, no automatic retry. Candidate27bd6ec remains
+evidence, not an accepted release. Owner Windows focused35 passed/2 POSIX skips and the actual
+scheduled-task canary passed twice with held owner/child/grandchild handles, released lock, sentinel
+survival and no manual recovery. The existing venv pythonw action worked in both trials; do not
+change its executable on speculation. Preserve those accepted ownership observations.
+
+One consolidated review adds no new feature. Independent Codex found the pre-spawn logging gap and
+nonzero shutdown error precedence. Owner reproduced the logging gap on Windows and WSL, and an
+actual SIGTERM at the spawn handoff on WSL. Raw injected receipts are in artifacts/service-ownership-001/
+boundary-rprddrh5 and boundary-wpcjq60r. These are fault-injection executions, not production incidents.
+Every probe-owned process was reclaimed. The assumption that opening a log proves it writable, and
+that a raising cancellation handler is safe while an ownership object is being acquired, is false.
+
+One corrective implementation/review pair is authorized within the same requested outcome. The
+previous one-pair stop was a batch boundary, not a reason to leave this confirmed problem unresolved;
+the rejected operation stays stopped, and a separately named corrective job supplies clear accounting.
+Same three allowed paths, same runtime policy, no ProcessTree change and no added features.
+
+Complete state design:
+1. Establish and successfully write a safe `starting` receipt BEFORE ProcessTree.spawn. If that
+   write fails, return125 with zero spawns. A pid-bearing startup record still follows ownership.
+2. POSIX main-thread SIGTERM handler records cancellation; it MUST NOT raise during spawn/handoff,
+   cleanup or final logging. After acquiring the tree, observe pending cancellation and use a
+   bounded-poll wait (for example process.wait(timeout=0.2)) so a sleeping service responds promptly.
+   Always reclaim the acquired tree before143. Restore the prior signal handler; off-main-thread
+   and Windows ownership limits remain explicit. A signal between successful spawn and its return
+   must not create a143 answer beside a live child. Do not extend POSIX guarantees to SIGKILL/setsid.
+3. Recompute final error precedence for failed shutdown logging: unconfirmed cleanup124, explicit
+   interruption130/143, owner/journal error125, otherwise child's original code. A child7 plus failed
+   shutdown receipt must be125, not7. Preserve124 and130/143 when those already apply.
+
+Regression: zero-spawn opened-but-unwritable journal; successful pre-spawn receipt and ordinary
+events; real signal at a wrapped actual spawn return on POSIX with proven cleanup; ordinary waiting
+SIGTERM/restoration; final-write failure with child0 and7 plus cleanup-unknown/interruption controls.
+Retain native Windows tests and document owner scheduled-task evidence accurately. The independent
+reviewer's missing-held-handle concern is covered by the owner canary, not an invented worker run.
+Correct IMPLEMENTATION prose: opening alone was insufficient; raw PID/lock observations have the
+scope tested; setsid escape is a documented limit, not a test executed in the first submission.
+Do not add the root's experimental probe code to production. Run focused tests and lint; owner
+rechecks affected interactions and whole suite/CI at the final candidate. No speculative new review
+round after these explicit conditions pass.
