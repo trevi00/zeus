@@ -296,3 +296,21 @@ Runner storage failure must be a durable summary failure and nonzero CLI exit; g
 normal idle --once stay0. Include a focused injected storage-loss CLI regression. No redesign of
 accepted receipt ownership, transport, HTTP or owner delivery. Run focused tests + ruff, BACKEND.md
 <=35lines. No extra exploration/full suite; owner final browser + CI completes original matrix.
+
+## Owner acceptance disposition (2026-09-20)
+
+The final automated backend reviewer statically identified budget=[] normalizing to legacy finite
+and jobs/lanes=[null] normalizing to zero. These are real limitations of the defensive sanitizer,
+not disproved by151 worker or220 owner focused tests. The trusted collector's validated Fleet
+producer emits a budget object and object rows; no reachable normal producer path was identified.
+This evidence only informs read-only conversation, never accounting enforcement, admission, merge
+or deployment. Under the user's explicit critical-only launch priority, owner classifies these as
+nonblocking follow-up, preserving the review rejection and narrowing acceptance honestly: actual
+producer-shaped observations and tested failures pass; exhaustive malformed-value semantics do not.
+Revisit on a producer/schema change or any real invalid shape observed. This is an explicit exception
+to the malformed-is-unknown matrix, not a claim of full conformance or an erased finding.
+
+UI repair cc626221 had one unchecked tool claim, so its automated evidence gate stopped before
+review. Its failed operation remains unchanged. Root Codex directly reviews the changed paths and
+supplies actual npm lint/build, injected503/body deadline and real browser persistence evidence.
+Neither machine operation is relabelled accepted. Owner final PR acceptance is a separate judgment.
