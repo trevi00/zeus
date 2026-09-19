@@ -96,7 +96,10 @@ def run(service, args) -> dict:
             with suppress(Exception):  # a close failure never replaces the original outcome
                 observer.close()
         lock.release()
-    return {"desk": ACTION, "revision": args.revision, **summary, "exit_code": 0}
+    # A graceful interrupt and a normal idle `--once` run are completed commands; a run the store
+    # stopped is a failure, and it must not be reported to the shell as a successful desk run.
+    return {"desk": ACTION, "revision": args.revision, **summary,
+            "exit_code": 1 if summary.get("failure") else 0}
 
 
 def status(service, args) -> dict:

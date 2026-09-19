@@ -293,6 +293,9 @@ class DeskRunner:
         self.collector = collector
         self.sleep, self.interval = sleep, interval
         self.stopping = False
+        # A storage failure that stopped this process, kept out of the bounded turn list so the
+        # summary still reports it after 50 later turns would have evicted the step.
+        self.failure = None
 
     def stop(self) -> None:
         """Interrupt shutdown: no new turn is claimed; a claimed turn finishes its own record."""
@@ -346,7 +349,8 @@ class DeskRunner:
         """
         recovered = self.recover()
         summary = {"recovered": recovered, "collection": self._collect(), "turns": [],
-                   "turn_count": 0, "omitted_turns": 0, "statuses": {}, "stopped": False}
+                   "turn_count": 0, "omitted_turns": 0, "statuses": {}, "stopped": False,
+                   "failure": None}
         while not self.stopping:
             step = self.step()
             if step["action"] != "idle":
@@ -356,6 +360,9 @@ class DeskRunner:
                 break
             self.sleep(self.interval)
         summary["stopped"] = self.stopping
+        # An interrupted or idle stop is a completed run; a storage stop is a durable failure of
+        # this run, and the caller turns it into a nonzero exit.
+        summary["failure"] = self.failure
         return summary
 
     @staticmethod
@@ -397,8 +404,11 @@ class DeskRunner:
         """A failed store leaves the durable record as it is and stops this process; the next
         startup recovers it. Only the exception TYPE is reported, never its text."""
         self.stopping = True
-        return {"action": "unavailable", "request_id": request_id,
+        step = {"action": "unavailable", "request_id": request_id,
                 "reason_code": "storage_unavailable", "error_type": type(exc).__name__}
+        # The first storage failure owns the outcome of this run; a later one never overwrites it.
+        self.failure = self.failure or dict(step)
+        return step
 
     def _collect(self) -> dict | None:
         """Drain this process's own observation spool into the store after a turn or recovery.

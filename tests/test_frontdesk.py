@@ -13,6 +13,7 @@ from uuid import uuid4
 import pytest
 
 from codex_harness.adapters.contracts import validate_message
+from codex_harness.adapters.frontdesk import ACCOUNTING_NOTE
 from codex_harness.adapters.store import MemoryStore
 from codex_harness.application.frontdesk import (
     BUCKET_REQUESTS,
@@ -747,6 +748,59 @@ def test_the_host_lock_and_observer_are_released_when_the_wiring_fails(tmp_path,
     lock.release()
 
 
+def desk_cli(tmp_path, monkeypatch, desk_runner):
+    """`zeus desk run` around an ALREADY built runner: the real lock, observer release and result,
+    with no Redis, executor or provider wiring."""
+    import codex_harness.bootstrap as bootstrap
+    from codex_harness.adapters import configuration, frontdesk_cli
+
+    monkeypatch.setattr(configuration, "runtime_dir", lambda: tmp_path)
+    monkeypatch.setattr(bootstrap, "build_observer", lambda *args, **kwargs: SimpleNamespace(close=lambda: None))
+    monkeypatch.setattr(frontdesk_cli, "build_runner", lambda service, args, observer: desk_runner)
+    return frontdesk_cli, SimpleNamespace(revision=REVISION, once=True, desk_command="run")
+
+
+def test_an_injected_storage_loss_is_a_durable_failure_and_a_nonzero_desk_exit(tmp_path, monkeypatch):
+    svc, desk, session_id = opened()
+    request_id = submit(desk, session_id)["request"]["id"]
+    # Injected: the terminal write fails, so this run cannot record the outcome of its own turn.
+    desk_runner, _ = runner(svc, UnavailableFinalize(svc, REVISION), FakeExecutor(svc))
+    frontdesk_cli, args = desk_cli(tmp_path, monkeypatch, desk_runner)
+    result = frontdesk_cli.run(svc, args)
+    assert result["exit_code"] == 1 and result["stopped"] is True
+    assert result["failure"] == {"action": "unavailable", "request_id": request_id,
+                                 "reason_code": "storage_unavailable", "error_type": "RuntimeError"}
+    # The turn is left for the next startup; a failed run is never reported as a completed desk run.
+    assert desk.request(request_id)["status"] == "dispatching"
+
+
+def test_a_storage_stopped_desk_run_exits_the_process_nonzero(tmp_path, monkeypatch, capsys):
+    from codex_harness import cli
+
+    svc, desk, session_id = opened()
+    submit(desk, session_id)
+    desk_runner, _ = runner(svc, UnavailableFinalize(svc, REVISION), FakeExecutor(svc))
+    _, args = desk_cli(tmp_path, monkeypatch, desk_runner)
+    with pytest.raises(SystemExit) as exit_info:
+        cli.desk_command(svc, args)
+    assert exit_info.value.code == 1
+    printed = json.loads(capsys.readouterr().out)
+    assert printed["failure"]["reason_code"] == "storage_unavailable"
+
+
+def test_a_normal_idle_or_interrupted_desk_run_stays_successful(tmp_path, monkeypatch):
+    svc, desk, session_id = opened()
+    request_id = submit(desk, session_id)["request"]["id"]
+    desk_runner, _ = runner(svc, desk, FakeExecutor(svc))
+    frontdesk_cli, args = desk_cli(tmp_path, monkeypatch, desk_runner)
+    result = frontdesk_cli.run(svc, args)  # one answered turn, then an idle `--once` exit
+    assert result["exit_code"] == 0 and result["failure"] is None
+    assert result["statuses"] == {"answered": 1} and desk.request(request_id)["status"] == "answered"
+    interrupted, _ = runner(svc, desk, FakeExecutor(svc))
+    interrupted.stop()  # a graceful interrupt claims nothing and is still a completed run
+    assert frontdesk_cli.run(svc, args)["exit_code"] == 0
+
+
 # ----- the sanitized owner-runtime monitoring evidence -----------------------------------------
 FLEET_DATA = {"schema": "urn:zeus:fleet-status:1", "registered": True, "id": "fleet-local",
               "paused": False, "max_parallel": 2,
@@ -762,20 +816,28 @@ FLEET_DATA = {"schema": "urn:zeus:fleet-status:1", "registered": True, "id": "fl
                         "created_at": "2026-09-19T00:00:00+00:00",
                         "updated_at": "2026-09-19T00:00:00+00:00"}],
               "truncated": False}
-OBSERVATION_DATA = {"events": {"total": 120, "high_severity_total": 7},
-                    "sample": {"truncated": True},
+OBSERVATION_DATA = {"schema": "urn:zeus:observation-monitor:1", "authority": "informational_only",
+                    "observed_at": "2026-09-19T12:00:00+00:00",
+                    "events": {"total": 120, "high_severity_total": 7},
+                    "sample": {"limit_per_bucket": 500, "truncated": True},
                     "terminations": {"by_status": {"pending": 1}, "pending": 1},
-                    "local": {"status": "ok", "pending_terminations": 1, "unreadable_terminations": 0,
-                              "pending_alerts": 2}}
+                    "local": {"status": "ok", "segments": 3, "pending_terminations": 1,
+                              "unreadable_terminations": 0, "pending_alerts": 2}}
 
 
 def monitoring_document(collected_at="2026-09-19T12:00:00+00:00", **sources):
+    """The shape `adapters/monitoring.collect()` actually writes: the `harness-monitor.v1`
+    envelope, every source with its own `status`/`observed_at`, and a failed source carrying an
+    exception type instead of data."""
     return {"schema": "harness-monitor.v1", "collected_at": collected_at,
             "scope": {"label": "repository zeus", "docker": "compose", "containers": None},
             "sources": {"database": {"status": "ok", "observed_at": collected_at, "data": {}},
                         "docker": {"status": "unavailable", "observed_at": collected_at,
                                    "error": "DockerUnavailable", "data": None},
+                        "redis": {"status": "ok", "observed_at": collected_at, "data": {}},
                         "fleet": {"status": "ok", "observed_at": collected_at, "data": FLEET_DATA},
+                        "research_programs": {"status": "ok", "observed_at": collected_at,
+                                              "data": {"programs": []}},
                         "observations": {"status": "ok", "observed_at": collected_at,
                                          "data": OBSERVATION_DATA},
                         **sources}}
@@ -790,12 +852,18 @@ def written(tmp_path, document):
 def test_monitoring_facts_are_bounded_sanitized_and_dated():
     from codex_harness.adapters.frontdesk import monitoring_facts
 
-    now = datetime.fromisoformat("2026-09-19T12:00:30+00:00")
+    now = datetime.fromisoformat("2026-09-19T12:00:10+00:00")
     facts = monitoring_facts(monitoring_document(), now=now)
     assert facts["availability"] == "observed" and facts["freshness"] == "current"
-    assert facts["age_seconds"] == 30 and facts["schema"] == "urn:zeus:desk-monitoring:1"
-    assert facts["sources"]["docker"] == {"status": "unavailable", "error_type": "DockerUnavailable"}
+    assert facts["age_seconds"] == 10 and facts["schema"] == "urn:zeus:desk-monitoring:1"
+    assert facts["basis"] == "current_capture" and facts["freshness_bound_seconds"] == 20
+    assert facts["sources"]["docker"] == {"status": "unavailable", "error_type": "DockerUnavailable",
+                                          "freshness": "unknown",
+                                          "freshness_reason": "collection_failed", "age_seconds": None}
+    assert facts["sources"]["database"] == {"status": "ok", "error_type": None, "freshness": "current",
+                                            "freshness_reason": "current", "age_seconds": 10}
     assert facts["fleet"]["accounting_mode"] == "subscription" and facts["fleet"]["registered"] is True
+    assert facts["fleet"]["accounting_note"] == ACCOUNTING_NOTE["subscription"]
     assert facts["fleet"]["active_lanes"] == 1 and facts["fleet"]["sampled_jobs_by_status"] == {"running": 1}
     assert facts["observations"]["pending"] == {"terminations_recorded": 1, "terminations_local": 1,
                                                 "unreadable_terminations": 0, "alerts": 2}
@@ -806,19 +874,63 @@ def test_monitoring_facts_are_bounded_sanitized_and_dated():
         assert forbidden not in flat
 
 
-@pytest.mark.parametrize("age, freshness", [(30, "current"), (600, "stale")])
-def test_an_old_capture_is_stale_not_current(age, freshness):
+@pytest.mark.parametrize("age, freshness, basis", [
+    (10, "current", "current_capture"),
+    # The owner's mutation of an actual capture: 60 s old is stale for monitor readiness, so the
+    # desk must not call it current either.
+    (60, "stale", "historical_capture"),
+    (600, "stale", "historical_capture"),
+])
+def test_an_old_capture_is_historical_not_current(age, freshness, basis):
     from codex_harness.adapters.frontdesk import monitoring_facts
 
     now = datetime.fromisoformat("2026-09-19T12:00:00+00:00")
     collected = (now - timedelta(seconds=age)).isoformat()
-    assert monitoring_facts(monitoring_document(collected), now=now)["freshness"] == freshness
+    facts = monitoring_facts(monitoring_document(collected), now=now)
+    assert facts["freshness"] == freshness and facts["basis"] == basis
+    # The capture itself is retained, explicitly dated; stale facts are not deleted, only labelled.
+    assert facts["collected_at"] == collected and facts["age_seconds"] == age
+    assert facts["fleet"]["availability"] == "observed"
+
+
+def test_the_desk_and_the_readiness_endpoint_agree_on_one_freshness_rule(tmp_path):
+    from codex_harness.adapters.frontdesk import monitoring_evidence
+    from codex_harness.adapters.monitoring_readiness import readiness
+
+    now = datetime.fromisoformat("2026-09-19T12:00:00+00:00")
+    for age in (10, 19, 20, 60, 600):
+        collected = (now - timedelta(seconds=age)).isoformat()
+        path = written(tmp_path, monitoring_document(collected))
+        answer = readiness(path, now=now)
+        facts = monitoring_evidence(path, now=now)
+        assert (facts["freshness"] == "current") is (answer["snapshot"]["state"] == "fresh"), age
+
+
+def test_each_source_carries_its_own_observed_at_age():
+    from codex_harness.adapters.frontdesk import monitoring_facts
+
+    now = datetime.fromisoformat("2026-09-19T12:00:00+00:00")
+    document = monitoring_document((now - timedelta(seconds=5)).isoformat())
+    # One envelope of an otherwise fresh capture lags behind: its own age must be reported.
+    document["sources"]["fleet"]["observed_at"] = (now - timedelta(seconds=300)).isoformat()
+    facts = monitoring_facts(document, now=now)
+    assert facts["freshness"] == "current" and facts["sources"]["redis"]["age_seconds"] == 5
+    assert facts["sources"]["fleet"] == {"status": "ok", "error_type": None, "freshness": "stale",
+                                         "freshness_reason": "older_than_window", "age_seconds": 300}
+    # A missing envelope is explicitly unavailable, never a healthy or zero-aged source.
+    document["sources"].pop("redis")
+    missing = monitoring_facts(document, now=now)["sources"]["redis"]
+    assert missing == {"status": "unknown", "error_type": None, "freshness": "unknown",
+                       "freshness_reason": "envelope_missing", "age_seconds": None}
 
 
 @pytest.mark.parametrize("document, code", [
     ("not a snapshot", "snapshot_invalid"),
-    ({"schema": "harness-monitor.v1"}, "snapshot_invalid"),
     (None, "snapshot_invalid"),
+    ([{"schema": "harness-monitor.v1"}], "snapshot_invalid"),
+    ({"schema": "something-else.v9", "sources": {}}, "schema_unexpected"),
+    ({"schema": "harness-monitor.v1"}, "sources_unexpected"),
+    ({"schema": "harness-monitor.v1", "sources": ["fleet"]}, "sources_unexpected"),
 ])
 def test_a_malformed_capture_is_explicitly_unknown(document, code):
     from codex_harness.adapters.frontdesk import monitoring_facts
@@ -826,52 +938,128 @@ def test_a_malformed_capture_is_explicitly_unknown(document, code):
     facts = monitoring_facts(document)
     assert facts["availability"] == "unknown" and facts["reason_code"] == code
     assert facts["fleet"] is None and facts["observations"] is None and facts["freshness"] == "unknown"
+    assert facts["sources"] is None and facts["basis"] == "capture_time_unknown"
 
 
-def test_an_unparsable_capture_time_is_unknown_freshness():
+@pytest.mark.parametrize("mutation", [
+    {"sources": {"fleet": {"status": "ok", "observed_at": None, "data": {"registered": True, "jobs": 7}}}},
+    {"sources": {"fleet": {"status": "ok", "data": {"registered": True, "jobs": {"job-1": {}},
+                                                    "lanes": "lane-a", "budget": [1, 2],
+                                                    "paused": "yes", "truncated": "no"}}}},
+    {"sources": {"observations": {"status": "ok", "data": {"local": "ok", "events": 3,
+                                                           "terminations": None, "sample": []}}}},
+    {"sources": {"fleet": ["not an envelope"], "observations": 5}},
+    {"collected_at": {"at": "2026-09-19T12:00:00+00:00"}},
+    {"scope": None, "sources": {"database": None}},
+])
+def test_a_malformed_nested_capture_is_unknown_evidence_and_never_raises(mutation):
     from codex_harness.adapters.frontdesk import monitoring_facts
 
-    facts = monitoring_facts(monitoring_document("어제"))
+    document = monitoring_document()
+    document.update({key: value for key, value in mutation.items() if key != "sources"})
+    document["sources"].update(mutation.get("sources") or {})
+    facts = monitoring_facts(document)  # a malformed capture must not raise into the conversation
+    assert facts["schema"] == "urn:zeus:desk-monitoring:1"
+    assert facts["freshness"] in {"current", "stale", "unknown"}
+    assert isinstance(facts["fleet"], dict) and isinstance(facts["observations"], dict)
+    # Whatever the mutation did, the evidence stays a fixed-shape document of fixed labels.
+    assert facts["fleet"]["availability"] in {"observed", "unknown"}
+    assert "숨겨진 목표 문장" not in canonical(facts)
+
+
+def test_a_malformed_container_is_unknown_not_zero():
+    from codex_harness.adapters.frontdesk import monitoring_facts
+
+    document = monitoring_document()
+    document["sources"]["fleet"]["data"] = {**FLEET_DATA, "jobs": {"job-1": {}}, "lanes": 3,
+                                            "paused": "yes", "truncated": "no"}
+    fleet = monitoring_facts(document)["fleet"]
+    assert fleet["sampled_jobs"] is None and fleet["sampled_jobs_by_status"] is None
+    assert fleet["lanes"] is None and fleet["active_lanes"] is None
+    assert fleet["paused"] is None and fleet["jobs_truncated"] is None
+
+
+@pytest.mark.parametrize("collected_at", ["어제", None, "2026-09-19T12:00:00", 12, ""])
+def test_an_unusable_capture_time_is_unknown_freshness(collected_at):
+    from codex_harness.adapters.frontdesk import monitoring_facts
+
+    facts = monitoring_facts(monitoring_document(collected_at))
     assert facts["availability"] == "observed" and facts["freshness"] == "unknown"
     assert facts["collected_at"] is None and facts["age_seconds"] is None
+    assert facts["basis"] == "capture_time_unknown"
+    # The sources are still assessed independently; an undated capture is not a failed turn.
+    assert facts["sources"]["database"]["status"] == "ok"
 
 
-@pytest.mark.parametrize("mode, expected", [
-    ({"accounting_mode": "subscription", "budget_mode": "finite"}, "unknown"),
-    ({"accounting_mode": "finite", "budget_mode": "finite"}, "finite"),
-    ({"accounting_mode": None, "budget_mode": None}, "finite"),
-    ({"accounting_mode": "made-up", "budget_mode": "made-up"}, "unknown"),
+def test_a_capture_from_the_future_is_not_reported_as_current():
+    from codex_harness.adapters.frontdesk import monitoring_facts
+
+    now = datetime.fromisoformat("2026-09-19T12:00:00+00:00")
+    ahead = monitoring_document((now + timedelta(seconds=60)).isoformat())
+    facts = monitoring_facts(ahead, now=now)
+    assert facts["freshness"] == "unknown" and facts["freshness_reason"] == "timestamp_in_future"
+
+
+@pytest.mark.parametrize("mode, expected, note_mode", [
+    ({"accounting_mode": "subscription", "budget_mode": "subscription"}, "subscription", "subscription"),
+    ({"accounting_mode": "subscription", "budget_mode": "finite"}, "unknown", "unknown"),
+    ({"accounting_mode": "finite", "budget_mode": "finite"}, "finite", "finite"),
+    ({"accounting_mode": "absent", "budget_mode": "absent"}, "finite", "finite"),
+    ({"accounting_mode": "made-up", "budget_mode": "made-up"}, "unknown", "unknown"),
+    # An explicit `null` is a present but malformed value, not an absent legacy field.
+    ({"accounting_mode": None, "budget_mode": "absent"}, "unknown", "unknown"),
+    ({"accounting_mode": "absent", "budget_mode": None}, "unknown", "unknown"),
 ])
-def test_contradictory_or_invalid_accounting_modes_are_unknown_never_silently_finite(mode, expected):
+def test_accounting_modes_and_their_explanations_never_silently_claim_a_ceiling(mode, expected, note_mode):
     from codex_harness.adapters.frontdesk import monitoring_facts
 
     data = {**FLEET_DATA, "budget": {"per_host": 1, "total": 1}}
-    if mode["accounting_mode"] is None:
+    if mode["accounting_mode"] == "absent":
         data.pop("accounting_mode")
     else:
         data["accounting_mode"] = mode["accounting_mode"]
-    if mode["budget_mode"] is not None:
+    if mode["budget_mode"] != "absent":
         data["budget"] = {**data["budget"], "mode": mode["budget_mode"]}
     document = monitoring_document()
-    document["sources"]["fleet"] = {"status": "ok", "data": data}
-    assert monitoring_facts(document)["fleet"]["accounting_mode"] == expected
+    document["sources"]["fleet"] = {"status": "ok", "observed_at": document["collected_at"], "data": data}
+    fleet = monitoring_facts(document)["fleet"]
+    assert fleet["accounting_mode"] == expected
+    # The subscription sentence belongs to a confirmed subscription only; finite is told its
+    # ceiling applies and unknown makes no ceiling claim at all.
+    assert fleet["accounting_note"] == ACCOUNTING_NOTE[note_mode]
+    assert ("no call-count ceiling is applied" in fleet["accounting_note"]) is (expected == "subscription")
 
 
 def test_an_unavailable_fleet_or_observation_source_is_unknown_not_healthy():
     from codex_harness.adapters.frontdesk import monitoring_facts
 
     document = monitoring_document()
-    document["sources"]["fleet"] = {"status": "unavailable", "error": "OperationalError", "data": None}
-    document["sources"]["observations"] = {"status": "ok", "data": None}
+    document["sources"]["fleet"] = {"status": "unavailable", "observed_at": document["collected_at"],
+                                    "error": "OperationalError", "data": None}
+    document["sources"]["observations"] = {"status": "ok", "observed_at": document["collected_at"],
+                                           "data": None}
     facts = monitoring_facts(document)
     assert facts["fleet"] == {"availability": "unknown", "reason_code": "source_unavailable",
                               "error_type": "OperationalError"}
     assert facts["observations"]["availability"] == "unknown"
 
 
+def test_an_unregistered_fleet_makes_no_ceiling_claim():
+    from codex_harness.adapters.frontdesk import monitoring_facts
+
+    document = monitoring_document()
+    document["sources"]["fleet"]["data"] = {"schema": "urn:zeus:fleet-status:1", "registered": False,
+                                            "lanes": [], "jobs": []}
+    assert monitoring_facts(document)["fleet"] == {"availability": "observed", "registered": False,
+                                                   "accounting_mode": "unknown",
+                                                   "accounting_note": ACCOUNTING_NOTE["unknown"]}
+
+
 @pytest.mark.parametrize("write, code", [
     (None, "snapshot_missing"),
     ("{not json", "snapshot_unreadable"),
+    ('{"schema": "harness-monitor.v1", "sources": {}, "sources": {}}', "snapshot_unreadable"),
+    ('{"schema": "harness-monitor.v1", "sources": {"a": NaN}}', "snapshot_unreadable"),
 ])
 def test_a_missing_or_unreadable_capture_never_fails_the_turn(tmp_path, write, code):
     from codex_harness.adapters.frontdesk import monitoring_evidence
@@ -881,6 +1069,16 @@ def test_a_missing_or_unreadable_capture_never_fails_the_turn(tmp_path, write, c
         path.write_text(write, "utf-8")
     facts = monitoring_evidence(path)
     assert facts["availability"] == "unknown" and facts["reason_code"] == code
+
+
+def test_an_oversized_or_unopenable_capture_is_unknown(tmp_path, monkeypatch):
+    from codex_harness.adapters import frontdesk as frontdesk_adapter
+
+    path = written(tmp_path, monitoring_document())
+    monkeypatch.setattr(frontdesk_adapter, "MONITORING_MAX_BYTES", 10)
+    assert frontdesk_adapter.monitoring_evidence(path)["reason_code"] == "snapshot_too_large"
+    # A directory in the snapshot's place is an OS error, not a raised conversation failure.
+    assert frontdesk_adapter.monitoring_evidence(tmp_path)["reason_code"] == "snapshot_unreadable"
 
 
 def test_the_execution_helper_carries_the_owner_runtime_capture_as_evidence(tmp_path, monkeypatch):
@@ -897,6 +1095,22 @@ def test_the_execution_helper_carries_the_owner_runtime_capture_as_evidence(tmp_
     assert snapshot["fleet"]["accounting_mode"] == "subscription"
     assert snapshot["observations"]["pending"]["terminations_local"] == 1
     assert snapshot["freshness"] in {"current", "stale"} and snapshot["age_seconds"] is not None
+    assert snapshot["sources"]["fleet"]["age_seconds"] is not None
+
+
+def test_the_execution_helper_reports_a_malformed_capture_as_unknown_without_failing(tmp_path, monkeypatch):
+    from codex_harness.adapters import frontdesk as frontdesk_adapter
+
+    svc, desk, session_id = opened()
+    _, task = desk_task(svc, desk, session_id)
+    path = tmp_path / "monitoring.json"
+    path.write_text('{"schema": "harness-monitor.v1", "sources": 3}', "utf-8")
+    monkeypatch.setattr(frontdesk_adapter, "snapshot_path", lambda: path)
+    calls = []
+    result = frontdesk_adapter.execute_frontdesk(fake_executor_object(svc, ANSWER, FakeGit(), calls), task)
+    snapshot = calls[0]["evidence"]["fleet_snapshot"]
+    assert snapshot["availability"] == "unknown" and snapshot["reason_code"] == "sources_unexpected"
+    assert result["answer"] == ANSWER["answer"]
 
 
 def test_the_execution_helper_reports_an_absent_capture_as_unknown(tmp_path, monkeypatch):
@@ -912,8 +1126,10 @@ def test_the_execution_helper_reports_an_absent_capture_as_unknown(tmp_path, mon
     assert snapshot == {"schema": "urn:zeus:desk-monitoring:1", "availability": "unknown",
                         "reason_code": "snapshot_missing",
                         "authority": frontdesk_adapter.MONITORING_AUTHORITY, "collected_at": None,
-                        "age_seconds": None, "freshness": "unknown", "sources": None,
-                        "fleet": None, "observations": None}
+                        "age_seconds": None, "freshness": "unknown",
+                        "freshness_reason": "snapshot_missing", "basis": "capture_time_unknown",
+                        "freshness_bound_seconds": frontdesk_adapter.FRESH_SECONDS,
+                        "sources": None, "fleet": None, "observations": None}
     assert result["answer"] == ANSWER["answer"]
 
 

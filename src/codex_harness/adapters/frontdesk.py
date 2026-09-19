@@ -8,9 +8,9 @@ anything the conversation asked for.
 """
 from __future__ import annotations
 
-import json
 from datetime import datetime, timezone
 
+from codex_harness.adapters import monitoring_readiness as readiness
 from codex_harness.application.frontdesk import FrontDesk
 from codex_harness.domain.frontdesk import DeskRefused, revision, safe_code, validate_answer
 from codex_harness.domain.model import require
@@ -18,13 +18,27 @@ from codex_harness.domain.model import require
 MONITORING_SCHEMA = "urn:zeus:desk-monitoring:1"
 # The owner's collector replaces this file atomically; the desk only ever reads it.
 MONITORING_FILE = "monitoring.json"
-MONITORING_MAX_BYTES = 8 * 1024 * 1024
-# Older than this, the collector's last capture is reported as stale rather than as the current
-# state. It is never silently presented as fresh.
-FRESH_SECONDS = 120
-SOURCE_LIMIT = 16
+# The accepted monitor-readiness rules are reused verbatim (monitor-readiness-001): the same
+# bounded read, the same strict parse, the same 20 s freshness window and future tolerance. The
+# desk must not answer "current" about a capture the readiness endpoint already calls stale.
+MONITORING_MAX_BYTES = readiness.MAX_SNAPSHOT_BYTES
+FRESH_SECONDS = readiness.FRESH_SECONDS
+FUTURE_TOLERANCE_SECONDS = readiness.FUTURE_TOLERANCE_SECONDS
+# How many entries of one malformed-or-huge container are inspected at all.
+JOB_LIMIT, LANE_LIMIT = 200, 64
+# The readiness states, said in this evidence's words. Every non-fresh state is explicit.
+FRESHNESS = {"fresh": "current", "stale": "stale"}
+# Stale facts are retained only as an explicitly historical capture, never as the current state.
+BASIS = {"current": "current_capture", "stale": "historical_capture",
+         "unknown": "capture_time_unknown"}
 MONITORING_AUTHORITY = ("sanitized_owner_runtime_observation; the collector's last capture, not a "
                         "live query and not proof of a current incident")
+# Fixed accounting explanations. Only a confirmed subscription gets the subscription sentence; a
+# finite fleet is told its ceiling applies, and an unknown mode makes no ceiling claim at all.
+ACCOUNTING_NOTE = {
+    "subscription": "subscription usage is recorded; no call-count ceiling is applied",
+    "finite": "a finite call-count ceiling applies to provider calls",
+    "unknown": "the accounting mode is unknown; no ceiling claim can be made from this capture"}
 
 TEXT = {"type": "string"}
 STRINGS = {"type": "array", "items": TEXT}
@@ -57,14 +71,21 @@ def _count(value):
     return value if type(value) is int and value >= 0 else None
 
 
-def _moment(value):
-    if type(value) is not str:
+def _flag(value):
+    """An explicit boolean, or unknown; a missing or malformed flag never becomes `False`."""
+    return value if type(value) is bool else None
+
+
+def _entries(value, limit: int):
+    """A bounded list of mapping entries, or `None` when the container itself is absent or of
+    another type. A malformed container counts nothing and stays unknown, never zero."""
+    if not isinstance(value, list):
         return None
-    try:
-        parsed = datetime.fromisoformat(value)
-    except ValueError:
-        return None
-    return parsed if parsed.tzinfo is not None else None
+    return [item for item in value[:limit] if isinstance(item, dict)]
+
+
+def _seconds(age):
+    return None if age is None else int(age)
 
 
 def _unknown(reason_code: str) -> dict:
@@ -72,13 +93,17 @@ def _unknown(reason_code: str) -> dict:
     reported as current, as healthy, as zero or as a provider failure."""
     return {"schema": MONITORING_SCHEMA, "availability": "unknown", "reason_code": reason_code,
             "authority": MONITORING_AUTHORITY, "collected_at": None, "age_seconds": None,
-            "freshness": "unknown", "sources": None, "fleet": None, "observations": None}
+            "freshness": "unknown", "freshness_reason": reason_code, "basis": BASIS["unknown"],
+            "freshness_bound_seconds": FRESH_SECONDS, "sources": None, "fleet": None,
+            "observations": None}
 
 
 def _accounting_mode(data: dict, budget: dict) -> str:
-    """The shared interpretation: explicit modes must agree, a legacy snapshot without any mode is
-    finite, and a contradictory or malformed pair is unknown - never silently finite."""
-    explicit = [value for value in (data.get("accounting_mode"), budget.get("mode")) if value is not None]
+    """The shared interpretation: explicit modes must agree, a legacy snapshot without any mode
+    FIELD is finite, and a contradictory or malformed pair - including an explicit `null`, which is
+    a present but malformed value - is unknown, never silently finite."""
+    explicit = [source[key] for source, key in ((data, "accounting_mode"), (budget, "mode"))
+                if key in source]
     if not explicit:
         return "finite"
     if all(value == explicit[0] for value in explicit) and explicit[0] in {"finite", "subscription"}:
@@ -88,35 +113,40 @@ def _accounting_mode(data: dict, budget: dict) -> str:
 
 def _fleet(source) -> dict:
     """Fleet status and accounting as counters and fixed labels. No goal text, path, manifest,
-    identifier of a work item's content or raw error leaves this projection."""
+    identifier of a work item's content or raw error leaves this projection, and every nested
+    container is type-checked: a malformed `jobs` or `lanes` is unknown, not an empty fleet."""
     if not isinstance(source, dict) or source.get("status") != "ok" or not isinstance(source.get("data"), dict):
-        error = (source or {}).get("error") if isinstance(source, dict) else None
+        error = source.get("error") if isinstance(source, dict) else None
         return {"availability": "unknown", "reason_code": "source_unavailable",
                 "error_type": safe_code(error) if isinstance(error, str) else None}
     data = source["data"]
     if data.get("registered") is not True:
-        return {"availability": "observed", "registered": False, "accounting_mode": "unknown"}
+        return {"availability": "observed", "registered": False, "accounting_mode": "unknown",
+                "accounting_note": ACCOUNTING_NOTE["unknown"]}
     budget = data["budget"] if isinstance(data.get("budget"), dict) else {}
-    jobs = [job for job in (data.get("jobs") or []) if isinstance(job, dict)]
-    by_status: dict[str, int] = {}
-    for job in jobs:
-        label = safe_code(job.get("status")) if isinstance(job.get("status"), str) else "unknown"
-        by_status[label] = by_status.get(label, 0) + 1
-    lanes = [lane for lane in (data.get("lanes") or []) if isinstance(lane, dict)]
-    return {"availability": "observed", "registered": True, "paused": bool(data.get("paused")),
-            "accounting_mode": _accounting_mode(data, budget),
-            "subscription_note": "recorded provider usage; no call-count ceiling is applied",
-            "max_parallel": _count(data.get("max_parallel")), "lanes": len(lanes),
-            "active_lanes": sum(1 for lane in lanes if lane.get("active_job")),
-            "sampled_jobs": len(jobs), "sampled_jobs_by_status": by_status,
-            "jobs_truncated": bool(data.get("truncated"))}
+    jobs = _entries(data.get("jobs"), JOB_LIMIT)
+    by_status: dict[str, int] | None = None
+    if jobs is not None:
+        by_status = {}
+        for job in jobs:
+            label = safe_code(job.get("status")) if isinstance(job.get("status"), str) else "unknown"
+            by_status[label] = by_status.get(label, 0) + 1
+    lanes = _entries(data.get("lanes"), LANE_LIMIT)
+    mode = _accounting_mode(data, budget)
+    return {"availability": "observed", "registered": True, "paused": _flag(data.get("paused")),
+            "accounting_mode": mode, "accounting_note": ACCOUNTING_NOTE[mode],
+            "max_parallel": _count(data.get("max_parallel")),
+            "lanes": None if lanes is None else len(lanes),
+            "active_lanes": None if lanes is None else sum(1 for lane in lanes if lane.get("active_job")),
+            "sampled_jobs": None if jobs is None else len(jobs),
+            "sampled_jobs_by_status": by_status, "jobs_truncated": _flag(data.get("truncated"))}
 
 
 def _observations(source) -> dict:
     """Current pending counters separated from the historical stored sample; a missing counter
     stays unknown instead of becoming zero, and no event text or file path is carried."""
     if not isinstance(source, dict) or source.get("status") != "ok" or not isinstance(source.get("data"), dict):
-        error = (source or {}).get("error") if isinstance(source, dict) else None
+        error = source.get("error") if isinstance(source, dict) else None
         return {"availability": "unknown", "reason_code": "source_unavailable",
                 "error_type": safe_code(error) if isinstance(error, str) else None}
     data = source["data"]
@@ -131,33 +161,56 @@ def _observations(source) -> dict:
                         "alerts": _count(local.get("pending_alerts"))},
             "history": {"sampled_events": _count(events.get("total")),
                         "sampled_high_severity": _count(events.get("high_severity_total")),
-                        "sample_truncated": bool(sample.get("truncated")),
+                        "sample_truncated": _flag(sample.get("truncated")),
                         "note": "stored past records; an old sampled error does not prove a "
                                 "current unresolved incident, and absence does not prove none"}}
 
 
+def _sources(sources: dict, now) -> dict:
+    """Per-source state under the accepted readiness rules, each with its OWN `observed_at` age.
+
+    `source_states` assesses the collector's known envelopes only, so no snapshot key reaches the
+    evidence, and an envelope whose collection failed is unavailable whatever its timestamp says.
+    """
+    assessed = readiness.source_states(sources, now)
+    projection = {}
+    for name, observed in assessed.items():
+        envelope = sources.get(name) if isinstance(sources.get(name), dict) else {}
+        status, error = envelope.get("status"), envelope.get("error")
+        projection[name] = {"status": safe_code(status) if isinstance(status, str) else "unknown",
+                            "error_type": safe_code(error) if isinstance(error, str) else None,
+                            "freshness": FRESHNESS.get(observed["state"], "unknown"),
+                            "freshness_reason": observed["reason"],
+                            "age_seconds": _seconds(observed["age_seconds"])}
+    return projection
+
+
 def monitoring_facts(document, now=None) -> dict:
-    """The bounded sanitized view of one collector capture, as conversation evidence."""
-    if not isinstance(document, dict) or not isinstance(document.get("sources"), dict):
-        return _unknown("snapshot_invalid")
-    collected = _moment(document.get("collected_at"))
+    """The bounded sanitized view of one collector capture, as conversation evidence.
+
+    The document's schema and every nested container it reads are validated here, so a malformed
+    capture is unknown evidence rather than a raised conversation error. Freshness is the accepted
+    `monitoring_readiness` judgement, not a second policy: a capture the readiness endpoint calls
+    stale is never described as the current state, and a retained stale capture is labelled
+    historical.
+    """
     now = now or datetime.now(timezone.utc)
-    age = int((now - collected).total_seconds()) if collected is not None else None
-    sources = {}
-    for name, envelope in list(document["sources"].items())[:SOURCE_LIMIT]:
-        name = safe_code(name)  # only a fixed-shape source name is carried
-        status = (envelope or {}).get("status") if isinstance(envelope, dict) else None
-        error = (envelope or {}).get("error") if isinstance(envelope, dict) else None
-        sources[name] = {"status": safe_code(status) if isinstance(status, str) else "unknown",
-                         "error_type": safe_code(error) if isinstance(error, str) else None}
+    if not isinstance(document, dict):
+        return _unknown("snapshot_invalid")
+    if document.get("schema") != readiness.SNAPSHOT_SCHEMA:
+        return _unknown("schema_unexpected")
+    sources = document.get("sources")
+    if not isinstance(sources, dict):
+        return _unknown("sources_unexpected")
+    state, reason, age = readiness.elapsed(document.get("collected_at"), now)
+    freshness = FRESHNESS.get(state, "unknown")
     return {"schema": MONITORING_SCHEMA, "availability": "observed", "reason_code": None,
             "authority": MONITORING_AUTHORITY,
-            "collected_at": document.get("collected_at") if collected is not None else None,
-            "age_seconds": age,
-            "freshness": "unknown" if age is None else ("current" if 0 <= age <= FRESH_SECONDS else "stale"),
-            "freshness_bound_seconds": FRESH_SECONDS, "sources": sources,
-            "fleet": _fleet(document["sources"].get("fleet")),
-            "observations": _observations(document["sources"].get("observations"))}
+            "collected_at": document["collected_at"] if freshness != "unknown" else None,
+            "age_seconds": _seconds(age), "freshness": freshness, "freshness_reason": reason,
+            "basis": BASIS[freshness], "freshness_bound_seconds": FRESH_SECONDS,
+            "sources": _sources(sources, now), "fleet": _fleet(sources.get("fleet")),
+            "observations": _observations(sources.get("observations"))}
 
 
 def snapshot_path():
@@ -168,19 +221,31 @@ def snapshot_path():
 
 def monitoring_evidence(path=None, now=None) -> dict:
     """Read the owner's runtime capture and sanitize it. This never raises and never fails a turn:
-    an absent, oversized, unreadable or malformed snapshot is an explicit unknown."""
+    an absent, oversized, unreadable or malformed snapshot is an explicit unknown.
+
+    One opened stream and one bounded read of `MONITORING_MAX_BYTES + 1` bytes, then the accepted
+    strict parse (UTF-8 only, duplicate keys and non-finite numbers refused): the same boundary the
+    readiness endpoint already applies to this very file.
+    """
     try:
         path = path if path is not None else snapshot_path()
-        if not path.is_file():
+        try:
+            with open(path, "rb") as stream:
+                # The extra byte only detects an oversized file; it is never parsed.
+                body = stream.read(MONITORING_MAX_BYTES + 1)
+        except FileNotFoundError:
             return _unknown("snapshot_missing")
-        if path.stat().st_size > MONITORING_MAX_BYTES:
+        except OSError:
+            return _unknown("snapshot_unreadable")
+        if len(body) > MONITORING_MAX_BYTES:
             return _unknown("snapshot_too_large")
-        document = json.loads(path.read_text("utf-8"))
-    except (OSError, ValueError, UnicodeDecodeError):
-        return _unknown("snapshot_unreadable")
+        try:
+            document = readiness.parse(body)
+        except (ValueError, RecursionError):
+            return _unknown("snapshot_unreadable")
+        return monitoring_facts(document, now)
     except Exception:  # configuration or filesystem surprises are unknown facts, not turn failures
         return _unknown("snapshot_unavailable")
-    return monitoring_facts(document, now)
 
 
 def clean_checkout(git, path: str, expected: str) -> None:
@@ -223,5 +288,6 @@ def execute_frontdesk(executor, task: dict, heartbeat=None, snapshot=None) -> di
             "execution_ref": result.get("execution_ref"), "basis_revision": result.get("basis_revision")}
 
 
-__all__ = ["DESK_OUTPUT", "FRESH_SECONDS", "MONITORING_SCHEMA", "PROMPT", "clean_checkout",
-           "execute_frontdesk", "monitoring_evidence", "monitoring_facts", "snapshot_path"]
+__all__ = ["ACCOUNTING_NOTE", "DESK_OUTPUT", "FRESH_SECONDS", "MONITORING_SCHEMA", "PROMPT",
+           "clean_checkout", "execute_frontdesk", "monitoring_evidence", "monitoring_facts",
+           "snapshot_path"]
