@@ -56,7 +56,7 @@ user's home; never copy files from outside the working directory into the change
 ## Environment
 - PATH `python` is the verified interpreter; `PYTHONPATH` is checkout `src` if any. Test
 `python -m pytest`, lint `python -m ruff check .`. No other interpreter except host
-`project_evidence` commands, verbatim.
+`project_evidence` commands, run verbatim.
 - Profile edit: run `python -m codex_harness.adapters.worker_profile_metadata`, Edit its digests
 into the manifest, rerun.
 - Bash: these commands and read-only git; other tool policy unchanged.
