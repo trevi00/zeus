@@ -100,3 +100,25 @@ Actual snapshot may be nonready for source failures; preserve that result rather
 Owner raw evidence stays on D with hashes; C dirty analysis preserved. No UI changes or visual
 rendering claim; no bootstrap/reboot or autonomous recovery claim. Report prior source vs implemented
 behavior vs actual operation separately. No next asset job automatically admitted.
+
+## Consolidated correction, 2026-09-19
+
+First candidate d37368b is not accepted: owner Windows focused run produced66 passes and2 setup/
+teardown errors before the deep-nesting test body. Pytest includes its >40k bytes parameter in the
+test ID; PYTEST_CURRENT_TEST exceeds Windows32767-character environment value limit. This is a
+test portability failure, not a demonstrated endpoint crash. Keep the full20,000-depth input and
+assertions; assign concise explicit IDs to the malformed-input parametrization. Do not reduce or
+skip the input. Native acceptance requires the actual test body to run successfully.
+
+Independent Zeus Codex also identified that rounding age to milliseconds before comparison turns
+19.9996 seconds into20, causing an early stale response. The roughly0.5ms window is not treated as
+a critical production incident or a reason for a broader review. Correct it in the same small batch:
+classify the unrounded/clamped age against20, and preserve numerical age without rounding so the
+reported age and state agree. Add cases19.9996 and19.999999 for snapshot and source, retain20 and
+future tolerance controls. This is an exact contract correction, not changed threshold policy.
+
+One corrective Claude implementation + independent review pair; same four allowed paths and no
+new architecture or scope. Preserve accepted HTTP/security/optional-source/recovery checks and
+first failed evidence; no full suite was run after the failed focus gate. First code CI was cancelled
+by the owner after the deterministic Windows failure, not reported as green. Run the final candidate's
+focused/full checks and CI. Update IMPLEMENTATION with these failures and actual correction results.
