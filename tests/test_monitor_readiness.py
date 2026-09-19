@@ -206,6 +206,13 @@ def test_broken_required_envelopes_are_named_without_echoing_them(tmp_path, enve
                                              'age_seconds': None}
 
 
+# Deep nesting may be refused by the parser (undecodable) or, where the parser decodes it, by
+# structural validation of the non-object `sources` (sources_unexpected). Both are the same safe
+# refusal; the required answer -- 503, ready false, invalid, no sources, no payload disclosure,
+# responsive server -- is asserted identically for either. No nesting-depth threshold is asserted.
+DEEP_NESTING_REASONS = ('undecodable', 'sources_unexpected')
+
+
 @pytest.mark.parametrize('payload, expected', [
     (b'', 'undecodable'),
     (b'{"schema": "harness-monitor.v1", "sources": ', 'undecodable'),
@@ -215,7 +222,7 @@ def test_broken_required_envelopes_are_named_without_echoing_them(tmp_path, enve
     (b'{"schema": "harness-monitor.v1", "collected_at": NaN, "sources": {}}', 'undecodable'),
     (b'{"schema": "harness-monitor.v1", "collected_at": Infinity, "sources": {}}', 'undecodable'),
     (b'{"schema": "harness-monitor.v1", "sources": ' + b'[' * 20000 + b']' * 20000 + b'}',
-     'undecodable'),
+     DEEP_NESTING_REASONS),
     (b'[]', 'not_an_object'),
     (b'"harness-monitor.v1"', 'not_an_object'),
     (b'null', 'not_an_object'),
@@ -234,10 +241,18 @@ def test_undecodable_snapshots_answer_503_with_no_sources_and_no_crash(monitor, 
     The explicit ids keep the full payloads out of the test id: a generated id for the 20 000-deep
     input pushes PYTEST_CURRENT_TEST past the Windows 32 767-character environment value limit and
     the case errors in setup before this body runs. The inputs themselves are unchanged.
+
+    `expected` is one fixed reason for every case except deep nesting, which accepts either of the
+    two documented safe refusals (DEEP_NESTING_REASONS) because the parser's nesting guard is not
+    reached identically on every platform; state, age and the empty sources stay exact.
     """
+    accepted = (expected,) if isinstance(expected, str) else expected
     replace(monitor.path, payload)
     answer = ready_answer(monitor, 503)
-    assert answer['snapshot'] == {'state': 'invalid', 'reason': expected, 'age_seconds': None}
+    snapshot = answer['snapshot']
+    assert set(snapshot) == {'state', 'reason', 'age_seconds'}
+    assert snapshot['state'] == 'invalid' and snapshot['age_seconds'] is None
+    assert snapshot['reason'] in accepted
     assert answer['sources'] == {}
 
 

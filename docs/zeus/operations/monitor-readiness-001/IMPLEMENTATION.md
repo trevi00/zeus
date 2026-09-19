@@ -2,8 +2,9 @@
 
 Worker: Claude, isolated Zeus worker, Linux. First candidate base revision
 `eb274f93ebe6d430f29d989540124d2c4220afd0`; the correction batch below was supplied with base
-`f444fc3180b0e88e1d1e053ebae9836cbff0099a`. Git commands were out of scope here, so both revisions
-are carried forward as supplied, not re-observed. Frame: `SPEC.md` in this
+`f444fc3180b0e88e1d1e053ebae9836cbff0099a`; the portable input acceptance batch below was supplied
+with base `45bc27b8f5b85b548b4a649f429d44c614cc98a5`. Git commands were out of scope here, so all
+three revisions are carried forward as supplied, not re-observed. Frame: `SPEC.md` in this
 directory, read in full and followed as fixed. Owner keeps the full suite, CI, deployment and the
 real stale/recovery observation against a running collector.
 
@@ -38,8 +39,10 @@ real stale/recovery observation against a running collector.
 - `adapters/monitoring_readiness.py` (new, pure and total): `readiness(snapshot_path, *,
   now=None)` returns the fixed `urn:zeus:monitor-readiness:1` dictionary. One `open` and one
   `read(MAX_SNAPSHOT_BYTES + 1)`; the extra byte only detects an oversized file. `parse` decodes
-  strict UTF-8 and refuses duplicate object keys and `NaN`/`Infinity`; deep nesting is refused by
-  the interpreter's recursion guard, which is caught with the other input errors. `elapsed`
+  strict UTF-8 and refuses duplicate object keys and `NaN`/`Infinity`; deeply nested input is
+  refused either there (the interpreter's recursion guard, caught with the other input errors) or,
+  where the parser decodes it, by the structural validation that follows — see the portable input
+  acceptance batch below. `elapsed`
   implements the timestamp rule (aware ISO 8601 only; `age < -5` invalid, `-5 <= age < 0` clamps
   to `0.0`, `0 <= age < 20` fresh, `age >= 20` stale; the clamped age is compared and reported
   unrounded, see the correction below). `snapshot_state`
@@ -63,7 +66,7 @@ real stale/recovery observation against a running collector.
 | fresh | `current` | `collected_at` within 20 s |
 | stale | `older_than_window` | `collected_at` 20 s or older |
 | invalid | `timestamp_missing` / `timestamp_unparsable` / `timestamp_naive` / `timestamp_in_future` | `collected_at` absent or not an aware moment, or more than 5 s ahead |
-| invalid | `too_large` / `undecodable` / `not_an_object` / `schema_unexpected` / `sources_unexpected` | over 5 MB; not strict UTF-8 JSON (BOM, duplicate keys, `NaN`/`Infinity`, truncation, excessive nesting); root not an object; `schema` not `harness-monitor.v1`; `sources` not an object |
+| invalid | `too_large` / `undecodable` / `not_an_object` / `schema_unexpected` / `sources_unexpected` | over 5 MB; not strict UTF-8 JSON (BOM, duplicate keys, `NaN`/`Infinity`, truncation, and nesting the parser refuses); root not an object; `schema` not `harness-monitor.v1`; `sources` not an object. Deeply nested input that the parser does decode falls to one of the structural codes instead, `sources_unexpected` for the nesting fixture |
 | unavailable | `file_missing` / `file_unreadable` | no snapshot file; the path could not be opened |
 
 Source states use `current`, `older_than_window`, the four timestamp codes, plus
@@ -107,12 +110,45 @@ owner after the deterministic Windows failure — neither has been reported gree
 accepted checks (HTTP contract, security headers, optional sources, recovery, concurrency,
 non-disclosure) were kept as they were and re-run unchanged.
 
+## Portable input acceptance batch (SPEC "Portable input acceptance clarification, 2026-09-19")
+
+Test and documentation only: the two allowed paths for this batch are
+`tests/test_monitor_readiness.py` and this file. No runtime code, threshold, route, skip,
+dependency, workflow or global setting was touched, and the deployed behaviour is unchanged.
+
+- **Reported observation (not mine)**: CI 35446193663, Linux Python 3.14, failed only the
+  `deep-nesting` reason assertion — the endpoint returned `503` with `invalid` /
+  `sources_unexpected` instead of `invalid` / `undecodable`. That receipt shows the parser reaching
+  structural validation and the non-object `sources` (a 20 000-deep array) being refused there. No
+  handler crash and no false `200`. I did not re-observe that CI run and did not run an extra probe
+  to establish which branch this Linux session takes, so the interpreter/runtime cause of the
+  difference stays **unknown** and is not needed: neither refusal is a failure.
+- **Correction made**: only the `deep-nesting` case now accepts either of the two documented
+  reasons, through the named constant `DEEP_NESTING_REASONS = ('undecodable',
+  'sources_unexpected')`. Everything else is retained: all 17 payloads byte-for-byte (including the
+  full 20 000-deep input, neither reduced nor skipped), the 17 concise ids, the test count, and the
+  single fixed reason expected by each of the other 16 cases. The body still asserts the exact
+  snapshot key set, `state == 'invalid'`, `age_seconds is None` and empty `sources`, and
+  `ready_answer` still asserts the `503`, `ready` false, the fixed answer keys, the reason being a
+  known code and the no-store/nosniff/JSON headers. A single-reason case is asserted exactly as
+  before; only the nesting case widened, and it widened to two safe refusals, not to "any reason".
+- **Prose corrected**: the earlier claim that deep input hits the interpreter's recursion guard on
+  every platform was wrong, and the reason table implied the same. Both are fixed above. The same
+  wrong claim also appears in the `parse` docstring in
+  `src/codex_harness/adapters/monitoring_readiness.py` (lines 46-51); that file is outside this
+  batch's allowed paths and the SPEC forbids runtime changes here, so it is left byte-identical and
+  recorded as a follow-up for the owner.
+- **Family**: this and the Windows test-id failure are both test/representation portability, not
+  endpoint safety defects. Neither is evidence of a runtime regression, and nothing here claims the
+  deployed endpoint improved.
+
 ## Verification
 
 Run here, with the output read:
 
 - `python -m pytest tests/test_monitor_readiness.py tests/test_monitoring.py -q -p no:cacheprovider`
-  — 69 passed on Linux (67 before this batch, plus the two sub-millisecond regressions). New file:
+  — 69 passed on Linux (67 before the correction batch, plus the two sub-millisecond regressions;
+  the portable input acceptance batch re-ran the same 69 and added no case). New file:
   the fixed contract over real HTTP; optional envelopes present/absent; the
   19.999 / 19.9996 / 19.999999 / 20 / 20.001 / -5 / -5.001 boundaries; collector-versus-source
   independence; broken
