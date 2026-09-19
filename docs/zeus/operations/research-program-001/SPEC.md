@@ -542,3 +542,21 @@ output bounds, safe argv, full raw accessibility and other consumers' readers un
 proposed next correction, not an implemented guarantee. Complete prompt remains the denominator;
 keep all meeting content and guards. Existing matrix and accepted results stand. No new live run,
 reconciliation, merge, deployment or provider call follows automatically from the unused slot.
+
+
+### Final slot189: timeout and measured whole-layout revision (2026-09-19)
+
+User requested resolving remainder; one Claude call consumed188->189.900s provider timeout
+produced no terminal answer/candidate. Three dirty files retained with hashes/patch, no source
+integration. Root owner review:16delivery tests passed/1failed, lintpassed. No automatic retry.
+
+Owner plan was too narrow: representative projection18813bytes is larger than the measured
+17819minimum. The specified two reader cuts cannot satisfy that complete test. Before another
+implementation, an offline WHOLE advisory-layout projection on the same failing fixture measured
+22473->21690bytes, unchanged22000limit, with inline meeting content and handles equal. This is
+design evidence only, not an implemented fix or live success. Apply the single measured layout
+across conductor objective, phase advisory metadata, reader guidance and empty optional fields;
+retain materiality obligations, isolation identity and all source/critical/unknown/argv/cursor
+contracts. Keep recovery and other reviewers unchanged. Same matrix/test inputs; no budget
+increase or semantic compression. See CONDUCTOR-FINAL-SLOT.md and raw design-projection.json.
+Current call budget exhausted189/189; paused. No further model execution is authorized here.
