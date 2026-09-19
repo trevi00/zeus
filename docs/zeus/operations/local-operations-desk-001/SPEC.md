@@ -246,3 +246,30 @@ Worker ruff only (node absent); owner npm typecheck/lint/build/browser and full 
 Finish original matrix, exactly two predeclared real browser turns, replay without extra call, no
 automatic implementation, CI, pinned release and hidden local desk service. Broad redesign and
 autonomous approvals remain excluded.
+
+## Consolidated browser-boundary acceptance repair
+
+Owner and independent review of de1514a agree on a single browser-state repair, not new features.
+Owner npm build actually fails TS2367 in fleet.tsx277/278; lint fails desk.tsx153/156 refs during
+render and194/199 effect state updates. Fix source patterns, no lint exceptions. npm typecheck alone
+did not exercise referenced application build; final npm build is required.
+
+The client-boundaries owner probe (injected Fetch responses, not a real model) confirms 503 becomes
+refused and stalled response.json is still pending after8.3s with signal not aborted. Keep deadline
+and external cancellation active through reading/parsing, handle already-aborted signals, always
+cleanup in outer finally. A fixed503/5xx error is uncertainty: server transaction commit response may
+be lost. Do not claim 'not stored', clear its ID, or allow new identity. Only explicit4xx validation/
+conflict is definite refusal. Persist/freeze the complete pending creation (UUID+title) as well as
+message (UUID+body), before POST. Reload/retry must reuse it; no erase-unresolved button. If storage
+cannot persist, refuse before POST with plain explanation (not a silent memory-only fallback).
+
+Serialize ALL history reads (poll/manual/post-send), or monotonically guard every response, and
+prevent old same-session responses from replacing newer history. Selection check alone is not enough.
+Unmount cancels and prevents state writes. Keep React ref updates in handlers/effects, not render.
+Create-state title stays frozen while uncertain. All plain-text states stay truthful. Concise UI copy:
+user sees actions and outcomes; keep receipt IDs/authority/wire jargon inside details, no new redesign.
+
+Implementation limited to existing desk client/view, fleet type error and UI.md<=35lines. Worker
+ruff only; owner executes npm lint/build, deterministic503/body-timeout and browser replay/reload/
+selection tests. Preserve accepted accounting, report diagrams and delivery. Repair review is scoped
+to these changed boundaries, not another exploratory pass.
