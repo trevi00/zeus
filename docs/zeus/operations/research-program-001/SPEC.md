@@ -1046,3 +1046,59 @@ migration; preserve their safety purpose. Worker runs focused four files and ruf
 Return one completed candidate with exact checks and limitations. One actual new canary only after acceptance
 and CI: max2 collection ticks/1 council, fail-stop, no automatic merge/deploy. Success requires full accepted
 cycle plus bounded second tick/stop; local-asset absorption and project view stay operational follow-up work.
+
+### Live006 result and Implementation014: informational notices on shared transport
+
+Accepted policy batch013: candidate e27c821, PR runtime f93aea2, independent Zeus Codex accepted;
+owner focused118/full2259passed455skipped/lint; actual prior4 input replays and original live005 proposal
+admitted without mutation; all required CI checks passed attempt1. Preserve this evidence; do not rework v2.
+Actual006: researcher, DBA, research lead, improvement lead, conductor all succeeded; then foreign_message.
+No worker/reviewer/promotion/tick2. Program blocked, Fleet paused/active0, calls207->212, token scan0.
+
+Observation (raw run006/foreign-message-diagnosis.json and foreign-notice-source.json): current conductor
+stream contains persisted execution.notice1aaaa20e6be3a2b02de593ab0352612eff409e80627af2d7fd1ec53cffeeb3bc
+for OLD autonomous:research-live-004.c001 taskd552756e-37e8-589d-8018-51ec68836f52; recorded at06:12:35Z
+as expired/deadline_exceeded. This is a genuine stored informational notice, not the current conductor result.
+Its Redis entry1789798392671-0 precedes the current succeeded conductor result. Rejection remains pending.
+Code path: Workflow.claim maintenance of older same-agent executions -> execution_notices.record -> global
+PG outbox -> current Redis namespace -> AutonomousRun._deliver correlation refusal. No tenant-scoped outbox
+exists. Invalid assumption: an isolated Redis namespace contains only the active correlation when its outbox
+and execution store are shared. Narrow failure family: informational side effects are treated as foreign
+workflow commands. No claim that all cross-project message routing is now solved or supported concurrently.
+
+Owner design: recognize ONLY valid, route-authorized, durably proven execution.notice as informational even
+when its correlation differs. Reuse execution_notices.receive, which checks stored transition digest and exact
+message and idempotent inbox binding, in a transaction; commit BEFORE ACK. Do not use Workflow.handle's
+terminal parking shortcut as proof of a notice. Receipt authority remains informational_only. It may neither
+queue a task/decision, grant a provider invocation, count as current task.result, change current cycle status,
+nor authorize promotion. Observe accepted/ack using existing event contracts. A failed proof/storage/commit
+never ACKs and leaves current run safely refused with a fixed diagnostic (no original source text).
+
+Apply the SAME distinction at both reachable boundaries: AutonomousRun._deliver (includes CouncilRun relay)
+and LocalCycle._deliver (the next implementation/review transport). A foreign notice, even for a terminal
+operation, must pass the notice proof rather than falling through permissive parking. Preserve existing
+same-correlation notice behavior, foreign task/result/review/hook refusal or existing authorized terminal
+parking, and current MESSAGE_DRAIN bound. A small shared helper in application/execution_notices.py is
+acceptable if needed. No blanket correlation bypass, skipping/deleting/ACKing unproven messages, outbox
+schema/routing migration, global-state cleanup, retries, new bus, or auth/budget/role changes.
+
+One acceptance matrix/batch:
+- A recorded foreign notice before current report is committed+ACKed, current report still handled once;
+  conductor relay completes and a bounded fixture council can reach its existing implementation path.
+- Identical redelivery is idempotent; conflicting body/id, missing notice, invalid transition digest or sender,
+  schema/route rejection never become informational success or advance current work.
+- Notice with terminal operation metadata is still proven; no parking-before-proof bypass.
+- Storage/commit failure: no ACK; subsequent delivery can retry informational persistence only. No model call.
+- Foreign command/task.result/review.result remains refused/pending unless existing terminal parking permits;
+  own notice behavior unchanged. Interleaved two correlations and finite drain retain all messages/ownership.
+- Assert no extra task/decision/provider entry/promotion from the notice, and source data stays unchanged.
+- LocalCycle and AutonomousRun tests use real execution_notices.record/receive + workflow/store with labelled
+  transport fixtures. Owner separately compares the actual006 envelope/PG evidence. No real model calls in tests.
+- Timeout/cancel/restart: existing receive idempotency and commit-before-ACK; no new background ownership.
+  Pure application branching is platform neutral; existing platform CI applies. No resource cleanup changes.
+
+Allowed: application/autonomous.py, local_cycle.py, execution_notices.py; directly related tests
+(test_autonomous.py,test_council.py,test_local_cycle.py,test_execution_notices.py and one focused new test
+file if needed); docs/contracts.md. Claude runs related focused tests plus ruff, owner full suite/CI.
+One consolidated completed candidate, no research expansion. Actual006 stays terminal and untouched.
+Any next live execution is a new run after acceptance, same2ticks/1council/fail-stop/no merge/deploy.
