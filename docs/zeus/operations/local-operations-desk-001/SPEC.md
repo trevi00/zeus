@@ -273,3 +273,26 @@ Implementation limited to existing desk client/view, fleet type error and UI.md<
 ruff only; owner executes npm lint/build, deterministic503/body-timeout and browser replay/reload/
 selection tests. Preserve accepted accounting, report diagrams and delivery. Repair review is scoped
 to these changed boundaries, not another exploratory pass.
+
+## Consolidated backend evidence/exit repair
+
+Owner focused tests191 passed on integrated6e535795. Independent review accepts the receipt/recovery
+design and reports three concrete remaining boundaries: malformed nested snapshot can raise, finite
+mode receives subscription explanation, and storage-stop returns CLI exit0. Owner synthetic mutation
+of the actual collector capture also reproduces60s-old marked current while existing readiness says
+stale, and source observed_at age being omitted. These directly affect truthful progress answers.
+
+Keep this repair to frontdesk.py sanitizer, application/frontdesk.py stop summary, frontdesk_cli.py
+exit result and focused tests. Reuse accepted monitoring_readiness elapsed/source_states/parse and
+their20s/<5s future rules instead of a new120s policy. Preserve capture and per-source freshness
+alongside sanitized facts; stale data can be retained only explicitly historical. Validate nested
+container types, schema and bounded reads; malformed documents are unknown evidence, never a thrown
+conversation error. No raw values/paths/errors escape. Subscription explanation only for confirmed
+subscription; finite says ceiling applies, unknown makes no ceiling claim. Explicit null mode is
+malformed (unknown), not an absent legacy field. Tests must use actual producer-shaped captures,
+then mutate60s capture, old source timestamp, finite/unknown mode and malformed jobs/lanes.
+
+Runner storage failure must be a durable summary failure and nonzero CLI exit; graceful stop and
+normal idle --once stay0. Include a focused injected storage-loss CLI regression. No redesign of
+accepted receipt ownership, transport, HTTP or owner delivery. Run focused tests + ruff, BACKEND.md
+<=35lines. No extra exploration/full suite; owner final browser + CI completes original matrix.
