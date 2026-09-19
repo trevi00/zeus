@@ -1,8 +1,9 @@
 # Implementation: monitor readiness (monitor-readiness-001)
 
-Worker: Claude, isolated Zeus worker, Linux. Base revision
-`eb274f93ebe6d430f29d989540124d2c4220afd0` as supplied with the task; Git commands were out of
-scope here, so the revision is carried forward, not re-observed. Frame: `SPEC.md` in this
+Worker: Claude, isolated Zeus worker, Linux. First candidate base revision
+`eb274f93ebe6d430f29d989540124d2c4220afd0`; the correction batch below was supplied with base
+`f444fc3180b0e88e1d1e053ebae9836cbff0099a`. Git commands were out of scope here, so both revisions
+are carried forward as supplied, not re-observed. Frame: `SPEC.md` in this
 directory, read in full and followed as fixed. Owner keeps the full suite, CI, deployment and the
 real stale/recovery observation against a running collector.
 
@@ -40,7 +41,8 @@ real stale/recovery observation against a running collector.
   strict UTF-8 and refuses duplicate object keys and `NaN`/`Infinity`; deep nesting is refused by
   the interpreter's recursion guard, which is caught with the other input errors. `elapsed`
   implements the timestamp rule (aware ISO 8601 only; `age < -5` invalid, `-5 <= age < 0` clamps
-  to `0.0`, `0 <= age < 20` fresh, `age >= 20` stale; ages rounded to milliseconds). `snapshot_state`
+  to `0.0`, `0 <= age < 20` fresh, `age >= 20` stale; the clamped age is compared and reported
+  unrounded, see the correction below). `snapshot_state`
   maps every structural failure to a state and empty `sources`; a structurally valid snapshot with
   a broken `collected_at` still assesses every envelope. `envelope_state` never looks inside
   `data`. Constants: `MAX_SNAPSHOT_BYTES = 5_000_000`, `FRESH_SECONDS = 20`,
@@ -69,13 +71,51 @@ Source states use `current`, `older_than_window`, the four timestamp codes, plus
 `collection_failed` (`status` is not `ok`). `age_seconds` is a number only for fresh and stale,
 otherwise null. Unknown source names are ignored, so no snapshot key is echoed.
 
+## Correction batch (SPEC "Consolidated correction, 2026-09-19")
+
+Two defects in the first candidate `d37368b`, both fixed here in the same four allowed paths. No
+new module, route, constant or threshold; the response contract is unchanged.
+
+- **Test portability, reported by the owner's native Windows focused run**: 66 passed with 2
+  setup/teardown errors. Pytest embeds the parameter itself in the test id, so the 20 000-deep
+  nesting payload made `PYTEST_CURRENT_TEST` exceed the Windows 32 767-character environment value
+  limit and the case errored *before* its body ran. That is a failure of the test id, not a
+  demonstrated handler crash — the endpoint behaviour was never observed on Windows for that case.
+  Fix: explicit concise `ids=` for the 17-case malformed-input parametrization (`empty`,
+  `truncated`, `bom`, `invalid-utf8`, `duplicate-key`, `nan`, `infinity`, `deep-nesting`,
+  `root-array`, `root-string`, `root-null`, `schema-absent`, `schema-other`,
+  `schema-not-a-string`, `sources-absent`, `sources-array`, `sources-string`). The payloads and
+  assertions are untouched; the 20 000-deep input is neither reduced nor skipped. Collected ids are
+  now at most ~112 characters including the file path, so the body runs. Verified by reading
+  `--collect-only` output here on Linux; the Windows environment-variable limit itself can only be
+  re-observed by the owner's native run.
+- **Sub-millisecond early stale, reported by independent Zeus Codex review**: `elapsed` rounded the
+  age to milliseconds *before* comparing it with the 20 s window, so 19.9996 s and 19.999999 s
+  became `20.0` — a stale answer, with a reported age that then contradicted a fresh reading of the
+  same moment. Fix: clamp only (`age = max(0.0, age)`), classify that number, and report that same
+  number. The window, the future tolerance and the clamp are unchanged; this restores the exact
+  contract rather than retuning policy. Regressions added to the existing boundary parametrization,
+  which asserts the snapshot and all three required sources together: 19.9996 and 19.999999 are
+  `fresh`/`current` with those exact ages, while the 19.999 / 20 / 20.001 / -5 / -5.001 controls
+  stay as accepted. Under the old rounding both new cases would classify `stale` with age `20.0`
+  and fail these assertions; that discriminating control was **not executed** in a disposable copy,
+  because arbitrary `python` invocation (and copying the tree to a scratch directory) is denied in
+  this session — it is reasoning over the diff, not an observation.
+
+No full suite was run after the first failed focus gate, and the first CI run was cancelled by the
+owner after the deterministic Windows failure — neither has been reported green. The remaining
+accepted checks (HTTP contract, security headers, optional sources, recovery, concurrency,
+non-disclosure) were kept as they were and re-run unchanged.
+
 ## Verification
 
 Run here, with the output read:
 
 - `python -m pytest tests/test_monitor_readiness.py tests/test_monitoring.py -q -p no:cacheprovider`
-  — 67 passed. New file: the fixed contract over real HTTP; optional envelopes present/absent; the
-  19.999 / 20 / 20.001 / -5 / -5.001 boundaries; collector-versus-source independence; broken
+  — 69 passed on Linux (67 before this batch, plus the two sub-millisecond regressions). New file:
+  the fixed contract over real HTTP; optional envelopes present/absent; the
+  19.999 / 19.9996 / 19.999999 / 20 / 20.001 / -5 / -5.001 boundaries; collector-versus-source
+  independence; broken
   required envelopes; 17 malformed snapshot payloads (empty, truncated, BOM, invalid UTF-8,
   duplicate key, `NaN`, `Infinity`, 20 000-deep nesting, wrong root, wrong schema, wrong `sources`)
   each 503 with no sources and no handler failure; missing file and directory path; the 5 MB limit
@@ -86,6 +126,9 @@ Run here, with the output read:
   404, query string ignored; four threads polling while the file is atomically replaced 20 times
   (40 responses, every one a complete fresh-or-stale answer, `ready` always matching the status).
 - `python -m ruff check .` — All checks passed.
+- `python -m pytest tests/test_monitor_readiness.py -p no:cacheprovider --collect-only -q`, read to
+  confirm the new ids (this is the evidence for the portability fix; it collects only the readiness
+  file and runs nothing).
 
 Not run by me, by instruction: the full suite, CI, any Git, Docker or service command, and any
 deployed-collector observation. The concurrency test's atomic replacement retries briefly on

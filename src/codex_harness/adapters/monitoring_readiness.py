@@ -63,7 +63,8 @@ def parse(body):
 
 def elapsed(value, now):
     """(state, reason, age) for one timestamp. Aware ISO 8601 only: absent, malformed, naive or
-    more than the tolerance in the future is invalid; a small future skew clamps to zero age."""
+    more than the tolerance in the future is invalid; a small future skew clamps to zero age. The
+    age is neither rounded nor truncated, so the returned state and age always agree."""
     if not isinstance(value, str) or not value:
         return 'invalid', 'timestamp_missing', None
     try:
@@ -78,7 +79,9 @@ def elapsed(value, now):
         return 'invalid', 'timestamp_unparsable', None
     if age < -FUTURE_TOLERANCE_SECONDS:
         return 'invalid', 'timestamp_in_future', None
-    age = round(max(0.0, age), 3)
+    # Classify the clamped age itself: rounding first would push 19.9996 s over the window and
+    # report a stale state beside a fresh age. State and reported age must come from one number.
+    age = max(0.0, age)
     return ('fresh', 'current', age) if age < FRESH_SECONDS else ('stale', 'older_than_window', age)
 
 

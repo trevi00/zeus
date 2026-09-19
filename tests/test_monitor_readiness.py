@@ -139,6 +139,10 @@ def test_present_optional_envelopes_are_assessed_and_absent_ones_omitted(monitor
 
 @pytest.mark.parametrize('age, expected, clamped', [
     (19.999, ('fresh', 'current'), 19.999),
+    # Sub-millisecond ages below the window stay fresh: rounding to milliseconds before the
+    # comparison used to report these as stale (regression, monitor-readiness-001 correction).
+    (19.9996, ('fresh', 'current'), 19.9996),
+    (19.999999, ('fresh', 'current'), 19.999999),
     (20, ('stale', 'older_than_window'), 20.0),
     (20.001, ('stale', 'older_than_window'), 20.001),
     (-FUTURE_TOLERANCE_SECONDS, ('fresh', 'current'), 0.0),
@@ -221,9 +225,16 @@ def test_broken_required_envelopes_are_named_without_echoing_them(tmp_path, enve
     (b'{"schema": "harness-monitor.v1"}', 'sources_unexpected'),
     (b'{"schema": "harness-monitor.v1", "sources": []}', 'sources_unexpected'),
     (b'{"schema": "harness-monitor.v1", "sources": "database"}', 'sources_unexpected'),
-])
+], ids=['empty', 'truncated', 'bom', 'invalid-utf8', 'duplicate-key', 'nan', 'infinity',
+        'deep-nesting', 'root-array', 'root-string', 'root-null', 'schema-absent', 'schema-other',
+        'schema-not-a-string', 'sources-absent', 'sources-array', 'sources-string'])
 def test_undecodable_snapshots_answer_503_with_no_sources_and_no_crash(monitor, payload, expected):
-    """Injected malformed bytes (fixtures): every one is bounded input, never a handler failure."""
+    """Injected malformed bytes (fixtures): every one is bounded input, never a handler failure.
+
+    The explicit ids keep the full payloads out of the test id: a generated id for the 20 000-deep
+    input pushes PYTEST_CURRENT_TEST past the Windows 32 767-character environment value limit and
+    the case errors in setup before this body runs. The inputs themselves are unchanged.
+    """
     replace(monitor.path, payload)
     answer = ready_answer(monitor, 503)
     assert answer['snapshot'] == {'state': 'invalid', 'reason': expected, 'age_seconds': None}
