@@ -7,6 +7,8 @@ triage family of identical status and reason code, never a confirmed cause, and 
 accepted only because the owner recorded it.
 """
 import json
+import logging
+import signal
 from copy import deepcopy
 from types import SimpleNamespace
 
@@ -367,3 +369,100 @@ def test_runner_reconciles_once_per_tick_and_its_failure_never_blocks_admission(
     assert degraded["reconciliation"] == {"state": "unavailable", "error_type": "RuntimeError"}
     assert degraded["admitted"] == ["op-4"] and launcher.launched == ["op-4"]
     assert degraded["finalized"][0]["status"] == "accepted"
+
+
+class NoAdmissionLauncher:
+    """Launcher port with every ceiling exhausted: the real runner admits and launches nothing."""
+
+    constructed: list[dict] = []
+
+    def __init__(self, config, environment):
+        NoAdmissionLauncher.constructed.append(config)
+
+    def budget_exhausted(self, budget):
+        return True
+
+    def launch(self, job):
+        raise AssertionError("this test must never launch a process")
+
+    def wait(self, handles, seconds):
+        return list(handles)
+
+    def outcome(self, handle, job):
+        raise AssertionError("this test must never produce an outcome")
+
+
+def test_actual_fleet_cli_run_reconciles_through_the_real_runner(tmp_path, monkeypatch):
+    """The shipped `zeus fleet run` entrypoint, not a spy: `fleet_cli.execute` builds the real
+    `FleetRunner`, so the adapter wiring itself must turn two historical failures into one durable
+    candidate. Only the launcher is a fixture, and it admits nothing."""
+    from codex_harness.adapters import fleet_cli, fleet_runtime
+
+    f = fleet(tmp_path)
+    finish(f, "op-1", "failed", "child_refused")
+    finish(f, "op-2", "failed", "child_refused")
+    assert [k for k in f.store.data if k[0] == BUCKET_INVESTIGATIONS] == []
+    NoAdmissionLauncher.constructed = []
+    monkeypatch.setattr(fleet_runtime, "LaneLauncher", NoAdmissionLauncher)
+    enqueue(f, "op-3")                     # queued work stays queued: only reconciliation runs
+    # Only the terminal rows are compared: Fleet itself still records the blocking reason of the
+    # queued job during admission.
+    terminal = {(BUCKET_JOBS, "op-1"), (BUCKET_JOBS, "op-2")}
+    before = {k: deepcopy(v) for k, v in f.store.data.items() if k in terminal}
+    installed = {name: signal.getsignal(getattr(signal, name))
+                 for name in ("SIGINT", "SIGTERM", "SIGBREAK") if hasattr(signal, name)}
+    try:
+        summary = fleet_cli.execute(SimpleNamespace(store=f.store),
+                                    SimpleNamespace(fleet_command="run", once=True))
+    finally:
+        # The entrypoint installs real handlers; restore this process before the next test.
+        for name, handler in installed.items():
+            signal.signal(getattr(signal, name), handler)
+    assert summary["exit_code"] == 0 and summary["admitted"] == [] and summary["finalized"] == []
+    assert summary["reconciliation"] == {"state": "ok", "error_type": None}
+    assert [config["id"] for config in NoAdmissionLauncher.constructed] == ["fleet-1"]
+    candidate = portfolio(f.store).status()["investigations"][0]
+    assert candidate["count"] == 2 and candidate["job_ids"] == ["op-1", "op-2"]
+    assert candidate["state"] == "research_required" and candidate["reason_code"] == "child_refused"
+    # Reconciliation reads the Fleet rows and never rewrites a recorded outcome.
+    assert {k: v for k, v in f.store.data.items() if k in terminal} == before
+
+
+def test_reconciliation_transitions_are_logged_once_and_never_leak_the_exception(tmp_path, caplog):
+    """A long-running service only returns its summary at shutdown, so the state change itself is
+    logged: once on entering unavailable, once on recovery, with no repetition in between."""
+    f = fleet(tmp_path)
+    finish(f, "op-1", "failed", "child_refused")
+    finish(f, "op-2", "failed", "child_refused")
+    outage = {"active": True}
+
+    def flaky():
+        if outage["active"]:
+            raise RuntimeError("injected reconciliation outage (fixture) " + CANARY)
+        reconcile(f.store)
+
+    enqueue(f, "op-3")
+    launcher = FixtureLauncher({"op-3": {"status": "accepted", "reason_code": "lead_accepted", "exit_code": 0}})
+    runner = FleetRunner(f, launcher, interval=0, reconcile=flaky)
+    caplog.set_level(logging.INFO, logger="zeus.fleet.runner")
+
+    def logged():
+        return [record.levelname + " " + record.getMessage() for record in caplog.records
+                if record.name == "zeus.fleet.runner"]
+    degraded = runner.run(once=True)
+    assert degraded["reconciliation"] == {"state": "unavailable", "error_type": "RuntimeError"}
+    # Unrelated admission keeps running through the outage.
+    assert degraded["admitted"] == ["op-3"] and degraded["finalized"][0]["status"] == "accepted"
+    assert logged() == ["WARNING portfolio reconciliation unavailable; fleet admission continues"]
+    runner.run(once=True)                  # the identical failure repeats and stays silent
+    assert len(logged()) == 1
+    outage["active"] = False
+    recovered = runner.run(once=True)
+    assert recovered["reconciliation"] == {"state": "ok", "error_type": None}
+    assert logged()[-1] == "INFO portfolio reconciliation recovered"
+    runner.run(once=True)                  # still ok: no second recovery line
+    assert len(logged()) == 2
+    text = caplog.text
+    assert CANARY not in text and "RuntimeError" not in text and "Traceback" not in text
+    candidate = portfolio(f.store).status()["investigations"][0]
+    assert candidate["count"] == 2 and candidate["job_ids"] == ["op-1", "op-2"]
