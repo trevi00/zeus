@@ -2,7 +2,7 @@
   "id": "worker-v1",
   "version": "1",
   "document": "worker-profile-v1.md",
-  "document_sha256": "bd60e87ba2216a7811b9feeb203672120c98d84dd2949225936648c914af661d",
+  "document_sha256": "807092b822dbb198f1fb3d9d694dbd7f767fbd0c01686b87701f602272aa19c9",
   "hook": "worker_profile_hook.py",
   "hook_sha256": "fd6ecaf37282071107d4d38fa3cddc17a7197bfb20dd9cf5134e0142d5927b82",
   "character_limit": 6000,
@@ -134,6 +134,15 @@
       "pinned_sha256": "4c27943aeb7db3251c6ba288971dbfde07c736ed87d992339687ef5cdfab314b",
       "scope": "Selected two-strike research-first policy and caller inspection; upstream tests not run",
       "disposition": "Adapt session-level normalized symptom detection and bounded research handoff; replace shared temp JSON with session SQLite; no auto-dispatch, automatic writeback or verified-cause inference"
+    },
+    {
+      "source": "hermes-agent",
+      "path": "agent/learn_prompt.py",
+      "commit": "59f9ff8dbc75b9c4f07ae10174df730f7882a505",
+      "blob": "db50f95aa3196fb19f265d0491ca93f63b4f2c84",
+      "pinned_sha256": "14529273cc4c1f371e9f2843cfd5a1ced9c3bba16acc6304d418b1f8a38f12c1",
+      "scope": "Prerequisite/verification and extend-the-existing-owner principles adapted with the local missing-history incident; upstream code read only, never executed or copied",
+      "disposition": "Principles rewritten as prompt guidance in the existing worker-v1 document; no machine preflight, upstream prompt text, skill mutation or validation engine adopted"
     }
   ],
   "note": "Selected only by runtime.worker_profile; assignment messages and model output never choose it. The document is delivered, adherence is not judged by delivery."

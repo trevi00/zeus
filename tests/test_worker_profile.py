@@ -79,7 +79,8 @@ def test_the_packaged_profile_verifies_and_carries_its_provenance():
     assert "Always return BOTH `summary` and `tests`; neither is optional." in reporting
     assert "Legacy `tests`: only the exact commands you ran, one per string" in reporting
     assert "no arrows, results, counts or unrun commands, those belong in `summary`" in reporting
-    assert {source["source"] for source in profile["sources"]} == {"baldrix", "harness", "guardian"}
+    assert {source["source"] for source in profile["sources"]} == {"baldrix", "harness", "guardian",
+                                                                   "hermes-agent"}
     assert all(source["pinned_sha256"] and source["commit"] for source in profile["sources"])
     assert all(rule.startswith("Bash(") for rule in profile["permissions_allow"])
     assert profile["hook_path"].is_file() and len(profile_digest(profile)) == 64
@@ -254,7 +255,7 @@ def test_the_metadata_command_is_one_exact_allow_and_every_earlier_grant_is_pres
     assert set(manifest["permissions"]) == {"allow"} and manifest["character_limit"] == module.MAX_CHARACTERS
     assert manifest["hooks"] == ["SessionStart", "PostToolUse(Bash)",
                                  "PostToolUseFailure(Bash|Edit|Glob|Grep|Read|Write)"]
-    assert len(manifest["sources"]) == 12
+    assert len(manifest["sources"]) == 13
     assert {source["path"] for source in manifest["sources"]} >= {
         "scripts/lib/repeat_error_tracker.py", "scripts/lib/strike_dispatcher.py",
         "scripts/cli/strike_research_consume.py"}
