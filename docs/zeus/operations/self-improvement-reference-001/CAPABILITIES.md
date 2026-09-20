@@ -23,6 +23,11 @@ is navigation only; no family is closed merely because its files were listed or 
 
 ## Recorded capability decisions
 
+- Hermes experience/prerequisite guidance: **bounded adaptation implemented and accepted**
+  into the existing Zeus worker profile; see [PREREQUISITE-ABSORPTION.md](PREREQUISITE-ABSORPTION.md).
+  Container checks 67 passed; owner Windows checks 65 passed / 2 platform skips.
+  This is one prompt-level behavior, not full skill-manager/source-file adoption or deployment.
+
 - Cancellation/resource ownership comparison: **reuse existing Zeus owner**, accepted for
   this bounded decision; see [OWNERSHIP-DECISION.md](OWNERSHIP-DECISION.md). Windows checks
   32 passed / 1 skipped include a real disposable sleeping-container cleanup. No full-family

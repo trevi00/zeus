@@ -418,3 +418,12 @@ python -m ruff check . . No full suite, unrelated tests, model calls or environm
 inside the worker. Existing owner full-suite evidence covers unchanged runtime; owner
 independently inspects exact diff and reruns these affected checks. Finish when these pass.
 Deployment remains separate and the prior failed Fleet job stays failed.
+
+Absorption completion: candidate f80fdd37c662e509640026783e71438348a6effe accepted by
+independent Fleet Codex review and owner. Worker container checks 67 passed; owner
+Windows 65 passed / 2 environment skips, metadata and ruff exit 0. Profile is 5985
+characters with valid hashes; earlier provenance/permissions/hooks preserved. The
+existing source-count assertion also changes 12 to 13 because one source was added;
+the two-strike/project-delivery checks were relevant to compressed existing wording.
+See PREREQUISITE-ABSORPTION.md for evidence and limits. Integrated into task branch,
+no deployment or automatic successor. This bounded reference adaptation is complete.
