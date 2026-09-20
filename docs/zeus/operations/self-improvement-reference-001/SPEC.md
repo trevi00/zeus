@@ -555,3 +555,158 @@ Batch: consolidate and merge reviewed work; deploy verified artifacts; perform b
 automatic-continuation acceptance and connect remaining absorption backlog. Research only
 unresolved release/launcher contracts that affect this path. Minor unrelated findings remain
 follow-up notes; a missing release authority is an explicit blocker, not a direct PG toggle.
+
+### Operating connection handoff (same frame)
+
+## Operating connection: existing source audit scheduler to the current host
+
+Observed obstacle: current operating tasks are Fleet, desk, monitor and observation collection.
+Public PG has 58 pinned Ouroboros partitions but no deployment/active or research activation.
+The existing supervisor owns a separate Compose postgres/redis topology; starting it against
+the current host is not a verified connection to the live PG/Redis/artifact store. The manual
+two-task canary used existing owners successfully but is not a persistent operating service.
+
+Implement one thin host entry point using existing scheduler/Workflow/Executor/Redis/Observer
+owners. No second analysis engine, source reader, promotion authority or budget ledger.
+Codex manages the release authorization and scheduled-task wiring outside the implementation.
+
+Scope: `zeus audit-service run` and `status` (one focused adapter plus CLI registration, tests,
+contract and implementation note). Use existing configuration for repository, runtime, database,
+Redis namespace, model selection and subscription usage. The runtime holds the existing audit
+artifacts/checkpoints, not a fresh store. The service executes source audit work only; no feed
+research, unrelated implementation, source execution, Git merge or deployment. Unknown actions
+are reported and left unexecuted. Do not activate a release or bypass Releases in this command.
+
+Run requires research_control activation=active and matching current repository revision/graph.
+One host owner per configured runtime via a process-lifetime lock; duplicate owner starts no
+provider. One task at a time. Call existing schedule_audits (do not reimplement its generation
+deduplication), existing outbox/Redis and Workflow acceptance/ack semantics. Only matching
+audit tasks may be claimed via Executor.execute_one's expected id/correlation/status guard.
+For the initial operating scope execute audit_partition only. Other audit actions can remain
+durably queued with a clear not-supported-by-this-service status; do not claim full ingestion
+or proposal automation. No modification to scheduler semantics is required for this scope.
+
+Audit selection is an explicit operator-provided `--audit-id` to prevent unrelated partition
+work being executed. schedule_audits may produce global assignments; retain all of them in
+their proper queues. Do not consume/ack someone else's message simply to bypass it. If existing
+bus/scheduler contracts cannot support this narrow scope cleanly, report that exact boundary
+before implementing a parallel queue or mutating unrelated tasks. Prefer an optional filter in
+the existing scheduler with backwards-compatible default over a new scheduler.
+
+Success: persist task result and collect observations, then schedule/execute the next eligible
+generation. Before next admission require predecessor succeeded; failed/blocked/retry/unknown
+or unresolved execution requires stop, no automatic retry. Restart with an unfinished/running
+attempt is explicit reconciliation-required, never inferred permission to repeat. Keep the
+historical failed manual task outside this service's own operation boundary; do not rewrite it.
+Use durable existing schedule/task records as authority and a narrowly named service state for
+owner/current task/last result only. No extra knowledge promotion or new completion claim.
+
+`--max-tasks 2` is an explicit finite canary mode, not a subscription call cap; stop after two
+successful task completions, preserve queued successor. Default continuous operation uses the
+same path. `--once`/finite idle observation must avoid hanging tests. Task timeout and model
+usage continue to use existing policy. On signal/service owner exit, existing process-tree
+owner handles children; don't invent detached subprocesses or restart a lost attempt.
+
+Logs: use existing observation owner for general/development/operations facts with safe IDs,
+counts and reason codes only. Record start, scheduler admission, task binding, completion,
+checkpoint generation/remaining counts, pause/failure and collection health. Preserve existing
+schema allowlists; if a new event is needed add one narrow defined event instead of arbitrary
+attributes. status and monitor-readable health expose current task, predecessor/result,
+checkpoint and stop reason; no prompt, credentials, source text or false semantic count.
+
+Acceptance: matching active release normal two-task continuation; inactive/stale activation
+starts zero providers; duplicate owner/duplicate tick cannot double-run; actual result/checkpoint
+drives successor; failure and restart unknown stop without retry; unrelated queue work preserved;
+finite exit retains evidence and releases owned resources. Fixture versus real Redis/PG/model
+evidence must be explicit. Existing source read tests establish inert inspection separately.
+Worker runs focused contract tests and ruff; Codex runs actual host canary after review/CI.
+No model calls or service changes inside the worker. This closes operating connection only,
+not full-source analysis, all ingestion adapters or guaranteed semantic progress.
+
+Integration observation (2026-09-21 KST): PR #167 merged as
+ae2d8c9ab8ede22c5b27d7421189cf28ca531b73 after run 35517643047 attempt 1:
+four Windows/Linux Python jobs, service integration and CI gate passed (docs-only job
+correctly skipped). The merge's src/tests match the reviewed candidate exactly.
+Runtime-167 is a clean pinned checkout, not yet the running service at this observation.
+Worker image 90ffff67b95a9c49d7fec4bf3fb0dfdc53d212d8e80d73e26fbf61f7208fdb82
+and research image 36701e6ce1d30dc506807d0e445851217f10c60bcdf26ba39f79760b9675214a
+each match all 224 packaged source files. Existing ReleaseRunner actual Codex file canary
+passed in the research image; this does not certify research service activation.
+Claude connection job self-improvement-reference-001-audit-service is executing through
+Fleet; keep the running job intact and drain before switching service launchers.
+
+Owner scope correction: the dispatch manifest misspelled the existing observation-domain
+owner as domain/observations.py. The actual owner is domain/observation.py; changes confined
+to narrow event definitions in that existing file are authorized by this frame. Do not create
+a duplicate module. The already-dispatched manifest stays immutable; if its exact-path gate
+rejects this owner typo, preserve that failed gate and use explicit owner review of the
+corrected scope rather than another implementation/model retry or a retroactive green record.
+
+### Consolidated admission review and one correction batch
+
+Candidate b2dfc16550276a7b80df19a8d90b0f5589923480 is retained on this task branch for
+correction, NOT accepted or deployed. Owner read the complete adapter, scheduler/CLI diff,
+contract and tests against the fixed matrix. One material finding (P1), with two triggers:
+activation is checked only at startup and stop is checked only at step entry. A queued
+successor therefore executes after activation is paused; a stop observed during Redis
+delivery also still enters Executor.execute_one. These break the actual admission boundary.
+
+Deterministic injected probes in D:/workspaces/zeus/artifacts/self-improvement-reference-001/
+owner-probes/test_admission.py both failed against the clean candidate (5.35 seconds).
+Using the submitted connected/runner fixtures: (A) validate activation, execute one step,
+change research_control/activation.status to paused, then step again: executor call count
+becomes 2 instead of staying 1. (B) wrap bus.receive to call runner.stop() before returning
+the normal message: executor calls becomes 1 instead of 0. MemoryStore/fixture executor;
+no real signal, provider, PG or Redis was invoked. A mirrors the paused control transition
+created by Releases.rollback; B calls the same stop method as the registered signal handler.
+
+Claude correction scope: audit_service.py, tests/test_audit_service.py, this task's
+AUDIT-SERVICE.md and the directly affected INV-AUDIT-SERVICE-001 wording only. Add a single
+coherent admission guard that observes stop and current release/activation/graph at each
+new admission, including after blocking delivery and immediately before executor entry.
+An observed pause/stale release, unavailable gate or stop must leave queued work intact,
+record the reason, and start zero new executions. Do not kill or reinterpret an already
+admitted attempt. Preserve existing failure/restart/expected-task fences and scoped relay.
+Add both reproductions as safe-result regressions, plus active normal continuation and a
+gate read failure after startup. Do not invent a second release owner or directly toggle PG.
+
+Nonblocking accuracy correction: foreign Redis entries are claimed into this consumer's
+PEL and left unacknowledged for recovery; they are not literally unconsumed. Correct that
+wording, retain bounded reads and no ACK/handling of foreign work. Dedicated routing is
+not a blocker for this serial selected-audit delivery. Monitor-specific UI wiring remains
+explicitly deferred; generic task/observation records and the service status remain visible.
+
+Verification allocation is explicit: worker runs ONLY
+python -m pytest tests/test_audit_service.py tests/test_research_audits.py -q
+and python -m ruff check . . Owner/CI owns the required whole-suite check in a historical
+checkout. Do NOT rerun the full suite, historical-schema check or signing checks in the
+snapshot, change global git configuration, install ssh-keygen or bypass permissions. The
+first worker reported 18 new tests passed, 93 combined passed, but its full snapshot suite
+had 1 git-ownership/history failure and 51 missing-ssh-keygen errors. Four full-suite
+processes were observed, including unchanged-code diagnostic reruns: preserve that history;
+another broad run to recover filtered output is not this correction's verification.
+
+Finish this correction after the exact focused commands and regression matrix pass.
+No new feature, source acquisition, model calls, deployment or further speculative review.
+
+
+### Accepted correction and operating deployment receipt (2026-09-21 KST)
+
+PR #167 is now deployed at runtime-167/ae2d8c9; Fleet, monitor, observation collector and
+web desk launchers use that pinned checkout. Worker image 90ffff67b95a is active. Receipt:
+D:/workspaces/zeus/artifacts/self-improvement-reference-001/deployment-002/receipt.json.
+The earlier deployment-001 failed on taskkill output decoding and restored launchers; its
+failure is preserved. C home repository dirty-file hashes remained unchanged.
+
+Actual Claude correction b056f84d-7aee-5ce8-a780-7c24f7de3897 used that new worker image.
+Candidate 3c99ffff9087a62012914af75775f7bd4b349a40 passed its two allocated commands
+(98 tests and ruff) and the isolated claim verifier. Independent Codex lead decision
+89c029e4-4e59-45b6-b085-924d0d20e4c5 accepted it; Fleet job admission is accepted.
+Owner reran both original injected probes unchanged: 2 passed in 5.35 seconds, JUnit
+owner-probes/fixed.xml on D. These demonstrate the previously failing pause/stop boundary,
+not live PG/Redis or a delivered OS signal. Documentation now distinguishes delivered/ACKed
+messages from the queued execution row; no second implementation round for wording.
+
+The first audit-service Fleet job remains failed/evidence_gate_refused, with its candidate
+retained and corrected, never retroactively accepted. Service source is accepted for CI;
+actual release activation and two-task host canary remain required before continuous audit.

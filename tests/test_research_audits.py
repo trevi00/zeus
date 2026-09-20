@@ -784,6 +784,27 @@ def test_scheduler_deduplicates_and_resumes_checkpoint_generation(audit):
     assert schedule_audits(service.workflow) == 0
 
 
+def test_narrowed_scheduling_covers_one_audit_and_leaves_other_queues_untouched(audit):
+    """self-improvement-reference-001: the optional `audit_id` filter, default behaviour unchanged."""
+    from codex_harness.application.scheduling import schedule_audits
+    service, record, _, _, _ = audit
+    partitions = service.partition(record['id'], 1)
+    other = PartitionCheckpoint('other-audit-fixture', digest({'other': 'audit'}), 0,
+                                ['cGF0aA=='], [], [], ['cGF0aA=='], [], [], 'pending')
+    other.validate()
+    with service.store.transaction() as tx:
+        tx.put('research_partitions', other.partition_id, asdict(other))
+    activate_fixture(service)
+    assert schedule_audits(service.workflow, audit_id=record['id']) == len(partitions)
+    assert schedule_audits(service.workflow, audit_id=record['id']) == 0
+    with service.store.transaction() as tx:
+        assert [r for r in tx.scan('schedule')] and all(
+            r.get('partition_id') != other.partition_id for r in tx.scan('schedule'))
+    # The unnarrowed pass is unchanged: it still admits the remaining work exactly once.
+    assert schedule_audits(service.workflow) == 1
+    assert schedule_audits(service.workflow) == 0
+
+
 def test_real_runner_failure_retains_command_evidence(audit, tmp_path, monkeypatch):
     from codex_harness.adapters.audit_runner import AuditRunner
     service, _, source, _, _ = audit

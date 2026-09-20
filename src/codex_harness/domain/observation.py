@@ -108,6 +108,17 @@ REGISTRY = {
     "operations.collection_completed": {"files": _I, "records": _I, "inserted": _I, "duplicates": _I,
                                         "conflicts": _I, "corrupt": _I, "truncated_tail": _I,
                                         "unconfirmed_audits": _I},
+    # self-improvement-reference-001: the host audit service's own facts. Identifiers, fixed codes
+    # and counts only; a partition's paths, the model's cursor, prompts and source text never
+    # reach a log, and a remaining count is scope arithmetic, not a semantic review credit.
+    "operations.audit_service_started": {"audit_id": _S, "release_id": _S, "revision": _S,
+                                         "max_tasks": _NI, "partitions": _I},
+    "operations.audit_service_scheduled": {"audit_id": _S, "created": _I, "pending": _I,
+                                           "foreign_messages": _I},
+    "operations.audit_service_task": {"audit_id": _S, "task_id": _S, "partition_id": _S,
+                                      "generation": _NI, "status": _S, "remaining_paths": _NI,
+                                      "remaining_subsystems": _NI, "open_questions": _NI},
+    "operations.audit_service_stopped": {"audit_id": _S, "completed_tasks": _I, "error_type": _N},
     "operations.alert_suppressed": {"kind": _S, "suppressed": _I},
     "operations.alert_pending": {"kind": _S, "channel": _N, "pending": _I},
     "operations.autonomous_stage": {"run_id": _S, "stage": _S, "state": _S},
