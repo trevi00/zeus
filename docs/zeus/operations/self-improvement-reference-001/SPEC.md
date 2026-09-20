@@ -364,3 +364,57 @@ See AUDIT-CANARY.md and vocabulary-verification-003/receipt.json for scope and h
 The runtime matches the two-task actual canary. Task-branch integration only; automatic
 Fleet failure is preserved, and no release activation or whole-reference completion is
 claimed. Stop this bounded delivery rather than expanding it into another investigation.
+
+### Continued absorption: experience prerequisites in the existing worker profile
+
+User authorized continuing reference absorption. One bounded deliverable: adapt Hermes
+learn-prompt's prerequisite/verification and extend-existing-owner principles to Zeus's
+existing packaged worker profile, informed by the actual missing-history incident above.
+This is prompt guidance, not a new enforced preflight, successful model compliance,
+knowledge promotion, full repository adoption or deployment. No runtime engine/hook change.
+
+Source facts, inspected 2026-09-20: Hermes agent/learn_prompt.py at
+59f9ff8dbc75b9c4f07ae10174df730f7882a505, lines 43-52 require prerequisites, pitfalls and
+verification; lines 172-190 prefer extending existing skills and incremental sources.
+hermes_cli/cli_commands_mixin.py:1906-1914 queues this prompt as a normal turn, not a
+validation engine. tests/agent/test_learn_prompt.py:46-108 tests prompt content (read,
+not executed). The local incident provides the historical-Git prerequisite; it is not
+an upstream implementation feature. No upstream code is copied or run.
+
+Complete affected path: packaged worker-profile-v1.md -> manifest normalized digest ->
+load_profile -> ClaudeCodeRuntime append-system-prompt / isolated worker profile binding
+-> existing digest-bearing hook evidence. Profile delivery does not prove adherence.
+The existing worker profile is the SSOT; do not create a competing skill or authority.
+
+Claude implementation scope (ONLY this final section):
+- Edit worker-profile-v1.md near Environment/Verification to require checking the named
+  checks' prerequisites before repeated attempts: supplied checkout/history, tools and
+  services. A snapshot is not a historical checkout. On known missing prerequisites,
+  run available scoped checks, report blocked check + evidence + exact owner prerequisite;
+  never disable the check, widen permissions, fabricate history or embed an ad-hoc probe
+  in product/tests to bypass restrictions. Ordinary tools/services available: proceed.
+- This adapts experience into existing guidance, not a machine preflight guarantee. Keep
+  all reporting, two-strike, authority, external-data and verification guarantees intact.
+  Stay within the existing 6000-character cap, using concise wording; do not raise it.
+- Add manifest provenance: source hermes-agent; path agent/learn_prompt.py; commit above;
+  blob db50f95aa3196fb19f265d0491ca93f63b4f2c84;
+  pinned_sha256 14529273cc4c1f371e9f2843cfd5a1ced9c3bba16acc6304d418b1f8a38f12c1;
+  scope/disposition describe principles adapted with local incident, no code executed/copied.
+  Preserve existing provenance/permissions/hooks. Update document digest using the existing
+  python -m codex_harness.adapters.worker_profile_metadata command, no custom scripts.
+- Update only the existing provenance-set expectation in tests/test_worker_profile.py to
+  include hermes-agent. Do not add text-mirroring tests or alter runtime/test behavior.
+
+Acceptance matrix: normal profile load/delivery and exact provenance pass existing tests;
+stale hash/oversize/unknown profile and redaction retain existing rejection tests; hook
+behavior, task ownership, concurrency/restart and permissions unchanged. Existing tests
+include subprocess protocol fixtures, not real Claude compliance. Windows host checks
+only; no new WSL or upstream execution claim. Prior live analysis evidence is unaffected.
+
+Verification is explicitly narrowed for this data-only change: run
+python -m codex_harness.adapters.worker_profile_metadata (after digest edit, exit 0),
+python -m pytest tests/test_worker_profile.py tests/test_worker_profile_metadata.py,
+python -m ruff check . . No full suite, unrelated tests, model calls or environment edits
+inside the worker. Existing owner full-suite evidence covers unchanged runtime; owner
+independently inspects exact diff and reruns these affected checks. Finish when these pass.
+Deployment remains separate and the prior failed Fleet job stays failed.
