@@ -689,3 +689,24 @@ another broad run to recover filtered output is not this correction's verificati
 Finish this correction after the exact focused commands and regression matrix pass.
 No new feature, source acquisition, model calls, deployment or further speculative review.
 
+
+### Accepted correction and operating deployment receipt (2026-09-21 KST)
+
+PR #167 is now deployed at runtime-167/ae2d8c9; Fleet, monitor, observation collector and
+web desk launchers use that pinned checkout. Worker image 90ffff67b95a is active. Receipt:
+D:/workspaces/zeus/artifacts/self-improvement-reference-001/deployment-002/receipt.json.
+The earlier deployment-001 failed on taskkill output decoding and restored launchers; its
+failure is preserved. C home repository dirty-file hashes remained unchanged.
+
+Actual Claude correction b056f84d-7aee-5ce8-a780-7c24f7de3897 used that new worker image.
+Candidate 3c99ffff9087a62012914af75775f7bd4b349a40 passed its two allocated commands
+(98 tests and ruff) and the isolated claim verifier. Independent Codex lead decision
+89c029e4-4e59-45b6-b085-924d0d20e4c5 accepted it; Fleet job admission is accepted.
+Owner reran both original injected probes unchanged: 2 passed in 5.35 seconds, JUnit
+owner-probes/fixed.xml on D. These demonstrate the previously failing pause/stop boundary,
+not live PG/Redis or a delivered OS signal. Documentation now distinguishes delivered/ACKed
+messages from the queued execution row; no second implementation round for wording.
+
+The first audit-service Fleet job remains failed/evidence_gate_refused, with its candidate
+retained and corrected, never retroactively accepted. Service source is accepted for CI;
+actual release activation and two-task host canary remain required before continuous audit.

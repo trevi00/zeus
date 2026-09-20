@@ -59,8 +59,9 @@ immediately before `Executor.execute_one`, because delivery blocks and the relea
 a message is in flight. A paused, rolled back or stale release, a changed revision or graph, a gate
 read that fails (`activation_unavailable`: unknown is not permission), or a stop (`service_stopped`,
 the method the signal handler calls) binds no task, enters no executor and starts zero work; the
-queued assignment, its outbox record and its stream entry stay exactly as they are and the reason is
-recorded in `stop_reason` and the durable row. The guard governs admission only: an attempt already
+task remains queued and the reason is recorded in `stop_reason` and the durable row. Delivery may
+already have published the outbox and acknowledged this assignment before that second gate;
+the gate itself does not undo delivery or claim execution. The guard governs admission only: an attempt already
 inside the executor keeps its binding and is never killed, retried or reinterpreted by it, and the
 existing reconciliation then decides that attempt on the next start.
 
@@ -113,7 +114,8 @@ tests/test_research_audits.py tests/test_audit_output_vocabulary.py tests/test_o
 tests/test_observation_boundaries.py tests/test_monitoring.py`, the full `python -m pytest` suite and
 `python -m ruff check .`; the observed results are reported with the candidate. That full snapshot
 suite had one git-ownership/history failure and 51 missing-`ssh-keygen` errors, which are missing
-host prerequisites of the snapshot, not results of this service.
+snapshot prerequisite failures. A baseline countercheck was not completed, so they are not
+claimed to be independently proven pre-existing; the historical checkout CI owns the full check.
 
 Admission-guard correction (this batch): the allocated worker checks are exactly
 `python -m pytest tests/test_audit_service.py tests/test_research_audits.py -q` and
