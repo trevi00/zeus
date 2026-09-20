@@ -113,21 +113,47 @@ def test_a_tampered_document_or_hook_is_refused(monkeypatch, tmp_path):
         load_profile("worker-v1")
 
 
-def test_an_oversized_document_is_refused_rather_than_truncated(monkeypatch, tmp_path):
-    manifest = json.loads(module._resource_path("worker-profile-v1.json").read_text("utf-8"))
-    document = "# big\n" + ("x" * 80 + "\n") * 80
-    assert len(document) > module.MAX_CHARACTERS
-    manifest["document_sha256"] = module._sha256(document)
-    _redirect(monkeypatch, tmp_path, "worker-profile-v1.md", document)
+def _packaged_with(monkeypatch, tmp_path, document, name):
+    """Serve `document` as the packaged one under a manifest that pins exactly those bytes.
+
+    The document is written as bytes, so a CRLF fixture reaches the loader as CRLF on every host.
+    """
     original = module._resource_path
-    copy = tmp_path / "worker-profile-v1.json"
-    copy.write_text(json.dumps(manifest), encoding="utf-8")
-    redirected = module._resource_path
-    monkeypatch.setattr(module, "_resource_path",
-                        lambda n: copy if n == "worker-profile-v1.json" else redirected(n))
-    with pytest.raises(WorkerProfileError, match="exceeds 6000 characters"):
+    manifest = {**json.loads(original("worker-profile-v1.json").read_text("utf-8")),
+                "document_sha256": module._sha256(document)}
+    directory = tmp_path / name
+    directory.mkdir()
+    served = {"worker-profile-v1.md": directory / "worker-profile-v1.md",
+              "worker-profile-v1.json": directory / "worker-profile-v1.json"}
+    served["worker-profile-v1.md"].write_bytes(document.encode("utf-8"))
+    served["worker-profile-v1.json"].write_text(json.dumps(manifest), encoding="utf-8")
+    monkeypatch.setattr(module, "_resource_path", lambda n: served.get(n) or original(n))
+
+
+def test_the_document_limit_is_a_boundary_on_normalized_characters(monkeypatch, tmp_path):
+    """15000 normalized characters load; one more is refused, with the digest still matching."""
+    exact = "# limit\n" + "é" * (module.MAX_CHARACTERS - 9) + "\n"
+    assert len(exact) == module.MAX_CHARACTERS < len(exact.encode("utf-8"))
+    _packaged_with(monkeypatch, tmp_path, exact, "exact")
+    profile = load_profile("worker-v1")
+    assert profile["characters"] == module.MAX_CHARACTERS == 15000
+    assert profile["document"] == exact and profile["document_sha256"] == module._sha256(exact)
+    monkeypatch.undo()
+    # CRLF line ends are normalized before the count, so the same document is still inside.
+    _packaged_with(monkeypatch, tmp_path, exact.replace("\n", "\r\n"), "crlf")
+    assert load_profile("worker-v1")["characters"] == module.MAX_CHARACTERS
+
+
+def test_an_oversized_document_is_refused_rather_than_truncated(monkeypatch, tmp_path):
+    over = "# big\n" + "é" * (module.MAX_CHARACTERS - 6) + "\n"
+    assert len(over) == module.MAX_CHARACTERS + 1
+    _packaged_with(monkeypatch, tmp_path, over, "over")
+    with pytest.raises(WorkerProfileError, match="exceeds 15000 characters"):
         load_profile("worker-v1")
-    monkeypatch.setattr(module, "_resource_path", original)
+    monkeypatch.undo()
+    _packaged_with(monkeypatch, tmp_path, "# big\n" + ("x" * 80 + "\n") * 400, "big")
+    with pytest.raises(WorkerProfileError, match="exceeds 15000 characters"):
+        load_profile("worker-v1")
 
 
 def test_a_manifest_naming_another_profile_or_non_bash_rules_is_refused(monkeypatch, tmp_path):

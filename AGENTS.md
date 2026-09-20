@@ -1,5 +1,11 @@
 # Codex harness implementation rules
 
+This file is the entry point for the rules common to every agent working in this repository. The
+conventions for durable guidance documents — the layers, one canonical owner per rule, and what is
+actually delivered to a run versus what is reference-only — are indexed by
+[`docs/context/README.md`](docs/context/README.md). That index is documentation: linking it loads
+nothing, selects no role and grants no authority over the contracts in `docs/contracts.md`.
+
 ## Local workspace placement
 
 - On this Windows host, put new worktrees under `D:\workspaces\zeus\worktrees`, raw evidence under `D:\workspaces\zeus\artifacts`, and temporary work under `D:\workspaces\zeus\scratch`. WSL accesses these through `/mnt/d/workspaces/zeus`. Do not create review folders directly under the user's home.
@@ -80,7 +86,7 @@
 - After changing `src/codex_harness/resources/worker-profile-v1.md`, a worker runs exactly
   `python -m codex_harness.adapters.worker_profile_metadata` from the checkout root, with no
   arguments, and copies the reported `document_sha256` into `worker-profile-v1.json` with Edit. The
-  JSON observation carries the normalized character count, the 6000 limit, the computed digest,
+  JSON observation carries the normalized character count, the 15000 limit, the computed digest,
   `digest_matches` and `within_limit`. Exit 0: the manifest matches. Exit 1: stale digest, overlong
   document or a named input failure (the computed facts are still reported when they exist).
   Exit 2: arguments were passed.

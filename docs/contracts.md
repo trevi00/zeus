@@ -17,6 +17,7 @@ Comments cite invariant IDs and explain non-obvious local reasons, without dupli
 Organization SSOT: `src/codex_harness/resources/organization.json`.
 Wire schema SSOT: `src/codex_harness/resources/message.schema.json`.
 Runtime policy SSOT: `src/codex_harness/domain/policy.py`.
+Guidance-document conventions (layers, one owner per rule, actual delivery): `docs/context/README.md`.
 The trusted local-process identity boundary is documented in status.md; validation is not authentication.
 
 ## Research enforcement stage
@@ -786,8 +787,11 @@ configured `runtime.worker_profile`; an assignment message, task detail or model
 chooses one, and an unconfigured run keeps every existing option, flag, settings value and
 environment exactly as before. Selection is verified before any probe or process: an unknown name,
 a manifest that names another profile, a document or hook whose bytes disagree with the manifest,
-a document over the character limit, or a rule that widens anything but Bash is refused whole and
-never truncated or narrowed. The document travels as the `--append-system-prompt` value and the
+a document over the character limit (15000 normalized characters for the common worker document,
+declared once in `adapters/worker_profile.py` and repeated only by its manifest, which must
+agree), or a rule that widens anything but Bash is refused whole and never truncated or narrowed.
+That ceiling bounds this one packaged document: per-run project delivery, project-skill admission
+and context composition keep their own separate budgets, and it sets no model token allowance. The document travels as the `--append-system-prompt` value and the
 hooks and Bash rules travel inside the per-run `--settings` value; the recorded command carries
 the profile's id, version, digests, source digests and transport names, never the text. The
 host's own hooks, settings files and home directory are neither read into the run nor modified,

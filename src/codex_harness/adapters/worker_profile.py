@@ -26,7 +26,10 @@ from codex_harness.domain.model import ContractError, digest, require
 
 RESOURCES = "codex_harness.resources"
 PROFILES = {"worker-v1": "worker-profile-v1.json"}
-MAX_CHARACTERS = 6000
+# The user authorized 15000 normalized characters for this common profile. It is a ceiling for
+# the packaged document only: per-run project delivery, project-skill admission and research
+# budgets keep their own separate limits, and this number sets no model token allowance.
+MAX_CHARACTERS = 15000
 HOOK_EVENTS = ("SessionStart", "PostToolUse", "PostToolUseFailure")
 HOOK_TOOL_MATCHER = "Bash"
 # two-strike-001: the failure event is registered for the tools whose failures the hook can

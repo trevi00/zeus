@@ -2,10 +2,10 @@
   "id": "worker-v1",
   "version": "1",
   "document": "worker-profile-v1.md",
-  "document_sha256": "807092b822dbb198f1fb3d9d694dbd7f767fbd0c01686b87701f602272aa19c9",
+  "document_sha256": "1db4d3e46bfc4409420b0658d2f1d52059c7fd4481c3666af692ac9db85f8896",
   "hook": "worker_profile_hook.py",
   "hook_sha256": "fd6ecaf37282071107d4d38fa3cddc17a7197bfb20dd9cf5134e0142d5927b82",
-  "character_limit": 6000,
+  "character_limit": 15000,
   "hooks": [
     "SessionStart",
     "PostToolUse(Bash)",
