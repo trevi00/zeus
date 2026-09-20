@@ -19,6 +19,12 @@ from codex_harness.domain.council import SCHEMA_AUTONOMOUS_V2, validate_council_
 from codex_harness.domain.dge import parse_deadline
 from codex_harness.domain.model import ContractError, digest
 from codex_harness.domain.operation import ID, REVISION, SHA256, safe_relative_path
+from codex_harness.domain.research_investigations import SOURCE as INVESTIGATION
+from codex_harness.domain.research_investigations import (
+    InvestigationRefused,
+    dispatch_counts,
+    validate_source,
+)
 from codex_harness.domain.usage_policy import NUMERIC_FIELDS, UsagePolicyError, accounting_mode
 from codex_harness.domain.usage_policy import headroom as policy_headroom
 from codex_harness.domain.usage_policy import validate_budget as policy_budget
@@ -29,6 +35,8 @@ CAPTURE_SCHEMA = "urn:zeus:research-capture:1"
 MONITOR_SCHEMA = "urn:zeus:research-program-monitor:1"
 CONFIG_FIELDS = {"schema", "id", "base_revision", "deadline", "interval_seconds", "max_cycles", "max_adoptions",
                  "budget", "topics", "local_candidates", "template"}
+# Opt-in only: an absent `investigation_source` keeps the legacy canonical config and digest exactly.
+OPTIONAL_CONFIG_FIELDS = {"investigation_source"}
 BUDGET_FIELDS = set(NUMERIC_FIELDS)  # the legacy finite shape; `mode` is optional (usage_policy)
 TOPIC_FIELDS = {"id", "keywords"}
 LOCAL_FIELDS = {"id", "topic", "path", "sha256", "rationale"}
@@ -42,7 +50,7 @@ KEYWORD = re.compile(r"^[a-z0-9][a-z0-9 ._+#/-]{0,63}$")
 TOKEN = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$")
 SAFE_CODE = re.compile(r"^[A-Za-z0-9_.:-]{1,80}$")
 EXTERNAL_SOURCES = ("github", "geeknews")
-SOURCES = ("local", *EXTERNAL_SOURCES)
+SOURCES = ("local", *EXTERNAL_SOURCES)   # the discovery feeds; investigations are not a fetched feed
 
 PAUSED, ACTIVE, COMPLETED, BLOCKED = "paused", "active", "completed", "blocked"
 STATES = frozenset({PAUSED, ACTIVE, COMPLETED, BLOCKED})
@@ -122,7 +130,8 @@ def validate_config(document, policy) -> dict:
     council validator (one copy of those rules) and must carry the SAME base and budget."""
     if not isinstance(document, dict) or document.get("schema") != CONFIG_SCHEMA:
         raise ProgramRefused("config_schema")
-    _fields(document, CONFIG_FIELDS, "root")
+    if not CONFIG_FIELDS <= set(document) or set(document) - CONFIG_FIELDS - OPTIONAL_CONFIG_FIELDS:
+        raise ProgramRefused("config_fields", "root")
     if type(document["id"]) is not str or PROGRAM_ID.fullmatch(document["id"]) is None:
         raise ProgramRefused("config_invalid", "id")
     if type(document["base_revision"]) is not str or REVISION.fullmatch(document["base_revision"]) is None:
@@ -163,9 +172,17 @@ def validate_config(document, policy) -> dict:
         raise ProgramRefused("template_base_mismatch", "template.base_revision")
     if template["budget"] != budget:
         raise ProgramRefused("template_budget_mismatch", "template.budget")
-    return {"schema": CONFIG_SCHEMA, "id": document["id"], "base_revision": document["base_revision"],
-            "deadline": deadline, "interval_seconds": interval, "max_cycles": cycles, "max_adoptions": adoptions,
-            "budget": budget, "topics": topics, "local_candidates": locals_, "template": template}
+    canonical = {"schema": CONFIG_SCHEMA, "id": document["id"], "base_revision": document["base_revision"],
+                 "deadline": deadline, "interval_seconds": interval, "max_cycles": cycles, "max_adoptions": adoptions,
+                 "budget": budget, "topics": topics, "local_candidates": locals_, "template": template}
+    if "investigation_source" in document:
+        # Opt-in portfolio consumption: it authorizes ONLY this program's unchanged template plan for
+        # the named projects and fixed reason codes, never arbitrary repairs or a wider scope.
+        try:
+            canonical["investigation_source"] = validate_source(document["investigation_source"], {t["id"] for t in topics})
+        except InvestigationRefused as exc:
+            raise ProgramRefused(exc.reason_code, exc.field) from exc
+    return canonical
 
 
 def config_digest(config: dict, repository: str) -> str:
@@ -190,7 +207,11 @@ def normalize_url(url) -> str | None:
 
 
 def candidate_key(source: str, identity: str) -> str:
-    return ("local:" if source == "local" else "url:") + identity
+    if source == "local":
+        return "local:" + identity
+    if source == INVESTIGATION:   # synthesized in the store transaction only, never from a feed item
+        return INVESTIGATION + ":" + identity
+    return "url:" + identity
 
 
 def candidate_id(key: str) -> str:
@@ -215,8 +236,10 @@ def match_topics(topics: list, title, summary) -> dict:
 
 
 def order_key(entry: dict) -> tuple:
-    """Stable order: owner-authorized local first, then topic, id, url lexical."""
-    return (0 if entry["source"] == "local" else 1, entry.get("topic") or "", entry["id"], entry.get("url") or "")
+    """Stable order: authorized investigations first (repeated observed failures outrank new leads),
+    then owner-authorized local, then external; inside a rank topic, id and url decide."""
+    rank = {INVESTIGATION: 0, "local": 1}.get(entry["source"], 2)
+    return (rank, entry.get("topic") or "", entry["id"], entry.get("url") or "")
 
 
 def headroom(budget: dict, counts: dict) -> dict:
@@ -275,15 +298,20 @@ def run_id(program_id: str, number: int) -> str:
 def snapshot_document(*, program_id: str, number: int, base_revision: str, fetched_at: str, candidate: dict,
                       sources: dict, local_bytes_sha256: str | None, github_detail: dict) -> dict:
     """The bounded canonical capture: identity, reason, source-status map and references only.
-    Capture records are unverified source data, not approved knowledge."""
-    return {"schema": CAPTURE_SCHEMA, "program": program_id, "cycle": number, "base_revision": base_revision,
-            "fetched_at": fetched_at,
-            "candidate": {k: candidate.get(k) for k in ("id", "key", "source", "url", "path", "sha256", "title",
-                                                          "summary", "topic", "reason", "content_sha256")},
-            "source_status": {name: {k: sources[name].get(k) for k in ("status", "code", "artifact", "fetched_at", "items")}
-                              for name in SOURCES if name in sources},
-            "local_bytes_sha256": local_bytes_sha256, "github_detail": github_detail,
-            "trust": "unverified discovery lead; not primary-source verification, not approved knowledge"}
+    Capture records are unverified source data, not approved knowledge. An investigation candidate
+    additionally carries its IMMUTABLE bridge snapshot verbatim (identities, fixed codes and bounded
+    job references); local and external captures keep their existing shape exactly."""
+    document = {"schema": CAPTURE_SCHEMA, "program": program_id, "cycle": number, "base_revision": base_revision,
+                "fetched_at": fetched_at,
+                "candidate": {k: candidate.get(k) for k in ("id", "key", "source", "url", "path", "sha256", "title",
+                                                            "summary", "topic", "reason", "content_sha256")},
+                "source_status": {name: {k: sources[name].get(k) for k in ("status", "code", "artifact", "fetched_at", "items")}
+                                  for name in SOURCES if name in sources},
+                "local_bytes_sha256": local_bytes_sha256, "github_detail": github_detail,
+                "trust": "unverified discovery lead; not primary-source verification, not approved knowledge"}
+    if candidate.get("source") == INVESTIGATION and isinstance(candidate.get("snapshot"), dict):
+        document["investigation"] = candidate["snapshot"]
+    return document
 
 
 def earliest(left: str, right: str) -> str:
@@ -338,18 +366,20 @@ def expired(deadline: str, now: str) -> bool:
 
 # ----- projections ------------------------------------------------------------------------------------
 def cycle_view(cycle: dict) -> dict:
+    """Legacy entries keep their keys; `investigations` is the additive bridge receipt (bounded
+    counts, the claimed investigation id and its dispatch result) and stays None when disabled."""
     keys = ("id", "number", "status", "counts", "sources", "selection", "budget", "capture", "council", "result",
-            "failure", "stop_reason", "remaining", "started_at", "updated_at", "finished_at")
+            "failure", "stop_reason", "remaining", "started_at", "updated_at", "finished_at", "investigations")
     return {k: cycle.get(k) for k in keys}
 
 
 def candidate_view(candidate: dict) -> dict:
     keys = ("id", "source", "topic", "status", "reason", "url", "path", "first_cycle", "last_cycle", "seen",
-            "claimed_cycle", "result")
+            "claimed_cycle", "result", "investigation")
     return {k: candidate.get(k) for k in keys}
 
 
-def program_view(row: dict, cycles: list, candidates: list) -> dict:
+def program_view(row: dict, cycles: list, candidates: list, dispatches: list | None = None) -> dict:
     """`urn:zeus:research-program-status:1`: identities, state, counts, codes and per-cycle facts;
     never the template text, config bodies, exception text, DSNs or feed bodies."""
     config = row["config"]
@@ -368,6 +398,9 @@ def program_view(row: dict, cycles: list, candidates: list) -> dict:
                            "claimed": sum(c["status"] == CLAIMED for c in candidates),
                            "ignored": sum(c["status"] == IGNORED for c in candidates)},
             "cycle_receipts": [cycle_view(c) for c in ordered],
+            # Dispatch is counted separately from acceptance: a claimed or dispatched investigation is
+            # work in flight, and an accepted council is still not an owner disposition or a fix.
+            "investigations": dispatch_counts(list(dispatches or [])),
             "authority": "research program status; counts from the store, not model claims; no merge, deploy or truth"}
 
 
@@ -395,7 +428,7 @@ def monitor_projection(programs: list, cycles: list) -> dict:
 
 
 __all__ = ["ACTIVE", "BLOCKED", "CAPTURE_SCHEMA", "CLAIMED", "COMPLETED", "CONFIG_SCHEMA", "ELIGIBLE", "HEADROOM",
-           "IGNORED", "MONITOR_SCHEMA", "PAUSED", "STATUS_SCHEMA", "ProgramRefused", "candidate_id", "candidate_key",
-           "capture_path", "capture_ref", "config_digest", "council_result", "derive_manifest", "headroom",
-           "match_topics", "monitor_projection", "normalize_url", "program_view", "select_candidate",
+           "IGNORED", "INVESTIGATION", "MONITOR_SCHEMA", "PAUSED", "STATUS_SCHEMA", "ProgramRefused", "candidate_id",
+           "candidate_key", "capture_path", "capture_ref", "config_digest", "council_result", "derive_manifest",
+           "headroom", "match_topics", "monitor_projection", "normalize_url", "program_view", "select_candidate",
            "snapshot_document", "validate_config"]

@@ -24,6 +24,7 @@ from codex_harness.application.research_program import ResearchProgram
 from codex_harness.domain.autonomous import manifest_digest
 from codex_harness.domain.model import ContractError, canonical, digest, utcnow
 from codex_harness.domain.operation import safe_relative_path
+from codex_harness.domain.research_investigations import SOURCE as INVESTIGATION
 from codex_harness.domain.research_program import (
     CAPTURE_ROOT,
     EXTERNAL_SOURCES,
@@ -194,6 +195,10 @@ def render_report(view: dict) -> str:
              " -> autonomous:2 council (research -> DBA -> leads -> conductor -> implement -> review -> promotion) -> result", "",
              "Candidates: total " + str(view["candidates"]["total"]) + ", eligible " + str(view["candidates"]["eligible"])
              + ", claimed " + str(view["candidates"]["claimed"]) + ", ignored " + str(view["candidates"]["ignored"]), "",
+             # Dispatch counts are not acceptance: claimed/dispatched work is still in flight and an
+             # accepted council is still not an owner disposition, a fixed incident or a merge.
+             "Investigation dispatches (claim and council outcome only, never an owner disposition): "
+             + ", ".join(name + " " + str(count) for name, count in view["investigations"].items()), "",
              "## Observed cycles", ""]
     for cycle in view["cycle_receipts"]:
         sources = cycle.get("sources") or {}
@@ -202,13 +207,21 @@ def render_report(view: dict) -> str:
                                 for name in ("local", "github", "geeknews"))
         counts, selection = cycle.get("counts") or {}, cycle.get("selection") or {}
         capture, council = cycle.get("capture") or {}, cycle.get("council") or {}
+        bridge = cycle.get("investigations")
+        investigation_text = ("" if bridge is None else
+                              "; investigations scanned " + str(bridge["counts"]["scanned"]) + " eligible "
+                              + str(bridge["counts"]["eligible"]) + " new " + str(bridge["new"]) + " ineligible "
+                              + str(bridge["ineligible"]) + " claimed " + str(bridge["claimed"])
+                              + "; dispatch result " + str(bridge["result"]) + " (reported "
+                              + str(bridge["reported_result"]) + ")")
         lines.append("- cycle " + str(cycle["number"]) + " [" + cycle["status"] + "]: sources " + source_text
                      + "; discovered " + str(counts.get("discovered")) + " new " + str(counts.get("new")) + " duplicate "
                      + str(counts.get("duplicate")) + " ignored " + str(counts.get("ignored")) + " selected " + str(counts.get("selected"))
                      + "; selection " + str(selection.get("candidate")) + " (" + str(selection.get("reason")) + ")"
                      + "; capture " + str(capture.get("revision")) + "; council " + str(council.get("run_id")) + " -> "
                      + str(council.get("status")) + " (" + str(council.get("reason_code")) + "); result " + str(cycle.get("result"))
-                     + "; failure " + str((cycle.get("failure") or {}).get("stage")) + "/" + str((cycle.get("failure") or {}).get("code")))
+                     + "; failure " + str((cycle.get("failure") or {}).get("stage")) + "/" + str((cycle.get("failure") or {}).get("code"))
+                     + investigation_text)
     lines += ["", "Result vocabulary: accepted/rejected/failed/unknown come from the authoritative autonomous_runs row;",
               "a rejected council stays rejected; unknown is distinct from missing and from zero.", ""]
     return "\n".join(lines)
@@ -270,6 +283,13 @@ class ProgramRunner:
         cycle, candidate = recorded["cycle"], recorded["candidate"]
         log.emit("development", "collection_recorded", cycle=number, counts=cycle["counts"], degraded=degraded,
                  selection=cycle["selection"], headroom=cycle["budget"]["headroom"])
+        bridge = cycle.get("investigations")
+        if bridge is not None:   # opt-in bridge only: identifiers and bounded counts, no payload
+            log.emit("development", "investigations_scanned", cycle=number, counts=bridge["counts"],
+                     new=bridge["new"], ineligible=bridge["ineligible"])
+            if bridge["claimed"] is not None:
+                log.emit("general", "investigation_claimed", cycle=number, investigation=bridge["claimed"],
+                         candidate=cycle["selection"]["candidate"])
         if degraded:
             log.emit("operations", "source_degraded", cycle=number, sources={n: sources[n]["code"] for n in degraded})
         if candidate is None:
@@ -277,25 +297,27 @@ class ProgramRunner:
             return self._finish(program_id, log, number, {"reserved": True, "cycle": cycle["id"], "selected": None,
                                                           "reason": cycle["selection"]["reason"], "degraded": degraded, "result": None})
         # ----- evidence capture -----
+        claim = {"investigation": candidate["investigation"]} if candidate["source"] == INVESTIGATION else {}
         try:
             capture = self._capture(config, number, candidate, sources)
         except (CaptureError, ContractError) as exc:
             code = getattr(exc, "reason_code", "contract_refused")
             self.programs.fail_cycle(cycle["id"], owner, "capture", code)
-            log.emit("operations", "cycle_failed", cycle=number, stage="capture", code=code)
+            log.emit("operations", "cycle_failed", cycle=number, stage="capture", code=code, **claim)
             return self._finish(program_id, log, number, {"reserved": True, "cycle": cycle["id"], "selected": candidate["id"],
-                                                          "failure": {"stage": "capture", "code": code}, "result": None})
+                                                          "failure": {"stage": "capture", "code": code}, "result": None, **claim})
         except Exception as exc:
             self.programs.fail_cycle(cycle["id"], owner, "capture", type(exc).__name__)
-            log.emit("operations", "cycle_failed", cycle=number, stage="capture", code=type(exc).__name__)
+            log.emit("operations", "cycle_failed", cycle=number, stage="capture", code=type(exc).__name__, **claim)
             return self._finish(program_id, log, number, {"reserved": True, "cycle": cycle["id"], "selected": candidate["id"],
-                                                          "failure": {"stage": "capture", "code": type(exc).__name__}, "result": None})
+                                                          "failure": {"stage": "capture", "code": type(exc).__name__},
+                                                          "result": None, **claim})
         # ----- pre-provider preparation (review001 R2): every stage tracked; a failure here is
         # recorded as a blocked cycle with the capture reference retained, and no council runs -----
         stage = "capture_record"
         try:
             self.programs.record_capture(cycle["id"], owner, capture)
-            log.emit("development", "capture_recorded", cycle=number, revision=capture["revision"], ref=capture["ref"])
+            log.emit("development", "capture_recorded", cycle=number, revision=capture["revision"], ref=capture["ref"], **claim)
             stage = "manifest_derive"
             manifest = derive_manifest(config, number, capture["revision"], candidate)
             sha = manifest_digest(manifest)
@@ -308,8 +330,8 @@ class ProgramRunner:
             stage = "council_start"
             self.programs.record_council_start(cycle["id"], owner, manifest["id"], sha, stored["ref"])
         except Exception as exc:
-            return self._fail_before_council(program_id, log, cycle, owner, capture, stage, exc)
-        log.emit("development", "council_started", cycle=number, run_id=manifest["id"], manifest_sha256=sha)
+            return self._fail_before_council(program_id, log, cycle, owner, capture, stage, exc, claim)
+        log.emit("development", "council_started", cycle=number, run_id=manifest["id"], manifest_sha256=sha, **claim)
         error = None
         try:
             self.council(self.service, SimpleNamespace(file=path))
@@ -322,30 +344,42 @@ class ProgramRunner:
             verdict = {"result": "failed", "reason_code": "council_refused:" + error, "row_status": None}
         self.programs.record_council_result(cycle["id"], owner, verdict)
         category = "operations" if verdict["result"] in {"failed", "unknown"} else "development"
-        log.emit(category, "council_result", cycle=number, run_id=manifest["id"], **verdict)
+        log.emit(category, "council_result", cycle=number, run_id=manifest["id"], **verdict, **claim)
+        dispatch = self._dispatch_outcome(candidate)
+        if dispatch is not None:   # the store's own authoritative dispatch outcome, never the verdict text
+            log.emit(category, "investigation_result", cycle=number, run_id=manifest["id"], **dispatch)
         return self._finish(program_id, log, number, {"reserved": True, "cycle": cycle["id"], "selected": candidate["id"],
-                                                      "run_id": manifest["id"], "capture": capture["revision"], **verdict})
+                                                      "run_id": manifest["id"], "capture": capture["revision"], **verdict,
+                                                      **claim})
 
-    def _fail_before_council(self, program_id, log, cycle, owner, capture, stage, exc) -> dict:
+    def _dispatch_outcome(self, candidate) -> dict | None:
+        """The recorded dispatch row of THIS claim, read back for the log; identifiers and codes only."""
+        if candidate["source"] != INVESTIGATION:
+            return None
+        row = next((d for d in self.programs.dispatches() if d["investigation"] == candidate["investigation"]), None)
+        return None if row is None else {k: row[k] for k in ("investigation", "state", "result", "result_reason",
+                                                             "reported_result", "row_status")}
+
+    def _fail_before_council(self, program_id, log, cycle, owner, capture, stage, exc, claim=None) -> dict:
         """Zero council calls. If the store still records the failure, the cycle is counted, the
         program blocked and the claim plus capture reference kept. If recording itself fails the
         cycle stays owned (busy) and the receipt says so: no durable receipt is claimed."""
         code = getattr(exc, "reason_code", None) or type(exc).__name__
-        number = cycle["number"]
+        number, claim = cycle["number"], claim or {}
         retained = {"revision": capture["revision"], "ref": capture["ref"], "path": capture["path"], "artifact": capture["artifact"]}
         receipt = {"reserved": True, "cycle": cycle["id"], "selected": capture["candidate"], "result": None,
-                   "failure": {"stage": stage, "code": code, "recorded": True, "capture": retained}}
+                   "failure": {"stage": stage, "code": code, "recorded": True, "capture": retained}, **claim}
         try:
             self.programs.fail_cycle(cycle["id"], owner, stage, code, recovery={"capture": retained})
         except Exception as record_exc:
             receipt["failure"].update(recorded=False, record_code=type(record_exc).__name__)
             try:
                 log.emit("operations", "cycle_failure_unrecorded", cycle=number, stage=stage, code=code,
-                         record_code=type(record_exc).__name__, capture=capture["revision"])
+                         record_code=type(record_exc).__name__, capture=capture["revision"], **claim)
             except OSError:
                 pass
             return {**receipt, "state": "unknown", "stop_reason": None, "report": None}
-        log.emit("operations", "cycle_failed", cycle=number, stage=stage, code=code, capture=capture["revision"])
+        log.emit("operations", "cycle_failed", cycle=number, stage=stage, code=code, capture=capture["revision"], **claim)
         return self._finish(program_id, log, number, receipt)
 
     def _capture(self, config, number, candidate, sources) -> dict:

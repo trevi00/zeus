@@ -1,18 +1,47 @@
 """Research program state machine over the existing store (INV-RESEARCH-PROGRAM-001).
 
-Three buckets: `research_programs` (immutable config, digest, durable counters and state),
-`research_program_candidates` (dedup identity across cycles, relevance reason, claim and result) and
-`research_program_cycles` (one receipt per reserved cycle). Every state change is one store
-transaction that re-reads the row it expects; no transaction stays open across network, Git or
-provider work: the adapter reserves, then fetches, then records. A reserved cycle stays owned until
-its owner records a terminal fact; a crash leaves it owned and the program busy, never assumed empty.
-Counters never reset: the adoption cap counts every dispatched council, accepted or not.
+Four buckets: `research_programs` (immutable config, digest, durable counters and state),
+`research_program_candidates` (dedup identity across cycles, relevance reason, claim and result),
+`research_program_cycles` (one receipt per reserved cycle) and `research_investigation_dispatches`
+(one claim per portfolio investigation, keyed SOLELY by investigation id, across every program).
+Every state change is one store transaction that re-reads the row it expects; no transaction stays
+open across network, Git or provider work: the adapter reserves, then fetches, then records. A
+reserved cycle stays owned until its owner records a terminal fact; a crash leaves it owned and the
+program busy, never assumed empty. Counters never reset: the adoption cap counts every dispatched
+council, accepted or not.
+
+The investigation bridge (research-dispatch-001) is opt-in per program. Candidates are synthesized
+from the authoritative `portfolio_investigations`, `portfolio_bindings` and `fleet_jobs` reads INSIDE
+the selection transaction - an adapter may never supply one as a discovery item - and the claim, the
+cycle reservation bookkeeping and the candidate selection commit together. `portfolio_investigations`
+is read only: no owner disposition, Fleet job or investigation state is ever written here, a dispatch
+result is never an incident resolution, and an unknown outcome keeps its claim instead of releasing it.
 """
 from __future__ import annotations
 
 from uuid import uuid4
 
+from codex_harness.application.autonomous import BUCKET as BUCKET_RUNS
+from codex_harness.application.fleet import BUCKET_JOBS
+from codex_harness.application.portfolio import (
+    BUCKET_BINDINGS,
+    BUCKET_INVESTIGATIONS,
+    FAMILY_MINIMUM,
+    RESEARCH_REQUIRED,
+)
 from codex_harness.domain.model import require, utcnow
+from codex_harness.domain.research_investigations import (
+    DISPATCHED,
+    RESOLVED,
+    candidate_identity,
+    dispatch_row,
+    dispatch_view,
+    eligible_investigations,
+    snapshot,
+)
+from codex_harness.domain.research_investigations import (
+    SOURCE as INVESTIGATION,
+)
 from codex_harness.domain.research_program import (
     ACTIVE,
     BLOCKED,
@@ -33,6 +62,7 @@ from codex_harness.domain.research_program import (
     candidate_id,
     candidate_key,
     config_digest,
+    council_result,
     cycle_id,
     due,
     expired,
@@ -46,6 +76,8 @@ from codex_harness.domain.research_program import (
 
 BUCKET_PROGRAMS, BUCKET_CANDIDATES, BUCKET_CYCLES = ("research_programs", "research_program_candidates",
                                                      "research_program_cycles")
+BUCKET_DISPATCHES = "research_investigation_dispatches"
+ELIGIBLE_REASON, INELIGIBLE_REASON = "portfolio_investigation_eligible", "investigation_ineligible"
 
 
 class ResearchProgram:
@@ -162,7 +194,13 @@ class ResearchProgram:
     def record_collection(self, cycle_ref: str, owner: str, sources: dict, items: list, counts: dict) -> dict:
         """Dedup, relevance, claim and the adoption reservation in ONE transaction. `sources` is the
         per-source status map (type/code only), `items` the discovered entries (source, identity, url,
-        path, sha256, title, summary), `counts` the machine ledger reading. Returns the cycle."""
+        path, sha256, title, summary), `counts` the machine ledger reading. Returns the cycle.
+
+        An investigation candidate is NEVER an ordinary discovery item: the source is refused at this
+        boundary and synthesized from the authoritative transaction reads instead."""
+        for item in items:
+            if item.get("source") == INVESTIGATION:
+                raise ProgramRefused("investigation_source_forbidden", "items[].source")
         with self.store.transaction() as tx:
             cycle, row = self._owned(tx, cycle_ref, owner, {COLLECTING})
             config, now = row["config"], self.clock()
@@ -193,6 +231,7 @@ class ResearchProgram:
                 tally["ignored" if candidate["status"] == IGNORED else "eligible"] += 1
                 known[key] = candidate
                 tx.put(BUCKET_CANDIDATES, candidate["_key"], candidate)
+            bridge = self._investigations(tx, row, cycle, known, now)
             room = headroom(config["budget"], counts)
             selection = select_candidate(list(known.values()), row["adoptions"], config["max_adoptions"], room)
             chosen = selection["candidate"]
@@ -202,7 +241,11 @@ class ResearchProgram:
                 tx.put(BUCKET_CANDIDATES, chosen["_key"], chosen)
                 row["adoptions"] += 1   # every dispatched attempt counts, from the claim on
                 tally["selected"] = 1
+                if chosen["source"] == INVESTIGATION:
+                    # The cross-program claim commits with this selection and this cycle bookkeeping.
+                    bridge["claimed"] = self._claim_investigation(tx, chosen, cycle, now)["investigation"]
             cycle.update(status=SELECTED if chosen else NO_SELECTION, counts=tally, sources=sources, budget=budget,
+                         investigations=bridge,
                          selection={"candidate": None if chosen is None else chosen["id"], "reason": selection["reason"],
                                     "source": None if chosen is None else chosen["source"]},
                          remaining={"cycles": cycle["remaining"]["cycles"], "adoptions": config["max_adoptions"] - row["adoptions"]},
@@ -217,6 +260,87 @@ class ResearchProgram:
             row = tx.get(BUCKET_CANDIDATES, program_id + ":" + candidate_ref)
         return None if row is None else {k: v for k, v in row.items() if k != "_key"}
 
+    # ----- investigation bridge (research-dispatch-001) ----------------------------------------
+    def _investigations(self, tx, row: dict, cycle: dict, known: dict, now: str) -> dict | None:
+        """Synthesize and REVALIDATE the program's investigation candidates from the authoritative
+        rows in this transaction, immediately before selection. `None` when the program did not opt
+        in: no portfolio bucket is read and the legacy behaviour is byte-identical. A candidate whose
+        state, scope or claim changed since an earlier tick is ignored here, so an old cached entry
+        can never run later; nothing in the portfolio is written."""
+        source = row["config"].get("investigation_source")
+        if source is None:
+            return None
+        claimed = {d["investigation"] for d in tx.scan(BUCKET_DISPATCHES) if type(d.get("investigation")) is str}
+        found = eligible_investigations(investigations=tx.scan(BUCKET_INVESTIGATIONS), jobs=tx.scan(BUCKET_JOBS),
+                                        bindings=tx.scan(BUCKET_BINDINGS), source=source, claimed=claimed,
+                                        required_state=RESEARCH_REQUIRED, minimum=FAMILY_MINIMUM)
+        current, new, ineligible = {}, 0, 0
+        for entry in found["candidates"]:
+            key = candidate_key(INVESTIGATION, entry["investigation"])
+            current[entry["investigation"]] = key
+            document = snapshot(candidate=entry, program_id=row["id"], cycle_number=cycle["number"],
+                                topic=source["topic"], observed_at=now)
+            existing = known.get(key)
+            if existing is None:
+                identity = candidate_identity(entry["investigation"])
+                existing = {"id": identity, "program": row["id"], "key": key, "source": INVESTIGATION, "url": None,
+                            "path": None, "sha256": None, "title": None, "summary": None,
+                            "content_sha256": document["job_ids_sha256"], "topic": source["topic"],
+                            "reason": ELIGIBLE_REASON, "status": ELIGIBLE, "investigation": entry["investigation"],
+                            "snapshot": document, "first_cycle": cycle["number"], "last_cycle": cycle["number"],
+                            "seen": 1, "claimed_cycle": None, "result": None, "created_at": now, "updated_at": now,
+                            "_key": row["id"] + ":" + identity}
+                new += 1
+                known[key] = existing
+            elif existing["status"] == CLAIMED:
+                continue    # its dispatch owns the investigation; a claim is never recomputed
+            else:
+                existing.update(status=ELIGIBLE, reason=ELIGIBLE_REASON, snapshot=document,
+                                content_sha256=document["job_ids_sha256"], last_cycle=cycle["number"],
+                                seen=existing["seen"] + 1, updated_at=now)
+            tx.put(BUCKET_CANDIDATES, existing["_key"], existing)
+        for entry in known.values():
+            if entry["source"] != INVESTIGATION or entry["status"] != ELIGIBLE or entry.get("investigation") in current:
+                continue
+            # State, scope or a competing claim changed: drop the cached snapshot with the eligibility.
+            entry.update(status=IGNORED, reason=INELIGIBLE_REASON, snapshot=None, updated_at=now)
+            tx.put(BUCKET_CANDIDATES, entry["_key"], entry)
+            ineligible += 1
+        return {"counts": found["counts"], "new": new, "ineligible": ineligible, "claimed": None,
+                "result": None, "reported_result": None}
+
+    def _claim_investigation(self, tx, chosen: dict, cycle: dict, now: str) -> dict:
+        """The durable cross-program claim, keyed solely by investigation id. A row that appeared in
+        the meantime refuses the whole transaction: two programs and two workers cannot both claim."""
+        document = chosen.get("snapshot")
+        require(isinstance(document, dict) and document.get("investigation") == chosen["investigation"],
+                "Research investigation candidate must carry its snapshot")
+        dispatch = dispatch_row(document=document, candidate_id=chosen["id"], cycle_ref=cycle["id"], now=now)
+        if tx.get(BUCKET_DISPATCHES, dispatch["id"]) is not None:
+            raise ProgramRefused("investigation_already_claimed")
+        tx.put(BUCKET_DISPATCHES, dispatch["id"], dispatch)
+        return dispatch
+
+    def _dispatch(self, tx, row: dict, cycle: dict) -> dict | None:
+        """This cycle's dispatch row, or None when the cycle did not claim an investigation."""
+        selected = (cycle.get("selection") or {}).get("candidate")
+        if selected is None:
+            return None
+        candidate = tx.get(BUCKET_CANDIDATES, row["id"] + ":" + selected)
+        if candidate is None or candidate.get("source") != INVESTIGATION:
+            return None
+        dispatch = tx.get(BUCKET_DISPATCHES, candidate["investigation"])
+        if dispatch is None or dispatch.get("cycle") != cycle["id"] or dispatch.get("program") != row["id"]:
+            return None   # another program's claim is never rewritten from this cycle
+        return dispatch
+
+    def dispatches(self, program_id: str | None = None) -> list:
+        """Bounded read-only projection of the claims; no config, prompt, output or error text."""
+        with self.store.transaction() as tx:
+            rows = tx.scan(BUCKET_DISPATCHES)
+        return [dispatch_view(r) for r in sorted(rows, key=lambda r: r["investigation"])
+                if program_id is None or r.get("program") == program_id]
+
     # ----- capture and council ----------------------------------------------------------------
     def record_capture(self, cycle_ref: str, owner: str, capture: dict) -> dict:
         with self.store.transaction() as tx:
@@ -226,12 +350,20 @@ class ResearchProgram:
             return cycle
 
     def record_council_start(self, cycle_ref: str, owner: str, run_id: str, manifest_sha256: str, manifest_ref: str) -> dict:
-        """Persisted BEFORE the council starts: the run id, manifest digest and its stored reference."""
+        """Persisted BEFORE the council starts: the run id, manifest digest and its stored reference.
+        An investigation dispatch is bound to that EXACT run and manifest digest here, so its result
+        can only ever be read back from the run row it actually started."""
         with self.store.transaction() as tx:
             cycle, row = self._owned(tx, cycle_ref, owner, {CAPTURED})
-            cycle.update(status=COUNCIL, updated_at=self.clock(),
+            now = self.clock()
+            cycle.update(status=COUNCIL, updated_at=now,
                          council={"run_id": run_id, "manifest_sha256": manifest_sha256, "manifest_ref": manifest_ref,
-                                  "status": "started", "reason_code": None, "row_status": None, "started_at": self.clock()})
+                                  "status": "started", "reason_code": None, "row_status": None, "started_at": now})
+            dispatch = self._dispatch(tx, row, cycle)
+            if dispatch is not None:
+                dispatch.update(state=DISPATCHED, run_id=run_id, manifest_sha256=manifest_sha256,
+                                manifest_ref=manifest_ref, started_at=now, updated_at=now)
+                tx.put(BUCKET_DISPATCHES, dispatch["id"], dispatch)
             tx.put(BUCKET_CYCLES, cycle["id"], cycle)
             return cycle
 
@@ -250,10 +382,38 @@ class ResearchProgram:
             if candidate is not None:
                 candidate.update(result=result, updated_at=now)
                 tx.put(BUCKET_CANDIDATES, candidate["_key"], candidate)
+            self._record_dispatch_result(tx, row, cycle, verdict, now)
             blocked = result in {"failed", "unknown"}
             self._close(tx, cycle, row, now, result=result, stop_reason="council_" + result if blocked else None,
                         blocked_reason="council_" + result + ":" + safe_code(verdict.get("reason_code")) if blocked else None)
             return cycle
+
+    def _record_dispatch_result(self, tx, row: dict, cycle: dict, verdict: dict, now: str) -> dict | None:
+        """The dispatch outcome comes from the authoritative `autonomous_runs` row read INSIDE this
+        transaction and validated by the existing `council_result` helper against the bound run id and
+        manifest digest. The caller's verdict is kept only as `reported_result`, an unverified claim:
+        a missing, mismatched or still running row stays `unknown`, never accepted. The claim is never
+        released and this is a dispatch outcome only - not an owner disposition, not a resolved
+        incident and not a promotion."""
+        dispatch = self._dispatch(tx, row, cycle)
+        if dispatch is None:
+            return None
+        run = tx.get(BUCKET_RUNS, dispatch["run_id"]) if dispatch.get("run_id") else None
+        authoritative = (council_result(dispatch["run_id"], dispatch["manifest_sha256"], run) if dispatch.get("run_id")
+                         else {"result": "unknown", "reason_code": "dispatch_not_started", "row_status": None})
+        dispatch.update(state=RESOLVED, result=authoritative["result"], result_reason=authoritative["reason_code"],
+                        row_status=authoritative["row_status"], reported_result=safe_code(verdict.get("result")),
+                        finished_at=now, updated_at=now)
+        tx.put(BUCKET_DISPATCHES, dispatch["id"], dispatch)
+        self._project_dispatch(cycle, dispatch)
+        return dispatch
+
+    @staticmethod
+    def _project_dispatch(cycle: dict, dispatch: dict) -> None:
+        """The cycle receipt carries the dispatch outcome beside the council outcome, so a status or
+        report reader sees a dispatch that is NOT an acceptance without reading another bucket."""
+        if isinstance(cycle.get("investigations"), dict):
+            cycle["investigations"].update(result=dispatch["result"], reported_result=dispatch.get("reported_result"))
 
     def complete_cycle(self, cycle_ref: str, owner: str) -> dict:
         """A collection-only tick (nothing selected) ends here: counted, never a dispatch."""
@@ -272,7 +432,15 @@ class ResearchProgram:
             capture = cycle.get("capture") or {}
             retained = {k: capture.get(k) for k in ("revision", "ref", "path", "blob", "sha256")} if capture else None
             cycle["failure"] = {"stage": stage, "code": safe_code(code), "recovery": recovery, "capture": retained}
-            self._close(tx, cycle, row, self.clock(), result="failed" if cycle["status"] == COUNCIL else None,
+            now = self.clock()
+            dispatch = self._dispatch(tx, row, cycle)
+            if dispatch is not None:
+                # A failed dispatch KEEPS its claim: nothing is released, retried or cleaned up here.
+                dispatch.update(state=RESOLVED, result="failed", result_reason=safe_code(code),
+                                failure={"stage": stage, "code": safe_code(code)}, finished_at=now, updated_at=now)
+                tx.put(BUCKET_DISPATCHES, dispatch["id"], dispatch)
+                self._project_dispatch(cycle, dispatch)
+            self._close(tx, cycle, row, now, result="failed" if cycle["status"] == COUNCIL else None,
                         status=CYCLE_FAILED, stop_reason="failed:" + stage, blocked_reason=stage + ":" + safe_code(code))
             return cycle
 
@@ -296,7 +464,8 @@ class ResearchProgram:
             row = self._row(tx, program_id)
             cycles = [c for c in tx.scan(BUCKET_CYCLES) if c["program"] == program_id]
             candidates = [c for c in tx.scan(BUCKET_CANDIDATES) if c["program"] == program_id]
-        return program_view(row, cycles, candidates)
+            dispatches = [d for d in tx.scan(BUCKET_DISPATCHES) if d.get("program") == program_id]
+        return program_view(row, cycles, candidates, dispatches)
 
     def candidates(self, program_id: str) -> list:
         with self.store.transaction() as tx:
@@ -309,4 +478,4 @@ class ResearchProgram:
         return monitor_projection(programs, cycles)
 
 
-__all__ = ["BUCKET_CANDIDATES", "BUCKET_CYCLES", "BUCKET_PROGRAMS", "ResearchProgram"]
+__all__ = ["BUCKET_CANDIDATES", "BUCKET_CYCLES", "BUCKET_DISPATCHES", "BUCKET_PROGRAMS", "ResearchProgram"]
