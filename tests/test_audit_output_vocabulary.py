@@ -19,7 +19,7 @@ from test_research_audits import (  # noqa: F401  `audit` is a pytest fixture: i
 )
 
 from codex_harness.adapters.audit_execution import AuditExecution, output_definitions
-from codex_harness.domain.model import ContractError, envelope
+from codex_harness.domain.model import ContractError, canonical, envelope
 from codex_harness.domain.research import PATH_DISPOSITIONS, PathDisposition, parse_record
 
 REJECTED = ['partial', 'Partial', 'semantic ', 'complete', '', 'unreviewed_observed_asset']
@@ -172,22 +172,33 @@ def test_partial_inspection_checkpoints_as_unreviewed_without_review_credit(
 
 def test_provider_partial_answer_still_fails_closed_in_the_application_path(
         audit, monkeypatch):  # noqa: F811  the parameter is pytest's injection of the imported fixture
-    """The observed canary shape: schema bypassed, domain refuses, nothing is credited."""
+    """The observed canary shape: schema bypassed, domain refuses, nothing is credited.
+
+    The domain vocabulary is unchanged by the 2026-09-21 reframe; only the disposition of the
+    refused draft changed, from a stopped execution to retained `analysis_rejected` work.
+    """
+    from codex_harness.domain.model import digest
+
     service, record, _, _, _ = audit
     activate_fixture(service)
     part, task, execution = partition_task(service, record, 'partial-refusal')
     refused = body('partial', part['paths'][0])
     refused['justification'] = 'partially read'
     answer = assigned_answer(part, {refused['path']: wire(refused)}, cursor='partially read')
+    draft = service.artifacts.put('the refused draft, retained verbatim', 'fixture')['ref']
 
     def run_model(task, objective, evidence, result_schema):
         if 'commands' in result_schema['properties']:
             return {'commands': []}
-        return answer  # Deliberately unvalidated output, as the provider actually returned.
+        # Deliberately unvalidated output, as the provider actually returned, with the executor's
+        # own artifact reference added after validation exactly as `Executor._run` adds it.
+        return {**answer, 'execution_ref': draft}
 
     monkeypatch.setattr(execution, 'run_model', run_model)
-    with pytest.raises(ContractError, match='Unknown disposition'):
-        execution.execute(task)
+    analysis = execution.execute(task)['analysis']
+    assert analysis['outcome'] == 'analysis_rejected' and analysis['execution_ref'] == draft
+    assert analysis['error_digest'] == digest('Unknown disposition')
+    assert 'partial' not in canonical(analysis) and 'partially read' not in canonical(analysis)
     with service.store.transaction() as tx:
         assert tx.scan('research_paths') == []
         assert tx.get('research_partitions', part['partition_id']) == part

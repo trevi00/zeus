@@ -12,9 +12,18 @@ The durable authority stays where it is: the `schedule`, `tasks` and `research_p
 what exists and how far the scope got. The narrow `audit_service` row this module owns holds only
 the current owner, the task it bound, the last result and the stop reason, so a restart reconciles
 against the records instead of inferring permission to repeat an attempt.
+
+What an execution DID and what its content was JUDGED to be are reported as two separate facts. A
+draft the typed content boundary refused is a completed execution that retained its work
+(`analysis_rejected`): it holds its own partition at the generation it was assigned, lets another
+partition run, counts against `--max-tasks`, and is never retried, reassigned or credited here. A
+checkpoint is partial progress (`analysis_checkpointed`), not semantic acceptance, and a result
+carrying no such marker stays unclassified. Evidence, receipt, ownership, transport and store
+failures are unchanged: they are execution failures and they still stop admission.
 """
 from __future__ import annotations
 
+import re
 import time
 from dataclasses import asdict
 from uuid import uuid4
@@ -23,9 +32,16 @@ from codex_harness.adapters.operation_cli import refusal
 from codex_harness.application.scheduling import schedule_audits
 from codex_harness.application.workflow import ClaimGuardRefused
 from codex_harness.domain.model import ContractError, digest, utcnow
+from codex_harness.domain.observation import (
+    ANALYSIS_OUTCOMES,
+    ANALYSIS_REASONS,
+    ANALYSIS_REJECTED,
+    ANALYSIS_UNCLASSIFIED,
+    safe_code,
+)
 
-__all__ = ["AuditServiceRefused", "AuditServiceRunner", "activation", "add_parser", "block_reason",
-           "execute", "refusal", "run", "status"]
+__all__ = ["AuditServiceRefused", "AuditServiceRunner", "activation", "add_parser",
+           "analysis_facts", "block_reason", "execute", "refusal", "run", "status"]
 
 AGENT = "worker:github"
 ACTION = "audit_partition"
@@ -43,6 +59,30 @@ STOP_BY_STATUS = {"failed": "task_failed", "retry": "task_retry", "blocked": "ta
                   "expired": "task_expired", "cancelled": "task_cancelled",
                   "superseded": "task_superseded", "running": "task_unresolved",
                   "queued": "task_unresolved"}
+# A settled execution says what its content was judged to be; a result that carries no such marker,
+# every historical row included, stays unclassified and is never promoted to either outcome.
+ANALYSIS_FACTS = ("analysis_outcome", "analysis_reason", "analysis_ref", "analysis_generation")
+NO_ANALYSIS = dict.fromkeys(ANALYSIS_FACTS)
+ARTIFACT_REFERENCE = re.compile(r"sha256:[0-9a-f]{64}")
+
+
+def analysis_facts(result) -> dict:
+    """The analysis outcome of ONE durable task result, in fixed codes and identifiers only.
+
+    The result is data this service reads, never an instruction: an outcome or reason outside the
+    declared vocabularies is `unknown`, a reference that is not an immutable artifact handle is
+    dropped, and a missing marker is `analysis_unclassified`. No stored string can become free text
+    in a log, a step or a status read this way.
+    """
+    analysis = result.get("analysis") if isinstance(result, dict) else None
+    if not isinstance(analysis, dict):
+        return {**NO_ANALYSIS, "analysis_outcome": ANALYSIS_UNCLASSIFIED}
+    ref, generation = analysis.get("execution_ref"), analysis.get("partition_generation")
+    return {"analysis_outcome": safe_code(analysis.get("outcome"), ANALYSIS_OUTCOMES,
+                                          absent=ANALYSIS_UNCLASSIFIED),
+            "analysis_reason": safe_code(analysis.get("reason_code"), ANALYSIS_REASONS, absent=None),
+            "analysis_ref": ref if type(ref) is str and ARTIFACT_REFERENCE.fullmatch(ref) else None,
+            "analysis_generation": generation if type(generation) is int else None}
 
 
 class AuditServiceRefused(ContractError):
@@ -168,6 +208,8 @@ class AuditServiceRunner:
         self.stopping = False
         self.stop_reason: str | None = None
         self.completed = 0
+        # Settled executions of THIS run by analysis outcome; the durable rows stay the authority.
+        self.analysis: dict = {}
 
     def stop(self) -> None:
         """Interrupt shutdown: no new assignment is bound; a bound task keeps its own record."""
@@ -211,10 +253,13 @@ class AuditServiceRunner:
                 return {"status": "reconciliation_required", "task_id": current["task_id"],
                         "reason_code": "unknown_execution" if not bound else _stop_code(status)}
             facts = self._checkpoint_facts(current.get("partition_id"))
+            # The outcome comes from the durable result of the attempt itself, never from this
+            # process's memory: a restart re-reads what the execution recorded and repeats nothing.
+            analysis = analysis_facts(task.get("result"))
             self._write(current_task=None, count=True,
                         last_task={**current, "status": status, "task_generation": task.get("generation"),
-                                   "settled_at": utcnow(), **facts})
-            settled = {"status": "settled", "task_id": current["task_id"], **facts}
+                                   "settled_at": utcnow(), **facts, **analysis})
+            settled = {"status": "settled", "task_id": current["task_id"], **facts, **analysis}
         blocked = self._predecessor_block()
         if blocked is not None:
             return {"status": "reconciliation_required", **blocked}
@@ -232,8 +277,8 @@ class AuditServiceRunner:
         recovered = self.reconcile()
         summary = {"audit_id": self.audit_id, "owner": self.owner, "revision": self.revision,
                    "release_id": self.release_id, "reconciliation": recovered, "steps": [],
-                   "step_count": 0, "omitted_steps": 0, "completed_tasks": 0, "stop_reason": None,
-                   "stopped": False}
+                   "step_count": 0, "omitted_steps": 0, "completed_tasks": 0, "analysis": {},
+                   "stop_reason": None, "stopped": False}
         if recovered["status"] == "reconciliation_required":
             # No admission at all: the previous attempt's outcome is not this run's to decide.
             self._stop(recovered["reason_code"])
@@ -251,8 +296,8 @@ class AuditServiceRunner:
             if once:
                 break
             self.sleep(self.interval)
-        summary.update(completed_tasks=self.completed, stop_reason=self.stop_reason,
-                       stopped=self.stopping)
+        summary.update(completed_tasks=self.completed, analysis=dict(self.analysis),
+                       stop_reason=self.stop_reason, stopped=self.stopping)
         self._emit("operations.audit_service_stopped", "blocked" if self.stop_reason else "observed",
                    reason_code=self.stop_reason,
                    attributes={"audit_id": self.audit_id, "completed_tasks": self.completed,
@@ -357,23 +402,32 @@ class AuditServiceRunner:
         status = row.get("status") if isinstance(row, dict) else None
         facts = self._checkpoint_facts(assignment["partition_id"])
         succeeded = status == "succeeded"
+        # What the EXECUTION did and what its CONTENT was judged to be are two separate facts. An
+        # execution that did not succeed has no analysis outcome at all; a settled one carries the
+        # outcome its own durable result states, including unclassified.
+        analysis = analysis_facts(row.get("result")) if succeeded else dict(NO_ANALYSIS)
         # `generation` is the partition checkpoint's own generation; `task_generation` is the
         # execution fence of the attempt, which only the operator's recovery or cancellation moves.
         record = {"task_id": assignment["task_id"], "partition_id": assignment["partition_id"],
                   "correlation_id": assignment["correlation_id"], "status": status or "unknown",
                   "task_generation": row.get("generation") if isinstance(row, dict) else None,
-                  "settled_at": utcnow(), **facts}
+                  "settled_at": utcnow(), **facts, **analysis}
         published = self._flush(assignment["correlation_id"])
         record["published"] = None if published is None else bool(published["complete"])
         self._write(current_task=None, last_task=record, count=succeeded)
         self._emit_task("succeeded" if succeeded else "failed", assignment, status=record["status"],
-                        **facts)
+                        reason_code=analysis["analysis_reason"],
+                        analysis_outcome=analysis["analysis_outcome"], **facts)
         collection = self._collect()
         step = {"action": "task", **record, "collection": collection}
         if not succeeded:
             self._stop(_stop_code(status))
             return {**step, "stop_reason": self.stop_reason}
+        # Finite acceptance counts every settled execution, a rejected draft included, so a run
+        # cannot evade its own bound by producing content the typed boundary refuses.
         self.completed += 1
+        outcome = analysis["analysis_outcome"]
+        self.analysis[outcome] = self.analysis.get(outcome, 0) + 1
         if record["published"] is False:
             self._stop("publication_incomplete")
         elif self.max_tasks is not None and self.completed >= self.max_tasks:
@@ -493,14 +547,16 @@ class AuditServiceRunner:
                            severity="warning" if outcome in {"failed", "blocked"} else "info")
 
     def _emit_task(self, outcome: str, assignment: dict, *, status: str, generation=None,
-                   remaining_paths=None, remaining_subsystems=None, open_questions=None) -> None:
-        self._emit("operations.audit_service_task", outcome,
+                   remaining_paths=None, remaining_subsystems=None, open_questions=None,
+                   analysis_outcome=None, reason_code=None) -> None:
+        self._emit("operations.audit_service_task", outcome, reason_code=reason_code,
                    correlation_id=assignment["correlation_id"], causation_id=assignment["task_id"],
                    attributes={"audit_id": self.audit_id, "task_id": assignment["task_id"],
                                "partition_id": assignment["partition_id"], "generation": generation,
                                "status": status, "remaining_paths": remaining_paths,
                                "remaining_subsystems": remaining_subsystems,
-                               "open_questions": open_questions})
+                               "open_questions": open_questions,
+                               "analysis_outcome": analysis_outcome})
 
     # ----- stopping -----------------------------------------------------------------------------
     def _stop(self, reason_code: str) -> None:
@@ -583,14 +639,28 @@ def status(service, args) -> dict:
         audit = tx.get("research_audits", audit_id)
         predecessor = tx.get("tasks", (state.get("last_task") or {}).get("task_id") or "")
         partitions = [p for p in tx.scan("research_partitions") if p["audit_id"] == audit_id]
-        known = {p["partition_id"] for p in partitions}
-        assignments: dict = {}
+        known = {p["partition_id"]: p for p in partitions}
+        assignments, outcomes, held = {}, {}, []
         for row in tx.scan("schedule"):
             if row.get("partition_id") not in known or not row.get("task_id"):
                 continue
             task = tx.get("tasks", row["task_id"])
             name = task.get("status", "queued") if isinstance(task, dict) else "not_submitted"
             assignments[name] = assignments.get(name, 0) + 1
+            if name != "succeeded":
+                continue
+            facts = analysis_facts(task.get("result"))
+            outcome = facts["analysis_outcome"]
+            outcomes[outcome] = outcomes.get(outcome, 0) + 1
+            # A rejected draft whose partition still stands at the generation it was assigned is
+            # HELD: its scope is intact and waiting for an explicit, reviewed decision. This read
+            # states that fact; it never retries, reassigns, completes or rewrites the history.
+            if outcome == ANALYSIS_REJECTED and (
+                    known[row["partition_id"]].get("generation") == facts["analysis_generation"]):
+                held.append({"partition_id": row["partition_id"], "task_id": task["id"],
+                             "partition_generation": facts["analysis_generation"],
+                             "execution_ref": facts["analysis_ref"],
+                             "reason_code": facts["analysis_reason"]})
     scope = {"total": len(partitions),
              "with_remaining_work": sum(1 for p in partitions if p["remaining_paths"]
                                         or p["remaining_subsystems"] or p["open_questions"]),
@@ -598,9 +668,12 @@ def status(service, args) -> dict:
              "remaining_subsystems": sum(len(p["remaining_subsystems"]) for p in partitions),
              "open_questions": sum(len(p["open_questions"]) for p in partitions),
              "max_generation": max((p["generation"] for p in partitions), default=None)}
+    analysis = {"outcomes": outcomes, "held_partitions": len(held),
+                "held": sorted(held, key=lambda row: (row["partition_id"], row["task_id"]))}
     return {"audit_service": ACTION, "audit_id": audit_id, "known_audit": audit is not None,
             "activation": {key: control.get(key) for key in ("status", "release_id", "revision")},
             "supported_actions": [ACTION], "partitions": scope, "assignments": assignments,
+            "analysis": analysis,
             "admission_blocked": block_reason(state, predecessor),
             **{key: state.get(key) for key in ("owner", "current_task", "last_task", "stop_reason",
                                                "completed_tasks", "last_collection", "started_at",

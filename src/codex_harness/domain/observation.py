@@ -115,9 +115,14 @@ REGISTRY = {
                                          "max_tasks": _NI, "partitions": _I},
     "operations.audit_service_scheduled": {"audit_id": _S, "created": _I, "pending": _I,
                                            "foreign_messages": _I},
+    # `status` is what the EXECUTION did; `analysis_outcome` is what its content was judged to be
+    # (a fixed code, or null when a settled execution has no analysis outcome at all). The two are
+    # reported separately: a rejected draft is a completed execution, and an unclassified history
+    # row is neither a checkpoint nor a rejection.
     "operations.audit_service_task": {"audit_id": _S, "task_id": _S, "partition_id": _S,
                                       "generation": _NI, "status": _S, "remaining_paths": _NI,
-                                      "remaining_subsystems": _NI, "open_questions": _NI},
+                                      "remaining_subsystems": _NI, "open_questions": _NI,
+                                      "analysis_outcome": _N},
     "operations.audit_service_stopped": {"audit_id": _S, "completed_tasks": _I, "error_type": _N},
     "operations.alert_suppressed": {"kind": _S, "suppressed": _I},
     "operations.alert_pending": {"kind": _S, "channel": _N, "pending": _I},
@@ -154,6 +159,19 @@ PROVIDER_CAUSES = ("codex-provider-usage-limit-exceeded", "claude-provider-budge
 TERMINAL_SUBTYPES = ("success", "error_during_execution", "error_max_turns",
                      "error_max_structured_output_retries")
 STRUCTURAL_CHECKS = ("checked", "unchecked", "failed", "configuration_error")
+
+# self-improvement-reference-001: what one settled `audit_partition` execution's content was judged
+# to be, written by the execution into its own durable result and read back from there. These are
+# the one authority for the codes; `analysis_unclassified` is a result that carries no marker -
+# historical rows included - and it is never promoted to a checkpoint or an acceptance. `safe_code`
+# maps anything foreign to "unknown" rather than letting a stored string become a Zeus code. A
+# checkpoint is partial progress, and a rejection is retained work, not a successful review.
+ANALYSIS_CHECKPOINTED = "analysis_checkpointed"
+ANALYSIS_REJECTED = "analysis_rejected"
+ANALYSIS_UNCLASSIFIED = "analysis_unclassified"
+ANALYSIS_CONTENT_REJECTED = "analysis_content_rejected"
+ANALYSIS_OUTCOMES = (ANALYSIS_CHECKPOINTED, ANALYSIS_REJECTED, ANALYSIS_UNCLASSIFIED)
+ANALYSIS_REASONS = (ANALYSIS_CONTENT_REJECTED,)
 
 # A terminal subtype that names its own actionable failure also names the projected reason, so an
 # operator can tell it apart from every other provider failure without reading a raw stream. Only a
