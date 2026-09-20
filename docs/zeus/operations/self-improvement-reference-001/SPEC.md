@@ -170,3 +170,46 @@ report. The four runtime source files were read, selected callers/tests traced, 
 execution-time contracts ran (21 passed, 14 skipped). Retain Zeus allow-listed child environment
 and durable deadline ownership. Cooperative recursion counters and recorded watchdog cancellation
 are not process isolation/termination proofs. Provider-family and whole-source closure remain open.
+
+### User amendment: learn autonomous operation through this task
+
+The user explicitly asks that this absorption work also teach the autonomous workflow. Preserve
+the primary analysis outcome; capture lessons in this same frame rather than spawning another
+unbounded improvement project. Lessons below are candidates, not verified knowledge or deployed hooks.
+
+Observed in this conversation: several bounded analysis deliveries ended with no background job
+and required another user continuation. Reports and commits existed, but no autonomous successor
+was dispatched. Therefore report production is not evidence of autonomous progress. This is a
+workflow observation, not proof of a defect in the currently deployed Zeus scheduler.
+
+Proposed operating loop, retaining the existing role split:
+
+1. Codex defines a capability-sized unit with source pins, dependencies, acceptance and stop criteria.
+2. Existing scheduler admits a unit only with a durable claim and an authorized executor. Codex owns
+   analysis/design; Claude receives implementation only after the corresponding specification exists.
+3. Execution records run identity, state transitions, changed artifacts, checks and unresolved limits.
+4. Verification records whether the unit met its fixed criteria. A small advisory finding does not
+   create a new blocker; a material failure is bound to the affected criterion and concrete evidence.
+5. An accepted unit makes a scoped successor eligible. Dispatch must be recorded before claiming
+   it is running. Unknown external effects require reconciliation rather than another launch.
+6. Repeated similar failures from distinct attempts trigger the existing two-strike research path.
+   One cause-tested correction replaces repeated local patches; do not treat a replay as a new strike.
+7. Promote reusable guidance only after implementation/check evidence and independent review are
+   bound through the existing promotion owner. A lesson written here remains a proposal meanwhile.
+
+Candidate metrics (not yet instrumented; unknown is not zero): accepted capability units divided
+by planned units; accepted units requiring user continuation; eligible-to-claimed time; time without
+criterion progress; distinct repeat-failure attempts; inspected changes accepted on first review;
+missing-evidence transitions; verified lessons actually exercised on a later unit. File/report/token
+counts remain effort indicators, not completion or learning-effectiveness scores.
+
+Workflow acceptance examples: ordinary accepted work admits its eligible successor; duplicate
+delivery does not create another job; rejection retains evidence and a named recovery disposition;
+restart preserves ownership; unknown execution blocks duplicate launch; terminal stop records why
+and the exact user action needed, if any. Subscription usage is measured, not converted into a new
+per-call approval rule. Existing authorized scope and resource controls remain authoritative.
+
+Current status: these lessons and acceptance examples are recorded only. This amendment does not
+start a scheduler, invoke Claude, alter production state or claim persistent model training. The
+eventual consolidated handoff must map each proposed change to existing Fleet/ResearchProgram/
+Council/promotion code and verify a real successor cycle before reporting autonomous operation.
