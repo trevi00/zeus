@@ -97,3 +97,24 @@ Zeus comparison confirmed existing critical-only Council rules, research-investi
 promotion and accepted-successor linkage. Therefore a duplicate recovery engine or a new prompt-only
 critical rule is not the current design choice. The remaining integration questions and whole-source
 coverage stay open; the report is an interim artifact, not a completed Claude implementation handoff.
+
+### Requirement-to-verification tranche
+
+CONTRACT-PATH.md records the traced requirement provenance/promotion -> Seed generation ->
+prepare-session verification declaration -> parallel verifier/unavailable path, with exact read
+ranges and explicit gaps. It maps those contracts to Zeus frontdesk, ticket dispatch, closed plan
+schema, SDD, project evidence and operation acceptance. The draft design locates provenance at the
+owner's request-to-ticket/plan boundary, not the model's conversation output. No new approval flow
+or alternate source of execution authority was implemented.
+
+Current inspection ledger: 28 Ouroboros paths, 1 Hermes path, 2 OMH paths, full or partial; no
+whole-path semantic closure/adoption claimed. Static AST navigation covers 1,413 Python files,
+776,809 lines, 35,262 definitions, zero parse errors; it contributes zero semantic-completion credit.
+Existing Zeus SDD/project-evidence checks: 54 passed, 8 skipped (7 PG prerequisites, 1 unavailable
+host symlink permission). Receipt and log digest are in CONTRACT-PATH.md. No upstream tests or
+model calls were executed. One UTF-8 reader fix addressed local analysis-tool output, not product code.
+
+Next bounded continuation retains this frame: execution ownership/settlement/restart and the
+existing Zeus recovery/authority equivalents, followed by the remaining repository coverage.
+Requirements provenance is a supported enhancement candidate; its machine-verifiable delegated
+authority and manifest extension are unresolved design points, not an issued implementation task.
