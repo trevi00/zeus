@@ -8,8 +8,11 @@ class RuntimePolicy:
     max_active_executions: int = 2
     max_attempts: int = 3
     max_reworks: int = 2
-    task_seconds: int = 900
-    decision_seconds: int = 300
+    # operating-portfolio-001: the user-authorized implementation allowance (one hour) and
+    # decision/review allowance (fifteen minutes). These are ceilings, not budgets to spend: an
+    # explicit provider control and a shorter durable deadline both still take the minimum.
+    task_seconds: int = 3600
+    decision_seconds: int = 900
     task_lease_seconds: int = 600
     research_interval_hours: int = 6
     recurrence_threshold: int = 2

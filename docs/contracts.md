@@ -237,6 +237,13 @@ values also block; deadline expiry records expiration. Resumption requires expli
 bounded recovery with cause and evidence. The five-second tolerance also bounds
 the optional injected scheduling time; normal execution samples host time.
 
+One execution's time limit is a ceiling built from the shortest applicable source, never a grant:
+the single policy default for the role (`domain/policy.py`, a worker task or a decision), the
+remaining time of the execution's own durable deadline, and any explicit provider control the host
+configuration declares. Changing a default changes what is allowed at most; it never extends a
+recorded deadline, a lease, a heartbeat interval, a command-evidence replay window or a retry, and
+it never re-dates a manifest that was already queued.
+
 This contract assumes usable UTC across restarts. OS clock-step, suspend/VM-resume
 and multi-host time behavior are unmeasured operating conditions, not certified by
 pure clock-input tests or modified stored observations. Their absence must remain
@@ -636,7 +643,10 @@ counts and a fixed reason code; only a completed all_checked inspection is recor
 an unknown or failed one never is, and the verdict, the ledger row and the review gate are
 unchanged by the record of them. Every code on these events is a declared value: a foreign or
 future provider string is `unknown` and an absent one is `none`, so nothing is inferred from a
-subtype, and a failed inspection carries its exception's type and a digest of its message — the
+subtype, except that a declared terminal subtype naming its own actionable failure also names the
+projected reason code, so retry-exhausted structured output is readable apart from every other
+provider failure while an undeclared subtype reaches no reason of its own and a structural output
+reason still wins; and a failed inspection carries its exception's type and a digest of its message — the
 same rule the failure records follow — on the log and on the result it returns, never the message
 itself. Prompts, answers, schema property names, commands, stdout and tool arguments are excluded
 by construction here as everywhere else. Unit fault injection and MemoryStore exercise these

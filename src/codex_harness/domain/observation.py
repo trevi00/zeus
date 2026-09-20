@@ -140,8 +140,16 @@ PROVIDER_CAUSES = ("codex-provider-usage-limit-exceeded", "claude-provider-budge
                    "claude-provider-session-mismatch", "claude-provider-session-unreported",
                    "claude-provider-startup-failed", "claude-provider-stream-truncated",
                    "claude-provider-timeout")
-TERMINAL_SUBTYPES = ("success", "error_during_execution", "error_max_turns")
+TERMINAL_SUBTYPES = ("success", "error_during_execution", "error_max_turns",
+                     "error_max_structured_output_retries")
 STRUCTURAL_CHECKS = ("checked", "unchecked", "failed", "configuration_error")
+
+# A terminal subtype that names its own actionable failure also names the projected reason, so an
+# operator can tell it apart from every other provider failure without reading a raw stream. Only a
+# subtype this harness declares can reach this map, because `safe_code` runs first and a foreign or
+# future string is `unknown`; nothing about the output itself is inferred from the subtype, and a
+# structural output reason, when there is one, stays the reason.
+SUBTYPE_REASONS = {"error_max_structured_output_retries": "output_structured_retries_exhausted"}
 
 # Evidence inspection verdict → (outcome, reason_code, severity). Only a completed all_checked
 # inspection succeeds: no claims, an incomplete check, a failed inspection and any verdict this

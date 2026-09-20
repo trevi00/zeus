@@ -77,6 +77,7 @@ from codex_harness.domain.observation import (
     OUTPUT_REASONS,
     PROVIDER_CAUSES,
     STRUCTURAL_CHECKS,
+    SUBTYPE_REASONS,
     TERMINAL_SUBTYPES,
     inspection_verdict,
     invocation_outcome,
@@ -853,18 +854,24 @@ class Executor:
         classification = (result.get("invocation") or {}).get("outcome") if isinstance(result, dict) else None
         outcome_code = safe_code(classification, tuple(INVOCATION_OUTCOMES))
         reason = safe_code(failure.get("output_reason"), OUTPUT_REASONS)
+        subtype = safe_code(failure.get("result_subtype"), TERMINAL_SUBTYPES)
         # A structurally invalid answer is not a provider failure: its cause names the output, and
         # the provider cause stays absent rather than being filled with the output label.
         cause = safe_code(failure.get("cause"), PROVIDER_CAUSES) if reason == "none" else "none"
+        # The output's own structural defect names the reason when there is one. Otherwise a declared
+        # terminal subtype that names its own failure does (a retry-exhausted structured output is not
+        # the same operator problem as any other provider failure), and the ledger's classification
+        # names it when neither does; an unknown subtype reaches no reason of its own.
+        projected = "output_" + reason if reason != "none" else SUBTYPE_REASONS.get(subtype)
         self.observer.emit("development.output_evaluated",
                            invocation_outcome(classification) if classification in INVOCATION_OUTCOMES else "unknown",
                            execution=execution, correlation_id=correlation_id, causation_id=causation_id,
-                           reason_code="output_" + (reason if reason != "none" else outcome_code),
+                           reason_code=projected or "output_" + outcome_code,
                            severity=OUTPUT_SEVERITY.get(outcome_code, "warning"),
                            evidence_refs=[evidence_ref] if type(evidence_ref) is str else [],
                            attributes={"reservation_id": reservation_id, "invocation_outcome": outcome_code,
                                        "output_reason": reason, "provider_cause": cause,
-                                       "terminal_subtype": safe_code(failure.get("result_subtype"), TERMINAL_SUBTYPES),
+                                       "terminal_subtype": subtype,
                                        "failure_owner": safe_code(failure.get("owner"), FAILURE_OWNERS),
                                        "json_check": safe_code(checks.get("json"), STRUCTURAL_CHECKS, absent="unreported"),
                                        "schema_check": safe_code(checks.get("schema"), STRUCTURAL_CHECKS, absent="unreported"),

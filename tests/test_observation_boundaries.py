@@ -35,7 +35,7 @@ from codex_harness.application.service import Harness
 from codex_harness.bootstrap import organization
 from codex_harness.domain.evidence import STATES
 from codex_harness.domain.model import digest, envelope
-from codex_harness.domain.observation import REGISTRY, safe_code
+from codex_harness.domain.observation import REGISTRY, SUBTYPE_REASONS, TERMINAL_SUBTYPES, safe_code
 from codex_harness.domain.observation import new_process_run_id as run_id
 
 PY = sys.executable
@@ -146,6 +146,16 @@ def test_an_unknown_code_never_becomes_a_zeus_code_and_an_absent_one_never_becom
     assert safe_code(7, ('checked',)) == 'unknown'
 
 
+def test_only_a_declared_terminal_subtype_can_name_a_reason_of_its_own():
+    """The subtype→reason map is closed: an unknown subtype reaches no reason, so no future provider
+    string can invent a Zeus reason code."""
+    assert set(SUBTYPE_REASONS) <= set(TERMINAL_SUBTYPES)
+    assert SUBTYPE_REASONS[safe_code('error_max_structured_output_retries', TERMINAL_SUBTYPES)] == \
+        'output_structured_retries_exhausted'
+    assert SUBTYPE_REASONS.get(safe_code('error_vendor_future_subtype', TERMINAL_SUBTYPES)) is None
+    assert SUBTYPE_REASONS.get(safe_code(None, TERMINAL_SUBTYPES)) is None
+
+
 # ---- accepted output, checked evidence ----------------------------------------------------------
 
 def test_an_accepted_answer_and_its_checked_inspection_are_one_correlated_story(tmp_path, monkeypatch):
@@ -248,6 +258,44 @@ def test_a_provider_failure_keeps_its_own_code_and_a_foreign_one_stays_unknown(
     if expected_cause == 'unknown':
         text = json.dumps(evaluated)
         assert cause not in text and subtype not in text and owner not in text
+
+
+def test_structured_output_retry_exhaustion_is_named_apart_and_bound_to_its_artifact(tmp_path, monkeypatch):
+    """The exact failure observed in failure-facts.json: the provider gave up after repeated
+    structured-output retries. The transport result is the shape `claude_cli._provider_failure`
+    builds for that terminal message; the executor, the spool, the collector and the projection
+    are production. This subtype used to convert to `unknown` and read as any other provider
+    failure, so the monitor could not tell it apart.
+    """
+    failure = {'cause': 'claude-provider-error-result', 'owner': 'provider', 'kind': 'provider',
+               'stop_reason': 'completed', 'result_subtype': 'error_max_structured_output_retries'}
+    s = build(tmp_path, monkeypatch, lambda schema, model: {
+        'answer': None, 'model_answer_text': '', 'failure': failure, 'events': [], 'thread_id': 'thread',
+        'turn_id': 'turn', 'usage': None, 'rotate': False, 'interrupted': False, 'requested_model': model})
+    row = s.executor.execute_one('worker:implementation')
+    assert row['status'] != 'succeeded' and row.get('result') is None, 'the failure stays a failure'
+    summary, rows = collect(s)
+    assert summary['corrupt'] == summary['refused'] == 0, 'the new reason passes the observation schema'
+    evaluated = one(rows, OUTPUT_EVALUATED)
+    assert evaluated['reason_code'] == 'output_structured_retries_exhausted'
+    assert evaluated['attributes']['terminal_subtype'] == 'error_max_structured_output_retries'
+    assert evaluated['attributes']['provider_cause'] == 'claude-provider-error-result'
+    assert evaluated['attributes']['invocation_outcome'] == 'provider_failure'
+    assert evaluated['outcome'] == 'failed' and evaluated['severity'] == 'error'
+    # Nothing about the output itself is inferred from the subtype that names the provider's giving up.
+    assert evaluated['attributes']['output_reason'] == 'none'
+    assert evaluated['attributes']['json_check'] == evaluated['attributes']['schema_check'] == 'unreported'
+    assert evaluated['attributes']['execution_failure'] is True
+    # The durable receipt exists before the event names it, and the event carries the link.
+    [ref] = evaluated['evidence_refs']
+    stored = json.loads(s.artifacts.read(ref))
+    assert stored['failure']['result_subtype'] == 'error_max_structured_output_retries'
+    # What an operator actually reads: the projected row, with the same reason and the same artifact.
+    projected = observation_facts(s.store, s.runtime, datetime.now(timezone.utc))
+    [seen] = [event for event in projected['events']['rows'] if event['event_type'] == OUTPUT_EVALUATED]
+    assert seen['reason_code'] == 'output_structured_retries_exhausted'
+    assert seen['evidence_refs'] == [ref] and seen['execution']['task_id'] == s.task['id']
+    assert seen['correlation_id'] == 'corr-boundaries'
 
 
 # ---- empty and failed evidence -------------------------------------------------------------------
