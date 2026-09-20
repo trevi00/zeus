@@ -1101,3 +1101,28 @@ then run the same two-execution finite acceptance before registration. This is a
 bounded batch, not an automatic retry of recovery-002. A new execution/ownership/storage failure
 still stops. Whole-source completeness and adaptation gates stay unchanged; this is operation
 continuity with truthful retained candidates, not proof of all-source absorption.
+
+### Checkpoint boundary owner verification (2026-09-21 KST)
+
+Claude worker 8b7c2422-e578-57da-9f6f-908f2e0ff47a submitted candidate
+5f3cf62e1536af6248ce9befe1360acb7bbdc44c from the unchanged whole-checkpoint frame.
+Codex independently reviewed all six changed files and their transaction/retention interactions.
+The clean historical Windows checkout passed the allocated six-file suite: 198 passed,
+3 PostgreSQL cases skipped, 195.54 seconds; ruff passed. Codex then separately executed those
+three PostgreSQL cases using the existing isolated_pgstore fixture: 3 passed, zero skips,
+5.31 seconds, all temporary schemas reclaimed, checkout still clean. The cases establish
+late claim rejection rollback and separate owned task completion, ordinary store-write failure
+rollback, and valid whole-checkpoint commit. Model/runner inputs and store faults are injected;
+the PostgreSQL transaction and artifact/Workflow paths are real. No production task was changed.
+Raw owner receipt: D:/workspaces/zeus/artifacts/self-improvement-reference-001/claims-owner-pg.json;
+owner verdict: claims-owner-review.json in the same directory. Tool stdout retains Windows checks.
+
+No owner blocking finding in this fixed matrix. Two nonblocking observations are recorded in
+the owner verdict: the historical pure-decoder comment still says ONE boundary, and the duplicate
+record guard precedes ownership validation (the assigned decoder cannot produce duplicates and
+completion still fences ownership). Neither establishes a reachable false-completion condition;
+neither expands this delivery. Existing source acceptance checks were not weakened.
+
+The independent Fleet lead, full CI, image equivalence, real CLI canary and one recovery plus
+two-execution operation checks are still prerequisites; none is inferred from these tests.
+Continuous audit remains unregistered. All previous failed executions and unreviewed scope remain.
