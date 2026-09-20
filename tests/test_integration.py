@@ -12,7 +12,7 @@ from codex_harness.adapters.knowledge import PostgresKnowledge
 from codex_harness.adapters.store import PostgresStore
 from codex_harness.application.service import Harness
 from codex_harness.bootstrap import database_url, organization, redis_url
-from codex_harness.domain.model import ContractError, digest, envelope
+from codex_harness.domain.model import ContractError, canonical, digest, envelope
 
 pytestmark = [pytest.mark.integration, pytest.mark.skipif(
     os.environ.get("HARNESS_INTEGRATION") != "1", reason="Set HARNESS_INTEGRATION=1 for local services")]
@@ -255,17 +255,23 @@ def test_tree_sitter_graph_vector_and_failed_reindex(pgstore, tmp_path):
 
 
 def test_postgres_audit_checkpoint_reconnect_and_stale_write(pgstore, tmp_path):
-    from dataclasses import replace
+    from dataclasses import asdict, replace
 
     from codex_harness.adapters.artifacts import FileArtifacts
     from codex_harness.application.research import ResearchAudits
     from codex_harness.application.workflow import Workflow
-    from codex_harness.domain.research import PartitionCheckpoint
+    from codex_harness.domain.research import PartitionCheckpoint, SourceIdentity
 
     workflow = Workflow(pgstore, organization())
     audits = ResearchAudits(pgstore, None, FileArtifacts(str(tmp_path / 'evidence')), workflow)
+    # A real retained manifest, as every imported audit keeps: the source anchor is trusted input.
+    manifest = {'version': 1, 'repository': 'https://github.com/fixture/repo',
+                'commit': 'a' * 40, 'tree': 'b' * 40, 'entries': []}
+    manifest_ref = audits.artifacts.put(canonical(manifest), 'integration-fixture-manifest')['ref']
+    source = SourceIdentity(manifest['repository'], manifest['commit'], manifest['tree'], manifest_ref)
     with pgstore.transaction() as tx:
-        tx.put('research_audits', 'fixture', {'id': 'fixture', 'inventory': [], 'subsystems': ['core']})
+        tx.put('research_audits', 'fixture', {'id': 'fixture', 'inventory': [], 'subsystems': ['core'],
+                                              'source': asdict(source)})
     partition = PartitionCheckpoint(**audits.partition('fixture')[0])
     message = envelope('task.assign', 'lead:research', 'worker:github', 'research',
                        {'audit_id': 'fixture', 'partition_id': partition.partition_id}, 'fixture')

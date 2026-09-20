@@ -9,6 +9,7 @@ from importlib.resources import files
 from codex_harness.domain.model import canonical, digest, require, utcnow
 from codex_harness.domain.research import (
     AdaptationProposal,
+    AuditDraftRejected,
     InventoryEntry,
     ObservedAsset,
     PartitionCheckpoint,
@@ -17,6 +18,7 @@ from codex_harness.domain.research import (
     SubsystemAnalysis,
     parse_record,
     receipt_successful,
+    reject,
 )
 from codex_harness.ports import AuditArtifacts, SourceVerifier, Store
 
@@ -103,6 +105,46 @@ class ResearchAudits:
                     records.append(body)
             return records
 
+    @staticmethod
+    def _anchors(tx, audit):
+        """The authoritative artifact references of THIS audit, read from trusted records only.
+
+        self-improvement-reference-001, 2026-09-21: the verified source manifest, the verified
+        inventory artifacts, the evidence its partitions and checkpoints already retain, and the
+        output of runner executions stored for it. A reference in this set is trusted input, so
+        failing to read it is an execution failure and never a candidate's fault. This is a
+        classification of existing records, not a new provenance grant: an unanchored reference
+        whose body is readable remains as acceptable as it has always been.
+        """
+        source = audit.get('source') or {}
+        require(bool(source.get('manifest_ref')), 'Audit source manifest unavailable')
+        refs = {source['manifest_ref']}
+        refs.update(e['artifact_ref'] for e in audit['inventory'] if e['artifact_ref'])
+        for bucket in ('research_partitions', 'research_checkpoints'):
+            refs.update(ref for row in tx.scan(bucket) if row['audit_id'] == audit['id']
+                        for ref in row['evidence_refs'])
+        refs.update(row['receipt']['output_ref'] for row in tx.scan('research_receipts')
+                    if row['audit_id'] == audit['id'])
+        return refs
+
+    def _claimed_evidence(self, anchors, refs):
+        """Inspect evidence a candidate NAMES. Only an absent unanchored body is its own fault.
+
+        An anchored reference is trusted input: every failure to read it stays a hard failure. For
+        an unanchored one, a `FileNotFoundError` means the draft invented or mistyped a reference
+        that was never stored, which no later review could inspect. A modified body, invalid or
+        missing metadata, a permission error and every other IO failure stay hard failures: those
+        say the artifact store is damaged, not that the draft is wrong.
+        """
+        for ref in refs:
+            if ref in anchors:
+                self.artifacts.inspect(ref)
+                continue
+            try:
+                self.artifacts.inspect(ref)
+            except FileNotFoundError as absent:
+                raise AuditDraftRejected('Claimed evidence artifact is absent') from absent
+
     def checkpoint(self, task, checkpoint: PartitionCheckpoint,
                    dispositions: list[PathDisposition], analyses: list[SubsystemAnalysis],
                    continuation: dict | None = None):
@@ -110,12 +152,10 @@ class ResearchAudits:
                                    'record': asdict(checkpoint)})
         for record in [*dispositions, *analyses]:
             parse_record({'version': 1, 'kind': type(record).__name__, 'record': asdict(record)})
-            for ref in record.evidence_refs:
-                self.artifacts.inspect(ref)
-        for ref in checkpoint.evidence_refs:
-            self.artifacts.inspect(ref)
-        require(len({p.path for p in dispositions}) == len(dispositions)
-                and len({s.name for s in analyses}) == len(analyses), 'Duplicate coverage')
+        # Candidate claims are `reject`ed with their existing messages; trusted anchors - ownership,
+        # lease, assignment, generation, immutable scope, stored records and the store itself -
+        # stay ordinary `require` failures. The whole transaction is all-or-nothing either way: a
+        # rejection raised after staged writes leaves this transaction before any caller sees it.
         with self.store.transaction() as tx:
             current_task = self.workflow._owned(tx, task)
             details = current_task['message']['what']['details']
@@ -127,25 +167,39 @@ class ResearchAudits:
                     and old['generation'] == checkpoint.generation, 'Stale partition writer')
             require(old['paths'] == checkpoint.paths and old['subsystems'] == checkpoint.subsystems,
                     'Partition scope changed')
-            require(all(p.path in old['paths'] for p in dispositions)
-                    and all(s.name in old['subsystems'] for s in analyses), 'Cross-partition evidence')
             audit = tx.get('research_audits', checkpoint.audit_id)
+            require(audit is not None, 'Unknown audit')
+            # Ownership, generation and immutable scope are settled above; from here the draft's
+            # own relationship and evidence claims are classified against the trusted records.
+            # self-improvement-reference-001, 2026-09-21 independent lead disposition: duplicate
+            # coverage is the FIRST of those candidate claims, so it is refused here and no longer
+            # ahead of the trusted guards. A stale, unassigned or rescoped execution that also
+            # submits duplicates therefore fails as the ordinary execution failure it is.
+            reject(len({p.path for p in dispositions}) == len(dispositions)
+                   and len({s.name for s in analyses}) == len(analyses), 'Duplicate coverage')
+            anchors = self._anchors(tx, audit)
+            for record in [*dispositions, *analyses]:
+                self._claimed_evidence(anchors, record.evidence_refs)
+            self._claimed_evidence(anchors, checkpoint.evidence_refs)
+            reject(all(p.path in old['paths'] for p in dispositions)
+                   and all(s.name in old['subsystems'] for s in analyses), 'Cross-partition evidence')
             inventory = {p['path']: p for p in audit['inventory']}
             # INV-RESEARCH-003: model-authored receipt IDs are not runner attestations.
             for item in [*dispositions, *analyses]:
                 for receipt_id in item.receipt_ids:
                     receipt = tx.get('research_receipts', receipt_id)
-                    require(receipt is not None and receipt['audit_id'] == checkpoint.audit_id
-                            and receipt['task_id'] == task['id']
-                            and receipt['generation'] == task['generation']
-                            and receipt_successful(receipt['receipt']),
-                            'Runner receipt missing, stale, blocked or unsuccessful')
+                    reject(receipt is not None and receipt['audit_id'] == checkpoint.audit_id
+                           and receipt['task_id'] == task['id']
+                           and receipt['generation'] == task['generation']
+                           and receipt_successful(receipt['receipt']),
+                           'Runner receipt missing, stale, blocked or unsuccessful')
+                    # The receipt is now a trusted stored record: its own output is an anchor.
                     self.artifacts.inspect(receipt['receipt']['output_ref'])
             for disposition in dispositions:
                 entry = inventory[disposition.path]
                 if disposition.disposition in {'unreviewed', 'unavailable'}:
                     continue
-                require(entry['mode'] != '160000', 'Submodule requires its own verified audit')
+                reject(entry['mode'] != '160000', 'Submodule requires its own verified audit')
                 envelope = self.artifacts.document(entry['artifact_ref'])
                 raw = base64.b64decode(envelope['data'], validate=True)
                 try:
@@ -153,12 +207,14 @@ class ResearchAudits:
                     binary = b'\0' in raw
                 except UnicodeDecodeError:
                     binary = True
-                require(not binary or (disposition.disposition == 'binary'
-                        and disposition.receipt_ids),
-                        'Binary coverage requires verified runner inspection')
-                require(set(disposition.links) <= set(inventory), 'Unknown generator/original path')
+                reject(not binary or (disposition.disposition == 'binary'
+                       and disposition.receipt_ids),
+                       'Binary coverage requires verified runner inspection')
+                # Links are exact inventory identities; nothing is encoded, decoded or normalized
+                # here, because a silently repaired claim is no longer the claim that was made.
+                reject(set(disposition.links) <= set(inventory), 'Unknown generator/original path')
             for analysis in analyses:
-                require(set(analysis.paths) <= set(inventory), 'Unknown subsystem path')
+                reject(set(analysis.paths) <= set(inventory), 'Unknown subsystem path')
                 # INV-RESEARCH-003: listing files cannot attest that a claimed test command ran.
                 not_run = {test['test'] for test in analysis.tests_not_run}
                 executed = [tx.get('research_receipts', ref)['receipt'] for ref in analysis.receipt_ids]
@@ -169,12 +225,12 @@ class ResearchAudits:
                         command = json.loads(test)
                     except (TypeError, ValueError):
                         command = None
-                    require(isinstance(command, list) and command and all(isinstance(s, str) for s in command)
-                            and command[0] not in {'source-list', 'source-read'}
-                            and any(r['command'] == command
-                                    and r['isolation'] != 'inert-objects-no-code-execution'
-                                    for r in executed),
-                            'Claimed test lacks matching successful execution command')
+                    reject(isinstance(command, list) and command and all(isinstance(s, str) for s in command)
+                           and command[0] not in {'source-list', 'source-read'}
+                           and any(r['command'] == command
+                                   and r['isolation'] != 'inert-objects-no-code-execution'
+                                   for r in executed),
+                           'Claimed test lacks matching successful execution command')
             for kind, records, field in [('research_paths', dispositions, 'path'),
                                          ('research_subsystems', analyses, 'name')]:
                 for record in records:
@@ -184,9 +240,12 @@ class ResearchAudits:
                     tx.put(kind, key, body)
                     tx.put('research_evidence_history', digest(body), body)
             paths, subsystems = self._coverage(tx, audit)
-            require(set(checkpoint.remaining_paths) == set(old['paths']) - paths
-                    and set(checkpoint.remaining_subsystems) == set(old['subsystems']) - subsystems,
-                    'Remaining work does not reconcile')
+            # The candidate's own account of what is left, reconciled against persisted coverage
+            # AFTER this batch's rows are staged. A refusal here leaves the transaction, so those
+            # staged coverage and history rows roll back with everything else.
+            reject(set(checkpoint.remaining_paths) == set(old['paths']) - paths
+                   and set(checkpoint.remaining_subsystems) == set(old['subsystems']) - subsystems,
+                   'Remaining work does not reconcile')
             body = asdict(checkpoint)
             body['evidence_refs'] = sorted(set(old['evidence_refs']) | set(body['evidence_refs']) |
                 {ref for r in [*dispositions, *analyses] for ref in r.evidence_refs})

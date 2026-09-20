@@ -4,7 +4,31 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass
 
-from codex_harness.domain.model import digest, require
+from codex_harness.domain.model import ContractError, digest, require
+
+
+class AuditDraftRejected(ContractError):
+    """A candidate audit draft's OWN claims are refused; nothing else failed.
+
+    self-improvement-reference-001, 2026-09-21: a model draft can pass type validation and still
+    fail relationship and evidence-claim validation. Recovery `audit-recovery-002` stopped on
+    `Unknown generator/original path` while the response's three human-readable links each encoded
+    to an existing inventory identity, so the files WERE present: the draft's representation was
+    wrong, not the source, the store or the execution.
+
+    This type separates that family from execution integrity. It is raised only for claims a
+    candidate itself makes - record relationships, artifact references it names, and the remaining
+    work it reconciles - never for ownership, leases, trusted scope, stored anchors, the database
+    or a refused execution. Being a `ContractError` keeps every existing caller, message and
+    `pytest.raises(ContractError)` expectation unchanged; owners and types decide the disposition,
+    never the wording of a message.
+    """
+
+
+def reject(condition: bool, reason: str) -> None:
+    """`require` for a candidate claim: same message, a type that names whose fault it is."""
+    if not condition:
+        raise AuditDraftRejected(reason)
 
 
 def reference(value: str) -> None:
