@@ -635,3 +635,10 @@ passed in the research image; this does not certify research service activation.
 Claude connection job self-improvement-reference-001-audit-service is executing through
 Fleet; keep the running job intact and drain before switching service launchers.
 
+Owner scope correction: the dispatch manifest misspelled the existing observation-domain
+owner as domain/observations.py. The actual owner is domain/observation.py; changes confined
+to narrow event definitions in that existing file are authorized by this frame. Do not create
+a duplicate module. The already-dispatched manifest stays immutable; if its exact-path gate
+rejects this owner typo, preserve that failed gate and use explicit owner review of the
+corrected scope rather than another implementation/model retry or a retroactive green record.
+
