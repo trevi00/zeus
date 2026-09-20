@@ -261,3 +261,80 @@ fixture over `MemoryStore`. No model call, Redis connection, PostgreSQL connecti
 start happened in these checks. The actual host canary (real Redis, PostgreSQL, Codex and an active
 release) is the owner's step after review and CI, exactly as the SPEC section states; nothing in
 this note is evidence that the service has run in operation.
+
+## Whole-checkpoint reframe: candidate claims versus execution integrity (2026-09-21)
+
+Why this batch exists. The explicitly authorized recovery of `6975f930-7633-4f4b-b083-e002d04776b7`
+stopped again on attempt 2 with `ContractError: Unknown generator/original path`, while the actual
+response `sha256:777c874c1d99b3c44f814cfe526cdda87f4361dbfdb632384cad5d8dacbf117f` carried three
+human-readable links whose Base64 encodings each name an existing inventory path. The files WERE
+present: the defect was representation against the contract, not missing source, a storage fault or
+a database failure. A model draft can therefore pass type validation and still fail relationship
+and evidence-claim validation, so the earlier pure-only restriction is superseded here: treating
+every checkpoint refusal as infrastructure failure repeats the family after each schema correction.
+Both failed attempts stay unchanged in the task history, and no provider was called to inspect this
+evidence.
+
+What the boundary is now. Two owners raise a recoverable rejection, and TYPE decides - never a
+message substring, never a broad catch:
+
+| Boundary | Disposition | Owner |
+|---|---|---|
+| Model output shape and pure typed records | Retained `analysis_rejected`, as already implemented | `AuditExecution.proposed_checkpoint` |
+| Candidate record relationships and its own remaining-work reconciliation | `AuditDraftRejected`; the whole checkpoint transaction rolls back, then the draft is retained | `ResearchAudits.checkpoint` |
+| A model-named artifact body that is absent AND unanchored | Unverifiable candidate evidence -> `AuditDraftRejected`, never acceptance | `ResearchAudits._claimed_evidence` |
+| Returned `inspection_blocked`, runner/provider exception, invalid or stale task or partition ownership, immutable scope mutation, source or receipt corruption, a missing authoritative artifact, permission or other IO error, DB read/write/commit and continuation-authorization failure | Ordinary execution failure; never converted | the existing trusted owners |
+
+`AuditDraftRejected` is a `ContractError` subtype in `domain/research.py` with a `reject()` helper,
+so every existing caller, message and `pytest.raises(ContractError)` expectation is unchanged and a
+rejection is never a relaxation. The candidate-claim checks it replaces keep their exact wording;
+`require()` still owns ownership, leases, trusted scope, stored anchors and the store itself.
+
+In `application/research.py`: `checkpoint` validates ownership, the assignment, the current
+generation and the immutable trusted scope BEFORE it classifies any relationship. `_anchors` reads
+this audit's authoritative artifact references from trusted records only - `source.manifest_ref`,
+the verified inventory `artifact_ref`s, the evidence its partitions and checkpoints already retain,
+and the stored runner `output_ref`s. `_claimed_evidence` then inspects what the draft NAMES: an
+anchored reference is trusted input whose every read failure is hard, and for an unanchored one
+only `FileNotFoundError` becomes a draft rejection. A modified body, invalid or missing metadata, a
+permission error and every other IO failure stay hard failures, because those say the artifact
+store is damaged rather than that the draft is wrong. This is a classification of existing records,
+not a new provenance grant: an unanchored reference whose body is readable is as acceptable as
+before. No path is encoded, decoded, normalized or deduplicated anywhere on this path.
+
+In `adapters/audit_execution.py`: the checkpoint call is wrapped in a catch of ONLY
+`AuditDraftRejected`, OUTSIDE `checkpoint`'s own transaction, so the exception has already left
+that transaction and every staged coverage, history, checkpoint, partition and outbox write of the
+refused batch has rolled back before the handler runs. The existing `rejected_analysis` then
+inspects the executor-owned output and returns the same versioned binding, with `error_type`
+naming the family and only a digest of the message. The semantic-turn instructions now state the
+path-reference contract once for keys, links and subsystem trace paths; the instructions are
+guidance and the validation above stays authoritative.
+
+Explicitly not done: no new scheduler, retry policy, PG schema, repair API, provider loop,
+knowledge promotion, process or socket lifecycle, and no reclassification of historical failures.
+The outcome code stays `analysis_rejected` with the fixed reason `analysis_content_rejected`.
+
+Checks actually run for this batch, in the worker container: `python -m pytest
+tests/test_audit_checkpoint_outcomes.py tests/test_audit_analysis_outcomes.py
+tests/test_audit_service.py tests/test_audit_output_identity.py
+tests/test_audit_output_vocabulary.py tests/test_research_audits.py -q` and
+`python -m ruff check .`. `tests/test_audit_checkpoint_outcomes.py` carries this matrix. Every
+model turn in it is INJECTED over the real store, artifacts, `ResearchAudits`, `Workflow`,
+`schedule_audits` and observation contract, with `FixtureRunner` receipts; the permission and
+store-write faults are injected too. It is not evidence that a provider, Redis, PostgreSQL or a
+host service ran, and no model was provoked to obtain a rejection sample. Its controls are
+`test_execution_integrity_failures_are_never_retained_as_a_rejected_draft` (a missing ANCHORED body
+is hard where an invented reference is a rejection),
+`test_an_ordinary_contract_error_with_a_candidate_message_is_not_an_analysis_outcome` (same text,
+other type, still a failure), `test_trusted_anchor_failures_stay_ordinary_execution_failures` and
+`test_an_unbindable_refused_candidate_still_stops_the_service`.
+`test_a_late_reconciliation_rejection_rolls_back_rows_it_already_staged` is the rollback case with
+rows actually staged first. The rollback and store-failure regressions run on BOTH stores through
+`rollback_store`: the `memory` parameter ran here, and the `postgres` parameter uses the existing
+`isolated_pgstore` fixture in a per-test schema with no production rows. That PostgreSQL parameter
+SKIPPED in this container (no `HARNESS_INTEGRATION=1`), so nothing here proves it on PostgreSQL;
+the owner and CI must run it without skips. The discriminating control for the whole batch was run
+by temporarily making `reject()` raise a plain `ContractError`: 19 of the new regressions failed
+and the integrity and acceptance controls kept passing. The full suite, the history checks and any
+new host canary stay with the owner and CI.

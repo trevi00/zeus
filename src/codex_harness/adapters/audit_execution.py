@@ -13,6 +13,7 @@ from codex_harness.domain.observation import (
 )
 from codex_harness.domain.research import (
     PATH_DISPOSITIONS,
+    AuditDraftRejected,
     IndependentReview,
     PartitionCheckpoint,
     parse_record,
@@ -37,6 +38,15 @@ NULL = {'type': 'null'}
 # `analysis_checkpointed` is partial progress, never semantic acceptance; `analysis_rejected` is
 # never a successful review. A result carrying neither marker is unclassified history and is never
 # newly inferred to be either. `domain.observation` owns the codes; this module only writes them.
+#
+# 2026-09-21 whole-checkpoint reframe: a draft that passes type validation can still fail
+# relationship and evidence-claim validation (recovery attempt 2 of that task stopped on
+# `Unknown generator/original path` while every link encoded to an existing inventory identity).
+# The rejection boundary is therefore BOTH the pure decoder here and `AuditDraftRejected` from
+# `ResearchAudits.checkpoint`, caught outside its transaction. Execution integrity - a returned
+# inspection refusal, the runner, the provider, ownership, leases, trusted scope, artifact
+# integrity, the database and its commit - is on the other side of that boundary and is never
+# converted; types and owners decide that, never the wording of a message.
 ANALYSIS_VERSION = 1
 
 # 2026-09-21 independent lead finding: an execution failure is not always a raised exception.
@@ -194,9 +204,10 @@ class AuditExecution:
     def rejected_analysis(self, task, trusted, answer, error):
         """Retain a refused draft as its own explicit outcome, bound to its immutable evidence.
 
-        The executor-owned reference is inspected HERE, outside the pure catch: absent, unreadable
+        The executor-owned reference is inspected HERE, outside both catches: absent, unreadable
         or modified evidence stays an execution failure, because then there is no retained content
-        to review later. Only the error's type and a digest of its message leave this method.
+        to review later. Only the error's type and a digest of its message leave this method, so a
+        pure content refusal and a refused candidate claim are told apart by type, never by text.
         """
         ref = self.evidence_ref(answer)
         require(ref is not None, 'Analysis rejection evidence missing')
@@ -302,7 +313,19 @@ class AuditExecution:
             'partial is not a disposition and unverified work is never semantic. '
             'An empty assignment requires an empty object; '
             'do not add supporting subsystem records to a path-only partition. Subsystem trace paths '
-            'may reference repository inventory paths. Partial results may leave assigned identities '
+            'may reference repository inventory paths. '
+            # 2026-09-21: recovery attempt 2 stopped on `Unknown generator/original path` while the
+            # answer carried human-readable display names whose Base64 identities all existed. The
+            # contract is stated once, for every place a path is referenced; validation stays
+            # authoritative and nothing is encoded, decoded, normalized or deduplicated for you.
+            'EVERY path reference is the exact Base64 identity from the inventory: the keys of '
+            'paths, the links of a generated or duplicate disposition, and the paths of a subsystem '
+            'record. Copy those identities verbatim from partition.paths and audit.inventory; a '
+            'human-readable file name belongs only in justification or narrative text, never in a '
+            'key, a link or a trace path. A reference that is not an assigned or inventory identity '
+            'is refused as written: it is never encoded, decoded, corrected or deduplicated for you, '
+            'so leave work you cannot reference exactly unreviewed or null with its explanation. '
+            'Partial results may leave assigned identities '
             'null; all null or unresolved work remains in its existing partition. '
             'Explicitly preserve unreviewed scope, tests not run and open questions. Inventory is not review. '
             'Never infer execution from test file presence. For each executed test in tests, use a JSON '
@@ -324,7 +347,17 @@ class AuditExecution:
             # as a rejected draft. Nothing of this batch is checkpointed: the partition keeps its
             # generation and its whole remaining scope for an explicitly reviewed later decision.
             return self.rejected_analysis(task, trusted, answer, rejection)
-        saved = self.audits.checkpoint(task, checkpoint, paths, systems)
+        try:
+            saved = self.audits.checkpoint(task, checkpoint, paths, systems)
+        except AuditDraftRejected as rejection:
+            # The SECOND half of the same boundary (2026-09-21 reframe): a draft that passes type
+            # validation can still fail relationship and evidence-claim validation. Only this one
+            # type is caught, and only OUTSIDE `checkpoint`'s own transaction, so the exception has
+            # already left that transaction and every staged coverage, history, checkpoint,
+            # partition and outbox write of this batch rolled back before this line runs. An
+            # ordinary `ContractError` with the same wording, a store, commit, lease, ownership,
+            # artifact-integrity or runner failure is not this type and passes straight through.
+            return self.rejected_analysis(task, trusted, answer, rejection)
         ref = self.evidence_ref(answer)
         if ref is None:
             # No executor-owned evidence to bind this outcome to (an injected or legacy answer):
