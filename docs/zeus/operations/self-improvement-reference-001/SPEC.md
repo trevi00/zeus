@@ -118,3 +118,12 @@ Next bounded continuation retains this frame: execution ownership/settlement/res
 existing Zeus recovery/authority equivalents, followed by the remaining repository coverage.
 Requirements provenance is a supported enhancement candidate; its machine-verifiable delegated
 authority and manifest extension are unresolved design points, not an issued implementation task.
+
+### Execution ownership/recovery tranche
+
+RECOVERY-PATH.md records settlement/deadline distinctions and the existing Zeus fence, recovery
+and Fleet ownership mapping. Its substep review log separates source inspection, self-crosscheck
+and actual execution. Four existing local contract files passed 75 checks with 63 skipped;
+PostgreSQL/restart and upstream runtime behavior are not established by that result.
+The decision remains to enhance the existing authority owner rather than add another retry engine.
+Full repository analysis and the consolidated Claude handoff remain open; no runtime changes made.

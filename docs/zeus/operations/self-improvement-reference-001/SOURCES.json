@@ -7,8 +7,8 @@
     "paths": 1817,
     "inventory_sha256": "ae580d28e0cd42d37de59ae4a877e2ad353c9fd8cc93514d4ee80ab5c09bd73d",
     "coverage_file": "D:\\workspaces\\zeus\\artifacts\\self-improvement-reference-001\\ouroboros-coverage.json",
-    "coverage_sha256": "494b259cdbcca2f13377289912603d0baba11162ddc536721ba977dbae7d6ac6",
-    "touched_paths": 28,
+    "coverage_sha256": "51809e97fb9b5fcd8c92761e9de7b22a20b43600899541ab4e3630a4e15ffd2e",
+    "touched_paths": 31,
     "fully_analyzed_paths": 0,
     "adopted_capabilities": 0
   },
