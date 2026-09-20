@@ -1534,3 +1534,49 @@ identifiers with codes only.
 only; the local JSONL event log carries general/development/operations records with identifiers,
 counts and codes; none of them carry configs, feed bodies, exception text, credentials or DSNs.
 No retry, merge, deploy, service install, budget grant, scope change or generated goal.
+
+## INV-AUDIT-SERVICE-001
+
+`zeus audit-service run|status` is the one host entry point that runs ONE explicitly selected
+source audit through the existing owners; it adds no second analysis engine, source reader,
+scheduler, promotion authority or budget ledger, and it never activates a release, merges,
+deploys, executes source code or runs an audit action other than `audit_partition`. `run` takes
+the host lock (`<runtime>/audit-service.lock`, process lifetime, one owner per configured runtime)
+and then the read-only gate: `research_control/activation` must be `active` and name the CURRENT
+`deployment/active` release, the control and `research_control/graph` revisions must equal this
+checkout's revision, the graph organization digest must equal the current organization, and the
+`--audit-id` must name an imported, partitioned audit. A busy lock, an inactive, paused, legacy or
+stale activation, a foreign revision or graph and an unknown or unpartitioned audit all return a
+fixed reason code BEFORE an observer, an executor, a transport or any provider is built. The
+existing `Releases` reconciliation stays the only activation authority; this command writes none.
+Admission uses the existing records only: `schedule_audits(audit_id=...)` is the same scheduler
+with an optional backwards-compatible filter (the narrowed pass admits that audit's partition,
+proposal and adoption assignments and leaves discovery, acquisition and every other audit to the
+existing global pass; generation deduplication is unchanged), the correlation-scoped outbox relay
+publishes only this assignment's own records, and delivery accepts ONLY the message whose id,
+correlation, recipient, action and audit match the selected assignment. A foreign stream entry is
+counted and left pending for its owner: never acknowledged, dead-lettered, submitted, rewritten or
+published by this service, and an unsent foreign outbox record stays unsent. Exactly one task runs
+at a time, claimed through `Executor.execute_one`'s expected id/correlation/status guard, so a
+claim policy that would take another row refuses before the fence, the lease and any provider
+entry; that refusal stops this service and changes nothing about the other row. Completion is the
+existing `Workflow.complete` plus `ResearchAudits.checkpoint`: the partition record itself supplies
+the generation and the remaining counts, which are scope arithmetic and never a semantic or review
+credit. The narrow `audit_service` row holds only the owner, the bound task, the last result, the
+completion count, the last collection health and the stop reason; the durable `schedule`, `tasks`
+and `research_partitions` rows remain the authority. A restart settles a bound task only when its
+stored row succeeded under the same correlation; a running, queued, retried, failed or unreadable
+attempt is `reconciliation_required` and admits nothing, and a recorded predecessor that did not
+succeed keeps blocking until its own row succeeds or its execution generation advances through the
+existing recovery or cancellation path. Nothing here retries an attempt, rewrites a historical
+failed task or restarts a lost one; the existing process-tree owner handles children on a signal.
+`--max-tasks N` (1..100) is a finite acceptance mode, not a call cap: it stops after N successful
+completions and leaves every queued successor and its evidence untouched; `--once` does the ready
+work and exits. The observations are four declared events (`operations.audit_service_started`,
+`_scheduled`, `_task`, `_stopped`) carrying identifiers, fixed codes and counts only, plus the
+existing collection record; prompts, cursors, source text, partition scope and credentials have no
+place on them. `status` and the durable row expose the activation, the supported action, the
+current task, the predecessor result, the checkpoint generation and remaining counts, the
+assignment states, the collection health and the stop or block reason, and they read the store
+only. Fixture executors, buses and releases in the tests are not evidence that a provider, Redis,
+PostgreSQL or a host service ran.

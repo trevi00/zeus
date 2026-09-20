@@ -269,7 +269,8 @@ def parser() -> argparse.ArgumentParser:
                                            "invocation_reservations",
                                            "observations", "observation_audit", "observation_quarantine",
                                            "observation_alerts", "observation_collections", "observation_terminations",
-                                           "tasks", "decisions_pending", "releases", "deployment", "release_queue"])
+                                           "tasks", "decisions_pending", "releases", "deployment", "release_queue",
+                                           "audit_service"])
     observe = commands.add_parser("observe", help="Observation logs: collect the spool, report status, reconcile")
     observe_commands = observe.add_subparsers(dest="observe_command", required=True)
     observe_commands.add_parser("collect", help="Move durable spool records into PostgreSQL and acknowledge them")
@@ -299,6 +300,8 @@ def parser() -> argparse.ArgumentParser:
     operate_run.add_argument("--file", type=Path, required=True, help="Operation manifest JSON (urn:zeus:operation:1)")
     operate_status = operate_commands.add_parser("status", help="Read the saved receipt; store read only")
     operate_status.add_argument("operation_id")
+    from codex_harness.adapters.audit_service import add_parser as add_audit_service_parser
+    add_audit_service_parser(commands)
     from codex_harness.adapters.dge_cli import add_parser as add_dge_parser
     add_dge_parser(commands)
     from codex_harness.adapters.fleet_cli import add_parser as add_fleet_parser
@@ -511,6 +514,20 @@ def autonomous_command(service, args):
         raise SystemExit(1)
 
 
+def audit_service_command(service, args):
+    """INV-AUDIT-SERVICE-001: exit 0 only for a completed command; refusals print a code and a type,
+    never prompts, source text, partition scope, credentials, DSNs or raw exceptions."""
+    from codex_harness.adapters import audit_service
+    try:
+        result = audit_service.execute(service, args)
+    except Exception as exc:
+        emit(audit_service.refusal(exc))
+        raise SystemExit(1) from exc
+    emit(result)
+    if result.get("exit_code", 1) != 0:
+        raise SystemExit(1)
+
+
 def research_program_command(service, args):
     """INV-RESEARCH-PROGRAM-001: exit 0 only for a recorded, replayed or read result; refusals print a
     code and a type, never configs, feed bodies, DSNs or raw exceptions."""
@@ -683,6 +700,8 @@ def main() -> None:
             fleet_command(service, args)
         elif args.command == "desk":
             desk_command(service, args)
+        elif args.command == "audit-service":
+            audit_service_command(service, args)
         elif args.command == "research-program":
             research_program_command(service, args)
         elif args.command == "observe":
