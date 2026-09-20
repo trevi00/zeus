@@ -247,3 +247,27 @@ isolated-worker tests; actual Docker checks cover a disposable, credential-free 
 container only. Restart/duplicate admission use the existing unresolved-run refusal contract.
 Windows is this execution host; no new WSL result is inferred. Full source coverage, release
 activation, global hooks and autonomous continuation remain separate, uncompleted conditions.
+
+### Operator-assigned analysis canary
+
+The current user authorized connecting the existing path. Trace inspection distinguishes
+automatic `schedule_audits` activation from an explicit `Workflow.submit` audit task:
+the latter admits an authorized six-W assignment and AuditExecution uses the same owned
+task/checkpoint contracts. This canary exercises that existing manual surface, not an
+activation bypass or a manufactured release. Adoption/release gates remain unchanged.
+
+Use deployed runtime `5cb0dc4ada51bb66412eb1f5b642fb793b286ce6` with a dedicated D-drive
+runtime/artifact root, the existing PostgreSQL store and a dedicated Redis namespace.
+Import the complete pinned Ouroboros inventory through GitSourceVerifier, partition it
+without review credit, and explicitly assign one partition to the existing Codex audit
+executor. Preserve all evidence and stop on failure/unknown; no retry-until-green.
+If the first task succeeds with remaining scope, explicitly assign one successor using
+the persisted next generation and verify the predecessor remains terminal. Maximum two
+partition tasks for this canary; no automatic adoption, merge, deployment or broad scheduler.
+
+Acceptance: verify all imported objects/bytes; Redis delivery plus PG task identity;
+exclusive owned execution and exact partition generation; runner receipts and persisted
+remaining scope; second-generation continuation only after success; named failure/unknown
+and no further launch; actual observer records. Status must expose the D artifact root.
+Prior manual findings are supplementary only, never inserted as verified checkpoints.
+This is host orchestration of existing application APIs, with no runtime implementation edit.
