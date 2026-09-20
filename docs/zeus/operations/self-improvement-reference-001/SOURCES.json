@@ -1,0 +1,41 @@
+[
+  {
+    "name": "ouroboros",
+    "repository": "https://github.com/Q00/ouroboros.git",
+    "commit": "f0e17b4b42cc06974f2afaf15606250939cd4f87",
+    "tree": "d53587c37f8171cb7c165282418fa35efd82225a",
+    "paths": 1817,
+    "inventory_sha256": "ae580d28e0cd42d37de59ae4a877e2ad353c9fd8cc93514d4ee80ab5c09bd73d",
+    "coverage_file": "D:\\workspaces\\zeus\\artifacts\\self-improvement-reference-001\\ouroboros-coverage.json",
+    "coverage_sha256": "b1df5d1c4f4104729ee6ec7a541ded6c851a9cfc79e626b85b19fc0cdc204579",
+    "touched_paths": 16,
+    "fully_analyzed_paths": 0,
+    "adopted_capabilities": 0
+  },
+  {
+    "name": "hermes-agent",
+    "repository": "https://github.com/NousResearch/hermes-agent.git",
+    "commit": "59f9ff8dbc75b9c4f07ae10174df730f7882a505",
+    "tree": "544aa7e1af9ade3f90a3f19f0982fec37c3c1a4c",
+    "paths": 14403,
+    "inventory_sha256": "6791492e7fb343b15a50b1a3ba28cf55de3aca2c01ca46e9b4ce0bdb931b1c76",
+    "coverage_file": "D:\\workspaces\\zeus\\artifacts\\self-improvement-reference-001\\hermes-agent-coverage.json",
+    "coverage_sha256": "3eca5ac49d23cfc95c44ce5521233653d1f0188d12f089c0a637cadec85d2e36",
+    "touched_paths": 1,
+    "fully_analyzed_paths": 0,
+    "adopted_capabilities": 0
+  },
+  {
+    "name": "oh-my-hermes",
+    "repository": "https://github.com/rlaope/oh-my-hermes.git",
+    "commit": "24108bc70e319295663cef60cdb44fed58705d28",
+    "tree": "ec8a84f7ba33c70cfc85a221cafa3a03304912b9",
+    "paths": 2614,
+    "inventory_sha256": "6e8f2816e420771159259fe6a645d88866ae58d563c36794f38dea05a82b26f3",
+    "coverage_file": "D:\\workspaces\\zeus\\artifacts\\self-improvement-reference-001\\oh-my-hermes-coverage.json",
+    "coverage_sha256": "2d8c7ab14af827eaa57a550ef6195338532b06a5b92aa5679c5b6d58ec8fa1ac",
+    "touched_paths": 2,
+    "fully_analyzed_paths": 0,
+    "adopted_capabilities": 0
+  }
+]
