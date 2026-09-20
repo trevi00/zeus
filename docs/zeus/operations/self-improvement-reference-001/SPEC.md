@@ -623,3 +623,15 @@ Worker runs focused contract tests and ruff; Codex runs actual host canary after
 No model calls or service changes inside the worker. This closes operating connection only,
 not full-source analysis, all ingestion adapters or guaranteed semantic progress.
 
+Integration observation (2026-09-21 KST): PR #167 merged as
+ae2d8c9ab8ede22c5b27d7421189cf28ca531b73 after run 35517643047 attempt 1:
+four Windows/Linux Python jobs, service integration and CI gate passed (docs-only job
+correctly skipped). The merge's src/tests match the reviewed candidate exactly.
+Runtime-167 is a clean pinned checkout, not yet the running service at this observation.
+Worker image 90ffff67b95a9c49d7fec4bf3fb0dfdc53d212d8e80d73e26fbf61f7208fdb82
+and research image 36701e6ce1d30dc506807d0e445851217f10c60bcdf26ba39f79760b9675214a
+each match all 224 packaged source files. Existing ReleaseRunner actual Codex file canary
+passed in the research image; this does not certify research service activation.
+Claude connection job self-improvement-reference-001-audit-service is executing through
+Fleet; keep the running job intact and drain before switching service launchers.
+
