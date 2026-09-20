@@ -48,3 +48,42 @@ a new explicit canary are required before claiming the checkpoint boundary repai
 
 Automatic audit activation is still absent. This attempt exercised the authorized
 manual analysis surface; source-code execution, adoption and deployment gates remain.
+
+## Corrected runtime: two real sequential tasks
+
+Candidate `df57361152ec249533631d17dbcba2aea189b15c` was accepted by the existing
+independent Codex Fleet review, decision `50b8708c-1fef-4cdc-a0c9-8327a43a85e9`.
+It constrains provider and packaged disposition vocabulary to existing domain values;
+partial source inspection remains unreviewed, never coerced into completion.
+
+| Actual task | Result | Persisted partition generation | Remaining paths | Observation records |
+|---|---|---:|---:|---:|
+| dc9a8efd-b9c1-46fc-9d50-c9262cd091e6 | succeeded, attempt 1 | 1 | 32 | 65 |
+| 2c095b12-5cc2-4d79-b145-e0d45262d868 | succeeded, attempt 1 | 2 | 32 | 60 |
+
+The parent started the second child process only after the first returned success.
+The successor read generation 1 from PostgreSQL. Eight successful inert source-read
+receipts bind the two tasks to the pinned source. The second task read controls.py and
+watchdog.py from zero-based line 120, matching the predecessor's persisted next steps;
+its checkpoint requests the next watchdog slice at line 240. This is actual continuation,
+not merely an incremented generation. All source execution receipts are reads, not tests.
+
+Collection totals: 125 records, eight confirmed audit writes, zero sink failures,
+conflicts, corrupt/refused records or unconfirmed audits. See r2-assignment-*.json,
+r2-result-*.json, r2-collection-*.json and r2-progress-detail.json under the evidence root.
+All 32 paths remain unreviewed; no complete semantic audit, knowledge promotion or
+reference adoption is claimed. The bounded two-task round ended; no successor is queued.
+
+## Owner regression findings
+
+Full candidate suite: 12 failed, 2618 passed, 476 skipped, 951.80 seconds. The outer
+operator wrapper timed out at 900 seconds; the original pytest continued and wrote its
+complete JUnit/log. Its process exit code was not observed, so that run is not a pass.
+Raw failed evidence is retained in vocabulary-verification-001.
+
+A discriminating run in vocabulary-verification-002 found eleven of the same file-access
+failures on unchanged baseline code with the long Windows temporary path. All eleven pass
+on the candidate using a short D temporary path. The twelfth is the historical schema
+equality test, which has not accounted for the intended enum constraint. Its bounded
+test-only amendment is specified in SPEC.md and assigned as Fleet job
+`self-improvement-reference-001-baseline`. No unrelated runtime repair is authorized.
