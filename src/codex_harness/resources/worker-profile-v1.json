@@ -2,7 +2,7 @@
   "id": "worker-v1",
   "version": "1",
   "document": "worker-profile-v1.md",
-  "document_sha256": "aa7ee482076f0005a7bddfd33c26691f2d45cc819f49617f447672b19264b4e4",
+  "document_sha256": "bd60e87ba2216a7811b9feeb203672120c98d84dd2949225936648c914af661d",
   "hook": "worker_profile_hook.py",
   "hook_sha256": "fd6ecaf37282071107d4d38fa3cddc17a7197bfb20dd9cf5134e0142d5927b82",
   "character_limit": 6000,
@@ -22,7 +22,8 @@
       "Bash(git diff:*)",
       "Bash(git diff)",
       "Bash(git log:*)",
-      "Bash(python -m codex_harness.adapters.worker_profile_metadata)"
+      "Bash(python -m codex_harness.adapters.worker_profile_metadata)",
+      "Bash(python -m codex_harness.adapters.monitor_frontend_checks)"
     ]
   },
   "sources": [

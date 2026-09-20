@@ -5,3 +5,7 @@
 __pycache__
 .pytest_cache
 .ruff_cache
+# A host dependency tree never enters the build context: the image installs from the lock alone.
+**/node_modules
+frontend/monitor/node_modules
+frontend/monitor/dist
