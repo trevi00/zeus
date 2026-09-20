@@ -81,7 +81,15 @@
           "type": "string"
         },
         "disposition": {
-          "type": "string"
+          "type": "string",
+          "enum": [
+            "unreviewed",
+            "semantic",
+            "generated",
+            "duplicate",
+            "binary",
+            "unavailable"
+          ]
         },
         "evidence_refs": {
           "type": "array",
