@@ -129,7 +129,9 @@ output failures or that shorter prose cures the provider. That remains a hypothe
 
 One correction delivery: Claude edits only RESULT.md to correct the timing, explicitly attributes
 test/deployment facts to supplied owner evidence, and notes that the initial report canary failed
-before review. Keep the existing diagram and evidence hashes, at most 90 lines. Run ruff once after
+before review. Label PR164 numbers, three links and head as the PR164 deployment-time snapshot, not
+the current live head; PR165 subsequently deployed at 5cb0dc4ada51bb66412eb1f5b642fb793b286ce6.
+Keep the existing diagram and evidence hashes, at most 90 lines. Run ruff once after
 the edit. Supply summary <=600 characters and tests as a separate JSON array containing only the
 exact executed command. No XML, report body or repeated validation attempts in the final object.
 No git commands are needed in this task; owner verifies the diff. Do not change runtime/schema,
