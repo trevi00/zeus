@@ -427,3 +427,69 @@ existing source-count assertion also changes 12 to 13 because one source was add
 the two-strike/project-delivery checks were relevant to compressed existing wording.
 See PREREQUISITE-ABSORPTION.md for evidence and limits. Integrated into task branch,
 no deployment or automatic successor. This bounded reference adaptation is complete.
+
+### User-authorized 15000-character profile and context convention
+
+Outcome: user explicitly requests a 15000-character profile ceiling plus readable,
+hierarchical context conventions. Implement a coherent policy/documentation change using
+existing profile and project-skill owners. No new recursive include engine, role router,
+global settings change or deployment. Keep prior accepted absorption evidence.
+
+Observed architecture: adapters/worker_profile.py MAX_CHARACTERS=6000 is enforced by
+load_profile; manifest repeats the cap and worker_profile_metadata imports the constant
+and checks manifest agreement. Metadata read bound is 262144 bytes, sufficient for the
+new 15000-character ceiling; do not enlarge that byte bound. ClaudeCodeRuntime joins the
+profile and existing per-run project delivery in append-system-prompt. Project skills
+are Git-pinned under .harness/skills, selected by project_skills and skill_routing with
+their own admission/context budgets. Those separate budgets and research limits are
+NOT this profile ceiling and must not be changed by broad search/replace.
+
+Codex design / Claude implementation (this final section only):
+1. Set the profile constant and manifest character_limit to 15000. Update the metadata
+   explanatory byte-bound comment, current AGENTS instructions and INV-WORKER-PROFILE-001.
+   Preserve fail-closed digest/oversize rejection, no silent truncation, hooks, permissions,
+   provenance and fixed-path metadata helper. Changing this number does not set model tokens.
+2. Improve readability of worker-profile-v1.md: use plain connected sentences and clear
+   headings, expand compressed slash lists as useful, preserve every authority/research/
+   verification/reporting rule including accepted prerequisite guidance. Do not fill the
+   allowance with new policy. A brief context-layer note distinguishes core guidance,
+   explicitly delivered task/project guidance and external evidence; a Markdown link does
+   not load a file or establish higher authority. Keep command/reporting contract phrases
+   that existing tests check. Refresh digest with existing metadata helper.
+3. Establish documentation tree docs/context/README.md (index, layer/owner/delivery map),
+   docs/context/AUTHORING.md (one owner per rule, predictable readable sections, metadata),
+   docs/context/DELIVERY.md (actual supported loading vs manual/reference-only material).
+   Link the index from AGENTS and contracts. Documentation is not runtime activation.
+   Map: L0 platform/user constraints; L1 packaged common profile; L2 existing role/task
+   assignment and Git-bound project skills; L3 focused procedures and experience references;
+   L4 raw evidence on D referenced by hash/run. Layers are organization, not invented
+   instruction-priority powers. Role docs are not automatically selected merely by a folder.
+   Describe existing normal selection and unavailable/omitted material truthfully. No
+   instruction to load the entire tree, and no recursive references-as-authority.
+4. Convention: each durable guidance unit states purpose/owner, when to read, authoritative
+   definition, procedure, prerequisites, evidence/verification, limits and related links;
+   short sections when simple. Single canonical definition; other documents link it.
+   Experience states source revision/hash, incident, applicable conditions, candidate vs
+   verified status and supersession. Plans/drafts are not verified knowledge; PG promotion
+   remains existing reviewed path. Track selected/omitted context and token use where already
+   available; do not claim new adherence or context-efficiency metrics are implemented.
+5. Update existing profile/metadata tests to the new boundary. Meaningful acceptance:
+   actual loader accepts normalized 15000 and rejects 15001 with correct digest; metadata
+   agrees for Unicode and CRLF, mismatched/stale digest and wrong manifest cap remain refused.
+   Retain protocol delivery/secret-redaction/unknown-profile tests. Do not mirror prose in
+   new tests. Preserve old evidence; no rewriting historical 6000 measurements.
+
+Matrix: normal exact-limit load/metadata/delivery, over-limit and stale/unknown rejection,
+normalization and readable profile, consistent declared cap, explicit document routing
+limits. Platform: host Windows and worker container evidence distinguished. Concurrency,
+restart and cleanup owners unchanged; no new guarantees. Rollback: revert coordinated
+profile/policy/manifest/docs change, never ignore a digest failure. Existing project-context
+budgets remain unchanged; 15000 is a maximum for the common profile, not all context.
+
+Worker checks (narrowed because snapshot lacks historical Git): existing metadata helper;
+python -m pytest tests/test_worker_profile.py tests/test_worker_profile_metadata.py
+tests/test_two_strike.py tests/test_project_delivery.py; python -m ruff check . . Owner
+runs full suite in historical checkout with short D temporary directory after candidate
+submission. No additional real model verification call is required for this policy change;
+describe fixture transport and actual behavior separately. Finish the batch when checks
+and independent review pass; main/release/automatic research activation remain separate.
