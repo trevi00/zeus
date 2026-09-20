@@ -65,8 +65,13 @@ class DockerEvidenceInspector(EvidenceInspector):
                     "platform": "linux-container"}
         return {"identity": identity, "environment": environment, "interpreter": TRUSTED_PYTHON}
 
-    def _replay(self, argv, cwd, timeout, max_bytes, env):
-        """One authorized argv in one fresh container over one fresh candidate copy."""
+    def _replay(self, argv, cwd, timeout, max_bytes, env, progress=None):
+        """One authorized argv in one fresh container over one fresh candidate copy.
+
+        The caller's per-call `progress` check reaches the attached capture exactly as it does on
+        the host (research-dispatch-001). Its refusal is an interruption of that capture, so `hold`
+        stops and confirms this container by its exact id before the refusal propagates; preparation
+        and the lifecycle record are unchanged."""
         run_id = uuid4().hex
         directory = self.root / run_id
         snapshot = directory / "workspace"
@@ -116,8 +121,8 @@ class DockerEvidenceInspector(EvidenceInspector):
         # The capture's own `cleanup` record is its positive proof; returned without one is unknown.
         try:
             run, stopped = hold(container, record, lambda: _capture(
-                [self.docker, "start", "--attach", container.id], None, timeout, max_bytes, docker_environment()),
-                proof=lambda value: value["cleanup"])
+                [self.docker, "start", "--attach", container.id], None, timeout, max_bytes, docker_environment(),
+                progress=progress), proof=lambda value: value["cleanup"])
         except IsolationError as exc:  # a lifecycle step could not be written: nothing is removed on a guess
             return {"failure": "isolated_replay_unrecorded: " + exc.reason_code + "; recovery record " + record["record"]
                     + " container " + container.id, "returncode": None, "duration_seconds": 0.0, **context}

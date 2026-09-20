@@ -202,10 +202,14 @@ class ProjectEvidenceInspector(EvidenceInspector):
                          for name, context in project['contexts'].items()}}}
         return {**snapshot, 'identity': identity, 'project': project}
 
-    def _check(self, claim, project, deadline):
+    def _check(self, claim, project, deadline, progress=None):
         """`deadline` is the inspection's one absolute monotonic instant. The remaining allowance is
         recomputed before EVERY repeat, no repeat starts at or beyond it, and a result observed after
-        it is never counted as checked: a repeat can only spend what the aggregate budget still holds."""
+        it is never counted as checked: a repeat can only spend what the aggregate budget still holds.
+
+        `progress` is the caller's per-call ownership/cancellation check (research-dispatch-001): it
+        runs before and after every host check and, through `_capture`, between the bounded polls of
+        its wait. Its refusal travels out of this check - a cancelled replay is never classified."""
         if claim['status'] == 'missing':
             return {'state': 'not_checked', 'cause': 'required check has no observation; not replayed'}
         if claim['status'] == 'not_run':
@@ -222,9 +226,13 @@ class ProjectEvidenceInspector(EvidenceInspector):
                 break
             finite_positive(per_command, 'replay deadline', self.policy['replay']['total_seconds'])
             timeouts.append(per_command)
+            if progress is not None:
+                progress('replay_start')
             run = _capture(effective, context['cwd'], per_command, self.policy['replay']['max_output_bytes'],
-                           dict(context['environment']))
+                           dict(context['environment']), progress=progress)
             runs.append(self._archive(run))
+            if progress is not None:
+                progress('replay_end')
             if run.get('failure'):
                 break
             if self.clock() > deadline:
@@ -241,7 +249,13 @@ class ProjectEvidenceInspector(EvidenceInspector):
                 'cwd': context['cwd'], 'interpreter': context['interpreter'],
                 'timeout_seconds': timeouts[0] if timeouts else 0, 'timeouts_seconds': timeouts}
 
-    def inspect(self, claims, cwd, binding, environment=None, interpreter=None, project=None):
+    def inspect(self, claims, cwd, binding, environment=None, interpreter=None, project=None, progress=None):
+        """The host's required checks, replayed in their own contexts, under the caller's own lease.
+
+        `progress` is the per-call ownership/cancellation check the ledger hands to any inspector that
+        declares one: the profile route takes it exactly like the legacy route, forwards it into the
+        existing `_capture` polling, and never turns a refusal into a check that is reported as done.
+        The snapshot, the profile digest, the allowlist and the environment are untouched by it."""
         root = Path(cwd)
         if not root.is_dir():
             return {'context': {**binding, 'cwd': str(root)}, 'policy_hash': self.policy['policy_hash'], 'findings': [
@@ -266,7 +280,7 @@ class ProjectEvidenceInspector(EvidenceInspector):
             if index >= self.policy['replay']['max_claims']:
                 findings.append({'claim': claim, 'state': 'not_checked', 'cause': 'claim budget exhausted'})
                 continue
-            findings.append({'claim': claim, **self._check(claim, project, deadline)})
+            findings.append({'claim': claim, **self._check(claim, project, deadline, progress=progress)})
         findings.extend({'claim': {k: v for k, v in refusal.items() if k != 'refused'}, 'state': 'error',
                          'cause': refusal['refused']} for refusal in refusals)
         return {'context': context, 'policy_hash': self.policy['policy_hash'], 'findings': findings,

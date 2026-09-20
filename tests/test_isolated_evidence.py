@@ -12,6 +12,7 @@ from test_isolated_worker import IMAGE, TOKEN, FakeDocker
 from codex_harness.adapters import evidence_inspection as ei
 from codex_harness.adapters import isolated_evidence as ie
 from codex_harness.adapters import isolated_worker as iw
+from codex_harness.domain.model import ContractError
 
 
 class Artifacts:
@@ -25,8 +26,8 @@ def setup(tmp_path, monkeypatch):
     monkeypatch.setattr(iw, "_docker", fake)
     monkeypatch.setenv(iw.TOKEN_NAME, TOKEN)
 
-    def capture(argv, cwd, timeout, max_bytes, env):  # injected: the container "ran" and exited 0
-        captured.append({"argv": argv, "env": env})
+    def capture(argv, cwd, timeout, max_bytes, env, progress=None):  # injected: the container "ran" and exited 0
+        captured.append({"argv": argv, "env": env, "progress": progress})
         fake.containers[argv[-1]]["status"] = "exited" if getattr(fake, "exit_on_capture", True) else "running"
         return {"failure": None, "terminated": False, "returncode": 0, "duration_seconds": 0.1,
                 "cleanup": {"reason": "exited", "confirmed": True, "injected": True}}
@@ -39,10 +40,10 @@ def setup(tmp_path, monkeypatch):
     return ie.DockerEvidenceInspector(Artifacts(), config, tmp_path / "replays"), fake, captured, workspace
 
 
-def inspect(inspector, workspace, claims):
+def inspect(inspector, workspace, claims, progress=None):
     snapshot = inspector.snapshot(workspace)
     return inspector.inspect(claims, workspace, {"task_id": "t"}, environment=snapshot["environment"],
-                             interpreter=snapshot["identity"]["interpreter"]), snapshot
+                             interpreter=snapshot["identity"]["interpreter"], progress=progress), snapshot
 
 
 def test_unauthorized_argv_never_reaches_docker_or_the_host(setup):
@@ -83,13 +84,54 @@ def test_authorized_replay_runs_in_fresh_credential_free_network_none_containers
 
 
 def interrupting(fake, seen):
-    def capture(argv, cwd, timeout, max_bytes, env):  # INJECTED cancellation right after a (fake) docker start
+    def capture(argv, cwd, timeout, max_bytes, env, progress=None):  # INJECTED cancellation right after a (fake) docker start
         fake.containers[argv[-1]]["status"] = "running"
         seen.append({"id": argv[-1], "records": iw.run_records(fake.root)})
         error = KeyboardInterrupt()
         error.capture_cleanup = {"reason": "KeyboardInterrupt", "confirmed": True, "injected": True}
         raise error
     return capture
+
+
+def test_the_owners_progress_check_reaches_the_attached_capture_of_every_replay(setup):
+    """research-dispatch-001: the caller's per-call check is forwarded into the container capture as
+    given, and runs before and after each replay; the container lifecycle is unchanged."""
+    inspector, fake, captured, workspace = setup
+    stages = []
+    progress = lambda stage=None: stages.append(stage)  # noqa: E731 - one recorder, per call
+    report, _ = inspect(inspector, workspace, ["python -m pytest -q"], progress=progress)
+    assert report["findings"][0]["state"] == "checked"
+    assert [run["progress"] for run in captured] == [progress, progress], "the same callback, both replays"
+    assert stages == ["replay_start", "replay_end"] * 2
+    assert iw.unresolved_runs(inspector.root) == []
+
+
+def test_a_progress_refusal_inside_the_container_capture_stops_and_retires_that_container(setup, monkeypatch):
+    """INJECTED: the owner is lost while the attached capture waits, exactly where the real bounded
+    poll calls back. `hold` still stops and confirms the exact container before the refusal travels."""
+    inspector, fake, _, workspace = setup
+    seen = []
+
+    def capture(argv, cwd, timeout, max_bytes, env, progress=None):
+        fake.containers[argv[-1]]["status"] = "running"
+        seen.append(argv[-1])
+        try:
+            progress("replay_wait")
+        except BaseException as exc:  # what the real capture does: reclaim, then carry the proof
+            exc.capture_cleanup = {"reason": type(exc).__name__, "confirmed": True, "injected": True}
+            raise
+        raise AssertionError("the refusal never reached the capture")
+    monkeypatch.setattr(ie, "_capture", capture)
+
+    def lost(stage=None):
+        if stage == "replay_wait":
+            raise ContractError("Stale or expired task execution")
+    with pytest.raises(ContractError, match="Stale or expired task execution"):
+        inspect(inspector, workspace, ["python -m pytest -q"], progress=lost)
+    saved = iw.run_records(inspector.root)
+    assert len(saved) == 1 and saved[0]["state"] == "removed" and saved[0]["result"]["interrupted"] == "ContractError"
+    assert [c["args"] for c in fake.calls if c["args"][0] == "kill"] == [["kill", seen[0]]]
+    assert iw.unresolved_runs(inspector.root) == [] and len(seen) == 1, "no second replay was started"
 
 
 def test_injected_interruption_after_start_stops_records_and_removes(setup, monkeypatch):
@@ -162,7 +204,7 @@ def test_interruption_with_unreclaimed_capture_debt_is_retained_not_retired(setu
     inspector, fake, _, workspace = setup
     debt = {"reason": "KeyboardInterrupt", "confirmed": False, "readers_alive": ["stdout"], "injected": True}
 
-    def capture(argv, cwd, timeout, max_bytes, env):  # INJECTED: the capture could not reclaim its client
+    def capture(argv, cwd, timeout, max_bytes, env, progress=None):  # INJECTED: the capture could not reclaim its client
         fake.containers[argv[-1]]["status"] = "running"
         error = KeyboardInterrupt()
         error.capture_cleanup = debt
@@ -367,8 +409,8 @@ def test_lifecycle_real_capture_missing_or_malformed_proof_fails_closed(setup, m
     spawned = []
     real_child(monkeypatch, fake, "print('ok')", "exited", spawned)
 
-    def stripped(*args):  # INJECTED: the real capture ran and cleaned up, but its proof does not arrive
-        run = ei._capture(*args)
+    def stripped(*args, **kwargs):  # INJECTED: the real capture ran and cleaned up, but its proof does not arrive
+        run = ei._capture(*args, **kwargs)
         assert run.pop("cleanup")["confirmed"] is True
         return run if proof == "absent" else {**run, "cleanup": proof}
     monkeypatch.setattr(ie, "_capture", stripped)

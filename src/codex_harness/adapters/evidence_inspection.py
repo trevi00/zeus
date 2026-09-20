@@ -38,6 +38,9 @@ from codex_harness.domain.model import ContractError, canonical, digest
 # Capture teardown bounds: each tree-termination phase, then the readers' one shared join window.
 CLEANUP_SECONDS = 10.0
 READER_JOIN_SECONDS = 5.0
+# How long one replay may wait before the caller's own progress check gets its turn again
+# (research-dispatch-001). It bounds only the wait, never the per-command deadline or the budget.
+POLL_SECONDS = 0.5
 POLICY_FILE = Path(__file__).resolve().parents[1] / 'resources/evidence-policy.json'
 # PROGRAMDATA (Windows OpenSSH reads its host configuration under it; goal-progress-001 isolated an
 # ssh-keygen exit 255 to its absence) joins the allowlist under both spellings the host may carry,
@@ -126,7 +129,31 @@ def _unspawned(reason, leak=None):
             'confirmed': leak is None, **({'leak': leak} if leak is not None else {})}
 
 
-def _capture(argv, cwd, timeout, max_bytes, env):
+def _wait(process, timeout, progress):
+    """Wait for one replay, giving the caller's own owner a turn between bounded polls.
+
+    Without `progress` this is exactly the bounded wait it always was. With one, the same deadline
+    is spent in short polls and the callback runs between them ON THIS THREAD: there is no renewal
+    worker, nothing is shared between calls, and the wait never runs longer than `timeout`.
+    Whatever the callback raises - lost ownership, an exceeded deadline or its own failure -
+    propagates into `_capture`'s cleanup path, so the owned tree is reclaimed before it travels on.
+    """
+    if progress is None:
+        process.wait(timeout=timeout)
+        return
+    deadline = time.monotonic() + timeout
+    while True:
+        remaining = deadline - time.monotonic()
+        if remaining <= 0:
+            raise subprocess.TimeoutExpired(process.args, timeout)
+        try:
+            process.wait(timeout=min(POLL_SECONDS, remaining))
+            return
+        except subprocess.TimeoutExpired:
+            progress('replay_wait')
+
+
+def _capture(argv, cwd, timeout, max_bytes, env, progress=None):
     """Run one bounded replay and return everything observed, including how it ended.
 
     EVERY return carries `cleanup`, the positive proof (or the named debt) of what this capture still
@@ -136,7 +163,10 @@ def _capture(argv, cwd, timeout, max_bytes, env):
     The client process is an owned `ProcessTree` from spawn. However the wait ends (exit, deadline,
     KeyboardInterrupt, any exception) `_reclaim` runs once, bounded, before anything propagates; an
     interruption is re-raised unchanged with the cleanup record on its `capture_cleanup` attribute,
-    so the outer owner (`hold`) still stops its container and knows what this capture left behind."""
+    so the outer owner (`hold`) still stops its container and knows what this capture left behind.
+
+    `progress` is the caller's optional per-call check (research-dispatch-001); it runs between the
+    bounded polls of the wait and its refusal ends this capture the same way a cancellation does."""
     started = time.monotonic()
     try:
         tree = ProcessTree.spawn(argv, cwd=cwd, env=env, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE,
@@ -170,7 +200,7 @@ def _capture(argv, cwd, timeout, max_bytes, env):
     try:
         for _, thread, _ in readers:
             thread.start()
-        process.wait(timeout=timeout)
+        _wait(process, timeout, progress)
         deadline = time.monotonic() + READER_JOIN_SECONDS  # an exited child's output, as before
         for _, thread, _ in readers:
             thread.join(timeout=max(0.0, deadline - time.monotonic()))
@@ -214,8 +244,8 @@ class EvidenceInspector:
     def _python(self):
         return sys.version.split()[0]
 
-    def _replay(self, argv, cwd, timeout, max_bytes, env):
-        return _capture(argv, cwd, timeout, max_bytes, env)
+    def _replay(self, argv, cwd, timeout, max_bytes, env, progress=None):
+        return _capture(argv, cwd, timeout, max_bytes, env, progress=progress)
 
     def _archive(self, run):
         """Raw bytes go to the artifact store byte-for-byte; the finding keeps hashes and refs."""
@@ -270,7 +300,7 @@ class EvidenceInspector:
         return {'state': 'checked', 'cause': 'file present' + (' with the claimed hash' if claim['sha256'] else
                                                               '; no hash was claimed, so only presence is checked'), **detail}
 
-    def inspect_command(self, claim, cwd, remaining_seconds, environment=None, interpreter=None):
+    def inspect_command(self, claim, cwd, remaining_seconds, environment=None, interpreter=None, progress=None):
         # Authorization is decided on the claim exactly as written; the interpreter substitution
         # below never takes part in it (review-contract-001).
         if not authorized(claim['argv'], self.policy):
@@ -283,9 +313,17 @@ class EvidenceInspector:
         effective, transformation = replay_argv(claim['argv'], interpreter)
         runs = []
         for _ in range(self.policy['replay']['replays_per_claim']):
+            # Before and after each command (research-dispatch-001): a caller that has lost its
+            # ownership or its deadline starts no further replay, and its finished replay is not
+            # carried on into a finding it may no longer publish.
+            if progress is not None:
+                progress('replay_start')
             run = self._replay(effective, str(Path(cwd).resolve()), per_command, self.policy['replay']['max_output_bytes'],
-                               dict(environment) if environment is not None else replay_environment(cwd=cwd))
+                               dict(environment) if environment is not None else replay_environment(cwd=cwd),
+                               progress=progress)
             runs.append(self._archive(run))
+            if progress is not None:
+                progress('replay_end')
             if run.get('failure'):
                 break
         state, cause = classify_replays(runs, claim['expected_exit'])
@@ -310,11 +348,16 @@ class EvidenceInspector:
     def identity(self, cwd=None):
         return self.snapshot(cwd)['identity']
 
-    def inspect(self, claims, cwd, binding, environment=None, interpreter=None):
+    def inspect(self, claims, cwd, binding, environment=None, interpreter=None, progress=None):
         """Inspect every claim in one explicit context; the budget is enforced, never assumed.
 
         `environment` and `interpreter` are the snapshot the caller keyed the inspection by; every
         replay runs under exactly them, whatever the parent process's environment has become since.
+
+        `progress` is this call's optional ownership/cancellation check. It is passed in per call,
+        never stored, and it is raised through: an inspection whose caller stopped owning its
+        execution ends there instead of replaying on and returning findings the caller may no
+        longer record. A caller that supplies none gets exactly the previous behaviour.
         """
         root = Path(cwd)
         if not root.is_dir():
@@ -339,7 +382,8 @@ class EvidenceInspector:
             if claim['kind'] == 'file':
                 result = self.inspect_file(claim, root)
             else:
-                result = self.inspect_command(claim, root, deadline - time.monotonic(), environment, interpreter)
+                result = self.inspect_command(claim, root, deadline - time.monotonic(), environment, interpreter,
+                                              progress=progress)
             findings.append({'claim': claim, **result})
         return {'context': context, 'policy_hash': self.policy['policy_hash'], 'findings': findings,
                 'inspection_id': digest([context, self.policy['policy_hash'], [f['claim'] for f in findings]])}

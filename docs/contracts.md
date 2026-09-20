@@ -451,6 +451,33 @@ interpreter is a new inspection and an older row is neither reused nor overwritt
 `tests` answer holds only commands that were executed, one per string; results, skips and unrun
 work are stated in `summary`, and past claims are parsed as written, never leniently reinterpreted.
 
+The execution lease covers the replays, not only the provider call. A heartbeat taken when the
+provider returns says nothing about the minutes an inspection then spends in child processes, so
+the owner's check travels with that work: the caller passes one per-call progress/cancellation
+callback into the inspection, it is invoked before and after every command and between the bounded
+polls of every wait, and it is never module state, a shared callback or a detached renewal thread.
+It re-reads ownership and the remaining deadline through the existing workflow and renews at the
+existing cadence and lease duration; nothing here makes a lease longer. A refusal - lost or
+superseded ownership, an exceeded deadline, or a failure of the callback itself - starts no further
+replay, reclaims the owned process tree (and, in the isolated backend, stops and confirms the exact
+container) through the existing cleanup, and leaves no ledger row: a stale owner publishes neither a
+verdict nor a success, and its refusal keeps its own type for the caller's containment path. A
+caller that supplies no callback, and an inspector that declares none, keep their previous behaviour
+exactly, and the callback takes no part in the inspection identity or its digests.
+
+That check covers every production inspector route - the host inspector, the isolated container
+backend and the host project-profile inspector - and its cadence throttles only the intermediate
+polls of one wait: at every boundary (inspection start and end, each command start and end) the
+ownership and deadline read is taken fresh, so a verdict read seconds earlier never authorizes one
+more child or one more publication. Renewal keeps its own longer cadence. The ledger is fenced by
+the same owner inside its own transactions: the caller's guard runs in the transaction that reads a
+cached inspection and in the transaction that looks up and writes the row, opening none of its own,
+so a cache hit is no more exempt than a new publication. A guard refusal is the caller's ownership
+failure, raised unchanged with no row written and no inspection-recording-failure notice, because
+the ledger did not fail; the production executor always supplies one, while a caller that supplies
+none keeps its previous contract and transaction count. Injected ownership loss in tests is contract
+evidence, never evidence of a recovered live operation.
+
 An independent review runs in a clean checkout at the candidate commit. The transport's read-only
 instructions, the repository's AGENTS.md and the executor's post-run checks say the same thing: no
 file in that checkout is created, modified or deleted, tracked or untracked; test output is read
@@ -1461,6 +1488,42 @@ receipt says `recorded: false`, the cycle stays owned and nothing is cleared or 
 (R3) the capture blob is written from exact UTF-8 bytes through an owned binary file with
 `hash-object --no-filters`, its id must equal the content-addressed SHA-1 and the commit's blob
 must read back byte-identical through `GitSource.blob` before the ref is created.
+Investigation dispatch (research-dispatch-001). The OPTIONAL `investigation_source`
+(`{"topic": "<configured topic id>", "project_ids": [...<=20], "reason_codes": [...<=50]}`, nonempty,
+distinct, pattern-bound lists) lets ONE authorized program consume operating-portfolio investigations;
+absent means disabled and keeps the legacy canonical config and its digest byte-identical, while
+`null`, `[]`, a wildcard, an unknown topic or any other field is refused with a field name only. It
+authorizes the program's unchanged template plan, nothing else, and it is evaluated on an existing
+tick: no daemon, schedule, hook or second scheduler is added. Inside `record_collection`'s existing
+transaction the candidates are synthesized from the authoritative `portfolio_investigations`,
+`portfolio_bindings` and `fleet_jobs` reads only - an adapter that supplies an `investigation` item is
+refused with `investigation_source_forbidden` - and an investigation is eligible when it is well
+formed, still `research_required`, carries an authorized reason code, is unclaimed and keeps at least
+two distinct referenced terminal jobs whose status and reason code equal the family's AND that are
+bound to an allowed project; only those scoped job ids are used, excluded rows become bounded fixed
+counts (`malformed`, `state`, `reason_code`, `insufficient_jobs`, `claimed`) and no root cause is
+derived. Eligible investigations sort before local and external candidates by id, stored candidates
+are revalidated against the current state, scope and claim immediately before selection (a changed
+owner disposition drops the cached snapshot and can never run later), and the selected one reserves
+`research_investigation_dispatches` keyed SOLELY by investigation id - one claim across all programs,
+in the SAME transaction as the selection and the cycle bookkeeping, refused as
+`investigation_already_claimed` and rolled back whole if a row appeared meanwhile. The claim binds
+program, cycle, the immutable snapshot digest, the scoped job ids, the family status and reason code
+and the timestamps; the candidate carries that `urn:zeus:research-investigation-snapshot:1` snapshot
+(identities, fixed codes, at most 50 job ids with the complete count, the digest of the full scoped
+set and explicit `job_ids_truncated`, observed time, explicit unverified trust) through the existing
+GitCapture and `snapshot_document` into the council, and no prompt, output, exception, credential or
+provider stream is copied. `record_council_start` binds the dispatch to that exact run id and manifest
+digest; the result is recomputed from the authoritative `autonomous_runs` row through `council_result`
+INSIDE the result transaction, so a missing, mismatched or running row stays `unknown` and the
+caller's claim is kept only as the unverified `reported_result`. Capture and pre-start failures record
+a failed dispatch with the fixed stage and code; failed and unknown outcomes keep the claim, nothing
+is released on a timeout, retried or cleaned up, and `portfolio_investigations.state`, Fleet jobs and
+owner dispositions are never written from this bridge: a dispatch outcome is not an owner disposition,
+an incident resolution or a promotion. `status` gains the additive `investigations` dispatch counts,
+cycle receipts gain `investigations` (bounded counts plus the claimed id, `null` when disabled), the
+report names dispatch separately from acceptance and the event log gains claim, capture and outcome
+identifiers with codes only.
 `status`, the additive read-only monitor source `research_programs`
 (`urn:zeus:research-program-monitor:1`, at most 20 programs, `truncated` explicit) and the bounded
 `runtime/research-program/<id>/report.md` project counts, states, codes and outcomes from the store
