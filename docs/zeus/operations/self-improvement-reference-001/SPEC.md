@@ -137,3 +137,11 @@ Zeus autonomous/investigation contracts passed 25 checks; 1 PostgreSQL integrati
 No upstream code was executed. Candidate preparation, execution provenance, semantic truth and
 deployment remain separate statuses. Whole-source coverage and the final implementation handoff
 remain open; this tranche does not change the completion conditions or create another retry engine.
+
+### Recovery execution and learning storage tranche
+
+STORAGE-RECOVERY.md records cause-specific recovery preconditions, the child-dispatch caller,
+Hermes ledger/rollback, OMH offline trace storage and the existing Zeus skill-history/import owners.
+Local history/import/audit contracts passed 44 checks with 1 skipped. Upstream code was not run.
+Complete package change evidence is an adaptation candidate; offline replay cannot satisfy real
+browser/device acceptance. Remaining whole-source dispositions and consolidated handoff stay open.
