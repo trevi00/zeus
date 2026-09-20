@@ -975,3 +975,20 @@ No full-suite rerun in snapshot, model call, activation, historical task mutatio
 new repair mechanism. Owner reruns the identical injected envelope probe and the directly
 affected tests, then full CI applies to the corrected head. All earlier actual failure evidence
 and accepted checks remain; the rollout conditions above are unchanged.
+
+### Owner verification of the returned-refusal correction
+
+Claude candidate 1223368911e8bfcc912d1e0a165038784ef1cb5d adds the explicit returned-failure
+guard after both partition turns and before content use. The owner reviewed all four changed
+files, including the injected planning/semantic/service cases. The identical owner envelope
+probe now raises the fixed execution refusal; public records remain unchanged. Evidence is
+inspection-envelope-replay-after.json on D. Owner affected-outcome suite: 26 passed in
+30.43 seconds; ruff passed; candidate checkout remained clean. Earlier 158 owner checks
+remain accepted for unchanged paths. Claude reports the allocated combined command at
+163 passed (five added refusal cases), with tests clearly identified as injected.
+
+The returned-failure finding is resolved in source; no additional owner critical finding
+remains within the established matrix. The first rejected Fleet verdict and cancelled CI
+remain historical facts. The corrected candidate's independent Fleet decision and full CI
+must complete before activation or any actual recovery. An actual inspection failure was
+not induced; neither the injected probe nor its passing tests is represented as one.
