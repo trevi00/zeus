@@ -493,3 +493,30 @@ runs full suite in historical checkout with short D temporary directory after ca
 submission. No additional real model verification call is required for this policy change;
 describe fixture transport and actual behavior separately. Finish the batch when checks
 and independent review pass; main/release/automatic research activation remain separate.
+
+Context candidate: 37e10ba6cdaf9ada318557391a6b6b422739a6cc, Fleet job
+self-improvement-reference-001-context, worker 2e31a764-6ac8-5c6f-a2f9-a9160189c2f9.
+Independent Codex decision 82634b9b-95d7-421f-be19-371409df1c18 accepted the candidate;
+inspection checked all four command claims without mismatches. Worker container checks:
+69 passed, metadata/ruff passed. Profile: 8688 normalized characters with a 15000 ceiling.
+Preserved review execution: sha256:058672c6018e3a1393a665236b35fae85a07c81ad6d8e3d2d60b21165a0f8c9b.
+Worker inner result SHA-256: 0fb1e68cf392dbe6b7d82a9f7554edccd644ba776feb22d5c589a4c0e08c434f.
+
+Owner read all changed code and profile/document sections. No material code blocker.
+Owner clarified convention prose on the task branch: platform/user authority is not
+overridden by project contracts; supported pipeline-only configuration is not absent
+configuration; existing source inspection of docs is not automatic instruction delivery.
+These are Codex design-document clarifications, not another runtime change. src and tests
+remain byte-identical to the reviewed candidate. Host full verification is recorded in
+context-verification-001, outside both checkouts. No main merge or deployment occurred.
+
+Final owner acceptance: full Windows suite 2632 passed / 476 skipped / zero failures,
+759.06 seconds, exit 0; metadata, ruff and CLI help exit 0. Full log SHA-256:
+81c080a8c9e35b348ff360dfa920cf48674887628939f9a0abce5ee68c798208.
+Skipped scope includes 403 integration-environment and 28 explicitly enabled service
+checks, plus platform/opt-in cases; this is not a fresh full-service or WSL validation.
+The exact accepted source/tests are unchanged by the owner's documentation clarifications.
+Task branch is the integration destination. The 15000 ceiling and context conventions
+are implemented and accepted; operating image deployment, scheduler activation, and
+gradual migration of remaining legacy guidance/assets are separate unfinished work.
+No automatic successor or further model call was admitted by this delivery.

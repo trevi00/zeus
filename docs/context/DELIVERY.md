@@ -22,7 +22,8 @@ it reaches its reader.
   and the files under `.harness/skills/` at a pinned revision, selects them for the project
   profile, lets `skill_routing` route them against the objective, and returns context items plus a
   manifest artifact naming every selected skill, its content reference and the files from which an
-  omitted body can be read. A checkout with no profile and no skills is reported as
+  omitted body can be read. A checkout with no project profile, no skills and no supported
+  pipeline configuration (`.harness/stages.yaml` or `.claude/stages.yaml`) is reported as
   `not_configured` and nothing is delivered.
 - **The assignment itself.** The six-W message and the task contract are the run's scope
   (INV-MESSAGE-001, INV-CONTEXT-001); required role, goal, acceptance, policy and provenance are
@@ -43,11 +44,11 @@ or any research limit.
 
 ## Reference-only
 
-Everything under `docs/`, including this tree, is read by people and by workers who were told to
-read it. No runtime path walks `docs/`, expands its links or follows references recursively, and a
-folder name selects no role. If a document must influence a run, either its owning code delivers
-it (the paths above) or the assignment names it; there is no third mechanism, and describing one
-here would not create it.
+This convention tree is reference material for people and tasks that need it. These conventions
+add no runtime traversal, link expansion or recursive loading, and a folder name selects no role.
+Existing source inspection may read documentation as data; that is not automatic instruction
+delivery. To require guidance in a run, use its existing delivery owner or name the document in
+the assignment. Writing a new loading mechanism in prose does not implement one.
 
 ## Verifying a claim about delivery
 

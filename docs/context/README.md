@@ -29,14 +29,15 @@ mechanism, and a document does not gain authority by sitting in a particular fol
 | L3 | Focused procedures and experience references in `docs/` | whoever owns the subject | Read on purpose, by a person or because a task names the path |
 | L4 | Raw evidence in the artifact store on `D:` | the artifact store (INV-ARTIFACT-001) | Addressed by hash or run identifier through the bounded artifact reader |
 
-A higher number is not a weaker rule and a lower number is not a licence: an L1 profile rule and an
-L2 assignment are both binding on a run, while L3 and L4 are material you consult. Where two
-documents appear to say different things, the authoritative definition named in `docs/contracts.md`
-decides, and the duplicate is the defect.
+A higher number is not a weaker rule and a lower number is not a licence. Platform instructions
+and the user's current instructions keep their existing authority; this map cannot override them.
+The profile and assignment operate within that authority, while L3 and L4 are consulted material.
+For conflicting project definitions, trace the canonical owner named in `docs/contracts.md` and
+correct the stale duplicate. A project contract is not permission to disregard a user instruction.
 
 ## Boundaries
 
-- No layer instructs anyone to read this tree as a whole, and no runtime reads it at all.
+- No layer instructs anyone to read this tree as a whole. This convention adds no automatic loader.
 - A reference is not authority: a document that only links a rule cannot change it.
 - Plans, drafts and proposals are candidates. Verified knowledge is promoted through the existing
   reviewed promotion path and lives in PostgreSQL, not in a Markdown file that claims it.
