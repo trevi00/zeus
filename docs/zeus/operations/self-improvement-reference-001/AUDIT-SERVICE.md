@@ -22,8 +22,11 @@ collection -> narrow `audit_service` state row -> `zeus audit-service status`.
 
 Files: `src/codex_harness/adapters/audit_service.py` (the whole adapter), `src/codex_harness/cli.py`
 (registration and exit codes), `src/codex_harness/application/scheduling.py` (the optional
-`audit_id` filter), `src/codex_harness/domain/observation.py` (four declared event types),
-`tests/test_audit_service.py`, `tests/test_research_audits.py` (the filter's scheduler test).
+`audit_id` filter), `src/codex_harness/domain/observation.py` (four declared event types and the
+analysis vocabularies), `src/codex_harness/adapters/audit_execution.py` (the assigned output shape
+and the analysis outcome boundary), `tests/test_audit_service.py`,
+`tests/test_audit_analysis_outcomes.py`, `tests/test_research_audits.py` (the filter's scheduler
+test).
 
 ## What is reused, not rebuilt
 
@@ -159,6 +162,78 @@ test_baseline_reconstruction_and_semantic_preservation` fails in this snapshot b
 change because `git show` refuses the checkout (`detected dubious ownership`, a global git
 configuration this worker does not change); the historical-checkout check belongs to CI/the owner,
 as does the full suite and any new host canary.
+
+## Rejected analysis is retained work, not a stopped execution (this batch)
+
+After the explicit recovery of `d1133291-1151-4ffd-987a-6671cd0f34bd` succeeded on attempt 2 and
+the normal task `4a1e49fc-a59f-472a-ad12-694e3082728f` also succeeded, the normal task
+`6975f930-7633-4f4b-b083-e002d04776b7` failed with `ContractError: Missing generator/original
+link`. Its receipts and its observation collection succeeded and the partition kept generation 0
+with all 32 paths. The discriminating fact is that the typed validator refused generated content
+while the execution itself did not fail: schema and identity fixes made drafts well-shaped, not
+always valid, and another mandatory-field patch would repeat that family. The service equated a
+refused draft with a failed execution; this batch changes that explicit outcome boundary only and
+keeps every accepted schema, identity, receipt, ownership and evidence safeguard as it is. It does
+not retroactively accept either failed canary.
+
+The boundary, in `adapters/audit_execution.py`:
+
+- The trusted stored partition is validated BEFORE any generated content is decoded, so a stale or
+  corrupt assignment is an ownership failure and never a rejected draft.
+- An execution failure is not always a raised exception: `Executor._run` RETURNS an
+  `inspection_blocked` envelope (`accepted` false, a stored `execution_ref`, a host reason). Both
+  the planning turn and the semantic turn are classified for that envelope BEFORE the pure content
+  boundary, and refused with the fixed error `Execution inspection blocked`; the returned reason is
+  never read, quoted, logged or projected. Blocked wins even when the same result also carries
+  otherwise valid content, and a refused planning turn runs no inspection command and no semantic
+  turn. This is returned-failure versus content routing, not a new mandatory model field.
+- `AuditExecution.proposed_checkpoint` is the ONE recoverable rejection boundary: it decodes paths,
+  subsystems, cursor and open questions into the proposed checkpoint and touches no store, lease,
+  runner, artifact or provider. Only a `ContractError` from that call is caught - not arbitrary
+  exceptions, not message substrings, and not a programmer error, which is not a `ContractError`.
+- On rejection the executor-owned `execution_ref` is inspected OUTSIDE that catch and a versioned
+  `analysis_rejected` result is returned: task id, task generation and attempt, audit, partition,
+  partition generation, that reference, the fixed reason code `analysis_content_rejected`, and the
+  refusal's type with a digest of its message. `Workflow.complete` persists it through its existing
+  ownership and commit path. Nothing of the refused batch is checkpointed, no generation advances,
+  no scope is dropped and no knowledge is written; the raw draft stays in its immutable artifact.
+- Valid content still uses the unchanged `ResearchAudits.checkpoint` and the returned task result
+  carries an `analysis_checkpointed` marker with the same binding. The persisted canonical
+  checkpoint is untouched. A checkpoint is partial progress, not semantic acceptance.
+- The marker binds to the executor-owned reference, so an answer that carries none (an injected or
+  legacy one; `Executor._run` always supplies it) still checkpoints and stays unclassified rather
+  than asserting an outcome it cannot bind. Rejection is stricter: with no retained evidence there
+  is nothing to review later, so a missing, unreadable or modified reference is a failure.
+
+In `adapters/audit_service.py` and `domain/observation.py`: the step, the run summary, the durable
+`audit_service` row, the `operations.audit_service_task` observation (new closed `analysis_outcome`
+attribute and the fixed reason code) and `status` report the execution status and the analysis
+outcome as two separate facts, read from the execution's own durable result. `--max-tasks` counts
+every settled execution including rejected drafts. `status` counts the outcomes and lists each held
+current-generation partition with its task, evidence reference and reason code.
+
+Explicitly not done here: a held draft is NOT retried, reassigned or repaired by this service. The
+existing same-generation schedule key holds its partition, and a future recovery or reassignment is
+an explicit, reviewed operator decision; no repair endpoint or retry loop was invented, the
+historical failed task `6975f930-7633-4f4b-b083-e002d04776b7` is unchanged, and no service
+registration, release activation, model invocation or operational mutation happened in this batch.
+
+Checks actually run for this batch, in the worker container: `python -m pytest
+tests/test_audit_analysis_outcomes.py tests/test_audit_service.py tests/test_audit_output_identity.py
+tests/test_audit_output_vocabulary.py tests/test_research_audits.py -q` and `python -m ruff check .`.
+`tests/test_audit_analysis_outcomes.py` carries the acceptance matrix; every model turn in it is
+INJECTED over the real store, artifacts, `ResearchAudits.checkpoint`, `schedule_audits`, `Workflow`
+and observation contract, with `FixtureRunner` receipts. It is not evidence that a provider, Redis,
+PostgreSQL or a host service ran, and no model was provoked to obtain a rejection sample. Its
+control for the previous behaviour is `test_an_execution_failure_still_stops_the_service`: the same
+refused content with no retained evidence is an ordinary execution failure that stops the service.
+`test_a_returned_inspection_refusal_is_never_a_rejected_draft` and
+`test_a_returned_inspection_refusal_stops_the_service_after_one_task` cover the returned envelope
+from both turns, including a semantic envelope that also carries checkpointable content: zero
+checkpoint and coverage, one task then a stopped service, no semantic turn after a refused planning
+turn, and the canary reason in no step, log, published message or `status`. Those envelopes are
+INJECTED fixtures; no bubblewrap, runner, host or provider inspection actually failed here.
+The full suite, the history checks and any new host canary stay with the owner and CI.
 
 ## Evidence and verification
 

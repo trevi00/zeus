@@ -78,15 +78,19 @@ def answer_for(part, bodies=None, **fields):
             'open_questions': [], 'cursor': 'checkpoint', **fields}
 
 
-def run_with(execution, monkeypatch, answer, validate_against=True):
-    """Mock only the model turn: inspection planning, decoding and checkpointing stay real."""
+def run_with(execution, monkeypatch, answer, validate_against=True, execution_ref=None):
+    """Mock only the model turn: inspection planning, decoding and checkpointing stay real.
+
+    `execution_ref` is added AFTER schema validation, exactly where `Executor._run` adds the
+    executor-owned artifact reference of the real answer.
+    """
     def run_model(task, objective, evidence, result_schema):
         if 'commands' in result_schema['properties']:
             return {'commands': []}
         assert 'null' in objective and 'partition.paths' in objective
         if validate_against:
             validate(answer, result_schema)
-        return answer
+        return answer if execution_ref is None else {**answer, 'execution_ref': execution_ref}
     monkeypatch.setattr(execution, 'run_model', run_model)
 
 
@@ -252,13 +256,20 @@ def test_all_null_results_advance_the_generation_without_any_coverage(
 
 
 @pytest.mark.parametrize('shape', ['legacy_array', 'foreign_key', 'missing_key', 'inner_identity'],)
-def test_invalid_assigned_output_fails_before_the_checkpoint(
+def test_invalid_assigned_output_is_retained_and_never_reaches_the_checkpoint(
         audit, monkeypatch, shape):  # noqa: F811  the parameter is pytest's injection of the imported fixture
-    """A bypassed output schema still cannot reach `ResearchAudits.checkpoint`."""
+    """A bypassed output schema still cannot reach `ResearchAudits.checkpoint`.
+
+    Since the 2026-09-21 reframe the refused draft is retained work (`analysis_rejected`) instead
+    of a stopped execution: the same identity rules decide, and the same nothing is written.
+    """
+    from codex_harness.domain.model import digest
+
     service, record, _, _, _ = audit
     activate_fixture(service)
     part, task, execution = partition_task(service, record, 'assigned-invalid-' + shape)
     ref = service.artifacts.put('one traced path', 'fixture')['ref']
+    draft = service.artifacts.put('the refused draft, retained verbatim', 'fixture')['ref']
     analyzed = part['paths'][0]
     valid = answer_for(part, {analyzed: path_body(ref)})
     bodies = {'legacy_array': [{**path_body(ref), 'path': analyzed},
@@ -269,12 +280,21 @@ def test_invalid_assigned_output_fails_before_the_checkpoint(
                                  analyzed: {**path_body(ref), 'path': analyzed}}}[shape]
     expected = ('Invalid assigned output record' if shape == 'inner_identity'
                 else 'Assigned output identities changed')
-    run_with(execution, monkeypatch, {**valid, 'paths': bodies}, validate_against=False)
-    with pytest.raises(ContractError, match=expected):
-        execution.execute(task)
+    run_with(execution, monkeypatch, {**valid, 'paths': bodies}, validate_against=False,
+             execution_ref=draft)
+    result = execution.execute(task)
+    analysis = result['analysis']
+    assert set(result) == {'analysis'} and analysis['outcome'] == 'analysis_rejected'
+    assert analysis['reason_code'] == 'analysis_content_rejected'
+    # The refusal is identified by type and digest; the message itself never enters the result.
+    assert analysis['error_type'] == 'ContractError' and analysis['error_digest'] == digest(expected)
+    assert analysis['execution_ref'] == draft and analysis['checkpointed'] is False
+    assert (analysis['partition_id'], analysis['partition_generation']) == (
+        part['partition_id'], part['generation'])
     with service.store.transaction() as tx:
         assert tx.scan('research_paths') == []
         assert tx.get('research_partitions', part['partition_id']) == part
+        assert tx.scan('research_checkpoints') == [] and tx.scan('research_evidence_history') == []
     assert service.coverage(record['id'])['reviewed_paths'] == 0
 
 

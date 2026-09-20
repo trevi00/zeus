@@ -5,7 +5,12 @@ from importlib.resources import files
 
 from codex_harness.application.audit_gate import AUDIT_EVIDENCE_BUCKETS
 from codex_harness.application.research import ResearchAudits
-from codex_harness.domain.model import digest, require, utcnow
+from codex_harness.domain.model import ContractError, digest, require, utcnow
+from codex_harness.domain.observation import (
+    ANALYSIS_CHECKPOINTED,
+    ANALYSIS_CONTENT_REJECTED,
+    ANALYSIS_REJECTED,
+)
 from codex_harness.domain.research import (
     PATH_DISPOSITIONS,
     IndependentReview,
@@ -22,6 +27,23 @@ def schema(**properties):
 TEXT = {'type': 'string'}
 STRINGS = {'type': 'array', 'items': TEXT}
 NULL = {'type': 'null'}
+
+# self-improvement-reference-001, 2026-09-21 host canary task
+# `6975f930-7633-4f4b-b083-e002d04776b7` (`ContractError: Missing generator/original link`): the
+# typed content boundary refused a generated draft while the execution, its receipts and its
+# observations succeeded. A refused draft is retained work with its own explicit outcome, not a
+# stopped execution: the raw content stays in the immutable output artifact, the partition keeps
+# its generation and its whole remaining scope, and nothing is retried, merged or credited.
+# `analysis_checkpointed` is partial progress, never semantic acceptance; `analysis_rejected` is
+# never a successful review. A result carrying neither marker is unclassified history and is never
+# newly inferred to be either. `domain.observation` owns the codes; this module only writes them.
+ANALYSIS_VERSION = 1
+
+# 2026-09-21 independent lead finding: an execution failure is not always a raised exception.
+# `Executor._run` RETURNS an inspection-blocked envelope at its return boundary, and its missing
+# analysis content would otherwise read as a refused draft. This is the fixed message the partition
+# path refuses with; the envelope's own host reason is never read, quoted, logged or projected.
+INSPECTION_REFUSED = 'Execution inspection blocked'
 
 
 def assigned_body(definition, identity):
@@ -111,6 +133,80 @@ class AuditExecution:
                                          'record': {**body, identity: key}}))
         return records
 
+    @staticmethod
+    def proposed_checkpoint(trusted, answer):
+        """Decode one model answer into the checkpoint it proposes. Pure content validation only.
+
+        This is the ONE recoverable rejection boundary: it reads the already validated trusted
+        partition and the answer, and it touches no store, lease, runner, artifact or provider. A
+        `ContractError` raised inside it therefore says that generated content was refused and
+        nothing else. Identities come from the trusted scope, never from the answer, and no value
+        is deduplicated, merged or normalized.
+        """
+        paths = AuditExecution.decode_assigned('PathDisposition', 'path', trusted.paths,
+                                               answer.get('paths'))
+        systems = AuditExecution.decode_assigned('SubsystemAnalysis', 'name', trusted.subsystems,
+                                                 answer.get('subsystems'))
+        covered_paths = {p.path for p in paths if p.disposition not in {'unreviewed', 'unavailable'}}
+        covered_systems = {s.name for s in systems if not (
+            s.contradictions or s.unresolved_dependencies or s.tests_not_run)}
+        questions, cursor = answer.get('open_questions'), answer.get('cursor')
+        require(type(questions) is list and all(type(q) is str and q for q in questions),
+                'Invalid analysis open questions')
+        require(type(cursor) is str, 'Invalid analysis cursor')
+        # checkpoint() independently reconciles these claims against persisted coverage.
+        checkpoint = replace(trusted,
+            remaining_paths=sorted(set(trusted.remaining_paths) - covered_paths),
+            remaining_subsystems=sorted(set(trusted.remaining_subsystems) - covered_systems),
+            open_questions=questions, cursor=cursor)
+        checkpoint.validate()
+        return checkpoint, paths, systems
+
+    @staticmethod
+    def refused_execution(result):
+        """True when the executor RETURNED its inspection-blocked refusal instead of an answer.
+
+        The envelope carries `accepted` false, the stored `execution_ref` and a host reason, and no
+        analysis content. It is a stopped execution, so this fact is read BEFORE any content is
+        decoded and it wins even when the same result also carries otherwise valid-looking content.
+        """
+        return type(result) is dict and bool(result.get('inspection_blocked'))
+
+    @staticmethod
+    def evidence_ref(answer):
+        """This answer's executor-owned artifact reference, or None when the answer carries none."""
+        ref = answer.get('execution_ref')
+        return ref if type(ref) is str and ref else None
+
+    @staticmethod
+    def analysis_binding(task, trusted, outcome, execution_ref, **facts):
+        """What this execution did, on which assigned scope, and where its evidence is.
+
+        Identifiers, integers and fixed codes only: model answers, source text, prompts and
+        exception messages never enter this projection, which travels into the durable task result,
+        the six-W report and the service's logs.
+        """
+        return {'version': ANALYSIS_VERSION, 'outcome': outcome, 'task_id': task['id'],
+                'task_generation': task['generation'], 'attempt': task['attempt'],
+                'audit_id': trusted.audit_id, 'partition_id': trusted.partition_id,
+                'partition_generation': trusted.generation, 'execution_ref': execution_ref, **facts}
+
+    def rejected_analysis(self, task, trusted, answer, error):
+        """Retain a refused draft as its own explicit outcome, bound to its immutable evidence.
+
+        The executor-owned reference is inspected HERE, outside the pure catch: absent, unreadable
+        or modified evidence stays an execution failure, because then there is no retained content
+        to review later. Only the error's type and a digest of its message leave this method.
+        """
+        ref = self.evidence_ref(answer)
+        require(ref is not None, 'Analysis rejection evidence missing')
+        inspected = self.audits.artifacts.inspect(ref)
+        require(inspected.get('ref') == ref, 'Analysis rejection evidence mismatch')
+        return {'analysis': self.analysis_binding(
+            task, trusted, ANALYSIS_REJECTED, ref, reason_code=ANALYSIS_CONTENT_REJECTED,
+            error_type=type(error).__name__, error_digest=digest(str(error)),
+            checkpointed=False, rejected_at=utcnow())}
+
     def execute(self, task):
         details = task['message']['what']['details']
         action = task['message']['what']['action']
@@ -173,6 +269,11 @@ class AuditExecution:
             return result
         require(partition is not None and partition['generation'] == details['generation'],
                 'Stale partition assignment')
+        # The trusted stored partition is validated BEFORE any generated content is decoded: a
+        # stale, corrupt or unreadable assignment is an ownership failure and can never be reported
+        # as a rejected draft, and the decode below binds identities from THIS record only.
+        trusted = PartitionCheckpoint(**partition)
+        trusted.validate()
         evidence['partition'] = partition
         plan = self.run_model(task, 'Select bounded source inspection or test commands for this partition. '
             'For source inspection prefer ["source-list", "0"] (100 entries per page) or '
@@ -182,6 +283,9 @@ class AuditExecution:
             'Commands run in a networkless, read-only source tree with inert symlinks and no installs. '
             'Do not claim commands ran. Return at most four commands.', evidence,
             schema(commands={'type': 'array', 'maxItems': 4, 'items': STRINGS}))
+        # A RETURNED execution refusal is classified here, before this turn's own content is read:
+        # a refused planning turn runs no inspection command and no semantic turn at all.
+        require(not self.refused_execution(plan), INSPECTION_REFUSED)
         require(len(plan['commands']) <= 4, 'Inspection command budget exceeded')
         receipts = [self.audits.execute(task, audit['id'], command) for command in plan['commands']]
         evidence['receipts'] = receipts
@@ -207,20 +311,30 @@ class AuditExecution:
             'including each test verbatim '
             'with reason and follow_up. On context limits return partial progress.',
             evidence, result_schema)
-        # `.get`: a field the provider dropped is refused by the same shape check, not a KeyError.
-        paths = self.decode_assigned('PathDisposition', 'path', partition['paths'],
-                                     answer.get('paths'))
-        systems = self.decode_assigned('SubsystemAnalysis', 'name', partition['subsystems'],
-                                       answer.get('subsystems'))
-        covered_paths = {p.path for p in paths if p.disposition not in {'unreviewed', 'unavailable'}}
-        covered_systems = {s.name for s in systems if not (
-            s.contradictions or s.unresolved_dependencies or s.tests_not_run)}
-        # checkpoint() independently reconciles these claims against persisted coverage.
-        checkpoint = replace(PartitionCheckpoint(**partition),
-            remaining_paths=sorted(set(partition['remaining_paths']) - covered_paths),
-            remaining_subsystems=sorted(set(partition['remaining_subsystems']) - covered_systems),
-            open_questions=answer['open_questions'], cursor=answer['cursor'])
-        return self.audits.checkpoint(task, checkpoint, paths, systems)
+        # The same returned refusal, BEFORE the pure content boundary below: a stopped execution is
+        # never reported as a rejected draft, whatever content its envelope happens to carry.
+        require(not self.refused_execution(answer), INSPECTION_REFUSED)
+        try:
+            # `.get` inside: a field the provider dropped is refused by the same shape check.
+            checkpoint, paths, systems = self.proposed_checkpoint(trusted, answer)
+        except ContractError as rejection:
+            # ONLY the pure content boundary above is recoverable. run_model, the runner, artifact
+            # inspection, the lease, the store and ResearchAudits.checkpoint are all outside this
+            # catch, and a programmer error is not a ContractError, so none of them can be reported
+            # as a rejected draft. Nothing of this batch is checkpointed: the partition keeps its
+            # generation and its whole remaining scope for an explicitly reviewed later decision.
+            return self.rejected_analysis(task, trusted, answer, rejection)
+        saved = self.audits.checkpoint(task, checkpoint, paths, systems)
+        ref = self.evidence_ref(answer)
+        if ref is None:
+            # No executor-owned evidence to bind this outcome to (an injected or legacy answer):
+            # the durable checkpoint is the retained work and the result stays unclassified rather
+            # than carrying an unbindable marker. `Executor._run` always supplies this reference.
+            return saved
+        # The persisted canonical checkpoint is untouched; the marker travels with the task result.
+        return {**saved, 'analysis': self.analysis_binding(
+            task, trusted, ANALYSIS_CHECKPOINTED, ref, checkpoint_generation=saved['generation'],
+            checkpointed=True)}
 
     def review(self, task):
         from codex_harness.application.execution_notices import record as execution_notice

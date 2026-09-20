@@ -806,3 +806,189 @@ success, the ordinary audit service can run its two-task finite canary. Any new 
 stops this batch; no loop, ledger edit or repeated search for a green result. These are one
 explicit recovery attempt plus two normal service tasks, not an invisible replay of the
 first canary. Continuous service registration requires the two normal tasks to pass.
+
+### Reframe: rejected analysis is retained work, not a stopped execution (2026-09-21 KST)
+
+The previous bounded batch DID stop. PR #169 merged as b631ea59 after CI 35524320870,
+attempt 1, passed. Its exact research image passed the actual CLI file canary and became
+release f9e1491a62d774e58a8740e3a13e81802e0cfdaf9e318e35d5f0e13683b706bd.
+Explicit recovery of d1133291-1151-4ffd-987a-6671cd0f34bd succeeded on attempt 2;
+the following normal task 4a1e49fc-a59f-472a-ad12-694e3082728f also succeeded.
+Normal task 6975f930-7633-4f4b-b083-e002d04776b7 then failed with ContractError:
+Missing generator/original link. Partition generation stayed 0 with all 32 paths remaining.
+Receipts: audit-recovery-001/receipt.json, audit-service-host-canary-002.json and
+audit-service-second-failure.json under the operation's D artifacts. No second attempt of
+6975 has run; no continuous service is registered. The successful tasks are partial
+checkpoints, not completed semantic analysis.
+
+Observation -> assumption: schema vocabulary and identity fixes did not make typed model
+drafts always valid. The service currently equates a rejected draft with execution failure.
+The discriminating evidence is the actual typed validator rejecting generated/duplicate
+content with no link, while execution receipts and observation collection succeeded.
+This is a content rejection, not observed PG/Redis/transport failure. Another mandatory-field
+patch would repeat the family. Preserve accepted schema/identity safeguards; change the
+explicit outcome boundary. This revised criterion follows the user's critical-only
+containment policy; it does not retroactively accept either failed canary.
+
+SSOT inspected at b631ea59 on 2026-09-21: AuditExecution.run_model uses executor-owned
+execution_ref; parse_record performs pure shape/content validation; FileArtifacts.inspect
+checks stored bytes/hash/metadata; ResearchAudits.checkpoint owns receipts, source scope,
+lease, generation and atomic coverage; Workflow.complete owns task/result/outbox commit;
+schedule_audits deduplicates by partition ID/generation; AuditServiceRunner settles tasks.
+These local facts support the design, not a claim that the new behavior is already live.
+Earlier primary structured-output documentation remains applicable; no additional external
+research is needed to establish these local state owners.
+
+One bounded Claude batch, followed by Codex independent review and CI:
+
+1. Keep the assigned identity schema. In AuditExecution validate the trusted stored partition
+   BEFORE decoding model output. Pure decoding/validation of paths, subsystems and model-owned
+   cursor/open_questions into the proposed checkpoint is the ONLY recoverable rejection
+   boundary. Catch ContractError from that pure boundary, not arbitrary exceptions or message
+   substring matching. Do not include run_model, runner calls, artifact inspection, lease,
+   database access or ResearchAudits.checkpoint in the catch. Do not catch programmer errors.
+2. On pure rejection, inspect the executor-owned semantic execution_ref outside that catch;
+   absent/corrupt/unreadable evidence remains a failure. Return a versioned explicit
+   analysis_rejected result binding task ID, task generation/attempt, audit ID, partition ID
+   and partition generation, execution_ref and a fixed reason code plus error digest/type.
+   No raw exception/model/source text in status or logs. Workflow.complete persists this
+   execution outcome and its six-W result using its existing ownership/commit path. It must
+   not checkpoint any of the rejected batch, increment partition generation, drop remaining
+   scope, write knowledge, or fabricate a successful review. Rejected raw content remains in
+   the existing immutable artifact; no duplicate runtime database or cache engine.
+3. Valid content still uses unchanged ResearchAudits.checkpoint. Add an explicit
+   analysis_checkpointed outcome and binding/ref to the returned task result without
+   changing the persisted canonical checkpoint. A checkpoint is partial progress and is
+   NOT full semantic acceptance. Historical results without this marker are unclassified,
+   never newly inferred accepted. Evidence/receipt/ownership checkpoint rejection remains
+   a service-stopping safety failure; this change does not weaken those gates.
+4. Audit service must distinguish completed execution, checkpointed analysis, rejected
+   analysis and unclassified history in step/summary/status and bounded observation facts.
+   Rejected execution may complete and let another partition run. Keep max_tasks as the
+   finite number of successfully settled executions INCLUDING rejected drafts, so a run
+   cannot evade its bound. Reconcile/restart derives outcomes from durable task results and
+   never double-counts or repeats a held partition. Status lists/counts held current-generation
+   partitions with task/ref/reason; history is not silently rewritten or completed.
+5. Existing same-generation schedule key holds the rejected partition with no automatic
+   retry; other already assigned partitions remain admissible. Document that a reviewed,
+   explicit future recovery/reassignment is needed for a held draft. Do not invent a repair
+   endpoint or retry loop now. Failed historical task 6975 remains unchanged in this batch.
+   No new service registration, activation, model invocation or operational mutation by worker.
+
+Acceptance matrix (one complete review, not one blocker per round):
+- Valid partial/null/empty output still checkpoints; generated-without-link, malformed shape,
+  missing subsystem trace and invalid cursor/questions become retained rejection with no
+  checkpoint/coverage/history write. Use real MemoryStore and FileArtifacts with injected
+  model replies; label these tests injected rather than actual model acceptance.
+- Missing/corrupt rejection artifact, runner/model/PG failures, lease loss, stale trusted
+  partition and checkpoint receipt failure are NOT converted to analysis_rejected. Existing
+  failed/blocked/unknown statuses still stop admission. No fabricated evidence to pass tests.
+- In one serial service run rejected A is followed by valid B; A generation/scope unchanged,
+  B normal checkpoint. Repeated tick and restart do not rerun A or count it as coverage.
+  Max_tasks=2 stops after these two settled executions. Read-only status remains truthful.
+- Log/summary/outbox contain explicit outcome and safe binding/ref. Error with a canary
+  secret has no raw text in those projections. Existing audit-service admission/stop,
+  concurrency lock and publish-failure behavior retain their accepted tests.
+- No new process, socket, filesystem lifecycle or migrations. CI covers Windows/Linux;
+  original runtime failures are preserved. No new UI redesign or whole-source completion claim.
+
+Allowed source: adapters/audit_execution.py, adapters/audit_service.py, domain/observation.py,
+focused tests/test_audit_analysis_outcomes.py and affected tests/test_audit_{service,output_*}.py,
+docs/contracts.md, operation AUDIT-SERVICE.md. Do not modify research.py validation, workflow,
+scheduling, shared exception handlers, historical receipts or global settings.
+Worker allocation: python -m pytest tests/test_audit_analysis_outcomes.py tests/test_audit_service.py tests/test_audit_output_identity.py tests/test_audit_output_vocabulary.py tests/test_research_audits.py -q
+and python -m ruff check . . Owner/CI runs full required history/service suites: no waiver.
+The known snapshot git-history prerequisite is not assigned again. Tests answers list only
+the exact allocated commands; summary records failures/skips separately. No full suite or
+extra model call inside worker. Return one candidate and all acceptance evidence.
+
+Owner rollout after accepted code and CI: exact-image CLI checks, release through existing
+Releases, then one explicit recovery of historical retry 6975 (one attempt only). Its new
+outcome may be checkpointed or safely held; execution/evidence failure still stops. A new
+two-execution finite canary must show truthful outcomes and no infrastructure failure before
+continuous registration. Injected rejection-continuation proof is reported separately from
+actual outcomes; do not provoke/retry models merely to obtain a rejection sample.
+Continuous source audit is this selected audit only, serial; whole-source absorption and
+later adoption remain ongoing work with their existing strict denominators and review gates.
+
+### Owner source review of the retained-outcome batch
+
+Claude candidate cbfc19865458a773dda88c78e8caf951d2589c62 completed the allocated checks;
+the Fleet evidence gate passed and its independent lead review was started. This Codex
+owner separately reviewed all nine changed files and reran the allocated five test files in
+the clean historical candidate checkout: 158 passed in 153.05 seconds, no skips/failures;
+ruff passed and the checkout stayed clean. These are injected contract checks, not live
+provider/PG/Redis acceptance. Full Windows/Linux/service CI remains required.
+
+Read-only replay of the ACTUAL response sha256:91ae14d9eb7735f5e3d9b50cfd89731f0924b8ccb7d571733afd5111578e6e32
+under runtime-169 raised the original typed refusal. Under cbfc198 it returned bound
+analysis_rejected with checkpointed false. Public task and partition rows remained byte-for-
+byte equal across both replays. This was no provider invocation, lease, task completion or
+checkpoint; actual-rejection-replay-before.json and -after.json on D retain the distinction.
+
+Owner decision on the reported compatibility deviation: accepted. The real Executor._run
+constructs execution_ref AFTER the model answer from the stored output reference (executor.py
+return boundary), so model content cannot omit/override it. A legacy/injected valid answer
+without that executor-owned reference retains the old canonical checkpoint return and is
+explicitly unclassified; it never acquires a claimed analysis outcome. Missing rejection
+evidence still fails. No change to test history or an extra worker round is justified for
+this non-runtime compatibility path. If a future run_model implementation can omit the
+executor reference, it must explicitly revisit this contract; no broader guarantee is claimed.
+
+No new critical source finding remains against this fixed matrix. Independent Fleet verdict,
+CI, exact image and finite actual rollout checks remain separate pending evidence. Historical
+6975 stays retry/attempt 1; continuous source-audit registration is still absent.
+
+### Independent lead finding: returned execution refusal precedes content decoding
+
+The independent Fleet lead ef8a4a8c-b86e-4ede-943d-726da1daaf5e rejected cbfc198. Its finding
+corrects the owner source review above: an execution failure is not always a raised exception.
+Executor._run at executor.py:895-899 explicitly returns an inspection_blocked envelope with
+accepted false and a stored execution_ref. The new pure decoder mistakes that envelope's missing
+paths for a draft rejection, so the service would continue. This violates the ALREADY FIXED
+acceptance condition that execution/inspection failure stops. No deployment has occurred.
+
+Owner confirmed the reachable return branch and ran a discriminating read-only injected replay:
+the actual executor envelope shape with a verified retained artifact was incorrectly classified
+analysis_rejected by cbfc198. No provider was called, no real new inspection failure was induced,
+and the public task/partition stayed unchanged. Evidence: inspection-envelope-replay-before.json.
+The original lead evidence is sha256:ad803ca17907c2243444e65b8b30b549f497d8585077748fc6c3ff790768831f.
+Fleet job analysis-outcomes stays rejected; no verdict or result is rewritten. PR #170 CI
+35528117492 was deliberately cancelled by the owner after this material finding, not rerun to
+obtain a green result. Its source remains unmerged.
+
+One focused Claude correction within this same frame: in the audit_partition path, classify
+the executor's returned inspection_blocked result BEFORE entering the pure content boundary.
+Check both the planning and semantic turn; refuse using a fixed safe error, never quote the
+returned reason. An explicit execution refusal wins even if an answer also carries paths.
+Keep review/proposal actions, shared executor, all other outcome/coverage/lease/scheduling
+behavior and the accepted legacy compatibility path unchanged. This is returned-failure versus
+content routing, not another mandatory model-field patch.
+
+Add regression coverage for returned inspection_blocked (valid retained ref) from both turns,
+including the service path: zero checkpoint/coverage, failed execution stops after one task,
+no next partition or semantic call after planning refusal, secret-bearing returned reason never
+projected. Existing typed rejected A -> checkpointed B still passes. Return one candidate with
+the same allocated five-file command and ruff only. Allowed changes: audit_execution.py,
+tests/test_audit_analysis_outcomes.py, docs/contracts.md and operation AUDIT-SERVICE.md.
+No full-suite rerun in snapshot, model call, activation, historical task mutation, recovery or
+new repair mechanism. Owner reruns the identical injected envelope probe and the directly
+affected tests, then full CI applies to the corrected head. All earlier actual failure evidence
+and accepted checks remain; the rollout conditions above are unchanged.
+
+### Owner verification of the returned-refusal correction
+
+Claude candidate 1223368911e8bfcc912d1e0a165038784ef1cb5d adds the explicit returned-failure
+guard after both partition turns and before content use. The owner reviewed all four changed
+files, including the injected planning/semantic/service cases. The identical owner envelope
+probe now raises the fixed execution refusal; public records remain unchanged. Evidence is
+inspection-envelope-replay-after.json on D. Owner affected-outcome suite: 26 passed in
+30.43 seconds; ruff passed; candidate checkout remained clean. Earlier 158 owner checks
+remain accepted for unchanged paths. Claude reports the allocated combined command at
+163 passed (five added refusal cases), with tests clearly identified as injected.
+
+The returned-failure finding is resolved in source; no additional owner critical finding
+remains within the established matrix. The first rejected Fleet verdict and cancelled CI
+remain historical facts. The corrected candidate's independent Fleet decision and full CI
+must complete before activation or any actual recovery. An actual inspection failure was
+not induced; neither the injected probe nor its passing tests is represented as one.

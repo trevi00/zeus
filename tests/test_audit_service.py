@@ -479,6 +479,11 @@ def test_status_reads_the_durable_records_and_builds_no_provider(connected):
     # this fixture partition holds is still remaining after the checkpoint advanced.
     last = after["last_task"]
     assert last["generation"] == 1 and last["remaining_paths"] + last["remaining_subsystems"] == 1
+    # This fixture completes the task with a bare checkpoint body, exactly like the results written
+    # before analysis outcomes existed: they stay unclassified and are never newly called accepted.
+    assert last["analysis_outcome"] == "analysis_unclassified" and last["analysis_ref"] is None
+    assert after["analysis"] == {"outcomes": {"analysis_unclassified": 1}, "held_partitions": 0,
+                                 "held": []}
 
 
 def test_the_observations_are_declared_events_with_identifiers_counts_and_codes(connected):
@@ -499,6 +504,9 @@ def test_the_observations_are_declared_events_with_identifiers_counts_and_codes(
     task_event = [e for e in events if e["event_type"] == "operations.audit_service_task"][-1]
     attributes = task_event["attributes"]
     assert task_event["outcome"] == "succeeded" and attributes["status"] == "succeeded"
+    # The execution status and the analysis outcome are two separate, declared facts.
+    assert attributes["analysis_outcome"] == "analysis_unclassified"
+    assert task_event["reason_code"] is None
     assert attributes["generation"] == 1 and attributes["audit_id"] == connected.audit_id
     assert attributes["remaining_paths"] + attributes["remaining_subsystems"] == 1
     stopped = [e for e in events if e["event_type"] == "operations.audit_service_stopped"][-1]
