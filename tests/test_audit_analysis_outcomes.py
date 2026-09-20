@@ -69,6 +69,19 @@ def rejected_answer(part, ref, justification="traced"):
     return answer_for(part, subsystems={part["subsystems"][0]: subsystem_body(ref, contracts=[])})
 
 
+def inspection_envelope(ref, **content):
+    """The shape `Executor._run` RETURNS when required inspection is blocked, verbatim from its
+    return boundary: no analysis content, a stored evidence reference and a host reason.
+
+    This is an INJECTED envelope, not an observed inspection outage: no bubblewrap, runner, host or
+    provider failure happened here. The reason carries the canary because the real one carries host
+    text, and no projection may repeat it.
+    """
+    return {"accepted": False, "inspection_blocked": True, "basis_revision": "fixture-revision",
+            "reason": "inspection-blocked: namespace creation denied; " + SECRET,
+            "execution_ref": ref, **content}
+
+
 def assigned(service, record, name, kind="paths"):
     """One claimed `audit_partition` execution of a real partition, with fixture receipts."""
     part = next(p for p in service.partition(record["id"]) if p[kind])
@@ -282,19 +295,68 @@ def test_failures_outside_the_content_boundary_are_never_converted(
         assert calls == [], "the trusted assignment is checked before any model turn"
 
 
+@pytest.mark.parametrize("turn", ["planning", "semantic", "semantic_carrying_content"])
+def test_a_returned_inspection_refusal_is_never_a_rejected_draft(
+        audit, monkeypatch, turn):  # noqa: F811  the parameter is pytest's injection of the imported fixture
+    """An execution failure is not always a raised exception.
+
+    `Executor._run` RETURNS its inspection-blocked envelope, whose missing analysis content would
+    read as a refused draft at the pure boundary. The refusal is classified before that boundary,
+    from either turn, and it wins even when the same envelope also carries valid-looking content.
+    """
+    service, record, _, _, _ = audit
+    activate_fixture(service)
+    part, task, execution = assigned(service, record, "returned-blocked-" + turn)
+    retained = service.artifacts.put("the blocked inspection output, retained", "fixture")["ref"]
+    before = store_state(service, record["id"])
+    schemas = []
+
+    def run_model(assignment, objective, evidence, result_schema):
+        schemas.append(result_schema)
+        if "commands" in result_schema["properties"]:
+            return inspection_envelope(retained) if turn == "planning" else {"commands": []}
+        content = (answer_for(part, {part["paths"][0]: path_body(retained)})
+                   if turn == "semantic_carrying_content" else {})
+        return inspection_envelope(retained, **content)
+
+    monkeypatch.setattr(execution, "run_model", run_model)
+    with pytest.raises(ContractError) as refusal:
+        execution.execute(task)
+
+    # A fixed safe error: the returned reason is never quoted, even into the exception.
+    assert str(refusal.value) == "Execution inspection blocked"
+    assert SECRET not in str(refusal.value) and "hunter2" not in str(refusal.value)
+    # A refused planning turn reaches no semantic turn, and neither refusal runs a command.
+    assert len(schemas) == (1 if turn == "planning" else 2)
+    with service.store.transaction() as tx:
+        assert [row for row in tx.scan("research_receipts")] == []
+    # Nothing is checkpointed, credited or held: this is a stopped execution, not retained work.
+    assert store_state(service, record["id"]) == before
+    coverage = service.coverage(record["id"])
+    assert coverage["reviewed_paths"] == 0 and coverage["remaining_subsystems"] == ["core"]
+    assert len(coverage["remaining_paths"]) == len(record["inventory"])
+
+
 # ----- the service: one rejected partition does not stop the run ------------------------------
 class InjectedAnalysis(AuditExecution):
-    """The real `AuditExecution` with only its model turn injected."""
+    """The real `AuditExecution` with only its model turn injected.
 
-    def __init__(self, audits, answer):
+    `planning` replaces the planning turn's own returned value; `turns` records which turns the
+    real `execute` actually reached, so a refused planning turn can be shown to reach no other.
+    """
+
+    def __init__(self, audits, answer, planning=None, turns=None):
         super().__init__(SimpleNamespace(service=SimpleNamespace(store=audits.store),
                                          artifacts=audits.artifacts, workflow=audits.workflow),
                          FixtureRunner(audits.artifacts))
-        self.answer = answer
+        self.answer, self.planning = answer, planning
+        self.turns = [] if turns is None else turns
 
     def run_model(self, task, objective, evidence, result_schema):
         if "commands" in result_schema["properties"]:
-            return {"commands": []}
+            self.turns.append("planning")
+            return {"commands": []} if self.planning is None else self.planning
+        self.turns.append("semantic")
         return self.answer(evidence["partition"])
 
 
@@ -303,8 +365,9 @@ class AnalysisExecutor:
     guard, runs the real decode and checkpoint boundary on an injected answer, and completes or
     fails the task the way `Executor.execute_one` does. No provider is entered."""
 
-    def __init__(self, audits, answer):
-        self.audits, self.answer, self.calls = audits, answer, []
+    def __init__(self, audits, answer, planning=None):
+        self.audits, self.answer, self.planning = audits, answer, planning
+        self.calls, self.turns = [], []
 
     def execute_one(self, agent, expected=None):
         self.calls.append({"agent": agent, "expected": expected})
@@ -313,7 +376,8 @@ class AnalysisExecutor:
         if task is None:
             return None
         try:
-            result = InjectedAnalysis(self.audits, self.answer).execute(task)
+            result = InjectedAnalysis(self.audits, self.answer, self.planning,
+                                      self.turns).execute(task)
         except ContractError as exc:  # the disposition a contract refusal gets in the executor
             return workflow.fail_execution(task, exc)
         return workflow.complete(task, result)
@@ -485,3 +549,46 @@ def test_an_execution_failure_still_stops_the_service(connected):  # noqa: F811
     # A restart admits nothing while the failed attempt stands: a failure is not retained work.
     restarted, _, second = runner(connected, executor=AnalysisExecutor(connected.audits, answer))
     assert restarted.run(once=True)["stop_reason"] == "task_retry" and second.calls == []
+
+
+@pytest.mark.parametrize("turn", ["planning", "semantic"])
+def test_a_returned_inspection_refusal_stops_the_service_after_one_task(connected, turn):  # noqa: F811
+    """The same control at the service: an INJECTED returned envelope, not a real inspection outage.
+
+    The task is not settled as succeeded, no coverage or checkpoint is written, admission stops
+    before a second partition, and the returned host reason reaches no projection.
+    """
+    held_partition = first_assignment(connected)
+    retained = connected.audits.artifacts.put("the blocked inspection output", "fixture")["ref"]
+    blocked = inspection_envelope(retained)
+
+    def answer(partition):
+        # In the semantic case the SAME envelope also carries content that would checkpoint.
+        return {**answer_for(partition), **blocked} if turn == "semantic" else answer_for(partition)
+
+    observer = spool_observer(connected)
+    service_runner, _, executor = runner(
+        connected, executor=AnalysisExecutor(connected.audits, answer,
+                                             planning=blocked if turn == "planning" else None),
+        max_tasks=2, observer=observer)
+    summary = service_runner.run(once=True)
+
+    assert summary["stop_reason"] == "task_retry" and summary["completed_tasks"] == 0
+    assert summary["analysis"] == {} and len(executor.calls) == 1, "no next partition ran"
+    assert executor.turns == (["planning"] if turn == "planning" else ["planning", "semantic"])
+    step = [s for s in summary["steps"] if s["action"] == "task"][0]
+    assert step["status"] == "retry" and step["analysis_outcome"] is None
+    # Zero checkpoint and zero coverage: every partition kept its generation and its whole scope.
+    assert {p["generation"] for p in partitions_of(connected)} == {0}
+    assert next(p for p in partitions_of(connected)
+                if p["partition_id"] == held_partition)["generation"] == 0
+    with connected.store.transaction() as tx:
+        assert not [row for row in tx.scan("research_paths")]
+        assert not [row for row in tx.scan("research_checkpoints")]
+        published = [row["message"] for row in tx.scan("outbox")]
+    status = audit_service.status(connected.service, SimpleNamespace(
+        audit_service_command="status", audit_id=connected.audit_id))
+    assert status["analysis"] == {"outcomes": {}, "held_partitions": 0, "held": []}
+    assert status["admission_blocked"]["reason_code"] == "task_retry"
+    projections = canonical([summary, [e for e in observer.spool.records()], published, status])
+    assert SECRET not in projections and "hunter2" not in projections

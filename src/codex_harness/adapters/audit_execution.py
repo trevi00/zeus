@@ -39,6 +39,12 @@ NULL = {'type': 'null'}
 # newly inferred to be either. `domain.observation` owns the codes; this module only writes them.
 ANALYSIS_VERSION = 1
 
+# 2026-09-21 independent lead finding: an execution failure is not always a raised exception.
+# `Executor._run` RETURNS an inspection-blocked envelope at its return boundary, and its missing
+# analysis content would otherwise read as a refused draft. This is the fixed message the partition
+# path refuses with; the envelope's own host reason is never read, quoted, logged or projected.
+INSPECTION_REFUSED = 'Execution inspection blocked'
+
 
 def assigned_body(definition, identity):
     """The record definition without its identity field: the assigned key carries that identity."""
@@ -157,6 +163,16 @@ class AuditExecution:
         return checkpoint, paths, systems
 
     @staticmethod
+    def refused_execution(result):
+        """True when the executor RETURNED its inspection-blocked refusal instead of an answer.
+
+        The envelope carries `accepted` false, the stored `execution_ref` and a host reason, and no
+        analysis content. It is a stopped execution, so this fact is read BEFORE any content is
+        decoded and it wins even when the same result also carries otherwise valid-looking content.
+        """
+        return type(result) is dict and bool(result.get('inspection_blocked'))
+
+    @staticmethod
     def evidence_ref(answer):
         """This answer's executor-owned artifact reference, or None when the answer carries none."""
         ref = answer.get('execution_ref')
@@ -267,6 +283,9 @@ class AuditExecution:
             'Commands run in a networkless, read-only source tree with inert symlinks and no installs. '
             'Do not claim commands ran. Return at most four commands.', evidence,
             schema(commands={'type': 'array', 'maxItems': 4, 'items': STRINGS}))
+        # A RETURNED execution refusal is classified here, before this turn's own content is read:
+        # a refused planning turn runs no inspection command and no semantic turn at all.
+        require(not self.refused_execution(plan), INSPECTION_REFUSED)
         require(len(plan['commands']) <= 4, 'Inspection command budget exceeded')
         receipts = [self.audits.execute(task, audit['id'], command) for command in plan['commands']]
         evidence['receipts'] = receipts
@@ -292,6 +311,9 @@ class AuditExecution:
             'including each test verbatim '
             'with reason and follow_up. On context limits return partial progress.',
             evidence, result_schema)
+        # The same returned refusal, BEFORE the pure content boundary below: a stopped execution is
+        # never reported as a rejected draft, whatever content its envelope happens to carry.
+        require(not self.refused_execution(answer), INSPECTION_REFUSED)
         try:
             # `.get` inside: a field the provider dropped is refused by the same shape check.
             checkpoint, paths, systems = self.proposed_checkpoint(trusted, answer)

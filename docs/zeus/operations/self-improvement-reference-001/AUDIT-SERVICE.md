@@ -180,6 +180,13 @@ The boundary, in `adapters/audit_execution.py`:
 
 - The trusted stored partition is validated BEFORE any generated content is decoded, so a stale or
   corrupt assignment is an ownership failure and never a rejected draft.
+- An execution failure is not always a raised exception: `Executor._run` RETURNS an
+  `inspection_blocked` envelope (`accepted` false, a stored `execution_ref`, a host reason). Both
+  the planning turn and the semantic turn are classified for that envelope BEFORE the pure content
+  boundary, and refused with the fixed error `Execution inspection blocked`; the returned reason is
+  never read, quoted, logged or projected. Blocked wins even when the same result also carries
+  otherwise valid content, and a refused planning turn runs no inspection command and no semantic
+  turn. This is returned-failure versus content routing, not a new mandatory model field.
 - `AuditExecution.proposed_checkpoint` is the ONE recoverable rejection boundary: it decodes paths,
   subsystems, cursor and open questions into the proposed checkpoint and touches no store, lease,
   runner, artifact or provider. Only a `ContractError` from that call is caught - not arbitrary
@@ -220,6 +227,12 @@ and observation contract, with `FixtureRunner` receipts. It is not evidence that
 PostgreSQL or a host service ran, and no model was provoked to obtain a rejection sample. Its
 control for the previous behaviour is `test_an_execution_failure_still_stops_the_service`: the same
 refused content with no retained evidence is an ordinary execution failure that stops the service.
+`test_a_returned_inspection_refusal_is_never_a_rejected_draft` and
+`test_a_returned_inspection_refusal_stops_the_service_after_one_task` cover the returned envelope
+from both turns, including a semantic envelope that also carries checkpointable content: zero
+checkpoint and coverage, one task then a stopped service, no semantic turn after a refused planning
+turn, and the canary reason in no step, log, published message or `status`. Those envelopes are
+INJECTED fixtures; no bubblewrap, runner, host or provider inspection actually failed here.
 The full suite, the history checks and any new host canary stay with the owner and CI.
 
 ## Evidence and verification
