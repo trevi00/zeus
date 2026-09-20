@@ -6,18 +6,22 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import {
   PORTFOLIO_SAMPLE,
+  activityInfo,
   criterionInfo,
   criterionProgress,
+  followUpInfo,
+  groupJobs,
   investigationInfo,
   jobSample,
   jobStatusInfo,
   jobsByCriterion,
+  projectActivity,
   readPortfolio,
   unplacedJobs,
   type ParsedPortfolio,
   type Progress,
 } from "@/lib/portfolio"
-import { PORTFOLIO_SCHEMA, formatNumber, formatSeconds, formatTime, portfolioFreshness, type PortfolioInvestigation, type PortfolioJob, type PortfolioProject, type Snapshot } from "@/lib/snapshot"
+import { PORTFOLIO_SCHEMA, formatNumber, formatSeconds, formatTime, portfolioFreshness, type PortfolioFollowUp, type PortfolioInvestigation, type PortfolioJob, type PortfolioProject, type Snapshot } from "@/lib/snapshot"
 import { freshnessTone, type Tone } from "@/lib/tones"
 
 /**
@@ -37,7 +41,13 @@ import { freshnessTone, type Tone } from "@/lib/tones"
  * - an investigation row is a coarse (status, reason_code) triage family: a research candidate,
  *   not a confirmed cause, not an executed fix, and `researched`/`deferred` are owner decisions
  *   rather than resolutions;
- * - `unknown` jobs keep fleet ownership and are neither failure nor success here.
+ * - `unknown` jobs keep fleet ownership and are neither failure nor success here;
+ * - a project's `activity` is the collector's full-population count with a headline mode. It says
+ *   what the work is doing now - never that a criterion is accepted - and a collector that sends
+ *   no summary leaves 확인 불가 instead of zeros reconstructed from the sample;
+ * - a follow-up is the owner's immutable link from a preserved failure to an accepted successor
+ *   job. `linked` means exactly that and nothing more (no fix, no acceptance, no merge, no
+ *   deploy), and a link the current rows no longer support is 확인 불가, never 해결.
  * `portfolio` is not in SOURCE_NAMES, so the source strip, header warnings, the retained map and
  * the pinned report keep their fixed contracts; this view carries its own freshness and notices.
  */
@@ -97,6 +107,35 @@ function ProgressBar({ label, progress }: { label: string; progress: Progress })
   )
 }
 
+function EvidenceRefs({ refs }: { refs: string[] }) {
+  if (refs.length === 0) return <span className="text-muted-foreground">증거 참조 없음</span>
+  return <span className="font-mono break-all">{refs.join(", ")}</span>
+}
+
+/**
+ * The owner's link from this preserved failure to the job they recorded as its successor. It shows
+ * exactly what was recorded - 원본 ID → 후속 ID and the owner's evidence identifiers - and says so
+ * in words: an owner-linked accepted follow-up, not a fixed incident, an accepted criterion, a
+ * merge or a deployment. A link the current rows no longer support is 확인 불가, not 해결.
+ */
+function FollowUpNote({ job, followUp }: { job: PortfolioJob; followUp: PortfolioFollowUp }) {
+  const info = followUpInfo(followUp)
+  const successor = followUp.successor_status
+  return (
+    <div className="flex min-w-0 flex-col gap-1 rounded-md border border-dashed p-1.5">
+      <div className="flex min-w-0 flex-wrap items-center gap-1.5">
+        <StatusBadge tone={info.tone} title={info.note}>{info.label}</StatusBadge>
+        <span className="font-mono break-all">{job.id} → {followUp.successor_job_id}</span>
+      </div>
+      <div className="text-muted-foreground break-words">
+        후속 작업 상태 {successor ? jobStatusInfo(successor).label : <Unknown>현재 기록 없음</Unknown>} · 연결 기록 {formatTime(followUp.recorded_at)}
+      </div>
+      <div className="text-muted-foreground break-words">연결 증거 <EvidenceRefs refs={followUp.evidence_refs} /></div>
+      <div className="text-muted-foreground break-words">{info.note}</div>
+    </div>
+  )
+}
+
 /** One bound fleet job row. Status meaning is fleet's, and 검토 수락은 병합·배포·기준 수용이 아닙니다. */
 function JobRow({ job }: { job: PortfolioJob }) {
   const info = jobStatusInfo(job.status)
@@ -109,6 +148,7 @@ function JobRow({ job }: { job: PortfolioJob }) {
       <div className="text-muted-foreground break-words">
         레인 {job.lane || "기록 없음"} · 사유 {job.reason_code ?? "없음"} · 마지막 기록 {formatTime(job.updated_at)}
       </div>
+      {job.follow_up ? <FollowUpNote job={job} followUp={job.follow_up} /> : null}
     </li>
   )
 }
@@ -118,9 +158,76 @@ function JobList({ jobs, empty }: { jobs: PortfolioJob[]; empty: string }) {
   return <ul className="flex flex-col gap-1">{jobs.map((job) => <JobRow key={job.id} job={job} />)}</ul>
 }
 
-function EvidenceRefs({ refs }: { refs: string[] }) {
-  if (refs.length === 0) return <span className="text-muted-foreground">증거 참조 없음</span>
-  return <span className="font-mono break-all">{refs.join(", ")}</span>
+/**
+ * The three areas of one criterion's SAMPLE, kept apart on purpose: what needs a look now, what
+ * review already accepted, and the preserved failures the owner linked to an accepted successor.
+ * The history area is collapsed but always present and keyboard reachable (native details/summary);
+ * nothing is dropped, and a failure only leaves 현재 확인 필요 while its link still holds.
+ */
+function CriterionJobs({ jobs, label }: { jobs: PortfolioJob[]; label: string }) {
+  const groups = groupJobs(jobs)
+  return (
+    <div className="flex min-w-0 flex-col gap-2">
+      <section aria-label={`${label} · 현재 확인 필요`} className="flex min-w-0 flex-col gap-1">
+        <p className="text-xs font-medium">현재 확인 필요 {formatNumber(groups.attention.length)}건 <span className="font-normal text-muted-foreground">· 진행·대기·불확실·후속 미연결 실패 (표본 안)</span></p>
+        <JobList jobs={groups.attention} empty="표본 안에 지금 확인이 필요한 작업이 없습니다 · 전체에도 없다는 뜻은 아닙니다." />
+      </section>
+      <section aria-label={`${label} · 검토 수락된 작업`} className="flex min-w-0 flex-col gap-1">
+        <p className="text-xs font-medium">검토 수락된 작업 {formatNumber(groups.accepted.length)}건 <span className="font-normal text-muted-foreground">· 후보 수락일 뿐 병합·배포·기준 수용이 아님</span></p>
+        <JobList jobs={groups.accepted} empty="표본 안에 검토 수락된 작업이 없습니다." />
+      </section>
+      <details className="min-w-0 rounded-md border">
+        <summary className="cursor-pointer px-2 py-1.5 text-xs font-medium">후속 작업이 연결된 실패 이력 {formatNumber(groups.history.length)}건 보기 <span className="font-normal text-muted-foreground">· 기록은 삭제되지 않음</span></summary>
+        <div className="border-t p-2">
+          <JobList jobs={groups.history} empty="후속 작업이 연결된 과거 실패가 표본 안에 없습니다 (연결이 없거나 지금은 확인 불가)." />
+        </div>
+      </details>
+    </div>
+  )
+}
+
+/**
+ * Full-population activity of one project. These counts come from the collector over ALL rows: an
+ * older collector that sends none leaves 확인 불가 here, and the latest-50 sample below is never
+ * counted to fill the gap. A running project still shows its old unresolved failures beside it,
+ * and none of these labels is criterion acceptance.
+ */
+function ActivityRow({ project, current }: { project: PortfolioProject; current: boolean }) {
+  const { activity, attention, settled, consistent } = projectActivity(project)
+  if (!activity) {
+    return (
+      <div className="flex min-w-0 flex-col gap-1 rounded-md border border-unknown/50 p-2">
+        <StatusBadge tone="unknown" className="self-start">활동 요약 확인 불가</StatusBadge>
+        <p className="text-xs text-muted-foreground break-words">이 수집기는 활동 집계를 제공하지 않습니다(이전 계약의 스냅샷). 아래 표본으로 전체 건수를 추정하지 않으며, 작업이 없다는 뜻도 아닙니다.</p>
+      </div>
+    )
+  }
+  const info = activityInfo(activity.mode)
+  const counts: [string, number, string][] = [
+    ["진행 중", activity.running, "배정된 작업"],
+    ["배정 대기", activity.queued, "대기 중인 작업"],
+    ["확인 필요", activity.unknown, "시작·종료가 불확실한 작업"],
+    ["조치 필요", activity.unresolved_failed, "후속 작업이 연결되지 않은 실패·거부·예산 소진"],
+    ["검토 수락", activity.accepted, "독립 검토가 수락한 작업 · 기준 수용 아님"],
+    ["연결된 이력", activity.historical_failed, "소유자가 수락된 후속 작업을 연결한 과거 실패"],
+  ]
+  return (
+    <div className="flex min-w-0 flex-col gap-1 rounded-md border p-2">
+      <div className="flex min-w-0 flex-wrap items-center gap-2">
+        <StatusBadge tone={info.tone} title={info.note}>{info.label}</StatusBadge>
+        <span className="text-xs text-muted-foreground break-words">지금 볼 것 {formatNumber(attention)}건 · 정리된 기록 {formatNumber(settled)}건 (전체 기준{current ? "" : " · 현재 아님"})</span>
+      </div>
+      <ul className="flex min-w-0 flex-wrap gap-x-3 gap-y-1 text-xs">
+        {counts.map(([label, value, note]) => (
+          <li key={label} className="break-words" title={note}>{label} <span className="tabular-nums font-medium">{formatNumber(value)}</span></li>
+        ))}
+      </ul>
+      <p className="text-xs text-muted-foreground break-words">{info.note}</p>
+      {consistent ? null : (
+        <p className="text-xs text-unknown break-words">활동 집계 합계가 전체 작업 수 {formatNumber(project.counts.jobs_total)}건과 일치하지 않습니다 (확인 불가 · 0이 아님).</p>
+      )}
+    </div>
+  )
 }
 
 /** One authorized goal: full outcome, honest acceptance progress, criteria and their actual jobs. */
@@ -146,6 +253,7 @@ function ProjectCard({ project, current }: { project: PortfolioProject; current:
       <CardContent className="flex min-w-0 flex-col gap-3">
         <p className="text-xs text-muted-foreground break-all">정의 출처 {project.source_ref || "기록 없음"}</p>
         <ProgressBar label={`${project.title} 수용 기준 진행`} progress={progress} />
+        <ActivityRow project={project} current={current} />
         <p className="text-xs text-muted-foreground break-words">{sampleNote} · 작업 수는 전체 기준이고 아래 목록은 표본입니다.</p>
         <details className="min-w-0 rounded-md border">
           <summary className="cursor-pointer px-2 py-1.5 text-xs font-medium">수용 기준 {formatNumber(project.criteria.length)}개와 연결된 작업 보기</summary>
@@ -164,7 +272,7 @@ function ProjectCard({ project, current }: { project: PortfolioProject; current:
                   <p className="text-sm break-words">{criterion.text || <Unknown>기준 문구 없음</Unknown>}</p>
                   <p className="text-xs text-muted-foreground break-words">수용 증거 <EvidenceRefs refs={criterion.evidence_refs} /></p>
                   <p className="text-xs text-muted-foreground">연결된 작업 {formatNumber(jobs.length)}건 (표본 안)</p>
-                  <JobList jobs={jobs} empty="표본 안에 이 기준으로 연결된 작업이 없습니다 · 전체에도 없다는 뜻은 아닙니다." />
+                  <CriterionJobs jobs={jobs} label={`${project.title} · ${criterion.id}`} />
                 </section>
               )
             })}
@@ -269,6 +377,13 @@ export function ProjectsView({ snapshot, now }: Props) {
   const reviewNegative = sampledJobs.filter((job) => ["rejected", "failed", "exhausted"].includes(job.status)).length
   const jobsSampled = jobsShown < jobsTotal || data.projects.some((project) => project.jobs_truncated)
   const researchRequired = data.investigations.filter((investigation) => investigation.state === "research_required").length
+  // Full-population activity, straight from the collector. One project without a summary makes the
+  // roll-up 확인 불가: the samples above are never added up to replace a count the wire did not send.
+  const activities = data.projects.map((project) => projectActivity(project))
+  const activityAvailable = data.projects.length > 0 && activities.every((entry) => entry.activity != null)
+  const attentionTotal = activities.reduce((sum, entry) => sum + entry.attention, 0)
+  const acceptedTotal = activities.reduce((sum, entry) => sum + (entry.activity?.accepted ?? 0), 0)
+  const historyTotal = activities.reduce((sum, entry) => sum + (entry.activity?.historical_failed ?? 0), 0)
   // A stale or invalid observation keeps the number it actually read, labelled as not-current
   // instead of being redrawn as today's state.
   const liveCount = (value: number) => (current ? formatNumber(value) : <Unknown>{formatNumber(value)} · 현재 아님</Unknown>)
@@ -291,6 +406,11 @@ export function ProjectsView({ snapshot, now }: Props) {
         <StatCard title="조사 후보" value={liveCount(data.investigations.length)} note={`조사 필요 ${formatNumber(researchRequired)}건 · 원인 확정 아님 · 자동 재시도 없음`} icon={<Lightbulb className="size-4" />} />
       </div>
 
+      <p className="text-xs text-muted-foreground break-words">
+        {activityAvailable
+          ? <>지금 볼 것 <span className="tabular-nums">{formatNumber(attentionTotal)}</span>건 (진행·대기·불확실·후속 미연결 실패) · 검토 수락된 작업 <span className="tabular-nums">{formatNumber(acceptedTotal)}</span>건 · 후속 작업이 연결된 과거 실패 <span className="tabular-nums">{formatNumber(historyTotal)}</span>건 · 모두 전체 기준이며, 연결은 소유자 기록일 뿐 해결·수용을 뜻하지 않습니다.</>
+          : <Unknown>활동 요약을 제공하지 않는 수집기가 있어 전체 활동 합계는 확인 불가입니다 (표본으로 추정하지 않음).</Unknown>}
+      </p>
       <p className="text-xs text-muted-foreground break-all">정의 지문 <span className="font-mono">{data.definition_sha256.slice(0, 16)}</span> · 소유자 정의 문서의 정규 JSON 지문이며 완료·검증 주장이 아닙니다.</p>
 
       {data.unbound_jobs || data.unclassified_failures ? (
@@ -360,7 +480,7 @@ export function ProjectsView({ snapshot, now }: Props) {
       </section>
 
       <p className="text-xs text-muted-foreground break-words">
-        읽는 법: '확인 불가'는 값을 읽지 못한 것이고 '비어 있음'은 읽었더니 없었다는 뜻입니다. 기준의 '수용 기록됨'은 소유자가 증거와 함께 남긴 기록이며, 작업이 검토 수락되었다는 사실에서 유추하지 않습니다. 검토 수락은 병합·배포가 아니고, 기준 수용은 해당 원본 전체를 흡수했다는 뜻이 아닙니다. 작업 수와 후보 건수는 전체 기준이고 화면의 목록은 최근 {formatNumber(PORTFOLIO_SAMPLE)}건 표본이므로, 목록에 없다고 없는 것이 아닙니다. 조사 후보는 증상이 반복된다는 기록일 뿐 원인·해결이 아니며, 판단 이후의 새 실패도 건수에 계속 반영됩니다.
+        읽는 법: '확인 불가'는 값을 읽지 못한 것이고 '비어 있음'은 읽었더니 없었다는 뜻입니다. 목표별 활동(진행 중·배정 대기·확인 필요·조치 필요·현재 실행 없음·미착수)은 지금 작업이 어떤 상태인지를 말할 뿐 기준 수용과 무관하며, '현재 실행 없음'이 완료를 뜻하지 않습니다. '후속 작업 연결됨'은 소유자가 증거와 함께 수락된 후속 작업을 지목한 기록이며, 원인 해결·병합·배포가 아니고 원래 실패 기록도 그대로 남습니다. 후속 작업이 사라졌거나 아직 수락되지 않았거나 다른 기준에 연결되면 '연결 확인 불가'로 표시하고 해결로 세지 않습니다. 기준의 '수용 기록됨'은 소유자가 증거와 함께 남긴 기록이며, 작업이 검토 수락되었다는 사실에서 유추하지 않습니다. 검토 수락은 병합·배포가 아니고, 기준 수용은 해당 원본 전체를 흡수했다는 뜻이 아닙니다. 작업 수와 후보 건수는 전체 기준이고 화면의 목록은 최근 {formatNumber(PORTFOLIO_SAMPLE)}건 표본이므로, 목록에 없다고 없는 것이 아닙니다. 조사 후보는 증상이 반복된다는 기록일 뿐 원인·해결이 아니며, 판단 이후의 새 실패도 건수에 계속 반영됩니다.
       </p>
     </div>
   )

@@ -8,8 +8,10 @@
 
 import {
   PORTFOLIO_SCHEMA,
+  type PortfolioActivity,
   type PortfolioCriterion,
   type PortfolioData,
+  type PortfolioFollowUp,
   type PortfolioInvestigation,
   type PortfolioJob,
   type PortfolioProject,
@@ -53,6 +55,21 @@ function readCriterion(value: unknown): PortfolioCriterion | null {
   return { id, text, status, evidence_refs: evidence }
 }
 
+/**
+ * One owner follow-up link, or `undefined` for off-contract (which invalidates the job, like every
+ * other wrong type here). An ABSENT key is not off-contract: it means the owner recorded no link.
+ */
+function readFollowUp(value: unknown): PortfolioFollowUp | undefined {
+  if (!isRecord(value)) return undefined
+  const { successor_job_id: successor, successor_status: status, state, reason, recorded_at: at } = value
+  const evidence = readStrings(value.evidence_refs)
+  if (!isText(successor) || !successor || !isText(state) || !evidence) return undefined
+  if (!(status === null || isText(status))) return undefined
+  if (!(reason === null || isText(reason))) return undefined
+  if (!(at === null || isText(at))) return undefined
+  return { successor_job_id: successor, successor_status: status, state, reason, evidence_refs: evidence, recorded_at: at }
+}
+
 function readJob(value: unknown): PortfolioJob | null {
   if (!isRecord(value)) return null
   const { id, lane, status, updated_at: updatedAt } = value
@@ -63,7 +80,40 @@ function readJob(value: unknown): PortfolioJob | null {
   if (!isText(id) || !id || !isText(lane) || !isText(status) || !isText(updatedAt)) return null
   if (!(criterionId === null || isText(criterionId))) return null
   if (!(reasonCode === null || isText(reasonCode))) return null
-  return { id, criterion_id: criterionId, lane, status, reason_code: reasonCode, updated_at: updatedAt }
+  // Optional and additive: absent or explicitly null means "no link recorded for this job".
+  const raw = value.follow_up
+  const absent = raw === undefined || raw === null
+  const followUp = absent ? null : readFollowUp(raw)
+  if (followUp === undefined) return null
+  return { id, criterion_id: criterionId, lane, status, reason_code: reasonCode, updated_at: updatedAt, follow_up: followUp }
+}
+
+/**
+ * The full-population activity summary, `null` for an older collector that does not send one, or
+ * `undefined` for off-contract. A missing summary is "확인 불가": the sample below must never be
+ * counted to reconstruct it.
+ */
+function readActivity(value: unknown): PortfolioActivity | null | undefined {
+  if (value === undefined || value === null) return null
+  if (!isRecord(value)) return undefined
+  const mode = value.mode
+  if (!isText(mode) || !mode) return undefined
+  const names = ["running", "queued", "unknown", "accepted", "unresolved_failed", "historical_failed"] as const
+  const counts: Record<string, number> = {}
+  for (const name of names) {
+    const count = value[name]
+    if (!isCount(count)) return undefined
+    counts[name] = count
+  }
+  return {
+    mode,
+    running: counts.running,
+    queued: counts.queued,
+    unknown: counts.unknown,
+    accepted: counts.accepted,
+    unresolved_failed: counts.unresolved_failed,
+    historical_failed: counts.historical_failed,
+  }
 }
 
 function readProject(value: unknown): PortfolioProject | null {
@@ -86,7 +136,9 @@ function readProject(value: unknown): PortfolioProject | null {
     if (!job) return null
     jobs.push(job)
   }
-  return { id, title, outcome, source_ref: sourceRef, criteria, jobs, counts: totals, jobs_truncated: truncated }
+  const activity = readActivity(value.activity)
+  if (activity === undefined) return null
+  return { id, title, outcome, source_ref: sourceRef, criteria, jobs, counts: totals, activity, jobs_truncated: truncated }
 }
 
 function readInvestigation(value: unknown): PortfolioInvestigation | null {
@@ -124,7 +176,7 @@ export function readPortfolio(data: unknown): ParsedPortfolio {
   const projects: PortfolioProject[] = []
   for (const [index, row] of data.projects.entries()) {
     const project = readProject(row)
-    if (!project) return { ok: false, reason: `projects[${index}] 필드 형식 불일치 (id·title·outcome·source_ref·criteria·jobs·counts·jobs_truncated)` }
+    if (!project) return { ok: false, reason: `projects[${index}] 필드 형식 불일치 (id·title·outcome·source_ref·criteria·jobs·counts·activity·jobs_truncated)` }
     projects.push(project)
   }
   const investigations: PortfolioInvestigation[] = []
@@ -262,4 +314,96 @@ export type JobSample = { shown: number; total: number; truncated: boolean }
 /** Displayed rows vs. all rows for one project's jobs; the two numbers are never merged. */
 export function jobSample(project: PortfolioProject): JobSample {
   return { shown: project.jobs.length, total: project.counts.jobs_total, truncated: project.jobs_truncated }
+}
+
+export type FollowUpInfo = { label: string; tone: Tone; note: string; linked: boolean }
+
+/**
+ * What an owner follow-up link means on screen. `linked` is one fact only: the owner recorded an
+ * accepted successor job for this preserved failure, with evidence. It is not "the incident is
+ * fixed", not criterion acceptance, not a merge and not a deployment — and every other state is
+ * unknown, so a link the current rows no longer support never reads as history that was handled.
+ */
+export function followUpInfo(followUp: PortfolioFollowUp): FollowUpInfo {
+  if (followUp.state === "linked") {
+    return { label: "후속 작업 연결됨", tone: "neutral", linked: true, note: "소유자가 증거와 함께 연결한 수락된 후속 작업 · 원인 해결·기준 수용·병합·배포를 뜻하지 않음 · 실패 기록은 그대로 보존됨" }
+  }
+  if (followUp.state === "unknown") {
+    const reasons: Record<string, string> = {
+      successor_missing: "연결된 후속 작업을 현재 저장소에서 찾지 못함",
+      successor_not_accepted: "후속 작업이 아직 검토 수락 상태가 아님(대기·배정·알 수 없음 포함)",
+      binding_missing: "원본 또는 후속 작업의 기준 연결이 현재 없음",
+      target_mismatch: "후속 작업이 다른 목표·기준에 연결되어 있음",
+    }
+    const why = followUp.reason ? (reasons[followUp.reason] ?? `사유 ${followUp.reason} (이 화면이 모르는 값)`) : "사유 기록 없음"
+    return { label: "연결 확인 불가", tone: "unknown", linked: false, note: `${why} · 기록은 남아 있으나 지금은 해결로 읽지 않음` }
+  }
+  return { label: `${followUp.state} (정의되지 않은 값)`, tone: "unknown", linked: false, note: "이 화면이 모르는 연결 상태 · 저장된 그대로 표시 · 해결로 읽지 않음" }
+}
+
+export type ActivityInfo = { label: string; tone: Tone; note: string }
+
+/**
+ * The headline of a project's CURRENT work. These are activity labels over fleet job states, never
+ * criterion completion: `현재 실행 없음` says no job is active right now, not that the goal is
+ * done, and acceptance keeps its own separate row above.
+ */
+export function activityInfo(mode: string): ActivityInfo {
+  const known: Record<string, ActivityInfo> = {
+    running: { label: "진행 중", tone: "warning", note: "배정된 작업이 있음 · 실행 중일 수 있음 · 완료·수용과는 별개" },
+    queued: { label: "배정 대기", tone: "warning", note: "대기 중인 작업이 있고 배정된 작업은 없음" },
+    unknown: { label: "확인 필요", tone: "unknown", note: "시작·종료가 불확실한 작업이 있음 · 실패도 성공도 아님 · 다른 상태보다 먼저 표시됨" },
+    needs_attention: { label: "조치 필요", tone: "error", note: "후속 작업이 연결되지 않은 실패·거부·예산 소진 기록이 남아 있음 · 현재 실행 중인 작업은 없음" },
+    idle: { label: "현재 실행 없음", tone: "neutral", note: "진행·대기·미해결 실패가 모두 없음 · 기준이 수용되었다는 뜻은 아님" },
+    not_started: { label: "미착수", tone: "neutral", note: "이 목표에 연결된 작업이 아직 없음 (읽었으나 비어 있음)" },
+  }
+  return known[mode] ?? { label: `${mode} (정의되지 않은 값)`, tone: "unknown", note: "이 화면이 모르는 활동 값 · 저장된 그대로 표시" }
+}
+
+export type ActivitySummary = {
+  /** `null` when the collector sent no summary: unavailable, never reconstructed from the sample. */
+  activity: PortfolioActivity | null
+  /** Needs a look now: running, queued, uncertain and unresolved failures over ALL rows. */
+  attention: number
+  /** Already settled records: review-accepted work and failures with a link that still holds. */
+  settled: number
+  /** The six disjoint counts add up to `counts.jobs_total`; if not, they are shown as unreliable. */
+  consistent: boolean
+}
+
+/** Full-population activity of one project. The latest-50 sample is never counted to fill a gap. */
+export function projectActivity(project: PortfolioProject): ActivitySummary {
+  const activity = project.activity
+  if (!activity) return { activity: null, attention: 0, settled: 0, consistent: false }
+  const attention = activity.running + activity.queued + activity.unknown + activity.unresolved_failed
+  const settled = activity.accepted + activity.historical_failed
+  return { activity, attention, settled, consistent: attention + settled === project.counts.jobs_total }
+}
+
+export type JobGroups = {
+  /** Sampled jobs that need a look: active, waiting, uncertain, or failed with no holding link. */
+  attention: PortfolioJob[]
+  /** Sampled review-accepted work. */
+  accepted: PortfolioJob[]
+  /** Sampled preserved failures whose owner link currently reads `linked`. */
+  history: PortfolioJob[]
+}
+
+const FAILURE_STATUSES = ["failed", "rejected", "exhausted"]
+
+/**
+ * Split the project's job SAMPLE into the three areas the screen shows apart. A failure moves to
+ * 이력 only while its link reads `linked`; an unknown link keeps it in 현재 확인 필요. A status this
+ * screen does not know stays in 현재 확인 필요 rather than disappearing into history.
+ */
+export function groupJobs(jobs: PortfolioJob[]): JobGroups {
+  const groups: JobGroups = { attention: [], accepted: [], history: [] }
+  for (const job of jobs) {
+    if (job.status === "accepted") groups.accepted.push(job)
+    else if (FAILURE_STATUSES.includes(job.status)) {
+      const linked = job.follow_up != null && followUpInfo(job.follow_up).linked
+      groups[linked ? "history" : "attention"].push(job)
+    } else groups.attention.push(job)   // queued, dispatching, unknown and any value we do not know
+  }
+  return groups
 }
