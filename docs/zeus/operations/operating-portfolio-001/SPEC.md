@@ -152,3 +152,10 @@ stronger reference grammar can follow later, without exposing web write authorit
 Finish concise terminal JSON matching supplied response schema. `tests` only exact commands
 actually executed, no status strings in it. No arbitrary Python diagnostics, git config mutation,
 or rollback experiments. Existing APIs and accepted PG checks remain intact.
+
+Deployment configuration: this PC's launch-fleet.ps1 currently discards CLI stdout/stderr, and
+Python defaults filter INFO. Owner enables only zeus.fleet.runner INFO/WARNING in a fixed JSON
+file handler via the existing hidden launcher, allow-listing the two transition messages. This
+is host logging configuration, not a new application retry path. Other CLI output stays discarded;
+no raw exception/traceback/token is forwarded. The wrapper and launch diff are hashed in deployment
+evidence. CI caplog proves emission; the separate owner configuration check proves persistence.
