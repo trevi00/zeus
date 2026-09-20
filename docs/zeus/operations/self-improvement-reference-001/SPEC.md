@@ -710,3 +710,70 @@ messages from the queued execution row; no second implementation round for wordi
 The first audit-service Fleet job remains failed/evidence_gate_refused, with its candidate
 retained and corrected, never retroactively accepted. Service source is accepted for CI;
 actual release activation and two-task host canary remain required before continuous audit.
+
+### Operating canary obstruction: unique result ownership (2026-09-21 KST)
+
+PR #168 merged as 12fed1f391fc1ebc08ec228e2a1f915e3f2454a2 after CI 35522222448
+attempt 1 passed all four OS/Python jobs, service integration and gate. Runtime-168 and
+its image 9c1780a65d7fbe0c3c05021905416f479bc3a50c076c36216905deced0706893
+match 225 package files. Its actual Codex file canary passed. The owner adopted the actual
+isolated lead decision and recorded a separate owner rollout judgment through Releases;
+this is not two newly executed model reviews. Public release 154079c18710aa8e8f91b328ef68cd9ffafde521722e114b4796f2d178d3110c
+is active; an active release is permission, not proof of running continuous analysis.
+
+The real two-task host canary stopped after its first task d1133291-1151-4ffd-987a-6671cd0f34bd
+returned retry/ContractError: Duplicate coverage. No retry or second task was started.
+64 observations were collected, 0 sink failures/corrupt/refused. The partition retained
+generation 0/all 32 paths; no semantic coverage was awarded. Actual output artifact
+sha256:0b573a6e14db5bd4534f4cdfb3f6f790722259e5e731eb0988073d0f412c43f4 contains
+5 PathDisposition rows, including TWO for base64 identity
+ZG9jcy9jb250cmlidXRpbmcvcmV2aWV3LWNvbnZlbnRpb25zLm1k (docs/contributing/review-conventions.md).
+This is observed duplicate identity, not a PostgreSQL or scheduler failure. The existing
+checkpoint duplicate guard correctly refused it. All first-run evidence stays on D under
+audit-service-host-canary-001.json and audit-service-first-failure.json.
+
+Affected assumption: enum-constrained arrays bind membership but cannot ensure one result
+per assigned identity. Do not fix this by taking first/last, deduplicating contradictory
+records, weakening checkpoint checks, retrying a model, or merely asking it not to repeat.
+The one revised boundary is provider output -> decoded canonical records -> existing checkpoint.
+
+Primary source opened 2026-09-21 KST: https://developers.openai.com/api/docs/guides/structured-outputs
+(all fields required; nullable union for optional values; additionalProperties false;
+nested anyOf and definitions supported). This supports the proposed closed nullable object
+shape, not proof that this exact schema was accepted by the local CLI/model. The local
+provider is Codex CLI 0.153.4; actual canary after CI remains the compatibility check.
+
+Claude bounded implementation: for an ASSIGNED partition, generate closed paths/subsystems
+OBJECTS keyed by the immutable assigned identity, one required property per identity. Each
+value is null (not analyzed; scope remains) or the corresponding record BODY without its
+path/name field. Derive these bodies from the existing definitions; preserve the domain
+vocabulary and conditional evidence rules. Decode only the exact assigned keys, inject
+path/name from the trusted key, omit nulls, and then use the unchanged parse_record and
+ResearchAudits.checkpoint flow. Validate shape before decoding so missing/foreign keys,
+arrays, extra inner identity fields or malformed bodies are refused, never normalized.
+An empty assignment is {}. Unscoped partition_schema(None) may retain the generic legacy
+schema for inspection compatibility; actual execution always uses the assigned shape.
+Do not migrate historical artifacts, PG schema, domain records or six-W messages.
+Update the model objective to describe null/one result per identity. No raw source text
+or credentials in diagnostics; existing artifacts keep the invalid result for analysis.
+
+Acceptance matrix: one partial record + nulls preserves remaining work; path-only and
+subsystem-only and empty assignments are valid; supplied partial stays unreviewed; all six
+vocabulary values retain prior validation; missing/foreign/inner identity and legacy
+repeated-row arrays fail before checkpoint; source/receipt/generation/domain duplicate
+checks remain authoritative. Prove the old assigned schema accepts two rows for the same
+identity while the new assigned wire shape cannot express two decoded records for a key.
+Test the full mocked execution boundary into the real MemoryStore checkpoint, precisely
+labelled injected. Existing service pause/failure/restart ownership is unchanged.
+Platform/concurrency/cleanup: no new IO/thread/process/DB transition in this correction;
+retain accepted service evidence, CI still tests Windows/Linux. Actual failure recovery is
+owner-only after acceptance; no task, release, counter, active service or old result changes
+inside the worker. No automatic model retry or full-source completion claim.
+
+Allowed implementation: adapters/audit_execution.py, focused tests/test_audit_output_*.py,
+tests/test_research_audits.py, tests/test_output_schema.py, tests/test_output_validation.py,
+docs/contracts.md and this operation AUDIT-SERVICE.md. Worker runs only
+python -m pytest tests/test_audit_output_vocabulary.py tests/test_research_audits.py tests/test_output_schema.py tests/test_output_validation.py tests/test_audit_output_identity.py -q
+and python -m ruff check . . Add test_audit_output_identity.py. No full suite in the worker
+snapshot, installs, global git changes or model calls. Owner handles historical CI and
+one new two-task run after explicit durable recovery; stop on any failure, do not loop.
