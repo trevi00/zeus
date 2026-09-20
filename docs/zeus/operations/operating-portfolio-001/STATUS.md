@@ -101,3 +101,42 @@ exercise the lane observer and projection, not just a mocked UI badge. Live acce
 an actual assigned worker and its transition to verification/result. No live transition observed means
 that criterion stays unverified. Schema/UI implementation is deferred until the predecessor candidate
 is available; no new job is claimed queued or running for this extension yet.
+
+## Owner delivery and bounded report canary (2026-09-20)
+
+PR164 is deployed at 5bab9e82f9fadfaa94728c51a46d0e95a094c16d; PR165 followed at
+5cb0dc4ada51bb66412eb1f5b642fb793b286ce6. The original status implementation and its independent
+review preceded PR164 deployment. Current/historical display and six explicit follow-up links are
+operating; project-wide absorption and agent cards are not completed by those deliveries.
+
+The post-deployment report canary portfolio-report-001 failed after 148739 ms with provider terminal
+error_max_structured_output_retries. Its successful Write tool receipt preserved an 89-line draft;
+this RESULT.md is unverified and is NOT a candidate accepted by the failed run. Source artifact
+SHA256 b0860916ed39ec0cfc4ebc1c0cf7e8e9636853ac962f040a62a6920db9211a07;
+preserved draft SHA256 0014184a96a161e7ef178317184572dab5bb2fa9ee09a3007ad6d06177b5e8e1.
+
+Observed discriminating check: each of five StructuredOutput calls supplied only summary (2443–2943
+characters); all five validator replies named missing tests. Four summaries embedded XML parameter
+markup. The report's opening also falsely says independent review happened after deployment.
+Two optional git inspection commands were denied; these are separate from the schema rejection.
+No authentication failure, time-limit exhaustion or completed independent review was observed.
+
+SSOT worker-profile-v1.md already requires both summary and tests. Official Claude Code headless
+documentation, read 2026-09-20, describes --json-schema and the structured_output object:
+https://code.claude.com/docs/en/headless#get-structured-output . Observed CLI version 2.1.274.
+This supports keeping the existing JSON contract; it does not prove the cause of older structured
+output failures or that shorter prose cures the provider. That remains a hypothesis for one check.
+
+One correction delivery: Claude edits only RESULT.md to correct the timing, explicitly attributes
+test/deployment facts to supplied owner evidence, and notes that the initial report canary failed
+before review. Keep the existing diagram and evidence hashes, at most 90 lines. Run ruff once after
+the edit. Supply summary <=600 characters and tests as a separate JSON array containing only the
+exact executed command. No XML, report body or repeated validation attempts in the final object.
+No git commands are needed in this task; owner verifies the diff. Do not change runtime/schema,
+global prompts, permissions, budgets or retry counts. No new self-improvement team or redesign.
+
+Acceptance: only allowed report changed; factual timing correct; owner facts distinguished from own
+checks; valid terminal JSON; actual deterministic inspection and independent review accepted.
+On another provider failure, retain it and stop this canary without recursive patches or retries.
+Normal lease path only: success does not prove recovery from an expired lease or live research
+dispatch. Original failed operation remains failed, linked only after an accepted successor exists.
