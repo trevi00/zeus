@@ -145,3 +145,20 @@ Hermes ledger/rollback, OMH offline trace storage and the existing Zeus skill-hi
 Local history/import/audit contracts passed 44 checks with 1 skipped. Upstream code was not run.
 Complete package change evidence is an adaptation candidate; offline replay cannot satisfy real
 browser/device acceptance. Remaining whole-source dispositions and consolidated handoff stay open.
+
+### Working-method correction: capability closure rather than report accumulation
+
+Observation: several source-reading tranches produced useful evidence but no closed whole-capability
+dispositions. The assumption that another local report alone advances the whole delivery is inadequate.
+Alternative approaches: continue ad hoc source reads, or maintain a complete capability worklist and
+close input-to-output paths with their dependencies. Chosen check: reconcile every pinned Ouroboros
+path to exactly one primary family, with no loss/duplication and preserved object IDs. CAPABILITIES.md
+now records 14 families, 1,817 unique assigned paths and zero unassigned paths. Assignment is not
+semantic review. The first generator used the wrong blob key; inspection caught null IDs, corrected
+it to the inventory's object field and added a strict object-ID assertion before final generation.
+
+The same goal and matrix remain. Future work closes capability decisions and associated path
+dispositions; another report is not itself a completion criterion. Existing partial evidence remains
+valid. Packaging comparison in SKILL-PACKAGING.md establishes a bounded non-port/reuse decision for
+source discovery, while keeping the larger installer/routing family open. No scope reduction or
+new implementation authority follows from this working-method correction.
