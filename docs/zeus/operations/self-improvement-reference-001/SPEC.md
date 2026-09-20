@@ -315,3 +315,34 @@ Acceptance matrix for this correction:
 Claude implements this section only and supplies focused tests. Codex independently
 reviews the candidate; owner then runs required full checks and a new bounded live canary
 against the accepted candidate. No live retry is authorized by a model's self-report alone.
+
+### Owner verification: explicit schema baseline amendment
+
+Candidate df57361152ec249533631d17dbcba2aea189b15c passed the independent Fleet
+review and two actual sequential analysis tasks, persisting generations 1 and 2 with
+all 32 partially inspected paths still remaining. Preserve this evidence; no repeated
+model canary is needed for a test-only amendment.
+
+Owner full suite: 12 failed, 2618 passed, 476 skipped. Eleven file-access failures
+reproduce on the unchanged baseline with the long Windows temporary path; all eleven
+pass on this candidate with D:/workspaces/zeus/scratch/voc2. They are not disposition
+regressions. Preserve both observations; do not change machine long-path policy.
+The remaining failure is test_baseline_reconstruction_and_semantic_preservation:
+it requires the resource schema to equal a historical version after stripping version
+types, but the deliberately added PathDisposition.disposition enum is now different.
+
+Claude amendment scope: tests/test_output_schema.py ONLY. Retain the exact historical
+comparison and all unrelated safeguards. Assert the one expected enum equals the domain
+vocabulary, remove ONLY that exact enum from a deep-copy for historical reconstruction,
+and preserve preflight(current). No recursive enum stripping, snapshot replacement or
+runtime change. The new vocabulary tests already cover unknown and partial rejection.
+Run python -m pytest tests/test_output_schema.py tests/test_audit_output_vocabulary.py
+tests/test_research_audits.py and python -m ruff check . . Codex owner repeats the full
+suite using a short D temporary path after the accepted amendment. No live provider call,
+release activation, merge to main or wider investigation belongs to this amendment.
+
+Evidence: vocabulary-verification-001 retains the full failing JUnit/log. Its operator
+wrapper timed out after 900 seconds but pytest continued to completion at 951.80 seconds;
+the inner exit code was not observed. vocabulary-verification-002 preserves the paired
+baseline/candidate checks with actual exit codes. Subsequent owner commands use the
+existing owned-process helper and policy allowance rather than that wrapper.
