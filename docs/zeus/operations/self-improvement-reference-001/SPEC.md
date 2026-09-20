@@ -1150,3 +1150,19 @@ Allowed: application/research.py, adapters/audit_execution.py (comments only),
 tests/test_audit_checkpoint_outcomes.py, operation AUDIT-SERVICE.md (verification note only).
 Run only python -m pytest tests/test_audit_checkpoint_outcomes.py -q and python -m ruff check . .
 Owner verifies changed cases and fresh full CI before release; no model calls or runtime mutation.
+
+### Guard-order correction owner verification (2026-09-21 KST)
+
+Claude candidate f60148ab8ab411c96563a1a18c81dbecc70c02d0 changes only the assigned four
+files. Codex reviewed the guard movement, comment-only adapter diff, four combined-fault cases
+and valid-owner duplicate control. Windows focused suite: 40 passed, 3 unchanged PG cases skipped,
+69.99 seconds; ruff passed; checkout clean. Prior actual isolated PG 3/3 and whole affected-suite
+198/198 evidence remains bound to 5f3cf62. No remaining owner blocker in the changed interactions.
+The final full CI must still execute integration. Original lead rejection is preserved.
+Both intermediate CI runs 35531658896 and 35531711949 were deliberately cancelled pending this
+correction; neither is reported as an infrastructure failure or a green run.
+
+Corrected image sha256:7519fbdb06c4f41ead952c75e686ec2ec48d8006c7c45f04279f1dc8ec6596a3
+passed actual CLI startup and file-task canary. Receipt: claims-release-canary-001/receipt.json
+under the existing D artifact directory. This proves CLI execution in that image, not source-audit
+completion. Package byte comparison, corrected independent lead and final CI remain before rollout.
