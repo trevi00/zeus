@@ -217,3 +217,38 @@ Complete the dispatch batch when its fixed matrix passes and its named live evid
 Do not hold it for all-language graphs, visual redesign, OWL inference or complete local absorption.
 Those become follow-up work only when the next task needs them. Reuse this frame if a real obstacle
 changes the design; do not turn each source feature into a new blocking ticket.
+
+## Recovery: evidence replay outlived its lease (2026-09-20)
+
+Actual run `research-dispatch-001` produced candidate `3277873` (preserved in a Git bundle under
+the task artifact directory, imported as `4488ea4` on this branch). Container exit was 0; changes
+were imported. This is not acceptance. Host inspection `b346fcd924cfc6322375cb76f23eed4421eee3f894db68282cf200bb99998d32`
+finished at 05:21:35 UTC after task lease 05:20:28 UTC. Final operation failed `execution_stale`.
+Inspection had 6 checked claims, one exit mismatch (output-schema baseline test), and one full-suite
+replay timeout at 300 seconds. The worker had run a full suite contrary to this frame. Failed
+evidence is preserved; do not rewrite it or mark the old task successful.
+
+The affected assumption is that provider heartbeat covers the entire owned execution. It does not:
+executor renews immediately after the provider, then synchronously inspects evidence with no renewal
+while subprocess replays run. Corrective batch: maintain and check lease ownership THROUGH evidence
+inspection, rather than enlarge its 600-second lease or remove checks. Reuse the existing workflow
+heartbeat and remaining-time checks. A per-call optional progress/cancellation callback may flow through
+EvidenceInspections -> EvidenceInspector -> host/Docker capture; use bounded process polling to invoke
+it during waits, and before/after commands. No mutable global callback or detached renewal thread.
+On lost ownership/deadline, stop new replays, reclaim the owned process/container through existing
+cleanup, and never publish success from the stale owner. Preserve adapter defaults for callers that
+do not provide a callback and keep inspection identity/digests and output policy unchanged.
+
+Additional acceptance: delayed command with continued renewals; ownership loss during command;
+callback exception; timeout and cleanup; no callback compatibility; Docker forwarding; no remaining
+renewal worker after return. Use deterministic short/fake clocks and actual short child-process tests
+where appropriate. Do not wait ten minutes in tests. Existing positive inspection and redaction tests
+must still pass. Tests/injected ownership loss are not live recovery evidence.
+
+Claude implements this correction on the preserved candidate. Run only focused evidence/lease and
+research-investigation tests plus ruff; full-suite and baseline-history investigation belong to Codex.
+Report failing diagnostics in summary, not as successful command claims. No rollback experiments,
+new model calls, global policy changes or modified historical receipts. Owner then independently
+reviews the complete bridge and correction, validates the original baseline-test mismatch, and runs
+the full acceptance checks before merge/deployment. The original running task is a retained stale
+record to reconcile through supported recovery, not a reason to overwrite PG state manually.
