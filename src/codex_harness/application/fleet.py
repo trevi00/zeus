@@ -14,6 +14,7 @@ in a lane environment, behind a launcher port.
 """
 from __future__ import annotations
 
+import logging
 import time
 from uuid import uuid4
 
@@ -49,6 +50,7 @@ BUCKET_REGISTRY, BUCKET_CONTROL, BUCKET_JOBS = "fleet_registry", "fleet_control"
 BUCKET_GRANTS = "fleet_budget_grants"
 BUCKET_DELIVERY = "fleet_delivery"
 CONTROL_KEY = "admission"
+LOGGER = logging.getLogger("zeus.fleet.runner")
 
 
 class LaunchRefused(FleetRefused):
@@ -306,8 +308,14 @@ class FleetRunner:
     Children are bounded by `max_parallel`, waited for outside transactions, and every claimed
     job this process launched is finalized by it even if another runner races."""
 
-    def __init__(self, fleet: Fleet, launcher, sleep=time.sleep, interval: float = 5.0):
+    def __init__(self, fleet: Fleet, launcher, sleep=time.sleep, interval: float = 5.0, reconcile=None):
         self.fleet, self.launcher, self.sleep, self.interval = fleet, launcher, sleep, interval
+        # Optional bounded read/group pass run once per tick BEFORE admission, in its own
+        # transaction (the adapter supplies it, so this layer keeps no portfolio dependency).
+        self.reconcile = reconcile
+        # Last logged reconciliation state, so repeated identical failures stay silent and only a
+        # real transition is written.
+        self.reconciliation_state = None
         self.children: dict[str, tuple[dict, object]] = {}
         self.stopping = False
 
@@ -317,8 +325,10 @@ class FleetRunner:
 
     def run(self, once: bool) -> dict:
         self.fleet.registered()  # refuse early when unregistered; ceilings are re-read per scan
-        summary = {"admitted": [], "finalized": [], "finalize_failures": [], "blocked": {}, "stopped": False}
+        summary = {"admitted": [], "finalized": [], "finalize_failures": [], "blocked": {}, "stopped": False,
+                   "reconciliation": {"state": "disabled", "error_type": None}}
         while True:
+            self._reconcile(summary)
             progressed = self._admit(summary)
             progressed = self._reap(summary) or progressed
             if self.children or progressed:
@@ -329,6 +339,30 @@ class FleetRunner:
         summary["stopped"] = self.stopping
         summary["reconciliation_required"] = self.fleet.reconciliation_required()
         return summary
+
+    def _reconcile(self, summary: dict) -> None:
+        """One bounded reconciliation per tick, before admission and outside every other
+        transaction. It never admits, launches, finalizes or retries anything, and its failure is
+        recorded as a fixed `unavailable` state with the exception TYPE only: unrelated Fleet
+        admission and finalization keep running.
+
+        A long-running service only returns its summary when it stops, so each state TRANSITION is
+        also logged once: a fixed message on entering `unavailable` and one on recovery. Repeated
+        identical failures stay silent, and no traceback, exception text or message is logged."""
+        if self.reconcile is None:
+            return
+        try:
+            self.reconcile()
+        except Exception as exc:
+            summary["reconciliation"] = {"state": "unavailable", "error_type": type(exc).__name__}
+            if self.reconciliation_state != "unavailable":
+                LOGGER.warning("portfolio reconciliation unavailable; fleet admission continues")
+            self.reconciliation_state = "unavailable"
+        else:
+            summary["reconciliation"] = {"state": "ok", "error_type": None}
+            if self.reconciliation_state == "unavailable":
+                LOGGER.info("portfolio reconciliation recovered")
+            self.reconciliation_state = "ok"
 
     def _admit(self, summary: dict) -> bool:
         progressed = False

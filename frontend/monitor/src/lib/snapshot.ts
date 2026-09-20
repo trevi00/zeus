@@ -24,7 +24,10 @@ export type Snapshot = {
   // `fleet` is additive (INV-FLEET-001, fleet-001 SPEC). It is not in SOURCE_NAMES: older
   // snapshots without it stay valid, the source strip, retained map, header warnings and the pinned
   // report keep their fixed four-source contract, and only the 팀 작업 view reads it.
-  sources: Partial<Record<SourceName, Envelope>> & { fleet?: Envelope }
+  // `portfolio` is additive in the same way (operating-portfolio-001 SPEC, wire contract
+  // `sources.portfolio`): independent of the legacy four sources and of `fleet`, read only by the
+  // 프로젝트 view. Its absence is an older collector, never an empty portfolio.
+  sources: Partial<Record<SourceName, Envelope>> & { fleet?: Envelope; portfolio?: Envelope }
 }
 
 // Wire shape of `sources.fleet.data` (fleet-001 SPEC "Monitoring wire contract"). Projection only:
@@ -112,6 +115,83 @@ export type FleetRegistered = {
   truncated: boolean
 }
 export type FleetData = FleetUnregistered | FleetRegistered
+
+/**
+ * Wire shape of `sources.portfolio.data` (operating-portfolio-001 SPEC, "Wire contract"). Bounded
+ * read-only projection of owner-written goal definitions, owner-recorded criterion acceptances,
+ * the fleet jobs explicitly bound to a criterion, and the durable repeated-failure investigation
+ * candidates. What it is NOT, and what the view must never imply:
+ * - a criterion `status` comes only from an explicit owner acceptance record; it is never derived
+ *   from job status, and `accepted` is not "the whole source was absorbed";
+ * - `counts` are computed over ALL rows while `jobs` (per project) and `investigations` are the
+ *   latest 50 only, so the rendered rows are a labelled sample, never the denominator;
+ * - an investigation row groups jobs by (status, reason_code) as a coarse triage family. It is a
+ *   research candidate, not a confirmed root cause, incident or executed fix;
+ * - `investigations[].job_ids` is itself capped at 50 while `count` covers all job IDs of the
+ *   family, so the ID list must not be read as exhaustive;
+ * - unknown or unreadable values stay unknown: they never become 0, empty or success.
+ */
+export const PORTFOLIO_SCHEMA = "urn:zeus:portfolio-status:1"
+export type PortfolioCriterion = {
+  id: string
+  text: string
+  /**
+   * `pending` | `accepted` on the wire, kept as a raw string so a value this screen does not know
+   * can be shown as unknown (lib/portfolio.ts `criterionInfo`) instead of silently counting as
+   * either side. Only `accepted` means the owner recorded an acceptance.
+   */
+  status: string
+  /** Opaque owner evidence references of the acceptance record; empty for a pending criterion. */
+  evidence_refs: string[]
+}
+export type PortfolioJob = {
+  id: string
+  /** Criterion this job was explicitly bound to. `null` only if the collector omitted it (unknown). */
+  criterion_id: string | null
+  lane: string
+  status: string
+  reason_code: string | null
+  updated_at: string
+}
+export type PortfolioProject = {
+  id: string
+  title: string
+  outcome: string
+  source_ref: string
+  criteria: PortfolioCriterion[]
+  /** Latest 50 bound jobs, deterministic order from the collector. `counts.jobs_total` is all rows. */
+  jobs: PortfolioJob[]
+  counts: { criteria_total: number; criteria_accepted: number; jobs_total: number }
+  jobs_truncated: boolean
+}
+export type PortfolioInvestigation = {
+  id: string
+  /** Terminal job status of the family (`failed` / `rejected`), as recorded. */
+  family_status: string
+  reason_code: string
+  /**
+   * `research_required` | `researched` | `deferred` on the wire, kept raw for the same reason as a
+   * criterion status: an unknown value is shown as unknown and never read as resolved.
+   */
+  state: string
+  /** Distinct job IDs in the family over ALL rows; `job_ids` below is capped at 50. */
+  count: number
+  job_ids: string[]
+  evidence_refs: string[]
+  updated_at: string
+}
+export type PortfolioData = {
+  schema: string
+  /** Canonical digest of the owner's definition document. Not a completion assertion. */
+  definition_sha256: string
+  projects: PortfolioProject[]
+  investigations: PortfolioInvestigation[]
+  investigations_truncated: boolean
+  /** Fleet jobs bound to no criterion, over ALL rows — not over the samples above. */
+  unbound_jobs: number
+  /** Terminal failures left out of triage for lack of a reason code, over ALL rows. */
+  unclassified_failures: number
+}
 
 export type EventRow = {
   event_id: string | null
@@ -253,6 +333,12 @@ export function freshness(snapshot: Snapshot | null, name: SourceName, now: numb
 export function fleetFreshness(snapshot: Snapshot | null, now: number): Freshness {
   if (!snapshot) return { state: "unavailable", observed_at: null, age: null, reason: "응답 없음" }
   return envelopeFreshness(snapshot.sources?.fleet, now)
+}
+
+/** Same accepted freshness rules applied to the optional `sources.portfolio` envelope. */
+export function portfolioFreshness(snapshot: Snapshot | null, now: number): Freshness {
+  if (!snapshot) return { state: "unavailable", observed_at: null, age: null, reason: "응답 없음" }
+  return envelopeFreshness(snapshot.sources?.portfolio, now)
 }
 
 function envelopeFreshness(source: Envelope | undefined, now: number): Freshness {

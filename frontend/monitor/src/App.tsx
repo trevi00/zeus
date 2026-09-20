@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { ExternalLink, FileText, LayoutDashboard, MessageSquare, Palette, RefreshCw, ScrollText, Users, type LucideIcon } from "lucide-react"
+import { ExternalLink, FileText, LayoutDashboard, MessageSquare, Palette, RefreshCw, ScrollText, Target, Users, type LucideIcon } from "lucide-react"
 
 import { SourceStrip } from "@/components/source-strip"
 import { StatusBadge } from "@/components/status-badge"
@@ -13,11 +13,18 @@ import { DesignSystemView } from "@/views/design-system"
 import { FleetView } from "@/views/fleet"
 import { LogsView } from "@/views/logs"
 import { OverviewView } from "@/views/overview"
+import { ProjectsView } from "@/views/projects"
 import { ReportView } from "@/views/report"
 
-type ViewName = "overview" | "logs" | "fleet" | "desk" | "report" | "design"
+type ViewName = "overview" | "projects" | "logs" | "fleet" | "desk" | "report" | "design"
 const VIEWS: Array<{ id: ViewName; label: string; icon: LucideIcon }> = [
   { id: "overview", label: "개요", icon: LayoutDashboard },
+  // 프로젝트 reads the optional `sources.portfolio` envelope only (operating-portfolio-001 SPEC).
+  // Like fleet it is deliberately absent from SOURCE_NAMES: the source strip, the header warnings
+  // below and the pinned report keep the fixed four-source contract, and the view carries its own
+  // freshness and notices. It shows owner-defined goals, the jobs explicitly bound to them and the
+  // repeated-failure investigation candidates; it records nothing.
+  { id: "projects", label: "프로젝트", icon: Target },
   { id: "logs", label: "로그", icon: ScrollText },
   // 대화 창구 talks to the separate desk routes (`/api/desk*`, local-operations-desk-001), not to
   // the status snapshot: it has its own transport, freshness and errors, and the read-only
@@ -96,6 +103,7 @@ export function App() {
             <Alert variant="destructive" className="no-print"><AlertDescription className="break-words">{warnings.join(" · ")}</AlertDescription></Alert>
           ) : null}
           {view === "overview" ? <OverviewView snapshot={snapshot} retained={retained} now={now} /> : null}
+          {view === "projects" ? <ProjectsView snapshot={snapshot} now={now} /> : null}
           {view === "logs" ? <LogsView snapshot={snapshot} retained={retained} now={now} /> : null}
           {view === "fleet" ? <FleetView snapshot={snapshot} now={now} /> : null}
           {view === "desk" ? <DeskView /> : null}

@@ -74,10 +74,13 @@ def enqueue(service, args) -> dict:
 def run(service, args) -> dict:
     from codex_harness.adapters.configuration import settings
     from codex_harness.adapters.fleet_runtime import LaneLauncher
+    from codex_harness.adapters.portfolio import portfolio_reconciler
 
     fleet = Fleet(service.store)
     config = fleet.registered()["config"]
-    runner = FleetRunner(fleet, LaneLauncher(config, settings()))
+    # The bounded portfolio pass is wired here, in the adapter: the runner keeps no portfolio
+    # dependency and a reconciliation outage never blocks admission (operating-portfolio-001).
+    runner = FleetRunner(fleet, LaneLauncher(config, settings()), reconcile=portfolio_reconciler(service.store))
     for name in ("SIGINT", "SIGTERM", "SIGBREAK"):
         if hasattr(signal, name):
             # Graceful stop: admission closes, owned children are drained, nothing is killed.

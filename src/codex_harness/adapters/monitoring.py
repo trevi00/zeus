@@ -337,6 +337,17 @@ def research_program_facts(store):
     return ResearchProgram(store).monitor()
 
 
+def portfolio_facts(store):
+    """Operating portfolio projection (`urn:zeus:portfolio-status:1`) from store reads only: the
+    owner's goals, their criterion acceptance records, the bound jobs' identities/states/codes and
+    the failure investigation queue. Never manifests, objectives, paths, credentials or raw errors.
+    A candidate is a coarse triage family, not a confirmed cause, and an acceptance record is an
+    owner statement, not proof that the whole source was absorbed. A store failure propagates so
+    the envelope becomes `unavailable` rather than an empty portfolio."""
+    from codex_harness.adapters.portfolio import portfolio
+    return portfolio(store).status()
+
+
 def scope_label(repository, label=None):
     """ZEUS_MONITOR_SCOPE names what is observed; the default is the repository name. It is a
     label for the page toolbar, not a status or success claim."""
@@ -363,7 +374,9 @@ def collect(service, artifacts, repository, redis_url, containers=None, scope=No
             # Additive fleet envelope (INV-FLEET-001): same read-only store, fails independently.
             'fleet': lambda: fleet_facts(service.store),
             # Additive research-program envelope (INV-RESEARCH-PROGRAM-001): same read-only store, fails independently.
-            'research_programs': lambda: research_program_facts(service.store)}
+            'research_programs': lambda: research_program_facts(service.store),
+            # Additive portfolio envelope (operating-portfolio-001): same read-only store, fails independently.
+            'portfolio': lambda: portfolio_facts(service.store)}
     if runtime is not None:
         jobs['observations'] = lambda: observation_facts(service.store, runtime)
     with ThreadPoolExecutor(max_workers=4) as pool:
