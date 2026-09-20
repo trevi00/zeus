@@ -992,3 +992,112 @@ remains within the established matrix. The first rejected Fleet verdict and canc
 remain historical facts. The corrected candidate's independent Fleet decision and full CI
 must complete before activation or any actual recovery. An actual inspection failure was
 not induced; neither the injected probe nor its passing tests is represented as one.
+
+### Whole-checkpoint reframe: candidate claims versus execution integrity (2026-09-21 KST)
+
+PR #170 merged as fab58b1d92afc0eb7a8f872e033e4bac7bd4f1ce after corrected CI 35528688078
+passed at attempt 1 and independent Fleet lead 744fc66f accepted. Image e099f674... matched
+225 files and passed the actual CLI file canary. Release e01beb40a913ab2245770569b997b1f1a09fcf13dacab2c886d0d8a76339afae
+was activated through Releases. The explicitly authorized recovery of 6975 then STOPPED on
+attempt 2: Unknown generator/original path. No normal two-task canary or continuous registration
+was attempted. 75 observations were collected, 0 sink/conflict/corrupt/refused; partition stayed
+generation 0/all 32 paths. Both failed attempts remain unchanged in the task history.
+
+Actual response sha256:777c874c1d99b3c44f814cfe526cdda87f4361dbfdb632384cad5d8dacbf117f
+contains three human-readable links. Encoding each as the inventory's Base64 identity finds
+an existing path. Thus the files ARE present: the observed defect is a representation/contract
+mismatch, not missing source or database failure. Evidence: audit-recovery-002/receipt.json and
+actual-relationship-rejection.json on D. No new provider call was made to inspect this evidence.
+
+The owner's previous assumption was too narrow: a model draft can pass type validation but
+fail relationship/evidence-claim validation. Treating EVERY checkpoint refusal as infrastructure
+failure repeats the same family after each schema correction. Stop that approach. Revise the
+ENTIRE existing checkpoint acceptance boundary once; no per-message catch or one-field retry.
+Accepted identity mapping, inspection_blocked guard, retained-result format, status/logging,
+max_tasks, scheduler deduplication, role split and all earlier evidence remain in force.
+
+SSOT reviewed: domain/research.py (typed contracts), application/research.py checkpoint and
+coverage, adapters/artifacts.py integrity reader, adapters/store.py transaction owners,
+Workflow.complete and AuditExecution. Existing Refused classes concern other aggregates, so
+none owns research draft acceptance. One research-specific ContractError subtype is appropriate.
+Primary source opened 2026-09-21: https://www.psycopg.org/psycopg3/docs/basic/transactions.html
+(page labelled 3.3.7.dev1; installed host psycopg 3.3.5). It states a connection context rolls
+back on an escaping exception. Our PostgresStore uses that context; MemoryStore only assigns its
+draft after successful yield. Documentation supports the placement, not proof of our rollback;
+the real isolated-PG regression below must establish that proof.
+
+Complete classification (no message-string matching):
+
+| Boundary | Disposition | Owner |
+|---|---|---|
+| Model output shape/pure typed records | Retained analysis_rejected as already implemented | AuditExecution pure decoder |
+| Candidate record relationships: duplicate or cross-partition records; unknown links/subsystem paths; submodule or binary classification not supported; missing/wrong-task/wrong-generation/unsuccessful receipt claims; unproven test command; candidate remaining-scope reconciliation | Explicit AuditDraftRejected subtype; entire checkpoint transaction rolls back, then retain draft | ResearchAudits.checkpoint |
+| Model-named artifact body absent (FileNotFoundError) AND reference absent from authoritative input anchors below | Unverifiable candidate evidence -> AuditDraftRejected, never acceptance | ResearchAudits candidate evidence validation |
+| Returned inspection_blocked, runner/provider exception, invalid/stale task or partition ownership, immutable partition-scope mutation, source/receipt corruption, missing authoritative artifact, permission/other IO error, DB read/write/commit or continuation-authorization failure | Ordinary execution failure; never convert | Existing trusted owners |
+
+One coherent Claude implementation:
+- Add AuditDraftRejected as a ContractError subtype in the research domain and a narrow
+  claim-assertion helper if useful. Convert the candidate-claim checks in the table, not generic
+  require() everywhere. Preserve their existing semantics/messages for callers; rejection is not
+  relaxation. Keep trusted task/partition/lease/source checks ordinary errors. No broad catch
+  around database or artifacts and no substring-based taxonomy.
+- Validate ownership/current generation/immutable scope before relationship classification in
+  the checkpoint transaction. Separate candidate claims from trusted anchors clearly in code.
+  Authoritative artifact anchors are source.manifest_ref, inventory artifact_refs, the existing
+  partition/checkpoint retained evidence, and stored runner output_refs for this audit. Read these
+  from trusted records. Existing available auxiliary evidence remains valid as before; this is
+  not a new provenance grant. Only FileNotFoundError for an unanchored candidate evidence_ref
+  becomes draft rejection. Missing anchored body, any modified body or invalid/missing metadata,
+  permission error and other IO failure stay hard failures. Missing executor-owned draft output
+  still fails when retained outside the catch. No root existence inference or fabricated receipt.
+- Keep transaction all-or-nothing. If reconciliation rejects after staged writes, let the typed
+  exception LEAVE the transaction first. Catch ONLY AuditDraftRejected around checkpoint() in
+  AuditExecution, outside its transaction, then use existing rejected_analysis() to inspect the
+  executor-owned output and return the same versioned safe binding. Do not swallow rollback or
+  commit errors, and do not return a rejection from inside the application transaction.
+- Clarify the whole path-reference contract in the model instructions: keys, PathDisposition.links
+  and SubsystemAnalysis.paths use exact inventory Base64 identities; display names belong only
+  in narrative. Do not silently encode/normalize/deduplicate any submitted claim. Unknown or
+  unsupported work stays unreviewed/null, and validation is authoritative even with this guidance.
+- Do not add another scheduler, retry policy, PG schema, repair API, provider loop, knowledge
+  promotion or hidden reclassification of historical failures. Status/log outcome code remains
+  analysis_rejected with safe type/digest/ref; malformed data never becomes verified knowledge.
+
+Fixed acceptance matrix for this whole boundary:
+- Actual raw-link shape, unknown subsystem path, missing/wrong-task/stale/failed receipt claims,
+  invented missing artifact, binary/submodule claim, unsupported test claim, duplicate/foreign
+  record and inconsistent remaining work are refused as candidates. Verify zero committed
+  path/subsystem/checkpoint/history/outbox/knowledge changes, unchanged scope/generation, and
+  retained output. Include a late reconciliation failure AFTER staged writes.
+- Use existing domain/application evidence checks without weakening them. Valid semantic and
+  justified partial work still checkpoints. Rejected A then valid B proceeds once; held A is not
+  retried on tick/restart and counts against finite max_tasks. Existing 26 outcome tests remain.
+- Missing known source/retained/runner artifact; modified unknown artifact; missing metadata;
+  permission/DB/commit error; stale lease/generation; changed trusted scope; blocked planning or
+  semantic execution; unauthorized continuation all remain errors and stop service. An ordinary
+  ContractError with the SAME text as a candidate refusal must not be converted: types/owners,
+  not wording, decide. Use injected errors labelled as such.
+- Add real isolated_pgstore tests (existing fixture, HARNESS_INTEGRATION=1) proving late typed
+  rejection rolls back staged coverage/history, then owned retained task completion succeeds in
+  its separate transaction. No production rows used. A second case proves an ordinary store
+  failure is not retained as draft success. Worker may skip these when integration is unavailable;
+  owner/CI must run them without skips. MemoryStore cases must also prove rollback.
+- No new process/socket/cleanup lifecycle: preserve accepted service lock/cancel/restart checks.
+  Full Windows/Linux CI remains required. No new exploratory review beyond these changed owners.
+
+Allowed files: domain/research.py, application/research.py, adapters/audit_execution.py;
+tests/test_audit_checkpoint_outcomes.py, tests/test_audit_analysis_outcomes.py,
+tests/test_research_audits.py, tests/test_audit_output_identity.py, tests/test_audit_output_vocabulary.py;
+docs/contracts.md and operation AUDIT-SERVICE.md. No store/workflow/scheduling or shared artifact
+implementation changes. Worker commands only:
+python -m pytest tests/test_audit_checkpoint_outcomes.py tests/test_audit_analysis_outcomes.py tests/test_audit_service.py tests/test_audit_output_identity.py tests/test_audit_output_vocabulary.py tests/test_research_audits.py -q
+python -m ruff check .
+Owner handles actual isolated PG and complete historical CI. No model invocation, activation or
+retry inside worker. Return one candidate and complete matrix evidence; don't chase unrelated work.
+
+After this batch is independently accepted and CI/image checks pass, owner may recover the
+existing verified retry task ONCE under the revised contract, preserving attempts 1 and 2,
+then run the same two-execution finite acceptance before registration. This is a new explicitly
+bounded batch, not an automatic retry of recovery-002. A new execution/ownership/storage failure
+still stops. Whole-source completeness and adaptation gates stay unchanged; this is operation
+continuity with truthful retained candidates, not proof of all-source absorption.
