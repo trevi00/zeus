@@ -287,3 +287,27 @@ executed command. No package installation, npm command, report file or generated
 Owner rebuilds tracked bundle after independent review, verifies the explanation in the browser,
 and adds it to this same PR. This narrowly extends the canary from observation to useful UI copy;
 it does not claim a no-change run succeeded, nor change old failed jobs. Stop after this one job.
+
+### Whole-suite profile-reference correction
+The actual frontend canary was accepted through Claude -> Docker replay -> independent Codex:
+70.108s Claude successful terminal; required summary/tests, fixed frontend command exit0; candidate
+ebd79aa; inspection9763ae60e3fc5390d78bfb93e0ab02863627277b5d43c5f27a8eae84b5771052.
+Normal / real TS error / changed lock default replays:2/2 correct in each case, all sources unchanged,
+six verifier containers removed. Do not repeat the model canary for test-only expectation changes.
+
+Full Linux CI (including integration) now identifies one remaining stale test at
+ tests/test_two_strike.py::test_the_packaged_profile_ships_this_hook_with_its_failure_event.
+This is the same profile-text expectation family: after two discoveries the owner searched ALL
+profile document references under tests, not just test_worker_profile. Only test_two_strike retains
+old literal strings; profile metadata/hash and delivered-prompt comparisons remain compatible.
+The current document still requires stop retrying, treats symptoms as research candidates not
+causes, preserves research_required/non-promotion and reviewer-rejection guidance, and explicitly
+says a hook context is not research. Hook events/matcher are unchanged and mechanically asserted.
+
+Claude final correction ONLY tests/test_two_strike.py: align its two stale literal substrings to
+current equivalent text (stop retrying;... rather than stop retrying it;...; a hook context prompts
+research but is not research). Preserve all four semantic requirements, event set/matcher and
+receipt checks. Do not relax the implementation or edit profile/manifest/other tests. Run python -m
+pytest tests/test_two_strike.py tests/test_worker_profile.py tests/test_worker_profile_metadata.py
+and python -m ruff check .; finish concise required summary/tests immediately. No broader analysis,
+rollback or full suite in this call. Owner CI checks the final combined candidate before deploy.
