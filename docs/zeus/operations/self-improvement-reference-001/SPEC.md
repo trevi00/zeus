@@ -162,3 +162,11 @@ dispositions; another report is not itself a completion criterion. Existing part
 valid. Packaging comparison in SKILL-PACKAGING.md establishes a bounded non-port/reuse decision for
 source discovery, while keeping the larger installer/routing family open. No scope reduction or
 new implementation authority follows from this working-method correction.
+
+### Runtime boundary decisions
+
+CAPABILITIES.md now holds the capability decisions directly instead of creating another tranche
+report. The four runtime source files were read, selected callers/tests traced, and existing Zeus
+execution-time contracts ran (21 passed, 14 skipped). Retain Zeus allow-listed child environment
+and durable deadline ownership. Cooperative recursion counters and recorded watchdog cancellation
+are not process isolation/termination proofs. Provider-family and whole-source closure remain open.
