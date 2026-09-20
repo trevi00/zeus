@@ -451,6 +451,20 @@ interpreter is a new inspection and an older row is neither reused nor overwritt
 `tests` answer holds only commands that were executed, one per string; results, skips and unrun
 work are stated in `summary`, and past claims are parsed as written, never leniently reinterpreted.
 
+The execution lease covers the replays, not only the provider call. A heartbeat taken when the
+provider returns says nothing about the minutes an inspection then spends in child processes, so
+the owner's check travels with that work: the caller passes one per-call progress/cancellation
+callback into the inspection, it is invoked before and after every command and between the bounded
+polls of every wait, and it is never module state, a shared callback or a detached renewal thread.
+It re-reads ownership and the remaining deadline through the existing workflow and renews at the
+existing cadence and lease duration; nothing here makes a lease longer. A refusal - lost or
+superseded ownership, an exceeded deadline, or a failure of the callback itself - starts no further
+replay, reclaims the owned process tree (and, in the isolated backend, stops and confirms the exact
+container) through the existing cleanup, and leaves no ledger row: a stale owner publishes neither a
+verdict nor a success, and its refusal keeps its own type for the caller's containment path. A
+caller that supplies no callback, and an inspector that declares none, keep their previous behaviour
+exactly, and the callback takes no part in the inspection identity or its digests.
+
 An independent review runs in a clean checkout at the candidate commit. The transport's read-only
 instructions, the repository's AGENTS.md and the executor's post-run checks say the same thing: no
 file in that checkout is created, modified or deleted, tracked or untracked; test output is read

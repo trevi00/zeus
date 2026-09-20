@@ -249,6 +249,63 @@ def invocation_options(assignment, *, model, timeout, schema, read_only: bool) -
     return options
 
 
+# The cadence the provider path already uses inside `_run`: the remaining deadline is re-read every
+# five seconds and the lease renewed every twenty. `LeaseProgress` carries exactly these to the work
+# that happens after the provider returned, so one owner keeps one rhythm.
+LEASE_CHECK_SECONDS = 5.0
+LEASE_RENEW_SECONDS = 20.0
+
+
+class LeaseProgress:
+    """One owner's per-call ownership check for one bounded piece of post-provider work.
+
+    research-dispatch-001: the provider heartbeat covers the provider call only. The executor renewed
+    the lease immediately after it and then replayed the worker's evidence synchronously, with no
+    check at all - so an inspection whose replays ran for minutes could finish, and try to publish,
+    after the lease it was working under had already expired (host inspection at 05:21:35 UTC under a
+    lease until 05:20:28 UTC).
+
+    This is not a renewal thread and not a shared callback: the caller builds ONE of these for ONE
+    call and hands it down, so every check runs on the working thread between bounded waits and stops
+    existing when the call returns. It renews through the existing workflow heartbeat, at its
+    existing duration - nothing here makes a lease longer - and re-reads the remaining deadline
+    through `remaining_seconds`, which refuses a lost, superseded or expired execution. The refusal
+    is raised unchanged so the caller's own failure path keeps its type, and is kept on `refusal` so
+    that caller can tell an ended lease from a failure of the work itself.
+    """
+
+    # The cadence lives on the class so one call's rhythm is visible and a test can shorten it
+    # without a second scheduler; an instance may still be built with its own.
+    CHECK_SECONDS = LEASE_CHECK_SECONDS
+    RENEW_SECONDS = LEASE_RENEW_SECONDS
+
+    def __init__(self, workflow, task, *, heartbeat=None, clock=time.monotonic,
+                 check_seconds=None, renew_seconds=None):
+        self.workflow, self.task, self._heartbeat = workflow, task, heartbeat
+        self.clock = clock
+        self.check_seconds = self.CHECK_SECONDS if check_seconds is None else check_seconds
+        self.renew_seconds = self.RENEW_SECONDS if renew_seconds is None else renew_seconds
+        self.checked = self.renewed = None
+        self.checks = self.renewals = 0
+        self.refusal = None
+
+    def __call__(self, stage=None):
+        now = self.clock()
+        try:
+            if self.checked is None or now - self.checked >= self.check_seconds:
+                self.workflow.remaining_seconds(self.task, POLICY.task_lease_seconds)
+                self.checked, self.checks = now, self.checks + 1
+            if self.renewed is None or now - self.renewed >= self.renew_seconds:
+                if self._heartbeat is not None:
+                    self._heartbeat()
+                else:
+                    self.workflow.heartbeat(self.task)
+                self.renewed, self.renewals = now, self.renewals + 1
+        except BaseException as exc:
+            self.refusal = exc
+            raise
+
+
 class Executor:
     """Infrastructure composition for role-specific, independently executed Codex tasks."""
 
@@ -989,7 +1046,7 @@ class Executor:
                 result["origin"] = details
                 # INV-EVIDENCE-001: the worker's test claims are inspected in the workspace they came from;
                 # a claim is never authority, an uninspected claim is never success.
-                result["evidence_inspection"] = self._inspect_evidence(task, result, workspace["path"])
+                result["evidence_inspection"] = self._inspect_evidence(task, result, workspace["path"], heartbeat)
             elif action == "dge_role":
                 # INV-AUTONOMOUS-001: read-only role execution in a clean checkout at base, one entry.
                 from codex_harness.adapters.autonomous_roles import execute_role
@@ -1083,7 +1140,7 @@ class Executor:
         except ContractError as failure:
             return self._lost_execution(lease, exc, failure)
 
-    def _inspect_evidence(self, task, result, workspace_path):
+    def _inspect_evidence(self, task, result, workspace_path, heartbeat=None):
         claims = result.get("tests") if isinstance(result.get("tests"), list) else []
         # INV-OBSERVATION-001: the inspection boundary is observable from the ledger identities this
         # execution already has. The returned verdict and the review gate that reads it are unchanged.
@@ -1094,8 +1151,11 @@ class Executor:
                            correlation_id=correlation, causation_id=task["id"], evidence_refs=refs,
                            attributes={"claims": len(claims)})
         started = time.monotonic()
+        # The replays below are the executor's own work under the same lease the provider ran under,
+        # and they are the longest part of it: the ownership check travels with them (INV-EVIDENCE-001).
+        progress = LeaseProgress(self.workflow, task, heartbeat=heartbeat)
         try:
-            row = self.evidence.inspect(task, result["candidate"], claims, workspace_path)
+            row = self.evidence.inspect(task, result["candidate"], claims, workspace_path, progress=progress)
         except Exception as exc:
             # Never a success: the inspection did not complete or was not recorded. The exception's
             # own text is not part of the identity of that fact, and a wrapped foreign message may
@@ -1105,6 +1165,10 @@ class Executor:
             self._inspection_finished(execution, correlation, task, "inspection_error", refs,
                                       claims=len(claims), elapsed=time.monotonic() - started,
                                       error_type=error_type, message_sha256=message_sha256)
+            if progress.refusal is exc:
+                # The lease ended this, not the inspection: a stale owner publishes no verdict at all
+                # and the original error keeps its type for the executor's containment path.
+                raise
             return {"verdict": "inspection_error", "cause": error_type + ": message_sha256=" + message_sha256,
                     "claims": len(claims)}
         self._inspection_finished(execution, correlation, task, row["verdict"], refs, claims=len(claims),
