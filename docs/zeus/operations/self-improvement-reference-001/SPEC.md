@@ -213,3 +213,37 @@ Current status: these lessons and acceptance examples are recorded only. This am
 start a scheduler, invoke Claude, alter production state or claim persistent model training. The
 eventual consolidated handoff must map each proposed change to existing Fleet/ResearchProgram/
 Council/promotion code and verify a real successor cycle before reporting autonomous operation.
+
+### Continuation correction: observed ownership, 2026-09-20
+
+The read-only live snapshots `fleet-before-continuation.json` and
+`audit-before-continuation.json` in the task evidence directory show no active Fleet job,
+no research audit/partition registration, and no deployment/release activation record for
+the legacy audit lifecycle. Scheduled-task Running is not evidence of assigned analysis.
+The current analysis remains owned by this interactive Codex session.
+
+The existing ResearchAudits -> scheduling -> AuditExecution path can partition and continue
+Codex source analysis. It is not currently enabled: Releases.reconcile_audits requires a
+verified release, independent approvals and CLI/file-task evidence. The configured host
+artifact store also defaults to C; the source evidence lives on D. Registering references
+that the executor cannot read or manufacturing activation would not connect this task.
+Therefore the proposed live import is deferred until its storage and release prerequisites
+are satisfied. No production rows, activation or provider calls are changed in this batch.
+
+This replaces the assumption that finding a scheduler implies a usable successor. The next
+bounded delivery is the cancellation/resource-ownership adoption decision, with a real local
+Docker cleanup check if the existing pinned image is available, plus fixture tests explicitly
+labelled as such. Existing accepted analysis stays accepted. Unknown upstream process-tree
+behavior does not block a decision to reuse Zeus's existing process/container ownership.
+
+Working rule applied now: a source read or document commit alone does not close a capability.
+Close a bounded decision only after source/caller mapping, existing-owner mapping, relevant
+check results and residual limits are recorded. A final progress report must distinguish
+interactive work, queued work, active ownership and verified completion. If no successor is
+actually admitted, report that absence; do not say work continues in the background.
+
+Acceptance: normal return, deadline, unknown stop and evidence-before-removal use the existing
+isolated-worker tests; actual Docker checks cover a disposable, credential-free sleeping
+container only. Restart/duplicate admission use the existing unresolved-run refusal contract.
+Windows is this execution host; no new WSL result is inferred. Full source coverage, release
+activation, global hooks and autonomous continuation remain separate, uncompleted conditions.

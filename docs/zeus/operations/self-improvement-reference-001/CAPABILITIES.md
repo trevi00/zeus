@@ -23,6 +23,11 @@ is navigation only; no family is closed merely because its files were listed or 
 
 ## Recorded capability decisions
 
+- Cancellation/resource ownership comparison: **reuse existing Zeus owner**, accepted for
+  this bounded decision; see [OWNERSHIP-DECISION.md](OWNERSHIP-DECISION.md). Windows checks
+  32 passed / 1 skipped include a real disposable sleeping-container cleanup. No full-family
+  closure, imported code, model invocation or automatic successor is implied.
+
 These decisions are bounded to the named behavior; parent families remain open. They are analysis
 dispositions, not implementation or runtime acceptance. Keep this section when updating inventory.
 
