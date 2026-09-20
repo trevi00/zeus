@@ -144,6 +144,25 @@ export type PortfolioCriterion = {
   /** Opaque owner evidence references of the acceptance record; empty for a pending criterion. */
   evidence_refs: string[]
 }
+/**
+ * The owner's immutable link from one preserved terminal failure to the job they recorded as its
+ * successor, re-read against the rows that exist now (STATUS 2026-09-20). `state` is `linked` only
+ * while that successor is still present, still `accepted` and still bound to the same criterion;
+ * every other case is `unknown` with a `reason` and must never be drawn as resolved. Even `linked`
+ * says exactly one thing: the owner linked an accepted follow-up with evidence. It is not "the
+ * incident is fixed", not criterion acceptance, not a merge and not a deployment.
+ */
+export type PortfolioFollowUp = {
+  successor_job_id: string
+  /** Current fleet status of the successor, or `null` when the store no longer has that job. */
+  successor_status: string | null
+  /** `linked` | `unknown` on the wire, kept raw so an unfamiliar value stays unknown. */
+  state: string
+  /** `successor_missing` | `successor_not_accepted` | `binding_missing` | `target_mismatch`. */
+  reason: string | null
+  evidence_refs: string[]
+  recorded_at: string | null
+}
 export type PortfolioJob = {
   id: string
   /** Criterion this job was explicitly bound to. `null` only if the collector omitted it (unknown). */
@@ -152,6 +171,27 @@ export type PortfolioJob = {
   status: string
   reason_code: string | null
   updated_at: string
+  /** `null` where the owner recorded no link for this job — absence of a link, not unknown. */
+  follow_up: PortfolioFollowUp | null
+}
+/**
+ * What one project's bound work is doing, counted over ALL rows before the latest-50 sample. The
+ * six counts are disjoint and add up to `counts.jobs_total`; `mode` is the headline of the same
+ * numbers and is an ACTIVITY label only — `idle` means no active job, never "criterion accepted".
+ * A running project can still carry old unresolved failures, so both counts are always present.
+ */
+export type PortfolioActivity = {
+  /** `not_started` | `unknown` | `running` | `queued` | `needs_attention` | `idle`, kept raw. */
+  mode: string
+  running: number
+  queued: number
+  /** Fleet `unknown` jobs and any status this contract does not define: uncertain, never idle. */
+  unknown: number
+  accepted: number
+  /** Failed/rejected/exhausted with no link that currently reads `linked`. */
+  unresolved_failed: number
+  /** Failed/rejected/exhausted whose owner link currently reads `linked`. */
+  historical_failed: number
 }
 export type PortfolioProject = {
   id: string
@@ -162,6 +202,8 @@ export type PortfolioProject = {
   /** Latest 50 bound jobs, deterministic order from the collector. `counts.jobs_total` is all rows. */
   jobs: PortfolioJob[]
   counts: { criteria_total: number; criteria_accepted: number; jobs_total: number }
+  /** `null` from a collector older than the activity contract: summary unavailable, never zeros. */
+  activity: PortfolioActivity | null
   jobs_truncated: boolean
 }
 export type PortfolioInvestigation = {
