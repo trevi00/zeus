@@ -642,3 +642,50 @@ a duplicate module. The already-dispatched manifest stays immutable; if its exac
 rejects this owner typo, preserve that failed gate and use explicit owner review of the
 corrected scope rather than another implementation/model retry or a retroactive green record.
 
+### Consolidated admission review and one correction batch
+
+Candidate b2dfc16550276a7b80df19a8d90b0f5589923480 is retained on this task branch for
+correction, NOT accepted or deployed. Owner read the complete adapter, scheduler/CLI diff,
+contract and tests against the fixed matrix. One material finding (P1), with two triggers:
+activation is checked only at startup and stop is checked only at step entry. A queued
+successor therefore executes after activation is paused; a stop observed during Redis
+delivery also still enters Executor.execute_one. These break the actual admission boundary.
+
+Deterministic injected probes in D:/workspaces/zeus/artifacts/self-improvement-reference-001/
+owner-probes/test_admission.py both failed against the clean candidate (5.35 seconds).
+Using the submitted connected/runner fixtures: (A) validate activation, execute one step,
+change research_control/activation.status to paused, then step again: executor call count
+becomes 2 instead of staying 1. (B) wrap bus.receive to call runner.stop() before returning
+the normal message: executor calls becomes 1 instead of 0. MemoryStore/fixture executor;
+no real signal, provider, PG or Redis was invoked. A mirrors the paused control transition
+created by Releases.rollback; B calls the same stop method as the registered signal handler.
+
+Claude correction scope: audit_service.py, tests/test_audit_service.py, this task's
+AUDIT-SERVICE.md and the directly affected INV-AUDIT-SERVICE-001 wording only. Add a single
+coherent admission guard that observes stop and current release/activation/graph at each
+new admission, including after blocking delivery and immediately before executor entry.
+An observed pause/stale release, unavailable gate or stop must leave queued work intact,
+record the reason, and start zero new executions. Do not kill or reinterpret an already
+admitted attempt. Preserve existing failure/restart/expected-task fences and scoped relay.
+Add both reproductions as safe-result regressions, plus active normal continuation and a
+gate read failure after startup. Do not invent a second release owner or directly toggle PG.
+
+Nonblocking accuracy correction: foreign Redis entries are claimed into this consumer's
+PEL and left unacknowledged for recovery; they are not literally unconsumed. Correct that
+wording, retain bounded reads and no ACK/handling of foreign work. Dedicated routing is
+not a blocker for this serial selected-audit delivery. Monitor-specific UI wiring remains
+explicitly deferred; generic task/observation records and the service status remain visible.
+
+Verification allocation is explicit: worker runs ONLY
+python -m pytest tests/test_audit_service.py tests/test_research_audits.py -q
+and python -m ruff check . . Owner/CI owns the required whole-suite check in a historical
+checkout. Do NOT rerun the full suite, historical-schema check or signing checks in the
+snapshot, change global git configuration, install ssh-keygen or bypass permissions. The
+first worker reported 18 new tests passed, 93 combined passed, but its full snapshot suite
+had 1 git-ownership/history failure and 51 missing-ssh-keygen errors. Four full-suite
+processes were observed, including unchanged-code diagnostic reruns: preserve that history;
+another broad run to recover filtered output is not this correction's verification.
+
+Finish this correction after the exact focused commands and regression matrix pass.
+No new feature, source acquisition, model calls, deployment or further speculative review.
+
