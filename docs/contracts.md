@@ -1549,14 +1549,22 @@ checkout's revision, the graph organization digest must equal the current organi
 stale activation, a foreign revision or graph and an unknown or unpartitioned audit all return a
 fixed reason code BEFORE an observer, an executor, a transport or any provider is built. The
 existing `Releases` reconciliation stays the only activation authority; this command writes none.
+That same read-only gate, plus an observed stop, is re-read at EVERY new admission and again
+immediately before the executor, never trusted from startup: a release paused, rolled back or made
+stale mid-run, a changed revision or graph, a gate read that fails (`activation_unavailable` -
+unknown is not permission), and a stop observed while this assignment's own message was in flight
+(`service_stopped`) each bind nothing, enter no executor, leave the queued assignment and its
+evidence exactly where they are, and record the reason in the stop reason and the durable row. That
+guard admits work; it never kills, retries or reinterprets an attempt that was already admitted.
 Admission uses the existing records only: `schedule_audits(audit_id=...)` is the same scheduler
 with an optional backwards-compatible filter (the narrowed pass admits that audit's partition,
 proposal and adoption assignments and leaves discovery, acquisition and every other audit to the
 existing global pass; generation deduplication is unchanged), the correlation-scoped outbox relay
 publishes only this assignment's own records, and delivery accepts ONLY the message whose id,
-correlation, recipient, action and audit match the selected assignment. A foreign stream entry is
-counted and left pending for its owner: never acknowledged, dead-lettered, submitted, rewritten or
-published by this service, and an unsent foreign outbox record stays unsent. Exactly one task runs
+correlation, recipient, action and audit match the selected assignment. A foreign stream entry a
+read hands to this consumer is counted and left unacknowledged in this consumer's pending list, so
+the existing consumer-group recovery returns it to its owner: never acknowledged, dead-lettered,
+submitted, rewritten or published by this service, and an unsent foreign outbox record stays unsent. Exactly one task runs
 at a time, claimed through `Executor.execute_one`'s expected id/correlation/status guard, so a
 claim policy that would take another row refuses before the fence, the lease and any provider
 entry; that refusal stops this service and changes nothing about the other row. Completion is the

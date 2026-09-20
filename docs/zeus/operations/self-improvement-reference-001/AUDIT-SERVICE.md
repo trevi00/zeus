@@ -51,6 +51,19 @@ revision), `graph_mismatch` (the organization graph changed), `unknown_audit`, `
 `audit_id_invalid`, `max_tasks_invalid`. Each of them returns before an observer, an executor, a
 transport or any provider exists, so a refused start runs zero providers.
 
+## The admission guard (checked again, not trusted from startup)
+
+The gate above is not only a startup check. `AuditServiceRunner._admission_gate` re-reads the
+observed stop and the SAME read-only activation/release/graph gate at every new admission and again
+immediately before `Executor.execute_one`, because delivery blocks and the release can change while
+a message is in flight. A paused, rolled back or stale release, a changed revision or graph, a gate
+read that fails (`activation_unavailable`: unknown is not permission), or a stop (`service_stopped`,
+the method the signal handler calls) binds no task, enters no executor and starts zero work; the
+queued assignment, its outbox record and its stream entry stay exactly as they are and the reason is
+recorded in `stop_reason` and the durable row. The guard governs admission only: an attempt already
+inside the executor keeps its binding and is never killed, retried or reinterpreted by it, and the
+existing reconciliation then decides that attempt on the next start.
+
 ## Stop reasons and the operator action for each
 
 | Reason | Meaning | Operator action |
@@ -62,6 +75,9 @@ transport or any provider exists, so a refused start runs zero providers.
 | `executor_exception` | the attempt's outcome is unknown to this service | reconcile as above; the durable binding is kept on purpose |
 | `message_missing` / `message_not_delivered` / `message_invalid` / `message_refused` / `publication_incomplete` | the assignment exists durably but its delivery is not proven | inspect Redis and the outbox; the record is retained and nothing is re-executed |
 | `scheduler_unavailable` | the store or the scheduler failed | fix the store; no partial admission happened |
+| `activation_inactive` / `activation_stale` / `revision_mismatch` / `graph_mismatch` | the release gate stopped admitting mid-run (pause, rollback, a new active release, a changed revision or graph) | decide the release first; rerun when the activation matches this checkout again (exit 1) |
+| `activation_unavailable` | the gate itself could not be read, so admission is unknown | fix the store, then rerun; nothing was admitted on an unknown gate (exit 1) |
+| `service_stopped` | an operator stop (signal) was observed at an admission point | rerun when ready; the assignment stayed queued and nothing was bound (exit 0) |
 
 `status` reports the same reasons in `stop_reason` and `admission_blocked`, plus the current task,
 the predecessor result, the checkpoint generation and remaining counts, the assignment states and
@@ -77,9 +93,13 @@ the last collection health (including a collection failure's exception type).
 - The historical failed manual canary task stays exactly as it is; it is outside this service's
   operation boundary and is never rewritten, retried or counted here.
 - Delivery uses the existing consumer-group semantics. A foreign entry this service reads while
-  looking for its own assignment is counted and left unacknowledged for its owner; the bounded read
-  budget (8 entries per tick) means a stream full of foreign work ends the tick with
-  `message_not_delivered` instead of consuming anything.
+  looking for its own assignment is claimed into THIS consumer's pending list by the read itself -
+  it is not literally unconsumed - and is then counted and left unacknowledged there, so the
+  existing consumer-group recovery (idle reclaim) returns it to its owner; it is never acknowledged,
+  dead-lettered, submitted, rewritten or published here. The bounded read budget (8 entries per
+  tick) means a stream full of foreign work ends the tick with `message_not_delivered` instead of
+  handling anything. Dedicated routing for this serial, explicitly selected audit is a separate
+  change, not a blocker for it.
 - Monitoring wiring (`adapters/monitoring.py` `DatabaseFacts`) was NOT changed: it is outside the
   assigned paths. The `audit_service` row is readable through `zeus audit-service status` and
   `zeus inspect audit_service`; adding it to the monitor's bucket list is a separate change.
@@ -88,10 +108,23 @@ the last collection health (including a collection failure's exception type).
 
 ## Evidence and verification
 
-Worker checks (container, this candidate): `python -m pytest tests/test_audit_service.py
+Worker checks (container, the first candidate): `python -m pytest tests/test_audit_service.py
 tests/test_research_audits.py tests/test_audit_output_vocabulary.py tests/test_observation_contract.py
 tests/test_observation_boundaries.py tests/test_monitoring.py`, the full `python -m pytest` suite and
-`python -m ruff check .`; the observed results are reported with the candidate.
+`python -m ruff check .`; the observed results are reported with the candidate. That full snapshot
+suite had one git-ownership/history failure and 51 missing-`ssh-keygen` errors, which are missing
+host prerequisites of the snapshot, not results of this service.
+
+Admission-guard correction (this batch): the allocated worker checks are exactly
+`python -m pytest tests/test_audit_service.py tests/test_research_audits.py -q` and
+`python -m ruff check .`; the whole-suite check in a historical checkout belongs to the owner/CI,
+and no full-suite, historical-schema or signing run was repeated for it. The two owner probes are
+carried here as `test_a_paused_or_stale_release_after_the_first_step_admits_nothing_further` and
+`test_a_stop_observed_during_delivery_binds_nothing_and_keeps_the_queued_work`, with
+`test_an_active_release_admits_the_next_step_unchanged` as the active control and
+`test_a_gate_read_failure_after_startup_is_unknown_and_admits_nothing` for the unreadable gate.
+They pass against the guarded implementation here; the failing observation against the unguarded
+candidate is the owner's own probe run, not a result reproduced in this container.
 
 Every executor, bus, collector, release and audit in `tests/test_audit_service.py` is an injected
 fixture over `MemoryStore`. No model call, Redis connection, PostgreSQL connection or host service

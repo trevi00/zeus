@@ -296,7 +296,8 @@ def test_only_the_selected_audit_is_scheduled_executed_and_acknowledged(connecte
     assert len(bus.acked) == 1
     scheduled = [event for event in observer.spool.records()
                  if event["event_type"] == "operations.audit_service_scheduled"]
-    assert scheduled[0]["attributes"]["foreign_messages"] == 1  # counted, not consumed
+    # Counted and left unacknowledged for its owner's recovery, never handled or acknowledged here.
+    assert scheduled[0]["attributes"]["foreign_messages"] == 1
 
 
 def test_the_claim_guard_refuses_a_foreign_row_and_stops_without_running_it(connected):
@@ -315,6 +316,87 @@ def test_the_claim_guard_refuses_a_foreign_row_and_stops_without_running_it(conn
     with connected.store.transaction() as tx:
         assert tx.get("tasks", other["message_id"])["status"] == "queued"
     assert service_runner.state()["current_task"] is None
+
+
+# ----- the admission guard: every new admission re-reads the stop and the release gate ----------
+def test_an_active_release_admits_the_next_step_unchanged(connected):
+    """The control for the probes below: only the observed stop or activation transition differs."""
+    service_runner, bus, executor = runner(connected)
+    assert service_runner.step()["status"] == "succeeded"
+    assert service_runner.step()["status"] == "succeeded"
+    assert len(executor.calls) == 2 and service_runner.stopping is False
+    assert service_runner.state()["completed_tasks"] == 2
+
+
+@pytest.mark.parametrize("change,reason", [({"status": "paused"}, "activation_inactive"),
+                                           ({"release_id": "another-release"}, "activation_stale")])
+def test_a_paused_or_stale_release_after_the_first_step_admits_nothing_further(
+        connected, change, reason):
+    """Owner probe A: the startup gate alone let a queued successor run after a release pause."""
+    service_runner, bus, executor = runner(connected)
+    assert service_runner.step()["status"] == "succeeded"
+    with connected.store.transaction() as tx:  # the control transition Releases pause/rollback makes
+        control = tx.get("research_control", "activation")
+        tx.put("research_control", "activation", {**control, **change})
+    assert service_runner.step() == {"action": "stopped", "reason_code": reason}
+    assert len(executor.calls) == 1 and service_runner.stopping is True
+    assert service_runner.state()["stop_reason"] == reason
+    # Nothing was bound, cancelled or acknowledged: the successors keep their durable assignments.
+    with connected.store.transaction() as tx:
+        scheduled = [row for row in tx.scan("schedule") if row.get("partition_id")]
+        tasks = tx.scan("tasks")
+    assert service_runner.state()["current_task"] is None
+    assert len(tasks) == 1 and len(scheduled) >= 4
+
+
+def test_a_stop_observed_during_delivery_binds_nothing_and_keeps_the_queued_work(
+        tmp_path, monkeypatch, connected):
+    """Owner probe B: a stop observed while this assignment's own message was in flight still
+    entered the executor, because stop was only checked at step entry."""
+    import codex_harness.bootstrap as bootstrap
+    from codex_harness.adapters import configuration
+
+    holder = {}
+
+    class StoppingBus(FixtureBus):
+        """`stop` is the same method the registered signal handler calls; the entry is normal."""
+
+        def receive(self, agent, consumer, idle_ms=60000):
+            entry = super().receive(agent, consumer, idle_ms)
+            holder["runner"].stop()
+            return entry
+
+    service_runner, bus, executor = runner(connected, bus=StoppingBus())
+    holder["runner"] = service_runner
+    monkeypatch.setattr(configuration, "runtime_dir", lambda: tmp_path)
+    monkeypatch.setattr(audit_service, "current_revision", lambda: REVISION)
+    monkeypatch.setattr(bootstrap, "build_observer",
+                        lambda *args, **kwargs: SimpleNamespace(close=lambda: None))
+    monkeypatch.setattr(audit_service, "build_runner",
+                        lambda service, args, observer, gate: service_runner)
+    result = audit_service.execute(connected.service, SimpleNamespace(
+        audit_service_command="run", audit_id=connected.audit_id, max_tasks=None, once=True))
+    assert executor.calls == [] and result["completed_tasks"] == 0
+    # An operator interrupt is a shutdown with a recorded reason, not a failed run.
+    assert result["stop_reason"] == "service_stopped" and result["exit_code"] == 0
+    assert service_runner.state()["current_task"] is None
+    # The delivered assignment keeps its own durable record, queued for the next admission.
+    with connected.store.transaction() as tx:
+        assert [task["status"] for task in tx.scan("tasks")] == ["queued"]
+
+
+def test_a_gate_read_failure_after_startup_is_unknown_and_admits_nothing(monkeypatch, connected):
+    service_runner, bus, executor = runner(connected)
+    assert service_runner.step()["status"] == "succeeded"
+
+    def unavailable(*args, **kwargs):  # an injected gate read loss, not a refusal
+        raise RuntimeError("injected gate read failure")
+
+    monkeypatch.setattr(audit_service, "activation", unavailable)
+    assert service_runner.step() == {"action": "stopped", "reason_code": "activation_unavailable",
+                                     "error_type": "RuntimeError"}
+    assert len(executor.calls) == 1
+    assert service_runner.state()["stop_reason"] == "activation_unavailable"
 
 
 # ----- failure, restart and unknown state stop admission without a retry -------------------------

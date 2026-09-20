@@ -31,7 +31,9 @@ AGENT = "worker:github"
 ACTION = "audit_partition"
 STATE_BUCKET = "audit_service"
 # One tick reads at most this many stream entries while looking for its own assignment. A foreign
-# entry is counted and left pending for its owner: never acknowledged, dead-lettered or handled.
+# entry is read into THIS consumer's pending list, counted and left unacknowledged there, so the
+# existing consumer-group recovery returns it to its owner: never acknowledged, dead-lettered or
+# handled here.
 DELIVERY_READS = 8
 IDLE_SECONDS = 5.0
 MAX_TASKS_CEILING = 100
@@ -141,6 +143,10 @@ class AuditServiceRunner:
     the observer and the collector; a contract test drives the real store, scheduler and Workflow
     without entering a provider. The runner never claims work it did not select, never acknowledges
     a message that is not its own assignment and never starts a second attempt of anything.
+
+    Admission is guarded at every new admission and again immediately before the executor, not only
+    at startup: `_admission_gate` re-reads the observed stop and the same activation/release/graph
+    gate, so a release paused mid-run and a stop observed during delivery both start zero work.
     """
 
     def __init__(self, service, audit_id: str, *, executor=None, bus=None, workflow=None,
@@ -261,9 +267,35 @@ class AuditServiceRunner:
             summary["steps"].pop(0)
             summary["omitted_steps"] += 1
 
-    def step(self) -> dict:
+    # ----- the admission guard ------------------------------------------------------------------
+    def _admission_gate(self) -> dict | None:
+        """Why nothing new may be admitted right now, or None.
+
+        The one guard for every new admission, re-read from the durable records each time instead
+        of trusted from startup: an observed stop, and the SAME read-only activation/release/graph
+        gate that admitted this run. A paused, stale, foreign or unreadable gate is not permission
+        to start work, and an unreadable one is unknown rather than clear. Nothing here writes,
+        retries, acknowledges or cancels: queued work keeps its durable record, and an attempt that
+        was already admitted keeps running under its own binding.
+        """
         if self.stopping:
-            return {"action": "idle"}
+            return {"reason_code": self.stop_reason or "service_stopped"}
+        try:
+            activation(self.service.store, self.service.org, self.audit_id, self.revision)
+        except AuditServiceRefused as exc:
+            return {"reason_code": exc.reason_code}
+        except Exception as exc:
+            return {"reason_code": "activation_unavailable", "error_type": type(exc).__name__}
+        return None
+
+    def _stop_admission(self, gate: dict, **facts) -> dict:
+        return self._stopped_step(gate["reason_code"], **facts,
+                                  **{k: v for k, v in gate.items() if k != "reason_code"})
+
+    def step(self) -> dict:
+        gate = self._admission_gate()
+        if gate is not None:
+            return self._stop_admission(gate)
         try:
             created = self.schedule(self.service, audit_id=self.audit_id)
             pending = self._pending()
@@ -289,6 +321,12 @@ class AuditServiceRunner:
         if delivery is not None and delivery["reason_code"] is not None:
             return self._stopped_step(delivery["reason_code"], task_id=assignment["task_id"],
                                       **{k: v for k, v in delivery.items() if k != "reason_code"})
+        # Delivery blocks, so the gate is read again immediately before the executor: a stop or a
+        # paused release observed while the message was in flight binds and executes nothing. The
+        # assignment stays queued with its own record for the next admission.
+        gate = self._admission_gate()
+        if gate is not None:
+            return self._stop_admission(gate, task_id=assignment["task_id"])
         return self._execute(assignment)
 
     def _execute(self, assignment: dict) -> dict:
@@ -396,8 +434,10 @@ class AuditServiceRunner:
     def _deliver(self, assignment: dict) -> dict | None:
         """Receive ONLY this assignment's own message from the existing agent stream.
 
-        A foreign entry is counted and left pending for its owner: it is never acknowledged,
-        dead-lettered, submitted or rewritten here. A `reason_code` that is not None stops the tick.
+        A foreign entry a read hands to this consumer is counted and left unacknowledged in this
+        consumer's pending list, so the existing consumer-group recovery returns it to its owner:
+        it is never acknowledged, dead-lettered, submitted or rewritten here. A `reason_code` that
+        is not None stops the tick.
         """
         if self.bus is None or self.workflow is None:
             return None
@@ -527,8 +567,11 @@ def run(service, args) -> dict:
         lock.release()
     # The gate's own reads win over the runner's constructor values: the receipt reports what the
     # store actually said about the activation this run was admitted under.
+    # `service_stopped` is the operator's own interrupt observed at an admission point, exactly the
+    # stop a signal between two ticks already exits 0 with; it is a shutdown, not a failed run.
     return {"audit_service": ACTION, **summary, **gate,
-            "exit_code": 1 if summary["stop_reason"] not in (None, "max_tasks_reached") else 0}
+            "exit_code": 1 if summary["stop_reason"] not in
+            (None, "max_tasks_reached", "service_stopped") else 0}
 
 
 def status(service, args) -> dict:
