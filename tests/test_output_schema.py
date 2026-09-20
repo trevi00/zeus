@@ -9,7 +9,7 @@ from codex_harness.adapters.app_server import AppServer
 from codex_harness.adapters.audit_execution import AuditExecution
 from codex_harness.adapters.output_schema import CAUSE, preflight
 from codex_harness.domain.model import ContractError
-from codex_harness.domain.research import SourceIdentity, parse_record
+from codex_harness.domain.research import PATH_DISPOSITIONS, SourceIdentity, parse_record
 
 
 @pytest.mark.parametrize('kind', ['AdaptationProposal', 'IndependentReview'])
@@ -99,10 +99,15 @@ def test_baseline_reconstruction_and_semantic_preservation():
     import subprocess
     from importlib.resources import files
 
+    current = json.loads(files('codex_harness.resources').joinpath('research.schema.json').read_text())
+    # The single accepted delta since the baseline: PathDisposition.disposition was an
+    # unconstrained string that let `partial` through (2026-09-20 canary). Nothing else may
+    # differ, so only this exact enum is removed before the historical comparison below.
+    assert current['$defs']['PathDisposition']['properties']['disposition'] == {
+        'type': 'string', 'enum': list(PATH_DISPOSITIONS)}
     old = json.loads(subprocess.check_output([
         'git', 'show', '09c1d58298b22337125f29842382d2aef960c7d2:'
         'src/codex_harness/resources/research.schema.json']))
-    current = json.loads(files('codex_harness.resources').joinpath('research.schema.json').read_text())
     assert sum('version' in d['properties'] for d in old['$defs'].values()) == 5
     for kind, definition in old['$defs'].items():
         if 'version' in definition['properties']:
@@ -115,7 +120,9 @@ def test_baseline_reconstruction_and_semantic_preservation():
         if isinstance(node, list):
             return [strip_added_types(v) for v in node]
         return node
-    assert strip_added_types(current) == old
+    reconstructed = copy.deepcopy(current)
+    del reconstructed['$defs']['PathDisposition']['properties']['disposition']['enum']
+    assert strip_added_types(reconstructed) == old
     preflight(current)
 
 
