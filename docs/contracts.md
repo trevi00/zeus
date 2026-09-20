@@ -237,6 +237,13 @@ values also block; deadline expiry records expiration. Resumption requires expli
 bounded recovery with cause and evidence. The five-second tolerance also bounds
 the optional injected scheduling time; normal execution samples host time.
 
+One execution's time limit is a ceiling built from the shortest applicable source, never a grant:
+the single policy default for the role (`domain/policy.py`, a worker task or a decision), the
+remaining time of the execution's own durable deadline, and any explicit provider control the host
+configuration declares. Changing a default changes what is allowed at most; it never extends a
+recorded deadline, a lease, a heartbeat interval, a command-evidence replay window or a retry, and
+it never re-dates a manifest that was already queued.
+
 This contract assumes usable UTC across restarts. OS clock-step, suspend/VM-resume
 and multi-host time behavior are unmeasured operating conditions, not certified by
 pure clock-input tests or modified stored observations. Their absence must remain
@@ -624,8 +631,26 @@ one; re-queuing goes through execution recovery, which refuses while any termina
 pending. Pending alerts are persisted locally, cleared only after the transaction that carried
 them committed, and inherited by the next process run. The invocation ledger closes an orphaned
 reservation as unsettled_unknown. Health, status, orphan and alert reports are informational
-only. Unit fault injection and MemoryStore exercise these boundaries; they are not operational
-evidence.
+only. Two failure boundaries are observable without reading a raw stream, and neither decides
+anything. One evaluated output is recorded after its durable receipt exists — the receipt result
+persistence returned, or the one its ExecutionFailure carries — naming the ledger's own
+classification beside the structural output reason and its owner, the provider's own failure cause
+and reported result subtype, which structural checks ran, and the artifact reference; the event
+explains a refusal, it never re-decides it, and a refused output stays refused. The evidence
+inspection records its start with the number of claims and its end with the verdict it actually
+reached, including no claims, incomplete and a failed inspection, with the denominator as typed
+counts and a fixed reason code; only a completed all_checked inspection is recorded as succeeded,
+an unknown or failed one never is, and the verdict, the ledger row and the review gate are
+unchanged by the record of them. Every code on these events is a declared value: a foreign or
+future provider string is `unknown` and an absent one is `none`, so nothing is inferred from a
+subtype, except that a declared terminal subtype naming its own actionable failure also names the
+projected reason code, so retry-exhausted structured output is readable apart from every other
+provider failure while an undeclared subtype reaches no reason of its own and a structural output
+reason still wins; and a failed inspection carries its exception's type and a digest of its message — the
+same rule the failure records follow — on the log and on the result it returns, never the message
+itself. Prompts, answers, schema property names, commands, stdout and tool arguments are excluded
+by construction here as everywhere else. Unit fault injection and MemoryStore exercise these
+boundaries; they are not operational evidence.
 
 ## INV-CLAUDE-WORKER-001
 

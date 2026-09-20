@@ -39,7 +39,7 @@ from codex_harness.domain.evidence import (
     parse_policy,
     verdict,
 )
-from codex_harness.domain.model import ContractError
+from codex_harness.domain.model import ContractError, digest
 
 PY = sys.executable
 TRUSTED = str(Path(sys.executable).resolve())
@@ -266,7 +266,13 @@ def test_a_missing_trusted_interpreter_is_refused_before_any_child_and_never_rec
     row = s.executor.execute_one('worker:implementation')
     assert row['status'] == 'succeeded', row.get('error')
     assert row['result']['evidence_inspection']['verdict'] == 'inspection_error'
-    assert 'Trusted replay interpreter is not a file' in row['result']['evidence_inspection']['cause']
+    # operating-portfolio-001: the failure keeps an actionable identity - the exception type and a
+    # digest of its message - and no longer repeats the message itself, which (here a host path,
+    # elsewhere a wrapped foreign error) has no place on a result that travels outward.
+    cause = row['result']['evidence_inspection']['cause']
+    assert cause == 'ContractError: message_sha256=' + digest(
+        'Trusted replay interpreter is not a file: ' + missing)[:16]
+    assert 'Trusted replay interpreter is not a file' not in cause and missing not in cause
 
 
 def test_deadline_and_budgets_are_enforced_and_termination_is_recorded(tmp_path):

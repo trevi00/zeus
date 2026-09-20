@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import json
 import sys
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -25,13 +26,20 @@ from codex_harness.adapters.store import MemoryStore
 from codex_harness.application.service import Harness
 from codex_harness.bootstrap import organization
 from codex_harness.domain.model import envelope
+from codex_harness.domain.policy import POLICY as RUNTIME
 from codex_harness.domain.project_evidence import parse_profile
 
+# `RUNTIME` is the runtime policy; the `POLICY` imported above is the project-evidence one.
 PY = sys.executable
 
 
-def run_implementation(tmp_path, monkeypatch, profile=None):
-    """One real implement execution; returns the prompts the fixture runtime received."""
+def run_implementation(tmp_path, monkeypatch, profile=None, deadline_seconds=None, claude_timeout=None):
+    """One real implement execution; returns the prompts and time limits the fixture runtime received.
+
+    `deadline_seconds` puts a durable deadline on the assignment itself; `claude_timeout` configures
+    the second provider so its explicit `timeout_seconds` control is the one the executor must take
+    the minimum with. Neither changes anything else about the run.
+    """
     root = repository(tmp_path)
     if profile is not None:  # the profile's context must exist in the candidate the worker receives
         workspace(tmp_path, 'repository')
@@ -41,10 +49,11 @@ def run_implementation(tmp_path, monkeypatch, profile=None):
     service = Harness(MemoryStore(), organization())
     executor = Executor(service, git_workspace, FileArtifacts(str(tmp_path / 'artifacts')),
                         evidence_profile=profile)
-    prompts = []
+    prompts, timeouts = [], []
 
     class Runtime:
-        """Fixture seam: records the composed prompt and answers the declared schema."""
+        """Fixture seam: records the composed prompt and the delivered time limit, and answers the
+        declared schema. No provider, model, network or Docker."""
 
         def __init__(self, **kwargs): pass
         def __enter__(self): return self
@@ -52,20 +61,33 @@ def run_implementation(tmp_path, monkeypatch, profile=None):
 
         def run(self, prompt, cwd, schema, timeout, **kwargs):
             prompts.append(json.loads(prompt))
+            timeouts.append(timeout)
             Path(cwd, 'change.txt').write_text('implemented', encoding='utf-8')
             return {'answer': {'summary': 'fixture', 'tests': []}, 'events': [], 'thread_id': 'thread',
                     'turn_id': 'turn', 'usage': None, 'rotate': False, 'interrupted': False,
                     'requested_model': kwargs.get('model')}
 
     monkeypatch.setattr('codex_harness.adapters.executor.AppServer', Runtime)
+    monkeypatch.setattr('codex_harness.adapters.executor.ClaudeCodeRuntime', lambda **kwargs: Runtime())
+    for name in ('ZEUS_CLAUDE_ASSIGNMENTS', 'ZEUS_CLAUDE_MODEL', 'ZEUS_CLAUDE_MAX_BUDGET_USD',
+                 'ZEUS_CLAUDE_TIMEOUT_SECONDS', 'ZEUS_CLAUDE_ACCOUNTING_MODE'):
+        monkeypatch.delenv(name, raising=False)
+    if claude_timeout is not None:
+        monkeypatch.setenv('ZEUS_CLAUDE_ASSIGNMENTS', 'worker:implementation/implement')
+        monkeypatch.setenv('ZEUS_CLAUDE_MODEL', 'claude-fixture-model')
+        monkeypatch.setenv('ZEUS_CLAUDE_MAX_BUDGET_USD', '1')
+        monkeypatch.setenv('ZEUS_CLAUDE_TIMEOUT_SECONDS', str(claude_timeout))
     message = envelope('task.assign', organization().actor('worker:implementation').parent,
                        'worker:implementation', 'implement',
                        {'plan': {'objective': 'fixture', 'acceptance_criteria': ['x'],
                                  'allowed_paths': ['change.txt']}}, 'fixture', None)
     message['where']['revision'] = git_workspace._git('rev-parse', 'HEAD')
+    if deadline_seconds is not None:
+        message['when']['deadline'] = (datetime.now(timezone.utc)
+                                       + timedelta(seconds=deadline_seconds)).isoformat()
     executor.workflow.submit(message)
     row = executor.execute_one('worker:implementation')
-    return SimpleNamespace(prompts=prompts, row=row)
+    return SimpleNamespace(prompts=prompts, timeouts=timeouts, row=row, executor=executor)
 
 
 def test_the_legacy_implementation_objective_requires_both_fields_and_shows_only_a_shape(tmp_path, monkeypatch):
@@ -107,6 +129,45 @@ def test_the_implementation_schema_still_refuses_an_answer_that_omits_either_fie
     assert not validator.is_valid({'summary': 'prose instead of the envelope'})
     assert not validator.is_valid({'tests': ['python -m pytest -q']})
     assert not validator.is_valid({'summary': 's', 'tests': []} | {'notes': 'x'})
+
+
+# ---- the authorized time allowance (operating-portfolio-001, LOGGING.md) -------------------------
+
+def test_the_authorized_allowance_is_one_definition_and_a_ceiling(tmp_path, monkeypatch):
+    """INV-RESOURCE-001: the user-authorized hour (and the fifteen-minute decision allowance) live in
+    domain/policy.py, and the delivered limit is the policy's own, not a number the executor invents."""
+    assert (RUNTIME.task_seconds, RUNTIME.decision_seconds) == (3600, 900)
+    delivered = run_implementation(tmp_path, monkeypatch)
+    assert delivered.row['status'] == 'succeeded', delivered.row
+    assert delivered.timeouts == [RUNTIME.task_seconds] == [3600]
+
+
+def test_a_shorter_explicit_deadline_still_wins_over_the_default_allowance(tmp_path, monkeypatch):
+    """The assignment's own durable deadline shortens the run; the allowance is a ceiling, not a grant."""
+    delivered = run_implementation(tmp_path, monkeypatch, deadline_seconds=120)
+    assert delivered.row['status'] == 'succeeded', delivered.row
+    [delivered_timeout] = delivered.timeouts
+    assert 60 < delivered_timeout <= 120, delivered_timeout
+
+
+def test_a_decision_role_is_given_the_decision_allowance_not_the_task_one(tmp_path, monkeypatch):
+    """The same production `_run`, asked for a non-worker role: the branch that picks the allowance is
+    the executor's own, so the delivered limit says which one it took."""
+    delivered = run_implementation(tmp_path, monkeypatch)
+    executor = delivered.executor
+    delivered.timeouts.clear()
+    answer = executor._run('lead:improvement', 'decision-fixture', 'fixture objective', {},
+                           str(executor.git.repository), IMPLEMENTATION)
+    assert answer['summary'] == 'fixture'
+    assert delivered.timeouts == [RUNTIME.decision_seconds] == [900]
+
+
+def test_a_shorter_explicit_provider_control_still_takes_the_minimum(tmp_path, monkeypatch):
+    """The configured `claude_cli` ceiling is explicit host configuration and keeps winning; the
+    transport is a labelled fixture seam, the selection and the argument delivery are production."""
+    delivered = run_implementation(tmp_path, monkeypatch, claude_timeout=300)
+    assert delivered.row['status'] == 'succeeded', delivered.row
+    assert delivered.timeouts == [300] and 300 < RUNTIME.task_seconds
 
 
 @pytest.mark.parametrize('profiled', [False, True])

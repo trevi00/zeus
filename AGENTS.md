@@ -57,6 +57,24 @@
   context interpreter, not `python` on PATH). Either way results, skips,
   diagnostic attempts and unrun work go in `summary`.
 
+## Implementation time allowance (60 minutes)
+
+- The user authorized a 60-minute implementation allowance and a 15-minute decision/review
+  allowance. `domain/policy.py` holds the single definition (`task_seconds` 3600,
+  `decision_seconds` 900); do not restate either number in a script, a prompt or a manifest
+  template. New implementation manifests are authored with `claude.timeout_seconds: 3600`.
+  Queued and recorded manifests are immutable: they keep the value they were written with.
+- The allowance is a ceiling, not an instruction to spend the hour. Stop when the fixed
+  acceptance criteria pass.
+- The shortest applicable limit always wins: an explicit provider control
+  (`ZEUS_CLAUDE_TIMEOUT_SECONDS`) and a durable execution deadline both take the minimum with the
+  policy default, and an explicitly shorter user deadline beats the authorized allowance. Nothing
+  here extends command-evidence replay timeouts or network and cleanup windows, and it introduces
+  no retry.
+- Under the authorized subscription scope a call needs no separate per-call approval; call counts
+  and token usage are still recorded exactly as before, and subscription accounting still forwards
+  no dollar ceiling (INV-CLAUDE-WORKER-001). A time allowance is not a spend allowance.
+
 ## Worker profile packaging metadata
 
 - After changing `src/codex_harness/resources/worker-profile-v1.md`, a worker runs exactly

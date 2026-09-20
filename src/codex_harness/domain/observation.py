@@ -58,6 +58,13 @@ REGISTRY = {
                                       "usage_source": _S, "total_tokens": _NI, "thread_id": _N},
     "development.provider_failed": {"reservation_id": _N, "error_type": _S, "elapsed_seconds": _F,
                                     "provider_entered": _B},
+    # operating-portfolio-001: what one attempt's output was judged to be, recorded once its durable
+    # receipt exists. Fixed codes only (see the vocabularies below): a foreign provider string is
+    # `unknown` and an absent one is `none`, never a missing field inferred from a subtype. The
+    # prompt, the answer, schema property names, commands and exception text have no place here.
+    "development.output_evaluated": {"reservation_id": _N, "invocation_outcome": _S, "output_reason": _S,
+                                     "provider_cause": _S, "terminal_subtype": _S, "failure_owner": _S,
+                                     "json_check": _S, "schema_check": _S, "execution_failure": _B},
     "development.invocation_settled": {"reservation_id": _S, "invocation_outcome": _S, "usage_source": _S,
                                        "total_tokens": _NI, "within_budget": _B},
     "development.invocation_abandoned": {"reservation_id": _S, "reason": _S},
@@ -65,6 +72,17 @@ REGISTRY = {
                                       "item_status": _N, "receipt_ref": _S, "malformed": _B, "defect": _N},
     "development.checkpoint_recorded": {"session_generation": _I, "session_id": _S, "handoff_reason": _S,
                                         "evidence_ref": _S, "context_ref": _S},
+    # operating-portfolio-001: the evidence inspection boundary. `started` says how many claims went
+    # in; `finished` says what came out, including no_claims, incomplete and a failed inspection,
+    # with the denominator as typed counts. A failed inspection carries its exception's type and a
+    # digest of its message, never the message (INV-EVIDENCE-001 keeps the verdict and gate as they are).
+    "development.evidence_inspection_started": {"claims": _I},
+    "development.evidence_inspection_finished": {"inspection_id": _N, "verdict": _S, "claims": _I,
+                                                 "findings": _NI, "checked": _NI, "not_checked": _NI,
+                                                 "missing": _NI, "unknown": _NI, "error": _NI,
+                                                 "replay_failed": _NI, "flake_pattern": _NI,
+                                                 "verified_mismatch": _NI, "elapsed_seconds": _F,
+                                                 "error_type": _N, "message_sha256": _N},
     "development.task_completed": {"status": _S, "commands": _I},
     "development.task_failed": {"status": _S, "error_type": _S, "failure_receipt": _N},
     "development.termination_recorded": {"reservation_id": _N, "invocation_outcome": _S, "stream_hash": _S,
@@ -105,6 +123,54 @@ REGISTRY = {
 INVOCATION_OUTCOMES = {"accepted": "succeeded", "empty_answer": "failed", "invalid_output": "failed",
                        "tool_only": "failed", "provider_failure": "failed", "interrupted": "aborted",
                        "inspection_blocked": "blocked"}
+
+# Closed code vocabularies for the boundary events above (operating-portfolio-001). Each lists the
+# values this harness itself produces: the structural output reasons and owners of
+# adapters.execution_output, the provider failure causes of the Codex and Claude adapters, the
+# provider result subtypes those adapters read, and the structural check states. `safe_code` maps
+# anything else, including a value a future provider version invents, to "unknown" rather than
+# letting a foreign string become a Zeus code.
+OUTPUT_REASONS = ("empty", "invalid_text", "invalid_json", "schema_mismatch", "schema_configuration")
+FAILURE_OWNERS = ("agent_output", "configuration", "provider")
+PROVIDER_CAUSES = ("codex-provider-usage-limit-exceeded", "claude-provider-budget-exhausted",
+                   "claude-provider-cancelled", "claude-provider-conflicting-terminal",
+                   "claude-provider-error-result", "claude-provider-exit-conflict",
+                   "claude-provider-max-turns", "claude-provider-missing-terminal",
+                   "claude-provider-model-mismatch", "claude-provider-session-conflicting",
+                   "claude-provider-session-mismatch", "claude-provider-session-unreported",
+                   "claude-provider-startup-failed", "claude-provider-stream-truncated",
+                   "claude-provider-timeout")
+TERMINAL_SUBTYPES = ("success", "error_during_execution", "error_max_turns",
+                     "error_max_structured_output_retries")
+STRUCTURAL_CHECKS = ("checked", "unchecked", "failed", "configuration_error")
+
+# A terminal subtype that names its own actionable failure also names the projected reason, so an
+# operator can tell it apart from every other provider failure without reading a raw stream. Only a
+# subtype this harness declares can reach this map, because `safe_code` runs first and a foreign or
+# future string is `unknown`; nothing about the output itself is inferred from the subtype, and a
+# structural output reason, when there is one, stays the reason.
+SUBTYPE_REASONS = {"error_max_structured_output_retries": "output_structured_retries_exhausted"}
+
+# Evidence inspection verdict → (outcome, reason_code, severity). Only a completed all_checked
+# inspection succeeds: no claims, an incomplete check, a failed inspection and any verdict this
+# table does not know are recorded as what they are (INV-EVIDENCE-001 owns the verdict itself).
+INSPECTION_VERDICTS = {"all_checked": ("succeeded", "evidence_all_checked", "info"),
+                       "no_claims": ("blocked", "evidence_no_claims", "warning"),
+                       "incomplete": ("blocked", "evidence_incomplete", "warning"),
+                       "inspection_error": ("unknown", "evidence_inspection_error", "error")}
+UNKNOWN_VERDICT = ("unknown", "evidence_verdict_unknown", "error")
+
+
+def safe_code(value, allowed, *, absent: str = "none") -> str:
+    """One declared code, or a word that says why there is none. Never the foreign value itself."""
+    if value is None:
+        return absent
+    return value if type(value) is str and value in allowed else "unknown"
+
+
+def inspection_verdict(verdict) -> tuple:
+    """(outcome, reason_code, severity) for an inspection verdict; an unknown verdict never succeeds."""
+    return INSPECTION_VERDICTS.get(verdict, UNKNOWN_VERDICT) if type(verdict) is str else UNKNOWN_VERDICT
 
 _URL_CREDENTIALS = re.compile(r"([a-z][a-z0-9+.-]*://)[^\s/@:]+:[^\s/@]+@", re.I)
 _ASSIGNED_SECRET = re.compile(
