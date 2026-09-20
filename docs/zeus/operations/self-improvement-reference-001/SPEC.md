@@ -555,3 +555,71 @@ Batch: consolidate and merge reviewed work; deploy verified artifacts; perform b
 automatic-continuation acceptance and connect remaining absorption backlog. Research only
 unresolved release/launcher contracts that affect this path. Minor unrelated findings remain
 follow-up notes; a missing release authority is an explicit blocker, not a direct PG toggle.
+
+### Operating connection handoff (same frame)
+
+## Operating connection: existing source audit scheduler to the current host
+
+Observed obstacle: current operating tasks are Fleet, desk, monitor and observation collection.
+Public PG has 58 pinned Ouroboros partitions but no deployment/active or research activation.
+The existing supervisor owns a separate Compose postgres/redis topology; starting it against
+the current host is not a verified connection to the live PG/Redis/artifact store. The manual
+two-task canary used existing owners successfully but is not a persistent operating service.
+
+Implement one thin host entry point using existing scheduler/Workflow/Executor/Redis/Observer
+owners. No second analysis engine, source reader, promotion authority or budget ledger.
+Codex manages the release authorization and scheduled-task wiring outside the implementation.
+
+Scope: `zeus audit-service run` and `status` (one focused adapter plus CLI registration, tests,
+contract and implementation note). Use existing configuration for repository, runtime, database,
+Redis namespace, model selection and subscription usage. The runtime holds the existing audit
+artifacts/checkpoints, not a fresh store. The service executes source audit work only; no feed
+research, unrelated implementation, source execution, Git merge or deployment. Unknown actions
+are reported and left unexecuted. Do not activate a release or bypass Releases in this command.
+
+Run requires research_control activation=active and matching current repository revision/graph.
+One host owner per configured runtime via a process-lifetime lock; duplicate owner starts no
+provider. One task at a time. Call existing schedule_audits (do not reimplement its generation
+deduplication), existing outbox/Redis and Workflow acceptance/ack semantics. Only matching
+audit tasks may be claimed via Executor.execute_one's expected id/correlation/status guard.
+For the initial operating scope execute audit_partition only. Other audit actions can remain
+durably queued with a clear not-supported-by-this-service status; do not claim full ingestion
+or proposal automation. No modification to scheduler semantics is required for this scope.
+
+Audit selection is an explicit operator-provided `--audit-id` to prevent unrelated partition
+work being executed. schedule_audits may produce global assignments; retain all of them in
+their proper queues. Do not consume/ack someone else's message simply to bypass it. If existing
+bus/scheduler contracts cannot support this narrow scope cleanly, report that exact boundary
+before implementing a parallel queue or mutating unrelated tasks. Prefer an optional filter in
+the existing scheduler with backwards-compatible default over a new scheduler.
+
+Success: persist task result and collect observations, then schedule/execute the next eligible
+generation. Before next admission require predecessor succeeded; failed/blocked/retry/unknown
+or unresolved execution requires stop, no automatic retry. Restart with an unfinished/running
+attempt is explicit reconciliation-required, never inferred permission to repeat. Keep the
+historical failed manual task outside this service's own operation boundary; do not rewrite it.
+Use durable existing schedule/task records as authority and a narrowly named service state for
+owner/current task/last result only. No extra knowledge promotion or new completion claim.
+
+`--max-tasks 2` is an explicit finite canary mode, not a subscription call cap; stop after two
+successful task completions, preserve queued successor. Default continuous operation uses the
+same path. `--once`/finite idle observation must avoid hanging tests. Task timeout and model
+usage continue to use existing policy. On signal/service owner exit, existing process-tree
+owner handles children; don't invent detached subprocesses or restart a lost attempt.
+
+Logs: use existing observation owner for general/development/operations facts with safe IDs,
+counts and reason codes only. Record start, scheduler admission, task binding, completion,
+checkpoint generation/remaining counts, pause/failure and collection health. Preserve existing
+schema allowlists; if a new event is needed add one narrow defined event instead of arbitrary
+attributes. status and monitor-readable health expose current task, predecessor/result,
+checkpoint and stop reason; no prompt, credentials, source text or false semantic count.
+
+Acceptance: matching active release normal two-task continuation; inactive/stale activation
+starts zero providers; duplicate owner/duplicate tick cannot double-run; actual result/checkpoint
+drives successor; failure and restart unknown stop without retry; unrelated queue work preserved;
+finite exit retains evidence and releases owned resources. Fixture versus real Redis/PG/model
+evidence must be explicit. Existing source read tests establish inert inspection separately.
+Worker runs focused contract tests and ruff; Codex runs actual host canary after review/CI.
+No model calls or service changes inside the worker. This closes operating connection only,
+not full-source analysis, all ingestion adapters or guaranteed semantic progress.
+
