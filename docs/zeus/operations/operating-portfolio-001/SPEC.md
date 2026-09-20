@@ -246,3 +246,31 @@ Completion: targeted checks, owner full suite/CI, container positives/negatives,
 frontend completion, independent review, preserve all failed runs, then deploy accepted runtime/image.
 If actual run fails, discriminate against these criteria once and update THIS frame; no blind reruns.
 Minor issues remain follow-up notes. Existing evidence gating stays mandatory.
+
+### Preserved timeout and consolidated completion review
+Actual implementation run 3bf5c193d4af44b5927606f01086189d reached the unchanged 900s deadline;
+process tree termination confirmed, draft imported and owner-preserved (b6c2f6d -> 8b658fb).
+No terminal answer, no model review, no historical success rewrite. The final files DO have a
+valid profile: 5988 characters and matching hashes; an earlier event at 6195 was superseded.
+Owner Windows focused check: 79 passed,16 skipped,2 failed, both old profile text/allow-list
+assertions. New tests in real Linux container:19 passed, including injected fixture tools (NOT
+real Node evidence). Owner built image c1a4f4a12d9ab26e7aee81470add3671f0cf9c7f1993309890c4e530d38166ed.
+Actual default DockerEvidenceInspector: normal monitor checked, injected real TypeScript error
+verified_mismatch, original source hashes unchanged. Lock-mismatch check and final owner suite
+are recorded externally. First owner check used an overlong nested scratch path and failed before
+container creation (FileNotFoundError); using short D scratch path reached actual replay. Keep
+that failed preparation separately, not as a frontend check failure.
+
+Remaining Claude correction ONLY tests/test_worker_profile.py:
+- test_the_packaged_profile_verifies_and_carries_its_provenance: align literal-text assertion to
+  current equivalent reporting instruction, and assert BOTH summary/tests requirement. Preserve
+  provenance, byte/hash, length and meaningful exact-command semantics assertions.
+- test_the_metadata_command_is_one_exact_allow_and_every_earlier_grant_is_preserved: expected
+  list includes the new EXACT monitor_frontend_checks grant, all prior grants unchanged. Assert
+  no broad python/node/npm grant and both fixed commands reject extra argv via authorized.
+Run python -m pytest tests/test_worker_profile.py tests/test_executor.py tests/test_monitor_frontend_checks.py
+and python -m ruff check . . The native Windows skips are declared by the module; Linux fixture
+tests already ran. No runtime/profile/manifest/image changes, no extra report or rollback trial.
+Finalize concise structured JSON with required summary AND tests. This is completing a preserved
+implementation, not repeating the entire assignment. Owner full suite/CI and actual Fleet frontend
+canary remain before deployment. Earlier accepted code/matrix stay fixed.
