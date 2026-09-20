@@ -520,3 +520,38 @@ Task branch is the integration destination. The 15000 ceiling and context conven
 are implemented and accepted; operating image deployment, scheduler activation, and
 gradual migration of remaining legacy guidance/assets are separate unfinished work.
 No automatic successor or further model call was admitted by this delivery.
+
+### Authorized integration and operating continuation (2026-09-20)
+
+User now authorizes all remaining integration, deployment and automatic continuation.
+Reuse this frame and accepted evidence. Outcome: the accepted vocabulary/profile changes
+reach main and the actual operating runtime; reference absorption resumes through existing
+owners, with persisted progress and visible failures. Whole-reference semantic completion
+is continuing operational work, not a prerequisite or a claim of this activation batch.
+
+Observed: remote main is 1382f734, ancestor of the task branch; no open PR, both Fleet
+lanes idle, three bounded jobs accepted and the historical baseline job remains failed.
+Fleet launcher still pins runtime-165 and its old immutable worker image. Research audit
+activation is a separate reviewed release boundary; a Git merge or Fleet acceptance does
+not authorize manufacturing a public-schema activation record.
+
+Path: accepted task branch -> GitHub PR/CI -> main -> pinned host runtime and image ->
+existing launcher -> actual profile receipt -> reviewed research release/activation ->
+existing scheduler -> durable assignment/checkpoint/successor -> monitoring evidence.
+Codex owns integration, release judgments and local operating configuration; any required
+runtime implementation still goes through Claude with one consolidated specification.
+
+Acceptance: exact PR head and CI; source/image/profile digest agreement; preserve auth,
+ledgers and existing evidence; idle/drained service switch with previous launcher snapshot;
+real task progress and successor identity with no false semantic credit. Failure/unknown
+must preserve checkpoints and stop admission at the existing boundary. Restart recovery
+uses existing durable state (no reboot required). Windows is the operating host; Linux
+container and CI results are recorded separately, no new native-Linux/WSL claim. Cleanup
+affects only newly owned run resources. Do not rerun accepted full suites without changed
+code or failing integration evidence. Rollback restores recorded runtime/image and pauses
+new admissions; never erase work or rewrite previous failed jobs as successes.
+
+Batch: consolidate and merge reviewed work; deploy verified artifacts; perform bounded
+automatic-continuation acceptance and connect remaining absorption backlog. Research only
+unresolved release/launcher contracts that affect this path. Minor unrelated findings remain
+follow-up notes; a missing release authority is an explicit blocker, not a direct PG toggle.
