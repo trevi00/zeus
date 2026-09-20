@@ -271,3 +271,47 @@ remaining scope; second-generation continuation only after success; named failur
 and no further launch; actual observer records. Status must expose the D artifact root.
 Prior manual findings are supplementary only, never inserted as verified checkpoints.
 This is host orchestration of existing application APIs, with no runtime implementation edit.
+
+### Canary finding and consolidated Claude implementation handoff
+
+Observed actual run: task `8cf37c35-e374-4e5b-8bb6-a980b40afaf2` traversed Redis/PG and
+Codex, but failed with `ContractError: Unknown disposition`. Partition generation stayed
+0, all 32 paths remained. Collected 70 observation records with zero sink failures,
+conflicts, corrupt or refused records. Raw model result artifact
+`sha256:09691cb2568365baeaa638af565ccd3df2e35d3b657da951678c6b2204d57f0e`
+uses disposition `partial`. No automatic retry or second canary task was started.
+
+Discriminating check: the provider's PathDisposition schema accepts a synthetic complete
+record with disposition `partial`, while parse_record rejects the same record. The
+packaged schema declares an unrestricted string; domain validation accepts exactly
+unreviewed, semantic, generated, duplicate, binary, unavailable. This is a boundary
+contract mismatch, not evidence of provider unavailability or a database failure.
+
+Implement ONE bounded correction of this output vocabulary boundary:
+
+- Keep domain meanings and all existing stored evidence unchanged. Put the accepted
+  disposition vocabulary in one named domain constant used by PathDisposition.validate.
+- Constrain the actual provider output schema to that vocabulary, including the schema
+  nested in partition output. Align the packaged research schema and add an equality
+  regression so static declaration and runtime/domain authority cannot drift unnoticed.
+- Make the analysis prompt explicit: a partial read is `unreviewed` with explanation
+  and remaining scope, or an omitted identity; it is not a new disposition. Never coerce
+  arbitrary output to `semantic`, invent evidence, or loosen checkpoint validation.
+- Reuse existing ResearchAudits/Workflow/AuditExecution. No new scheduler, migration,
+  deployment activation, provider change, automatic retry or broader source audit.
+
+Acceptance matrix for this correction:
+
+| Case | Required result |
+|---|---|
+| Six supported values | Provider schema and domain agree; existing conditional evidence rules remain |
+| `partial` or an unknown string | Provider schema rejects; domain still rejects; no normalization |
+| Partial source inspection represented as unreviewed | Real application checkpoint path persists explanation/remaining scope and advances generation without review credit |
+| Nested partition output | Its actual $defs constrain disposition, not just an unused standalone schema |
+| Existing valid audit fixtures | Retain their accepted behavior and evidence ownership gates |
+| Existing failed canary | Preserve its output and failure; never rewrite it as successful |
+| Timeout/restart/concurrency/platform | No ownership or I/O change; use existing tests, no new platform claims |
+
+Claude implements this section only and supplies focused tests. Codex independently
+reviews the candidate; owner then runs required full checks and a new bounded live canary
+against the accepted candidate. No live retry is authorized by a model's self-report alone.
