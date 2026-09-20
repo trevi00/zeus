@@ -306,8 +306,11 @@ class FleetRunner:
     Children are bounded by `max_parallel`, waited for outside transactions, and every claimed
     job this process launched is finalized by it even if another runner races."""
 
-    def __init__(self, fleet: Fleet, launcher, sleep=time.sleep, interval: float = 5.0):
+    def __init__(self, fleet: Fleet, launcher, sleep=time.sleep, interval: float = 5.0, reconcile=None):
         self.fleet, self.launcher, self.sleep, self.interval = fleet, launcher, sleep, interval
+        # Optional bounded read/group pass run once per tick BEFORE admission, in its own
+        # transaction (the adapter supplies it, so this layer keeps no portfolio dependency).
+        self.reconcile = reconcile
         self.children: dict[str, tuple[dict, object]] = {}
         self.stopping = False
 
@@ -317,8 +320,10 @@ class FleetRunner:
 
     def run(self, once: bool) -> dict:
         self.fleet.registered()  # refuse early when unregistered; ceilings are re-read per scan
-        summary = {"admitted": [], "finalized": [], "finalize_failures": [], "blocked": {}, "stopped": False}
+        summary = {"admitted": [], "finalized": [], "finalize_failures": [], "blocked": {}, "stopped": False,
+                   "reconciliation": {"state": "disabled", "error_type": None}}
         while True:
+            self._reconcile(summary)
             progressed = self._admit(summary)
             progressed = self._reap(summary) or progressed
             if self.children or progressed:
@@ -329,6 +334,20 @@ class FleetRunner:
         summary["stopped"] = self.stopping
         summary["reconciliation_required"] = self.fleet.reconciliation_required()
         return summary
+
+    def _reconcile(self, summary: dict) -> None:
+        """One bounded reconciliation per tick, before admission and outside every other
+        transaction. It never admits, launches, finalizes or retries anything, and its failure is
+        recorded as a fixed `unavailable` state with the exception TYPE only: unrelated Fleet
+        admission and finalization keep running."""
+        if self.reconcile is None:
+            return
+        try:
+            self.reconcile()
+        except Exception as exc:
+            summary["reconciliation"] = {"state": "unavailable", "error_type": type(exc).__name__}
+        else:
+            summary["reconciliation"] = {"state": "ok", "error_type": None}
 
     def _admit(self, summary: dict) -> bool:
         progressed = False
