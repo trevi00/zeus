@@ -1166,8 +1166,17 @@ def test_execution_scopes_output_and_checkpoints_partial_progress(audit, monkeyp
         ['impl'], ['caller'], ['config'], ['git'], ['failure'], [], [], [ref], [], [],
         [{'test': 'upstream suite', 'reason': 'dependencies unavailable',
           'follow_up': 'run in verified runner'}]))
-    answer = {'paths': [path] if scope == 'paths' else [],
-              'subsystems': [subsystem] if scope == 'subsystems' else [],
+    identity = 'path' if scope == 'paths' else 'name'
+    record_body = {k: v for k, v in (path if scope == 'paths' else subsystem).items()
+                   if k != identity}
+    key = (path if scope == 'paths' else subsystem)[identity]
+
+    def assigned(bodies):
+        # One required, nullable property per assigned identity; the key carries the identity.
+        return {field: {k: bodies.get(k) for k in part[field]}
+                for field in ('paths', 'subsystems')}
+
+    answer = {**assigned({key: record_body}),
               'open_questions': ['remaining work'], 'cursor': 'partial'}
     seen = []
 
@@ -1183,11 +1192,15 @@ def test_execution_scopes_output_and_checkpoints_partial_progress(audit, monkeyp
             if 'version' in definition['properties']:
                 assert definition['properties']['version'] == {'type': 'integer', 'const': 1}
         validate(answer, result_schema)
-        validate({**answer, 'paths': [], 'subsystems': []}, result_schema)
-        # A supporting subsystem on a path-only partition is still forbidden.
-        for invalid in ({**answer, 'paths': [path], 'subsystems': [subsystem]},
-                        {**answer, scope: [{**(path if scope == 'paths' else subsystem),
-                            ('path' if scope == 'paths' else 'name'): 'unassigned'}]}):
+        validate({**answer, **assigned({})}, result_schema)  # every identity null: nothing analyzed
+        # A supporting subsystem on a path-only partition, a foreign key, a missing key, a body
+        # carrying its own identity and the legacy repeated-row array are all refused here.
+        other = 'subsystems' if scope == 'paths' else 'paths'
+        for invalid in ({**answer, other: {'unassigned': None}},
+                        {**answer, scope: {**answer[scope], 'unassigned': record_body}},
+                        {**answer, scope: {}},
+                        {**answer, scope: {key: {**record_body, identity: key}}},
+                        {**answer, scope: [path if scope == 'paths' else subsystem]}):
             with pytest.raises(ValidationError):
                 validate(invalid, result_schema)
         return answer
@@ -1206,11 +1219,16 @@ def test_execution_scopes_output_and_checkpoints_partial_progress(audit, monkeyp
         assert all(tx.get('research_partitions', p['partition_id']) == p
                    for p in partitions if p['partition_id'] != part['partition_id'])
         bucket = 'research_paths' if scope == 'paths' else 'research_subsystems'
-        assert [r['record'] for r in tx.scan(bucket)] == answer[scope]
-        assert any(r['record'] == answer[scope][0] for r in tx.scan('research_evidence_history'))
+        # The identity is injected back from the trusted assigned key, not from the body.
+        stored = [path] if scope == 'paths' else [subsystem]
+        assert [r['record'] for r in tx.scan(bucket)] == stored
+        assert any(r['record'] == stored[0] for r in tx.scan('research_evidence_history'))
     # INV-RESEARCH-002: bypassing output validation cannot bypass application scope gates.
     with pytest.raises(ContractError, match='Cross-partition evidence'):
         service.checkpoint(task, PartitionCheckpoint(**saved),
             [PathDisposition(**path)], [SubsystemAnalysis(**subsystem)])
+    # The unscoped schema stays the generic legacy array shape for inspection compatibility.
     generic = AuditExecution.partition_schema()
     validate({**answer, 'paths': [path], 'subsystems': [subsystem]}, generic)
+    with pytest.raises(ValidationError):
+        validate(answer, generic)
