@@ -142,3 +142,26 @@ checks; valid terminal JSON; actual deterministic inspection and independent rev
 On another provider failure, retain it and stop this canary without recursive patches or retries.
 Normal lease path only: success does not prove recovery from an expired lease or live research
 dispatch. Original failed operation remains failed, linked only after an accepted successor exists.
+
+### Owner disposition after the bounded correction
+
+The actual correction candidate b6b590b2f18df21239d1169d224c3a147d624ca6 completed Claude
+execution and deterministic inspection e1cbb2d88221bba346f437f6d8eba94f797d55e98aaf54b6db1a4f1cb2c646bf.
+Independent review explicitly passed report scope, 90 lines, diagram, chronology, snapshot
+attribution and evidence. It rejected ONLY the 613-character response summary against the
+owner-authored 600-character cap. Review evidence:
+sha256:2cf2774e035877407987db79e092f007777f2369e877f7df7160b20a39c7eee1.
+
+Owner decision: accept the report with an explicit 13-character deviation. The cap was an overly
+strict owner handoff criterion intended to test a shorter response, not a runtime safety boundary.
+Both required JSON fields were valid, and the one actual Ruff claim was checked. This is NOT an
+automatic acceptance, a rewrite of the reviewer verdict or proof of a general provider fix.
+No additional model call is justified for this cosmetic deviation. The user's material-blockers-only
+direction controls this acceptance decision; the exception is documented rather than hidden.
+
+Fleet records stay failed/rejected. Its existing accepted-successor/delivery API therefore cannot
+represent this owner exception; no direct database mutation or fabricated accepted job is used.
+The report's owner acceptance is recorded here and in its PR. The project view can still show the
+two canary attempts as needing attention. That representation and handoff-criterion classification
+are bounded follow-up inputs for the deferred self-improvement analysis, not new implementation
+in this delivery. No further run is queued. Live investigation dispatch remains unverified.
