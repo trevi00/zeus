@@ -55,6 +55,7 @@ from codex_harness.application.tickets import TicketSuperseded, ticket_binding
 from codex_harness.application.workflow import Workflow
 from codex_harness.domain.council_input import SCHEMA as COUNCIL_INPUT_POLICY
 from codex_harness.domain.council_input import admit_required, council_budget
+from codex_harness.domain.evidence import STATES
 from codex_harness.domain.invocation import classify_result, parse_request, usage_record
 from codex_harness.domain.model import (
     ContextItem,
@@ -69,11 +70,30 @@ from codex_harness.domain.model import (
     utcnow,
 )
 from codex_harness.domain.model_routing import select_model
-from codex_harness.domain.observation import invocation_outcome, new_process_run_id
+from codex_harness.domain.observation import (
+    FAILURE_OWNERS,
+    INSPECTION_VERDICTS,
+    INVOCATION_OUTCOMES,
+    OUTPUT_REASONS,
+    PROVIDER_CAUSES,
+    STRUCTURAL_CHECKS,
+    TERMINAL_SUBTYPES,
+    inspection_verdict,
+    invocation_outcome,
+    new_process_run_id,
+    safe_code,
+)
 from codex_harness.domain.policy import POLICY
 from codex_harness.domain.project_evidence import worker_schema
 from codex_harness.domain.provider_stream import CODEX_PROGRESS, CodexStream, stream_for
 from codex_harness.domain.research import require_dispatch
+
+# Severity of one evaluated output (operating-portfolio-001): an accepted answer is information, a
+# refusal is not. A structurally invalid answer and a provider failure both lose the run, so neither
+# is a low-severity development note; an interruption or a blocked inspection is a warning.
+OUTPUT_SEVERITY = {"accepted": "info", "empty_answer": "warning", "tool_only": "warning",
+                   "interrupted": "warning", "inspection_blocked": "warning",
+                   "invalid_output": "error", "provider_failure": "error"}
 
 
 def object_schema(properties: dict) -> dict:
@@ -748,8 +768,24 @@ class Executor:
                 if history_recording:
                     result['skill_history_recording'] = history_recording
                 boundary = "result_persistence"
-                evidence_ref = persist_result(self.artifacts, result, key=key, agent=agent, lease=lease,
-                                              basis_revision=basis_revision, context_ref=context_ref['ref'])
+                # INV-OBSERVATION-001: the evaluation of this output is recorded only once its
+                # durable receipt exists, on both exits of `persist_result` — the receipt it returns,
+                # and the one its ExecutionFailure carries after having written it. A refused output
+                # stays refused; the event explains it, it never re-decides it.
+                try:
+                    evidence_ref = persist_result(self.artifacts, result, key=key, agent=agent, lease=lease,
+                                                  basis_revision=basis_revision, context_ref=context_ref['ref'])
+                except ExecutionFailure as failure:
+                    self._output_evaluated(result, execution=observed_execution(reservation_id),
+                                           correlation_id=correlation, causation_id=key,
+                                           reservation_id=reservation_id,
+                                           evidence_ref=(failure.evidence or {}).get("execution_ref"),
+                                           execution_failure=True)
+                    raise
+                self._output_evaluated(result, execution=observed_execution(reservation_id),
+                                       correlation_id=correlation, causation_id=key,
+                                       reservation_id=reservation_id, evidence_ref=evidence_ref["ref"],
+                                       execution_failure=False)
                 boundary = "checkpoint"
                 graph = ({"code": self.knowledge.index_python(cwd),
                           "runtime": self.knowledge.project_runtime(self.service.store, self.service.org)}
@@ -798,6 +834,41 @@ class Executor:
             completed = [event for event in result["events"] if event.get("method") == "item/completed"]
             recovery = {"checkpoint": state, "completed": completed[-4:]}
         raise RuntimeError("Session handoff budget exhausted; task remains resumable from checkpoint")
+
+    def _output_evaluated(self, result, *, execution, correlation_id, causation_id, reservation_id,
+                          evidence_ref, execution_failure: bool) -> None:
+        """What this attempt's output was judged to be, at the boundary where its receipt is durable.
+
+        The classification is the ledger's own (INV-INVOCATION-001) and is not recomputed here. Every
+        other field is a declared code: the structural output reason and its owner, the provider's own
+        failure cause and reported result subtype, and which structural checks ran. A value outside
+        the declared vocabulary becomes `unknown` and an absent one `none`, so no missing field is
+        inferred from a provider subtype; the prompt, the answer, schema property names, commands,
+        stdout and exception text stay out by construction. The durable artifact is linked, not copied.
+        """
+        failure = result.get("failure") if isinstance(result, dict) else None
+        failure = failure if isinstance(failure, dict) else {}
+        structural = result.get("structural") if isinstance(result, dict) else None
+        checks = structural.get("checks") if isinstance(structural, dict) and isinstance(structural.get("checks"), dict) else {}
+        classification = (result.get("invocation") or {}).get("outcome") if isinstance(result, dict) else None
+        outcome_code = safe_code(classification, tuple(INVOCATION_OUTCOMES))
+        reason = safe_code(failure.get("output_reason"), OUTPUT_REASONS)
+        # A structurally invalid answer is not a provider failure: its cause names the output, and
+        # the provider cause stays absent rather than being filled with the output label.
+        cause = safe_code(failure.get("cause"), PROVIDER_CAUSES) if reason == "none" else "none"
+        self.observer.emit("development.output_evaluated",
+                           invocation_outcome(classification) if classification in INVOCATION_OUTCOMES else "unknown",
+                           execution=execution, correlation_id=correlation_id, causation_id=causation_id,
+                           reason_code="output_" + (reason if reason != "none" else outcome_code),
+                           severity=OUTPUT_SEVERITY.get(outcome_code, "warning"),
+                           evidence_refs=[evidence_ref] if type(evidence_ref) is str else [],
+                           attributes={"reservation_id": reservation_id, "invocation_outcome": outcome_code,
+                                       "output_reason": reason, "provider_cause": cause,
+                                       "terminal_subtype": safe_code(failure.get("result_subtype"), TERMINAL_SUBTYPES),
+                                       "failure_owner": safe_code(failure.get("owner"), FAILURE_OWNERS),
+                                       "json_check": safe_code(checks.get("json"), STRUCTURAL_CHECKS, absent="unreported"),
+                                       "schema_check": safe_code(checks.get("schema"), STRUCTURAL_CHECKS, absent="unreported"),
+                                       "execution_failure": bool(execution_failure)})
 
     def execute_one(self, agent: str, expected: dict | None = None) -> dict | None:
         task = self.workflow.claim(agent, str(uuid4()), expected=expected)
@@ -1007,13 +1078,48 @@ class Executor:
 
     def _inspect_evidence(self, task, result, workspace_path):
         claims = result.get("tests") if isinstance(result.get("tests"), list) else []
+        # INV-OBSERVATION-001: the inspection boundary is observable from the ledger identities this
+        # execution already has. The returned verdict and the review gate that reads it are unchanged.
+        execution = self.observer.for_lease(task)
+        correlation = self.observer.correlation(task)
+        refs = [result["execution_ref"]] if type(result.get("execution_ref")) is str else []
+        self.observer.emit("development.evidence_inspection_started", "started", execution=execution,
+                           correlation_id=correlation, causation_id=task["id"], evidence_refs=refs,
+                           attributes={"claims": len(claims)})
+        started = time.monotonic()
         try:
             row = self.evidence.inspect(task, result["candidate"], claims, workspace_path)
         except Exception as exc:
-            # Never a success: the inspection did not complete or was not recorded.
-            return {"verdict": "inspection_error", "cause": type(exc).__name__ + ": " + str(exc)[:300],
+            # Never a success: the inspection did not complete or was not recorded. The exception's
+            # own text is not part of the identity of that fact, and a wrapped foreign message may
+            # carry a secret, so the type and a digest of the message identify it instead - the same
+            # wording the observation records use for foreign errors.
+            error_type, message_sha256 = type(exc).__name__, digest(str(exc))[:16]
+            self._inspection_finished(execution, correlation, task, "inspection_error", refs,
+                                      claims=len(claims), elapsed=time.monotonic() - started,
+                                      error_type=error_type, message_sha256=message_sha256)
+            return {"verdict": "inspection_error", "cause": error_type + ": message_sha256=" + message_sha256,
                     "claims": len(claims)}
+        self._inspection_finished(execution, correlation, task, row["verdict"], refs, claims=len(claims),
+                                  elapsed=time.monotonic() - started, inspection_id=row["id"],
+                                  denominator=row["denominator"])
         return {"inspection_id": row["id"], "verdict": row["verdict"], "denominator": row["denominator"]}
+
+    def _inspection_finished(self, execution, correlation, task, verdict, evidence_refs, *, claims,
+                             elapsed, inspection_id=None, denominator=None, error_type=None,
+                             message_sha256=None) -> None:
+        """How the inspection ended, with its denominator; unknown and error never read as success."""
+        outcome, reason_code, severity = inspection_verdict(verdict)
+        counts = denominator if isinstance(denominator, dict) else {}
+        self.observer.emit("development.evidence_inspection_finished", outcome, execution=execution,
+                           correlation_id=correlation, causation_id=task["id"], reason_code=reason_code,
+                           severity=severity, evidence_refs=evidence_refs,
+                           attributes={"inspection_id": inspection_id,
+                                       "verdict": safe_code(verdict, tuple(INSPECTION_VERDICTS)),
+                                       "claims": claims, "findings": counts.get("claims"),
+                                       "elapsed_seconds": float(elapsed),
+                                       "error_type": error_type, "message_sha256": message_sha256,
+                                       **{state: counts.get(state) for state in STATES}})
 
     def _lost_execution(self, lease, error, rejection_error=None):
         # INV-SESSION-001: a stale executor cannot publish failure or diagnosis.
