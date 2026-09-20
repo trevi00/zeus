@@ -1197,3 +1197,44 @@ and FileArtifacts execution are real. Receipt: claims-final-owner-pg.json on D.
 No production task changed. No remaining owner blocker. Runtime/package bytes are unchanged
 from accepted f60148a, preserving image and actual CLI canary evidence. New full CI and independent
 fixture-only review remain required. The prior integration failure is preserved, not retried green.
+
+### Accepted rollout and continuous operation started (2026-09-21 KST)
+
+PR #171 merged as 459816fd27c45d23d5a074f306bfe07afbbd7058. Final full CI 35533070693
+passed on attempt 1: both Windows/Python versions, both Linux/Python versions, service integration
+and final gate. Earlier failed/cancelled runs remain recorded above. Runtime candidate f60148a and
+test-only b137134 were independently accepted; owner Windows/actual PG proof is preserved separately.
+Image sha256:7519fbdb06c4f41ead952c75e686ec2ec48d8006c7c45f04279f1dc8ec6596a3 matched
+225 package files and passed actual CLI startup/file-task checks. Existing Releases APIs activated
+release 8be48acb53caa070d7556588d2e2a9f35b3d5583fe94bb08d5e42cdfa428500d; the prior release
+and image remain available. Fleet/desk/monitor stay on runtime-167; audit alone uses runtime-171.
+
+Actual recovery 003: task 6975f930 completed at attempt 3 as analysis_checkpointed; failed attempts
+1 and 2 remain. Partition generation advanced to 1, all 32 paths remain, 7 questions. Publication
+completed and 62 observations were collected with zero sink/conflict/corrupt/refused counts.
+Actual normal canary 003: tasks 1442acb2 and 6c7ba1b4 both completed as analysis_checkpointed and
+published their reports. Exactly 2 executions then stop_reason=max_tasks_reached, exit 0. Collection
+was 76 + 74 records, zero sink/corrupt/refused. Both still have 32 remaining paths (5/6 questions).
+These are retained partial checkpoints, NOT semantic completion or accepted source adoption.
+
+After those gates, the existing hidden process-tree owner was registered as scheduled task
+ZeusAudit-run, AtLogOn, IgnoreNew, no execution-time cap and no automatic failure retry. Registration
+alone is not the proof: read-only status confirmed a new live owner
+`audit-service:4b271df974fa4f9080a2c27a28b2c652` bound task
+8b418943-0ea4-464a-9e5f-5396e8a9c663 under the activated revision; stop_reason was null.
+The background owner journal recorded child startup. The current task's eventual result is NOT
+claimed here. No reboot/logon recovery was exercised.
+
+The selected Ouroboros audit still has 58 partitions with remaining work, 1817 remaining paths,
+14 remaining subsystems and 48 questions at startup. Whole-source absorption is NOT complete.
+Local Claude/Baldrix/guardian full absorption and Hermes/oh-my-hermes scopes remain open; the
+already deployed selected profile principles do not stand in for that analysis. This launch
+covers this one selected source audit only, not universal unattended merging or deployment.
+Execution/evidence failures stop the service; rejected drafts are retained without credit or retry.
+
+Owner receipts under D:/workspaces/zeus/artifacts/self-improvement-reference-001/:
+claims-final-ci.json; claims-image-verification.json; claims-release-canary-001/receipt.json;
+claims-release-activation-001/receipt.json; audit-recovery-003/receipt.json;
+audit-service-host-canary-003.json; continuous-start-status.json; audit-scheduled-task.xml;
+audit-background.jsonl. Large raw evidence stays on D. Public audit/runtime rows remain the
+live authority; this paragraph is a dated startup observation, not a promise of ongoing health.
