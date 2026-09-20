@@ -252,3 +252,31 @@ new model calls, global policy changes or modified historical receipts. Owner th
 reviews the complete bridge and correction, validates the original baseline-test mismatch, and runs
 the full acceptance checks before merge/deployment. The original running task is a retained stale
 record to reconcile through supported recovery, not a reason to overwrite PG state manually.
+
+### Consolidated recovery review, candidate 2d2ab890 (next bounded correction)
+
+The first recovery candidate renewed host/Docker replay but its static review found two gaps.
+Preserve its tests and changes; it is imported as 558b0d6. The unchanged assumption to remove is that
+an optional callback accepted by some adapters and a recent check outside a transaction fence every
+production route. Inspect the whole affected path once: Executor -> EvidenceInspections -> legacy,
+Docker and ProjectEvidenceInspector -> command capture -> cached or new ledger publication.
+
+R1: add per-call optional progress to ProjectEvidenceInspector.inspect and its command replay route,
+forward through the existing _capture polling implementation, including profile-specific observations.
+Do not swallow cancellation into a successful check or ignore the callback because of the profile.
+Snapshot, profile digest, allowlist and environment remain unchanged. Test this actual adapter route
+with a short real child and injected ownership loss; use an existing valid project-profile fixture.
+
+R2: LeaseProgress must force fresh ownership/deadline checks at boundaries (inspection start/end,
+replay start/end); throttle only intermediate poll checks. More importantly add an optional caller
+transaction guard to EvidenceInspections.inspect. Executor provides workflow._owned(tx, task).
+Invoke it INSIDE the SAME store transaction before returning cached evidence and before final row
+lookup/write. Guard refusal must propagate as ownership failure without writing a success or an
+inspection-recording-failure notice. Do not start a nested transaction for this guard. Legacy callers
+without a guard keep their contract, but production executor always supplies it. Cache hits are not
+exempt from ownership checks. Test default 5-second cadence with a fence change within that window;
+change ownership immediately before publication transaction; assert no inspection/false notice;
+cover cached hit, valid owner, and both profile/legacy execution. Treat tests as injected failure
+evidence, not a real stale-operation recovery. This closes the complete ownership boundary; no new
+scheduler, retry, timeout extension or detached thread. Focused tests and ruff only. Stop after these
+criteria pass and submit for independent review. Original investigation implementation unchanged.
