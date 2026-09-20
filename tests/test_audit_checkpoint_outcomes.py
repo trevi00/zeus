@@ -458,6 +458,91 @@ def test_trusted_anchor_failures_stay_ordinary_execution_failures(
     assert committed(service.store) == before
 
 
+@pytest.mark.parametrize("trusted", ["stale_ownership", "stale_generation", "changed_scope",
+                                      "foreign_assignment"])
+def test_a_duplicate_draft_from_an_untrusted_execution_fails_as_execution_integrity(
+        audit, trusted):  # noqa: F811  the parameter is pytest's injection of the imported fixture
+    """Combined fault: the SAME batch carries duplicate coverage and a failed trusted guard.
+
+    self-improvement-reference-001, 2026-09-21 independent lead disposition: duplicate coverage was
+    refused before ownership, assignment, generation and immutable scope were settled, so a stale
+    or unassigned execution submitting duplicates was reported as a candidate's fault. Order alone
+    decides which of the two faults is seen here, so each case asserts the ordinary type AND the
+    trusted message - `Duplicate coverage` must not be the verdict for any of them.
+    """
+    service, record, _, _, _ = audit
+    activate_fixture(service)
+    part, task = claim_partition(service, record, "duplicate-" + trusted)
+    ref = service.artifacts.put("one traced path", "fixture")["ref"]
+    semantic = PathDisposition(part["paths"][0], "semantic", [ref], ["symbol"], "traced",
+                               [], "", [])
+    # The identical duplicate claim of the accepted `duplicate_records` case above.
+    duplicates = [semantic, replace(semantic, disposition="unreviewed", evidence_refs=[],
+                                    justification="")]
+    checkpoint = PartitionCheckpoint(**part)
+    if trusted == "stale_ownership":
+        # A really completed task: the lease is spent and the durable fence refuses this writer.
+        service.workflow.complete(task, {"analysis": {"outcome": "analysis_rejected"}})
+        expected = "Stale or expired task execution"
+    elif trusted == "stale_generation":
+        checkpoint = replace(checkpoint, generation=part["generation"] + 1)
+        expected = "Stale partition writer"
+    elif trusted == "changed_scope":
+        checkpoint = replace(checkpoint, paths=part["paths"][:1],
+                             remaining_paths=part["remaining_paths"][:1])
+        expected = "Partition scope changed"
+    else:
+        checkpoint = replace(checkpoint, partition_id=digest({"foreign": "partition"}))
+        expected = "Execution is not assigned this partition"
+    before = committed(service.store)
+
+    with pytest.raises(ContractError) as failure:
+        service.checkpoint(task, checkpoint, duplicates, [])
+
+    assert not isinstance(failure.value, AuditDraftRejected), "integrity is not a candidate claim"
+    assert expected in str(failure.value)
+    assert "Duplicate coverage" not in str(failure.value)
+    assert committed(service.store) == before
+    coverage = service.coverage(record["id"])
+    assert coverage["reviewed_paths"] == 0
+    assert len(coverage["remaining_paths"]) == len(record["inventory"])
+
+
+def test_a_valid_owner_submitting_duplicates_is_still_a_typed_rejection_that_commits_nothing(
+        audit):  # noqa: F811  the parameter is pytest's injection of the imported fixture
+    """The control for the combined faults above: with every trusted guard passing, the duplicate
+    claim is still the candidate's own fault, still typed, and still commits nothing.
+
+    Duplicates on both record kinds in one batch, so the moved guard is exercised whole.
+    """
+    service, record, _, _, _ = audit
+    activate_fixture(service)
+    part, task = claim_partition(service, record, "valid-owner-duplicate")
+    ref = service.artifacts.put("one traced path", "fixture")["ref"]
+    semantic = PathDisposition(part["paths"][0], "semantic", [ref], ["symbol"], "traced",
+                               [], "", [])
+    duplicates = [semantic, replace(semantic, disposition="unreviewed", evidence_refs=[],
+                                    justification="")]
+    before = committed(service.store)
+
+    with pytest.raises(AuditDraftRejected, match="Duplicate coverage"):
+        service.checkpoint(task, PartitionCheckpoint(**part), duplicates, [])
+
+    assert committed(service.store) == before
+    analysis = SubsystemAnalysis("core", [record["inventory"][0]["path"]], ["contract"], ["main"],
+                                 ["impl"], ["caller"], ["config"], ["git"], ["failure"], [], [],
+                                 [ref], [], [],
+                                 [{"test": "upstream suite", "reason": "isolation unavailable",
+                                   "follow_up": "run in a verified runner"}])
+    with pytest.raises(AuditDraftRejected, match="Duplicate coverage"):
+        service.checkpoint(task, PartitionCheckpoint(**part), [], [analysis, replace(analysis)])
+
+    assert committed(service.store) == before
+    # The lease is untouched by either rejection: this is retained work, not a stopped execution.
+    assert service.workflow.complete(
+        task, {"analysis": {"outcome": "analysis_rejected"}})["status"] == "succeeded"
+
+
 # ----- the service: a refused candidate is settled work, a failure still stops ------------------
 def candidate_answers(audits, rejected_partition):
     """A draft that passes the typed decoder and fails only on a claim it makes itself.

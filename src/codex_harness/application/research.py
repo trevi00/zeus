@@ -156,8 +156,6 @@ class ResearchAudits:
         # lease, assignment, generation, immutable scope, stored records and the store itself -
         # stay ordinary `require` failures. The whole transaction is all-or-nothing either way: a
         # rejection raised after staged writes leaves this transaction before any caller sees it.
-        reject(len({p.path for p in dispositions}) == len(dispositions)
-               and len({s.name for s in analyses}) == len(analyses), 'Duplicate coverage')
         with self.store.transaction() as tx:
             current_task = self.workflow._owned(tx, task)
             details = current_task['message']['what']['details']
@@ -173,6 +171,12 @@ class ResearchAudits:
             require(audit is not None, 'Unknown audit')
             # Ownership, generation and immutable scope are settled above; from here the draft's
             # own relationship and evidence claims are classified against the trusted records.
+            # self-improvement-reference-001, 2026-09-21 independent lead disposition: duplicate
+            # coverage is the FIRST of those candidate claims, so it is refused here and no longer
+            # ahead of the trusted guards. A stale, unassigned or rescoped execution that also
+            # submits duplicates therefore fails as the ordinary execution failure it is.
+            reject(len({p.path for p in dispositions}) == len(dispositions)
+                   and len({s.name for s in analyses}) == len(analyses), 'Duplicate coverage')
             anchors = self._anchors(tx, audit)
             for record in [*dispositions, *analyses]:
                 self._claimed_evidence(anchors, record.evidence_refs)

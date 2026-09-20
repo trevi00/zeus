@@ -147,11 +147,14 @@ class AuditExecution:
     def proposed_checkpoint(trusted, answer):
         """Decode one model answer into the checkpoint it proposes. Pure content validation only.
 
-        This is the ONE recoverable rejection boundary: it reads the already validated trusted
-        partition and the answer, and it touches no store, lease, runner, artifact or provider. A
-        `ContractError` raised inside it therefore says that generated content was refused and
-        nothing else. Identities come from the trusted scope, never from the answer, and no value
-        is deduplicated, merged or normalized.
+        This is the FIRST half of the recoverable rejection boundary: it reads the already validated
+        trusted partition and the answer, and it touches no store, lease, runner, artifact or
+        provider. A `ContractError` raised inside it therefore says that generated content was
+        refused and nothing else. The second half is `AuditDraftRejected` from
+        `ResearchAudits.checkpoint`, where the draft's relationship and evidence claims - duplicate
+        coverage among them - are refused only AFTER that method's trusted ownership, assignment,
+        generation and scope guards have passed. Identities come from the trusted scope, never from
+        the answer, and no value is deduplicated, merged or normalized.
         """
         paths = AuditExecution.decode_assigned('PathDisposition', 'path', trusted.paths,
                                                answer.get('paths'))
@@ -341,10 +344,11 @@ class AuditExecution:
             # `.get` inside: a field the provider dropped is refused by the same shape check.
             checkpoint, paths, systems = self.proposed_checkpoint(trusted, answer)
         except ContractError as rejection:
-            # ONLY the pure content boundary above is recoverable. run_model, the runner, artifact
-            # inspection, the lease, the store and ResearchAudits.checkpoint are all outside this
-            # catch, and a programmer error is not a ContractError, so none of them can be reported
-            # as a rejected draft. Nothing of this batch is checkpointed: the partition keeps its
+            # ONLY the pure content boundary above is recoverable HERE. run_model, the runner,
+            # artifact inspection, the lease, the store and ResearchAudits.checkpoint are all
+            # outside this catch, and a programmer error is not a ContractError, so none of them can
+            # be reported as a rejected draft by it; the checkpoint half of the boundary has its own
+            # typed catch below. Nothing of this batch is checkpointed: the partition keeps its
             # generation and its whole remaining scope for an explicitly reviewed later decision.
             return self.rejected_analysis(task, trusted, answer, rejection)
         try:

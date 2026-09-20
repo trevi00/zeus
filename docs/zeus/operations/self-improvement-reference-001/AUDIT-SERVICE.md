@@ -338,3 +338,33 @@ the owner and CI must run it without skips. The discriminating control for the w
 by temporarily making `reject()` raise a plain `ContractError`: 19 of the new regressions failed
 and the integrity and acceptance controls kept passing. The full suite, the history checks and any
 new host canary stay with the owner and CI.
+
+## Trusted guard ordering correction (2026-09-21 KST)
+
+The independent Fleet lead's P2 static finding is now corrected in `application/research.py`: the
+`Duplicate coverage` reject is inside `checkpoint`'s transaction, AFTER `_owned`, the assignment,
+the stored generation, the immutable scope and the known-audit check, and BEFORE the anchors,
+claimed evidence and every other candidate relationship check. Nothing else moved: the exception
+types, the artifact taxonomy, the transaction semantics, the catch in `adapters/audit_execution.py`,
+the scheduler and the retention rules are unchanged, and the stale "ONE recoverable boundary"
+comments in `adapters/audit_execution.py` were corrected to name both halves, with no behavior
+change. The owner's earlier verdict that the keyed decoder cannot emit duplicates and that
+completion still fences ownership stands: no false coverage or operational failure was
+demonstrated, and this is an entry-contract alignment, not a defect repair.
+
+Checks actually run for this correction, in the worker container:
+`python -m pytest tests/test_audit_checkpoint_outcomes.py -q` (40 passed, 3 skipped) and
+`python -m ruff check .`. The 3 skips are the `postgres` parameters of `rollback_store` without
+`HARNESS_INTEGRATION=1`; those cases are unchanged by this correction and the owner already ran
+them 3/3 at the previous candidate. No other suite, no full suite, no model call and no host
+service ran here. The new regressions are
+`test_a_duplicate_draft_from_an_untrusted_execution_fails_as_execution_integrity`
+(duplicate coverage combined with spent ownership, a stale generation, a changed scope or a
+foreign assignment: each must stay an ordinary `ContractError` carrying the trusted message) and
+`test_a_valid_owner_submitting_duplicates_is_still_a_typed_rejection_that_commits_nothing` (the
+control: with every trusted guard passing, duplicates on either record kind stay
+`AuditDraftRejected`, commit nothing and leave the lease usable). The discriminating control was
+run by temporarily restoring the pre-transaction ordering in the same file: all four combined-fault
+cases failed with `AuditDraftRejected('Duplicate coverage')` and the valid-owner control passed
+under both orderings. A disposable checkout copy was not available in this container, so that
+control ran in the working tree and the ordering was restored before the final run above.
