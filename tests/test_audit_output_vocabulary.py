@@ -34,16 +34,38 @@ def body(disposition, path='cGF0aA=='):
     return asdict(PathDisposition(path, disposition, [], [], '', [], '', []))
 
 
+def wire(record, identity='path'):
+    """A record body without its identity field: the assigned key carries that identity."""
+    return {k: v for k, v in record.items() if k != identity}
+
+
+def assigned(record, **fields):
+    """The assigned wire shape: one nullable body per identity, the identity only in the key."""
+    return {'paths': {record['path']: wire(record)}, 'subsystems': {},
+            'open_questions': [], 'cursor': 'c', **fields}
+
+
+def assigned_answer(part, paths=None, **fields):
+    """Every assigned identity present exactly once: a body for analyzed work, null for the rest."""
+    paths = paths or {}
+    return {'paths': {key: paths.get(key) for key in part['paths']},
+            'subsystems': {name: None for name in part['subsystems']},
+            'open_questions': [], 'cursor': 'c', **fields}
+
+
 def test_static_declaration_and_domain_authority_cannot_drift():
     expected = {'type': 'string', 'enum': list(PATH_DISPOSITIONS)}
     assert len(set(PATH_DISPOSITIONS)) == 6 and 'partial' not in PATH_DISPOSITIONS
     assert packaged_disposition() == expected
     assert output_definitions()['PathDisposition']['properties']['disposition'] == expected
     assert AuditExecution.typed_schema('PathDisposition')['properties']['disposition'] == expected
-    # The nested definition actually consumed by partition output, scoped and unscoped.
-    for partition in (None, {'paths': ['cGF0aA=='], 'subsystems': ['core']}):
-        nested = AuditExecution.partition_schema(partition)['$defs']['PathDisposition']
-        assert nested['properties']['disposition'] == expected
+    # The nested definition actually consumed by partition output: the generic array definition
+    # when unscoped, the assigned identity-keyed body when a partition is assigned.
+    assert AuditExecution.partition_schema()['$defs']['PathDisposition']['properties'][
+        'disposition'] == expected
+    scoped = AuditExecution.partition_schema({'paths': ['cGF0aA=='], 'subsystems': ['core']})['$defs']
+    assert scoped['AssignedPathDisposition']['properties']['disposition'] == expected
+    assert 'path' not in scoped['AssignedPathDisposition']['properties']
 
 
 @pytest.mark.parametrize('disposition', PATH_DISPOSITIONS)
@@ -52,19 +74,24 @@ def test_supported_values_pass_both_boundaries(disposition):
     validate(record, AuditExecution.typed_schema('PathDisposition'))
     validate({'paths': [record], 'subsystems': [], 'open_questions': [], 'cursor': 'c'},
              AuditExecution.partition_schema())
+    validate(assigned(record),
+             AuditExecution.partition_schema({'paths': [record['path']], 'subsystems': []}))
 
 
 @pytest.mark.parametrize('disposition', REJECTED)
 def test_unknown_values_are_rejected_and_never_normalized(disposition):
     record = body(disposition)
-    for schema in (AuditExecution.typed_schema('PathDisposition'),
-                   AuditExecution.partition_schema({'paths': [record['path']], 'subsystems': []})
-                   ['$defs']['PathDisposition']):
-        with pytest.raises(ValidationError):
-            validate(record, schema)
+    scoped = AuditExecution.partition_schema({'paths': [record['path']], 'subsystems': []})
+    with pytest.raises(ValidationError):
+        validate(record, AuditExecution.typed_schema('PathDisposition'))
+    with pytest.raises(ValidationError):
+        validate({k: v for k, v in record.items() if k != 'path'},
+                 {**scoped['$defs']['AssignedPathDisposition'], '$defs': scoped['$defs']})
     with pytest.raises(ValidationError):
         validate({'paths': [record], 'subsystems': [], 'open_questions': [], 'cursor': 'c'},
                  AuditExecution.partition_schema())
+    with pytest.raises(ValidationError):
+        validate(assigned(record), scoped)
     with pytest.raises(ContractError, match='Unknown disposition'):
         parse_record({'version': 1, 'kind': 'PathDisposition', 'record': record})
 
@@ -114,9 +141,9 @@ def test_partial_inspection_checkpoints_as_unreviewed_without_review_credit(
     part, task, execution = partition_task(service, record)
     partial = body('unreviewed', part['paths'][0])
     partial['justification'] = 'read lines 0-40 of 900; the remaining body is not inspected'
-    answer = {'paths': [partial], 'subsystems': [],
-              'open_questions': ['Finish reading the remaining body of the assigned path'],
-              'cursor': '40'}
+    answer = assigned_answer(part, {partial['path']: wire(partial)},
+                             open_questions=['Finish reading the remaining body of the assigned path'],
+                             cursor='40')
 
     def run_model(task, objective, evidence, result_schema):
         if 'commands' in result_schema['properties']:
@@ -124,7 +151,8 @@ def test_partial_inspection_checkpoints_as_unreviewed_without_review_credit(
         assert 'partial is not a disposition' in objective
         validate(answer, result_schema)
         with pytest.raises(ValidationError):
-            validate({**answer, 'paths': [{**partial, 'disposition': 'partial'}]}, result_schema)
+            validate({**answer, 'paths': {**answer['paths'],
+                partial['path']: {**wire(partial), 'disposition': 'partial'}}}, result_schema)
         return answer
 
     monkeypatch.setattr(execution, 'run_model', run_model)
@@ -148,9 +176,9 @@ def test_provider_partial_answer_still_fails_closed_in_the_application_path(
     service, record, _, _, _ = audit
     activate_fixture(service)
     part, task, execution = partition_task(service, record, 'partial-refusal')
-    answer = {'paths': [body('partial', part['paths'][0])], 'subsystems': [],
-              'open_questions': [], 'cursor': 'partially read'}
-    answer['paths'][0]['justification'] = 'partially read'
+    refused = body('partial', part['paths'][0])
+    refused['justification'] = 'partially read'
+    answer = assigned_answer(part, {refused['path']: wire(refused)}, cursor='partially read')
 
     def run_model(task, objective, evidence, result_schema):
         if 'commands' in result_schema['properties']:

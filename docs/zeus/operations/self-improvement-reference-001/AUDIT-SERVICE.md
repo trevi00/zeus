@@ -34,7 +34,7 @@ Files: `src/codex_harness/adapters/audit_service.py` (the whole adapter), `src/c
 | Publication | `application.outbox.relay` through `Harness.flush_outbox` (correlation scoped) |
 | Transport | `adapters.bus.RedisBus` with the existing consumer-group semantics |
 | Acceptance, claim guard, lease, completion, failure | `application.workflow.Workflow` |
-| Analysis and the model contract | `adapters.audit_execution.AuditExecution` (unchanged) |
+| Analysis and the model contract | `adapters.audit_execution.AuditExecution` (assigned output shape corrected below; the rest unchanged) |
 | Scope arithmetic and evidence | `application.research.ResearchAudits.checkpoint` (unchanged) |
 | Logs and their allow-lists | `application.observations.Observer`, `domain.observation` |
 | Child processes on a signal | the existing process-tree owner |
@@ -106,6 +106,59 @@ the last collection health (including a collection failure's exception type).
   `zeus inspect audit_service`; adding it to the monitor's bucket list is a separate change.
 - The `run` gate requires an already reconciled active activation. This command never writes
   `research_control`; `schedule_audits` keeps calling the existing `Releases.reconcile_audits`.
+
+## Unique result ownership in assigned partition output (this batch)
+
+The first real two-task host canary stopped at its first task
+`d1133291-1151-4ffd-987a-6671cd0f34bd` with `retry/ContractError: Duplicate coverage`: the model's
+output artifact `sha256:0b573a6e14db5bd4534f4cdfb3f6f790722259e5e731eb0988073d0f412c43f4` held five
+`PathDisposition` rows, two of them for the identity
+`ZG9jcy9jb250cmlidXRpbmcvcmV2aWV3LWNvbnZlbnRpb25zLm1k` (`docs/contributing/review-conventions.md`).
+No second task was started; the partition kept generation 0 and all 32 paths, and 64 observations
+were collected with no sink failure. That is observed duplicate identity in provider output, not a
+PostgreSQL, scheduler or service failure, and the existing checkpoint duplicate guard correctly
+refused the whole checkpoint.
+
+The affected assumption was that an enum-constrained array binds ownership. It binds membership
+only. The one revised boundary is provider output -> decoded canonical records -> the unchanged
+checkpoint:
+
+- `AuditExecution.partition_schema(partition)` now returns `paths` and `subsystems` as closed
+  objects keyed by the immutable assigned identities. Every assigned key is required exactly once
+  and is `null` (not analyzed; the identity stays in remaining work) or one record body derived
+  from the existing definition minus its `path`/`name` field (`AssignedPathDisposition`,
+  `AssignedSubsystemAnalysis`). An empty assignment is `{}`. `partition_schema()` with no partition
+  keeps the generic legacy array shape for inspection compatibility; actual execution is always
+  scoped.
+- `AuditExecution.decode_assigned` validates the shape before the domain decode: the result map
+  must carry exactly the assigned keys, a body must be an object and must not repeat its own
+  identity field, and the identity is injected from the trusted key. Nulls are omitted. Nothing is
+  deduplicated, merged, reordered, retried or normalized; `parse_record` and
+  `ResearchAudits.checkpoint` are untouched, so the duplicate-coverage, scope, receipt and
+  evidence guards remain authoritative and independent.
+- The model objective now states null/one result per identity. The domain vocabulary, the evidence
+  conditions, the receipt rules, the checkpoint guards and every historical array record and
+  artifact are unchanged; no migration of stored records, PostgreSQL schema or six-W messages.
+
+Primary source, opened 2026-09-21 KST:
+<https://developers.openai.com/api/docs/guides/structured-outputs> (all fields required, nullable
+unions for optional values, `additionalProperties: false`, nested `anyOf` and definitions). That
+supports this closed nullable object shape; it is not evidence that the local provider (Codex CLI
+0.153.4) accepted this exact schema. The actual canary after CI remains the compatibility check.
+
+Checks actually run for this batch, in the worker container:
+`python -m pytest tests/test_audit_output_vocabulary.py tests/test_research_audits.py
+tests/test_output_schema.py tests/test_output_validation.py tests/test_audit_output_identity.py -q`
+and `python -m ruff check .`. `tests/test_audit_output_identity.py` carries the acceptance matrix
+(one partial record plus nulls, path-only/subsystem-only/empty assignments, missing, foreign, inner
+identity and legacy repeated-row arrays refused before the checkpoint, and the old assigned schema
+reconstructed as the control that does accept two rows for one identity). Its execution tests mock
+only the model turn and run the real `MemoryStore` `ResearchAudits.checkpoint` with `FixtureRunner`
+receipts: no provider, Redis, PostgreSQL or host service was involved. `test_output_schema.py::
+test_baseline_reconstruction_and_semantic_preservation` fails in this snapshot before and after the
+change because `git show` refuses the checkout (`detected dubious ownership`, a global git
+configuration this worker does not change); the historical-checkout check belongs to CI/the owner,
+as does the full suite and any new host canary.
 
 ## Evidence and verification
 

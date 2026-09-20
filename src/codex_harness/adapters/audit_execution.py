@@ -21,6 +21,14 @@ def schema(**properties):
 
 TEXT = {'type': 'string'}
 STRINGS = {'type': 'array', 'items': TEXT}
+NULL = {'type': 'null'}
+
+
+def assigned_body(definition, identity):
+    """The record definition without its identity field: the assigned key carries that identity."""
+    return {**definition,
+            'properties': {k: v for k, v in definition['properties'].items() if k != identity},
+            'required': [k for k in definition['required'] if k != identity]}
 
 
 def output_definitions():
@@ -64,14 +72,44 @@ class AuditExecution:
             open_questions=STRINGS, cursor=TEXT)
         result_schema['$defs'] = defs
         if partition is not None:
-            # INV-RESEARCH-002: output identities must match immutable assigned scope.
+            # INV-RESEARCH-002: output identities must match immutable assigned scope, and each
+            # assigned identity owns exactly one result. 2026-09-21 host canary
+            # `d1133291-1151-4ffd-987a-6671cd0f34bd`: an enum-constrained array bound membership
+            # but still returned two PathDisposition rows for one path, so the checkpoint duplicate
+            # guard refused the whole partition. One required, nullable property per identity
+            # cannot express a second record; an unscoped schema stays generic for inspection.
             for field, kind, identity in [('paths', 'PathDisposition', 'path'),
                                           ('subsystems', 'SubsystemAnalysis', 'name')]:
-                if partition[field]:
-                    defs[kind]['properties'][identity] = {'type': 'string', 'enum': list(partition[field])}
-                else:
-                    result_schema['properties'][field]['maxItems'] = 0
+                require(len(set(partition[field])) == len(partition[field]),
+                        'Duplicate assigned identity')
+                defs['Assigned' + kind] = assigned_body(defs[kind], identity)
+                properties = {key: {'anyOf': [NULL, {'$ref': '#/$defs/Assigned' + kind}]}
+                              for key in partition[field]}
+                result_schema['properties'][field] = {
+                    'type': 'object', 'additionalProperties': False,
+                    'properties': properties, 'required': list(properties)}
         return result_schema
+
+    @staticmethod
+    def decode_assigned(kind, identity, assigned, results):
+        """Decode one nullable body per assigned identity; the shape is checked before the domain.
+
+        Missing, foreign or repeated identities, arrays, an identity field inside a body and any
+        malformed body are refused here. Nothing is deduplicated, reordered or normalized: a null
+        is simply not analyzed and its identity stays in the partition's remaining work.
+        """
+        require(len(set(assigned)) == len(assigned), 'Duplicate assigned identity')
+        require(type(results) is dict and set(results) == set(assigned),
+                'Assigned output identities changed')
+        records = []
+        for key in assigned:
+            body = results[key]
+            if body is None:
+                continue
+            require(type(body) is dict and identity not in body, 'Invalid assigned output record')
+            records.append(parse_record({'version': 1, 'kind': kind,
+                                         'record': {**body, identity: key}}))
+        return records
 
     def execute(self, task):
         details = task['message']['what']['details']
@@ -150,15 +188,18 @@ class AuditExecution:
         result_schema = self.partition_schema(partition)
         answer = self.run_model(task, 'Semantically trace this bounded partition against contracts, callers, '
             'configuration, failure handling and tests. Use only supplied successful runner receipt IDs. '
-            'Return paths records only for identities in partition.paths and subsystem records only '
-            'for names in partition.subsystems. Use only these dispositions: '
+            'paths and subsystems are objects keyed by exactly the identities in partition.paths '
+            'and partition.subsystems: every assigned key is present once and carries either null '
+            'or one record body. Omit the path/name field inside a body; the key is that identity. '
+            'Use null for an identity you did not analyze, and never repeat, rename, add or drop a '
+            'key. Use only these dispositions: '
             + ', '.join(PATH_DISPOSITIONS) + '. A partially read path stays unreviewed with its '
-            'explanation in justification and its remaining work in open_questions, or omit that '
-            'path entirely; partial is not a disposition and unverified work is never semantic. '
-            'An empty assignment requires an empty output array; '
+            'explanation in justification and its remaining work in open_questions, or is null; '
+            'partial is not a disposition and unverified work is never semantic. '
+            'An empty assignment requires an empty object; '
             'do not add supporting subsystem records to a path-only partition. Subsystem trace paths '
-            'may reference repository inventory paths. Partial results may omit assigned identities; '
-            'all omitted or unresolved work remains in its existing partition. '
+            'may reference repository inventory paths. Partial results may leave assigned identities '
+            'null; all null or unresolved work remains in its existing partition. '
             'Explicitly preserve unreviewed scope, tests not run and open questions. Inventory is not review. '
             'Never infer execution from test file presence. For each executed test in tests, use a JSON '
             'string encoding the exact argv array of its successful execution receipt. source-list and '
@@ -166,10 +207,11 @@ class AuditExecution:
             'including each test verbatim '
             'with reason and follow_up. On context limits return partial progress.',
             evidence, result_schema)
-        def decode(kind, records):
-            return [parse_record({'version': 1, 'kind': kind, 'record': r}) for r in records]
-        paths = decode('PathDisposition', answer['paths'])
-        systems = decode('SubsystemAnalysis', answer['subsystems'])
+        # `.get`: a field the provider dropped is refused by the same shape check, not a KeyError.
+        paths = self.decode_assigned('PathDisposition', 'path', partition['paths'],
+                                     answer.get('paths'))
+        systems = self.decode_assigned('SubsystemAnalysis', 'name', partition['subsystems'],
+                                       answer.get('subsystems'))
         covered_paths = {p.path for p in paths if p.disposition not in {'unreviewed', 'unavailable'}}
         covered_systems = {s.name for s in systems if not (
             s.contradictions or s.unresolved_dependencies or s.tests_not_run)}
