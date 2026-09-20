@@ -98,6 +98,12 @@ class ObservedAsset:
         return self.state in OBSERVED_PENDING_STATES
 
 
+# The single accepted path-disposition vocabulary (2026-09-20 canary: a provider answered
+# `partial`, which this domain rejects). A partially read path stays `unreviewed` with its
+# explanation and remaining scope; partial progress never becomes a disposition of its own.
+PATH_DISPOSITIONS = ('unreviewed', 'semantic', 'generated', 'duplicate', 'binary', 'unavailable')
+
+
 @dataclass(frozen=True)
 class PathDisposition:
     path: str
@@ -110,8 +116,7 @@ class PathDisposition:
     receipt_ids: list[str]
 
     def validate(self):
-        require(self.disposition in {'unreviewed', 'semantic', 'generated', 'duplicate',
-                                     'binary', 'unavailable'}, 'Unknown disposition')
+        require(self.disposition in PATH_DISPOSITIONS, 'Unknown disposition')
         for ref in self.evidence_refs:
             reference(ref)
         if self.disposition not in {'unreviewed', 'unavailable'}:

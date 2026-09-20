@@ -6,7 +6,12 @@ from importlib.resources import files
 from codex_harness.application.audit_gate import AUDIT_EVIDENCE_BUCKETS
 from codex_harness.application.research import ResearchAudits
 from codex_harness.domain.model import digest, require, utcnow
-from codex_harness.domain.research import IndependentReview, PartitionCheckpoint, parse_record
+from codex_harness.domain.research import (
+    PATH_DISPOSITIONS,
+    IndependentReview,
+    PartitionCheckpoint,
+    parse_record,
+)
 
 
 def schema(**properties):
@@ -24,6 +29,11 @@ def output_definitions():
     # The provider rejects open objects even in unused definitions (2026-09-07 canary).
     definitions['SubsystemAnalysis']['properties']['tests_not_run']['items'] = schema(
         test=TEXT, reason=TEXT, follow_up=TEXT)
+    # The domain vocabulary is the authority for generated output; the packaged declaration
+    # states the same values and test_audit_output_vocabulary asserts they cannot drift
+    # (2026-09-20 canary: an unconstrained string let `partial` reach parse_record).
+    definitions['PathDisposition']['properties']['disposition'] = {
+        'type': 'string', 'enum': list(PATH_DISPOSITIONS)}
     return definitions
 
 
@@ -141,7 +151,11 @@ class AuditExecution:
         answer = self.run_model(task, 'Semantically trace this bounded partition against contracts, callers, '
             'configuration, failure handling and tests. Use only supplied successful runner receipt IDs. '
             'Return paths records only for identities in partition.paths and subsystem records only '
-            'for names in partition.subsystems. An empty assignment requires an empty output array; '
+            'for names in partition.subsystems. Use only these dispositions: '
+            + ', '.join(PATH_DISPOSITIONS) + '. A partially read path stays unreviewed with its '
+            'explanation in justification and its remaining work in open_questions, or omit that '
+            'path entirely; partial is not a disposition and unverified work is never semantic. '
+            'An empty assignment requires an empty output array; '
             'do not add supporting subsystem records to a path-only partition. Subsystem trace paths '
             'may reference repository inventory paths. Partial results may omit assigned identities; '
             'all omitted or unresolved work remains in its existing partition. '

@@ -35,7 +35,8 @@ def checkout(tmp_path, document=None, manifest=None, name="checkout"):
 
 def manifest_for(document_sha256, **changes):
     body = {"id": "worker-v1", "version": "1", "document": "worker-profile-v1.md",
-            "document_sha256": document_sha256, "character_limit": 6000, **changes}
+            "document_sha256": document_sha256, "character_limit": worker_profile.MAX_CHARACTERS,
+            **changes}
     return json.dumps(body).encode("utf-8")
 
 
@@ -93,23 +94,26 @@ def test_a_stale_digest_keeps_the_computed_metadata_for_repair(tmp_path):
     # The worker repairs the manifest with the reported digest; the same command then passes.
     root.joinpath(*RESOURCES, "worker-profile-v1.json").write_bytes(manifest_for(body["document_sha256"]))
     assert run(root)[0] == 0
-    missing_digest = json.dumps({"id": "worker-v1", "document": "worker-profile-v1.md", "character_limit": 6000}).encode()
+    missing_digest = json.dumps({"id": "worker-v1", "document": "worker-profile-v1.md",
+                                 "character_limit": worker_profile.MAX_CHARACTERS}).encode()
     code, body, _ = run(checkout(tmp_path, document, missing_digest, name="no-digest"))
     assert code == 1 and body["digest_matches"] is False and body["document_sha256"] == loader_digest(document)
 
 
 def test_the_character_limit_is_the_loaders_boundary(tmp_path):
-    exact = ("é" * 5999 + "\n").encode("utf-8")  # 6000 characters, more than 6000 bytes
+    limit = worker_profile.MAX_CHARACTERS
+    assert limit == 15000, "the user-authorized ceiling for the common profile"
+    exact = ("é" * (limit - 1) + "\n").encode("utf-8")  # 15000 characters, more than 15000 bytes
     code, body, _ = run(checkout(tmp_path, exact, manifest_for(loader_digest(exact)), name="exact"))
-    assert code == 0 and body["characters"] == 6000 and body["within_limit"] is True
-    over = ("é" * 6000 + "\n").encode("utf-8")
+    assert code == 0 and body["characters"] == limit and body["within_limit"] is True
+    over = ("é" * limit + "\n").encode("utf-8")
     code, body, _ = run(checkout(tmp_path, over, manifest_for(loader_digest(over)), name="over"))
     assert code == 1 and body["status"] == "mismatch"
-    assert body["characters"] == 6001 and body["within_limit"] is False and body["digest_matches"] is True
+    assert body["characters"] == limit + 1 and body["within_limit"] is False and body["digest_matches"] is True
     assert body["document_sha256"] == loader_digest(over), "the overlong document is still measured"
-    crlf = b"x\r\n" * 3000  # 9000 bytes, 6000 normalized characters
+    crlf = b"x\r\n" * (limit // 2)  # 22500 bytes, 15000 normalized characters
     code, body, _ = run(checkout(tmp_path, crlf, manifest_for(loader_digest(crlf)), name="crlf"))
-    assert code == 0 and body["characters"] == 6000
+    assert code == 0 and body["characters"] == limit
 
 
 DOCUMENT = b"# Profile\n"
@@ -126,9 +130,10 @@ GOOD = manifest_for(hashlib.sha256(DOCUMENT).hexdigest())
     (DOCUMENT, b'["worker-v1"]', "manifest_not_object", "worker-profile-v1.json"),
     (DOCUMENT, manifest_for("0" * 64, id="worker-v2"), "wrong_id", "worker-profile-v1.json"),
     (DOCUMENT, manifest_for("0" * 64, document="../../../" + CANARY + ".md"), "wrong_document", "worker-profile-v1.json"),
-    (DOCUMENT, manifest_for("0" * 64, character_limit=6001), "wrong_character_limit", "worker-profile-v1.json"),
+    (DOCUMENT, manifest_for("0" * 64, character_limit=15001), "wrong_character_limit", "worker-profile-v1.json"),
+    (DOCUMENT, manifest_for("0" * 64, character_limit=6000), "wrong_character_limit", "worker-profile-v1.json"),
     (DOCUMENT, manifest_for("0" * 64, character_limit=True), "wrong_character_limit", "worker-profile-v1.json"),
-    (DOCUMENT, manifest_for("0" * 64, character_limit="6000"), "wrong_character_limit", "worker-profile-v1.json"),
+    (DOCUMENT, manifest_for("0" * 64, character_limit="15000"), "wrong_character_limit", "worker-profile-v1.json"),
     (b"x" * (module.MAX_DOCUMENT_BYTES + 1), GOOD, "input_too_large", "worker-profile-v1.md"),
     (DOCUMENT, GOOD + b" " * module.MAX_MANIFEST_BYTES, "input_too_large", "worker-profile-v1.json"),
 ], ids=lambda value: value if type(value) is str else "bytes")

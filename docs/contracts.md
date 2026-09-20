@@ -17,6 +17,7 @@ Comments cite invariant IDs and explain non-obvious local reasons, without dupli
 Organization SSOT: `src/codex_harness/resources/organization.json`.
 Wire schema SSOT: `src/codex_harness/resources/message.schema.json`.
 Runtime policy SSOT: `src/codex_harness/domain/policy.py`.
+Guidance-document conventions (layers, one owner per rule, actual delivery): `docs/context/README.md`.
 The trusted local-process identity boundary is documented in status.md; validation is not authentication.
 
 ## Research enforcement stage
@@ -25,7 +26,7 @@ The trusted local-process identity boundary is documented in status.md; validati
 |---|---|
 | INV-RESEARCH-001 | Discovery and historical inventory never imply semantic review. Versioned imports preserve original reference records. Source verification reconciles every raw Git path and object against the pinned commit/tree, not just a manifest hash. Assets outside Git (uncommitted notes, caches, private sessions, nested repositories) are a separate observed-asset ledger per audit: they never enter the tracked denominator, but whole-analysis completeness and adoption proposals share one denominator — every observed asset dispositioned and no open partition questions — a disposition never regresses to pending, and observed records are part of the approval binding. |
 | INV-RESEARCH-002 | Partition scope is immutable. Checkpoints require an authorized assigned task, current lease and task/partition generations; evidence history and continuation outbox writes commit atomically. Remaining work reconciles with recorded evidence. |
-| INV-RESEARCH-003 | Model-authored receipt IDs are not runner evidence. Missing execution, binary inspection or unresolved subsystem work cannot establish completion. Record tests not run with reasons and follow-up. |
+| INV-RESEARCH-003 | Model-authored receipt IDs are not runner evidence. Missing execution, binary inspection or unresolved subsystem work cannot establish completion. Record tests not run with reasons and follow-up. One named domain vocabulary (`PATH_DISPOSITIONS`: unreviewed, semantic, generated, duplicate, binary, unavailable) governs path dispositions: the packaged schema, the generated provider output schema and its definition nested in partition output declare exactly those values, so a partially read path is `unreviewed` with its explanation and remaining work (or an omitted identity) and earns no coverage. Any other value, including `partial`, is refused by both boundaries and never normalized to a reviewed disposition. |
 | INV-RESEARCH-004 | Both discovery feeds and legacy approvals lack adoption authority. Positive eligibility requires complete coverage and ordered independent reviews bound to source/evidence/proposal, deployed revision/policy and graph. Revalidate approval and immutable bytes before execution. Reviews are sequenced per binding and actor; a rejection after approval revokes it and the latest review is the verdict, so an earlier acceptance never outranks a later rejection, and redelivery of an already recorded review is idempotent (original sequence kept), so re-approval requires a new review bound to a new inspection receipt. Verified release activation enables dispatch; rollback pauses it without deleting evidence. |
 
 Audit wire schema: `src/codex_harness/resources/research.schema.json`.
@@ -786,8 +787,11 @@ configured `runtime.worker_profile`; an assignment message, task detail or model
 chooses one, and an unconfigured run keeps every existing option, flag, settings value and
 environment exactly as before. Selection is verified before any probe or process: an unknown name,
 a manifest that names another profile, a document or hook whose bytes disagree with the manifest,
-a document over the character limit, or a rule that widens anything but Bash is refused whole and
-never truncated or narrowed. The document travels as the `--append-system-prompt` value and the
+a document over the character limit (15000 normalized characters for the common worker document,
+declared once in `adapters/worker_profile.py` and repeated only by its manifest, which must
+agree), or a rule that widens anything but Bash is refused whole and never truncated or narrowed.
+That ceiling bounds this one packaged document: per-run project delivery, project-skill admission
+and context composition keep their own separate budgets, and it sets no model token allowance. The document travels as the `--append-system-prompt` value and the
 hooks and Bash rules travel inside the per-run `--settings` value; the recorded command carries
 the profile's id, version, digests, source digests and transport names, never the text. The
 host's own hooks, settings files and home directory are neither read into the run nor modified,

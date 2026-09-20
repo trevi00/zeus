@@ -27,7 +27,7 @@ RESOURCE_DIRECTORY = ("src", "codex_harness", "resources")
 MANIFEST_NAME = PROFILES[PROFILE_ID]
 DOCUMENT_NAME = "worker-profile-v1.md"
 HOOK_NAME = "worker_profile_hook.py"
-# Finite read bounds. 6000 characters are at most 24000 UTF-8 bytes (30000 with CRLF line ends);
+# Finite read bounds. 15000 characters are at most 60000 UTF-8 bytes (75000 with CRLF line ends);
 # the document bound leaves room to measure an overlong candidate instead of only refusing it.
 MAX_DOCUMENT_BYTES = 262144
 MAX_MANIFEST_BYTES = 262144
