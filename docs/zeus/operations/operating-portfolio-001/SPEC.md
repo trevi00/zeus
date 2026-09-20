@@ -115,3 +115,40 @@ Worker lacks Node: report build unrun; owner builds/checks browser. No dependenc
 Workers focused checks and concise answer; owner clean candidate review, relevant integration,
 ruff/full suite via CI, frontend build/browser, then authorized merge and hidden runtime switch.
 Minor findings deferred against goal; critical blocker requires real violated criterion evidence.
+
+## Consolidated owner integration review (same frame)
+Actual parallel jobs ended: backend provider error_max_structured_output_retries (not timeout),
+UI returned successfully but had no executable frontend evidence and the gate refused. Both
+failed Fleet outcomes remain unchanged. Drafts were preserved at 3091171 (backend) and 440da12
+(UI). Owner frontend build passed; isolated real PG checks passed: 4 concurrent reconciliation
+calls produce one candidate for 120 distinct jobs, 50-row projection retains count120, immutable
+binding conflicts refuse, explicit acceptance only, restart preserves disposition, unknown excluded,
+status read-only. Synthetic PG rows never entered production. Focused checks:40 pass,2 fail.
+
+Observation -> assumption: the runner callback was implemented but adapter wiring was outside
+the original allowed paths. A callback-only fixture passed; actual fleet_cli.run still constructs
+FleetRunner without it. Update the SAME batch with the missing adapter path, not another subsystem.
+
+One completion correction, Claude scope:
+1. adapters/fleet_cli.py: pass portfolio_reconciler(service.store) into real FleetRunner construction.
+   Add a test entering fleet_cli.run with the actual FleetRunner and a no-admission fixture launcher,
+   seed two failed jobs in isolated MemoryStore and assert durable candidate after once. Do not
+   merely replace FleetRunner with a spy or directly call a callback. No model/production calls.
+2. Existing source-set assertions need the additive portfolio envelope: tests/test_monitoring.py
+   source_state count7 (was6) and source names; tests/test_monitoring_observations.py legacy source
+   set. Preserve read-only and independent-unavailable assertions. These are expected contract
+   updates, not evidence of a service defect. Include them in focused checks.
+3. application/fleet.py: reconciliation failure currently only changes a summary returned when
+   the long-running service stops. Emit a fixed, credential-free warning on transition into
+   unavailable, and a recovery log on transition back to ok (stdlib logger sufficient). Suppress
+   repeated identical failures; no traceback, raw exception or arbitrary type text. Preserve
+   continuing unrelated admission. Test caplog against repeated failure and recovery.
+
+Owner frontend lint/build and browser cover UI; do not add more UI requirements during this
+correction. Keep optional numeric/inconsistent-data hardening as later improvements unless real
+collector output violates the view. Evidence references are supplied only by the trusted owner;
+stronger reference grammar can follow later, without exposing web write authority now.
+
+Finish concise terminal JSON matching supplied response schema. `tests` only exact commands
+actually executed, no status strings in it. No arbitrary Python diagnostics, git config mutation,
+or rollback experiments. Existing APIs and accepted PG checks remain intact.
