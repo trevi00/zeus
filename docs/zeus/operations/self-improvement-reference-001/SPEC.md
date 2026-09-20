@@ -938,3 +938,40 @@ executor reference, it must explicitly revisit this contract; no broader guarant
 No new critical source finding remains against this fixed matrix. Independent Fleet verdict,
 CI, exact image and finite actual rollout checks remain separate pending evidence. Historical
 6975 stays retry/attempt 1; continuous source-audit registration is still absent.
+
+### Independent lead finding: returned execution refusal precedes content decoding
+
+The independent Fleet lead ef8a4a8c-b86e-4ede-943d-726da1daaf5e rejected cbfc198. Its finding
+corrects the owner source review above: an execution failure is not always a raised exception.
+Executor._run at executor.py:895-899 explicitly returns an inspection_blocked envelope with
+accepted false and a stored execution_ref. The new pure decoder mistakes that envelope's missing
+paths for a draft rejection, so the service would continue. This violates the ALREADY FIXED
+acceptance condition that execution/inspection failure stops. No deployment has occurred.
+
+Owner confirmed the reachable return branch and ran a discriminating read-only injected replay:
+the actual executor envelope shape with a verified retained artifact was incorrectly classified
+analysis_rejected by cbfc198. No provider was called, no real new inspection failure was induced,
+and the public task/partition stayed unchanged. Evidence: inspection-envelope-replay-before.json.
+The original lead evidence is sha256:ad803ca17907c2243444e65b8b30b549f497d8585077748fc6c3ff790768831f.
+Fleet job analysis-outcomes stays rejected; no verdict or result is rewritten. PR #170 CI
+35528117492 was deliberately cancelled by the owner after this material finding, not rerun to
+obtain a green result. Its source remains unmerged.
+
+One focused Claude correction within this same frame: in the audit_partition path, classify
+the executor's returned inspection_blocked result BEFORE entering the pure content boundary.
+Check both the planning and semantic turn; refuse using a fixed safe error, never quote the
+returned reason. An explicit execution refusal wins even if an answer also carries paths.
+Keep review/proposal actions, shared executor, all other outcome/coverage/lease/scheduling
+behavior and the accepted legacy compatibility path unchanged. This is returned-failure versus
+content routing, not another mandatory model-field patch.
+
+Add regression coverage for returned inspection_blocked (valid retained ref) from both turns,
+including the service path: zero checkpoint/coverage, failed execution stops after one task,
+no next partition or semantic call after planning refusal, secret-bearing returned reason never
+projected. Existing typed rejected A -> checkpointed B still passes. Return one candidate with
+the same allocated five-file command and ruff only. Allowed changes: audit_execution.py,
+tests/test_audit_analysis_outcomes.py, docs/contracts.md and operation AUDIT-SERVICE.md.
+No full-suite rerun in snapshot, model call, activation, historical task mutation, recovery or
+new repair mechanism. Owner reruns the identical injected envelope probe and the directly
+affected tests, then full CI applies to the corrected head. All earlier actual failure evidence
+and accepted checks remain; the rollout conditions above are unchanged.
