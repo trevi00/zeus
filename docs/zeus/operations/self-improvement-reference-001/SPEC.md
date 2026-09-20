@@ -1185,3 +1185,15 @@ no unrelated test rewrite. Allowed tests/test_integration.py only. Run python -m
 tests/test_integration.py -q -k test_postgres_audit_checkpoint_reconnect_and_stale_write and
 python -m ruff check . . Report missing integration honestly; owner executes the real isolated-PG
 case plus preserved checkpoint PG controls before final CI. No source audit/provider/service call.
+
+### Fixture correction owner verification (2026-09-21 KST)
+
+Claude candidate b137134bd0b735a704dc2ad70d1044ae132130c6 changes tests/test_integration.py
+only. Codex reviewed its real persisted labelled fixture manifest and unchanged reconnect,
+stale-write and remaining-scope assertions. Actual isolated PostgreSQL run: corrected reconnect
+case plus three checkpoint controls, 4 passed, zero skips, 5.77 seconds, all temporary schemas
+reclaimed; ruff passed and checkout clean. Source identity is synthetic test data; PostgreSQL
+and FileArtifacts execution are real. Receipt: claims-final-owner-pg.json on D.
+No production task changed. No remaining owner blocker. Runtime/package bytes are unchanged
+from accepted f60148a, preserving image and actual CLI canary evidence. New full CI and independent
+fixture-only review remain required. The prior integration failure is preserved, not retried green.
