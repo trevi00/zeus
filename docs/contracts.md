@@ -465,6 +465,19 @@ verdict nor a success, and its refusal keeps its own type for the caller's conta
 caller that supplies no callback, and an inspector that declares none, keep their previous behaviour
 exactly, and the callback takes no part in the inspection identity or its digests.
 
+That check covers every production inspector route - the host inspector, the isolated container
+backend and the host project-profile inspector - and its cadence throttles only the intermediate
+polls of one wait: at every boundary (inspection start and end, each command start and end) the
+ownership and deadline read is taken fresh, so a verdict read seconds earlier never authorizes one
+more child or one more publication. Renewal keeps its own longer cadence. The ledger is fenced by
+the same owner inside its own transactions: the caller's guard runs in the transaction that reads a
+cached inspection and in the transaction that looks up and writes the row, opening none of its own,
+so a cache hit is no more exempt than a new publication. A guard refusal is the caller's ownership
+failure, raised unchanged with no row written and no inspection-recording-failure notice, because
+the ledger did not fail; the production executor always supplies one, while a caller that supplies
+none keeps its previous contract and transaction count. Injected ownership loss in tests is contract
+evidence, never evidence of a recovered live operation.
+
 An independent review runs in a clean checkout at the candidate commit. The transport's read-only
 instructions, the repository's AGENTS.md and the executor's post-run checks say the same thing: no
 file in that checkout is created, modified or deleted, tracked or untracked; test output is read

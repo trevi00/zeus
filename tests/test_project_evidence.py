@@ -250,7 +250,7 @@ def timed(tmp_path, monkeypatch, durations, total=1):
     clock, given, pending = Clock(), [], list(durations)
     inspect.clock = clock
 
-    def capture(argv, cwd, timeout, max_bytes, env):
+    def capture(argv, cwd, timeout, max_bytes, env, progress=None):
         given.append(timeout)
         clock.now += pending.pop(0)
         return {'failure': None, 'terminated': False, 'returncode': 0, 'duration_seconds': 0.0}

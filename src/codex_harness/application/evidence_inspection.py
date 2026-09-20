@@ -43,7 +43,7 @@ class EvidenceInspections:
                 'owner': task.get('lease_owner'), 'source_revision': candidate['revision'],
                 'base': candidate.get('base'), 'tree': candidate.get('tree'), 'workspace': str(cwd)}
 
-    def inspect(self, task, candidate, claims, cwd, progress=None):
+    def inspect(self, task, candidate, claims, cwd, progress=None, guard=None):
         """Run the inspection and commit it; one row per (execution, revision, claims, policy, host).
 
         `progress` is the caller's own per-call ownership and cancellation check (research-dispatch-001).
@@ -51,7 +51,26 @@ class EvidenceInspections:
         is handed to an inspector that declares it so the replays themselves stay inside the caller's
         lease. Whatever it raises ends this inspection: a caller that no longer owns its execution
         neither starts new commands nor records a result. `progress=None` is the previous behaviour.
+
+        `guard` is that same caller's ownership check taken INSIDE this ledger's own transactions: it
+        receives the open transaction (never opening one of its own) and runs before a cached row is
+        returned and before the final row is looked up and written, so neither a cache hit nor a
+        publication escapes the fence. Its refusal is the CALLER's failure and is raised unchanged -
+        no row, and no inspection-recording-failure notice, because the ledger did not fail. A caller
+        that supplies no guard keeps its previous contract, including its transaction count.
         """
+        # Bound to this call like `progress`: nothing about the guard is stored on the ledger.
+        refusals = []
+
+        def fence(tx):
+            if guard is None:
+                return
+            try:
+                guard(tx)
+            except BaseException as exc:
+                refusals.append(exc)
+                raise
+
         if progress is not None:
             progress('inspection_start')
         bound = self.binding(task, candidate, cwd)
@@ -69,6 +88,8 @@ class EvidenceInspections:
         # v4: the identity gained interpreter and cwd; rows keyed under v3 stay untouched and unread.
         key = digest(['evidence-inspection-v4', bound, identity, list(claims)])
         with self.store.transaction() as tx:
+            # A cache hit is still a publication to this caller: it is read under the same fence.
+            fence(tx)
             existing = tx.get(BUCKET, key)
         if existing is not None:
             return existing
@@ -104,11 +125,16 @@ class EvidenceInspections:
                'authority': 'deterministic inspection of claims; not historical truth, semantic review or human acceptance'}
         try:
             with self.store.transaction() as tx:
+                fence(tx)
                 previous = tx.get(BUCKET, key)
                 if previous is not None:
                     return previous
                 tx.put(BUCKET, key, row)
         except Exception as exc:
+            if any(exc is refusal for refusal in refusals):
+                # The owner ended, not the store: the transaction rolled back, so there is no row -
+                # and a lost lease is not a recording failure, so it gets no notice either.
+                raise
             # The inspection happened; the ledger did not take it. Say so, loudly and durably if possible.
             notice = {'id': digest([key, 'recording_failed']), 'inspection_id': key, 'reason': type(exc).__name__ + ': ' + str(exc)[:300],
                       'verdict': row['verdict'], 'denominator': counts, 'at': utcnow()}

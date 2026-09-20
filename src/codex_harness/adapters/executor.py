@@ -272,12 +272,21 @@ class LeaseProgress:
     through `remaining_seconds`, which refuses a lost, superseded or expired execution. The refusal
     is raised unchanged so the caller's own failure path keeps its type, and is kept on `refusal` so
     that caller can tell an ended lease from a failure of the work itself.
+
+    The cadence throttles the polls of one wait only: at every boundary the ownership and deadline
+    read is fresh. Renewal keeps its own longer cadence - a boundary must not turn into a heartbeat
+    per replay, and nothing here lengthens a lease.
     """
 
     # The cadence lives on the class so one call's rhythm is visible and a test can shorten it
     # without a second scheduler; an instance may still be built with its own.
     CHECK_SECONDS = LEASE_CHECK_SECONDS
     RENEW_SECONDS = LEASE_RENEW_SECONDS
+    # Only the intermediate polls of one wait are throttled to that cadence. Every other stage is a
+    # BOUNDARY - an inspection or a replay is about to start, or its result is about to travel on -
+    # and there the ownership and deadline read is taken fresh, because a verdict cached up to five
+    # seconds ago is exactly what let a lost owner spawn one more child and publish after its lease.
+    POLL_STAGES = frozenset({'replay_wait'})
 
     def __init__(self, workflow, task, *, heartbeat=None, clock=time.monotonic,
                  check_seconds=None, renew_seconds=None):
@@ -291,8 +300,9 @@ class LeaseProgress:
 
     def __call__(self, stage=None):
         now = self.clock()
+        boundary = stage not in self.POLL_STAGES
         try:
-            if self.checked is None or now - self.checked >= self.check_seconds:
+            if boundary or self.checked is None or now - self.checked >= self.check_seconds:
                 self.workflow.remaining_seconds(self.task, POLICY.task_lease_seconds)
                 self.checked, self.checks = now, self.checks + 1
             if self.renewed is None or now - self.renewed >= self.renew_seconds:
@@ -1154,8 +1164,20 @@ class Executor:
         # The replays below are the executor's own work under the same lease the provider ran under,
         # and they are the longest part of it: the ownership check travels with them (INV-EVIDENCE-001).
         progress = LeaseProgress(self.workflow, task, heartbeat=heartbeat)
+        # ...and the ledger's own transactions carry the same ownership check, so a cached row and a
+        # new one are both read and written by an owner that still holds this execution. The guard
+        # runs INSIDE the transaction it is given; it opens none of its own.
+        ownership_refusals = []
+
+        def guard(tx):
+            try:
+                return self.workflow._owned(tx, task)
+            except BaseException as exc:
+                ownership_refusals.append(exc)
+                raise
         try:
-            row = self.evidence.inspect(task, result["candidate"], claims, workspace_path, progress=progress)
+            row = self.evidence.inspect(task, result["candidate"], claims, workspace_path, progress=progress,
+                                        guard=guard)
         except Exception as exc:
             # Never a success: the inspection did not complete or was not recorded. The exception's
             # own text is not part of the identity of that fact, and a wrapped foreign message may
@@ -1165,7 +1187,7 @@ class Executor:
             self._inspection_finished(execution, correlation, task, "inspection_error", refs,
                                       claims=len(claims), elapsed=time.monotonic() - started,
                                       error_type=error_type, message_sha256=message_sha256)
-            if progress.refusal is exc:
+            if progress.refusal is exc or any(exc is refusal for refusal in ownership_refusals):
                 # The lease ended this, not the inspection: a stale owner publishes no verdict at all
                 # and the original error keeps its type for the executor's containment path.
                 raise
