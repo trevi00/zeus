@@ -910,3 +910,31 @@ continuous registration. Injected rejection-continuation proof is reported separ
 actual outcomes; do not provoke/retry models merely to obtain a rejection sample.
 Continuous source audit is this selected audit only, serial; whole-source absorption and
 later adoption remain ongoing work with their existing strict denominators and review gates.
+
+### Owner source review of the retained-outcome batch
+
+Claude candidate cbfc19865458a773dda88c78e8caf951d2589c62 completed the allocated checks;
+the Fleet evidence gate passed and its independent lead review was started. This Codex
+owner separately reviewed all nine changed files and reran the allocated five test files in
+the clean historical candidate checkout: 158 passed in 153.05 seconds, no skips/failures;
+ruff passed and the checkout stayed clean. These are injected contract checks, not live
+provider/PG/Redis acceptance. Full Windows/Linux/service CI remains required.
+
+Read-only replay of the ACTUAL response sha256:91ae14d9eb7735f5e3d9b50cfd89731f0924b8ccb7d571733afd5111578e6e32
+under runtime-169 raised the original typed refusal. Under cbfc198 it returned bound
+analysis_rejected with checkpointed false. Public task and partition rows remained byte-for-
+byte equal across both replays. This was no provider invocation, lease, task completion or
+checkpoint; actual-rejection-replay-before.json and -after.json on D retain the distinction.
+
+Owner decision on the reported compatibility deviation: accepted. The real Executor._run
+constructs execution_ref AFTER the model answer from the stored output reference (executor.py
+return boundary), so model content cannot omit/override it. A legacy/injected valid answer
+without that executor-owned reference retains the old canonical checkpoint return and is
+explicitly unclassified; it never acquires a claimed analysis outcome. Missing rejection
+evidence still fails. No change to test history or an extra worker round is justified for
+this non-runtime compatibility path. If a future run_model implementation can omit the
+executor reference, it must explicitly revisit this contract; no broader guarantee is claimed.
+
+No new critical source finding remains against this fixed matrix. Independent Fleet verdict,
+CI, exact image and finite actual rollout checks remain separate pending evidence. Historical
+6975 stays retry/attempt 1; continuous source-audit registration is still absent.
