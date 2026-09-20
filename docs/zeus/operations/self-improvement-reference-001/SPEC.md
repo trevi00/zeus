@@ -1126,3 +1126,27 @@ neither expands this delivery. Existing source acceptance checks were not weaken
 The independent Fleet lead, full CI, image equivalence, real CLI canary and one recovery plus
 two-execution operation checks are still prerequisites; none is inferred from these tests.
 Continuous audit remains unregistered. All previous failed executions and unreviewed scope remain.
+
+### Independent lead disposition: trusted guard ordering (2026-09-21 KST)
+
+Independent Fleet lead 6ccec904-ee12-4132-8472-80fbe29a5288 rejected candidate 5f3cf62
+on one P2 static finding: duplicate coverage is rejected before trusted ownership/generation/scope.
+The owner had recorded it as nonblocking for the current keyed execution path, because that decoder
+cannot emit duplicates and task completion still fences ownership. Preserve that distinction:
+no false coverage or operational failure was demonstrated. Nevertheless the existing frame explicitly
+requires trusted guards first, so align the application entry contract in one narrow correction.
+The original Fleet verdict remains rejected; do not reinterpret it as acceptance. Owner PostgreSQL
+3/3 evidence and all unaffected 198 checks remain valid evidence at their original candidate.
+CI 35531658896 is deliberately cancelled before rollout, not a test failure or infrastructure retry.
+
+Claude correction only: move the duplicate-record reject inside checkpoint's transaction AFTER
+_owned, assignment, current generation and immutable scope (and known audit) checks, BEFORE candidate
+artifact/relationship checks. Do not change exception types, artifact taxonomy, transaction semantics
+or scheduler. Add focused combined-fault tests: duplicate + stale ownership/generation/changed scope
+must be ordinary execution failure; valid-owner duplicate remains AuditDraftRejected and commits
+nothing. Update stale pure-decoder/catch comments to acknowledge the second typed boundary, with
+no behavior change. Do not retest or redesign unrelated boundaries.
+Allowed: application/research.py, adapters/audit_execution.py (comments only),
+tests/test_audit_checkpoint_outcomes.py, operation AUDIT-SERVICE.md (verification note only).
+Run only python -m pytest tests/test_audit_checkpoint_outcomes.py -q and python -m ruff check . .
+Owner verifies changed cases and fresh full CI before release; no model calls or runtime mutation.
