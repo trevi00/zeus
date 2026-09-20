@@ -4,6 +4,15 @@
 FROM node:22-bookworm-slim AS claude
 RUN npm install -g @anthropic-ai/claude-code@2.1.274
 
+# operating-portfolio-001: the monitor frontend's locked dependencies, installed ONCE here by the
+# owner's build from the tracked package.json/package-lock.json (npm ci: lock-based clean install
+# that refuses a package/lock mismatch, docs.npmjs.com/cli/v11/commands/npm-ci, read 2026-09-20).
+# No install, no script and no network ever happens in a worker or verifier run.
+FROM node:22-bookworm-slim AS monitor
+WORKDIR /opt/zeus-monitor
+COPY frontend/monitor/package.json frontend/monitor/package-lock.json ./
+RUN npm ci --ignore-scripts --no-audit --no-fund
+
 FROM python:3.13-slim-bookworm
 RUN apt-get update && apt-get install -y --no-install-recommends git ca-certificates && rm -rf /var/lib/apt/lists/*
 RUN pip install --no-cache-dir uv==0.12.2
@@ -15,6 +24,14 @@ COPY --from=claude /usr/local/lib/node_modules /usr/local/lib/node_modules
 RUN python -c "import json, os; root = '/usr/local/lib/node_modules/@anthropic-ai/claude-code'; os.symlink(os.path.join(root, json.load(open(root + '/package.json'))['bin']['claude']), '/usr/local/bin/claude')" \
     && claude --version \
     && claude --version | grep -F "2.1.274"
+# The frozen monitor toolchain: the store the checks bind, plus the package/lock bytes they compare
+# the candidate's against. Read-only at run time; the build fails if an entrypoint is missing.
+COPY --from=monitor /opt/zeus-monitor /opt/zeus-monitor
+RUN test -f /opt/zeus-monitor/package.json && test -f /opt/zeus-monitor/package-lock.json \
+    && test -f /opt/zeus-monitor/node_modules/eslint/bin/eslint.js \
+    && test -f /opt/zeus-monitor/node_modules/typescript/bin/tsc \
+    && test -f /opt/zeus-monitor/node_modules/vite/bin/vite.js \
+    && /usr/local/bin/node /opt/zeus-monitor/node_modules/typescript/bin/tsc --version
 # Trusted package, locked dependencies, pytest and ruff live in /opt/zeus, installed non-editable so
 # nothing under /workspace can shadow the entrypoint or the pinned profile hook.
 WORKDIR /build

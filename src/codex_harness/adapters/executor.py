@@ -95,6 +95,39 @@ IMPLEMENTATION = object_schema({
     "tests": {**STRINGS, "description": "Only the exact commands you actually executed, one reproducible "
               "command per string, as typed (for example \"python -m pytest tests/test_x.py -q\"). No arrows, "
               "results, pass counts, prose, or commands you did not run; those belong in summary."}})
+
+
+
+def implementation_instruction(profiled: bool) -> str:
+    """The objective an implementation worker receives, on both paths (operating-portfolio-001).
+
+    Run 5b6a3b1cc9f249dfbbc0b2c8f5407e50 spent 647s and five StructuredOutput attempts, every one
+    refused because the required `tests` field was absent; the schema enforcement was right and the
+    run was still lost. So the envelope is stated in the instruction as well: BOTH top-level fields
+    every time, in the shape this path's schema declares. The shapes below are shapes only - they
+    are never a claim that such a check ran, and an empty `tests` stays honest but never becomes
+    acceptance on its own. The schema itself is unchanged; this text does not relax it.
+    """
+    field = ("holds exactly one observation per host-declared check in project_evidence: "
+             "{check_id, status, exit_code} with status executed and the integer exit code you "
+             "observed (a failure stays a failure), or not_run with null; diagnostic attempts and "
+             "everything else belong in `summary`"
+             if profiled else
+             "lists only the exact commands you executed, one per string, with no arrows, results, "
+             "pass counts, descriptions or unexecuted commands")
+    shape = ('{"summary": "<concise observed results>", "tests": '
+             + ('[{"check_id": "<a declared check_id>", "status": "executed", "exit_code": 0}]}'
+                if profiled else '["python -m pytest tests/test_x.py -q"]}'))
+    return ("Implement the assigned plan, run meaningful tests, and leave changes ready for "
+            "independent review. Answer with the structured output envelope and ALWAYS include "
+            "BOTH top-level fields, `summary` and `tests`: neither is optional, an answer that "
+            "omits one is refused, and prose instead of the envelope loses the run. `summary` is "
+            "concise observed fact - actual results, failures, skips and what was not run, never a "
+            "restated expectation. `tests` " + field + ". If you truly executed nothing, an empty "
+            "`tests` with the reason in `summary` is honest, but it is never by itself sufficient "
+            "for acceptance. Shape only, not an example of work that was done: " + shape)
+
+
 RESEARCH = object_schema({"title": TEXT, "objective": TEXT, "source_url": TEXT,
                           "evidence": TEXT, "acceptance_criteria": STRINGS})
 SHORTLIST = object_schema({"source_url": TEXT})
@@ -862,16 +895,7 @@ class Executor:
                         "normal_case:[same]}. Use Codex native hook input/output contracts. "
                         "Include negative cases and actual incident reproductions; never fabricate a fix."}
                 profiled = self.evidence_profile is not None
-                result = self._run(agent, task["id"], "Implement the assigned plan, run meaningful tests, "
-                                   "and leave changes ready for independent review. In the answer, `tests` "
-                                   + ("holds exactly one observation per host-declared check in project_evidence: "
-                                      "{check_id, status, exit_code} with status executed and the integer exit "
-                                      "code you observed (a failure stays a failure), or not_run with null; "
-                                      "diagnostic attempts and everything else belong in `summary`."
-                                      if profiled else
-                                      "lists only the exact commands you executed, one per string, with no "
-                                      "arrows, results, pass counts, descriptions or unexecuted commands; "
-                                      "`summary` states the actual results, skips and what was not run."), details,
+                result = self._run(agent, task["id"], implementation_instruction(profiled), details,
                                    workspace["path"], worker_schema(self.evidence_profile) if profiled else IMPLEMENTATION,
                                    False, heartbeat, task,
                                    workload="implementation", action="implement",

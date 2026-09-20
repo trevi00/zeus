@@ -22,6 +22,9 @@ REPLAY_KEYS = frozenset({'allowed_argv_prefixes', 'per_command_seconds', 'total_
 HEX64 = re.compile(r'[0-9a-f]{64}\Z')
 MAX_ARGV = 64
 PROFILE_METADATA_ARGV = ['python', '-m', 'codex_harness.adapters.worker_profile_metadata']
+MONITOR_FRONTEND_ARGV = ['python', '-m', 'codex_harness.adapters.monitor_frontend_checks']
+# Fixed no-argument capabilities: granted as themselves, never as a prefix another token extends.
+EXACT_ARGV = (PROFILE_METADATA_ARGV, MONITOR_FRONTEND_ARGV)
 
 
 def _bounded_int(value, name, low, high):
@@ -96,10 +99,12 @@ def parse_claim(raw):
 def authorized(argv, policy):
     """A model-written command is a claim; only a policy prefix grants replay.
 
-    The worker profile metadata module takes no arguments, so its grant is the exact argv: a
-    matching (or broader) prefix never lets extra tokens through for it."""
-    if argv[:len(PROFILE_METADATA_ARGV)] == PROFILE_METADATA_ARGV and argv != PROFILE_METADATA_ARGV:
-        return False
+    The worker profile metadata module and the monitor frontend checks take no arguments, so each
+    grant is the exact argv: a matching (or broader) prefix never lets extra tokens through for
+    them."""
+    for exact in EXACT_ARGV:
+        if argv[:len(exact)] == exact and argv != exact:
+            return False
     return any(len(argv) >= len(prefix) and argv[:len(prefix)] == prefix
                for prefix in policy['replay']['allowed_argv_prefixes'])
 

@@ -220,6 +220,7 @@ export function ProjectsView({ snapshot, now }: Props) {
       <div className="min-w-0">
         <h2 className="text-lg font-semibold inline-flex items-center gap-2"><Target aria-hidden="true" className="size-4" />프로젝트</h2>
         <p className="text-sm text-muted-foreground break-words">소유자가 정의한 목표와 명시적으로 연결된 실제 작업의 읽기 전용 투영 · 조회 전용(제어 없음) · 수용은 소유자 기록만</p>
+        <p className="text-xs text-muted-foreground break-words">실패 기록은 후속 작업이 반영되어도 보존됩니다. 현재 해결 여부는 후속 작업과 수용 기록을 함께 확인하세요.</p>
       </div>
       <div className="flex flex-wrap items-center gap-2">
         <StatusBadge tone={!envelope && snapshot ? "unknown" : freshnessTone(fresh.state)}>

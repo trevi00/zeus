@@ -236,10 +236,10 @@ def test_the_packaged_profile_ships_this_hook_with_its_failure_event(tmp_path):
         "SessionStart", "PostToolUse(Bash)", "PostToolUseFailure(Bash|Edit|Glob|Grep|Read|Write)"]
     document = " ".join(profile["document"].split())  # the rule must survive rewrapping
     assert "## Repeated failure and investigation" in document
-    assert "stop retrying it; a shared symptom is a research candidate, not a cause" in document
+    assert "stop retrying; a shared symptom is a research candidate, not a cause" in document
     assert "research_required evidence-and-gap report: not success, not promoted knowledge" in document
     assert "covers repeated reviewer rejection" in document
-    assert "hooks observe none, and a hook context prompts research but is not research" in document
+    assert "a hook context prompts research but is not research" in document
 
 
 def test_the_receipt_projection_reports_counts_fingerprints_and_unknowns_only(tmp_path):

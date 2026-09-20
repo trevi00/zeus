@@ -17,6 +17,7 @@ import pytest
 
 from codex_harness.adapters import worker_profile as module
 from codex_harness.adapters.claude_cli import ClaudeCodeRuntime, claude_settings
+from codex_harness.adapters.evidence_inspection import packaged_policy
 from codex_harness.adapters.worker_profile import (
     WorkerProfileError,
     hook_command,
@@ -28,6 +29,7 @@ from codex_harness.adapters.worker_profile import (
     profile_environment,
     quote_argument,
 )
+from codex_harness.domain.evidence import authorized
 from codex_harness.domain.model import ContractError
 
 CHILD = Path(__file__).resolve().parent / "claude_protocol_child.py"
@@ -71,9 +73,12 @@ def test_the_packaged_profile_verifies_and_carries_its_provenance():
     profile = load_profile("worker-v1")
     assert profile["id"] == "worker-v1" and profile["characters"] <= module.MAX_CHARACTERS
     assert "Verification before completion" in profile["document"]
-    # review-contract-001: executed commands and result descriptions are kept apart in the answer.
-    assert "`tests` holds only the exact commands you actually executed" in profile["document"]
-    assert "No arrows, results, pass counts" in profile["document"]
+    # review-contract-001: both terminal fields are always required, and executed commands are
+    # kept apart from result descriptions. The instruction wraps, so read it unwrapped.
+    reporting = " ".join(profile["document"].split())
+    assert "Always return BOTH `summary` and `tests`; neither is optional." in reporting
+    assert "Legacy `tests`: only the exact commands you ran, one per string" in reporting
+    assert "no arrows, results, counts or unrun commands, those belong in `summary`" in reporting
     assert {source["source"] for source in profile["sources"]} == {"baldrix", "harness", "guardian"}
     assert all(source["pinned_sha256"] and source["commit"] for source in profile["sources"])
     assert all(rule.startswith("Bash(") for rule in profile["permissions_allow"])
@@ -223,15 +228,26 @@ def test_the_profile_adds_hooks_and_bash_rules_and_changes_no_other_policy():
 
 
 def test_the_metadata_command_is_one_exact_allow_and_every_earlier_grant_is_preserved():
-    """Issue 124: the metadata module is granted as one exact command, never as a Python prefix."""
+    """Issue 124: each fixed module is granted as one exact command, never as a Python prefix."""
     profile = load_profile("worker-v1")
     exact = "Bash(python -m codex_harness.adapters.worker_profile_metadata)"
+    frontend = "Bash(python -m codex_harness.adapters.monitor_frontend_checks)"
     assert profile["permissions_allow"] == [
         "Bash(python -m pytest:*)", "Bash(python -m pytest)", "Bash(python -m ruff:*)",
         "Bash(python -m compileall:*)", "Bash(git status:*)", "Bash(git status)", "Bash(git diff:*)",
-        "Bash(git diff)", "Bash(git log:*)", exact]
-    assert not [rule for rule in profile["permissions_allow"]
-                if rule != exact and ("worker_profile_metadata" in rule or rule.startswith(("Bash(python:", "Bash(python -m:", "Bash(python -c")))]
+        "Bash(git diff)", "Bash(git log:*)", exact, frontend]
+    fixed = (exact, frontend)
+    assert all(":*" not in rule for rule in fixed), "a fixed capability is never granted with a wildcard"
+    assert not [rule for rule in profile["permissions_allow"] if rule not in fixed
+                and ("worker_profile_metadata" in rule or "monitor_frontend_checks" in rule
+                     or rule.startswith(("Bash(python:", "Bash(python)", "Bash(python -m:", "Bash(python -m)",
+                                         "Bash(python -c", "Bash(node", "Bash(npm", "Bash(npx")))]
+    # The grant is only as narrow as the replay policy that repeats it: extra tokens are refused.
+    packaged = packaged_policy()
+    for rule in fixed:
+        argv = rule[len("Bash("):-1].split()
+        assert authorized(argv, packaged), rule
+        assert not authorized([*argv, "--help"], packaged) and not authorized([*argv, "."], packaged)
     manifest = json.loads(module._resource_path("worker-profile-v1.json").read_text("utf-8"))
     assert list(manifest) == ["id", "version", "document", "document_sha256", "hook", "hook_sha256",
                               "character_limit", "hooks", "permissions", "sources", "note"]
@@ -246,7 +262,8 @@ def test_the_metadata_command_is_one_exact_allow_and_every_earlier_grant_is_pres
     merged = merge_settings(base, profile, hook_settings("cmd"))
     assert merged["permissions"]["deny"] == ["Task", "WebFetch", "Bash(python -c:*)"], "denies are delivered unchanged"
     assert merged["permissions"]["allow"] == [*RUNTIME["allowed_tools"], *profile["permissions_allow"]]
-    assert merged["permissions"]["allow"].count(exact) == 1 and merged["permissions"]["defaultMode"] == "acceptEdits"
+    assert merged["permissions"]["allow"].count(exact) == 1 and merged["permissions"]["allow"].count(frontend) == 1
+    assert merged["permissions"]["defaultMode"] == "acceptEdits"
 
 
 def test_the_profile_environment_prefixes_path_and_binds_pythonpath_to_the_candidate(tmp_path):
