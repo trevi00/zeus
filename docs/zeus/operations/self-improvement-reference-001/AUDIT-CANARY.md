@@ -87,3 +87,56 @@ on the candidate using a short D temporary path. The twelfth is the historical s
 equality test, which has not accounted for the intended enum constraint. Its bounded
 test-only amendment is specified in SPEC.md and assigned as Fleet job
 `self-improvement-reference-001-baseline`. No unrelated runtime repair is authorized.
+
+## Test-only amendment and automation boundary
+
+Worker task `96cfbf34-3fe6-53a6-bdf4-26bae6ebf3fd` produced candidate
+`784bc8eb8a3400203f8c3d449a5042fbb43e0b55`, changing only tests/test_output_schema.py.
+The exact disposition node is asserted against PATH_DISPOSITIONS; only that enum is
+removed from a deep-copy for the retained historical schema comparison. Production
+code is byte-identical to the already reviewed and exercised correction.
+
+The isolated worker reported 128 passed, one failed: git could not read the historical
+commit in the worker snapshot. It did not claim all checks passed. Fleet stopped with
+evidence_gate_refused and cancelled the lead-review decision. This remains a FAILED
+Fleet job, not an automatic review success. The worker container was removed and its
+inner_result.json retained with sha256
+`d145ccdcddb2b24523141ceb33a8e259c697e696b0db83c8687d2a967f27e0e9`.
+
+Codex owner's independent review finds the exact specified test amendment, no runtime
+change, no removal of unrelated protections, and no temporary worker probes in the
+candidate. Final host verification in vocabulary-verification-003 passed:
+2,630 passed, 476 skipped, zero failures/errors in 780.18 seconds; pytest exit 0,
+ruff exit 0, CLI help exit 0. The candidate stayed clean. The full-suite log sha256 is
+`3fade50957e26979ec8d5422dde49f71b306e5f9de8566bf8ee0e96971b96925`;
+receipt.json records all commands, exit codes, immutable revision and log digests.
+
+This suite did not enable service integration or disposable Docker tests: 403 skips
+require integration environment and 28 explicitly require HARNESS_INTEGRATION=1;
+other skips include platform and opt-in Docker cases. These are not new PostgreSQL,
+Redis, Docker or WSL full-suite results. The two actual audit tasks separately exercised
+the real PostgreSQL/Redis/Codex/checkpoint/observation path described above.
+
+Owner verdict: ACCEPT the bounded vocabulary correction and exact test amendment.
+Runtime equality between the live-canary commit and final candidate was checked by
+git diff --exit-code on src. Both changes are integrated into the existing task branch;
+no main merge, release activation or deployment was performed. The failed amendment
+Fleet job remains failed; this owner acceptance does not relabel it.
+
+The bounded delivery is complete. No analysis successor or worker container from these
+jobs remains active. Automatic research activation is still absent. Next operational
+scope is a legitimate release/activation and bounded scheduling decision, retaining
+all unreviewed scope; it must not be inferred from these canary successes.
+
+Operational lessons (recorded, not claimed as deployed hooks):
+
+- Bind provider output vocabularies to domain contracts before using model output to
+  advance a durable checkpoint. Unknown output must not gain semantic-review credit.
+- Declare historical Git objects as test prerequisites before assigning work to a
+  snapshot-only worker. Do not repeatedly call models to rediscover missing prerequisites.
+- Use short D-drive test roots on this Windows host. Preserve failing long-path evidence;
+  changing the path does not establish universal Windows long-path support.
+- A command wrapper owns its subprocess tree through completion or confirmed termination.
+  Losing the wrapper deadline does not establish that the test process stopped.
+- A bounded successful continuation is not proof that the global scheduler is active,
+  that all source paths are reviewed, or that a candidate has been deployed.

@@ -346,3 +346,21 @@ wrapper timed out after 900 seconds but pytest continued to completion at 951.80
 the inner exit code was not observed. vocabulary-verification-002 preserves the paired
 baseline/candidate checks with actual exit codes. Subsequent owner commands use the
 existing owned-process helper and policy allowance rather than that wrapper.
+
+Amendment execution outcome: Fleet worker produced 784bc8eb8a3400203f8c3d449a5042fbb43e0b55,
+changing only the specified test file. Its container snapshot lacks historical Git
+objects and git reports dubious ownership; the worker accurately reported 1 failed,
+128 passed. Fleet evidence_gate_refused stopped the operation before lead review.
+Do not resubmit unchanged or rewrite that outcome. Codex owner independently reviews
+the exact patch and runs the full suite on the real historical checkout. This is a
+manual owner acceptance path, not an automatic Fleet success. Preserve the runtime
+canary evidence because this amendment changes no runtime. Snapshot/history-dependent
+test delivery is a separate automation limit to revisit before repeating such jobs;
+it does not justify weakening the historical comparison or widening container access.
+
+Completion: Codex accepted the exact amendment after immutable candidate host checks:
+ruff and CLI exit 0, full pytest 2630 passed / 476 skipped / zero failures, exit 0.
+See AUDIT-CANARY.md and vocabulary-verification-003/receipt.json for scope and hashes.
+The runtime matches the two-task actual canary. Task-branch integration only; automatic
+Fleet failure is preserved, and no release activation or whole-reference completion is
+claimed. Stop this bounded delivery rather than expanding it into another investigation.
