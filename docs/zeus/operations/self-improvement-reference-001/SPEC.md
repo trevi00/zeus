@@ -1347,3 +1347,35 @@ may inspect one real candidate if eligible; do not fabricate production stagnati
 Live rollout occurs at a task boundary with previous runtime retained, no killing an owned model.
 Unknown throughput causes and broader optimization are the resulting topic, not extra blockers
 to this feedback delivery. No adoption/ontology promotion from these raw observations.
+
+#### Observed delivery obstacle and bounded frame revision
+
+The first Fleet job self-improvement-reference-001-goal-progress failed execution_stale before
+producing a candidate. Task 86f26005-b2d2-506d-9917-24e5c448cd6b reserved at 23:21:23 UTC;
+its last renewed lease expired 23:31:23. Preparation of 5212 files / 62,111,643 bytes finished
+23:32:37; the container started and was stopped/removed on the immediate stale heartbeat.
+Run d0497649aaf0471a9c05180bf7c6079e preserves confirmed client/container cleanup. No model
+result or zero-usage claim is supported. Invocation usage remains unknown. A read-only py-spy
+0.4.2 stack observation showed stage_source waiting for Git batch output with its request writer;
+this single sample does NOT prove a deadlock. Separate Docker read-only preflight took 0.16s.
+Preparation elapsed beyond the lease is confirmed; the cause of the preparation delay is unknown.
+Diagnostic source: https://github.com/benfred/py-spy README dump, opened 2026-09-21; no locals read.
+
+Affected assumption: the existing worker can reach its model heartbeat within the initial lease.
+Add one directly required correction to the SAME batch: source preparation must invoke the existing
+lease/cancellation heartbeat as it makes progress, before provider entry, without extending the
+task's existing deadline or weakening stale ownership checks. Pass optional callback through
+isolated_worker.stage_source from IsolatedClaudeRuntime.run; preserve callers without callbacks,
+source bytes/hash/path/ownership rules and cleanup. Test slow multi-file preparation crossing a
+short lease with real Git/files and callback observations; cancellation must prevent container
+start and retain the owned preparation record. Do not invent a general watchdog or investigate
+all subprocess timing. Allowed additionally isolated_worker.py and tests/test_audit_progress.py
+(or tests/test_isolated_worker_preparation.py). The actual delay's cause is a follow-up unless
+this narrow lease-liveness fix fails its acceptance.
+
+Bootstrap exception, owner operation only: after confirming the old owner/container stopped,
+cancel the old task and discard its termination through existing APIs, retaining unknown usage.
+One new Fleet attempt may receive one explicitly logged owner heartbeat after reservation, with
+seconds=POLICY.task_seconds and the existing Workflow deadline clamp. This is a temporary owner
+assist, not proof the runtime is autonomous; the corrected runtime must subsequently run without
+the assist. No repeating renewal loop, deadline extension, new model budget or host fallback.
