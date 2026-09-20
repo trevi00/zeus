@@ -127,3 +127,13 @@ and actual execution. Four existing local contract files passed 75 checks with 6
 PostgreSQL/restart and upstream runtime behavior are not established by that result.
 The decision remains to enhance the existing authority owner rather than add another retry engine.
 Full repository analysis and the consolidated Claude handoff remain open; no runtime changes made.
+
+### Restart and learning-promotion tranche
+
+LEARNING-RESUME.md traces Ouroboros resume routing/checkpoint handling, Hermes prompt-to-skill
+mutation boundaries and OMH learning-candidate preparation against existing Zeus research and
+promotion owners. It supplies a consolidated candidate flow and substep acceptance log. Existing
+Zeus autonomous/investigation contracts passed 25 checks; 1 PostgreSQL integration check skipped.
+No upstream code was executed. Candidate preparation, execution provenance, semantic truth and
+deployment remain separate statuses. Whole-source coverage and the final implementation handoff
+remain open; this tranche does not change the completion conditions or create another retry engine.
