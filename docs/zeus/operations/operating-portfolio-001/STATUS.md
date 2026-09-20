@@ -58,3 +58,46 @@ Existing data repair: bind accepted local-absorption-001-utf8 and worker-handoff
 local-absorption/adoption after checking exact goal and status. This is attribution, not project
 acceptance. Other unmatched jobs are not guessed into projects. Existing current/historical
 relations will be seeded only after the new API is available and evidence verified.
+
+## Requested extension: agent execution cards (2026-09-20)
+
+User requested agent status inside each project. The already-dispatched portfolio-status-001 manifest
+remains immutable at 2d7b24b; this extension is NOT part of that worker's current assignment. Integrate
+against its accepted candidate before a follow-up handoff, retaining its successful evidence. This
+prevents two workers from concurrently changing the same project view or guessing the other's schema.
+
+Observed path: monitoring.DatabaseFacts already projects agents/sessions and task execution_progress
+from its own store. Fleet jobs run in separate registered lane schemas, and fleet_facts projects job
+state, not provider liveness. Reuse registered lane identity and the read_receipt schema-validation
+pattern. Never join a host-level `worker:implementation` row to a lane job merely by agent name.
+
+Read-only projection ownership: host adapter observes the registered lane through a bounded, read-only
+query; application/domain policy binds observation to the exact Fleet job/operation, task or decision
+ID, generation, attempt and execution owner. Only then expose an optional agent_execution envelope
+for that job. Do not expose DSNs, lane schema names, raw session tokens, prompts, reasoning, tool
+arguments or output. Progress belonging to an earlier generation/attempt must not appear current.
+Read receipt alone is not enough: distinguish recorded operation status from fresh execution evidence.
+
+Cards show role and agent ID, provider/model only when actually recorded (otherwise unknown), current
+observed stage, attempt, last progress timestamp and its age, recorded lease expiry, and fixed safe
+wait/failure code. Stages distinguish implementation, evidence replay and independent review so a
+completed provider is not displayed as still coding during host checks. Do not fabricate a percentage
+complete or label a process alive based on `running` alone. An expired lease is a warning, not an
+automatic claim that the process has exited. Display observation time/freshness independently of last
+progress time. No selected agent or incomplete binding is explicit unknown, not idle or success.
+
+Use existing observation events, not a new logging stream or per-card poller. Shared monitor collection
+publishes bounded per-lane observations and a total time budget; one unavailable lane does not erase
+other lanes or freeze the dashboard. Hard bounds must cover connection and SQL waits. A failed lane
+read returns unavailable with a safe code. Recheck active operation identity around lane reads or bind
+the projection to its original job and time; never attach an older observation to a newer active job.
+No writes, retries, execution admission or worker control are added to the page.
+
+Extension acceptance matrix: exact identity normal path; two lanes with identical role names; stale
+attempt/restart; active job changes during collection; progress missing; lane unavailable; expired
+lease; provider exit followed by host verification; terminal accepted/rejected; collector timeout;
+unknown model; old API without envelope; keyboard/mobile and retained project-history views. Tests
+exercise the lane observer and projection, not just a mocked UI badge. Live acceptance must observe
+an actual assigned worker and its transition to verification/result. No live transition observed means
+that criterion stays unverified. Schema/UI implementation is deferred until the predecessor candidate
+is available; no new job is claimed queued or running for this extension yet.
