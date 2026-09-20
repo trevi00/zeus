@@ -159,3 +159,90 @@ file handler via the existing hidden launcher, allow-listing the two transition 
 is host logging configuration, not a new application retry path. Other CLI output stays discarded;
 no raw exception/traceback/token is forwarded. The wrapper and launch diff are hashed in deployment
 evidence. CI caplog proves emission; the separate owner configuration check proves persistence.
+
+## Operational failure completion batch (2026-09-20; same frame)
+
+Outcome: an isolated worker can return the required implementation envelope and produce real
+monitor frontend checks which the existing credential-free verifier replays before Codex review.
+Keep PR161's accepted project/recurrence work. Do not rewrite historical failed jobs. No wider
+asset absorption, arbitrary npm support, automatic model retry, increased deadlines, or weakened
+evidence gate. Owner authorized analysis/design/review/deployment; Claude implements this batch.
+
+Facts: run 5b6a3b1cc9f249dfbbc0b2c8f5407e50 tried StructuredOutput five times, each refused
+because required tests was absent (CLI2.1.274, Opus5, 647s). Final schema enforcement was correct.
+Run 1c29225241524c37ad2008581a74e616 returned a model answer; frontend assignment explicitly
+allowed no checks although Operation requires an all_checked inspection. This was an owner
+assignment/capability mismatch. Existing image contains node but no usable frontend dependency
+installation/check delivery. Do not say Node itself is absent. Unknown: why the model omitted
+that field despite schema. Explicit prompt instruction is a mitigation, not a universal guarantee.
+
+Sources opened 2026-09-20:
+- https://code.claude.com/docs/en/headless : --json-schema supplies a structured_output result;
+  exit status and terminal errors remain authoritative. It does not guarantee every invocation.
+- https://docs.npmjs.com/cli/v11/commands/npm-ci/ : lock-based clean installation, refusal on
+  package/lock mismatch. Used at owner image build only, never network installation during checks.
+Source data inspected: preserved provider events, executor IMPLEMENTATION, evidence verdict,
+Operation._gate path, DockerEvidenceInspector fresh snapshot/image identity, worker profile,
+Dockerfile.worker and frontend/monitor package/lock/config. Full raw evidence stays on D.
+
+Path/design: owner pinned image packages frontend lock dependencies -> worker profile grants ONE
+fixed check command -> isolated Claude edits -> actual checks on temporary copy -> strict terminal
+summary/tests -> candidate capture -> existing DockerEvidenceInspector repeats same command in
+fresh network-none/token-free containers -> PG inspection all_checked -> independent Codex review.
+Existing worker/verifier container lifecycle owns cleanup; backend Python evidence stays unchanged.
+
+One Claude implementation batch, exact scope:
+1. executor implementation instruction: explicitly require both top-level summary and tests every
+   time, provide a concise legacy JSON shape and profiled observation shape without pretending
+   example checks ran. Summary must be concise; never prose instead of envelope; empty tests is
+   honest but not sufficient for automatic acceptance. Keep schema validation and terminal failure
+   handling unchanged. Test actual _run-delivered instructions for legacy and profiled paths.
+2. Add adapters/monitor_frontend_checks.py: sole supported argv is
+   python -m codex_harness.adapters.monitor_frontend_checks (NO arguments).
+   Fixed monitor-only capability, NOT general command runner. Locate frontend/monitor from cwd;
+   refuse absent/unreadable inputs, symlinks escaping candidate, or package.json/package-lock.json
+   bytes differing from image's /opt/zeus-monitor package/lock. Never use host credentials/network.
+   Image contains frozen node_modules under /opt/zeus-monitor. Work in a uniquely owned temporary
+   directory, copying monitor source/config plus dependencies, excluding candidate node_modules,
+   dist, .git; do not mutate checkout or packaged observatory. No cwd deletion. Execute fixed
+   /usr/local/bin/node plus trusted dependency entrypoints for eslint ., tsc -b, vite build with
+   explicit temporary outDir. Use existing _capture for bounded process tree ownership, no shell.
+   Return JSON with actual named check statuses/exits, dependency/package digests, output and
+   limitations. A failure, unavailable tool, timeout, truncation or cleanup debt means nonzero;
+   do not claim later unrun checks ran. No arguments even --help. Existing outer replay captures
+   stdout/stderr; preserve diagnostic output with fixed identity labels. Temp cleanup owns only
+   its own directory; do not remove it with live child debt. This command is capability observation,
+   not human scenario acceptance. No native Windows fallback; unsupported host reports unavailable.
+3. Dockerfile.worker: add frontend package/lock COPY and npm ci --ignore-scripts --no-audit
+   --no-fund in a node stage, copy frozen toolchain/deps to /opt/zeus-monitor in final image;
+   no changes to authentication or provider version. Image build context .dockerignore excludes
+   frontend node_modules so host dependency trees never enter context. The owner builds/executes
+   actual Linux container checks; no model calls from tests. Do not install on worker startup.
+4. Grant exact command in resources/evidence-policy.json and worker-profile-v1.json; exact-argv
+   rejection in domain/evidence.authorized as for metadata (extra tokens never authorized).
+   Worker profile reporting: add fixed frontend command when assigned monitor work; always both
+   terminal fields required; update document hash through existing metadata helper (<=6000chars).
+   Do not add broad Bash/node/npm permissions or modify project_evidence v1's Python-only contract.
+5. tests/test_monitor_frontend_checks.py plus relevant existing executor/evidence/profile tests.
+   Test real temporary files; injected runner/tool failures clearly labeled. Test success, build
+   failure, absent toolchain, lock mismatch, extra args, escaped source, no source mutation, unique
+   concurrent temps, timeout/cleanup debt classification. Reuse _capture lifecycle tests rather
+   than redesigning process ownership. No full suite in worker: run focused tests + ruff only.
+
+Acceptance matrix:
+- normal: required two fields delivered, real frontend lint/typecheck/build, same replay all_checked.
+- failure/unknown: missing tests still fails schema; empty tests still no_claims; missing toolchain,
+  changed lock or check failure fail closed, no invented evidence or unrelated Python-pass substitute.
+- timeout/cancel/cleanup: existing capture ownership, nonzero and retained debt, no original deletion.
+- concurrency/restart: unique disposable check copies; same image dependency binding on replay;
+  existing task/PG idempotence untouched (not a new queue).
+- platform: Windows host Linux Docker worker and verifier exercised; native no-toolchain explicit
+  unavailable; no reboot required and no blanket port/environment investigation.
+- actual integration: owner builds image; positive current frontend plus injected real TS error
+  in disposable copy; source hash before/after; run actual bounded Claude frontend task and Codex
+  review through Fleet with the new pin. Success is one observed completion, not a reliability rate.
+
+Completion: targeted checks, owner full suite/CI, container positives/negatives, one actual Fleet
+frontend completion, independent review, preserve all failed runs, then deploy accepted runtime/image.
+If actual run fails, discriminate against these criteria once and update THIS frame; no blind reruns.
+Minor issues remain follow-up notes. Existing evidence gating stays mandatory.
