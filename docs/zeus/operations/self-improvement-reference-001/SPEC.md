@@ -777,3 +777,32 @@ python -m pytest tests/test_audit_output_vocabulary.py tests/test_research_audit
 and python -m ruff check . . Add test_audit_output_identity.py. No full suite in the worker
 snapshot, installs, global git changes or model calls. Owner handles historical CI and
 one new two-task run after explicit durable recovery; stop on any failure, do not loop.
+
+### Owner verification of unique-result candidate
+
+Claude candidate 4d5c909094cd73edcbd62d2dfc41569456ffd7cb finished implementation. Fleet
+job output-identity remains failed/evidence_gate_refused: the owner allocated a command
+containing a git-history test that this snapshot cannot run. Worker measured the same Git
+ownership failure before and after the change (135/1 then 157/1); lint passed. No history
+check is waived and the cancelled automatic lead decision is not claimed as a review.
+This Codex owner independently reviewed the entire changed output path and the fixed
+acceptance matrix. Original actual artifact: old assigned schema accepts it; new assigned
+schema rejects it. Owner focused identity/vocabulary execution: 39 passed, JUnit on D.
+The entire allocated five-file command is being run in the historical host checkout; CI
+will independently run the full historical suites and services. No extra Claude call is
+needed to change code for a host prerequisite.
+
+Boundary accuracy: uniqueness here concerns the parsed assigned result object and decoded
+canonical records. The shared JSON text parser is unchanged; this change does not establish
+rejection of repeated property names in raw transport text. The observed incident was two
+array records for one identity. Raw duplicate-property hardening has no observed trigger in
+this strict-output run and is not a newly invented blocker.
+
+After accepted source + CI + exact-image CLI checks: the existing failed row is already a
+verified retry-eligible attempt, so no ExecutionRecovery.repair mutation is appropriate.
+The owner may explicitly execute ONLY d1133291-1151-4ffd-987a-6671cd0f34bd once with the
+existing executor expected-id/correlation/status=retry guard, preserving attempt 1. On
+success, the ordinary audit service can run its two-task finite canary. Any new failure
+stops this batch; no loop, ledger edit or repeated search for a green result. These are one
+explicit recovery attempt plus two normal service tasks, not an invisible replay of the
+first canary. Continuous service registration requires the two normal tasks to pass.
