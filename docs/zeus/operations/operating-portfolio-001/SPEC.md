@@ -274,3 +274,16 @@ tests already ran. No runtime/profile/manifest/image changes, no extra report or
 Finalize concise structured JSON with required summary AND tests. This is completing a preserved
 implementation, not repeating the entire assignment. Owner full suite/CI and actual Fleet frontend
 canary remain before deployment. Earlier accepted code/matrix stay fixed.
+
+### Actual frontend canary scope
+GitWorkspace.capture requires a real code change; a verification-only implement assignment would
+be refused as no code change. Preserve that contract. Use a meaningful, one-file monitor change:
+in frontend/monitor/src/views/projects.tsx, below the main project header description add a small
+muted, wrapping Korean explanation: "실패 기록은 후속 작업이 반영되어도 보존됩니다. 현재 해결 여부는 후속 작업과 수용 기록을 함께 확인하세요."
+This directly clarifies the user's observed failed entries. Do not change status, counts, acceptance,
+parser, retry controls or data. Execute ONLY python -m codex_harness.adapters.monitor_frontend_checks
+for frontend evidence in the new image, then provide concise summary plus tests containing that exact
+executed command. No package installation, npm command, report file or generated bundle edit.
+Owner rebuilds tracked bundle after independent review, verifies the explanation in the browser,
+and adds it to this same PR. This narrowly extends the canary from observation to useful UI copy;
+it does not claim a no-change run succeeded, nor change old failed jobs. Stop after this one job.
