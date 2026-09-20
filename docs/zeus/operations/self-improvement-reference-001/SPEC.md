@@ -1166,3 +1166,22 @@ Corrected image sha256:7519fbdb06c4f41ead952c75e686ec2ec48d8006c7c45f04279f1dc8e
 passed actual CLI startup and file-task canary. Receipt: claims-release-canary-001/receipt.json
 under the existing D artifact directory. This proves CLI execution in that image, not source-audit
 completion. Package byte comparison, corrected independent lead and final CI remain before rollout.
+
+### Full-CI fixture reconciliation (2026-09-21 KST)
+
+Final CI 35532116249 integration finished with 1 failed, 3195 passed, 27 skipped.
+Failure is tests/test_integration.py::test_postgres_audit_checkpoint_reconnect_and_stale_write:
+Audit source manifest unavailable. The test directly inserts a synthetic research_audits row
+with id/inventory/subsystems only, without source, then checkpoints it. Valid production imports
+always retain source.manifest_ref. This is a demonstrated old fixture/contract mismatch, not a
+PostgreSQL readiness failure, and it will not be retried unchanged. Raw CI job 106134472669 log
+is preserved as claims-ci-integration-first.log on D. Guard-order lead accepted candidate f60148a;
+that result and all prior evidence remain valid within their scope.
+
+One test-only correction: in that named test create a clearly labelled fixture manifest using the
+existing FileArtifacts instance, include source.manifest_ref on its synthetic audit row, and retain
+all reconnect, stale-write and remaining-scope assertions unchanged. No production/runtime change,
+no unrelated test rewrite. Allowed tests/test_integration.py only. Run python -m pytest
+tests/test_integration.py -q -k test_postgres_audit_checkpoint_reconnect_and_stale_write and
+python -m ruff check . . Report missing integration honestly; owner executes the real isolated-PG
+case plus preserved checkpoint PG controls before final CI. No source audit/provider/service call.
