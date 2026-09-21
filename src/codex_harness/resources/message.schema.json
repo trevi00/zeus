@@ -261,7 +261,8 @@
                       "cancelled",
                       "blocked",
                       "superseded",
-                      "inspection_blocked"
+                      "inspection_blocked",
+                      "succeeded"
                     ]
                   },
                   "reason_code": {
@@ -284,6 +285,7 @@
                       "inspection_blocked",
                       "operator_cancelled",
                       "reconciliation_required",
+                      "research_required",
                       "ticket_binding_changed",
                       "ticket_superseded"
                     ]
@@ -305,7 +307,47 @@
                   "reason_code",
                   "transition_ref"
                 ],
-                "additionalProperties": false
+                "additionalProperties": false,
+                "allOf": [
+                  {
+                    "if": {
+                      "properties": {
+                        "status": {
+                          "const": "succeeded"
+                        }
+                      },
+                      "required": [
+                        "status"
+                      ]
+                    },
+                    "then": {
+                      "properties": {
+                        "reason_code": {
+                          "const": "research_required"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "if": {
+                      "properties": {
+                        "reason_code": {
+                          "const": "research_required"
+                        }
+                      },
+                      "required": [
+                        "reason_code"
+                      ]
+                    },
+                    "then": {
+                      "properties": {
+                        "status": {
+                          "const": "succeeded"
+                        }
+                      }
+                    }
+                  }
+                ]
               }
             }
           }

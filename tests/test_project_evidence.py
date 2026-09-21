@@ -26,9 +26,12 @@ from codex_harness.application.evidence_inspection import BUCKET, EvidenceInspec
 from codex_harness.domain.evidence import parse_policy
 from codex_harness.domain.model import ContractError
 from codex_harness.domain.project_evidence import (
+    CONTAINER_INTERPRETER,
     SCHEMA,
+    SCHEMA_V2,
     observed_checks,
     parse_profile,
+    requires_container,
     worker_schema,
 )
 
@@ -190,6 +193,65 @@ def test_refusals_are_error_findings_in_a_real_inspection(tmp_path):
 def test_profile_refuses_unsafe_paths_and_unknown_fields(mutation):
     with pytest.raises(ContractError):
         parse_profile(document(**mutation), POLICY)
+
+
+# ----- version 2: the same contract, declared for the pinned container -------------------------
+IMAGE = 'sha256:' + 'a' * 64
+
+
+def container_document(checks=None, execution=None, **context):
+    doc = document(checks, **{'interpreter': CONTAINER_INTERPRETER, **context})
+    return {**doc, 'schema': SCHEMA_V2,
+            'execution': {'kind': 'container', 'image': IMAGE} if execution is None else execution}
+
+
+def test_version_two_declares_its_image_and_keeps_the_whole_version_one_grammar():
+    parsed = parse_profile(container_document(), POLICY)
+    v1 = parse_profile(document(), POLICY)
+    assert parsed['schema'] == SCHEMA_V2 and parsed['execution'] == {'kind': 'container', 'image': IMAGE}
+    assert requires_container(parsed) is True and requires_container(v1) is False
+    assert parsed['checks'] == v1['checks'] and worker_schema(parsed) == worker_schema(v1)
+    assert parsed['profile_digest'] != v1['profile_digest'], 'the version and image are part of the identity'
+    assert parse_profile(container_document(execution={'kind': 'container', 'image': 'sha256:' + 'b' * 64}),
+                         POLICY)['profile_digest'] != parsed['profile_digest']
+    assert 'execution' not in v1, 'a version 1 profile keeps its exact old shape'
+
+
+@pytest.mark.parametrize('mutation', [
+    {'execution': {'kind': 'host', 'image': IMAGE}},
+    {'execution': {'kind': 'container', 'image': 'sha256:' + 'A' * 64}},
+    {'execution': {'kind': 'container', 'image': 'latest'}},
+    {'execution': {'kind': 'container', 'image': IMAGE, 'mounts': ['/etc']}},
+    {'execution': {'kind': 'container'}},
+    {'interpreter': 'C:\\venv\\Scripts\\python.exe'},  # a host interpreter is never a container path
+    {'interpreter': '/usr/bin/python3'}])
+def test_version_two_refuses_an_unknown_execution_image_or_a_host_interpreter(mutation):
+    with pytest.raises(ContractError):
+        parse_profile(container_document(**mutation), POLICY)
+
+
+@pytest.mark.parametrize('document_', [
+    {**container_document(), 'schema': SCHEMA},  # version 1 with a version 2 field
+    {k: v for k, v in container_document().items() if k != 'execution'},  # version 2 without one
+    {**container_document(), 'schema': 'urn:zeus:project-evidence:3'}])
+def test_an_unknown_version_or_a_mixed_document_is_refused(document_):
+    with pytest.raises(ContractError):
+        parse_profile(document_, POLICY)
+
+
+def test_a_container_profile_is_loaded_without_requiring_a_host_interpreter(tmp_path, monkeypatch):
+    """The version 2 interpreter is a path inside the image: no host file is verified or run for it,
+    while a version 1 profile still refuses a host interpreter that does not exist."""
+    path = tmp_path / 'container-profile.json'
+    path.write_text(json.dumps(container_document()), encoding='utf-8')
+    monkeypatch.setenv('HARNESS_EVIDENCE_PROFILE', str(path))
+    loaded = load_profile(os.environ, POLICY)
+    assert loaded['execution']['image'] == IMAGE and loaded['contexts']['backend']['interpreter'] == CONTAINER_INTERPRETER
+    absent = tmp_path / 'host-profile.json'
+    absent.write_text(json.dumps(document(interpreter=str(tmp_path / 'no-such-python'))), encoding='utf-8')
+    monkeypatch.setenv('HARNESS_EVIDENCE_PROFILE', str(absent))
+    with pytest.raises(ContractError):
+        load_profile(os.environ, POLICY)
 
 
 @pytest.mark.parametrize('checks', [

@@ -139,4 +139,8 @@ class LaneLauncher:
             stream.close()
         exit_code = handle["process"].returncode
         receipt, error = read_receipt(handle["dsn"], handle["schema"], job["operation_id"], self.connect)
-        return classify_outcome(exit_code, receipt, job, error)
+        outcome = classify_outcome(exit_code, receipt, job, error)
+        # INV-OPERATION-001: the lane operation's own durable owner handoff travels up as it was
+        # written. The classification above is untouched by it; `Fleet.finalize` projects it safely.
+        handoff = receipt.get("owner_handoff") if isinstance(receipt, dict) else None
+        return outcome if handoff is None else {**outcome, "owner_handoff": handoff}

@@ -7,6 +7,7 @@ import pytest
 
 from codex_harness.adapters.providers import packaged_policy
 from codex_harness.adapters.store import MemoryStore
+from codex_harness.application.fleet import owner_handoff_view
 from codex_harness.application.local_cycle import LocalCycle
 from codex_harness.application.operation import Operation, OperationRefused
 from codex_harness.application.service import Harness
@@ -101,6 +102,13 @@ class FakeBudget:
         self.settled.append((slot_id, outcome))
 
 
+# Fixture bindings that belong to ANOTHER execution than the one the operation is running: one
+# per field of the execution identity an inspection is bound to.
+FOREIGN_BINDINGS = {"foreign": ("task_id", "someone-else"), "foreign_generation": ("generation", 7),
+                    "foreign_attempt": ("attempt", 4), "foreign_revision": ("source_revision", "9" * 40)}
+WITH_INSPECTION_ROW = {"bound", "incomplete", "unidentified", *FOREIGN_BINDINGS}
+
+
 class FakeExecutor:
     """Settles the guarded row the way the real executor would; provider entries are counted."""
 
@@ -115,18 +123,31 @@ class FakeExecutor:
         with self.svc.store.transaction() as tx:
             task = tx.get("tasks", expected["id"])
             task.update(status=self.worker, attempt=1, generation=1, lease_owner="fixture")
+            if self.inspection == "unidentified":
+                # A row whose execution identity cannot be read back: the current binding is
+                # incomplete, so no finding can be attributed to this run at all.
+                task.update(generation=None, attempt=None)
             if self.worker == "succeeded":
                 candidate = {"revision": "c" * 40, "base": BASE, "tree": "t" * 40, "diff_hash": "d" * 64,
                              "path": "D:/secret/" + CANARY}
                 inspection_id = "insp-" + task["id"]
                 binding = {"task_id": task["id"], "generation": 1, "attempt": 1, "source_revision": candidate["revision"]}
-                if self.inspection == "foreign":
-                    binding["task_id"] = "someone-else"
-                if self.inspection in {"bound", "foreign", "incomplete"}:
+                if self.inspection in FOREIGN_BINDINGS:
+                    field, value = FOREIGN_BINDINGS[self.inspection]
+                    binding[field] = value
+                if self.inspection in WITH_INSPECTION_ROW:
+                    # Two host-declared checks, as a profiled inspection records them: one replayed
+                    # and agreed, one the worker never reported. The raw text is the CANARY on
+                    # purpose: nothing from a finding's cause may reach an owner handoff.
+                    findings = [{"claim": {"kind": "project_check", "check_id": "unit", "status": "executed",
+                                           "argv": ["python", "-m", "pytest", CANARY]}, "state": "checked", "cause": None},
+                                {"claim": {"kind": "project_check", "check_id": "lint", "status": "missing"},
+                                 "state": "not_checked", "cause": "required check has no observation " + CANARY}]
                     tx.put("evidence_inspections", inspection_id, {
-                        "id": inspection_id, "binding": binding, "policy_hash": "ph",
+                        "id": inspection_id, "binding": binding, "policy_hash": "ph", "findings": findings,
                         "verdict": "incomplete" if self.inspection == "incomplete" else "all_checked",
-                        "denominator": {"claims": 1, "checked": 0 if self.inspection == "incomplete" else 1, "missing": 1}})
+                        "denominator": {"claims": 2, "checked": 0 if self.inspection == "incomplete" else 1,
+                                        "not_checked": 1}})
                 task["result"] = {"summary": CANARY, "candidate": candidate, "execution_ref": "sha256:" + "e" * 64,
                                   "evidence_inspection": {"inspection_id": inspection_id, "verdict": "all_checked"}}
                 report = envelope("task.result", task["agent"], "lead:improvement", "implement",
@@ -279,7 +300,8 @@ def test_worker_exception_settles_the_slot_and_fails():
     assert budget.settled == [("slot-1", "exception")] and executor.calls == ["task"] and CANARY not in json.dumps(receipt)
 
 
-@pytest.mark.parametrize("inspection", ["missing", "foreign", "incomplete"])
+@pytest.mark.parametrize("inspection", ["missing", "foreign", "foreign_generation", "foreign_attempt",
+                                        "foreign_revision", "unidentified", "incomplete"])
 def test_all_checked_summary_without_a_bound_all_checked_row_stops_before_review(inspection):
     receipt, svc, executor, budget, _ = run(inspection=inspection)
     assert receipt["status"] == "failed" and receipt["reason_code"] == "evidence_gate_refused"
@@ -291,6 +313,106 @@ def test_all_checked_summary_without_a_bound_all_checked_row_stops_before_review
         assert decision["status"] == "cancelled" and decision["retirement"]["before"]["status"] == "pending"
         assert decision["input"] is not None and decision["message"]["correlation_id"] == "operation:op-001"
     assert receipt["finalization"]["retired"]["decisions_pending"] == [decision["id"]]
+
+
+# ----- evidence refusal owner handoff ----------------------------------------------------------
+def test_evidence_refusal_leaves_one_bounded_pending_owner_handoff_beside_the_failed_outcome():
+    receipt, svc, executor, budget, _ = run(inspection="incomplete")
+    handoff = receipt["owner_handoff"]
+    assert receipt["status"] == "failed" and receipt["reason_code"] == "evidence_gate_refused", "outcome unchanged"
+    assert handoff["schema"] == "urn:zeus:operation-evidence-handoff:1" and handoff["status"] == "pending_owner"
+    assert handoff["owner"] == "lead:improvement" and handoff["next_action"] == "inspect_evidence_contract"
+    assert handoff["reason_code"] == "evidence_gate_refused" and handoff["operation_id"] == "op-001"
+    assert handoff["correlation_id"] == "operation:op-001" and handoff["candidate"]["revision"] == "c" * 40
+    with svc.store.transaction() as tx:
+        [task] = tx.scan("tasks")
+    # The refusal precedes the review, so the operation itself names no task: the handoff still binds
+    # the actual candidate execution and the inspection row the gate refused.
+    assert receipt["task_id"] is None and handoff["task_id"] == task["id"]
+    assert handoff["generation"] == 1 and handoff["attempt"] == 1
+    inspection = handoff["inspection"]
+    assert inspection["id"] == "insp-" + task["id"] and inspection["bound"] is True
+    assert inspection["known"] is True and inspection["verdict"] == "incomplete"
+    assert [item["check_id"] for item in inspection["passed"]] == ["unit"]
+    assert [item["check_id"] for item in inspection["remaining"]] == ["lint"]
+    assert inspection["remaining"][0]["state"] == "not_checked" and inspection["remaining"][0]["reported"] == "missing"
+    assert inspection["claim_status_counts"] == {"executed": 1, "missing": 1}
+    assert inspection["denominator"] == {"claims": 2, "checked": 0, "not_checked": 1}
+    # No cause, command, output or path leaves; the handoff itself grants nothing.
+    assert CANARY not in json.dumps(handoff) and "argv" not in json.dumps(handoff)
+    assert "never a retry" in handoff["retry"] or "no follow-up" in handoff["retry"]
+    assert "no retry" in handoff["authority"]
+
+
+def test_the_owner_handoff_is_visible_idempotent_and_schedules_nothing():
+    receipt, svc, executor, budget, _ = run(inspection="incomplete")
+    read = Operation(svc).status("op-001")
+    assert read["owner_handoff"] == receipt["owner_handoff"], "the same record through the status projection"
+    again = Operation(svc, FakeExecutor(svc), Bus(), Workflow(svc.store, svc.org), FakeBudget(), Collector())
+    replay = again.run(valid(), IDENTITY, BOUND_GOAL)
+    assert replay["cached"] is True and replay["owner_handoff"] == receipt["owner_handoff"]
+    assert again.executor.calls == [] and again.budget.reserved == [], "no retry, no reservation, no provider entry"
+    with svc.store.transaction() as tx:
+        assert [row["status"] for row in tx.scan("decisions_pending")] == ["cancelled"]
+        assert [row["status"] for row in tx.scan("tasks")] == ["succeeded"], "the candidate task stays as it was"
+
+
+PROGRESS_KEYS = ("verdict", "denominator", "claim_status_counts", "passed", "remaining", "truncated")
+
+
+@pytest.mark.parametrize("inspection, reason", [
+    ("missing", "inspection_unknown"),
+    ("foreign", "inspection_bound_elsewhere"),
+    ("foreign_generation", "inspection_bound_elsewhere"),
+    ("foreign_attempt", "inspection_bound_elsewhere"),
+    ("foreign_revision", "inspection_bound_elsewhere"),
+    ("unidentified", "execution_binding_incomplete")])
+def test_an_unbound_or_absent_inspection_is_unknown_and_earns_no_progress_credit(inspection, reason):
+    """The reproduced finding: a real `all_checked` row of ANOTHER execution (or an execution this
+    run cannot identify) must never be summarized as this run's completed checklist. The inspection
+    id stays for diagnosis; verdict, denominator, counts and the passed/remaining items do not."""
+    receipt, svc, _, _, _ = run(inspection=inspection)
+    handoff = receipt["owner_handoff"]
+    summary = handoff["inspection"]
+    assert receipt["status"] == "failed" and receipt["reason_code"] == "evidence_gate_refused"
+    assert summary["id"] is not None, "the id is kept so an owner can inspect the foreign row"
+    assert summary["bound"] is False and summary["known"] is False and summary["reason_code"] == reason
+    assert all(key not in summary for key in PROGRESS_KEYS), "unknown is absent, not a zero workload"
+    # Identity, owner and next action are untouched by the refusal to credit progress.
+    assert handoff["status"] == "pending_owner" and handoff["owner"] == "lead:improvement"
+    assert handoff["next_action"] == "inspect_evidence_contract" and handoff["reason_code"] == "evidence_gate_refused"
+    # The same real receipt through the lane projection: no passed/remaining count either.
+    view = owner_handoff_view(handoff)
+    assert view["inspection_id"] == summary["id"] and view["inspection_bound"] is False
+    assert view["inspection_known"] is False and view["inspection_reason_code"] == reason
+    assert view["passed"] is None and view["remaining"] is None
+    assert view["status"] == "pending_owner" and view["next_action"] == "inspect_evidence_contract"
+    assert Operation(svc).status("op-001")["owner_handoff"] == handoff, "read-only and idempotent"
+    assert CANARY not in json.dumps(receipt) and CANARY not in json.dumps(view)
+
+
+def test_an_inspection_bound_to_this_execution_keeps_its_checklist_and_counts():
+    """The positive control of the same matrix: complete, matching binding still projects the
+    useful passed/remaining checklist, both on the receipt and through the lane projection."""
+    receipt, svc, _, _, _ = run(inspection="incomplete")
+    summary = receipt["owner_handoff"]["inspection"]
+    with svc.store.transaction() as tx:
+        [task] = tx.scan("tasks")
+        row = tx.get("evidence_inspections", summary["id"])
+    assert row["binding"] == {"task_id": task["id"], "generation": 1, "attempt": 1, "source_revision": "c" * 40}
+    assert summary["bound"] is True and summary["known"] is True and summary["reason_code"] is None
+    assert [item["check_id"] for item in summary["passed"]] == ["unit"]
+    assert [item["check_id"] for item in summary["remaining"]] == ["lint"]
+    assert summary["denominator"] == {"claims": 2, "checked": 0, "not_checked": 1}
+    view = owner_handoff_view(receipt["owner_handoff"])
+    assert view["inspection_bound"] is True and view["inspection_known"] is True
+    assert view["passed"] == 1 and view["remaining"] == 1 and view["inspection_reason_code"] is None
+
+
+@pytest.mark.parametrize("kwargs", [{}, {"verdict": False}, {"worker": "failed"}])
+def test_only_an_evidence_refusal_produces_a_handoff(kwargs):
+    receipt, _, _, _, _ = run(**kwargs)
+    assert receipt["reason_code"] != "evidence_gate_refused" and receipt["owner_handoff"] is None
 
 
 def test_lead_rejection_stops_without_rework_and_unknown_verdict_is_unknown():

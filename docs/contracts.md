@@ -952,7 +952,30 @@ exact pending `review_lead` decision, its succeeded worker task with the same co
 result, the candidate revision and an actual `evidence_inspections` row bound to that task id,
 generation, attempt and source revision must pass `require_all_checked`; a summary verdict string
 is insufficient and a missing, foreign or incomplete row stops with `evidence_gate_refused` and
-zero reviewer calls. Worker retry/failure/exception, ledger exhaustion, a lead rejection (no
+zero reviewer calls. That refusal keeps its terminal `failed` status and its cancelled pending
+review exactly, and in the SAME durable finalization it records one bounded owner handoff on the
+operation row (`owner_handoff`, `urn:zeus:operation-evidence-handoff:1`): reason code, operation,
+correlation, task/generation/attempt, candidate fields, bounded artifact refs, the inspection's id,
+bound/known flags, verdict, denominator, per-claim status counts and the inspection-bound passed and
+remaining check items, owner `lead:improvement`, next action `inspect_evidence_contract`, status
+`pending_owner`. It is a visible request for an owner: no raw output, cause text, command or
+credential enters it, it grants no retry, acceptance, model call, merge or deployment authority, and
+it schedules no follow-up - `pending_owner` is never presented as running work. Progress is reported
+only for evidence bound to THIS execution: the complete current binding (task id, generation, attempt
+and candidate source revision) must be known and equal to the stored one before any finding is read.
+A missing id (`inspection_missing`), an unreadable row (`inspection_unknown`), an incompletely
+identified current execution (`execution_binding_incomplete`) and a row bound elsewhere
+(`inspection_bound_elsewhere`) are each `bound=false`, `known=false` with that reason code and the
+inspection id for diagnosis; verdict, denominator, claim status counts and the passed/remaining
+items are ABSENT, never a foreign checklist and never a misleading zero. The counts-only lane
+projection decides credit independently of the writer: it relays `passed`/`remaining` only when the
+record states both `bound` and `known` as exactly true, so a handoff retained before this rule -
+contradictory flags beside populated item lists - shows null progress there too. The record is
+deterministic and written once, so a repeated finalization or a lost response returns the identical
+handoff through `operate status` and, for a lane job, through the safe counts-only `owner_handoff`
+projection recorded by `Fleet.finalize` and shown by `fleet status`; historical receipts are never
+rewritten, and a job without a handoff keeps its exact previous shape. Worker
+retry/failure/exception, ledger exhaustion, a lead rejection (no
 rework, diagnosis or retry), an unproven or non-boolean verdict and repeated idle turns end the
 run as failed, exhausted, rejected or unknown. `accepted` requires a succeeded accepted review_lead
 decision for the worker's candidate revision, all slots settled and a collection without sink
@@ -1240,9 +1263,34 @@ the repository-root working directory and the legacy path without a profile are 
 is derived from model output. Delivery is recorded as digests; whether the installed CLI honoured
 the rules is decided by a real canary, not by this configuration.
 
+Version 2 (`urn:zeus:project-evidence:2`) is the same contract declared for the pinned isolation
+image: the closed fields gain `execution` (`{kind: "container", image: "sha256:<64hex>"}`) and every
+context interpreter must be the trusted in-image path `/opt/zeus/bin/python`. The checks grammar,
+the Python-only argv boundary, the packaged allowlist, the worker schema, the observation rules and
+the classifier are shared with version 1 unchanged. A version-2 profile REQUIRES the host isolation
+selection and refuses without it, under another image or with a host interpreter; a version-1 (host)
+profile beside isolation stays refused; an absent profile is exactly the legacy path. All of that is
+decided in `bootstrap.host_isolation` and the `Executor` constructor, before any provider entry, and
+nothing falls back to the host. Contexts are verified against the real candidate tree on the host
+(existence, containment through symlinks, dependency byte digests) and then mapped to `/workspace`:
+the values that execute are container paths, the image interpreter and a fixed allowlisted container
+environment, never a host path, host interpreter or inherited host value. Profile digest, execution
+image/limits/isolation digest, relative contexts, dependency digests and the environment digest are
+bound into the inspection identity and cache key. The worker delivery is the same `worker_delivery`
+resolved in container terms and travels in the isolated request under its own protocol
+(`zeus-isolated-worker-v1-project-evidence`), so an entry that predates delivery refuses explicitly
+instead of dropping the checklist and answering as an unprofiled run; protocol and delivery must
+agree in both directions. Replay is the verifier container of `DockerEvidenceInspector` - the same
+function, so ownership, records, cleanup debt and refusals cannot drift - entered at the check's own
+container context directory; the host lead reviews with the same check ids resolved for its own
+checkout and is told explicitly that these commands do not exist on the host. Missing, duplicate,
+unknown, `not_run`, unauthorized and mismatched observations stay non-passing exactly as in
+version 1, and diagnostic prose confers no verification credit.
+
 - INV-ISOLATED-WORKER-001: Worker isolation is a host opt-in (`ZEUS_WORKER_ISOLATION=docker` with
 `ZEUS_WORKER_IMAGE=sha256:<64hex>`); absent, host execution is exactly unchanged; unknown or partial
-configuration, a host project-evidence profile beside it, an unavailable daemon or image and a
+configuration, a version-1 host project-evidence profile beside it (a version-2 container profile
+naming this exact image is the one accepted pairing), an unavailable daemon or image and a
 missing `CLAUDE_CODE_OAUTH_TOKEN` refuse before any reservation or provider, and a selected isolation
 never falls back to the host. Mode, image and limits are bound into the operation identity, the
 invocation request, the result and the replay cache identity; image, mounts, executable and
@@ -1712,3 +1760,122 @@ bytes, hashes, paths, modes, refusals or cleanup - a caller that passes no callb
 as before. A callback that refuses propagates unchanged between two files, so no further file is
 written, no container is created or started, and the owned run record is retained as `refused`
 with `preparation_cancelled`, which blocks no later run because no container ever existed.
+
+## INV-AUDIT-REPAIR-001
+
+A rejected source audit analysis may gain AT MOST ONE opted-in, evidence-bound corrective successor,
+and what that successor achieved is reported truthfully. This owner adds no daemon, scheduler,
+analysis engine, source reader, executor, provider, transport, promotion authority or budget ledger;
+it calls no model; it never activates a release, merges, deploys, cancels, retries or reassigns; and
+it never writes a `research_partitions`, `research_paths`, `research_subsystems`,
+`research_checkpoints`, `audit_progress_*`, `fleet_jobs` or `portfolio_investigations` row. The
+original task, its result, its rejection, its immutable artifact and its partition generation are
+read only and are never rewritten. Admission is DISABLED by default: `zeus audit-repair enable
+--audit-id <id> --task-id <task> --operator <label>` records one durable `audit_repair_activation`
+row scoped to that audit and that rejected task (the task must exist, belong to that audit and carry
+its own recorded rejection), `disable` prevents NEW admission only and leaves every recorded lineage,
+its evidence and its settlement intact, and `inspect`/`status` are store (and artifact) reads that
+create no task, no opt-in, no schedule key and no assignment. Automatic eligibility in THIS version
+is ONLY the demonstrated missing structured test disposition: the settled task succeeded, its own
+durable result carries `analysis_rejected` with `analysis_content_rejected`, the recorded
+`error_type` is the pure decoder's own `ContractError`, and the recorded `error_digest` equals the
+digest of a validator message this diagnosis is bound to (`Missing subsystem trace: tests`).
+Classification is structured content plus the validator's identity, never model prose, an exception
+substring or a subtype: `AuditDraftRejected` from `ResearchAudits.checkpoint`, every other validator
+message, an unclassified or checkpointed result, a failed, cancelled, blocked, retried, queued or
+running task and a foreign audit are not eligible and are reported as the fixed reason they are
+(`unsupported_diagnosis`, `not_enabled`, `out_of_scope`, `unknown_task`, `unknown_partition`,
+`foreign_partition`, `generation_changed`, `evidence_missing`, `evidence_unreadable`,
+`evidence_mismatch`, `replay_unavailable`, `replay_mismatch`, `no_correctable_identity`,
+`lineage_exists`, `family_closed`, `binding_changed`, `predecessor_unpublished`, `no_candidate`,
+`research_inactive`, `unresolved_termination`, `control_unavailable`).
+The rejection must still HOLD its partition at the generation it was assigned, and the predecessor's
+own correlation must have no unsent outbox record. The immutable artifact is inspected and read
+OUTSIDE any transaction and the pure content decode (`AuditExecution.proposed_checkpoint`, the same
+half of the boundary that refused the draft) is replayed against the trusted stored partition and
+the retained answer: only the refusal's TYPE and the digest of its message leave that replay, and
+the admission is eligible only when the replay reproduces exactly the refusal the record claims.
+Absent, modified, unreadable or mismatched evidence, an unavailable replay and a draft that now
+decodes cleanly are all ineligible - unknown is never permission, and nothing is repaired, decoded,
+normalized or deduplicated. The lineage identity is derived from the durable records (audit,
+partition, partition generation, original task, its execution generation, the diagnosis), so a
+repeated tick, a restarted service and a concurrent admission caller find the SAME
+`audit_repair_corrections` row instead of creating a second call. In ONE store transaction the
+admission re-reads the activation, the task, the partition, the SAME `research_control/activation`
+run gate the host service reads and the `observation_terminations` markers of the execution being
+corrected, refuses unless the exact binding it was diagnosed against is unchanged, refuses a paused
+or unreadable control (`research_inactive`, `control_unavailable`) and an unconfirmed or
+pending-reconciliation marker of that execution (`unresolved_termination`) - an unresolved marker is
+the operator's alone to resolve and unknown is never permission - and writes the correction record,
+the complete diagnosed target set, the ordinary `audit_partition`
+assignment into the existing outbox, a `schedule` row under its own deterministic
+`repair:<correction>` key carrying the same `partition_id`, and the durable `events` audit record.
+The successor is an ORDINARY assignment: same action, same agent, same audit, same partition and the
+SAME trusted partition generation, plus a bounded `repair` context (schema, correction id, source
+task, the immutable artifact reference, the fixed diagnosis and field, the assigned identities whose
+record carried no test disposition, bounded and counted, and the owner's own versioned checklist).
+No draft, validator message, prompt, source text or exception text is ever copied into an
+assignment, a record, a log or a status read. An executing worker allow-lists that context before it
+reaches a prompt, so a foreign or malformed context is dropped and no assignment can smuggle
+instructions into an analysis. `schedule_audits`, the correlation-scoped relay, the Redis delivery,
+the `Workflow` claim guard, the fence, the lease, `check_expected`/`require_expected`, the claim
+order, `created_at`, the audit progress observer and every existing validator are UNCHANGED: the
+correction takes its turn like any other queued assignment, is never preferred, reordered or
+re-prioritized, and the analysis contract gains only a fixed pre-submission checklist (a justified
+`tests_not_run` entry remains an accepted incomplete result, never a fabricated pass) and no hidden
+model-validation loop. Settlement is reconciled from terminal task evidence and is idempotent: a
+missing or live successor stays `admitted` (`successor_not_submitted`, `successor_pending`), a
+successor bound to another record is `reconciliation_required` (`successor_unbound`), a failed,
+cancelled, expired, blocked or superseded successor is `reconciliation_required`
+(`execution_unresolved`) and is NOT a strike, a succeeded successor whose own result is
+`analysis_rejected` records `research_required` (`content_rejected_again`) ONCE and closes the
+family, and a succeeded, checkpointed successor is `repaired` only when EVERY originally diagnosed
+target identity carries a subsystem record persisted by THAT successor's own execution with a
+justified test disposition - a corrected subset is `deferred` (`partially_corrected`) and no
+corrected target at all is `deferred` (`no_corrected_subsystem`, `unclassified_result`). Settlement
+counts the COMPLETE diagnosed target set retained on the lineage row, never the bounded list the
+assignment carries, so a truncated recovery context can never shrink the denominator, and it counts
+only identities in that set, so valid work the successor did outside it stays valid and still yields
+a deferred repair; `target_subsystems`, `corrected_subsystems` and `remaining_targets` are reported
+separately and a partial correction can never read as a whole repair. Those records are read from
+the immutable `research_evidence_history` rows of the successor's own execution, not from
+`research_subsystems`, whose latest-row-per-item semantics would let a later ordinary checkpoint
+take the credit for, or erase, what the successor persisted. A checkpoint is resumed partial work,
+never subsystem acceptance: a corrected record whose tests were justifiably not run leaves that
+subsystem in the remaining scope. The original and the successor are the only two attempts: after
+any terminal state the family is closed (`family_closed`) and there is no automatic third call, no
+fabricated research completion and no claim that a recorded `research_required` means research ran -
+source investigation remains the existing ResearchProgram/Codex responsibility. A lineage that
+reaches `research_required` writes, in the SAME transaction as that terminal settlement, ONE
+deterministic informational `execution.notice` to the executing agent's own lead over the existing
+direct reporting edge, plus that notice's own outbox record, so the second strike can never be
+stored without the message that reports it. The existing notice builder is extended NARROWLY for
+this case alone: a `succeeded` execution is notice-eligible only when its own durable result records
+`analysis_rejected` AND the authoritative repair lineage proves `research_required` for exactly that
+successor, no arbitrary succeeded row becomes eligible, no row is relabelled `failed`, and the
+reason `research_required` may be raised on no other status. The notice identity is the digest of
+the lineage proof (correction, family, audit, partition generation, diagnosis, both tasks, both
+immutable execution references, state and reason), it retains both execution references as evidence
+references, and it is published by the existing correlation-scoped relay under the lineage's own
+correlation even when no further worker assignment exists there. Publication is read from the
+notice's own outbox record and never assumed: a failed publication keeps that record unsent and is
+retried by a later tick or after a restart, a repeated settlement, a lost commit response and a
+duplicate delivery all return the SAME notice through the existing proof-checked
+commit-before-acknowledgement receive, and receiving it is `informational_only` - it performs no
+research, queues no task or decision and authorizes no third call. The audit service asks this
+owner for ONE tick under its SAME admission gate (settle, then admit at most one successor), relays
+the pending lead notices of that tick through the existing scoped publication, records the bounded
+facts in its `last_repair` row and summary, and reports them in the two declared observations
+`operations.audit_repair_admitted` and `operations.audit_repair_settled` (identifiers, fixed codes
+and counts only, both immutable artifact references as evidence references, a foreign value reduced
+to a declared code or null); execution success, analysis rejection, repair settlement and notice
+delivery stay four separate facts in every projection. A repair failure is `repair_unavailable` and
+a failed notice publication is that attempt's recorded error type beside an unsent notice record;
+both are bounded recorded facts that are never an execution outcome, a stop reason or permission to
+repeat an attempt.
+`zeus audit-service status` gains `repair`: the opt-in, its scope, each source task -> diagnosis ->
+successor -> settlement and the SEPARATE counts (attempted, admitted, repaired, deferred,
+research_required, reconciliation_required); the rejected history is preserved and a hold disappears
+only because the verified lineage advanced the partition's own generation, never because a refusal
+was erased. Fixture audits, tasks, artifacts, buses and executors in the tests are not evidence that
+a model, Redis, PostgreSQL or a host service ran.

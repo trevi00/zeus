@@ -20,6 +20,13 @@ retries or reinterprets an execution, an observation failure is reported as `deg
 unchanged execution result, and the research candidate it may record is an unverified symptom for
 the existing research program, never an audit verdict.
 
+A rejected draft may also gain ONE opted-in corrective successor: each tick asks the bounded repair
+owner (INV-AUDIT-REPAIR-001) to reconcile its open lineages from terminal task evidence and to admit
+at most one ordinary `audit_partition` assignment for a diagnosed rejection. That assignment is not
+special here - it takes its turn through the same relay, delivery, claim guard, fence, executor and
+validators as any other queued one - and a repair failure is a bounded recorded fact, never an
+execution outcome, a stop reason or permission to repeat an attempt.
+
 What an execution DID and what its content was JUDGED to be are reported as two separate facts. A
 draft the typed content boundary refused is a completed execution that retained its work
 (`analysis_rejected`): it holds its own partition at the generation it was assigned, lets another
@@ -38,6 +45,9 @@ from uuid import uuid4
 from codex_harness.adapters.operation_cli import refusal
 from codex_harness.application.audit_progress import BUCKET_STATE as PROGRESS_BUCKET
 from codex_harness.application.audit_progress import status_view as progress_view
+from codex_harness.application.audit_repair import BUCKET_ACTIVATION as REPAIR_ACTIVATION
+from codex_harness.application.audit_repair import BUCKET_CORRECTIONS as REPAIR_CORRECTIONS
+from codex_harness.application.audit_repair import repair_view
 from codex_harness.application.scheduling import schedule_audits
 from codex_harness.application.workflow import ClaimGuardRefused
 from codex_harness.domain.audit_progress import (
@@ -47,17 +57,25 @@ from codex_harness.domain.audit_progress import (
     OBSERVED,
     VERDICTS,
 )
+from codex_harness.domain.audit_repair import (
+    DIAGNOSES,
+    NOT_ADMITTED_REASONS,
+    SETTLEMENT_REASONS,
+    STATES,
+)
 from codex_harness.domain.model import ContractError, digest, utcnow
 from codex_harness.domain.observation import (
     ANALYSIS_OUTCOMES,
-    ANALYSIS_REASONS,
     ANALYSIS_REJECTED,
-    ANALYSIS_UNCLASSIFIED,
+    NO_ANALYSIS,
+    analysis_facts,
     safe_code,
 )
 
 __all__ = ["AuditServiceRefused", "AuditServiceRunner", "activation", "add_parser",
-           "analysis_facts", "block_reason", "execute", "progress_facts", "refusal", "run", "status"]
+           "analysis_facts", "block_reason", "execute", "progress_facts",
+           "repair_admission_facts", "repair_reason", "repair_settlement_facts", "refusal", "run",
+           "status"]
 
 AGENT = "worker:github"
 ACTION = "audit_partition"
@@ -77,9 +95,8 @@ STOP_BY_STATUS = {"failed": "task_failed", "retry": "task_retry", "blocked": "ta
                   "queued": "task_unresolved"}
 # A settled execution says what its content was judged to be; a result that carries no such marker,
 # every historical row included, stays unclassified and is never promoted to either outcome.
-ANALYSIS_FACTS = ("analysis_outcome", "analysis_reason", "analysis_ref", "analysis_generation")
-NO_ANALYSIS = dict.fromkeys(ANALYSIS_FACTS)
-ARTIFACT_REFERENCE = re.compile(r"sha256:[0-9a-f]{64}")
+# `domain.observation` owns that projection (`analysis_facts`) and its vocabularies; this module and
+# the repair owner both read it there rather than each deciding what a stored marker means.
 SAFE_IDENTIFIER = re.compile(r"[A-Za-z0-9][A-Za-z0-9._:-]{0,127}")
 # The goal-progress observation this service records and logs (self-improvement-reference-001).
 # Only these attributes reach a log or the durable row, and only these fixed codes are declared:
@@ -91,25 +108,19 @@ PROGRESS_REASONS = ("unknown_audit", "audit_not_partitioned", "state_changed", "
 PROGRESS_ATTRIBUTES = ("audit_id", "epoch", "status", "verdict", "window_index", "window_executions",
                        "new_executions", "semantic_delta", "ranges_delta", "streak", "candidate",
                        "candidate_created", "unknown", "error_type")
-
-
-def analysis_facts(result) -> dict:
-    """The analysis outcome of ONE durable task result, in fixed codes and identifiers only.
-
-    The result is data this service reads, never an instruction: an outcome or reason outside the
-    declared vocabularies is `unknown`, a reference that is not an immutable artifact handle is
-    dropped, and a missing marker is `analysis_unclassified`. No stored string can become free text
-    in a log, a step or a status read this way.
-    """
-    analysis = result.get("analysis") if isinstance(result, dict) else None
-    if not isinstance(analysis, dict):
-        return {**NO_ANALYSIS, "analysis_outcome": ANALYSIS_UNCLASSIFIED}
-    ref, generation = analysis.get("execution_ref"), analysis.get("partition_generation")
-    return {"analysis_outcome": safe_code(analysis.get("outcome"), ANALYSIS_OUTCOMES,
-                                          absent=ANALYSIS_UNCLASSIFIED),
-            "analysis_reason": safe_code(analysis.get("reason_code"), ANALYSIS_REASONS, absent=None),
-            "analysis_ref": ref if type(ref) is str and ARTIFACT_REFERENCE.fullmatch(ref) else None,
-            "analysis_generation": generation if type(generation) is int else None}
+# self-improvement-reference-001 bounded repair (INV-AUDIT-REPAIR-001): the lineage facts this
+# service logs and records. Identifiers, fixed codes and counts only - the refused draft, the
+# validator's message, source text and every exception text stay in the immutable artifact that the
+# lineage merely names. A foreign code a future owner returns is `unknown`, never a new Zeus code.
+REPAIR_UNAVAILABLE = "repair_unavailable"
+REPAIR_REASONS = (*NOT_ADMITTED_REASONS, *SETTLEMENT_REASONS, REPAIR_UNAVAILABLE)
+REPAIR_ADMITTED_ATTRIBUTES = ("audit_id", "correction_id", "source_task_id", "partition_id",
+                              "partition_generation", "diagnosis", "successor_task_id", "admitted",
+                              "published", "error_type")
+REPAIR_SETTLED_ATTRIBUTES = ("audit_id", "correction_id", "source_task_id", "successor_task_id",
+                             "state", "diagnosis", "analysis_outcome", "target_subsystems",
+                             "corrected_subsystems", "remaining_targets", "checkpoint_generation",
+                             "attempts", "notice_id", "notice_published", "error_type")
 
 
 def _count(value):
@@ -150,6 +161,53 @@ def progress_facts(observation) -> dict:
             "candidate_created": bool(row.get("candidate_created")),
             "unknown": None if unknown is None else safe_code(unknown, PROGRESS_REASONS, absent=None),
             "error_type": _identity(row.get("error_type"))}
+
+
+def repair_admission_facts(admission, audit_id: str) -> dict:
+    """The allow-listed facts of ONE repair admission attempt.
+
+    The owner's result is data this service reads, never an instruction: a diagnosis or reason
+    outside the declared vocabularies is a fixed code, an identifier that is not an identifier is
+    dropped, and `admitted` false always carries the reason it was not.
+    """
+    row = admission if isinstance(admission, dict) else {}
+    return {"audit_id": audit_id, "correction_id": _identity(row.get("correction_id")),
+            "source_task_id": _identity(row.get("source_task_id")),
+            "partition_id": _identity(row.get("partition_id")),
+            "partition_generation": _count(row.get("partition_generation")),
+            "diagnosis": safe_code(row.get("diagnosis"), DIAGNOSES, absent=None),
+            "successor_task_id": _identity(row.get("successor_task_id")),
+            "admitted": bool(row.get("admitted")), "published": bool(row.get("published")),
+            "error_type": _identity(row.get("error_type"))}
+
+
+def repair_settlement_facts(settled, audit_id: str, notice=None) -> dict:
+    """The allow-listed facts of ONE settled lineage. A checkpoint generation and the target,
+    corrected and remaining counts are arithmetic over the successor's own records against the
+    originally diagnosed target set, never a semantic credit; a notice identity is a delivered
+    question, reported separately from the settlement it names and never a repaired subsystem."""
+    row = settled if isinstance(settled, dict) else {}
+    notice = notice if isinstance(notice, dict) else {}
+    published = notice.get("published")
+    return {"audit_id": audit_id, "correction_id": str(row.get("correction_id") or ""),
+            "source_task_id": _identity(row.get("source_task_id")),
+            "successor_task_id": _identity(row.get("successor_task_id")),
+            "state": safe_code(row.get("state"), STATES, absent="unknown"),
+            "diagnosis": safe_code(row.get("diagnosis"), DIAGNOSES, absent=None),
+            "analysis_outcome": safe_code(row.get("analysis_outcome"), ANALYSIS_OUTCOMES, absent=None),
+            "target_subsystems": _count(row.get("target_subsystems")),
+            "corrected_subsystems": _count(row.get("corrected_subsystems")),
+            "remaining_targets": _count(row.get("remaining_targets")),
+            "checkpoint_generation": _count(row.get("checkpoint_generation")),
+            "attempts": _count(row.get("attempts")) or 0,
+            "notice_id": _identity(notice.get("notice_id")),
+            "notice_published": None if published is None else bool(published),
+            "error_type": None}
+
+
+def repair_reason(value):
+    """A declared repair reason code, or None. A foreign value is `unknown`, never free text."""
+    return None if value is None else safe_code(value, REPAIR_REASONS, absent=None)
 
 
 class AuditServiceRefused(ContractError):
@@ -202,7 +260,7 @@ def block_reason(state: dict, task) -> dict | None:
 def _default_state(audit_id: str) -> dict:
     return {"id": audit_id, "audit_id": audit_id, "owner": None, "current_task": None,
             "last_task": None, "stop_reason": None, "completed_tasks": 0, "last_collection": None,
-            "last_progress": None, "started_at": None, "updated_at": None}
+            "last_progress": None, "last_repair": None, "started_at": None, "updated_at": None}
 
 
 def current_revision() -> str:
@@ -257,8 +315,8 @@ class AuditServiceRunner:
     """
 
     def __init__(self, service, audit_id: str, *, executor=None, bus=None, workflow=None,
-                 observer=None, collector=None, progress=None, max_tasks=None, revision=None,
-                 release_id=None, partitions=None, owner=None, sleep=time.sleep,
+                 observer=None, collector=None, progress=None, repair=None, max_tasks=None,
+                 revision=None, release_id=None, partitions=None, owner=None, sleep=time.sleep,
                  interval: float = IDLE_SECONDS, schedule=schedule_audits):
         if type(audit_id) is not str or not audit_id.strip():
             raise AuditServiceRefused("audit_id_invalid")
@@ -268,6 +326,8 @@ class AuditServiceRunner:
         self.service, self.audit_id = service, audit_id
         self.executor, self.bus, self.workflow = executor, bus, workflow
         self.observer, self.collector, self.progress = observer, collector, progress
+        # The bounded repair owner, or None: an unwired owner admits nothing and changes nothing.
+        self.repair = repair
         self.max_tasks, self.revision, self.release_id = max_tasks, revision, release_id
         self.partitions = partitions
         self.owner = owner or ("audit-service:" + uuid4().hex)
@@ -280,6 +340,9 @@ class AuditServiceRunner:
         # The last progress observation of this run, as observed facts only; it never decides
         # admission, never stops this service and never changes an execution's own outcome.
         self.last_progress: dict | None = None
+        # The last repair tick of this run, as bounded facts only; like the observation above it
+        # decides no admission, stops nothing and reinterprets no execution.
+        self.last_repair: dict | None = None
 
     def stop(self) -> None:
         """Interrupt shutdown: no new assignment is bound; a bound task keeps its own record."""
@@ -348,7 +411,7 @@ class AuditServiceRunner:
         summary = {"audit_id": self.audit_id, "owner": self.owner, "revision": self.revision,
                    "release_id": self.release_id, "reconciliation": recovered, "steps": [],
                    "step_count": 0, "omitted_steps": 0, "completed_tasks": 0, "analysis": {},
-                   "progress": None, "stop_reason": None, "stopped": False}
+                   "progress": None, "repair": None, "stop_reason": None, "stopped": False}
         if recovered["status"] == "reconciliation_required":
             # No admission at all: the previous attempt's outcome is not this run's to decide.
             self._stop(recovered["reason_code"])
@@ -370,7 +433,8 @@ class AuditServiceRunner:
                 break
             self.sleep(self.interval)
         summary.update(completed_tasks=self.completed, analysis=dict(self.analysis),
-                       progress=self.last_progress, stop_reason=self.stop_reason, stopped=self.stopping)
+                       progress=self.last_progress, repair=self.last_repair,
+                       stop_reason=self.stop_reason, stopped=self.stopping)
         self._emit("operations.audit_service_stopped", "blocked" if self.stop_reason else "observed",
                    reason_code=self.stop_reason,
                    attributes={"audit_id": self.audit_id, "completed_tasks": self.completed,
@@ -414,6 +478,10 @@ class AuditServiceRunner:
         gate = self._admission_gate()
         if gate is not None:
             return self._stop_admission(gate)
+        # ONE bounded repair tick under the SAME admission gate: it may add at most one ordinary
+        # assignment to the existing outbox and schedule, which the scheduler, the relay, the
+        # delivery and the claim guard below then treat exactly like any other queued assignment.
+        repair = self._repair_tick()
         try:
             created = self.schedule(self.service, audit_id=self.audit_id)
             pending = self._pending()
@@ -435,7 +503,7 @@ class AuditServiceRunner:
                                    "pending": len(pending),
                                    "foreign_messages": int((delivery or {}).get("foreign_messages") or 0)})
         if assignment is None:
-            return {"action": "idle", "created": created, "pending": 0}
+            return {"action": "idle", "created": created, "pending": 0, "repair": repair}
         if delivery is not None and delivery["reason_code"] is not None:
             return self._stopped_step(delivery["reason_code"], task_id=assignment["task_id"],
                                       **{k: v for k, v in delivery.items() if k != "reason_code"})
@@ -495,7 +563,11 @@ class AuditServiceRunner:
         # One observation of THIS audit's own records after a terminal settlement. It reads only;
         # it never retries this execution, never changes its result and never stops the service.
         progress = self._observe_progress()
-        step = {"action": "task", **record, "collection": collection, "progress": progress}
+        # The repair lineage is reconciled from the SAME terminal evidence, so a successor that has
+        # just settled reaches its truthful state even if this run stops before the next tick.
+        repair = self._repair_tick()
+        step = {"action": "task", **record, "collection": collection, "progress": progress,
+                "repair": repair}
         if not succeeded:
             self._stop(_stop_code(status))
             return {**step, "stop_reason": self.stop_reason}
@@ -648,12 +720,119 @@ class AuditServiceRunner:
             self.last_progress = {**facts, "error_type": facts.get("error_type") or type(exc).__name__}
         return self.last_progress
 
+    # ----- the bounded repair lineage -------------------------------------------------------------
+    def _repair_tick(self) -> dict | None:
+        """ONE repair tick, or None when no repair owner is wired.
+
+        The owner settles its open lineages from terminal task evidence and then admits at most one
+        corrective successor, which is an ORDINARY `audit_partition` assignment in the existing
+        outbox and schedule. This service does not claim, publish, prioritize or retry anything
+        differently because of it: the queued successor takes its turn through the same relay,
+        delivery, claim guard and fence as any other assignment. A repair failure is recorded as a
+        bounded fact and is never an execution outcome, a stop reason or permission to repeat an
+        attempt - a lineage this service could not reconcile stays exactly as the records say.
+        """
+        if self.repair is None:
+            return None
+        try:
+            result = self.repair.tick(self.audit_id)
+            settled = result.get("settled") or []
+            notices = result.get("notices") or []
+            admission = result.get("admission") or {}
+        except Exception as exc:
+            facts = {"admitted": False, "reason_code": REPAIR_UNAVAILABLE, "correction_id": None,
+                     "diagnosis": None, "settled": 0, "notices": 0, "notices_published": 0,
+                     "error_type": type(exc).__name__}
+            self._emit("operations.audit_repair_admitted", "blocked", reason_code=REPAIR_UNAVAILABLE,
+                       attributes={**repair_admission_facts({}, self.audit_id),
+                                   "error_type": type(exc).__name__})
+            self._write_repair(facts)
+            return facts
+        # The lead notice of a second refused draft is already durable with its own outbox record;
+        # publishing it is the SAME correlation-scoped relay every assignment uses. A notice that
+        # stays unsent keeps its record and is retried by the next tick, here or after a restart.
+        published, notice_error = self._publish_notices(notices)
+        by_correction = {row.get("correction_id"): row for row in notices if isinstance(row, dict)}
+        for row in settled:
+            self._emit_repair_settled(row, by_correction.get((row or {}).get("correction_id")))
+        attributes = repair_admission_facts(admission, self.audit_id)
+        reason = repair_reason(admission.get("reason_code"))
+        self._emit("operations.audit_repair_admitted",
+                   "succeeded" if attributes["admitted"] else "observed",
+                   reason_code=None if attributes["admitted"] else reason,
+                   correlation_id=attributes["correction_id"],
+                   causation_id=attributes["source_task_id"], attributes=attributes)
+        facts = {"admitted": attributes["admitted"], "reason_code": reason,
+                 "correction_id": attributes["correction_id"],
+                 "diagnosis": attributes["diagnosis"], "settled": len(settled),
+                 "notices": len(notices), "notices_published": published,
+                 "error_type": notice_error}
+        self._write_repair(facts)
+        return facts
+
+    def _publish_notices(self, notices) -> tuple:
+        """Publish the lead notices this audit still owes, through the existing scoped relay.
+
+        Each notice is published under its own lineage correlation, so the relay reaches it even
+        when no further worker assignment exists there. A transport failure is a bounded recorded
+        fact: the notice record stays unsent for the next tick, and nothing about the settlement,
+        the executions or the stop reason changes.
+        """
+        published, error = 0, None
+        for row in notices if isinstance(notices, list) else []:
+            row = row if isinstance(row, dict) else {}
+            if row.get("published"):
+                published += 1
+                continue
+            correlation = row.get("correlation_id")
+            if type(correlation) is not str:
+                continue
+            try:
+                relayed = self._flush(correlation)
+            except Exception as exc:
+                error = error or type(exc).__name__
+                continue
+            if relayed is not None and relayed["complete"]:
+                published += 1
+        return published, error
+
+    def _emit_repair_settled(self, settled: dict, notice=None) -> None:
+        """What ONE lineage achieved, with its immutable evidence attached and nothing else.
+
+        `repaired` is every diagnosed target corrected with a justified test disposition; `deferred`
+        is resumed partial work - including a corrected SUBSET of those targets - which is NOT
+        subsystem acceptance; `research_required` is the second refused draft of this family,
+        reported once with the notice that carried it to the lead and no third attempt started here;
+        `reconciliation_required` is unknown or failed execution, which is not a strike either.
+        """
+        attributes = repair_settlement_facts(settled, self.audit_id, notice)
+        state = attributes["state"]
+        outcome = ("succeeded" if state == "repaired"
+                   else "blocked" if state in {"research_required", "reconciliation_required"}
+                   else "observed")
+        refs = [ref for ref in ((settled or {}).get("source_execution_ref"),
+                                (settled or {}).get("successor_execution_ref"))
+                if type(ref) is str]
+        self._emit("operations.audit_repair_settled", outcome,
+                   reason_code=repair_reason((settled or {}).get("reason_code")),
+                   correlation_id=attributes["correction_id"] or None,
+                   causation_id=attributes["successor_task_id"], evidence_refs=refs,
+                   attributes=attributes)
+
+    def _write_repair(self, facts: dict) -> None:
+        self.last_repair = facts
+        try:
+            self._write(last_repair=facts)
+        except Exception as exc:      # the durable note is not the lineage's authority
+            self.last_repair = {**facts, "error_type": facts.get("error_type") or type(exc).__name__}
+
     def _emit(self, event_type: str, outcome: str, *, reason_code=None, attributes=None,
-              correlation_id=None, causation_id=None) -> None:
+              correlation_id=None, causation_id=None, evidence_refs=()) -> None:
         if self.observer is None:
             return
         self.observer.emit(event_type, outcome, reason_code=reason_code, attributes=attributes,
                            correlation_id=correlation_id, causation_id=causation_id,
+                           evidence_refs=evidence_refs,
                            severity="warning" if outcome in {"failed", "blocked"} else "info")
 
     def _emit_task(self, outcome: str, assignment: dict, *, status: str, generation=None,
@@ -687,6 +866,7 @@ def build_runner(service, args, observer, gate: dict):
     the goal-progress observer reads the same store and the same host artifact root - it starts no
     process, enters no provider and owns no scheduler of its own."""
     from codex_harness.adapters.artifacts import FileArtifacts
+    from codex_harness.adapters.audit_repair import build_repair
     from codex_harness.adapters.bus import RedisBus
     from codex_harness.adapters.configuration import runtime_dir
     from codex_harness.application.audit_progress import AuditProgress
@@ -694,10 +874,14 @@ def build_runner(service, args, observer, gate: dict):
     from codex_harness.bootstrap import build_collector, build_executor, redis_url
 
     executor = build_executor(service, observer=observer)
-    progress = AuditProgress(service.store, FileArtifacts(str(runtime_dir() / "artifacts")))
+    artifacts = FileArtifacts(str(runtime_dir() / "artifacts"))
+    progress = AuditProgress(service.store, artifacts)
+    # The repair owner reads the same store and the same host artifact root. It admits nothing
+    # unless the operator durably enabled THIS audit through `zeus audit-repair enable`.
     return AuditServiceRunner(service, args.audit_id, executor=executor, bus=RedisBus(redis_url()),
                               workflow=Workflow(service.store, service.org), observer=observer,
                               collector=build_collector(service.store, observer), progress=progress,
+                              repair=build_repair(service, artifacts),
                               max_tasks=args.max_tasks, revision=gate["revision"],
                               release_id=gate["release_id"], partitions=gate["partitions"])
 
@@ -755,6 +939,9 @@ def status(service, args) -> dict:
         audit = tx.get("research_audits", audit_id)
         predecessor = tx.get("tasks", (state.get("last_task") or {}).get("task_id") or "")
         progress_state = tx.get(PROGRESS_BUCKET, audit_id)
+        repair_activation = tx.get(REPAIR_ACTIVATION, audit_id)
+        repair_rows = [row for row in tx.scan(REPAIR_CORRECTIONS)
+                       if isinstance(row, dict) and row.get("audit_id") == audit_id]
         partitions = [p for p in tx.scan("research_partitions") if p["audit_id"] == audit_id]
         known = {p["partition_id"]: p for p in partitions}
         assignments, outcomes, held = {}, {}, []
@@ -794,10 +981,14 @@ def status(service, args) -> dict:
             # The observer's own durable state, read only: a dated observation of this audit's
             # records, never a completion, a cause or a promise about the current run.
             "progress": progress_view(progress_state),
+            # The bounded repair lineage, read only: the opt-in, each source task -> diagnosis ->
+            # successor -> settlement, and the separate counts. A held rejection above stays held
+            # until a lineage of its own reports `repaired`; nothing here rewrites that history.
+            "repair": repair_view(repair_activation, repair_rows),
             "admission_blocked": block_reason(state, predecessor),
             **{key: state.get(key) for key in ("owner", "current_task", "last_task", "stop_reason",
                                                "completed_tasks", "last_collection", "last_progress",
-                                               "started_at", "updated_at")},
+                                               "last_repair", "started_at", "updated_at")},
             "exit_code": 0}
 
 

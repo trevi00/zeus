@@ -1424,3 +1424,440 @@ failed diagnostic attempts and environment limits in summary. No new model calls
 configuration, runtime activation, source-audit edits, threshold change, merge or issue closure.
 Owner will re-run these two counterexamples, the affected regressions and required full host/CI
 checks on the final candidate before deployment and actual baseline/consumer verification.
+
+### Rejected analysis -> bounded repair -> resumed work (2026-09-21)
+
+User now authorizes implementation, verification and operating delivery, including an actual
+reference absorption, not just additional analysis. Codex owns this design and acceptance; the
+Zeus Claude worker implements. This is the SAME frame, one consolidated batch. PR #173 progress
+observation is accepted and deployed; do not reopen its matrix or wait for full-source completion.
+
+**Selected absorption.** Adapt Ouroboros's explicit recoverable-phase routing and existing-run
+reconciliation to Zeus's existing audit owner. Pinned source f0e17b4b42cc06974f2afaf15606250939cd4f87,
+`src/ouroboros/auto/resume_routing.py` lines 1-36 re-read 2026-09-21: named tools map to named
+recoverable phases and unknown tools map to None. Prior traced callers and limits are in
+LEARNING-RESUME.md and RECOVERY-PATH.md. This is a pattern adaptation, not copied upstream code,
+not an upstream execution result and not whole-repository adoption. Concrete Zeus implementation
+is typed rejection diagnosis -> one evidence-bound corrective assignment -> validated settlement.
+
+**Observed trigger.** Audit task c54b7b10-4a8e-4a9b-97e8-a5f9a298c6ed succeeded in execution but
+its content was rejected, with no checkpoint. Its immutable execution artifact
+sha256:cd56aa7e7d1429baec8dfb1920653670cc6a5664e4d745dbef8842caf819bb25 has distribution.tests=[]
+and distribution.tests_not_run=[]. It says no test command was identified in unresolved_dependencies.
+Replaying decode_assigned reproduces `Missing subsystem trace: tests`; digest
+9456f7b883a2a1f448d141daee486aa14eedface1767e76c5c9a0cf0e82b9804 equals the recorded error_digest.
+This establishes missing structured test disposition, not that a particular test exists or passed.
+The current generation remains held. Other partitions continue; execution is not global progress.
+
+**Existing complete path.** schedule_audits -> schedule/outbox six-W -> Redis -> audit-service
+_pending/_execute -> Workflow claim/fence -> AuditExecution planning, source runner, answer,
+pure decode + ResearchAudits.checkpoint -> task settlement -> audit-service logs/progress.
+One schedule key per partition generation prevents resubmitting a rejected draft. Checkpoint
+authority owns generation/remaining scope; Workflow owns attempt/lease. Do not change either to
+pretend recovery or rewrite the original succeeded/rejected outcome. Artifact store is immutable.
+Unknown execution effects remain blocked/reconciliation-required. Fleet implementation is a
+different lane from the source-audit execution; neither may silently impersonate the other.
+
+**Design.** Add a small application/domain audit-repair owner, using the existing store, artifacts,
+schedule/outbox, audit executor and CLI. No new daemon/provider/process/transport, and no global
+auto-retry. An explicit durable opt-in is scoped to one audit; disabled by default. Owner CLI
+supports enable/disable, inspect and status (and a deterministic prepare/admit API if useful).
+Read-only inspection creates no task. Enabled service ticks admit at most ONE corrective successor
+per original partition generation/rejection family. A repeated tick/restart/concurrent scheduler
+returns that same lineage; it does not create another call. Opt-out prevents new admission only.
+
+Automatic eligibility in THIS version is only the demonstrated missing subsystem test-disposition
+case. Re-read the source task, exact execution binding, source/partition generation, immutable
+artifact, and matching error digest. Classify by structured content + validator, not model prose
+or arbitrary exception substrings. New failures should expose a fixed diagnostic code, field and
+identity; keep raw error text out of public logs. Unknown kinds, corrupt evidence, changed scope,
+cancelled/blocked/retry/running tasks, unresolved termination markers and unpublished predecessor
+must not become eligible. Historical records can be classified by the same read-only validator.
+
+In one store transaction revalidate admission and bind original task/generation/attempt, artifact,
+partition/source identity, reason family and policy to a new correction record + assignment +
+outbox + required audit/notice. Keep partition generation and original schedule/task unchanged.
+The successor uses ordinary audit_partition and the SAME trusted partition generation, with a
+new deterministic repair schedule key and bounded context naming the old artifact and diagnostic.
+Do not repair JSON or generate tests_not_run facts in owner code. The model must inspect evidence
+and return justified structured omissions or real receipt-bound tests. Existing validators remain
+the authority; missing prerequisite becomes an explicit not-run/deferred fact, never fake success.
+Add a clear pre-submission checklist to the existing analysis prompt/schema contract; do not add
+an unlimited hidden model-validation loop. Current task/run deadlines and subscription accounting
+remain unchanged. Past execution receipts cannot be claimed as this successor's executions.
+
+Use audit-service's existing delivery and guarded claim path. A correction may be preferred over
+UNDELIVERED ordinary assignments, but an already queued task must retain the Workflow claim order.
+Never weaken check_expected/require_expected or fabricate created_at to force priority. No unrelated
+message may be acknowledged/claimed. Audit repair settlement is idempotent and can be reconciled
+from terminal task evidence after a restart/commit response loss. A valid checkpoint means resumed
+partial work, not subsystem acceptance. Only a corrected non-null subsystem with justified test
+disposition can be reported as repaired; null/unknown remains deferred. If the corrective attempt
+is rejected, record research_required (original+successor are two distinct attempts), emit the
+existing lead notice with evidence and stop this repair family. Infrastructure/unknown execution
+is reconciliation_required, not a third attempt. No automatic third call. Do not claim a notice
+means research ran; source investigation remains the existing ResearchProgram/Codex responsibility.
+
+Expose source task -> diagnosis -> successor -> settlement with fixed reason codes in audit-service
+status/observation and CLI. Report attempted, repaired, deferred, research_required and unknown
+separately; recovery latency and semantic-progress deltas are distinct. Preserve existing rejected
+history; a successful successor may remove an *active* hold only through verified lineage, not by
+erasing the prior refusal. Large model drafts stay in hash-addressed artifacts, not status/prompts.
+
+**Acceptance matrix and checks (one batch).**
+- Normal: exact retained failure, opt-in, one correction, original immutable, justified not-run
+  record accepted as incomplete, resumed checkpoint, ordinary continuation can proceed.
+- Failure/unknown: corrupt/missing/unbound evidence, unavailable prerequisites, null correction,
+  foreign partition, unsupported reason, failed/unknown provider, pending reconciliation, and
+  publication failure retain truthful distinct state and cannot authorize another provider.
+- Two strikes: a second actual rejected execution creates research_required once; replayed events
+  are not a second strike; no third task, bounded lead notice, no fabricated research completion.
+- Concurrency/restart: two admission callers -> one successor; re-read generation/activation;
+  crash after commit before delivery and after task settlement before ledger update resumes by ID.
+- Ownership/cancel/time: disable/paused activation prevents admission; no mutation of active task,
+  no lease/deadline extension; existing Workflow guard and cleanup semantics preserved.
+- Progress/visibility: checkpoint and semantic completion remain separate; missing test execution
+  never gains subsystem acceptance; raw error and source/model text absent from status/log fields.
+- Platform: pure/domain/MemoryStore + actual isolated PG owner checks; existing Windows/Linux CI.
+  No new OS-specific lifecycle to qualify, and no upstream code is executed.
+
+Claude allowed scope: new domain/application audit_repair modules and focused tests; integration
+in scheduling, audit_execution, audit_service, CLI registration/adapter, observation reason/schema
+allow-lists as necessary; docs/contracts.md, AUDIT-SERVICE.md and a concise REPAIR-ADOPTION.md in
+this directory. Keep recovery policy in one owner, not shell scripts. Do not change Workflow claim
+policy, existing validators, audit_progress policy, model routing, global profiles or source audits.
+Worker executes focused new/affected audit, scheduling, research and observation tests + ruff;
+owner/CI runs full verification (reduced worker snapshot lacks historical full-suite prerequisites).
+Keep actual commands and observed outcomes separate; no extra model calls inside implementation.
+
+**Completion.** Accepted candidate, independent Codex review, required CI, exact release binding,
+task-boundary deployment; owner enables only current Ouroboros audit; the retained rejected
+distribution task gains ONE actual successor with evidence-bound disposition and successful
+checkpoint/resumption, or a concrete prerequisite/deferred outcome explicitly reported. A deferred
+outcome does not satisfy successful-repair acceptance. Preserve failure receipts. Record adopted
+capability, source pins, checks and deployed revision separately from full analysis/semantic totals.
+No claim that every refusal can recover, no broad UI redesign or speculative scheduler repair.
+Progress investigation already enabled by #173 continues independently; no production windows
+or claimed semantic credit are manufactured to make this batch green.
+
+### Consolidated specification/event/evidence design and plan (2026-09-21)
+
+User explicitly accepts more documents and prioritizes spec-driven development, event-driven
+orchestration, and evidence-driven improvement (logs are supporting evidence, not workflow authority).
+SPEC-EVENT-DEVELOPMENT.md records the consolidated design output of THIS frame: feature-level reverse
+specification, persona/requirements/technical/observability/test/adoption/operation traceability,
+log-to-scenario evidence limits and separate analysis/implementation/operating progress. It is a
+proposed target, not a new executed pipeline or a retroactive change to the immutable repair job.
+Preserve the d69eaf6 implementation candidate and evidence_gate_refused history; its unscoped
+full-suite evidence replay timed out at 300 seconds before independent review. The consolidated
+delivery must distinguish fixing the submission/review path from proving the runtime repair.
+Existing validators, Git/PG/D authority and accepted #173 results remain authoritative. No runtime
+policy change, speculative extra blocker, repeated provider call or release is authorized merely
+by writing these design documents. Implementation continues through the established owner handoff.
+The user requested the consolidated plan: the same design document now fixes the staged delivery,
+event/command/observation boundaries and acceptance matrix. Reuse the rejected-repair candidate;
+no whole repository rewrite, event-sourcing migration, new broker, or automatic promotion is implied.
+Planning is the current requested delivery; new provider calls and deployments were not made here.
+
+### Owner review and bounded correction handoff (2026-09-21)
+
+User now authorized execution of that plan. Reuse this frame and d69eaf6; local inclusion of that
+candidate in this task branch is preparation for correction, NOT acceptance, main merge or release.
+The deployed #173 runtime and its accepted evidence stay unchanged.
+
+**Observed review.** Clean d69eaf6 checkout: 98 focused tests passed in 130.37s on Windows
+(`test_audit_repair`, `test_audit_repair_cli`, `test_audit_analysis_outcomes`, `test_audit_service`,
+`test_scheduling`); changed repair/execution/service modules and repair tests passed ruff.
+Owner counterexamples ran the real decoder/checkpoint, fixture Git and MemoryStore with synthetic
+answers; no model, Redis or PostgreSQL execution is claimed. Raw script and JSON receipt:
+`D:/workspaces/zeus/artifacts/self-improvement-reference-001/review-audit-repair-001.{py,json}`.
+
+**R1 / material false completion.** A normal two-subsystem partition contains `core` and `other`.
+The original execution returns core with empty tests/tests_not_run and other=null, so core alone
+is diagnosed. The successor returns core=null and a justified not-run record for other. Real
+checkpoint validation accepts partial work, but repair settlement reports `repaired` because it
+counts ANY subsystem written by the successor. This does not repair the diagnosed target.
+Reproduce using existing `audit`/`repairable`/`rejected_execution`/`settle_successor` helpers; create
+the two-subsystem audit through import_audit on a fresh store, not by forging a checkpoint.
+
+Correction: bind settlement to the exact originally diagnosed subsystem set, successor execution
+identity and authoritative checkpoint/history. Only corrected target identities count; unrelated
+valid work remains valid but yields deferred repair. Partial target correction must expose target,
+corrected and remaining counts and cannot claim whole repair. A bounded prompt list must not
+silently truncate the internal target denominator. Use immutable evidence history where later
+ordinary checkpoints can overwrite latest coverage rows. Keep justified not-run as incomplete
+subsystem analysis; do not manufacture semantic acceptance or change existing validators.
+
+**R2 / missing escalation delivery.** Two actual fixture executions are content-rejected; the
+lineage becomes research_required, but there are ZERO execution.notice outbox messages. Current
+settle writes only the lineage, and the service emits a diagnostic observation after commit.
+Thus the required team-lead notification is absent and the two-strike loop stops silently.
+
+Correction: atomically retain the terminal settlement, a deterministic proof-bound informational
+lead notice and its outbox row. Reuse execution_notices and the direct reporting edge. The existing
+builder refuses succeeded tasks: extend the contract narrowly for a succeeded execution whose
+analysis was rejected AND whose authoritative repair lineage proves research_required. Do not
+make arbitrary succeeded rows notice-eligible or relabel them failed. Bind notice identity to the
+lineage/transition, retain original+successor evidence references, and reuse proof-checked receive
+and commit-before-ACK. Repeated settlement/restart/lost response must return the same notice.
+Arrange correlation-scoped relay even if no further worker assignment exists; pending publication
+must survive restart. Receiving the notice does not itself perform research or authorize a third
+call. Test publish failure then recovery, duplicate receive, and no automatic follow-up execution.
+
+**Admission observations (same affected path, proportional disposition).** An injected pause during
+diagnostic replay still creates the successor; the service's second gate prevents provider entry.
+This proves queued admission after pause, NOT execution after pause. An injected pending termination
+marker also permits admission, but this check alone does not establish that a normal succeeded
+transaction can leave such a marker. Close the explicit existing admission requirements within
+_commit: re-read active research control and relevant unresolved markers, and refuse on unavailable
+reads. Preserve the second pre-execution gate. These are contained contract guards, not evidence of
+an observed production incident or permission to widen Workflow/recovery semantics.
+
+**Submission failure investigation and scope decision.** The prior implementation succeeded but
+the evidence gate replayed its unscoped full-suite claim and timed out after 300s, before independent
+review. Runtime #173 explicitly refuses combining host project-evidence profiles with Docker
+isolation (bootstrap.host_isolation / Executor.__init__). Enabling that profile would therefore
+not fix this job; mapping host contexts/interpreters into immutable containers is a separate
+compatibility implementation, not a config change. Do not bypass isolation, edit failed receipts,
+raise deadlines, auto-retry the old job or claim this compatibility already exists.
+
+For THIS correction, owner names the focused command groups below and independently verifies the
+candidate; legacy evidence gate stays authoritative. This fixes the concrete submitted scope but
+is NOT mechanical enforcement of a host check denominator. The durable follow-up is to extend the
+existing INV-PROJECT-EVIDENCE-001 into isolated execution with image-bound contexts, exact commands,
+negative/missing checks and matching replay/reviewer bindings; no second evidence framework.
+Do not implement that separate compatibility change in this correction. If this submission again
+violates the scope/gate, stop and report it; no next prompt-only retry is authorized by this handoff.
+
+**Fixed checks.** Worker runs commands below verbatim using the container's trusted interpreter
+(the delivered `python` command form is retained in legacy answer.tests). Add R1/R2/guard regressions
+to these existing files so the denominator remains fixed:
+
+1. `python -m pytest -q -p no:cacheprovider tests/test_audit_repair.py tests/test_audit_repair_cli.py`
+2. `python -m pytest -q -p no:cacheprovider tests/test_audit_analysis_outcomes.py tests/test_audit_service.py tests/test_scheduling.py`
+3. `python -m pytest -q -p no:cacheprovider tests/test_execution_notices.py`
+4. `python -m ruff check . --no-cache`
+
+Confirm the notice test filename exists before running; report a missing prerequisite rather than
+inventing an execution. Do NOT run unscoped pytest or the full suite inside the reduced worker
+snapshot. Only exact actually successful commands go in legacy answer.tests; failed attempts,
+not-run checks and limitations remain in summary. Empty tests is not acceptance. Owner/CI owns
+full-suite and isolated PostgreSQL verification; no fixture claim may masquerade as it.
+
+**One correction batch / acceptance matrix.** Preserve all previously passing tests. Add target-only,
+unrelated-only, mixed/partial-target and later-history settlement checks; normal target correction
+must still resume without semantic acceptance. Add notice atomicity/replay/publication/receive
+checks, pause-at-commit and unresolved-marker guards. Use existing real isolated PG fixtures for
+transaction/duplicate checks where applicable, label skips honestly; no live production DB from
+tests. Existing cancellation/deadline/claim/resource contracts are unchanged. CLI/log projections
+must keep execution success, analysis rejection, repair settlement and notice delivery distinct.
+Reuse the existing module owners. No UI redesign, upstream execution, unrelated warnings or
+runtime enablement. Completion remains independent review + required CI + exact release binding
+and one real corrected/resumed held analysis; this corrective submission alone is not completion.
+
+### Evidence-checklist delivery and retained-candidate review (2026-09-21)
+
+**Outcome / reframe.** User authorized direct review, repair of the submission/handoff structure,
+then end-to-end acceptance. Completion is satisfied acceptance items with bound evidence, not
+elapsed time. Existing process/network/cleanup deadlines remain containment safeguards; hitting
+one produces incomplete/recovery-required state, never success. Do not change a running manifest,
+raise limits, rewrite failed receipts, relaunch the previous job or ask the worker to reimplement
+already preserved repair code. This section is the next bounded delivery in this SAME frame.
+
+**Facts and accepted scope.** Candidate afe6cb37cfa9909c5ad70c7869fe6ec278ae4c85 is preserved.
+Its four owner-required checks each passed two isolated replays. Three additional `timeout 540
+python -m pytest ...` claims were not replay-authorized: inspection
+4e3e042b36826b96336259f69a66790fbacacff8ff8816c5362bd4787c1e3d36 has 4 checked / 3 not_checked,
+not a timeout or a failing test. The original operation remains failed/evidence_gate_refused.
+Owner independently reran the original four counterexamples at afe6cb3: all safe (pause and
+pending-marker admission refused, exactly one two-strike notice, unrelated target stays deferred).
+Raw script/receipt: artifacts/self-improvement-reference-001/review-audit-repair-002.{py,json} on D.
+Owner ran the additional nine unique test modules WITHOUT the timeout shell wrapper on Windows:
+191 passed / 38 skipped in 24.61s. This is host evidence, not replacement container replay; skips
+remain unexecuted. Clean candidate preserved. Direct review accepts the original R1/R2 and contained
+guard fixes in this tested scope; full CI/isolated PG and live resumed-analysis acceptance remain.
+No new functional blocker was established within that resubmission scope. Generalized internal
+notice-proof hardening is not a new blocker without a reachable untrusted producer.
+
+**Failure family / discriminating check.** The worker can still choose the legacy evidence list,
+and every extra command becomes a required claim. Prompt-only exact-command guidance did not
+prevent that mismatch. The existing host profile already owns check IDs, required denominator,
+commands, observed exits, replay and reviewer binding; it deliberately refuses Docker isolation.
+SSOT read at runtime ab02a1f and candidate afe6cb3: domain/project_evidence.py,
+adapters/project_evidence.py, isolated_worker.py, isolated_worker_entry.py, isolated_evidence.py,
+executor.py, bootstrap.py, operation_cli.py and application/operation.py. No external API change
+is assumed. Selected correction is to connect that existing contract to isolated execution and
+expose a durable failure handoff, rather than whitelist timeout wrappers or relax all_checked.
+
+**Complete affected path.** Host config/profile -> strict parse and isolation selection -> operation
+identity -> executor's pinned worker schema/instructions -> container request/entry -> Claude result
+observations -> immutable candidate/profile/image/environment snapshot -> credential-free isolated
+replay -> EvidenceInspections -> operation gate -> independent reviewer context -> final receipt /
+failure handoff -> existing Fleet status. Git owns definitions, host owns profile and image, PG owns
+execution/inspection/handoff state. Worker output owns neither required checks nor authorization.
+
+**Design: reuse one checklist contract.** Preserve version-1 HOST profiles and all legacy behavior
+when no profile is configured. Add an explicit closed version-2 container variant to the same
+project_evidence parser/schema owner: root schema `urn:zeus:project-evidence:2`, contexts, checks,
+execution={kind:"container",image:"sha256:<64hex>"}. Contexts retain cwd/interpreter/source_paths/
+dependency_files; interpreter MUST equal the existing TRUSTED_PYTHON container path. Image MUST
+equal host-selected immutable isolation image. Version 2 requires isolation, version 1 with
+isolation continues to refuse; do not silently reinterpret a host interpreter as a container path.
+Unknown versions/fields, missing profile, mismatched image, missing context/dependency or escaped
+path refuse before provider reservation. Read the host profile once; never load it from candidate
+files or model claims. Reuse current checks grammar, worker_schema, observed_checks and classifier.
+
+Resolve candidate-relative paths against the checked tree, then explicitly map to WORKSPACE in the
+container. Only the pinned image interpreter and a fixed allowlisted environment may execute.
+Bind profile digest, candidate revision/tree, image/limits, relative contexts, dependency digests,
+effective environment and policy into operation/inspection identity. No host PATH/interpreter/env
+leak, no network or credential in verification containers, no new mounts or host fallback. Keep
+existing container ownership, finite capture, cancellation and cleanup-debt guards. A configured
+old image/entry that does not understand delivery must refuse, never drop the profile silently.
+
+Deliver host-authored exact commands/settings and the typed per-check observation schema through
+the isolated request/entry to Claude. Reuse worker_delivery semantics with explicit container
+contexts, not host absolute paths. Every required check yields one executed exit or not_run/null;
+missing/duplicate/unknown IDs, nonzero mismatches and empty observations remain non-passing.
+Diagnostic commands/results belong in summary, outside the required denominator, and confer no
+verification credit or replay authority. Independent review still considers material diagnostic
+failures: this separation must not hide a real defect. Do not normalize model command strings or
+strip a timeout wrapper from an existing receipt to manufacture a pass.
+
+Compose the existing project-check classification with Docker replay rather than introducing a
+second policy or a parallel evidence store. Replay each check in its resolved container cwd/env
+using trusted interpreter and the same image. Preserve expected/reported/observed exits, all runs,
+one aggregate deadline and authoritative gate. Reviewer receives the same profile/check IDs bound
+to its own checkout and explicit container execution instructions; it must not run /workspace
+commands on the Windows host. A container profile requires the corresponding isolated check runner.
+Bootstrap, operate and autonomous entry points must agree on profile/isolation loading order and
+identity. No global profile activation or runtime image rebuild/deploy by the worker.
+
+**Failure handoff.** On operation evidence refusal, preserve the existing failed terminal state and
+cancelled pending review. In the same durable finalization, add one bounded, idempotent owner handoff
+to the existing operation receipt (no new daemon): reason code, operation/task/generation/attempt,
+candidate revision, inspection ID, per-check/claim status counts and bounded refs, passed/remaining
+items, owner `lead:improvement`, next_action `inspect_evidence_contract`, status `pending_owner`.
+Do not include raw output/exception strings or credentials. It grants no retry, acceptance, model
+call, merge or deployment authority. Missing/unbound inspection is explicitly unknown. Repeated
+finalization/lost response returns the same handoff; expose it through existing operation/Fleet
+status projections. Current failed operation is historical; do not mutate it in tests or migration.
+Automatic follow-up/recovery scheduling is outside this batch: pending_owner must be visible rather
+than presented as running. Existing two-strike research can consume this evidence in its own lane.
+
+**Acceptance matrix / single batch.**
+- Normal: fixed IDs traverse host -> actual isolated entry -> result -> isolated replay -> reviewer
+  context/gate; exact required denominator, no model-selected command authority.
+- Failure/unknown: absent/invalid profile/image/context, missing/duplicate/unknown ID, failed exit,
+  not_run, diagnostic prose and disallowed command cannot create a false pass; failure handoff binds
+  to actual durable inspection and preserves candidate/old history.
+- Compatibility: host v1 and no-profile legacy remain unchanged; old entry refuses unsupported
+  container delivery explicitly; Python-only check restriction remains.
+- Ownership: deadline/cancel/lease loss during replay stops owned work, leaves truthful debt,
+  launches no replacement; image/profile/env changes invalidate cached proof.
+- Restart/concurrency: repeated finalization produces one stable handoff; identity changes cannot
+  reuse an inspection or operation; no duplicated diagnostic-triggered execution.
+- Platforms: domain/adapter focused checks plus existing Windows/Linux CI; owner real Docker
+  canary with no model first, then one actual isolated model/check/review flow after accepted build.
+- Completion: independent review + required CI + container profile canary + one fixed-denominator
+  implementation/review completion. Retained audit-repair live resume follows that accepted release.
+
+Worker scope: existing project_evidence, isolated_worker/entry/evidence, executor/bootstrap,
+operation/autonomous entry points, operation/finalization/receipt projections, focused tests and
+contracts documentation. Keep audit-repair functionality unchanged. No arbitrary replay commands,
+global config, live DB, source-audit admission, model routing/time-limit change, merge or release.
+During this bootstrap run the deployed worker still uses the LEGACY schema: submit only exact
+successful `python -m pytest ... <explicit test files>` / `python -m ruff check . --no-cache`
+commands. Report extra diagnostic wrappers in summary. Do not run an unscoped full suite. This
+bootstrap limitation is explicit; the feature itself must be tested with typed profiles. If the
+bootstrap submission is refused, preserve it for owner review, do not auto-repeat.
+
+### Checklist independent-review correction: foreign evidence (2026-09-21)
+
+User authorized continuation after independent review. Candidate e4dded23a88c35b9e9b5c3e2e29031e63f555caf
+passed all four submitted evidence checks (inspection c00f040cb598867cd1466efacd13aae4be94525bfede7c374a93356cf846395b).
+Independent lead review 840ca78e-4160-4a97-9afc-a9b096df060a rejected one P2 finding; no other
+material finding was reported across its fixed matrix. Preserve that evidence and the existing
+repair acceptance. Do not reopen or rewrite the isolated profile implementation in this correction.
+
+Owner reproduced the exact finding using candidate test_operation.run(inspection='foreign') and
+Fleet.owner_handoff_view with synthetic MemoryStore records. Operation stayed failed; inspection
+was bound=false / known=true / verdict=all_checked, and Fleet showed passed=1, remaining=1 for a
+foreign inspection. This is false progress attribution, NOT an observed false release acceptance.
+The existing gate stayed closed. No model/provider/production database was invoked by this check.
+
+**One narrow correction.** _inspection_summary must establish complete current execution binding
+(task ID, generation, attempt and candidate revision) before reading findings into current progress.
+Missing/unreadable/incomplete/foreign binding yields known=false, bound=false and its fixed reason;
+retain inspection ID for diagnosis but no foreign verdict, denominator, status counts or passed /
+remaining items. Unknown counts should be null/absent, not a misleading zero completed workload.
+For bound evidence keep the existing useful passed/remaining checklist and limits unchanged.
+Fleet.owner_handoff_view independently refuses progress credit unless both binding and known state
+are explicitly true, so an already retained stale foreign handoff cannot leak credit through that
+projection. Preserve identity, owner, next_action and reason. Do not alter stored historical receipts,
+inspection findings, actual gate, retry authority, operation state or automatic scheduling.
+
+**Acceptance.** Regression at the existing test_operation foreign case must demand unknown and no
+progress credit, with the same real receipt projection also checked through Fleet. Cover each
+binding field mismatch, missing binding, and a positive bound case preserving counts. A historical
+handoff carrying contradictory known=true/bound=false plus populated lists must show unknown/null
+progress through Fleet. Repeated status/receipt reads stay idempotent and read-only. Use the existing
+MemoryStore/fixture helpers; no new integration environment is required for this pure projection
+change. Source code scope is application/operation.py and application/fleet.py, tests/test_operation.py
+and tests/test_fleet.py; update CHECKLIST-DELIVERY.md/contracts only to state the corrected semantics.
+
+Worker checks (run verbatim; current bootstrap output remains legacy exact commands):
+1. `python -m pytest -q -p no:cacheprovider tests/test_operation.py tests/test_fleet.py tests/test_fleet_runtime.py tests/test_operation_finalization.py`
+2. `python -m ruff check . --no-cache`
+No unscoped pytest, timeout prefix, extra wrapped command in answer.tests, provider call or live
+record changes. Diagnostic attempts remain in summary. This is one code correction, not another
+prompt-only retry of an evidence submission. Finish after these checks; owner retains full CI,
+independent resubmission review and the actual container/checklist/resumed-audit acceptance.
+
+### Owner acceptance and operational handover (2026-09-21)
+
+Continue the SAME delivery and acceptance matrix above. User authorized proceeding without goal
+mode: validate, release, then demonstrate recovery of the actual held analysis. Do not turn source
+inventory completion, all reference absorption or unrelated UI polish into new release criteria.
+
+Candidate 310b8e13bd34d88b73377697bd22c56fad664e36 is accepted by independent decision
+c5735302-672b-4f9e-93a9-2fe81011d8ce. Inspection
+db6820ed5d7ba7ccf9a44e9766ba77cede651ead7942b00f960521af87b18a3e verified both submitted checks;
+review found no remaining blocker within the correction matrix. This is not deployment acceptance.
+The task branch is fast-forwarded to that preserved candidate. Current services remain runtime-173.
+
+Owner batch: full Windows suite and GitHub Windows/Linux/integration at this exact candidate;
+actual pinned-image verifier canary; one actual Claude/checklist/replay/independent-review operation
+in a dedicated fixture repository, PG schema and Redis namespace; normal PR/merge controls; pinned,
+reversible runtime/image handover while existing owners are idle; one scoped held-analysis recovery
+and truthful monitoring. Preserve unsuccessful executions and all historical receipts. Never reset
+an unknown/failed task or silently relabel missing prerequisite evidence as a completed recovery.
+
+Raw evidence lives under D:/workspaces/zeus/artifacts/self-improvement-reference-001:
+owner-checklist-310b8e1.xml, checklist-image-310b8e1-build.log,
+checklist-container-canary-001, checklist-live-canary-001. CI run: 35573794517.
+Image: sha256:df85b10cdfb4e744e81d466d6ed747e6f9ee1398b29f01dab456989e9c635cfa.
+The no-model canary actually replayed a synthetic observation twice in real containers; both
+exited zero and unresolved containers were empty. It does not prove model delivery or recovery.
+
+Separate observed obstacle: source audit task 6bdee495-dc50-4701-8a7b-8806962b3bea is retry/attempt 1
+with ContractError: Unknown or submodule path. Trace its exact retained planning output against the
+pinned manifest before deciding a correction. A similar historical error opens the existing
+two-strike investigation; wording alone does not prove a common cause. No blind resubmission.
+
+Owner observations at 2026-09-21 16:48 KST: checklist-live-canary-001 accepted/lead_accepted,
+with actual Claude Opus 5 implementation and independent review (2 ledger slots), actual isolated
+replay, exact-token artifact matches 0 and no remaining worker/verifier container. Retained receipt:
+checklist-live-canary-001/stdout.json; owner metadata: receipt.json. This small owner-authored fixture
+proves the execution path, not production source-analysis recovery. PR #174 contains the reviewed
+runtime candidate; required CI and deployment are still outstanding.
+
+The separate source-read refusal is now diagnosed from execution artifact
+sha256:c67f36f16ef6c451adb6456e33de39673159dc02d0e0a8f7ea69ea596d864a1e against manifest
+sha256:f70e523819a021a1800f24a1eb984fbc3f24b8ab430b0cb500b5bf5fae88d395 at source commit
+f0e17b4b42cc06974f2afaf15606250939cd4f87. The model proposed four reads; command 2 names
+`docs/rfc/verdict-gate-evidential-force.md`, absent from the manifest. The other three are ordinary
+tracked files. This is an observed invalid planning output, not evidence of a PostgreSQL, Docker or
+submodule failure. The boundary correctly refused it; no task/receipt was rewritten or retried.
+Raw bounded diagnosis: unknown-path-diagnosis-001.json. Planning-output recovery is distinct from
+the currently accepted semantic-draft repair; do not broaden that repair's authority implicitly.

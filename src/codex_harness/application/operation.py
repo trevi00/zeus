@@ -29,10 +29,20 @@ from codex_harness.domain.usage_policy import SUBSCRIPTION, accounting_mode, val
 
 BUCKET = "operations"
 RECEIPT_SCHEMA = "urn:zeus:operation-receipt:1"
+HANDOFF_SCHEMA = "urn:zeus:operation-evidence-handoff:1"
+HANDOFF_REASON = "evidence_gate_refused"
+HANDOFF_OWNER = "lead:improvement"
+HANDOFF_NEXT_ACTION = "inspect_evidence_contract"
+HANDOFF_STATUS = "pending_owner"
+MAX_HANDOFF_ITEMS = 32
+INSPECTIONS = "evidence_inspections"
 TERMINAL = {"accepted", "rejected", "failed", "unknown", "exhausted"}
 MAX_STEPS = 6
 MAX_IDLE = 2
 CANDIDATE_FIELDS = ("base", "revision", "tree", "diff_hash")
+# The complete identity of the execution an inspection may speak for; every field must be known and
+# equal before a finding counts as progress of THIS run (the same binding the evidence gate requires).
+BINDING_FIELDS = ("task_id", "generation", "attempt", "source_revision")
 
 
 class OperationRefused(ContractError):
@@ -144,7 +154,8 @@ class Operation:
         """Safe projection: identities, digests, codes and counts; no manifest text or raw errors."""
         keys = ("id", "status", "reason_code", "manifest_sha256", "identity", "goal", "design", "correlation_id",
                 "cycle_id", "assignment_message_id", "task_id", "decision_id", "lead_accepted", "calls", "evidence",
-                "cycle", "collection", "finalization", "accounting_mode", "claimed_at", "updated_at", "finished_at")
+                "cycle", "collection", "finalization", "owner_handoff", "accounting_mode", "claimed_at",
+                "updated_at", "finished_at")
         return {"schema": RECEIPT_SCHEMA, "authority": "operation_receipt; not merge, deploy or completion",
                 **{k: row.get(k) for k in keys}}
 
@@ -343,6 +354,58 @@ class Operation:
             return {"status": "accepted", "reason_code": "lead_accepted", "decision_id": decision["id"], "task_id": task["id"]}
         return {"status": "unknown", "reason_code": "acceptance_unproven", "decision_id": last.get("id")}
 
+    # ----- evidence refusal handoff -------------------------------------------------------
+    def _owner_handoff(self, row, status, reason, evidence, cycle, at) -> dict | None:
+        """One bounded, idempotent owner handoff for an evidence-refused operation, or None.
+
+        It is written in the SAME durable finalization as the terminal status, beside the untouched
+        failed outcome and the cancelled pending review: a handoff is a visible request for an owner,
+        never a retry, an acceptance, a model call, a merge or a deployment, and it schedules
+        nothing. Only identities, digests, codes, counts and check ids leave here - no raw output,
+        exception text, command string or credential. An inspection that is missing or not bound to
+        this execution is reported as explicitly unknown, never as a clean denominator.
+        """
+        if status != "failed" or reason != HANDOFF_REASON:
+            return None
+        # The refusal happens BEFORE the review reservation, so the operation outcome names no task
+        # yet: the candidate execution is the cycle's own last target record, read as it stands now.
+        target = cycle.get("target_record") or {}
+        target_id = _string(target.get("id"))
+        task_id = _string(evidence.get("task_id"))
+        if task_id is None and target.get("kind") == "task":
+            task_id = target_id
+        with self.service.store.transaction() as tx:
+            if task_id is None and target.get("kind") == "decision" and target_id is not None:
+                # The refused turn is the review decision itself; it names the candidate task it guards.
+                decision = tx.get("decisions_pending", target_id) or {}
+                details = ((decision.get("message") or {}).get("what") or {}).get("details") or {}
+                task_id = _string(details.get("task_id"))
+            task = tx.get("tasks", task_id) if task_id else None
+            task = task if isinstance(task, dict) else {}
+            result = task.get("result") if isinstance(task.get("result"), dict) else {}
+            reported = result.get("evidence_inspection") if isinstance(result.get("evidence_inspection"), dict) else {}
+            inspection_id = _string(evidence.get("inspection_id")) or _string(reported.get("inspection_id"))
+            inspection = tx.get(INSPECTIONS, inspection_id) if inspection_id else None
+        candidate = evidence.get("candidate") if isinstance(evidence.get("candidate"), dict) else {}
+        if not candidate:
+            stored = result.get("candidate")
+            candidate = stored if isinstance(stored, dict) else {}
+        revision = _string(candidate.get("revision"))
+        binding = {"task_id": task_id, "generation": task.get("generation"), "attempt": task.get("attempt"),
+                   "source_revision": revision}
+        record = {"schema": HANDOFF_SCHEMA, "status": HANDOFF_STATUS, "owner": HANDOFF_OWNER,
+                  "next_action": HANDOFF_NEXT_ACTION, "reason_code": reason,
+                  "authority": "owner_handoff; grants no retry, acceptance, model call, merge or deployment",
+                  "retry": "none; this handoff schedules no follow-up and relaunches nothing",
+                  "operation_id": row["id"], "correlation_id": row["correlation_id"],
+                  "manifest_sha256": row.get("manifest_sha256"), **binding,
+                  "candidate": {k: _string(candidate.get(k)) for k in CANDIDATE_FIELDS},
+                  "refs": {"execution_ref": _string(evidence.get("execution_ref")),
+                           "review_execution_ref": _string(evidence.get("review_execution_ref"))},
+                  "inspection": _inspection_summary(inspection_id, inspection, binding), "at": at}
+        record["id"] = digest(["operation_evidence_handoff", row["id"], task_id, revision, inspection_id])
+        return record
+
     def _finish(self, row, manifest, wrapped, outcome, steps) -> dict:
         collection, collection_failed = None, False
         if self.collector is not None:
@@ -359,16 +422,21 @@ class Operation:
             status, reason = "failed", "settlement_failed" if unsettled else "collection_failed"
         handoff = LocalCycle(self.service).handoff(row["cycle_id"])
         evidence = self._evidence(handoff, outcome)
+        at = utcnow()
+        # Read before the terminal transaction, written inside it: the same failed status, the same
+        # cancelled pending review, plus one visible owner handoff when evidence itself was refused.
+        owner_handoff = self._owner_handoff(row, status, reason, evidence, handoff, at)
         with self.service.store.transaction() as tx:
             current = tx.get(BUCKET, row["id"])
             require(current is not None and current["status"] == "running", "Operation row changed during the run")
+            current["owner_handoff"] = owner_handoff
             current.update(status=status, reason_code=reason, lead_accepted=lead_accepted,
                            task_id=evidence.pop("task_id", None), decision_id=outcome.get("decision_id"),
                            calls={"reserved": len(wrapped.slots), "settled": sum(s["settled"] for s in wrapped.slots),
                                   "slots": [{k: s.get(k) for k in ("id", "kind", "agent", "provider", "outcome", "settled", "settle_error")}
                                             for s in wrapped.slots]},
                            evidence=evidence, cycle=handoff, collection=collection, steps=steps,
-                           updated_at=utcnow(), finished_at=utcnow())
+                           updated_at=at, finished_at=at)
             tx.put(BUCKET, row["id"], current)
             # INV-OPERATION-FINALIZATION-001: the same transaction retires owned unstarted follow-ups;
             # a rollback leaves neither the terminal status nor a disposition. The summary is cleanup
@@ -414,6 +482,58 @@ class Operation:
                 out["candidate"] = ({k: _string(candidate.get(k)) for k in CANDIDATE_FIELDS}
                                     if isinstance(candidate, dict) else None)
         return out
+
+
+def _check_item(finding) -> dict:
+    """One check's identity and state: no cause text, no command and no observed output."""
+    claim = finding.get("claim") if isinstance(finding.get("claim"), dict) else {}
+    return {"check_id": _string(claim.get("check_id")), "reported": _string(claim.get("status")),
+            "state": _string(finding.get("state"))}
+
+
+def _unknown_inspection(inspection_id, reason_code: str) -> dict:
+    """Evidence that is absent, unreadable, unidentified or foreign: identity and reason only.
+
+    No verdict, denominator, claim counts or checklist item is projected, so an owner reading this
+    handoff - or the Fleet projection of it - can credit no progress to the current execution.
+    """
+    return {"id": inspection_id, "bound": False, "known": False, "reason_code": reason_code}
+
+
+def _inspection_summary(inspection_id, row, binding) -> dict:
+    """What the owner is told about the inspection the refusal rests on.
+
+    `bound` is the same question the gate asked: does a real row exist for exactly this execution
+    and revision? Binding is established FIRST and completely - every field of the current execution
+    must be known and equal to the stored one - because findings only describe progress of the
+    execution they belong to. A missing row, a row whose findings cannot be read, an incompletely
+    identified current execution and a row bound elsewhere are each explicitly unknown: the id stays
+    for diagnosis, and no verdict, denominator, status count or passed/remaining item is carried
+    over from foreign or unidentified evidence. Unknown is absent, never a zero completed workload.
+    """
+    if inspection_id is None:
+        return _unknown_inspection(None, "inspection_missing")
+    if not isinstance(row, dict) or not isinstance(row.get("findings"), list):
+        return _unknown_inspection(inspection_id, "inspection_unknown")
+    if any(binding.get(field) is None for field in BINDING_FIELDS):
+        return _unknown_inspection(inspection_id, "execution_binding_incomplete")
+    stored = row.get("binding") if isinstance(row.get("binding"), dict) else {}
+    if any(stored.get(field) != binding[field] for field in BINDING_FIELDS):
+        return _unknown_inspection(inspection_id, "inspection_bound_elsewhere")
+    passed, remaining, claims = [], [], {}
+    for finding in row["findings"]:
+        if not isinstance(finding, dict):
+            continue
+        item = _check_item(finding)
+        claims[item["reported"]] = claims.get(item["reported"], 0) + 1
+        (passed if item["state"] == "checked" else remaining).append(item)
+    denominator = row.get("denominator") if isinstance(row.get("denominator"), dict) else {}
+    return {"id": inspection_id, "bound": True, "known": True, "reason_code": None,
+            "verdict": _string(row.get("verdict")), "policy_hash": _string(row.get("policy_hash")),
+            "denominator": {k: v for k, v in denominator.items() if type(v) is int},
+            "claim_status_counts": claims,
+            "passed": passed[:MAX_HANDOFF_ITEMS], "remaining": remaining[:MAX_HANDOFF_ITEMS],
+            "truncated": len(passed) > MAX_HANDOFF_ITEMS or len(remaining) > MAX_HANDOFF_ITEMS}
 
 
 def _code(reason) -> str:

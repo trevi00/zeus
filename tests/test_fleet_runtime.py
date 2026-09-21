@@ -147,6 +147,19 @@ def test_launcher_spawns_real_child_in_lane_environment_and_reads_exact_receipt(
     launcher.wait([handle], 30)
     assert launcher.outcome(handle, job) == {"status": "failed", "reason_code": "child_refused", "exit_code": 3,
                                              "calls": {"reserved": None, "settled": None}, "operation_status": None}
+    # An evidence-refused lane row carries its own durable owner handoff up, unchanged and beside
+    # the classification; nothing here creates, retries or resolves it.
+    handoff = {"schema": "urn:zeus:operation-evidence-handoff:1", "status": "pending_owner",
+               "owner": "lead:improvement", "next_action": "inspect_evidence_contract"}
+    refused = {"id": "op-1", "manifest_sha256": "m" * 64, "status": "failed",
+               "reason_code": "evidence_gate_refused", "owner_handoff": handoff}
+    launcher.connect = FakeConnection("lane_a", {"op-1": refused})
+    launcher.environ = {**os.environ, "STUB_EXIT": "1"}
+    handle = launcher.launch(job)
+    launcher.wait([handle], 30)
+    outcome = launcher.outcome(handle, job)
+    assert outcome["status"] == "failed" and outcome["reason_code"] == "evidence_gate_refused"
+    assert outcome["owner_handoff"] == handoff
     # A missing executable never leaves a process behind: a definite pre-spawn refusal.
     launcher.argv = (str(tmp_path / "absent-interpreter"),)
     with pytest.raises(LaunchRefused, match="spawn_failed"):

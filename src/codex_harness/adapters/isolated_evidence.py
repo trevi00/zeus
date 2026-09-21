@@ -28,7 +28,12 @@ from codex_harness.adapters.isolated_worker import (
     summary,
     unresolved_runs,
 )
-from codex_harness.domain.model import digest
+from codex_harness.adapters.project_evidence import (
+    ProjectEvidenceInspector,
+    container_binding,
+    resolve_container_profile,
+)
+from codex_harness.domain.model import digest, require
 
 CONTAINER_ENVIRONMENT = {"HOME": "/tmp", "PYTHONIOENCODING": "utf-8", "PYTHONDONTWRITEBYTECODE": "1",
                          "GIT_CONFIG_COUNT": "1", "GIT_CONFIG_KEY_0": "safe.directory", "GIT_CONFIG_VALUE_0": WORKSPACE}
@@ -65,13 +70,17 @@ class DockerEvidenceInspector(EvidenceInspector):
                     "platform": "linux-container"}
         return {"identity": identity, "environment": environment, "interpreter": TRUSTED_PYTHON}
 
-    def _replay(self, argv, cwd, timeout, max_bytes, env, progress=None):
+    def _replay(self, argv, cwd, timeout, max_bytes, env, progress=None, workdir=WORKSPACE):
         """One authorized argv in one fresh container over one fresh candidate copy.
 
         The caller's per-call `progress` check reaches the attached capture exactly as it does on
         the host (research-dispatch-001). Its refusal is an interruption of that capture, so `hold`
         stops and confirms this container by its exact id before the refusal propagates; preparation
-        and the lifecycle record are unchanged."""
+        and the lifecycle record are unchanged.
+
+        `workdir` is the container directory the check runs in: the mounted root by default, and a
+        host-declared project context (INV-PROJECT-EVIDENCE-001 version 2) under it. The copy, the
+        mount, the image and every control are identical either way."""
         run_id = uuid4().hex
         directory = self.root / run_id
         snapshot = directory / "workspace"
@@ -98,7 +107,7 @@ class DockerEvidenceInspector(EvidenceInspector):
             advance(record, "prepared", snapshot_sha256=context["container"]["snapshot_sha256"])
             args = container_args(self.isolation, name=container.name, run_id=run_id, role="verifier", network="none",
                                   mounts=[(str(snapshot.resolve()), WORKSPACE)], environment=dict(env), pass_names=(),
-                                  entry=list(argv), workdir=WORKSPACE)
+                                  entry=list(argv), workdir=workdir)
             container.create(args, docker_environment())
             context["container"]["id"] = record["container"] = container.id
             advance(record, "created", container=container.id)
@@ -142,3 +151,62 @@ class DockerEvidenceInspector(EvidenceInspector):
         if cleanup["removed"]:
             shutil.rmtree(snapshot, ignore_errors=True)  # exactly this replay's own snapshot; the record stays
         return {**run, **context}
+
+
+class IsolatedProjectEvidenceInspector(ProjectEvidenceInspector):
+    """INV-PROJECT-EVIDENCE-001 version 2: the host's declared checks, replayed in the pinned image.
+
+    Exactly one thing differs from the host profile inspector: WHERE an already authorized,
+    interpreter-bound check runs. The profile, the required denominator, the claim parsing, the
+    classification, the aggregate deadline, the archive and the cancellation/cleanup ownership stay
+    inherited; the execution is the verifier container above - one fresh, network-none,
+    credential-free container of the same image over a fresh candidate copy, entered in the check's
+    own container context directory. No candidate command runs on the host, and an unavailable
+    container is a named replay failure, never a host replay.
+    """
+
+    # The verifier replay is not reimplemented here: this is the same function object, so the
+    # container ownership, records, cleanup debt and refusals cannot drift between the two routes.
+    _replay = DockerEvidenceInspector._replay
+
+    def __init__(self, artifacts, profile, isolation: dict, root, docker: str = "docker", policy=None):
+        super().__init__(artifacts, profile, policy, interpreter=TRUSTED_PYTHON)
+        # Refused here, before any snapshot or container: version, image and interpreter must agree.
+        self.execution = container_binding(profile, isolation)
+        self.isolation, self.root, self.docker = isolation, Path(root), docker
+
+    def _trusted(self, candidate):
+        # A container path: there is no host file to verify and none is run. Nothing else is accepted.
+        require(candidate in (None, TRUSTED_PYTHON), "The isolated project inspector runs the image interpreter only")
+        return TRUSTED_PYTHON
+
+    def _python(self):
+        return "container:" + self.isolation["image"]
+
+    def snapshot(self, cwd=None):
+        """The container identity (image, limits, network, driver) AND the container-resolved project
+        contexts, both in the cache key: a changed image, profile, context or dependency digest can
+        never read back an older inspection."""
+        require(cwd is not None, "Project evidence snapshot requires the candidate workspace")
+        project = resolve_container_profile(self.profile, cwd, self.isolation)
+        # The identity environment is the one every context shares; per-context PYTHONPATH values are
+        # bound by the project digest below, and each replay runs under its own context environment.
+        environment = {k: v for k, v in CONTAINER_ENVIRONMENT.items()}
+        identity = {"policy_hash": self.policy["policy_hash"], "environment_names": sorted(environment),
+                    "environment_digest": digest(sorted(environment.items())), "interpreter": TRUSTED_PYTHON,
+                    "cwd": str(Path(cwd).resolve()),
+                    "container": {**summary(self.isolation), "network": "none", "credentials": "none",
+                                  "workspace": WORKSPACE, "snapshot": "fresh copy per replay"},
+                    "platform": "linux-container",
+                    "project": {"digest": project["digest"], "profile_digest": project["profile_digest"],
+                                "execution": project["execution"], "workspace": project["workspace"],
+                                "contexts": {name: {k: v for k, v in context.items()
+                                                    if k not in ("environment", "workspace")}
+                                             for name, context in project["contexts"].items()}}}
+        return {"identity": identity, "environment": environment, "interpreter": TRUSTED_PYTHON, "project": project}
+
+    def _execute_check(self, argv, context, timeout, max_bytes, progress=None):
+        """`context['workspace']` is the HOST checkout this context was resolved against and is what
+        the replay copies; every executing value (workdir, interpreter, environment) is the image's."""
+        return self._replay(argv, context["workspace"], timeout, max_bytes, dict(context["environment"]),
+                            progress=progress, workdir=context["cwd"])

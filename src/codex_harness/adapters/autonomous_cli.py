@@ -34,6 +34,7 @@ def run(service, args) -> dict:
         build_executor,
         build_observer,
         database_url,
+        host_isolation,
         redis_url,
     )
 
@@ -44,13 +45,17 @@ def run(service, args) -> dict:
     repository = repository_root()
     source = GitSource(repository)
     goal = bind_goal(manifest, source)
-    # INV-PROJECT-EVIDENCE-001: this entry point composes an operation, so it binds the same profile.
+    # INV-PROJECT-EVIDENCE-001 / INV-ISOLATED-WORKER-001: this entry point composes an operation, so it
+    # loads the profile and the isolation selection in the same order, and binds both into the identity.
     evidence_profile = load_profile(host)
-    bound = identity(manifest, repository, policy, host, runtime_dir(), evidence_profile)
+    isolated = host_isolation(evidence_profile)
+    bound = identity(manifest, repository, policy, host, runtime_dir(), evidence_profile,
+                     **({} if isolated is None else {"isolation": isolated.config}))
     observer = build_observer(service.store, "cli.autonomous")
     try:
         executor = build_executor(service, observer=observer, execution_policy=policy, knowledge=False,
-                                  evidence_profile=evidence_profile)
+                                  evidence_profile=evidence_profile,
+                                  **({} if isolated is None else {"isolation": isolated}))
         # The evidence port reads the very artifact store the executor persists execution results to.
         wiring = dict(verify_sources=lambda packet: verify_sources(packet, source), repository=repository_identity(repository),
                       observer=observer, evidence=ExecutionEvidence(executor.artifacts))

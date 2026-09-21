@@ -302,6 +302,8 @@ def parser() -> argparse.ArgumentParser:
     operate_status.add_argument("operation_id")
     from codex_harness.adapters.audit_service import add_parser as add_audit_service_parser
     add_audit_service_parser(commands)
+    from codex_harness.adapters.audit_repair_cli import add_parser as add_audit_repair_parser
+    add_audit_repair_parser(commands)
     from codex_harness.adapters.dge_cli import add_parser as add_dge_parser
     add_dge_parser(commands)
     from codex_harness.adapters.fleet_cli import add_parser as add_fleet_parser
@@ -528,6 +530,20 @@ def audit_service_command(service, args):
         raise SystemExit(1)
 
 
+def audit_repair_command(service, args):
+    """INV-AUDIT-REPAIR-001: exit 0 only for a completed owner command; refusals print a code and a
+    type, never a model draft, a validator message, source text or a raw exception."""
+    from codex_harness.adapters import audit_repair_cli
+    try:
+        result = audit_repair_cli.execute(service, args)
+    except Exception as exc:
+        emit(audit_repair_cli.refusal(exc))
+        raise SystemExit(1) from exc
+    emit(result)
+    if result.get("exit_code", 1) != 0:
+        raise SystemExit(1)
+
+
 def research_program_command(service, args):
     """INV-RESEARCH-PROGRAM-001: exit 0 only for a recorded, replayed or read result; refusals print a
     code and a type, never configs, feed bodies, DSNs or raw exceptions."""
@@ -702,6 +718,8 @@ def main() -> None:
             desk_command(service, args)
         elif args.command == "audit-service":
             audit_service_command(service, args)
+        elif args.command == "audit-repair":
+            audit_repair_command(service, args)
         elif args.command == "research-program":
             research_program_command(service, args)
         elif args.command == "observe":

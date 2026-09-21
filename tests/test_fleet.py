@@ -166,6 +166,77 @@ def test_admission_capacity_lane_paths_dependencies_pause_and_budget(tmp_path):
     assert CANARY not in json.dumps(f.status()) and str(tmp_path) not in json.dumps(f.status())
 
 
+def evidence_handoff(**overrides):
+    """A fixture copy of the durable operation handoff a lane writes on an evidence refusal."""
+    return {"schema": "urn:zeus:operation-evidence-handoff:1", "id": "h" * 64, "status": "pending_owner",
+            "owner": "lead:improvement", "next_action": "inspect_evidence_contract",
+            "reason_code": "evidence_gate_refused", "operation_id": "op-1", "correlation_id": "operation:op-1",
+            "candidate": {"revision": "c" * 40, "path": "D:/secret/" + CANARY},
+            "inspection": {"id": "i" * 64, "bound": True, "known": True, "verdict": "incomplete",
+                           "passed": [{"check_id": "unit"}],
+                           "remaining": [{"check_id": "lint"}, {"check_id": "types"}]}, **overrides}
+
+
+def test_an_evidence_refused_lane_operation_stays_visible_as_pending_owner(tmp_path):
+    f = fleet(tmp_path)
+    f.enqueue("a", manifest("op-1", ["docs/x.md"]), GOAL, [])
+    token = f.admit_one()["job"]["owner_token"]
+    view = f.finalize("op-1", token, {"status": "failed", "reason_code": "evidence_gate_refused", "exit_code": 1,
+                                      "operation_status": "failed", "owner_handoff": evidence_handoff()})
+    handoff = view["owner_handoff"]
+    assert view["status"] == "failed" and view["reason_code"] == "evidence_gate_refused", "the outcome is unchanged"
+    assert handoff["status"] == "pending_owner" and handoff["owner"] == "lead:improvement"
+    assert handoff["next_action"] == "inspect_evidence_contract" and handoff["id"] == "h" * 64
+    assert handoff["inspection_id"] == "i" * 64 and handoff["inspection_bound"] is True
+    assert handoff["passed"] == 1 and handoff["remaining"] == 2, "counts only, never the items"
+    assert "check_id" not in json.dumps(handoff) and CANARY not in json.dumps(handoff)
+    assert f.store.data["fleet_jobs", "op-1"]["receipt"]["owner_handoff"] == handoff
+    [job] = f.status()["jobs"]
+    assert job["owner_handoff"] == handoff, "visible in the status a reader polls, not presented as running"
+    assert f.reconciliation_required() == [] and CANARY not in json.dumps(f.status())
+
+
+@pytest.mark.parametrize("inspection, bound, known", [
+    # A handoff retained BEFORE the correction: contradictory flags beside populated item lists.
+    ({"id": "i" * 64, "bound": False, "known": True, "verdict": "all_checked",
+      "reason_code": "inspection_bound_elsewhere", "passed": [{"check_id": "unit"}, {"check_id": "lint"}],
+      "remaining": []}, False, True),
+    ({"id": "i" * 64, "bound": True, "known": False, "passed": [{"check_id": "unit"}], "remaining": [{"check_id": "lint"}]}, True, False),
+    ({"id": "i" * 64, "bound": "yes", "known": "yes", "passed": [{"check_id": "unit"}], "remaining": []}, False, False),
+    ({"id": "i" * 64, "bound": False, "known": False, "reason_code": "execution_binding_incomplete"}, False, False)])
+def test_unbound_or_unknown_evidence_never_earns_progress_credit_through_the_fleet(tmp_path, inspection, bound, known):
+    """Fleet decides credit itself: only `bound` AND `known` exactly true relay counts, so a stale
+    or foreign handoff already on disk shows unknown progress instead of finished work."""
+    f = fleet(tmp_path)
+    f.enqueue("a", manifest("op-1", ["docs/x.md"]), GOAL, [])
+    token = f.admit_one()["job"]["owner_token"]
+    view = f.finalize("op-1", token, {"status": "failed", "reason_code": "evidence_gate_refused", "exit_code": 1,
+                                      "operation_status": "failed",
+                                      "owner_handoff": evidence_handoff(inspection=inspection)})
+    handoff = view["owner_handoff"]
+    assert view["status"] == "failed" and view["reason_code"] == "evidence_gate_refused", "the outcome is unchanged"
+    assert handoff["passed"] is None and handoff["remaining"] is None, "null progress, never a count"
+    assert handoff["inspection_id"] == "i" * 64 and handoff["inspection_bound"] is bound
+    assert handoff["inspection_known"] is known and handoff["inspection_reason_code"] == inspection.get("reason_code")
+    assert handoff["status"] == "pending_owner" and handoff["owner"] == "lead:improvement"
+    assert handoff["next_action"] == "inspect_evidence_contract" and handoff["id"] == "h" * 64
+    assert "verdict" not in handoff and "check_id" not in json.dumps(handoff)
+    [job] = f.status()["jobs"]
+    assert job["owner_handoff"] == handoff == f.status()["jobs"][0]["owner_handoff"], "repeated reads are identical"
+    assert f.store.data["fleet_jobs", "op-1"]["receipt"]["owner_handoff"] == handoff
+
+
+@pytest.mark.parametrize("document", [None, {"schema": "urn:zeus:other:1"}, "pending_owner", {}])
+def test_an_unrecognized_or_absent_handoff_document_is_never_relayed(tmp_path, document):
+    f = fleet(tmp_path)
+    f.enqueue("a", manifest("op-1", ["docs/x.md"]), GOAL, [])
+    token = f.admit_one()["job"]["owner_token"]
+    view = f.finalize("op-1", token, {"status": "failed", "reason_code": "child_refused", "exit_code": 2,
+                                      "owner_handoff": document})
+    assert view["owner_handoff"] is None and view["status"] == "failed"
+    assert "owner_handoff" not in f.status()["jobs"][0], "a job without a handoff keeps its exact shape"
+
+
 def ticking():
     """Deterministic clock fixture: strictly increasing ISO timestamps, one per call."""
     counter = iter(range(1, 10_000))
