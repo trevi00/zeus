@@ -136,3 +136,57 @@ the current blocking implementation boundary, not missing user permission or a m
 Still pending: lane relocation/Fleet reservation disposition, Audit/Desk and remaining observation
 producer path switches, durable staging cleanup feature, successor worker/review, ontology acceptance,
 and broader absorption/model-transfer deliveries. No unattended completion claim is made.
+
+## Recovery/relocation implementation handoff
+
+One bounded batch, Claude implementation and independent Codex review. Add trusted owner CLI
+`fleet reconcile-interrupted` and `fleet relocate`, sharing existing Fleet store and contracts.
+Neither command calls models, retries, grants budget, resumes admission or records success.
+
+Reconcile accepts an explicit versioned evidence document, expected job owner/config identity and
+operator ID. Adapter verifies exact lane operation/task association from stored assignment/cycle,
+task cancelled with advanced generation, no live lease, exact owned container record and Docker
+inspect stopped state, and matching settled machine invocation slot. Missing/unreadable/ambiguous
+proof refuses. A container name supplied without recorded task/run binding is insufficient. Preserve
+unknown usage and original operation/history. Under paused Fleet and compare-and-swap on current job
+status/owner, record one immutable recovery receipt and terminal interrupted failure, clearing only
+that reservation. Identical receipt replay is idempotent, changed evidence conflicts. Cross-store
+proof is captured with identities and reread directly before commit; document that this is an
+owner-controlled recovery with worker services stopped, not a distributed atomic transaction.
+
+Relocation accepts expected current config hash, exact source->target path map, verified copy
+manifest and operator ID. Only lane repository/runtime paths may change; schema, Redis namespace,
+lane ID/team, concurrency, budgets and provider authority remain unchanged. Require paused Fleet,
+no dispatching/unknown reservations, no running lane executions and the runner stopped for cutover.
+Do not trust a user-supplied idle boolean: adapter inspects available host/runtime ownership facts;
+if the platform cannot establish them, refuse with a bounded reason. Inspect original adapter and
+run records before choosing a supported process check. Keep the contract practical and explicit.
+
+Target repositories must be real independent Git checkouts, include required pinned queued bases
+and goal blobs, and match the source identity. Runtime target must be writable and copied evidence
+hashes verified. Reject symlink/junction escapes, invalid roots, source/target overlap and differing
+destination files. Copying is an owner preparation step; command does not move/delete bulk files.
+Write revised registry and immutable migration receipt in one store transaction with expected-hash
+CAS. Repeating exact migration returns its receipt, conflicting requests refuse. Do not rewrite
+historical manifests, operation identities, provenance paths or artifact content references.
+Future jobs use new paths; old operations are never silently resumed with changed runtime identity.
+
+Acceptance adds source failure/unavailable proof, live container/lease, wrong task/slot, duplicate and
+concurrent reconciliation, non-idle relocation, stale config, missing queued commit, changed goal,
+corrupt copied artifact, target path escape, restart receipt replay and no provider invocation.
+Use actual temporary Git/files for filesystem tests and controlled labelled faults for unreachable
+Docker/PG. Windows/POSIX capability differences explicit. Existing failed operation is not marked
+accepted. No background reaper, schema reset, force flags or direct operator SQL mutation.
+
+Allowed paths: domain/fleet.py, application/fleet.py, adapters/fleet_cli.py, new
+adapters/fleet_recovery.py and domain/fleet_recovery.py if needed, focused
+tests/test_fleet_recovery.py, tests/test_fleet_relocation.py, docs/contracts.md, and this task folder.
+Exact worker checks: python -m pytest tests/test_fleet_recovery.py tests/test_fleet_relocation.py -q -p no:cacheprovider
+and python -m ruff check . --no-cache. Full-suite/real host cutover belongs to owner/CI. Legacy tests
+answer lists only successful executed focused commands; failures/unrun checks go in summary.
+
+Bootstrap exception: because the old Fleet paths cannot yet be changed by its API, this one repair
+operation uses existing `zeus operate run` from C with an existing isolated lane schema and C runtime.
+It does not replace registered Fleet configuration or resume it. Original interrupted task is fenced
+and call slots accounted before bootstrap. No second dispatcher, raw Claude invocation or bypass of
+isolation/evidence/independent review. Record bootstrap identity and result separately from Fleet jobs.
