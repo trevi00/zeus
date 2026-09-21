@@ -1379,3 +1379,48 @@ One new Fleet attempt may receive one explicitly logged owner heartbeat after re
 seconds=POLICY.task_seconds and the existing Workflow deadline clamp. This is a temporary owner
 assist, not proof the runtime is autonomous; the corrected runtime must subsequently run without
 the assist. No repeating renewal loop, deadline extension, new model budget or host fallback.
+
+#### Owner review of bc75905: one bounded correction (2026-09-21 KST)
+
+Independent owner review covered measurement -> window -> candidate -> scoped claim -> capture ->
+council handoff, service status/log wiring and preparation callback. Ruff passed; the focused host
+suite passed 177 tests with 5 skips. A real isolated PostgreSQL and real temporary Git test, with
+synthetic audit records and an explicitly simulated council, raced two programs: exactly one claim
+and one council handoff succeeded. This is NOT a live model/research/deployment result. Keep those
+accepted paths; do not reopen unrelated infrastructure. Candidate remains unaccepted for two
+material measurement defects, both reproduced in MemoryStore AND isolated PostgreSQL (four safe
+assertions failed). Owner reproducer is retained on D as owner-progress-review.py; no production
+audit, model or call ledger was changed.
+
+R1, semantic denominator: ResearchAudits._coverage is the existing COMPLETION denominator: it
+includes generated, duplicate and binary dispositions. It must remain unchanged. Reusing its count
+as semantic_paths causes a valid generated disposition alone to yield adequate_progress. Separate
+literal disposition=semantic paths from all non-semantic disposition counts, while retaining the
+existing completion/remaining-path contract. minimum_semantic_paths compares the NET semantic PATH
+delta, not the path+subsystem total; subsystem progress remains a separate reported fact. Test
+generated/duplicate/binary exclusions, actual semantic gain, a semantic-to-nonsemantic regression,
+and subsystem-only gain, without weakening the existing valid completion dispositions.
+
+R2, observation watermark: with window size 2, baseline -> four completions plus two semantic gains
+-> observe -> identical observe -> two genuinely new zero-gain completions -> observe currently
+creates a research candidate. The second reading assigns OLD leftover executions the NEW opening
+measurement and invents a zero-gain strike. This violates nonoverlapping comparable windows and
+restart/replay acceptance. An overflow has no historical per-execution measurements: do not infer
+them. Record the whole unseen cohort as ONE explicitly not_comparable overflow receipt, consume ALL
+its identities, reset the streak, and anchor the next window at that same complete reading. Its
+actual execution count may exceed the configured size and must be reported honestly; only exactly
+sized comparable windows can count as strikes. A duplicate reading after overflow creates no new
+window. Two wholly NEW low windows must still trigger normally afterwards. Test divisible and
+nondivisible overflow, restart, and observed gains preceding the overflow reading.
+
+One correction batch: change audit_progress domain/application, tests/test_audit_progress.py and
+the related contract/operator documentation only as needed. Preserve routing/ownership/source
+preparation behavior already checked. Execute targeted progress/preparation/service/research-program/
+portfolio tests and ruff only. Do NOT execute the whole suite or the historical Git-baseline test
+inside the reduced container snapshot: owner/CI owns those prerequisites and checks. Preserve the
+previous worker's full-suite failures as history; do not label them passing or remove their receipts.
+In the legacy answer.tests, list only the final successful exact targeted check commands; describe
+failed diagnostic attempts and environment limits in summary. No new model calls, global Git
+configuration, runtime activation, source-audit edits, threshold change, merge or issue closure.
+Owner will re-run these two counterexamples, the affected regressions and required full host/CI
+checks on the final candidate before deployment and actual baseline/consumer verification.
