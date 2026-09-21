@@ -2071,6 +2071,31 @@ historical runs is a measured no-candidate result, never a reason to forge regis
 
 ## Astra-to-Sol transfer: bounded follow-on frame (2026-09-21)
 
+### Decision-feedback correction handoff (2026-09-21)
+
+Candidate fbfcf1df249fbf130123672e09357221947428a7 was independently rejected. Owner traced
+collect -> read transaction -> separate record transaction, terminal conflict handling, capped
+group membership and verified_binding. Three reported triggers are reachable in that code:
+the 51st distinct run increments overflow on each recollection; a stale pending snapshot arrives
+after a terminal observation and becomes a false conflict; matching execution refs get evidence
+credit without reading artifact bytes. These are code-trace findings, not owner-executed repros.
+
+Preserve original scope and accepted additive architecture. One correction batch must retain exact
+distinct occurrence identity independently of bounded display lists, prevent stale snapshots from
+creating false terminal conflicts while preserving genuine changed-terminal conflicts, and inject
+the existing integrity-checking artifact reader before admitting evidence. Missing/corrupt/invalid
+execution evidence stays unknown, without fabricating outcomes or exposing raw contents. No network
+or provider calls during collection. Use existing executor execution_assignment/output conventions,
+not a new invented artifact contract. Retain pending -> terminal updates and bounded pagination.
+
+Regression matrix adds 51+ runs collected twice (unchanged counts), two coordinated collectors
+across pending -> terminal (no false conflict), real contradictory terminal history (still conflict),
+valid content-addressed execution artifact vs absent/corrupt/mismatched artifacts (no false credit).
+Worker supplies deterministic isolated regression results, preserving already accepted tests and
+running original focused checks. Review together; do not expand into routing or UI changes.
+Owner binds rejected and successor jobs to research-improvement before claiming project visibility.
+Binding is ownership metadata, not acceptance, resolution or an automatic recovery loop.
+
 Outcome: reuse accepted Astra experience to reduce total tokens per accepted objective while
 preserving the same acceptance criteria. Canonical guidance lives in docs/context/AUTHORING.md.
 Codex owns design/qualification/acceptance; Claude implements. Current immutable decision-feedback
