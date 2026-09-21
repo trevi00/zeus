@@ -55,3 +55,71 @@ The limit is a ceiling for that one common document, verified by `worker_profile
 which refuses an oversized or mismatched document whole rather than truncating it. It is not a
 token allowance, and it is not the budget of any other context: the per-run project section, the
 project-skill selection and the research paths keep their own separate limits.
+
+
+## Repeated work becomes reusable capability
+
+User direction, 2026-09-21. Owner: Codex for analysis, design and acceptance; Claude for the
+specified implementation and tests. This is a working rule, not evidence that an automatic
+recurrence detector or runtime skill publisher has been installed.
+
+After two distinct executions of the same or materially similar procedure, record an automation
+candidate, whether the executions succeeded or failed. Count task/run identities, not replayed
+events, copied receipts, rereads, or repeated imports of one experience. Similarity is a hypothesis:
+compare outcome, inputs, prerequisites, steps and verification before merging different procedures.
+Keep the existing failed-tool two-strike research rule separate; successful recurrence is not failure.
+
+Search the existing SSOT, skills and scripts first. Extend or migrate an existing owner when it fits.
+Use a focused skill for contextual judgment, a script for deterministic repeated steps, or a skill
+calling a script when both are needed. Keep authority, applicability, inputs/outputs, platform limits,
+unknown results, side effects and verification explicit. Do not copy ad-hoc task scripts into the
+runtime or add every learned rule to the common prompt. Link focused units from this context tree
+and deliver them only through the existing verified selectors.
+
+A judgment improvement records the original decision, evidence available at that time, expected
+outcome, observed outcome, failure classification and the revised criterion. Test the criterion on
+the retained failure and an applicable successful control; it must not merely lower the acceptance
+bar. Unknown causes remain unknown. Similar failures twice require bounded research before another
+correction, as AGENTS.md already requires.
+
+Candidate -> specified -> implemented -> independently verified -> activated -> measured is the
+promotion path. Two occurrences trigger evaluation and extraction, not unchecked publication.
+Reuse the ordinary code review and knowledge-promotion owners. Keep unverified candidates separate
+from verified PostgreSQL knowledge. Deduplicate a recurrence family into one bounded improvement
+item; this rule grants no recursive self-improvement loop or additional execution authority.
+
+Measure distinct occurrences, verified reuse count, task success denominator, repeated failures,
+manual interventions and time/token cost per accepted outcome. Compare equivalent tasks and retain
+failed measurements. Neither creating a skill nor a passing synthetic test proves efficiency or
+failure-free operation. Review ineffective automations for revision or retirement.
+
+
+### Conductor decision improvement
+
+Apply judgment improvement to the conductor's prioritization, assignment, clarification, deferral,
+retry/stop and acceptance recommendations. Bind a decision ID to the goal and acceptance criteria,
+policy/prompt revision, evidence and state snapshot available then, alternatives considered,
+selected action, concise evidence-based rationale, uncertainty and expected observable outcome.
+Record decision summaries, not private reasoning traces. Attach actual downstream outcome, review,
+rework, interventions and time/token usage later; pending or unavailable outcomes remain unknown.
+
+Distinguish a bad decision from implementation failure, infrastructure failure and changed inputs.
+A successful task does not by itself prove a good decision, and a failed task does not establish a
+bad one. Evaluate unnecessary refusals/deferrals as well as unsafe acceptance. A material incident
+may justify immediate investigation; two distinct similar judgment failures trigger the existing
+bounded research rule. Do not retry or lower standards to improve the reported success rate.
+
+Improvement candidates must name one failure family and revised criterion. Compare current and
+candidate policy against retained failure cases, successful controls and held-out cases, using only
+evidence available at the original decision. Replay is an evaluation, not proof that an unchosen
+historical action would have succeeded. Preserve evaluator version, denominator and unknown cases.
+An independent reviewer assesses the candidate; the proposing conductor cannot certify itself.
+After acceptance, use scoped activation, observed outcomes and a previous-version rollback path.
+User authority, acceptance requirements and merge/deploy permissions are not self-modifiable.
+
+Keep immutable decision/outcome facts and unverified hypotheses distinct from verified rules;
+PostgreSQL promotion follows its existing owner. Prefer a focused decision skill or deterministic
+preflight over common-prompt growth. Report accepted-outcome rate, inappropriate acceptance and
+unnecessary refusal findings, recurrence, manual intervention and cost per completed objective.
+Do not optimize throughput alone or claim failure-free judgment. This procedure is a specification;
+a live recorder, evaluator and automatic policy promotion require separate verified implementation.

@@ -98,3 +98,11 @@ nothing, selects no role and grants no authority over the contracts in `docs/con
   `worker_profile.load_profile` and the profile tests remain the authority over the final bytes.
 - An expected failing run (a stale digest before the repair) is a diagnostic attempt: report it in
   `summary` with its observed exit; legacy `tests` lists the final successful command.
+
+
+## Repeated procedures and judgment improvement
+
+For two distinct similar work executions (successes included), follow the canonical extraction and
+verification procedure in [docs/context/AUTHORING.md](docs/context/AUTHORING.md#repeated-work-becomes-reusable-capability).
+Prefer improving existing skills/scripts. This complements the failed-tool two-strike research rule;
+it does not equate recurrence with failure or grant automatic publication/promotion authority.

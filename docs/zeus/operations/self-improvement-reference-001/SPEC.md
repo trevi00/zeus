@@ -1861,3 +1861,127 @@ tracked files. This is an observed invalid planning output, not evidence of a Po
 submodule failure. The boundary correctly refused it; no task/receipt was rewritten or retried.
 Raw bounded diagnosis: unknown-path-diagnosis-001.json. Planning-output recovery is distinct from
 the currently accepted semantic-draft repair; do not broaden that repair's authority implicitly.
+
+## Operational residuals and one concrete adoption (2026-09-21 18:10 KST)
+
+Continue the same frame after CHECKLIST-RELEASE-RESULT.md, which supersedes the pending-release
+notes above. User authorizes resolving retained blocked work, finishing one source assessment and
+implementing one justified adoption through Claude with independent Codex acceptance.
+Scope excludes restarting accepted release verification, full reference coverage and UI redesign.
+
+Observed: both monitored blocked tasks already have resolved/discard termination decisions. The
+DGE attempt belongs to research-live-003, superseded by RESULT-008; the desk attempt was rejected
+for output schema, with later real acceptance in local-operations-desk-001/RESULT.md. Preserve
+failure receipts and resolved decisions; terminate these old task aggregates using Workflow.cancel,
+not success or retry. No unresolved marker or live ownership may be present at disposition.
+
+Path: PG task/termination/failure -> existing Workflow operator cancellation -> generation fence
+and execution.notice -> monitoring. Separately, pinned source evidence -> semantic assessment ->
+adoption decision -> Claude implementation -> independent review -> operating evidence.
+
+Acceptance matrix: normal cancellation must preserve failure and termination receipts; stale or
+non-blocked task refuses owner action; pending/unconfirmed termination forbids it; no provider call,
+no retry and no successful result may be created. Process failure leaves durable per-task results,
+never blindly repeats terminal cancellation. Platform/cleanup: read-only local source inspection,
+no container or file deletion needed. Two-strike/source evidence gaps remain distinct from runtime
+failure. Distribution assessment may be deferred with exact missing evidence; deferral is not repair.
+
+Batch: snapshot and dispose two historical tasks; trace distribution source implementation/tests;
+select one concrete source-backed adaptation against existing SSOT, then hand off one bounded
+implementation to Claude. A new material prerequisite revises this section rather than spawning
+unbounded local fixes. Raw evidence: artifacts/self-improvement-reference-001/blocked-disposition-001.
+
+## Safe Fleet lifecycle failure provenance (2026-09-21)
+
+Reframe the preceding batch: actual source inspection does not support a complete distribution
+adoption, so retain that explicit deferral (RESIDUAL-DISPOSITION.md). Do not invent a port. Implement
+one demonstrated operating gap: service failure provenance lost by launch-fleet.ps1 Out-Null.
+This is operational hardening, not completed reference absorption. Prior blocked task dispositions
+are complete and must not be rewritten. Ordinary source analysis stays running.
+
+Architecture/ownership: scheduled hidden owner -> PowerShell launcher -> Python fleet entry ->
+existing cli.main -> FleetRunner/LaneLauncher. Existing background_service.ProcessTree remains
+sole process owner. Add a packaged Python service-entry adapter, called by an owner launcher after
+acceptance, which journals structured lifecycle/exception-location facts before CLI stderr disappears.
+No raw stdout/stderr capture, new process owner, automatic retry, budget changes or exception suppression.
+
+Deliver src/codex_harness/adapters/service_entry.py as `python -m ... --journal PATH -- CLI_ARGS`.
+The adapter passes CLI_ARGS unchanged to existing cli.main through scoped sys.argv replacement;
+restore argv on exit. Reuse rotating _Journal (or factor its reusable primitive while preserving its
+contract) rather than another logging framework. Generate a run ID. Record start before CLI starts,
+finish/exception and exit result. Capture both uncaught exceptions and SystemExit with chained cause
+(cli.main wraps ValueError/RuntimeError). Exit0/None is success, int nonzero is failure, non-int exit
+is fixed failure1 without formatting its value. KeyboardInterrupt exits130. Preserve original numeric
+exit code unless durable diagnostics failed, which exits125. Pre-start journal failure runs nothing.
+Post-start journal failure never reports success. Journal closes in finally. No raw exception message,
+repr, locals, argv, environment, source text, absolute paths, raw traceback or output in journal/stdout.
+Trace facts: at most 8 deepest frames belonging to this installed codex_harness package, relative
+module path plus integer line only; omit outside-package frames and untrusted names. Include safe
+built-in exception type or fixed unknown, fixed reason code, run ID, timestamp. Bounded cause/context
+traversal handles cycles without interpreting arbitrary exception text. Unknown/absent cause is
+reported explicitly. This proves where an exception escaped, NOT its root cause or child cleanup.
+Reuse existing _Journal size/rotation cap; any extension is typed/allowlisted and preserves existing
+background_service logs. Adapter does not claim to recover SIGKILL or a failure before interpreter start.
+
+Matrix: successful callable; uncaught RuntimeError; CLI-style SystemExit(1) from cause; SystemExit0,
+non-integer SystemExit with secret text; KeyboardInterrupt; nested/cyclic causes; secret/path canaries
+in argv/exception/local/source lines never persisted; startup/write/rotation failure; argv restored;
+separate sequential invocations identifiable; real subprocess executes module with --help and invalid
+CLI option, checks exit+JSONL, no model/DB needed; all existing ProcessTree owner tests unchanged.
+One journal is single-writer per service instance; concurrent service owners remain prohibited by
+existing ownership. No tests of production auth or destructive live task failures.
+
+Checks: python -m pytest tests/test_service_entry.py tests/test_background_service.py -q -p no:cacheprovider
+and python -m ruff check . --no-cache. Run explicit files only in worker; full cross-platform CI is
+owner work. Deliver operating instructions with exact launcher replacement and rollback but DO NOT
+edit local external launchers, restart services, call models, merge, deploy or close issues as worker.
+Allowed files: service_entry.py, background_service.py if needed for journal reuse, named tests,
+docs/contracts.md, SERVICE-DIAGNOSTICS.md in this task directory. Completion: independent review of
+candidate, exact checks, then separately verified owner launcher activation. No claim of past root-cause fix.
+
+
+## User steering: recurring-work automation and judgment quality (2026-09-21)
+
+Canonical working procedure: docs/context/AUTHORING.md, Repeated work becomes reusable capability.
+User requests improved judgment from outcome evidence and skill/script extraction after two distinct
+similar work executions. The running service-diagnostics manifest/base remains immutable; do not
+expand or restart that accepted assignment. This instruction applies to subsequent owner framing.
+
+Observed SSOT: application/experience.py deliberately excludes imported claims from recurrence;
+worker_profile_hook.py counts distinct failed tool calls, not successful repeated procedures.
+Existing project_skills/skill_routing owns actual delivery. Therefore a general successful-work
+recurrence trigger is not established by current code. Do not claim this documentation installs it.
+
+Next bounded design must bind two distinct task/run receipts to a comparable procedure, deduplicate
+one automation candidate, search existing owners, choose skill/script/reuse with rationale, and use
+ordinary Claude implementation, independent review and activation. Matrix: real second occurrence;
+event replay/import duplication; similar-but-different tasks; unknown/missing evidence; concurrent
+candidate creation/restart; rejected candidate and no recursive retry; Windows/WSL when applicable.
+Judgment calibration must retain failure plus positive control and unchanged acceptance authority.
+Completion is verified reuse and measured outcome, not candidate count or document creation.
+Operational read-only status aggregation and evidence-bound historical task disposition are owner
+candidate examples, not yet proven equivalent by a recurrence classifier. Validate their receipts
+before selecting; do not auto-cancel tasks from the historical disposition example.
+
+
+## User steering: conductor decision improvement (2026-09-21)
+
+Extend the SAME judgment-improvement scope; canonical procedure is docs/context/AUTHORING.md,
+Conductor decision improvement. Outcome: reduce repeated poor conductor decisions and unnecessary
+blocking without weakening evidence, acceptance or authority. The accepted service-diagnostics
+candidate remains separate and unchanged; this is not deployed behavior.
+
+Existing council.py owns frozen research/DBA snapshot input and conductor flow; experience.py owns
+unverified experience claims. Inspect those owners and existing decisions/observations before
+introducing a record or evaluator. Proposed path: bound decision observation -> later outcome join
+-> comparable failure-family investigation -> candidate rule/skill -> baseline/held-out evaluation
+-> independent review -> scoped version activation -> measured outcome/rollback. Do not create a
+second conductor or bypass existing knowledge promotion.
+
+Acceptance matrix for the future bounded implementation: correct and incorrect judgments; false
+acceptance and unnecessary rejection; delayed/missing outcome; changed goal/environment; duplicate
+or out-of-order events; concurrent outcome updates; stale policy; independent reviewer refusal;
+rollback and preservation of original evidence. Unknown cases cannot enter the success numerator.
+No historical future-information leakage and no claim that replay proves counterfactual outcomes.
+Completion requires one evidence-bound decision improvement and measured actual reuse. Documentation
+alone satisfies only framing; recorder/evaluator/activation remain unimplemented in this change.
