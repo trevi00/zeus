@@ -30,6 +30,11 @@ def schedule_audits(service, audit_id: str | None = None) -> int:
     adoption). Discovery and acquisition are not bound to an audit, so a narrowed pass leaves them
     to the existing global pass; nothing else changes. The default None is the existing behaviour,
     including the generation deduplication every caller relies on.
+
+    A bounded correction admitted by `application.audit_repair` (INV-AUDIT-REPAIR-001) writes its
+    own `schedule` row carrying the same `partition_id`, so the overlap guard below sees it exactly
+    like any other unfinished assignment of that partition and this pass adds no second one. This
+    function itself is unchanged: it never creates, prefers, reorders or retries a correction.
     """
     from codex_harness.application.releases import Releases
     from codex_harness.domain.model import digest

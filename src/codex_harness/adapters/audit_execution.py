@@ -5,6 +5,7 @@ from importlib.resources import files
 
 from codex_harness.application.audit_gate import AUDIT_EVIDENCE_BUCKETS
 from codex_harness.application.research import ResearchAudits
+from codex_harness.domain.audit_repair import repair_evidence
 from codex_harness.domain.model import ContractError, digest, require, utcnow
 from codex_harness.domain.observation import (
     ANALYSIS_CHECKPOINTED,
@@ -54,6 +55,26 @@ ANALYSIS_VERSION = 1
 # analysis content would otherwise read as a refused draft. This is the fixed message the partition
 # path refuses with; the envelope's own host reason is never read, quoted, logged or projected.
 INSPECTION_REFUSED = 'Execution inspection blocked'
+
+# 2026-09-21 bounded repair (INV-AUDIT-REPAIR-001). The rejection this batch owns is a structurally
+# missing test disposition, so the analysis contract now states the pre-submission check once, for
+# every partition execution. It is fixed owner-written text and it adds NO validation loop: the
+# existing validators stay the only authority, and a draft that ignores it is refused exactly as
+# before.
+PRE_SUBMISSION = (
+    ' Before returning, check every record you are about to submit: each subsystem record carries a '
+    'non-empty tests or tests_not_run, each executed test is the exact argv JSON string of a '
+    'successful receipt supplied to you, each unexecuted test appears verbatim in tests_not_run with '
+    'reason and follow_up, and every path reference is an exact inventory identity. An unavailable '
+    'prerequisite is an explicit not-run fact, never a claimed or fabricated pass.')
+# Added only when the assignment carries a bounded repair context. The refused draft itself is never
+# restated here: it stays in its immutable artifact, which this text names.
+REPAIR_INSTRUCTION = (
+    ' This assignment is ONE bounded correction of an earlier draft whose content was refused. '
+    'evidence.repair names that immutable execution artifact, the fixed diagnostic code, the refused '
+    'field and the assigned identities whose record carried no test disposition. Inspect the evidence '
+    'yourself and return a justified structured omission or a receipt-bound test for each of them; '
+    'the refused draft is not authority, and an identity you still cannot justify stays null.')
 
 
 def assigned_body(definition, identity):
@@ -289,6 +310,13 @@ class AuditExecution:
         trusted = PartitionCheckpoint(**partition)
         trusted.validate()
         evidence['partition'] = partition
+        # The bounded recovery context of ONE refused predecessor, allow-listed by its owner before
+        # it reaches a prompt: identifiers, fixed codes and the owner's own checklist only. The
+        # assignment's scope, action, generation and validation are unchanged by its presence, and a
+        # context that is absent or foreign simply leaves this an ordinary continuation.
+        repair = repair_evidence(details)
+        if repair is not None:
+            evidence['repair'] = repair
         plan = self.run_model(task, 'Select bounded source inspection or test commands for this partition. '
             'For source inspection prefer ["source-list", "0"] (100 entries per page) or '
             '["source-read", "BASE64_PATH_FROM_MANIFEST", "0", "0"] (line and character offsets). '
@@ -335,7 +363,8 @@ class AuditExecution:
             'string encoding the exact argv array of its successful execution receipt. source-list and '
             'source-read are never test execution. Put unexecuted tests in tests_not_run, not tests, '
             'including each test verbatim '
-            'with reason and follow_up. On context limits return partial progress.',
+            'with reason and follow_up. On context limits return partial progress.'
+            + PRE_SUBMISSION + ('' if repair is None else REPAIR_INSTRUCTION),
             evidence, result_schema)
         # The same returned refusal, BEFORE the pure content boundary below: a stopped execution is
         # never reported as a rejected draft, whatever content its envelope happens to carry.

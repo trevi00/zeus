@@ -453,3 +453,78 @@ the historical Git-baseline reconstruction in `tests/test_output_schema.py`, Pos
 host canary were NOT run here: this snapshot lacks those prerequisites and they belong to the owner.
 The previous batch's recorded full-suite failures stay history and are not restated as passing. No
 model call, provider, Redis, PostgreSQL connection or host service start happened in these checks.
+
+## Rejected analysis -> bounded repair -> resumed work (2026-09-21 KST)
+
+Why this batch exists. Audit task `c54b7b10-4a8e-4a9b-97e8-a5f9a298c6ed` succeeded as an execution
+and its draft was refused: the immutable artifact
+`sha256:cd56aa7e7d1429baec8dfb1920653670cc6a5664e4d745dbef8842caf819bb25` carried a subsystem record
+with empty `tests` AND empty `tests_not_run`, so `SubsystemAnalysis.validate` refused it with
+`Missing subsystem trace: tests`, whose digest `9456f7b8...` is what the task recorded as its
+`error_digest`. The partition kept its generation and its whole scope, and nothing retried it -
+correctly, because a retry without a diagnosis is just another guess. This batch adds ONE opted-in,
+evidence-bound successor for exactly that family. Authoritative rule text: INV-AUDIT-REPAIR-001 in
+`docs/contracts.md`; adaptation provenance and its limits are in `REPAIR-ADOPTION.md`.
+
+What was added, and what was deliberately not. Added: `domain/audit_repair.py` (the diagnosis
+vocabulary, the lineage identity, the bounded context and checklist, the settlement rule and the
+projections), `application/audit_repair.py` (the opt-in, the admission and the idempotent
+settlement over two narrow buckets), `adapters/audit_repair.py` (the replay of the EXISTING pure
+decoder), `adapters/audit_repair_cli.py` plus its `zeus audit-repair` registration, the repair tick,
+the `last_repair` row, the `repair` status projection and the two declared observations in
+`adapters/audit_service.py`, the allow-listed repair context and one fixed pre-submission checklist
+in `adapters/audit_execution.py`, and `analysis_facts` moved into `domain/observation.py` so the
+service and the repair owner read ONE projection of the analysis marker. NOT added: a daemon, a
+second scheduler, an automatic or global retry, a third attempt, a model call, a new provider or
+transport, a priority for corrections, a weakened validator, a new permission, a runtime-editable
+policy or any rewrite of an original task, result, artifact or partition.
+
+| Responsibility | Existing owner it reuses |
+|---|---|
+| What refused the draft, and what a corrected record must satisfy | `domain.research` validators and `ResearchAudits.checkpoint` (unchanged) |
+| Replaying that refusal | `AuditExecution.proposed_checkpoint`, the same pure half of the boundary |
+| Delivering and claiming the successor | outbox relay, Redis stream, `Workflow` claim guard and fence (unchanged) |
+| One assignment per partition generation | `application.scheduling.schedule_audits` (unchanged) |
+| Immutable evidence | `adapters.artifacts.FileArtifacts`, read outside any transaction |
+| Logs and their allow-lists | `application.observations.Observer`, `domain.observation` |
+
+Two things an operator will otherwise misread. First, `repaired` is not acceptance of the subsystem:
+it means the successor persisted a corrected non-null record whose test disposition is justified,
+which for a not-run test leaves that subsystem in the remaining scope exactly as the existing
+coverage rule says. A checkpoint with no corrected record is `deferred`, and a deferred outcome does
+not satisfy repair. Second, a `research_required` lineage is the SECOND refused draft of the same
+family: it is recorded once, the family is closed, and no third call is ever started. It is a topic
+for the existing research program and an owner decision, not a finding, a cause or a completed
+investigation - and this owner does not dispatch research or write a portfolio candidate.
+
+Operating procedure. 1) `zeus audit-repair inspect --audit-id <id>` - read-only; every rejected
+analysis of that audit with its typed diagnosis, its eligibility and the fixed reason when it is not
+eligible. 2) `zeus audit-repair enable --audit-id <id> --task-id <rejected task> --operator <label>`
+- the durable opt-in for ONE audit and ONE task; it creates no assignment. 3) The existing
+`zeus audit-service run --audit-id <id>` admits at most one successor per family on its own tick,
+delivers and executes it through the paths it already uses, and settles the lineage from the
+successor's terminal evidence. 4) `zeus audit-repair status --audit-id <id>` or the `repair` block
+of `zeus audit-service status --audit-id <id>` - the opt-in, each source task -> diagnosis ->
+successor -> settlement, and the separate counts. 5) `zeus audit-repair disable --audit-id <id>
+--operator <label>` closes admission; a queued successor keeps its own record and every recorded
+lineage survives. A `reconciliation_required` lineage means the successor's execution failed or is
+unknown: look at the named task through the existing execution recovery path, never re-admit here.
+
+Checks actually run for this batch, in this worker container: `python -m pytest
+tests/test_audit_repair.py tests/test_audit_repair_cli.py tests/test_scheduling.py
+tests/test_audit_service.py tests/test_audit_analysis_outcomes.py
+tests/test_audit_checkpoint_outcomes.py tests/test_audit_output_identity.py
+tests/test_audit_output_vocabulary.py tests/test_audit_progress.py tests/test_research_audits.py
+tests/test_research_investigations.py tests/test_research_program.py
+tests/test_observation_contract.py tests/test_observation_boundaries.py tests/test_observations.py
+tests/test_observation_wiring.py tests/test_architecture.py -q -p no:cacheprovider` and
+`python -m ruff check .`; the observed results are reported with the candidate. The whole suite was
+also executed here and its two unrelated environment blocks are reported honestly with the batch:
+`tests/test_output_schema.py::test_baseline_reconstruction_and_semantic_preservation` cannot read
+Git history in this container (`fatal: detected dubious ownership in repository at '/workspace'`,
+which only a host-level `safe.directory` setting fixes), and the `tests/test_ticket_lifecycle.py` /
+`tests/test_ticket_review.py` errors are a missing `ssh-keygen` binary. Neither is touched by this
+batch, and no bypass, skip marker or probe was added for either. PostgreSQL
+(`HARNESS_INTEGRATION=1`), CI and any host canary were NOT run here and belong to the owner. No
+model call, provider, Redis, PostgreSQL connection or host service start happened in these checks,
+and nothing here is evidence that a correction has run in operation.

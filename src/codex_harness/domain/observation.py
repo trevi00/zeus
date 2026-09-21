@@ -134,6 +134,19 @@ REGISTRY = {
                                            "new_executions": _NI, "semantic_delta": _NI,
                                            "ranges_delta": _NI, "streak": _NI, "candidate": _N,
                                            "candidate_created": _B, "unknown": _N, "error_type": _N},
+    # self-improvement-reference-001 bounded repair: the lineage of ONE rejected analysis. Fixed
+    # codes, identifiers and counts only - never the refused draft, the validator's message, a
+    # subsystem name, a prompt or an exception text. `admitted` false with a reason code says why
+    # nothing was admitted; a settlement reports what the successor's own records showed.
+    "operations.audit_repair_admitted": {"audit_id": _S, "correction_id": _N, "source_task_id": _N,
+                                         "partition_id": _N, "partition_generation": _NI,
+                                         "diagnosis": _N, "successor_task_id": _N, "admitted": _B,
+                                         "published": _B, "error_type": _N},
+    "operations.audit_repair_settled": {"audit_id": _S, "correction_id": _S, "source_task_id": _N,
+                                        "successor_task_id": _N, "state": _S, "diagnosis": _N,
+                                        "analysis_outcome": _N, "corrected_subsystems": _NI,
+                                        "checkpoint_generation": _NI, "attempts": _I,
+                                        "error_type": _N},
     "operations.alert_suppressed": {"kind": _S, "suppressed": _I},
     "operations.alert_pending": {"kind": _S, "channel": _N, "pending": _I},
     "operations.autonomous_stage": {"run_id": _S, "stage": _S, "state": _S},
@@ -182,6 +195,29 @@ ANALYSIS_UNCLASSIFIED = "analysis_unclassified"
 ANALYSIS_CONTENT_REJECTED = "analysis_content_rejected"
 ANALYSIS_OUTCOMES = (ANALYSIS_CHECKPOINTED, ANALYSIS_REJECTED, ANALYSIS_UNCLASSIFIED)
 ANALYSIS_REASONS = (ANALYSIS_CONTENT_REJECTED,)
+ANALYSIS_FACTS = ("analysis_outcome", "analysis_reason", "analysis_ref", "analysis_generation")
+NO_ANALYSIS = dict.fromkeys(ANALYSIS_FACTS)
+ARTIFACT_REFERENCE = re.compile(r"sha256:[0-9a-f]{64}")
+
+
+def analysis_facts(result) -> dict:
+    """The analysis outcome of ONE durable task result, in fixed codes and identifiers only.
+
+    The result is data a reader reads, never an instruction: an outcome or reason outside the
+    declared vocabularies is `unknown`, a reference that is not an immutable artifact handle is
+    dropped, and a missing marker is `analysis_unclassified`. No stored string can become free text
+    in a log, a step, a status read or a repair diagnosis this way. This is the one projection of
+    that marker: `adapters.audit_service` and the repair owner both read it here.
+    """
+    analysis = result.get("analysis") if isinstance(result, dict) else None
+    if not isinstance(analysis, dict):
+        return {**NO_ANALYSIS, "analysis_outcome": ANALYSIS_UNCLASSIFIED}
+    ref, generation = analysis.get("execution_ref"), analysis.get("partition_generation")
+    return {"analysis_outcome": safe_code(analysis.get("outcome"), ANALYSIS_OUTCOMES,
+                                          absent=ANALYSIS_UNCLASSIFIED),
+            "analysis_reason": safe_code(analysis.get("reason_code"), ANALYSIS_REASONS, absent=None),
+            "analysis_ref": ref if type(ref) is str and ARTIFACT_REFERENCE.fullmatch(ref) else None,
+            "analysis_generation": generation if type(generation) is int else None}
 
 # A terminal subtype that names its own actionable failure also names the projected reason, so an
 # operator can tell it apart from every other provider failure without reading a raw stream. Only a
