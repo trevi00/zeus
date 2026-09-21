@@ -1771,3 +1771,45 @@ successful `python -m pytest ... <explicit test files>` / `python -m ruff check 
 commands. Report extra diagnostic wrappers in summary. Do not run an unscoped full suite. This
 bootstrap limitation is explicit; the feature itself must be tested with typed profiles. If the
 bootstrap submission is refused, preserve it for owner review, do not auto-repeat.
+
+### Checklist independent-review correction: foreign evidence (2026-09-21)
+
+User authorized continuation after independent review. Candidate e4dded23a88c35b9e9b5c3e2e29031e63f555caf
+passed all four submitted evidence checks (inspection c00f040cb598867cd1466efacd13aae4be94525bfede7c374a93356cf846395b).
+Independent lead review 840ca78e-4160-4a97-9afc-a9b096df060a rejected one P2 finding; no other
+material finding was reported across its fixed matrix. Preserve that evidence and the existing
+repair acceptance. Do not reopen or rewrite the isolated profile implementation in this correction.
+
+Owner reproduced the exact finding using candidate test_operation.run(inspection='foreign') and
+Fleet.owner_handoff_view with synthetic MemoryStore records. Operation stayed failed; inspection
+was bound=false / known=true / verdict=all_checked, and Fleet showed passed=1, remaining=1 for a
+foreign inspection. This is false progress attribution, NOT an observed false release acceptance.
+The existing gate stayed closed. No model/provider/production database was invoked by this check.
+
+**One narrow correction.** _inspection_summary must establish complete current execution binding
+(task ID, generation, attempt and candidate revision) before reading findings into current progress.
+Missing/unreadable/incomplete/foreign binding yields known=false, bound=false and its fixed reason;
+retain inspection ID for diagnosis but no foreign verdict, denominator, status counts or passed /
+remaining items. Unknown counts should be null/absent, not a misleading zero completed workload.
+For bound evidence keep the existing useful passed/remaining checklist and limits unchanged.
+Fleet.owner_handoff_view independently refuses progress credit unless both binding and known state
+are explicitly true, so an already retained stale foreign handoff cannot leak credit through that
+projection. Preserve identity, owner, next_action and reason. Do not alter stored historical receipts,
+inspection findings, actual gate, retry authority, operation state or automatic scheduling.
+
+**Acceptance.** Regression at the existing test_operation foreign case must demand unknown and no
+progress credit, with the same real receipt projection also checked through Fleet. Cover each
+binding field mismatch, missing binding, and a positive bound case preserving counts. A historical
+handoff carrying contradictory known=true/bound=false plus populated lists must show unknown/null
+progress through Fleet. Repeated status/receipt reads stay idempotent and read-only. Use the existing
+MemoryStore/fixture helpers; no new integration environment is required for this pure projection
+change. Source code scope is application/operation.py and application/fleet.py, tests/test_operation.py
+and tests/test_fleet.py; update CHECKLIST-DELIVERY.md/contracts only to state the corrected semantics.
+
+Worker checks (run verbatim; current bootstrap output remains legacy exact commands):
+1. `python -m pytest -q -p no:cacheprovider tests/test_operation.py tests/test_fleet.py tests/test_fleet_runtime.py tests/test_operation_finalization.py`
+2. `python -m ruff check . --no-cache`
+No unscoped pytest, timeout prefix, extra wrapped command in answer.tests, provider call or live
+record changes. Diagnostic attempts remain in summary. This is one code correction, not another
+prompt-only retry of an evidence submission. Finish after these checks; owner retains full CI,
+independent resubmission review and the actual container/checklist/resumed-audit acceptance.
