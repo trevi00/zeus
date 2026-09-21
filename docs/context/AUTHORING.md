@@ -92,3 +92,34 @@ Measure distinct occurrences, verified reuse count, task success denominator, re
 manual interventions and time/token cost per accepted outcome. Compare equivalent tasks and retain
 failed measurements. Neither creating a skill nor a passing synthetic test proves efficiency or
 failure-free operation. Review ineffective automations for revision or retirement.
+
+
+### Conductor decision improvement
+
+Apply judgment improvement to the conductor's prioritization, assignment, clarification, deferral,
+retry/stop and acceptance recommendations. Bind a decision ID to the goal and acceptance criteria,
+policy/prompt revision, evidence and state snapshot available then, alternatives considered,
+selected action, concise evidence-based rationale, uncertainty and expected observable outcome.
+Record decision summaries, not private reasoning traces. Attach actual downstream outcome, review,
+rework, interventions and time/token usage later; pending or unavailable outcomes remain unknown.
+
+Distinguish a bad decision from implementation failure, infrastructure failure and changed inputs.
+A successful task does not by itself prove a good decision, and a failed task does not establish a
+bad one. Evaluate unnecessary refusals/deferrals as well as unsafe acceptance. A material incident
+may justify immediate investigation; two distinct similar judgment failures trigger the existing
+bounded research rule. Do not retry or lower standards to improve the reported success rate.
+
+Improvement candidates must name one failure family and revised criterion. Compare current and
+candidate policy against retained failure cases, successful controls and held-out cases, using only
+evidence available at the original decision. Replay is an evaluation, not proof that an unchosen
+historical action would have succeeded. Preserve evaluator version, denominator and unknown cases.
+An independent reviewer assesses the candidate; the proposing conductor cannot certify itself.
+After acceptance, use scoped activation, observed outcomes and a previous-version rollback path.
+User authority, acceptance requirements and merge/deploy permissions are not self-modifiable.
+
+Keep immutable decision/outcome facts and unverified hypotheses distinct from verified rules;
+PostgreSQL promotion follows its existing owner. Prefer a focused decision skill or deterministic
+preflight over common-prompt growth. Report accepted-outcome rate, inappropriate acceptance and
+unnecessary refusal findings, recurrence, manual intervention and cost per completed objective.
+Do not optimize throughput alone or claim failure-free judgment. This procedure is a specification;
+a live recorder, evaluator and automatic policy promotion require separate verified implementation.

@@ -1962,3 +1962,26 @@ Completion is verified reuse and measured outcome, not candidate count or docume
 Operational read-only status aggregation and evidence-bound historical task disposition are owner
 candidate examples, not yet proven equivalent by a recurrence classifier. Validate their receipts
 before selecting; do not auto-cancel tasks from the historical disposition example.
+
+
+## User steering: conductor decision improvement (2026-09-21)
+
+Extend the SAME judgment-improvement scope; canonical procedure is docs/context/AUTHORING.md,
+Conductor decision improvement. Outcome: reduce repeated poor conductor decisions and unnecessary
+blocking without weakening evidence, acceptance or authority. The accepted service-diagnostics
+candidate remains separate and unchanged; this is not deployed behavior.
+
+Existing council.py owns frozen research/DBA snapshot input and conductor flow; experience.py owns
+unverified experience claims. Inspect those owners and existing decisions/observations before
+introducing a record or evaluator. Proposed path: bound decision observation -> later outcome join
+-> comparable failure-family investigation -> candidate rule/skill -> baseline/held-out evaluation
+-> independent review -> scoped version activation -> measured outcome/rollback. Do not create a
+second conductor or bypass existing knowledge promotion.
+
+Acceptance matrix for the future bounded implementation: correct and incorrect judgments; false
+acceptance and unnecessary rejection; delayed/missing outcome; changed goal/environment; duplicate
+or out-of-order events; concurrent outcome updates; stale policy; independent reviewer refusal;
+rollback and preservation of original evidence. Unknown cases cannot enter the success numerator.
+No historical future-information leakage and no claim that replay proves counterfactual outcomes.
+Completion requires one evidence-bound decision improvement and measured actual reuse. Documentation
+alone satisfies only framing; recorder/evaluator/activation remain unimplemented in this change.
