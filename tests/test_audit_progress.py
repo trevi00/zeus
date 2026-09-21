@@ -130,10 +130,14 @@ class World:
 
     def cover(self, path, disposition="semantic"):
         """A coverage row in the exact shape `ResearchAudits.checkpoint` writes, with the REAL
-        `PathDisposition` record; no checkpoint transaction ran."""
-        record = PathDisposition(path, disposition, ["sha256:" + "1" * 64] if disposition == "semantic" else [],
-                                 [], "fixture justification" if disposition == "semantic" else "", [],
-                                 "read", [])
+        `PathDisposition` record; no checkpoint transaction ran. `generated`, `duplicate` and
+        `binary` carry the evidence, link and receipt the real record demands of them, so they are
+        valid COMPLETION here exactly as the existing audit contract treats them."""
+        reviewed = disposition not in ("unreviewed", "unavailable")
+        record = PathDisposition(path, disposition, ["sha256:" + "1" * 64] if reviewed else [],
+                                 [], "fixture justification" if reviewed else "",
+                                 [p for p in PATHS if p != path][:1] if disposition in ("generated", "duplicate") else [],
+                                 "read", ["receipt-1"] if disposition == "binary" else [])
         record.validate()
         with self.store.transaction() as tx:
             tx.put("research_paths", digest({"audit": self.audit_id, "item": path}),
@@ -285,6 +289,63 @@ def test_new_evidence_without_semantic_gain_is_low_yield_and_real_progress_clear
     assert silent["metrics"]["non_semantic"] == {"unreviewed": 1} and silent["streak"] == 1
 
 
+def test_generated_duplicate_and_binary_completions_are_valid_but_never_semantic_gain(tmp_path):
+    """The completion denominator is not the semantic denominator: `ResearchAudits._coverage`
+    counts these dispositions as covered, and this observer counts none of them as semantic yield."""
+    world = World(tmp_path)
+    observer = world.observer(policy=small())
+    observer.observe(AUDIT, release_id="release-1", revision="r" * 40)
+    world.cover(PATHS[0], disposition="generated")
+    world.cover(PATHS[1], disposition="duplicate")
+    first = close(world, observer)
+    assert first["metrics"]["semantic_paths"] == 0 and first["window"]["delta"]["semantic_paths"] == 0
+    assert first["metrics"]["non_semantic"] == {"duplicate": 1, "generated": 1}
+    assert first["verdict"] == LOW_YIELD and first["streak"] == 1
+    assert first["metrics"]["remaining_paths"] == 2, "they remain valid completion of those paths"
+    world.cover(PATHS[2], disposition="binary")
+    second = close(world, observer, evidence=False)
+    assert second["metrics"]["non_semantic"]["binary"] == 1 and second["metrics"]["remaining_paths"] == 1
+    assert second["window"]["delta"]["semantic_total"] == 0 and second["verdict"] == NO_EVIDENCE
+    assert second["streak"] == 2 and second["candidate_created"] is True
+
+
+def test_one_semantic_path_clears_the_streak_and_a_subsystem_only_gain_does_not(tmp_path):
+    world = World(tmp_path)
+    observer = world.observer(policy=small())
+    observer.observe(AUDIT, release_id="release-1", revision="r" * 40)
+    world.cover(PATHS[0])
+    good = close(world, observer)
+    assert good["verdict"] == ADEQUATE and good["window"]["delta"]["semantic_paths"] == 1
+    assert good["streak"] == 0 and good["metrics"]["semantic_paths"] == 1
+    # `minimum_semantic_paths` is a PATH threshold: subsystem progress is reported beside it.
+    world.cover_subsystem("core")
+    subsystem = close(world, observer)
+    assert subsystem["window"]["delta"]["semantic_subsystems"] == 1
+    assert subsystem["window"]["delta"]["semantic_total"] == 1
+    assert subsystem["window"]["delta"]["semantic_paths"] == 0
+    assert subsystem["verdict"] == LOW_YIELD and subsystem["streak"] == 1
+    assert subsystem["metrics"]["semantic_subsystems"] == 1
+
+
+def test_a_semantic_path_rewritten_as_a_valid_completion_is_a_visible_regression(tmp_path):
+    world = World(tmp_path)
+    world.cover(PATHS[0])
+    world.cover(PATHS[1])
+    observer = world.observer(policy=small())
+    observer.observe(AUDIT, release_id="release-1", revision="r" * 40)
+    world.cover(PATHS[1], disposition="duplicate")
+    world.cover_subsystem("core")          # a subsystem gain never hides the path regression
+    regressed = close(world, observer)
+    assert regressed["metrics"]["semantic_paths"] == 1
+    assert regressed["metrics"]["non_semantic"] == {"duplicate": 1}
+    assert regressed["window"]["delta"]["semantic_paths"] == -1
+    assert regressed["window"]["delta"]["semantic_subsystems"] == 1
+    assert regressed["window"]["delta"]["semantic_total"] == 0
+    assert regressed["window"]["delta"]["regressed"] is True
+    assert regressed["verdict"] == LOW_YIELD and regressed["streak"] == 1
+    assert regressed["metrics"]["remaining_paths"] == 2, "the completion contract did not regress"
+
+
 def test_a_regressed_semantic_set_is_visible_and_never_positive_only(tmp_path):
     world = World(tmp_path)
     world.cover(PATHS[0])
@@ -334,7 +395,7 @@ def test_unreadable_evidence_is_unknown_never_zero_and_breaks_comparability(tmp_
     assert CANARY not in json.dumps(unknown)
 
 
-def test_an_observation_overflow_is_recorded_but_is_not_comparable(tmp_path):
+def test_a_nondivisible_overflow_cohort_is_consumed_once_and_leaves_nothing_behind(tmp_path):
     world = World(tmp_path)
     observer = world.observer(policy=small())
     observer.observe(AUDIT, release_id="release-1", revision="r" * 40)
@@ -342,9 +403,47 @@ def test_an_observation_overflow_is_recorded_but_is_not_comparable(tmp_path):
     overflowed = observer.observe(AUDIT, release_id="release-1", revision="r" * 40)
     assert overflowed["window"]["verdict"] == NOT_COMPARABLE
     assert overflowed["window"]["verdict_reason"] == "window_overflow" and overflowed["streak"] == 0
-    assert overflowed["new_executions"] == 5 and overflowed["window"]["executions"] == 2
-    # The leftover executions stay uncounted and belong to the next window.
-    assert observer.observe(AUDIT, release_id="release-1", revision="r" * 40)["window"]["executions"] == 2
+    # ONE receipt over the WHOLE unseen cohort, with its real size reported, not a size-2 slice.
+    assert overflowed["new_executions"] == 5 and overflowed["window"]["executions"] == 5
+    assert len(observer.windows(AUDIT)[0]["members"]) == 5
+    # Nothing is left over to be given a new opening measurement, so a duplicate reading and a
+    # restart close no window at all and no strike is invented from that old work.
+    repeat = observer.observe(AUDIT, release_id="release-1", revision="r" * 40)
+    assert repeat["status"] == "observed" and repeat["window"] is None and repeat["streak"] == 0
+    assert world.observer(policy=small()).observe(AUDIT, release_id="release-1",
+                                                  revision="r" * 40)["window"] is None
+    assert len(observer.windows(AUDIT)) == 1
+    # Two WHOLLY NEW low windows, anchored at the overflow reading, still trigger normally.
+    first = close(world, observer)
+    assert first["window"]["comparable"] is True and first["streak"] == 1 and first["candidate"] is None
+    second = close(world, observer)
+    assert second["streak"] == 2 and second["candidate_created"] is True
+    assert [w["executions"] for w in observer.windows(AUDIT)] == [5, 2, 2]
+
+
+def test_gains_before_a_divisible_overflow_anchor_the_next_window_and_invent_no_strike(tmp_path):
+    """The owner counterexample: baseline -> four settled executions carrying two semantic gains ->
+    observe -> an identical observe -> two genuinely new zero-gain executions -> observe. The old
+    leftovers must never be measured against the reading that already contains their own gains."""
+    world = World(tmp_path)
+    observer = world.observer(policy=small())
+    observer.observe(AUDIT, release_id="release-1", revision="r" * 40)
+    world.settle(4)                       # exactly two windows' worth: divisible, still ONE cohort
+    world.cover(PATHS[0])
+    world.cover(PATHS[1])
+    overflowed = observer.observe(AUDIT, release_id="release-1", revision="r" * 40)
+    assert overflowed["window"]["verdict"] == NOT_COMPARABLE and overflowed["window"]["executions"] == 4
+    assert overflowed["window"]["delta"]["semantic_paths"] == 2, "the observed gains are not lost"
+    assert overflowed["streak"] == 0 and len(observer.windows(AUDIT)) == 1
+    identical = observer.observe(AUDIT, release_id="release-1", revision="r" * 40)
+    assert identical["status"] == "observed" and identical["streak"] == 0
+    restarted = world.observer(policy=small())
+    world.settle(2)
+    low = restarted.observe(AUDIT, release_id="release-1", revision="r" * 40)
+    assert low["window"]["comparable"] is True and low["window"]["executions"] == 2
+    assert low["verdict"] == NO_EVIDENCE and low["streak"] == 1, "one new window, one strike"
+    assert low["candidate"] is None and restarted.candidates(AUDIT) == []
+    assert len(restarted.windows(AUDIT)) == 2
 
 
 # ----- exactly two low windows, one candidate ----------------------------------------------------

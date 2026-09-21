@@ -183,9 +183,14 @@ def range_identity(body) -> tuple | None:
 def measurement(*, semantic_paths: int, semantic_subsystems: int, non_semantic: dict, remaining_paths: int,
                 remaining_subsystems: int, open_questions: int, executions: int, ranges: int,
                 unknown: str | None, complete: bool, observed_at: str) -> dict:
-    """One dated reading of the authoritative records. Semantic coverage and non-semantic
-    dispositions are reported separately, so an `unreviewed` or `unavailable` disposition can never
-    be presented as progress, and a source-read range is evidence, not completion."""
+    """One dated reading of the authoritative records.
+
+    `semantic_paths` counts the LITERALLY semantic path dispositions only. Every other disposition -
+    `unreviewed` and `unavailable`, and equally the valid completions `generated`, `duplicate` and
+    `binary` - is counted apart in `non_semantic`, so no disposition change alone can be presented
+    as semantic progress, while the existing completion and remaining-path contract keeps counting
+    those valid dispositions as covered. A source-read range is evidence, never completion.
+    """
     return {"semantic_paths": semantic_paths, "semantic_subsystems": semantic_subsystems,
             "semantic_total": semantic_paths + semantic_subsystems,
             "non_semantic": dict(sorted(non_semantic.items())), "remaining_paths": remaining_paths,
@@ -196,11 +201,13 @@ def measurement(*, semantic_paths: int, semantic_subsystems: int, non_semantic: 
 
 def window_delta(opening: dict, closing: dict, elapsed_seconds) -> dict:
     """Net progress is gains minus regressions, never positive-only: a semantic set that shrank is
-    visible as a negative total with `regressed` true."""
+    visible as a negative delta with `regressed` true. The path delta and the subsystem delta are
+    separate facts, and a subsystem gain never hides a path regression behind the total."""
     total = closing["semantic_total"] - opening["semantic_total"]
-    return {"semantic_paths": closing["semantic_paths"] - opening["semantic_paths"],
+    paths = closing["semantic_paths"] - opening["semantic_paths"]
+    return {"semantic_paths": paths,
             "semantic_subsystems": closing["semantic_subsystems"] - opening["semantic_subsystems"],
-            "semantic_total": total, "regressed": total < 0,
+            "semantic_total": total, "regressed": paths < 0 or total < 0,
             "distinct_ranges": closing["distinct_ranges"] - opening["distinct_ranges"],
             "remaining_paths": closing["remaining_paths"] - opening["remaining_paths"],
             "elapsed_seconds": elapsed_seconds}
@@ -223,12 +230,34 @@ def window_verdict(*, opening: dict, closing: dict, delta: dict, policy: dict,
         # Completion is the existing audit contract, not a semantic count: binary, generated and
         # unavailable paths keep their own valid dispositions.
         return {"verdict": AUDIT_COMPLETE, "comparable": True, "reason": None}
-    if delta["semantic_total"] >= policy["minimum_semantic_paths"]:
+    if delta["semantic_paths"] >= policy["minimum_semantic_paths"]:
+        # `minimum_semantic_paths` is a PATH threshold: it is met by net literal semantic path gain
+        # alone. Subsystem progress and the non-semantic dispositions are reported beside it and
+        # never add to it, so a single generated, duplicate or binary disposition - valid completion
+        # as it is - can never clear a streak by itself.
         return {"verdict": ADEQUATE, "comparable": True, "reason": None}
     if delta["distinct_ranges"] > 0:
         # New verified source evidence with no semantic gain: low yield, explicitly not "no work".
         return {"verdict": LOW_YIELD, "comparable": True, "reason": None}
     return {"verdict": NO_EVIDENCE, "comparable": True, "reason": None}
+
+
+def window_cohort(new: list, size: int) -> dict:
+    """The exact membership of the window ONE reading may close, from the uncounted settled
+    executions it saw, oldest first.
+
+    Fewer than `size`: no window closes yet. Exactly `size`: one comparable window, the only shape
+    that can ever count as a strike. MORE than `size` is an overflow - a backlog, a restart or a
+    reading taken late - and the whole cohort is consumed ONCE as a single `not_comparable` receipt
+    whose execution count is honestly larger than the configured size. Those executions settled
+    before this reading and have no historical per-execution measurement, and none may be inferred:
+    keeping a remainder for the next window would hand old executions a NEW opening measurement they
+    never earned and invent a zero-gain strike out of work that was never comparably observed.
+    """
+    if len(new) < size:
+        return {"members": [], "closes": False, "incomparable": None}
+    return {"members": list(new), "closes": True,
+            "incomparable": "window_overflow" if len(new) > size else None}
 
 
 def streak_after(previous: int, verdict: str) -> int:
@@ -397,5 +426,5 @@ __all__ = ["ADEQUATE", "AUDIT_COMPLETE", "AUTHORITY", "BASELINE", "CLOSED", "DEG
            "ProgressRefused", "candidate_identity", "candidate_label", "candidate_row", "eligible_candidates",
            "epoch_identity", "execution_key", "measurement", "observation_entry", "policy_digest",
            "range_identity", "reason_for", "record_observation", "scope_digest", "snapshot",
-           "streak_after", "validate_policy", "validate_source", "window_delta", "window_id",
-           "window_row", "window_verdict"]
+           "streak_after", "validate_policy", "validate_source", "window_cohort", "window_delta",
+           "window_id", "window_row", "window_verdict"]

@@ -43,19 +43,26 @@ from codex_harness.domain.audit_progress import (
     scope_digest,
     streak_after,
     validate_policy,
+    window_cohort,
     window_delta,
     window_row,
     window_verdict,
 )
 from codex_harness.domain.model import digest, utcnow
+from codex_harness.domain.research import PATH_DISPOSITIONS
 
 BUCKET_STATE, BUCKET_WINDOWS = "audit_progress_state", "audit_progress_windows"
 POLICY_RESOURCE = "audit-progress-policy-v1.json"
 # The inert reader command `adapters.audit_runner` records in its receipts; it is not defined here.
 SOURCE_READ = "source-read"
-# A path disposition the existing audit contract does NOT count as semantic coverage
-# (`application.research.ResearchAudits._coverage`); they are reported separately and never as gain.
-NON_SEMANTIC = ("unreviewed", "unavailable")
+# The ONE literally semantic path disposition of the existing audit vocabulary
+# (`domain.research.PATH_DISPOSITIONS`). Every other disposition is non-semantic HERE and is counted
+# apart: `unreviewed` and `unavailable` are not coverage at all, while `generated`, `duplicate` and
+# `binary` remain entirely VALID completions for `ResearchAudits._coverage` and the remaining-path
+# and completion contract below. They are progress of the audit, not semantic review of a path, so
+# they are never semantic gain and can never clear a low-yield streak on their own.
+SEMANTIC = "semantic"
+NON_SEMANTIC = tuple(name for name in PATH_DISPOSITIONS if name != SEMANTIC)
 
 
 def packaged_policy(name: str = POLICY_RESOURCE) -> dict:
@@ -83,10 +90,13 @@ class AuditProgress:
     def _facts(self, tx, audit_id: str) -> dict:
         """Everything this observer reads from the store, in one transaction and read only.
 
-        Semantic coverage comes from the EXISTING audit authority
-        (`ResearchAudits._coverage`), so this module never becomes a second definition of what a
-        reviewed path or subsystem is; a malformed stored record raises there and this observation
-        becomes degraded rather than a known zero.
+        COMPLETION comes from the EXISTING audit authority (`ResearchAudits._coverage`/`_observed`),
+        unchanged: it counts every valid disposition, including `generated`, `duplicate` and
+        `binary`, and it alone decides the remaining paths and subsystems. SEMANTIC YIELD is the
+        narrower fact this observer measures, so it counts the literal `semantic` dispositions and
+        reports all the others apart - the completion denominator is not a semantic denominator.
+        Neither definition lives here twice: a malformed stored record raises in that authority and
+        this observation becomes degraded rather than a known zero.
         """
         from codex_harness.application.research import ResearchAudits
 
@@ -97,17 +107,21 @@ class AuditProgress:
                             key=lambda p: p["partition_id"])
         if not partitions:
             raise ProgressRefused("audit_not_partitioned")
-        paths, subsystems = ResearchAudits._coverage(tx, audit)
+        covered, subsystems = ResearchAudits._coverage(tx, audit)
         observed = ResearchAudits._observed(tx, audit)
-        non_semantic: dict = {}
+        # Every disposition here was already validated against the vocabulary by `_coverage` above.
+        semantic, non_semantic = set(), {}
         for row in tx.scan("research_paths"):
             if row["audit_id"] != audit_id:
                 continue
-            disposition = (row.get("record") or {}).get("disposition")
-            if disposition in NON_SEMANTIC:
+            record = row.get("record") or {}
+            disposition = record.get("disposition")
+            if disposition == SEMANTIC:
+                semantic.add(record.get("path"))
+            elif disposition in NON_SEMANTIC:
                 non_semantic[disposition] = non_semantic.get(disposition, 0) + 1
         inventory = {entry["path"] for entry in audit.get("inventory") or []}
-        remaining_paths = sorted(inventory - paths)
+        remaining_paths = sorted(inventory - covered)
         remaining_subsystems = sorted(set(audit.get("subsystems") or []) - subsystems)
         open_questions = [q for p in partitions for q in p.get("open_questions") or []]
         executions, statuses = [], {}
@@ -128,7 +142,7 @@ class AuditProgress:
         # distinct ranges below are computed over the bodies, never over the command count.
         read_refs = sorted(set(reads))
         facts = {"audit": audit, "scope_sha256": scope_digest(audit, partitions),
-                 "semantic_paths": len(paths), "semantic_subsystems": len(subsystems),
+                 "semantic_paths": len(semantic), "semantic_subsystems": len(subsystems),
                  "non_semantic": non_semantic, "remaining_paths": len(remaining_paths),
                  "remaining_subsystems": len(remaining_subsystems), "open_questions": len(open_questions),
                  "executions": [key for _, key in sorted(executions)], "statuses": statuses,
@@ -203,11 +217,11 @@ class AuditProgress:
             return self._start_epoch(tx, state, epoch, facts, metrics, evidence, now)
         counted = set(state.get("counted") or [])
         new = [key for key in facts["executions"] if key not in counted]
-        size = self.policy["window_executions"]
-        if len(new) < size:
+        cohort = window_cohort(new, self.policy["window_executions"])
+        if not cohort["closes"]:
             return self._record(tx, state, metrics, evidence, now,
                                 status=OBSERVED, new_executions=len(new), window=None, candidate=None)
-        return self._close_window(tx, state, epoch, metrics, evidence, new, now)
+        return self._close_window(tx, state, epoch, metrics, evidence, cohort, now)
 
     def _start_epoch(self, tx, previous, epoch: dict, facts: dict, metrics: dict, evidence: dict,
                      now: str) -> dict:
@@ -226,18 +240,22 @@ class AuditProgress:
         return self._record(tx, state, metrics, evidence, now, status=BASELINE, new_executions=0,
                             window=None, candidate=None)
 
-    def _close_window(self, tx, state: dict, epoch: dict, metrics: dict, evidence: dict, new: list,
+    def _close_window(self, tx, state: dict, epoch: dict, metrics: dict, evidence: dict, cohort: dict,
                       now: str) -> dict:
-        """Close EXACTLY one window with the oldest `window_executions` uncounted settled
-        executions. Anything left over stays uncounted for the next window and makes this one
-        incomparable: those executions settled before this reading, so crediting or blaming this
-        window for them would compare two different populations."""
-        size = self.policy["window_executions"]
-        members, leftover = new[:size], new[size:]
+        """Close EXACTLY one window per reading with the cohort `window_cohort` allows.
+
+        Exactly `window_executions` new settled executions are one comparable window. A larger
+        cohort is consumed ENTIRELY by one `not_comparable` overflow receipt that reports its real
+        size, and the next window opens at this same complete reading: no execution is left over to
+        be re-measured later against an opening it never had, so an overflow can neither hide work
+        nor manufacture a zero-gain strike out of it, and a repeated reading finds nothing new to
+        close. Either way the streak follows the verdict alone.
+        """
+        members = cohort["members"]
         opening, opened_at = state["window"]["opening"], state["window"]["opened_at"]
         delta = window_delta(opening, metrics, _seconds(opened_at, now))
         verdict = window_verdict(opening=opening, closing=metrics, delta=delta, policy=self.policy,
-                                 incomparable="window_overflow" if leftover else None)
+                                 incomparable=cohort["incomparable"])
         window = window_row(epoch=epoch, index=state["window"]["index"], members=members,
                             opening=opening, closing=metrics, delta=delta, verdict=verdict,
                             policy_sha256=self.policy_sha256, opened_at=opened_at, closed_at=now)
@@ -253,7 +271,7 @@ class AuditProgress:
             if candidate["id"] is not None:
                 state["candidate"] = candidate["id"]
         return self._record(tx, state, metrics, evidence, now, status=CLOSED,
-                            new_executions=len(new), window=window, candidate=candidate)
+                            new_executions=len(members), window=window, candidate=candidate)
 
     def _candidate(self, tx, epoch: dict, window: dict, streak: int, now: str) -> dict:
         """ONE candidate per epoch. A first streak records the row in the owner's undecided state;

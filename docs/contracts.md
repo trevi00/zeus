@@ -1630,18 +1630,31 @@ terminal `tasks` row (succeeded/failed/cancelled/expired/blocked/superseded) ide
 task+generation+attempt+status, so a replay, a duplicate tick or a restart counts it once; queued,
 running and retrying rows are live work, never counted, never called stalled and never treated as
 cancelled because another task finished. Exactly `window_executions` uncounted settled executions
-close exactly ONE window per reading, with the oldest members; leftovers stay uncounted, belong to
-the next window and make this one `not_comparable` (`window_overflow`). Each window reports semantic
-paths and subsystems, the non-semantic dispositions separately, remaining paths/subsystems, open
-questions, the execution count, the observed elapsed seconds and the distinct verified source-read
-ranges. A range is (source object or inventory path, start line, start char, next line, next char)
+close exactly ONE comparable window per reading, and that exact size is the ONLY shape that can ever
+count as a strike. MORE than `window_executions` is an overflow: the whole unseen cohort is consumed
+ONCE by a single `not_comparable` (`window_overflow`) receipt that reports its real execution count,
+honestly larger than the configured size, every one of its identities is counted, and the next
+window opens at that same complete reading. Nothing is left over, because an overflowed cohort has
+no historical per-execution measurement and none may be inferred: keeping a remainder would hand old
+executions a NEW opening measurement they never earned and invent a zero-gain strike out of work
+that was never comparably observed. A duplicate or restarted reading after an overflow therefore
+closes no window at all, and two wholly NEW low windows still trigger normally afterwards. Each
+window reports LITERAL semantic paths, semantic subsystems, every other disposition counted
+separately, remaining paths/subsystems, open questions, the execution count, the observed elapsed
+seconds and the distinct verified source-read ranges. `semantic_paths` counts the literal `semantic`
+path disposition only: `unreviewed` and `unavailable` are no coverage, and `generated`, `duplicate`
+and `binary` stay entirely VALID completions for `ResearchAudits._coverage`, the remaining paths and
+the completion verdict while counting as non-semantic here, so a disposition change alone is never
+semantic gain. A range is (source object or inventory path, start line, start char, next line, next char)
 from the reader's own verified output: DISTINCT RANGES, never unique bytes and never reviewed
 coverage; two receipts of one immutable body are one range, a repeated range is no new evidence and
 source-read evidence is never semantic completion. Net progress is gains minus regressions, so a
-shrunken semantic set is visible and negative. Verdicts: `audit_complete` when the EXISTING audit
-completion contract holds (binary, generated and unavailable dispositions stay valid);
-`unknown_evidence` when any evidence was unreadable or unintelligible; `not_comparable` for an
-overflowed window; `adequate_progress` at or above `minimum_semantic_paths`; `low_semantic_yield`
+shrunken semantic set is visible and negative, and a subsystem gain never hides a semantic path
+regression. Verdicts: `audit_complete` when the EXISTING audit completion contract holds (binary,
+generated and unavailable dispositions stay valid); `unknown_evidence` when any evidence was
+unreadable or unintelligible; `not_comparable` for an overflow cohort; `adequate_progress` when the
+NET semantic PATH delta alone is at or above `minimum_semantic_paths` - subsystem progress is a
+separate reported fact and is never added to that threshold; `low_semantic_yield`
 when new ranges appeared without semantic gain; `no_new_evidence` when neither did. Only the last
 two add a strike; every other verdict clears the streak, because a comparison that did not hold is
 not evidence of low progress, and unknown evidence is never a known zero or a second strike. At

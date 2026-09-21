@@ -392,11 +392,25 @@ notification channel, a runtime-editable threshold or any weakening of an existi
 
 | Responsibility | Existing owner it reuses |
 |---|---|
-| What a reviewed path or subsystem is | `application.research.ResearchAudits._coverage` / `_observed` (unchanged) |
+| What a reviewed path or subsystem is, and when the audit is complete | `application.research.ResearchAudits._coverage` / `_observed` (unchanged) |
 | Evidence bodies and their integrity | `adapters.artifacts.FileArtifacts` (read only, outside any transaction) |
 | The owner's undecided candidate state and disposition | `application.portfolio` (`research_required`, `Portfolio.disposition`) |
 | Claim, capture, council, result authority and blocking | `application.research_program` + `adapters.research_program` (unchanged) |
 | Logs and their allow-lists | `application.observations.Observer`, `domain.observation` |
+
+Two measurement rules an operator will otherwise misread (owner review of bc75905, corrected here).
+First, completion and semantic yield are different denominators. `ResearchAudits._coverage` decides
+completion and the remaining paths, and it counts `generated`, `duplicate` and `binary` as the valid
+dispositions they are; `semantic_paths` counts only the literal `semantic` disposition, every other
+disposition is reported beside it, and `minimum_semantic_paths` is met by net semantic PATH gain
+alone. So a batch of generated or duplicate paths legitimately shrinks the remaining count while the
+window is still low yield, and a subsystem gain is reported without clearing a streak. Second, a
+reading that finds MORE new settled executions than one window is an overflow: the entire cohort
+becomes ONE `not_comparable` receipt whose execution count is honestly larger than
+`window_executions`, the streak resets, and the next window opens at that same reading. No leftover
+is carried, so `windows_completed` can grow by one while many executions were consumed, a repeated
+or post-restart reading closes nothing, and no strike is ever produced from work that was never
+comparably observed. Only exactly sized comparable windows count towards a candidate.
 
 Operator reading. `zeus audit-service status --audit-id <id>` gains `progress` (observed, epoch,
 policy digest, baseline and counted executions, windows completed, current window index, streak,
@@ -429,3 +443,13 @@ were NOT run here and belong to the owner. No model call, provider, Redis, Postg
 host service start happened in these checks, and nothing in this note is evidence that the observer
 has run in operation: the natural live threshold and its council outcome remain pending until
 actually observed.
+
+Checks actually run for the two-defect correction above, in the reduced worker snapshot: `python -m
+pytest tests/test_audit_progress.py tests/test_isolated_worker_preparation.py
+tests/test_audit_service.py tests/test_research_program.py tests/test_research_investigations.py
+tests/test_research_program_cli.py tests/test_portfolio.py -q` (101 passed, 2 skipped: both are the
+`Integration environment required` PostgreSQL skips) and `python -m ruff check .`. The full suite,
+the historical Git-baseline reconstruction in `tests/test_output_schema.py`, PostgreSQL, CI and any
+host canary were NOT run here: this snapshot lacks those prerequisites and they belong to the owner.
+The previous batch's recorded full-suite failures stay history and are not restated as passing. No
+model call, provider, Redis, PostgreSQL connection or host service start happened in these checks.
