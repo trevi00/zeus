@@ -70,18 +70,26 @@ def owner_handoff_view(record) -> dict | None:
     Identities, codes, a bound flag and counts only: no check items, causes, output or manifest
     text cross this boundary, and an unrecognized document is dropped rather than relayed. It is
     delivery VISIBILITY - the job's status, verdict and authority are untouched by it.
+
+    Progress counts are relayed only when the record states BOTH `bound` and `known` as exactly
+    true. This check is independent of the writer: a retained older handoff that carries populated
+    item lists beside an unbound or unknown inspection shows null progress here, so foreign or
+    unidentified evidence cannot be read as work this job completed.
     """
     if not isinstance(record, dict) or record.get("schema") != HANDOFF_SCHEMA:
         return None
     inspection = record.get("inspection") if isinstance(record.get("inspection"), dict) else {}
-    counted = lambda key: len(inspection[key]) if isinstance(inspection.get(key), list) else None  # noqa: E731
+    credited = inspection.get("bound") is True and inspection.get("known") is True
+    counted = lambda key: len(inspection[key]) if credited and isinstance(inspection.get(key), list) else None  # noqa: E731
     return {"schema": HANDOFF_SCHEMA, "id": _safe_value(record.get("id")), "status": _safe_value(record.get("status")),
             "owner": _safe_value(record.get("owner")), "next_action": _safe_value(record.get("next_action")),
             "reason_code": _safe_value(record.get("reason_code")),
             "operation_id": _safe_value(record.get("operation_id")),
-            "inspection_id": _safe_value(inspection.get("id")), "inspection_bound": bool(inspection.get("bound")),
-            "inspection_known": bool(inspection.get("known")), "passed": counted("passed"),
-            "remaining": counted("remaining"),
+            "inspection_id": _safe_value(inspection.get("id")),
+            "inspection_bound": inspection.get("bound") is True,
+            "inspection_known": inspection.get("known") is True,
+            "inspection_reason_code": _safe_value(inspection.get("reason_code")),
+            "passed": counted("passed"), "remaining": counted("remaining"),
             "authority": "owner_handoff; visibility only, never a retry, acceptance or release"}
 
 

@@ -40,6 +40,9 @@ TERMINAL = {"accepted", "rejected", "failed", "unknown", "exhausted"}
 MAX_STEPS = 6
 MAX_IDLE = 2
 CANDIDATE_FIELDS = ("base", "revision", "tree", "diff_hash")
+# The complete identity of the execution an inspection may speak for; every field must be known and
+# equal before a finding counts as progress of THIS run (the same binding the evidence gate requires).
+BINDING_FIELDS = ("task_id", "generation", "attempt", "source_revision")
 
 
 class OperationRefused(ContractError):
@@ -488,18 +491,35 @@ def _check_item(finding) -> dict:
             "state": _string(finding.get("state"))}
 
 
+def _unknown_inspection(inspection_id, reason_code: str) -> dict:
+    """Evidence that is absent, unreadable, unidentified or foreign: identity and reason only.
+
+    No verdict, denominator, claim counts or checklist item is projected, so an owner reading this
+    handoff - or the Fleet projection of it - can credit no progress to the current execution.
+    """
+    return {"id": inspection_id, "bound": False, "known": False, "reason_code": reason_code}
+
+
 def _inspection_summary(inspection_id, row, binding) -> dict:
     """What the owner is told about the inspection the refusal rests on.
 
     `bound` is the same question the gate asked: does a real row exist for exactly this execution
-    and revision? A missing row, a row for another execution and a row whose findings cannot be read
-    are each explicitly unknown; none of them is summarized as a passing denominator.
+    and revision? Binding is established FIRST and completely - every field of the current execution
+    must be known and equal to the stored one - because findings only describe progress of the
+    execution they belong to. A missing row, a row whose findings cannot be read, an incompletely
+    identified current execution and a row bound elsewhere are each explicitly unknown: the id stays
+    for diagnosis, and no verdict, denominator, status count or passed/remaining item is carried
+    over from foreign or unidentified evidence. Unknown is absent, never a zero completed workload.
     """
     if inspection_id is None:
-        return {"id": None, "bound": False, "known": False, "reason_code": "inspection_missing"}
+        return _unknown_inspection(None, "inspection_missing")
     if not isinstance(row, dict) or not isinstance(row.get("findings"), list):
-        return {"id": inspection_id, "bound": False, "known": False, "reason_code": "inspection_unknown"}
-    bound = all(row.get("binding", {}).get(k) == v for k, v in binding.items() if v is not None)
+        return _unknown_inspection(inspection_id, "inspection_unknown")
+    if any(binding.get(field) is None for field in BINDING_FIELDS):
+        return _unknown_inspection(inspection_id, "execution_binding_incomplete")
+    stored = row.get("binding") if isinstance(row.get("binding"), dict) else {}
+    if any(stored.get(field) != binding[field] for field in BINDING_FIELDS):
+        return _unknown_inspection(inspection_id, "inspection_bound_elsewhere")
     passed, remaining, claims = [], [], {}
     for finding in row["findings"]:
         if not isinstance(finding, dict):
@@ -508,8 +528,7 @@ def _inspection_summary(inspection_id, row, binding) -> dict:
         claims[item["reported"]] = claims.get(item["reported"], 0) + 1
         (passed if item["state"] == "checked" else remaining).append(item)
     denominator = row.get("denominator") if isinstance(row.get("denominator"), dict) else {}
-    return {"id": inspection_id, "bound": bound, "known": True,
-            "reason_code": None if bound else "inspection_bound_elsewhere",
+    return {"id": inspection_id, "bound": True, "known": True, "reason_code": None,
             "verdict": _string(row.get("verdict")), "policy_hash": _string(row.get("policy_hash")),
             "denominator": {k: v for k, v in denominator.items() if type(v) is int},
             "claim_status_counts": claims,

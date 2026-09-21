@@ -25,6 +25,27 @@ command spellings or relaxing `all_checked`.
 | `adapters/executor.py`, `bootstrap.py`, `operation_cli.py`, `autonomous_cli.py` | One pairing rule before any provider entry: version 2 requires isolation and its exact image, version 1 beside isolation stays refused, no profile is the untouched legacy path. Both entry points load profile and isolation in the same order and bind both into the operation identity. |
 | `application/operation.py`, `application/fleet.py`, `adapters/fleet_runtime.py` | `owner_handoff` (`urn:zeus:operation-evidence-handoff:1`) on the operation row, written in the same transaction as the terminal `failed` / `evidence_gate_refused` status, and its counts-only projection on a lane job. |
 
+## Correction after independent review: foreign evidence earns no progress (2026-09-21)
+
+The independent review of candidate `e4dded2` reproduced one false progress attribution: a handoff
+whose inspection row belonged to ANOTHER execution was summarized with `known=true`, the foreign
+`all_checked` verdict and its passed/remaining checklist, and `Fleet` relayed `passed=1,
+remaining=1` for it. The operation itself stayed `failed`; the evidence gate stayed closed, so this
+was misleading owner-facing reporting, not a false release acceptance.
+
+- `application/operation.py` establishes the COMPLETE current execution binding (task id,
+  generation, attempt, candidate source revision) before reading any finding. Missing, unreadable,
+  incomplete and foreign binding each yield `bound=false`, `known=false` and a fixed reason code
+  (`inspection_missing`, `inspection_unknown`, `execution_binding_incomplete`,
+  `inspection_bound_elsewhere`) with the inspection id kept for diagnosis and no verdict,
+  denominator, claim counts or checklist items - unknown is absent, not a completed zero.
+- `application/fleet.py` decides credit itself: `owner_handoff_view` relays `passed`/`remaining`
+  only when the record states both `bound` and `known` as exactly true, so a handoff written and
+  retained before this rule cannot leak credit through the projection an owner polls. It also
+  carries the inspection's reason code, so null progress is interpretable.
+- Bound evidence is unchanged: the same passed/remaining checklist, limits, identity, owner, next
+  action, reason code, gate, retry authority, operation state and stored history as before.
+
 ## What it deliberately does not do
 
 - No retry, acceptance, model call, merge, deployment or scheduling. `pending_owner` is a visible
@@ -50,3 +71,6 @@ command spellings or relaxing `all_checked`.
   dependencies installed in that image; the host prepares them.
 - Whether the installed Claude CLI honours the delivered permission rules is decided by that canary,
   not by this configuration, which only records the delivery digests.
+- The foreign-evidence correction is verified by the focused
+  `tests/test_operation.py`/`tests/test_fleet.py` regressions and the linter only: a pure projection
+  change over `MemoryStore` fixtures, with no live database, model or container run behind it.

@@ -196,6 +196,36 @@ def test_an_evidence_refused_lane_operation_stays_visible_as_pending_owner(tmp_p
     assert f.reconciliation_required() == [] and CANARY not in json.dumps(f.status())
 
 
+@pytest.mark.parametrize("inspection, bound, known", [
+    # A handoff retained BEFORE the correction: contradictory flags beside populated item lists.
+    ({"id": "i" * 64, "bound": False, "known": True, "verdict": "all_checked",
+      "reason_code": "inspection_bound_elsewhere", "passed": [{"check_id": "unit"}, {"check_id": "lint"}],
+      "remaining": []}, False, True),
+    ({"id": "i" * 64, "bound": True, "known": False, "passed": [{"check_id": "unit"}], "remaining": [{"check_id": "lint"}]}, True, False),
+    ({"id": "i" * 64, "bound": "yes", "known": "yes", "passed": [{"check_id": "unit"}], "remaining": []}, False, False),
+    ({"id": "i" * 64, "bound": False, "known": False, "reason_code": "execution_binding_incomplete"}, False, False)])
+def test_unbound_or_unknown_evidence_never_earns_progress_credit_through_the_fleet(tmp_path, inspection, bound, known):
+    """Fleet decides credit itself: only `bound` AND `known` exactly true relay counts, so a stale
+    or foreign handoff already on disk shows unknown progress instead of finished work."""
+    f = fleet(tmp_path)
+    f.enqueue("a", manifest("op-1", ["docs/x.md"]), GOAL, [])
+    token = f.admit_one()["job"]["owner_token"]
+    view = f.finalize("op-1", token, {"status": "failed", "reason_code": "evidence_gate_refused", "exit_code": 1,
+                                      "operation_status": "failed",
+                                      "owner_handoff": evidence_handoff(inspection=inspection)})
+    handoff = view["owner_handoff"]
+    assert view["status"] == "failed" and view["reason_code"] == "evidence_gate_refused", "the outcome is unchanged"
+    assert handoff["passed"] is None and handoff["remaining"] is None, "null progress, never a count"
+    assert handoff["inspection_id"] == "i" * 64 and handoff["inspection_bound"] is bound
+    assert handoff["inspection_known"] is known and handoff["inspection_reason_code"] == inspection.get("reason_code")
+    assert handoff["status"] == "pending_owner" and handoff["owner"] == "lead:improvement"
+    assert handoff["next_action"] == "inspect_evidence_contract" and handoff["id"] == "h" * 64
+    assert "verdict" not in handoff and "check_id" not in json.dumps(handoff)
+    [job] = f.status()["jobs"]
+    assert job["owner_handoff"] == handoff == f.status()["jobs"][0]["owner_handoff"], "repeated reads are identical"
+    assert f.store.data["fleet_jobs", "op-1"]["receipt"]["owner_handoff"] == handoff
+
+
 @pytest.mark.parametrize("document", [None, {"schema": "urn:zeus:other:1"}, "pending_owner", {}])
 def test_an_unrecognized_or_absent_handoff_document_is_never_relayed(tmp_path, document):
     f = fleet(tmp_path)

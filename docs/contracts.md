@@ -960,8 +960,17 @@ bound/known flags, verdict, denominator, per-claim status counts and the inspect
 remaining check items, owner `lead:improvement`, next action `inspect_evidence_contract`, status
 `pending_owner`. It is a visible request for an owner: no raw output, cause text, command or
 credential enters it, it grants no retry, acceptance, model call, merge or deployment authority, and
-it schedules no follow-up - `pending_owner` is never presented as running work. A missing or
-unbound inspection is stated as explicitly unknown, never as a clean denominator. The record is
+it schedules no follow-up - `pending_owner` is never presented as running work. Progress is reported
+only for evidence bound to THIS execution: the complete current binding (task id, generation, attempt
+and candidate source revision) must be known and equal to the stored one before any finding is read.
+A missing id (`inspection_missing`), an unreadable row (`inspection_unknown`), an incompletely
+identified current execution (`execution_binding_incomplete`) and a row bound elsewhere
+(`inspection_bound_elsewhere`) are each `bound=false`, `known=false` with that reason code and the
+inspection id for diagnosis; verdict, denominator, claim status counts and the passed/remaining
+items are ABSENT, never a foreign checklist and never a misleading zero. The counts-only lane
+projection decides credit independently of the writer: it relays `passed`/`remaining` only when the
+record states both `bound` and `known` as exactly true, so a handoff retained before this rule -
+contradictory flags beside populated item lists - shows null progress there too. The record is
 deterministic and written once, so a repeated finalization or a lost response returns the identical
 handoff through `operate status` and, for a lane job, through the safe counts-only `owner_handoff`
 projection recorded by `Fleet.finalize` and shown by `fleet status`; historical receipts are never
