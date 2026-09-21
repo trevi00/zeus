@@ -1424,3 +1424,118 @@ failed diagnostic attempts and environment limits in summary. No new model calls
 configuration, runtime activation, source-audit edits, threshold change, merge or issue closure.
 Owner will re-run these two counterexamples, the affected regressions and required full host/CI
 checks on the final candidate before deployment and actual baseline/consumer verification.
+
+### Rejected analysis -> bounded repair -> resumed work (2026-09-21)
+
+User now authorizes implementation, verification and operating delivery, including an actual
+reference absorption, not just additional analysis. Codex owns this design and acceptance; the
+Zeus Claude worker implements. This is the SAME frame, one consolidated batch. PR #173 progress
+observation is accepted and deployed; do not reopen its matrix or wait for full-source completion.
+
+**Selected absorption.** Adapt Ouroboros's explicit recoverable-phase routing and existing-run
+reconciliation to Zeus's existing audit owner. Pinned source f0e17b4b42cc06974f2afaf15606250939cd4f87,
+`src/ouroboros/auto/resume_routing.py` lines 1-36 re-read 2026-09-21: named tools map to named
+recoverable phases and unknown tools map to None. Prior traced callers and limits are in
+LEARNING-RESUME.md and RECOVERY-PATH.md. This is a pattern adaptation, not copied upstream code,
+not an upstream execution result and not whole-repository adoption. Concrete Zeus implementation
+is typed rejection diagnosis -> one evidence-bound corrective assignment -> validated settlement.
+
+**Observed trigger.** Audit task c54b7b10-4a8e-4a9b-97e8-a5f9a298c6ed succeeded in execution but
+its content was rejected, with no checkpoint. Its immutable execution artifact
+sha256:cd56aa7e7d1429baec8dfb1920653670cc6a5664e4d745dbef8842caf819bb25 has distribution.tests=[]
+and distribution.tests_not_run=[]. It says no test command was identified in unresolved_dependencies.
+Replaying decode_assigned reproduces `Missing subsystem trace: tests`; digest
+9456f7b883a2a1f448d141daee486aa14eedface1767e76c5c9a0cf0e82b9804 equals the recorded error_digest.
+This establishes missing structured test disposition, not that a particular test exists or passed.
+The current generation remains held. Other partitions continue; execution is not global progress.
+
+**Existing complete path.** schedule_audits -> schedule/outbox six-W -> Redis -> audit-service
+_pending/_execute -> Workflow claim/fence -> AuditExecution planning, source runner, answer,
+pure decode + ResearchAudits.checkpoint -> task settlement -> audit-service logs/progress.
+One schedule key per partition generation prevents resubmitting a rejected draft. Checkpoint
+authority owns generation/remaining scope; Workflow owns attempt/lease. Do not change either to
+pretend recovery or rewrite the original succeeded/rejected outcome. Artifact store is immutable.
+Unknown execution effects remain blocked/reconciliation-required. Fleet implementation is a
+different lane from the source-audit execution; neither may silently impersonate the other.
+
+**Design.** Add a small application/domain audit-repair owner, using the existing store, artifacts,
+schedule/outbox, audit executor and CLI. No new daemon/provider/process/transport, and no global
+auto-retry. An explicit durable opt-in is scoped to one audit; disabled by default. Owner CLI
+supports enable/disable, inspect and status (and a deterministic prepare/admit API if useful).
+Read-only inspection creates no task. Enabled service ticks admit at most ONE corrective successor
+per original partition generation/rejection family. A repeated tick/restart/concurrent scheduler
+returns that same lineage; it does not create another call. Opt-out prevents new admission only.
+
+Automatic eligibility in THIS version is only the demonstrated missing subsystem test-disposition
+case. Re-read the source task, exact execution binding, source/partition generation, immutable
+artifact, and matching error digest. Classify by structured content + validator, not model prose
+or arbitrary exception substrings. New failures should expose a fixed diagnostic code, field and
+identity; keep raw error text out of public logs. Unknown kinds, corrupt evidence, changed scope,
+cancelled/blocked/retry/running tasks, unresolved termination markers and unpublished predecessor
+must not become eligible. Historical records can be classified by the same read-only validator.
+
+In one store transaction revalidate admission and bind original task/generation/attempt, artifact,
+partition/source identity, reason family and policy to a new correction record + assignment +
+outbox + required audit/notice. Keep partition generation and original schedule/task unchanged.
+The successor uses ordinary audit_partition and the SAME trusted partition generation, with a
+new deterministic repair schedule key and bounded context naming the old artifact and diagnostic.
+Do not repair JSON or generate tests_not_run facts in owner code. The model must inspect evidence
+and return justified structured omissions or real receipt-bound tests. Existing validators remain
+the authority; missing prerequisite becomes an explicit not-run/deferred fact, never fake success.
+Add a clear pre-submission checklist to the existing analysis prompt/schema contract; do not add
+an unlimited hidden model-validation loop. Current task/run deadlines and subscription accounting
+remain unchanged. Past execution receipts cannot be claimed as this successor's executions.
+
+Use audit-service's existing delivery and guarded claim path. A correction may be preferred over
+UNDELIVERED ordinary assignments, but an already queued task must retain the Workflow claim order.
+Never weaken check_expected/require_expected or fabricate created_at to force priority. No unrelated
+message may be acknowledged/claimed. Audit repair settlement is idempotent and can be reconciled
+from terminal task evidence after a restart/commit response loss. A valid checkpoint means resumed
+partial work, not subsystem acceptance. Only a corrected non-null subsystem with justified test
+disposition can be reported as repaired; null/unknown remains deferred. If the corrective attempt
+is rejected, record research_required (original+successor are two distinct attempts), emit the
+existing lead notice with evidence and stop this repair family. Infrastructure/unknown execution
+is reconciliation_required, not a third attempt. No automatic third call. Do not claim a notice
+means research ran; source investigation remains the existing ResearchProgram/Codex responsibility.
+
+Expose source task -> diagnosis -> successor -> settlement with fixed reason codes in audit-service
+status/observation and CLI. Report attempted, repaired, deferred, research_required and unknown
+separately; recovery latency and semantic-progress deltas are distinct. Preserve existing rejected
+history; a successful successor may remove an *active* hold only through verified lineage, not by
+erasing the prior refusal. Large model drafts stay in hash-addressed artifacts, not status/prompts.
+
+**Acceptance matrix and checks (one batch).**
+- Normal: exact retained failure, opt-in, one correction, original immutable, justified not-run
+  record accepted as incomplete, resumed checkpoint, ordinary continuation can proceed.
+- Failure/unknown: corrupt/missing/unbound evidence, unavailable prerequisites, null correction,
+  foreign partition, unsupported reason, failed/unknown provider, pending reconciliation, and
+  publication failure retain truthful distinct state and cannot authorize another provider.
+- Two strikes: a second actual rejected execution creates research_required once; replayed events
+  are not a second strike; no third task, bounded lead notice, no fabricated research completion.
+- Concurrency/restart: two admission callers -> one successor; re-read generation/activation;
+  crash after commit before delivery and after task settlement before ledger update resumes by ID.
+- Ownership/cancel/time: disable/paused activation prevents admission; no mutation of active task,
+  no lease/deadline extension; existing Workflow guard and cleanup semantics preserved.
+- Progress/visibility: checkpoint and semantic completion remain separate; missing test execution
+  never gains subsystem acceptance; raw error and source/model text absent from status/log fields.
+- Platform: pure/domain/MemoryStore + actual isolated PG owner checks; existing Windows/Linux CI.
+  No new OS-specific lifecycle to qualify, and no upstream code is executed.
+
+Claude allowed scope: new domain/application audit_repair modules and focused tests; integration
+in scheduling, audit_execution, audit_service, CLI registration/adapter, observation reason/schema
+allow-lists as necessary; docs/contracts.md, AUDIT-SERVICE.md and a concise REPAIR-ADOPTION.md in
+this directory. Keep recovery policy in one owner, not shell scripts. Do not change Workflow claim
+policy, existing validators, audit_progress policy, model routing, global profiles or source audits.
+Worker executes focused new/affected audit, scheduling, research and observation tests + ruff;
+owner/CI runs full verification (reduced worker snapshot lacks historical full-suite prerequisites).
+Keep actual commands and observed outcomes separate; no extra model calls inside implementation.
+
+**Completion.** Accepted candidate, independent Codex review, required CI, exact release binding,
+task-boundary deployment; owner enables only current Ouroboros audit; the retained rejected
+distribution task gains ONE actual successor with evidence-bound disposition and successful
+checkpoint/resumption, or a concrete prerequisite/deferred outcome explicitly reported. A deferred
+outcome does not satisfy successful-repair acceptance. Preserve failure receipts. Record adopted
+capability, source pins, checks and deployed revision separately from full analysis/semantic totals.
+No claim that every refusal can recover, no broad UI redesign or speculative scheduler repair.
+Progress investigation already enabled by #173 continues independently; no production windows
+or claimed semantic credit are manufactured to make this batch green.
