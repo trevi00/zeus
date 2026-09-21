@@ -2068,3 +2068,60 @@ python -m ruff check . --no-cache
 Worker runs focused checks; owner performs integration/CI and a real read-only historical collection
 in a separately named candidate namespace before any scheduling decision. A lack of two comparable
 historical runs is a measured no-candidate result, never a reason to forge registry equivalence.
+
+## Astra-to-Sol transfer: bounded follow-on frame (2026-09-21)
+
+Outcome: reuse accepted Astra experience to reduce total tokens per accepted objective while
+preserving the same acceptance criteria. Canonical guidance lives in docs/context/AUTHORING.md.
+Codex owns design/qualification/acceptance; Claude implements. Current immutable decision-feedback
+and ontology assignments retain their scopes. This frame is specified, not dispatched or activated.
+
+Facts inspected on 2026-09-21: domain/model_routing.py selects Astra for every current workload;
+the Sol/Terra constants do not establish active routing. application/sdd.py record_transfer stores
+versioned sdd_transfer_candidates as recorded_unqualified with routing_authority false. Executor
+selects a Codex model separately from the configured Claude provider. Measurements already have
+evidence snapshots; extend these owners rather than creating a second usage ledger.
+Official source: https://developers.openai.com/api/docs/guides/model-selection (accessed 2026-09-21,
+unversioned guide): establish accuracy requirements before optimizing cost and latency. This does
+not establish local account availability, measured Sol quality, token savings or subscription cost.
+Unknowns: comparable accepted baseline coverage, provider usage-field coverage, actual Sol access.
+Resolve these for the selected family only; unrelated uncertainty does not block current workers.
+
+Affected path: accepted execution/review artifacts -> trusted task-family definition -> extraction
+of a focused procedure and deterministic checks -> retained baseline and held-out evaluation ->
+independent qualification receipt -> scoped routing -> execution/usage/outcome -> monitoring and
+revocation. Git owns definitions; PG owns append-only runtime evidence and versioned qualification
+state through existing owners. A recorded candidate is neither qualification nor verified knowledge.
+
+One implementation batch: extend existing SDD transfer and model-routing owners with explicit
+qualification validation and bounded evaluation/reporting; select ONE repeatable read-only family
+from real accepted evidence before qualification. If no eligible family exists, report insufficient
+evidence without broadening into an unrelated project. Bind model, family, repository/scope,
+contract/guardrail/toolchain/context/evaluator hashes and baseline/held-out artifact identities.
+Set the family acceptance thresholds, sample denominator and independent sampling policy before
+evaluation; never choose them after seeing outcomes. Versioned activation needs independent Codex
+acceptance and an actual Sol evaluation. Preserve default Astra routing when unqualified. No global
+switch, no changes to Claude ownership, no Terra activation and no new arbitrary call-count ceiling.
+
+Acceptance matrix:
+
+| Boundary | Required evidence |
+| --- | --- |
+| Normal | Exact qualified family/version selects Sol; receipt identifies authority and actual model. |
+| Unqualified/unknown | Missing, ambiguous, stale or unavailable qualification retains Astra with explicit reason. |
+| Quality | Same fixed oracle on retained baseline and held-out normal/material-failure cases; independent evaluator; unknown is not pass. |
+| Efficiency | Total reported tokens per accepted goal includes retries, review, fallback and amortized qualification; coverage and missing fields explicit. |
+| Timeout/cancel | Failed evaluation cannot qualify; no blind replay of uncertain side effects. |
+| Concurrent/restart | Duplicate evidence cannot count twice; activation/revocation version checks are atomic and durable. |
+| Drift/rollback | Changed bound versions invalidate applicability; revoke returns new selections to Astra without rewriting historical receipts. |
+| Platform | Exercise routing/storage contracts on Windows and Linux; platform-specific procedure evidence qualifies only that environment. |
+| Cleanup | Evaluation artifacts remain referenced; no deletion of operational evidence or mutation of source task outcomes. |
+
+Complete when focused contract/integration checks pass, the independent review accepts the code,
+and one real scoped evaluation reports its quality and total usage honestly. Qualification refusal
+is an explicit result, not proof the goal of efficient transfer has been achieved. After a passing
+evaluation activate only that family and observe the predeclared canary/sample; final report must
+separate implemented, evaluated, qualified and active. Do not rerun every accepted result through
+Astra indefinitely: automate the established oracle and reserve Astra for exceptions and the fixed
+sample. Dashboard presentation and broader task-family rollout follow accepted measurements rather
+than blocking this batch. No efficiency claim is supported by this specification alone.
