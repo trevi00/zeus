@@ -55,3 +55,40 @@ The limit is a ceiling for that one common document, verified by `worker_profile
 which refuses an oversized or mismatched document whole rather than truncating it. It is not a
 token allowance, and it is not the budget of any other context: the per-run project section, the
 project-skill selection and the research paths keep their own separate limits.
+
+
+## Repeated work becomes reusable capability
+
+User direction, 2026-09-21. Owner: Codex for analysis, design and acceptance; Claude for the
+specified implementation and tests. This is a working rule, not evidence that an automatic
+recurrence detector or runtime skill publisher has been installed.
+
+After two distinct executions of the same or materially similar procedure, record an automation
+candidate, whether the executions succeeded or failed. Count task/run identities, not replayed
+events, copied receipts, rereads, or repeated imports of one experience. Similarity is a hypothesis:
+compare outcome, inputs, prerequisites, steps and verification before merging different procedures.
+Keep the existing failed-tool two-strike research rule separate; successful recurrence is not failure.
+
+Search the existing SSOT, skills and scripts first. Extend or migrate an existing owner when it fits.
+Use a focused skill for contextual judgment, a script for deterministic repeated steps, or a skill
+calling a script when both are needed. Keep authority, applicability, inputs/outputs, platform limits,
+unknown results, side effects and verification explicit. Do not copy ad-hoc task scripts into the
+runtime or add every learned rule to the common prompt. Link focused units from this context tree
+and deliver them only through the existing verified selectors.
+
+A judgment improvement records the original decision, evidence available at that time, expected
+outcome, observed outcome, failure classification and the revised criterion. Test the criterion on
+the retained failure and an applicable successful control; it must not merely lower the acceptance
+bar. Unknown causes remain unknown. Similar failures twice require bounded research before another
+correction, as AGENTS.md already requires.
+
+Candidate -> specified -> implemented -> independently verified -> activated -> measured is the
+promotion path. Two occurrences trigger evaluation and extraction, not unchecked publication.
+Reuse the ordinary code review and knowledge-promotion owners. Keep unverified candidates separate
+from verified PostgreSQL knowledge. Deduplicate a recurrence family into one bounded improvement
+item; this rule grants no recursive self-improvement loop or additional execution authority.
+
+Measure distinct occurrences, verified reuse count, task success denominator, repeated failures,
+manual interventions and time/token cost per accepted outcome. Compare equivalent tasks and retain
+failed measurements. Neither creating a skill nor a passing synthetic test proves efficiency or
+failure-free operation. Review ineffective automations for revision or retirement.

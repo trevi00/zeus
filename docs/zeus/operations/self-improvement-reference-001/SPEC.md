@@ -1938,3 +1938,27 @@ edit local external launchers, restart services, call models, merge, deploy or c
 Allowed files: service_entry.py, background_service.py if needed for journal reuse, named tests,
 docs/contracts.md, SERVICE-DIAGNOSTICS.md in this task directory. Completion: independent review of
 candidate, exact checks, then separately verified owner launcher activation. No claim of past root-cause fix.
+
+
+## User steering: recurring-work automation and judgment quality (2026-09-21)
+
+Canonical working procedure: docs/context/AUTHORING.md, Repeated work becomes reusable capability.
+User requests improved judgment from outcome evidence and skill/script extraction after two distinct
+similar work executions. The running service-diagnostics manifest/base remains immutable; do not
+expand or restart that accepted assignment. This instruction applies to subsequent owner framing.
+
+Observed SSOT: application/experience.py deliberately excludes imported claims from recurrence;
+worker_profile_hook.py counts distinct failed tool calls, not successful repeated procedures.
+Existing project_skills/skill_routing owns actual delivery. Therefore a general successful-work
+recurrence trigger is not established by current code. Do not claim this documentation installs it.
+
+Next bounded design must bind two distinct task/run receipts to a comparable procedure, deduplicate
+one automation candidate, search existing owners, choose skill/script/reuse with rationale, and use
+ordinary Claude implementation, independent review and activation. Matrix: real second occurrence;
+event replay/import duplication; similar-but-different tasks; unknown/missing evidence; concurrent
+candidate creation/restart; rejected candidate and no recursive retry; Windows/WSL when applicable.
+Judgment calibration must retain failure plus positive control and unchanged acceptance authority.
+Completion is verified reuse and measured outcome, not candidate count or document creation.
+Operational read-only status aggregation and evidence-bound historical task disposition are owner
+candidate examples, not yet proven equivalent by a recurrence classifier. Validate their receipts
+before selecting; do not auto-cancel tasks from the historical disposition example.
