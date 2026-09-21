@@ -105,15 +105,29 @@ def _write_failed(record):
     raise JournalWriteError(type(failure).__name__ if failure is not None else "Unknown")
 
 
-class _Journal:
-    """Rotating JSONL (1 MiB, two backups), one owner run per process."""
+def safe_scalar(value) -> bool:
+    """The owner's field rule: nothing but a flag, a plain integer or a short bounded token."""
+    return bool(value is None or isinstance(value, bool) or type(value) is int
+                or (isinstance(value, str) and LOG_VALUE.fullmatch(value)))
 
-    def __init__(self, path):
+
+class Journal:
+    """Rotating JSONL (1 MiB, two backups), one run per process for one logger name.
+
+    The owner's own journal is the default: its logger, its five allowlisted facts and its rule
+    that anything else a caller passes is dropped rather than sanitized. A second lifecycle
+    journal (`service_entry`) reuses this file rotation, this drop-don't-sanitize allowlist and
+    `_write_failed`'s refusal to swallow a lost line by naming its own logger and its own typed
+    allowlist; it never writes to the owner's logger, so the owner's log stays exactly as it was.
+    """
+
+    def __init__(self, path, *, logger_name: str = LOGGER_NAME, fields=None):
         handler = RotatingFileHandler(str(path), maxBytes=LOG_BYTES, backupCount=LOG_BACKUPS,
                                       encoding="utf-8")
         handler.setFormatter(logging.Formatter("%(message)s"))
         handler.handleError = _write_failed
-        self.logger = logging.getLogger(LOGGER_NAME)
+        self.fields = {name: safe_scalar for name in LOG_FIELDS} if fields is None else dict(fields)
+        self.logger = logging.getLogger(logger_name)
         self.logger.propagate = False
         self.logger.setLevel(logging.INFO)
         for old in list(self.logger.handlers):
@@ -123,9 +137,8 @@ class _Journal:
         self.handler = handler
 
     def write(self, event: str, **fields) -> None:
-        safe = {key: value for key, value in fields.items() if key in LOG_FIELDS and (
-            value is None or isinstance(value, bool) or type(value) is int
-            or (isinstance(value, str) and LOG_VALUE.fullmatch(value)))}
+        safe = {key: value for key, value in fields.items()
+                if key in self.fields and self.fields[key](value)}
         self.logger.info(json.dumps({"timestamp": datetime.now(timezone.utc).isoformat(),
                                      "event": event, **safe}, sort_keys=True))
 
@@ -137,7 +150,7 @@ class _Journal:
             pass
 
 
-def _record(book: _Journal, event: str, **fields) -> str | None:
+def record(book: Journal, event: str, **fields) -> str | None:
     """Write a shutdown-path entry; answer with the failure's class name instead of raising.
 
     Nothing on the way out may be skipped because the journal broke, and nothing on the way out may
@@ -239,7 +252,7 @@ def run_owned(argv: list[str], *, cwd: str | None = None, env: dict | None = Non
     and a pipe nobody reads is a place for a background service to stop.
     """
     try:
-        book = _Journal(journal)
+        book = Journal(journal)
     except (OSError, ValueError, TypeError):
         return EXIT_OWNER_ERROR  # nothing has been started, and nothing will be
     try:
@@ -257,20 +270,20 @@ def run_owned(argv: list[str], *, cwd: str | None = None, env: dict | None = Non
         book.close()
 
 
-def _own(argv, *, cwd, env, book: _Journal, pending: _Pending | None) -> int:
+def _own(argv, *, cwd, env, book: Journal, pending: _Pending | None) -> int:
     try:
         tree = ProcessTree.spawn(argv, cwd=cwd, env=env, stdin=subprocess.DEVNULL,
                                  stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     except KeyboardInterrupt:
-        _record(book, "start_interrupted", error_type="KeyboardInterrupt")
+        record(book, "start_interrupted", error_type="KeyboardInterrupt")
         return EXIT_INTERRUPTED
     except TreeOwnershipLeak as leak:
         # spawn's own cleanup could not prove the process it created is gone. A second start would
         # add a second one to whatever the first one is, so there is no retry here, ever.
-        _record(book, "start_leaked", cleanup_confirmed=False, error_type=type(leak).__name__)
+        record(book, "start_leaked", cleanup_confirmed=False, error_type=type(leak).__name__)
         return EXIT_CLEANUP_UNCONFIRMED
     except BaseException as failure:
-        _record(book, "start_failed", error_type=type(failure).__name__)
+        record(book, "start_failed", error_type=type(failure).__name__)
         return EXIT_OWNER_ERROR
 
     released: dict = {}
@@ -295,11 +308,11 @@ def _own(argv, *, cwd, env, book: _Journal, pending: _Pending | None) -> int:
         released["confirmed"], released["error"] = _release(tree)
 
     confirmed, cleanup_error = released["confirmed"], released["error"]
-    journal_error = _record(book, "cleanup", cleanup_confirmed=confirmed, error_type=cleanup_error)
+    journal_error = record(book, "cleanup", cleanup_confirmed=confirmed, error_type=cleanup_error)
     error_type = error_type or cleanup_error or journal_error
     final = _final_code(confirmed=confirmed, stop_code=stop_code, error_type=error_type,
                         child_exit_code=child_exit_code)
-    shutdown_error = _record(book, "shutdown", child_exit_code=child_exit_code,
+    shutdown_error = record(book, "shutdown", child_exit_code=child_exit_code,
                              final_exit_code=final, cleanup_confirmed=confirmed,
                              error_type=error_type)
     if shutdown_error:

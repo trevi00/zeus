@@ -1879,3 +1879,33 @@ research_required, reconciliation_required); the rejected history is preserved a
 only because the verified lineage advanced the partition's own generation, never because a refusal
 was erased. Fixture audits, tasks, artifacts, buses and executors in the tests are not evidence that
 a model, Redis, PostgreSQL or a host service ran.
+
+## INV-SERVICE-DIAGNOSTICS-001
+
+`service_entry` (`python -m codex_harness.adapters.service_entry --journal PATH -- CLI_ARGS`) is
+bounded lifecycle provenance for a service run whose stdout and stderr the launcher discards
+(docs/zeus/operations/self-improvement-reference-001/SERVICE-DIAGNOSTICS.md). It passes the
+arguments after `--` to the existing `codex_harness.cli.main` unchanged through a scoped `sys.argv`
+replacement that is restored however the call ends, and it owns no process: `background_service`'s
+`ProcessTree` remains the sole process owner, and this adapter starts, retries, releases, kills,
+budgets and configures nothing. The CLI's exit status is preserved - an `int` `SystemExit` code
+including `0`, a `bool` as its integer value, `None` as success - while an uncaught exception or a
+non-integer exit code is
+the fixed 1 whose value is never formatted, `KeyboardInterrupt` is 130, and a failure of the
+diagnostics themselves is 125 and outranks the CLI's own number, so a run that could not be
+described durably is never reported as success. The journal is `background_service`'s rotating
+JSONL primitive reused under its own logger name and its own typed allowlist, leaving the owner's
+journal, handler and fields untouched; a journal that cannot be opened or refuses the pre-start
+`start` entry never invokes the CLI at all, and a post-start failure is stated in whatever entry
+still reaches the file. Each run writes `start`, `finish` and `exit` carrying one generated run id, so
+sequential runs in one file stay separable; one journal belongs to one service instance, and
+concurrent owners stay prohibited by the existing process ownership. Facts are allowlisted by name
+and by shape and anything else is dropped rather than sanitized: a reason from a closed vocabulary,
+the name of a *built-in* exception type or the fixed `unknown` (a look-alike defined elsewhere is
+`unknown`), at most the eight deepest frames inside the installed `codex_harness` package as a
+package-relative module path plus an integer line, and a bounded four-link `__cause__`/`__context__`
+walk that respects `__suppress_context__`, reports an absent cause explicitly and ends on a cycle
+instead of following it. No exception message, `repr`, argument, local, `argv`, environment value,
+source line, absolute path, raw traceback or CLI output is ever read into the journal or printed.
+This records where an exception left the package; it is not a root cause, it observes no child
+process cleanup, and it cannot exist for a `SIGKILL` or a failure before the interpreter starts.
