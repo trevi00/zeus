@@ -12,7 +12,7 @@ import sys
 import threading
 
 from codex_harness.adapters.claude_cli import ClaudeCodeRuntime
-from codex_harness.adapters.isolated_worker import PROTOCOL
+from codex_harness.adapters.isolated_worker import DELIVERY_PROTOCOL, PROTOCOL, PROTOCOLS
 
 MAX_REQUEST_BYTES = 32 * 1024 * 1024
 
@@ -31,12 +31,18 @@ def serve(stdin, stdout, runtime_factory=ClaudeCodeRuntime) -> int:
         if len(raw) > MAX_REQUEST_BYTES:
             raise ValueError("request exceeds budget")
         request = json.loads(raw.decode("utf-8"))
-        if not isinstance(request, dict) or request.get("protocol") != PROTOCOL:
+        if not isinstance(request, dict) or request.get("protocol") not in PROTOCOLS:
             raise ValueError("request is not " + PROTOCOL)
+        # A delivery request names its own protocol, so an older entry refuses it rather than dropping
+        # the host checklist; here the two must agree in both directions before anything is opened.
+        delivery = request.get("project_delivery")
+        if (request["protocol"] == DELIVERY_PROTOCOL) != (delivery is not None):
+            raise ValueError("request protocol and project delivery disagree")
         runtime = {**(request.get("runtime") or {}), "profile_evidence_root": request["evidence_root"]}
         opened = runtime_factory(model=request["model"], runtime=runtime,
                                  max_budget_usd=request.get("max_budget_usd"),
-                                 settings_document=request.get("settings_document"))
+                                 settings_document=request.get("settings_document"),
+                                 **({} if delivery is None else {"project_delivery": delivery}))
         with opened as inner:
             result = inner.run(request["prompt"], request["cwd"], request["schema"], request["timeout"],
                                on_event=lambda event: send("event", event=event),

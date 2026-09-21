@@ -7,6 +7,13 @@ per declared check (`executed` with its exit status, or `not_run`). A reported f
 failure, a `not_run` stays incomplete, and an observation for an undeclared, repeated or missing
 check is an explicit non-checked finding. Replay authority is still the packaged evidence policy
 (INV-EVIDENCE-001): a profile cannot authorize a command the allowlist refuses.
+
+Version 2 is the same contract with one explicit closed addition: `execution`, which names the
+container image the host pinned for isolation. It changes WHERE the checks run, never who owns
+them. A version-2 context interpreter must be the trusted in-image interpreter, so a host
+interpreter can never be silently reinterpreted as a container path (and the reverse); version 1
+stays a host profile and keeps refusing isolation. Everything else - the checks grammar, the worker
+schema, the observation rules and the classifier - is shared by both versions.
 """
 import re
 
@@ -14,7 +21,16 @@ from codex_harness.domain.evidence import MAX_ARGV, authorized
 from codex_harness.domain.model import digest, require
 
 SCHEMA = 'urn:zeus:project-evidence:1'
+SCHEMA_V2 = 'urn:zeus:project-evidence:2'
+SCHEMAS = (SCHEMA, SCHEMA_V2)
 PROFILE_KEYS = frozenset({'schema', 'contexts', 'checks'})
+PROFILE_KEYS_V2 = frozenset({'schema', 'contexts', 'checks', 'execution'})
+EXECUTION_KEYS = frozenset({'kind', 'image'})
+CONTAINER = 'container'
+# The trusted in-image interpreter (adapters.isolated_worker.TRUSTED_PYTHON). Stated here as data so
+# the domain stays adapter-free; the adapter asserts the two are the same string.
+CONTAINER_INTERPRETER = '/opt/zeus/bin/python'
+IMAGE = re.compile(r'sha256:[0-9a-f]{64}\Z')
 CONTEXT_KEYS = frozenset({'cwd', 'interpreter', 'source_paths', 'dependency_files'})
 CHECK_KEYS = frozenset({'id', 'context', 'argv', 'expected_exit'})
 OBSERVATION_KEYS = frozenset({'check_id', 'status', 'exit_code'})
@@ -57,10 +73,31 @@ def _paths(value, name):
     return paths
 
 
+def _execution(document):
+    """Version 2's closed `execution`: the immutable container image the host pinned, or None (v1)."""
+    if document['schema'] == SCHEMA:
+        require(set(document) == PROFILE_KEYS, 'Project evidence profile must carry schema, contexts, checks')
+        return None
+    require(set(document) == PROFILE_KEYS_V2,
+            'Project evidence profile version 2 must carry schema, contexts, checks, execution')
+    execution = document['execution']
+    require(isinstance(execution, dict) and set(execution) == EXECUTION_KEYS, 'Project evidence execution fields')
+    require(execution['kind'] == CONTAINER, 'Project evidence execution kind must be container')
+    require(type(execution['image']) is str and IMAGE.fullmatch(execution['image']),
+            'Project evidence execution image must be an immutable sha256:<64hex> image id')
+    return {'kind': CONTAINER, 'image': execution['image']}
+
+
+def requires_container(profile):
+    """Whether this parsed profile may run only in the host's pinned isolation image."""
+    return isinstance(profile, dict) and profile.get('schema') == SCHEMA_V2
+
+
 def parse_profile(document, policy):
     """The closed, normalized profile with its digest. Every check is a required acceptance check."""
-    require(isinstance(document, dict) and set(document) == PROFILE_KEYS, 'Project evidence profile must carry schema, contexts, checks')
-    require(document['schema'] == SCHEMA, 'Unknown project evidence profile schema')
+    require(isinstance(document, dict) and type(document.get('schema')) is str, 'Project evidence profile must carry a schema')
+    require(document['schema'] in SCHEMAS, 'Unknown project evidence profile schema')
+    execution = _execution(document)
     contexts = document['contexts']
     require(isinstance(contexts, dict) and 0 < len(contexts) <= MAX_CONTEXTS, 'Project evidence contexts must be a nonempty mapping')
     parsed = {}
@@ -71,6 +108,11 @@ def parse_profile(document, policy):
         interpreter = context['interpreter']
         require(type(interpreter) is str and interpreter and '\x00' not in interpreter and len(interpreter) <= 1024,
                 'Project evidence interpreter must be an absolute host path')
+        # No silent reinterpretation: a container profile names the trusted in-image interpreter and
+        # nothing else. A version-1 interpreter is a HOST path whatever it spells, and it is still
+        # verified as an existing host file before any replay, so the two can never be confused.
+        require(execution is None or interpreter == CONTAINER_INTERPRETER,
+                'Project evidence version 2 requires the container interpreter ' + CONTAINER_INTERPRETER)
         parsed[name] = {'cwd': safe_relative(context['cwd'], 'Project evidence cwd', allow_root=True),
                         'interpreter': interpreter,
                         'source_paths': _paths(context['source_paths'], 'Project evidence source_paths'),
@@ -94,7 +136,9 @@ def parse_profile(document, policy):
         require(type(check['expected_exit']) is int and 0 <= check['expected_exit'] <= 255,
                 'Project evidence expected_exit must be an exit status')
         listed.append({'id': check['id'], 'context': check['context'], 'argv': list(argv), 'expected_exit': check['expected_exit']})
-    profile = {'schema': SCHEMA, 'contexts': parsed, 'checks': listed}
+    profile = {'schema': document['schema'], 'contexts': parsed, 'checks': listed}
+    if execution is not None:
+        profile['execution'] = execution
     profile['profile_digest'] = digest(profile)
     return profile
 

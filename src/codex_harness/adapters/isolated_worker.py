@@ -43,6 +43,11 @@ TOKEN_NAME = "CLAUDE_CODE_OAUTH_TOKEN"
 LABEL = "zeus.isolated.run"
 ROLE_LABEL = "zeus.isolated.role"
 PROTOCOL = "zeus-isolated-worker-v1"
+# A request that carries a host project-evidence delivery names its own protocol, so an image whose
+# entry predates delivery refuses it explicitly (`inner_refused`) instead of dropping the profile and
+# answering as if no checklist had been delivered. Answers stay on PROTOCOL either way.
+DELIVERY_PROTOCOL = "zeus-isolated-worker-v1-project-evidence"
+PROTOCOLS = (PROTOCOL, DELIVERY_PROTOCOL)
 ENTRY_MODULE = "codex_harness.adapters.isolated_worker_entry"
 TRUSTED_PYTHON = "/opt/zeus/bin/python"
 WORKSPACE, EVIDENCE = "/workspace", "/evidence"
@@ -647,7 +652,8 @@ class IsolatedClaudeRuntime:
 
     def __init__(self, config: dict, root, *, model: str, runtime: dict | None = None,
                  max_budget_usd: float | None = None, settings_document: dict | None = None,
-                 docker: str = "docker", environment: dict | None = None, watch: tuple = ()):
+                 docker: str = "docker", environment: dict | None = None, watch: tuple = (),
+                 project_delivery: dict | None = None):
         require(isinstance(config, dict) and config.get("mode") == MODE and IMAGE.fullmatch(str(config.get("image"))),
                 "Isolated runtime requires a validated isolation configuration")
         require(type(model) is str and bool(model.strip()), "Claude requires an explicit model name")
@@ -658,6 +664,14 @@ class IsolatedClaudeRuntime:
         self.runtime = {key: value for key, value in dict(runtime or {}).items()
                         if key not in ("profile_interpreter", "profile_evidence_root")}
         self.environment_source = environment
+        # INV-PROJECT-EVIDENCE-001 version 2: the host-resolved checklist for THIS candidate, stated in
+        # container paths. It is host output, never model output, and it must name this exact image.
+        if project_delivery is not None:
+            require(isinstance(project_delivery, dict)
+                    and (project_delivery.get("execution") or {}).get("image") == config["image"]
+                    and project_delivery.get("workspace") == WORKSPACE,
+                    "A container project delivery must name this image and the mounted workspace")
+        self.project_delivery = project_delivery
         self.profile = load_profile(self.runtime["worker_profile"]) if self.runtime.get("worker_profile") is not None else None
         self.container, self.tree, self.record, self.record_path = None, None, None, None
         self.used = False
@@ -769,9 +783,12 @@ class IsolatedClaudeRuntime:
             if self.record["state"] is None:
                 self._advance("refused", reason="before_container")
             raise
-        request = {"protocol": PROTOCOL, "prompt": prompt, "schema": schema, "timeout": timeout, "model": self.model,
+        request = {"protocol": PROTOCOL if self.project_delivery is None else DELIVERY_PROTOCOL,
+                   "prompt": prompt, "schema": schema, "timeout": timeout, "model": self.model,
                    "session_id": session_id, "runtime": self.runtime, "max_budget_usd": self.max_budget_usd,
                    "settings_document": self.settings_document, "cwd": WORKSPACE, "evidence_root": EVIDENCE}
+        if self.project_delivery is not None:
+            request["project_delivery"] = self.project_delivery
         started = time.monotonic()
 
         def converse():
@@ -799,6 +816,14 @@ class IsolatedClaudeRuntime:
                                  "note": "receipts are files the hook wrote into the mounted evidence directory, read "
                                          "by the host after the container stopped; absence is not observed, never assumed"},
                      "stream": {key: stream[key] for key in ("reason", "violation", "lines", "stderr_tail")},
+                     "project_evidence": None if self.project_delivery is None else {
+                         "protocol": DELIVERY_PROTOCOL, "profile_digest": self.project_delivery.get("profile_digest"),
+                         "project_digest": self.project_delivery.get("project_digest"),
+                         "execution": dict(self.project_delivery["execution"]),
+                         "checks": [entry["check_id"] for entry in self.project_delivery.get("commands", [])],
+                         "document_sha256": digest(self.project_delivery["document"]),
+                         "note": "host-authored checklist delivered into the container; compliance is decided by "
+                                 "the isolated replay, not by this delivery"},
                      "elapsed_seconds": time.monotonic() - started}
         failure = None
         try:
@@ -921,7 +946,7 @@ def parse_line(line: bytes, limit: int) -> dict | None:
         message = json.loads(line.decode("utf-8"))
     except (UnicodeDecodeError, ValueError):
         return None
-    if not isinstance(message, dict) or message.get("protocol") != PROTOCOL:
+    if not isinstance(message, dict) or message.get("protocol") not in PROTOCOLS:
         return None
     kind = message.get("kind")
     if kind in ("entered", "refused"):
@@ -937,13 +962,24 @@ class IsolatedWorker:
     def __init__(self, config: dict, root, docker: str = "docker"):
         self.config, self.root, self.docker = config, Path(root), docker
 
-    def runtime(self, *, model, runtime, max_budget_usd, settings_document) -> IsolatedClaudeRuntime:
+    def runtime(self, *, model, runtime, max_budget_usd, settings_document,
+                project_delivery=None) -> IsolatedClaudeRuntime:
         return IsolatedClaudeRuntime(self.config, self.root / "runs", model=model, runtime=runtime,
                                      max_budget_usd=max_budget_usd, settings_document=settings_document,
-                                     docker=self.docker, watch=(self.root / "replays",))
+                                     docker=self.docker, watch=(self.root / "replays",),
+                                     project_delivery=project_delivery)
 
-    def inspector(self, artifacts):
-        from codex_harness.adapters.isolated_evidence import DockerEvidenceInspector
+    def inspector(self, artifacts, evidence_profile=None):
+        """The verifier backend for this selection: the legacy claim replay, or - with a host
+        version-2 project profile - the same containers running the host's declared checks."""
+        from codex_harness.adapters.isolated_evidence import (
+            DockerEvidenceInspector,
+            IsolatedProjectEvidenceInspector,
+        )
+
+        if evidence_profile is not None:
+            return IsolatedProjectEvidenceInspector(artifacts, evidence_profile, self.config,
+                                                    self.root / "replays", docker=self.docker)
         return DockerEvidenceInspector(artifacts, self.config, self.root / "replays", docker=self.docker)
 
 

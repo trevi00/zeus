@@ -15,9 +15,11 @@ in a lane environment, behind a launcher port.
 from __future__ import annotations
 
 import logging
+import re
 import time
 from uuid import uuid4
 
+from codex_harness.application.operation import HANDOFF_SCHEMA
 from codex_harness.domain.fleet import (
     ACCEPTED,
     DISPATCHING,
@@ -51,6 +53,36 @@ BUCKET_GRANTS = "fleet_budget_grants"
 BUCKET_DELIVERY = "fleet_delivery"
 CONTROL_KEY = "admission"
 LOGGER = logging.getLogger("zeus.fleet.runner")
+
+
+SAFE_HANDOFF_VALUE = re.compile(r"[A-Za-z0-9_.:-]{1,80}\Z")
+
+
+def _safe_value(value):
+    """A short identifier or code, or None. Unlike `safe_code` nothing is truncated at a colon: an
+    owner (`lead:improvement`) and a digest id keep their whole value or are dropped entirely."""
+    return value if type(value) is str and SAFE_HANDOFF_VALUE.fullmatch(value) else None
+
+
+def owner_handoff_view(record) -> dict | None:
+    """The fleet-visible projection of a lane operation's owner handoff, or None.
+
+    Identities, codes, a bound flag and counts only: no check items, causes, output or manifest
+    text cross this boundary, and an unrecognized document is dropped rather than relayed. It is
+    delivery VISIBILITY - the job's status, verdict and authority are untouched by it.
+    """
+    if not isinstance(record, dict) or record.get("schema") != HANDOFF_SCHEMA:
+        return None
+    inspection = record.get("inspection") if isinstance(record.get("inspection"), dict) else {}
+    counted = lambda key: len(inspection[key]) if isinstance(inspection.get(key), list) else None  # noqa: E731
+    return {"schema": HANDOFF_SCHEMA, "id": _safe_value(record.get("id")), "status": _safe_value(record.get("status")),
+            "owner": _safe_value(record.get("owner")), "next_action": _safe_value(record.get("next_action")),
+            "reason_code": _safe_value(record.get("reason_code")),
+            "operation_id": _safe_value(record.get("operation_id")),
+            "inspection_id": _safe_value(inspection.get("id")), "inspection_bound": bool(inspection.get("bound")),
+            "inspection_known": bool(inspection.get("known")), "passed": counted("passed"),
+            "remaining": counted("remaining"),
+            "authority": "owner_handoff; visibility only, never a retry, acceptance or release"}
 
 
 class LaunchRefused(FleetRefused):
@@ -135,7 +167,7 @@ class Fleet:
     @staticmethod
     def _view(job: dict) -> dict:
         keys = ("id", "operation_id", "lane", "team", "status", "reason_code", "manifest_sha256", "goal",
-                "dependencies", "calls", "exit_code", "error_type", "created_at", "updated_at",
+                "dependencies", "calls", "exit_code", "error_type", "owner_handoff", "created_at", "updated_at",
                 "dispatched_at", "finished_at")
         return {k: job.get(k) for k in keys}
 
@@ -238,10 +270,14 @@ class Fleet:
                 raise FleetRefused("owner_mismatch")
             now = self.clock()
             calls = outcome.get("calls") if isinstance(outcome.get("calls"), dict) else {}
+            # INV-OPERATION-001: an evidence-refused lane operation hands its bounded owner request up
+            # with the job, so `pending_owner` is visible here instead of looking like finished work.
+            handoff = owner_handoff_view(outcome.get("owner_handoff"))
             job.update(status=status, reason_code=safe_code(outcome.get("reason_code")),
                        exit_code=outcome.get("exit_code") if type(outcome.get("exit_code")) is int else None,
                        calls={"reserved": calls.get("reserved"), "settled": calls.get("settled")},
-                       receipt={"operation_status": outcome.get("operation_status")},
+                       owner_handoff=handoff,
+                       receipt={"operation_status": outcome.get("operation_status"), "owner_handoff": handoff},
                        error_type=outcome.get("error_type") if isinstance(outcome.get("error_type"), str) else None,
                        updated_at=now, finished_at=now)
             tx.put(BUCKET_JOBS, job_id, job)
@@ -299,7 +335,13 @@ class Fleet:
             deliveries = {row["job_id"]: row for row in tx.scan(BUCKET_DELIVERY)}
         if registry is not None:
             registry = {**registry, "config": effective_config(registry["config"], control)}
-        return projection(registry, bool(control.get("paused")), rows, deliveries)
+        view = projection(registry, bool(control.get("paused")), rows, deliveries)
+        # A job whose lane operation was refused on evidence carries its already-safe counts-only
+        # handoff here too, so `pending_owner` is visible in the status a reader actually polls. A
+        # job without one keeps its exact previous shape.
+        handoffs = {row["id"]: row.get("owner_handoff") for row in rows if row.get("owner_handoff")}
+        return {**view, "jobs": [job if job["id"] not in handoffs else {**job, "owner_handoff": handoffs[job["id"]]}
+                                 for job in view["jobs"]]}
 
 
 class FleetRunner:

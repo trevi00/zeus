@@ -22,6 +22,8 @@ from codex_harness.adapters.observation_spool import MemorySpool
 from codex_harness.adapters.output_schema import preflight
 from codex_harness.adapters.project_evidence import (
     ProjectEvidenceInspector,
+    container_execution_instructions,
+    container_worker_delivery,
     execution_instructions,
     worker_delivery,
 )
@@ -85,7 +87,7 @@ from codex_harness.domain.observation import (
     safe_code,
 )
 from codex_harness.domain.policy import POLICY
-from codex_harness.domain.project_evidence import worker_schema
+from codex_harness.domain.project_evidence import requires_container, worker_schema
 from codex_harness.domain.provider_stream import CODEX_PROGRESS, CodexStream, stream_for
 from codex_harness.domain.research import require_dispatch
 
@@ -335,12 +337,18 @@ class Executor:
         # INV-PROJECT-EVIDENCE-001: the host-loaded profile (parsed once, before any provider entry)
         # or None; absence keeps the legacy inspector, schema and review context exactly.
         self.evidence_profile = evidence_profile
-        # INV-ISOLATED-WORKER-001: a host-selected IsolatedWorker, or None for exact host behaviour. A host
-        # project-evidence profile has no in-container mapping yet: the pair is refused, never run on host.
-        require(isolation is None or evidence_profile is None,
+        # INV-ISOLATED-WORKER-001: a host-selected IsolatedWorker, or None for exact host behaviour. A
+        # version-1 (HOST) project-evidence profile still has no in-container mapping: that pair is
+        # refused, never run on the host. A version-2 (container) profile is the opposite: it declares
+        # its own image and REQUIRES the matching host isolation, so it can never fall back either.
+        self.container_profile = requires_container(evidence_profile) if evidence_profile is not None else False
+        require(isolation is None or evidence_profile is None or self.container_profile,
                 "Isolated worker mode refuses a host project evidence profile")
+        require(not self.container_profile or isolation is not None,
+                "A container project evidence profile requires the host isolated worker")
         self.isolation = isolation
-        inspector = (isolation.inspector(artifacts) if isolation is not None
+        inspector = (isolation.inspector(artifacts, evidence_profile if self.container_profile else None)
+                     if isolation is not None
                      else EvidenceInspector(artifacts) if evidence_profile is None
                      else ProjectEvidenceInspector(artifacts, evidence_profile))
         self.evidence = EvidenceInspections(service.store, inspector)
@@ -357,6 +365,13 @@ class Executor:
             self._execution_policy = host_policy()
         return self._execution_policy
 
+    def _project_instructions(self, cwd) -> dict:
+        """The host's declared checks for THIS checkout: host contexts, or container contexts bound
+        to the host-selected image when the profile is the container variant."""
+        if self.container_profile:
+            return container_execution_instructions(self.evidence_profile, cwd, self.isolation.config)
+        return execution_instructions(self.evidence_profile, cwd)
+
     def _open_runtime(self, assignment, model: str, cwd=None, action: str | None = None):
         """Open the transport this assignment names. Nothing here falls back to another provider."""
         if assignment.transport == "app_server":
@@ -365,13 +380,16 @@ class Executor:
         # INV-PROJECT-EVIDENCE-001 (R3): the host profile resolved for THIS implementation checkout
         # reaches the transport itself (exact Bash rules, system prompt), not only the prompt details.
         # Without a profile the construction is exactly the legacy one.
+        profiled = self.evidence_profile is not None and action == "implement" and cwd is not None
         if self.isolation is not None:
             # Selected isolation is the only Claude path: there is no branch back to the host runtime.
+            # With a container profile the SAME delivery travels, resolved into container paths.
             return self.isolation.runtime(model=model, runtime=assignment.runtime,
                                           max_budget_usd=assignment.controls.get("max_budget_usd"),
-                                          settings_document=claude_settings(assignment.runtime))
-        project = ({"project_delivery": worker_delivery(self.evidence_profile, cwd)}
-                   if self.evidence_profile is not None and action == "implement" and cwd is not None else {})
+                                          settings_document=claude_settings(assignment.runtime),
+                                          project_delivery=container_worker_delivery(
+                                              self.evidence_profile, cwd, self.isolation.config) if profiled else None)
+        project = ({"project_delivery": worker_delivery(self.evidence_profile, cwd)} if profiled else {})
         return ClaudeCodeRuntime(model=model, runtime=assignment.runtime,
                                  executable=assignment.controls.get("executable"),
                                  max_budget_usd=assignment.controls.get("max_budget_usd"),
@@ -480,10 +498,12 @@ class Executor:
             required["review_context"] = (review_context(cwd) if self.isolation is None
                                           else isolated_review_context(cwd, self.isolation.config))
             if self.evidence_profile is not None:
-                # Rebound to THIS clean checkout, never the implementation workspace.
-                required["review_context"]["project_evidence"] = execution_instructions(self.evidence_profile, cwd)
+                # Rebound to THIS clean checkout, never the implementation workspace. A container
+                # profile states the same check ids in container terms, so the reviewer never runs
+                # the candidate's checks on this host.
+                required["review_context"]["project_evidence"] = self._project_instructions(cwd)
         elif action == "implement" and self.evidence_profile is not None:
-            required["project_evidence"] = execution_instructions(self.evidence_profile, cwd)
+            required["project_evidence"] = self._project_instructions(cwd)
         # INV-SESSION-001: task identity is stable, but recovery belongs to one
         # stage, evidence set and harness revision; never replay shortlist as final.
         binding = {"stage": stage, "evidence_ref": raw["ref"], "basis_revision": basis_revision}

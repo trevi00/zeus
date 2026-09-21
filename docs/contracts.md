@@ -952,7 +952,21 @@ exact pending `review_lead` decision, its succeeded worker task with the same co
 result, the candidate revision and an actual `evidence_inspections` row bound to that task id,
 generation, attempt and source revision must pass `require_all_checked`; a summary verdict string
 is insufficient and a missing, foreign or incomplete row stops with `evidence_gate_refused` and
-zero reviewer calls. Worker retry/failure/exception, ledger exhaustion, a lead rejection (no
+zero reviewer calls. That refusal keeps its terminal `failed` status and its cancelled pending
+review exactly, and in the SAME durable finalization it records one bounded owner handoff on the
+operation row (`owner_handoff`, `urn:zeus:operation-evidence-handoff:1`): reason code, operation,
+correlation, task/generation/attempt, candidate fields, bounded artifact refs, the inspection's id,
+bound/known flags, verdict, denominator, per-claim status counts and the inspection-bound passed and
+remaining check items, owner `lead:improvement`, next action `inspect_evidence_contract`, status
+`pending_owner`. It is a visible request for an owner: no raw output, cause text, command or
+credential enters it, it grants no retry, acceptance, model call, merge or deployment authority, and
+it schedules no follow-up - `pending_owner` is never presented as running work. A missing or
+unbound inspection is stated as explicitly unknown, never as a clean denominator. The record is
+deterministic and written once, so a repeated finalization or a lost response returns the identical
+handoff through `operate status` and, for a lane job, through the safe counts-only `owner_handoff`
+projection recorded by `Fleet.finalize` and shown by `fleet status`; historical receipts are never
+rewritten, and a job without a handoff keeps its exact previous shape. Worker
+retry/failure/exception, ledger exhaustion, a lead rejection (no
 rework, diagnosis or retry), an unproven or non-boolean verdict and repeated idle turns end the
 run as failed, exhausted, rejected or unknown. `accepted` requires a succeeded accepted review_lead
 decision for the worker's candidate revision, all slots settled and a collection without sink
@@ -1240,9 +1254,34 @@ the repository-root working directory and the legacy path without a profile are 
 is derived from model output. Delivery is recorded as digests; whether the installed CLI honoured
 the rules is decided by a real canary, not by this configuration.
 
+Version 2 (`urn:zeus:project-evidence:2`) is the same contract declared for the pinned isolation
+image: the closed fields gain `execution` (`{kind: "container", image: "sha256:<64hex>"}`) and every
+context interpreter must be the trusted in-image path `/opt/zeus/bin/python`. The checks grammar,
+the Python-only argv boundary, the packaged allowlist, the worker schema, the observation rules and
+the classifier are shared with version 1 unchanged. A version-2 profile REQUIRES the host isolation
+selection and refuses without it, under another image or with a host interpreter; a version-1 (host)
+profile beside isolation stays refused; an absent profile is exactly the legacy path. All of that is
+decided in `bootstrap.host_isolation` and the `Executor` constructor, before any provider entry, and
+nothing falls back to the host. Contexts are verified against the real candidate tree on the host
+(existence, containment through symlinks, dependency byte digests) and then mapped to `/workspace`:
+the values that execute are container paths, the image interpreter and a fixed allowlisted container
+environment, never a host path, host interpreter or inherited host value. Profile digest, execution
+image/limits/isolation digest, relative contexts, dependency digests and the environment digest are
+bound into the inspection identity and cache key. The worker delivery is the same `worker_delivery`
+resolved in container terms and travels in the isolated request under its own protocol
+(`zeus-isolated-worker-v1-project-evidence`), so an entry that predates delivery refuses explicitly
+instead of dropping the checklist and answering as an unprofiled run; protocol and delivery must
+agree in both directions. Replay is the verifier container of `DockerEvidenceInspector` - the same
+function, so ownership, records, cleanup debt and refusals cannot drift - entered at the check's own
+container context directory; the host lead reviews with the same check ids resolved for its own
+checkout and is told explicitly that these commands do not exist on the host. Missing, duplicate,
+unknown, `not_run`, unauthorized and mismatched observations stay non-passing exactly as in
+version 1, and diagnostic prose confers no verification credit.
+
 - INV-ISOLATED-WORKER-001: Worker isolation is a host opt-in (`ZEUS_WORKER_ISOLATION=docker` with
 `ZEUS_WORKER_IMAGE=sha256:<64hex>`); absent, host execution is exactly unchanged; unknown or partial
-configuration, a host project-evidence profile beside it, an unavailable daemon or image and a
+configuration, a version-1 host project-evidence profile beside it (a version-2 container profile
+naming this exact image is the one accepted pairing), an unavailable daemon or image and a
 missing `CLAUDE_CODE_OAUTH_TOKEN` refuse before any reservation or provider, and a selected isolation
 never falls back to the host. Mode, image and limits are bound into the operation identity, the
 invocation request, the result and the replay cache identity; image, mounts, executable and

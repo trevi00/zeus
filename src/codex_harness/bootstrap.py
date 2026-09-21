@@ -66,21 +66,29 @@ def host_evidence_profile():
 
 def host_isolation(evidence_profile=None):
     """INV-ISOLATED-WORKER-001: the host-selected isolated worker, or None when the host configured
-    none. Unknown or partial configuration, a host project-evidence profile beside it, an unavailable
-    daemon or image and a missing worker token all raise here, before any executor or provider
-    exists; nothing falls back to host execution."""
+    none. Unknown or partial configuration, a version-1 (host) project-evidence profile beside it, a
+    version-2 (container) profile without it or naming another image, an unavailable daemon or image
+    and a missing worker token all raise here, before any executor or provider exists; nothing falls
+    back to host execution."""
     from codex_harness.adapters.isolated_worker import (
         IsolatedWorker,
         IsolationError,
         load_isolation,
         preflight,
     )
+    from codex_harness.domain.project_evidence import requires_container
 
     config = load_isolation(settings())
+    container_profile = requires_container(evidence_profile)
     if config is None:
+        if container_profile:
+            raise IsolationError("project_evidence_profile_requires_isolation")
         return None
-    if evidence_profile is not None:
+    if evidence_profile is not None and not container_profile:
         raise IsolationError("isolation_refuses_project_evidence_profile")
+    if container_profile and evidence_profile["execution"]["image"] != config["image"]:
+        # The profile names an image the host did not select: refused here, before any container.
+        raise IsolationError("project_evidence_image_mismatch")
     preflight(config)
     return IsolatedWorker(config, runtime_dir() / "isolated-worker")
 
