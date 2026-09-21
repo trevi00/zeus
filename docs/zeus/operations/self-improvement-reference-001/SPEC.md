@@ -1654,3 +1654,120 @@ must keep execution success, analysis rejection, repair settlement and notice de
 Reuse the existing module owners. No UI redesign, upstream execution, unrelated warnings or
 runtime enablement. Completion remains independent review + required CI + exact release binding
 and one real corrected/resumed held analysis; this corrective submission alone is not completion.
+
+### Evidence-checklist delivery and retained-candidate review (2026-09-21)
+
+**Outcome / reframe.** User authorized direct review, repair of the submission/handoff structure,
+then end-to-end acceptance. Completion is satisfied acceptance items with bound evidence, not
+elapsed time. Existing process/network/cleanup deadlines remain containment safeguards; hitting
+one produces incomplete/recovery-required state, never success. Do not change a running manifest,
+raise limits, rewrite failed receipts, relaunch the previous job or ask the worker to reimplement
+already preserved repair code. This section is the next bounded delivery in this SAME frame.
+
+**Facts and accepted scope.** Candidate afe6cb37cfa9909c5ad70c7869fe6ec278ae4c85 is preserved.
+Its four owner-required checks each passed two isolated replays. Three additional `timeout 540
+python -m pytest ...` claims were not replay-authorized: inspection
+4e3e042b36826b96336259f69a66790fbacacff8ff8816c5362bd4787c1e3d36 has 4 checked / 3 not_checked,
+not a timeout or a failing test. The original operation remains failed/evidence_gate_refused.
+Owner independently reran the original four counterexamples at afe6cb3: all safe (pause and
+pending-marker admission refused, exactly one two-strike notice, unrelated target stays deferred).
+Raw script/receipt: artifacts/self-improvement-reference-001/review-audit-repair-002.{py,json} on D.
+Owner ran the additional nine unique test modules WITHOUT the timeout shell wrapper on Windows:
+191 passed / 38 skipped in 24.61s. This is host evidence, not replacement container replay; skips
+remain unexecuted. Clean candidate preserved. Direct review accepts the original R1/R2 and contained
+guard fixes in this tested scope; full CI/isolated PG and live resumed-analysis acceptance remain.
+No new functional blocker was established within that resubmission scope. Generalized internal
+notice-proof hardening is not a new blocker without a reachable untrusted producer.
+
+**Failure family / discriminating check.** The worker can still choose the legacy evidence list,
+and every extra command becomes a required claim. Prompt-only exact-command guidance did not
+prevent that mismatch. The existing host profile already owns check IDs, required denominator,
+commands, observed exits, replay and reviewer binding; it deliberately refuses Docker isolation.
+SSOT read at runtime ab02a1f and candidate afe6cb3: domain/project_evidence.py,
+adapters/project_evidence.py, isolated_worker.py, isolated_worker_entry.py, isolated_evidence.py,
+executor.py, bootstrap.py, operation_cli.py and application/operation.py. No external API change
+is assumed. Selected correction is to connect that existing contract to isolated execution and
+expose a durable failure handoff, rather than whitelist timeout wrappers or relax all_checked.
+
+**Complete affected path.** Host config/profile -> strict parse and isolation selection -> operation
+identity -> executor's pinned worker schema/instructions -> container request/entry -> Claude result
+observations -> immutable candidate/profile/image/environment snapshot -> credential-free isolated
+replay -> EvidenceInspections -> operation gate -> independent reviewer context -> final receipt /
+failure handoff -> existing Fleet status. Git owns definitions, host owns profile and image, PG owns
+execution/inspection/handoff state. Worker output owns neither required checks nor authorization.
+
+**Design: reuse one checklist contract.** Preserve version-1 HOST profiles and all legacy behavior
+when no profile is configured. Add an explicit closed version-2 container variant to the same
+project_evidence parser/schema owner: root schema `urn:zeus:project-evidence:2`, contexts, checks,
+execution={kind:"container",image:"sha256:<64hex>"}. Contexts retain cwd/interpreter/source_paths/
+dependency_files; interpreter MUST equal the existing TRUSTED_PYTHON container path. Image MUST
+equal host-selected immutable isolation image. Version 2 requires isolation, version 1 with
+isolation continues to refuse; do not silently reinterpret a host interpreter as a container path.
+Unknown versions/fields, missing profile, mismatched image, missing context/dependency or escaped
+path refuse before provider reservation. Read the host profile once; never load it from candidate
+files or model claims. Reuse current checks grammar, worker_schema, observed_checks and classifier.
+
+Resolve candidate-relative paths against the checked tree, then explicitly map to WORKSPACE in the
+container. Only the pinned image interpreter and a fixed allowlisted environment may execute.
+Bind profile digest, candidate revision/tree, image/limits, relative contexts, dependency digests,
+effective environment and policy into operation/inspection identity. No host PATH/interpreter/env
+leak, no network or credential in verification containers, no new mounts or host fallback. Keep
+existing container ownership, finite capture, cancellation and cleanup-debt guards. A configured
+old image/entry that does not understand delivery must refuse, never drop the profile silently.
+
+Deliver host-authored exact commands/settings and the typed per-check observation schema through
+the isolated request/entry to Claude. Reuse worker_delivery semantics with explicit container
+contexts, not host absolute paths. Every required check yields one executed exit or not_run/null;
+missing/duplicate/unknown IDs, nonzero mismatches and empty observations remain non-passing.
+Diagnostic commands/results belong in summary, outside the required denominator, and confer no
+verification credit or replay authority. Independent review still considers material diagnostic
+failures: this separation must not hide a real defect. Do not normalize model command strings or
+strip a timeout wrapper from an existing receipt to manufacture a pass.
+
+Compose the existing project-check classification with Docker replay rather than introducing a
+second policy or a parallel evidence store. Replay each check in its resolved container cwd/env
+using trusted interpreter and the same image. Preserve expected/reported/observed exits, all runs,
+one aggregate deadline and authoritative gate. Reviewer receives the same profile/check IDs bound
+to its own checkout and explicit container execution instructions; it must not run /workspace
+commands on the Windows host. A container profile requires the corresponding isolated check runner.
+Bootstrap, operate and autonomous entry points must agree on profile/isolation loading order and
+identity. No global profile activation or runtime image rebuild/deploy by the worker.
+
+**Failure handoff.** On operation evidence refusal, preserve the existing failed terminal state and
+cancelled pending review. In the same durable finalization, add one bounded, idempotent owner handoff
+to the existing operation receipt (no new daemon): reason code, operation/task/generation/attempt,
+candidate revision, inspection ID, per-check/claim status counts and bounded refs, passed/remaining
+items, owner `lead:improvement`, next_action `inspect_evidence_contract`, status `pending_owner`.
+Do not include raw output/exception strings or credentials. It grants no retry, acceptance, model
+call, merge or deployment authority. Missing/unbound inspection is explicitly unknown. Repeated
+finalization/lost response returns the same handoff; expose it through existing operation/Fleet
+status projections. Current failed operation is historical; do not mutate it in tests or migration.
+Automatic follow-up/recovery scheduling is outside this batch: pending_owner must be visible rather
+than presented as running. Existing two-strike research can consume this evidence in its own lane.
+
+**Acceptance matrix / single batch.**
+- Normal: fixed IDs traverse host -> actual isolated entry -> result -> isolated replay -> reviewer
+  context/gate; exact required denominator, no model-selected command authority.
+- Failure/unknown: absent/invalid profile/image/context, missing/duplicate/unknown ID, failed exit,
+  not_run, diagnostic prose and disallowed command cannot create a false pass; failure handoff binds
+  to actual durable inspection and preserves candidate/old history.
+- Compatibility: host v1 and no-profile legacy remain unchanged; old entry refuses unsupported
+  container delivery explicitly; Python-only check restriction remains.
+- Ownership: deadline/cancel/lease loss during replay stops owned work, leaves truthful debt,
+  launches no replacement; image/profile/env changes invalidate cached proof.
+- Restart/concurrency: repeated finalization produces one stable handoff; identity changes cannot
+  reuse an inspection or operation; no duplicated diagnostic-triggered execution.
+- Platforms: domain/adapter focused checks plus existing Windows/Linux CI; owner real Docker
+  canary with no model first, then one actual isolated model/check/review flow after accepted build.
+- Completion: independent review + required CI + container profile canary + one fixed-denominator
+  implementation/review completion. Retained audit-repair live resume follows that accepted release.
+
+Worker scope: existing project_evidence, isolated_worker/entry/evidence, executor/bootstrap,
+operation/autonomous entry points, operation/finalization/receipt projections, focused tests and
+contracts documentation. Keep audit-repair functionality unchanged. No arbitrary replay commands,
+global config, live DB, source-audit admission, model routing/time-limit change, merge or release.
+During this bootstrap run the deployed worker still uses the LEGACY schema: submit only exact
+successful `python -m pytest ... <explicit test files>` / `python -m ruff check . --no-cache`
+commands. Report extra diagnostic wrappers in summary. Do not run an unscoped full suite. This
+bootstrap limitation is explicit; the feature itself must be tested with typed profiles. If the
+bootstrap submission is refused, preserve it for owner review, do not auto-repeat.
