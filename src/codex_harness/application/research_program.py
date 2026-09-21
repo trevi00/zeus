@@ -16,11 +16,28 @@ the selection transaction - an adapter may never supply one as a discovery item 
 cycle reservation bookkeeping and the candidate selection commit together. `portfolio_investigations`
 is read only: no owner disposition, Fleet job or investigation state is ever written here, a dispatch
 result is never an incident resolution, and an unknown outcome keeps its claim instead of releasing it.
+
+The audit-progress bridge (self-improvement-reference-001) is the SAME path for a second explicit
+candidate kind: an opt-in `audit_progress_source` synthesizes candidates from the authoritative
+`portfolio_investigations` rows of that kind together with their epoch state and their completed
+windows, revalidates all of it inside the selection transaction, and claims through the same
+cross-program dispatch bucket. Failure-family eligibility, its counts and its snapshot are
+untouched, the two kinds are counted and reported apart, and no audit, partition, task or window row
+is ever written here: a claim is a research dispatch, never an audit decision or a promotion.
 """
 from __future__ import annotations
 
 from uuid import uuid4
 
+from codex_harness.application.audit_progress import (
+    BUCKET_STATE as BUCKET_PROGRESS_STATE,
+)
+from codex_harness.application.audit_progress import (
+    BUCKET_WINDOWS as BUCKET_PROGRESS_WINDOWS,
+)
+from codex_harness.application.audit_progress import (
+    packaged_policy,
+)
 from codex_harness.application.autonomous import BUCKET as BUCKET_RUNS
 from codex_harness.application.fleet import BUCKET_JOBS
 from codex_harness.application.portfolio import (
@@ -28,6 +45,18 @@ from codex_harness.application.portfolio import (
     BUCKET_INVESTIGATIONS,
     FAMILY_MINIMUM,
     RESEARCH_REQUIRED,
+)
+from codex_harness.domain.audit_progress import KIND as AUDIT_PROGRESS
+from codex_harness.domain.audit_progress import (
+    candidate_label as progress_label,
+)
+from codex_harness.domain.audit_progress import (
+    eligible_candidates,
+    policy_digest,
+    validate_policy,
+)
+from codex_harness.domain.audit_progress import (
+    snapshot as progress_snapshot,
 )
 from codex_harness.domain.model import require, utcnow
 from codex_harness.domain.research_investigations import (
@@ -78,11 +107,17 @@ BUCKET_PROGRAMS, BUCKET_CANDIDATES, BUCKET_CYCLES = ("research_programs", "resea
                                                      "research_program_cycles")
 BUCKET_DISPATCHES = "research_investigation_dispatches"
 ELIGIBLE_REASON, INELIGIBLE_REASON = "portfolio_investigation_eligible", "investigation_ineligible"
+PROGRESS_ELIGIBLE_REASON, PROGRESS_INELIGIBLE_REASON = "audit_progress_eligible", "audit_progress_ineligible"
 
 
 class ResearchProgram:
-    def __init__(self, store, clock=utcnow, token=lambda: uuid4().hex):
+    def __init__(self, store, clock=utcnow, token=lambda: uuid4().hex, progress_policy=None):
         self.store, self.clock, self.token = store, clock, token
+        # The audit-progress thresholds in force, as versioned data only: this state machine never
+        # measures an audit, never observes one and never edits a threshold. It reads the digest so
+        # a candidate recorded under other thresholds can never be dispatched as if it were current.
+        self.progress_policy = validate_policy(packaged_policy() if progress_policy is None else progress_policy)
+        self.progress_policy_sha256 = policy_digest(self.progress_policy)
 
     # ----- registration -----------------------------------------------------------------------
     def register(self, config: dict, repository: str, verified_local: list) -> dict:
@@ -232,6 +267,7 @@ class ResearchProgram:
                 known[key] = candidate
                 tx.put(BUCKET_CANDIDATES, candidate["_key"], candidate)
             bridge = self._investigations(tx, row, cycle, known, now)
+            progress = self._audit_progress(tx, row, cycle, known, now)
             room = headroom(config["budget"], counts)
             selection = select_candidate(list(known.values()), row["adoptions"], config["max_adoptions"], room)
             chosen = selection["candidate"]
@@ -242,10 +278,13 @@ class ResearchProgram:
                 row["adoptions"] += 1   # every dispatched attempt counts, from the claim on
                 tally["selected"] = 1
                 if chosen["source"] == INVESTIGATION:
-                    # The cross-program claim commits with this selection and this cycle bookkeeping.
-                    bridge["claimed"] = self._claim_investigation(tx, chosen, cycle, now)["investigation"]
+                    # The cross-program claim commits with this selection and this cycle
+                    # bookkeeping. One bucket, one claim per candidate id, whatever the kind.
+                    claimed = self._claim_investigation(tx, chosen, cycle, now)["investigation"]
+                    receipt = progress if chosen.get("kind") == AUDIT_PROGRESS else bridge
+                    receipt["claimed"] = claimed
             cycle.update(status=SELECTED if chosen else NO_SELECTION, counts=tally, sources=sources, budget=budget,
-                         investigations=bridge,
+                         investigations=bridge, audit_progress=progress,
                          selection={"candidate": None if chosen is None else chosen["id"], "reason": selection["reason"],
                                     "source": None if chosen is None else chosen["source"]},
                          remaining={"cycles": cycle["remaining"]["cycles"], "adoptions": config["max_adoptions"] - row["adoptions"]},
@@ -300,14 +339,72 @@ class ResearchProgram:
                                 seen=existing["seen"] + 1, updated_at=now)
             tx.put(BUCKET_CANDIDATES, existing["_key"], existing)
         for entry in known.values():
-            if entry["source"] != INVESTIGATION or entry["status"] != ELIGIBLE or entry.get("investigation") in current:
-                continue
+            if (entry["source"] != INVESTIGATION or entry.get("kind") == AUDIT_PROGRESS
+                    or entry["status"] != ELIGIBLE or entry.get("investigation") in current):
+                continue    # another kind's candidates are owned by their own rule, never by this one
             # State, scope or a competing claim changed: drop the cached snapshot with the eligibility.
             entry.update(status=IGNORED, reason=INELIGIBLE_REASON, snapshot=None, updated_at=now)
             tx.put(BUCKET_CANDIDATES, entry["_key"], entry)
             ineligible += 1
         return {"counts": found["counts"], "new": new, "ineligible": ineligible, "claimed": None,
                 "result": None, "reported_result": None}
+
+    def _audit_progress(self, tx, row: dict, cycle: dict, known: dict, now: str) -> dict | None:
+        """Synthesize and REVALIDATE this program's audit-progress candidates from the authoritative
+        rows in this transaction, immediately before selection. `None` when the program did not opt
+        in: no progress bucket is read and the legacy behaviour is byte-identical.
+
+        The candidate row, its epoch and BOTH completed windows are re-read here, so a candidate
+        whose owner disposition, epoch, policy digest, window membership or authorized audit changed
+        since an earlier tick simply stops being eligible and its cached snapshot is dropped. A
+        discovery item can never forge one: nothing outside these reads reaches this rule, and
+        nothing in the portfolio, the audit or its windows is written.
+        """
+        source = row["config"].get("audit_progress_source")
+        if source is None:
+            return None
+        claimed = {d["investigation"] for d in tx.scan(BUCKET_DISPATCHES) if type(d.get("investigation")) is str}
+        found = eligible_candidates(candidates=tx.scan(BUCKET_INVESTIGATIONS),
+                                    windows=tx.scan(BUCKET_PROGRESS_WINDOWS),
+                                    states=tx.scan(BUCKET_PROGRESS_STATE), source=source, claimed=claimed,
+                                    required_state=RESEARCH_REQUIRED,
+                                    policy_sha256=self.progress_policy_sha256)
+        current, new, ineligible = {}, 0, 0
+        for entry in found["candidates"]:
+            candidate, identifier = entry["candidate"], entry["candidate"]["id"]
+            key = candidate_key(INVESTIGATION, identifier)
+            current[identifier] = key
+            document = progress_snapshot(candidate=candidate, windows=entry["windows"], program_id=row["id"],
+                                         cycle_number=cycle["number"], topic=source["topic"], observed_at=now)
+            existing = known.get(key)
+            if existing is None:
+                short = progress_label(identifier)
+                existing = {"id": short, "program": row["id"], "key": key, "source": INVESTIGATION,
+                            "kind": AUDIT_PROGRESS, "url": None, "path": None, "sha256": None, "title": None,
+                            "summary": None, "content_sha256": document["windows"][-1]["members_sha256"],
+                            "topic": source["topic"], "reason": PROGRESS_ELIGIBLE_REASON, "status": ELIGIBLE,
+                            "investigation": identifier, "audit_id": candidate["audit_id"],
+                            "epoch": candidate["epoch"], "snapshot": document, "first_cycle": cycle["number"],
+                            "last_cycle": cycle["number"], "seen": 1, "claimed_cycle": None, "result": None,
+                            "created_at": now, "updated_at": now, "_key": row["id"] + ":" + short}
+                new += 1
+                known[key] = existing
+            elif existing["status"] == CLAIMED:
+                continue    # its dispatch owns the candidate; a claim is never recomputed
+            else:
+                existing.update(status=ELIGIBLE, reason=PROGRESS_ELIGIBLE_REASON, snapshot=document,
+                                content_sha256=document["windows"][-1]["members_sha256"],
+                                last_cycle=cycle["number"], seen=existing["seen"] + 1, updated_at=now)
+            tx.put(BUCKET_CANDIDATES, existing["_key"], existing)
+        for entry in known.values():
+            if (entry.get("kind") != AUDIT_PROGRESS or entry["status"] != ELIGIBLE
+                    or entry.get("investigation") in current):
+                continue
+            entry.update(status=IGNORED, reason=PROGRESS_INELIGIBLE_REASON, snapshot=None, updated_at=now)
+            tx.put(BUCKET_CANDIDATES, entry["_key"], entry)
+            ineligible += 1
+        return {"counts": found["counts"], "new": new, "ineligible": ineligible, "claimed": None,
+                "result": None, "reported_result": None, "policy_sha256": self.progress_policy_sha256}
 
     def _claim_investigation(self, tx, chosen: dict, cycle: dict, now: str) -> dict:
         """The durable cross-program claim, keyed solely by investigation id. A row that appeared in
@@ -411,9 +508,11 @@ class ResearchProgram:
     @staticmethod
     def _project_dispatch(cycle: dict, dispatch: dict) -> None:
         """The cycle receipt carries the dispatch outcome beside the council outcome, so a status or
-        report reader sees a dispatch that is NOT an acceptance without reading another bucket."""
-        if isinstance(cycle.get("investigations"), dict):
-            cycle["investigations"].update(result=dispatch["result"], reported_result=dispatch.get("reported_result"))
+        report reader sees a dispatch that is NOT an acceptance without reading another bucket. The
+        outcome lands on the receipt of the kind that was actually claimed."""
+        name = "audit_progress" if dispatch.get("kind") == AUDIT_PROGRESS else "investigations"
+        if isinstance(cycle.get(name), dict):
+            cycle[name].update(result=dispatch["result"], reported_result=dispatch.get("reported_result"))
 
     def complete_cycle(self, cycle_ref: str, owner: str) -> dict:
         """A collection-only tick (nothing selected) ends here: counted, never a dispatch."""

@@ -1238,3 +1238,189 @@ claims-release-activation-001/receipt.json; audit-recovery-003/receipt.json;
 audit-service-host-canary-003.json; continuous-start-status.json; audit-scheduled-task.xml;
 audit-background.jsonl. Large raw evidence stays on D. Public audit/runtime rows remain the
 live authority; this paragraph is a dated startup observation, not a promise of ongoing health.
+
+### Goal-progress feedback: consolidated frame (2026-09-21 KST)
+
+Outcome: unattended source absorption notices sustained low useful progress and submits ONE
+evidence-bound research topic without waiting for the user to ask for status. Codex owns this
+design/acceptance; Claude implements through Fleet. Existing subscription authorization applies.
+Scope is the active source-audit path plus the existing ResearchProgram investigation bridge.
+No replacement scheduler, invented Fleet failures, automatic retries, automatic patch/merge,
+adoption approval, permission expansion, threshold self-editing or weaker semantic acceptance.
+The current audit may continue while implementation is reviewed; a low count alone is not a crash.
+
+Evidence and decisions:
+- At runtime-171, audit 4aaa63e9... has 1813/1817 paths remaining after 55 live settled executions;
+  source receipts and continuation offsets are accumulating. This establishes low semantic yield,
+  NOT an infinite loop or a cause. D artifacts continuous-progress-measurement.json and
+  continuous-progress-sample.json are dated observations, not authoritative completion records.
+- SSOT: application/goal_progress.py binds ticket closure to exact definitions. Keep it unchanged:
+  a source-audit disposition is not a ticket closure or knowledge promotion. application/portfolio.py
+  groups failed/rejected Fleet jobs only. application/research_program.py already offers scoped,
+  cross-program deduplicated investigation claim -> capture -> council -> independent acceptance.
+- Google SRE, Monitoring Distributed Systems, chapter 6, opened 2026-09-21:
+  https://sre.google/sre-book/monitoring-distributed-systems/ (Symptoms Versus Causes and Setting
+  Reasonable Expectations): use simple actionable symptom rules and distinguish symptoms from
+  causes. This supports investigation rather than inferred diagnosis; it provides NO Zeus threshold.
+- Initial owner policy (not externally validated): a nonoverlapping window of 10 distinct settled
+  audit executions; at least 1 net new semantic path per window; two consecutive below-target
+  windows open a research candidate. Duration and evidence gain accompany the judgement. This
+  intentionally notices low yield even while new source evidence accumulates; it does not assert
+  that every healthy project should meet that rate. Policy is versioned Git data, never model input.
+
+Complete path and ownership:
+1. Existing audit service collects an initial baseline before the first admission and observes
+   terminal settlement. An application use case reads this audit's authoritative source/inventory,
+   partitions, dispositions, tasks/assignments and runner receipts. Artifact bodies are verified
+   via existing FileArtifacts outside a long DB transaction, with state binding rechecked before
+   committing. No model-written aggregate is authoritative. No provider work in this observer.
+2. Persist observation/window state in PG, under source identity + inventory/partition scope digest
+   + policy digest + active runtime/release identity. Restart retains baseline and membership;
+   changed scope/release/policy starts a new epoch without rewriting history or comparing epochs.
+   A terminal task/attempt/generation is counted once; a replay cannot close another window.
+   Initial baseline excludes historical executions from future strike credit. Running tasks are
+   not terminal and never treated as stalled/cancelled just because another task finishes.
+3. Report semantic paths, non-semantic dispositions separately, remaining paths/subsystems,
+   open questions, execution count, elapsed seconds, and distinct verified source-read chunks.
+   Chunk identity uses source object/path and start/end offsets, not command count. Call this
+   distinct ranges, NOT unique bytes or reviewed coverage; overlapping ranges can overlap bytes.
+   Repeated ranges do not create new-evidence gain. Source-read evidence is not semantic completion.
+   Unknown/unreadable/corrupt evidence is unknown, never zero progress or a second strike.
+   A regressed semantic set is visible; net progress is gains minus regressions, not positive-only.
+4. Exactly 10 new settled executions close a window; consecutive valid low-yield windows share
+   an epoch. Adequate progress resets the streak; unknown evidence breaks comparability. Completion
+   is the existing audit contract, not semantic count alone (binary/generated etc remain valid).
+   Two low windows create one portfolio_investigations row with an explicit audit_progress kind,
+   audit/epoch/policy/window references and research_required. No fake job IDs/statuses. Distinguish
+   low_semantic_yield with evidence growth from no_new_evidence; neither is a root cause. Dedup
+   one candidate per epoch, preserving owner dispositions and recording later observations only.
+5. Extend existing ResearchProgram with OPTIONAL audit_progress_source {topic, audit_ids} scoped
+   opt-in. Validate topic and bounded unique exact audit IDs; absent preserves old config/digests.
+   Selection must re-read the candidate AND both authoritative completed windows inside its
+   transaction, verify epoch/membership/threshold/scope and undecided owner state, and claim through
+   the existing cross-program dispatch bucket. Discovery input cannot forge a progress candidate.
+   Keep failure-family eligibility unchanged. Progress snapshots identify kind, scope, complete
+   window hashes and metrics (bounded IDs/sample plus full digest if needed); empty job membership
+   is not presented as a failed-job family. Preserve existing capture/council/result semantics and
+   stale/cross-program/unknown-result claim protection. Selecting a topic is not evidence research
+   completed. Existing council requires research/SSOT before proposal, critical-only challenge,
+   arbitration and independent review; no alternate direct implementation route.
+6. Service status exposes current epoch/window counts, semantic/evidence deltas, unknown reason,
+   streak and candidate ID. General/development/operations observations use allow-listed counts,
+   IDs and safe reason codes. Observation failure is explicitly degraded and leaves audit success
+   separate; it must not silently increment strikes or fail/retry a completed provider execution.
+   Research-program receipts/status show claim and council result through existing surfaces.
+   No new UI design or external notification channel in this batch.
+
+Acceptance matrix / one implementation batch:
+- Normal: new evidence with zero semantic gain is labelled low-yield, not no-work; real semantic
+  progress clears streak; disposition-only changes cannot pretend to be semantic gain. Completion
+  and existing path/subsystem/receipt guards remain unchanged.
+- Failure/unknown: unreadable receipts, absent source, malformed policy, changed state during
+  capture and missing windows never produce a known zero or eligible candidate. Safe diagnostics.
+- Repetition/restart/concurrency: duplicate settlement/tick/restart cannot create extra windows,
+  strikes or dispatch; concurrent programs claim once; completed disposition survives new ticks;
+  epoch change resets comparison; running tasks and original audit rows are never modified.
+- Time/cancel: duration is observation, no inference from a live task age; failed/cancelled work is
+  recorded distinctly and cannot grant semantic credit. Existing executor timeouts remain intact.
+- Routing: two valid low windows -> persisted candidate -> authorized program selection -> immutable
+  capture -> existing council handoff. Disallowed audit and invented discovery are refused. Existing
+  failure-family program tests still pass. Council test doubles must be labelled, not live debate.
+- Platforms/cleanup: focused pure/MemoryStore tests on worker, owner actual isolated PG transaction
+  and duplicate-claim proof, full existing CI Windows/Linux/integration. No raw secrets/source text
+  in status; temporary schemas/artifacts are owned. No new subprocess/OS protocol to test here.
+
+Claude may add domain/audit_progress.py and application/audit_progress.py, packaged
+audit-progress-policy-v1.json, focused tests/test_audit_progress.py, and change audit_service,
+research_program (application/domain/adapters), research_investigations, observation allow-list,
+portfolio projection only as needed for the explicit kind, docs/contracts.md and AUDIT-SERVICE.md.
+Keep unrelated code/tests intact. Run focused progress + audit service + research investigation/
+program + portfolio tests and ruff; owner runs complete suite/CI and live binding validation.
+Stop after this fixed matrix; report unexecuted PG/model/platform checks honestly.
+
+Delivery completion requires accepted code/CI plus deployment of the observer and an authorized
+scoped research consumer, read-only live baseline proof, and real retained observation replay into
+isolated PG demonstrating one candidate and the existing council handoff. Label replay, synthetic
+windows, and actual model execution separately; do not wait for live 20 executions to claim a test.
+Natural live threshold/council outcome remains pending until actually observed. A scoped canary
+may inspect one real candidate if eligible; do not fabricate production stagnation to force it.
+Live rollout occurs at a task boundary with previous runtime retained, no killing an owned model.
+Unknown throughput causes and broader optimization are the resulting topic, not extra blockers
+to this feedback delivery. No adoption/ontology promotion from these raw observations.
+
+#### Observed delivery obstacle and bounded frame revision
+
+The first Fleet job self-improvement-reference-001-goal-progress failed execution_stale before
+producing a candidate. Task 86f26005-b2d2-506d-9917-24e5c448cd6b reserved at 23:21:23 UTC;
+its last renewed lease expired 23:31:23. Preparation of 5212 files / 62,111,643 bytes finished
+23:32:37; the container started and was stopped/removed on the immediate stale heartbeat.
+Run d0497649aaf0471a9c05180bf7c6079e preserves confirmed client/container cleanup. No model
+result or zero-usage claim is supported. Invocation usage remains unknown. A read-only py-spy
+0.4.2 stack observation showed stage_source waiting for Git batch output with its request writer;
+this single sample does NOT prove a deadlock. Separate Docker read-only preflight took 0.16s.
+Preparation elapsed beyond the lease is confirmed; the cause of the preparation delay is unknown.
+Diagnostic source: https://github.com/benfred/py-spy README dump, opened 2026-09-21; no locals read.
+
+Affected assumption: the existing worker can reach its model heartbeat within the initial lease.
+Add one directly required correction to the SAME batch: source preparation must invoke the existing
+lease/cancellation heartbeat as it makes progress, before provider entry, without extending the
+task's existing deadline or weakening stale ownership checks. Pass optional callback through
+isolated_worker.stage_source from IsolatedClaudeRuntime.run; preserve callers without callbacks,
+source bytes/hash/path/ownership rules and cleanup. Test slow multi-file preparation crossing a
+short lease with real Git/files and callback observations; cancellation must prevent container
+start and retain the owned preparation record. Do not invent a general watchdog or investigate
+all subprocess timing. Allowed additionally isolated_worker.py and tests/test_audit_progress.py
+(or tests/test_isolated_worker_preparation.py). The actual delay's cause is a follow-up unless
+this narrow lease-liveness fix fails its acceptance.
+
+Bootstrap exception, owner operation only: after confirming the old owner/container stopped,
+cancel the old task and discard its termination through existing APIs, retaining unknown usage.
+One new Fleet attempt may receive one explicitly logged owner heartbeat after reservation, with
+seconds=POLICY.task_seconds and the existing Workflow deadline clamp. This is a temporary owner
+assist, not proof the runtime is autonomous; the corrected runtime must subsequently run without
+the assist. No repeating renewal loop, deadline extension, new model budget or host fallback.
+
+#### Owner review of bc75905: one bounded correction (2026-09-21 KST)
+
+Independent owner review covered measurement -> window -> candidate -> scoped claim -> capture ->
+council handoff, service status/log wiring and preparation callback. Ruff passed; the focused host
+suite passed 177 tests with 5 skips. A real isolated PostgreSQL and real temporary Git test, with
+synthetic audit records and an explicitly simulated council, raced two programs: exactly one claim
+and one council handoff succeeded. This is NOT a live model/research/deployment result. Keep those
+accepted paths; do not reopen unrelated infrastructure. Candidate remains unaccepted for two
+material measurement defects, both reproduced in MemoryStore AND isolated PostgreSQL (four safe
+assertions failed). Owner reproducer is retained on D as owner-progress-review.py; no production
+audit, model or call ledger was changed.
+
+R1, semantic denominator: ResearchAudits._coverage is the existing COMPLETION denominator: it
+includes generated, duplicate and binary dispositions. It must remain unchanged. Reusing its count
+as semantic_paths causes a valid generated disposition alone to yield adequate_progress. Separate
+literal disposition=semantic paths from all non-semantic disposition counts, while retaining the
+existing completion/remaining-path contract. minimum_semantic_paths compares the NET semantic PATH
+delta, not the path+subsystem total; subsystem progress remains a separate reported fact. Test
+generated/duplicate/binary exclusions, actual semantic gain, a semantic-to-nonsemantic regression,
+and subsystem-only gain, without weakening the existing valid completion dispositions.
+
+R2, observation watermark: with window size 2, baseline -> four completions plus two semantic gains
+-> observe -> identical observe -> two genuinely new zero-gain completions -> observe currently
+creates a research candidate. The second reading assigns OLD leftover executions the NEW opening
+measurement and invents a zero-gain strike. This violates nonoverlapping comparable windows and
+restart/replay acceptance. An overflow has no historical per-execution measurements: do not infer
+them. Record the whole unseen cohort as ONE explicitly not_comparable overflow receipt, consume ALL
+its identities, reset the streak, and anchor the next window at that same complete reading. Its
+actual execution count may exceed the configured size and must be reported honestly; only exactly
+sized comparable windows can count as strikes. A duplicate reading after overflow creates no new
+window. Two wholly NEW low windows must still trigger normally afterwards. Test divisible and
+nondivisible overflow, restart, and observed gains preceding the overflow reading.
+
+One correction batch: change audit_progress domain/application, tests/test_audit_progress.py and
+the related contract/operator documentation only as needed. Preserve routing/ownership/source
+preparation behavior already checked. Execute targeted progress/preparation/service/research-program/
+portfolio tests and ruff only. Do NOT execute the whole suite or the historical Git-baseline test
+inside the reduced container snapshot: owner/CI owns those prerequisites and checks. Preserve the
+previous worker's full-suite failures as history; do not label them passing or remove their receipts.
+In the legacy answer.tests, list only the final successful exact targeted check commands; describe
+failed diagnostic attempts and environment limits in summary. No new model calls, global Git
+configuration, runtime activation, source-audit edits, threshold change, merge or issue closure.
+Owner will re-run these two counterexamples, the affected regressions and required full host/CI
+checks on the final candidate before deployment and actual baseline/consumer verification.

@@ -124,6 +124,16 @@ REGISTRY = {
                                       "remaining_subsystems": _NI, "open_questions": _NI,
                                       "analysis_outcome": _N},
     "operations.audit_service_stopped": {"audit_id": _S, "completed_tasks": _I, "error_type": _N},
+    # self-improvement-reference-001 goal progress: ONE observation of the audit's own records.
+    # Identifiers, counts and fixed codes only - never a path, a cursor, source text or a metric
+    # the model wrote. `status` says what the observation was (baseline, observed, window_closed or
+    # degraded); a degraded observation says nothing about the execution that preceded it, a
+    # `verdict` is an unverified symptom and a `candidate` id is a research topic, not a cause.
+    "operations.audit_progress_observed": {"audit_id": _S, "epoch": _N, "status": _S, "verdict": _N,
+                                           "window_index": _NI, "window_executions": _NI,
+                                           "new_executions": _NI, "semantic_delta": _NI,
+                                           "ranges_delta": _NI, "streak": _NI, "candidate": _N,
+                                           "candidate_created": _B, "unknown": _N, "error_type": _N},
     "operations.alert_suppressed": {"kind": _S, "suppressed": _I},
     "operations.alert_pending": {"kind": _S, "channel": _N, "pending": _I},
     "operations.autonomous_stage": {"run_id": _S, "stage": _S, "state": _S},
