@@ -107,3 +107,28 @@ contains replay-supported exact successful Python commands above; npm commands/r
 Unavailable prerequisites are reported, not claimed passing. Owner verifies actual browser with live
 read-only data, API/PG no-write evidence, independent review, CI and reversible deployment. Finish only
 when these checks support usable pages; documents or a rendered mockup alone do not finish delivery.
+
+## Owner residual assessment — 2026-09-21
+
+Candidate 871c46549a393555bde13e100e56804a73f502e0 stopped at evidence inspection
+2fad0bac8c64691a93df062f3418d56ab653fd33955877bf13eeef4a7c0c99df before independent review.
+Lane PostgreSQL inspection confirms all THREE specified commands passed two identical replays each.
+An additional full-suite command was declared exit-0 evidence although DELIVERY.md reports it failed
+(2949 passed, 464 skipped, 1 failed, 51 errors). Replay stopped at 300.065 seconds with E/F markers
+before a detailed summary. The worker attributes failures to safe.directory and missing ssh-keygen;
+that historical/baseline attribution is not owner-verified. Preserve failure; do not increase timeout
+or waive all evidence to make the run green. Correct the evidence submission semantics.
+
+Architectural obstacle: the fixed frontend capability accepts only the image's frozen package/lock
+digests, checks builds in isolation and does not emit a production bundle. Candidate instead uses
+custom WebGL, adds no graph dependency, and leaves packaged observatory assets unchanged. The owner
+SPEC requested a library and packaged build without accommodating this capability boundary. Do not
+classify this solely as worker failure or silently approve the changed rendering architecture.
+
+Consolidated remaining acceptance: decide custom WebGL versus image-prepared pinned library against
+maintainability/accessibility and requested interaction criteria; produce tracked packaged assets in
+the owner build environment; run the two actually skipped real-PG/read-only tests; correct failed
+full-suite evidence reporting; then independent review, real browser acceptance and CI/deployment.
+Physical Samsung-device acceptance remains deferred as originally specified, despite DELIVERY.md
+listing it among owner tasks. Keep the original scope. No model retry, merge or deployment occurred
+during this assessment. Existing three replay successes remain accepted mechanical evidence.
