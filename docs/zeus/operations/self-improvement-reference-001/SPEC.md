@@ -1813,3 +1813,51 @@ No unscoped pytest, timeout prefix, extra wrapped command in answer.tests, provi
 record changes. Diagnostic attempts remain in summary. This is one code correction, not another
 prompt-only retry of an evidence submission. Finish after these checks; owner retains full CI,
 independent resubmission review and the actual container/checklist/resumed-audit acceptance.
+
+### Owner acceptance and operational handover (2026-09-21)
+
+Continue the SAME delivery and acceptance matrix above. User authorized proceeding without goal
+mode: validate, release, then demonstrate recovery of the actual held analysis. Do not turn source
+inventory completion, all reference absorption or unrelated UI polish into new release criteria.
+
+Candidate 310b8e13bd34d88b73377697bd22c56fad664e36 is accepted by independent decision
+c5735302-672b-4f9e-93a9-2fe81011d8ce. Inspection
+db6820ed5d7ba7ccf9a44e9766ba77cede651ead7942b00f960521af87b18a3e verified both submitted checks;
+review found no remaining blocker within the correction matrix. This is not deployment acceptance.
+The task branch is fast-forwarded to that preserved candidate. Current services remain runtime-173.
+
+Owner batch: full Windows suite and GitHub Windows/Linux/integration at this exact candidate;
+actual pinned-image verifier canary; one actual Claude/checklist/replay/independent-review operation
+in a dedicated fixture repository, PG schema and Redis namespace; normal PR/merge controls; pinned,
+reversible runtime/image handover while existing owners are idle; one scoped held-analysis recovery
+and truthful monitoring. Preserve unsuccessful executions and all historical receipts. Never reset
+an unknown/failed task or silently relabel missing prerequisite evidence as a completed recovery.
+
+Raw evidence lives under D:/workspaces/zeus/artifacts/self-improvement-reference-001:
+owner-checklist-310b8e1.xml, checklist-image-310b8e1-build.log,
+checklist-container-canary-001, checklist-live-canary-001. CI run: 35573794517.
+Image: sha256:df85b10cdfb4e744e81d466d6ed747e6f9ee1398b29f01dab456989e9c635cfa.
+The no-model canary actually replayed a synthetic observation twice in real containers; both
+exited zero and unresolved containers were empty. It does not prove model delivery or recovery.
+
+Separate observed obstacle: source audit task 6bdee495-dc50-4701-8a7b-8806962b3bea is retry/attempt 1
+with ContractError: Unknown or submodule path. Trace its exact retained planning output against the
+pinned manifest before deciding a correction. A similar historical error opens the existing
+two-strike investigation; wording alone does not prove a common cause. No blind resubmission.
+
+Owner observations at 2026-09-21 16:48 KST: checklist-live-canary-001 accepted/lead_accepted,
+with actual Claude Opus 5 implementation and independent review (2 ledger slots), actual isolated
+replay, exact-token artifact matches 0 and no remaining worker/verifier container. Retained receipt:
+checklist-live-canary-001/stdout.json; owner metadata: receipt.json. This small owner-authored fixture
+proves the execution path, not production source-analysis recovery. PR #174 contains the reviewed
+runtime candidate; required CI and deployment are still outstanding.
+
+The separate source-read refusal is now diagnosed from execution artifact
+sha256:c67f36f16ef6c451adb6456e33de39673159dc02d0e0a8f7ea69ea596d864a1e against manifest
+sha256:f70e523819a021a1800f24a1eb984fbc3f24b8ab430b0cb500b5bf5fae88d395 at source commit
+f0e17b4b42cc06974f2afaf15606250939cd4f87. The model proposed four reads; command 2 names
+`docs/rfc/verdict-gate-evidential-force.md`, absent from the manifest. The other three are ordinary
+tracked files. This is an observed invalid planning output, not evidence of a PostgreSQL, Docker or
+submodule failure. The boundary correctly refused it; no task/receipt was rewritten or retried.
+Raw bounded diagnosis: unknown-path-diagnosis-001.json. Planning-output recovery is distinct from
+the currently accepted semantic-draft repair; do not broaden that repair's authority implicitly.
