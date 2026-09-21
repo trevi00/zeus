@@ -13,6 +13,13 @@ groups and counts; it never rewrites a Fleet job, retries anything or resets an 
 Acceptance is never inferred from a job status, and an unknown or missing value never becomes
 success: it stays unknown and is counted as such.
 
+`portfolio_investigations` holds one row per candidate of an explicit kind. The failure family above
+is `failure_family` (legacy rows carry no kind and read as that); `audit_progress` rows are written
+by the audit progress observer, carry no job membership at all and are projected separately, so an
+observed low-yield audit window is never counted, sampled or displayed as a failed-job family. This
+module writes and groups failure families only; it decides nothing about another kind's rows beyond
+the owner's disposition, which is the same explicit record for every kind.
+
 A fourth bucket, `portfolio_followups`, holds the owner's explicit link from ONE historical
 terminal failure to the accepted job that came after it. It says "the owner linked an accepted
 successor with evidence": not that the incident was fixed, the criterion accepted, anything merged
@@ -23,10 +30,12 @@ rather than as resolved history.
 from __future__ import annotations
 
 from codex_harness.application.fleet import BUCKET_JOBS
+from codex_harness.domain.audit_progress import KIND as PROGRESS_KIND
 from codex_harness.domain.fleet import ACCEPTED as JOB_ACCEPTED
 from codex_harness.domain.fleet import DISPATCHING, EXHAUSTED, FAILED, QUEUED, REJECTED, safe_code
 from codex_harness.domain.model import ContractError, digest, utcnow
 from codex_harness.domain.operation import safe_relative_path
+from codex_harness.domain.research_investigations import KIND as FAILURE_KIND
 
 DEFINITIONS_SCHEMA = "urn:zeus:portfolio-definitions:1"
 STATUS_SCHEMA = "urn:zeus:portfolio-status:1"
@@ -361,7 +370,20 @@ def status_projection(definitions: dict, jobs: list[dict], bindings: list[dict],
                                     "criteria_accepted": sum(c["status"] == ACCEPTED_CRITERION for c in criteria),
                                     "jobs_total": len(entries)},
                          "activity": activity, "jobs_truncated": truncated})
-    queue, queue_truncated = _latest(investigations, lambda r: (r.get("updated_at") or "", r["id"]))
+    # Candidate kinds are projected apart. `investigations` stays exactly the failure-family queue
+    # it has always been; a row of another kind (audit progress) has no job membership and is
+    # never shown as a failed-job family (self-improvement-reference-001).
+    families = [row for row in investigations if row.get("kind", FAILURE_KIND) == FAILURE_KIND]
+    progress_rows, progress_truncated = _latest(
+        [row for row in investigations if row.get("kind") == PROGRESS_KIND],
+        lambda r: (r.get("updated_at") or "", r["id"]))
+    progress = [{"id": row["id"], "kind": PROGRESS_KIND, "audit_id": row.get("audit_id"),
+                 "epoch": row.get("epoch"), "reason_code": row.get("reason_code"),
+                 "state": row.get("state"), "windows": list(row.get("windows") or []),
+                 "count": row.get("count"), "evidence_refs": list(row.get("evidence_refs", [])),
+                 "observations": len(row.get("observations") or []),
+                 "updated_at": row.get("updated_at")} for row in progress_rows]
+    queue, queue_truncated = _latest(families, lambda r: (r.get("updated_at") or "", r["id"]))
     candidates = [{"id": row["id"], "family_status": row["family_status"], "reason_code": row["reason_code"],
                    "state": row["state"], "count": row["count"],
                    # A bounded sample of the family's members; `count` is the complete number.
@@ -371,6 +393,8 @@ def status_projection(definitions: dict, jobs: list[dict], bindings: list[dict],
     _, unclassified = failure_families(jobs)
     return {"schema": STATUS_SCHEMA, "definition_sha256": digest(definitions), "projects": projects,
             "investigations": candidates, "investigations_truncated": queue_truncated,
+            # Additive and independent: an older reader keeps its exact previous projection.
+            "progress_investigations": progress, "progress_investigations_truncated": progress_truncated,
             "unbound_jobs": len(rows) - len(bound_ids), "unclassified_failures": unclassified}
 
 

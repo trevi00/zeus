@@ -1601,3 +1601,101 @@ current task, the predecessor result, the checkpoint generation and remaining co
 assignment states, the collection health and the stop or block reason, and they read the store
 only. Fixture executors, buses and releases in the tests are not evidence that a provider, Redis,
 PostgreSQL or a host service ran.
+
+## INV-AUDIT-PROGRESS-001
+
+Goal-progress feedback for ONE selected source audit: the existing audit service observes its own
+records and, after two comparable low-yield windows, records ONE research candidate for the existing
+research program. It adds no scheduler, analysis engine, source reader, executor, promotion
+authority or budget ledger; it calls no model and no provider; it starts, retries, cancels, merges,
+deploys and rewrites nothing; and it never writes a `tasks`, `schedule`, `research_*` or
+`fleet_jobs` row. Thresholds are the packaged `audit-progress-policy-v1.json`
+(`urn:zeus:audit-progress-policy:1`: version 1, `window_executions` 1..100, `minimum_semantic_paths`
+1..1000, `low_yield_windows` 2..10, an authority note): versioned Git data, strictly validated,
+never model input, never defaulted when broken and never edited at runtime. It is owner policy that
+is not externally validated and asserts no healthy rate for any project. ONE observation reads the
+authoritative rows in a short transaction (the audit, its partitions, the coverage rows through the
+EXISTING `ResearchAudits._coverage`/`_observed` authority, the terminal `tasks` rows bound to that
+audit and the source-read receipts), verifies the evidence bodies through the existing artifact
+store OUTSIDE any transaction, then re-reads the same rows and commits only when that binding digest
+is unchanged (`state_changed` writes nothing). An unknown audit, an unpartitioned audit, a malformed
+record, an unreadable store and any other failure are `degraded`: fixed reason code, nothing
+written, no window, no strike, and explicitly separate from the audit execution's own success.
+Durable state is `audit_progress_state` (one row per audit) and `audit_progress_windows` (one
+receipt per closed window). An epoch is audit + inventory/partition scope digest + policy digest +
+release + revision; a changed scope, policy, release or revision starts a NEW epoch with a new
+baseline, never rewrites history and never compares across epochs. The baseline counts every
+already settled execution, so historical work can never earn a strike. A settled execution is a
+terminal `tasks` row (succeeded/failed/cancelled/expired/blocked/superseded) identified by
+task+generation+attempt+status, so a replay, a duplicate tick or a restart counts it once; queued,
+running and retrying rows are live work, never counted, never called stalled and never treated as
+cancelled because another task finished. Exactly `window_executions` uncounted settled executions
+close exactly ONE window per reading, with the oldest members; leftovers stay uncounted, belong to
+the next window and make this one `not_comparable` (`window_overflow`). Each window reports semantic
+paths and subsystems, the non-semantic dispositions separately, remaining paths/subsystems, open
+questions, the execution count, the observed elapsed seconds and the distinct verified source-read
+ranges. A range is (source object or inventory path, start line, start char, next line, next char)
+from the reader's own verified output: DISTINCT RANGES, never unique bytes and never reviewed
+coverage; two receipts of one immutable body are one range, a repeated range is no new evidence and
+source-read evidence is never semantic completion. Net progress is gains minus regressions, so a
+shrunken semantic set is visible and negative. Verdicts: `audit_complete` when the EXISTING audit
+completion contract holds (binary, generated and unavailable dispositions stay valid);
+`unknown_evidence` when any evidence was unreadable or unintelligible; `not_comparable` for an
+overflowed window; `adequate_progress` at or above `minimum_semantic_paths`; `low_semantic_yield`
+when new ranges appeared without semantic gain; `no_new_evidence` when neither did. Only the last
+two add a strike; every other verdict clears the streak, because a comparison that did not hold is
+not evidence of low progress, and unknown evidence is never a known zero or a second strike. At
+`low_yield_windows` consecutive low windows of one epoch, ONE `portfolio_investigations` row of the
+explicit `audit_progress` kind is written in the owner's undecided `research_required` state with
+the audit, epoch, policy digest, the fixed reason code, the window ids and their membership digests
+and the bounded metrics. It carries NO job ids and no Fleet status: an empty membership is never
+presented as a failed-job family, `application/portfolio.py` groups and projects failure families
+exactly as before, its `investigations` queue keeps its previous shape and content, progress rows
+are projected apart in the additive `progress_investigations`, and the failure-family eligibility
+rule skips another kind before it is scanned, so its counts are unchanged. One candidate per epoch:
+a later streak only appends a bounded observation and preserves the owner's disposition, evidence,
+decision, windows and reason code. Consumption is the EXISTING research program. The optional
+`audit_progress_source` (`{"topic": "<configured topic id>", "audit_ids": [...<=10 distinct
+pattern-bound ids]}`) is opt-in per program; absent keeps the legacy canonical config and its digest
+byte-identical, and `null`, `[]`, a wildcard, an unknown topic or any other field is refused with a
+field name only. Inside `record_collection`'s existing transaction the candidates are synthesized
+from the authoritative `portfolio_investigations`, `audit_progress_state` and
+`audit_progress_windows` reads only - an adapter that supplies one is refused exactly as before -
+and a candidate is eligible when it is well formed, its audit is authorized, it is still
+`research_required`, its policy digest is the one in force, its epoch is still that audit's CURRENT
+epoch, every window it names still exists in that epoch, is comparable, carries a low-yield verdict
+and still matches the membership digest recorded with it, and no dispatch claim exists for it across
+ALL programs; excluded rows become bounded fixed counts (`malformed`, `state`, `scope`, `epoch`,
+`window`, `policy`, `claimed`). The claim is the SAME `research_investigation_dispatches` bucket
+keyed solely by the candidate id (one claim across programs and kinds), committed with the selection
+and the cycle bookkeeping; the dispatch row names its `kind`, its bounded `scope` (audit, epoch,
+policy digest) and null job fields. The immutable `urn:zeus:audit-progress-snapshot:1` snapshot
+(identities, fixed codes, both window receipts with membership digests, a bounded member sample with
+explicit truncation, the bounded metrics, the observed time and the explicit unverified trust)
+travels through the existing GitCapture and `snapshot_document` under the `audit_progress` key, so
+no reader mistakes it for a failed-job family; no source text, path, cursor, prompt, output,
+exception, credential or provider stream is copied. Capture, council start, the authoritative
+`autonomous_runs` result reading, the failure/unknown blocking and the stale, cross-program and
+unknown-result claim protection are unchanged, the two kinds are counted and reported apart in
+`status`, the cycle receipts, the report and the event log, and selecting a topic is not evidence
+that research happened: the existing council still owns research, challenge, arbitration and
+independent review. The audit service wires the observer, takes the baseline BEFORE the first
+admission and observes after each terminal settlement; the observation never admits, blocks,
+retries or reinterprets an execution, its failure never changes a stop reason and never increments a
+strike, and `status`, the durable row and the declared
+`operations.audit_progress_observed` event carry allow-listed identifiers, counts and fixed codes
+only, with a foreign status, verdict, identifier or count reduced to a declared code or null rather
+than becoming a Zeus code. Nothing here promotes knowledge, completes an audit, decides an adoption
+or resolves an incident: a recorded candidate is an unverified symptom to research, never a cause.
+Fixture audits, tasks, coverage rows, councils and observers in the tests are not evidence that a
+model, Redis, PostgreSQL or a host service ran.
+Source preparation liveness (same batch): `isolated_worker.stage_source` takes an optional
+`on_progress` callback and `IsolatedClaudeRuntime.run` passes its EXISTING `on_tick` heartbeat into
+it, so the caller's own lease renewal and cancellation check run once the pinned entries are known,
+at most every `PREPARATION_TICK_SECONDS` of materialization and once more before the caller may
+create a container. It is the caller's callback: nothing extends a deadline, renews a lease on its
+own, weakens an ownership or stale check, starts a watchdog or a thread, or changes the exported
+bytes, hashes, paths, modes, refusals or cleanup - a caller that passes no callback behaves exactly
+as before. A callback that refuses propagates unchanged between two files, so no further file is
+written, no container is created or started, and the owned run record is retained as `refused`
+with `preparation_cancelled`, which blocks no later run because no container ever existed.

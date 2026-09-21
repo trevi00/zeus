@@ -368,3 +368,64 @@ run by temporarily restoring the pre-transaction ordering in the same file: all 
 cases failed with `AuditDraftRejected('Duplicate coverage')` and the valid-owner control passed
 under both orderings. A disposable checkout copy was not available in this container, so that
 control ran in the working tree and the ordering was restored before the final run above.
+
+## Goal-progress feedback: consolidated frame (2026-09-21 KST)
+
+Why this batch exists. Successful executions currently mask semantic yield: at runtime-171 the
+selected audit still had 1813 of 1817 paths remaining after 55 settled executions, while receipts
+and continuation offsets kept accumulating. That is low yield, NOT a crash, a stall, an infinite
+loop or a cause. This batch makes the unattended path notice it and submit ONE evidence-bound
+research topic through the paths that already exist. Authoritative rule text: INV-AUDIT-PROGRESS-001
+in `docs/contracts.md`; this note explains and bounds it.
+
+What was added, and what was deliberately not. Added: `domain/audit_progress.py` (policy, epoch,
+window arithmetic, verdicts, the candidate row, the eligibility rule, the council snapshot),
+`application/audit_progress.py` (the observer use case and its two narrow buckets), the packaged
+`resources/audit-progress-policy-v1.json`, the observer wiring plus `progress` facts, the declared
+`operations.audit_progress_observed` event and the `status` projection in
+`adapters/audit_service.py`, the opt-in `audit_progress_source` and the second candidate kind in
+`domain/research_program.py`, `domain/research_investigations.py`,
+`application/research_program.py` and `adapters/research_program.py`, and the kind-aware portfolio
+projection in `application/portfolio.py`. NOT added: a second scheduler, a daemon, a retry, an
+automatic patch, merge or adoption, a model call, a new permission, a new UI, an external
+notification channel, a runtime-editable threshold or any weakening of an existing guard.
+
+| Responsibility | Existing owner it reuses |
+|---|---|
+| What a reviewed path or subsystem is | `application.research.ResearchAudits._coverage` / `_observed` (unchanged) |
+| Evidence bodies and their integrity | `adapters.artifacts.FileArtifacts` (read only, outside any transaction) |
+| The owner's undecided candidate state and disposition | `application.portfolio` (`research_required`, `Portfolio.disposition`) |
+| Claim, capture, council, result authority and blocking | `application.research_program` + `adapters.research_program` (unchanged) |
+| Logs and their allow-lists | `application.observations.Observer`, `domain.observation` |
+
+Operator reading. `zeus audit-service status --audit-id <id>` gains `progress` (observed, epoch,
+policy digest, baseline and counted executions, windows completed, current window index, streak,
+candidate id, last verdict, the last observation and the bounded metrics) and `last_progress` (what
+the running service last recorded). `observed: false` means no observation exists - never that
+progress is zero. A `degraded` observation names its fixed reason (`unknown_audit`,
+`audit_not_partitioned`, `state_changed`, `observation_failed`, `observer_failed`,
+`unreadable_evidence`, `malformed_evidence`) and leaves the audit's own execution result alone; the
+operator action is to look at the named prerequisite, never to retry an execution. A recorded
+candidate is a research topic for the existing program and an owner decision (`researched` or
+`deferred`) through the existing portfolio disposition; it is not an incident, a fix or an approved
+change.
+
+Delivery obstacle carried in the same batch. The first Fleet job for this frame failed
+`execution_stale`: preparation of 5212 files finished after the lease it was reserved under had
+already expired, and the container was stopped on the immediate stale heartbeat. The cause of that
+preparation delay is unknown and remains a follow-up; the narrow correction here is that
+`stage_source` now calls the caller's EXISTING `on_tick` lease heartbeat as it makes progress
+(passed down from `IsolatedClaudeRuntime.run`), so a long preparation renews and re-checks the same
+lease it already owned, and a lease that ends mid-preparation refuses before any container exists
+with the run record retained as `refused`/`preparation_cancelled`. No watchdog, no thread, no longer
+deadline, no weakened ownership check and no change to the exported bytes, paths or cleanup.
+
+Checks actually run for this batch, in this worker container: `python -m pytest
+tests/test_audit_progress.py tests/test_isolated_worker_preparation.py tests/test_audit_service.py
+tests/test_research_program.py tests/test_research_investigations.py tests/test_portfolio.py
+tests/test_isolated_worker.py -q` and `python -m ruff check .`; the observed results are reported
+with the candidate. PostgreSQL (`HARNESS_INTEGRATION=1`), the full suite, CI and any host canary
+were NOT run here and belong to the owner. No model call, provider, Redis, PostgreSQL connection or
+host service start happened in these checks, and nothing in this note is evidence that the observer
+has run in operation: the natural live threshold and its council outcome remain pending until
+actually observed.

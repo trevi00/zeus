@@ -15,10 +15,14 @@ import re
 from datetime import datetime, timedelta, timezone
 from urllib.parse import urlsplit, urlunsplit
 
+from codex_harness.domain.audit_progress import KIND as AUDIT_PROGRESS
+from codex_harness.domain.audit_progress import ProgressRefused
+from codex_harness.domain.audit_progress import validate_source as validate_progress_source
 from codex_harness.domain.council import SCHEMA_AUTONOMOUS_V2, validate_council_manifest
 from codex_harness.domain.dge import parse_deadline
 from codex_harness.domain.model import ContractError, digest
 from codex_harness.domain.operation import ID, REVISION, SHA256, safe_relative_path
+from codex_harness.domain.research_investigations import KIND as FAMILY
 from codex_harness.domain.research_investigations import SOURCE as INVESTIGATION
 from codex_harness.domain.research_investigations import (
     InvestigationRefused,
@@ -35,8 +39,10 @@ CAPTURE_SCHEMA = "urn:zeus:research-capture:1"
 MONITOR_SCHEMA = "urn:zeus:research-program-monitor:1"
 CONFIG_FIELDS = {"schema", "id", "base_revision", "deadline", "interval_seconds", "max_cycles", "max_adoptions",
                  "budget", "topics", "local_candidates", "template"}
-# Opt-in only: an absent `investigation_source` keeps the legacy canonical config and digest exactly.
-OPTIONAL_CONFIG_FIELDS = {"investigation_source"}
+# Opt-in only: an absent `investigation_source` or `audit_progress_source` keeps the legacy
+# canonical config and digest exactly. Each authorizes ONE scoped source for this program's
+# unchanged template plan; neither widens permissions, thresholds or the template.
+OPTIONAL_CONFIG_FIELDS = {"investigation_source", "audit_progress_source"}
 BUDGET_FIELDS = set(NUMERIC_FIELDS)  # the legacy finite shape; `mode` is optional (usage_policy)
 TOPIC_FIELDS = {"id", "keywords"}
 LOCAL_FIELDS = {"id", "topic", "path", "sha256", "rationale"}
@@ -182,6 +188,14 @@ def validate_config(document, policy) -> dict:
             canonical["investigation_source"] = validate_source(document["investigation_source"], {t["id"] for t in topics})
         except InvestigationRefused as exc:
             raise ProgramRefused(exc.reason_code, exc.field) from exc
+    if "audit_progress_source" in document:
+        # Opt-in audit-progress consumption: it authorizes ONLY this program's unchanged template
+        # plan for the named audits. It grants no threshold, no audit action and no wider scope.
+        try:
+            canonical["audit_progress_source"] = validate_progress_source(
+                document["audit_progress_source"], {t["id"] for t in topics})
+        except ProgressRefused as exc:
+            raise ProgramRefused(exc.reason_code, exc.field) from exc
     return canonical
 
 
@@ -309,8 +323,12 @@ def snapshot_document(*, program_id: str, number: int, base_revision: str, fetch
                                   for name in SOURCES if name in sources},
                 "local_bytes_sha256": local_bytes_sha256, "github_detail": github_detail,
                 "trust": "unverified discovery lead; not primary-source verification, not approved knowledge"}
-    if candidate.get("source") == INVESTIGATION and isinstance(candidate.get("snapshot"), dict):
-        document["investigation"] = candidate["snapshot"]
+    document_snapshot = candidate.get("snapshot")
+    if candidate.get("source") == INVESTIGATION and isinstance(document_snapshot, dict):
+        # The bridge snapshot travels verbatim under the name of the kind it describes, so a reader
+        # cannot mistake an audit-progress symptom for a failed-job family.
+        key = "audit_progress" if document_snapshot.get("kind") == AUDIT_PROGRESS else "investigation"
+        document[key] = document_snapshot
     return document
 
 
@@ -366,10 +384,12 @@ def expired(deadline: str, now: str) -> bool:
 
 # ----- projections ------------------------------------------------------------------------------------
 def cycle_view(cycle: dict) -> dict:
-    """Legacy entries keep their keys; `investigations` is the additive bridge receipt (bounded
-    counts, the claimed investigation id and its dispatch result) and stays None when disabled."""
+    """Legacy entries keep their keys; `investigations` and `audit_progress` are the additive bridge
+    receipts (bounded counts, the claimed candidate id and its dispatch result), each None when that
+    source is not configured. They are separate rows of evidence and are never merged."""
     keys = ("id", "number", "status", "counts", "sources", "selection", "budget", "capture", "council", "result",
-            "failure", "stop_reason", "remaining", "started_at", "updated_at", "finished_at", "investigations")
+            "failure", "stop_reason", "remaining", "started_at", "updated_at", "finished_at", "investigations",
+            "audit_progress")
     return {k: cycle.get(k) for k in keys}
 
 
@@ -398,9 +418,13 @@ def program_view(row: dict, cycles: list, candidates: list, dispatches: list | N
                            "claimed": sum(c["status"] == CLAIMED for c in candidates),
                            "ignored": sum(c["status"] == IGNORED for c in candidates)},
             "cycle_receipts": [cycle_view(c) for c in ordered],
-            # Dispatch is counted separately from acceptance: a claimed or dispatched investigation is
+            # Dispatch is counted separately from acceptance: a claimed or dispatched candidate is
             # work in flight, and an accepted council is still not an owner disposition or a fix.
-            "investigations": dispatch_counts(list(dispatches or [])),
+            # The two kinds are counted apart: an audit-progress claim is not a failure family.
+            "investigations": dispatch_counts([d for d in (dispatches or [])
+                                               if d.get("kind", FAMILY) == FAMILY]),
+            "audit_progress": dispatch_counts([d for d in (dispatches or [])
+                                               if d.get("kind") == AUDIT_PROGRESS]),
             "authority": "research program status; counts from the store, not model claims; no merge, deploy or truth"}
 
 
@@ -427,7 +451,8 @@ def monitor_projection(programs: list, cycles: list) -> dict:
     return {"schema": MONITOR_SCHEMA, "programs": out, "truncated": len(ordered) > MONITOR_SAMPLE}
 
 
-__all__ = ["ACTIVE", "BLOCKED", "CAPTURE_SCHEMA", "CLAIMED", "COMPLETED", "CONFIG_SCHEMA", "ELIGIBLE", "HEADROOM",
+__all__ = ["ACTIVE", "AUDIT_PROGRESS", "BLOCKED", "CAPTURE_SCHEMA", "CLAIMED", "COMPLETED", "CONFIG_SCHEMA",
+           "ELIGIBLE", "FAMILY", "HEADROOM",
            "IGNORED", "INVESTIGATION", "MONITOR_SCHEMA", "PAUSED", "STATUS_SCHEMA", "ProgramRefused", "candidate_id",
            "candidate_key", "capture_path", "capture_ref", "config_digest", "council_result", "derive_manifest",
            "headroom", "match_topics", "monitor_projection", "normalize_url", "program_view", "select_candidate",

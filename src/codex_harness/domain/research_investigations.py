@@ -16,6 +16,10 @@ import re
 from codex_harness.domain.model import ContractError, digest
 
 SOURCE = "investigation"
+# The candidate kind THIS rule owns. A `portfolio_investigations` row without a kind is a legacy
+# failure family; a row of another kind (audit-progress, see `domain.audit_progress`) has its own
+# rule, its own counts and its own snapshot, and is never scanned, counted or dispatched here.
+KIND = "failure_family"
 SOURCE_FIELDS = {"topic", "project_ids", "reason_codes"}
 SNAPSHOT_SCHEMA = "urn:zeus:research-investigation-snapshot:1"
 DISPATCH_SCHEMA = "urn:zeus:research-investigation-dispatch:1"
@@ -111,7 +115,8 @@ def eligible_investigations(*, investigations, jobs, bindings, source: dict, cla
     Eligible: the row is well formed, its state is the owner's undecided `required_state`, its reason
     code is authorized by `source`, no dispatch claim exists for it (`claimed`, across ALL programs),
     and at least `minimum` distinct scoped jobs remain. No root cause is derived, no row is modified
-    and a changed owner disposition simply stops being eligible.
+    and a changed owner disposition simply stops being eligible. A row of another candidate kind is
+    skipped before it is scanned: this rule's counts describe failure families only.
     """
     project_ids, reason_codes = set(source["project_ids"]), set(source["reason_codes"])
     job_rows = {j["id"]: j for j in jobs if isinstance(j, dict) and type(j.get("id")) is str}
@@ -120,6 +125,8 @@ def eligible_investigations(*, investigations, jobs, bindings, source: dict, cla
     counts = {"scanned": 0, "eligible": 0, **{name: 0 for name in EXCLUSIONS}}
     candidates = []
     for row in investigations:
+        if isinstance(row, dict) and row.get("kind", KIND) != KIND:
+            continue    # another candidate kind: not this family rule's population at all
         counts["scanned"] += 1
         if not isinstance(row, dict) or type(row.get("id")) is not str or INVESTIGATION_ID.fullmatch(row.get("id") or "") is None:
             counts["malformed"] += 1
@@ -162,25 +169,42 @@ def snapshot(*, candidate: dict, program_id: str, cycle_number: int, topic: str,
 
 def dispatch_row(*, document: dict, candidate_id: str, cycle_ref: str, now: str) -> dict:
     """The `research_investigation_dispatches` claim, keyed SOLELY by investigation id: one claim
-    across programs. It binds program, cycle, the snapshot digest, the scoped job ids and the fixed
-    codes; run and manifest are bound when the council starts, never before."""
+    across programs and across candidate kinds. It binds program, cycle, the snapshot digest, the
+    kind and the fixed codes; run and manifest are bound when the council starts, never before.
+
+    A failure family binds its scoped job ids. Another kind (audit progress) has no job membership
+    at all, so the job fields are explicitly `null` and its own bounded scope travels in `scope`: an
+    empty list would read as a failed-job family with no members, which it is not.
+    """
+    kind = document.get("kind", KIND)
+    family = kind == KIND
     return {"schema": DISPATCH_SCHEMA, "id": document["investigation"], "investigation": document["investigation"],
+            "kind": kind, "scope": None if family else scope_reference(document),
             "program": document["program"], "cycle": cycle_ref, "cycle_number": document["cycle"],
             "candidate": candidate_id, "state": CLAIMED, "snapshot_sha256": digest(document),
-            "family_status": document["family_status"], "reason_code": document["reason_code"],
-            "job_ids": list(document["job_ids"]), "job_ids_total": document["job_ids_total"],
-            "job_ids_sha256": document["job_ids_sha256"], "run_id": None, "manifest_sha256": None,
+            "family_status": document.get("family_status"), "reason_code": document["reason_code"],
+            "job_ids": list(document["job_ids"]) if family else None,
+            "job_ids_total": document["job_ids_total"] if family else None,
+            "job_ids_sha256": document["job_ids_sha256"] if family else None,
+            "run_id": None, "manifest_sha256": None,
             "manifest_ref": None, "result": None, "result_reason": None, "row_status": None,
             "reported_result": None, "failure": None, "claimed_at": now, "started_at": None,
             "finished_at": None, "updated_at": now, "authority": AUTHORITY}
 
 
+def scope_reference(document: dict) -> dict:
+    """The bounded scope of a non-family claim: identifiers and digests only, never a measurement,
+    a path, a cursor or any source text."""
+    return {key: document.get(key) for key in ("audit_id", "epoch", "policy_sha256")}
+
+
 def dispatch_view(row: dict) -> dict:
-    """The bounded read-only projection: identifiers, fixed codes and counts only."""
+    """The bounded read-only projection: identifiers, fixed codes and counts only. `kind` and
+    `scope` are additive: a legacy row reads as the failure family it is."""
     keys = ("investigation", "program", "cycle", "cycle_number", "state", "result", "result_reason", "row_status",
             "reported_result", "run_id", "manifest_sha256", "snapshot_sha256", "family_status", "reason_code",
             "job_ids_total", "job_ids_sha256", "failure", "claimed_at", "started_at", "finished_at", "updated_at")
-    return {k: row.get(k) for k in keys}
+    return {**{k: row.get(k) for k in keys}, "kind": row.get("kind", KIND), "scope": row.get("scope")}
 
 
 def dispatch_counts(rows: list) -> dict:
@@ -197,7 +221,8 @@ def dispatch_counts(rows: list) -> dict:
     return counts
 
 
-__all__ = ["AUTHORITY", "CLAIMED", "DISPATCHED", "DISPATCH_SCHEMA", "EXCLUSIONS", "MAX_JOB_SAMPLE", "MAX_PROJECTS",
-           "MAX_REASON_CODES", "RESOLVED", "SNAPSHOT_SCHEMA", "SOURCE", "TRUST", "InvestigationRefused",
-           "candidate_identity", "candidate_key", "dispatch_counts", "dispatch_row", "dispatch_view",
-           "eligible_investigations", "scoped_job_ids", "snapshot", "validate_source"]
+__all__ = ["AUTHORITY", "CLAIMED", "DISPATCHED", "DISPATCH_SCHEMA", "EXCLUSIONS", "KIND", "MAX_JOB_SAMPLE",
+           "MAX_PROJECTS", "MAX_REASON_CODES", "RESOLVED", "SNAPSHOT_SCHEMA", "SOURCE", "TRUST",
+           "InvestigationRefused", "candidate_identity", "candidate_key", "dispatch_counts", "dispatch_row",
+           "dispatch_view", "eligible_investigations", "scope_reference", "scoped_job_ids", "snapshot",
+           "validate_source"]

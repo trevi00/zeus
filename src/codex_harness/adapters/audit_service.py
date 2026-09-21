@@ -13,6 +13,13 @@ what exists and how far the scope got. The narrow `audit_service` row this modul
 the current owner, the task it bound, the last result and the stop reason, so a restart reconciles
 against the records instead of inferring permission to repeat an attempt.
 
+Goal progress is observed here and decided nowhere here: before the first admission and after each
+terminal settlement this service asks the existing progress observer for ONE reading of the audit's
+own records and records the bounded facts it returned. That observation never admits, blocks,
+retries or reinterprets an execution, an observation failure is reported as `degraded` beside an
+unchanged execution result, and the research candidate it may record is an unverified symptom for
+the existing research program, never an audit verdict.
+
 What an execution DID and what its content was JUDGED to be are reported as two separate facts. A
 draft the typed content boundary refused is a completed execution that retained its work
 (`analysis_rejected`): it holds its own partition at the generation it was assigned, lets another
@@ -29,8 +36,17 @@ from dataclasses import asdict
 from uuid import uuid4
 
 from codex_harness.adapters.operation_cli import refusal
+from codex_harness.application.audit_progress import BUCKET_STATE as PROGRESS_BUCKET
+from codex_harness.application.audit_progress import status_view as progress_view
 from codex_harness.application.scheduling import schedule_audits
 from codex_harness.application.workflow import ClaimGuardRefused
+from codex_harness.domain.audit_progress import (
+    BASELINE,
+    CLOSED,
+    DEGRADED,
+    OBSERVED,
+    VERDICTS,
+)
 from codex_harness.domain.model import ContractError, digest, utcnow
 from codex_harness.domain.observation import (
     ANALYSIS_OUTCOMES,
@@ -41,7 +57,7 @@ from codex_harness.domain.observation import (
 )
 
 __all__ = ["AuditServiceRefused", "AuditServiceRunner", "activation", "add_parser",
-           "analysis_facts", "block_reason", "execute", "refusal", "run", "status"]
+           "analysis_facts", "block_reason", "execute", "progress_facts", "refusal", "run", "status"]
 
 AGENT = "worker:github"
 ACTION = "audit_partition"
@@ -64,6 +80,17 @@ STOP_BY_STATUS = {"failed": "task_failed", "retry": "task_retry", "blocked": "ta
 ANALYSIS_FACTS = ("analysis_outcome", "analysis_reason", "analysis_ref", "analysis_generation")
 NO_ANALYSIS = dict.fromkeys(ANALYSIS_FACTS)
 ARTIFACT_REFERENCE = re.compile(r"sha256:[0-9a-f]{64}")
+SAFE_IDENTIFIER = re.compile(r"[A-Za-z0-9][A-Za-z0-9._:-]{0,127}")
+# The goal-progress observation this service records and logs (self-improvement-reference-001).
+# Only these attributes reach a log or the durable row, and only these fixed codes are declared:
+# anything else a future observer returns is `unknown`, never a new Zeus code.
+PROGRESS_DEGRADED = DEGRADED
+PROGRESS_STATUSES = (BASELINE, OBSERVED, CLOSED, DEGRADED)
+PROGRESS_REASONS = ("unknown_audit", "audit_not_partitioned", "state_changed", "observation_failed",
+                    "observer_failed", "unreadable_evidence", "malformed_evidence")
+PROGRESS_ATTRIBUTES = ("audit_id", "epoch", "status", "verdict", "window_index", "window_executions",
+                       "new_executions", "semantic_delta", "ranges_delta", "streak", "candidate",
+                       "candidate_created", "unknown", "error_type")
 
 
 def analysis_facts(result) -> dict:
@@ -83,6 +110,46 @@ def analysis_facts(result) -> dict:
             "analysis_reason": safe_code(analysis.get("reason_code"), ANALYSIS_REASONS, absent=None),
             "analysis_ref": ref if type(ref) is str and ARTIFACT_REFERENCE.fullmatch(ref) else None,
             "analysis_generation": generation if type(generation) is int else None}
+
+
+def _count(value):
+    """An integer count, or None. A boolean is not a count and a foreign type is unknown."""
+    return value if type(value) is int else None
+
+
+def _identity(value):
+    return value if type(value) is str and SAFE_IDENTIFIER.fullmatch(value) else None
+
+
+def progress_facts(observation) -> dict:
+    """The allow-listed facts of ONE goal-progress observation.
+
+    The observation is data this service reads, never an instruction: a status or verdict outside
+    the declared vocabularies is a fixed code, an identifier that is not an identifier is dropped,
+    and a count that is not an integer is `null` rather than zero. A window delta is arithmetic over
+    the audit's own records, never a semantic or review credit, and a `degraded` observation says
+    nothing at all about the execution that preceded it.
+    """
+    row = observation if isinstance(observation, dict) else {}
+    window = row.get("window") if isinstance(row.get("window"), dict) else {}
+    delta = window.get("delta") if isinstance(window.get("delta"), dict) else {}
+    # An absent or foreign status is not an observation this service can report as one: it reads as
+    # degraded, so an unreadable reading can never be logged as a clean observation.
+    status = safe_code(row.get("status"), PROGRESS_STATUSES, absent=PROGRESS_DEGRADED)
+    status = PROGRESS_DEGRADED if status not in PROGRESS_STATUSES else status
+    unknown = row.get("reason_code") or row.get("unknown")
+    return {"audit_id": str(row.get("audit_id") or ""), "status": status,
+            "epoch": _identity(row.get("epoch")),
+            "verdict": safe_code(row.get("verdict"), VERDICTS, absent=None),
+            "window_index": _count(row.get("window_index")),
+            "window_executions": _count(window.get("executions")),
+            "new_executions": _count(row.get("new_executions")),
+            "semantic_delta": _count(delta.get("semantic_total")),
+            "ranges_delta": _count(delta.get("distinct_ranges")),
+            "streak": _count(row.get("streak")), "candidate": _identity(row.get("candidate")),
+            "candidate_created": bool(row.get("candidate_created")),
+            "unknown": None if unknown is None else safe_code(unknown, PROGRESS_REASONS, absent=None),
+            "error_type": _identity(row.get("error_type"))}
 
 
 class AuditServiceRefused(ContractError):
@@ -135,7 +202,7 @@ def block_reason(state: dict, task) -> dict | None:
 def _default_state(audit_id: str) -> dict:
     return {"id": audit_id, "audit_id": audit_id, "owner": None, "current_task": None,
             "last_task": None, "stop_reason": None, "completed_tasks": 0, "last_collection": None,
-            "started_at": None, "updated_at": None}
+            "last_progress": None, "started_at": None, "updated_at": None}
 
 
 def current_revision() -> str:
@@ -190,9 +257,9 @@ class AuditServiceRunner:
     """
 
     def __init__(self, service, audit_id: str, *, executor=None, bus=None, workflow=None,
-                 observer=None, collector=None, max_tasks=None, revision=None, release_id=None,
-                 partitions=None, owner=None, sleep=time.sleep, interval: float = IDLE_SECONDS,
-                 schedule=schedule_audits):
+                 observer=None, collector=None, progress=None, max_tasks=None, revision=None,
+                 release_id=None, partitions=None, owner=None, sleep=time.sleep,
+                 interval: float = IDLE_SECONDS, schedule=schedule_audits):
         if type(audit_id) is not str or not audit_id.strip():
             raise AuditServiceRefused("audit_id_invalid")
         if max_tasks is not None and (type(max_tasks) is not int or isinstance(max_tasks, bool)
@@ -200,7 +267,7 @@ class AuditServiceRunner:
             raise AuditServiceRefused("max_tasks_invalid")
         self.service, self.audit_id = service, audit_id
         self.executor, self.bus, self.workflow = executor, bus, workflow
-        self.observer, self.collector = observer, collector
+        self.observer, self.collector, self.progress = observer, collector, progress
         self.max_tasks, self.revision, self.release_id = max_tasks, revision, release_id
         self.partitions = partitions
         self.owner = owner or ("audit-service:" + uuid4().hex)
@@ -210,6 +277,9 @@ class AuditServiceRunner:
         self.completed = 0
         # Settled executions of THIS run by analysis outcome; the durable rows stay the authority.
         self.analysis: dict = {}
+        # The last progress observation of this run, as observed facts only; it never decides
+        # admission, never stops this service and never changes an execution's own outcome.
+        self.last_progress: dict | None = None
 
     def stop(self) -> None:
         """Interrupt shutdown: no new assignment is bound; a bound task keeps its own record."""
@@ -278,7 +348,7 @@ class AuditServiceRunner:
         summary = {"audit_id": self.audit_id, "owner": self.owner, "revision": self.revision,
                    "release_id": self.release_id, "reconciliation": recovered, "steps": [],
                    "step_count": 0, "omitted_steps": 0, "completed_tasks": 0, "analysis": {},
-                   "stop_reason": None, "stopped": False}
+                   "progress": None, "stop_reason": None, "stopped": False}
         if recovered["status"] == "reconciliation_required":
             # No admission at all: the previous attempt's outcome is not this run's to decide.
             self._stop(recovered["reason_code"])
@@ -288,6 +358,9 @@ class AuditServiceRunner:
                        attributes={"audit_id": self.audit_id, "release_id": str(self.release_id or ""),
                                    "revision": str(self.revision or ""), "max_tasks": self.max_tasks,
                                    "partitions": int(self.partitions or 0)})
+            # The baseline is taken before the first admission, so every execution that already
+            # settled is excluded from future strike credit (self-improvement-reference-001).
+            self._observe_progress()
         while not self.stopping:
             step = self.step()
             if step["action"] != "idle":
@@ -297,7 +370,7 @@ class AuditServiceRunner:
                 break
             self.sleep(self.interval)
         summary.update(completed_tasks=self.completed, analysis=dict(self.analysis),
-                       stop_reason=self.stop_reason, stopped=self.stopping)
+                       progress=self.last_progress, stop_reason=self.stop_reason, stopped=self.stopping)
         self._emit("operations.audit_service_stopped", "blocked" if self.stop_reason else "observed",
                    reason_code=self.stop_reason,
                    attributes={"audit_id": self.audit_id, "completed_tasks": self.completed,
@@ -419,7 +492,10 @@ class AuditServiceRunner:
                         reason_code=analysis["analysis_reason"],
                         analysis_outcome=analysis["analysis_outcome"], **facts)
         collection = self._collect()
-        step = {"action": "task", **record, "collection": collection}
+        # One observation of THIS audit's own records after a terminal settlement. It reads only;
+        # it never retries this execution, never changes its result and never stops the service.
+        progress = self._observe_progress()
+        step = {"action": "task", **record, "collection": collection, "progress": progress}
         if not succeeded:
             self._stop(_stop_code(status))
             return {**step, "stop_reason": self.stop_reason}
@@ -538,6 +614,40 @@ class AuditServiceRunner:
         self._write(last_collection=health)
         return health
 
+    def _observe_progress(self) -> dict | None:
+        """One goal-progress observation, or None when no observer is wired.
+
+        The observer owns its own reads, its own state and its own degradation: this service only
+        records what it returned and logs the bounded facts. An observation failure is reported as
+        `degraded` and is explicitly separate from the audit execution's own success - it never
+        increments a strike, never fails or retries a completed provider execution, never changes
+        the stop reason and never blocks the next admission.
+        """
+        if self.progress is None:
+            return None
+        try:
+            observation = self.progress.observe(self.audit_id, release_id=self.release_id,
+                                                revision=self.revision)
+            facts = progress_facts(observation)
+        except Exception as exc:
+            observation = {"status": PROGRESS_DEGRADED, "audit_id": self.audit_id,
+                           "reason_code": "observer_failed", "error_type": type(exc).__name__}
+            facts = progress_facts(observation)
+        self.last_progress = facts
+        try:
+            self._write(last_progress=facts)
+        except Exception as exc:      # the durable note is not the observation's authority
+            facts = {**facts, "error_type": facts.get("error_type") or type(exc).__name__}
+            self.last_progress = facts
+        degraded = facts["status"] == PROGRESS_DEGRADED
+        try:
+            self._emit("operations.audit_progress_observed", "blocked" if degraded else "observed",
+                       reason_code=facts["unknown"] if degraded else None,
+                       attributes={key: facts[key] for key in PROGRESS_ATTRIBUTES})
+        except Exception as exc:      # a refused or unavailable log never fails the audit run
+            self.last_progress = {**facts, "error_type": facts.get("error_type") or type(exc).__name__}
+        return self.last_progress
+
     def _emit(self, event_type: str, outcome: str, *, reason_code=None, attributes=None,
               correlation_id=None, causation_id=None) -> None:
         if self.observer is None:
@@ -573,15 +683,21 @@ class AuditServiceRunner:
 # ----- entry points -------------------------------------------------------------------------------
 def build_runner(service, args, observer, gate: dict):
     """Wire the real services around an ALREADY built observer, so the caller can release it even
-    when this wiring fails. The executor is the existing one, with its existing audit runner."""
+    when this wiring fails. The executor is the existing one, with its existing audit runner, and
+    the goal-progress observer reads the same store and the same host artifact root - it starts no
+    process, enters no provider and owns no scheduler of its own."""
+    from codex_harness.adapters.artifacts import FileArtifacts
     from codex_harness.adapters.bus import RedisBus
+    from codex_harness.adapters.configuration import runtime_dir
+    from codex_harness.application.audit_progress import AuditProgress
     from codex_harness.application.workflow import Workflow
     from codex_harness.bootstrap import build_collector, build_executor, redis_url
 
     executor = build_executor(service, observer=observer)
+    progress = AuditProgress(service.store, FileArtifacts(str(runtime_dir() / "artifacts")))
     return AuditServiceRunner(service, args.audit_id, executor=executor, bus=RedisBus(redis_url()),
                               workflow=Workflow(service.store, service.org), observer=observer,
-                              collector=build_collector(service.store, observer),
+                              collector=build_collector(service.store, observer), progress=progress,
                               max_tasks=args.max_tasks, revision=gate["revision"],
                               release_id=gate["release_id"], partitions=gate["partitions"])
 
@@ -638,6 +754,7 @@ def status(service, args) -> dict:
         control = tx.get("research_control", "activation") or {}
         audit = tx.get("research_audits", audit_id)
         predecessor = tx.get("tasks", (state.get("last_task") or {}).get("task_id") or "")
+        progress_state = tx.get(PROGRESS_BUCKET, audit_id)
         partitions = [p for p in tx.scan("research_partitions") if p["audit_id"] == audit_id]
         known = {p["partition_id"]: p for p in partitions}
         assignments, outcomes, held = {}, {}, []
@@ -674,10 +791,13 @@ def status(service, args) -> dict:
             "activation": {key: control.get(key) for key in ("status", "release_id", "revision")},
             "supported_actions": [ACTION], "partitions": scope, "assignments": assignments,
             "analysis": analysis,
+            # The observer's own durable state, read only: a dated observation of this audit's
+            # records, never a completion, a cause or a promise about the current run.
+            "progress": progress_view(progress_state),
             "admission_blocked": block_reason(state, predecessor),
             **{key: state.get(key) for key in ("owner", "current_task", "last_task", "stop_reason",
-                                               "completed_tasks", "last_collection", "started_at",
-                                               "updated_at")},
+                                               "completed_tasks", "last_collection", "last_progress",
+                                               "started_at", "updated_at")},
             "exit_code": 0}
 
 

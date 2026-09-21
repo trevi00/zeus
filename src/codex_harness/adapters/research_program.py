@@ -21,6 +21,7 @@ from codex_harness.adapters.operation_cli import GitSource
 from codex_harness.application.autonomous import BUCKET as RUNS
 from codex_harness.application.dge import DgeRefused
 from codex_harness.application.research_program import ResearchProgram
+from codex_harness.domain.audit_progress import KIND as AUDIT_PROGRESS
 from codex_harness.domain.autonomous import manifest_digest
 from codex_harness.domain.model import ContractError, canonical, digest, utcnow
 from codex_harness.domain.operation import safe_relative_path
@@ -199,6 +200,10 @@ def render_report(view: dict) -> str:
              # accepted council is still not an owner disposition, a fixed incident or a merge.
              "Investigation dispatches (claim and council outcome only, never an owner disposition): "
              + ", ".join(name + " " + str(count) for name, count in view["investigations"].items()), "",
+             # The second candidate kind is reported apart: an observed low-yield audit window is a
+             # research symptom, not a failed-job family and not an audit decision.
+             "Audit progress dispatches (observed low-yield symptom only, never an audit verdict): "
+             + ", ".join(name + " " + str(count) for name, count in (view.get("audit_progress") or {}).items()), "",
              "## Observed cycles", ""]
     for cycle in view["cycle_receipts"]:
         sources = cycle.get("sources") or {}
@@ -214,6 +219,13 @@ def render_report(view: dict) -> str:
                               + str(bridge["ineligible"]) + " claimed " + str(bridge["claimed"])
                               + "; dispatch result " + str(bridge["result"]) + " (reported "
                               + str(bridge["reported_result"]) + ")")
+        progress = cycle.get("audit_progress")
+        investigation_text += ("" if progress is None else
+                               "; audit progress scanned " + str(progress["counts"]["scanned"]) + " eligible "
+                               + str(progress["counts"]["eligible"]) + " new " + str(progress["new"])
+                               + " ineligible " + str(progress["ineligible"]) + " claimed "
+                               + str(progress["claimed"]) + "; dispatch result " + str(progress["result"])
+                               + " (reported " + str(progress["reported_result"]) + ")")
         lines.append("- cycle " + str(cycle["number"]) + " [" + cycle["status"] + "]: sources " + source_text
                      + "; discovered " + str(counts.get("discovered")) + " new " + str(counts.get("new")) + " duplicate "
                      + str(counts.get("duplicate")) + " ignored " + str(counts.get("ignored")) + " selected " + str(counts.get("selected"))
@@ -283,12 +295,15 @@ class ProgramRunner:
         cycle, candidate = recorded["cycle"], recorded["candidate"]
         log.emit("development", "collection_recorded", cycle=number, counts=cycle["counts"], degraded=degraded,
                  selection=cycle["selection"], headroom=cycle["budget"]["headroom"])
-        bridge = cycle.get("investigations")
-        if bridge is not None:   # opt-in bridge only: identifiers and bounded counts, no payload
-            log.emit("development", "investigations_scanned", cycle=number, counts=bridge["counts"],
-                     new=bridge["new"], ineligible=bridge["ineligible"])
-            if bridge["claimed"] is not None:
-                log.emit("general", "investigation_claimed", cycle=number, investigation=bridge["claimed"],
+        for name, event, claim_event in (("investigations", "investigations_scanned", "investigation_claimed"),
+                                         ("audit_progress", "audit_progress_scanned", "audit_progress_claimed")):
+            receipt = cycle.get(name)
+            if receipt is None:   # opt-in bridge only: identifiers and bounded counts, no payload
+                continue
+            log.emit("development", event, cycle=number, counts=receipt["counts"],
+                     new=receipt["new"], ineligible=receipt["ineligible"])
+            if receipt["claimed"] is not None:
+                log.emit("general", claim_event, cycle=number, investigation=receipt["claimed"],
                          candidate=cycle["selection"]["candidate"])
         if degraded:
             log.emit("operations", "source_degraded", cycle=number, sources={n: sources[n]["code"] for n in degraded})
@@ -347,7 +362,8 @@ class ProgramRunner:
         log.emit(category, "council_result", cycle=number, run_id=manifest["id"], **verdict, **claim)
         dispatch = self._dispatch_outcome(candidate)
         if dispatch is not None:   # the store's own authoritative dispatch outcome, never the verdict text
-            log.emit(category, "investigation_result", cycle=number, run_id=manifest["id"], **dispatch)
+            event = "audit_progress_result" if dispatch["kind"] == AUDIT_PROGRESS else "investigation_result"
+            log.emit(category, event, cycle=number, run_id=manifest["id"], **dispatch)
         return self._finish(program_id, log, number, {"reserved": True, "cycle": cycle["id"], "selected": candidate["id"],
                                                       "run_id": manifest["id"], "capture": capture["revision"], **verdict,
                                                       **claim})
@@ -357,8 +373,8 @@ class ProgramRunner:
         if candidate["source"] != INVESTIGATION:
             return None
         row = next((d for d in self.programs.dispatches() if d["investigation"] == candidate["investigation"]), None)
-        return None if row is None else {k: row[k] for k in ("investigation", "state", "result", "result_reason",
-                                                             "reported_result", "row_status")}
+        return None if row is None else {k: row[k] for k in ("investigation", "kind", "state", "result",
+                                                             "result_reason", "reported_result", "row_status")}
 
     def _fail_before_council(self, program_id, log, cycle, owner, capture, stage, exc, claim=None) -> dict:
         """Zero council calls. If the store still records the failure, the cycle is counted, the

@@ -59,6 +59,10 @@ DOCKER_CLIENT_ENVIRONMENT = ("PATH", "PATHEXT", "SYSTEMROOT", "SystemRoot", "COM
                              "USERPROFILE", "PROGRAMDATA", "ProgramData", "DOCKER_HOST", "DOCKER_CONTEXT",
                              "DOCKER_CONFIG", "DOCKER_CERT_PATH", "DOCKER_TLS_VERIFY")
 RESOLVED = ("removed", "refused")
+# How often source preparation calls the caller's existing lease heartbeat while it materializes
+# files. It is a cadence, not a deadline or a renewal of its own: the caller's callback keeps its
+# own renewal interval and its own ownership checks.
+PREPARATION_TICK_SECONDS = 1.0
 
 
 class IsolationError(ContractError):
@@ -194,10 +198,23 @@ def list_revision(repository, revision: str) -> list:
     return entries
 
 
-def stage_source(repository, revision: str, destination: Path) -> dict:
-    """Export the pinned revision into a fresh directory: validated first, materialized after."""
+def stage_source(repository, revision: str, destination: Path, *, on_progress=None) -> dict:
+    """Export the pinned revision into a fresh directory: validated first, materialized after.
+
+    `on_progress` is the caller's OWN lease and cancellation heartbeat, called as this export makes
+    progress (once the pinned entries are known, then at most every `PREPARATION_TICK_SECONDS` of
+    materialization, then once the manifest is complete). Preparing a large candidate can outlast
+    the initial lease, and a worker that only reaches its heartbeat inside the provider call starts
+    a container under an expired lease; calling it here keeps the existing owner visible while it
+    works. It is passed through unchanged: nothing here extends a deadline, renews anything itself
+    or weakens an ownership check, and a caller that passes no callback behaves exactly as before.
+    An exception from the callback (an ended, superseded or cancelled execution) propagates
+    immediately, so the export stops before the next file and before any container exists.
+    """
     entries = list_revision(repository, revision)
     bounds = check_bounds([(name, size) for _, _, size, name in entries])
+    tick = (lambda: None) if on_progress is None else on_progress
+    tick()
     destination = Path(destination)
     require(not destination.exists(), "Staging directory must be fresh")
     destination.mkdir(parents=True)
@@ -214,8 +231,15 @@ def stage_source(repository, revision: str, destination: Path) -> dict:
     writer = threading.Thread(target=request, daemon=True)
     writer.start()
     manifest = {}
+    beat = time.monotonic()
     try:
         for mode, sha, size, name in entries:
+            now = time.monotonic()
+            if now - beat >= PREPARATION_TICK_SECONDS:
+                # Between two files, never inside one: the bytes, hash, path and ownership rules
+                # of the file being written are untouched by the heartbeat's cadence.
+                tick()
+                beat = now
             header = reader.stdout.readline().split()
             if len(header) != 3 or header[0].decode("ascii") != sha or header[1] != b"blob" or int(header[2]) != size:
                 raise IsolationError("source_read_failed", repr(name)[:200])
@@ -234,6 +258,7 @@ def stage_source(repository, revision: str, destination: Path) -> dict:
         reader.wait(timeout=20)
         writer.join(timeout=5)
         reader.stdout.close()
+    tick()   # the last beat before the caller leaves preparation and may create a container
     return {"revision": revision, **bounds, "manifest": manifest, "manifest_sha256": digest(manifest)}
 
 
@@ -693,7 +718,30 @@ class IsolatedClaudeRuntime:
                                    timeout=120, **no_console_kwargs())
             if dirty.returncode != 0 or dirty.stdout.strip():
                 raise IsolationError("source_candidate_dirty")
-            source = stage_source(workspace, revision.stdout.strip(), staging)
+            # The caller's existing per-call heartbeat covers preparation too: an execution whose
+            # lease ended, was superseded or was cancelled while its source was being staged stops
+            # here, before the container exists. The refusal is the caller's own and travels
+            # unchanged; only the retained record notes where it happened.
+            cancelled = []
+            def prepared_tick():
+                try:
+                    on_tick()
+                except BaseException:
+                    cancelled.append("preparation")
+                    raise
+            try:
+                source = stage_source(workspace, revision.stdout.strip(), staging,
+                                      on_progress=None if on_tick is None else prepared_tick)
+            except BaseException:
+                if cancelled:
+                    # Proven never to have created a container: a refusal that never ran, with its
+                    # owned preparation record retained for the operator.
+                    try:
+                        self._advance("refused", reason="preparation_cancelled")
+                    except IsolationError:
+                        pass   # unwritable record: it stays unresolved, and the caller's own
+                        # refusal still reaches the caller instead of being replaced here
+                raise
             git_report = init_standalone_git(staging)
             self._advance("prepared", source={key: source[key] for key in ("revision", "files", "bytes", "manifest_sha256")})
             entry = [TRUSTED_PYTHON, "-I", "-m", ENTRY_MODULE]

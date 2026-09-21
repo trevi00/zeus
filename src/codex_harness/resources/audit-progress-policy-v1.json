@@ -1,0 +1,8 @@
+{
+  "schema": "urn:zeus:audit-progress-policy:1",
+  "version": 1,
+  "window_executions": 10,
+  "minimum_semantic_paths": 1,
+  "low_yield_windows": 2,
+  "authority": "owner-written observation threshold, versioned Git data and never model input; it is not externally validated, it asserts no healthy rate for any project, and a window below it is a symptom to research, never a cause, a fault or an approved repair"
+}
