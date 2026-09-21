@@ -45,7 +45,7 @@ local durability or successful restoration. Docker placement was observed locall
    Auth/global configs/machine call ledger stay at home. Preserve rollback paths, no stale model replay.
 5. Verify real controlled restart, promotion and cleanup using disposable records, then resume only
    reconciled work. Do not require another physical PC reboot or copy all historical bulk evidence
-   before unrelated work can progress; still refuse deleting unpreserved originals.
+before unrelated work can progress; still refuse deleting unpreserved originals.
 
 ## Acceptance matrix
 
@@ -79,3 +79,60 @@ the outer task checkout being clean did not imply no work existed. Preserved tho
 binary Git diff, hook evidence and run metadata: 35 files copied to C with source/destination SHA256
 matching. Manifest records base and original paths. No originals deleted, no edits accepted and no
 model re-executed. Full runtime/artifact migration and durable staging implementation remain pending.
+
+## Consolidated delivery ledger — 2026-09-22
+
+User requests recording and resolving the full briefing. This is the single sequencing ledger;
+feature-specific acceptance remains in its original frame. Do not silently equate a queued job,
+accepted candidate, merge or healthy source read with deployed, operating success.
+
+| Order | Delivery | Current state | Completion evidence |
+| --- | --- | --- | --- |
+| 1 | C-backed code, artifacts and service paths | C checkout and backup restored; deployment pending | Verified copy manifest, actual C process paths, fresh collection |
+| 2 | Interrupted decision-feedback reconciliation | Five edits and 35 evidence files preserved | Termination/call settlement and explicit successor ownership |
+| 3 | Service diagnostics PR176 | Merged c4660cf9465cd632a3627ca3a180deced07ce447 | Live lifecycle journal and delivery receipt still required |
+| 4 | Resume decision-feedback correction | Paused, old dispatch retained | Actual resumed bounded work and independent verdict |
+| 5 | Ontology explorer | Candidate; scoped checks passed, other residuals open | Packaged build, PG read-only tests, review/browser/CI/deploy |
+| 6 | Investigation-to-repair ownership | Detection and manual binding only | Owner + successor + review + deployment provenance visible |
+| 7 | Durable staging/promotion/cleanup | Designed, not implemented | Fixed restart/concurrency/retention matrix above |
+| 8 | Parallel local/reference absorption | Partial; semantics coverage incomplete | Source ledger, selected migration, independent acceptance |
+| 9 | Astra-to-Sol task qualification | Designed, not active | Same quality oracle plus total-token measurements and scoped activation |
+
+Immediate bottlenecks are D path dependency, stale interrupted ownership, capability/spec mismatch
+for frontend packaging, and incomplete accepted-to-deployed handoff. No broad historical failure
+closure or blind retries. Code Tutor remains the subsequent product project, not a dependency for
+infrastructure recovery. Physical Samsung acceptance remains deferred. No promise of zero failure.
+
+## Executed recovery batch — 2026-09-22 00:25–00:36 KST
+
+- PR176 merged at c4660cf9465cd632a3627ca3a180deced07ce447 after exact-head CI recheck.
+  C:/workspaces/zeus/worktrees/runtime-176 is the clean detached release checkout.
+- Monitor collect/web scheduled actions now use C-only launcher/code/snapshot paths. Previous action
+  XML retained in artifacts/storage-recovery-001/monitor-services. Fresh snapshot and seven source
+  reads checked after actual restart. This does not migrate all observation producers or lane paths.
+- Fleet owner/launcher/runtime now execute from C; the new PR176 CLI lifecycle journal recorded real
+  start run 728078ed931e4347bf19bd1ca7141b36. Fleet remains paused, no model call. An initial owner
+  script had an extra closing parenthesis, failed before startup, was corrected and restarted; keep
+  this failure distinct from accepted package behavior. Owner delivery recorded in PG with reference
+  sha256:f830a0fd92b815f5d6692a7764161f9b1a097fef4aae0c59793839293c43358c.
+- Copied live/r/artifacts, f2h/artifacts and f2i/artifacts to corresponding C roots: 15,226 files,
+  248,843,723 bytes. Every copied file was SHA256-compared, no original deleted. Full manifest is
+  C:/workspaces/zeus/artifacts/storage-recovery-001/evidence-copy-manifest.json.
+- Verified old container exited255, fenced task92b13b20-f8cb-5bb2-9549-fae70c63a164 through Workflow
+  cancel (generation1->2), and reclaimed its sole reservation through InvocationLedger.reclaim.
+  Usage remains unknown/null; no success fabricated. Machine slot7884c429a6da4ce09e2caea55a4aca3a
+  settled as used/interrupted_unknown with preserved count and recovery evidence; ledger stayed home.
+
+Next material constraint: Fleet.register deliberately refuses all changed configurations, including
+new C lane repository/runtime paths. Historical interrupted Fleet reservation also retains ownership
+even after task cancellation. Existing APIs do not provide an idle relocation/reconciliation
+transaction. Do not rewrite registry rows or replace D with a filesystem alias to disguise this.
+Before new work, specify and implement an owner-only, evidence-bound recovery/relocation path with
+paused admission, exact old config hash, dead process/lease evidence, preserved invocation history,
+verified copied artifacts and rollback receipt. Source repository and pending manifest identities
+must remain pinned; changed runtime identity must never silently resume the old operation. This is
+the current blocking implementation boundary, not missing user permission or a model-call ceiling.
+
+Still pending: lane relocation/Fleet reservation disposition, Audit/Desk and remaining observation
+producer path switches, durable staging cleanup feature, successor worker/review, ontology acceptance,
+and broader absorption/model-transfer deliveries. No unattended completion claim is made.
