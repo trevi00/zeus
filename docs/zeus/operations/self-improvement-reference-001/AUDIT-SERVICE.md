@@ -528,3 +528,53 @@ batch, and no bypass, skip marker or probe was added for either. PostgreSQL
 (`HARNESS_INTEGRATION=1`), CI and any host canary were NOT run here and belong to the owner. No
 model call, provider, Redis, PostgreSQL connection or host service start happened in these checks,
 and nothing here is evidence that a correction has run in operation.
+
+## Owner review corrections: target-bound settlement and the escalation notice (2026-09-21 KST)
+
+The owner's independent review of the candidate above found two material defects and two admission
+observations. This section records what changed; the rule text is INV-AUDIT-REPAIR-001.
+
+**R1, a false `repaired`.** Settlement counted ANY subsystem record the successor persisted. In a
+two-subsystem partition where only `core` was diagnosed, a successor that left `core` null and wrote
+a justified record for `other` produced a real checkpoint and was reported `repaired` - valid work,
+but not the repair that was asked for. Settlement is now bound to the exact diagnosed TARGET set:
+the complete set is retained on the lineage row (`targets`) while the assignment keeps carrying only
+the bounded list, so a truncated recovery context cannot shrink the denominator. `repaired` now
+requires EVERY target to carry a corrected record; a corrected subset is `deferred` with the new
+`partially_corrected` reason, and `target_subsystems` / `corrected_subsystems` / `remaining_targets`
+are reported separately in the lineage, the status projection and the settled observation. The count
+is read from the immutable `research_evidence_history` rows of the successor's own execution rather
+than from `research_subsystems`, whose latest-row-per-item semantics let a later ordinary checkpoint
+either take the credit for, or erase, what the successor actually persisted.
+
+**R2, a silent second strike.** A lineage reached `research_required` with ZERO
+`execution.notice` messages, so the two-strike loop stopped without telling anyone. The terminal
+settlement, one deterministic informational lead notice and that notice's own outbox record are now
+written in the SAME transaction. The existing `execution_notices` builder is extended NARROWLY: a
+`succeeded` execution becomes notice-eligible only when its own durable result records the content
+rejection AND the authoritative repair lineage proves `research_required` for that exact successor.
+No arbitrary succeeded row becomes eligible, nothing is relabelled `failed`, and the reason
+`research_required` can be raised on no other status. The notice identity is the lineage proof
+digest, it retains both immutable execution references, and it is published by the existing
+correlation-scoped relay, so a repeated settlement, a restart or a lost commit response returns the
+same notice and a failed publication is simply retried from its own unsent record. Receiving it is
+`informational_only`: it performs no research, queues no task and authorizes no third call.
+
+**Admission guards.** A pause injected during the diagnostic replay still queued a successor (the
+service's second gate prevented provider entry, so this was queued admission after pause, not
+execution after pause), and an injected pending termination marker still permitted admission. The
+commit now re-reads the same `research_control/activation` the host service reads and the
+`observation_terminations` markers of the execution being corrected, and refuses with
+`research_inactive`, `unresolved_termination` or `control_unavailable`. The service's pre-execution
+gate, the `Workflow` claim policy and the recovery semantics are unchanged; these are contained
+contract guards, not evidence of an observed production incident.
+
+Checks actually run for this correction, in this worker container, are the four command groups the
+owner fixed: `python -m pytest -q -p no:cacheprovider tests/test_audit_repair.py
+tests/test_audit_repair_cli.py`; `python -m pytest -q -p no:cacheprovider
+tests/test_audit_analysis_outcomes.py tests/test_audit_service.py tests/test_scheduling.py`;
+`python -m pytest -q -p no:cacheprovider tests/test_execution_notices.py`; and
+`python -m ruff check . --no-cache`. The isolated PostgreSQL tests in the notices file SKIP here
+(`HARNESS_INTEGRATION` is unset); the full suite, CI and the real isolated PostgreSQL verification
+belong to the owner and were NOT run here. No model call, provider, Redis, PostgreSQL connection or
+host service start happened, and no correction has run in operation.

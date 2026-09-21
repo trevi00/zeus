@@ -29,8 +29,11 @@ the admission commits only when the exact state it was diagnosed against is unch
 """
 from __future__ import annotations
 
+from codex_harness.application.execution_notices import RESEARCH_REQUIRED as NOTICE_REASON
+from codex_harness.application.execution_notices import record as execution_notice
 from codex_harness.domain.audit_repair import (
     BINDING_CHANGED,
+    CONTROL_UNAVAILABLE,
     EVIDENCE_MISMATCH,
     EVIDENCE_MISSING,
     EVIDENCE_UNREADABLE,
@@ -45,9 +48,12 @@ from codex_harness.domain.audit_repair import (
     PREDECESSOR_UNPUBLISHED,
     REPLAY_MISMATCH,
     REPLAY_UNAVAILABLE,
+    RESEARCH_INACTIVE,
+    RESEARCH_REQUIRED,
     TERMINAL_STATES,
     UNKNOWN_PARTITION,
     UNKNOWN_TASK,
+    UNRESOLVED_TERMINATION,
     UNSUPPORTED_DIAGNOSIS,
     RepairRefused,
     binding,
@@ -56,18 +62,28 @@ from codex_harness.domain.audit_repair import (
     diagnosis_for,
     diagnosis_view,
     family_identity,
+    notice_evidence,
+    notice_proof,
     rejection_facts,
     repair_context,
     repair_details,
     schedule_key,
     settlement,
     status_view,
+    target_identities,
     unjustified_subsystems,
 )
-from codex_harness.domain.model import envelope, utcnow
+from codex_harness.domain.model import digest, envelope, utcnow
 
 BUCKET_ACTIVATION = "audit_repair_activation"
 BUCKET_CORRECTIONS = "audit_repair_corrections"
+# The durable control rows a commit re-reads. `research_control/activation` is the SAME run gate the
+# host service reads before every admission, and `observation_terminations` holds the unconfirmed /
+# pending_reconciliation markers whose owner is the operator alone. Neither is written here.
+BUCKET_CONTROL = "research_control"
+CONTROL_KEY = "activation"
+BUCKET_TERMINATIONS = "observation_terminations"
+UNRESOLVED_MARKERS = ("unconfirmed", "pending_reconciliation")
 # The ONE action, sender and recipient a correction may ever use: the ordinary partition assignment
 # of the existing research lane. Nothing here can address another agent or invent another action.
 SENDER, AGENT, ACTION = "lead:research", "worker:github", "audit_partition"
@@ -231,20 +247,23 @@ class AuditRepair:
             # The retained draft does not reproduce the refusal this task recorded: the evidence and
             # the record disagree, so nothing is admitted on it.
             return self._ineligible(refused, REPLAY_MISMATCH, partition=partition, diagnosis=diagnosis)
+        # The COMPLETE diagnosed target set travels with the diagnosis; the bounded projection is
+        # only what the assignment may carry, so settlement's denominator is never truncated.
+        targets = target_identities(answer, partition.get("subsystems"))
         identities = unjustified_subsystems(answer, partition.get("subsystems"))
         if not identities["total"]:
             return self._ineligible(refused, NO_CORRECTABLE_IDENTITY, partition=partition,
                                     diagnosis=diagnosis, identities=identities)
         return {"facts": facts, "eligible": True, "diagnosis": diagnosis, "reason_code": None,
-                "error_type": None, "identities": identities, "partition": partition,
-                "binding": binding(facts, partition, diagnosis)}
+                "error_type": None, "identities": identities, "targets": targets,
+                "partition": partition, "binding": binding(facts, partition, diagnosis)}
 
     @staticmethod
     def _ineligible(facts: dict, reason_code: str, *, partition=None, diagnosis=None,
                     error_type=None, identities=None) -> dict:
         return {"facts": facts, "eligible": False, "diagnosis": diagnosis,
                 "reason_code": reason_code, "error_type": error_type, "identities": identities,
-                "partition": partition, "binding": None}
+                "targets": [], "partition": partition, "binding": None}
 
     # ----- admission ----------------------------------------------------------------------------
     def admit(self, audit_id: str) -> dict:
@@ -290,6 +309,13 @@ class AuditRepair:
                     activation.get("task_ids") or []):
                 # Disabled or rescoped between the diagnosis and this commit: nothing is admitted.
                 return self._not_admitted(NOT_ENABLED, facts=facts, diagnosis=diagnosis)
+            control = self._control(tx, facts["task_id"])
+            if control is not None:
+                # The run gate or the execution's own unresolved markers, re-read HERE rather than
+                # trusted from the diagnosis: a paused control and an unreconciled termination both
+                # stop this admission before a successor is queued at all. The service's own
+                # pre-execution gate stays exactly where it is; this does not replace it.
+                return self._not_admitted(control, facts=facts, diagnosis=diagnosis)
             existing = tx.get(BUCKET_CORRECTIONS, correction_id)
             if isinstance(existing, dict):
                 # The same lineage, from a repeated tick, a restart or a concurrent caller: this is
@@ -311,7 +337,8 @@ class AuditRepair:
                          "schedule_key": key, "published": None, "assigned_at": now}
             row = correction_row(correction_id=correction_id, family=family, facts=facts,
                                  diagnosis=diagnosis, identities=diagnosed["identities"],
-                                 bound=diagnosed["binding"], successor=successor, now=now)
+                                 targets=diagnosed["targets"], bound=diagnosed["binding"],
+                                 successor=successor, now=now)
             tx.put("outbox", message["message_id"], {"message": message, "sent": False})
             tx.put("schedule", key, {"id": key, "task_id": message["message_id"],
                                      "partition_id": facts["partition_id"], "at": now,
@@ -327,6 +354,29 @@ class AuditRepair:
                 "successor_task_id": successor["task_id"], "partition_id": facts["partition_id"],
                 "partition_generation": facts["partition_generation"], "error_type": None,
                 "correction": diagnosis_view(row)}
+
+    @staticmethod
+    def _control(tx, source_task_id) -> str | None:
+        """Why the durable controls refuse this admission right now, or None.
+
+        Two existing requirements, read inside the admitting transaction and never written here: the
+        research activation must still be `active`, and the execution being corrected must carry no
+        unconfirmed or pending-reconciliation termination marker, whose only owner is the operator.
+        A read that cannot be completed is `control_unavailable`: unknown is not permission.
+        """
+        try:
+            control = tx.get(BUCKET_CONTROL, CONTROL_KEY)
+            markers = [row for row in tx.scan(BUCKET_TERMINATIONS) if isinstance(row, dict)]
+        except Exception:
+            return CONTROL_UNAVAILABLE
+        if not isinstance(control, dict) or control.get("status") != "active":
+            return RESEARCH_INACTIVE
+        for row in markers:
+            if (row.get("status") in UNRESOLVED_MARKERS
+                    and row.get("bucket", "tasks") == "tasks"
+                    and row.get("task_id") == source_task_id):
+                return UNRESOLVED_TERMINATION
+        return None
 
     @staticmethod
     def _not_admitted(reason_code: str, *, facts=None, diagnosis=None, error_type=None,
@@ -346,28 +396,39 @@ class AuditRepair:
 
         A restart, a lost commit response and a repeated tick all recompute the same state from the
         durable records; a terminal lineage is never reopened, rewritten or retried, and a live
-        successor simply stays `admitted`.
+        successor simply stays `admitted`. A lineage that reaches `research_required` records its
+        terminal settlement, ONE deterministic informational lead notice and that notice's own outbox
+        record in the SAME transaction, so the second strike can never be stored without the message
+        that reports it. `notices` carries each research_required notice of this audit with the
+        publication state read from its OWN outbox record, so a caller can publish the pending ones;
+        publication is never assumed, and a repeated settlement returns the same notice identity.
         """
-        settled, changed = [], []
+        settled, changed, notices = [], [], []
         with self.store.transaction() as tx:
             rows = [row for row in tx.scan(BUCKET_CORRECTIONS)
                     if isinstance(row, dict) and row.get("audit_id") == audit_id]
-            subsystems = [row for row in tx.scan("research_subsystems")
-                          if isinstance(row, dict) and row.get("audit_id") == audit_id]
+            # Immutable evidence history, not the latest coverage rows: an ordinary later checkpoint
+            # overwrites `research_subsystems` by (audit, item), which would let unrelated work stand
+            # in for - or erase - what THIS successor actually persisted.
+            history = [row for row in tx.scan("research_evidence_history")
+                       if isinstance(row, dict) and row.get("audit_id") == audit_id]
             now = self.clock()
             for row in sorted(rows, key=lambda r: str(r.get("id"))):
                 if row.get("state") in TERMINAL_STATES:
                     settled.append(row.get("settlement") or {"correction_id": row.get("id"),
                                                              "state": row.get("state")})
+                    self._pending_notice(tx, row, notices)
                     continue
                 task = tx.get("tasks", (row.get("successor") or {}).get("task_id") or "")
                 partition = tx.get("research_partitions", row.get("partition_id") or "")
-                result = settlement(row, task, subsystems, partition)
+                result = settlement(row, task, history, partition)
                 settled.append(result)
                 if result["state"] == row.get("state") and result["reason_code"] == row.get("reason_code"):
                     continue
                 row.update(state=result["state"], reason_code=result["reason_code"],
                            settlement=result, updated_at=now)
+                if result["state"] == RESEARCH_REQUIRED:
+                    row["notice"] = self._notify(tx, row, result, task, now)
                 # Publication is read from the assignment's OWN outbox record, never inferred from
                 # the existence of a task row: `null` stays null until that record says `sent`.
                 record = tx.get("outbox", (row.get("successor") or {}).get("task_id") or "")
@@ -375,14 +436,55 @@ class AuditRepair:
                     row["successor"] = {**row["successor"], "published": bool(record.get("sent"))}
                 tx.put(BUCKET_CORRECTIONS, row["id"], row)
                 changed.append(result)
-        return {"audit_id": audit_id, "settled": settled, "changed": changed}
+                self._pending_notice(tx, row, notices)
+        return {"audit_id": audit_id, "settled": settled, "changed": changed, "notices": notices}
+
+    def _notify(self, tx, row: dict, result: dict, task, now: str) -> dict:
+        """ONE proof-bound informational lead notice for this second refused draft.
+
+        The existing `execution_notices` builder and the existing direct reporting edge do the work:
+        the notice is bound to the lineage proof (its digest is the transition reference), retains
+        both immutable execution references, and is idempotent by identity, so a repeated settlement,
+        a restart and a lost commit response all return the same notice and the same outbox record.
+        Receiving it performs no research and authorizes no third call. A source the builder cannot
+        turn into a notice is quarantined by that owner, and this lineage says so instead of claiming
+        a delivery it does not have.
+        """
+        proof = notice_proof(row, result)
+        notice = execution_notice(tx, self.org, task, "tasks", NOTICE_REASON, now,
+                                  digest(proof), proof=proof,
+                                  evidence_refs=notice_evidence(result))
+        if not isinstance(notice, dict) or not isinstance(notice.get("transition"), dict):
+            return {"id": None, "correlation_id": None, "published": None,
+                    "error_id": (notice or {}).get("id")}
+        return {"id": notice["id"], "correlation_id": notice["message"]["correlation_id"],
+                "published": False, "error_id": None, "at": now}
+
+    @staticmethod
+    def _pending_notice(tx, row: dict, notices: list) -> None:
+        """Report this lineage's notice and whether its own outbox record is still unsent.
+
+        The durable flag is refreshed from that record, so a pending publication survives a restart
+        and a later tick can retry it without building a second notice.
+        """
+        notice = row.get("notice")
+        if not isinstance(notice, dict) or not notice.get("id"):
+            return
+        record = tx.get("outbox", notice["id"])
+        published = bool(record.get("sent")) if isinstance(record, dict) else None
+        if published != notice.get("published"):
+            row["notice"] = {**notice, "published": published}
+            tx.put(BUCKET_CORRECTIONS, row["id"], row)
+        notices.append({"correction_id": row.get("id"), "notice_id": notice["id"],
+                        "correlation_id": notice.get("correlation_id"), "published": published})
 
     # ----- one service tick ---------------------------------------------------------------------
     def tick(self, audit_id: str) -> dict:
         """Settle first, then admit: a tick never admits on a lineage it has not reconciled."""
         settled = self.settle(audit_id)
         admitted = self.admit(audit_id)
-        return {"audit_id": audit_id, "settled": settled["changed"], "admission": admitted}
+        return {"audit_id": audit_id, "settled": settled["changed"],
+                "notices": settled["notices"], "admission": admitted}
 
     # ----- read-only ----------------------------------------------------------------------------
     def status(self, audit_id: str) -> dict:

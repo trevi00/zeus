@@ -118,8 +118,9 @@ REPAIR_ADMITTED_ATTRIBUTES = ("audit_id", "correction_id", "source_task_id", "pa
                               "partition_generation", "diagnosis", "successor_task_id", "admitted",
                               "published", "error_type")
 REPAIR_SETTLED_ATTRIBUTES = ("audit_id", "correction_id", "source_task_id", "successor_task_id",
-                             "state", "diagnosis", "analysis_outcome", "corrected_subsystems",
-                             "checkpoint_generation", "attempts", "error_type")
+                             "state", "diagnosis", "analysis_outcome", "target_subsystems",
+                             "corrected_subsystems", "remaining_targets", "checkpoint_generation",
+                             "attempts", "notice_id", "notice_published", "error_type")
 
 
 def _count(value):
@@ -180,19 +181,28 @@ def repair_admission_facts(admission, audit_id: str) -> dict:
             "error_type": _identity(row.get("error_type"))}
 
 
-def repair_settlement_facts(settled, audit_id: str) -> dict:
-    """The allow-listed facts of ONE settled lineage. A checkpoint generation and a corrected
-    subsystem count are arithmetic over the successor's own records, never a semantic credit."""
+def repair_settlement_facts(settled, audit_id: str, notice=None) -> dict:
+    """The allow-listed facts of ONE settled lineage. A checkpoint generation and the target,
+    corrected and remaining counts are arithmetic over the successor's own records against the
+    originally diagnosed target set, never a semantic credit; a notice identity is a delivered
+    question, reported separately from the settlement it names and never a repaired subsystem."""
     row = settled if isinstance(settled, dict) else {}
+    notice = notice if isinstance(notice, dict) else {}
+    published = notice.get("published")
     return {"audit_id": audit_id, "correction_id": str(row.get("correction_id") or ""),
             "source_task_id": _identity(row.get("source_task_id")),
             "successor_task_id": _identity(row.get("successor_task_id")),
             "state": safe_code(row.get("state"), STATES, absent="unknown"),
             "diagnosis": safe_code(row.get("diagnosis"), DIAGNOSES, absent=None),
             "analysis_outcome": safe_code(row.get("analysis_outcome"), ANALYSIS_OUTCOMES, absent=None),
+            "target_subsystems": _count(row.get("target_subsystems")),
             "corrected_subsystems": _count(row.get("corrected_subsystems")),
+            "remaining_targets": _count(row.get("remaining_targets")),
             "checkpoint_generation": _count(row.get("checkpoint_generation")),
-            "attempts": _count(row.get("attempts")) or 0, "error_type": None}
+            "attempts": _count(row.get("attempts")) or 0,
+            "notice_id": _identity(notice.get("notice_id")),
+            "notice_published": None if published is None else bool(published),
+            "error_type": None}
 
 
 def repair_reason(value):
@@ -727,17 +737,24 @@ class AuditServiceRunner:
         try:
             result = self.repair.tick(self.audit_id)
             settled = result.get("settled") or []
+            notices = result.get("notices") or []
             admission = result.get("admission") or {}
         except Exception as exc:
             facts = {"admitted": False, "reason_code": REPAIR_UNAVAILABLE, "correction_id": None,
-                     "diagnosis": None, "settled": 0, "error_type": type(exc).__name__}
+                     "diagnosis": None, "settled": 0, "notices": 0, "notices_published": 0,
+                     "error_type": type(exc).__name__}
             self._emit("operations.audit_repair_admitted", "blocked", reason_code=REPAIR_UNAVAILABLE,
                        attributes={**repair_admission_facts({}, self.audit_id),
                                    "error_type": type(exc).__name__})
             self._write_repair(facts)
             return facts
+        # The lead notice of a second refused draft is already durable with its own outbox record;
+        # publishing it is the SAME correlation-scoped relay every assignment uses. A notice that
+        # stays unsent keeps its record and is retried by the next tick, here or after a restart.
+        published, notice_error = self._publish_notices(notices)
+        by_correction = {row.get("correction_id"): row for row in notices if isinstance(row, dict)}
         for row in settled:
-            self._emit_repair_settled(row)
+            self._emit_repair_settled(row, by_correction.get((row or {}).get("correction_id")))
         attributes = repair_admission_facts(admission, self.audit_id)
         reason = repair_reason(admission.get("reason_code"))
         self._emit("operations.audit_repair_admitted",
@@ -747,24 +764,55 @@ class AuditServiceRunner:
                    causation_id=attributes["source_task_id"], attributes=attributes)
         facts = {"admitted": attributes["admitted"], "reason_code": reason,
                  "correction_id": attributes["correction_id"],
-                 "diagnosis": attributes["diagnosis"], "settled": len(settled), "error_type": None}
+                 "diagnosis": attributes["diagnosis"], "settled": len(settled),
+                 "notices": len(notices), "notices_published": published,
+                 "error_type": notice_error}
         self._write_repair(facts)
         return facts
 
-    def _emit_repair_settled(self, settled: dict) -> None:
+    def _publish_notices(self, notices) -> tuple:
+        """Publish the lead notices this audit still owes, through the existing scoped relay.
+
+        Each notice is published under its own lineage correlation, so the relay reaches it even
+        when no further worker assignment exists there. A transport failure is a bounded recorded
+        fact: the notice record stays unsent for the next tick, and nothing about the settlement,
+        the executions or the stop reason changes.
+        """
+        published, error = 0, None
+        for row in notices if isinstance(notices, list) else []:
+            row = row if isinstance(row, dict) else {}
+            if row.get("published"):
+                published += 1
+                continue
+            correlation = row.get("correlation_id")
+            if type(correlation) is not str:
+                continue
+            try:
+                relayed = self._flush(correlation)
+            except Exception as exc:
+                error = error or type(exc).__name__
+                continue
+            if relayed is not None and relayed["complete"]:
+                published += 1
+        return published, error
+
+    def _emit_repair_settled(self, settled: dict, notice=None) -> None:
         """What ONE lineage achieved, with its immutable evidence attached and nothing else.
 
-        `repaired` is a corrected non-null subsystem record with a justified test disposition;
-        `deferred` is resumed partial work that is NOT subsystem acceptance; `research_required` is
-        the second refused draft of this family, reported once, with no third attempt started here;
+        `repaired` is every diagnosed target corrected with a justified test disposition; `deferred`
+        is resumed partial work - including a corrected SUBSET of those targets - which is NOT
+        subsystem acceptance; `research_required` is the second refused draft of this family,
+        reported once with the notice that carried it to the lead and no third attempt started here;
         `reconciliation_required` is unknown or failed execution, which is not a strike either.
         """
-        attributes = repair_settlement_facts(settled, self.audit_id)
+        attributes = repair_settlement_facts(settled, self.audit_id, notice)
         state = attributes["state"]
         outcome = ("succeeded" if state == "repaired"
                    else "blocked" if state in {"research_required", "reconciliation_required"}
                    else "observed")
-        refs = [ref for ref in ((settled or {}).get("source_execution_ref"),) if type(ref) is str]
+        refs = [ref for ref in ((settled or {}).get("source_execution_ref"),
+                                (settled or {}).get("successor_execution_ref"))
+                if type(ref) is str]
         self._emit("operations.audit_repair_settled", outcome,
                    reason_code=repair_reason((settled or {}).get("reason_code")),
                    correlation_id=attributes["correction_id"] or None,

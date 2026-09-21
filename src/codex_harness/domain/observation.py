@@ -36,6 +36,9 @@ REFERENCE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@+-]{0,199}$")
 # scalar of the declared type. Prompts, environment variables, credentials, private keys and
 # model reasoning have no place here by construction, and redaction runs on what remains.
 _S, _I, _B, _F, _N, _NI = "string", "integer", "boolean", "number", "nullable_string", "nullable_integer"
+# A fact that is genuinely unknown until its own durable record says otherwise (a publication that
+# has not been attempted yet) is null, never a default `false`.
+_NB = "nullable_boolean"
 REGISTRY = {
     "general.process_started": {"agent": _N, "autonomous": _B, "platform": _S, "python": _S, "mode": _S},
     "general.process_idle_exit": {"agent": _N, "idle_seconds": _I},
@@ -142,11 +145,16 @@ REGISTRY = {
                                          "partition_id": _N, "partition_generation": _NI,
                                          "diagnosis": _N, "successor_task_id": _N, "admitted": _B,
                                          "published": _B, "error_type": _N},
+    # `target_subsystems` is the set this correction was diagnosed to repair, `corrected_subsystems`
+    # how many of THOSE the successor persisted with a justified test disposition, and
+    # `remaining_targets` the rest: a partial correction can never read as a whole repair. A notice
+    # identity says a lead was told, which is neither a repair nor evidence that research ran.
     "operations.audit_repair_settled": {"audit_id": _S, "correction_id": _S, "source_task_id": _N,
                                         "successor_task_id": _N, "state": _S, "diagnosis": _N,
-                                        "analysis_outcome": _N, "corrected_subsystems": _NI,
+                                        "analysis_outcome": _N, "target_subsystems": _NI,
+                                        "corrected_subsystems": _NI, "remaining_targets": _NI,
                                         "checkpoint_generation": _NI, "attempts": _I,
-                                        "error_type": _N},
+                                        "notice_id": _N, "notice_published": _NB, "error_type": _N},
     "operations.alert_suppressed": {"kind": _S, "suppressed": _I},
     "operations.alert_pending": {"kind": _S, "channel": _N, "pending": _I},
     "operations.autonomous_stage": {"run_id": _S, "stage": _S, "state": _S},
@@ -327,6 +335,8 @@ def _typed(kind, value):
         return value is None or (type(value) is str)
     if kind == _NI:
         return value is None or (type(value) is int)
+    if kind == _NB:
+        return value is None or (type(value) is bool)
     if kind == _S:
         return type(value) is str
     if kind == _I:

@@ -24,8 +24,9 @@ artifact was copied, and no upstream package was installed or executed at any po
 
 - `ralph_resume`'s plugin branch transitions its pipeline to COMPLETE without proving the remote job
   succeeded (LEARNING-RESUME.md). Zeus never translates a transition into acceptance: `repaired`
-  requires a corrected subsystem record persisted by the successor's own checkpoint through the
-  existing validators, and a checkpoint alone is `deferred`.
+  requires EVERY diagnosed target to carry a corrected subsystem record persisted by the successor's
+  own checkpoint through the existing validators, a corrected subset is `partially_corrected` and
+  therefore `deferred`, and a checkpoint alone is `deferred` as well.
 - No resume daemon, no phase registry for the whole harness, no global auto-retry, no deadline
   reset, no lease extension and no second recovery engine. Zeus's existing Fleet reservation,
   execution-generation fence, `Workflow` claim policy, `ResearchAudits.checkpoint` and release
@@ -46,12 +47,14 @@ artifact was copied, and no upstream package was installed or executed at any po
 2. At most ONE successor per (audit, partition, partition generation, original task, execution
    generation, diagnosis). A second refused draft records `research_required` once and closes the
    family; there is no automatic third call.
-3. `research_required` is recorded on this owner's own lineage and reported in its CLI, the audit
-   service status and the declared observation with the immutable artifact as evidence. It does NOT
-   write a `portfolio_investigations` row and does not dispatch research: the kind-aware portfolio
-   projection and the research program's candidate synthesis are other owners' code and were out of
-   this batch's allowed scope. An owner who wants a research topic raises it through the existing
-   program with this lineage as evidence. This is a known partial adoption, not a silent gap.
+3. `research_required` is recorded on this owner's own lineage, delivered ONCE as an informational
+   `execution.notice` to the team lead on the existing reporting edge, and reported in its CLI, the
+   audit service status and the declared observation with both immutable artifacts as evidence. The
+   notice is a delivered question: receiving it performs no research and authorizes no third call.
+   It does NOT write a `portfolio_investigations` row and does not dispatch research: the kind-aware
+   portfolio projection and the research program's candidate synthesis are other owners' code and
+   were out of this batch's allowed scope. An owner who wants a research topic raises it through the
+   existing program with this lineage as evidence. This is a known partial adoption, not a silent gap.
 4. Admission is per audit and per task, disabled by default, and is never enabled by running the
    service. No global setting, operator script, runtime activation or source-audit mutation is part
    of this batch.

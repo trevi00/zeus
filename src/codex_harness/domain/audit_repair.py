@@ -90,12 +90,19 @@ FAMILY_CLOSED = "family_closed"
 BINDING_CHANGED = "binding_changed"
 PREDECESSOR_UNPUBLISHED = "predecessor_unpublished"
 NO_CANDIDATE = "no_candidate"
+# The commit-time control requirements: the same durable research activation the host service reads
+# before every admission, and the unresolved termination markers of the execution being corrected.
+# An unreadable control row is `control_unavailable`, which is unknown and therefore never permission.
+RESEARCH_INACTIVE = "research_inactive"
+UNRESOLVED_TERMINATION = "unresolved_termination"
+CONTROL_UNAVAILABLE = "control_unavailable"
 NOT_ADMITTED_REASONS = (NOT_ENABLED, OUT_OF_SCOPE, UNKNOWN_TASK, UNKNOWN_PARTITION, FOREIGN_PARTITION,
                         TASK_NOT_SETTLED, NOT_REJECTED, UNSUPPORTED_REASON, UNSUPPORTED_DIAGNOSIS,
                         GENERATION_CHANGED, SCOPE_CHANGED, EVIDENCE_MISSING, EVIDENCE_UNREADABLE,
                         EVIDENCE_MISMATCH, REPLAY_UNAVAILABLE, REPLAY_MISMATCH,
                         NO_CORRECTABLE_IDENTITY, LINEAGE_EXISTS, FAMILY_CLOSED, BINDING_CHANGED,
-                        PREDECESSOR_UNPUBLISHED, NO_CANDIDATE)
+                        PREDECESSOR_UNPUBLISHED, NO_CANDIDATE, RESEARCH_INACTIVE,
+                        UNRESOLVED_TERMINATION, CONTROL_UNAVAILABLE)
 
 # ----- what a lineage is --------------------------------------------------------------------------
 ADMITTED = "admitted"
@@ -111,13 +118,14 @@ SUCCESSOR_NOT_SUBMITTED = "successor_not_submitted"
 SUCCESSOR_PENDING = "successor_pending"
 SUCCESSOR_UNBOUND = "successor_unbound"
 CORRECTED = "corrected"
+PARTIALLY_CORRECTED = "partially_corrected"
 NO_CORRECTED_SUBSYSTEM = "no_corrected_subsystem"
 CONTENT_REJECTED_AGAIN = "content_rejected_again"
 UNCLASSIFIED_RESULT = "unclassified_result"
 EXECUTION_UNRESOLVED = "execution_unresolved"
 SETTLEMENT_REASONS = (SUCCESSOR_NOT_SUBMITTED, SUCCESSOR_PENDING, SUCCESSOR_UNBOUND, CORRECTED,
-                      NO_CORRECTED_SUBSYSTEM, CONTENT_REJECTED_AGAIN, UNCLASSIFIED_RESULT,
-                      EXECUTION_UNRESOLVED)
+                      PARTIALLY_CORRECTED, NO_CORRECTED_SUBSYSTEM, CONTENT_REJECTED_AGAIN,
+                      UNCLASSIFIED_RESULT, EXECUTION_UNRESOLVED)
 # The live task statuses a successor may legitimately still hold.
 LIVE_STATUSES = ("queued", "running", "retry")
 
@@ -180,13 +188,14 @@ def diagnosis_for(facts) -> str | None:
     return DIAGNOSIS_BY_DIGEST.get(facts.get("error_digest") or "")
 
 
-def unjustified_subsystems(answer, assigned) -> dict:
-    """The assigned subsystem identities whose returned record carries NO test disposition.
+def target_identities(answer, assigned) -> list:
+    """EVERY assigned subsystem identity whose returned record carries NO test disposition.
 
     Structured inspection of the retained draft, bound to the trusted assigned scope: a body that is
     not an object, an identity that was not assigned and every other field are ignored, and a null
-    identity is simply unanalyzed work, not a defect. The returned list is bounded and the honest
-    total travels with it; no value from the draft other than an assigned identity is copied.
+    identity is simply unanalyzed work, not a defect. This complete list is the diagnosed TARGET set
+    and therefore the internal denominator of settlement; only the prompt-facing projection below is
+    bounded, so a truncated recovery context can never shrink what a repair must correct.
     """
     results = answer.get("subsystems") if isinstance(answer, dict) else None
     names = []
@@ -194,7 +203,13 @@ def unjustified_subsystems(answer, assigned) -> dict:
         body = results.get(name) if isinstance(results, dict) else None
         if isinstance(body, dict) and not body.get("tests") and not body.get("tests_not_run"):
             names.append(name)
-    names = sorted(set(names))
+    return sorted(set(names))
+
+
+def unjustified_subsystems(answer, assigned) -> dict:
+    """The BOUNDED prompt-facing projection of the diagnosed targets, with the honest total beside
+    it. No value from the draft other than an assigned identity is copied."""
+    names = target_identities(answer, assigned)
     return {"identities": names[:MAX_IDENTITIES], "total": len(names),
             "truncated": len(names) > MAX_IDENTITIES}
 
@@ -294,11 +309,13 @@ def repair_evidence(details) -> dict | None:
 
 
 def correction_row(*, correction_id: str, family: str, facts: dict, diagnosis: str, identities: dict,
-                   bound: str, successor: dict, now: str) -> dict:
+                   targets, bound: str, successor: dict, now: str) -> dict:
     """The immutable lineage record: original execution, diagnosis, successor and state.
 
-    The original task, its result, its artifact and the partition generation it holds are never
-    written by this owner; they are referenced here.
+    `targets` is the COMPLETE diagnosed identity set this correction must repair; `subsystems` is
+    only the bounded list the assignment carries. Settlement counts against `targets`, so a bounded
+    recovery context never shrinks the denominator. The original task, its result, its artifact and
+    the partition generation it holds are never written by this owner; they are referenced here.
     """
     return {"schema": SCHEMA, "version": VERSION, "id": correction_id, "family": family,
             "audit_id": facts["audit_id"], "partition_id": facts["partition_id"],
@@ -308,34 +325,52 @@ def correction_row(*, correction_id: str, family: str, facts: dict, diagnosis: s
             "source_error_type": facts["error_type"], "source_error_digest": facts["error_digest"],
             "diagnosis": diagnosis, "field": DIAGNOSIS_FIELD[diagnosis],
             "subsystems": list(identities["identities"]), "subsystems_total": identities["total"],
-            "binding": bound, "successor": dict(successor), "attempts": MAX_ATTEMPTS,
-            "state": ADMITTED, "reason_code": SUCCESSOR_NOT_SUBMITTED, "settlement": None,
-            "created_at": now, "updated_at": now}
+            "targets": list(targets), "binding": bound, "successor": dict(successor),
+            "attempts": MAX_ATTEMPTS, "state": ADMITTED, "reason_code": SUCCESSOR_NOT_SUBMITTED,
+            "settlement": None, "notice": None, "created_at": now, "updated_at": now}
 
 
-def corrected_subsystems(rows, successor_task_id) -> int:
-    """How many subsystem records THIS successor persisted with a justified test disposition.
+def diagnosed_targets(correction) -> list:
+    """The complete diagnosed target set of one lineage. A row written before targets were retained
+    falls back to its bounded list rather than silently counting zero."""
+    row = correction if isinstance(correction, dict) else {}
+    targets = row.get("targets")
+    if not isinstance(targets, list):
+        targets = row.get("subsystems")
+    return sorted({name for name in (targets or []) if identifier(name)})
 
-    The rows are the existing `research_subsystems` coverage records, which only
+
+def corrected_targets(history_rows, successor_task_id, targets) -> list:
+    """Which of the DIAGNOSED targets THIS successor persisted with a justified test disposition.
+
+    The rows are the existing `research_evidence_history` records, which only
     `ResearchAudits.checkpoint` writes and which `SubsystemAnalysis.validate` already refused unless
-    tests or tests_not_run was non-empty. Counting them here therefore reports what the existing
-    authority accepted; it re-decides nothing and credits no path.
+    tests or tests_not_run was non-empty. History is used rather than the latest
+    `research_subsystems` coverage rows because an ordinary later checkpoint overwrites those by
+    (audit, item), which would let unrelated work stand in for, or erase, this successor's own
+    record. Every row must name this successor's execution AND a diagnosed target identity: a
+    subsystem the successor happened to analyse outside the diagnosed set is valid work and is not
+    counted here, and a path disposition (no `name`) is not a subsystem record at all.
     """
-    count = 0
-    for row in rows if isinstance(rows, list) else []:
+    wanted, corrected = set(targets or []), set()
+    for row in history_rows if isinstance(history_rows, list) else []:
         if not isinstance(row, dict) or row.get("task_id") != successor_task_id:
             continue
         record = row.get("record") if isinstance(row.get("record"), dict) else {}
-        if record.get("tests") or record.get("tests_not_run"):
-            count += 1
-    return count
+        name = record.get("name")
+        if name in wanted and (record.get("tests") or record.get("tests_not_run")):
+            corrected.add(name)
+    return sorted(corrected)
 
 
-def settlement(correction: dict, task, subsystem_rows, partition) -> dict:
-    """What the successor ACHIEVED, from terminal task evidence only. Idempotent and truthful.
+def settlement(correction: dict, task, history_rows, partition) -> dict:
+    """What the successor ACHIEVED against its DIAGNOSED targets. Idempotent and truthful.
 
-    A checkpoint is resumed partial work, never subsystem acceptance: only a corrected non-null
-    subsystem record with a justified test disposition is `repaired`. A second refused draft is
+    A checkpoint is resumed partial work, never subsystem acceptance, and work outside the diagnosed
+    set is never the repair that was asked for: `repaired` requires every diagnosed target to carry a
+    corrected record with a justified test disposition, a corrected subset is `deferred`
+    (`partially_corrected`) with its target, corrected and remaining counts exposed, and no corrected
+    target at all is `deferred` (`no_corrected_subsystem`). A second refused draft is
     `research_required` - the original and the successor are two distinct attempts and there is no
     third one. An execution that failed, was cancelled or cannot be read is
     `reconciliation_required`, which is not a strike and not another attempt. A live successor is
@@ -343,45 +378,88 @@ def settlement(correction: dict, task, subsystem_rows, partition) -> dict:
     """
     successor = correction.get("successor") or {}
     task_id = successor.get("task_id")
+    targets = diagnosed_targets(correction)
     if not isinstance(task, dict):
-        return _settled(correction, ADMITTED, SUCCESSOR_NOT_SUBMITTED, task_id=task_id)
+        return _settled(correction, ADMITTED, SUCCESSOR_NOT_SUBMITTED, task_id=task_id,
+                        targets=targets)
     bound = ((task.get("message") or {}).get("correlation_id") == successor.get("correlation_id")
              and task.get("id") == task_id)
     if not bound:
-        return _settled(correction, RECONCILIATION_REQUIRED, SUCCESSOR_UNBOUND, task_id=task_id)
+        return _settled(correction, RECONCILIATION_REQUIRED, SUCCESSOR_UNBOUND, task_id=task_id,
+                        targets=targets)
     status = task.get("status")
     if status in LIVE_STATUSES:
-        return _settled(correction, ADMITTED, SUCCESSOR_PENDING, task_id=task_id)
+        return _settled(correction, ADMITTED, SUCCESSOR_PENDING, task_id=task_id, targets=targets)
     if status != "succeeded":
-        return _settled(correction, RECONCILIATION_REQUIRED, EXECUTION_UNRESOLVED, task_id=task_id)
+        return _settled(correction, RECONCILIATION_REQUIRED, EXECUTION_UNRESOLVED, task_id=task_id,
+                        targets=targets)
     facts = analysis_facts(task.get("result"))
     outcome = facts["analysis_outcome"]
     if outcome == ANALYSIS_REJECTED:
         # The second actual rejected execution of this family: recorded once, and this family stops.
         return _settled(correction, RESEARCH_REQUIRED, CONTENT_REJECTED_AGAIN, task_id=task_id,
-                        analysis_outcome=outcome)
-    corrected = corrected_subsystems(subsystem_rows, task_id)
+                        analysis_outcome=outcome, targets=targets,
+                        successor_execution_ref=facts["analysis_ref"])
+    corrected = corrected_targets(history_rows, task_id, targets)
     generation = (partition or {}).get("generation") if isinstance(partition, dict) else None
+    generation = generation if type(generation) is int else None
     if outcome != ANALYSIS_CHECKPOINTED:
         return _settled(correction, DEFERRED, UNCLASSIFIED_RESULT, task_id=task_id,
-                        analysis_outcome=outcome, corrected_subsystems=corrected,
-                        checkpoint_generation=generation if type(generation) is int else None)
-    state = REPAIRED if corrected else DEFERRED
-    reason = CORRECTED if corrected else NO_CORRECTED_SUBSYSTEM
+                        analysis_outcome=outcome, corrected=corrected, targets=targets,
+                        checkpoint_generation=generation,
+                        successor_execution_ref=facts["analysis_ref"])
+    whole = bool(targets) and len(corrected) == len(targets)
+    state = REPAIRED if whole else DEFERRED
+    reason = (CORRECTED if whole else PARTIALLY_CORRECTED if corrected else NO_CORRECTED_SUBSYSTEM)
     return _settled(correction, state, reason, task_id=task_id, analysis_outcome=outcome,
-                    corrected_subsystems=corrected,
-                    checkpoint_generation=generation if type(generation) is int else None)
+                    corrected=corrected, targets=targets, checkpoint_generation=generation,
+                    successor_execution_ref=facts["analysis_ref"])
 
 
 def _settled(correction: dict, state: str, reason_code: str, *, task_id=None, analysis_outcome=None,
-             corrected_subsystems=0, checkpoint_generation=None) -> dict:
+             corrected=(), targets=(), checkpoint_generation=None,
+             successor_execution_ref=None) -> dict:
+    corrected, targets = list(corrected), list(targets)
     return {"correction_id": correction.get("id"), "audit_id": correction.get("audit_id"),
             "source_task_id": correction.get("source_task_id"), "successor_task_id": task_id,
             "source_execution_ref": correction.get("source_execution_ref"),
+            "successor_execution_ref": successor_execution_ref,
             "diagnosis": correction.get("diagnosis"), "state": state, "reason_code": reason_code,
-            "analysis_outcome": analysis_outcome, "corrected_subsystems": corrected_subsystems,
+            "analysis_outcome": analysis_outcome, "target_subsystems": len(targets),
+            "corrected_subsystems": len(corrected),
+            "remaining_targets": len(targets) - len(corrected),
             "checkpoint_generation": checkpoint_generation,
             "attempts": int(correction.get("attempts") or MAX_ATTEMPTS)}
+
+
+def notice_proof(correction: dict, settled: dict) -> dict:
+    """The lineage proof ONE informational lead notice is bound to.
+
+    Its digest becomes the notice's `transition_ref`, so the notice identity is the (successor
+    execution, repair transition) pair: a repeated settlement, a restart and a lost commit response
+    all rebuild the same identity, and no other transition can borrow it. Identifiers, fixed codes
+    and counts only - both immutable artifact references travel as references, never as content.
+    """
+    return {"schema": SCHEMA, "version": VERSION, "correction_id": correction.get("id"),
+            "family": correction.get("family"), "audit_id": correction.get("audit_id"),
+            "partition_id": correction.get("partition_id"),
+            "partition_generation": correction.get("partition_generation"),
+            "diagnosis": correction.get("diagnosis"),
+            "source_task_id": settled.get("source_task_id"),
+            "source_execution_ref": settled.get("source_execution_ref"),
+            "successor_task_id": settled.get("successor_task_id"),
+            "successor_execution_ref": settled.get("successor_execution_ref"),
+            "state": settled.get("state"), "reason_code": settled.get("reason_code"),
+            "attempts": settled.get("attempts"),
+            "authority": "informational lead notice; the two attempts of this family are closed and "
+                         "no research has run"}
+
+
+def notice_evidence(settled: dict) -> list:
+    """The original and successor execution references the notice retains, in that order."""
+    return [ref for ref in (settled.get("source_execution_ref"),
+                            settled.get("successor_execution_ref"))
+            if type(ref) is str and ARTIFACT_REFERENCE.fullmatch(ref)]
 
 
 def diagnosis_view(row: dict) -> dict:
@@ -392,13 +470,20 @@ def diagnosis_view(row: dict) -> dict:
             "reason_code", "attempts", "subsystems_total", "created_at", "updated_at")
     successor = row.get("successor") or {}
     settled = row.get("settlement") or {}
+    notice = row.get("notice") or {}
     return {**{key: row.get(key) for key in keys},
             "successor_task_id": successor.get("task_id"),
             "successor_schedule_key": successor.get("schedule_key"),
             "successor_published": successor.get("published"),
+            "successor_execution_ref": settled.get("successor_execution_ref"),
+            # Execution success, analysis rejection, repair settlement and notice delivery stay four
+            # separate facts: a recorded notice is a delivered question, never a repaired subsystem.
+            "target_subsystems": settled.get("target_subsystems"),
             "corrected_subsystems": settled.get("corrected_subsystems"),
+            "remaining_targets": settled.get("remaining_targets"),
             "checkpoint_generation": settled.get("checkpoint_generation"),
-            "analysis_outcome": settled.get("analysis_outcome")}
+            "analysis_outcome": settled.get("analysis_outcome"),
+            "notice_id": notice.get("id"), "notice_published": notice.get("published")}
 
 
 def status_view(activation, corrections) -> dict:
@@ -421,12 +506,14 @@ def status_view(activation, corrections) -> dict:
                             sorted(rows, key=lambda r: (str(r.get("created_at") or ""), str(r.get("id"))))]}
 
 
-__all__ = ["ADMITTED", "CHECKLISTS", "DEFERRED", "DIAGNOSES", "DIAGNOSIS_BY_DIGEST",
-           "DIAGNOSIS_FIELD", "LIVE_STATUSES", "MAX_ATTEMPTS", "MAX_IDENTITIES",
-           "MISSING_TEST_DISPOSITION", "NOT_ADMITTED_REASONS", "RECONCILIATION_REQUIRED",
-           "REPAIRED", "RESEARCH_REQUIRED", "SCHEMA", "SETTLEMENT_REASONS", "STATES",
-           "TERMINAL_STATES", "VALIDATOR_MESSAGES", "VERSION", "RepairRefused", "binding",
-           "correction_identity", "correction_row", "corrected_subsystems", "diagnosis_for",
-           "diagnosis_view", "family_identity", "identifier", "rejection_facts", "repair_context",
-           "repair_details", "repair_evidence", "schedule_key", "scope_digest", "settlement",
-           "status_view", "unjustified_subsystems"]
+__all__ = ["ADMITTED", "CHECKLISTS", "CONTROL_UNAVAILABLE", "DEFERRED", "DIAGNOSES",
+           "DIAGNOSIS_BY_DIGEST", "DIAGNOSIS_FIELD", "LIVE_STATUSES", "MAX_ATTEMPTS",
+           "MAX_IDENTITIES", "MISSING_TEST_DISPOSITION", "NOT_ADMITTED_REASONS",
+           "RECONCILIATION_REQUIRED", "REPAIRED", "RESEARCH_INACTIVE", "RESEARCH_REQUIRED",
+           "SCHEMA", "SETTLEMENT_REASONS", "STATES", "TERMINAL_STATES", "UNRESOLVED_TERMINATION",
+           "VALIDATOR_MESSAGES", "VERSION", "RepairRefused", "binding", "correction_identity",
+           "correction_row", "corrected_targets", "diagnosed_targets", "diagnosis_for",
+           "diagnosis_view", "family_identity", "identifier", "notice_evidence", "notice_proof",
+           "rejection_facts", "repair_context", "repair_details", "repair_evidence", "schedule_key",
+           "scope_digest", "settlement", "status_view", "target_identities",
+           "unjustified_subsystems"]

@@ -13,7 +13,7 @@ from test_workflow import assignment
 from codex_harness.adapters.bus import RedisBus
 from codex_harness.adapters.contracts import validate_message
 from codex_harness.adapters.store import MemoryStore
-from codex_harness.application.execution_notices import record
+from codex_harness.application.execution_notices import receive, record
 from codex_harness.application.service import Harness
 from codex_harness.application.workflow import Workflow
 from codex_harness.bootstrap import organization, redis_url
@@ -99,6 +99,61 @@ def test_quarantine_is_serializable_and_semantic(backend, request):
         assert not tx.scan('outbox')
         json.dumps(first, allow_nan=False, sort_keys=True)
         assert first['source']['extra']['invalid_mapping'][0][1] == {'invalid_type': 'object'}
+
+
+# ----- the ONE narrow succeeded-row extension (INV-AUDIT-REPAIR-001, owner review 2026-09-21) ----
+def repair_row(status='succeeded', outcome='analysis_rejected'):
+    return {'id': 'successor-task', 'agent': 'worker:github', 'attempt': 1, 'generation': 1,
+            'status': status, 'result': {'analysis': {'outcome': outcome}}}
+
+
+REPAIR_PROOF = {'state': 'research_required', 'successor_task_id': 'successor-task',
+                'correction_id': 'repair-fixture'}
+
+
+@pytest.mark.parametrize('row,reason,proof', [
+    (repair_row(), 'research_required', None),
+    (repair_row(), 'research_required', {**REPAIR_PROOF, 'state': 'repaired'}),
+    (repair_row(), 'research_required', {**REPAIR_PROOF, 'successor_task_id': 'another-task'}),
+    (repair_row(outcome='analysis_checkpointed'), 'research_required', REPAIR_PROOF),
+    (repair_row(), 'execution_failed', REPAIR_PROOF),
+    (repair_row(status='failed'), 'research_required', REPAIR_PROOF),
+], ids=['unproven', 'wrong-state', 'foreign-successor', 'not-rejected', 'other-reason',
+        'failed-row'])
+def test_a_succeeded_row_is_notice_eligible_only_through_a_proven_repair_lineage(row, reason, proof):
+    """No arbitrary succeeded row becomes notice-eligible, and the repair reason belongs to no
+    other status. A refused source is quarantined: no notice and no outbox record is written."""
+    store = MemoryStore()
+    with store.transaction() as tx:
+        quarantined = record(tx, organization(), row, 'tasks', reason, 'at', proof=proof)
+        assert quarantined['status'] == 'quarantined'
+        assert not tx.scan('execution_notices') and not tx.scan('outbox')
+        assert len(tx.scan('execution_notice_errors')) == 1
+
+
+@pytest.mark.parametrize('backend', ['memory', 'postgres'])
+def test_a_proven_second_refusal_keeps_the_execution_succeeded_and_is_idempotent(backend, request):
+    store = MemoryStore() if backend == 'memory' else request.getfixturevalue('isolated_pgstore')
+    org, row = organization(), repair_row()
+    with store.transaction() as tx:
+        notice = record(tx, org, row, 'tasks', 'research_required', '2026-09-21T00:00:00+00:00',
+                        'a' * 64, proof=REPAIR_PROOF, evidence_refs=['sha256:' + 'b' * 64])
+        again = record(tx, org, row, 'tasks', 'research_required', '2026-09-21T01:00:00+00:00',
+                       'a' * 64, proof=REPAIR_PROOF, evidence_refs=['sha256:' + 'b' * 64])
+        assert notice == again and len(tx.scan('execution_notices')) == len(tx.scan('outbox')) == 1
+    message = notice['message']
+    validate_message(message)
+    # The row is reported as what it is; nothing relabels a succeeded execution as failed.
+    assert notice['transition']['status'] == 'succeeded'
+    assert notice['transition']['reason_code'] == 'research_required'
+    assert message['why']['evidence_refs'] == ['sha256:' + 'b' * 64]
+    assert message['who']['recipient'] == 'lead:research'
+    # The same proof-checked receive as every other notice, with no workflow authority.
+    with store.transaction() as tx:
+        assert receive(tx, message) == {'handled': True, 'notice_id': notice['id'],
+                                        'authority': 'informational_only'}
+        assert receive(tx, message)['handled'] is True
+        assert not tx.scan('tasks') and not tx.scan('decisions_pending')
 
 
 def test_receipt_replay_survives_missing_notice_but_unprocessed_notice_does_not():

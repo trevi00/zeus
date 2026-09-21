@@ -3,20 +3,47 @@ import math
 import re
 
 from codex_harness.domain.model import ContractError, digest, envelope, require
+from codex_harness.domain.observation import ANALYSIS_REJECTED, analysis_facts
 
 REASONS = {'execution_failed', 'budget_exhausted', 'deadline_exceeded', 'dependency_failed',
            'operator_cancelled', 'ticket_binding_changed', 'execution_recovered', 'InvalidExecutionDeadline',
            'InvalidRetryBudget', 'UnverifiedLegacyRetryBudget', 'RecoveryContextChanged',
            'inspection_blocked', 'decision_blocked', 'ticket_superseded', 'InvalidExecutionLease',
            'InvalidExecutionClock', 'ClockDiscontinuity', 'InvalidExecutionOrder', 'InvalidExecutionState',
-           'reconciliation_required'}  # INV-OBSERVATION-001: provider ran, outcome unrecorded, execution blocked
+           'reconciliation_required',  # INV-OBSERVATION-001: provider ran, outcome unrecorded, execution blocked
+           'research_required'}  # INV-AUDIT-REPAIR-001: both attempts of one repair family were content-refused
+FAILED_STATES = {'retry', 'failed', 'expired', 'cancelled', 'blocked', 'superseded', 'inspection_blocked'}
+# The ONE narrow extension for a SUCCEEDED execution (INV-AUDIT-REPAIR-001). It is not a relabelling:
+# the row keeps `succeeded`, and eligibility needs BOTH the execution's own recorded content
+# rejection AND an authoritative repair lineage that already reached `research_required`. No other
+# reason may be raised on a succeeded row, and this reason may be raised on no other status.
+RESEARCH_REQUIRED = 'research_required'
+REPAIR_STATE = 'research_required'
 
 
-def _build(org, row, bucket, reason_code, at, transition_ref):
+def _repair_proved(row, proof) -> bool:
+    """Is this succeeded execution the second refused draft of a proven repair lineage?
+
+    The proof is the lineage's own settlement facts, and it is checked against the execution row it
+    names: the row's durable result must itself record the content rejection, and the lineage must
+    name THIS row as the successor it settled. A caller's assertion alone proves nothing here.
+    """
+    if not isinstance(proof, dict) or proof.get('state') != REPAIR_STATE:
+        return False
+    correction = proof.get('correction_id')
+    return (analysis_facts(row.get('result'))['analysis_outcome'] == ANALYSIS_REJECTED
+            and proof.get('successor_task_id') == row.get('id')
+            and type(correction) is str and bool(correction))
+
+
+def _build(org, row, bucket, reason_code, at, transition_ref, proof=None, evidence_refs=()):
     require(bucket in {'tasks', 'decisions_pending'}, 'Invalid notice aggregate')
     require(reason_code in REASONS, 'Unknown execution notice reason')
-    require(row['status'] in {'retry', 'failed', 'expired', 'cancelled', 'blocked', 'superseded', 'inspection_blocked'},
+    require(_repair_proved(row, proof) and reason_code == RESEARCH_REQUIRED
+            if row['status'] == 'succeeded'
+            else row['status'] in FAILED_STATES and reason_code != RESEARCH_REQUIRED,
             'Invalid notice execution state')
+    require(all(type(ref) is str and bool(ref) for ref in evidence_refs), 'Invalid notice evidence')
     actor = org.actor(row.get('agent', row.get('actor')))
     recipient = actor.parent or actor.id
     transition = {'version': 1, 'bucket': bucket, 'task_id': row['id'],
@@ -34,7 +61,8 @@ def _build(org, row, bucket, reason_code, at, transition_ref):
     message['message_id'] = identity
     message['when']['created_at'] = at
     message['why']['objective'] = 'Observe a persisted execution transition without granting workflow authority'
-    message['why']['evidence_refs'] = []
+    # Immutable references only; the retained drafts they name never travel in a notice.
+    message['why']['evidence_refs'] = list(evidence_refs)
     org.authorize(message)
     notice = {'id': identity, 'transition': transition, 'message': message, 'at': at,
               'authority': 'informational_only', 'observer': 'workflow_controller', 'source_hash': digest(row)}
@@ -57,9 +85,10 @@ def _quarantine_value(value):
     return {'invalid_type': type(value).__name__}
 
 
-def record(tx, org, row, bucket, reason_code, at, transition_ref=None):
+def record(tx, org, row, bucket, reason_code, at, transition_ref=None, *, proof=None,
+           evidence_refs=()):
     try:
-        notice = _build(org, row, bucket, reason_code, at, transition_ref)
+        notice = _build(org, row, bucket, reason_code, at, transition_ref, proof, evidence_refs)
     except (ContractError, KeyError, TypeError, ValueError, AttributeError) as exc:
         # Bad source data must not roll back containment of this or earlier queue rows.
         # Storage errors below still abort the entire transaction; no state-only success.

@@ -1739,7 +1739,8 @@ running task and a foreign audit are not eligible and are reported as the fixed 
 (`unsupported_diagnosis`, `not_enabled`, `out_of_scope`, `unknown_task`, `unknown_partition`,
 `foreign_partition`, `generation_changed`, `evidence_missing`, `evidence_unreadable`,
 `evidence_mismatch`, `replay_unavailable`, `replay_mismatch`, `no_correctable_identity`,
-`lineage_exists`, `family_closed`, `binding_changed`, `predecessor_unpublished`, `no_candidate`).
+`lineage_exists`, `family_closed`, `binding_changed`, `predecessor_unpublished`, `no_candidate`,
+`research_inactive`, `unresolved_termination`, `control_unavailable`).
 The rejection must still HOLD its partition at the generation it was assigned, and the predecessor's
 own correlation must have no unsent outbox record. The immutable artifact is inspected and read
 OUTSIDE any transaction and the pure content decode (`AuditExecution.proposed_checkpoint`, the same
@@ -1752,8 +1753,13 @@ normalized or deduplicated. The lineage identity is derived from the durable rec
 partition, partition generation, original task, its execution generation, the diagnosis), so a
 repeated tick, a restarted service and a concurrent admission caller find the SAME
 `audit_repair_corrections` row instead of creating a second call. In ONE store transaction the
-admission re-reads the activation, the task and the partition, refuses unless the exact binding it
-was diagnosed against is unchanged, and writes the correction record, the ordinary `audit_partition`
+admission re-reads the activation, the task, the partition, the SAME `research_control/activation`
+run gate the host service reads and the `observation_terminations` markers of the execution being
+corrected, refuses unless the exact binding it was diagnosed against is unchanged, refuses a paused
+or unreadable control (`research_inactive`, `control_unavailable`) and an unconfirmed or
+pending-reconciliation marker of that execution (`unresolved_termination`) - an unresolved marker is
+the operator's alone to resolve and unknown is never permission - and writes the correction record,
+the complete diagnosed target set, the ordinary `audit_partition`
 assignment into the existing outbox, a `schedule` row under its own deterministic
 `repair:<correction>` key carrying the same `partition_id`, and the durable `events` audit record.
 The successor is an ORDINARY assignment: same action, same agent, same audit, same partition and the
@@ -1775,20 +1781,50 @@ successor bound to another record is `reconciliation_required` (`successor_unbou
 cancelled, expired, blocked or superseded successor is `reconciliation_required`
 (`execution_unresolved`) and is NOT a strike, a succeeded successor whose own result is
 `analysis_rejected` records `research_required` (`content_rejected_again`) ONCE and closes the
-family, and a succeeded, checkpointed successor is `repaired` only when it persisted at least one
-subsystem coverage record of its own with a justified test disposition - otherwise it is `deferred`
-(`no_corrected_subsystem`, `unclassified_result`). A checkpoint is resumed partial work, never
-subsystem acceptance: a corrected record whose tests were justifiably not run leaves that subsystem
-in the remaining scope. The original and the successor are the only two attempts: after any terminal
-state the family is closed (`family_closed`) and there is no automatic third call, no fabricated
-research completion and no claim that a recorded `research_required` means research ran - source
-investigation remains the existing ResearchProgram/Codex responsibility. The audit service asks this
-owner for ONE tick under its SAME admission gate (settle, then admit at most one successor), records
-the bounded facts in its `last_repair` row and summary, and reports them in the two declared
-observations `operations.audit_repair_admitted` and `operations.audit_repair_settled` (identifiers,
-fixed codes and counts only, the immutable artifact reference as an evidence reference, a foreign
-value reduced to a declared code or null); a repair failure is `repair_unavailable`, a bounded
-recorded fact that is never an execution outcome, a stop reason or permission to repeat an attempt.
+family, and a succeeded, checkpointed successor is `repaired` only when EVERY originally diagnosed
+target identity carries a subsystem record persisted by THAT successor's own execution with a
+justified test disposition - a corrected subset is `deferred` (`partially_corrected`) and no
+corrected target at all is `deferred` (`no_corrected_subsystem`, `unclassified_result`). Settlement
+counts the COMPLETE diagnosed target set retained on the lineage row, never the bounded list the
+assignment carries, so a truncated recovery context can never shrink the denominator, and it counts
+only identities in that set, so valid work the successor did outside it stays valid and still yields
+a deferred repair; `target_subsystems`, `corrected_subsystems` and `remaining_targets` are reported
+separately and a partial correction can never read as a whole repair. Those records are read from
+the immutable `research_evidence_history` rows of the successor's own execution, not from
+`research_subsystems`, whose latest-row-per-item semantics would let a later ordinary checkpoint
+take the credit for, or erase, what the successor persisted. A checkpoint is resumed partial work,
+never subsystem acceptance: a corrected record whose tests were justifiably not run leaves that
+subsystem in the remaining scope. The original and the successor are the only two attempts: after
+any terminal state the family is closed (`family_closed`) and there is no automatic third call, no
+fabricated research completion and no claim that a recorded `research_required` means research ran -
+source investigation remains the existing ResearchProgram/Codex responsibility. A lineage that
+reaches `research_required` writes, in the SAME transaction as that terminal settlement, ONE
+deterministic informational `execution.notice` to the executing agent's own lead over the existing
+direct reporting edge, plus that notice's own outbox record, so the second strike can never be
+stored without the message that reports it. The existing notice builder is extended NARROWLY for
+this case alone: a `succeeded` execution is notice-eligible only when its own durable result records
+`analysis_rejected` AND the authoritative repair lineage proves `research_required` for exactly that
+successor, no arbitrary succeeded row becomes eligible, no row is relabelled `failed`, and the
+reason `research_required` may be raised on no other status. The notice identity is the digest of
+the lineage proof (correction, family, audit, partition generation, diagnosis, both tasks, both
+immutable execution references, state and reason), it retains both execution references as evidence
+references, and it is published by the existing correlation-scoped relay under the lineage's own
+correlation even when no further worker assignment exists there. Publication is read from the
+notice's own outbox record and never assumed: a failed publication keeps that record unsent and is
+retried by a later tick or after a restart, a repeated settlement, a lost commit response and a
+duplicate delivery all return the SAME notice through the existing proof-checked
+commit-before-acknowledgement receive, and receiving it is `informational_only` - it performs no
+research, queues no task or decision and authorizes no third call. The audit service asks this
+owner for ONE tick under its SAME admission gate (settle, then admit at most one successor), relays
+the pending lead notices of that tick through the existing scoped publication, records the bounded
+facts in its `last_repair` row and summary, and reports them in the two declared observations
+`operations.audit_repair_admitted` and `operations.audit_repair_settled` (identifiers, fixed codes
+and counts only, both immutable artifact references as evidence references, a foreign value reduced
+to a declared code or null); execution success, analysis rejection, repair settlement and notice
+delivery stay four separate facts in every projection. A repair failure is `repair_unavailable` and
+a failed notice publication is that attempt's recorded error type beside an unsent notice record;
+both are bounded recorded facts that are never an execution outcome, a stop reason or permission to
+repeat an attempt.
 `zeus audit-service status` gains `repair`: the opt-in, its scope, each source task -> diagnosis ->
 successor -> settlement and the SEPARATE counts (attempted, admitted, repaired, deferred,
 research_required, reconciliation_required); the rejected history is preserved and a hold disappears

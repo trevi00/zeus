@@ -12,9 +12,11 @@ from test_audit_repair import (  # noqa: F401  imported fixtures register with p
     SECRET,
     corrections_of,
     enabled_owner,
+    notices_of,
     owner,
     rejected_execution,
     repairable,
+    two_strikes,
 )
 from test_research_audits import (  # noqa: F401  `audit` is a pytest fixture: importing registers it
     activate_fixture,
@@ -90,6 +92,26 @@ def test_enable_scopes_one_task_and_disable_closes_admission(repairable):  # noq
     assert correction["id"] == admitted["correction_id"] and correction["state"] == "admitted"
     assert correction["diagnosis"] == "missing_test_disposition"
     assert correction["successor_schedule_key"] == domain_repair.schedule_key(correction["id"])
+
+
+def test_status_keeps_settlement_counts_and_notice_delivery_distinct(repairable):  # noqa: F811
+    """One read, four separate facts: the execution succeeded, its analysis was refused, the repair
+    is NOT a repair, and the lead notice that carried the second strike was recorded."""
+    ctx = repairable
+    strike = two_strikes(ctx)
+    status = run(ctx, strike.repair, "status", "--audit-id", ctx.audit_id)
+    correction = status["corrections"][0]
+
+    assert status["counts"]["research_required"] == 1 and status["counts"]["repaired"] == 0
+    assert strike.successor["status"] == "succeeded"
+    assert correction["state"] == "research_required"
+    assert correction["analysis_outcome"] == "analysis_rejected"
+    assert (correction["target_subsystems"], correction["corrected_subsystems"],
+            correction["remaining_targets"]) == (1, 0, 1)
+    assert correction["successor_execution_ref"] == strike.successor_ref
+    assert correction["notice_id"] == notices_of(ctx)[0]["id"]
+    assert correction["notice_published"] is False, "publication is read, never assumed"
+    assert SECRET not in canonical(status)
 
 
 @pytest.mark.parametrize("argv,code", [
