@@ -1985,3 +1985,86 @@ rollback and preservation of original evidence. Unknown cases cannot enter the s
 No historical future-information leakage and no claim that replay proves counterfactual outcomes.
 Completion requires one evidence-bound decision improvement and measured actual reuse. Documentation
 alone satisfies only framing; recorder/evaluator/activation remain unimplemented in this change.
+
+## Decision feedback and recurring-work candidates: first runnable delivery (2026-09-21)
+
+Outcome: expose existing conductor decisions beside their actual run outcomes and identify repeated
+procedures (including successes) as evidence-bound improvement candidates. Finish one operating
+read/collect/report cycle; no automatic policy edits, fabricated judgment labels, new conductor or
+self-authorized promotion. This is the foundation for evaluated improvement, not a claim that all
+judgments already improve themselves. User permits implementation and independent review.
+
+SSOT inspected: council.py freezes research/DBA snapshot and records conductor DGE events before
+implementation; autonomous.py owns final run outcome; dge.py stores immutable session/event bindings;
+operations owns actual implementation/review receipts. service.py record_incident already counts
+independent incident occurrences and queues required hooks. experience.py explicitly excludes imported
+experience from recurrence. SkillHistory/ThresholdProposals retain separate skill evidence and
+review candidates. Reuse these stores/ports and owners; do not reinterpret successful repetitions
+as incidents or add them to incident counts. Existing role packets are not new user authority.
+
+Path: existing executor-bound DGE conductor event + task/execution binding + autonomous run ID ->
+read-only joined observation -> deterministic comparison against a trusted owner-authored procedure
+registry -> idempotent candidate collection -> human-readable/JSON report. PG stores unverified
+observations/candidates only; no verified graph, task status, dispatch, activation or release write.
+Do NOT infer the quality of a conductor decision from downstream success/failure alone.
+
+Trusted registry version1: explicit nonempty procedure ID, source kind (council only initially),
+exact repository identity, exact allowed-path set and exact acceptance-criteria digest from the
+owner's known plan, and remediation kind skill/script/existing_owner_review. No fuzzy title matching,
+model-selected root cause, substring family or arbitrary code execution. Observation matches a
+registry entry only on these contracts. Different repositories/scopes/oracles remain separate.
+Empty/malformed/ambiguous match => unknown, never counted toward threshold. Registry is Git-pinned
+and read with GitSource, not mutable working-tree configuration. CLI requires revision+path.
+
+Reuse application/domain hexagonal shape: pure normalization/fingerprint/grouping, application
+reads existing store/artifact evidence, adapter CLI for collect/status/report. Integrate as
+`zeus decision-feedback collect --registry PATH --revision COMMIT`, `status`, and `report` JSON.
+The repository comes from current trusted CLI settings. No web or scheduled daemon in this batch.
+One explicit bounded collect defaults to at most100 source runs; report scanned/eligible/unknown/
+truncated and a continuation cursor, deterministic sort by immutable run ID. A failed store/read
+must be unavailable, not empty. Progress is not a semantic judgment.
+
+Each observation binds run/session/event IDs, source revision, goal/criteria digest, input snapshot
+and packet/report identities, conductor execution ref and policy/manifest identity as available.
+Absent historical fields are unknown, not fabricated. Verify the existing event/task binding and
+actual artifact identity before admitting a row as evidence. Keep concise decision summaries in
+artifact store, not copied raw model text in logs. Do not expose credentials or entire input packets.
+Outcome states distinguish pending, accepted, rejected, failed, cancelled, unknown; preserve exact
+source state and reason code, plus its provenance. Terminal accepted is operation acceptance, not
+proof the decision was correct, the code was deployed, or product acceptance passed.
+
+Count distinct autonomous run IDs, not attempts, event replays, repeated collection, receipt copies
+or imported experiences. Two independently executed matching runs create one advisory candidate
+per repository+procedure+registry revision, successes included. Additional runs append bounded
+immutable evidence references without another dispatch. Candidate says needs_analysis, not skill
+created or verified. Existing owner should be searched by the lead before implementation.
+Partial evidence cannot upgrade a candidate. Separate an unavailable observation from zero samples.
+Same collection input is idempotent; changed terminal source history is a conflict requiring owner
+inspection, never overwritten as better outcome. Concurrent collectors serialize candidate updates
+using the store transaction contract. No network or model invocation from collection.
+
+Decision quality labels require future independent evidence. Report unknown unless an independently
+reviewed diagnosis is actually linked; this delivery does not accept arbitrary owner-supplied success
+labels as measured judgment quality. Do not add model confidence or acceptance-rate optimization.
+Report comparable samples, actual run outcome counts, unknown/missing counts and candidate evidence;
+no invented duration/token values. Replay/held-out evaluator and policy activation remain follow-up
+under the canonical AUTHORING.md rules; name these limits in the report.
+
+Acceptance matrix: two actual matching distinct run identities => one candidate; repeated read or
+same run retry => no second occurrence; different scope/registry => no accidental grouping; pending
+outcome stays pending; unknown decision identity/artifact refuses evidence credit; rejected/failed
+outcome remains visible without causal blame; concurrent/restarted collection is idempotent; source
+read/PG failure is explicit; truncated scan has continuation; Git registry pin prevents working-tree
+drift; no source task/incident/verified knowledge mutations. MemoryStore plus isolated PostgreSQL
+where fixture exists; real CLI read/report with no model. Synthetic fixtures explicitly labelled.
+
+Implementation ownership Claude, independent acceptance Codex. Trace real stored row shapes before
+coding and reuse verification helpers. Allowed files: new domain/application/adapters modules named
+decision_feedback.py, adapter decision_feedback_cli.py, CLI registration, focused tests,
+docs/contracts.md and DECISION-FEEDBACK.md in this task folder. Do not change decision policy,
+incident recurrence, worker profile, live config, release, model budgets or task state. Fixed checks:
+python -m pytest tests/test_decision_feedback.py tests/test_decision_feedback_cli.py -q -p no:cacheprovider
+python -m ruff check . --no-cache
+Worker runs focused checks; owner performs integration/CI and a real read-only historical collection
+in a separately named candidate namespace before any scheduling decision. A lack of two comparable
+historical runs is a measured no-candidate result, never a reason to forge registry equivalence.
