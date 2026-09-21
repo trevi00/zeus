@@ -292,6 +292,23 @@ def repository_identity(path: str) -> str:
     return digest(normalize_path(path))
 
 
+def resolve_repository(identity: str, aliases=None) -> str:
+    """Follow an owner relocation chain (old repository identity -> new one) to its current end.
+
+    Frozen job rows are never rewritten, so a job enqueued before its lane repository moved keeps
+    the identity of the path it was bound to. `aliases` comes from the immutable relocation
+    receipts (`domain.fleet_recovery.repository_aliases`); without one nothing changes. The walk is
+    bounded by the map and refuses to loop, so a cycle answers instead of hanging.
+    """
+    if not aliases:
+        return identity
+    seen = set()
+    while identity in aliases and identity not in seen:
+        seen.add(identity)
+        identity = aliases[identity]
+    return identity
+
+
 def new_job(manifest: dict, manifest_sha256: str, lane: dict, goal: dict, dependencies: list[str],
             now: str) -> dict:
     """The durable job row. The manifest is frozen here; the job id is the operation id, so one
@@ -312,10 +329,12 @@ def binding(job: dict) -> dict:
             "dependencies": list(job["dependencies"]), "goal": dict(job["goal"])}
 
 
-def blocking_reason(job: dict, jobs: dict, config: dict) -> str | None:
+def blocking_reason(job: dict, jobs: dict, config: dict, aliases=None) -> str | None:
     """Why this queued job cannot be admitted now, or None. Capacity and pause are fleet-wide and
     checked by the caller; this covers a stale budget, the lane, the dependencies and the path
-    exclusion. A job frozen with ceilings other than the effective ones is never dispatched."""
+    exclusion. A job frozen with ceilings other than the effective ones is never dispatched.
+    `aliases` resolves the repository identities of jobs frozen before an owner relocation, so the
+    path exclusion still compares two jobs of one repository under its current path."""
     if job["manifest"].get("budget") != config["budget"]:
         return "budget_stale"
     reserving = [other for other in jobs.values() if other["status"] in RESERVING]
@@ -329,14 +348,15 @@ def blocking_reason(job: dict, jobs: dict, config: dict) -> str | None:
             return "dependency_" + other["status"]
         if other["status"] != ACCEPTED:
             return "dependency_waiting"
+    mine = resolve_repository(job["repository"], aliases)
     for other in reserving:
-        if other["repository"] == job["repository"] and conflicting_paths(
+        if resolve_repository(other["repository"], aliases) == mine and conflicting_paths(
                 job["manifest"]["plan"]["allowed_paths"], other["manifest"]["plan"]["allowed_paths"]):
             return "path_conflict"
     return None
 
 
-def select_admission(config: dict, paused: bool, jobs: dict, budget_exhausted: bool) -> dict:
+def select_admission(config: dict, paused: bool, jobs: dict, budget_exhausted: bool, aliases=None) -> dict:
     """The one queued job to dispatch next (oldest first) and the reason every other queued job
     waits. At most `max_parallel` jobs reserve at once, one per lane. `config` carries the
     effective ceilings; the caller persists every observed reason in the same transaction."""
@@ -351,7 +371,7 @@ def select_admission(config: dict, paused: bool, jobs: dict, budget_exhausted: b
         elif reserving >= config["max_parallel"]:
             reason = "capacity"
         else:
-            reason = blocking_reason(job, jobs, config)
+            reason = blocking_reason(job, jobs, config, aliases)
         if reason is None and chosen is None:
             chosen = job
             reserving += 1  # the next candidates see this claim: capacity, lane and paths

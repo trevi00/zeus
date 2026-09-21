@@ -1394,6 +1394,51 @@ or generated work. `sources.fleet` in the monitor snapshot (an additive source b
 the persisted queued reasons), call counts, effective `budget`, last 100 jobs with `truncated`,
 `active_job` from all reserving jobs; never manifests, paths, schemas, DSNs or raw output.
 
+Two owner-only commands exist beside `authorize-budget` for storage recovery (storage-recovery-001);
+neither calls a model, retries, grants budget, resumes admission, records success or moves a file.
+`fleet reconcile-interrupted --file` settles ONE interrupted job from an explicit
+`urn:zeus:fleet-recovery-evidence:1` document (job, operator, expected status/owner token/lane/
+registered digest, lane operation id with its `operation:<id>` correlation and task id at its
+advanced generation, the owned container run id/name/id, the invocation reservation and the machine
+call slot). The adapter observes that evidence itself (`urn:zeus:fleet-recovery-proof:1`): the lane
+`operations` row that owns the exact correlation (the INV-OPERATION-FINALIZATION-001 ownership
+rule), the task cancelled at that generation with a lease that parses and is not live, the task's
+recorded `execution_progress` worktree, the ONE retained isolation run record of that worktree with
+that exact container name and id, a Docker state of `exited`/`dead`/`created`, a reservation that is
+`settled` or `unsettled_unknown` with no open reservation left for that task, and a `used` machine
+slot. A container name with no recorded task/run binding, an ambiguous or unreadable record, an
+unavailable daemon or a missing slot is a refusal, never an absence, and unknown usage stays
+unknown. The commit needs a paused fleet, the registered digest the evidence names, and the job
+still being that exact reservation (status in dispatching/unknown, owner token, lane, operation id);
+the observation is re-read inside that transaction and its identities (everything but its clock)
+must be unchanged. It writes one immutable `fleet_recovery_receipts` row and makes the job terminal
+`failed` with the fixed `interrupted_unknown` reason, clearing that one reservation while manifest,
+goal, dependencies, exit code, call counts and every other record stay byte-for-byte; identical
+evidence replays idempotently and any other evidence for that job is `recovery_conflict`. This is an
+owner-controlled recovery with the worker services stopped, not a distributed atomic transaction,
+and the receipt says so. `fleet relocate --file --journal` moves lane repository and runtime PATHS
+to already-copied targets under `urn:zeus:fleet-relocation:1` (expected registered digest, exact
+`from`->`to` map, verified copy manifest, operator): only those paths may change, every stated source
+must be exactly what is registered, no target may equal or contain a path this fleet already uses,
+the result is re-validated by `validate_config`, and lane id, team, schema, Redis namespace,
+concurrency, budget and provider authority are compared field by field. The adapter proves the
+cutover state instead of trusting an idle flag: the service lifecycle journal
+(INV-SERVICE-DIAGNOSTICS-001) must show the last Fleet CLI run exited (missing, unreadable or still
+open is `runner_state_unknown`/`runner_not_stopped`), every retained isolation run of a moving lane
+must have a container Docker proves is not running, each target must be an existing resolved
+directory (no symlink or junction escape) that is an independent checkout with no borrowed objects
+and the same root-commit identity as its source, each target runtime must be writable, every queued
+job of that lane must have its pinned base commit and goal bytes present in the target, and the copy
+manifest and every destination file must hash to what the request states. The commit needs a paused
+fleet with no dispatching or unknown job, compare-and-swap on the registered digest, and the same
+re-read rule; it writes one immutable `fleet_relocations` receipt (prior configuration and digest,
+new configuration and digest, request, observation, repository alias map) and the revised registry
+row in one transaction. Job rows, manifests, goals, operation identities, provenance and artifact
+references are never rewritten, so a job frozen before a move keeps its old repository identity and
+admission resolves both sides through the receipts' alias map (`resolve_repository`) to keep the
+path exclusion intact. The identical request replays idempotently; another request against the same
+expected digest is `relocation_conflict`. Future jobs use the new paths; no old operation is resumed.
+
 ## INV-OPERATION-FINALIZATION-001
 
 A terminal bounded operation (INV-OPERATION-001: accepted, rejected, failed, unknown, exhausted)

@@ -1,6 +1,8 @@
-"""`zeus fleet register|enqueue|run|pause|resume|authorize-budget|status`: thin wiring around
-application.fleet. `authorize-budget` is the operator's explicit grant under the trusted local CLI;
-nothing in the dispatcher or a model run calls it."""
+"""`zeus fleet register|enqueue|run|pause|resume|authorize-budget|reconcile-interrupted|relocate|
+status`: thin wiring around application.fleet. `authorize-budget`, `reconcile-interrupted` and
+`relocate` are the operator's explicit owner commands under the trusted local CLI; nothing in the
+dispatcher or a model run calls them, and none of them invokes a provider, retries, resumes
+admission or records success."""
 from __future__ import annotations
 
 import signal
@@ -8,8 +10,12 @@ from pathlib import Path
 
 from codex_harness.adapters.operation_cli import GitSource, bind_goal, read_manifest, refusal
 from codex_harness.adapters.providers import packaged_policy
-from codex_harness.application.fleet import Fleet, FleetRunner
+from codex_harness.application.fleet import BUCKET_JOBS, Fleet, FleetRunner
 from codex_harness.domain.fleet import FleetRefused, lane_of, validate_config
+from codex_harness.domain.fleet_recovery import (
+    validate_recovery_evidence,
+    validate_relocation_request,
+)
 from codex_harness.domain.operation import validate_manifest
 from codex_harness.domain.usage_policy import MODES
 
@@ -41,6 +47,16 @@ def add_parser(commands) -> None:
                               "accepted job (urn:zeus:owner-delivery:1); trusted owner CLI only")
     delivery.add_argument("--job", required=True, help="Existing accepted fleet job id")
     delivery.add_argument("--file", type=Path, required=True, help="Owner delivery document JSON")
+    reconcile = sub.add_parser("reconcile-interrupted", help="Settle one interrupted job from proven-dead "
+                               "evidence (urn:zeus:fleet-recovery-evidence:1); paused fleet, owner CLI only")
+    reconcile.add_argument("--file", type=Path, required=True, help="Owner recovery evidence document JSON")
+    reconcile.add_argument("--docker", default="docker", help="Docker client used to inspect the named container")
+    relocate = sub.add_parser("relocate", help="Move lane repository/runtime paths to verified copies "
+                              "(urn:zeus:fleet-relocation:1); paused, idle fleet, owner CLI only")
+    relocate.add_argument("--file", type=Path, required=True, help="Owner relocation request document JSON")
+    relocate.add_argument("--journal", type=Path, required=True,
+                          help="Service lifecycle journal of the Fleet CLI; the runner must be stopped in it")
+    relocate.add_argument("--docker", default="docker", help="Docker client used to inspect retained lane runs")
     sub.add_parser("status", help="Read the fleet projection; store read only")
 
 
@@ -95,6 +111,48 @@ def record_delivery(service, args) -> dict:
     return {**Fleet(service.store).record_delivery(args.job, document), "exit_code": 0}
 
 
+def reconcile_interrupted(service, args) -> dict:
+    """Owner recovery of ONE interrupted job. The evidence document says what the owner proved; the
+    adapter observes the lane store, Docker and the machine ledger itself and re-reads that
+    observation inside the committing transaction. No model is called and no work is resumed."""
+    from codex_harness.adapters.configuration import settings
+    from codex_harness.adapters.fleet_recovery import (
+        LaneReader,
+        collect_recovery_proof,
+        docker_state,
+    )
+    from codex_harness.adapters.fleet_runtime import lane_dsn
+
+    evidence = validate_recovery_evidence(read_manifest(args.file))
+    fleet = Fleet(service.store)
+    lane = lane_of(fleet.registered()["config"], evidence["expected"]["lane"])
+    reader = LaneReader(lane_dsn(settings().get("HARNESS_DATABASE_URL"), lane["schema"]), lane["schema"])
+
+    def observe() -> dict:
+        return collect_recovery_proof(evidence, lane, reader=reader,
+                                      state=lambda container: docker_state(container, args.docker))
+
+    return {**fleet.reconcile_interrupted(evidence, observe(), reread=observe), "exit_code": 0}
+
+
+def relocate(service, args) -> dict:
+    """Owner relocation of lane repository/runtime paths to already-copied, verified targets. The
+    copy itself is the owner's preparation step: nothing here moves, deletes or rewrites files,
+    history, manifests or goal identities."""
+    from codex_harness.adapters.fleet_recovery import collect_relocation_proof, docker_state
+
+    request = validate_relocation_request(read_manifest(args.file))
+    fleet = Fleet(service.store)
+    registry = fleet.registered()
+    with service.store.transaction() as tx:
+        jobs = tx.scan(BUCKET_JOBS)
+    def observe() -> dict:
+        return collect_relocation_proof(request, registry["config"], jobs, journal=args.journal,
+                                        state=lambda container: docker_state(container, args.docker))
+
+    return {**fleet.relocate(request, observe(), reread=observe), "exit_code": 0}
+
+
 def status(service, args) -> dict:
     # Store read only: no executor, observer, bus, budget or provider is built.
     fleet = Fleet(service.store)
@@ -115,6 +173,10 @@ def execute(service, args) -> dict:
         return {**Fleet(service.store).resume(), "exit_code": 0}
     if command == "record-delivery":
         return record_delivery(service, args)
+    if command == "reconcile-interrupted":
+        return reconcile_interrupted(service, args)
+    if command == "relocate":
+        return relocate(service, args)
     if command == "authorize-budget":
         grant = Fleet(service.store).authorize_budget(args.per_host, args.total, args.expected_total,
                                                       mode=getattr(args, "mode", None))
