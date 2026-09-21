@@ -139,6 +139,40 @@ and broader absorption/model-transfer deliveries. No unattended completion claim
 
 ## Recovery/relocation implementation handoff
 
+### Status reconciliation — 2026-09-22 08:25 KST
+
+This update supersedes stale current-state cells in the earlier sequencing table; it does not
+change feature acceptance. PR176 is merged AND deployed to the C-backed Fleet CLI, with the live
+journal and PG delivery receipt recorded above. Monitor collect/web and Fleet launcher/code paths
+are on C; registered lane paths and remaining Audit/Desk/observation service migration are pending.
+Backup restore, 15,226 artifact copies and interrupted work preservation are complete within their
+recorded scope. Task fencing and invocation accounting are complete; Fleet reservation recovery is not.
+
+Actual recovery/relocation operation ended lead_rejected; candidate implementation is not accepted
+or deployed. Session-retirement-001 has its own SPEC and candidate
+56520f999dda89647e1c34bccfcb04a8121a7147; its operation ended evidence_gate_refused at 02:30 KST:
+five claims, two checked, one replay_failed, two not_checked. Independent model review did not run.
+No existing Codex sessions have been deleted by this delivery. A failed evidence replay is not yet
+an independently established runtime defect; inspect the recorded command/result before correction.
+
+Live monitoring returns seven source reads ok, and Fleet remains paused. These observations do not
+establish autonomous recovery or complete project coverage. Portfolio acceptance denominators:
+local-absorption 0/3 accepted; sterk-migration 1/3 (project observability); research-improvement 1/3
+(recurrence collection). Thus 2/9 registered high-level criteria are accepted, 7 pending. This is
+NOT an overall implementation percentage, source-semantic coverage percentage or effort estimate.
+
+Next bounded sequence: (1) consolidate and fix recovery/relocation rejection, verify actual idle
+cutover and finish required C service paths; (2) resume preserved feedback correction and verify
+failure->owner->successor->review->delivery linkage; (3) finish PG staging/retention and independently
+validate session retirement before controlled deletion; (4) accept ontology packaging/PG/browser,
+then resume parallel absorption and scoped model qualification. Existing useful source research,
+worker isolation, transport, evidence gates and monitor components are retained. Full local/reference
+absorption, graphical reports, model qualification and Code Tutor product acceptance are not complete.
+
+The immediate bottleneck is accepted-to-operational delivery and recovery ownership, not another
+unbounded reference investigation. Completion is determined by evidence-backed checklist items;
+no overall percentage or calendar promise is inferred from elapsed time or test counts.
+
 One bounded batch, Claude implementation and independent Codex review. Add trusted owner CLI
 `fleet reconcile-interrupted` and `fleet relocate`, sharing existing Fleet store and contracts.
 Neither command calls models, retries, grants budget, resumes admission or records success.
