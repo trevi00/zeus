@@ -1539,3 +1539,118 @@ capability, source pins, checks and deployed revision separately from full analy
 No claim that every refusal can recover, no broad UI redesign or speculative scheduler repair.
 Progress investigation already enabled by #173 continues independently; no production windows
 or claimed semantic credit are manufactured to make this batch green.
+
+### Consolidated specification/event/evidence design and plan (2026-09-21)
+
+User explicitly accepts more documents and prioritizes spec-driven development, event-driven
+orchestration, and evidence-driven improvement (logs are supporting evidence, not workflow authority).
+SPEC-EVENT-DEVELOPMENT.md records the consolidated design output of THIS frame: feature-level reverse
+specification, persona/requirements/technical/observability/test/adoption/operation traceability,
+log-to-scenario evidence limits and separate analysis/implementation/operating progress. It is a
+proposed target, not a new executed pipeline or a retroactive change to the immutable repair job.
+Preserve the d69eaf6 implementation candidate and evidence_gate_refused history; its unscoped
+full-suite evidence replay timed out at 300 seconds before independent review. The consolidated
+delivery must distinguish fixing the submission/review path from proving the runtime repair.
+Existing validators, Git/PG/D authority and accepted #173 results remain authoritative. No runtime
+policy change, speculative extra blocker, repeated provider call or release is authorized merely
+by writing these design documents. Implementation continues through the established owner handoff.
+The user requested the consolidated plan: the same design document now fixes the staged delivery,
+event/command/observation boundaries and acceptance matrix. Reuse the rejected-repair candidate;
+no whole repository rewrite, event-sourcing migration, new broker, or automatic promotion is implied.
+Planning is the current requested delivery; new provider calls and deployments were not made here.
+
+### Owner review and bounded correction handoff (2026-09-21)
+
+User now authorized execution of that plan. Reuse this frame and d69eaf6; local inclusion of that
+candidate in this task branch is preparation for correction, NOT acceptance, main merge or release.
+The deployed #173 runtime and its accepted evidence stay unchanged.
+
+**Observed review.** Clean d69eaf6 checkout: 98 focused tests passed in 130.37s on Windows
+(`test_audit_repair`, `test_audit_repair_cli`, `test_audit_analysis_outcomes`, `test_audit_service`,
+`test_scheduling`); changed repair/execution/service modules and repair tests passed ruff.
+Owner counterexamples ran the real decoder/checkpoint, fixture Git and MemoryStore with synthetic
+answers; no model, Redis or PostgreSQL execution is claimed. Raw script and JSON receipt:
+`D:/workspaces/zeus/artifacts/self-improvement-reference-001/review-audit-repair-001.{py,json}`.
+
+**R1 / material false completion.** A normal two-subsystem partition contains `core` and `other`.
+The original execution returns core with empty tests/tests_not_run and other=null, so core alone
+is diagnosed. The successor returns core=null and a justified not-run record for other. Real
+checkpoint validation accepts partial work, but repair settlement reports `repaired` because it
+counts ANY subsystem written by the successor. This does not repair the diagnosed target.
+Reproduce using existing `audit`/`repairable`/`rejected_execution`/`settle_successor` helpers; create
+the two-subsystem audit through import_audit on a fresh store, not by forging a checkpoint.
+
+Correction: bind settlement to the exact originally diagnosed subsystem set, successor execution
+identity and authoritative checkpoint/history. Only corrected target identities count; unrelated
+valid work remains valid but yields deferred repair. Partial target correction must expose target,
+corrected and remaining counts and cannot claim whole repair. A bounded prompt list must not
+silently truncate the internal target denominator. Use immutable evidence history where later
+ordinary checkpoints can overwrite latest coverage rows. Keep justified not-run as incomplete
+subsystem analysis; do not manufacture semantic acceptance or change existing validators.
+
+**R2 / missing escalation delivery.** Two actual fixture executions are content-rejected; the
+lineage becomes research_required, but there are ZERO execution.notice outbox messages. Current
+settle writes only the lineage, and the service emits a diagnostic observation after commit.
+Thus the required team-lead notification is absent and the two-strike loop stops silently.
+
+Correction: atomically retain the terminal settlement, a deterministic proof-bound informational
+lead notice and its outbox row. Reuse execution_notices and the direct reporting edge. The existing
+builder refuses succeeded tasks: extend the contract narrowly for a succeeded execution whose
+analysis was rejected AND whose authoritative repair lineage proves research_required. Do not
+make arbitrary succeeded rows notice-eligible or relabel them failed. Bind notice identity to the
+lineage/transition, retain original+successor evidence references, and reuse proof-checked receive
+and commit-before-ACK. Repeated settlement/restart/lost response must return the same notice.
+Arrange correlation-scoped relay even if no further worker assignment exists; pending publication
+must survive restart. Receiving the notice does not itself perform research or authorize a third
+call. Test publish failure then recovery, duplicate receive, and no automatic follow-up execution.
+
+**Admission observations (same affected path, proportional disposition).** An injected pause during
+diagnostic replay still creates the successor; the service's second gate prevents provider entry.
+This proves queued admission after pause, NOT execution after pause. An injected pending termination
+marker also permits admission, but this check alone does not establish that a normal succeeded
+transaction can leave such a marker. Close the explicit existing admission requirements within
+_commit: re-read active research control and relevant unresolved markers, and refuse on unavailable
+reads. Preserve the second pre-execution gate. These are contained contract guards, not evidence of
+an observed production incident or permission to widen Workflow/recovery semantics.
+
+**Submission failure investigation and scope decision.** The prior implementation succeeded but
+the evidence gate replayed its unscoped full-suite claim and timed out after 300s, before independent
+review. Runtime #173 explicitly refuses combining host project-evidence profiles with Docker
+isolation (bootstrap.host_isolation / Executor.__init__). Enabling that profile would therefore
+not fix this job; mapping host contexts/interpreters into immutable containers is a separate
+compatibility implementation, not a config change. Do not bypass isolation, edit failed receipts,
+raise deadlines, auto-retry the old job or claim this compatibility already exists.
+
+For THIS correction, owner names the focused command groups below and independently verifies the
+candidate; legacy evidence gate stays authoritative. This fixes the concrete submitted scope but
+is NOT mechanical enforcement of a host check denominator. The durable follow-up is to extend the
+existing INV-PROJECT-EVIDENCE-001 into isolated execution with image-bound contexts, exact commands,
+negative/missing checks and matching replay/reviewer bindings; no second evidence framework.
+Do not implement that separate compatibility change in this correction. If this submission again
+violates the scope/gate, stop and report it; no next prompt-only retry is authorized by this handoff.
+
+**Fixed checks.** Worker runs commands below verbatim using the container's trusted interpreter
+(the delivered `python` command form is retained in legacy answer.tests). Add R1/R2/guard regressions
+to these existing files so the denominator remains fixed:
+
+1. `python -m pytest -q -p no:cacheprovider tests/test_audit_repair.py tests/test_audit_repair_cli.py`
+2. `python -m pytest -q -p no:cacheprovider tests/test_audit_analysis_outcomes.py tests/test_audit_service.py tests/test_scheduling.py`
+3. `python -m pytest -q -p no:cacheprovider tests/test_execution_notices.py`
+4. `python -m ruff check . --no-cache`
+
+Confirm the notice test filename exists before running; report a missing prerequisite rather than
+inventing an execution. Do NOT run unscoped pytest or the full suite inside the reduced worker
+snapshot. Only exact actually successful commands go in legacy answer.tests; failed attempts,
+not-run checks and limitations remain in summary. Empty tests is not acceptance. Owner/CI owns
+full-suite and isolated PostgreSQL verification; no fixture claim may masquerade as it.
+
+**One correction batch / acceptance matrix.** Preserve all previously passing tests. Add target-only,
+unrelated-only, mixed/partial-target and later-history settlement checks; normal target correction
+must still resume without semantic acceptance. Add notice atomicity/replay/publication/receive
+checks, pause-at-commit and unresolved-marker guards. Use existing real isolated PG fixtures for
+transaction/duplicate checks where applicable, label skips honestly; no live production DB from
+tests. Existing cancellation/deadline/claim/resource contracts are unchanged. CLI/log projections
+must keep execution success, analysis rejection, repair settlement and notice delivery distinct.
+Reuse the existing module owners. No UI redesign, upstream execution, unrelated warnings or
+runtime enablement. Completion remains independent review + required CI + exact release binding
+and one real corrected/resumed held analysis; this corrective submission alone is not completion.
