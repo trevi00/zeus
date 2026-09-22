@@ -139,6 +139,37 @@ and broader absorption/model-transfer deliveries. No unattended completion claim
 
 ## Recovery/relocation implementation handoff
 
+### CLI PostgreSQL integration correction — next bounded delivery
+
+Actual first-call reconcile_interrupted failed with psycopg.errors.LockNotAvailable in the owner
+execution on 2026-09-22. Trace: Fleet transaction holds advisory lock 734219 -> reread callback ->
+Fleet.registered -> second PostgresStore connection requests 734219. MemoryStore RLock concealed
+this non-reentrant PG boundary. Relocate callback has the same nested registry/jobs reads. The
+application APIs completed actual recovery/relocation using pinned inputs, unchanged validators,
+normal external reread and in-transaction expected-state checks (receipts above).
+
+Claude implements ONLY the adapter integration repair. Preserve receipt-first replay: do not eagerly
+read absent source/config outside the callback for cached requests. Lazily capture required immutable
+registry/lane/jobs on first observation (outside application commit), reuse these inputs on reread;
+application's current transaction still checks expected config, job identity and queued denominator.
+Trace those guards before choosing this approach; if any required guard is absent, add it to the SAME
+transaction rather than a nested connection. External lane/Docker/copy evidence is still freshly
+read twice. No cached physical proof substitution, no weakening/removal of locks, timeouts or CAS.
+
+Acceptance: both CLI first-call commands commit via real isolated PostgreSQL; identical CLI replay
+requires no external observer; conflicting request refuses; external change between observations
+refuses; expected config and queued-job changes refuse; non-reentrant store regression catches old
+behavior. PG tests use existing isolated_pgstore fixture and label missing env as skipped, never
+claim mock or skipped PG is actual. Owner runs real PG tests before service update. Historical recovery
+and relocation receipts remain intact; no live recovery/migration repeated by worker.
+
+Allowed: adapters/fleet_cli.py, application/fleet.py only if required guard is missing, existing
+tests/test_fleet_recovery.py and tests/test_fleet_relocation.py, new tests/test_fleet_recovery_postgres.py,
+docs/contracts.md and RECOVERY-RELOCATION.md in this folder. Focused command:
+python -m pytest tests/test_fleet_recovery.py tests/test_fleet_relocation.py tests/test_fleet_recovery_postgres.py -q -p no:cacheprovider
+and python -m ruff check . --no-cache. No full-suite claims. Schema/policy/alias/path checks are already
+accepted and out of correction scope. Review one consolidated matrix; do not re-open unrelated scope.
+
 ### Actual owner cutover observations — 2026-09-22
 
 COMPLETED AT 14:05 KST: both harness/interface registry repository and runtime paths now point to C.
