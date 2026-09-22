@@ -24,3 +24,17 @@ release consumption and rollback; run the finite whole-loop acceptance checklist
 There was no registered backlog plan at cutover. A running service with zero jobs is not evidence
 of ongoing useful work or complete autonomous operation. This cutover is owner-operated evidence,
 not proof of automatic deployment or a tested rollback.
+
+## First automatic admission, 2026-09-23 KST
+
+Owner registered enabled plan autonomous-operation-001 at Git pin 82284fafa1ff608ce99f7164d0e77fb3fe57a803
+and enabled ZEUS_FLEET_BACKLOG_PLAN in the existing owned launcher. After a drained restart and
+resume, the runner created autonomous-operation-001-backlog-monitor at 2026-09-22T15:00:09Z,
+bound it to research-improvement / verified-loop, and dispatched it. No manual Fleet.enqueue or
+manual backlog.tick was used. The intent reports linked, zero deferrals, no binding conflict.
+Receipt: artifacts/autonomous-operation-001/first-automatic-admission.json on the current C workspace.
+
+The useful item adds the missing read-only backlog source to monitoring; implementation and review
+were still pending when this receipt was recorded. The plan has one item, so backlog_exhausted means
+no unadmitted item remains, not that the dispatched job finished. This proves first-item selection
+and admission, not automatic successor selection, self-generated work, recovery or release.
