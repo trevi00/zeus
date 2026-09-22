@@ -1909,3 +1909,72 @@ instead of following it. No exception message, `repr`, argument, local, `argv`, 
 source line, absolute path, raw traceback or CLI output is ever read into the journal or printed.
 This records where an exception left the package; it is not a root cause, it observes no child
 process cleanup, and it cannot exist for a `SIGKILL` or a failure before the interpreter starts.
+
+## INV-DECISION-FEEDBACK-001
+
+`zeus decision-feedback collect|status|report` joins conductor decisions that already exist with the
+actual outcomes of the runs that carried them, and identifies repeated procedures — successes
+included — as unverified improvement candidates
+(docs/zeus/operations/self-improvement-reference-001/DECISION-FEEDBACK.md). It owns no decision, no
+conductor and no promotion: `council.py`/`autonomous.py` remain the only writers of runs and role
+executions, `dge.py` of sessions and events, `service.record_incident` of incident recurrence
+(INV-RECURRENCE-001) and the existing knowledge owners of verified promotion. Nothing here calls a
+model, opens a network connection, executes registry content, dispatches work or activates a policy.
+An observation is admitted only when one execution identity binds across four existing rows: the
+`autonomous_runs` row names the session, the `dge_sessions` row is `executor_bound` and owned by that
+run with the run's packet digest, the conductor's `dge_events` row is the executor-bound arbitration
+slot of that session carrying a task id and an `execution_ref`, and that `tasks` row is a succeeded
+`conductor` execution whose result carries the same reference, generation and attempt, which the
+run's own role binding repeats. Matching reference strings are not evidence: the artifact stored at
+that `execution_ref` is read through the existing execution-evidence port and checked by the existing
+`execution_evidence` rule against the authoritative `invocation_reservations` row, so credit needs
+this task's own exact answer, hashing to the binding's `output_sha256`, from the settled `accepted`
+reservation of this task, generation, attempt and conductor stage at the session's base revision; a
+collection without an artifact port refuses (`evidence_port_unavailable`) rather than crediting rows.
+Any gap is one fixed reason code — `run_identity_unknown`, `foreign_repository`, `source_kind_unknown`,
+`decision_session_unproven`, `work_contract_unknown`, `decision_event_unproven`,
+`decision_execution_unproven`, `decision_artifact_missing`, `decision_artifact_corrupt`,
+`decision_artifact_invalid`, `decision_artifact_unproven` — with no observation, no group and no
+evidence credit; absent historical fields stay unknown and are never defaulted or repaired. Version 1
+reads council (autonomous v2) runs only, stores identities, digests and closed vocabularies (outcome
+state, arbiter verdict, disposition count) and never copies rationale, scenario, packet, payload,
+answer or credential text.
+Outcome states are `pending`, `accepted`, `rejected`, `failed`, `cancelled` and `unknown`; the exact
+source status, reason code and provenance are preserved beside the state, an unmapped or missing
+status stays `unknown`, and a terminal `accepted` is operation acceptance only — never proof that the
+decision was correct, that the change was deployed or that product acceptance passed. Decision
+quality is always reported `unknown` in this delivery: downstream success or failure alone never
+establishes it, and no owner-supplied label, confidence or acceptance-rate target is accepted.
+Comparability is exact and owner-authored. The registry (`urn:zeus:procedure-registry:1`) is read
+with `GitSource` at a 40-hex commit the caller names, never from the working tree; its bytes are
+bounded, parsed as strict JSON with duplicate keys refused, and every entry pins a safe token id, the
+source kind, the exact repository identity, the complete allowed-path set, the sha256 of the exact
+acceptance-criteria list in the plan's own order, and a remediation kind of `skill`, `script` or
+`existing_owner_review`. Matching compares those four contract values only: no title, substring,
+family, regular expression, model-selected cause or executed rule exists, and an empty or ambiguous
+match is `unknown` and never reaches a threshold. Runs group on exact contract equality, so different
+repositories, scopes or criteria never merge.
+Two distinct executed run identities in one group create exactly one advisory candidate per
+repository, procedure and registry revision; it says `needs_analysis`, is explicitly unverified and
+grants no publication, activation or execution authority. Attempts, retries, replayed events, copied
+receipts, repeated collection and imported experiences are not additional occurrences. A group keeps
+its distinct run identities durably (exactly, up to 1000 per group, beyond which it reports
+`membership_capped` and counts no further run), and the candidate's at most 50 occurrence references
+are a bounded window derived from that membership rather than an accumulating list, so re-collecting
+a group that is already larger than the window inflates neither the distinct-run count nor the named
+unreferenced remainder. Decision facts are
+immutable: a changed decision digest, or a changed history after a terminal outcome, is recorded as a
+conflict for owner inspection and the stored observation is left exactly as it was, while a run that
+was still in flight may later join its real terminal outcome with the previous state kept in a
+bounded history. Because the bounded page is read in one transaction and recorded in the next, a
+differing outcome is revalidated against the authoritative run row inside the recording transaction
+before any conflict: a page that went stale while another collector recorded the same terminal
+outcome is counted stale and changes nothing, a row that cannot be re-read stays unknown, and only a
+history that really changed is a conflict. Only `decision_observations`, `decision_feedback_groups`,
+`recurring_work_candidates`, `decision_feedback_conflicts` and the collection receipt are written,
+all in one transaction, so concurrent collectors and restarts converge on the same rows.
+One collect scans a bounded ascending page of run ids (default 100, maximum 500) and reports scanned,
+eligible, unknown by reason, conflicts, truncation and a continuation cursor; the counts describe that
+page. A store or driver failure is `source_unavailable`, never an empty result, and a refused
+collection writes nothing. Replay, held-out evaluation, policy activation and skill or script
+extraction are out of scope here and are named as limits in every receipt and report.
