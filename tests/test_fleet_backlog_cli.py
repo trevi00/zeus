@@ -20,6 +20,7 @@ from codex_harness import bootstrap, cli
 from codex_harness.adapters import fleet_cli, fleet_runtime
 from codex_harness.adapters.fleet_backlog import (
     PLAN_SETTING,
+    REGULAR_BLOB,
     backlog_ticker,
     configured_plan,
     load_manifest,
@@ -57,12 +58,41 @@ def commit(root, message) -> str:
     return git(root, "rev-parse", "HEAD")
 
 
+# Newline normalization is pinned in each disposable repository's OWN config. `git init` otherwise
+# inherits the host's `core.autocrlf`, which is `true` by default on Windows and rewrites committed
+# blobs, so a digest taken from the working tree names bytes no commit contains. `core.safecrlf` is
+# pinned too so an inherited `true` cannot fail `git add` here. Nothing global or system-wide is
+# read or written by these tests.
+NORMALIZATION = {"core.autocrlf": "false", "core.eol": "lf", "core.safecrlf": "false"}
+
+
+def init_repository(root, **settings) -> None:
+    """An empty disposable repository with its newline normalization declared repo-locally."""
+    Path(root).mkdir(parents=True, exist_ok=True)
+    git(root, "init", "-q", "-b", "main")
+    for key, value in {**NORMALIZATION, **settings}.items():
+        git(root, "config", "--local", key, value)
+
+
+def canonical(document) -> bytes:
+    """The exact bytes a fixture commits: the document's own UTF-8, with no platform translation.
+
+    `Path.write_text` translates `\\n` to the host separator, so on Windows the working tree held
+    CRLF while the committed blob held LF, and a pin hashed from the file named bytes no commit
+    contained. These bytes are built once and are both written and hashed, so the pin IS the
+    committed bytes; the fixture documents above are LF, which a regression below asserts.
+    """
+    body = document if isinstance(document, str) else json.dumps(document, indent=2, sort_keys=True)
+    return body.encode("utf-8")
+
+
 def write(root, path, document) -> str:
+    """Write the canonical bytes and return their digest - never a digest of re-read file bytes."""
     target = Path(root) / path
     target.parent.mkdir(parents=True, exist_ok=True)
-    body = document if isinstance(document, str) else json.dumps(document, indent=2, sort_keys=True)
-    target.write_text(body, encoding="utf-8")
-    return hashlib.sha256(target.read_bytes()).hexdigest()
+    data = canonical(document)
+    target.write_bytes(data)
+    return hashlib.sha256(data).hexdigest()
 
 
 def manifest_document(op_id, base_revision, goal_sha256, paths):
@@ -90,17 +120,14 @@ def item_document(item_id, path, revision, sha256, **overrides):
 def repository(tmp_path):
     """A disposable repository holding the goal, two pinned manifests and the approved plan."""
     root = tmp_path / "repo-a"
-    root.mkdir()
-    git(root, "init", "-q", "-b", "main")
+    init_repository(root)
     goal_sha = write(root, GOAL_PATH, GOAL_TEXT)
     base = commit(root, "goal")
     first = "docs/zeus/manifests/one.json"
     second = "docs/zeus/manifests/two.json"
-    write(root, first, manifest_document("op-one", base, goal_sha, ["docs/one.md"]))
-    write(root, second, manifest_document("op-two", base, goal_sha, ["docs/two.md"]))
+    digests = {first: write(root, first, manifest_document("op-one", base, goal_sha, ["docs/one.md"])),
+               second: write(root, second, manifest_document("op-two", base, goal_sha, ["docs/two.md"]))}
     manifests = commit(root, "manifests")
-    digests = {first: hashlib.sha256((root / first).read_bytes()).hexdigest(),
-               second: hashlib.sha256((root / second).read_bytes()).hexdigest()}
     identity = repository_identity(str(root))
     items = [item_document("one", first, manifests, digests[first]),
              item_document("two", second, manifests, digests[second], priority=20, dependencies=["one"])]
@@ -151,6 +178,98 @@ def test_the_plan_and_its_manifests_are_read_at_the_pin_and_never_from_the_worki
     assert bound["goal"] == {"path": GOAL_PATH, "sha256": repository.goal_sha256,
                              "base_revision": repository.base, "criterion": "crit op-one",
                              "bytes": len(GOAL_TEXT.encode("utf-8"))}
+
+
+def test_the_fixture_pins_the_committed_bytes_under_inherited_git_newline_normalization(
+        tmp_path, repository, monkeypatch):
+    """Portability of THIS test file, not a runtime change (owner Windows gate, 2026-09-22).
+
+    The owner's Windows run failed six CLI cases: `write_text` emitted CRLF, the inherited
+    `core.autocrlf=true` normalized the committed blob back to LF, and the pin hashed from the
+    working tree named bytes no commit held. The loader was right to refuse. Here `core.autocrlf`
+    is set to `true` REPO-LOCALLY to reproduce that inherited Windows default - the fixture writes
+    canonical LF bytes, so working tree, blob and pin agree on every platform - and the exact-byte
+    runtime check still refuses a pin taken from CRLF bytes.
+    """
+    assert b"\r" not in canonical(manifest_document("op-x", "0" * 40, "a" * 64, ["docs/x.md"]))
+    assert b"\r" not in canonical(GOAL_TEXT), "fixture documents are written with LF only"
+    # The standard fixture declares its normalization in its own config file, never globally.
+    local = (Path(repository.root) / ".git" / "config").read_text(encoding="utf-8")
+    assert "autocrlf = false" in local and "eol = lf" in local
+
+    root = tmp_path / "repo-crlf"
+    init_repository(root, **{"core.autocrlf": "true", "core.eol": "crlf"})
+    goal_sha = write(root, GOAL_PATH, GOAL_TEXT)
+    base = commit(root, "goal")
+    path = "docs/zeus/manifests/one.json"
+    manifest_sha = write(root, path, manifest_document("op-one", base, goal_sha, ["docs/one.md"]))
+    revision = commit(root, "manifest")
+
+    source = GitSource(root)
+    mode, blob = source.blob(revision, path)
+    assert mode == REGULAR_BLOB and b"\r\n" not in blob and blob.count(b"\n") > 0
+    assert hashlib.sha256(blob).hexdigest() == manifest_sha, "the pin is the committed bytes"
+    assert (Path(root) / path).read_bytes() == blob, "working tree and commit hold the same bytes"
+    assert hashlib.sha256(source.blob(base, GOAL_PATH)[1]).hexdigest() == goal_sha
+
+    bound = load_manifest(source, item_document("one", path, revision, manifest_sha))
+    assert bound["manifest"]["id"] == "op-one" and bound["goal"]["sha256"] == goal_sha
+
+    # The control that makes this regression discriminating: the OLD fixture behaviour in the same
+    # repository. LABELLED EMULATION - `newline="\r\n"` stands in for the platform translation
+    # `write_text` performs on Windows, so the observed failure is reproduced on any host.
+    stale = "docs/zeus/manifests/platform.json"
+    body = json.dumps(manifest_document("op-two", base, goal_sha, ["docs/two.md"]),
+                      indent=2, sort_keys=True)
+    (Path(root) / stale).write_text(body, encoding="utf-8", newline="\r\n")
+    working = hashlib.sha256((Path(root) / stale).read_bytes()).hexdigest()
+    stale_revision = commit(root, "platform separator")
+    committed = source.blob(stale_revision, stale)[1]
+    assert (Path(root) / stale).read_bytes().count(b"\r\n") == committed.count(b"\n") > 0
+    assert b"\r" not in committed, "core.autocrlf normalized the blob the working tree kept as CRLF"
+    with pytest.raises(BacklogRefused, match="manifest_pin_mismatch"):
+        # Byte-strictness is unchanged: a working-tree digest still names bytes no commit holds.
+        load_manifest(source, item_document("two", stale, stale_revision, working))
+
+    # A revert of `write` back to platform text mode is caught on Linux too: with `write_text`
+    # emulating the Windows translation, the canonical writer is unaffected and its pin holds.
+    text_mode = Path.write_text
+    monkeypatch.setattr(Path, "write_text",
+                        lambda self, data, **kw: text_mode(self, data, **{**kw, "newline": "\r\n"}))
+    third = "docs/zeus/manifests/three.json"
+    third_sha = write(root, third, manifest_document("op-three", base, goal_sha, ["docs/three.md"]))
+    third_revision = commit(root, "third")
+    assert hashlib.sha256(source.blob(third_revision, third)[1]).hexdigest() == third_sha
+    assert load_manifest(source, item_document("three", third, third_revision, third_sha))["bytes"] > 0
+
+
+def test_a_disposable_repository_overrides_an_inherited_global_autocrlf(tmp_path, monkeypatch):
+    """The repository's own settings must beat the value the host would otherwise contribute.
+
+    The inherited Windows default is simulated by pointing Git at a temporary `GIT_CONFIG_GLOBAL`
+    file for this test only: the developer's real global configuration is neither read nor written,
+    and no `git config --global` is ever executed.
+    """
+    inherited = tmp_path / "git-global-config"
+    inherited.write_bytes(b"[core]\n\tautocrlf = true\n\teol = crlf\n\tsafecrlf = true\n")
+    monkeypatch.setenv("GIT_CONFIG_GLOBAL", str(inherited))
+    root = tmp_path / "repo-inherited"
+    init_repository(root)
+    seen = subprocess.run(["git", "-C", str(root), "config", "--global", "core.autocrlf"],
+                          capture_output=True, text=True).stdout.strip()
+    if seen != "true":
+        pytest.skip("this Git ignores GIT_CONFIG_GLOBAL; an inherited value cannot be simulated")
+    assert git(root, "config", "core.autocrlf") == "false", "the repository's own setting wins"
+
+    goal_sha = write(root, GOAL_PATH, GOAL_TEXT)
+    base = commit(root, "goal")
+    path = "docs/zeus/manifests/one.json"
+    sha = write(root, path, manifest_document("op-one", base, goal_sha, ["docs/one.md"]))
+    revision = commit(root, "manifest")
+    source = GitSource(root)
+    assert hashlib.sha256(source.blob(revision, path)[1]).hexdigest() == sha
+    assert hashlib.sha256(source.blob(base, GOAL_PATH)[1]).hexdigest() == goal_sha
+    assert load_manifest(source, item_document("one", path, revision, sha))["manifest"]["id"] == "op-one"
 
 
 def test_register_tick_and_status_admit_one_approved_successor_through_the_existing_fleet(service, repository):
@@ -206,15 +325,13 @@ def test_a_manifest_that_moved_under_an_approved_item_is_refused_with_a_fixed_co
 
 def test_a_manifest_whose_goal_bytes_do_not_match_its_pin_is_refused(tmp_path, repository):
     root = repository.root
-    write(root, "docs/zeus/manifests/bad.json",
-          manifest_document("op-bad", repository.base, "b" * 64, ["docs/bad.md"]))
+    sha = write(root, "docs/zeus/manifests/bad.json",
+                manifest_document("op-bad", repository.base, "b" * 64, ["docs/bad.md"]))
     revision = commit(root, "bad goal")
-    sha = hashlib.sha256((root / "docs/zeus/manifests/bad.json").read_bytes()).hexdigest()
     with pytest.raises(BacklogRefused, match="goal_mismatch"):
         load_manifest(GitSource(root), item_document("bad", "docs/zeus/manifests/bad.json", revision, sha))
-    write(root, "docs/zeus/manifests/broken.json", "{ not json")
+    sha = write(root, "docs/zeus/manifests/broken.json", "{ not json")
     revision = commit(root, "broken")
-    sha = hashlib.sha256((root / "docs/zeus/manifests/broken.json").read_bytes()).hexdigest()
     with pytest.raises(BacklogRefused, match="manifest_not_json"):
         load_manifest(GitSource(root), item_document("broken", "docs/zeus/manifests/broken.json", revision, sha))
 

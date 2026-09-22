@@ -165,6 +165,33 @@ python -m ruff check . --no-cache
 Fleet tests and CI. Nothing in this batch establishes release readiness, host activation or
 whole-loop completion.
 
+### Git fixture portability (Windows and Linux)
+
+The owner's Windows gate on 2026-09-22 reported six CLI failures that were fixture defects, not
+runtime defects: `Path.write_text` emitted the platform separator (28 CRLF in the manifest), the
+inherited `core.autocrlf=true` normalized the committed blob back to LF (0 CRLF), and the pin hashed
+from the working tree then named bytes no commit held. `load_manifest` refused correctly with
+`manifest_pin_mismatch`. **The exact-byte runtime check is unchanged and must stay unchanged.**
+
+Rules for every Git fixture in `tests/test_fleet_backlog_cli.py`:
+
+- Build the document bytes once (`canonical`), `write_bytes` them, and pin the digest of THOSE
+  bytes. Never hash a re-read working-tree file and never use `write_text` for a file that is
+  committed and pinned.
+- Create the disposable repository with `init_repository`, which declares `core.autocrlf=false`,
+  `core.eol=lf` and `core.safecrlf=false` **repo-locally**. No test reads or writes global or
+  system Git configuration.
+
+Two regressions hold this boundary, both platform-independent:
+
+| Test | What it proves |
+|---|---|
+| `...pins_the_committed_bytes_under_inherited_git_newline_normalization` | with `core.autocrlf=true` set repo-locally (the reproduced Windows default) the pin equals the blob; the old platform-text-mode write is reproduced in the same repository and is still refused with `manifest_pin_mismatch`; with `Path.write_text` patched to translate newlines, the canonical writer is unaffected |
+| `...overrides_an_inherited_global_autocrlf` | a temporary `GIT_CONFIG_GLOBAL` file supplies `autocrlf=true`, and the repository's own `false` wins (SKIPS on a Git that ignores `GIT_CONFIG_GLOBAL`) |
+
+The second regression sets `GIT_CONFIG_GLOBAL` through `monkeypatch` for that test only; it is a
+simulation of an inherited value, never a change to the developer's configuration.
+
 ## Known boundaries handed to the owner
 
 - The one-shot `zeus fleet backlog tick` command records the durable status and the
