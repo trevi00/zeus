@@ -22,10 +22,13 @@ import pytest
 
 from codex_harness.adapters.commands import run_process
 from codex_harness.adapters.fleet_recovery import (
+    _hash_bounded,
     _hash_file,
+    _relative,
     collect_relocation_proof,
     run_root,
     runner_state,
+    verify_copy_manifest,
 )
 from codex_harness.adapters.isolated_worker import run_records
 from codex_harness.adapters.providers import packaged_policy
@@ -39,6 +42,7 @@ from codex_harness.application.fleet import (
 from codex_harness.domain.fleet import FleetRefused, repository_identity, resolve_repository
 from codex_harness.domain.fleet_recovery import (
     COPY_MANIFEST_SCHEMA,
+    COPY_OWNERSHIP,
     REQUEST_SCHEMA,
     relocated_config,
     validate_relocation_request,
@@ -108,21 +112,25 @@ def copy_manifest(tmp_path, pairs, *, corrupt=False, write=True, name="copy-mani
     """The owner's record of files copied from a stated source root to a stated target root.
 
     `pairs` is `(source_root, target_root, relative)`: the same relative path below both roots, as
-    a real copy has. The destination is written for real unless `write` is false (a target that
-    must stay absent for the test that needs it absent). `entries` replaces the generated rows, so
-    a test can state a malformed, unbound or duplicated entry on purpose.
+    a real copy has. BOTH ends are written for real - a manifest row describes a file that was
+    copied from somewhere that exists - unless `write` is false (a target that must stay absent for
+    the test that needs it absent). `entries` replaces the generated rows, so a test can state a
+    malformed, unbound or duplicated entry on purpose.
     """
     rows = []
     for index, (source_root, target_root, relative) in enumerate(pairs):
+        source = Path(source_root).joinpath(*relative.split("/"))
         destination = Path(target_root).joinpath(*relative.split("/"))
         data = ("copied evidence %d\n" % index).encode("utf-8")
         recorded = hashlib.sha256(data).hexdigest()
+        source.parent.mkdir(parents=True, exist_ok=True)
+        source.write_bytes(data)
         if write:
             destination.parent.mkdir(parents=True, exist_ok=True)
             # The copy no longer is what was verified.
             destination.write_bytes(data + b"tampered" if corrupt and index == 0 else data)
-        rows.append({"source": str(Path(source_root).joinpath(*relative.split("/"))),
-                     "destination": str(destination), "sha256": recorded, "bytes": len(data)})
+        rows.append({"source": str(source), "destination": str(destination),
+                     "sha256": recorded, "bytes": len(data)})
     document = {"schema": COPY_MANIFEST_SCHEMA, "entries": rows if entries is None else entries}
     path = tmp_path / name
     path.write_text(json.dumps(document, sort_keys=True), encoding="utf-8")
@@ -393,7 +401,8 @@ def test_queued_bases_and_goal_blobs_must_exist_in_the_target(tmp_path):
 def test_the_copy_manifest_must_hash_to_what_was_actually_copied(tmp_path):
     state = setup(tmp_path)
     assert proof_for(state)["copy_manifest"] == {"sha256": state["copy"]["sha256"], "entries": 1,
-                                                 "verified": 1, "bound": True, "covered": ["a.runtime"]}
+                                                 "verified": 1, "bound": True,
+                                                 "ownership": COPY_OWNERSHIP, "covered": ["a.runtime"]}
     corrupt = copy_manifest(tmp_path, [(state["runtime"], state["target_runtime"], "artifacts/broken.json")],
                             corrupt=True, name="corrupt.json")
     with pytest.raises(FleetRefused, match="copy_corrupt"):
@@ -449,6 +458,9 @@ def test_a_manifest_entry_must_prove_a_file_this_request_actually_moves(tmp_path
     }[case]
     copy = copy_manifest(tmp_path, [(state["runtime"], state["target_runtime"], "artifacts/evidence.json")],
                          name=case + ".json", entries=entries)
+    if case == "missing_destination":
+        # The source of a copy that was never made still exists; only the destination is absent.
+        Path(entries[0]["source"]).write_bytes(b"copied evidence 0\n")
     if case == "null_digest_missing_file":
         # Control for the behaviour this corrects: the destination cannot be read, so the entry was
         # compared as `None == None` and counted as verified.
@@ -456,6 +468,202 @@ def test_a_manifest_entry_must_prove_a_file_this_request_actually_moves(tmp_path
     with pytest.raises(FleetRefused, match=reason) as info:
         proof_for(state, request_for(state, copy_manifest=copy))
     assert str(tmp_path) not in str(info.value) and CANARY not in str(info.value)
+
+
+# ----- physical ownership of the copied files -------------------------------------------------
+def symlink_or_skip(source, name, *, directory: bool = True):
+    """A real link on this filesystem, or a labelled skip.
+
+    Windows expresses the same redirection as a directory junction and grants a symlink only to a
+    privileged or developer-mode session; the owner's retained Windows junction reproducer covers
+    that side of the same rule, and it is not executed from here.
+    """
+    try:
+        os.symlink(str(source), str(name), target_is_directory=directory)
+    except (OSError, NotImplementedError, AttributeError) as exc:  # pragma: no cover - platform dependent
+        pytest.skip("this platform refuses to create a symlink here (%s); a Windows junction expresses the "
+                    "same redirection and needs the same refusal" % type(exc).__name__)
+    return Path(name)
+
+
+def entry_for(source_root, target_root, relative: str, data: bytes):
+    """One manifest row: what the owner says was copied to `target_root/relative`."""
+    return {"source": str(Path(source_root).joinpath(*relative.split("/"))),
+            "destination": str(Path(target_root).joinpath(*relative.split("/"))),
+            "sha256": hashlib.sha256(data).hexdigest(), "bytes": len(data)}
+
+
+def runtime_move(state, tmp_path, target_root, entries, *, name, source_root=None):
+    """A runtime-only move whose manifest states exactly `entries`."""
+    copy = copy_manifest(tmp_path, [], name=name, entries=entries)
+    return request_for(state, copy_manifest=copy,
+                       moves=[{"lane": "a", "repository": None,
+                               "runtime": {"from": str(source_root or state["runtime"]),
+                                           "to": str(target_root)}}])
+
+
+def test_a_child_link_to_the_source_is_refused_even_though_the_bytes_read_back(tmp_path, monkeypatch):
+    """The owner's reproducer, in the form this platform can create: the new runtime's `artifacts`
+    child is a LINK to the old runtime's `artifacts`, so nothing was copied at all and every name
+    below the new root still reads the old runtime's bytes."""
+    from codex_harness.adapters import fleet_recovery
+
+    state = setup(tmp_path)
+    target = tmp_path / "new" / "rt-junction"
+    target.mkdir(parents=True)
+    data = b"interrupted evidence\n"
+    (Path(state["runtime"]) / "artifacts" / "interrupted.json").write_bytes(data)
+    symlink_or_skip(Path(state["runtime"]) / "artifacts", target / "artifacts")
+    entry = entry_for(state["runtime"], target, "artifacts/interrupted.json", data)
+    # Control for the behaviour this corrects: the destination NAME is below the new runtime root at
+    # exactly the relative path its source is below the old one, and it reads back to the declared
+    # digest and length - because it IS the source file. Lexical containment credits this as a copy.
+    assert _relative(entry["destination"], str(target)) == "artifacts/interrupted.json"
+    assert _hash_bounded(Path(entry["destination"]), entry["bytes"]) == {"sha256": entry["sha256"],
+                                                                        "bytes": len(data)}
+    assert Path(entry["destination"]).resolve() == Path(entry["source"]).resolve()
+    request = runtime_move(state, tmp_path, target, [entry], name="junction.json")
+    # ... and the same control at the boundary this corrects: with the physical ownership check
+    # removed, the remaining rules are the pre-fix ones, and they answer verified=1/bound=True for
+    # a destination that IS the source - the result the owner reproduced with a real junction.
+    monkeypatch.setattr(fleet_recovery, "_owned_copy", lambda *_, **__: None)
+    lexical = verify_copy_manifest(request)
+    assert lexical["verified"] == 1 and lexical["bound"] is True
+    monkeypatch.undo()
+    with pytest.raises(FleetRefused, match="copy_entry_escaped") as info:
+        verify_copy_manifest(request)
+    assert "destination" in str(info.value)
+    assert str(tmp_path) not in str(info.value) and CANARY not in str(info.value)
+    # The same refusal at the collection boundary the owner command actually uses, and no receipt.
+    with pytest.raises(FleetRefused, match="copy_entry_escaped"):
+        proof_for(state, request)
+    with state["store"].transaction() as tx:
+        assert tx.scan(BUCKET_RELOCATION) == []
+        assert tx.get(BUCKET_REGISTRY, "fleet-1")["config_sha256"] == state["config_sha256"]
+    assert (Path(state["runtime"]) / "artifacts" / "interrupted.json").read_bytes() == data
+
+
+def test_a_destination_that_links_outside_the_target_is_refused(tmp_path, monkeypatch):
+    """A copied FILE that is a link to identical bytes elsewhere is not this target's own file."""
+    from codex_harness.adapters import fleet_recovery
+
+    state = setup(tmp_path)
+    target = tmp_path / "new" / "rt-escape"
+    (target / "artifacts").mkdir(parents=True)
+    data = b"stored somewhere this request never moves\n"
+    outside = tmp_path / "elsewhere" / "evidence.json"
+    outside.parent.mkdir(parents=True)
+    outside.write_bytes(data)
+    (Path(state["runtime"]) / "artifacts" / "escape.json").write_bytes(data)
+    symlink_or_skip(outside, target / "artifacts" / "escape.json", directory=False)
+    entry = entry_for(state["runtime"], target, "artifacts/escape.json", data)
+    assert _hash_bounded(Path(entry["destination"]), entry["bytes"])["sha256"] == entry["sha256"]
+    request = runtime_move(state, tmp_path, target, [entry], name="escape.json")
+    monkeypatch.setattr(fleet_recovery, "_owned_copy", lambda *_, **__: None)  # pre-fix control
+    assert verify_copy_manifest(request)["verified"] == 1
+    monkeypatch.undo()
+    with pytest.raises(FleetRefused, match="copy_entry_escaped"):
+        verify_copy_manifest(request)
+    with pytest.raises(FleetRefused, match="copy_entry_escaped"):
+        proof_for(state, request)
+
+
+def test_a_source_side_redirection_is_refused_as_well(tmp_path, monkeypatch):
+    """A link on the SOURCE side substitutes unrelated storage just as well: the manifest then
+    certifies a file that never lived below the path this request moves away from."""
+    from codex_harness.adapters import fleet_recovery
+
+    state = setup(tmp_path)
+    target = tmp_path / "new" / "rt-source-link"
+    (target / "staged").mkdir(parents=True)
+    data = b"only ever on the target\n"
+    (target / "staged" / "evidence.json").write_bytes(data)
+    symlink_or_skip(target / "staged", Path(state["runtime"]) / "staged")
+    entry = entry_for(state["runtime"], target, "staged/evidence.json", data)
+    request = runtime_move(state, tmp_path, target, [entry], name="source-link.json")
+    monkeypatch.setattr(fleet_recovery, "_owned_copy", lambda *_, **__: None)  # pre-fix control
+    assert verify_copy_manifest(request)["verified"] == 1
+    monkeypatch.undo()
+    with pytest.raises(FleetRefused, match="copy_entry_escaped") as info:
+        verify_copy_manifest(request)
+    assert "source" in str(info.value) and str(tmp_path) not in str(info.value)
+    # A move ROOT that is itself a link lends its whole subtree to storage this request never moves.
+    aliased = symlink_or_skip(state["runtime"], tmp_path / "old" / "rt-a-alias")
+    entry = entry_for(aliased, target, "staged/evidence.json", data)
+    with pytest.raises(FleetRefused, match="copy_entry_link_refused") as info:
+        verify_copy_manifest(runtime_move(state, tmp_path, target, [entry], name="alias.json",
+                                          source_root=aliased))
+    assert "source" in str(info.value)
+
+
+@pytest.mark.parametrize("case,reason,side", [
+    ("missing_source", "copy_entry_unresolved", "source"),
+    ("missing_destination_directory", "copy_entry_unresolved", "destination"),
+    ("looping_destination_chain", "copy_entry_unresolved", "destination"),
+])
+def test_a_manifest_path_whose_resolution_is_inaccessible_refuses(tmp_path, case, reason, side):
+    """Strict resolution: a path that is missing, unreadable or looping is a refusal, never an
+    assumption that it lives where it is spelled."""
+    state = setup(tmp_path)
+    target = tmp_path / "new" / ("rt-" + case)
+    (target / "artifacts").mkdir(parents=True)
+    data = b"resolution evidence\n"
+    entry = entry_for(state["runtime"], target, "artifacts/evidence.json", data)
+    if case == "missing_source":
+        entry = entry_for(state["runtime"], target, "artifacts/no-such-source.json", data)
+        Path(entry["destination"]).write_bytes(data)  # the copy exists; its stated source does not
+        assert not Path(entry["source"]).exists()
+    elif case == "missing_destination_directory":
+        (Path(state["runtime"]) / "artifacts" / "evidence.json").write_bytes(data)
+        entry = entry_for(state["runtime"], target, "artifacts/never/evidence.json", data)
+        (Path(state["runtime"]) / "artifacts" / "never").mkdir()
+        (Path(state["runtime"]) / "artifacts" / "never" / "evidence.json").write_bytes(data)
+    else:
+        (Path(state["runtime"]) / "artifacts" / "evidence.json").write_bytes(data)
+        entry = entry_for(state["runtime"], target, "artifacts/loop/evidence.json", data)
+        (Path(state["runtime"]) / "artifacts" / "loop").mkdir()
+        (Path(state["runtime"]) / "artifacts" / "loop" / "evidence.json").write_bytes(data)
+        symlink_or_skip(target / "artifacts" / "loop-b", target / "artifacts" / "loop")
+        symlink_or_skip(target / "artifacts" / "loop", target / "artifacts" / "loop-b")
+    request = runtime_move(state, tmp_path, target, [entry], name=case + ".json")
+    with pytest.raises(FleetRefused, match=reason) as info:
+        verify_copy_manifest(request)
+    assert side in str(info.value) and str(tmp_path) not in str(info.value)
+
+
+def test_a_nested_ordinary_copy_below_the_target_commits(tmp_path):
+    """The passing control: ordinary directories and an ordinary file, deep below the target, are
+    verified and relocate - the refusals above are about redirection, not about depth."""
+    state = setup(tmp_path)
+    target = tmp_path / "new" / "rt-nested"
+    target.mkdir(parents=True)
+    relative = "artifacts/f2h/artifacts/deep/evidence.json"
+    copy = copy_manifest(tmp_path, [(state["runtime"], target, relative)], name="nested.json")
+    request = request_for(state, copy_manifest=copy,
+                          moves=[{"lane": "a", "repository": None,
+                                  "runtime": {"from": str(state["runtime"]), "to": str(target)}}])
+    assert verify_copy_manifest(request) == {"sha256": copy["sha256"], "entries": 1, "verified": 1,
+                                             "bound": True, "ownership": COPY_OWNERSHIP,
+                                             "covered": ["a.runtime"]}
+    answer = state["fleet"].relocate(request, proof_for(state, request))
+    assert answer["relocated"] is True and answer["cached"] is False
+    with state["store"].transaction() as tx:
+        assert tx.get(BUCKET_REGISTRY, "fleet-1")["config"]["lanes"][0]["runtime"] == str(target)
+
+
+def test_a_proof_that_only_compared_names_cannot_commit(tmp_path):
+    """The commit needs the adapter's own statement that ownership was resolved on the filesystem;
+    a `bound` manifest observation without it is the shape a purely lexical check produced."""
+    state = setup(tmp_path)
+    request = request_for(state)
+    proof = proof_for(state, request)
+    assert proof["copy_manifest"]["ownership"] == COPY_OWNERSHIP
+    for copy in ({key: value for key, value in proof["copy_manifest"].items() if key != "ownership"},
+                 {**proof["copy_manifest"], "ownership": "names"}):
+        with pytest.raises(FleetRefused, match="copy_unverified"):
+            state["fleet"].relocate(request, {**proof, "copy_manifest": copy})
+    with state["store"].transaction() as tx:
+        assert tx.scan(BUCKET_RELOCATION) == []
 
 
 # ----- the committing transaction -----------------------------------------------------------

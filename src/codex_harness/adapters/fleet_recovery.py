@@ -25,12 +25,18 @@ writable, and every entry of the owner's copy manifest must be a file below a pa
 moves that reads back to the declared digest and length. The owner's own idle claim is never read
 as a fact, and neither is a source that could not be enumerated; where the platform cannot
 establish one, the answer is a bounded refusal instead of an assumption.
+
+Copy ownership is physical, not lexical: a normalized absolute name proves nothing about where it
+leads, so each move root and each side of each manifest entry is resolved concretely and must sit
+below its own resolved root at the relative path the request states. A symlink, junction or other
+reparse redirection under either root is refused instead of followed, on the source side as well.
 """
 from __future__ import annotations
 
 import hashlib
 import json
 import os
+import stat
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -48,6 +54,7 @@ from codex_harness.domain.fleet import (
 from codex_harness.domain.fleet_recovery import (
     CLOSED_INVOCATIONS,
     COPY_MANIFEST_SCHEMA,
+    COPY_OWNERSHIP,
     HEX64,
     MOVABLE,
     PROOF_SCHEMA,
@@ -443,7 +450,9 @@ def _bind_entry(entry: dict, roots: list, name: str) -> tuple:
 
     A manifest of files copied somewhere else says nothing about the paths this request moves, so
     an entry that is not below a stated target - or that is below it at a different relative path
-    than its source is below the stated source - is refused rather than counted.
+    than its source is below the stated source - is refused rather than counted. This is the
+    entry's NAME against the request's names; `_owned_copy` decides where those names actually
+    lead on this filesystem.
     """
     for lane, key, source_root, target_root in roots:
         below = _relative(entry["destination"], target_root)
@@ -451,8 +460,73 @@ def _bind_entry(entry: dict, roots: list, name: str) -> tuple:
             continue
         if below != _relative(entry["source"], source_root):
             raise FleetRefused("copy_entry_unbound", name)
-        return lane, key, below
+        return lane, key, below, source_root, target_root
     raise FleetRefused("copy_entry_unbound", name)
+
+
+def _linked(path: Path) -> bool:
+    """A symlink, a Windows junction or any other reparse point, by the rule `isolated_worker`
+    already applies to its own roots: the name's own entry is inspected, never followed."""
+    try:
+        info = path.lstat()
+    except OSError:
+        return False  # unresolvable; `_actual` refuses it with the precise reason
+    reparse = getattr(info, "st_file_attributes", 0) & getattr(stat, "FILE_ATTRIBUTE_REPARSE_POINT", 0)
+    return stat.S_ISLNK(info.st_mode) or bool(reparse)
+
+
+def _actual(path: Path, field: str) -> Path:
+    """Where this name actually leads on this filesystem.
+
+    `pathlib` distinguishes pure path computation from concrete resolution; only the concrete one
+    answers here, and a name that is missing, unreadable or looping is refused instead of being
+    assumed to live where it is spelled.
+    """
+    try:
+        return path.resolve(strict=True)
+    except (OSError, RuntimeError, ValueError) as exc:
+        raise FleetRefused("copy_entry_unresolved", field) from exc
+
+
+def _actual_root(root: str, field: str) -> Path:
+    """The move root as an existing directory of its own, resolved. A root that is itself a link
+    would lend its whole subtree to unrelated storage, so it is refused rather than followed."""
+    if _linked(Path(root)):
+        raise FleetRefused("copy_entry_link_refused", field)
+    actual = _actual(Path(root), field)
+    if not actual.is_dir():
+        raise FleetRefused("copy_entry_unresolved", field)
+    return actual
+
+
+def _owned_copy(entry: dict, relative: str, source_root: str, target_root: str, name: str,
+                resolved: dict) -> None:
+    """Both ends of one manifest row must PHYSICALLY be their own root's file at `relative`.
+
+    Normalized absolute names do not establish containment. A junction or symlink below either root
+    makes a contained-looking name resolve into unrelated storage - the redirection the owner
+    reproduced with equal bytes, where the new runtime's entry WAS the old runtime's file - so the
+    lexical binding of `_bind_entry` is not ownership evidence by itself. Each root and each side is
+    resolved concretely instead, and the resolved path must sit below the resolved root at exactly
+    the relative path this request moves. A redirection is refused here, not followed for ownership
+    credit, on the source side as well: a link there substitutes unrelated storage just as well.
+    A destination name that leads nowhere yet keeps its own reason (the bounded read below reports
+    it unreadable), but its directory chain must still be this target's own.
+
+    This is what the filesystem shows at the moment it is read; it does not exclude an OS-level
+    concurrent mutation between this check and the read that follows.
+    """
+    for side, root in (("source", source_root), ("destination", target_root)):
+        field = name + "." + side
+        if root not in resolved:
+            resolved[root] = _actual_root(root, field)
+        declared = Path(entry[side])
+        if side == "destination" and not _linked(declared) and not declared.exists():
+            actual = _actual(declared.parent, field) / declared.name
+        else:
+            actual = _actual(declared, field)
+        if _relative(str(actual), str(resolved[root])) != relative:
+            raise FleetRefused("copy_entry_escaped", field)
 
 
 def verify_copy_manifest(request: dict) -> dict:
@@ -462,11 +536,12 @@ def verify_copy_manifest(request: dict) -> dict:
     bound to the exact evidence the owner verified. Every entry is then checked as a copy of a file
     this request moves: typed fields, a real non-null sha256 and byte length, an absolute resolved
     source and destination, the destination below a stated target at the same relative path its
-    source is below the stated source, no destination or source named twice, and a destination that
-    is actually read back to that digest and that length. A missing destination file reads as
-    nothing here; it never matches a null digest, and it is a refusal. Every moving runtime target
-    must be covered by at least one entry, so an unrelated manifest cannot certify this cutover.
-    Nothing is copied, moved or deleted here.
+    source is below the stated source, no destination or source named twice, both ends actually
+    resolving to their own root's file at that relative path rather than through a link into other
+    storage, and a destination that is actually read back to that digest and that length. A missing
+    destination file reads as nothing here; it never matches a null digest, and it is a refusal.
+    Every moving runtime target must be covered by at least one entry, so an unrelated manifest
+    cannot certify this cutover. Nothing is copied, moved or deleted here.
     """
     declared = request["copy_manifest"]
     path = Path(declared["path"])
@@ -484,6 +559,7 @@ def verify_copy_manifest(request: dict) -> dict:
             and isinstance(entries, list) and len(entries) == declared["entries"]):
         raise FleetRefused("copy_manifest_invalid", "copy_manifest.entries")
     roots, covered, seen, verified = _move_roots(request), set(), set(), 0
+    resolved: dict = {}  # one concrete resolution per move root, reused by every entry below it
     for index, entry in enumerate(entries):
         name = "copy_manifest.entries[" + str(index) + "]"
         if not isinstance(entry, dict) or set(entry) != COPY_ENTRY_FIELDS:
@@ -496,11 +572,14 @@ def verify_copy_manifest(request: dict) -> dict:
         for side in ("source", "destination"):
             if not absolute_resolved(entry[side]):
                 raise FleetRefused("copy_manifest_invalid", name + "." + side)
-        lane, key, _ = _bind_entry(entry, roots, name)
+        lane, key, below, source_root, target_root = _bind_entry(entry, roots, name)
         for side in ("source", "destination"):
             if normalize_path(entry[side]) in seen:
                 raise FleetRefused("copy_entry_duplicate", name + "." + side)
             seen.add(normalize_path(entry[side]))
+        # Physical ownership before any byte is counted: a redirected name reads back the SOURCE's
+        # bytes and would otherwise be credited as a verified copy.
+        _owned_copy(entry, below, source_root, target_root, name, resolved)
         read = _hash_bounded(Path(entry["destination"]), entry["bytes"])
         if read is None:
             raise FleetRefused("copy_unreadable", name + ".destination")
@@ -512,6 +591,7 @@ def verify_copy_manifest(request: dict) -> dict:
     if missing:
         raise FleetRefused("copy_manifest_incomplete", "lanes[]." + missing[0][0] + ".runtime")
     return {"sha256": observed, "entries": len(entries), "verified": verified, "bound": True,
+            "ownership": COPY_OWNERSHIP,
             "covered": sorted(lane + "." + key for lane, key in covered)}
 
 

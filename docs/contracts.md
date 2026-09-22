@@ -1448,8 +1448,19 @@ length, name absolute resolved paths, sit below a target this request moves at t
 path its source sits below the stated source, appear once, and read back to exactly that digest and
 length within that bounded length; a missing destination is `copy_unreadable` rather than a match
 for a null digest, an entry outside the stated moves is `copy_entry_unbound`, and a moving runtime
-with no entry is `copy_manifest_incomplete`, so an unrelated manifest cannot certify a cutover. The
-commit needs a paused
+with no entry is `copy_manifest_incomplete`, so an unrelated manifest cannot certify a cutover.
+Containment is physical, not lexical: normalized absolute names do not establish where a path
+leads, so each move root and both ends of every entry are resolved concretely and the resolved path
+must sit below its own resolved root at exactly that relative path. A symlink, junction or other
+reparse redirection below either root - which reads back the source's own bytes under a
+contained-looking destination name - is `copy_entry_escaped` and is refused rather than followed for
+ownership credit; a root that is itself such a link is `copy_entry_link_refused`; a path that is
+missing, unreadable or looping is `copy_entry_unresolved` (a destination whose directory chain
+resolves but whose file was never written keeps `copy_unreadable`). The observation states this as
+`copy_manifest.ownership: resolved_paths`, and the commit refuses a `bound` manifest observation
+without it (`copy_unverified`), so a check that only compared names cannot certify a cutover. This
+is what the filesystem showed when it was read; it does not exclude concurrent OS-level mutation
+afterwards. The commit needs a paused
 fleet with no dispatching or unknown job, compare-and-swap on the registered digest, and the same
 re-read rule; it writes one immutable `fleet_relocations` receipt (prior configuration and digest,
 new configuration and digest, request, observation, repository alias map) and the revised registry

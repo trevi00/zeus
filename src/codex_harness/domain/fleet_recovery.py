@@ -46,6 +46,11 @@ REQUEST_SCHEMA = "urn:zeus:fleet-relocation:1"
 RELOCATION_PROOF_SCHEMA = "urn:zeus:fleet-relocation-proof:1"
 RELOCATION_RECEIPT_SCHEMA = "urn:zeus:fleet-relocation-receipt:1"
 COPY_MANIFEST_SCHEMA = "urn:zeus:copy-manifest:1"
+# How the adapter states it established copy ownership: every move root and both ends of every
+# manifest entry were resolved concretely and had to be their own root's file at the stated relative
+# path. A proof that cannot say this has only compared names, which a junction or symlink below a
+# root satisfies while the destination IS the source, so the commit refuses it.
+COPY_OWNERSHIP = "resolved_paths"
 
 # The one terminal reason an owner recovery may write. It is a failure, never an acceptance, and it
 # says the outcome of the interrupted work itself is unknown.
@@ -419,9 +424,11 @@ def check_relocation_proof(request: dict, proof, queued: dict) -> dict:
     if not isinstance(copy, dict) or copy.get("sha256") != request["copy_manifest"]["sha256"] \
             or copy.get("entries") != request["copy_manifest"]["entries"] \
             or copy.get("verified") != request["copy_manifest"]["entries"] \
-            or copy.get("bound") is not True:
+            or copy.get("bound") is not True or copy.get("ownership") != COPY_OWNERSHIP:
         # `bound` is the adapter's statement that every entry was read and that each one belongs to
         # a path this request actually moves: an unrelated manifest cannot certify this cutover.
+        # `ownership` is its statement that each one physically IS that path's own file rather than
+        # a name redirected there by a link, which equal bytes alone cannot distinguish.
         raise FleetRefused("copy_unverified", "copy_manifest")
     observed = {lane.get("id"): lane for lane in proof.get("lanes") or [] if isinstance(lane, dict)}
     for move in request["moves"]:
@@ -475,7 +482,7 @@ def relocation_view(receipt: dict) -> dict:
             "recorded_at": receipt["recorded_at"]}
 
 
-__all__ = ["COPY_MANIFEST_SCHEMA", "EVIDENCE_SCHEMA", "INTERRUPTED", "PROOF_SCHEMA",
+__all__ = ["COPY_MANIFEST_SCHEMA", "COPY_OWNERSHIP", "EVIDENCE_SCHEMA", "INTERRUPTED", "PROOF_SCHEMA",
            "RECEIPT_SCHEMA", "RELOCATION_PROOF_SCHEMA", "RELOCATION_RECEIPT_SCHEMA", "REQUEST_SCHEMA",
            "SLOT_BINDINGS", "canonical_repositories",
            "check_recovery_proof", "check_relocation_proof", "proof_binding", "recovery_receipt",
