@@ -330,3 +330,96 @@ review follows preserved inspection and the complete changed monitor path, not a
 Register the correction as a new approved item without an accepted dependency on its failed origin;
 retain the original failed item and its immutable pin. Automatic selection of this correction is
 owner-authorized recovery evidence, not autonomous diagnosis or self-authorization.
+
+## Durable delivery controller: consolidated Batch 3 implementation
+
+The one-shot PR181 continuation completed: required CI passed, PR merged c9e7ed19, collector
+switched, fresh /api/status reported the real plan at 2026-09-22T23:16:37Z. This is measured owner
+delivery, not a reusable controller. The remaining recurring failure is loss of continuation after
+review; implement that whole path rather than another task-specific shell script.
+
+Existing owners inspected: Releases requires worker-parent lead then conductor approval, exact
+revision/policy checks and active CAS. ReleaseQueue owns leases/generation/fences and retry limits.
+GitWorkspace owns publish/merge. Legacy ReleaseRunner monitors its Docker deployment, not current
+Windows scheduled services. Preserve all these authorities; an accepted Fleet row alone cannot
+grant release approval. The single-PR helper in artifacts is evidence/design precedent, not a
+dependency or code to execute from the repository.
+
+Deliver a reusable opt-in host delivery use case with domain policy, application coordinator and
+adapters. Input is an owner-approved Git-pinned delivery plan: plan/release IDs, exact existing
+release candidate revision/tree, incumbent policy hash, repository, named required CI checks,
+host target ID, expected current descriptor digest and target descriptor. Strict versioned JSON;
+no arbitrary shell commands, source text or credentials accepted as a plan. Target descriptors bind
+clean host revision/root, immutable worker image (or explicit unchanged), profile digest (or
+explicit unchanged) and known-good predecessor. Authorized target registry is host configuration,
+separate from candidate content; a candidate cannot select another scheduled task/path/policy.
+
+Reuse Releases and ReleaseQueue for approval/fencing; require their actual records and exact
+bindings before external effects. Never synthesize lead/conductor approvals from a plan or model
+self-report. Registration may precede release review but must project awaiting_review, not run.
+Build a bounded tick/run/status CLI through existing parser and process ownership conventions;
+run persists across this chat, while an empty queue idles without provider calls. No production
+registration or service changes in worker tests. Default remains disabled until owner acceptance.
+
+State path: registered -> awaiting_review -> publishing -> awaiting_ci -> merge_intended -> merged
+-> drain_intended -> switching -> awaiting_consumption -> active; explicit blocked/retry/rollback
+states preserve stage, error type, evidence and next action. Durable external intent precedes every
+non-idempotent action. Use existing ReleaseQueue claim and check current ownership before actions
+and committing observations. No store transaction spans GitHub, filesystem, subprocess or another
+independently locking transaction. Do not hold a lease asleep through a 20-minute CI run: return a
+pending state and schedule the next bounded tick under the same durable logical intent.
+
+GitHub adapter uses the existing GitWorkspace publish/merge contracts where applicable and exact
+PR/head CI observation. Required named checks must all finish successfully for the intended head;
+missing/skipped/cancelled/failed are not pass. Review a failed response by querying exact PR/merge
+identity before reissuing mutations. Changed head/base/tree goes to requalification, not silent
+rebase that inherits stale acceptance. Failure before any effect can retry within existing bounds;
+ambiguous effects retain ownership/evidence and reconcile, never blindly rerun or overwrite.
+
+Host adapter uses the existing background_service/process_tree ownership tools and a stable
+controller outside the service being replaced. Support the actual Windows scheduled collect/Fleet
+targets via the host registry; POSIX test target uses owned child processes and the same descriptor
+contract. Pause new admission and prove drain before replacing Fleet; existing unconfirmed effects
+block its switch. Do not kill active model work just to deploy. Switch an immutable descriptor
+atomically under a target-specific lock and compare expected predecessor. Launch hidden on Windows.
+Consume startup evidence from the launched process (instance ID, PID/start identity, actually loaded
+module root, revision/image/profile bindings), not merely a modified setting or PG pointer. Update
+release active through Releases only after prescribed checks and actual consumption; do not call
+legacy ReleaseRunner promotion early. Active host descriptors are scoped per target; reconcile the
+existing release active CAS explicitly rather than inventing a parallel approval authority.
+
+Canary uses the actual service contract (fresh monitor source for collect; real qualified worker
+operation for Fleet), specified by an incumbent fixed check ID, never executable text in the plan.
+Model canary runs are owner acceptance work, not fixture tests. A failed switch/canary restores the
+exact predecessor descriptor, verifies its consumption, and records rollback. A failed rollback or
+unknown process identity is a blocked operational alert. Do not erase evidence or claim rolled_back
+merely because a rollback was requested. A process restart reconciles recorded intent and observed
+instance before another start. Unrelated targets continue; conflicting changes serialize by target.
+
+Expose read-only status in monitoring and structured observation transitions: general scheduling,
+development evidence/check stages, operations failures/switch/rollback. IDs, hashes and safe reason
+codes only; no credential/exception-body dumps. Repeated idle polls emit no duplicate transition.
+
+Fixed acceptance matrix for one consolidated independent review:
+- Normal exact reviewed release -> publish -> real CI observation -> merge -> consumed descriptor.
+- Missing/stale review, policy, head, target, image or predecessor refuses without side effects.
+- Lost publish/merge/start response and process restart reconcile once, preserve evidence.
+- Competing claims/target changes and lease expiry prevent stale mutation/commit.
+- CI pending/failed, unavailable store/GitHub/host and timeout/cancel stay explicit; unrelated work moves.
+- Active work drains; unknown effects prevent switch; wrong startup receipt never grants activation.
+- Failed canary restores and proves predecessor; rollback failure blocks and alerts.
+- Actual temporary files/owned child processes for descriptor, restart and cleanup tests; injected
+  faults labelled. No real GitHub writes, scheduled-task mutations, models or production DB in tests.
+- Isolated PostgreSQL test for transaction boundaries; skip honestly if unavailable in worker image.
+
+Allowed files: new domain/application/adapters host_delivery.py modules; existing release_queue.py,
+releases.py, deployment.py, git.py, background_service.py, service_entry.py, observation.py and
+monitoring.py only for narrow reusable integration; cli.py parser; tests/test_host_delivery.py and
+tests/test_host_delivery_cli.py; docs/contracts.md and HOST-DELIVERY.md here. Do not weaken existing
+gates or make unrelated edits. Required scoped checks only:
+python -m pytest tests/test_host_delivery.py tests/test_host_delivery_cli.py -q -p no:cacheprovider
+python -m ruff check . --no-cache
+These explicit task checks override generic full-suite guidance for the worker; owner runs affected
+neighbors/PG and CI. Keep failures and unexecuted native checks separate from successful commands.
+Independent review covers the entire matrix in one verdict. Whole-loop research selection and
+qualified failure repair in Batch 2 remain required, not replaced by this delivery component.
