@@ -139,6 +139,43 @@ and broader absorption/model-transfer deliveries. No unattended completion claim
 
 ## Recovery/relocation implementation handoff
 
+### Consolidated correction 1
+
+Owner inspected candidate 09cf363 and independent review
+sha256:2fd9797de386942aa57b4bbea411b7e1ea4dafa0a91b5c9d8b059bbd450d5f13.
+The following are reachable static code traces, not owner-executed reproductions. Prior 53 focused,
+59 regression, 4 architecture checks and Ruff evidence remain accepted within their scope. Candidate
+is carried into this work branch only to correct it; this is NOT release acceptance or deployment.
+
+One correction batch, unchanged original completion matrix:
+
+1. `_machine_slot` only selects supplied ID and returns status/outcome. Independently bind that slot
+   to the actual operation task invocation using stored operation call-slot association and ledger
+   purpose/provider/model where present, not caller assertions. Legacy incomplete binding refuses.
+   Test unrelated settled slot alongside actual reserved slot and valid interrupted legacy evidence.
+2. `_active_runs` consumes run_records on a missing root as zero. Verify source ownership evidence
+   is readable and directory enumeration succeeded; missing/unavailable is refusal. Distinguish a
+   genuinely empty accessible initialized run root. Do not create a missing source just to pass.
+3. `verify_copy_manifest` credits None==None for missing destination and null digest. Enforce entry
+   types, valid non-null SHA256 and byte lengths, successful bounded file reads, source/destination
+   containment and relative-path correspondence to requested moves. Reject duplicate/unbound or
+   escaped entries; no unrelated manifest can certify the moved runtime. Source unreadability does
+   not erase a previously committed receipt, but first-time verification requires complete proof.
+4. A->B->A aliases form a cycle and resolve differently depending on starting identity. Represent
+   one canonical repository equivalence across repeated moves/rollback using existing immutable
+   relocation receipts; historical jobs and new jobs must share path exclusion. Do not rewrite job
+   manifests. Test A->B->A and A->B->C plus cross-lane dispatch exclusion with old frozen jobs.
+5. Both CLI commands observe external state before returning existing receipts. Validate request
+   identity then consult committed receipt FIRST; identical replay returns exact receipt without
+   touching vanished source/container. Conflicting same-ID requests refuse. Test real CLI adapter
+   path with external observer that would fail if called, not only application supplied-proof replay.
+
+New tests must distinguish pre-fix failure from passing controls, keep faults labelled, and exercise
+the exact owner CLI boundary. Only required focused pytest and Ruff claims go in legacy `tests`;
+diagnostic/unavailable commands stay in summary so unrequested broad suites cannot block the defined
+evidence gate. Owner will exercise actual Windows/Docker/PG cutover after independent acceptance.
+Do not solve unrelated session retirement or change limits/authorization/automatic retries here.
+
 ### Status reconciliation — 2026-09-22 08:25 KST
 
 This update supersedes stale current-state cells in the earlier sequencing table; it does not
