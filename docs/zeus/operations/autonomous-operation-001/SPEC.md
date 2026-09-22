@@ -298,3 +298,35 @@ Owner registers one meaningful item in an enabled Git-pinned plan and enables th
 setting. Admission must occur from runner tick without manual Fleet.enqueue. Record the resulting
 intent/job/project links. This proves first-item admission only; automatic successor, research,
 recovery and release gates in the whole-task checklist remain pending.
+
+## Monitor evidence-gate correction / 2026-09-23
+
+First automatic job failed evidence_gate_refused before independent lead review. Candidate
+b7f2c16aba00050104ed7fc939380b367f6c3ebf is preserved, not accepted. Inspection
+5b505df61579ed09b19e98f1764e0f8df958b1f897742b7e87035b472de06f5e checked the scoped
+monitoring tests and Ruff twice successfully. It found an actual changed-interface failure in
+test_monitoring_observations.py:161: the exact source-set assertion omitted fleet_backlog.
+The owner originally omitted this neighbor file from the allowlist; expand it explicitly.
+
+The worker also supplied four extra command claims beyond the two scoped commands. The full-suite
+replay timed out at 300 seconds; separate historical-Git tests failed because the verifier snapshot
+is not a Git repository. These are observed replay limitations/failures, not proof those tests pass
+or a reason to weaken the gate. Preserve the original inspection and failed operation as history.
+
+One correction: update affected observation-source assertions and verify the original monitor
+acceptance matrix together with that neighbor. Keep production code unless this combined check
+demonstrates a material bug. Correct the RUNBOOK's validation claims to match executed evidence;
+failed/unavailable historical checks remain diagnostics, never claimed successful execution.
+The exact required commands for THIS operation are:
+python -m pytest tests/test_monitoring.py tests/test_monitoring_observations.py -q -p no:cacheprovider
+python -m ruff check . --no-cache
+This explicit task scope supersedes generic full-suite repository guidance for this worker run.
+Do not run or claim a whole suite or historical-Git tests. Whole CI remains the host owner's gate.
+Legacy tests output must contain only the exact successful commands above; record other diagnostic
+facts in summary, without recasting them as successful commands. No suppressed genuine failures.
+Allowed paths add tests/test_monitoring_observations.py to the original monitor scope. Independent
+review follows preserved inspection and the complete changed monitor path, not a new broad audit.
+
+Register the correction as a new approved item without an accepted dependency on its failed origin;
+retain the original failed item and its immutable pin. Automatic selection of this correction is
+owner-authorized recovery evidence, not autonomous diagnosis or self-authorization.
