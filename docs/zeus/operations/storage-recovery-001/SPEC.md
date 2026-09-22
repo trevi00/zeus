@@ -139,6 +139,42 @@ and broader absorption/model-transfer deliveries. No unattended completion claim
 
 ## Recovery/relocation implementation handoff
 
+### Consolidated correction 2: actual filesystem ownership
+
+Candidate 0f787975 passed the two evidence claims (70 focused tests and Ruff), but independent
+review retained one correction-3 issue. Owner reproduced it on Windows with a real directory
+junction and synthetic bytes: new-runtime/artifacts -> old-runtime/artifacts; verify_copy_manifest
+returned verified=1 and bound=true although the destination resolved to the source file. Receipt:
+C:/workspaces/zeus/artifacts/storage-recovery-001/link-repro-001/result.json. No production source
+or destination was changed. Prior four corrected boundaries remain accepted within their scope.
+
+Two-strike reframe of the same copy-ownership family: the earlier fix established lexical names,
+types and digests, but the invalid assumption was that normalized absolute names establish physical
+containment. Competing explanations (content mismatch vs path redirection) are separated by the
+above equal-byte junction reproducer; redirection is confirmed. Python 3.14.7 primary documentation
+read 2026-09-22 https://docs.python.org/3/library/pathlib.html#pathlib.Path.resolve distinguishes
+pure path computation from concrete filesystem resolution. Existing isolated_worker.py already
+checks resolved parents and lstat reparse bits. Reuse the same ownership principle, not a new
+generic filesystem framework. Documentation alone does not prove Windows junction behavior; the
+actual reproducer does.
+
+One narrow batch: resolve existing roots and source/destination entry paths with strict error
+handling, verify each actual path belongs below its respective actual root and maintains the
+declared relative correspondence before counting bytes. Refuse child symlinks/junctions/reparse
+redirections under the move roots rather than following them for ownership credit. Missing,
+unreadable, looping or escaping paths refuse. Keep checks on both source and destination; a
+link in either may substitute unrelated storage. Preserve the existing paused/stopped owner
+cutover model; do not claim exclusion of hostile OS-level concurrent filesystem mutation.
+No new deletion, global path rewrite, budgets or replay semantics changes.
+
+Acceptance delta: actual Windows child junction pointing to source refused; POSIX child symlink
+escape refused; source-side redirection refused; nested ordinary copied file passes; inaccessible
+resolution refuses; identical committed receipt still replays without revisiting removed sources.
+Exercise verify_copy_manifest AND the relocation collection/commit boundary. Real temporary
+filesystem links, labelled platform skips, no fake Path.resolve-only proof. Owner reruns the
+retained Windows reproducer at the accepted candidate before cutover. Preserve 70-test evidence;
+run updated focused pair plus Ruff, keep diagnostic commands out of legacy success claims.
+
 ### Consolidated correction 1
 
 Owner inspected candidate 09cf363 and independent review
