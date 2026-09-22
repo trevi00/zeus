@@ -8,6 +8,7 @@ filesystem side (retained isolation run records) is real files under `tmp_path`.
 container, no PostgreSQL and no model is reached by anything in this file.
 """
 import json
+import shutil
 from copy import deepcopy
 from pathlib import Path
 
@@ -34,6 +35,7 @@ RUN = "1a" * 16
 CONTAINER = "c7" * 32
 RESERVATION = "d4" * 32
 SLOT = "e9" * 16
+OTHER_SLOT = "b3" * 16
 PAST = "2026-09-20T00:00:00+00:00"
 NOW = "2026-09-21T00:00:00+00:00"
 
@@ -156,8 +158,16 @@ def unavailable(_container_id):
 
 
 def ledger(**overrides):
-    return Ledger([{"id": SLOT, "host": "h", "status": "used", "purpose": "operation",
-                    "outcome": "interrupted_unknown", **overrides}])
+    """The machine ledger as the file ledger reads back: this operation's slot beside an unrelated
+    settled slot of other work. The two have exactly the same shape, so only the `purpose` the
+    ledger itself wrote (`application.operation.BudgetedExecutor`: `operation:<id>:<kind>`) tells
+    them apart."""
+    mine = {"id": SLOT, "host": "h", "status": "used", "purpose": CORRELATION + ":task",
+            "provider": "claude", "model": "claude-fixture-model",
+            "outcome": "interrupted_unknown", **overrides}
+    unrelated = {"id": OTHER_SLOT, "host": "h", "status": "used", "purpose": "operation:op-other:task",
+                 "provider": "claude", "model": "claude-fixture-model", "outcome": "accepted"}
+    return Ledger([unrelated, mine])
 
 
 def interrupted(tmp_path, status="dispatching", *, second=False):
@@ -224,7 +234,9 @@ def test_proof_reads_every_store_and_preserves_unknown_usage(tmp_path):
     assert proof["container"]["bound_worktree"] is True
     assert proof["invocation"] == {"reservation_id": RESERVATION, "status": "unsettled_unknown",
                                    "usage_source": "unknown", "total_tokens": None}
-    assert proof["machine_slot"] == {"id": SLOT, "status": "used", "outcome": "interrupted_unknown"}
+    assert proof["machine_slot"] == {"id": SLOT, "status": "used", "outcome": "interrupted_unknown",
+                                     "bound_by": "ledger_purpose", "bound_operation": OPERATION,
+                                     "provider": "claude", "model": "claude-fixture-model", "kind": "task"}
 
 
 @pytest.mark.parametrize("case,reason", [
@@ -245,6 +257,8 @@ def test_proof_reads_every_store_and_preserves_unknown_usage(tmp_path):
     ("missing_slot", "machine_slot_unknown"),
     ("unreadable_slot", "machine_slot_unreadable"),
     ("open_slot", "machine_slot_open"),
+    ("unrelated_slot", "machine_slot_foreign"),
+    ("legacy_slot", "machine_slot_unbound"),
 ])
 def test_missing_unreadable_or_live_proof_refuses(tmp_path, case, reason):
     setup = interrupted(tmp_path)
@@ -285,6 +299,14 @@ def test_missing_unreadable_or_live_proof_refuses(tmp_path, case, reason):
         slots = ledger(unreadable="ValueError")
     elif case == "open_slot":
         slots = ledger(status="reserved", outcome="interrupted_unknown")
+    elif case == "unrelated_slot":
+        # The settled slot of other work: same shape, same ledger, another operation.
+        document = evidence(setup["job"], config_sha256=setup["config_sha256"],
+                            machine_slot={"id": OTHER_SLOT, "outcome": "accepted"})
+    elif case == "legacy_slot":
+        # A ledger row written before slots recorded their purpose, beside an operation row that
+        # never recorded its calls: incomplete binding, not an assumed match.
+        slots = Ledger([{"id": SLOT, "host": "h", "status": "used", "outcome": "interrupted_unknown"}])
     if case == "open_slot":
         # A reserved slot passes the adapter (it exists and is readable) and is refused by the
         # policy gate, which is what the application actually commits behind.
@@ -342,6 +364,42 @@ def test_an_unavailable_or_wrong_lane_source_is_a_refusal_not_an_absence():
     with pytest.raises(FleetRefused, match="lane_unreadable") as info:
         LaneReader("dsn", "lane_a", connect=refused).get("tasks", TASK)
     assert "connection refused" not in str(info.value) and "dsn" not in str(info.value)
+
+
+def test_a_call_slot_must_be_bound_to_this_operation_by_a_record_the_host_wrote(tmp_path):
+    """The slot id in the evidence is a caller assertion. An unrelated settled slot carries exactly
+    the same fields, so the binding has to come from a record the host wrote for its own reasons."""
+    setup = interrupted(tmp_path)
+    document = evidence(setup["job"], config_sha256=setup["config_sha256"])
+    slot = proof_for(setup, tmp_path, document=document)["machine_slot"]
+    assert slot["bound_by"] == "ledger_purpose" and slot["bound_operation"] == OPERATION
+    # Control for the behaviour this corrects: selecting by the supplied id alone answers a settled
+    # slot with a settled outcome for the unrelated work too, which is why the id is not enough.
+    unrelated = [row for row in ledger().slots() if row["id"] == OTHER_SLOT][0]
+    assert unrelated["status"] == "used" and unrelated["outcome"] == "accepted"
+    # A legacy ledger row without a purpose binds only through the lane operation's own record.
+    legacy = Ledger([{"id": SLOT, "host": "h", "status": "used", "outcome": "interrupted_unknown"}])
+    with pytest.raises(FleetRefused, match="machine_slot_unbound"):
+        proof_for(setup, tmp_path, document=document, slots=legacy)
+    documents = lane_store(tmp_path)
+    documents.documents["operations"][OPERATION]["calls"] = {
+        "reserved": 1, "settled": 0, "slots": [{"id": SLOT, "kind": "task", "provider": "claude"}]}
+    bound = proof_for(setup, tmp_path, document=document, documents=documents, slots=legacy)["machine_slot"]
+    assert bound["bound_by"] == "operation_calls" and bound["bound_operation"] == OPERATION
+    # Two records that disagree about the provider are a mismatch, never a match.
+    documents.documents["operations"][OPERATION]["calls"]["slots"] = [{"id": SLOT, "kind": "task",
+                                                                       "provider": "another-provider"}]
+    with pytest.raises(FleetRefused, match="machine_slot_binding_mismatch"):
+        proof_for(setup, tmp_path, document=document, documents=documents)
+    # And the policy gate refuses an observation that states no binding at all.
+    proof = proof_for(setup, tmp_path, document=document)
+    for broken in ({k: v for k, v in proof["machine_slot"].items() if k != "bound_by"},
+                   {**proof["machine_slot"], "bound_operation": "op-other"},
+                   {**proof["machine_slot"], "bound_by": "operator_says_so"}):
+        with pytest.raises(FleetRefused, match="machine_slot_unbound"):
+            setup["fleet"].reconcile_interrupted(document, {**proof, "machine_slot": broken})
+    with setup["store"].transaction() as tx:
+        assert tx.scan(BUCKET_RECOVERY) == []
 
 
 def test_container_name_without_a_recorded_binding_is_not_proof(tmp_path):
@@ -437,8 +495,11 @@ def test_the_transaction_refuses_anything_it_was_not_shown(tmp_path, case, reaso
     elif case == "wrong_operation":
         document = {**document, "lane_operation": {**document["lane_operation"], "id": "op-2",
                                                    "correlation_id": "operation:op-2"}}
+        # The whole observation names the other operation, slot binding included, so the refusal
+        # under test is the job's own operation id and not an earlier gate.
         proof = {**proof, "lane_operation": {**proof["lane_operation"], "id": "op-2",
-                                             "correlation_id": "operation:op-2"}}
+                                             "correlation_id": "operation:op-2"},
+                 "machine_slot": {**proof["machine_slot"], "bound_operation": "op-2"}}
     with pytest.raises(FleetRefused, match=reason) as info:
         fleet.reconcile_interrupted(document, proof)
     assert CANARY not in str(info.value) and str(tmp_path) not in str(info.value)
@@ -487,6 +548,43 @@ def test_the_owner_command_exists_on_the_cli_and_carries_only_codes(tmp_path):
     printed = refusal(FleetRefused("container_not_stopped", "container.state"))
     assert printed == {"status": "refused", "reason_code": "container_not_stopped",
                        "error_type": "FleetRefused", "exit_code": 1}
+
+
+def test_the_cli_replays_a_committed_recovery_without_observing_anything(tmp_path, monkeypatch):
+    """The shipped `zeus fleet reconcile-interrupted` entrypoint, not the application call: once the
+    receipt is committed, the command must answer from it even though the container, the lane
+    schema and the machine ledger it settled are gone. Every external reader is replaced by a fault
+    that fails the test if it is reached."""
+    from types import SimpleNamespace
+
+    from codex_harness.adapters import configuration, fleet_cli, fleet_recovery, fleet_runtime
+
+    setup = interrupted(tmp_path)
+    document = evidence(setup["job"], config_sha256=setup["config_sha256"])
+    first = setup["fleet"].reconcile_interrupted(document, proof_for(setup, tmp_path, document=document))
+    # The retained run record the observation binds the container through is gone too, so an
+    # observation would refuse on its own even without the faults below.
+    shutil.rmtree(run_root(setup["lane"]["runtime"]))
+
+    def gone(*_, **__):
+        """Injected fault: the sources this recovery settled no longer answer at all."""
+        raise AssertionError("a committed recovery must not observe any external state")
+
+    for module, name in ((fleet_recovery, "collect_recovery_proof"), (fleet_recovery, "LaneReader"),
+                         (fleet_recovery, "docker_state"), (fleet_runtime, "lane_dsn"),
+                         (configuration, "settings")):
+        monkeypatch.setattr(module, name, gone)
+
+    def run(name, body):
+        path = tmp_path / name
+        path.write_text(json.dumps(body, sort_keys=True), encoding="utf-8")
+        return fleet_cli.execute(SimpleNamespace(store=setup["store"]),
+                                 SimpleNamespace(fleet_command="reconcile-interrupted", file=path, docker="docker"))
+
+    answer = run("evidence.json", document)
+    assert answer["exit_code"] == 0 and answer["cached"] is True and answer["receipt"] == first["receipt"]
+    with pytest.raises(FleetRefused, match="recovery_conflict"):
+        run("changed.json", {**document, "operator": "someone-else"})
 
 
 def test_recovery_reads_no_repository_and_reserves_no_call(tmp_path):

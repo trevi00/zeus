@@ -114,43 +114,52 @@ def record_delivery(service, args) -> dict:
 def reconcile_interrupted(service, args) -> dict:
     """Owner recovery of ONE interrupted job. The evidence document says what the owner proved; the
     adapter observes the lane store, Docker and the machine ledger itself and re-reads that
-    observation inside the committing transaction. No model is called and no work is resumed."""
-    from codex_harness.adapters.configuration import settings
-    from codex_harness.adapters.fleet_recovery import (
-        LaneReader,
-        collect_recovery_proof,
-        docker_state,
-    )
-    from codex_harness.adapters.fleet_runtime import lane_dsn
+    observation inside the committing transaction. No model is called and no work is resumed.
 
+    The observation is a callback, not a value: `Fleet.reconcile_interrupted` answers an identical
+    replay from the committed receipt, and this command then reads no lane schema, no Docker daemon
+    and no call ledger at all, so a settled recovery survives the removal of what it settled."""
     evidence = validate_recovery_evidence(read_manifest(args.file))
     fleet = Fleet(service.store)
-    lane = lane_of(fleet.registered()["config"], evidence["expected"]["lane"])
-    reader = LaneReader(lane_dsn(settings().get("HARNESS_DATABASE_URL"), lane["schema"]), lane["schema"])
 
     def observe() -> dict:
+        from codex_harness.adapters.configuration import settings
+        from codex_harness.adapters.fleet_recovery import (
+            LaneReader,
+            collect_recovery_proof,
+            docker_state,
+        )
+        from codex_harness.adapters.fleet_runtime import lane_dsn
+
+        lane = lane_of(fleet.registered()["config"], evidence["expected"]["lane"])
+        reader = LaneReader(lane_dsn(settings().get("HARNESS_DATABASE_URL"), lane["schema"]), lane["schema"])
         return collect_recovery_proof(evidence, lane, reader=reader,
                                       state=lambda container: docker_state(container, args.docker))
 
-    return {**fleet.reconcile_interrupted(evidence, observe(), reread=observe), "exit_code": 0}
+    return {**fleet.reconcile_interrupted(evidence, observe=observe, reread=observe), "exit_code": 0}
 
 
 def relocate(service, args) -> dict:
     """Owner relocation of lane repository/runtime paths to already-copied, verified targets. The
     copy itself is the owner's preparation step: nothing here moves, deletes or rewrites files,
-    history, manifests or goal identities."""
-    from codex_harness.adapters.fleet_recovery import collect_relocation_proof, docker_state
+    history, manifests or goal identities.
 
+    The observation is a callback, not a value: `Fleet.relocate` answers an identical replay from
+    the committed receipt, and this command then reads no journal, no checkout, no Docker daemon
+    and no copied file, so a completed cutover replays even once the old paths are gone."""
     request = validate_relocation_request(read_manifest(args.file))
     fleet = Fleet(service.store)
-    registry = fleet.registered()
-    with service.store.transaction() as tx:
-        jobs = tx.scan(BUCKET_JOBS)
+
     def observe() -> dict:
+        from codex_harness.adapters.fleet_recovery import collect_relocation_proof, docker_state
+
+        registry = fleet.registered()
+        with service.store.transaction() as tx:
+            jobs = tx.scan(BUCKET_JOBS)
         return collect_relocation_proof(request, registry["config"], jobs, journal=args.journal,
                                         state=lambda container: docker_state(container, args.docker))
 
-    return {**fleet.relocate(request, observe(), reread=observe), "exit_code": 0}
+    return {**fleet.relocate(request, observe=observe, reread=observe), "exit_code": 0}
 
 
 def status(service, args) -> dict:

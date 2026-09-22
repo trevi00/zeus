@@ -46,6 +46,7 @@ from codex_harness.domain.fleet import (
 )
 from codex_harness.domain.fleet_recovery import (
     INTERRUPTED,
+    canonical_repositories,
     check_recovery_proof,
     check_relocation_proof,
     proof_binding,
@@ -345,16 +346,45 @@ class Fleet:
     # ----- owner recovery and relocation (storage-recovery-001) ---------------------------
     @staticmethod
     def _repository_aliases(tx) -> dict:
-        """Old lane repository identity -> current one, folded from the immutable relocation
-        receipts in their recorded order. Job rows are never rewritten, so this map is how a job
-        frozen before a move is still compared against the repository it belongs to."""
-        aliases = {}
-        for row in sorted(tx.scan(BUCKET_RELOCATION), key=lambda r: (r["recorded_at"], r["id"])):
-            aliases.update(row.get("repository_aliases") or {})
-        return aliases
+        """Every repository identity this fleet has used -> the one canonical identity of its
+        repository, folded from the immutable relocation receipts in their recorded order.
 
-    def reconcile_interrupted(self, evidence, proof, *, reread=None) -> dict:
+        Job rows are never rewritten, so this map is how a job frozen before a move is still
+        compared against the repository it belongs to. Folding the receipts' edges into one
+        equivalence class per repository (`canonical_repositories`) is what keeps that true after
+        repeated moves and after a rollback: A->B->A is a cycle, and a plain chain walk over it
+        would answer differently depending on which identity a job happens to carry."""
+        return canonical_repositories(row.get("repository_aliases") or {}
+                                      for row in sorted(tx.scan(BUCKET_RELOCATION),
+                                                        key=lambda r: (r["recorded_at"], r["id"])))
+
+    def _recovery_replay(self, document: dict) -> dict | None:
+        """The committed answer for this evidence, read BEFORE anything is observed.
+
+        A recovery that already committed is finished: its receipt is the durable fact, and asking
+        Docker, the lane store or the machine ledger about a container, a schema or a slot that has
+        since been removed would turn a settled job into a refusal. Identical evidence therefore
+        replays from the receipt alone; any other evidence for that job still conflicts here.
+        """
+        with self.store.transaction() as tx:
+            if self._registry(tx) is None:
+                raise FleetRefused("unregistered")
+            old = tx.get(BUCKET_RECOVERY, document["job_id"])
+            if old is None:
+                return None
+            if old["evidence"] != document:
+                raise FleetRefused("recovery_conflict")
+            return {"reconciled": True, "cached": True, "receipt": recovery_view(old),
+                    "job": self._view(tx.get(BUCKET_JOBS, document["job_id"]) or {})}
+
+    def reconcile_interrupted(self, evidence, proof=None, *, observe=None, reread=None) -> dict:
         """Settle ONE interrupted job whose external effects the owner proved dead (trusted CLI).
+
+        The committed receipt is consulted first: an identical replay is answered from it without
+        observing anything, so a vanished container or an unreachable lane store cannot withdraw a
+        recovery that already happened, and a conflicting document for the same job refuses just as
+        early. Only when no receipt exists is the observation taken - supply it as `proof`, or as
+        `observe()` for a caller that must not pay for it on a replay.
 
         The fleet must be paused, the registered configuration must still be the one the evidence
         names, and the job must still be the exact reservation it names (status, owner token,
@@ -373,6 +403,12 @@ class Fleet:
         evidence for the same job is refused and nothing is overwritten.
         """
         document = validate_recovery_evidence(evidence)
+        require(proof is not None or observe is not None, "Fleet recovery needs an observation")
+        replay = self._recovery_replay(document)
+        if replay is not None:
+            return replay
+        if proof is None:
+            proof = observe()
         check_recovery_proof(document, proof)
         with self.store.transaction() as tx:
             registry = self._registry(tx)
@@ -380,7 +416,8 @@ class Fleet:
                 raise FleetRefused("unregistered")
             old = tx.get(BUCKET_RECOVERY, document["job_id"])
             if old is not None:
-                # Replay before any state check: the reservation is already cleared by the first one.
+                # A second owner committed between the read above and this transaction; the
+                # reservation is already cleared, so the durable receipt is still the answer.
                 if old["evidence"] != document:
                     raise FleetRefused("recovery_conflict")
                 return {"reconciled": True, "cached": True, "receipt": recovery_view(old),
@@ -419,8 +456,35 @@ class Fleet:
             row = tx.get(BUCKET_RECOVERY, job_id)
         return recovery_view(row) if row is not None else None
 
-    def relocate(self, request, proof, *, reread=None) -> dict:
+    def _relocation_replay(self, document: dict) -> dict | None:
+        """The committed answer for this exact request, read BEFORE anything is observed.
+
+        A relocation that already committed is finished, and the old source paths it moved away
+        from may well be gone; re-observing them would refuse a request the registry has already
+        satisfied. The identical request therefore replays from its receipt, and a different
+        request against the same expected digest conflicts here rather than after a host read.
+        """
+        with self.store.transaction() as tx:
+            registry = self._registry(tx)
+            if registry is None:
+                raise FleetRefused("unregistered")
+            old = tx.get(BUCKET_RELOCATION, relocation_receipt_id(document))
+            if old is not None:
+                return {"relocated": True, "cached": True, "receipt": relocation_view(old),
+                        "config": sanitized_config(registry["config"]),
+                        "config_sha256": registry["config_sha256"]}
+            if any(row["request"]["expected_config_sha256"] == document["expected_config_sha256"]
+                   for row in tx.scan(BUCKET_RELOCATION)):
+                raise FleetRefused("relocation_conflict")
+            return None
+
+    def relocate(self, request, proof=None, *, observe=None, reread=None) -> dict:
         """Move lane repository and runtime PATHS to already-copied targets (trusted owner CLI).
+
+        The committed receipt is consulted first: the identical request replays from it without
+        observing the host, and a conflicting request against the same expected digest refuses
+        there. Only when neither applies is the observation taken - supply it as `proof`, or as
+        `observe()` for a caller that must not pay for it on a replay.
 
         One transaction, compare-and-swap on the registered configuration digest: the fleet must be
         paused, hold no dispatching or unknown reservation, and the adapter's host observation must
@@ -436,6 +500,12 @@ class Fleet:
         refused.
         """
         document = validate_relocation_request(request)
+        require(proof is not None or observe is not None, "Fleet relocation needs an observation")
+        replay = self._relocation_replay(document)
+        if replay is not None:
+            return replay
+        if proof is None:
+            proof = observe()
         with self.store.transaction() as tx:
             registry = self._registry(tx)
             if registry is None:

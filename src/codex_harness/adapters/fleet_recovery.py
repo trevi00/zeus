@@ -10,17 +10,21 @@ fixed reason code. A value never reaches the message; the field name does.
 `operation_finalization.owner` rule), the cancelled task at its advanced generation with no live
 lease, the task's recorded worktree, the one retained isolation run record for that worktree with
 its exact container name and id, that container's Docker state, the closed invocation reservation
-and the settled machine call slot. A container name with no recorded task/run binding is refused,
-unknown usage stays unknown, and an unreadable or ambiguous read is a refusal, never an absence.
+and the settled machine call slot, which is bound to that same operation by the ledger's own
+`purpose` or the operation row's own recorded calls rather than by the caller's assertion. A
+container name with no recorded task/run binding is refused, a call slot with no recorded binding
+is refused, unknown usage stays unknown, and an unreadable or ambiguous read is a refusal, never an
+absence.
 
 `collect_relocation_proof` establishes that the fleet is idle for a cutover and that the copied
 targets are usable: the service lifecycle journal (`adapters/service_entry`) must show the last
 Fleet CLI run finished, every retained isolation run in a moving lane must have a container Docker
 proves is not running, each target must be a real independent checkout of the same repository
 identity carrying every queued job's pinned base commit and goal bytes, each target runtime must be
-writable, and every entry of the owner's copy manifest must hash to what was copied. The owner's
-own idle claim is never read as a fact; where the platform cannot establish one, the answer is a
-bounded refusal instead of an assumption.
+writable, and every entry of the owner's copy manifest must be a file below a path this request
+moves that reads back to the declared digest and length. The owner's own idle claim is never read
+as a fact, and neither is a source that could not be enumerated; where the platform cannot
+establish one, the answer is a bounded refusal instead of an assumption.
 """
 from __future__ import annotations
 
@@ -35,10 +39,17 @@ from codex_harness.adapters.isolated_worker import LIMITS, RESOLVED, _docker, ru
 from codex_harness.adapters.operation_cli import GitSource
 from codex_harness.application.operation_finalization import _lease_live as lease_live
 from codex_harness.application.operation_finalization import owner as operation_owner
-from codex_harness.domain.fleet import FleetRefused, repository_identity
+from codex_harness.domain.fleet import (
+    FleetRefused,
+    absolute_resolved,
+    normalize_path,
+    repository_identity,
+)
 from codex_harness.domain.fleet_recovery import (
     CLOSED_INVOCATIONS,
     COPY_MANIFEST_SCHEMA,
+    HEX64,
+    MOVABLE,
     PROOF_SCHEMA,
     RELOCATION_PROOF_SCHEMA,
     STOPPED_STATES,
@@ -49,6 +60,9 @@ from codex_harness.domain.model import digest, utcnow
 RUN_ROOT = ("isolated-worker", "runs")
 COPY_ENTRY_FIELDS = {"source", "destination", "sha256", "bytes"}
 READ_BYTES = 1 << 20
+# The largest single copied file this verification will read back. A manifest may not ask for an
+# unbounded read, and a declared length beyond this is refused instead of attempted.
+MAX_COPY_BYTES = 1 << 36
 # One journal line per lifecycle step; a service journal far longer than this is not read further
 # back, so an unbounded file cannot be walked here.
 JOURNAL_LINES = 20000
@@ -64,6 +78,24 @@ def _hash_file(path: Path) -> str | None:
     except OSError:
         return None
     return sha.hexdigest()
+
+
+def _hash_bounded(path: Path, limit: int) -> dict | None:
+    """The sha256 and length of a file, reading at most one byte past the declared length.
+
+    A file that cannot be opened or read answers None, which is never a match for anything; a file
+    longer than it was declared to be stops the read and reports the longer length, so a manifest
+    entry can never make this command walk an unbounded file.
+    """
+    sha, size = hashlib.sha256(), 0
+    try:
+        with open(path, "rb") as stream:
+            while size <= limit and (chunk := stream.read(min(READ_BYTES, limit + 1 - size))):
+                sha.update(chunk)
+                size += len(chunk)
+    except OSError:
+        return None
+    return {"sha256": sha.hexdigest(), "bytes": size}
 
 
 def _resolved_directory(value: str, field: str) -> Path:
@@ -191,7 +223,7 @@ def collect_recovery_proof(evidence: dict, lane: dict, *, reader, budget=None, s
     if any(row.get("status") == "reserved" and row.get("task_id") == evidence["lane_operation"]["task_id"]
            for row in reader.scan("invocation_reservations")):
         raise FleetRefused("invocation_open", "invocation.reservation_id")
-    slot = _machine_slot(evidence, budget)
+    slot = _machine_slot(evidence, budget, operation)
     usage = reservation.get("usage") if isinstance(reservation.get("usage"), dict) else {}
     return {"schema": PROOF_SCHEMA,
             "lane_operation": {"id": operation["id"], "correlation_id": operation["correlation_id"],
@@ -209,7 +241,29 @@ def collect_recovery_proof(evidence: dict, lane: dict, *, reader, budget=None, s
             "machine_slot": slot, "worktree_digest": digest(worktree), "observed_at": clock()}
 
 
-def _machine_slot(evidence: dict, budget) -> dict:
+def _recorded_slots(operation: dict) -> dict:
+    """The call slots the lane `operations` row itself recorded, by id.
+
+    `application.operation` writes `calls.slots[]` when the operation FINISHES, so an interrupted
+    operation usually has none; this is the binding when the row does carry them, not a substitute
+    for the ledger's own.
+    """
+    calls = operation.get("calls") if isinstance(operation.get("calls"), dict) else {}
+    recorded = calls.get("slots") if isinstance(calls.get("slots"), list) else []
+    return {row["id"]: row for row in recorded if isinstance(row, dict) and type(row.get("id")) is str}
+
+
+def _machine_slot(evidence: dict, budget, operation: dict) -> dict:
+    """The named machine call slot, bound to THIS operation by the host's own records.
+
+    The slot id in the evidence document is a caller assertion, and an unrelated settled slot has
+    exactly the same shape as the right one. Two records the host wrote for its own reasons decide
+    instead: the ledger slot's `purpose`, which `application.operation.BudgetedExecutor` writes as
+    `operation:<id>:<kind>` at the moment the slot is taken, and the lane `operations` row's
+    recorded `calls.slots[]`. Where both exist they must agree, including the provider. A slot that
+    carries neither (an older ledger row without a purpose, an operation row that never recorded
+    its calls) is incomplete evidence and refuses; nothing here infers the binding from the id.
+    """
     ledger = CallBudget() if budget is None else budget
     rows = [row for row in ledger.slots() if row.get("id") == evidence["machine_slot"]["id"]]
     if len(rows) != 1:
@@ -217,7 +271,22 @@ def _machine_slot(evidence: dict, budget) -> dict:
     row = rows[0]
     if row.get("unreadable"):
         raise FleetRefused("machine_slot_unreadable", "machine_slot.id")
-    return {"id": row["id"], "status": row.get("status"), "outcome": row.get("outcome")}
+    correlation = evidence["lane_operation"]["correlation_id"]
+    purpose = row.get("purpose")
+    by_purpose = type(purpose) is str and purpose.startswith(correlation + ":") and len(purpose) > len(correlation) + 1
+    recorded = _recorded_slots(operation).get(row["id"])
+    if type(purpose) is str and not by_purpose:
+        # A purpose that names other work is a mismatch, never a missing binding.
+        raise FleetRefused("machine_slot_foreign", "machine_slot.id")
+    if recorded is not None and by_purpose and recorded.get("provider") not in (None, row.get("provider")):
+        raise FleetRefused("machine_slot_binding_mismatch", "machine_slot.id")
+    if not by_purpose and recorded is None:
+        raise FleetRefused("machine_slot_unbound", "machine_slot.id")
+    return {"id": row["id"], "status": row.get("status"), "outcome": row.get("outcome"),
+            "bound_by": "ledger_purpose" if by_purpose else "operation_calls",
+            "bound_operation": evidence["lane_operation"]["id"],
+            "provider": row.get("provider") if by_purpose else recorded.get("provider"),
+            "model": row.get("model"), "kind": purpose.rpartition(":")[2] if by_purpose else recorded.get("kind")}
 
 
 # ----- relocate ----------------------------------------------------------------------------
@@ -254,10 +323,37 @@ def runner_state(journal) -> dict:
     return {"state": state, "run_id": started, "journal_sha256": sha, "reason": None}
 
 
+def listed_runs(runtime: str, field: str) -> list:
+    """The retained isolation run records of one runtime root, or a refusal.
+
+    `run_records` answers an empty list for a root that is missing, that is not a directory and
+    that could not be enumerated, all of which would read as "this lane has no runs" - the exact
+    absence this command must never assume. The source of the answer is checked first: the runtime
+    root and its `isolated-worker/runs` root must exist and enumerate, and a run directory without
+    a readable record is uncertainty too. An initialized root that genuinely holds nothing answers
+    an empty list, which is a fact about a source that was read. Nothing is created here.
+    """
+    if not Path(runtime).is_dir():
+        raise FleetRefused("lane_runtime_unavailable", field)
+    runs = run_root(runtime)
+    if not runs.is_dir():
+        raise FleetRefused("lane_runs_unavailable", field)
+    try:
+        with os.scandir(runs) as entries:
+            listed = [entry.name for entry in entries if entry.is_dir()]
+    except OSError as exc:
+        raise FleetRefused("lane_runs_unreadable", field) from exc
+    records = run_records(runs)
+    if len(records) != len(listed):
+        # A retained run directory that holds no record at all: its container is unaccounted for.
+        raise FleetRefused("lane_runs_unreadable", field)
+    return records
+
+
 def _active_runs(runtime: str, lane_id: str, state) -> int:
     """Retained isolation runs of this lane whose container is not proven stopped or absent."""
     active = 0
-    for row in run_records(run_root(runtime)):
+    for row in listed_runs(runtime, "lanes[]." + lane_id):
         if row.get("state") in RESOLVED:
             continue
         if row.get("state") == "unreadable":
@@ -328,12 +424,49 @@ def _queued_bindings(target: str, jobs: list) -> list:
     return bindings
 
 
+def _relative(inner: str, outer: str) -> str | None:
+    """`inner`'s path below `outer`, in comparison form, or None when it is not below it."""
+    low, high = normalize_path(inner), normalize_path(outer)
+    if low == high or not low.startswith(high.rstrip("/") + "/"):
+        return None
+    return low[len(high.rstrip("/")) + 1:]
+
+
+def _move_roots(request: dict) -> list:
+    """Every `from` -> `to` pair this request actually moves, as `(lane, key, from, to)`."""
+    return [(move["lane"], key, move[key]["from"], move[key]["to"])
+            for move in request["moves"] for key in MOVABLE if move[key] is not None]
+
+
+def _bind_entry(entry: dict, roots: list, name: str) -> tuple:
+    """The one move this copied file belongs to, by containment AND relative correspondence.
+
+    A manifest of files copied somewhere else says nothing about the paths this request moves, so
+    an entry that is not below a stated target - or that is below it at a different relative path
+    than its source is below the stated source - is refused rather than counted.
+    """
+    for lane, key, source_root, target_root in roots:
+        below = _relative(entry["destination"], target_root)
+        if below is None:
+            continue
+        if below != _relative(entry["source"], source_root):
+            raise FleetRefused("copy_entry_unbound", name)
+        return lane, key, below
+    raise FleetRefused("copy_entry_unbound", name)
+
+
 def verify_copy_manifest(request: dict) -> dict:
     """Re-hash the owner's copy manifest and every destination file it claims.
 
     The manifest document itself must hash to the digest the request states, so the request is
-    bound to the exact evidence the owner verified; every destination file is then read and
-    compared. Nothing is copied, moved or deleted here.
+    bound to the exact evidence the owner verified. Every entry is then checked as a copy of a file
+    this request moves: typed fields, a real non-null sha256 and byte length, an absolute resolved
+    source and destination, the destination below a stated target at the same relative path its
+    source is below the stated source, no destination or source named twice, and a destination that
+    is actually read back to that digest and that length. A missing destination file reads as
+    nothing here; it never matches a null digest, and it is a refusal. Every moving runtime target
+    must be covered by at least one entry, so an unrelated manifest cannot certify this cutover.
+    Nothing is copied, moved or deleted here.
     """
     declared = request["copy_manifest"]
     path = Path(declared["path"])
@@ -350,15 +483,36 @@ def verify_copy_manifest(request: dict) -> dict:
     if not (isinstance(document, dict) and document.get("schema") == COPY_MANIFEST_SCHEMA
             and isinstance(entries, list) and len(entries) == declared["entries"]):
         raise FleetRefused("copy_manifest_invalid", "copy_manifest.entries")
-    verified = 0
-    for entry in entries:
+    roots, covered, seen, verified = _move_roots(request), set(), set(), 0
+    for index, entry in enumerate(entries):
+        name = "copy_manifest.entries[" + str(index) + "]"
         if not isinstance(entry, dict) or set(entry) != COPY_ENTRY_FIELDS:
-            raise FleetRefused("copy_manifest_invalid", "copy_manifest.entries")
-        if _hash_file(Path(entry["destination"])) == entry["sha256"]:
-            verified += 1
-    if verified != len(entries):
-        raise FleetRefused("copy_corrupt", "copy_manifest.entries")
-    return {"sha256": observed, "entries": len(entries), "verified": verified}
+            raise FleetRefused("copy_manifest_invalid", name)
+        if not (type(entry["sha256"]) is str and HEX64.fullmatch(entry["sha256"])):
+            raise FleetRefused("copy_manifest_invalid", name + ".sha256")
+        if type(entry["bytes"]) is not int or type(entry["bytes"]) is bool \
+                or not 0 <= entry["bytes"] <= MAX_COPY_BYTES:
+            raise FleetRefused("copy_manifest_invalid", name + ".bytes")
+        for side in ("source", "destination"):
+            if not absolute_resolved(entry[side]):
+                raise FleetRefused("copy_manifest_invalid", name + "." + side)
+        lane, key, _ = _bind_entry(entry, roots, name)
+        for side in ("source", "destination"):
+            if normalize_path(entry[side]) in seen:
+                raise FleetRefused("copy_entry_duplicate", name + "." + side)
+            seen.add(normalize_path(entry[side]))
+        read = _hash_bounded(Path(entry["destination"]), entry["bytes"])
+        if read is None:
+            raise FleetRefused("copy_unreadable", name + ".destination")
+        if read != {"sha256": entry["sha256"], "bytes": entry["bytes"]}:
+            raise FleetRefused("copy_corrupt", name + ".destination")
+        covered.add((lane, key))
+        verified += 1
+    missing = [(lane, key) for lane, key, _, _ in roots if key == "runtime" and (lane, key) not in covered]
+    if missing:
+        raise FleetRefused("copy_manifest_incomplete", "lanes[]." + missing[0][0] + ".runtime")
+    return {"sha256": observed, "entries": len(entries), "verified": verified, "bound": True,
+            "covered": sorted(lane + "." + key for lane, key in covered)}
 
 
 def collect_relocation_proof(request: dict, config: dict, jobs: list, *, journal, state=docker_state,
@@ -394,12 +548,15 @@ def collect_relocation_proof(request: dict, config: dict, jobs: list, *, journal
         row["queued_bindings"] = _queued_bindings(repository, queued)
         if move["runtime"] is not None:
             target = _resolved_directory(move["runtime"]["to"], "moves[]." + lane["id"] + ".runtime.to")
-            row["runtime"] = {"writable": _writable(target),
-                              "existing_runs": len(run_records(run_root(str(target))))}
+            runs = run_root(str(target))
+            # A target that has never hosted an isolated run has no run root; that is reported as
+            # an unknown count, never as a proven zero.
+            row["runtime"] = {"writable": _writable(target), "run_root": runs.is_dir(),
+                              "existing_runs": len(run_records(runs)) if runs.is_dir() else None}
         observed.append(row)
     return {"schema": RELOCATION_PROOF_SCHEMA, "runner": runner, "lanes": observed,
             "copy_manifest": verify_copy_manifest(request), "observed_at": clock()}
 
 
 __all__ = ["LaneReader", "checkout_identity", "collect_recovery_proof", "collect_relocation_proof",
-           "docker_state", "run_root", "runner_state", "verify_copy_manifest"]
+           "docker_state", "listed_runs", "run_root", "runner_state", "verify_copy_manifest"]

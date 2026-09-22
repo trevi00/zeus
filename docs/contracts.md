@@ -1408,13 +1408,22 @@ that exact container name and id, a Docker state of `exited`/`dead`/`created`, a
 `settled` or `unsettled_unknown` with no open reservation left for that task, and a `used` machine
 slot. A container name with no recorded task/run binding, an ambiguous or unreadable record, an
 unavailable daemon or a missing slot is a refusal, never an absence, and unknown usage stays
-unknown. The commit needs a paused fleet, the registered digest the evidence names, and the job
+unknown. The slot id is never taken as its own binding: the slot must be tied to that operation by
+the ledger's own `purpose` (`operation:<id>:<kind>`, written when the slot was taken) or by the lane
+`operations` row's recorded `calls.slots[]`, agreeing on the provider where both exist; a purpose
+naming other work is `machine_slot_foreign` and a slot with neither record is
+`machine_slot_unbound`. The commit needs a paused fleet, the registered digest the evidence names,
+and the job
 still being that exact reservation (status in dispatching/unknown, owner token, lane, operation id);
 the observation is re-read inside that transaction and its identities (everything but its clock)
 must be unchanged. It writes one immutable `fleet_recovery_receipts` row and makes the job terminal
 `failed` with the fixed `interrupted_unknown` reason, clearing that one reservation while manifest,
 goal, dependencies, exit code, call counts and every other record stay byte-for-byte; identical
-evidence replays idempotently and any other evidence for that job is `recovery_conflict`. This is an
+evidence replays idempotently and any other evidence for that job is `recovery_conflict`. Both
+owner commands consult that committed receipt FIRST, before any lane, Docker, ledger, journal,
+checkout or copied-file read: an identical replay is answered from the durable receipt and a
+conflicting request for the same identity refuses there, so a settled operation survives the
+removal of what it settled. This is an
 owner-controlled recovery with the worker services stopped, not a distributed atomic transaction,
 and the receipt says so. `fleet relocate --file --journal` moves lane repository and runtime PATHS
 to already-copied targets under `urn:zeus:fleet-relocation:1` (expected registered digest, exact
@@ -1429,14 +1438,28 @@ must have a container Docker proves is not running, each target must be an exist
 directory (no symlink or junction escape) that is an independent checkout with no borrowed objects
 and the same root-commit identity as its source, each target runtime must be writable, every queued
 job of that lane must have its pinned base commit and goal bytes present in the target, and the copy
-manifest and every destination file must hash to what the request states. The commit needs a paused
+manifest and every destination file must hash to what the request states. A moving lane's runs are
+read from a source that was actually enumerated: a missing runtime root, a missing or unreadable
+`isolated-worker/runs` root and a retained run directory without a record are
+`lane_runtime_unavailable`/`lane_runs_unavailable`/`lane_runs_unreadable`, never zero active runs,
+and only an initialized accessible root that genuinely holds nothing counts as zero; no missing
+source is created here. Every manifest entry must be typed, carry a non-null sha256 and byte
+length, name absolute resolved paths, sit below a target this request moves at the same relative
+path its source sits below the stated source, appear once, and read back to exactly that digest and
+length within that bounded length; a missing destination is `copy_unreadable` rather than a match
+for a null digest, an entry outside the stated moves is `copy_entry_unbound`, and a moving runtime
+with no entry is `copy_manifest_incomplete`, so an unrelated manifest cannot certify a cutover. The
+commit needs a paused
 fleet with no dispatching or unknown job, compare-and-swap on the registered digest, and the same
 re-read rule; it writes one immutable `fleet_relocations` receipt (prior configuration and digest,
 new configuration and digest, request, observation, repository alias map) and the revised registry
 row in one transaction. Job rows, manifests, goals, operation identities, provenance and artifact
 references are never rewritten, so a job frozen before a move keeps its old repository identity and
-admission resolves both sides through the receipts' alias map (`resolve_repository`) to keep the
-path exclusion intact. The identical request replays idempotently; another request against the same
+admission resolves both sides through the receipts (`canonical_repositories` folds their edges into
+one equivalence class per repository, answering the class's latest destination;
+`resolve_repository` reads that map) to keep the path exclusion intact after repeated moves and
+after a rollback, where a plain chain walk over A->B->A would answer differently from each side.
+The identical request replays idempotently; another request against the same
 expected digest is `relocation_conflict`. Future jobs use the new paths; no old operation is resumed.
 
 ## INV-OPERATION-FINALIZATION-001

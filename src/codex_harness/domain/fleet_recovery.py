@@ -7,7 +7,8 @@ git, Docker or filesystem access:
   a terminal `failed` with the fixed `interrupted_unknown` reason. The evidence document names the
   job, the exact lane operation and task, the exact owned container, the closed invocation
   reservation and the settled machine call slot; the adapter's observation (`proof`) must repeat
-  those identities exactly. Nothing here retries, resumes, grants budget, invents usage or turns an
+  those identities exactly and must show the call slot bound to that operation by a record the
+  host wrote itself. Nothing here retries, resumes, grants budget, invents usage or turns an
   unknown outcome into a success: the job's frozen manifest, goal, call counts and history stay as
   they are and only that one reservation is cleared.
 * RELOCATE. Lane repository and runtime PATHS move to already-copied targets. The lane id, team,
@@ -77,6 +78,11 @@ STOPPED_STATES = frozenset({"exited", "dead", "created"})
 # An invocation reservation that no longer holds capacity. `reserved` is still open.
 CLOSED_INVOCATIONS = frozenset({"settled", "unsettled_unknown"})
 SETTLED_SLOT = "used"
+# How a machine call slot may be bound to the interrupted operation. Both are records the host
+# already wrote for its own reasons: the ledger slot's own `purpose` (`operation:<id>:<kind>`,
+# written when the slot was taken) and the lane `operations` row's recorded `calls.slots[]`. A
+# caller's assertion that a slot belongs to this job is not one of them.
+SLOT_BINDINGS = frozenset({"ledger_purpose", "operation_calls"})
 MAX_MOVES = 4
 MAX_COPY_ENTRIES = 100000
 
@@ -213,6 +219,13 @@ def check_recovery_proof(evidence: dict, proof) -> dict:
     if not isinstance(slot, dict) or slot.get("id") != evidence["machine_slot"]["id"] \
             or slot.get("outcome") != evidence["machine_slot"]["outcome"]:
         raise FleetRefused("proof_mismatch", "machine_slot")
+    if slot.get("bound_by") not in SLOT_BINDINGS \
+            or slot.get("bound_operation") != evidence["lane_operation"]["id"]:
+        # The slot id alone says nothing: a settled slot of unrelated work carries the same shape.
+        # Only a record the host wrote itself binds this slot to this operation, and a slot whose
+        # ledger row predates that record (no purpose, not in the operation's recorded calls) is
+        # incomplete evidence, never an assumed match.
+        raise FleetRefused("machine_slot_unbound", "machine_slot.id")
     if slot.get("status") != SETTLED_SLOT:
         raise FleetRefused("machine_slot_open", "machine_slot.status")
     return proof_binding(proof)
@@ -346,14 +359,48 @@ def repository_aliases(config: dict, new: dict) -> dict:
     """Old lane repository identity -> new one, for the lanes whose repository moved.
 
     Frozen job rows are never rewritten, so a job enqueued before the move keeps the identity of
-    the repository it was bound to. Admission resolves both sides through this immutable map
-    (`domain.fleet.resolve_repository`) so the path exclusion still sees one repository.
+    the repository it was bound to. This is ONE receipt's edges; `canonical_repositories` folds
+    every receipt into the equivalence a reader may use.
     """
     aliases = {}
     for old_lane, new_lane in zip(config["lanes"], new["lanes"]):
         if old_lane["repository"] != new_lane["repository"]:
             aliases[repository_identity(old_lane["repository"])] = repository_identity(new_lane["repository"])
     return aliases
+
+
+def canonical_repositories(alias_maps) -> dict:
+    """One canonical identity per repository, folded over the relocation receipts in their order.
+
+    Repeated moves and rollbacks make the receipts' `old -> new` edges a graph, not a chain: A->B
+    followed by B->A is a cycle, and walking it from A and from B answers differently, which would
+    silently split one repository into two for the admission path exclusion. The equivalence CLASS
+    is the invariant instead. Every identity a lane repository has ever had joins one class, and
+    the whole class resolves to the destination of the LAST recorded move of that class - the path
+    the lane actually uses now. A job frozen at any older identity and a job enqueued now therefore
+    compare equal, in either direction and after any number of moves.
+
+    Nothing here rewrites a receipt or a job: the receipts are the input, and the answer is a map
+    (`domain.fleet.resolve_repository` reads it).
+    """
+    parent: dict[str, str] = {}
+
+    def find(identity: str) -> str:
+        # `parent` is only ever pointed from one class root at another, so this walk terminates.
+        while parent.get(identity, identity) != identity:
+            identity = parent[identity]
+        return identity
+
+    current: dict[str, str] = {}
+    for mapping in alias_maps:
+        for old, new in sorted((mapping or {}).items()):
+            parent.setdefault(old, old)
+            parent.setdefault(new, new)
+            left, right = find(old), find(new)
+            if left != right:
+                parent[left] = right
+            current[find(new)] = new
+    return {identity: current[find(identity)] for identity in sorted(parent)}
 
 
 def check_relocation_proof(request: dict, proof, queued: dict) -> dict:
@@ -371,7 +418,10 @@ def check_relocation_proof(request: dict, proof, queued: dict) -> dict:
     copy = proof.get("copy_manifest")
     if not isinstance(copy, dict) or copy.get("sha256") != request["copy_manifest"]["sha256"] \
             or copy.get("entries") != request["copy_manifest"]["entries"] \
-            or copy.get("verified") != request["copy_manifest"]["entries"]:
+            or copy.get("verified") != request["copy_manifest"]["entries"] \
+            or copy.get("bound") is not True:
+        # `bound` is the adapter's statement that every entry was read and that each one belongs to
+        # a path this request actually moves: an unrelated manifest cannot certify this cutover.
         raise FleetRefused("copy_unverified", "copy_manifest")
     observed = {lane.get("id"): lane for lane in proof.get("lanes") or [] if isinstance(lane, dict)}
     for move in request["moves"]:
@@ -427,6 +477,7 @@ def relocation_view(receipt: dict) -> dict:
 
 __all__ = ["COPY_MANIFEST_SCHEMA", "EVIDENCE_SCHEMA", "INTERRUPTED", "PROOF_SCHEMA",
            "RECEIPT_SCHEMA", "RELOCATION_PROOF_SCHEMA", "RELOCATION_RECEIPT_SCHEMA", "REQUEST_SCHEMA",
+           "SLOT_BINDINGS", "canonical_repositories",
            "check_recovery_proof", "check_relocation_proof", "proof_binding", "recovery_receipt",
            "recovery_receipt_id", "recovery_view", "relocated_config", "relocation_receipt",
            "relocation_receipt_id", "relocation_view", "repository_aliases",

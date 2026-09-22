@@ -14,12 +14,20 @@ one case skips with its reason instead of pretending to have run.
 import hashlib
 import json
 import os
+import shutil
 from copy import deepcopy
+from pathlib import Path
 
 import pytest
 
 from codex_harness.adapters.commands import run_process
-from codex_harness.adapters.fleet_recovery import collect_relocation_proof, run_root, runner_state
+from codex_harness.adapters.fleet_recovery import (
+    _hash_file,
+    collect_relocation_proof,
+    run_root,
+    runner_state,
+)
+from codex_harness.adapters.isolated_worker import run_records
 from codex_harness.adapters.providers import packaged_policy
 from codex_harness.adapters.store import MemoryStore
 from codex_harness.application.fleet import (
@@ -96,22 +104,30 @@ def journal(tmp_path, *, finished: bool = True, name="fleet-journal.log", raw: b
     return path
 
 
-def copy_manifest(tmp_path, destinations, *, corrupt=False):
-    entries = []
-    for index, destination in enumerate(destinations):
-        destination.parent.mkdir(parents=True, exist_ok=True)
+def copy_manifest(tmp_path, pairs, *, corrupt=False, write=True, name="copy-manifest.json", entries=None):
+    """The owner's record of files copied from a stated source root to a stated target root.
+
+    `pairs` is `(source_root, target_root, relative)`: the same relative path below both roots, as
+    a real copy has. The destination is written for real unless `write` is false (a target that
+    must stay absent for the test that needs it absent). `entries` replaces the generated rows, so
+    a test can state a malformed, unbound or duplicated entry on purpose.
+    """
+    rows = []
+    for index, (source_root, target_root, relative) in enumerate(pairs):
+        destination = Path(target_root).joinpath(*relative.split("/"))
         data = ("copied evidence %d\n" % index).encode("utf-8")
-        destination.write_bytes(data)
         recorded = hashlib.sha256(data).hexdigest()
-        if corrupt and index == 0:
-            destination.write_bytes(data + b"tampered")  # the copy no longer is what was verified
-        entries.append({"source": str(tmp_path / ("original-%d.txt" % index)),
-                        "destination": str(destination), "sha256": recorded, "bytes": len(data)})
-    document = {"schema": COPY_MANIFEST_SCHEMA, "entries": entries}
-    path = tmp_path / "copy-manifest.json"
+        if write:
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            # The copy no longer is what was verified.
+            destination.write_bytes(data + b"tampered" if corrupt and index == 0 else data)
+        rows.append({"source": str(Path(source_root).joinpath(*relative.split("/"))),
+                     "destination": str(destination), "sha256": recorded, "bytes": len(data)})
+    document = {"schema": COPY_MANIFEST_SCHEMA, "entries": rows if entries is None else entries}
+    path = tmp_path / name
     path.write_text(json.dumps(document, sort_keys=True), encoding="utf-8")
     return {"path": str(path), "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
-            "entries": len(entries)}
+            "entries": len(document["entries"])}
 
 
 def stopped(_container_id):
@@ -151,7 +167,9 @@ def setup(tmp_path, *, shared_repository=False, queued=("op-1",)):
     document = {"schema": "urn:zeus:fleet:1", "id": "fleet-1", "max_parallel": 2,
                 "budget": {"per_host": 4, "total": 8}, "lanes": lanes}
     for lane in lanes:
-        (tmp_path / lane["runtime"]).mkdir(parents=True, exist_ok=True)
+        # An initialized lane runtime: `bootstrap.isolated_worker` owns this root, and a lane that
+        # has hosted isolated runs has it whether or not any run is retained in it.
+        run_root(lane["runtime"]).mkdir(parents=True, exist_ok=True)
     store = MemoryStore()
     fleet = Fleet(store)
     registry = fleet.register(deepcopy(document))
@@ -161,7 +179,7 @@ def setup(tmp_path, *, shared_repository=False, queued=("op-1",)):
     target = clone(tmp_path, source, tmp_path / "new" / "repo-a")
     target_runtime = tmp_path / "new" / "rt-a"
     target_runtime.mkdir(parents=True)
-    copy = copy_manifest(tmp_path, [target_runtime / "artifacts" / "evidence.json"])
+    copy = copy_manifest(tmp_path, [(tmp_path / "old" / "rt-a", target_runtime, "artifacts/evidence.json")])
     return {"store": store, "fleet": fleet, "config": document, "config_sha256": registry["config_sha256"],
             "base": base, "source": source, "target": target, "target_runtime": target_runtime,
             "runtime": tmp_path / "old" / "rt-a", "copy": copy, "journal": journal(tmp_path)}
@@ -282,13 +300,43 @@ def test_a_retained_lane_run_refuses_unless_docker_proves_it_is_not_running(tmp_
     assert str(tmp_path) not in str(info.value)
 
 
+def test_runs_that_cannot_be_enumerated_are_a_refusal_not_an_empty_lane(tmp_path):
+    """`run_records` answers the same empty list for a root that is missing, that is not a
+    directory and that could not be read. Only a root that was actually enumerated may be counted
+    as zero, and the missing one is never created to make the check pass."""
+    state = setup(tmp_path)
+    runs = run_root(str(state["runtime"]))
+    assert runs.is_dir() and not any(runs.iterdir())
+    assert proof_for(state)["lanes"][0]["active_runs"] == 0  # initialized, accessible, genuinely empty
+    shutil.rmtree(runs)
+    # Control for the behaviour this corrects: the record reader answers the same empty list for a
+    # root that is not there, and a count over it reads as "this lane has no active run".
+    assert run_records(runs) == [] and not runs.exists()
+    with pytest.raises(FleetRefused, match="lane_runs_unavailable") as info:
+        proof_for(state)
+    assert str(tmp_path) not in str(info.value)
+    assert not runs.exists()
+    (runs / ("ab" * 16)).mkdir(parents=True)  # a retained run whose record is not there at all
+    with pytest.raises(FleetRefused, match="lane_runs_unreadable"):
+        proof_for(state)
+    shutil.rmtree(state["runtime"])
+    with pytest.raises(FleetRefused, match="lane_runtime_unavailable"):
+        proof_for(state)
+    assert not state["runtime"].exists()
+
+
 def relocate(state, request, *, docker=stopped):
     return state["fleet"].relocate(request, proof_for(state, request, docker=docker))
 
 
-def repository_move(state, target):
-    return request_for(state, moves=[{"lane": "a", "runtime": None,
-                                      "repository": {"from": str(state["source"]), "to": str(target)}}])
+def repository_move(state, tmp_path, target, *, write=True, lanes=("a",)):
+    """A repository-only move, with a copy manifest bound to exactly that move."""
+    copy = copy_manifest(tmp_path, [(state["source"], target, "copied/evidence.json")], write=write,
+                         name="copy-" + Path(target).name + ".json")
+    return request_for(state, copy_manifest=copy,
+                       moves=[{"lane": lane, "runtime": None,
+                               "repository": {"from": str(state["source"]), "to": str(target)}}
+                              for lane in lanes])
 
 
 def test_the_target_must_be_an_independent_checkout_of_the_same_repository(tmp_path):
@@ -300,12 +348,14 @@ def test_the_target_must_be_an_independent_checkout_of_the_same_repository(tmp_p
     stranger = tmp_path / "new" / "stranger"
     repository(stranger, goal=b"another history\n")  # a real checkout, another repository
     with pytest.raises(FleetRefused, match="repository_identity_mismatch"):
-        relocate(state, repository_move(state, stranger))
+        relocate(state, repository_move(state, tmp_path, stranger))
     borrowed = clone(tmp_path, state["source"], tmp_path / "new" / "borrowed", "--shared")
     with pytest.raises(FleetRefused, match="target_not_independent"):
-        relocate(state, repository_move(state, borrowed))
+        relocate(state, repository_move(state, tmp_path, borrowed))
+    absent = tmp_path / "new" / "absent"
     with pytest.raises(FleetRefused, match="path_unresolved"):
-        proof_for(state, repository_move(state, tmp_path / "new" / "absent"))
+        proof_for(state, repository_move(state, tmp_path, absent, write=False))
+    assert not absent.exists(), "an absent target is never created to make the check pass"
 
 
 def test_a_symlinked_target_is_refused_rather_than_followed(tmp_path):
@@ -316,10 +366,8 @@ def test_a_symlinked_target_is_refused_rather_than_followed(tmp_path):
     except (OSError, NotImplementedError, AttributeError) as exc:  # pragma: no cover - platform dependent
         pytest.skip("this platform refuses to create a symlink here (%s); Windows expresses the same "
                     "escape as a junction and needs the same refusal" % type(exc).__name__)
-    escaping = request_for(state, moves=[{"lane": "a", "repository": {"from": str(state["source"]),
-                                                                      "to": str(link)}, "runtime": None}])
     with pytest.raises(FleetRefused, match="path_unresolved"):
-        proof_for(state, escaping)
+        proof_for(state, repository_move(state, tmp_path, link, write=False))
 
 
 def test_queued_bases_and_goal_blobs_must_exist_in_the_target(tmp_path):
@@ -344,8 +392,10 @@ def test_queued_bases_and_goal_blobs_must_exist_in_the_target(tmp_path):
 
 def test_the_copy_manifest_must_hash_to_what_was_actually_copied(tmp_path):
     state = setup(tmp_path)
-    assert proof_for(state)["copy_manifest"] == {"sha256": state["copy"]["sha256"], "entries": 1, "verified": 1}
-    corrupt = copy_manifest(tmp_path, [state["target_runtime"] / "artifacts" / "broken.json"], corrupt=True)
+    assert proof_for(state)["copy_manifest"] == {"sha256": state["copy"]["sha256"], "entries": 1,
+                                                 "verified": 1, "bound": True, "covered": ["a.runtime"]}
+    corrupt = copy_manifest(tmp_path, [(state["runtime"], state["target_runtime"], "artifacts/broken.json")],
+                            corrupt=True, name="corrupt.json")
     with pytest.raises(FleetRefused, match="copy_corrupt"):
         proof_for(state, request_for(state, copy_manifest=corrupt))
     (tmp_path / "copy-manifest.json").write_text("{}", encoding="utf-8")
@@ -355,6 +405,57 @@ def test_the_copy_manifest_must_hash_to_what_was_actually_copied(tmp_path):
     with pytest.raises(FleetRefused, match="copy_manifest_unreadable") as info:
         proof_for(state, request_for(state))
     assert str(tmp_path) not in str(info.value)
+
+
+def entry_of(state, relative="artifacts/evidence.json", **overrides):
+    source = Path(state["runtime"]).joinpath(*relative.split("/"))
+    destination = Path(state["target_runtime"]).joinpath(*relative.split("/"))
+    data = b"copied evidence 0\n"
+    return {"source": str(source), "destination": str(destination),
+            "sha256": hashlib.sha256(data).hexdigest(), "bytes": len(data), **overrides}
+
+
+@pytest.mark.parametrize("case,reason", [
+    ("null_digest_missing_file", "copy_manifest_invalid"),
+    ("missing_destination", "copy_unreadable"),
+    ("short_bytes", "copy_corrupt"),
+    ("untyped_bytes", "copy_manifest_invalid"),
+    ("relative_path", "copy_manifest_invalid"),
+    ("duplicate", "copy_entry_duplicate"),
+    ("outside_the_move", "copy_entry_unbound"),
+    ("renamed", "copy_entry_unbound"),
+    ("runtime_uncovered", "copy_manifest_incomplete"),
+])
+def test_a_manifest_entry_must_prove_a_file_this_request_actually_moves(tmp_path, case, reason):
+    """The old credit of `None == None` - a missing destination beside a null digest - is the first
+    case here; the rest are the entries a manifest of unrelated or malformed copies would carry."""
+    state = setup(tmp_path)
+    outside = tmp_path / "elsewhere"
+    outside.mkdir()
+    entries = {
+        "null_digest_missing_file": [entry_of(state, "artifacts/never-copied.json", sha256=None)],
+        "missing_destination": [entry_of(state, "artifacts/never-copied.json")],
+        "short_bytes": [entry_of(state, bytes=2)],
+        "untyped_bytes": [entry_of(state, bytes="18")],
+        "relative_path": [entry_of(state, source="artifacts/evidence.json")],
+        "duplicate": [entry_of(state), entry_of(state)],
+        "outside_the_move": [entry_of(state), {"source": str(outside / "a.txt"),
+                                               "destination": str(outside / "b.txt"),
+                                               "sha256": "c" * 64, "bytes": 0}],
+        "renamed": [entry_of(state, destination=str(Path(state["target_runtime"]) / "artifacts" / "other.json"))],
+        "runtime_uncovered": [entry_of(state, source=str(Path(state["source"]) / "docs" / "GOAL.md"),
+                                       destination=str(Path(state["target"]) / "docs" / "GOAL.md"),
+                                       sha256=hashlib.sha256(GOAL_BYTES).hexdigest(), bytes=len(GOAL_BYTES))],
+    }[case]
+    copy = copy_manifest(tmp_path, [(state["runtime"], state["target_runtime"], "artifacts/evidence.json")],
+                         name=case + ".json", entries=entries)
+    if case == "null_digest_missing_file":
+        # Control for the behaviour this corrects: the destination cannot be read, so the entry was
+        # compared as `None == None` and counted as verified.
+        assert _hash_file(Path(entries[0]["destination"])) is None and entries[0]["sha256"] is None
+    with pytest.raises(FleetRefused, match=reason) as info:
+        proof_for(state, request_for(state, copy_manifest=copy))
+    assert str(tmp_path) not in str(info.value) and CANARY not in str(info.value)
 
 
 # ----- the committing transaction -----------------------------------------------------------
@@ -475,10 +576,7 @@ def test_admission_after_a_move_still_excludes_conflicting_paths(tmp_path):
     state = setup(tmp_path, shared_repository=True, queued=("op-1",))
     fleet = state["fleet"]
     target = state["target"]
-    moves = [{"lane": lane, "repository": {"from": str(state["source"]), "to": str(target)}, "runtime": None}
-             for lane in ("a", "b")]
-    request = request_for(state, moves=moves)
-    relocate(state, request)
+    relocate(state, repository_move(state, tmp_path, target, lanes=("a", "b")))
     fleet.resume()
     with state["store"].transaction() as tx:
         aliases = Fleet._repository_aliases(tx)
@@ -491,3 +589,115 @@ def test_admission_after_a_move_still_excludes_conflicting_paths(tmp_path):
     assert fleet.admit_one()["job"]["id"] == "op-1"
     decision = fleet.admit_one()
     assert decision["job"] is None and decision["blocked"] == {"op-9": "path_conflict"}
+
+
+def move_back(state, tmp_path, source, target, *, lanes=("a", "b"), name="back"):
+    """The reverse move, with its own copy manifest bound to it: B -> A is a relocation like any
+    other, and after it the registered path is the one the older jobs were frozen at."""
+    copy = copy_manifest(tmp_path, [(source, target, name + "/evidence.json")], name="copy-" + name + ".json")
+    with state["store"].transaction() as tx:
+        expected = tx.get(BUCKET_REGISTRY, "fleet-1")["config_sha256"]
+    request = request_for(state, copy_manifest=copy, expected_config_sha256=expected,
+                          moves=[{"lane": lane, "runtime": None,
+                                  "repository": {"from": str(source), "to": str(target)}} for lane in lanes])
+    with state["store"].transaction() as tx:
+        config = tx.get(BUCKET_REGISTRY, "fleet-1")["config"]
+    return state["fleet"].relocate(request, collect_relocation_proof(
+        request, config, jobs_of(state), journal=state["journal"], state=stopped, clock=lambda: NOW))
+
+
+def jobs_of(state):
+    with state["store"].transaction() as tx:
+        return tx.scan(BUCKET_JOBS)
+
+
+def aliases_of(state):
+    with state["store"].transaction() as tx:
+        return Fleet._repository_aliases(tx)
+
+
+def test_a_repository_that_moved_and_came_back_is_still_one_repository(tmp_path):
+    """A -> B -> A is a CYCLE in the receipts' edges. Walking that chain answers `A` from `A` and
+    `B` from `B`, which would split one repository in two and lose the admission path exclusion
+    between a job frozen before the move and a job enqueued between the two moves."""
+    state = setup(tmp_path, shared_repository=True, queued=("op-1",))
+    fleet, source, target = state["fleet"], state["source"], state["target"]
+    a, b = repository_identity(str(source)), repository_identity(str(target))
+    relocate(state, repository_move(state, tmp_path, target, lanes=("a", "b")))
+    fleet.resume()
+    # Enqueued while the lanes point at B, so this job is frozen at the intermediate identity.
+    fleet.enqueue("b", manifest("op-9", ["docs/x0.md"], state["base"]), goal_of(state["base"]), [])
+    fleet.pause()
+    move_back(state, tmp_path, target, source)
+    with state["store"].transaction() as tx:
+        assert tx.get(BUCKET_REGISTRY, "fleet-1")["config"]["lanes"][0]["repository"] == str(source)
+        assert tx.get(BUCKET_JOBS, "op-1")["repository"] == a and tx.get(BUCKET_JOBS, "op-9")["repository"] == b
+    # Control for the behaviour this corrects: the receipts' raw edges are the cycle A->B->A, and
+    # walking them answers a different repository depending on which identity a job carries.
+    edges = {}
+    with state["store"].transaction() as tx:
+        for row in sorted(tx.scan(BUCKET_RELOCATION), key=lambda r: (r["recorded_at"], r["id"])):
+            edges.update(row["repository_aliases"])
+    assert resolve_repository(a, edges) != resolve_repository(b, edges)
+    aliases = aliases_of(state)
+    assert resolve_repository(a, aliases) == resolve_repository(b, aliases) == a
+    fleet.resume()
+    assert fleet.admit_one()["job"]["id"] == "op-1"
+    decision = fleet.admit_one()
+    assert decision["job"] is None and decision["blocked"] == {"op-9": "path_conflict"}
+
+
+def test_a_repository_moved_twice_resolves_to_its_current_path_from_either_identity(tmp_path):
+    """A -> B -> C: every identity the repository ever had answers the path it is at now, whichever
+    one a frozen job happens to carry."""
+    state = setup(tmp_path, shared_repository=True, queued=("op-1",))
+    fleet, source, target = state["fleet"], state["source"], state["target"]
+    third = clone(tmp_path, source, tmp_path / "newer" / "repo-a")
+    a, b, c = (repository_identity(str(path)) for path in (source, target, third))
+    relocate(state, repository_move(state, tmp_path, target, lanes=("a", "b")))
+    fleet.resume()
+    fleet.enqueue("b", manifest("op-9", ["docs/x0.md"], state["base"]), goal_of(state["base"]), [])
+    fleet.pause()
+    move_back(state, tmp_path, target, third, name="onward")
+    aliases = aliases_of(state)
+    assert resolve_repository(a, aliases) == resolve_repository(b, aliases) == resolve_repository(c, aliases) == c
+    with state["store"].transaction() as tx:
+        assert tx.get(BUCKET_JOBS, "op-1")["repository"] == a and tx.get(BUCKET_JOBS, "op-9")["repository"] == b
+    fleet.resume()
+    assert fleet.admit_one()["job"]["id"] == "op-1"
+    decision = fleet.admit_one()
+    assert decision["job"] is None and decision["blocked"] == {"op-9": "path_conflict"}
+
+
+def test_the_cli_replays_a_committed_relocation_without_observing_the_old_paths(tmp_path, monkeypatch):
+    """The shipped `zeus fleet relocate` entrypoint: once the receipt is committed, the command
+    answers from it even though the journal, the old checkout and the copied files it verified are
+    gone. Every external reader is replaced by a fault that fails the test if it is reached."""
+    from types import SimpleNamespace
+
+    from codex_harness.adapters import fleet_cli, fleet_recovery
+
+    state = setup(tmp_path)
+    request = request_for(state)
+    first = relocate(state, request)
+
+    def gone(*_, **__):
+        """Injected fault: the sources this relocation moved away from no longer answer."""
+        raise AssertionError("a committed relocation must not observe any external state")
+
+    monkeypatch.setattr(fleet_recovery, "collect_relocation_proof", gone)
+    monkeypatch.setattr(fleet_recovery, "docker_state", gone)
+    shutil.rmtree(state["source"])  # the old checkout is gone, as it is after a real cutover
+    os.unlink(state["journal"])
+
+    def run(name, body):
+        path = tmp_path / name
+        path.write_text(json.dumps(body, sort_keys=True), encoding="utf-8")
+        return fleet_cli.execute(SimpleNamespace(store=state["store"]),
+                                 SimpleNamespace(fleet_command="relocate", file=path,
+                                                 journal=state["journal"], docker="docker"))
+
+    answer = run("request.json", request)
+    assert answer["exit_code"] == 0 and answer["cached"] is True and answer["receipt"] == first["receipt"]
+    with pytest.raises(FleetRefused, match="relocation_conflict"):
+        run("other.json", {**request, "operator": "someone-else"})

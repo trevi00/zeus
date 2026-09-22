@@ -293,12 +293,15 @@ def repository_identity(path: str) -> str:
 
 
 def resolve_repository(identity: str, aliases=None) -> str:
-    """Follow an owner relocation chain (old repository identity -> new one) to its current end.
+    """The canonical identity of this repository under an owner relocation map.
 
     Frozen job rows are never rewritten, so a job enqueued before its lane repository moved keeps
-    the identity of the path it was bound to. `aliases` comes from the immutable relocation
-    receipts (`domain.fleet_recovery.repository_aliases`); without one nothing changes. The walk is
-    bounded by the map and refuses to loop, so a cycle answers instead of hanging.
+    the identity of the path it was bound to. `aliases` is the canonical map folded from the
+    immutable relocation receipts (`domain.fleet_recovery.canonical_repositories`), where every
+    identity of one repository already answers that repository's current one; without a map nothing
+    changes. The walk is bounded by the map and refuses to loop, so neither a cycle nor a raw
+    per-receipt edge map can hang here - but only the canonical map answers the SAME identity from
+    either side of a move, which is what the path exclusion compares.
     """
     if not aliases:
         return identity
