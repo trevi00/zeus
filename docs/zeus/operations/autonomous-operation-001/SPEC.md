@@ -167,3 +167,35 @@ Worker checks: `python -m pytest tests/test_fleet_backlog.py tests/test_fleet_ba
 and `python -m ruff check . --no-cache`. Owner runs real isolated PG and affected existing Fleet tests
 plus CI. Keep exact executed commands in legacy tests, failures/skips/diagnostics in summary. Do not
 claim full-loop completion, all-source absorption, release readiness or host activation from this batch.
+
+## Batch 1 consolidated correction / 2026-09-22
+
+Rejected candidate f8b8d07b5ed9f5a1c9ab05d4ba0c750991b885b1; independent review
+sha256:0aabdee53d1243aef70763adeaacb5cae664042d314939ffbdc986dd8779e2e6.
+The four findings below were static reachable code traces, not executed owner reproductions.
+Preserve the accepted architecture and existing tests; this is one correction of the same matrix.
+
+Observation -> affected assumption: partial identities cannot establish reconciliation, and an
+unavailable selected item is not a reason to suspend unrelated work. Ordinary logger output is
+not proof of integration with the structured observation collector. The original allowed paths
+also omitted the observation registry; that scope defect belongs to the owner handoff.
+
+| Required correction | Deciding regression / evidence |
+|---|---|
+| R1 complete identity | Persist the complete existing domain.fleet.binding identity before enqueue. Both confirmation and restart reconciliation compare authoritative full rows through the existing binding policy (Fleet._view omits repository, so do not silently compare projected rows). Same ID with changed lane, repository, dependencies or any bound goal field is conflict; a crash after intended and before enqueue cannot adopt a foreign accepted job or unlock successors. Exact response-loss replay still succeeds once. |
+| R2 immutable intent scope | Once selected, project, criterion, dependency item identities, lane and manifest pin are frozen. Re-registration changing any refuses without mutation, for both open and admitted intents. Plan pause and new unrelated items remain supported. |
+| R3 independent progress | Reconcile ambiguous intents before replay but never discard them. Use deterministic bounded per-item deferral/fair selection so a permanently unavailable item does not starve an eligible independent item. Deferred intent remains observable/recoverable after restart; dependents stay blocked. Test repeated unavailable ticks and recovery without duplicate admission. |
+| R4 truthful returned failure | Exercise the real backlog_ticker -> runner path when the adapter RETURNS unavailable (not merely raises). Preserve reason/error type and durable last failure, distinguish idle/paused/refused/conflict/unavailable, emit failure/recovery transitions once, and continue unrelated admission. Redact raw exception text. |
+| Project binding | Call the existing Portfolio.bind owner for the exact project/criterion, outside any held store transaction. Durable pending linkage resumes after response loss or binding outage. Do not report fully linked success or unlock successors from incomplete/conflicting linkage. Never rewrite an existing different binding. This does not accept a project criterion. |
+| Structured observation | Wire the actual existing observer port for admission/refusal/conflict/unavailability/recovery with fixed allow-listed identifiers and development/operations categories. Persist bounded status, no raw manifests/credentials, no idle-poll flood. Show collected events and secret-canary absence in focused tests; configuration or standard logger output alone is insufficient. |
+
+Additional allowed files for this correction: domain/observation.py (additive event allow-list),
+application/observations.py and adapters/observation_spool.py ONLY if existing observation wiring
+requires a narrow compatibility change; resources/observation.schema.json ONLY if required by that
+additive event contract. Existing portfolio and Fleet binding policy must be reused, not weakened.
+All original Batch 1 files remain allowed. Extend the two existing focused test files.
+
+One implementation batch and one consolidated independent verdict. Run the same focused tests and
+Ruff. Label injected faults versus actual PG; owner performs isolated PG and affected-neighbor checks.
+No full-suite/model/live-operation calls in tests. No merge, deployment, authority, budget or global
+settings changes. Keep runtime opt-in. Remaining batches 2-4 and whole-task DONE above are unchanged.
