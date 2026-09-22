@@ -1,0 +1,30 @@
+{
+  "schema": "urn:zeus:fleet-backlog:1",
+  "plan_id": "autonomous-operation-001",
+  "repository": "fe13e1ed40e5b9ba64a3fa8bed3a3f46d1bf486634b337fca46a5f5179622c63",
+  "enabled": true,
+  "items": [
+    {
+      "id": "backlog-monitor",
+      "project_id": "research-improvement",
+      "criterion_id": "verified-loop",
+      "lane": "harness",
+      "manifest_path": "docs/zeus/operations/autonomous-operation-001/backlog-monitor.operation.json",
+      "manifest_revision": "b74a30815dc5c8b4c4c1cdb4e50dafa8f84251ea",
+      "manifest_sha256": "7c9229644171af4d62e5335ea3b079d27355f82341dcd1346a4949a02195ce6a",
+      "priority": 10,
+      "dependencies": []
+    },
+    {
+      "id": "monitor-correction",
+      "project_id": "research-improvement",
+      "criterion_id": "verified-loop",
+      "lane": "harness",
+      "manifest_path": "docs/zeus/operations/autonomous-operation-001/monitor-correction.operation.json",
+      "manifest_revision": "8272f30025c70ce1b72f18ba20c3a99e4821d709",
+      "manifest_sha256": "0d7e5704907512d1b73a6071a91192eb3c1df7b965ab9e2ac504e9b0ba70b720",
+      "priority": 20,
+      "dependencies": []
+    }
+  ]
+}

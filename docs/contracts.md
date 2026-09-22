@@ -1474,10 +1474,19 @@ and emits the fixed structured transitions `development.backlog_item_admitted`,
 `operations.backlog_item_refused`, `operations.backlog_unavailable` and
 `operations.backlog_recovered` (INV-OBSERVATION-001 allow-lists: plan, item, lane and job
 identifiers, fixed codes and counts only; a run of outages emits one entry, not one per poll).
-`fleet backlog status` projects `urn:zeus:fleet-backlog-status:1` from store reads only - plan and
+`fleet backlog status` and `sources.fleet_backlog` in the monitor snapshot project
+`urn:zeus:fleet-backlog-status:1` from store reads only - plan and
 item identities, the pin, item state, the authoritative Fleet `job_status`, the linkage state,
-fixed reason codes, attempts, deferrals and a bounded `next_action` - never manifests, objectives,
-goal text, absolute paths, schemas, DSNs or raw errors. A selection receipt is never a completion,
+fixed reason codes, attempts, deferrals, counts and a bounded `next_action` - never manifests, objectives,
+goal text, absolute paths, schemas, DSNs or raw errors. That monitor source is an additive envelope
+beside `database`, `docker`, `redis`, `fleet`, `research_programs`, `portfolio` and `observations`,
+collected by the same read-only collector and served unchanged by the existing `/api/status` route:
+it ticks nothing, so it selects, reads no Git, enqueues, binds and writes nothing, every registered
+plan's `blocked`/`plan_paused`/`fleet_paused`/`backlog_exhausted`/`conflict` outcome stays distinct,
+no registered plan is the `registered: false` shape with an empty `plans` list, and a store failure
+makes that one envelope `unavailable` with the exception TYPE while every other source is collected
+as before. A collected status is a selection projection only: never evidence of active work,
+acceptance, release or host activation. A selection receipt is never a completion,
 review, release or deployment receipt: an `accepted` item means an accepted lane operation only, a
 linked item means a recorded goal binding only, and missing evidence stays unknown.
 Two owner-only commands exist beside `authorize-budget` for storage recovery (storage-recovery-001);
