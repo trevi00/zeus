@@ -25,6 +25,19 @@
       "manifest_sha256": "0d7e5704907512d1b73a6071a91192eb3c1df7b965ab9e2ac504e9b0ba70b720",
       "priority": 20,
       "dependencies": []
+    },
+    {
+      "id": "host-delivery",
+      "project_id": "research-improvement",
+      "criterion_id": "verified-loop",
+      "lane": "harness",
+      "manifest_path": "docs/zeus/operations/autonomous-operation-001/host-delivery.operation.json",
+      "manifest_revision": "64290c918c95bba9cbd1ed8c2ede1f1e04cea746",
+      "manifest_sha256": "195ada54fc5704cdb9db43a464516cdd150462918ab3015a9eac10d26e8f9f15",
+      "priority": 30,
+      "dependencies": [
+        "monitor-correction"
+      ]
     }
   ]
 }
