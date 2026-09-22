@@ -1,0 +1,48 @@
+{
+  "schema": "urn:zeus:operation:1",
+  "id": "autonomous-operation-001-host-delivery",
+  "base_revision": "0ac369470d61c0e2b8a767ff4fe810153341321c",
+  "goal": {
+    "path": "docs/zeus/operations/autonomous-operation-001/SPEC.md",
+    "sha256": "b539747ba9e726d485c82caa63da8462995a93582664b283738c3379916a64b3",
+    "criterion": "Complete durable reviewed release to actual host consumption with qualified CI, fencing, restart reconciliation and verified rollback",
+    "rationale": "Replace the demonstrated one-shot continuation with a reusable owner-controlled delivery component; retain existing Releases and ReleaseQueue authority."
+  },
+  "budget": {
+    "mode": "subscription",
+    "total": 192,
+    "per_host": 192
+  },
+  "claude": {
+    "model": "claude-opus-5",
+    "timeout_seconds": 3600,
+    "max_budget_usd": 2
+  },
+  "plan": {
+    "objective": "Implement the complete Durable delivery controller: consolidated Batch 3 implementation section of bound SPEC. Read existing release authority, queue fencing, GitWorkspace, deployment and process ownership end to end first; reuse them. Deliver real adapters and CLI, not only abstract ports. Preserve all review/policy/ticket gates, exact CI/head and consumed host identity. Keep production opt-in; no live GitHub writes, task changes or models during worker execution. Use actual disposable child processes/files for local boundaries and label injected faults. Run ONLY the two exact commands in that section; no full suite. Legacy tests claims contain exact successful commands only; failures/native unavailable checks in summary. Independent Codex reviews the fixed whole path/matrix once, separating critical reachable findings from recommendations. No merge/deploy by worker.",
+    "allowed_paths": [
+      "src/codex_harness/domain/host_delivery.py",
+      "src/codex_harness/application/host_delivery.py",
+      "src/codex_harness/adapters/host_delivery.py",
+      "src/codex_harness/application/release_queue.py",
+      "src/codex_harness/application/releases.py",
+      "src/codex_harness/adapters/deployment.py",
+      "src/codex_harness/adapters/git.py",
+      "src/codex_harness/adapters/background_service.py",
+      "src/codex_harness/adapters/service_entry.py",
+      "src/codex_harness/domain/observation.py",
+      "src/codex_harness/adapters/monitoring.py",
+      "src/codex_harness/cli.py",
+      "tests/test_host_delivery.py",
+      "tests/test_host_delivery_cli.py",
+      "docs/contracts.md",
+      "docs/zeus/operations/autonomous-operation-001/HOST-DELIVERY.md"
+    ],
+    "acceptance_criteria": [
+      "Existing Releases approval and ReleaseQueue fencing authorize the exact plan; no accepted-row shortcut or new approval authority.",
+      "Bounded durable tick continues publish/CI/merge/drain/switch/consumption across restart and response loss without duplicate effects or nested transactions.",
+      "Concrete host adapters, canary/verified rollback and read-only monitoring/structured logs meet the fixed acceptance matrix; actual live qualification remains owner work.",
+      "Scoped tests and Ruff pass; preserve all failed and unexecuted evidence honestly."
+    ]
+  }
+}
