@@ -44,6 +44,8 @@ from codex_harness.domain.fleet import (
     validate_grant,
     validate_job_manifest,
 )
+from codex_harness.domain.fleet_backlog import runner_state
+from codex_harness.domain.fleet_backlog import safe_error_type as safe_backlog_error_type
 from codex_harness.domain.model import require, utcnow
 from codex_harness.domain.operation import manifest_digest
 from codex_harness.domain.usage_policy import MODES, SUBSCRIPTION, accounting_mode
@@ -383,7 +385,8 @@ class FleetRunner:
         self.fleet.registered()  # refuse early when unregistered; ceilings are re-read per scan
         summary = {"admitted": [], "finalized": [], "finalize_failures": [], "blocked": {}, "stopped": False,
                    "reconciliation": {"state": "disabled", "error_type": None},
-                   "backlog": {"state": "disabled", "outcome": None, "error_type": None}}
+                   "backlog": {"state": "disabled", "outcome": None, "reason_code": None,
+                               "error_type": None}}
         while True:
             self._reconcile(summary)
             self._backlog(summary)
@@ -428,26 +431,41 @@ class FleetRunner:
         begun, so a stopping runner admits no new work.
 
         It selects at most one already approved item and hands it to the ordinary `Fleet.enqueue`;
-        it never admits, launches, finalizes, retries or merges anything. Its failure is recorded
-        as a fixed `unavailable` state with the exception TYPE only, unrelated admission and
-        finalization keep running, and only a state TRANSITION is logged - repeated identical
-        failures and repeated idle polls stay silent.
+        it never admits, launches, finalizes, retries or merges anything.
+
+        A tick that RETURNS a failure is a failure of that tick, exactly like one that raises: an
+        `unavailable`, `refused`, `conflict` or `plan_unregistered` answer is reported with its own
+        fixed reason code and exception TYPE, never as `ok` merely because the call returned. Idle,
+        blocked and both pauses are healthy. Unrelated admission and finalization keep running, and
+        only a state TRANSITION is logged - repeated identical failures, repeated idle polls, raw
+        exception text and raw messages never reach a log line.
         """
         if self.backlog is None or self.stopping:
             return
         try:
             result = self.backlog()
         except Exception as exc:
-            summary["backlog"] = {"state": "unavailable", "outcome": None, "error_type": type(exc).__name__}
-            if self.backlog_state != "unavailable":
-                LOGGER.warning("approved backlog unavailable; fleet admission continues")
-            self.backlog_state = "unavailable"
+            self._backlog_state(summary, "unavailable", None, None, type(exc).__name__)
         else:
-            outcome = result.get("outcome") if isinstance(result, dict) else None
-            summary["backlog"] = {"state": "ok", "outcome": outcome, "error_type": None}
-            if self.backlog_state == "unavailable":
-                LOGGER.info("approved backlog recovered")
-            self.backlog_state = "ok"
+            row = result if isinstance(result, dict) else {}
+            outcome = row.get("outcome")
+            self._backlog_state(summary, runner_state(outcome), outcome, row.get("reason_code"),
+                                row.get("error_type"))
+
+    def _backlog_state(self, summary: dict, state: str, outcome, reason_code, error_type) -> None:
+        summary["backlog"] = {"state": state, "outcome": outcome,
+                              "reason_code": safe_code(reason_code) if reason_code is not None else None,
+                              "error_type": safe_backlog_error_type(error_type)}
+        if state == self.backlog_state:
+            return
+        if state == "unavailable":
+            LOGGER.warning("approved backlog unavailable; fleet admission continues")
+        elif state != "ok":
+            LOGGER.warning("approved backlog %s; fleet admission continues reason=%s", state,
+                           summary["backlog"]["reason_code"])
+        elif self.backlog_state is not None:
+            LOGGER.info("approved backlog recovered")
+        self.backlog_state = state
 
     def _admit(self, summary: dict) -> bool:
         progressed = False

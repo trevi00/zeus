@@ -93,9 +93,17 @@ def run(service, args) -> dict:
     config = fleet.registered()["config"]
     host = settings()
     # Opt-in only (INV-FLEET-BACKLOG-001): without the host plan setting the runner keeps its exact
-    # previous behaviour and never selects work of its own.
+    # previous behaviour, never selects work of its own and builds no observer.
     plan_id = configured_plan(host)
-    backlog_tick = None if plan_id is None else backlog_ticker(service.store, config, plan_id)
+    backlog_tick = None
+    if plan_id is not None:
+        from codex_harness.bootstrap import build_observer
+
+        # The durable process observer of the configured continuous loop: the backlog's fixed
+        # admission, refusal, conflict, unavailability and recovery transitions are collected as
+        # structured observations, not only as log lines.
+        backlog_tick = backlog_ticker(service.store, config, plan_id,
+                                      observer=build_observer(service.store, "fleet-backlog"))
     # The bounded portfolio pass is wired here, in the adapter: the runner keeps no portfolio
     # dependency and a reconciliation outage never blocks admission (operating-portfolio-001).
     runner = FleetRunner(fleet, LaneLauncher(config, host), reconcile=portfolio_reconciler(service.store),

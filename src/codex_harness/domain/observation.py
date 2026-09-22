@@ -155,6 +155,23 @@ REGISTRY = {
                                         "corrected_subsystems": _NI, "remaining_targets": _NI,
                                         "checkpoint_generation": _NI, "attempts": _I,
                                         "notice_id": _N, "notice_published": _NB, "error_type": _N},
+    # INV-FLEET-BACKLOG-001: what one approved-backlog tick did. Plan, item, lane and job
+    # IDENTIFIERS, fixed codes and counts only - never a manifest, an objective, goal text, a
+    # repository path, a schema or an exception message. `linked` says whether the admitted job's
+    # portfolio binding actually exists: an admission is never reported as a linked goal, a review
+    # verdict, a merge, a release or a deployment.
+    "development.backlog_item_admitted": {"plan_id": _S, "item_id": _S, "lane": _S, "job_id": _S,
+                                          "cached": _B, "linked": _B},
+    # A definite refusal or a conflict of ONE item. `outcome` is the tick's own fixed outcome and
+    # `item_state` its durable state; the reason travels as the event's `reason_code`.
+    "operations.backlog_item_refused": {"plan_id": _S, "item_id": _S, "lane": _S, "outcome": _S,
+                                        "item_state": _S, "attempts": _I, "job_id": _N},
+    # The pinned input or the binding owner was unreadable: the exception TYPE only, never its
+    # message. Emitted on entering unavailability and on exhausting the bounded deferral, not on
+    # every poll in between, and never as an empty success.
+    "operations.backlog_unavailable": {"plan_id": _S, "item_id": _S, "lane": _S, "error_type": _N,
+                                       "deferrals": _I, "exhausted": _B},
+    "operations.backlog_recovered": {"plan_id": _S, "item_id": _S, "lane": _S, "deferrals": _I},
     "operations.alert_suppressed": {"kind": _S, "suppressed": _I},
     "operations.alert_pending": {"kind": _S, "channel": _N, "pending": _I},
     "operations.autonomous_stage": {"run_id": _S, "stage": _S, "state": _S},

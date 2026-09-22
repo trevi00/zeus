@@ -1410,43 +1410,76 @@ criterion the packaged portfolio definitions do not define (`goal_unknown`) are 
 anything is stored. Items are owner-approved goals, never executable commands, and no manifest
 schema is duplicated: the existing operation validator and `bind_goal` decide the manifest and its
 goal. Registration is idempotent for the identical plan at the identical pin; a later registration
-may add items and flip `enabled`, but an item that already carries a durable intent may not move
-(`item_pin_changed`) or disappear (`item_removed`), and the repository identity may not change
-(`repository_conflict`) - a refused registration writes nothing.
+may add items and flip `enabled`, but an item that already carries a durable intent - open or
+already admitted - may not move and may not disappear (`item_removed`), and the repository identity
+may not change (`repository_conflict`) - a refused registration writes nothing. The frozen scope of
+a selected item is its lane and manifest pin (`item_pin_changed`) AND its project, criterion and
+declared dependency item ids (`item_scope_changed`): the goal an item was selected under cannot be
+swapped after the fact, for an open intent or for an accepted job.
 
-One tick is three short store transactions with every external read strictly between them, because
+One tick is a few short store transactions with every external read strictly between them, because
 `PostgresStore.transaction` takes `pg_advisory_xact_lock` per transaction and a nested call would
 block until `lock_timeout`: (1) read plan, intents, `fleet_jobs` and `fleet_control` in ONE
 transaction, settle open intents against the jobs that may already exist, and write the durable
-intent for the chosen item; (2) read and validate the pinned manifest and bind its goal OUTSIDE
-every transaction, then record the exact job identity on the intent; (3) call the unchanged
-idempotent `Fleet.enqueue` (its own transaction) and confirm. The job id is the operation id, so a
-replay after a lost response reconciles the already created job instead of creating a second one;
-an equal job id whose frozen manifest digest or bound goal differs is `conflict`
-(`binding_conflict`, `job_binding_conflict`, `intent_identity_conflict`) for the owner and never
-evidence that the enqueue succeeded, and the already queued job is never edited. Selection is
-deterministic: open durable intents first (an interrupted enqueue is completed before new work is
-admitted), then dependency-satisfied pending items by `priority` then by stable id; a dependency is
-satisfied only by an `accepted` Fleet job, and a blocked, failed, conflicted or unknown item blocks
-its own dependents only. Two distinct definite refusals of one item block that item
-(`attempts_exhausted`) and hand it to the owner: no infinite retry, and other eligible items keep
-moving. `selected`, `enqueued`, `backlog_exhausted`, `blocked`, `plan_paused`, `fleet_paused`,
-`unavailable` (input unreadable: the exception TYPE only, not an attempt and never an empty
-success), `plan_unregistered`, `refused` and `conflict` are distinct recorded outcomes; the last
-four exit nonzero. An idle poll writes no row and moves no timestamp.
+intent for the chosen item; (2) read and validate the pinned manifest, bind its goal and name the
+lane repository identity OUTSIDE every transaction, then record the exact job identity on the
+intent; (3) call the unchanged idempotent `Fleet.enqueue` (its own transaction) and confirm against
+the durable job row; (4) call the unchanged owner `Portfolio.bind` (its own transaction) for the
+item's project and criterion and record the linkage. The job id is the operation id, so a replay
+after a lost response reconciles the already created job instead of creating a second one. Identity
+is the COMPLETE `domain.fleet.binding` of the AUTHORITATIVE row - lane, repository, frozen manifest
+digest, predeclared dependencies and every bound goal field - recorded before the enqueue and
+compared field for field; the `Fleet._view` projection omits `repository` and is never compared as
+if it were an identity, and an intent that carries no recorded binding reconciles nothing. An equal
+job id under any other binding is `conflict` (`binding_conflict`, `job_binding_conflict`,
+`intent_identity_conflict`) for the owner and never evidence that the enqueue succeeded, so a crash
+between the intent and the enqueue can neither adopt a foreign accepted job nor unlock its
+successors, and the already queued job is never edited.
+
+Selection is deterministic: open durable intents first (an interrupted enqueue is completed before
+new work is admitted), then admitted items whose portfolio linkage is still pending, then
+dependency-satisfied pending items by `priority` then by stable id. A dependency is satisfied only
+by an `accepted` AND linked Fleet job (`dependency_unlinked` otherwise), and a blocked, failed,
+conflicted or unknown item blocks its own dependents only. Two distinct definite refusals of one
+item block that item (`attempts_exhausted`) and hand it to the owner. A repeatedly unavailable
+input or binding owner is NOT an attempt: that item is deferred for a bounded doubling number of
+ticks (`deferred_*` while it waits), keeps its durable intent, stays observable and recoverable
+across a restart, and lets every independent eligible item keep moving; after `MAX_DEFERRALS`
+consecutive outages it is blocked for the owner with its last reason and exception TYPE preserved.
+A deferred item's countdown is a durable transition, not an idle poll. `selected`, `enqueued`,
+`backlog_exhausted`, `blocked`, `plan_paused`, `fleet_paused`, `unavailable` (input or binding
+owner unreadable: the exception TYPE only, never an empty success), `plan_unregistered`, `refused`
+and `conflict` are distinct recorded outcomes; the last four exit nonzero. An idle poll writes no
+row and moves no timestamp.
+
+The portfolio stays the authority over goals and over its own bindings: a tick calls the existing
+`Portfolio.bind` for the exact project and criterion, outside every held transaction, and records
+`link_state` pending / linked / conflict / blocked. An admitted job whose binding does not yet
+exist is unfinished work (`complete_binding`, counted as `unlinked`): it is never reported as a
+linked success and never unlocks a dependent item, a binding outage leaves it durably pending and a
+later tick completes it, and a job already bound to a DIFFERENT criterion is `portfolio_binding_conflict`
+and is never rewritten. A binding is not an acceptance; no criterion completion is written here.
 
 Fleet pause, concurrency, lane and path exclusion, the machine ledger, the frozen manifest,
-dispatch, finalization, the portfolio's authority over goals (read-only here: no binding and no
-acceptance is written) and the subscription accounting are all unchanged. `FleetRunner(...,
-backlog=...)` is the optional per-tick connection, disabled by default and skipped once a graceful
-stop begins, wired by the adapter only when the host setting `ZEUS_FLEET_BACKLOG_PLAN` names a
-plan; its failure is a fixed `unavailable` state with the exception type, logged once per
-transition, and unrelated admission and finalization keep running. `fleet backlog status` projects
-`urn:zeus:fleet-backlog-status:1` from store reads only - plan and item identities, the pin, item
-state, the authoritative Fleet `job_status`, fixed reason codes, attempts and a bounded
-`next_action` - never manifests, objectives, goal text, absolute paths, schemas, DSNs or raw
-errors. A selection receipt is never a completion, review, release or deployment receipt: an
-`accepted` item means an accepted lane operation only, and missing evidence stays unknown.
+dispatch, finalization, the portfolio's authority over goals and bindings and the subscription
+accounting are all unchanged. `FleetRunner(..., backlog=...)` is the optional per-tick connection,
+disabled by default and skipped once a graceful stop begins, wired by the adapter only when the
+host setting `ZEUS_FLEET_BACKLOG_PLAN` names a plan. A tick that RETURNS a failure is a failure of
+that tick, exactly like one that raises: `unavailable` reads as `unavailable` and `refused`,
+`conflict` and `plan_unregistered` read as `refused`, each with the tick's own fixed
+`reason_code` and exception TYPE in the run summary; idle, blocked and both pauses are `ok`. Only a
+state TRANSITION is logged (one line, never raw exception text or a message), and unrelated
+admission and finalization keep running. The same opt-in wiring builds the durable process observer
+and emits the fixed structured transitions `development.backlog_item_admitted`,
+`operations.backlog_item_refused`, `operations.backlog_unavailable` and
+`operations.backlog_recovered` (INV-OBSERVATION-001 allow-lists: plan, item, lane and job
+identifiers, fixed codes and counts only; a run of outages emits one entry, not one per poll).
+`fleet backlog status` projects `urn:zeus:fleet-backlog-status:1` from store reads only - plan and
+item identities, the pin, item state, the authoritative Fleet `job_status`, the linkage state,
+fixed reason codes, attempts, deferrals and a bounded `next_action` - never manifests, objectives,
+goal text, absolute paths, schemas, DSNs or raw errors. A selection receipt is never a completion,
+review, release or deployment receipt: an `accepted` item means an accepted lane operation only, a
+linked item means a recorded goal binding only, and missing evidence stays unknown.
 
 ## INV-OPERATION-FINALIZATION-001
 

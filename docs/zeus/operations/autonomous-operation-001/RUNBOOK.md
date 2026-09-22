@@ -12,8 +12,9 @@ It is **not** self-direction, not release readiness and not host activation. Con
 | Reads an owner-approved plan from Git at an explicit commit | Write, generate or edit a plan |
 | Selects one eligible dependency-satisfied item per tick | Invent successors, retries or merges |
 | Writes a durable intent, then calls the unchanged `Fleet.enqueue` | Add a second executor, scheduler or launcher |
-| Reports accepted / failed / unknown / pending distinctly | Treat `accepted` as merged, released or deployed |
-| Validates the item's project and criterion against the portfolio | Write a portfolio binding or acceptance |
+| Reports accepted / failed / unknown / pending / unlinked distinctly | Treat `accepted` as merged, released or deployed |
+| Validates the item's project and criterion against the portfolio | Write a portfolio acceptance or criterion verdict |
+| Records the job's goal binding through the owner's `Portfolio.bind` | Rewrite a binding that already names another criterion |
 
 `accepted` in every projection here means **one accepted lane operation**. Merge, release, canary
 and the actual running worker identity are batch 3 and remain owner evidence.
@@ -54,7 +55,9 @@ zeus fleet backlog status [--plan plan-1]
 
 `register` is idempotent for the identical plan at the identical pin. A later registration may add
 items and flip `enabled`; it may not move or remove an item that already has a durable intent, and
-a refused registration writes nothing.
+a refused registration writes nothing. The frozen scope of a selected item is its lane and manifest
+pin (`item_pin_changed`) plus its project, criterion and dependency ids (`item_scope_changed`) -
+open intents and already accepted jobs alike.
 
 `tick` admits at most one item. Exit 0 for `selected`, `enqueued`, `backlog_exhausted`, `blocked`,
 `plan_paused` and `fleet_paused`; exit 1 for `plan_unregistered`, `unavailable`, `refused` and
@@ -69,12 +72,46 @@ a chat or an operator invoking `tick`, set the host setting before `zeus fleet r
 ZEUS_FLEET_BACKLOG_PLAN=plan-1
 ```
 
-`fleet_cli.run` then wires `FleetRunner(..., backlog=backlog_ticker(...))`. The tick runs once per
-runner cycle, before admission, in its own transactions. A graceful stop skips it, so a stopping
-runner admits no new work. A backlog outage records `{"state": "unavailable", "error_type": ...}`
-in the run summary, logs once per transition and never blocks unrelated admission.
+`fleet_cli.run` then wires `FleetRunner(..., backlog=backlog_ticker(...))` together with the durable
+process observer. The tick runs once per runner cycle, before admission, in its own transactions. A
+graceful stop skips it, so a stopping runner admits no new work.
 
-Unset (or empty) means disabled: nothing selects work by itself.
+A tick that RETURNS a failure is reported as a failure, not as `ok`:
+
+| Returned outcome | Runner `state` |
+|---|---|
+| `enqueued`, `selected`, `backlog_exhausted`, `blocked`, `plan_paused`, `fleet_paused` | `ok` |
+| `unavailable` (or a raised exception) | `unavailable` |
+| `refused`, `conflict`, `plan_unregistered` | `refused` |
+
+The summary carries `{"state", "outcome", "reason_code", "error_type"}`; only a state transition is
+logged (one line, never raw exception text), and unrelated admission and finalization keep running.
+
+Unset (or empty) means disabled: nothing selects work by itself and no observer is built.
+
+## Structured observations
+
+The configured loop emits fixed transitions through the existing observation port (identifiers,
+codes and counts only - no manifest, objective, goal text, path or exception message):
+
+| Event | When |
+|---|---|
+| `development.backlog_item_admitted` | one item became one Fleet job (`cached`, `linked`) |
+| `operations.backlog_item_refused` | a definite refusal or a conflict of one item |
+| `operations.backlog_unavailable` | entering unavailability and exhausting the deferral, not every poll |
+| `operations.backlog_recovered` | a previously deferred item was admitted or linked |
+
+## Portfolio linkage of an admitted job
+
+After the enqueue, the tick calls the owner's `Portfolio.bind` for the item's project and criterion,
+outside every store transaction. `link_state` is `pending` until that binding exists.
+
+- A pending or refused linkage is **not** a success: it never unlocks a dependent item
+  (`dependency_unlinked`) and shows as `complete_binding` with a `counts.unlinked` entry.
+- A binding outage leaves the linkage durably pending; a later tick completes it without admitting
+  anything twice.
+- A job already bound to ANOTHER criterion is `portfolio_binding_conflict` and is never rewritten.
+- A binding is not an acceptance. The owner's `portfolio accept` remains the only criterion verdict.
 
 ## Outcomes and next actions
 
@@ -85,9 +122,9 @@ Unset (or empty) means disabled: nothing selects work by itself.
 | `blocked` | items exist but wait on dependencies, conflicts or exhausted attempts | owner review |
 | `plan_paused` | the committed plan has `enabled: false` | commit an enabled plan and re-register |
 | `fleet_paused` | `zeus fleet pause` is in effect | `zeus fleet resume` |
-| `unavailable` | the pinned input could not be read (exception type only) | fix Git/store availability |
+| `unavailable` | the pinned input or the binding owner could not be read (exception type only) | fix Git/store availability; the item is deferred, not lost |
 | `refused` | a definite refusal of this item, attempt counted | owner review after two attempts |
-| `conflict` | the job id exists under another binding | owner review; nothing is overwritten |
+| `conflict` | the job id exists under another binding, or the job is bound to another criterion | owner review; nothing is overwritten |
 | `plan_unregistered` | no plan under that id | `backlog register` |
 
 ## Operating notes
@@ -98,10 +135,19 @@ Unset (or empty) means disabled: nothing selects work by itself.
 - **Response loss and restart.** The durable intent exists before the enqueue. A restart between
   intent and enqueue resumes that intent before any new item is selected; a restart between enqueue
   and acknowledgement reconciles the already created job. One item is one job, always.
+- **One complete identity.** The intent records the whole `domain.fleet.binding` - lane, repository,
+  manifest digest, dependencies and every bound goal field - BEFORE the enqueue, and reconciliation
+  compares it against the authoritative `fleet_jobs` row (never the `Fleet` projection, which omits
+  `repository`). A same-id job with any other binding is a conflict; a crash before the enqueue can
+  never adopt a foreign accepted job or unlock its successors.
 - **Recovery exhaustion.** Two distinct definite refusals of one item block that item and report it;
-  they never retry forever and never weaken a check. Transient unavailability is not an attempt.
+  they never retry forever and never weaken a check. Transient unavailability is not an attempt: the
+  item is deferred for a bounded doubling number of ticks (1, 2, 4, 8 ...) so an independent eligible
+  item keeps being admitted, its intent stays observable and recoverable after a restart, its
+  dependents stay blocked, and after five consecutive outages it is blocked for owner review with the
+  last reason and exception TYPE preserved.
 - **Idle polls write nothing.** Repeated ticks over an exhausted or blocked plan change no row and
-  move no timestamp.
+  move no timestamp. A deferred item's countdown is a durable transition, not an idle poll.
 - **Correcting a blocked or conflicted item.** An item that already has a durable intent cannot be
   re-pinned or removed - that is what keeps a queued manifest from being edited underneath an
   admitted job. The owner's route is a NEW item id with the corrected pin, committed and
@@ -121,12 +167,10 @@ whole-loop completion.
 
 ## Known boundaries handed to the owner
 
-- Dedicated observation event types are not registered: `domain/observation.py` is outside this
-  batch's allowed paths, so transitions are recorded on the `zeus.fleet.backlog` and
-  `zeus.fleet.runner` loggers with identities and fixed codes only, plus the durable
-  `urn:zeus:fleet-backlog-status:1` row. Registering `development.*`/`operations.*` types for these
-  transitions is a follow-up that needs the observation contract.
-- Portfolio bindings are not written by a tick. The item's project and criterion are validated
-  read-only, so the owner's `Portfolio.bind` remains the only writer of a job-to-criterion binding.
+- The one-shot `zeus fleet backlog tick` command records the durable status and the
+  `zeus.fleet.backlog` log line, but builds no observer: the structured events above are emitted by
+  the configured continuous runner, which owns a durable process observer.
+- `Portfolio.bind` is called by a tick; `Portfolio.accept` is not. A recorded binding says which
+  criterion the work was admitted under, never that the criterion is met.
 - Runtime activation on the current Windows host, the real PG check and the whole-loop acceptance
   in `SPEC.md` remain owner work.
