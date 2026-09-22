@@ -1,0 +1,16 @@
+{
+  "schema": "urn:zeus:procedure-registry:1",
+  "version": 1,
+  "entries": [
+    {
+      "id": "research-live-recommendation",
+      "source_kind": "council",
+      "repository": "bdc7d4fff6a0d952958ca9b6be39926e60ed4269482e47788c5a1fb69cebb388",
+      "allowed_paths": [
+        "docs/zeus/operations/research-program-001/LIVE-RECOMMENDATION.md"
+      ],
+      "acceptance_criteria_sha256": "01ad1cc5a8b6572cb3fddfdce4befcaa40726d13d4179d1f079f2e1f084a1326",
+      "remediation": "existing_owner_review"
+    }
+  ]
+}
