@@ -358,14 +358,20 @@ class FleetRunner:
     Children are bounded by `max_parallel`, waited for outside transactions, and every claimed
     job this process launched is finalized by it even if another runner races."""
 
-    def __init__(self, fleet: Fleet, launcher, sleep=time.sleep, interval: float = 5.0, reconcile=None):
+    def __init__(self, fleet: Fleet, launcher, sleep=time.sleep, interval: float = 5.0, reconcile=None,
+                 backlog=None):
         self.fleet, self.launcher, self.sleep, self.interval = fleet, launcher, sleep, interval
         # Optional bounded read/group pass run once per tick BEFORE admission, in its own
         # transaction (the adapter supplies it, so this layer keeps no portfolio dependency).
         self.reconcile = reconcile
+        # Optional bounded approved-backlog tick (INV-FLEET-BACKLOG-001), also supplied by the
+        # adapter and also in its own transactions. None - the default - keeps this runner's exact
+        # previous behaviour: it invents no successor, no retry and no merge.
+        self.backlog = backlog
         # Last logged reconciliation state, so repeated identical failures stay silent and only a
         # real transition is written.
         self.reconciliation_state = None
+        self.backlog_state = None
         self.children: dict[str, tuple[dict, object]] = {}
         self.stopping = False
 
@@ -376,9 +382,11 @@ class FleetRunner:
     def run(self, once: bool) -> dict:
         self.fleet.registered()  # refuse early when unregistered; ceilings are re-read per scan
         summary = {"admitted": [], "finalized": [], "finalize_failures": [], "blocked": {}, "stopped": False,
-                   "reconciliation": {"state": "disabled", "error_type": None}}
+                   "reconciliation": {"state": "disabled", "error_type": None},
+                   "backlog": {"state": "disabled", "outcome": None, "error_type": None}}
         while True:
             self._reconcile(summary)
+            self._backlog(summary)
             progressed = self._admit(summary)
             progressed = self._reap(summary) or progressed
             if self.children or progressed:
@@ -413,6 +421,33 @@ class FleetRunner:
             if self.reconciliation_state == "unavailable":
                 LOGGER.info("portfolio reconciliation recovered")
             self.reconciliation_state = "ok"
+
+    def _backlog(self, summary: dict) -> None:
+        """One bounded approved-backlog tick per cycle, before admission and outside every other
+        transaction. Disabled unless the adapter wired one, and skipped once a graceful stop has
+        begun, so a stopping runner admits no new work.
+
+        It selects at most one already approved item and hands it to the ordinary `Fleet.enqueue`;
+        it never admits, launches, finalizes, retries or merges anything. Its failure is recorded
+        as a fixed `unavailable` state with the exception TYPE only, unrelated admission and
+        finalization keep running, and only a state TRANSITION is logged - repeated identical
+        failures and repeated idle polls stay silent.
+        """
+        if self.backlog is None or self.stopping:
+            return
+        try:
+            result = self.backlog()
+        except Exception as exc:
+            summary["backlog"] = {"state": "unavailable", "outcome": None, "error_type": type(exc).__name__}
+            if self.backlog_state != "unavailable":
+                LOGGER.warning("approved backlog unavailable; fleet admission continues")
+            self.backlog_state = "unavailable"
+        else:
+            outcome = result.get("outcome") if isinstance(result, dict) else None
+            summary["backlog"] = {"state": "ok", "outcome": outcome, "error_type": None}
+            if self.backlog_state == "unavailable":
+                LOGGER.info("approved backlog recovered")
+            self.backlog_state = "ok"
 
     def _admit(self, summary: dict) -> bool:
         progressed = False

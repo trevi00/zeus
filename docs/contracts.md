@@ -1394,6 +1394,60 @@ or generated work. `sources.fleet` in the monitor snapshot (an additive source b
 the persisted queued reasons), call counts, effective `budget`, last 100 jobs with `truncated`,
 `active_job` from all reserving jobs; never manifests, paths, schemas, DSNs or raw output.
 
+## INV-FLEET-BACKLOG-001
+
+`zeus fleet backlog register|tick|status` admits ALREADY APPROVED work into the existing
+INV-FLEET-001 admission and adds no executor, scheduler process, launcher, research model, repair,
+retry, merge or deployment. An approved backlog is one owner-authored document
+(`urn:zeus:fleet-backlog:1`: `plan_id`, `repository` as the 64-hex identity of the lane repository,
+`enabled`, 1..64 items) read through the existing `GitSource` at an explicit 40-hex commit, never
+from the working tree. Each item carries an id, an EXISTING portfolio project and criterion id, a
+lane, `manifest_path` (safe relative, `.json`) + `manifest_revision` + `manifest_sha256`, a
+`priority` 0..10000 and up to 8 item dependencies. Unknown or missing fields, duplicate ids, a self
+dependency, a dependency on an undefined item, a cycle, a malformed pin, an unknown lane, a lane
+whose repository is not the plan's repository identity (`repository_foreign`) and a project or
+criterion the packaged portfolio definitions do not define (`goal_unknown`) are all refused before
+anything is stored. Items are owner-approved goals, never executable commands, and no manifest
+schema is duplicated: the existing operation validator and `bind_goal` decide the manifest and its
+goal. Registration is idempotent for the identical plan at the identical pin; a later registration
+may add items and flip `enabled`, but an item that already carries a durable intent may not move
+(`item_pin_changed`) or disappear (`item_removed`), and the repository identity may not change
+(`repository_conflict`) - a refused registration writes nothing.
+
+One tick is three short store transactions with every external read strictly between them, because
+`PostgresStore.transaction` takes `pg_advisory_xact_lock` per transaction and a nested call would
+block until `lock_timeout`: (1) read plan, intents, `fleet_jobs` and `fleet_control` in ONE
+transaction, settle open intents against the jobs that may already exist, and write the durable
+intent for the chosen item; (2) read and validate the pinned manifest and bind its goal OUTSIDE
+every transaction, then record the exact job identity on the intent; (3) call the unchanged
+idempotent `Fleet.enqueue` (its own transaction) and confirm. The job id is the operation id, so a
+replay after a lost response reconciles the already created job instead of creating a second one;
+an equal job id whose frozen manifest digest or bound goal differs is `conflict`
+(`binding_conflict`, `job_binding_conflict`, `intent_identity_conflict`) for the owner and never
+evidence that the enqueue succeeded, and the already queued job is never edited. Selection is
+deterministic: open durable intents first (an interrupted enqueue is completed before new work is
+admitted), then dependency-satisfied pending items by `priority` then by stable id; a dependency is
+satisfied only by an `accepted` Fleet job, and a blocked, failed, conflicted or unknown item blocks
+its own dependents only. Two distinct definite refusals of one item block that item
+(`attempts_exhausted`) and hand it to the owner: no infinite retry, and other eligible items keep
+moving. `selected`, `enqueued`, `backlog_exhausted`, `blocked`, `plan_paused`, `fleet_paused`,
+`unavailable` (input unreadable: the exception TYPE only, not an attempt and never an empty
+success), `plan_unregistered`, `refused` and `conflict` are distinct recorded outcomes; the last
+four exit nonzero. An idle poll writes no row and moves no timestamp.
+
+Fleet pause, concurrency, lane and path exclusion, the machine ledger, the frozen manifest,
+dispatch, finalization, the portfolio's authority over goals (read-only here: no binding and no
+acceptance is written) and the subscription accounting are all unchanged. `FleetRunner(...,
+backlog=...)` is the optional per-tick connection, disabled by default and skipped once a graceful
+stop begins, wired by the adapter only when the host setting `ZEUS_FLEET_BACKLOG_PLAN` names a
+plan; its failure is a fixed `unavailable` state with the exception type, logged once per
+transition, and unrelated admission and finalization keep running. `fleet backlog status` projects
+`urn:zeus:fleet-backlog-status:1` from store reads only - plan and item identities, the pin, item
+state, the authoritative Fleet `job_status`, fixed reason codes, attempts and a bounded
+`next_action` - never manifests, objectives, goal text, absolute paths, schemas, DSNs or raw
+errors. A selection receipt is never a completion, review, release or deployment receipt: an
+`accepted` item means an accepted lane operation only, and missing evidence stays unknown.
+
 ## INV-OPERATION-FINALIZATION-001
 
 A terminal bounded operation (INV-OPERATION-001: accepted, rejected, failed, unknown, exhausted)
