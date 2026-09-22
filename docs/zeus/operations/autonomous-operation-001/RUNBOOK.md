@@ -252,7 +252,8 @@ calls the SAME read-only `FleetBacklog.status()` the `zeus fleet backlog status`
   Fleet job exists, `accepted` means an accepted lane operation, `linked` means a recorded goal
   binding. It is never evidence of active work, review, release or host activation.
 
-Checks executed for this item, on Linux:
+Checks executed for this item, on Linux (candidate `b7f2c16aba00050104ed7fc939380b367f6c3ebf`,
+preserved and NOT accepted - see the correction section below):
 
 ```
 python -m pytest tests/test_monitoring.py -q -p no:cacheprovider
@@ -269,13 +270,48 @@ assertions), so these tests detect the previous behaviour rather than passing ei
 was restored and the run repeated at 23 passed. The control ran in this checkout because the file
 tools here are confined to it; it left no other change.
 
-**One neighbour test outside this item's allowed paths still fails and is handed to the owner:**
+**That scoped run did not cover the changed interface's neighbour, and the item was refused.**
 `tests/test_monitoring_observations.py::test_collect_adds_observations_only_with_runtime_and_keeps_other_sources`
-asserts the exact set of collector sources (line 161) and now sees the additional `fleet_backlog`
-name; it needs that name added to the expected set. The full suite additionally reports failures
-this environment cannot run (`tests/test_output_schema.py` needs `git show` in a checkout this
-container refuses for ownership, and 51 ticket/goal-progress errors come from a missing
-`ssh-keygen`); none of them touch the collector.
+asserts the exact set of collector sources and saw the additional `fleet_backlog` name, so it
+failed; the file was outside that item's allowed paths. The same run also reported four command
+claims beyond the two scoped commands: those whole-suite and historical-Git results are preserved
+as diagnostics only and are NOT evidence that anything passed. On replay the whole suite timed out
+at 300 s and the historical-Git tests (`tests/test_output_schema.py`) failed because the verifier
+snapshot is not a Git repository. Whole CI remains the host owner's gate.
+
+## Monitor evidence-gate correction (2026-09-23)
+
+The first automatically selected job failed `evidence_gate_refused` before independent lead review.
+Its candidate is preserved as history and is not accepted; the failed item and its pin stay. This
+correction is a new owner-approved item, not a re-opened monitor review, and it changes NO
+production code: `adapters/monitoring.py` and `adapters/monitoring_web.py` are byte-unchanged here.
+
+The single material finding was the changed interface's neighbour assertion. `collect` gained the
+`fleet_backlog` source, and `test_collect_adds_observations_only_with_runtime_and_keeps_other_sources`
+asserts the EXACT source set, so it read the new name as unexpected. The expected set now carries
+`fleet_backlog`; the test additionally asserts that the unregistered backlog is the honest `ok`
+envelope with `registered: false`, and that `fleet_backlog` still reports `ok` in the same
+collection where the `observations` source is injected to fail - one failed source hides no
+neighbour.
+
+Checks executed for this correction, on Linux, in this checkout:
+
+```
+python -m pytest tests/test_monitoring.py tests/test_monitoring_observations.py -q -p no:cacheprovider
+python -m ruff check . --no-cache
+```
+
+Before the test change the same pytest command reported 1 failed / 29 passed, the failure being
+exactly the source-set assertion above. After it: 30 passed, no skips. Ruff passed.
+
+Discriminating control: with the one `'fleet_backlog'` entry deleted from `collect`, the corrected
+neighbour test failed again (the expected name now missing from the collected set), so the updated
+assertion detects the absence rather than passing either way. The collector line was restored
+verbatim and the scoped run repeated at 30 passed. The control ran in this checkout because the
+file tools here are confined to it; it left no other change.
+
+Not run here, by this operation's explicit scope: the whole suite, the historical-Git tests, the
+real-PostgreSQL cases and CI. They are the host owner's gate, and nothing above claims them.
 
 ## Known boundaries handed to the owner
 
