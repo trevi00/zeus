@@ -1,5 +1,23 @@
 # PostgreSQL-first retirement of disposable Codex sessions
 
+## Owner evidence triage — 2026-09-22
+
+Candidate 56520f999dda89647e1c34bccfcb04a8121a7147 stopped at evidence_gate_refused,
+inspection 4099e6665a6c1371962e12e74087bcad15946239fc8911b72c74caaada4da60c.
+Direct PG inspection shows the specified focused pytest command passed twice (177.364/178.100s),
+and the extra same-command -rf variant passed twice (178.265/179.752s). The additional full-suite
+claim then timed out after the remaining 167.247s; regression subset and Ruff were not checked
+because aggregate replay budget was exhausted. This is evidence-contract scope drift and budget
+exhaustion, not proof that the feature is correct or that its implementation caused the full-suite
+failure. Skipped PG tests still do not establish actual PostgreSQL behavior. No independent reviewer
+call ran and no production deletion occurred. Preserve all original claims and failed output.
+
+Next feature batch after priority recovery: inspect worker report and full-suite output for material
+actual failures; preserve already passed focused evidence; supply only the original declared checks
+to the bounded evidence path without rewriting the historic receipt or raising global budgets.
+Any implementation issue from the fixed matrix belongs in one consolidated correction. Owner real
+PG retention/restoration and exact installed-provider canary remain required before activation.
+
 ## Outcome and authority (2026-09-22)
 
 The user authorizes permanent destruction of finished one-shot Zeus sessions ONLY after full
