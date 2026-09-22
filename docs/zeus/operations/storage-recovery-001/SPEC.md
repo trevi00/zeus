@@ -139,6 +139,50 @@ and broader absorption/model-transfer deliveries. No unattended completion claim
 
 ## Recovery/relocation implementation handoff
 
+### Actual owner cutover observations — 2026-09-22
+
+COMPLETED AT 14:05 KST: both harness/interface registry repository and runtime paths now point to C.
+Manifest verified all 13,516 lane artifact files with actual filesystem ownership and hashes. Real
+PG relocation receipt 29ea811c794cf1aea54a15f2c8bd662cf0202264b66232cbb620172653d279f5; new config
+8e6668003de242b4e3bb62a77ed95d657a8f8f8c918945890d2c51da0066f261. Same application owner API and
+in-transaction expected config/job gates used, external reread uses pinned pre-transaction inputs;
+identical replay cached without external reads. No direct SQL mutation. Raw request, preflight and
+receipt stored as live-relocation-*.json. Initial slash spelling request failed validation before
+write; preserved separately and corrected to native Windows paths.
+
+Fleet scheduled owner now pins clean detached runtime-recovery-001 at accepted ea8a8339; previous
+owner preserved as fleet-owner.before-recovery.pyw. Service restarted and Fleet.resume committed
+paused=false after verifying zero queued/reserving jobs. Resume does not retry the failed old job,
+call any model or certify the whole autonomous workflow. Remaining Audit/Desk paths, accepted code
+publication/CI, CLI nested-lock correction, preserved feedback successor, staging/retirement and
+other feature deliveries remain separate residuals. D originals were not deleted.
+
+Candidate ea8a8339 accepted independently; owner Windows junction and actual Linux case-distinct
+link reproductions both now refuse. Receipt correction-003/owner-link-verification.json. The Fleet
+scheduled task was stopped and absence of its Python owner/CLI processes checked before live writes.
+
+Actual PostgreSQL exposed an adapter integration defect absent from MemoryStore tests: CLI observe
+calls Fleet.registered(), including during the application's in-transaction reread. PostgresStore
+opens another connection and acquires the same advisory lock, timing out. The first recovery rolled
+back. Do not weaken locks or pretend CLI acceptance covers PG. Both CLI callbacks have this pattern.
+Required follow-up: resolve immutable expected registry/job inputs outside the callback while keeping
+receipt-first replay; recheck current expected config/job membership using the existing transaction.
+Exercise actual PG CLI first-call and identical replay, no production mutation in regression tests.
+
+Owner used the SAME Fleet.reconcile_interrupted application API with the exact expected-config
+lane pinned outside the callback; its normal in-transaction config/status/owner CAS, live external
+proof reread and immutable receipt remained enforced. No direct SQL writes or fabricated proof.
+Actual job self-improvement-reference-001-decision-feedback-correction is now failed/interrupted_unknown,
+reservation cleared; usage remains unknown. Receipt 1367b516fab3f7896e7bc7ef98158500fe5bfc347c2509812334f503377fcce4
+in PG and live-recovery-receipt.json. Identical replay returned cached receipt with an observer that
+would raise if called. Existing run/container/source evidence and five interrupted edits preserved.
+
+A paused one-shot Fleet CLI run actually exited successfully into cutover-lifecycle.jsonl after the
+old service stopped. This is a real new idle run, not an invented exit for the old abruptly stopped
+run. Admission remains paused; no model or retry was launched. Relocation preflight now checks the
+scoped f2h/f2i artifact manifest and queued Git identities. Further progress belongs in receipts;
+this paragraph does not claim relocation or service redeployment completed.
+
 ### Consolidated correction 3: platform-native physical containment
 
 Candidate 5abd387 preserved previous four correction families and passed 78 focused checks and
