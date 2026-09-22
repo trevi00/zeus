@@ -1480,6 +1480,110 @@ fixed reason codes, attempts, deferrals and a bounded `next_action` - never mani
 goal text, absolute paths, schemas, DSNs or raw errors. A selection receipt is never a completion,
 review, release or deployment receipt: an `accepted` item means an accepted lane operation only, a
 linked item means a recorded goal binding only, and missing evidence stays unknown.
+Two owner-only commands exist beside `authorize-budget` for storage recovery (storage-recovery-001);
+neither calls a model, retries, grants budget, resumes admission, records success or moves a file.
+`fleet reconcile-interrupted --file` settles ONE interrupted job from an explicit
+`urn:zeus:fleet-recovery-evidence:1` document (job, operator, expected status/owner token/lane/
+registered digest, lane operation id with its `operation:<id>` correlation and task id at its
+advanced generation, the owned container run id/name/id, the invocation reservation and the machine
+call slot). The adapter observes that evidence itself (`urn:zeus:fleet-recovery-proof:1`): the lane
+`operations` row that owns the exact correlation (the INV-OPERATION-FINALIZATION-001 ownership
+rule), the task cancelled at that generation with a lease that parses and is not live, the task's
+recorded `execution_progress` worktree, the ONE retained isolation run record of that worktree with
+that exact container name and id, a Docker state of `exited`/`dead`/`created`, a reservation that is
+`settled` or `unsettled_unknown` with no open reservation left for that task, and a `used` machine
+slot. A container name with no recorded task/run binding, an ambiguous or unreadable record, an
+unavailable daemon or a missing slot is a refusal, never an absence, and unknown usage stays
+unknown. The slot id is never taken as its own binding: the slot must be tied to that operation by
+the ledger's own `purpose` (`operation:<id>:<kind>`, written when the slot was taken) or by the lane
+`operations` row's recorded `calls.slots[]`, agreeing on the provider where both exist; a purpose
+naming other work is `machine_slot_foreign` and a slot with neither record is
+`machine_slot_unbound`. The commit needs a paused fleet, the registered digest the evidence names,
+and the job
+still being that exact reservation (status in dispatching/unknown, owner token, lane, operation id);
+the observation is re-read inside that transaction and its identities (everything but its clock)
+must be unchanged. It writes one immutable `fleet_recovery_receipts` row and makes the job terminal
+`failed` with the fixed `interrupted_unknown` reason, clearing that one reservation while manifest,
+goal, dependencies, exit code, call counts and every other record stay byte-for-byte; identical
+evidence replays idempotently and any other evidence for that job is `recovery_conflict`. Both
+owner commands consult that committed receipt FIRST, before any lane, Docker, ledger, journal,
+checkout or copied-file read: an identical replay is answered from the durable receipt and a
+conflicting request for the same identity refuses there, so a settled operation survives the
+removal of what it settled. This is an
+owner-controlled recovery with the worker services stopped, not a distributed atomic transaction,
+and the receipt says so. `fleet relocate --file --journal` moves lane repository and runtime PATHS
+to already-copied targets under `urn:zeus:fleet-relocation:1` (expected registered digest, exact
+`from`->`to` map, verified copy manifest, operator): only those paths may change, every stated source
+must be exactly what is registered, no target may equal or contain a path this fleet already uses,
+the result is re-validated by `validate_config`, and lane id, team, schema, Redis namespace,
+concurrency, budget and provider authority are compared field by field. The adapter proves the
+cutover state instead of trusting an idle flag: the service lifecycle journal
+(INV-SERVICE-DIAGNOSTICS-001) must show the last Fleet CLI run exited (missing, unreadable or still
+open is `runner_state_unknown`/`runner_not_stopped`), every retained isolation run of a moving lane
+must have a container Docker proves is not running, each target must be an existing resolved
+directory (no symlink or junction escape) that is an independent checkout with no borrowed objects
+and the same root-commit identity as its source, each target runtime must be writable, every queued
+job of that lane must have its pinned base commit and goal bytes present in the target, and the copy
+manifest and every destination file must hash to what the request states. A moving lane's runs are
+read from a source that was actually enumerated: a missing runtime root, a missing or unreadable
+`isolated-worker/runs` root and a retained run directory without a record are
+`lane_runtime_unavailable`/`lane_runs_unavailable`/`lane_runs_unreadable`, never zero active runs,
+and only an initialized accessible root that genuinely holds nothing counts as zero; no missing
+source is created here. Every manifest entry must be typed, carry a non-null sha256 and byte
+length, name absolute resolved paths, sit below a target this request moves at the same relative
+path its source sits below the stated source, appear once, and read back to exactly that digest and
+length within that bounded length; a missing destination is `copy_unreadable` rather than a match
+for a null digest, an entry outside the stated moves is `copy_entry_unbound`, and a moving runtime
+with no entry is `copy_manifest_incomplete`, so an unrelated manifest cannot certify a cutover.
+Containment is physical, not lexical: normalized absolute names do not establish where a path
+leads, and `normalize_path`'s casefolded comparison form is scheduling identity, never a filesystem
+rule - on a case-sensitive filesystem it reads the two distinct sibling directories `new/RT` and
+`new/rt` as one. So containment is decided by concrete platform-native `Path` operations on the
+components the request actually spelled: the stated components below each move root are taken with
+this platform's own path rule (`relative_to`, case sensitive on POSIX and case insensitive on
+Windows, nothing lowercased), a name that is not natively below the root it claims is
+`copy_entry_escaped`, every move root and both ends of every entry resolve strictly, the resolved
+path must sit below its own resolved root at exactly those components, and the two sides must state
+the same components. Every stated component below either root is also inspected with `lstat`: a
+symlink, junction or other reparse point anywhere under a move root - intermediate directory or
+leaf, source side or destination side - is `copy_entry_link_refused` and is refused as a redirection
+rather than resolved for ownership credit, and that holds whether or not it leads outside the root
+and even when it points at a contained file, because a redirected child is not the file this request
+moves wherever it points. A root that is itself such a link is `copy_entry_link_refused` too; a path
+that is
+missing, unreadable or looping is `copy_entry_unresolved` (a destination whose directory chain
+resolves but whose file was never written keeps `copy_unreadable`). Global path canonicalization is
+unchanged, so scheduling identity, the admission path exclusion and the relocation rollback
+equivalence keep their existing casefolded comparison. The observation states this as
+`copy_manifest.ownership: resolved_paths`, and the commit refuses a `bound` manifest observation
+without it (`copy_unverified`), so a check that only compared names cannot certify a cutover. This
+is what the filesystem showed when it was read; it does not exclude concurrent OS-level mutation
+afterwards. The commit needs a paused
+fleet with no dispatching or unknown job, compare-and-swap on the registered digest, and the same
+re-read rule; it writes one immutable `fleet_relocations` receipt (prior configuration and digest,
+new configuration and digest, request, observation, repository alias map) and the revised registry
+row in one transaction. Job rows, manifests, goals, operation identities, provenance and artifact
+references are never rewritten, so a job frozen before a move keeps its old repository identity and
+admission resolves both sides through the receipts (`canonical_repositories` folds their edges into
+one equivalence class per repository, answering the class's latest destination;
+`resolve_repository` reads that map) to keep the path exclusion intact after repeated moves and
+after a rollback, where a plain chain walk over A->B->A would answer differently from each side.
+The identical request replays idempotently; another request against the same
+expected digest is `relocation_conflict`. Future jobs use the new paths; no old operation is resumed.
+Because both commits re-read the adapter's observation from INSIDE their own store transaction, that
+observation callback never reads the primary store there: `PostgresStore.transaction` opens its own
+connection and takes advisory lock 734219 per transaction, so a nested primary-store read waits on a
+lock the same call holds and fails with `LockNotAvailable` at `lock_timeout` (the first real owner
+recovery rolled back on exactly that; `MemoryStore`'s reentrant lock hid it). The CLI therefore
+resolves its immutable store inputs once, on the first observation, while the application is still
+outside its transaction - the lane of a recovery, the configuration and job rows of a relocation -
+and reuses them for the re-read, refusing with `config_expected_mismatch` when the registry it reads
+them from is not the digest the request expects, so the observed lanes are the configuration the
+commit compares against. Every external fact is still observed twice (lane schema, Docker daemon,
+service journal, checkouts, copied files) and the queued denominator is still the committing
+transaction's own read of the job rows, so state that changed between the two observations refuses
+before the write; no lock, timeout, compare-and-swap or replay rule is relaxed, and a request the
+committed receipt already answers still reads nothing at all.
 
 ## INV-OPERATION-FINALIZATION-001
 

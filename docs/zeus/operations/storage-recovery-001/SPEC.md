@@ -1,0 +1,405 @@
+# Durable staging and storage recovery
+
+2026-09-21. User authorizes replacing D-dependent work storage with durable staging and promoting
+verified results before temporary-copy cleanup. This supersedes the old D-only placement rule for
+this delivery: use C:/workspaces/zeus; preserve the existing dirty C home repository and D originals.
+Codex owns analysis, design and acceptance; Claude implements. Current Fleet remains paused.
+
+## Outcome and affected path
+
+Resume without depending on the unreliable D device, retaining interrupted work and audit evidence.
+Do not confuse a temporary lifecycle with PostgreSQL TEMP/UNLOGGED or RAM-only storage. Existing
+ledger uses Docker named volume zeus-ticket-ledger-data; Docker's data VHDX is under C:/Users/rudtn/
+AppData/Local/Docker/wsl/disk/docker_data.vhdx. C has approximately 274 GB free. D is My Passport;
+pre-reboot Event153 mapped to that physical disk. Volume Healthy after reboot is not a hardware test.
+
+Git definitions -> durable task/checkpoint staging -> independent execution/evidence review ->
+existing promotion transaction -> durable receipt and retained evidence -> retention-aware temporary
+copy cleanup. application/promotion.py already atomically writes graph and receipt and rejects
+conflicting retries. Reuse it and its caller's evidence gates. FileArtifacts currently resides on
+filesystem; moving metadata to PG cannot preserve files that remain solely on D.
+
+Use ordinary logged staging tables/buckets in the existing PostgreSQL database initially, separately
+namespaced and permission-scoped. A second physical database adds a cross-database commit boundary
+without removing disk dependence. Keep runtime facts/failures separate from verified knowledge.
+Never delete task ledger, invocation accounting, failed attempts or accepted evidence as cache.
+Code remains Git; large artifacts are retained on healthy storage with hashes/references in PG.
+
+Source: PostgreSQL CREATE TABLE documentation, accessed 2026-09-21,
+https://www.postgresql.org/docs/current/sql-createtable.html . TEMP is session-lifetime;
+UNLOGGED is not crash-safe. These semantics support ordinary logged staging, not a claim of measured
+local durability or successful restoration. Docker placement was observed locally, not inferred.
+
+## One delivery batch and state boundaries
+
+1. Establish independent C checkout and ledger backup with digest/archive readability; preserve D.
+2. Inventory exact active runtime, artifact references, interrupted worker checkout, launcher paths
+   and authentication locations. Copy only required owned paths with manifests and hash verification;
+   do not globally replace D strings or migrate unrelated projects. Recreate environment if needed.
+3. Extend existing staging/promotion ownership: run+attempt+generation identity, checkpoints, staged
+   artifact manifest, review binding, promotion receipt, cleanup eligibility and idempotent cleanup.
+   State staged -> verified -> promoted -> cleanup_eligible -> cleaned. Failed/cancelled/unknown
+   work remains recoverable under explicit retention. An executable cleanup must recheck reference
+   ownership and active leases; no worktree shared with active writers may be removed.
+4. Switch approved service paths only after copy verification and interrupted invocation reconciliation.
+   Auth/global configs/machine call ledger stay at home. Preserve rollback paths, no stale model replay.
+5. Verify real controlled restart, promotion and cleanup using disposable records, then resume only
+   reconciled work. Do not require another physical PC reboot or copy all historical bulk evidence
+before unrelated work can progress; still refuse deleting unpreserved originals.
+
+## Acceptance matrix
+
+| Boundary | Required result |
+| --- | --- |
+| Normal | Verified exact staged revision promotes once; receipt survives process restart. |
+| Failed review | No verified-graph promotion or cleanup; diagnostic history retained. |
+| Crash before/after commit | Retry reads durable receipt; no duplicate promotion or premature deletion. |
+| Missing/corrupt artifact | Explicit unavailable/refused, no evidence credit or cleanup. |
+| Concurrency | Lease/version checks prevent cleanup of active or replaced attempts. |
+| Partial copy/storage outage | Source retained, failed paths/digests reported, operation cannot claim complete. |
+| Platforms | Windows native paths and Linux container mount paths validated independently. |
+| Cleanup | Only unreferenced temporary copies; audit/checkpoint policy and recovery targets preserved. |
+| Restore | Archive readability is preliminary; disposable restore plus representative ledger reads required. |
+
+Completion requires deployed C-backed execution/evidence paths, reconciled interrupted job, actual
+staging/promotion/cleanup verification and fresh monitoring. Current preparation is not that completion.
+Unrelated ontology acceptance, PR176 rollout and token routing stay on their existing frames.
+
+## Preparation evidence
+
+Independent C checkout created without Git alternates/hardlinks to D; dirty home checkout preserved.
+Ledger pg_dump custom archive: 16,837,262 bytes, SHA256
+4efcbc1bc071932f9653307c71b52d3ff9292a586bd0de6b0e4b9ce6623a02ff.
+Actual disposable pg_restore completed exit0, catalog found 74 documents tables, disposable drop
+exit0. This establishes archive restoration and catalog presence, not all application invariants.
+Evidence under C:/workspaces/zeus/artifacts/storage-recovery-001/ (backup and restore receipts).
+
+Interrupted worker's actual container-mounted workspace contains five modified tracked files;
+the outer task checkout being clean did not imply no work existed. Preserved those five files,
+binary Git diff, hook evidence and run metadata: 35 files copied to C with source/destination SHA256
+matching. Manifest records base and original paths. No originals deleted, no edits accepted and no
+model re-executed. Full runtime/artifact migration and durable staging implementation remain pending.
+
+## Consolidated delivery ledger — 2026-09-22
+
+User requests recording and resolving the full briefing. This is the single sequencing ledger;
+feature-specific acceptance remains in its original frame. Do not silently equate a queued job,
+accepted candidate, merge or healthy source read with deployed, operating success.
+
+| Order | Delivery | Current state | Completion evidence |
+| --- | --- | --- | --- |
+| 1 | C-backed code, artifacts and service paths | C checkout and backup restored; deployment pending | Verified copy manifest, actual C process paths, fresh collection |
+| 2 | Interrupted decision-feedback reconciliation | Five edits and 35 evidence files preserved | Termination/call settlement and explicit successor ownership |
+| 3 | Service diagnostics PR176 | Merged c4660cf9465cd632a3627ca3a180deced07ce447 | Live lifecycle journal and delivery receipt still required |
+| 4 | Resume decision-feedback correction | Paused, old dispatch retained | Actual resumed bounded work and independent verdict |
+| 5 | Ontology explorer | Candidate; scoped checks passed, other residuals open | Packaged build, PG read-only tests, review/browser/CI/deploy |
+| 6 | Investigation-to-repair ownership | Detection and manual binding only | Owner + successor + review + deployment provenance visible |
+| 7 | Durable staging/promotion/cleanup | Designed, not implemented | Fixed restart/concurrency/retention matrix above |
+| 8 | Parallel local/reference absorption | Partial; semantics coverage incomplete | Source ledger, selected migration, independent acceptance |
+| 9 | Astra-to-Sol task qualification | Designed, not active | Same quality oracle plus total-token measurements and scoped activation |
+
+Immediate bottlenecks are D path dependency, stale interrupted ownership, capability/spec mismatch
+for frontend packaging, and incomplete accepted-to-deployed handoff. No broad historical failure
+closure or blind retries. Code Tutor remains the subsequent product project, not a dependency for
+infrastructure recovery. Physical Samsung acceptance remains deferred. No promise of zero failure.
+
+## Executed recovery batch — 2026-09-22 00:25–00:36 KST
+
+- PR176 merged at c4660cf9465cd632a3627ca3a180deced07ce447 after exact-head CI recheck.
+  C:/workspaces/zeus/worktrees/runtime-176 is the clean detached release checkout.
+- Monitor collect/web scheduled actions now use C-only launcher/code/snapshot paths. Previous action
+  XML retained in artifacts/storage-recovery-001/monitor-services. Fresh snapshot and seven source
+  reads checked after actual restart. This does not migrate all observation producers or lane paths.
+- Fleet owner/launcher/runtime now execute from C; the new PR176 CLI lifecycle journal recorded real
+  start run 728078ed931e4347bf19bd1ca7141b36. Fleet remains paused, no model call. An initial owner
+  script had an extra closing parenthesis, failed before startup, was corrected and restarted; keep
+  this failure distinct from accepted package behavior. Owner delivery recorded in PG with reference
+  sha256:f830a0fd92b815f5d6692a7764161f9b1a097fef4aae0c59793839293c43358c.
+- Copied live/r/artifacts, f2h/artifacts and f2i/artifacts to corresponding C roots: 15,226 files,
+  248,843,723 bytes. Every copied file was SHA256-compared, no original deleted. Full manifest is
+  C:/workspaces/zeus/artifacts/storage-recovery-001/evidence-copy-manifest.json.
+- Verified old container exited255, fenced task92b13b20-f8cb-5bb2-9549-fae70c63a164 through Workflow
+  cancel (generation1->2), and reclaimed its sole reservation through InvocationLedger.reclaim.
+  Usage remains unknown/null; no success fabricated. Machine slot7884c429a6da4ce09e2caea55a4aca3a
+  settled as used/interrupted_unknown with preserved count and recovery evidence; ledger stayed home.
+
+Next material constraint: Fleet.register deliberately refuses all changed configurations, including
+new C lane repository/runtime paths. Historical interrupted Fleet reservation also retains ownership
+even after task cancellation. Existing APIs do not provide an idle relocation/reconciliation
+transaction. Do not rewrite registry rows or replace D with a filesystem alias to disguise this.
+Before new work, specify and implement an owner-only, evidence-bound recovery/relocation path with
+paused admission, exact old config hash, dead process/lease evidence, preserved invocation history,
+verified copied artifacts and rollback receipt. Source repository and pending manifest identities
+must remain pinned; changed runtime identity must never silently resume the old operation. This is
+the current blocking implementation boundary, not missing user permission or a model-call ceiling.
+
+Still pending: lane relocation/Fleet reservation disposition, Audit/Desk and remaining observation
+producer path switches, durable staging cleanup feature, successor worker/review, ontology acceptance,
+and broader absorption/model-transfer deliveries. No unattended completion claim is made.
+
+## Recovery/relocation implementation handoff
+
+### CLI PostgreSQL integration correction — next bounded delivery
+
+Actual first-call reconcile_interrupted failed with psycopg.errors.LockNotAvailable in the owner
+execution on 2026-09-22. Trace: Fleet transaction holds advisory lock 734219 -> reread callback ->
+Fleet.registered -> second PostgresStore connection requests 734219. MemoryStore RLock concealed
+this non-reentrant PG boundary. Relocate callback has the same nested registry/jobs reads. The
+application APIs completed actual recovery/relocation using pinned inputs, unchanged validators,
+normal external reread and in-transaction expected-state checks (receipts above).
+
+Claude implements ONLY the adapter integration repair. Preserve receipt-first replay: do not eagerly
+read absent source/config outside the callback for cached requests. Lazily capture required immutable
+registry/lane/jobs on first observation (outside application commit), reuse these inputs on reread;
+application's current transaction still checks expected config, job identity and queued denominator.
+Trace those guards before choosing this approach; if any required guard is absent, add it to the SAME
+transaction rather than a nested connection. External lane/Docker/copy evidence is still freshly
+read twice. No cached physical proof substitution, no weakening/removal of locks, timeouts or CAS.
+
+Acceptance: both CLI first-call commands commit via real isolated PostgreSQL; identical CLI replay
+requires no external observer; conflicting request refuses; external change between observations
+refuses; expected config and queued-job changes refuse; non-reentrant store regression catches old
+behavior. PG tests use existing isolated_pgstore fixture and label missing env as skipped, never
+claim mock or skipped PG is actual. Owner runs real PG tests before service update. Historical recovery
+and relocation receipts remain intact; no live recovery/migration repeated by worker.
+
+Allowed: adapters/fleet_cli.py, application/fleet.py only if required guard is missing, existing
+tests/test_fleet_recovery.py and tests/test_fleet_relocation.py, new tests/test_fleet_recovery_postgres.py,
+docs/contracts.md and RECOVERY-RELOCATION.md in this folder. Focused command:
+python -m pytest tests/test_fleet_recovery.py tests/test_fleet_relocation.py tests/test_fleet_recovery_postgres.py -q -p no:cacheprovider
+and python -m ruff check . --no-cache. No full-suite claims. Schema/policy/alias/path checks are already
+accepted and out of correction scope. Review one consolidated matrix; do not re-open unrelated scope.
+
+### Actual owner cutover observations — 2026-09-22
+
+COMPLETED AT 14:05 KST: both harness/interface registry repository and runtime paths now point to C.
+Manifest verified all 13,516 lane artifact files with actual filesystem ownership and hashes. Real
+PG relocation receipt 29ea811c794cf1aea54a15f2c8bd662cf0202264b66232cbb620172653d279f5; new config
+8e6668003de242b4e3bb62a77ed95d657a8f8f8c918945890d2c51da0066f261. Same application owner API and
+in-transaction expected config/job gates used, external reread uses pinned pre-transaction inputs;
+identical replay cached without external reads. No direct SQL mutation. Raw request, preflight and
+receipt stored as live-relocation-*.json. Initial slash spelling request failed validation before
+write; preserved separately and corrected to native Windows paths.
+
+Fleet scheduled owner now pins clean detached runtime-recovery-001 at accepted ea8a8339; previous
+owner preserved as fleet-owner.before-recovery.pyw. Service restarted and Fleet.resume committed
+paused=false after verifying zero queued/reserving jobs. Resume does not retry the failed old job,
+call any model or certify the whole autonomous workflow. Remaining Audit/Desk paths, accepted code
+publication/CI, CLI nested-lock correction, preserved feedback successor, staging/retirement and
+other feature deliveries remain separate residuals. D originals were not deleted.
+
+Candidate ea8a8339 accepted independently; owner Windows junction and actual Linux case-distinct
+link reproductions both now refuse. Receipt correction-003/owner-link-verification.json. The Fleet
+scheduled task was stopped and absence of its Python owner/CLI processes checked before live writes.
+
+Actual PostgreSQL exposed an adapter integration defect absent from MemoryStore tests: CLI observe
+calls Fleet.registered(), including during the application's in-transaction reread. PostgresStore
+opens another connection and acquires the same advisory lock, timing out. The first recovery rolled
+back. Do not weaken locks or pretend CLI acceptance covers PG. Both CLI callbacks have this pattern.
+Required follow-up: resolve immutable expected registry/job inputs outside the callback while keeping
+receipt-first replay; recheck current expected config/job membership using the existing transaction.
+Exercise actual PG CLI first-call and identical replay, no production mutation in regression tests.
+
+Owner used the SAME Fleet.reconcile_interrupted application API with the exact expected-config
+lane pinned outside the callback; its normal in-transaction config/status/owner CAS, live external
+proof reread and immutable receipt remained enforced. No direct SQL writes or fabricated proof.
+Actual job self-improvement-reference-001-decision-feedback-correction is now failed/interrupted_unknown,
+reservation cleared; usage remains unknown. Receipt 1367b516fab3f7896e7bc7ef98158500fe5bfc347c2509812334f503377fcce4
+in PG and live-recovery-receipt.json. Identical replay returned cached receipt with an observer that
+would raise if called. Existing run/container/source evidence and five interrupted edits preserved.
+
+A paused one-shot Fleet CLI run actually exited successfully into cutover-lifecycle.jsonl after the
+old service stopped. This is a real new idle run, not an invented exit for the old abruptly stopped
+run. Admission remains paused; no model or retry was launched. Relocation preflight now checks the
+scoped f2h/f2i artifact manifest and queued Git identities. Further progress belongs in receipts;
+this paragraph does not claim relocation or service redeployment completed.
+
+### Consolidated correction 3: platform-native physical containment
+
+Candidate 5abd387 preserved previous four correction families and passed 78 focused checks and
+Ruff; review retained the physical-ownership condition. Owner EXECUTED the reported POSIX case:
+a network-disabled disposable Linux container with actual distinct new/rt and new/RT directories,
+new/rt/artifacts symlinked to new/RT/artifacts, synthetic equal bytes. verify_copy_manifest returned
+bound=true and ownership=resolved_paths although Path.is_relative_to proved escape. No production
+paths changed; container removed. Reproducer and result:
+C:/workspaces/zeus/artifacts/storage-recovery-001/case-repro-001/{repro.py,result.json}.
+
+Reframe same family, do not add another lexical patch: normalize_path/_relative deliberately use
+conservative case folding for scheduling identity, but that is NOT a filesystem ownership rule.
+Keep scheduler identity/rollback behavior unchanged. Physical containment must use concrete native
+Path operations on strict resolved roots/files, never the case-folded comparison. Preserve actual
+relative components when checking source/destination correspondence. Inspect every declared component
+below each source/target move root with lstat and reject symlink/reparse/junction components, not
+merely the leaf/root or links that happen to escape. That enforces the already specified no-child-
+redirection rule also when a link resolves inside the same root. Missing/error is explicit refusal.
+The owner-stopped cutover remains the concurrency contract; hostile concurrent OS mutation is still
+excluded rather than claimed solved by path checks. Existing committed replay still bypasses vanished
+external proof as previously accepted. Do not alter global path canonicalization to fix this adapter.
+
+Single correction batch acceptance delta: actual case-distinct sibling escape on POSIX refuses;
+ordinary mixed-case nested copies pass without lowercasing real path names; both source-side and
+destination-side intermediate links refuse, including links to contained files; existing Windows
+junction scenario and valid-copy controls retain results. Test through manifest/relocation boundary,
+label platform skips and actual vs injected checks. Preserve old CAS, accounting, receipt replay and
+alias-rollback acceptance. Only original focused pytest pair and Ruff in evidence claims, no full
+suite claim or arbitrary larger timeout. Independent review uses this consolidated ownership matrix.
+Owner reruns Windows and Linux reproductions on the accepted candidate before actual deployment.
+
+### Consolidated correction 2: actual filesystem ownership
+
+Candidate 0f787975 passed the two evidence claims (70 focused tests and Ruff), but independent
+review retained one correction-3 issue. Owner reproduced it on Windows with a real directory
+junction and synthetic bytes: new-runtime/artifacts -> old-runtime/artifacts; verify_copy_manifest
+returned verified=1 and bound=true although the destination resolved to the source file. Receipt:
+C:/workspaces/zeus/artifacts/storage-recovery-001/link-repro-001/result.json. No production source
+or destination was changed. Prior four corrected boundaries remain accepted within their scope.
+
+Two-strike reframe of the same copy-ownership family: the earlier fix established lexical names,
+types and digests, but the invalid assumption was that normalized absolute names establish physical
+containment. Competing explanations (content mismatch vs path redirection) are separated by the
+above equal-byte junction reproducer; redirection is confirmed. Python 3.14.7 primary documentation
+read 2026-09-22 https://docs.python.org/3/library/pathlib.html#pathlib.Path.resolve distinguishes
+pure path computation from concrete filesystem resolution. Existing isolated_worker.py already
+checks resolved parents and lstat reparse bits. Reuse the same ownership principle, not a new
+generic filesystem framework. Documentation alone does not prove Windows junction behavior; the
+actual reproducer does.
+
+One narrow batch: resolve existing roots and source/destination entry paths with strict error
+handling, verify each actual path belongs below its respective actual root and maintains the
+declared relative correspondence before counting bytes. Refuse child symlinks/junctions/reparse
+redirections under the move roots rather than following them for ownership credit. Missing,
+unreadable, looping or escaping paths refuse. Keep checks on both source and destination; a
+link in either may substitute unrelated storage. Preserve the existing paused/stopped owner
+cutover model; do not claim exclusion of hostile OS-level concurrent filesystem mutation.
+No new deletion, global path rewrite, budgets or replay semantics changes.
+
+Acceptance delta: actual Windows child junction pointing to source refused; POSIX child symlink
+escape refused; source-side redirection refused; nested ordinary copied file passes; inaccessible
+resolution refuses; identical committed receipt still replays without revisiting removed sources.
+Exercise verify_copy_manifest AND the relocation collection/commit boundary. Real temporary
+filesystem links, labelled platform skips, no fake Path.resolve-only proof. Owner reruns the
+retained Windows reproducer at the accepted candidate before cutover. Preserve 70-test evidence;
+run updated focused pair plus Ruff, keep diagnostic commands out of legacy success claims.
+
+### Consolidated correction 1
+
+Owner inspected candidate 09cf363 and independent review
+sha256:2fd9797de386942aa57b4bbea411b7e1ea4dafa0a91b5c9d8b059bbd450d5f13.
+The following are reachable static code traces, not owner-executed reproductions. Prior 53 focused,
+59 regression, 4 architecture checks and Ruff evidence remain accepted within their scope. Candidate
+is carried into this work branch only to correct it; this is NOT release acceptance or deployment.
+
+One correction batch, unchanged original completion matrix:
+
+1. `_machine_slot` only selects supplied ID and returns status/outcome. Independently bind that slot
+   to the actual operation task invocation using stored operation call-slot association and ledger
+   purpose/provider/model where present, not caller assertions. Legacy incomplete binding refuses.
+   Test unrelated settled slot alongside actual reserved slot and valid interrupted legacy evidence.
+2. `_active_runs` consumes run_records on a missing root as zero. Verify source ownership evidence
+   is readable and directory enumeration succeeded; missing/unavailable is refusal. Distinguish a
+   genuinely empty accessible initialized run root. Do not create a missing source just to pass.
+3. `verify_copy_manifest` credits None==None for missing destination and null digest. Enforce entry
+   types, valid non-null SHA256 and byte lengths, successful bounded file reads, source/destination
+   containment and relative-path correspondence to requested moves. Reject duplicate/unbound or
+   escaped entries; no unrelated manifest can certify the moved runtime. Source unreadability does
+   not erase a previously committed receipt, but first-time verification requires complete proof.
+4. A->B->A aliases form a cycle and resolve differently depending on starting identity. Represent
+   one canonical repository equivalence across repeated moves/rollback using existing immutable
+   relocation receipts; historical jobs and new jobs must share path exclusion. Do not rewrite job
+   manifests. Test A->B->A and A->B->C plus cross-lane dispatch exclusion with old frozen jobs.
+5. Both CLI commands observe external state before returning existing receipts. Validate request
+   identity then consult committed receipt FIRST; identical replay returns exact receipt without
+   touching vanished source/container. Conflicting same-ID requests refuse. Test real CLI adapter
+   path with external observer that would fail if called, not only application supplied-proof replay.
+
+New tests must distinguish pre-fix failure from passing controls, keep faults labelled, and exercise
+the exact owner CLI boundary. Only required focused pytest and Ruff claims go in legacy `tests`;
+diagnostic/unavailable commands stay in summary so unrequested broad suites cannot block the defined
+evidence gate. Owner will exercise actual Windows/Docker/PG cutover after independent acceptance.
+Do not solve unrelated session retirement or change limits/authorization/automatic retries here.
+
+### Status reconciliation — 2026-09-22 08:25 KST
+
+This update supersedes stale current-state cells in the earlier sequencing table; it does not
+change feature acceptance. PR176 is merged AND deployed to the C-backed Fleet CLI, with the live
+journal and PG delivery receipt recorded above. Monitor collect/web and Fleet launcher/code paths
+are on C; registered lane paths and remaining Audit/Desk/observation service migration are pending.
+Backup restore, 15,226 artifact copies and interrupted work preservation are complete within their
+recorded scope. Task fencing and invocation accounting are complete; Fleet reservation recovery is not.
+
+Actual recovery/relocation operation ended lead_rejected; candidate implementation is not accepted
+or deployed. Session-retirement-001 has its own SPEC and candidate
+56520f999dda89647e1c34bccfcb04a8121a7147; its operation ended evidence_gate_refused at 02:30 KST:
+five claims, two checked, one replay_failed, two not_checked. Independent model review did not run.
+No existing Codex sessions have been deleted by this delivery. A failed evidence replay is not yet
+an independently established runtime defect; inspect the recorded command/result before correction.
+
+Live monitoring returns seven source reads ok, and Fleet remains paused. These observations do not
+establish autonomous recovery or complete project coverage. Portfolio acceptance denominators:
+local-absorption 0/3 accepted; sterk-migration 1/3 (project observability); research-improvement 1/3
+(recurrence collection). Thus 2/9 registered high-level criteria are accepted, 7 pending. This is
+NOT an overall implementation percentage, source-semantic coverage percentage or effort estimate.
+
+Next bounded sequence: (1) consolidate and fix recovery/relocation rejection, verify actual idle
+cutover and finish required C service paths; (2) resume preserved feedback correction and verify
+failure->owner->successor->review->delivery linkage; (3) finish PG staging/retention and independently
+validate session retirement before controlled deletion; (4) accept ontology packaging/PG/browser,
+then resume parallel absorption and scoped model qualification. Existing useful source research,
+worker isolation, transport, evidence gates and monitor components are retained. Full local/reference
+absorption, graphical reports, model qualification and Code Tutor product acceptance are not complete.
+
+The immediate bottleneck is accepted-to-operational delivery and recovery ownership, not another
+unbounded reference investigation. Completion is determined by evidence-backed checklist items;
+no overall percentage or calendar promise is inferred from elapsed time or test counts.
+
+One bounded batch, Claude implementation and independent Codex review. Add trusted owner CLI
+`fleet reconcile-interrupted` and `fleet relocate`, sharing existing Fleet store and contracts.
+Neither command calls models, retries, grants budget, resumes admission or records success.
+
+Reconcile accepts an explicit versioned evidence document, expected job owner/config identity and
+operator ID. Adapter verifies exact lane operation/task association from stored assignment/cycle,
+task cancelled with advanced generation, no live lease, exact owned container record and Docker
+inspect stopped state, and matching settled machine invocation slot. Missing/unreadable/ambiguous
+proof refuses. A container name supplied without recorded task/run binding is insufficient. Preserve
+unknown usage and original operation/history. Under paused Fleet and compare-and-swap on current job
+status/owner, record one immutable recovery receipt and terminal interrupted failure, clearing only
+that reservation. Identical receipt replay is idempotent, changed evidence conflicts. Cross-store
+proof is captured with identities and reread directly before commit; document that this is an
+owner-controlled recovery with worker services stopped, not a distributed atomic transaction.
+
+Relocation accepts expected current config hash, exact source->target path map, verified copy
+manifest and operator ID. Only lane repository/runtime paths may change; schema, Redis namespace,
+lane ID/team, concurrency, budgets and provider authority remain unchanged. Require paused Fleet,
+no dispatching/unknown reservations, no running lane executions and the runner stopped for cutover.
+Do not trust a user-supplied idle boolean: adapter inspects available host/runtime ownership facts;
+if the platform cannot establish them, refuse with a bounded reason. Inspect original adapter and
+run records before choosing a supported process check. Keep the contract practical and explicit.
+
+Target repositories must be real independent Git checkouts, include required pinned queued bases
+and goal blobs, and match the source identity. Runtime target must be writable and copied evidence
+hashes verified. Reject symlink/junction escapes, invalid roots, source/target overlap and differing
+destination files. Copying is an owner preparation step; command does not move/delete bulk files.
+Write revised registry and immutable migration receipt in one store transaction with expected-hash
+CAS. Repeating exact migration returns its receipt, conflicting requests refuse. Do not rewrite
+historical manifests, operation identities, provenance paths or artifact content references.
+Future jobs use new paths; old operations are never silently resumed with changed runtime identity.
+
+Acceptance adds source failure/unavailable proof, live container/lease, wrong task/slot, duplicate and
+concurrent reconciliation, non-idle relocation, stale config, missing queued commit, changed goal,
+corrupt copied artifact, target path escape, restart receipt replay and no provider invocation.
+Use actual temporary Git/files for filesystem tests and controlled labelled faults for unreachable
+Docker/PG. Windows/POSIX capability differences explicit. Existing failed operation is not marked
+accepted. No background reaper, schema reset, force flags or direct operator SQL mutation.
+
+Allowed paths: domain/fleet.py, application/fleet.py, adapters/fleet_cli.py, new
+adapters/fleet_recovery.py and domain/fleet_recovery.py if needed, focused
+tests/test_fleet_recovery.py, tests/test_fleet_relocation.py, docs/contracts.md, and this task folder.
+Exact worker checks: python -m pytest tests/test_fleet_recovery.py tests/test_fleet_relocation.py -q -p no:cacheprovider
+and python -m ruff check . --no-cache. Full-suite/real host cutover belongs to owner/CI. Legacy tests
+answer lists only successful executed focused commands; failures/unrun checks go in summary.
+
+Bootstrap exception: because the old Fleet paths cannot yet be changed by its API, this one repair
+operation uses existing `zeus operate run` from C with an existing isolated lane schema and C runtime.
+It does not replace registered Fleet configuration or resume it. Original interrupted task is fenced
+and call slots accounted before bootstrap. No second dispatcher, raw Claude invocation or bypass of
+isolation/evidence/independent review. Record bootstrap identity and result separately from Fleet jobs.

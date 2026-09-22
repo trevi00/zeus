@@ -123,3 +123,30 @@ preflight over common-prompt growth. Report accepted-outcome rate, inappropriate
 unnecessary refusal findings, recurrence, manual intervention and cost per completed objective.
 Do not optimize throughput alone or claim failure-free judgment. This procedure is a specification;
 a live recorder, evaluator and automatic policy promotion require separate verified implementation.
+
+### Harness-mediated model transfer and token efficiency
+
+User direction, 2026-09-21: turn previously accepted Astra procedures into scoped skills, scripts,
+evidence selectors and executable acceptance checks so Sol can perform qualified task families.
+Reuse existing context owners and SDD transfer records; INV-MODEL-001 remains authoritative.
+Two comparable executions suggest an extraction candidate, not automatic model qualification.
+
+Bind qualification to task family, scope, model, contract, prompt/skill, toolchain and evaluator
+versions. Retain accepted Astra baselines and evaluate Sol on separate held-out cases, including
+material rejection and unavailable-evidence cases. Independent acceptance must precede activation.
+The model's confidence, a matching answer or a narrow successful pilot cannot authorize routing.
+Version drift or an out-of-scope task requires renewed qualification or the existing Astra route.
+Keep Claude implementation ownership and Codex acceptance authority unchanged.
+
+Extract deterministic work into scripts first. Supply focused context by immutable reference;
+avoid repeated full-repository reads and duplicated instructions. Do not truncate required evidence
+to meet an efficiency target. Record provider-reported input/output/cache usage separately, with
+unknown distinct from zero. Compare total usage per accepted objective, including failed attempts,
+reviews, escalation and qualification overhead, alongside critical misses, rework and completion.
+Subscription usage is not a fabricated dollar cost, and a smaller model is not proof of fewer tokens.
+
+After scoped qualification, use executable checks and a predeclared independent sampling policy;
+do not require a full Astra rerun of every routine Sol result. Novel architecture, materially changed
+boundaries and authority decisions still follow their assigned owner. Escalation must preserve
+evidence and side-effect ownership rather than blindly rerun an uncertain operation. Activate or
+roll back a versioned qualification through the existing review path; never self-certify it.

@@ -239,3 +239,33 @@ bytes reproducibly. Cover inherited Git normalization explicitly without changin
 This is a narrow test portability correction, not a reopened runtime review. Claude may change only
 tests/test_fleet_backlog_cli.py and RUNBOOK.md. Repeat focused tests/Ruff; owner repeats the real PG
 and affected-neighbor gate. Previous raw failure log: backlog-pg.log in the task artifact directory.
+
+## Integration progress / 2026-09-22
+
+Portability candidate 680b40f7 passed independent review and owner Windows disposable-PostgreSQL
+checks: 82 passed, no skips; Ruff passed. Receipt backlog-owner-final.json identifies the candidate
+and database removal. PR 179 contains that exact candidate and is in CI; no operating activation.
+
+Next integration branch integrate/autonomous-runtime-001 merges accepted operating e2266e8 with
+680b40f7. Codex resolved routine merge conflicts only: retain both Fleet import sets, both CLI
+command branches, and both historical contract/spec sections. No new recovery or admission policy.
+Acceptance is preservation of backlog, interrupted reconciliation, relocation and current main
+decision-feedback contracts together; affected suites, actual PG and CI precede any host switch.
+This integration prepares Batch 3 and does not bypass the remaining Research/Recovery bridge or
+whole-loop canary. Existing service remains pinned to e2266e8 until those activation conditions.
+
+The merged runtime neighbor check produced 179 passed, 11 skipped, 2 failures; Ruff passed.
+Both failures are in preserved test_fleet_relocation.py fixtures: runtime_uncovered expected
+copy_manifest_incomplete but gets copy_corrupt for GOAL.md; committed-relocation replay never
+reaches its assertion because shutil.rmtree refuses a read-only Git object on Windows.
+These findings do not block PR 179, which does not include these recovery files.
+Claude next bounded task: correct ONLY these existing fixture portability boundaries, checking
+working/committed GOAL bytes before attributing the first cause. Keep all runtime rejection and
+recovery policies unchanged. Canonical bytes must be actual committed bytes; cleanup must remain
+within the test-owned repository (or move it to a test-owned sibling to prove the original path
+absent), and preserve the original replay assertion. Add focused regression where helpful, no
+global Git changes, no real model calls, no production cleanup. Allowed: tests/test_fleet_relocation.py
+and RUNBOOK.md here. Verify test_fleet_relocation.py, test_fleet_recovery.py, test_fleet_backlog.py,
+test_fleet_backlog_cli.py plus Ruff; independent reviewer covers these two fixture changes only.
+Owner repeats actual PG/combined tests afterwards. Raw runtime-integration-tests.log preserves
+the first failures and skipped paths; its default OS temp path is evidence, not new storage policy.
