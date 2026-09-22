@@ -38,3 +38,23 @@ The useful item adds the missing read-only backlog source to monitoring; impleme
 were still pending when this receipt was recorded. The plan has one item, so backlog_exhausted means
 no unadmitted item remains, not that the dispatched job finished. This proves first-item selection
 and admission, not automatic successor selection, self-generated work, recovery or release.
+
+## Accepted monitor correction and bounded delivery continuation
+
+Correction e91deeb1 passed independent review after the first evidence-gate refusal. Owner integrated
+it at e51c1e20875363dd95ebac1d802e222aad43a71f and ran monitoring/observation tests on Windows:
+30 passed, Ruff passed. PR181 contains this integrated head. Initial actual /api/status inspection
+showed no fleet_backlog source: the running monitor collector still uses runtime-176.
+
+To avoid another idle handoff, an owner-authored one-shot continuation runs under
+artifacts/autonomous-operation-001/monitor-cutover/finish.py. It is pinned to PR181, head e51c1e2,
+and workflow run 35794784993. It waits at most 45 minutes, requires all seven named mandatory jobs
+and workflow success on that head, checks a clean pinned runtime and unchanged launcher, then
+merges that PR and switches ONLY the monitor collector. A fresh /api/status must show the actual
+backlog plan. Failed activation restores the saved launcher and restarts the old collector;
+changed/ambiguous ownership stops rather than overwriting. No automatic test reruns or model calls.
+The web service and Fleet service are unchanged. Logs/results remain in that cutover directory.
+
+At startup the helper recorded waiting_ci (2026-09-22T22:56:51Z). Syntax and pinned CI identity were
+checked; activation/rollback are not yet exercised or claimed successful. This authorized one-shot
+administrative continuation is not the reusable release controller required by the whole frame.
