@@ -1,0 +1,36 @@
+{
+  "schema": "urn:zeus:operation:1",
+  "id": "autonomous-operation-001-backlog-monitor",
+  "base_revision": "88bb95be49c9a295299b16784f10ce73856b266d",
+  "goal": {
+    "path": "docs/zeus/operations/autonomous-operation-001/SPEC.md",
+    "sha256": "3aaccd456e1bf6a6353e1ceb5b6204050a012e667c508a0e38ae09738f8f4c63",
+    "criterion": "Complete the autonomous operating loop; batch1 closes approved backlog selection and durable Fleet admission",
+    "rationale": "Reuse existing Fleet and portfolio owners; select goal-bound eligible successors without manual enqueue while preserving independent acceptance and release boundaries"
+  },
+  "budget": {
+    "mode": "subscription",
+    "total": 192,
+    "per_host": 192
+  },
+  "claude": {
+    "model": "claude-opus-5",
+    "timeout_seconds": 3600,
+    "max_budget_usd": 2
+  },
+  "plan": {
+    "objective": "Implement ONLY First operating backlog item: observable selection in the bound SPEC. Add a read-only fleet_backlog collector source reusing FleetBacklog.status and existing independent envelopes. Verify snapshot through existing web JSON route, unchanged store, one-source failure isolation, missing versus unavailable states and no raw secrets. No scheduler/UI/provider/deploy changes. Run python -m pytest tests/test_monitoring.py -q -p no:cacheprovider and python -m ruff check . --no-cache only as success claims. Independent review scoped to this whole path and documented acceptance. Report skips and injected faults explicitly.",
+    "allowed_paths": [
+      "src/codex_harness/adapters/monitoring.py",
+      "src/codex_harness/adapters/monitoring_web.py",
+      "tests/test_monitoring.py",
+      "docs/contracts.md",
+      "docs/zeus/operations/autonomous-operation-001/RUNBOOK.md"
+    ],
+    "acceptance_criteria": [
+      "Read-only collector and existing web JSON expose authoritative backlog progress without modifying the store.",
+      "Unknown/unregistered/paused/exhausted and unavailable remain distinct, failure is safely reported and other sources continue.",
+      "Scoped tests and Ruff pass; no new authority, scheduler, UI or runtime deployment."
+    ]
+  }
+}
