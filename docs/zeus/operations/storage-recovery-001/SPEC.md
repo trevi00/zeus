@@ -139,6 +139,37 @@ and broader absorption/model-transfer deliveries. No unattended completion claim
 
 ## Recovery/relocation implementation handoff
 
+### Consolidated correction 3: platform-native physical containment
+
+Candidate 5abd387 preserved previous four correction families and passed 78 focused checks and
+Ruff; review retained the physical-ownership condition. Owner EXECUTED the reported POSIX case:
+a network-disabled disposable Linux container with actual distinct new/rt and new/RT directories,
+new/rt/artifacts symlinked to new/RT/artifacts, synthetic equal bytes. verify_copy_manifest returned
+bound=true and ownership=resolved_paths although Path.is_relative_to proved escape. No production
+paths changed; container removed. Reproducer and result:
+C:/workspaces/zeus/artifacts/storage-recovery-001/case-repro-001/{repro.py,result.json}.
+
+Reframe same family, do not add another lexical patch: normalize_path/_relative deliberately use
+conservative case folding for scheduling identity, but that is NOT a filesystem ownership rule.
+Keep scheduler identity/rollback behavior unchanged. Physical containment must use concrete native
+Path operations on strict resolved roots/files, never the case-folded comparison. Preserve actual
+relative components when checking source/destination correspondence. Inspect every declared component
+below each source/target move root with lstat and reject symlink/reparse/junction components, not
+merely the leaf/root or links that happen to escape. That enforces the already specified no-child-
+redirection rule also when a link resolves inside the same root. Missing/error is explicit refusal.
+The owner-stopped cutover remains the concurrency contract; hostile concurrent OS mutation is still
+excluded rather than claimed solved by path checks. Existing committed replay still bypasses vanished
+external proof as previously accepted. Do not alter global path canonicalization to fix this adapter.
+
+Single correction batch acceptance delta: actual case-distinct sibling escape on POSIX refuses;
+ordinary mixed-case nested copies pass without lowercasing real path names; both source-side and
+destination-side intermediate links refuse, including links to contained files; existing Windows
+junction scenario and valid-copy controls retain results. Test through manifest/relocation boundary,
+label platform skips and actual vs injected checks. Preserve old CAS, accounting, receipt replay and
+alias-rollback acceptance. Only original focused pytest pair and Ruff in evidence claims, no full
+suite claim or arbitrary larger timeout. Independent review uses this consolidated ownership matrix.
+Owner reruns Windows and Linux reproductions on the accepted candidate before actual deployment.
+
 ### Consolidated correction 2: actual filesystem ownership
 
 Candidate 0f787975 passed the two evidence claims (70 focused tests and Ruff), but independent
