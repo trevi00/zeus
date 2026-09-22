@@ -199,3 +199,30 @@ One implementation batch and one consolidated independent verdict. Run the same 
 Ruff. Label injected faults versus actual PG; owner performs isolated PG and affected-neighbor checks.
 No full-suite/model/live-operation calls in tests. No merge, deployment, authority, budget or global
 settings changes. Keep runtime opt-in. Remaining batches 2-4 and whole-task DONE above are unchanged.
+
+## Batch 3 host bridge trace (owner design, not part of Batch 1 implementation)
+
+Inspected current host launch files and candidate code on 2026-09-22. Facts:
+`fleet-services/fleet-owner.pyw` imports runtime-pg-cli-001 and passes that same CodeRoot to
+launch-fleet.ps1; the launcher sets PYTHONPATH and starts fleet-entry.py. ProcessLauncher creates
+lane processes from the host environment. isolated_worker reads the immutable worker image from
+ZEUS_WORKER_IMAGE/HARNESS_WORKER_IMAGE; profile evidence has its own digest. ReleaseRunner instead
+builds a candidate image, runs a Codex file canary, and updates deployment/active and images.
+No inspected path connects that active pointer to the current Windows CodeRoot or Claude image.
+Therefore an active release row alone cannot establish current-host activation.
+
+Bridge design: reuse Releases approval/CAS and ReleaseQueue ownership, with a host-specific adapter
+that records the whole target tuple (host revision, worker image ID, profile digest, previous tuple,
+incumbent policy identity). Persist intent before switching; the stable owner drains active lane
+children without killing unconfirmed effects, switches the versioned runtime descriptor, and starts
+the service once. A new process must report its consumed tuple before activation is acknowledged.
+After response loss, inspect owner/process and consumed identity before another start or switch.
+Canary must exercise the actual Claude worker path, not substitute the legacy Codex file canary.
+Preserve e2266e8 recovery/CLI changes when composing the candidate runtime. Unknown process or image
+identity is a reconciliation exception; rollback restores the prior full tuple, not merely PG state.
+
+Remaining decision check before the implementation handoff: identify the existing owner lock/drain
+and descriptor APIs and specify the exact atomic switch/restart receipt contract. Do not enable
+legacy supervisor or change scheduled tasks while the current correction is executing. The host
+fleet-entry logging filter currently admits only portfolio reconciliation messages, reinforcing why
+Batch 1 needs real structured observation wiring rather than another ordinary log line.
