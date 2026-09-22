@@ -1450,13 +1450,25 @@ length within that bounded length; a missing destination is `copy_unreadable` ra
 for a null digest, an entry outside the stated moves is `copy_entry_unbound`, and a moving runtime
 with no entry is `copy_manifest_incomplete`, so an unrelated manifest cannot certify a cutover.
 Containment is physical, not lexical: normalized absolute names do not establish where a path
-leads, so each move root and both ends of every entry are resolved concretely and the resolved path
-must sit below its own resolved root at exactly that relative path. A symlink, junction or other
-reparse redirection below either root - which reads back the source's own bytes under a
-contained-looking destination name - is `copy_entry_escaped` and is refused rather than followed for
-ownership credit; a root that is itself such a link is `copy_entry_link_refused`; a path that is
+leads, and `normalize_path`'s casefolded comparison form is scheduling identity, never a filesystem
+rule - on a case-sensitive filesystem it reads the two distinct sibling directories `new/RT` and
+`new/rt` as one. So containment is decided by concrete platform-native `Path` operations on the
+components the request actually spelled: the stated components below each move root are taken with
+this platform's own path rule (`relative_to`, case sensitive on POSIX and case insensitive on
+Windows, nothing lowercased), a name that is not natively below the root it claims is
+`copy_entry_escaped`, every move root and both ends of every entry resolve strictly, the resolved
+path must sit below its own resolved root at exactly those components, and the two sides must state
+the same components. Every stated component below either root is also inspected with `lstat`: a
+symlink, junction or other reparse point anywhere under a move root - intermediate directory or
+leaf, source side or destination side - is `copy_entry_link_refused` and is refused as a redirection
+rather than resolved for ownership credit, and that holds whether or not it leads outside the root
+and even when it points at a contained file, because a redirected child is not the file this request
+moves wherever it points. A root that is itself such a link is `copy_entry_link_refused` too; a path
+that is
 missing, unreadable or looping is `copy_entry_unresolved` (a destination whose directory chain
-resolves but whose file was never written keeps `copy_unreadable`). The observation states this as
+resolves but whose file was never written keeps `copy_unreadable`). Global path canonicalization is
+unchanged, so scheduling identity, the admission path exclusion and the relocation rollback
+equivalence keep their existing casefolded comparison. The observation states this as
 `copy_manifest.ownership: resolved_paths`, and the commit refuses a `bound` manifest observation
 without it (`copy_unverified`), so a check that only compared names cannot certify a cutover. This
 is what the filesystem showed when it was read; it does not exclude concurrent OS-level mutation

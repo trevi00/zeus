@@ -9,7 +9,9 @@ deleted by the code under test.
 
 Platform note: the symlink escape case needs a symlink the OS will create. Windows grants that only
 to a privileged or developer-mode session (and expresses the same escape as a junction), so that
-one case skips with its reason instead of pretending to have run.
+one case skips with its reason instead of pretending to have run. The case-distinct sibling cases
+need a case-sensitive filesystem to hold `rt` and `RT` as two directories at all; where the
+filesystem folds them into one, that escape does not exist and the case skips with that reason.
 """
 import hashlib
 import json
@@ -530,12 +532,14 @@ def test_a_child_link_to_the_source_is_refused_even_though_the_bytes_read_back(t
     lexical = verify_copy_manifest(request)
     assert lexical["verified"] == 1 and lexical["bound"] is True
     monkeypatch.undo()
-    with pytest.raises(FleetRefused, match="copy_entry_escaped") as info:
+    # The redirection itself is the refusal now: the `artifacts` component is inspected with lstat
+    # and rejected as a link, before and independently of where it happens to lead.
+    with pytest.raises(FleetRefused, match="copy_entry_link_refused") as info:
         verify_copy_manifest(request)
     assert "destination" in str(info.value)
     assert str(tmp_path) not in str(info.value) and CANARY not in str(info.value)
     # The same refusal at the collection boundary the owner command actually uses, and no receipt.
-    with pytest.raises(FleetRefused, match="copy_entry_escaped"):
+    with pytest.raises(FleetRefused, match="copy_entry_link_refused"):
         proof_for(state, request)
     with state["store"].transaction() as tx:
         assert tx.scan(BUCKET_RELOCATION) == []
@@ -562,9 +566,9 @@ def test_a_destination_that_links_outside_the_target_is_refused(tmp_path, monkey
     monkeypatch.setattr(fleet_recovery, "_owned_copy", lambda *_, **__: None)  # pre-fix control
     assert verify_copy_manifest(request)["verified"] == 1
     monkeypatch.undo()
-    with pytest.raises(FleetRefused, match="copy_entry_escaped"):
+    with pytest.raises(FleetRefused, match="copy_entry_link_refused"):
         verify_copy_manifest(request)
-    with pytest.raises(FleetRefused, match="copy_entry_escaped"):
+    with pytest.raises(FleetRefused, match="copy_entry_link_refused"):
         proof_for(state, request)
 
 
@@ -584,7 +588,7 @@ def test_a_source_side_redirection_is_refused_as_well(tmp_path, monkeypatch):
     monkeypatch.setattr(fleet_recovery, "_owned_copy", lambda *_, **__: None)  # pre-fix control
     assert verify_copy_manifest(request)["verified"] == 1
     monkeypatch.undo()
-    with pytest.raises(FleetRefused, match="copy_entry_escaped") as info:
+    with pytest.raises(FleetRefused, match="copy_entry_link_refused") as info:
         verify_copy_manifest(request)
     assert "source" in str(info.value) and str(tmp_path) not in str(info.value)
     # A move ROOT that is itself a link lends its whole subtree to storage this request never moves.
@@ -594,6 +598,169 @@ def test_a_source_side_redirection_is_refused_as_well(tmp_path, monkeypatch):
         verify_copy_manifest(runtime_move(state, tmp_path, target, [entry], name="alias.json",
                                           source_root=aliased))
     assert "source" in str(info.value)
+
+
+def case_sensitive_or_skip(parent):
+    """This filesystem must distinguish two names that differ only in case, or the case skips.
+
+    Windows and a default macOS volume fold them into one entry, so the escapes below cannot exist
+    there at all; the owner's retained junction reproducer covers the Windows side of the same rule.
+    """
+    probe = parent / "case-probe"
+    probe.mkdir(parents=True, exist_ok=True)
+    if (parent / "CASE-PROBE").exists():
+        pytest.skip("this filesystem folds names that differ only in case into one entry, so a "
+                    "case-distinct sibling cannot exist here")
+    return parent
+
+
+def case_distinct_roots(parent, lower="rt", upper="RT"):
+    """Two sibling directories that differ only in case, on a filesystem that keeps them apart."""
+    case_sensitive_or_skip(parent)
+    low, high = parent / lower, parent / upper
+    low.mkdir(parents=True)
+    high.mkdir(parents=True)
+    return low, high
+
+
+def test_a_case_distinct_sibling_is_not_this_target_even_though_names_casefold_equal(tmp_path, monkeypatch):
+    """The owner's POSIX finding, in its plainest form: a manifest row that simply NAMES the
+    case-distinct sibling of the move target.
+
+    `normalize_path` casefolds for scheduling identity, so the lexical rules read `new/RT/...` as
+    living below `new/rt` and credited the row. The filesystem does not: these are two directories,
+    and the copy this request moves is not in the one it states.
+    """
+    from codex_harness.adapters import fleet_recovery
+
+    state = setup(tmp_path)
+    target, sibling = case_distinct_roots(tmp_path / "new" / "case")
+    data = b"synthetic equal bytes\n"
+    (sibling / "artifacts").mkdir()
+    (sibling / "artifacts" / "evidence.json").write_bytes(data)
+    entry = entry_for(state["runtime"], sibling, "artifacts/evidence.json", data)
+    Path(entry["source"]).parent.mkdir(parents=True, exist_ok=True)
+    Path(entry["source"]).write_bytes(data)
+    request = runtime_move(state, tmp_path, target, [entry], name="case-sibling.json")
+    # Control for the behaviour this corrects: the casefolded comparison form answers the exact
+    # relative path the request moves, for a destination that is not below the target at all.
+    assert _relative(entry["destination"], str(target)) == "artifacts/evidence.json"
+    assert not Path(entry["destination"]).is_relative_to(target)
+    monkeypatch.setattr(fleet_recovery, "_owned_copy", lambda *_, **__: None)  # pre-fix control
+    assert verify_copy_manifest(request)["verified"] == 1
+    monkeypatch.undo()
+    with pytest.raises(FleetRefused, match="copy_entry_escaped") as info:
+        verify_copy_manifest(request)
+    assert "destination" in str(info.value)
+    assert str(tmp_path) not in str(info.value) and CANARY not in str(info.value)
+    with pytest.raises(FleetRefused, match="copy_entry_escaped"):
+        proof_for(state, request)
+    with state["store"].transaction() as tx:
+        assert tx.scan(BUCKET_RELOCATION) == []
+
+
+def test_the_owners_case_distinct_symlink_reproduction_refuses(tmp_path, monkeypatch):
+    """The reproduction the owner EXECUTED in a disposable Linux container (`case-repro-001`):
+    distinct `new/rt` and `new/RT`, `new/rt/artifacts` a symlink to `new/RT/artifacts`, synthetic
+    equal bytes. `verify_copy_manifest` answered `bound=true`/`ownership=resolved_paths` although
+    `Path.is_relative_to` on the resolved destination proved the escape."""
+    from codex_harness.adapters import fleet_recovery
+
+    state = setup(tmp_path)
+    target, sibling = case_distinct_roots(tmp_path / "new" / "repro")
+    data = b"synthetic equal bytes\n"
+    (sibling / "artifacts").mkdir()
+    (sibling / "artifacts" / "evidence.json").write_bytes(data)
+    symlink_or_skip(sibling / "artifacts", target / "artifacts")
+    entry = entry_for(state["runtime"], target, "artifacts/evidence.json", data)
+    Path(entry["source"]).parent.mkdir(parents=True, exist_ok=True)
+    Path(entry["source"]).write_bytes(data)
+    request = runtime_move(state, tmp_path, target, [entry], name="case-repro.json")
+    # The owner's recorded result: the name reads as contained and the bytes read back, while the
+    # concrete resolution leaves the root.
+    assert _relative(entry["destination"], str(target)) == "artifacts/evidence.json"
+    assert _hash_bounded(Path(entry["destination"]), entry["bytes"]) == {"sha256": entry["sha256"],
+                                                                        "bytes": len(data)}
+    assert not Path(entry["destination"]).resolve().is_relative_to(target.resolve())
+    monkeypatch.setattr(fleet_recovery, "_owned_copy", lambda *_, **__: None)  # pre-fix control
+    lexical = verify_copy_manifest(request)
+    assert lexical["verified"] == 1 and lexical["bound"] is True and lexical["ownership"] == COPY_OWNERSHIP
+    monkeypatch.undo()
+    with pytest.raises(FleetRefused, match="copy_entry_link_refused") as info:
+        verify_copy_manifest(request)
+    assert "destination" in str(info.value) and str(tmp_path) not in str(info.value)
+    with pytest.raises(FleetRefused, match="copy_entry_link_refused"):
+        proof_for(state, request)
+    with state["store"].transaction() as tx:
+        assert tx.scan(BUCKET_RELOCATION) == []
+        assert tx.get(BUCKET_REGISTRY, "fleet-1")["config_sha256"] == state["config_sha256"]
+
+
+@pytest.mark.parametrize("side", ["source", "destination"])
+def test_a_child_link_is_refused_even_when_it_leads_to_a_contained_file(tmp_path, side, monkeypatch):
+    """No-child-redirection holds INSIDE the root too, on both sides.
+
+    `artifacts/Carried.json` is a link to the root's OWN `artifacts/carried.json`, so it never
+    leaves the root - and the casefolded comparison the correction removes read the resolved
+    redirection as exactly the relative path the request states, which is the pre-fix credit
+    asserted below. The component is a link, and that alone is the refusal: ownership does not
+    depend on where a redirection happens to lead.
+    """
+    from codex_harness.adapters import fleet_recovery
+
+    state = setup(tmp_path)
+    case_sensitive_or_skip(tmp_path)
+    target = tmp_path / "new" / ("rt-contained-" + side)
+    (target / "artifacts").mkdir(parents=True)
+    data = b"contained but redirected\n"
+    relative = "artifacts/Carried.json"
+    root = Path(state["runtime"]) if side == "source" else target
+    other = target if side == "source" else Path(state["runtime"])
+    (other / "artifacts").mkdir(parents=True, exist_ok=True)
+    (other / "artifacts" / "Carried.json").write_bytes(data)
+    (root / "artifacts").mkdir(parents=True, exist_ok=True)
+    (root / "artifacts" / "carried.json").write_bytes(data)
+    # The link is a CHILD of its own move root and resolves to a file of that same root.
+    symlink_or_skip(root / "artifacts" / "carried.json", root / "artifacts" / "Carried.json",
+                    directory=False)
+    entry = entry_for(state["runtime"], target, relative, data)
+    resolved = Path(entry[side]).resolve()
+    assert resolved.is_relative_to(root.resolve()) and resolved.name == "carried.json"
+    # Control for the behaviour this corrects: the casefolded comparison answers the declared
+    # relative path for the redirection, so the pre-fix rules counted this row as a verified copy.
+    assert _relative(str(resolved), str(root.resolve())) == _relative(entry[side], str(root))
+    request = runtime_move(state, tmp_path, target, [entry], name="contained-" + side + ".json")
+    monkeypatch.setattr(fleet_recovery, "_owned_copy", lambda *_, **__: None)  # pre-fix control
+    assert verify_copy_manifest(request)["verified"] == 1
+    monkeypatch.undo()
+    with pytest.raises(FleetRefused, match="copy_entry_link_refused") as info:
+        verify_copy_manifest(request)
+    assert side in str(info.value) and str(tmp_path) not in str(info.value)
+
+
+def test_mixed_case_nested_copies_pass_without_lowercasing_real_path_names(tmp_path):
+    """The valid control for the same family: ordinary directories whose real names carry mixed
+    case verify and relocate. The correction replaces the casefolded comparison with the platform's
+    own path rule; it does not require lowercase paths, and it lowercases no real name."""
+    state = setup(tmp_path)
+    target = tmp_path / "new" / "RT-Mixed"
+    target.mkdir(parents=True)
+    relative = "Artifacts/F2H/Deep/Evidence.JSON"
+    copy = copy_manifest(tmp_path, [(state["runtime"], target, relative)], name="mixed.json")
+    request = request_for(state, copy_manifest=copy,
+                          moves=[{"lane": "a", "repository": None,
+                                  "runtime": {"from": str(state["runtime"]), "to": str(target)}}])
+    document = json.loads(Path(copy["path"]).read_text(encoding="utf-8"))
+    for entry in document["entries"]:
+        # The request and the manifest keep the names the owner actually copied.
+        assert "Artifacts/F2H/Deep/Evidence.JSON" in entry["destination"].replace(os.sep, "/")
+    assert verify_copy_manifest(request) == {"sha256": copy["sha256"], "entries": 1, "verified": 1,
+                                             "bound": True, "ownership": COPY_OWNERSHIP,
+                                             "covered": ["a.runtime"]}
+    answer = state["fleet"].relocate(request, proof_for(state, request))
+    assert answer["relocated"] is True and answer["cached"] is False
+    with state["store"].transaction() as tx:
+        assert tx.get(BUCKET_REGISTRY, "fleet-1")["config"]["lanes"][0]["runtime"] == str(target)
 
 
 @pytest.mark.parametrize("case,reason,side", [
