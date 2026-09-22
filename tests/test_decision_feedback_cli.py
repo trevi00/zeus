@@ -46,6 +46,23 @@ def commit(root, message) -> str:
     return git(root, "rev-parse", "HEAD")
 
 
+def blob_mode(root, revision, path=REGISTRY_PATH) -> str:
+    """The committed mode exactly as `GitSource.blob` reads it, so the assertion is the real check."""
+    return git(root, "ls-tree", revision, "--", path).split(" ", 1)[0]
+
+
+def commit_regular(root, message, path=REGISTRY_PATH) -> str:
+    """A commit whose registry blob is regular on every platform: where `core.filemode` is false
+    (Windows) `git add` keeps the executable mode an earlier `--chmod=+x` left in the index, so the
+    mode is restored explicitly and asserted instead of being inherited by the cases below."""
+    git(root, "add", "--all")
+    git(root, "update-index", "--chmod=-x", path)
+    git(root, "-c", "user.name=t", "-c", "user.email=t@localhost", "commit", "-q", "-m", message)
+    revision = git(root, "rev-parse", "HEAD")
+    assert blob_mode(root, revision, path) == "100644", "this case must reach its own boundary"
+    return revision
+
+
 def registry_for(identity, **overrides) -> dict:
     return {"schema": df.REGISTRY_SCHEMA, "version": 1,
             "entries": [entry(repository=identity, **overrides)]}
@@ -77,22 +94,23 @@ def test_a_non_regular_oversized_malformed_or_invalid_registry_is_refused(tmp_pa
     git(root, "update-index", "--chmod=+x", REGISTRY_PATH)  # an executable blob is not a registry file
     git(root, "-c", "user.name=t", "-c", "user.email=t@localhost", "commit", "-q", "-m", "chmod")
     executable = git(root, "rev-parse", "HEAD")
+    assert blob_mode(root, executable) == "100755", "the refusal below is the mode, not the content"
     with pytest.raises(DecisionFeedbackError) as info:
         load_registry(GitSource(root), executable, REGISTRY_PATH)
     assert info.value.reason_code == "registry_not_regular"
     (root / REGISTRY_PATH).write_text("{not json" + CANARY, encoding="utf-8")
     with pytest.raises(RegistryError) as info:
-        load_registry(GitSource(root), commit(root, "broken"), REGISTRY_PATH)
+        load_registry(GitSource(root), commit_regular(root, "broken"), REGISTRY_PATH)
     assert CANARY not in str(info.value) and "not valid JSON" in str(info.value)
     (root / REGISTRY_PATH).write_text('{"schema": "a", "schema": "b", "version": 1, "entries": []}', encoding="utf-8")
     with pytest.raises(RegistryError, match="duplicate JSON key"):
-        load_registry(GitSource(root), commit(root, "duplicate"), REGISTRY_PATH)
+        load_registry(GitSource(root), commit_regular(root, "duplicate"), REGISTRY_PATH)
     (root / REGISTRY_PATH).write_text(json.dumps(registry_for("repo-identity", source_kind="operation")), encoding="utf-8")
     with pytest.raises(RegistryError, match="source_kind"):
-        load_registry(GitSource(root), commit(root, "unknown kind"), REGISTRY_PATH)
+        load_registry(GitSource(root), commit_regular(root, "unknown kind"), REGISTRY_PATH)
     (root / REGISTRY_PATH).write_text("[" + "0," * MAX_REGISTRY_BYTES + "0]", encoding="utf-8")
     with pytest.raises(DecisionFeedbackError) as info:
-        load_registry(GitSource(root), commit(root, "oversized"), REGISTRY_PATH)
+        load_registry(GitSource(root), commit_regular(root, "oversized"), REGISTRY_PATH)
     assert info.value.reason_code == "registry_too_large", "the bytes are bounded before they are parsed"
 
 
