@@ -226,3 +226,16 @@ and descriptor APIs and specify the exact atomic switch/restart receipt contract
 legacy supervisor or change scheduled tasks while the current correction is executing. The host
 fleet-entry logging filter currently admits only portfolio reconciliation messages, reinforcing why
 Batch 1 needs real structured observation wiring rather than another ordinary log line.
+
+## Owner platform gate / 2026-09-22
+
+Candidate deee6363 passed independent review; isolated verifier reported 44 passed/1 PG skipped.
+Owner ran focused backlog plus Fleet/runtime/portfolio neighbors against a disposable PostgreSQL
+database on Windows: 74 passed, 6 failed, no skips. Ruff passed; disposable database was removed.
+The six failures are CLI Git fixtures: write_text uses platform CRLF and hashes working bytes,
+while inherited core.autocrlf=true normalizes committed blobs. The loader correctly rejects pins.
+Preserve runtime byte-strictness; correct the fixture to construct and hash canonical committed
+bytes reproducibly. Cover inherited Git normalization explicitly without changing global Git config.
+This is a narrow test portability correction, not a reopened runtime review. Claude may change only
+tests/test_fleet_backlog_cli.py and RUNBOOK.md. Repeat focused tests/Ruff; owner repeats the real PG
+and affected-neighbor gate. Previous raw failure log: backlog-pg.log in the task artifact directory.
