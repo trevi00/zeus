@@ -60,6 +60,34 @@ def add_parser(commands) -> None:
     sub.add_parser("status", help="Read the fleet projection; store read only")
 
 
+def _resolved(read):
+    """One store input, read on the FIRST observation and reused on the re-read.
+
+    Both owner commands hand `Fleet` an observation callback that `Fleet` calls a second time from
+    INSIDE its committing transaction. `PostgresStore.transaction` opens its own connection and takes
+    advisory lock 734219 for every transaction, so a callback that reads the primary store there
+    waits for a lock the same call already holds and fails with `LockNotAvailable` when
+    `lock_timeout` expires; `MemoryStore`'s reentrant lock hid that boundary, and the first real
+    owner recovery rolled back on it. The immutable registry, lane and job rows an observation needs
+    are therefore resolved once, while `Fleet` is still outside its transaction, and reused on the
+    re-read - nothing about the store is read from inside the commit, and no lock, timeout or
+    compare-and-swap is relaxed to allow it.
+
+    Every EXTERNAL fact stays freshly observed on both reads: the lane schema, the Docker daemon, the
+    service journal and the copied files are read again, so state that changed between the two
+    observations still refuses before the commit. The callback itself is lazy, so a request the
+    committed receipt already answers reads nothing at all.
+    """
+    cache = []
+
+    def resolved():
+        if not cache:
+            cache.append(read())
+        return cache[0]
+
+    return resolved
+
+
 def check_resolved(config: dict) -> dict:
     """Adapter-side filesystem facts the grammar cannot know: each path is its own resolution and
     every repository is an existing directory. Runtime roots may not exist yet."""
@@ -118,9 +146,26 @@ def reconcile_interrupted(service, args) -> dict:
 
     The observation is a callback, not a value: `Fleet.reconcile_interrupted` answers an identical
     replay from the committed receipt, and this command then reads no lane schema, no Docker daemon
-    and no call ledger at all, so a settled recovery survives the removal of what it settled."""
+    and no call ledger at all, so a settled recovery survives the removal of what it settled.
+
+    The lane the observation reads is resolved once, outside the application's transaction (see
+    `_resolved`); the lane store, Docker and the call ledger are read again on the re-read."""
     evidence = validate_recovery_evidence(read_manifest(args.file))
     fleet = Fleet(service.store)
+
+    def pinned_lane() -> dict:
+        """The lane this evidence names, taken from the registry the evidence expects.
+
+        Pinning the digest here binds the observed lane to the exact configuration
+        `Fleet.reconcile_interrupted` compares against under its own transaction: the schema and
+        runtime that were read cannot belong to some other configuration that the commit's
+        `config_expected_mismatch` check would then accept as the expected one."""
+        registry = fleet.registered()
+        if registry["config_sha256"] != evidence["expected"]["config_sha256"]:
+            raise FleetRefused("config_expected_mismatch", "expected.config_sha256")
+        return lane_of(registry["config"], evidence["expected"]["lane"])
+
+    lane = _resolved(pinned_lane)
 
     def observe() -> dict:
         from codex_harness.adapters.configuration import settings
@@ -131,9 +176,9 @@ def reconcile_interrupted(service, args) -> dict:
         )
         from codex_harness.adapters.fleet_runtime import lane_dsn
 
-        lane = lane_of(fleet.registered()["config"], evidence["expected"]["lane"])
-        reader = LaneReader(lane_dsn(settings().get("HARNESS_DATABASE_URL"), lane["schema"]), lane["schema"])
-        return collect_recovery_proof(evidence, lane, reader=reader,
+        target = lane()
+        reader = LaneReader(lane_dsn(settings().get("HARNESS_DATABASE_URL"), target["schema"]), target["schema"])
+        return collect_recovery_proof(evidence, target, reader=reader,
                                       state=lambda container: docker_state(container, args.docker))
 
     return {**fleet.reconcile_interrupted(evidence, observe=observe, reread=observe), "exit_code": 0}
@@ -146,17 +191,36 @@ def relocate(service, args) -> dict:
 
     The observation is a callback, not a value: `Fleet.relocate` answers an identical replay from
     the committed receipt, and this command then reads no journal, no checkout, no Docker daemon
-    and no copied file, so a completed cutover replays even once the old paths are gone."""
+    and no copied file, so a completed cutover replays even once the old paths are gone.
+
+    The configuration and job rows the observation needs are resolved once, outside the application's
+    transaction (see `_resolved`); the journal, the checkouts, Docker and the copied files are read
+    again on the re-read, and the queued denominator the proof is judged against is the one the
+    commit reads for itself."""
     request = validate_relocation_request(read_manifest(args.file))
     fleet = Fleet(service.store)
+
+    def pinned_inputs() -> tuple[dict, list]:
+        """The expected configuration and the job rows, read before the application's commit.
+
+        The digest is pinned for the same reason as in the recovery command; the job rows are only
+        the queued bindings this observation must look for, and `Fleet.relocate` still recomputes
+        the queued denominator inside its transaction and refuses a proof that does not cover
+        exactly that set, so rows that changed in between cannot commit."""
+        registry = fleet.registered()
+        if registry["config_sha256"] != request["expected_config_sha256"]:
+            raise FleetRefused("config_expected_mismatch", "expected_config_sha256")
+        with service.store.transaction() as tx:
+            jobs = tx.scan(BUCKET_JOBS)
+        return registry["config"], jobs
+
+    inputs = _resolved(pinned_inputs)
 
     def observe() -> dict:
         from codex_harness.adapters.fleet_recovery import collect_relocation_proof, docker_state
 
-        registry = fleet.registered()
-        with service.store.transaction() as tx:
-            jobs = tx.scan(BUCKET_JOBS)
-        return collect_relocation_proof(request, registry["config"], jobs, journal=args.journal,
+        config, jobs = inputs()
+        return collect_relocation_proof(request, config, jobs, journal=args.journal,
                                         state=lambda container: docker_state(container, args.docker))
 
     return {**fleet.relocate(request, observe=observe, reread=observe), "exit_code": 0}

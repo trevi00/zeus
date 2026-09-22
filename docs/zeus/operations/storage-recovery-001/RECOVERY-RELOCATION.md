@@ -13,8 +13,9 @@ included here, and no host cutover was performed from this checkout.
 | `application/fleet.py` | `Fleet.reconcile_interrupted`, `Fleet.recovery`, `Fleet.relocate`, `Fleet.relocations`, alias folding in `admit_one`; buckets `fleet_recovery_receipts`, `fleet_relocations`. |
 | `adapters/fleet_recovery.py` | New. Lane reads, run-record and Docker state reads, journal read, checkout identity, copy-manifest verification. |
 | `adapters/fleet_cli.py` | `fleet reconcile-interrupted --file [--docker]`, `fleet relocate --file --journal [--docker]`. |
-| `docs/contracts.md` | INV-FLEET-001 extended with both operations. |
-| `tests/test_fleet_recovery.py`, `tests/test_fleet_relocation.py` | Focused tests (83). |
+| `docs/contracts.md` | INV-FLEET-001 extended with both operations and the observation-callback rule. |
+| `tests/test_fleet_recovery.py`, `tests/test_fleet_relocation.py` | Focused tests (92). |
+| `tests/test_fleet_recovery_postgres.py` | New. Both commands over a real isolated PostgreSQL store; skips without `HARNESS_INTEGRATION=1`. |
 
 Existing owners were reused rather than duplicated: `validate_config` decides the new lane paths,
 `operation_finalization.owner` decides the lane operation association and its `_lease_live` decides
@@ -47,6 +48,63 @@ Correction 2 below adds that each row's stated source and destination must PHYSI
 their own root's file at that relative path, so a link cannot lend either side unrelated storage.
 Correction 3 below decides that physical question with platform-native path operations on the
 components the request actually spelled, and rejects any link component under either root as such.
+
+## CLI PostgreSQL integration correction (2026-09-22): no nested primary-store read
+
+Only the adapter integration defect the owner's real first call exposed is corrected here. The
+application APIs, both grammars, every gate and refusal code, the compare-and-swap, the receipt-first
+replay, the alias/rollback equivalence and the three corrections below stand exactly as they were,
+and the historical recovery receipt `1367b516…` and relocation receipt `29ea811c…` are untouched.
+
+What actually happened (owner execution, 2026-09-22): the first `fleet reconcile-interrupted` call
+failed with `psycopg.errors.LockNotAvailable` and rolled back. `Fleet.reconcile_interrupted` re-reads
+the adapter's observation from inside its committing transaction, the observation resolved its lane
+through `Fleet.registered()`, and `PostgresStore.transaction` opens its own connection and takes
+advisory lock 734219 for every transaction - so the nested read waited for a lock the same call held
+until `lock_timeout` expired. `MemoryStore`'s RLock is reentrant, so every prior test accepted the
+nesting. `fleet relocate`'s callback had the same pattern (registry read plus a `BUCKET_JOBS` scan).
+
+The repair is ownership of the observation's inputs, not weaker locking. `adapters/fleet_cli._resolved`
+memoizes one lazily read value per command, so the store inputs are read once, on the first
+observation, while the application is still outside its transaction, and reused for the re-read:
+
+* `reconcile-interrupted` resolves the evidence's lane there and refuses `config_expected_mismatch`
+  unless the registry it reads is the digest the evidence expects, so the schema and runtime that are
+  observed belong to the configuration the commit's own check compares against;
+* `relocate` resolves the expected configuration and the job rows there, under the same digest pin;
+* both are lazy, so a request the committed receipt already answers still observes nothing at all -
+  the accepted replay behaviour is unchanged.
+
+Nothing else about the observation changed. The lane schema, the Docker daemon, the service journal,
+the checkouts and the copied files are still read on both observations, `proof_binding` still refuses
+a changed observation, and the queued denominator is still the committing transaction's own read of
+`BUCKET_JOBS` - a job queued after the observed rows refuses `queued_binding_incomplete`. No lock,
+`lock_timeout`, compare-and-swap, validator or retention rule was relaxed, and `application/fleet.py`
+needed no change: the required expected-config, job-identity and queued-denominator guards were
+already inside that one transaction (traced at `Fleet.reconcile_interrupted` lines 427-439 and
+`Fleet.relocate` lines 523-534 of this revision).
+
+Evidence, and its limits:
+
+* Executed here: `python -m pytest tests/test_fleet_recovery.py tests/test_fleet_relocation.py
+  tests/test_fleet_recovery_postgres.py -q -p no:cacheprovider` → 92 passed, 4 skipped, and
+  `python -m ruff check . --no-cache` clean. Both first-call commands commit through a store that
+  refuses nesting the way PostgreSQL does (`NonReentrant`), the external re-read still refuses a
+  container that is running again, a stale expected digest refuses before any observation, and the
+  identical replay still answers from the receipt.
+* The regression detects the OLD behaviour: `nested_observer` in each focused file reproduces the
+  pre-fix callback, and over `NonReentrant` it raises `NestedStoreRead` with nothing committed. That
+  wrapper is a labelled deterministic stand-in for the advisory-lock timeout, not PostgreSQL.
+* NOT executed by this worker: the four `tests/test_fleet_recovery_postgres.py` cases SKIPPED with
+  "Integration environment required" - this host has no `HARNESS_INTEGRATION=1` and denies the
+  environment-prefixed command that would set it, so the real-store first call, the real-store replay
+  and the two `psycopg.errors.LockNotAvailable` controls (each waiting out one 10s `lock_timeout`)
+  are unverified from here. A skipped PostgreSQL test is not a passing one; the owner runs that
+  module with the integration environment before updating the service. Those tests keep the lane
+  schema, Docker and the machine ledger as labelled fixtures - only the PRIMARY store is real.
+* No live recovery or relocation was repeated, no production registry, schema or path was touched, no
+  provider or model was called, and the full suite was not run from this worker (the frame names the
+  focused command above).
 
 ## Consolidated correction 3 (2026-09-22): platform-native physical containment
 
@@ -185,8 +243,9 @@ the operation's earlier `lead_rejected` outcome is not reversed by these tests p
 ## What is verified here, and what is not
 
 Verified by the focused tests in this checkout (`python -m pytest tests/test_fleet_recovery.py
-tests/test_fleet_relocation.py -q -p no:cacheprovider`, 83 passed, 0 skipped on this Linux host;
-`python -m ruff check . --no-cache`
+tests/test_fleet_relocation.py tests/test_fleet_recovery_postgres.py -q -p no:cacheprovider`,
+92 passed and 4 skipped on this Linux host - the four skips are the isolated-PostgreSQL module, see
+the CLI PostgreSQL integration correction above; `python -m ruff check . --no-cache`
 clean): the grammars and their refusals, the proof gates, the call-slot binding, the enumerated run
 source, the copy-manifest entry rules, the physical ownership rules against real temporary symlinks
 and real case-distinct sibling directories, the mixed-case nested copy that verifies and relocates,
@@ -201,6 +260,9 @@ NOT verified here, and left to the owner and CI:
   Docker daemon and no machine call ledger, so the recovery tests replace the lane store, the
   Docker answers and the call ledger with labelled fixtures and injected faults. `LaneReader`'s
   actual PostgreSQL path and `docker_state`'s actual daemon path were never executed.
+* The primary store as PostgreSQL. `tests/test_fleet_recovery_postgres.py` exercises exactly that
+  and SKIPPED here for want of the integration environment; the `NonReentrant` wrapper stands in for
+  the advisory-lock boundary in the focused files, and a stand-in is not the store.
 * Windows behaviour. Every link case skips with its reason where the OS refuses to create a
   symlink, and the case-distinct cases skip where the filesystem folds case; a Windows junction
   expresses the same redirection and needs the same refusal, unexecuted here, so the owner reruns
@@ -223,6 +285,10 @@ NOT verified here, and left to the owner and CI:
 
 ## Ordering for the owner
 
+0. Run `python -m pytest tests/test_fleet_recovery_postgres.py -q -p no:cacheprovider` with
+   `HARNESS_INTEGRATION=1` and a reachable database before updating the service. Those four cases are
+   the only real-primary-store evidence for the nested-lock correction and they SKIP without that
+   environment; two of them deliberately wait out a 10s `lock_timeout`.
 1. `fleet pause` (already paused) and stop the Fleet runner so its journal shows an `exit`.
 2. `fleet reconcile-interrupted --file <evidence>` for the fenced job. This settles it `failed`
    with `interrupted_unknown`; the unknown usage and the whole history stay as they are.

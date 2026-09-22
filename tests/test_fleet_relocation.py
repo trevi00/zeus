@@ -21,6 +21,7 @@ from copy import deepcopy
 from pathlib import Path
 
 import pytest
+from test_fleet_recovery import NestedStoreRead, NonReentrant
 
 from codex_harness.adapters.commands import run_process
 from codex_harness.adapters.fleet_recovery import (
@@ -163,8 +164,11 @@ def write_run_record(runtime, **overrides):
     return directory / "run.json"
 
 
-def setup(tmp_path, *, shared_repository=False, queued=("op-1",)):
-    """One registered, paused fleet with real source checkouts and prepared copies."""
+def setup(tmp_path, *, shared_repository=False, queued=("op-1",), store=None):
+    """One registered, paused fleet with real source checkouts and prepared copies.
+
+    `store` supplies the primary store, so the same fixture serves `MemoryStore`, the non-reentrant
+    wrapper and the real isolated PostgreSQL store of tests/test_fleet_recovery_postgres.py."""
     source = tmp_path / "old" / "repo-a"
     base = repository(source)
     other = tmp_path / "old" / "repo-b"
@@ -180,7 +184,7 @@ def setup(tmp_path, *, shared_repository=False, queued=("op-1",)):
         # An initialized lane runtime: `bootstrap.isolated_worker` owns this root, and a lane that
         # has hosted isolated runs has it whether or not any run is retained in it.
         run_root(lane["runtime"]).mkdir(parents=True, exist_ok=True)
-    store = MemoryStore()
+    store = MemoryStore() if store is None else store
     fleet = Fleet(store)
     registry = fleet.register(deepcopy(document))
     for index, op_id in enumerate(queued):
@@ -1042,6 +1046,143 @@ def test_a_repository_moved_twice_resolves_to_its_current_path_from_either_ident
     assert fleet.admit_one()["job"]["id"] == "op-1"
     decision = fleet.admit_one()
     assert decision["job"] is None and decision["blocked"] == {"op-9": "path_conflict"}
+
+
+def cli_relocate(state, tmp_path, monkeypatch, *, store=None, request=None, docker=stopped,
+                 name="request.json"):
+    """The shipped `zeus fleet relocate` entrypoint. Only Docker is replaced (it is UNAVAILABLE here);
+    the journal, the checkouts, the copied files and the store transaction are real, and the
+    adapter's own configuration/job resolution is the code under test."""
+    from types import SimpleNamespace
+
+    from codex_harness.adapters import fleet_cli, fleet_recovery
+
+    monkeypatch.setattr(fleet_recovery, "docker_state", lambda container, client="docker": docker(container))
+    path = tmp_path / name
+    path.write_text(json.dumps(request or request_for(state), sort_keys=True), encoding="utf-8")
+    return fleet_cli.execute(SimpleNamespace(store=state["store"] if store is None else store),
+                             SimpleNamespace(fleet_command="relocate", file=path,
+                                             journal=state["journal"], docker="docker"))
+
+
+def nested_observer(state, store, request):
+    """The PRE-FIX adapter callback: it read the registry AND the job rows through the primary store
+    on every observation, including the re-read `Fleet.relocate` takes inside its transaction."""
+    fleet = Fleet(store)
+
+    def observe():
+        registry = fleet.registered()
+        with store.transaction() as tx:
+            jobs = tx.scan(BUCKET_JOBS)
+        return collect_relocation_proof(request, registry["config"], jobs, journal=state["journal"],
+                                        state=stopped, clock=lambda: NOW)
+
+    return observe
+
+
+def test_the_cli_first_call_commits_without_a_nested_store_transaction(tmp_path, monkeypatch):
+    """`Fleet.relocate` re-reads the observation from INSIDE its committing transaction, where a
+    callback that reads the primary store again waits on a lock the same call holds. Over a store
+    that refuses nesting the way PostgreSQL does, the cutover commits and only the paths move."""
+    state = setup(tmp_path)
+    store = NonReentrant(state["store"])
+    request = request_for(state)
+    answer = cli_relocate(state, tmp_path, monkeypatch, store=store, request=request)
+    assert answer["exit_code"] == 0 and answer["relocated"] is True and answer["cached"] is False
+    assert store.nested == 0
+    with store.transaction() as tx:
+        registry = tx.get(BUCKET_REGISTRY, "fleet-1")
+        # The frozen job keeps its original repository identity; only the registry paths moved.
+        assert tx.get(BUCKET_JOBS, "op-1")["repository"] == repository_identity(str(state["source"]))
+    assert registry["config_sha256"] == answer["config_sha256"] != state["config_sha256"]
+    assert registry["config"]["lanes"][0]["repository"] == str(state["target"])
+    assert registry["config"]["lanes"][0]["runtime"] == str(state["target_runtime"])
+    assert registry["config"]["lanes"][0]["schema"] == "lane_a"
+    assert str(tmp_path) not in json.dumps(answer, sort_keys=True)
+    # The identical replay answers from the receipt over the same store, observing nothing.
+    replay = cli_relocate(state, tmp_path, monkeypatch, store=store, request=request, name="again.json")
+    assert replay["cached"] is True and replay["receipt"] == answer["receipt"] and store.nested == 0
+
+
+def test_the_non_reentrant_regression_catches_the_pre_fix_observation(tmp_path):
+    """The control for the test above: the pre-fix callback IS detected, so the fixed adapter's pass
+    is not the wrapper failing to notice anything. Nothing is committed on that failure."""
+    state = setup(tmp_path)
+    store = NonReentrant(state["store"])
+    request = request_for(state)
+    observe = nested_observer(state, store, request)
+    with pytest.raises(NestedStoreRead):
+        Fleet(store).relocate(request, observe=observe, reread=observe)
+    assert store.nested == 1
+    with store.transaction() as tx:
+        assert tx.scan(BUCKET_RELOCATION) == []
+        assert tx.get(BUCKET_REGISTRY, "fleet-1")["config_sha256"] == state["config_sha256"]
+
+
+def test_the_cli_reads_the_lane_again_inside_the_committing_transaction(tmp_path, monkeypatch):
+    """Only the immutable store inputs are reused: the retained lane run is observed on Docker again
+    inside the transaction, so a container that is running by then refuses before the write."""
+    state = setup(tmp_path)
+    store = NonReentrant(state["store"])
+    write_run_record(state["runtime"])
+    seen = []
+
+    def docker(container):
+        """Injected fault on the SECOND observation only: the retained run is running again."""
+        seen.append(container)
+        return (stopped if len(seen) == 1 else running)(container)
+
+    with pytest.raises(FleetRefused, match="lane_run_active"):
+        cli_relocate(state, tmp_path, monkeypatch, store=store, docker=docker)
+    assert len(seen) == 2 and store.nested == 0
+    with store.transaction() as tx:
+        assert tx.scan(BUCKET_RELOCATION) == []
+        assert tx.get(BUCKET_REGISTRY, "fleet-1")["config_sha256"] == state["config_sha256"]
+
+
+def test_the_cli_refuses_a_configuration_that_is_no_longer_the_expected_one(tmp_path, monkeypatch):
+    """The configuration the observation reads its lanes from is the one the request expects, so a
+    stale expectation refuses instead of observing lanes the commit would not have accepted."""
+    state = setup(tmp_path)
+    store = NonReentrant(state["store"])
+    request = request_for(state, expected_config_sha256="0" * 64)
+    with pytest.raises(FleetRefused, match="config_expected_mismatch"):
+        cli_relocate(state, tmp_path, monkeypatch, store=store, request=request)
+    with store.transaction() as tx:
+        assert tx.scan(BUCKET_RELOCATION) == []
+        assert tx.get(BUCKET_REGISTRY, "fleet-1")["config_sha256"] == state["config_sha256"]
+
+
+def test_the_cli_refuses_when_a_job_was_queued_after_the_observed_rows(tmp_path, monkeypatch):
+    """The queued denominator stays the committing transaction's own read of the job rows, not the
+    reused ones: a job enqueued after the first observation refuses the cutover rather than leaving
+    queued work pointing at a target checkout its pinned base was never checked in."""
+    state = setup(tmp_path)
+    store = NonReentrant(state["store"])
+
+    from codex_harness.adapters import fleet_recovery
+
+    collect = fleet_recovery.collect_relocation_proof
+    calls = []
+
+    def observed(*args, **kwargs):
+        """Real collection; between the first observation and the commit, one more job is queued
+        through the same store - exactly the window the reused rows cannot know about."""
+        proof = collect(*args, **kwargs)
+        calls.append(1)
+        if len(calls) == 1:
+            Fleet(store).enqueue("a", manifest("op-late", ["docs/late.md"], state["base"]),
+                                 goal_of(state["base"]), [])
+        return proof
+
+    monkeypatch.setattr(fleet_recovery, "collect_relocation_proof", observed)
+    with pytest.raises(FleetRefused, match="queued_binding_incomplete"):
+        cli_relocate(state, tmp_path, monkeypatch, store=store)
+    # The transaction's own queued read already refuses the reused observation, before the re-read.
+    assert len(calls) == 1 and store.nested == 0
+    with store.transaction() as tx:
+        assert tx.scan(BUCKET_RELOCATION) == []
+        assert tx.get(BUCKET_REGISTRY, "fleet-1")["config_sha256"] == state["config_sha256"]
 
 
 def test_the_cli_replays_a_committed_relocation_without_observing_the_old_paths(tmp_path, monkeypatch):

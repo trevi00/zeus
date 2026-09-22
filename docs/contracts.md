@@ -1484,6 +1484,20 @@ one equivalence class per repository, answering the class's latest destination;
 after a rollback, where a plain chain walk over A->B->A would answer differently from each side.
 The identical request replays idempotently; another request against the same
 expected digest is `relocation_conflict`. Future jobs use the new paths; no old operation is resumed.
+Because both commits re-read the adapter's observation from INSIDE their own store transaction, that
+observation callback never reads the primary store there: `PostgresStore.transaction` opens its own
+connection and takes advisory lock 734219 per transaction, so a nested primary-store read waits on a
+lock the same call holds and fails with `LockNotAvailable` at `lock_timeout` (the first real owner
+recovery rolled back on exactly that; `MemoryStore`'s reentrant lock hid it). The CLI therefore
+resolves its immutable store inputs once, on the first observation, while the application is still
+outside its transaction - the lane of a recovery, the configuration and job rows of a relocation -
+and reuses them for the re-read, refusing with `config_expected_mismatch` when the registry it reads
+them from is not the digest the request expects, so the observed lanes are the configuration the
+commit compares against. Every external fact is still observed twice (lane schema, Docker daemon,
+service journal, checkouts, copied files) and the queued denominator is still the committing
+transaction's own read of the job rows, so state that changed between the two observations refuses
+before the write; no lock, timeout, compare-and-swap or replay rule is relaxed, and a request the
+committed receipt already answers still reads nothing at all.
 
 ## INV-OPERATION-FINALIZATION-001
 

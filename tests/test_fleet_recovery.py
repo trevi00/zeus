@@ -9,8 +9,10 @@ container, no PostgreSQL and no model is reached by anything in this file.
 """
 import json
 import shutil
+from contextlib import contextmanager
 from copy import deepcopy
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 
@@ -18,7 +20,7 @@ from codex_harness.adapters.fleet_recovery import collect_recovery_proof, run_ro
 from codex_harness.adapters.providers import packaged_policy
 from codex_harness.adapters.store import MemoryStore
 from codex_harness.application.fleet import BUCKET_JOBS, BUCKET_RECOVERY, Fleet
-from codex_harness.domain.fleet import FleetRefused
+from codex_harness.domain.fleet import FleetRefused, lane_of
 from codex_harness.domain.fleet_recovery import (
     EVIDENCE_SCHEMA,
     INTERRUPTED,
@@ -170,8 +172,42 @@ def ledger(**overrides):
     return Ledger([unrelated, mine])
 
 
-def interrupted(tmp_path, status="dispatching", *, second=False):
-    store = MemoryStore()
+class NestedStoreRead(AssertionError):
+    """Labelled stand-in for the real failure: `psycopg.errors.LockNotAvailable`, raised when the
+    nested transaction's `lock_timeout` expires on advisory lock 734219."""
+
+
+class NonReentrant:
+    """The primary store with its actual non-reentrant boundary made visible.
+
+    `PostgresStore.transaction` opens one connection per transaction and takes advisory lock 734219
+    in each of them, so a second transaction opened while the first is still open waits for a lock
+    the same call already holds and fails once `lock_timeout` expires. `MemoryStore`'s RLock is
+    reentrant and accepts that nesting silently, which is how the defect reached the first real owner
+    recovery. This wrapper injects the boundary deterministically: it is a labelled fault around
+    `MemoryStore`, not a PostgreSQL connection, and tests/test_fleet_recovery_postgres.py is the
+    actual store evidence.
+    """
+
+    def __init__(self, store=None):
+        self.store = MemoryStore() if store is None else store
+        self.depth, self.nested = 0, 0
+
+    @contextmanager
+    def transaction(self):
+        if self.depth:
+            self.nested += 1
+            raise NestedStoreRead("nested primary-store transaction while advisory lock 734219 is held")
+        self.depth += 1
+        try:
+            with self.store.transaction() as tx:
+                yield tx
+        finally:
+            self.depth -= 1
+
+
+def interrupted(tmp_path, status="dispatching", *, second=False, store=None):
+    store = MemoryStore() if store is None else store
     fleet = Fleet(store)
     registry = fleet.register(config(tmp_path))
     fleet.enqueue("a", manifest(OPERATION, ["docs/x.md"]), GOAL, [])
@@ -585,6 +621,109 @@ def test_the_cli_replays_a_committed_recovery_without_observing_anything(tmp_pat
     assert answer["exit_code"] == 0 and answer["cached"] is True and answer["receipt"] == first["receipt"]
     with pytest.raises(FleetRefused, match="recovery_conflict"):
         run("changed.json", {**document, "operator": "someone-else"})
+
+
+def cli_reconcile(setup, tmp_path, monkeypatch, *, store=None, document=None, documents=None,
+                  state=stopped, name="evidence.json"):
+    """The shipped `zeus fleet reconcile-interrupted` entrypoint with every service that is
+    UNAVAILABLE here replaced by a labelled fixture and nothing else replaced: the lane schema answers
+    from `LaneDouble`, Docker from `state`, the machine call ledger from `ledger()`, and the
+    observation's clock is fixed at `NOW`. The adapter's own lane resolution, its proof collection and
+    the application's transaction are the real code under test."""
+    from codex_harness.adapters import configuration, fleet_cli, fleet_recovery, fleet_runtime
+
+    reader = lane_store(tmp_path) if documents is None else documents
+    collect = fleet_recovery.collect_recovery_proof
+    monkeypatch.setattr(fleet_recovery, "collect_recovery_proof",
+                        lambda *args, **kwargs: collect(*args, **{"clock": lambda: NOW, **kwargs}))
+    monkeypatch.setattr(fleet_recovery, "LaneReader", lambda dsn, schema: reader)
+    monkeypatch.setattr(fleet_recovery, "docker_state", lambda container, client="docker": state(container))
+    monkeypatch.setattr(fleet_recovery, "CallBudget", ledger)
+    monkeypatch.setattr(fleet_runtime, "lane_dsn", lambda url, schema: "postgresql://fixture/" + schema)
+    monkeypatch.setattr(configuration, "settings", lambda: {"HARNESS_DATABASE_URL": "postgresql://fixture/0"})
+    path = tmp_path / name
+    path.write_text(json.dumps(document, sort_keys=True), encoding="utf-8")
+    return fleet_cli.execute(SimpleNamespace(store=setup["store"] if store is None else store),
+                             SimpleNamespace(fleet_command="reconcile-interrupted", file=path, docker="docker"))
+
+
+def nested_observer(store, setup, tmp_path, document):
+    """The PRE-FIX adapter callback: it resolved the lane through the primary store on every
+    observation, including the re-read `Fleet.reconcile_interrupted` takes inside its transaction."""
+    fleet = Fleet(store)
+
+    def observe():
+        lane = lane_of(fleet.registered()["config"], document["expected"]["lane"])
+        return proof_for({**setup, "lane": lane}, tmp_path, document=document)
+
+    return observe
+
+
+def test_the_cli_first_call_commits_without_a_nested_store_transaction(tmp_path, monkeypatch):
+    """The observed defect: `Fleet.reconcile_interrupted` re-reads the observation from INSIDE its
+    committing transaction, where a callback that reads the primary store again waits on a lock the
+    same call holds. Over a store that refuses nesting the way PostgreSQL does, the command commits
+    its one recovery."""
+    setup = interrupted(tmp_path)
+    store = NonReentrant(setup["store"])
+    document = evidence(setup["job"], config_sha256=setup["config_sha256"])
+    answer = cli_reconcile(setup, tmp_path, monkeypatch, store=store, document=document)
+    assert answer["exit_code"] == 0 and answer["cached"] is False and store.nested == 0
+    assert answer["job"]["status"] == "failed" and answer["job"]["reason_code"] == INTERRUPTED
+    assert answer["job"]["id"] == document["job_id"]
+    with store.transaction() as tx:
+        assert tx.get(BUCKET_RECOVERY, document["job_id"])["id"] == answer["receipt"]["id"]
+        assert tx.get(BUCKET_JOBS, document["job_id"])["owner_token"] is None
+
+
+def test_the_non_reentrant_regression_catches_the_pre_fix_observation(tmp_path):
+    """The control for the test above: the pre-fix callback IS detected, so the fixed adapter's pass
+    is not the wrapper failing to notice anything. Nothing is committed on that failure."""
+    setup = interrupted(tmp_path)
+    store = NonReentrant(setup["store"])
+    document = evidence(setup["job"], config_sha256=setup["config_sha256"])
+    observe = nested_observer(store, setup, tmp_path, document)
+    with pytest.raises(NestedStoreRead):
+        Fleet(store).reconcile_interrupted(document, observe=observe, reread=observe)
+    assert store.nested == 1
+    with store.transaction() as tx:
+        assert tx.scan(BUCKET_RECOVERY) == []
+        assert tx.get(BUCKET_JOBS, document["job_id"])["status"] == "dispatching"
+
+
+def test_the_cli_reads_docker_again_inside_the_committing_transaction(tmp_path, monkeypatch):
+    """Only the immutable store inputs are reused: the external proof is still observed twice, so a
+    container that is running again when the commit re-reads it refuses before the write."""
+    setup = interrupted(tmp_path)
+    store = NonReentrant(setup["store"])
+    document = evidence(setup["job"], config_sha256=setup["config_sha256"])
+    seen = []
+
+    def state(container):
+        """Injected fault on the SECOND observation only: the container is running again."""
+        seen.append(container)
+        return (stopped if len(seen) == 1 else running)(container)
+
+    with pytest.raises(FleetRefused, match="container_not_stopped"):
+        cli_reconcile(setup, tmp_path, monkeypatch, store=store, document=document, state=state)
+    assert len(seen) == 2 and store.nested == 0
+    with store.transaction() as tx:
+        assert tx.scan(BUCKET_RECOVERY) == []
+        assert tx.get(BUCKET_JOBS, document["job_id"])["status"] == "dispatching"
+
+
+def test_the_cli_refuses_a_configuration_that_is_no_longer_the_expected_one(tmp_path, monkeypatch):
+    """The lane whose schema and runtime are observed is taken from the registry the evidence
+    expects, so an evidence document naming another configuration refuses instead of observing a
+    lane the commit would not have accepted."""
+    setup = interrupted(tmp_path)
+    store = NonReentrant(setup["store"])
+    document = evidence(setup["job"], config_sha256=setup["config_sha256"],
+                        expected={"config_sha256": "c" * 64})
+    with pytest.raises(FleetRefused, match="config_expected_mismatch"):
+        cli_reconcile(setup, tmp_path, monkeypatch, store=store, document=document)
+    with store.transaction() as tx:
+        assert tx.scan(BUCKET_RECOVERY) == []
 
 
 def test_recovery_reads_no_repository_and_reserves_no_call(tmp_path):
