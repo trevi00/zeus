@@ -311,11 +311,15 @@ def parser() -> argparse.ArgumentParser:
     from codex_harness.adapters.frontdesk_cli import add_parser as add_desk_parser
     add_desk_parser(commands)
     from codex_harness.adapters.autonomous_cli import add_parser as add_autonomous_parser
+    from codex_harness.adapters.decision_feedback_cli import (
+        add_parser as add_decision_feedback_parser,
+    )
     from codex_harness.adapters.research_program_cli import (
         add_parser as add_research_program_parser,
     )
     add_autonomous_parser(commands)
     add_research_program_parser(commands)
+    add_decision_feedback_parser(commands)
     ticket = commands.add_parser("ticket", help="Versioned review topics and explicit GitHub issue sync")
     ticket_commands = ticket.add_subparsers(dest="ticket_command", required=True)
     ticket_commands.add_parser("list")
@@ -544,6 +548,16 @@ def audit_repair_command(service, args):
         raise SystemExit(1)
 
 
+def decision_feedback_command(service, args):
+    """INV-DECISION-FEEDBACK-001: exit 0 only for a recorded or read result; refusals print a code and
+    a type, never registry content, row bodies, payloads, DSNs or raw exceptions."""
+    from codex_harness.adapters import decision_feedback_cli
+    result = decision_feedback_cli.execute(service, args)
+    emit(result)
+    if result.get("exit_code", 1) != 0:
+        raise SystemExit(1)
+
+
 def research_program_command(service, args):
     """INV-RESEARCH-PROGRAM-001: exit 0 only for a recorded, replayed or read result; refusals print a
     code and a type, never configs, feed bodies, DSNs or raw exceptions."""
@@ -722,6 +736,8 @@ def main() -> None:
             audit_repair_command(service, args)
         elif args.command == "research-program":
             research_program_command(service, args)
+        elif args.command == "decision-feedback":
+            decision_feedback_command(service, args)
         elif args.command == "observe":
             observe_command(service, args)
         elif args.command == "demo":
