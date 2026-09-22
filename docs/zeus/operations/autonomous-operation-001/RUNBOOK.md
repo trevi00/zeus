@@ -226,6 +226,57 @@ required"); Ruff passed. `tests/test_fleet_recovery_postgres.py` imports `setup`
 `tests/test_fleet_relocation.py` and therefore inherits the corrected fixture; it needs PostgreSQL
 and was NOT run here. The owner repeats the real PG and combined runs, which remain the gate.
 
+## Observing the backlog from the monitor (2026-09-22)
+
+`adapters/monitoring.collect` read `Fleet`, `ResearchProgram` and `Portfolio` but never the
+backlog, so a healthy collector could not say why a plan was idle. `fleet_backlog_facts(store)` now
+calls the SAME read-only `FleetBacklog.status()` the `zeus fleet backlog status` command uses, and
+`collect` adds it as the additive `sources.fleet_backlog` envelope beside the existing ones.
+
+- **Read-only, and it never ticks.** The collector's `ReadOnlyStore` refuses every write anyway;
+  the source only scans `fleet_backlog_plans`, `fleet_backlog_intents`, `fleet_jobs` and
+  `fleet_control`. Nothing is selected, read from Git, enqueued, bound or written.
+- **The envelope is the existing contract.** `{'status', 'observed_at', 'data'}` on success and
+  `{'status': 'unavailable', 'observed_at', 'error': '<ExceptionType>', 'data': None}` on failure,
+  sampled by the same `ThreadPoolExecutor`, so one failed source never hides another. A store
+  outage is `unavailable`, never an empty backlog reported as a healthy read.
+- **States stay distinct.** No registered plan is `registered: false` with an empty `plans` list
+  (an honest empty read, NOT `unavailable`); per plan, `blocked` (with the per-item reason,
+  including `deferred_input_unavailable`), `plan_paused`, `fleet_paused`, `backlog_exhausted`
+  (idle) and `conflict` items keep the meanings in the outcome table above.
+- **No new route, UI or scheduler.** `monitoring_web` is unchanged: `/api/status` already serves
+  the collected snapshot bytes verbatim, so the envelope reaches a reader as-is. `readiness()`
+  ignores source names it does not know, so `/ready` is unaffected and still assesses only its
+  required and known optional envelopes.
+- **What a collected status is not.** It is a selection projection: an `enqueued` item means one
+  Fleet job exists, `accepted` means an accepted lane operation, `linked` means a recorded goal
+  binding. It is never evidence of active work, review, release or host activation.
+
+Checks executed for this item, on Linux:
+
+```
+python -m pytest tests/test_monitoring.py -q -p no:cacheprovider
+python -m ruff check . --no-cache
+```
+
+23 passed, no skips; Ruff passed. The new fixture registers a real fleet and two real plans over a
+`MemoryStore` and runs real ticks; its loader, its loader outage and the conflicting and orphaned
+intent rows are labelled fixtures, and no git, process, provider or model call is made.
+
+Discriminating control: with the one `'fleet_backlog'` entry removed from `collect` again, the same
+command reported 4 failed / 19 passed (the two new tests plus the two updated source-set
+assertions), so these tests detect the previous behaviour rather than passing either way. The entry
+was restored and the run repeated at 23 passed. The control ran in this checkout because the file
+tools here are confined to it; it left no other change.
+
+**One neighbour test outside this item's allowed paths still fails and is handed to the owner:**
+`tests/test_monitoring_observations.py::test_collect_adds_observations_only_with_runtime_and_keeps_other_sources`
+asserts the exact set of collector sources (line 161) and now sees the additional `fleet_backlog`
+name; it needs that name added to the expected set. The full suite additionally reports failures
+this environment cannot run (`tests/test_output_schema.py` needs `git show` in a checkout this
+container refuses for ownership, and 51 ticket/goal-progress errors come from a missing
+`ssh-keygen`); none of them touch the collector.
+
 ## Known boundaries handed to the owner
 
 - The one-shot `zeus fleet backlog tick` command records the durable status and the
