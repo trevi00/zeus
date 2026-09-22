@@ -21,7 +21,7 @@ from codex_harness.adapters.portfolio import packaged_definitions
 from codex_harness.adapters.providers import packaged_policy
 from codex_harness.application.fleet import Fleet
 from codex_harness.application.fleet_backlog import FleetBacklog
-from codex_harness.application.portfolio import validate_definitions
+from codex_harness.application.portfolio import Portfolio, validate_definitions
 from codex_harness.domain.fleet import FleetRefused, lane_of, repository_identity
 from codex_harness.domain.fleet_backlog import BacklogRefused, validate_plan
 from codex_harness.domain.model import ContractError, require
@@ -133,13 +133,16 @@ def manifest_loader(config: dict, plan: dict, source_factory=GitSource, definiti
 
     It re-checks the lane, the repository identity and the portfolio goal on every tick, so a
     definition or configuration that changed after registration refuses the item with a reason
-    instead of admitting stale work.
+    instead of admitting stale work. It also names the lane repository IDENTITY (the digest, never
+    the path) the job will carry, so the coordinator can record the complete Fleet binding before
+    the enqueue instead of comparing a partial one afterwards.
     """
     def load(item: dict) -> dict:
         check_lanes({**plan, "items": [item]}, config)
         check_goals({**plan, "items": [item]}, definitions)
         lane = lane_of(config, item["lane"])
-        return load_manifest(source_factory(lane["repository"]), item)
+        return {**load_manifest(source_factory(lane["repository"]), item),
+                "repository": repository_identity(lane["repository"])}
 
     return load
 
@@ -156,9 +159,19 @@ def register_plan(store, config: dict, lane_id: str, revision: str, path: str,
     return {**receipt, "bytes": loaded["bytes"]}
 
 
-def tick_plan(store, config: dict, plan_id: str, source_factory=GitSource, definitions=None) -> dict:
+def coordinator(store, definitions=None, observer=None) -> FleetBacklog:
+    """The coordinator with its existing owners wired: the unchanged `Fleet` for admission, the
+    unchanged `Portfolio` for the job-to-criterion binding of an admitted job, and the existing
+    observation port for the fixed structured transitions. Both owners open their own
+    transactions, so nothing here is ever called under a held one."""
+    validated = packaged_definitions() if definitions is None else definitions
+    return FleetBacklog(store, Fleet(store), portfolio=Portfolio(store, validated), observer=observer)
+
+
+def tick_plan(store, config: dict, plan_id: str, source_factory=GitSource, definitions=None,
+              observer=None) -> dict:
     """One bounded tick over an already registered plan."""
-    backlog = FleetBacklog(store, Fleet(store))
+    backlog = coordinator(store, definitions, observer)
     row = backlog.plan(plan_id)
     if row is None:
         return backlog.tick(plan_id, lambda item: None)  # records `plan_unregistered`, writes nothing
@@ -166,13 +179,14 @@ def tick_plan(store, config: dict, plan_id: str, source_factory=GitSource, defin
     return backlog.tick(plan_id, loader)
 
 
-def backlog_ticker(store, config: dict, plan_id: str, source_factory=GitSource, definitions=None):
+def backlog_ticker(store, config: dict, plan_id: str, source_factory=GitSource, definitions=None,
+                   observer=None):
     """The optional per-tick callable for `FleetRunner(..., backlog=...)`; disabled by default.
 
     It opens its own transactions, exactly like the portfolio reconciler beside it, so a backlog
     outage never blocks admission and admission never holds a lock across this work.
     """
-    return lambda: tick_plan(store, config, plan_id, source_factory, definitions)
+    return lambda: tick_plan(store, config, plan_id, source_factory, definitions, observer)
 
 
 def configured_plan(settings: dict) -> str | None:
@@ -182,5 +196,5 @@ def configured_plan(settings: dict) -> str | None:
 
 
 __all__ = ["MAX_MANIFEST_BYTES", "MAX_PLAN_BYTES", "PLAN_SETTING", "backlog_ticker", "check_goals",
-           "check_lanes", "configured_plan", "load_manifest", "load_plan", "manifest_loader",
-           "read_blob", "register_plan", "tick_plan"]
+           "check_lanes", "configured_plan", "coordinator", "load_manifest", "load_plan",
+           "manifest_loader", "read_blob", "register_plan", "tick_plan"]

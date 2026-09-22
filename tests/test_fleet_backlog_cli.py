@@ -7,28 +7,38 @@ successful command is itself the evidence that none is built. No model runs.
 """
 import hashlib
 import json
+import logging
+import signal
 import subprocess
+from copy import deepcopy
 from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
 
-from codex_harness import cli
-from codex_harness.adapters import fleet_cli
+from codex_harness import bootstrap, cli
+from codex_harness.adapters import fleet_cli, fleet_runtime
 from codex_harness.adapters.fleet_backlog import (
     PLAN_SETTING,
+    backlog_ticker,
     configured_plan,
     load_manifest,
     load_plan,
     register_plan,
     tick_plan,
 )
+from codex_harness.adapters.observation_spool import MemorySpool
 from codex_harness.adapters.operation_cli import GitSource
+from codex_harness.adapters.providers import packaged_policy
 from codex_harness.adapters.store import MemoryStore
-from codex_harness.application.fleet import Fleet
+from codex_harness.application.fleet import Fleet, FleetRunner
 from codex_harness.application.fleet_backlog import BUCKET_INTENTS, FleetBacklog
+from codex_harness.application.observations import MemoryDirectory, Observer
+from codex_harness.application.portfolio import BUCKET_BINDINGS
 from codex_harness.domain.fleet import repository_identity
 from codex_harness.domain.fleet_backlog import PLAN_SCHEMA, BacklogRefused
+from codex_harness.domain.observation import new_process_run_id
+from codex_harness.domain.operation import validate_manifest
 
 CANARY = "CANARY-must-never-be-emitted"
 PLAN_PATH = "docs/zeus/backlog.json"
@@ -292,6 +302,175 @@ def test_the_cli_parser_exposes_backlog_register_tick_and_status():
                  ["fleet", "backlog", "register", "--lane", "a"]):
         with pytest.raises(SystemExit):
             cli.parser().parse_args(argv)
+
+
+class FakeLauncher:
+    """Fixture launcher: records what was asked to run, never spawns a process."""
+
+    constructed = []
+
+    def __init__(self, config=None, host=None):
+        FakeLauncher.constructed.append(config)
+        self.launched = []
+
+    def budget_exhausted(self, budget):
+        return False
+
+    def launch(self, job):
+        self.launched.append(job["id"])
+        FakeLauncher.launched_ids.append(job["id"])
+        return {"job_id": job["id"]}
+
+    def wait(self, handles, seconds):
+        return list(handles)
+
+    def outcome(self, handle, job):
+        return {"status": "accepted", "reason_code": "lead_accepted", "exit_code": 0,
+                "calls": {"reserved": 2, "settled": 2}}
+
+
+FakeLauncher.launched_ids = []
+
+
+class OutageGit:
+    """Labelled fixture: a git source whose reads fail, so the ADAPTER returns `unavailable`
+    instead of raising out of the tick."""
+
+    def __init__(self, repository):
+        self.repository = repository
+
+    def commit_exists(self, revision):
+        raise OSError("injected git outage (fixture)")
+
+
+def manual_job(service, repository, lane="b"):
+    """One job an operator queued by hand, so backlog failures can be shown not to block it."""
+    document = manifest_document("op-manual", repository.base, repository.goal_sha256, ["docs/manual.md"])
+    goal = {"path": GOAL_PATH, "sha256": repository.goal_sha256, "criterion": "crit op-manual",
+            "base_revision": repository.base, "bytes": len(GOAL_TEXT.encode("utf-8"))}
+    return Fleet(service.store).enqueue(lane, validate_manifest(document, packaged_policy()), goal, [])
+
+
+def test_a_tick_records_the_portfolio_binding_of_the_job_it_admitted(service, repository):
+    """The existing `Portfolio.bind` owner writes the job-to-criterion binding, in its own
+    transaction, for the exact project and criterion the approved item names. No acceptance and no
+    criterion verdict is written by a tick."""
+    register(service, repository)
+    result = fleet_cli.execute(service, args("tick", plan="plan-1"))
+    assert result["outcome"] == "enqueued" and result["linked"] is True
+    row = service.store.data[BUCKET_BINDINGS, "op-one"]
+    assert (row["project_id"], row["criterion_id"]) == ("research-improvement", "verified-loop")
+    assert row["recorded_by"] == "owner"
+    assert service.store.data[BUCKET_INTENTS, "plan-1:one"]["link_state"] == "linked"
+    # A binding is not an acceptance: the portfolio records no criterion completion here.
+    assert not [k for k in service.store.data if k[0] == "portfolio_acceptances"]
+
+
+def test_the_real_ticker_returning_unavailable_is_a_failed_runner_tick_that_blocks_nothing(service, repository, caplog):
+    """R4 over the REAL path: `backlog_ticker` -> `tick_plan` -> the adapter's git read. The tick
+    RETURNS `unavailable`; the runner must report that as a failure with the reason and exception
+    type, keep admitting unrelated work, log one transition and recover."""
+    config_document = Fleet(service.store).registered()["config"]
+    register(service, repository)
+    manual_job(service, repository)
+    fleet = Fleet(service.store)
+    launcher, seen = FakeLauncher(), []
+    outage = backlog_ticker(service.store, config_document, "plan-1", source_factory=OutageGit)
+
+    def ticker():
+        seen.append(outage())
+        return seen[-1]
+
+    runner = FleetRunner(fleet, launcher, sleep=lambda _: None, interval=0, backlog=ticker)
+    with caplog.at_level(logging.INFO, logger="zeus.fleet.runner"):
+        first = runner.run(once=True)
+        # The adapter RETURNED the failure; unrelated queued work was admitted in the same cycle.
+        assert seen[0]["outcome"] == "unavailable" and seen[0]["reason_code"] == "input_unavailable"
+        assert seen[0]["error_type"] == "OSError" and seen[0]["job_id"] is None
+        assert first["admitted"] == ["op-manual"] and launcher.launched == ["op-manual"]
+        assert [j["id"] for j in fleet.status()["jobs"]] == ["op-manual"], "nothing was admitted blindly"
+        # The bounded deferral is durable and the item is still recoverable.
+        assert service.store.data[BUCKET_INTENTS, "plan-1:one"]["deferrals"] >= 1
+        assert service.store.data[BUCKET_INTENTS, "plan-1:one"]["error_type"] == "OSError"
+        still_failing = runner.run(once=True)
+        assert still_failing["backlog"] == {"state": "unavailable", "outcome": "unavailable",
+                                            "reason_code": "input_unavailable", "error_type": "OSError"}
+        assert still_failing["admitted"] == []
+        runner.backlog = backlog_ticker(service.store, config_document, "plan-1")
+        # The bounded wait of the deferred item counts down over the next cycles and then admits
+        # it exactly once; no cycle in between retries it and none writes a new log line.
+        for _ in range(3):
+            recovered = runner.run(once=True)
+    assert recovered["backlog"]["state"] == "ok"
+    assert sorted(j["id"] for j in fleet.status()["jobs"]) == ["op-manual", "op-one", "op-two"]
+    messages = [r.getMessage() for r in caplog.records if r.name == "zeus.fleet.runner"]
+    # A deferral tick is a healthy `blocked` answer, so entering and leaving unavailability is
+    # logged each time it actually happens - never once per poll, and never with any raw text.
+    assert messages == ["approved backlog unavailable; fleet admission continues",
+                        "approved backlog recovered",
+                        "approved backlog unavailable; fleet admission continues",
+                        "approved backlog recovered"]
+    assert "injected" not in "\n".join(messages) and "OSError" not in "\n".join(messages)
+
+
+def test_the_configured_runner_continues_successors_and_emits_the_structured_transitions(
+        tmp_path, service, repository, monkeypatch):
+    """The shipped `zeus fleet run` entrypoint with the opt-in host setting, not a spy: one runner
+    cycle selects, admits, dispatches and finalizes both approved items and then selects the second
+    one itself, with no `tick` command in between. Only the launcher and the observer spool are
+    fixtures; the observer is the real one the adapter wires."""
+    from codex_harness.adapters import configuration
+
+    register(service, repository)
+    observer = Observer(service.store, MemorySpool(new_process_run_id()), component="fleet-backlog",
+                        directory=MemoryDirectory())
+    FakeLauncher.constructed, FakeLauncher.launched_ids = [], []
+    monkeypatch.setattr(configuration, "settings", lambda: {PLAN_SETTING: "plan-1"})
+    monkeypatch.setattr(fleet_runtime, "LaneLauncher", FakeLauncher)
+    monkeypatch.setattr(bootstrap, "build_observer", lambda store, component, role=None: observer)
+    installed = {name: signal.getsignal(getattr(signal, name))
+                 for name in ("SIGINT", "SIGTERM", "SIGBREAK") if hasattr(signal, name)}
+    try:
+        summary = fleet_cli.execute(service, SimpleNamespace(fleet_command="run", once=True))
+    finally:
+        for name, handler in installed.items():
+            signal.signal(getattr(signal, name), handler)
+    assert summary["exit_code"] == 0 and summary["admitted"] == ["op-one", "op-two"]
+    assert FakeLauncher.launched_ids == ["op-one", "op-two"]
+    assert [entry["status"] for entry in summary["finalized"]] == ["accepted", "accepted"]
+    assert summary["backlog"] == {"state": "ok", "outcome": "backlog_exhausted", "reason_code": None,
+                                  "error_type": None}
+    assert [config["id"] for config in FakeLauncher.constructed] == ["fleet-1"]
+    kinds = [record["event_type"] for record in observer.spool.records()]
+    assert kinds == ["development.backlog_item_admitted", "development.backlog_item_admitted"]
+    attributes = [record["attributes"] for record in observer.spool.records()]
+    assert [a["item_id"] for a in attributes] == ["one", "two"]
+    assert all(a["linked"] is True and a["plan_id"] == "plan-1" for a in attributes)
+    text = json.dumps(observer.spool.records())
+    assert CANARY not in text and str(repository.root) not in text and "lane_a" not in text
+
+
+def test_the_runner_without_the_host_setting_builds_no_backlog_and_no_observer(service, repository, monkeypatch):
+    from codex_harness.adapters import configuration
+
+    register(service, repository)
+    FakeLauncher.constructed, FakeLauncher.launched_ids = [], []
+    monkeypatch.setattr(configuration, "settings", lambda: {})
+    monkeypatch.setattr(fleet_runtime, "LaneLauncher", FakeLauncher)
+    monkeypatch.setattr(bootstrap, "build_observer",
+                        lambda *a, **k: pytest.fail("no observer is built without the opt-in"))
+    before = deepcopy(service.store.data)
+    installed = {name: signal.getsignal(getattr(signal, name))
+                 for name in ("SIGINT", "SIGTERM", "SIGBREAK") if hasattr(signal, name)}
+    try:
+        summary = fleet_cli.execute(service, SimpleNamespace(fleet_command="run", once=True))
+    finally:
+        for name, handler in installed.items():
+            signal.signal(getattr(signal, name), handler)
+    assert summary["backlog"] == {"state": "disabled", "outcome": None, "reason_code": None,
+                                  "error_type": None}
+    assert summary["admitted"] == [] and FakeLauncher.launched_ids == []
+    assert service.store.data == before, "the default runtime selects nothing and writes nothing"
 
 
 def test_a_refusal_prints_a_code_and_a_type_never_the_document_or_a_path(tmp_path):
