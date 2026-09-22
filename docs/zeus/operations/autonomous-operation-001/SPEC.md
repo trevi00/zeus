@@ -269,3 +269,32 @@ and RUNBOOK.md here. Verify test_fleet_relocation.py, test_fleet_recovery.py, te
 test_fleet_backlog_cli.py plus Ruff; independent reviewer covers these two fixture changes only.
 Owner repeats actual PG/combined tests afterwards. Raw runtime-integration-tests.log preserves
 the first failures and skipped paths; its default OS temp path is evidence, not new storage policy.
+
+## First operating backlog item: observable selection
+
+PR179/180 are merged and host db859af is active (see STATUS.md). Codex inspected monitoring.py:
+collect_snapshot reads Fleet, ResearchProgram and Portfolio but no FleetBacklog. Therefore a
+healthy collector does not reveal backlog deferral/exhaustion reasons. Reuse FleetBacklog.status
+and the existing independent source envelope; do not implement another selector or mutate state.
+
+Claude implements one complete additive fleet_backlog monitor source in adapters/monitoring.py,
+using the existing read-only application status projection. Include it in collect_snapshot and
+existing snapshot JSON served by monitoring_web; change web code only if required for that path.
+Keep pause/unregistered/exhausted/conflict/unavailable distinct. Store failure yields the standard
+unavailable envelope with safe exception type, never empty success. Successful snapshot collection
+is not evidence of active work, deployment or full autonomy. No new UI or graphs in this item.
+
+Acceptance: real collector tests prove populated status and unknown/unavailable propagation,
+unchanged store before/after, other sources surviving one failed source, existing web JSON route
+preserving this envelope, no raw goal/manifest/credentials. Reuse existing timeout and concurrency
+envelope; do not add a scheduler or global settings. Windows/Linux fixture-safe bytes and owned
+temporary files. Focused tests: python -m pytest tests/test_monitoring.py -q -p no:cacheprovider;
+python -m ruff check . --no-cache. Record exact commands and honest skips. Allowed files:
+src/codex_harness/adapters/monitoring.py, src/codex_harness/adapters/monitoring_web.py,
+tests/test_monitoring.py, docs/contracts.md, RUNBOOK.md in this directory. No model calls in tests,
+no merge/deployment, no acceptance-policy changes. Independent Codex reviews this bounded feature.
+
+Owner registers one meaningful item in an enabled Git-pinned plan and enables the existing Fleet
+setting. Admission must occur from runner tick without manual Fleet.enqueue. Record the resulting
+intent/job/project links. This proves first-item admission only; automatic successor, research,
+recovery and release gates in the whole-task checklist remain pending.
