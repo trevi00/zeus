@@ -348,6 +348,25 @@ def portfolio_facts(store):
     return portfolio(store).status()
 
 
+def fleet_backlog_facts(store):
+    """INV-FLEET-BACKLOG-001 projection (`urn:zeus:fleet-backlog-status:1`) for every registered
+    plan, from store reads only: plan and item identities, the pin, item state, the authoritative
+    Fleet job status, the linkage state, fixed reason codes, attempts, deferrals, counts and a
+    bounded next action. Never manifests, objectives, goal text, absolute paths, schemas, DSNs or
+    raw errors.
+
+    This is the same read-only status the `fleet backlog status` command projects; no tick happens
+    here, so nothing is selected, read from Git, enqueued, bound or written. `plan_paused`,
+    `fleet_paused`, `backlog_exhausted`, `blocked` and `conflict` stay distinct outcomes, an
+    unregistered plan is `registered: false` with an empty `plans` list rather than an absent
+    source, and a store failure propagates so the envelope becomes `unavailable` rather than an
+    empty backlog. A collected status is a selection projection only: never evidence of active
+    work, acceptance, release or deployment.
+    """
+    from codex_harness.application.fleet_backlog import FleetBacklog
+    return FleetBacklog(store).status()
+
+
 def scope_label(repository, label=None):
     """ZEUS_MONITOR_SCOPE names what is observed; the default is the repository name. It is a
     label for the page toolbar, not a status or success claim."""
@@ -356,8 +375,9 @@ def scope_label(repository, label=None):
 
 
 def collect(service, artifacts, repository, redis_url, containers=None, scope=None, runtime=None):
-    """Three legacy sources; with a runtime directory an additive fourth `observations` envelope
-    (observatory-001). Every envelope fails independently."""
+    """The three legacy sources (`database`, `docker`, `redis`) plus the additive store-backed
+    projections; with a runtime directory also `observations` (observatory-001). Every envelope
+    fails independently."""
     def sample(callback):
         try:
             return {'status': 'ok', 'observed_at': datetime.now(timezone.utc).isoformat(), 'data': callback()}
@@ -376,7 +396,10 @@ def collect(service, artifacts, repository, redis_url, containers=None, scope=No
             # Additive research-program envelope (INV-RESEARCH-PROGRAM-001): same read-only store, fails independently.
             'research_programs': lambda: research_program_facts(service.store),
             # Additive portfolio envelope (operating-portfolio-001): same read-only store, fails independently.
-            'portfolio': lambda: portfolio_facts(service.store)}
+            'portfolio': lambda: portfolio_facts(service.store),
+            # Additive approved-backlog envelope (INV-FLEET-BACKLOG-001): same read-only store,
+            # fails independently, and never ticks the backlog it observes.
+            'fleet_backlog': lambda: fleet_backlog_facts(service.store)}
     if runtime is not None:
         jobs['observations'] = lambda: observation_facts(service.store, runtime)
     with ThreadPoolExecutor(max_workers=4) as pool:

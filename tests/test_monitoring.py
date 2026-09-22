@@ -1,5 +1,7 @@
+import hashlib
 import json
 import sys
+from copy import deepcopy
 from datetime import datetime, timedelta, timezone
 from http.client import HTTPConnection
 from http.server import ThreadingHTTPServer
@@ -18,10 +20,18 @@ from codex_harness.adapters.monitoring import (
     safe_text,
 )
 from codex_harness.adapters.monitoring_web import handler
+from codex_harness.adapters.portfolio import packaged_definitions
+from codex_harness.adapters.providers import packaged_policy
 from codex_harness.adapters.store import MemoryStore
+from codex_harness.application.fleet import Fleet
+from codex_harness.application.fleet_backlog import BUCKET_INTENTS, FleetBacklog
 from codex_harness.application.monitoring import Monitoring, initiatives
+from codex_harness.application.portfolio import Portfolio
 from codex_harness.bootstrap import organization
+from codex_harness.domain.fleet import repository_identity
+from codex_harness.domain.fleet_backlog import new_intent
 from codex_harness.domain.model import ContractError
+from codex_harness.domain.operation import validate_manifest
 
 NOW = datetime(2026, 9, 18, 12, tzinfo=timezone.utc)
 
@@ -162,17 +172,24 @@ def test_collector_entrypoint_is_read_only_and_needs_no_executor(monkeypatch, tm
     assert store.data == before
     assert list((runtime / 'artifacts').iterdir()) == []
     lines = [json.loads(line) for line in (runtime / 'monitor-collector.log').read_text('utf-8').splitlines()]
-    # Seven sources: observatory-001 added observations (the CLI passes the runtime), fleet-001 the
+    # Eight sources: observatory-001 added observations (the CLI passes the runtime), fleet-001 the
     # additive fleet envelope (INV-FLEET-001), research-program-001 the additive
-    # research_programs envelope (INV-RESEARCH-PROGRAM-001) and operating-portfolio-001 the
-    # additive portfolio envelope.
-    assert [line['event'] for line in lines] == (['startup'] + ['source_state'] * 7 + ['shutdown']) * 2
+    # research_programs envelope (INV-RESEARCH-PROGRAM-001), operating-portfolio-001 the
+    # additive portfolio envelope and autonomous-operation-001 the additive fleet_backlog envelope
+    # (INV-FLEET-BACKLOG-001).
+    assert [line['event'] for line in lines] == (['startup'] + ['source_state'] * 8 + ['shutdown']) * 2
     assert snapshot['sources']['observations']['status'] == 'ok'
     # Unregistered fleet: an ok envelope with the fixed empty shape; the read-only store is unchanged
     # (asserted above) and no executor was built.
     assert snapshot['sources']['fleet']['status'] == 'ok'
     assert snapshot['sources']['fleet']['data'] == {'schema': 'urn:zeus:fleet-status:1', 'registered': False,
                                                     'lanes': [], 'jobs': []}
+    # No registered backlog plan: an `ok` envelope that says so, never an absent source and never
+    # an unavailable one (INV-FLEET-BACKLOG-001).
+    assert snapshot['sources']['fleet_backlog']['status'] == 'ok'
+    assert snapshot['sources']['fleet_backlog']['data'] == {
+        'schema': 'urn:zeus:fleet-backlog-status:1', 'registered': False, 'fleet_paused': False,
+        'plans': [], 'authority': snapshot['sources']['fleet_backlog']['data']['authority']}
     assert snapshot['sources']['observations']['data']['local'] == {'status': 'unavailable',
                                                                     'reason': 'directory_missing'}
     assert lines[0] == {'at': lines[0]['at'], 'event': 'startup', 'mode': 'collect', 'once': True,
@@ -268,7 +285,12 @@ def test_collect_keeps_source_failures_independent(monkeypatch):
     sources = result['sources']
     assert result['schema'] == 'harness-monitor.v1'
     assert result['scope'] == {'label': 'repository ' + Path('.').resolve().name, 'docker': 'compose', 'containers': None}
-    assert set(sources) == {'database', 'docker', 'redis', 'fleet', 'research_programs', 'portfolio'}
+    assert set(sources) == {'database', 'docker', 'redis', 'fleet', 'research_programs', 'portfolio',
+                            'fleet_backlog'}
+    # The additive approved-backlog source (INV-FLEET-BACKLOG-001) reads the same store: unavailable
+    # with the exception TYPE only, never an empty backlog reported as a healthy read.
+    assert sources['fleet_backlog']['status'] == 'unavailable'
+    assert sources['fleet_backlog']['data'] is None and sources['fleet_backlog']['error'] == 'RuntimeError'
     # The additive portfolio source (operating-portfolio-001) reads the same store: unavailable, never a guess.
     assert sources['portfolio']['status'] == 'unavailable'
     assert sources['portfolio']['data'] is None and sources['portfolio']['error'] == 'RuntimeError'
@@ -283,10 +305,168 @@ def test_collect_keeps_source_failures_independent(monkeypatch):
     assert sources['docker'] == {'status': 'ok', 'observed_at': sources['docker']['observed_at'],
                                  'data': [{'service': 'redis', 'state': 'running'}]}
     assert sources['redis']['status'] == 'ok' and sources['redis']['data'][0]['agent'] == 'conductor'
-    for name in ('database', 'docker', 'redis', 'fleet'):
+    for name in ('database', 'docker', 'redis', 'fleet', 'fleet_backlog'):
         observed = datetime.fromisoformat(sources[name]['observed_at'])
         assert observed.tzinfo is not None
         assert before <= observed <= datetime.fromisoformat(result['collected_at'])
+
+
+BACKLOG_CANARY = 'CANARY-objective-must-never-reach-the-snapshot'
+BACKLOG_NOW = '2026-09-22T00:00:00+00:00'
+
+
+def backlog_fixture(store, tmp_path):
+    """One registered fleet and two registered approved backlog plans on the same store.
+
+    Everything here runs the real owners (`Fleet`, `FleetBacklog`, `Portfolio`) over a MemoryStore;
+    the loader is a labelled FIXTURE standing in for the adapter's git-backed one, so no git read,
+    process, provider or model call happens. Item `one` is really admitted and linked, item `two`
+    is deferred by a labelled INJECTED loader outage, item `three` carries a labelled synthetic
+    conflicting intent row, and `plan-2`'s only item is admitted and linked so that plan is idle.
+    """
+    repository = str(tmp_path / 'repo-a')
+    identity = repository_identity(repository)
+    fleet = Fleet(store)
+    fleet.register({'schema': 'urn:zeus:fleet:1', 'id': 'fleet-1', 'max_parallel': 1,
+                    'budget': {'per_host': 4, 'total': 8},
+                    'lanes': [{'id': 'a', 'team': 'alpha', 'repository': repository, 'schema': 'lane_a',
+                               'redis_namespace': 'fleet-a', 'runtime': str(tmp_path / 'rt-a')}]})
+    coordinator = FleetBacklog(store, fleet, portfolio=Portfolio(store, packaged_definitions()))
+
+    def plan_item(name, priority):
+        return {'id': name, 'project_id': 'research-improvement', 'criterion_id': 'verified-loop',
+                'lane': 'a', 'manifest_path': 'docs/zeus/manifests/' + name + '.json',
+                'manifest_revision': 'd' * 40, 'manifest_sha256': hashlib.sha256(name.encode()).hexdigest(),
+                'priority': priority, 'dependencies': []}
+
+    def loader(item):
+        if item['id'] == 'two':
+            raise RuntimeError('injected loader outage (fixture)')
+        manifest = validate_manifest({
+            'schema': 'urn:zeus:operation:1', 'id': 'op-' + item['id'], 'base_revision': 'a' * 40,
+            'goal': {'path': 'docs/GOAL.md', 'sha256': 'b' * 64, 'criterion': 'crit ' + item['id'],
+                     'rationale': BACKLOG_CANARY},
+            'plan': {'objective': BACKLOG_CANARY, 'acceptance_criteria': ['ok'],
+                     'allowed_paths': ['docs/' + item['id'] + '.md']},
+            'budget': {'per_host': 4, 'total': 8},
+            'claude': {'model': 'claude-fixture-model', 'timeout_seconds': 120, 'max_budget_usd': 1.0}},
+            packaged_policy())
+        goal = {'path': 'docs/GOAL.md', 'sha256': 'b' * 64, 'criterion': 'c',
+                'base_revision': 'a' * 40, 'bytes': 3}
+        return {'manifest': manifest, 'goal': goal, 'repository': identity}
+
+    items = [plan_item('one', 10), plan_item('two', 20), plan_item('three', 30), plan_item('four', 40)]
+    coordinator.register({'schema': 'urn:zeus:fleet-backlog:1', 'plan_id': 'plan-1',
+                          'repository': identity, 'enabled': True, 'items': items},
+                         {'revision': 'c' * 40, 'path': 'docs/zeus/backlog.json', 'sha256': 'e' * 64})
+    assert coordinator.tick('plan-1', loader)['outcome'] == 'enqueued'          # item one
+    assert coordinator.tick('plan-1', loader)['outcome'] == 'unavailable'       # item two, injected
+    coordinator.register({'schema': 'urn:zeus:fleet-backlog:1', 'plan_id': 'plan-2',
+                          'repository': identity, 'enabled': True, 'items': [plan_item('solo', 10)]},
+                         {'revision': 'c' * 40, 'path': 'docs/zeus/backlog-2.json', 'sha256': 'f' * 64})
+    assert coordinator.tick('plan-2', loader)['outcome'] == 'enqueued'
+    # Labelled synthetic fixtures: the durable intent rows a conflicting job identity and an
+    # admitted item whose Fleet row is no longer there leave behind.
+    conflicted = {**new_intent('plan-1', items[2], BACKLOG_NOW), 'state': 'conflict',
+                  'reason_code': 'job_binding_conflict', 'job_id': 'op-three'}
+    orphaned = {**new_intent('plan-1', items[3], BACKLOG_NOW), 'state': 'enqueued', 'job_id': 'op-four'}
+    with store.transaction() as tx:
+        tx.put(BUCKET_INTENTS, conflicted['id'], conflicted)
+        tx.put(BUCKET_INTENTS, orphaned['id'], orphaned)
+    return fleet
+
+
+def test_backlog_source_shows_selection_progress_without_ticking_or_leaking_manifests(monkeypatch, tmp_path):
+    """INV-FLEET-BACKLOG-001 through the existing collector envelope: the durable status a healthy
+    collector previously could not reveal, read-only and with its outcomes kept distinct."""
+    from codex_harness.adapters import monitoring
+    stubbed_sources(monkeypatch)
+    store = MemoryStore()
+    fleet = backlog_fixture(store, tmp_path)
+    service, _ = read_only(SimpleNamespace(store=store, org=organization()), None)
+    before = deepcopy(store.data)
+    result = monitoring.collect(service, None, str(tmp_path), 'redis://127.0.0.1/0')
+    envelope = result['sources']['fleet_backlog']
+    assert envelope['status'] == 'ok' and envelope.get('error') is None
+    assert datetime.fromisoformat(envelope['observed_at']).tzinfo is not None
+    data = envelope['data']
+    assert data['schema'] == 'urn:zeus:fleet-backlog-status:1'
+    assert data['registered'] is True and data['fleet_paused'] is False
+    assert [plan['plan_id'] for plan in data['plans']] == ['plan-1', 'plan-2']
+    plan = data['plans'][0]
+    assert plan['enabled'] is True and plan['repository'] == repository_identity(str(tmp_path / 'repo-a'))
+    assert plan['pin'] == {'revision': 'c' * 40, 'path': 'docs/zeus/backlog.json', 'sha256': 'e' * 64}
+    views = {view['item_id']: view for view in plan['items']}
+    # Admitted, linked and waiting on the Fleet: a selection receipt, never an acceptance.
+    assert views['one']['state'] == 'enqueued' and views['one']['link_state'] == 'linked'
+    assert views['one']['job_id'] == 'op-one' and views['one']['job_status'] == 'queued'
+    assert views['one']['next_action'] == 'await_fleet'
+    # The deferral reason and its bounded countdown, distinct from a definite refusal.
+    assert views['two']['state'] == 'open' and views['two']['reason_code'] == 'input_unavailable'
+    assert views['two']['deferrals'] == 1 and views['two']['attempts'] == 0
+    # The synthetic conflicting intent stays `conflict`, not blocked and not unknown.
+    assert views['three']['state'] == 'conflict' and views['three']['reason_code'] == 'job_binding_conflict'
+    assert views['three']['next_action'] == 'owner_review'
+    # An admitted item whose authoritative Fleet row is not there is unknown, never zero, absent or
+    # done.
+    assert views['four']['state'] == 'unknown' and views['four']['reason_code'] == 'job_missing'
+    assert views['four']['job_status'] is None and views['four']['next_action'] == 'owner_review'
+    assert plan['blocked'] == {'two': 'deferred_input_unavailable', 'three': 'job_binding_conflict',
+                               'four': 'job_missing'}
+    assert plan['outcome'] == 'blocked' and plan['next_action'] == 'owner_review'
+    assert plan['counts'] == {'pending': 0, 'open': 1, 'enqueued': 1, 'blocked': 0, 'conflict': 1,
+                              'unknown': 1, 'accepted': 0, 'unlinked': 0}
+    # An independent plan with nothing left to select is idle, never blocked and never busywork.
+    assert data['plans'][1]['outcome'] == 'backlog_exhausted'
+    assert data['plans'][1]['next_action'] == 'idle' and data['plans'][1]['blocked'] == {}
+    # Read-only: the collector selected, enqueued, bound and wrote nothing.
+    assert store.data == before
+    body = json.dumps(envelope)
+    assert BACKLOG_CANARY not in body and 'claude-fixture-model' not in body
+    assert str(tmp_path) not in body and 'acceptance_criteria' not in body
+    # The other sources of the same snapshot are unaffected.
+    assert result['sources']['database']['status'] == 'ok'
+    assert result['sources']['fleet']['data']['registered'] is True
+    # A paused fleet is its own outcome, not an exhausted or blocked backlog.
+    fleet.pause()
+    paused = monitoring.collect(service, None, str(tmp_path), 'redis://127.0.0.1/0')['sources']['fleet_backlog']
+    assert paused['status'] == 'ok' and paused['data']['fleet_paused'] is True
+    assert [plan['outcome'] for plan in paused['data']['plans']] == ['fleet_paused', 'fleet_paused']
+    assert paused['data']['plans'][0]['next_action'] == 'resume_fleet'
+    assert paused['data']['plans'][0]['blocked'] == {}
+
+
+def test_web_json_route_preserves_the_backlog_envelope(monkeypatch, tmp_path):
+    """The existing `/api/status` route serves the collected snapshot unchanged, so the additive
+    envelope reaches a reader without any new route, schema or UI."""
+    from codex_harness.adapters import monitoring
+    stubbed_sources(monkeypatch)
+    store = MemoryStore()
+    backlog_fixture(store, tmp_path)
+    service, _ = read_only(SimpleNamespace(store=store, org=organization()), None)
+    snapshot = monitoring.collect(service, None, str(tmp_path), 'redis://127.0.0.1/0')
+    path = tmp_path / 'monitoring.json'
+    path.write_text(json.dumps(snapshot), encoding='utf-8')
+    server = ThreadingHTTPServer(('127.0.0.1', 0), handler(path))
+    thread = Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+    try:
+        connection = HTTPConnection('127.0.0.1', server.server_port, timeout=3)
+        try:
+            connection.request('GET', '/api/status')
+            response = connection.getresponse()
+            status, served = response.status, json.loads(response.read())
+        finally:
+            connection.close()
+    finally:
+        server.shutdown()
+        server.server_close()
+        thread.join(timeout=3)
+    assert status == 200
+    assert served['schema'] == 'harness-monitor.v1'
+    assert served['sources']['fleet_backlog'] == snapshot['sources']['fleet_backlog']
+    assert served['sources']['fleet_backlog']['data']['plans'][0]['counts']['enqueued'] == 1
+    assert BACKLOG_CANARY not in json.dumps(served)
 
 
 def test_index_falls_back_to_legacy_without_build_and_assets_are_strict(monkeypatch, tmp_path):
