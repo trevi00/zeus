@@ -12,11 +12,17 @@ to a privileged or developer-mode session (and expresses the same escape as a ju
 one case skips with its reason instead of pretending to have run. The case-distinct sibling cases
 need a case-sensitive filesystem to hold `rt` and `RT` as two directories at all; where the
 filesystem folds them into one, that escape does not exist and the case skips with that reason.
+Two further platform rules are carried by the fixtures rather than by any skip: each disposable
+repository declares its own newline normalization, so a pin taken from the committed goal bytes is
+what an inherited `core.autocrlf` would otherwise rewrite in a checkout; and a checkout this test
+owns is retired by renaming it, because Git's own object files are read-only and Windows refuses to
+unlink those. Both have a regression of their own below, and neither changes anything global.
 """
 import hashlib
 import json
 import os
 import shutil
+import stat
 from copy import deepcopy
 from pathlib import Path
 
@@ -63,9 +69,21 @@ def git(root, *args):
     return result.stdout.strip()
 
 
+# Newline normalization is pinned in each disposable repository's OWN config, exactly as
+# tests/test_fleet_backlog_cli.py pins it. `git init` and `git clone` otherwise inherit the host's
+# `core.autocrlf`, which is `true` by default on Windows and rewrites a CHECKOUT to CRLF, so a
+# manifest entry pinned to the committed goal bytes names bytes the clone's working tree does not
+# hold. `core.safecrlf` is pinned too so an inherited `true` cannot fail `git add` here. Nothing
+# global or system-wide is read or written by these tests.
+NORMALIZATION = {"core.autocrlf": "false", "core.eol": "lf", "core.safecrlf": "false"}
+NORMALIZATION_ARGS = [arg for key, value in NORMALIZATION.items() for arg in ("--config", key + "=" + value)]
+
+
 def repository(path, *, goal: bytes = GOAL_BYTES) -> str:
     path.mkdir(parents=True)
     git(path, "init", "-b", "main")
+    for key, value in NORMALIZATION.items():
+        git(path, "config", "--local", key, value)
     git(path, "config", "user.name", "Fixture")
     git(path, "config", "user.email", "fixture@localhost")
     (path / "docs").mkdir()
@@ -75,9 +93,32 @@ def repository(path, *, goal: bytes = GOAL_BYTES) -> str:
     return git(path, "rev-parse", "HEAD")
 
 
-def clone(tmp_path, source, target, *shared):
-    git(tmp_path, "clone", "--quiet", *shared, str(source), str(target))
+def clone(tmp_path, source, target, *shared, normalize: bool = True):
+    """A real clone whose own config declares its normalization BEFORE the initial checkout.
+
+    `normalize=False` leaves the inherited value to apply, which the portability regression below
+    uses as its labelled control - never as the fixture any other test builds on."""
+    git(tmp_path, "clone", "--quiet", *(NORMALIZATION_ARGS if normalize else []), *shared,
+        str(source), str(target))
     return target
+
+
+def retire(path, aside):
+    """Make a test-owned checkout's path absent, the way a real cutover leaves it behind.
+
+    `shutil.rmtree` cannot do that everywhere: Git writes its loose objects and pack files
+    READ-ONLY, and on Windows `unlink` refuses a read-only file, so the removal raised before the
+    assertion it was preparing ever ran (owner Windows gate, 2026-09-22). A rename needs no write
+    permission on the files it moves, is one operation on both platforms, and leaves the ORIGINAL
+    path absent - which is the whole claim: every later read of that path fails. The bytes stay
+    below the test's own `tmp_path`, so nothing outside this test's temporary directory is touched
+    and no production cleanup path is involved.
+    """
+    aside = Path(aside)
+    aside.parent.mkdir(parents=True, exist_ok=True)
+    os.rename(str(path), str(aside))
+    assert not Path(path).exists(), "the old checkout no longer answers at the path it moved from"
+    return aside
 
 
 def manifest(op_id, paths, base):
@@ -430,6 +471,16 @@ def entry_of(state, relative="artifacts/evidence.json", **overrides):
             "sha256": hashlib.sha256(data).hexdigest(), "bytes": len(data), **overrides}
 
 
+def uncovered_goal_entry(state, **overrides):
+    """One manifest row for a REPOSITORY file: a real, verifiable copy that covers no moving
+    runtime. Its digest is the committed goal bytes, which every fixture checkout holds verbatim
+    because the fixture repositories declare their own newline normalization (see `repository`)."""
+    return entry_of(state, **{"source": str(Path(state["source"]) / "docs" / "GOAL.md"),
+                              "destination": str(Path(state["target"]) / "docs" / "GOAL.md"),
+                              "sha256": hashlib.sha256(GOAL_BYTES).hexdigest(),
+                              "bytes": len(GOAL_BYTES), **overrides})
+
+
 @pytest.mark.parametrize("case,reason", [
     ("null_digest_missing_file", "copy_manifest_invalid"),
     ("missing_destination", "copy_unreadable"),
@@ -458,9 +509,7 @@ def test_a_manifest_entry_must_prove_a_file_this_request_actually_moves(tmp_path
                                                "destination": str(outside / "b.txt"),
                                                "sha256": "c" * 64, "bytes": 0}],
         "renamed": [entry_of(state, destination=str(Path(state["target_runtime"]) / "artifacts" / "other.json"))],
-        "runtime_uncovered": [entry_of(state, source=str(Path(state["source"]) / "docs" / "GOAL.md"),
-                                       destination=str(Path(state["target"]) / "docs" / "GOAL.md"),
-                                       sha256=hashlib.sha256(GOAL_BYTES).hexdigest(), bytes=len(GOAL_BYTES))],
+        "runtime_uncovered": [uncovered_goal_entry(state)],
     }[case]
     copy = copy_manifest(tmp_path, [(state["runtime"], state["target_runtime"], "artifacts/evidence.json")],
                          name=case + ".json", entries=entries)
@@ -474,6 +523,56 @@ def test_a_manifest_entry_must_prove_a_file_this_request_actually_moves(tmp_path
     with pytest.raises(FleetRefused, match=reason) as info:
         proof_for(state, request_for(state, copy_manifest=copy))
     assert str(tmp_path) not in str(info.value) and CANARY not in str(info.value)
+
+
+def test_the_fixture_checkouts_hold_the_committed_goal_bytes_under_inherited_normalization(
+        tmp_path, monkeypatch):
+    """Portability of THIS test file, not a runtime change (owner Windows gate, 2026-09-22).
+
+    The owner's Windows run failed `runtime_uncovered` with `copy_corrupt` instead of
+    `copy_manifest_incomplete`: the inherited `core.autocrlf=true` rewrote the CLONE's working
+    `docs/GOAL.md` to CRLF, so the entry's pin - the committed bytes - named bytes that checkout
+    did not hold, and the destination re-hash refused before coverage was ever counted. The runtime
+    was right to refuse. The fixture repositories now declare their normalization repo-locally, so
+    the working tree, the blob and the pin agree on every platform. The inherited Windows default
+    is simulated for this test only through a temporary `GIT_CONFIG_GLOBAL` file: the developer's
+    real global configuration is neither read nor written, and no `git config --global` is run.
+    """
+    inherited = tmp_path / "git-global-config"
+    inherited.write_bytes(b"[core]\n\tautocrlf = true\n\teol = crlf\n\tsafecrlf = true\n")
+    monkeypatch.setenv("GIT_CONFIG_GLOBAL", str(inherited))
+    probe = run_process(["git", "config", "--global", "core.autocrlf"], cwd=str(tmp_path))
+    if probe.stdout.strip() != "true":
+        pytest.skip("this Git ignores GIT_CONFIG_GLOBAL; an inherited value cannot be simulated")
+
+    state = setup(tmp_path)
+    assert git(state["source"], "config", "core.autocrlf") == "false", "the repository's own setting wins"
+    assert git(state["target"], "config", "core.autocrlf") == "false", "and the clone's own setting too"
+    committed = run_process(["git", "cat-file", "-p", "HEAD:docs/GOAL.md"], cwd=str(state["target"]))
+    assert committed.returncode == 0 and b"\r" not in GOAL_BYTES
+    assert (Path(state["source"]) / "docs" / "GOAL.md").read_bytes() == GOAL_BYTES
+    assert (Path(state["target"]) / "docs" / "GOAL.md").read_bytes() == GOAL_BYTES, \
+        "the checkout holds the committed goal bytes the manifest entry pins"
+
+    copy = copy_manifest(tmp_path, [], name="uncovered.json", entries=[uncovered_goal_entry(state)])
+    with pytest.raises(FleetRefused, match="copy_manifest_incomplete"):
+        proof_for(state, request_for(state, copy_manifest=copy))
+
+    # The control that makes this regression discriminating: the same source cloned WITHOUT the
+    # repository-local declaration, so the inherited value applies and reproduces the owner's
+    # Windows checkout on any host. The pin is unchanged and the runtime refuses it as corrupt.
+    stale = clone(tmp_path, state["source"], tmp_path / "new" / "repo-a-inherited", normalize=False)
+    working = (stale / "docs" / "GOAL.md").read_bytes()
+    assert working == GOAL_BYTES.replace(b"\n", b"\r\n") != GOAL_BYTES, \
+        "the inherited normalization rewrote the checkout the fixture would have hashed"
+    control = request_for(
+        state, copy_manifest=copy_manifest(tmp_path, [], name="inherited.json",
+                                           entries=[uncovered_goal_entry(
+                                               state, destination=str(stale / "docs" / "GOAL.md"))]),
+        moves=[{"lane": "a", "repository": {"from": str(state["source"]), "to": str(stale)},
+                "runtime": {"from": str(state["runtime"]), "to": str(state["target_runtime"])}}])
+    with pytest.raises(FleetRefused, match="copy_corrupt"):
+        proof_for(state, control)
 
 
 # ----- physical ownership of the copied files -------------------------------------------------
@@ -1203,7 +1302,7 @@ def test_the_cli_replays_a_committed_relocation_without_observing_the_old_paths(
 
     monkeypatch.setattr(fleet_recovery, "collect_relocation_proof", gone)
     monkeypatch.setattr(fleet_recovery, "docker_state", gone)
-    shutil.rmtree(state["source"])  # the old checkout is gone, as it is after a real cutover
+    retire(state["source"], tmp_path / "retired" / "repo-a")  # gone, as it is after a real cutover
     os.unlink(state["journal"])
 
     def run(name, body):
@@ -1217,3 +1316,37 @@ def test_the_cli_replays_a_committed_relocation_without_observing_the_old_paths(
     assert answer["exit_code"] == 0 and answer["cached"] is True and answer["receipt"] == first["receipt"]
     with pytest.raises(FleetRefused, match="relocation_conflict"):
         run("other.json", {**request, "operator": "someone-else"})
+
+
+def test_retiring_a_checkout_does_not_depend_on_deleting_read_only_git_objects(tmp_path, monkeypatch):
+    """Portability of the replay fixture above, not a runtime change (owner Windows gate).
+
+    On the owner's host `shutil.rmtree(state["source"])` raised before the replay assertion it was
+    preparing: Git writes its loose objects READ-ONLY, and Windows refuses to unlink a read-only
+    file. The cause is asserted here from a real checkout, and the Windows rule is reproduced on
+    any host by a LABELLED EMULATION of `os.unlink` - the removal is attempted on a disposable
+    second repository, because it damages the tree it cannot finish. `retire` renames instead, so
+    it never needs that permission, and the path it moved from is absent either way.
+    """
+    source, doomed = tmp_path / "old" / "repo-a", tmp_path / "old" / "repo-doomed"
+    repository(source)
+    repository(doomed)
+    read_only = [path for path in (doomed / ".git" / "objects").rglob("*")
+                 if path.is_file() and not path.stat().st_mode & stat.S_IWUSR]
+    assert read_only, "a real checkout carries Git object files Git itself made read-only"
+
+    real_unlink = os.unlink
+
+    def windows_unlink(path, *args, dir_fd=None, **kwargs):
+        """Injected fault, labelled: the Windows rule expressed on whatever host runs this."""
+        if not os.stat(path, dir_fd=dir_fd).st_mode & stat.S_IWUSR:
+            raise PermissionError(13, "Access is denied")
+        return real_unlink(path, *args, dir_fd=dir_fd, **kwargs)
+
+    monkeypatch.setattr(os, "unlink", windows_unlink)
+    with pytest.raises(PermissionError):
+        shutil.rmtree(doomed)  # the behaviour this corrects, in a repository nothing else reads
+    assert doomed.exists(), "the removal stopped part-way, as it did on the owner's host"
+
+    aside = retire(source, tmp_path / "retired" / "repo-a")
+    assert not source.exists() and (aside / ".git").is_dir()

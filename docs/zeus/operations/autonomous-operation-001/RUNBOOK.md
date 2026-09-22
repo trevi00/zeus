@@ -192,6 +192,40 @@ Two regressions hold this boundary, both platform-independent:
 The second regression sets `GIT_CONFIG_GLOBAL` through `monkeypatch` for that test only; it is a
 simulation of an inherited value, never a change to the developer's configuration.
 
+### Relocation fixture portability (runtime integration, 2026-09-22)
+
+The merged runtime neighbour check reported two failures in `tests/test_fleet_relocation.py`, both
+fixture defects on the same two platform rules. **No runtime rejection, recovery or cleanup policy
+changed; only the fixtures did.**
+
+| Observed failure | Cause | Correction |
+|---|---|---|
+| `runtime_uncovered` refused with `copy_corrupt` where `copy_manifest_incomplete` was expected | the manifest entry pins the committed `docs/GOAL.md` bytes (LF), but the fixture CLONE inherited `core.autocrlf=true` and held CRLF, so `verify_copy_manifest` re-hashed the destination and refused before coverage was counted | `repository` and `clone` declare `NORMALIZATION` (`core.autocrlf=false`, `core.eol=lf`, `core.safecrlf=false`) in each disposable repository's OWN config - `clone` passes it as `--config` so it applies to the initial checkout. Same keys and same rationale as `init_repository` in `tests/test_fleet_backlog_cli.py` |
+| `..._replays_a_committed_relocation_without_observing_the_old_paths` never reached its assertion | `shutil.rmtree` on the old checkout: Git writes its loose objects read-only and Windows refuses to unlink a read-only file | `retire(path, aside)` RENAMES the test-owned checkout to a sibling below the same `tmp_path` and asserts the original path is absent. The replay assertions, the `gone` faults on `collect_relocation_proof`/`docker_state` and the journal unlink are unchanged |
+
+A rename proves exactly what the removal was there to prove - the old path no longer answers - and
+needs no write permission on the files it moves. Nothing outside the test's own `tmp_path` is
+touched, and no production cleanup path is involved.
+
+Two regressions hold this boundary, both platform-independent:
+
+| Test | What it proves |
+|---|---|
+| `...checkouts_hold_the_committed_goal_bytes_under_inherited_normalization` | a temporary `GIT_CONFIG_GLOBAL` supplies `autocrlf=true`/`eol=crlf`/`safecrlf=true`, the fixture's own settings win, the clone holds the committed goal bytes verbatim and `runtime_uncovered` refuses with `copy_manifest_incomplete`; the labelled control clones the same source with `normalize=False`, observes the CRLF checkout and shows the unchanged pin still refused as `copy_corrupt` (SKIPS on a Git that ignores `GIT_CONFIG_GLOBAL`) |
+| `...retiring_a_checkout_does_not_depend_on_deleting_read_only_git_objects` | a real checkout's Git objects are asserted read-only; with `os.unlink` patched to the Windows rule (labelled emulation) `shutil.rmtree` raises `PermissionError` and leaves the tree part-way, on a disposable second repository, while `retire` still makes the original path absent |
+
+Checks executed for this correction, on Linux:
+
+```
+python -m pytest tests/test_fleet_relocation.py tests/test_fleet_recovery.py tests/test_fleet_backlog.py tests/test_fleet_backlog_cli.py -q -p no:cacheprovider
+python -m ruff check . --no-cache
+```
+
+140 passed, 1 skipped (`tests/test_fleet_backlog.py` real-PostgreSQL case, "Integration environment
+required"); Ruff passed. `tests/test_fleet_recovery_postgres.py` imports `setup` from
+`tests/test_fleet_relocation.py` and therefore inherits the corrected fixture; it needs PostgreSQL
+and was NOT run here. The owner repeats the real PG and combined runs, which remain the gate.
+
 ## Known boundaries handed to the owner
 
 - The one-shot `zeus fleet backlog tick` command records the durable status and the
