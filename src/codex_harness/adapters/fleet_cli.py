@@ -1,6 +1,8 @@
-"""`zeus fleet register|enqueue|run|pause|resume|authorize-budget|status`: thin wiring around
-application.fleet. `authorize-budget` is the operator's explicit grant under the trusted local CLI;
-nothing in the dispatcher or a model run calls it."""
+"""`zeus fleet register|enqueue|run|pause|resume|authorize-budget|status|backlog`: thin wiring
+around application.fleet. `authorize-budget` is the operator's explicit grant under the trusted
+local CLI; nothing in the dispatcher or a model run calls it. `backlog register|tick|status`
+(INV-FLEET-BACKLOG-001) admits already approved Git-pinned work through the same `Fleet.enqueue`;
+it adds no executor, no scheduler process and no authority of its own."""
 from __future__ import annotations
 
 import signal
@@ -42,6 +44,16 @@ def add_parser(commands) -> None:
     delivery.add_argument("--job", required=True, help="Existing accepted fleet job id")
     delivery.add_argument("--file", type=Path, required=True, help="Owner delivery document JSON")
     sub.add_parser("status", help="Read the fleet projection; store read only")
+    backlog = sub.add_parser("backlog", help="Approved Git-pinned backlog: register, tick, status")
+    backlog_sub = backlog.add_subparsers(dest="backlog_command", required=True)
+    backlog_register = backlog_sub.add_parser("register", help="Register one owner-approved plan read at a commit")
+    backlog_register.add_argument("--lane", required=True, help="Lane whose repository holds the plan")
+    backlog_register.add_argument("--revision", required=True, help="40-hex commit the plan is read at")
+    backlog_register.add_argument("--path", required=True, help="Repository-relative plan path")
+    backlog_tick = backlog_sub.add_parser("tick", help="Select and admit at most one eligible successor")
+    backlog_tick.add_argument("--plan", required=True, help="Registered plan id")
+    backlog_status = backlog_sub.add_parser("status", help="Read the backlog projection; store read only")
+    backlog_status.add_argument("--plan", default=None, help="One plan id; omitted reads every registered plan")
 
 
 def check_resolved(config: dict) -> dict:
@@ -73,14 +85,29 @@ def enqueue(service, args) -> dict:
 
 def run(service, args) -> dict:
     from codex_harness.adapters.configuration import settings
+    from codex_harness.adapters.fleet_backlog import backlog_ticker, configured_plan
     from codex_harness.adapters.fleet_runtime import LaneLauncher
     from codex_harness.adapters.portfolio import portfolio_reconciler
 
     fleet = Fleet(service.store)
     config = fleet.registered()["config"]
+    host = settings()
+    # Opt-in only (INV-FLEET-BACKLOG-001): without the host plan setting the runner keeps its exact
+    # previous behaviour, never selects work of its own and builds no observer.
+    plan_id = configured_plan(host)
+    backlog_tick = None
+    if plan_id is not None:
+        from codex_harness.bootstrap import build_observer
+
+        # The durable process observer of the configured continuous loop: the backlog's fixed
+        # admission, refusal, conflict, unavailability and recovery transitions are collected as
+        # structured observations, not only as log lines.
+        backlog_tick = backlog_ticker(service.store, config, plan_id,
+                                      observer=build_observer(service.store, "fleet-backlog"))
     # The bounded portfolio pass is wired here, in the adapter: the runner keeps no portfolio
     # dependency and a reconciliation outage never blocks admission (operating-portfolio-001).
-    runner = FleetRunner(fleet, LaneLauncher(config, settings()), reconcile=portfolio_reconciler(service.store))
+    runner = FleetRunner(fleet, LaneLauncher(config, host), reconcile=portfolio_reconciler(service.store),
+                         backlog=backlog_tick)
     for name in ("SIGINT", "SIGTERM", "SIGBREAK"):
         if hasattr(signal, name):
             # Graceful stop: admission closes, owned children are drained, nothing is killed.
@@ -101,6 +128,28 @@ def status(service, args) -> dict:
     return {**fleet.status(), "reconciliation_required": fleet.reconciliation_required(), "exit_code": 0}
 
 
+def backlog(service, args) -> dict:
+    """`zeus fleet backlog register|tick|status`. Git reads and manifest validation happen in the
+    adapter, outside every store transaction; admission itself is the unchanged `Fleet.enqueue`."""
+    from codex_harness.adapters.fleet_backlog import register_plan, tick_plan
+    from codex_harness.application.fleet_backlog import FleetBacklog
+    from codex_harness.domain.fleet_backlog import FAILED_OUTCOMES
+
+    command = args.backlog_command
+    if command == "register":
+        config = Fleet(service.store).registered()["config"]
+        return {**register_plan(service.store, config, args.lane, args.revision, args.path), "exit_code": 0}
+    if command == "tick":
+        config = Fleet(service.store).registered()["config"]
+        result = tick_plan(service.store, config, args.plan)
+        return {**result, "exit_code": 1 if result["outcome"] in FAILED_OUTCOMES else 0}
+    plan_id = getattr(args, "plan", None)
+    projection = FleetBacklog(service.store).status(plan_id)
+    # A named plan that is not registered is a refusal; listing every plan is a successful read
+    # even when nothing is registered yet.
+    return {**projection, "exit_code": 1 if plan_id is not None and not projection["registered"] else 0}
+
+
 def execute(service, args) -> dict:
     command = args.fleet_command
     if command == "register":
@@ -115,6 +164,8 @@ def execute(service, args) -> dict:
         return {**Fleet(service.store).resume(), "exit_code": 0}
     if command == "record-delivery":
         return record_delivery(service, args)
+    if command == "backlog":
+        return backlog(service, args)
     if command == "authorize-budget":
         grant = Fleet(service.store).authorize_budget(args.per_host, args.total, args.expected_total,
                                                       mode=getattr(args, "mode", None))
