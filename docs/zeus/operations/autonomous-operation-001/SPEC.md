@@ -556,6 +556,37 @@ artifact/DB promotion is confirmed; unavailable persistence preserves recovery m
 
 #### R5 instance-authority amendment after candidate 79c6783
 
+##### Evidence-environment reconciliation after a1481784 (2026-09-23)
+
+The instance amendment produced candidate a1481784c12fb8af7becb3c32f23e2203f7d0075, but
+evidence inspection 420f935a refused 3/8 claims (5 checked). No independent acceptance exists for
+this candidate. The actual verifier failure is test_a_fence_lost_during_the_bounded_stop_preserves_
+the_effect_and_starts_nothing: instance_receipt_unreadable BEFORE the intended lease-loss boundary.
+Owner reproduced the same failure once in an offline read-only archive without .git using image
+ae070306: 1 failed/85 deselected, log artifacts/autonomous-operation-001/instance-replay/reproduce.log.
+This is an executed reproduction, not the earlier code-only finding.
+
+Discriminating evidence: verifier supplies a source archive without .git; worker staging has git.
+startup_receipt derives revision from the loaded root's git state and emits empty revision when
+unavailable; receipt_identity correctly refuses that as unreadable. live_target currently accepts
+receipt arrival/digest without ensuring the fixture actually owns a valid attestable runtime.
+The guard test therefore exercises refusal of an unknown instance instead of expiry after stop.
+Do not weaken production receipt validation or pretend absent git proves an attested revision.
+
+Bounded correction is TEST FIXTURE plus its evidence documentation only: create an owned temporary
+attestable runtime for tests that require a valid live receipt, using real source files and a tiny
+local git repository where required. Keep git changes confined to that fixture, no global git
+configuration, network, or production checkout writes. Preserve separate deliberate no-git/wrong-
+runtime refusal tests. Assert fixture validity before the intended boundary. No adding skips to
+avoid the gate. Run both exact scoped four-file pytest and Ruff. Also run the named regression in
+a source-copy environment without outer .git, preserving all outcomes and bounded logs. Independent
+Codex must still inspect the instance-authority correction inherited from a1481784 and its full
+changed forward/rollback matrix; it has never been accepted, not merely the fixture diff.
+Allowed edits for this correction: tests/test_host_delivery.py and HOST-DELIVERY.md only. If the
+discriminating check reveals a production defect, report it rather than broadening those edits.
+This task may run in the interface lane alongside worker-sessions: both use the same repository but
+their allowed paths are disjoint. Lane is scheduling ownership, not permission to change goal/role.
+
 The lifecycle guard itself is retained. Independent review of candidate 79c6783ba0d32d985761d8cdde70d2662b42ab3b
 found the remaining mismatch: adapter _matching_instance returns None for every nonmatching receipt,
 and start interprets None as permission to stop/retire. Descriptor identity and authority to replace
