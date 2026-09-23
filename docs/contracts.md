@@ -2455,3 +2455,86 @@ Fixture tests prove the wiring against a labelled protocol child and an injected
 not prove the pinned CLI's transcript layout, `--resume` behaviour under `CLAUDE_CONFIG_DIR`, or
 continuity across a real container recreation; that is the owner's real two-turn probe before any
 production activation.
+
+## INV-CONTINUATION-001
+
+The durable conductor continuation keeps one logical goal moving across FINITE operations without
+editing any of them (docs/zeus/operations/autonomous-operation-001/CONTINUATION.md). It is opt-in
+twice: the owner registers a Git-pinned policy (`urn:zeus:continuation-policy:1`, `zeus continuation
+register --lane --revision --path`, read through `GitSource` at the commit, never the working tree),
+and either the host setting `ZEUS_CONTINUATION_POLICY` names it for `zeus fleet run` or the owner runs
+one `zeus continuation tick --policy`. An unregistered or disabled policy is `disabled` with zero
+actions: no Git read, lane connection, process, write or model call. Every other command, the finite
+Operation, LocalCycle and Fleet defaults are unchanged.
+
+The policy binds the lanes, the repository identity, the goals (path, sha256, criterion), the
+allowed paths and acceptance criteria, the session archive root digest
+(`zeus continuation identity --lane`), the qualified model, image and profile, the delivery target
+and `max_corrections`. A different policy under the same id is `policy_conflict`; a registered pin
+whose bytes no longer resolve is `policy_unavailable`, a changed digest `policy_changed`. A job whose
+lane, repository, goal, allowed paths, criteria or model is outside the policy, or a lane whose actual
+isolation image, worker profile or archive root differs, is a named `refused` intent
+(`goal_changed`, `scope_changed`, `model_changed`, `image_changed`, `session_archive_changed`, ...)
+with `next_owner: operator`; the continuation never widens its own permission and model output never
+extends it.
+
+State lives in the Fleet control store (`continuation_policies`, `continuation_intents`) and in each
+lane store (`continuation_bindings`). The fixed routing table, over terminal Fleet jobs and their lane
+evidence read outside every transaction: `failed/evidence_gate_refused` with a known handoff ->
+`evidence_repair` successor (candidate preserved, fresh evidence handoff, never a resumed session);
+`rejected` with a succeeded `review_lead` decision, or a conductor rejection -> `correction`
+successor; the second distinct similar failure of a family -> `research` (held until the existing
+Portfolio investigation holding its jobs is `researched` with evidence; replays count nothing);
+`unknown`, an unknown-effect failure reason, an unconfirmed/pending termination marker or a lost
+conductor dispatch -> `recovery` for ExecutionRecovery, never a fresh call; `accepted` ->
+`conductor_review` (the existing guarded `decide_one("conductor", expected=...)` in the lane through
+`zeus continuation conduct`); a conductor-accepted release -> `host_delivery` handoff to the owner's
+HostDelivery plan on the policy target (`active` completes, `rolled_back`/`failed`/`blocked` holds the
+family, the acceptance stays); a delivered item -> `next_item` for the approved backlog. Missing
+evidence is a named refusal, never a guess; `max_corrections` successors per family, then
+`correction_budget_exhausted`.
+
+An intent id is `origin job + generation/attempt + decisive evidence digest + route`; a successor id is
+`cont-` plus 24 hex of it. Every external effect has a durable pre-effect state: `intended` (complete
+successor manifest and binding recorded) -> `published` (lane binding written; identical replay cached,
+different document `binding_conflict`, an already claimed operation `operation_already_claimed`) ->
+`admitted` (the unchanged `Fleet.enqueue`, same id on replay) -> `returned` -> `completed`; for the
+conductor `intended -> dispatched` BEFORE the child starts, and a dispatch whose decision row is still
+`pending` with attempt 0 is provably not entered. Each move is a compare-and-swap on the intent
+version (`IntentChanged` for a stale holder), so two controllers, a restart and a duplicate event
+converge on one intent, one successor and one dispatch. A successor keeps the origin's goal, base,
+allowed paths, acceptance criteria, budget and Claude controls byte for byte; only the id and a fixed
+objective preface with identity/digest references differ, and the existing manifest validator
+decides it (`successor_manifest_refused`). The rejected operation stays rejected; nothing parked is
+revived. One family per tick, least recently served first, at most four per tick; a held family
+(`research_required`, `recovery_required`, `paused`, `refused`) never starves another. A lane, Git or
+Fleet outage skips that subject for the tick (`unavailable`, exception type only).
+
+Sessions and workspaces: before admission the controller binds each queued in-policy job to its own
+logical session (`task_id` = the family's root job). `Operation.claim` attaches the lane's binding to
+the row identity and the assignment (`details.continuation`), refusing a binding that changed between
+its reads. `Executor.execute_one` accepts it only when the identical document is the lane's own
+`continuation_bindings` row for the assignment's operation; it then passes `task_session` with
+`max_handoffs=1` to `_run`, freezes the adopted turn's exact candidate with `WorkerSessions.submit`,
+and records a committed `review_lead` decision on the session after the commit. A correction is
+`native_resume_eligible` only when `record_review` moved the family session to `correction_ready` on
+that decision; otherwise it is an explicit fresh evidence handoff. `GitWorkspace.continue_workspace`
+reuses only the owner-derived origin workspace under the managed root, on its own branch and pinned
+base, at exactly the last candidate HEAD and clean; the executor also refuses an origin task that is
+queued, retrying, running or blocked. Nothing is reset or cleaned; the frozen review checkout stays
+separate. `zeus operate run` and `continuation conduct` build a `WorkerSessions` owner only for an
+operation whose binding names a session.
+
+Observability: every committed intent change emits `operations.continuation_transition` or, for
+`research_required`, `recovery_required` (outcome `unknown`), `paused` and `refused`,
+`operations.continuation_blocked`, with intent, family, route, state, origin/successor job, next owner
+and next action only. `zeus continuation status` and the additive monitoring source `continuation`
+project policies (id, enabled, digest, pin), intents (route, state, cause, next owner/action, evidence
+references, predecessor/successor links, completion evidence), counts and held families; never a
+manifest, objective, review text, transcript, path or credential; a store failure makes the envelope
+`unavailable`. `FleetRunner(continuation=...)` runs the pass after the backlog tick and before
+admission; its failure is its own `unavailable` state and never blocks admission.
+
+Fixture tests prove the composition with labelled worker/lead/conductor executors and a fixture
+process runner. They do not prove real PostgreSQL/Redis behaviour, a real two-turn model session, the
+managed Fleet or two useful unattended jobs; those are owner qualification gates.

@@ -589,7 +589,7 @@ class FleetRunner:
     job this process launched is finalized by it even if another runner races."""
 
     def __init__(self, fleet: Fleet, launcher, sleep=time.sleep, interval: float = 5.0, reconcile=None,
-                 backlog=None, control=None):
+                 backlog=None, control=None, continuation=None):
         self.fleet, self.launcher, self.sleep, self.interval = fleet, launcher, sleep, interval
         # Optional descriptor-bound runtime control of a managed host target (HOST-RUNTIME.md):
         # `admission_open() -> bool`, `stop_requested() -> bool` and `heartbeat(state)`. A closed
@@ -605,6 +605,12 @@ class FleetRunner:
         # adapter and also in its own transactions. None - the default - keeps this runner's exact
         # previous behaviour: it invents no successor, no retry and no merge.
         self.backlog = backlog
+        # Optional opt-in conductor continuation pass (INV-CONTINUATION-001), supplied by the adapter
+        # and run in its own transactions after the backlog tick and before admission, so a
+        # successor or an initial session binding it records is visible to this same admission.
+        # None - the default - keeps this runner's exact previous behaviour.
+        self.continuation = continuation
+        self.continuation_state = None
         # Last logged reconciliation state, so repeated identical failures stay silent and only a
         # real transition is written.
         self.reconciliation_state = None
@@ -622,13 +628,16 @@ class FleetRunner:
                    "reconciliation": {"state": "disabled", "error_type": None},
                    "backlog": {"state": "disabled", "outcome": None, "reason_code": None,
                                "error_type": None}}
+        if self.continuation is not None:
+            summary["continuation"] = {"state": "disabled", "outcome": None, "reason_code": None, "error_type": None}
         while True:
             admitting = self._admission_open(summary)
             self._reconcile(summary)
             progressed = False
             if admitting:
                 self._backlog(summary)
-                progressed = self._admit(summary)
+                progressed = self._continue(summary)
+                progressed = self._admit(summary) or progressed
             progressed = self._reap(summary) or progressed
             self._heartbeat(summary)
             if self.children or progressed:
@@ -743,6 +752,28 @@ class FleetRunner:
         elif self.backlog_state is not None:
             LOGGER.info("approved backlog recovered")
         self.backlog_state = state
+
+    def _continue(self, summary: dict) -> bool:
+        """One bounded continuation pass per cycle. Its failure is its own `unavailable` state with
+        the exception TYPE only; unrelated admission and finalization keep running. Returns whether
+        it recorded progress (so `--once` drains a successor it just admitted)."""
+        if self.continuation is None or self.stopping:
+            return False
+        try:
+            result = self.continuation()
+        except Exception as exc:
+            state, row = "unavailable", {"error_type": type(exc).__name__}
+        else:
+            row = result if isinstance(result, dict) else {}
+            state = {"refused": "refused", "disabled": "disabled"}.get(row.get("outcome"), "ok")
+        summary["continuation"] = {"state": state, "outcome": row.get("outcome"),
+                                   "reason_code": safe_code(row["reason_code"]) if row.get("reason_code") else None,
+                                   "error_type": row.get("error_type") if isinstance(row.get("error_type"), str) else None}
+        if state != self.continuation_state and state in {"unavailable", "refused"}:
+            LOGGER.warning("conductor continuation %s; fleet admission continues", state)
+        self.continuation_state = state
+        return state == "ok" and any(action.get("effect") in {"admitted", "session_bound"}
+                                     for action in row.get("actions") or [] if isinstance(action, dict))
 
     def _admit(self, summary: dict) -> bool:
         progressed = False

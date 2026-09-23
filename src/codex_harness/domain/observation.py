@@ -207,6 +207,17 @@ REGISTRY = {
     "operations.worker_session_blocked": {"task_id": _S, "session_id": _S, "state": _S, "version": _I,
                                           "error_type": _N, "archive_retained": _N, "next_owner": _S,
                                           "next_action": _S},
+    # INV-CONTINUATION-001: one committed continuation intent change. Intent, family and job
+    # IDENTIFIERS, the routing-table route, fixed state/owner codes and the domain's fixed next-action
+    # text only - never a manifest, an objective, review text, a transcript or a path. A replayed
+    # observation maps to the same intent, commits nothing and reports nothing.
+    "operations.continuation_transition": {"intent_id": _S, "family": _S, "route": _S, "state": _S,
+                                           "previous_state": _N, "origin_job": _S, "successor_job": _N,
+                                           "next_owner": _S, "next_action": _S},
+    # Research required, recovery required (unknown effects), a held family or a named refusal.
+    "operations.continuation_blocked": {"intent_id": _S, "family": _S, "route": _S, "state": _S,
+                                        "origin_job": _S, "successor_job": _N, "next_owner": _S,
+                                        "next_action": _S},
     "operations.alert_suppressed": {"kind": _S, "suppressed": _I},
     "operations.alert_pending": {"kind": _S, "channel": _N, "pending": _I},
     "operations.autonomous_stage": {"run_id": _S, "stage": _S, "state": _S},

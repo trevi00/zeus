@@ -162,7 +162,10 @@ def test_collect_adds_observations_only_with_runtime_and_keeps_other_sources(mon
     # `worker_sessions` envelopes beside the existing store-backed sources; `observations` still
     # appears only with a runtime directory, and every original source is still collected as before.
     assert set(legacy['sources']) == {'database', 'docker', 'redis', 'fleet', 'research_programs', 'portfolio',
-                                      'fleet_backlog', 'host_delivery', 'worker_sessions'}
+                                      'fleet_backlog', 'host_delivery', 'worker_sessions', 'continuation'}
+    # INV-CONTINUATION-001: the read-only continuation envelope beside them, empty without a policy.
+    assert legacy['sources']['continuation']['status'] == 'ok'
+    assert legacy['sources']['continuation']['data']['intents'] == []
     assert legacy['sources']['worker_sessions']['status'] == 'ok'
     assert legacy['sources']['worker_sessions']['data']['sessions'] == []
     assert legacy['sources']['fleet']['data']['registered'] is False
