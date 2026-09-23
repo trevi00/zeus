@@ -360,6 +360,19 @@
       "dependencies": [
         "native-fixture"
       ]
+    },
+    {
+      "id": "research-recovery",
+      "project_id": "research-improvement",
+      "criterion_id": "verified-loop",
+      "lane": "harness",
+      "manifest_path": "docs/zeus/operations/autonomous-operation-001/research-recovery.operation.json",
+      "manifest_revision": "379cc1681374e9c4c10b316c0350aad226ceab31",
+      "manifest_sha256": "355d22646c8267129464dc832cf6283e185e9b63ddeb9f65bc4c98f77aec68ed",
+      "priority": 260,
+      "dependencies": [
+        "native-fixture"
+      ]
     }
   ]
 }
