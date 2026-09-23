@@ -10,6 +10,7 @@ successful command is itself the evidence that none was needed. No model runs.
 import hashlib
 import json
 import os
+import signal
 import subprocess
 import sys
 import time
@@ -395,7 +396,9 @@ def test_the_run_loop_stops_gracefully_and_finishes_the_tick_in_flight():
         def tick(self, plan_id=None):
             self.calls += 1
             if self.calls == 2:
-                os.kill(os.getpid(), __import__("signal").SIGINT)
+                # Delivered in process to the handler run_loop installed. `os.kill` on Windows is
+                # TerminateProcess for SIGINT and would end the test runner instead.
+                signal.raise_signal(signal.SIGINT)
             observed.append(self.calls)
             return {"outcome": "progressed", "stage": "publishing"}
 
@@ -474,10 +477,17 @@ def test_the_service_entry_runs_as_a_real_child_process_and_reports_its_identity
                   "root": str(tmp_path / "root"), "revision": REVISION, "worker_image": IMAGE,
                   "profile_digest": PROFILE, "predecessor": None}
     (state / DESCRIPTOR_FILE).write_text(json.dumps(descriptor), encoding="utf-8")
-    child = subprocess.Popen([sys.executable, "-m", "codex_harness.adapters.host_delivery",
+    # The interpreter itself, not a Windows venv redirector whose PID is a launcher distinct from the
+    # Python process that writes the receipt. The venv is replaced by this process's own import
+    # paths, in order, so the child still loads the candidate source and its dependencies.
+    interpreter = getattr(sys, "_base_executable", None) or sys.executable
+    assert Path(interpreter).is_file(), "no base interpreter to launch directly"
+    environment = dict(os.environ)
+    environment["PYTHONPATH"] = os.pathsep.join(entry for entry in sys.path if entry)
+    child = subprocess.Popen([interpreter, "-m", "codex_harness.adapters.host_delivery",
                               "service", "--state-dir", str(state), "--max-seconds", "30"],
                              stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL,
-                             stderr=subprocess.PIPE)
+                             stderr=subprocess.PIPE, env=environment)
     try:
         receipt = None
         for _ in range(100):
