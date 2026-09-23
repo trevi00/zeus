@@ -1,5 +1,27 @@
 # Operating status
 
+## Continuation checkpoint: 2026-09-23 13:17 KST
+
+Session correction remains an actual running harness-lane job. The interface lane additionally
+admitted autonomous-operation-001-host-runtime at 04:12:46Z from owner plan
+6ee10bc4c99e5ade0498e39a48f899eb286abc56. It implements the missing managed immutable runtime /
+actual Fleet entry / pause-drain-heartbeat / predecessor consumption composition specified in the
+same SPEC. Paths are disjoint from session correction; neither job may change production services.
+
+PR182 owner review comment 5788869558 records no additional established blocker in the fixed
+inherited instance-ownership scope, conditional on exact-head CI. Linux 3.12/3.14 checks passed;
+Windows and integration were still running. An owner-authored bounded continuation is actually
+waiting for run 35816837876 on head aff7749882 and unchanged base c9e7ed19. It requires all six
+named checks plus workflow success, then marks ready and merges with the exact head guard. It
+does not deploy or invoke models. Failure/identity changes stop and are recorded; there is no CI
+rerun loop. This bootstrap owner action is not the still-pending autonomous conductor.
+Evidence: artifacts/autonomous-operation-001/host-pr-continuation.json(l), finish-host-pr.py.
+
+SPEC now also records the existing Council/Operation/Executor/Release continuation routing and
+the requirement to preserve the original managed workspace for native correction continuity.
+Implementation of that controller follows acceptance of the session primitive; the whole-loop
+recovery, rollback and two-useful-item gates remain open.
+
 ## Latest execution checkpoint
 
 - Native correction aff7749882 passed the independent review of its two-file delta. Owner native
