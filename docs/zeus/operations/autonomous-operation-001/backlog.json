@@ -269,6 +269,32 @@
       "dependencies": [
         "pause-commit"
       ]
+    },
+    {
+      "id": "live-status",
+      "project_id": "research-improvement",
+      "criterion_id": "verified-loop",
+      "lane": "harness",
+      "manifest_path": "docs/zeus/operations/autonomous-operation-001/live-status.operation.json",
+      "manifest_revision": "b735789eb3dfbf1e5abb33d75290d255062b7905",
+      "manifest_sha256": "569fdf345d4bab2b54fd0219d7e02a6422e5a19610882706684cc8c9751be944",
+      "priority": 200,
+      "dependencies": [
+        "native-fixture"
+      ]
+    },
+    {
+      "id": "live-runbook",
+      "project_id": "research-improvement",
+      "criterion_id": "verified-loop",
+      "lane": "harness",
+      "manifest_path": "docs/zeus/operations/autonomous-operation-001/live-runbook.operation.json",
+      "manifest_revision": "b735789eb3dfbf1e5abb33d75290d255062b7905",
+      "manifest_sha256": "a1862300bf119ea8ba295bbbcb23568f552ad59c682c126898592399189ea690",
+      "priority": 200,
+      "dependencies": [
+        "live-status"
+      ]
     }
   ]
 }
