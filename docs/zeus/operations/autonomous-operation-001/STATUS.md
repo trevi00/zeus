@@ -186,3 +186,37 @@ Native CLI resume probe evidence: artifacts/autonomous-operation-001/opus55/nati
 It uses a dedicated test-only CLI home; it does not prove the future Zeus allowlisted archive path.
 Raw model usage is retained. No reboot, live product/payment rollout or complete asset absorption
 is required to close this initial autonomy contract. These remain operating workload/product gates.
+# Owner qualification checkpoint, 2026-09-23
+
+Accepted session 973a903f and managed-runtime 9c327f48 are integrated at a81cfbd. Windows scoped
+integration: 226 passed, 11 skipped, 1 test-oracle failure. CRLF/raw-byte versus Git-filtered hash
+was reproduced; no corrupt runtime was observed. Ruff passed. Native qualification support and
+the durable conductor connection are dispatched through approved backlog pin 752462d, both actual
+Claude tasks observed running. No operating runtime or live worker image has been switched.
+
+Owner built image sha256:f1b6ef24d6ae27a1885442c269618c783fe2604c67eaccde375dd19f6d0525fe
+from the pinned implementation. Real Opus 5.5 transport made two calls with separate removed and
+recreated containers, the same session id, verified archive prefix continuity and successful
+nonce recall. Checkpoints were committed in dedicated PostgreSQL schema
+zeus_session_qualification_001. Both containers were removed with evidence retained. This proves
+transport/PG/archive resume, not the future continuation controller's independent review cycle.
+Receipt: artifacts/autonomous-operation-001/session-real-receipt.json (raw turns retained locally).
+
+Resumed usage delta remains explicitly unknown: cache_creation_input_tokens decreased from 2929
+to 172 while cache_read_input_tokens became 2929. No zero/delta was invented; original usage is
+preserved. Primary documentation read 2026-09-23:
+https://code.claude.com/docs/en/agent-sdk/cost-tracking distinguishes per-turn usage, per-model
+totals and cumulative cost, with differences between input modes. These actual CLI 2.1.280
+observations do not establish universal cumulative raw-usage semantics. Calibrate attribution
+against the pinned transport before claiming token efficiency; retained raw usage remains evidence.
+
+Owner also launched the REAL managed Fleet on Windows, with a dedicated empty PostgreSQL schema
+zeus_managed_qualification_001. Its startup receipt identified sealed source 752462d and actual
+module path; fresh heartbeat reported zero active/unresolved work. Repeated start reconciled the
+same instance and graceful stop succeeded. Receipt: artifacts/autonomous-operation-001/
+managed-real-receipt.json. No model call, operating-queue admission or live service mutation occurred.
+This is actual Windows managed Fleet consumption, not useful-work/live cutover/rollback evidence.
+
+Remaining: accepted native-platform correction; independently accepted connected controller;
+actual rejected-review session correction and release/canary/rollback; two useful items selected
+and completed without chat relay, including recovery/restart/fairness and monitoring evidence.
