@@ -177,8 +177,9 @@ def test_collector_entrypoint_is_read_only_and_needs_no_executor(monkeypatch, tm
     # research_programs envelope (INV-RESEARCH-PROGRAM-001), operating-portfolio-001 the
     # additive portfolio envelope and autonomous-operation-001 the additive fleet_backlog envelope
     # (INV-FLEET-BACKLOG-001), the additive host_delivery envelope (INV-HOST-DELIVERY-001) and the
-    # additive worker_sessions envelope (INV-WORKER-SESSION-001).
-    assert [line['event'] for line in lines] == (['startup'] + ['source_state'] * 10 + ['shutdown']) * 2
+    # additive worker_sessions envelope (INV-WORKER-SESSION-001) and the additive continuation
+    # envelope (INV-CONTINUATION-001).
+    assert [line['event'] for line in lines] == (['startup'] + ['source_state'] * 11 + ['shutdown']) * 2
     assert snapshot['sources']['observations']['status'] == 'ok'
     # Unregistered fleet: an ok envelope with the fixed empty shape; the read-only store is unchanged
     # (asserted above) and no executor was built.
@@ -205,6 +206,13 @@ def test_collector_entrypoint_is_read_only_and_needs_no_executor(monkeypatch, tm
     assert sessions['status'] == 'ok'
     assert sessions['data'] == {'schema': 'zeus.worker-session.v1', 'sessions': [], 'truncated': False,
                                 'counts': {}, 'blocked': 0, 'authority': sessions['data']['authority']}
+    # No registered continuation policy: an `ok` envelope with no policy and no intent
+    # (INV-CONTINUATION-001); collecting it ticks, dispatches and admits nothing.
+    continuation = snapshot['sources']['continuation']
+    assert continuation['status'] == 'ok'
+    assert continuation['data'] == {'schema': 'urn:zeus:continuation-status:1', 'policies': [], 'intents': [],
+                                    'truncated': False, 'counts': {}, 'held_families': {},
+                                    'authority': continuation['data']['authority']}
     assert snapshot['sources']['observations']['data']['local'] == {'status': 'unavailable',
                                                                     'reason': 'directory_missing'}
     assert lines[0] == {'at': lines[0]['at'], 'event': 'startup', 'mode': 'collect', 'once': True,
@@ -301,7 +309,11 @@ def test_collect_keeps_source_failures_independent(monkeypatch):
     assert result['schema'] == 'harness-monitor.v1'
     assert result['scope'] == {'label': 'repository ' + Path('.').resolve().name, 'docker': 'compose', 'containers': None}
     assert set(sources) == {'database', 'docker', 'redis', 'fleet', 'research_programs', 'portfolio',
-                            'fleet_backlog', 'host_delivery', 'worker_sessions'}
+                            'fleet_backlog', 'host_delivery', 'worker_sessions', 'continuation'}
+    # The additive continuation source (INV-CONTINUATION-001) reads the same store: unavailable with
+    # the exception TYPE only, never an empty intent list reported as a healthy read.
+    assert sources['continuation']['status'] == 'unavailable'
+    assert sources['continuation']['data'] is None and sources['continuation']['error'] == 'RuntimeError'
     # The additive worker-session source (INV-WORKER-SESSION-001) reads the same store: unavailable
     # with the exception TYPE only, never an empty session list reported as a healthy read.
     assert sources['worker_sessions']['status'] == 'unavailable'

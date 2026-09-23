@@ -460,6 +460,52 @@ class Executor:
                 "archive": {key: last["archive"][key] for key in ("ref", "transcript_sha256", "files")},
                 "continuity": last["continuity"]}
 
+    # ---- conductor continuation (INV-CONTINUATION-001) --------------------------------------------
+    def _continuation(self, details) -> dict | None:
+        """The trusted continuation binding of this assignment, or None for the legacy path.
+
+        It is accepted only when the assignment's operation names it AND the identical document is
+        the lane store's own `continuation_bindings` row for that operation, so neither a plan nor a
+        model answer nor a forged message can select a workspace or a session."""
+        from codex_harness.domain.continuation import validate_binding
+
+        attached = details.get("continuation") if isinstance(details, dict) else None
+        if attached is None:
+            return None
+        binding = validate_binding(attached)
+        operation = details.get("operation") if isinstance(details.get("operation"), dict) else {}
+        require(operation.get("id") == binding["operation_id"], "Continuation binding names another operation")
+        with self.service.store.transaction() as tx:
+            stored = tx.get("continuation_bindings", binding["operation_id"])
+        require(stored == binding, "Continuation binding is not the lane's own record")
+        return binding
+
+    def _session_review(self, phase, data, current) -> None:
+        """After the decision committed (never inside its transaction): the session owner reads the
+        committed review row itself. Best effort: the continuation controller records the same
+        decision idempotently on its next tick, so a refusal or outage here changes no outcome."""
+        if self.worker_sessions is None or phase != "review_lead" or (current or {}).get("status") != "succeeded":
+            return
+        continuation = ((data.get("origin") or {}).get("continuation") or {}) if isinstance(data, dict) else {}
+        session = continuation.get("session") if isinstance(continuation, dict) else None
+        if not isinstance(session, dict) or type(session.get("task_id")) is not str:
+            return
+        try:
+            self.worker_sessions.record_review(session["task_id"], current["id"])
+        except Exception:
+            pass
+
+    def _continued_workspace(self, task, workspace) -> dict:
+        """The origin workspace, only when no execution of the origin task can still own it. A
+        blocked origin (reconciliation required) has unconfirmed effects: its workspace is evidence
+        for recovery, never a place to continue."""
+        with self.service.store.transaction() as tx:
+            origin = tx.get("tasks", workspace["origin_task_id"])
+        require(origin is not None and origin.get("status") not in {"queued", "retry", "running", "blocked"},
+                "Continuation workspace still has an active or unresolved owner")
+        return self.git.continue_workspace(workspace["origin_task_id"], task["id"], workspace["head"],
+                                           workspace["base"])
+
     def _run(self, agent: str, key: str, objective: str, evidence: dict, cwd: str,
              schema: dict, read_only: bool = False, heartbeat=None, lease=None, stage=None,
              workload: str = "final_validation", importance: str | None = None,
@@ -1147,8 +1193,15 @@ class Executor:
                 self.service.org.authorize(assignment)
                 commands.append(assignment)
             elif action == "implement":
-                workspace = self.git.prepare(task["id"], message["where"]["revision"]
-                                             if message["where"]["revision"] != "bootstrap" else "HEAD")
+                # INV-CONTINUATION-001: only the trusted lane binding an Operation claim attached
+                # (never plan or model text) selects a continued workspace or a task session.
+                continuation = self._continuation(details)
+                if continuation is not None and continuation["workspace"] is not None:
+                    workspace = self._continued_workspace(task, continuation["workspace"])
+                else:
+                    workspace = self.git.prepare(task["id"], message["where"]["revision"]
+                                                 if message["where"]["revision"] != "bootstrap" else "HEAD")
+                task_session = continuation["session"] if continuation is not None else None
                 hook = details.get("plan", {}).get("origin", {}).get("hook")
                 if hook:
                     details["hook_contract"] = {"manifest": "harness_hooks/" + hook["id"] + ".json",
@@ -1163,9 +1216,16 @@ class Executor:
                                    workspace["path"], worker_schema(self.evidence_profile) if profiled else IMPLEMENTATION,
                                    False, heartbeat, task,
                                    workload="implementation", action="implement",
-                                   importance=details.get("plan", {}).get("origin", {}).get("importance"))
+                                   importance=details.get("plan", {}).get("origin", {}).get("importance"),
+                                   # A task-session turn is exactly one provider call (INV-WORKER-SESSION-001).
+                                   **({"task_session": task_session, "max_handoffs": 1} if task_session else {}))
                 heartbeat()
                 result["candidate"] = self.git.capture(workspace)
+                if task_session and (result.get("task_session") or {}).get("adopted"):
+                    # The exact candidate this adopted turn produced is frozen on the session; the
+                    # review wait that follows holds no owner and calls nothing.
+                    self.worker_sessions.submit(task_session["task_id"], {
+                        key: result["candidate"][key] for key in ("revision", "tree", "base")})
                 if bound_ticket:
                     result["candidate"]["zeus_ticket"] = bound_ticket
                 if hook:
@@ -1519,7 +1579,9 @@ class Executor:
                     self.observer.close_unconfirmed(tx, lease, "accepted")  # a recorded terminal outcome
                     execution_notice(tx, self.service.org, current, 'decisions_pending', 'decision_blocked', utcnow())
                 return current
-            return self._commit_decision(decision, agent, phase, data, result, lease)
+            current = self._commit_decision(decision, agent, phase, data, result, lease)
+            self._session_review(phase, data, current)
+            return current
         except ReconciliationRequired as exc:
             return self._block_for_reconciliation({**decision, "_bucket": "decisions_pending"}, agent, exc)
         except PostExecutionRecordFailure as exc:

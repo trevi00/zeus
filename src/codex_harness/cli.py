@@ -312,6 +312,8 @@ def parser() -> argparse.ArgumentParser:
     add_host_delivery_parser(commands)
     from codex_harness.adapters.worker_sessions import add_parser as add_worker_session_parser
     add_worker_session_parser(commands)
+    from codex_harness.adapters.continuation_cli import add_parser as add_continuation_parser
+    add_continuation_parser(commands)
     from codex_harness.adapters.frontdesk_cli import add_parser as add_desk_parser
     add_desk_parser(commands)
     from codex_harness.adapters.autonomous_cli import add_parser as add_autonomous_parser
@@ -524,6 +526,20 @@ def worker_session_command(service, args):
         emit(worker_sessions.refusal(exc))
         raise SystemExit(1) from exc
     emit(result)
+
+
+def continuation_command(service, args):
+    """INV-CONTINUATION-001: exit 0 only for a completed command; refusals print a code, the named
+    next owner and a type, never a manifest, a path, a DSN or a raw exception."""
+    from codex_harness.adapters import continuation_cli
+    try:
+        result = continuation_cli.execute(service, args)
+    except Exception as exc:
+        emit(continuation_cli.refusal(exc))
+        raise SystemExit(1) from exc
+    emit(result)
+    if result.get("exit_code", 1) != 0:
+        raise SystemExit(1)
 
 
 def desk_command(service, args):
@@ -762,6 +778,8 @@ def main() -> None:
             host_delivery_command(service, args)
         elif args.command == "worker-session":
             worker_session_command(service, args)
+        elif args.command == "continuation":
+            continuation_command(service, args)
         elif args.command == "desk":
             desk_command(service, args)
         elif args.command == "audit-service":
