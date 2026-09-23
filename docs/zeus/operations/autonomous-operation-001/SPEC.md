@@ -1,5 +1,59 @@
 # Whole autonomous operating loop
 
+## Accepted ownership design: stop and rollback integration correction, 2026-09-23
+
+Latest independent review of f9c95c0 accepts the Fleet reservation/guardian/proof/settlement
+architecture and all ten replayed command claims, but rejects two reachable integration gaps.
+The candidate is integrated ONLY into this implementation branch, not operating runtime.
+Preserve accepted session, managed-runtime, native-Windows and ownership evidence. This is
+one bounded follow-up, not a new architecture audit. OWNERSHIP-DEBATE.md remains the research frame.
+
+Facts: FleetRunner.stop sets only stopping; ContinuationPass has no stop forwarding; guardian
+request_stop has no production caller. CONTINUATION.md tells an operator to revert and ignore
+fleet_units. ManagedFleetTarget.stop/drain treat a dead controller as stopped/drained without
+proving its independent guardian debt settled. Host delivery can then start a predecessor that
+does not count fleet_units. These are source traces, not executed reproductions.
+
+Scope and design: preserve existing owners. Wire an idempotent, DB-free local stop request from
+FleetRunner.stop through ContinuationPass to its ConductorProcesses before DB-dependent drain.
+Do not kill ordinary worker jobs or claim that stop requests prove cleanup. Request failures
+must remain observable; guardian deadline/proof and durable settlement keep their authority.
+Controlled stop must reach a guardian even while store access is unavailable/blocked. Do not
+introduce a DB query into this path. Distinguish pause (admission only) from stop (guardian cleanup).
+
+Rollback chooses paused admission plus proven cleanup/settlement BEFORE predecessor activation,
+not teaching every historical predecessor a new table. Extend the existing managed host lifecycle
+and Fleet authority with a bounded safety gate: pause durable admission, require reserving workers
+and held conductor units to be absent on authoritative read, retain the pause across descriptor
+restore/replay and reject activation on held/unknown/unavailable state. A dead controller or idle
+heartbeat alone is insufficient. All admissions already use Fleet's pause transaction; do not
+replace it with a local stale check. Reuse existing host guard and fenced transitions, no second
+scheduler, no DB transaction held over process I/O. Preserve exact instance replacement authority.
+Provide injectable authority for fixture workload; production must bind actual Fleet store, never
+default to an empty list when unconfigured. Apply gate to the actual managed start/replacement
+path so both rollback replay and direct predecessor activation are covered. Keep collect targets
+and unrelated host behavior unchanged. Update runbook to require this gate; a bare git revert is
+not a safe operational rollback. If debt cannot settle, remain paused with reason and recovery owner.
+
+Acceptance matrix (one batch):
+| Boundary | Required evidence |
+| --- | --- |
+| stop normal/repeated | Real controlled child guardian receives stop through FleetRunner; no duplicate invocation; confirmed proof eventually settles once |
+| stop with blocked/unavailable DB | Stop marker and real child cleanup occur independently of blocked store; no false released slot; labelled injected DB fault |
+| stop request failure | Error/unconfirmed request observable; no fabricated cleanup; deadline fallback preserved |
+| rollback held or unknown units | No predecessor launch; admission stays paused, including dead-controller and failed-read cases |
+| clean rollback | Proven cleanup and settlement allow exact predecessor start with existing identity/fence checks intact |
+| concurrent/replayed rollback | Durable pause prevents new reservation in gap; restored descriptor with lost acknowledgement still cannot bypass debt gate |
+| platforms/cleanup | Portable controlled-process checks plus native-Windows owner qualification; owned children reaped, no unrelated deletion |
+
+Implement and independently review only these boundaries and changed interactions. Run affected
+continuation/process/Fleet/managed-runtime/host-delivery tests, including existing identity and
+rollback replay tests, and Ruff. Record exact completed commands, injected faults and skips.
+No actual model calls inside tests, no operating cutover, no whole-suite rerun. Existing native
+PG/Redis/model qualification and full autonomous-loop owner gates remain pending, not new blockers.
+Completion of this correction means independent acceptance and owner native checks; overall
+completion still requires real rejected-review recovery and qualified runtime consumption/rollback.
+
 ## Two-strike ownership design after research and debate, 2026-09-23
 
 Candidate 1bd95a36 was rejected after the prior 77dbb04f rejection: both concern conductor lifecycle
