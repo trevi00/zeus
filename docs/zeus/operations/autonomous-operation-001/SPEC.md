@@ -1,5 +1,38 @@
 # Whole autonomous operating loop
 
+## Native evidence completion, 2026-09-23 12:54 KST
+
+This is the same host-delivery acceptance batch, not a new runtime feature. Candidate 779d0326
+fixed the attestable fixture. Owner executed its source archive without .git, read-only and offline:
+119 passed, 25 skipped; the specifically disputed lease-loss regression passed separately
+(1 passed, 86 deselected). Raw logs: artifacts/autonomous-operation-001/instance-replay/
+fixed-replay.log and fixed-named.log. These owner results resolve the missing archive execution
+in review b457b2e6; they do not silently change its stored blocked decision or accept runtime R5.
+
+Native Windows full four-file execution revealed two test assumptions together. The graceful-loop
+test calls os.kill(self, SIGINT), which terminates the Windows pytest process; the subsequent scoped
+run excluding that case completed with 141 passed, 1 skipped, 1 failure, 1 deselected. The failure
+assumes Popen.pid equals the interpreting Python PID. Actual minimal subprocess observation using
+the same venv executable returned launcher 31712, interpreter 6200, interpreter parent 31712,
+exit 0. A launcher PID and service PID are distinct in this environment. This does not establish
+a production scheduled-task failure. Runtime ownership logic must not be weakened to satisfy tests.
+
+Primary source checked 2026-09-23: https://docs.python.org/3/library/os.html#os.kill describes
+Windows TerminateProcess for signals other than CTRL_C_EVENT/CTRL_BREAK_EVENT. Replace the test's
+self-kill with portable in-process signal delivery that actually invokes the installed handler,
+retaining completion of the tick in flight. For the real-child service test, launch the actual
+interpreter rather than the Windows venv redirector, explicitly retaining candidate source and
+dependency import paths, or prove the interpreter's parentage using actual OS evidence. Do not
+delete the identity assertion, skip Windows, or claim the receipt alone proves ownership.
+
+Claude batch: modify only tests/test_host_delivery_cli.py and HOST-DELIVERY.md. Retain production
+code and all other accepted evidence. Run the four-file command below and Ruff. Label container
+Linux results as Linux, not native Windows. Owner then runs Windows and isolated-PG scope and
+independently reviews inherited a1481784 R5 runtime, fixture 779d0326 and this test delta as one
+candidate. Timeout/cancel is exercised by the signal test; identity by actual child; original
+concurrency/restart/cleanup matrix remains in the four-file suite. No model calls in these tests.
+Unknown Windows outcomes must be reported, not guessed. This batch has no permission to deploy.
+
 2026-09-22. Owner: Codex analysis/design/acceptance; Claude implementation and execution evidence.
 This frame is the parent completion contract. Individual accepted features do not complete it.
 Continue this file after every batch; do not replace the objective with its next local defect.
