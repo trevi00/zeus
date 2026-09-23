@@ -1,0 +1,51 @@
+{
+  "schema": "urn:zeus:operation:1",
+  "id": "autonomous-operation-001-delivery-instance",
+  "base_revision": "68b97068335d0f007bff7282632aeff70bc84719",
+  "goal": {
+    "path": "docs/zeus/operations/autonomous-operation-001/SPEC.md",
+    "sha256": "92ad92b04c1904980496637c36e53593a48dc6adce1b9809e39faf2ea484d106",
+    "criterion": "Qualify exact replacement instance authority for forward and rollback delivery without disturbing foreign or unknown work",
+    "rationale": "Replace the demonstrated one-shot continuation with a reusable owner-controlled delivery component; retain existing Releases and ReleaseQueue authority."
+  },
+  "budget": {
+    "mode": "subscription",
+    "total": 192,
+    "per_host": 192
+  },
+  "claude": {
+    "model": "claude-opus-5",
+    "timeout_seconds": 3600,
+    "max_budget_usd": 2
+  },
+  "plan": {
+    "objective": "Implement ONLY R5 instance-authority amendment after candidate 79c6783 in bound SPEC. Preserve accepted lifecycle guard and earlier corrections. Replace nonmatching receipt implies replaceable with explicit intended/authorized predecessor/clean absent/foreign unknown/known stopped classification, tied to durable transition evidence. Cover forward and rollback, including launch identity recovery. Keep unsafe unrelated-receipt test as a refusal regression. Run fixed four-file pytest and Ruff with bounded output. No unrelated redesign, production actions, model calls, merge or deployment. Record injected faults and unavailable checks honestly.",
+    "allowed_paths": [
+      "src/codex_harness/domain/host_delivery.py",
+      "src/codex_harness/application/host_delivery.py",
+      "src/codex_harness/adapters/host_delivery.py",
+      "src/codex_harness/application/release_queue.py",
+      "src/codex_harness/application/releases.py",
+      "src/codex_harness/adapters/deployment.py",
+      "src/codex_harness/adapters/git.py",
+      "src/codex_harness/adapters/background_service.py",
+      "src/codex_harness/adapters/service_entry.py",
+      "src/codex_harness/domain/observation.py",
+      "src/codex_harness/adapters/monitoring.py",
+      "src/codex_harness/cli.py",
+      "tests/test_host_delivery.py",
+      "tests/test_host_delivery_cli.py",
+      "docs/contracts.md",
+      "docs/zeus/operations/autonomous-operation-001/HOST-DELIVERY.md",
+      "tests/test_monitoring.py",
+      "tests/test_monitoring_observations.py"
+    ],
+    "acceptance_criteria": [
+      "Existing Releases approval and ReleaseQueue fencing authorize the exact plan; no accepted-row shortcut or new approval authority.",
+      "Bounded durable tick continues publish/CI/merge/drain/switch/consumption across restart and response loss without duplicate effects or nested transactions.",
+      "Concrete host adapters, canary/verified rollback and read-only monitoring/structured logs meet the fixed acceptance matrix; actual live qualification remains owner work.",
+      "Scoped tests and Ruff pass; preserve all failed and unexecuted evidence honestly.",
+      "All seven correction boundaries covered together, including real canary ordering, recovered merge validation, ownership before effects, rollback restart and eligible-plan fairness."
+    ]
+  }
+}
