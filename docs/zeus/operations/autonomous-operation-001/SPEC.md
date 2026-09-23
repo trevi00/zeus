@@ -1,5 +1,32 @@
 # Whole autonomous operating loop
 
+## Recovery coverage correction and actual evidence failure, 2026-09-24
+
+Inspection 6fba3e1b of delivery-tree candidate b31a9112: scoped host-delivery regression,
+three affected test files and Ruff were checked twice, all exit 0. Two extra whole-suite
+claims timed out at 300 and 289.95 seconds. Worker itself reported the first full suite was
+not verified (ssh-keygen missing) and the second exceeded 600 seconds with ENOSPC/lost output.
+Those commands nevertheless appeared in its tests array. Preserve this failure history;
+do not recategorize the original inspection as passed or extend timeouts to chase green.
+The original contract required affected tests and Ruff, not the whole suite. Repair evidence
+must certify only actually completed required checks, distinguish attempted/incomplete checks,
+and retain the unchanged strict verifier. Whole-suite execution belongs to existing CI.
+
+Owner omission: delivery-tree was outside autonomous-live-001's exact goal/scope policy.
+Correct configuration by registering a separate immutable recovery policy with the EXACT
+original manifest goal, paths, criteria, model and actual archive/image/profile. Keep old
+policy and intents as evidence; no authority widening, forced verdict or terminal-row edit.
+Use existing continuation evidence_repair route to create the successor and bind preserved
+workspace; do not manually manufacture an accepted operation or rewrite its tests array.
+Observe origin -> evidence_repair intent -> successor -> inspection -> independent review.
+Existing two-distinct-failure research hold remains enforced (two failed commands inside one
+attempt are NOT two independent attempts). Unknown effects retain recovery debt.
+
+Future admission invariant: before authorizing unattended repair work, bind its immutable
+scope to a continuation policy, or expose an explicit owner-only disposition. This owner
+configuration correction is not proof that automatic policy construction/research execution
+has been implemented universally. Deployment and whole-loop qualification remain outstanding.
+
 ## Actual delivery registration: Git tree identity contract, 2026-09-23
 
 Goal unchanged: connect accepted useful work to actual delivery. Both live-status and live-runbook
