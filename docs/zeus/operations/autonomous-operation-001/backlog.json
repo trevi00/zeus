@@ -321,6 +321,19 @@
       "dependencies": [
         "native-fixture"
       ]
+    },
+    {
+      "id": "recovery-fairness",
+      "project_id": "research-improvement",
+      "criterion_id": "verified-loop",
+      "lane": "harness",
+      "manifest_path": "docs/zeus/operations/autonomous-operation-001/recovery-fairness.operation.json",
+      "manifest_revision": "6afe03d4ed28527d22ae9a2bb19b3678619a568d",
+      "manifest_sha256": "0ebf1ec0f262385f0c8bb518a58c9a02188850a0c64dc893bcc77b154fc79b2b",
+      "priority": 230,
+      "dependencies": [
+        "native-fixture"
+      ]
     }
   ]
 }
