@@ -308,6 +308,19 @@
       "dependencies": [
         "native-fixture"
       ]
+    },
+    {
+      "id": "recovery-routing",
+      "project_id": "research-improvement",
+      "criterion_id": "verified-loop",
+      "lane": "harness",
+      "manifest_path": "docs/zeus/operations/autonomous-operation-001/recovery-routing.operation.json",
+      "manifest_revision": "fdc77f45007693fd25cd6354de0aba18287a7693",
+      "manifest_sha256": "fd93782481ea630021eeb030093d98daaf05cf3926cb0ce329d92a54d4883e1a",
+      "priority": 220,
+      "dependencies": [
+        "native-fixture"
+      ]
     }
   ]
 }
