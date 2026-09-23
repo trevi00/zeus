@@ -28,6 +28,7 @@ The ports it supplies:
 from __future__ import annotations
 
 import hashlib
+import json
 from pathlib import Path
 
 from codex_harness.adapters.continuation_process import ConductorProcesses
@@ -77,6 +78,26 @@ def register_policy(store, config: dict, lane_id: str, revision: str, path: str,
         except Exception as exc:
             raise ContinuationRefused("lane_unknown", "operator", "lanes") from exc
     return Continuation(store).register(policy, {**loaded["pin"], "lane": lane_id})
+
+
+def read_receipt(path) -> dict:
+    """The owner's research receipt file: bounded, JSON, validated by the domain afterwards."""
+    try:
+        data = Path(path).read_bytes()
+    except OSError as exc:
+        raise ContinuationRefused("research_receipt_unreadable", "operator", "file") from exc
+    if len(data) > MAX_POLICY_BYTES:
+        raise ContinuationRefused("research_receipt_invalid", "operator", "file")
+    try:
+        return json.loads(data.decode("utf-8"))
+    except (UnicodeDecodeError, ValueError) as exc:
+        raise ContinuationRefused("research_receipt_invalid", "operator", "file") from exc
+
+
+def accept_research(store, config: dict, host: dict, document, *, lanes=None) -> dict:
+    """The owner's explicit scoped research receipt, verified against the Fleet control store and
+    each attempt's own lane store, then stored once (`Continuation.accept_research`)."""
+    return Continuation(store, lanes=lanes or lane_stores(config, host)).accept_research(document)
 
 
 def lane_runtime(config: dict, host: dict):
@@ -192,6 +213,6 @@ def configured_policy(settings: dict) -> str | None:
     return value.strip() if type(value) is str and value.strip() else None
 
 
-__all__ = ["ConductorProcesses", "ContinuationPass", "POLICY_SETTING", "archive_identity", "configured_policy",
-           "continuation_ticker", "coordinator", "lane_runtime", "lane_stores", "load_policy", "register_policy",
-           "tick_policy"]
+__all__ = ["ConductorProcesses", "ContinuationPass", "POLICY_SETTING", "accept_research", "archive_identity",
+           "configured_policy", "continuation_ticker", "coordinator", "lane_runtime", "lane_stores", "load_policy",
+           "read_receipt", "register_policy", "tick_policy"]
