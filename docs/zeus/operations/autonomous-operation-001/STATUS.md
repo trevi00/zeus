@@ -73,3 +73,24 @@ of an owner-authored correction, not completed Claude execution or autonomous di
 Independent review, affected verification, CI and qualified host consumption remain required.
 The master SPEC records the durable rejection-to-successor coordinator boundary; implementation
 and real no-chat continuation qualification of that separate path remain pending.
+# Whole-goal checkpoint, 2026-09-23 12:34 KST
+
+Owner continues toward the existing full autonomous-loop completion contract without manual user
+relay for routine steps. This checkpoint supersedes earlier per-job summaries, not their evidence.
+
+| Area | Actual state | Completion still required |
+| --- | --- | --- |
+| Approved backlog/Fleet admission | Accepted, deployed; two disjoint lanes now running | Goal-backed self-selection after research, not only owner-pinned items |
+| Backlog monitor | PR181 deployed and real source verified | New session/continuation/release stages with evidence links |
+| Opus 5.5 | Actual model probe passed; Fleet consumed image ae070306 at 03:27:51Z | First full worker result/model binding and subsequent normal use |
+| Native CLI session continuity | Two actual Opus 5.5 turns in removed/recreated containers retained session id and remembered nonce | Zeus-owned secure archive, task/review binding, concurrency/restart/closure qualification |
+| Worker-session implementation | Opus 5.5 Claude running in harness lane | Independent acceptance, integration and real two-turn Zeus qualification |
+| Host delivery | Instance correction a1481784 produced, NOT accepted; verifier fixture mismatch reproduced | Parallel interface-lane fixture repair, independent whole changed-boundary review, PG/Windows/CI and actual host/rollback qualification |
+| Conductor continuation | Existing rework message path traced; finite Operation currently stops and parks it | Qualified ongoing lifecycle using existing owners and accepted session API |
+| Research/recovery/release loop | Components and authority exist, connections incomplete | SSOT/Council selection, two-strike research, safe recovery, exact reviewed deployment and next item |
+| Whole unattended acceptance | NOT complete | Two useful items, recovery, rejected/rollback control, duplicate/service restart and parallel progress without chat relay |
+
+Native CLI resume probe evidence: artifacts/autonomous-operation-001/opus55/native-resume-receipt.json.
+It uses a dedicated test-only CLI home; it does not prove the future Zeus allowlisted archive path.
+Raw model usage is retained. No reboot, live product/payment rollout or complete asset absorption
+is required to close this initial autonomy contract. These remain operating workload/product gates.
