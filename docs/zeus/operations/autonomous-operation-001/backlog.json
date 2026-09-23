@@ -90,6 +90,19 @@
       "dependencies": [
         "monitor-correction"
       ]
+    },
+    {
+      "id": "worker-sessions",
+      "project_id": "research-improvement",
+      "criterion_id": "verified-loop",
+      "lane": "harness",
+      "manifest_path": "docs/zeus/operations/autonomous-operation-001/worker-sessions.operation.json",
+      "manifest_revision": "c4a5ec2706443a8a1f4529a519281cfc15c2f8b5",
+      "manifest_sha256": "3a57c165a81d8bad007ee6a8a6b29d4b729c84887209f717da77fe7a0ed0bdc8",
+      "priority": 80,
+      "dependencies": [
+        "monitor-correction"
+      ]
     }
   ]
 }
