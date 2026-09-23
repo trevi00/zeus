@@ -242,3 +242,8 @@ liveness paths; the qualified `fleet_worker_operation` canary; and the isolated-
 transaction-boundary test, which is integration-gated and skips without `HARNESS_INTEGRATION=1`.
 The runtime-binding tests also skip honestly in a checkout that attests no revision of its own (no
 Git directory and no owner `runtime.json`), because there is no real runtime identity to bind.
+
+The oversized- and malformed-plan cases carry explicit short parametrize ids. Their payloads are
+unchanged and still full size; only the generated node id is short, because pytest otherwise puts
+the whole body into `PYTEST_CURRENT_TEST` and the oversized case alone exceeds the Windows
+32767-byte environment limit before the refusal contract is reached.
