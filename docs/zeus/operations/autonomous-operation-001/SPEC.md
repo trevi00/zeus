@@ -1,5 +1,28 @@
 # Whole autonomous operating loop
 
+## Owner independent acceptance, 2026-09-24
+
+Candidate f33f8069193a51eb7b9ff506033fe4bc2c01727b: reviewed changed selection transactions,
+durable progress ordering, ownership preservation and failure paths against the fixed matrix.
+The model review's only blocker was missing negative-regression evidence. The original operation
+remains failed/execution_blocked; no verdict or runtime row is rewritten. Owner accepts this code
+correction for CI/publication, not as full operating qualification.
+
+The same standalone discriminator ran against 2c4e7f0 and f33f8069: four older same-lane jobs
+receive injected evidence-read errors, healthy fifth job, three fresh controllers over real
+MemoryStores. Old code: no healthy intent, assertion exit 1. New code: healthy intent exists,
+exit 0. Synthetic faults, not live database outage. Artifacts: compare-routing-progress.py and
+routing-comparison-{2c4e7f0,f33f8069}.json in artifacts/autonomous-operation-001. Initial direct
+pytest comparison failed to import a new constant and is INVALID negative evidence; the portable
+discriminator supersedes it.
+
+Native Windows exact-candidate checks: continuation/routing/CLI 72 passed in 17.14 seconds;
+Ruff passed; checkout unchanged. Remaining: CI, controlled operating host runtime switch with
+admission paused/no held units, then real delivery-tree automatic evidence repair. Keep the existing
+qualified worker image and immutable recovery policy; this is host controller code, with unchanged
+worker execution code. No full-autonomy completion claim.
+
+
 ## Recovery routing resubmission: durable bounded fairness, 2026-09-24
 
 Same outcome/scope and acceptance matrix as the routing frame below. Candidate 2c4e7f0 was
