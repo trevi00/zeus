@@ -178,7 +178,7 @@ delivery, with no paths:
 - `runtime`: `revision`, `manifest_sha256`, `files`, `recovered`;
 - `work`: `state`, `reason_code`, `active`, `unresolved`, `paused`.
 
-## Acceptance evidence (fixtures labelled; run on Linux/POSIX only)
+## Acceptance evidence (fixtures labelled; portable process tests)
 
 Tests are in `tests/test_managed_runtime.py` unless noted. The source is a disposable Git repository
 built from this checkout's real `src/codex_harness`, with two commits: A, and B, which adds one
@@ -199,12 +199,31 @@ whose jobs are real waiting processes.
 | Restored predecessor executes its old code after candidate failure | `test_a_failed_candidate_restores_the_predecessor_which_runs_its_old_code` |
 | Environment gate is named and writes nothing | `test_an_unqualified_environment_is_a_named_unavailable_gate_before_any_host_change`, `test_an_unresolved_revision_or_unqualified_environment_writes_nothing` |
 | Linked worktree | `test_a_linked_worktree_resolves_through_git_and_its_checkout_revision_through_commondir` |
+| Sealed listing ids physical bytes (LF and CRLF); symlinked file or directory refused | `test_the_scan_ids_the_physical_bytes_of_lf_and_crlf_files`, `test_the_scan_refuses_a_symlink_inside_a_runtime` |
 | Legacy modes unchanged | Existing `tests/test_host_delivery.py`, `tests/test_host_delivery_cli.py`, `tests/test_fleet*.py`, `tests/test_background_*.py`; `tests/test_fleet_cli.py::test_fleet_run_without_a_control_is_unchanged` |
 
 Platform claims:
 
-- The process tests are skipped on Windows (`posix_only`). The Windows paths used are the
-  incumbent `no_console_kwargs` and `run_owned` job object, which were not exercised by this batch.
+- The real-process tests (child, restart, two owners, drain, heartbeat, forward activation and
+  rollback) are portable and are no longer skipped on Windows. They run the incumbent hidden
+  launch (`no_console_kwargs`) and the incumbent `run_owned` owner (a job object on Windows).
+  The registered `python` is the run's actual `sys.executable`. On a Windows venv that is a
+  redirector whose child is the actual interpreter, so the launch record holds the redirector's
+  pid, and the sealed child's own receipt holds the actual child pid. Liveness reads both.
+- Test cleanup only (never the target's stop path, which sends no signal): on POSIX, SIGTERM to
+  the recorded launcher; on Windows, `taskkill /PID <launcher> /T /F`, the incumbent convention of
+  `tests/test_host_interruption.py`. A survivor is reported as a failure and then ended.
+- Exactly one process test stays POSIX-only (`posix_sigkill_limit`):
+  `test_a_child_that_outlives_its_killed_launcher_is_still_running_and_stops_gracefully`. It
+  asserts the POSIX process-group limit after SIGKILL. Windows has no SIGKILL, and its job object
+  ends the tree instead (`tests/test_background_service.py`).
+- `test_the_scan_refuses_a_symlink_inside_a_runtime` skips with a named capability reason only
+  when the host cannot create a symlink (Windows without Developer Mode or
+  `SeCreateSymbolicLinkPrivilege`).
+- The byte oracle is `git hash-object --no-filters` with no global or system Git configuration.
+  The owner's Windows failure came from a bare `git hash-object` under `core.autocrlf`, which
+  hashed a normalized copy rather than the bytes on disk. That filtered id is now the test's
+  discriminating control, and it must differ from the scan.
 - The `fleet` workload (`run_fleet` with `bootstrap.build()`) was not run here, because it needs
   the owner's PostgreSQL and lanes. Only its wiring (`fleet_cli.run(control=...)`) is tested, with
   doubles.
@@ -231,9 +250,10 @@ The five skips are all declared:
   fact.
 - `tests/test_background_service.py:691`: job-object kill-on-close is a Windows fact.
 
-On Linux, the `posix_only` process tests in `tests/test_managed_runtime.py` run and are not
-skipped. The same tests are skipped on Windows. Linux results do not prove native Windows
-behaviour, and no Windows success is inferred.
+On Linux, the process tests in `tests/test_managed_runtime.py` ran and were not skipped. At that
+record they were skipped on Windows. The native managed-runtime qualification batch later removed
+that gate (see "Platform claims" above). Linux results do not prove native Windows behaviour, and
+no Windows success is inferred.
 
 Uncertainty about the file set: this handoff did not state the eleven file names. They were
 chosen from the scope in [SPEC.md](SPEC.md) ("managed runtime, original host delivery, Fleet and
