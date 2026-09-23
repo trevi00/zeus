@@ -520,7 +520,8 @@ def fair_order(candidates: list, intents: list, limit: int | None = MAX_ACTIONS_
 
     Held families are dropped here, so one blocked family never starves an unrelated one, and at
     most one candidate per family is returned per tick. `limit=None` returns the whole order for a
-    caller that spends its own bounded budget (the tick skips an unavailable lane without a slot)."""
+    caller that spends its own bounded budget (the tick skips an unavailable lane without a slot,
+    and reorders by durable attempt progress, `progress_order`)."""
     held = blocked_families(intents)
     served = {}
     for row in intents:
@@ -532,6 +533,32 @@ def fair_order(candidates: list, intents: list, limit: int | None = MAX_ACTIONS_
         first[candidate["family"]] = candidate
     return sorted(first.values(), key=lambda c: (served.get(c["family"], ""), str(c.get("finished_at") or ""),
                                                  c["job_id"]))[:limit]
+
+
+# ---- durable selection progress -----------------------------------------------------------------
+# A per-job read failure is not a lane outage, and an unchanged order would pick the SAME failing
+# candidates after every tick and restart. Each observation attempt is therefore recorded durably
+# BEFORE its lane read, whatever the read then shows; the next pass (any controller) tries the least
+# recently attempted candidate first. It records a scheduling attempt only: no intent, verdict or
+# evidence. With a fixed finite set of candidates every one is attempted within ceil(n / reads per
+# pass) passes.
+def progress_order(ordered: list, progress) -> list:
+    """`fair_order` output, never-attempted candidates first, then least recently attempted; the
+    fair order is kept among equals (the sort is stable)."""
+    attempts = (progress or {}).get("attempts") or {}
+    return sorted(ordered, key=lambda c: attempts.get(c["job_id"], 0))
+
+
+def record_attempt(progress, policy_id: str, job_id: str, live, since: int) -> dict:
+    """The progress row after one attempt: the stored sequence + 1, never reset by a stale reader.
+    Entries of jobs that are no longer candidates are dropped only when they predate the reader's
+    snapshot (`since`), so a concurrent controller's newer entry is never lost; the row stays bounded
+    by the candidates."""
+    progress = progress if isinstance(progress, dict) else {}
+    sequence = int(progress.get("sequence") or 0) + 1
+    attempts = {job: seq for job, seq in (progress.get("attempts") or {}).items() if job in live or seq > since}
+    attempts[job_id] = sequence
+    return {"policy_id": policy_id, "sequence": sequence, "attempts": attempts}
 
 
 # ---- successor ----------------------------------------------------------------------------------

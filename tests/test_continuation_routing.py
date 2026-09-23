@@ -17,7 +17,7 @@ from test_worker_sessions import IMAGE
 
 from codex_harness.adapters.store import MemoryStore
 from codex_harness.adapters.worker_sessions import SessionArchives
-from codex_harness.application.continuation import LaneEvidence
+from codex_harness.application.continuation import BUCKET_PROGRESS, LaneEvidence
 from codex_harness.application.fleet import Fleet
 from codex_harness.application.operation import Operation
 from codex_harness.application.service import Harness
@@ -209,3 +209,123 @@ def test_an_unavailable_or_mismatched_runtime_blocks_its_lane_visibly_and_never_
     assert sorted(row["origin_job"] for row in refused) == sorted(blocked)
     assert all(row["state"] == dc.REFUSED and row["reason_code"] == "image_changed" for row in refused)
     assert len(world.jobs()) == len(blocked) + 2 and world.conductor.calls == []
+
+
+# ---- durable selection progress past same-lane per-job read failures -----------------------------
+class FailingReads(LaneEvidence):
+    """Injected fault (synthetic, not a live outage): the evidence read of the named jobs raises."""
+
+    def __init__(self, store, sessions, failing, reads):
+        super().__init__(store, sessions)
+        self.failing, self.reads = failing, reads
+
+    def read(self, job, target=None):
+        self.reads.append(job["id"])
+        if job["id"] in self.failing:
+            raise TimeoutError("lane evidence read of " + job["id"] + " failed (injected fault)")
+        return super().read(job, target)
+
+
+def failing_lanes(world, failing, reads):
+    return lambda lane_id: FailingReads(world.lane.store, world.sessions, failing, reads)
+
+
+def progress(world, policy_id="policy-1"):
+    with world.control.transaction() as tx:
+        return tx.get(BUCKET_PROGRESS, policy_id)
+
+
+def test_older_same_lane_read_failures_never_starve_a_healthy_job_across_reconstructed_controllers(tmp_path):
+    world = World(tmp_path)
+    world.register()
+    failing = []
+    for n in range(dc.MAX_ACTIONS_PER_TICK):
+        world.enqueue(f"f{n}")
+        failing.append(world.run_next(verdict=False)[0])
+    world.enqueue("healthy")
+    healthy = world.run_next(verdict=False)[0]
+    reads = []
+
+    # Pass 1: the four older failures fill the lane's bounded reads; the healthy job is not read.
+    first = world.tick(controller=world.build(lanes=failing_lanes(world, set(failing), reads)))
+    assert reads == failing and world.intents() == {}
+    assert first["outcome"] == "blocked"
+    assert [(row["subject"], row["reason_code"]) for row in first["skipped"]] == [(j, "unavailable") for j in failing]
+    assert progress(world)["attempts"] == {job: n + 1 for n, job in enumerate(failing)}
+
+    # Read-only status never advances the progress.
+    snapshot = deepcopy(world.control.data)
+    world.controller.status("policy-1")
+    assert world.control.data == snapshot
+
+    # Pass 2 by a freshly reconstructed controller: the durable progress puts the never-attempted
+    # healthy job first; the failures stay visible and started nothing.
+    reads.clear()
+    second = world.tick(controller=world.build(lanes=failing_lanes(world, set(failing), reads)))
+    correction = only(world.intents(), route=dc.CORRECTION)
+    assert correction["origin_job"] == healthy and correction["state"] == dc.ADMITTED
+    assert reads == [healthy, *failing] and second["outcome"] == "progressed"
+    assert [row["subject"] for row in second["skipped"]] == failing
+    assert len(world.intents()) == 1 and len(world.jobs()) == len(failing) + 2
+
+    # Pass 3 (another restart): the healthy job is routed; the failures rotate, nothing duplicates.
+    reads.clear()
+    world.tick(controller=world.build(lanes=failing_lanes(world, set(failing), reads)))
+    assert reads == failing and len(world.intents()) == 1 and len(world.jobs()) == len(failing) + 2
+    assert set(progress(world)["attempts"]) == set(failing), "no longer a candidate: dropped, row bounded"
+
+
+def test_all_unavailable_passes_stay_bounded_and_reach_every_candidate(tmp_path):
+    world = World(tmp_path)
+    world.register()
+    jobs = []
+    for n in range(dc.MAX_ACTIONS_PER_TICK + 2):
+        world.enqueue(f"u{n}")
+        jobs.append(world.run_next(verdict=False)[0])
+    reads, seen = [], []
+    for _ in range(2):
+        reads.clear()
+        result = world.tick(controller=world.build(lanes=failing_lanes(world, set(jobs), reads)))
+        assert len(reads) == dc.MAX_ACTIONS_PER_TICK, "at most four failed reads per lane per pass"
+        assert result["outcome"] == "blocked" and result["actions"] == []
+        seen.extend(reads)
+    assert set(seen) == set(jobs), "every candidate attempted within ceil(6 / 4) passes"
+    assert reads[:2] == jobs[dc.MAX_ACTIONS_PER_TICK:], "never-attempted first"
+    assert world.intents() == {} and len(world.jobs()) == len(jobs)
+    assert progress(world)["sequence"] == 2 * dc.MAX_ACTIONS_PER_TICK
+
+
+def test_concurrent_ticks_keep_every_attempt_and_one_effect_owner(tmp_path):
+    world = World(tmp_path)
+    world.register()
+    failing = []
+    for n in range(dc.MAX_ACTIONS_PER_TICK):
+        world.enqueue(f"f{n}")
+        failing.append(world.run_next(verdict=False)[0])
+    world.enqueue("healthy")
+    healthy = world.run_next(verdict=False)[0]
+    first = world.tick(controller=world.build(lanes=failing_lanes(world, set(failing), [])))
+    assert first["actions"] == []
+    raced, raced_reads, reads = [], [], []
+
+    def racing(lane_id):
+        # A second controller runs a whole pass between this controller's recorded attempt of the
+        # healthy job and its read of it.
+        if not raced:
+            raced.append(world.tick(controller=world.build(lanes=failing_lanes(world, set(failing), raced_reads))))
+        return FailingReads(world.lane.store, world.sessions, set(failing), reads)
+    result = world.tick(controller=world.build(lanes=racing))
+    # The racer saw the healthy job already attempted (least recent last) and spent its bounded
+    # failed reads first: it neither reset that attempt nor read the job a second time.
+    assert raced[0]["outcome"] == "blocked" and raced_reads == failing
+    assert reads == [healthy, *failing]
+    correction = only(world.intents(), route=dc.CORRECTION)
+    assert correction["origin_job"] == healthy and correction["policy_id"] == "policy-1"
+    assert [action["subject"] for action in result["actions"]] == [correction["id"]]
+    assert len(world.intents()) == 1 and len(world.jobs()) == len(failing) + 2, "one successor, one admission"
+    # Every attempt of both controllers is kept in one sequence; nothing was reset or lost.
+    row = progress(world)
+    assert row["sequence"] == 3 * dc.MAX_ACTIONS_PER_TICK + 1
+    assert row["attempts"][healthy] == dc.MAX_ACTIONS_PER_TICK + 1
+    assert sorted(row["attempts"][job] for job in failing) == list(range(2 * dc.MAX_ACTIONS_PER_TICK + 2,
+                                                                         3 * dc.MAX_ACTIONS_PER_TICK + 2))
