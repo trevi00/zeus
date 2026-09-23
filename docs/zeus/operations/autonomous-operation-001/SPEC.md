@@ -1,5 +1,55 @@
 # Whole autonomous operating loop
 
+## Recovery routing ownership and bounded progress, 2026-09-24
+
+Outcome: the already authorized delivery-tree failure must reach its existing evidence-repair
+route automatically, without rewriting evidence, weakening acceptance, or creating duplicate effects.
+One Claude implementation batch repairs continuation selection/ownership. Codex independently
+reviews and qualifies it before updating runtime; then resumes the preserved delivery candidate.
+
+Executed evidence: recovery-discriminator.json, against runtime 87d7d92 and immutable registered
+autonomous-recovery-001, returns four refused intents belonging to the OLD policy. Repeated normal
+service ticks have produced no recovery-policy intent for delivery-tree. This is not quota denial.
+Primary sources inspected 2026-09-24: application/continuation.py tick filters intents by policy,
+_candidates includes all terminal jobs in matching lanes, _observe checks scope only after selection;
+_create returns any existing key without ownership validation. domain/continuation.py intent_id
+omits policy; fair_order limits the pass. Together old out-of-scope rows repeatedly occupy the pass.
+No external API behavior is being inferred. Scope-filter starvation plus foreign-row reuse is the
+supported mechanism; it does not prove there are no other later recovery gates.
+
+Design: distinguish immutable policy membership (repository, goal, allowed paths/criteria) from
+current runtime eligibility. Apply membership before bounded fairness/evidence reads, so unrelated
+history cannot consume all slots. Keep genuine in-scope runtime mismatch/unavailability visible
+and refusing NEW effects, while already dispatched work still drains under its original owner.
+Preserve durable global effect identity/idempotence. Do NOT simply salt all IDs by policy and allow
+two overlapping policies to launch twice. An existing foreign-policy observation must never be
+returned as progress of this policy; expose explicit ownership/conflict and let eligible independent
+families advance. No deleting/rekeying old rows, adopting another policy's authorization, terminal
+status edits, reviewer bypass, policy broadening, or manually queuing delivery-tree's repair.
+Restart and concurrent policies must converge on the same existing owner/effect. Preserve all
+accepted session/runtime/guardian semantics. Use existing stores and transactional owners.
+
+Acceptance matrix (one fixed review batch):
+- Normal: more out-of-scope old terminal jobs than fair_order limit, then eligible evidence failure;
+  target gets an evidence_repair intent/successor in the bounded pass. Verify actual tick, not a
+  replacement selector. Two immutable policies share the same store and preserve old records.
+- Failure/unknown: in-scope runtime mismatch or unavailable evidence never starts a worker;
+  explicit blocked/skip evidence remains; independent eligible work progresses.
+- Ownership/concurrency/restart: overlapping policies observing identical evidence never reuse
+  foreign authorization, return foreign progress, or duplicate admission/conductor launch. Repeat
+  ticks/reconstructed controller and lost-response paths keep original owner and successor ID.
+- Timeout/cancel: preserve drain and paused/changed-policy behavior; existing tests cover these.
+- Platform/cleanup: pure coordinator change; no new processes/resources or platform backend.
+  Existing continuation tests and native owner checks apply; no new OS cleanup design.
+- Legacy persisted intent: original IDs/records remain valid and settle with their original owner.
+
+Run scoped continuation tests and Ruff. Whole repository integration suite belongs to CI/owner.
+Legacy worker tests array includes only actually completed successful required commands; attempted,
+failed, timed-out and NOT RUN commands go in summary, never masquerade as successful claims.
+The old delivery-tree inspection remains failed. No merge/deploy by worker. Out of scope: new
+research agent, generic scheduling redesign, delivery tree code (candidate b31a9112 preserved),
+UI and other asset absorption. Completion of this batch is NOT full autonomous-loop qualification.
+
 ## Recovery coverage correction and actual evidence failure, 2026-09-24
 
 Inspection 6fba3e1b of delivery-tree candidate b31a9112: scoped host-delivery regression,
