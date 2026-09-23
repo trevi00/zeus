@@ -269,6 +269,71 @@
       "dependencies": [
         "pause-commit"
       ]
+    },
+    {
+      "id": "live-status",
+      "project_id": "research-improvement",
+      "criterion_id": "verified-loop",
+      "lane": "harness",
+      "manifest_path": "docs/zeus/operations/autonomous-operation-001/live-status.operation.json",
+      "manifest_revision": "b735789eb3dfbf1e5abb33d75290d255062b7905",
+      "manifest_sha256": "569fdf345d4bab2b54fd0219d7e02a6422e5a19610882706684cc8c9751be944",
+      "priority": 200,
+      "dependencies": [
+        "native-fixture"
+      ]
+    },
+    {
+      "id": "live-runbook",
+      "project_id": "research-improvement",
+      "criterion_id": "verified-loop",
+      "lane": "harness",
+      "manifest_path": "docs/zeus/operations/autonomous-operation-001/live-runbook.operation.json",
+      "manifest_revision": "b735789eb3dfbf1e5abb33d75290d255062b7905",
+      "manifest_sha256": "a1862300bf119ea8ba295bbbcb23568f552ad59c682c126898592399189ea690",
+      "priority": 200,
+      "dependencies": [
+        "live-status"
+      ]
+    },
+    {
+      "id": "delivery-tree",
+      "project_id": "research-improvement",
+      "criterion_id": "verified-loop",
+      "lane": "harness",
+      "manifest_path": "docs/zeus/operations/autonomous-operation-001/delivery-tree.operation.json",
+      "manifest_revision": "c54bcc9b84e0687a3ee6c22b6919675da83d63f6",
+      "manifest_sha256": "811b270743b038aed13e7ecea7dc350e2e25a49eb922fac051af0ca800b98f54",
+      "priority": 210,
+      "dependencies": [
+        "native-fixture"
+      ]
+    },
+    {
+      "id": "recovery-routing",
+      "project_id": "research-improvement",
+      "criterion_id": "verified-loop",
+      "lane": "harness",
+      "manifest_path": "docs/zeus/operations/autonomous-operation-001/recovery-routing.operation.json",
+      "manifest_revision": "fdc77f45007693fd25cd6354de0aba18287a7693",
+      "manifest_sha256": "fd93782481ea630021eeb030093d98daaf05cf3926cb0ce329d92a54d4883e1a",
+      "priority": 220,
+      "dependencies": [
+        "native-fixture"
+      ]
+    },
+    {
+      "id": "recovery-fairness",
+      "project_id": "research-improvement",
+      "criterion_id": "verified-loop",
+      "lane": "harness",
+      "manifest_path": "docs/zeus/operations/autonomous-operation-001/recovery-fairness.operation.json",
+      "manifest_revision": "6afe03d4ed28527d22ae9a2bb19b3678619a568d",
+      "manifest_sha256": "0ebf1ec0f262385f0c8bb518a58c9a02188850a0c64dc893bcc77b154fc79b2b",
+      "priority": 230,
+      "dependencies": [
+        "native-fixture"
+      ]
     }
   ]
 }

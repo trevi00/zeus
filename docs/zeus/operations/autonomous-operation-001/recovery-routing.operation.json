@@ -1,0 +1,37 @@
+{
+  "schema": "urn:zeus:operation:1",
+  "id": "autonomous-operation-001-recovery-routing",
+  "base_revision": "7a691ba2be04757b365c75d066f92dda22e65d45",
+  "goal": {
+    "path": "docs/zeus/operations/autonomous-operation-001/SPEC.md",
+    "sha256": "bc7adb297f6ce4595d61750b7623ca2168ba000a42e255bbb4b5e9c45cdeaed0",
+    "criterion": "Complete the existing autonomous operating loop with independently verified session, continuation and actual runtime ownership",
+    "rationale": "Finish the existing whole-goal acceptance matrix without manual user relay or weaker verification."
+  },
+  "budget": {
+    "mode": "subscription",
+    "total": 192,
+    "per_host": 192
+  },
+  "claude": {
+    "model": "claude-opus-5-5",
+    "timeout_seconds": 3600,
+    "max_budget_usd": 2
+  },
+  "plan": {
+    "objective": "Implement ONLY Recovery routing ownership and bounded progress in SPEC.md. Fix policy membership selection before fairness and foreign intent reuse, preserving global effect ownership/idempotence and historical records. Run scoped tests and Ruff only; incomplete/full-suite diagnostic attempts belong in summary, not successful tests claims. Do not change delivery-tree candidate or merge/deploy.",
+    "allowed_paths": [
+      "src/codex_harness/domain/continuation.py",
+      "src/codex_harness/application/continuation.py",
+      "tests/test_continuation.py",
+      "tests/test_continuation_routing.py",
+      "docs/contracts.md"
+    ],
+    "acceptance_criteria": [
+      "Actual tick advances in-scope evidence repair despite more unrelated historical jobs than its fairness limit; old policy records remain unchanged.",
+      "Overlapping policies, replay and restart preserve original effect ownership; foreign intents are not returned as current-policy progress and duplicate effects cannot start.",
+      "Runtime mismatch/unavailable evidence blocks new effects visibly without starving independent eligible work; existing drain and pause semantics remain.",
+      "Scoped continuation tests and Ruff pass; regression fails against previous implementation for the behavioral defect, not an import error."
+    ]
+  }
+}

@@ -23,7 +23,8 @@ What is authoritative, and what is not:
   paths and acceptance criteria byte for byte; model output never extends them.
 - The intent id is `origin job + generation/attempt + decisive evidence digest + route`, so a
   replayed event, a restart or a second controller derives the SAME intent and the same successor
-  id, never a second one. A replay is not another failure.
+  id, never a second one. A replay is not another failure. The id carries no policy: a row belongs
+  to the policy that wrote it, and another policy never reuses or reports it (`owners`).
 - A rejected finite operation stays rejected: the successor is a new operation with lineage.
 """
 from __future__ import annotations
@@ -243,11 +244,10 @@ def policy_digest(policy: dict) -> str:
     return digest(policy)
 
 
-def check_scope(policy: dict, job: dict, runtime: dict) -> None:
-    """The origin job is inside the policy frame, and the host still runs the qualified identity.
-
-    Any difference is a named refusal: the continuation never widens its own permission to fit a
-    changed goal, scope, model, image, profile or session archive."""
+def check_membership(policy: dict, job: dict) -> None:
+    """The job belongs to the policy: its immutable lane, repository, goal, allowed paths and
+    criteria are inside the frame. A non-member is not this policy's work at all - it is never
+    selected, read or recorded - so unrelated history cannot occupy a bounded pass."""
     refuse(job.get("lane") in policy["lanes"], "lane_outside_policy", field="lane")
     refuse(job.get("repository") == policy["repository"], "repository_changed", field="repository")
     goal = job.get("goal") or {}
@@ -259,6 +259,24 @@ def check_scope(policy: dict, job: dict, runtime: dict) -> None:
            "scope_changed", field="allowed_paths")
     refuse(set(plan.get("acceptance_criteria") or []) <= set(policy["acceptance_criteria"])
            and plan.get("acceptance_criteria"), "criteria_changed", field="acceptance_criteria")
+
+
+def is_member(policy: dict, job: dict) -> bool:
+    try:
+        check_membership(policy, job)
+    except ContinuationRefused:
+        return False
+    return True
+
+
+def check_scope(policy: dict, job: dict, runtime: dict) -> None:
+    """The origin job is inside the policy frame, and the host still runs the qualified identity.
+
+    Any difference is a named refusal: the continuation never widens its own permission to fit a
+    changed goal, scope, model, image, profile or session archive. For a member job the model and
+    the runtime identity are current eligibility: a visible refusal or hold, never silence."""
+    check_membership(policy, job)
+    manifest = job.get("manifest") or {}
     refuse((manifest.get("claude") or {}).get("model") == policy["qualified"]["model"], "model_changed",
            field="claude.model")
     refuse(isinstance(runtime, dict), "runtime_unknown", field="runtime")
@@ -430,6 +448,39 @@ def successor_id(intent: str) -> str:
     return "cont-" + intent[:24]
 
 
+# ---- effect ownership across policies sharing one control store ----------------------------------
+# The intent id is global (no policy in it), so two overlapping policies derive the SAME effect and
+# the same successor id. A row stays with the policy that wrote it; another policy never replays,
+# advances or reports it. The only foreign row that owns nothing is a refusal written at creation
+# (no successor, no launch, no later state): it never authorized an effect, so the next slot of the
+# same observation - again derived without the policy - is claimable. Every policy walks the same
+# slots, so restarts and concurrent controllers converge on one owner and one successor.
+MAX_SLOTS = 8
+
+
+def intent_slot(key: str, n: int) -> str:
+    return key if n == 0 else digest(["continuation_intent_slot", key, n])
+
+
+def effect_free(row: dict) -> bool:
+    return (row.get("state") == REFUSED and row.get("successor_job") is None and row.get("launch") is None
+            and [entry.get("state") for entry in row.get("history") or []] == [REFUSED])
+
+
+def owners(intents: list, policy_id: str) -> dict:
+    """job id -> the other policy whose effect-owning intent routed it or created it as a successor.
+    Such a job belongs to that lineage: it is excluded before fair selection, never re-observed."""
+    mine, out = set(), {}
+    for row in intents:
+        jobs = [job for job in (row.get("origin_job"), row.get("successor_job")) if job]
+        if row.get("policy_id") == policy_id:
+            mine.update(jobs)
+        elif not effect_free(row):
+            for job in jobs:
+                out.setdefault(job, row.get("policy_id"))
+    return {job: owner for job, owner in out.items() if job not in mine}
+
+
 # ---- two-strike ---------------------------------------------------------------------------------
 def prior_failures(intents: list, family: str) -> list:
     """Distinct failure observations of one family since its last researched diagnosis.
@@ -464,11 +515,13 @@ def blocked_families(intents: list) -> dict:
     return held
 
 
-def fair_order(candidates: list, intents: list) -> list:
+def fair_order(candidates: list, intents: list, limit: int | None = MAX_ACTIONS_PER_TICK) -> list:
     """Round robin over families: least recently served family first, then oldest candidate.
 
     Held families are dropped here, so one blocked family never starves an unrelated one, and at
-    most one candidate per family is returned per tick."""
+    most one candidate per family is returned per tick. `limit=None` returns the whole order for a
+    caller that spends its own bounded budget (the tick skips an unavailable lane without a slot,
+    and reorders by durable attempt progress, `progress_order`)."""
     held = blocked_families(intents)
     served = {}
     for row in intents:
@@ -479,7 +532,33 @@ def fair_order(candidates: list, intents: list) -> list:
             continue
         first[candidate["family"]] = candidate
     return sorted(first.values(), key=lambda c: (served.get(c["family"], ""), str(c.get("finished_at") or ""),
-                                                 c["job_id"]))[:MAX_ACTIONS_PER_TICK]
+                                                 c["job_id"]))[:limit]
+
+
+# ---- durable selection progress -----------------------------------------------------------------
+# A per-job read failure is not a lane outage, and an unchanged order would pick the SAME failing
+# candidates after every tick and restart. Each observation attempt is therefore recorded durably
+# BEFORE its lane read, whatever the read then shows; the next pass (any controller) tries the least
+# recently attempted candidate first. It records a scheduling attempt only: no intent, verdict or
+# evidence. With a fixed finite set of candidates every one is attempted within ceil(n / reads per
+# pass) passes.
+def progress_order(ordered: list, progress) -> list:
+    """`fair_order` output, never-attempted candidates first, then least recently attempted; the
+    fair order is kept among equals (the sort is stable)."""
+    attempts = (progress or {}).get("attempts") or {}
+    return sorted(ordered, key=lambda c: attempts.get(c["job_id"], 0))
+
+
+def record_attempt(progress, policy_id: str, job_id: str, live, since: int) -> dict:
+    """The progress row after one attempt: the stored sequence + 1, never reset by a stale reader.
+    Entries of jobs that are no longer candidates are dropped only when they predate the reader's
+    snapshot (`since`), so a concurrent controller's newer entry is never lost; the row stays bounded
+    by the candidates."""
+    progress = progress if isinstance(progress, dict) else {}
+    sequence = int(progress.get("sequence") or 0) + 1
+    attempts = {job: seq for job, seq in (progress.get("attempts") or {}).items() if job in live or seq > since}
+    attempts[job_id] = sequence
+    return {"policy_id": policy_id, "sequence": sequence, "attempts": attempts}
 
 
 # ---- successor ----------------------------------------------------------------------------------

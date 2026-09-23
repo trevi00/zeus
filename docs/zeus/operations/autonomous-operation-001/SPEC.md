@@ -1,5 +1,232 @@
 # Whole autonomous operating loop
 
+## Owner independent acceptance, 2026-09-24
+
+Candidate f33f8069193a51eb7b9ff506033fe4bc2c01727b: reviewed changed selection transactions,
+durable progress ordering, ownership preservation and failure paths against the fixed matrix.
+The model review's only blocker was missing negative-regression evidence. The original operation
+remains failed/execution_blocked; no verdict or runtime row is rewritten. Owner accepts this code
+correction for CI/publication, not as full operating qualification.
+
+The same standalone discriminator ran against 2c4e7f0 and f33f8069: four older same-lane jobs
+receive injected evidence-read errors, healthy fifth job, three fresh controllers over real
+MemoryStores. Old code: no healthy intent, assertion exit 1. New code: healthy intent exists,
+exit 0. Synthetic faults, not live database outage. Artifacts: compare-routing-progress.py and
+routing-comparison-{2c4e7f0,f33f8069}.json in artifacts/autonomous-operation-001. Initial direct
+pytest comparison failed to import a new constant and is INVALID negative evidence; the portable
+discriminator supersedes it.
+
+Native Windows exact-candidate checks: continuation/routing/CLI 72 passed in 17.14 seconds;
+Ruff passed; checkout unchanged. Remaining: CI, controlled operating host runtime switch with
+admission paused/no held units, then real delivery-tree automatic evidence repair. Keep the existing
+qualified worker image and immutable recovery policy; this is host controller code, with unchanged
+worker execution code. No full-autonomy completion claim.
+
+
+## Recovery routing resubmission: durable bounded fairness, 2026-09-24
+
+Same outcome/scope and acceptance matrix as the routing frame below. Candidate 2c4e7f0 was
+REJECTED by independent lead e9f0bab7, not promoted. It is integrated ONLY into this correction
+worktree as implementation input; production remains 87d7d92. Preserve its membership filtering,
+global effect ownership and legacy-record behavior; no rework of accepted boundaries.
+
+Observation -> invalid assumption: limiting unavailable reads to four per lane bounds a tick,
+but an unchanged ordering picks the SAME four after every tick/restart. Per-job unavailable is
+not proof the entire lane is unavailable. Owner discriminator routing-starvation-reproducer.json
+executed the real candidate tick with real MemoryStores and injected read failures for four
+older jobs, with one healthy later job in the SAME lane. Three freshly reconstructed controllers
+all selected the same failures; target had no intent. This is synthetic fault injection, not a
+live database outage, and establishes a reachable failure mode rather than its production frequency.
+
+Competing designs: unbounded scanning removes starvation but loses the tick bound; per-process
+rotation loses progress on restart; durable selection progress retains both. Implement the third
+using the existing control store: persist selection/attempt order or a stable cursor per policy
+BEFORE/with bounded selection, independently of whether lane evidence can be read. Concurrent
+controllers must not reset progress or create duplicate effects; use existing transactional owners.
+Read-only polling/status must not advance it. Do not fabricate an intent, verdict, success or failure
+evidence to record a scheduling attempt. Keep named unavailable observations. True cached lane-wide
+runtime identity outage may still skip that lane; per-job read failure cannot prove lane outage.
+With finite fixed eligible candidates, repeated bounded ticks (including reconstructed controllers)
+must reach the healthy candidate in a deterministically testable number of passes. Preserve bounded
+attempt counts with all jobs unavailable, paused/drain behavior and global effect idempotence.
+
+One Claude batch: implement durable bounded selection progress, same-lane failure/healthy/restart
+regression, all-unavailable bound and overlapping-controller safety; rerun previous scoped tests
+and Ruff. No larger feature, deployment or verifier timeout change. Fixed matrix below still applies.
+
+The other lead gap is CLOSED BY OWNER EVIDENCE: before staging this candidate, Codex ran the new
+test_an_actual_tick_repairs_in_scope_evidence_past_more_old_history_than_its_fairness_limit with
+pre-candidate src at 4d082db9. It executed and failed at test line68 (only: zero repair intents),
+1 failed in 1.89 seconds; no import error. No need to fake a worker rollback command in tests.
+New same-lane regression must be shown to fail behaviorally against candidate 2c4e7f0; owner may
+perform that negative comparison after submission if worker sandbox cannot access old Git objects.
+Record that division honestly. Worker tests array lists only completed successful commands;
+negative/failed/attempted checks belong in summary. Existing full-suite CI stays separate.
+
+Manual bootstrap is still necessary for this controller correction because the controller being
+fixed is the automatic repair path. This dispatch does NOT prove automatic recovery. Completion:
+independent acceptance, owner affected checks/CI, operating update, THEN real delivery-tree recovery.
+
+## Recovery routing ownership and bounded progress, 2026-09-24
+
+Outcome: the already authorized delivery-tree failure must reach its existing evidence-repair
+route automatically, without rewriting evidence, weakening acceptance, or creating duplicate effects.
+One Claude implementation batch repairs continuation selection/ownership. Codex independently
+reviews and qualifies it before updating runtime; then resumes the preserved delivery candidate.
+
+Executed evidence: recovery-discriminator.json, against runtime 87d7d92 and immutable registered
+autonomous-recovery-001, returns four refused intents belonging to the OLD policy. Repeated normal
+service ticks have produced no recovery-policy intent for delivery-tree. This is not quota denial.
+Primary sources inspected 2026-09-24: application/continuation.py tick filters intents by policy,
+_candidates includes all terminal jobs in matching lanes, _observe checks scope only after selection;
+_create returns any existing key without ownership validation. domain/continuation.py intent_id
+omits policy; fair_order limits the pass. Together old out-of-scope rows repeatedly occupy the pass.
+No external API behavior is being inferred. Scope-filter starvation plus foreign-row reuse is the
+supported mechanism; it does not prove there are no other later recovery gates.
+
+Design: distinguish immutable policy membership (repository, goal, allowed paths/criteria) from
+current runtime eligibility. Apply membership before bounded fairness/evidence reads, so unrelated
+history cannot consume all slots. Keep genuine in-scope runtime mismatch/unavailability visible
+and refusing NEW effects, while already dispatched work still drains under its original owner.
+Preserve durable global effect identity/idempotence. Do NOT simply salt all IDs by policy and allow
+two overlapping policies to launch twice. An existing foreign-policy observation must never be
+returned as progress of this policy; expose explicit ownership/conflict and let eligible independent
+families advance. No deleting/rekeying old rows, adopting another policy's authorization, terminal
+status edits, reviewer bypass, policy broadening, or manually queuing delivery-tree's repair.
+Restart and concurrent policies must converge on the same existing owner/effect. Preserve all
+accepted session/runtime/guardian semantics. Use existing stores and transactional owners.
+
+Acceptance matrix (one fixed review batch):
+- Normal: more out-of-scope old terminal jobs than fair_order limit, then eligible evidence failure;
+  target gets an evidence_repair intent/successor in the bounded pass. Verify actual tick, not a
+  replacement selector. Two immutable policies share the same store and preserve old records.
+- Failure/unknown: in-scope runtime mismatch or unavailable evidence never starts a worker;
+  explicit blocked/skip evidence remains; independent eligible work progresses.
+- Ownership/concurrency/restart: overlapping policies observing identical evidence never reuse
+  foreign authorization, return foreign progress, or duplicate admission/conductor launch. Repeat
+  ticks/reconstructed controller and lost-response paths keep original owner and successor ID.
+- Timeout/cancel: preserve drain and paused/changed-policy behavior; existing tests cover these.
+- Platform/cleanup: pure coordinator change; no new processes/resources or platform backend.
+  Existing continuation tests and native owner checks apply; no new OS cleanup design.
+- Legacy persisted intent: original IDs/records remain valid and settle with their original owner.
+
+Run scoped continuation tests and Ruff. Whole repository integration suite belongs to CI/owner.
+Legacy worker tests array includes only actually completed successful required commands; attempted,
+failed, timed-out and NOT RUN commands go in summary, never masquerade as successful claims.
+The old delivery-tree inspection remains failed. No merge/deploy by worker. Out of scope: new
+research agent, generic scheduling redesign, delivery tree code (candidate b31a9112 preserved),
+UI and other asset absorption. Completion of this batch is NOT full autonomous-loop qualification.
+
+## Recovery coverage correction and actual evidence failure, 2026-09-24
+
+Inspection 6fba3e1b of delivery-tree candidate b31a9112: scoped host-delivery regression,
+three affected test files and Ruff were checked twice, all exit 0. Two extra whole-suite
+claims timed out at 300 and 289.95 seconds. Worker itself reported the first full suite was
+not verified (ssh-keygen missing) and the second exceeded 600 seconds with ENOSPC/lost output.
+Those commands nevertheless appeared in its tests array. Preserve this failure history;
+do not recategorize the original inspection as passed or extend timeouts to chase green.
+The original contract required affected tests and Ruff, not the whole suite. Repair evidence
+must certify only actually completed required checks, distinguish attempted/incomplete checks,
+and retain the unchanged strict verifier. Whole-suite execution belongs to existing CI.
+
+Owner omission: delivery-tree was outside autonomous-live-001's exact goal/scope policy.
+Correct configuration by registering a separate immutable recovery policy with the EXACT
+original manifest goal, paths, criteria, model and actual archive/image/profile. Keep old
+policy and intents as evidence; no authority widening, forced verdict or terminal-row edit.
+Use existing continuation evidence_repair route to create the successor and bind preserved
+workspace; do not manually manufacture an accepted operation or rewrite its tests array.
+Observe origin -> evidence_repair intent -> successor -> inspection -> independent review.
+Existing two-distinct-failure research hold remains enforced (two failed commands inside one
+attempt are NOT two independent attempts). Unknown effects retain recovery debt.
+
+Future admission invariant: before authorizing unattended repair work, bind its immutable
+scope to a continuation policy, or expose an explicit owner-only disposition. This owner
+configuration correction is not proof that automatic policy construction/research execution
+has been implemented universally. Deployment and whole-loop qualification remain outstanding.
+
+## Actual delivery registration: Git tree identity contract, 2026-09-23
+
+Goal unchanged: connect accepted useful work to actual delivery. Both live-status and live-runbook
+finished real Claude execution, independent lead and conductor acceptance; host_delivery awaits
+owner. Two actual releases live in the harness lane store; Fleet/targets were registered centrally.
+The owner must compose lane release authority with primary Fleet authority for managed activation,
+never infer an empty Fleet from a lane store. This composition is owner configuration, not scope
+for the following implementation correction. Existing scheduled service must be drained/stopped
+before managed takeover, so two Fleet services cannot run accidentally.
+
+Executed discriminator: validate_plan using accepted live-status revision 8693acc9860ac6b439f520c0d15149c9cdcd40f7,
+actual Git tree 84e42223417be53bef4c7c544a234af6e7402e68, failed plan_invalid field tree.
+Evidence artifacts/autonomous-operation-001/delivery-plan-tree-reproducer.json. Source:
+domain/host_delivery.py validates tree and policy_hash together as 64 hex; actual GitWorkspace
+candidate and qualification use git rev-parse tree identity (40 hex here). Tests use synthetic
+64-character trees. No hash may be padded/rehashed/substituted to bypass candidate binding.
+
+One bounded Claude batch: separate Git object-id validation for plan.tree from SHA256 digest
+fields. Accept exact lowercase 40 or 64 hex tree ids; keep policy_hash, profile, pin and descriptor
+digests strictly 64. Do not change revision support or imply full SHA256-repository qualification.
+Preserve exact candidate tree equality at review/merge/consumption. Use actual disposable Git
+repository output for a normal registration regression; include malformed lengths, 64-char tree
+compatibility and policy-hash strictness, exact tree mismatch refusal. Exercise plan registration
+with the release identity shape, not only a standalone regex. Scope is this contract and affected
+tests/comments/docs only. No deployment or new runtime feature by Claude.
+
+Acceptance: actual Git SHA1 tree plan registers; malformed ids and changed candidate tree refuse;
+existing 64-char fixture compatibility retained; SHA256 policy digest never relaxed. Run affected
+host-delivery/CLI/managed-runtime tests and Ruff. Preserve accepted runtime/session evidence.
+Owner then registers real plan and drives publish/CI/merge stages. Live-status publication already
+exists as PR184; reconcile rather than duplicate it. Runbook has same original base as status and
+must be rebased/reviewed against integrated status BEFORE merging: exact whole-tree qualification
+must not be bypassed. These are existing release gates, not new speculative review criteria.
+
+## Live continuation qualification after PR183 deployment, 2026-09-23
+
+Outcome: enable the accepted continuation for TWO explicitly authorized useful documentation
+items, observe real Claude session/independent review/conductor and correction if genuinely
+needed, then assess actual delivery handoff. No artificial rejection or fabricated deployment.
+Codex owns these requirements; Claude implements the documentation, not scope/design decisions.
+Existing accepted runtime and tests remain accepted. No new broad environment audit.
+
+Owner-observed facts (not claims the worker must re-execute): PR183 merged as 87d7d9237761e1036f695da871173b60bc16ca26.
+All required GitHub CI checks passed including Windows/Linux 3.12/3.14 and integration.
+Native integrated checks 255 passed/5 skipped, Ruff passed. Focused Windows managed runtime
+23 passed/2 skipped. Live scheduled Fleet consumed revision 87d7d92 from runtime-autonomous-183
+at 2026-09-23T11:45:54Z, PID38312, image
+sha256:1ee94821ead80039a2ea1070079ce47ba3137771f56ef7a115e779ebeb06b267.
+Previous PID33740 was absent, new process tree observed, prior admission state restored.
+Owner evidence: artifacts/autonomous-operation-001/cutover-183/result.json and events.jsonl;
+connection-r6-pytest.log; connection-r6-ruff.log; native-fixture-owner.log.
+Actual dedicated-PG/Windows empty-Fleet start/repeat/stop passed. Descriptor restoration across
+two revisions with IDENTICAL runtime code passed: managed-real-current-receipt.json and
+managed-real-rollback-receipt.json. This is not live rollback or full HostDelivery orchestration.
+pause-pg-receipt.json proves real PG rollback with labelled scan faults retains pause and denies
+conductor reservation. Initial probe used invalid unit id and was corrected; it is not acceptance.
+
+Remaining before this batch: policies and host targets empty; deployed scheduled Fleet is not
+yet a managed-delivery target. Registering target/policy does not prove activation. This batch's
+policy is limited to the goal digest below, harness lane, Opus5.5, image/profile/archive pin and
+the two document scopes. Existing unrelated jobs cannot be continued by this policy.
+
+Item A: update STATUS.md and stale CONTINUATION.md intro to distinguish code deployed from
+policy enabled and full-loop qualified. Preserve history with dated superseding statements,
+add a compact Mermaid state diagram and evidence links. State unknowns honestly. No guessed
+test counts, model success, live heartbeat, autonomous recovery or release claims.
+Item B: create OPERATOR-RUNBOOK.md for the Codex-designed existing sequence: pin reviewed merged
+code/image -> pause -> verify no worker/conductor debt -> preserve old launcher/config -> stop
+owned service -> immutable runtime identity check -> start -> observed module/revision/PID and
+admission restore -> evidence receipt. On failure retain pause and restore predecessor only
+after new work is absent; verify previous consumption. Warn that bare git revert ignores debt.
+Distinguish current scheduled service cutover from future managed HostDelivery. Include SSOT
+code/doc references and a checklist with evidence columns, not scripts or new mechanisms.
+
+Matrix: normal two jobs -> actual session binding/review/conductor evidence; real rejection ->
+same-frame correction with retained lineage; duplicate tick/restart -> no duplicate invocation;
+unknown effects -> retained debt/recovery owner; delivery -> exact bound plan/consumption or
+explicit waiting-owner (not completion). Qualification is unfinished until those required actual
+paths are observed. No forced failure just to claim a recovery result. Documentation checks
+must not expand into runtime tests. No operator script, runtime, auth or CI changes by Claude.
+Owner pauses admission before registration/restart, confirms no work, then resumes the original
+state. Target registration alone keeps host delivery disabled until exact release qualification.
+
 ## Native fixture qualification and authorized operating delivery, 2026-09-23
 
 User explicitly requests operating deployment after qualification. Accepted candidate 815adbc

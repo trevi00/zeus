@@ -1,0 +1,38 @@
+{
+  "schema": "urn:zeus:operation:1",
+  "id": "autonomous-operation-001-recovery-fairness",
+  "base_revision": "2cd70b695060c32c27ac935b39a475b6591db790",
+  "goal": {
+    "path": "docs/zeus/operations/autonomous-operation-001/SPEC.md",
+    "sha256": "d300a60e66948a1fa627aa49b3cd39d55cb988f3ed902cdf226036f618cb3524",
+    "criterion": "Complete the existing autonomous operating loop with independently verified session, continuation and actual runtime ownership",
+    "rationale": "Finish the existing whole-goal acceptance matrix without manual user relay or weaker verification."
+  },
+  "budget": {
+    "mode": "subscription",
+    "total": 192,
+    "per_host": 192
+  },
+  "claude": {
+    "model": "claude-opus-5-5",
+    "timeout_seconds": 3600,
+    "max_budget_usd": 2
+  },
+  "plan": {
+    "objective": "Implement ONLY Recovery routing resubmission: durable bounded fairness in SPEC.md. Preserve staged unaccepted candidate ownership/membership fixes. Add durable scheduling progress for same-lane per-job evidence outages across bounded ticks and restart; no whole-suite execution or deployment. Report negative regression separately; owner already proved original historical-policy regression against old src.",
+    "allowed_paths": [
+      "src/codex_harness/domain/continuation.py",
+      "src/codex_harness/application/continuation.py",
+      "tests/test_continuation.py",
+      "tests/test_continuation_routing.py",
+      "docs/contracts.md"
+    ],
+    "acceptance_criteria": [
+      "Actual tick advances in-scope evidence repair despite more unrelated historical jobs than its fairness limit; old policy records remain unchanged.",
+      "Overlapping policies, replay and restart preserve original effect ownership; foreign intents are not returned as current-policy progress and duplicate effects cannot start.",
+      "Runtime mismatch/unavailable evidence blocks new effects visibly without starving independent eligible work; existing drain and pause semantics remain.",
+      "Scoped continuation tests and Ruff pass; regression fails against previous implementation for the behavioral defect, not an import error.",
+      "Four older same-lane read failures cannot indefinitely starve a healthy fifth job across reconstructed controllers; all-unavailable passes remain bounded and concurrent ticks preserve progress/effect ownership."
+    ]
+  }
+}
