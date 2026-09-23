@@ -64,6 +64,19 @@
       "dependencies": [
         "monitor-correction"
       ]
+    },
+    {
+      "id": "delivery-r5",
+      "project_id": "research-improvement",
+      "criterion_id": "verified-loop",
+      "lane": "harness",
+      "manifest_path": "docs/zeus/operations/autonomous-operation-001/delivery-r5.operation.json",
+      "manifest_revision": "aa734f97ad04b0dfac5c95bf146e56fdbb595989",
+      "manifest_sha256": "a9174f8d5f7b860766b43a2431eaa82a3fbf50171f286b95b9766e0a282d1302",
+      "priority": 60,
+      "dependencies": [
+        "monitor-correction"
+      ]
     }
   ]
 }
