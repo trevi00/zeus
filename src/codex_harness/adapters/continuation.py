@@ -15,19 +15,21 @@ The ports it supplies:
 * `runtime(lane_id)` - the identity the lane ACTUALLY runs: the host-selected isolation image, the
   packaged worker profile and the digest of the lane's session archive root. A policy naming
   anything else refuses before any effect.
-* `LaneConductor` - the guarded conductor dispatch: the existing `zeus continuation conduct` in the
-  lane environment as a child process, exactly as the Fleet launches `zeus operate run`. Its
-  timeout or a lost child is an UNKNOWN effect for ExecutionRecovery, never a relaunch.
+* `ConductorProcesses` (adapters/continuation_process.py) - the guarded conductor dispatch: the
+  existing `zeus continuation conduct` in the lane environment as an OWNED child tree started under
+  the committed launch identity and polled on later ticks, never waited on inside one. A timeout,
+  a lost child or an unconfirmed start is reconciled from its launch evidence and the decision row;
+  an unknown effect goes to ExecutionRecovery, never to a relaunch.
+* `ContinuationPass` - what `FleetRunner(continuation=...)` holds for its lifetime: the tick, the
+  admission-closed `drain`, and the owned/unresolved conductor launches its heartbeat, drain and
+  concurrency slot account for.
 """
 from __future__ import annotations
 
 import hashlib
-import json
-import subprocess
-import sys
 from pathlib import Path
 
-from codex_harness.adapters.commands import no_console_kwargs
+from codex_harness.adapters.continuation_process import ConductorProcesses
 from codex_harness.adapters.fleet_backlog import _parse, read_blob
 from codex_harness.adapters.operation_cli import GitSource
 from codex_harness.adapters.providers import packaged_policy
@@ -37,14 +39,9 @@ from codex_harness.domain.continuation import ContinuationRefused, validate_poli
 from codex_harness.domain.fleet import lane_of, repository_identity
 from codex_harness.domain.fleet_backlog import BacklogRefused
 from codex_harness.domain.operation import WORKER_PROFILE, validate_manifest
-from codex_harness.domain.policy import POLICY
 
 POLICY_SETTING = "ZEUS_CONTINUATION_POLICY"
 MAX_POLICY_BYTES = 64 * 1024
-DEFAULT_ARGV = (sys.executable, "-m", "codex_harness.cli")
-# The conductor child is one Codex decision; its wall-clock bound is the decision allowance plus a
-# fixed margin for process start and store I/O, never an extension of the decision itself.
-CONDUCT_MARGIN_SECONDS = 120
 
 
 def archive_identity(runtime_root) -> str:
@@ -115,31 +112,6 @@ def lane_stores(config: dict, host: dict, store_factory=None):
     return lanes
 
 
-class LaneConductor:
-    """`(lane_id, job) -> outcome`: the guarded conductor decision in the lane environment."""
-
-    def __init__(self, config: dict, host: dict, *, argv=DEFAULT_ARGV, run=subprocess.run):
-        self.config, self.host, self.argv, self.run = config, host, tuple(argv), run
-
-    def __call__(self, lane_id: str, job: dict) -> dict:
-        from codex_harness.adapters.fleet_runtime import lane_environment
-
-        lane = lane_of(self.config, lane_id)
-        env = lane_environment(lane, self.host)
-        directory = Path(lane["runtime"]) / "continuation"
-        directory.mkdir(parents=True, exist_ok=True)
-        manifest = directory / (job["id"] + ".manifest.json")
-        body = json.dumps(job["manifest"], sort_keys=True)
-        if not manifest.exists() or manifest.read_text(encoding="utf-8") != body:
-            manifest.write_text(body, encoding="utf-8")
-        argv = [*self.argv, "--repository", lane["repository"], "continuation", "conduct", "--file", str(manifest)]
-        with (directory / (job["id"] + ".conduct.log")).open("ab") as log:
-            # A timeout raises: the controller records an unknown effect and never relaunches it.
-            completed = self.run(argv, env=env, stdout=log, stderr=subprocess.STDOUT,
-                                 timeout=POLICY.decision_seconds + CONDUCT_MARGIN_SECONDS, **no_console_kwargs())
-        return {"exit_code": completed.returncode}
-
-
 def validator():
     policy = packaged_policy()
     return lambda manifest: validate_manifest(manifest, policy)
@@ -147,14 +119,15 @@ def validator():
 
 def coordinator(store, config: dict, host: dict, *, lanes=None, conductor=None, observer=None) -> Continuation:
     return Continuation(store, Fleet(store), lanes or lane_stores(config, host),
-                        conductor if conductor is not None else LaneConductor(config, host),
+                        conductor if conductor is not None else ConductorProcesses(config, host),
                         validate=validator(), observer=observer)
 
 
 def tick_policy(store, config: dict, host: dict, policy_id: str, *, source_factory=GitSource, lanes=None,
                 conductor=None, runtime=None, observer=None) -> dict:
     """One bounded tick. An unregistered or disabled policy returns before any Git read, lane
-    connection or process; the registered pin is re-read so a changed policy refuses."""
+    connection or process; the registered pin is re-read so a changed policy refuses. A pin that
+    cannot be re-read refuses every NEW effect, while launches already started are still drained."""
     owner = coordinator(store, config, host, lanes=lanes, conductor=conductor, observer=observer)
     row = owner.policy(policy_id)
     if row is None or not row["policy"]["enabled"]:
@@ -164,15 +137,47 @@ def tick_policy(store, config: dict, host: dict, policy_id: str, *, source_facto
         loaded = load_policy(source_factory(lane_of(config, pin["lane"])["repository"]), pin["revision"], pin["path"])
         sha = loaded["pin"]["sha256"]
     except Exception as exc:
+        drained = owner.drain(policy_id)
         return {"schema": "urn:zeus:continuation-tick:1", "policy_id": policy_id, "outcome": "refused",
-                "reason_code": "policy_unavailable", "error_type": type(exc).__name__, "actions": [],
-                "skipped": [], "next_owner": "operator"}
+                "reason_code": "policy_unavailable", "error_type": type(exc).__name__, "actions": drained["actions"],
+                "skipped": drained["skipped"], "next_owner": "operator"}
     return owner.tick(policy_id, pin_sha256=sha, runtime=runtime or lane_runtime(config, host))
 
 
-def continuation_ticker(store, config: dict, host: dict, policy_id: str, observer=None):
-    """The optional per-pass callable for `FleetRunner(..., continuation=...)`; disabled by default."""
-    return lambda: tick_policy(store, config, host, policy_id, observer=observer)
+class ContinuationPass:
+    """The runner-lifetime continuation: one `ConductorProcesses` (so owned child handles survive
+    across ticks) and one lane-store cache. Calling it is one tick; `drain()` settles only launches
+    already started (admission closed); `owned()` and `unresolved()` are what the Fleet heartbeat,
+    drain and concurrency slot count - never reported as idle while a conductor is pending."""
+
+    def __init__(self, store, config: dict, host: dict, policy_id: str, *, observer=None, processes=None,
+                 lanes=None, runtime=None, source_factory=GitSource):
+        self.store, self.config, self.host, self.policy_id = store, config, host, policy_id
+        self.observer, self.runtime, self.source_factory = observer, runtime, source_factory
+        self.processes = processes if processes is not None else ConductorProcesses(config, host)
+        self.lanes = lanes or lane_stores(config, host)
+
+    def __call__(self) -> dict:
+        return tick_policy(self.store, self.config, self.host, self.policy_id, source_factory=self.source_factory,
+                           lanes=self.lanes, conductor=self.processes, runtime=self.runtime, observer=self.observer)
+
+    def _owner(self) -> Continuation:
+        return coordinator(self.store, self.config, self.host, lanes=self.lanes, conductor=self.processes,
+                           observer=self.observer)
+
+    def drain(self) -> dict:
+        return self._owner().drain(self.policy_id)
+
+    def owned(self) -> list:
+        return self.processes.active()
+
+    def unresolved(self) -> list:
+        return self._owner().unresolved(self.policy_id, self.processes.active())
+
+
+def continuation_ticker(store, config: dict, host: dict, policy_id: str, observer=None) -> ContinuationPass:
+    """The optional `FleetRunner(..., continuation=...)` pass; disabled by default."""
+    return ContinuationPass(store, config, host, policy_id, observer=observer)
 
 
 def configured_policy(settings: dict) -> str | None:
@@ -180,5 +185,6 @@ def configured_policy(settings: dict) -> str | None:
     return value.strip() if type(value) is str and value.strip() else None
 
 
-__all__ = ["LaneConductor", "POLICY_SETTING", "archive_identity", "configured_policy", "continuation_ticker",
-           "coordinator", "lane_runtime", "lane_stores", "load_policy", "register_policy", "tick_policy"]
+__all__ = ["ConductorProcesses", "ContinuationPass", "POLICY_SETTING", "archive_identity", "configured_policy",
+           "continuation_ticker", "coordinator", "lane_runtime", "lane_stores", "load_policy", "register_policy",
+           "tick_policy"]

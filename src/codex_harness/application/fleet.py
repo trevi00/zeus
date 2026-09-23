@@ -608,7 +608,11 @@ class FleetRunner:
         # Optional opt-in conductor continuation pass (INV-CONTINUATION-001), supplied by the adapter
         # and run in its own transactions after the backlog tick and before admission, so a
         # successor or an initial session binding it records is visible to this same admission.
-        # None - the default - keeps this runner's exact previous behaviour.
+        # It never waits for a conductor decision: it starts an owned child and polls it on later
+        # passes. When it also offers `owned()`, `unresolved()` and `drain()`, pending conductors
+        # take admission slots, count as active/unresolved work in the heartbeat, keep a graceful
+        # stop draining, and are settled by `drain()` while admission is closed. None - the
+        # default - keeps this runner's exact previous behaviour.
         self.continuation = continuation
         self.continuation_state = None
         # Last logged reconciliation state, so repeated identical failures stay silent and only a
@@ -634,13 +638,20 @@ class FleetRunner:
             admitting = self._admission_open(summary)
             self._reconcile(summary)
             progressed = False
-            if admitting:
+            if admitting and not self.stopping:
                 self._backlog(summary)
                 progressed = self._continue(summary)
                 progressed = self._admit(summary) or progressed
+            else:
+                self._drain_continuation(summary)
             progressed = self._reap(summary) or progressed
             self._heartbeat(summary)
             if self.children or progressed:
+                continue
+            if self._conductors():
+                # A pending conductor child is polled on the next pass, never waited on here; a
+                # graceful stop or `--once` keeps draining it rather than leaving it behind.
+                self.sleep(self.interval)
                 continue
             if once or self.stopping:
                 break
@@ -680,8 +691,14 @@ class FleetRunner:
         try:
             owned = set(self.children)
             unresolved = [job for job in self.fleet.reconciliation_required() if job not in owned]
-            self.control.heartbeat({"admission": self.admission, "active": len(owned),
-                                    "unresolved": len(unresolved)})
+            # Conductor children this process owns are active work; dispatched launches it does not
+            # own (a previous owner's, an unconfirmed start) are unresolved. A failure to read them
+            # skips the heartbeat rather than under-reporting work.
+            pending = getattr(self.continuation, "unresolved", None)
+            conductors = self._conductors()
+            unresolved_conductors = list(pending()) if pending is not None else []
+            self.control.heartbeat({"admission": self.admission, "active": len(owned) + len(conductors),
+                                    "unresolved": len(unresolved) + len(unresolved_conductors)})
         except Exception as exc:
             summary["heartbeat"] = {"state": "unavailable", "error_type": type(exc).__name__}
         else:
@@ -775,12 +792,36 @@ class FleetRunner:
         return state == "ok" and any(action.get("effect") in {"admitted", "session_bound"}
                                      for action in row.get("actions") or [] if isinstance(action, dict))
 
+    def _conductors(self) -> list:
+        """Conductor launches this runner's continuation owns and has not settled (none without)."""
+        owned = getattr(self.continuation, "owned", None)
+        return list(owned()) if owned is not None else []
+
+    def _drain_continuation(self, summary: dict) -> None:
+        """Admission is closed (graceful stop or host pause): only already started conductor
+        launches are polled and settled, under the binding they were started with. No new effect."""
+        drain = getattr(self.continuation, "drain", None)
+        if drain is None:
+            return
+        try:
+            result = drain()
+        except Exception as exc:
+            state, row = "unavailable", {"error_type": type(exc).__name__}
+        else:
+            state, row = "draining", result if isinstance(result, dict) else {}
+        summary["continuation"] = {"state": state, "outcome": row.get("outcome"), "reason_code": None,
+                                   "error_type": row.get("error_type") if isinstance(row.get("error_type"), str) else None}
+        if state != self.continuation_state and state == "unavailable":
+            LOGGER.warning("conductor continuation %s; fleet admission continues", state)
+        self.continuation_state = state
+
     def _admit(self, summary: dict) -> bool:
         progressed = False
         # Effective ceilings are refreshed before every admission scan: a grant made while this
         # service sleeps applies to the next scan without a restart and without any hidden reset.
         config = self.fleet.registered()["config"]
-        while not self.stopping and len(self.children) < config["max_parallel"]:
+        # A pending conductor child holds a slot of the same bounded parallelism as a lane child.
+        while not self.stopping and len(self.children) + len(self._conductors()) < config["max_parallel"]:
             exhausted = bool(self.launcher.budget_exhausted(config["budget"]))
             decision = self.fleet.admit_one(budget_exhausted=exhausted)
             summary["blocked"] = decision["blocked"]

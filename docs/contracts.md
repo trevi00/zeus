@@ -2485,8 +2485,9 @@ evidence read outside every transaction: `failed/evidence_gate_refused` with a k
 `rejected` with a succeeded `review_lead` decision, or a conductor rejection -> `correction`
 successor; the second distinct similar failure of a family -> `research` (held until the existing
 Portfolio investigation holding its jobs is `researched` with evidence; replays count nothing);
-`unknown`, an unknown-effect failure reason, an unconfirmed/pending termination marker or a lost
-conductor dispatch -> `recovery` for ExecutionRecovery, never a fresh call; `accepted` ->
+`unknown`, an unknown-effect failure reason, an unconfirmed/pending termination marker or a
+conductor launch that ended with its row not settled -> `recovery` for ExecutionRecovery, never a
+fresh call; `accepted` ->
 `conductor_review` (the existing guarded `decide_one("conductor", expected=...)` in the lane through
 `zeus continuation conduct`); a conductor-accepted release -> `host_delivery` handoff to the owner's
 HostDelivery plan on the policy target (`active` completes, `rolled_back`/`failed`/`blocked` holds the
@@ -2500,7 +2501,12 @@ successor manifest and binding recorded) -> `published` (lane binding written; i
 different document `binding_conflict`, an already claimed operation `operation_already_claimed`) ->
 `admitted` (the unchanged `Fleet.enqueue`, same id on replay) -> `returned` -> `completed`; for the
 conductor `intended -> dispatched` BEFORE the child starts, and a dispatch whose decision row is still
-`pending` with attempt 0 is provably not entered. Each move is a compare-and-swap on the intent
+`pending` with attempt 0 is provably not entered. `domain.continuation.RESUME` is the route x state
+restart table: every open (route, state) has exactly one action (`publish`, `await_successor`,
+`complete`, `dispatch`, `reconcile_launch`, `redispatch`, `observe_delivery`, `observe_research`,
+`await_backlog`), so a crash after any commit - including `intended` and `returned` - resumes the
+same intent; `returned` completes from the committed outcome it already holds (the successor status
+or the conductor decision). Each move is a compare-and-swap on the intent
 version (`IntentChanged` for a stale holder), so two controllers, a restart and a duplicate event
 converge on one intent, one successor and one dispatch. A successor keeps the origin's goal, base,
 allowed paths, acceptance criteria, budget and Claude controls byte for byte; only the id and a fixed
@@ -2535,6 +2541,48 @@ manifest, objective, review text, transcript, path or credential; a store failur
 `unavailable`. `FleetRunner(continuation=...)` runs the pass after the backlog tick and before
 admission; its failure is its own `unavailable` state and never blocks admission.
 
-Fixture tests prove the composition with labelled worker/lead/conductor executors and a fixture
-process runner. They do not prove real PostgreSQL/Redis behaviour, a real two-turn model session, the
-managed Fleet or two useful unattended jobs; those are owner qualification gates.
+Conductor children (`adapters/continuation_process.py`) are owned and never waited on. The launch
+identity `digest(intent, sequence)` commits on the intent (`dispatched`, `launch.state: starting`)
+BEFORE `ConductorProcesses.start` spawns the child wrapper through `ProcessTree` (job object /
+session group) and returns; later passes `poll` it. The wrapper takes `<lane runtime>/continuation/
+launches/<launch>/lock` without waiting, creates `claim` exclusively as `child`, runs `zeus
+continuation conduct`, then writes `exit.json`. A controller without the handle reconciles from those
+files: receipt -> `exited`; lock held -> `running` (owned elsewhere: `conductor_owner_unknown`, only
+that family waits, reported as unresolved); lock free and no claim -> it writes `claim=fenced` while
+holding the lock -> `absent` (never entered, never will). Only `absent`, or an exited child whose row
+is still `pending` with attempt 0, lets a NEW launch identity start, at most `MAX_LAUNCHES` (3), then
+`conductor_launch_exhausted`. An exited child with a `running`/`failed` row, or an owned child past
+`decision_seconds + 120` (ended through its tree, `conductor_timeout`), is `recovery_required`. A
+failed or lost start response (`launch_unconfirmed`) is decided by reconciling the same identity,
+never by a second start. `ContinuationPass` lives as long as the runner: pending conductor children
+take one slot of `max_parallel` (and `max_active=1` conductor), count as heartbeat `active` (launches
+owned elsewhere as `unresolved`), keep `--once` and a graceful stop draining, and `drain()` settles
+them while admission is closed or the pin changed/unreadable, without any new effect. `zeus
+continuation tick` owns its child until it ends and then drains once.
+
+Every NEW effect (lane binding, Fleet admission, conductor start, including resumed `intended`/
+`published` work and a re-dispatch) passes one eligibility guard: the registered policy digest,
+`check_scope` against the current runtime, and the `authorization` stored on the intent at creation
+(policy/pin digest, repository, lane, goal, allowed paths, criteria, model, image/profile/archive
+identity, source job manifest digest and status) must all equal the current values. Drift refuses
+the effect by name (`image_changed`, `session_archive_changed`, `policy_changed`, `source_changed`,
+...), records `hold {reason_code, next_owner, field}` on the intent once (an
+`operations.continuation_blocked` event; the family is held; idle ticks write nothing), and keeps the
+state, stored authorization and evidence unchanged; restoring the authorized binding clears it.
+Reconciling an already started launch needs no guard and keeps its outcome under the original
+binding; the next observation of that job under the changed binding is a named refusal.
+
+Delivery evidence is bound: `LaneEvidence.read(job, target)` selects the ONE `host_delivery_intents`
+row of the policy `delivery_target` whose `release_id` and `revision` equal the conductor's release
+and the accepted task's candidate, and the `releases` record must name that candidate
+(`bind_delivery`). The `delivery` intent carries `delivery_binding {target_id, release_id, revision}`
+and re-validates it on every observation. Another target's plan (active or rolled back) is foreign
+and neither completes nor pauses the item; a plan of this target for another revision
+(`delivery_stale`), two exact plans (`delivery_ambiguous`), a release naming another candidate
+(`delivery_release_candidate_mismatch`) or a changed tuple (`delivery_binding_changed`) is a named
+wait with no write. Completion and pause record `delivery_plan {plan_id, plan_sha256, stage}`.
+
+Fixture tests prove the composition with labelled worker/lead/conductor executors; the child
+ownership is proven with real local sleeping children (tests/test_continuation_process.py), never a
+model. They do not prove real PostgreSQL/Redis behaviour, a real two-turn model session, the managed
+Fleet, native Windows execution or two useful unattended jobs; those are owner qualification gates.

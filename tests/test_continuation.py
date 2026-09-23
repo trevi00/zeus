@@ -67,19 +67,44 @@ def manifest(op_id, path="docs/a.md", model=MODEL, objective=None):
 
 
 class ConductorFixture:
-    """LABELLED fixture of the guarded conductor dispatch: it writes the succeeded review_conductor
-    row (and the queued release id) exactly as the executor's `_commit_decision` shapes it."""
+    """LABELLED fixture of the owned-child conductor port (no process, no model): `start` does what
+    the child's guarded decision would - it writes the succeeded review_conductor row, the queued
+    release id and the Releases record of the exact candidate, as the executor's `_commit_decision`
+    shapes them - and `poll` reports the launch as the real port would observe it.
 
-    def __init__(self, lane, accepted=True, raise_error=None):
-        self.lane, self.accepted, self.raise_error, self.calls = lane, accepted, raise_error, []
+    `pending=True` leaves the launch running with nothing decided until `finish()`; `lost=True`
+    starts (and decides) but loses the start response; `raise_error` fails before any child exists."""
 
-    def __call__(self, lane_id, job):
-        self.calls.append(job["id"])
+    def __init__(self, lane, accepted=True, raise_error=None, pending=False, lost=False):
+        self.lane, self.accepted, self.raise_error = lane, accepted, raise_error
+        self.pending, self.lost, self.calls, self.launches, self.jobs = pending, lost, [], {}, {}
+        self.slots = 1
+
+    def available(self):
+        return sum(1 for state in self.launches.values() if state == "running") < self.slots
+
+    def start(self, lane_id, job, launch):
         if self.raise_error is not None:
             raise self.raise_error
+        self.calls.append(job["id"])
+        self.jobs[launch] = job
+        self.launches[launch] = "running"
+        if not self.pending:
+            self.finish(launch)
+        if self.lost:
+            raise TimeoutError("start response lost after the child started (injected)")
+        return {"pid": 4242}
+
+    def finish(self, launch, decide=True):
+        if decide:
+            self.decide(self.jobs[launch])
+        self.launches[launch] = "exited"
+
+    def decide(self, job):
         with self.lane.store.transaction() as tx:
             operation = tx.get("operations", job["id"])
             lead = tx.get("decisions_pending", operation["decision_id"])
+            candidate = tx.get("tasks", operation["task_id"])["result"]["candidate"]
             decision_id = "cond-" + job["id"]
             tx.put("decisions_pending", decision_id, {
                 "id": decision_id, "actor": "conductor", "phase": "review_conductor", "status": "succeeded",
@@ -89,7 +114,17 @@ class ConductorFixture:
                 "result": {"accepted": self.accepted, "reason": CANARY, "execution_ref": "sha256:" + "9" * 64,
                            **({"deployment": {"status": "queued", "release_id": "rel-" + job["id"]}}
                               if self.accepted else {})}})
-        return {"exit_code": 0}
+            if self.accepted:
+                tx.put("releases", "rel-" + job["id"], {"id": "rel-" + job["id"], "candidate": dict(candidate)})
+
+    def active(self):
+        return sorted(launch for launch, state in self.launches.items() if state == "running")
+
+    def poll(self, lane_id, launch):
+        state = self.launches.get(launch)
+        if state is None:  # nothing was ever spawned under this identity: the fence proves it
+            return {"state": "absent", "owned": False, "exit_code": None}
+        return {"state": state, "owned": True, "exit_code": 0 if state == "exited" else None}
 
 
 class World:
@@ -124,10 +159,10 @@ class World:
         self.lane_reads += 1
         return LaneEvidence(self.lane.store, self.sessions)
 
-    def build(self, **overrides):
+    def build(self, cls=Continuation, **overrides):
         ports = {"fleet": self.fleet, "lanes": self.lanes, "conductor": self.conductor,
                  "validate": lambda m: validate_manifest(m, packaged_policy()), "observer": self.observer, **overrides}
-        return Continuation(self.control, **ports)
+        return cls(self.control, **ports)
 
     def register(self):
         return self.controller.register(self.document, self.pin)
@@ -325,7 +360,7 @@ def test_lost_responses_around_each_effect_reconcile_to_one_successor(tmp_path):
     world.await_review(job_id)
 
     class DownBeforeRead(LaneEvidence):
-        def read(self, job):
+        def read(self, job, target=None):
             raise ConnectionError("lane store unavailable before any effect (injected fault)")
 
     before = world.tick(controller=world.build(lanes=lambda lane: DownBeforeRead(world.lane.store, world.sessions)))
@@ -470,6 +505,17 @@ def test_a_pending_termination_marker_is_an_unknown_effect_even_for_a_rejection(
 
 
 # ---- accepted lead -> conductor -> release -> delivery -> next item ------------------------------
+CANDIDATE = "c" * 40  # the fixture worker's candidate revision (test_operation.FakeExecutor)
+
+
+def deliver(world, plan_id, release_id, stage, target="fleet-host", revision=CANDIDATE):
+    """A HostDelivery intent row as `domain.host_delivery.new_intent` shapes it (the fields read)."""
+    with world.lane.store.transaction() as tx:
+        tx.put("host_delivery_intents", plan_id, {"id": plan_id, "plan_id": plan_id, "release_id": release_id,
+                                                  "target_id": target, "revision": revision, "stage": stage,
+                                                  "plan_sha256": "5" * 64, "updated_at": "t"})
+
+
 def accepted_item(world, op_id="op-1", path="docs/a.md"):
     world.enqueue(op_id, path)
     world.tick()
@@ -493,9 +539,7 @@ def test_accepted_lead_is_conducted_once_then_delivered_then_the_next_item(tmp_p
     idle = deepcopy(world.control.data)
     world.tick()
     assert world.control.data == idle and world.conductor.calls == [job_id], "waiting holds no call"
-    with world.lane.store.transaction() as tx:
-        tx.put("host_delivery_intents", "plan-1", {"id": "plan-1", "release_id": "rel-" + job_id, "stage": "active",
-                                                   "updated_at": "t"})
+    deliver(world, "plan-1", "rel-" + job_id, "active")
     world.tick()
     intents = world.intents()
     assert only(intents, route=dc.DELIVERY)["state"] == dc.COMPLETED
@@ -514,9 +558,7 @@ def test_rollback_holds_only_the_family_and_preserves_the_acceptance(tmp_path):
     job_id = accepted_item(world)
     world.tick()
     world.tick()
-    with world.lane.store.transaction() as tx:
-        tx.put("host_delivery_intents", "plan-1", {"id": "plan-1", "release_id": "rel-" + job_id,
-                                                   "stage": "rolled_back", "updated_at": "t"})
+    deliver(world, "plan-1", "rel-" + job_id, "rolled_back")
     world.tick()
     paused = only(world.intents(), route=dc.DELIVERY)
     assert paused["state"] == dc.PAUSED and paused["reason_code"] == "delivery_rolled_back"
@@ -540,16 +582,39 @@ def test_conductor_rejection_is_a_correction_and_an_unknown_dispatch_is_never_re
     assert correction["reason_code"] == "conductor_rejected" and correction["state"] == dc.ADMITTED
     assert world.binding(correction["successor_job"])["predecessor"]["decision_id"] == "cond-" + job_id
 
+    # A lost start response of a child that DID start and decide: reconciled from its launch
+    # evidence and the committed decision row, never started again.
     lost = World(tmp_path / "lost")
-    lost.conductor.raise_error = TimeoutError("conductor child outcome unknown (injected)")
+    lost.conductor.lost = True
     lost.register()
     lost_job = accepted_item(lost)
-    lost.tick()
-    intent = only(lost.intents(), route=dc.CONDUCTOR)
-    assert intent["state"] == dc.RECOVERY_REQUIRED and intent["reason_code"] == "conductor_effect_unknown"
+    first = lost.tick()
+    assert {"subject": only(lost.intents(), route=dc.CONDUCTOR)["id"], "effect": "launch_unconfirmed",
+            "route": dc.CONDUCTOR, "error_type": "TimeoutError"} in first["actions"]
     for _ in range(3):
         lost.tick()
-    assert lost.conductor.calls == [lost_job]
+    intent = only(lost.intents(), route=dc.CONDUCTOR)
+    assert intent["state"] == dc.COMPLETED and intent["decision"]["id"] == "cond-" + lost_job
+    assert lost.conductor.calls == [lost_job] and intent["launch"]["sequence"] == 1
+
+    # A child that exited with its row still `running` is an unknown effect: recovery, never a relaunch.
+    unknown = World(tmp_path / "unknown")
+    unknown.conductor.pending = True
+    unknown.register()
+    unknown_job = accepted_item(unknown)
+    unknown.tick()
+    with unknown.lane.store.transaction() as tx:
+        operation = tx.get("operations", unknown_job)
+        lead = tx.get("decisions_pending", operation["decision_id"])
+        tx.put("decisions_pending", "cond-x", {"id": "cond-x", "actor": "conductor", "phase": "review_conductor",
+                                               "status": "running", "attempt": 1,
+                                               "message": {"what": {"details": {"decision_id": lead["id"]}}}})
+    unknown.conductor.finish(next(iter(unknown.conductor.launches)), decide=False)
+    for _ in range(3):
+        unknown.tick()
+    intent = only(unknown.intents(), route=dc.CONDUCTOR)
+    assert intent["state"] == dc.RECOVERY_REQUIRED and intent["reason_code"] == "conductor_running"
+    assert intent["next_owner"] == "execution_recovery" and unknown.conductor.calls == [unknown_job]
 
 
 def test_without_a_conductor_port_the_route_waits_for_its_owner_with_no_call(tmp_path):
@@ -788,3 +853,373 @@ def test_fair_order_serves_each_unheld_family_once_least_recent_first():
                   {"job_id": "y2", "family": "y", "finished_at": "2"}, {"job_id": "z1", "family": "z"},
                   {"job_id": "n1", "family": "n"}]
     assert [c["job_id"] for c in dc.fair_order(candidates, intents)] == ["n1", "z1", "y1"]
+    held = [{"family": "h", "state": dc.INTENDED, "hold": {"reason_code": "image_changed"}, "updated_at": "0"}]
+    assert dc.blocked_families(held) == {"h": "image_changed"}
+    assert [c["job_id"] for c in dc.fair_order([{"job_id": "h1", "family": "h"}, *candidates[:1]], held)] == ["x1"]
+
+
+# ---- R1: route x state restart table ------------------------------------------------------------
+def test_every_open_route_state_has_exactly_one_resume_action_and_terminal_states_have_none():
+    for route, states in dc.ROUTE_STATES.items():
+        for state in states:
+            key = (route, state)
+            if state in dc.OPEN_STATES:
+                assert key in dc.RESUME, key
+                assert callable(getattr(Continuation, "_resume_" + dc.RESUME[key])), key
+            else:
+                assert key not in dc.RESUME, key
+    assert set(dc.RESUME) <= {(r, s) for r, states in dc.ROUTE_STATES.items() for s in states}
+    new_effects = {dc.PUBLISH, dc.DISPATCH, dc.REDISPATCH}
+    assert {action for action in dc.RESUME.values()} - new_effects == {
+        dc.AWAIT_SUCCESSOR, dc.COMPLETE, dc.RECONCILE_LAUNCH, dc.OBSERVE_DELIVERY, dc.OBSERVE_RESEARCH,
+        dc.AWAIT_BACKLOG}
+
+
+class Crash(BaseException):
+    """LABELLED injected process death at an exact commit boundary: it escapes every handler, so
+    nothing after it runs - exactly what a killed controller leaves behind."""
+
+
+class CrashingPort:
+    """The fixture conductor port with a process death injected at one boundary of the start."""
+
+    def __init__(self, inner, at):
+        self.inner, self.at = inner, at
+
+    def available(self):
+        if self.at == "intended":
+            raise Crash("after the intended commit")
+        return self.inner.available()
+
+    def start(self, lane_id, job, launch):
+        if self.at == "dispatched":
+            raise Crash("after the dispatched commit, before any child")
+        self.inner.start(lane_id, job, launch)
+        raise Crash("after the child started, before its launch evidence was recorded")
+
+    def poll(self, lane_id, launch):
+        return self.inner.poll(lane_id, launch)
+
+
+class CrashAtComplete(Continuation):
+    def _move(self, intent, target, **fields):
+        if target == dc.COMPLETED and intent["state"] == dc.RETURNED:
+            raise Crash("after the returned commit")
+        return super()._move(intent, target, **fields)
+
+
+@pytest.mark.parametrize("boundary, left", [("intended", dc.INTENDED), ("dispatched", dc.DISPATCHED),
+                                            ("started", dc.DISPATCHED), ("returned", dc.RETURNED)])
+def test_conductor_restart_after_each_commit_invokes_at_most_once_and_completes(tmp_path, boundary, left):
+    world = World(tmp_path)
+    world.register()
+    job_id = accepted_item(world)
+    crashing = (world.build(cls=CrashAtComplete) if boundary == "returned"
+                else world.build(conductor=CrashingPort(world.conductor, boundary)))
+    with pytest.raises(Crash):
+        world.tick(controller=crashing)
+    assert only(world.intents(), route=dc.CONDUCTOR)["state"] == left
+    for _ in range(3):  # the process is recreated: fresh controllers over the same durable stores
+        world.tick(controller=world.build())
+    intent = only(world.intents(), route=dc.CONDUCTOR)
+    assert intent["state"] == dc.COMPLETED and intent["decision"]["id"] == "cond-" + job_id
+    assert intent["decision"]["accepted"] is True
+    assert world.conductor.calls == [job_id], "at most one invocation across the crash"
+    # Only a launch proven never started (fenced) is followed by a NEW launch identity.
+    assert intent["launch"]["sequence"] == (2 if boundary == "dispatched" else 1)
+    assert only(world.intents(), route=dc.DELIVERY)["state"] == dc.AWAITING_OWNER, "and the item moves on"
+
+
+@pytest.mark.parametrize("boundary", ["intended", "published", "enqueued", "returned"])
+def test_successor_restart_after_each_commit_admits_one_successor_and_completes(tmp_path, boundary):
+    world = World(tmp_path)
+    world.register()
+    world.enqueue("op-1")
+    world.tick()
+    job_id, _ = world.run_next(verdict=False)
+
+    class CrashBind(LaneEvidence):
+        def bind(self, document):
+            raise Crash("after the intended commit, before the lane binding")
+
+    class CrashEnqueue(Fleet):
+        def enqueue(self, *args):
+            if boundary == "enqueued":
+                super().enqueue(*args)
+            raise Crash("around the Fleet admission")
+    if boundary == "intended":
+        crashing = world.build(lanes=lambda lane: CrashBind(world.lane.store, world.sessions))
+    elif boundary in {"published", "enqueued"}:
+        crashing = world.build(fleet=CrashEnqueue(world.control))
+    else:
+        world.tick()
+        world.run_next(verdict=True)
+        crashing = world.build(cls=CrashAtComplete)
+    with pytest.raises(Crash):
+        world.tick(controller=crashing)
+    expected = {"intended": dc.INTENDED, "published": dc.PUBLISHED, "enqueued": dc.PUBLISHED,
+                "returned": dc.RETURNED}[boundary]
+    assert only(world.intents(), route=dc.CORRECTION)["state"] == expected
+    world.tick(controller=world.build())
+    intent = only(world.intents(), route=dc.CORRECTION)
+    assert len([job for job in world.jobs() if job.startswith("cont-")]) == 1
+    if boundary != "returned":
+        assert intent["state"] == dc.ADMITTED
+        world.run_next(verdict=True)
+        world.tick(controller=world.build())
+        intent = only(world.intents(), route=dc.CORRECTION)
+    assert intent["state"] == dc.COMPLETED and intent["reason_code"] == "successor_accepted"
+    assert world.jobs()[job_id]["status"] == "rejected", "the origin stays rejected"
+
+
+# ---- R2: delivery bound to the policy target and exact candidate ----------------------------------
+def test_delivery_is_bound_to_the_policy_target_and_the_exact_release_candidate(tmp_path):
+    world = World(tmp_path)
+    world.register()
+    job_id = accepted_item(world)
+    world.tick()
+    release = "rel-" + job_id
+    deliver(world, "plan-other", release, "active", target="other-host")
+    world.tick()
+    intent = only(world.intents(), route=dc.DELIVERY)
+    assert intent["state"] == dc.AWAITING_OWNER, "another target's active plan completes nothing here"
+    assert intent["delivery_binding"] == {"target_id": "fleet-host", "release_id": release, "revision": CANDIDATE}
+    # One release, two targets: the other one is rolled back, the intended one is still pending.
+    deliver(world, "plan-other", release, "rolled_back", target="other-host")
+    deliver(world, "plan-mine", release, "awaiting_ci")
+    quiet = deepcopy(world.control.data)
+    for _ in range(2):
+        world.tick()
+    assert world.control.data == quiet, "a foreign rollback neither pauses nor completes this family"
+
+    def skipped_reason():
+        result = world.tick()
+        return [row["reason_code"] for row in result["skipped"] if row["subject"] == intent["id"]]
+    deliver(world, "plan-mine", release, "active", revision="0" * 40)
+    assert skipped_reason() == ["delivery_stale"] and world.control.data == quiet
+    deliver(world, "plan-mine", release, "active")
+    deliver(world, "plan-dup", release, "rolled_back")
+    assert skipped_reason() == ["delivery_ambiguous"] and world.control.data == quiet
+    deliver(world, "plan-dup", release, "rolled_back", target="other-host")
+    with world.lane.store.transaction() as tx:
+        record = tx.get("releases", release)
+        tx.put("releases", release, {**record, "candidate": {**record["candidate"], "revision": "1" * 40}})
+    assert skipped_reason() == ["delivery_release_candidate_mismatch"] and world.control.data == quiet
+    with world.lane.store.transaction() as tx:
+        tx.put("releases", release, record)
+    world.tick()
+    done = only(world.intents(), route=dc.DELIVERY)
+    assert done["state"] == dc.COMPLETED and done["delivery_plan"] == {"plan_id": "plan-mine", "plan_sha256": "5" * 64,
+                                                                      "stage": "active"}
+    assert only(world.intents(), route=dc.NEXT_ITEM)["state"] == dc.AWAITING_OWNER
+
+
+def test_bind_delivery_selects_only_the_exact_target_and_candidate():
+    rows = [{"plan_id": "p1", "target_id": "t", "revision": "c" * 40, "stage": "active"},
+            {"plan_id": "p2", "target_id": "u", "revision": "c" * 40, "stage": "rolled_back"}]
+    release = {"candidate": {"revision": "c" * 40}}
+    bound = dc.bind_delivery(rows, "t", "r", "c" * 40, release)
+    assert bound["binding"] == dc.DELIVERY_BOUND and bound["plan_id"] == "p1" and bound["foreign"] == 1
+    assert dc.bind_delivery(rows[1:], "t", "r", "c" * 40, release)["binding"] == dc.DELIVERY_ABSENT
+    assert dc.bind_delivery(rows, "t", "r", None, release)["binding"] == dc.DELIVERY_UNKNOWN
+    assert dc.bind_delivery(rows, "t", "r", "c" * 40, {"candidate": {"revision": "d" * 40}})["binding"] == \
+        dc.DELIVERY_MISMATCH
+
+
+# ---- R4: one eligibility guard before every new effect --------------------------------------------
+RUNTIME = {"image": IMAGE, "profile": "worker-v1", "session_archive_sha256": ARCHIVE}
+DRIFT = [({"image": "other/image:1"}, "image_changed"), ({"profile": "worker-v2"}, "profile_changed"),
+         ({"session_archive_sha256": "0" * 64}, "session_archive_changed")]
+
+
+@pytest.mark.parametrize("change, reason", DRIFT)
+def test_drift_during_an_outage_refuses_new_effects_and_preserves_the_original_rows(tmp_path, change, reason):
+    world = World(tmp_path)
+    world.register()
+    world.enqueue("op-1")
+    world.tick()
+    job_id, _ = world.run_next(verdict=False)
+    world.await_review(job_id)
+
+    class DownAtBind(LaneEvidence):
+        def bind(self, document):
+            raise ConnectionError("lane store outage before the binding (injected)")
+    world.tick(controller=world.build(lanes=lambda lane: DownAtBind(world.lane.store, world.sessions)))
+    intent = only(world.intents(), route=dc.CORRECTION)
+    assert intent["state"] == dc.INTENDED
+    stored, lane_before = deepcopy(intent["authorization"]), deepcopy(world.lane.store.data)
+    world.runtime = lambda lane: {**RUNTIME, **change}
+    result = world.tick(controller=world.build())  # restart after the outage, under drift
+    held = only(world.intents(), route=dc.CORRECTION)
+    assert held["state"] == dc.INTENDED and held["authorization"] == stored and held["manifest"] == intent["manifest"]
+    assert held["hold"]["reason_code"] == reason and held["hold"]["next_owner"] == "operator"
+    assert {"subject": held["id"], "reason_code": reason, "next_owner": "operator"} in result["skipped"]
+    assert world.binding(held["successor_job"]) is None and len(world.jobs()) == 1, "zero successor"
+    assert world.lane.store.data == lane_before
+    status = world.controller.status("policy-1")
+    assert status["held_families"] == {job_id: reason}
+    assert "changed authorization" in only({r["id"]: r for r in status["intents"]}, route=dc.CORRECTION)["next_action"]
+    blocked = [e for e in world.events() if e["event_type"] == "operations.continuation_blocked"]
+    assert blocked[-1]["reason_code"] == reason and blocked[-1]["attributes"]["state"] == dc.INTENDED
+    quiet = deepcopy(world.control.data)
+    world.tick()
+    assert world.control.data == quiet, "a held intent writes nothing on idle ticks"
+    world.runtime = lambda lane: dict(RUNTIME)  # the authorized binding is restored by its owner
+    world.tick()
+    resumed = only(world.intents(), route=dc.CORRECTION)
+    assert resumed["state"] == dc.ADMITTED and resumed["hold"] is None and len(world.jobs()) == 2
+
+
+def test_conductor_drift_after_an_outage_starts_nothing_and_a_changed_pin_only_drains(tmp_path):
+    world = World(tmp_path)
+    world.register()
+    accepted_item(world)
+
+    class Down(ConductorFixture):
+        def available(self):
+            raise ConnectionError("slot probe unavailable (injected)")
+    world.tick(controller=world.build(conductor=Down(world.lane)))
+    assert only(world.intents(), route=dc.CONDUCTOR)["state"] == dc.INTENDED
+    world.runtime = lambda lane: {**RUNTIME, "image": "other/image:1"}
+    for _ in range(2):
+        world.tick(controller=world.build())
+    intent = only(world.intents(), route=dc.CONDUCTOR)
+    assert intent["state"] == dc.INTENDED and intent["hold"]["reason_code"] == "image_changed"
+    assert world.conductor.calls == [], "zero provider start under drift"
+    world.runtime = lambda lane: dict(RUNTIME)
+    before = deepcopy(world.control.data)
+    refused = world.controller.tick("policy-1", pin_sha256="0" * 64, runtime=world.runtime)
+    assert refused["outcome"] == "refused" and refused["reason_code"] == "policy_changed"
+    assert world.control.data == before and world.conductor.calls == []
+
+
+def test_drift_while_the_child_runs_retains_its_outcome_under_the_original_binding(tmp_path):
+    world = World(tmp_path)
+    world.conductor.pending = True
+    world.register()
+    job_id = accepted_item(world)
+    world.tick()
+    intent = only(world.intents(), route=dc.CONDUCTOR)
+    launch = intent["launch"]["id"]
+    assert intent["state"] == dc.DISPATCHED and intent["launch"]["state"] == "started"
+    assert world.controller.unresolved("policy-1", owned=[launch]) == []
+    assert world.controller.unresolved("policy-1") == [launch], "not owned here: unresolved, never idle"
+    world.runtime = lambda lane: {**RUNTIME, "image": "other/image:1"}
+    running = deepcopy(world.control.data)
+    world.tick()
+    assert world.control.data == running, "a running child is observed, not replaced"
+    world.conductor.finish(launch)
+    world.tick()
+    world.tick()
+    intents = world.intents()
+    settled = only(intents, route=dc.CONDUCTOR)
+    assert settled["state"] == dc.COMPLETED and settled["decision"]["accepted"] is True
+    assert settled["authorization"] == intent["authorization"], "retained under the original binding"
+    refused = only(intents, route=dc.DELIVERY)
+    assert refused["state"] == dc.REFUSED and refused["reason_code"] == "image_changed", "never adopted"
+    assert world.conductor.calls == [job_id]
+
+
+def test_changed_runtime_after_a_lost_dispatch_response_reconciles_the_old_child_but_never_replaces_it(tmp_path):
+    # (a) the child DID start before the response was lost: it is reconciled to its outcome.
+    world = World(tmp_path)
+    world.conductor.pending = world.conductor.lost = True
+    world.register()
+    job_id = accepted_item(world)
+    world.tick()
+    intent = only(world.intents(), route=dc.CONDUCTOR)
+    assert intent["state"] == dc.DISPATCHED and intent["launch"]["state"] == "start_unconfirmed"
+    world.runtime = lambda lane: {**RUNTIME, "image": "other/image:1"}
+    world.tick()
+    world.conductor.finish(intent["launch"]["id"])
+    world.tick()
+    assert only(world.intents(), route=dc.CONDUCTOR)["state"] == dc.COMPLETED
+    assert world.conductor.calls == [job_id]
+    # (b) no child ever started: it is proven absent, and the guard refuses the replacement.
+    other = World(tmp_path / "b")
+    other.conductor.raise_error = ConnectionError("spawn response lost before any child (injected)")
+    other.register()
+    accepted_item(other)
+    other.tick()
+    other.conductor.raise_error = None
+    other.runtime = lambda lane: {**RUNTIME, "image": "other/image:1"}
+    for _ in range(3):
+        other.tick()
+    intent = only(other.intents(), route=dc.CONDUCTOR)
+    assert intent["state"] == dc.AWAITING_OWNER and intent["reason_code"] == "conductor_not_launched"
+    assert intent["launch"]["state"] == dc.LAUNCH_ABSENT and intent["hold"]["reason_code"] == "image_changed"
+    assert other.conductor.calls == [], "no replacement under the changed runtime"
+
+
+def test_an_unclaimed_row_is_relaunched_only_under_new_identities_and_boundedly(tmp_path):
+    world = World(tmp_path)
+    world.conductor.pending = True
+    world.register()
+    job_id = accepted_item(world)
+    for _ in range(dc.MAX_LAUNCHES + 2):
+        world.tick()
+        for launch, state in list(world.conductor.launches.items()):
+            if state == "running":
+                world.conductor.finish(launch, decide=False)  # the child exited having claimed nothing
+        world.tick()
+    intent = only(world.intents(), route=dc.CONDUCTOR)
+    assert intent["state"] == dc.REFUSED and intent["reason_code"] == "conductor_launch_exhausted"
+    assert len(set(world.conductor.launches)) == dc.MAX_LAUNCHES and world.conductor.calls == [job_id] * dc.MAX_LAUNCHES
+
+
+# ---- R3: the runner accounts a pending conductor and keeps serving another family ----------------
+class FixturePass:
+    """The `ContinuationPass` surface over the fixture world (the real one is exercised with a real
+    child process in test_continuation_process.py)."""
+
+    def __init__(self, world):
+        self.world = world
+
+    def __call__(self):
+        return self.world.tick()
+
+    def drain(self):
+        return self.world.controller.drain("policy-1")
+
+    def owned(self):
+        return [launch for launch, state in self.world.conductor.launches.items() if state == "running"]
+
+    def unresolved(self):
+        return self.world.controller.unresolved("policy-1", self.owned())
+
+
+def test_runner_counts_a_pending_conductor_as_owned_work_takes_a_slot_and_drains_it_on_stop(tmp_path):
+    world = World(tmp_path)
+    world.conductor.pending = True
+    world.register()
+    job_id = accepted_item(world)
+    world.enqueue("op-2", "docs/b.md")
+    heartbeats, sleeps, flags = [], [], {"stop": False}
+
+    class Control:  # LABELLED fixture of the managed runtime control
+        def admission_open(self):
+            return True
+
+        def stop_requested(self):
+            return flags["stop"]
+
+        def heartbeat(self, state):
+            heartbeats.append(dict(state, op2=world.jobs()["op-2"]["status"]))
+
+    def sleep(seconds):
+        sleeps.append(seconds)
+        if len(sleeps) == 1:
+            flags["stop"] = True
+        elif len(sleeps) == 2:
+            world.conductor.finish(next(iter(world.conductor.launches)))
+    passes = FixturePass(world)
+    runner = FleetRunner(world.fleet, LaneLauncher(world, [True]), sleep=sleep, interval=0, control=Control(),
+                         continuation=passes)
+    summary = runner.run(once=False)
+    assert summary["stopped"] is True and world.jobs()["op-2"]["status"] == "accepted"
+    assert {"admission": "open", "active": 1, "unresolved": 0, "op2": "accepted"} in heartbeats, \
+        "the other family was admitted and reaped while the conductor was pending"
+    assert {"admission": "stopping", "active": 1, "unresolved": 0, "op2": "accepted"} in heartbeats
+    assert only(world.intents(), origin_job=job_id, route=dc.CONDUCTOR)["state"] == dc.COMPLETED
+    assert world.conductor.calls == [job_id], "the second conductor waited for the bounded slot"
+    assert summary["continuation"]["state"] == "draining" and passes.owned() == []
