@@ -1,5 +1,27 @@
 # Operating status
 
+## Latest execution checkpoint
+
+- Native correction aff7749882 passed the independent review of its two-file delta. Owner native
+  Windows four-file rerun completed: 143 passed, 1 integration skip (native-fixed.log). The
+  preceding candidate's isolated-PG check passed separately; no later runtime change in this delta.
+- Draft PR182: https://github.com/trevi00/zeus/pull/182, head aff7749882. CI and actual deployment
+  qualification are pending. Draft publishing is not merge, deployment or whole-feature acceptance.
+- Session candidate ecb0e6d6 stopped at evidence gate: six checks replayed, five timeout-prefixed
+  commands were not authorized for replay. No mismatch was reported by that gate. Owner Windows
+  ten-file replay: 226 passed, 29 skipped, four failed. See session-owner-tests.log.
+- Owner reproduced absent-promotion closure and duplicate-owner model-check bypass in temporary
+  MemoryStore only, then consolidated them with required observability/native evidence completion
+  in the SAME SPEC. Source implementation is preserved, not approved or deployed.
+- Plan d4e8cc2c83ce15786354c51e8375affcd43b3f6e is registered. Actual Fleet job
+  autonomous-operation-001-session-correction is running on the harness lane using Opus 5.5.
+  This is an owner-designed correction, not proof of the future autonomous diagnosis controller.
+
+Next: accept and qualify the session primitive, connect bounded automatic continuation to existing
+review/research/release owners, then execute all seven whole-loop acceptance criteria. No new user
+approval is needed for this already-authorized scope. Ordinary completion claims must continue to
+distinguish actual worker activity, accepted code, live consumption and the complete autonomous loop.
+
 ## Current checkpoint: 2026-09-23 13:00 KST
 
 Whole autonomous operation is NOT yet accepted. Fleet is running, and actual pinned Claude Opus
