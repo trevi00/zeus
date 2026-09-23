@@ -61,6 +61,7 @@ from codex_harness.domain.host_delivery import (
     OUTCOME_ACTIVE,
     OUTCOME_BLOCKED,
     OUTCOME_BUSY,
+    OUTCOME_CONFLICT,
     OUTCOME_DISABLED,
     OUTCOME_IDLE,
     OUTCOME_PENDING,
@@ -93,6 +94,7 @@ from codex_harness.domain.host_delivery import (
     validate_targets,
 )
 from codex_harness.domain.model import ContractError, utcnow
+from codex_harness.domain.policy import POLICY
 
 BUCKET_TARGETS = "host_delivery_targets"
 BUCKET_PLANS = "host_delivery_plans"
@@ -106,6 +108,24 @@ TARGET_BUSY_STAGES = frozenset({DRAIN_INTENDED, SWITCHING, AWAITING_CONSUMPTION,
 # How long a pending external wait asks to be resumed after; the stage deadline in the intent is
 # what actually ends the wait.
 RESUME_SECONDS = 15
+# One tick reads at most this many registered plans looking for an actionable one; the rest are
+# recorded as `scan_bounded` rather than scanned, so selection stays bounded however many exist.
+MAX_SCAN = 64
+
+
+class AmbiguousEffect(Exception):
+    """An external effect happened and the fence was gone when this controller tried to record it.
+
+    It is deliberately not a `ContractError`: a refused contract is a definite verdict about the
+    work, while this is an UNKNOWN about an effect that is already out in the world. The durable
+    evidence is the intent that named the stage before the effect - which is why the next owner of
+    this plan reconciles the host instead of repeating the action - and the tick reports the
+    conflict rather than claiming the effect was cancelled.
+    """
+
+    def __init__(self, effect: str, cause: Exception):
+        super().__init__(effect)
+        self.effect, self.cause = effect, cause
 
 
 class HostDelivery:
@@ -196,7 +216,11 @@ class HostDelivery:
 
     # ----- one bounded tick ------------------------------------------------------------------
     def tick(self, plan_id: str | None = None) -> dict:
-        """Advance at most ONE delivery by at most one stage, under the existing release fence."""
+        """Advance at most ONE delivery by at most one stage, under the existing release fence.
+
+        Whatever this tick did, its receipt carries why every OTHER registered plan waited, so a
+        plan that was passed over is an explicit recorded reason rather than a silent omission.
+        """
         try:
             selection = self._select(plan_id, create=self.enabled)
         except Exception as exc:
@@ -207,6 +231,12 @@ class HostDelivery:
         if selection["plan"] is None:
             return self._result(None, None, selection["outcome"], blocked=selection["blocked"],
                                 reason_code=selection.get("reason_code"))
+        result = self._act(selection)
+        result["blocked"] = {**selection["blocked"], **(result.get("blocked") or {})}
+        return result
+
+    def _act(self, selection: dict) -> dict:
+        """Everything one tick does once its single plan has been selected."""
         row, intent = selection["plan"], selection["intent"]
         plan = row["plan"]
         if not self.enabled:
@@ -234,12 +264,30 @@ class HostDelivery:
             # Why this tick got nothing is an operational fact of its own: another controller holds
             # the single host lease, or this release's own queue row is no longer runnable.
             with self.store.transaction() as tx:
-                status = (tx.get("release_queue", plan["release_id"]) or {}).get("status")
-            reason = ("controller_lease_held" if status in {"queued", "retry", "running"}
-                      else "release_queue_" + str(status))
+                queued = tx.get("release_queue", plan["release_id"]) or {}
+            status = queued.get("status")
+            if status not in {"queued", "retry", "running"}:
+                reason = "release_queue_" + str(status)
+            elif int(queued.get("attempt") or 0) >= POLICY.release_max_attempts:
+                reason = "release_attempts_exhausted"
+            elif self._not_due(queued):
+                # Its own bounded backoff, not another controller: a distinct operational fact.
+                reason = "release_retry_not_due"
+            else:
+                reason = "controller_lease_held"
             return self._result(plan, intent, OUTCOME_BUSY, reason_code=reason)
         try:
             result = self._advance(row, intent, claim)
+        except AmbiguousEffect as ambiguous:
+            # The effect happened; this controller no longer owns the fence that would record it.
+            # It is neither progress nor a cancellation: the successor reconciles what is there.
+            LOGGER.warning("host delivery ambiguous effect plan=%s stage=%s effect=%s error=%s",
+                           plan["plan_id"], intent["stage"], ambiguous.effect,
+                           type(ambiguous.cause).__name__)
+            result = {**self._result(plan, intent, OUTCOME_CONFLICT,
+                                     reason_code="controller_stale_after_effect",
+                                     error_type=type(ambiguous.cause).__name__),
+                      "controller": "stale", "ambiguous_effect": ambiguous.effect}
         except ContractError as refusal:
             # A definite contract refusal of this stage; a fence that moved underneath it cannot be
             # recorded either, and says so instead of raising over what was already observed. The
@@ -255,6 +303,32 @@ class HostDelivery:
                 plan, intent, "stage_unavailable", failure, claim=claim))
         self._settle(claim, result)
         return result
+
+    # ----- the mutation boundary ---------------------------------------------------------------
+    def _owned_now(self, claim) -> None:
+        """Re-check this claim's generation, owner and lease IMMEDIATELY before a mutation.
+
+        One short store transaction of its own: no external call is ever made from inside it, and
+        a stale actor raises here, before it can publish, merge, drain, switch, start or restore.
+        """
+        if claim is None:
+            return
+        with self.store.transaction() as tx:
+            self.queue.owned(tx, claim, self._now())
+
+    def _authorizer(self, claim):
+        """The same check, handed to the host adapter so it runs INSIDE the target lock."""
+        if claim is None:
+            return None
+        return lambda: self._owned_now(claim)
+
+    @staticmethod
+    def _record(effect: str, write):
+        """Commit what an external effect did; a lost fence here is ambiguity, not cancellation."""
+        try:
+            return write()
+        except ContractError as exc:
+            raise AmbiguousEffect(effect, exc) from exc
 
     def _guard(self, plan: dict, intent: dict, outcome: str, record) -> dict:
         """Record a stop, or report that this controller no longer owns what it observed."""
@@ -295,6 +369,16 @@ class HostDelivery:
     def _select(self, plan_id: str | None, *, create: bool = True) -> dict:
         """Transaction 1: the one plan this tick may work on, and why every other one waits.
 
+        A plan that cannot be acted on right now - its independent review is not complete, its
+        queue row is in backoff, exhausted, blocked or held by another controller - does not
+        consume the single selection: the scan keeps looking for a plan that IS actionable, so one
+        waiting target can no longer starve a qualified one. Every skipped plan is recorded with
+        its own explicit wait reason rather than silently passed over, the same-target exclusion is
+        unchanged, and the scan itself is bounded.
+
+        Only when nothing is actionable does the first WAITING plan become the selection, so a
+        single registered plan still projects its own wait (`awaiting_review`) exactly as before.
+
         `create` is the opt-in: while delivery is disabled the selection is a pure read and not
         even a durable intent is written, so an unaccepted host stays exactly as it was.
         """
@@ -308,20 +392,33 @@ class HostDelivery:
             intents = {row["plan_id"]: row for row in tx.scan(BUCKET_INTENTS)}
             busy = {intent["target_id"] for intent in intents.values()
                     if intent.get("stage") in TARGET_BUSY_STAGES}
-            blocked, chosen, chosen_intent = {}, None, None
-            for row in sorted(rows, key=lambda r: r["plan_id"]):
+            blocked, chosen, chosen_intent, waiting = {}, None, None, None
+            for index, row in enumerate(sorted(rows, key=lambda r: r["plan_id"])):
                 intent = intents.get(row["plan_id"])
                 stage = (intent or {}).get("stage") or REGISTERED
+                if index >= MAX_SCAN:
+                    blocked[row["plan_id"]] = "scan_bounded"
+                    continue
                 if stage == ACTIVE or stage in STOPPED_STAGES:
                     blocked[row["plan_id"]] = stage
                     continue
-                if chosen is None and row["target_id"] in busy and stage not in TARGET_BUSY_STAGES:
+                if row["target_id"] in busy and stage not in TARGET_BUSY_STAGES:
                     blocked[row["plan_id"]] = "target_busy"
                     continue
-                if chosen is None:
-                    chosen, chosen_intent = row, intent
-                else:
+                if chosen is not None:
                     blocked[row["plan_id"]] = "controller_serialized"
+                    continue
+                reason = self._waiting_reason(tx, row["plan"], stage)
+                if reason is not None:
+                    blocked[row["plan_id"]] = reason
+                    waiting = waiting or (row, intent)
+                    continue
+                chosen, chosen_intent = row, intent
+            if chosen is None and waiting is not None:
+                # Nothing is actionable; the first waiting plan is selected so its own wait is
+                # projected and recorded, which advances no stage and touches nothing external.
+                chosen, chosen_intent = waiting
+                blocked.pop(chosen["plan_id"], None)
             if chosen is None:
                 return {"plan": None, "intent": None, "blocked": blocked, "outcome": OUTCOME_IDLE}
             if chosen_intent is None:
@@ -330,6 +427,48 @@ class HostDelivery:
                 if create:
                     tx.put(BUCKET_INTENTS, chosen_intent["id"], chosen_intent)
         return {"plan": chosen, "intent": chosen_intent, "blocked": blocked, "outcome": OUTCOME_PROGRESSED}
+
+    def _waiting_reason(self, tx, plan: dict, stage: str) -> str | None:
+        """Why this plan cannot be advanced right now, or None when it can be.
+
+        Read-only, inside the caller's transaction, and deliberately in the same order as the tick
+        itself: the existing release record first, then the existing queue row. A refused release
+        is NOT a wait - halting it is the tick's owed work - and a rolling back delivery is owed
+        work too, because a restoration that stopped being selected would leave the host on a
+        descriptor that failed its own canary.
+        """
+        if stage == ROLLING_BACK:
+            return None
+        record = tx.get("releases", plan["release_id"])
+        gate = release_gate(record, plan, self._parent(record))
+        if gate["state"] == AWAITING_REVIEW:
+            return gate["reason_code"]
+        if gate["state"] == OUTCOME_REFUSED:
+            return None
+        row = tx.get("release_queue", plan["release_id"])
+        if row is None:
+            return None
+        if row.get("status") not in {"queued", "retry", "running"}:
+            return "release_queue_" + str(row.get("status"))
+        if int(row.get("attempt") or 0) >= POLICY.release_max_attempts:
+            return "release_attempts_exhausted"
+        if row.get("status") == "running" and self._leased(row):
+            return "controller_lease_held"
+        if self._not_due(row):
+            return "release_retry_not_due"
+        return None
+
+    def _leased(self, row: dict) -> bool:
+        try:
+            return datetime.fromisoformat(row["lease_until"]) > self._now()
+        except (KeyError, TypeError, ValueError):
+            return False
+
+    def _not_due(self, row: dict) -> bool:
+        try:
+            return datetime.fromisoformat(row["retry_at"]) > self._now()
+        except (KeyError, TypeError, ValueError):
+            return False
 
     def _gate(self, plan: dict) -> dict:
         """What the EXISTING release record says about this plan. This never writes anything."""
@@ -376,15 +515,16 @@ class HostDelivery:
         candidate = self._candidate(plan)
         observed = port.observe(candidate)
         if observed is None:
+            self._owned_now(claim)
             observed = port.publish(candidate)
         head = (observed or {}).get("head")
         if head != plan["revision"]:
             return self._halt(plan, intent, BLOCKED, OUTCOME_BLOCKED, "publish_head_mismatch",
                               claim=claim)
         deadline = self._deadline(plan["ci_timeout_seconds"])
-        return self._enter(plan, intent, AWAITING_CI, claim, head=head,
-                           pr_number=observed.get("number"), pr_url=observed.get("url"),
-                           stage_deadline=deadline)
+        return self._record("published", lambda: self._enter(
+            plan, intent, AWAITING_CI, claim, head=head, pr_number=observed.get("number"),
+            pr_url=observed.get("url"), stage_deadline=deadline))
 
     def _observe_ci(self, plan: dict, intent: dict, claim) -> dict:
         """The REAL checks of the exact intended head; nothing else is evidence that CI passed."""
@@ -414,7 +554,13 @@ class HostDelivery:
         return self._pending(plan, intent, claim, verdict["reason_code"], last_check_state=CI_PENDING)
 
     def _merge(self, plan: dict, intent: dict, claim) -> dict:
-        """Merge the exact reviewed head, or RECOGNIZE the merge a lost response already made."""
+        """Merge the exact reviewed head, or RECOGNIZE the merge a lost response already made.
+
+        Both paths end at the SAME qualification: the merged revision must carry the reviewed tree,
+        checked by the merge owner itself. A merge that happened is not a qualified deployment, so
+        a merged tree that is not the reviewed one blocks here - on the tick that performed it and
+        on every later tick that observes it - instead of inheriting the old acceptance.
+        """
         port = self._require_port(self.github, "github_port_unavailable")
         candidate = self._candidate(plan)
         observed = port.observe(candidate)
@@ -426,9 +572,24 @@ class HostDelivery:
             merged = {"merged": True, "merged_revision": observed.get("merged_revision")
                       or intent["head"], "recovered": True}
         else:
+            self._owned_now(claim)
             merged = port.merge(candidate)
-        return self._enter(plan, intent, MERGED, claim,
-                           merged_revision=merged.get("merged_revision") or intent["head"])
+        revision = merged.get("merged_revision") or intent["head"]
+        qualify = getattr(port, "qualify", None)
+        if qualify is None:
+            return self._record("merged", lambda: self._halt(
+                plan, intent, BLOCKED, OUTCOME_BLOCKED, "merge_unqualified", claim=claim,
+                merged_revision=revision))
+        try:
+            qualify(candidate, revision)
+        except ContractError as refusal:
+            # Bound to a local: `except ... as` unbinds its own name before the lambda runs.
+            failure = type(refusal).__name__
+            return self._record("merged", lambda: self._halt(
+                plan, intent, BLOCKED, OUTCOME_BLOCKED, "merged_tree_mismatch", claim=claim,
+                error_type=failure, merged_revision=revision))
+        return self._record("merged", lambda: self._enter(plan, intent, MERGED, claim,
+                                                          merged_revision=revision))
 
     def _prepare_switch(self, plan: dict, intent: dict, claim) -> dict:
         """Bind the exact target tuple this delivery will switch to, before touching the host.
@@ -464,6 +625,8 @@ class HostDelivery:
     def _drain(self, plan: dict, intent: dict, claim) -> dict:
         """Pause new admission and prove the target drained; an unconfirmed effect blocks the switch."""
         host, target = self._host(plan)
+        # Pausing admission writes to the target's state directory: a stale actor pauses nothing.
+        self._owned_now(claim)
         observed = host.drain(target)
         if observed.get("unconfirmed"):
             # Unknown work is not finished work: this never kills active model work to deploy.
@@ -489,33 +652,67 @@ class HostDelivery:
         """
         host, target = self._host(plan)
         descriptor = intent["descriptor"]
-        current = host.current(target)
-        if current is not None and descriptor_digest(current) == intent["descriptor_sha256"]:
+        state = self._reconcile_descriptor(host, target, intent)
+        if state == "foreign":
+            # Neither the descriptor this delivery bound nor the one it expected to replace is
+            # there. Something outside this delivery owns the target; it is not overwritten.
+            return self._halt(plan, intent, BLOCKED, OUTCOME_BLOCKED, "descriptor_foreign",
+                              claim=claim)
+        authorize = self._authorizer(claim)
+        if state == "intended":
             switched = {"written": False, "recovered": True}
         else:
-            switched = host.switch(target, descriptor, expected=intent["previous_descriptor_sha256"])
+            self._owned_now(claim)
+            switched = host.switch(target, descriptor, expected=intent["previous_descriptor_sha256"],
+                                   authorize=authorize)
         running = consumption_verdict(descriptor, host.receipt(target),
                                       expected_instance=intent.get("previous_instance_id"))
         if running["consumed"] and host.running(target):
             started = {"started": False, "recovered": True}
         else:
-            started = host.start(target, descriptor)
-        self._record_descriptor(plan, intent, descriptor, consumed=False,
-                                instance_id=None, claim=claim)
+            self._owned_now(claim)
+            started = host.start(target, descriptor, authorize=authorize)
+        self._record("descriptor_switched", lambda: self._record_descriptor(
+            plan, intent, descriptor, consumed=False, instance_id=None, claim=claim))
         self._emit(EVENT_SWITCHED, "observed", plan, attributes={
             "plan_id": plan["plan_id"], "target_id": plan["target_id"],
             "descriptor_sha256": intent["descriptor_sha256"],
             "previous_sha256": intent["previous_descriptor_sha256"], "instance_id": None,
             "consumed": False})
-        return self._enter(plan, intent, AWAITING_CONSUMPTION, claim,
-                           switch={"at": self.clock(), "written": bool(switched.get("written")),
-                                   "started": bool(started.get("started")),
-                                   "recovered": bool(switched.get("recovered")
-                                                     or started.get("recovered"))},
-                           stage_deadline=self._deadline(plan["consumption_timeout_seconds"]))
+        return self._record("descriptor_switched", lambda: self._enter(
+            plan, intent, AWAITING_CONSUMPTION, claim,
+            switch={"at": self.clock(), "written": bool(switched.get("written")),
+                    "started": bool(started.get("started")),
+                    "recovered": bool(switched.get("recovered") or started.get("recovered"))},
+            stage_deadline=self._deadline(plan["consumption_timeout_seconds"])))
+
+    @staticmethod
+    def _reconcile_descriptor(host, target: dict, intent: dict) -> str:
+        """What is on the host RIGHT NOW, named against this delivery's own two descriptors.
+
+        `intended` is the switch this delivery already made (a lost response, or a restart);
+        `previous` is the state it expected to replace, including "no descriptor yet" when that is
+        what the plan approved; anything else is `foreign` - another delivery, another controller
+        or a hand edit - and is reconciled by an owner rather than overwritten.
+        """
+        current = host.current(target)
+        observed = None if current is None else descriptor_digest(current)
+        if observed == intent["descriptor_sha256"]:
+            return "intended"
+        if observed == intent["previous_descriptor_sha256"]:
+            return "previous"
+        return "foreign"
 
     def _consume(self, plan: dict, intent: dict, claim) -> dict:
-        """The launched process's OWN startup evidence decides activation; a switch alone does not."""
+        """The launched process's OWN startup evidence decides activation; a switch alone does not.
+
+        Observing the startup and activating it are two separate facts in two separate records.
+        The accepted receipt is recorded as an OBSERVED startup first - instance, runtime root and
+        the revision that runtime is actually at - and only then is the canary asked whether that
+        observed runtime may become the active one. The canary therefore never has to read the
+        activation this stage has deliberately not written yet, and a runtime that is observed but
+        refused is durably an unconsumed descriptor rather than a half-claimed activation.
+        """
         host, target = self._host(plan)
         descriptor = intent["descriptor"]
         verdict = consumption_verdict(descriptor, host.receipt(target),
@@ -527,7 +724,12 @@ class HostDelivery:
             # A wrong receipt never grants activation, and an expired wait is not an unknown that
             # can be waited out: the exact predecessor is restored.
             return self._begin_rollback(plan, intent, claim, verdict["reason_code"])
-        canary = self._canary(plan, target, descriptor)
+        startup = {key: verdict.get(key) for key in
+                   ("instance_id", "pid", "runtime_root", "module_root", "revision")}
+        self._record("startup_observed", lambda: self._record_descriptor(
+            plan, intent, descriptor, consumed=False, instance_id=None, claim=claim,
+            startup=startup))
+        canary = self._canary(plan, target, descriptor, startup)
         # A canary state of its own, so a passed canary is never mistaken for the CI verdict that
         # preceded it and neither one suppresses the other's transition.
         self._emit_check(plan, intent, AWAITING_CONSUMPTION,
@@ -537,34 +739,53 @@ class HostDelivery:
         if not canary["passed"]:
             return self._begin_rollback(plan, intent, claim, canary.get("reason_code") or "canary_failed",
                                         canary=canary)
-        self._record_descriptor(plan, intent, descriptor, consumed=True,
-                                instance_id=verdict["instance_id"], claim=claim)
+        self._record("consumed", lambda: self._record_descriptor(
+            plan, intent, descriptor, consumed=True, instance_id=verdict["instance_id"],
+            claim=claim, startup=startup))
         self._emit(EVENT_SWITCHED, "succeeded", plan, attributes={
             "plan_id": plan["plan_id"], "target_id": plan["target_id"],
             "descriptor_sha256": intent["descriptor_sha256"],
             "previous_sha256": intent["previous_descriptor_sha256"],
             "instance_id": verdict["instance_id"], "consumed": True})
-        pointer = self._promote(plan, intent)
+        try:
+            pointer = self._promote(plan, intent, claim)
+        except ContractError as refusal:
+            # `Releases` refused its own compare-and-swap: the host is consumed, the pointer is
+            # not this release's, and that is a blocked operational fact, never an activation.
+            failure = type(refusal).__name__
+            return self._record("consumed", lambda: self._halt(
+                plan, intent, BLOCKED, OUTCOME_BLOCKED, "release_promotion_refused", claim=claim,
+                error_type=failure))
         LOGGER.info("host delivery active plan=%s release=%s target=%s descriptor=%s instance=%s",
                     plan["plan_id"], plan["release_id"], plan["target_id"],
                     intent["descriptor_sha256"], verdict["instance_id"])
-        return self._enter(plan, intent, ACTIVE, claim, outcome=OUTCOME_ACTIVE,
-                           instance_id=verdict["instance_id"], canary=canary, stage_deadline=None,
-                           active_pointer=pointer)
+        return self._record("release_promoted", lambda: self._enter(
+            plan, intent, ACTIVE, claim, outcome=OUTCOME_ACTIVE,
+            instance_id=verdict["instance_id"], canary=canary, stage_deadline=None,
+            active_pointer=pointer))
 
-    def _promote(self, plan: dict, intent: dict) -> dict | None:
+    def _promote(self, plan: dict, intent: dict, claim) -> dict | None:
         """Move the existing release pointer through `Releases`, with ITS compare-and-swap.
 
-        The expected active release is the one recorded when this delivery bound its target tuple,
-        so a pointer that moved in between refuses here instead of overwriting another activation.
-        A release this promotion already made active is recognized rather than promoted twice.
+        The fence check and the promotion share ONE transaction - the promotion is handed the very
+        transaction the ownership was checked in - so there is no window between "this controller
+        still owns the release" and "this controller moved the active pointer". The expected active
+        release is the one recorded when this delivery bound its target tuple, so a pointer that
+        moved in between refuses here instead of overwriting another activation, and a release this
+        promotion already made active is recognized rather than promoted twice.
         """
         with self.store.transaction() as tx:
+            if claim is not None:
+                try:
+                    self.queue.owned(tx, claim, self._now())
+                except ContractError as exc:
+                    raise AmbiguousEffect("release_promotion", exc) from exc
             record = tx.get("releases", plan["release_id"]) or {}
             active = tx.get("deployment", "active") or {}
-        if record.get("status") == "active" and active.get("release_id") == plan["release_id"]:
-            return active
-        return self.releases.promote(plan["release_id"], intent.get("expected_active"))
+            if record.get("status") == "active" and active.get("release_id") == plan["release_id"]:
+                return active
+            return self.releases.promote(plan["release_id"], intent.get("expected_active"),
+                                         transaction=tx)
 
     def _begin_rollback(self, plan: dict, intent: dict, claim, reason_code: str, canary=None) -> dict:
         if intent.get("previous_descriptor") is None:
@@ -585,28 +806,44 @@ class HostDelivery:
     def _rollback(self, plan: dict, intent: dict, claim) -> dict:
         """Restore the EXACT predecessor tuple, then PROVE the restored runtime is the one running.
 
-        The restoration and its proof are two bounded steps of the same stage, exactly like the
-        forward switch: nothing sleeps under the lease, the predecessor's own startup receipt and a
-        live process are what verify it, and a restoration that cannot be proven becomes a blocked
-        operational alert rather than a `rolled_back` claim.
+        Every entry into this stage reconciles first: what descriptor is on the host right now, and
+        which instance is actually running. A restoration whose durable acknowledgement was lost is
+        RESUMED from what the host already shows rather than attempted a second time against an
+        expectation that no longer holds, a descriptor that is neither the failed one nor the
+        predecessor is a foreign state that blocks instead of being overwritten, and the start is
+        performed at most once per restoration. Nothing sleeps under the lease: the predecessor's
+        own fresh receipt and a live process are what verify it, and a restoration that cannot be
+        proven becomes a blocked operational alert rather than a `rolled_back` claim.
         """
         host, target = self._host(plan)
         previous = intent["previous_descriptor"]
         record = dict(intent.get("rollback") or {})
         reason = record.get("reason_code") or "rollback"
-        if not record.get("restored"):
+        state = self._reconcile_descriptor(host, target, intent)
+        if state == "foreign":
+            record.update(restored=False, verified=False, error_type=None, at=self.clock())
+            return self._blocked_rollback(plan, intent, claim, record, "rollback_foreign_descriptor")
+        if state == "intended":
+            # The failed descriptor is still the one on the host: restore the predecessor now.
             try:
-                host.switch(target, previous, expected=intent["descriptor_sha256"])
-                host.start(target, previous)
+                self._owned_now(claim)
+                host.switch(target, previous, expected=intent["descriptor_sha256"],
+                            authorize=self._authorizer(claim))
+            except AmbiguousEffect:
+                raise
             except Exception as exc:
                 error_type = safe_error_type(type(exc).__name__)
                 record.update(restored=False, verified=False, error_type=error_type,
                               at=self.clock())
                 return self._blocked_rollback(plan, intent, claim, record, "rollback_failed")
-            record.update(restored=True, verified=False, error_type=None, at=self.clock())
-            return self._pending(plan, intent, claim, "rollback_awaiting_consumption",
-                                 rollback=record,
-                                 stage_deadline=self._deadline(plan["consumption_timeout_seconds"]))
+            record.update(restored=True, started=False, verified=False, error_type=None,
+                          at=self.clock())
+            return self._record("descriptor_restored", lambda: self._pending(
+                plan, intent, claim, "rollback_awaiting_consumption", rollback=record,
+                stage_deadline=self._deadline(plan["consumption_timeout_seconds"])))
+        # The predecessor descriptor IS on the host, whether this tick wrote it or a lost response
+        # did. The restoration is a fact of the host, not of the record that failed to name it.
+        record.update(restored=True)
         try:
             verdict = consumption_verdict(previous, host.receipt(target))
             alive = bool(host.running(target))
@@ -614,6 +851,21 @@ class HostDelivery:
         except Exception as exc:
             verdict, alive = {"consumed": False, "instance_id": None}, False
             error_type = safe_error_type(type(exc).__name__)
+        if not (verdict["consumed"] and alive) and not record.get("started"):
+            # The restored descriptor is there but its runtime is not: start it exactly once.
+            try:
+                self._owned_now(claim)
+                host.start(target, previous, authorize=self._authorizer(claim))
+            except AmbiguousEffect:
+                raise
+            except Exception as exc:
+                record.update(started=False, verified=False,
+                              error_type=safe_error_type(type(exc).__name__), at=self.clock())
+                return self._blocked_rollback(plan, intent, claim, record, "rollback_failed")
+            record.update(started=True, verified=False, error_type=None, at=self.clock())
+            return self._record("predecessor_started", lambda: self._pending(
+                plan, intent, claim, "rollback_awaiting_consumption", rollback=record,
+                stage_deadline=self._deadline(plan["consumption_timeout_seconds"])))
         if not (verdict["consumed"] and alive):
             record.update(verified=False, error_type=error_type)
             if not self._expired(intent):
@@ -625,13 +877,16 @@ class HostDelivery:
                    attributes={"plan_id": plan["plan_id"], "target_id": plan["target_id"],
                                "descriptor_sha256": intent["previous_descriptor_sha256"],
                                "restored": True, "verified": True, "error_type": None})
-        self._record_descriptor(plan, intent, previous, consumed=True,
-                                instance_id=verdict.get("instance_id"), claim=claim,
-                                rolled_back=True)
+        self._record("predecessor_consumed", lambda: self._record_descriptor(
+            plan, intent, previous, consumed=True, instance_id=verdict.get("instance_id"),
+            claim=claim, rolled_back=True,
+            startup={key: verdict.get(key) for key in
+                     ("instance_id", "pid", "runtime_root", "module_root", "revision")}))
         LOGGER.warning("host delivery rolled back plan=%s target=%s descriptor=%s reason=%s",
                        plan["plan_id"], plan["target_id"], intent["previous_descriptor_sha256"], reason)
-        return self._enter(plan, intent, ROLLED_BACK, claim, outcome=OUTCOME_ROLLED_BACK,
-                           reason_code=reason, rollback=record, stage_deadline=None)
+        return self._record("predecessor_consumed", lambda: self._enter(
+            plan, intent, ROLLED_BACK, claim, outcome=OUTCOME_ROLLED_BACK, reason_code=reason,
+            rollback=record, stage_deadline=None))
 
     def _blocked_rollback(self, plan: dict, intent: dict, claim, record: dict,
                           reason_code: str) -> dict:
@@ -669,14 +924,18 @@ class HostDelivery:
             raise DeliveryRefused("release_missing", "release_id")
         return record["candidate"]
 
-    def _canary(self, plan: dict, target: dict, descriptor: dict) -> dict:
-        """The incumbent fixed check named by id; a plan can never supply the check itself."""
+    def _canary(self, plan: dict, target: dict, descriptor: dict, startup: dict) -> dict:
+        """The incumbent fixed check named by id; a plan can never supply the check itself.
+
+        It is given the OBSERVED startup of the instance that reported this descriptor, so it can
+        bind its answer to that instance and that runtime rather than to an activation.
+        """
         check = self.canaries.get(plan["canary_check_id"])
         if check is None:
             return {"passed": False, "reason_code": "canary_unavailable", "evidence": None,
                     "check_id": plan["canary_check_id"]}
         try:
-            result = check(target, descriptor)
+            result = check(target, descriptor, startup)
         except Exception as exc:
             return {"passed": False, "reason_code": "canary_error", "evidence": None,
                     "error_type": safe_error_type(type(exc).__name__),
@@ -754,8 +1013,13 @@ class HostDelivery:
             tx.put(BUCKET_INTENTS, intent["id"], intent)
 
     def _record_descriptor(self, plan: dict, intent: dict, descriptor: dict, *, consumed: bool,
-                           instance_id, claim, rolled_back: bool = False) -> None:
-        """The host's active descriptor per target, recorded after the host itself moved."""
+                           instance_id, claim, rolled_back: bool = False, startup=None) -> None:
+        """The host's active descriptor per target, recorded after the host itself moved.
+
+        `startup` is what the launched instance reported about ITSELF and is recorded separately
+        from `consumed`: a runtime can be observed without being activated, and the read-only
+        projection says which of the two happened rather than blurring them into one flag.
+        """
         now = self.clock()
         with self.store.transaction() as tx:
             if claim is not None:
@@ -768,6 +1032,10 @@ class HostDelivery:
             tx.put(BUCKET_DESCRIPTORS, plan["target_id"], {
                 "id": plan["target_id"], "target_id": plan["target_id"], "descriptor": descriptor,
                 "descriptor_sha256": descriptor_digest(descriptor), "consumed": bool(consumed),
+                "startup_observed": bool(startup),
+                "observed_instance_id": (startup or {}).get("instance_id"),
+                "observed_revision": (startup or {}).get("revision"),
+                "observed_runtime_root": (startup or {}).get("runtime_root"),
                 "instance_id": instance_id, "plan_id": plan["plan_id"],
                 "release_id": plan["release_id"], "rolled_back": bool(rolled_back),
                 "history": history, "updated_at": now})
@@ -820,7 +1088,8 @@ class HostDelivery:
                 "previous_descriptor_sha256": (intent or {}).get("previous_descriptor_sha256"),
                 "instance_id": (intent or {}).get("instance_id"),
                 "canary": (intent or {}).get("canary"), "rollback": (intent or {}).get("rollback"),
-                "active": active, "attempts": int((intent or {}).get("attempts") or 0),
+                "active": active, "ambiguous_effect": None,
+                "attempts": int((intent or {}).get("attempts") or 0),
                 "blocked": dict(blocked or {}), "at": self.clock(),
                 "next_action": stage_next_action(stage, outcome), "authority": AUTHORITY}
 
@@ -850,4 +1119,4 @@ class HostDelivery:
 
 
 __all__ = ["BUCKET_DESCRIPTORS", "BUCKET_INTENTS", "BUCKET_PLANS", "BUCKET_TARGETS", "LOGGER",
-           "RESUME_SECONDS", "TARGET_BUSY_STAGES", "HostDelivery"]
+           "MAX_SCAN", "RESUME_SECONDS", "TARGET_BUSY_STAGES", "AmbiguousEffect", "HostDelivery"]
