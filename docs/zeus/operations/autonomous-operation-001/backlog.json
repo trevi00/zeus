@@ -142,6 +142,19 @@
       "dependencies": [
         "monitor-correction"
       ]
+    },
+    {
+      "id": "host-runtime",
+      "project_id": "research-improvement",
+      "criterion_id": "verified-loop",
+      "lane": "interface",
+      "manifest_path": "docs/zeus/operations/autonomous-operation-001/host-runtime.operation.json",
+      "manifest_revision": "edfcde59582e886de3218ecdbfb0f08e4c18baee",
+      "manifest_sha256": "de62f5748bbc0d346dd647264face9ccce2ce06ed480cfa304a7ba0c2bf6c496",
+      "priority": 120,
+      "dependencies": [
+        "native-evidence"
+      ]
     }
   ]
 }
