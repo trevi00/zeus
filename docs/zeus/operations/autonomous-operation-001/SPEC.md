@@ -1,5 +1,64 @@
 # Whole autonomous operating loop
 
+## Operating-host composition: immutable runtime consumption
+
+Observation (owner, 2026-09-23): the live fleet-owner.pyw / fleet-entry.py / launch-fleet.ps1 pin
+runtime-autonomous-001 and do not read HostDelivery descriptors. Packaged ProcessHostTarget runs
+an identity-only service; ScheduledTaskHostTarget starts a pre-registered task without configuring
+its command. A code-review/test pass of PR182 therefore cannot establish an actual Fleet upgrade.
+The existing GitWorkspace.merge fast-forwards its repository, but that is not immutable operating
+code materialization or preservation of the old runtime for rollback. This is the explicitly
+pending live-composition gate, not a claim that the current service has failed.
+
+Design choice: add an OPT-IN managed Fleet target with immutable per-revision runtime directories,
+instead of modifying the running checkout or continuing to patch personal launcher scripts.
+Existing process/scheduled-task target behavior and registries remain compatible. The owner registry
+alone names source repository, managed root, state directory, fixed interpreter and registered
+service. Candidate plans select target id + reviewed revision/image/profile only; they cannot
+provide executable commands, arbitrary host paths or a new service. Extend the target contract
+explicitly for this mode, preserving all exact Release/Queue/fence/instance checks from PR182.
+
+One implementation batch (can run beside worker-session correction; disjoint runtime paths):
+
+1. Repository-owned materializer resolves exact reviewed revision from owner source, stages it
+   under the managed root, validates tracked content and a manifest, and seals it atomically.
+   Never import candidate code during preparation, overwrite an existing different directory,
+   mutate the live checkout, or delete old/dirty/unowned evidence. Lost response revalidates the
+   same immutable result. Partial stage remains named recovery evidence. Use Git authoritative
+   resolution including linked-worktree commondir; no unchecked copied revision claim.
+2. Runtime descriptor names the owner-derived sealed revision directory. Validate containment and
+   manifest before launch; actual child reports loaded module root, revision, image/profile,
+   instance and startup time. Retain predecessor directory/config for rollback. A fixed trusted
+   launcher outside the switched Fleet imports only that resolved runtime into its child. Keep
+   Windows hidden process ownership and POSIX ownership from existing background_service.
+3. This entry runs the REAL existing Fleet CLI, not the idle identity service. Add narrow optional
+   runner hooks for descriptor-bound pause/drain and work heartbeat. Pause closes admission while
+   already owned children finish. Work evidence reflects actual owned children plus unresolved
+   Fleet state. Missing, stale, mismatched or unreadable heartbeat is unknown, never idle. Stop
+   and launch reuse HostDelivery lifecycle guard and named-instance authority.
+4. Fixed interpreter/dependency environment is owner configuration. Validate candidate lockfile
+   compatibility with its qualified environment; changed dependencies are a named unavailable
+   environment gate until built/qualified, not a silent global install. No package downloads,
+   model calls, host scheduled-task registration or live-service mutation in worker checks.
+5. Wire forward activation and rollback to the sealed candidate/predecessor, preserving old target
+   behavior. Current controller process is separate from target Fleet. Existing observation events
+   and monitoring projection expose actual transitions and next actions; never label descriptor
+   write as consumption. Do not add an approval authority or automatic merge shortcut.
+
+Acceptance: actual temporary child consumes two different sealed source revisions; clean normal
+start and restart; bad manifest/foreign path/revision/image refusal before launch; controlled
+interruption before/after seal and launch; no double launch under two owners; active work prevents
+stop; unavailable heartbeat prevents idle; restored predecessor executes its old code after candidate
+failure; legacy mode remains passing; Windows/POSIX claims reflect actual execution. Use controlled
+fixtures for Fleet workloads, labelled as such; owner later verifies real running Fleet and useful
+model work. Scoped tests cover managed runtime, original host delivery, Fleet and background service.
+No changes to worker_sessions, executor, provider, general observation schema or docs/contracts in
+this parallel batch. Document the contract in HOST-RUNTIME.md, then owner consolidates references.
+
+Completion of this batch is a reviewed, testable composition primitive. Actual live cutover, rollback
+and whole-goal two-item qualification remain the owner gates already in this frame. Do not broaden
+to unrelated scheduler/platform improvements, and do not claim unattended operation from fixtures.
+
 ## Session primitive consolidated correction, 2026-09-23
 
 Candidate ecb0e6d6 (preserved, not accepted) completed implementation. Inspector 486d7c4d checked
