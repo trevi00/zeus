@@ -1,5 +1,49 @@
 # Whole autonomous operating loop
 
+## Recovery routing resubmission: durable bounded fairness, 2026-09-24
+
+Same outcome/scope and acceptance matrix as the routing frame below. Candidate 2c4e7f0 was
+REJECTED by independent lead e9f0bab7, not promoted. It is integrated ONLY into this correction
+worktree as implementation input; production remains 87d7d92. Preserve its membership filtering,
+global effect ownership and legacy-record behavior; no rework of accepted boundaries.
+
+Observation -> invalid assumption: limiting unavailable reads to four per lane bounds a tick,
+but an unchanged ordering picks the SAME four after every tick/restart. Per-job unavailable is
+not proof the entire lane is unavailable. Owner discriminator routing-starvation-reproducer.json
+executed the real candidate tick with real MemoryStores and injected read failures for four
+older jobs, with one healthy later job in the SAME lane. Three freshly reconstructed controllers
+all selected the same failures; target had no intent. This is synthetic fault injection, not a
+live database outage, and establishes a reachable failure mode rather than its production frequency.
+
+Competing designs: unbounded scanning removes starvation but loses the tick bound; per-process
+rotation loses progress on restart; durable selection progress retains both. Implement the third
+using the existing control store: persist selection/attempt order or a stable cursor per policy
+BEFORE/with bounded selection, independently of whether lane evidence can be read. Concurrent
+controllers must not reset progress or create duplicate effects; use existing transactional owners.
+Read-only polling/status must not advance it. Do not fabricate an intent, verdict, success or failure
+evidence to record a scheduling attempt. Keep named unavailable observations. True cached lane-wide
+runtime identity outage may still skip that lane; per-job read failure cannot prove lane outage.
+With finite fixed eligible candidates, repeated bounded ticks (including reconstructed controllers)
+must reach the healthy candidate in a deterministically testable number of passes. Preserve bounded
+attempt counts with all jobs unavailable, paused/drain behavior and global effect idempotence.
+
+One Claude batch: implement durable bounded selection progress, same-lane failure/healthy/restart
+regression, all-unavailable bound and overlapping-controller safety; rerun previous scoped tests
+and Ruff. No larger feature, deployment or verifier timeout change. Fixed matrix below still applies.
+
+The other lead gap is CLOSED BY OWNER EVIDENCE: before staging this candidate, Codex ran the new
+test_an_actual_tick_repairs_in_scope_evidence_past_more_old_history_than_its_fairness_limit with
+pre-candidate src at 4d082db9. It executed and failed at test line68 (only: zero repair intents),
+1 failed in 1.89 seconds; no import error. No need to fake a worker rollback command in tests.
+New same-lane regression must be shown to fail behaviorally against candidate 2c4e7f0; owner may
+perform that negative comparison after submission if worker sandbox cannot access old Git objects.
+Record that division honestly. Worker tests array lists only completed successful commands;
+negative/failed/attempted checks belong in summary. Existing full-suite CI stays separate.
+
+Manual bootstrap is still necessary for this controller correction because the controller being
+fixed is the automatic repair path. This dispatch does NOT prove automatic recovery. Completion:
+independent acceptance, owner affected checks/CI, operating update, THEN real delivery-tree recovery.
+
 ## Recovery routing ownership and bounded progress, 2026-09-24
 
 Outcome: the already authorized delivery-tree failure must reach its existing evidence-repair
