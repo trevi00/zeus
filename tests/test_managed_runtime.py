@@ -12,9 +12,13 @@ provider, scheduled task, live service, package download or production state is 
 
 The HOST side is real: an actual managed root, actual sealed directories, an actual trusted
 launcher process running this controller's code, and an actual child process importing ONLY the
-sealed runtime and reporting what it loaded. Those tests run on POSIX here; the Windows job-object
-and hidden-window paths are the incumbent `background_service`/`no_console_kwargs` ones and are not
-exercised on this host.
+sealed runtime and reporting what it loaded. Those tests are portable: the launcher is started
+hidden through the incumbent `no_console_kwargs`, the child is owned by the incumbent
+`background_service.run_owned` (a job object on Windows, a process group on POSIX), and the
+registered interpreter is this run's actual `sys.executable` - on a Windows venv a redirector whose
+child is the actual interpreter, so liveness is read from both the launch record and the child's
+own receipt. Only the SIGKILL test is POSIX-only, because it asserts the POSIX limit of that owner.
+File content oracles hash physical bytes with `git hash-object --no-filters`.
 """
 import hashlib
 import json
@@ -104,8 +108,10 @@ MODULE_PATH = "src/codex_harness/adapters/managed_runtime.py"
 TARGET_ID = "managed-fleet"
 
 needs_profile = pytest.mark.skipif(PROFILE is None, reason="this checkout packages no worker profile")
-posix_only = pytest.mark.skipif(os.name == "nt", reason="POSIX process ownership is asserted here; "
-                                "the Windows job-object path is not exercised on this host")
+posix_sigkill_limit = pytest.mark.skipif(
+    os.name == "nt", reason="POSIX-only limit: SIGKILL of the run_owned launcher leaves its process "
+    "group's child running; Windows has no SIGKILL and its job object ends the tree instead "
+    "(tests/test_background_service.py::test_windows_abrupt_owner_stop_releases_children_and_the_lock)")
 
 
 # ----- fixtures ---------------------------------------------------------------------------------
@@ -193,23 +199,41 @@ def release_jobs(target):
         (state(target, "fixture") / ("release-" + job)).touch()
 
 
+def end_tree(pid):
+    """Test cleanup only: end one recorded process and what it started.
+
+    On POSIX, SIGTERM reaches the incumbent `run_owned` owner, which reclaims its whole tree. On
+    Windows the recorded pid is whatever `Popen` started with the registered interpreter, which for
+    a venv is the redirector whose child is the actual interpreter; the incumbent test convention
+    (`tests/test_host_interruption.py::finish`) ends that parentage tree with `taskkill /T /F`, and
+    the actual launcher ending closes its KILL_ON_JOB_CLOSE job over the sealed child.
+    """
+    if os.name == "nt":
+        subprocess.run(["taskkill", "/PID", str(pid), "/T", "/F"], capture_output=True, timeout=60)
+    else:
+        os.kill(pid, signal.SIGTERM)
+
+
 def teardown(target):
     """Test cleanup only: release every fixture job, then end the owned launcher tree.
 
-    SIGTERM reaches the incumbent `run_owned` owner, which reclaims its whole tree; this is the
-    cleanup of a test, never the managed target's own stop path, which sends no signal at all.
+    This is the cleanup of a test, never the managed target's own stop path, which sends no signal
+    and kills nothing at all.
     """
     release_jobs(target)
     record = read(state(target, STATE_FILE)) if state(target, STATE_FILE).exists() else {}
     receipt = read(state(target, RECEIPT_FILE)) if state(target, RECEIPT_FILE).exists() else {}
-    pid = record.get("pid")
+    pid, child = record.get("pid"), receipt.get("pid")
     if _alive(pid):
-        os.kill(pid, signal.SIGTERM)
+        end_tree(pid)
     deadline = time.monotonic() + 20
-    while (_alive(pid) or _alive(receipt.get("pid"))) and time.monotonic() < deadline:
+    while (_alive(pid) or _alive(child)) and time.monotonic() < deadline:
         time.sleep(0.05)
-    # No launcher and no sealed child outlives a test.
-    assert not _alive(pid) and not _alive(receipt.get("pid"))
+    survivors = [p for p in (pid, child) if _alive(p)]
+    for survivor in survivors:
+        end_tree(survivor)  # a failing test reports its survivor below; it does not leak it
+    # No launcher and no sealed child outlives the end of its owned launcher tree.
+    assert not survivors, survivors
 
 
 # ----- the extended target contract ---------------------------------------------------------------
@@ -409,7 +433,6 @@ def test_a_linked_worktree_resolves_through_git_and_its_checkout_revision_throug
 
 # ----- the actual child -------------------------------------------------------------------------
 @needs_profile
-@posix_only
 def test_a_bad_runtime_is_refused_before_the_running_instance_is_touched(tmp_path, source):
     target = target_for(tmp_path, source["root"])
     host = ManagedFleetTarget(workload="fixture")
@@ -444,7 +467,6 @@ def test_a_bad_runtime_is_refused_before_the_running_instance_is_touched(tmp_pat
 
 
 @needs_profile
-@posix_only
 def test_a_clean_start_a_restart_and_a_repeated_start_launch_exactly_once(tmp_path, source):
     target = target_for(tmp_path, source["root"])
     host = ManagedFleetTarget(workload="fixture")
@@ -482,7 +504,7 @@ def test_a_clean_start_a_restart_and_a_repeated_start_launch_exactly_once(tmp_pa
 
 
 @needs_profile
-@posix_only
+@posix_sigkill_limit
 def test_a_child_that_outlives_its_killed_launcher_is_still_running_and_stops_gracefully(tmp_path,
                                                                                         source):
     """The documented POSIX limit of the incumbent owner: SIGKILL of the launcher leaves its child.
@@ -511,7 +533,6 @@ def test_a_child_that_outlives_its_killed_launcher_is_still_running_and_stops_gr
 
 
 @needs_profile
-@posix_only
 def test_two_owners_starting_at_once_launch_a_single_runtime(tmp_path, source):
     target = target_for(tmp_path, source["root"])
     desc = descriptor(target, source["root"], source["a"])
@@ -546,7 +567,6 @@ def test_two_owners_starting_at_once_launch_a_single_runtime(tmp_path, source):
 
 
 @needs_profile
-@posix_only
 def test_active_owned_work_prevents_the_drain_and_the_stop_until_it_finishes(tmp_path, source):
     target = target_for(tmp_path, source["root"])
     host = ManagedFleetTarget(workload="fixture", stop_timeout=1.0)
@@ -584,7 +604,6 @@ def test_active_owned_work_prevents_the_drain_and_the_stop_until_it_finishes(tmp
 
 
 @needs_profile
-@posix_only
 def test_an_unavailable_heartbeat_prevents_idle_and_the_stop(tmp_path, source):
     target = target_for(tmp_path, source["root"])
     host = ManagedFleetTarget(workload="fixture")
@@ -705,7 +724,6 @@ def test_a_lost_materialize_response_is_revalidated_and_projected_without_paths(
 
 
 @needs_profile
-@posix_only
 def test_forward_activation_consumes_two_sealed_revisions_and_retains_the_predecessor(tmp_path, source):
     system = managed_system(tmp_path, source)
     target, host = system["target"], system["host"]
@@ -736,7 +754,6 @@ def test_forward_activation_consumes_two_sealed_revisions_and_retains_the_predec
 
 
 @needs_profile
-@posix_only
 def test_a_failed_candidate_restores_the_predecessor_which_runs_its_old_code(tmp_path, source):
     system = managed_system(tmp_path, source)
     target, host = system["target"], system["host"]
@@ -764,12 +781,49 @@ def test_a_failed_candidate_restores_the_predecessor_which_runs_its_old_code(tmp
         teardown(target)
 
 
-def test_the_scan_refuses_a_symlink_inside_a_runtime(tmp_path):
+def hash_object(path, *, autocrlf=False):
+    """Git's own blob id of a file, with no global or system configuration read.
+
+    By default `--no-filters` hashes the PHYSICAL bytes: no clean filter, no `core.autocrlf`, no
+    `.gitattributes` eol conversion. `autocrlf=True` is only the discriminating control below.
+    """
+    argv = (["git", "-c", "core.autocrlf=true", "hash-object", str(path)] if autocrlf
+            else ["git", "hash-object", "--no-filters", str(path)])
+    return subprocess.run(argv, capture_output=True, text=True, check=True, timeout=60,
+                          env={**os.environ, "GIT_CONFIG_GLOBAL": os.devnull,
+                               "GIT_CONFIG_NOSYSTEM": "1"}).stdout.strip()
+
+
+def test_the_scan_ids_the_physical_bytes_of_lf_and_crlf_files(tmp_path):
+    """The sealed listing is the id of the bytes on disk, never of a line-ending-normalized copy."""
     root = tmp_path / "runtime"
     (root / "src").mkdir(parents=True)
-    (root / "src" / "a.py").write_text("x = 1\n", encoding="utf-8")
-    assert scan(root) == [["src/a.py", subprocess.run(
-        ["git", "hash-object", str(root / "src" / "a.py")], capture_output=True, text=True,
-        check=True).stdout.strip()]]
-    (root / "src" / "link.py").symlink_to(root / "src" / "a.py")
+    lf, crlf = root / "src" / "lf.py", root / "src" / "crlf.py"
+    lf.write_bytes(b"x = 1\ny = 2\n")  # bytes, never text mode: Windows would write CRLF here
+    crlf.write_bytes(b"x = 1\r\ny = 2\r\n")
+    assert scan(root) == [["src/crlf.py", hash_object(crlf)], ["src/lf.py", hash_object(lf)]]
+    assert hash_object(crlf) != hash_object(lf)
+    # The discriminating control: an eol-normalizing filter (the owner's Windows `core.autocrlf`)
+    # gives the CRLF file the LF id, which is not what is on disk and is not what the scan says.
+    assert hash_object(crlf, autocrlf=True) == hash_object(lf)
+    assert ["src/crlf.py", hash_object(crlf, autocrlf=True)] not in scan(root)
+
+
+def test_the_scan_refuses_a_symlink_inside_a_runtime(tmp_path):
+    root = tmp_path / "runtime"
+    (root / "src" / "pkg").mkdir(parents=True)
+    (root / "src" / "a.py").write_bytes(b"x = 1\n")
+    assert scan(root) == [["src/a.py", hash_object(root / "src" / "a.py")]]
+    try:
+        (root / "src" / "link.py").symlink_to(root / "src" / "a.py")
+    except (OSError, NotImplementedError) as exc:
+        # A platform capability, not a pass: Windows creates symlinks only with Developer Mode or
+        # SeCreateSymbolicLinkPrivilege. The Git-side refusal of a tracked symlink (mode 120000,
+        # `runtime_entry_unsupported`) is independent of this and not what this test proves.
+        pytest.skip("capability unavailable: this host cannot create a file symlink ("
+                    + type(exc).__name__ + ")")
+    assert scan(root) is None
+    (root / "src" / "link.py").unlink()
+    assert scan(root) == [["src/a.py", hash_object(root / "src" / "a.py")]]
+    (root / "src" / "linked-dir").symlink_to(root / "src" / "pkg", target_is_directory=True)
     assert scan(root) is None
