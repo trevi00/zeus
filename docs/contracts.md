@@ -2361,3 +2361,70 @@ carrying identifiers, digests, fixed codes and counts only; a repeated idle poll
 and emits nothing, and a switch with `consumed: false` is never read as an activation. A collected
 status is a durable-record projection: it is never evidence of a qualified live host, a passed owner
 canary or a semantically accepted release.
+
+## INV-WORKER-SESSION-001
+
+A durable Claude task session keeps one logical worker conversation through implementation, frozen
+candidate, review wait and qualified rejection correction without an idle model process
+(docs/zeus/operations/autonomous-operation-001/WORKER-SESSIONS.md). It is opt-in twice: the host
+constructs `Executor(worker_sessions=...)`, and a caller passes an explicit
+`task_session={"task_id", "repository"}` with `max_handoffs=1`. Without both, execution is the
+unchanged fresh path: `--session-id` with a new UUID per attempt, `session.resume: "unsupported"`,
+the legacy isolated protocols and receipts. The packaged `providers.json` still declares Claude
+`session_resume: "unsupported"` and the invocation option matrix is unchanged; native resume is this
+separate, conditional path, never a capability flag.
+
+`worker_sessions` rows (one per logical task id) hold the binding and state; the transcript bytes
+live in the restricted content-addressed `SessionArchives` root (`<runtime>/worker-sessions`, never
+the general artifact tree a model reads) and the row keeps only reference and hashes. The binding is
+task id, repository, workspace, provider, model, runtime image, runtime, policy and config digests.
+States follow one fixed matrix: `active -> checkpointed -> awaiting_review -> correction_ready ->
+active`, `awaiting_review -> accepted -> archival_pending -> closed`, plus explicit
+`archive_missing`, `archive_corrupt`, `incompatible` and `unresolved`; any other move is
+`invalid_transition`. A foreign task/repository/workspace is refused unchanged (`session_foreign`);
+a model, image, runtime, policy or config mismatch sets `incompatible` and reports that an explicit
+fresh evidence handoff is required (`session_incompatible`). A turn that was never adopted reopens
+fresh under a NEW session id; nothing is ever relabelled as resumed.
+
+`begin` claims the session exclusively for one leased execution; a second owner is `session_owned`
+however old the claim looks, and a claim is committed only at the row version it read, after the
+archive was verified OUTSIDE the transaction. `checkpoint` puts the verified export into the archive
+store (deterministic reference, read back) and THEN updates the row idempotently, so a crash between
+the two replays to the same reference and a duplicate event returns the recorded checkpoint. A
+resumed turn is adopted only when its transcript begins with the exact bytes of the archive it
+resumed (`prefix_verified`); otherwise the session is `unresolved` (`resume_continuity_unproven`)
+and only `reconcile` from retained verified bytes of this exact session continues it. A failed or
+unexported turn releases the claim back to the prior resume point; an entered turn that raised is
+`unresolved`. Review wait holds no owner, no reservation and no provider: `record_review` reads the
+existing succeeded `review_lead`/`review_conductor` decision row for the exact frozen revision and
+tree (`review_candidate_mismatch`, `review_not_succeeded`, `review_not_independent`); a rejection
+makes the session `correction_ready` (eligible, never admitted: conductor continuation remains the
+sole admission owner), conductor acceptance makes it `accepted`, and a rejected candidate can never
+be submitted again (`candidate_rejected_immutable`). `promote` needs an existing evidence reference;
+`close` needs the recorded promotion, records a cleanup failure without closing, and never deletes
+the archive.
+
+Transport: `ClaudeCodeRuntime(session_home=...)` alone may restore or export, and only for a
+`task_session` binding; the host's own home is never read, written or resumed from, and the executor
+refuses a task session without isolation. A resumed turn needs `--resume` in the installed CLI's
+options, a manifest recorded for this exact workspace, and a verified restore into the empty owned
+home before any process starts (each a `ClaudeUnavailable` refusal before entry); the command is
+`--resume <exact id>`, never `--session-id` and never `--continue`. After the process tree is
+confirmed gone, only the exact session's transcript and the regular files under that session's own
+directory are exported, bounded (64 files, 64 MiB, depth 6), with dot-files, credentials, settings,
+other sessions and other projects excluded by allowlist and any link or special file refused. The
+isolated request names `zeus-isolated-worker-v1-task-session` (or its project-evidence twin), so an
+older entry refuses it; the host stages the verified archive into THIS run's evidence mount before
+the container exists (`task_session_stage_failed` otherwise), the entry accepts only the fixed
+`/evidence/session-restore` and `/evidence/session-export` paths and its own `$HOME/.claude`, and the
+host re-verifies every exported byte (`archive_unlisted_file`, `archive_corrupt`) before adoption.
+No home and no other task's directory is ever mounted, and the export stays in the retained run
+evidence until the session closes. Resumed usage is cumulative: a turn's usage is its delta against
+the same session's recorded baseline and otherwise unknown; a resumed turn's cost estimate is not
+attributed to it. `zeus worker-session status` is a bounded read-only projection and
+`worker-session close` the explicit close; neither prints transcript bytes or paths.
+
+Fixture tests prove the wiring against a labelled protocol child and an injected Docker fake. They do
+not prove the pinned CLI's transcript layout, `--resume` behaviour under `CLAUDE_CONFIG_DIR`, or
+continuity across a real container recreation; that is the owner's real two-turn probe before any
+production activation.
