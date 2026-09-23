@@ -1,5 +1,21 @@
 # Operating status
 
+## Evidence recovery checkpoint: 2026-09-23 14:04 KST
+
+PR182 merged at 04:27:48Z (ce81f885); no live deployment was attempted. Session correction 973a903f
+passed its lane's independent review; real session/container owner qualification remains pending.
+Managed-runtime candidate 344271b9 finished implementation but stopped at evidence inspection:
+seven checked commands, one whole-suite replay timed out at 300s. Its output also had setup errors.
+Owner isolated replay of the first affected test file established missing ssh-keygen in the pinned
+verifier image. It does not establish all full-suite errors or a managed-runtime defect.
+
+Same SPEC now fixes the recovery scope: preserve failed/uncompleted full-suite history; submit
+completed, originally required focused checks; independently review the inherited runtime as a
+whole. Plan 98bbae773d203b34082eeb9e5586eb8f61e475a2 was registered and Fleet actually dispatched
+autonomous-operation-001-host-runtime-evidence at 05:03:52Z; task is running. No gate, timeout,
+production image or old inspection was weakened/rewritten. This remains owner-directed recovery,
+not proof that autonomous diagnosis/continuation has been delivered.
+
 ## Continuation checkpoint: 2026-09-23 13:17 KST
 
 Session correction remains an actual running harness-lane job. The interface lane additionally
