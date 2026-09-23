@@ -1,5 +1,165 @@
 # Whole autonomous operating loop
 
+## Scoped research resubmission: actual artifact availability, 2026-09-24
+
+Candidate c6bdf29 is staged ONLY as correction input, not accepted or deployed. Independent review
+59098e6f found one material gap in the existing fixed matrix: receipt evidence is checked only for
+sha256 syntax. accept_research and _resume_observe_research never resolve its bytes. Existing
+success test uses fabricated sha256:555... and accepts it. This confirms missing wiring by source;
+it is not evidence that a missing artifact was used in production. All other accepted scoped
+receipt bindings, ownership and history behavior stay unchanged. No wider review/research scope.
+
+One Claude correction: inject an artifact-verification port into the existing continuation owner,
+wire both owner acceptance CLI and runtime coordinator to trusted configured artifact storage.
+Reuse FileArtifacts.text(ref, bound) or equivalent existing content-addressed integrity checking:
+read actual bounded bytes and verify SHA256. No caller-provided roots, candidate paths, network
+fetches or model assertions. Document which configured root owns research receipt evidence;
+use explicit host store resolution, not an unbounded search of home/worktrees. Domain stays pure.
+Require this at receipt acceptance and again BEFORE consuming the receipt to release a hold.
+Missing verifier, missing/unreadable/corrupt/oversized evidence fails closed with safe reason codes;
+raw content/path errors are not logged. Cached acceptance is historical only, never substitutes
+for current consumption validation. Do not relabel an absent file as a valid empty report.
+Artifact I/O remains outside PG transactions; retain existing version/family checks at commit.
+State the filesystem time-of-check boundary honestly: integrity at observed read time, not an
+eternal availability guarantee. A later tick must recheck before new hold-release effect.
+
+Tests: use actual temporary FileArtifacts for successful reference bytes/digest; prove each refusal
+for missing, unreadable (labelled injection), tampered and oversized body. Remove/tamper after
+receipt acceptance and reconstruct controller: hold remains, no successor. Cover both adapter
+entry paths (acceptance and consumption) so a fixture-only injected reader cannot hide absent live
+wiring. Verify no unrelated-family release and immutable receipt/history through existing tests.
+Run targeted continuation/research/artifact tests and Ruff only. Negative checks belong in summary;
+tests array lists completed successful commands. Do not run whole suite in worker. No deployment,
+policy widening, new scheduler or changes to the already qualified worker image by Claude.
+
+Completion: independent acceptance, native owner targeted checks, CI, then owner config and live
+research/repair qualification from the same frame. The original rejection remains recorded.
+
+## Scoped research completion and evidence-repair delivery, 2026-09-24
+
+Outcome: finish the held delivery-tree repair without re-running known-incomplete whole-suite
+claims, and connect existing research dispatch to exact-family owner acceptance. Keep the whole
+autonomous goal and prior accepted routing/runtime evidence. The findings below are the source
+assessment; this section is the SINGLE bounded implementation handoff, not a new research program.
+
+Facts: original and successor inspections 6fba3e1b/a73a092b show scoped tests and Ruff passing;
+two whole-suite commands timeout in each. Candidate b31a9112/tree52b232ab unchanged. Primary PG
+investigation aab8c6d6 includes 16 same-reason jobs, but only this two-job lineage was investigated.
+None of nine registered ResearchPrograms enables investigation_source; existing dispatch mechanism
+is unused for this family. Existing _resume_observe_research accepts any researched coarse row
+intersecting family_jobs. Portfolio disposition means owner looked, not cause/promotion authority.
+Therefore do not use broad disposition to unlock this family or create another research scheduler.
+
+Complete path/ownership: Portfolio observation -> existing ResearchProgram opt-in source and
+immutable snapshot -> existing council result -> explicit scoped OWNER acceptance receipt ->
+Continuation research intent completion -> existing evidence_repair successor -> existing verifier,
+lead and conductor. The receipt records exact intent, policy, family, complete failed attempt set,
+inspection/evidence bindings and approved research result; it is not an operation acceptance or a
+repair verdict. Store it transactionally and immutably via existing application/CLI ownership.
+No worker may mint its own receipt or claim that a broad same-reason row is fully researched.
+
+Implement one scoped completion contract in the existing continuation owner, exposed through its
+existing CLI. Resolve only an exact research-required intent whose FULL current family attempt
+set is covered by the owner receipt and evidence. Validate referenced investigation membership,
+the completed accepted existing research dispatch/council binding and immutable evidence refs;
+unknown/unavailable/mismatched/incomplete results refuse. Make identical submission idempotent,
+different receipt conflict. New failures/another family need new coverage; old receipts cannot
+authorize new attempts. Preserve original Portfolio states/history; do not rewrite the 16-job row.
+Polling can consume a valid owner receipt but may never invent acceptance from a research label.
+Replace the broad intersection-based release for research holds with the scoped receipt path;
+legacy coarse dispositions remain evidence, not automatic approval for unrelated attempts. Preserve
+all existing effect ownership, max corrections, two-strike and drain behavior. Receipt acceptance
+must be explicit and visible (exact covered jobs/evidence), not implicit automatic council promotion.
+
+Existing project-evidence v2 already defines container-bound host check commands. Reuse it rather
+than changing claim parser or increasing timeouts. Owner deployment/configuration AFTER this batch
+will register a bounded investigation_source program for research-improvement/evidence_gate_refused,
+then accept only this lineage's result, and bind host-delivery three-file pytest plus Ruff to the
+repair execution. No global profile change to unrelated jobs, no old tests-array editing. Do not
+implement a second evidence system. Existing scope/profile loading is sufficient for owner setup;
+if implementation shows a missing binding, report the exact existing boundary, not a speculative API.
+
+Acceptance matrix: exact covered pair can leave research_required once; partial pair, foreign policy,
+wrong intent, unfinished/rejected research, absent evidence or changed attempt stays blocked. A second
+family in the same coarse investigation remains held. Replay/concurrent receipt submission preserves
+one acceptance and successor; restart consumes the persisted receipt. Unknown store/reads never
+approve. Existing pause/drain/timeouts unchanged, no new process/OS resource so no new cleanup design.
+Use actual existing application store/dispatch structures in tests; distinguish injected fixtures
+from live execution. Test required checks/failure reporting through existing evidence profile tests.
+
+Run ONLY targeted continuation, research-investigation and project-evidence tests plus Ruff. Failed,
+diagnostic and unrun checks belong in summary; legacy tests contains completed successful commands
+only. Full suite is owner/CI responsibility. No merge/deploy/profile switch by Claude. Codex owns
+independent acceptance and the subsequent real research/repair operating verification. This batch
+finishes when scoped completion contract and fixed matrix pass, not when all autonomy is claimed.
+
+## Two-strike investigation: delivery-tree evidence and research dispatch
+
+Observed 2026-09-24, operating runtime d2eb4dc11e1138d8238cac8063a193f3e2151d23.
+Scope: explain these two failed attempts and why their investigation is not executing.
+No runtime verdict, investigation disposition, worker policy or retry counter was changed.
+
+## Evidence and conclusions
+
+1. Original task 1fa1026d and automatic successor 4dde540d both preserve candidate b31a9112,
+   tree 52b232ab. Inspectors 6fba3e1b and a73a092b independently replayed scoped tests and Ruff
+   twice successfully. Both legacy tests arrays also declared the same two whole-suite commands
+   as expected exit zero, while both worker summaries explicitly said they did not complete.
+   Replays timed out at 300/289.95 seconds and 300/164.07 seconds respectively. This is actual
+   runtime inspection evidence of a repeated claim/verification-scope failure, not proof of a
+   host-delivery code defect, and not a subscription quota refusal.
+2. Worker summaries report missing ssh-keygen, temporary-space/output problems, and in the
+   successor Git dubious ownership. These are worker-reported observations; they have NOT been
+   independently reproduced here. They must not be conflated with the verified replay timeouts.
+3. The continuation copies the original immutable goal/scope and adds a fixed 'declared checks'
+   preface plus reference IDs. Its source does not construct a host-approved replacement check
+   denominator from this diagnosis. The profile allows explicitly scoped checks, but the original
+   repository AGENTS defaults to whole-suite validation and legacy tests text is interpreted as
+   success claims. Stronger explicit host check ownership is needed; simply increasing timeouts or
+   suppressing unsuccessful evidence would repeat the failure family.
+4. Investigation aab8c6d6 groups 16 historical jobs by status and evidence_gate_refused, including
+   these two. It has no evidence refs. Shared reason code is a triage family, not a shared cause.
+   Do not mark all 16 researched/fixed on evidence for this pair.
+5. Research dispatch ALREADY EXISTS: domain/research_investigations.py and ProgramRunner.tick
+   implement an opt-in investigation_source with project/reason filters and durable dispatch.
+   Primary PG contains nine research programs; none has investigation_source configured. Eight
+   are blocked, one completed. No dispatch row exists for aab8c6d6. ZeusAuditResearch-run is Ready
+   with last run 2026-09-22; no active Fleet jobs were observed. Fleet reconciliation creates the
+   candidate; it does not execute ProgramRunner. Thus a research-required label is not a running
+   investigation. Broader reasons for eight historical program blocks are outside this scope.
+6. Continuation _resume_observe_research waits for a researched Portfolio row with overlapping
+   family membership and evidence refs. Portfolio.disposition records an owner having looked,
+   explicitly not a cause/fix/promotion. A council dispatch result is also not an owner disposition.
+   Completion must connect these distinct authorities with exact family/attempt coverage; never
+   unlock unrelated historical failures by globally disposing this coarse symptom group.
+
+## Revised complete path and next bounded batch
+
+Input: two immutable task/inspection refs and original accepted scope -> host-frozen required
+checks (reuse existing project-evidence profile) -> bounded research dispatch through existing
+ResearchProgram -> source-backed report plus independent owner acceptance for exact attempts ->
+authorized evidence-only successor over preserved candidate -> inspection -> lead/conductor ->
+existing delivery. Pending research is cache/unverified evidence, not promoted knowledge.
+
+First reuse existing investigation-source/program controls; do not add another research scheduler.
+The closure boundary needs exact coverage before a broad Portfolio disposition is consumed by
+continuation. Keep the existing strict verifier and failed attempts. Neither rewrite old tests
+arrays nor manually mark operation accepted. Implementation is Claude's next bounded handoff,
+after Codex fixes the exact check and research-result contract; no blind third retry now.
+
+Acceptance matrix: normal exact pair produces one research dispatch and one authorized repair;
+unavailable sources/invalid claims remain explicitly blocked; timeouts preserve owned cleanup;
+restart/concurrent dispatch is idempotent; unrelated jobs sharing reason stay held; incomplete
+research never releases repair; Windows/container scoped commands are replayed; original failure
+records and candidate hashes stay unchanged. No new OS process backend or cleanup mechanism.
+
+Raw local evidence: two-strike-investigation.json, two-strike-inspections.json. Primary code sources
+read at the operating revision: application/portfolio.py (reconcile, disposition),
+application/continuation.py (_resume_observe_research), domain/continuation.py (successor_manifest),
+adapters/research_program.py (tick), domain/research_investigations.py, worker-profile-v1.md.
+No external product/API uncertainty changes this diagnosis; primary local code and PG are decisive.
+
+
 ## Owner independent acceptance, 2026-09-24
 
 Candidate f33f8069193a51eb7b9ff506033fe4bc2c01727b: reviewed changed selection transactions,

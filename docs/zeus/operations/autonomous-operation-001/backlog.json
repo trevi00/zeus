@@ -334,6 +334,32 @@
       "dependencies": [
         "native-fixture"
       ]
+    },
+    {
+      "id": "scoped-research",
+      "project_id": "research-improvement",
+      "criterion_id": "verified-loop",
+      "lane": "harness",
+      "manifest_path": "docs/zeus/operations/autonomous-operation-001/scoped-research.operation.json",
+      "manifest_revision": "62985256baeac45ad91acc08520bda0ea1e7e7b9",
+      "manifest_sha256": "2b9cc44ffd6b67b054dce81fbd6bdafa4b51e742c4b3874ec350a03abb8da2e2",
+      "priority": 240,
+      "dependencies": [
+        "native-fixture"
+      ]
+    },
+    {
+      "id": "research-artifacts",
+      "project_id": "research-improvement",
+      "criterion_id": "verified-loop",
+      "lane": "harness",
+      "manifest_path": "docs/zeus/operations/autonomous-operation-001/research-artifacts.operation.json",
+      "manifest_revision": "598367316ca6b62b0d66302355bf2cd76b29b102",
+      "manifest_sha256": "c50087b2b9dc270d91ba401a5e1dd470ce3a7f7b647acb71e5902d2e37e3c93b",
+      "priority": 250,
+      "dependencies": [
+        "native-fixture"
+      ]
     }
   ]
 }

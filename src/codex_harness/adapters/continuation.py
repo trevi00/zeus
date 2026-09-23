@@ -15,6 +15,9 @@ The ports it supplies:
 * `runtime(lane_id)` - the identity the lane ACTUALLY runs: the host-selected isolation image, the
   packaged worker profile and the digest of the lane's session archive root. A policy naming
   anything else refuses before any effect.
+* `evidence` - `ResearchEvidence` over the control host's configured artifact store
+  (`<HARNESS_RUNTIME_DIR>/artifacts`): the actual bounded bytes and digest of every research receipt
+  evidence ref, at `research-accept` AND on each tick before a receipt releases a hold.
 * `ConductorProcesses` (adapters/continuation_process.py) - the guarded conductor dispatch: one
   hidden, DB-free per-launch guardian that owns the existing `zeus continuation conduct` as its
   tree, spawned once under the launch identity and unit token the Fleet reserved and committed
@@ -28,21 +31,30 @@ The ports it supplies:
 from __future__ import annotations
 
 import hashlib
+import json
 from pathlib import Path
 
+from codex_harness.adapters.artifacts import FileArtifacts
 from codex_harness.adapters.continuation_process import ConductorProcesses
 from codex_harness.adapters.fleet_backlog import _parse, read_blob
 from codex_harness.adapters.operation_cli import GitSource
 from codex_harness.adapters.providers import packaged_policy
 from codex_harness.application.continuation import Continuation, LaneEvidence
 from codex_harness.application.fleet import Fleet
-from codex_harness.domain.continuation import ContinuationRefused, validate_policy
+from codex_harness.domain.continuation import (
+    RESEARCH,
+    ROUTE_OWNERS,
+    ContinuationRefused,
+    validate_policy,
+)
 from codex_harness.domain.fleet import lane_of, repository_identity
 from codex_harness.domain.fleet_backlog import BacklogRefused
+from codex_harness.domain.model import ContractError
 from codex_harness.domain.operation import WORKER_PROFILE, validate_manifest
 
 POLICY_SETTING = "ZEUS_CONTINUATION_POLICY"
 MAX_POLICY_BYTES = 64 * 1024
+MAX_RESEARCH_EVIDENCE_BYTES = 1024 * 1024  # the FileArtifacts.text ceiling
 
 
 def archive_identity(runtime_root) -> str:
@@ -77,6 +89,66 @@ def register_policy(store, config: dict, lane_id: str, revision: str, path: str,
         except Exception as exc:
             raise ContinuationRefused("lane_unknown", "operator", "lanes") from exc
     return Continuation(store).register(policy, {**loaded["pin"], "lane": lane_id})
+
+
+def read_receipt(path) -> dict:
+    """The owner's research receipt file: bounded, JSON, validated by the domain afterwards."""
+    try:
+        data = Path(path).read_bytes()
+    except OSError as exc:
+        raise ContinuationRefused("research_receipt_unreadable", "operator", "file") from exc
+    if len(data) > MAX_POLICY_BYTES:
+        raise ContinuationRefused("research_receipt_invalid", "operator", "file")
+    try:
+        return json.loads(data.decode("utf-8"))
+    except (UnicodeDecodeError, ValueError) as exc:
+        raise ContinuationRefused("research_receipt_invalid", "operator", "file") from exc
+
+
+class ResearchEvidence:
+    """The research evidence port over ONE trusted content-addressed store (`FileArtifacts`): `verify`
+    reads at most `max_bytes` of the reference's actual bytes and checks their SHA-256. Refusals are
+    fixed codes (`research_evidence_missing|unreadable|oversized|corrupt|invalid`); no path, raw error
+    or content leaves. The root is fixed by configuration; it is never created, searched or
+    supplied by a caller, and nothing is fetched. Integrity holds at the observed read only."""
+
+    def __init__(self, root, max_bytes: int = MAX_RESEARCH_EVIDENCE_BYTES):
+        self.root, self.max_bytes, self.store = Path(root), max_bytes, None
+
+    def verify(self, reference) -> None:
+        code = None
+        try:
+            if self.store is None:
+                if not self.root.is_dir():
+                    raise FileNotFoundError
+                self.store = FileArtifacts(str(self.root))
+            self.store.text(reference, self.max_bytes)
+        except FileNotFoundError:
+            code = "research_evidence_missing"
+        except UnicodeDecodeError:
+            code = "research_evidence_invalid"  # digest matched, but not the text the store writes
+        except OSError:
+            code = "research_evidence_unreadable"
+        except ContractError as exc:
+            code = {"Artifact exceeds text budget": "research_evidence_oversized",
+                    "Artifact modified": "research_evidence_corrupt"}.get(str(exc), "research_evidence_invalid")
+        if code is not None:
+            raise ContinuationRefused(code, ROUTE_OWNERS[RESEARCH], "evidence_refs")
+
+
+def research_evidence() -> ResearchEvidence:
+    """The configured owner of research receipt evidence: the control host's general artifact store
+    (`<HARNESS_RUNTIME_DIR>/artifacts`), where the research council and the executor write."""
+    from codex_harness.adapters.configuration import runtime_dir
+    return ResearchEvidence(runtime_dir() / "artifacts")
+
+
+def accept_research(store, config: dict, host: dict, document, *, lanes=None, evidence=None) -> dict:
+    """The owner's explicit scoped research receipt, verified against the Fleet control store, each
+    attempt's own lane store and the actual evidence bytes, then stored once
+    (`Continuation.accept_research`)."""
+    return Continuation(store, lanes=lanes or lane_stores(config, host),
+                        evidence=evidence or research_evidence()).accept_research(document)
 
 
 def lane_runtime(config: dict, host: dict):
@@ -118,18 +190,19 @@ def validator():
     return lambda manifest: validate_manifest(manifest, policy)
 
 
-def coordinator(store, config: dict, host: dict, *, lanes=None, conductor=None, observer=None) -> Continuation:
+def coordinator(store, config: dict, host: dict, *, lanes=None, conductor=None, observer=None,
+                evidence=None) -> Continuation:
     return Continuation(store, Fleet(store), lanes or lane_stores(config, host),
                         conductor if conductor is not None else ConductorProcesses(config, host),
-                        validate=validator(), observer=observer)
+                        validate=validator(), observer=observer, evidence=evidence or research_evidence())
 
 
 def tick_policy(store, config: dict, host: dict, policy_id: str, *, source_factory=GitSource, lanes=None,
-                conductor=None, runtime=None, observer=None) -> dict:
+                conductor=None, runtime=None, observer=None, evidence=None) -> dict:
     """One bounded tick. An unregistered or disabled policy returns before any Git read, lane
     connection or process; the registered pin is re-read so a changed policy refuses. A pin that
     cannot be re-read refuses every NEW effect, while launches already started are still drained."""
-    owner = coordinator(store, config, host, lanes=lanes, conductor=conductor, observer=observer)
+    owner = coordinator(store, config, host, lanes=lanes, conductor=conductor, observer=observer, evidence=evidence)
     row = owner.policy(policy_id)
     if row is None or not row["policy"]["enabled"]:
         return owner.tick(policy_id)
@@ -152,19 +225,21 @@ class ContinuationPass:
     drain and concurrency slot count - never reported as idle while a conductor is pending."""
 
     def __init__(self, store, config: dict, host: dict, policy_id: str, *, observer=None, processes=None,
-                 lanes=None, runtime=None, source_factory=GitSource):
+                 lanes=None, runtime=None, source_factory=GitSource, evidence=None):
         self.store, self.config, self.host, self.policy_id = store, config, host, policy_id
         self.observer, self.runtime, self.source_factory = observer, runtime, source_factory
         self.processes = processes if processes is not None else ConductorProcesses(config, host)
         self.lanes = lanes or lane_stores(config, host)
+        self.evidence = evidence or research_evidence()
 
     def __call__(self) -> dict:
         return tick_policy(self.store, self.config, self.host, self.policy_id, source_factory=self.source_factory,
-                           lanes=self.lanes, conductor=self.processes, runtime=self.runtime, observer=self.observer)
+                           lanes=self.lanes, conductor=self.processes, runtime=self.runtime, observer=self.observer,
+                           evidence=self.evidence)
 
     def _owner(self) -> Continuation:
         return coordinator(self.store, self.config, self.host, lanes=self.lanes, conductor=self.processes,
-                           observer=self.observer)
+                           observer=self.observer, evidence=self.evidence)
 
     def drain(self) -> dict:
         return self._owner().drain(self.policy_id)
@@ -192,6 +267,6 @@ def configured_policy(settings: dict) -> str | None:
     return value.strip() if type(value) is str and value.strip() else None
 
 
-__all__ = ["ConductorProcesses", "ContinuationPass", "POLICY_SETTING", "archive_identity", "configured_policy",
-           "continuation_ticker", "coordinator", "lane_runtime", "lane_stores", "load_policy", "register_policy",
-           "tick_policy"]
+__all__ = ["ConductorProcesses", "ContinuationPass", "POLICY_SETTING", "ResearchEvidence", "accept_research",
+           "archive_identity", "configured_policy", "continuation_ticker", "coordinator", "lane_runtime",
+           "lane_stores", "load_policy", "read_receipt", "register_policy", "research_evidence", "tick_policy"]

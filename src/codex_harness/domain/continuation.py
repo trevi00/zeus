@@ -9,7 +9,7 @@ authorizes. This module decides; it performs no I/O.
 | ----------------------------------------- | ----------------------------------------- | ------------------- |
 | failed / evidence_gate_refused, effects known | evidence repair successor, candidate kept | new bound inspection + independent review |
 | rejected exact independent review         | correction successor under the same frame  | pinned successor, retained rejection, session lineage |
-| two distinct similar failed attempts      | existing Portfolio investigation (research) | owner `researched` disposition with evidence |
+| two distinct similar failed attempts      | existing Portfolio investigation (research) | owner scoped research receipt (exact attempts) |
 | unknown provider / external effects       | existing ExecutionRecovery                 | bound proof; never a fresh call |
 | accepted lead candidate                   | existing conductor review (guarded row)    | succeeded conductor decision, Releases record |
 | qualified (conductor-accepted) release    | HostDelivery + managed runtime target      | `active` consumption, or verified rollback |
@@ -70,7 +70,8 @@ ROUTE_OWNERS = {EVIDENCE_REPAIR: "fleet", CORRECTION: "fleet", RESEARCH: "portfo
                 NEXT_ITEM: "fleet_backlog"}
 ROUTE_COMPLETION = {EVIDENCE_REPAIR: "new bound inspection and independent review of the successor",
                     CORRECTION: "pinned successor with retained rejection and session lineage",
-                    RESEARCH: "owner researched disposition with evidence before another correction",
+                    RESEARCH: "owner scoped research receipt covering the exact family attempts, an accepted "
+                              "research dispatch and immutable evidence before another correction",
                     RECOVERY: "bound reconciliation proof; no fresh invocation",
                     CONDUCTOR: "succeeded conductor decision and its Releases record",
                     DELIVERY: "active consumption receipt or verified predecessor rollback",
@@ -502,6 +503,160 @@ def needs_research(intents: list, family: str, evidence_sha256: str) -> bool:
     return len(prior) >= 1
 
 
+# ---- scoped research completion (SPEC "Scoped research completion and evidence-repair delivery") --
+# A research hold is released ONLY by an explicit owner receipt naming this exact intent, policy and
+# family, the COMPLETE failed attempt set the hold was raised on, the Portfolio investigation holding
+# those jobs, the resolved and accepted existing research dispatch (bound run and manifest) and
+# immutable evidence references. A coarse `researched` disposition of a same-reason row is evidence
+# that the owner looked, never approval for these attempts. The receipt is not an operation
+# acceptance, a repair verdict or a promotion.
+RESEARCH_RECEIPT_SCHEMA = "urn:zeus:continuation-research-receipt:1"
+RECEIPT_FIELDS = {"schema", "intent_id", "policy_id", "policy_sha256", "family", "attempts", "investigation",
+                  "dispatch", "evidence_refs"}
+RECEIPT_ATTEMPT_FIELDS = {"job", "evidence_sha256", "inspection"}
+RECEIPT_DISPATCH_FIELDS = {"program", "run_id", "manifest_sha256", "snapshot_sha256"}
+RECEIPT_AUTHORITY = ("owner scoped research completion for one continuation intent: not an operation "
+                     "acceptance, a repair verdict, an incident resolution or a promotion")
+MAX_RECEIPT_ATTEMPTS, MAX_RECEIPT_REFS = 32, 16
+EVIDENCE_REF = re.compile(r"^sha256:[0-9a-f]{64}$")
+INVESTIGATION_REF = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$")
+RESEARCH_ACCEPTED = "accepted"
+
+
+def _receipt(condition, field: str) -> None:
+    refuse(condition, "research_receipt_invalid", "operator", field)
+
+
+def validate_research_receipt(document) -> dict:
+    """Strict owner receipt; returns the canonical copy (attempts sorted by job). Unknown or missing
+    fields, a non content-addressed evidence reference or a duplicate attempt are refused."""
+    _receipt(isinstance(document, dict) and set(document) == RECEIPT_FIELDS, "root")
+    _receipt(document["schema"] == RESEARCH_RECEIPT_SCHEMA, "schema")
+    _receipt(type(document["intent_id"]) is str and SHA256.fullmatch(document["intent_id"]) is not None, "intent_id")
+    _receipt(type(document["policy_id"]) is str and TOKEN.fullmatch(document["policy_id"]) is not None, "policy_id")
+    _receipt(type(document["policy_sha256"]) is str and SHA256.fullmatch(document["policy_sha256"]) is not None,
+             "policy_sha256")
+    _receipt(type(document["family"]) is str and TOKEN.fullmatch(document["family"]) is not None, "family")
+    attempts = document["attempts"]
+    _receipt(isinstance(attempts, list) and 0 < len(attempts) <= MAX_RECEIPT_ATTEMPTS, "attempts")
+    for attempt in attempts:
+        _receipt(isinstance(attempt, dict) and set(attempt) == RECEIPT_ATTEMPT_FIELDS, "attempts[]")
+        _receipt(type(attempt["job"]) is str and TOKEN.fullmatch(attempt["job"]) is not None, "attempts[].job")
+        _receipt(type(attempt["evidence_sha256"]) is str and SHA256.fullmatch(attempt["evidence_sha256"]) is not None,
+                 "attempts[].evidence_sha256")
+        _receipt(attempt["inspection"] is None or (type(attempt["inspection"]) is str
+                                                   and TOKEN.fullmatch(attempt["inspection"]) is not None),
+                 "attempts[].inspection")
+    _receipt(len({a["job"] for a in attempts}) == len(attempts), "attempts[].job")
+    _receipt(type(document["investigation"]) is str and INVESTIGATION_REF.fullmatch(document["investigation"]),
+             "investigation")
+    dispatch = document["dispatch"]
+    _receipt(isinstance(dispatch, dict) and set(dispatch) == RECEIPT_DISPATCH_FIELDS, "dispatch")
+    _receipt(type(dispatch["program"]) is str and TOKEN.fullmatch(dispatch["program"]) is not None, "dispatch.program")
+    _receipt(type(dispatch["run_id"]) is str and TOKEN.fullmatch(dispatch["run_id"]) is not None, "dispatch.run_id")
+    for key in ("manifest_sha256", "snapshot_sha256"):
+        _receipt(type(dispatch[key]) is str and SHA256.fullmatch(dispatch[key]) is not None, "dispatch." + key)
+    refs = document["evidence_refs"]
+    _receipt(isinstance(refs, list) and 0 < len(refs) <= MAX_RECEIPT_REFS and len(set(refs)) == len(refs)
+             and all(type(ref) is str and EVIDENCE_REF.fullmatch(ref) for ref in refs), "evidence_refs")
+    return {"schema": RESEARCH_RECEIPT_SCHEMA, "intent_id": document["intent_id"], "policy_id": document["policy_id"],
+            "policy_sha256": document["policy_sha256"], "family": document["family"],
+            "attempts": sorted(({k: a[k] for k in sorted(RECEIPT_ATTEMPT_FIELDS)} for a in attempts),
+                               key=lambda a: a["job"]),
+            "investigation": document["investigation"],
+            "dispatch": {k: dispatch[k] for k in sorted(RECEIPT_DISPATCH_FIELDS)}, "evidence_refs": sorted(refs)}
+
+
+def research_attempts(intents: list, research: dict) -> list:
+    """The COMPLETE failed attempt set a research intent holds: the family's distinct failure
+    observations of the same policy since its last completed research (the rows `prior_failures`
+    counted when the hold was raised), plus the research intent's own observation. Derived from the
+    durable rows only, so a replay, a restart and a second controller derive the same set."""
+    mark = (str(research.get("created_at")), research["id"])
+    rows = sorted((row for row in intents if row.get("family") == research.get("family")
+                   and row.get("policy_id") == research.get("policy_id")
+                   and (str(row.get("created_at")), row["id"]) < mark),
+                  key=lambda r: (str(r.get("created_at")), r["id"]))
+    counted: set = set()
+    for row in rows:
+        if row["route"] == RESEARCH and row["state"] == COMPLETED:
+            counted = set()
+        elif row["route"] in FAILURE_ROUTES and row["state"] != REFUSED:
+            counted.add((row["origin_job"], row["evidence_sha256"]))
+    counted.add((research["origin_job"], research["evidence_sha256"]))
+    return [{"job": job, "evidence_sha256": sha} for job, sha in sorted(counted)]
+
+
+def observed_attempt(job: dict, evidence: dict) -> dict:
+    """What the lane evidence of one attempt shows NOW: its decisive evidence digest under the
+    route it classifies to, and the inspection its owner handoff names (None when it has none)."""
+    route = classify(job, evidence).get("route")
+    handoff = (evidence.get("operation") or {}).get("owner_handoff") or {}
+    inspection = (handoff.get("inspection") or {}).get("id") if isinstance(handoff, dict) else None
+    return {"evidence_sha256": evidence_digest(job, evidence, route) if route in FAILURE_ROUTES else None,
+            "inspection": inspection if type(inspection) is str else None}
+
+
+def check_research_receipt(receipt: dict, *, intent, attempts: list, policy, jobs: dict, observed: dict,
+                           investigation, dispatch, run_result) -> None:
+    """Every binding of one owner receipt against authoritative reads; the first gap refuses by name.
+
+    `intent` is the stored research intent, `attempts` its current `research_attempts`, `policy` the
+    registered policy row, `jobs` the Fleet rows of the attempts, `observed` job -> `observed_attempt`
+    from the lane (absent: unread), `investigation` the Portfolio row, `dispatch` the research
+    dispatch row keyed by that investigation and `run_result` the existing `council_result` over its
+    bound run row. Unknown, unavailable, partial, foreign or stale evidence never approves."""
+    research = ROUTE_OWNERS[RESEARCH]
+    refuse(isinstance(intent, dict), "research_intent_unknown", "operator", "intent_id")
+    refuse(isinstance(policy, dict) and intent.get("policy_id") == receipt["policy_id"] == policy.get("id")
+           and receipt["policy_sha256"] == intent.get("policy_sha256") == policy.get("policy_sha256"),
+           "research_policy_foreign", "operator", "policy")
+    refuse(intent.get("route") == RESEARCH, "research_intent_wrong", "operator", "intent_id")
+    refuse(intent.get("state") == RESEARCH_REQUIRED, "research_intent_not_held", "operator", "intent_id")
+    refuse(receipt["family"] == intent.get("family"), "research_family_mismatch", "operator", "family")
+    claimed = {(a["job"], a["evidence_sha256"]) for a in receipt["attempts"]}
+    current = {(a["job"], a["evidence_sha256"]) for a in attempts}
+    refuse(not claimed < current, "research_coverage_partial", "operator", "attempts")
+    refuse(claimed == current, "research_attempts_changed", "operator", "attempts")
+    for attempt in receipt["attempts"]:
+        seen = observed.get(attempt["job"])
+        refuse(isinstance(jobs.get(attempt["job"]), dict) and isinstance(seen, dict), "research_attempt_unavailable",
+               "operator", "attempts[].job")
+        refuse(seen["evidence_sha256"] == attempt["evidence_sha256"], "research_attempt_changed", "operator",
+               "attempts[].evidence_sha256")
+        refuse(seen["inspection"] == attempt["inspection"], "research_inspection_mismatch", "operator",
+               "attempts[].inspection")
+    members = [a["job"] for a in receipt["attempts"]]
+    refuse(isinstance(investigation, dict), "research_investigation_unknown", research, "investigation")
+    refuse(investigation.get("id") == receipt["investigation"] and investigation.get("kind", "failure_family")
+           == "failure_family", "research_investigation_mismatch", research, "investigation")
+    refuse(set(members) <= set(investigation.get("job_ids") or [])
+           and all(jobs[job].get("status") == investigation.get("family_status")
+                   and jobs[job].get("reason_code") == investigation.get("reason_code") for job in members),
+           "research_investigation_membership", research, "investigation")
+    refuse(isinstance(dispatch, dict), "research_dispatch_unknown", research, "dispatch")
+    bound = receipt["dispatch"]
+    refuse(dispatch.get("investigation") == receipt["investigation"] and dispatch.get("kind", "failure_family")
+           == "failure_family" and all(dispatch.get(key) == bound[key] for key in RECEIPT_DISPATCH_FIELDS),
+           "research_dispatch_mismatch", research, "dispatch")
+    refuse(dispatch.get("state") == "resolved", "research_unfinished", research, "dispatch")
+    refuse(dispatch.get("result") == RESEARCH_ACCEPTED and (run_result or {}).get("result") == RESEARCH_ACCEPTED,
+           "research_not_accepted", research, "dispatch")
+    # The dispatch snapshot names at most its job sample; a member outside it is unverifiable here.
+    refuse(set(members) <= set(dispatch.get("job_ids") or []), "research_scope_unverified", research, "dispatch")
+
+
+def receipt_view(row: dict) -> dict:
+    """Bounded projection of one stored receipt: what it covers, never who typed what."""
+    receipt = row.get("receipt") or {}
+    return {"intent_id": row.get("id"), "policy_id": receipt.get("policy_id"), "family": receipt.get("family"),
+            "covered_jobs": [a.get("job") for a in receipt.get("attempts") or []],
+            "inspections": [a.get("inspection") for a in receipt.get("attempts") or []],
+            "investigation": receipt.get("investigation"), "dispatch": receipt.get("dispatch"),
+            "evidence_refs": list(receipt.get("evidence_refs") or []), "receipt_sha256": row.get("receipt_sha256"),
+            "accepted_at": row.get("accepted_at"), "authority": RECEIPT_AUTHORITY}
+
+
 # ---- fair selection -----------------------------------------------------------------------------
 def blocked_families(intents: list) -> dict:
     """family -> the reason its lineage is held. Only the family is held; others stay selectable."""
@@ -646,7 +801,8 @@ def next_action(row: dict) -> str:
                 DELIVERY: "owner registers a host delivery plan for the queued release on the policy target",
                 NEXT_ITEM: "approved backlog selects the next item"}.get(route, "owner action required")
     if state == RESEARCH_REQUIRED:
-        return "existing portfolio investigation must record a researched disposition with evidence"
+        return ("owner submits a scoped research receipt (zeus continuation research-accept) for this exact "
+                "intent and attempt set; a coarse disposition alone never releases the hold")
     if state == RECOVERY_REQUIRED:
         return "reconcile through ExecutionRecovery; no fresh invocation on uncertainty"
     if state == PAUSED:
@@ -669,5 +825,6 @@ def view(row: dict) -> dict:
                        if isinstance(row.get("launch"), dict) else None),
             "delivery_binding": (delivery_tuple(row["delivery_binding"])
                                  if isinstance(row.get("delivery_binding"), dict) else None),
+            "research_receipt": row.get("research_receipt"),
             "next_action": next_action(row), "completion": ROUTE_COMPLETION.get(row["route"]),
             "version": row.get("version"), "created_at": row.get("created_at"), "updated_at": row.get("updated_at")}

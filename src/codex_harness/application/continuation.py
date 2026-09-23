@@ -1,9 +1,10 @@
 """Durable conductor continuation over the existing Fleet, lanes and owners (INV-CONTINUATION-001).
 
-A thin coordinator, not a second executor, scheduler, reviewer or release authority. It owns three
+A thin coordinator, not a second executor, scheduler, reviewer or release authority. It owns four
 buckets in the Fleet control store - `continuation_policies` (one registered Git-pinned owner
-policy per id), `continuation_intents` (one durable intent per routed observation) and
-`continuation_progress` (one selection-progress row per policy: attempts only) - and one in
+policy per id), `continuation_intents` (one durable intent per routed observation),
+`continuation_progress` (one selection-progress row per policy: attempts only) and
+`continuation_research_receipts` (one immutable owner receipt per research intent) - and one in
 each lane store, `continuation_bindings` (the trusted document a lane Operation claim attaches to
 its assignment). Everything else is reached through its existing owner:
 
@@ -16,7 +17,9 @@ its assignment). Everything else is reached through its existing owner:
   Releases/ReleaseQueue records it writes are read back.
 * HostDelivery and the approved backlog stay the owners of delivery and of the next item; the
   controller records the handoff and observes their durable result.
-* The existing Portfolio investigation is the research owner after two distinct similar failures.
+* The existing Portfolio investigation and research dispatch are the research owners after two
+  distinct similar failures; only the owner's scoped receipt (`accept_research`) for the exact
+  intent and attempt set releases that hold.
 
 One tick is a few short store transactions with every external effect strictly between them: no
 transaction is open across a lane store, Git, a process or the Fleet's own transaction. Each effect
@@ -70,6 +73,7 @@ from codex_harness.domain.continuation import (
     RECOVERY_REQUIRED,
     REFUSED,
     RESEARCH,
+    RESEARCH_RECEIPT_SCHEMA,
     RESEARCH_REQUIRED,
     RESUME,
     RETURNED,
@@ -83,6 +87,7 @@ from codex_harness.domain.continuation import (
     bind_delivery,
     blocked_families,
     check_authorization,
+    check_research_receipt,
     check_scope,
     classify,
     delivery_tuple,
@@ -94,20 +99,25 @@ from codex_harness.domain.continuation import (
     is_member,
     launch_id,
     needs_research,
+    observed_attempt,
     owners,
     policy_digest,
     progress_order,
+    receipt_view,
     record_attempt,
     refuse,
+    research_attempts,
     successor_id,
     successor_manifest,
     transition,
     validate_binding,
     validate_policy,
+    validate_research_receipt,
     view,
 )
 from codex_harness.domain.fleet import UNIT_CONDUCTOR, FleetRefused, held_units
-from codex_harness.domain.model import ContractError, utcnow
+from codex_harness.domain.model import ContractError, digest, utcnow
+from codex_harness.domain.research_program import council_result
 
 BUCKET_POLICIES = "continuation_policies"
 BUCKET_INTENTS = "continuation_intents"
@@ -115,7 +125,10 @@ BUCKET_PROGRESS = "continuation_progress"
 LANE_BINDINGS = "continuation_bindings"
 FLEET_JOBS = "fleet_jobs"
 FLEET_UNITS = "fleet_units"
+BUCKET_RESEARCH_RECEIPTS = "continuation_research_receipts"
 INVESTIGATIONS = "portfolio_investigations"
+RESEARCH_DISPATCHES = "research_investigation_dispatches"
+RESEARCH_RUNS = "autonomous_runs"
 EVENT_TRANSITION = "operations.continuation_transition"
 EVENT_BLOCKED = "operations.continuation_blocked"
 TERMINAL_JOBS = frozenset({"accepted", "rejected", "failed", "exhausted", "unknown"})
@@ -235,11 +248,17 @@ class Continuation:
     `start(lane_id, job, launch_id, token)` (returns once the guardian is spawned, never when the
     decision is made) and `poll(lane_id, launch_id) -> {state, owned, exit_code, cleanup_confirmed,
     proof}` with a state of `domain.continuation.LAUNCH_STATES`. Capacity is never the port's: the
-    Fleet (sharing this control store) reserves and settles the execution unit."""
+    Fleet (sharing this control store) reserves and settles the execution unit.
 
-    def __init__(self, store, fleet=None, lanes=None, conductor=None, validate=None, observer=None, clock=utcnow):
+    `evidence` is the research evidence port: `verify(ref)` reads the actual bounded bytes of one
+    content-addressed reference from the trusted configured artifact store and checks their digest,
+    or raises `ContinuationRefused` with a safe reason code. None: no research receipt is accepted or
+    consumed (`research_evidence_unverified`)."""
+
+    def __init__(self, store, fleet=None, lanes=None, conductor=None, validate=None, observer=None, clock=utcnow,
+                 evidence=None):
         self.store, self.fleet, self.lanes, self.conductor = store, fleet, lanes, conductor
-        self.validate, self.observer, self.clock = validate, observer, clock
+        self.validate, self.observer, self.clock, self.evidence = validate, observer, clock, evidence
 
     # ----- registry -----------------------------------------------------------------------
     def register(self, document, pin: dict) -> dict:
@@ -264,10 +283,16 @@ class Continuation:
         with self.store.transaction() as tx:
             policies = tx.scan(BUCKET_POLICIES)
             intents = tx.scan(BUCKET_INTENTS)
+            receipts = tx.scan(BUCKET_RESEARCH_RECEIPTS)
         if policy_id is not None:
             policies = [row for row in policies if row["id"] == policy_id]
             intents = [row for row in intents if row.get("policy_id") == policy_id]
-        views = [view(row) for row in sorted(intents, key=lambda r: (str(r.get("created_at")), r["id"]))]
+        # A research intent shows the exact attempt set an owner receipt must cover, and the stored
+        # receipt (covered jobs, inspections, dispatch, evidence) once the owner recorded one.
+        receipts = {row["id"]: receipt_view(row) for row in receipts}
+        views = [{**view(row), "attempts": research_attempts(intents, row), "receipt": receipts.get(row["id"])}
+                 if row["route"] == RESEARCH else view(row)
+                 for row in sorted(intents, key=lambda r: (str(r.get("created_at")), r["id"]))]
         counts: dict = {}
         for row in views:
             counts[row["state"]] = counts.get(row["state"], 0) + 1
@@ -276,6 +301,92 @@ class Continuation:
                               "pin": row["pin"]} for row in policies],
                 "intents": views[-200:], "truncated": len(views) > 200, "counts": counts,
                 "held_families": blocked_families(intents)}
+
+    # ----- scoped research completion (owner receipt) -------------------------------------
+    def accept_research(self, document) -> dict:
+        """Record the owner's scoped research receipt for one `research_required` intent.
+
+        Every binding is verified against authoritative reads first (`check_research_receipt`): the
+        exact policy, intent and family, the COMPLETE current attempt set, each attempt's lane
+        evidence digest and inspection, the Portfolio investigation holding those jobs and the
+        resolved existing research dispatch whose bound run row is accepted. Stored once and never
+        edited: the identical receipt replays (`cached`), any other for the same intent is
+        `research_receipt_conflict`. It moves no intent: the next tick consumes it after verifying
+        it again, so a restart or a second controller completes the hold exactly once."""
+        receipt = validate_research_receipt(document)
+        facts = self._research_facts(receipt)
+        stored = facts.pop("stored")
+        if stored is not None:
+            refuse(stored.get("receipt") == receipt, "research_receipt_conflict", "operator", "intent_id")
+            return self._receipt_result(stored, cached=True)
+        if isinstance(facts["intent"], dict) and facts["intent"].get("state") == RESEARCH_REQUIRED:
+            facts["observed"] = self._observe_attempts(facts["jobs"])
+        check_research_receipt(receipt, **facts)
+        self._verify_evidence(receipt)
+        now = self.clock()
+        with self.store.transaction() as tx:
+            old = tx.get(BUCKET_RESEARCH_RECEIPTS, receipt["intent_id"])
+            if old is not None:
+                refuse(old.get("receipt") == receipt, "research_receipt_conflict", "operator", "intent_id")
+                return self._receipt_result(old, cached=True)
+            # Nothing moved between the verification and this write: same intent version, same set.
+            intent = tx.get(BUCKET_INTENTS, receipt["intent_id"])
+            refuse(isinstance(intent, dict) and intent.get("version") == facts["intent"].get("version")
+                   and intent.get("state") == RESEARCH_REQUIRED, "research_intent_changed", "operator", "intent_id")
+            intents = [row for row in tx.scan(BUCKET_INTENTS) if row.get("policy_id") == receipt["policy_id"]]
+            refuse(research_attempts(intents, intent) == facts["attempts"], "research_attempts_changed", "operator",
+                   "attempts")
+            row = {"id": receipt["intent_id"], "schema": RESEARCH_RECEIPT_SCHEMA, "receipt": receipt,
+                   "receipt_sha256": digest(receipt), "accepted_at": now, "recorded_by": "owner"}
+            tx.put(BUCKET_RESEARCH_RECEIPTS, row["id"], row)
+        return self._receipt_result(row, cached=False)
+
+    @staticmethod
+    def _receipt_result(row: dict, cached: bool) -> dict:
+        return {"accepted": True, "cached": cached, **receipt_view(row)}
+
+    def _research_facts(self, receipt: dict) -> dict:
+        """The authoritative reads one receipt is checked against: control-store rows in ONE short
+        transaction, then each attempt's lane evidence outside it. A lane or store failure raises:
+        an unread attempt never approves."""
+        with self.store.transaction() as tx:
+            policy = tx.get(BUCKET_POLICIES, receipt["policy_id"])
+            intent = tx.get(BUCKET_INTENTS, receipt["intent_id"])
+            intents = [row for row in tx.scan(BUCKET_INTENTS) if row.get("policy_id") == receipt["policy_id"]]
+            stored = tx.get(BUCKET_RESEARCH_RECEIPTS, receipt["intent_id"])
+            investigation = tx.get(INVESTIGATIONS, receipt["investigation"])
+            dispatch = tx.get(RESEARCH_DISPATCHES, receipt["investigation"])
+            run_id = (dispatch or {}).get("run_id") if isinstance(dispatch, dict) else None
+            run = tx.get(RESEARCH_RUNS, run_id) if type(run_id) is str else None
+            jobs = {a["job"]: tx.get(FLEET_JOBS, a["job"]) for a in receipt["attempts"]}
+        held = isinstance(intent, dict) and intent.get("route") == RESEARCH
+        run_result = (council_result(run_id, dispatch.get("manifest_sha256"), run) if type(run_id) is str
+                      else {"result": "unknown", "reason_code": "dispatch_not_started", "row_status": None})
+        return {"stored": stored, "intent": intent, "attempts": research_attempts(intents, intent) if held else [],
+                "policy": policy, "jobs": jobs, "observed": {}, "investigation": investigation,
+                "dispatch": dispatch, "run_result": run_result}
+
+    def _verify_evidence(self, receipt: dict) -> None:
+        """Every evidence ref's actual bytes, read now through the trusted store and digest checked,
+        outside any store transaction. Integrity holds at this observed read only: acceptance checks
+        it, and each tick checks it again before consuming the receipt (a cached acceptance is
+        history, never a substitute). A missing verifier or any port failure refuses by code."""
+        refuse(self.evidence is not None, "research_evidence_unverified", "operator", "evidence_refs")
+        for ref in receipt["evidence_refs"]:
+            try:
+                self.evidence.verify(ref)
+            except ContinuationRefused:
+                raise
+            except Exception:
+                # A port fault never releases; its raw message may carry a path and is not kept.
+                raise ContinuationRefused("research_evidence_unreadable", ROUTE_OWNERS[RESEARCH],
+                                          "evidence_refs") from None
+
+    def _observe_attempts(self, jobs: dict) -> dict:
+        """Each attempt's lane evidence now, one short lane transaction each; a failure raises."""
+        refuse(self.lanes is not None, "lanes_unconfigured", "operator", "lanes")
+        return {job_id: observed_attempt(job, self.lanes(job["lane"]).read(job))
+                for job_id, job in jobs.items() if isinstance(job, dict)}
 
     def unresolved(self, policy_id: str, owned=()) -> list:
         """Conductor work of this policy no guardian of THIS process supervises: dispatched launches
@@ -860,15 +971,27 @@ class Continuation:
         return self._advance_delivery(intent, self.lanes(intent["lane"]).read(job, ctx["policy"]["delivery_target"]))
 
     def _resume_observe_research(self, ctx, intent, job):
+        """Only the owner's stored scoped receipt for THIS intent releases the hold, and only after
+        it is verified again against the current rows and lane evidence (a changed attempt, a new
+        failure, a withdrawn dispatch result, an unreadable lane or evidence bytes that are now
+        missing, unreadable, tampered or oversized keep the family held). A coarse
+        `researched` disposition intersecting the family is evidence, never approval: it is not read
+        here. The stored receipt is never edited; the intent's compare-and-swap completes it once."""
         with self.store.transaction() as tx:
-            investigations = tx.scan(INVESTIGATIONS)
-        members = set(intent.get("family_jobs") or [])
-        researched = [row for row in investigations if row.get("state") == "researched"
-                      and members & set(row.get("job_ids") or []) and row.get("evidence_refs")]
-        if not researched:
+            stored = tx.get(BUCKET_RESEARCH_RECEIPTS, intent["id"])
+        if stored is None:
             return None
-        moved = self._move(intent, COMPLETED, reason_code="researched",
-                           evidence_refs=sorted({ref for row in researched for ref in row["evidence_refs"]}))
+        receipt = stored.get("receipt")
+        refuse(isinstance(receipt, dict) and receipt.get("intent_id") == intent["id"]
+               and receipt.get("policy_id") == ctx["policy"]["id"] and receipt.get("policy_sha256") == ctx["sha"],
+               "research_policy_foreign", "operator", "policy")
+        facts = self._research_facts(receipt)
+        facts.pop("stored")
+        facts["observed"] = self._observe_attempts(facts["jobs"])
+        check_research_receipt(receipt, **facts)
+        self._verify_evidence(receipt)
+        moved = self._move(intent, COMPLETED, reason_code="research_receipt_accepted",
+                           evidence_refs=list(receipt["evidence_refs"]), research_receipt=stored["receipt_sha256"])
         return {"subject": moved["id"], "effect": "research_resolved", "route": RESEARCH}
 
     def _resume_await_backlog(self, ctx, intent, job):
@@ -972,4 +1095,5 @@ def _code(reason):
     return cleaned if cleaned[:1].isalpha() else None
 
 
-__all__ = ["BUCKET_INTENTS", "BUCKET_POLICIES", "BUCKET_PROGRESS", "LANE_BINDINGS", "Continuation", "IntentChanged", "LaneEvidence"]
+__all__ = ["BUCKET_INTENTS", "BUCKET_POLICIES", "BUCKET_PROGRESS", "BUCKET_RESEARCH_RECEIPTS", "LANE_BINDINGS",
+           "Continuation", "IntentChanged", "LaneEvidence"]

@@ -2503,8 +2503,8 @@ lane store (`continuation_bindings`). The fixed routing table, over terminal Fle
 evidence read outside every transaction: `failed/evidence_gate_refused` with a known handoff ->
 `evidence_repair` successor (candidate preserved, fresh evidence handoff, never a resumed session);
 `rejected` with a succeeded `review_lead` decision, or a conductor rejection -> `correction`
-successor; the second distinct similar failure of a family -> `research` (held until the existing
-Portfolio investigation holding its jobs is `researched` with evidence; replays count nothing);
+successor; the second distinct similar failure of a family -> `research` (held until the owner's
+scoped research receipt for that exact intent is verified, below; replays count nothing);
 `unknown`, an unknown-effect failure reason, an unconfirmed/pending termination marker or a
 conductor launch that ended with its row not settled -> `recovery` for ExecutionRecovery, never a
 fresh call; `accepted` ->
@@ -2514,6 +2514,59 @@ HostDelivery plan on the policy target (`active` completes, `rolled_back`/`faile
 family, the acceptance stays); a delivered item -> `next_item` for the approved backlog. Missing
 evidence is a named refusal, never a guess; `max_corrections` successors per family, then
 `correction_budget_exhausted`.
+
+Scoped research completion (SPEC "Scoped research completion and evidence-repair delivery"): a
+`research_required` intent leaves its state ONLY through an explicit owner receipt
+(`urn:zeus:continuation-research-receipt:1`, `zeus continuation research-accept --file`,
+`Continuation.accept_research`) stored once in the control store bucket
+`continuation_research_receipts`, keyed by the intent id. The strict receipt names the exact
+`intent_id`, `policy_id` and `policy_sha256`, the `family`, the COMPLETE failed attempt set
+(`attempts[] {job, evidence_sha256, inspection}`: the family's distinct failure observations of that
+policy since its last completed research plus the research intent's own,
+`domain.continuation.research_attempts`, shown as `attempts` on the research intent in `status`), the
+Portfolio `investigation` holding those jobs, the existing research dispatch binding
+(`dispatch {program, run_id, manifest_sha256, snapshot_sha256}`) and 1-16 content-addressed
+`evidence_refs` (`sha256:<64 hex>`). It is verified against authoritative reads
+(`domain.continuation.check_research_receipt`): the registered policy row and the intent's own
+policy digest; the intent route/state/family; the attempt set equal to the current one (a subset is
+`research_coverage_partial`, anything else `research_attempts_changed`); each attempt's lane evidence
+re-read now, its decisive digest and handoff inspection equal (`research_attempt_changed`,
+`research_inspection_mismatch`, `research_attempt_unavailable`); every attempt job a member of the
+failure-family investigation with its status and reason code; the dispatch keyed by that
+investigation with the same binding, `resolved`, result `accepted` AND `council_result` over its
+bound `autonomous_runs` row accepted (`research_unfinished`, `research_not_accepted`,
+`research_dispatch_unknown`/`_mismatch`), every attempt job inside its job sample
+(`research_scope_unverified`). The identical receipt replays (`cached`), another receipt for the
+same intent is `research_receipt_conflict`; the receipt is never edited. Acceptance moves no intent:
+a tick (any controller, after a restart) re-verifies the stored receipt, including fresh lane reads,
+and completes the intent by compare-and-swap (`research_receipt_accepted`, evidence refs and
+`research_receipt` digest on the intent); the job is then routed again through the unchanged table,
+so an evidence-refused attempt gets exactly one `evidence_repair` successor under the existing
+`max_corrections`. An unreadable lane or store, a changed attempt, a withdrawn result or a foreign
+policy keeps the family held (skipped by name or `unavailable`). A later failure opens a new research
+intent whose attempt set no old receipt covers. Two families under one coarse same-reason
+investigation are released only by their own receipts. A Portfolio `researched`/`deferred`
+disposition is evidence that the owner looked and is not read for release; no Portfolio row,
+dispatch row, Fleet job or earlier intent is written. The receipt is not an operation acceptance, a
+repair verdict or a promotion; nothing here mints one for a worker.
+
+Research evidence availability (SPEC "Scoped research resubmission: actual artifact availability"):
+sha256 syntax is not availability. The owner of research receipt evidence is the control host's
+general artifact store `<HARNESS_RUNTIME_DIR>/artifacts` (`FileArtifacts`, where the research council
+and the executor write), reached only through `adapters.continuation.ResearchEvidence` (the
+`Continuation(evidence=...)` port) built by `research_evidence()` in BOTH production paths:
+`accept_research` (`zeus continuation research-accept`) and `coordinator`/`tick_policy`/
+`ContinuationPass` (tick and Fleet runner). No caller-supplied root, candidate path, search, network
+fetch or model assertion; the root is never created on a read. Each ref's actual bytes are read with
+the `FileArtifacts.text` bound (1 MiB) and their SHA-256 checked, outside any store transaction, after
+`check_research_receipt` and before the receipt write, and again on every tick before the stored
+receipt completes the intent; the existing intent version and attempt-set checks at commit are
+unchanged. Refusals are fixed codes owned by `portfolio_research`: `research_evidence_missing`,
+`_unreadable`, `_oversized`, `_corrupt` (digest mismatch), `_invalid` (not UTF-8 text); an absent
+port is `research_evidence_unverified` (operator). No path, raw error or content is kept. A cached
+acceptance is history, never a substitute for the consumption read; an absent file is never an
+empty report. Integrity holds at the observed read time only, not as a lasting availability
+guarantee: a later tick rechecks before any new hold-release effect.
 
 An intent id is `origin job + generation/attempt + decisive evidence digest + route`; a successor id is
 `cont-` plus 24 hex of it. Every external effect has a durable pre-effect state: `intended` (complete

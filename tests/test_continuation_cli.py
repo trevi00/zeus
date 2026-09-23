@@ -6,6 +6,7 @@ fixtures (no model, provider, Docker, PostgreSQL or network). Nothing here quali
 """
 from __future__ import annotations
 
+import hashlib
 import json
 from pathlib import Path
 from types import SimpleNamespace
@@ -259,3 +260,70 @@ def test_status_and_refusal_print_codes_only(tmp_path):
                        "error_type": "ContinuationRefused", "exit_code": 1}
     assert continuation_cli.refusal(RuntimeError("postgresql://secret"))["reason_code"] == "error"
     assert "postgresql" not in json.dumps(continuation_cli.refusal(RuntimeError("postgresql://secret")))
+
+
+def test_research_accept_reads_the_owner_file_and_stores_one_verified_receipt(tmp_path):
+    from test_continuation_research import held, receipt_for, receipts
+
+    args = parser().parse_args(["continuation", "research-accept", "--file", "r.json"])
+    assert args.continuation_command == "research-accept" and args.file == Path("r.json")
+    world = World(tmp_path)
+    root, successor, research, investigation, dispatch = held(world, tmp_path)
+    path = tmp_path / "receipt.json"
+    path.write_text(json.dumps(receipt_for(world, research, investigation, dispatch)), encoding="utf-8")
+    config = world.fleet.registered()["config"]
+    stored = adapter.accept_research(world.control, config, HOST, adapter.read_receipt(path), lanes=world.lanes,
+                                     evidence=world.evidence)
+    assert stored["accepted"] is True and stored["cached"] is False
+    assert stored["covered_jobs"] == sorted([root, successor]) and stored["intent_id"] == research["id"]
+    again = adapter.accept_research(world.control, config, HOST, adapter.read_receipt(path), lanes=world.lanes,
+                                    evidence=world.evidence)
+    assert again["cached"] is True and len(receipts(world)) == 1
+    # A malformed or unreadable file refuses by code before any store or lane access.
+    path.write_text("{not json " + str(tmp_path), encoding="utf-8")
+    for target in (path, tmp_path / "missing.json"):
+        with pytest.raises(dc.ContinuationRefused) as info:
+            adapter.read_receipt(target)
+        refusal = continuation_cli.refusal(info.value)
+        assert refusal["reason_code"] in {"research_receipt_invalid", "research_receipt_unreadable"}
+        assert str(tmp_path) not in json.dumps(refusal)
+
+
+def test_both_production_paths_read_research_evidence_from_the_configured_runtime_store(tmp_path, monkeypatch):
+    """No evidence port is injected: `accept_research`, `tick_policy` and `ContinuationPass` must
+    build their own over `<HARNESS_RUNTIME_DIR>/artifacts`, where the World's store also writes."""
+    from test_continuation_research import EVIDENCE, held, receipt_for, receipts
+
+    for name in ("HARNESS_RUNTIME_DIR", "ZEUS_RUNTIME_DIR"):
+        monkeypatch.setenv(name, str(tmp_path / "runtime"))
+    world = World(tmp_path)
+    repo, revision = policy_repository(world)
+    world.pin = {"revision": revision, "path": "ops/continuation.json", "lane": "a",
+                 "sha256": hashlib.sha256((repo / "ops" / "continuation.json").read_bytes()).hexdigest()}
+    root, successor, research, investigation, dispatch = held(world, tmp_path)
+    document = receipt_for(world, research, investigation, dispatch)
+    config = world.fleet.registered()["config"]
+    path = tmp_path / "runtime" / "artifacts" / (EVIDENCE[0].partition(":")[2] + ".txt")
+    body = path.read_bytes()
+    # Owner acceptance: the file is absent from the configured store, so nothing is stored.
+    path.unlink()
+    with pytest.raises(dc.ContinuationRefused) as info:
+        adapter.accept_research(world.control, config, HOST, document, lanes=world.lanes)
+    assert info.value.reason_code == "research_evidence_missing" and receipts(world) == {}
+    assert str(tmp_path) not in json.dumps(continuation_cli.refusal(info.value))
+    path.write_bytes(body)
+    assert adapter.accept_research(world.control, config, HOST, document, lanes=world.lanes)["cached"] is False
+    # Runtime consumption: tampered after acceptance, the production tick keeps the hold.
+    path.write_bytes(body + b"tampered")
+    ticked = adapter.tick_policy(world.control, config, HOST, "policy-1", lanes=world.lanes,
+                                 conductor=world.conductor, runtime=world.runtime)
+    assert {"subject": research["id"], "reason_code": "research_evidence_corrupt",
+            "next_owner": "portfolio_research"} in ticked["skipped"]
+    assert world.intents()[research["id"]]["state"] == dc.RESEARCH_REQUIRED and len(world.jobs()) == 2
+    # The runner pass holds the same configured store; once the bytes verify it releases once.
+    path.write_bytes(body)
+    runner = adapter.ContinuationPass(world.control, config, HOST, "policy-1", processes=world.conductor,
+                                      lanes=world.lanes, runtime=world.runtime)
+    assert runner.evidence.root.resolve() == (tmp_path / "runtime" / "artifacts").resolve()
+    assert {"subject": research["id"], "effect": "research_resolved", "route": dc.RESEARCH} in runner()["actions"]
+    assert world.intents()[research["id"]]["state"] == dc.COMPLETED and len(world.jobs()) == 3

@@ -1,6 +1,7 @@
-"""`zeus continuation register|tick|status|identity|conduct` (INV-CONTINUATION-001).
+"""`zeus continuation register|tick|status|identity|conduct|research-accept` (INV-CONTINUATION-001).
 
-`register`, `tick`, `status` and `identity` run against the Fleet control store; `conduct` is the
+`register`, `tick`, `status`, `identity` and `research-accept` (the owner's scoped research receipt,
+verified and stored once; it moves no intent) run against the Fleet control store; `conduct` is the
 lane-side child the controller launches (it is also the owner's manual command for one accepted
 operation). Refusals print a code and a type, never a manifest, a path, a DSN or a raw exception.
 """
@@ -31,6 +32,9 @@ def add_parser(commands) -> None:
     identity.add_argument("--lane", required=True)
     conduct = sub.add_parser("conduct", help="Lane side: the guarded conductor review of one accepted operation")
     conduct.add_argument("--file", type=Path, required=True, help="The operation's frozen manifest JSON")
+    research = sub.add_parser("research-accept", help="Owner: record one scoped research receipt "
+                              "(urn:zeus:continuation-research-receipt:1) for an exact research intent")
+    research.add_argument("--file", type=Path, required=True, help="The owner's receipt JSON")
 
 
 def _config(service) -> dict:
@@ -120,6 +124,10 @@ def execute(service, args) -> dict:
                 "session_archive_sha256": adapter.archive_identity(lane["runtime"]), "exit_code": 0}
     if command == "register":
         return {**adapter.register_policy(service.store, config, args.lane, args.revision, args.path), "exit_code": 0}
+    if command == "research-accept":
+        from codex_harness.adapters.configuration import settings
+        return {**adapter.accept_research(service.store, config, settings(), adapter.read_receipt(args.file)),
+                "exit_code": 0}
     from codex_harness.adapters.configuration import settings
     from codex_harness.bootstrap import build_observer
     observer = build_observer(service.store, "cli.continuation")
