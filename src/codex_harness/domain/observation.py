@@ -172,6 +172,29 @@ REGISTRY = {
     "operations.backlog_unavailable": {"plan_id": _S, "item_id": _S, "lane": _S, "error_type": _N,
                                        "deferrals": _I, "exhausted": _B},
     "operations.backlog_recovered": {"plan_id": _S, "item_id": _S, "lane": _S, "deferrals": _I},
+    # INV-HOST-DELIVERY-001: what one host delivery tick did. Plan, release, target and instance
+    # IDENTIFIERS, descriptor DIGESTS, fixed stage/outcome codes and counts only - never a PR title,
+    # a check log, a descriptor body, a host path, a command line or an exception message. Entering
+    # a stage is a scheduling fact; a repeated idle poll re-enters nothing and emits nothing.
+    "general.delivery_stage_entered": {"plan_id": _S, "release_id": _S, "target_id": _S,
+                                       "stage": _S, "previous_stage": _N},
+    # The evidence stages: how many REQUIRED checks were observed in each state for the intended
+    # head, and what the incumbent canary check answered. A count is not a verdict about content,
+    # and an unobserved check is missing, never a pass.
+    "development.delivery_check_observed": {"plan_id": _S, "release_id": _S, "stage": _S,
+                                            "check_state": _S, "required": _I, "missing": _I,
+                                            "pending": _I, "failed": _I, "canary_passed": _NB},
+    # The one operational fact that the host itself moved: which descriptor replaced which, and
+    # whether the launched instance's own startup receipt was accepted. `consumed` false is a
+    # switch that is NOT an activation.
+    "operations.delivery_switched": {"plan_id": _S, "target_id": _S, "descriptor_sha256": _S,
+                                     "previous_sha256": _N, "instance_id": _N, "consumed": _B},
+    # A rollback that was requested, what it restored and whether that restoration was VERIFIED by
+    # a fresh consumption receipt. A failed or unverified rollback is never reported as rolled back.
+    "operations.delivery_rollback": {"plan_id": _S, "target_id": _S, "descriptor_sha256": _N,
+                                     "restored": _B, "verified": _B, "error_type": _N},
+    "operations.delivery_blocked": {"plan_id": _S, "target_id": _S, "stage": _S, "outcome": _S,
+                                    "error_type": _N, "attempts": _I},
     "operations.alert_suppressed": {"kind": _S, "suppressed": _I},
     "operations.alert_pending": {"kind": _S, "channel": _N, "pending": _I},
     "operations.autonomous_stage": {"run_id": _S, "stage": _S, "state": _S},

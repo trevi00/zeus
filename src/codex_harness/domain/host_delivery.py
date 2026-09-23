@@ -1,0 +1,612 @@
+"""Owner-approved host delivery plans and their durable stage policy (INV-HOST-DELIVERY-001).
+
+A delivery plan is one owner-authored document (`urn:zeus:host-delivery:1`) that lives in Git and
+is read at an explicit commit. It names an EXISTING release candidate (release id, revision, tree,
+the incumbent policy hash it was evaluated under and the canonical repository), the named CI checks
+that must finish successfully for that exact head, the host target it activates and the descriptor
+that target must end up consuming. It is strict versioned JSON: no shell command, no argv, no
+source text, no path and no credential is ever accepted from a plan, and nothing in a plan is
+executed or interpreted as an instruction.
+
+What a target IS - its root, its state files, its service identity and its kind - is host
+configuration (`urn:zeus:host-delivery-targets:1`), registered separately by the owner. A plan may
+only NAME a registered target id, so a candidate can never select another scheduled task, another
+path or another policy for itself. The canary is the same: a plan names one incumbent fixed check
+id from `CANARY_CHECKS`, never executable text.
+
+Everything here is pure policy over dictionaries: no store, process, git, subprocess or provider
+access, and no value ever reaches an error message - only the field name does. Approval is not
+granted here either: this module can only RECOGNIZE the approval that `application.releases`
+already recorded, and a plan that claims a review, a check or an activation proves nothing.
+"""
+from __future__ import annotations
+
+import re
+
+from codex_harness.domain.model import ContractError, digest
+from codex_harness.domain.operation import safe_relative_path
+
+PLAN_SCHEMA = "urn:zeus:host-delivery:1"
+REGISTRY_SCHEMA = "urn:zeus:host-delivery-targets:1"
+DESCRIPTOR_SCHEMA = "urn:zeus:host-descriptor:1"
+RECEIPT_SCHEMA = "urn:zeus:host-startup-receipt:1"
+STATUS_SCHEMA = "urn:zeus:host-delivery-status:1"
+TICK_SCHEMA = "urn:zeus:host-delivery-tick:1"
+
+PLAN_FIELDS = {"schema", "plan_id", "release_id", "revision", "tree", "policy_hash", "repository",
+               "required_checks", "target_id", "expected_descriptor", "target_descriptor",
+               "canary_check_id", "ci_timeout_seconds", "consumption_timeout_seconds"}
+TARGET_DESCRIPTOR_FIELDS = {"revision", "worker_image", "profile_digest"}
+REGISTRY_FIELDS = {"schema", "targets"}
+TARGET_FIELDS = {"target_id", "kind", "root", "state_dir", "service"}
+DESCRIPTOR_FIELDS = ("schema", "target_id", "root", "revision", "worker_image", "profile_digest",
+                     "predecessor")
+RECEIPT_FIELDS = {"schema", "target_id", "instance_id", "pid", "started_at", "module_root",
+                  "descriptor_sha256", "revision", "worker_image", "profile_digest"}
+PIN_FIELDS = {"revision", "path", "sha256"}
+
+# Host target kinds this harness knows how to own. The Windows scheduled task is the current host's
+# real service; `process` is the owned-child-process target used on POSIX and in tests. Both carry
+# the identical descriptor, switch and startup-receipt contract.
+KIND_SCHEDULED_TASK = "windows_scheduled_task"
+KIND_PROCESS = "process"
+TARGET_KINDS = (KIND_SCHEDULED_TASK, KIND_PROCESS)
+
+# The incumbent fixed canary check ids. A plan selects one of these by id; the check itself lives in
+# the adapter and exercises the ACTUAL service contract of the target it was written for.
+CANARY_COLLECT = "collect_monitor_source"
+CANARY_FLEET = "fleet_worker_operation"
+CANARY_STARTUP = "startup_identity"
+CANARY_CHECKS = (CANARY_COLLECT, CANARY_FLEET, CANARY_STARTUP)
+
+# "the image or the profile does not change in this delivery", stated explicitly rather than left
+# out: an absent binding would be indistinguishable from an unknown one.
+UNCHANGED = "unchanged"
+
+MAX_REQUIRED_CHECKS = 16
+MAX_TARGETS = 16
+# Two distinct definite failures of one stage stop the delivery and hand it to the owner.
+MAX_STAGE_ATTEMPTS = 2
+MIN_CI_TIMEOUT, MAX_CI_TIMEOUT = 60, 6 * 3600
+MIN_CONSUMPTION_TIMEOUT, MAX_CONSUMPTION_TIMEOUT = 10, 900
+
+TOKEN = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$")
+REVISION = re.compile(r"^[0-9a-f]{40}$")
+SHA256 = re.compile(r"^[0-9a-f]{64}$")
+# A GitHub check or status context name as it is reported, and nothing that could be a command.
+CHECK_NAME = re.compile(r"^[A-Za-z0-9][A-Za-z0-9 ._/()#:-]{0,119}$")
+# `github:owner/repo` or `local:/path` as `adapters.git.GitWorkspace.target_identity` writes it.
+REPOSITORY = re.compile(r"^(github:[a-z0-9][a-z0-9-]{0,38}/[a-z0-9_.-]{1,100}|local:[^\s]{1,400})$")
+IMAGE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:/@-]{0,200}$")
+INSTANCE = re.compile(r"^[0-9a-f]{32}$")
+
+# The durable stage path of one delivery. Every stage before `active` is an open state a restart
+# must resume; a stage is entered by writing the durable intent BEFORE the external action it
+# names, so a lost response can only ever reconcile what already happened.
+REGISTERED = "registered"
+AWAITING_REVIEW = "awaiting_review"
+PUBLISHING = "publishing"
+AWAITING_CI = "awaiting_ci"
+MERGE_INTENDED = "merge_intended"
+MERGED = "merged"
+DRAIN_INTENDED = "drain_intended"
+SWITCHING = "switching"
+AWAITING_CONSUMPTION = "awaiting_consumption"
+ACTIVE = "active"
+# Explicit non-progress states. Each preserves the stage it left, the error type, the evidence and
+# the next action; none of them is ever rewritten into a success.
+BLOCKED = "blocked"
+ROLLING_BACK = "rolling_back"
+ROLLED_BACK = "rolled_back"
+FAILED = "failed"
+
+STAGE_ORDER = (REGISTERED, AWAITING_REVIEW, PUBLISHING, AWAITING_CI, MERGE_INTENDED, MERGED,
+               DRAIN_INTENDED, SWITCHING, AWAITING_CONSUMPTION, ACTIVE)
+TERMINAL_STAGES = frozenset({ACTIVE, ROLLED_BACK, FAILED})
+HALTED_STAGES = frozenset({BLOCKED, ROLLING_BACK, ROLLED_BACK, FAILED})
+# The stages a tick may no longer advance at all. `rolling_back` is deliberately NOT one of them:
+# a restoration is owed work, and a controller that stopped selecting it would leave the host on a
+# descriptor that failed its own canary.
+STOPPED_STAGES = frozenset({BLOCKED, ROLLED_BACK, FAILED})
+OPEN_STAGES = frozenset(STAGE_ORDER) - {ACTIVE}
+# The stages that have already changed something outside this store: a restart reconciles the
+# external identity before it is allowed to act again.
+EXTERNAL_STAGES = frozenset({PUBLISHING, AWAITING_CI, MERGE_INTENDED, MERGED, DRAIN_INTENDED,
+                             SWITCHING, AWAITING_CONSUMPTION, ROLLING_BACK})
+
+# One tick's outcome. `pending` is an external wait that released its lease, not a failure and not
+# a success; `unavailable` is an outage with its exception TYPE; `blocked` and `refused` are
+# definite and exit nonzero.
+OUTCOME_PROGRESSED = "progressed"
+OUTCOME_PENDING = "pending"
+OUTCOME_ACTIVE = "active"
+OUTCOME_IDLE = "idle"
+OUTCOME_BUSY = "controller_busy"
+OUTCOME_DISABLED = "disabled"
+OUTCOME_BLOCKED = "blocked"
+OUTCOME_REFUSED = "refused"
+OUTCOME_CONFLICT = "conflict"
+OUTCOME_UNAVAILABLE = "unavailable"
+OUTCOME_ROLLED_BACK = "rolled_back"
+OUTCOME_UNREGISTERED = "plan_unregistered"
+FAILED_OUTCOMES = frozenset({OUTCOME_BLOCKED, OUTCOME_REFUSED, OUTCOME_CONFLICT,
+                             OUTCOME_UNAVAILABLE, OUTCOME_UNREGISTERED})
+
+# CI states. Only every required check FINISHED SUCCESSFULLY for the intended head is a pass;
+# missing, queued, in progress, skipped, cancelled, neutral and failed are all not-a-pass, each
+# under its own code.
+CI_PASSED, CI_PENDING, CI_FAILED, CI_HEAD_CHANGED = "passed", "pending", "failed", "head_changed"
+
+# The structured transitions of this component (domain.observation REGISTRY): scheduling is
+# general, the evidence/check stages are development, and the switch, the rollback and every
+# operational block are operations.
+EVENT_STAGE = "general.delivery_stage_entered"
+EVENT_CHECK = "development.delivery_check_observed"
+EVENT_SWITCHED = "operations.delivery_switched"
+EVENT_ROLLBACK = "operations.delivery_rollback"
+EVENT_BLOCKED = "operations.delivery_blocked"
+
+AUTHORITY = ("host_delivery; approval remains the existing Releases lead+conductor record and the "
+             "ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an "
+             "atomically switched descriptor and a consumed startup identity - never a review "
+             "verdict, a semantic acceptance or a qualified live host")
+
+
+class DeliveryRefused(ContractError):
+    """Refused; the message carries a fixed reason code and at most a field name, never a value."""
+
+    def __init__(self, reason_code: str, field: str | None = None):
+        super().__init__("host delivery refused: " + reason_code + (" (" + field + ")" if field else ""))
+        self.reason_code, self.field = reason_code, field
+
+
+def _token(value) -> bool:
+    return type(value) is str and TOKEN.fullmatch(value) is not None
+
+
+def _hex(value, pattern) -> bool:
+    return type(value) is str and pattern.fullmatch(value) is not None
+
+
+def _fields(document, expected, name: str) -> None:
+    if not isinstance(document, dict):
+        raise DeliveryRefused("plan_invalid", name)
+    if set(document) != expected:
+        raise DeliveryRefused("plan_fields", name)
+
+
+def _bounded_int(value, low: int, high: int) -> bool:
+    # `bool` is refused here exactly as everywhere else: its type is bool, not int.
+    return type(value) is int and low <= value <= high
+
+
+def safe_error_type(value) -> str | None:
+    """An exception TYPE name and nothing else; any other text is `unknown` rather than relayed."""
+    if value is None:
+        return None
+    return value if _token(value) else "unknown"
+
+
+def validate_pin(pin) -> dict:
+    """The Git pin the plan itself was read from: a commit, a safe relative path, exact bytes."""
+    _fields(pin, PIN_FIELDS, "pin")
+    if not _hex(pin["revision"], REVISION):
+        raise DeliveryRefused("pin_invalid", "pin.revision")
+    if not safe_relative_path(pin["path"]):
+        raise DeliveryRefused("pin_invalid", "pin.path")
+    if not _hex(pin["sha256"], SHA256):
+        raise DeliveryRefused("pin_invalid", "pin.sha256")
+    return {key: pin[key] for key in sorted(PIN_FIELDS)}
+
+
+def _target_descriptor(document) -> dict:
+    """The candidate side of a descriptor: a clean host revision and the two immutable bindings,
+    each either an exact identity or the explicit word `unchanged`."""
+    _fields(document, TARGET_DESCRIPTOR_FIELDS, "target_descriptor")
+    if not _hex(document["revision"], REVISION):
+        raise DeliveryRefused("descriptor_invalid", "target_descriptor.revision")
+    image = document["worker_image"]
+    if image != UNCHANGED and not (type(image) is str and IMAGE.fullmatch(image) is not None):
+        raise DeliveryRefused("descriptor_invalid", "target_descriptor.worker_image")
+    profile = document["profile_digest"]
+    if profile != UNCHANGED and not _hex(profile, SHA256):
+        raise DeliveryRefused("descriptor_invalid", "target_descriptor.profile_digest")
+    return {key: document[key] for key in sorted(TARGET_DESCRIPTOR_FIELDS)}
+
+
+def validate_plan(document) -> dict:
+    """Strict validation of one owner-approved delivery plan; returns the canonical copy.
+
+    Unknown or missing fields, a malformed identity, an empty or oversized check list, a duplicate
+    check name, a canary id this harness does not implement and an out-of-range timeout are refused
+    before anything is stored. Nothing here contacts a release, a repository or a host: this says
+    only that the DOCUMENT is well formed.
+    """
+    if not isinstance(document, dict) or document.get("schema") != PLAN_SCHEMA:
+        raise DeliveryRefused("plan_schema")
+    _fields(document, PLAN_FIELDS, "root")
+    for key in ("plan_id", "release_id", "target_id"):
+        if not _token(document[key]):
+            raise DeliveryRefused("plan_invalid", key)
+    if not _hex(document["revision"], REVISION):
+        raise DeliveryRefused("plan_invalid", "revision")
+    for key in ("tree", "policy_hash"):
+        if not _hex(document[key], SHA256):
+            raise DeliveryRefused("plan_invalid", key)
+    repository = document["repository"]
+    if not (type(repository) is str and REPOSITORY.fullmatch(repository) is not None):
+        raise DeliveryRefused("plan_invalid", "repository")
+    checks = document["required_checks"]
+    if not (isinstance(checks, list) and 1 <= len(checks) <= MAX_REQUIRED_CHECKS
+            and all(type(c) is str and CHECK_NAME.fullmatch(c) is not None for c in checks)):
+        raise DeliveryRefused("plan_invalid", "required_checks")
+    if len(set(checks)) != len(checks):
+        raise DeliveryRefused("plan_duplicate", "required_checks")
+    expected = document["expected_descriptor"]
+    # `null` is the first activation of a target that has no descriptor yet; it is not a wildcard.
+    if expected is not None and not _hex(expected, SHA256):
+        raise DeliveryRefused("plan_invalid", "expected_descriptor")
+    if document["canary_check_id"] not in CANARY_CHECKS:
+        raise DeliveryRefused("plan_invalid", "canary_check_id")
+    if not _bounded_int(document["ci_timeout_seconds"], MIN_CI_TIMEOUT, MAX_CI_TIMEOUT):
+        raise DeliveryRefused("plan_invalid", "ci_timeout_seconds")
+    if not _bounded_int(document["consumption_timeout_seconds"], MIN_CONSUMPTION_TIMEOUT,
+                        MAX_CONSUMPTION_TIMEOUT):
+        raise DeliveryRefused("plan_invalid", "consumption_timeout_seconds")
+    return {"schema": PLAN_SCHEMA, "plan_id": document["plan_id"], "release_id": document["release_id"],
+            "revision": document["revision"], "tree": document["tree"],
+            "policy_hash": document["policy_hash"], "repository": repository,
+            "required_checks": list(checks), "target_id": document["target_id"],
+            "expected_descriptor": expected,
+            "target_descriptor": _target_descriptor(document["target_descriptor"]),
+            "canary_check_id": document["canary_check_id"],
+            "ci_timeout_seconds": document["ci_timeout_seconds"],
+            "consumption_timeout_seconds": document["consumption_timeout_seconds"]}
+
+
+def plan_digest(plan: dict) -> str:
+    return digest(plan)
+
+
+def _target(entry, index: int) -> dict:
+    name = "targets[" + str(index) + "]"
+    _fields(entry, TARGET_FIELDS, name)
+    if not _token(entry["target_id"]):
+        raise DeliveryRefused("target_invalid", name + ".target_id")
+    if entry["kind"] not in TARGET_KINDS:
+        raise DeliveryRefused("target_invalid", name + ".kind")
+    for key in ("root", "state_dir"):
+        # A host path IS owner configuration here, but it is still never taken from a candidate and
+        # never interpolated into a command line.
+        if not (type(entry[key]) is str and entry[key].strip() and len(entry[key]) <= 400):
+            raise DeliveryRefused("target_invalid", name + "." + key)
+    if not (type(entry["service"]) is str and TOKEN.fullmatch(entry["service"]) is not None):
+        raise DeliveryRefused("target_invalid", name + ".service")
+    return {key: entry[key] for key in sorted(TARGET_FIELDS)}
+
+
+def validate_targets(document) -> dict:
+    """The authorized host target registry: what a target id MEANS on this host.
+
+    This is host configuration, registered by the owner and deliberately separate from candidate
+    content. A plan may name one of these ids and nothing else; it can never introduce a root, a
+    state directory, a service or a kind of its own.
+    """
+    if not isinstance(document, dict) or document.get("schema") != REGISTRY_SCHEMA:
+        raise DeliveryRefused("registry_schema")
+    _fields(document, REGISTRY_FIELDS, "root")
+    targets = document["targets"]
+    if not (isinstance(targets, list) and 1 <= len(targets) <= MAX_TARGETS):
+        raise DeliveryRefused("registry_invalid", "targets")
+    entries = [_target(entry, index) for index, entry in enumerate(targets)]
+    identifiers = [entry["target_id"] for entry in entries]
+    if len(set(identifiers)) != len(identifiers):
+        raise DeliveryRefused("registry_duplicate", "targets[].target_id")
+    return {"schema": REGISTRY_SCHEMA, "targets": entries}
+
+
+def resolve_descriptor(target: dict, plan: dict, current: dict | None) -> dict:
+    """The COMPLETE descriptor this delivery must make the target consume.
+
+    The root comes from the registered target, never from the plan. `unchanged` is resolved against
+    the descriptor the target is actually running now, and a target with no current descriptor
+    cannot resolve it at all - that is a refusal, never a guess or an empty binding. `predecessor`
+    is the digest of exactly the descriptor this switch replaces, so a rollback restores a full
+    tuple rather than a remembered revision.
+    """
+    plan_descriptor = plan["target_descriptor"]
+    resolved = {}
+    for key in ("worker_image", "profile_digest"):
+        value = plan_descriptor[key]
+        if value != UNCHANGED:
+            resolved[key] = value
+            continue
+        if not isinstance(current, dict) or current.get(key) in (None, UNCHANGED):
+            raise DeliveryRefused("unchanged_without_predecessor", "target_descriptor." + key)
+        resolved[key] = current[key]
+    return {"schema": DESCRIPTOR_SCHEMA, "target_id": target["target_id"], "root": target["root"],
+            "revision": plan_descriptor["revision"], "worker_image": resolved["worker_image"],
+            "profile_digest": resolved["profile_digest"],
+            "predecessor": None if current is None else descriptor_digest(current)}
+
+
+def descriptor_digest(descriptor: dict) -> str:
+    """One identity per descriptor, over exactly the bound fields and in a fixed order."""
+    return digest({key: descriptor.get(key) for key in DESCRIPTOR_FIELDS})
+
+
+def validate_descriptor(document) -> dict:
+    """A descriptor read back from the host: the file a service was pointed at, checked as data."""
+    if not isinstance(document, dict) or document.get("schema") != DESCRIPTOR_SCHEMA:
+        raise DeliveryRefused("descriptor_schema")
+    if set(document) != set(DESCRIPTOR_FIELDS):
+        raise DeliveryRefused("descriptor_fields")
+    if not _token(document["target_id"]):
+        raise DeliveryRefused("descriptor_invalid", "target_id")
+    if not _hex(document["revision"], REVISION):
+        raise DeliveryRefused("descriptor_invalid", "revision")
+    if not (type(document["root"]) is str and document["root"].strip()):
+        raise DeliveryRefused("descriptor_invalid", "root")
+    if not (type(document["worker_image"]) is str and IMAGE.fullmatch(document["worker_image"])):
+        raise DeliveryRefused("descriptor_invalid", "worker_image")
+    if not _hex(document["profile_digest"], SHA256):
+        raise DeliveryRefused("descriptor_invalid", "profile_digest")
+    if document["predecessor"] is not None and not _hex(document["predecessor"], SHA256):
+        raise DeliveryRefused("descriptor_invalid", "predecessor")
+    return {key: document[key] for key in DESCRIPTOR_FIELDS}
+
+
+def validate_receipt(document) -> dict:
+    """The startup evidence a launched process reports about ITSELF, checked as untrusted data."""
+    if not isinstance(document, dict) or document.get("schema") != RECEIPT_SCHEMA:
+        raise DeliveryRefused("receipt_schema")
+    if set(document) != RECEIPT_FIELDS:
+        raise DeliveryRefused("receipt_fields")
+    if not _token(document["target_id"]):
+        raise DeliveryRefused("receipt_invalid", "target_id")
+    if not _hex(document["instance_id"], INSTANCE):
+        raise DeliveryRefused("receipt_invalid", "instance_id")
+    if not _bounded_int(document["pid"], 1, 2 ** 31 - 1):
+        raise DeliveryRefused("receipt_invalid", "pid")
+    for key in ("started_at", "module_root"):
+        if not (type(document[key]) is str and document[key].strip() and len(document[key]) <= 400):
+            raise DeliveryRefused("receipt_invalid", key)
+    if not _hex(document["descriptor_sha256"], SHA256):
+        raise DeliveryRefused("receipt_invalid", "descriptor_sha256")
+    if not _hex(document["revision"], REVISION):
+        raise DeliveryRefused("receipt_invalid", "revision")
+    if not (type(document["worker_image"]) is str and IMAGE.fullmatch(document["worker_image"])):
+        raise DeliveryRefused("receipt_invalid", "worker_image")
+    if not _hex(document["profile_digest"], SHA256):
+        raise DeliveryRefused("receipt_invalid", "profile_digest")
+    return {key: document[key] for key in sorted(RECEIPT_FIELDS)}
+
+
+def _check_row(row) -> dict | None:
+    """One observed CI row reduced to (name, state); anything unreadable is dropped, not guessed."""
+    if not isinstance(row, dict):
+        return None
+    name, state = row.get("name"), row.get("state")
+    if type(name) is not str or type(state) is not str:
+        return None
+    return {"name": name, "state": state}
+
+
+def ci_verdict(required, observed, head: str, observed_head=None) -> dict:
+    """Whether the named checks all finished successfully for EXACTLY the intended head.
+
+    `observed` is a list of `{name, state}` rows the adapter normalized from the provider, where
+    `state` is `success`, `pending` or `failure`. A required check that is absent, still running,
+    skipped, cancelled, neutral or failed is not a pass - each under its own code - and a head that
+    moved is `head_changed`, which goes to requalification rather than being rebased into the old
+    acceptance. Extra checks the plan does not require are ignored: the plan is the authority over
+    what must pass, never the provider's current workflow list.
+    """
+    if observed_head is not None and observed_head != head:
+        return {"state": CI_HEAD_CHANGED, "reason_code": "ci_head_changed", "missing": [],
+                "failed": [], "pending": [], "head": observed_head}
+    rows = {row["name"]: row["state"] for row in (_check_row(r) for r in observed or []) if row}
+    missing = sorted(name for name in required if name not in rows)
+    failed = sorted(name for name in required if rows.get(name) == "failure")
+    pending = sorted(name for name in required if rows.get(name) == "pending")
+    if failed:
+        return {"state": CI_FAILED, "reason_code": "ci_check_failed", "missing": missing,
+                "failed": failed, "pending": pending, "head": head}
+    if missing or pending:
+        return {"state": CI_PENDING,
+                "reason_code": "ci_check_missing" if missing else "ci_check_pending",
+                "missing": missing, "failed": failed, "pending": pending, "head": head}
+    return {"state": CI_PASSED, "reason_code": None, "missing": [], "failed": [], "pending": [],
+            "head": head}
+
+
+def consumption_verdict(descriptor: dict, receipt, *, expected_instance=None) -> dict:
+    """Whether the process that started is REALLY running the descriptor that was switched to.
+
+    Every bound field is compared, including the digest of the descriptor the process says it
+    loaded and the module root it says it imported. A receipt that is absent, malformed, from
+    another target, from the previous instance or bound to any other identity never grants
+    activation; it is a definite mismatch with its own code, not a retryable unknown.
+    """
+    if receipt is None:
+        return {"consumed": False, "reason_code": "receipt_missing", "instance_id": None}
+    try:
+        checked = validate_receipt(receipt)
+    except DeliveryRefused as exc:
+        return {"consumed": False, "reason_code": exc.reason_code, "instance_id": None}
+    expected_digest = descriptor_digest(descriptor)
+    for key, expected in (("target_id", descriptor["target_id"]), ("revision", descriptor["revision"]),
+                          ("worker_image", descriptor["worker_image"]),
+                          ("profile_digest", descriptor["profile_digest"]),
+                          ("descriptor_sha256", expected_digest)):
+        if checked[key] != expected:
+            return {"consumed": False, "reason_code": "receipt_" + key + "_mismatch",
+                    "instance_id": checked["instance_id"]}
+    if expected_instance is not None and checked["instance_id"] == expected_instance:
+        # The file still describes the process that was there BEFORE this switch: a stale receipt is
+        # not evidence of the new one, however well its fields match.
+        return {"consumed": False, "reason_code": "receipt_stale_instance",
+                "instance_id": checked["instance_id"]}
+    return {"consumed": True, "reason_code": None, "instance_id": checked["instance_id"],
+            "pid": checked["pid"], "module_root": checked["module_root"]}
+
+
+def release_gate(record, plan: dict, parent: str | None) -> dict:
+    """What the EXISTING release record says about this exact plan; nothing here approves anything.
+
+    The reviews are re-derived from the record - the author's own lead and a conductor, both
+    accepting exactly this revision with evidence - and the candidate's revision, tree, evaluator
+    policy hash and canonical repository must be exactly the ones the plan names. A plan can
+    therefore never introduce an approval, relax an evaluator or point a reviewed acceptance at
+    another tree. `awaiting_review` is a real projected state: registration may legitimately precede
+    the review, and it never runs.
+    """
+    if not isinstance(record, dict):
+        return {"state": OUTCOME_REFUSED, "reason_code": "release_missing", "status": None}
+    candidate = record.get("candidate") or {}
+    status = record.get("status")
+    for key, expected in (("revision", plan["revision"]), ("tree", plan["tree"])):
+        if candidate.get(key) != expected:
+            return {"state": OUTCOME_REFUSED, "reason_code": "release_" + key + "_mismatch",
+                    "status": status}
+    if record.get("policy_hash") != plan["policy_hash"]:
+        return {"state": OUTCOME_REFUSED, "reason_code": "release_policy_mismatch", "status": status}
+    if candidate.get("repository") != plan["repository"]:
+        # A legacy candidate without a recorded repository is `legacy_unverified` for the merge
+        # owner; for an activation of this host it is simply not a verified target.
+        return {"state": OUTCOME_REFUSED, "reason_code": "release_repository_mismatch", "status": status}
+    accepted = {review.get("actor") for review in record.get("reviews") or []
+                if review.get("accepted") is True and review.get("revision") == plan["revision"]
+                and review.get("evidence")}
+    if status in {"rejected", "cancelled", "rolled_back"} or str(status).startswith("superseded"):
+        return {"state": OUTCOME_REFUSED, "reason_code": "release_" + str(status), "status": status}
+    if parent is None or parent not in accepted or "conductor" not in accepted:
+        return {"state": AWAITING_REVIEW, "reason_code": "release_reviews_incomplete", "status": status}
+    if status not in {"reviewed", "verified", "active"}:
+        return {"state": AWAITING_REVIEW, "reason_code": "release_not_reviewed", "status": status}
+    return {"state": "approved", "reason_code": None, "status": status}
+
+
+def new_intent(plan: dict, plan_sha256: str, now: str) -> dict:
+    """The durable intent of one delivery, written before any external effect of any stage."""
+    return {"id": plan["plan_id"], "plan_id": plan["plan_id"], "release_id": plan["release_id"],
+            "target_id": plan["target_id"], "plan_sha256": plan_sha256, "stage": REGISTERED,
+            "previous_stage": None, "outcome": None, "reason_code": None, "error_type": None,
+            "attempts": 0, "revision": plan["revision"], "head": None, "pr_number": None,
+            "pr_url": None, "merged_revision": None, "descriptor_sha256": None,
+            "previous_descriptor_sha256": None, "descriptor": None, "previous_descriptor": None,
+            "previous_instance_id": None, "instance_id": None, "expected_active": None,
+            "expected_active_set": False, "canary": None, "rollback": None, "stage_deadline": None,
+            "stage_entered_at": now, "created_at": now, "updated_at": now, "evidence": []}
+
+
+def next_stage(stage: str) -> str:
+    """The stage that follows a completed one; `active` is terminal and follows nothing."""
+    if stage not in STAGE_ORDER:
+        raise DeliveryRefused("stage_unknown", "stage")
+    index = STAGE_ORDER.index(stage)
+    return STAGE_ORDER[min(index + 1, len(STAGE_ORDER) - 1)]
+
+
+def stage_next_action(stage: str, outcome=None) -> str:
+    """The bounded next action for one delivery; never a command and never an authorization."""
+    if stage == ACTIVE:
+        return "observe_active_runtime"
+    if stage == ROLLING_BACK:
+        return "restore_predecessor"
+    if stage in {BLOCKED, FAILED}:
+        return "owner_review"
+    if stage == ROLLED_BACK:
+        return "owner_requalify_candidate"
+    if stage == AWAITING_REVIEW:
+        return "await_independent_review"
+    if stage == AWAITING_CI:
+        return "await_required_checks"
+    if stage == AWAITING_CONSUMPTION:
+        return "await_startup_receipt"
+    if outcome == OUTCOME_UNAVAILABLE:
+        return "await_dependency"
+    return "tick"
+
+
+def delivery_progress(row: dict, intent, descriptor_row) -> dict:
+    """What one registered plan looks like now: identities, digests, stage, fixed codes and counts.
+
+    No path, no descriptor body, no check output, no PR title, no exception message and no
+    credential is projected: a reader gets ids, digests, states and reason codes only. An absent
+    intent is `registered`, never invented progress, and an absent descriptor is unknown rather
+    than an empty tuple.
+    """
+    plan = row["plan"]
+    stage = (intent or {}).get("stage") or REGISTERED
+    active = (descriptor_row or {}).get("descriptor") or None
+    view = {"plan_id": plan["plan_id"], "release_id": plan["release_id"], "target_id": plan["target_id"],
+            "revision": plan["revision"], "plan_sha256": row["plan_sha256"], "pin": dict(row["pin"]),
+            "required_checks": len(plan["required_checks"]), "canary_check_id": plan["canary_check_id"],
+            "stage": stage, "outcome": (intent or {}).get("outcome"),
+            "reason_code": (intent or {}).get("reason_code"),
+            "error_type": (intent or {}).get("error_type"),
+            "attempts": int((intent or {}).get("attempts") or 0),
+            "head": (intent or {}).get("head"), "pr_number": (intent or {}).get("pr_number"),
+            "merged_revision": (intent or {}).get("merged_revision"),
+            "intended_descriptor_sha256": (intent or {}).get("descriptor_sha256"),
+            "instance_id": (intent or {}).get("instance_id"),
+            "canary": (intent or {}).get("canary"), "rollback": (intent or {}).get("rollback"),
+            "active_descriptor_sha256": None if active is None else descriptor_digest(active),
+            "active_revision": None if active is None else active.get("revision"),
+            "consumed": bool((descriptor_row or {}).get("consumed")),
+            "updated_at": (intent or {}).get("updated_at") or row.get("updated_at")}
+    view["next_action"] = stage_next_action(stage, view["outcome"])
+    return view
+
+
+def delivery_status(rows, intents: dict, descriptors: dict, *, enabled: bool) -> dict:
+    """`urn:zeus:host-delivery-status:1`: the read-only projection of every registered plan.
+
+    A collected status is a projection of durable records only. It is never evidence of an active
+    host, a qualified release or a successful canary - `stage` says what was PROVEN, and every
+    absent observation stays unknown.
+    """
+    plans = [delivery_progress(row, intents.get(row["plan_id"]), descriptors.get(row["plan"]["target_id"]))
+             for row in sorted(rows, key=lambda r: r["plan_id"])]
+    counts = {stage: sum(1 for view in plans if view["stage"] == stage)
+              for stage in (*STAGE_ORDER, BLOCKED, ROLLING_BACK, ROLLED_BACK, FAILED)}
+    return {"schema": STATUS_SCHEMA, "registered": bool(plans), "enabled": bool(enabled),
+            "deliveries": plans, "counts": {k: v for k, v in counts.items() if v},
+            "targets": [target_progress(descriptors[target_id]) for target_id in sorted(descriptors)],
+            "authority": AUTHORITY}
+
+
+def target_progress(row: dict) -> dict:
+    """What ONE host target is recorded as running: digests, ids and states, never a descriptor
+    body, a root, a service name or a path. `consumed` false is a switch that was not an
+    activation, and an absent row is simply not listed - never an empty tuple that reads as clean."""
+    return {"target_id": row["target_id"], "descriptor_sha256": row.get("descriptor_sha256"),
+            "revision": (row.get("descriptor") or {}).get("revision"),
+            "worker_image": (row.get("descriptor") or {}).get("worker_image"),
+            "profile_digest": (row.get("descriptor") or {}).get("profile_digest"),
+            "predecessor": (row.get("descriptor") or {}).get("predecessor"),
+            "consumed": bool(row.get("consumed")), "instance_id": row.get("instance_id"),
+            "plan_id": row.get("plan_id"), "release_id": row.get("release_id"),
+            "rolled_back": bool(row.get("rolled_back")), "updated_at": row.get("updated_at"),
+            "history": len(row.get("history") or [])}
+
+
+__all__ = ["ACTIVE", "AUTHORITY", "AWAITING_CI", "AWAITING_CONSUMPTION", "AWAITING_REVIEW",
+           "BLOCKED", "CANARY_CHECKS", "CANARY_COLLECT", "CANARY_FLEET", "CANARY_STARTUP",
+           "CI_FAILED", "CI_HEAD_CHANGED", "CI_PASSED", "CI_PENDING", "DESCRIPTOR_FIELDS",
+           "DESCRIPTOR_SCHEMA", "EVENT_BLOCKED", "EVENT_CHECK", "EVENT_ROLLBACK", "EVENT_STAGE",
+           "EVENT_SWITCHED", "EXTERNAL_STAGES", "FAILED", "FAILED_OUTCOMES", "HALTED_STAGES",
+           "KIND_PROCESS", "KIND_SCHEDULED_TASK", "MAX_STAGE_ATTEMPTS", "MERGED", "MERGE_INTENDED",
+           "OPEN_STAGES", "OUTCOME_ACTIVE", "OUTCOME_BLOCKED", "OUTCOME_BUSY", "OUTCOME_CONFLICT",
+           "OUTCOME_DISABLED", "OUTCOME_IDLE", "OUTCOME_PENDING", "OUTCOME_PROGRESSED",
+           "OUTCOME_REFUSED", "OUTCOME_ROLLED_BACK", "OUTCOME_UNAVAILABLE", "OUTCOME_UNREGISTERED",
+           "PLAN_SCHEMA", "PUBLISHING", "RECEIPT_SCHEMA", "REGISTERED", "REGISTRY_SCHEMA",
+           "ROLLED_BACK", "ROLLING_BACK", "STAGE_ORDER", "STATUS_SCHEMA", "STOPPED_STAGES",
+           "SWITCHING",
+           "TARGET_KINDS", "TERMINAL_STAGES", "TICK_SCHEMA", "UNCHANGED", "DeliveryRefused",
+           "ci_verdict", "consumption_verdict", "delivery_progress", "delivery_status",
+           "descriptor_digest", "new_intent", "next_stage", "plan_digest", "release_gate",
+           "resolve_descriptor", "safe_error_type", "stage_next_action", "target_progress",
+           "validate_descriptor",
+           "validate_pin", "validate_plan", "validate_receipt", "validate_targets"]
