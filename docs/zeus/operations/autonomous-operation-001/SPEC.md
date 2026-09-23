@@ -423,3 +423,71 @@ These explicit task checks override generic full-suite guidance for the worker; 
 neighbors/PG and CI. Keep failures and unexecuted native checks separate from successful commands.
 Independent review covers the entire matrix in one verdict. Whole-loop research selection and
 qualified failure repair in Batch 2 remain required, not replaced by this delivery component.
+
+## Batch 3 correction and conductor continuation boundary (2026-09-23)
+
+Candidate 9689ed954f24cc1b27b9e4da2e6ea1d52b308b5a was rejected by independent
+review 55e265c9-977f-4d36-adca-4227545d9b5c. It is integrated ONLY into this implementation
+checkout, not the operating runtime. The following are code-traced reachable defects, not owner
+executed reproductions. Preserve the prior 70-pass worker evidence with its scope; it does not
+establish host deployment. One correction must cover the seven findings and their interactions.
+
+1. Runtime identity: ProcessHostTarget.start launches the current interpreter/module, while
+   startup_receipt copies revision/image/profile from the requested descriptor and consumption
+   ignores module_root. Resolve an owner-registered clean runtime root before launch, bind imports
+   to it, and attest the actually loaded code and effective configuration. Compare observed root
+   and revision to the authorized tuple. An idle descriptor-echo process cannot qualify collect
+   or Fleet. Image/profile facts describe effective configuration, not a model call that never ran.
+   Test an old runtime with a new requested descriptor: no activation, even if PID is alive.
+2. Canary ordering: collect_monitor_canary currently requires consumed=true, which _consume writes
+   only AFTER that canary. Separate observed startup from final activation; actual fresh collector
+   output must bind instance and runtime independently of the final active pointer. Exercise the
+   real coordinator/canary integration, both fresh success and stale/missing source refusal.
+3. Merge reconciliation: observing MERGED with the same head bypasses GitWorkspace's merged-tree
+   validation after response loss or a post-merge rejection. Share exact merged revision/tree
+   qualification between normal and recovered paths. A merge that happened is not a qualified
+   deployment; mismatch remains blocked on every later tick.
+4. Rollback: crash after predecessor descriptor restoration but before its durable acknowledgement
+   currently fails the next expected-descriptor check. Reconcile old/new/foreign descriptors and
+   actual process identity at every restore/start/receipt boundary before another mutation.
+   Resume restoration, verify predecessor consumption, or explicitly block foreign/unknown state.
+5. Ownership: validate the current claim before EACH external mutation, not only its later record.
+   Coordinate target locking and current fence checking at the mutation boundary; a stale actor
+   must not switch/start/restore or overwrite its successor. Expiry during an in-flight effect
+   requires reconciliation, not an assertion that the effect was cancelled. Promotion and queue
+   ownership validation must share the existing transaction authority (no check-then-independent
+   promote transaction). Preserve Releases review, policy and active CAS gates and avoid nested
+   store transactions or holding a database transaction over external I/O. Test loss before and
+   across effects, including promotion; retain durable ambiguous-effect evidence.
+6. Fair selection: _select chooses the first nonterminal plan without review/queue eligibility.
+   Awaiting review, not-yet-due retry and exhausted/blocked queue rows must not starve another
+   qualified target. Preserve same-target exclusion, explicit wait reasons and bounded scanning.
+7. Monitoring neighbors: update tests/test_monitoring.py and test_monitoring_observations.py for
+   the intentionally added source; retain their assertions for all original sources. The original
+   allowed-path omission was a handoff gap, not permission to omit these affected checks.
+
+Required correction checks (replace the two-file command for this operation only):
+python -m pytest tests/test_host_delivery.py tests/test_host_delivery_cli.py tests/test_monitoring.py tests/test_monitoring_observations.py -q -p no:cacheprovider
+python -m ruff check . --no-cache
+Add the two monitoring test files to allowed paths. Use real temporary files/child processes for
+local ownership boundaries, controlled barriers for races, labelled adapter faults for remote
+responses. No production mutations or model calls in worker tests. Native Windows, isolated PG,
+real GitHub and actual service qualification remain owner gates. Do not widen to unrelated audit.
+
+The next autonomous continuation is part of the SAME outcome, not accomplished by this manual
+handoff. Existing SSOT at candidate 9689ed9: Portfolio.reconcile creates repeated-failure research
+candidates; Portfolio.follow_up links only an accepted successor; FleetBacklog consumes approved
+immutable manifests; Releases/ReleaseQueue retain deployment authority. Reuse these owners.
+Required coordinator states: observed terminal evidence -> classified -> research_required when
+two distinct similar attempts failed -> Codex design decision -> authorized pinned correction ->
+admitted -> independently reviewed -> delivery/verified recovery -> complete. Durable correlation
+binds original job/attempt, evidence, decision and successor; duplicate events cannot create new
+work. Claude implements; model self-report cannot authorize acceptance or invent a user goal.
+Unknown effects go through ExecutionRecovery, not a blind new invocation. A researched correction
+must carry the relevant SSOT and primary sources; mere similarity is not proof of shared cause.
+Only scope/authority gaps require the user; routine approved transitions must continue without
+chat input. Monitor must expose state, next action, owner, last evidence and why blocked.
+Design/qualification of this coordinator remains pending; registering this correction is explicit
+owner action and MUST NOT be reported as autonomous diagnosis. Completion requires a real rejected
+job to reach a qualified successor without this chat relaying transitions, duplicate/restart
+checks, two-strike research evidence, and existing independent acceptance gates unchanged.
