@@ -103,6 +103,29 @@ def test_the_runner_pass_keeps_its_port_across_ticks_and_an_unreadable_pin_only_
     assert tick.owned() == [] and tick.drain()["actions"] == [] and world.conductor.calls == [job_id]
 
 
+def test_a_standalone_tick_reserves_through_the_same_fleet_authority_as_the_runner(tmp_path):
+    world = World(tmp_path, max_parallel=1)
+    root, revision = policy_repository(world)
+    config = world.fleet.registered()["config"]
+    adapter.register_policy(world.control, config, "a", revision, "ops/continuation.json")
+    owner = adapter.coordinator(world.control, config, HOST, lanes=world.lanes, conductor=world.conductor)
+    assert owner.fleet.store is world.control, "the standalone coordinator uses the control store's Fleet"
+    world.enqueue("op-1")
+    adapter.tick_policy(world.control, config, HOST, "policy-1", lanes=world.lanes, conductor=world.conductor,
+                        runtime=world.runtime)
+    job_id, _ = world.run_next(verdict=True)
+    world.enqueue("op-2", "docs/b.md")
+    job = world.fleet.admit_one()["job"]  # another controller's worker holds the only slot
+    full = adapter.tick_policy(world.control, config, HOST, "policy-1", lanes=world.lanes,
+                               conductor=world.conductor, runtime=world.runtime)
+    assert {"subject": job_id, "reason_code": "conductor_capacity", "next_owner": "fleet"} in full["skipped"]
+    assert world.conductor.calls == [] and world.fleet.held_units() == []
+    world.fleet.finalize(job["id"], job["owner_token"], {"status": "failed", "reason_code": "child_refused"})
+    adapter.tick_policy(world.control, config, HOST, "policy-1", lanes=world.lanes, conductor=world.conductor,
+                        runtime=world.runtime)
+    assert world.conductor.calls == [job_id] and world.fleet.units()[0]["state"] == "released"
+
+
 def test_unregistered_policy_reads_no_git_no_lane_and_starts_no_process(tmp_path):
     world = World(tmp_path)
 
@@ -128,35 +151,39 @@ def test_lane_runtime_reports_the_actual_image_profile_and_archive_identity(tmp_
     assert identity["repository"] == world.repository and identity["exit_code"] == 0
 
 
-def test_conductor_processes_start_the_existing_command_as_an_owned_child_in_the_lane_environment(tmp_path):
+def test_conductor_processes_spawn_one_guardian_for_the_existing_command_in_the_lane_environment(tmp_path):
     world = World(tmp_path)
     config = world.fleet.registered()["config"]
     seen = []
 
-    class Tree:  # LABELLED fixture of ProcessTree.spawn: records, starts nothing, stays running
-        process = SimpleNamespace(pid=4242, poll=lambda: None)
-
-    def spawn(argv, **kwargs):
+    def spawn(argv, **kwargs):  # LABELLED fixture of the guardian spawn: records, starts nothing, stays running
         seen.append((argv, kwargs))
-        return Tree()
+        return SimpleNamespace(pid=4242, poll=lambda: None, breakaway=None)
     job = {"id": "op-1", "manifest": manifest("op-1")}
     launch = "a" * 64
     port = adapter.ConductorProcesses(config, HOST, argv=("python", "-m", "codex_harness.cli"),
-                                      entry=("python", "-m", "entry"), spawn=spawn)
-    assert port.available() is True
-    assert port.start("a", job, launch) == {"pid": 4242, "cached": False}
-    assert port.available() is False and port.active() == [launch], "one bounded slot is taken"
+                                      entry=("python", "-m", "entry"), spawn=spawn, seconds=30)
+    assert not hasattr(port, "available"), "the port holds no capacity: the Fleet unit is the slot"
+    with pytest.raises(ValueError):
+        port.start("a", job, launch, None)  # never without the reserved unit's token
+    assert port.start("a", job, launch, "tok-1") == {"pid": 4242, "cached": False, "breakaway": None}
+    assert port.active() == [launch]
     argv, kwargs = seen[0]
     directory = tmp_path / "rt-a" / "continuation" / "launches" / launch
-    assert argv[:5] == ["python", "-m", "entry", "--launch", str(directory)]
-    assert argv[5:11] == ["--", "python", "-m", "codex_harness.cli", "--repository", str(tmp_path / "repo-a")]
-    assert argv[11:14] == ["continuation", "conduct", "--file"]
-    assert json.loads(Path(argv[14]).read_text(encoding="utf-8")) == job["manifest"]
-    assert "search_path=lane_a" in kwargs["env"]["ZEUS_DATABASE_URL"]
+    assert argv[:7] == ["python", "-m", "entry", "--launch", str(directory), "--seconds", "30.0"]
+    assert argv[7:13] == ["--", "python", "-m", "codex_harness.cli", "--repository", str(tmp_path / "repo-a")]
+    assert argv[13:16] == ["continuation", "conduct", "--file"]
+    assert json.loads(Path(argv[16]).read_text(encoding="utf-8")) == job["manifest"]
+    assert json.loads((directory / "launch.json").read_text(encoding="utf-8")) == {
+        "schema": "urn:zeus:conductor-guardian:1", "launch": launch, "token": "tok-1", "seconds": 30}
+    assert "search_path=lane_a" in kwargs["env"]["ZEUS_DATABASE_URL"] and kwargs["cwd"] == str(tmp_path / "repo-a")
     assert port.poll("a", launch) == {"state": "running", "owned": True, "exit_code": None}
-    assert port.start("a", job, launch)["cached"] is True and len(seen) == 1, "one identity, one start"
+    assert port.start("a", job, launch, "tok-1")["cached"] is True and len(seen) == 1, "one identity, one start"
+    restarted = adapter.ConductorProcesses(config, HOST, spawn=spawn)
+    assert restarted.start("a", job, launch, "tok-1") == {"pid": None, "cached": True} and len(seen) == 1, \
+        "the one-shot spawn marker holds across a controller restart"
     with pytest.raises(ValueError):
-        port.start("a", job, "../escape")
+        port.start("a", job, "../escape", "tok-1")
 
 
 class GuardedDecider:

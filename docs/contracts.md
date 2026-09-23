@@ -1386,7 +1386,16 @@ never created); Docker isolation must be selected. `accepted` needs exit 0 and t
 row (id, manifest digest, accepted); nonzero, contradictory, missing or unreadable evidence is
 `failed` (definite pre-claim refusal) or `unknown`. `unknown` and `dispatching` retain lane,
 capacity and path exclusion, are reported as `reconciliation_required`, are never relaunched after a
-restart and are never cleared by a command here. No retry, merge, deploy, automatic ceiling change
+restart and are never cleared by a command here. Non-job execution units (`fleet_units`, kind
+`conductor`, INV-CONTINUATION-001) share the same capacity: `reserve_unit` (same transaction and
+serialization as admission; paused or `reserving jobs + held units >= max_parallel` refuses; the
+same unit id replays, another binding is `unit_conflict`) holds a slot before anything is spawned,
+and `admit_one` counts every held unit (`capacity`). A unit is released only by `settle_unit` on its
+reservation token and an exact proof - a cleanup receipt for that unit and token confirming parent
+AND tree, or the never-entered fence (`proof_invalid`, `proof_identity_mismatch`,
+`proof_unconfirmed`, `owner_mismatch`); an identical replay is cached, a different proof
+`settlement_conflict`. Age, a wrapper exit, a restart or a decision never release one; held units
+also make the fleet not idle for `authorize-budget` and `relocate`. No retry, merge, deploy, automatic ceiling change
 or generated work. `sources.fleet` in the monitor snapshot (an additive source beside `database`,
 `docker`, `redis` and `observations`; unavailable on its own when the store fails, the fixed
 `registered: false` shape when no fleet is registered) and `fleet status` project
@@ -2541,24 +2550,48 @@ manifest, objective, review text, transcript, path or credential; a store failur
 `unavailable`. `FleetRunner(continuation=...)` runs the pass after the backlog tick and before
 admission; its failure is its own `unavailable` state and never blocks admission.
 
-Conductor children (`adapters/continuation_process.py`) are owned and never waited on. The launch
-identity `digest(intent, sequence)` commits on the intent (`dispatched`, `launch.state: starting`)
-BEFORE `ConductorProcesses.start` spawns the child wrapper through `ProcessTree` (job object /
-session group) and returns; later passes `poll` it. The wrapper takes `<lane runtime>/continuation/
-launches/<launch>/lock` without waiting, creates `claim` exclusively as `child`, runs `zeus
-continuation conduct`, then writes `exit.json`. A controller without the handle reconciles from those
-files: receipt -> `exited`; lock held -> `running` (owned elsewhere: `conductor_owner_unknown`, only
-that family waits, reported as unresolved); lock free and no claim -> it writes `claim=fenced` while
-holding the lock -> `absent` (never entered, never will). Only `absent`, or an exited child whose row
-is still `pending` with attempt 0, lets a NEW launch identity start, at most `MAX_LAUNCHES` (3), then
-`conductor_launch_exhausted`. An exited child with a `running`/`failed` row, or an owned child past
-`decision_seconds + 120` (ended through its tree, `conductor_timeout`), is `recovery_required`. A
-failed or lost start response (`launch_unconfirmed`) is decided by reconciling the same identity,
-never by a second start. `ContinuationPass` lives as long as the runner: pending conductor children
-take one slot of `max_parallel` (and `max_active=1` conductor), count as heartbeat `active` (launches
-owned elsewhere as `unresolved`), keep `--once` and a graceful stop draining, and `drain()` settles
-them while admission is closed or the pin changed/unreadable, without any new effect. `zeus
-continuation tick` owns its child until it ends and then drains once.
+Conductor launches (`adapters/continuation_process.py`, SPEC "Two-strike ownership design") are
+never waited on, and three owners stay separate. (1) Capacity: ONE Fleet transaction
+(`Fleet.reserve_unit`, INV-FLEET-001 `fleet_units`) reserves the launch's execution unit against
+the shared `max_parallel` (reserving jobs + held units, the same serialization as `admit_one`, for
+the runner, independent controllers and `zeus continuation tick` alike) AND commits the launch
+identity `digest(intent, sequence)` with the unit token on the intent (`dispatched`) BEFORE anything
+is spawned; a full or paused fleet refuses (`conductor_capacity`/`conductor_paused`, next owner
+`fleet`) and the intent stays. No local count authorizes a start. (2) Supervision:
+`ConductorProcesses.start` creates `<lane runtime>/continuation/launches/<launch>/spawn`
+exclusively (one-shot; a replay, a lost response or a restart never spawns that identity again),
+writes `launch.json` {launch, token}, and spawns one hidden guardian (`continuation_process.main`) in
+its own POSIX session / Windows group with a breakaway request, outside every controller kill
+boundary. The guardian uses NO database: it takes `lock` without waiting, skips an already `claim`ed
+launch, flushes write-ahead `debt.json` (a failed write starts nothing), creates `claim=child`
+exclusively, runs `zeus continuation conduct` as its own `ProcessTree`, and alone enforces the
+monotonic deadline (`decision_seconds + 120`) and stop requests (`stop` file, POSIX SIGTERM, recorded
+not raised) through bounded `terminate` attempts. A store that blocks or fails, a Fleet tick or a
+controller exit cannot suppress them. (3) Proof and settlement: only when the parent AND the tree
+are each confirmed does the guardian atomically write `cleanup.json` bound to launch and token, then
+close the handle; `terminate` False/raising, a parent that exited with the tree unknown, or a proof
+that cannot be persisted leave no proof, keep the debt (`debt.json: cleanup_unknown`) and record
+`unresolved.json`. `observe` answers from these files alone: valid proof -> `exited`/`timeout`
+with `cleanup_confirmed`; lock held -> `running` (another controller's guardian:
+`conductor_owner_unknown`, only that family waits); lock free and no claim -> `claim=fenced` under
+the lock -> `absent` with the fence proof (a delayed guardian executes nothing); claimed without a
+proof -> `unknown`, even beside an old `exit.json`. The intent leaves `dispatched` only through
+`Fleet.settle_unit`, which validates the exact proof and token and commits the unit release with the
+intent move in one transaction; a failed commit keeps both and the next pass settles exactly once
+from the local proof, never by a model rerun. Unknown cleanup - including a succeeded decision, a
+guardian that ended without proof, and a killed guardian (never reacquired from a pid file, never
+signalled) - stays `dispatched` with `hold {conductor_cleanup_unknown, execution_recovery}` and its
+unit held; it neither completes nor re-dispatches, and when such debt fills every slot admission
+stops. Only `absent`, or a proven-clean exit whose row is still `pending` with attempt 0, lets a NEW
+launch identity start, at most `MAX_LAUNCHES` (3), then `conductor_launch_exhausted`; a proven-clean
+exit with a `running`/`failed` row, or past its deadline, is `recovery_required`. A failed or lost
+start response (`launch_unconfirmed`) is decided by reconciling the same identity. `ContinuationPass`
+lives as long as the runner: its live guardians count as heartbeat `active`, held units and
+dispatched launches it does not supervise as `unresolved`, `--once` and a graceful stop keep draining
+them, `drain()` settles them while admission is closed or the pin changed/unreadable, and the run
+summary lists `units_held`. `zeus continuation tick` waits for its guardians and drains once. A
+launch written before units existed has no token: it is settled without a unit. Windows job-object
+and breakaway behaviour is an owner qualification gate; POSIX tests do not prove it.
 
 Every NEW effect (lane binding, Fleet admission, conductor start, including resumed `intended`/
 `published` work and a re-dispatch) passes one eligibility guard: the registered policy digest,

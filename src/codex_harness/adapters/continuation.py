@@ -15,14 +15,15 @@ The ports it supplies:
 * `runtime(lane_id)` - the identity the lane ACTUALLY runs: the host-selected isolation image, the
   packaged worker profile and the digest of the lane's session archive root. A policy naming
   anything else refuses before any effect.
-* `ConductorProcesses` (adapters/continuation_process.py) - the guarded conductor dispatch: the
-  existing `zeus continuation conduct` in the lane environment as an OWNED child tree started under
-  the committed launch identity and polled on later ticks, never waited on inside one. A timeout,
-  a lost child or an unconfirmed start is reconciled from its launch evidence and the decision row;
-  an unknown effect goes to ExecutionRecovery, never to a relaunch.
+* `ConductorProcesses` (adapters/continuation_process.py) - the guarded conductor dispatch: one
+  hidden, DB-free per-launch guardian that owns the existing `zeus continuation conduct` as its
+  tree, spawned once under the launch identity and unit token the Fleet reserved and committed
+  first, polled on later ticks and never waited on inside one. Only its confirmed parent-and-tree
+  cleanup receipt (or the never-entered fence) settles the Fleet unit; unknown cleanup stays held
+  debt for ExecutionRecovery, never a relaunch.
 * `ContinuationPass` - what `FleetRunner(continuation=...)` holds for its lifetime: the tick, the
-  admission-closed `drain`, and the owned/unresolved conductor launches its heartbeat, drain and
-  concurrency slot account for.
+  admission-closed `drain`, and the owned/unresolved conductor launches its heartbeat and drain
+  account for. Capacity is the Fleet's shared unit reservation, not a count here.
 """
 from __future__ import annotations
 

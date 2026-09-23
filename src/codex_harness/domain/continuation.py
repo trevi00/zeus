@@ -544,6 +544,10 @@ def validate_binding(document) -> dict:
 # ---- projection ---------------------------------------------------------------------------------
 def next_action(row: dict) -> str:
     state, route = row.get("state"), row.get("route")
+    if state == DISPATCHED and isinstance(row.get("hold"), dict):
+        return ("conductor cleanup unproven: its execution unit stays held; "
+                + str(row["hold"].get("next_owner") or "execution_recovery")
+                + " proves parent and tree cleanup or records recovery; no rerun, no replacement")
     if state in OPEN_STATES and isinstance(row.get("hold"), dict):
         return ("no new effect under a changed authorization; " + str(row["hold"].get("next_owner") or "operator")
                 + " restores the authorized binding or supersedes this intent")
@@ -554,7 +558,8 @@ def next_action(row: dict) -> str:
     if state == ADMITTED:
         return "wait for the successor operation's terminal outcome"
     if state == DISPATCHED:
-        return "poll the owned conductor child and reconcile its decision; never relaunch an entered one"
+        return ("poll the guardian's local evidence; settle the unit and decision only on its cleanup proof; "
+                "never relaunch an entered one")
     if state == RETURNED:
         return "route the returned outcome"
     if state == AWAITING_OWNER:

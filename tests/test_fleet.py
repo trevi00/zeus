@@ -618,3 +618,118 @@ def test_an_unreadable_control_closes_admission_and_an_unwritable_heartbeat_is_n
     plain = FleetRunner(f, FakeLauncher({"op-1": {"status": "accepted", "reason_code": "lead_accepted",
                                                   "exit_code": 0}}), interval=0).run(once=True)
     assert plain["admitted"] == ["op-1"] and "heartbeat" not in plain and "control" not in plain
+
+
+# ---- shared execution units (SPEC two-strike ownership design) -----------------------------------
+UNIT_A, UNIT_B, UNIT_C = "1" * 64, "2" * 64, "3" * 64
+
+
+def cleanup(unit, token, **overrides):
+    """The shape of a guardian cleanup receipt (LABELLED: written here, not by a guardian)."""
+    return {"kind": "cleanup", "launch": unit, "token": token, "confirmed": True, "exit_code": 0,
+            "timed_out": False, "parent": {"confirmed": True}, "tree": {"confirmed": True}, **overrides}
+
+
+def test_worker_jobs_and_execution_units_share_one_capacity_in_either_order(tmp_path):
+    f = fleet(tmp_path, max_parallel=1)
+    f.enqueue("a", manifest("op-1", ["docs/a.md"]), GOAL, [])
+    # Unit first: the queued worker waits with the persisted `capacity` reason.
+    held = f.reserve_unit(UNIT_A, "conductor", "b", "intent-1")
+    assert held["cached"] is False and f.held_units() == [UNIT_A]
+    decision = f.admit_one()
+    assert decision["job"] is None and decision["blocked"] == {"op-1": "capacity"}
+    # Replaying the same unit id (a lost response) is the same reservation, never a second slot.
+    assert f.reserve_unit(UNIT_A, "conductor", "b", "intent-1") == {**held, "cached": True}
+    with pytest.raises(FleetRefused, match="unit_conflict"):
+        f.reserve_unit(UNIT_A, "conductor", "b", "intent-2")
+    f.settle_unit(UNIT_A, held["token"], cleanup(UNIT_A, held["token"]))
+    job = f.admit_one()["job"]
+    assert job["id"] == "op-1"
+    # Worker first: the dispatching job fills the fleet and no unit is reserved.
+    with pytest.raises(FleetRefused, match="capacity"):
+        f.reserve_unit(UNIT_B, "conductor", "b", "intent-2")
+    assert f.held_units() == []
+    f.finalize(job["id"], job["owner_token"], {"status": "unknown", "reason_code": "outcome_uncertain"})
+    with pytest.raises(FleetRefused, match="capacity"):
+        f.reserve_unit(UNIT_B, "conductor", "b", "intent-2")  # an unknown job keeps its slot too
+    other = fleet(tmp_path / "paused", max_parallel=2)
+    other.pause()
+    with pytest.raises(FleetRefused, match="paused"):
+        other.reserve_unit(UNIT_C, "conductor", "a", "intent-3")
+
+
+def test_only_an_exact_parent_and_tree_proof_releases_a_unit_exactly_once(tmp_path):
+    f = fleet(tmp_path)
+    token = f.reserve_unit(UNIT_A, "conductor", "a", "intent-1")["token"]
+    refused = [(cleanup(UNIT_A, token, tree={"confirmed": False}), "proof_unconfirmed"),  # parent exited only
+               (cleanup(UNIT_A, token, parent={"confirmed": False}), "proof_unconfirmed"),
+               (cleanup(UNIT_A, token, confirmed=False), "proof_unconfirmed"),
+               (cleanup(UNIT_B, token), "proof_identity_mismatch"),
+               (cleanup(UNIT_A, "other"), "proof_identity_mismatch"),
+               ({"kind": "fenced", "launch": UNIT_A}, "proof_invalid"),
+               ({"kind": "exit", "launch": UNIT_A}, "proof_invalid"), (None, "proof_invalid")]
+    for proof, reason in refused:
+        with pytest.raises(FleetRefused, match=reason):
+            f.settle_unit(UNIT_A, token, proof)
+    with pytest.raises(FleetRefused, match="owner_mismatch"):
+        f.settle_unit(UNIT_A, "stale-token", cleanup(UNIT_A, token))
+    assert f.held_units() == [UNIT_A], "no refused proof released anything"
+
+    def failing_commit(tx, unit):  # LABELLED fault: the settlement transaction fails before its commit
+        raise ConnectionError("commit failed (injected)")
+    with pytest.raises(ConnectionError):
+        f.settle_unit(UNIT_A, token, cleanup(UNIT_A, token), within=failing_commit)
+    assert f.held_units() == [UNIT_A], "a failed commit keeps the unit held"
+    writes = []
+    first = f.settle_unit(UNIT_A, token, cleanup(UNIT_A, token), within=lambda tx, unit: writes.append(unit["id"]))
+    again = f.settle_unit(UNIT_A, token, cleanup(UNIT_A, token), within=lambda tx, unit: writes.append(unit["id"]))
+    assert first["cached"] is False and again["cached"] is True and writes == [UNIT_A], "settled exactly once"
+    assert first["unit"]["state"] == "released" and "token" not in first["unit"]
+    with pytest.raises(FleetRefused, match="settlement_conflict"):
+        f.settle_unit(UNIT_A, token, cleanup(UNIT_A, token, exit_code=1))
+    fenced = f.reserve_unit(UNIT_B, "conductor", "a", "intent-2")["token"]
+    released = f.settle_unit(UNIT_B, fenced, {"kind": "fenced", "launch": UNIT_B, "claim": "fenced"})
+    assert released["unit"]["settlement"]["kind"] == "fenced" and f.held_units() == []
+
+
+def test_simultaneous_controllers_never_start_more_units_than_the_shared_capacity(tmp_path):
+    """Real threads, each its own Fleet object over ONE store: the store's transaction is the
+    serialization boundary (MemoryStore's lock here; PostgreSQL's control advisory lock in
+    production, not exercised in this image)."""
+    import threading
+
+    f = fleet(tmp_path, max_parallel=2)
+    for op, lane in (("op-1", "a"), ("op-2", "b")):
+        f.enqueue(lane, manifest(op, ["docs/" + op + ".md"]), GOAL, [])
+    barrier, outcomes = threading.Barrier(6), []
+
+    def conductor(index):
+        barrier.wait()
+        try:
+            Fleet(f.store).reserve_unit(str(index) * 64, "conductor", "a", "intent-%d" % index)
+            outcomes.append("unit")
+        except FleetRefused as exc:
+            outcomes.append(exc.reason_code)
+
+    def worker():
+        barrier.wait()
+        outcomes.append("job" if Fleet(f.store).admit_one()["job"] is not None else "none")
+    threads = [threading.Thread(target=conductor, args=(i,)) for i in range(4, 8)]
+    threads += [threading.Thread(target=worker) for _ in range(2)]
+    for thread in threads:
+        thread.start()
+    for thread in threads:
+        thread.join(timeout=60)
+    started = outcomes.count("unit") + outcomes.count("job")
+    with f.store.transaction() as tx:
+        reserving = [row for row in tx.scan("fleet_jobs") if row["status"] == "dispatching"]
+    assert started == 2 == len(reserving) + len(f.held_units()), "zero excess start"
+    assert len(outcomes) == 6 and set(outcomes) - {"unit", "job"} <= {"capacity", "none"}
+
+
+def test_held_units_keep_the_fleet_from_idle_only_operations(tmp_path):
+    f = fleet(tmp_path)
+    f.reserve_unit(UNIT_A, "conductor", "a", "intent-1")
+    with pytest.raises(FleetRefused, match="fleet_not_idle"):
+        f.authorize_budget(5, 9, 8)
+    assert [unit["id"] for unit in f.units()] == [UNIT_A] and "unknown cleanup" in f.units()[0]["next_action"]
