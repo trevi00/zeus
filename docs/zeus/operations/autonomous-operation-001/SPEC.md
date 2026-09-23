@@ -1,5 +1,39 @@
 # Whole autonomous operating loop
 
+## Actual delivery registration: Git tree identity contract, 2026-09-23
+
+Goal unchanged: connect accepted useful work to actual delivery. Both live-status and live-runbook
+finished real Claude execution, independent lead and conductor acceptance; host_delivery awaits
+owner. Two actual releases live in the harness lane store; Fleet/targets were registered centrally.
+The owner must compose lane release authority with primary Fleet authority for managed activation,
+never infer an empty Fleet from a lane store. This composition is owner configuration, not scope
+for the following implementation correction. Existing scheduled service must be drained/stopped
+before managed takeover, so two Fleet services cannot run accidentally.
+
+Executed discriminator: validate_plan using accepted live-status revision 8693acc9860ac6b439f520c0d15149c9cdcd40f7,
+actual Git tree 84e42223417be53bef4c7c544a234af6e7402e68, failed plan_invalid field tree.
+Evidence artifacts/autonomous-operation-001/delivery-plan-tree-reproducer.json. Source:
+domain/host_delivery.py validates tree and policy_hash together as 64 hex; actual GitWorkspace
+candidate and qualification use git rev-parse tree identity (40 hex here). Tests use synthetic
+64-character trees. No hash may be padded/rehashed/substituted to bypass candidate binding.
+
+One bounded Claude batch: separate Git object-id validation for plan.tree from SHA256 digest
+fields. Accept exact lowercase 40 or 64 hex tree ids; keep policy_hash, profile, pin and descriptor
+digests strictly 64. Do not change revision support or imply full SHA256-repository qualification.
+Preserve exact candidate tree equality at review/merge/consumption. Use actual disposable Git
+repository output for a normal registration regression; include malformed lengths, 64-char tree
+compatibility and policy-hash strictness, exact tree mismatch refusal. Exercise plan registration
+with the release identity shape, not only a standalone regex. Scope is this contract and affected
+tests/comments/docs only. No deployment or new runtime feature by Claude.
+
+Acceptance: actual Git SHA1 tree plan registers; malformed ids and changed candidate tree refuse;
+existing 64-char fixture compatibility retained; SHA256 policy digest never relaxed. Run affected
+host-delivery/CLI/managed-runtime tests and Ruff. Preserve accepted runtime/session evidence.
+Owner then registers real plan and drives publish/CI/merge stages. Live-status publication already
+exists as PR184; reconcile rather than duplicate it. Runbook has same original base as status and
+must be rebased/reviewed against integrated status BEFORE merging: exact whole-tree qualification
+must not be bypassed. These are existing release gates, not new speculative review criteria.
+
 ## Live continuation qualification after PR183 deployment, 2026-09-23
 
 Outcome: enable the accepted continuation for TWO explicitly authorized useful documentation
