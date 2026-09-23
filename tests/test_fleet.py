@@ -537,3 +537,84 @@ def test_monitor_snapshot_carries_fleet_envelope_and_survives_store_failure(tmp_
     broken = collect(SimpleNamespace(store=Broken(), org=SimpleNamespace(agents={})), None, str(tmp_path), "redis://x")
     assert broken["sources"]["fleet"] == {"status": "unavailable", "observed_at": broken["sources"]["fleet"]["observed_at"],
                                           "error": "RuntimeError", "data": None}
+
+
+# ----- the optional managed runtime control (HOST-RUNTIME.md) -----------------------------------------
+class RecordingControl:
+    """Labelled fixture control: scripted pause and stop answers, every heartbeat recorded."""
+
+    def __init__(self):
+        self.paused = self.stopping = self.unreadable = self.unwritable = False
+        self.beats = []
+
+    def admission_open(self):
+        if self.unreadable:
+            raise OSError("labelled injected unreadable pause")
+        return not self.paused
+
+    def stop_requested(self):
+        return self.stopping
+
+    def heartbeat(self, state):
+        if self.unwritable:
+            raise OSError("labelled injected unwritable heartbeat")
+        self.beats.append(dict(state))
+
+
+class HeldLauncher(FakeLauncher):
+    """Fixture launcher whose children keep running until the test releases them."""
+
+    def __init__(self, outcomes, on_wait):
+        super().__init__(outcomes)
+        self.released, self.on_wait, self.waits = set(), on_wait, 0
+
+    def wait(self, handles, seconds):
+        self.waits += 1
+        self.on_wait(self)
+        return [h for h in handles if h["job_id"] in self.released]
+
+
+def test_a_paused_runner_admits_nothing_new_while_its_owned_child_finishes(tmp_path):
+    f = fleet(tmp_path)
+    # A reservation this runner does not own (an earlier runner's dispatching job) is unresolved.
+    f.enqueue("b", manifest("op-0", ["docs/w.md"]), GOAL, [])
+    assert f.admit_one()["job"]["id"] == "op-0"
+    f.enqueue("a", manifest("op-1", ["docs/x.md"]), GOAL, [])
+    accepted = {"status": "accepted", "reason_code": "lead_accepted", "exit_code": 0}
+    control = RecordingControl()
+
+    def script(launcher):
+        if launcher.waits == 1:
+            control.paused = True  # the drain closes admission while op-1 is still running
+            f.enqueue("a", manifest("op-2", ["docs/y.md"]), GOAL, ["op-1"])
+        if launcher.waits == 3:
+            launcher.released.add("op-1")
+
+    launcher = HeldLauncher({"op-1": accepted, "op-2": accepted}, script)
+    runner = FleetRunner(f, launcher, interval=0, control=control)
+    runner.sleep = lambda seconds: setattr(control, "stopping", True)
+    summary = runner.run(once=False)
+    assert launcher.launched == ["op-1"] and summary["admitted"] == ["op-1"]
+    assert summary["finalized"] == [{"id": "op-1", "status": "accepted", "reason_code": "lead_accepted"}]
+    assert {j["id"]: j["status"] for j in f.status()["jobs"]}["op-2"] == "queued"
+    assert control.beats[0] == {"admission": "open", "active": 1, "unresolved": 1}
+    assert {"admission": "paused", "active": 1, "unresolved": 1} in control.beats
+    assert control.beats[-2] == {"admission": "paused", "active": 0, "unresolved": 1}
+    assert control.beats[-1] == {"admission": "stopping", "active": 0, "unresolved": 1}
+    assert summary["stopped"] is True and summary["heartbeat"] == {"state": "ok", "error_type": None}
+
+
+def test_an_unreadable_control_closes_admission_and_an_unwritable_heartbeat_is_not_invented(tmp_path):
+    f = fleet(tmp_path)
+    f.enqueue("a", manifest("op-1", ["docs/x.md"]), GOAL, [])
+    control = RecordingControl()
+    control.unreadable = control.unwritable = True
+    launcher = FakeLauncher({})
+    summary = FleetRunner(f, launcher, interval=0, control=control).run(once=True)
+    assert launcher.launched == [] and summary["admitted"] == [] and control.beats == []
+    assert summary["control"] == {"state": "unavailable", "error_type": "OSError"}
+    assert summary["heartbeat"] == {"state": "unavailable", "error_type": "OSError"}
+    # Without a control the runner is exactly the previous one: no heartbeat, no control state.
+    plain = FleetRunner(f, FakeLauncher({"op-1": {"status": "accepted", "reason_code": "lead_accepted",
+                                                  "exit_code": 0}}), interval=0).run(once=True)
+    assert plain["admitted"] == ["op-1"] and "heartbeat" not in plain and "control" not in plain

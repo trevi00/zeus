@@ -42,6 +42,10 @@ PLAN_FIELDS = {"schema", "plan_id", "release_id", "revision", "tree", "policy_ha
 TARGET_DESCRIPTOR_FIELDS = {"revision", "worker_image", "profile_digest"}
 REGISTRY_FIELDS = {"schema", "targets"}
 TARGET_FIELDS = {"target_id", "kind", "root", "state_dir", "service"}
+# The managed Fleet target adds exactly the owner facts an immutable runtime needs: the source
+# repository its revisions are resolved from (also the host configuration root of its child), the
+# fixed interpreter and the digest of the dependency lockfile that interpreter was qualified for.
+MANAGED_TARGET_FIELDS = TARGET_FIELDS | {"source", "python", "environment_lock"}
 DESCRIPTOR_FIELDS = ("schema", "target_id", "root", "revision", "worker_image", "profile_digest",
                      "predecessor")
 RECEIPT_FIELDS = {"schema", "target_id", "instance_id", "pid", "started_at", "runtime_root",
@@ -53,7 +57,13 @@ PIN_FIELDS = {"revision", "path", "sha256"}
 # the identical descriptor, switch and startup-receipt contract.
 KIND_SCHEDULED_TASK = "windows_scheduled_task"
 KIND_PROCESS = "process"
-TARGET_KINDS = (KIND_SCHEDULED_TASK, KIND_PROCESS)
+# The opt-in managed Fleet target (HOST-RUNTIME.md): `root` is a managed root of sealed per-revision
+# runtime directories, and the descriptor names the one directory of its revision. The two kinds
+# above keep their registry fields and their meaning unchanged.
+KIND_MANAGED = "managed_fleet"
+TARGET_KINDS = (KIND_SCHEDULED_TASK, KIND_PROCESS, KIND_MANAGED)
+# Where the sealed runtime of one revision lives under a managed root.
+RUNTIMES_DIR = "runtimes"
 
 # What the instance ACTUALLY on a target is, relative to the authority to replace it. Descriptor
 # identity and authority over a running instance are two different facts: a receipt that does not
@@ -319,19 +329,47 @@ def plan_digest(plan: dict) -> str:
 
 def _target(entry, index: int) -> dict:
     name = "targets[" + str(index) + "]"
-    _fields(entry, TARGET_FIELDS, name)
+    managed = isinstance(entry, dict) and entry.get("kind") == KIND_MANAGED
+    fields = MANAGED_TARGET_FIELDS if managed else TARGET_FIELDS
+    _fields(entry, fields, name)
     if not _token(entry["target_id"]):
         raise DeliveryRefused("target_invalid", name + ".target_id")
     if entry["kind"] not in TARGET_KINDS:
         raise DeliveryRefused("target_invalid", name + ".kind")
-    for key in ("root", "state_dir"):
+    paths = ("root", "state_dir", "source", "python") if managed else ("root", "state_dir")
+    for key in paths:
         # A host path IS owner configuration here, but it is still never taken from a candidate and
         # never interpolated into a command line.
         if not (type(entry[key]) is str and entry[key].strip() and len(entry[key]) <= 400):
             raise DeliveryRefused("target_invalid", name + "." + key)
     if not (type(entry["service"]) is str and TOKEN.fullmatch(entry["service"]) is not None):
         raise DeliveryRefused("target_invalid", name + ".service")
-    return {key: entry[key] for key in sorted(TARGET_FIELDS)}
+    if managed:
+        _managed_target(entry, name)
+    return {key: entry[key] for key in sorted(fields)}
+
+
+def _managed_target(entry: dict, name: str) -> None:
+    """The extra owner facts of a managed target: absolute, and three disjoint trees.
+
+    The managed root, the state directory and the source checkout may not contain one another, so
+    sealing a runtime can never write into the live checkout, a state file can never land inside a
+    sealed runtime, and a runtime can never be sealed from inside itself.
+    """
+    for key in ("root", "state_dir", "source", "python"):
+        if not os.path.isabs(entry[key]):
+            raise DeliveryRefused("target_invalid", name + "." + key)
+    for left, right in (("root", "state_dir"), ("root", "source"), ("state_dir", "source")):
+        if within_path(entry[left], entry[right]) or within_path(entry[right], entry[left]):
+            raise DeliveryRefused("target_overlap", name + "." + left)
+    if not _hex(entry["environment_lock"], SHA256):
+        raise DeliveryRefused("target_invalid", name + ".environment_lock")
+
+
+def managed_runtime_root(target: dict, revision: str) -> str:
+    """The sealed runtime directory of one revision under a managed root. Pure text: the path is
+    derived from the owner registry and the reviewed revision, never taken from a plan."""
+    return os.path.join(target["root"], RUNTIMES_DIR, revision)
 
 
 def validate_targets(document) -> dict:
@@ -357,7 +395,9 @@ def validate_targets(document) -> dict:
 def resolve_descriptor(target: dict, plan: dict, current: dict | None) -> dict:
     """The COMPLETE descriptor this delivery must make the target consume.
 
-    The root comes from the registered target, never from the plan. `unchanged` is resolved against
+    The root comes from the registered target, never from the plan; for a managed target it is the
+    sealed directory of the descriptor's revision under the registered managed root, so the
+    predecessor and the candidate always name two different immutable runtimes. `unchanged` is resolved against
     the descriptor the target is actually running now, and a target with no current descriptor
     cannot resolve it at all - that is a refusal, never a guess or an empty binding. `predecessor`
     is the digest of exactly the descriptor this switch replaces, so a rollback restores a full
@@ -373,7 +413,9 @@ def resolve_descriptor(target: dict, plan: dict, current: dict | None) -> dict:
         if not isinstance(current, dict) or current.get(key) in (None, UNCHANGED):
             raise DeliveryRefused("unchanged_without_predecessor", "target_descriptor." + key)
         resolved[key] = current[key]
-    return {"schema": DESCRIPTOR_SCHEMA, "target_id": target["target_id"], "root": target["root"],
+    root = (managed_runtime_root(target, plan_descriptor["revision"])
+            if target.get("kind") == KIND_MANAGED else target["root"])
+    return {"schema": DESCRIPTOR_SCHEMA, "target_id": target["target_id"], "root": root,
             "revision": plan_descriptor["revision"], "worker_image": resolved["worker_image"],
             "profile_digest": resolved["profile_digest"],
             "predecessor": None if current is None else descriptor_digest(current)}
@@ -764,9 +806,27 @@ def delivery_progress(row: dict, intent, descriptor_row) -> dict:
             "active_revision": None if active is None else active.get("revision"),
             "startup_observed": bool((descriptor_row or {}).get("startup_observed")),
             "consumed": bool((descriptor_row or {}).get("consumed")),
+            "runtime": _runtime_view((intent or {}).get("runtime")),
+            "work": _work_view((intent or {}).get("work")),
             "updated_at": (intent or {}).get("updated_at") or row.get("updated_at")}
     view["next_action"] = stage_next_action(stage, view["outcome"])
     return view
+
+
+def _runtime_view(record) -> dict | None:
+    """The sealed runtime a managed delivery bound, as a digest and a revision; never its path."""
+    if not isinstance(record, dict):
+        return None
+    return {"revision": record.get("revision"), "manifest_sha256": record.get("manifest_sha256"),
+            "files": record.get("files"), "recovered": bool(record.get("recovered"))}
+
+
+def _work_view(record) -> dict | None:
+    """The last drain observation of a managed target: a state, a code and two counts."""
+    if not isinstance(record, dict):
+        return None
+    return {key: record.get(key) for key in ("state", "reason_code", "active", "unresolved",
+                                             "paused")}
 
 
 def delivery_status(rows, intents: dict, descriptors: dict, *, enabled: bool) -> dict:
@@ -811,7 +871,8 @@ __all__ = ["ACTIVE", "AUTHORITY", "AWAITING_CI", "AWAITING_CONSUMPTION", "AWAITI
            "EVENT_SWITCHED", "EXTERNAL_STAGES", "FAILED", "FAILED_OUTCOMES", "HALTED_STAGES",
            "INSTANCE_ABSENT", "INSTANCE_AUTHORIZED", "INSTANCE_FOREIGN", "INSTANCE_INTENDED",
            "INSTANCE_INTERRUPTED", "INSTANCE_UNKNOWN", "REPLACEABLE_INSTANCES",
-           "KIND_PROCESS", "KIND_SCHEDULED_TASK", "MAX_STAGE_ATTEMPTS", "MERGED", "MERGE_INTENDED",
+           "KIND_MANAGED", "KIND_PROCESS", "KIND_SCHEDULED_TASK", "MANAGED_TARGET_FIELDS",
+           "MAX_STAGE_ATTEMPTS", "MERGED", "MERGE_INTENDED", "RUNTIMES_DIR",
            "OPEN_STAGES", "OUTCOME_ACTIVE", "OUTCOME_BLOCKED", "OUTCOME_BUSY", "OUTCOME_CONFLICT",
            "OUTCOME_DISABLED", "OUTCOME_IDLE", "OUTCOME_PENDING", "OUTCOME_PROGRESSED",
            "OUTCOME_REFUSED", "OUTCOME_ROLLED_BACK", "OUTCOME_UNAVAILABLE", "OUTCOME_UNREGISTERED",
@@ -821,7 +882,8 @@ __all__ = ["ACTIVE", "AUTHORITY", "AWAITING_CI", "AWAITING_CONSUMPTION", "AWAITI
            "TARGET_KINDS", "TERMINAL_STAGES", "TICK_SCHEMA", "UNCHANGED", "DeliveryRefused",
            "LifecycleInterrupted",
            "ci_verdict", "consumption_verdict", "delivery_progress", "delivery_status",
-           "descriptor_digest", "instance_authority", "new_intent", "next_stage", "normal_path",
+           "descriptor_digest", "instance_authority", "managed_runtime_root", "new_intent",
+           "next_stage", "normal_path",
            "plan_digest", "receipt_identity",
            "release_gate", "resolve_descriptor", "safe_error_type", "same_launch", "same_path",
            "stage_next_action", "target_progress", "validate_descriptor",
