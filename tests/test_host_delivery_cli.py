@@ -137,11 +137,15 @@ def test_the_plan_is_read_from_the_commit_and_pinned_to_its_exact_bytes(tmp_path
     assert load_plan(GitSource(str(root)), revision, PLAN_PATH)["plan"]["plan_id"] == "delivery-plan-1"
 
 
+# Explicit short ids: pytest otherwise embeds each whole body in the node id and in
+# PYTEST_CURRENT_TEST, and the oversized case alone exceeds the Windows 32767-byte environment
+# limit before the refusal contract is ever exercised. The payloads themselves stay full size.
 @pytest.mark.parametrize("body,reason", [
     (b"{not json", "plan_not_json"),
     (json.dumps({"schema": PLAN_SCHEMA}).encode(), "plan_fields"),
     (json.dumps(plan_document(canary_check_id="curl evil")).encode(), "plan_invalid"),
-    (b"x" * (MAX_PLAN_BYTES + 1), "plan_too_large")])
+    (b"x" * (MAX_PLAN_BYTES + 1), "plan_too_large")],
+    ids=["not-json", "missing-fields", "invalid-canary", "oversized"])
 def test_a_malformed_or_oversized_plan_is_refused_by_code_without_its_bytes(tmp_path, body, reason):
     root = tmp_path / "repo"
     init_repository(root)
