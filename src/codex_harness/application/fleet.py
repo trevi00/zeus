@@ -27,18 +27,24 @@ from codex_harness.domain.fleet import (
     QUEUED,
     RESERVING,
     TERMINAL,
+    UNIT_RELEASED,
     UNKNOWN,
     FleetRefused,
     binding,
+    check_unit_proof,
     config_digest,
     delivery_view,
     effective_config,
+    held_units,
     lane_of,
     new_job,
+    new_unit,
     projection,
     safe_code,
     sanitized_config,
     select_admission,
+    unit_binding,
+    unit_view,
     validate_config,
     validate_delivery,
     validate_grant,
@@ -71,6 +77,7 @@ BUCKET_GRANTS = "fleet_budget_grants"
 BUCKET_DELIVERY = "fleet_delivery"
 BUCKET_RECOVERY = "fleet_recovery_receipts"
 BUCKET_RELOCATION = "fleet_relocations"
+BUCKET_UNITS = "fleet_units"
 CONTROL_KEY = "admission"
 LOGGER = logging.getLogger("zeus.fleet.runner")
 
@@ -239,7 +246,8 @@ class Fleet:
             if mode == SUBSCRIPTION:
                 requested["mode"] = mode
             budget = validate_grant(prior, requested, expected_total)
-            if any(row["status"] == QUEUED or row["status"] in RESERVING for row in tx.scan(BUCKET_JOBS)):
+            if any(row["status"] == QUEUED or row["status"] in RESERVING for row in tx.scan(BUCKET_JOBS)) \
+                    or held_units(tx.scan(BUCKET_UNITS)):
                 raise FleetRefused("fleet_not_idle")
             now = self.clock()
             grant_id = "grant-%08d" % (len(tx.scan(BUCKET_GRANTS)) + 1)
@@ -270,8 +278,10 @@ class Fleet:
             control = self._control(tx)
             config = effective_config(registry["config"], control)  # refreshed every admission
             jobs = {row["id"]: row for row in tx.scan(BUCKET_JOBS)}
+            # Held execution units (a reserved, running or cleanup-unknown conductor) take the same
+            # `max_parallel` slots, read in this same serialized transaction.
             decision = select_admission(config, bool(control.get("paused")), jobs, budget_exhausted,
-                                        self._repository_aliases(tx))
+                                        self._repository_aliases(tx), units=len(held_units(tx.scan(BUCKET_UNITS))))
             job = decision["job"]
             now = self.clock()
             if job is not None:
@@ -284,6 +294,77 @@ class Fleet:
                     blocked.update(reason_code=reason, updated_at=now)
                     tx.put(BUCKET_JOBS, job_id, blocked)
         return {**decision, "job": job}
+
+    # ----- shared execution units: reserve before spawn, release only on exact proof ------
+    def reserve_unit(self, unit_id: str, kind: str, lane_id: str, subject: str, *, within=None) -> dict:
+        """Reserve one non-job execution unit (a conductor decision) BEFORE anything is spawned.
+
+        One transaction under the same serialization as `admit_one` (PostgresStore's control advisory
+        lock; MemoryStore's lock), so every controller and a standalone tick compete for the same
+        `max_parallel` slots as worker jobs: reserving jobs plus held units must stay below it. A
+        paused fleet reserves nothing. `within(tx, unit)` runs inside this transaction before the
+        commit - the caller's write-ahead record (the `dispatched` intent carrying the unit's token)
+        commits with the reservation or not at all. The same unit id replays its reservation
+        (`cached`, `within` not run); a different binding under that id is `unit_conflict`."""
+        with self.store.transaction() as tx:
+            registry = self._registry(tx)
+            if registry is None:
+                raise FleetRefused("unregistered")
+            old = tx.get(BUCKET_UNITS, unit_id)
+            config = effective_config(registry["config"], self._control(tx))
+            unit = new_unit(unit_id, kind, lane_of(config, lane_id), subject, self.token(), self.clock())
+            if old is not None:
+                if unit_binding(old) != unit_binding(unit):
+                    raise FleetRefused("unit_conflict", "id")
+                return {"unit": unit_view(old), "token": old["token"], "cached": True}
+            if bool(self._control(tx).get("paused")):
+                raise FleetRefused("paused")
+            reserving = sum(1 for row in tx.scan(BUCKET_JOBS) if row["status"] in RESERVING)
+            if reserving + len(held_units(tx.scan(BUCKET_UNITS))) >= config["max_parallel"]:
+                raise FleetRefused("capacity")
+            if within is not None:
+                within(tx, dict(unit))
+            tx.put(BUCKET_UNITS, unit_id, unit)
+        return {"unit": unit_view(unit), "token": unit["token"], "cached": False}
+
+    def settle_unit(self, unit_id: str, token: str, proof, *, within=None) -> dict:
+        """Release one unit on its exact proof (`domain.fleet.check_unit_proof`), in one transaction
+        with the caller's settlement write (`within(tx, unit)`, e.g. the intent leaving `dispatched`).
+
+        The token must be the reservation's; the proof must name this unit id (and, for a cleanup
+        receipt, this token) and confirm the parent AND the tree. A failed commit leaves the unit
+        held and the local proof intact, so the next pass settles it exactly once; an identical
+        replay after a lost response is `cached` (`within` not run); a different proof for a
+        released unit is `settlement_conflict`."""
+        with self.store.transaction() as tx:
+            unit = tx.get(BUCKET_UNITS, unit_id)
+            if unit is None:
+                raise FleetRefused("unit_unknown")
+            if not token or unit.get("token") != token:
+                raise FleetRefused("owner_mismatch", "token")
+            settlement = check_unit_proof(unit, proof)
+            if unit["state"] == UNIT_RELEASED:
+                if (unit.get("settlement") or {}).get("proof_sha256") != settlement["proof_sha256"]:
+                    raise FleetRefused("settlement_conflict")
+                return {"unit": unit_view(unit), "cached": True}
+            if within is not None:
+                within(tx, dict(unit))
+            now = self.clock()
+            unit.update(state=UNIT_RELEASED, released_at=now, settlement=settlement)
+            tx.put(BUCKET_UNITS, unit_id, unit)
+        return {"unit": unit_view(unit), "cached": False}
+
+    def units(self) -> list[dict]:
+        """Every execution unit's safe view (no token), held ones first."""
+        with self.store.transaction() as tx:
+            rows = tx.scan(BUCKET_UNITS)
+        return [unit_view(row) for row in sorted(rows, key=lambda r: (r.get("state") == UNIT_RELEASED,
+                                                                       str(r.get("reserved_at")), r["id"]))]
+
+    def held_units(self) -> list[str]:
+        """Units still consuming capacity: reserved, running or with unproven cleanup."""
+        with self.store.transaction() as tx:
+            return held_units(tx.scan(BUCKET_UNITS))
 
     def finalize(self, job_id: str, owner_token: str, outcome: dict) -> dict:
         """Only the dispatching owner records the terminal fact. `unknown` stays reserving."""
@@ -527,7 +608,7 @@ class Fleet:
             if registry["config_sha256"] != document["expected_config_sha256"]:
                 raise FleetRefused("config_expected_mismatch", "expected_config_sha256")
             jobs = tx.scan(BUCKET_JOBS)
-            if any(row["status"] in RESERVING for row in jobs):
+            if any(row["status"] in RESERVING for row in jobs) or held_units(tx.scan(BUCKET_UNITS)):
                 raise FleetRefused("fleet_not_idle")
             new = relocated_config(registry["config"], document)
             queued = {move["lane"]: sorted(row["id"] for row in jobs
@@ -658,6 +739,13 @@ class FleetRunner:
             self.sleep(self.interval)
         summary["stopped"] = self.stopping
         summary["reconciliation_required"] = self.fleet.reconciliation_required()
+        if self.continuation is not None:
+            # A stop never reports idle past owned debt: execution units still held (a conductor
+            # awaiting cleanup proof or settlement) are listed; an unreadable list is unknown.
+            try:
+                summary["units_held"] = self.fleet.held_units()
+            except Exception as exc:
+                summary["units_held"] = {"state": "unknown", "error_type": type(exc).__name__}
         return summary
 
     def _admission_open(self, summary: dict) -> bool:
@@ -820,8 +908,10 @@ class FleetRunner:
         # Effective ceilings are refreshed before every admission scan: a grant made while this
         # service sleeps applies to the next scan without a restart and without any hidden reset.
         config = self.fleet.registered()["config"]
-        # A pending conductor child holds a slot of the same bounded parallelism as a lane child.
-        while not self.stopping and len(self.children) + len(self._conductors()) < config["max_parallel"]:
+        # `admit_one` is the only capacity authority: its transaction counts reserving jobs AND held
+        # execution units (a conductor of any controller or standalone tick), so no local count here
+        # authorizes a start or counts a durable reservation twice. `children` only bounds the loop.
+        while not self.stopping and len(self.children) < config["max_parallel"]:
             exhausted = bool(self.launcher.budget_exhausted(config["budget"]))
             decision = self.fleet.admit_one(budget_exhausted=exhausted)
             summary["blocked"] = decision["blocked"]
@@ -868,4 +958,4 @@ class FleetRunner:
 
 
 __all__ = ["BUCKET_CONTROL", "BUCKET_DELIVERY", "BUCKET_GRANTS", "BUCKET_JOBS", "BUCKET_RECOVERY",
-           "BUCKET_REGISTRY", "BUCKET_RELOCATION", "Fleet", "FleetRunner", "LaunchRefused", "QUEUED"]
+           "BUCKET_REGISTRY", "BUCKET_RELOCATION", "BUCKET_UNITS", "Fleet", "FleetRunner", "LaunchRefused", "QUEUED"]

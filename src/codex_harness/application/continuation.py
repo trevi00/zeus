@@ -24,9 +24,14 @@ is a compare-and-swap on the intent version, so two controllers and a restart co
 intent, one successor id and one dispatch. An idle tick writes nothing and calls nothing.
 
 Restart is a table, not a guess: `domain.continuation.RESUME` names the one action for every open
-(route, state) a crash can leave behind. The conductor is never waited on: `conductor.start`
-launches an owned child under a launch identity committed BEFORE the start, and later ticks (or
-`drain`, when admission is closed) `conductor.poll` it and settle from the committed decision row.
+(route, state) a crash can leave behind. The conductor is never waited on: the Fleet's shared
+capacity authority reserves its execution unit in the SAME transaction that commits the launch
+identity (`dispatched`), before `conductor.start` spawns the DB-free guardian that owns the conduct
+tree; later ticks (or `drain`, when admission is closed) `conductor.poll` its local evidence. The
+unit and the intent leave `dispatched` together, in one Fleet settlement, and only on an exact
+proof: the guardian's confirmed parent-and-tree cleanup receipt or the never-entered fence. A
+decision that succeeded while cleanup is unknown is neither completed nor retried; that debt keeps
+its slot for its named owner.
 Every NEW effect - lane binding, Fleet admission, conductor start - first passes `_authorize`, the
 one eligibility guard comparing the current pinned policy, frame, model and runtime identity with
 the authorization stored on the intent; reconciling an already started effect never needs it.
@@ -51,6 +56,7 @@ from codex_harness.domain.continuation import (
     LAUNCH_EXITED,
     LAUNCH_RUNNING,
     LAUNCH_TIMEOUT,
+    LAUNCH_UNKNOWN,
     MAX_HISTORY,
     MAX_LAUNCHES,
     NEXT_ITEM,
@@ -91,12 +97,14 @@ from codex_harness.domain.continuation import (
     validate_policy,
     view,
 )
+from codex_harness.domain.fleet import UNIT_CONDUCTOR, FleetRefused, held_units
 from codex_harness.domain.model import ContractError, utcnow
 
 BUCKET_POLICIES = "continuation_policies"
 BUCKET_INTENTS = "continuation_intents"
 LANE_BINDINGS = "continuation_bindings"
 FLEET_JOBS = "fleet_jobs"
+FLEET_UNITS = "fleet_units"
 INVESTIGATIONS = "portfolio_investigations"
 EVENT_TRANSITION = "operations.continuation_transition"
 EVENT_BLOCKED = "operations.continuation_blocked"
@@ -191,10 +199,11 @@ class Continuation:
     `fleet` is the existing `Fleet`. `validate(manifest)` is the existing operation manifest
     validator the adapter binds to the packaged provider policy.
 
-    `conductor` is the owned-child conductor port (None: the conductor route waits for its owner):
-    `available() -> bool` (a bounded slot is free), `start(lane_id, job, launch_id)` (returns once
-    the child is spawned, never when the decision is made) and `poll(lane_id, launch_id) -> {state,
-    owned, exit_code}` with a state of `domain.continuation.LAUNCH_STATES`."""
+    `conductor` is the guarded conductor port (None: the conductor route waits for its owner):
+    `start(lane_id, job, launch_id, token)` (returns once the guardian is spawned, never when the
+    decision is made) and `poll(lane_id, launch_id) -> {state, owned, exit_code, cleanup_confirmed,
+    proof}` with a state of `domain.continuation.LAUNCH_STATES`. Capacity is never the port's: the
+    Fleet (sharing this control store) reserves and settles the execution unit."""
 
     def __init__(self, store, fleet=None, lanes=None, conductor=None, validate=None, observer=None, clock=utcnow):
         self.store, self.fleet, self.lanes, self.conductor = store, fleet, lanes, conductor
@@ -237,14 +246,18 @@ class Continuation:
                 "held_families": blocked_families(intents)}
 
     def unresolved(self, policy_id: str, owned=()) -> list:
-        """Dispatched conductor launches no child of THIS process owns: work a heartbeat reports as
-        unresolved (a previous owner's child, or one whose start is unconfirmed), never as idle."""
+        """Conductor work of this policy no guardian of THIS process supervises: dispatched launches
+        and every Fleet execution unit still held for one of its intents (a previous controller's
+        guardian, an unconfirmed start, cleanup unknown or settlement pending). A heartbeat reports
+        them as unresolved, never as idle."""
         owned = set(owned)
         with self.store.transaction() as tx:
-            intents = [row for row in tx.scan(BUCKET_INTENTS)
-                       if row.get("policy_id") == policy_id and row["state"] == DISPATCHED]
-        return sorted(ref for ref in ((row.get("launch") or {}).get("id") or row["id"] for row in intents)
-                      if ref not in owned)
+            intents = [row for row in tx.scan(BUCKET_INTENTS) if row.get("policy_id") == policy_id]
+            units = [row for row in tx.scan(FLEET_UNITS) if row.get("kind") == UNIT_CONDUCTOR]
+        mine = {row["id"] for row in intents}
+        refs = {(row.get("launch") or {}).get("id") or row["id"] for row in intents if row["state"] == DISPATCHED}
+        refs |= set(held_units(unit for unit in units if unit.get("subject") in mine))
+        return sorted(ref for ref in refs if ref not in owned)
 
     # ----- one tick -----------------------------------------------------------------------
     def tick(self, policy_id: str, *, pin_sha256: str | None = None, runtime=None) -> dict:
@@ -549,20 +562,35 @@ class Continuation:
                 "successor_job": intent.get("successor_job")}
 
     def _dispatch(self, ctx, intent: dict, job: dict) -> dict | None:
-        """Guard, then the launch identity commits (`dispatched`) BEFORE the owned child starts, then
-        the start returns without waiting for the decision. A failed or lost start response is not
-        retried here: reconciliation of this same launch identity decides whether a child exists."""
+        """Guard, then ONE Fleet transaction reserves the shared execution unit and commits the
+        launch identity with its token (`dispatched`) BEFORE the guardian is spawned, then the start
+        returns without waiting for the decision. No local count authorizes it; a full fleet refuses
+        (`conductor_capacity`) and the intent stays. A failed or lost start response is not retried
+        here: reconciliation of this same launch identity decides whether a guardian entered."""
         if self.conductor is None:
             moved = self._move(intent, AWAITING_OWNER, reason_code="conductor_port_unconfigured")
             return {"subject": moved["id"], "effect": moved["state"], "route": CONDUCTOR}
+        refuse(self.fleet is not None and getattr(self.fleet, "store", None) is self.store,
+               "fleet_unconfigured", "fleet")
         intent = self._authorize(ctx, intent)
-        refuse(bool(self.conductor.available()), "conductor_slots_full", "conductor")
         sequence = int((intent.get("launch") or {}).get("sequence") or 0) + 1
         launch = {"id": launch_id(intent["id"], sequence), "sequence": sequence, "state": "starting",
                   "exit_code": None, "error_type": None}
-        intent = self._move(intent, DISPATCHED, launch=launch)
+        moved = {}
+
+        def dispatched(tx, unit):
+            moved["previous"], moved["row"] = self._apply(tx, intent, DISPATCHED, {"launch": {**launch, "token": unit["token"]}})
         try:
-            started = self.conductor.start(intent["lane"], job, launch["id"])
+            self.fleet.reserve_unit(launch["id"], UNIT_CONDUCTOR, intent["lane"], intent["id"], within=dispatched)
+        except FleetRefused as exc:
+            raise ContinuationRefused("conductor_" + exc.reason_code, "fleet", exc.field) from exc
+        if "row" not in moved:
+            raise IntentChanged(intent["id"])  # the reservation already committed with its intent move
+        intent = moved["row"]
+        self._emit(moved["previous"], intent)
+        launch = intent["launch"]
+        try:
+            started = self.conductor.start(intent["lane"], job, launch["id"], launch["token"])
         except Exception as exc:
             try:
                 self._note(intent, launch={**launch, "state": "start_unconfirmed", "error_type": type(exc).__name__})
@@ -588,19 +616,51 @@ class Continuation:
             return self._settle_conductor(intent, job, {"state": LAUNCH_EXITED, "exit_code": None})
         refuse(self.conductor is not None, "conductor_port_unconfigured", "conductor")
         observed = self.conductor.poll(intent["lane"], launch["id"])
-        state = observed.get("state") if isinstance(observed, dict) else None
+        observed = observed if isinstance(observed, dict) else {}
+        state = observed.get("state")
         if state == LAUNCH_RUNNING:
             if observed.get("owned"):
                 return None
-            # Alive, but not a child of this process: only this family waits; never a second start.
+            # Supervised by a guardian this process did not start (a previous controller's): only
+            # this family waits, its unit stays held; never a second start.
             raise ContinuationRefused("conductor_owner_unknown", "conductor", "launch")
         if state == LAUNCH_ABSENT:
-            moved = self._move(intent, AWAITING_OWNER, reason_code="conductor_not_launched",
-                               launch={**launch, "state": LAUNCH_ABSENT})
+            # The fence proves the launch never entered and never will: the unit is released with it.
+            moved = self._settle(intent, observed, AWAITING_OWNER, reason_code="conductor_not_launched",
+                                 launch={**launch, "state": LAUNCH_ABSENT})
             return {"subject": moved["id"], "effect": moved["state"], "route": CONDUCTOR}
-        if state in {LAUNCH_EXITED, LAUNCH_TIMEOUT}:
+        if state in {LAUNCH_EXITED, LAUNCH_TIMEOUT} and observed.get("cleanup_confirmed") is True:
             return self._settle_conductor(intent, job, observed)
-        raise ContinuationRefused("conductor_launch_unknown", ROUTE_OWNERS[RECOVERY], "launch")
+        # Exited or timed out without a confirmed parent-and-tree receipt, a guardian that ended
+        # without proof, or unreadable evidence: owned debt. The decision row is not even read - a
+        # succeeded decision with unknown cleanup neither completes nor frees a retry.
+        reason = "conductor_cleanup_unknown" if state in {LAUNCH_EXITED, LAUNCH_TIMEOUT, LAUNCH_UNKNOWN} \
+            else "conductor_launch_unknown"
+        if launch.get("state") != "cleanup_unknown":
+            self._note(intent, emit=True, launch={**launch, "state": "cleanup_unknown"},
+                       hold={"reason_code": reason, "next_owner": ROUTE_OWNERS[RECOVERY], "field": "launch"})
+        raise ContinuationRefused(reason, ROUTE_OWNERS[RECOVERY], "launch")
+
+    def _settle(self, intent, observed, target, **fields) -> dict:
+        """Leave `dispatched`: the intent move and the Fleet unit's release commit together, and only
+        on the observed proof. A launch recorded before shared units existed has no token, and so
+        no unit to release: its intent moves alone."""
+        token = (intent.get("launch") or {}).get("token")
+        if not token:
+            return self._move(intent, target, **fields)
+        moved = {}
+
+        def settled(tx, unit):
+            moved["previous"], moved["row"] = self._apply(tx, intent, target, fields)
+        try:
+            self.fleet.settle_unit(intent["launch"]["id"], token, observed.get("proof"), within=settled)
+        except FleetRefused as exc:
+            raise ContinuationRefused("conductor_settlement_" + exc.reason_code, ROUTE_OWNERS[RECOVERY],
+                                      exc.field) from exc
+        if "row" not in moved:
+            raise IntentChanged(intent["id"])  # already settled together with its intent
+        self._emit(moved["previous"], moved["row"])
+        return moved["row"]
 
     def _settle_conductor(self, intent, job, observed) -> dict | None:
         evidence = self.lanes(intent["lane"]).read(job)
@@ -611,20 +671,26 @@ class Continuation:
             exit_code = observed.get("exit_code")
             fields["launch"] = {**intent["launch"], "state": observed.get("state"),
                                 "exit_code": exit_code if type(exit_code) is int else None}
+            if fields["launch"]["state"] is None:
+                fields["launch"]["state"] = LAUNCH_EXITED
+        if intent.get("hold") is not None:
+            fields["hold"] = None
         if status == "succeeded":
             result = conductor.get("result") or {}
             decision = {"id": conductor.get("id"), "status": status, "accepted": result.get("accepted"),
                         "execution_ref": result.get("execution_ref")}
-            moved = self._move(intent, RETURNED, decision=decision,
-                               evidence_refs=[ref for ref in (result.get("execution_ref"),) if ref], **fields)
+            moved = self._settle(intent, observed, RETURNED, decision=decision,
+                                 evidence_refs=[ref for ref in (result.get("execution_ref"),) if ref], **fields)
             moved = self._move(moved, COMPLETED)
             return {"subject": moved["id"], "effect": "conductor_decided", "route": CONDUCTOR}
         if status in {None, "pending"} and int(conductor.get("attempt") or 0) == 0:
-            # Provably not entered (no claim, no attempt): a later launch of a NEW identity may claim it.
-            moved = self._move(intent, AWAITING_OWNER, reason_code="conductor_not_claimed", **fields)
+            # Provably not entered (no attempt) AND the prior tree proven gone: a later launch of a NEW
+            # identity may claim it.
+            moved = self._settle(intent, observed, AWAITING_OWNER, reason_code="conductor_not_claimed", **fields)
             return {"subject": moved["id"], "effect": moved["state"], "route": CONDUCTOR}
         reason = "conductor_timeout" if observed.get("state") == LAUNCH_TIMEOUT else "conductor_" + str(status)
-        moved = self._move(intent, RECOVERY_REQUIRED, reason_code=reason, next_owner=ROUTE_OWNERS[RECOVERY], **fields)
+        moved = self._settle(intent, observed, RECOVERY_REQUIRED, reason_code=reason,
+                             next_owner=ROUTE_OWNERS[RECOVERY], **fields)
         return {"subject": moved["id"], "effect": moved["state"], "route": CONDUCTOR}
 
     def _advance_delivery(self, intent, evidence) -> dict | None:
@@ -754,20 +820,26 @@ class Continuation:
     def _move(self, intent: dict, target: str, **fields) -> dict:
         """Compare-and-swap on the intent version; a moved intent raises `IntentChanged`."""
         with self.store.transaction() as tx:
-            current = tx.get(BUCKET_INTENTS, intent["id"])
-            if current is None or current.get("version") != intent.get("version"):
-                raise IntentChanged(intent["id"])
-            previous = current["state"]
-            current["state"] = transition(previous, target)
-            now = self.clock()
-            current.update({k: v for k, v in fields.items() if k != "error_type"}, version=current["version"] + 1,
-                           updated_at=now)
-            current["history"] = (current.get("history") or [])[-(MAX_HISTORY - 1):] + [
-                {"state": target, "previous": previous, "reason_code": current.get("reason_code"),
-                 "error_type": fields.get("error_type"), "at": now}]
-            tx.put(BUCKET_INTENTS, intent["id"], current)
+            previous, current = self._apply(tx, intent, target, fields)
         self._emit(previous, current)
         return current
+
+    def _apply(self, tx, intent: dict, target: str, fields: dict) -> tuple:
+        """The compare-and-swap write inside an open control-store transaction (its own, or the
+        Fleet's when the move commits together with an execution unit); the caller emits after."""
+        current = tx.get(BUCKET_INTENTS, intent["id"])
+        if current is None or current.get("version") != intent.get("version"):
+            raise IntentChanged(intent["id"])
+        previous = current["state"]
+        current["state"] = transition(previous, target)
+        now = self.clock()
+        current.update({k: v for k, v in fields.items() if k != "error_type"}, version=current["version"] + 1,
+                       updated_at=now)
+        current["history"] = (current.get("history") or [])[-(MAX_HISTORY - 1):] + [
+            {"state": target, "previous": previous, "reason_code": current.get("reason_code"),
+             "error_type": fields.get("error_type"), "at": now}]
+        tx.put(BUCKET_INTENTS, intent["id"], current)
+        return previous, current
 
     def _note(self, intent: dict, *, emit: bool = False, **fields) -> dict:
         """The same compare-and-swap for a field of an unchanged state: launch evidence or a hold."""

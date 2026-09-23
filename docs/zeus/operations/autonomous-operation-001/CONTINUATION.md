@@ -75,8 +75,50 @@ local child processes, locks and launch files of `ConductorProcesses`, MemorySto
 Fleet, Operation, LocalCycle, Workflow, finalization, WorkerSessions archives, Portfolio, temporary
 Git repositories.
 
+## Two-strike ownership correction (SPEC 2026-09-23, OWNERSHIP-DEBATE.md option B)
+
+Base aaa4c626. Candidates 77dbb04f and 1bd95a36 were rejected for the same lifecycle family; this
+is the debated design, not a third local patch. Reuse/extend, no new scheduler: the Fleet
+admission transaction, `ProcessTree`, the launch directory/lock/claim and the continuation intents.
+
+| State (SPEC table) | Where it lives now | Capacity |
+| --- | --- | --- |
+| Reserved | `Fleet.reserve_unit` (`fleet_units`, same transaction/serialization as `admit_one`) + intent `dispatched` with launch id and token, one commit, before spawn | held |
+| Starting | `spawn` marker (one-shot), `launch.json`; guardian `lock`, flushed `debt.json`, then `claim=child` | held |
+| Running | hidden DB-free guardian (`continuation_process.main`/`guard`) owns the conduct `ProcessTree`, deadline, stop | held |
+| Cleanup pending/unknown | `debt.json: cleanup_unknown`, `unresolved.json`; `observe` -> `unknown`; intent `dispatched` + `hold conductor_cleanup_unknown` | held |
+| Cleanup confirmed, settlement pending | `cleanup.json` (parent AND tree confirmed, launch + token); Fleet unit still `reserved` | held |
+| Released | `Fleet.settle_unit` checks proof/token and commits the unit release with the intent move | free |
+
+Changed: `domain/fleet.py` (unit rows, `check_unit_proof`, `select_admission(units=)`),
+`application/fleet.py` (`reserve_unit`, `settle_unit`, `units`, `held_units`; admission, grant and
+relocation count held units; the runner no longer adds a local conductor count and reports
+`units_held`), `application/continuation.py` (`_dispatch` reserves+dispatches atomically;
+`_settle` releases only on proof; unknown cleanup is held debt; `unresolved` includes held units),
+`adapters/continuation_process.py` (guardian, proof-only `observe`, one-shot spawn, `request_stop`;
+`available`/`max_active` removed: the port holds no capacity), `domain/continuation.py` (next action
+texts), contracts INV-FLEET-001/INV-CONTINUATION-001.
+
+Compatibility: an intent dispatched before this change has a launch without a token; it is settled
+without a unit, and its old `exit.json`-only directory now observes as `unknown` (conservative: owner
+recovery, never a relaunch). Conductor starts now need a free shared slot and an unpaused fleet.
+Rollback: revert this change; `fleet_units` rows are then ignored evidence. Retired: the controller-
+side timeout kill and the local `max_active` conductor slot.
+
+Decisions: a reconciler that wins the lock before a freshly spawned guardian fences it (the guardian
+exits `3` with zero conduct; the unit is released on the fence and a new identity may follow within
+`MAX_LAUNCHES`). Graceful stop keeps the R3 drain; guardians additionally honour a local stop request
+(`stop` file, POSIX SIGTERM) and still prove cleanup. A guardian that cannot confirm cleanup exits
+`124` after bounded attempts with the deliberate handoff; on Windows its exit closes the job handle
+(kill-on-close), which is still not recorded as proof. On Windows the guardian requests
+`CREATE_BREAKAWAY_FROM_JOB`; if the controller's job forbids it the single fallback spawn keeps it in
+that job (`breakaway: False`) and controller teardown then leaves unknown debt.
+
 ## Not established here (owner qualification gates)
 
+- The ownership correction on Windows (job object, breakaway, guardian survival of controller
+  teardown) and PostgreSQL advisory-lock concurrency of `reserve_unit`/`admit_one`: only POSIX
+  process groups and MemoryStore thread concurrency were executed in the worker image.
 - Real PostgreSQL lane schemas and Redis delivery; the conductor's Redis stream message is handled
   from the operation's outbox row and stays unacknowledged in the stream (idempotent by inbox hash).
 - A real two-turn model session through the isolated worker and the correction resume.

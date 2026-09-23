@@ -73,21 +73,20 @@ class ConductorFixture:
     shapes them - and `poll` reports the launch as the real port would observe it.
 
     `pending=True` leaves the launch running with nothing decided until `finish()`; `lost=True`
-    starts (and decides) but loses the start response; `raise_error` fails before any child exists."""
+    starts (and decides) but loses the start response; `raise_error` fails before any child exists;
+    `cleanup=False` makes an ended launch report no cleanup proof (a guardian that ended without
+    proving parent-and-tree cleanup). It holds no capacity: the Fleet unit is the only slot."""
 
     def __init__(self, lane, accepted=True, raise_error=None, pending=False, lost=False):
         self.lane, self.accepted, self.raise_error = lane, accepted, raise_error
         self.pending, self.lost, self.calls, self.launches, self.jobs = pending, lost, [], {}, {}
-        self.slots = 1
+        self.tokens, self.cleanup = {}, True
 
-    def available(self):
-        return sum(1 for state in self.launches.values() if state == "running") < self.slots
-
-    def start(self, lane_id, job, launch):
+    def start(self, lane_id, job, launch, token):
         if self.raise_error is not None:
             raise self.raise_error
         self.calls.append(job["id"])
-        self.jobs[launch] = job
+        self.jobs[launch], self.tokens[launch] = job, token
         self.launches[launch] = "running"
         if not self.pending:
             self.finish(launch)
@@ -123,19 +122,34 @@ class ConductorFixture:
     def poll(self, lane_id, launch):
         state = self.launches.get(launch)
         if state is None:  # nothing was ever spawned under this identity: the fence proves it
-            return {"state": "absent", "owned": False, "exit_code": None}
-        return {"state": state, "owned": True, "exit_code": 0 if state == "exited" else None}
+            return {"state": "absent", "owned": False, "exit_code": None,
+                    "proof": {"kind": "fenced", "launch": launch, "claim": "fenced"}}
+        if state == "running":
+            return {"state": state, "owned": True, "exit_code": None}
+        if not self.cleanup:
+            return {"state": "unknown", "owned": False, "exit_code": None, "cleanup_confirmed": False,
+                    "reason_code": "guardian_ended_without_proof"}
+        return {"state": state, "owned": True, "exit_code": 0, "cleanup_confirmed": True,
+                "proof": cleanup_proof(launch, self.tokens[launch])}
+
+
+def cleanup_proof(launch, token, **overrides):
+    """The shape of the guardian's durable `cleanup.json` (LABELLED: written by this fixture)."""
+    return {"schema": "urn:zeus:conductor-guardian:1", "kind": "cleanup", "launch": launch, "token": token,
+            "spawned": True, "exit_code": 0, "timed_out": False, "stopped": False, "confirmed": True,
+            "parent": {"confirmed": True, "exit_code": 0, "method": None},
+            "tree": {"confirmed": True, "exit_code": None, "method": "process_group"}, **overrides}
 
 
 class World:
     """One Fleet (control store), one lane store, the lane's session owner and one controller."""
 
     def __init__(self, tmp_path, *, conductor=True, accepted=True, runtime=None, max_corrections=3,
-                 enabled=True):
+                 enabled=True, max_parallel=2):
         self.tmp = tmp_path
         self.control = MemoryStore()
         self.fleet = Fleet(self.control)
-        self.fleet.register(fleet_config(tmp_path))
+        self.fleet.register(fleet_config(tmp_path, max_parallel=max_parallel))
         self.repository = repository_identity(str(tmp_path / "repo-a"))
         self.lane = Harness(MemoryStore(), organization())
         self.sessions = WorkerSessions(self.lane.store, SessionArchives(tmp_path / "archives"))
@@ -886,16 +900,18 @@ class CrashingPort:
     def __init__(self, inner, at):
         self.inner, self.at = inner, at
 
-    def available(self):
-        if self.at == "intended":
-            raise Crash("after the intended commit")
-        return self.inner.available()
-
-    def start(self, lane_id, job, launch):
+    def start(self, lane_id, job, launch, token):
         if self.at == "dispatched":
             raise Crash("after the dispatched commit, before any child")
-        self.inner.start(lane_id, job, launch)
+        self.inner.start(lane_id, job, launch, token)
         raise Crash("after the child started, before its launch evidence was recorded")
+
+
+class CrashReserve(Fleet):
+    """A controller killed after the `intended` commit, inside the Fleet reservation transaction."""
+
+    def reserve_unit(self, *args, **kwargs):
+        raise Crash("after the intended commit, before the reservation committed")
 
     def poll(self, lane_id, launch):
         return self.inner.poll(lane_id, launch)
@@ -915,6 +931,7 @@ def test_conductor_restart_after_each_commit_invokes_at_most_once_and_completes(
     world.register()
     job_id = accepted_item(world)
     crashing = (world.build(cls=CrashAtComplete) if boundary == "returned"
+                else world.build(fleet=CrashReserve(world.control)) if boundary == "intended"
                 else world.build(conductor=CrashingPort(world.conductor, boundary)))
     with pytest.raises(Crash):
         world.tick(controller=crashing)
@@ -1075,10 +1092,10 @@ def test_conductor_drift_after_an_outage_starts_nothing_and_a_changed_pin_only_d
     world.register()
     accepted_item(world)
 
-    class Down(ConductorFixture):
-        def available(self):
-            raise ConnectionError("slot probe unavailable (injected)")
-    world.tick(controller=world.build(conductor=Down(world.lane)))
+    class Down(Fleet):
+        def reserve_unit(self, *args, **kwargs):
+            raise ConnectionError("shared capacity authority unavailable (injected)")
+    world.tick(controller=world.build(fleet=Down(world.control)))
     assert only(world.intents(), route=dc.CONDUCTOR)["state"] == dc.INTENDED
     world.runtime = lambda lane: {**RUNTIME, "image": "other/image:1"}
     for _ in range(2):
@@ -1211,7 +1228,9 @@ def test_runner_counts_a_pending_conductor_as_owned_work_takes_a_slot_and_drains
         if len(sleeps) == 1:
             flags["stop"] = True
         elif len(sleeps) == 2:
-            world.conductor.finish(next(iter(world.conductor.launches)))
+            for launch, state in list(world.conductor.launches.items()):
+                if state == "running":
+                    world.conductor.finish(launch)
     passes = FixturePass(world)
     runner = FleetRunner(world.fleet, LaneLauncher(world, [True]), sleep=sleep, interval=0, control=Control(),
                          continuation=passes)
@@ -1219,7 +1238,123 @@ def test_runner_counts_a_pending_conductor_as_owned_work_takes_a_slot_and_drains
     assert summary["stopped"] is True and world.jobs()["op-2"]["status"] == "accepted"
     assert {"admission": "open", "active": 1, "unresolved": 0, "op2": "accepted"} in heartbeats, \
         "the other family was admitted and reaped while the conductor was pending"
-    assert {"admission": "stopping", "active": 1, "unresolved": 0, "op2": "accepted"} in heartbeats
+    assert any(beat["admission"] == "stopping" and beat["active"] >= 1 and beat["unresolved"] == 0
+               for beat in heartbeats), "the stop drained owned conductors and kept them accounted"
     assert only(world.intents(), origin_job=job_id, route=dc.CONDUCTOR)["state"] == dc.COMPLETED
-    assert world.conductor.calls == [job_id], "the second conductor waited for the bounded slot"
+    # Both conductors fit the shared max_parallel=2 (one slot each, the worker job had finished):
+    # each identity was started exactly once and each unit was released on its cleanup proof.
+    assert sorted(world.conductor.calls) == sorted([job_id, "op-2"])
+    assert world.fleet.held_units() == [] and summary["units_held"] == []
     assert summary["continuation"]["state"] == "draining" and passes.owned() == []
+
+
+# ---- two-strike ownership: shared capacity, proof-bound settlement, unknown debt ------------------
+def test_a_conductor_reserves_the_shared_slot_before_its_start_and_a_worker_waits_for_it(tmp_path):
+    world = World(tmp_path, max_parallel=1)
+    world.conductor.pending = True
+    world.register()
+    job_id = accepted_item(world)
+    world.enqueue("op-2", "docs/b.md")
+    world.tick()
+    intent = only(world.intents(), route=dc.CONDUCTOR)
+    assert intent["state"] == dc.DISPATCHED and world.fleet.held_units() == [intent["launch"]["id"]]
+    assert intent["launch"]["token"] == world.conductor.tokens[intent["launch"]["id"]], "started under its token"
+    decision = world.fleet.admit_one()
+    assert decision["job"] is None and decision["blocked"] == {"op-2": "capacity"}, "conductor first: zero excess"
+    world.conductor.finish(intent["launch"]["id"])
+    world.tick()
+    assert only(world.intents(), route=dc.CONDUCTOR)["state"] == dc.COMPLETED and world.fleet.held_units() == []
+    assert world.fleet.admit_one()["job"]["id"] == "op-2" and world.conductor.calls == [job_id]
+
+
+def test_a_dispatching_worker_fills_the_fleet_and_the_conductor_waits_without_starting(tmp_path):
+    world = World(tmp_path, max_parallel=1)
+    world.register()
+    job_id = accepted_item(world)
+    world.enqueue("op-2", "docs/b.md")
+    job = world.fleet.admit_one()["job"]  # the worker is admitted before the conductor is observed
+    result = world.tick()
+    intent = only(world.intents(), route=dc.CONDUCTOR)
+    assert intent["state"] == dc.INTENDED and world.conductor.calls == [] and world.fleet.held_units() == []
+    assert {"subject": job_id, "reason_code": "conductor_capacity", "next_owner": "fleet"} in result["skipped"]
+    world.fleet.finalize(job["id"], job["owner_token"], {"status": "failed", "reason_code": "child_refused"})
+    world.tick()
+    assert only(world.intents(), route=dc.CONDUCTOR)["state"] == dc.COMPLETED and world.conductor.calls == [job_id]
+
+
+def test_a_succeeded_decision_with_unknown_cleanup_neither_completes_nor_retries(tmp_path):
+    world = World(tmp_path)
+    world.conductor.pending, world.conductor.cleanup = True, False
+    world.register()
+    job_id = accepted_item(world)
+    world.tick()
+    intent = only(world.intents(), route=dc.CONDUCTOR)
+    world.conductor.finish(intent["launch"]["id"])  # the decision row is `succeeded`
+    for _ in range(3):
+        result = world.tick()
+    held = only(world.intents(), route=dc.CONDUCTOR)
+    assert held["state"] == dc.DISPATCHED and "decision" not in held and held["launch"]["state"] == "cleanup_unknown"
+    assert {"subject": held["id"], "reason_code": "conductor_cleanup_unknown", "next_owner": "execution_recovery"} \
+        in result["skipped"]
+    assert not [row for row in world.intents().values() if row["route"] == dc.DELIVERY]
+    assert world.fleet.held_units() == [intent["launch"]["id"]] and world.conductor.calls == [job_id]
+    assert world.controller.unresolved("policy-1") == [intent["launch"]["id"]], "never reported idle"
+    blocked = [e for e in world.events() if e["event_type"] == "operations.continuation_blocked"]
+    assert blocked[-1]["reason_code"] == "conductor_cleanup_unknown"
+    # Trustworthy cleanup evidence resolves it WITHOUT a rerun: the committed decision completes it.
+    world.conductor.cleanup = True
+    world.tick()
+    settled = only(world.intents(), route=dc.CONDUCTOR)
+    assert settled["state"] == dc.COMPLETED and settled["hold"] is None and world.fleet.held_units() == []
+    assert world.conductor.calls == [job_id]
+
+
+class CommitFails(Fleet):
+    """LABELLED fault: the settlement transaction runs, then its commit fails (store outage)."""
+
+    def settle_unit(self, unit_id, token, proof, *, within=None):
+        def then_fail(tx, unit):
+            within(tx, unit)
+            raise ConnectionError("commit failed after the settlement write (injected)")
+        return super().settle_unit(unit_id, token, proof, within=then_fail)
+
+
+def test_confirmed_cleanup_with_a_failed_settlement_commit_settles_exactly_once_after_restart(tmp_path):
+    world = World(tmp_path)
+    world.conductor.pending = True
+    world.register()
+    job_id = accepted_item(world)
+    world.tick()
+    intent = only(world.intents(), route=dc.CONDUCTOR)
+    world.conductor.finish(intent["launch"]["id"])
+    failing = world.build(fleet=CommitFails(world.control))
+    for _ in range(2):
+        result = world.tick(controller=failing)
+        assert [row["reason_code"] for row in result["skipped"]] == ["unavailable"]
+    assert only(world.intents(), route=dc.CONDUCTOR)["state"] == dc.DISPATCHED, "rolled back with the unit"
+    assert world.fleet.held_units() == [intent["launch"]["id"]]
+    for _ in range(3):  # the store recovered; a restarted controller replays the settlement from the proof
+        world.tick(controller=world.build())
+    settled = only(world.intents(), route=dc.CONDUCTOR)
+    assert settled["state"] == dc.COMPLETED and world.fleet.held_units() == []
+    units = world.fleet.units()
+    assert len(units) == 1 and units[0]["settlement"]["kind"] == "cleanup" and world.conductor.calls == [job_id]
+    assert [h["state"] for h in settled["history"]].count(dc.RETURNED) == 1, "settled exactly once"
+
+
+def test_unknown_debt_holds_capacity_while_free_slots_still_serve_unrelated_work(tmp_path):
+    world = World(tmp_path)
+    world.conductor.pending, world.conductor.cleanup = True, False
+    world.register()
+    accepted_item(world)
+    world.tick()
+    world.conductor.finish(next(iter(world.conductor.launches)), decide=False)
+    world.tick()
+    world.enqueue("op-2", "docs/b.md")
+    job = world.fleet.admit_one()["job"]
+    assert job["id"] == "op-2", "one slot of two is free: unrelated work advances"
+    world.enqueue("op-3", "docs/c.md")
+    world.fleet.finalize(job["id"], job["owner_token"], {"status": "unknown", "reason_code": "outcome_uncertain"})
+    blocked = world.fleet.admit_one()
+    assert blocked["job"] is None and blocked["blocked"] == {"op-3": "capacity"}, \
+        "debt plus an unknown job hold every slot: admission stops honestly"
