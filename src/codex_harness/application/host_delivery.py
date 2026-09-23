@@ -613,6 +613,12 @@ class HostDelivery:
         The verified release, the registered target, the current descriptor and the plan's expected
         predecessor must all agree here; the resolved descriptor and the active-release CAS value
         are written durably, so the switch, a replay of it and a rollback all act on one identity.
+
+        The IDENTITY of the instance that is running there is captured here too, while the
+        predecessor's own receipt still names it, and durably: the authority to replace an instance
+        cannot be re-derived from the target after its descriptor has been replaced. A target whose
+        running instance is not the one this delivery's own records name is a disagreement to
+        reconcile (`target_instance_mismatch`), not something to switch on top of.
         """
         gate = self._gate(plan)
         if gate["status"] not in {"verified", "active"}:
@@ -630,11 +636,28 @@ class HostDelivery:
             # The host is not where the owner approved this switch from.
             return self._halt(plan, intent, BLOCKED, OUTCOME_BLOCKED, "descriptor_predecessor_mismatch",
                               claim=claim)
+        # The identity of the instance this delivery may replace is captured HERE, before the
+        # descriptor is replaced and therefore while the predecessor's own receipt still names it.
+        # It is durable, so a later tick, a restart or a lost response acts on the same authority.
+        # A port that is not wired yet is not a reason to refuse here - the stage that actually
+        # touches the host reports that - and it leaves this delivery with NO authority to replace
+        # anything, which the start then refuses rather than acting on an assumption.
+        host = self.hosts.get(target["kind"])
+        identity = host.identity(target) if hasattr(host, "identity") else {}
+        recorded = (current_row or {}).get("instance_id") or (current_row or {}).get(
+            "observed_instance_id")
+        observed_instance = identity.get("instance_id")
+        if recorded and observed_instance and recorded != observed_instance:
+            # This delivery's own records and the target disagree about who is running there.
+            # Nothing is switched, stopped or started on contradictory evidence.
+            return self._halt(plan, intent, BLOCKED, OUTCOME_BLOCKED, "target_instance_mismatch",
+                              claim=claim)
         descriptor = resolve_descriptor(target, plan, current)
         return self._enter(plan, intent, DRAIN_INTENDED, claim, descriptor=descriptor,
                            descriptor_sha256=descriptor_digest(descriptor),
                            previous_descriptor=current, previous_descriptor_sha256=current_sha,
-                           previous_instance_id=(current_row or {}).get("instance_id"),
+                           previous_instance_id=observed_instance or recorded,
+                           previous_launch=identity.get("launch"),
                            expected_active=active.get("release_id"), expected_active_set=True,
                            stage_deadline=self._deadline(plan["consumption_timeout_seconds"]))
 
@@ -666,6 +689,11 @@ class HostDelivery:
         start a second instance: the descriptor that is already there is compared to the intended
         one, and a process that is already running and already reports this exact descriptor is
         recognized instead of restarted.
+
+        The start carries the authority captured before the descriptor was replaced, so the only
+        running instance it may end is the predecessor this transition named - and what it launched
+        or recognized is recorded durably, because that is what a rollback is later authorized to
+        replace.
         """
         host, target = self._host(plan)
         descriptor = intent["descriptor"]
@@ -685,14 +713,16 @@ class HostDelivery:
         running = consumption_verdict(descriptor, host.receipt(target),
                                       expected_instance=intent.get("previous_instance_id"))
         if running["consumed"] and host.running(target):
-            started = {"started": False, "recovered": True}
+            started = {"started": False, "recovered": True, "instance_id": running["instance_id"]}
         else:
             # This outer check is not the mutation boundary: the guard inside the adapter proves
-            # ownership again before the first effect, reconciles what is actually on the target
-            # and recognizes an already matching live instance instead of restarting it.
+            # ownership again before the first effect, reconciles what is actually on the target,
+            # recognizes an already matching live instance instead of restarting it, and replaces
+            # only the instance this delivery's durable transition authorized it to replace.
             self._owned_now(claim)
             started = self._lifecycle(
-                lambda: host.start(target, descriptor, authorize=authorize))
+                lambda: host.start(target, descriptor, authorize=authorize,
+                                   replaces=self._replaces(intent, forward=True)))
         self._record("descriptor_switched", lambda: self._record_descriptor(
             plan, intent, descriptor, consumed=False, instance_id=None, claim=claim))
         self._emit(EVENT_SWITCHED, "observed", plan, attributes={
@@ -700,12 +730,47 @@ class HostDelivery:
             "descriptor_sha256": intent["descriptor_sha256"],
             "previous_sha256": intent["previous_descriptor_sha256"], "instance_id": None,
             "consumed": False})
+        # What this delivery itself put on the target: the instance it launched or recognized, and
+        # the launch record that identifies it even if that instance never confirms a startup. A
+        # rollback replaces exactly this, never the predecessor it is restoring.
         return self._record("descriptor_switched", lambda: self._enter(
             plan, intent, AWAITING_CONSUMPTION, claim,
+            candidate_instance_id=started.get("instance_id") or intent.get("candidate_instance_id"),
+            candidate_launch=started.get("launch") or self._launch_record(host, target),
             switch={"at": self.clock(), "written": bool(switched.get("written")),
                     "started": bool(started.get("started")),
                     "recovered": bool(switched.get("recovered") or started.get("recovered"))},
             stage_deadline=self._deadline(plan["consumption_timeout_seconds"])))
+
+    @staticmethod
+    def _replaces(intent: dict, *, forward: bool) -> dict:
+        """The ONE instance this delivery is authorized to replace, from its own durable intent.
+
+        Forward, that is the predecessor whose identity was captured BEFORE the descriptor was
+        replaced. In a rollback it is the failed candidate THIS intent started - not the
+        predecessor it is restoring - because that is the instance this delivery put there. Both
+        carry the exact descriptor digest and, when the startup identity was never confirmed, the
+        launch record this component wrote under the target's own guard. The adapter is handed this
+        authority; it never infers permission from whatever receipt is currently on the target.
+        """
+        if forward:
+            return {"descriptor_sha256": intent.get("previous_descriptor_sha256"),
+                    "instance_id": intent.get("previous_instance_id"),
+                    "launch": intent.get("previous_launch")}
+        return {"descriptor_sha256": intent.get("descriptor_sha256"),
+                "instance_id": intent.get("candidate_instance_id"),
+                "launch": intent.get("candidate_launch")}
+
+    @staticmethod
+    def _launch_record(host, target: dict):
+        """This component's own record of the last launch of a target, or None when unavailable."""
+        reader = getattr(host, "launch_record", None)
+        if reader is None:
+            return None
+        try:
+            return reader(target)
+        except Exception:
+            return None
 
     @staticmethod
     def _reconcile_descriptor(host, target: dict, intent: dict) -> str:
@@ -758,8 +823,10 @@ class HostDelivery:
                           "reason_code": canary.get("reason_code"), "missing": [], "failed": [],
                           "pending": []}, canary_passed=bool(canary["passed"]))
         if not canary["passed"]:
+            # The instance this delivery started is now known by its own receipt: the rollback that
+            # follows replaces exactly it, and nothing else that may be on the target.
             return self._begin_rollback(plan, intent, claim, canary.get("reason_code") or "canary_failed",
-                                        canary=canary)
+                                        canary=canary, instance_id=verdict["instance_id"])
         self._record("consumed", lambda: self._record_descriptor(
             plan, intent, descriptor, consumed=True, instance_id=verdict["instance_id"],
             claim=claim, startup=startup))
@@ -808,7 +875,10 @@ class HostDelivery:
             return self.releases.promote(plan["release_id"], intent.get("expected_active"),
                                          transaction=tx)
 
-    def _begin_rollback(self, plan: dict, intent: dict, claim, reason_code: str, canary=None) -> dict:
+    def _begin_rollback(self, plan: dict, intent: dict, claim, reason_code: str, canary=None,
+                        instance_id=None) -> dict:
+        if instance_id is not None:
+            intent = {**intent, "candidate_instance_id": instance_id}
         if intent.get("previous_descriptor") is None:
             # There is no known-good predecessor for this target: nothing may be restored, and the
             # delivery stops where it is rather than inventing a state to return to.
@@ -832,7 +902,9 @@ class HostDelivery:
         RESUMED from what the host already shows rather than attempted a second time against an
         expectation that no longer holds, a descriptor that is neither the failed one nor the
         predecessor is a foreign state that blocks instead of being overwritten, and the start is
-        performed at most once per restoration. Nothing sleeps under the lease: the predecessor's
+        performed at most once per restoration. The instance it is authorized to replace is the
+        failed CANDIDATE this intent started - by its own receipt, or by this delivery's launch
+        record when that candidate never confirmed a startup - and never an unknown one. Nothing sleeps under the lease: the predecessor's
         own fresh receipt and a live process are what verify it, and a restoration that cannot be
         proven becomes a blocked operational alert rather than a `rolled_back` claim.
         """
@@ -878,7 +950,8 @@ class HostDelivery:
             try:
                 self._owned_now(claim)
                 self._lifecycle(lambda: host.start(target, previous,
-                                                   authorize=self._authorizer(claim)))
+                                                   authorize=self._authorizer(claim),
+                                                   replaces=self._replaces(intent, forward=False)))
             except AmbiguousEffect:
                 raise
             except Exception as exc:

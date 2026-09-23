@@ -78,7 +78,7 @@ reason code, the error TYPE and the evidence. One tick advances at most one stag
 | `merge_intended` | the merge happened — recognized rather than repeated if a previous tick already merged — **and** the merged revision was qualified against the reviewed tree by the merge owner itself, on the performed and the observed path alike |
 | `merged` | the incumbent evaluator recorded `verified`, the target is registered, the current descriptor is the approved predecessor, and the whole target tuple plus the expected active release are written durably |
 | `drain_intended` | new admission is paused and the target reports no active and no unconfirmed work |
-| `switching` | what is on the host was reconciled first (the intended descriptor, the expected predecessor, or a **foreign** state that blocks), then the immutable descriptor was replaced atomically under the target's lifecycle guard against its expected predecessor, and the service was started exactly once from the registered runtime root — reconciled, stopped, retired, launched and recorded inside that same guard |
+| `switching` | what is on the host was reconciled first (the intended descriptor, the expected predecessor, or a **foreign** state that blocks), then the immutable descriptor was replaced atomically under the target's lifecycle guard against its expected predecessor, and the service was started exactly once from the registered runtime root — reconciled, classified against the instance this intent is authorized to replace, stopped, retired, launched and recorded inside that same guard |
 | `awaiting_consumption` | the launched process's own startup receipt names this target's registered root, a package imported from inside it, and the revision, effective image and profile that runtime actually has; that observed startup is recorded; and only then does the named canary decide whether it may be activated |
 | `active` | `Releases.promote` moved the pointer under its own compare-and-swap |
 
@@ -131,8 +131,27 @@ another independently locking transaction.
 * A live instance that the incumbent `consumption_verdict` shows is **really** running the intended
   descriptor is recognized rather than killed and restarted, so a restart in either direction
   reconciles instead of churning the service. An instance that merely echoes the descriptor digest
-  from another runtime, root or revision is not recognized and is replaced like any other
-  predecessor.
+  from another runtime, root or revision is not recognized.
+* **Descriptor identity is not authority over a running instance.** Not being the intended instance
+  says nothing about who may end one, so after the descriptor is reconciled the instance that is
+  actually there is classified (`instance_authority`) against the authority the coordinator carries
+  in its durable intent: the exact descriptor digest, the instance id, and the launch record this
+  component itself wrote under that target's guard. Forward, that is the predecessor whose identity
+  was captured **before** the descriptor was replaced; in a rollback it is the failed **candidate**
+  this intent started — never the predecessor it is restoring — and a candidate that never confirmed
+  a startup is reconciled by that trusted launch record rather than by a live pid.
+
+  | observed on the target | what happens |
+  | --- | --- |
+  | the intended instance, really running it | recognized: no stop, no unlink, no start |
+  | the authorized predecessor or candidate, by its own receipt or this delivery's launch record | replaced, once, under the guard |
+  | this delivery's own instance, stopped mid-transition | the recorded effect is reconciled and the start resumes once |
+  | a clean target: no receipt file, no launch record, nothing alive | initial start, on positive evidence of absence |
+  | another instance (`instance_not_authorized`), the named one under another descriptor (`instance_contradictory`), a missing/malformed receipt beside a live process (`instance_receipt_unreadable`, `instance_unidentified`), an unreadable liveness (`instance_liveness_unknown`) or an unproven absence (`instance_absence_unknown`) | refused **before** the stop and the cleanup; the process and its evidence are untouched |
+
+  The coordinator refuses earlier still, before the drain and the switch, when its own durable record
+  and the target disagree about which instance is running there (`target_instance_mismatch`). Both
+  host kinds use exactly this contract.
 * The descriptor itself is **immutable**: replaced only when what is there is exactly the expected
   predecessor, by one atomic `os.replace`.
 * Active work is **drained, not killed**. The controller writes `pause.json` into the target's state
@@ -257,7 +276,16 @@ fence lost during the bounded stop preserving that effect and starting nothing (
 and through the coordinator, which reports it as `service_stopped` ambiguity), a restart
 recognizing the matching live instance forward and in rollback, one target serializing while an
 unrelated one does not, and a foreign descriptor, a held guard or an unreadable fence refusing
-without touching the service; the same guard, authorization and reconciliation on the scheduled-task
+without touching the service; the replacement authority over a running instance — the authorized
+predecessor replaced once and an unauthorized, contradictory, unidentified, unreadable or
+unknown-liveness instance refused with its process and its own receipt unchanged, a clean target
+started only on proven absence, this delivery's own known-dead instance resumed, a candidate whose
+startup was never confirmed reconciled by the launch record this component wrote, the coordinator
+blocking on `target_instance_mismatch` before the drain and on `instance_not_authorized` at the
+start, and a rollback replacing the failed candidate rather than the predecessor it restores — with
+a controlled counterexample that reproduces the old nonmatching-receipt rule replacing a live
+instance and shows the shipped adapter refusing on the same interleaving; the same guard,
+authorization, classification and reconciliation on the scheduled-task
 target through a labelled injected `schtasks` runner; the real coordinator with the real
 `collect_monitor_source` canary, and that canary's missing, stale, unobserved, wrong-instance and
 wrong-revision refusals; a failed canary restoring and proving the predecessor; a restoration

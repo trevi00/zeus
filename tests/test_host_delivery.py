@@ -909,8 +909,10 @@ def test_an_old_runtime_never_activates_a_new_descriptor_however_alive_its_proce
         assert results[-1]["stage"] != ACTIVE
         assert results[-1]["reason_code"] == "no_known_good_predecessor"
         # The runtime really did start and really is alive; it is simply not the requested one.
-        receipt = json.loads((tmp_path / "state-canary-service" / RECEIPT_FILE).read_text("utf-8"))
-        assert receipt["revision"] == RUNTIME_REVISION != "5" * 40
+        # The child publishes its own receipt asynchronously, and the delivery may have reached its
+        # consumption deadline first, so this waits for that evidence within a bound rather than
+        # assuming the file had already landed.
+        assert await_receipt(system["target"])["revision"] == RUNTIME_REVISION != "5" * 40
         assert system["host"].running(system["target"]) is True
         row = descriptor_of(system)
         assert row["consumed"] is False and row["startup_observed"] is False
@@ -982,7 +984,7 @@ def test_a_rollback_that_cannot_be_proven_blocks_and_alerts_instead_of_claiming_
     class BrokenHost(ProcessHostTarget):
         """The predecessor is restored on disk but its process never reports: an injected fault."""
 
-        def start(self, target, descriptor, *, authorize=None):
+        def start(self, target, descriptor, *, authorize=None, replaces=None):
             self.stop(target)
             return {"started": True, "pid": None}
 
@@ -1020,7 +1022,7 @@ def test_an_unproven_restoration_blocks_with_a_critical_alert(tmp_path):
         class BrokenHost(ProcessHostTarget):
             """Injected fault: the restored descriptor's service is never actually started."""
 
-            def start(self, target, descriptor, *, authorize=None):
+            def start(self, target, descriptor, *, authorize=None, replaces=None):
                 self.stop(target)
                 return {"started": True, "pid": None}
 
@@ -1544,6 +1546,21 @@ def state_of(target, name):
     return Path(target["state_dir"]) / name
 
 
+def launch_of(target):
+    """The launch record this component wrote for a target, read straight from its state file."""
+    path = state_of(target, STATE_FILE)
+    return json.loads(path.read_text("utf-8")) if path.exists() else None
+
+
+def replaces(target, descriptor, receipt=None, *, instance_id=None, launch=True):
+    """The durable authority the coordinator passes to a start: exactly which instance this
+    transition may replace. Built here from the same two facts the coordinator captures - the
+    descriptor the instance was running and its own instance or launch identity."""
+    return {"descriptor_sha256": descriptor_digest(descriptor),
+            "instance_id": instance_id or (receipt or {}).get("instance_id"),
+            "launch": launch_of(target) if launch is True else launch}
+
+
 def test_a_stale_controller_stops_nothing_and_unlinks_nothing_before_the_guard(tmp_path):
     """The rejected R5 path itself: a superseded controller resumes into `start`.
 
@@ -1612,11 +1629,12 @@ def test_a_fence_lost_during_the_bounded_stop_preserves_the_effect_and_starts_no
     try:
         successor = descriptor_for(target, revision="8" * 40,
                                    predecessor=descriptor_digest(descriptor))
+        authority = replaces(target, descriptor, receipt)
         host.switch(target, successor, expected=descriptor_digest(descriptor))
         recorded = json.loads(state_of(target, STATE_FILE).read_text("utf-8"))
         fence = stale_fence(after=1)  # the guard entry passes; the check after the stop does not
         with pytest.raises(LifecycleInterrupted) as interrupted:
-            host.start(target, successor, authorize=fence)
+            host.start(target, successor, authorize=fence, replaces=authority)
         assert interrupted.value.effect == "service_stopped"
         assert isinstance(interrupted.value.cause, ContractError)
         # The stop happened and is kept as the observed effect it is: no cleanup, no launch, and
@@ -1625,8 +1643,11 @@ def test_a_fence_lost_during_the_bounded_stop_preserves_the_effect_and_starts_no
         assert await_receipt(target)["instance_id"] == receipt["instance_id"]
         assert json.loads(state_of(target, STATE_FILE).read_text("utf-8")) == recorded
         # The guard is released, so the successor is serialized behind it rather than locked out.
+        # The instance it replaces is the stopped one this transition named: an interrupted
+        # lifecycle is resumed, not a reason to act on an unidentified target.
         successor_host = ProcessHostTarget(max_seconds=60)
-        assert successor_host.start(target, successor, authorize=lambda: None)["started"] is True
+        assert successor_host.start(target, successor, authorize=lambda: None,
+                                    replaces=authority)["started"] is True
         assert await_receipt(target, descriptor_digest(successor))["instance_id"] \
             != receipt["instance_id"]
     finally:
@@ -1680,7 +1701,7 @@ def test_a_restarted_start_recognizes_the_matching_live_instance_instead_of_rest
         recorded = json.loads(state_of(target, STATE_FILE).read_text("utf-8"))
         again = host.start(target, descriptor, authorize=lambda: None)
         assert again == {"started": False, "recovered": True,
-                         "instance_id": receipt["instance_id"]}
+                         "instance_id": receipt["instance_id"], "launch": recorded}
         assert host.running(target)
         assert await_receipt(target)["instance_id"] == receipt["instance_id"]
         assert json.loads(state_of(target, STATE_FILE).read_text("utf-8")) == recorded
@@ -1820,6 +1841,166 @@ def test_an_unavailable_authority_stops_the_lifecycle_before_any_effect(tmp_path
         host.stop(target)
 
 
+# ----- who may replace THIS instance ------------------------------------------------------------
+# Descriptor identity and authority over a running instance are different facts. These exercise the
+# classification on real targets: a real child process, its own real receipt, the real launch record
+# this component writes, and a labelled injected scheduled-task runner.
+class LegacyReplacementHost(ProcessHostTarget):
+    """The REJECTED pre-R5 rule, reproduced here as a controlled counterexample and used nowhere
+    else: any receipt that did not match the descriptor being started was read as permission to
+    stop that instance, delete its evidence and launch over it."""
+
+    def start(self, target, descriptor, *, authorize=None, replaces=None):
+        with self.guard(target, authorize):
+            context = self._prepare(target, descriptor)
+            self._reconcile(target, descriptor)
+            verdict = consumption_verdict(descriptor, self.receipt(target))
+            if verdict["consumed"] and self.running(target):
+                return {"started": False, "recovered": True, "instance_id": verdict["instance_id"]}
+            self.stop(target)
+            self._retire(target)
+            return self._launch(target, descriptor, context)
+
+
+@binds_a_runtime
+def test_the_old_nonmatching_receipt_rule_replaces_a_live_instance_and_the_new_one_refuses(tmp_path):
+    """The counterexample and the correction, on the same interleaving and the same evidence."""
+    legacy, host = LegacyReplacementHost(max_seconds=60), ProcessHostTarget(max_seconds=60)
+    first, descriptor, receipt = live_target(tmp_path, legacy, target_id="legacy-service")
+    try:
+        successor = descriptor_for(first, revision="8" * 40,
+                                   predecessor=descriptor_digest(descriptor))
+        legacy.switch(first, successor, expected=descriptor_digest(descriptor))
+        # The defect: a live instance that is merely NOT the intended one is stopped, its own
+        # receipt deleted and a second instance launched over it, with no authority anywhere.
+        assert legacy.start(first, successor, authorize=lambda: None)["started"] is True
+        assert await_receipt(first, descriptor_digest(successor))["instance_id"] \
+            != receipt["instance_id"]
+    finally:
+        legacy.stop(first)
+    second, current, running = live_target(tmp_path, host, target_id="corrected-service")
+    try:
+        successor = descriptor_for(second, revision="8" * 40,
+                                   predecessor=descriptor_digest(current))
+        host.switch(second, successor, expected=descriptor_digest(current))
+        with pytest.raises(DeliveryRefused) as refused:
+            host.start(second, successor, authorize=lambda: None)
+        assert refused.value.reason_code == "instance_not_authorized"
+        # The service and its evidence are exactly as they were: refused before stop and cleanup.
+        assert host.running(second)
+        assert await_receipt(second)["instance_id"] == running["instance_id"]
+        assert not state_of(second, "stop.json").exists()
+    finally:
+        host.stop(second)
+
+
+@binds_a_runtime
+def test_only_the_predecessor_this_transition_captured_may_be_replaced(tmp_path):
+    """The forward half of the fixed matrix: the authorized predecessor, and nothing else."""
+    host = ProcessHostTarget(max_seconds=60)
+    target, descriptor, receipt = live_target(tmp_path, host)
+    try:
+        authority = replaces(target, descriptor, receipt)
+        successor = descriptor_for(target, revision="8" * 40,
+                                   predecessor=descriptor_digest(descriptor))
+        host.switch(target, successor, expected=descriptor_digest(descriptor))
+        # An authority over ANOTHER instance is no authority over this one.
+        with pytest.raises(DeliveryRefused) as other:
+            host.start(target, successor, authorize=lambda: None,
+                       replaces={**authority, "instance_id": "c" * 32})
+        assert other.value.reason_code == "instance_not_authorized"
+        # The right instance under the wrong descriptor is contradictory evidence, not a licence.
+        with pytest.raises(DeliveryRefused) as contradictory:
+            host.start(target, successor, authorize=lambda: None,
+                       replaces={"descriptor_sha256": "0" * 64,
+                                 "instance_id": receipt["instance_id"], "launch": None})
+        assert contradictory.value.reason_code == "instance_contradictory"
+        assert host.running(target) and not state_of(target, "stop.json").exists()
+        assert await_receipt(target)["instance_id"] == receipt["instance_id"]
+        # The exact instance this transition captured before the descriptor was replaced IS
+        # replaceable, once, and the launch it performs is reported as the evidence it wrote.
+        started = host.start(target, successor, authorize=lambda: None, replaces=authority)
+        assert started["started"] is True and started["launch"]["pid"] == started["pid"]
+        assert started["launch"] == launch_of(target)
+        assert await_receipt(target, descriptor_digest(successor))["instance_id"] \
+            != receipt["instance_id"]
+    finally:
+        host.stop(target)
+
+
+@binds_a_runtime
+def test_a_missing_or_malformed_receipt_beside_a_live_process_preserves_it(tmp_path):
+    """An unidentified live instance is never an absence, and the launch record is what recovers it."""
+    host = ProcessHostTarget(max_seconds=60)
+    target, descriptor, receipt = live_target(tmp_path, host)
+    try:
+        authority = replaces(target, descriptor, receipt)
+        successor = descriptor_for(target, revision="8" * 40,
+                                   predecessor=descriptor_digest(descriptor))
+        host.switch(target, successor, expected=descriptor_digest(descriptor))
+        state_of(target, RECEIPT_FILE).write_text("{not json", encoding="utf-8")
+        with pytest.raises(DeliveryRefused) as unreadable:
+            host.start(target, successor, authorize=lambda: None, replaces=authority)
+        assert unreadable.value.reason_code == "instance_receipt_unreadable"
+        assert host.running(target)
+        assert state_of(target, RECEIPT_FILE).read_text("utf-8") == "{not json"
+        # Gone entirely, with a process still running: unidentified, not absent.
+        state_of(target, RECEIPT_FILE).unlink()
+        with pytest.raises(DeliveryRefused) as unidentified:
+            host.start(target, successor, authorize=lambda: None,
+                       replaces={**authority, "launch": None})
+        assert unidentified.value.reason_code == "instance_unidentified"
+        assert host.running(target) and not state_of(target, "stop.json").exists()
+        # A startup identity that was never confirmed is reconciled by the launch record THIS
+        # component wrote for that instance - not by a live pid, and not by a guess.
+        assert host.start(target, successor, authorize=lambda: None,
+                          replaces=authority)["started"] is True
+        assert await_receipt(target, descriptor_digest(successor))["instance_id"] \
+            != receipt["instance_id"]
+    finally:
+        host.stop(target)
+
+
+def test_a_clean_target_starts_and_an_absence_that_is_not_proven_does_not(tmp_path):
+    """Initial activation needs POSITIVE evidence of absence; a read that says nothing is not one."""
+    host = ProcessHostTarget(max_seconds=60)
+    target = targets_document(tmp_path, target_id="clean-service")["targets"][0]
+    descriptor = descriptor_for(target)
+    host.switch(target, descriptor, expected=None)
+    state_of(target, RECEIPT_FILE).write_text("", encoding="utf-8")
+    with pytest.raises(DeliveryRefused) as unknown:
+        host.start(target, descriptor, authorize=lambda: None)
+    assert unknown.value.reason_code == "instance_receipt_unreadable"
+    assert not state_of(target, STATE_FILE).exists()  # nothing was launched or recorded
+    state_of(target, RECEIPT_FILE).unlink()
+    try:
+        assert host.start(target, descriptor, authorize=lambda: None)["started"] is True
+    finally:
+        host.stop(target)
+
+
+@binds_a_runtime
+def test_a_known_dead_instance_of_this_delivery_is_resumed_and_an_unknown_one_is_not(tmp_path):
+    """Known-dead recovery: this delivery's own stopped instance, proven by its own receipt."""
+    host = ProcessHostTarget(max_seconds=60)
+    target, descriptor, receipt = live_target(tmp_path, host)
+    assert host.stop(target)["stopped"] is True
+    try:
+        assert host.start(target, descriptor, authorize=lambda: None)["started"] is True
+        second = await_receipt(target, descriptor_digest(descriptor))
+        assert second["instance_id"] != receipt["instance_id"]
+    finally:
+        host.stop(target)
+    # A stopped instance of ANOTHER descriptor, with nothing naming it, stays blocked.
+    successor = descriptor_for(target, revision="8" * 40, predecessor=descriptor_digest(descriptor))
+    host.switch(target, successor, expected=descriptor_digest(descriptor))
+    with pytest.raises(DeliveryRefused) as unknown:
+        host.start(target, successor, authorize=lambda: None)
+    assert unknown.value.reason_code == "instance_not_authorized"
+    assert not host.running(target)
+    assert await_receipt(target)["instance_id"] == second["instance_id"]
+
+
 class FakeSchtasks:
     """A labelled in-test double for `schtasks`: it records argv and answers from its own state.
 
@@ -1872,20 +2053,164 @@ def test_the_scheduled_task_target_shares_the_guard_authorization_and_reconcilia
     receipt = owned_receipt(descriptor, target_id="fleet-service", instance_id="a" * 32)
     state_of(target, RECEIPT_FILE).write_text(json.dumps(receipt), encoding="utf-8")
     assert host.start(target, descriptor, authorize=lambda: None) == {
-        "started": False, "recovered": True, "instance_id": "a" * 32}
+        "started": False, "recovered": True, "instance_id": "a" * 32, "launch": None}
     assert runner.verbs == ["/Query"] and runner.running is True
-    # Another instance's receipt: the task is ended, that evidence retired, and it is started once.
-    state_of(target, RECEIPT_FILE).write_text(
-        json.dumps(owned_receipt(descriptor, target_id="fleet-service",
-                                 descriptor_sha256="0" * 64)), encoding="utf-8")
-    assert host.start(target, descriptor, authorize=lambda: None) == {
-        "started": True, "service": target["service"]}
+    # Another instance's receipt beside the correct descriptor. This is the R5 boundary itself, and
+    # it used to END the task and delete that instance's evidence: a receipt that does not match
+    # the descriptor being started was read as permission to replace whatever was running. It is
+    # now a refusal BEFORE any stop or cleanup, because nothing authorizes replacing THIS instance.
+    unrelated = owned_receipt(descriptor, target_id="fleet-service", instance_id="b" * 32,
+                              descriptor_sha256="0" * 64)
+    state_of(target, RECEIPT_FILE).write_text(json.dumps(unrelated), encoding="utf-8")
+    with pytest.raises(DeliveryRefused) as unauthorized:
+        host.start(target, descriptor, authorize=lambda: None)
+    assert unauthorized.value.reason_code == "instance_not_authorized"
+    assert "/End" not in runner.verbs and "/Run" not in runner.verbs
+    assert runner.running is True  # the running task survived
+    assert json.loads(state_of(target, RECEIPT_FILE).read_text("utf-8")) == unrelated
+    assert not state_of(target, STATE_FILE).exists()  # and nothing was launched or recorded
+    # Named as the instance this transition replaces, the SAME state is ended, retired and started
+    # exactly once - by the authority the coordinator carries, not by the adapter's own reading.
+    assert host.start(target, descriptor, authorize=lambda: None,
+                      replaces={"descriptor_sha256": "0" * 64, "instance_id": "b" * 32,
+                                "launch": None}) == {
+        "started": True, "service": target["service"],
+        "launch": launch_of(target)}
     assert runner.verbs.index("/End") < runner.verbs.index("/Run")
     assert runner.verbs.count("/Run") == 1 and runner.running is True
     assert not state_of(target, RECEIPT_FILE).exists()
     assert json.loads(state_of(target, STATE_FILE).read_text("utf-8"))["descriptor_sha256"] \
         == descriptor_digest(descriptor)
     assert not state_of(target, "switch.lock").exists()
+
+
+def test_a_target_whose_liveness_cannot_be_read_refuses_before_any_effect(tmp_path):
+    """Unknown liveness is an unknown, never a licence: the task is neither ended nor started."""
+
+    class UnreadableSchtasks(FakeSchtasks):
+        """Labelled injected outage: this task's status cannot be read at all."""
+
+        def __call__(self, argv, timeout=None):
+            if argv[1] == "/Query":
+                self.calls.append(list(argv))
+                return subprocess.CompletedProcess(argv, 1, "", "injected: status unavailable")
+            return super().__call__(argv, timeout=timeout)
+
+    runner = UnreadableSchtasks(running=True)
+    host = ScheduledTaskHostTarget(runner=runner)
+    target = targets_document(tmp_path, target_id="fleet-service",
+                              kind="windows_scheduled_task")["targets"][0]
+    descriptor = descriptor_for(target, root="/opt/zeus", revision=REVISION,
+                                worker_image=FIXTURE_IMAGE, profile_digest=FIXTURE_PROFILE)
+    host.switch(target, descriptor, expected=None)
+    with pytest.raises(DeliveryRefused) as unknown:
+        host.start(target, descriptor, authorize=lambda: None,
+                   replaces={"descriptor_sha256": "0" * 64, "instance_id": "b" * 32,
+                             "launch": None})
+    assert unknown.value.reason_code == "instance_liveness_unknown"
+    assert runner.verbs == ["/Query"] and runner.running is True
+    assert not state_of(target, STATE_FILE).exists()
+
+
+# ----- the same authority through the coordinator ------------------------------------------------
+def second_plan(system, *, expected, plan_id="delivery-plan-2"):
+    """A second reviewed candidate for the same target, registered through the existing authority."""
+    successor = reviewed_release(system["store"], system["org"],
+                                 record_candidate={**candidate(), "revision": "5" * 40,
+                                                   "branch": "harness/two", "task_id": "two"})
+    plan = plan_document(successor, plan_id=plan_id, expected=expected)
+    system["delivery"].register(plan, pin(path="docs/zeus/operations/delivery-2.json"))
+    system["plan"] = plan
+    return plan
+
+
+@binds_a_runtime
+def test_an_instance_the_records_do_not_name_stops_the_delivery_before_the_host(tmp_path):
+    """The identity is captured from the target BEFORE the descriptor is replaced, and it must
+    agree with this delivery's own durable record of what is running there."""
+    system = build(tmp_path)
+    try:
+        assert drive(system)[-1]["stage"] == ACTIVE
+        good = descriptor_of(system)
+        second_plan(system, expected=good["descriptor_sha256"])
+        # A labelled injected foreign instance: an otherwise perfect receipt for another instance.
+        receipt = json.loads(state_of(system["target"], RECEIPT_FILE).read_text("utf-8"))
+        foreign = {**receipt, "instance_id": "c" * 32}
+        state_of(system["target"], RECEIPT_FILE).write_text(json.dumps(foreign), encoding="utf-8")
+        results = drive(system, until=SWITCHING, limit=20)
+        assert results[-1]["outcome"] == "blocked"
+        assert results[-1]["reason_code"] == "target_instance_mismatch"
+        # Nothing on the host was touched: the predecessor's descriptor, process and evidence stand.
+        written = json.loads(state_of(system["target"], DESCRIPTOR_FILE).read_text("utf-8"))
+        assert descriptor_digest(written) == good["descriptor_sha256"]
+        assert system["host"].running(system["target"])
+        assert json.loads(state_of(system["target"], RECEIPT_FILE).read_text("utf-8")) == foreign
+    finally:
+        stop_target(system)
+
+
+@binds_a_runtime
+def test_an_instance_that_appears_after_the_authority_was_captured_blocks_the_start(tmp_path):
+    """The other side of the same boundary: the target changes hands between the captured identity
+    and the start, so the start refuses and the running service is left alone."""
+    system = build(tmp_path)
+    try:
+        assert drive(system)[-1]["stage"] == ACTIVE
+        good = descriptor_of(system)
+        second_plan(system, expected=good["descriptor_sha256"])
+        assert drive(system, until=SWITCHING, limit=20)[-1]["stage"] == SWITCHING
+        receipt = json.loads(state_of(system["target"], RECEIPT_FILE).read_text("utf-8"))
+        foreign = {**receipt, "instance_id": "c" * 32}
+        state_of(system["target"], RECEIPT_FILE).write_text(json.dumps(foreign), encoding="utf-8")
+        result = system["delivery"].tick()
+        assert result["outcome"] == "refused"
+        assert result["reason_code"] == "instance_not_authorized"
+        assert system["host"].running(system["target"])  # never stopped
+        assert json.loads(state_of(system["target"], RECEIPT_FILE).read_text("utf-8")) == foreign
+        # Nothing was recorded for the candidate: the durable row still names the predecessor and
+        # the instance that actually ran it, so no activation was claimed for this switch.
+        row = descriptor_of(system)
+        assert row["descriptor_sha256"] == good["descriptor_sha256"]
+        assert row["instance_id"] == good["instance_id"]
+        assert intent_of(system)["stage"] == BLOCKED
+    finally:
+        stop_target(system)
+
+
+@binds_a_runtime
+def test_a_rollback_replaces_the_candidate_it_started_and_not_the_predecessor(tmp_path):
+    """The rollback half: the authority it carries names the FAILED candidate instance."""
+    verdicts = {"passed": True}
+    system = build(tmp_path, canaries={CANARY_STARTUP: lambda target, descriptor, startup: {
+        "passed": verdicts["passed"],
+        "reason_code": None if verdicts["passed"] else "canary_fixture_failed"}})
+    try:
+        assert drive(system)[-1]["stage"] == ACTIVE
+        good = descriptor_of(system)
+        verdicts["passed"] = False
+        second_plan(system, expected=good["descriptor_sha256"])
+        drive(system, until=ROLLING_BACK, limit=30)
+        intent = intent_of(system)
+        candidate_receipt = json.loads(
+            state_of(system["target"], RECEIPT_FILE).read_text("utf-8"))
+        # What the rollback is authorized to replace is the instance this intent launched, named by
+        # its own receipt and by the launch record this component wrote for it.
+        assert intent["candidate_instance_id"] == candidate_receipt["instance_id"]
+        assert intent["candidate_launch"]["descriptor_sha256"] == intent["descriptor_sha256"]
+        assert intent["previous_instance_id"] == good["instance_id"]
+        assert intent["previous_launch"]["descriptor_sha256"] == good["descriptor_sha256"]
+        results = drive(system, until=ROLLED_BACK, limit=30)
+        assert results[-1]["stage"] == ROLLED_BACK, "\n".join(
+            str((r["stage"], r["outcome"], r["reason_code"])) for r in results)
+        rolled = descriptor_of(system)
+        assert rolled["descriptor_sha256"] == good["descriptor_sha256"]
+        assert rolled["consumed"] is True and rolled["rolled_back"] is True
+        # The restored runtime is a NEW instance of the predecessor tuple, and the failed
+        # candidate's instance is gone rather than left running beside it.
+        assert rolled["instance_id"] not in {candidate_receipt["instance_id"],
+                                             good["instance_id"]}
+    finally:
+        stop_target(system)
 
 
 # ----- isolated PostgreSQL --------------------------------------------------------------------------------------
