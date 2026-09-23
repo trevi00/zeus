@@ -248,11 +248,17 @@ class Continuation:
     `start(lane_id, job, launch_id, token)` (returns once the guardian is spawned, never when the
     decision is made) and `poll(lane_id, launch_id) -> {state, owned, exit_code, cleanup_confirmed,
     proof}` with a state of `domain.continuation.LAUNCH_STATES`. Capacity is never the port's: the
-    Fleet (sharing this control store) reserves and settles the execution unit."""
+    Fleet (sharing this control store) reserves and settles the execution unit.
 
-    def __init__(self, store, fleet=None, lanes=None, conductor=None, validate=None, observer=None, clock=utcnow):
+    `evidence` is the research evidence port: `verify(ref)` reads the actual bounded bytes of one
+    content-addressed reference from the trusted configured artifact store and checks their digest,
+    or raises `ContinuationRefused` with a safe reason code. None: no research receipt is accepted or
+    consumed (`research_evidence_unverified`)."""
+
+    def __init__(self, store, fleet=None, lanes=None, conductor=None, validate=None, observer=None, clock=utcnow,
+                 evidence=None):
         self.store, self.fleet, self.lanes, self.conductor = store, fleet, lanes, conductor
-        self.validate, self.observer, self.clock = validate, observer, clock
+        self.validate, self.observer, self.clock, self.evidence = validate, observer, clock, evidence
 
     # ----- registry -----------------------------------------------------------------------
     def register(self, document, pin: dict) -> dict:
@@ -316,6 +322,7 @@ class Continuation:
         if isinstance(facts["intent"], dict) and facts["intent"].get("state") == RESEARCH_REQUIRED:
             facts["observed"] = self._observe_attempts(facts["jobs"])
         check_research_receipt(receipt, **facts)
+        self._verify_evidence(receipt)
         now = self.clock()
         with self.store.transaction() as tx:
             old = tx.get(BUCKET_RESEARCH_RECEIPTS, receipt["intent_id"])
@@ -358,6 +365,22 @@ class Continuation:
         return {"stored": stored, "intent": intent, "attempts": research_attempts(intents, intent) if held else [],
                 "policy": policy, "jobs": jobs, "observed": {}, "investigation": investigation,
                 "dispatch": dispatch, "run_result": run_result}
+
+    def _verify_evidence(self, receipt: dict) -> None:
+        """Every evidence ref's actual bytes, read now through the trusted store and digest checked,
+        outside any store transaction. Integrity holds at this observed read only: acceptance checks
+        it, and each tick checks it again before consuming the receipt (a cached acceptance is
+        history, never a substitute). A missing verifier or any port failure refuses by code."""
+        refuse(self.evidence is not None, "research_evidence_unverified", "operator", "evidence_refs")
+        for ref in receipt["evidence_refs"]:
+            try:
+                self.evidence.verify(ref)
+            except ContinuationRefused:
+                raise
+            except Exception:
+                # A port fault never releases; its raw message may carry a path and is not kept.
+                raise ContinuationRefused("research_evidence_unreadable", ROUTE_OWNERS[RESEARCH],
+                                          "evidence_refs") from None
 
     def _observe_attempts(self, jobs: dict) -> dict:
         """Each attempt's lane evidence now, one short lane transaction each; a failure raises."""
@@ -950,7 +973,8 @@ class Continuation:
     def _resume_observe_research(self, ctx, intent, job):
         """Only the owner's stored scoped receipt for THIS intent releases the hold, and only after
         it is verified again against the current rows and lane evidence (a changed attempt, a new
-        failure, a withdrawn dispatch result or an unreadable lane keeps the family held). A coarse
+        failure, a withdrawn dispatch result, an unreadable lane or evidence bytes that are now
+        missing, unreadable, tampered or oversized keep the family held). A coarse
         `researched` disposition intersecting the family is evidence, never approval: it is not read
         here. The stored receipt is never edited; the intent's compare-and-swap completes it once."""
         with self.store.transaction() as tx:
@@ -965,6 +989,7 @@ class Continuation:
         facts.pop("stored")
         facts["observed"] = self._observe_attempts(facts["jobs"])
         check_research_receipt(receipt, **facts)
+        self._verify_evidence(receipt)
         moved = self._move(intent, COMPLETED, reason_code="research_receipt_accepted",
                            evidence_refs=list(receipt["evidence_refs"]), research_receipt=stored["receipt_sha256"])
         return {"subject": moved["id"], "effect": "research_resolved", "route": RESEARCH}

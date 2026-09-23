@@ -2550,6 +2550,24 @@ disposition is evidence that the owner looked and is not read for release; no Po
 dispatch row, Fleet job or earlier intent is written. The receipt is not an operation acceptance, a
 repair verdict or a promotion; nothing here mints one for a worker.
 
+Research evidence availability (SPEC "Scoped research resubmission: actual artifact availability"):
+sha256 syntax is not availability. The owner of research receipt evidence is the control host's
+general artifact store `<HARNESS_RUNTIME_DIR>/artifacts` (`FileArtifacts`, where the research council
+and the executor write), reached only through `adapters.continuation.ResearchEvidence` (the
+`Continuation(evidence=...)` port) built by `research_evidence()` in BOTH production paths:
+`accept_research` (`zeus continuation research-accept`) and `coordinator`/`tick_policy`/
+`ContinuationPass` (tick and Fleet runner). No caller-supplied root, candidate path, search, network
+fetch or model assertion; the root is never created on a read. Each ref's actual bytes are read with
+the `FileArtifacts.text` bound (1 MiB) and their SHA-256 checked, outside any store transaction, after
+`check_research_receipt` and before the receipt write, and again on every tick before the stored
+receipt completes the intent; the existing intent version and attempt-set checks at commit are
+unchanged. Refusals are fixed codes owned by `portfolio_research`: `research_evidence_missing`,
+`_unreadable`, `_oversized`, `_corrupt` (digest mismatch), `_invalid` (not UTF-8 text); an absent
+port is `research_evidence_unverified` (operator). No path, raw error or content is kept. A cached
+acceptance is history, never a substitute for the consumption read; an absent file is never an
+empty report. Integrity holds at the observed read time only, not as a lasting availability
+guarantee: a later tick rechecks before any new hold-release effect.
+
 An intent id is `origin job + generation/attempt + decisive evidence digest + route`; a successor id is
 `cont-` plus 24 hex of it. Every external effect has a durable pre-effect state: `intended` (complete
 successor manifest and binding recorded) -> `published` (lane binding written; identical replay cached,

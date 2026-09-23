@@ -13,8 +13,12 @@ touched, and an injected council verdict is never evidence of real research qual
 """
 from __future__ import annotations
 
+import hashlib
+import json
+import shutil
 import threading
 from copy import deepcopy
+from pathlib import Path
 
 import pytest
 from test_continuation import World, only
@@ -22,6 +26,8 @@ from test_research_investigations import DEFINITIONS
 from test_research_program import build, registered
 from test_research_program_fixtures import FakeCouncil
 
+from codex_harness.adapters import continuation as adapter
+from codex_harness.adapters import continuation_cli
 from codex_harness.application.continuation import (
     BUCKET_RESEARCH_RECEIPTS,
     Continuation,
@@ -31,7 +37,10 @@ from codex_harness.application.portfolio import BUCKET_INVESTIGATIONS, Portfolio
 from codex_harness.application.research_program import BUCKET_DISPATCHES
 from codex_harness.domain import continuation as dc
 
-EVIDENCE = ["sha256:" + "5" * 64]
+# The owner's research evidence: real bytes stored in the World's temporary FileArtifacts root by
+# `receipt_for`, and read back (bounded, digest checked) at acceptance and again at consumption.
+REPORT = "LABELLED fixture research report for the evidence_gate_refused family\n"
+EVIDENCE = ["sha256:" + hashlib.sha256(REPORT.encode("utf-8")).hexdigest()]
 
 
 def two_strikes(world, op_id, path):
@@ -72,7 +81,9 @@ def research_dispatch(world, tmp_path, jobs, status="accepted", project="ops"):
 
 def receipt_for(world, research, investigation, dispatch, **overrides):
     """What the owner submits: the attempt set the status projection names for this intent, each
-    attempt's inspection from its own lane evidence, the dispatch binding and evidence refs."""
+    attempt's inspection from its own lane evidence, the dispatch binding and evidence refs whose
+    bytes the research owner stored."""
+    assert world.artifacts.put(REPORT, "research-council")["ref"] == EVIDENCE[0]
     status = world.controller.status("policy-1")
     attempts = only({row["id"]: row for row in status["intents"]}, id=research["id"])["attempts"]
     jobs, lane = world.jobs(), LaneEvidence(world.lane.store)
@@ -315,7 +326,7 @@ def test_concurrent_submission_keeps_one_receipt_and_a_different_one_conflicts(t
 
     def submit():
         start.wait()
-        results.append(Continuation(world.control, lanes=world.lanes).accept_research(document))
+        results.append(Continuation(world.control, lanes=world.lanes, evidence=world.evidence).accept_research(document))
     threads = [threading.Thread(target=submit) for _ in range(2)]
     for thread in threads:
         thread.start()
@@ -393,3 +404,112 @@ def test_an_old_receipt_never_authorizes_a_new_failure_of_the_family(tmp_path):
         world.controller.accept_research({**document, "intent_id": again["id"]})
     world.tick()
     assert world.intents()[again["id"]]["state"] == dc.RESEARCH_REQUIRED and set(receipts(world)) == {research["id"]}
+
+
+# ---- actual evidence bytes (SPEC "Scoped research resubmission: actual artifact availability") ------
+def stored_path(world, ref) -> Path:
+    return Path(world.artifacts.root) / (ref.partition(":")[2] + ".txt")
+
+
+def _missing(world):
+    return ["sha256:" + hashlib.sha256(b"never stored").hexdigest()]
+
+
+def _one_missing(world):
+    return sorted(EVIDENCE + _missing(world))
+
+
+def _unreadable(world):
+    # LABELLED injected fault: the content-addressed path exists but cannot be read as a file.
+    path = stored_path(world, EVIDENCE[0])
+    path.unlink()
+    path.mkdir()
+    return list(EVIDENCE)
+
+
+def _tampered(world):
+    stored_path(world, EVIDENCE[0]).write_text(REPORT + "edited after storage\n", encoding="utf-8")
+    return list(EVIDENCE)
+
+
+def _oversized(world):
+    return [world.artifacts.put("x" * (adapter.MAX_RESEARCH_EVIDENCE_BYTES + 1), "research-council")["ref"]]
+
+
+def _not_text(world):
+    data = b"\xff\xfe\x00 binary"
+    ref = "sha256:" + hashlib.sha256(data).hexdigest()
+    stored_path(world, ref).write_bytes(data)
+    return [ref]
+
+
+@pytest.mark.parametrize("fault, reason", [
+    (_missing, "research_evidence_missing"), (_one_missing, "research_evidence_missing"),
+    (_unreadable, "research_evidence_unreadable"), (_tampered, "research_evidence_corrupt"),
+    (_oversized, "research_evidence_oversized"), (_not_text, "research_evidence_invalid")])
+def test_acceptance_reads_the_actual_evidence_bytes_and_refuses_what_is_not_there(tmp_path, fault, reason):
+    world = World(tmp_path)
+    root, successor, research, investigation, dispatch = held(world, tmp_path)
+    document = receipt_for(world, research, investigation, dispatch)
+    document["evidence_refs"] = fault(world)
+    with pytest.raises(dc.ContinuationRefused) as info:
+        world.controller.accept_research(document)
+    assert (info.value.reason_code, info.value.owner) == (reason, "portfolio_research")
+    assert str(tmp_path) not in json.dumps(continuation_cli.refusal(info.value)), "no path leaves"
+    assert receipts(world) == {}
+    world.tick()
+    assert only(world.intents(), id=research["id"])["state"] == dc.RESEARCH_REQUIRED and len(world.jobs()) == 2
+
+
+def test_an_absent_verifier_neither_accepts_nor_consumes_a_receipt(tmp_path):
+    world = World(tmp_path)
+    root, successor, research, investigation, dispatch = held(world, tmp_path)
+    document = receipt_for(world, research, investigation, dispatch)
+    with pytest.raises(dc.ContinuationRefused, match="research_evidence_unverified"):
+        world.build(evidence=None).accept_research(document)
+    assert receipts(world) == {}
+    world.controller.accept_research(document)
+    unverified = world.tick(controller=world.build(evidence=None))
+    assert [s["reason_code"] for s in unverified["skipped"] if s["subject"] == research["id"]] == [
+        "research_evidence_unverified"]
+    assert world.intents()[research["id"]]["state"] == dc.RESEARCH_REQUIRED and len(world.jobs()) == 2
+
+
+def _remove(world):
+    stored_path(world, EVIDENCE[0]).unlink()
+    return "research_evidence_missing"
+
+
+def _tamper(world):
+    _tampered(world)
+    return "research_evidence_corrupt"
+
+
+def _block(world):
+    _unreadable(world)
+    return "research_evidence_unreadable"
+
+
+@pytest.mark.parametrize("fault", [_remove, _tamper, _block])
+def test_evidence_lost_after_acceptance_keeps_the_hold_until_it_verifies_again(tmp_path, fault):
+    world = World(tmp_path)
+    root, successor, research, investigation, dispatch = held(world, tmp_path)
+    world.controller.accept_research(receipt_for(world, research, investigation, dispatch))
+    stored = deepcopy(receipts(world))
+    reason = fault(world)
+    # A reconstructed controller (a restart): the cached acceptance never substitutes for this read.
+    result = world.tick(controller=world.build())
+    assert {"subject": research["id"], "reason_code": reason, "next_owner": "portfolio_research"} in result["skipped"]
+    assert world.intents()[research["id"]]["state"] == dc.RESEARCH_REQUIRED
+    assert len(world.jobs()) == 2 and receipts(world) == stored, "no successor, receipt unchanged"
+    # The same bytes restored: the next tick's own read verifies them and releases exactly once.
+    path = stored_path(world, EVIDENCE[0])
+    if path.is_dir():
+        shutil.rmtree(path)
+    path.write_bytes(REPORT.encode("utf-8"))
+    world.tick(controller=world.build())
+    world.tick()
+    intents = world.intents()
+    assert intents[research["id"]]["state"] == dc.COMPLETED and len(world.jobs()) == 3
+    assert only(intents, origin_job=successor, route=dc.EVIDENCE_REPAIR)["state"] == dc.ADMITTED
+    assert receipts(world) == stored
