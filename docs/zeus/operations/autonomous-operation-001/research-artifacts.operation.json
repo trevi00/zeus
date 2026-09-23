@@ -1,0 +1,43 @@
+{
+  "schema": "urn:zeus:operation:1",
+  "id": "autonomous-operation-001-research-artifacts",
+  "base_revision": "e350b9d5cc030f2bc36d19f904b388e1021d2ec8",
+  "goal": {
+    "path": "docs/zeus/operations/autonomous-operation-001/SPEC.md",
+    "sha256": "6375c6bbb51704ccb821cb029c52534f080f0f64445cba6ae73d5733665c0c10",
+    "criterion": "Complete the existing autonomous operating loop with independently verified session, continuation and actual runtime ownership",
+    "rationale": "Finish the existing whole-goal acceptance matrix without manual user relay or weaker verification."
+  },
+  "budget": {
+    "mode": "subscription",
+    "total": 192,
+    "per_host": 192
+  },
+  "claude": {
+    "model": "claude-opus-5-5",
+    "timeout_seconds": 3600,
+    "max_budget_usd": 2
+  },
+  "plan": {
+    "objective": "Implement ONLY Scoped research resubmission: actual artifact availability in SPEC.md. Wire trusted bounded content-addressed reads to both owner acceptance and runtime consumption; preserve scoped receipt behavior. Targeted tests/Ruff only, diagnostics in summary, no full suite or deploy.",
+    "allowed_paths": [
+      "src/codex_harness/domain/continuation.py",
+      "src/codex_harness/application/continuation.py",
+      "src/codex_harness/adapters/continuation.py",
+      "src/codex_harness/adapters/continuation_cli.py",
+      "tests/test_continuation.py",
+      "tests/test_continuation_cli.py",
+      "tests/test_continuation_research.py",
+      "tests/test_research_investigations.py",
+      "docs/contracts.md",
+      "tests/test_artifacts.py"
+    ],
+    "acceptance_criteria": [
+      "Exact-policy/intent/family/current-attempt coverage and accepted research binding are mandatory; partial/foreign/stale/unavailable evidence cannot release a hold.",
+      "Two families sharing a coarse investigation stay independent; no Portfolio state or old failure verdict is rewritten.",
+      "Owner receipt is immutable/idempotent and restart/concurrent consumption preserves one successor and original execution ownership.",
+      "Targeted continuation, research-investigation and existing evidence-profile checks plus Ruff pass; no global check/profile/timeout relaxation.",
+      "Real artifact bytes must be available and digest-correct at acceptance and consumption; missing/unreadable/tampered/oversized refs or absent verifier never release a hold; both production adapter paths are wired."
+    ]
+  }
+}
