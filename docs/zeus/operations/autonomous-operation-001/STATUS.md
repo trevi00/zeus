@@ -58,3 +58,18 @@ The web service and Fleet service are unchanged. Logs/results remain in that cut
 At startup the helper recorded waiting_ci (2026-09-22T22:56:51Z). Syntax and pinned CI identity were
 checked; activation/rollback are not yet exercised or claimed successful. This authorized one-shot
 administrative continuation is not the reusable release controller required by the whole frame.
+# 2026-09-23 correction dispatch checkpoint
+
+The monitor continuation completed with PR181 merged and collector consumption verified (receipt:
+artifacts/autonomous-operation-001/monitor-cutover/continuation-result.json). Operating Fleet code
+is unchanged. Rejected candidate 9689ed9 is present only in the implementation checkout.
+
+The consolidated seven-finding correction is pinned by plan be5524ea9ce07736fd2ef73beef42f1ffe36578f.
+Primary PostgreSQL records autonomous-operation-001-delivery-correction as dispatching at
+2026-09-23T00:51:46.272747+00:00 in the harness lane. Registration/admission evidence is under
+artifacts/autonomous-operation-001/delivery-correction-*.json. This proves automatic admission
+of an owner-authored correction, not completed Claude execution or autonomous diagnosis.
+
+Independent review, affected verification, CI and qualified host consumption remain required.
+The master SPEC records the durable rejection-to-successor coordinator boundary; implementation
+and real no-chat continuation qualification of that separate path remain pending.
