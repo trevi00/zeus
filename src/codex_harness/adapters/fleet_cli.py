@@ -124,7 +124,10 @@ def enqueue(service, args) -> dict:
     return {**fleet.enqueue(args.lane, manifest, goal, args.after), "exit_code": 0}
 
 
-def run(service, args) -> dict:
+def run(service, args, *, control=None) -> dict:
+    """`zeus fleet run`. `control` is the optional descriptor-bound pause, stop and heartbeat of a
+    managed host runtime (`adapters.managed_runtime`); the CLI itself never passes one, so
+    `zeus fleet run` keeps its exact previous behaviour."""
     from codex_harness.adapters.configuration import settings
     from codex_harness.adapters.fleet_backlog import backlog_ticker, configured_plan
     from codex_harness.adapters.fleet_runtime import LaneLauncher
@@ -148,7 +151,7 @@ def run(service, args) -> dict:
     # The bounded portfolio pass is wired here, in the adapter: the runner keeps no portfolio
     # dependency and a reconciliation outage never blocks admission (operating-portfolio-001).
     runner = FleetRunner(fleet, LaneLauncher(config, host), reconcile=portfolio_reconciler(service.store),
-                         backlog=backlog_tick)
+                         backlog=backlog_tick, control=control)
     for name in ("SIGINT", "SIGTERM", "SIGBREAK"):
         if hasattr(signal, name):
             # Graceful stop: admission closes, owned children are drained, nothing is killed.

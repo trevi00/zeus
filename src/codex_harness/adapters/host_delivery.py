@@ -72,6 +72,7 @@ from codex_harness.domain.host_delivery import (
     CANARY_STARTUP,
     FAILED_OUTCOMES,
     INSTANCE_INTENDED,
+    KIND_MANAGED,
     KIND_PROCESS,
     KIND_SCHEDULED_TASK,
     RECEIPT_SCHEMA,
@@ -177,20 +178,38 @@ def checkout_revision(root: Path) -> str | None:
     if not head.startswith("ref:"):
         return None
     reference = head.split(":", 1)[1].strip()
-    try:
-        loose = (directory / reference).read_text("utf-8").strip()
-        return loose if re.fullmatch(r"[0-9a-f]{40}", loose) else None
-    except OSError:
-        pass
-    try:
-        packed = (directory / "packed-refs").read_text("utf-8")
-    except OSError:
-        return None
-    for line in packed.splitlines():
-        parts = line.split()
-        if len(parts) == 2 and parts[1] == reference and re.fullmatch(r"[0-9a-f]{40}", parts[0]):
-            return parts[0]
+    # A linked worktree keeps its own HEAD but shares branch refs with the main repository, named
+    # by its `commondir` file; a ref is looked up there after the worktree's own directory.
+    for base in _ref_directories(directory):
+        try:
+            loose = (base / reference).read_text("utf-8").strip()
+            return loose if re.fullmatch(r"[0-9a-f]{40}", loose) else None
+        except OSError:
+            pass
+        try:
+            packed = (base / "packed-refs").read_text("utf-8")
+        except OSError:
+            continue
+        for line in packed.splitlines():
+            parts = line.split()
+            if len(parts) == 2 and parts[1] == reference and re.fullmatch(r"[0-9a-f]{40}", parts[0]):
+                return parts[0]
     return None
+
+
+def _ref_directories(directory: Path) -> list[Path]:
+    """The Git directory itself, then its `commondir` when it has one. No git runs."""
+    directories = [directory]
+    try:
+        common = (directory / "commondir").read_text("utf-8").strip()
+    except OSError:
+        return directories
+    if common:
+        pointer = Path(common)
+        pointer = pointer if pointer.is_absolute() else directory / pointer
+        if pointer.is_dir():
+            directories.append(pointer)
+    return directories
 
 
 def runtime_revision(root) -> str | None:
@@ -565,7 +584,10 @@ class HostTargetBase:
                 raise DeliveryRefused(authority["reason_code"], "target_id")
             stopped = self.stop(target)
             if not stopped["stopped"]:
-                raise DeliveryRefused("previous_instance_unconfirmed", "target_id")
+                # A target kind that knows WHY it could not stop (a managed instance with active or
+                # unknown work) names that; every other kind keeps the incumbent code.
+                raise DeliveryRefused(stopped.get("reason_code") or "previous_instance_unconfirmed",
+                                      "target_id")
             self._still_owned(authorize, "service_stopped")
             self._retire(target)
             return self._launch(target, descriptor, context)
@@ -769,8 +791,15 @@ class ScheduledTaskHostTarget(HostTargetBase):
 
 
 def host_ports(**kwargs) -> dict:
-    """The host adapters by target kind, as the coordinator expects them."""
-    return {KIND_PROCESS: ProcessHostTarget(**kwargs), KIND_SCHEDULED_TASK: ScheduledTaskHostTarget()}
+    """The host adapters by target kind, as the coordinator expects them.
+
+    The managed Fleet target is only ever USED for a target the owner registered with that kind;
+    registering none keeps every existing target exactly as it was.
+    """
+    from codex_harness.adapters.managed_runtime import ManagedFleetTarget
+
+    return {KIND_PROCESS: ProcessHostTarget(**kwargs), KIND_SCHEDULED_TASK: ScheduledTaskHostTarget(),
+            KIND_MANAGED: ManagedFleetTarget()}
 
 
 # ----- the incumbent fixed canary checks --------------------------------------------------------

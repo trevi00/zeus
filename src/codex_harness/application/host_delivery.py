@@ -94,6 +94,7 @@ from codex_harness.domain.host_delivery import (
     validate_plan,
     validate_targets,
 )
+from codex_harness.domain.managed_runtime import EnvironmentUnqualified
 from codex_harness.domain.model import ContractError, utcnow
 from codex_harness.domain.policy import POLICY
 
@@ -300,8 +301,12 @@ class HostDelivery:
                 error_type=type(failure).__name__, claim=claim))
         except Exception as outage:
             failure = outage
+            # The one NAMED outage: a managed runtime whose dependencies are not the qualified
+            # environment waits for the owner to build and qualify it; nothing is installed here.
+            reason = ("environment_unqualified" if isinstance(outage, EnvironmentUnqualified)
+                      else "stage_unavailable")
             result = self._guard(plan, intent, OUTCOME_UNAVAILABLE, lambda: self._unavailable(
-                plan, intent, "stage_unavailable", failure, claim=claim))
+                plan, intent, reason, failure, claim=claim))
         self._settle(claim, result)
         return result
 
@@ -653,7 +658,16 @@ class HostDelivery:
             return self._halt(plan, intent, BLOCKED, OUTCOME_BLOCKED, "target_instance_mismatch",
                               claim=claim)
         descriptor = resolve_descriptor(target, plan, current)
+        # A managed target runs an immutable sealed runtime: it is materialized (or, after a lost
+        # response, revalidated as the same immutable result) BEFORE the drain, so nothing on the
+        # running instance is paused for a runtime that cannot exist. Other kinds have no such port.
+        runtime = None
+        materialize = getattr(host, "materialize", None)
+        if materialize is not None:
+            self._owned_now(claim)
+            runtime = materialize(target, descriptor, authorize=self._authorizer(claim))
         return self._enter(plan, intent, DRAIN_INTENDED, claim, descriptor=descriptor,
+                           **({"runtime": runtime} if runtime is not None else {}),
                            descriptor_sha256=descriptor_digest(descriptor),
                            previous_descriptor=current, previous_descriptor_sha256=current_sha,
                            previous_instance_id=observed_instance or recorded,
@@ -668,18 +682,22 @@ class HostDelivery:
         # The check is made again inside the target guard, where the pause actually happens.
         self._owned_now(claim)
         observed = host.drain(target, authorize=self._authorizer(claim))
+        # A target that reports what its instance is doing (the managed heartbeat verdict) has that
+        # observation recorded with the stage, so the projection shows why a drain waits.
+        work = {"work": observed["work"]} if isinstance(observed.get("work"), dict) else {}
         if observed.get("unconfirmed"):
             # Unknown work is not finished work: this never kills active model work to deploy.
             if self._expired(intent):
                 return self._halt(plan, intent, BLOCKED, OUTCOME_BLOCKED, "drain_unconfirmed_effects",
-                                  claim=claim)
-            return self._pending(plan, intent, claim, "drain_unconfirmed_effects")
+                                  claim=claim, **work)
+            return self._pending(plan, intent, claim, "drain_unconfirmed_effects", **work)
         if not observed.get("drained"):
             if self._expired(intent):
-                return self._halt(plan, intent, BLOCKED, OUTCOME_BLOCKED, "drain_timeout", claim=claim)
-            return self._pending(plan, intent, claim, "drain_pending")
+                return self._halt(plan, intent, BLOCKED, OUTCOME_BLOCKED, "drain_timeout", claim=claim,
+                                  **work)
+            return self._pending(plan, intent, claim, "drain_pending", **work)
         return self._enter(plan, intent, SWITCHING, claim,
-                           stage_deadline=self._deadline(plan["consumption_timeout_seconds"]))
+                           stage_deadline=self._deadline(plan["consumption_timeout_seconds"]), **work)
 
     def _switch(self, plan: dict, intent: dict, claim) -> dict:
         """Replace the immutable descriptor atomically and start the service exactly once.

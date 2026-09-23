@@ -589,8 +589,15 @@ class FleetRunner:
     job this process launched is finalized by it even if another runner races."""
 
     def __init__(self, fleet: Fleet, launcher, sleep=time.sleep, interval: float = 5.0, reconcile=None,
-                 backlog=None):
+                 backlog=None, control=None):
         self.fleet, self.launcher, self.sleep, self.interval = fleet, launcher, sleep, interval
+        # Optional descriptor-bound runtime control of a managed host target (HOST-RUNTIME.md):
+        # `admission_open() -> bool`, `stop_requested() -> bool` and `heartbeat(state)`. A closed
+        # admission stops the backlog tick and new admissions while owned children are still waited
+        # for and finalized; a stop request is the same graceful `stop()`. None - the default -
+        # keeps this runner's exact previous behaviour and writes no heartbeat.
+        self.control = control
+        self.admission = "open"
         # Optional bounded read/group pass run once per tick BEFORE admission, in its own
         # transaction (the adapter supplies it, so this layer keeps no portfolio dependency).
         self.reconcile = reconcile
@@ -616,10 +623,14 @@ class FleetRunner:
                    "backlog": {"state": "disabled", "outcome": None, "reason_code": None,
                                "error_type": None}}
         while True:
+            admitting = self._admission_open(summary)
             self._reconcile(summary)
-            self._backlog(summary)
-            progressed = self._admit(summary)
+            progressed = False
+            if admitting:
+                self._backlog(summary)
+                progressed = self._admit(summary)
             progressed = self._reap(summary) or progressed
+            self._heartbeat(summary)
             if self.children or progressed:
                 continue
             if once or self.stopping:
@@ -628,6 +639,44 @@ class FleetRunner:
         summary["stopped"] = self.stopping
         summary["reconciliation_required"] = self.fleet.reconciliation_required()
         return summary
+
+    def _admission_open(self, summary: dict) -> bool:
+        """Whether new work may be selected or admitted on this pass. Always true without control.
+
+        A control that cannot be read closes admission rather than opening it: an unknown pause is
+        treated as a pause, never as permission to take new work.
+        """
+        if self.control is None:
+            return True
+        try:
+            if self.control.stop_requested():
+                self.stop()
+            open_ = not self.stopping and bool(self.control.admission_open())
+        except Exception as exc:
+            summary["control"] = {"state": "unavailable", "error_type": type(exc).__name__}
+            open_ = False
+        self.admission = "stopping" if self.stopping else "open" if open_ else "paused"
+        return open_
+
+    def _heartbeat(self, summary: dict) -> None:
+        """Report the work this runner ACTUALLY owns, plus Fleet reservations nobody here owns.
+
+        `active` is the number of children this process launched and has not finalized; `unresolved`
+        is every dispatching or unknown job that is not one of them, which a successor could not
+        account for either. A heartbeat that cannot be computed or written is simply not written:
+        its reader then sees a stale or missing heartbeat, which is unknown and never idle.
+        """
+        if self.control is None:
+            return
+        try:
+            owned = set(self.children)
+            unresolved = [job for job in self.fleet.reconciliation_required() if job not in owned]
+            self.control.heartbeat({"admission": self.admission, "active": len(owned),
+                                    "unresolved": len(unresolved)})
+        except Exception as exc:
+            summary["heartbeat"] = {"state": "unavailable", "error_type": type(exc).__name__}
+        else:
+            summary["heartbeat"] = {"state": "ok", "error_type": None}
 
     def _reconcile(self, summary: dict) -> None:
         """One bounded reconciliation per tick, before admission and outside every other
