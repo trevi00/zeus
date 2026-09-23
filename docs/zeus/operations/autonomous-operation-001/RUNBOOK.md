@@ -322,3 +322,18 @@ real-PostgreSQL cases and CI. They are the host owner's gate, and nothing above 
   criterion the work was admitted under, never that the criterion is met.
 - Runtime activation on the current Windows host, the real PG check and the whole-loop acceptance
   in `SPEC.md` remain owner work.
+# Claude worker model selection, 2026-09-23
+
+New operation manifests MUST explicitly set claude.model to claude-opus-5-5, retaining subscription
+accounting. Existing admitted manifests are immutable and keep their recorded model. Do not copy
+claude-opus-5 from earlier manifests when authoring a successor. Model selection is bound by the
+operation manifest, not inherited from the user's ~/.claude/settings.json.
+
+Required CLI minimum is 2.1.280 (official model-config documentation, read 2026-09-23).
+CLI-only successor image: sha256:ae070306fb25ccc37d41a73cd0ab0a2b5fdafcfff3914161518918c1932b79c6.
+It derives from the accepted df85b10 image, not from the unaccepted host-delivery implementation.
+The owner launcher now references this image for its NEXT start. Existing running service/worker
+was not interrupted. Before admitting the first Opus 5.5 job, drain current work and restart the
+Fleet owner through the existing owned-service procedure; verify its consumed image receipt.
+First real run must verify requested/reported model agreement. Offline --version is not that proof.
+Build logs, launcher backup and migration receipt: artifacts/autonomous-operation-001/opus55/.
