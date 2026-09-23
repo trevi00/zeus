@@ -243,6 +243,44 @@ new image before new Opus 5.5 operations are registered. No previous admitted op
 
 ### Conductor continuation SSOT finding, 2026-09-23 (design input)
 
+Additional traced composition decisions (same frame, 2026-09-23): CouncilRun already performs
+research -> frozen DB snapshot -> DBA -> leads -> conductor design -> finite Operation -> verified
+knowledge promotion. Its promotion is NOT a release/live-runtime promotion. Reuse that pipeline
+for research/design; do not build a second debate engine. Executor already creates the conductor
+review decision after an accepted lead. Operation finalization deliberately preserves conductor
+rows, although it parks correlated messages. Continue the exact eligible decision through its
+expected-row claim, not by fabricating a review or rewriting a terminal operation.
+
+The next controller's fixed routing table is:
+
+| Observed evidence | Authorized continuation | Completion evidence |
+| --- | --- | --- |
+| Terminal incomplete inspection, effects known | exact scoped evidence-repair plan, preserve candidate | new bound inspection plus independent review; never edit old verdict |
+| Rejected exact independent review | Codex consolidated correction design under original goal/scope | one pinned successor, retained rejection and logical session lineage |
+| Two distinct similar failed attempts | existing Portfolio/ResearchProgram investigation and Council | frozen sources/SSOT/reuse-extend-build decision before another implementation |
+| Unknown provider/external effects | existing ExecutionRecovery reconciliation | bound proof; no automatic fresh invocation on uncertainty |
+| Accepted lead candidate | existing conductor review then Releases/ReleaseQueue | exact independently accepted candidate and existing release verification |
+| Qualified release | HostDelivery plus managed runtime target | actual consumption/canary, or verified predecessor rollback |
+| Completed first item | existing approved backlog/research selection | second useful item linked to a criterion; not a new goal invented by a model |
+
+Persist a continuation intent keyed by original job + generation/attempt + decisive evidence hash
++ action. Outbox publication, lane admission, returned effect and terminal reconciliation have
+distinct durable states; an ACK loss reuses the same successor id. Controller restarts and duplicate
+events cannot create another model call or merge. Unrelated eligible families remain selectable.
+Classify source states separately from the logical goal: a rejected finite operation remains
+rejected even when its successor succeeds. Scope/policy/evaluator/credential changes are exceptions,
+not self-authorized improvements. No idle polling invokes a model.
+
+Workspace identity must be preserved deliberately. GitWorkspace.prepare pins assignment base and
+uses the task id as its workspace/branch; review_workspace already makes a separate frozen checkout.
+A correction cannot simply get a new directory and claim native continuity: worker_sessions binds
+the physical workspace. Add an explicitly owner-validated continuation workspace path using the
+original managed workspace, exact last submitted HEAD and no live owner; preserve its pinned base
+and rejected commits. The new execution/candidate binding still names the successor task, while
+lineage names the workspace origin. Do not relax generic prepare or accept a model-supplied path.
+Dirty/unconfirmed ownership blocks reuse and names evidence recovery; no reset or cleanup to pass.
+These are design decisions; dispatch follows acceptance of the current primitive's concrete API.
+
 Existing executor._commit_decision already emits rejected-review rework messages and approved lead
 reviews for conductor; improvement_loops tracks rejected trees and max_reworks. LocalCycle explicitly
 runs only worker/lead, stops at awaiting_operator, and Operation._classify turns rejected lead review
