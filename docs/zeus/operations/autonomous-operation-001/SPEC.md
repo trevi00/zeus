@@ -430,6 +430,53 @@ qualified failure repair in Batch 2 remain required, not replaced by this delive
 
 ### Remaining R5 ownership correction (2026-09-23, review 8952f377)
 
+#### R5 instance-authority amendment after candidate 79c6783
+
+The lifecycle guard itself is retained. Independent review of candidate 79c6783ba0d32d985761d8cdde70d2662b42ab3b
+found the remaining mismatch: adapter _matching_instance returns None for every nonmatching receipt,
+and start interprets None as permission to stop/retire. Descriptor identity and authority to replace
+a running instance are different facts. The test expecting replacement for an unrelated receipt
+digest encoded the unsafe behavior. This is a static reachable trace, not an executed reproduction.
+Earlier 133-pass/1-skip evidence is preserved, with that limitation.
+
+Reframe the SAME boundary around explicit observed-instance classification, not another local
+check. Primary implementation sources: HostTargetBase.start/_reconcile/_matching_instance and
+HostDelivery._switch/_rollback at 79c6783. No external API assumption changes in this correction.
+Question deciding the design: where is authority to replace THIS observed instance durably bound?
+The current desired descriptor alone does not answer it; require trusted transition evidence.
+
+Implement one shared classification/authorization contract used by forward and rollback paths:
+- matching intended live instance: recognize it, no stop/unlink/start;
+- known authorized predecessor: exact descriptor PLUS instance/process identity bound by the
+  durable delivery transition permits replacement under the existing lifecycle guard and fence;
+- clean empty target: permit initial start only on positive evidence of absence, not read errors;
+- foreign or unknown running instance (including missing, malformed, contradictory, wrong-runtime
+  receipt or an instance different from the authorized predecessor): refuse BEFORE stop or cleanup;
+- known stopped owned instance with interrupted transition: reconcile recorded effect and resume
+  once, retaining identity evidence until replacement is established. Unknown absence stays blocked.
+
+Pass the authorized replacement identity from the durable application intent to the adapter; do
+not let the adapter infer permission from an arbitrary current receipt or accept every nonmatching
+receipt. Capture identity before descriptor replacement, preserve it across ticks/response loss,
+and bind process identity to the same observed receipt/state rather than PID existence alone.
+Rollback's replaceable instance is the failed candidate instance actually started by this intent,
+not the original predecessor it is restoring. If startup identity was never confirmed, use trusted
+launch ownership evidence to reconcile; otherwise block with evidence rather than killing unknown
+work. No weakening of actual-runtime receipt checks, existing guard or lease-loss handling.
+
+One fixed acceptance matrix: normal forward replacing the authorized predecessor; failed-canary
+rollback replacing the owned candidate; already-matching restart with zero churn; stale/expired
+owner still has zero unauthorized mutation; correct descriptor but foreign digest/runtime/instance,
+missing/malformed receipt beside live process all preserve process and evidence; clean initial
+start; known-dead recovery; unknown liveness; crash after switch/start/stop reconciles identity;
+both process and injected scheduled-task adapters use this contract. A controlled counterexample
+must show the old nonmatching->stop behavior and the safe refusal with unchanged evidence.
+Update the unsafe expectation instead of deleting the scenario. Use actual temporary files and
+owned child processes where supported; label injected scheduled-task responses. Keep all prior
+accepted tests. Required four-file pytest and Ruff commands remain unchanged. Native PG/Windows/
+GitHub qualification remains owner work. Scope is only this changed ownership boundary and directly
+affected forward/rollback interactions; no unrelated exploration or new feature.
+
 Candidate 5d23049264e5523a1e5e5039a53ba42f2fc35c47 completed implementation and evidence
 inspection, but independent review rejected one remaining R5 path. Preserve the short-id fix and
 prior accepted boundaries. Worker reported 124 passed/1 skipped and Ruff; these do not prove the
