@@ -1,0 +1,61 @@
+{
+  "schema": "urn:zeus:operation:1",
+  "id": "autonomous-operation-001-worker-sessions",
+  "base_revision": "fa7954caad5b95576dd65de81685f826650e2efd",
+  "goal": {
+    "path": "docs/zeus/operations/autonomous-operation-001/SPEC.md",
+    "sha256": "0358de07418ef6f706dc7f96973c0206ee0224cfaf5ed819c14e66b562102aa4",
+    "criterion": "Durably preserve and explicitly resume a task-scoped Claude context across container recreation and independent review without weakening execution or evidence authority",
+    "rationale": "Implement the missing reusable session primitive for the approved full autonomous loop; no idle model calls and no recent-session cross-task ambiguity."
+  },
+  "budget": {
+    "mode": "subscription",
+    "total": 192,
+    "per_host": 192
+  },
+  "claude": {
+    "model": "claude-opus-5-5",
+    "timeout_seconds": 3600,
+    "max_budget_usd": 2
+  },
+  "plan": {
+    "objective": "Implement ONLY Next bounded implementation: durable Claude task sessions in the bound SPEC. Preserve existing execution/session/effect authority; explicit opt-in and default fresh compatibility. Inspect actual owners before adding new abstractions. No unrelated host-delivery edits. Retain exact native transcript safely and validate task/model/policy identity across restart; review decisions authorize correction eligibility but this batch does not self-admit work or merge. Follow fixed acceptance matrix, scoped tests and directly affected named tests, bounded output. No model calls or production mutations during implementation; real two-turn qualification is owner work.",
+    "allowed_paths": [
+      "src/codex_harness/domain/worker_sessions.py",
+      "src/codex_harness/application/worker_sessions.py",
+      "src/codex_harness/adapters/worker_sessions.py",
+      "src/codex_harness/adapters/executor.py",
+      "src/codex_harness/adapters/claude_cli.py",
+      "src/codex_harness/adapters/isolated_worker.py",
+      "src/codex_harness/adapters/isolated_worker_entry.py",
+      "src/codex_harness/adapters/providers.py",
+      "src/codex_harness/domain/providers.py",
+      "src/codex_harness/resources/providers.json",
+      "src/codex_harness/application/service.py",
+      "src/codex_harness/cli.py",
+      "src/codex_harness/domain/observation.py",
+      "src/codex_harness/adapters/monitoring.py",
+      "tests/test_worker_sessions.py",
+      "tests/test_claude_assignment.py",
+      "tests/test_claude_cli_process.py",
+      "tests/claude_protocol_child.py",
+      "tests/test_claude_review_boundaries.py",
+      "tests/test_claude_execution.py",
+      "tests/test_isolated_worker.py",
+      "tests/test_isolated_worker_preparation.py",
+      "tests/test_isolated_project_evidence.py",
+      "tests/test_executor.py",
+      "tests/test_executor_research.py",
+      "tests/test_monitoring.py",
+      "tests/test_monitoring_observations.py",
+      "docs/contracts.md",
+      "docs/zeus/operations/autonomous-operation-001/WORKER-SESSIONS.md"
+    ],
+    "acceptance_criteria": [
+      "Task-bound archive/checkpoint/review lifecycle survives restart and duplicate events; no cross-task or incompatible native resume.",
+      "Default fresh path remains compatible; concrete CLI and isolated transport implement opt-in resume with safe retained files and exact identity checks.",
+      "Candidate review isolation and current invocation/effect guards remain intact; review wait uses no model calls; evidence-backed closure only.",
+      "Fixed matrix and scoped checks pass with failed/injected/unexecuted/real evidence distinguished; no model or production calls by worker."
+    ]
+  }
+}

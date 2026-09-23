@@ -25,6 +25,97 @@
       "manifest_sha256": "0d7e5704907512d1b73a6071a91192eb3c1df7b965ab9e2ac504e9b0ba70b720",
       "priority": 20,
       "dependencies": []
+    },
+    {
+      "id": "host-delivery",
+      "project_id": "research-improvement",
+      "criterion_id": "verified-loop",
+      "lane": "harness",
+      "manifest_path": "docs/zeus/operations/autonomous-operation-001/host-delivery.operation.json",
+      "manifest_revision": "64290c918c95bba9cbd1ed8c2ede1f1e04cea746",
+      "manifest_sha256": "195ada54fc5704cdb9db43a464516cdd150462918ab3015a9eac10d26e8f9f15",
+      "priority": 30,
+      "dependencies": [
+        "monitor-correction"
+      ]
+    },
+    {
+      "id": "delivery-correction",
+      "project_id": "research-improvement",
+      "criterion_id": "verified-loop",
+      "lane": "harness",
+      "manifest_path": "docs/zeus/operations/autonomous-operation-001/delivery-correction.operation.json",
+      "manifest_revision": "6e6b91efa8b29f795a7ff8fcbb3df8fa9ee4fa5d",
+      "manifest_sha256": "033686a6366d7af719a2d893b085f648ea8a7eb2a291dfc684f949505a02748a",
+      "priority": 40,
+      "dependencies": [
+        "monitor-correction"
+      ]
+    },
+    {
+      "id": "delivery-resume",
+      "project_id": "research-improvement",
+      "criterion_id": "verified-loop",
+      "lane": "harness",
+      "manifest_path": "docs/zeus/operations/autonomous-operation-001/delivery-resume.operation.json",
+      "manifest_revision": "9b3aaaead23774af61c148d5b287e4856669e72f",
+      "manifest_sha256": "eec7f91e0216ff0fc6210b364a8d498feec5baaa0441a0309ce90f8cebe517f1",
+      "priority": 50,
+      "dependencies": [
+        "monitor-correction"
+      ]
+    },
+    {
+      "id": "delivery-r5",
+      "project_id": "research-improvement",
+      "criterion_id": "verified-loop",
+      "lane": "harness",
+      "manifest_path": "docs/zeus/operations/autonomous-operation-001/delivery-r5.operation.json",
+      "manifest_revision": "aa734f97ad04b0dfac5c95bf146e56fdbb595989",
+      "manifest_sha256": "a9174f8d5f7b860766b43a2431eaa82a3fbf50171f286b95b9766e0a282d1302",
+      "priority": 60,
+      "dependencies": [
+        "monitor-correction"
+      ]
+    },
+    {
+      "id": "delivery-instance",
+      "project_id": "research-improvement",
+      "criterion_id": "verified-loop",
+      "lane": "harness",
+      "manifest_path": "docs/zeus/operations/autonomous-operation-001/delivery-instance.operation.json",
+      "manifest_revision": "086f3d3843281c739a8401f9860c030722fb8a6e",
+      "manifest_sha256": "a1f04be838a3deebe394468ca05c0628b857688759753d5e25e723089b764785",
+      "priority": 70,
+      "dependencies": [
+        "monitor-correction"
+      ]
+    },
+    {
+      "id": "worker-sessions",
+      "project_id": "research-improvement",
+      "criterion_id": "verified-loop",
+      "lane": "harness",
+      "manifest_path": "docs/zeus/operations/autonomous-operation-001/worker-sessions.operation.json",
+      "manifest_revision": "c4a5ec2706443a8a1f4529a519281cfc15c2f8b5",
+      "manifest_sha256": "3a57c165a81d8bad007ee6a8a6b29d4b729c84887209f717da77fe7a0ed0bdc8",
+      "priority": 80,
+      "dependencies": [
+        "monitor-correction"
+      ]
+    },
+    {
+      "id": "instance-evidence",
+      "project_id": "research-improvement",
+      "criterion_id": "verified-loop",
+      "lane": "interface",
+      "manifest_path": "docs/zeus/operations/autonomous-operation-001/instance-evidence.operation.json",
+      "manifest_revision": "b63b1b122254ff8d8275ccc150a84b8d3ce506c1",
+      "manifest_sha256": "6fae1c8dcd9ef80b71d14915b0097f56f10fe43fa381a92f8713e1c0e1dfef45",
+      "priority": 90,
+      "dependencies": [
+        "monitor-correction"
+      ]
     }
   ]
 }

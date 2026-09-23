@@ -38,3 +38,59 @@ The useful item adds the missing read-only backlog source to monitoring; impleme
 were still pending when this receipt was recorded. The plan has one item, so backlog_exhausted means
 no unadmitted item remains, not that the dispatched job finished. This proves first-item selection
 and admission, not automatic successor selection, self-generated work, recovery or release.
+
+## Accepted monitor correction and bounded delivery continuation
+
+Correction e91deeb1 passed independent review after the first evidence-gate refusal. Owner integrated
+it at e51c1e20875363dd95ebac1d802e222aad43a71f and ran monitoring/observation tests on Windows:
+30 passed, Ruff passed. PR181 contains this integrated head. Initial actual /api/status inspection
+showed no fleet_backlog source: the running monitor collector still uses runtime-176.
+
+To avoid another idle handoff, an owner-authored one-shot continuation runs under
+artifacts/autonomous-operation-001/monitor-cutover/finish.py. It is pinned to PR181, head e51c1e2,
+and workflow run 35794784993. It waits at most 45 minutes, requires all seven named mandatory jobs
+and workflow success on that head, checks a clean pinned runtime and unchanged launcher, then
+merges that PR and switches ONLY the monitor collector. A fresh /api/status must show the actual
+backlog plan. Failed activation restores the saved launcher and restarts the old collector;
+changed/ambiguous ownership stops rather than overwriting. No automatic test reruns or model calls.
+The web service and Fleet service are unchanged. Logs/results remain in that cutover directory.
+
+At startup the helper recorded waiting_ci (2026-09-22T22:56:51Z). Syntax and pinned CI identity were
+checked; activation/rollback are not yet exercised or claimed successful. This authorized one-shot
+administrative continuation is not the reusable release controller required by the whole frame.
+# 2026-09-23 correction dispatch checkpoint
+
+The monitor continuation completed with PR181 merged and collector consumption verified (receipt:
+artifacts/autonomous-operation-001/monitor-cutover/continuation-result.json). Operating Fleet code
+is unchanged. Rejected candidate 9689ed9 is present only in the implementation checkout.
+
+The consolidated seven-finding correction is pinned by plan be5524ea9ce07736fd2ef73beef42f1ffe36578f.
+Primary PostgreSQL records autonomous-operation-001-delivery-correction as dispatching at
+2026-09-23T00:51:46.272747+00:00 in the harness lane. Registration/admission evidence is under
+artifacts/autonomous-operation-001/delivery-correction-*.json. This proves automatic admission
+of an owner-authored correction, not completed Claude execution or autonomous diagnosis.
+
+Independent review, affected verification, CI and qualified host consumption remain required.
+The master SPEC records the durable rejection-to-successor coordinator boundary; implementation
+and real no-chat continuation qualification of that separate path remain pending.
+# Whole-goal checkpoint, 2026-09-23 12:34 KST
+
+Owner continues toward the existing full autonomous-loop completion contract without manual user
+relay for routine steps. This checkpoint supersedes earlier per-job summaries, not their evidence.
+
+| Area | Actual state | Completion still required |
+| --- | --- | --- |
+| Approved backlog/Fleet admission | Accepted, deployed; two disjoint lanes now running | Goal-backed self-selection after research, not only owner-pinned items |
+| Backlog monitor | PR181 deployed and real source verified | New session/continuation/release stages with evidence links |
+| Opus 5.5 | Actual model probe passed; Fleet consumed image ae070306 at 03:27:51Z | First full worker result/model binding and subsequent normal use |
+| Native CLI session continuity | Two actual Opus 5.5 turns in removed/recreated containers retained session id and remembered nonce | Zeus-owned secure archive, task/review binding, concurrency/restart/closure qualification |
+| Worker-session implementation | Opus 5.5 Claude running in harness lane | Independent acceptance, integration and real two-turn Zeus qualification |
+| Host delivery | Instance correction a1481784 produced, NOT accepted; verifier fixture mismatch reproduced | Parallel interface-lane fixture repair, independent whole changed-boundary review, PG/Windows/CI and actual host/rollback qualification |
+| Conductor continuation | Existing rework message path traced; finite Operation currently stops and parks it | Qualified ongoing lifecycle using existing owners and accepted session API |
+| Research/recovery/release loop | Components and authority exist, connections incomplete | SSOT/Council selection, two-strike research, safe recovery, exact reviewed deployment and next item |
+| Whole unattended acceptance | NOT complete | Two useful items, recovery, rejected/rollback control, duplicate/service restart and parallel progress without chat relay |
+
+Native CLI resume probe evidence: artifacts/autonomous-operation-001/opus55/native-resume-receipt.json.
+It uses a dedicated test-only CLI home; it does not prove the future Zeus allowlisted archive path.
+Raw model usage is retained. No reboot, live product/payment rollout or complete asset absorption
+is required to close this initial autonomy contract. These remain operating workload/product gates.

@@ -30,7 +30,39 @@ class ReleaseQueue:
             tx.put("release_queue", release_id, row)
             return row
 
-    def claim(self, now=None):
+    def enqueue(self, release_id, reason):
+        """Queue an ALREADY reviewed release for the single release controller; idempotent.
+
+        This is the same row the executor writes on conductor acceptance, created here for a
+        release that was reviewed outside that path. It grants nothing: the row is refused unless
+        the release record itself is `reviewed` or `verified` and its ticket binding still holds,
+        an existing row of any status is returned untouched (a failed or cancelled release is never
+        silently re-armed), and no lease, attempt, generation or fence is changed.
+        """
+        require(isinstance(reason, str) and reason.strip(), "Enqueue reason required")
+        now = datetime.now(timezone.utc)
+        with self.store.transaction() as tx:
+            existing = tx.get("release_queue", release_id)
+            if existing:
+                return existing
+            release = tx.get("releases", release_id)
+            require(release and release["status"] in {"reviewed", "verified"},
+                    "Release is not queueable")
+            ticket_binding(tx, release["candidate"])
+            row = {"id": release_id, "status": "queued", "at": now.isoformat(), "attempt": 0,
+                   "reason": reason}
+            tx.put("release_queue", release_id, row)
+            return row
+
+    def claim(self, now=None, eligible=None):
+        """Claim the next runnable row under the single controller lease.
+
+        `eligible` is an optional predicate over the row: a second controller on this host (the
+        host delivery controller) claims only the rows a registered plan names, so it can never
+        consume another controller's row or spend its attempt budget. The lease itself is
+        deliberately NOT narrowed - `deployment_locks:controller` still serializes every controller
+        on this host, exactly as before.
+        """
         now = now or datetime.now(timezone.utc)
         with self.store.transaction() as tx:
             lock = tx.get("deployment_locks", "controller") or {}
@@ -38,6 +70,8 @@ class ReleaseQueue:
                 return None
             for row in sorted(tx.scan("release_queue"), key=lambda r: (r.get("at", ""), r["id"])):
                 if row["status"] not in {"queued", "retry", "running"}:
+                    continue
+                if eligible is not None and not eligible(row):
                     continue
                 if row.get("retry_at") and datetime.fromisoformat(row["retry_at"]) > now:
                     continue
@@ -61,6 +95,16 @@ class ReleaseQueue:
                 return row
         return None
 
+    def owned(self, tx, claim, now=None):
+        """Re-check this claim's ownership INSIDE a caller's transaction.
+
+        A controller that writes its own durable observation elsewhere commits it in the same
+        transaction as this check, so a stale or superseded controller cannot record what it
+        observed. It is the check `heartbeat` and `finish` already make, exposed rather than
+        duplicated; it changes no row and grants nothing.
+        """
+        return self._owned(tx, claim, now or datetime.now(timezone.utc))
+
     @staticmethod
     def _owned(tx, claim, now):
         row = tx.get("release_queue", claim["id"])
@@ -81,6 +125,29 @@ class ReleaseQueue:
             tx.put("release_queue", row["id"], row)
             tx.put("deployment_locks", "controller", {"release_id": row["id"],
                 "owner": row["owner"], "lease_until": row["lease_until"]})
+
+    def defer(self, claim, result, *, resume_after_seconds=0, now=None):
+        """Release the lease for an EXTERNAL WAIT under the same durable logical intent.
+
+        A 20-minute CI run must not be waited out while holding the controller lease, and it is
+        not a failed attempt either. `defer` therefore completes this tick, records what was
+        observed in the same `attempts` history `finish` writes, returns the row to `queued` with a
+        bounded resume time and clears the controller lock. The attempt counter goes back to zero
+        because the wait is bounded elsewhere: the CALLER's durable intent carries the stage
+        deadline that ends this wait (`ci_timeout`, `consumption_timeout`), and a definite failure
+        still goes through `finish` with its unchanged retry budget and backoff. Ownership is
+        checked exactly as in `finish`: a stale controller cannot commit here either.
+        """
+        now = now or datetime.now(timezone.utc)
+        with self.store.transaction() as tx:
+            row = self._owned(tx, claim, now)
+            row.setdefault("attempts", []).append({"attempt": row["attempt"], "at": now.isoformat(),
+                                                   "result": result, "deferred": True})
+            row.update(status="queued", attempt=0, result=result, owner=None, lease_until=None,
+                       retry_at=(now + timedelta(seconds=max(0, int(resume_after_seconds)))).isoformat())
+            tx.put("release_queue", row["id"], row)
+            tx.put("deployment_locks", "controller", {"owner": None, "lease_until": None})
+            return row
 
     def finish(self, claim, result, now=None):
         now = now or datetime.now(timezone.utc)

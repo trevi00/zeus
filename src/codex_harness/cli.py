@@ -308,6 +308,8 @@ def parser() -> argparse.ArgumentParser:
     add_dge_parser(commands)
     from codex_harness.adapters.fleet_cli import add_parser as add_fleet_parser
     add_fleet_parser(commands)
+    from codex_harness.adapters.host_delivery import add_parser as add_host_delivery_parser
+    add_host_delivery_parser(commands)
     from codex_harness.adapters.frontdesk_cli import add_parser as add_desk_parser
     add_desk_parser(commands)
     from codex_harness.adapters.autonomous_cli import add_parser as add_autonomous_parser
@@ -490,6 +492,20 @@ def fleet_command(service, args):
         result = fleet_cli.execute(service, args)
     except Exception as exc:
         emit(fleet_cli.refusal(exc))
+        raise SystemExit(1) from exc
+    emit(result)
+    if result.get("exit_code", 1) != 0:
+        raise SystemExit(1)
+
+
+def host_delivery_command(service, args):
+    """INV-HOST-DELIVERY-001: exit 0 only for a completed command; refusals print a code and a type,
+    never a plan, a descriptor, a host path, a service name, a PR body, a DSN or a raw exception."""
+    from codex_harness.adapters import host_delivery
+    try:
+        result = host_delivery.execute(service, args)
+    except Exception as exc:
+        emit(host_delivery.refusal(exc))
         raise SystemExit(1) from exc
     emit(result)
     if result.get("exit_code", 1) != 0:
@@ -728,6 +744,8 @@ def main() -> None:
             autonomous_command(service, args)
         elif args.command == "fleet":
             fleet_command(service, args)
+        elif args.command == "host-delivery":
+            host_delivery_command(service, args)
         elif args.command == "desk":
             desk_command(service, args)
         elif args.command == "audit-service":

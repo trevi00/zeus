@@ -1,0 +1,35 @@
+{
+  "schema": "urn:zeus:operation:1",
+  "id": "autonomous-operation-001-instance-evidence",
+  "base_revision": "9d50e83d0891141f43444ee73af88d3650e87256",
+  "goal": {
+    "path": "docs/zeus/operations/autonomous-operation-001/SPEC.md",
+    "sha256": "a220463f675b3d72b49ceb7fd80a27eb0e1eaafbc3d67a68a2eeefcd08fc8594",
+    "criterion": "Reconcile worker/verifier runtime-fixture evidence and independently qualify inherited instance replacement correction a1481784",
+    "rationale": "Replace the demonstrated one-shot continuation with a reusable owner-controlled delivery component; retain existing Releases and ReleaseQueue authority."
+  },
+  "budget": {
+    "mode": "subscription",
+    "total": 192,
+    "per_host": 192
+  },
+  "claude": {
+    "model": "claude-opus-5-5",
+    "timeout_seconds": 3600,
+    "max_budget_usd": 2
+  },
+  "plan": {
+    "objective": "Implement ONLY Evidence-environment reconciliation after a1481784 section of bound SPEC. Existing candidate runtime is unaccepted, not a trusted baseline: independent reviewer must cover inherited R5 instance-authority code and changed matrix, not only test delta. Fix test-owned attestable runtime fixture so absent outer .git does not invalidate the instance before lease-loss test. Keep no-git refusal tests and production validation intact; no skips or global git edits. Only two allowed files. Run exact four-file pytest and Ruff, and named regression with no outer .git. Bounded output; no production actions/model calls. Keep actual failures separate from successful legacy tests claims.",
+    "allowed_paths": [
+      "tests/test_host_delivery.py",
+      "docs/zeus/operations/autonomous-operation-001/HOST-DELIVERY.md"
+    ],
+    "acceptance_criteria": [
+      "Existing Releases approval and ReleaseQueue fencing authorize the exact plan; no accepted-row shortcut or new approval authority.",
+      "Bounded durable tick continues publish/CI/merge/drain/switch/consumption across restart and response loss without duplicate effects or nested transactions.",
+      "Concrete host adapters, canary/verified rollback and read-only monitoring/structured logs meet the fixed acceptance matrix; actual live qualification remains owner work.",
+      "Scoped tests and Ruff pass; preserve all failed and unexecuted evidence honestly.",
+      "All seven correction boundaries covered together, including real canary ordering, recovered merge validation, ownership before effects, rollback restart and eligible-plan fairness."
+    ]
+  }
+}

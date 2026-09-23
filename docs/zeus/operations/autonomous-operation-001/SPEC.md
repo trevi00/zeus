@@ -1,5 +1,38 @@
 # Whole autonomous operating loop
 
+## Native evidence completion, 2026-09-23 12:54 KST
+
+This is the same host-delivery acceptance batch, not a new runtime feature. Candidate 779d0326
+fixed the attestable fixture. Owner executed its source archive without .git, read-only and offline:
+119 passed, 25 skipped; the specifically disputed lease-loss regression passed separately
+(1 passed, 86 deselected). Raw logs: artifacts/autonomous-operation-001/instance-replay/
+fixed-replay.log and fixed-named.log. These owner results resolve the missing archive execution
+in review b457b2e6; they do not silently change its stored blocked decision or accept runtime R5.
+
+Native Windows full four-file execution revealed two test assumptions together. The graceful-loop
+test calls os.kill(self, SIGINT), which terminates the Windows pytest process; the subsequent scoped
+run excluding that case completed with 141 passed, 1 skipped, 1 failure, 1 deselected. The failure
+assumes Popen.pid equals the interpreting Python PID. Actual minimal subprocess observation using
+the same venv executable returned launcher 31712, interpreter 6200, interpreter parent 31712,
+exit 0. A launcher PID and service PID are distinct in this environment. This does not establish
+a production scheduled-task failure. Runtime ownership logic must not be weakened to satisfy tests.
+
+Primary source checked 2026-09-23: https://docs.python.org/3/library/os.html#os.kill describes
+Windows TerminateProcess for signals other than CTRL_C_EVENT/CTRL_BREAK_EVENT. Replace the test's
+self-kill with portable in-process signal delivery that actually invokes the installed handler,
+retaining completion of the tick in flight. For the real-child service test, launch the actual
+interpreter rather than the Windows venv redirector, explicitly retaining candidate source and
+dependency import paths, or prove the interpreter's parentage using actual OS evidence. Do not
+delete the identity assertion, skip Windows, or claim the receipt alone proves ownership.
+
+Claude batch: modify only tests/test_host_delivery_cli.py and HOST-DELIVERY.md. Retain production
+code and all other accepted evidence. Run the four-file command below and Ruff. Label container
+Linux results as Linux, not native Windows. Owner then runs Windows and isolated-PG scope and
+independently reviews inherited a1481784 R5 runtime, fixture 779d0326 and this test delta as one
+candidate. Timeout/cancel is exercised by the signal test; identity by actual child; original
+concurrency/restart/cleanup matrix remains in the four-file suite. No model calls in these tests.
+Unknown Windows outcomes must be reported, not guessed. This batch has no permission to deploy.
+
 2026-09-22. Owner: Codex analysis/design/acceptance; Claude implementation and execution evidence.
 This frame is the parent completion contract. Individual accepted features do not complete it.
 Continue this file after every batch; do not replace the objective with its next local defect.
@@ -87,6 +120,132 @@ accepted Fleet candidate through the actual release/store/image/launcher identit
 which owner changes each pointer. Do not enable legacy supervisor merely because its class exists.
 
 ## Delivery batches under this one completion contract
+
+### Execution order confirmed by user on 2026-09-23
+
+Proceed autonomously to this document's WHOLE outcome. Ordinary research, correction, independent
+review, tests, eligible admission and qualified reversible deployment within the approved portfolio
+are authorized. Do not ask the user to relay every transition. Current work remains delivery-instance
+qualification; accepted backlog/monitor/recovery evidence is preserved. Follow it with durable worker
+session support and conductor continuation; then connect existing research selection/recovery and
+qualified release owners; finally run the whole real acceptance checklist. These are completion
+dependencies, not permission to keep adding unrelated features. Local-asset absorption and external
+reference migrations become useful operating workload; total absorption is not a prerequisite to
+first verified autonomy. No claim that this chat itself is a continuously running daemon.
+
+Opus 5.5 availability probe succeeded in the CLI-only image ae070306 on this host (2026-09-23).
+Requested model and returned modelUsage identify claude-opus-5-5; fixed response matched; receipt
+and usage saved in artifacts/autonomous-operation-001/opus55/model-receipt.json. This is a real
+subscription call, not a worker implementation, resume, or release test. Two earlier invocations
+failed argument parsing before model execution. The active Fleet must still drain/restart onto the
+new image before new Opus 5.5 operations are registered. No previous admitted operation is rewritten.
+
+### Next bounded implementation: durable Claude task sessions
+
+### Conductor continuation SSOT finding, 2026-09-23 (design input)
+
+Existing executor._commit_decision already emits rejected-review rework messages and approved lead
+reviews for conductor; improvement_loops tracks rejected trees and max_reworks. LocalCycle explicitly
+runs only worker/lead, stops at awaiting_operator, and Operation._classify turns rejected lead review
+into terminal rejected. Operation finalization then parks terminal-correlated messages. Thus saying
+"there is no rework logic" would be false: the missing piece is an approved continuous lifecycle
+around finite operation semantics and scope-bound rework. Reuse these message/review owners.
+
+Next design must keep existing finite operation behavior backwards compatible and opt in via a
+Git-pinned owner policy. Preserve each rejected candidate and exact evidence, but allow the logical
+goal to remain active under the authorized lifecycle. Do not revive a parked finite operation by
+editing its row. A continuation intent should derive one successor (idempotently) from the succeeded
+independent review decision and an evidence-backed Codex correction design, preserving original
+goal/allowed paths/acceptance matrix; expand only by an authorized revised frame. Replace the vague
+"reimplement" context with previous candidate, validated session checkpoint and consolidated matrix.
+Connect session eligibility to exact review/candidate/task; no fresh-session claim of native resume.
+
+Two distinct similar failures pause the affected family for existing research/DBA/Council diagnosis;
+replayed events do not count. A free-text similarity or common rejection status is only a research
+candidate, never proof of common cause. Research outputs must cite inspected SSOT and relevant
+primary sources before Codex selects the corrected design. Preserve generic budget/usage accounting
+and operational resource bounds without imposing another user-approval lifetime call cap.
+
+Accepted lead review alone is not release approval: route through existing conductor review and
+Releases/ReleaseQueue, then qualified host delivery. Different identities cannot inherit acceptance.
+The controller must not grant a candidate authority to change its own evaluator. Unknown effects use
+ExecutionRecovery's bound repair process; known evidence refusal retains salvage and goes through
+inspection repair and independent review, not status rewriting. This section is traced design input;
+implementation contract will bind the accepted worker-session API, not speculate a second API now.
+
+Purpose: keep one logical worker task context through implementation -> frozen candidate -> review
+wait -> qualified rejection correction, without keeping an idle model process alive. This batch
+provides the reusable transport/storage primitive; conductor continuation consumes it in the next
+batch. A retained container, a UUID alone or a PG checkpoint is not proof of transcript continuity.
+
+SSOT inspected: Executor writes provider_session_id, workspace_identity, generation/attempt and
+policy/config digests in service.checkpoint; ClaudeCLI._command always uses --session-id and reports
+resume unsupported; IsolatedWorker uses disposable /home/worker and removes the container after
+output import. Keep executor reservation, unresolved-effect checks, observation and settlement.
+Add task-scoped lifecycle ownership instead of treating the last agent checkpoint as permission
+to open any session. Git fixes specification/candidate; PG owns binding/state; artifacts hold large
+transcript bytes and hashes. Candidate code cannot approve its session/archive or retention policy.
+
+Primary documents read 2026-09-23 (living versions): code.claude.com/docs/en/headless, Continue
+conversations: --resume accepts exact session id or absolute .jsonl transcript path. --continue
+chooses a recent session and is inappropriate for concurrent tasks. CLI reference: --session-id
+is creation identity, --resume restores context, --no-session-persistence disables restoration.
+Headless usage totals on resumed conversations are cumulative; record raw totals and derive deltas
+only with matching session/baseline, otherwise unknown. These documents do not prove Zeus preserves
+the needed files or current --restricted integration: require real two-turn owner qualification.
+
+Implement opt-in task-session contract and repository-owned adapter; default fresh behavior stays
+compatible. Durable binding includes logical task id, repository/workspace identity, session id,
+provider/model/CLI/profile/policy/config identities, owner generation/attempt, submitted candidate,
+archive reference/hash and review reference. States: active -> checkpointed -> awaiting_review ->
+correction_ready -> active; accepted -> archival_pending -> closed. Explicit missing/corrupt,
+incompatible and unresolved states; never relabel a fresh context as a resumed one. A model or
+policy mismatch refuses native resume and reports need for an explicit fresh evidence handoff.
+
+Preserve validated session transcript artifacts from the owned container before deleting its home.
+Export only the exact session's allowlisted regular transcript/support files needed by the pinned
+CLI, with bounded bytes/counts, path containment and hashes. No wholesale ~/.claude copy, credentials,
+settings, arbitrary symlinks or project-executable configuration. Keep retained native transcripts
+as restricted local evidence, not public Git/log output. Verify saved bytes before admitting resume;
+restore into the new isolated worker via the existing fixed mounts/protocol or a narrowly validated
+extension. Never mount another task's writable home. Same logical session is exclusively owned
+during execution; waiting holds no invocation reservation or model loop. Freeze review candidates;
+resume edits a worker workspace, never the review checkout. Keep archive until evidence promotion
+and closure are confirmed. Cleanup failure is recorded, not permission to discard the last copy.
+
+Thread explicit resume binding through existing executor/provider/isolated-entry paths. Validate
+the resume identity in the host and at the trusted container entry, preserve model/session result
+checks and reject unsafe or unsupported combinations before provider entry. Reuse checkpoints;
+do not build another invocation ledger. Source/result archive promotion must survive response loss:
+deterministic intent, verified content-addressed artifact, idempotent PG update. No external I/O under
+store transaction. Unsupported native resume must be reported accurately; do not merely change
+providers.json capability to supported without a conditional implemented path.
+
+Rejection authorization is supplied by the existing independent succeeded Codex decision for the
+exact frozen candidate, not by arbitrary text. This primitive validates the binding and makes a
+context eligible; it does not self-create work, approve a candidate, merge or delete historical
+rejected records. Conductor continuation remains the sole subsequent admission owner.
+
+Fixed acceptance matrix: fresh unchanged; native resume command uses exact archive/id, not latest;
+task/repository/model/policy mismatch refusal; corruption/path escape/secret-file exclusion; two
+owners race for one logical session; duplicate checkpoint/review event; crash after archive write
+before PG commit; review wait uses no calls; rejected candidate immutable; rejected correction
+retains prior history; cumulative usage not double-counted; closed state only after promotion;
+cleanup failure retains recoverable bytes; Windows/POSIX paths; default no-resume behavior intact.
+Use real temp files and a labelled fake CLI protocol fixture for unit transport, and an integration
+test skipped unless explicitly configured for real Claude. No model calls in worker tests; owner
+must later run a real two-turn/container-recreation probe before production resume activation.
+
+Allowed new modules domain/application/adapters/worker_sessions.py; narrow integration in executor.py,
+claude_cli.py, isolated_worker.py, isolated_worker_entry.py, providers.py, resources/providers.json,
+application service/checkpoint owner as actually present, cli.py for read-only status/explicit close,
+domain/observation.py and adapters/monitoring.py; tests/test_worker_sessions.py and existing directly
+affected Claude/isolated/executor/monitoring tests; docs/contracts.md and WORKER-SESSIONS.md here.
+Inspect actual file names first. Do not alter release approval or current host-delivery work.
+Required checks: python -m pytest tests/test_worker_sessions.py -q -p no:cacheprovider and
+python -m ruff check . --no-cache; run directly affected existing tests by exact named files as well,
+record executed commands and outcomes honestly. All output bounded; no huge fixture/stream dumps.
+One independent review against this matrix, then owner integration/real resume qualification.
 
 1. Durable approved backlog -> existing Fleet admission. Implement now, scoped below. This closes
    manual enqueue/next-selection for already specified tasks; it is not complete self-direction.
@@ -330,3 +489,342 @@ review follows preserved inspection and the complete changed monitor path, not a
 Register the correction as a new approved item without an accepted dependency on its failed origin;
 retain the original failed item and its immutable pin. Automatic selection of this correction is
 owner-authorized recovery evidence, not autonomous diagnosis or self-authorization.
+
+## Durable delivery controller: consolidated Batch 3 implementation
+
+The one-shot PR181 continuation completed: required CI passed, PR merged c9e7ed19, collector
+switched, fresh /api/status reported the real plan at 2026-09-22T23:16:37Z. This is measured owner
+delivery, not a reusable controller. The remaining recurring failure is loss of continuation after
+review; implement that whole path rather than another task-specific shell script.
+
+Existing owners inspected: Releases requires worker-parent lead then conductor approval, exact
+revision/policy checks and active CAS. ReleaseQueue owns leases/generation/fences and retry limits.
+GitWorkspace owns publish/merge. Legacy ReleaseRunner monitors its Docker deployment, not current
+Windows scheduled services. Preserve all these authorities; an accepted Fleet row alone cannot
+grant release approval. The single-PR helper in artifacts is evidence/design precedent, not a
+dependency or code to execute from the repository.
+
+Deliver a reusable opt-in host delivery use case with domain policy, application coordinator and
+adapters. Input is an owner-approved Git-pinned delivery plan: plan/release IDs, exact existing
+release candidate revision/tree, incumbent policy hash, repository, named required CI checks,
+host target ID, expected current descriptor digest and target descriptor. Strict versioned JSON;
+no arbitrary shell commands, source text or credentials accepted as a plan. Target descriptors bind
+clean host revision/root, immutable worker image (or explicit unchanged), profile digest (or
+explicit unchanged) and known-good predecessor. Authorized target registry is host configuration,
+separate from candidate content; a candidate cannot select another scheduled task/path/policy.
+
+Reuse Releases and ReleaseQueue for approval/fencing; require their actual records and exact
+bindings before external effects. Never synthesize lead/conductor approvals from a plan or model
+self-report. Registration may precede release review but must project awaiting_review, not run.
+Build a bounded tick/run/status CLI through existing parser and process ownership conventions;
+run persists across this chat, while an empty queue idles without provider calls. No production
+registration or service changes in worker tests. Default remains disabled until owner acceptance.
+
+State path: registered -> awaiting_review -> publishing -> awaiting_ci -> merge_intended -> merged
+-> drain_intended -> switching -> awaiting_consumption -> active; explicit blocked/retry/rollback
+states preserve stage, error type, evidence and next action. Durable external intent precedes every
+non-idempotent action. Use existing ReleaseQueue claim and check current ownership before actions
+and committing observations. No store transaction spans GitHub, filesystem, subprocess or another
+independently locking transaction. Do not hold a lease asleep through a 20-minute CI run: return a
+pending state and schedule the next bounded tick under the same durable logical intent.
+
+GitHub adapter uses the existing GitWorkspace publish/merge contracts where applicable and exact
+PR/head CI observation. Required named checks must all finish successfully for the intended head;
+missing/skipped/cancelled/failed are not pass. Review a failed response by querying exact PR/merge
+identity before reissuing mutations. Changed head/base/tree goes to requalification, not silent
+rebase that inherits stale acceptance. Failure before any effect can retry within existing bounds;
+ambiguous effects retain ownership/evidence and reconcile, never blindly rerun or overwrite.
+
+Host adapter uses the existing background_service/process_tree ownership tools and a stable
+controller outside the service being replaced. Support the actual Windows scheduled collect/Fleet
+targets via the host registry; POSIX test target uses owned child processes and the same descriptor
+contract. Pause new admission and prove drain before replacing Fleet; existing unconfirmed effects
+block its switch. Do not kill active model work just to deploy. Switch an immutable descriptor
+atomically under a target-specific lock and compare expected predecessor. Launch hidden on Windows.
+Consume startup evidence from the launched process (instance ID, PID/start identity, actually loaded
+module root, revision/image/profile bindings), not merely a modified setting or PG pointer. Update
+release active through Releases only after prescribed checks and actual consumption; do not call
+legacy ReleaseRunner promotion early. Active host descriptors are scoped per target; reconcile the
+existing release active CAS explicitly rather than inventing a parallel approval authority.
+
+Canary uses the actual service contract (fresh monitor source for collect; real qualified worker
+operation for Fleet), specified by an incumbent fixed check ID, never executable text in the plan.
+Model canary runs are owner acceptance work, not fixture tests. A failed switch/canary restores the
+exact predecessor descriptor, verifies its consumption, and records rollback. A failed rollback or
+unknown process identity is a blocked operational alert. Do not erase evidence or claim rolled_back
+merely because a rollback was requested. A process restart reconciles recorded intent and observed
+instance before another start. Unrelated targets continue; conflicting changes serialize by target.
+
+Expose read-only status in monitoring and structured observation transitions: general scheduling,
+development evidence/check stages, operations failures/switch/rollback. IDs, hashes and safe reason
+codes only; no credential/exception-body dumps. Repeated idle polls emit no duplicate transition.
+
+Fixed acceptance matrix for one consolidated independent review:
+- Normal exact reviewed release -> publish -> real CI observation -> merge -> consumed descriptor.
+- Missing/stale review, policy, head, target, image or predecessor refuses without side effects.
+- Lost publish/merge/start response and process restart reconcile once, preserve evidence.
+- Competing claims/target changes and lease expiry prevent stale mutation/commit.
+- CI pending/failed, unavailable store/GitHub/host and timeout/cancel stay explicit; unrelated work moves.
+- Active work drains; unknown effects prevent switch; wrong startup receipt never grants activation.
+- Failed canary restores and proves predecessor; rollback failure blocks and alerts.
+- Actual temporary files/owned child processes for descriptor, restart and cleanup tests; injected
+  faults labelled. No real GitHub writes, scheduled-task mutations, models or production DB in tests.
+- Isolated PostgreSQL test for transaction boundaries; skip honestly if unavailable in worker image.
+
+Allowed files: new domain/application/adapters host_delivery.py modules; existing release_queue.py,
+releases.py, deployment.py, git.py, background_service.py, service_entry.py, observation.py and
+monitoring.py only for narrow reusable integration; cli.py parser; tests/test_host_delivery.py and
+tests/test_host_delivery_cli.py; docs/contracts.md and HOST-DELIVERY.md here. Do not weaken existing
+gates or make unrelated edits. Required scoped checks only:
+python -m pytest tests/test_host_delivery.py tests/test_host_delivery_cli.py -q -p no:cacheprovider
+python -m ruff check . --no-cache
+These explicit task checks override generic full-suite guidance for the worker; owner runs affected
+neighbors/PG and CI. Keep failures and unexecuted native checks separate from successful commands.
+Independent review covers the entire matrix in one verdict. Whole-loop research selection and
+qualified failure repair in Batch 2 remain required, not replaced by this delivery component.
+
+## Batch 3 correction and conductor continuation boundary (2026-09-23)
+
+### Approved worker model and review-loop design update (2026-09-23)
+
+User authorizes Opus 5.5 for subsequent Claude work. Pin NEW manifests to claude-opus-5-5,
+subscription accounting unchanged. Do not rewrite an admitted manifest or change an active run.
+Official source read 2026-09-23: https://code.claude.com/docs/en/model-config states this exact
+model ID and minimum Claude Code 2.1.280; explicit --model overrides user settings. Local CLI
+observed 2.1.280, incumbent worker image contains 2.1.274. Therefore a host alias/settings change
+alone is insufficient. Build a CLI-only successor of the accepted image, verify version/worker
+contracts, bind its immutable id and require actual requested/reported-model agreement on the
+first new execution. A version probe alone does not prove subscription model availability.
+Source: https://platform.claude.com/docs/en/models/opus-5-5/overview; model migration must not
+reuse model-bound thinking blocks as evidence or assume cross-model transcript compatibility.
+
+Keep the logical worker session/workspace until final independent acceptance and durable evidence
+promotion. Freeze each submitted candidate; reviewer uses a separate immutable checkout. Rejection
+returns one consolidated acceptance-matrix report to that task's resumable worker context. Waiting
+does not consume model calls; container/process lifetime is independent of logical session lifetime.
+Current resources/providers.json explicitly says Claude session_resume unsupported: implementation
+and measured restart/rejection qualification are still required, not enabled by this document.
+
+Defect prevention is a fixed full state/action matrix before implementation, shared enforcement of
+ownership invariants rather than scattered checks, independent counterexamples, and one complete
+review of changed boundaries. Two distinct similar failures require an evidence-backed reframe in
+this document. Accepted results are preserved. Promote repeated checks into shared contracts/tests
+after validation. Track recurrence by cause (not merely symptom), review rounds, operational escapes,
+and time to accepted outcome; raw test count is not a success metric. Session persistence alone does
+not establish these invariants or guarantee defect-free work. Clean up ephemeral state only after
+artifact/DB promotion is confirmed; unavailable persistence preserves recovery material.
+
+### Execution recovery checkpoint: output overflow
+
+### Remaining R5 ownership correction (2026-09-23, review 8952f377)
+
+#### R5 instance-authority amendment after candidate 79c6783
+
+##### Evidence-environment reconciliation after a1481784 (2026-09-23)
+
+The instance amendment produced candidate a1481784c12fb8af7becb3c32f23e2203f7d0075, but
+evidence inspection 420f935a refused 3/8 claims (5 checked). No independent acceptance exists for
+this candidate. The actual verifier failure is test_a_fence_lost_during_the_bounded_stop_preserves_
+the_effect_and_starts_nothing: instance_receipt_unreadable BEFORE the intended lease-loss boundary.
+Owner reproduced the same failure once in an offline read-only archive without .git using image
+ae070306: 1 failed/85 deselected, log artifacts/autonomous-operation-001/instance-replay/reproduce.log.
+This is an executed reproduction, not the earlier code-only finding.
+
+Discriminating evidence: verifier supplies a source archive without .git; worker staging has git.
+startup_receipt derives revision from the loaded root's git state and emits empty revision when
+unavailable; receipt_identity correctly refuses that as unreadable. live_target currently accepts
+receipt arrival/digest without ensuring the fixture actually owns a valid attestable runtime.
+The guard test therefore exercises refusal of an unknown instance instead of expiry after stop.
+Do not weaken production receipt validation or pretend absent git proves an attested revision.
+
+Bounded correction is TEST FIXTURE plus its evidence documentation only: create an owned temporary
+attestable runtime for tests that require a valid live receipt, using real source files and a tiny
+local git repository where required. Keep git changes confined to that fixture, no global git
+configuration, network, or production checkout writes. Preserve separate deliberate no-git/wrong-
+runtime refusal tests. Assert fixture validity before the intended boundary. No adding skips to
+avoid the gate. Run both exact scoped four-file pytest and Ruff. Also run the named regression in
+a source-copy environment without outer .git, preserving all outcomes and bounded logs. Independent
+Codex must still inspect the instance-authority correction inherited from a1481784 and its full
+changed forward/rollback matrix; it has never been accepted, not merely the fixture diff.
+Allowed edits for this correction: tests/test_host_delivery.py and HOST-DELIVERY.md only. If the
+discriminating check reveals a production defect, report it rather than broadening those edits.
+This task may run in the interface lane alongside worker-sessions: both use the same repository but
+their allowed paths are disjoint. Lane is scheduling ownership, not permission to change goal/role.
+
+The lifecycle guard itself is retained. Independent review of candidate 79c6783ba0d32d985761d8cdde70d2662b42ab3b
+found the remaining mismatch: adapter _matching_instance returns None for every nonmatching receipt,
+and start interprets None as permission to stop/retire. Descriptor identity and authority to replace
+a running instance are different facts. The test expecting replacement for an unrelated receipt
+digest encoded the unsafe behavior. This is a static reachable trace, not an executed reproduction.
+Earlier 133-pass/1-skip evidence is preserved, with that limitation.
+
+Reframe the SAME boundary around explicit observed-instance classification, not another local
+check. Primary implementation sources: HostTargetBase.start/_reconcile/_matching_instance and
+HostDelivery._switch/_rollback at 79c6783. No external API assumption changes in this correction.
+Question deciding the design: where is authority to replace THIS observed instance durably bound?
+The current desired descriptor alone does not answer it; require trusted transition evidence.
+
+Implement one shared classification/authorization contract used by forward and rollback paths:
+- matching intended live instance: recognize it, no stop/unlink/start;
+- known authorized predecessor: exact descriptor PLUS instance/process identity bound by the
+  durable delivery transition permits replacement under the existing lifecycle guard and fence;
+- clean empty target: permit initial start only on positive evidence of absence, not read errors;
+- foreign or unknown running instance (including missing, malformed, contradictory, wrong-runtime
+  receipt or an instance different from the authorized predecessor): refuse BEFORE stop or cleanup;
+- known stopped owned instance with interrupted transition: reconcile recorded effect and resume
+  once, retaining identity evidence until replacement is established. Unknown absence stays blocked.
+
+Pass the authorized replacement identity from the durable application intent to the adapter; do
+not let the adapter infer permission from an arbitrary current receipt or accept every nonmatching
+receipt. Capture identity before descriptor replacement, preserve it across ticks/response loss,
+and bind process identity to the same observed receipt/state rather than PID existence alone.
+Rollback's replaceable instance is the failed candidate instance actually started by this intent,
+not the original predecessor it is restoring. If startup identity was never confirmed, use trusted
+launch ownership evidence to reconcile; otherwise block with evidence rather than killing unknown
+work. No weakening of actual-runtime receipt checks, existing guard or lease-loss handling.
+
+One fixed acceptance matrix: normal forward replacing the authorized predecessor; failed-canary
+rollback replacing the owned candidate; already-matching restart with zero churn; stale/expired
+owner still has zero unauthorized mutation; correct descriptor but foreign digest/runtime/instance,
+missing/malformed receipt beside live process all preserve process and evidence; clean initial
+start; known-dead recovery; unknown liveness; crash after switch/start/stop reconciles identity;
+both process and injected scheduled-task adapters use this contract. A controlled counterexample
+must show the old nonmatching->stop behavior and the safe refusal with unchanged evidence.
+Update the unsafe expectation instead of deleting the scenario. Use actual temporary files and
+owned child processes where supported; label injected scheduled-task responses. Keep all prior
+accepted tests. Required four-file pytest and Ruff commands remain unchanged. Native PG/Windows/
+GitHub qualification remains owner work. Scope is only this changed ownership boundary and directly
+affected forward/rollback interactions; no unrelated exploration or new feature.
+
+Candidate 5d23049264e5523a1e5e5039a53ba42f2fc35c47 completed implementation and evidence
+inspection, but independent review rejected one remaining R5 path. Preserve the short-id fix and
+prior accepted boundaries. Worker reported 124 passed/1 skipped and Ruff; these do not prove the
+missing interleaving. Review is static code evidence, not a reproduced race. This recurring R5
+family requires revising the ownership boundary before further patching, not moving one check.
+
+Observed source: ProcessHostTarget.start and ScheduledTaskHostTarget.start call stop and unlink
+receipt/stop/pause files BEFORE authorize(), outside the target lock. HostTargetBase.switch alone
+locks descriptor replacement. Reachable trigger: A passes the application fence check and pauses;
+its lease expires; B claims and starts a successor; A resumes, stops B and removes B's receipt,
+then rejects its own stale authorization. Material consequence: successor outage and lost evidence.
+Competing explanation that the application-level check suffices is refuted by that check/action
+gap. Discriminating check: a barrier after A's outer check, let B acquire ownership and finish its
+start, then resume A; assert B's process/receipt survive and A has no mutating effects.
+
+One complete correction: reuse a shared target lifecycle guard for switch and both start adapters.
+Inside that guard, authorize before the first mutation, reconcile current descriptor and recorded
+instance against the intended target, then protect stop -> cleanup -> start -> state publication.
+Every controller that touches this target must use the same guard; unrelated targets remain free.
+Recheck ownership before later mutations when a stop/wait can outlive the lease. B must not create
+a successor inside A's unfinished lifecycle operation. If A expires during its own in-flight stop,
+preserve/reconcile that observed effect; do not erase evidence or label it cancelled. Do not hold
+a database transaction across a process wait, introduce nested transactions, or recursively acquire
+a non-reentrant lock. Forward and rollback start must share the same protection.
+On recovery, recognize an already matching live instance rather than killing/restarting it. A
+foreign/unknown descriptor or instance refuses before stop/unlink. Lock timeout refuses without
+mutation. If a lock survives a crashed owner, report the actual recovery condition; do not break
+another owner's lock using age alone. No expansion to unrelated locking architecture is required.
+
+Fixed acceptance additions: (a) stale before guard: zero stop/unlink/start; (b) successor between
+outer check and guard survives; (c) expiry during bounded stop: no later stale cleanup/start,
+successor serialized; (d) normal and rollback restart reconcile matching instance; (e) concurrent
+same-target operations serialize and different targets do not; (f) foreign identity, lock timeout
+and unavailable authority preserve evidence. Use controlled barriers and real disposable files;
+actual child process where supported, injected schtasks runner explicitly labelled. Never touch
+production scheduled services. Test adapter effects, not only coordinator return codes.
+
+Required commands remain the exact four-file pytest command and Ruff below. Keep output bounded;
+short test ids, no full streams/fixture dumps. Allowed scope remains the existing host-delivery
+files and direct tests/docs. Independent review verifies this changed boundary and its forward/
+rollback interactions, preserving prior accepted results. No merge/deployment by worker.
+
+### Preserved output-overflow investigation
+
+Run da5eaa40006b4e74a3ff4071d93e8bd2 ended normally (exit 0, no OOM, confirmed container
+removal), but provider output was 8,878,674 bytes against 8,388,608 stream_bytes. The recorded
+failure explicitly says output limit reached, not network failure. No accepted terminal result
+exists. Ten modified files were imported before cleanup and are preserved as UNREVIEWED commit
+5c491cd3592e96fbaa646ed43eb19acf843dc5ec. This is salvage, not a passed implementation.
+Sources: run.json and inner_result.json under artifacts/f2h/isolated-worker/runs/<run-id>.
+Existing claude_cli._lost_output and _provider_failure correctly refuse incomplete evidence.
+
+Resume from the preserved implementation, inspect the seven criteria, finish/fix and rerun the
+four-file scoped check and Ruff. Do not reimplement from the pre-correction base. Use bounded
+source reads and compact diffs; no whole-file/whole-stream dumps. Keep logs as artifacts and
+report concise result counts and relevant failures. Do not weaken truncation refusal or claim
+that avoiding large output fixes the stream collector architecture. Durable spooling/independent
+terminal parsing is a separate follow-up, not required to discard useful recovered code now.
+
+Owner Windows check discovered a concrete portability error in oversized-plan parametrization:
+pytest embeds the 256KB input into its node id/PYTEST_CURRENT_TEST, exceeding Windows' 32767
+environment-variable limit before exercising the contract. Give cases explicit short ids while
+retaining the full oversized payload and assertions. Interrupted scoped run: 56 passed, 16
+skipped, 2 setup/teardown errors; raw recovery-owner-check.log retained. An initial owner attempt
+also imported the home editable install; subsequent checks set PYTHONPATH to this checkout/src.
+Neither attempt is claimed a passing check. All original acceptance gates still apply.
+
+Candidate 9689ed954f24cc1b27b9e4da2e6ea1d52b308b5a was rejected by independent
+review 55e265c9-977f-4d36-adca-4227545d9b5c. It is integrated ONLY into this implementation
+checkout, not the operating runtime. The following are code-traced reachable defects, not owner
+executed reproductions. Preserve the prior 70-pass worker evidence with its scope; it does not
+establish host deployment. One correction must cover the seven findings and their interactions.
+
+1. Runtime identity: ProcessHostTarget.start launches the current interpreter/module, while
+   startup_receipt copies revision/image/profile from the requested descriptor and consumption
+   ignores module_root. Resolve an owner-registered clean runtime root before launch, bind imports
+   to it, and attest the actually loaded code and effective configuration. Compare observed root
+   and revision to the authorized tuple. An idle descriptor-echo process cannot qualify collect
+   or Fleet. Image/profile facts describe effective configuration, not a model call that never ran.
+   Test an old runtime with a new requested descriptor: no activation, even if PID is alive.
+2. Canary ordering: collect_monitor_canary currently requires consumed=true, which _consume writes
+   only AFTER that canary. Separate observed startup from final activation; actual fresh collector
+   output must bind instance and runtime independently of the final active pointer. Exercise the
+   real coordinator/canary integration, both fresh success and stale/missing source refusal.
+3. Merge reconciliation: observing MERGED with the same head bypasses GitWorkspace's merged-tree
+   validation after response loss or a post-merge rejection. Share exact merged revision/tree
+   qualification between normal and recovered paths. A merge that happened is not a qualified
+   deployment; mismatch remains blocked on every later tick.
+4. Rollback: crash after predecessor descriptor restoration but before its durable acknowledgement
+   currently fails the next expected-descriptor check. Reconcile old/new/foreign descriptors and
+   actual process identity at every restore/start/receipt boundary before another mutation.
+   Resume restoration, verify predecessor consumption, or explicitly block foreign/unknown state.
+5. Ownership: validate the current claim before EACH external mutation, not only its later record.
+   Coordinate target locking and current fence checking at the mutation boundary; a stale actor
+   must not switch/start/restore or overwrite its successor. Expiry during an in-flight effect
+   requires reconciliation, not an assertion that the effect was cancelled. Promotion and queue
+   ownership validation must share the existing transaction authority (no check-then-independent
+   promote transaction). Preserve Releases review, policy and active CAS gates and avoid nested
+   store transactions or holding a database transaction over external I/O. Test loss before and
+   across effects, including promotion; retain durable ambiguous-effect evidence.
+6. Fair selection: _select chooses the first nonterminal plan without review/queue eligibility.
+   Awaiting review, not-yet-due retry and exhausted/blocked queue rows must not starve another
+   qualified target. Preserve same-target exclusion, explicit wait reasons and bounded scanning.
+7. Monitoring neighbors: update tests/test_monitoring.py and test_monitoring_observations.py for
+   the intentionally added source; retain their assertions for all original sources. The original
+   allowed-path omission was a handoff gap, not permission to omit these affected checks.
+
+Required correction checks (replace the two-file command for this operation only):
+python -m pytest tests/test_host_delivery.py tests/test_host_delivery_cli.py tests/test_monitoring.py tests/test_monitoring_observations.py -q -p no:cacheprovider
+python -m ruff check . --no-cache
+Add the two monitoring test files to allowed paths. Use real temporary files/child processes for
+local ownership boundaries, controlled barriers for races, labelled adapter faults for remote
+responses. No production mutations or model calls in worker tests. Native Windows, isolated PG,
+real GitHub and actual service qualification remain owner gates. Do not widen to unrelated audit.
+
+The next autonomous continuation is part of the SAME outcome, not accomplished by this manual
+handoff. Existing SSOT at candidate 9689ed9: Portfolio.reconcile creates repeated-failure research
+candidates; Portfolio.follow_up links only an accepted successor; FleetBacklog consumes approved
+immutable manifests; Releases/ReleaseQueue retain deployment authority. Reuse these owners.
+Required coordinator states: observed terminal evidence -> classified -> research_required when
+two distinct similar attempts failed -> Codex design decision -> authorized pinned correction ->
+admitted -> independently reviewed -> delivery/verified recovery -> complete. Durable correlation
+binds original job/attempt, evidence, decision and successor; duplicate events cannot create new
+work. Claude implements; model self-report cannot authorize acceptance or invent a user goal.
+Unknown effects go through ExecutionRecovery, not a blind new invocation. A researched correction
+must carry the relevant SSOT and primary sources; mere similarity is not proof of shared cause.
+Only scope/authority gaps require the user; routine approved transitions must continue without
+chat input. Monitor must expose state, next action, owner, last evidence and why blocked.
+Design/qualification of this coordinator remains pending; registering this correction is explicit
+owner action and MUST NOT be reported as autonomous diagnosis. Completion requires a real rejected
+job to reach a qualified successor without this chat relaying transitions, duplicate/restart
+checks, two-strike research evidence, and existing independent acceptance gates unchanged.

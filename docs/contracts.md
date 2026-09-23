@@ -2178,3 +2178,186 @@ eligible, unknown by reason, conflicts, truncation and a continuation cursor; th
 page. A store or driver failure is `source_unavailable`, never an empty result, and a refused
 collection writes nothing. Replay, held-out evaluation, policy activation and skill or script
 extraction are out of scope here and are named as limits in every receipt and report.
+
+## INV-HOST-DELIVERY-001
+
+`zeus host-delivery register-targets|register|tick|run|status` carries an ALREADY reviewed release
+candidate from its repository to an actual host runtime, and adds no approval, evaluator, executor,
+scheduler, merge policy or deployment authority
+(docs/zeus/operations/autonomous-operation-001/HOST-DELIVERY.md). `Releases` remains the only
+approval and the only active-release compare-and-swap, `ReleaseQueue` the only controller fence,
+`GitWorkspace` the only publisher and merger, and the registered scheduled task or owned child
+process the only thing that runs. Delivery is opt-in: without `ZEUS_HOST_DELIVERY_ENABLED` a tick
+registers, projects and refuses every external action, and while it is off not even a durable intent
+is written. The legacy Docker `ReleaseRunner` is not enabled, driven or replaced by this component.
+
+A delivery plan (`urn:zeus:host-delivery:1`) is owner-authored, read through the existing `GitSource`
+at an explicit 40-hex commit and never from the working tree: `plan_id`, the EXISTING `release_id`,
+the candidate `revision`/`tree`, the incumbent `policy_hash`, the canonical `repository` identity,
+1..16 named `required_checks`, a registered `target_id`, the `expected_descriptor` digest (or `null`
+for a target's first activation), a `target_descriptor` of revision plus worker image and profile
+digest (each an exact identity or the explicit word `unchanged`, which resolves against the
+descriptor the target is actually running and refuses when there is none —
+`unchanged_without_predecessor`), one `canary_check_id` from the incumbent fixed set, and bounded CI
+and consumption timeouts. Unknown or missing fields, a malformed
+identity, a duplicate or empty check list, a canary id this harness does not implement and an
+out-of-range timeout are refused before anything is stored. No shell command, argv, path, host root,
+service name, source text or credential is ever accepted from a plan, and nothing in one is executed.
+What a target IS - its kind (`windows_scheduled_task` or `process`), its root, its state directory
+and its service identity - is host configuration (`urn:zeus:host-delivery-targets:1`) registered
+separately by the owner; a plan may only NAME a registered target id (`target_unregistered`), so a
+candidate can never select another scheduled task, path or policy for itself. Registration is
+idempotent for the identical plan at the identical pin, and a plan whose delivery has left
+`registered` may not be edited at all (`delivery_in_flight`); a refused registration writes nothing.
+
+Approval is recognized, never synthesized. `release_gate` re-derives it from the release record
+itself: the candidate's revision, tree, evaluator `policy_hash` and canonical repository must be
+exactly the plan's (`release_revision_mismatch`, `release_tree_mismatch`,
+`release_policy_mismatch`, `release_repository_mismatch`), and the author's OWN lead plus a
+conductor must both have accepted that exact revision with evidence. An incomplete review projects
+`awaiting_review` and runs nothing - no queue row, no lease, no publication - and a rejected,
+cancelled, rolled back or ticket-superseded record refuses. The host is touched only once the
+incumbent evaluator itself recorded `verified` (`release_not_verified`), and the active release
+pointer moves only through `Releases.promote` with the expected active release recorded when the
+target tuple was bound, after the prescribed checks AND an actual consumption receipt.
+
+One delivery advances at most one stage per tick under the existing `ReleaseQueue` fence:
+`registered` -> `awaiting_review` -> `publishing` -> `awaiting_ci` -> `merge_intended` -> `merged` ->
+`drain_intended` -> `switching` -> `awaiting_consumption` -> `active`, with `blocked`,
+`rolling_back`, `rolled_back` and `failed` preserving the stage they happened at, the fixed reason
+code, the error TYPE and the evidence. The durable intent names the stage BEFORE the external action
+of that stage, so a lost response can only reconcile what already happened: an existing pull request
+at the intended head is adopted rather than published again, an already merged one is recognized
+rather than merged again, and a running instance's own receipt is recognized rather than restarted.
+The controller claims only queue rows a registered plan names (so another controller's row is never
+consumed or spent). Ownership is proven BEFORE every external mutation - publish, merge, drain,
+switch, start, restore - and again inside that target's own lifecycle guard for the drain, the
+switch and the start, so a controller whose lease expired while it waited for that guard overwrites
+nothing; every durable
+observation is then committed in the SAME transaction that re-checks the claim's generation, owner
+and lease, and the promotion shares one transaction with its own ownership check rather than
+checking and then promoting separately. A fence lost BEFORE an effect changes nothing and records
+nothing; a fence lost ACROSS an effect is an explicit `conflict` carrying `ambiguous_effect`, never
+a cancellation - the durable evidence is the intent that named the stage before the effect, and the
+next owner reconciles the host rather than repeating the action. A tick advances at most one
+delivery, so a plan it cannot act on - an incomplete review, a queue row in backoff, exhausted,
+blocked, failed, cancelled or held by another controller - is skipped with its own explicit wait
+reason instead of starving a qualified target; `target_busy` exclusion is unchanged, the scan is
+bounded, and when nothing is actionable the first waiting plan is selected so that its own wait is
+projected and nothing external happens. A long external wait never sleeps under the lease: the tick answers `pending`, returns the
+lease through `ReleaseQueue.defer` (which is not a failed attempt), and the stage's own durable
+deadline - not the attempt budget - ends the wait (`ci_timeout`, `rollback_unverified`). Definite
+failures still go through `finish` with the queue's unchanged retry budget and backoff. No store
+transaction is open across GitHub, the filesystem, a subprocess or another independently locking
+transaction, and an idle poll writes no row.
+
+CI is the provider's own answer about the exact intended head. Every required check must have
+FINISHED SUCCESSFULLY: absent is `ci_check_missing`, still running is `ci_check_pending`, and
+skipped, cancelled, neutral, timed out and failed are `ci_check_failed` - none of them is a pass, and
+extra checks the plan does not require are ignored. A head that moved is `ci_head_changed` and goes
+to requalification, never a silent rebase that inherits the old acceptance. A merge that HAPPENED is
+not a qualified deployment: the merged revision is qualified against the reviewed tree by the merge
+owner itself (`GitWorkspace.qualify_merged`), and the merge this controller performed and one it
+only observed after a lost response take exactly the same path, so a merged tree that is not the
+reviewed one is `merged_tree_mismatch` and stays blocked on every later tick.
+
+The host boundary is descriptor-first, and ONE service is ONE lifecycle. Replacing the descriptor,
+pausing, stopping the old instance, retiring its files, launching the new one and publishing the
+state that identifies it all run under a single target-specific guard (`HostTargetBase.guard`),
+which every controller that touches that target uses and which unrelated targets never share:
+`target_lock_held` is a conflicting change on that target, waited for within its timeout and then
+refused without any mutation, never broken on age - a guard that survived a crashed owner is an
+actual recovery condition for the owner, not something a successor decides for itself. Inside it,
+this controller's ownership is proven BEFORE the first mutation of any kind, and what is actually on
+the target is reconciled before anything is touched: the descriptor must be exactly the one being
+switched from (`descriptor_changed`, `descriptor_predecessor_mismatch`) or started
+(`descriptor_foreign`), so a superseded controller that resumes into a target its successor has
+taken over stops no service, deletes no receipt and starts no second instance. A descriptor
+replacement is one atomic `os.replace`. A live instance that the incumbent `consumption_verdict`
+shows is REALLY running the intended descriptor is recognized rather than killed and started again,
+so a restart - forward or rollback - reconciles instead of churning the service; an instance that
+merely echoes the digest from another runtime, root or revision is not recognized.
+
+Descriptor identity and authority over a RUNNING instance are different facts, and a receipt that
+does not match the descriptor being started is never by itself permission to end that instance.
+Inside the guard, after the descriptor is reconciled, `instance_authority` classifies what is
+actually there against the authority the coordinator passes in from its own durable intent
+(`validate_replacement`: the exact descriptor digest, the instance id, and the launch record this
+component wrote under that target's guard). Forward, that authority is the predecessor whose
+identity was captured BEFORE the descriptor was replaced; in a rollback it is the failed CANDIDATE
+this intent started, never the predecessor it is restoring, and a candidate whose startup identity
+was never confirmed is reconciled by that trusted launch record rather than by a live pid. Only five
+outcomes act: the `intended` live instance is recognized (no stop, no unlink, no start), the
+`authorized_predecessor` and this delivery's own `owned_stopped` instance may be replaced, and a
+clean target is started only on POSITIVE evidence of absence - no receipt file, no launch record and
+nothing alive. Everything else refuses BEFORE the stop and before any evidence is removed: a receipt
+that names another instance (`instance_not_authorized`), the named instance under another descriptor
+(`instance_contradictory`), a present but missing, malformed, oversized or wrong-target receipt
+(`instance_receipt_unreadable`), a live process nothing identifies (`instance_unidentified`), a
+liveness that could not be read at all (`instance_liveness_unknown`) and an absence that is not
+proven (`instance_absence_unknown`). The coordinator refuses earlier still when its own records and
+the target disagree about who is running there (`target_instance_mismatch`), before the drain and
+the switch. Both host kinds - the owned child process and the registered scheduled task - use this
+one contract. Ownership is
+re-checked after the bounded stop, which can outlive a lease, and a loss THERE is the ambiguous
+effect it is (`service_stopped`): nothing is cleaned up or launched after it, the stopped instance's
+own evidence is preserved, and the next owner reconciles the target rather than the effect being
+called cancelled. New admission is paused and the drain is PROVEN before the switch: a service that
+is running with no work report, or with an unconfirmed effect, blocks the switch
+(`drain_unconfirmed_effects`) rather than having its active work killed. A previous instance that
+cannot be proven gone is `previous_instance_unconfirmed` and no second one is started beside it. No
+store transaction is open while the guard is held, it is never acquired recursively, and the
+forward start and the rollback start share exactly the same protection.
+
+The service is launched from the OWNER-REGISTERED runtime root of its target - that root as the
+working directory, that root's `src` ahead of `PYTHONPATH` - and a root with no importable harness
+is `runtime_root_unavailable` before a process exists. The launched process's OWN startup receipt
+decides activation, and its runtime identity is OBSERVED rather than copied from the descriptor:
+the package directory it actually imported, the root that package came from, the revision that root
+is actually at (its own checked out `HEAD`, or the owner's `runtime.json` attestation when the root
+is not a checkout) and the EFFECTIVE worker image and profile digest of that runtime, which are
+configuration facts and never a model run. The root must be this target's registered root
+(`receipt_runtime_root_mismatch`), the package must lie inside it (`receipt_module_root_foreign`),
+and revision, image, profile and descriptor digest must be the requested ones; an old runtime handed
+a new descriptor is therefore refused however alive its pid is, and a receipt that is missing,
+malformed, from another target, from the previous instance or bound to any other identity never
+grants activation. A switched descriptor whose receipt never arrives is not an activation either:
+the consumption deadline sends it to rollback.
+
+Observing a startup and activating it are separate durable facts: the accepted receipt is recorded
+as `startup_observed` with its instance and revision BEFORE the canary runs, and `consumed` is only
+the activation the canary allowed - so a canary can bind the instance and the runtime without
+reading an active pointer that has deliberately not been written yet. Before every host mutation the
+controller reconciles what is on the target right now: the descriptor it intended, the predecessor
+it expected, or a FOREIGN state that blocks (`descriptor_foreign`, `rollback_foreign_descriptor`)
+rather than being overwritten. Rollback restores the EXACT predecessor tuple and then proves it,
+with that predecessor's own fresh receipt and a live process; a restoration whose durable
+acknowledgement was lost is RESUMED from what the host already shows rather than attempted again,
+the predecessor is started at most once per restoration, and a restoration that fails or cannot be
+proven is a blocked critical alert (`rollback_failed`, `rollback_unverified`), never a `rolled_back`
+claim. A target with no known-good predecessor blocks (`no_known_good_predecessor`) instead of
+inventing a state to return to. Active descriptors are scoped per target, two plans on one target
+serialize (`target_busy`) and unrelated targets keep moving.
+
+The canary exercises the actual service contract, is named by an incumbent fixed id only, and is
+given the OBSERVED startup it must answer about: `startup_identity` (the owned process still runs,
+still names this descriptor and is still this instance), `collect_monitor_source` (a FRESH incumbent
+read-only monitor projection shows this descriptor as observed-started for this target, by this
+instance id and at this revision) or `fleet_worker_operation`, which is OWNER acceptance work - it
+looks for the owner's own receipt for exactly this descriptor and instance and starts no model,
+provider or worker itself. `canary_unavailable`, `canary_error`, `canary_source_unavailable` and
+every not-passed verdict send the delivery to rollback rather than to activation.
+
+Read-only status is projected by `host-delivery status` and by the additive `host_delivery` monitor
+source, which is collected beside the existing `database`, `docker`, `redis`, `fleet`,
+`research_programs`, `portfolio` and `fleet_backlog` sources and fails independently of every one of
+them: plan, release, target and instance identities, the Git pin, descriptor digests, whether a
+startup was observed and which instance and revision it was, the durable stage, fixed reason codes,
+counts and a bounded next action. Never a descriptor body, a host root, a runtime root, a service
+name, a pull request title, a check log, an exception message or a credential. Structured
+transitions are `general.delivery_stage_entered`, `development.delivery_check_observed`,
+`operations.delivery_switched`, `operations.delivery_rollback` and `operations.delivery_blocked`,
+carrying identifiers, digests, fixed codes and counts only; a repeated idle poll re-enters no stage
+and emits nothing, and a switch with `consumed: false` is never read as an activation. A collected
+status is a durable-record projection: it is never evidence of a qualified live host, a passed owner
+canary or a semantically accepted release.
