@@ -196,6 +196,21 @@
         "session-correction",
         "host-runtime-evidence"
       ]
+    },
+    {
+      "id": "continuation-correction",
+      "project_id": "research-improvement",
+      "criterion_id": "verified-loop",
+      "lane": "harness",
+      "manifest_path": "docs/zeus/operations/autonomous-operation-001/continuation-correction.operation.json",
+      "manifest_revision": "b5313b44e90cef9b1d00282537ae563a0c4a9d56",
+      "manifest_sha256": "89412de2025622ce6fad07edc4db374fefc58bc52892bc2d871a6b564c130a6c",
+      "priority": 150,
+      "dependencies": [
+        "session-correction",
+        "host-runtime-evidence",
+        "native-runtime"
+      ]
     }
   ]
 }
