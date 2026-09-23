@@ -340,3 +340,35 @@ The oversized- and malformed-plan cases carry explicit short parametrize ids. Th
 unchanged and still full size; only the generated node id is short, because pytest otherwise puts
 the whole body into `PYTEST_CURRENT_TEST` and the oversized case alone exceeds the Windows
 32767-byte environment limit before the refusal contract is reached.
+
+### Native evidence completion: two test portability corrections (2026-09-23)
+
+Native Windows execution of the four-file suite exposed two assumptions in
+`tests/test_host_delivery_cli.py`. Both are corrected together, in that file only. **No production
+code changed**, and no identity, ownership or consumption check was relaxed.
+
+- `test_the_run_loop_stops_gracefully_and_finishes_the_tick_in_flight` sent `os.kill(os.getpid(),
+  SIGINT)`. On Windows that is `TerminateProcess` for any signal other than `CTRL_C_EVENT` or
+  `CTRL_BREAK_EVENT` (Python `os.kill` documentation, checked 2026-09-23), so it ended the pytest
+  process. The test now uses `signal.raise_signal(SIGINT)`, which delivers the signal in process to
+  the handler `run_loop` installed. The assertions are unchanged: the tick in flight completes
+  (`observed == [1, 2]`), the loop reports `stopped`, and the counts are exact. A missing handler
+  would surface as `KeyboardInterrupt`, not as a pass.
+- `test_the_service_entry_runs_as_a_real_child_process_and_reports_its_identity` launched
+  `sys.executable`. In a Windows venv that is a redirector: the owner's minimal observation with the
+  same venv executable returned launcher 31712, interpreter 6200, interpreter parent 31712, exit 0,
+  so `Popen.pid` is not the PID of the Python process that writes the receipt. The test now launches
+  the base interpreter (`sys._base_executable`, falling back to `sys.executable`) and passes this
+  process's own `sys.path` entries, in order, as `PYTHONPATH`, so the child still imports the
+  candidate source and its dependencies. The assertion `receipt["pid"] == child.pid` is kept, as are
+  the runtime-root, module-root, revision and profile assertions. The receipt alone is not treated
+  as proof of ownership. This says nothing about a production scheduled-task launch, which does not
+  go through a venv redirector in this test.
+
+Evidence for this delta is container **Linux** only: the four-file command and Ruff below. Native
+Windows and isolated-PostgreSQL results for it are **not run** by the worker and remain owner work.
+In particular, whether `sys._base_executable` is a real interpreter (and not another alias, for
+example a Microsoft Store app execution alias) on the owner's Windows host is unknown until run
+there. The owner's earlier archive results for 779d0326 (119 passed, 25 skipped; the named
+lease-loss regression 1 passed, 86 deselected) stand as recorded in the SPEC and are not repeated
+here. The inherited a1481784 R5 instance authority remains unaccepted pending independent review.
