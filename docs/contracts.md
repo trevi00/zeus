@@ -2388,7 +2388,10 @@ fresh under a NEW session id; nothing is ever relabelled as resumed.
 
 `begin` claims the session exclusively for one leased execution; a second owner is `session_owned`
 however old the claim looks, and a claim is committed only at the row version it read, after the
-archive was verified OUTSIDE the transaction. `checkpoint` puts the verified export into the archive
+archive was verified OUTSIDE the transaction. Compatibility is checked BEFORE the duplicate-owner
+shortcut: the owner's own replay with a changed model, image, runtime, policy or config is
+`session_incompatible` and writes nothing, so the valid owner's claim, row and archive survive; only
+an exact duplicate returns the same plan. `checkpoint` puts the verified export into the archive
 store (deterministic reference, read back) and THEN updates the row idempotently, so a crash between
 the two replays to the same reference and a duplicate event returns the recorded checkpoint. A
 resumed turn is adopted only when its transcript begins with the exact bytes of the archive it
@@ -2400,9 +2403,33 @@ existing succeeded `review_lead`/`review_conductor` decision row for the exact f
 tree (`review_candidate_mismatch`, `review_not_succeeded`, `review_not_independent`); a rejection
 makes the session `correction_ready` (eligible, never admitted: conductor continuation remains the
 sole admission owner), conductor acceptance makes it `accepted`, and a rejected candidate can never
-be submitted again (`candidate_rejected_immutable`). `promote` needs an existing evidence reference;
-`close` needs the recorded promotion, records a cleanup failure without closing, and never deletes
-the archive.
+be submitted again (`candidate_rejected_immutable`).
+
+Promotion and closure are evidence-backed. `WorkerSessions(evidence=...)` names the verified general
+artifact store; without it `promote` and `close` refuse (`promotion_evidence_unconfigured`). `promote`
+reads an integrity-checked receipt (`zeus.worker-session-promotion.v1`, built by
+`domain.worker_sessions.promotion_receipt`) whose exact fields name this task and session id, the
+accepted frozen candidate (revision, tree, base), the archive it was frozen from (reference, manifest
+and transcript hashes), the accepting succeeded review (decision id, execution reference) and a
+non-empty list of promoted evidence references; every listed reference and the review's execution
+receipt must exist intact in the same store. A missing receipt (`promotion_receipt_missing`), any other
+artifact or a changed file (`promotion_receipt_malformed`), a receipt for another session, candidate,
+archive or review (`promotion_receipt_unrelated`) and missing or corrupt listed evidence
+(`promotion_evidence_missing`/`_corrupt`) leave the row unchanged; a syntactically valid hash alone
+is never enough. `close` re-verifies the same receipt before any cleanup, records a cleanup failure
+without closing, and never deletes the archive (the default close retains it). `worker-session close`
+uses `<runtime>/artifacts` as that store.
+
+Observability: with an `observer` (the existing Observer port), every COMMITTED change of state,
+owner or cleanup outcome emits one event after its transaction: `development.worker_session_transition`
+or, for `archive_missing`/`archive_corrupt`/`incompatible` (outcome `blocked`), `unresolved` (outcome
+`unknown`) and a failed cleanup (reason `cleanup_failed`), `operations.worker_session_blocked`. Both carry
+task and session ids, state, version, the fixed `next_owner` code (`execution`, `conductor`,
+`independent_review`, `evidence_promotion`, `session_owner`, `operator`, `none`) and `next_action`; a
+duplicate event commits and reports nothing. The status projection (CLI and the additive monitoring
+source `worker_sessions`) adds per-state counts, `blocked`, `next_owner` and reports the binding only as
+`identity_sha256`; neither surface carries transcript bytes, archive paths or raw binding values, and a
+store failure makes the monitoring envelope `unavailable`, never an empty list.
 
 Transport: `ClaudeCodeRuntime(session_home=...)` alone may restore or export, and only for a
 `task_session` binding; the host's own home is never read, written or resumed from, and the executor

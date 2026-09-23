@@ -16,12 +16,22 @@ no owner and calls nothing: there is no method here that starts a provider.
 
 This primitive never creates work, approves a candidate, merges, or deletes an archive. The
 conductor continuation is the sole admission owner of a correction turn.
+
+Promotion and closure are evidence-backed: ACCEPTED -> ARCHIVAL_PENDING -> CLOSED each re-read a
+promotion receipt from the configured verified evidence store and require it to name this exact
+session, accepted candidate, archive and accepting review, and every evidence reference it lists
+to exist intact. Without a configured evidence store, or with a missing, unrelated or malformed
+receipt, the state is left unchanged; a syntactically valid hash alone is never enough.
+
+Every committed transition is reported AFTER its commit through the existing Observer port (when
+one is given): fixed codes and identifiers only, never transcript bytes or raw binding values.
 """
 from __future__ import annotations
 
 from uuid import uuid4
 
-from codex_harness.domain.model import require, utcnow
+from codex_harness.domain.model import ContractError, require, utcnow
+from codex_harness.domain.observation import REASON_CODE
 from codex_harness.domain.worker_sessions import (
     ACCEPTED,
     ACTIVE,
@@ -29,6 +39,7 @@ from codex_harness.domain.worker_sessions import (
     ARCHIVE_CORRUPT,
     ARCHIVE_MISSING,
     AWAITING_REVIEW,
+    BLOCKED_STATES,
     CHECKPOINTED,
     CLOSED,
     CORRECTION_READY,
@@ -42,6 +53,8 @@ from codex_harness.domain.worker_sessions import (
     UNRESOLVED,
     WorkerSessionRefused,
     compare_identity,
+    next_action,
+    next_owner,
     refuse,
     review_outcome,
     status_view,
@@ -49,18 +62,24 @@ from codex_harness.domain.worker_sessions import (
     validate_candidate,
     validate_identity,
     validate_owner,
+    validate_promotion,
 )
+from codex_harness.domain.worker_sessions import AUTHORITY as STATUS_AUTHORITY
 
 BUCKET = "worker_sessions"
 DECISIONS = "decisions_pending"
+EVENT_TRANSITION = "development.worker_session_transition"
+EVENT_BLOCKED = "operations.worker_session_blocked"
 
 
 class WorkerSessions:
-    """The lifecycle owner. `archives` is a `SessionArchives`; `evidence` (optional) is the general
-    artifact store used only to verify that a promoted evidence reference really exists."""
+    """The lifecycle owner. `archives` is a `SessionArchives`; `evidence` is the verified general
+    artifact store (FileArtifacts) that holds promotion receipts and the evidence they name; without
+    it, promotion and closure refuse. `observer` (optional) is the existing Observer port."""
 
-    def __init__(self, store, archives, *, evidence=None, clock=utcnow):
+    def __init__(self, store, archives, *, evidence=None, observer=None, clock=utcnow):
         self.store, self.archives, self.evidence, self.clock = store, archives, evidence, clock
+        self.observer = observer
 
     # ---- reads ----------------------------------------------------------------------------------
     def _read(self, task_id: str) -> dict | None:
@@ -71,9 +90,13 @@ class WorkerSessions:
         """Read-only projection; never transcript bytes."""
         with self.store.transaction() as tx:
             rows = [tx.get(BUCKET, task_id)] if task_id is not None else tx.scan(BUCKET)
-        rows = [row for row in rows if row is not None]
-        return {"schema": SCHEMA, "sessions": [status_view(row) for row in rows][:200],
-                "truncated": len(rows) > 200}
+        rows = sorted((row for row in rows if row is not None), key=lambda row: str(row.get("task_id")))
+        views = [status_view(row) for row in rows]
+        counts: dict = {}
+        for view in views:
+            counts[view["state"]] = counts.get(view["state"], 0) + 1
+        return {"schema": SCHEMA, "sessions": views[:200], "truncated": len(views) > 200, "counts": counts,
+                "blocked": sum(1 for view in views if view["blocked"]), "authority": STATUS_AUTHORITY}
 
     # ---- the one conditional write --------------------------------------------------------------
     def _commit(self, task_id: str, version, change) -> dict:
@@ -82,11 +105,45 @@ class WorkerSessions:
             row = tx.get(BUCKET, task_id)
             refuse((row or {}).get("version") == version, "session_changed",
                    f"expected version {version}, found {(row or {}).get('version')}")
+            before = self._facts(row)
             updated = change(row)
             updated["version"] = (version or 0) + 1
             updated["updated_at"] = self.clock()
             tx.put(BUCKET, task_id, updated)
-            return updated
+        self._observe(before, updated)
+        return updated
+
+    # ---- observation (after the commit, outside every transaction) -----------------------------
+    @staticmethod
+    def _facts(row) -> dict:
+        row = row or {}
+        return {"state": row.get("state"), "owner": row.get("owner"), "cleanup": row.get("cleanup")}
+
+    def _observe(self, before: dict, row: dict) -> None:
+        """One event per committed change of state, owner or cleanup outcome. A duplicate event
+        returns before any commit and so reports nothing; a blocked, unknown or cleanup-failed
+        session names its next owner and action. The Observer's emit never raises."""
+        if self.observer is None or before == self._facts(row):
+            return
+        state, cleanup = row.get("state"), row.get("cleanup") or {}
+        reason = row.get("reason") if type(row.get("reason")) is str and REASON_CODE.fullmatch(row["reason"]) else None
+        common = {"task_id": str(row.get("task_id")), "session_id": str(row.get("session_id")), "state": str(state),
+                  "version": int(row.get("version") or 0), "next_owner": next_owner(row),
+                  "next_action": next_action(row)}
+        cleanup_failed = cleanup.get("state") == "failed" and cleanup != (before.get("cleanup") or {})
+        if state in BLOCKED_STATES or cleanup_failed:
+            self.observer.emit(EVENT_BLOCKED, "unknown" if state == UNRESOLVED else "blocked", severity="warning",
+                               reason_code=("cleanup_failed" if cleanup_failed else reason),
+                               attributes={**common, "error_type": cleanup.get("error_type") if cleanup_failed else None,
+                                           "archive_retained": cleanup.get("archive_retained") if cleanup_failed
+                                           else ((row.get("checkpoints") or [{}])[-1].get("archive") or {}).get("ref")})
+            return
+        owner = row.get("owner") or {}
+        self.observer.emit(EVENT_TRANSITION, "observed", reason_code=reason,
+                           attributes={**common, "previous_state": before.get("state"), "mode": row.get("mode"),
+                                       "checkpoints": len(row.get("checkpoints") or []),
+                                       "candidates": len(row.get("candidates") or []),
+                                       "owner_execution": owner.get("execution")})
 
     @staticmethod
     def _event(row: dict, kind: str, **detail) -> None:
@@ -124,6 +181,12 @@ class WorkerSessions:
         comparison = compare_identity(row["identity"], identity)
         refuse(comparison["decision"] != "foreign", "session_foreign", ",".join(comparison["foreign"]))
         if row.get("owner") is not None:
+            # Compatibility BEFORE the duplicate-owner shortcut: even the owner's own replay never
+            # receives a plan for a changed model/image/runtime/policy/config. The refusal writes
+            # nothing, so the valid owner's claim, row and archive stay exactly as they were.
+            refuse(comparison["decision"] == "match", "session_incompatible",
+                   "native resume refused (" + ",".join(comparison["incompatible"])
+                   + "); an explicit fresh evidence handoff is required")
             refuse(row["owner"] == owner, "session_owned", "another execution holds this session")
             return self._plan(row, row.get("mode") or MODE_FRESH)
         if row["state"] == ACTIVE and not row.get("checkpoints"):
@@ -296,6 +359,7 @@ class WorkerSessions:
             outcome = review_outcome(tx.get(DECISIONS, decision_id), candidate)
             refuse(outcome["decision_id"] == decision_id, "review_malformed", "id")
             target = {"rejected": CORRECTION_READY, "accepted": ACCEPTED}.get(outcome["outcome"])
+            before = self._facts(row)
             row["reviews"] = (row.get("reviews") or []) + [{**outcome, "at": self.clock()}]
             if outcome["outcome"] in ("rejected", "accepted"):
                 row["candidates"][-1]["outcome"] = outcome["outcome"]
@@ -306,33 +370,65 @@ class WorkerSessions:
             row["version"] = row["version"] + 1
             row["updated_at"] = self.clock()
             tx.put(BUCKET, task_id, row)
-            return row
+        self._observe(before, row)
+        return row
 
     # ---- closure --------------------------------------------------------------------------------
+    def _verify_promotion(self, row: dict, evidence_ref: str) -> dict:
+        """Read the promotion receipt from the verified evidence store (outside any transaction) and
+        require it to be bound to this row; then require every evidence reference it names, and the
+        accepting review's own execution receipt, to exist intact. Refusal changes nothing."""
+        refuse(self.evidence is not None, "promotion_evidence_unconfigured",
+               "no verified evidence store is configured; nothing can be promoted or closed")
+        try:
+            self.evidence.inspect(evidence_ref)
+            document = self.evidence.document(evidence_ref)
+        except FileNotFoundError:
+            raise WorkerSessionRefused("promotion_receipt_missing", evidence_ref) from None
+        except OSError as exc:
+            raise WorkerSessionRefused("promotion_evidence_unavailable", type(exc).__name__) from None
+        except (ContractError, ValueError, UnicodeDecodeError) as exc:
+            raise WorkerSessionRefused("promotion_receipt_malformed", type(exc).__name__) from None
+        bound = validate_promotion(document, row)
+        for reference in bound["evidence"] + [bound["review"]["execution_ref"]]:
+            try:
+                self.evidence.inspect(reference)
+            except FileNotFoundError:
+                raise WorkerSessionRefused("promotion_evidence_missing", reference) from None
+            except OSError as exc:
+                raise WorkerSessionRefused("promotion_evidence_unavailable", type(exc).__name__) from None
+            except (ContractError, ValueError, UnicodeDecodeError):
+                raise WorkerSessionRefused("promotion_evidence_corrupt", reference) from None
+        return bound
+
     def promote(self, task_id: str, evidence_ref: str) -> dict:
-        """ACCEPTED -> ARCHIVAL_PENDING once the accepted evidence is durably promoted and verified."""
+        """ACCEPTED -> ARCHIVAL_PENDING once a promotion receipt bound to this session's accepted
+        candidate, archive and review is verified in the evidence store (see `_verify_promotion`)."""
         refuse(type(evidence_ref) is str and REFERENCE.fullmatch(evidence_ref) is not None, "evidence_malformed")
         row = self._read(task_id)
         refuse(row is not None, "session_missing")
         if row["state"] == ARCHIVAL_PENDING and (row.get("promotion") or {}).get("evidence_ref") == evidence_ref:
             return row
         refuse(row["state"] == ACCEPTED, "session_not_accepted", str(row["state"]))
-        if self.evidence is not None:
-            self.evidence.inspect(evidence_ref)  # outside any transaction; raises when absent or modified
-        self.archives.load(row["checkpoints"][-1]["archive"]["ref"], session_id=row["session_id"])
+        bound = self._verify_promotion(row, evidence_ref)
+        self.archives.load(bound["archive"]["ref"], session_id=row["session_id"])
         return self._commit(task_id, row["version"], lambda current: {
             **self._set_state(current, ARCHIVAL_PENDING, "evidence_promoted", evidence_ref=evidence_ref),
-            "promotion": {"evidence_ref": evidence_ref, "verified": self.evidence is not None, "at": self.clock()}})
+            "promotion": {"evidence_ref": evidence_ref, "verified": True, "evidence": bound["evidence"],
+                          "decision_id": bound["review"]["decision_id"], "archive_ref": bound["archive"]["ref"],
+                          "revision": bound["candidate"]["revision"], "at": self.clock()}})
 
     def close(self, task_id: str, cleanup=None) -> dict:
-        """ARCHIVAL_PENDING -> CLOSED after the owner's scratch cleanup succeeded. A cleanup failure is
-        recorded and the session stays pending with its archive; the archive itself is never removed."""
+        """ARCHIVAL_PENDING -> CLOSED after the promotion receipt re-verifies and the owner's scratch
+        cleanup succeeded. A cleanup failure is recorded and the session stays pending with its
+        archive; the archive itself is never removed, by default or otherwise."""
         row = self._read(task_id)
         refuse(row is not None, "session_missing")
         if row["state"] == CLOSED:
             return row
         refuse(row["state"] == ARCHIVAL_PENDING and row.get("promotion"), "session_not_promoted", str(row["state"]))
-        self.archives.load(row["checkpoints"][-1]["archive"]["ref"], session_id=row["session_id"])
+        bound = self._verify_promotion(row, row["promotion"]["evidence_ref"])
+        self.archives.load(bound["archive"]["ref"], session_id=row["session_id"])
         failure = None
         if cleanup is not None:
             try:

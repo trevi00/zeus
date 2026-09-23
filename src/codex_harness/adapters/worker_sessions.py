@@ -274,15 +274,24 @@ def add_parser(commands) -> None:
     sub = session.add_subparsers(dest="worker_session_command", required=True)
     status = sub.add_parser("status", help="Bounded status; ids, hashes and states only (store read only)")
     status.add_argument("--task-id", default=None)
-    close = sub.add_parser("close", help="Close an archival_pending session whose evidence promotion is recorded")
+    close = sub.add_parser("close", help="Close an archival_pending session after its bound promotion receipt "
+                                         "re-verifies in the evidence store; archives are retained")
     close.add_argument("--task-id", required=True)
 
 
-def execute(service, args, archives=None) -> dict:
+def evidence_store():
+    """The verified general artifact store the executor writes execution receipts into."""
+    from codex_harness.adapters.configuration import runtime_dir
+    return FileArtifacts(str(runtime_dir() / "artifacts"))
+
+
+def execute(service, args, archives=None, evidence=None) -> dict:
     from codex_harness.application.worker_sessions import WorkerSessions
-    owner = WorkerSessions(service.store, archives or SessionArchives(archive_root()))
+    archives = archives or SessionArchives(archive_root())
     if args.worker_session_command == "status":
-        return {**owner.status(args.task_id), "exit_code": 0}
+        # Store reads only: no evidence store is opened (or created) for a status read.
+        return {**WorkerSessions(service.store, archives).status(args.task_id), "exit_code": 0}
+    owner = WorkerSessions(service.store, archives, evidence=evidence if evidence is not None else evidence_store())
     row = owner.close(args.task_id)
     return {"closed": row["state"] == "closed", "task_id": args.task_id, "state": row["state"],
             "archive_retained": (row.get("cleanup") or {}).get("archive_retained"), "exit_code": 0}
