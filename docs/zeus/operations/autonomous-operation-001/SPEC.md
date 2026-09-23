@@ -1,5 +1,29 @@
 # Whole autonomous operating loop
 
+## Native fixture qualification and authorized operating delivery, 2026-09-23
+
+User explicitly requests operating deployment after qualification. Accepted candidate 815adbc
+fixes pause durability; preserve this acceptance. Integrated Windows checks at aac4abb gave
+243 passed, 5 skipped, 12 failures, all at fixture_fleet registering Path('/labelled-fixture'):
+Windows validates this as drive-relative, so the tests never reach managed lifecycle assertions.
+Evidence: connection-r5-pytest.log in the existing owner artifacts directory. This is a test
+setup portability defect, not evidence against the accepted runtime transaction fix.
+
+Claude scope: fix ONLY tests/test_managed_runtime.py fixture authority to use a native absolute
+path on Windows and POSIX. The path is labelled configuration, never a production repository;
+do not create or delete paths outside test ownership. Preserve actual controlled process tests,
+assertions, activation binding and all test gates. No production validator relaxation, no added
+platform skips, no runtime changes. Run managed-runtime tests and Ruff; owner reruns native
+Windows affected suite. Completion: independent acceptance plus Windows setup and lifecycle
+assertions passing. No unrelated audit or implementation expansion.
+
+Owner delivery after this correction: native verification -> PR/CI -> scoped independent
+acceptance and qualified managed-host real PG consumption/rollback -> merge and controlled
+operating cutover with predecessor retained. Check actual active jobs before drain. Do not
+claim deployment from merge or descriptor alone: actual process revision, heartbeat, admission
+and rollback evidence must bind the released revision. Preserve safe pause for unknown debt.
+Full useful-work autonomous recovery qualification remains separate from successful cutover.
+
 ## Stop/rollback resubmission: durable pause before debt observation, 2026-09-23
 
 Independent review f49f04d5 accepted the preceding stop forwarding and activation-boundary
