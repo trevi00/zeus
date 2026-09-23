@@ -1,5 +1,45 @@
 # Whole autonomous operating loop
 
+## Session primitive consolidated correction, 2026-09-23
+
+Candidate ecb0e6d6 (preserved, not accepted) completed implementation. Inspector 486d7c4d checked
+6 claims and left 5 unexecuted solely because their argv begins with `timeout`; no test mismatch
+was demonstrated by that inspector. Preserve that distinction. Owner native Windows replay of the
+ten affected files: 226 passed, 29 skipped, 4 failed (session-owner-tests.log). Do not relabel
+Linux results or these skips as native acceptance. This correction is one batch against the same
+session matrix; preserve the implementation rather than recreate it.
+
+1. Promotion/closure must verify actual promotion evidence for this session, accepted candidate,
+   archive and review, not a syntactically valid hash or any existing artifact. Owner synthetic
+   MemoryStore reproduction used existing test helpers to adopt/freeze/accept a session and call
+   promote(task, sha256:000...000), then close: returned archival_pending then closed without any
+   artifact. Default evidence=None currently bypasses verification. Require a configured verified
+   evidence source and a bound promotion receipt before transition. Missing/unavailable, unrelated,
+   or malformed receipts leave state unchanged; default close retains archives. This reproduction
+   proves a state-contract failure, not that production data was deleted.
+2. Identity applies to duplicate begin as well as new claim. Same owner plus changed model currently
+   returns a plan before checking incompatible fields (owner synthetic reproduction confirmed).
+   Check compatibility before the duplicate-owner shortcut; preserve the valid owner's row and
+   archive when refusing. Test exact duplicate still succeeds and changed model/policy/image fails.
+3. Deliver the requested observable state transitions and monitoring projection. Worker explicitly
+   omitted both, though they are in the existing allowed paths/matrix. Reuse Observer and existing
+   monitoring source conventions, never transcript bytes or raw secret-shaped identity values.
+   Unknown/resume-blocked/cleanup-failed must name owner and next action. No new logging subsystem.
+4. Native fixture/environment checks: entry test passes POSIX HOME to Windows os.path.isabs; real
+   Linux container semantics must remain intact while tests use the proper platform boundary.
+   The two-turn, fake-container, and executor fixtures also fail on native Windows. A short-path
+   direct fixture turn passed, so path/environment is a discriminating lead, not a confirmed shared
+   cause. Use short test-owned locations and exact failure evidence; no platform-wide skips, no
+   removal of model/session agreement. Run Linux scoped suite; owner runs native Windows and PG.
+
+Final evidence tests list must contain only exact commands actually run and replayable under the
+existing inspector (plain python -m pytest / python -m ruff check, no timeout prefix and no --fix).
+Keep historical commands/failures in WORKER-SESSIONS.md. Put execution deadlines in the tool's
+timeout, not shell wrappers. Do not widen the verifier allowlist or rewrite the failed operation.
+Use a single affected-file pytest command plus Ruff; real two-turn image qualification remains
+owner work after independent review. No production mutations, provider calls or autonomous admission
+in this implementation. Conductor continuation consumes the accepted session API next.
+
 ## Native evidence completion, 2026-09-23 12:54 KST
 
 This is the same host-delivery acceptance batch, not a new runtime feature. Candidate 779d0326
