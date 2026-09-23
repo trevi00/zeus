@@ -27,6 +27,7 @@ from codex_harness.domain.research_investigations import SOURCE as INVESTIGATION
 from codex_harness.domain.research_investigations import (
     InvestigationRefused,
     dispatch_counts,
+    recovery_view,
     validate_source,
 )
 from codex_harness.domain.usage_policy import NUMERIC_FIELDS, UsagePolicyError, accounting_mode
@@ -202,6 +203,20 @@ def validate_config(document, policy) -> dict:
 def config_digest(config: dict, repository: str) -> str:
     """The immutable registration identity: canonical config plus the resolved repository identity."""
     return digest({"config": config, "repository": repository})
+
+
+# A replacement program (research-dispatch-recovery-001) is a NEW authorization, so its identity, base
+# and deadline are its own; every other field - topics, investigation source, caps, budget, template
+# goal/plan/research/claude - must equal the failed program's, so a recovery never widens authority.
+REPLACEMENT_OWN, REPLACEMENT_TEMPLATE_OWN = frozenset({"id", "base_revision", "deadline"}), frozenset({"base_revision", "deadline"})
+
+
+def same_authority(failed: dict, replacement: dict) -> bool:
+    def fixed(config):
+        return {**{k: v for k, v in config.items() if k not in REPLACEMENT_OWN},
+                "template": {k: v for k, v in config["template"].items() if k not in REPLACEMENT_TEMPLATE_OWN}}
+    return ("investigation_source" in failed and isinstance(replacement, dict) and "template" in replacement
+            and fixed(failed) == fixed(replacement))
 
 
 # ----- identity and relevance -----------------------------------------------------------------------
@@ -399,7 +414,8 @@ def candidate_view(candidate: dict) -> dict:
     return {k: candidate.get(k) for k in keys}
 
 
-def program_view(row: dict, cycles: list, candidates: list, dispatches: list | None = None) -> dict:
+def program_view(row: dict, cycles: list, candidates: list, dispatches: list | None = None,
+                 recoveries: list | None = None) -> dict:
     """`urn:zeus:research-program-status:1`: identities, state, counts, codes and per-cycle facts;
     never the template text, config bodies, exception text, DSNs or feed bodies."""
     config = row["config"]
@@ -425,6 +441,8 @@ def program_view(row: dict, cycles: list, candidates: list, dispatches: list | N
                                                if d.get("kind", FAMILY) == FAMILY]),
             "audit_progress": dispatch_counts([d for d in (dispatches or [])
                                                if d.get("kind") == AUDIT_PROGRESS]),
+            # Additive lineage: a failed original and its owner-authorized replacement, read-only.
+            "recoveries": [recovery_view(r) for r in sorted(recoveries or [], key=lambda r: r["investigation"])],
             "authority": "research program status; counts from the store, not model claims; no merge, deploy or truth"}
 
 
@@ -455,5 +473,5 @@ __all__ = ["ACTIVE", "AUDIT_PROGRESS", "BLOCKED", "CAPTURE_SCHEMA", "CLAIMED", "
            "ELIGIBLE", "FAMILY", "HEADROOM",
            "IGNORED", "INVESTIGATION", "MONITOR_SCHEMA", "PAUSED", "STATUS_SCHEMA", "ProgramRefused", "candidate_id",
            "candidate_key", "capture_path", "capture_ref", "config_digest", "council_result", "derive_manifest",
-           "headroom", "match_topics", "monitor_projection", "normalize_url", "program_view", "select_candidate",
-           "snapshot_document", "validate_config"]
+           "headroom", "match_topics", "monitor_projection", "normalize_url", "program_view", "same_authority",
+           "select_candidate", "snapshot_document", "validate_config"]

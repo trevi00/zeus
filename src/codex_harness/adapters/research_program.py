@@ -372,7 +372,9 @@ class ProgramRunner:
         """The recorded dispatch row of THIS claim, read back for the log; identifiers and codes only."""
         if candidate["source"] != INVESTIGATION:
             return None
-        row = next((d for d in self.programs.dispatches() if d["investigation"] == candidate["investigation"]), None)
+        # This program's own claim: a replaced original of another program is history, not this outcome.
+        row = next((d for d in self.programs.dispatches(candidate["program"])
+                    if d["investigation"] == candidate["investigation"]), None)
         return None if row is None else {k: row[k] for k in ("investigation", "kind", "state", "result",
                                                              "result_reason", "reported_result", "row_status")}
 
@@ -435,5 +437,26 @@ class ProgramRunner:
         return {**receipt, "state": view["state"], "stop_reason": view["stop_reason"], "report": None if report is None else str(report)}
 
 
-__all__ = ["CaptureError", "EventLog", "GitCapture", "ProgramRunner", "collect_live", "collect_local", "render_report",
-           "write_report"]
+# ----- failed-dispatch recovery transport proof (research-dispatch-recovery-001) ---------------------------
+class TransportProbe:
+    """Read-only, bounded inspection of the CONFIGURED Redis bus for one exact message id: the
+    recipient's stream (delivered, pending and undelivered entries) and the dead-letter stream. It
+    publishes, claims, ACKs and trims nothing. A stream longer than `limit` cannot be read completely
+    and a Redis error propagates, so the owner refuses; only a complete read without the id is
+    `absent`. It proves nothing about any OTHER endpoint an earlier misconfiguration may have used."""
+
+    def __init__(self, bus, limit: int = 10000):
+        self.bus, self.limit = bus, limit
+
+    def absent(self, recipient: str, message_id: str) -> bool:
+        for stream in (self.bus.stream(recipient), self.bus.namespace + ":dead-letter"):
+            if self.bus.client.xlen(stream) > self.limit:
+                raise ProgramRefused("recovery_transport_unbounded")
+            for _, fields in self.bus.client.xrange(stream, count=self.limit):
+                if any(isinstance(value, str) and message_id in value for value in fields.values()):
+                    return False
+        return True
+
+
+__all__ = ["CaptureError", "EventLog", "GitCapture", "ProgramRunner", "TransportProbe", "collect_live", "collect_local",
+           "render_report", "write_report"]
