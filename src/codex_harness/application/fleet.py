@@ -227,17 +227,31 @@ class Fleet:
     def resume(self) -> dict:
         return self._set_paused(False)
 
+    @staticmethod
+    def _hold_key(control: dict):
+        """The pause authority of a control row: paused, and whose activation hold (if any)."""
+        hold = control.get(ACTIVATION_HOLD)
+        hold = (hold.get("target_id"), hold.get("descriptor_sha256")) if isinstance(hold, dict) else None
+        return control.get("paused") is True, hold
+
     def activation_gate(self, target_id: str, descriptor_sha256: str) -> dict:
-        """Pause durable admission and read the Fleet's execution debt in ONE transaction.
+        """Commit a durable admission pause, THEN read the Fleet's execution debt in a second transaction.
 
         The managed host target calls this under its own lifecycle guard before it stops an
         instance and again before it launches one (HOST-RUNTIME.md "Activation gate"). Because every
         admission and unit reservation checks the pause under the same serialization, nothing can
-        be reserved after this commits. The pause is left in place: a running fleet was not paused
-        by an owner, so it carries an `activation_hold` naming the target and the descriptor being
-        activated, which only that exact runtime may release (`release_activation_hold`); an owner
-        pause is kept as it is. `settled` is True only when no worker job is reserving and no
-        execution unit is held."""
+        be reserved after the first transaction commits. That transaction scans no debt, so a failed
+        debt read can never roll the pause back. The pause is left in place: a running fleet was not
+        paused by an owner, so it carries an `activation_hold` naming the target and the descriptor
+        being activated, which only that exact runtime may release (`release_activation_hold`); an
+        owner pause is kept as it is.
+
+        A failure of the pause transaction itself (write, commit or a lost acknowledgement) raises:
+        no durable pause is claimed, and a retry reconciles the same hold. The debt read re-checks the
+        pause authority in its own transaction: a failed read returns `reason_code` `debt_unknown`, a
+        pause that changed between the two (an owner resume, pause or another hold) `control_changed`,
+        both with unknown debt (None) and never `settled`. `settled` is True only when the pause is
+        exactly the committed one, no worker job is reserving and no execution unit is held."""
         with self.store.transaction() as tx:
             if self._registry(tx) is None:
                 raise FleetRefused("unregistered")
@@ -246,10 +260,20 @@ class Fleet:
             ours = not control.get("paused") or (isinstance(hold, dict) and hold.get("target_id") == target_id)
             if ours:
                 hold = {"target_id": target_id, "descriptor_sha256": descriptor_sha256, "at": self.clock()}
-                tx.put(BUCKET_CONTROL, CONTROL_KEY, {**control, "paused": True, ACTIVATION_HOLD: hold,
-                                                     "updated_at": self.clock()})
-            reserving = sorted(row["id"] for row in tx.scan(BUCKET_JOBS) if row["status"] in RESERVING)
-            units = held_units(tx.scan(BUCKET_UNITS))
+                control = {**control, "paused": True, ACTIVATION_HOLD: hold, "updated_at": self.clock()}
+                tx.put(BUCKET_CONTROL, CONTROL_KEY, control)
+            committed = self._hold_key(control)
+        unknown = {"paused": True, "hold": ours, "reserving": None, "units_held": None, "settled": False}
+        try:
+            with self.store.transaction() as tx:
+                current = self._hold_key(self._control(tx))
+                if current == committed:
+                    reserving = sorted(row["id"] for row in tx.scan(BUCKET_JOBS) if row["status"] in RESERVING)
+                    units = held_units(tx.scan(BUCKET_UNITS))
+        except Exception as exc:
+            return {**unknown, "reason_code": "debt_unknown", "error_type": safe_code(type(exc).__name__)}
+        if current != committed:
+            return {**unknown, "paused": current[0], "hold": False, "reason_code": "control_changed"}
         return {"paused": True, "hold": ours, "reserving": reserving, "units_held": units,
                 "settled": not reserving and not units}
 

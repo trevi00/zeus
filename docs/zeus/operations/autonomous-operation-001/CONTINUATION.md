@@ -123,9 +123,12 @@ admission only; stop is the guardian cleanup request.
 
 Rollback (managed host lifecycle, HOST-RUNTIME.md "Activation gate"): every managed start, forward
 or restoration, first runs `Fleet.activation_gate` under the target guard - one transaction that
-pauses durable admission and reads reserving jobs and held units - before it stops the previous
-instance and again before it launches. Held debt refuses `fleet_debt_held`, a failed read
-`fleet_debt_unknown`, a missing authority `fleet_authority_unconfigured`; a dead controller or idle
+commits the durable admission pause, then a separate one that re-checks it and reads reserving jobs
+and held units - before it stops the previous instance and again before it launches. Held debt
+refuses `fleet_debt_held`; a failed debt read after the committed pause `fleet_debt_unknown` (the
+pause stays); a pause changed between the two `fleet_control_changed`; a pause write/commit that
+failed or lost its acknowledgement `fleet_pause_unknown` (no pause is claimed; the retry reconciles
+the same hold); a missing authority `fleet_authority_unconfigured`; a dead controller or idle
 heartbeat never counts as settled. A restoration waits on these codes (pending) and after its
 deadline blocks with the same code, still paused; the recovery owner is ExecutionRecovery / the
 host owner: settle each held unit from its proof (drain with unit-aware code) or owner recovery,
