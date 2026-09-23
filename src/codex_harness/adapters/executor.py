@@ -90,6 +90,7 @@ from codex_harness.domain.policy import POLICY
 from codex_harness.domain.project_evidence import requires_container, worker_schema
 from codex_harness.domain.provider_stream import CODEX_PROGRESS, CodexStream, stream_for
 from codex_harness.domain.research import require_dispatch
+from codex_harness.domain.worker_sessions import MODE_RESUME, usage_delta
 
 # Severity of one evaluated output (operating-portfolio-001): an accepted answer is information, a
 # refusal is not. A structurally invalid answer and a provider failure both lose the run, so neither
@@ -322,8 +323,12 @@ class Executor:
     """Infrastructure composition for role-specific, independently executed Codex tasks."""
 
     def __init__(self, service, git, artifacts, knowledge=None, research=None, release_runner=None, audit_runner=None,
-                 observer=None, execution_policy=None, evidence_profile=None, isolation=None):
+                 observer=None, execution_policy=None, evidence_profile=None, isolation=None,
+                 worker_sessions=None):
         self.service, self.git, self.artifacts = service, git, artifacts
+        # INV-WORKER-SESSION-001: a host-selected WorkerSessions owner, or None. Without it, and for
+        # every call that passes no explicit task session, execution is exactly the fresh legacy path.
+        self.worker_sessions = worker_sessions
         # Read on first use: a malformed host configuration must refuse an execution, not a process.
         self._execution_policy = execution_policy
         self.knowledge, self.research, self.release_runner = knowledge, research, release_runner
@@ -395,10 +400,71 @@ class Executor:
                                  max_budget_usd=assignment.controls.get("max_budget_usd"),
                                  settings_document=claude_settings(assignment.runtime), **project)
 
+    # ---- durable task sessions (INV-WORKER-SESSION-001) -------------------------------------------
+    def _task_session_owner(self, task_session, assignment, read_only, lease, max_handoffs) -> dict | None:
+        """None for the default fresh path; otherwise the exclusive owner, after refusing every
+        unsupported combination before any provider entry."""
+        if task_session is None:
+            return None
+        require(self.worker_sessions is not None, "Task sessions are not configured on this host")
+        require(isinstance(task_session, dict) and set(task_session) == {"task_id", "repository"}
+                and all(type(task_session[k]) is str and task_session[k] for k in task_session),
+                "Task session binding must name exactly task_id and repository")
+        require(assignment.transport == "claude_cli" and self.isolation is not None,
+                "Native task sessions run only in the isolated Claude worker; the host home is never resumed")
+        require(not read_only, "A review never opens or resumes a worker session")
+        require(bool(lease), "A task session is owned by a leased execution")
+        require(max_handoffs == 1, "A task session turn is one provider call; handoffs are the owner's decision")
+        return {"execution": str(lease["id"]), "generation": int(lease.get("generation") or 0),
+                "attempt": int(lease.get("attempt") or 0)}
+
+    def _task_session_identity(self, task_session, assignment, requested_model, cwd) -> dict:
+        return {"task_id": task_session["task_id"], "repository": task_session["repository"],
+                "workspace": digest({"worktree": str(cwd)}), "provider": assignment.provider,
+                "model": requested_model, "runtime_image": self.isolation.config["image"],
+                "runtime_digest": digest(assignment.runtime), "policy_digest": assignment.policy_digest,
+                "config_digest": assignment.config_digest}
+
+    def _task_session_ended(self, task_session, owner, entered: bool, exc) -> None:
+        """A turn that raised. Not entered: the claim is released unchanged. Entered: its effect is
+        unknown, so the session is unresolved rather than resumable. Best effort: the termination
+        evidence of the caller is what must survive, never this bookkeeping."""
+        try:
+            if entered:
+                self.worker_sessions.mark_unresolved(task_session["task_id"], owner, "turn_" + type(exc).__name__)
+            else:
+                self.worker_sessions.release(task_session["task_id"], owner, "not_entered")
+        except Exception:
+            pass
+
+    def _task_session_turn(self, task_session, owner, plan, result) -> dict:
+        """Adopt the finished turn's exported transcript, or release the claim when there is none to
+        adopt. Only references and hashes travel on in the result; the bytes stay restricted."""
+        reported = result.get("task_session") if isinstance(result.get("task_session"), dict) else {}
+        adoptable = (not result.get("failure") and result.get("answer") is not None and reported.get("exported")
+                     and reported.get("session_id") == plan["session_id"])
+        if not adoptable:
+            reason = "turn_failed" if result.get("failure") or result.get("answer") is None else "export_unavailable"
+            self.worker_sessions.release(task_session["task_id"], owner, reason)
+            return {"mode": plan["mode"], "session_id": plan["session_id"], "adopted": False, "reason": reason}
+        try:
+            row = self.worker_sessions.checkpoint(task_session["task_id"], owner, reported["export"],
+                                                  usage=result.get("session_usage"),
+                                                  cli_version=(result.get("command") or {}).get("cli_version"))
+        except Exception as exc:
+            # The retained export stays on disk for `reconcile`; the claim never silently survives.
+            self._task_session_ended(task_session, owner, True, exc)
+            raise
+        last = row["checkpoints"][-1]
+        return {"mode": plan["mode"], "session_id": plan["session_id"], "adopted": True, "state": row["state"],
+                "archive": {key: last["archive"][key] for key in ("ref", "transcript_sha256", "files")},
+                "continuity": last["continuity"]}
+
     def _run(self, agent: str, key: str, objective: str, evidence: dict, cwd: str,
              schema: dict, read_only: bool = False, heartbeat=None, lease=None, stage=None,
              workload: str = "final_validation", importance: str | None = None,
-             action: str | None = None, max_handoffs: int = 4, delivery: dict | None = None) -> dict:
+             action: str | None = None, max_handoffs: int = 4, delivery: dict | None = None,
+             task_session: dict | None = None) -> dict:
         # Codex model routing still decides every Codex model and names no other provider's model.
         # Which provider runs at all comes from the packaged policy and the host configuration;
         # the assignment message and the task details never take part (INV-CLAUDE-WORKER-001).
@@ -406,6 +472,9 @@ class Executor:
         assignment = self.execution_policy.select(role=agent, action=action, workload=workload,
                                                   read_only=read_only)
         stream = stream_for(assignment.transport)
+        # INV-WORKER-SESSION-001: an explicit task session is refused here, before any context work,
+        # reservation or provider, unless every condition of the native path holds.
+        session_owner = self._task_session_owner(task_session, assignment, read_only, lease, max_handoffs)
         if assignment.model_source == "explicit_setting":
             requested_model = assignment.configured_model
             model_receipt = {"policy": assignment.policy_version, "workload": workload,
@@ -737,6 +806,7 @@ class Executor:
             # refuses a new run of this task until an operator reconciles. The one exception is a
             # runner-observed output failure, whose evidence is persisted before it is raised.
             provider_entered = False
+            session_plan = None
 
             def terminated(exc, boundary, classification="unknown", stream_hash=None):
                 if not lease:
@@ -766,6 +836,18 @@ class Executor:
                 # INV-INVOCATION-001 / INV-BREAKER-001: capacity refusal must not take a
                 # probe slot; breaker refusal must release the invocation reservation.
                 admission = self.breaker.admit(breaker_key(assignment.identity, workload), lease) if lease else None
+                session_arguments = {}
+                if session_owner is not None:
+                    # Exclusive claim of the logical session for this execution; a refusal (owned,
+                    # foreign, incompatible, missing/corrupt archive) is a refusal before entry.
+                    session_plan = self.worker_sessions.begin(
+                        task_session["task_id"], self._task_session_identity(task_session, assignment,
+                                                                            requested_model, cwd),
+                        session_owner)
+                    plan = session_plan
+                    session_arguments = {"session_id": plan["session_id"], "task_session": {
+                        "mode": plan["mode"], "session_id": plan["session_id"],
+                        "stage": lambda destination: self.worker_sessions.stage(plan, destination)}}
                 opened = self._open_runtime(assignment, requested_model, cwd, action)
                 # A transport whose construction is itself the external effect says so; one that
                 # starts its process later reports the exact moment through `on_enter`.
@@ -776,8 +858,12 @@ class Executor:
                     result = runtime.run(prompt, cwd, schema, timeout,
                                          on_event=observe, read_only=read_only, on_tick=lambda: observe(None),
                                          model=requested_model,
-                                         **({} if entry_on_open else {"on_enter": mark_entered}))
+                                         **({} if entry_on_open else {"on_enter": mark_entered}),
+                                         **session_arguments)
             except Exception as exc:
+                if session_plan is not None and (result is None or not (result.get("inspection_blocked")
+                                                                        or result.get("failure"))):
+                    self._task_session_ended(task_session, session_owner, provider_entered, exc)
                 if result is None or not (result.get("inspection_blocked") or result.get("failure")):
                     self.observer.emit("development.provider_failed", "failed", severity="error",
                                        execution=observed_execution(reservation_id), correlation_id=correlation,
@@ -816,6 +902,16 @@ class Executor:
                 result["cleanup_error"] = {"type": type(exc).__name__, "message": str(exc)}
             boundary = "classification"
             try:
+                if session_plan is not None:
+                    # Resumed headless usage is cumulative: only this turn's delta against the same
+                    # session's recorded baseline is counted, otherwise the turn's usage is unknown.
+                    session_usage = usage_delta(mode=session_plan["mode"], session_id=session_plan["session_id"],
+                                                baseline=session_plan.get("usage_baseline"), raw=result.get("usage"))
+                    result["session_usage"] = session_usage
+                    result["usage"] = session_usage["delta"] if session_usage["delta"] else None
+                    if session_plan["mode"] == MODE_RESUME:
+                        result["cost"] = {**(result.get("cost") or {}), "reported_usd": None, "source": "unknown",
+                                          "note": "a resumed session reports a cumulative estimate; not attributed to this turn"}
                 if context_bound:
                     result.update(elapsed_seconds=time.monotonic() - started,
                                   context_ref=context_ref["ref"], research_binding=binding)
@@ -855,6 +951,9 @@ class Executor:
                 result['tool_usage'] = tool_usage(result)  # INV-OUTPUT-001: observed, beside any self-report
                 if history_recording:
                     result['skill_history_recording'] = history_recording
+                if session_plan is not None:
+                    boundary = "task_session"
+                    result["task_session"] = self._task_session_turn(task_session, session_owner, session_plan, result)
                 boundary = "result_persistence"
                 # INV-OBSERVATION-001: the evaluation of this output is recorded only once its
                 # durable receipt exists, on both exits of `persist_result` — the receipt it returns,

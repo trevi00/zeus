@@ -11,6 +11,7 @@ environment is built from an allow-list that deliberately withholds harness vari
 import hashlib
 import json
 import os
+import re
 import subprocess
 import sys
 import time
@@ -18,7 +19,7 @@ import time
 FLAGS = ("--print", "--output-format", "--input-format", "--verbose", "--model", "--session-id",
          "--permission-mode", "--permission-prompts", "--strict-mcp-config", "--setting-sources",
          "--tools", "--settings", "--max-budget-usd", "--json-schema", "--restricted",
-         "--append-system-prompt", "--version", "--help")
+         "--append-system-prompt", "--resume", "--version", "--help")
 # The same synthetic secret the observation tests use: a provider that prints this must not put it
 # into any log, notice or public row.
 CANARY = "CANARY-7e1d9c3b5a2f4e6d8c0b1a2f3e4d5c6b"
@@ -81,6 +82,40 @@ def result(session, *, subtype="success", is_error=False, text="", structured=No
     emit(body)
 
 
+def session_turn(argv, session, model, digest):
+    """Fixture imitation of the CLI's transcript store, NOT the real format: `--session-id` starts a
+    transcript under $CLAUDE_CONFIG_DIR/projects/<cwd key>/<id>.jsonl, `--resume <id>` requires that
+    exact file and appends to it, and usage totals are cumulative over the session's turns. Decoy
+    credential, settings, dot-file and foreign-session files are written beside it every turn."""
+    home = os.environ["CLAUDE_CONFIG_DIR"]
+    resumed = option(argv, "--resume")
+    sid = resumed or session
+    base = os.path.join(home, "projects", re.sub(r"[^A-Za-z0-9]", "-", os.getcwd()))
+    transcript = os.path.join(base, sid + ".jsonl")
+    if resumed and not os.path.isfile(transcript):
+        emit({"type": "result", "subtype": "error_during_execution", "is_error": True,
+              "result": "No conversation found with session ID: " + sid, "session_id": sid})
+        return 1
+    os.makedirs(os.path.join(base, sid, "tool-results"), exist_ok=True)
+    with open(transcript, "a", encoding="utf-8") as handle:
+        handle.write(json.dumps({"type": "user", "prompt_sha256": digest}) + "\n")
+    with open(transcript, encoding="utf-8") as handle:
+        turns = sum(1 for _ in handle)
+    with open(os.path.join(base, sid, "tool-results", f"turn-{turns}.txt"), "w", encoding="utf-8") as handle:
+        handle.write("tool output " + str(turns))
+    for decoy in (os.path.join(home, ".credentials.json"), os.path.join(home, "settings.json"),
+                  os.path.join(base, sid, ".secret"), os.path.join(base, "foreign-session.jsonl")):
+        with open(decoy, "w", encoding="utf-8") as handle:
+            handle.write(CANARY)
+    init(sid, model)
+    emit({"type": "result", "subtype": "success", "is_error": False, "duration_ms": 5, "num_turns": turns,
+          "result": "", "session_id": sid, "total_cost_usd": 0.01 * turns,
+          "usage": {"input_tokens": 100 * turns, "output_tokens": 10 * turns,
+                    "cache_creation_input_tokens": 0, "cache_read_input_tokens": 5 * turns},
+          "structured_output": {"summary": digest, "tests": [f"turn {turns}", "resumed" if resumed else "fresh"]}})
+    return 0
+
+
 def main(argv):
     if "--version" in argv:
         print("9.9.9-zeus-protocol-stub (fixture)")
@@ -116,6 +151,8 @@ def main(argv):
     digest = (observation["stdin"] or {}).get("sha256", "")
 
     init_model = model if scenario != "wrong_model" else "some-other-model"
+    if scenario == "session":
+        return session_turn(argv, session, init_model, digest)
     if scenario == "profile":
         # Plays the part of Claude Code's hook runner: each configured command hook is run through
         # the platform shell with the event JSON on stdin, exactly as the real CLI would. What the

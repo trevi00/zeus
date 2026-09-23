@@ -310,6 +310,8 @@ def parser() -> argparse.ArgumentParser:
     add_fleet_parser(commands)
     from codex_harness.adapters.host_delivery import add_parser as add_host_delivery_parser
     add_host_delivery_parser(commands)
+    from codex_harness.adapters.worker_sessions import add_parser as add_worker_session_parser
+    add_worker_session_parser(commands)
     from codex_harness.adapters.frontdesk_cli import add_parser as add_desk_parser
     add_desk_parser(commands)
     from codex_harness.adapters.autonomous_cli import add_parser as add_autonomous_parser
@@ -510,6 +512,18 @@ def host_delivery_command(service, args):
     emit(result)
     if result.get("exit_code", 1) != 0:
         raise SystemExit(1)
+
+
+def worker_session_command(service, args):
+    """INV-WORKER-SESSION-001: read-only status and explicit close; refusals print a code and a
+    type, never transcript bytes, archive paths, DSNs or raw exceptions."""
+    from codex_harness.adapters import worker_sessions
+    try:
+        result = worker_sessions.execute(service, args)
+    except Exception as exc:
+        emit(worker_sessions.refusal(exc))
+        raise SystemExit(1) from exc
+    emit(result)
 
 
 def desk_command(service, args):
@@ -746,6 +760,8 @@ def main() -> None:
             fleet_command(service, args)
         elif args.command == "host-delivery":
             host_delivery_command(service, args)
+        elif args.command == "worker-session":
+            worker_session_command(service, args)
         elif args.command == "desk":
             desk_command(service, args)
         elif args.command == "audit-service":
