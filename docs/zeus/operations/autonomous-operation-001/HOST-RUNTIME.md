@@ -209,6 +209,63 @@ Platform claims:
   the owner's PostgreSQL and lanes. Only its wiring (`fleet_cli.run(control=...)`) is tested, with
   doubles.
 
+## Verification record (evidence recovery, 2026-09-23)
+
+Candidate `344271b9` is preserved, and it is not accepted or deployed. This record changes only
+this document. It does not change the runtime code, the tests, the verifier image or any timeout.
+The independent review must cover the whole managed-runtime implementation and the acceptance
+matrix above, not only this record.
+
+Completed checks, rerun on Linux in the worker checkout. The task's base revision is `937e24bb`. The
+checkout's HEAD was not confirmed with Git here, because Git refused the checkout's ownership.
+
+| Command | Observed result |
+|---|---|
+| `python -m pytest tests/test_managed_runtime.py tests/test_host_delivery.py tests/test_host_delivery_cli.py tests/test_fleet.py tests/test_fleet_cli.py tests/test_fleet_delivery.py tests/test_fleet_recovery.py tests/test_fleet_relocation.py tests/test_fleet_runtime.py tests/test_background_processes.py tests/test_background_service.py -q -p no:cacheprovider -rs` | 319 passed, 5 skipped, 0 failed, 86.74 s |
+| `python -m ruff check .` | All checks passed |
+
+The five skips are all declared:
+
+- `tests/test_host_delivery.py:2307`: Integration environment required.
+- `tests/test_background_processes.py:278`, `:295` and `:311`: a real console handle is a Windows
+  fact.
+- `tests/test_background_service.py:691`: job-object kill-on-close is a Windows fact.
+
+On Linux, the `posix_only` process tests in `tests/test_managed_runtime.py` run and are not
+skipped. The same tests are skipped on Windows. Linux results do not prove native Windows
+behaviour, and no Windows success is inferred.
+
+Uncertainty about the file set: this handoff did not state the eleven file names. They were
+chosen from the scope in [SPEC.md](SPEC.md) ("managed runtime, original host delivery, Fleet and
+background service") and from the legacy row of the matrix. Two groups were left out:
+
+- `tests/test_fleet_recovery_postgres.py`, which needs PostgreSQL;
+- `tests/test_fleet_backlog*.py`, which belong to the backlog batch.
+
+The reviewer should check this set against the eleven files of the original inspection.
+
+Full suite: not qualified, and not run in this handoff.
+
+- The earlier bare `python -m pytest -q -rs` timed out at 300.073 s, at about 56%. Its progress
+  had `E` markers from about 46%, so it had no final outcome. It is not a passed check, and it is
+  not only a slow successful run.
+- The owner mapped the first `E` to `test_goal_progress`, and reran that file alone. The rerun used
+  a no-git archive of the exact candidate, in the same immutable image, offline and without
+  credentials. It failed in fixture setup because `ssh-keygen` is absent from the verifier image
+  (`host-runtime-first-error-2.log`).
+- That log establishes a missing image prerequisite. It does not establish the cause of every later
+  full-suite error, and it is not a managed-runtime code defect.
+- An earlier replay attempt ran zero tests, because the verifier had reclaimed its workspace
+  (`host-runtime-first-error.log`). That failed check is preserved, and it says nothing about the
+  test's behaviour.
+- The original inspection and the worker result remain unchanged (`host-runtime-inspection.json`,
+  `host-runtime-result.json`).
+- Full-suite qualification belongs to suitably provisioned CI. The open prerequisite is
+  `ssh-keygen` in the verifier image.
+
+These checks do not establish real Fleet consumption, a live rollback or native Windows
+managed-service behaviour. Those stay owner gates, as listed below.
+
 ## Owner gates that remain
 
 1. Build and qualify the fixed interpreter environment for the reviewed revision's `uv.lock`, and
