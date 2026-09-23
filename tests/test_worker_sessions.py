@@ -11,8 +11,11 @@ import base64
 import copy
 import json
 import os
+import shutil
+import stat
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -66,12 +69,66 @@ def candidate(n):
             "base": "c" * 40}
 
 
-def decide(store, decision_id, frozen, *, accepted, phase="review_lead", status="succeeded"):
+def decide(store, decision_id, frozen, *, accepted, phase="review_lead", status="succeeded",
+           execution_ref="sha256:" + "e" * 64):
     with store.transaction() as tx:
         tx.put("decisions_pending", decision_id, {
             "id": decision_id, "phase": phase, "status": status, "actor": "lead:improvement",
             "input": {"candidate": frozen},
-            "result": {"accepted": accepted, "execution_ref": "sha256:" + "e" * 64, "reason": "fixture"}})
+            "result": {"accepted": accepted, "execution_ref": execution_ref, "reason": "fixture"}})
+
+
+# Windows MAX_PATH. A fixture that nests a CLI home, a transcript key derived from the ABSOLUTE
+# workspace path and a session directory repeats its root twice in one path; under pytest's long
+# per-test tmp_path that exceeds 260 characters on a Windows host without long-path support. Owner
+# native replay failed exactly the two-turn, fake-container and executor fixtures while a short-path
+# direct turn passed; this is the discriminating lead, not a confirmed shared cause.
+WINDOWS_MAX_PATH = 260
+# Elsewhere the check projects a Windows root of this length (`C:\Users\<name>\AppData\Local\Temp\
+# zws-xxxxxxxx` is 46 characters for a 5-character user name). On Windows the real length is used.
+WINDOWS_ROOT_ALLOWANCE = 60
+
+
+def _writable_retry(function, path, _error):
+    os.chmod(path, stat.S_IWRITE)  # read-only Git objects on Windows; only inside this owned root
+    function(path)
+
+
+@pytest.fixture
+def short_root():
+    """A SHORT test-owned directory, removed afterwards. On teardown it asserts that every path the
+    test created stays under Windows MAX_PATH when the root is as long as the Windows allowance."""
+    root = Path(tempfile.mkdtemp(prefix="zws-")).resolve()
+    try:
+        yield root
+        longest = max((str(path) for path in root.rglob("*")), key=len, default="")
+        projected = len(longest) + (0 if os.name == "nt" else 2 * max(0, WINDOWS_ROOT_ALLOWANCE - len(str(root))))
+        assert projected < WINDOWS_MAX_PATH, (f"fixture path budget {projected} >= {WINDOWS_MAX_PATH}: "
+                                              + os.path.relpath(longest, root))
+    finally:
+        retry = {"onexc": _writable_retry} if sys.version_info >= (3, 12) else {"onerror": _writable_retry}
+        shutil.rmtree(root, **retry)
+
+
+def evidence_store(root):
+    """A real verified evidence store (FileArtifacts); everything put into it is labelled fixture text."""
+    from codex_harness.adapters.artifacts import FileArtifacts
+    return FileArtifacts(str(root / "evidence"))
+
+
+def accept_for_promotion(store, owner_sessions, root, n, evidence):
+    """Adopt one turn, freeze candidate n, and record a succeeded conductor acceptance whose own
+    execution receipt exists in `evidence`. Returns (row, promoted evidence ref)."""
+    review_ref = evidence.put(json.dumps({"fixture": "review execution receipt", "n": n}), "fixture")["ref"]
+    plan = owner_sessions.begin("task-1", identity(), owner())
+    adopt_turn(owner_sessions, root, "t1", plan["session_id"], "/workspace", [b"a"], owner())
+    frozen = candidate(n)
+    owner_sessions.submit("task-1", frozen)
+    decide(store, f"review-{n}", frozen, accepted=True, phase="review_conductor", execution_ref=review_ref)
+    row = owner_sessions.record_review("task-1", f"review-{n}")
+    assert row["state"] == ws.ACCEPTED
+    promoted = evidence.put(json.dumps({"fixture": "promoted accepted evidence", "n": n}), "fixture")["ref"]
+    return row, promoted
 
 
 def write_session(home, cwd, sid, lines, extra=None):
@@ -86,9 +143,9 @@ def write_session(home, cwd, sid, lines, extra=None):
     return base
 
 
-def sessions(tmp_path, store=None):
+def sessions(tmp_path, store=None, **kwargs):
     store = store or MemoryStore()
-    return store, WorkerSessions(store, SessionArchives(tmp_path / "archives"))
+    return store, WorkerSessions(store, SessionArchives(tmp_path / "archives"), **kwargs)
 
 
 def adopt_turn(owner_sessions, tmp_path, name, sid, cwd, lines, who, usage=None):
@@ -141,7 +198,8 @@ def test_executor_default_path_and_unsupported_combinations_refuse_before_entry(
 
 
 # ---- native resume uses the exact archive and id; history is retained --------------------------------
-def test_two_turn_resume_restores_exact_archive_and_retains_history(tmp_path):
+def test_two_turn_resume_restores_exact_archive_and_retains_history(short_root):
+    tmp_path = short_root
     store, owner_sessions = sessions(tmp_path)
     workspace = tmp_path / "workspace"
     workspace.mkdir()
@@ -383,6 +441,34 @@ def test_two_owners_race_for_one_logical_session(tmp_path):
     assert owner_sessions.status("task-1")["sessions"][0]["owner"] == owner("exec-b")
 
 
+@pytest.mark.parametrize("field", ["model", "policy_digest", "runtime_image", "config_digest", "runtime_digest"])
+def test_duplicate_begin_by_the_owner_checks_compatibility_first_and_preserves_the_claim(tmp_path, field):
+    """Owner synthetic reproduction: same owner + changed model used to get a plan back."""
+    store, owner_sessions = sessions(tmp_path)
+    plan = owner_sessions.begin("task-1", identity(), owner("exec-a"))
+    assert owner_sessions.begin("task-1", identity(), owner("exec-a")) == plan  # exact duplicate succeeds
+    before = copy.deepcopy(store.data)
+    for who in (owner("exec-a"), owner("exec-b")):
+        with pytest.raises(ws.WorkerSessionRefused) as refused:
+            owner_sessions.begin("task-1", identity(**{field: "changed"}), who)
+        assert refused.value.reason == "session_incompatible"
+    assert store.data == before  # the valid owner's claim and row are untouched
+    # The valid owner's turn and archive are unaffected; its resumed claim is guarded the same way.
+    row = adopt_turn(owner_sessions, tmp_path, "t1", plan["session_id"], "/workspace", [b"a"], owner("exec-a"))
+    frozen = candidate(14)
+    owner_sessions.submit("task-1", frozen)
+    decide(store, "review-14", frozen, accepted=False)
+    owner_sessions.record_review("task-1", "review-14")
+    resumed = owner_sessions.begin("task-1", identity(), owner("exec-b", 2, 1))
+    assert resumed["mode"] == ws.MODE_RESUME and owner_sessions.begin("task-1", identity(), owner("exec-b", 2, 1)) == resumed
+    before = copy.deepcopy(store.data)
+    with pytest.raises(ws.WorkerSessionRefused) as refused:
+        owner_sessions.begin("task-1", identity(**{field: "changed"}), owner("exec-b", 2, 1))
+    assert refused.value.reason == "session_incompatible" and store.data == before
+    reference = row["checkpoints"][-1]["archive"]["ref"]
+    assert owner_sessions.archives.load(reference, session_id=plan["session_id"])["files"]
+
+
 def test_duplicate_checkpoint_and_review_events_are_idempotent(tmp_path):
     store, owner_sessions = sessions(tmp_path)
     plan = owner_sessions.begin("task-1", identity(), owner())
@@ -508,7 +594,8 @@ def test_rejected_candidate_is_immutable(tmp_path):
 
 
 def test_closed_only_after_promotion_and_cleanup_failure_retains_bytes(tmp_path):
-    store, owner_sessions = sessions(tmp_path)
+    evidence = evidence_store(tmp_path)
+    store, owner_sessions = sessions(tmp_path, evidence=evidence)
     plan = owner_sessions.begin("task-1", identity(), owner())
     row = adopt_turn(owner_sessions, tmp_path, "t1", plan["session_id"], "/workspace", [b"a"], owner())
     reference = row["checkpoints"][-1]["archive"]["ref"]
@@ -517,39 +604,226 @@ def test_closed_only_after_promotion_and_cleanup_failure_retains_bytes(tmp_path)
     for step in (lambda: owner_sessions.close("task-1"), lambda: owner_sessions.promote("task-1", "sha256:" + "1" * 64)):
         with pytest.raises(ws.WorkerSessionRefused):
             step()
-    decide(store, "review-9", frozen, accepted=True, phase="review_conductor")
-    owner_sessions.record_review("task-1", "review-9")
+    review_ref = evidence.put(json.dumps({"fixture": "review execution receipt"}), "fixture")["ref"]
+    decide(store, "review-9", frozen, accepted=True, phase="review_conductor", execution_ref=review_ref)
+    accepted = owner_sessions.record_review("task-1", "review-9")
     with pytest.raises(ws.WorkerSessionRefused):
         owner_sessions.close("task-1")  # accepted but not promoted
-    owner_sessions.promote("task-1", "sha256:" + "1" * 64)
+    promoted = evidence.put(json.dumps({"fixture": "promoted accepted evidence"}), "fixture")["ref"]
+    receipt = evidence.put(json.dumps(ws.promotion_receipt(accepted, [promoted])), "fixture")["ref"]
+    owner_sessions.promote("task-1", receipt)
 
     def failing(_row):
         raise PermissionError("injected cleanup failure")
     kept = owner_sessions.close("task-1", cleanup=failing)
     assert kept["state"] == ws.ARCHIVAL_PENDING and kept["cleanup"]["state"] == "failed"
     assert kept["cleanup"]["error_type"] == "PermissionError" and kept["cleanup"]["archive_retained"] == reference
+    view = owner_sessions.status("task-1")["sessions"][0]
+    assert view["blocked"] and view["next_owner"] == "operator" and "archive is retained" in view["next_action"]
     assert owner_sessions.archives.load(reference, session_id=plan["session_id"])["files"]
     closed = owner_sessions.close("task-1", cleanup=lambda _row: None)
     assert closed["state"] == ws.CLOSED and owner_sessions.archives.load(reference, session_id=plan["session_id"])
     assert owner_sessions.close("task-1") == closed
 
 
-def test_promotion_verifies_the_evidence_reference_when_an_evidence_store_is_given(tmp_path):
-    from codex_harness.adapters.artifacts import FileArtifacts
-    store = MemoryStore()
-    evidence = FileArtifacts(str(tmp_path / "evidence"))
-    owner_sessions = WorkerSessions(store, SessionArchives(tmp_path / "archives"), evidence=evidence)
+def test_promotion_and_closure_require_a_verified_receipt_bound_to_this_session(tmp_path):
+    """The owner's synthetic reproduction (adopt/freeze/accept, promote(task, sha256:000..0), close)
+    and every receipt that is not bound to this session's accepted candidate/archive/review."""
+    # 1. No configured evidence source: refused, state unchanged (was: archival_pending then closed).
+    store, owner_sessions = sessions(tmp_path / "unconfigured")
+    evidence = evidence_store(tmp_path / "unconfigured")
+    accept_for_promotion(store, owner_sessions, tmp_path / "unconfigured", 20, evidence)
+    before = copy.deepcopy(store.data)
+    for step in (lambda: owner_sessions.promote("task-1", "sha256:" + "0" * 64), lambda: owner_sessions.close("task-1")):
+        with pytest.raises(ws.WorkerSessionRefused) as refused:
+            step()
+        assert refused.value.reason in ("promotion_evidence_unconfigured", "session_not_promoted")
+    assert store.data == before
+
+    # 2. Configured store: missing, unrelated, malformed and incompletely backed receipts all refuse.
+    root = tmp_path / "configured"
+    evidence = evidence_store(root)
+    store, owner_sessions = sessions(root, evidence=evidence)
+    accepted, promoted = accept_for_promotion(store, owner_sessions, root, 21, evidence)
+    archive_ref = accepted["checkpoints"][-1]["archive"]["ref"]
+    good = ws.promotion_receipt(accepted, [promoted])
+    other_session = {**good, "session_id": "ffffffff-ffff-4fff-8fff-ffffffffffff"}
+    cases = {
+        "promotion_receipt_missing": "sha256:" + "0" * 64,
+        "promotion_receipt_malformed": evidence.put("promoted evidence", "fixture")["ref"],  # any artifact
+        "promotion_receipt_unrelated": evidence.put(json.dumps(other_session), "fixture")["ref"],
+    }
+    for key, value in (("candidate", {**good["candidate"], "tree": "d" * 40}),
+                       ("archive", {**good["archive"], "ref": "sha256:" + "1" * 64}),
+                       ("review", {**good["review"], "decision_id": "another-review"}),
+                       ("task_id", "task-2")):
+        cases.setdefault("promotion_receipt_unrelated:" + key,
+                         evidence.put(json.dumps({**good, key: value}), "fixture")["ref"])
+    cases["promotion_receipt_malformed:extra"] = evidence.put(json.dumps({**good, "approved": True}), "fixture")["ref"]
+    cases["promotion_receipt_malformed:empty"] = evidence.put(json.dumps({**good, "evidence": []}), "fixture")["ref"]
+    cases["promotion_evidence_missing"] = evidence.put(json.dumps(
+        ws.promotion_receipt(accepted, ["sha256:" + "9" * 64])), "fixture")["ref"]
+    before = copy.deepcopy(store.data)
+    for expected, reference in cases.items():
+        with pytest.raises(ws.WorkerSessionRefused) as refused:
+            owner_sessions.promote("task-1", reference)
+        assert refused.value.reason == expected.split(":")[0], expected
+    assert store.data == before  # nothing moved: still accepted, no promotion record
+    # A modified receipt file is corrupt, never trusted by its name.
+    receipt = evidence.put(json.dumps(good), "fixture")["ref"]
+    stored = evidence.root / (receipt[7:] + ".txt")
+    original = stored.read_bytes()
+    stored.write_bytes(original.replace(b"task-1", b"task-X"))
+    with pytest.raises(ws.WorkerSessionRefused) as refused:
+        owner_sessions.promote("task-1", receipt)
+    assert refused.value.reason == "promotion_receipt_malformed" and store.data == before
+    stored.write_bytes(original)
+
+    # 3. The bound receipt promotes; closure re-verifies it, and default close retains the archive.
+    row = owner_sessions.promote("task-1", receipt)
+    assert row["state"] == ws.ARCHIVAL_PENDING and row["promotion"]["verified"] is True
+    assert row["promotion"]["evidence"] == [promoted] and row["promotion"]["archive_ref"] == archive_ref
+    assert owner_sessions.promote("task-1", receipt) == row  # duplicate promotion event
+    stored.unlink()  # the receipt disappears between promotion and closure
+    with pytest.raises(ws.WorkerSessionRefused) as refused:
+        owner_sessions.close("task-1")
+    assert refused.value.reason == "promotion_receipt_missing"
+    assert owner_sessions.status("task-1")["sessions"][0]["state"] == ws.ARCHIVAL_PENDING
+    evidence.put(json.dumps(good), "fixture")
+    unconfigured = WorkerSessions(store, owner_sessions.archives)  # the same row, no evidence source
+    with pytest.raises(ws.WorkerSessionRefused) as refused:
+        unconfigured.close("task-1")
+    assert refused.value.reason == "promotion_evidence_unconfigured"
+    closed = owner_sessions.close("task-1")
+    assert closed["state"] == ws.CLOSED and closed["cleanup"] == {
+        "state": "not_requested", "at": closed["cleanup"]["at"], "archive_retained": archive_ref}
+    assert owner_sessions.archives.load(archive_ref, session_id=closed["session_id"])["files"]
+
+
+# ---- observable transitions and the monitoring projection ------------------------------------------
+def observed(tmp_path):
+    from codex_harness.adapters.observation_spool import MemorySpool
+    from codex_harness.application.observations import MemoryDirectory, Observer
+    from codex_harness.domain.observation import new_process_run_id
+    store, spool = MemoryStore(), MemorySpool(new_process_run_id())
+    observer = Observer(store, spool, component="test-sessions", directory=MemoryDirectory())
+    return store, spool, observer
+
+
+def session_events(spool):
+    return [record for record in spool.records()
+            if str(record.get("event_type", "")).split(".")[-1].startswith("worker_session")]
+
+
+def test_committed_transitions_are_observed_once_and_blocked_states_name_owner_and_action(tmp_path):
+    store, spool, observer = observed(tmp_path)
+    evidence = evidence_store(tmp_path)
+    _, owner_sessions = sessions(tmp_path, store=store, evidence=evidence, observer=observer)
     plan = owner_sessions.begin("task-1", identity(), owner())
-    adopt_turn(owner_sessions, tmp_path, "t1", plan["session_id"], "/workspace", [b"a"], owner())
-    frozen = candidate(10)
+    owner_sessions.begin("task-1", identity(), owner())  # duplicate begin: nothing committed, nothing reported
+    home = tmp_path / "home"
+    write_session(home, "/workspace", plan["session_id"], [CANARY.encode()])
+    export_session(home, "/workspace", plan["session_id"], tmp_path / "export")
+    owner_sessions.checkpoint("task-1", owner(), tmp_path / "export", usage=None)
+    owner_sessions.checkpoint("task-1", owner(), tmp_path / "export", usage=None)  # duplicate
+    frozen = candidate(30)
     owner_sessions.submit("task-1", frozen)
-    decide(store, "review-10", frozen, accepted=True, phase="review_conductor")
-    owner_sessions.record_review("task-1", "review-10")
-    with pytest.raises((ContractError, OSError)):
-        owner_sessions.promote("task-1", "sha256:" + "2" * 64)
-    assert owner_sessions.status("task-1")["sessions"][0]["state"] == ws.ACCEPTED
-    receipt = evidence.put("promoted evidence", "fixture")
-    assert owner_sessions.promote("task-1", receipt["ref"])["promotion"]["verified"] is True
+    owner_sessions.submit("task-1", frozen)  # duplicate
+    review_ref = evidence.put(json.dumps({"fixture": "review execution receipt"}), "fixture")["ref"]
+    decide(store, "review-30", frozen, accepted=True, phase="review_conductor", execution_ref=review_ref)
+    accepted = owner_sessions.record_review("task-1", "review-30")
+    owner_sessions.record_review("task-1", "review-30")  # duplicate
+    promoted = evidence.put(json.dumps({"fixture": "promoted"}), "fixture")["ref"]
+    receipt = evidence.put(json.dumps(ws.promotion_receipt(accepted, [promoted])), "fixture")["ref"]
+    owner_sessions.promote("task-1", receipt)
+
+    def failing(_row):
+        raise PermissionError("injected cleanup failure " + CANARY)
+    owner_sessions.close("task-1", cleanup=failing)
+    owner_sessions.close("task-1")
+    events = session_events(spool)
+    states = [(e["event_type"], e["attributes"]["state"]) for e in events]
+    assert states == [("development.worker_session_transition", ws.ACTIVE),
+                      ("development.worker_session_transition", ws.CHECKPOINTED),
+                      ("development.worker_session_transition", ws.AWAITING_REVIEW),
+                      ("development.worker_session_transition", ws.ACCEPTED),
+                      ("development.worker_session_transition", ws.ARCHIVAL_PENDING),
+                      ("operations.worker_session_blocked", ws.ARCHIVAL_PENDING),
+                      ("development.worker_session_transition", ws.CLOSED)]
+    cleanup = events[5]
+    assert cleanup["outcome"] == "blocked" and cleanup["reason_code"] == "cleanup_failed"
+    assert cleanup["attributes"]["error_type"] == "PermissionError" and cleanup["attributes"]["next_owner"] == "operator"
+    assert cleanup["attributes"]["archive_retained"].startswith("sha256:")
+    assert events[1]["attributes"]["previous_state"] == ws.ACTIVE and events[0]["attributes"]["owner_execution"] == "exec-a"
+    assert events[2]["attributes"]["next_owner"] == "independent_review"
+    assert "no model calls" in events[2]["attributes"]["next_action"]
+    assert events[3]["attributes"]["next_owner"] == "evidence_promotion"
+    text = json.dumps(spool.records())
+    for raw in (CANARY, MODEL, IMAGE, "p" * 16, "c" * 16, "r" * 16, "w" * 16):
+        assert raw not in text  # no transcript bytes, exception text or raw binding values
+
+    # Resume blocked, incompatible and unknown: each is reported once, naming the operator.
+    for name, damage in (("corrupt", "corrupt"), ("incompatible", "model"), ("unresolved", "turn")):
+        store, spool, observer = observed(tmp_path)
+        _, owner_sessions = sessions(tmp_path / name, store=store, observer=observer)
+        plan = owner_sessions.begin("task-1", identity(), owner())
+        row = adopt_turn(owner_sessions, tmp_path / name, "t1", plan["session_id"], "/workspace", [b"a"], owner())
+        if damage == "turn":
+            owner_sessions.begin("task-1", identity(), owner("exec-b"))
+            owner_sessions.mark_unresolved("task-1", owner("exec-b"), "turn_ContractError")
+            expected, outcome = ws.UNRESOLVED, "unknown"
+        else:
+            if damage == "corrupt":
+                stored = owner_sessions.archives.root / (row["checkpoints"][-1]["archive"]["ref"][7:] + ".txt")
+                stored.write_bytes(stored.read_bytes().replace(b'"schema"', b'"schemb"'))
+            with pytest.raises(ws.WorkerSessionRefused):
+                owner_sessions.begin("task-1", identity(**({"model": "changed"} if damage == "model" else {})),
+                                     owner("exec-b"))
+            expected, outcome = (ws.ARCHIVE_CORRUPT, "blocked") if damage == "corrupt" else (ws.INCOMPATIBLE, "blocked")
+        [blocked] = [e for e in session_events(spool) if e["event_type"] == "operations.worker_session_blocked"]
+        assert blocked["attributes"]["state"] == expected and blocked["outcome"] == outcome
+        assert blocked["attributes"]["next_owner"] == "operator" and blocked["attributes"]["next_action"].startswith(
+            ("owner:", "explicit fresh"))
+        assert blocked["severity"] == "warning" and "changed" not in json.dumps(blocked)
+        view = owner_sessions.status("task-1")["sessions"][0]
+        assert view["blocked"] and view["next_owner"] == "operator"
+
+
+def test_monitoring_projects_session_states_read_only_and_unavailable_is_not_empty(tmp_path, monkeypatch):
+    from codex_harness.adapters import monitoring
+    store, owner_sessions = sessions(tmp_path)
+    plan = owner_sessions.begin("task-1", identity(), owner())
+    adopt_turn(owner_sessions, tmp_path, "t1", plan["session_id"], "/workspace", [CANARY.encode()], owner())
+    owner_sessions.submit("task-1", candidate(31))
+    _, other = sessions(tmp_path / "other", store=store)
+    other.begin("task-2", identity(task_id="task-2"), owner("exec-z"))
+    before = copy.deepcopy(store.data)
+    facts = monitoring.worker_session_facts(store)
+    assert store.data == before  # store reads only; no archive is opened
+    assert facts["counts"] == {ws.AWAITING_REVIEW: 1, ws.ACTIVE: 1} and facts["blocked"] == 0
+    first, second = facts["sessions"]
+    assert (first["task_id"], first["next_owner"]) == ("task-1", "independent_review")
+    assert (second["task_id"], second["next_owner"], second["owner"]["execution"]) == ("task-2", "execution", "exec-z")
+    assert len(first["identity_sha256"]) == 64 and "identity" not in first
+    text = json.dumps(facts)
+    for raw in (CANARY, MODEL, IMAGE, "p" * 16, "c" * 16, "base64"):
+        assert raw not in text
+    # Through the real collector: an ok envelope beside the other sources, then an unavailable one.
+    monkeypatch.setattr(monitoring, "docker_facts", lambda repository, containers=None: [])
+    monkeypatch.setattr(monitoring, "redis_facts", lambda url, agents: [])
+    from codex_harness.bootstrap import organization
+    snapshot = monitoring.collect(SimpleNamespace(store=store, org=organization()), None, str(tmp_path),
+                                  "redis://127.0.0.1/0")
+    assert snapshot["sources"]["worker_sessions"]["status"] == "ok"
+    assert snapshot["sources"]["worker_sessions"]["data"]["counts"] == facts["counts"]
+
+    class Broken:  # INJECTED store outage
+        def transaction(self):
+            raise RuntimeError("injected outage " + CANARY)
+    failed = monitoring.collect(SimpleNamespace(store=Broken(), org=organization()), None, str(tmp_path),
+                                "redis://127.0.0.1/0")["sources"]["worker_sessions"]
+    assert failed == {"status": "unavailable", "observed_at": failed["observed_at"], "error": "RuntimeError",
+                      "data": None}
 
 
 # ---- cumulative usage -------------------------------------------------------------------------------
@@ -584,8 +858,16 @@ def test_entry_binds_task_sessions_to_fixed_paths_and_protocol(tmp_path):
     base = {"protocol": iw.SESSION_PROTOCOL, "session_id": sid, "evidence_root": "/evidence"}
     good = {"mode": ws.MODE_RESUME, "session_id": sid, "manifest": {"schema": "x"},
             "restore": "/evidence/" + RESTORE_DIRECTORY, "export": "/evidence/" + EXPORT_DIRECTORY}
-    home, bound = entry.task_session({**base, "task_session": good}, {"HOME": "/home/worker"})
-    assert Path(home) == Path("/home/worker/.claude") and bound == good
+    # The entry judges HOME with its OWN platform's rules: inside the Linux container `/home/worker`
+    # is absolute. A Windows host running this unit test has no such absolute path (no drive), so the
+    # platform boundary is a HOME that is absolute where the test runs; the container value is
+    # asserted on POSIX, where the entry actually runs, instead of being skipped or relaxed.
+    platform_home = str(tmp_path / "home" / "worker")
+    home, bound = entry.task_session({**base, "task_session": good}, {"HOME": platform_home})
+    assert Path(home) == Path(platform_home) / ".claude" and bound == good
+    if os.name == "posix":
+        home, _ = entry.task_session({**base, "task_session": good}, {"HOME": "/home/worker"})
+        assert home == "/home/worker/.claude"
     for request in ({**base, "protocol": iw.PROTOCOL, "task_session": good},  # an older protocol never carries it
                     {**base},  # the session protocol without a session
                     {**base, "task_session": {**good, "export": "/home/worker/other"}},
@@ -594,9 +876,10 @@ def test_entry_binds_task_sessions_to_fixed_paths_and_protocol(tmp_path):
                     {**base, "task_session": {**good, "mode": "latest"}},
                     {**base, "task_session": {**good, "mode": ws.MODE_FRESH}}):
         with pytest.raises(ValueError):
-            entry.task_session(request, {"HOME": "/home/worker"})
-    with pytest.raises(ValueError):
-        entry.task_session({**base, "task_session": good}, {"HOME": "relative"})
+            entry.task_session(request, {"HOME": platform_home})
+    for relative in ("relative", "", None):
+        with pytest.raises(ValueError):
+            entry.task_session({**base, "task_session": good}, {} if relative is None else {"HOME": relative})
     # A session request to an entry is refused on the wire, never answered as a fresh run.
     import io
     out = io.BytesIO()
@@ -661,7 +944,8 @@ class SessionDocker(FakeDocker):
         return Tree
 
 
-def test_isolated_transport_restores_resumes_and_exports_across_container_recreation(tmp_path, monkeypatch):
+def test_isolated_transport_restores_resumes_and_exports_across_container_recreation(short_root, monkeypatch):
+    tmp_path = short_root
     config = iw.load_isolation({"ZEUS_WORKER_ISOLATION": "docker", "ZEUS_WORKER_IMAGE": IMAGE})
     config["limits"] = {**config["limits"], "inner_grace_seconds": 5, "cleanup_seconds": 5}
     repo = tmp_path / "candidate"
@@ -671,16 +955,18 @@ def test_isolated_transport_restores_resumes_and_exports_across_container_recrea
     git(repo, "add", "-A")
     git(repo, "commit", "-q", "-m", "base")
     store, owner_sessions = sessions(tmp_path)
-    container_workspace = tmp_path / "container-workspace"
+    container_workspace = tmp_path / "cw"
     container_workspace.mkdir()
 
     def turn(name, who, prompt):
         plan = owner_sessions.begin("task-1", identity(), who)
         (tmp_path / name).mkdir()
-        fake = SessionDocker(tmp_path / name, tmp_path / (name + "-home"), container_workspace)
+        fake = SessionDocker(tmp_path / name, tmp_path / (name + "h"), container_workspace)
         monkeypatch.setattr(iw, "_docker", fake)
         monkeypatch.setattr(iw, "ProcessTree", fake.tree())
-        runtime = iw.IsolatedClaudeRuntime(config, tmp_path / "runs", model=MODEL, runtime=RUNTIME, max_budget_usd=1.0,
+        # Short run root: the production run layout below it (`<run id>/evidence/session-restore/`)
+        # plus this fixture's host-derived transcript key is the longest path of the suite.
+        runtime = iw.IsolatedClaudeRuntime(config, tmp_path / "r", model=MODEL, runtime=RUNTIME, max_budget_usd=1.0,
                                            environment={**os.environ, iw.TOKEN_NAME: TOKEN})
         with runtime as opened:
             result = opened.run(prompt, str(repo), SCHEMA, 60, session_id=plan["session_id"], task_session={
@@ -690,7 +976,7 @@ def test_isolated_transport_restores_resumes_and_exports_across_container_recrea
         assert git(repo, "status", "--porcelain") == ""  # nothing imported: the fixture edits no source
         return plan, result, create
 
-    plan, first, create = turn("turn-1", owner("exec-a"), "first")
+    plan, first, create = turn("t1", owner("exec-a"), "first")
     assert first["task_session"]["exported"] and first["answer"]["tests"] == ["turn 1", "fresh"]
     assert "/home/worker" not in [a.split("target=")[-1] for a in create if a.startswith("type=bind")]
     row = owner_sessions.checkpoint("task-1", owner("exec-a"), first["task_session"]["export"], usage=None)
@@ -698,13 +984,13 @@ def test_isolated_transport_restores_resumes_and_exports_across_container_recrea
     owner_sessions.submit("task-1", frozen)
     decide(store, "review-11", frozen, accepted=False)
     owner_sessions.record_review("task-1", "review-11")
-    again, second, create = turn("turn-2", owner("exec-b", 2, 1), "second")
+    again, second, create = turn("t2", owner("exec-b", 2, 1), "second")
     assert again["mode"] == ws.MODE_RESUME and second["answer"]["tests"] == ["turn 2", "resumed"]
     assert second["session"]["resume"] == "native" and second["session"]["match"]
     assert second["command"]["argv"][second["command"]["argv"].index("--resume") + 1] == plan["session_id"]
     targets = sorted(a.split("target=")[-1] for a in create if a.startswith("type=bind"))
     assert targets == sorted([iw.WORKSPACE, iw.EVIDENCE])  # no home or other task's directory is mounted
-    record = iw.run_records(tmp_path / "runs")[-1]
+    record = iw.run_records(tmp_path / "r")[-1]
     assert record["state"] == "removed" and Path(second["task_session"]["export"]).is_dir()  # bytes retained
     retained = json.dumps(json.loads(Path(record["record"]).with_name("inner_result.json").read_text("utf-8")))
     assert CANARY not in retained and TOKEN not in retained and '"type": "user"' not in retained
@@ -756,12 +1042,16 @@ def test_cli_status_is_read_only_and_close_requires_promotion(tmp_path):
     printed = adapter.refusal(refused.value)
     assert printed == {"refused": True, "reason": "session_not_promoted", "error_type": "WorkerSessionRefused",
                        "exit_code": 1}
+    evidence = evidence_store(tmp_path)
     frozen = candidate(13)
     owner_sessions.submit("task-1", frozen)
-    decide(store, "review-13", frozen, accepted=True, phase="review_conductor")
-    owner_sessions.record_review("task-1", "review-13")
-    owner_sessions.promote("task-1", "sha256:" + "3" * 64)
-    closed = adapter.execute(service, close, archives=owner_sessions.archives)
+    review_ref = evidence.put(json.dumps({"fixture": "review execution receipt"}), "fixture")["ref"]
+    decide(store, "review-13", frozen, accepted=True, phase="review_conductor", execution_ref=review_ref)
+    accepted = owner_sessions.record_review("task-1", "review-13")
+    promoted = evidence.put(json.dumps({"fixture": "promoted accepted evidence"}), "fixture")["ref"]
+    receipt = evidence.put(json.dumps(ws.promotion_receipt(accepted, [promoted])), "fixture")["ref"]
+    WorkerSessions(store, owner_sessions.archives, evidence=evidence).promote("task-1", receipt)
+    closed = adapter.execute(service, close, archives=owner_sessions.archives, evidence=evidence)
     assert closed["closed"] and closed["archive_retained"].startswith("sha256:")
 
 
@@ -811,7 +1101,7 @@ def executor_with_sessions(tmp_path, monkeypatch):
     monkeypatch.setenv("ZEUS_CLAUDE_ASSIGNMENTS", "worker:implementation/implement")
     monkeypatch.setenv("ZEUS_CLAUDE_MODEL", MODEL)
     monkeypatch.setenv("ZEUS_CLAUDE_MAX_BUDGET_USD", "1")
-    store, workspace, entered = MemoryStore(), tmp_path / "workspace", []
+    store, workspace, entered = MemoryStore(), tmp_path / "ws", []
     workspace.mkdir()
     config = iw.load_isolation({"ZEUS_WORKER_ISOLATION": "docker", "ZEUS_WORKER_IMAGE": IMAGE})
     isolation = SimpleNamespace(config=config, inspector=lambda *args: None,
@@ -820,8 +1110,9 @@ def executor_with_sessions(tmp_path, monkeypatch):
                                prepare=lambda *args: {"path": str(workspace), "branch": "harness/t", "base": "f" * 40,
                                                       "task_id": "t"},
                                capture=lambda _workspace: {"revision": "a" * 40, "base": "f" * 40, "tree": "b" * 40})
-    observer = Observer(store, MemorySpool(new_process_run_id()), component="test-sessions", directory=MemoryDirectory())
-    owner_sessions = WorkerSessions(store, SessionArchives(tmp_path / "archives"))
+    spool = MemorySpool(new_process_run_id())
+    observer = Observer(store, spool, component="test-sessions", directory=MemoryDirectory())
+    owner_sessions = WorkerSessions(store, SessionArchives(tmp_path / "archives"), observer=observer)
     executor = Executor(Harness(store, organization()), git_port, FileArtifacts(str(tmp_path / "artifacts")),
                         observer=observer, isolation=isolation, worker_sessions=owner_sessions)
     monkeypatch.setattr(executor, "_inspect_evidence", lambda *a, **k: {"verdict": "not_inspected_in_unit", "claims": 0})
@@ -834,11 +1125,11 @@ def executor_with_sessions(tmp_path, monkeypatch):
                            {"plan": dict(PLAN)}, "corr-" + str(len(entered)))
         return executor.workflow.submit(message)
     return SimpleNamespace(executor=executor, store=store, sessions=owner_sessions, entered=entered, submit=submit,
-                           workspace=workspace)
+                           workspace=workspace, spool=spool)
 
 
-def test_executor_threads_the_binding_through_reservation_resume_and_settlement(tmp_path, monkeypatch):
-    s = executor_with_sessions(tmp_path, monkeypatch)
+def test_executor_threads_the_binding_through_reservation_resume_and_settlement(short_root, monkeypatch):
+    s = executor_with_sessions(short_root, monkeypatch)
     s.submit()
     first = s.executor.execute_one("worker:implementation")
     assert first["status"] == "succeeded" and len(s.entered) == 1
@@ -873,6 +1164,12 @@ def test_executor_threads_the_binding_through_reservation_resume_and_settlement(
     assert totals == [115, 115]  # turn one (fresh totals) and turn two (delta), never the cumulative 230
     status = s.sessions.status("task-1")["sessions"][0]
     assert status["state"] == ws.CHECKPOINTED and status["checkpoints"] == 2
+    # The same committed path is observed through the executor's Observer: the refused review-wait
+    # turn committed nothing and so reported nothing.
+    events = [e for e in s.spool.records() if e.get("event_type") == "development.worker_session_transition"]
+    assert [e["attributes"]["state"] for e in events] == [ws.ACTIVE, ws.CHECKPOINTED, ws.AWAITING_REVIEW,
+                                                          ws.CORRECTION_READY, ws.ACTIVE, ws.CHECKPOINTED]
+    assert events[4]["attributes"]["mode"] == ws.MODE_RESUME and events[4]["attributes"]["owner_execution"]
 
 
 @pytest.mark.skipif(not os.environ.get("ZEUS_REAL_CLAUDE_SESSION_PROBE"),

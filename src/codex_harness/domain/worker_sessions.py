@@ -25,10 +25,13 @@ from __future__ import annotations
 
 import re
 
-from codex_harness.domain.model import ContractError
+from codex_harness.domain.model import ContractError, digest
 
 SCHEMA = "zeus.worker-session.v1"
 ARCHIVE_SCHEMA = "zeus.worker-session-archive.v1"
+PROMOTION_SCHEMA = "zeus.worker-session-promotion.v1"
+AUTHORITY = ("read-only projection of worker_sessions rows: not a resume, a transcript continuity proof, "
+             "an acceptance, a promotion or a release")
 
 ACTIVE = "active"
 CHECKPOINTED = "checkpointed"
@@ -261,28 +264,96 @@ def review_outcome(row, candidate: dict) -> dict:
             "execution_ref": result["execution_ref"], "candidate": dict(candidate)}
 
 
+# ---- evidence promotion -------------------------------------------------------------------------
+def accepted_binding(row: dict) -> dict:
+    """What a promotion receipt must name for THIS session: the accepted frozen candidate, the
+    archive it was frozen from (with its hashes), and the succeeded independent review that accepted
+    it. Refuses when the row holds no such accepted candidate/review/archive triple."""
+    refuse(row.get("state") in (ACCEPTED, ARCHIVAL_PENDING, CLOSED), "session_not_accepted", str(row.get("state")))
+    candidates = row.get("candidates") or []
+    refuse(bool(candidates) and candidates[-1].get("outcome") == "accepted", "promotion_binding_missing", "candidate")
+    frozen = candidates[-1]
+    reviews = [review for review in row.get("reviews") or [] if review.get("outcome") == "accepted"
+               and (review.get("candidate") or {}).get("revision") == frozen["revision"]
+               and (review.get("candidate") or {}).get("tree") == frozen["tree"]]
+    refuse(len(reviews) == 1, "promotion_binding_missing", "review")
+    archives = [entry["archive"] for entry in row.get("checkpoints") or [] if entry["archive"]["ref"] == frozen.get("archive")]
+    refuse(bool(archives), "promotion_binding_missing", "archive")
+    return {"schema": PROMOTION_SCHEMA, "task_id": row["task_id"], "session_id": row["session_id"],
+            "candidate": {key: frozen[key] for key in ("revision", "tree", "base")},
+            "archive": {key: archives[-1][key] for key in ("ref", "manifest_sha256", "transcript_sha256")},
+            "review": {"decision_id": reviews[0]["decision_id"], "execution_ref": reviews[0]["execution_ref"]}}
+
+
+def promotion_receipt(row: dict, evidence: list) -> dict:
+    """The receipt document the evidence-promotion owner writes into the verified evidence store
+    once `evidence` (content-addressed references) is durably promoted for the accepted candidate."""
+    return {**accepted_binding(row), "evidence": sorted(set(evidence))}
+
+
+def validate_promotion(document, row: dict) -> dict:
+    """A promotion receipt is bound to this session's exact accepted candidate, archive and review.
+    A syntactically valid hash of anything else, or an extra/missing field, is refused."""
+    refuse(isinstance(document, dict) and set(document) == {"schema", "task_id", "session_id", "candidate",
+                                                            "archive", "review", "evidence"},
+           "promotion_receipt_malformed", "fields")
+    refuse(document.get("schema") == PROMOTION_SCHEMA, "promotion_receipt_malformed", "schema")
+    evidence = document.get("evidence")
+    refuse(isinstance(evidence, list) and 0 < len(evidence) <= 64 and len(set(evidence)) == len(evidence)
+           and all(type(ref) is str and REFERENCE.fullmatch(ref) is not None for ref in evidence),
+           "promotion_receipt_malformed", "evidence")
+    expected = accepted_binding(row)
+    refuse({key: document[key] for key in expected} == expected, "promotion_receipt_unrelated")
+    return {**expected, "evidence": list(evidence)}
+
+
+# ---- read-only projection -----------------------------------------------------------------------
+BLOCKED_STATES = frozenset({ARCHIVE_MISSING, ARCHIVE_CORRUPT, INCOMPATIBLE, UNRESOLVED})
+
+
 def status_view(row: dict) -> dict:
-    """Bounded read-only projection: ids, hashes, states and reasons; never transcript bytes."""
-    last = (row.get("checkpoints") or [None])[-1]
+    """Bounded read-only projection: ids, hashes, states, reasons, the next owner and action; never
+    transcript bytes and never the raw binding values (the identity travels as one digest)."""
+    last =(row.get("checkpoints") or [None])[-1]
+    identity = row.get("identity") if isinstance(row.get("identity"), dict) else None
     return {"task_id": row.get("task_id"), "state": row.get("state"), "session_id": row.get("session_id"),
             "version": row.get("version"), "owner": row.get("owner"),
-            "identity": row.get("identity"), "archive": (last or {}).get("archive"),
+            "identity_sha256": digest(identity) if identity is not None else None,
+            "archive": (last or {}).get("archive"),
             "checkpoints": len(row.get("checkpoints") or []), "candidates": len(row.get("candidates") or []),
             "reviews": [{key: review.get(key) for key in ("decision_id", "phase", "outcome")}
                         for review in row.get("reviews") or []][-8:],
-            "reason": row.get("reason"), "next_action": next_action(row),
+            "reason": row.get("reason"), "blocked": row.get("state") in BLOCKED_STATES or bool(
+                (row.get("cleanup") or {}).get("state") == "failed"),
+            "next_owner": next_owner(row), "next_action": next_action(row),
             "cleanup": row.get("cleanup"), "promotion": row.get("promotion")}
+
+
+def next_owner(row: dict) -> str:
+    """Who acts next, as a fixed code. A blocked state or a failed cleanup is the operator's."""
+    state = row.get("state")
+    if row.get("owner"):
+        return "execution"
+    if state in BLOCKED_STATES or (row.get("cleanup") or {}).get("state") == "failed":
+        return "operator"
+    return {ACTIVE: "conductor", CHECKPOINTED: "conductor", AWAITING_REVIEW: "independent_review",
+            CORRECTION_READY: "conductor", ACCEPTED: "evidence_promotion", ARCHIVAL_PENDING: "session_owner",
+            CLOSED: "none"}.get(state, "operator")
 
 
 def next_action(row: dict) -> str:
     state = row.get("state")
     if row.get("owner"):
         return "owned by a running execution"
-    return {CHECKPOINTED: "submit candidate or continue by native resume",
+    if state == ARCHIVAL_PENDING and (row.get("cleanup") or {}).get("state") == "failed":
+        return "operator: repair scratch cleanup, then close again; the archive is retained"
+    return {ACTIVE: "no turn adopted yet; the next begin opens a fresh turn",
+            CHECKPOINTED: "submit candidate or continue by native resume",
             AWAITING_REVIEW: "wait for the independent review decision (no model calls)",
             CORRECTION_READY: "conductor may admit a correction turn by native resume",
-            ACCEPTED: "promote evidence", ARCHIVAL_PENDING: "confirm closure and cleanup",
+            ACCEPTED: "promote evidence with a bound promotion receipt", ARCHIVAL_PENDING: "confirm closure and cleanup",
             CLOSED: "none", ARCHIVE_MISSING: "owner: restore the archive or hand off fresh evidence",
             ARCHIVE_CORRUPT: "owner: investigate corrupt archive; fresh evidence handoff",
             INCOMPATIBLE: "explicit fresh evidence handoff required",
-            UNRESOLVED: "owner: reconcile from retained verified session bytes"}.get(state, "unknown")
+            UNRESOLVED: "owner: reconcile from retained verified session bytes"}.get(
+                state, "operator: unknown state; inspect the row")
