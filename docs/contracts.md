@@ -2276,7 +2276,29 @@ taken over stops no service, deletes no receipt and starts no second instance. A
 replacement is one atomic `os.replace`. A live instance that the incumbent `consumption_verdict`
 shows is REALLY running the intended descriptor is recognized rather than killed and started again,
 so a restart - forward or rollback - reconciles instead of churning the service; an instance that
-merely echoes the digest from another runtime, root or revision is not recognized. Ownership is
+merely echoes the digest from another runtime, root or revision is not recognized.
+
+Descriptor identity and authority over a RUNNING instance are different facts, and a receipt that
+does not match the descriptor being started is never by itself permission to end that instance.
+Inside the guard, after the descriptor is reconciled, `instance_authority` classifies what is
+actually there against the authority the coordinator passes in from its own durable intent
+(`validate_replacement`: the exact descriptor digest, the instance id, and the launch record this
+component wrote under that target's guard). Forward, that authority is the predecessor whose
+identity was captured BEFORE the descriptor was replaced; in a rollback it is the failed CANDIDATE
+this intent started, never the predecessor it is restoring, and a candidate whose startup identity
+was never confirmed is reconciled by that trusted launch record rather than by a live pid. Only five
+outcomes act: the `intended` live instance is recognized (no stop, no unlink, no start), the
+`authorized_predecessor` and this delivery's own `owned_stopped` instance may be replaced, and a
+clean target is started only on POSITIVE evidence of absence - no receipt file, no launch record and
+nothing alive. Everything else refuses BEFORE the stop and before any evidence is removed: a receipt
+that names another instance (`instance_not_authorized`), the named instance under another descriptor
+(`instance_contradictory`), a present but missing, malformed, oversized or wrong-target receipt
+(`instance_receipt_unreadable`), a live process nothing identifies (`instance_unidentified`), a
+liveness that could not be read at all (`instance_liveness_unknown`) and an absence that is not
+proven (`instance_absence_unknown`). The coordinator refuses earlier still when its own records and
+the target disagree about who is running there (`target_instance_mismatch`), before the drain and
+the switch. Both host kinds - the owned child process and the registered scheduled task - use this
+one contract. Ownership is
 re-checked after the bounded stop, which can outlive a lease, and a loss THERE is the ambiguous
 effect it is (`service_stopped`): nothing is cleaned up or launched after it, the stopped instance's
 own evidence is preserved, and the next owner reconciles the target rather than the effect being

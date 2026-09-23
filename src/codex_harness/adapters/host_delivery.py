@@ -15,7 +15,11 @@ Four concrete things live here and nothing else decides policy:
   run under ONE guard per target (`HostTargetBase.guard`), which proves ownership before the first
   mutation and reconciles what is actually on the target before it touches anything. Two
   controllers therefore cannot interleave their operations on one service, and unrelated targets
-  never wait for each other.
+  never wait for each other. Inside that guard the instance that is really there is classified
+  against the authority the coordinator passes in (`replaces`), never against whatever receipt
+  happens to lie on the target: only the intended instance is recognized, only the named
+  predecessor or this delivery's own interrupted instance is replaced, and anything foreign,
+  contradictory or unidentified refuses before the stop and the cleanup.
 * `CANARIES` maps the incumbent fixed check ids to real checks. A plan names one of them by id; no
   plan ever supplies a command, an argv, a path or a check body.
 
@@ -67,13 +71,16 @@ from codex_harness.domain.host_delivery import (
     CANARY_FLEET,
     CANARY_STARTUP,
     FAILED_OUTCOMES,
+    INSTANCE_INTENDED,
     KIND_PROCESS,
     KIND_SCHEDULED_TASK,
     RECEIPT_SCHEMA,
+    REPLACEABLE_INSTANCES,
     DeliveryRefused,
     LifecycleInterrupted,
-    consumption_verdict,
     descriptor_digest,
+    instance_authority,
+    receipt_identity,
     validate_descriptor,
     validate_plan,
 )
@@ -458,6 +465,46 @@ class HostTargetBase:
     def receipt(self, target: dict):
         return _read_json(self.path(target, RECEIPT_FILE))
 
+    def launch_record(self, target: dict):
+        """The state THIS component wrote when it last launched this target, or None.
+
+        It is written only inside the lifecycle guard, by the controller that performed the launch,
+        and names that launch's descriptor, its start time and its process or service identity. It
+        is the trusted evidence of what this component started - not a claim a service makes about
+        itself - which is what lets a transition whose startup identity was never confirmed be
+        reconciled without guessing at a live pid.
+        """
+        return _read_json(self.path(target, STATE_FILE))
+
+    def _liveness(self, target: dict, receipt):
+        """Whether an instance is running here, or None when that could not be observed at all."""
+        try:
+            return bool(self.running(target))
+        except Exception:
+            return None
+
+    def observe(self, target: dict) -> dict:
+        """Everything this target says about the instance on it right now. It mutates nothing.
+
+        Presence and readability are reported separately from content: a receipt or launch file
+        that exists but cannot be read is an unknown, never an absence.
+        """
+        receipt = self.receipt(target)
+        return {"receipt": receipt, "receipt_present": self.path(target, RECEIPT_FILE).exists(),
+                "launch": self.launch_record(target),
+                "launch_present": self.path(target, STATE_FILE).exists(),
+                "running": self._liveness(target, receipt)}
+
+    def identity(self, target: dict) -> dict:
+        """The durable identity evidence of this target, for the coordinator to capture BEFORE it
+        replaces a descriptor. Read only: nothing is locked, stopped, launched or written."""
+        observed = self.observe(target)
+        named = receipt_identity(observed["receipt"], present=observed["receipt_present"])
+        current = self.current(target)
+        return {"descriptor_sha256": None if current is None else descriptor_digest(current),
+                "instance_id": named["instance_id"], "receipt": named["state"],
+                "launch": observed["launch"], "running": observed["running"]}
+
     # --- draining -------------------------------------------------------------------------------
     def drain(self, target: dict, *, authorize=None) -> dict:
         """Pause new admission and report what is still running and what is unconfirmed.
@@ -490,23 +537,32 @@ class HostTargetBase:
         raise NotImplementedError
 
     # --- the one protected service lifecycle -----------------------------------------------------
-    def start(self, target: dict, descriptor: dict, *, authorize=None) -> dict:
-        """Reconcile, stop, retire, launch and publish the new state, all inside one guard.
+    def start(self, target: dict, descriptor: dict, *, authorize=None, replaces=None) -> dict:
+        """Reconcile, classify, stop, retire, launch and publish the new state, in one guard.
 
-        The descriptor on the target must be exactly the one being started: a foreign or unknown
-        one refuses BEFORE any process is stopped and before any receipt is removed, because
-        something other than this delivery owns the target then. A live instance that is REALLY
-        running this descriptor is RECOGNIZED rather than killed and restarted, which is what makes
-        a restart - forward or rollback - reconcile instead of churn. Ownership is proven again
-        after the bounded stop, which can outlive a lease, and never after a mutation it would have
-        to undo.
+        Two facts are checked, in this order and both before any effect. The descriptor on the
+        target must be exactly the one being started: a foreign one refuses, because something
+        other than this delivery owns the target then. Then the instance that is ACTUALLY there is
+        classified against `replaces`, the durable authority the coordinator captured from its own
+        transition. A live instance really running this descriptor is RECOGNIZED rather than killed
+        and restarted, which is what makes a restart - forward or rollback - reconcile instead of
+        churn; the authorized predecessor or this delivery's own interrupted instance may be
+        replaced; a clean target may be started on positive evidence of absence; and a foreign,
+        unidentified, contradictory or simply unauthorized instance refuses BEFORE the stop and
+        before any receipt is removed. Not being the intended instance is never by itself
+        permission to end one. Ownership is proven again after the bounded stop, which can outlive
+        a lease, and never after a mutation it would have to undo.
         """
         with self.guard(target, authorize):
             context = self._prepare(target, descriptor)
             self._reconcile(target, descriptor)
-            recovered = self._matching_instance(target, descriptor)
-            if recovered is not None:
-                return recovered
+            authority = instance_authority(descriptor, self.observe(target), replaces)
+            if authority["state"] == INSTANCE_INTENDED:
+                return {"started": False, "recovered": True,
+                        "instance_id": authority["instance_id"],
+                        "launch": self.launch_record(target)}
+            if authority["state"] not in REPLACEABLE_INSTANCES:
+                raise DeliveryRefused(authority["reason_code"], "target_id")
             stopped = self.stop(target)
             if not stopped["stopped"]:
                 raise DeliveryRefused("previous_instance_unconfirmed", "target_id")
@@ -524,20 +580,6 @@ class HostTargetBase:
         observed = None if current is None else descriptor_digest(current)
         if observed != descriptor_digest(descriptor):
             raise DeliveryRefused("descriptor_foreign", "target_id")
-
-    def _matching_instance(self, target: dict, descriptor: dict):
-        """A live instance that is REALLY running this descriptor already, or None.
-
-        The incumbent `consumption_verdict` decides it, exactly as the coordinator's own activation
-        check does, so an instance that merely echoes the descriptor digest from another runtime,
-        another root or another revision is not recognized and is replaced like any other
-        predecessor. Recognition is only for the instance a restart would otherwise kill and start
-        again for nothing.
-        """
-        verdict = consumption_verdict(descriptor, self.receipt(target))
-        if not verdict["consumed"] or not self.running(target):
-            return None
-        return {"started": False, "recovered": True, "instance_id": verdict["instance_id"]}
 
     def _retire(self, target: dict) -> None:
         """Retire the previous instance's own files, after it has been proven gone.
@@ -609,10 +651,22 @@ class ProcessHostTarget(HostTargetBase):
         self.max_seconds = max_seconds
 
     def _state(self, target: dict) -> dict:
-        return _read_json(self.path(target, STATE_FILE)) or {}
+        return self.launch_record(target) or {}
 
     def running(self, target: dict) -> bool:
         return _alive(self._state(target).get("pid"))
+
+    def _liveness(self, target: dict, receipt):
+        """Liveness for the classification, from the recorded launch AND from the receipt's pid.
+
+        A process that reported a startup but is not in this component's launch record is still a
+        live process on this target: it is an instance to identify and refuse, never an absence to
+        start over.
+        """
+        if self.running(target):
+            return True
+        pid = receipt.get("pid") if isinstance(receipt, dict) else None
+        return _alive(pid)
 
     def stop(self, target: dict) -> dict:
         """End the recorded process within a bounded wait; an unconfirmed stop is reported as one."""
@@ -664,10 +718,12 @@ class ProcessHostTarget(HostTargetBase):
                                    stderr=subprocess.DEVNULL, cwd=str(context["root"]),
                                    env=context["environment"],
                                    **no_console_kwargs(process_group=True))
-        _write_json(self.path(target, STATE_FILE),
-                    {"pid": process.pid, "started_at": _utcnow(),
-                     "descriptor_sha256": descriptor_digest(descriptor)})
-        return {"started": True, "pid": process.pid}
+        record = {"pid": process.pid, "started_at": _utcnow(),
+                  "descriptor_sha256": descriptor_digest(descriptor)}
+        _write_json(self.path(target, STATE_FILE), record)
+        # The launch record goes back to the caller as it was written, under this guard: it is the
+        # evidence that identifies THIS launch if its startup identity is never confirmed.
+        return {"started": True, "pid": process.pid, "launch": record}
 
 
 class ScheduledTaskHostTarget(HostTargetBase):
@@ -706,10 +762,10 @@ class ScheduledTaskHostTarget(HostTargetBase):
         result = self.runner(["schtasks", "/Run", "/TN", target["service"]], timeout=self.timeout)
         if result.returncode:
             raise RuntimeError("Scheduled task could not be started")
-        _write_json(self.path(target, STATE_FILE),
-                    {"service": target["service"], "started_at": _utcnow(),
-                     "descriptor_sha256": descriptor_digest(descriptor)})
-        return {"started": True, "service": target["service"]}
+        record = {"service": target["service"], "started_at": _utcnow(),
+                  "descriptor_sha256": descriptor_digest(descriptor)}
+        _write_json(self.path(target, STATE_FILE), record)
+        return {"started": True, "service": target["service"], "launch": record}
 
 
 def host_ports(**kwargs) -> dict:

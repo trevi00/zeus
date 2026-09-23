@@ -55,6 +55,19 @@ KIND_SCHEDULED_TASK = "windows_scheduled_task"
 KIND_PROCESS = "process"
 TARGET_KINDS = (KIND_SCHEDULED_TASK, KIND_PROCESS)
 
+# What the instance ACTUALLY on a target is, relative to the authority to replace it. Descriptor
+# identity and authority over a running instance are two different facts: a receipt that does not
+# match the descriptor being started says only that this is not the intended instance - never that
+# whatever is running there may be stopped and retired.
+INSTANCE_INTENDED = "intended"
+INSTANCE_AUTHORIZED = "authorized_predecessor"
+INSTANCE_INTERRUPTED = "owned_stopped"
+INSTANCE_ABSENT = "absent"
+INSTANCE_FOREIGN = "foreign"
+INSTANCE_UNKNOWN = "unknown"
+# The three states a start may act on. Everything else refuses BEFORE the stop and the cleanup.
+REPLACEABLE_INSTANCES = frozenset({INSTANCE_AUTHORIZED, INSTANCE_INTERRUPTED, INSTANCE_ABSENT})
+
 # The incumbent fixed canary check ids. A plan selects one of these by id; the check itself lives in
 # the adapter and exercises the ACTUAL service contract of the target it was written for.
 CANARY_COLLECT = "collect_monitor_source"
@@ -499,6 +512,146 @@ def consumption_verdict(descriptor: dict, receipt, *, expected_instance=None) ->
     return {"consumed": True, "reason_code": None, **observed}
 
 
+def validate_replacement(authorization) -> dict | None:
+    """The durable authority to replace ONE observed instance of a target, checked as data.
+
+    It is produced by the coordinator from its own durable intent - the identity captured before
+    the descriptor was replaced, or the candidate this intent itself launched - and never by the
+    host adapter from whatever receipt happens to be lying on the target. `None` is the honest
+    "nothing here may be replaced": a clean target may still be started, and a running instance may
+    not be touched at all.
+    """
+    if authorization is None:
+        return None
+    if not isinstance(authorization, dict):
+        raise DeliveryRefused("replacement_invalid", "replaces")
+    descriptor_sha256 = authorization.get("descriptor_sha256")
+    instance_id = authorization.get("instance_id")
+    launch = authorization.get("launch")
+    if descriptor_sha256 is not None and not _hex(descriptor_sha256, SHA256):
+        raise DeliveryRefused("replacement_invalid", "replaces.descriptor_sha256")
+    if instance_id is not None and not _hex(instance_id, INSTANCE):
+        raise DeliveryRefused("replacement_invalid", "replaces.instance_id")
+    if launch is not None and not isinstance(launch, dict):
+        raise DeliveryRefused("replacement_invalid", "replaces.launch")
+    return {"descriptor_sha256": descriptor_sha256, "instance_id": instance_id,
+            "launch": dict(launch) if isinstance(launch, dict) else None}
+
+
+def receipt_identity(receipt, *, present: bool = False) -> dict:
+    """WHO the receipt on a target says is running there, as untrusted data.
+
+    Three different facts, deliberately not collapsed: `absent` (no receipt file at all), `valid`
+    (a well formed receipt that names an instance) and `unreadable` (a file that exists but is
+    missing, malformed, oversized or contradictory). An unreadable receipt identifies nobody, and is
+    never read as an absence.
+    """
+    if receipt is None:
+        return {"state": "unreadable" if present else "absent", "instance_id": None,
+                "descriptor_sha256": None, "target_id": None}
+    try:
+        checked = validate_receipt(receipt)
+    except DeliveryRefused:
+        return {"state": "unreadable", "instance_id": None, "descriptor_sha256": None,
+                "target_id": None}
+    return {"state": "valid", "instance_id": checked["instance_id"],
+            "descriptor_sha256": checked["descriptor_sha256"], "target_id": checked["target_id"]}
+
+
+def same_launch(observed, authorized) -> bool:
+    """Whether the launch record on the target is EXACTLY the one this delivery recorded writing.
+
+    The record is written only by this component, under the target's lifecycle guard, and names the
+    descriptor, the start time and the process or service identity of that launch. Exact equality -
+    not a live pid alone - is what binds a running instance to a transition this delivery made.
+    """
+    return bool(observed) and isinstance(observed, dict) and observed == authorized
+
+
+def _instance(state: str, reason_code, instance_id=None, evidence=None) -> dict:
+    return {"state": state, "reason_code": reason_code, "instance_id": instance_id,
+            "evidence": evidence}
+
+
+def instance_authority(descriptor: dict, observed, authorization=None) -> dict:
+    """Classify the instance actually on this target, and say whether it may be replaced.
+
+    `observed` is what the adapter READ from the target before touching anything: the receipt
+    document and whether that file exists at all, the launch record this component wrote and
+    whether that file exists at all, and whether an instance is running (`None` when that could not
+    be observed). `authorization` is the durable authority above.
+
+    * `intended` - the incumbent `consumption_verdict` shows the live instance is really running
+      exactly this descriptor: recognized, never stopped, retired or started again.
+    * `authorized_predecessor` - the running instance is the exact instance the durable transition
+      named, by its own receipt or by this delivery's own launch record.
+    * `owned_stopped` - an instance this delivery owns is no longer running and its transition was
+      interrupted: its recorded effect is reconciled and the start is resumed once.
+    * `absent` - POSITIVE evidence of an empty target: no receipt, no launch record, nothing alive.
+    * `foreign` / `unknown` - anything else, including a missing, malformed, contradictory or
+      simply unauthorized instance. These refuse before any stop or cleanup, because an instance
+      that is not the intended one is not thereby a replaceable one.
+    """
+    authority = validate_replacement(authorization)
+    observation = observed or {}
+    running = observation.get("running")
+    if running is None:
+        # The target could not be observed at all; an unknown is never a licence to replace.
+        return _instance(INSTANCE_UNKNOWN, "instance_liveness_unknown", evidence="liveness")
+    receipt = observation.get("receipt")
+    verdict = consumption_verdict(descriptor, receipt)
+    if verdict["consumed"]:
+        if running:
+            return _instance(INSTANCE_INTENDED, None, verdict["instance_id"], "receipt")
+        # This delivery's own instance, proven by its own receipt, is gone: resume the transition.
+        return _instance(INSTANCE_INTERRUPTED, "instance_intended_stopped", verdict["instance_id"],
+                         "receipt")
+    identity = receipt_identity(receipt, present=bool(observation.get("receipt_present")))
+    launch = observation.get("launch")
+    owned_launch = (authority is not None and authority["launch"] is not None
+                    and same_launch(launch, authority["launch"]))
+    if identity["state"] == "valid":
+        authorized = (authority is not None
+                      and identity["descriptor_sha256"] == authority["descriptor_sha256"]
+                      and (identity["instance_id"] == authority["instance_id"]
+                           or (authority["instance_id"] is None and owned_launch)))
+        if not authorized:
+            contradictory = (authority is not None
+                             and identity["instance_id"] == authority["instance_id"])
+            return _instance(INSTANCE_FOREIGN,
+                             "instance_contradictory" if contradictory else "instance_not_authorized",
+                             identity["instance_id"], "receipt")
+        if running:
+            return _instance(INSTANCE_AUTHORIZED, None, identity["instance_id"], "receipt")
+        return _instance(INSTANCE_INTERRUPTED, "instance_authorized_stopped",
+                         identity["instance_id"], "receipt")
+    if identity["state"] == "unreadable":
+        # A receipt file that says nothing identifies nobody, alive or not.
+        return _instance(INSTANCE_UNKNOWN, "instance_receipt_unreadable", evidence="receipt")
+    if owned_launch:
+        # No startup identity was ever confirmed, so the trusted launch record of THIS delivery is
+        # what reconciles the instance it started.
+        return _instance(INSTANCE_AUTHORIZED if running else INSTANCE_INTERRUPTED,
+                         None if running else "instance_authorized_stopped", None, "launch")
+    if running:
+        return _instance(INSTANCE_UNKNOWN, "instance_unidentified", evidence="liveness")
+    if observation.get("launch_present") or isinstance(launch, dict):
+        owned = (isinstance(launch, dict)
+                 and launch.get("descriptor_sha256") in _owned_digests(descriptor, authority))
+        if owned:
+            return _instance(INSTANCE_INTERRUPTED, "instance_launch_stopped", None, "launch")
+        return _instance(INSTANCE_UNKNOWN, "instance_absence_unknown", evidence="launch")
+    return _instance(INSTANCE_ABSENT, None, None, "absence")
+
+
+def _owned_digests(descriptor: dict, authority) -> set:
+    """The descriptors an interrupted launch record of THIS delivery may legitimately name."""
+    digests = {descriptor_digest(descriptor)}
+    if authority is not None and authority["descriptor_sha256"] is not None:
+        digests.add(authority["descriptor_sha256"])
+    return digests
+
+
 def release_gate(record, plan: dict, parent: str | None) -> dict:
     """What the EXISTING release record says about this exact plan; nothing here approves anything.
 
@@ -543,7 +696,12 @@ def new_intent(plan: dict, plan_sha256: str, now: str) -> dict:
             "attempts": 0, "revision": plan["revision"], "head": None, "pr_number": None,
             "pr_url": None, "merged_revision": None, "descriptor_sha256": None,
             "previous_descriptor_sha256": None, "descriptor": None, "previous_descriptor": None,
-            "previous_instance_id": None, "instance_id": None, "expected_active": None,
+            # The identity of the instance this delivery may replace, captured BEFORE the
+            # descriptor is replaced, and the identity of the candidate it launches itself. A
+            # rollback replaces the candidate, never the predecessor it is restoring.
+            "previous_instance_id": None, "previous_launch": None,
+            "candidate_instance_id": None, "candidate_launch": None,
+            "instance_id": None, "expected_active": None,
             "expected_active_set": False, "canary": None, "rollback": None, "stage_deadline": None,
             "stage_entered_at": now, "created_at": now, "updated_at": now, "evidence": []}
 
@@ -651,6 +809,8 @@ __all__ = ["ACTIVE", "AUTHORITY", "AWAITING_CI", "AWAITING_CONSUMPTION", "AWAITI
            "CI_FAILED", "CI_HEAD_CHANGED", "CI_PASSED", "CI_PENDING", "DESCRIPTOR_FIELDS",
            "DESCRIPTOR_SCHEMA", "EVENT_BLOCKED", "EVENT_CHECK", "EVENT_ROLLBACK", "EVENT_STAGE",
            "EVENT_SWITCHED", "EXTERNAL_STAGES", "FAILED", "FAILED_OUTCOMES", "HALTED_STAGES",
+           "INSTANCE_ABSENT", "INSTANCE_AUTHORIZED", "INSTANCE_FOREIGN", "INSTANCE_INTENDED",
+           "INSTANCE_INTERRUPTED", "INSTANCE_UNKNOWN", "REPLACEABLE_INSTANCES",
            "KIND_PROCESS", "KIND_SCHEDULED_TASK", "MAX_STAGE_ATTEMPTS", "MERGED", "MERGE_INTENDED",
            "OPEN_STAGES", "OUTCOME_ACTIVE", "OUTCOME_BLOCKED", "OUTCOME_BUSY", "OUTCOME_CONFLICT",
            "OUTCOME_DISABLED", "OUTCOME_IDLE", "OUTCOME_PENDING", "OUTCOME_PROGRESSED",
@@ -661,7 +821,9 @@ __all__ = ["ACTIVE", "AUTHORITY", "AWAITING_CI", "AWAITING_CONSUMPTION", "AWAITI
            "TARGET_KINDS", "TERMINAL_STAGES", "TICK_SCHEMA", "UNCHANGED", "DeliveryRefused",
            "LifecycleInterrupted",
            "ci_verdict", "consumption_verdict", "delivery_progress", "delivery_status",
-           "descriptor_digest", "new_intent", "next_stage", "normal_path", "plan_digest",
-           "release_gate", "resolve_descriptor", "safe_error_type", "same_path",
+           "descriptor_digest", "instance_authority", "new_intent", "next_stage", "normal_path",
+           "plan_digest", "receipt_identity",
+           "release_gate", "resolve_descriptor", "safe_error_type", "same_launch", "same_path",
            "stage_next_action", "target_progress", "validate_descriptor",
-           "validate_pin", "validate_plan", "validate_receipt", "validate_targets", "within_path"]
+           "validate_pin", "validate_plan", "validate_receipt", "validate_replacement",
+           "validate_targets", "within_path"]
