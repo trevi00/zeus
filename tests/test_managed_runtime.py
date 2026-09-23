@@ -176,9 +176,11 @@ def descriptor(target, source_root, revision, **overrides):
 def fixture_fleet(store=None):
     """LABELLED fixture authority of the activation gate: a registered in-memory Fleet (MemoryStore,
     not PostgreSQL) standing in for the host store's Fleet. The fixture workload's own runner uses
-    a separate in-memory Fleet, so it never releases this authority's activation hold."""
+    a separate in-memory Fleet, so it never releases this authority's activation hold. Its lane
+    paths are labels only, never created: rooted at the native filesystem anchor so they are
+    absolute on Windows (a drive) as well as POSIX."""
     fleet = Fleet(store if store is not None else MemoryStore())
-    fleet.register(fixture_config(Path("/labelled-fixture")))
+    fleet.register(fixture_config(Path(Path.cwd().anchor) / "labelled-fixture"))
     return fleet
 
 
