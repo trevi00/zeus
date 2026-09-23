@@ -656,7 +656,7 @@ def test_changed_runtime_identity_refuses_with_a_named_owner_and_never_widens(tm
     assert refused["reason_code"] == reason and refused["next_owner"] == "operator" and len(world.jobs()) == 1
 
 
-def test_changed_goal_scope_or_model_of_a_job_refuses(tmp_path):
+def test_a_changed_model_refuses_and_a_non_member_scope_is_never_this_policys_work(tmp_path):
     world = World(tmp_path)
     world.register()
     world.enqueue("op-model", "docs/a.md", model="claude-other-model")
@@ -664,10 +664,13 @@ def test_changed_goal_scope_or_model_of_a_job_refuses(tmp_path):
     assert world.tick()["actions"] == [], "jobs outside the policy are never bound"
     world.run_next(verdict=False)
     world.run_next(verdict=False)
+    reads = world.lane_reads
     world.tick()
-    reasons = sorted(row["reason_code"] for row in world.intents().values())
-    assert reasons == ["model_changed", "scope_changed"] and len(world.jobs()) == 2
-    assert all(row["state"] == dc.REFUSED and row["next_owner"] == "operator" for row in world.intents().values())
+    assert world.lane_reads == reads + 1, "only the member job's evidence is read"
+    refused = only(world.intents(), origin_job="op-model")
+    assert list(world.intents()) == [refused["id"]] and len(world.jobs()) == 2
+    assert refused["state"] == dc.REFUSED and refused["reason_code"] == "model_changed"
+    assert refused["next_owner"] == "operator"
 
 
 def test_missing_lane_evidence_refuses_with_the_owner_who_can_supply_it(tmp_path):

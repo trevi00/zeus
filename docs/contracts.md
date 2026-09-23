@@ -2488,12 +2488,14 @@ The policy binds the lanes, the repository identity, the goals (path, sha256, cr
 allowed paths and acceptance criteria, the session archive root digest
 (`zeus continuation identity --lane`), the qualified model, image and profile, the delivery target
 and `max_corrections`. A different policy under the same id is `policy_conflict`; a registered pin
-whose bytes no longer resolve is `policy_unavailable`, a changed digest `policy_changed`. A job whose
-lane, repository, goal, allowed paths, criteria or model is outside the policy, or a lane whose actual
-isolation image, worker profile or archive root differs, is a named `refused` intent
-(`goal_changed`, `scope_changed`, `model_changed`, `image_changed`, `session_archive_changed`, ...)
-with `next_owner: operator`; the continuation never widens its own permission and model output never
-extends it.
+whose bytes no longer resolve is `policy_unavailable`, a changed digest `policy_changed`. Membership
+is immutable and applied BEFORE selection: a job whose lane, repository, goal, allowed paths or
+criteria are outside the policy (`domain.continuation.check_membership`) is not this policy's work -
+it is never selected, read, bound or recorded, so unrelated history never occupies a bounded pass.
+For a member job, a model outside the policy, or a lane whose actual isolation image, worker profile
+or archive root differs, is current eligibility: a named `refused` intent (`model_changed`,
+`image_changed`, `session_archive_changed`, ...) with `next_owner: operator`; the continuation never
+widens its own permission and model output never extends it.
 
 State lives in the Fleet control store (`continuation_policies`, `continuation_intents`) and in each
 lane store (`continuation_bindings`). The fixed routing table, over terminal Fleet jobs and their lane
@@ -2531,7 +2533,25 @@ objective preface with identity/digest references differ, and the existing manif
 decides it (`successor_manifest_refused`). The rejected operation stays rejected; nothing parked is
 revived. One family per tick, least recently served first, at most four per tick; a held family
 (`research_required`, `recovery_required`, `paused`, `refused`) never starves another. A lane, Git or
-Fleet outage skips that subject for the tick (`unavailable`, exception type only).
+Fleet outage skips that subject for the tick (`unavailable`, exception type only) without spending
+one of the four slots; each lane's runtime identity is read once per tick, an unreadable one makes
+the whole lane skip after its first visible entry, and any lane stops being read after four
+`unavailable` skips, so other lanes still progress within a bounded pass. A queued job whose runtime
+cannot be read is skipped visibly instead of failing the tick.
+
+Effect ownership across policies sharing one control store: the intent id (and with it the successor
+and launch ids) carries NO policy, so overlapping policies derive the same effect and can never
+admit or launch it twice. A row belongs to the policy that wrote it. Another policy never replays,
+advances or reports it: a job routed, or created as a successor, by another policy's effect-owning
+intent is excluded before selection and projected in the tick's `owned_elsewhere {count, jobs[<=16]
+{job, policy_id}}`, and a create that meets such a row (a race) is skipped as
+`intent_owned_elsewhere` with no effect. The only foreign row that owns nothing is a refusal written
+at creation (history `[refused]`, no successor, no launch): it never authorized an effect, so the
+next slot of the same observation, `digest(["continuation_intent_slot", id, n])` for n = 1..7 and
+again without the policy, is claimable, and the successor id derives from that slot. Every policy
+walks the same slots, so a restart, a replay and a second controller converge on the one existing
+owner and successor. Old rows are never deleted, rekeyed or edited, and no authorization is adopted
+from them.
 
 Sessions and workspaces: before admission the controller binds each queued in-policy job to its own
 logical session (`task_id` = the family's root job). `Operation.claim` attaches the lane's binding to
