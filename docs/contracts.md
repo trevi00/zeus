@@ -2178,3 +2178,107 @@ eligible, unknown by reason, conflicts, truncation and a continuation cursor; th
 page. A store or driver failure is `source_unavailable`, never an empty result, and a refused
 collection writes nothing. Replay, held-out evaluation, policy activation and skill or script
 extraction are out of scope here and are named as limits in every receipt and report.
+
+## INV-HOST-DELIVERY-001
+
+`zeus host-delivery register-targets|register|tick|run|status` carries an ALREADY reviewed release
+candidate from its repository to an actual host runtime, and adds no approval, evaluator, executor,
+scheduler, merge policy or deployment authority
+(docs/zeus/operations/autonomous-operation-001/HOST-DELIVERY.md). `Releases` remains the only
+approval and the only active-release compare-and-swap, `ReleaseQueue` the only controller fence,
+`GitWorkspace` the only publisher and merger, and the registered scheduled task or owned child
+process the only thing that runs. Delivery is opt-in: without `ZEUS_HOST_DELIVERY_ENABLED` a tick
+registers, projects and refuses every external action, and while it is off not even a durable intent
+is written. The legacy Docker `ReleaseRunner` is not enabled, driven or replaced by this component.
+
+A delivery plan (`urn:zeus:host-delivery:1`) is owner-authored, read through the existing `GitSource`
+at an explicit 40-hex commit and never from the working tree: `plan_id`, the EXISTING `release_id`,
+the candidate `revision`/`tree`, the incumbent `policy_hash`, the canonical `repository` identity,
+1..16 named `required_checks`, a registered `target_id`, the `expected_descriptor` digest (or `null`
+for a target's first activation), a `target_descriptor` of revision plus worker image and profile
+digest (each an exact identity or the explicit word `unchanged`, which resolves against the
+descriptor the target is actually running and refuses when there is none —
+`unchanged_without_predecessor`), one `canary_check_id` from the incumbent fixed set, and bounded CI
+and consumption timeouts. Unknown or missing fields, a malformed
+identity, a duplicate or empty check list, a canary id this harness does not implement and an
+out-of-range timeout are refused before anything is stored. No shell command, argv, path, host root,
+service name, source text or credential is ever accepted from a plan, and nothing in one is executed.
+What a target IS - its kind (`windows_scheduled_task` or `process`), its root, its state directory
+and its service identity - is host configuration (`urn:zeus:host-delivery-targets:1`) registered
+separately by the owner; a plan may only NAME a registered target id (`target_unregistered`), so a
+candidate can never select another scheduled task, path or policy for itself. Registration is
+idempotent for the identical plan at the identical pin, and a plan whose delivery has left
+`registered` may not be edited at all (`delivery_in_flight`); a refused registration writes nothing.
+
+Approval is recognized, never synthesized. `release_gate` re-derives it from the release record
+itself: the candidate's revision, tree, evaluator `policy_hash` and canonical repository must be
+exactly the plan's (`release_revision_mismatch`, `release_tree_mismatch`,
+`release_policy_mismatch`, `release_repository_mismatch`), and the author's OWN lead plus a
+conductor must both have accepted that exact revision with evidence. An incomplete review projects
+`awaiting_review` and runs nothing - no queue row, no lease, no publication - and a rejected,
+cancelled, rolled back or ticket-superseded record refuses. The host is touched only once the
+incumbent evaluator itself recorded `verified` (`release_not_verified`), and the active release
+pointer moves only through `Releases.promote` with the expected active release recorded when the
+target tuple was bound, after the prescribed checks AND an actual consumption receipt.
+
+One delivery advances at most one stage per tick under the existing `ReleaseQueue` fence:
+`registered` -> `awaiting_review` -> `publishing` -> `awaiting_ci` -> `merge_intended` -> `merged` ->
+`drain_intended` -> `switching` -> `awaiting_consumption` -> `active`, with `blocked`,
+`rolling_back`, `rolled_back` and `failed` preserving the stage they happened at, the fixed reason
+code, the error TYPE and the evidence. The durable intent names the stage BEFORE the external action
+of that stage, so a lost response can only reconcile what already happened: an existing pull request
+at the intended head is adopted rather than published again, an already merged one is recognized
+rather than merged again, and a running instance's own receipt is recognized rather than restarted.
+The controller claims only queue rows a registered plan names (so another controller's row is never
+consumed or spent), and every durable observation is committed in the SAME transaction that
+re-checks the claim's generation, owner and lease, so a superseded controller cannot record what it
+observed. A long external wait never sleeps under the lease: the tick answers `pending`, returns the
+lease through `ReleaseQueue.defer` (which is not a failed attempt), and the stage's own durable
+deadline - not the attempt budget - ends the wait (`ci_timeout`, `rollback_unverified`). Definite
+failures still go through `finish` with the queue's unchanged retry budget and backoff. No store
+transaction is open across GitHub, the filesystem, a subprocess or another independently locking
+transaction, and an idle poll writes no row.
+
+CI is the provider's own answer about the exact intended head. Every required check must have
+FINISHED SUCCESSFULLY: absent is `ci_check_missing`, still running is `ci_check_pending`, and
+skipped, cancelled, neutral, timed out and failed are `ci_check_failed` - none of them is a pass, and
+extra checks the plan does not require are ignored. A head that moved is `ci_head_changed` and goes
+to requalification, never a silent rebase that inherits the old acceptance.
+
+The host boundary is descriptor-first. A descriptor is immutable and is replaced, never edited:
+under a target-specific lock (`target_lock_held` is a conflicting change, never something to break)
+the descriptor that is there right now must be exactly the expected predecessor
+(`descriptor_changed`, `descriptor_predecessor_mismatch`), and the replacement is one atomic
+`os.replace`. New admission is paused and the drain is PROVEN before the switch: a service that is
+running with no work report, or with an unconfirmed effect, blocks the switch
+(`drain_unconfirmed_effects`) rather than having its active work killed. A previous instance that
+cannot be proven gone is `previous_instance_unconfirmed` and no second one is started beside it. The
+launched process's OWN startup receipt decides activation - instance id, pid, start time, the module
+root it actually imported and the descriptor digest, revision, image and profile it actually loaded -
+and a receipt that is missing, malformed, from another target, from the previous instance or bound to
+any other identity never grants activation. A switched descriptor whose receipt never arrives is not
+an activation either: the consumption deadline sends it to rollback. Rollback restores the EXACT
+predecessor tuple and then proves it, with that predecessor's own fresh receipt and a live process;
+a restoration that fails or cannot be proven is a blocked critical alert (`rollback_failed`,
+`rollback_unverified`), never a `rolled_back` claim, and a target with no known-good predecessor
+blocks (`no_known_good_predecessor`) instead of inventing a state to return to. Active descriptors
+are scoped per target, two plans on one target serialize (`target_busy`) and unrelated targets keep
+moving.
+
+The canary exercises the actual service contract and is named by an incumbent fixed id only:
+`startup_identity` (the owned process still runs and is still itself), `collect_monitor_source` (the
+incumbent read-only monitor projection shows this descriptor as the consumed one) or
+`fleet_worker_operation`, which is OWNER acceptance work - it looks for the owner's own receipt for
+exactly this descriptor and starts no model, provider or worker itself. `canary_unavailable`,
+`canary_error` and every not-passed verdict send the delivery to rollback rather than to activation.
+
+Read-only status is projected by `host-delivery status` and by the additive `host_delivery` monitor
+source: plan, release, target and instance identities, the Git pin, descriptor digests, the durable
+stage, fixed reason codes, counts and a bounded next action. Never a descriptor body, a host root, a
+service name, a pull request title, a check log, an exception message or a credential. Structured
+transitions are `general.delivery_stage_entered`, `development.delivery_check_observed`,
+`operations.delivery_switched`, `operations.delivery_rollback` and `operations.delivery_blocked`,
+carrying identifiers, digests, fixed codes and counts only; a repeated idle poll re-enters no stage
+and emits nothing, and a switch with `consumed: false` is never read as an activation. A collected
+status is a durable-record projection: it is never evidence of a qualified live host, a passed owner
+canary or a semantically accepted release.

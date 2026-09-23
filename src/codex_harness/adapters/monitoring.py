@@ -367,6 +367,26 @@ def fleet_backlog_facts(store):
     return FleetBacklog(store).status()
 
 
+def host_delivery_facts(store):
+    """INV-HOST-DELIVERY-001 projection (`urn:zeus:host-delivery-status:1`) for every registered
+    delivery plan and every host target, from store reads only: plan, release, target and instance
+    identities, the Git pin, descriptor DIGESTS, the durable stage, fixed reason codes, counts and
+    a bounded next action. Never a descriptor body, a host root, a service name, a scheduled task,
+    a PR title, a check log, a credential or a raw error.
+
+    This is the same read-only status the `host-delivery status` command projects; no tick happens
+    here, so nothing is published, merged, switched, started or written. `awaiting_review`,
+    `awaiting_ci`, `switching`, `awaiting_consumption`, `active`, `blocked`, `rolling_back` and
+    `rolled_back` stay distinct, a target whose descriptor was switched but NOT consumed reports
+    `consumed: false` rather than an activation, an unregistered controller is `registered: false`
+    with an empty list rather than an absent source, and a store failure propagates so the envelope
+    becomes `unavailable` rather than an empty delivery. A collected status is a durable-record
+    projection only: never evidence of a qualified live host or a passed owner canary.
+    """
+    from codex_harness.application.host_delivery import HostDelivery
+    return HostDelivery(store).status()
+
+
 def scope_label(repository, label=None):
     """ZEUS_MONITOR_SCOPE names what is observed; the default is the repository name. It is a
     label for the page toolbar, not a status or success claim."""
@@ -399,7 +419,10 @@ def collect(service, artifacts, repository, redis_url, containers=None, scope=No
             'portfolio': lambda: portfolio_facts(service.store),
             # Additive approved-backlog envelope (INV-FLEET-BACKLOG-001): same read-only store,
             # fails independently, and never ticks the backlog it observes.
-            'fleet_backlog': lambda: fleet_backlog_facts(service.store)}
+            'fleet_backlog': lambda: fleet_backlog_facts(service.store),
+            # Additive host-delivery envelope (INV-HOST-DELIVERY-001): same read-only store, fails
+            # independently, and never ticks, publishes, merges or switches what it observes.
+            'host_delivery': lambda: host_delivery_facts(service.store)}
     if runtime is not None:
         jobs['observations'] = lambda: observation_facts(service.store, runtime)
     with ThreadPoolExecutor(max_workers=4) as pool:
