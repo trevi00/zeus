@@ -1,5 +1,58 @@
 # Whole autonomous operating loop
 
+## Research dispatch transport recovery: one revised delivery batch, 2026-09-24
+
+Goal unchanged: exact two-strike research -> independently accepted report -> scoped owner receipt
+-> preserved-candidate repair with host-defined checks. PR186 is operating at 846e627; preserve its
+accepted ownership, artifact integrity and existing routing checks. This is a real obstacle to the
+same complete path, not a new feature initiative.
+
+Actual execution: autonomous-recovery-research-001 was registered, explicitly resumed, and claimed
+investigation aab8c6d6. Council autonomous-recovery-research-001.c001 failed at research with
+publication_incomplete before its first role execution. The correlated outbox entry remains unsent.
+Owner helper omitted the existing Fleet launcher's Docker-discovered Redis endpoint; configured
+Redis ping times out while docker port zeus-local-ops-redis reports 127.0.0.1:59889. Fix owner config
+by reusing dynamic endpoint discovery and a readiness preflight; do not hardcode that ephemeral port.
+Record this as OWNER wiring error, not worker or provider quota failure. First invocation had
+registered the program paused and ran no cycle; it is not an extra failed research attempt.
+
+SSOT sources: Program.resume only permits paused->active; blocked requires a NEW authorized program.
+The investigation dispatch claim is globally keyed and retained after failed council, so a new
+authorized program cannot claim the same investigation. No normal retry API was found in inspected
+ResearchProgram/ProgramRunner. A transient pre-execution transport error therefore strands this
+research family indefinitely. Never delete claim rows, overwrite a failed run as accepted, or
+relax scoped receipt checks to make a local fix appear complete.
+
+One bounded Claude batch: add explicit OWNER-authorized failed-dispatch recovery through the existing
+research-program owner and CLI, using a new authorized program/run and an immutable retry lineage.
+Permit ONLY confirmed failure before provider entry (this publication_incomplete case), with the
+old run terminal and no active/unknown invocation, task or cleanup debt. Inspect real records;
+absent/unknown/unavailable proof refuses. Fence/reconcile the old correlated pending publication
+through existing outbox ownership so replay cannot create a late old role after recovery. Preserve
+its audit/evidence and never claim it was sent. A timeout alone does NOT prove no external effect.
+Old dispatch/run/cycle remain historical facts. Current dispatch selection and scoped receipt must
+name the exact new attempt; stale receipts/old run results cannot approve the replacement.
+
+The owner request pins investigation, failed program/run/dispatch identity and new immutable program
+configuration; new program retains topic/project/reason and repair scope, no authority widening.
+Authorization is explicit once, reservation/claim atomic and idempotent across repeat/concurrent
+owner requests and process restart. One replacement attempt is authorized for this qualification;
+another failure is held, not a hidden retry loop. No second scheduler or model execution in a DB tx.
+Prefer existing application/store/outbox/research mechanisms; only the needed recovery owner/CLI
+and dispatch binding changes are in scope. Ordinary, accepted, active and unknown dispatches cannot
+be taken over. Preserve existing budget/accounting and continuation artifact checks.
+
+Fixed matrix: real pre-provider publication failure fixture -> explicit new authorized program ->
+one replacement claim/council -> exact scoped receipt; old history retained. Negative: active or
+unknown provider/cleanup, possibly delivered old message, changed investigation/scope, stale owner
+request, rejected/accepted old council all refuse. Retry/restart/concurrency -> one new run only.
+Read-only status distinguishes failed original/current replacement and never schedules work.
+Use existing MemoryStore and isolated PostgreSQL coverage where available; mark injected bus
+failure/model fixtures clearly. No new OS resources, so no new process backend/cleanup design.
+Run targeted research-program/investigation/continuation tests and Ruff only. Incomplete diagnostics
+belong in summary. No worker deployment or legacy row edits; owner supplies actual Redis preflight,
+new program configuration and real run after independent acceptance/CI.
+
 ## Scoped research resubmission: actual artifact availability, 2026-09-24
 
 Candidate c6bdf29 is staged ONLY as correction input, not accepted or deployed. Independent review
