@@ -5,6 +5,18 @@ continuation) and "Conductor continuation SSOT finding" (routing table). Contrac
 `docs/contracts.md`, INV-CONTINUATION-001. Base revision 60f79586. This is an implementation
 candidate for independent review; it is not deployed, enabled or qualified.
 
+Superseding status, 2026-09-23 (SPEC.md "Live continuation qualification after PR183 deployment"):
+the sentence above describes the candidate at base 60f79586 and is kept as history. Three layers
+are now separate:
+- Deployed code: PR183 (87d7d9237761e1036f695da871173b60bc16ca26) is consumed by the live scheduled
+  Fleet. The owner recorded this at 2026-09-23T11:45:54Z (evidence:
+  artifacts/autonomous-operation-001/cutover-183/).
+- Configured policy: before this batch no policy or host target was registered. The batch policy
+  is limited to two documentation items on the harness lane. Registration does not prove
+  activation, and host delivery stays disabled until exact release qualification.
+- Qualified: not yet. The "Not established here" gates at the end of this file stay open except
+  where STATUS.md records owner evidence for them. The whole-loop matrix is tracked in STATUS.md.
+
 ## Composition (reuse, not a second engine)
 
 | Stage | Existing owner reused | Added connection |

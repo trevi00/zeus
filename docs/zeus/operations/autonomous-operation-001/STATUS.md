@@ -1,5 +1,59 @@
 # Operating status
 
+## Current checkpoint: live continuation qualification after PR183, 2026-09-23
+
+This checkpoint replaces the "current" and "whole-goal" labels below as the present state. The
+older sections still hold the evidence for their own dates and are not rewritten. Source: SPEC.md
+"Live continuation qualification after PR183 deployment" (owner-observed facts). This document
+records those facts and does not re-execute them.
+
+| Layer | State as recorded in SPEC | What it does NOT establish |
+| --- | --- | --- |
+| Code deployed | PR183 merged as 87d7d9237761e1036f695da871173b60bc16ca26 after all required CI checks. The live scheduled Fleet consumed 87d7d92 from runtime-autonomous-183 at 2026-09-23T11:45:54Z, PID38312, image sha256:1ee94821ead80039a2ea1070079ce47ba3137771f56ef7a115e779ebeb06b267. PID33740 was gone, a new process tree was observed and admission was restored to its prior state | That the continuation policy is active, or that any continuation has run on the live service |
+| Policy configured | Before this batch, policies and host targets were empty. The batch policy is limited to the SPEC goal, the harness lane, Opus 5.5, the image/profile/archive pin and the two document scopes (Item A, Item B). It cannot continue unrelated existing jobs | Registering a policy or target does not prove activation. Target registration alone keeps host delivery disabled until exact release qualification. The deployed scheduled Fleet is not yet a managed-delivery target |
+| Full loop qualified | NOT qualified | See the matrix below. Every row is still unobserved on the live service |
+
+Owner verification recorded with the deployment: native integrated checks gave 255 passed and
+5 skipped, and Ruff passed. The focused Windows managed-runtime run gave 23 passed and 2 skipped.
+Actual dedicated-PG/Windows empty-Fleet start/repeat/stop passed. Descriptor restoration across
+two revisions with identical runtime code passed. That result is not a live rollback and not full
+HostDelivery orchestration. Real PG rollback with labelled scan faults kept the pause and denied
+the conductor reservation. The initial pause probe used an invalid unit id and was corrected; it
+is not acceptance evidence. Skipped cases are not execution evidence.
+
+Evidence (owner artifacts directory, not in this repository):
+artifacts/autonomous-operation-001/cutover-183/result.json and events.jsonl,
+connection-r6-pytest.log, connection-r6-ruff.log, native-fixture-owner.log,
+managed-real-current-receipt.json, managed-real-rollback-receipt.json, pause-pg-receipt.json.
+
+```mermaid
+stateDiagram-v2
+    [*] --> CodeDeployed: PR183 87d7d92 consumed by live Fleet (observed)
+    CodeDeployed --> PolicyRegistered: owner pauses, confirms no work, registers scoped policy
+    PolicyRegistered --> ItemsRunning: two authorized documentation items admitted
+    ItemsRunning --> Reviewed: real session binding, independent review, conductor
+    Reviewed --> ItemsRunning: real rejection, same-frame correction with lineage
+    Reviewed --> DeliveryObserved: exact bound plan/consumption or explicit waiting-owner
+    DeliveryObserved --> LoopQualified: all required matrix paths observed
+    note right of CodeDeployed: Current observed state. Later states are not yet evidenced here.
+```
+
+Qualification matrix. All rows are open, and no row is claimed here:
+
+| Required actual path | Status |
+| --- | --- |
+| Two normal jobs: session binding, review and conductor evidence | Not observed |
+| Real rejection: same-frame correction with retained lineage | Not observed, and none is forced |
+| Duplicate tick/restart: no duplicate invocation | Not observed |
+| Unknown effects: retained debt and a named recovery owner | Not observed |
+| Delivery: exact bound plan/consumption or explicit waiting-owner (not completion) | Not observed |
+
+Unknowns: whether the scoped policy is registered and active on the live service at the moment a
+reader sees this; heartbeat state after the cutover; the outcome of either documentation item,
+including this one. This checkpoint makes no claim about test counts beyond those above, model
+success, autonomous recovery or a release. Qualification stays unfinished until the actual paths
+above are observed.
+
 ## Evidence recovery checkpoint: 2026-09-23 14:04 KST
 
 PR182 merged at 04:27:48Z (ce81f885); no live deployment was attempted. Session correction 973a903f

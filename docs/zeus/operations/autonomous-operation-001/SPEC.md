@@ -1,5 +1,54 @@
 # Whole autonomous operating loop
 
+## Live continuation qualification after PR183 deployment, 2026-09-23
+
+Outcome: enable the accepted continuation for TWO explicitly authorized useful documentation
+items, observe real Claude session/independent review/conductor and correction if genuinely
+needed, then assess actual delivery handoff. No artificial rejection or fabricated deployment.
+Codex owns these requirements; Claude implements the documentation, not scope/design decisions.
+Existing accepted runtime and tests remain accepted. No new broad environment audit.
+
+Owner-observed facts (not claims the worker must re-execute): PR183 merged as 87d7d9237761e1036f695da871173b60bc16ca26.
+All required GitHub CI checks passed including Windows/Linux 3.12/3.14 and integration.
+Native integrated checks 255 passed/5 skipped, Ruff passed. Focused Windows managed runtime
+23 passed/2 skipped. Live scheduled Fleet consumed revision 87d7d92 from runtime-autonomous-183
+at 2026-09-23T11:45:54Z, PID38312, image
+sha256:1ee94821ead80039a2ea1070079ce47ba3137771f56ef7a115e779ebeb06b267.
+Previous PID33740 was absent, new process tree observed, prior admission state restored.
+Owner evidence: artifacts/autonomous-operation-001/cutover-183/result.json and events.jsonl;
+connection-r6-pytest.log; connection-r6-ruff.log; native-fixture-owner.log.
+Actual dedicated-PG/Windows empty-Fleet start/repeat/stop passed. Descriptor restoration across
+two revisions with IDENTICAL runtime code passed: managed-real-current-receipt.json and
+managed-real-rollback-receipt.json. This is not live rollback or full HostDelivery orchestration.
+pause-pg-receipt.json proves real PG rollback with labelled scan faults retains pause and denies
+conductor reservation. Initial probe used invalid unit id and was corrected; it is not acceptance.
+
+Remaining before this batch: policies and host targets empty; deployed scheduled Fleet is not
+yet a managed-delivery target. Registering target/policy does not prove activation. This batch's
+policy is limited to the goal digest below, harness lane, Opus5.5, image/profile/archive pin and
+the two document scopes. Existing unrelated jobs cannot be continued by this policy.
+
+Item A: update STATUS.md and stale CONTINUATION.md intro to distinguish code deployed from
+policy enabled and full-loop qualified. Preserve history with dated superseding statements,
+add a compact Mermaid state diagram and evidence links. State unknowns honestly. No guessed
+test counts, model success, live heartbeat, autonomous recovery or release claims.
+Item B: create OPERATOR-RUNBOOK.md for the Codex-designed existing sequence: pin reviewed merged
+code/image -> pause -> verify no worker/conductor debt -> preserve old launcher/config -> stop
+owned service -> immutable runtime identity check -> start -> observed module/revision/PID and
+admission restore -> evidence receipt. On failure retain pause and restore predecessor only
+after new work is absent; verify previous consumption. Warn that bare git revert ignores debt.
+Distinguish current scheduled service cutover from future managed HostDelivery. Include SSOT
+code/doc references and a checklist with evidence columns, not scripts or new mechanisms.
+
+Matrix: normal two jobs -> actual session binding/review/conductor evidence; real rejection ->
+same-frame correction with retained lineage; duplicate tick/restart -> no duplicate invocation;
+unknown effects -> retained debt/recovery owner; delivery -> exact bound plan/consumption or
+explicit waiting-owner (not completion). Qualification is unfinished until those required actual
+paths are observed. No forced failure just to claim a recovery result. Documentation checks
+must not expand into runtime tests. No operator script, runtime, auth or CI changes by Claude.
+Owner pauses admission before registration/restart, confirms no work, then resumes the original
+state. Target registration alone keeps host delivery disabled until exact release qualification.
+
 ## Native fixture qualification and authorized operating delivery, 2026-09-23
 
 User explicitly requests operating deployment after qualification. Accepted candidate 815adbc
