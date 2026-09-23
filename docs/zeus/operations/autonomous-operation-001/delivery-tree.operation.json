@@ -1,0 +1,37 @@
+{
+  "schema": "urn:zeus:operation:1",
+  "id": "autonomous-operation-001-delivery-tree",
+  "base_revision": "2478d0ab69856a58602760b170f7a39486bc19ed",
+  "goal": {
+    "path": "docs/zeus/operations/autonomous-operation-001/SPEC.md",
+    "sha256": "614f43a698fe0a0d96b5582b6bc92740cd5ed8350d56da12e48223d1994d95e7",
+    "criterion": "Complete the existing autonomous operating loop with independently verified session, continuation and actual runtime ownership",
+    "rationale": "Finish the existing whole-goal acceptance matrix without manual user relay or weaker verification."
+  },
+  "budget": {
+    "mode": "subscription",
+    "total": 192,
+    "per_host": 192
+  },
+  "claude": {
+    "model": "claude-opus-5-5",
+    "timeout_seconds": 3600,
+    "max_budget_usd": 2
+  },
+  "plan": {
+    "objective": "Implement ONLY Actual delivery registration: Git tree identity contract in SPEC.md. Real accepted 40-hex Git tree is rejected by 64-only plan.tree validator. Separate tree id from SHA256 digests, preserve exact identity checks, use real Git regression and scoped tests. No new feature, no deployment, no changes to accepted session/runtime behavior.",
+    "allowed_paths": [
+      "src/codex_harness/domain/host_delivery.py",
+      "tests/test_host_delivery.py",
+      "tests/test_host_delivery_cli.py",
+      "tests/test_managed_runtime.py",
+      "docs/contracts.md",
+      "docs/zeus/operations/autonomous-operation-001/HOST-DELIVERY.md"
+    ],
+    "acceptance_criteria": [
+      "Actual lowercase 40-hex Git tree and existing 64-hex tree plans register with exact release binding; no digest substitution.",
+      "Malformed trees and mismatched candidate trees refuse; policy_hash and other SHA256 digests remain strictly 64 hex.",
+      "Real disposable Git regression plus affected host-delivery/CLI/managed-runtime tests and Ruff pass; no runtime scope expansion."
+    ]
+  }
+}
