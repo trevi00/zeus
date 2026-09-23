@@ -57,8 +57,10 @@ from codex_harness.domain.continuation import (
     LAUNCH_RUNNING,
     LAUNCH_TIMEOUT,
     LAUNCH_UNKNOWN,
+    MAX_ACTIONS_PER_TICK,
     MAX_HISTORY,
     MAX_LAUNCHES,
+    MAX_SLOTS,
     NEXT_ITEM,
     OPEN_STATES,
     PAUSED,
@@ -83,11 +85,15 @@ from codex_harness.domain.continuation import (
     check_scope,
     classify,
     delivery_tuple,
+    effect_free,
     evidence_digest,
     fair_order,
     intent_id,
+    intent_slot,
+    is_member,
     launch_id,
     needs_research,
+    owners,
     policy_digest,
     refuse,
     successor_id,
@@ -116,6 +122,28 @@ DELIVERY_HALTED = frozenset({"rolled_back", "failed", "blocked"})
 
 class IntentChanged(ContractError):
     """Another controller (or a restart replay) moved the intent first; nothing was written here."""
+
+
+class LaneRuntime:
+    """One tick's view of `runtime(lane_id)`: each lane's identity is read once, and a failed read is
+    remembered, so an unreadable runtime is one lane-wide outage for the tick, not a slot per job."""
+
+    def __init__(self, port):
+        self.port, self.seen = port, {}
+
+    def __call__(self, lane_id: str):
+        if lane_id not in self.seen:
+            try:
+                self.seen[lane_id] = (self.port(lane_id), None)
+            except Exception as exc:
+                self.seen[lane_id] = (None, exc)
+        value, error = self.seen[lane_id]
+        if error is not None:
+            raise error
+        return value
+
+    def failed(self, lane_id: str) -> bool:
+        return self.seen.get(lane_id, (None, None))[1] is not None
 
 
 # ---- one lane store -----------------------------------------------------------------------------
@@ -264,7 +292,7 @@ class Continuation:
         """One bounded pass. `pin_sha256` is the digest of the pinned policy bytes re-read by the
         adapter this tick; `runtime(lane_id)` names the lane's actual image/profile/archive identity."""
         result = {"schema": TICK_SCHEMA, "policy_id": policy_id, "outcome": "idle", "actions": [],
-                  "skipped": [], "reason_code": None}
+                  "skipped": [], "reason_code": None, "owned_elsewhere": {"count": 0, "jobs": []}}
         row = self.policy(policy_id)
         if row is None:
             return {**result, "outcome": "disabled", "reason_code": "policy_unregistered"}
@@ -279,17 +307,35 @@ class Continuation:
                     "actions": drained["actions"], "skipped": drained["skipped"]}
         with self.store.transaction() as tx:
             jobs = {job["id"]: job for job in tx.scan(FLEET_JOBS)}
-            intents = [intent for intent in tx.scan(BUCKET_INTENTS) if intent.get("policy_id") == policy_id]
-        ctx = {"policy": policy, "sha": row["policy_sha256"], "pin": row["pin"].get("sha256"), "runtime": runtime,
-               "jobs": jobs}
-        self._bind_initial(ctx, intents, result)
+            every = tx.scan(BUCKET_INTENTS)
+        intents = [intent for intent in every if intent.get("policy_id") == policy_id]
+        ctx = {"policy": policy, "sha": row["policy_sha256"], "pin": row["pin"].get("sha256"),
+               "runtime": LaneRuntime(runtime) if runtime else None, "jobs": jobs}
+        self._bind_initial(ctx, intents, owners(every, policy_id), result)
         for intent in sorted(intents, key=lambda r: (str(r.get("created_at")), r["id"])):
             if (intent["route"], intent["state"]) in RESUME:
                 self._guarded(result, intent["id"], lambda i=intent: self._advance(ctx, i))
         with self.store.transaction() as tx:
-            intents = [intent for intent in tx.scan(BUCKET_INTENTS) if intent.get("policy_id") == policy_id]
-        for candidate in fair_order(self._candidates(policy, jobs, intents), intents):
-            self._guarded(result, candidate["job_id"], lambda c=candidate: self._observe(ctx, c, intents))
+            every = tx.scan(BUCKET_INTENTS)
+        intents = [intent for intent in every if intent.get("policy_id") == policy_id]
+        # Membership and ownership first, THEN the bounded fair pass: unrelated history and another
+        # policy's lineage never occupy a slot. An unavailable lane (store or runtime identity) is
+        # skipped visibly without spending a slot, at most MAX_ACTIONS_PER_TICK reads per lane.
+        candidates, elsewhere = self._candidates(policy, jobs, intents, owners(every, policy_id))
+        result["owned_elsewhere"] = {"count": len(elsewhere), "jobs": elsewhere[:16]}
+        budget, failures = MAX_ACTIONS_PER_TICK, {}
+        for candidate in fair_order(candidates, intents, limit=None):
+            lane = jobs[candidate["job_id"]]["lane"]
+            if budget <= 0:
+                break
+            if failures.get(lane, 0) >= MAX_ACTIONS_PER_TICK:
+                continue
+            if self._guarded(result, candidate["job_id"], lambda c=candidate: self._observe(ctx, c, intents)) \
+                    == "unavailable":
+                runtime_down = ctx["runtime"] is not None and ctx["runtime"].failed(lane)
+                failures[lane] = MAX_ACTIONS_PER_TICK if runtime_down else failures.get(lane, 0) + 1
+            else:
+                budget -= 1
         if result["actions"]:
             result["outcome"] = "progressed"
         elif result["skipped"]:
@@ -310,26 +356,27 @@ class Continuation:
             self._guarded(result, intent["id"], lambda i=intent: self._reconcile_launch(i, jobs))
         return result
 
-    def _guarded(self, result, subject, action) -> None:
+    def _guarded(self, result, subject, action) -> str | None:
         """One subject's work; a lost race or a named refusal is recorded, never raised past the tick,
-        so one family's outage never stops another family's progress."""
+        so one family's outage never stops another family's progress. Returns the skip reason code."""
         try:
             done = action()
         except IntentChanged:
             result["skipped"].append({"subject": subject, "reason_code": "intent_changed"})
-            return
+            return "intent_changed"
         except ContinuationRefused as exc:
             result["skipped"].append({"subject": subject, "reason_code": exc.reason_code, "next_owner": exc.owner})
-            return
+            return exc.reason_code
         except Exception as exc:  # a lane store, Git or Fleet outage: the intent stays for the next tick
             result["skipped"].append({"subject": subject, "reason_code": "unavailable",
                                       "error_type": type(exc).__name__})
-            return
+            return "unavailable"
         if isinstance(done, dict) and "history" in done:
             # A stored intent row is never printed: only its identity, state and route leave.
             done = {"subject": done["id"], "effect": done["state"], "route": done["route"]}
         if done:
             result["actions"].append(done)
+        return None
 
     # ----- candidates ---------------------------------------------------------------------
     @staticmethod
@@ -339,20 +386,24 @@ class Continuation:
                 return intent["family"], intent["id"]
         return job_id, None
 
-    def _candidates(self, policy: dict, jobs: dict, intents: list) -> list:
-        """Terminal jobs of the policy lanes with no intent for their current decisive evidence.
+    def _candidates(self, policy: dict, jobs: dict, intents: list, owned: dict) -> tuple[list, list]:
+        """Terminal member jobs of the policy with no intent for their current decisive evidence, and
+        the member jobs another policy's intent owns (`owned`, excluded and reported, never observed).
         Jobs whose origin intent already exists are re-read only when their row changed."""
         seen = {(intent["origin_job"], intent.get("job_updated_at")) for intent in intents}
-        out = []
-        for job in jobs.values():
-            if job.get("lane") not in policy["lanes"] or job.get("status") not in TERMINAL_JOBS:
+        out, elsewhere = [], []
+        for job in sorted(jobs.values(), key=lambda j: j["id"]):
+            if job.get("status") not in TERMINAL_JOBS or not is_member(policy, job):
                 continue
             if (job["id"], job.get("updated_at")) in seen and not self._reclassifiable(job, intents):
+                continue
+            if job["id"] in owned:
+                elsewhere.append({"job": job["id"], "policy_id": owned[job["id"]]})
                 continue
             family, predecessor = self._family_of(job["id"], intents)
             out.append({"job_id": job["id"], "family": family, "predecessor": predecessor,
                         "finished_at": job.get("finished_at")})
-        return out
+        return out, elsewhere
 
     @staticmethod
     def _reclassifiable(job: dict, intents: list) -> bool:
@@ -364,18 +415,23 @@ class Continuation:
             intent["route"] in {NEXT_ITEM, *SUCCESSOR_ROUTES} for intent in mine)
 
     # ----- initial session binding --------------------------------------------------------
-    def _bind_initial(self, ctx, intents, result) -> None:
+    def _bind_initial(self, ctx, intents, owned, result) -> None:
         """Bind a newly queued policy job to its own logical session BEFORE admission, so the first
         execution already runs as a task session. A successor is bound by its own intent instead."""
         policy, runtime = ctx["policy"], ctx["runtime"]
         successors = {intent.get("successor_job") for intent in intents}
         for job in sorted(ctx["jobs"].values(), key=lambda j: j["id"]):
-            if job.get("status") != "queued" or job.get("lane") not in policy["lanes"] or job["id"] in successors:
+            if (job.get("status") != "queued" or job["id"] in successors or job["id"] in owned
+                    or not is_member(policy, job)):
                 continue
             try:
                 check_scope(policy, job, runtime(job["lane"]) if runtime else None)
             except ContinuationRefused:
-                continue  # outside this policy: the job keeps its exact legacy behaviour
+                continue  # not eligible now: the job keeps its exact legacy behaviour
+            except Exception as exc:  # an unreadable runtime identity: this job only, visibly
+                result["skipped"].append({"subject": job["id"], "reason_code": "unavailable",
+                                          "error_type": type(exc).__name__})
+                continue
             lane = self.lanes(job["lane"])
 
             def bind(job=job, lane=lane):
@@ -463,7 +519,8 @@ class Continuation:
         task = evidence.get("task") or {}
         candidate = ((task.get("result") or {}).get("candidate") or {}) if isinstance(task, dict) else {}
         attempt = attempt_of(evidence)
-        key = intent_id(job["id"], attempt, evidence_sha, route)
+        with self.store.transaction() as tx:
+            key, _ = self._claim(tx, intent_id(job["id"], attempt, evidence_sha, route), base["policy_id"])
         successor = successor_id(key)
         decision = evidence.get("conductor") if routed["reason_code"] == "conductor_rejected" else evidence.get("lead")
         references = {"predecessor_job": job["id"], "candidate_revision": candidate.get("revision"),
@@ -802,17 +859,37 @@ class Continuation:
         return None  # the approved backlog owns the next item; nothing to do here
 
     # ----- durable intent writes ----------------------------------------------------------
+    @staticmethod
+    def _claim(tx, key: str, policy_id: str) -> tuple:
+        """The slot of one observation for this policy: its own row (a replay), else the first free
+        slot past foreign refusals that never owned an effect. A foreign row that owns an effect is
+        never reused, advanced or reported as this policy's progress: `intent_owned_elsewhere`."""
+        for n in range(MAX_SLOTS):
+            slot = intent_slot(key, n)
+            old = tx.get(BUCKET_INTENTS, slot)
+            if old is None or old.get("policy_id") == policy_id:
+                return slot, old
+            refuse(effect_free(old), "intent_owned_elsewhere", "operator", "policy_id")
+        raise ContinuationRefused("intent_slots_exhausted", "operator", "intent_id")
+
     def _create(self, fields: dict, attempt: dict, key: str | None = None) -> dict:
-        key = key or intent_id(fields["origin_job"], attempt, fields["evidence_sha256"], fields["route"])
+        """`key` is a slot `_claim` already resolved (the successor id is derived from it); it must
+        still be free or this policy's own."""
         now = self.clock()
-        row = {"id": key, "successor_job": None, "evidence_refs": [], "session_mode": None, **fields,
-               **attempt, "version": 1, "created_at": now, "updated_at": now,
-               "history": [{"state": fields["state"], "reason_code": fields.get("reason_code"), "at": now}]}
-        transition(None, row["state"])
+        transition(None, fields["state"])
         with self.store.transaction() as tx:
-            old = tx.get(BUCKET_INTENTS, key)
+            if key is None:
+                key, old = self._claim(tx, intent_id(fields["origin_job"], attempt, fields["evidence_sha256"],
+                                                     fields["route"]), fields["policy_id"])
+            else:
+                old = tx.get(BUCKET_INTENTS, key)
+                refuse(old is None or old.get("policy_id") == fields["policy_id"], "intent_owned_elsewhere",
+                       "operator", "policy_id")
             if old is not None:
                 return old  # the same observation again: a replay, never a second intent
+            row = {"id": key, "successor_job": None, "evidence_refs": [], "session_mode": None, **fields,
+                   **attempt, "version": 1, "created_at": now, "updated_at": now,
+                   "history": [{"state": fields["state"], "reason_code": fields.get("reason_code"), "at": now}]}
             tx.put(BUCKET_INTENTS, key, row)
         self._emit(None, row)
         return row
