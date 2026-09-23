@@ -10,8 +10,12 @@ Four concrete things live here and nothing else decides policy:
   checks of the exact PR head with `gh`. Nothing here parses a check's output; a required check is
   a pass only when the provider says it finished successfully for that head.
 * `ProcessHostTarget` and `ScheduledTaskHostTarget` own the immutable descriptor file, the drain
-  and the service process of one target. They share the descriptor mechanics exactly: an atomic
-  replace under a target-specific lock that compares the expected predecessor first.
+  and the service process of one target. They share the whole lifecycle exactly: descriptor
+  replacement, pause, stop, cleanup, launch and the state that identifies the launched instance all
+  run under ONE guard per target (`HostTargetBase.guard`), which proves ownership before the first
+  mutation and reconciles what is actually on the target before it touches anything. Two
+  controllers therefore cannot interleave their operations on one service, and unrelated targets
+  never wait for each other.
 * `CANARIES` maps the incumbent fixed check ids to real checks. A plan names one of them by id; no
   plan ever supplies a command, an argv, a path or a check body.
 
@@ -50,6 +54,7 @@ import subprocess
 import sys
 import time
 import uuid
+from contextlib import contextmanager
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -66,6 +71,8 @@ from codex_harness.domain.host_delivery import (
     KIND_SCHEDULED_TASK,
     RECEIPT_SCHEMA,
     DeliveryRefused,
+    LifecycleInterrupted,
+    consumption_verdict,
     descriptor_digest,
     validate_descriptor,
     validate_plan,
@@ -88,6 +95,8 @@ WORK_FILE = "work.json"
 STATE_FILE = "controller-state.json"
 PAUSE_FILE = "pause"
 STOP_FILE = "stop"
+# The one lifecycle lock of a target, under its original name: it guards the descriptor
+# replacement AND the pause, stop, cleanup, launch and state publication of that target's service.
 LOCK_DIR = "switch.lock"
 CANARY_RECEIPT_FILE = "owner-canary-receipt.json"
 
@@ -344,10 +353,15 @@ class GitHubDelivery:
 
 # ----- host targets ----------------------------------------------------------------------------
 class HostTargetBase:
-    """The descriptor, receipt and drain mechanics every target kind shares.
+    """The descriptor, receipt, drain and service-lifecycle mechanics every target kind shares.
 
-    The descriptor is immutable: it is replaced, never edited, under a target-specific lock and
-    only when the descriptor that is there right now is exactly the expected predecessor.
+    The descriptor is immutable: it is replaced, never edited, under this target's lifecycle guard
+    and only when the descriptor that is there right now is exactly the expected predecessor.
+
+    Switching that descriptor, stopping the old service, retiring its files, starting the new one
+    and publishing the resulting state are ONE operation on one service, not five independent file
+    writes, so they all run under the same guard. Everything that mutates a target goes through it;
+    unrelated targets share nothing and never wait for each other.
     """
 
     def __init__(self, *, lock_timeout: float = LOCK_TIMEOUT):
@@ -360,6 +374,61 @@ class HostTargetBase:
     @classmethod
     def path(cls, target: dict, name: str) -> Path:
         return cls.state_dir(target) / name
+
+    # --- the shared target lifecycle guard -------------------------------------------------------
+    @contextmanager
+    def guard(self, target: dict, authorize=None):
+        """Hold this target's lifecycle lock, and prove ownership before the first mutation.
+
+        The lock is one directory per target, so two controllers cannot interleave their lifecycle
+        operations on the same service while unrelated targets keep moving. `authorize` is the
+        caller's fence check and runs INSIDE the lock, before anything has been written, stopped or
+        deleted: a controller that passed its own outer check, was superseded while it waited here
+        and then resumed stops nothing, deletes nothing and starts nothing.
+
+        A lock that is already held is a conflicting change on this target: it is waited for within
+        `lock_timeout` and then refused, never broken on age - an owner that crashed holding it is
+        an actual recovery condition and not something a successor may decide for itself. No store
+        transaction is ever open while this is held; the caller's `authorize` opens and closes its
+        own short one.
+        """
+        lock = self.path(target, LOCK_DIR)
+        lock.parent.mkdir(parents=True, exist_ok=True)
+        deadline = time.monotonic() + self.lock_timeout
+        while True:
+            try:
+                lock.mkdir()
+                break
+            except FileExistsError:
+                if time.monotonic() >= deadline:
+                    raise DeliveryRefused("target_lock_held", "target_id") from None
+                time.sleep(STOP_POLL)
+            except OSError as exc:
+                raise DeliveryRefused("target_lock_unavailable", "state_dir") from exc
+        try:
+            if authorize is not None:
+                authorize()
+            yield
+        finally:
+            try:
+                lock.rmdir()
+            except OSError:
+                pass
+
+    @staticmethod
+    def _still_owned(authorize, effect: str) -> None:
+        """Re-check ownership after a bounded wait that can outlive a lease.
+
+        A loss HERE is not a refusal, because the stop it follows already happened: it is raised as
+        an interrupted lifecycle so the coordinator records an ambiguous effect and the next owner
+        reconciles this target. Nothing after it is cleaned up or started by this controller.
+        """
+        if authorize is None:
+            return
+        try:
+            authorize()
+        except Exception as exc:
+            raise LifecycleInterrupted(effect, exc) from exc
 
     # --- the immutable descriptor --------------------------------------------------------------
     def current(self, target: dict):
@@ -374,54 +443,37 @@ class HostTargetBase:
     def switch(self, target: dict, descriptor: dict, *, expected, authorize=None) -> dict:
         """Atomically replace the descriptor after comparing the expected predecessor.
 
-        `authorize` is the caller's ownership check and is called INSIDE the target lock, right
-        before the replacement: a controller whose fence expired while it was waiting for this lock
-        raises there and writes nothing, rather than overwriting its successor's descriptor.
+        Ownership is proven first, inside the guard and before the comparison, so a superseded
+        controller reports the ownership it lost rather than a descriptor its successor moved.
         """
-        lock = self.path(target, LOCK_DIR)
-        lock.parent.mkdir(parents=True, exist_ok=True)
-        deadline = time.monotonic() + self.lock_timeout
-        while True:
-            try:
-                lock.mkdir()
-                break
-            except FileExistsError:
-                if time.monotonic() >= deadline:
-                    # A held lock is a conflicting change on this target, never something to break.
-                    raise DeliveryRefused("target_lock_held", "target_id") from None
-                time.sleep(STOP_POLL)
-            except OSError as exc:
-                raise DeliveryRefused("target_lock_unavailable", "state_dir") from exc
-        try:
+        with self.guard(target, authorize):
             current = self.current(target)
             observed = None if current is None else descriptor_digest(current)
             if observed != expected:
                 raise DeliveryRefused("descriptor_changed", "expected_descriptor")
-            if authorize is not None:
-                authorize()
             _write_json(self.path(target, DESCRIPTOR_FILE), descriptor)
             return {"written": True, "descriptor_sha256": descriptor_digest(descriptor)}
-        finally:
-            try:
-                lock.rmdir()
-            except OSError:
-                pass
 
     # --- what the launched process said about itself -------------------------------------------
     def receipt(self, target: dict):
         return _read_json(self.path(target, RECEIPT_FILE))
 
     # --- draining -------------------------------------------------------------------------------
-    def drain(self, target: dict) -> dict:
+    def drain(self, target: dict, *, authorize=None) -> dict:
         """Pause new admission and report what is still running and what is unconfirmed.
+
+        The pause is a mutation of this target's state directory, so it happens under the same
+        guard as the rest of the lifecycle: a stale controller pauses nothing, and a pause can
+        never land between a successor's cleanup and its launch.
 
         `work.json` is the service's own report. A missing report beside a RUNNING service is not
         an empty one: it is an unconfirmed effect, because nothing observed that the service had
         finished its work.
         """
-        _write_json(self.path(target, PAUSE_FILE + ".json"), {"paused": True, "at": _utcnow()})
-        running = self.running(target)
-        work = _read_json(self.path(target, WORK_FILE))
+        with self.guard(target, authorize):
+            _write_json(self.path(target, PAUSE_FILE + ".json"), {"paused": True, "at": _utcnow()})
+            running = self.running(target)
+            work = _read_json(self.path(target, WORK_FILE))
         if not running:
             return {"drained": True, "unconfirmed": 0, "running": False, "active": 0}
         if not isinstance(work, dict):
@@ -434,14 +486,73 @@ class HostTargetBase:
     def running(self, target: dict) -> bool:
         raise NotImplementedError
 
-    def start(self, target: dict, descriptor: dict, *, authorize=None) -> dict:
+    def stop(self, target: dict) -> dict:
         raise NotImplementedError
 
-    @staticmethod
-    def _authorized(authorize) -> None:
-        """The caller's fence check at the last moment before a process is started."""
-        if authorize is not None:
-            authorize()
+    # --- the one protected service lifecycle -----------------------------------------------------
+    def start(self, target: dict, descriptor: dict, *, authorize=None) -> dict:
+        """Reconcile, stop, retire, launch and publish the new state, all inside one guard.
+
+        The descriptor on the target must be exactly the one being started: a foreign or unknown
+        one refuses BEFORE any process is stopped and before any receipt is removed, because
+        something other than this delivery owns the target then. A live instance that is REALLY
+        running this descriptor is RECOGNIZED rather than killed and restarted, which is what makes
+        a restart - forward or rollback - reconcile instead of churn. Ownership is proven again
+        after the bounded stop, which can outlive a lease, and never after a mutation it would have
+        to undo.
+        """
+        with self.guard(target, authorize):
+            context = self._prepare(target, descriptor)
+            self._reconcile(target, descriptor)
+            recovered = self._matching_instance(target, descriptor)
+            if recovered is not None:
+                return recovered
+            stopped = self.stop(target)
+            if not stopped["stopped"]:
+                raise DeliveryRefused("previous_instance_unconfirmed", "target_id")
+            self._still_owned(authorize, "service_stopped")
+            self._retire(target)
+            return self._launch(target, descriptor, context)
+
+    def _prepare(self, target: dict, descriptor: dict):
+        """Everything that must hold BEFORE anything is stopped; it mutates nothing."""
+        return None
+
+    def _reconcile(self, target: dict, descriptor: dict) -> None:
+        """What is on the target right now, compared with the descriptor about to be started."""
+        current = self.current(target)
+        observed = None if current is None else descriptor_digest(current)
+        if observed != descriptor_digest(descriptor):
+            raise DeliveryRefused("descriptor_foreign", "target_id")
+
+    def _matching_instance(self, target: dict, descriptor: dict):
+        """A live instance that is REALLY running this descriptor already, or None.
+
+        The incumbent `consumption_verdict` decides it, exactly as the coordinator's own activation
+        check does, so an instance that merely echoes the descriptor digest from another runtime,
+        another root or another revision is not recognized and is replaced like any other
+        predecessor. Recognition is only for the instance a restart would otherwise kill and start
+        again for nothing.
+        """
+        verdict = consumption_verdict(descriptor, self.receipt(target))
+        if not verdict["consumed"] or not self.running(target):
+            return None
+        return {"started": False, "recovered": True, "instance_id": verdict["instance_id"]}
+
+    def _retire(self, target: dict) -> None:
+        """Retire the previous instance's own files, after it has been proven gone.
+
+        The old receipt goes before the start, so the next consumption check cannot read the
+        previous instance's evidence as the new one's.
+        """
+        for name in (RECEIPT_FILE, STOP_FILE + ".json", PAUSE_FILE + ".json"):
+            try:
+                self.path(target, name).unlink()
+            except OSError:
+                pass
+
+    def _launch(self, target: dict, descriptor: dict, context) -> dict:
+        raise NotImplementedError
 
 
 def _reaped(pid) -> bool:
@@ -540,29 +651,18 @@ class ProcessHostTarget(HostTargetBase):
         environment["ZEUS_REPOSITORY"] = environment["HARNESS_REPOSITORY"] = str(root)
         return environment
 
-    def start(self, target: dict, descriptor: dict, *, authorize=None) -> dict:
-        """Stop the previous instance, prove it is gone, then start exactly one new process.
-
-        The old receipt is removed before the start, so the next consumption check cannot read the
-        previous instance's evidence as the new one's. A previous process that cannot be proven
-        gone raises instead of starting a second one beside it, and the fence is re-checked
-        immediately before the launch so a superseded controller starts nothing.
-        """
+    def _prepare(self, target: dict, descriptor: dict) -> dict:
+        """The registered runtime root must hold an importable harness before anything is stopped."""
         root = Path(descriptor["root"])
-        environment = self.runtime_environment(root)
-        stopped = self.stop(target)
-        if not stopped["stopped"]:
-            raise DeliveryRefused("previous_instance_unconfirmed", "target_id")
-        for name in (RECEIPT_FILE, STOP_FILE + ".json", PAUSE_FILE + ".json"):
-            try:
-                self.path(target, name).unlink()
-            except OSError:
-                pass
-        self._authorized(authorize)
+        return {"root": root, "environment": self.runtime_environment(root)}
+
+    def _launch(self, target: dict, descriptor: dict, context: dict) -> dict:
+        """Exactly one new process, and the recorded state that identifies it, under the guard."""
         argv = [self.python, "-m", "codex_harness.adapters.host_delivery", "service",
                 "--state-dir", str(self.state_dir(target)), "--max-seconds", str(self.max_seconds)]
         process = subprocess.Popen(argv, stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL,
-                                   stderr=subprocess.DEVNULL, cwd=str(root), env=environment,
+                                   stderr=subprocess.DEVNULL, cwd=str(context["root"]),
+                                   env=context["environment"],
                                    **no_console_kwargs(process_group=True))
         _write_json(self.path(target, STATE_FILE),
                     {"pid": process.pid, "started_at": _utcnow(),
@@ -600,16 +700,7 @@ class ScheduledTaskHostTarget(HostTargetBase):
             time.sleep(STOP_POLL)
         return {"stopped": not self.running(target), "exit_code": result.returncode}
 
-    def start(self, target: dict, descriptor: dict, *, authorize=None) -> dict:
-        stopped = self.stop(target)
-        if not stopped["stopped"]:
-            raise DeliveryRefused("previous_instance_unconfirmed", "target_id")
-        for name in (RECEIPT_FILE, STOP_FILE + ".json", PAUSE_FILE + ".json"):
-            try:
-                self.path(target, name).unlink()
-            except OSError:
-                pass
-        self._authorized(authorize)
+    def _launch(self, target: dict, descriptor: dict, context) -> dict:
         # The task's own registration owns its launcher, its window policy and its process tree;
         # the runtime root it starts from is the owner's registration, which this never rewrites.
         result = self.runner(["schtasks", "/Run", "/TN", target["service"]], timeout=self.timeout)

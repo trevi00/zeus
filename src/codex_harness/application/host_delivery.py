@@ -79,6 +79,7 @@ from codex_harness.domain.host_delivery import (
     SWITCHING,
     TICK_SCHEMA,
     DeliveryRefused,
+    LifecycleInterrupted,
     ci_verdict,
     consumption_verdict,
     delivery_status,
@@ -329,6 +330,21 @@ class HostDelivery:
             return write()
         except ContractError as exc:
             raise AmbiguousEffect(effect, exc) from exc
+
+    @staticmethod
+    def _lifecycle(action):
+        """Run one guarded host lifecycle operation and name what an interruption of it means.
+
+        The host adapter raises `LifecycleInterrupted` only when this controller lost the fence
+        AFTER it had already stopped that target's service, inside the guard that prevents anyone
+        else from acting in the middle of it. That effect is out in the world, so it becomes the
+        same ambiguity every other lost-across-the-effect case is - reconciled by the next owner -
+        rather than a refusal that would claim nothing happened.
+        """
+        try:
+            return action()
+        except LifecycleInterrupted as interrupted:
+            raise AmbiguousEffect(interrupted.effect, interrupted.cause) from interrupted
 
     def _guard(self, plan: dict, intent: dict, outcome: str, record) -> dict:
         """Record a stop, or report that this controller no longer owns what it observed."""
@@ -626,8 +642,9 @@ class HostDelivery:
         """Pause new admission and prove the target drained; an unconfirmed effect blocks the switch."""
         host, target = self._host(plan)
         # Pausing admission writes to the target's state directory: a stale actor pauses nothing.
+        # The check is made again inside the target guard, where the pause actually happens.
         self._owned_now(claim)
-        observed = host.drain(target)
+        observed = host.drain(target, authorize=self._authorizer(claim))
         if observed.get("unconfirmed"):
             # Unknown work is not finished work: this never kills active model work to deploy.
             if self._expired(intent):
@@ -670,8 +687,12 @@ class HostDelivery:
         if running["consumed"] and host.running(target):
             started = {"started": False, "recovered": True}
         else:
+            # This outer check is not the mutation boundary: the guard inside the adapter proves
+            # ownership again before the first effect, reconciles what is actually on the target
+            # and recognizes an already matching live instance instead of restarting it.
             self._owned_now(claim)
-            started = host.start(target, descriptor, authorize=authorize)
+            started = self._lifecycle(
+                lambda: host.start(target, descriptor, authorize=authorize))
         self._record("descriptor_switched", lambda: self._record_descriptor(
             plan, intent, descriptor, consumed=False, instance_id=None, claim=claim))
         self._emit(EVENT_SWITCHED, "observed", plan, attributes={
@@ -852,10 +873,12 @@ class HostDelivery:
             verdict, alive = {"consumed": False, "instance_id": None}, False
             error_type = safe_error_type(type(exc).__name__)
         if not (verdict["consumed"] and alive) and not record.get("started"):
-            # The restored descriptor is there but its runtime is not: start it exactly once.
+            # The restored descriptor is there but its runtime is not: start it exactly once, under
+            # the same guard, the same authorization and the same reconciliation as a forward start.
             try:
                 self._owned_now(claim)
-                host.start(target, previous, authorize=self._authorizer(claim))
+                self._lifecycle(lambda: host.start(target, previous,
+                                                   authorize=self._authorizer(claim)))
             except AmbiguousEffect:
                 raise
             except Exception as exc:

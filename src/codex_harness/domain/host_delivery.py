@@ -163,6 +163,21 @@ class DeliveryRefused(ContractError):
         self.reason_code, self.field = reason_code, field
 
 
+class LifecycleInterrupted(Exception):
+    """Ownership ended DURING a lifecycle operation that had already changed the host.
+
+    It is deliberately not a `ContractError`: a refusal means nothing happened, while this names an
+    effect that is already out in the world - the service of this target was stopped, and only then
+    did the fence turn out to be gone. The operation stops there: nothing is cleaned up, nothing is
+    started, and the coordinator reports an ambiguous effect so the next owner reconciles this
+    target. The stopped instance's own evidence is preserved rather than erased or called cancelled.
+    """
+
+    def __init__(self, effect: str, cause: Exception):
+        super().__init__(effect)
+        self.effect, self.cause = effect, cause
+
+
 def _token(value) -> bool:
     return type(value) is str and TOKEN.fullmatch(value) is not None
 
@@ -644,6 +659,7 @@ __all__ = ["ACTIVE", "AUTHORITY", "AWAITING_CI", "AWAITING_CONSUMPTION", "AWAITI
            "ROLLED_BACK", "ROLLING_BACK", "STAGE_ORDER", "STATUS_SCHEMA", "STOPPED_STAGES",
            "SWITCHING",
            "TARGET_KINDS", "TERMINAL_STAGES", "TICK_SCHEMA", "UNCHANGED", "DeliveryRefused",
+           "LifecycleInterrupted",
            "ci_verdict", "consumption_verdict", "delivery_progress", "delivery_status",
            "descriptor_digest", "new_intent", "next_stage", "normal_path", "plan_digest",
            "release_gate", "resolve_descriptor", "safe_error_type", "same_path",

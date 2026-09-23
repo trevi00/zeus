@@ -2231,8 +2231,9 @@ at the intended head is adopted rather than published again, an already merged o
 rather than merged again, and a running instance's own receipt is recognized rather than restarted.
 The controller claims only queue rows a registered plan names (so another controller's row is never
 consumed or spent). Ownership is proven BEFORE every external mutation - publish, merge, drain,
-switch, start, restore - and again inside the target lock for the switch and the start, so a
-controller whose lease expired while it waited for that lock overwrites nothing; every durable
+switch, start, restore - and again inside that target's own lifecycle guard for the drain, the
+switch and the start, so a controller whose lease expired while it waited for that guard overwrites
+nothing; every durable
 observation is then committed in the SAME transaction that re-checks the claim's generation, owner
 and lease, and the promotion shares one transaction with its own ownership check rather than
 checking and then promoting separately. A fence lost BEFORE an effect changes nothing and records
@@ -2260,14 +2261,31 @@ owner itself (`GitWorkspace.qualify_merged`), and the merge this controller perf
 only observed after a lost response take exactly the same path, so a merged tree that is not the
 reviewed one is `merged_tree_mismatch` and stays blocked on every later tick.
 
-The host boundary is descriptor-first. A descriptor is immutable and is replaced, never edited:
-under a target-specific lock (`target_lock_held` is a conflicting change, never something to break)
-the descriptor that is there right now must be exactly the expected predecessor
-(`descriptor_changed`, `descriptor_predecessor_mismatch`), and the replacement is one atomic
-`os.replace`. New admission is paused and the drain is PROVEN before the switch: a service that is
-running with no work report, or with an unconfirmed effect, blocks the switch
+The host boundary is descriptor-first, and ONE service is ONE lifecycle. Replacing the descriptor,
+pausing, stopping the old instance, retiring its files, launching the new one and publishing the
+state that identifies it all run under a single target-specific guard (`HostTargetBase.guard`),
+which every controller that touches that target uses and which unrelated targets never share:
+`target_lock_held` is a conflicting change on that target, waited for within its timeout and then
+refused without any mutation, never broken on age - a guard that survived a crashed owner is an
+actual recovery condition for the owner, not something a successor decides for itself. Inside it,
+this controller's ownership is proven BEFORE the first mutation of any kind, and what is actually on
+the target is reconciled before anything is touched: the descriptor must be exactly the one being
+switched from (`descriptor_changed`, `descriptor_predecessor_mismatch`) or started
+(`descriptor_foreign`), so a superseded controller that resumes into a target its successor has
+taken over stops no service, deletes no receipt and starts no second instance. A descriptor
+replacement is one atomic `os.replace`. A live instance that the incumbent `consumption_verdict`
+shows is REALLY running the intended descriptor is recognized rather than killed and started again,
+so a restart - forward or rollback - reconciles instead of churning the service; an instance that
+merely echoes the digest from another runtime, root or revision is not recognized. Ownership is
+re-checked after the bounded stop, which can outlive a lease, and a loss THERE is the ambiguous
+effect it is (`service_stopped`): nothing is cleaned up or launched after it, the stopped instance's
+own evidence is preserved, and the next owner reconciles the target rather than the effect being
+called cancelled. New admission is paused and the drain is PROVEN before the switch: a service that
+is running with no work report, or with an unconfirmed effect, blocks the switch
 (`drain_unconfirmed_effects`) rather than having its active work killed. A previous instance that
-cannot be proven gone is `previous_instance_unconfirmed` and no second one is started beside it.
+cannot be proven gone is `previous_instance_unconfirmed` and no second one is started beside it. No
+store transaction is open while the guard is held, it is never acquired recursively, and the
+forward start and the rollback start share exactly the same protection.
 
 The service is launched from the OWNER-REGISTERED runtime root of its target - that root as the
 working directory, that root's `src` ahead of `PYTHONPATH` - and a root with no importable harness

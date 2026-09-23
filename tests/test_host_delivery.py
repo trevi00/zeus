@@ -20,6 +20,8 @@ deadlock into an immediate failure for every path below, including the `Releases
 import hashlib
 import json
 import os
+import subprocess
+import threading
 import time
 from contextlib import contextmanager
 from datetime import datetime, timedelta
@@ -34,6 +36,7 @@ from codex_harness.adapters.host_delivery import (
     STATE_FILE,
     WORK_FILE,
     ProcessHostTarget,
+    ScheduledTaskHostTarget,
     collect_monitor_canary,
     effective_profile_digest,
     effective_worker_image,
@@ -77,6 +80,7 @@ from codex_harness.domain.host_delivery import (
     ROLLING_BACK,
     SWITCHING,
     DeliveryRefused,
+    LifecycleInterrupted,
     ci_verdict,
     consumption_verdict,
     descriptor_digest,
@@ -1483,6 +1487,405 @@ def test_a_promotion_that_loses_the_fence_never_moves_the_pointer_and_reconciles
     finally:
         delivery._emit = emit
         stop_target(system)
+
+
+# ----- the shared target lifecycle guard --------------------------------------------------------------------
+# One service is one lifecycle: the descriptor replacement, the pause, the stop, the retirement of
+# the old instance's files, the launch and the state that identifies it. These exercise the ADAPTER
+# effects of that boundary - real temporary state directories, real child processes and a labelled
+# injected `schtasks` runner - not only the coordinator's return codes.
+def descriptor_for(target, *, revision=None, predecessor=None, **overrides):
+    """A complete descriptor for a real target: rooted at this checkout so it can really launch,
+    and bound by default to the facts this runtime really has, so an instance of it is one the
+    incumbent consumption check can actually recognize."""
+    return {"schema": "urn:zeus:host-descriptor:1", "target_id": target["target_id"],
+            "root": target["root"], "revision": revision or DESCRIPTOR_REVISION,
+            "worker_image": IMAGE, "profile_digest": PROFILE or FIXTURE_PROFILE,
+            "predecessor": predecessor, **overrides}
+
+
+def await_receipt(target, digest=None, timeout=20.0):
+    """The launched child's OWN receipt, waited for within a bound; optionally for one descriptor."""
+    path = Path(target["state_dir"]) / RECEIPT_FILE
+    deadline = time.monotonic() + timeout
+    while time.monotonic() < deadline:
+        try:
+            document = json.loads(path.read_text("utf-8"))
+        except (OSError, ValueError):
+            document = None
+        if isinstance(document, dict) and (digest is None
+                                           or document.get("descriptor_sha256") == digest):
+            return document
+        time.sleep(0.05)
+    raise AssertionError("no startup receipt for the expected descriptor appeared")
+
+
+def live_target(tmp_path, host, target_id="canary-service"):
+    """A real target with a real running child process that has reported its own startup."""
+    target = targets_document(tmp_path, target_id=target_id)["targets"][0]
+    descriptor = descriptor_for(target)
+    host.switch(target, descriptor, expected=None)
+    host.start(target, descriptor)
+    return target, descriptor, await_receipt(target, descriptor_digest(descriptor))
+
+
+def stale_fence(after=0):
+    """A labelled injected fence: it authorizes `after` calls, then reports the lease it lost."""
+    def authorize():
+        authorize.calls += 1
+        if authorize.calls > after:
+            raise ContractError("injected: stale release controller")
+
+    authorize.calls = 0
+    return authorize
+
+
+def state_of(target, name):
+    return Path(target["state_dir"]) / name
+
+
+def test_a_stale_controller_stops_nothing_and_unlinks_nothing_before_the_guard(tmp_path):
+    """The rejected R5 path itself: a superseded controller resumes into `start`.
+
+    Before this guard, `start` stopped the service and deleted its receipt BEFORE calling the
+    caller's authorization and outside any lock, so a controller whose lease had expired took out
+    the successor it had lost the target to and destroyed that successor's evidence. Ownership is
+    now proven inside the guard, before the first mutation of any kind.
+    """
+    host = ProcessHostTarget(max_seconds=60)
+    target, descriptor, receipt = live_target(tmp_path, host)
+    try:
+        successor = descriptor_for(target, revision="8" * 40,
+                                   predecessor=descriptor_digest(descriptor))
+        host.switch(target, successor, expected=descriptor_digest(descriptor))
+        fence = stale_fence()
+        with pytest.raises(ContractError):
+            host.start(target, successor, authorize=fence)
+        assert fence.calls == 1  # asked once, inside the guard, and refused there
+        assert host.running(target)  # the live instance was never stopped
+        assert await_receipt(target)["instance_id"] == receipt["instance_id"]
+        assert not state_of(target, "stop.json").exists()  # nothing was even asked to stop
+        assert not state_of(target, "switch.lock").exists()  # and the guard was released
+    finally:
+        host.stop(target)
+
+
+def test_a_successor_started_between_the_outer_check_and_the_guard_survives(tmp_path):
+    """The review's controlled barrier, deterministically interleaved.
+
+    A passes its own outer fence check; B then claims the target and completes its WHOLE lifecycle
+    operation; only then does A resume into the adapter. A must neither stop B's service nor remove
+    B's receipt, whether the authority it carries reports the loss or is absent altogether.
+    """
+    first, second = ProcessHostTarget(max_seconds=60), ProcessHostTarget(max_seconds=60)
+    target = targets_document(tmp_path)["targets"][0]
+    mine = descriptor_for(target, revision="1" * 40)
+    first.switch(target, mine, expected=None)
+    fence = stale_fence(after=1)
+    fence()  # A's outer check, passed while it still owned the lease
+    # --- the barrier: B takes the target over completely before A acts on it ---
+    theirs = descriptor_for(target, revision="2" * 40, predecessor=descriptor_digest(mine))
+    second.switch(target, theirs, expected=descriptor_digest(mine))
+    second.start(target, theirs)
+    running = await_receipt(target, descriptor_digest(theirs))
+    try:
+        with pytest.raises(ContractError):
+            first.start(target, mine, authorize=fence)
+        assert second.running(target)
+        assert await_receipt(target)["instance_id"] == running["instance_id"]
+        # Even with no authority to ask at all, the target no longer carries A's descriptor: that
+        # is a foreign state, refused before anything is stopped or unlinked.
+        with pytest.raises(DeliveryRefused) as foreign:
+            first.start(target, mine)
+        assert foreign.value.reason_code == "descriptor_foreign"
+        assert second.running(target) and second.current(target) == theirs
+        assert await_receipt(target)["instance_id"] == running["instance_id"]
+        assert not state_of(target, "stop.json").exists()
+    finally:
+        second.stop(target)
+
+
+def test_a_fence_lost_during_the_bounded_stop_preserves_the_effect_and_starts_nothing(tmp_path):
+    """A stop can outlive a lease. What it already did is preserved, and nothing follows it."""
+    host = ProcessHostTarget(max_seconds=60)
+    target, descriptor, receipt = live_target(tmp_path, host)
+    try:
+        successor = descriptor_for(target, revision="8" * 40,
+                                   predecessor=descriptor_digest(descriptor))
+        host.switch(target, successor, expected=descriptor_digest(descriptor))
+        recorded = json.loads(state_of(target, STATE_FILE).read_text("utf-8"))
+        fence = stale_fence(after=1)  # the guard entry passes; the check after the stop does not
+        with pytest.raises(LifecycleInterrupted) as interrupted:
+            host.start(target, successor, authorize=fence)
+        assert interrupted.value.effect == "service_stopped"
+        assert isinstance(interrupted.value.cause, ContractError)
+        # The stop happened and is kept as the observed effect it is: no cleanup, no launch, and
+        # the stopped instance's own evidence is not erased or called cancelled.
+        assert not host.running(target)
+        assert await_receipt(target)["instance_id"] == receipt["instance_id"]
+        assert json.loads(state_of(target, STATE_FILE).read_text("utf-8")) == recorded
+        # The guard is released, so the successor is serialized behind it rather than locked out.
+        successor_host = ProcessHostTarget(max_seconds=60)
+        assert successor_host.start(target, successor, authorize=lambda: None)["started"] is True
+        assert await_receipt(target, descriptor_digest(successor))["instance_id"] \
+            != receipt["instance_id"]
+    finally:
+        host.stop(target)
+
+
+def test_a_supersession_during_the_switch_stop_is_reported_as_an_ambiguous_effect(tmp_path):
+    """The same interruption through the REAL coordinator: a conflict carrying the effect it had."""
+    armed = {"on": False, "system": None}
+
+    class SupersedingHost(ProcessHostTarget):
+        """Labelled injected supersession, exactly inside the lifecycle's own bounded stop."""
+
+        def stop(self, target):
+            observed = super().stop(target)
+            if armed["on"]:
+                armed["on"] = False
+                supersede(armed["system"])
+            return observed
+
+    system = build(tmp_path)
+    armed["system"] = system
+    system["host"] = system["delivery"].hosts["process"] = SupersedingHost(max_seconds=60)
+    try:
+        drive(system, until=SWITCHING, limit=7)
+        armed["on"] = True
+        result = system["delivery"].tick()
+        assert result["outcome"] == "conflict" and result["controller"] == "stale"
+        assert result["ambiguous_effect"] == "service_stopped"
+        # The durable intent still names the stage entered BEFORE the effect, and neither the
+        # switch nor a consumption is claimed: the next owner reconciles this target.
+        assert intent_of(system)["stage"] == SWITCHING
+        assert descriptor_of(system) is None
+        assert not state_of(system["target"], RECEIPT_FILE).exists()
+    finally:
+        stop_target(system)
+
+
+@binds_a_runtime
+def test_a_restarted_start_recognizes_the_matching_live_instance_instead_of_restarting_it(tmp_path):
+    """Recovery is recognition: the instance already running the intended descriptor is kept.
+
+    It is the incumbent consumption check that decides "already running this", so this is the real
+    runtime's own receipt and not a digest echo. It is also the same call the forward switch and
+    the rollback both make, so a start reached again after a lost acknowledgement - in either
+    direction - reconciles rather than churns the service.
+    """
+    host = ProcessHostTarget(max_seconds=60)
+    target, descriptor, receipt = live_target(tmp_path, host)
+    try:
+        recorded = json.loads(state_of(target, STATE_FILE).read_text("utf-8"))
+        again = host.start(target, descriptor, authorize=lambda: None)
+        assert again == {"started": False, "recovered": True,
+                         "instance_id": receipt["instance_id"]}
+        assert host.running(target)
+        assert await_receipt(target)["instance_id"] == receipt["instance_id"]
+        assert json.loads(state_of(target, STATE_FILE).read_text("utf-8")) == recorded
+        assert not state_of(target, "stop.json").exists()  # it was never asked to stop
+    finally:
+        host.stop(target)
+
+
+class LateReceiptHost(ProcessHostTarget):
+    """Labelled injected timing: the next `miss` receipt reads answer None.
+
+    That is exactly the window the guard closes - the coordinator looked before the restored
+    instance had published its startup, so its own check says "start it", and the guarded start
+    looks again at the moment it would otherwise kill that instance.
+    """
+
+    def __init__(self, *, miss=0, **kwargs):
+        super().__init__(**kwargs)
+        self.miss = miss
+
+    def receipt(self, target):
+        if self.miss > 0:
+            self.miss -= 1
+            return None
+        return super().receipt(target)
+
+
+@binds_a_runtime
+def test_a_rollback_start_after_a_lost_acknowledgement_keeps_the_restored_instance(tmp_path):
+    """The rollback half of that reconciliation, through the coordinator and a real process."""
+    verdicts = {"passed": True}
+    system = build(tmp_path, canaries={CANARY_STARTUP: lambda target, descriptor, startup: {
+        "passed": verdicts["passed"], "reason_code": None if verdicts["passed"]
+        else "canary_fixture_failed"}})
+    system["host"] = system["delivery"].hosts["process"] = LateReceiptHost(max_seconds=60)
+    try:
+        assert drive(system)[-1]["stage"] == ACTIVE
+        good = descriptor_of(system)
+        verdicts["passed"] = False
+        successor = reviewed_release(system["store"], system["org"],
+                                     record_candidate={**candidate(), "revision": "5" * 40,
+                                                       "branch": "harness/two", "task_id": "two"})
+        plan = plan_document(successor, plan_id="delivery-plan-2",
+                             expected=good["descriptor_sha256"])
+        system["delivery"].register(plan, pin(path="docs/zeus/operations/delivery-2.json"))
+        system["plan"] = plan
+        drive(system, until=ROLLING_BACK, limit=30)
+        for _ in range(20):
+            if (intent_of(system).get("rollback") or {}).get("started"):
+                break
+            system["delivery"].tick()
+            system["clock"].advance(1)
+            time.sleep(0.05)
+        restored = await_receipt(system["target"], good["descriptor_sha256"])
+        with system["store"].transaction() as tx:
+            intent = tx.get(BUCKET_INTENTS, system["plan"]["plan_id"])
+            # Labelled injected loss of the start acknowledgement: the predecessor IS running, the
+            # durable record of having started it never happened, so the stage starts it again.
+            intent["rollback"] = {**intent["rollback"], "started": False}
+            tx.put(BUCKET_INTENTS, intent["id"], intent)
+        # ...and the coordinator's own check misses that instance's receipt, so the start is the
+        # one thing standing between the restored runtime and being killed for nothing.
+        system["host"].miss = 1
+        results = drive(system, until=ROLLED_BACK, limit=30)
+        assert results[-1]["stage"] == ROLLED_BACK, "\n".join(
+            str((r["stage"], r["outcome"], r["reason_code"])) for r in results)
+        # The same restored instance proved the rollback: it was recognized, never restarted.
+        assert descriptor_of(system)["instance_id"] == restored["instance_id"]
+    finally:
+        stop_target(system)
+
+
+def test_lifecycle_operations_serialize_on_one_target_and_never_across_targets(tmp_path):
+    """The guard is per target: one service is exclusive, an unrelated one is not affected."""
+    holder, elsewhere = ProcessHostTarget(max_seconds=60), ProcessHostTarget(max_seconds=60)
+    first = targets_document(tmp_path, target_id="canary-service")["targets"][0]
+    second = targets_document(tmp_path, target_id="other-service")["targets"][0]
+    inside, release, outcome = threading.Event(), threading.Event(), {}
+    descriptor = descriptor_for(first)
+
+    def barrier():
+        """A controlled barrier: the holder stays inside the guard until this is released."""
+        inside.set()
+        release.wait(30)
+
+    def hold():
+        try:
+            outcome["result"] = holder.switch(first, descriptor, expected=None, authorize=barrier)
+        except Exception as exc:  # reported through the result, never swallowed
+            outcome["error"] = exc
+
+    worker = threading.Thread(target=hold)
+    worker.start()
+    try:
+        assert inside.wait(30)
+        contender = ProcessHostTarget(max_seconds=60, lock_timeout=0.3)
+        with pytest.raises(DeliveryRefused) as held:
+            contender.start(first, descriptor, authorize=lambda: None)
+        # A held guard is a conflicting change on that target: waited for, then refused, never
+        # broken on age, and nothing of the operation it would have performed happened.
+        assert held.value.reason_code == "target_lock_held"
+        assert not state_of(first, "stop.json").exists()
+        assert not state_of(first, STATE_FILE).exists()
+        # The unrelated target is free while that one is held.
+        assert elsewhere.switch(second, descriptor_for(second), expected=None)["written"] is True
+    finally:
+        release.set()
+        worker.join(30)
+    assert outcome.get("error") is None and outcome["result"]["written"] is True
+
+
+def test_an_unavailable_authority_stops_the_lifecycle_before_any_effect(tmp_path):
+    """The fence cannot be read at all: the operation refuses and the service stays exactly as is."""
+    host = ProcessHostTarget(max_seconds=60)
+    target, descriptor, receipt = live_target(tmp_path, host)
+
+    def unavailable():
+        raise ConnectionError("injected: the fence cannot be read")
+
+    try:
+        successor = descriptor_for(target, revision="8" * 40,
+                                   predecessor=descriptor_digest(descriptor))
+        with pytest.raises(ConnectionError):
+            host.switch(target, successor, expected=descriptor_digest(descriptor),
+                        authorize=unavailable)
+        assert host.current(target) == descriptor  # not replaced
+        with pytest.raises(ConnectionError):
+            host.start(target, descriptor, authorize=unavailable)
+        assert host.running(target)  # not stopped
+        assert await_receipt(target)["instance_id"] == receipt["instance_id"]
+        assert not state_of(target, "stop.json").exists()
+        assert not state_of(target, "switch.lock").exists()
+        with pytest.raises(ConnectionError):
+            host.drain(target, authorize=unavailable)
+        assert not state_of(target, "pause.json").exists()  # not even paused
+    finally:
+        host.stop(target)
+
+
+class FakeSchtasks:
+    """A labelled in-test double for `schtasks`: it records argv and answers from its own state.
+
+    No scheduled task is created, queried, started or ended on this or any host; nothing here runs
+    `schtasks` and no production service is reachable from it.
+    """
+
+    def __init__(self, running=False):
+        self.calls, self.running = [], running
+
+    def __call__(self, argv, timeout=None):
+        self.calls.append(list(argv))
+        verb = argv[1]
+        if verb == "/Query":
+            return subprocess.CompletedProcess(
+                argv, 0, "Status: " + ("Running" if self.running else "Ready"), "")
+        if verb == "/End":
+            self.running = False
+        if verb == "/Run":
+            self.running = True
+        return subprocess.CompletedProcess(argv, 0, "", "")
+
+    @property
+    def verbs(self):
+        return [call[1] for call in self.calls]
+
+
+def test_the_scheduled_task_target_shares_the_guard_authorization_and_reconciliation(tmp_path):
+    """The Windows host target under exactly the same lifecycle boundary, with an injected runner."""
+    runner = FakeSchtasks(running=True)
+    host = ScheduledTaskHostTarget(runner=runner)
+    target = targets_document(tmp_path, target_id="fleet-service",
+                              kind="windows_scheduled_task")["targets"][0]
+    # An identity-only runtime: this target's service is the owner's task, which this never
+    # launches itself, so the descriptor's root is a registered path and not this checkout.
+    descriptor = descriptor_for(target, root="/opt/zeus", revision=REVISION,
+                                worker_image=FIXTURE_IMAGE, profile_digest=FIXTURE_PROFILE)
+    host.switch(target, descriptor, expected=None)
+    # A superseded controller ends nothing and runs nothing: the task is not even queried.
+    with pytest.raises(ContractError):
+        host.start(target, descriptor, authorize=stale_fence())
+    assert runner.verbs == [] and runner.running is True
+    # A descriptor that is not the target's is foreign, and refuses before the task is touched.
+    with pytest.raises(DeliveryRefused) as refused:
+        host.start(target, descriptor_for(target, root="/opt/zeus", revision="7" * 40,
+                                          worker_image=FIXTURE_IMAGE,
+                                          profile_digest=FIXTURE_PROFILE))
+    assert refused.value.reason_code == "descriptor_foreign" and runner.verbs == []
+    # A live instance that is really running this descriptor is recognized, not restarted.
+    receipt = owned_receipt(descriptor, target_id="fleet-service", instance_id="a" * 32)
+    state_of(target, RECEIPT_FILE).write_text(json.dumps(receipt), encoding="utf-8")
+    assert host.start(target, descriptor, authorize=lambda: None) == {
+        "started": False, "recovered": True, "instance_id": "a" * 32}
+    assert runner.verbs == ["/Query"] and runner.running is True
+    # Another instance's receipt: the task is ended, that evidence retired, and it is started once.
+    state_of(target, RECEIPT_FILE).write_text(
+        json.dumps(owned_receipt(descriptor, target_id="fleet-service",
+                                 descriptor_sha256="0" * 64)), encoding="utf-8")
+    assert host.start(target, descriptor, authorize=lambda: None) == {
+        "started": True, "service": target["service"]}
+    assert runner.verbs.index("/End") < runner.verbs.index("/Run")
+    assert runner.verbs.count("/Run") == 1 and runner.running is True
+    assert not state_of(target, RECEIPT_FILE).exists()
+    assert json.loads(state_of(target, STATE_FILE).read_text("utf-8"))["descriptor_sha256"] \
+        == descriptor_digest(descriptor)
+    assert not state_of(target, "switch.lock").exists()
 
 
 # ----- isolated PostgreSQL --------------------------------------------------------------------------------------

@@ -78,7 +78,7 @@ reason code, the error TYPE and the evidence. One tick advances at most one stag
 | `merge_intended` | the merge happened — recognized rather than repeated if a previous tick already merged — **and** the merged revision was qualified against the reviewed tree by the merge owner itself, on the performed and the observed path alike |
 | `merged` | the incumbent evaluator recorded `verified`, the target is registered, the current descriptor is the approved predecessor, and the whole target tuple plus the expected active release are written durably |
 | `drain_intended` | new admission is paused and the target reports no active and no unconfirmed work |
-| `switching` | what is on the host was reconciled first (the intended descriptor, the expected predecessor, or a **foreign** state that blocks), then the immutable descriptor was replaced atomically under the target lock against its expected predecessor, and the service was started exactly once from the registered runtime root |
+| `switching` | what is on the host was reconciled first (the intended descriptor, the expected predecessor, or a **foreign** state that blocks), then the immutable descriptor was replaced atomically under the target's lifecycle guard against its expected predecessor, and the service was started exactly once from the registered runtime root — reconciled, stopped, retired, launched and recorded inside that same guard |
 | `awaiting_consumption` | the launched process's own startup receipt names this target's registered root, a package imported from inside it, and the revision, effective image and profile that runtime actually has; that observed startup is recorded; and only then does the named canary decide whether it may be activated |
 | `active` | `Releases.promote` moved the pointer under its own compare-and-swap |
 
@@ -91,8 +91,9 @@ receipt is recognized. A restarted controller reads the same durable intent and 
 
 Ownership is proven **before every external mutation**, not only when its result is recorded: the
 claim's generation, owner and lease are re-checked immediately before publishing, merging, draining,
-switching, starting and restoring, and the switch and the start re-check it again *inside* the
-target lock, so a controller whose lease expired while it waited for that lock overwrites nothing.
+switching, starting and restoring, and the drain, the switch and the start re-check it again
+*inside* that target's lifecycle guard, so a controller whose lease expired while it waited for the
+guard overwrites nothing.
 Every durable observation is then committed in the same transaction that re-checks the claim
 (`ReleaseQueue.owned`), and the promotion shares one transaction with its own ownership check, so
 there is no window between "this controller still owns the release" and "it moved the pointer".
@@ -110,9 +111,30 @@ another independently locking transaction.
 
 ## The host boundary
 
-* The descriptor is **immutable**: replaced under a target-specific lock, only when what is there is
-  exactly the expected predecessor, by one atomic `os.replace`. A held lock is a conflicting change
-  on that target and is never broken.
+* **One service is one lifecycle.** The descriptor replacement, the pause, the stop, the retirement
+  of the old instance's files, the launch and the state that identifies it all run under a single
+  guard per target (`HostTargetBase.guard`). Every controller that touches that target uses the same
+  one; unrelated targets share nothing and never wait for each other. A held guard is a conflicting
+  change on that target: it is waited for within `lock_timeout`, then refused (`target_lock_held`)
+  without any mutation, and it is **never** broken on age — a guard that survived a crashed owner is
+  a recovery condition to report, not something a successor may take. No store transaction is open
+  while it is held and it is never acquired recursively.
+* Inside that guard, ownership is proven **before the first mutation of any kind**, and what is
+  actually on the target is reconciled before anything is touched: the descriptor must be exactly
+  the one being switched from or started, so a controller that passed its own outer check, was
+  superseded while it waited, and then resumed stops no service, deletes no receipt and starts no
+  second instance. The forward start and the rollback start share exactly this protection.
+* Ownership is re-checked **after the bounded stop**, which can outlive a lease. A loss there is the
+  ambiguous effect it is (`service_stopped`): nothing is cleaned up or launched after it, the
+  stopped instance's own evidence is preserved, and the next owner reconciles the target — it is
+  never recorded as a cancellation.
+* A live instance that the incumbent `consumption_verdict` shows is **really** running the intended
+  descriptor is recognized rather than killed and restarted, so a restart in either direction
+  reconciles instead of churning the service. An instance that merely echoes the descriptor digest
+  from another runtime, root or revision is not recognized and is replaced like any other
+  predecessor.
+* The descriptor itself is **immutable**: replaced only when what is there is exactly the expected
+  predecessor, by one atomic `os.replace`.
 * Active work is **drained, not killed**. The controller writes `pause.json` into the target's state
   directory and reads the service's own `work.json` (`{"active": n, "unconfirmed": n}`). A running
   service with no work report at all, or with an unconfirmed effect, blocks the switch. A real
@@ -228,7 +250,15 @@ fence lost before an effect changing nothing and a fence lost across an effect (
 promotion) reported as an ambiguous conflict and then reconciled once; unconfirmed host effects
 blocking the switch; a foreign descriptor blocking the switch and the rollback; an old runtime never
 activating a new descriptor however alive its process is; a descriptor naming another image than the
-runtime's effective configuration never being consumed; the real coordinator with the real
+runtime's effective configuration never being consumed; the shared lifecycle guard against real
+child processes and controlled barriers — a superseded controller stopping and unlinking nothing, a
+successor that took the target over between the outer check and the guard surviving untouched, a
+fence lost during the bounded stop preserving that effect and starting nothing (through the adapter
+and through the coordinator, which reports it as `service_stopped` ambiguity), a restart
+recognizing the matching live instance forward and in rollback, one target serializing while an
+unrelated one does not, and a foreign descriptor, a held guard or an unreadable fence refusing
+without touching the service; the same guard, authorization and reconciliation on the scheduled-task
+target through a labelled injected `schtasks` runner; the real coordinator with the real
 `collect_monitor_source` canary, and that canary's missing, stale, unobserved, wrong-instance and
 wrong-revision refusals; a failed canary restoring and proving the predecessor; a restoration
 interrupted before its acknowledgement resuming and being proven; an unproven restoration blocking
