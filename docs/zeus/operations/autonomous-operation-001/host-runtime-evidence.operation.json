@@ -1,0 +1,34 @@
+{
+  "schema": "urn:zeus:operation:1",
+  "id": "autonomous-operation-001-host-runtime-evidence",
+  "base_revision": "937e24bba71c0714ccf0a20672054307362e4ec5",
+  "goal": {
+    "path": "docs/zeus/operations/autonomous-operation-001/SPEC.md",
+    "sha256": "64e6985a635bcd0a4fbc44f6cae3a95050c2c61d2f007a6528586e3dfc59a098",
+    "criterion": "Make the existing reviewed delivery controller consume immutable actual Fleet runtimes and retain a verifiable predecessor",
+    "rationale": "Replace the demonstrated one-shot continuation with a reusable owner-controlled delivery component; retain existing Releases and ReleaseQueue authority."
+  },
+  "budget": {
+    "mode": "subscription",
+    "total": 192,
+    "per_host": 192
+  },
+  "claude": {
+    "model": "claude-opus-5-5",
+    "timeout_seconds": 3600,
+    "max_budget_usd": 2
+  },
+  "plan": {
+    "objective": "Perform ONLY Managed runtime evidence recovery in SPEC. Runtime 344271b9 is preserved but UNACCEPTED; independent reviewer must review its whole managed-runtime implementation/matrix, not just documentation delta. Edit only HOST-RUNTIME.md. Run the already required focused eleven-file pytest and Ruff, and put only actually completed replayable commands in final tests list. The earlier full suite was incomplete and its first reproduced setup failure is missing ssh-keygen in verifier image. Preserve that history in docs; do NOT launch the full suite again here or claim it passed. No code/test changes, image installs, timeout increases, model calls or production mutations. Linux results do not prove native Windows. Owner will qualify real Fleet and rollback separately.",
+    "allowed_paths": [
+      "docs/zeus/operations/autonomous-operation-001/HOST-RUNTIME.md"
+    ],
+    "acceptance_criteria": [
+      "Owner-only immutable runtime materialization and exact actual child consumption; candidate has no arbitrary host command/path authority.",
+      "Real Fleet optional pause/drain/heartbeat is truthful, preserves running children, and refuses unknown idle.",
+      "Forward/restart/lost-response/concurrent-owner/rollback scenarios retain exact predecessor code and existing instance/fence authority.",
+      "Existing modes and relevant tests remain compatible; Windows/POSIX/fixture/actual distinctions and all failures are recorded.",
+      "Structured existing observations and read-only projection expose progress; no self-approval or production action."
+    ]
+  }
+}
