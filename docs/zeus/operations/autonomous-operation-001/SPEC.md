@@ -1,5 +1,69 @@
 # Whole autonomous operating loop
 
+## Consolidated continuation correction, 2026-09-23
+
+Independent review 7416beb6 rejected candidate 77dbb04f. It is preserved in this implementation
+checkout ONLY, not accepted or operating. Inspection verified 2/2 commands; 310 passed/10 skipped
+does not establish the four missing boundaries below. Owner traced the cited production paths and
+agrees they are reachable material gaps, not a request for a speculative broader audit. The
+administrative integration helper stopped before integration/PR on rejection. Native-runtime
+d4688f84 separately passed independent review AND native Windows 151 passed/8 skipped, with clean
+candidate after execution; preserve that qualification. Raw owner log and digest: artifacts/
+autonomous-operation-001/native-runtime-owner.log and .json.
+
+One correction batch: make the continuation a restartable, nonblocking, identity-bound effect
+owner. Retain all prior accepted session/runtime behavior and the existing routing table.
+
+R1: application/continuation._advance has no conductor transition for persisted INTENDED or
+RETURNED. A crash after those commits leaves the logical goal forever active without progress.
+Define a route-by-state table for every durable boundary; recover INTENDED through the SAME
+deterministic dispatch identity, reconcile DISPATCHED from actual child/decision evidence, and
+complete RETURNED from the exact committed decision. A running/pending/unknown execution is not
+permission for a second model call. Test process/controller recreation after each commit, including
+lost launch/result responses, and prove at most one invocation and eventual recorded completion.
+
+R2: LaneEvidence.read currently chooses any host_delivery_intents row for release_id; advancement
+then checks only its stage. Multiple targets for one release can complete or pause the wrong family.
+Bind delivery selection and advancement to the policy target AND exact release/candidate/revision,
+with the existing HostDelivery intent/consumption or rollback evidence. Foreign, ambiguous, stale
+or unavailable evidence must not complete the item or pause its unrelated family. Carry the bound
+tuple in the continuation intent and revalidate the persisted evidence at reconciliation. Test two
+targets on one release, including one active and the intended one pending, and foreign rollback.
+
+R3: FleetRunner.run calls _continue before admission/reaping/heartbeat; LaneConductor.__call__ uses
+subprocess.run until the full model decision returns. A >30-second decision therefore suppresses
+heartbeats and delays unrelated work and graceful stop. Replace this synchronous call with bounded
+start/poll/reconcile methods over an owned hidden child, reusing existing background_service and
+Fleet process ownership conventions. Persist launch identity before/after effects and retain it
+across ticks/restart. Do not keep only an in-memory Future/thread or launch detached orphan work.
+Slow model execution must not hold the Fleet tick or a database transaction. Active conductors
+count as owned/unresolved work in drain/stop/heartbeat and consume a bounded concurrency slot;
+controller death/timeout has an explicit reconciliation outcome, never blind relaunch. Graceful
+stop closes admission and drains existing work. Unknown child ownership blocks only its family.
+Prove with a real controlled sleeping child and a second eligible family that Fleet admission,
+reaping, heartbeats and stop polling continue while the conductor is pending; this is a labelled
+local child, not a real model. Test restart, two owners, launch failure/response loss and cleanup.
+
+R4: tick supplies runtime checks only when first binding/observing jobs. _advance can publish or
+admit an existing intent after its image/archive/scope changed during an outage. Add one shared
+eligibility guard before every new effect, including resumed INTENDED/PUBLISHED work. Compare the
+current pinned policy, repository/goal/allowed paths/criteria, model/image/profile/archive identity
+and source candidate/evidence against the stored authorization. Drift refuses NEW effects and
+records exact next owner/reason. Reconciliation of already-started effects must still observe and
+retain their outcome under the original binding, without adopting it under a changed policy or
+losing the child. Test outage -> image/archive/scope drift -> restart: zero successor/provider
+start, original row/evidence preserved; separately test drift while child runs and safe accounting.
+
+Fixed acceptance additions: route x state restart table, target/candidate evidence binding,
+nonblocking managed Fleet child ownership, and eligibility recheck around every pre/post-effect
+boundary. Test their interactions together (changed runtime after lost dispatch response must
+reconcile the old child but cannot create a replacement). Keep normal finite behavior, independent
+review/release gates and zero-call idle behavior. No production enabling, no actual model calls
+in worker tests, no full-suite rerun in the known incomplete image. Use the existing 14-file scoped
+command from CONTINUATION.md plus new direct regressions, Fleet CLI/background-service checks and
+Ruff. Final tests list contains only completed exact replayable commands; failures remain in summary.
+Owner real PG/Redis/session/release qualification follows acceptance; do not claim it from fixtures.
+
 ## Accepted primitive integration and final connection batch, 2026-09-23
 
 Session 973a903f and managed runtime/evidence 9c327f48 passed independent reviews of their
