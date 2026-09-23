@@ -1,5 +1,44 @@
 # Whole autonomous operating loop
 
+## Managed runtime evidence recovery, 2026-09-23
+
+Candidate 344271b9 is preserved in the implementation checkout, not accepted or deployed. Inspector
+c58975d7 checked seven submitted commands, including the required focused 11-file scope and Ruff.
+The eighth command, bare `python -m pytest -q -rs`, timed out at 300.073 seconds around 56%.
+Its progress contains E markers around 46%; it is not merely evidence of a slow successful run.
+The worker explicitly reported that this full run had no final outcome, but also put that command
+in the tests claim list. Executor._inspect_evidence treats that list as claims to replay, not an
+attempt-history ledger. The original incomplete inspection remains unchanged.
+
+Owner discriminating check: collected the candidate's test order, mapped the first E to
+test_goal_progress, then reran that file alone from a no-git archive of the exact candidate in the
+same immutable image, offline, no credentials. It failed in fixture setup because `ssh-keygen` is
+absent. Log host-runtime-first-error-2.log establishes that missing prerequisite, not the cause of
+every later full-suite error or a managed-runtime code defect. An initial replay-path attempt ran
+zero tests because the verifier had reclaimed its workspace; that failed check is preserved in
+host-runtime-first-error.log and is not evidence of the test's behavior. Raw inspection and worker
+result remain in host-runtime-inspection.json / host-runtime-result.json under this task's artifacts.
+
+One evidence-only handoff: change HOST-RUNTIME.md to record the results and limitations precisely;
+run the originally required focused 11-file command and Ruff as completed checks. Final tests list
+contains ONLY actually completed claims. Record full-suite incomplete execution and missing image
+prerequisite in the document/summary, not as a successful command claim. Do not delete histories,
+weaken inspection, increase timeout, install tools in the live image or edit runtime/tests in this
+handoff. The original SPEC required scoped checks, not a successful whole suite in this verifier
+image. Full-suite qualification belongs to suitably provisioned CI; current unresolved prerequisite
+is explicit. Preserve the new process tests' Windows skips; no Windows success is inferred.
+
+Independent review must now cover the ENTIRE inherited managed-runtime implementation and its fixed
+acceptance matrix, not only this documentation delta. Review acceptance still does not establish
+native Windows managed-service behavior, real Fleet consumption or live rollback. Those owner gates
+remain. This is an owner-directed evidence repair and must not be reported as autonomous recovery.
+
+Repeated failure family: session correction previously had unsupported timeout-wrapped claims;
+this run mixed an unfinished command into completed evidence. For the future continuation design,
+separate observed attempts/status from replayable success claims under the existing evidence owner.
+Research/code inspection supports that producer/consumer contract mismatch; do not generalize it
+to a provider failure or blindly reimplement candidate code.
+
 ## Operating-host composition: immutable runtime consumption
 
 Observation (owner, 2026-09-23): the live fleet-owner.pyw / fleet-entry.py / launch-fleet.ps1 pin
