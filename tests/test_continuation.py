@@ -20,6 +20,7 @@ from test_operation import Bus, Collector, FakeBudget, FakeExecutor
 from test_worker_sessions import IMAGE, identity, write_session
 
 from codex_harness.adapters.artifacts import FileArtifacts
+from codex_harness.adapters.continuation import ResearchEvidence
 from codex_harness.adapters.executor import Executor
 from codex_harness.adapters.git import GitWorkspace
 from codex_harness.adapters.observation_spool import MemorySpool
@@ -157,6 +158,10 @@ class World:
         self.observer = Observer(MemoryStore(), self.spool, component="test-continuation", directory=MemoryDirectory())
         self.conductor = ConductorFixture(self.lane, accepted=accepted) if conductor else None
         self.lane_reads = 0
+        # The research evidence store: a real temporary content-addressed FileArtifacts root, read
+        # through the production `ResearchEvidence` port (the same layout as <runtime>/artifacts).
+        self.artifacts = FileArtifacts(str(tmp_path / "runtime" / "artifacts"))
+        self.evidence = ResearchEvidence(tmp_path / "runtime" / "artifacts")
         self.runtime = runtime or (lambda lane: {"image": IMAGE, "profile": "worker-v1", "session_archive_sha256": ARCHIVE})
         self.controller = self.build()
         self.document = {"schema": dc.POLICY_SCHEMA, "id": "policy-1", "enabled": enabled,
@@ -175,7 +180,8 @@ class World:
 
     def build(self, cls=Continuation, **overrides):
         ports = {"fleet": self.fleet, "lanes": self.lanes, "conductor": self.conductor,
-                 "validate": lambda m: validate_manifest(m, packaged_policy()), "observer": self.observer, **overrides}
+                 "validate": lambda m: validate_manifest(m, packaged_policy()), "observer": self.observer,
+                 "evidence": self.evidence, **overrides}
         return cls(self.control, **ports)
 
     def register(self):
