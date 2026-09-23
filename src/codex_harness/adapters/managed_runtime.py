@@ -436,18 +436,25 @@ class ManagedFleetTarget(ProcessHostTarget):
     def _activation_gate(self, target: dict, descriptor: dict) -> None:
         """Paused durable admission plus settled Fleet debt, or no activation (HOST-RUNTIME.md).
 
-        One Fleet transaction pauses admission (retained afterwards as this activation's hold) and
-        reads every reserving worker job and held execution unit. Any held debt refuses
-        `fleet_debt_held`; an unconfigured authority or a failed read refuses, because unknown is
-        never settled. A dead controller or an idle heartbeat does not count: only this read does.
-        Called under the target guard, before the stop and again before the launch; no store
-        transaction is open across process I/O."""
+        One Fleet transaction commits the admission pause (retained afterwards as this activation's
+        hold); a second one re-checks that pause and reads every reserving worker job and held
+        execution unit. A pause that could not be committed or acknowledged refuses
+        `fleet_pause_unknown` (no durable pause is claimed); a failed debt read after the committed
+        pause `fleet_debt_unknown`; a pause changed between the two `fleet_control_changed`; any held
+        debt `fleet_debt_held`; an unconfigured authority `fleet_authority_unconfigured`, because
+        unknown is never settled. A dead controller or an idle heartbeat does not count: only this
+        read does. Called under the target guard, before the stop and again before the launch; no
+        store transaction is open across process I/O."""
         if self.fleet is None:
             raise DeliveryRefused("fleet_authority_unconfigured", "fleet")
         try:
             gate = self.fleet.activation_gate(target["target_id"], descriptor_digest(descriptor))
         except Exception as exc:
-            raise DeliveryRefused("fleet_debt_unknown", "fleet") from exc
+            raise DeliveryRefused("fleet_pause_unknown", "fleet") from exc
+        if gate.get("reason_code") == "debt_unknown":
+            raise DeliveryRefused("fleet_debt_unknown", "fleet")
+        if gate.get("reason_code") == "control_changed":
+            raise DeliveryRefused("fleet_control_changed", "fleet")
         if gate.get("paused") is not True or gate.get("settled") is not True:
             raise DeliveryRefused("fleet_debt_held", "fleet")
 

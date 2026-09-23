@@ -77,9 +77,11 @@ INSTANCE_FOREIGN = "foreign"
 INSTANCE_UNKNOWN = "unknown"
 # The three states a start may act on. Everything else refuses BEFORE the stop and the cleanup.
 REPLACEABLE_INSTANCES = frozenset({INSTANCE_AUTHORIZED, INSTANCE_INTERRUPTED, INSTANCE_ABSENT})
-# A managed start refused by its activation gate (Fleet debt held, unreadable or without an
-# authority): nothing was launched and durable admission stays paused. A restoration waits on it.
-ACTIVATION_GATE_CODES = frozenset({"fleet_debt_held", "fleet_debt_unknown", "fleet_authority_unconfigured"})
+# A managed start refused by its activation gate (Fleet debt held or unreadable after the committed
+# pause, the pause changed between commit and read, the pause itself not committed or acknowledged,
+# or no authority): nothing was launched, and any pause already committed stays. A restoration waits.
+ACTIVATION_GATE_CODES = frozenset({"fleet_debt_held", "fleet_debt_unknown", "fleet_control_changed",
+                                   "fleet_pause_unknown", "fleet_authority_unconfigured"})
 
 # The incumbent fixed canary check ids. A plan selects one of these by id; the check itself lives in
 # the adapter and exercises the ACTUAL service contract of the target it was written for.

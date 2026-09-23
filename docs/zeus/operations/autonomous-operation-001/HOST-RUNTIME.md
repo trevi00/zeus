@@ -179,13 +179,18 @@ it is never read as "no debt".
 Every managed start that would launch (forward or restoration, first attempt or replay) calls
 `Fleet.activation_gate(target_id, descriptor_sha256)` under the target guard, twice: after the
 instance authority check and BEFORE the stop, and again after the stop immediately before
-retire/launch. Each call is one short Fleet transaction (no transaction is held across process I/O):
+retire/launch. Each call is two short Fleet transactions (none is held across process I/O):
 
-- it durably pauses admission; every `admit_one` and `reserve_unit` checks that pause in the same
-  serialization, so nothing can be reserved in the gap between the read and the launch;
-- it reads every reserving worker job and every held execution unit;
-- held debt refuses `fleet_debt_held`, a failed read `fleet_debt_unknown`. A dead controller or an
-  idle heartbeat alone never counts as settled.
+- the first durably pauses admission and reads no debt, so a failed debt read can never roll the
+  pause back; every `admit_one` and `reserve_unit` checks that pause in the same serialization, so
+  nothing can be reserved in the gap between the read and the launch. If this write or commit fails,
+  or its acknowledgement is lost, the start refuses `fleet_pause_unknown` and claims no pause; the
+  retry reconciles the same hold;
+- the second re-checks that the pause is exactly the committed one and reads every reserving worker
+  job and every held execution unit. A pause changed in between (an owner resume or pause, another
+  hold) refuses `fleet_control_changed` and is left as the owner set it;
+- held debt refuses `fleet_debt_held`, a failed debt read `fleet_debt_unknown` with the committed
+  pause kept. A dead controller or an idle heartbeat alone never counts as settled.
 
 A refusal before the stop leaves a live instance running with admission paused, so the owner of the
 debt can settle it. A restoration refused by the gate stays `rolling_back` and pending with that code

@@ -978,8 +978,8 @@ class HostDelivery:
                     record.update(started=False, verified=False,
                                   error_type=safe_error_type(type(exc).__name__), at=self.clock())
                     return self._blocked_rollback(plan, intent, claim, record, "rollback_failed")
-                # The target's Fleet debt is held or unknown: the predecessor is NOT started, the
-                # durable admission pause stays, and the restoration waits for settlement - then
+                # The target's Fleet debt or pause is held or unknown: the predecessor is NOT started,
+                # any committed admission pause stays, and the restoration waits for settlement - then
                 # blocks for its recovery owner under that same code, never started past the debt.
                 record.update(started=False, verified=False, error_type=None, gate=exc.reason_code,
                               at=self.clock())

@@ -33,6 +33,7 @@ from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
+from test_fleet import FaultStore
 from test_host_delivery import (
     PROFILE,
     RUNTIME_ROOT,
@@ -71,7 +72,13 @@ from codex_harness.adapters.managed_runtime import (
     scan,
 )
 from codex_harness.adapters.store import MemoryStore
-from codex_harness.application.fleet import ACTIVATION_HOLD, BUCKET_CONTROL, CONTROL_KEY, Fleet
+from codex_harness.application.fleet import (
+    ACTIVATION_HOLD,
+    BUCKET_CONTROL,
+    BUCKET_UNITS,
+    CONTROL_KEY,
+    Fleet,
+)
 from codex_harness.application.host_delivery import BUCKET_INTENTS, HostDelivery
 from codex_harness.bootstrap import organization
 from codex_harness.domain.fleet import UNIT_CONDUCTOR, FleetRefused
@@ -166,11 +173,11 @@ def descriptor(target, source_root, revision, **overrides):
             "predecessor": None, **overrides}
 
 
-def fixture_fleet():
+def fixture_fleet(store=None):
     """LABELLED fixture authority of the activation gate: a registered in-memory Fleet (MemoryStore,
     not PostgreSQL) standing in for the host store's Fleet. The fixture workload's own runner uses
     a separate in-memory Fleet, so it never releases this authority's activation hold."""
-    fleet = Fleet(MemoryStore())
+    fleet = Fleet(store if store is not None else MemoryStore())
     fleet.register(fixture_config(Path("/labelled-fixture")))
     return fleet
 
@@ -819,9 +826,9 @@ class UnreachableStore:
         raise ConnectionError("labelled injected unreachable Fleet store")
 
 
-def rolling_back(tmp_path, source):
+def rolling_back(tmp_path, source, store=None):
     """Predecessor A active, then candidate B whose owner canary fails: the delivery is rolling back."""
-    authority = fixture_fleet()
+    authority = fixture_fleet(store)
     system = managed_system(tmp_path, source, host=managed(fleet=authority))
     target, host = system["target"], system["host"]
     assert advance(system, ACTIVE)[-1]["stage"] == ACTIVE
@@ -883,9 +890,11 @@ def test_a_rollback_over_held_or_unknown_fleet_debt_never_starts_the_predecessor
             time.sleep(0.05)
         assert not host.running(target)
         refused("fleet_debt_held")  # a dead controller is not settled debt
-        host.fleet = Fleet(UnreachableStore())  # LABELLED injected failed authoritative read
+        # LABELLED injected unreachable authority: the pause transaction itself fails, so no durable
+        # pause is claimed by this gate (the earlier committed one is what stays below).
+        host.fleet = Fleet(UnreachableStore())
         result = tick(system)
-        assert (result["outcome"], result["reason_code"]) == ("pending", "fleet_debt_unknown")
+        assert (result["outcome"], result["reason_code"]) == ("pending", "fleet_pause_unknown")
         assert read(state(target, STATE_FILE)) == launch
         host.fleet = authority
         assert control(authority)["paused"] is True, "the pause survived the unknown read"
@@ -939,6 +948,81 @@ def test_a_settled_rollback_starts_the_exact_predecessor_once_and_no_reservation
         assert read(state(target, STATE_FILE)) == launch
     finally:
         teardown(target)
+
+
+@needs_profile
+def test_a_first_rollback_gate_whose_debt_read_fails_after_the_pause_never_starts_the_predecessor(tmp_path,
+                                                                                                 source):
+    store = FaultStore()
+    system, authority, good, first = rolling_back(tmp_path, source, store)
+    target, host = system["target"], system["host"]
+    try:
+        token = hold_debt(authority)
+        assert control(authority)["paused"] is False, "admission is open before the first gate"
+        candidate_launch = read(state(target, STATE_FILE))
+        store.scan_faults.add(BUCKET_UNITS)  # LABELLED injected failure of the FIRST gate's debt read
+        for _ in range(8):  # the restoration reaches its start (and the gate) within a few ticks
+            result = tick(system)
+            if not store.scan_faults:
+                break
+        assert not store.scan_faults, "the fault fired in the gate"
+        assert (result["outcome"], result["reason_code"]) == ("pending", "fleet_debt_unknown"), result
+        assert intent(system)["rollback"]["started"] is False
+        assert intent(system)["rollback"]["gate"] == "fleet_debt_unknown"
+        assert read(state(target, STATE_FILE)) == candidate_launch, "no predecessor launch"
+        row = control(authority)
+        assert row["paused"] is True and row[ACTIVATION_HOLD]["descriptor_sha256"] == descriptor_digest(good)
+        # Another Fleet owner over the same store: no worker admission, no conductor reservation.
+        other = Fleet(store)
+        other.enqueue("fixture", fixture_manifest("job-gap"), GOAL_FIXTURE, [])
+        assert other.admit_one()["job"] is None
+        with pytest.raises(FleetRefused, match="paused"):
+            other.reserve_unit("d" * 64, UNIT_CONDUCTOR, "fixture", "labelled-gap")
+        # Recovery: the unit is settled from its proof, and the exact predecessor starts.
+        authority.settle_unit(UNIT, token, FENCED)
+        results = advance(system, ROLLED_BACK)
+        assert results[-1]["stage"] == ROLLED_BACK, trail(results)
+        restored = read(state(target, RECEIPT_FILE))
+        assert consumption_verdict(good, restored)["consumed"] and host.running(target)
+        assert restored["revision"] == source["a"] and restored["instance_id"] != first["instance_id"]
+        assert read(state(target, STATE_FILE))["descriptor_sha256"] == descriptor_digest(good)
+        assert {job["id"]: job["status"] for job in authority.status()["jobs"]}["job-gap"] == "queued"
+    finally:
+        teardown(target)
+
+
+def test_a_first_managed_start_refuses_on_a_failed_debt_read_or_pause_commit_before_any_effect(tmp_path,
+                                                                                              source):
+    target = target_for(tmp_path, source["root"])
+    desc = descriptor(target, source["root"], source["a"])
+    setup = managed()
+    setup.materialize(target, desc)
+    setup.switch(target, desc, expected=None)
+    for bucket in ("fleet_jobs", BUCKET_UNITS):
+        authority = fixture_fleet(FaultStore())
+        host = managed(fleet=authority)
+        assert control(authority)["paused"] is False, "admission is open before the first gate"
+        authority.store.scan_faults.add(bucket)  # LABELLED injected failure of the first debt read
+        with pytest.raises(DeliveryRefused) as refused:
+            host.start(target, desc)
+        assert refused.value.reason_code == "fleet_debt_unknown"
+        assert not state(target, STATE_FILE).exists() and not host.running(target)
+        row = control(authority)
+        assert row["paused"] is True and row[ACTIVATION_HOLD]["descriptor_sha256"] == descriptor_digest(desc)
+        with pytest.raises(FleetRefused, match="paused"):
+            Fleet(authority.store).reserve_unit(UNIT, UNIT_CONDUCTOR, "fixture", "labelled-gap")
+    authority = fixture_fleet(FaultStore())
+    authority.store.put_faults.add(BUCKET_CONTROL)  # LABELLED injected failed pause write
+    with pytest.raises(DeliveryRefused) as refused:
+        managed(fleet=authority).start(target, desc)
+    assert refused.value.reason_code == "fleet_pause_unknown"
+    assert control(authority)["paused"] is False and not state(target, STATE_FILE).exists()
+    authority.store.lost_acks = 1  # LABELLED injected lost acknowledgement of a committed pause
+    with pytest.raises(DeliveryRefused) as refused:
+        managed(fleet=authority).start(target, desc)
+    assert refused.value.reason_code == "fleet_pause_unknown"
+    assert control(authority)[ACTIVATION_HOLD]["descriptor_sha256"] == descriptor_digest(desc)
+    assert not state(target, STATE_FILE).exists() and not managed(fleet=authority).running(target)
 
 
 def test_a_managed_start_without_a_fleet_authority_refuses_before_any_effect(tmp_path, source):

@@ -1,6 +1,7 @@
 """Fleet domain and application over MemoryStore (INV-FLEET-001). Launchers here are labeled
 fixtures (fault injection), never `zeus operate run`, Claude or the machine ledger."""
 import json
+from contextlib import contextmanager
 from copy import deepcopy
 
 import pytest
@@ -739,7 +740,7 @@ def test_held_units_keep_the_fleet_from_idle_only_operations(tmp_path):
 FENCED_A = {"kind": "fenced", "launch": UNIT_A, "claim": "fenced"}  # labelled fixture fence proof
 
 
-def test_the_activation_gate_pauses_and_reads_debt_in_one_transaction_and_blocks_a_reservation_in_the_gap(
+def test_the_activation_gate_commits_the_pause_then_reads_debt_and_blocks_a_reservation_in_the_gap(
         tmp_path):
     f = fleet(tmp_path)
     f.enqueue("a", manifest("op-1", ["docs/x.md"]), GOAL, [])
@@ -774,6 +775,136 @@ def test_an_activation_hold_is_released_only_by_its_own_descriptor_and_an_owner_
     f.activation_gate("managed-fleet", "d" * 64)
     f.pause()
     assert f.release_activation_hold("d" * 64) == {"released": False} and f.status()["paused"] is True
+
+
+class FaultTransaction:
+    """A real MemoryStore transaction whose scan or write of an armed bucket raises (labelled fault)."""
+
+    def __init__(self, store, tx):
+        self.store, self.tx = store, tx
+
+    def scan(self, bucket):
+        if bucket in self.store.scan_faults:
+            self.store.scan_faults.discard(bucket)
+            raise ConnectionError("labelled injected failed debt read: " + bucket)
+        return self.tx.scan(bucket)
+
+    def put(self, bucket, key, body):
+        if bucket in self.store.put_faults:
+            self.store.put_faults.discard(bucket)
+            raise ConnectionError("labelled injected failed write: " + bucket)
+        return self.tx.put(bucket, key, body)
+
+    def __getattr__(self, name):
+        return getattr(self.tx, name)
+
+
+class FaultStore(MemoryStore):
+    """LABELLED fault injection over the REAL MemoryStore and its actual rollback: an exception
+    inside a transaction discards that whole draft. Each armed fault fires once: `scan_faults` on the
+    next scan of a bucket, `put_faults` on the next write to one, `lost_acks` raises after a commit
+    that DID happen, and `before` runs its next hook as the next transaction opens (a concurrent
+    owner acting between two transactions of the caller)."""
+
+    def __init__(self):
+        super().__init__()
+        self.scan_faults, self.put_faults, self.lost_acks, self.before = set(), set(), 0, []
+
+    @contextmanager
+    def transaction(self):
+        hook = self.before.pop(0) if self.before else None
+        if hook is not None:
+            hook()
+        with super().transaction() as tx:
+            yield FaultTransaction(self, tx)
+        if self.lost_acks:
+            self.lost_acks -= 1
+            raise ConnectionError("labelled injected lost commit acknowledgement")
+
+
+def faulty_fleet(tmp_path):
+    f = Fleet(FaultStore())
+    f.register(config(tmp_path))
+    return f
+
+
+def control_row(f):
+    with f.store.transaction() as tx:
+        return tx.get("fleet_control", "admission")
+
+
+def assert_admission_closed(store):
+    """Another Fleet owner over the same store can neither admit a worker nor reserve a conductor."""
+    other = Fleet(store)
+    other.enqueue("b", manifest("op-gap", ["gap/y.md"]), GOAL, [])
+    admitted = other.admit_one()
+    assert admitted["job"] is None, admitted
+    with pytest.raises(FleetRefused, match="paused"):
+        other.reserve_unit(UNIT_B, "conductor", "b", "intent-gap")
+
+
+@pytest.mark.parametrize("bucket", ["fleet_jobs", "fleet_units"])
+def test_a_first_gate_whose_debt_read_fails_after_the_pause_commit_keeps_the_pause(tmp_path, bucket):
+    f = faulty_fleet(tmp_path)
+    assert control_row(f)["paused"] is False, "admission is initially open"
+    f.store.scan_faults.add(bucket)  # LABELLED injected failure of the FIRST gate's debt read
+    gate = f.activation_gate("managed-fleet", "d" * 64)
+    assert gate == {"paused": True, "hold": True, "reserving": None, "units_held": None, "settled": False,
+                    "reason_code": "debt_unknown", "error_type": "ConnectionError"}
+    row = control_row(f)
+    assert row["paused"] is True and row["activation_hold"]["descriptor_sha256"] == "d" * 64
+    assert_admission_closed(f.store)
+    # Recovery: the same hold is reconciled, the read succeeds, and only that descriptor releases it.
+    again = f.activation_gate("managed-fleet", "d" * 64)
+    assert again == {"paused": True, "hold": True, "reserving": [], "units_held": [], "settled": True}
+    assert f.release_activation_hold("d" * 64) == {"released": True}
+    assert f.admit_one()["job"]["id"] == "op-gap"
+
+
+def test_a_gate_over_an_owner_pause_whose_debt_read_fails_takes_no_hold(tmp_path):
+    f = faulty_fleet(tmp_path)
+    f.pause()
+    f.store.scan_faults.add("fleet_units")  # LABELLED injected failed debt read
+    gate = f.activation_gate("managed-fleet", "d" * 64)
+    assert (gate["paused"], gate["hold"], gate["settled"], gate["reason_code"]) == (True, False, False,
+                                                                                   "debt_unknown")
+    row = control_row(f)
+    assert row["paused"] is True and "activation_hold" not in row
+    assert f.release_activation_hold("d" * 64) == {"released": False}
+
+
+def test_a_failed_pause_write_claims_no_pause_and_a_lost_acknowledgement_reconciles_the_same_hold(tmp_path):
+    f = faulty_fleet(tmp_path)
+    f.store.put_faults.add("fleet_control")  # LABELLED injected failed pause write
+    with pytest.raises(ConnectionError):
+        f.activation_gate("managed-fleet", "d" * 64)
+    row = control_row(f)
+    assert row["paused"] is False and "activation_hold" not in row, "the rolled-back pause is not claimed"
+    f.store.lost_acks = 1  # LABELLED injected lost acknowledgement of a pause commit that happened
+    with pytest.raises(ConnectionError):
+        f.activation_gate("managed-fleet", "d" * 64)
+    assert control_row(f)["activation_hold"]["descriptor_sha256"] == "d" * 64
+    assert_admission_closed(f.store)
+    again = f.activation_gate("managed-fleet", "d" * 64)
+    assert (again["hold"], again["settled"]) == (True, True)
+    assert f.release_activation_hold("d" * 64) == {"released": True}
+    assert f.release_activation_hold("d" * 64) == {"released": False}, "one hold, released once"
+
+
+@pytest.mark.parametrize("change,paused", [("resume", False), ("pause", True), ("other_hold", True)])
+def test_a_pause_changed_between_commit_and_read_is_never_reported_settled(tmp_path, change, paused):
+    f = faulty_fleet(tmp_path)
+    owner = Fleet(f.store)
+    act = {"resume": owner.resume, "pause": owner.pause,
+           "other_hold": lambda: owner.activation_gate("managed-fleet", "e" * 64)}[change]
+    f.store.before = [None, act]  # LABELLED concurrent control change between the gate's two transactions
+    gate = f.activation_gate("managed-fleet", "d" * 64)
+    assert gate == {"paused": paused, "hold": False, "reserving": None, "units_held": None, "settled": False,
+                    "reason_code": "control_changed"}
+    row = control_row(f)
+    assert row["paused"] is paused
+    # The owner's decision stands: nothing here re-pauses, resumes or releases it.
+    assert f.release_activation_hold("d" * 64) == {"released": False}
 
 
 class ActivatedControl(RecordingControl):

@@ -1396,8 +1396,12 @@ AND tree, or the never-entered fence (`proof_invalid`, `proof_identity_mismatch`
 `proof_unconfirmed`, `owner_mismatch`); an identical replay is cached, a different proof
 `settlement_conflict`. Age, a wrapper exit, a restart or a decision never release one; held units
 also make the fleet not idle for `authorize-budget` and `relocate`. `activation_gate(target,
-descriptor)` is the managed host activation gate (HOST-RUNTIME.md): one transaction pauses admission
-and reads reserving jobs and held units (`settled` only when both are empty); a pause it sets carries
+descriptor)` is the managed host activation gate (HOST-RUNTIME.md): one transaction commits the admission
+pause without reading debt, and a second re-checks that exact pause and reads reserving jobs and held
+units (`settled` only when both are empty). A failed pause write/commit or lost acknowledgement raises
+(no pause claimed; a retry reconciles the same hold); a failed debt read keeps the committed pause and
+returns `reason_code` `debt_unknown`, a pause changed in between `control_changed`, both with unknown
+(null) debt and never settled. A pause it sets carries
 an `activation_hold` that only `release_activation_hold` for that exact descriptor lifts, an owner
 pause is never taken over, and an owner `pause`/`resume` clears the hold. No retry, merge, deploy, automatic ceiling change
 or generated work. `sources.fleet` in the monitor snapshot (an additive source beside `database`,
