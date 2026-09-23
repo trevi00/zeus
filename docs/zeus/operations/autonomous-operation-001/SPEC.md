@@ -426,6 +426,35 @@ qualified failure repair in Batch 2 remain required, not replaced by this delive
 
 ## Batch 3 correction and conductor continuation boundary (2026-09-23)
 
+### Approved worker model and review-loop design update (2026-09-23)
+
+User authorizes Opus 5.5 for subsequent Claude work. Pin NEW manifests to claude-opus-5-5,
+subscription accounting unchanged. Do not rewrite an admitted manifest or change an active run.
+Official source read 2026-09-23: https://code.claude.com/docs/en/model-config states this exact
+model ID and minimum Claude Code 2.1.280; explicit --model overrides user settings. Local CLI
+observed 2.1.280, incumbent worker image contains 2.1.274. Therefore a host alias/settings change
+alone is insufficient. Build a CLI-only successor of the accepted image, verify version/worker
+contracts, bind its immutable id and require actual requested/reported-model agreement on the
+first new execution. A version probe alone does not prove subscription model availability.
+Source: https://platform.claude.com/docs/en/models/opus-5-5/overview; model migration must not
+reuse model-bound thinking blocks as evidence or assume cross-model transcript compatibility.
+
+Keep the logical worker session/workspace until final independent acceptance and durable evidence
+promotion. Freeze each submitted candidate; reviewer uses a separate immutable checkout. Rejection
+returns one consolidated acceptance-matrix report to that task's resumable worker context. Waiting
+does not consume model calls; container/process lifetime is independent of logical session lifetime.
+Current resources/providers.json explicitly says Claude session_resume unsupported: implementation
+and measured restart/rejection qualification are still required, not enabled by this document.
+
+Defect prevention is a fixed full state/action matrix before implementation, shared enforcement of
+ownership invariants rather than scattered checks, independent counterexamples, and one complete
+review of changed boundaries. Two distinct similar failures require an evidence-backed reframe in
+this document. Accepted results are preserved. Promote repeated checks into shared contracts/tests
+after validation. Track recurrence by cause (not merely symptom), review rounds, operational escapes,
+and time to accepted outcome; raw test count is not a success metric. Session persistence alone does
+not establish these invariants or guarantee defect-free work. Clean up ephemeral state only after
+artifact/DB promotion is confirmed; unavailable persistence preserves recovery material.
+
 ### Execution recovery checkpoint: output overflow
 
 ### Remaining R5 ownership correction (2026-09-23, review 8952f377)
