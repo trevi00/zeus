@@ -428,6 +428,52 @@ qualified failure repair in Batch 2 remain required, not replaced by this delive
 
 ### Execution recovery checkpoint: output overflow
 
+### Remaining R5 ownership correction (2026-09-23, review 8952f377)
+
+Candidate 5d23049264e5523a1e5e5039a53ba42f2fc35c47 completed implementation and evidence
+inspection, but independent review rejected one remaining R5 path. Preserve the short-id fix and
+prior accepted boundaries. Worker reported 124 passed/1 skipped and Ruff; these do not prove the
+missing interleaving. Review is static code evidence, not a reproduced race. This recurring R5
+family requires revising the ownership boundary before further patching, not moving one check.
+
+Observed source: ProcessHostTarget.start and ScheduledTaskHostTarget.start call stop and unlink
+receipt/stop/pause files BEFORE authorize(), outside the target lock. HostTargetBase.switch alone
+locks descriptor replacement. Reachable trigger: A passes the application fence check and pauses;
+its lease expires; B claims and starts a successor; A resumes, stops B and removes B's receipt,
+then rejects its own stale authorization. Material consequence: successor outage and lost evidence.
+Competing explanation that the application-level check suffices is refuted by that check/action
+gap. Discriminating check: a barrier after A's outer check, let B acquire ownership and finish its
+start, then resume A; assert B's process/receipt survive and A has no mutating effects.
+
+One complete correction: reuse a shared target lifecycle guard for switch and both start adapters.
+Inside that guard, authorize before the first mutation, reconcile current descriptor and recorded
+instance against the intended target, then protect stop -> cleanup -> start -> state publication.
+Every controller that touches this target must use the same guard; unrelated targets remain free.
+Recheck ownership before later mutations when a stop/wait can outlive the lease. B must not create
+a successor inside A's unfinished lifecycle operation. If A expires during its own in-flight stop,
+preserve/reconcile that observed effect; do not erase evidence or label it cancelled. Do not hold
+a database transaction across a process wait, introduce nested transactions, or recursively acquire
+a non-reentrant lock. Forward and rollback start must share the same protection.
+On recovery, recognize an already matching live instance rather than killing/restarting it. A
+foreign/unknown descriptor or instance refuses before stop/unlink. Lock timeout refuses without
+mutation. If a lock survives a crashed owner, report the actual recovery condition; do not break
+another owner's lock using age alone. No expansion to unrelated locking architecture is required.
+
+Fixed acceptance additions: (a) stale before guard: zero stop/unlink/start; (b) successor between
+outer check and guard survives; (c) expiry during bounded stop: no later stale cleanup/start,
+successor serialized; (d) normal and rollback restart reconcile matching instance; (e) concurrent
+same-target operations serialize and different targets do not; (f) foreign identity, lock timeout
+and unavailable authority preserve evidence. Use controlled barriers and real disposable files;
+actual child process where supported, injected schtasks runner explicitly labelled. Never touch
+production scheduled services. Test adapter effects, not only coordinator return codes.
+
+Required commands remain the exact four-file pytest command and Ruff below. Keep output bounded;
+short test ids, no full streams/fixture dumps. Allowed scope remains the existing host-delivery
+files and direct tests/docs. Independent review verifies this changed boundary and its forward/
+rollback interactions, preserving prior accepted results. No merge/deployment by worker.
+
+### Preserved output-overflow investigation
+
 Run da5eaa40006b4e74a3ff4071d93e8bd2 ended normally (exit 0, no OOM, confirmed container
 removal), but provider output was 8,878,674 bytes against 8,388,608 stream_bytes. The recorded
 failure explicitly says output limit reached, not network failure. No accepted terminal result
