@@ -256,6 +256,19 @@
         "host-runtime-evidence",
         "native-runtime"
       ]
+    },
+    {
+      "id": "native-fixture",
+      "project_id": "research-improvement",
+      "criterion_id": "verified-loop",
+      "lane": "harness",
+      "manifest_path": "docs/zeus/operations/autonomous-operation-001/native-fixture.operation.json",
+      "manifest_revision": "1854248e30ac8039fa9bce9b3b9c084bab710be8",
+      "manifest_sha256": "bb48675f3c4dd3dc93d85012da8f8ae55c52fd5b4ef7f6a1b940d59fb14a870d",
+      "priority": 190,
+      "dependencies": [
+        "pause-commit"
+      ]
     }
   ]
 }
