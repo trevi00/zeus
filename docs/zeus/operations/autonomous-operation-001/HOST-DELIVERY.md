@@ -301,6 +301,41 @@ transaction-boundary test, which is integration-gated and skips without `HARNESS
 The runtime-binding tests also skip honestly in a checkout that attests no revision of its own (no
 Git directory and no owner `runtime.json`), because there is no real runtime identity to bind.
 
+### Evidence environment: the attestable runtime fixture (after a1481784, 2026-09-23)
+
+The verifier's source archive has no outer `.git`; the worker's staging checkout has one. The
+lifecycle tests' `live_target` used to launch its child from the checkout itself, so in the archive
+that child honestly reported an empty revision, `receipt_identity` correctly read it as unreadable,
+and `test_a_fence_lost_during_the_bounded_stop_preserves_the_effect_and_starts_nothing` failed with
+`instance_receipt_unreadable` **before** its lease-loss boundary. The defect was in the fixture, not
+in production validation, and **no production code changed**.
+
+`live_target` now runs a **test-owned attestable runtime**: the checkout's real `src/codex_harness`,
+copied byte for byte into `tmp_path` and committed to a tiny repository of its own. Every Git command
+runs in that directory only, with `GIT_CONFIG_GLOBAL` pointed at the null device,
+`GIT_CONFIG_NOSYSTEM=1` and its settings passed as per-command `-c` values. No global or system Git
+configuration is read or written, and nothing is written into the checkout. The descriptor binds
+what that copy really is: its own `HEAD` (read by the production `runtime_revision`, cross-checked
+against `git rev-parse HEAD`), the image its own `settings()` yields and its packaged profile. Before
+any test reaches its intended boundary, `live_target` asserts that the incumbent `consumption_verdict`
+accepts the child's own receipt.
+
+The deliberate no-git refusal is kept as its own test,
+`test_a_runtime_that_attests_no_revision_is_unreadable_and_the_attested_fixture_is_not`. It uses
+the same copied source with no Git directory and no `runtime.json`, and checks four things:
+`runtime_revision` is `None`, the child's receipt carries an empty revision, `consumption_verdict`
+refuses it as `receipt_invalid`, and a replacement is refused as `instance_receipt_unreadable` with
+the process still running and no stop requested. The same test then shows that the attested copy of
+that same source is consumed. This reproduces the verifier's symptom as a discriminating control
+inside the suite. It is not a run in an archive without an outer `.git`. The `binds_a_runtime` skip
+marks are unchanged, and no skip was added.
+
+Git must be on `PATH` for the attested fixture. Without Git the lifecycle tests fail at the fixture
+assertion; they do not skip. The inherited R5 instance-authority code from a1481784
+(`HostTargetBase.start/_reconcile`, `domain.instance_authority`, `HostDelivery._switch/_rollback`)
+and its forward and rollback matrix have **not** been independently accepted. This fixture change
+does not qualify them.
+
 The oversized- and malformed-plan cases carry explicit short parametrize ids. Their payloads are
 unchanged and still full size; only the generated node id is short, because pytest otherwise puts
 the whole body into `PYTEST_CURRENT_TEST` and the oversized case alone exceeds the Windows

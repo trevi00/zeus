@@ -20,6 +20,7 @@ deadlock into an immediate failure for every path below, including the `Releases
 import hashlib
 import json
 import os
+import shutil
 import subprocess
 import threading
 import time
@@ -29,6 +30,7 @@ from pathlib import Path
 
 import pytest
 
+from codex_harness.adapters.configuration import aliases, read_env
 from codex_harness.adapters.host_delivery import (
     CANARY_RECEIPT_FILE,
     DESCRIPTOR_FILE,
@@ -1522,13 +1524,101 @@ def await_receipt(target, digest=None, timeout=20.0):
     raise AssertionError("no startup receipt for the expected descriptor appeared")
 
 
+def fixture_git(root, *args):
+    """Git confined to one disposable fixture repository: no global or system configuration is
+    read or written, and every setting the commit needs is passed for this one command only."""
+    done = subprocess.run(
+        ["git", "-c", "core.autocrlf=false", "-c", "core.eol=lf", "-c", "commit.gpgsign=false",
+         "-c", "user.name=Zeus Fixture", "-c", "user.email=fixture@localhost", *args],
+        cwd=str(root), capture_output=True, text=True, timeout=120,
+        env={**os.environ, "GIT_CONFIG_GLOBAL": os.devnull, "GIT_CONFIG_NOSYSTEM": "1"})
+    assert done.returncode == 0, done.stderr[-2000:]
+    return done.stdout.strip()
+
+
+def runtime_copy(tmp_path, *, attested=True):
+    """A test-owned runtime root: this checkout's REAL `src/codex_harness`, copied byte for byte.
+
+    Attested, the copy is committed to a tiny repository of its own, so the revision its child
+    observes is a real `HEAD` whether or not the checkout running the tests has a Git directory at
+    all (an exported source archive does not). Unattested, it has no Git directory and no owner
+    `runtime.json`: the deliberate no-git runtime, whose child honestly reports no revision.
+    """
+    root = tmp_path / ("attested-runtime" if attested else "unattested-runtime")
+    if not root.exists():
+        shutil.copytree(Path(RUNTIME_ROOT) / "src" / "codex_harness",
+                        root / "src" / "codex_harness",
+                        ignore=shutil.ignore_patterns("__pycache__", "*.pyc"))
+        if attested:
+            fixture_git(root, "init", "-q")
+            fixture_git(root, "add", "--all")
+            fixture_git(root, "commit", "-q", "--no-verify", "-m", "attested runtime fixture")
+    return root
+
+
+def runtime_image(root):
+    """The worker image a runtime at `root` configures, read exactly as its own `settings()` does."""
+    return effective_worker_image({**aliases(read_env(Path(root))), **aliases(dict(os.environ))})
+
+
 def live_target(tmp_path, host, target_id="canary-service"):
-    """A real target with a real running child process that has reported its own startup."""
-    target = targets_document(tmp_path, target_id=target_id)["targets"][0]
-    descriptor = descriptor_for(target)
+    """A real target with a real running child process that has reported its own startup.
+
+    The target runs the attested runtime copy, and the descriptor binds what that runtime really is:
+    its own committed revision, its effective image and its packaged profile. The fixture is proven
+    valid - the incumbent consumption check accepts the child's own receipt - BEFORE any test
+    reaches the boundary it is about, so a later refusal is that boundary and not an unknown
+    instance.
+    """
+    root = runtime_copy(tmp_path)
+    revision = runtime_revision(root)
+    assert revision is not None and revision == fixture_git(root, "rev-parse", "HEAD")
+    target = targets_document(tmp_path, target_id=target_id, root=str(root))["targets"][0]
+    descriptor = descriptor_for(target, revision=revision, worker_image=runtime_image(root))
     host.switch(target, descriptor, expected=None)
     host.start(target, descriptor)
-    return target, descriptor, await_receipt(target, descriptor_digest(descriptor))
+    receipt = await_receipt(target, descriptor_digest(descriptor))
+    verdict = consumption_verdict(descriptor, receipt)
+    assert verdict["consumed"], verdict["reason_code"]
+    return target, descriptor, receipt
+
+
+def test_a_runtime_that_attests_no_revision_is_unreadable_and_the_attested_fixture_is_not(tmp_path):
+    """The discriminating control for an exported source archive with no Git directory.
+
+    The same real source, launched from a root that attests no revision, reports an empty revision;
+    that receipt identifies nobody, so a replacement is refused as `instance_receipt_unreadable`
+    before any stop. Production validation is unchanged: absent Git proves no revision, and only the
+    fixture's own committed runtime yields the valid receipt the lifecycle tests start from.
+    """
+    host = ProcessHostTarget(max_seconds=60)
+    bare = runtime_copy(tmp_path, attested=False)
+    assert runtime_revision(bare) is None
+    target = targets_document(tmp_path, target_id="unattested-service",
+                              root=str(bare))["targets"][0]
+    descriptor = descriptor_for(target, worker_image=runtime_image(bare))
+    host.switch(target, descriptor, expected=None)
+    host.start(target, descriptor)
+    try:
+        receipt = await_receipt(target, descriptor_digest(descriptor))
+        assert receipt["revision"] == ""
+        assert consumption_verdict(descriptor, receipt)["reason_code"] == "receipt_invalid"
+        successor = descriptor_for(target, revision="8" * 40, worker_image=runtime_image(bare),
+                                   predecessor=descriptor_digest(descriptor))
+        authority = replaces(target, descriptor, receipt)
+        host.switch(target, successor, expected=descriptor_digest(descriptor))
+        with pytest.raises(DeliveryRefused) as unreadable:
+            host.start(target, successor, authorize=lambda: None, replaces=authority)
+        assert unreadable.value.reason_code == "instance_receipt_unreadable"
+        assert host.running(target) and not state_of(target, "stop.json").exists()
+    finally:
+        host.stop(target)
+    # The attested copy of the very same source is a valid, consumed runtime.
+    attested_target, _, attested = live_target(tmp_path, host, target_id="attested-service")
+    try:
+        assert attested["revision"] == runtime_revision(attested_target["root"])
+    finally:
+        host.stop(attested_target)
 
 
 def stale_fence(after=0):
