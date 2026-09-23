@@ -1,5 +1,75 @@
 # Whole autonomous operating loop
 
+## Accepted primitive integration and final connection batch, 2026-09-23
+
+Session 973a903f and managed runtime/evidence 9c327f48 passed independent reviews of their
+inherited implementations. Both are now merged into this implementation checkout, not deployed.
+Owner native Windows eight-file integration check: 226 passed, 11 skipped, one failure in
+test_the_scan_refuses_a_symlink_inside_a_runtime. A byte-controlled CRLF experiment reproduced
+the mismatch: raw Git blob/no-filters=a1c705fd..., default hash-object=7d4290a..., autocrlf=true.
+This establishes a test oracle comparing filtered content against physical bytes, not corrupt
+materialization. Preserve that failed run. Session tests passed; actual provider continuity is
+still a distinct gate. The managed process tests currently skip Windows and must be qualified.
+
+Two disjoint implementation assignments now finish the existing frame:
+
+**Native managed-runtime qualification support** owns only tests/test_managed_runtime.py,
+adapters/managed_runtime.py, domain/managed_runtime.py and HOST-RUNTIME.md. Fix the byte oracle
+using physical bytes/no filters. Enable portable real-process tests on Windows by using the
+existing actual interpreter/parentage and hidden Job Object ownership conventions; keep the
+SIGKILL-specific test POSIX-only. Do not weaken identity, permission, seal or ownership gates.
+Use explicit platform-capability skips only when an actual capability is unavailable and record
+them. Retain LF and CRLF controls and symlink rejection. Run focused managed-runtime, host-delivery,
+host-delivery-cli and background-service checks plus Ruff. Linux results are not Windows proof;
+owner replays Windows and actual Fleet after review. This is one platform qualification batch,
+not permission to redesign delivery or change production services.
+
+**Durable conductor continuation** implements the existing routing table below as one opt-in
+composition, now against the accepted WorkerSessions API. Reuse finite Operations, expected-row
+Executor claims, existing Council/Portfolio/ResearchProgram, Releases/ReleaseQueue and HostDelivery.
+Do not merely implement a status table or injected callbacks with no production adapter wiring.
+Provide the actual CLI/service tick composition behind one owner Git-pinned policy, disabled by
+default, with normal finite modes unchanged. Trusted configuration binds repository, goals,
+allowed paths, acceptance criteria, session archive root, qualified model/image/profile and
+delivery target. Model output cannot extend those permissions. No automatic production enabling.
+
+The complete path is committed source evidence -> idempotent intent/claim -> existing Codex
+design or conductor decision -> exact scoped successor admission -> Claude implementation in the
+retained logical workspace/session -> independent review -> existing release gates -> managed
+delivery consumption/rollback -> next eligible approved goal. Initial execution must actually
+pass task_session to Executor._run; currently execute_one does not. Attach exact candidate to
+checkpoint, record committed independent review, and retain the workspace through review and
+correction. Reuse only owner-derived original workspace at exact last candidate HEAD with no
+active owner. Frozen reviewer checkout remains separate. Archive closure requires the existing
+bound promotion evidence. Never revive parked messages or rewrite terminal operation outcomes.
+
+Every external action has durable pre-effect intent and post-effect evidence. Expected-row/fence
+checks prevent concurrent owners from both dispatching. Response loss reconciles by deterministic
+action identity; unknown provider/process effects go to ExecutionRecovery, not a fresh call.
+Two distinct similar failures invoke existing research/Council once before another correction;
+source links and frozen SSOT/reuse-extend-build decision precede Codex design. A repeated event is
+not another failure. Keep observed failed/incomplete test attempts separate from final completed
+replayable claims. Never transform a failed check to passed or bypass evidence inspection.
+
+Acceptance matrix for this connection: absent policy produces zero actions; qualified first
+item/rejection/correction/accepted conductor/release/next item; missing evidence or changed policy,
+goal, scope, model, image, session archive or workspace refuses with a named next owner; timeout
+before/after each effect, duplicate notification, two controllers and restart reconcile once;
+active sessions and dirty workspaces retained; two-strike research deduplicated; unknown effects
+not retried; release rejection and rollback preserve acceptance authority; one blocked family
+does not starve another; idle ticks make zero model calls. Monitor projects exact stage, cause,
+owner, next action, evidence and predecessor/successor links, without transcript/credentials.
+Use real temporary Git/files/store flows and labelled provider/remote faults in worker tests.
+Required checks: continuation domain/application/CLI tests, Git/session/executor/local-cycle/
+operation/fleet/backlog/monitoring directly affected tests and Ruff. Owner real PG/Redis, actual
+two-turn model session, actual managed Fleet and two useful unattended jobs remain qualification
+gates. Do not claim those from fixtures, nor widen this batch into unrelated research engines.
+
+Authority: Codex owns this consolidated design and acceptance; Claude implements/tests through
+Zeus. Existing subscription use is authorized. No reboot or credential changes. Raw evidence is
+under the active C:/workspaces/zeus/artifacts/autonomous-operation-001 recovery workspace. The
+original whole-goal checklist remains the completion contract; neither batch alone completes it.
+
 ## Managed runtime evidence recovery, 2026-09-23
 
 Candidate 344271b9 is preserved in the implementation checkout, not accepted or deployed. Inspector
