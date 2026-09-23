@@ -155,6 +155,19 @@
       "dependencies": [
         "native-evidence"
       ]
+    },
+    {
+      "id": "host-runtime-evidence",
+      "project_id": "research-improvement",
+      "criterion_id": "verified-loop",
+      "lane": "interface",
+      "manifest_path": "docs/zeus/operations/autonomous-operation-001/host-runtime-evidence.operation.json",
+      "manifest_revision": "622e28bf8cb5fc48c01a42f40f7f69f864b9c9cf",
+      "manifest_sha256": "a8edeae95d9dcfdc2adfb4a36b2d78f143e98d4d38fccf4276980d47bacf7990",
+      "priority": 130,
+      "dependencies": [
+        "native-evidence"
+      ]
     }
   ]
 }
