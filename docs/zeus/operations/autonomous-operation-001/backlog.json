@@ -116,6 +116,19 @@
       "dependencies": [
         "monitor-correction"
       ]
+    },
+    {
+      "id": "native-evidence",
+      "project_id": "research-improvement",
+      "criterion_id": "verified-loop",
+      "lane": "interface",
+      "manifest_path": "docs/zeus/operations/autonomous-operation-001/native-evidence.operation.json",
+      "manifest_revision": "6514e7160e7c5abc53481ac15d2075df72b2002f",
+      "manifest_sha256": "ffde8015815e26a049aec26851bfa4391062f98aaa1de24bcd243d387c3f824c",
+      "priority": 100,
+      "dependencies": [
+        "monitor-correction"
+      ]
     }
   ]
 }
