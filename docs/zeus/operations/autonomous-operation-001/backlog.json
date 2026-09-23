@@ -226,6 +226,21 @@
         "host-runtime-evidence",
         "native-runtime"
       ]
+    },
+    {
+      "id": "stop-rollback",
+      "project_id": "research-improvement",
+      "criterion_id": "verified-loop",
+      "lane": "harness",
+      "manifest_path": "docs/zeus/operations/autonomous-operation-001/stop-rollback.operation.json",
+      "manifest_revision": "f02963597cf65fce18ab5f08807a770a7ddfa301",
+      "manifest_sha256": "80878bd4778290b1472f3939cbf14069583e311be77f2d25ae8a4a9209fb5097",
+      "priority": 170,
+      "dependencies": [
+        "session-correction",
+        "host-runtime-evidence",
+        "native-runtime"
+      ]
     }
   ]
 }
