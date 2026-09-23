@@ -1,5 +1,80 @@
 # Whole autonomous operating loop
 
+## Two-strike ownership design after research and debate, 2026-09-23
+
+Candidate 1bd95a36 was rejected after the prior 77dbb04f rejection: both concern conductor lifecycle
+ownership. Preserve the accepted R1/R2/R4 corrections and native/runtime/session evidence. No
+third local patch is authorized without this reframe. Research, alternatives, primary source
+claims/limits, executed synthetic discriminator and actual proposer/attacker exchange are in
+OWNERSHIP-DEBATE.md. This is Codex-led analysis/debate, not a live Zeus Council execution. Root
+adopts option B below; independent implementation review and owner qualification remain mandatory.
+
+Outcome unchanged: the existing complete autonomous loop, with one bounded ownership correction.
+Failure family: local capacity, DB-dependent OS cleanup and decision-success settlement each
+treated an incomplete observation as completed ownership. Reuse existing Fleet, ProcessTree,
+continuation_process launch directory/claim, and release/review authorities; extend rather than
+build a second scheduler. Existing LaneLauncher is Popen-based; no worker-process rewrite is needed.
+
+| State | Owner and required evidence | Shared capacity |
+| --- | --- | --- |
+| Reserved | Fleet transaction: immutable launch id/token and dispatched intent, before spawn | held |
+| Starting | guardian claim lock; flushed write-ahead identity/debt before conduct spawn | held |
+| Running | DB-free guardian owns inner ProcessTree, monotonic deadline and evidence | held |
+| Cleanup pending/unknown | guardian retains handle/debt; false/exception never implies absence | held |
+| Cleanup confirmed, settlement pending | durable local parent AND tree proof bound to reservation | held |
+| Released | Fleet validates exact proof/token/current intent and commits settlement+release | free |
+
+1. Extend Fleet's existing transactional admission authority to reserve BOTH worker jobs and
+   conductor execution units. Worker admission and conductor reservation count the same durable
+   active/unknown reservations under the same serialization boundary, including standalone tick
+   and independent controllers. No local capacity check may authorize start. Local observations
+   do not double-count a durable reservation. Slot expiry, wrapper exit or controller restart
+   NEVER releases uncertain work. Preserve current lane/path exclusion and effective limits.
+2. Adapt existing continuation_process.main to a per-launch guardian that owns the inner conduct
+   ProcessTree and uses NO DB. Hidden guardian lifetime is independent of controller teardown;
+   it is not in a controller kill-on-close boundary. Supervision is established before conduct
+   starts. DB timeout/block/exception and Fleet exit cannot suppress its monotonic deadline or
+   bounded cleanup attempts. Polling observes receipts; it no longer drives timeout enforcement.
+   Graceful stop requests local cleanup without needing DB. Guardian remains responsible until
+   cleanup is proved and receipted, or a deliberate unresolved handoff is recorded. No silent
+   orphan, unbounded thread/guardian spawning or main-loop blocking wait. Count uncertainty in
+   heartbeat/drain and expose next owner/action; shutdown must not claim idle after losing evidence.
+3. Reserve before spawn; reuse launch lock/exclusive claim across debt, spawn and supervision.
+   Flush/atomically publish identity-bound local debt before conduct execution; write failure
+   starts nothing. A reconciler fences a genuinely unclaimed launch under the same lock so a
+   delayed guardian cannot execute. Never retry guardian spawn merely because its response was
+   lost. A free lock/child claim without cleanup proof is UNKNOWN even when exit.json exists.
+4. Separate decision outcome, parent exit and tree cleanup. Retain handle and debt when terminate
+   raises/returns false; parent exit alone cannot remove an execution from owned capacity. Only
+   combined ProcessTree confirmation permits the cleanup receipt. If persistence fails after
+   cleanup, retain/retry evidence persistence; do not release. After durable proof, handle close
+   is allowed, but slot stays held until matching Fleet settlement. DB write failure replays that
+   settlement once after recovery, never the model. A successful decision with unknown cleanup
+   remains pending recovery. No pending attempt-0 retry until prior tree absence is proven.
+5. Guardian killed unexpectedly: preserve UNKNOWN debt. Do not kill a PID recovered from a file
+   or claim reacquisition/cleanup from ancestor death. Proven never-entered fencing or trustworthy
+   cleanup evidence can resolve it; otherwise named owner recovery is required. Unrelated work
+   may use remaining slots. If debt fills every slot, safe admission stops; fairness does not
+   override physical execution limits. max_parallel counts execution units, not OS PID count.
+
+Fixed acceptance (no expansion beyond this boundary): shared-slot worker-first/conductor-first/
+simultaneous independent controllers/standalone tick; reserve/claim/spawn/response-loss restart;
+late fenced guardian executes zero conduct; real sleeping child with DB down AND DB call blocked
+still deadline-cleans; terminate false/exception/parent-exited-tree-unknown retains debt/handle;
+success decision plus unknown cleanup neither completes nor retries; cleanup-proof write failure;
+cleanup confirmed plus failed DB settlement restarts and settles exactly once; graceful stop,
+controller death and guardian death distinguished; free capacity permits unrelated work; no idle
+model calls. Use real temporary child processes and PG concurrency where available; label injected
+failures. Owner executes Windows/isolated PG/Redis/model evidence after independent review. Test
+both POSIX and Windows containment contracts without claiming one proves the other.
+
+Implementation one batch, Claude: existing continuation files + Fleet domain/application/adapters
+and direct process/background-service tests/contract docs as needed. No new general scheduler,
+budget expansion, authority relaxation, deployment or full-suite rerun in incomplete worker image.
+Keep the existing fourteen-file scoped checks plus process and Fleet runtime/background-service
+neighbors, and Ruff; completed replayable commands only in final tests. State the exact matrix
+rows exercised and residual limits. Reviewer covers the full shared ownership matrix together.
+
 ## Consolidated continuation correction, 2026-09-23
 
 Independent review 7416beb6 rejected candidate 77dbb04f. It is preserved in this implementation
