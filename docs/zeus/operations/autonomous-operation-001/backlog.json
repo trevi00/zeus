@@ -129,6 +129,19 @@
       "dependencies": [
         "monitor-correction"
       ]
+    },
+    {
+      "id": "session-correction",
+      "project_id": "research-improvement",
+      "criterion_id": "verified-loop",
+      "lane": "harness",
+      "manifest_path": "docs/zeus/operations/autonomous-operation-001/session-correction.operation.json",
+      "manifest_revision": "d20f2aee5cf67edbb15d5f8bd7cfecb7983e58dc",
+      "manifest_sha256": "27fa4a2b081ec45c748a2d9121bb52d84c84ec9011fd946435c39f67b542e1e6",
+      "priority": 110,
+      "dependencies": [
+        "monitor-correction"
+      ]
     }
   ]
 }
