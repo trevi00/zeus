@@ -10,8 +10,9 @@ its assignment). Everything else is reached through its existing owner:
   pause and ledger decide when it runs) and finite `zeus operate run` executes it unchanged.
 * `WorkerSessions.record_review` moves the logical session on the committed independent review
   decision row; the executor resumes it natively only from `correction_ready`.
-* The conductor port runs the existing guarded `Executor.decide_one("conductor", expected=...)`
-  for exactly the pending conductor row; the Releases/ReleaseQueue records it writes are read back.
+* The conductor port starts an owned child running the existing guarded
+  `Executor.decide_one("conductor", expected=...)` for exactly the pending conductor row; the
+  Releases/ReleaseQueue records it writes are read back.
 * HostDelivery and the approved backlog stay the owners of delivery and of the next item; the
   controller records the handoff and observes their durable result.
 * The existing Portfolio investigation is the research owner after two distinct similar failures.
@@ -21,6 +22,14 @@ transaction is open across a lane store, Git, a process or the Fleet's own trans
 is preceded by a durable intent state and followed by its observed evidence, and each state change
 is a compare-and-swap on the intent version, so two controllers and a restart converge on one
 intent, one successor id and one dispatch. An idle tick writes nothing and calls nothing.
+
+Restart is a table, not a guess: `domain.continuation.RESUME` names the one action for every open
+(route, state) a crash can leave behind. The conductor is never waited on: `conductor.start`
+launches an owned child under a launch identity committed BEFORE the start, and later ticks (or
+`drain`, when admission is closed) `conductor.poll` it and settle from the committed decision row.
+Every NEW effect - lane binding, Fleet admission, conductor start - first passes `_authorize`, the
+one eligibility guard comparing the current pinned policy, frame, model and runtime identity with
+the authorization stored on the intent; reconciling an already started effect never needs it.
 """
 from __future__ import annotations
 
@@ -33,11 +42,19 @@ from codex_harness.domain.continuation import (
     CONDUCTOR,
     CORRECTION,
     DELIVERY,
+    DELIVERY_ABSENT,
+    DELIVERY_BOUND,
     DISPATCHED,
     EVIDENCE_REPAIR,
     INTENDED,
+    LAUNCH_ABSENT,
+    LAUNCH_EXITED,
+    LAUNCH_RUNNING,
+    LAUNCH_TIMEOUT,
     MAX_HISTORY,
+    MAX_LAUNCHES,
     NEXT_ITEM,
+    OPEN_STATES,
     PAUSED,
     PUBLISHED,
     RECOVERY,
@@ -45,6 +62,7 @@ from codex_harness.domain.continuation import (
     REFUSED,
     RESEARCH,
     RESEARCH_REQUIRED,
+    RESUME,
     RETURNED,
     ROUTE_OWNERS,
     STATUS_SCHEMA,
@@ -52,12 +70,17 @@ from codex_harness.domain.continuation import (
     TICK_SCHEMA,
     ContinuationRefused,
     attempt_of,
+    authorization,
+    bind_delivery,
     blocked_families,
+    check_authorization,
     check_scope,
     classify,
+    delivery_tuple,
     evidence_digest,
     fair_order,
     intent_id,
+    launch_id,
     needs_research,
     policy_digest,
     refuse,
@@ -95,8 +118,10 @@ class LaneEvidence:
     def __init__(self, store, sessions=None):
         self.store, self.sessions = store, sessions
 
-    def read(self, job: dict) -> dict:
-        """The decisive lane evidence of one terminal job, from store reads only."""
+    def read(self, job: dict, target: str | None = None) -> dict:
+        """The decisive lane evidence of one terminal job, from store reads only. `target` is the
+        policy's delivery target: only ITS HostDelivery intent for the exact release and candidate
+        is delivery evidence (`bind_delivery`); a plan of another target is foreign."""
         with self.store.transaction() as tx:
             operation = tx.get("operations", job["operation_id"])
             binding = tx.get(LANE_BINDINGS, job["operation_id"])
@@ -126,8 +151,10 @@ class LaneEvidence:
                 release_id = (result.get("deployment") or {}).get("release_id") or result.get("release_id")
                 if isinstance(release_id, str):
                     deliveries = [row for row in tx.scan("host_delivery_intents") if row.get("release_id") == release_id]
-                    evidence["delivery"] = sorted(deliveries, key=lambda row: str(row.get("updated_at")))[-1] \
-                        if deliveries else {"release_id": release_id, "stage": None}
+                    task = evidence["task"] if isinstance(evidence["task"], dict) else {}
+                    candidate = (task.get("result") or {}).get("candidate") or {}
+                    evidence["delivery"] = bind_delivery(deliveries, target, release_id, candidate.get("revision"),
+                                                         tx.get("releases", release_id))
             session = (binding or {}).get("session") if isinstance(binding, dict) else None
             if isinstance(session, dict):
                 evidence["session"] = tx.get("worker_sessions", session["task_id"])
@@ -161,9 +188,13 @@ class LaneEvidence:
 # ---- the coordinator ----------------------------------------------------------------------------
 class Continuation:
     """`store` is the Fleet control store. `lanes(lane_id)` returns that lane's `LaneEvidence`.
-    `fleet` is the existing `Fleet`. `conductor(lane_id, job)` is the guarded conductor dispatch
-    port (None: the conductor route waits for its owner). `validate(manifest)` is the existing
-    operation manifest validator the adapter binds to the packaged provider policy."""
+    `fleet` is the existing `Fleet`. `validate(manifest)` is the existing operation manifest
+    validator the adapter binds to the packaged provider policy.
+
+    `conductor` is the owned-child conductor port (None: the conductor route waits for its owner):
+    `available() -> bool` (a bounded slot is free), `start(lane_id, job, launch_id)` (returns once
+    the child is spawned, never when the decision is made) and `poll(lane_id, launch_id) -> {state,
+    owned, exit_code}` with a state of `domain.continuation.LAUNCH_STATES`."""
 
     def __init__(self, store, fleet=None, lanes=None, conductor=None, validate=None, observer=None, clock=utcnow):
         self.store, self.fleet, self.lanes, self.conductor = store, fleet, lanes, conductor
@@ -205,6 +236,16 @@ class Continuation:
                 "intents": views[-200:], "truncated": len(views) > 200, "counts": counts,
                 "held_families": blocked_families(intents)}
 
+    def unresolved(self, policy_id: str, owned=()) -> list:
+        """Dispatched conductor launches no child of THIS process owns: work a heartbeat reports as
+        unresolved (a previous owner's child, or one whose start is unconfirmed), never as idle."""
+        owned = set(owned)
+        with self.store.transaction() as tx:
+            intents = [row for row in tx.scan(BUCKET_INTENTS)
+                       if row.get("policy_id") == policy_id and row["state"] == DISPATCHED]
+        return sorted(ref for ref in ((row.get("launch") or {}).get("id") or row["id"] for row in intents)
+                      if ref not in owned)
+
     # ----- one tick -----------------------------------------------------------------------
     def tick(self, policy_id: str, *, pin_sha256: str | None = None, runtime=None) -> dict:
         """One bounded pass. `pin_sha256` is the digest of the pinned policy bytes re-read by the
@@ -218,25 +259,42 @@ class Continuation:
         if not policy["enabled"]:
             return {**result, "outcome": "disabled", "reason_code": "policy_disabled"}
         if pin_sha256 is not None and pin_sha256 != row["pin"].get("sha256"):
-            return {**result, "outcome": "refused", "reason_code": "policy_changed", "next_owner": "operator"}
-        sha = row["policy_sha256"]
+            # No NEW effect under changed pinned bytes; already started launches are still settled
+            # under the binding they were started with.
+            drained = self.drain(policy_id)
+            return {**result, "outcome": "refused", "reason_code": "policy_changed", "next_owner": "operator",
+                    "actions": drained["actions"], "skipped": drained["skipped"]}
         with self.store.transaction() as tx:
             jobs = {job["id"]: job for job in tx.scan(FLEET_JOBS)}
             intents = [intent for intent in tx.scan(BUCKET_INTENTS) if intent.get("policy_id") == policy_id]
-        self._bind_initial(policy, sha, jobs, intents, runtime, result)
+        ctx = {"policy": policy, "sha": row["policy_sha256"], "pin": row["pin"].get("sha256"), "runtime": runtime,
+               "jobs": jobs}
+        self._bind_initial(ctx, intents, result)
         for intent in sorted(intents, key=lambda r: (str(r.get("created_at")), r["id"])):
-            if intent["state"] in {INTENDED, PUBLISHED, ADMITTED, DISPATCHED, RETURNED, AWAITING_OWNER,
-                                   RESEARCH_REQUIRED}:
-                self._guarded(result, intent["id"], lambda i=intent: self._advance(policy, sha, i, jobs))
+            if (intent["route"], intent["state"]) in RESUME:
+                self._guarded(result, intent["id"], lambda i=intent: self._advance(ctx, i))
         with self.store.transaction() as tx:
             intents = [intent for intent in tx.scan(BUCKET_INTENTS) if intent.get("policy_id") == policy_id]
         for candidate in fair_order(self._candidates(policy, jobs, intents), intents):
-            self._guarded(result, candidate["job_id"],
-                          lambda c=candidate: self._observe(policy, sha, c, jobs, intents, runtime))
+            self._guarded(result, candidate["job_id"], lambda c=candidate: self._observe(ctx, c, intents))
         if result["actions"]:
             result["outcome"] = "progressed"
         elif result["skipped"]:
             result["outcome"] = "blocked"
+        return result
+
+    def drain(self, policy_id: str) -> dict:
+        """Admission closed (graceful stop, host pause, changed or unreadable pin): only launches
+        already started are polled and settled under their original binding. Nothing new is bound,
+        admitted or started, and with nothing dispatched this reads no lane and writes nothing."""
+        result = {"schema": TICK_SCHEMA, "policy_id": policy_id, "outcome": "draining", "actions": [],
+                  "skipped": [], "reason_code": None}
+        with self.store.transaction() as tx:
+            dispatched = [row for row in tx.scan(BUCKET_INTENTS)
+                          if row.get("policy_id") == policy_id and row["state"] == DISPATCHED]
+            jobs = {job["id"]: job for job in tx.scan(FLEET_JOBS)} if dispatched else {}
+        for intent in sorted(dispatched, key=lambda r: (str(r.get("created_at")), r["id"])):
+            self._guarded(result, intent["id"], lambda i=intent: self._reconcile_launch(i, jobs))
         return result
 
     def _guarded(self, result, subject, action) -> None:
@@ -293,11 +351,12 @@ class Continuation:
             intent["route"] in {NEXT_ITEM, *SUCCESSOR_ROUTES} for intent in mine)
 
     # ----- initial session binding --------------------------------------------------------
-    def _bind_initial(self, policy, sha, jobs, intents, runtime, result) -> None:
+    def _bind_initial(self, ctx, intents, result) -> None:
         """Bind a newly queued policy job to its own logical session BEFORE admission, so the first
         execution already runs as a task session. A successor is bound by its own intent instead."""
+        policy, runtime = ctx["policy"], ctx["runtime"]
         successors = {intent.get("successor_job") for intent in intents}
-        for job in sorted(jobs.values(), key=lambda j: j["id"]):
+        for job in sorted(ctx["jobs"].values(), key=lambda j: j["id"]):
             if job.get("status") != "queued" or job.get("lane") not in policy["lanes"] or job["id"] in successors:
                 continue
             try:
@@ -309,7 +368,7 @@ class Continuation:
             def bind(job=job, lane=lane):
                 if lane.bound(job["id"]) is not None:
                     return None
-                lane.bind({"schema": BINDING_SCHEMA, "operation_id": job["id"], "policy_sha256": sha,
+                lane.bind({"schema": BINDING_SCHEMA, "operation_id": job["id"], "policy_sha256": ctx["sha"],
                            "intent_id": None, "family": job["id"], "route": None,
                            "session": {"task_id": job["id"], "repository": job["repository"]},
                            "workspace": None, "predecessor": None})
@@ -317,14 +376,15 @@ class Continuation:
             self._guarded(result, job["id"], bind)
 
     # ----- a new observation --------------------------------------------------------------
-    def _observe(self, policy, sha, candidate, jobs, intents, runtime):
-        job = jobs[candidate["job_id"]]
+    def _observe(self, ctx, candidate, intents):
+        policy, runtime = ctx["policy"], ctx["runtime"]
+        job = ctx["jobs"][candidate["job_id"]]
         lane = self.lanes(job["lane"])
-        evidence = lane.read(job)
+        evidence = lane.read(job, policy["delivery_target"])
         family = candidate["family"]
         routed = classify(job, evidence)
         route = routed["route"]
-        base = {"policy_id": policy["id"], "policy_sha256": sha, "origin_job": job["id"], "lane": job["lane"],
+        base = {"policy_id": policy["id"], "policy_sha256": ctx["sha"], "origin_job": job["id"], "lane": job["lane"],
                 "family": family, "predecessor_intent": candidate["predecessor"],
                 "job_updated_at": job.get("updated_at")}
         if route is None:
@@ -333,12 +393,15 @@ class Continuation:
             return self._create({**base, "route": "refusal", "state": REFUSED, "reason_code": routed["reason_code"],
                                  "next_owner": routed.get("owner", "operator"),
                                  "evidence_sha256": evidence_digest(job, evidence, "refusal")}, attempt_of(evidence))
+        current = runtime(job["lane"]) if runtime else None
         try:
-            check_scope(policy, job, runtime(job["lane"]) if runtime else None)
+            check_scope(policy, job, current)
         except ContinuationRefused as exc:
             return self._create({**base, "route": route, "state": REFUSED, "reason_code": exc.reason_code,
                                  "next_owner": exc.owner, "evidence_sha256": evidence_digest(job, evidence, route)},
                                 attempt_of(evidence))
+        # The exact binding every later NEW effect of this intent is re-checked against.
+        base["authorization"] = authorization(ctx["sha"], ctx["pin"], job, current)
         evidence_sha = evidence_digest(job, evidence, route)
         if route == RECOVERY:
             return self._create({**base, "route": RECOVERY, "state": RECOVERY_REQUIRED,
@@ -357,19 +420,22 @@ class Continuation:
             if len(successors) >= policy["max_corrections"]:
                 return self._create({**base, "route": route, "state": REFUSED, "reason_code": "correction_budget_exhausted",
                                      "next_owner": "operator", "evidence_sha256": evidence_sha}, attempt_of(evidence))
-            return self._successor(policy, sha, base, job, evidence, route, routed, evidence_sha, lane)
+            return self._successor(ctx, base, job, evidence, route, routed, evidence_sha, lane)
         if route == CONDUCTOR:
             created = self._create({**base, "route": CONDUCTOR, "state": INTENDED, "reason_code": routed["reason_code"],
                                     "next_owner": ROUTE_OWNERS[CONDUCTOR], "evidence_sha256": evidence_sha},
                                    attempt_of(evidence))
             if created["state"] != INTENDED:
                 return None  # an existing intent: its own state is advanced by `_advance`
-            return self._dispatch(created, job) or created
-        # DELIVERY: the conductor accepted; the release is queued for its existing owners.
+            return self._dispatch(ctx, created, job) or created
+        # DELIVERY: the conductor accepted; the release is queued for its existing owners. The
+        # exact (policy target, release, candidate revision) tuple is carried by the intent and
+        # re-validated against the persisted HostDelivery evidence at every reconciliation.
         delivery = evidence.get("delivery") or {}
         created = self._create({**base, "route": DELIVERY, "state": AWAITING_OWNER, "reason_code": routed["reason_code"],
                                 "next_owner": ROUTE_OWNERS[DELIVERY], "evidence_sha256": evidence_sha,
                                 "release_id": delivery.get("release_id"), "delivery_target": policy["delivery_target"],
+                                "delivery_binding": delivery_tuple(delivery),
                                 "evidence_refs": [ref for ref in (((evidence.get("conductor") or {}).get("result") or {})
                                                                   .get("execution_ref"),) if ref]},
                                attempt_of(evidence))
@@ -377,7 +443,7 @@ class Continuation:
             return None
         return self._advance_delivery(created, evidence) or created
 
-    def _successor(self, policy, sha, base, job, evidence, route, routed, evidence_sha, lane):
+    def _successor(self, ctx, base, job, evidence, route, routed, evidence_sha, lane):
         """Intent first (with the complete successor identity), then the lane binding, then the
         existing Fleet admission - each step replayable to the same result after a lost response."""
         operation = evidence["operation"]
@@ -420,7 +486,7 @@ class Continuation:
         if isinstance(task.get("id"), str) and candidate.get("revision") and candidate.get("base"):
             workspace = {"origin_task_id": (binding.get("workspace") or {}).get("origin_task_id") or task["id"],
                          "head": candidate["revision"], "base": candidate["base"]}
-        document = {"schema": BINDING_SCHEMA, "operation_id": successor, "policy_sha256": sha, "intent_id": key,
+        document = {"schema": BINDING_SCHEMA, "operation_id": successor, "policy_sha256": ctx["sha"], "intent_id": key,
                     "family": base["family"], "route": route, "session": session, "workspace": workspace,
                     "predecessor": {"job_id": job["id"], "task_id": task.get("id"),
                                     "candidate_revision": candidate.get("revision"),
@@ -433,18 +499,45 @@ class Continuation:
                                 "session_mode": mode,
                                 "evidence_refs": [ref for ref in (references["review_execution_ref"],) if ref]},
                                attempt, key=key)
-        return self._publish(created)
+        return self._publish(ctx, created)
+
+    # ----- the one eligibility guard ------------------------------------------------------
+    def _authorize(self, ctx, intent: dict) -> dict:
+        """Before every NEW effect (lane binding, Fleet admission, conductor start): the current
+        pinned policy, frame, model and runtime identity must equal the intent's stored authorization.
+
+        Drift refuses the effect and records the exact reason and next owner on the intent as a
+        `hold` (written once, not on every idle tick); the state, the stored authorization and all
+        evidence stay as they were. A hold clears only when the current binding equals the stored
+        one again - it is never resolved by adopting the changed binding."""
+        job = ctx["jobs"].get(intent["origin_job"])
+        try:
+            refuse(job is not None, "origin_job_missing", "fleet", "origin_job")
+            refuse(intent.get("policy_sha256") == ctx["sha"], "policy_changed", field="policy_sha256")
+            current = ctx["runtime"](job["lane"]) if ctx["runtime"] else None
+            check_scope(ctx["policy"], job, current)
+            check_authorization(intent.get("authorization"), authorization(ctx["sha"], ctx["pin"], job, current))
+        except ContinuationRefused as exc:
+            hold = {"reason_code": exc.reason_code, "next_owner": exc.owner, "field": exc.field}
+            if intent.get("hold") != hold:
+                self._note(intent, emit=True, hold=hold, next_owner=exc.owner)
+            raise
+        if intent.get("hold") is not None:
+            intent = self._note(intent, emit=True, hold=None, next_owner=ROUTE_OWNERS.get(intent["route"], "operator"))
+        return intent
 
     # ----- effects ------------------------------------------------------------------------
-    def _publish(self, intent: dict) -> dict | None:
+    def _publish(self, ctx, intent: dict) -> dict | None:
         if intent["state"] not in {INTENDED, PUBLISHED}:
             return None
         lane = self.lanes(intent["lane"])
         if intent["state"] == INTENDED:
+            intent = self._authorize(ctx, intent)
             lane.bind(intent["binding"])
             intent = self._move(intent, PUBLISHED)
         if intent["state"] == PUBLISHED:
             refuse(self.fleet is not None, "fleet_unconfigured")
+            intent = self._authorize(ctx, intent)
             with self.store.transaction() as tx:
                 origin = tx.get(FLEET_JOBS, intent["origin_job"])
             self.fleet.enqueue(intent["lane"], intent["manifest"], origin["goal"], [])
@@ -455,90 +548,192 @@ class Continuation:
         return {"subject": intent["id"], "effect": intent["state"], "route": intent["route"],
                 "successor_job": intent.get("successor_job")}
 
-    def _dispatch(self, intent: dict, job: dict) -> dict | None:
-        """The pre-effect state commits BEFORE the guarded conductor call; the executor's own
-        expected-row guard and fence make any second dispatcher a no-claim, never a second call."""
+    def _dispatch(self, ctx, intent: dict, job: dict) -> dict | None:
+        """Guard, then the launch identity commits (`dispatched`) BEFORE the owned child starts, then
+        the start returns without waiting for the decision. A failed or lost start response is not
+        retried here: reconciliation of this same launch identity decides whether a child exists."""
         if self.conductor is None:
             moved = self._move(intent, AWAITING_OWNER, reason_code="conductor_port_unconfigured")
             return {"subject": moved["id"], "effect": moved["state"], "route": CONDUCTOR}
-        intent = self._move(intent, DISPATCHED)
+        intent = self._authorize(ctx, intent)
+        refuse(bool(self.conductor.available()), "conductor_slots_full", "conductor")
+        sequence = int((intent.get("launch") or {}).get("sequence") or 0) + 1
+        launch = {"id": launch_id(intent["id"], sequence), "sequence": sequence, "state": "starting",
+                  "exit_code": None, "error_type": None}
+        intent = self._move(intent, DISPATCHED, launch=launch)
         try:
-            outcome = self.conductor(intent["lane"], job)
+            started = self.conductor.start(intent["lane"], job, launch["id"])
         except Exception as exc:
-            moved = self._move(intent, RECOVERY_REQUIRED, reason_code="conductor_effect_unknown",
-                               next_owner=ROUTE_OWNERS[RECOVERY], error_type=type(exc).__name__)
-            return {"subject": moved["id"], "effect": moved["state"], "route": CONDUCTOR}
-        return self._settle_conductor(intent, job, outcome)
+            try:
+                self._note(intent, launch={**launch, "state": "start_unconfirmed", "error_type": type(exc).__name__})
+            except Exception:  # the next poll reconciles the same launch identity either way
+                pass
+            return {"subject": intent["id"], "effect": "launch_unconfirmed", "route": CONDUCTOR,
+                    "error_type": type(exc).__name__}
+        pid = (started or {}).get("pid") if isinstance(started, dict) else None
+        intent = self._note(intent, launch={**launch, "state": "started", "pid": pid if type(pid) is int else None})
+        # One non-blocking observation: a child that already finished settles in this tick.
+        return self._reconcile_launch(intent, ctx["jobs"]) or {"subject": intent["id"], "effect": "conductor_started",
+                                                               "route": CONDUCTOR}
 
-    def _settle_conductor(self, intent, job, outcome=None) -> dict | None:
+    def _reconcile_launch(self, intent: dict, jobs: dict) -> dict | None:
+        """Observe an already started launch and settle it from the committed decision row. Needs no
+        eligibility: its outcome is retained under the binding it was started with."""
+        job = jobs.get(intent["origin_job"])
+        refuse(job is not None, "origin_job_missing", "fleet", "origin_job")
+        launch = intent.get("launch") if isinstance(intent.get("launch"), dict) else None
+        if launch is None:
+            # A dispatch recorded without a launch identity: the decision row alone decides, and a
+            # still running row becomes recovery work, never a relaunch.
+            return self._settle_conductor(intent, job, {"state": LAUNCH_EXITED, "exit_code": None})
+        refuse(self.conductor is not None, "conductor_port_unconfigured", "conductor")
+        observed = self.conductor.poll(intent["lane"], launch["id"])
+        state = observed.get("state") if isinstance(observed, dict) else None
+        if state == LAUNCH_RUNNING:
+            if observed.get("owned"):
+                return None
+            # Alive, but not a child of this process: only this family waits; never a second start.
+            raise ContinuationRefused("conductor_owner_unknown", "conductor", "launch")
+        if state == LAUNCH_ABSENT:
+            moved = self._move(intent, AWAITING_OWNER, reason_code="conductor_not_launched",
+                               launch={**launch, "state": LAUNCH_ABSENT})
+            return {"subject": moved["id"], "effect": moved["state"], "route": CONDUCTOR}
+        if state in {LAUNCH_EXITED, LAUNCH_TIMEOUT}:
+            return self._settle_conductor(intent, job, observed)
+        raise ContinuationRefused("conductor_launch_unknown", ROUTE_OWNERS[RECOVERY], "launch")
+
+    def _settle_conductor(self, intent, job, observed) -> dict | None:
         evidence = self.lanes(intent["lane"]).read(job)
         conductor = evidence.get("conductor") or {}
         status = conductor.get("status")
+        fields = {}
+        if isinstance(intent.get("launch"), dict):
+            exit_code = observed.get("exit_code")
+            fields["launch"] = {**intent["launch"], "state": observed.get("state"),
+                                "exit_code": exit_code if type(exit_code) is int else None}
         if status == "succeeded":
-            moved = self._move(intent, RETURNED, evidence_refs=[r for r in ((conductor.get("result") or {})
-                                                                            .get("execution_ref"),) if r])
+            result = conductor.get("result") or {}
+            decision = {"id": conductor.get("id"), "status": status, "accepted": result.get("accepted"),
+                        "execution_ref": result.get("execution_ref")}
+            moved = self._move(intent, RETURNED, decision=decision,
+                               evidence_refs=[ref for ref in (result.get("execution_ref"),) if ref], **fields)
             moved = self._move(moved, COMPLETED)
             return {"subject": moved["id"], "effect": "conductor_decided", "route": CONDUCTOR}
-        if status == "running":
-            return None
         if status in {None, "pending"} and int(conductor.get("attempt") or 0) == 0:
-            # Provably not entered (no claim, no attempt): the owner may dispatch it again.
-            moved = self._move(intent, AWAITING_OWNER, reason_code="conductor_not_claimed")
+            # Provably not entered (no claim, no attempt): a later launch of a NEW identity may claim it.
+            moved = self._move(intent, AWAITING_OWNER, reason_code="conductor_not_claimed", **fields)
             return {"subject": moved["id"], "effect": moved["state"], "route": CONDUCTOR}
-        moved = self._move(intent, RECOVERY_REQUIRED, reason_code="conductor_" + str(status),
-                           next_owner=ROUTE_OWNERS[RECOVERY])
+        reason = "conductor_timeout" if observed.get("state") == LAUNCH_TIMEOUT else "conductor_" + str(status)
+        moved = self._move(intent, RECOVERY_REQUIRED, reason_code=reason, next_owner=ROUTE_OWNERS[RECOVERY], **fields)
         return {"subject": moved["id"], "effect": moved["state"], "route": CONDUCTOR}
 
     def _advance_delivery(self, intent, evidence) -> dict | None:
-        stage = (evidence.get("delivery") or {}).get("stage")
+        """Only the HostDelivery intent bound to this item's (target, release, candidate) moves it.
+        Foreign, stale, ambiguous or mismatched evidence is a named wait: never a completion, never a
+        pause of this family, and nothing is written."""
+        delivery = evidence.get("delivery")
+        refuse(isinstance(delivery, dict), "delivery_evidence_missing", "host_delivery", "release_id")
+        refuse(delivery_tuple(delivery) == delivery_tuple(intent.get("delivery_binding")), "delivery_binding_changed",
+               "host_delivery", "delivery_binding")
+        if delivery["binding"] == DELIVERY_ABSENT:
+            return None
+        refuse(delivery["binding"] == DELIVERY_BOUND, "delivery_" + str(delivery["binding"]), "host_delivery",
+               "delivery")
+        plan = {"plan_id": delivery.get("plan_id"), "plan_sha256": delivery.get("plan_sha256"),
+                "stage": delivery.get("stage")}
+        stage = delivery.get("stage")
         if stage == DELIVERY_ACTIVE:
-            moved = self._move(intent, COMPLETED, reason_code="delivery_active")
+            moved = self._move(intent, COMPLETED, reason_code="delivery_active", delivery_plan=plan)
             nxt = self._create({key: intent[key] for key in ("policy_id", "policy_sha256", "origin_job", "lane", "family",
                                                              "job_updated_at")}
                                | {"route": NEXT_ITEM, "state": AWAITING_OWNER, "reason_code": "item_completed",
                                   "next_owner": ROUTE_OWNERS[NEXT_ITEM], "predecessor_intent": moved["id"],
-                                  "evidence_sha256": intent["evidence_sha256"]},
+                                  "evidence_sha256": intent["evidence_sha256"],
+                                  "authorization": intent.get("authorization")},
                                {"generation": 0, "attempt": 0})
             return {"subject": moved["id"], "effect": "delivered", "route": DELIVERY, "next": nxt["id"]}
         if stage in DELIVERY_HALTED:
-            moved = self._move(intent, PAUSED, reason_code="delivery_" + stage, next_owner="host_delivery")
+            moved = self._move(intent, PAUSED, reason_code="delivery_" + stage, next_owner="host_delivery",
+                               delivery_plan=plan)
             return {"subject": moved["id"], "effect": moved["state"], "route": DELIVERY}
         return None
 
-    def _advance(self, policy, sha, intent, jobs):
-        if intent["route"] in SUCCESSOR_ROUTES and intent["state"] in {INTENDED, PUBLISHED}:
-            return self._publish(intent)
-        if intent["route"] in SUCCESSOR_ROUTES and intent["state"] == ADMITTED:
-            successor = jobs.get(intent["successor_job"])
-            if successor is None or successor.get("status") not in TERMINAL_JOBS:
-                return None
-            moved = self._move(intent, RETURNED, reason_code="successor_" + successor["status"])
-            moved = self._move(moved, COMPLETED)
-            return {"subject": moved["id"], "effect": "successor_returned", "route": intent["route"]}
-        job = jobs.get(intent["origin_job"])
-        if intent["route"] == CONDUCTOR and job is not None:
-            if intent["state"] == DISPATCHED:
-                return self._settle_conductor(intent, job)
-            if intent["state"] == AWAITING_OWNER and self.conductor is not None:
-                evidence = self.lanes(intent["lane"]).read(job)
-                conductor = evidence.get("conductor") or {}
-                if conductor.get("status") in {None, "pending"} and int(conductor.get("attempt") or 0) == 0:
-                    return self._dispatch(self._move(intent, INTENDED), job)
+    # ----- restart: one action per (route, state), domain.continuation.RESUME -------------
+    def _advance(self, ctx, intent):
+        action = RESUME.get((intent["route"], intent["state"]))
+        if action is None:
             return None
-        if intent["route"] == DELIVERY and intent["state"] == AWAITING_OWNER and job is not None:
-            return self._advance_delivery(intent, self.lanes(intent["lane"]).read(job))
-        if intent["route"] == RESEARCH and intent["state"] == RESEARCH_REQUIRED:
-            with self.store.transaction() as tx:
-                investigations = tx.scan(INVESTIGATIONS)
-            members = set(intent.get("family_jobs") or [])
-            researched = [row for row in investigations if row.get("state") == "researched"
-                          and members & set(row.get("job_ids") or []) and row.get("evidence_refs")]
-            if not researched:
-                return None
-            moved = self._move(intent, COMPLETED, reason_code="researched",
-                               evidence_refs=sorted({ref for row in researched for ref in row["evidence_refs"]}))
-            return {"subject": moved["id"], "effect": "research_resolved", "route": RESEARCH}
-        return None
+        return getattr(self, "_resume_" + action)(ctx, intent, ctx["jobs"].get(intent["origin_job"]))
+
+    def _resume_publish(self, ctx, intent, job):
+        return self._publish(ctx, intent)
+
+    def _resume_await_successor(self, ctx, intent, job):
+        successor = ctx["jobs"].get(intent["successor_job"])
+        if successor is None or successor.get("status") not in TERMINAL_JOBS:
+            return None
+        moved = self._move(intent, RETURNED, reason_code="successor_" + successor["status"])
+        return self._resume_complete(ctx, moved, job)
+
+    def _resume_complete(self, ctx, intent, job):
+        """`returned` already holds the exact committed outcome (successor status, or the conductor
+        decision); completing it needs no other read and no effect."""
+        moved = self._move(intent, COMPLETED)
+        return {"subject": moved["id"], "effect": "successor_returned" if moved["route"] in SUCCESSOR_ROUTES
+                else "returned_completed", "route": moved["route"]}
+
+    def _resume_dispatch(self, ctx, intent, job):
+        refuse(job is not None, "origin_job_missing", "fleet", "origin_job")
+        return self._dispatch(ctx, intent, job)
+
+    def _resume_reconcile_launch(self, ctx, intent, job):
+        return self._reconcile_launch(intent, ctx["jobs"])
+
+    def _resume_redispatch(self, ctx, intent, job):
+        """A conductor intent waiting because its row was not claimed (or no port was configured).
+        A new launch identity is started only for a row still provably not entered, within
+        `MAX_LAUNCHES`, and only after the eligibility guard."""
+        if self.conductor is None or job is None:
+            return None
+        conductor = self.lanes(intent["lane"]).read(job).get("conductor") or {}
+        status = conductor.get("status")
+        if status == "running":
+            return None
+        if status == "succeeded":  # decided by another owner (e.g. the manual command): record it
+            result = conductor.get("result") or {}
+            moved = self._move(intent, COMPLETED, reason_code="conductor_decided_elsewhere",
+                               decision={"id": conductor.get("id"), "status": status,
+                                         "accepted": result.get("accepted"), "execution_ref": result.get("execution_ref")})
+            return {"subject": moved["id"], "effect": "conductor_decided", "route": CONDUCTOR}
+        if not (status in {None, "pending"} and int(conductor.get("attempt") or 0) == 0):
+            moved = self._move(intent, RECOVERY_REQUIRED, reason_code="conductor_" + str(status),
+                               next_owner=ROUTE_OWNERS[RECOVERY])
+            return {"subject": moved["id"], "effect": moved["state"], "route": CONDUCTOR}
+        if int((intent.get("launch") or {}).get("sequence") or 0) >= MAX_LAUNCHES:
+            moved = self._move(intent, REFUSED, reason_code="conductor_launch_exhausted", next_owner="conductor")
+            return {"subject": moved["id"], "effect": moved["state"], "route": CONDUCTOR}
+        intent = self._authorize(ctx, intent)
+        return self._dispatch(ctx, self._move(intent, INTENDED), job)
+
+    def _resume_observe_delivery(self, ctx, intent, job):
+        if job is None:
+            return None
+        return self._advance_delivery(intent, self.lanes(intent["lane"]).read(job, ctx["policy"]["delivery_target"]))
+
+    def _resume_observe_research(self, ctx, intent, job):
+        with self.store.transaction() as tx:
+            investigations = tx.scan(INVESTIGATIONS)
+        members = set(intent.get("family_jobs") or [])
+        researched = [row for row in investigations if row.get("state") == "researched"
+                      and members & set(row.get("job_ids") or []) and row.get("evidence_refs")]
+        if not researched:
+            return None
+        moved = self._move(intent, COMPLETED, reason_code="researched",
+                           evidence_refs=sorted({ref for row in researched for ref in row["evidence_refs"]}))
+        return {"subject": moved["id"], "effect": "research_resolved", "route": RESEARCH}
+
+    def _resume_await_backlog(self, ctx, intent, job):
+        return None  # the approved backlog owns the next item; nothing to do here
 
     # ----- durable intent writes ----------------------------------------------------------
     def _create(self, fields: dict, attempt: dict, key: str | None = None) -> dict:
@@ -574,6 +769,18 @@ class Continuation:
         self._emit(previous, current)
         return current
 
+    def _note(self, intent: dict, *, emit: bool = False, **fields) -> dict:
+        """The same compare-and-swap for a field of an unchanged state: launch evidence or a hold."""
+        with self.store.transaction() as tx:
+            current = tx.get(BUCKET_INTENTS, intent["id"])
+            if current is None or current.get("version") != intent.get("version"):
+                raise IntentChanged(intent["id"])
+            current.update(fields, version=current["version"] + 1, updated_at=self.clock())
+            tx.put(BUCKET_INTENTS, intent["id"], current)
+        if emit:
+            self._emit(current["state"], current)
+        return current
+
     def _emit(self, previous, row) -> None:
         """After the commit, through the existing Observer port: identifiers and codes only."""
         if self.observer is None:
@@ -582,7 +789,10 @@ class Continuation:
                   "origin_job": row["origin_job"], "successor_job": row.get("successor_job"),
                   "next_owner": str(row.get("next_owner") or "none"), "next_action": view(row)["next_action"]}
         reason = row.get("reason_code") if isinstance(row.get("reason_code"), str) else None
-        if row["state"] in {RESEARCH_REQUIRED, RECOVERY_REQUIRED, PAUSED, REFUSED}:
+        hold = row.get("hold") if row["state"] in OPEN_STATES and isinstance(row.get("hold"), dict) else None
+        if row["state"] in {RESEARCH_REQUIRED, RECOVERY_REQUIRED, PAUSED, REFUSED} or hold is not None:
+            if hold is not None:
+                reason = hold.get("reason_code") if isinstance(hold.get("reason_code"), str) else None
             self.observer.emit(EVENT_BLOCKED, "unknown" if row["state"] == RECOVERY_REQUIRED else "blocked",
                                severity="warning", reason_code=_code(reason), attributes=common)
             return

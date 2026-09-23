@@ -108,6 +108,51 @@ OPEN_STATES = frozenset({INTENDED, PUBLISHED, ADMITTED, DISPATCHED, RETURNED, AW
 # other family keeps being selected.
 BLOCKING_STATES = frozenset({RESEARCH_REQUIRED, RECOVERY_REQUIRED, PAUSED, REFUSED})
 
+# ---- route x state restart table ----------------------------------------------------------------
+# Every durable boundary a route can leave behind, and the ONE thing a restarted (or second)
+# controller does with it. A row absent here is terminal. `dispatch` and `publish` are NEW effects
+# and pass the eligibility guard first; `reconcile_launch` only observes an effect already started.
+PUBLISH, AWAIT_SUCCESSOR, COMPLETE = "publish", "await_successor", "complete"
+DISPATCH, RECONCILE_LAUNCH, REDISPATCH = "dispatch", "reconcile_launch", "redispatch"
+OBSERVE_DELIVERY, OBSERVE_RESEARCH, AWAIT_BACKLOG = "observe_delivery", "observe_research", "await_backlog"
+RESUME = {
+    **{(route, state): action for route in (EVIDENCE_REPAIR, CORRECTION)
+       for state, action in ((INTENDED, PUBLISH), (PUBLISHED, PUBLISH), (ADMITTED, AWAIT_SUCCESSOR),
+                             (RETURNED, COMPLETE))},
+    (CONDUCTOR, INTENDED): DISPATCH,
+    (CONDUCTOR, DISPATCHED): RECONCILE_LAUNCH,
+    (CONDUCTOR, RETURNED): COMPLETE,
+    (CONDUCTOR, AWAITING_OWNER): REDISPATCH,
+    (DELIVERY, AWAITING_OWNER): OBSERVE_DELIVERY,
+    (RESEARCH, RESEARCH_REQUIRED): OBSERVE_RESEARCH,
+    (NEXT_ITEM, AWAITING_OWNER): AWAIT_BACKLOG,
+}
+# The states each route can durably hold; the open ones are exactly the RESUME rows of that route.
+ROUTE_STATES = {EVIDENCE_REPAIR: (INTENDED, PUBLISHED, ADMITTED, RETURNED, COMPLETED, REFUSED),
+                CORRECTION: (INTENDED, PUBLISHED, ADMITTED, RETURNED, COMPLETED, REFUSED),
+                CONDUCTOR: (INTENDED, DISPATCHED, RETURNED, AWAITING_OWNER, COMPLETED, RECOVERY_REQUIRED,
+                            REFUSED),
+                DELIVERY: (AWAITING_OWNER, COMPLETED, PAUSED, REFUSED),
+                RESEARCH: (RESEARCH_REQUIRED, COMPLETED),
+                RECOVERY: (RECOVERY_REQUIRED,),
+                NEXT_ITEM: (AWAITING_OWNER,)}
+
+# ---- conductor launches: owned child identity ---------------------------------------------------
+# What reconciliation observed about one launch: still running (owned here or by an unknown owner),
+# exited (with or without its receipt), proven never started (fenced), timed out and ended by its
+# owner, or not determinable. Only `absent` permits another launch, and only of a NEW identity.
+LAUNCH_RUNNING, LAUNCH_EXITED, LAUNCH_ABSENT = "running", "exited", "absent"
+LAUNCH_TIMEOUT, LAUNCH_UNKNOWN = "timeout", "unknown"
+LAUNCH_STATES = (LAUNCH_RUNNING, LAUNCH_EXITED, LAUNCH_ABSENT, LAUNCH_TIMEOUT, LAUNCH_UNKNOWN)
+# At most this many launch identities per conductor intent; each one enters the guarded claim at
+# most once, so this bounds process starts, never model calls (the expected-row guard bounds those).
+MAX_LAUNCHES = 3
+
+
+def launch_id(intent: str, sequence: int) -> str:
+    """Deterministic launch identity: a restart or a second controller names the SAME launch."""
+    return digest(["conductor_launch", intent, sequence])
+
 # Terminal lane-operation reasons whose provider/process/publication effects are NOT known.
 UNKNOWN_EFFECT_REASONS = frozenset({"settlement_failed", "collection_failed", "publication_incomplete",
                                     "no_terminal_outcome", "acceptance_unproven", "review_verdict_unknown",
@@ -223,6 +268,85 @@ def check_scope(policy: dict, job: dict, runtime: dict) -> None:
            field="session_archive")
 
 
+# ---- stored authorization and the shared eligibility guard ---------------------------------------
+RUNTIME_FIELDS = ("image", "profile", "session_archive_sha256")
+AUTHORIZATION_REASONS = {"policy_sha256": "policy_changed", "pin_sha256": "policy_changed",
+                         "repository": "repository_changed", "lane": "lane_outside_policy",
+                         "goal": "goal_changed", "allowed_paths": "scope_changed",
+                         "acceptance_criteria": "criteria_changed", "model": "model_changed",
+                         "source": "source_changed"}
+RUNTIME_REASONS = {"image": "image_changed", "profile": "profile_changed",
+                   "session_archive_sha256": "session_archive_changed"}
+
+
+def authorization(policy_sha256: str, pin_sha256, job: dict, runtime) -> dict:
+    """The exact binding an intent was authorized under: pinned policy, frame, model, runtime
+    identity and the source job. Identities only; stored on the intent at creation."""
+    manifest = job.get("manifest") or {}
+    plan = manifest.get("plan") or {}
+    goal = job.get("goal") or {}
+    return {"policy_sha256": policy_sha256, "pin_sha256": pin_sha256, "repository": job.get("repository"),
+            "lane": job.get("lane"), "goal": {key: goal.get(key) for key in sorted(GOAL_FIELDS)},
+            "allowed_paths": sorted(plan.get("allowed_paths") or []),
+            "acceptance_criteria": sorted(plan.get("acceptance_criteria") or []),
+            "model": (manifest.get("claude") or {}).get("model"),
+            "runtime": ({key: runtime.get(key) for key in RUNTIME_FIELDS} if isinstance(runtime, dict) else None),
+            "source": {"job": job.get("id"), "manifest_sha256": job.get("manifest_sha256"),
+                       "status": job.get("status")}}
+
+
+def check_authorization(stored, current: dict) -> None:
+    """The eligibility guard before every NEW effect: the current binding must equal the stored one.
+
+    Drift refuses by the name of the first differing field; the stored authorization is never
+    rewritten to fit the current world, and an intent without one (older rows) is unknown."""
+    refuse(isinstance(stored, dict), "authorization_unknown", field="authorization")
+    for key, reason in AUTHORIZATION_REASONS.items():
+        refuse(stored.get(key) == current.get(key), reason, field=key)
+    stored_runtime, current_runtime = stored.get("runtime"), current.get("runtime")
+    refuse(isinstance(stored_runtime, dict) and isinstance(current_runtime, dict), "runtime_unknown",
+           field="runtime")
+    for key in RUNTIME_FIELDS:
+        refuse(stored_runtime.get(key) == current_runtime.get(key), RUNTIME_REASONS[key], field=key)
+
+
+# ---- host delivery evidence bound to target and candidate ----------------------------------------
+DELIVERY_BOUND, DELIVERY_ABSENT, DELIVERY_AMBIGUOUS = "bound", "absent", "ambiguous"
+DELIVERY_STALE, DELIVERY_MISMATCH, DELIVERY_UNKNOWN = "stale", "release_candidate_mismatch", "unknown"
+
+
+def bind_delivery(rows: list, target, release_id, revision, release) -> dict:
+    """The ONE HostDelivery intent of the policy target for this exact release and candidate.
+
+    A plan of another target for the same release is foreign: it never completes nor pauses this
+    item. A plan of this target for another revision is stale, two of them ambiguous, a release
+    record naming another candidate a mismatch, a missing candidate unknown - each a named wait,
+    never a completion or a pause."""
+    bound = {"target_id": target, "release_id": release_id, "revision": revision}
+    foreign = sum(1 for row in rows if row.get("target_id") != target)
+    base = {**bound, "stage": None, "plan_id": None, "plan_sha256": None, "foreign": foreign}
+    if not (isinstance(revision, str) and REVISION.fullmatch(revision)):
+        return {**base, "binding": DELIVERY_UNKNOWN}
+    candidate = ((release or {}).get("candidate") or {}).get("revision") if isinstance(release, dict) else None
+    if release is not None and candidate != revision:
+        return {**base, "binding": DELIVERY_MISMATCH}
+    mine = [row for row in rows if row.get("target_id") == target]
+    exact = [row for row in mine if row.get("revision") == revision]
+    if not mine:
+        return {**base, "binding": DELIVERY_ABSENT}
+    if not exact:
+        return {**base, "binding": DELIVERY_STALE}
+    if len(exact) > 1:
+        return {**base, "binding": DELIVERY_AMBIGUOUS}
+    row = exact[0]
+    return {**base, "binding": DELIVERY_BOUND, "stage": row.get("stage"), "plan_id": row.get("plan_id") or row.get("id"),
+            "plan_sha256": row.get("plan_sha256")}
+
+
+def delivery_tuple(delivery: dict) -> dict:
+    return {key: (delivery or {}).get(key) for key in ("target_id", "release_id", "revision")}
+
+
 # ---- classification of one terminal observation --------------------------------------------------
 def classify(job: dict, evidence: dict) -> dict:
     """The routing-table row for one terminal Fleet job and its lane evidence.
@@ -334,6 +458,9 @@ def blocked_families(intents: list) -> dict:
     for row in intents:
         if row["state"] in BLOCKING_STATES:
             held.setdefault(row["family"], row.get("reason_code") or row["state"])
+        elif row["state"] in OPEN_STATES and isinstance(row.get("hold"), dict):
+            # An open intent the eligibility guard stopped: its family waits for the named owner.
+            held.setdefault(row["family"], row["hold"].get("reason_code") or "held")
     return held
 
 
@@ -417,6 +544,9 @@ def validate_binding(document) -> dict:
 # ---- projection ---------------------------------------------------------------------------------
 def next_action(row: dict) -> str:
     state, route = row.get("state"), row.get("route")
+    if state in OPEN_STATES and isinstance(row.get("hold"), dict):
+        return ("no new effect under a changed authorization; " + str(row["hold"].get("next_owner") or "operator")
+                + " restores the authorized binding or supersedes this intent")
     if state == INTENDED:
         return "perform the " + str(route) + " effect under this intent"
     if state == PUBLISHED:
@@ -424,7 +554,7 @@ def next_action(row: dict) -> str:
     if state == ADMITTED:
         return "wait for the successor operation's terminal outcome"
     if state == DISPATCHED:
-        return "observe the guarded conductor decision; never relaunch an entered one"
+        return "poll the owned conductor child and reconcile its decision; never relaunch an entered one"
     if state == RETURNED:
         return "route the returned outcome"
     if state == AWAITING_OWNER:
@@ -449,5 +579,11 @@ def view(row: dict) -> dict:
             "successor_job": row.get("successor_job"), "predecessor_intent": row.get("predecessor_intent"),
             "evidence_sha256": row["evidence_sha256"], "evidence_refs": list(row.get("evidence_refs") or [])[:16],
             "session_mode": row.get("session_mode"), "next_owner": row.get("next_owner"),
+            "hold": ({k: row["hold"].get(k) for k in ("reason_code", "next_owner", "field")}
+                     if isinstance(row.get("hold"), dict) else None),
+            "launch": ({k: row["launch"].get(k) for k in ("id", "sequence", "state", "exit_code")}
+                       if isinstance(row.get("launch"), dict) else None),
+            "delivery_binding": (delivery_tuple(row["delivery_binding"])
+                                 if isinstance(row.get("delivery_binding"), dict) else None),
             "next_action": next_action(row), "completion": ROUTE_COMPLETION.get(row["route"]),
             "version": row.get("version"), "created_at": row.get("created_at"), "updated_at": row.get("updated_at")}

@@ -124,7 +124,15 @@ def execute(service, args) -> dict:
     from codex_harness.bootstrap import build_observer
     observer = build_observer(service.store, "cli.continuation")
     try:
-        result = adapter.tick_policy(service.store, config, settings(), args.policy, observer=observer)
+        # One owned pass: a conductor child it starts is this process's until it ends (never an
+        # orphan of a returned command), then its outcome is settled by one drain.
+        tick = adapter.ContinuationPass(service.store, config, settings(), args.policy, observer=observer)
+        result = tick()
+        if tick.owned():
+            tick.processes.join()
+            drained = tick.drain()
+            result = {**result, "actions": result["actions"] + drained["actions"],
+                      "skipped": result["skipped"] + drained["skipped"]}
     finally:
         observer.close()
     return {**result, "exit_code": 1 if result["outcome"] == "refused" else 0}

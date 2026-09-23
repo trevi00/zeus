@@ -7,7 +7,6 @@ fixtures (no model, provider, Docker, PostgreSQL or network). Nothing here quali
 from __future__ import annotations
 
 import json
-import subprocess
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -79,6 +78,31 @@ def test_policy_is_registered_from_a_git_pin_and_a_moved_pin_refuses(tmp_path):
     assert refused["next_owner"] == "operator"
 
 
+def test_the_runner_pass_keeps_its_port_across_ticks_and_an_unreadable_pin_only_drains(tmp_path):
+    world = World(tmp_path)
+    world.conductor.pending = True
+    root, revision = policy_repository(world)
+    config = world.fleet.registered()["config"]
+    adapter.register_policy(world.control, config, "a", revision, "ops/continuation.json")
+    world.enqueue("op-1")
+    tick = adapter.ContinuationPass(world.control, config, HOST, "policy-1", processes=world.conductor,
+                                    lanes=world.lanes, runtime=world.runtime)
+    assert tick()["actions"] == [{"subject": "op-1", "effect": "session_bound"}]
+    job_id, _ = world.run_next(verdict=True)
+    tick()
+    launch = world.conductor.active()
+    assert len(launch) == 1 and tick.owned() == launch and tick.unresolved() == []
+    # The pinned commit disappears while the child runs: no new effect, but the child is settled.
+    with world.control.transaction() as tx:
+        row = tx.get("continuation_policies", "policy-1")
+        tx.put("continuation_policies", "policy-1", {**row, "pin": {**row["pin"], "revision": "0" * 40}})
+    world.conductor.finish(launch[0])
+    refused = tick()
+    assert refused["outcome"] == "refused" and refused["reason_code"] == "policy_unavailable"
+    assert [action["effect"] for action in refused["actions"]] == ["conductor_decided"]
+    assert tick.owned() == [] and tick.drain()["actions"] == [] and world.conductor.calls == [job_id]
+
+
 def test_unregistered_policy_reads_no_git_no_lane_and_starts_no_process(tmp_path):
     world = World(tmp_path)
 
@@ -104,27 +128,35 @@ def test_lane_runtime_reports_the_actual_image_profile_and_archive_identity(tmp_
     assert identity["repository"] == world.repository and identity["exit_code"] == 0
 
 
-def test_lane_conductor_runs_the_existing_command_in_the_lane_environment(tmp_path):
+def test_conductor_processes_start_the_existing_command_as_an_owned_child_in_the_lane_environment(tmp_path):
     world = World(tmp_path)
     config = world.fleet.registered()["config"]
     seen = []
 
-    def run(argv, **kwargs):  # LABELLED fixture process runner: records, starts nothing
-        seen.append((argv, kwargs))
-        return SimpleNamespace(returncode=0)
-    job = {"id": "op-1", "manifest": manifest("op-1")}
-    assert adapter.LaneConductor(config, HOST, argv=("python", "-m", "codex_harness.cli"), run=run)("a", job) == {
-        "exit_code": 0}
-    argv, kwargs = seen[0]
-    assert argv[:5] == ["python", "-m", "codex_harness.cli", "--repository", str(tmp_path / "repo-a")]
-    assert argv[5:8] == ["continuation", "conduct", "--file"]
-    assert json.loads(Path(argv[8]).read_text(encoding="utf-8")) == job["manifest"]
-    assert "search_path=lane_a" in kwargs["env"]["ZEUS_DATABASE_URL"] and kwargs["timeout"] > 0
+    class Tree:  # LABELLED fixture of ProcessTree.spawn: records, starts nothing, stays running
+        process = SimpleNamespace(pid=4242, poll=lambda: None)
 
-    def lost(argv, **kwargs):
-        raise subprocess.TimeoutExpired(argv, kwargs["timeout"])
-    with pytest.raises(subprocess.TimeoutExpired):  # the controller records this as an unknown effect
-        adapter.LaneConductor(config, HOST, run=lost)("a", job)
+    def spawn(argv, **kwargs):
+        seen.append((argv, kwargs))
+        return Tree()
+    job = {"id": "op-1", "manifest": manifest("op-1")}
+    launch = "a" * 64
+    port = adapter.ConductorProcesses(config, HOST, argv=("python", "-m", "codex_harness.cli"),
+                                      entry=("python", "-m", "entry"), spawn=spawn)
+    assert port.available() is True
+    assert port.start("a", job, launch) == {"pid": 4242, "cached": False}
+    assert port.available() is False and port.active() == [launch], "one bounded slot is taken"
+    argv, kwargs = seen[0]
+    directory = tmp_path / "rt-a" / "continuation" / "launches" / launch
+    assert argv[:5] == ["python", "-m", "entry", "--launch", str(directory)]
+    assert argv[5:11] == ["--", "python", "-m", "codex_harness.cli", "--repository", str(tmp_path / "repo-a")]
+    assert argv[11:14] == ["continuation", "conduct", "--file"]
+    assert json.loads(Path(argv[14]).read_text(encoding="utf-8")) == job["manifest"]
+    assert "search_path=lane_a" in kwargs["env"]["ZEUS_DATABASE_URL"]
+    assert port.poll("a", launch) == {"state": "running", "owned": True, "exit_code": None}
+    assert port.start("a", job, launch)["cached"] is True and len(seen) == 1, "one identity, one start"
+    with pytest.raises(ValueError):
+        port.start("a", job, "../escape")
 
 
 class GuardedDecider:
