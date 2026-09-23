@@ -109,6 +109,37 @@ new image before new Opus 5.5 operations are registered. No previous admitted op
 
 ### Next bounded implementation: durable Claude task sessions
 
+### Conductor continuation SSOT finding, 2026-09-23 (design input)
+
+Existing executor._commit_decision already emits rejected-review rework messages and approved lead
+reviews for conductor; improvement_loops tracks rejected trees and max_reworks. LocalCycle explicitly
+runs only worker/lead, stops at awaiting_operator, and Operation._classify turns rejected lead review
+into terminal rejected. Operation finalization then parks terminal-correlated messages. Thus saying
+"there is no rework logic" would be false: the missing piece is an approved continuous lifecycle
+around finite operation semantics and scope-bound rework. Reuse these message/review owners.
+
+Next design must keep existing finite operation behavior backwards compatible and opt in via a
+Git-pinned owner policy. Preserve each rejected candidate and exact evidence, but allow the logical
+goal to remain active under the authorized lifecycle. Do not revive a parked finite operation by
+editing its row. A continuation intent should derive one successor (idempotently) from the succeeded
+independent review decision and an evidence-backed Codex correction design, preserving original
+goal/allowed paths/acceptance matrix; expand only by an authorized revised frame. Replace the vague
+"reimplement" context with previous candidate, validated session checkpoint and consolidated matrix.
+Connect session eligibility to exact review/candidate/task; no fresh-session claim of native resume.
+
+Two distinct similar failures pause the affected family for existing research/DBA/Council diagnosis;
+replayed events do not count. A free-text similarity or common rejection status is only a research
+candidate, never proof of common cause. Research outputs must cite inspected SSOT and relevant
+primary sources before Codex selects the corrected design. Preserve generic budget/usage accounting
+and operational resource bounds without imposing another user-approval lifetime call cap.
+
+Accepted lead review alone is not release approval: route through existing conductor review and
+Releases/ReleaseQueue, then qualified host delivery. Different identities cannot inherit acceptance.
+The controller must not grant a candidate authority to change its own evaluator. Unknown effects use
+ExecutionRecovery's bound repair process; known evidence refusal retains salvage and goes through
+inspection repair and independent review, not status rewriting. This section is traced design input;
+implementation contract will bind the accepted worker-session API, not speculate a second API now.
+
 Purpose: keep one logical worker task context through implementation -> frozen candidate -> review
 wait -> qualified rejection correction, without keeping an idle model process alive. This batch
 provides the reusable transport/storage primitive; conductor continuation consumes it in the next
