@@ -232,6 +232,7 @@ class ConductorProcesses:
         self.seconds = POLICY.decision_seconds + CONDUCT_MARGIN_SECONDS if seconds is None else seconds
         self.environment = environment
         self.children: dict[str, dict] = {}
+        self.stop_asked: set[str] = set()
 
     def _environment(self, lane: dict) -> dict:
         if self.environment is not None:
@@ -290,20 +291,26 @@ class ConductorProcesses:
                     "error_type": type(exc).__name__}
         return observe(directory)
 
-    def request_stop(self, launches=None) -> list[str]:
+    def request_stop(self, launches=None) -> dict:
         """Ask guardians to end their trees now (local files only, no database); each still proves
-        its cleanup before its unit can be settled. Returns the launches asked."""
-        asked = []
+        its cleanup before its unit can be settled. A launch already asked is not asked again.
+
+        Returns `asked` (the launches whose `stop` file was written by this call) and `failed`
+        (`launch` and `error_type` of each request that could not be written; it is retried by the
+        next call, and the guardian's own deadline still bounds that launch). Asking is not cleanup."""
+        asked, failed = [], []
         for launch in (sorted(self.children) if launches is None else launches):
             child = self.children.get(launch)
-            if child is None:
+            if child is None or launch in self.stop_asked:
                 continue
             try:
                 (child["directory"] / "stop").write_text("stop", encoding="utf-8")
-            except OSError:
+            except OSError as exc:
+                failed.append({"launch": launch, "error_type": type(exc).__name__})
                 continue
+            self.stop_asked.add(launch)
             asked.append(launch)
-        return asked
+        return {"asked": asked, "failed": failed}
 
     def join(self, poll_seconds: float = 0.2) -> None:
         """Wait until every guardian this process spawned has ended (each is bounded by its own

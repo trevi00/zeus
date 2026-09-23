@@ -78,6 +78,8 @@ BUCKET_DELIVERY = "fleet_delivery"
 BUCKET_RECOVERY = "fleet_recovery_receipts"
 BUCKET_RELOCATION = "fleet_relocations"
 BUCKET_UNITS = "fleet_units"
+# Control-row field naming the managed host activation that paused admission (`activation_gate`).
+ACTIVATION_HOLD = "activation_hold"
 CONTROL_KEY = "admission"
 LOGGER = logging.getLogger("zeus.fleet.runner")
 
@@ -211,8 +213,10 @@ class Fleet:
         with self.store.transaction() as tx:
             if self._registry(tx) is None:
                 raise FleetRefused("unregistered")
-            # Only the flag changes: a granted effective budget survives pause/resume.
-            row = {**self._control(tx), "paused": paused, "updated_at": self.clock()}
+            # Only the flag changes: a granted effective budget survives pause/resume. An owner pause
+            # or resume takes the pause over, so a host activation hold never outlives it.
+            control = {key: value for key, value in self._control(tx).items() if key != ACTIVATION_HOLD}
+            row = {**control, "paused": paused, "updated_at": self.clock()}
             tx.put(BUCKET_CONTROL, CONTROL_KEY, row)
         return row
 
@@ -222,6 +226,51 @@ class Fleet:
 
     def resume(self) -> dict:
         return self._set_paused(False)
+
+    def activation_gate(self, target_id: str, descriptor_sha256: str) -> dict:
+        """Pause durable admission and read the Fleet's execution debt in ONE transaction.
+
+        The managed host target calls this under its own lifecycle guard before it stops an
+        instance and again before it launches one (HOST-RUNTIME.md "Activation gate"). Because every
+        admission and unit reservation checks the pause under the same serialization, nothing can
+        be reserved after this commits. The pause is left in place: a running fleet was not paused
+        by an owner, so it carries an `activation_hold` naming the target and the descriptor being
+        activated, which only that exact runtime may release (`release_activation_hold`); an owner
+        pause is kept as it is. `settled` is True only when no worker job is reserving and no
+        execution unit is held."""
+        with self.store.transaction() as tx:
+            if self._registry(tx) is None:
+                raise FleetRefused("unregistered")
+            control = self._control(tx)
+            hold = control.get(ACTIVATION_HOLD)
+            ours = not control.get("paused") or (isinstance(hold, dict) and hold.get("target_id") == target_id)
+            if ours:
+                hold = {"target_id": target_id, "descriptor_sha256": descriptor_sha256, "at": self.clock()}
+                tx.put(BUCKET_CONTROL, CONTROL_KEY, {**control, "paused": True, ACTIVATION_HOLD: hold,
+                                                     "updated_at": self.clock()})
+            reserving = sorted(row["id"] for row in tx.scan(BUCKET_JOBS) if row["status"] in RESERVING)
+            units = held_units(tx.scan(BUCKET_UNITS))
+        return {"paused": True, "hold": ours, "reserving": reserving, "units_held": units,
+                "settled": not reserving and not units}
+
+    def release_activation_hold(self, descriptor_sha256: str) -> dict:
+        """Resume admission paused by `activation_gate`, only for the runtime it was held for.
+
+        Called by a managed runtime that is running exactly that descriptor, so the code releasing
+        the pause is code that counts execution units. A predecessor that predates this never calls
+        it and stays paused for its owner. Any other pause (an owner's, another descriptor's hold)
+        is left untouched."""
+        with self.store.transaction() as tx:
+            if self._registry(tx) is None:
+                raise FleetRefused("unregistered")
+            control = self._control(tx)
+            hold = control.get(ACTIVATION_HOLD)
+            if not (control.get("paused") and isinstance(hold, dict)
+                    and hold.get("descriptor_sha256") == descriptor_sha256):
+                return {"released": False}
+            row = {key: value for key, value in control.items() if key != ACTIVATION_HOLD}
+            tx.put(BUCKET_CONTROL, CONTROL_KEY, {**row, "paused": False, "updated_at": self.clock()})
+        return {"released": True}
 
     def authorize_budget(self, per_host, total, expected_total, mode=None) -> dict:
         """Explicit operator grant over the effective budget, one transaction: the expected total
@@ -702,10 +751,41 @@ class FleetRunner:
         self.backlog_state = None
         self.children: dict[str, tuple[dict, object]] = {}
         self.stopping = False
+        # What the conductor stop request reached (`_forward_stop`); None until a stop is forwarded.
+        self.stop_request = None
+        # Whether this runtime's own activation hold was released (`_release_hold`); None until tried.
+        self.hold_state = None
 
     def stop(self) -> None:
-        """Graceful stop: close admission and drain owned children; nothing is killed."""
+        """Graceful stop: close admission and drain owned children; nothing is killed.
+
+        A continuation that offers `request_stop()` is asked HERE, before any store access, to have
+        the guardians of its conductor launches end their trees. That request is local and DB-free
+        (SPEC stop correction), so a blocked or unavailable store cannot hold it back; it proves no
+        cleanup - each guardian still writes its own proof, and each unit stays held until the Fleet
+        settles it. Worker jobs are never signalled. It never raises: a stop may come from a signal."""
         self.stopping = True
+        self._forward_stop()
+
+    def _forward_stop(self) -> None:
+        """Ask the continuation's guardians to stop; repeated calls ask only launches not yet asked.
+
+        The outcome is kept in `stop_request` and reported in the run summary: a request that could
+        not be written is `failed` with its error type, never counted as asked, and the guardian's
+        own deadline still bounds that launch."""
+        request = getattr(self.continuation, "request_stop", None)
+        if request is None:
+            return
+        prior = self.stop_request or {"asked": [], "failed": []}
+        try:
+            result = request()
+            asked = sorted(set(prior["asked"]) | set(result.get("asked") or []))
+            failed = [row for row in result.get("failed") or [] if row.get("launch") not in asked]
+            error_type = None
+        except Exception as exc:
+            asked, failed, error_type = prior["asked"], prior["failed"], type(exc).__name__
+        state = "failed" if failed or error_type else "requested" if asked else "none"
+        self.stop_request = {"state": state, "asked": asked, "failed": failed, "error_type": error_type}
 
     def run(self, once: bool) -> dict:
         self.fleet.registered()  # refuse early when unregistered; ceilings are re-read per scan
@@ -716,7 +796,12 @@ class FleetRunner:
         if self.continuation is not None:
             summary["continuation"] = {"state": "disabled", "outcome": None, "reason_code": None, "error_type": None}
         while True:
+            self._release_hold(summary)
             admitting = self._admission_open(summary)
+            if self.stopping:
+                # Every stopping pass forwards the stop BEFORE any store access of that pass, so a
+                # launch started just before the stop, or a request that failed, is asked again.
+                self._forward_stop()
             self._reconcile(summary)
             progressed = False
             if admitting and not self.stopping:
@@ -738,6 +823,8 @@ class FleetRunner:
                 break
             self.sleep(self.interval)
         summary["stopped"] = self.stopping
+        if self.stop_request is not None:
+            summary["stop_request"] = dict(self.stop_request)
         summary["reconciliation_required"] = self.fleet.reconciliation_required()
         if self.continuation is not None:
             # A stop never reports idle past owned debt: execution units still held (a conductor
@@ -747,6 +834,27 @@ class FleetRunner:
             except Exception as exc:
                 summary["units_held"] = {"state": "unknown", "error_type": type(exc).__name__}
         return summary
+
+    def _release_hold(self, summary: dict) -> None:
+        """Release the host activation hold THIS runtime was started under, once.
+
+        A control offering `activation()` names the descriptor digest this runtime is running;
+        `Fleet.release_activation_hold` resumes admission only when the pause is exactly that
+        activation's hold. A failed read leaves admission paused (safe) and is tried again on the
+        next pass; any other pause is not this runner's to lift."""
+        if self.hold_state is not None or self.stopping:
+            return
+        activation = getattr(self.control, "activation", None)
+        if activation is None:
+            self.hold_state = "none"
+            return
+        try:
+            released = self.fleet.release_activation_hold(activation())["released"]
+        except Exception as exc:
+            summary["activation_hold"] = {"state": "unavailable", "error_type": type(exc).__name__}
+            return
+        self.hold_state = "released" if released else "none"
+        summary["activation_hold"] = {"state": self.hold_state, "error_type": None}
 
     def _admission_open(self, summary: dict) -> bool:
         """Whether new work may be selected or admitted on this pass. Always true without control.
@@ -957,5 +1065,5 @@ class FleetRunner:
         summary["finalized"].append({"id": row["id"], "status": row["status"], "reason_code": row["reason_code"]})
 
 
-__all__ = ["BUCKET_CONTROL", "BUCKET_DELIVERY", "BUCKET_GRANTS", "BUCKET_JOBS", "BUCKET_RECOVERY",
+__all__ = ["ACTIVATION_HOLD", "BUCKET_CONTROL","BUCKET_DELIVERY", "BUCKET_GRANTS", "BUCKET_JOBS", "BUCKET_RECOVERY",
            "BUCKET_REGISTRY", "BUCKET_RELOCATION", "BUCKET_UNITS", "Fleet", "FleetRunner", "LaunchRefused", "QUEUED"]

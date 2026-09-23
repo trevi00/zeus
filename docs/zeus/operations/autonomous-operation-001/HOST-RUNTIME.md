@@ -165,6 +165,41 @@ If the owner has meanwhile changed `environment_lock` and the predecessor's lock
 the restoration refuses with `environment_unqualified`. It does not run old code in an environment
 nobody qualified for it.
 
+A bare `git revert` or a hand-started predecessor is not a safe rollback: an older runtime does not
+count the Fleet's execution units (`fleet_units`), so it could admit work past a conductor that is
+still running or whose cleanup is unproven. Roll back only through this lifecycle and its gate.
+
+## Activation gate
+
+`ManagedFleetTarget(fleet=...)` holds the gate authority: in production the coordinator binds
+`Fleet(<host store>)` (`host_delivery.controller` -> `host_ports(fleet=...)`); tests inject a labelled
+in-memory Fleet. Without an authority every managed start refuses `fleet_authority_unconfigured`;
+it is never read as "no debt".
+
+Every managed start that would launch (forward or restoration, first attempt or replay) calls
+`Fleet.activation_gate(target_id, descriptor_sha256)` under the target guard, twice: after the
+instance authority check and BEFORE the stop, and again after the stop immediately before
+retire/launch. Each call is one short Fleet transaction (no transaction is held across process I/O):
+
+- it durably pauses admission; every `admit_one` and `reserve_unit` checks that pause in the same
+  serialization, so nothing can be reserved in the gap between the read and the launch;
+- it reads every reserving worker job and every held execution unit;
+- held debt refuses `fleet_debt_held`, a failed read `fleet_debt_unknown`. A dead controller or an
+  idle heartbeat alone never counts as settled.
+
+A refusal before the stop leaves a live instance running with admission paused, so the owner of the
+debt can settle it. A restoration refused by the gate stays `rolling_back` and pending with that code
+(`rollback.gate`); after its deadline it is blocked with the same code, and admission stays paused.
+The recovery owner then settles each held unit from its proof, or recovers it as ExecutionRecovery
+work, and the delivery retries.
+
+The pause is kept after activation as an `activation_hold` naming the target and descriptor. A runtime
+whose `RuntimeControl.activation()` is exactly that descriptor releases it once at startup
+(`Fleet.release_activation_hold`), so unit-aware code resumes itself. A predecessor that predates this
+never releases it and stays paused until the owner runs `zeus fleet resume`. An owner pause is never
+taken over, and an owner pause or resume clears any hold. Instance identity, `replaces` authority,
+the fence and the recognition of an already-running intended instance are unchanged.
+
 ## Observability
 
 The existing transitions are emitted through the existing `general.delivery_stage_entered`,

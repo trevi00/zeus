@@ -1395,7 +1395,11 @@ reservation token and an exact proof - a cleanup receipt for that unit and token
 AND tree, or the never-entered fence (`proof_invalid`, `proof_identity_mismatch`,
 `proof_unconfirmed`, `owner_mismatch`); an identical replay is cached, a different proof
 `settlement_conflict`. Age, a wrapper exit, a restart or a decision never release one; held units
-also make the fleet not idle for `authorize-budget` and `relocate`. No retry, merge, deploy, automatic ceiling change
+also make the fleet not idle for `authorize-budget` and `relocate`. `activation_gate(target,
+descriptor)` is the managed host activation gate (HOST-RUNTIME.md): one transaction pauses admission
+and reads reserving jobs and held units (`settled` only when both are empty); a pause it sets carries
+an `activation_hold` that only `release_activation_hold` for that exact descriptor lifts, an owner
+pause is never taken over, and an owner `pause`/`resume` clears the hold. No retry, merge, deploy, automatic ceiling change
 or generated work. `sources.fleet` in the monitor snapshot (an additive source beside `database`,
 `docker`, `redis` and `observations`; unavailable on its own when the store fails, the fixed
 `registered: false` shape when no fleet is registered) and `fleet status` project
@@ -2589,7 +2593,12 @@ start response (`launch_unconfirmed`) is decided by reconciling the same identit
 lives as long as the runner: its live guardians count as heartbeat `active`, held units and
 dispatched launches it does not supervise as `unresolved`, `--once` and a graceful stop keep draining
 them, `drain()` settles them while admission is closed or the pin changed/unreadable, and the run
-summary lists `units_held`. `zeus continuation tick` waits for its guardians and drains once. A
+summary lists `units_held`. `FleetRunner.stop()` forwards, before any store access and again on each
+stopping pass before the drain, to `ContinuationPass.request_stop()`: a DB-free local `stop` file per
+guardian this process spawned, each launch asked once. It proves no cleanup (the guardian's proof and
+the Fleet settlement keep their authority) and signals no worker job; the run summary reports
+`stop_request` (`requested` with the launches asked, or `failed` with each launch and error type,
+the guardian deadline still bounding it). `zeus continuation tick` waits for its guardians and drains once. A
 launch written before units existed has no token: it is settled without a unit. Windows job-object
 and breakaway behaviour is an owner qualification gate; POSIX tests do not prove it.
 

@@ -733,3 +733,122 @@ def test_held_units_keep_the_fleet_from_idle_only_operations(tmp_path):
     with pytest.raises(FleetRefused, match="fleet_not_idle"):
         f.authorize_budget(5, 9, 8)
     assert [unit["id"] for unit in f.units()] == [UNIT_A] and "unknown cleanup" in f.units()[0]["next_action"]
+
+
+# ----- stop and rollback integration correction (SPEC 2026-09-23) ----------------------------------------
+FENCED_A = {"kind": "fenced", "launch": UNIT_A, "claim": "fenced"}  # labelled fixture fence proof
+
+
+def test_the_activation_gate_pauses_and_reads_debt_in_one_transaction_and_blocks_a_reservation_in_the_gap(
+        tmp_path):
+    f = fleet(tmp_path)
+    f.enqueue("a", manifest("op-1", ["docs/x.md"]), GOAL, [])
+    admitted = f.admit_one()["job"]
+    token = f.reserve_unit(UNIT_A, "conductor", "b", "intent-1")["token"]
+    held = f.activation_gate("managed-fleet", "d" * 64)
+    assert held == {"paused": True, "hold": True, "reserving": ["op-1"], "units_held": [UNIT_A], "settled": False}
+    # The durable pause is already committed: nothing new is reserved or admitted in the gap.
+    with pytest.raises(FleetRefused, match="paused"):
+        f.reserve_unit(UNIT_B, "conductor", "b", "intent-2")
+    f.enqueue("b", manifest("op-2", ["other/y.md"]), GOAL, [])
+    assert f.admit_one()["job"] is None
+    f.finalize("op-1", admitted["owner_token"], {"status": "accepted", "reason_code": None, "exit_code": 0})
+    assert f.activation_gate("managed-fleet", "d" * 64)["settled"] is False, "the held unit is still debt"
+    f.settle_unit(UNIT_A, token, FENCED_A)
+    settled = f.activation_gate("managed-fleet", "d" * 64)
+    assert settled["settled"] is True and settled["paused"] is True and f.status()["paused"] is True
+
+
+def test_an_activation_hold_is_released_only_by_its_own_descriptor_and_an_owner_pause_is_never_taken_over(
+        tmp_path):
+    f = fleet(tmp_path)
+    f.activation_gate("managed-fleet", "d" * 64)
+    assert f.release_activation_hold("e" * 64) == {"released": False} and f.status()["paused"] is True
+    assert f.release_activation_hold("d" * 64) == {"released": True} and f.status()["paused"] is False
+    assert f.release_activation_hold("d" * 64) == {"released": False}, "released once"
+    f.pause()  # an owner pause
+    assert f.activation_gate("managed-fleet", "d" * 64)["hold"] is False
+    assert f.release_activation_hold("d" * 64) == {"released": False} and f.status()["paused"] is True
+    # The owner takes a held pause over: after an owner resume or pause no hold survives.
+    f.resume()
+    f.activation_gate("managed-fleet", "d" * 64)
+    f.pause()
+    assert f.release_activation_hold("d" * 64) == {"released": False} and f.status()["paused"] is True
+
+
+class ActivatedControl(RecordingControl):
+    """Labelled fixture control of a managed runtime running descriptor `d...d`."""
+
+    @staticmethod
+    def activation():
+        return "d" * 64
+
+
+def test_a_runner_releases_only_its_own_activation_hold_once(tmp_path):
+    f = fleet(tmp_path)
+    f.activation_gate("managed-fleet", "d" * 64)
+    summary = FleetRunner(f, FakeLauncher({}), sleep=lambda s: None, control=ActivatedControl()).run(once=True)
+    assert summary["activation_hold"] == {"state": "released", "error_type": None} and f.status()["paused"] is False
+    other = fleet(tmp_path)
+    other.activation_gate("managed-fleet", "e" * 64)  # another descriptor's hold: a predecessor's
+    summary = FleetRunner(other, FakeLauncher({}), sleep=lambda s: None, control=ActivatedControl()).run(once=True)
+    assert summary["activation_hold"]["state"] == "none" and other.status()["paused"] is True
+
+
+class StoppableContinuation:
+    """Labelled fixture continuation: records every stop request; `fail` injects a request fault."""
+
+    def __init__(self, fail=None):
+        self.requests, self.fail = [], fail
+
+    def __call__(self):
+        return {"outcome": "idle"}
+
+    def drain(self):
+        return {"actions": [], "skipped": []}
+
+    def owned(self):
+        return []
+
+    def unresolved(self):
+        return []
+
+    def request_stop(self):
+        self.requests.append(True)
+        if self.fail == "raises":
+            raise OSError("labelled injected stop request failure")
+        if self.fail == "unwritten":
+            return {"asked": [], "failed": [{"launch": UNIT_A, "error_type": "PermissionError"}]}
+        return {"asked": [UNIT_A] if len(self.requests) == 1 else [], "failed": []}
+
+
+class Unreachable:
+    """Labelled fault: any store access raises."""
+
+    def transaction(self):
+        raise ConnectionError("labelled injected unreachable store")
+
+
+@pytest.mark.parametrize("fail", [None, "raises", "unwritten"])
+def test_stop_forwards_to_the_continuation_before_any_store_access_and_reports_failure(tmp_path, fail):
+    continuation = StoppableContinuation(fail)
+    runner = FleetRunner(Fleet(Unreachable()), FakeLauncher({}), sleep=lambda s: None, continuation=continuation)
+    runner.stop()
+    runner.stop()  # repeated: forwarded again, and nothing already asked is asked twice
+    assert runner.stopping is True and len(continuation.requests) == 2
+    expected = {None: {"state": "requested", "asked": [UNIT_A], "failed": [], "error_type": None},
+                "raises": {"state": "failed", "asked": [], "failed": [], "error_type": "OSError"},
+                "unwritten": {"state": "failed", "asked": [],
+                              "failed": [{"launch": UNIT_A, "error_type": "PermissionError"}],
+                              "error_type": None}}[fail]
+    assert runner.stop_request == expected
+    stopped = FleetRunner(fleet(tmp_path), FakeLauncher({}), sleep=lambda s: None,
+                          continuation=StoppableContinuation(fail))
+    stopped.stop()
+    assert stopped.run(once=True)["stop_request"]["state"] == expected["state"]
+
+
+def test_a_continuation_without_request_stop_keeps_the_previous_summary(tmp_path):
+    runner = FleetRunner(fleet(tmp_path), FakeLauncher({}), sleep=lambda s: None)
+    runner.stop()
+    assert "stop_request" not in runner.run(once=True) and runner.stop_request is None

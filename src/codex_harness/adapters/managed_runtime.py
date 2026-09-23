@@ -317,12 +317,16 @@ class ManagedFleetTarget(ProcessHostTarget):
     kind = KIND_MANAGED
 
     def __init__(self, *, workload: str = WORKLOAD_FLEET, heartbeat_max_age: float = HEARTBEAT_MAX_AGE,
-                 stop_timeout: float = STOP_TIMEOUT, **kwargs):
+                 stop_timeout: float = STOP_TIMEOUT, fleet=None, **kwargs):
         super().__init__(**kwargs)
         if workload not in WORKLOADS:
             raise ValueError("unknown managed workload")
         self.workload, self.heartbeat_max_age = workload, heartbeat_max_age
         self.stop_timeout = stop_timeout
+        # The Fleet authority of the activation gate: `application.fleet.Fleet` over the host store
+        # in production (`host_ports(fleet=...)`), a labelled in-memory Fleet for the fixture
+        # workload. None is never "no debt": every start then refuses `fleet_authority_unconfigured`.
+        self.fleet = fleet
 
     # --- the sealed runtime ---------------------------------------------------------------------
     def materialize(self, target: dict, descriptor: dict, *, authorize=None) -> dict:
@@ -429,6 +433,24 @@ class ManagedFleetTarget(ProcessHostTarget):
         return {"stopped": not alive, "was_running": True, "pid": pid,
                 "reason_code": "instance_stop_unconfirmed" if alive else None}
 
+    def _activation_gate(self, target: dict, descriptor: dict) -> None:
+        """Paused durable admission plus settled Fleet debt, or no activation (HOST-RUNTIME.md).
+
+        One Fleet transaction pauses admission (retained afterwards as this activation's hold) and
+        reads every reserving worker job and held execution unit. Any held debt refuses
+        `fleet_debt_held`; an unconfigured authority or a failed read refuses, because unknown is
+        never settled. A dead controller or an idle heartbeat does not count: only this read does.
+        Called under the target guard, before the stop and again before the launch; no store
+        transaction is open across process I/O."""
+        if self.fleet is None:
+            raise DeliveryRefused("fleet_authority_unconfigured", "fleet")
+        try:
+            gate = self.fleet.activation_gate(target["target_id"], descriptor_digest(descriptor))
+        except Exception as exc:
+            raise DeliveryRefused("fleet_debt_unknown", "fleet") from exc
+        if gate.get("paused") is not True or gate.get("settled") is not True:
+            raise DeliveryRefused("fleet_debt_held", "fleet")
+
     def _retire(self, target: dict) -> None:
         super()._retire(target)
         try:
@@ -450,6 +472,10 @@ class RuntimeControl:
 
     def stop_requested(self) -> bool:
         return os.path.lexists(self.root / (STOP_FILE + ".json"))
+
+    def activation(self) -> str:
+        """The descriptor this instance runs: the only activation hold it may release."""
+        return self.receipt["descriptor_sha256"]
 
     def heartbeat(self, state: dict) -> None:
         _write_json(self.root / HEARTBEAT_FILE,

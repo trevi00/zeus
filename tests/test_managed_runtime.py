@@ -30,6 +30,7 @@ import sys
 import threading
 import time
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 from test_host_delivery import (
@@ -54,6 +55,7 @@ from codex_harness.adapters.host_delivery import (
     STATE_FILE,
     _alive,
     checkout_revision,
+    controller,
     host_ports,
     owner_qualified_canary,
     runtime_revision,
@@ -64,10 +66,15 @@ from codex_harness.adapters.managed_runtime import (
     TARGET_FILE,
     ManagedFleetTarget,
     Materializer,
+    fixture_config,
+    fixture_manifest,
     scan,
 )
+from codex_harness.adapters.store import MemoryStore
+from codex_harness.application.fleet import ACTIVATION_HOLD, BUCKET_CONTROL, CONTROL_KEY, Fleet
 from codex_harness.application.host_delivery import BUCKET_INTENTS, HostDelivery
 from codex_harness.bootstrap import organization
+from codex_harness.domain.fleet import UNIT_CONDUCTOR, FleetRefused
 from codex_harness.domain.host_delivery import (
     ACTIVE,
     CANARY_FLEET,
@@ -79,6 +86,7 @@ from codex_harness.domain.host_delivery import (
     RECEIPT_SCHEMA,
     REGISTRY_SCHEMA,
     ROLLED_BACK,
+    ROLLING_BACK,
     DeliveryRefused,
     consumption_verdict,
     descriptor_digest,
@@ -156,6 +164,21 @@ def descriptor(target, source_root, revision, **overrides):
             "root": managed_runtime_root(target, revision), "revision": revision,
             "worker_image": runtime_image(source_root), "profile_digest": PROFILE or "e" * 64,
             "predecessor": None, **overrides}
+
+
+def fixture_fleet():
+    """LABELLED fixture authority of the activation gate: a registered in-memory Fleet (MemoryStore,
+    not PostgreSQL) standing in for the host store's Fleet. The fixture workload's own runner uses
+    a separate in-memory Fleet, so it never releases this authority's activation hold."""
+    fleet = Fleet(MemoryStore())
+    fleet.register(fixture_config(Path("/labelled-fixture")))
+    return fleet
+
+
+def managed(*, fleet=None, **kwargs):
+    """The managed target over the labelled fixture workload, with a labelled Fleet authority."""
+    return ManagedFleetTarget(workload="fixture", fleet=fleet if fleet is not None else fixture_fleet(),
+                              **kwargs)
 
 
 def state(target, name):
@@ -435,7 +458,7 @@ def test_a_linked_worktree_resolves_through_git_and_its_checkout_revision_throug
 @needs_profile
 def test_a_bad_runtime_is_refused_before_the_running_instance_is_touched(tmp_path, source):
     target = target_for(tmp_path, source["root"])
-    host = ManagedFleetTarget(workload="fixture")
+    host = managed()
     good = descriptor(target, source["root"], source["a"])
     try:
         receipt = start_live(host, target, good)
@@ -469,7 +492,7 @@ def test_a_bad_runtime_is_refused_before_the_running_instance_is_touched(tmp_pat
 @needs_profile
 def test_a_clean_start_a_restart_and_a_repeated_start_launch_exactly_once(tmp_path, source):
     target = target_for(tmp_path, source["root"])
-    host = ManagedFleetTarget(workload="fixture")
+    host = managed()
     desc = descriptor(target, source["root"], source["a"])
     try:
         receipt = start_live(host, target, desc)
@@ -482,7 +505,7 @@ def test_a_clean_start_a_restart_and_a_repeated_start_launch_exactly_once(tmp_pa
         await_work(host, target, "idle")
         first = read(state(target, STATE_FILE))
         # A repeated start (a lost start response, a second controller) recognizes the instance.
-        again = ManagedFleetTarget(workload="fixture").start(target, desc)
+        again = managed(fleet=host.fleet).start(target, desc)
         assert again["started"] is False and again["recovered"] is True
         assert read(state(target, STATE_FILE)) == first
         # A clean stop is a pause, an idle heartbeat and the graceful stop file; nothing is signalled.
@@ -510,12 +533,12 @@ def test_a_child_that_outlives_its_killed_launcher_is_still_running_and_stops_gr
     """The documented POSIX limit of the incumbent owner: SIGKILL of the launcher leaves its child.
     That child is still a Fleet runner on this target, never an absence to start over on."""
     target = target_for(tmp_path, source["root"])
-    host = ManagedFleetTarget(workload="fixture")
+    host = managed()
     desc = descriptor(target, source["root"], source["a"])
     try:
         receipt = start_live(host, target, desc)
         await_work(host, target, "idle")
-        launcher = read(state(target, STATE_FILE))["pid"]
+        launcher =read(state(target, STATE_FILE))["pid"]
         os.kill(launcher, signal.SIGKILL)  # labelled injected outright kill of the owner
         deadline = time.monotonic() + 10
         while _alive(launcher) and time.monotonic() < deadline:
@@ -536,7 +559,8 @@ def test_a_child_that_outlives_its_killed_launcher_is_still_running_and_stops_gr
 def test_two_owners_starting_at_once_launch_a_single_runtime(tmp_path, source):
     target = target_for(tmp_path, source["root"])
     desc = descriptor(target, source["root"], source["a"])
-    owners = [ManagedFleetTarget(workload="fixture"), ManagedFleetTarget(workload="fixture")]
+    authority = fixture_fleet()
+    owners = [managed(fleet=authority), managed(fleet=authority)]
     owners[0].materialize(target, desc)
     owners[0].switch(target, desc, expected=None)
     barrier, results = threading.Barrier(2), []
@@ -569,7 +593,7 @@ def test_two_owners_starting_at_once_launch_a_single_runtime(tmp_path, source):
 @needs_profile
 def test_active_owned_work_prevents_the_drain_and_the_stop_until_it_finishes(tmp_path, source):
     target = target_for(tmp_path, source["root"])
-    host = ManagedFleetTarget(workload="fixture", stop_timeout=1.0)
+    host = managed(stop_timeout=1.0)
     good = descriptor(target, source["root"], source["a"])
     try:
         receipt = start_live(host, target, good, jobs=["job-1"])
@@ -606,13 +630,13 @@ def test_active_owned_work_prevents_the_drain_and_the_stop_until_it_finishes(tmp
 @needs_profile
 def test_an_unavailable_heartbeat_prevents_idle_and_the_stop(tmp_path, source):
     target = target_for(tmp_path, source["root"])
-    host = ManagedFleetTarget(workload="fixture")
+    host = managed()
     desc = descriptor(target, source["root"], source["a"])
     try:
         receipt = start_live(host, target, desc)
         await_work(host, target, "idle")
         # The discriminating control: the same live instance read with a zero freshness bound.
-        strict = ManagedFleetTarget(workload="fixture", heartbeat_max_age=0.0, stop_timeout=0.5)
+        strict = managed(fleet=host.fleet, heartbeat_max_age=0.0, stop_timeout=0.5)
         time.sleep(0.05)
         drained = strict.drain(target)
         assert drained["drained"] is False and drained["unconfirmed"] == 1
@@ -634,7 +658,7 @@ def managed_system(tmp_path, source, *, canaries=None, lock=LOCK_SHA, host=None)
     """One wired controller over a real managed target and the labelled GitHub double."""
     store, org, clock = SerialStore(), organization(), Clock()
     release = reviewed_release(store, org)
-    host = host or ManagedFleetTarget(workload="fixture")
+    host = host or managed()
     delivery = HostDelivery(store, org, github=FakeGitHub(), hosts={KIND_MANAGED: host},
                             canaries=canaries or {CANARY_STARTUP: startup_identity_canary,
                                                   CANARY_FLEET: owner_qualified_canary},
@@ -779,6 +803,160 @@ def test_a_failed_candidate_restores_the_predecessor_which_runs_its_old_code(tmp
             descriptor(target, source["root"], source["b"], predecessor=descriptor_digest(good)))
     finally:
         teardown(target)
+
+
+# ----- the activation gate: paused admission plus settled Fleet debt before any activation -----------
+UNIT = "c" * 64
+FENCED = {"kind": "fenced", "launch": UNIT, "claim": "fenced"}  # labelled fixture fence proof
+GOAL_FIXTURE = {"path": "docs/GOAL.md", "sha256": "b" * 64, "criterion": "fixture", "base_revision": "a" * 40,
+                "bytes": 7}
+
+
+class UnreachableStore:
+    """Labelled injected fault: the Fleet authority's store refuses every transaction."""
+
+    def transaction(self):
+        raise ConnectionError("labelled injected unreachable Fleet store")
+
+
+def rolling_back(tmp_path, source):
+    """Predecessor A active, then candidate B whose owner canary fails: the delivery is rolling back."""
+    authority = fixture_fleet()
+    system = managed_system(tmp_path, source, host=managed(fleet=authority))
+    target, host = system["target"], system["host"]
+    assert advance(system, ACTIVE)[-1]["stage"] == ACTIVE
+    good, first = read(state(target, DESCRIPTOR_FILE)), read(state(target, RECEIPT_FILE))
+    await_work(host, target, "idle")
+    successor(system, source, expected=descriptor_digest(good), canary=CANARY_FLEET)
+    results = advance(system, ROLLING_BACK)
+    assert results[-1]["stage"] == ROLLING_BACK, trail(results)
+    return system, authority, good, first
+
+
+def hold_debt(authority):
+    """LABELLED debt: the owner resumed admission and the candidate era reserved a conductor unit
+    whose guardian cleanup is not settled (no guardian runs here; the unit alone is the debt)."""
+    authority.resume()
+    return authority.reserve_unit(UNIT, UNIT_CONDUCTOR, "fixture", "labelled-candidate-conductor")["token"]
+
+
+def control(authority):
+    with authority.store.transaction() as tx:
+        return tx.get(BUCKET_CONTROL, CONTROL_KEY)
+
+
+def tick(system):
+    result = system["delivery"].tick()
+    system["clock"].advance(1)
+    return result
+
+
+@needs_profile
+def test_a_rollback_over_held_or_unknown_fleet_debt_never_starts_the_predecessor_and_stays_paused(tmp_path,
+                                                                                                source):
+    system, authority, good, _ = rolling_back(tmp_path, source)
+    target, host = system["target"], system["host"]
+    try:
+        hold_debt(authority)
+        failed = read(state(target, DESCRIPTOR_FILE))
+        launch, receipt = read(state(target, STATE_FILE)), read(state(target, RECEIPT_FILE))
+        # LABELLED lost acknowledgement: the predecessor descriptor is restored on the host, and the
+        # coordinator's record of that restoration is lost - its replay must still meet the gate.
+        host.switch(target, good, expected=descriptor_digest(failed))
+
+        def refused(code):
+            result = tick(system)
+            assert (result["outcome"], result["reason_code"]) == ("pending", code), result
+            assert read(state(target, STATE_FILE)) == launch, "no predecessor launch"
+            assert read(state(target, RECEIPT_FILE)) == receipt, "the candidate's evidence was not retired"
+            assert not state(target, "stop.json").exists()
+            row = control(authority)
+            assert row["paused"] is True and row[ACTIVATION_HOLD]["descriptor_sha256"] == descriptor_digest(good)
+            assert intent(system)["rollback"]["started"] is False and intent(system)["rollback"]["gate"] == code
+        # The live candidate holds the debt: it is not stopped, so its own owner can still settle it.
+        refused("fleet_debt_held")
+        assert host.running(target)
+        # LABELLED injected controller exit: the candidate's launcher tree is ended outright.
+        end_tree(launch["pid"])
+        deadline = time.monotonic() + 30
+        while host.running(target) and time.monotonic() < deadline:
+            time.sleep(0.05)
+        assert not host.running(target)
+        refused("fleet_debt_held")  # a dead controller is not settled debt
+        host.fleet = Fleet(UnreachableStore())  # LABELLED injected failed authoritative read
+        result = tick(system)
+        assert (result["outcome"], result["reason_code"]) == ("pending", "fleet_debt_unknown")
+        assert read(state(target, STATE_FILE)) == launch
+        host.fleet = authority
+        assert control(authority)["paused"] is True, "the pause survived the unknown read"
+        refused("fleet_debt_held")
+        # The restoration's deadline passes with the debt unsettled: blocked for its owner, still paused.
+        system["clock"].advance(2000)
+        result = tick(system)
+        assert (result["stage"], result["outcome"], result["reason_code"]) == ("blocked", "blocked",
+                                                                               "fleet_debt_held")
+        assert read(state(target, STATE_FILE)) == launch and control(authority)["paused"] is True
+        assert authority.held_units() == [UNIT]
+    finally:
+        teardown(target)
+
+
+@needs_profile
+def test_a_settled_rollback_starts_the_exact_predecessor_once_and_no_reservation_enters_the_gap(tmp_path, source):
+    system, authority, good, first = rolling_back(tmp_path, source)
+    target, host = system["target"], system["host"]
+    try:
+        token = hold_debt(authority)
+        candidate_launch = read(state(target, STATE_FILE))
+        results = advance(system, ROLLED_BACK, limit=4)
+        assert results[-1]["reason_code"] == "fleet_debt_held", trail(results)
+        assert read(state(target, STATE_FILE)) == candidate_launch
+        # An independent controller in the gap: the durable pause refuses its reservation and admission.
+        authority.enqueue("fixture", fixture_manifest("job-gap"), GOAL_FIXTURE, [])
+        assert authority.admit_one()["job"] is None
+        with pytest.raises(FleetRefused, match="paused"):
+            authority.reserve_unit("d" * 64, UNIT_CONDUCTOR, "fixture", "labelled-gap")
+        authority.settle_unit(UNIT, token, FENCED)
+        results = advance(system, ROLLED_BACK)
+        assert results[-1]["stage"] == ROLLED_BACK, trail(results)
+        restored = read(state(target, RECEIPT_FILE))
+        assert consumption_verdict(good, restored)["consumed"] and host.running(target)
+        assert restored["revision"] == source["a"] and restored["instance_id"] != first["instance_id"]
+        assert read(state(target, DESCRIPTOR_FILE)) == good
+        launch = read(state(target, STATE_FILE))
+        assert launch["pid"] != candidate_launch["pid"]
+        assert launch["descriptor_sha256"] == descriptor_digest(good)
+        record = intent(system)["rollback"]
+        assert record["started"] is True and record["verified"] is True and "gate" not in record
+        # Admission stays paused under this activation's hold: the gap job was never admitted.
+        row = control(authority)
+        assert row["paused"] is True and row[ACTIVATION_HOLD]["descriptor_sha256"] == descriptor_digest(good)
+        assert {job["id"]: job["status"] for job in authority.status()["jobs"]}["job-gap"] == "queued"
+        assert authority.held_units() == []
+        # Idempotent recovery: a replayed start recognizes the restored instance; nothing relaunches.
+        again = managed(fleet=authority).start(target, good)
+        assert again["started"] is False and again["recovered"] is True
+        assert read(state(target, STATE_FILE)) == launch
+    finally:
+        teardown(target)
+
+
+def test_a_managed_start_without_a_fleet_authority_refuses_before_any_effect(tmp_path, source):
+    target = target_for(tmp_path, source["root"])
+    host = ManagedFleetTarget(workload="fixture")  # no authority: never read as "no debt"
+    desc = descriptor(target, source["root"], source["a"])
+    host.materialize(target, desc)
+    host.switch(target, desc, expected=None)
+    with pytest.raises(DeliveryRefused) as refused:
+        host.start(target, desc)
+    assert refused.value.reason_code == "fleet_authority_unconfigured"
+    assert not state(target, STATE_FILE).exists() and not host.running(target)
+    assert host_ports()[KIND_MANAGED].fleet is None
+    # The production coordinator binds the ACTUAL Fleet of its own host store.
+    store = MemoryStore()
+    wired = controller(SimpleNamespace(store=store, org=organization()), enabled=False)
+    bound = wired.hosts[KIND_MANAGED].fleet
+    assert isinstance(bound, Fleet) and bound.store is store
 
 
 def hash_object(path, *, autocrlf=False):
