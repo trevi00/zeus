@@ -1386,7 +1386,24 @@ never created); Docker isolation must be selected. `accepted` needs exit 0 and t
 row (id, manifest digest, accepted); nonzero, contradictory, missing or unreadable evidence is
 `failed` (definite pre-claim refusal) or `unknown`. `unknown` and `dispatching` retain lane,
 capacity and path exclusion, are reported as `reconciliation_required`, are never relaunched after a
-restart and are never cleared by a command here. No retry, merge, deploy, automatic ceiling change
+restart and are never cleared by a command here. Non-job execution units (`fleet_units`, kind
+`conductor`, INV-CONTINUATION-001) share the same capacity: `reserve_unit` (same transaction and
+serialization as admission; paused or `reserving jobs + held units >= max_parallel` refuses; the
+same unit id replays, another binding is `unit_conflict`) holds a slot before anything is spawned,
+and `admit_one` counts every held unit (`capacity`). A unit is released only by `settle_unit` on its
+reservation token and an exact proof - a cleanup receipt for that unit and token confirming parent
+AND tree, or the never-entered fence (`proof_invalid`, `proof_identity_mismatch`,
+`proof_unconfirmed`, `owner_mismatch`); an identical replay is cached, a different proof
+`settlement_conflict`. Age, a wrapper exit, a restart or a decision never release one; held units
+also make the fleet not idle for `authorize-budget` and `relocate`. `activation_gate(target,
+descriptor)` is the managed host activation gate (HOST-RUNTIME.md): one transaction commits the admission
+pause without reading debt, and a second re-checks that exact pause and reads reserving jobs and held
+units (`settled` only when both are empty). A failed pause write/commit or lost acknowledgement raises
+(no pause claimed; a retry reconciles the same hold); a failed debt read keeps the committed pause and
+returns `reason_code` `debt_unknown`, a pause changed in between `control_changed`, both with unknown
+(null) debt and never settled. A pause it sets carries
+an `activation_hold` that only `release_activation_hold` for that exact descriptor lifts, an owner
+pause is never taken over, and an owner `pause`/`resume` clears the hold. No retry, merge, deploy, automatic ceiling change
 or generated work. `sources.fleet` in the monitor snapshot (an additive source beside `database`,
 `docker`, `redis` and `observations`; unavailable on its own when the store fails, the fixed
 `registered: false` shape when no fleet is registered) and `fleet status` project
@@ -2361,3 +2378,257 @@ carrying identifiers, digests, fixed codes and counts only; a repeated idle poll
 and emits nothing, and a switch with `consumed: false` is never read as an activation. A collected
 status is a durable-record projection: it is never evidence of a qualified live host, a passed owner
 canary or a semantically accepted release.
+
+## INV-WORKER-SESSION-001
+
+A durable Claude task session keeps one logical worker conversation through implementation, frozen
+candidate, review wait and qualified rejection correction without an idle model process
+(docs/zeus/operations/autonomous-operation-001/WORKER-SESSIONS.md). It is opt-in twice: the host
+constructs `Executor(worker_sessions=...)`, and a caller passes an explicit
+`task_session={"task_id", "repository"}` with `max_handoffs=1`. Without both, execution is the
+unchanged fresh path: `--session-id` with a new UUID per attempt, `session.resume: "unsupported"`,
+the legacy isolated protocols and receipts. The packaged `providers.json` still declares Claude
+`session_resume: "unsupported"` and the invocation option matrix is unchanged; native resume is this
+separate, conditional path, never a capability flag.
+
+`worker_sessions` rows (one per logical task id) hold the binding and state; the transcript bytes
+live in the restricted content-addressed `SessionArchives` root (`<runtime>/worker-sessions`, never
+the general artifact tree a model reads) and the row keeps only reference and hashes. The binding is
+task id, repository, workspace, provider, model, runtime image, runtime, policy and config digests.
+States follow one fixed matrix: `active -> checkpointed -> awaiting_review -> correction_ready ->
+active`, `awaiting_review -> accepted -> archival_pending -> closed`, plus explicit
+`archive_missing`, `archive_corrupt`, `incompatible` and `unresolved`; any other move is
+`invalid_transition`. A foreign task/repository/workspace is refused unchanged (`session_foreign`);
+a model, image, runtime, policy or config mismatch sets `incompatible` and reports that an explicit
+fresh evidence handoff is required (`session_incompatible`). A turn that was never adopted reopens
+fresh under a NEW session id; nothing is ever relabelled as resumed.
+
+`begin` claims the session exclusively for one leased execution; a second owner is `session_owned`
+however old the claim looks, and a claim is committed only at the row version it read, after the
+archive was verified OUTSIDE the transaction. Compatibility is checked BEFORE the duplicate-owner
+shortcut: the owner's own replay with a changed model, image, runtime, policy or config is
+`session_incompatible` and writes nothing, so the valid owner's claim, row and archive survive; only
+an exact duplicate returns the same plan. `checkpoint` puts the verified export into the archive
+store (deterministic reference, read back) and THEN updates the row idempotently, so a crash between
+the two replays to the same reference and a duplicate event returns the recorded checkpoint. A
+resumed turn is adopted only when its transcript begins with the exact bytes of the archive it
+resumed (`prefix_verified`); otherwise the session is `unresolved` (`resume_continuity_unproven`)
+and only `reconcile` from retained verified bytes of this exact session continues it. A failed or
+unexported turn releases the claim back to the prior resume point; an entered turn that raised is
+`unresolved`. Review wait holds no owner, no reservation and no provider: `record_review` reads the
+existing succeeded `review_lead`/`review_conductor` decision row for the exact frozen revision and
+tree (`review_candidate_mismatch`, `review_not_succeeded`, `review_not_independent`); a rejection
+makes the session `correction_ready` (eligible, never admitted: conductor continuation remains the
+sole admission owner), conductor acceptance makes it `accepted`, and a rejected candidate can never
+be submitted again (`candidate_rejected_immutable`).
+
+Promotion and closure are evidence-backed. `WorkerSessions(evidence=...)` names the verified general
+artifact store; without it `promote` and `close` refuse (`promotion_evidence_unconfigured`). `promote`
+reads an integrity-checked receipt (`zeus.worker-session-promotion.v1`, built by
+`domain.worker_sessions.promotion_receipt`) whose exact fields name this task and session id, the
+accepted frozen candidate (revision, tree, base), the archive it was frozen from (reference, manifest
+and transcript hashes), the accepting succeeded review (decision id, execution reference) and a
+non-empty list of promoted evidence references; every listed reference and the review's execution
+receipt must exist intact in the same store. A missing receipt (`promotion_receipt_missing`), any other
+artifact or a changed file (`promotion_receipt_malformed`), a receipt for another session, candidate,
+archive or review (`promotion_receipt_unrelated`) and missing or corrupt listed evidence
+(`promotion_evidence_missing`/`_corrupt`) leave the row unchanged; a syntactically valid hash alone
+is never enough. `close` re-verifies the same receipt before any cleanup, records a cleanup failure
+without closing, and never deletes the archive (the default close retains it). `worker-session close`
+uses `<runtime>/artifacts` as that store.
+
+Observability: with an `observer` (the existing Observer port), every COMMITTED change of state,
+owner or cleanup outcome emits one event after its transaction: `development.worker_session_transition`
+or, for `archive_missing`/`archive_corrupt`/`incompatible` (outcome `blocked`), `unresolved` (outcome
+`unknown`) and a failed cleanup (reason `cleanup_failed`), `operations.worker_session_blocked`. Both carry
+task and session ids, state, version, the fixed `next_owner` code (`execution`, `conductor`,
+`independent_review`, `evidence_promotion`, `session_owner`, `operator`, `none`) and `next_action`; a
+duplicate event commits and reports nothing. The status projection (CLI and the additive monitoring
+source `worker_sessions`) adds per-state counts, `blocked`, `next_owner` and reports the binding only as
+`identity_sha256`; neither surface carries transcript bytes, archive paths or raw binding values, and a
+store failure makes the monitoring envelope `unavailable`, never an empty list.
+
+Transport: `ClaudeCodeRuntime(session_home=...)` alone may restore or export, and only for a
+`task_session` binding; the host's own home is never read, written or resumed from, and the executor
+refuses a task session without isolation. A resumed turn needs `--resume` in the installed CLI's
+options, a manifest recorded for this exact workspace, and a verified restore into the empty owned
+home before any process starts (each a `ClaudeUnavailable` refusal before entry); the command is
+`--resume <exact id>`, never `--session-id` and never `--continue`. After the process tree is
+confirmed gone, only the exact session's transcript and the regular files under that session's own
+directory are exported, bounded (64 files, 64 MiB, depth 6), with dot-files, credentials, settings,
+other sessions and other projects excluded by allowlist and any link or special file refused. The
+isolated request names `zeus-isolated-worker-v1-task-session` (or its project-evidence twin), so an
+older entry refuses it; the host stages the verified archive into THIS run's evidence mount before
+the container exists (`task_session_stage_failed` otherwise), the entry accepts only the fixed
+`/evidence/session-restore` and `/evidence/session-export` paths and its own `$HOME/.claude`, and the
+host re-verifies every exported byte (`archive_unlisted_file`, `archive_corrupt`) before adoption.
+No home and no other task's directory is ever mounted, and the export stays in the retained run
+evidence until the session closes. Resumed usage is cumulative: a turn's usage is its delta against
+the same session's recorded baseline and otherwise unknown; a resumed turn's cost estimate is not
+attributed to it. `zeus worker-session status` is a bounded read-only projection and
+`worker-session close` the explicit close; neither prints transcript bytes or paths.
+
+Fixture tests prove the wiring against a labelled protocol child and an injected Docker fake. They do
+not prove the pinned CLI's transcript layout, `--resume` behaviour under `CLAUDE_CONFIG_DIR`, or
+continuity across a real container recreation; that is the owner's real two-turn probe before any
+production activation.
+
+## INV-CONTINUATION-001
+
+The durable conductor continuation keeps one logical goal moving across FINITE operations without
+editing any of them (docs/zeus/operations/autonomous-operation-001/CONTINUATION.md). It is opt-in
+twice: the owner registers a Git-pinned policy (`urn:zeus:continuation-policy:1`, `zeus continuation
+register --lane --revision --path`, read through `GitSource` at the commit, never the working tree),
+and either the host setting `ZEUS_CONTINUATION_POLICY` names it for `zeus fleet run` or the owner runs
+one `zeus continuation tick --policy`. An unregistered or disabled policy is `disabled` with zero
+actions: no Git read, lane connection, process, write or model call. Every other command, the finite
+Operation, LocalCycle and Fleet defaults are unchanged.
+
+The policy binds the lanes, the repository identity, the goals (path, sha256, criterion), the
+allowed paths and acceptance criteria, the session archive root digest
+(`zeus continuation identity --lane`), the qualified model, image and profile, the delivery target
+and `max_corrections`. A different policy under the same id is `policy_conflict`; a registered pin
+whose bytes no longer resolve is `policy_unavailable`, a changed digest `policy_changed`. A job whose
+lane, repository, goal, allowed paths, criteria or model is outside the policy, or a lane whose actual
+isolation image, worker profile or archive root differs, is a named `refused` intent
+(`goal_changed`, `scope_changed`, `model_changed`, `image_changed`, `session_archive_changed`, ...)
+with `next_owner: operator`; the continuation never widens its own permission and model output never
+extends it.
+
+State lives in the Fleet control store (`continuation_policies`, `continuation_intents`) and in each
+lane store (`continuation_bindings`). The fixed routing table, over terminal Fleet jobs and their lane
+evidence read outside every transaction: `failed/evidence_gate_refused` with a known handoff ->
+`evidence_repair` successor (candidate preserved, fresh evidence handoff, never a resumed session);
+`rejected` with a succeeded `review_lead` decision, or a conductor rejection -> `correction`
+successor; the second distinct similar failure of a family -> `research` (held until the existing
+Portfolio investigation holding its jobs is `researched` with evidence; replays count nothing);
+`unknown`, an unknown-effect failure reason, an unconfirmed/pending termination marker or a
+conductor launch that ended with its row not settled -> `recovery` for ExecutionRecovery, never a
+fresh call; `accepted` ->
+`conductor_review` (the existing guarded `decide_one("conductor", expected=...)` in the lane through
+`zeus continuation conduct`); a conductor-accepted release -> `host_delivery` handoff to the owner's
+HostDelivery plan on the policy target (`active` completes, `rolled_back`/`failed`/`blocked` holds the
+family, the acceptance stays); a delivered item -> `next_item` for the approved backlog. Missing
+evidence is a named refusal, never a guess; `max_corrections` successors per family, then
+`correction_budget_exhausted`.
+
+An intent id is `origin job + generation/attempt + decisive evidence digest + route`; a successor id is
+`cont-` plus 24 hex of it. Every external effect has a durable pre-effect state: `intended` (complete
+successor manifest and binding recorded) -> `published` (lane binding written; identical replay cached,
+different document `binding_conflict`, an already claimed operation `operation_already_claimed`) ->
+`admitted` (the unchanged `Fleet.enqueue`, same id on replay) -> `returned` -> `completed`; for the
+conductor `intended -> dispatched` BEFORE the child starts, and a dispatch whose decision row is still
+`pending` with attempt 0 is provably not entered. `domain.continuation.RESUME` is the route x state
+restart table: every open (route, state) has exactly one action (`publish`, `await_successor`,
+`complete`, `dispatch`, `reconcile_launch`, `redispatch`, `observe_delivery`, `observe_research`,
+`await_backlog`), so a crash after any commit - including `intended` and `returned` - resumes the
+same intent; `returned` completes from the committed outcome it already holds (the successor status
+or the conductor decision). Each move is a compare-and-swap on the intent
+version (`IntentChanged` for a stale holder), so two controllers, a restart and a duplicate event
+converge on one intent, one successor and one dispatch. A successor keeps the origin's goal, base,
+allowed paths, acceptance criteria, budget and Claude controls byte for byte; only the id and a fixed
+objective preface with identity/digest references differ, and the existing manifest validator
+decides it (`successor_manifest_refused`). The rejected operation stays rejected; nothing parked is
+revived. One family per tick, least recently served first, at most four per tick; a held family
+(`research_required`, `recovery_required`, `paused`, `refused`) never starves another. A lane, Git or
+Fleet outage skips that subject for the tick (`unavailable`, exception type only).
+
+Sessions and workspaces: before admission the controller binds each queued in-policy job to its own
+logical session (`task_id` = the family's root job). `Operation.claim` attaches the lane's binding to
+the row identity and the assignment (`details.continuation`), refusing a binding that changed between
+its reads. `Executor.execute_one` accepts it only when the identical document is the lane's own
+`continuation_bindings` row for the assignment's operation; it then passes `task_session` with
+`max_handoffs=1` to `_run`, freezes the adopted turn's exact candidate with `WorkerSessions.submit`,
+and records a committed `review_lead` decision on the session after the commit. A correction is
+`native_resume_eligible` only when `record_review` moved the family session to `correction_ready` on
+that decision; otherwise it is an explicit fresh evidence handoff. `GitWorkspace.continue_workspace`
+reuses only the owner-derived origin workspace under the managed root, on its own branch and pinned
+base, at exactly the last candidate HEAD and clean; the executor also refuses an origin task that is
+queued, retrying, running or blocked. Nothing is reset or cleaned; the frozen review checkout stays
+separate. `zeus operate run` and `continuation conduct` build a `WorkerSessions` owner only for an
+operation whose binding names a session.
+
+Observability: every committed intent change emits `operations.continuation_transition` or, for
+`research_required`, `recovery_required` (outcome `unknown`), `paused` and `refused`,
+`operations.continuation_blocked`, with intent, family, route, state, origin/successor job, next owner
+and next action only. `zeus continuation status` and the additive monitoring source `continuation`
+project policies (id, enabled, digest, pin), intents (route, state, cause, next owner/action, evidence
+references, predecessor/successor links, completion evidence), counts and held families; never a
+manifest, objective, review text, transcript, path or credential; a store failure makes the envelope
+`unavailable`. `FleetRunner(continuation=...)` runs the pass after the backlog tick and before
+admission; its failure is its own `unavailable` state and never blocks admission.
+
+Conductor launches (`adapters/continuation_process.py`, SPEC "Two-strike ownership design") are
+never waited on, and three owners stay separate. (1) Capacity: ONE Fleet transaction
+(`Fleet.reserve_unit`, INV-FLEET-001 `fleet_units`) reserves the launch's execution unit against
+the shared `max_parallel` (reserving jobs + held units, the same serialization as `admit_one`, for
+the runner, independent controllers and `zeus continuation tick` alike) AND commits the launch
+identity `digest(intent, sequence)` with the unit token on the intent (`dispatched`) BEFORE anything
+is spawned; a full or paused fleet refuses (`conductor_capacity`/`conductor_paused`, next owner
+`fleet`) and the intent stays. No local count authorizes a start. (2) Supervision:
+`ConductorProcesses.start` creates `<lane runtime>/continuation/launches/<launch>/spawn`
+exclusively (one-shot; a replay, a lost response or a restart never spawns that identity again),
+writes `launch.json` {launch, token}, and spawns one hidden guardian (`continuation_process.main`) in
+its own POSIX session / Windows group with a breakaway request, outside every controller kill
+boundary. The guardian uses NO database: it takes `lock` without waiting, skips an already `claim`ed
+launch, flushes write-ahead `debt.json` (a failed write starts nothing), creates `claim=child`
+exclusively, runs `zeus continuation conduct` as its own `ProcessTree`, and alone enforces the
+monotonic deadline (`decision_seconds + 120`) and stop requests (`stop` file, POSIX SIGTERM, recorded
+not raised) through bounded `terminate` attempts. A store that blocks or fails, a Fleet tick or a
+controller exit cannot suppress them. (3) Proof and settlement: only when the parent AND the tree
+are each confirmed does the guardian atomically write `cleanup.json` bound to launch and token, then
+close the handle; `terminate` False/raising, a parent that exited with the tree unknown, or a proof
+that cannot be persisted leave no proof, keep the debt (`debt.json: cleanup_unknown`) and record
+`unresolved.json`. `observe` answers from these files alone: valid proof -> `exited`/`timeout`
+with `cleanup_confirmed`; lock held -> `running` (another controller's guardian:
+`conductor_owner_unknown`, only that family waits); lock free and no claim -> `claim=fenced` under
+the lock -> `absent` with the fence proof (a delayed guardian executes nothing); claimed without a
+proof -> `unknown`, even beside an old `exit.json`. The intent leaves `dispatched` only through
+`Fleet.settle_unit`, which validates the exact proof and token and commits the unit release with the
+intent move in one transaction; a failed commit keeps both and the next pass settles exactly once
+from the local proof, never by a model rerun. Unknown cleanup - including a succeeded decision, a
+guardian that ended without proof, and a killed guardian (never reacquired from a pid file, never
+signalled) - stays `dispatched` with `hold {conductor_cleanup_unknown, execution_recovery}` and its
+unit held; it neither completes nor re-dispatches, and when such debt fills every slot admission
+stops. Only `absent`, or a proven-clean exit whose row is still `pending` with attempt 0, lets a NEW
+launch identity start, at most `MAX_LAUNCHES` (3), then `conductor_launch_exhausted`; a proven-clean
+exit with a `running`/`failed` row, or past its deadline, is `recovery_required`. A failed or lost
+start response (`launch_unconfirmed`) is decided by reconciling the same identity. `ContinuationPass`
+lives as long as the runner: its live guardians count as heartbeat `active`, held units and
+dispatched launches it does not supervise as `unresolved`, `--once` and a graceful stop keep draining
+them, `drain()` settles them while admission is closed or the pin changed/unreadable, and the run
+summary lists `units_held`. `FleetRunner.stop()` forwards, before any store access and again on each
+stopping pass before the drain, to `ContinuationPass.request_stop()`: a DB-free local `stop` file per
+guardian this process spawned, each launch asked once. It proves no cleanup (the guardian's proof and
+the Fleet settlement keep their authority) and signals no worker job; the run summary reports
+`stop_request` (`requested` with the launches asked, or `failed` with each launch and error type,
+the guardian deadline still bounding it). `zeus continuation tick` waits for its guardians and drains once. A
+launch written before units existed has no token: it is settled without a unit. Windows job-object
+and breakaway behaviour is an owner qualification gate; POSIX tests do not prove it.
+
+Every NEW effect (lane binding, Fleet admission, conductor start, including resumed `intended`/
+`published` work and a re-dispatch) passes one eligibility guard: the registered policy digest,
+`check_scope` against the current runtime, and the `authorization` stored on the intent at creation
+(policy/pin digest, repository, lane, goal, allowed paths, criteria, model, image/profile/archive
+identity, source job manifest digest and status) must all equal the current values. Drift refuses
+the effect by name (`image_changed`, `session_archive_changed`, `policy_changed`, `source_changed`,
+...), records `hold {reason_code, next_owner, field}` on the intent once (an
+`operations.continuation_blocked` event; the family is held; idle ticks write nothing), and keeps the
+state, stored authorization and evidence unchanged; restoring the authorized binding clears it.
+Reconciling an already started launch needs no guard and keeps its outcome under the original
+binding; the next observation of that job under the changed binding is a named refusal.
+
+Delivery evidence is bound: `LaneEvidence.read(job, target)` selects the ONE `host_delivery_intents`
+row of the policy `delivery_target` whose `release_id` and `revision` equal the conductor's release
+and the accepted task's candidate, and the `releases` record must name that candidate
+(`bind_delivery`). The `delivery` intent carries `delivery_binding {target_id, release_id, revision}`
+and re-validates it on every observation. Another target's plan (active or rolled back) is foreign
+and neither completes nor pauses the item; a plan of this target for another revision
+(`delivery_stale`), two exact plans (`delivery_ambiguous`), a release naming another candidate
+(`delivery_release_candidate_mismatch`) or a changed tuple (`delivery_binding_changed`) is a named
+wait with no write. Completion and pause record `delivery_plan {plan_id, plan_sha256, stage}`.
+
+Fixture tests prove the composition with labelled worker/lead/conductor executors; the child
+ownership is proven with real local sleeping children (tests/test_continuation_process.py), never a
+model. They do not prove real PostgreSQL/Redis behaviour, a real two-turn model session, the managed
+Fleet, native Windows execution or two useful unattended jobs; those are owner qualification gates.

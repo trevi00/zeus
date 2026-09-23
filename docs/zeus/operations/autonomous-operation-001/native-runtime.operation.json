@@ -1,0 +1,35 @@
+{
+  "schema": "urn:zeus:operation:1",
+  "id": "autonomous-operation-001-native-runtime",
+  "base_revision": "60f7958636449ddeeec824a9ab4b0696e583fa45",
+  "goal": {
+    "path": "docs/zeus/operations/autonomous-operation-001/SPEC.md",
+    "sha256": "d18bfd8538f7ed444f24caf74181252af0cf68778a021409e8616454ea61ca08",
+    "criterion": "Complete the existing autonomous operating loop with independently verified session, continuation and actual runtime ownership",
+    "rationale": "Finish the existing whole-goal acceptance matrix without manual user relay or weaker verification."
+  },
+  "budget": {
+    "mode": "subscription",
+    "total": 192,
+    "per_host": 192
+  },
+  "claude": {
+    "model": "claude-opus-5-5",
+    "timeout_seconds": 3600,
+    "max_budget_usd": 2
+  },
+  "plan": {
+    "objective": "Implement ONLY Native managed-runtime qualification support section of SPEC. Owner Windows run was 226 passed 11 skipped one CRLF-vs-filtered-hash oracle failure, reproduced with raw blob and git --no-filters. Fix physical-byte test semantics and make real process qualification portable using incumbent hidden ownership and actual interpreter conventions. Preserve POSIX-specific SIGKILL limit. Do not weaken runtime seals, identity, fence or immutable environment. No production/model calls. Run scoped tests and Ruff; owner runs native Windows. Independent review verifies affected complete platform boundary.",
+    "allowed_paths": [
+      "tests/test_managed_runtime.py",
+      "src/codex_harness/adapters/managed_runtime.py",
+      "src/codex_harness/domain/managed_runtime.py",
+      "docs/zeus/operations/autonomous-operation-001/HOST-RUNTIME.md"
+    ],
+    "acceptance_criteria": [
+      "Raw LF/CRLF bytes and symlink refusal are verified without Git filters changing the oracle.",
+      "Actual managed child/forward/drain/rollback tests can run natively on Windows with preserved process ownership; remaining platform skips precisely labelled.",
+      "Existing process, delivery and immutable runtime contracts retained; affected checks plus Ruff completed."
+    ]
+  }
+}

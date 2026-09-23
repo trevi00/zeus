@@ -78,6 +78,32 @@ class GitWorkspace:
             marker.write_text(revision, encoding='utf-8')
         return {"path": str(path), "branch": branch, "base": revision, "task_id": task_id}
 
+    def continue_workspace(self, origin_task_id: str, task_id: str, head: str, base: str) -> dict:
+        """Reuse the ORIGINAL managed workspace for a continuation successor (INV-CONTINUATION-001).
+
+        Only an owner-derived origin id under this managed root is accepted, never a path. The
+        workspace must still be on the origin's own branch with its pinned assignment base, its
+        HEAD must be exactly the last submitted candidate and it must be clean: a dirty or moved
+        workspace is refused and never reset or cleaned. Whether an execution still owns it is the
+        caller's store check. The successor's candidate is captured under its own task id while
+        the branch, the pinned base and the rejected commits of the origin stay where they are."""
+        require(bool(re.fullmatch(r"[a-zA-Z0-9_-]{1,100}", origin_task_id)), "Invalid workspace ID")
+        require(bool(re.fullmatch(r"[a-zA-Z0-9_-]{1,100}", task_id)), "Invalid workspace ID")
+        require(bool(re.fullmatch(r"[0-9a-f]{40}", str(head))) and bool(re.fullmatch(r"[0-9a-f]{40}", str(base))),
+                "Continuation workspace needs exact head and base revisions")
+        path = self.workspaces / origin_task_id
+        require(path.is_dir() and not path.is_symlink() and path.resolve().parent == self.workspaces,
+                "Continuation workspace missing from managed root")
+        marker = path / ".git" / "harness-assignment-base"
+        require(marker.is_file() and marker.read_text("utf-8").strip() == base,
+                "Continuation workspace base changed")
+        branch = "harness/" + origin_task_id
+        require(self._git("branch", "--show-current", cwd=str(path)) == branch, "Workspace branch mismatch")
+        require(self._git("rev-parse", "HEAD", cwd=str(path)) == head, "Continuation workspace moved from its candidate")
+        require(not self._git("status", "--porcelain", cwd=str(path)), "Continuation workspace is dirty")
+        return {"path": str(path), "branch": branch, "base": base, "task_id": task_id,
+                "origin_task_id": origin_task_id, "continued_from": head}
+
     def capture(self, workspace: dict) -> dict:
         path = str(Path(workspace["path"]).resolve())
         require(Path(path).parent == self.workspaces, "Workspace outside managed root")

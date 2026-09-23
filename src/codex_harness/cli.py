@@ -310,6 +310,10 @@ def parser() -> argparse.ArgumentParser:
     add_fleet_parser(commands)
     from codex_harness.adapters.host_delivery import add_parser as add_host_delivery_parser
     add_host_delivery_parser(commands)
+    from codex_harness.adapters.worker_sessions import add_parser as add_worker_session_parser
+    add_worker_session_parser(commands)
+    from codex_harness.adapters.continuation_cli import add_parser as add_continuation_parser
+    add_continuation_parser(commands)
     from codex_harness.adapters.frontdesk_cli import add_parser as add_desk_parser
     add_desk_parser(commands)
     from codex_harness.adapters.autonomous_cli import add_parser as add_autonomous_parser
@@ -506,6 +510,32 @@ def host_delivery_command(service, args):
         result = host_delivery.execute(service, args)
     except Exception as exc:
         emit(host_delivery.refusal(exc))
+        raise SystemExit(1) from exc
+    emit(result)
+    if result.get("exit_code", 1) != 0:
+        raise SystemExit(1)
+
+
+def worker_session_command(service, args):
+    """INV-WORKER-SESSION-001: read-only status and explicit close; refusals print a code and a
+    type, never transcript bytes, archive paths, DSNs or raw exceptions."""
+    from codex_harness.adapters import worker_sessions
+    try:
+        result = worker_sessions.execute(service, args)
+    except Exception as exc:
+        emit(worker_sessions.refusal(exc))
+        raise SystemExit(1) from exc
+    emit(result)
+
+
+def continuation_command(service, args):
+    """INV-CONTINUATION-001: exit 0 only for a completed command; refusals print a code, the named
+    next owner and a type, never a manifest, a path, a DSN or a raw exception."""
+    from codex_harness.adapters import continuation_cli
+    try:
+        result = continuation_cli.execute(service, args)
+    except Exception as exc:
+        emit(continuation_cli.refusal(exc))
         raise SystemExit(1) from exc
     emit(result)
     if result.get("exit_code", 1) != 0:
@@ -746,6 +776,10 @@ def main() -> None:
             fleet_command(service, args)
         elif args.command == "host-delivery":
             host_delivery_command(service, args)
+        elif args.command == "worker-session":
+            worker_session_command(service, args)
+        elif args.command == "continuation":
+            continuation_command(service, args)
         elif args.command == "desk":
             desk_command(service, args)
         elif args.command == "audit-service":

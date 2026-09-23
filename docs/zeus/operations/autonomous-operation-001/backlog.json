@@ -116,6 +116,159 @@
       "dependencies": [
         "monitor-correction"
       ]
+    },
+    {
+      "id": "native-evidence",
+      "project_id": "research-improvement",
+      "criterion_id": "verified-loop",
+      "lane": "interface",
+      "manifest_path": "docs/zeus/operations/autonomous-operation-001/native-evidence.operation.json",
+      "manifest_revision": "6514e7160e7c5abc53481ac15d2075df72b2002f",
+      "manifest_sha256": "ffde8015815e26a049aec26851bfa4391062f98aaa1de24bcd243d387c3f824c",
+      "priority": 100,
+      "dependencies": [
+        "monitor-correction"
+      ]
+    },
+    {
+      "id": "session-correction",
+      "project_id": "research-improvement",
+      "criterion_id": "verified-loop",
+      "lane": "harness",
+      "manifest_path": "docs/zeus/operations/autonomous-operation-001/session-correction.operation.json",
+      "manifest_revision": "d20f2aee5cf67edbb15d5f8bd7cfecb7983e58dc",
+      "manifest_sha256": "27fa4a2b081ec45c748a2d9121bb52d84c84ec9011fd946435c39f67b542e1e6",
+      "priority": 110,
+      "dependencies": [
+        "monitor-correction"
+      ]
+    },
+    {
+      "id": "host-runtime",
+      "project_id": "research-improvement",
+      "criterion_id": "verified-loop",
+      "lane": "interface",
+      "manifest_path": "docs/zeus/operations/autonomous-operation-001/host-runtime.operation.json",
+      "manifest_revision": "edfcde59582e886de3218ecdbfb0f08e4c18baee",
+      "manifest_sha256": "de62f5748bbc0d346dd647264face9ccce2ce06ed480cfa304a7ba0c2bf6c496",
+      "priority": 120,
+      "dependencies": [
+        "native-evidence"
+      ]
+    },
+    {
+      "id": "host-runtime-evidence",
+      "project_id": "research-improvement",
+      "criterion_id": "verified-loop",
+      "lane": "interface",
+      "manifest_path": "docs/zeus/operations/autonomous-operation-001/host-runtime-evidence.operation.json",
+      "manifest_revision": "622e28bf8cb5fc48c01a42f40f7f69f864b9c9cf",
+      "manifest_sha256": "a8edeae95d9dcfdc2adfb4a36b2d78f143e98d4d38fccf4276980d47bacf7990",
+      "priority": 130,
+      "dependencies": [
+        "native-evidence"
+      ]
+    },
+    {
+      "id": "continuation",
+      "project_id": "research-improvement",
+      "criterion_id": "verified-loop",
+      "lane": "harness",
+      "manifest_path": "docs/zeus/operations/autonomous-operation-001/continuation.operation.json",
+      "manifest_revision": "ad9561bcda6b0761626d9941211e3c99e0db9808",
+      "manifest_sha256": "5b0af4b414ad4ac8c67821746874f7b8f569758e3c14657a4bcc26fcb6b9f2b4",
+      "priority": 140,
+      "dependencies": [
+        "session-correction",
+        "host-runtime-evidence"
+      ]
+    },
+    {
+      "id": "native-runtime",
+      "project_id": "research-improvement",
+      "criterion_id": "verified-loop",
+      "lane": "interface",
+      "manifest_path": "docs/zeus/operations/autonomous-operation-001/native-runtime.operation.json",
+      "manifest_revision": "ad9561bcda6b0761626d9941211e3c99e0db9808",
+      "manifest_sha256": "69fffb4bb014109e99d9e7a8192320158be4703b3d1e5f81131266ff57b9ea65",
+      "priority": 140,
+      "dependencies": [
+        "session-correction",
+        "host-runtime-evidence"
+      ]
+    },
+    {
+      "id": "continuation-correction",
+      "project_id": "research-improvement",
+      "criterion_id": "verified-loop",
+      "lane": "harness",
+      "manifest_path": "docs/zeus/operations/autonomous-operation-001/continuation-correction.operation.json",
+      "manifest_revision": "b5313b44e90cef9b1d00282537ae563a0c4a9d56",
+      "manifest_sha256": "89412de2025622ce6fad07edc4db374fefc58bc52892bc2d871a6b564c130a6c",
+      "priority": 150,
+      "dependencies": [
+        "session-correction",
+        "host-runtime-evidence",
+        "native-runtime"
+      ]
+    },
+    {
+      "id": "ownership-design",
+      "project_id": "research-improvement",
+      "criterion_id": "verified-loop",
+      "lane": "harness",
+      "manifest_path": "docs/zeus/operations/autonomous-operation-001/ownership-design.operation.json",
+      "manifest_revision": "40133bb9db336a0fe30f37ab116f05163bdc9ff1",
+      "manifest_sha256": "28c5c1704208834e475169940236ea9ba7e101b90958bf1cc0d45d282141c45e",
+      "priority": 160,
+      "dependencies": [
+        "session-correction",
+        "host-runtime-evidence",
+        "native-runtime"
+      ]
+    },
+    {
+      "id": "stop-rollback",
+      "project_id": "research-improvement",
+      "criterion_id": "verified-loop",
+      "lane": "harness",
+      "manifest_path": "docs/zeus/operations/autonomous-operation-001/stop-rollback.operation.json",
+      "manifest_revision": "f02963597cf65fce18ab5f08807a770a7ddfa301",
+      "manifest_sha256": "80878bd4778290b1472f3939cbf14069583e311be77f2d25ae8a4a9209fb5097",
+      "priority": 170,
+      "dependencies": [
+        "session-correction",
+        "host-runtime-evidence",
+        "native-runtime"
+      ]
+    },
+    {
+      "id": "pause-commit",
+      "project_id": "research-improvement",
+      "criterion_id": "verified-loop",
+      "lane": "harness",
+      "manifest_path": "docs/zeus/operations/autonomous-operation-001/pause-commit.operation.json",
+      "manifest_revision": "c5dfaf63d7be60a5389ac478b76de8f5a58ce74e",
+      "manifest_sha256": "a864ec6341001014ac42fe57a373f708e31e48d077e8550f96ce28916b31af31",
+      "priority": 180,
+      "dependencies": [
+        "session-correction",
+        "host-runtime-evidence",
+        "native-runtime"
+      ]
+    },
+    {
+      "id": "native-fixture",
+      "project_id": "research-improvement",
+      "criterion_id": "verified-loop",
+      "lane": "harness",
+      "manifest_path": "docs/zeus/operations/autonomous-operation-001/native-fixture.operation.json",
+      "manifest_revision": "1854248e30ac8039fa9bce9b3b9c084bab710be8",
+      "manifest_sha256": "bb48675f3c4dd3dc93d85012da8f8ae55c52fd5b4ef7f6a1b940d59fb14a870d",
+      "priority": 190,
+      "dependencies": [
+        "pause-commit"
+      ]
     }
   ]
 }

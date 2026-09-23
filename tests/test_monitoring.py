@@ -172,12 +172,14 @@ def test_collector_entrypoint_is_read_only_and_needs_no_executor(monkeypatch, tm
     assert store.data == before
     assert list((runtime / 'artifacts').iterdir()) == []
     lines = [json.loads(line) for line in (runtime / 'monitor-collector.log').read_text('utf-8').splitlines()]
-    # Nine sources: observatory-001 added observations (the CLI passes the runtime), fleet-001 the
+    # Ten sources: observatory-001 added observations (the CLI passes the runtime), fleet-001 the
     # additive fleet envelope (INV-FLEET-001), research-program-001 the additive
     # research_programs envelope (INV-RESEARCH-PROGRAM-001), operating-portfolio-001 the
     # additive portfolio envelope and autonomous-operation-001 the additive fleet_backlog envelope
-    # (INV-FLEET-BACKLOG-001) and the additive host_delivery envelope (INV-HOST-DELIVERY-001).
-    assert [line['event'] for line in lines] == (['startup'] + ['source_state'] * 9 + ['shutdown']) * 2
+    # (INV-FLEET-BACKLOG-001), the additive host_delivery envelope (INV-HOST-DELIVERY-001) and the
+    # additive worker_sessions envelope (INV-WORKER-SESSION-001) and the additive continuation
+    # envelope (INV-CONTINUATION-001).
+    assert [line['event'] for line in lines] == (['startup'] + ['source_state'] * 11 + ['shutdown']) * 2
     assert snapshot['sources']['observations']['status'] == 'ok'
     # Unregistered fleet: an ok envelope with the fixed empty shape; the read-only store is unchanged
     # (asserted above) and no executor was built.
@@ -198,6 +200,19 @@ def test_collector_entrypoint_is_read_only_and_needs_no_executor(monkeypatch, tm
     assert delivery['data'] == {'schema': 'urn:zeus:host-delivery-status:1', 'registered': False,
                                 'enabled': False, 'deliveries': [], 'counts': {}, 'targets': [],
                                 'authority': delivery['data']['authority']}
+    # No durable task session: an `ok` envelope with an empty list (INV-WORKER-SESSION-001), never
+    # an absent or unavailable source, and nothing is resumed, promoted or closed by collecting it.
+    sessions = snapshot['sources']['worker_sessions']
+    assert sessions['status'] == 'ok'
+    assert sessions['data'] == {'schema': 'zeus.worker-session.v1', 'sessions': [], 'truncated': False,
+                                'counts': {}, 'blocked': 0, 'authority': sessions['data']['authority']}
+    # No registered continuation policy: an `ok` envelope with no policy and no intent
+    # (INV-CONTINUATION-001); collecting it ticks, dispatches and admits nothing.
+    continuation = snapshot['sources']['continuation']
+    assert continuation['status'] == 'ok'
+    assert continuation['data'] == {'schema': 'urn:zeus:continuation-status:1', 'policies': [], 'intents': [],
+                                    'truncated': False, 'counts': {}, 'held_families': {},
+                                    'authority': continuation['data']['authority']}
     assert snapshot['sources']['observations']['data']['local'] == {'status': 'unavailable',
                                                                     'reason': 'directory_missing'}
     assert lines[0] == {'at': lines[0]['at'], 'event': 'startup', 'mode': 'collect', 'once': True,
@@ -294,7 +309,15 @@ def test_collect_keeps_source_failures_independent(monkeypatch):
     assert result['schema'] == 'harness-monitor.v1'
     assert result['scope'] == {'label': 'repository ' + Path('.').resolve().name, 'docker': 'compose', 'containers': None}
     assert set(sources) == {'database', 'docker', 'redis', 'fleet', 'research_programs', 'portfolio',
-                            'fleet_backlog', 'host_delivery'}
+                            'fleet_backlog', 'host_delivery', 'worker_sessions', 'continuation'}
+    # The additive continuation source (INV-CONTINUATION-001) reads the same store: unavailable with
+    # the exception TYPE only, never an empty intent list reported as a healthy read.
+    assert sources['continuation']['status'] == 'unavailable'
+    assert sources['continuation']['data'] is None and sources['continuation']['error'] == 'RuntimeError'
+    # The additive worker-session source (INV-WORKER-SESSION-001) reads the same store: unavailable
+    # with the exception TYPE only, never an empty session list reported as a healthy read.
+    assert sources['worker_sessions']['status'] == 'unavailable'
+    assert sources['worker_sessions']['data'] is None and sources['worker_sessions']['error'] == 'RuntimeError'
     # The additive approved-backlog source (INV-FLEET-BACKLOG-001) reads the same store: unavailable
     # with the exception TYPE only, never an empty backlog reported as a healthy read.
     assert sources['fleet_backlog']['status'] == 'unavailable'
@@ -318,7 +341,7 @@ def test_collect_keeps_source_failures_independent(monkeypatch):
     assert sources['docker'] == {'status': 'ok', 'observed_at': sources['docker']['observed_at'],
                                  'data': [{'service': 'redis', 'state': 'running'}]}
     assert sources['redis']['status'] == 'ok' and sources['redis']['data'][0]['agent'] == 'conductor'
-    for name in ('database', 'docker', 'redis', 'fleet', 'fleet_backlog', 'host_delivery'):
+    for name in ('database', 'docker', 'redis', 'fleet', 'fleet_backlog', 'host_delivery', 'worker_sessions'):
         observed = datetime.fromisoformat(sources[name]['observed_at'])
         assert observed.tzinfo is not None
         assert before <= observed <= datetime.fromisoformat(result['collected_at'])

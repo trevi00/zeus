@@ -50,11 +50,18 @@ from codex_harness.adapters.worker_profile import (
     session_directory,
     verified_interpreter,
 )
+from codex_harness.adapters.worker_sessions import export_session, restore_session
 from codex_harness.domain.model import ContractError, canonical, digest, require
 from codex_harness.domain.observation import redact_text
 from codex_harness.domain.policy import POLICY
 from codex_harness.domain.provider_stream import ClaudeStream
 from codex_harness.domain.usage_policy import FINITE, MODES, SUBSCRIPTION
+from codex_harness.domain.worker_sessions import (
+    MODE_FRESH,
+    MODE_RESUME,
+    project_key,
+    transcript_entry,
+)
 
 IDENTITY = ClaudeStream.identity
 TRANSPORT = ClaudeStream.transport
@@ -139,9 +146,13 @@ class ClaudeCodeRuntime:
                  max_budget_usd: float | None = None, settings_document: dict | None = None,
                  environment: dict | None = None, probe_timeout: int = 30,
                  launcher: list | None = None, limits: dict | None = None,
-                 project_delivery: dict | None = None):
+                 project_delivery: dict | None = None, session_home: str | None = None):
         require(type(model) is str and bool(model.strip()), "Claude requires an explicit model name")
         self.model = model.strip()
+        # INV-WORKER-SESSION-001: the CLI configuration directory a trusted caller owns for THIS run
+        # (the isolated entry's disposable home). Only with it may a task session be restored or
+        # exported; the host's own home is never read, written or resumed from.
+        self.session_home = str(session_home) if session_home is not None else None
         self.runtime = dict(runtime or {})
         self.executable = resolve_claude(executable)
         # Research program001 batch008: the selected runtime names the usage-accounting mode. Finite
@@ -275,7 +286,7 @@ class ClaudeCodeRuntime:
         return settings
 
     def _command(self, *, schema: dict, session_id: str,
-                 settings_document: dict | None = None) -> tuple[list, list]:
+                 settings_document: dict | None = None, resume: bool = False) -> tuple[list, list]:
         """Return (argv, manifest). The manifest is what may be written to a log: every element
         that can carry schema, context or configuration text is replaced by its digest."""
         require(self.accounting_mode == SUBSCRIPTION or self.max_budget_usd is not None,
@@ -295,7 +306,9 @@ class ClaudeCodeRuntime:
             "--input-format", str(self.runtime.get("input_format", "text")))
         if self.runtime.get("verbose", True):
             add("--verbose")
-        add("--model", self.model, "--session-id", session_id)
+        # A resumed turn names the exact archived session; `--continue` (whatever is most recent)
+        # is never used, so concurrent tasks cannot pick up each other's conversation.
+        add("--model", self.model, "--resume" if resume else "--session-id", session_id)
         add("--permission-mode", str(self.runtime.get("permission_mode", "acceptEdits")))
         if self.runtime.get("permission_prompts"):
             add("--permission-prompts", str(self.runtime["permission_prompts"]))
@@ -323,7 +336,7 @@ class ClaudeCodeRuntime:
     # ---- execution ------------------------------------------------------------------------------
     def run(self, prompt: str, cwd: str, schema: dict, timeout: int = 240, *, on_event=None,
             on_tick=None, read_only: bool = False, model: str | None = None, on_enter=None,
-            cancel=None, session_id: str | None = None) -> dict:
+            cancel=None, session_id: str | None = None, task_session: dict | None = None) -> dict:
         require(type(timeout) in (int, float) and timeout == timeout and 0 < timeout < float("inf"),
                 "Execution timeout must be finite and positive")
         require(type(prompt) is str and bool(prompt), "Claude execution requires a prompt")
@@ -338,7 +351,12 @@ class ClaudeCodeRuntime:
         require(SESSION_ID.fullmatch(session_id) is not None, "Claude session id must be a UUID")
         self.session_id = session_id
         workspace = str(Path(cwd).resolve())
+        resume = self._prepare_task_session(task_session, session_id, workspace)
         environment, environment_report = child_environment(self.environment_source)
+        if task_session is not None:
+            # The owned home is named explicitly, so the transcript the CLI writes is the one exported.
+            environment["CLAUDE_CONFIG_DIR"] = self.session_home
+            environment_report = {**environment_report, "task_session_home": "owned run home (CLAUDE_CONFIG_DIR)"}
         profile_delivery, evidence_directory = None, None
         if self.profile is not None:
             # Receipts live outside the checkout, one directory per session, created before the
@@ -365,7 +383,7 @@ class ClaudeCodeRuntime:
             environment_report = {**environment_report, "project_evidence": {"pythonpath": None}}
         settings_document = self._run_settings(evidence_directory)
         argv, manifest = self._command(schema=schema, session_id=session_id,
-                                       settings_document=settings_document)
+                                       settings_document=settings_document, resume=resume)
         limits = {"line_bytes": POLICY.claude_line_bytes, "stream_bytes": POLICY.claude_stream_bytes,
                   "queue_events": POLICY.claude_event_queue, "retained_events": POLICY.claude_events_retained,
                   **self.limit_overrides, "deadline_seconds": float(timeout)}
@@ -495,7 +513,11 @@ class ClaudeCodeRuntime:
                 "Claude process tree termination could not be confirmed; the outcome is unknown")
         result = self._result(events=events, terminal=terminal, conflict=conflict, state=state,
                               termination=termination, command=command, schema=schema,
-                              elapsed=time.monotonic() - started, reason=reason, session_id=session_id)
+                              elapsed=time.monotonic() - started, reason=reason, session_id=session_id,
+                              resume=resume)
+        if task_session is not None:
+            # After the tree is confirmed gone: the transcript is final. Adoption is not decided here.
+            result["task_session"] = self._export_task_session(task_session, session_id, workspace, resume)
         if self.profile is not None:
             # Read after the tree is confirmed gone, so the count is final. "selected" is what this
             # run passed; "hook_receipts" is what the hook wrote; neither is the other.
@@ -504,6 +526,47 @@ class ClaudeCodeRuntime:
                 "hook_receipts": hook_receipts(evidence_directory, profile_digest(self.profile)),
                 "note": "delivery and observation recorded separately; neither certifies compliance"}
         return result
+
+    # ---- task sessions (INV-WORKER-SESSION-001) -------------------------------------------------
+    def _prepare_task_session(self, task_session, session_id: str, workspace: str) -> bool:
+        """Validate the opt-in binding and restore a resumed transcript. Every failure here is a
+        refusal before entry: no process exists yet. Returns whether this turn resumes."""
+        if task_session is None:
+            return False
+        require(isinstance(task_session, dict) and task_session.get("mode") in (MODE_FRESH, MODE_RESUME),
+                "Task session must name mode fresh or native_resume")
+        require(self.session_home is not None,
+                "Native task sessions need an owned CLI home; the host's own home is never resumed from")
+        require(task_session.get("session_id") == session_id, "Task session id differs from this run's session id")
+        require(type(task_session.get("export")) is str and bool(task_session["export"]),
+                "Task session needs an export directory")
+        resume = task_session["mode"] == MODE_RESUME
+        if resume:
+            if "--resume" not in self.capabilities:
+                raise ClaudeUnavailable("Installed Claude Code lacks required options: --resume")
+            manifest = task_session.get("manifest")
+            if not isinstance(manifest, dict) or manifest.get("project") != project_key(workspace):
+                # The CLI files a transcript under its working directory; another directory is
+                # another conversation store, so this is refused rather than left to "not found".
+                raise ClaudeUnavailable("Task session archive was recorded for another workspace")
+            try:
+                restore_session(task_session.get("restore"), self.session_home, session_id=session_id,
+                                expected_manifest=task_session.get("manifest"))
+            except (ContractError, OSError, TypeError) as exc:
+                raise ClaudeUnavailable("Task session archive could not be restored: "
+                                        + getattr(exc, "reason", type(exc).__name__)) from exc
+        return resume
+
+    def _export_task_session(self, task_session: dict, session_id: str, workspace: str, resume: bool) -> dict:
+        body = {"mode": MODE_RESUME if resume else MODE_FRESH, "session_id": session_id,
+                "export": task_session["export"]}
+        try:
+            manifest = export_session(self.session_home, workspace, session_id, task_session["export"])
+        except (ContractError, OSError) as exc:
+            return {**body, "exported": False, "error": getattr(exc, "reason", type(exc).__name__)}
+        return {**body, "exported": True, "files": len(manifest["files"]), "excluded": manifest["excluded"],
+                "transcript_sha256": transcript_entry(manifest)["sha256"],
+                "manifest_sha256": digest({k: manifest[k] for k in ("schema", "session_id", "project", "files")})}
 
     # ---- termination ----------------------------------------------------------------------------
     def _terminate(self, reason: str) -> dict:
@@ -529,7 +592,7 @@ class ClaudeCodeRuntime:
 
     # ---- result ---------------------------------------------------------------------------------
     def _result(self, *, events, terminal, conflict, state, termination, command, schema, elapsed,
-                reason, session_id) -> dict:
+                reason, session_id, resume: bool = False) -> dict:
         raw_terminal = terminal.get("raw") if terminal else None
         reported_model = _text(raw_terminal, "model") or state.init_model
         reported_session = _text(raw_terminal, "session_id") or state.init_session
@@ -542,8 +605,11 @@ class ClaudeCodeRuntime:
             "events": events, "thread_id": session_id, "turn_id": None, "usage": usage if isinstance(usage, dict) else None,
             "rotate": False, "interrupted": False, "requested_model": self.model,
             "reported_model": reported_model, "model_agreement": agreement,
-            "session": {**binding, "resume": "unsupported",
-                        "basis": "a fresh session id for every attempt"},
+            "session": ({**binding, "resume": "native",
+                         "basis": "the exact archived session id, restored from verified bytes; continuity "
+                                  "is decided by the session owner, not by this label"} if resume else
+                        {**binding, "resume": "unsupported",
+                         "basis": "a fresh session id for every attempt"}),
             "cost": {"reported_usd": cost if type(cost) in (int, float) else None,
                      "source": "provider_estimate" if type(cost) in (int, float) else "unknown",
                      "note": "the provider's own estimate for this run, not a billed amount"},

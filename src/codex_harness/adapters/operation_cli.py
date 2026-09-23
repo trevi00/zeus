@@ -98,6 +98,23 @@ def identity(manifest: dict, repository, policy: ExecutionPolicy, host_settings:
                                           "namespace": host_settings.get("HARNESS_REDIS_NAMESPACE", "")})}
 
 
+def session_owner(service, operation_id: str, observer=None) -> dict:
+    """INV-CONTINUATION-001 / INV-WORKER-SESSION-001: the `worker_sessions` keyword for the executor
+    when, and only when, the lane store holds the opt-in controller's binding naming a task session
+    for this operation. Everything else keeps the exact legacy fresh path (an empty keyword set)."""
+    from codex_harness.domain.continuation import validate_binding
+
+    with service.store.transaction() as tx:
+        binding = tx.get("continuation_bindings", operation_id)
+    if binding is None or validate_binding(binding)["session"] is None:
+        return {}
+    from codex_harness.adapters.worker_sessions import SessionArchives, archive_root, evidence_store
+    from codex_harness.application.worker_sessions import WorkerSessions
+
+    return {"worker_sessions": WorkerSessions(service.store, SessionArchives(archive_root()),
+                                              evidence=evidence_store(), observer=observer)}
+
+
 def run(service, args) -> dict:
     from codex_harness.adapters.bus import RedisBus
     from codex_harness.adapters.call_budget import CallBudget
@@ -130,7 +147,8 @@ def run(service, args) -> dict:
         # No knowledge adapter: this entry point writes execution ledgers and provisional
         # artifacts only; formal knowledge promotion is a separate explicit contract.
         executor = build_executor(service, observer=observer, execution_policy=policy, knowledge=False,
-                                  evidence_profile=profile, **({} if isolated is None else {"isolation": isolated}))
+                                  evidence_profile=profile, **({} if isolated is None else {"isolation": isolated}),
+                                  **session_owner(service, manifest["id"], observer))
         # INV-OBSERVATION-001: the one process observer also sees the operation's message path.
         operation = Operation(service, executor, RedisBus(redis_url()), Workflow(service.store, service.org),
                               CallBudget(), build_collector(service.store, observer), observer=observer)

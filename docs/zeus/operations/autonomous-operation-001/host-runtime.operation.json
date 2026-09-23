@@ -1,0 +1,46 @@
+{
+  "schema": "urn:zeus:operation:1",
+  "id": "autonomous-operation-001-host-runtime",
+  "base_revision": "cf39bcc4b6a66b8797a12912cc24cffffc9fe077",
+  "goal": {
+    "path": "docs/zeus/operations/autonomous-operation-001/SPEC.md",
+    "sha256": "dc338d56bb699779d388f61f69b0f2a773ce8aecc9b9c66494570478cc7fc8e0",
+    "criterion": "Make the existing reviewed delivery controller consume immutable actual Fleet runtimes and retain a verifiable predecessor",
+    "rationale": "Replace the demonstrated one-shot continuation with a reusable owner-controlled delivery component; retain existing Releases and ReleaseQueue authority."
+  },
+  "budget": {
+    "mode": "subscription",
+    "total": 192,
+    "per_host": 192
+  },
+  "claude": {
+    "model": "claude-opus-5-5",
+    "timeout_seconds": 3600,
+    "max_budget_usd": 2
+  },
+  "plan": {
+    "objective": "Implement ONLY Operating-host composition: immutable runtime consumption in bound SPEC. Reuse existing HostDelivery/Queue/Releases/background_service/Fleet owners; explicit opt-in, preserve legacy behavior. Current production stays unchanged. Runtime snapshots immutable and owner-derived; real Fleet entry, truthful pause/drain/heartbeat and loaded identity; rollback old code. Keep candidate command/path authority absent. Exactly one consolidated batch and matrix, no unrelated audit. Tests use labelled local fixtures, no production mutations or model calls. Plain replayable python -m pytest and python -m ruff check commands in final tests list, no timeout shell prefix, no --fix claims. Read bounded excerpts and keep output compact. Independent reviewer covers full changed path; actual operating cutover remains owner work.",
+    "allowed_paths": [
+      "src/codex_harness/domain/managed_runtime.py",
+      "src/codex_harness/adapters/managed_runtime.py",
+      "src/codex_harness/domain/host_delivery.py",
+      "src/codex_harness/adapters/host_delivery.py",
+      "src/codex_harness/application/host_delivery.py",
+      "src/codex_harness/application/fleet.py",
+      "src/codex_harness/adapters/fleet_cli.py",
+      "tests/test_managed_runtime.py",
+      "tests/test_host_delivery.py",
+      "tests/test_host_delivery_cli.py",
+      "tests/test_fleet.py",
+      "tests/test_fleet_cli.py",
+      "docs/zeus/operations/autonomous-operation-001/HOST-RUNTIME.md"
+    ],
+    "acceptance_criteria": [
+      "Owner-only immutable runtime materialization and exact actual child consumption; candidate has no arbitrary host command/path authority.",
+      "Real Fleet optional pause/drain/heartbeat is truthful, preserves running children, and refuses unknown idle.",
+      "Forward/restart/lost-response/concurrent-owner/rollback scenarios retain exact predecessor code and existing instance/fence authority.",
+      "Existing modes and relevant tests remain compatible; Windows/POSIX/fixture/actual distinctions and all failures are recorded.",
+      "Structured existing observations and read-only projection expose progress; no self-approval or production action."
+    ]
+  }
+}

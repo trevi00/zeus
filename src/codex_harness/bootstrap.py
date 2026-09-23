@@ -94,8 +94,9 @@ def host_isolation(evidence_profile=None):
 
 
 def build_executor(service=None, observer=None, execution_policy=None, knowledge=True, evidence_profile=HOST_PROFILE,
-                   isolation=HOST_PROFILE):
-    """`knowledge=False` builds the executor without any knowledge adapter: no hybrid query and no
+                   isolation=HOST_PROFILE, worker_sessions=None):
+    """`worker_sessions` is a `WorkerSessions` owner for task-session execution, or None (default).
+    `knowledge=False` builds the executor without any knowledge adapter: no hybrid query and no
     index_python/project_runtime write on rotate. The default (writable PostgresKnowledge) is
     unchanged for every other caller. `evidence_profile` is the profile an entry point already
     loaded (or None) so identity and executor share one load; by default it is read from the host
@@ -124,4 +125,7 @@ def build_executor(service=None, observer=None, execution_policy=None, knowledge
                     audit_runner=AuditRunner(runtime / "audit-sources", artifacts, host_execution=True),
                     observer=observer or build_observer(service.store, "executor"),
                     execution_policy=execution_policy, evidence_profile=profile,
+                    # INV-WORKER-SESSION-001: only an entry point that holds a trusted continuation
+                    # binding passes an owner; None keeps every other caller's exact fresh path.
+                    **({} if worker_sessions is None else {"worker_sessions": worker_sessions}),
                     **({} if isolated is None else {"isolation": isolated}))

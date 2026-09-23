@@ -158,11 +158,16 @@ def test_collect_adds_observations_only_with_runtime_and_keeps_other_sources(mon
         tx.put('observations', 'e', event('e', 'operations', 'critical', record_kind='event'))
     service, artifacts = read_only(SimpleNamespace(store=store, org=organization()), None)
     legacy = monitoring.collect(service, artifacts, str(tmp_path), 'redis://127.0.0.1/0')
-    # autonomous-operation-001 added the read-only `fleet_backlog` and `host_delivery` envelopes
-    # beside the existing store-backed sources; `observations` still appears only with a runtime
-    # directory, and every original source is still collected exactly as before.
+    # autonomous-operation-001 added the read-only `fleet_backlog`, `host_delivery` and
+    # `worker_sessions` envelopes beside the existing store-backed sources; `observations` still
+    # appears only with a runtime directory, and every original source is still collected as before.
     assert set(legacy['sources']) == {'database', 'docker', 'redis', 'fleet', 'research_programs', 'portfolio',
-                                      'fleet_backlog', 'host_delivery'}
+                                      'fleet_backlog', 'host_delivery', 'worker_sessions', 'continuation'}
+    # INV-CONTINUATION-001: the read-only continuation envelope beside them, empty without a policy.
+    assert legacy['sources']['continuation']['status'] == 'ok'
+    assert legacy['sources']['continuation']['data']['intents'] == []
+    assert legacy['sources']['worker_sessions']['status'] == 'ok'
+    assert legacy['sources']['worker_sessions']['data']['sessions'] == []
     assert legacy['sources']['fleet']['data']['registered'] is False
     assert legacy['sources']['fleet_backlog']['data']['registered'] is False
     # Nothing registered and delivery disabled: an explicit projection, never an absent source.

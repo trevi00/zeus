@@ -359,12 +359,14 @@ def blocking_reason(job: dict, jobs: dict, config: dict, aliases=None) -> str | 
     return None
 
 
-def select_admission(config: dict, paused: bool, jobs: dict, budget_exhausted: bool, aliases=None) -> dict:
+def select_admission(config: dict, paused: bool, jobs: dict, budget_exhausted: bool, aliases=None,
+                     units: int = 0) -> dict:
     """The one queued job to dispatch next (oldest first) and the reason every other queued job
-    waits. At most `max_parallel` jobs reserve at once, one per lane. `config` carries the
+    waits. At most `max_parallel` execution units reserve at once - reserving jobs plus the `units`
+    held by other execution kinds (a conductor decision) - one job per lane. `config` carries the
     effective ceilings; the caller persists every observed reason in the same transaction."""
     queued = sorted((j for j in jobs.values() if j["status"] == QUEUED), key=lambda j: (j["created_at"], j["id"]))
-    reserving = sum(1 for j in jobs.values() if j["status"] in RESERVING)
+    reserving = sum(1 for j in jobs.values() if j["status"] in RESERVING) + units
     blocked, chosen = {}, None
     for job in queued:
         if paused:
@@ -382,6 +384,78 @@ def select_admission(config: dict, paused: bool, jobs: dict, budget_exhausted: b
             continue
         blocked[job["id"]] = reason or "capacity"
     return {"job": chosen, "blocked": blocked, "paused": paused, "budget_exhausted": budget_exhausted}
+
+
+# ----- shared execution units (INV-FLEET-001 capacity, INV-CONTINUATION-001 ownership) ------------
+# A worker job reserves its slot as `dispatching`; every other execution unit (a conductor decision)
+# reserves one here, in the same admission transaction, BEFORE anything is spawned. A unit is held
+# until the Fleet settles it on an exact proof: a confirmed parent-AND-tree cleanup receipt bound to
+# the unit's identity and token, or the fence proving the launch never entered. Nothing else - slot
+# age, a wrapper exit, a controller restart or a successful decision - releases it, so an uncertain
+# unit keeps consuming capacity until its owner resolves it.
+UNIT_CONDUCTOR = "conductor"
+UNIT_KINDS = frozenset({UNIT_CONDUCTOR})
+UNIT_RESERVED, UNIT_RELEASED = "reserved", "released"
+PROOF_CLEANUP, PROOF_FENCED = "cleanup", "fenced"
+UNIT_ID = re.compile(r"^[0-9a-f]{64}$")
+
+
+def new_unit(unit_id: str, kind: str, lane: dict, subject: str, token: str, now: str) -> dict:
+    if not (type(unit_id) is str and UNIT_ID.fullmatch(unit_id)):
+        raise FleetRefused("unit_invalid", "id")
+    if kind not in UNIT_KINDS:
+        raise FleetRefused("unit_invalid", "kind")
+    if not (type(subject) is str and subject):
+        raise FleetRefused("unit_invalid", "subject")
+    return {"id": unit_id, "kind": kind, "lane": lane["id"], "subject": subject, "state": UNIT_RESERVED,
+            "token": token, "reserved_at": now, "released_at": None, "settlement": None}
+
+
+def unit_binding(unit: dict) -> dict:
+    """What a replayed reservation of the same unit id must repeat exactly."""
+    return {"kind": unit["kind"], "lane": unit["lane"], "subject": unit["subject"]}
+
+
+def held_units(units) -> list[str]:
+    """Ids of units still consuming capacity: every unit not released on an exact proof."""
+    return sorted(unit["id"] for unit in units if unit.get("state") != UNIT_RELEASED)
+
+
+def check_unit_proof(unit: dict, proof) -> dict:
+    """The settlement a proof permits, or a named refusal. Only two proofs release a unit:
+
+    * `cleanup`: the guardian's durable receipt for THIS unit id and token, in which the parent AND
+      the tree were each confirmed ended (ProcessTree.terminate); a parent exit alone is not one;
+    * `fenced`: the launch's claim was written `fenced` under its lock, so it never entered and a
+      late guardian can execute nothing.
+    """
+    if not isinstance(proof, dict) or proof.get("kind") not in {PROOF_CLEANUP, PROOF_FENCED}:
+        raise FleetRefused("proof_invalid", "kind")
+    if proof.get("launch") != unit["id"]:
+        raise FleetRefused("proof_identity_mismatch", "launch")
+    if proof["kind"] == PROOF_FENCED:
+        if proof.get("claim") != PROOF_FENCED:
+            raise FleetRefused("proof_invalid", "claim")
+        return {"kind": PROOF_FENCED, "proof_sha256": digest(proof), "exit_code": None, "timed_out": False}
+    if not unit.get("token") or proof.get("token") != unit["token"]:
+        raise FleetRefused("proof_identity_mismatch", "token")
+    parent = proof.get("parent") if isinstance(proof.get("parent"), dict) else {}
+    tree = proof.get("tree") if isinstance(proof.get("tree"), dict) else {}
+    if not (proof.get("confirmed") is True and parent.get("confirmed") is True and tree.get("confirmed") is True):
+        raise FleetRefused("proof_unconfirmed", "confirmed")
+    code = proof.get("exit_code")
+    return {"kind": PROOF_CLEANUP, "proof_sha256": digest(proof), "exit_code": code if type(code) is int else None,
+            "timed_out": proof.get("timed_out") is True}
+
+
+def unit_view(unit: dict) -> dict:
+    """Identities, state and the settlement summary; never the token."""
+    held = unit.get("state") != UNIT_RELEASED
+    return {"id": unit["id"], "kind": unit["kind"], "lane": unit["lane"], "subject": unit["subject"],
+            "state": unit["state"], "reserved_at": unit.get("reserved_at"), "released_at": unit.get("released_at"),
+            "settlement": dict(unit["settlement"]) if isinstance(unit.get("settlement"), dict) else None,
+            "next_action": ("settle only on a confirmed parent-and-tree cleanup receipt or a never-entered fence; "
+                            "unknown cleanup keeps the slot until its named owner resolves it") if held else "none"}
 
 
 def safe_code(reason) -> str:

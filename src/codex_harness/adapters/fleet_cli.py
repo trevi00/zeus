@@ -124,7 +124,10 @@ def enqueue(service, args) -> dict:
     return {**fleet.enqueue(args.lane, manifest, goal, args.after), "exit_code": 0}
 
 
-def run(service, args) -> dict:
+def run(service, args, *, control=None) -> dict:
+    """`zeus fleet run`. `control` is the optional descriptor-bound pause, stop and heartbeat of a
+    managed host runtime (`adapters.managed_runtime`); the CLI itself never passes one, so
+    `zeus fleet run` keeps its exact previous behaviour."""
     from codex_harness.adapters.configuration import settings
     from codex_harness.adapters.fleet_backlog import backlog_ticker, configured_plan
     from codex_harness.adapters.fleet_runtime import LaneLauncher
@@ -145,10 +148,20 @@ def run(service, args) -> dict:
         # structured observations, not only as log lines.
         backlog_tick = backlog_ticker(service.store, config, plan_id,
                                       observer=build_observer(service.store, "fleet-backlog"))
+    # Opt-in only (INV-CONTINUATION-001): without the host policy setting no continuation pass,
+    # lane connection, conductor process or observer is built, and the runner is unchanged.
+    from codex_harness.adapters.continuation import configured_policy, continuation_ticker
+    policy_id = configured_policy(host)
+    continuation_tick = None
+    if policy_id is not None:
+        from codex_harness.bootstrap import build_observer
+
+        continuation_tick = continuation_ticker(service.store, config, host, policy_id,
+                                                observer=build_observer(service.store, "fleet-continuation"))
     # The bounded portfolio pass is wired here, in the adapter: the runner keeps no portfolio
     # dependency and a reconciliation outage never blocks admission (operating-portfolio-001).
     runner = FleetRunner(fleet, LaneLauncher(config, host), reconcile=portfolio_reconciler(service.store),
-                         backlog=backlog_tick)
+                         backlog=backlog_tick, control=control, continuation=continuation_tick)
     for name in ("SIGINT", "SIGTERM", "SIGBREAK"):
         if hasattr(signal, name):
             # Graceful stop: admission closes, owned children are drained, nothing is killed.

@@ -1,6 +1,7 @@
 """Fleet domain and application over MemoryStore (INV-FLEET-001). Launchers here are labeled
 fixtures (fault injection), never `zeus operate run`, Claude or the machine ledger."""
 import json
+from contextlib import contextmanager
 from copy import deepcopy
 
 import pytest
@@ -537,3 +538,448 @@ def test_monitor_snapshot_carries_fleet_envelope_and_survives_store_failure(tmp_
     broken = collect(SimpleNamespace(store=Broken(), org=SimpleNamespace(agents={})), None, str(tmp_path), "redis://x")
     assert broken["sources"]["fleet"] == {"status": "unavailable", "observed_at": broken["sources"]["fleet"]["observed_at"],
                                           "error": "RuntimeError", "data": None}
+
+
+# ----- the optional managed runtime control (HOST-RUNTIME.md) -----------------------------------------
+class RecordingControl:
+    """Labelled fixture control: scripted pause and stop answers, every heartbeat recorded."""
+
+    def __init__(self):
+        self.paused = self.stopping = self.unreadable = self.unwritable = False
+        self.beats = []
+
+    def admission_open(self):
+        if self.unreadable:
+            raise OSError("labelled injected unreadable pause")
+        return not self.paused
+
+    def stop_requested(self):
+        return self.stopping
+
+    def heartbeat(self, state):
+        if self.unwritable:
+            raise OSError("labelled injected unwritable heartbeat")
+        self.beats.append(dict(state))
+
+
+class HeldLauncher(FakeLauncher):
+    """Fixture launcher whose children keep running until the test releases them."""
+
+    def __init__(self, outcomes, on_wait):
+        super().__init__(outcomes)
+        self.released, self.on_wait, self.waits = set(), on_wait, 0
+
+    def wait(self, handles, seconds):
+        self.waits += 1
+        self.on_wait(self)
+        return [h for h in handles if h["job_id"] in self.released]
+
+
+def test_a_paused_runner_admits_nothing_new_while_its_owned_child_finishes(tmp_path):
+    f = fleet(tmp_path)
+    # A reservation this runner does not own (an earlier runner's dispatching job) is unresolved.
+    f.enqueue("b", manifest("op-0", ["docs/w.md"]), GOAL, [])
+    assert f.admit_one()["job"]["id"] == "op-0"
+    f.enqueue("a", manifest("op-1", ["docs/x.md"]), GOAL, [])
+    accepted = {"status": "accepted", "reason_code": "lead_accepted", "exit_code": 0}
+    control = RecordingControl()
+
+    def script(launcher):
+        if launcher.waits == 1:
+            control.paused = True  # the drain closes admission while op-1 is still running
+            f.enqueue("a", manifest("op-2", ["docs/y.md"]), GOAL, ["op-1"])
+        if launcher.waits == 3:
+            launcher.released.add("op-1")
+
+    launcher = HeldLauncher({"op-1": accepted, "op-2": accepted}, script)
+    runner = FleetRunner(f, launcher, interval=0, control=control)
+    runner.sleep = lambda seconds: setattr(control, "stopping", True)
+    summary = runner.run(once=False)
+    assert launcher.launched == ["op-1"] and summary["admitted"] == ["op-1"]
+    assert summary["finalized"] == [{"id": "op-1", "status": "accepted", "reason_code": "lead_accepted"}]
+    assert {j["id"]: j["status"] for j in f.status()["jobs"]}["op-2"] == "queued"
+    assert control.beats[0] == {"admission": "open", "active": 1, "unresolved": 1}
+    assert {"admission": "paused", "active": 1, "unresolved": 1} in control.beats
+    assert control.beats[-2] == {"admission": "paused", "active": 0, "unresolved": 1}
+    assert control.beats[-1] == {"admission": "stopping", "active": 0, "unresolved": 1}
+    assert summary["stopped"] is True and summary["heartbeat"] == {"state": "ok", "error_type": None}
+
+
+def test_an_unreadable_control_closes_admission_and_an_unwritable_heartbeat_is_not_invented(tmp_path):
+    f = fleet(tmp_path)
+    f.enqueue("a", manifest("op-1", ["docs/x.md"]), GOAL, [])
+    control = RecordingControl()
+    control.unreadable = control.unwritable = True
+    launcher = FakeLauncher({})
+    summary = FleetRunner(f, launcher, interval=0, control=control).run(once=True)
+    assert launcher.launched == [] and summary["admitted"] == [] and control.beats == []
+    assert summary["control"] == {"state": "unavailable", "error_type": "OSError"}
+    assert summary["heartbeat"] == {"state": "unavailable", "error_type": "OSError"}
+    # Without a control the runner is exactly the previous one: no heartbeat, no control state.
+    plain = FleetRunner(f, FakeLauncher({"op-1": {"status": "accepted", "reason_code": "lead_accepted",
+                                                  "exit_code": 0}}), interval=0).run(once=True)
+    assert plain["admitted"] == ["op-1"] and "heartbeat" not in plain and "control" not in plain
+
+
+# ---- shared execution units (SPEC two-strike ownership design) -----------------------------------
+UNIT_A, UNIT_B, UNIT_C = "1" * 64, "2" * 64, "3" * 64
+
+
+def cleanup(unit, token, **overrides):
+    """The shape of a guardian cleanup receipt (LABELLED: written here, not by a guardian)."""
+    return {"kind": "cleanup", "launch": unit, "token": token, "confirmed": True, "exit_code": 0,
+            "timed_out": False, "parent": {"confirmed": True}, "tree": {"confirmed": True}, **overrides}
+
+
+def test_worker_jobs_and_execution_units_share_one_capacity_in_either_order(tmp_path):
+    f = fleet(tmp_path, max_parallel=1)
+    f.enqueue("a", manifest("op-1", ["docs/a.md"]), GOAL, [])
+    # Unit first: the queued worker waits with the persisted `capacity` reason.
+    held = f.reserve_unit(UNIT_A, "conductor", "b", "intent-1")
+    assert held["cached"] is False and f.held_units() == [UNIT_A]
+    decision = f.admit_one()
+    assert decision["job"] is None and decision["blocked"] == {"op-1": "capacity"}
+    # Replaying the same unit id (a lost response) is the same reservation, never a second slot.
+    assert f.reserve_unit(UNIT_A, "conductor", "b", "intent-1") == {**held, "cached": True}
+    with pytest.raises(FleetRefused, match="unit_conflict"):
+        f.reserve_unit(UNIT_A, "conductor", "b", "intent-2")
+    f.settle_unit(UNIT_A, held["token"], cleanup(UNIT_A, held["token"]))
+    job = f.admit_one()["job"]
+    assert job["id"] == "op-1"
+    # Worker first: the dispatching job fills the fleet and no unit is reserved.
+    with pytest.raises(FleetRefused, match="capacity"):
+        f.reserve_unit(UNIT_B, "conductor", "b", "intent-2")
+    assert f.held_units() == []
+    f.finalize(job["id"], job["owner_token"], {"status": "unknown", "reason_code": "outcome_uncertain"})
+    with pytest.raises(FleetRefused, match="capacity"):
+        f.reserve_unit(UNIT_B, "conductor", "b", "intent-2")  # an unknown job keeps its slot too
+    other = fleet(tmp_path / "paused", max_parallel=2)
+    other.pause()
+    with pytest.raises(FleetRefused, match="paused"):
+        other.reserve_unit(UNIT_C, "conductor", "a", "intent-3")
+
+
+def test_only_an_exact_parent_and_tree_proof_releases_a_unit_exactly_once(tmp_path):
+    f = fleet(tmp_path)
+    token = f.reserve_unit(UNIT_A, "conductor", "a", "intent-1")["token"]
+    refused = [(cleanup(UNIT_A, token, tree={"confirmed": False}), "proof_unconfirmed"),  # parent exited only
+               (cleanup(UNIT_A, token, parent={"confirmed": False}), "proof_unconfirmed"),
+               (cleanup(UNIT_A, token, confirmed=False), "proof_unconfirmed"),
+               (cleanup(UNIT_B, token), "proof_identity_mismatch"),
+               (cleanup(UNIT_A, "other"), "proof_identity_mismatch"),
+               ({"kind": "fenced", "launch": UNIT_A}, "proof_invalid"),
+               ({"kind": "exit", "launch": UNIT_A}, "proof_invalid"), (None, "proof_invalid")]
+    for proof, reason in refused:
+        with pytest.raises(FleetRefused, match=reason):
+            f.settle_unit(UNIT_A, token, proof)
+    with pytest.raises(FleetRefused, match="owner_mismatch"):
+        f.settle_unit(UNIT_A, "stale-token", cleanup(UNIT_A, token))
+    assert f.held_units() == [UNIT_A], "no refused proof released anything"
+
+    def failing_commit(tx, unit):  # LABELLED fault: the settlement transaction fails before its commit
+        raise ConnectionError("commit failed (injected)")
+    with pytest.raises(ConnectionError):
+        f.settle_unit(UNIT_A, token, cleanup(UNIT_A, token), within=failing_commit)
+    assert f.held_units() == [UNIT_A], "a failed commit keeps the unit held"
+    writes = []
+    first = f.settle_unit(UNIT_A, token, cleanup(UNIT_A, token), within=lambda tx, unit: writes.append(unit["id"]))
+    again = f.settle_unit(UNIT_A, token, cleanup(UNIT_A, token), within=lambda tx, unit: writes.append(unit["id"]))
+    assert first["cached"] is False and again["cached"] is True and writes == [UNIT_A], "settled exactly once"
+    assert first["unit"]["state"] == "released" and "token" not in first["unit"]
+    with pytest.raises(FleetRefused, match="settlement_conflict"):
+        f.settle_unit(UNIT_A, token, cleanup(UNIT_A, token, exit_code=1))
+    fenced = f.reserve_unit(UNIT_B, "conductor", "a", "intent-2")["token"]
+    released = f.settle_unit(UNIT_B, fenced, {"kind": "fenced", "launch": UNIT_B, "claim": "fenced"})
+    assert released["unit"]["settlement"]["kind"] == "fenced" and f.held_units() == []
+
+
+def test_simultaneous_controllers_never_start_more_units_than_the_shared_capacity(tmp_path):
+    """Real threads, each its own Fleet object over ONE store: the store's transaction is the
+    serialization boundary (MemoryStore's lock here; PostgreSQL's control advisory lock in
+    production, not exercised in this image)."""
+    import threading
+
+    f = fleet(tmp_path, max_parallel=2)
+    for op, lane in (("op-1", "a"), ("op-2", "b")):
+        f.enqueue(lane, manifest(op, ["docs/" + op + ".md"]), GOAL, [])
+    barrier, outcomes = threading.Barrier(6), []
+
+    def conductor(index):
+        barrier.wait()
+        try:
+            Fleet(f.store).reserve_unit(str(index) * 64, "conductor", "a", "intent-%d" % index)
+            outcomes.append("unit")
+        except FleetRefused as exc:
+            outcomes.append(exc.reason_code)
+
+    def worker():
+        barrier.wait()
+        outcomes.append("job" if Fleet(f.store).admit_one()["job"] is not None else "none")
+    threads = [threading.Thread(target=conductor, args=(i,)) for i in range(4, 8)]
+    threads += [threading.Thread(target=worker) for _ in range(2)]
+    for thread in threads:
+        thread.start()
+    for thread in threads:
+        thread.join(timeout=60)
+    started = outcomes.count("unit") + outcomes.count("job")
+    with f.store.transaction() as tx:
+        reserving = [row for row in tx.scan("fleet_jobs") if row["status"] == "dispatching"]
+    assert started == 2 == len(reserving) + len(f.held_units()), "zero excess start"
+    assert len(outcomes) == 6 and set(outcomes) - {"unit", "job"} <= {"capacity", "none"}
+
+
+def test_held_units_keep_the_fleet_from_idle_only_operations(tmp_path):
+    f = fleet(tmp_path)
+    f.reserve_unit(UNIT_A, "conductor", "a", "intent-1")
+    with pytest.raises(FleetRefused, match="fleet_not_idle"):
+        f.authorize_budget(5, 9, 8)
+    assert [unit["id"] for unit in f.units()] == [UNIT_A] and "unknown cleanup" in f.units()[0]["next_action"]
+
+
+# ----- stop and rollback integration correction (SPEC 2026-09-23) ----------------------------------------
+FENCED_A = {"kind": "fenced", "launch": UNIT_A, "claim": "fenced"}  # labelled fixture fence proof
+
+
+def test_the_activation_gate_commits_the_pause_then_reads_debt_and_blocks_a_reservation_in_the_gap(
+        tmp_path):
+    f = fleet(tmp_path)
+    f.enqueue("a", manifest("op-1", ["docs/x.md"]), GOAL, [])
+    admitted = f.admit_one()["job"]
+    token = f.reserve_unit(UNIT_A, "conductor", "b", "intent-1")["token"]
+    held = f.activation_gate("managed-fleet", "d" * 64)
+    assert held == {"paused": True, "hold": True, "reserving": ["op-1"], "units_held": [UNIT_A], "settled": False}
+    # The durable pause is already committed: nothing new is reserved or admitted in the gap.
+    with pytest.raises(FleetRefused, match="paused"):
+        f.reserve_unit(UNIT_B, "conductor", "b", "intent-2")
+    f.enqueue("b", manifest("op-2", ["other/y.md"]), GOAL, [])
+    assert f.admit_one()["job"] is None
+    f.finalize("op-1", admitted["owner_token"], {"status": "accepted", "reason_code": None, "exit_code": 0})
+    assert f.activation_gate("managed-fleet", "d" * 64)["settled"] is False, "the held unit is still debt"
+    f.settle_unit(UNIT_A, token, FENCED_A)
+    settled = f.activation_gate("managed-fleet", "d" * 64)
+    assert settled["settled"] is True and settled["paused"] is True and f.status()["paused"] is True
+
+
+def test_an_activation_hold_is_released_only_by_its_own_descriptor_and_an_owner_pause_is_never_taken_over(
+        tmp_path):
+    f = fleet(tmp_path)
+    f.activation_gate("managed-fleet", "d" * 64)
+    assert f.release_activation_hold("e" * 64) == {"released": False} and f.status()["paused"] is True
+    assert f.release_activation_hold("d" * 64) == {"released": True} and f.status()["paused"] is False
+    assert f.release_activation_hold("d" * 64) == {"released": False}, "released once"
+    f.pause()  # an owner pause
+    assert f.activation_gate("managed-fleet", "d" * 64)["hold"] is False
+    assert f.release_activation_hold("d" * 64) == {"released": False} and f.status()["paused"] is True
+    # The owner takes a held pause over: after an owner resume or pause no hold survives.
+    f.resume()
+    f.activation_gate("managed-fleet", "d" * 64)
+    f.pause()
+    assert f.release_activation_hold("d" * 64) == {"released": False} and f.status()["paused"] is True
+
+
+class FaultTransaction:
+    """A real MemoryStore transaction whose scan or write of an armed bucket raises (labelled fault)."""
+
+    def __init__(self, store, tx):
+        self.store, self.tx = store, tx
+
+    def scan(self, bucket):
+        if bucket in self.store.scan_faults:
+            self.store.scan_faults.discard(bucket)
+            raise ConnectionError("labelled injected failed debt read: " + bucket)
+        return self.tx.scan(bucket)
+
+    def put(self, bucket, key, body):
+        if bucket in self.store.put_faults:
+            self.store.put_faults.discard(bucket)
+            raise ConnectionError("labelled injected failed write: " + bucket)
+        return self.tx.put(bucket, key, body)
+
+    def __getattr__(self, name):
+        return getattr(self.tx, name)
+
+
+class FaultStore(MemoryStore):
+    """LABELLED fault injection over the REAL MemoryStore and its actual rollback: an exception
+    inside a transaction discards that whole draft. Each armed fault fires once: `scan_faults` on the
+    next scan of a bucket, `put_faults` on the next write to one, `lost_acks` raises after a commit
+    that DID happen, and `before` runs its next hook as the next transaction opens (a concurrent
+    owner acting between two transactions of the caller)."""
+
+    def __init__(self):
+        super().__init__()
+        self.scan_faults, self.put_faults, self.lost_acks, self.before = set(), set(), 0, []
+
+    @contextmanager
+    def transaction(self):
+        hook = self.before.pop(0) if self.before else None
+        if hook is not None:
+            hook()
+        with super().transaction() as tx:
+            yield FaultTransaction(self, tx)
+        if self.lost_acks:
+            self.lost_acks -= 1
+            raise ConnectionError("labelled injected lost commit acknowledgement")
+
+
+def faulty_fleet(tmp_path):
+    f = Fleet(FaultStore())
+    f.register(config(tmp_path))
+    return f
+
+
+def control_row(f):
+    with f.store.transaction() as tx:
+        return tx.get("fleet_control", "admission")
+
+
+def assert_admission_closed(store):
+    """Another Fleet owner over the same store can neither admit a worker nor reserve a conductor."""
+    other = Fleet(store)
+    other.enqueue("b", manifest("op-gap", ["gap/y.md"]), GOAL, [])
+    admitted = other.admit_one()
+    assert admitted["job"] is None, admitted
+    with pytest.raises(FleetRefused, match="paused"):
+        other.reserve_unit(UNIT_B, "conductor", "b", "intent-gap")
+
+
+@pytest.mark.parametrize("bucket", ["fleet_jobs", "fleet_units"])
+def test_a_first_gate_whose_debt_read_fails_after_the_pause_commit_keeps_the_pause(tmp_path, bucket):
+    f = faulty_fleet(tmp_path)
+    assert control_row(f)["paused"] is False, "admission is initially open"
+    f.store.scan_faults.add(bucket)  # LABELLED injected failure of the FIRST gate's debt read
+    gate = f.activation_gate("managed-fleet", "d" * 64)
+    assert gate == {"paused": True, "hold": True, "reserving": None, "units_held": None, "settled": False,
+                    "reason_code": "debt_unknown", "error_type": "ConnectionError"}
+    row = control_row(f)
+    assert row["paused"] is True and row["activation_hold"]["descriptor_sha256"] == "d" * 64
+    assert_admission_closed(f.store)
+    # Recovery: the same hold is reconciled, the read succeeds, and only that descriptor releases it.
+    again = f.activation_gate("managed-fleet", "d" * 64)
+    assert again == {"paused": True, "hold": True, "reserving": [], "units_held": [], "settled": True}
+    assert f.release_activation_hold("d" * 64) == {"released": True}
+    assert f.admit_one()["job"]["id"] == "op-gap"
+
+
+def test_a_gate_over_an_owner_pause_whose_debt_read_fails_takes_no_hold(tmp_path):
+    f = faulty_fleet(tmp_path)
+    f.pause()
+    f.store.scan_faults.add("fleet_units")  # LABELLED injected failed debt read
+    gate = f.activation_gate("managed-fleet", "d" * 64)
+    assert (gate["paused"], gate["hold"], gate["settled"], gate["reason_code"]) == (True, False, False,
+                                                                                   "debt_unknown")
+    row = control_row(f)
+    assert row["paused"] is True and "activation_hold" not in row
+    assert f.release_activation_hold("d" * 64) == {"released": False}
+
+
+def test_a_failed_pause_write_claims_no_pause_and_a_lost_acknowledgement_reconciles_the_same_hold(tmp_path):
+    f = faulty_fleet(tmp_path)
+    f.store.put_faults.add("fleet_control")  # LABELLED injected failed pause write
+    with pytest.raises(ConnectionError):
+        f.activation_gate("managed-fleet", "d" * 64)
+    row = control_row(f)
+    assert row["paused"] is False and "activation_hold" not in row, "the rolled-back pause is not claimed"
+    f.store.lost_acks = 1  # LABELLED injected lost acknowledgement of a pause commit that happened
+    with pytest.raises(ConnectionError):
+        f.activation_gate("managed-fleet", "d" * 64)
+    assert control_row(f)["activation_hold"]["descriptor_sha256"] == "d" * 64
+    assert_admission_closed(f.store)
+    again = f.activation_gate("managed-fleet", "d" * 64)
+    assert (again["hold"], again["settled"]) == (True, True)
+    assert f.release_activation_hold("d" * 64) == {"released": True}
+    assert f.release_activation_hold("d" * 64) == {"released": False}, "one hold, released once"
+
+
+@pytest.mark.parametrize("change,paused", [("resume", False), ("pause", True), ("other_hold", True)])
+def test_a_pause_changed_between_commit_and_read_is_never_reported_settled(tmp_path, change, paused):
+    f = faulty_fleet(tmp_path)
+    owner = Fleet(f.store)
+    act = {"resume": owner.resume, "pause": owner.pause,
+           "other_hold": lambda: owner.activation_gate("managed-fleet", "e" * 64)}[change]
+    f.store.before = [None, act]  # LABELLED concurrent control change between the gate's two transactions
+    gate = f.activation_gate("managed-fleet", "d" * 64)
+    assert gate == {"paused": paused, "hold": False, "reserving": None, "units_held": None, "settled": False,
+                    "reason_code": "control_changed"}
+    row = control_row(f)
+    assert row["paused"] is paused
+    # The owner's decision stands: nothing here re-pauses, resumes or releases it.
+    assert f.release_activation_hold("d" * 64) == {"released": False}
+
+
+class ActivatedControl(RecordingControl):
+    """Labelled fixture control of a managed runtime running descriptor `d...d`."""
+
+    @staticmethod
+    def activation():
+        return "d" * 64
+
+
+def test_a_runner_releases_only_its_own_activation_hold_once(tmp_path):
+    f = fleet(tmp_path)
+    f.activation_gate("managed-fleet", "d" * 64)
+    summary = FleetRunner(f, FakeLauncher({}), sleep=lambda s: None, control=ActivatedControl()).run(once=True)
+    assert summary["activation_hold"] == {"state": "released", "error_type": None} and f.status()["paused"] is False
+    other = fleet(tmp_path)
+    other.activation_gate("managed-fleet", "e" * 64)  # another descriptor's hold: a predecessor's
+    summary = FleetRunner(other, FakeLauncher({}), sleep=lambda s: None, control=ActivatedControl()).run(once=True)
+    assert summary["activation_hold"]["state"] == "none" and other.status()["paused"] is True
+
+
+class StoppableContinuation:
+    """Labelled fixture continuation: records every stop request; `fail` injects a request fault."""
+
+    def __init__(self, fail=None):
+        self.requests, self.fail = [], fail
+
+    def __call__(self):
+        return {"outcome": "idle"}
+
+    def drain(self):
+        return {"actions": [], "skipped": []}
+
+    def owned(self):
+        return []
+
+    def unresolved(self):
+        return []
+
+    def request_stop(self):
+        self.requests.append(True)
+        if self.fail == "raises":
+            raise OSError("labelled injected stop request failure")
+        if self.fail == "unwritten":
+            return {"asked": [], "failed": [{"launch": UNIT_A, "error_type": "PermissionError"}]}
+        return {"asked": [UNIT_A] if len(self.requests) == 1 else [], "failed": []}
+
+
+class Unreachable:
+    """Labelled fault: any store access raises."""
+
+    def transaction(self):
+        raise ConnectionError("labelled injected unreachable store")
+
+
+@pytest.mark.parametrize("fail", [None, "raises", "unwritten"])
+def test_stop_forwards_to_the_continuation_before_any_store_access_and_reports_failure(tmp_path, fail):
+    continuation = StoppableContinuation(fail)
+    runner = FleetRunner(Fleet(Unreachable()), FakeLauncher({}), sleep=lambda s: None, continuation=continuation)
+    runner.stop()
+    runner.stop()  # repeated: forwarded again, and nothing already asked is asked twice
+    assert runner.stopping is True and len(continuation.requests) == 2
+    expected = {None: {"state": "requested", "asked": [UNIT_A], "failed": [], "error_type": None},
+                "raises": {"state": "failed", "asked": [], "failed": [], "error_type": "OSError"},
+                "unwritten": {"state": "failed", "asked": [],
+                              "failed": [{"launch": UNIT_A, "error_type": "PermissionError"}],
+                              "error_type": None}}[fail]
+    assert runner.stop_request == expected
+    stopped = FleetRunner(fleet(tmp_path), FakeLauncher({}), sleep=lambda s: None,
+                          continuation=StoppableContinuation(fail))
+    stopped.stop()
+    assert stopped.run(once=True)["stop_request"]["state"] == expected["state"]
+
+
+def test_a_continuation_without_request_stop_keeps_the_previous_summary(tmp_path):
+    runner = FleetRunner(fleet(tmp_path), FakeLauncher({}), sleep=lambda s: None)
+    runner.stop()
+    assert "stop_request" not in runner.run(once=True) and runner.stop_request is None

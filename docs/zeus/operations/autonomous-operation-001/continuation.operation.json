@@ -1,0 +1,66 @@
+{
+  "schema": "urn:zeus:operation:1",
+  "id": "autonomous-operation-001-continuation",
+  "base_revision": "60f7958636449ddeeec824a9ab4b0696e583fa45",
+  "goal": {
+    "path": "docs/zeus/operations/autonomous-operation-001/SPEC.md",
+    "sha256": "d18bfd8538f7ed444f24caf74181252af0cf68778a021409e8616454ea61ca08",
+    "criterion": "Complete the existing autonomous operating loop with independently verified session, continuation and actual runtime ownership",
+    "rationale": "Finish the existing whole-goal acceptance matrix without manual user relay or weaker verification."
+  },
+  "budget": {
+    "mode": "subscription",
+    "total": 192,
+    "per_host": 192
+  },
+  "claude": {
+    "model": "claude-opus-5-5",
+    "timeout_seconds": 3600,
+    "max_budget_usd": 2
+  },
+  "plan": {
+    "objective": "Implement the Durable conductor continuation section of Accepted primitive integration and final connection batch plus existing Conductor continuation SSOT routing table. Complete production adapter/CLI opt-in wiring, session execution and successor workspace lifecycle, durable effect reconciliation, existing Codex design/research/release connections and monitoring in one coherent batch. Use accepted APIs already in base. Preserve finite Operation defaults and all authority. No placeholder-only ports, no production enabling/model calls. Run scoped affected checks and Ruff; final tests only completed replayable commands, failed attempts in summary. Whole implementation independently reviewed, actual owner qualification follows.",
+    "allowed_paths": [
+      "src/codex_harness/domain/continuation.py",
+      "src/codex_harness/application/continuation.py",
+      "src/codex_harness/adapters/continuation.py",
+      "src/codex_harness/adapters/continuation_cli.py",
+      "src/codex_harness/adapters/executor.py",
+      "src/codex_harness/adapters/git.py",
+      "src/codex_harness/adapters/operation_cli.py",
+      "src/codex_harness/application/operation.py",
+      "src/codex_harness/application/operation_finalization.py",
+      "src/codex_harness/application/local_cycle.py",
+      "src/codex_harness/application/fleet.py",
+      "src/codex_harness/adapters/fleet_cli.py",
+      "src/codex_harness/application/worker_sessions.py",
+      "src/codex_harness/adapters/worker_sessions.py",
+      "src/codex_harness/application/service.py",
+      "src/codex_harness/bootstrap.py",
+      "src/codex_harness/cli.py",
+      "src/codex_harness/domain/observation.py",
+      "src/codex_harness/adapters/monitoring.py",
+      "docs/contracts.md",
+      "docs/zeus/operations/autonomous-operation-001/CONTINUATION.md",
+      "tests/test_continuation.py",
+      "tests/test_continuation_cli.py",
+      "tests/test_git.py",
+      "tests/test_worker_sessions.py",
+      "tests/test_executor.py",
+      "tests/test_executor_research.py",
+      "tests/test_local_cycle.py",
+      "tests/test_operation.py",
+      "tests/test_operation_finalization.py",
+      "tests/test_fleet.py",
+      "tests/test_fleet_cli.py",
+      "tests/test_fleet_backlog.py",
+      "tests/test_monitoring.py",
+      "tests/test_monitoring_observations.py"
+    ],
+    "acceptance_criteria": [
+      "Actual opt-in composition drives existing owners through the full specified routing table without bypassing authority.",
+      "Session workspace and independent review identity survive correction, restart and duplicate events.",
+      "Matrix including two-strike, unknown effects, rollback, fair selection and zero idle calls is tested and observable."
+    ]
+  }
+}

@@ -1,4 +1,96 @@
-# Operating status, 2026-09-22
+# Operating status
+
+## Evidence recovery checkpoint: 2026-09-23 14:04 KST
+
+PR182 merged at 04:27:48Z (ce81f885); no live deployment was attempted. Session correction 973a903f
+passed its lane's independent review; real session/container owner qualification remains pending.
+Managed-runtime candidate 344271b9 finished implementation but stopped at evidence inspection:
+seven checked commands, one whole-suite replay timed out at 300s. Its output also had setup errors.
+Owner isolated replay of the first affected test file established missing ssh-keygen in the pinned
+verifier image. It does not establish all full-suite errors or a managed-runtime defect.
+
+Same SPEC now fixes the recovery scope: preserve failed/uncompleted full-suite history; submit
+completed, originally required focused checks; independently review the inherited runtime as a
+whole. Plan 98bbae773d203b34082eeb9e5586eb8f61e475a2 was registered and Fleet actually dispatched
+autonomous-operation-001-host-runtime-evidence at 05:03:52Z; task is running. No gate, timeout,
+production image or old inspection was weakened/rewritten. This remains owner-directed recovery,
+not proof that autonomous diagnosis/continuation has been delivered.
+
+## Continuation checkpoint: 2026-09-23 13:17 KST
+
+Session correction remains an actual running harness-lane job. The interface lane additionally
+admitted autonomous-operation-001-host-runtime at 04:12:46Z from owner plan
+6ee10bc4c99e5ade0498e39a48f899eb286abc56. It implements the missing managed immutable runtime /
+actual Fleet entry / pause-drain-heartbeat / predecessor consumption composition specified in the
+same SPEC. Paths are disjoint from session correction; neither job may change production services.
+
+PR182 owner review comment 5788869558 records no additional established blocker in the fixed
+inherited instance-ownership scope, conditional on exact-head CI. Linux 3.12/3.14 checks passed;
+Windows and integration were still running. An owner-authored bounded continuation is actually
+waiting for run 35816837876 on head aff7749882 and unchanged base c9e7ed19. It requires all six
+named checks plus workflow success, then marks ready and merges with the exact head guard. It
+does not deploy or invoke models. Failure/identity changes stop and are recorded; there is no CI
+rerun loop. This bootstrap owner action is not the still-pending autonomous conductor.
+Evidence: artifacts/autonomous-operation-001/host-pr-continuation.json(l), finish-host-pr.py.
+
+SPEC now also records the existing Council/Operation/Executor/Release continuation routing and
+the requirement to preserve the original managed workspace for native correction continuity.
+Implementation of that controller follows acceptance of the session primitive; the whole-loop
+recovery, rollback and two-useful-item gates remain open.
+
+## Latest execution checkpoint
+
+- Native correction aff7749882 passed the independent review of its two-file delta. Owner native
+  Windows four-file rerun completed: 143 passed, 1 integration skip (native-fixed.log). The
+  preceding candidate's isolated-PG check passed separately; no later runtime change in this delta.
+- Draft PR182: https://github.com/trevi00/zeus/pull/182, head aff7749882. CI and actual deployment
+  qualification are pending. Draft publishing is not merge, deployment or whole-feature acceptance.
+- Session candidate ecb0e6d6 stopped at evidence gate: six checks replayed, five timeout-prefixed
+  commands were not authorized for replay. No mismatch was reported by that gate. Owner Windows
+  ten-file replay: 226 passed, 29 skipped, four failed. See session-owner-tests.log.
+- Owner reproduced absent-promotion closure and duplicate-owner model-check bypass in temporary
+  MemoryStore only, then consolidated them with required observability/native evidence completion
+  in the SAME SPEC. Source implementation is preserved, not approved or deployed.
+- Plan d4e8cc2c83ce15786354c51e8375affcd43b3f6e is registered. Actual Fleet job
+  autonomous-operation-001-session-correction is running on the harness lane using Opus 5.5.
+  This is an owner-designed correction, not proof of the future autonomous diagnosis controller.
+
+Next: accept and qualify the session primitive, connect bounded automatic continuation to existing
+review/research/release owners, then execute all seven whole-loop acceptance criteria. No new user
+approval is needed for this already-authorized scope. Ordinary completion claims must continue to
+distinguish actual worker activity, accepted code, live consumption and the complete autonomous loop.
+
+## Current checkpoint: 2026-09-23 13:00 KST
+
+Whole autonomous operation is NOT yet accepted. Fleet is running, and actual pinned Claude Opus
+5.5 jobs are executing on harness and interface lanes. The active image is
+sha256:ae070306fb25ccc37d41a73cd0ab0a2b5fdafcfff3914161518918c1932b79c6 (CLI 2.1.280).
+Older dated statements below describe their own checkpoint, not this current image.
+
+| Remaining outcome | Current evidence / next action |
+| --- | --- |
+| Worker context through review and correction | worker-sessions dispatched 03:27:57Z; actual native two-turn transport probe passed, Zeus lifecycle implementation/review pending |
+| Qualified operating delivery and rollback | instance fixture archive 119 passed/25 skipped; named regression passed; inherited runtime review and native-evidence job pending |
+| Automatic diagnosis, correction and release continuation | SSOT traced in SPEC; connect accepted session API to finite-operation successors and existing Releases authority |
+| Whole autonomous acceptance | two useful items, controlled recovery, rollback/restart and traceable monitor outcome remain unexecuted as one unattended chain |
+
+Plan 8ddad09d7740095dea9f5a8f2fbf47bd3065cc05 admitted native-evidence automatically at 03:52:15Z.
+Both active jobs use Claude implementation followed by independent Codex review. This owner-written
+plan is explicit owner orchestration, not evidence of autonomous correction design.
+
+Owner additionally executed candidate 779d0326's isolated PostgreSQL transaction test on Windows:
+1 passed, 0 skipped in 8.07s, using its clean candidate checkout and fixture-owned temporary schema.
+Log: artifacts/autonomous-operation-001/instance-replay/pg-candidate.log. The initial attempt from
+the integration branch worktree skipped because runtime_revision does not follow Git commondir
+for symbolic refs; pg-owner.log preserves that skip. Deploy qualification uses an exact detached
+commit or explicit owner attestation. Symbolic-worktree lookup support is a follow-up limitation,
+not evidence that a skipped case passed or a reason to disable revision matching.
+
+Native scope before the test portability correction: 141 passed, 1 skipped, 1 failed, 1 deselected.
+The deselected test self-terminates pytest on Windows; the failure conflates venv launcher and
+interpreter PID. Both are in one pinned correction. No host-delivery candidate is deployed yet.
+
+## Historical checkpoint: 2026-09-22
 
 PR 179 merged as aba7a894b69cdd72d2f2ef585efe17ccda0b5a6a.
 PR 180 merged as 980cd3017b70742f34009fae15f97e11d9697d4f after all required CI passed.
@@ -94,3 +186,37 @@ Native CLI resume probe evidence: artifacts/autonomous-operation-001/opus55/nati
 It uses a dedicated test-only CLI home; it does not prove the future Zeus allowlisted archive path.
 Raw model usage is retained. No reboot, live product/payment rollout or complete asset absorption
 is required to close this initial autonomy contract. These remain operating workload/product gates.
+# Owner qualification checkpoint, 2026-09-23
+
+Accepted session 973a903f and managed-runtime 9c327f48 are integrated at a81cfbd. Windows scoped
+integration: 226 passed, 11 skipped, 1 test-oracle failure. CRLF/raw-byte versus Git-filtered hash
+was reproduced; no corrupt runtime was observed. Ruff passed. Native qualification support and
+the durable conductor connection are dispatched through approved backlog pin 752462d, both actual
+Claude tasks observed running. No operating runtime or live worker image has been switched.
+
+Owner built image sha256:f1b6ef24d6ae27a1885442c269618c783fe2604c67eaccde375dd19f6d0525fe
+from the pinned implementation. Real Opus 5.5 transport made two calls with separate removed and
+recreated containers, the same session id, verified archive prefix continuity and successful
+nonce recall. Checkpoints were committed in dedicated PostgreSQL schema
+zeus_session_qualification_001. Both containers were removed with evidence retained. This proves
+transport/PG/archive resume, not the future continuation controller's independent review cycle.
+Receipt: artifacts/autonomous-operation-001/session-real-receipt.json (raw turns retained locally).
+
+Resumed usage delta remains explicitly unknown: cache_creation_input_tokens decreased from 2929
+to 172 while cache_read_input_tokens became 2929. No zero/delta was invented; original usage is
+preserved. Primary documentation read 2026-09-23:
+https://code.claude.com/docs/en/agent-sdk/cost-tracking distinguishes per-turn usage, per-model
+totals and cumulative cost, with differences between input modes. These actual CLI 2.1.280
+observations do not establish universal cumulative raw-usage semantics. Calibrate attribution
+against the pinned transport before claiming token efficiency; retained raw usage remains evidence.
+
+Owner also launched the REAL managed Fleet on Windows, with a dedicated empty PostgreSQL schema
+zeus_managed_qualification_001. Its startup receipt identified sealed source 752462d and actual
+module path; fresh heartbeat reported zero active/unresolved work. Repeated start reconciled the
+same instance and graceful stop succeeded. Receipt: artifacts/autonomous-operation-001/
+managed-real-receipt.json. No model call, operating-queue admission or live service mutation occurred.
+This is actual Windows managed Fleet consumption, not useful-work/live cutover/rollback evidence.
+
+Remaining: accepted native-platform correction; independently accepted connected controller;
+actual rejected-review session correction and release/canary/rollback; two useful items selected
+and completed without chat relay, including recovery/restart/fairness and monitoring evidence.

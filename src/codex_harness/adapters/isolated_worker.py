@@ -32,8 +32,10 @@ from uuid import uuid4
 from codex_harness.adapters.commands import no_console_kwargs, run_process
 from codex_harness.adapters.process_tree import ProcessTree
 from codex_harness.adapters.worker_profile import hook_receipts, load_profile, profile_digest
+from codex_harness.adapters.worker_sessions import EXPORT_DIRECTORY, RESTORE_DIRECTORY
 from codex_harness.domain.model import ContractError, canonical, digest, require
 from codex_harness.domain.policy import POLICY
+from codex_harness.domain.worker_sessions import MODE_FRESH, MODE_RESUME
 
 DRIVER_HASH = hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
 MODE = "docker"
@@ -47,7 +49,14 @@ PROTOCOL = "zeus-isolated-worker-v1"
 # entry predates delivery refuses it explicitly (`inner_refused`) instead of dropping the profile and
 # answering as if no checklist had been delivered. Answers stay on PROTOCOL either way.
 DELIVERY_PROTOCOL = "zeus-isolated-worker-v1-project-evidence"
-PROTOCOLS = (PROTOCOL, DELIVERY_PROTOCOL)
+# INV-WORKER-SESSION-001: a request that carries a task session names its own protocol for the same
+# reason: an entry that predates sessions refuses it rather than running a fresh context the host
+# would then label as resumed.
+SESSION_PROTOCOL = "zeus-isolated-worker-v1-task-session"
+SESSION_DELIVERY_PROTOCOL = "zeus-isolated-worker-v1-project-evidence-task-session"
+DELIVERY_PROTOCOLS = (DELIVERY_PROTOCOL, SESSION_DELIVERY_PROTOCOL)
+SESSION_PROTOCOLS = (SESSION_PROTOCOL, SESSION_DELIVERY_PROTOCOL)
+PROTOCOLS = (PROTOCOL, DELIVERY_PROTOCOL, SESSION_PROTOCOL, SESSION_DELIVERY_PROTOCOL)
 ENTRY_MODULE = "codex_harness.adapters.isolated_worker_entry"
 TRUSTED_PYTHON = "/opt/zeus/bin/python"
 WORKSPACE, EVIDENCE = "/workspace", "/evidence"
@@ -68,6 +77,12 @@ RESOLVED = ("removed", "refused")
 # files. It is a cadence, not a deadline or a renewal of its own: the caller's callback keeps its
 # own renewal interval and its own ownership checks.
 PREPARATION_TICK_SECONDS = 1.0
+
+
+def request_protocol(delivery: bool, session: bool) -> str:
+    """The request protocol names every optional section it carries, so an older entry refuses it."""
+    return {(False, False): PROTOCOL, (True, False): DELIVERY_PROTOCOL,
+            (False, True): SESSION_PROTOCOL, (True, True): SESSION_DELIVERY_PROTOCOL}[(delivery, session)]
 
 
 class IsolationError(ContractError):
@@ -699,12 +714,19 @@ class IsolatedClaudeRuntime:
 
     def run(self, prompt: str, cwd: str, schema: dict, timeout: int = 240, *, on_event=None, on_tick=None,
             read_only: bool = False, model: str | None = None, on_enter=None, cancel=None,
-            session_id: str | None = None) -> dict:
+            session_id: str | None = None, task_session: dict | None = None) -> dict:
         require(type(timeout) in (int, float) and 0 < timeout < float("inf"), "Execution timeout must be finite and positive")
         require(type(prompt) is str and bool(prompt), "Claude execution requires a prompt")
         require(not read_only, "The isolated worker is not assigned reviews")
         require(not self.used, "This transport object already ran; every attempt builds its own")
         require(model is None or model == self.model, "The requested model differs from the configured Claude model")
+        if task_session is not None:
+            # INV-WORKER-SESSION-001: an explicit binding only; checked before anything is created.
+            require(isinstance(task_session, dict) and task_session.get("mode") in (MODE_FRESH, MODE_RESUME)
+                    and task_session.get("session_id") == session_id and session_id is not None,
+                    "Task session must name its mode and this run's exact session id")
+            require(task_session["mode"] == MODE_FRESH or callable(task_session.get("stage")),
+                    "A resumed task session needs the owner's verified archive stage")
         self.used = True
         workspace = str(Path(cwd).resolve())
         pending = [row for root in (self.root, *self.watch) for row in unresolved_runs(root, workspace)]
@@ -757,7 +779,24 @@ class IsolatedClaudeRuntime:
                         # refusal still reaches the caller instead of being replaced here
                 raise
             git_report = init_standalone_git(staging)
-            self._advance("prepared", source={key: source[key] for key in ("revision", "files", "bytes", "manifest_sha256")})
+            session_request = None
+            if task_session is not None:
+                # The verified archive is staged into THIS run's own evidence mount before the container
+                # exists; the entry re-verifies it against the manifest named here. No other task's home
+                # or directory is ever mounted.
+                manifest = None
+                if task_session["mode"] == MODE_RESUME:
+                    try:
+                        manifest = task_session["stage"](evidence / RESTORE_DIRECTORY)
+                    except (ContractError, OSError) as exc:
+                        raise IsolationError("task_session_stage_failed",
+                                             getattr(exc, "reason", type(exc).__name__)) from exc
+                session_request = {"mode": task_session["mode"], "session_id": session_id, "manifest": manifest,
+                                   "restore": EVIDENCE + "/" + RESTORE_DIRECTORY if manifest is not None else None,
+                                   "export": EVIDENCE + "/" + EXPORT_DIRECTORY}
+            self._advance("prepared", source={key: source[key] for key in ("revision", "files", "bytes", "manifest_sha256")},
+                          **({} if session_request is None else
+                             {"task_session": {"mode": session_request["mode"], "session_id": session_id}}))
             entry = [TRUSTED_PYTHON, "-I", "-m", ENTRY_MODULE]
             environment = {"HOME": CONTAINER_HOME, "DISABLE_AUTOUPDATER": "1", "PYTHONDONTWRITEBYTECODE": "1",
                            "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1", "PYTHONIOENCODING": "utf-8",
@@ -783,12 +822,14 @@ class IsolatedClaudeRuntime:
             if self.record["state"] is None:
                 self._advance("refused", reason="before_container")
             raise
-        request = {"protocol": PROTOCOL if self.project_delivery is None else DELIVERY_PROTOCOL,
+        request = {"protocol": request_protocol(self.project_delivery is not None, session_request is not None),
                    "prompt": prompt, "schema": schema, "timeout": timeout, "model": self.model,
                    "session_id": session_id, "runtime": self.runtime, "max_budget_usd": self.max_budget_usd,
                    "settings_document": self.settings_document, "cwd": WORKSPACE, "evidence_root": EVIDENCE}
         if self.project_delivery is not None:
             request["project_delivery"] = self.project_delivery
+        if session_request is not None:
+            request["task_session"] = session_request
         started = time.monotonic()
 
         def converse():
@@ -825,6 +866,16 @@ class IsolatedClaudeRuntime:
                          "note": "host-authored checklist delivered into the container; compliance is decided by "
                                  "the isolated replay, not by this delivery"},
                      "elapsed_seconds": time.monotonic() - started}
+        if session_request is not None and inner is not None:
+            # The entry's report is a claim; the owner re-verifies every byte from the host path.
+            reported = inner.get("task_session") if isinstance(inner.get("task_session"), dict) else {}
+            inner = {**inner, "task_session": {
+                "mode": session_request["mode"], "session_id": session_id,
+                "exported": bool(reported.get("exported")) and reported.get("export") == session_request["export"]
+                and reported.get("session_id") == session_id,
+                "export": str(evidence / EXPORT_DIRECTORY),
+                "reported": {key: reported.get(key) for key in ("exported", "files", "excluded", "transcript_sha256",
+                                                                 "manifest_sha256", "error")}}}
         failure = None
         try:
             if inner is None:

@@ -387,6 +387,34 @@ def host_delivery_facts(store):
     return HostDelivery(store).status()
 
 
+def worker_session_facts(store):
+    """INV-WORKER-SESSION-001 projection (`zeus.worker-session.v1`) of every durable task session,
+    from store reads only: task and session identifiers, state, version, the running owner's
+    execution/generation/attempt, the binding as ONE digest, archive references and hashes, review
+    decision ids and outcomes, promotion/cleanup records, per-state counts and the fixed next owner
+    and next action (blocked, unresolved and cleanup-failed sessions name the operator). Never
+    transcript bytes, archive paths, prompts or the raw binding values.
+
+    This is the same read-only status `worker-session status` prints; no archive is read, nothing
+    is begun, resumed, promoted or closed, and a store failure propagates so the envelope becomes
+    `unavailable` rather than an empty list. A collected status is not a transcript continuity
+    proof, an acceptance, a promotion or evidence that any model call ran.
+    """
+    from codex_harness.application.worker_sessions import WorkerSessions
+    return WorkerSessions(store, None).status()
+
+
+def continuation_facts(store):
+    """INV-CONTINUATION-001 projection (`urn:zeus:continuation-status:1`) from store reads only:
+    registered policies (id, enabled, digest, pin), every intent's routing-table route, state,
+    cause code, next owner and next action, evidence references and predecessor/successor links,
+    per-state counts and the held families. Never a manifest, an objective, review text, a
+    transcript, a path or a credential; nothing is ticked, dispatched or admitted, and a store
+    failure propagates so the envelope becomes `unavailable` rather than an empty list."""
+    from codex_harness.application.continuation import Continuation
+    return Continuation(store).status()
+
+
 def scope_label(repository, label=None):
     """ZEUS_MONITOR_SCOPE names what is observed; the default is the repository name. It is a
     label for the page toolbar, not a status or success claim."""
@@ -422,7 +450,13 @@ def collect(service, artifacts, repository, redis_url, containers=None, scope=No
             'fleet_backlog': lambda: fleet_backlog_facts(service.store),
             # Additive host-delivery envelope (INV-HOST-DELIVERY-001): same read-only store, fails
             # independently, and never ticks, publishes, merges or switches what it observes.
-            'host_delivery': lambda: host_delivery_facts(service.store)}
+            'host_delivery': lambda: host_delivery_facts(service.store),
+            # Additive worker-session envelope (INV-WORKER-SESSION-001): same read-only store, fails
+            # independently, and never reads an archive, resumes, promotes or closes what it observes.
+            'worker_sessions': lambda: worker_session_facts(service.store),
+            # Additive continuation envelope (INV-CONTINUATION-001): same read-only store, fails
+            # independently, and never ticks, dispatches or admits what it observes.
+            'continuation': lambda: continuation_facts(service.store)}
     if runtime is not None:
         jobs['observations'] = lambda: observation_facts(service.store, runtime)
     with ThreadPoolExecutor(max_workers=4) as pool:

@@ -13,6 +13,7 @@ from codex_harness.application.dge import DgeRefused, design_gate
 from codex_harness.application.evidence_inspection import EvidenceInspections
 from codex_harness.application.local_cycle import LocalCycle, flush_outbox
 from codex_harness.application.operation_finalization import retire
+from codex_harness.domain.continuation import validate_binding
 from codex_harness.domain.dge import expired
 from codex_harness.domain.model import ContractError, digest, envelope, require, utcnow
 from codex_harness.domain.operation import (
@@ -28,6 +29,7 @@ from codex_harness.domain.operation import (
 from codex_harness.domain.usage_policy import SUBSCRIPTION, accounting_mode, validate_budget
 
 BUCKET = "operations"
+CONTINUATION_BINDINGS = "continuation_bindings"
 RECEIPT_SCHEMA = "urn:zeus:operation-receipt:1"
 HANDOFF_SCHEMA = "urn:zeus:operation-evidence-handoff:1"
 HANDOFF_REASON = "evidence_gate_refused"
@@ -164,8 +166,18 @@ class Operation:
         """Atomically own the id, record the binding and queue the assignment in the outbox."""
         operation_id, correlation, cycle = manifest["id"], correlation_id(manifest), cycle_id(manifest)
         binding = {"manifest_sha256": manifest_digest(manifest), "identity": identity, "goal": goal}
-        message = self._assignment(manifest, deadline)
         with self.service.store.transaction() as tx:
+            # INV-CONTINUATION-001: the lane's own trusted continuation binding for this id, if the
+            # opt-in controller wrote one before admission. Absent: the exact legacy row and message.
+            continuation = tx.get(CONTINUATION_BINDINGS, operation_id)
+        if continuation is not None:
+            continuation = validate_binding(continuation)
+            require(continuation["operation_id"] == operation_id, "Continuation binding names another operation")
+            binding["continuation"] = continuation
+        message = self._assignment(manifest, deadline, continuation)
+        with self.service.store.transaction() as tx:
+            if tx.get(CONTINUATION_BINDINGS, operation_id) != continuation:
+                raise OperationRefused("continuation_binding_changed")
             old = tx.get(BUCKET, operation_id)
             if old is not None:
                 if {k: old.get(k) for k in binding} != binding:
@@ -201,10 +213,13 @@ class Operation:
         return {"row": row, "cached": False}
 
     @staticmethod
-    def _assignment(manifest, deadline: str | None = None) -> dict:
+    def _assignment(manifest, deadline: str | None = None, continuation: dict | None = None) -> dict:
         details = {"plan": {k: manifest["plan"][k] for k in ("objective", "acceptance_criteria", "allowed_paths")},
                    "operation": {"id": manifest["id"], "manifest_sha256": manifest_digest(manifest),
                                  "goal": dict(manifest["goal"]), "base_revision": manifest["base_revision"]}}
+        if continuation is not None:
+            # Top-level and owner-written only; the executor re-reads the same lane row before use.
+            details["continuation"] = dict(continuation)
         if "design" in manifest:
             # The worker and reviewer can trace the plan authority; the reference is not knowledge.
             details["operation"]["design"] = dict(manifest["design"])

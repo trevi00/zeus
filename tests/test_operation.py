@@ -128,7 +128,9 @@ class FakeExecutor:
                 # incomplete, so no finding can be attributed to this run at all.
                 task.update(generation=None, attempt=None)
             if self.worker == "succeeded":
-                candidate = {"revision": "c" * 40, "base": BASE, "tree": "t" * 40, "diff_hash": "d" * 64,
+                # A well-formed 40-hex tree, so the real session owner can freeze this candidate
+                # (INV-WORKER-SESSION-001 validates revision, tree and base alike).
+                candidate = {"revision": "c" * 40, "base": BASE, "tree": "7" * 40, "diff_hash": "d" * 64,
                              "path": "D:/secret/" + CANARY}
                 inspection_id = "insp-" + task["id"]
                 binding = {"task_id": task["id"], "generation": 1, "attempt": 1, "source_revision": candidate["revision"]}
