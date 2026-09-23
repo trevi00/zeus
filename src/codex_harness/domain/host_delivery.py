@@ -77,6 +77,9 @@ INSTANCE_FOREIGN = "foreign"
 INSTANCE_UNKNOWN = "unknown"
 # The three states a start may act on. Everything else refuses BEFORE the stop and the cleanup.
 REPLACEABLE_INSTANCES = frozenset({INSTANCE_AUTHORIZED, INSTANCE_INTERRUPTED, INSTANCE_ABSENT})
+# A managed start refused by its activation gate (Fleet debt held, unreadable or without an
+# authority): nothing was launched and durable admission stays paused. A restoration waits on it.
+ACTIVATION_GATE_CODES = frozenset({"fleet_debt_held", "fleet_debt_unknown", "fleet_authority_unconfigured"})
 
 # The incumbent fixed canary check ids. A plan selects one of these by id; the check itself lives in
 # the adapter and exercises the ACTUAL service contract of the target it was written for.
@@ -864,7 +867,7 @@ def target_progress(row: dict) -> dict:
             "history": len(row.get("history") or [])}
 
 
-__all__ = ["ACTIVE", "AUTHORITY", "AWAITING_CI", "AWAITING_CONSUMPTION", "AWAITING_REVIEW",
+__all__ = ["ACTIVATION_GATE_CODES", "ACTIVE", "AUTHORITY", "AWAITING_CI", "AWAITING_CONSUMPTION", "AWAITING_REVIEW",
            "BLOCKED", "CANARY_CHECKS", "CANARY_COLLECT", "CANARY_FLEET", "CANARY_STARTUP",
            "CI_FAILED", "CI_HEAD_CHANGED", "CI_PASSED", "CI_PENDING", "DESCRIPTOR_FIELDS",
            "DESCRIPTOR_SCHEMA", "EVENT_BLOCKED", "EVENT_CHECK", "EVENT_ROLLBACK", "EVENT_STAGE",

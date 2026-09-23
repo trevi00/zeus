@@ -582,6 +582,9 @@ class HostTargetBase:
                         "launch": self.launch_record(target)}
             if authority["state"] not in REPLACEABLE_INSTANCES:
                 raise DeliveryRefused(authority["reason_code"], "target_id")
+            # A target kind whose instances hold shared execution debt refuses here, BEFORE the
+            # stop, so a live instance that still owns that debt keeps running to settle it.
+            self._activation_gate(target, descriptor)
             stopped = self.stop(target)
             if not stopped["stopped"]:
                 # A target kind that knows WHY it could not stop (a managed instance with active or
@@ -589,8 +592,14 @@ class HostTargetBase:
                 raise DeliveryRefused(stopped.get("reason_code") or "previous_instance_unconfirmed",
                                       "target_id")
             self._still_owned(authorize, "service_stopped")
+            # And again after the stop, immediately before anything is retired or launched.
+            self._activation_gate(target, descriptor)
             self._retire(target)
             return self._launch(target, descriptor, context)
+
+    def _activation_gate(self, target: dict, descriptor: dict) -> None:
+        """What must be settled before an instance of this kind may be activated; nothing by default."""
+        return None
 
     def _prepare(self, target: dict, descriptor: dict):
         """Everything that must hold BEFORE anything is stopped; it mutates nothing."""
@@ -790,16 +799,18 @@ class ScheduledTaskHostTarget(HostTargetBase):
         return {"started": True, "service": target["service"], "launch": record}
 
 
-def host_ports(**kwargs) -> dict:
+def host_ports(*, fleet=None, **kwargs) -> dict:
     """The host adapters by target kind, as the coordinator expects them.
 
     The managed Fleet target is only ever USED for a target the owner registered with that kind;
-    registering none keeps every existing target exactly as it was.
+    registering none keeps every existing target exactly as it was. `fleet` is its activation-gate
+    authority (the host store's Fleet); without one a managed start refuses rather than assuming
+    that no execution debt exists.
     """
     from codex_harness.adapters.managed_runtime import ManagedFleetTarget
 
     return {KIND_PROCESS: ProcessHostTarget(**kwargs), KIND_SCHEDULED_TASK: ScheduledTaskHostTarget(),
-            KIND_MANAGED: ManagedFleetTarget()}
+            KIND_MANAGED: ManagedFleetTarget(fleet=fleet)}
 
 
 # ----- the incumbent fixed canary checks --------------------------------------------------------
@@ -969,12 +980,14 @@ def refusal(exc: Exception) -> dict:
 def controller(service, *, enabled=None, observer=None, git=None, store=None) -> HostDelivery:
     """The coordinator with its existing owners and this host's real ports wired."""
     from codex_harness.adapters.configuration import settings
+    from codex_harness.application.fleet import Fleet
 
     store = service.store if store is None else store
     if enabled is None:
         enabled = configured_enabled(settings())
     github = None if git is None else GitHubDelivery(git)
-    return HostDelivery(store, service.org, github=github, hosts=host_ports(),
+    # The managed target's activation gate reads the ACTUAL Fleet of this host store.
+    return HostDelivery(store, service.org, github=github, hosts=host_ports(fleet=Fleet(store)),
                         canaries=canary_checks(store), observer=observer, enabled=enabled)
 
 

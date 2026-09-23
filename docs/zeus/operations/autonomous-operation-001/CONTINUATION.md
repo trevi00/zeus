@@ -102,8 +102,36 @@ texts), contracts INV-FLEET-001/INV-CONTINUATION-001.
 Compatibility: an intent dispatched before this change has a launch without a token; it is settled
 without a unit, and its old `exit.json`-only directory now observes as `unknown` (conservative: owner
 recovery, never a relaunch). Conductor starts now need a free shared slot and an unpaused fleet.
-Rollback: revert this change; `fleet_units` rows are then ignored evidence. Retired: the controller-
-side timeout kill and the local `max_active` conductor slot.
+Rollback: a bare `git revert` is NOT a safe operational rollback, because a predecessor does not count
+`fleet_units`. Roll back through the managed host lifecycle, whose activation gate (below) pauses
+durable admission and refuses to start a predecessor until every worker reservation and every held
+unit is settled on an authoritative read. Retired: the controller-side timeout kill and the local
+`max_active` conductor slot.
+
+## Stop and rollback integration correction (SPEC 2026-09-23)
+
+Stop: `FleetRunner.stop()` (the SIGTERM/SIGINT handler and a managed `stop.json`) sets `stopping` and
+forwards, before any store access, to `ContinuationPass.request_stop()` ->
+`ConductorProcesses.request_stop()`: a local `stop` file per guardian this process spawned, asked
+at most once per launch, and forwarded again on every stopping pass BEFORE the DB-dependent drain (a
+launch started just before the stop, or a request that failed, is asked again). Ordinary worker
+jobs are not signalled. Asking proves nothing: each guardian still writes its own cleanup proof,
+and the unit stays held until `drain()` settles it exactly once. The outcome is `stop_request` in
+the run summary: `requested` with the launches asked, or `failed` with each launch and error type
+(the guardian's own deadline still ends that tree). Pause (`pause.json`, `Fleet.pause`) closes
+admission only; stop is the guardian cleanup request.
+
+Rollback (managed host lifecycle, HOST-RUNTIME.md "Activation gate"): every managed start, forward
+or restoration, first runs `Fleet.activation_gate` under the target guard - one transaction that
+pauses durable admission and reads reserving jobs and held units - before it stops the previous
+instance and again before it launches. Held debt refuses `fleet_debt_held`, a failed read
+`fleet_debt_unknown`, a missing authority `fleet_authority_unconfigured`; a dead controller or idle
+heartbeat never counts as settled. A restoration waits on these codes (pending) and after its
+deadline blocks with the same code, still paused; the recovery owner is ExecutionRecovery / the
+host owner: settle each held unit from its proof (drain with unit-aware code) or owner recovery,
+then let the delivery retry. The pause is retained after activation as an `activation_hold` naming
+the descriptor; only a runtime running exactly that descriptor releases it (a unit-aware runtime);
+a predecessor that predates this stays paused until the owner decides `zeus fleet resume`.
 
 Decisions: a reconciler that wins the lock before a freshly spawned guardian fences it (the guardian
 exits `3` with zero conduct; the unit is released on the fence and a new identity may follow within

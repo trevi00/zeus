@@ -28,6 +28,7 @@ from test_continuation import LaneLauncher, World, accepted_item, only
 import codex_harness
 from codex_harness.adapters import continuation_process as cp
 from codex_harness.adapters import process_tree
+from codex_harness.adapters.continuation import ContinuationPass
 from codex_harness.adapters.continuation_process import (
     CLAIM_FENCED,
     ENTRY_ARGV,
@@ -492,13 +493,164 @@ def test_a_stop_request_ends_the_tree_locally_and_still_proves_it(tmp_path, how)
     port.start("a", JOB, launch, "tok-b")
     child, grandchild = pids(marker)
     if how == "stop_file":
-        assert port.request_stop() == [launch]
+        assert port.request_stop() == {"asked": [launch], "failed": []}
+        assert port.request_stop() == {"asked": [], "failed": []}, "an asked launch is not asked twice"
     else:
         os.kill(port.children[launch]["guardian"].pid, signal.SIGTERM)
     assert wait_for(lambda: port.active() == [])
     observed = port.poll("a", launch)
     assert observed["cleanup_confirmed"] is True and observed["proof"]["stopped"] is True
     assert not alive(child) and not alive(grandchild)
+
+
+# ---- FleetRunner.stop -> ContinuationPass.request_stop -> guardian (SPEC stop correction) ----------
+class WorldPass(ContinuationPass):
+    """The PRODUCTION `ContinuationPass` (its `request_stop` and `owned` are unchanged) whose tick,
+    drain and unresolved read are bound to the LABELLED World controller instead of a Git pin."""
+
+    def __init__(self, world, port, controller):
+        super().__init__(world.control, world.fleet.registered()["config"], HOST, "policy-1", processes=port,
+                         lanes=world.lanes)
+        self.world, self.controller = world, controller
+
+    def __call__(self):
+        return self.world.tick(controller=self.controller)
+
+    def drain(self):
+        return self.controller.drain("policy-1")
+
+    def unresolved(self):
+        return self.controller.unresolved("policy-1", self.processes.active())
+
+
+def launched(world, port, marker, **kwargs):
+    """One accepted item conducted by a REAL guardian over the LABELLED sleeping family."""
+    controller = world.build(conductor=port)
+    world.register()
+    accepted_item(world)
+    world.tick(controller=controller)
+    intent = only(world.intents(), route=dc.CONDUCTOR)
+    return controller, intent, pids(marker)
+
+
+def settled_once(world, controller, intent):
+    """The unit is released by exactly one cleanup settlement, and a replayed drain changes nothing."""
+    units = world.fleet.units()
+    assert world.fleet.held_units() == [] and len(units) == 1 and units[0]["id"] == intent["launch"]["id"]
+    assert units[0]["settlement"]["kind"] == "cleanup"
+    controller.drain("policy-1")
+    assert world.fleet.units() == units
+
+
+@POSIX
+def test_fleet_runner_stop_reaches_the_real_guardian_once_and_its_proof_settles_once(tmp_path):
+    world = World(tmp_path)
+    marker = tmp_path / "pids.txt"
+    port = processes(world, command=family(marker))  # a 60 s deadline: only the stop ends it here
+    controller, intent, (child, grandchild) = launched(world, port, marker)
+    requests = []
+    real = port.request_stop
+
+    def recording(launches=None):
+        requests.append(real(launches))
+        return requests[-1]
+    port.request_stop = recording
+
+    class Control:  # LABELLED fixture of the managed runtime control: asks for a stop on every pass
+        def admission_open(self):
+            return True
+
+        def stop_requested(self):
+            return True
+
+        def heartbeat(self, state):
+            pass
+
+    runner = FleetRunner(world.fleet, LaneLauncher(world, []), sleep=time.sleep, interval=0.05, control=Control(),
+                         continuation=WorldPass(world, port, controller))
+    started = time.monotonic()
+    summary = runner.run(once=False)
+    assert time.monotonic() - started < 60, "the stop, not the deadline, ended the tree"
+    launch = intent["launch"]["id"]
+    assert summary["stopped"] is True and len(requests) >= 2, "stop forwarded on every stopping pass"
+    assert [asked for row in requests for asked in row["asked"]] == [launch], "asked exactly once"
+    assert summary["stop_request"] == {"state": "requested", "asked": [launch], "failed": [], "error_type": None}
+    proof = read(launch_directory(tmp_path / "rt-a", launch), "cleanup.json")
+    assert proof["stopped"] is True and proof["timed_out"] is False and proof["tree"]["confirmed"] is True
+    assert not alive(child) and not alive(grandchild)
+    assert marker.read_text().count(" ") == 1 and len(list((tmp_path / "rt-a" / "continuation" / "launches")
+                                                             .iterdir())) == 1, "one conduct, one launch"
+    assert summary["units_held"] == []
+    settled_once(world, controller, intent)
+
+
+@POSIX
+@pytest.mark.parametrize("store", ["blocked", "down"])
+def test_fleet_runner_stop_cleans_the_real_tree_while_the_store_is_blocked_or_down(tmp_path, store):
+    """LABELLED injected DB fault: the runner's store blocks inside a transaction, or refuses every
+    one. The stop still reaches the guardian and the tree is cleaned; the unit stays held (no false
+    released slot) until a working store settles it once."""
+    world = World(tmp_path)
+    marker = tmp_path / "pids.txt"
+    port = processes(world, command=family(marker))
+    controller, intent, (child, grandchild) = launched(world, port, marker)
+    launch = intent["launch"]["id"]
+    directory = launch_directory(tmp_path / "rt-a", launch)
+    faulty = Blocked(world.control) if store == "blocked" else Down()
+    runner = FleetRunner(Fleet(faulty), LaneLauncher(world, []), sleep=time.sleep, interval=0.05,
+                         continuation=WorldPass(world, port, controller))
+    thread, results = None, []
+    if store == "blocked":
+        thread = threading.Thread(target=lambda: results.append(runner.run(once=False)), daemon=True)
+        thread.start()
+        assert faulty.entered.wait(timeout=10), "the runner is inside a blocked store call"
+    runner.stop()  # what the SIGTERM handler calls
+    assert runner.stop_request == {"state": "requested", "asked": [launch], "failed": [], "error_type": None}
+    assert wait_for(lambda: (directory / "cleanup.json").exists(), timeout=60)
+    assert read(directory, "cleanup.json")["stopped"] is True
+    assert not alive(child) and not alive(grandchild)
+    assert wait_for(lambda: port.active() == [])
+    assert world.fleet.held_units() == [launch], "cleanup alone releases no slot"
+    assert only(world.intents(), route=dc.CONDUCTOR)["state"] == dc.DISPATCHED
+    if store == "blocked":
+        assert thread.is_alive(), "the runner was still blocked when the tree was cleaned"
+        faulty.gate.set()
+        thread.join(timeout=60)
+        assert not thread.is_alive() and results[0]["stop_request"]["asked"] == [launch]
+    else:
+        controller.drain("policy-1")  # the store came back: one settlement from the guardian's proof
+    settled_once(world, controller, intent)
+
+
+@POSIX
+def test_a_failed_stop_request_is_observable_fabricates_no_cleanup_and_keeps_the_deadline(tmp_path, monkeypatch):
+    world = World(tmp_path)
+    marker = tmp_path / "pids.txt"
+    port = processes(world, seconds=2.0, command=family(marker))
+    controller, intent, (child, grandchild) = launched(world, port, marker)
+    launch = intent["launch"]["id"]
+    directory = launch_directory(tmp_path / "rt-a", launch)
+    real = Path.write_text
+
+    def refusing(self, *args, **kwargs):  # LABELLED fault: the controller cannot write the stop request
+        if self.name == "stop":
+            raise PermissionError("stop request unwritable (injected)")
+        return real(self, *args, **kwargs)
+    monkeypatch.setattr(Path, "write_text", refusing)
+    runner = FleetRunner(world.fleet, LaneLauncher(world, []), sleep=time.sleep, interval=0.05,
+                         continuation=WorldPass(world, port, controller))
+    runner.stop()
+    failed = {"state": "failed", "asked": [], "failed": [{"launch": launch, "error_type": "PermissionError"}],
+              "error_type": None}
+    assert runner.stop_request == failed
+    assert not (directory / "stop").exists() and not (directory / "cleanup.json").exists()
+    assert port.active() == [launch] and alive(child), "a failed request is not a cleanup"
+    summary = runner.run(once=False)  # drains until the guardian's own deadline ends the tree
+    assert summary["stop_request"] == failed
+    proof = read(directory, "cleanup.json")
+    assert proof["timed_out"] is True and proof["stopped"] is False
+    assert not alive(child) and not alive(grandchild)
+    settled_once(world, controller, intent)
 
 
 # ---- the Fleet runner: shared capacity, graceful stop, unrelated work -----------------------------

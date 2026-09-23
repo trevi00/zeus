@@ -38,6 +38,7 @@ from datetime import datetime, timedelta
 from codex_harness.application.release_queue import ReleaseQueue
 from codex_harness.application.releases import Releases
 from codex_harness.domain.host_delivery import (
+    ACTIVATION_GATE_CODES,
     ACTIVE,
     AUTHORITY,
     AWAITING_CI,
@@ -972,10 +973,24 @@ class HostDelivery:
                                                    replaces=self._replaces(intent, forward=False)))
             except AmbiguousEffect:
                 raise
+            except DeliveryRefused as exc:
+                if exc.reason_code not in ACTIVATION_GATE_CODES:
+                    record.update(started=False, verified=False,
+                                  error_type=safe_error_type(type(exc).__name__), at=self.clock())
+                    return self._blocked_rollback(plan, intent, claim, record, "rollback_failed")
+                # The target's Fleet debt is held or unknown: the predecessor is NOT started, the
+                # durable admission pause stays, and the restoration waits for settlement - then
+                # blocks for its recovery owner under that same code, never started past the debt.
+                record.update(started=False, verified=False, error_type=None, gate=exc.reason_code,
+                              at=self.clock())
+                if not self._expired(intent):
+                    return self._pending(plan, intent, claim, exc.reason_code, rollback=record)
+                return self._blocked_rollback(plan, intent, claim, record, exc.reason_code)
             except Exception as exc:
                 record.update(started=False, verified=False,
                               error_type=safe_error_type(type(exc).__name__), at=self.clock())
                 return self._blocked_rollback(plan, intent, claim, record, "rollback_failed")
+            record.pop("gate", None)
             record.update(started=True, verified=False, error_type=None, at=self.clock())
             return self._record("predecessor_started", lambda: self._pending(
                 plan, intent, claim, "rollback_awaiting_consumption", rollback=record,

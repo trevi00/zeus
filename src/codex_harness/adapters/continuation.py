@@ -22,8 +22,8 @@ The ports it supplies:
   cleanup receipt (or the never-entered fence) settles the Fleet unit; unknown cleanup stays held
   debt for ExecutionRecovery, never a relaunch.
 * `ContinuationPass` - what `FleetRunner(continuation=...)` holds for its lifetime: the tick, the
-  admission-closed `drain`, and the owned/unresolved conductor launches its heartbeat and drain
-  account for. Capacity is the Fleet's shared unit reservation, not a count here.
+  admission-closed `drain`, the DB-free `request_stop` a graceful stop forwards to its guardians,
+  and the owned/unresolved conductor launches its heartbeat and drain account for. Capacity is the Fleet's shared unit reservation, not a count here.
 """
 from __future__ import annotations
 
@@ -168,6 +168,12 @@ class ContinuationPass:
 
     def drain(self) -> dict:
         return self._owner().drain(self.policy_id)
+
+    def request_stop(self) -> dict:
+        """The runner's stop, forwarded to the guardians this pass spawned: local stop files only,
+        no store, lane or Git access, so it reaches them while the store is blocked or down. It
+        proves no cleanup; `drain()` settles each unit later from the guardian's own proof."""
+        return self.processes.request_stop()
 
     def owned(self) -> list:
         return self.processes.active()
