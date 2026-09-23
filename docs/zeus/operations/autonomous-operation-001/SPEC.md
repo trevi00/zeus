@@ -426,6 +426,31 @@ qualified failure repair in Batch 2 remain required, not replaced by this delive
 
 ## Batch 3 correction and conductor continuation boundary (2026-09-23)
 
+### Execution recovery checkpoint: output overflow
+
+Run da5eaa40006b4e74a3ff4071d93e8bd2 ended normally (exit 0, no OOM, confirmed container
+removal), but provider output was 8,878,674 bytes against 8,388,608 stream_bytes. The recorded
+failure explicitly says output limit reached, not network failure. No accepted terminal result
+exists. Ten modified files were imported before cleanup and are preserved as UNREVIEWED commit
+5c491cd3592e96fbaa646ed43eb19acf843dc5ec. This is salvage, not a passed implementation.
+Sources: run.json and inner_result.json under artifacts/f2h/isolated-worker/runs/<run-id>.
+Existing claude_cli._lost_output and _provider_failure correctly refuse incomplete evidence.
+
+Resume from the preserved implementation, inspect the seven criteria, finish/fix and rerun the
+four-file scoped check and Ruff. Do not reimplement from the pre-correction base. Use bounded
+source reads and compact diffs; no whole-file/whole-stream dumps. Keep logs as artifacts and
+report concise result counts and relevant failures. Do not weaken truncation refusal or claim
+that avoiding large output fixes the stream collector architecture. Durable spooling/independent
+terminal parsing is a separate follow-up, not required to discard useful recovered code now.
+
+Owner Windows check discovered a concrete portability error in oversized-plan parametrization:
+pytest embeds the 256KB input into its node id/PYTEST_CURRENT_TEST, exceeding Windows' 32767
+environment-variable limit before exercising the contract. Give cases explicit short ids while
+retaining the full oversized payload and assertions. Interrupted scoped run: 56 passed, 16
+skipped, 2 setup/teardown errors; raw recovery-owner-check.log retained. An initial owner attempt
+also imported the home editable install; subsequent checks set PYTHONPATH to this checkout/src.
+Neither attempt is claimed a passing check. All original acceptance gates still apply.
+
 Candidate 9689ed954f24cc1b27b9e4da2e6ea1d52b308b5a was rejected by independent
 review 55e265c9-977f-4d36-adca-4227545d9b5c. It is integrated ONLY into this implementation
 checkout, not the operating runtime. The following are code-traced reachable defects, not owner
