@@ -1,4 +1,36 @@
-# Operating status, 2026-09-22
+# Operating status
+
+## Current checkpoint: 2026-09-23 13:00 KST
+
+Whole autonomous operation is NOT yet accepted. Fleet is running, and actual pinned Claude Opus
+5.5 jobs are executing on harness and interface lanes. The active image is
+sha256:ae070306fb25ccc37d41a73cd0ab0a2b5fdafcfff3914161518918c1932b79c6 (CLI 2.1.280).
+Older dated statements below describe their own checkpoint, not this current image.
+
+| Remaining outcome | Current evidence / next action |
+| --- | --- |
+| Worker context through review and correction | worker-sessions dispatched 03:27:57Z; actual native two-turn transport probe passed, Zeus lifecycle implementation/review pending |
+| Qualified operating delivery and rollback | instance fixture archive 119 passed/25 skipped; named regression passed; inherited runtime review and native-evidence job pending |
+| Automatic diagnosis, correction and release continuation | SSOT traced in SPEC; connect accepted session API to finite-operation successors and existing Releases authority |
+| Whole autonomous acceptance | two useful items, controlled recovery, rollback/restart and traceable monitor outcome remain unexecuted as one unattended chain |
+
+Plan 8ddad09d7740095dea9f5a8f2fbf47bd3065cc05 admitted native-evidence automatically at 03:52:15Z.
+Both active jobs use Claude implementation followed by independent Codex review. This owner-written
+plan is explicit owner orchestration, not evidence of autonomous correction design.
+
+Owner additionally executed candidate 779d0326's isolated PostgreSQL transaction test on Windows:
+1 passed, 0 skipped in 8.07s, using its clean candidate checkout and fixture-owned temporary schema.
+Log: artifacts/autonomous-operation-001/instance-replay/pg-candidate.log. The initial attempt from
+the integration branch worktree skipped because runtime_revision does not follow Git commondir
+for symbolic refs; pg-owner.log preserves that skip. Deploy qualification uses an exact detached
+commit or explicit owner attestation. Symbolic-worktree lookup support is a follow-up limitation,
+not evidence that a skipped case passed or a reason to disable revision matching.
+
+Native scope before the test portability correction: 141 passed, 1 skipped, 1 failed, 1 deselected.
+The deselected test self-terminates pytest on Windows; the failure conflates venv launcher and
+interpreter PID. Both are in one pinned correction. No host-delivery candidate is deployed yet.
+
+## Historical checkpoint: 2026-09-22
 
 PR 179 merged as aba7a894b69cdd72d2f2ef585efe17ccda0b5a6a.
 PR 180 merged as 980cd3017b70742f34009fae15f97e11d9697d4f after all required CI passed.
