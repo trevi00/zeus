@@ -241,6 +241,21 @@
         "host-runtime-evidence",
         "native-runtime"
       ]
+    },
+    {
+      "id": "pause-commit",
+      "project_id": "research-improvement",
+      "criterion_id": "verified-loop",
+      "lane": "harness",
+      "manifest_path": "docs/zeus/operations/autonomous-operation-001/pause-commit.operation.json",
+      "manifest_revision": "c5dfaf63d7be60a5389ac478b76de8f5a58ce74e",
+      "manifest_sha256": "a864ec6341001014ac42fe57a373f708e31e48d077e8550f96ce28916b31af31",
+      "priority": 180,
+      "dependencies": [
+        "session-correction",
+        "host-runtime-evidence",
+        "native-runtime"
+      ]
     }
   ]
 }
