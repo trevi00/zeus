@@ -88,6 +88,101 @@ which owner changes each pointer. Do not enable legacy supervisor merely because
 
 ## Delivery batches under this one completion contract
 
+### Execution order confirmed by user on 2026-09-23
+
+Proceed autonomously to this document's WHOLE outcome. Ordinary research, correction, independent
+review, tests, eligible admission and qualified reversible deployment within the approved portfolio
+are authorized. Do not ask the user to relay every transition. Current work remains delivery-instance
+qualification; accepted backlog/monitor/recovery evidence is preserved. Follow it with durable worker
+session support and conductor continuation; then connect existing research selection/recovery and
+qualified release owners; finally run the whole real acceptance checklist. These are completion
+dependencies, not permission to keep adding unrelated features. Local-asset absorption and external
+reference migrations become useful operating workload; total absorption is not a prerequisite to
+first verified autonomy. No claim that this chat itself is a continuously running daemon.
+
+Opus 5.5 availability probe succeeded in the CLI-only image ae070306 on this host (2026-09-23).
+Requested model and returned modelUsage identify claude-opus-5-5; fixed response matched; receipt
+and usage saved in artifacts/autonomous-operation-001/opus55/model-receipt.json. This is a real
+subscription call, not a worker implementation, resume, or release test. Two earlier invocations
+failed argument parsing before model execution. The active Fleet must still drain/restart onto the
+new image before new Opus 5.5 operations are registered. No previous admitted operation is rewritten.
+
+### Next bounded implementation: durable Claude task sessions
+
+Purpose: keep one logical worker task context through implementation -> frozen candidate -> review
+wait -> qualified rejection correction, without keeping an idle model process alive. This batch
+provides the reusable transport/storage primitive; conductor continuation consumes it in the next
+batch. A retained container, a UUID alone or a PG checkpoint is not proof of transcript continuity.
+
+SSOT inspected: Executor writes provider_session_id, workspace_identity, generation/attempt and
+policy/config digests in service.checkpoint; ClaudeCLI._command always uses --session-id and reports
+resume unsupported; IsolatedWorker uses disposable /home/worker and removes the container after
+output import. Keep executor reservation, unresolved-effect checks, observation and settlement.
+Add task-scoped lifecycle ownership instead of treating the last agent checkpoint as permission
+to open any session. Git fixes specification/candidate; PG owns binding/state; artifacts hold large
+transcript bytes and hashes. Candidate code cannot approve its session/archive or retention policy.
+
+Primary documents read 2026-09-23 (living versions): code.claude.com/docs/en/headless, Continue
+conversations: --resume accepts exact session id or absolute .jsonl transcript path. --continue
+chooses a recent session and is inappropriate for concurrent tasks. CLI reference: --session-id
+is creation identity, --resume restores context, --no-session-persistence disables restoration.
+Headless usage totals on resumed conversations are cumulative; record raw totals and derive deltas
+only with matching session/baseline, otherwise unknown. These documents do not prove Zeus preserves
+the needed files or current --restricted integration: require real two-turn owner qualification.
+
+Implement opt-in task-session contract and repository-owned adapter; default fresh behavior stays
+compatible. Durable binding includes logical task id, repository/workspace identity, session id,
+provider/model/CLI/profile/policy/config identities, owner generation/attempt, submitted candidate,
+archive reference/hash and review reference. States: active -> checkpointed -> awaiting_review ->
+correction_ready -> active; accepted -> archival_pending -> closed. Explicit missing/corrupt,
+incompatible and unresolved states; never relabel a fresh context as a resumed one. A model or
+policy mismatch refuses native resume and reports need for an explicit fresh evidence handoff.
+
+Preserve validated session transcript artifacts from the owned container before deleting its home.
+Export only the exact session's allowlisted regular transcript/support files needed by the pinned
+CLI, with bounded bytes/counts, path containment and hashes. No wholesale ~/.claude copy, credentials,
+settings, arbitrary symlinks or project-executable configuration. Keep retained native transcripts
+as restricted local evidence, not public Git/log output. Verify saved bytes before admitting resume;
+restore into the new isolated worker via the existing fixed mounts/protocol or a narrowly validated
+extension. Never mount another task's writable home. Same logical session is exclusively owned
+during execution; waiting holds no invocation reservation or model loop. Freeze review candidates;
+resume edits a worker workspace, never the review checkout. Keep archive until evidence promotion
+and closure are confirmed. Cleanup failure is recorded, not permission to discard the last copy.
+
+Thread explicit resume binding through existing executor/provider/isolated-entry paths. Validate
+the resume identity in the host and at the trusted container entry, preserve model/session result
+checks and reject unsafe or unsupported combinations before provider entry. Reuse checkpoints;
+do not build another invocation ledger. Source/result archive promotion must survive response loss:
+deterministic intent, verified content-addressed artifact, idempotent PG update. No external I/O under
+store transaction. Unsupported native resume must be reported accurately; do not merely change
+providers.json capability to supported without a conditional implemented path.
+
+Rejection authorization is supplied by the existing independent succeeded Codex decision for the
+exact frozen candidate, not by arbitrary text. This primitive validates the binding and makes a
+context eligible; it does not self-create work, approve a candidate, merge or delete historical
+rejected records. Conductor continuation remains the sole subsequent admission owner.
+
+Fixed acceptance matrix: fresh unchanged; native resume command uses exact archive/id, not latest;
+task/repository/model/policy mismatch refusal; corruption/path escape/secret-file exclusion; two
+owners race for one logical session; duplicate checkpoint/review event; crash after archive write
+before PG commit; review wait uses no calls; rejected candidate immutable; rejected correction
+retains prior history; cumulative usage not double-counted; closed state only after promotion;
+cleanup failure retains recoverable bytes; Windows/POSIX paths; default no-resume behavior intact.
+Use real temp files and a labelled fake CLI protocol fixture for unit transport, and an integration
+test skipped unless explicitly configured for real Claude. No model calls in worker tests; owner
+must later run a real two-turn/container-recreation probe before production resume activation.
+
+Allowed new modules domain/application/adapters/worker_sessions.py; narrow integration in executor.py,
+claude_cli.py, isolated_worker.py, isolated_worker_entry.py, providers.py, resources/providers.json,
+application service/checkpoint owner as actually present, cli.py for read-only status/explicit close,
+domain/observation.py and adapters/monitoring.py; tests/test_worker_sessions.py and existing directly
+affected Claude/isolated/executor/monitoring tests; docs/contracts.md and WORKER-SESSIONS.md here.
+Inspect actual file names first. Do not alter release approval or current host-delivery work.
+Required checks: python -m pytest tests/test_worker_sessions.py -q -p no:cacheprovider and
+python -m ruff check . --no-cache; run directly affected existing tests by exact named files as well,
+record executed commands and outcomes honestly. All output bounded; no huge fixture/stream dumps.
+One independent review against this matrix, then owner integration/real resume qualification.
+
 1. Durable approved backlog -> existing Fleet admission. Implement now, scoped below. This closes
    manual enqueue/next-selection for already specified tasks; it is not complete self-direction.
 2. Connect research/DBA/Council and failure candidates to that backlog with evidence-bound Codex
