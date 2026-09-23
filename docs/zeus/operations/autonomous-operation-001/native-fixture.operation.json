@@ -1,0 +1,31 @@
+{
+  "schema": "urn:zeus:operation:1",
+  "id": "autonomous-operation-001-native-fixture",
+  "base_revision": "e16fed8fe07b9711e246e304ed842076c5cca45f",
+  "goal": {
+    "path": "docs/zeus/operations/autonomous-operation-001/SPEC.md",
+    "sha256": "294ea10185f2e13f7edd2e44e12e814f0536eb25b7cd980bd6b9fd42af796fea",
+    "criterion": "Complete the existing autonomous operating loop with independently verified session, continuation and actual runtime ownership",
+    "rationale": "Finish the existing whole-goal acceptance matrix without manual user relay or weaker verification."
+  },
+  "budget": {
+    "mode": "subscription",
+    "total": 192,
+    "per_host": 192
+  },
+  "claude": {
+    "model": "claude-opus-5-5",
+    "timeout_seconds": 3600,
+    "max_budget_usd": 2
+  },
+  "plan": {
+    "objective": "Fix only the Native fixture qualification section in SPEC: tests/test_managed_runtime.py fixture_fleet uses /labelled-fixture which is not absolute on Windows. Use native absolute labelled configuration path, preserve lifecycle tests/assertions, no production changes or new skips. Run scoped tests and Ruff; exact completed commands. Accepted runtime 815adbc unchanged.",
+    "allowed_paths": [
+      "tests/test_managed_runtime.py"
+    ],
+    "acceptance_criteria": [
+      "Fixture config path is absolute on Windows and POSIX without creating or deleting external paths.",
+      "Existing managed runtime assertions and platform gates unchanged; scoped tests and Ruff pass."
+    ]
+  }
+}
