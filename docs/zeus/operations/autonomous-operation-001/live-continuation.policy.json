@@ -1,0 +1,33 @@
+{
+  "schema": "urn:zeus:continuation-policy:1",
+  "id": "autonomous-live-001",
+  "enabled": true,
+  "repository": "fe13e1ed40e5b9ba64a3fa8bed3a3f46d1bf486634b337fca46a5f5179622c63",
+  "lanes": [
+    "harness"
+  ],
+  "goals": [
+    {
+      "path": "docs/zeus/operations/autonomous-operation-001/SPEC.md",
+      "sha256": "6731baf6369652067933d3ef889f633d6a0b97009d69cd7df01d42402248a9a3",
+      "criterion": "Complete the existing autonomous operating loop with independently verified session, continuation and actual runtime ownership"
+    }
+  ],
+  "allowed_paths": [
+    "docs/zeus/operations/autonomous-operation-001/STATUS.md",
+    "docs/zeus/operations/autonomous-operation-001/CONTINUATION.md",
+    "docs/zeus/operations/autonomous-operation-001/OPERATOR-RUNBOOK.md"
+  ],
+  "acceptance_criteria": [
+    "Only the authorized document paths change; preserve prior evidence and separate deployed code, configured policy and actual qualification.",
+    "Document claims match the owner facts in SPEC and current SSOT; no invented execution, release or autonomy claims."
+  ],
+  "session_archive_sha256": "1ab370f40de98823e63e1b7a80ed0d781ef7143ec94a67930e9b57417829e63c",
+  "qualified": {
+    "model": "claude-opus-5-5",
+    "image": "sha256:1ee94821ead80039a2ea1070079ce47ba3137771f56ef7a115e779ebeb06b267",
+    "profile": "worker-v1"
+  },
+  "delivery_target": "zeus-fleet-managed",
+  "max_corrections": 2
+}
