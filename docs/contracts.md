@@ -2230,9 +2230,20 @@ of that stage, so a lost response can only reconcile what already happened: an e
 at the intended head is adopted rather than published again, an already merged one is recognized
 rather than merged again, and a running instance's own receipt is recognized rather than restarted.
 The controller claims only queue rows a registered plan names (so another controller's row is never
-consumed or spent), and every durable observation is committed in the SAME transaction that
-re-checks the claim's generation, owner and lease, so a superseded controller cannot record what it
-observed. A long external wait never sleeps under the lease: the tick answers `pending`, returns the
+consumed or spent). Ownership is proven BEFORE every external mutation - publish, merge, drain,
+switch, start, restore - and again inside the target lock for the switch and the start, so a
+controller whose lease expired while it waited for that lock overwrites nothing; every durable
+observation is then committed in the SAME transaction that re-checks the claim's generation, owner
+and lease, and the promotion shares one transaction with its own ownership check rather than
+checking and then promoting separately. A fence lost BEFORE an effect changes nothing and records
+nothing; a fence lost ACROSS an effect is an explicit `conflict` carrying `ambiguous_effect`, never
+a cancellation - the durable evidence is the intent that named the stage before the effect, and the
+next owner reconciles the host rather than repeating the action. A tick advances at most one
+delivery, so a plan it cannot act on - an incomplete review, a queue row in backoff, exhausted,
+blocked, failed, cancelled or held by another controller - is skipped with its own explicit wait
+reason instead of starving a qualified target; `target_busy` exclusion is unchanged, the scan is
+bounded, and when nothing is actionable the first waiting plan is selected so that its own wait is
+projected and nothing external happens. A long external wait never sleeps under the lease: the tick answers `pending`, returns the
 lease through `ReleaseQueue.defer` (which is not a failed attempt), and the stage's own durable
 deadline - not the attempt budget - ends the wait (`ci_timeout`, `rollback_unverified`). Definite
 failures still go through `finish` with the queue's unchanged retry budget and backoff. No store
@@ -2243,7 +2254,11 @@ CI is the provider's own answer about the exact intended head. Every required ch
 FINISHED SUCCESSFULLY: absent is `ci_check_missing`, still running is `ci_check_pending`, and
 skipped, cancelled, neutral, timed out and failed are `ci_check_failed` - none of them is a pass, and
 extra checks the plan does not require are ignored. A head that moved is `ci_head_changed` and goes
-to requalification, never a silent rebase that inherits the old acceptance.
+to requalification, never a silent rebase that inherits the old acceptance. A merge that HAPPENED is
+not a qualified deployment: the merged revision is qualified against the reviewed tree by the merge
+owner itself (`GitWorkspace.qualify_merged`), and the merge this controller performed and one it
+only observed after a lost response take exactly the same path, so a merged tree that is not the
+reviewed one is `merged_tree_mismatch` and stays blocked on every later tick.
 
 The host boundary is descriptor-first. A descriptor is immutable and is replaced, never edited:
 under a target-specific lock (`target_lock_held` is a conflicting change, never something to break)
@@ -2252,30 +2267,54 @@ the descriptor that is there right now must be exactly the expected predecessor
 `os.replace`. New admission is paused and the drain is PROVEN before the switch: a service that is
 running with no work report, or with an unconfirmed effect, blocks the switch
 (`drain_unconfirmed_effects`) rather than having its active work killed. A previous instance that
-cannot be proven gone is `previous_instance_unconfirmed` and no second one is started beside it. The
-launched process's OWN startup receipt decides activation - instance id, pid, start time, the module
-root it actually imported and the descriptor digest, revision, image and profile it actually loaded -
-and a receipt that is missing, malformed, from another target, from the previous instance or bound to
-any other identity never grants activation. A switched descriptor whose receipt never arrives is not
-an activation either: the consumption deadline sends it to rollback. Rollback restores the EXACT
-predecessor tuple and then proves it, with that predecessor's own fresh receipt and a live process;
-a restoration that fails or cannot be proven is a blocked critical alert (`rollback_failed`,
-`rollback_unverified`), never a `rolled_back` claim, and a target with no known-good predecessor
-blocks (`no_known_good_predecessor`) instead of inventing a state to return to. Active descriptors
-are scoped per target, two plans on one target serialize (`target_busy`) and unrelated targets keep
-moving.
+cannot be proven gone is `previous_instance_unconfirmed` and no second one is started beside it.
 
-The canary exercises the actual service contract and is named by an incumbent fixed id only:
-`startup_identity` (the owned process still runs and is still itself), `collect_monitor_source` (the
-incumbent read-only monitor projection shows this descriptor as the consumed one) or
-`fleet_worker_operation`, which is OWNER acceptance work - it looks for the owner's own receipt for
-exactly this descriptor and starts no model, provider or worker itself. `canary_unavailable`,
-`canary_error` and every not-passed verdict send the delivery to rollback rather than to activation.
+The service is launched from the OWNER-REGISTERED runtime root of its target - that root as the
+working directory, that root's `src` ahead of `PYTHONPATH` - and a root with no importable harness
+is `runtime_root_unavailable` before a process exists. The launched process's OWN startup receipt
+decides activation, and its runtime identity is OBSERVED rather than copied from the descriptor:
+the package directory it actually imported, the root that package came from, the revision that root
+is actually at (its own checked out `HEAD`, or the owner's `runtime.json` attestation when the root
+is not a checkout) and the EFFECTIVE worker image and profile digest of that runtime, which are
+configuration facts and never a model run. The root must be this target's registered root
+(`receipt_runtime_root_mismatch`), the package must lie inside it (`receipt_module_root_foreign`),
+and revision, image, profile and descriptor digest must be the requested ones; an old runtime handed
+a new descriptor is therefore refused however alive its pid is, and a receipt that is missing,
+malformed, from another target, from the previous instance or bound to any other identity never
+grants activation. A switched descriptor whose receipt never arrives is not an activation either:
+the consumption deadline sends it to rollback.
+
+Observing a startup and activating it are separate durable facts: the accepted receipt is recorded
+as `startup_observed` with its instance and revision BEFORE the canary runs, and `consumed` is only
+the activation the canary allowed - so a canary can bind the instance and the runtime without
+reading an active pointer that has deliberately not been written yet. Before every host mutation the
+controller reconciles what is on the target right now: the descriptor it intended, the predecessor
+it expected, or a FOREIGN state that blocks (`descriptor_foreign`, `rollback_foreign_descriptor`)
+rather than being overwritten. Rollback restores the EXACT predecessor tuple and then proves it,
+with that predecessor's own fresh receipt and a live process; a restoration whose durable
+acknowledgement was lost is RESUMED from what the host already shows rather than attempted again,
+the predecessor is started at most once per restoration, and a restoration that fails or cannot be
+proven is a blocked critical alert (`rollback_failed`, `rollback_unverified`), never a `rolled_back`
+claim. A target with no known-good predecessor blocks (`no_known_good_predecessor`) instead of
+inventing a state to return to. Active descriptors are scoped per target, two plans on one target
+serialize (`target_busy`) and unrelated targets keep moving.
+
+The canary exercises the actual service contract, is named by an incumbent fixed id only, and is
+given the OBSERVED startup it must answer about: `startup_identity` (the owned process still runs,
+still names this descriptor and is still this instance), `collect_monitor_source` (a FRESH incumbent
+read-only monitor projection shows this descriptor as observed-started for this target, by this
+instance id and at this revision) or `fleet_worker_operation`, which is OWNER acceptance work - it
+looks for the owner's own receipt for exactly this descriptor and instance and starts no model,
+provider or worker itself. `canary_unavailable`, `canary_error`, `canary_source_unavailable` and
+every not-passed verdict send the delivery to rollback rather than to activation.
 
 Read-only status is projected by `host-delivery status` and by the additive `host_delivery` monitor
-source: plan, release, target and instance identities, the Git pin, descriptor digests, the durable
-stage, fixed reason codes, counts and a bounded next action. Never a descriptor body, a host root, a
-service name, a pull request title, a check log, an exception message or a credential. Structured
+source, which is collected beside the existing `database`, `docker`, `redis`, `fleet`,
+`research_programs`, `portfolio` and `fleet_backlog` sources and fails independently of every one of
+them: plan, release, target and instance identities, the Git pin, descriptor digests, whether a
+startup was observed and which instance and revision it was, the durable stage, fixed reason codes,
+counts and a bounded next action. Never a descriptor body, a host root, a runtime root, a service
+name, a pull request title, a check log, an exception message or a credential. Structured
 transitions are `general.delivery_stage_entered`, `development.delivery_check_observed`,
 `operations.delivery_switched`, `operations.delivery_rollback` and `operations.delivery_blocked`,
 carrying identifiers, digests, fixed codes and counts only; a repeated idle poll re-enters no stage

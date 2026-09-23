@@ -158,12 +158,18 @@ def test_collect_adds_observations_only_with_runtime_and_keeps_other_sources(mon
         tx.put('observations', 'e', event('e', 'operations', 'critical', record_kind='event'))
     service, artifacts = read_only(SimpleNamespace(store=store, org=organization()), None)
     legacy = monitoring.collect(service, artifacts, str(tmp_path), 'redis://127.0.0.1/0')
-    # autonomous-operation-001 added the read-only `fleet_backlog` envelope beside the existing
-    # store-backed sources; `observations` still appears only with a runtime directory.
+    # autonomous-operation-001 added the read-only `fleet_backlog` and `host_delivery` envelopes
+    # beside the existing store-backed sources; `observations` still appears only with a runtime
+    # directory, and every original source is still collected exactly as before.
     assert set(legacy['sources']) == {'database', 'docker', 'redis', 'fleet', 'research_programs', 'portfolio',
-                                      'fleet_backlog'}
+                                      'fleet_backlog', 'host_delivery'}
     assert legacy['sources']['fleet']['data']['registered'] is False
     assert legacy['sources']['fleet_backlog']['data']['registered'] is False
+    # Nothing registered and delivery disabled: an explicit projection, never an absent source.
+    assert legacy['sources']['host_delivery']['status'] == 'ok'
+    assert legacy['sources']['host_delivery']['data']['registered'] is False
+    assert legacy['sources']['host_delivery']['data']['enabled'] is False
+    assert legacy['sources']['host_delivery']['data']['targets'] == []
     assert 'observations' not in legacy['sources']
     before = store.data.copy()
     result = monitoring.collect(service, artifacts, str(tmp_path), 'redis://127.0.0.1/0', runtime=tmp_path / 'runtime')
@@ -181,7 +187,9 @@ def test_collect_adds_observations_only_with_runtime_and_keeps_other_sources(mon
     assert result['sources']['observations'] == {'status': 'unavailable', 'error': 'RuntimeError', 'data': None,
                                                  'observed_at': result['sources']['observations']['observed_at']}
     assert result['sources']['database']['status'] == 'ok' and result['sources']['docker']['status'] == 'ok'
-    assert result['sources']['fleet_backlog']['status'] == 'ok'  # one failed source hides no neighbour
+    # One failed source hides no neighbour, old or newly added.
+    assert result['sources']['fleet_backlog']['status'] == 'ok'
+    assert result['sources']['host_delivery']['status'] == 'ok'
 
 
 def test_projection_never_writes_through_the_read_only_store():

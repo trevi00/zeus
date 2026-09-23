@@ -25,13 +25,19 @@ from codex_harness.adapters.host_delivery import (
     ENABLED_SETTING,
     MAX_PLAN_BYTES,
     RECEIPT_FILE,
+    RUNTIME_FILE,
     GitHubDelivery,
+    ProcessHostTarget,
+    checkout_revision,
     configured_enabled,
+    effective_worker_image,
     execute,
     load_plan,
+    loaded_runtime,
     normalize_checks,
     refusal,
     run_loop,
+    runtime_revision,
 )
 from codex_harness.adapters.operation_cli import GitSource
 from codex_harness.adapters.store import MemoryStore
@@ -249,8 +255,9 @@ def test_delivery_is_opt_in_through_one_explicit_host_setting():
 class FakeWorkspace:
     """The existing GitWorkspace contract, recorded rather than executed: no push, no gh, no merge."""
 
-    def __init__(self, remote="zeus-owner/zeus-harness"):
+    def __init__(self, remote="zeus-owner/zeus-harness", merged_tree=TREE):
         self.remote, self.published, self.merged = remote, [], []
+        self.merged_tree, self.qualified = merged_tree, []
 
     def publish(self, candidate, title, body):
         self.published.append({"candidate": candidate, "title": title, "body": body})
@@ -261,10 +268,30 @@ class FakeWorkspace:
         self.merged.append(candidate)
         return {"merged": True, "revision": candidate["revision"], "merged_revision": "9" * 40}
 
+    def qualify_merged(self, candidate, merged_revision, *, fetch=True):
+        """The merge owner's own merged-tree check, recorded rather than executed."""
+        self.qualified.append((candidate["revision"], merged_revision))
+        if self.merged_tree != candidate["tree"]:
+            raise ContractError("Merged tree differs from reviewed candidate")
+        return {"merged_revision": merged_revision, "tree": self.merged_tree}
+
 
 def candidate():
     return {"revision": REVISION, "tree": TREE, "branch": "harness/delivery-1",
             "objective": CANARY_TEXT}
+
+
+def test_the_port_qualifies_a_merged_revision_through_the_existing_workspace_contract():
+    """One qualification for both paths; the port never re-implements the merged-tree check."""
+    workspace = FakeWorkspace()
+    port = GitHubDelivery(workspace, runner=lambda argv, timeout=None: completed("[]"))
+    assert port.qualify(candidate(), "9" * 40) == {"merged_revision": "9" * 40, "tree": TREE}
+    assert workspace.qualified == [(REVISION, "9" * 40)]
+    # A merged revision whose tree is not the reviewed one is refused, merged or not.
+    other = GitHubDelivery(FakeWorkspace(merged_tree="d" * 64),
+                           runner=lambda argv, timeout=None: completed("[]"))
+    with pytest.raises(ContractError):
+        other.qualify(candidate(), "9" * 40)
 
 
 def test_the_github_port_reads_the_exact_head_and_its_own_rollup(tmp_path):
@@ -373,6 +400,68 @@ def test_the_run_loop_stops_gracefully_and_finishes_the_tick_in_flight():
     assert summary["outcomes"] == {"progressed": 2}
 
 
+# ----- what a runtime root actually is -------------------------------------------------------------
+def test_a_runtime_root_attests_its_own_revision_from_its_own_refs(tmp_path):
+    """Plain reads of the checkout's own refs: no `git` process, no network and no descriptor."""
+    root = tmp_path / "repo"
+    init_repository(root)
+    assert checkout_revision(root) is None  # a branch with no commit yet attests nothing
+    write_bytes(root, "README.md", b"fixture\n")
+    revision = commit(root)
+    assert checkout_revision(root) == revision and runtime_revision(root) == revision
+    # A packed ref, as a freshly cloned or garbage collected repository has.
+    loose = root / ".git" / "refs" / "heads" / "main"
+    (root / ".git" / "packed-refs").write_text("# pack-refs with: peeled\n" + revision + " refs/heads/main\n",
+                                               encoding="utf-8")
+    loose.unlink()
+    assert checkout_revision(root) == revision
+    # A detached HEAD names the commit directly.
+    (root / ".git" / "HEAD").write_text(revision + "\n", encoding="utf-8")
+    assert checkout_revision(root) == revision
+
+
+def test_a_root_that_is_no_checkout_uses_the_owners_attestation_and_nothing_else(tmp_path):
+    root = tmp_path / "prepared"
+    root.mkdir()
+    assert checkout_revision(root) is None and runtime_revision(root) is None
+    (root / RUNTIME_FILE).write_text(json.dumps({"revision": "not a revision"}), encoding="utf-8")
+    assert runtime_revision(root) is None  # a malformed attestation is unknown, never a guess
+    (root / RUNTIME_FILE).write_text(json.dumps({"revision": REVISION}), encoding="utf-8")
+    assert runtime_revision(root) == REVISION
+
+
+def test_a_worktree_pointer_resolves_to_the_git_directory_it_names(tmp_path):
+    root = tmp_path / "repo"
+    init_repository(root)
+    write_bytes(root, "README.md", b"fixture\n")
+    revision = commit(root)
+    linked = tmp_path / "linked"
+    linked.mkdir()
+    (linked / ".git").write_text("gitdir: " + str(root / ".git") + "\n", encoding="utf-8")
+    assert checkout_revision(linked) == revision
+
+
+def test_the_effective_worker_image_is_configuration_and_never_a_claim(monkeypatch):
+    assert effective_worker_image({}) == "none"  # no isolation image configured, said explicitly
+    assert effective_worker_image({"HARNESS_WORKER_IMAGE": IMAGE}) == IMAGE
+    assert effective_worker_image({"ZEUS_WORKER_IMAGE": IMAGE}) == IMAGE
+    monkeypatch.setenv("ZEUS_WORKER_IMAGE", IMAGE)
+    assert effective_worker_image() == IMAGE
+
+
+def test_a_runtime_root_without_an_importable_harness_is_refused_before_a_process_exists(tmp_path):
+    """Binding the launch to the registered root is a precondition, not a best effort."""
+    empty = tmp_path / "empty-root"
+    empty.mkdir()
+    with pytest.raises(DeliveryRefused) as refused:
+        ProcessHostTarget.runtime_environment(empty)
+    assert refused.value.reason_code == "runtime_root_unavailable"
+    real = Path(loaded_runtime()["runtime_root"])
+    environment = ProcessHostTarget.runtime_environment(real)
+    assert environment["PYTHONPATH"].split(os.pathsep)[0] == str(real / "src")
+    assert environment["ZEUS_REPOSITORY"] == str(real)
+
+
 # ----- the launched service, as an actual child process -----------------------------------------------
 def test_the_service_entry_runs_as_a_real_child_process_and_reports_its_identity(tmp_path):
     state = tmp_path / "state"
@@ -396,6 +485,11 @@ def test_the_service_entry_runs_as_a_real_child_process_and_reports_its_identity
         assert receipt["pid"] == child.pid and receipt["target_id"] == "canary-service"
         assert receipt["descriptor_sha256"] == descriptor_digest(descriptor)
         assert Path(receipt["module_root"]).is_dir()
+        # The runtime identity is what the child observed, not what the descriptor asked for.
+        assert receipt["runtime_root"] == loaded_runtime()["runtime_root"]
+        assert Path(receipt["module_root"]).is_relative_to(Path(receipt["runtime_root"]))
+        assert receipt["revision"] == (runtime_revision(receipt["runtime_root"]) or "")
+        assert receipt["profile_digest"] != PROFILE  # the profile this code packages, not a claim
         (state / "stop.json").write_text(json.dumps({"stop": True}), encoding="utf-8")
         assert child.wait(timeout=30) == 0
     finally:

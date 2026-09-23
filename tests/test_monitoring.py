@@ -172,12 +172,12 @@ def test_collector_entrypoint_is_read_only_and_needs_no_executor(monkeypatch, tm
     assert store.data == before
     assert list((runtime / 'artifacts').iterdir()) == []
     lines = [json.loads(line) for line in (runtime / 'monitor-collector.log').read_text('utf-8').splitlines()]
-    # Eight sources: observatory-001 added observations (the CLI passes the runtime), fleet-001 the
+    # Nine sources: observatory-001 added observations (the CLI passes the runtime), fleet-001 the
     # additive fleet envelope (INV-FLEET-001), research-program-001 the additive
     # research_programs envelope (INV-RESEARCH-PROGRAM-001), operating-portfolio-001 the
     # additive portfolio envelope and autonomous-operation-001 the additive fleet_backlog envelope
-    # (INV-FLEET-BACKLOG-001).
-    assert [line['event'] for line in lines] == (['startup'] + ['source_state'] * 8 + ['shutdown']) * 2
+    # (INV-FLEET-BACKLOG-001) and the additive host_delivery envelope (INV-HOST-DELIVERY-001).
+    assert [line['event'] for line in lines] == (['startup'] + ['source_state'] * 9 + ['shutdown']) * 2
     assert snapshot['sources']['observations']['status'] == 'ok'
     # Unregistered fleet: an ok envelope with the fixed empty shape; the read-only store is unchanged
     # (asserted above) and no executor was built.
@@ -190,6 +190,14 @@ def test_collector_entrypoint_is_read_only_and_needs_no_executor(monkeypatch, tm
     assert snapshot['sources']['fleet_backlog']['data'] == {
         'schema': 'urn:zeus:fleet-backlog-status:1', 'registered': False, 'fleet_paused': False,
         'plans': [], 'authority': snapshot['sources']['fleet_backlog']['data']['authority']}
+    # No registered delivery plan and no host target: an `ok` envelope that says exactly that
+    # (INV-HOST-DELIVERY-001). Delivery is off, nothing is active, and the collector never ticks,
+    # publishes, merges or switches what it observes.
+    delivery = snapshot['sources']['host_delivery']
+    assert delivery['status'] == 'ok'
+    assert delivery['data'] == {'schema': 'urn:zeus:host-delivery-status:1', 'registered': False,
+                                'enabled': False, 'deliveries': [], 'counts': {}, 'targets': [],
+                                'authority': delivery['data']['authority']}
     assert snapshot['sources']['observations']['data']['local'] == {'status': 'unavailable',
                                                                     'reason': 'directory_missing'}
     assert lines[0] == {'at': lines[0]['at'], 'event': 'startup', 'mode': 'collect', 'once': True,
@@ -286,11 +294,16 @@ def test_collect_keeps_source_failures_independent(monkeypatch):
     assert result['schema'] == 'harness-monitor.v1'
     assert result['scope'] == {'label': 'repository ' + Path('.').resolve().name, 'docker': 'compose', 'containers': None}
     assert set(sources) == {'database', 'docker', 'redis', 'fleet', 'research_programs', 'portfolio',
-                            'fleet_backlog'}
+                            'fleet_backlog', 'host_delivery'}
     # The additive approved-backlog source (INV-FLEET-BACKLOG-001) reads the same store: unavailable
     # with the exception TYPE only, never an empty backlog reported as a healthy read.
     assert sources['fleet_backlog']['status'] == 'unavailable'
     assert sources['fleet_backlog']['data'] is None and sources['fleet_backlog']['error'] == 'RuntimeError'
+    # The additive host-delivery source (INV-HOST-DELIVERY-001) reads the same store: unavailable
+    # with the exception TYPE only, never an empty delivery reported as a healthy read, and never
+    # a host that is claimed to be running something because the store could not be asked.
+    assert sources['host_delivery']['status'] == 'unavailable'
+    assert sources['host_delivery']['data'] is None and sources['host_delivery']['error'] == 'RuntimeError'
     # The additive portfolio source (operating-portfolio-001) reads the same store: unavailable, never a guess.
     assert sources['portfolio']['status'] == 'unavailable'
     assert sources['portfolio']['data'] is None and sources['portfolio']['error'] == 'RuntimeError'
@@ -305,7 +318,7 @@ def test_collect_keeps_source_failures_independent(monkeypatch):
     assert sources['docker'] == {'status': 'ok', 'observed_at': sources['docker']['observed_at'],
                                  'data': [{'service': 'redis', 'state': 'running'}]}
     assert sources['redis']['status'] == 'ok' and sources['redis']['data'][0]['agent'] == 'conductor'
-    for name in ('database', 'docker', 'redis', 'fleet', 'fleet_backlog'):
+    for name in ('database', 'docker', 'redis', 'fleet', 'fleet_backlog', 'host_delivery'):
         observed = datetime.fromisoformat(sources[name]['observed_at'])
         assert observed.tzinfo is not None
         assert before <= observed <= datetime.fromisoformat(result['collected_at'])

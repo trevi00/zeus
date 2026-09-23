@@ -176,6 +176,22 @@ class GitWorkspace:
             raise GitCommandError("Cannot establish candidate ancestry")
         return result.returncode == 0
 
+    def qualify_merged(self, candidate: dict, merged_revision: str, *, fetch: bool = True) -> dict:
+        """The merged commit really carries the REVIEWED tree (FA-015).
+
+        One qualification for both paths: the merge this process performed and a merge it only
+        observed after a lost response or a later tick. A merge that happened is not a qualified
+        deployment, so a merged revision whose tree is not the reviewed one is refused here exactly
+        as it is during the merge itself, however successfully the provider reports it.
+        """
+        require(bool(re.fullmatch(r"[0-9a-f]{40}", str(merged_revision or ""))),
+                "Merged revision required")
+        if fetch and self.remote:
+            self._git("fetch", "https://github.com/" + self.remote + ".git", "main")
+        tree = self._git("rev-parse", merged_revision + "^{tree}")
+        require(tree == candidate["tree"], "Merged tree differs from reviewed candidate")
+        return {"merged_revision": merged_revision, "tree": tree}
+
     def merge(self, candidate: dict) -> dict:
         target = self.require_target(candidate)
         require(self._git("rev-parse", candidate["revision"] + "^{tree}") == candidate["tree"],
@@ -190,8 +206,7 @@ class GitWorkspace:
                 raise GitCommandError("PR merge failed: " + result.stderr[-1000:])
             self._git("fetch", "https://github.com/" + self.remote + ".git", "main")
             merged_revision = self._git("rev-parse", "FETCH_HEAD")
-            require(self._git("rev-parse", merged_revision + "^{tree}") == candidate["tree"],
-                    "Merged tree differs from reviewed candidate")
+            self.qualify_merged(candidate, merged_revision, fetch=False)
             self._git("merge", "--ff-only", merged_revision)
             return {"merged": True, "revision": candidate["revision"], "merged_revision": merged_revision,
                     "transport": "github", "target": target}

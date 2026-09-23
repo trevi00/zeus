@@ -15,6 +15,15 @@ Four concrete things live here and nothing else decides policy:
 * `CANARIES` maps the incumbent fixed check ids to real checks. A plan names one of them by id; no
   plan ever supplies a command, an argv, a path or a check body.
 
+A launched service is bound to the OWNER-REGISTERED runtime root of its target: it is started with
+that root as its working directory and with that root's `src` ahead of everything else on
+`PYTHONPATH`, so the code it imports is the code that lives there. What it reports back about itself
+is observed, never copied from the descriptor it was handed: the package directory it actually
+imported, the root that package came from, the revision that root is actually at (its own checked
+out `HEAD`, or the owner's `runtime.json` attestation when the root is not a checkout) and the
+effective worker image and profile digest of that runtime. An idle process that merely echoes a
+requested descriptor therefore cannot qualify anything.
+
 The service process is deliberately NOT owned through `ProcessTree`. That owner's Windows boundary
 is a job object with KILL_ON_JOB_CLOSE (see `adapters.background_service`), so the tree ends when
 the handle closes - exactly right for a launcher that outlives its child, and exactly wrong for a
@@ -35,6 +44,7 @@ import errno
 import hashlib
 import json
 import os
+import re
 import signal
 import subprocess
 import sys
@@ -70,6 +80,9 @@ ENABLED_SETTING = "ZEUS_HOST_DELIVERY_ENABLED"
 TRUE_VALUES = {"1", "true", "yes", "on"}
 
 DESCRIPTOR_FILE = "descriptor.json"
+# The owner's attestation of what a prepared runtime ROOT is, read from the root itself and only
+# when that root is not a Git checkout. It is never written, edited or read from a plan here.
+RUNTIME_FILE = "runtime.json"
 RECEIPT_FILE = "startup-receipt.json"
 WORK_FILE = "work.json"
 STATE_FILE = "controller-state.json"
@@ -111,6 +124,111 @@ def _write_json(path: Path, document) -> None:
     temporary = path.with_name(path.name + ".tmp-" + uuid.uuid4().hex[:8])
     temporary.write_text(json.dumps(document, sort_keys=True), encoding="utf-8")
     os.replace(temporary, path)
+
+
+# ----- what a runtime root actually IS ------------------------------------------------------
+def _git_directory(root: Path) -> Path | None:
+    """The Git directory of this root, following a worktree's `gitdir:` pointer. No git runs."""
+    marker = root / ".git"
+    if marker.is_dir():
+        return marker
+    try:
+        text = marker.read_text("utf-8")
+    except OSError:
+        return None
+    if not text.startswith("gitdir:"):
+        return None
+    pointer = Path(text.split(":", 1)[1].strip())
+    pointer = pointer if pointer.is_absolute() else (root / pointer)
+    return pointer if pointer.is_dir() else None
+
+
+def checkout_revision(root: Path) -> str | None:
+    """The commit this checkout is ACTUALLY at, read from its own refs; never from a descriptor.
+
+    Plain file reads of `HEAD`, the loose ref it names and `packed-refs` - no subprocess, no
+    network and no index. A root that is not a checkout answers None rather than a guess.
+    """
+    directory = _git_directory(Path(root))
+    if directory is None:
+        return None
+    try:
+        head = (directory / "HEAD").read_text("utf-8").strip()
+    except OSError:
+        return None
+    if re.fullmatch(r"[0-9a-f]{40}", head):
+        return head
+    if not head.startswith("ref:"):
+        return None
+    reference = head.split(":", 1)[1].strip()
+    try:
+        loose = (directory / reference).read_text("utf-8").strip()
+        return loose if re.fullmatch(r"[0-9a-f]{40}", loose) else None
+    except OSError:
+        pass
+    try:
+        packed = (directory / "packed-refs").read_text("utf-8")
+    except OSError:
+        return None
+    for line in packed.splitlines():
+        parts = line.split()
+        if len(parts) == 2 and parts[1] == reference and re.fullmatch(r"[0-9a-f]{40}", parts[0]):
+            return parts[0]
+    return None
+
+
+def runtime_revision(root) -> str | None:
+    """What revision the runtime root is at: its own checkout, else the owner's attestation."""
+    revision = checkout_revision(Path(root))
+    if revision is not None:
+        return revision
+    attestation = _read_json(Path(root) / RUNTIME_FILE)
+    value = attestation.get("revision") if isinstance(attestation, dict) else None
+    return value if type(value) is str and re.fullmatch(r"[0-9a-f]{40}", value) else None
+
+
+def effective_worker_image(config=None) -> str:
+    """The worker image THIS runtime is configured with, as `adapters.isolated_worker` reads it.
+
+    Effective configuration, not a model call: a host that configures no isolation image reports
+    the explicit token `none`, which a delivery must then bind deliberately.
+    """
+    if config is None:
+        config = _host_settings()
+    value = str((config or {}).get("ZEUS_WORKER_IMAGE")
+                or (config or {}).get("HARNESS_WORKER_IMAGE") or "").strip()
+    return value or "none"
+
+
+def effective_profile_digest() -> str | None:
+    """The digest of the worker profile THIS loaded code packages; None when it cannot be loaded."""
+    from codex_harness.adapters.worker_profile import load_profile
+    from codex_harness.adapters.worker_profile import profile_digest as digest_of
+
+    try:
+        return digest_of(load_profile("worker-v1"))
+    except Exception:
+        return None
+
+
+def _host_settings() -> dict:
+    from codex_harness.adapters.configuration import settings
+
+    try:
+        return settings()
+    except Exception:
+        # A malformed host configuration is not a reason to invent one; the receipt that follows
+        # simply carries no effective image and is refused rather than accepted.
+        return {}
+
+
+def loaded_runtime() -> dict:
+    """What THIS process actually loaded: the package directory and the root it came from."""
+    module_root = Path(codex_harness.__file__).resolve().parent
+    # `<root>/src/codex_harness` is this repository's layout; an installed package that is not
+    # under a `src` directory reports its own parent, and the comparison in the domain decides.
+    root = module_root.parent.parent if module_root.parent.name == "src" else module_root.parent
+    return {"module_root": str(module_root), "runtime_root": str(root)}
 
 
 # ----- the owner-approved plan, read from Git ------------------------------------------------
@@ -215,6 +333,14 @@ class GitHubDelivery:
         return {"merged": bool(merged.get("merged")),
                 "merged_revision": merged.get("merged_revision") or merged.get("revision")}
 
+    def qualify(self, candidate: dict, merged_revision) -> dict:
+        """The merged revision carries the reviewed tree, through the workspace's own check.
+
+        The coordinator calls this for a merge it performed AND for one it only observed, so a
+        recovered merge can never inherit an acceptance the merged tree does not satisfy.
+        """
+        return self.workspace.qualify_merged(candidate, merged_revision)
+
 
 # ----- host targets ----------------------------------------------------------------------------
 class HostTargetBase:
@@ -245,8 +371,13 @@ class HostTargetBase:
         except DeliveryRefused:
             return None
 
-    def switch(self, target: dict, descriptor: dict, *, expected) -> dict:
-        """Atomically replace the descriptor after comparing the expected predecessor."""
+    def switch(self, target: dict, descriptor: dict, *, expected, authorize=None) -> dict:
+        """Atomically replace the descriptor after comparing the expected predecessor.
+
+        `authorize` is the caller's ownership check and is called INSIDE the target lock, right
+        before the replacement: a controller whose fence expired while it was waiting for this lock
+        raises there and writes nothing, rather than overwriting its successor's descriptor.
+        """
         lock = self.path(target, LOCK_DIR)
         lock.parent.mkdir(parents=True, exist_ok=True)
         deadline = time.monotonic() + self.lock_timeout
@@ -266,6 +397,8 @@ class HostTargetBase:
             observed = None if current is None else descriptor_digest(current)
             if observed != expected:
                 raise DeliveryRefused("descriptor_changed", "expected_descriptor")
+            if authorize is not None:
+                authorize()
             _write_json(self.path(target, DESCRIPTOR_FILE), descriptor)
             return {"written": True, "descriptor_sha256": descriptor_digest(descriptor)}
         finally:
@@ -301,8 +434,14 @@ class HostTargetBase:
     def running(self, target: dict) -> bool:
         raise NotImplementedError
 
-    def start(self, target: dict, descriptor: dict) -> dict:
+    def start(self, target: dict, descriptor: dict, *, authorize=None) -> dict:
         raise NotImplementedError
+
+    @staticmethod
+    def _authorized(authorize) -> None:
+        """The caller's fence check at the last moment before a process is started."""
+        if authorize is not None:
+            authorize()
 
 
 def _reaped(pid) -> bool:
@@ -383,13 +522,34 @@ class ProcessHostTarget(HostTargetBase):
             time.sleep(STOP_POLL)
         return {"stopped": not _alive(pid), "was_running": True, "pid": pid}
 
-    def start(self, target: dict, descriptor: dict) -> dict:
+    @staticmethod
+    def runtime_environment(root: Path) -> dict:
+        """Bind the child's imports to the owner-registered runtime root, and to nothing else.
+
+        The root's `src` goes ahead of an inherited `PYTHONPATH` and the root becomes the child's
+        repository, so the package it imports is the one that lives there. A root that holds no
+        importable harness is refused before a process exists, rather than silently launching this
+        controller's own code and calling it the delivered runtime.
+        """
+        if not (root / "src" / "codex_harness" / "__init__.py").is_file():
+            raise DeliveryRefused("runtime_root_unavailable", "root")
+        environment = dict(os.environ)
+        inherited = environment.get("PYTHONPATH")
+        source = str(root / "src")
+        environment["PYTHONPATH"] = source + (os.pathsep + inherited if inherited else "")
+        environment["ZEUS_REPOSITORY"] = environment["HARNESS_REPOSITORY"] = str(root)
+        return environment
+
+    def start(self, target: dict, descriptor: dict, *, authorize=None) -> dict:
         """Stop the previous instance, prove it is gone, then start exactly one new process.
 
         The old receipt is removed before the start, so the next consumption check cannot read the
         previous instance's evidence as the new one's. A previous process that cannot be proven
-        gone raises instead of starting a second one beside it.
+        gone raises instead of starting a second one beside it, and the fence is re-checked
+        immediately before the launch so a superseded controller starts nothing.
         """
+        root = Path(descriptor["root"])
+        environment = self.runtime_environment(root)
         stopped = self.stop(target)
         if not stopped["stopped"]:
             raise DeliveryRefused("previous_instance_unconfirmed", "target_id")
@@ -398,10 +558,12 @@ class ProcessHostTarget(HostTargetBase):
                 self.path(target, name).unlink()
             except OSError:
                 pass
+        self._authorized(authorize)
         argv = [self.python, "-m", "codex_harness.adapters.host_delivery", "service",
                 "--state-dir", str(self.state_dir(target)), "--max-seconds", str(self.max_seconds)]
         process = subprocess.Popen(argv, stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL,
-                                   stderr=subprocess.DEVNULL, **no_console_kwargs(process_group=True))
+                                   stderr=subprocess.DEVNULL, cwd=str(root), env=environment,
+                                   **no_console_kwargs(process_group=True))
         _write_json(self.path(target, STATE_FILE),
                     {"pid": process.pid, "started_at": _utcnow(),
                      "descriptor_sha256": descriptor_digest(descriptor)})
@@ -438,7 +600,7 @@ class ScheduledTaskHostTarget(HostTargetBase):
             time.sleep(STOP_POLL)
         return {"stopped": not self.running(target), "exit_code": result.returncode}
 
-    def start(self, target: dict, descriptor: dict) -> dict:
+    def start(self, target: dict, descriptor: dict, *, authorize=None) -> dict:
         stopped = self.stop(target)
         if not stopped["stopped"]:
             raise DeliveryRefused("previous_instance_unconfirmed", "target_id")
@@ -447,7 +609,9 @@ class ScheduledTaskHostTarget(HostTargetBase):
                 self.path(target, name).unlink()
             except OSError:
                 pass
-        # The task's own registration owns its launcher, its window policy and its process tree.
+        self._authorized(authorize)
+        # The task's own registration owns its launcher, its window policy and its process tree;
+        # the runtime root it starts from is the owner's registration, which this never rewrites.
         result = self.runner(["schtasks", "/Run", "/TN", target["service"]], timeout=self.timeout)
         if result.returncode:
             raise RuntimeError("Scheduled task could not be started")
@@ -463,17 +627,25 @@ def host_ports(**kwargs) -> dict:
 
 
 # ----- the incumbent fixed canary checks --------------------------------------------------------
-def startup_identity_canary(target: dict, descriptor: dict) -> dict:
+# Every canary is called with the target, the descriptor this delivery switched to and `startup`:
+# the OBSERVED startup evidence of the instance that reported it (its instance id, the root and
+# package it actually loaded, and the revision that runtime is at). The canary decides whether that
+# observed runtime may become the active one, so it binds the instance and the runtime and never
+# reads the final active pointer - which this delivery has deliberately not written yet.
+def startup_identity_canary(target: dict, descriptor: dict, startup: dict) -> dict:
     """The service contract of an owned process target: it is still there, still itself.
 
-    The receipt is re-read AFTER activation was proposed and the process is checked to be alive, so
-    a process that wrote a receipt and died is not an activation.
+    The receipt is re-read AFTER the startup was observed and the process is checked to be alive,
+    so a process that wrote a receipt and died is not an activation, and a receipt that has since
+    been replaced by another instance is a stale one rather than this instance's evidence.
     """
     receipt = _read_json(HostTargetBase.path(target, RECEIPT_FILE))
     if not isinstance(receipt, dict):
         return {"passed": False, "reason_code": "canary_receipt_missing", "evidence": None}
     if receipt.get("descriptor_sha256") != descriptor_digest(descriptor):
         return {"passed": False, "reason_code": "canary_descriptor_mismatch", "evidence": None}
+    if receipt.get("instance_id") != (startup or {}).get("instance_id"):
+        return {"passed": False, "reason_code": "canary_instance_changed", "evidence": None}
     state = _read_json(HostTargetBase.path(target, STATE_FILE)) or {}
     pid = state.get("pid") if target.get("kind") == KIND_PROCESS else receipt.get("pid")
     if not _alive(pid):
@@ -481,37 +653,54 @@ def startup_identity_canary(target: dict, descriptor: dict) -> dict:
     return {"passed": True, "reason_code": None, "evidence": receipt.get("instance_id")}
 
 
-def collect_monitor_canary(target: dict, descriptor: dict, *, store=None) -> dict:
-    """The service contract of the collect target: a FRESH read-only monitor source shows this
-    runtime as the consumed one.
+def collect_monitor_canary(target: dict, descriptor: dict, startup: dict, *, store=None) -> dict:
+    """The service contract of the collect target: a FRESH read-only monitor source shows exactly
+    this runtime as the instance that started on this target.
 
-    It is the incumbent collector's own projection that answers, so a canary cannot pass on a
-    snapshot that was collected before the switch or on a descriptor nobody consumed.
+    It is the incumbent collector's own projection that answers, and it answers about the OBSERVED
+    startup, not about the active pointer: the descriptor this source reports must be the one that
+    was switched to, its startup must have been observed, and the instance it names must be the
+    instance whose receipt this delivery accepted. A snapshot taken before the switch names another
+    descriptor or another instance and is refused, and a source that cannot be read at all is
+    unavailable rather than a pass.
     """
     if store is None:
         return {"passed": False, "reason_code": "canary_store_unavailable", "evidence": None}
     from codex_harness.adapters.monitoring import host_delivery_facts
 
-    facts = host_delivery_facts(store)
+    try:
+        facts = host_delivery_facts(store)
+    except Exception as exc:
+        return {"passed": False, "reason_code": "canary_source_unavailable", "evidence": None,
+                "error_type": type(exc).__name__}
     row = next((entry for entry in facts.get("targets", [])
                 if entry.get("target_id") == target["target_id"]), None)
     if row is None:
         return {"passed": False, "reason_code": "canary_target_unobserved", "evidence": None}
-    if row.get("descriptor_sha256") != descriptor_digest(descriptor) or not row.get("consumed"):
-        return {"passed": False, "reason_code": "canary_descriptor_not_active", "evidence": None}
-    return {"passed": True, "reason_code": None, "evidence": row.get("instance_id")}
+    if row.get("descriptor_sha256") != descriptor_digest(descriptor) or not row.get("startup_observed"):
+        return {"passed": False, "reason_code": "canary_descriptor_not_observed", "evidence": None}
+    instance = (startup or {}).get("instance_id")
+    if not instance or row.get("observed_instance_id") != instance:
+        return {"passed": False, "reason_code": "canary_instance_not_observed", "evidence": None}
+    if row.get("observed_revision") != descriptor["revision"]:
+        return {"passed": False, "reason_code": "canary_runtime_not_observed", "evidence": None}
+    return {"passed": True, "reason_code": None, "evidence": row.get("observed_instance_id")}
 
 
-def owner_qualified_canary(target: dict, descriptor: dict) -> dict:
+def owner_qualified_canary(target: dict, descriptor: dict, startup: dict) -> dict:
     """A real qualified worker operation is OWNER acceptance work, not something a controller runs.
 
-    This check therefore looks for the owner's own receipt for exactly this descriptor. No model,
-    provider or worker is started from here, and an absent receipt is an honest not-passed.
+    This check therefore looks for the owner's own receipt for exactly this descriptor, and for the
+    instance it was taken against when the owner recorded one. No model, provider or worker is
+    started from here, and an absent receipt is an honest not-passed.
     """
     receipt = _read_json(HostTargetBase.path(target, CANARY_RECEIPT_FILE))
     if not isinstance(receipt, dict):
         return {"passed": False, "reason_code": "canary_owner_receipt_missing", "evidence": None}
     if receipt.get("descriptor_sha256") != descriptor_digest(descriptor):
+        return {"passed": False, "reason_code": "canary_owner_receipt_stale", "evidence": None}
+    if receipt.get("instance_id") is not None \
+            and receipt.get("instance_id") != (startup or {}).get("instance_id"):
         return {"passed": False, "reason_code": "canary_owner_receipt_stale", "evidence": None}
     return {"passed": bool(receipt.get("passed")), "evidence": receipt.get("evidence"),
             "reason_code": None if receipt.get("passed") else "canary_owner_receipt_failed"}
@@ -520,20 +709,28 @@ def owner_qualified_canary(target: dict, descriptor: dict) -> dict:
 def canary_checks(store=None) -> dict:
     """The fixed check id -> check map. A plan selects one by id and supplies nothing else."""
     return {CANARY_STARTUP: startup_identity_canary,
-            CANARY_COLLECT: lambda target, descriptor: collect_monitor_canary(target, descriptor,
-                                                                              store=store),
+            CANARY_COLLECT: lambda target, descriptor, startup: collect_monitor_canary(
+                target, descriptor, startup, store=store),
             CANARY_FLEET: owner_qualified_canary}
 
 
 # ----- the launched service ----------------------------------------------------------------------
 def startup_receipt(descriptor: dict) -> dict:
-    """What a launched process reports about ITSELF: its instance, its process and what it loaded."""
+    """What a launched process reports about ITSELF: its instance, its process and what it loaded.
+
+    Only the target and the descriptor digest say which descriptor was read. The runtime identity -
+    the root, the package directory, the revision that root is at, and the effective worker image
+    and profile digest of this runtime - is OBSERVED here, so a process launched from an old
+    runtime reports the old runtime and is refused instead of echoing what it was handed.
+    """
+    loaded = loaded_runtime()
     return {"schema": RECEIPT_SCHEMA, "target_id": descriptor["target_id"],
             "instance_id": uuid.uuid4().hex, "pid": os.getpid(), "started_at": _utcnow(),
-            "module_root": str(Path(codex_harness.__file__).resolve().parent),
-            "descriptor_sha256": descriptor_digest(descriptor), "revision": descriptor["revision"],
-            "worker_image": descriptor["worker_image"],
-            "profile_digest": descriptor["profile_digest"]}
+            "runtime_root": loaded["runtime_root"], "module_root": loaded["module_root"],
+            "descriptor_sha256": descriptor_digest(descriptor),
+            "revision": runtime_revision(loaded["runtime_root"]) or "",
+            "worker_image": effective_worker_image(),
+            "profile_digest": effective_profile_digest() or ""}
 
 
 def serve(state_dir: str, max_seconds: int = SERVICE_MAX_SECONDS) -> int:
@@ -707,11 +904,13 @@ def main(argv=None) -> int:
 
 
 __all__ = ["CANARY_RECEIPT_FILE", "DESCRIPTOR_FILE", "ENABLED_SETTING", "MAX_PLAN_BYTES",
-           "RECEIPT_FILE", "STATE_FILE", "WORK_FILE", "GitHubDelivery", "HostTargetBase",
-           "ProcessHostTarget", "ScheduledTaskHostTarget", "add_parser", "canary_checks",
-           "collect_monitor_canary", "configured_enabled", "controller", "execute", "host_ports",
-           "load_plan", "main", "normalize_checks", "owner_qualified_canary", "refusal", "run_loop",
-           "serve", "startup_identity_canary", "startup_receipt"]
+           "RECEIPT_FILE", "RUNTIME_FILE", "STATE_FILE", "WORK_FILE", "GitHubDelivery",
+           "HostTargetBase", "ProcessHostTarget", "ScheduledTaskHostTarget", "add_parser",
+           "canary_checks", "checkout_revision", "collect_monitor_canary", "configured_enabled",
+           "controller", "effective_profile_digest", "effective_worker_image", "execute",
+           "host_ports", "load_plan", "loaded_runtime", "main", "normalize_checks",
+           "owner_qualified_canary", "refusal", "run_loop", "runtime_revision", "serve",
+           "startup_identity_canary", "startup_receipt"]
 
 
 if __name__ == "__main__":

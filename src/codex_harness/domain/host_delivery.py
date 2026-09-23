@@ -15,12 +15,15 @@ path or another policy for itself. The canary is the same: a plan names one incu
 id from `CANARY_CHECKS`, never executable text.
 
 Everything here is pure policy over dictionaries: no store, process, git, subprocess or provider
-access, and no value ever reaches an error message - only the field name does. Approval is not
-granted here either: this module can only RECOGNIZE the approval that `application.releases`
-already recorded, and a plan that claims a review, a check or an activation proves nothing.
+access, and no value ever reaches an error message - only the field name does. (`os.path.normcase`
+and `os.path.normpath` are used for host paths: both are pure text functions that touch no
+filesystem.) Approval is not granted here either: this module can only RECOGNIZE the approval that
+`application.releases` already recorded, and a plan that claims a review, a check or an activation
+proves nothing.
 """
 from __future__ import annotations
 
+import os.path
 import re
 
 from codex_harness.domain.model import ContractError, digest
@@ -41,8 +44,8 @@ REGISTRY_FIELDS = {"schema", "targets"}
 TARGET_FIELDS = {"target_id", "kind", "root", "state_dir", "service"}
 DESCRIPTOR_FIELDS = ("schema", "target_id", "root", "revision", "worker_image", "profile_digest",
                      "predecessor")
-RECEIPT_FIELDS = {"schema", "target_id", "instance_id", "pid", "started_at", "module_root",
-                  "descriptor_sha256", "revision", "worker_image", "profile_digest"}
+RECEIPT_FIELDS = {"schema", "target_id", "instance_id", "pid", "started_at", "runtime_root",
+                  "module_root", "descriptor_sha256", "revision", "worker_image", "profile_digest"}
 PIN_FIELDS = {"revision", "path", "sha256"}
 
 # Host target kinds this harness knows how to own. The Windows scheduled task is the current host's
@@ -178,6 +181,24 @@ def _fields(document, expected, name: str) -> None:
 def _bounded_int(value, low: int, high: int) -> bool:
     # `bool` is refused here exactly as everywhere else: its type is bool, not int.
     return type(value) is int and low <= value <= high
+
+
+def normal_path(value) -> str:
+    """One comparable spelling of a host path. Pure text: nothing is resolved or opened here."""
+    text = str(value or "").strip().replace("\\", "/").rstrip("/")
+    return os.path.normcase(os.path.normpath(text)) if text else ""
+
+
+def same_path(left, right) -> bool:
+    return bool(normal_path(left)) and normal_path(left) == normal_path(right)
+
+
+def within_path(child, root) -> bool:
+    """Whether `child` IS `root` or lies under it; a sibling with a shared prefix does not."""
+    parent, inner = normal_path(root), normal_path(child)
+    if not parent or not inner:
+        return False
+    return inner == parent or inner.startswith(parent.rstrip(os.sep) + os.sep)
 
 
 def safe_error_type(value) -> str | None:
@@ -368,7 +389,7 @@ def validate_receipt(document) -> dict:
         raise DeliveryRefused("receipt_invalid", "instance_id")
     if not _bounded_int(document["pid"], 1, 2 ** 31 - 1):
         raise DeliveryRefused("receipt_invalid", "pid")
-    for key in ("started_at", "module_root"):
+    for key in ("started_at", "runtime_root", "module_root"):
         if not (type(document[key]) is str and document[key].strip() and len(document[key]) <= 400):
             raise DeliveryRefused("receipt_invalid", key)
     if not _hex(document["descriptor_sha256"], SHA256):
@@ -423,10 +444,16 @@ def ci_verdict(required, observed, head: str, observed_head=None) -> dict:
 def consumption_verdict(descriptor: dict, receipt, *, expected_instance=None) -> dict:
     """Whether the process that started is REALLY running the descriptor that was switched to.
 
-    Every bound field is compared, including the digest of the descriptor the process says it
-    loaded and the module root it says it imported. A receipt that is absent, malformed, from
-    another target, from the previous instance or bound to any other identity never grants
-    activation; it is a definite mismatch with its own code, not a retryable unknown.
+    Every bound field is compared, and the runtime identity is compared FIRST: the root the process
+    says it actually imported from must be exactly the owner-registered root of this target, and the
+    package it says it loaded must lie inside that root. Only then do the revision, the effective
+    worker image and the effective profile digest the runtime OBSERVED about itself have to equal
+    the ones this delivery requested - which is what makes an old runtime started with a new
+    descriptor a refusal rather than an activation, however alive its pid is.
+
+    A receipt that is absent, malformed, from another target, from another root, from the previous
+    instance or bound to any other identity never grants activation; it is a definite mismatch with
+    its own code, not a retryable unknown.
     """
     if receipt is None:
         return {"consumed": False, "reason_code": "receipt_missing", "instance_id": None}
@@ -434,21 +461,27 @@ def consumption_verdict(descriptor: dict, receipt, *, expected_instance=None) ->
         checked = validate_receipt(receipt)
     except DeliveryRefused as exc:
         return {"consumed": False, "reason_code": exc.reason_code, "instance_id": None}
+    observed = {"instance_id": checked["instance_id"], "pid": checked["pid"],
+                "runtime_root": checked["runtime_root"], "module_root": checked["module_root"],
+                "revision": checked["revision"]}
+    if not same_path(checked["runtime_root"], descriptor["root"]):
+        # The process is running from somewhere other than the root this target is registered at.
+        return {"consumed": False, "reason_code": "receipt_runtime_root_mismatch", **observed}
+    if not within_path(checked["module_root"], checked["runtime_root"]):
+        # It imported its code from outside the root it claims to be running: not this runtime.
+        return {"consumed": False, "reason_code": "receipt_module_root_foreign", **observed}
     expected_digest = descriptor_digest(descriptor)
     for key, expected in (("target_id", descriptor["target_id"]), ("revision", descriptor["revision"]),
                           ("worker_image", descriptor["worker_image"]),
                           ("profile_digest", descriptor["profile_digest"]),
                           ("descriptor_sha256", expected_digest)):
         if checked[key] != expected:
-            return {"consumed": False, "reason_code": "receipt_" + key + "_mismatch",
-                    "instance_id": checked["instance_id"]}
+            return {"consumed": False, "reason_code": "receipt_" + key + "_mismatch", **observed}
     if expected_instance is not None and checked["instance_id"] == expected_instance:
         # The file still describes the process that was there BEFORE this switch: a stale receipt is
         # not evidence of the new one, however well its fields match.
-        return {"consumed": False, "reason_code": "receipt_stale_instance",
-                "instance_id": checked["instance_id"]}
-    return {"consumed": True, "reason_code": None, "instance_id": checked["instance_id"],
-            "pid": checked["pid"], "module_root": checked["module_root"]}
+        return {"consumed": False, "reason_code": "receipt_stale_instance", **observed}
+    return {"consumed": True, "reason_code": None, **observed}
 
 
 def release_gate(record, plan: dict, parent: str | None) -> dict:
@@ -535,7 +568,9 @@ def delivery_progress(row: dict, intent, descriptor_row) -> dict:
     No path, no descriptor body, no check output, no PR title, no exception message and no
     credential is projected: a reader gets ids, digests, states and reason codes only. An absent
     intent is `registered`, never invented progress, and an absent descriptor is unknown rather
-    than an empty tuple.
+    than an empty tuple. `startup_observed` is the launched instance's OWN accepted receipt and is
+    deliberately separate from `consumed`: a runtime is observed BEFORE the canary that decides
+    whether it may become the active one, and only `consumed` is that activation.
     """
     plan = row["plan"]
     stage = (intent or {}).get("stage") or REGISTERED
@@ -554,6 +589,7 @@ def delivery_progress(row: dict, intent, descriptor_row) -> dict:
             "canary": (intent or {}).get("canary"), "rollback": (intent or {}).get("rollback"),
             "active_descriptor_sha256": None if active is None else descriptor_digest(active),
             "active_revision": None if active is None else active.get("revision"),
+            "startup_observed": bool((descriptor_row or {}).get("startup_observed")),
             "consumed": bool((descriptor_row or {}).get("consumed")),
             "updated_at": (intent or {}).get("updated_at") or row.get("updated_at")}
     view["next_action"] = stage_next_action(stage, view["outcome"])
@@ -582,6 +618,9 @@ def target_progress(row: dict) -> dict:
     body, a root, a service name or a path. `consumed` false is a switch that was not an
     activation, and an absent row is simply not listed - never an empty tuple that reads as clean."""
     return {"target_id": row["target_id"], "descriptor_sha256": row.get("descriptor_sha256"),
+            "startup_observed": bool(row.get("startup_observed")),
+            "observed_instance_id": row.get("observed_instance_id"),
+            "observed_revision": row.get("observed_revision"),
             "revision": (row.get("descriptor") or {}).get("revision"),
             "worker_image": (row.get("descriptor") or {}).get("worker_image"),
             "profile_digest": (row.get("descriptor") or {}).get("profile_digest"),
@@ -606,7 +645,7 @@ __all__ = ["ACTIVE", "AUTHORITY", "AWAITING_CI", "AWAITING_CONSUMPTION", "AWAITI
            "SWITCHING",
            "TARGET_KINDS", "TERMINAL_STAGES", "TICK_SCHEMA", "UNCHANGED", "DeliveryRefused",
            "ci_verdict", "consumption_verdict", "delivery_progress", "delivery_status",
-           "descriptor_digest", "new_intent", "next_stage", "plan_digest", "release_gate",
-           "resolve_descriptor", "safe_error_type", "stage_next_action", "target_progress",
-           "validate_descriptor",
-           "validate_pin", "validate_plan", "validate_receipt", "validate_targets"]
+           "descriptor_digest", "new_intent", "next_stage", "normal_path", "plan_digest",
+           "release_gate", "resolve_descriptor", "safe_error_type", "same_path",
+           "stage_next_action", "target_progress", "validate_descriptor",
+           "validate_pin", "validate_plan", "validate_receipt", "validate_targets", "within_path"]

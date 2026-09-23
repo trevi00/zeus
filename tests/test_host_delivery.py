@@ -5,9 +5,11 @@ The GitHub port here is a labelled in-test double: no `gh`, no network, no GitHu
 scheduled-task mutation, no provider and no model call happens anywhere in this module, and every
 injected outage is labelled where it is injected. The HOST side is real - an actual temporary state
 directory, an actual descriptor file replaced atomically, an actual detached child process started
-from this interpreter through the shipped service entry, and the actual startup receipt that child
-writes about itself. The one integration-gated test at the end skips honestly without
-`HARNESS_INTEGRATION=1`.
+from THIS CHECKOUT as its registered runtime root, and the actual startup receipt that child writes
+about the code it really imported. Nothing is ever written into that root: the runtime facts are
+read from it (its own `HEAD`, its packaged profile, its effective worker image), and every mutable
+file of a target lives under a temporary state directory. The one integration-gated test at the end
+skips honestly without `HARNESS_INTEGRATION=1`.
 
 The store is `SerialStore`: a MemoryStore that REFUSES a transaction opened while another one is
 already open. The real `PostgresStore.transaction` connects and takes `pg_advisory_xact_lock` per
@@ -21,17 +23,24 @@ import os
 import time
 from contextlib import contextmanager
 from datetime import datetime, timedelta
+from pathlib import Path
 
 import pytest
 
 from codex_harness.adapters.host_delivery import (
+    CANARY_RECEIPT_FILE,
     DESCRIPTOR_FILE,
     RECEIPT_FILE,
     STATE_FILE,
     WORK_FILE,
     ProcessHostTarget,
+    collect_monitor_canary,
+    effective_profile_digest,
+    effective_worker_image,
+    loaded_runtime,
     normalize_checks,
     owner_qualified_canary,
+    runtime_revision,
     serve,
     startup_identity_canary,
 )
@@ -53,9 +62,11 @@ from codex_harness.domain.host_delivery import (
     AWAITING_CONSUMPTION,
     AWAITING_REVIEW,
     BLOCKED,
+    CANARY_COLLECT,
     CANARY_FLEET,
     CANARY_STARTUP,
     DRAIN_INTENDED,
+    EVENT_SWITCHED,
     MERGE_INTENDED,
     MERGED,
     PLAN_SCHEMA,
@@ -74,14 +85,31 @@ from codex_harness.domain.host_delivery import (
 )
 from codex_harness.domain.model import ContractError
 from codex_harness.domain.observation import new_process_run_id
+from codex_harness.domain.policy import POLICY
 
 CANARY_TEXT = "CANARY-must-never-be-emitted"
 REVISION = "a" * 40
 BASE = "b" * 40
 TREE = "c" * 64
-IMAGE = "zeus-worker@sha256:" + "d" * 64
-PROFILE = "e" * 64
 MERGED_REVISION = "9" * 40
+
+# The runtime a delivery activates here is THIS checkout: its own root, the revision it is really
+# at, the worker image its configuration really names and the digest of the profile it really
+# packages. None of these is invented by a fixture, and none of them is taken from a descriptor -
+# which is exactly why the tests below can tell an actually delivered runtime from an echo.
+RUNTIME_ROOT = loaded_runtime()["runtime_root"]
+RUNTIME_REVISION = runtime_revision(RUNTIME_ROOT)
+IMAGE = effective_worker_image()
+PROFILE = effective_profile_digest()
+# A checkout that attests no revision of its own (an exported copy with no Git directory and no
+# owner `runtime.json`) cannot bind a real runtime; those tests skip honestly rather than pretend.
+DESCRIPTOR_REVISION = RUNTIME_REVISION or REVISION
+binds_a_runtime = pytest.mark.skipif(
+    RUNTIME_REVISION is None or PROFILE is None,
+    reason="this checkout attests no runtime revision or packaged profile digest")
+# An identity-only descriptor for the pure policy tests, with no host behind it.
+FIXTURE_IMAGE = "zeus-worker@sha256:" + "d" * 64
+FIXTURE_PROFILE = "e" * 64
 REPOSITORY = "github:zeus-owner/zeus-harness"
 CHECK = "ci / required"
 PLAN_PATH = "docs/zeus/operations/delivery.json"
@@ -132,12 +160,13 @@ class FakeGitHub:
     lost-response case; it never runs `gh`, opens a socket or touches a repository.
     """
 
-    def __init__(self, *, checks=((CHECK, "success"),), head=None):
+    def __init__(self, *, checks=((CHECK, "success"),), head=None, merged_tree=TREE):
         self.rows = [{"name": name, "state": state} for name, state in checks]
         self.head = head  # None: each candidate's own revision, as a real PR head would be
         self.prs = {}
         self.publishes = self.merges = self.observations = 0
         self.publish_error = self.merge_error = self.observe_error = None
+        self.merged_tree, self.qualifications = merged_tree, []
 
     @property
     def pr(self):
@@ -174,6 +203,17 @@ class FakeGitHub:
             raise self.merge_error  # labelled injected loss of the merge RESPONSE
         return {"merged": True, "merged_revision": MERGED_REVISION}
 
+    def qualify(self, candidate, merged_revision):
+        """The merge owner's own merged-tree qualification, recorded rather than executed.
+
+        `merged_tree` is the labelled injected answer: what the merged revision's tree actually is
+        on the provider side. It is compared to the REVIEWED tree, exactly as `GitWorkspace` does.
+        """
+        self.qualifications.append(merged_revision)
+        if self.merged_tree != candidate["tree"]:
+            raise ContractError("Merged tree differs from reviewed candidate")
+        return {"merged_revision": merged_revision, "tree": self.merged_tree}
+
 
 def candidate(revision=REVISION, tree=TREE, repository=REPOSITORY):
     return {"revision": revision, "base": BASE, "tree": tree, "author": "worker:implementation",
@@ -202,9 +242,11 @@ def reviewed_release(store, org, *, verified=True, record_candidate=None, lead=T
         return tx.get("releases", row["id"])
 
 
-def targets_document(tmp_path, target_id="canary-service", kind="process"):
+def targets_document(tmp_path, target_id="canary-service", kind="process", root=None):
+    """The owner's host configuration: the registered runtime root is this checkout, and every
+    mutable file of the target lives in a temporary state directory beside it."""
     return {"schema": REGISTRY_SCHEMA,
-            "targets": [{"target_id": target_id, "kind": kind, "root": str(tmp_path / "root"),
+            "targets": [{"target_id": target_id, "kind": kind, "root": root or RUNTIME_ROOT,
                          "state_dir": str(tmp_path / ("state-" + target_id)),
                          "service": "zeus-canary-service"}]}
 
@@ -219,7 +261,7 @@ def plan_document(release, *, plan_id="delivery-plan-1", target_id="canary-servi
             "policy_hash": policy_hash or release["policy_hash"], "repository": repository,
             "required_checks": list(checks), "target_id": target_id,
             "expected_descriptor": expected,
-            "target_descriptor": {"revision": descriptor_revision or REVISION,
+            "target_descriptor": {"revision": descriptor_revision or DESCRIPTOR_REVISION,
                                   "worker_image": image, "profile_digest": profile},
             "canary_check_id": canary, "ci_timeout_seconds": ci_timeout,
             "consumption_timeout_seconds": consumption_timeout}
@@ -236,7 +278,8 @@ def observer_for(store):
 
 def build(tmp_path, *, github=None, canaries=None, enabled=True, clock=None, observer=None,
           store=None, org=None, max_seconds=60, target_id="canary-service", kind="process",
-          verified=True, lead=True, conductor=True, plan_overrides=None, register_plan=True):
+          verified=True, lead=True, conductor=True, plan_overrides=None, register_plan=True,
+          root=None):
     """One wired controller over a real process target and a labelled GitHub double."""
     store = store or SerialStore()
     org = org or organization()
@@ -248,13 +291,14 @@ def build(tmp_path, *, github=None, canaries=None, enabled=True, clock=None, obs
                             canaries=canaries or {CANARY_STARTUP: startup_identity_canary,
                                                   CANARY_FLEET: owner_qualified_canary},
                             clock=clock, observer=observer, enabled=enabled, resume_seconds=0)
-    delivery.register_targets(targets_document(tmp_path, target_id=target_id, kind=kind))
+    registry = targets_document(tmp_path, target_id=target_id, kind=kind, root=root)
+    delivery.register_targets(registry)
     plan = plan_document(release, target_id=target_id, **(plan_overrides or {}))
     if register_plan:
         delivery.register(plan, pin())
     return {"store": store, "org": org, "clock": clock, "delivery": delivery, "release": release,
             "plan": plan, "host": host, "github": delivery.github,
-            "target": targets_document(tmp_path, target_id=target_id, kind=kind)["targets"][0]}
+            "target": registry["targets"][0]}
 
 
 def drive(system, *, until=ACTIVE, limit=40, sleep=0.05):
@@ -327,7 +371,8 @@ def test_plan_grammar_refuses_unknown_fields_bad_identities_and_foreign_canaries
     with pytest.raises(DeliveryRefused):
         validate_plan({**good, "extra": 1})
     with pytest.raises(DeliveryRefused):
-        validate_plan({**good, "target_descriptor": {"revision": REVISION, "worker_image": IMAGE}})
+        validate_plan({**good, "target_descriptor": {"revision": REVISION,
+                                                     "worker_image": FIXTURE_IMAGE}})
 
 
 def test_registry_is_host_configuration_and_a_plan_can_only_name_a_registered_target(tmp_path):
@@ -413,6 +458,7 @@ def test_an_unverified_release_stops_before_the_host_is_touched(tmp_path):
 
 
 # ----- the normal path ------------------------------------------------------------------------------
+@binds_a_runtime
 def test_normal_path_publishes_observes_ci_merges_switches_and_proves_consumption(tmp_path):
     system = build(tmp_path)
     try:
@@ -431,11 +477,18 @@ def test_normal_path_publishes_observes_ci_merges_switches_and_proves_consumptio
         assert descriptor_digest(written) == intent["descriptor_sha256"]
         receipt = json.loads((tmp_path / "state-canary-service" / RECEIPT_FILE).read_text("utf-8"))
         assert receipt["descriptor_sha256"] == intent["descriptor_sha256"]
-        assert receipt["revision"] == REVISION and receipt["worker_image"] == IMAGE
+        # The runtime facts are the ones the child OBSERVED about itself, not the ones it was sent.
+        assert receipt["revision"] == RUNTIME_REVISION and receipt["worker_image"] == IMAGE
+        assert receipt["profile_digest"] == PROFILE
         assert receipt["instance_id"] == intent["instance_id"]
         assert os.path.isdir(receipt["module_root"])
+        assert Path(receipt["module_root"]).is_relative_to(Path(receipt["runtime_root"]))
+        assert Path(receipt["runtime_root"]) == Path(RUNTIME_ROOT)
         row = descriptor_of(system)
         assert row["consumed"] is True and row["instance_id"] == receipt["instance_id"]
+        assert row["startup_observed"] is True
+        assert row["observed_instance_id"] == receipt["instance_id"]
+        assert system["github"].qualifications == [MERGED_REVISION]
         # The active release moved only through the existing Releases authority.
         with system["store"].transaction() as tx:
             assert tx.get("deployment", "active")["release_id"] == system["release"]["id"]
@@ -445,6 +498,7 @@ def test_normal_path_publishes_observes_ci_merges_switches_and_proves_consumptio
         stop_target(system)
 
 
+@binds_a_runtime
 def test_the_status_projection_carries_identities_and_digests_but_no_bodies(tmp_path):
     system = build(tmp_path)
     try:
@@ -452,6 +506,7 @@ def test_the_status_projection_carries_identities_and_digests_but_no_bodies(tmp_
         projection = system["delivery"].status()
         text = json.dumps(projection)
         assert CANARY_TEXT not in text and str(tmp_path) not in text
+        assert RUNTIME_ROOT not in text  # the runtime root is host configuration, not a projection
         assert "zeus-canary-service" not in text  # the service name is host configuration
         view = projection["deliveries"][0]
         assert view["stage"] == ACTIVE and view["consumed"] is True
@@ -539,8 +594,41 @@ def test_a_lost_merge_response_is_recognized_instead_of_merged_again(tmp_path):
     recovered = system["delivery"].tick()
     assert recovered["stage"] == MERGED and system["github"].merges == 1
     assert intent_of(system)["merged_revision"] == MERGED_REVISION
+    # The RECOVERED merge was qualified against the reviewed tree, exactly like a performed one.
+    assert system["github"].qualifications == [MERGED_REVISION]
 
 
+def test_a_recovered_merge_whose_tree_is_not_the_reviewed_one_stays_blocked(tmp_path):
+    """The same qualification on both paths: observing MERGED is not a qualified deployment."""
+    system = build(tmp_path)
+    drive(system, until=MERGE_INTENDED, limit=4)
+    system["github"].merge_error = TimeoutError("injected: merge response lost")
+    system["delivery"].tick()
+    system["github"].merge_error = None
+    # Labelled injected provider fact: the merged revision does NOT carry the reviewed tree.
+    system["github"].merged_tree = "d" * 64
+    system["clock"].advance(120)
+    blocked = system["delivery"].tick()
+    assert blocked["outcome"] == "blocked" and blocked["reason_code"] == "merged_tree_mismatch"
+    assert system["github"].merges == 1  # nothing was merged a second time to "fix" it
+    assert intent_of(system)["stage"] == BLOCKED
+    # And it does not become qualified by being observed again on a later tick.
+    system["clock"].advance(600)
+    later = system["delivery"].tick()
+    assert later["outcome"] == "idle" and descriptor_of(system) is None
+
+
+def test_a_merge_this_controller_performed_is_qualified_before_the_host_is_touched(tmp_path):
+    system = build(tmp_path, github=FakeGitHub(merged_tree="d" * 64))
+    results = drive(system, until=MERGED, limit=6)
+    assert results[-1]["outcome"] == "blocked"
+    assert results[-1]["reason_code"] == "merged_tree_mismatch"
+    assert system["github"].qualifications == [MERGED_REVISION]
+    assert intent_of(system)["merged_revision"] == MERGED_REVISION  # the evidence is preserved
+    assert descriptor_of(system) is None
+
+
+@binds_a_runtime
 def test_a_restarted_controller_resumes_the_same_intent_without_repeating_its_effects(tmp_path):
     system = build(tmp_path)
     try:
@@ -611,8 +699,8 @@ def test_the_descriptor_switch_compares_its_predecessor_under_a_target_lock(tmp_
     host = ProcessHostTarget()
     target = targets_document(tmp_path)["targets"][0]
     descriptor = {"schema": "urn:zeus:host-descriptor:1", "target_id": "canary-service",
-                  "root": target["root"], "revision": REVISION, "worker_image": IMAGE,
-                  "profile_digest": PROFILE, "predecessor": None}
+                  "root": target["root"], "revision": REVISION, "worker_image": FIXTURE_IMAGE,
+                  "profile_digest": FIXTURE_PROFILE, "predecessor": None}
     host.switch(target, descriptor, expected=None)
     assert host.current(target) == descriptor
     with pytest.raises(DeliveryRefused) as refused:
@@ -629,6 +717,27 @@ def test_the_descriptor_switch_compares_its_predecessor_under_a_target_lock(tmp_
         assert held.value.reason_code == "target_lock_held"
     finally:
         host.path(target, "switch.lock").rmdir()
+
+
+def test_the_switch_re_checks_the_fence_inside_the_target_lock_and_writes_nothing_when_stale(tmp_path):
+    """The mutation boundary: ownership is proven while the lock is held, before the replacement."""
+    host = ProcessHostTarget()
+    target = targets_document(tmp_path)["targets"][0]
+    descriptor = {"schema": "urn:zeus:host-descriptor:1", "target_id": "canary-service",
+                  "root": target["root"], "revision": REVISION, "worker_image": FIXTURE_IMAGE,
+                  "profile_digest": FIXTURE_PROFILE, "predecessor": None}
+    observed = []
+
+    def authorize():
+        observed.append(host.current(target))  # the lock is held and nothing was written yet
+        raise ContractError("Stale release controller")
+
+    with pytest.raises(ContractError):
+        host.switch(target, descriptor, expected=None, authorize=authorize)
+    assert observed == [None] and host.current(target) is None
+    assert not host.path(target, "switch.lock").exists()  # the lock is released either way
+    host.switch(target, descriptor, expected=None, authorize=lambda: None)
+    assert host.current(target) == descriptor
 
 
 def test_unconfirmed_host_effects_block_the_switch_and_do_not_kill_active_work(tmp_path):
@@ -667,6 +776,7 @@ def test_an_unchanged_binding_without_a_predecessor_refuses_instead_of_guessing(
     assert descriptor_of(system) is None
 
 
+@binds_a_runtime
 def test_a_lost_switch_response_writes_no_second_descriptor_and_starts_no_second_process(tmp_path):
     system = build(tmp_path)
     try:
@@ -729,15 +839,33 @@ def test_the_launched_service_reports_the_identity_it_actually_loaded(tmp_path):
     state.mkdir(parents=True)
     assert serve(str(state), 1) == 2  # no descriptor to load: no receipt is written at all
     assert not (state / RECEIPT_FILE).exists()
+    # A descriptor that REQUESTS another runtime entirely; the receipt still reports this one.
     descriptor = {"schema": "urn:zeus:host-descriptor:1", "target_id": "canary-service",
-                  "root": str(tmp_path / "root"), "revision": REVISION, "worker_image": IMAGE,
-                  "profile_digest": PROFILE, "predecessor": None}
+                  "root": str(tmp_path / "root"), "revision": "6" * 40,
+                  "worker_image": FIXTURE_IMAGE, "profile_digest": FIXTURE_PROFILE,
+                  "predecessor": None}
     (state / DESCRIPTOR_FILE).write_text(json.dumps(descriptor), encoding="utf-8")
     (state / "stop.json").write_text(json.dumps({"stop": True}), encoding="utf-8")
     assert serve(str(state), 5) == 0
     receipt = json.loads((state / RECEIPT_FILE).read_text("utf-8"))
     assert receipt["descriptor_sha256"] == descriptor_digest(descriptor)
-    assert receipt["pid"] == os.getpid() and receipt["revision"] == REVISION
+    assert receipt["pid"] == os.getpid()
+    # Observed, not echoed: this process's own root, package, revision and effective configuration.
+    assert receipt["runtime_root"] == RUNTIME_ROOT
+    assert receipt["module_root"] == loaded_runtime()["module_root"]
+    assert receipt["revision"] == (RUNTIME_REVISION or "")
+    assert receipt["worker_image"] == IMAGE and receipt["profile_digest"] == (PROFILE or "")
+    assert receipt["revision"] != descriptor["revision"]
+    # And exactly that difference refuses the activation the descriptor asked for.
+    assert consumption_verdict(descriptor, receipt)["consumed"] is False
+
+
+def owned_receipt(descriptor, **overrides):
+    return {"schema": "urn:zeus:host-startup-receipt:1", "target_id": "canary-service",
+            "instance_id": "1" * 32, "pid": 4242, "started_at": START,
+            "runtime_root": "/opt/zeus", "module_root": "/opt/zeus/src/codex_harness",
+            "descriptor_sha256": descriptor_digest(descriptor), "revision": REVISION,
+            "worker_image": FIXTURE_IMAGE, "profile_digest": FIXTURE_PROFILE, **overrides}
 
 
 @pytest.mark.parametrize("mutation,reason", [
@@ -745,16 +873,16 @@ def test_the_launched_service_reports_the_identity_it_actually_loaded(tmp_path):
     ({"worker_image": "zeus-worker@sha256:" + "f" * 64}, "receipt_worker_image_mismatch"),
     ({"profile_digest": "7" * 64}, "receipt_profile_digest_mismatch"),
     ({"descriptor_sha256": "8" * 64}, "receipt_descriptor_sha256_mismatch"),
-    ({"instance_id": "not-hex"}, "receipt_invalid")])
+    ({"instance_id": "not-hex"}, "receipt_invalid"),
+    # The runtime identity itself: another root, or a package imported from outside that root.
+    ({"runtime_root": "/opt/zeus-old"}, "receipt_runtime_root_mismatch"),
+    ({"module_root": "/usr/lib/python3/codex_harness"}, "receipt_module_root_foreign"),
+    ({"runtime_root": "/opt/zeus-extra"}, "receipt_runtime_root_mismatch")])
 def test_a_wrong_startup_receipt_never_grants_activation(mutation, reason):
     descriptor = {"schema": "urn:zeus:host-descriptor:1", "target_id": "canary-service",
-                  "root": "/opt/zeus", "revision": REVISION, "worker_image": IMAGE,
-                  "profile_digest": PROFILE, "predecessor": None}
-    receipt = {"schema": "urn:zeus:host-startup-receipt:1", "target_id": "canary-service",
-               "instance_id": "1" * 32, "pid": 4242, "started_at": START,
-               "module_root": "/opt/zeus/src/codex_harness",
-               "descriptor_sha256": descriptor_digest(descriptor), "revision": REVISION,
-               "worker_image": IMAGE, "profile_digest": PROFILE}
+                  "root": "/opt/zeus", "revision": REVISION, "worker_image": FIXTURE_IMAGE,
+                  "profile_digest": FIXTURE_PROFILE, "predecessor": None}
+    receipt = owned_receipt(descriptor)
     assert consumption_verdict(descriptor, receipt)["consumed"] is True
     assert consumption_verdict(descriptor, None)["reason_code"] == "receipt_missing"
     verdict = consumption_verdict(descriptor, {**receipt, **mutation})
@@ -763,12 +891,52 @@ def test_a_wrong_startup_receipt_never_grants_activation(mutation, reason):
     assert stale["consumed"] is False and stale["reason_code"] == "receipt_stale_instance"
 
 
+@binds_a_runtime
+def test_an_old_runtime_never_activates_a_new_descriptor_however_alive_its_process_is(tmp_path):
+    """The process starts, reports and stays alive - from the runtime that is actually installed.
+
+    The plan asks for another revision, so what the host is running is not what was approved, and
+    no pid, no receipt and no successful switch makes that an activation.
+    """
+    system = build(tmp_path, plan_overrides={"descriptor_revision": "5" * 40,
+                                             "consumption_timeout": 10})
+    try:
+        results = drive(system, until=ACTIVE, limit=30)
+        assert results[-1]["stage"] != ACTIVE
+        assert results[-1]["reason_code"] == "no_known_good_predecessor"
+        # The runtime really did start and really is alive; it is simply not the requested one.
+        receipt = json.loads((tmp_path / "state-canary-service" / RECEIPT_FILE).read_text("utf-8"))
+        assert receipt["revision"] == RUNTIME_REVISION != "5" * 40
+        assert system["host"].running(system["target"]) is True
+        row = descriptor_of(system)
+        assert row["consumed"] is False and row["startup_observed"] is False
+        with system["store"].transaction() as tx:
+            assert tx.get("deployment", "active") is None
+    finally:
+        stop_target(system)
+
+
+@binds_a_runtime
+def test_a_descriptor_that_names_another_image_than_the_runtime_is_not_consumed(tmp_path):
+    """Image and profile are EFFECTIVE configuration of the runtime, not a claim in a plan."""
+    system = build(tmp_path, plan_overrides={"image": "zeus-worker@sha256:" + "f" * 64,
+                                             "consumption_timeout": 10})
+    try:
+        results = drive(system, until=ACTIVE, limit=30)
+        assert results[-1]["stage"] != ACTIVE
+        assert descriptor_of(system)["consumed"] is False
+    finally:
+        stop_target(system)
+
+
 # ----- canary and rollback ------------------------------------------------------------------------------
+@binds_a_runtime
 def test_a_failed_canary_restores_the_exact_predecessor_and_proves_it_was_consumed(tmp_path):
     verdicts = {"passed": True}
 
-    def canary(target, descriptor):
+    def canary(target, descriptor, startup):
         # Labelled injected canary verdict: the first delivery passes, the successor fails.
+        assert startup["instance_id"] and startup["runtime_root"] == RUNTIME_ROOT
         return {"passed": verdicts["passed"], "reason_code": None if verdicts["passed"]
                 else "canary_fixture_failed"}
 
@@ -781,7 +949,7 @@ def test_a_failed_canary_restores_the_exact_predecessor_and_proves_it_was_consum
                                      record_candidate={**candidate(), "revision": "5" * 40,
                                                        "branch": "harness/two", "task_id": "two"})
         plan = plan_document(successor, plan_id="delivery-plan-2",
-                             expected=good["descriptor_sha256"], descriptor_revision="5" * 40)
+                             expected=good["descriptor_sha256"])
         system["delivery"].register(plan, pin(path="docs/zeus/operations/delivery-2.json"))
         system["plan"] = plan
         results = drive(system, until=ROLLED_BACK, limit=40)
@@ -805,15 +973,16 @@ def test_a_failed_canary_restores_the_exact_predecessor_and_proves_it_was_consum
         stop_target(system)
 
 
+@binds_a_runtime
 def test_a_rollback_that_cannot_be_proven_blocks_and_alerts_instead_of_claiming_success(tmp_path):
     class BrokenHost(ProcessHostTarget):
         """The predecessor is restored on disk but its process never reports: an injected fault."""
 
-        def start(self, target, descriptor):
+        def start(self, target, descriptor, *, authorize=None):
             self.stop(target)
             return {"started": True, "pid": None}
 
-    system = build(tmp_path, canaries={CANARY_STARTUP: lambda target, descriptor: {
+    system = build(tmp_path, canaries={CANARY_STARTUP: lambda target, descriptor, startup: {
         "passed": False, "reason_code": "canary_fixture_failed"}},
         plan_overrides={"consumption_timeout": 10})
     system["delivery"].hosts["process"] = BrokenHost(max_seconds=30)
@@ -829,13 +998,14 @@ def test_a_rollback_that_cannot_be_proven_blocks_and_alerts_instead_of_claiming_
         stop_target(system)
 
 
+@binds_a_runtime
 def test_an_unproven_restoration_blocks_with_a_critical_alert(tmp_path):
     """A rollback is requested, the descriptor is restored, and its runtime never reports."""
     store = SerialStore()
     observer = observer_for(store)
     verdicts = {"passed": True}
     system = build(tmp_path, store=store, observer=observer,
-                   canaries={CANARY_STARTUP: lambda target, descriptor: {
+                   canaries={CANARY_STARTUP: lambda target, descriptor, startup: {
                        "passed": verdicts["passed"], "reason_code": None if verdicts["passed"]
                        else "canary_fixture_failed"}})
     try:
@@ -846,7 +1016,7 @@ def test_an_unproven_restoration_blocks_with_a_critical_alert(tmp_path):
         class BrokenHost(ProcessHostTarget):
             """Injected fault: the restored descriptor's service is never actually started."""
 
-            def start(self, target, descriptor):
+            def start(self, target, descriptor, *, authorize=None):
                 self.stop(target)
                 return {"started": True, "pid": None}
 
@@ -855,7 +1025,6 @@ def test_an_unproven_restoration_blocks_with_a_critical_alert(tmp_path):
                                                        "branch": "harness/two", "task_id": "two"})
         system["delivery"].register(plan_document(successor, plan_id="delivery-plan-2",
                                                   expected=good["descriptor_sha256"],
-                                                  descriptor_revision="5" * 40,
                                                   consumption_timeout=10),
                                     pin(path="docs/zeus/operations/delivery-2.json"))
         system["plan"] = plan_document(successor, plan_id="delivery-plan-2")
@@ -879,18 +1048,27 @@ def test_an_unproven_restoration_blocks_with_a_critical_alert(tmp_path):
 def test_an_owner_qualified_canary_needs_the_owners_own_receipt(tmp_path):
     target = targets_document(tmp_path)["targets"][0]
     descriptor = {"schema": "urn:zeus:host-descriptor:1", "target_id": "canary-service",
-                  "root": target["root"], "revision": REVISION, "worker_image": IMAGE,
-                  "profile_digest": PROFILE, "predecessor": None}
-    assert owner_qualified_canary(target, descriptor)["reason_code"] == "canary_owner_receipt_missing"
+                  "root": target["root"], "revision": REVISION, "worker_image": FIXTURE_IMAGE,
+                  "profile_digest": FIXTURE_PROFILE, "predecessor": None}
+    startup = {"instance_id": "1" * 32, "runtime_root": target["root"]}
+    assert owner_qualified_canary(target, descriptor,
+                                  startup)["reason_code"] == "canary_owner_receipt_missing"
     state = tmp_path / "state-canary-service"
     state.mkdir(parents=True, exist_ok=True)
-    (state / "owner-canary-receipt.json").write_text(
+    (state / CANARY_RECEIPT_FILE).write_text(
         json.dumps({"descriptor_sha256": "0" * 64, "passed": True}), encoding="utf-8")
-    assert owner_qualified_canary(target, descriptor)["reason_code"] == "canary_owner_receipt_stale"
-    (state / "owner-canary-receipt.json").write_text(
+    assert owner_qualified_canary(target, descriptor,
+                                  startup)["reason_code"] == "canary_owner_receipt_stale"
+    (state / CANARY_RECEIPT_FILE).write_text(
         json.dumps({"descriptor_sha256": descriptor_digest(descriptor), "passed": True,
-                    "evidence": "sha256:" + "a" * 64}), encoding="utf-8")
-    assert owner_qualified_canary(target, descriptor)["passed"] is True
+                    "instance_id": "2" * 32, "evidence": "sha256:" + "a" * 64}), encoding="utf-8")
+    # The owner qualified ANOTHER instance of this descriptor; that receipt is not this one's.
+    assert owner_qualified_canary(target, descriptor,
+                                  startup)["reason_code"] == "canary_owner_receipt_stale"
+    (state / CANARY_RECEIPT_FILE).write_text(
+        json.dumps({"descriptor_sha256": descriptor_digest(descriptor), "passed": True,
+                    "instance_id": "1" * 32, "evidence": "sha256:" + "a" * 64}), encoding="utf-8")
+    assert owner_qualified_canary(target, descriptor, startup)["passed"] is True
 
 
 # ----- outages, concurrency and the store boundary --------------------------------------------------------
@@ -922,17 +1100,72 @@ def test_two_plans_on_one_target_serialize_and_an_unrelated_plan_is_not_starved(
         second = reviewed_release(system["store"], system["org"],
                                   record_candidate={**candidate(), "revision": "5" * 40,
                                                     "branch": "harness/two", "task_id": "two"})
-        system["delivery"].register(plan_document(second, plan_id="delivery-plan-2",
-                                                  descriptor_revision="5" * 40),
+        system["delivery"].register(plan_document(second, plan_id="delivery-plan-2"),
                                     pin(path="docs/zeus/operations/delivery-2.json"))
         result = system["delivery"].tick()
         # The in-flight delivery keeps the target; the newcomer is recorded as waiting, not failed.
         assert result["plan_id"] == "delivery-plan-1"
+        assert result["blocked"]["delivery-plan-2"] == "target_busy"
         assert system["delivery"].status()["deliveries"][1]["stage"] == REGISTERED
     finally:
         stop_target(system)
 
 
+def test_a_plan_awaiting_review_does_not_starve_a_qualified_plan_on_another_target(tmp_path):
+    """Fair selection: what cannot be acted on does not consume the single selection of a tick."""
+    system = build(tmp_path, lead=False, conductor=False)  # plan 1: no reviews at all
+    delivery = system["delivery"]
+    delivery.register_targets(targets_document(tmp_path, target_id="second-service"))
+    ready = reviewed_release(system["store"], system["org"],
+                             record_candidate={**candidate(), "revision": "5" * 40,
+                                               "branch": "harness/two", "task_id": "two"})
+    delivery.register(plan_document(ready, plan_id="delivery-plan-2", target_id="second-service"),
+                      pin(path="docs/zeus/operations/delivery-2.json"))
+    result = delivery.tick()
+    # The reviewed plan moves; the unreviewed one is recorded with its own explicit wait reason.
+    assert result["plan_id"] == "delivery-plan-2" and result["stage"] == PUBLISHING
+    assert result["blocked"]["delivery-plan-1"] == "release_reviews_incomplete"
+    published = delivery.tick()
+    assert published["plan_id"] == "delivery-plan-2" and published["stage"] == AWAITING_CI
+    assert system["github"].publishes == 1
+    # Plan 1 published nothing, took no queue row and did not become an in-flight delivery.
+    assert delivery.status("delivery-plan-1")["deliveries"][0]["stage"] == REGISTERED
+
+
+def test_a_queue_row_in_backoff_or_exhausted_does_not_starve_another_target(tmp_path):
+    system = build(tmp_path)
+    delivery = system["delivery"]
+    delivery.register_targets(targets_document(tmp_path, target_id="second-service"))
+    ready = reviewed_release(system["store"], system["org"],
+                             record_candidate={**candidate(), "revision": "5" * 40,
+                                               "branch": "harness/two", "task_id": "two"})
+    delivery.register(plan_document(ready, plan_id="delivery-plan-2", target_id="second-service"),
+                      pin(path="docs/zeus/operations/delivery-2.json"))
+    queue = ReleaseQueue(system["store"])
+    queue.enqueue(system["release"]["id"], "fixture")
+    claim = queue.claim()
+    # Plan 1's own row is now in its bounded backoff; plan 2 has nothing to do with it.
+    queue.finish(claim, {"status": "retry", "reason": "fixture injected retry"})
+    result = delivery.tick()
+    assert result["plan_id"] == "delivery-plan-2" and result["stage"] == PUBLISHING
+    assert result["blocked"]["delivery-plan-1"] == "release_retry_not_due"
+    with system["store"].transaction() as tx:
+        row = tx.get("release_queue", system["release"]["id"])
+        row.update(status="blocked", reason="fixture owner stop")
+        tx.put("release_queue", system["release"]["id"], row)
+    later = delivery.tick()
+    assert later["plan_id"] == "delivery-plan-2"
+    assert later["blocked"]["delivery-plan-1"] == "release_queue_blocked"
+    with system["store"].transaction() as tx:
+        row = tx.get("release_queue", system["release"]["id"])
+        row.update(status="queued", attempt=POLICY.release_max_attempts, retry_at=None)
+        tx.put("release_queue", system["release"]["id"], row)
+    exhausted = delivery.tick()
+    assert exhausted["plan_id"] == "delivery-plan-2"
+    assert exhausted["blocked"]["delivery-plan-1"] == "release_attempts_exhausted"
+
+
+@binds_a_runtime
 def test_no_tick_opens_a_nested_transaction_and_an_idle_poll_writes_nothing(tmp_path):
     system = build(tmp_path)
     try:
@@ -956,6 +1189,7 @@ def test_delivery_is_disabled_by_default_and_writes_no_intent(tmp_path):
 
 
 # ----- structured observation ---------------------------------------------------------------------------------
+@binds_a_runtime
 def test_transitions_are_structured_observations_with_identities_and_codes_only(tmp_path):
     store = SerialStore()
     observer = observer_for(store)
@@ -995,7 +1229,264 @@ def test_a_blocked_delivery_emits_one_operations_alert_with_its_stage(tmp_path):
     assert blocked[0]["reason_code"] == "ci_check_failed"
 
 
+# ----- the fresh collect canary -----------------------------------------------------------------------------
+@binds_a_runtime
+def test_the_collect_canary_binds_a_fresh_monitor_source_to_this_instance_and_runtime(tmp_path):
+    """The real coordinator with the real incumbent canary: the fresh read-only monitor source
+    shows the instance that just started, before any activation has been recorded."""
+    store = SerialStore()
+    system = build(tmp_path, store=store, plan_overrides={"canary": CANARY_COLLECT},
+                   canaries={CANARY_COLLECT: lambda target, descriptor, startup:
+                             collect_monitor_canary(target, descriptor, startup, store=store)})
+    try:
+        results = drive(system)
+        assert results[-1]["stage"] == ACTIVE, stages(results)
+        row = descriptor_of(system)
+        assert row["startup_observed"] is True and row["consumed"] is True
+        assert row["observed_revision"] == RUNTIME_REVISION
+        view = system["delivery"].status()["deliveries"][0]
+        assert view["canary"]["check_id"] == CANARY_COLLECT
+        assert view["canary"]["evidence"] == row["observed_instance_id"]
+    finally:
+        stop_target(system)
+
+
+def test_the_collect_canary_refuses_a_missing_or_stale_monitor_source(tmp_path):
+    store = SerialStore()
+    target = targets_document(tmp_path)["targets"][0]
+    descriptor = {"schema": "urn:zeus:host-descriptor:1", "target_id": "canary-service",
+                  "root": target["root"], "revision": REVISION, "worker_image": FIXTURE_IMAGE,
+                  "profile_digest": FIXTURE_PROFILE, "predecessor": None}
+    startup = {"instance_id": "1" * 32, "revision": REVISION, "runtime_root": target["root"]}
+
+    def observed(**fields):
+        with store.transaction() as tx:
+            tx.put(BUCKET_DESCRIPTORS, "canary-service",
+                   {"id": "canary-service", "target_id": "canary-service", **fields})
+        return collect_monitor_canary(target, descriptor, startup, store=store)
+
+    assert collect_monitor_canary(target, descriptor, startup,
+                                  store=None)["reason_code"] == "canary_store_unavailable"
+    assert collect_monitor_canary(target, descriptor, startup,
+                                  store=store)["reason_code"] == "canary_target_unobserved"
+    # A source collected BEFORE the switch: it names the descriptor that was there then.
+    stale = observed(descriptor_sha256="0" * 64, startup_observed=True,
+                     observed_instance_id="1" * 32, observed_revision=REVISION)
+    assert stale["reason_code"] == "canary_descriptor_not_observed"
+    # The right descriptor was switched to, but no startup has been observed for it at all.
+    unobserved = observed(descriptor_sha256=descriptor_digest(descriptor), startup_observed=False,
+                          observed_instance_id=None, observed_revision=None)
+    assert unobserved["reason_code"] == "canary_descriptor_not_observed"
+    # An earlier instance of the same descriptor is not this delivery's instance.
+    other = observed(descriptor_sha256=descriptor_digest(descriptor), startup_observed=True,
+                     observed_instance_id="2" * 32, observed_revision=REVISION)
+    assert other["reason_code"] == "canary_instance_not_observed"
+    # The right instance, running another revision than the descriptor requested.
+    moved = observed(descriptor_sha256=descriptor_digest(descriptor), startup_observed=True,
+                     observed_instance_id="1" * 32, observed_revision="6" * 40)
+    assert moved["reason_code"] == "canary_runtime_not_observed"
+    passed = observed(descriptor_sha256=descriptor_digest(descriptor), startup_observed=True,
+                      observed_instance_id="1" * 32, observed_revision=REVISION)
+    assert passed["passed"] is True and passed["evidence"] == "1" * 32
+
+
+# ----- reconciliation at the restore, start and receipt boundaries -------------------------------------------
+def test_a_foreign_descriptor_blocks_the_switch_instead_of_overwriting_it(tmp_path):
+    system = build(tmp_path)
+    drive(system, until=SWITCHING, limit=7)
+    intent = intent_of(system)
+    # Labelled injected host state: something outside this delivery owns the target now.
+    foreign = {**intent["descriptor"], "revision": "7" * 40}
+    system["host"].switch(system["target"], foreign, expected=None)
+    result = system["delivery"].tick()
+    assert result["outcome"] == "blocked" and result["reason_code"] == "descriptor_foreign"
+    assert system["host"].current(system["target"]) == foreign  # not overwritten, not started
+    assert descriptor_of(system) is None
+
+
+@binds_a_runtime
+def test_a_restoration_interrupted_before_its_acknowledgement_resumes_and_is_proven(tmp_path):
+    """The crash case: the predecessor is back on the host, its durable record never happened."""
+    verdicts = {"passed": True}
+    system = build(tmp_path, canaries={CANARY_STARTUP: lambda target, descriptor, startup: {
+        "passed": verdicts["passed"], "reason_code": None if verdicts["passed"]
+        else "canary_fixture_failed"}})
+    try:
+        assert drive(system)[-1]["stage"] == ACTIVE
+        good = descriptor_of(system)
+        verdicts["passed"] = False
+        successor = reviewed_release(system["store"], system["org"],
+                                     record_candidate={**candidate(), "revision": "5" * 40,
+                                                       "branch": "harness/two", "task_id": "two"})
+        plan = plan_document(successor, plan_id="delivery-plan-2",
+                             expected=good["descriptor_sha256"])
+        system["delivery"].register(plan, pin(path="docs/zeus/operations/delivery-2.json"))
+        system["plan"] = plan
+        drive(system, until=ROLLING_BACK, limit=30)
+        intent = intent_of(system)
+        assert intent["stage"] == ROLLING_BACK and not (intent.get("rollback") or {}).get("restored")
+        # The restoration happened; the acknowledgement did not.
+        system["host"].switch(system["target"], intent["previous_descriptor"],
+                              expected=intent["descriptor_sha256"])
+        results = drive(system, until=ROLLED_BACK, limit=40)
+        assert results[-1]["stage"] == ROLLED_BACK, "\n".join(
+            str((r["stage"], r["outcome"], r["reason_code"])) for r in results)
+        rolled = descriptor_of(system)
+        assert rolled["descriptor_sha256"] == good["descriptor_sha256"]
+        assert rolled["consumed"] is True and rolled["rolled_back"] is True
+        receipt = json.loads((tmp_path / "state-canary-service" / RECEIPT_FILE).read_text("utf-8"))
+        assert receipt["descriptor_sha256"] == good["descriptor_sha256"]
+        assert intent_of(system)["rollback"]["verified"] is True
+    finally:
+        stop_target(system)
+
+
+@binds_a_runtime
+def test_a_rollback_onto_a_foreign_descriptor_blocks_rather_than_overwriting_it(tmp_path):
+    verdicts = {"passed": True}
+    system = build(tmp_path, canaries={CANARY_STARTUP: lambda target, descriptor, startup: {
+        "passed": verdicts["passed"], "reason_code": None if verdicts["passed"]
+        else "canary_fixture_failed"}})
+    try:
+        assert drive(system)[-1]["stage"] == ACTIVE
+        good = descriptor_of(system)
+        verdicts["passed"] = False
+        successor = reviewed_release(system["store"], system["org"],
+                                     record_candidate={**candidate(), "revision": "5" * 40,
+                                                       "branch": "harness/two", "task_id": "two"})
+        plan = plan_document(successor, plan_id="delivery-plan-2",
+                             expected=good["descriptor_sha256"])
+        system["delivery"].register(plan, pin(path="docs/zeus/operations/delivery-2.json"))
+        system["plan"] = plan
+        drive(system, until=ROLLING_BACK, limit=30)
+        intent = intent_of(system)
+        foreign = {**intent["descriptor"], "revision": "7" * 40}
+        system["host"].switch(system["target"], foreign, expected=intent["descriptor_sha256"])
+        result = system["delivery"].tick()
+        assert result["outcome"] == "blocked"
+        assert result["reason_code"] == "rollback_foreign_descriptor"
+        assert system["host"].current(system["target"]) == foreign
+        assert intent_of(system)["rollback"]["restored"] is False
+        assert descriptor_of(system)["consumed"] is False
+    finally:
+        stop_target(system)
+
+
+# ----- ownership at the mutation boundary ----------------------------------------------------------------
+def supersede(system):
+    """A labelled injected supersession: this controller's lease expires and a successor claims."""
+    past = "2000-01-01T00:00:00+00:00"
+    with system["store"].transaction() as tx:
+        row = tx.get("release_queue", system["release"]["id"])
+        row["lease_until"] = past
+        tx.put("release_queue", row["id"], row)
+        lock = tx.get("deployment_locks", "controller") or {}
+        tx.put("deployment_locks", "controller", {**lock, "lease_until": past})
+    return ReleaseQueue(system["store"]).claim()
+
+
+def test_a_superseded_controller_makes_no_external_change_and_records_nothing(tmp_path):
+    """Loss BEFORE the effect: the fence is checked at the mutation boundary, not afterwards."""
+    system = build(tmp_path)
+    system["delivery"].tick()  # registered -> publishing
+    github = system["github"]
+    observe = github.observe
+
+    def stolen(candidate):
+        result = observe(candidate)
+        supersede(system)
+        return result
+
+    before = intent_of(system)
+    github.observe = stolen
+    result = system["delivery"].tick()
+    assert result["controller"] == "stale" and github.publishes == 0
+    assert intent_of(system)["stage"] == PUBLISHING  # the stage it was left at, unchanged
+    assert intent_of(system) == before  # and nothing this tick observed was recorded
+
+
+def test_an_effect_across_a_lost_fence_is_ambiguous_and_is_reconciled_once(tmp_path):
+    """Loss ACROSS the effect: the publication exists, its record does not, and the successor
+    adopts it instead of publishing a second one."""
+    system = build(tmp_path)
+    system["delivery"].tick()  # registered -> publishing
+    github = system["github"]
+    publish = github.publish
+
+    def stolen(candidate):
+        row = publish(candidate)
+        supersede(system)  # the response came back; the fence is gone before it can be recorded
+        return row
+
+    github.publish = stolen
+    result = system["delivery"].tick()
+    assert result["outcome"] == "conflict" and result["controller"] == "stale"
+    assert result["ambiguous_effect"] == "published" and github.publishes == 1
+    # The durable intent still names the stage that was entered BEFORE the effect: that is the
+    # evidence the next owner reconciles from, and the effect is never claimed to be cancelled.
+    assert intent_of(system)["stage"] == PUBLISHING
+    github.publish = publish
+    with system["store"].transaction() as tx:
+        tx.put("deployment_locks", "controller", {"owner": None, "lease_until": None})
+        row = tx.get("release_queue", system["release"]["id"])
+        row.update(status="queued", owner=None, lease_until=None, retry_at=None, attempt=0)
+        tx.put("release_queue", row["id"], row)
+    system["clock"].advance(120)
+    recovered = system["delivery"].tick()
+    assert recovered["stage"] == AWAITING_CI and github.publishes == 1
+
+
+@binds_a_runtime
+def test_a_promotion_that_loses_the_fence_never_moves_the_pointer_and_reconciles(tmp_path):
+    """Promotion and ownership share one transaction: there is no check-then-promote window."""
+    system = build(tmp_path)
+    delivery = system["delivery"]
+    emit = delivery._emit
+    stolen = {"done": False}
+
+    def racing(event_type, outcome, plan, **fields):
+        emit(event_type, outcome, plan, **fields)
+        if event_type == EVENT_SWITCHED and outcome == "succeeded" and not stolen["done"]:
+            # Labelled injected supersession, exactly between the recorded consumption and the
+            # promotion that would move the existing active-release pointer.
+            stolen["done"] = True
+            supersede(system)
+
+    delivery._emit = racing
+    try:
+        results = drive(system, until=ACTIVE, limit=30)
+        conflicts = [result for result in results if result["outcome"] == "conflict"]
+        assert len(conflicts) == 1, stages(results)
+        assert conflicts[0]["ambiguous_effect"] == "release_promotion"
+        assert conflicts[0]["controller"] == "stale"
+        with system["store"].transaction() as tx:
+            # The release pointer never moved, and the release was never marked active.
+            assert tx.get("deployment", "active") is None
+            assert tx.get("releases", system["release"]["id"])["status"] == "verified"
+        # The host effect IS durable evidence: the descriptor was consumed by a real instance.
+        consumed = descriptor_of(system)
+        assert consumed["consumed"] is True and consumed["startup_observed"] is True
+        assert intent_of(system)["stage"] == AWAITING_CONSUMPTION
+        instance = consumed["instance_id"]
+        with system["store"].transaction() as tx:
+            tx.put("deployment_locks", "controller", {"owner": None, "lease_until": None})
+            row = tx.get("release_queue", system["release"]["id"])
+            row.update(status="queued", owner=None, lease_until=None, retry_at=None, attempt=0)
+            tx.put("release_queue", row["id"], row)
+        system["clock"].advance(120)
+        finished = drive(system, until=ACTIVE, limit=20)
+        assert finished[-1]["stage"] == ACTIVE
+        # The same instance finished the delivery: nothing was switched or started a second time.
+        assert descriptor_of(system)["instance_id"] == instance
+        with system["store"].transaction() as tx:
+            assert tx.get("deployment", "active")["release_id"] == system["release"]["id"]
+    finally:
+        delivery._emit = emit
+        stop_target(system)
+
+
 # ----- isolated PostgreSQL --------------------------------------------------------------------------------------
+@binds_a_runtime
 @pytest.mark.integration
 def test_transaction_boundaries_hold_on_an_isolated_postgresql(isolated_pgstore, tmp_path):
     """The real advisory-lock boundary, against a disposable schema. Skips honestly without it."""

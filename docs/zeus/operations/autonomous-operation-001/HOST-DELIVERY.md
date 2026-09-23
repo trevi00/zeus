@@ -1,10 +1,11 @@
 # Durable host delivery of a reviewed release
 
-2026-09-23. Frame: `SPEC.md`, "Durable delivery controller: consolidated Batch 3 implementation".
-Contract: `docs/contracts.md`, INV-HOST-DELIVERY-001. Implementation:
-`src/codex_harness/domain/host_delivery.py`, `src/codex_harness/application/host_delivery.py`,
-`src/codex_harness/adapters/host_delivery.py`, with narrow reusable additions to
-`src/codex_harness/application/release_queue.py`, `src/codex_harness/adapters/monitoring.py`,
+2026-09-23. Frame: `SPEC.md`, "Durable delivery controller: consolidated Batch 3 implementation" and
+"Batch 3 correction and conductor continuation boundary". Contract: `docs/contracts.md`,
+INV-HOST-DELIVERY-001. Implementation: `src/codex_harness/domain/host_delivery.py`,
+`src/codex_harness/application/host_delivery.py`, `src/codex_harness/adapters/host_delivery.py`,
+with narrow reusable additions to `src/codex_harness/application/release_queue.py`,
+`src/codex_harness/adapters/git.py`, `src/codex_harness/adapters/monitoring.py`,
 `src/codex_harness/domain/observation.py` and `src/codex_harness/cli.py`.
 
 **Purpose.** Replace the one-shot PR181 continuation with a reusable, owner-controlled component
@@ -74,11 +75,11 @@ reason code, the error TYPE and the evidence. One tick advances at most one stag
 | `awaiting_review` | the release record itself carries the author's own lead **and** a conductor accepting exactly this revision with evidence, and the candidate's revision, tree, evaluator hash and repository are exactly the plan's |
 | `publishing` | a pull request exists for exactly the intended head — adopted if a previous tick already created it |
 | `awaiting_ci` | every named check FINISHED SUCCESSFULLY for that head; absent, running, skipped, cancelled, neutral and failed are not a pass, and a moved head goes to requalification |
-| `merge_intended` | the merge happened — recognized rather than repeated if a previous tick already merged |
+| `merge_intended` | the merge happened — recognized rather than repeated if a previous tick already merged — **and** the merged revision was qualified against the reviewed tree by the merge owner itself, on the performed and the observed path alike |
 | `merged` | the incumbent evaluator recorded `verified`, the target is registered, the current descriptor is the approved predecessor, and the whole target tuple plus the expected active release are written durably |
 | `drain_intended` | new admission is paused and the target reports no active and no unconfirmed work |
-| `switching` | the immutable descriptor was replaced atomically under the target lock against its expected predecessor, and the service was started exactly once |
-| `awaiting_consumption` | the launched process's own startup receipt names this exact descriptor, revision, image and profile, and the named canary passed |
+| `switching` | what is on the host was reconciled first (the intended descriptor, the expected predecessor, or a **foreign** state that blocks), then the immutable descriptor was replaced atomically under the target lock against its expected predecessor, and the service was started exactly once from the registered runtime root |
+| `awaiting_consumption` | the launched process's own startup receipt names this target's registered root, a package imported from inside it, and the revision, effective image and profile that runtime actually has; that observed startup is recorded; and only then does the named canary decide whether it may be activated |
 | `active` | `Releases.promote` moved the pointer under its own compare-and-swap |
 
 ## Idempotence, restart and the fence
@@ -88,9 +89,20 @@ can only reconcile what already happened. Recovery is observation, never a secon
 for this exact head either exists or it does not; a merged PR is recognized; a running instance's own
 receipt is recognized. A restarted controller reads the same durable intent and continues from it.
 
-Every durable observation is committed in the same transaction that re-checks the claim's
-generation, owner and lease (`ReleaseQueue.owned`), so a superseded controller cannot record what it
-observed. A 20-minute CI run never sleeps under the lease: the tick answers `pending`, returns the
+Ownership is proven **before every external mutation**, not only when its result is recorded: the
+claim's generation, owner and lease are re-checked immediately before publishing, merging, draining,
+switching, starting and restoring, and the switch and the start re-check it again *inside* the
+target lock, so a controller whose lease expired while it waited for that lock overwrites nothing.
+Every durable observation is then committed in the same transaction that re-checks the claim
+(`ReleaseQueue.owned`), and the promotion shares one transaction with its own ownership check, so
+there is no window between "this controller still owns the release" and "it moved the pointer".
+
+Losing the fence **before** an effect is a definite nothing-happened: no mutation, no record. Losing
+it **across** an effect is an explicit `conflict` with `ambiguous_effect`, never a cancellation —
+the durable evidence is the intent that named the stage before the effect, and the next owner
+reconciles what is on the host instead of repeating it.
+
+A 20-minute CI run never sleeps under the lease: the tick answers `pending`, returns the
 lease through `ReleaseQueue.defer` — which is explicitly **not** a failed attempt — and the stage's
 own durable deadline ends the wait. Definite failures go through `finish` with the queue's unchanged
 retry budget and backoff. No store transaction is open across GitHub, the filesystem, a subprocess or
@@ -109,12 +121,28 @@ another independently locking transaction.
   claim about a real Fleet.
 * A previous instance that cannot be proven gone is `previous_instance_unconfirmed`; no second one is
   started beside it.
-* Activation is decided by the launched process's **own** startup receipt — instance id, pid, start
-  time, the module root it actually imported, and the descriptor digest, revision, image and profile
-  it actually loaded. A missing, malformed, foreign or previous-instance receipt never activates.
-* Rollback restores the **exact predecessor tuple** and then proves it with that predecessor's own
-  fresh receipt and a live process. A failed or unproven restoration is a blocked critical alert, not
-  a `rolled_back` claim.
+* The service is **bound to the owner-registered runtime root** of its target: it is launched with
+  that root as its working directory and that root's `src` ahead of `PYTHONPATH`, so the code it
+  imports is the code that lives there. A root with no importable harness is refused before a
+  process exists.
+* Activation is decided by the launched process's **own** startup receipt, and its runtime identity
+  is **observed, not echoed**: the package directory it really imported, the root that package came
+  from, the revision that root is really at (its own `HEAD`, or the owner's `runtime.json`
+  attestation when the root is not a checkout) and the effective worker image and profile digest of
+  that runtime. The root must be this target's registered root, the package must lie inside it, and
+  revision, image and profile must equal the ones the delivery requested. An old runtime handed a
+  new descriptor therefore refuses — a live pid, a written descriptor and a well-formed receipt are
+  not an activation — and image and profile describe effective configuration, never a model run.
+* Observing a startup and activating it are **separate records**. The accepted receipt is recorded
+  as `startup_observed` with its instance and revision first; only then is the canary asked whether
+  that runtime may become the active one, and `consumed` is that activation and nothing else.
+* Rollback reconciles at every restore, start and receipt boundary before it mutates anything: a
+  restoration whose durable acknowledgement was lost is **resumed** from what the host already
+  shows rather than attempted again, the predecessor is started at most once per restoration, and a
+  descriptor that is neither the failed one nor the predecessor is `rollback_foreign_descriptor` —
+  blocked, not overwritten. It restores the **exact predecessor tuple** and then proves it with that
+  predecessor's own fresh receipt and a live process. A failed or unproven restoration is a blocked
+  critical alert, not a `rolled_back` claim.
 
 The service process is deliberately **not** owned through `ProcessTree`. That owner's Windows
 boundary is a job object with `KILL_ON_JOB_CLOSE` (`adapters/background_service.py`), which ends the
@@ -134,14 +162,19 @@ reconfigures one.
 
 Named by an incumbent fixed id only, never by text in a plan:
 
+Every canary is given the **observed startup** — the instance id, the root and package that
+instance actually loaded, and the revision that runtime is at — and answers about that, never about
+an activation the stage has deliberately not written yet:
+
 | id | what it actually checks |
 |---|---|
-| `startup_identity` | the owned process is still running and its receipt still names this descriptor |
-| `collect_monitor_source` | the incumbent read-only monitor projection reports this descriptor as the consumed one for this target |
-| `fleet_worker_operation` | the **owner's** own receipt for exactly this descriptor; this component starts no model, provider or worker |
+| `startup_identity` | the owned process is still running, its receipt still names this descriptor, and it is still **this** instance rather than a successor |
+| `collect_monitor_source` | a **fresh** read-only monitor projection reports this descriptor as observed-started for this target, by this instance id, at this revision |
+| `fleet_worker_operation` | the **owner's** own receipt for exactly this descriptor, and for this instance when the owner recorded one; this component starts no model, provider or worker |
 
-Any not-passed verdict — including `canary_unavailable` and `canary_error` — sends the delivery to
-rollback rather than to activation. A real qualified worker run remains owner acceptance work.
+Any not-passed verdict — including `canary_unavailable`, `canary_error`,
+`canary_source_unavailable` and every "not observed" code — sends the delivery to rollback rather
+than to activation. A real qualified worker run remains owner acceptance work.
 
 ## Operating it
 
@@ -169,19 +202,43 @@ stage and emits nothing.
 host, a passed owner canary or a semantically accepted release, and `consumed: false` beside a
 switched descriptor is exactly that: a switch that was not an activation.
 
+## Selecting one plan fairly
+
+A tick advances at most one delivery, so what it cannot act on must not consume that single
+selection. A plan whose independent review is incomplete, whose queue row is in its bounded backoff,
+whose attempt budget is exhausted, whose row is blocked, failed or cancelled, or whose row is held
+by another controller is **skipped with its own explicit wait reason** and the scan keeps looking
+for a plan that is actionable. Same-target exclusion (`target_busy`) is unchanged, the scan is
+bounded (`scan_bounded` beyond it), and when nothing is actionable the first waiting plan is
+selected so that its own wait is projected — which is why a single unreviewed plan still reports
+`awaiting_review` and still touches nothing. Every tick receipt carries the `blocked` map of why
+each other plan waited.
+
 ## What was verified here, and what was not
 
-Verified by the scoped suites (`tests/test_host_delivery.py`, `tests/test_host_delivery_cli.py`):
+Verified by the scoped suites (`tests/test_host_delivery.py`, `tests/test_host_delivery_cli.py`,
+and the affected neighbours `tests/test_monitoring.py`, `tests/test_monitoring_observations.py`):
 the plan and registry grammar; the release gate, including a registration that legitimately precedes
 its review; the whole stage path against a real temporary descriptor file, a real detached child
-process and that child's real startup receipt; CI pending, failed, missing and head-changed; lost
-publish and merge responses reconciled exactly once; a restarted controller resuming one intent
-without repeating its effects; a held lease and a stale claim; unconfirmed host effects blocking the
-switch; a wrong receipt refusing activation; a failed canary restoring and proving the predecessor;
-an unproven restoration blocking with a critical alert; disabled-by-default; the observation
-vocabulary; and the absence of nested store transactions under `SerialStore`.
+process launched from this checkout as its registered runtime root, and that child's real startup
+receipt; CI pending, failed, missing and head-changed; lost publish and merge responses reconciled
+exactly once; a recovered merge whose tree is not the reviewed one staying blocked; a restarted
+controller resuming one intent without repeating its effects; a held lease and a stale claim; a
+fence lost before an effect changing nothing and a fence lost across an effect (including the
+promotion) reported as an ambiguous conflict and then reconciled once; unconfirmed host effects
+blocking the switch; a foreign descriptor blocking the switch and the rollback; an old runtime never
+activating a new descriptor however alive its process is; a descriptor naming another image than the
+runtime's effective configuration never being consumed; the real coordinator with the real
+`collect_monitor_source` canary, and that canary's missing, stale, unobserved, wrong-instance and
+wrong-revision refusals; a failed canary restoring and proving the predecessor; a restoration
+interrupted before its acknowledgement resuming and being proven; an unproven restoration blocking
+with a critical alert; fair selection past an unreviewed plan and past a backed-off or blocked queue
+row; disabled-by-default; the observation vocabulary; and the absence of nested store transactions
+under `SerialStore`.
 
 Not verified here, and deliberately owner work: any live GitHub publication, CI run or merge; any
-scheduled-task mutation on the real Windows host; the qualified `fleet_worker_operation` canary; and
-the isolated-PostgreSQL transaction-boundary test, which is integration-gated and skips without
-`HARNESS_INTEGRATION=1`.
+scheduled-task mutation on the real Windows host; native Windows behaviour of the launch, stop and
+liveness paths; the qualified `fleet_worker_operation` canary; and the isolated-PostgreSQL
+transaction-boundary test, which is integration-gated and skips without `HARNESS_INTEGRATION=1`.
+The runtime-binding tests also skip honestly in a checkout that attests no revision of its own (no
+Git directory and no owner `runtime.json`), because there is no real runtime identity to bind.
