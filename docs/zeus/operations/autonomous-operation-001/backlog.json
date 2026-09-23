@@ -168,6 +168,34 @@
       "dependencies": [
         "native-evidence"
       ]
+    },
+    {
+      "id": "continuation",
+      "project_id": "research-improvement",
+      "criterion_id": "verified-loop",
+      "lane": "harness",
+      "manifest_path": "docs/zeus/operations/autonomous-operation-001/continuation.operation.json",
+      "manifest_revision": "ad9561bcda6b0761626d9941211e3c99e0db9808",
+      "manifest_sha256": "5b0af4b414ad4ac8c67821746874f7b8f569758e3c14657a4bcc26fcb6b9f2b4",
+      "priority": 140,
+      "dependencies": [
+        "session-correction",
+        "host-runtime-evidence"
+      ]
+    },
+    {
+      "id": "native-runtime",
+      "project_id": "research-improvement",
+      "criterion_id": "verified-loop",
+      "lane": "interface",
+      "manifest_path": "docs/zeus/operations/autonomous-operation-001/native-runtime.operation.json",
+      "manifest_revision": "ad9561bcda6b0761626d9941211e3c99e0db9808",
+      "manifest_sha256": "69fffb4bb014109e99d9e7a8192320158be4703b3d1e5f81131266ff57b9ea65",
+      "priority": 140,
+      "dependencies": [
+        "session-correction",
+        "host-runtime-evidence"
+      ]
     }
   ]
 }
