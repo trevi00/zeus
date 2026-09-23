@@ -1,5 +1,40 @@
 # Whole autonomous operating loop
 
+## Scoped research resubmission: actual artifact availability, 2026-09-24
+
+Candidate c6bdf29 is staged ONLY as correction input, not accepted or deployed. Independent review
+59098e6f found one material gap in the existing fixed matrix: receipt evidence is checked only for
+sha256 syntax. accept_research and _resume_observe_research never resolve its bytes. Existing
+success test uses fabricated sha256:555... and accepts it. This confirms missing wiring by source;
+it is not evidence that a missing artifact was used in production. All other accepted scoped
+receipt bindings, ownership and history behavior stay unchanged. No wider review/research scope.
+
+One Claude correction: inject an artifact-verification port into the existing continuation owner,
+wire both owner acceptance CLI and runtime coordinator to trusted configured artifact storage.
+Reuse FileArtifacts.text(ref, bound) or equivalent existing content-addressed integrity checking:
+read actual bounded bytes and verify SHA256. No caller-provided roots, candidate paths, network
+fetches or model assertions. Document which configured root owns research receipt evidence;
+use explicit host store resolution, not an unbounded search of home/worktrees. Domain stays pure.
+Require this at receipt acceptance and again BEFORE consuming the receipt to release a hold.
+Missing verifier, missing/unreadable/corrupt/oversized evidence fails closed with safe reason codes;
+raw content/path errors are not logged. Cached acceptance is historical only, never substitutes
+for current consumption validation. Do not relabel an absent file as a valid empty report.
+Artifact I/O remains outside PG transactions; retain existing version/family checks at commit.
+State the filesystem time-of-check boundary honestly: integrity at observed read time, not an
+eternal availability guarantee. A later tick must recheck before new hold-release effect.
+
+Tests: use actual temporary FileArtifacts for successful reference bytes/digest; prove each refusal
+for missing, unreadable (labelled injection), tampered and oversized body. Remove/tamper after
+receipt acceptance and reconstruct controller: hold remains, no successor. Cover both adapter
+entry paths (acceptance and consumption) so a fixture-only injected reader cannot hide absent live
+wiring. Verify no unrelated-family release and immutable receipt/history through existing tests.
+Run targeted continuation/research/artifact tests and Ruff only. Negative checks belong in summary;
+tests array lists completed successful commands. Do not run whole suite in worker. No deployment,
+policy widening, new scheduler or changes to the already qualified worker image by Claude.
+
+Completion: independent acceptance, native owner targeted checks, CI, then owner config and live
+research/repair qualification from the same frame. The original rejection remains recorded.
+
 ## Scoped research completion and evidence-repair delivery, 2026-09-24
 
 Outcome: finish the held delivery-tree repair without re-running known-incomplete whole-suite
