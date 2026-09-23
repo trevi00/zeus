@@ -1,8 +1,9 @@
 """Durable conductor continuation over the existing Fleet, lanes and owners (INV-CONTINUATION-001).
 
-A thin coordinator, not a second executor, scheduler, reviewer or release authority. It owns two
+A thin coordinator, not a second executor, scheduler, reviewer or release authority. It owns three
 buckets in the Fleet control store - `continuation_policies` (one registered Git-pinned owner
-policy per id) and `continuation_intents` (one durable intent per routed observation) - and one in
+policy per id), `continuation_intents` (one durable intent per routed observation) and
+`continuation_progress` (one selection-progress row per policy: attempts only) - and one in
 each lane store, `continuation_bindings` (the trusted document a lane Operation claim attaches to
 its assignment). Everything else is reached through its existing owner:
 
@@ -95,6 +96,8 @@ from codex_harness.domain.continuation import (
     needs_research,
     owners,
     policy_digest,
+    progress_order,
+    record_attempt,
     refuse,
     successor_id,
     successor_manifest,
@@ -108,6 +111,7 @@ from codex_harness.domain.model import ContractError, utcnow
 
 BUCKET_POLICIES = "continuation_policies"
 BUCKET_INTENTS = "continuation_intents"
+BUCKET_PROGRESS = "continuation_progress"
 LANE_BINDINGS = "continuation_bindings"
 FLEET_JOBS = "fleet_jobs"
 FLEET_UNITS = "fleet_units"
@@ -317,21 +321,26 @@ class Continuation:
                 self._guarded(result, intent["id"], lambda i=intent: self._advance(ctx, i))
         with self.store.transaction() as tx:
             every = tx.scan(BUCKET_INTENTS)
+            progress = tx.get(BUCKET_PROGRESS, policy_id)
         intents = [intent for intent in every if intent.get("policy_id") == policy_id]
         # Membership and ownership first, THEN the bounded fair pass: unrelated history and another
         # policy's lineage never occupy a slot. An unavailable lane (store or runtime identity) is
-        # skipped visibly without spending a slot, at most MAX_ACTIONS_PER_TICK reads per lane.
+        # skipped visibly without spending a slot, at most MAX_ACTIONS_PER_TICK reads per lane. Each
+        # attempt is recorded durably before its read, so the next pass - any controller, after a
+        # restart - tries the least recently attempted candidate first: per-job read failures never
+        # hold the same reads forever.
         candidates, elsewhere = self._candidates(policy, jobs, intents, owners(every, policy_id))
         result["owned_elsewhere"] = {"count": len(elsewhere), "jobs": elsewhere[:16]}
         budget, failures = MAX_ACTIONS_PER_TICK, {}
-        for candidate in fair_order(candidates, intents, limit=None):
+        live, since = {candidate["job_id"] for candidate in candidates}, int((progress or {}).get("sequence") or 0)
+        for candidate in progress_order(fair_order(candidates, intents, limit=None), progress):
             lane = jobs[candidate["job_id"]]["lane"]
             if budget <= 0:
                 break
             if failures.get(lane, 0) >= MAX_ACTIONS_PER_TICK:
                 continue
-            if self._guarded(result, candidate["job_id"], lambda c=candidate: self._observe(ctx, c, intents)) \
-                    == "unavailable":
+            if self._guarded(result, candidate["job_id"], lambda c=candidate: self._attempt(policy_id, c, live, since)
+                             or self._observe(ctx, c, intents)) == "unavailable":
                 runtime_down = ctx["runtime"] is not None and ctx["runtime"].failed(lane)
                 failures[lane] = MAX_ACTIONS_PER_TICK if runtime_down else failures.get(lane, 0) + 1
             else:
@@ -413,6 +422,13 @@ class Continuation:
         mine = [intent for intent in intents if intent["origin_job"] == job["id"]]
         return bool(mine) and all(intent["state"] == COMPLETED for intent in mine) and not any(
             intent["route"] in {NEXT_ITEM, *SUCCESSOR_ROUTES} for intent in mine)
+
+    def _attempt(self, policy_id: str, candidate: dict, live: set, since: int) -> None:
+        """Durable selection progress in its own short transaction BEFORE the lane read: a scheduling
+        attempt only, never an intent, a verdict or evidence (`domain.continuation.record_attempt`)."""
+        with self.store.transaction() as tx:
+            tx.put(BUCKET_PROGRESS, policy_id, record_attempt(tx.get(BUCKET_PROGRESS, policy_id), policy_id,
+                                                               candidate["job_id"], live, since))
 
     # ----- initial session binding --------------------------------------------------------
     def _bind_initial(self, ctx, intents, owned, result) -> None:
@@ -956,4 +972,4 @@ def _code(reason):
     return cleaned if cleaned[:1].isalpha() else None
 
 
-__all__ = ["BUCKET_INTENTS", "BUCKET_POLICIES", "LANE_BINDINGS", "Continuation", "IntentChanged", "LaneEvidence"]
+__all__ = ["BUCKET_INTENTS", "BUCKET_POLICIES", "BUCKET_PROGRESS", "LANE_BINDINGS", "Continuation", "IntentChanged", "LaneEvidence"]

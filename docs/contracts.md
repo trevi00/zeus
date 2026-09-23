@@ -2497,7 +2497,8 @@ or archive root differs, is current eligibility: a named `refused` intent (`mode
 `image_changed`, `session_archive_changed`, ...) with `next_owner: operator`; the continuation never
 widens its own permission and model output never extends it.
 
-State lives in the Fleet control store (`continuation_policies`, `continuation_intents`) and in each
+State lives in the Fleet control store (`continuation_policies`, `continuation_intents`,
+`continuation_progress`) and in each
 lane store (`continuation_bindings`). The fixed routing table, over terminal Fleet jobs and their lane
 evidence read outside every transaction: `failed/evidence_gate_refused` with a known handoff ->
 `evidence_repair` successor (candidate preserved, fresh evidence handoff, never a resumed session);
@@ -2537,7 +2538,16 @@ Fleet outage skips that subject for the tick (`unavailable`, exception type only
 one of the four slots; each lane's runtime identity is read once per tick, an unreadable one makes
 the whole lane skip after its first visible entry, and any lane stops being read after four
 `unavailable` skips, so other lanes still progress within a bounded pass. A queued job whose runtime
-cannot be read is skipped visibly instead of failing the tick.
+cannot be read is skipped visibly instead of failing the tick. A per-job read failure is not a lane
+outage, so selection progress is durable: before each lane read the tick records the attempt in the
+control store (`continuation_progress`, one row per policy `{policy_id, sequence, attempts{job:
+sequence}}`, its own short transaction, the stored sequence + 1), and every pass - any controller,
+after a restart - orders the fair pass never-attempted first, then least recently attempted
+(`domain.continuation.progress_order`). With a fixed finite set of candidates each one is attempted
+within ceil(n / 4) passes of its lane, and a pass still reads at most four failures per lane. The row
+records a scheduling attempt only (no intent, verdict or evidence); an entry is dropped once its job
+is no longer a candidate and it predates the writer's snapshot, so a concurrent controller's newer
+attempt is never reset. `status` and `drain` never write it; a tick with no candidate writes nothing.
 
 Effect ownership across policies sharing one control store: the intent id (and with it the successor
 and launch ids) carries NO policy, so overlapping policies derive the same effect and can never
