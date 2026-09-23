@@ -103,6 +103,19 @@
       "dependencies": [
         "monitor-correction"
       ]
+    },
+    {
+      "id": "instance-evidence",
+      "project_id": "research-improvement",
+      "criterion_id": "verified-loop",
+      "lane": "interface",
+      "manifest_path": "docs/zeus/operations/autonomous-operation-001/instance-evidence.operation.json",
+      "manifest_revision": "b63b1b122254ff8d8275ccc150a84b8d3ce506c1",
+      "manifest_sha256": "6fae1c8dcd9ef80b71d14915b0097f56f10fe43fa381a92f8713e1c0e1dfef45",
+      "priority": 90,
+      "dependencies": [
+        "monitor-correction"
+      ]
     }
   ]
 }
