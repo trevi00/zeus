@@ -259,3 +259,28 @@ def test_status_and_refusal_print_codes_only(tmp_path):
                        "error_type": "ContinuationRefused", "exit_code": 1}
     assert continuation_cli.refusal(RuntimeError("postgresql://secret"))["reason_code"] == "error"
     assert "postgresql" not in json.dumps(continuation_cli.refusal(RuntimeError("postgresql://secret")))
+
+
+def test_research_accept_reads_the_owner_file_and_stores_one_verified_receipt(tmp_path):
+    from test_continuation_research import held, receipt_for, receipts
+
+    args = parser().parse_args(["continuation", "research-accept", "--file", "r.json"])
+    assert args.continuation_command == "research-accept" and args.file == Path("r.json")
+    world = World(tmp_path)
+    root, successor, research, investigation, dispatch = held(world, tmp_path)
+    path = tmp_path / "receipt.json"
+    path.write_text(json.dumps(receipt_for(world, research, investigation, dispatch)), encoding="utf-8")
+    config = world.fleet.registered()["config"]
+    stored = adapter.accept_research(world.control, config, HOST, adapter.read_receipt(path), lanes=world.lanes)
+    assert stored["accepted"] is True and stored["cached"] is False
+    assert stored["covered_jobs"] == sorted([root, successor]) and stored["intent_id"] == research["id"]
+    again = adapter.accept_research(world.control, config, HOST, adapter.read_receipt(path), lanes=world.lanes)
+    assert again["cached"] is True and len(receipts(world)) == 1
+    # A malformed or unreadable file refuses by code before any store or lane access.
+    path.write_text("{not json " + str(tmp_path), encoding="utf-8")
+    for target in (path, tmp_path / "missing.json"):
+        with pytest.raises(dc.ContinuationRefused) as info:
+            adapter.read_receipt(target)
+        refusal = continuation_cli.refusal(info.value)
+        assert refusal["reason_code"] in {"research_receipt_invalid", "research_receipt_unreadable"}
+        assert str(tmp_path) not in json.dumps(refusal)

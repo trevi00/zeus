@@ -37,7 +37,7 @@ from codex_harness.application.continuation import (
 from codex_harness.application.fleet import Fleet, FleetRunner
 from codex_harness.application.observations import MemoryDirectory, Observer
 from codex_harness.application.operation import Operation, OperationRefused
-from codex_harness.application.portfolio import Portfolio, reconcile
+from codex_harness.application.portfolio import Portfolio
 from codex_harness.application.service import Harness
 from codex_harness.application.worker_sessions import WorkerSessions
 from codex_harness.application.workflow import Workflow
@@ -435,12 +435,16 @@ def test_second_distinct_failure_invokes_research_once_and_holds_only_that_famil
     world.tick()
     world.tick()
     assert world.control.data == held, "the research candidate is raised once; replays count nothing"
-    # The existing Portfolio groups the failures; the owner records a researched disposition.
-    reconcile(world.control)
-    portfolio = Portfolio(world.control, packaged_definitions())
-    with world.control.transaction() as tx:
-        candidate = next(row for row in tx.scan("portfolio_investigations") if successor in row["job_ids"])
-    portfolio.disposition(candidate["id"], "researched", ["sha256:" + "1" * 64])
+    # The existing Portfolio groups the failures and the existing research program dispatches the
+    # coarse row (LABELLED council, accepted). A `researched` disposition alone is evidence that the
+    # owner looked, never approval for these attempts: the family stays held.
+    from test_continuation_research import receipt_for, research_dispatch
+    investigation, dispatch = research_dispatch(world, tmp_path, [x, successor, y])
+    Portfolio(world.control, packaged_definitions()).disposition(investigation, "researched", ["sha256:" + "1" * 64])
+    world.tick()
+    assert only(world.intents(), route=dc.RESEARCH)["state"] == dc.RESEARCH_REQUIRED
+    # Only the owner's scoped receipt over the accepted existing research dispatch releases it.
+    world.controller.accept_research(receipt_for(world, research, investigation, dispatch))
     world.tick()
     intents = world.intents()
     assert only(intents, route=dc.RESEARCH)["state"] == dc.COMPLETED
@@ -459,10 +463,9 @@ def test_correction_budget_of_the_policy_is_a_named_refusal(tmp_path):
     world.run_next(verdict=False)
     world.tick()
     research = only(world.intents(), route=dc.RESEARCH)
-    reconcile(world.control)
-    with world.control.transaction() as tx:
-        candidate = next(row for row in tx.scan("portfolio_investigations") if first in row["job_ids"])
-    Portfolio(world.control, packaged_definitions()).disposition(candidate["id"], "researched", ["sha256:" + "2" * 64])
+    from test_continuation_research import receipt_for, research_dispatch
+    investigation, dispatch = research_dispatch(world, tmp_path, [first, research["origin_job"]])
+    world.controller.accept_research(receipt_for(world, research, investigation, dispatch))
     world.tick()
     refused = only(world.intents(), origin_job=research["origin_job"], route=dc.CORRECTION)
     assert refused["state"] == dc.REFUSED and refused["reason_code"] == "correction_budget_exhausted"
