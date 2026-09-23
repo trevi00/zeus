@@ -77,6 +77,19 @@
       "dependencies": [
         "monitor-correction"
       ]
+    },
+    {
+      "id": "delivery-instance",
+      "project_id": "research-improvement",
+      "criterion_id": "verified-loop",
+      "lane": "harness",
+      "manifest_path": "docs/zeus/operations/autonomous-operation-001/delivery-instance.operation.json",
+      "manifest_revision": "086f3d3843281c739a8401f9860c030722fb8a6e",
+      "manifest_sha256": "a1f04be838a3deebe394468ca05c0628b857688759753d5e25e723089b764785",
+      "priority": 70,
+      "dependencies": [
+        "monitor-correction"
+      ]
     }
   ]
 }
