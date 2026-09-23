@@ -1,5 +1,40 @@
 # Whole autonomous operating loop
 
+## Stop/rollback resubmission: durable pause before debt observation, 2026-09-23
+
+Independent review f49f04d5 accepted the preceding stop forwarding and activation-boundary
+structure, but found one failure of the SAME acceptance matrix: activation_gate writes pause
+and scans debt in one transaction. A scan error rolls back the first pause. The existing test
+injects unavailability only after an earlier successful pause, so does not cover initial failure.
+This is a static source finding; no executed reproducer yet. Preserve accepted results (nine
+inspected command claims, scoped tests 517 passed/8 skipped) and all earlier accepted evidence.
+
+Bounded correction: split pause establishment/commit from subsequent authoritative debt read.
+The initial pause transaction must not scan debt. Only after successful commit may a separate
+transaction inspect pause/hold authority and worker/conductor debt. Scan failure must not undo
+the committed pause. Preserve target/descriptor binding, owner pause precedence, exact-runtime
+hold release and existing target guard/fence; no transaction spans process I/O. If the pause
+write/commit itself fails, refuse activation and report unknown; do not claim durable pause was
+established. Lost commit acknowledgement is unknown/refusal and retry reconciles the same hold.
+If control changes between phases, do not return a fabricated paused/settled result. Preserve
+existing explicit operator resume authority; this correction does not invent a second pause owner.
+
+Acceptance additions to the existing matrix, one batch:
+- FIRST gate call with admission initially open, real rollback-capable store, injected debt scan
+  failure AFTER pause commit: gate refuses, stored pause remains true, another Fleet owner cannot
+  admit worker or reserve conductor. Do not mock activation_gate as a whole or pre-pause fixture.
+- Cover worker-debt and conductor-debt read failure, initial pause write/commit failure (honest
+  unknown), same-hold replay/recovery, owner pause and changed control between phases.
+- Managed predecessor start remains absent on that first failed debt read; after recovery and
+  proven settlement the exact predecessor can start. Preserve prior stop and rollback evidence.
+- A disposable isolated PostgreSQL check is preferred for transaction rollback semantics when
+  available; in-memory tests must use actual rollback semantics. Clearly label fault injection.
+
+Run affected Fleet and managed-runtime tests plus existing host-delivery/continuation-process
+neighbors and Ruff, not a new full audit. Update comments/contracts/runbook claiming one transaction.
+Do not broaden the reviewed design, deploy, or call models from tests. Independently review only
+this failure boundary and directly affected interactions. Owner native tests follow acceptance.
+
 ## Accepted ownership design: stop and rollback integration correction, 2026-09-23
 
 Latest independent review of f9c95c0 accepts the Fleet reservation/guardian/proof/settlement
