@@ -2210,7 +2210,8 @@ is written. The legacy Docker `ReleaseRunner` is not enabled, driven or replaced
 
 A delivery plan (`urn:zeus:host-delivery:1`) is owner-authored, read through the existing `GitSource`
 at an explicit 40-hex commit and never from the working tree: `plan_id`, the EXISTING `release_id`,
-the candidate `revision`/`tree`, the incumbent `policy_hash`, the canonical `repository` identity,
+the candidate `revision`/`tree` (the tree is the exact Git object id the candidate recorded, 40 or 64
+lowercase hex, never a substituted digest), the incumbent `policy_hash`, the canonical `repository` identity,
 1..16 named `required_checks`, a registered `target_id`, the `expected_descriptor` digest (or `null`
 for a target's first activation), a `target_descriptor` of revision plus worker image and profile
 digest (each an exact identity or the explicit word `unchanged`, which resolves against the

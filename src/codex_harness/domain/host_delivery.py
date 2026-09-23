@@ -104,6 +104,10 @@ MIN_CONSUMPTION_TIMEOUT, MAX_CONSUMPTION_TIMEOUT = 10, 900
 TOKEN = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$")
 REVISION = re.compile(r"^[0-9a-f]{40}$")
 SHA256 = re.compile(r"^[0-9a-f]{64}$")
+# A Git tree object id exactly as `git rev-parse <revision>^{tree}` prints it: 40 hex in a SHA-1
+# repository, 64 in a SHA-256 one. It is an object id, not a content digest, so it is validated
+# apart from the SHA256 fields above and compared only by exact equality, never padded or rehashed.
+TREE_ID = re.compile(r"^(?:[0-9a-f]{40}|[0-9a-f]{64})$")
 # A GitHub check or status context name as it is reported, and nothing that could be a command.
 CHECK_NAME = re.compile(r"^[A-Za-z0-9][A-Za-z0-9 ._/()#:-]{0,119}$")
 # `github:owner/repo` or `local:/path` as `adapters.git.GitWorkspace.target_identity` writes it.
@@ -294,9 +298,10 @@ def validate_plan(document) -> dict:
             raise DeliveryRefused("plan_invalid", key)
     if not _hex(document["revision"], REVISION):
         raise DeliveryRefused("plan_invalid", "revision")
-    for key in ("tree", "policy_hash"):
-        if not _hex(document[key], SHA256):
-            raise DeliveryRefused("plan_invalid", key)
+    if not _hex(document["tree"], TREE_ID):
+        raise DeliveryRefused("plan_invalid", "tree")
+    if not _hex(document["policy_hash"], SHA256):
+        raise DeliveryRefused("plan_invalid", "policy_hash")
     repository = document["repository"]
     if not (type(repository) is str and REPOSITORY.fullmatch(repository) is not None):
         raise DeliveryRefused("plan_invalid", "repository")

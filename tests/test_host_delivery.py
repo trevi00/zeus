@@ -31,6 +31,7 @@ from pathlib import Path
 import pytest
 
 from codex_harness.adapters.configuration import aliases, read_env
+from codex_harness.adapters.git import GitWorkspace
 from codex_harness.adapters.host_delivery import (
     CANARY_RECEIPT_FILE,
     DESCRIPTOR_FILE,
@@ -366,6 +367,9 @@ def test_plan_grammar_refuses_unknown_fields_bad_identities_and_foreign_canaries
     canonical = validate_plan(good)
     assert canonical["required_checks"] == [CHECK] and canonical["expected_descriptor"] is None
     for field, value in (("plan_id", "not a token"), ("revision", "z" * 40), ("tree", "c" * 63),
+                         ("tree", "c" * 39), ("tree", "c" * 41), ("tree", "c" * 65),
+                         ("tree", "C" * 40), ("tree", "g" * 40), ("tree", " " + "c" * 40),
+                         ("tree", 40), ("policy_hash", "1" * 40), ("expected_descriptor", "e" * 40),
                          ("policy_hash", 1), ("repository", "https://github.com/o/r"),
                          ("required_checks", []), ("required_checks", [CHECK, CHECK]),
                          ("canary_check_id", "rm -rf /"), ("target_id", "../other"),
@@ -379,6 +383,55 @@ def test_plan_grammar_refuses_unknown_fields_bad_identities_and_foreign_canaries
     with pytest.raises(DeliveryRefused):
         validate_plan({**good, "target_descriptor": {"revision": REVISION,
                                                      "worker_image": FIXTURE_IMAGE}})
+    # A Git tree id is 40 hex (SHA-1 repository) or 64 hex (SHA-256 repository), kept verbatim;
+    # the SHA256 digest fields beside it stay strictly 64 hex.
+    assert validate_plan({**good, "tree": "c" * 40})["tree"] == "c" * 40
+    assert validate_plan(good)["tree"] == TREE
+    with pytest.raises(DeliveryRefused) as refused:
+        validate_plan({**good, "target_descriptor": {**good["target_descriptor"],
+                                                     "profile_digest": "e" * 40}})
+    assert refused.value.field == "target_descriptor.profile_digest"
+
+
+def test_an_actual_git_candidate_tree_registers_and_passes_the_exact_release_binding(tmp_path):
+    """Real Git: a disposable repository, a candidate captured by the EXISTING GitWorkspace, and
+    the tree it reports (40 hex in a SHA-1 repository) carried verbatim into the plan."""
+    repository = tmp_path / "repository"
+    repository.mkdir()
+    fixture_git(repository, "init", "-q", "-b", "main")
+    (repository / "README.md").write_text("base\n", encoding="utf-8")
+    fixture_git(repository, "add", "--all")
+    fixture_git(repository, "commit", "-q", "-m", "base")
+    workspace = GitWorkspace(str(repository), str(tmp_path / "workspaces"))
+    prepared = workspace.prepare("delivery-1")
+    (Path(prepared["path"]) / "README.md").write_text("candidate\n", encoding="utf-8")
+    captured = workspace.capture(prepared)
+    real_tree = fixture_git(repository, "rev-parse", captured["revision"] + "^{tree}")
+    assert captured["tree"] == real_tree and len(real_tree) in {40, 64}
+    base_tree = fixture_git(repository, "rev-parse", captured["base"] + "^{tree}")
+    assert base_tree != real_tree and len(base_tree) == len(real_tree)
+    store, org = SerialStore(), organization()
+    release = reviewed_release(store, org, record_candidate={**captured, "objective": CANARY_TEXT})
+    assert release["candidate"]["tree"] == real_tree
+    delivery = HostDelivery(store, org, github=FakeGitHub(merged_tree=real_tree),
+                            hosts={"process": ProcessHostTarget(max_seconds=60)},
+                            canaries={CANARY_STARTUP: startup_identity_canary}, clock=Clock(),
+                            enabled=True, resume_seconds=0)
+    delivery.register_targets(targets_document(tmp_path))
+    plan = plan_document(release, repository=captured["repository"])
+    assert plan["tree"] == real_tree  # the exact object id: never padded, rehashed or substituted
+    registered = delivery.register(plan, pin())
+    with store.transaction() as tx:
+        assert tx.get(BUCKET_PLANS, plan["plan_id"])["plan"]["tree"] == real_tree
+    assert registered["cached"] is False
+    result = delivery.tick()
+    assert result["stage"] == PUBLISHING and result["reason_code"] is None, result
+    # Another real, well-formed tree of the same repository is a different candidate: refused.
+    other = plan_document(release, plan_id="delivery-plan-2", repository=captured["repository"],
+                          tree=base_tree)
+    delivery.register(other, pin())
+    refused = delivery.tick(other["plan_id"])
+    assert refused["outcome"] == "refused" and refused["reason_code"] == "release_tree_mismatch"
 
 
 def test_registry_is_host_configuration_and_a_plan_can_only_name_a_registered_target(tmp_path):
