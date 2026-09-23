@@ -1,0 +1,35 @@
+{
+  "schema": "urn:zeus:operation:1",
+  "id": "autonomous-operation-001-native-evidence",
+  "base_revision": "d2378a72e3f4d1c08dcf05995553d6052878cdea",
+  "goal": {
+    "path": "docs/zeus/operations/autonomous-operation-001/SPEC.md",
+    "sha256": "6aba9cf7bec9df40c6e492387f68051db6b5fcf90ea065286559b46fdff8ff5f",
+    "criterion": "Complete native host-delivery evidence without weakening runtime ownership or identity checks",
+    "rationale": "Replace the demonstrated one-shot continuation with a reusable owner-controlled delivery component; retain existing Releases and ReleaseQueue authority."
+  },
+  "budget": {
+    "mode": "subscription",
+    "total": 192,
+    "per_host": 192
+  },
+  "claude": {
+    "model": "claude-opus-5-5",
+    "timeout_seconds": 3600,
+    "max_budget_usd": 2
+  },
+  "plan": {
+    "objective": "Implement ONLY Native evidence completion section of SPEC: two test portability corrections together. Production runtime unchanged. Prior inherited a1481784 remains unaccepted; independent reviewer covers inherited instance authority plus fixture and this delta. Owner already executed no-git archive 119 passed/25 skipped and named regression 1 passed/86 deselected for 779d0326; do not repeat a blocked claim that nobody ran it. Run four-file tests and Ruff, mark Linux/Windows honestly. No service mutations or model calls.",
+    "allowed_paths": [
+      "tests/test_host_delivery_cli.py",
+      "docs/zeus/operations/autonomous-operation-001/HOST-DELIVERY.md"
+    ],
+    "acceptance_criteria": [
+      "Existing Releases approval and ReleaseQueue fencing authorize the exact plan; no accepted-row shortcut or new approval authority.",
+      "Bounded durable tick continues publish/CI/merge/drain/switch/consumption across restart and response loss without duplicate effects or nested transactions.",
+      "Concrete host adapters, canary/verified rollback and read-only monitoring/structured logs meet the fixed acceptance matrix; actual live qualification remains owner work.",
+      "Scoped tests and Ruff pass; preserve all failed and unexecuted evidence honestly.",
+      "All seven correction boundaries covered together, including real canary ordering, recovered merge validation, ownership before effects, rollback restart and eligible-plan fairness."
+    ]
+  }
+}
