@@ -295,6 +295,19 @@
       "dependencies": [
         "live-status"
       ]
+    },
+    {
+      "id": "delivery-tree",
+      "project_id": "research-improvement",
+      "criterion_id": "verified-loop",
+      "lane": "harness",
+      "manifest_path": "docs/zeus/operations/autonomous-operation-001/delivery-tree.operation.json",
+      "manifest_revision": "c54bcc9b84e0687a3ee6c22b6919675da83d63f6",
+      "manifest_sha256": "811b270743b038aed13e7ecea7dc350e2e25a49eb922fac051af0ca800b98f54",
+      "priority": 210,
+      "dependencies": [
+        "native-fixture"
+      ]
     }
   ]
 }
