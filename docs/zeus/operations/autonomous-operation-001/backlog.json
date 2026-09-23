@@ -211,6 +211,21 @@
         "host-runtime-evidence",
         "native-runtime"
       ]
+    },
+    {
+      "id": "ownership-design",
+      "project_id": "research-improvement",
+      "criterion_id": "verified-loop",
+      "lane": "harness",
+      "manifest_path": "docs/zeus/operations/autonomous-operation-001/ownership-design.operation.json",
+      "manifest_revision": "40133bb9db336a0fe30f37ab116f05163bdc9ff1",
+      "manifest_sha256": "28c5c1704208834e475169940236ea9ba7e101b90958bf1cc0d45d282141c45e",
+      "priority": 160,
+      "dependencies": [
+        "session-correction",
+        "host-runtime-evidence",
+        "native-runtime"
+      ]
     }
   ]
 }
