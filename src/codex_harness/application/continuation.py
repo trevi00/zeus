@@ -42,6 +42,7 @@ the authorization stored on the intent; reconciling an already started effect ne
 """
 from __future__ import annotations
 
+from codex_harness.application.execution_fence import current as current_fence
 from codex_harness.domain.continuation import (
     ADMITTED,
     AUTHORITY,
@@ -117,7 +118,12 @@ from codex_harness.domain.continuation import (
 )
 from codex_harness.domain.fleet import UNIT_CONDUCTOR, FleetRefused, held_units
 from codex_harness.domain.model import ContractError, digest, utcnow
-from codex_harness.domain.research_investigations import current_dispatch_id
+from codex_harness.domain.research_investigations import (
+    REVOCATION_BUCKET,
+    current_dispatch_id,
+    revocation_held,
+    revocation_task_id,
+)
 from codex_harness.domain.research_program import council_result
 
 BUCKET_POLICIES = "continuation_policies"
@@ -321,6 +327,7 @@ class Continuation:
         if stored is not None:
             refuse(stored.get("receipt") == receipt, "research_receipt_conflict", "operator", "intent_id")
             return self._receipt_result(stored, cached=True)
+        self._require_recovery(facts)
         if isinstance(facts["intent"], dict) and facts["intent"].get("state") == RESEARCH_REQUIRED:
             facts["observed"] = self._observe_attempts(facts["jobs"])
         check_research_receipt(receipt, **facts)
@@ -362,6 +369,12 @@ class Continuation:
             # original, or a result of its run, can never approve.
             recovery = tx.get(RESEARCH_RECOVERIES, receipt["investigation"])
             dispatch = tx.get(RESEARCH_DISPATCHES, current_dispatch_id(receipt["investigation"], recovery))
+            # An execution-revocation lineage answers only while its OWN retained task fence holds.
+            revoked = revocation_task_id(recovery)
+            recovery_held = None if revoked is None else revocation_held(
+                recovery, fence=current_fence(tx, REVOCATION_BUCKET, revoked) if revoked else None,
+                task=tx.get(REVOCATION_BUCKET, revoked) if revoked else None,
+                delivery=tx.get("outbox_delivery", revoked) if revoked else None)
             run_id = (dispatch or {}).get("run_id") if isinstance(dispatch, dict) else None
             run = tx.get(RESEARCH_RUNS, run_id) if type(run_id) is str else None
             jobs = {a["job"]: tx.get(FLEET_JOBS, a["job"]) for a in receipt["attempts"]}
@@ -370,7 +383,13 @@ class Continuation:
                       else {"result": "unknown", "reason_code": "dispatch_not_started", "row_status": None})
         return {"stored": stored, "intent": intent, "attempts": research_attempts(intents, intent) if held else [],
                 "policy": policy, "jobs": jobs, "observed": {}, "investigation": investigation,
-                "dispatch": dispatch, "run_result": run_result}
+                "dispatch": dispatch, "run_result": run_result, "recovery_held": recovery_held}
+
+    @staticmethod
+    def _require_recovery(facts: dict) -> None:
+        """A revocation-mode lineage whose retained fence no longer holds never approves or releases."""
+        code = facts.pop("recovery_held")
+        refuse(code is None, "research_" + str(code), ROUTE_OWNERS[RESEARCH], "dispatch")
 
     def _verify_evidence(self, receipt: dict) -> None:
         """Every evidence ref's actual bytes, read now through the trusted store and digest checked,
@@ -993,6 +1012,7 @@ class Continuation:
                "research_policy_foreign", "operator", "policy")
         facts = self._research_facts(receipt)
         facts.pop("stored")
+        self._require_recovery(facts)   # before the lane reads and before the hold is released
         facts["observed"] = self._observe_attempts(facts["jobs"])
         check_research_receipt(receipt, **facts)
         self._verify_evidence(receipt)

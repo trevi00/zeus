@@ -25,7 +25,7 @@ from test_continuation import World, only
 from test_research_investigations import DEFINITIONS
 from test_research_program import POLICY, build, registered
 from test_research_program_fixtures import FakeCouncil, config
-from test_research_recovery import FakeTransport, PublicationFailingCouncil
+from test_research_recovery import FakeTransport, PublicationFailingCouncil, UnreachableBus
 
 from codex_harness.adapters import continuation as adapter
 from codex_harness.adapters import continuation_cli
@@ -37,6 +37,7 @@ from codex_harness.application.continuation import (
 from codex_harness.application.portfolio import BUCKET_INVESTIGATIONS, Portfolio, family_id
 from codex_harness.application.research_program import BUCKET_DISPATCHES
 from codex_harness.domain import continuation as dc
+from codex_harness.domain.model import digest
 from codex_harness.domain.research_program import config_digest, validate_config
 
 # The owner's research evidence: real bytes stored in the World's temporary FileArtifacts root by
@@ -563,5 +564,63 @@ def test_a_recovered_dispatch_binds_the_scoped_receipt_to_the_accepted_replaceme
     assert only(world.intents(), id=research["id"])["state"] == dc.RESEARCH_REQUIRED
     accepted = world.controller.accept_research(receipt_for(world, research, investigation, current))
     assert accepted["accepted"] is True and accepted["dispatch"]["run_id"] == "rp-002.c001"
+    world.tick()
+    assert only(world.intents(), id=research["id"])["state"] == dc.COMPLETED
+
+
+def test_an_execution_revocation_releases_the_receipt_only_while_its_retained_fence_holds(tmp_path):
+    """SPEC "Actual legacy research recovery: execution revocation": the REAL council fails before
+    provider entry on a LABELLED legacy bus with NO transport binding; the owner's explicit revocation
+    authorizes the replacement. A lost retained fence (LABELLED injected fault) holds both acceptance
+    and consumption by name; the exact fence restored releases exactly once."""
+    world = World(tmp_path)
+    world.register()
+    root, successor, research = two_strikes(world, "op-x", "docs/a.md")
+    owner = Portfolio(world.control, DEFINITIONS)
+    for job in (root, successor):
+        owner.bind(job, "ops", "c1")
+    owner.reconcile()
+    investigation = family_id("failed", "evidence_gate_refused")
+    source = {"topic": "storage", "project_ids": ["ops"], "reason_codes": ["evidence_gate_refused"]}
+    (tmp_path / "research").mkdir()
+    council = PublicationFailingCouncil(world.control, UnreachableBus(bound=False))
+    env = build(tmp_path / "research", store=world.control, council=council)
+    registered(env, investigation_source=source)
+    assert env.runner.tick("rp-001")["reason_code"] == "publication_incomplete"
+    with world.control.transaction() as tx:
+        failed = deepcopy(tx.get(BUCKET_DISPATCHES, investigation))
+        [item] = [o for o in tx.scan("outbox") if o["message"]["correlation_id"] == "autonomous:rp-001.c001"]
+    cfg = validate_config(config(env.head, id="rp-002", investigation_source=source), POLICY)
+    env.programs.register(cfg, env.identity, [])
+    pinned = {k: failed[k] for k in ("program", "cycle", "run_id", "manifest_sha256", "snapshot_sha256")}
+    result = env.programs.recover_dispatch(
+        {"schema": "urn:zeus:research-dispatch-recovery:2", "mode": "execution_revocation",
+         "investigation": investigation, "failed": pinned,
+         "replacement": {"program": "rp-002", "config_sha256": config_digest(cfg, env.identity)},
+         "revoke": {"message_id": item["message"]["message_id"], "source_sha256": digest(item)}}, None)
+    assert result["proof"] == "execution_revoked"
+    env.programs.resume("rp-002")
+    env.runner.council = FakeCouncil(world.control, status="accepted")
+    assert env.runner.tick("rp-002")["result"] == "accepted"
+    with world.control.transaction() as tx:
+        current = deepcopy(tx.get(BUCKET_DISPATCHES, investigation + ".recovery-1"))
+    key = ("execution_fences", "tasks:" + item["message"]["message_id"])
+    with world.control.lock:   # LABELLED injected fault: the retained fence row is lost
+        fence = world.control.data.pop(key)
+    with pytest.raises(dc.ContinuationRefused, match="research_recovery_revocation_fence_missing"):
+        world.controller.accept_research(receipt_for(world, research, investigation, current))
+    assert receipts(world) == {}
+    with world.control.lock:
+        world.control.data[key] = fence
+    assert world.controller.accept_research(receipt_for(world, research, investigation, current))["accepted"] is True
+    with world.control.lock:   # the same fault after acceptance: consumption holds, receipt unchanged
+        world.control.data.pop(key)
+    stored = deepcopy(receipts(world))
+    result = world.tick()
+    assert {"subject": research["id"], "reason_code": "research_recovery_revocation_fence_missing",
+            "next_owner": "portfolio_research"} in result["skipped"]
+    assert only(world.intents(), id=research["id"])["state"] == dc.RESEARCH_REQUIRED and receipts(world) == stored
+    with world.control.lock:
+        world.control.data[key] = fence
     world.tick()
     assert only(world.intents(), id=research["id"])["state"] == dc.COMPLETED
