@@ -285,3 +285,149 @@ def test_monitor_keeps_quarantine_attention_after_later_empty_successful_batches
     assert snapshot['notifications']['status'] == 'attention'
     assert snapshot['notifications']['status_counts']['quarantined'] == 1
     assert 'source' not in str(snapshot['notifications'])
+
+
+# ----- authoritative publication route (SPEC "Council isolation resubmission", 2026-09-24) -------------
+class RunBus(Bus):
+    """The route shape `RedisBus.for_run` configures (fixture bus; the adapter itself is covered in
+    tests/test_bus.py and the production run wiring in tests/test_autonomous.py)."""
+
+    def __init__(self, run_id):
+        super().__init__()
+        self.namespace = 'ns:run:' + run_id
+        self.route = {'scope': 'run', 'run_id': run_id, 'namespace': self.namespace}
+
+
+def pinned(service, n, run_id, correlation=None):
+    from codex_harness.application.outbox import pin_route
+    correlation = correlation or 'autonomous:' + run_id
+    with service.store.transaction() as tx:
+        pin_route(tx, correlation, RunBus(run_id).route, 'at')
+    return put(service, n, envelope('task.assign', 'conductor', 'lead:improvement', 'plan',
+                                    {'objective': 'Pinned relay test'}, correlation))
+
+
+def untouched(service, identity):
+    with service.store.transaction() as tx:
+        assert tx.get('outbox', identity)['sent'] is False
+        assert tx.get('outbox_delivery', identity) is None
+        assert [a for a in tx.scan('outbox_attempts') if a['outbox_id'] == identity] == []
+        assert tx.scan('outbox_quarantine') == []
+
+
+def test_a_global_relay_holds_a_pinned_record_and_only_its_run_route_publishes_it_once(service):
+    legacy, own, foreign = put(service, 1), pinned(service, 2, 'run-A'), pinned(service, 3, 'run-B')
+    global_bus = Bus()
+    first = service.flush_outbox(global_bus)
+    assert first['published'] == 1 and first['route_held'] == 2
+    assert [m['message_id'] for m in global_bus.messages] == [legacy], 'legacy global work still progresses'
+    untouched(service, own)
+    untouched(service, foreign)
+    wrong = RunBus('run-B')
+    refused = service.flush_outbox(wrong, correlation_id='autonomous:run-A')
+    assert refused['route_refused'] == 1 and refused['complete'] is False and wrong.messages == []
+    untouched(service, own)
+    bus = RunBus('run-A')
+    done = service.flush_outbox(bus, correlation_id='autonomous:run-A')
+    assert done['published'] == 1 and done['complete'] is True
+    assert [m['message_id'] for m in bus.messages] == [own]
+    assert service.flush_outbox(bus, correlation_id='autonomous:run-A')['examined'] == 0
+    assert service.flush_outbox(global_bus)['published'] == 0 and len(global_bus.messages) == 1
+    untouched(service, foreign)
+
+
+def test_a_malformed_pinned_record_is_never_quarantined_by_a_relay_that_does_not_own_it(service):
+    identity = pinned(service, 1, 'run-A')
+    with service.store.transaction() as tx:
+        item = tx.get('outbox', identity)
+        item['message']['who']['recipient'] = 'nobody'
+        tx.put('outbox', identity, item)
+    assert service.flush_outbox(Bus())['route_held'] == 1
+    untouched(service, identity)
+    assert service.flush_outbox(RunBus('run-A'), correlation_id='autonomous:run-A')['quarantined'] == 1, \
+        'its owner keeps the strict existing validation'
+
+
+@pytest.mark.parametrize('damage', ['malformed_pin', 'missing_pin_of_known_scoped_run'])
+def test_unavailable_route_authority_never_falls_back_to_the_global_route(service, damage):
+    if damage == 'malformed_pin':
+        identity = pinned(service, 1, 'run-A')
+    else:   # the run row records its scoped bus, but no pin is readable for its correlation
+        identity = put(service, 1, envelope('task.assign', 'conductor', 'lead:improvement', 'plan',
+                                            {'objective': 'unpinned'}, 'autonomous:run-A'))
+    with service.store.transaction() as tx:
+        if damage == 'malformed_pin':
+            tx.put('outbox_routes', 'autonomous:run-A', {'id': 'autonomous:run-A', 'scope': 'run'})
+        else:
+            tx.put('autonomous_runs', 'run-A', {'id': 'run-A', 'correlation_id': 'autonomous:run-A',
+                                                'bus': {'namespace': 'ns:run:run-A', 'scope': 'run'}})
+    global_bus, bus = Bus(), RunBus('run-A')
+    assert service.flush_outbox(global_bus)['route_unavailable'] == 1
+    assert service.flush_outbox(bus, correlation_id='autonomous:run-A')['route_unavailable'] == 1
+    assert global_bus.messages == bus.messages == []
+    untouched(service, identity)
+
+
+@pytest.mark.parametrize('recorded', [None, {'namespace': 'ns'}, {'namespace': 'ns:run:' + '0' * 32}])
+def test_a_run_row_that_never_pinned_a_route_stays_on_the_legacy_route(service, recorded):
+    """Historical rows (no bus, or a bare namespace recorded before routes were pinned) are never
+    reinterpreted as scoped from their correlation or namespace text."""
+    identity = put(service, 1, envelope('task.assign', 'conductor', 'lead:improvement', 'plan',
+                                        {'objective': 'historical'}, 'autonomous:old-run'))
+    with service.store.transaction() as tx:
+        tx.put('autonomous_runs', 'old-run', {'id': 'old-run', 'correlation_id': 'autonomous:old-run', 'bus': recorded})
+    bus = Bus()
+    assert service.flush_outbox(bus)['published'] == 1 and [m['message_id'] for m in bus.messages] == [identity]
+
+
+def test_the_route_is_rechecked_at_the_publication_transaction_boundary(service):
+    from codex_harness.application.outbox import _prepare, _publish
+    identity = pinned(service, 1, 'run-A')
+    bus = RunBus('run-A')
+    with service.store.transaction() as tx:
+        result, prepared = _prepare(tx, identity, service.org, bus)
+    assert result == 'prepared'
+    with service.store.transaction() as tx:   # the pin changes between the intent and the publication
+        pin = tx.get('outbox_routes', 'autonomous:run-A')
+        tx.put('outbox_routes', 'autonomous:run-A', {**pin, 'namespace': 'ns:run:elsewhere'})
+    with service.store.transaction() as tx:
+        assert _publish(tx, prepared, bus) == ('route_refused', None)
+    assert bus.messages == []
+    with service.store.transaction() as tx:
+        assert tx.get('outbox', identity)['sent'] is False
+        assert tx.get('outbox_attempts', prepared['attempt_id'])['status'] == 'route_changed_before_publish'
+        assert tx.get('outbox_delivery', identity)['status'] == 'retry'
+        tx.put('outbox_routes', 'autonomous:run-A', pin)
+    assert service.flush_outbox(bus, correlation_id='autonomous:run-A')['published'] == 1 and len(bus.messages) == 1
+
+
+def test_a_pin_is_written_once_and_a_changed_route_never_replaces_it(service):
+    from codex_harness.application.outbox import pin_route
+    from codex_harness.domain.model import ContractError
+    route = RunBus('run-A').route
+    with service.store.transaction() as tx:
+        pin_route(tx, 'autonomous:run-A', route, 'first')
+    with service.store.transaction() as tx:
+        pin_route(tx, 'autonomous:run-A', route, 'second')   # the same route is idempotent
+    for bad in ({**route, 'namespace': 'ns:run:other'}, {**route, 'run_id': 'run-B'}):
+        with pytest.raises(ContractError, match='route_conflict'):
+            with service.store.transaction() as tx:
+                pin_route(tx, 'autonomous:run-A', bad, 'third')
+    for bad in (None, {}, {**route, 'scope': 'global'}, {**route, 'namespace': ''}):
+        with pytest.raises(ContractError, match='route_invalid'):
+            with service.store.transaction() as tx:
+                pin_route(tx, 'autonomous:run-A', bad, 'third')
+    with service.store.transaction() as tx:
+        assert tx.get('outbox_routes', 'autonomous:run-A')['pinned_at'] == 'first'
+        assert tx.get('outbox_routes', 'autonomous:run-A')['namespace'] == route['namespace']
+
+
+def test_concurrent_global_and_scoped_relays_publish_each_pinned_record_once_on_its_route(service):
+    own = [pinned(service, n, 'run-A') for n in (1, 2, 3)]
+    legacy = put(service, 4)
+    global_bus, bus = Bus(), RunBus('run-A')
+    jobs = [lambda: service.flush_outbox(global_bus), lambda: service.flush_outbox(bus, correlation_id='autonomous:run-A')] * 2
+    with ThreadPoolExecutor(max_workers=4) as pool:
+        list(pool.map(lambda job: job(), jobs))
+    assert [m['message_id'] for m in global_bus.messages] == [legacy]
+    assert sorted(m['message_id'] for m in bus.messages) == own
