@@ -266,6 +266,8 @@ def test_two_run_buses_interleaved_never_steal_and_the_old_global_stream_is_unto
 
     restarted = RedisBus.for_run(url, "run-A", namespace="ns")
     assert restarted.stream("lead:researcher") == a.stream("lead:researcher"), "a restart derives the same streams"
+    assert restarted.route == a.route == {"scope": "run", "run_id": "run-A", "namespace": a.namespace} != b.route
+    assert legacy.route is None, "the unscoped bus names no run route and cannot own a pin"
     assert restarted.transport(create=False) == a.transport(create=False)
     after = server.database(0)
     global_keys = (legacy.stream("lead:researcher"), legacy.incarnation_key())

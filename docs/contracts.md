@@ -1915,6 +1915,22 @@ additive `bus: {namespace}` (null when the bus names none). The version-1 transp
 failed run's scoped namespace only when that namespace holds its own storage token, otherwise the
 configured one; the owner still compares the full committed identity. Other global consumers keep the
 unscoped bus.
+Authoritative publication route (SPEC "Council isolation resubmission"). `RedisBus.for_run` carries the
+trusted `route {scope: run, run_id, namespace}`; the unscoped bus carries none. `AutonomousRun.claim`
+refuses `route_mismatch` when that route names another run, and in the claim transaction (before any
+message of the run) pins `outbox_routes/<correlation>` = `urn:zeus:outbox-route:1 {scope, run_id,
+namespace, pinned_at}` for `autonomous:<id>` and `operation:<id>.impl`; the row's `bus` then gains
+`scope: run`. A pin is written once: an equal route is idempotent, a different one refuses
+`route_conflict` and is never replaced. Every relay, global or correlation-scoped, rechecks the pin in the
+prepare AND the publish transaction: only a bus whose route equals the pin publishes; the unscoped relay
+leaves the record pending (`route_held`), another run route refuses (`route_refused`), and a malformed pin
+or a row with `bus.scope: run` whose pin is missing is `route_unavailable` for every relay, never a global
+fallback. Held records get no intent, attempt, quarantine or sent flag; a pin changed after the intent
+marks that attempt `route_changed_before_publish`. Route counters appear in relay results only when
+non-zero; `route_refused`/`route_unavailable` set the global health row to `attention`. Unpinned
+correlations, including historical rows with no bus or a bare namespace, keep the legacy route; nothing
+already sent is moved or resent. Rollback limit: reverting the code leaves `outbox_routes` rows as inert
+history, and the old global relay would again publish pending pinned records on the shared streams.
 `status`, the additive read-only monitor source `research_programs`
 (`urn:zeus:research-program-monitor:1`, at most 20 programs, `truncated` explicit) and the bounded
 `runtime/research-program/<id>/report.md` project counts, states, codes and outcomes from the store

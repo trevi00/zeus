@@ -434,6 +434,126 @@ def test_the_cli_owner_wires_one_run_scoped_bus_per_run_and_records_it_on_the_re
     assert [r["bus"] for r in receipts] == [{"namespace": n} for n in namespaces]
 
 
+# ----- authoritative publication route (SPEC "Council isolation resubmission", 2026-09-24) -------------
+URL = "redis://a.example:6379/0"
+
+
+def routed(monkeypatch, run_id="auto-001", svc=None, server=None):
+    """The REAL RedisBus.for_run (the CLI owner's bus) and the REAL unscoped global RedisBus on ONE
+    LABELLED fixture Redis server, around the real AutonomousRun, Workflow and outbox relay; the
+    executor, budget, artifacts and clock are the labelled fixtures of this module."""
+    from test_bus import FakeRedisFactory, FakeRedisServer
+
+    from codex_harness.adapters.bus import RedisBus
+    server = server or FakeRedisServer()
+    monkeypatch.setattr("codex_harness.adapters.bus.Redis", FakeRedisFactory({("a.example", 6379): server}))
+    svc = svc or Harness(MemoryStore(), organization())
+    artifacts, clock = Artifacts(), Clock()
+    executor = FakeExecutor(svc, artifacts, clock=clock)
+    scoped = RedisBus.for_run(URL, run_id, namespace="ns")
+    run = AutonomousRun(svc, executor, scoped, Workflow(svc.store, svc.org), FakeBudget(), Collector(),
+                        verify_sources=lambda packet: [{**s, "bytes": 1} for s in packet["sources"]], repository="r",
+                        clock=clock, evidence=artifacts)
+    return svc, run, server, RedisBus(URL, namespace="ns")
+
+
+def global_first(monkeypatch, svc, global_bus, relayed):
+    """Deterministic barrier AFTER each outbox commit of the run and BEFORE its scoped flush: the global
+    supervisor relay (the real `Harness.flush_outbox` on the unscoped bus) runs first, every time."""
+    from codex_harness.application import autonomous, operation
+    real = autonomous.flush_outbox
+
+    def interleaved(service, bus, observer=None, correlation_id=None):
+        relayed.append(svc.flush_outbox(global_bus))
+        return real(service, bus, observer, correlation_id)
+    monkeypatch.setattr(autonomous, "flush_outbox", interleaved)
+    monkeypatch.setattr(operation, "flush_outbox", interleaved)
+
+
+def global_entries(server):
+    return {k: v for k, v in server.database(0)["streams"].items() if k.startswith("ns:agent:") and v}
+
+
+def test_a_global_relay_interleaved_after_the_commit_never_publishes_or_marks_a_scoped_message(monkeypatch):
+    """Negative regression for the P1 routing interleaving (candidate 81ce6b9): before this change the
+    global relay published the committed assignment on `ns:agent:<role>` and set sent=true, so the
+    scoped flush found nothing and the run's drain received nothing. Now every run message, including
+    the executor-generated worker report and the workflow commands, is published exactly once on the
+    run's own streams and the global relay leaves it pending for its owner."""
+    svc, run, server, global_bus = routed(monkeypatch)
+    relayed = []
+    global_first(monkeypatch, svc, global_bus, relayed)
+    receipt = run.run(valid(), IDENTITY, BOUND_GOAL)
+    assert global_entries(server) == {}, "no wrong-route entry on the global streams"
+    assert receipt["status"] == "accepted", receipt["reason_code"]
+    assert relayed and sum(r["published"] for r in relayed) == 0 and sum(r.get("route_held", 0) for r in relayed) > 0
+    with svc.store.transaction() as tx:
+        rows, attempts = tx.scan("outbox"), tx.scan("outbox_attempts")
+        routes = {r["id"]: r for r in tx.scan("outbox_routes")}
+    assert rows and all(r["sent"] for r in rows)
+    delivered = [a for a in attempts if a["status"] == "delivered"]
+    assert sorted(a["outbox_id"] for a in delivered) == sorted(r["message"]["message_id"] for r in rows), "each exactly once"
+    assert {a["transport"]["namespace"] for a in delivered} == {run.bus.namespace}
+    assert {r["message"]["correlation_id"] for r in rows} <= set(routes) == {"autonomous:auto-001", "operation:auto-001.impl"}
+    assert {r["namespace"] for r in routes.values()} == {run.bus.namespace}
+    # A restart of the same run id derives the same route: the cached receipt, the pins unchanged.
+    _, restarted, _, _ = routed(monkeypatch, "auto-001", svc, server)
+    assert restarted.run(valid(), IDENTITY, BOUND_GOAL)["cached"] is True
+    with svc.store.transaction() as tx:
+        assert {r["id"]: r for r in tx.scan("outbox_routes")} == routes
+
+
+def test_two_run_owners_interleave_on_their_own_routes_and_legacy_global_work_still_progresses(monkeypatch):
+    svc = Harness(MemoryStore(), organization())
+    _, run_a, server, global_bus = routed(monkeypatch, "auto-001", svc)
+    _, run_b, _, _ = routed(monkeypatch, "auto-002", svc, server)
+    legacy = envelope("task.assign", "conductor", "lead:improvement", "plan", {"objective": "legacy"}, "legacy-1")
+    with svc.store.transaction() as tx:
+        tx.put("outbox", legacy["message_id"], {"message": legacy, "sent": False})
+    relayed = []
+    global_first(monkeypatch, svc, global_bus, relayed)
+    first = run_a.run(valid(), IDENTITY, BOUND_GOAL)
+    second = run_b.run(valid(id="auto-002"), IDENTITY, BOUND_GOAL)
+    assert first["status"] == second["status"] == "accepted"
+    assert list(global_entries(server)) == [global_bus.stream("lead:improvement")], "only the unpinned legacy record"
+    assert sum(r["published"] for r in relayed) == 1
+    with svc.store.transaction() as tx:
+        delivered = [a for a in tx.scan("outbox_attempts") if a["status"] == "delivered"]
+        outbox = {r["message"]["message_id"]: r["message"]["correlation_id"] for r in tx.scan("outbox")}
+    by_run = {run_a.bus.namespace: "auto-001", run_b.bus.namespace: "auto-002", "ns": None}
+    for attempt in delivered:
+        owner = by_run[attempt["transport"]["namespace"]]
+        correlation = outbox[attempt["outbox_id"]]
+        assert (owner is None and correlation == "legacy-1") or correlation.endswith(owner) or owner + ".impl" in correlation
+
+
+def test_claim_pins_the_route_before_any_message_and_refuses_a_changed_or_foreign_route(monkeypatch):
+    svc, run, server, global_bus = routed(monkeypatch)
+    run.claim(valid(), IDENTITY, BOUND_GOAL)
+    with svc.store.transaction() as tx:
+        assert tx.scan("outbox") == [], "the pin is committed before the first message"
+        pin = tx.get("outbox_routes", "autonomous:auto-001")
+        assert tx.get("autonomous_runs", "auto-001")["bus"] == {"namespace": run.bus.namespace, "scope": "run"}
+    assert pin["run_id"] == "auto-001" and pin["namespace"] == run.bus.namespace and pin["scope"] == "run"
+    # A different run's bus handed to this manifest: the run identity and the route disagree.
+    svc2, other, _, _ = routed(monkeypatch, "auto-999")
+    with pytest.raises(AutonomousRefused) as info:
+        other.claim(valid(), IDENTITY, BOUND_GOAL)
+    assert info.value.reason_code == "route_mismatch"
+    with svc2.store.transaction() as tx:
+        assert tx.scan("autonomous_runs") == [] and tx.scan("outbox_routes") == []
+    # A retained pin for this correlation that names another namespace is never silently replaced.
+    svc3, fresh, _, _ = routed(monkeypatch)
+    with svc3.store.transaction() as tx:
+        tx.put("outbox_routes", "autonomous:auto-001", {**pin, "namespace": "ns:run:" + "f" * 32})
+    with pytest.raises(AutonomousRefused) as info:
+        fresh.claim(valid(), IDENTITY, BOUND_GOAL)
+    assert info.value.reason_code == "route_conflict"
+    with svc3.store.transaction() as tx:
+        assert tx.get("autonomous_runs", "auto-001") is None
+        assert tx.get("outbox_routes", "autonomous:auto-001")["namespace"] == "ns:run:" + "f" * 32
+
+
 def test_the_run_row_records_its_delivery_namespace_and_a_bus_without_one_records_none():
     svc, run, executor, budget = build()
     run.bus.namespace = "ns:run:" + "0" * 32

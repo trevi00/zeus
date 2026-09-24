@@ -28,6 +28,7 @@ from codex_harness.application.local_cycle import (
     observe_rejected,
 )
 from codex_harness.application.operation import BudgetedExecutor, BudgetRefused, Operation
+from codex_harness.application.outbox import bus_route, pin_route
 from codex_harness.application.promotion import promote
 from codex_harness.domain.autonomous import (
     ARBITER,
@@ -57,6 +58,7 @@ from codex_harness.domain.council import profile
 from codex_harness.domain.dge import expired, packet_digest
 from codex_harness.domain.model import ContractError, envelope, require, utcnow
 from codex_harness.domain.operation import WORKER
+from codex_harness.domain.operation import correlation_id as operation_correlation
 
 BUCKET = "autonomous_runs"
 OPERATIONS = "operations"
@@ -112,6 +114,11 @@ class AutonomousRun:
     def claim(self, manifest: dict, identity: dict, goal: dict) -> dict:
         binding = {"manifest_sha256": manifest_digest(manifest), "identity": identity, "goal": goal}
         run_id, session, operation = manifest["id"], session_id(manifest), manifest["id"] + ".impl"
+        # SPEC "Council isolation resubmission": the trusted route of the bus the owner configured, read
+        # outside the transaction (no network); it must name exactly this run, never another one.
+        route = bus_route(self.bus)
+        if route is not None and route["run_id"] != run_id:
+            raise AutonomousRefused("route_mismatch")
         with self.service.store.transaction() as tx:
             old = tx.get(BUCKET, run_id)
             if old is not None:
@@ -129,10 +136,20 @@ class AutonomousRun:
             row = {"id": run_id, "status": "running", "stage": "research", "reason_code": None, **binding,
                    "correlation_id": correlation_id(manifest), "session_id": session, "operation_id": operation,
                    "deadline": manifest["deadline"], "max_starts": shape["max_starts"], "topology": shape["topology"],
-                   "starts": {"reserved": 0, "settled": 0, "slots": []}, "bus": bus_view(self.bus),
+                   "starts": {"reserved": 0, "settled": 0, "slots": []},
+                   # `scope: run` marks a row whose correlations are pinned; a bare namespace stays legacy.
+                   "bus": bus_view(self.bus) if route is None else {"namespace": route["namespace"], "scope": "run"},
                    "invocations": {}, "roles": {}, "packet_digest": None, "ssot_decision": None, "design": None,
                    "operation": None, "residuals": {"critical": [], "minor": []}, "promotion": None, "durations": {},
                    "history": [{"at": now, "from": None, "to": "research"}], "claimed_at": now, "updated_at": now, "finished_at": None}
+            if route is not None:
+                # Pinned in the claim transaction, before this run can commit its first message: its
+                # role correlation and its Operation's. A bus without a route keeps the legacy route.
+                try:
+                    for correlation in (row["correlation_id"], operation_correlation({"id": operation})):
+                        pin_route(tx, correlation, route, now)
+                except ContractError as exc:
+                    raise AutonomousRefused(str(exc)) from exc
             tx.put(BUCKET, run_id, row)
         return {"row": row, "cached": False}
 
