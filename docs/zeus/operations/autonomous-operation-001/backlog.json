@@ -516,6 +516,19 @@
       "dependencies": [
         "native-fixture"
       ]
+    },
+    {
+      "id": "research-followup",
+      "project_id": "research-improvement",
+      "criterion_id": "verified-loop",
+      "lane": "harness",
+      "manifest_path": "docs/zeus/operations/autonomous-operation-001/research-followup.operation.json",
+      "manifest_revision": "b0db80e9f421a698cb4b2d2d0d0785d0fc59e24d",
+      "manifest_sha256": "7849b4d67b51c90c06934b8ded3d4c9560b2ad2c179e58b4819d72956a9fb958",
+      "priority": 380,
+      "dependencies": [
+        "native-fixture"
+      ]
     }
   ]
 }

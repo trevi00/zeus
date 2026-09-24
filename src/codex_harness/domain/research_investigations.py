@@ -1045,7 +1045,7 @@ def followup_members(investigation, *, jobs: dict, bindings: dict, project_ids, 
 
 def check_followup(request: dict, *, investigation, required_state: str, minimum: int, lineage, dispatch, program,
                    cycle, run_result: dict, run, tasks: list, reservations: list, terminations: list, outbox: list,
-                   acceptance: dict, jobs: dict, bindings: dict, replacement, same_authority: bool) -> dict:
+                   acceptance: dict, jobs: dict, bindings: dict, replacement, scope: dict | None) -> dict:
     """Every precondition of one accepted follow-up against authoritative reads; the first gap refuses by name.
 
     `lineage` is `lineage_head` of the current authorization (None for the initial dispatch, lineage version 0).
@@ -1055,7 +1055,9 @@ def check_followup(request: dict, *, investigation, required_state: str, minimum
     starts, every reservation settled, no termination, every task succeeded and bound to its recorded role, every
     publication sent; and its promotion receipt must be the accepted candidate of the accepting review
     (`domain.continuation.accepted_candidate`). The fresh scoped membership must equal the pinned ids and add a
-    member the accepted, untruncated snapshot never captured. Returns the bound evidence; nothing is fenced."""
+    member the accepted, untruncated snapshot never captured. `scope` is `research_program.followup_scope` of the
+    predecessor and replacement configs (None: authority would widen or move); the replacement must also keep the
+    predecessor's repository. Returns the bound evidence with that scope transition; nothing is fenced."""
     old, members = request["predecessor"], request["members"]
     _refuse(isinstance(investigation, dict) and investigation.get("kind", KIND) == KIND
             and investigation.get("state") == required_state, "recovery_investigation_changed", "investigation")
@@ -1141,9 +1143,9 @@ def check_followup(request: dict, *, investigation, required_state: str, minimum
     _refuse(replacement.get("state") == "paused" and replacement.get("cycles") == 0 and replacement.get("adoptions") == 0
             and replacement.get("active_cycle") is None and replacement.get("next_cycle") == 1,
             "recovery_replacement_not_fresh", "replacement")
-    _refuse(same_authority and replacement.get("repository") == program.get("repository"),
+    _refuse(isinstance(scope, dict) and replacement.get("repository") == program.get("repository"),
             "recovery_scope_changed", "replacement")
-    return {"fenced": [], "executions": bound,
+    return {"fenced": [], "executions": bound, "scope": scope,
             "calls": {"reserved": starts["reserved"], "settled": starts["settled"], "reservations": len(reservations)},
             "acceptance": binding,
             "members": {"previous_sha256": members["previous_sha256"], "previous_total": len(captured),
@@ -1173,10 +1175,11 @@ def successor_view(row: dict) -> dict:
     if mode == CONTRACT_MODE:
         return {**{k: row.get(k) for k in keys}, "mode": CONTRACT_MODE, "failure": row.get("failure"),
                 "authority": CONTRACT_AUTHORITY}
-    # `members` is additive on a follow-up: the pinned new scoped membership and the captured digest it extends.
+    # `members` is additive on a follow-up: the pinned new scoped membership and the captured digest it extends;
+    # `scope` (additive, None on an earlier row) the bound authority/content transition of the replacement config.
     if mode == FOLLOWUP_MODE:
         return {**{k: row.get(k) for k in keys}, "mode": FOLLOWUP_MODE, "failure": None, "members": row.get("members"),
-                "authority": FOLLOWUP_AUTHORITY}
+                "scope": row.get("scope"), "authority": FOLLOWUP_AUTHORITY}
     return {**{k: row.get(k) for k in keys}, "mode": SUCCESSOR_MODE, "failure": None, "authority": SUCCESSOR_AUTHORITY}
 
 

@@ -1682,3 +1682,207 @@ def test_the_cli_follow_up_reads_the_control_store_only_and_builds_no_bus(tmp_pa
     service, args = type("Service", (), {"store": world.control})(), type("Args", (), {"file": path})()
     result = recover(service, args)
     assert result["exit_code"] == 0 and result["proof"] == "accepted_report_followup" and result["state"] == "authorized"
+
+
+# ---- accepted follow-up report scope binding (SPEC "Accepted follow-up report scope binding") ----------------
+OLD_PAIR = "Analyze ONLY the delivery-tree/cont-8a33 failure pair"
+NEW_PAIR = "Analyze ONLY the cont-fe15931105e915769378e016 and cont-6adfa87f8938c830ab60ac35 failure pair"
+
+
+def report_template(head, objective=OLD_PAIR, **changes):
+    """The fixture template with the report objective set; `changes` maps a template field to a dict merged
+    into it (or to a whole value for a non-dict field)."""
+    from test_research_program_fixtures import template
+
+    document = template(head)
+    document["plan"]["objective"] = objective
+    for name, value in changes.items():
+        document[name] = {**document[name], **value} if isinstance(value, dict) else value
+    return document
+
+
+def new_pair_changes():
+    """Every report-content field the SPEC admits, re-pointed at the newly authorized pair."""
+    return {"goal": {"sha256": "b" * 64, "criterion": "whole-loop criterion at the newer goal"},
+            "plan": {"objective": NEW_PAIR, "acceptance_criteria": ["the new pair's cause is named with evidence"]},
+            "research": {"topic": "new pair evidence gate", "questions": ["Why did the new pair fail?"],
+                         "search_scope": ["docs", "src/codex_harness/domain"]},
+            "current_state": {"records": [{"bucket": "tasks", "id": "t-2"}], "max_age_seconds": 900}}
+
+
+def pinned_config(head, program_id, template, **overrides):
+    return validate_config(config(head, **{"id": program_id, "investigation_source": dict(FOLLOWUP_SOURCE),
+                                           "template": template, **overrides}), POLICY)
+
+
+def test_followup_scope_admits_only_report_content_and_narrowing_and_never_loosens_same_authority():
+    from codex_harness.domain.research_program import followup_scope, same_authority
+
+    head = "a" * 40
+    old = pinned_config(head, "rp-001", report_template(head))
+    new = pinned_config("c" * 40, "rp-002", report_template("c" * 40, NEW_PAIR, **new_pair_changes()),
+                        deadline="2029-07-01T00:00:00+00:00")
+    assert same_authority(old, new) is False, "legacy failure recovery stays exact: a report change is refused there"
+    scope = followup_scope(old, new)
+    assert scope["content"]["changed"] == ["current_state", "goal.criterion", "goal.sha256", "plan.acceptance_criteria",
+                                           "plan.objective", "research"]
+    assert scope["content"]["previous_sha256"] != scope["content"]["sha256"]
+    assert scope["authority"]["previous_sha256"] == scope["authority"]["sha256"] and scope["authority"]["narrowed"] == []
+    same = followup_scope(old, pinned_config(head, "rp-002", report_template(head)))
+    assert same["content"]["changed"] == [] and same["content"]["sha256"] == same["content"]["previous_sha256"]
+
+    # Narrowing is admitted and named, never hidden as "same".
+    wide = pinned_config(head, "rp-001", report_template(head, plan={"allowed_paths": ["docs/RUNBOOK.md", "docs/B.md"]}))
+    narrow = followup_scope(wide, pinned_config(head, "rp-002", report_template(head, NEW_PAIR), max_cycles=1,
+                                                max_adoptions=0))
+    assert narrow["authority"]["narrowed"] == ["max_adoptions", "max_cycles", "template.plan.allowed_paths"]
+    assert narrow["authority"]["previous_sha256"] != narrow["authority"]["sha256"]
+
+    source = dict(FOLLOWUP_SOURCE)
+    refused = {
+        "project": dict(investigation_source={**source, "project_ids": ["ops", "other"]}),
+        "reason": dict(investigation_source={**source, "reason_codes": ["evidence_gate_refused", "x"]}),
+        "topics": dict(topics=[{"id": "storage", "keywords": ["advisory lock"]}]),
+        "local": dict(local_candidates=[]),
+        "interval": dict(interval_seconds=60),
+        "more_cycles": dict(max_cycles=3),
+        "more_adoptions": dict(max_adoptions=2),
+        "budget": dict(budget={"per_host": 10, "total": 30},
+                       template=report_template(head, NEW_PAIR, budget={"per_host": 10, "total": 30})),
+        "model": dict(template=report_template(head, NEW_PAIR, claude={"model": "claude-other-model"})),
+        "claude_budget": dict(template=report_template(head, NEW_PAIR, claude={"max_budget_usd": 5})),
+        "timeout": dict(template=report_template(head, NEW_PAIR, claude={"timeout_seconds": 600})),
+        "goal_path": dict(template=report_template(head, NEW_PAIR, goal={"path": "docs/OTHER.md"})),
+        "template_id": dict(template=report_template(head, NEW_PAIR, id="council-other")),
+        "path_widened": dict(template=report_template(head, NEW_PAIR, plan={"allowed_paths": ["docs/RUNBOOK.md",
+                                                                                               "docs/NEW.md"]})),
+        "path_moved": dict(template=report_template(head, NEW_PAIR, plan={"allowed_paths": ["docs/NEW.md"]})),
+        "runtime_edit": dict(template=report_template(head, NEW_PAIR, plan={"allowed_paths": ["src/codex_harness/x.py"]})),
+    }
+    for name, overrides in refused.items():
+        candidate = pinned_config(head, "rp-002", overrides.pop("template", report_template(head, NEW_PAIR)), **overrides)
+        assert followup_scope(old, candidate) is None, name
+    without = {k: v for k, v in old.items() if k != "investigation_source"}
+    malformed = [None, {}, {**new, "template": None}, {**new, "template": {**new["template"], "plan": None}},
+                 {**new, "max_cycles": "1"}]
+    assert followup_scope(without, {k: v for k, v in new.items() if k != "investigation_source"}) is None
+    assert [followup_scope(old, m) for m in malformed] == [None] * len(malformed)
+    assert followup_scope(None, new) is None
+
+
+def test_an_owner_pinned_new_pair_report_follow_up_authorizes_claims_and_records_the_transition(tmp_path):
+    """Real-shaped: the accepted report investigated one pair; the owner pins a NEW registered config whose
+    report content names ONLY the new pair. Recover authorizes (legacy `same_authority` would refuse), the row
+    and view carry both authority and content digests, and the claimed council runs the new content under the
+    predecessor's unchanged model, budget and report paths."""
+    from codex_harness.domain.research_program import same_authority
+
+    world = World(tmp_path)
+    env, owner, root, successor, research, investigation, dispatch = accepted_report(world, tmp_path)
+    owner.bind(successor, "ops", "c1")
+    changes = new_pair_changes()
+    changes["goal"] = {"criterion": "whole-loop criterion for the new pair"}   # the fixture goal bytes stay bound
+    sha = followup_program(env, template=report_template(env.head, NEW_PAIR, **changes))
+    with world.control.transaction() as tx:
+        old, new = deepcopy(tx.get("research_programs", "rp-001")), deepcopy(tx.get("research_programs", "rp-002"))
+    assert same_authority(old["config"], new["config"]) is False
+    document = followup_request(world, dispatch, [*dispatch["job_ids"], successor], sha)
+    result = env.programs.recover_dispatch(document, None)
+    assert result["state"] == "authorized" and result["proof"] == "accepted_report_followup"
+    scope = result["scope"]
+    assert scope["content"]["changed"] == ["current_state", "goal.criterion", "plan.acceptance_criteria",
+                                           "plan.objective", "research"]
+    assert scope["authority"]["sha256"] == scope["authority"]["previous_sha256"]
+    with world.control.transaction() as tx:
+        assert tx.get("research_dispatch_successors", investigation + ":2")["scope"] == scope
+    assert env.programs.recover_dispatch(document, None)["cached"] is True
+
+    env.programs.resume("rp-002")
+    env.runner.council = council = FakeCouncil(world.control, status="accepted")
+    env.clock.value = "2028-01-01T02:00:00+00:00"
+    assert env.runner.tick("rp-002")["result"] == "accepted"
+    manifest = council.manifests[-1]
+    assert manifest["plan"]["objective"] == NEW_PAIR
+    assert manifest["plan"]["allowed_paths"] == old["config"]["template"]["plan"]["allowed_paths"]
+    assert manifest["claude"] == old["config"]["template"]["claude"] and manifest["budget"] == old["config"]["budget"]
+    with world.control.transaction() as tx:
+        current = deepcopy(tx.get(BUCKET_DISPATCHES, investigation + ".recovery-2"))
+        assert tx.get("research_dispatch_successors", investigation + ":2")["state"] == "claimed"
+    assert current["job_ids_sha256"] == document["members"]["sha256"]
+
+
+def test_followup_authority_broadening_stale_or_malformed_bindings_refuse_and_write_nothing(tmp_path):
+    world = World(tmp_path)
+    env, owner, root, successor, research, investigation, dispatch = accepted_report(world, tmp_path)
+    owner.bind(successor, "ops", "c1")
+    members, head = [*dispatch["job_ids"], successor], env.head
+
+    def program(program_id, template=None, repository=None, **overrides):
+        cfg = pinned_config(head, program_id, template or report_template(head, NEW_PAIR), **overrides)
+        env.programs.register(cfg, repository or env.identity, [])
+        return config_digest(cfg, repository or env.identity)
+    cases = {
+        "repository": ("rp-011", program("rp-011", repository="other-repository")),
+        "model": ("rp-012", program("rp-012", report_template(head, NEW_PAIR, claude={"model": "claude-other-model"}))),
+        "budget": ("rp-013", program("rp-013", report_template(head, NEW_PAIR, budget={"per_host": 20, "total": 40}),
+                                     budget={"per_host": 20, "total": 40})),
+        "cycles": ("rp-014", program("rp-014", max_cycles=3)),
+        "paths": ("rp-015", program("rp-015", report_template(head, NEW_PAIR, plan={
+            "allowed_paths": ["docs/RUNBOOK.md", "docs/zeus/NEW.md"]}))),
+        "projects": ("rp-016", program("rp-016", investigation_source={**FOLLOWUP_SOURCE, "project_ids": ["ops", "x"]})),
+    }
+    for name, (program_id, sha) in cases.items():
+        request = followup_request(world, dispatch, members, sha, program=program_id)
+        assert refused_code(env.programs.recover_dispatch, request, None) == "recovery_scope_changed", name
+    valid = program("rp-002")
+    assert refused_code(env.programs.recover_dispatch, followup_request(world, dispatch, members, "5" * 64), None) \
+        == "recovery_replacement_mismatch"
+    assert refused_code(env.programs.recover_dispatch,
+                        followup_request(world, dispatch, members, valid, program="rp-099"), None) \
+        == "recovery_replacement_mismatch"
+    malformed = followup_request(world, dispatch, members, valid)
+    malformed["replacement"]["config_sha256"] = "not-a-digest"
+    assert refused_code(env.programs.recover_dispatch, malformed, None) == "followup_request_invalid"
+    with world.control.transaction() as tx:   # LABELLED injected fault: the new member is bound to another project
+        tx.put(BUCKET_BINDINGS, successor, {**tx.get(BUCKET_BINDINGS, successor), "project_id": "elsewhere"})
+    assert refused_code(env.programs.recover_dispatch, followup_request(world, dispatch, members, valid), None) \
+        == "followup_membership_mismatch"
+    assert lineage_rows(world) == ([], [])
+
+
+@pytest.mark.parametrize("fault", ["predecessor_config", "replacement_registration"])
+def test_a_scope_bound_follow_up_is_held_at_claim_when_either_registered_config_changed(tmp_path, fault):
+    """LABELLED injected faults after authorization: the pinned replacement registration, or the predecessor
+    config it was compared with, no longer recomputes to the recorded transition, so nothing is claimed until
+    it is exact again."""
+    world = World(tmp_path)
+    env, owner, root, successor, research, investigation, dispatch = accepted_report(world, tmp_path)
+    owner.bind(successor, "ops", "c1")
+    sha = followup_program(env, template=report_template(env.head, NEW_PAIR))
+    env.programs.recover_dispatch(followup_request(world, dispatch, [*dispatch["job_ids"], successor], sha), None)
+    env.programs.resume("rp-002")
+    key = "rp-001" if fault == "predecessor_config" else "rp-002"
+    field = "config" if fault == "predecessor_config" else "config_sha256"
+    with world.control.transaction() as tx:
+        changed = deepcopy(tx.get("research_programs", key))
+        clean = deepcopy(changed[field])
+        if fault == "predecessor_config":
+            changed["config"]["template"]["claude"]["model"] = "claude-other-model"
+        else:
+            changed["config_sha256"] = "6" * 64
+        tx.put("research_programs", key, changed)
+    env.clock.value = "2028-01-01T02:00:00+00:00"
+    reserved = env.programs.reserve_cycle("rp-002", env.identity)
+    recorded = env.programs.record_collection(reserved["cycle"]["id"], reserved["cycle"]["owner"], {}, [],
+                                              {"this_host": 0, "all_hosts": 0})
+    assert recorded["candidate"] is None
+    env.programs.complete_cycle(reserved["cycle"]["id"], reserved["cycle"]["owner"])
+    with world.control.transaction() as tx:
+        assert tx.get(BUCKET_DISPATCHES, investigation + ".recovery-2") is None, "never claimed under a changed scope"
+        assert tx.get("research_dispatch_successors", investigation + ":2")["state"] == "authorized"
+        tx.put("research_programs", key, {**tx.get("research_programs", key), field: clean})
+    env.runner.council = FakeCouncil(world.control, status="accepted")
+    env.clock.value = "2028-01-01T04:00:00+00:00"
+    assert env.runner.tick("rp-002")["result"] == "accepted"
+    with world.control.transaction() as tx:
+        assert tx.get(BUCKET_DISPATCHES, investigation + ".recovery-2") is not None
