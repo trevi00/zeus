@@ -1,5 +1,24 @@
 # Whole autonomous operating loop
 
+## Checklist test-profile correction, 2026-09-24 16:08 UTC
+
+Preserve the same outcome and matrix. PR194 merged51bff060 and Fleet consumed that runtime.
+Actual correction cont-6adfa87f8938c830ab60ac35 produced adeab8c79b5c6b34832d88eac43607d70307ddef
+with fixes responding to both readable review findings, but evidence inspection6b2bfd54 refused:
+the owner profile named tests/test_commands.py, test_check_results.py and test_deployment.py,
+none of which exists at the candidate. This is an OWNER test-list error, not a test assertion
+failure or independent code rejection. Worker honestly reported exit4/no tests and lint0; no
+active jobs/held units. The earlier evidence profile and failed inspection remain immutable.
+One bounded discriminating check now: exact candidate, real Windows+isolated PG, actual existing
+release_suite/release_runner/release_recovery/release_health/check_binding/runner_categories
+suites and Ruff. New versioned owner profile release-checklist-evidence-profile-v2.json on D.
+These checks do not replace the authoritative worker inspection or independent review. After
+results, use existing owner evidence handoff with corrected profile, preserving family research
+history, correction policy and all acceptance gates. No new runtime feature or broad review.
+Do not claim the unexecuted new regressions pass. Keep this owner's configuration failure in the
+history and validate every declared check path against the pinned candidate before future dispatch.
+
+
 ## Correction feedback evidence handoff, 2026-09-24 15:16 UTC
 
 Same acceptance frame below. Actual candidate e8e25b31420b5c7ecbb526ccb219bb9d0fa8e9bb,
