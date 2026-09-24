@@ -155,7 +155,9 @@ class ReleaseSuite:
         self.artifacts, self.fence, self.batch_nodes = artifacts, fence, batch_nodes
 
     def check(self, argv: list[str], *, cwd, timeout: int, env: dict | None, binding: dict) -> dict:
-        with tempfile.TemporaryDirectory(prefix="zeus-release-suite-") as directory:
+        # A descendant that outlived an unobservable Windows cleanup may still hold an owner file open;
+        # failing to delete the temporary directory must not replace the verdict or the interruption.
+        with tempfile.TemporaryDirectory(prefix="zeus-release-suite-", ignore_cleanup_errors=True) as directory:
             root = Path(directory)
             (root / "plugin").mkdir()
             (root / "plugin" / (PLUGIN_MODULE + ".py")).write_text(PLUGIN_SOURCE, encoding="utf-8")
@@ -199,19 +201,24 @@ class ReleaseSuite:
         return self.artifacts.put(canonical(body), "canary-suite")["ref"]
 
     def _suite(self, argv, cwd, timeout, env, root, context):
-        self.fence()
-        collect = argv + ["--collect-only", "-p", PLUGIN_MODULE]
-        observation, events, torn, files = self._run("collection", collect, cwd, timeout, env, root)
-        collection = classify_collection(observation["exit_code"], events)
-        if observation.get("timed_out"):
-            collection = {**collection, "reason": f"collection timed out after {timeout}s"}
-        nodeids = collection.pop("nodeids", None)
-        collection_ref = self._receipt("collection", collect, observation, events, torn, *files, collection)
-        self.fence()
+        report = {**context, "kind": "release-suite"}
+        try:
+            self.fence()
+            collect = argv + ["--collect-only", "-p", PLUGIN_MODULE]
+            observation, events, torn, files = self._run("collection", collect, cwd, timeout, env, root)
+            collection = classify_collection(observation["exit_code"], events)
+            if observation.get("timed_out"):
+                collection = {**collection, "reason": f"collection timed out after {timeout}s"}
+            nodeids = collection.pop("nodeids", None)
+            report["collection"] = self._receipt("collection", collect, observation, events, torn, *files, collection)
+            self.fence()
+        except BaseException as exc:
+            # Cancel or a lost fence around collection: the partial report is kept, no verdict.
+            self._interrupted(report, exc)
+            raise
         configured = last_event(events, "configure") or {}
-        report = {**context, "kind": "release-suite", "collection": collection_ref,
-                  "config": {"rootpath": configured.get("rootpath"), "inipath": configured.get("inipath"),
-                             "inifile_sha256": _file_digest(configured.get("inipath"))}}
+        report["config"] = {"rootpath": configured.get("rootpath"), "inipath": configured.get("inipath"),
+                            "inifile_sha256": _file_digest(configured.get("inipath"))}
         if not collection["passed"]:
             return self._finish(report, collection, {"collected": len(nodeids or []), "batches": 0, "batches_run": 0,
                                                      **dict.fromkeys(NODE_OUTCOMES, 0), "not_run": 0, "finished": 0},
@@ -255,10 +262,8 @@ class ReleaseSuite:
         except BaseException as exc:
             # Cancel or a lost fence: the partial report is kept; nothing here is a verdict.
             rows += [{"index": i, "count": len(b), "outcome": "not_run"} for i, b in enumerate(batches) if i >= len(rows)]
-            self.artifacts.put(canonical({**report, "batches": rows, "interrupted": type(exc).__name__,
-                                          "cancelled_process": getattr(exc, "receipt", None),
-                                          "verdict": {"passed": False, "outcome": "observation_error",
-                                                      "reason": "suite interrupted"}}), "canary-suite")
+            report["batches"] = rows
+            self._interrupted(report, exc)
             raise
         rows += [{"index": i, "count": len(b), "outcome": "not_run"} for i, b in enumerate(batches) if i >= len(rows)]
         not_run = sum(row["count"] for row in rows if row["outcome"] == "not_run")
@@ -281,6 +286,12 @@ class ReleaseSuite:
                                      f"{counts['xfailed']} xfailed of {len(nodeids)} collected in {len(batches)} batches"}
         return self._finish(report, verdict, denominator, exit_code if all(
             row.get("exit_code") is not None for row in rows if row["outcome"] != "not_run") else None)
+
+    def _interrupted(self, report, exc):
+        self.artifacts.put(canonical({**report, "interrupted": type(exc).__name__,
+                                      "cancelled_process": getattr(exc, "receipt", None),
+                                      "verdict": {"passed": False, "outcome": "observation_error",
+                                                  "reason": "suite interrupted"}}), "canary-suite")
 
     def _finish(self, report, verdict, denominator, exit_code):
         verdict = {key: verdict[key] for key in ("passed", "outcome", "reason")}

@@ -366,8 +366,9 @@ setup/call/teardown reports, not from progress text. The skip policy is unchange
 accounted but not executed, and a suite that executed nothing is `empty_check`. The first failing
 batch stops the rest as `not_run`. A timeout, a spawn error or a process that ends without a
 session finish is `observation_error` (retry), never a pass. The fence is checked before and after
-every process; a lost fence or a cancel raises after a partial report is stored, and nothing is
-verified. Output streams to owner files, so a timeout or cancel keeps it. Each process receipt
+every process; a lost fence or a cancel, during collection or any batch, raises after a partial
+report is stored, and nothing is verified. Failing to delete the owner temporary directory (a
+Windows descendant still holding a file) never replaces the verdict or the interruption. Output streams to owner files, so a timeout or cancel keeps it. Each process receipt
 holds a redacted head+tail of stdout/stderr, the accounting events, the last started and finished
 test (explicitly not blamed as the cause) and the cleanup. On POSIX, `descendants_gone` is true only
 when the process group is seen empty; on Windows it is null (unknown). One suite report links the

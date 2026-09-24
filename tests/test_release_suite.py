@@ -242,6 +242,37 @@ def test_lost_fence_between_batches_refuses_and_grants_nothing(tmp_path):
     assert len(reports) == 1 and '"passed":false' in reports[0].read_text()
 
 
+def test_lost_fence_or_cancel_around_collection_keeps_a_partial_report(tmp_path):
+    root = suite_tree(tmp_path / "suite", {"test_a.py": "def test_a():\n    pass\n"})
+    calls = []
+
+    def fence():
+        calls.append(1)
+        if len(calls) > 1:
+            raise ContractError("Stale release controller")
+
+    with pytest.raises(ContractError, match="Stale"):
+        run_suite(root, fence=fence)
+    store = tmp_path / "suite-artifacts"
+    reports = [p.read_text() for p in store.glob("*.txt") if '"interrupted":"ContractError"' in p.read_text()]
+    assert len(reports) == 1 and '"passed":false' in reports[0] and '"collection":"' in reports[0]
+    assert '"manifest"' not in reports[0], "no batch ran after the fence was lost"
+    # FAULT: a conftest that blocks collection, so the cancel lands inside the collection process.
+    slow = suite_tree(tmp_path / "slow", {"conftest.py": "import time\nprint('COLLECTING', flush=True)\ntime.sleep(60)\n",
+                                          "test_a.py": "def test_a():\n    pass\n"})
+    timer = interrupt_after(4)
+    try:
+        with pytest.raises(ProcessCancelled):
+            run_suite(slow, timeout=60, extra=["-s"])
+    finally:
+        timer.cancel()
+    store = tmp_path / "slow-artifacts"
+    partial = [p.read_text() for p in store.glob("*.txt") if '"interrupted":"ProcessCancelled"' in p.read_text()]
+    assert len(partial) == 1 and '"passed":false' in partial[0] and '"cancelled_process":"' in partial[0]
+    process = [p.read_text() for p in store.glob("*.txt") if '"cancelled":true' in p.read_text()]
+    assert len(process) == 1 and "COLLECTING" in process[0] and '"label":"collection"' in process[0]
+
+
 def test_incumbent_tests_run_against_candidate_code_with_incumbent_config(tmp_path):
     incumbent = suite_tree(tmp_path / "incumbent", {"test_contract.py": "import product\n\n"
                                                     "def test_value():\n    assert product.VALUE == 2\n"})
