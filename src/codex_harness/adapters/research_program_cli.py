@@ -14,6 +14,7 @@ from codex_harness.application.dge import DgeRefused
 from codex_harness.application.research_program import ResearchProgram
 from codex_harness.domain.research_investigations import (
     CONTRACT_SCHEMA,
+    FOLLOWUP_SCHEMA,
     REVOCATION_SCHEMA,
     SUCCESSOR_SCHEMA,
 )
@@ -38,7 +39,9 @@ def add_parser(commands) -> None:
                                              "replacement of a proven pre-provider failed dispatch; version 2 "
                                              "(execution_revocation) revokes instead of proving; version 3 "
                                              "(settled_read_only_successor) succeeds a current failed "
-                                             "read-only council once; no models")
+                                             "read-only council once; urn:zeus:research-dispatch-followup:1 "
+                                             "(accepted_evidence_followup) follows up an accepted report-only "
+                                             "dispatch for new authoritative members once; no models")
     recover.add_argument("--file", type=Path, required=True)
 
 
@@ -98,6 +101,9 @@ def recover(service, args, transport=None, evidence=None) -> dict:
             from codex_harness.adapters.configuration import runtime_dir
             evidence = ExecutionEvidence(FileArtifacts(str(runtime_dir() / "artifacts")))
         return {**ResearchProgram(service.store).recover_dispatch(document, None, evidence), "exit_code": 0}
+    if schema == FOLLOWUP_SCHEMA:
+        # The accepted follow-up reads control-store rows only: no bus, transport or artifact port.
+        return {**ResearchProgram(service.store).recover_dispatch(document, None), "exit_code": 0}
     if transport is None and schema != REVOCATION_SCHEMA:
         from codex_harness.adapters.bus import RedisBus
         from codex_harness.adapters.research_program import TransportProbe

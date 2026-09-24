@@ -1267,3 +1267,380 @@ def test_a_new_attempt_after_the_supplement_refuses_both_its_receipt_and_a_reuse
     with pytest.raises(dc.ContinuationRefused, match="research_attempts_changed"):
         world.controller.accept_research({**receipt, "intent_id": again["id"]})
     assert set(supplements(world)) == {research["id"]} and set(receipts(world)) == {research["id"]}
+
+
+# ---- accepted investigation follow-up (SPEC "Accepted investigation follow-up for newly observed evidence") --
+FOLLOWUP_SOURCE = {"topic": "storage", "project_ids": ["ops"], "reason_codes": ["evidence_gate_refused"]}
+FINISHED = "2026-09-24T00:00:00+00:00"
+
+
+def settle_accepted(world, dispatch, revision="9" * 40):
+    """LABELLED synthetic evidence of a fully settled ACCEPTED council run: the five council role tasks
+    (succeeded, each bound to its recorded execution ref and a settled reservation), seven settled starts,
+    the approved design, the accepted operation and `accepted_promotion`'s receipt and accepting review. No
+    model or provider produced any of it; it is the shape the real run row records."""
+    from codex_harness.domain.council import COUNCIL_AGENTS, COUNCIL_ORDER
+
+    run_id, roles, slots = dispatch["run_id"], {}, []
+    with world.control.transaction() as tx:
+        for role in COUNCIL_ORDER:
+            task_id = run_id + "." + role
+            ref = "sha256:" + hashlib.sha256(task_id.encode("utf-8")).hexdigest()
+            tx.put("tasks", task_id, {"id": task_id, "agent": COUNCIL_AGENTS[role], "status": "succeeded",
+                                      "generation": 1, "attempt": 1, "result": {"execution_ref": ref},
+                                      "message": {"correlation_id": "autonomous:" + run_id,
+                                                  "what": {"details": {"role": role}}}})
+            tx.put("invocation_reservations", "res-" + task_id, {"id": "res-" + task_id, "task_id": task_id,
+                                                                 "status": "settled"})
+            roles[role] = {"task_id": task_id, "execution_ref": ref}
+            slots.append({"id": task_id, "kind": "task", "agent": COUNCIL_AGENTS[role], "settled": True,
+                          "settle_error": None, "operation": None})
+        for slot in ("impl-" + run_id, "review-" + run_id):
+            slots.append({"id": slot, "kind": "task", "agent": "worker", "settled": True, "settle_error": None,
+                          "operation": "op-" + run_id})
+        run = tx.get("autonomous_runs", run_id)
+        tx.put("autonomous_runs", run_id, {
+            **run, "roles": roles, "starts": {"reserved": len(slots), "settled": len(slots), "slots": slots},
+            "design": {"state": "design_approved"}, "finished_at": FINISHED,
+            "operation": {"id": "op-" + run_id, "status": "accepted", "task_id": "impl-003", "decision_id": "review-003"}})
+    return accepted_promotion(world, dispatch, revision)
+
+
+def accepted_report(world, tmp_path):
+    """The actual accepted-then-new-evidence shape: rp-001's report-only council ACCEPTED a dispatch that
+    captured the root and another family's jobs; the root's evidence-repair successor is a member of the
+    same investigation but was not yet bound, so the accepted snapshot never captured it."""
+    world.register()
+    root, successor, research = two_strikes(world, "op-x", "docs/a.md")
+    two_strikes(world, "op-z", "docs/c.md")
+    jobs = world.jobs()
+    other = sorted(job for job in jobs if job not in {root, successor} and jobs[job]["status"] == "failed")
+    owner = Portfolio(world.control, DEFINITIONS)
+    for job in (root, *other):
+        owner.bind(job, "ops", "c1")
+    owner.reconcile()
+    (tmp_path / "research").mkdir()
+    env = build(tmp_path / "research", store=world.control, council=FakeCouncil(world.control, status="accepted"))
+    registered(env, investigation_source=dict(FOLLOWUP_SOURCE))
+    investigation = family_id("failed", "evidence_gate_refused")
+    assert env.runner.tick("rp-001")["investigation"] == investigation
+    with world.control.transaction() as tx:
+        dispatch = deepcopy(tx.get(BUCKET_DISPATCHES, investigation))
+        assert successor in tx.get(BUCKET_INVESTIGATIONS, investigation)["job_ids"]
+    assert dispatch["result"] == "accepted" and successor not in dispatch["job_ids"]
+    settle_accepted(world, dispatch)
+    return env, owner, root, successor, research, investigation, dispatch
+
+
+def followup_program(env, program_id="rp-002", **overrides):
+    cfg = validate_config(config(env.head, **{"id": program_id, "investigation_source": dict(FOLLOWUP_SOURCE),
+                                              **overrides}), POLICY)
+    env.programs.register(cfg, env.identity, [])
+    return config_digest(cfg, env.identity)
+
+
+def followup_request(world, dispatch, job_ids, config_sha256, program="rp-002", version=0, lineage_sha=None, **pinned):
+    with world.control.transaction() as tx:
+        predecessor = tx.get("research_programs", dispatch["program"])
+    ids = sorted(job_ids)
+    return {"schema": "urn:zeus:research-dispatch-followup:1", "mode": "accepted_evidence_followup",
+            "investigation": dispatch["investigation"],
+            "predecessor": {"dispatch": dispatch["id"], "lineage_version": version, "lineage_request_sha256": lineage_sha,
+                            "program": dispatch["program"], "config_sha256": predecessor["config_sha256"],
+                            **{k: dispatch[k] for k in ("cycle", "run_id", "manifest_sha256", "snapshot_sha256")},
+                            **pinned},
+            "members": {"previous_sha256": dispatch["job_ids_sha256"], "job_ids": ids, "sha256": digest(ids)},
+            "replacement": {"program": program, "config_sha256": config_sha256}}
+
+
+def lineage_rows(world):
+    with world.control.transaction() as tx:
+        return deepcopy((tx.scan("research_dispatch_successors"), tx.scan("research_dispatch_heads")))
+
+
+def refused_code(call, *args) -> str:
+    from codex_harness.domain.research_program import ProgramRefused
+
+    with pytest.raises(ProgramRefused) as caught:
+        call(*args)
+    return caught.value.reason_code
+
+
+def test_an_accepted_report_follow_up_captures_the_new_member_once_and_binds_only_the_new_receipt(tmp_path):
+    """Accepted rp-001 + a newly bound authoritative member -> the owner's explicit follow-up authorizes rp-002
+    once; registration alone releases nothing; rp-002's (LABELLED) council accepts a FRESH snapshot that
+    captures the new member; only a receipt naming THAT dispatch approves, under its original capture."""
+    from codex_harness.application.research_program import ResearchProgram
+
+    world = World(tmp_path)
+    env, owner, root, successor, research, investigation, dispatch = accepted_report(world, tmp_path)
+    captured = list(dispatch["job_ids"])
+    with pytest.raises(dc.ContinuationRefused, match="research_scope_unverified"):
+        world.controller.accept_research(receipt_for(world, research, investigation, dispatch))
+    sha = followup_program(env)
+    # Unchanged authoritative membership: nothing new was observed, so nothing may be followed up.
+    assert refused_code(env.programs.recover_dispatch, followup_request(world, dispatch, captured, sha), None) \
+        == "followup_membership_unchanged"
+    assert lineage_rows(world) == ([], [])
+
+    owner.bind(successor, "ops", "c1")   # the owner binds the new member: authoritative, not owner-asserted
+    keys = (investigation, dispatch["cycle"], "rp-001", dispatch["run_id"])
+    buckets = (BUCKET_DISPATCHES, "research_program_cycles", "research_programs", "autonomous_runs")
+    with world.control.transaction() as tx:
+        before = deepcopy({b: {k: tx.get(b, k) for k in keys} for b in buckets})
+    document = followup_request(world, dispatch, [*captured, successor], sha)
+    result = env.programs.recover_dispatch(document, None)
+    assert result["cached"] is False and result["state"] == "authorized" and result["proof"] == "accepted_report_followup"
+    assert result["mode"] == "accepted_evidence_followup" and result["version"] == 2 and result["fence"] == []
+    assert result["members"]["added"] == [successor] and result["members"]["previous_sha256"] == dispatch["job_ids_sha256"]
+    assert result["replacement"]["dispatch"] == investigation + ".recovery-2"
+    # The identical request replays after a restart; any other request for this head conflicts.
+    assert ResearchProgram(world.control, clock=env.clock).recover_dispatch(document, None)["cached"] is True
+    other = followup_program(env, "rp-009")
+    assert refused_code(env.programs.recover_dispatch,
+                        followup_request(world, dispatch, [*captured, successor], other, program="rp-009"), None) \
+        == "recovery_conflict"
+    # Registration alone releases no hold: the accepted predecessor no longer answers, nothing approves.
+    with pytest.raises(dc.ContinuationRefused, match="research_dispatch_unknown"):
+        world.controller.accept_research(receipt_for(world, research, investigation, dispatch))
+    assert receipts(world) == {}
+
+    env.programs.resume("rp-002")
+    env.runner.council = FakeCouncil(world.control, status="accepted")
+    env.clock.value = "2028-01-01T02:00:00+00:00"
+    assert env.runner.tick("rp-002")["result"] == "accepted"
+    with world.control.transaction() as tx:
+        current = deepcopy(tx.get(BUCKET_DISPATCHES, investigation + ".recovery-2"))
+        after = {b: {k: tx.get(b, k) for k in keys} for b in buckets}
+        row = tx.get("research_dispatch_successors", investigation + ":2")
+    assert after == before, "the accepted predecessor's dispatch, cycle, program and run stay history"
+    assert set(current["job_ids"]) == {*captured, successor} and current["job_ids_sha256"] == document["members"]["sha256"]
+    assert current["supersedes"]["dispatch"] == investigation and current["recovery"] == investigation + ":2"
+    assert row["state"] == "claimed" and row["replacement"]["cycle"] == current["cycle"]
+    assert env.programs.recover_dispatch(document, None)["cached"] is True, "the claimed head replays, never twice"
+
+    with pytest.raises(dc.ContinuationRefused, match="research_dispatch_mismatch"):
+        world.controller.accept_research(receipt_for(world, research, investigation, dispatch))
+    accepted = world.controller.accept_research(receipt_for(world, research, investigation, current))
+    assert accepted["accepted"] is True and accepted["dispatch"]["run_id"] == "rp-002.c001"
+    assert accepted["coverage"] == dc.COVERAGE_ORIGINAL, "the fresh snapshot captured the new member itself"
+    world.tick()
+    assert only(world.intents(), id=research["id"])["state"] == dc.COMPLETED
+
+    # No unchanged replay: a follow-up of the new accepted head with the same membership refuses, and a
+    # request still pinning the former initial dispatch names an occupied head.
+    settle_accepted(world, current, revision="8" * 40)
+    third = followup_program(env, "rp-003")
+    head = lineage_rows(world)[1][0]
+    again = followup_request(world, current, current["job_ids"], third, program="rp-003", version=2,
+                             lineage_sha=head["request_sha256"])
+    assert refused_code(env.programs.recover_dispatch, again, None) == "followup_membership_unchanged"
+    stale = followup_request(world, dispatch, [*captured, successor], third, program="rp-003")
+    assert refused_code(env.programs.recover_dispatch, stale, None) == "recovery_conflict"
+    assert len(lineage_rows(world)[0]) == 1
+
+
+def _mutate(bucket, key, change):
+    def fault(world, dispatch):
+        name = key(dispatch) if callable(key) else key
+        with world.control.transaction() as tx:
+            row = deepcopy(tx.get(bucket, name))
+            change(row, dispatch)
+            tx.put(bucket, name, row)
+    return fault
+
+
+def _run(change):
+    return _mutate("autonomous_runs", lambda d: d["run_id"], change)
+
+
+def _task(change):
+    return _mutate("tasks", lambda d: d["run_id"] + ".dba", change)
+
+
+def _add(bucket, key, body):
+    def fault(world, dispatch):
+        with world.control.transaction() as tx:
+            tx.put(bucket, key, {**body, "task_id": dispatch["run_id"] + ".dba",
+                                 "message": {"correlation_id": "autonomous:" + dispatch["run_id"]}})
+    return fault
+
+
+FOLLOWUP_FAULTS = [
+    ("slot_unsettled", _run(lambda r, d: r["starts"]["slots"][0].update(settled=False)), "recovery_invocation_unsettled"),
+    ("six_starts", _run(lambda r, d: r["starts"].update(slots=r["starts"]["slots"][:6], reserved=6, settled=6)),
+     "recovery_invocation_unsettled"),
+    ("reservation_open", _mutate("invocation_reservations", lambda d: "res-" + d["run_id"] + ".dba",
+                                 lambda r, d: r.update(status="reserved")), "recovery_invocation_unsettled"),
+    ("terminated", _add("observation_terminations", "term-1", {"id": "term-1"}), "recovery_effect_unknown"),
+    ("task_running", _task(lambda r, d: r.update(status="running")), "recovery_predecessor_active"),
+    ("task_failed", _task(lambda r, d: r.update(status="failed")), "recovery_effect_unknown"),
+    ("execution_changed", _task(lambda r, d: r.update(result={"execution_ref": "sha256:" + "0" * 64})),
+     "recovery_evidence_mismatch"),
+    ("unsent_publication", _add("outbox", "late-1", {"sent": False}), "recovery_effect_unknown"),
+    ("design_open", _run(lambda r, d: r.update(design={"state": "needs_research"})), "followup_acceptance_unproven"),
+    ("review_withdrawn", _mutate("decisions_pending", "review-003", lambda r, d: r.update(result={"accepted": False})),
+     "followup_acceptance_unproven"),
+    ("foreign_promotion", _mutate("promotions", lambda d: d["run_id"], lambda r, d: r.update(graph_sha256="6" * 64)),
+     "followup_acceptance_unproven"),
+    ("run_rejected", _run(lambda r, d: r.update(status="rejected")), "followup_predecessor_not_accepted"),
+    ("dispatch_rejected", _mutate(BUCKET_DISPATCHES, lambda d: d["id"], lambda r, d: r.update(result="rejected")),
+     "followup_predecessor_not_accepted"),
+    ("dispatch_open", _mutate(BUCKET_DISPATCHES, lambda d: d["id"], lambda r, d: r.update(state="dispatched")),
+     "recovery_predecessor_active"),
+    ("program_busy", _mutate("research_programs", "rp-001", lambda r, d: r.update(active_cycle="rp-001:002")),
+     "recovery_predecessor_active"),
+    ("runtime_edit", _mutate("research_programs", "rp-001",
+                             lambda r, d: r["config"]["template"]["plan"].update(allowed_paths=["src/codex_harness/x.py"])),
+     "followup_not_report_only"),
+    ("investigation_decided", _mutate(BUCKET_INVESTIGATIONS, lambda d: d["investigation"],
+                                      lambda r, d: r.update(state="researched")), "recovery_investigation_changed"),
+]
+
+
+def test_active_unknown_unproven_or_runtime_edit_predecessors_refuse_and_write_nothing(tmp_path):
+    """Each LABELLED injected fault is applied alone to the settled accepted world, then undone."""
+    world = World(tmp_path)
+    env, owner, root, successor, research, investigation, dispatch = accepted_report(world, tmp_path)
+    owner.bind(successor, "ops", "c1")
+    document = followup_request(world, dispatch, [*dispatch["job_ids"], successor], followup_program(env))
+    with world.control.lock:
+        clean = deepcopy(world.control.data)
+    observed = {}
+    for name, fault, _ in FOLLOWUP_FAULTS:
+        fault(world, dispatch)
+        observed[name] = refused_code(env.programs.recover_dispatch, document, None)
+        assert lineage_rows(world) == ([], []), name
+        with world.control.lock:
+            world.control.data = deepcopy(clean)
+    assert observed == {name: code for name, _, code in FOLLOWUP_FAULTS}
+    assert env.programs.recover_dispatch(document, None)["state"] == "authorized", "the clean world authorizes"
+
+
+def test_stale_foreign_or_missing_evidence_and_changed_authority_refuse_and_write_nothing(tmp_path):
+    world = World(tmp_path)
+    env, owner, root, successor, research, investigation, dispatch = accepted_report(world, tmp_path)
+    owner.bind(successor, "ops", "c1")
+    sha, members = followup_program(env), [*dispatch["job_ids"], successor]
+    wider = followup_program(env, "rp-004", investigation_source={**FOLLOWUP_SOURCE,
+                                                                   "reason_codes": ["evidence_gate_refused", "x"]})
+    previous = followup_request(world, dispatch, members, sha)
+    previous["members"]["previous_sha256"] = "3" * 64
+    cases = {
+        "foreign_run": (followup_request(world, dispatch, members, sha, run_id="rp-009.c001"), "recovery_dispatch_mismatch"),
+        "stale_head": (followup_request(world, {**dispatch, "id": investigation + ".recovery-1"}, members, sha,
+                                        version=1, lineage_sha="1" * 64), "recovery_successor_corrupt"),
+        "missing_member": (followup_request(world, dispatch, dispatch["job_ids"][:-1] + [successor], sha),
+                           "followup_membership_mismatch"),
+        "foreign_member": (followup_request(world, dispatch, [*members, "op-foreign"], sha), "followup_membership_mismatch"),
+        "changed_authority": (followup_request(world, dispatch, members, wider, program="rp-004"), "recovery_scope_changed"),
+        "unregistered": (followup_request(world, dispatch, members, "2" * 64), "recovery_replacement_mismatch"),
+        "stale_capture": (previous, "recovery_dispatch_mismatch"),
+    }
+    for name, (document, code) in cases.items():
+        assert refused_code(env.programs.recover_dispatch, document, None) == code, name
+    assert lineage_rows(world) == ([], [])
+    for change in ({"mode": "settled_read_only_successor"}, {"extra": 1}):
+        document = {**followup_request(world, dispatch, members, sha), **change}
+        assert refused_code(env.programs.recover_dispatch, document, None) == "followup_request_invalid"
+    forged = followup_request(world, dispatch, members, sha)
+    forged["members"]["sha256"] = "4" * 64
+    assert refused_code(env.programs.recover_dispatch, forged, None) == "followup_request_invalid"
+    assert lineage_rows(world) == ([], [])
+
+
+def test_membership_drift_after_authorization_holds_the_claim_until_it_is_exact_again(tmp_path):
+    world = World(tmp_path)
+    env, owner, root, successor, research, investigation, dispatch = accepted_report(world, tmp_path)
+    owner.bind(successor, "ops", "c1")
+    document = followup_request(world, dispatch, [*dispatch["job_ids"], successor], followup_program(env))
+    env.programs.recover_dispatch(document, None)
+    env.programs.resume("rp-002")
+    with world.control.transaction() as tx:   # LABELLED injected fault: the new member's binding moves project
+        binding = deepcopy(tx.get(BUCKET_BINDINGS, successor))
+        tx.put(BUCKET_BINDINGS, successor, {**binding, "project_id": "elsewhere"})
+    env.clock.value = "2028-01-01T02:00:00+00:00"
+    reserved = env.programs.reserve_cycle("rp-002", env.identity)
+    recorded = env.programs.record_collection(reserved["cycle"]["id"], reserved["cycle"]["owner"], {}, [],
+                                              {"this_host": 0, "all_hosts": 0})
+    assert recorded["candidate"] is None and recorded["cycle"]["investigations"]["counts"]["claimed"] == 1
+    env.programs.complete_cycle(reserved["cycle"]["id"], reserved["cycle"]["owner"])
+    with world.control.transaction() as tx:
+        assert tx.get(BUCKET_DISPATCHES, investigation + ".recovery-2") is None, "never silently recaptured"
+        assert tx.get("research_dispatch_successors", investigation + ":2")["state"] == "authorized"
+        tx.put(BUCKET_BINDINGS, successor, binding)
+    env.runner.council = FakeCouncil(world.control, status="accepted")
+    env.clock.value = "2028-01-01T04:00:00+00:00"
+    assert env.runner.tick("rp-002")["result"] == "accepted"
+    with world.control.transaction() as tx:
+        assert tx.get(BUCKET_DISPATCHES, investigation + ".recovery-2")["job_ids_sha256"] == document["members"]["sha256"]
+
+
+def test_concurrent_follow_up_requests_record_one_row_and_one_claim(tmp_path):
+    from codex_harness.application.research_program import ResearchProgram
+
+    world = World(tmp_path)
+    env, owner, root, successor, research, investigation, dispatch = accepted_report(world, tmp_path)
+    owner.bind(successor, "ops", "c1")
+    document = followup_request(world, dispatch, [*dispatch["job_ids"], successor], followup_program(env))
+    results, errors = [], []
+
+    def request():
+        try:
+            results.append(ResearchProgram(world.control, clock=env.clock).recover_dispatch(document, None))
+        except Exception as exc:   # pragma: no cover - reported below
+            errors.append(exc)
+    threads = [threading.Thread(target=request) for _ in range(4)]
+    for thread in threads:
+        thread.start()
+    for thread in threads:
+        thread.join()
+    assert errors == [] and len(results) == 4 and sum(not r["cached"] for r in results) == 1
+    successors, heads = lineage_rows(world)
+    assert len(successors) == 1 and len(heads) == 1
+    env.programs.resume("rp-002")
+    env.clock.value = "2028-01-01T02:00:00+00:00"
+    env.runner.tick("rp-002")
+    with world.control.transaction() as tx:
+        assert sorted(d["id"] for d in tx.scan(BUCKET_DISPATCHES)) == [investigation, investigation + ".recovery-2"]
+
+
+def test_a_failed_follow_up_stays_held_and_is_never_followed_up_again(tmp_path):
+    world = World(tmp_path)
+    env, owner, root, successor, research, investigation, dispatch = accepted_report(world, tmp_path)
+    owner.bind(successor, "ops", "c1")
+    members = [*dispatch["job_ids"], successor]
+    env.programs.recover_dispatch(followup_request(world, dispatch, members, followup_program(env)), None)
+    env.programs.resume("rp-002")
+    env.runner.council = FakeCouncil(world.control, status="rejected")
+    env.clock.value = "2028-01-01T02:00:00+00:00"
+    assert env.runner.tick("rp-002")["result"] == "rejected"
+    with world.control.transaction() as tx:
+        current = deepcopy(tx.get(BUCKET_DISPATCHES, investigation + ".recovery-2"))
+        head = deepcopy(tx.get("research_dispatch_heads", investigation))
+    with pytest.raises(dc.ContinuationRefused, match="research_not_accepted"):
+        world.controller.accept_research(receipt_for(world, research, investigation, current))
+    world.tick()
+    assert only(world.intents(), id=research["id"])["state"] == dc.RESEARCH_REQUIRED
+    again = followup_request(world, current, members, followup_program(env, "rp-003"), program="rp-003", version=2,
+                             lineage_sha=head["request_sha256"])
+    assert refused_code(env.programs.recover_dispatch, again, None) == "followup_predecessor_not_accepted"
+
+
+def test_the_cli_follow_up_reads_the_control_store_only_and_builds_no_bus(tmp_path, monkeypatch):
+    from codex_harness.adapters.research_program_cli import recover
+
+    world = World(tmp_path)
+    env, owner, root, successor, research, investigation, dispatch = accepted_report(world, tmp_path)
+    owner.bind(successor, "ops", "c1")
+    path = tmp_path / "followup.json"
+    path.write_text(json.dumps(followup_request(world, dispatch, [*dispatch["job_ids"], successor],
+                                                followup_program(env))), encoding="utf-8")
+
+    def forbidden(*args, **kwargs):
+        raise AssertionError("the follow-up must not build a bus or an artifact port")
+    monkeypatch.setattr("codex_harness.adapters.bus.RedisBus", forbidden)
+    monkeypatch.setattr("codex_harness.adapters.autonomous_evidence.ExecutionEvidence", forbidden)
+    service, args = type("Service", (), {"store": world.control})(), type("Args", (), {"file": path})()
+    result = recover(service, args)
+    assert result["exit_code"] == 0 and result["proof"] == "accepted_report_followup" and result["state"] == "authorized"

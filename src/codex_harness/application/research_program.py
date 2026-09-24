@@ -37,6 +37,10 @@ versioned head in `research_dispatch_successors`/`research_dispatch_heads`, neve
 original recovery row, and every consumer rechecks the retained predecessor fences before trusting it.
 The explicit `settled_contract_failure_successor` request (version 4) uses the same rows for the INITIAL
 or current dispatch whose read-only council refused a named output field, re-derived from its artifact.
+The explicit `accepted_evidence_followup` request (`urn:zeus:research-dispatch-followup:1`) is not a failure
+recovery: it follows up the ACCEPTED current dispatch of a report-only program whose authoritative scoped
+membership gained a member, through the same successor rows and head; the claim refuses any drift from the
+pinned membership, and the accepted predecessor and its receipts stay history.
 """
 from __future__ import annotations
 
@@ -64,6 +68,7 @@ from codex_harness.application.portfolio import (
     FAMILY_MINIMUM,
     RESEARCH_REQUIRED,
 )
+from codex_harness.application.promotion import BUCKET as BUCKET_PROMOTIONS
 from codex_harness.domain.audit_progress import KIND as AUDIT_PROGRESS
 from codex_harness.domain.audit_progress import (
     candidate_label as progress_label,
@@ -85,6 +90,8 @@ from codex_harness.domain.research_investigations import (
     DISPATCHED,
     FENCE_REASON,
     FENCED,
+    FOLLOWUP_PROOF,
+    FOLLOWUP_SCHEMA,
     INITIAL_VERSION,
     RECOVERED,
     REFUSED,
@@ -97,6 +104,7 @@ from codex_harness.domain.research_investigations import (
     SUCCESSOR_SCHEMA,
     InvestigationRefused,
     candidate_identity,
+    check_followup,
     check_recovery,
     check_successor,
     check_transport_proof,
@@ -104,6 +112,7 @@ from codex_harness.domain.research_investigations import (
     dispatch_row,
     dispatch_view,
     eligible_investigations,
+    followup_drift,
     lineage_head,
     recovery_view,
     replacement_dispatch_id,
@@ -119,6 +128,7 @@ from codex_harness.domain.research_investigations import (
     successor_version,
     successor_view,
     validate_any_successor,
+    validate_followup_request,
     validate_recovery_request,
 )
 from codex_harness.domain.research_investigations import (
@@ -488,6 +498,10 @@ class ResearchProgram:
             # authorization row and the predecessor it supersedes; the predecessor row, the original
             # recovery row and the head are never rewritten. Claimed in this same transaction.
             old = successor["predecessor"]
+            if successor.get("proof") == FOLLOWUP_PROOF and not (
+                    document.get("job_ids_sha256") == (successor.get("members") or {}).get("sha256")
+                    and document.get("job_ids_total") == len(document.get("job_ids") or [])):
+                raise ProgramRefused("followup_membership_drift")   # the claim captures exactly the pinned set
             dispatch.update(id=successor["replacement"]["dispatch"], recovery=successor["id"],
                             supersedes={"dispatch": old["dispatch"],
                                         **{k: old[k] for k in ("program", "cycle", "run_id", "manifest_sha256",
@@ -572,6 +586,8 @@ class ResearchProgram:
         `evidence` port (the executor's artifact store) instead; it never reads a transport."""
         if isinstance(document, dict) and document.get("schema") in {SUCCESSOR_SCHEMA, CONTRACT_SCHEMA}:
             return self._succeed_dispatch(document, evidence)
+        if isinstance(document, dict) and document.get("schema") == FOLLOWUP_SCHEMA:
+            return self._follow_up(document)
         try:
             request = validate_recovery_request(document)
         except InvestigationRefused as exc:
@@ -810,6 +826,89 @@ class ResearchProgram:
         except InvestigationRefused as exc:
             raise ProgramRefused(exc.reason_code, exc.field) from exc
 
+    # ----- accepted investigation follow-up (SPEC "Accepted investigation follow-up for newly observed evidence") ---
+    def _follow_up(self, document) -> dict:
+        """Authorize ONE follow-up of the exact ACCEPTED current head of a report-only program whose
+        authoritative scoped membership gained a member. ONE writer transaction, no artifact, transport or
+        model read: an existing authorization for this head replays (`cached`, the identical request only,
+        after revalidating the retained chain) or conflicts; otherwise every authoritative record is re-read,
+        `check_followup` compares the pinned membership to the fresh Portfolio jobs and bindings, and the
+        immutable successor row plus the moved head are written together. Concurrent or restarted requests
+        serialize on that transaction. Nothing is fenced, released or promoted here: the head names a dispatch
+        that does not exist until the named program claims it, and the accepted predecessor, its run, cycle,
+        calls and any receipt bound to it are never edited."""
+        try:
+            request = validate_followup_request(document)
+        except InvestigationRefused as exc:
+            raise ProgramRefused(exc.reason_code, exc.field) from exc
+        request_sha, investigation, old = digest(request), request["investigation"], request["predecessor"]
+        version = successor_version(old["lineage_version"])
+        key = successor_key(investigation, version)
+        with self.store.transaction() as tx:
+            row = tx.get(BUCKET_SUCCESSORS, key)
+            if row is not None:
+                return self._successor_replay(tx, row, request_sha)
+            lineage = self._lineage(tx, investigation)
+            if lineage["held"] is not None:
+                raise ProgramRefused(lineage["held"], "predecessor")
+            if old["lineage_version"] == INITIAL_VERSION and (lineage["recovery"] is not None or lineage["head"] is not None):
+                raise ProgramRefused("recovery_successor_stale", "predecessor")
+            proof = self._followup_check(tx, request, lineage["current"])
+            now = self.clock()
+            row = {"id": key, "investigation": investigation, "version": version, "state": AUTHORIZED,
+                   "reason_code": None, "request": request, "request_sha256": request_sha, "predecessor": dict(old),
+                   "replacement": {**request["replacement"], "dispatch": successor_dispatch_id(investigation, version),
+                                   "cycle": None},
+                   "fence": [], "proof": FOLLOWUP_PROOF, "members": proof["members"],
+                   "evidence": {"executions": proof["executions"], "calls": proof["calls"],
+                                "acceptance": proof["acceptance"]},
+                   "requested_at": now, "authorized_at": now, "claimed_at": None, "updated_at": now}
+            tx.put(BUCKET_SUCCESSORS, key, row)
+            tx.put(BUCKET_HEADS, investigation, {
+                "id": investigation, "investigation": investigation, "version": version, "successor": key,
+                "dispatch": row["replacement"]["dispatch"], "request_sha256": request_sha,
+                "previous": {"version": old["lineage_version"], "request_sha256": old["lineage_request_sha256"],
+                             "dispatch": old["dispatch"]}, "updated_at": now})
+        return self._successor_result(row, cached=False)
+
+    def _followup_check(self, tx, request: dict, current) -> dict:
+        """The authoritative reads of one follow-up, checked by the pure domain rule."""
+        old, investigation = request["predecessor"], request["investigation"]
+        run_id, correlation = old["run_id"], "autonomous:" + old["run_id"]
+        program = tx.get(BUCKET_PROGRAMS, old["program"])
+        replacement = tx.get(BUCKET_PROGRAMS, request["replacement"]["program"])
+        run = tx.get(BUCKET_RUNS, run_id)
+        tasks = self._run_tasks(tx, run_id)
+        slots = ((run or {}).get("starts") or {}).get("slots") if isinstance(run, dict) else None
+        # Every start of the run: its council role tasks and the operation's worker and review slots.
+        ids = {t.get("id") for t in tasks} | {s.get("id") for s in slots or [] if isinstance(s, dict)}
+        ids.discard(None)
+        promotion = tx.get(BUCKET_PROMOTIONS, run_id)
+        evidence = (promotion.get("evidence") if isinstance(promotion, dict) else None) or {}
+        evidence = evidence if isinstance(evidence, dict) else {}
+        task_id, decision_id = evidence.get("implementation_task_id"), evidence.get("decision_id")
+        try:
+            return check_followup(
+                request, investigation=tx.get(BUCKET_INVESTIGATIONS, investigation), required_state=RESEARCH_REQUIRED,
+                minimum=FAMILY_MINIMUM, lineage=current, dispatch=tx.get(BUCKET_DISPATCHES, old["dispatch"]),
+                program=program, cycle=tx.get(BUCKET_CYCLES, old["cycle"]),
+                run_result=council_result(run_id, old["manifest_sha256"], run), run=run, tasks=tasks,
+                reservations=[r for r in tx.scan(RESERVATIONS) if r.get("task_id") in ids],
+                terminations=[t for t in tx.scan("observation_terminations")
+                              if (t.get("record_id") or t.get("task_id")) in ids],
+                outbox=[item for item in tx.scan("outbox")
+                        if isinstance(item, dict) and (item.get("message") or {}).get("correlation_id") == correlation],
+                acceptance={"promotion": promotion,
+                            "task": tx.get("tasks", task_id) if type(task_id) is str else None,
+                            "decision": tx.get("decisions_pending", decision_id) if type(decision_id) is str else None},
+                jobs={j["id"]: j for j in tx.scan(BUCKET_JOBS) if type(j.get("id")) is str},
+                bindings={b["job_id"]: b for b in tx.scan(BUCKET_BINDINGS) if type(b.get("job_id")) is str},
+                replacement=replacement,
+                same_authority=isinstance(program, dict) and isinstance(replacement, dict)
+                and same_authority(program["config"], replacement["config"]))
+        except InvestigationRefused as exc:
+            raise ProgramRefused(exc.reason_code, exc.field) from exc
+
     def _lineage(self, tx, investigation: str) -> dict:
         """The investigation's current authorization and its named held condition, from the original
         recovery row, the head and every successor row on its chain in THIS transaction: the original
@@ -836,7 +935,20 @@ class ResearchProgram:
         if not (lineage["held"] is None and isinstance(row, dict) and row.get("state") == AUTHORIZED
                 and (row.get("replacement") or {}).get("program") == program_id):
             return None
+        # An accepted follow-up releases the claim only while the fresh scoped membership is still exactly
+        # the pinned one: drift after the authorization is never silently recaptured.
+        if row.get("proof") == FOLLOWUP_PROOF and self._followup_drift(tx, row) is not None:
+            return None
         return row
+
+    @staticmethod
+    def _followup_drift(tx, row: dict) -> str | None:
+        program = tx.get(BUCKET_PROGRAMS, (row.get("replacement") or {}).get("program"))
+        source = ((program or {}).get("config") or {}).get("investigation_source") or {}
+        return followup_drift(row, investigation=tx.get(BUCKET_INVESTIGATIONS, row["investigation"]),
+                              jobs={j["id"]: j for j in tx.scan(BUCKET_JOBS) if type(j.get("id")) is str},
+                              bindings={b["job_id"]: b for b in tx.scan(BUCKET_BINDINGS) if type(b.get("job_id")) is str},
+                              project_ids=source.get("project_ids") or [], required_state=RESEARCH_REQUIRED)
 
     @staticmethod
     def _revocation_held(tx, row) -> str | None:
