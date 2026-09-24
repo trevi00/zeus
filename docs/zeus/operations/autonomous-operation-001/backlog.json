@@ -399,6 +399,19 @@
       "dependencies": [
         "native-fixture"
       ]
+    },
+    {
+      "id": "research-revocation",
+      "project_id": "research-improvement",
+      "criterion_id": "verified-loop",
+      "lane": "harness",
+      "manifest_path": "docs/zeus/operations/autonomous-operation-001/research-revocation.operation.json",
+      "manifest_revision": "b83e22b4c336c595e150e0b57a5fb550378009ae",
+      "manifest_sha256": "55174276e606e068fa1972f472ab3a1767436ab2ad034522ddb38b91ec8aa37f",
+      "priority": 290,
+      "dependencies": [
+        "native-fixture"
+      ]
     }
   ]
 }
