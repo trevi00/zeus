@@ -441,14 +441,22 @@ class ProgramRunner:
 class TransportProbe:
     """Read-only, bounded inspection of the CONFIGURED Redis bus for one exact message id: the
     recipient's stream (delivered, pending and undelivered entries) and the dead-letter stream. It
-    publishes, claims, ACKs and trims nothing. A stream longer than `limit` cannot be read completely
+    publishes, claims, ACKs and trims nothing, and reads the bus identity with `create=False`, so it
+    never writes the storage token either. A stream longer than `limit` cannot be read completely
     and a Redis error propagates, so the owner refuses; only a complete read without the id is
-    `absent`. It proves nothing about any OTHER endpoint an earlier misconfiguration may have used."""
+    `absent`. The identity read before and after the streams is returned for the owner to compare
+    with the transport the failed attempt committed: absence here proves nothing about any OTHER
+    transport, and the owner never counts it for one."""
 
     def __init__(self, bus, limit: int = 10000):
         self.bus, self.limit = bus, limit
 
-    def absent(self, recipient: str, message_id: str) -> bool:
+    def inspect(self, recipient: str, message_id: str) -> dict:
+        before = self.bus.transport(create=False)
+        absent = self._absent(recipient, message_id)
+        return {"before": before, "absent": absent, "after": self.bus.transport(create=False)}
+
+    def _absent(self, recipient: str, message_id: str) -> bool:
         for stream in (self.bus.stream(recipient), self.bus.namespace + ":dead-letter"):
             if self.bus.client.xlen(stream) > self.limit:
                 raise ProgramRefused("recovery_transport_unbounded")

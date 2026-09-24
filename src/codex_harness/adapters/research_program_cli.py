@@ -71,8 +71,10 @@ def run(service, args) -> dict:
 
 def recover(service, args, transport=None) -> dict:
     """The owner's explicit recovery request. The transport proof reads the CONFIGURED bus
-    (`HARNESS_REDIS_URL`); its readiness is the owner's preflight, and an unreachable bus refuses
-    with `recovery_transport_unavailable` instead of being assumed empty."""
+    (`HARNESS_REDIS_URL`, `HARNESS_REDIS_NAMESPACE`) through the same `RedisBus` the publisher uses;
+    its readiness is the owner's preflight. An unreachable bus refuses with
+    `recovery_transport_unavailable` instead of being assumed empty, and a bus that is not the one
+    the failed attempt committed before publishing refuses with `recovery_transport_changed`."""
     if transport is None:
         from codex_harness.adapters.bus import RedisBus
         from codex_harness.adapters.research_program import TransportProbe

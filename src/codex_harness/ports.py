@@ -19,6 +19,11 @@ class MessageDeliveryError(RuntimeError):
     """Transport failed; delivery may have happened before the response was lost."""
 
 
+class TransportChanged(RuntimeError):
+    """The publisher is not the transport committed for this attempt; it refused BEFORE any write,
+    so nothing was handed to any transport by this call (research-dispatch-recovery-001)."""
+
+
 class SpoolFull(RuntimeError):
     """The bounded observation spool cannot take another record; the caller counts and reports."""
 
@@ -46,8 +51,13 @@ class ObservationDirectory(Protocol):
 
 
 class MessageBus(Protocol):
+    """`transport()` is optional: a bus that has it returns its credential-free identity, which the
+    outbox commits with the attempt BEFORE publishing and passes back as `publish(message,
+    transport=...)`; the bus must refuse with `TransportChanged` before writing when it is not that
+    transport. A bus without it still delivers, but its attempts carry no transport binding."""
+
     def validate(self, message: dict) -> dict: ...
-    def publish(self, message: dict) -> str: ...
+    def publish(self, message: dict, transport: dict | None = None) -> str: ...
 
 
 class Runtime(Protocol):
