@@ -44,7 +44,7 @@ Two separate documents, deliberately:
 
 ```json
 {"schema": "urn:zeus:host-delivery:1", "plan_id": "delivery-plan-1", "release_id": "<release id>",
- "revision": "<40-hex candidate revision>", "tree": "<64-hex candidate tree>",
+ "revision": "<40-hex candidate revision>", "tree": "<candidate Git tree id, 40 or 64 hex>",
  "policy_hash": "<64-hex incumbent evaluator hash>", "repository": "github:owner/repo",
  "required_checks": ["ci / required"], "target_id": "collect-service",
  "expected_descriptor": null, "canary_check_id": "collect_monitor_source",
@@ -59,6 +59,13 @@ the explicit statement that this delivery does not move the image or the profile
 against the descriptor the target is actually running, and a target with no current descriptor
 refuses it rather than guessing. `expected_descriptor` is the digest of the descriptor the owner
 approved switching **from**; `null` means this target has none yet.
+
+`tree` is the candidate's Git tree object id exactly as `git rev-parse <revision>^{tree}` reports it
+and as the release candidate recorded it: lowercase 40 hex in a SHA-1 repository, 64 hex in a
+SHA-256 one. It is an object id, not a digest, and is never padded, rehashed or substituted; the
+release gate compares it by exact equality (`release_tree_mismatch`). `policy_hash`,
+`expected_descriptor` and `profile_digest` are SHA256 digests and stay strictly 64 hex. The
+revision fields stay 40 hex; accepting a 64-hex tree does not qualify SHA-256 repositories.
 
 ## The stage path, and what each stage proves
 

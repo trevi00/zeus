@@ -1,5 +1,19 @@
 # Whole autonomous operating loop
 
+## Actual repair accepted; current-source delivery qualification, 2026-09-24
+
+Real successor cont-f7ed34f73b048bd5b698b3bb completed declared evidence checks, independent lead
+and conductor acceptance. Fleet finalized accepted, no held units or reconciliation debt. Research
+receipt cd95fdee and append-only supplement4a94f1aa cover the original exact failed pair; historical
+failures remain unchanged. Release2144c661 is queued for b31a9112/tree52b232ab on zeus-fleet-managed.
+The bounded four-file tree-identity fix is now integrated with current accepted source. Verify the
+three host-delivery/managed-runtime suites, Ruff and exact-head CI. Do NOT start the old candidate
+as the operating Fleet or pretend its release names the integrated tree. The scheduled Fleet stays
+the sole operating owner pending a separately proven delivery identity/cutover. The old release
+and its awaiting-owner intent remain honest until exact delivery or a reviewed successor lineage
+establishes completion. Current batch is integration PR/checks, then runtime/canary and whole-loop
+qualification using existing delivery owners, not a new unrelated investigation.
+
 ## Research coverage ownership: accepted003 receipt refusal, 2026-09-24
 
 Actual acceptance path refused research_scope_unverified. Council003 accepted docs candidate
