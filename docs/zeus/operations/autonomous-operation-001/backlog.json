@@ -464,6 +464,19 @@
       "dependencies": [
         "native-fixture"
       ]
+    },
+    {
+      "id": "live-status-current",
+      "project_id": "research-improvement",
+      "criterion_id": "verified-loop",
+      "lane": "harness",
+      "manifest_path": "docs/zeus/operations/autonomous-operation-001/live-status-current.operation.json",
+      "manifest_revision": "093e99d9395bb8fe58cfa64aedd1e95b22c77947",
+      "manifest_sha256": "f0fb290ce9cdf5b9ae4c4a747a6b4eb1fc57520efc2f6efc9df876f2dc115b71",
+      "priority": 340,
+      "dependencies": [
+        "research-coverage"
+      ]
     }
   ]
 }
