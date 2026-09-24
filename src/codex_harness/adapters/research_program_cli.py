@@ -12,7 +12,11 @@ from codex_harness.adapters.operation_cli import GitSource, bind_goal, refusal
 from codex_harness.adapters.providers import packaged_policy
 from codex_harness.application.dge import DgeRefused
 from codex_harness.application.research_program import ResearchProgram
-from codex_harness.domain.research_investigations import REVOCATION_SCHEMA, SUCCESSOR_SCHEMA
+from codex_harness.domain.research_investigations import (
+    CONTRACT_SCHEMA,
+    REVOCATION_SCHEMA,
+    SUCCESSOR_SCHEMA,
+)
 from codex_harness.domain.research_program import ProgramRefused, validate_config
 
 MAX_TICKS = 100
@@ -84,9 +88,10 @@ def recover(service, args, transport=None, evidence=None) -> dict:
     and reads no transport: it revokes execution authority in the control store only."""
     document = read_document(args.file, "Research dispatch recovery request")
     schema = document.get("schema") if isinstance(document, dict) else None
-    if schema == SUCCESSOR_SCHEMA:
-        # The settled read-only successor reads the predecessor's execution artifacts from the executor's
-        # own content store and builds no bus: it never proves or reads transport history.
+    if schema in {SUCCESSOR_SCHEMA, CONTRACT_SCHEMA}:
+        # The settled read-only successor (and the version-4 contract-failure successor) reads the
+        # predecessor's execution artifacts from the executor's own content store and builds no bus: it
+        # never proves or reads transport history.
         if evidence is None:
             from codex_harness.adapters.artifacts import FileArtifacts
             from codex_harness.adapters.autonomous_evidence import ExecutionEvidence

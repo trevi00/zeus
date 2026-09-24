@@ -93,6 +93,44 @@ CONDUCTOR_FIELDS = {"verdict", "rationale", "dispositions", "research_question",
 SNAPSHOT_FIELDS = {"schema", "topic", "run_id", "base_revision", "selection", "isolation", "observed_at", "expires_at",
                    "max_age_seconds", "database_identity", "records"}
 SHA256_LENGTH = 64
+# Council-owned free-text fields and their ONE bound (characters of the stripped value, the `_text` rule): the
+# consumer checks below and the provider-facing schema description and role guidance
+# (`adapters.autonomous_roles`) read this table, so a producer is told exactly what the consumer admits. A value
+# over its bound is refused with a fixed code, never truncated; the bound is neither raised nor applied to text
+# the DGE validator owns (proposer summary, finding scenario, arbiter rationale keep `domain.dge` limits).
+FIELD_LIMITS = {DBA: {"summary": 4000, "unknowns": 1024},
+                IMPROVEMENT_LEAD: {"summary": 4000, "rationale": 4000, "transition.compatibility": 4000,
+                                   "transition.rollback": 4000, "transition.retirement": 4000}}
+FIELD_REFUSED = "council_field_invalid"
+FIELD_PROBLEMS = ("type", "empty", "too_long")
+# `council_field_invalid:<role>.<field>:<problem>`: identifiers and a fixed problem only, never the value.
+FIELD_CODE = re.compile("^" + FIELD_REFUSED + r":(" + "|".join(sorted(FIELD_LIMITS)) + r")\.([a-z_.]+):("
+                        + "|".join(FIELD_PROBLEMS) + ")$")
+
+
+class CouncilFieldRefused(ContractError):
+    """A council text field of the wrong type, empty or over its `FIELD_LIMITS` bound. `reason_code` is the
+    fixed `council_field_invalid:<role>.<field>:<problem>`; the message keeps the legacy wording plus that
+    code and never echoes the value."""
+
+    def __init__(self, role: str, field: str, problem: str, message: str):
+        self.reason_code = FIELD_REFUSED + ":" + role + "." + field + ":" + problem
+        super().__init__(message + " (" + self.reason_code + ")")
+
+
+def field_problem(value, limit: int) -> str | None:
+    """The fixed problem of one bounded text value under the `_text` rule, or None when admitted."""
+    if type(value) is not str:
+        return "type"
+    if not value.strip():
+        return "empty"
+    return "too_long" if len(value.strip()) > limit else None
+
+
+def _bounded(role: str, field: str, value, message: str) -> None:
+    problem = field_problem(value, FIELD_LIMITS[role][field])
+    if problem is not None:
+        raise CouncilFieldRefused(role, field, problem, message)
 
 
 class SnapshotError(ContractError):
@@ -320,11 +358,12 @@ def report_from_dba(output, *, snapshot_digest_value: str, claim_ids: set) -> di
     if not isinstance(output, dict) or set(output) != DBA_REPORT_FIELDS:
         raise ContractError("DBA report lacks the required fields")
     _identities(output, {"snapshot_digest": snapshot_digest_value})
-    if not _text(output["summary"]):
-        raise ContractError("DBA report summary is required text")
+    _bounded(DBA, "summary", output["summary"], "DBA report summary is required text")
     unknowns = output["unknowns"]
-    if not isinstance(unknowns, list) or not all(_text(u, 1024) for u in unknowns):
+    if not isinstance(unknowns, list):
         raise ContractError("DBA report unknowns must hold text")
+    for unknown in unknowns:
+        _bounded(DBA, "unknowns", unknown, "DBA report unknowns must hold text")
     return {"snapshot_digest": snapshot_digest_value, "summary": output["summary"],
             "claim_ids": _claim_refs(output["claim_ids"], claim_ids, "DBA report"), "unknowns": list(unknowns)}
 
@@ -353,13 +392,18 @@ def proposal_from_improvement_lead(output, identities: dict, claim_ids: set) -> 
     if not isinstance(output, dict) or set(output) != IMPROVEMENT_LEAD_FIELDS:
         raise ContractError("Improvement lead proposal lacks the required fields")
     _identities(output, identities)
-    if output["decision"] not in SSOT_DECISIONS or not _text(output["summary"]) or not _text(output["rationale"]):
-        raise ContractError("Improvement lead proposal needs a summary, a rationale and a decision of reuse, improve, migrate or new")
+    needs = "Improvement lead proposal needs a summary, a rationale and a decision of reuse, improve, migrate or new"
+    if output["decision"] not in SSOT_DECISIONS:
+        raise ContractError(needs)
+    _bounded(IMPROVEMENT_LEAD, "summary", output["summary"], needs)
+    _bounded(IMPROVEMENT_LEAD, "rationale", output["rationale"], needs)
     transition = output["transition"]
     if output["decision"] in {"improve", "migrate"}:
-        if not (isinstance(transition, dict) and set(transition) == {"compatibility", "rollback", "retirement"}
-                and all(_text(transition[k]) for k in transition)):
-            raise ContractError("Improvement lead improve or migrate requires compatibility, rollback and retirement")
+        requires = "Improvement lead improve or migrate requires compatibility, rollback and retirement"
+        if not (isinstance(transition, dict) and set(transition) == {"compatibility", "rollback", "retirement"}):
+            raise ContractError(requires)
+        for key in sorted(transition):
+            _bounded(IMPROVEMENT_LEAD, "transition." + key, transition[key], requires)
     elif transition is not None:
         raise ContractError("Improvement lead transition must be null unless the decision is improve or migrate")
     # The alternative never reaches the DGE validator (only its findings do), so its citations are bound here.
@@ -389,7 +433,8 @@ def council_output(role: str, output, identities: dict, claim_ids: set) -> dict:
     return COUNCIL_OUTPUTS[role](output, identities, set(claim_ids))
 
 
-__all__ = ["AGENTS", "COUNCIL_AGENTS", "COUNCIL_DEBATE", "COUNCIL_ORDER", "CONDUCTOR_ROLE", "DBA", "IMPROVEMENT_LEAD",
+__all__ = ["AGENTS", "COUNCIL_AGENTS", "COUNCIL_DEBATE", "COUNCIL_ORDER", "CONDUCTOR_ROLE", "DBA", "FIELD_CODE",
+           "FIELD_LIMITS", "FIELD_REFUSED", "IMPROVEMENT_LEAD", "CouncilFieldRefused", "field_problem",
            "INTERNAL_SLOT", "MAX_STARTS_V2", "RESEARCH_LEAD", "SCHEMA_AUTONOMOUS_V2", "SNAPSHOT_SCHEMA", "STAGES_V2",
            "SnapshotError", "check_snapshot", "conductor_self_arbitration", "council_output", "field_valid", "profile", "report_digest",
            "report_from_dba", "snapshot_coverage", "snapshot_digest", "snapshot_envelope", "snapshot_records",

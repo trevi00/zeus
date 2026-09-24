@@ -23,7 +23,19 @@ from codex_harness.domain.autonomous import (
     execution_evidence,
     role_binding,
 )
-from codex_harness.domain.council import COUNCIL_AGENTS, DBA
+from codex_harness.domain.council import (
+    COUNCIL_AGENTS,
+    COUNCIL_DEBATE,
+    COUNCIL_ORDER,
+    DBA,
+    FIELD_CODE,
+    FIELD_LIMITS,
+    FIELD_REFUSED,
+    IMPROVEMENT_LEAD,
+    RESEARCH_LEAD,
+    CouncilFieldRefused,
+    council_output,
+)
 from codex_harness.domain.model import ContractError, digest
 from codex_harness.domain.operation import ID, SHA256
 
@@ -532,6 +544,33 @@ READ_ONLY_PARTIES = {CONDUCTOR, *READ_ONLY_ROLES.values()}
 SUCCESSOR_AUTHORITY = ("owner-authorized successor of one failed dispatch whose council settled only read-only "
                        "researcher/DBA executions; the predecessor's calls stay counted and its outputs are never "
                        "reused as an accepted council")
+# ----- settled council contract failure successor (SPEC "Settled council contract failure recovery") ----------
+# The INITIAL or CURRENT dispatch whose council settled only read-only researcher/DBA/research-lead/
+# improvement-lead executions and then stopped because one role output failed a NAMED council field check
+# (`domain.council.FIELD_CODE`) may be succeeded ONCE per exact head, on the owner's explicit version-4
+# request, through the SAME successor rows and versioned head as version 3. The failure is never taken from
+# the recorded reason alone: the pinned role's bound execution artifact is re-derived through the consumer
+# and must raise exactly the pinned code. Version 1 stays reserved for the original recovery's replacement,
+# so the successor of an initial dispatch (lineage version 0) is version 2 and `.recovery-1` stays unused.
+CONTRACT_SCHEMA = "urn:zeus:research-dispatch-recovery:4"
+CONTRACT_MODE = "settled_contract_failure_successor"
+CONTRACT_FIELDS = SUCCESSOR_FIELDS | {"failure"}
+CONTRACT_FAILURE_FIELDS = {"role", "task_id", "execution_ref", "check"}
+CONTRACT_PROOF = "settled_contract_failure"
+# The run reason of a council that refused a field: the exact typed code, or the legacy generic mapping
+# recorded before the typed code existed (release-checklist-research-001.c001). Both need the re-derivation.
+LEGACY_CONTRACT_FAILURE = "debate_refused:ContractError"
+CONTRACT_RESULT_REASONS = {FIELD_REFUSED, LEGACY_CONTRACT_FAILURE.partition(":")[0]}
+# Debate roles whose output carries council-owned bounded fields; the conductor never qualifies.
+CONTRACT_ROLES = {role: COUNCIL_AGENTS[role] for role in (RESEARCH_LEAD, IMPROVEMENT_LEAD)
+                  if role in FIELD_LIMITS}
+CONTRACT_READ_ROLES = {**READ_ONLY_ROLES, RESEARCH_LEAD: COUNCIL_AGENTS[RESEARCH_LEAD],
+                       IMPROVEMENT_LEAD: COUNCIL_AGENTS[IMPROVEMENT_LEAD]}
+EXECUTION_REF = re.compile(r"^sha256:[0-9a-f]{64}$")
+INITIAL_VERSION, FIRST_SUCCESSOR = 0, 2
+CONTRACT_AUTHORITY = ("owner-authorized successor of one failed dispatch whose council settled only read-only role "
+                      "executions and refused a named output field; the predecessor's calls stay counted and its "
+                      "outputs are never rewritten or reused as an accepted council")
 
 
 def successor_key(investigation: str, version: int) -> str:
@@ -541,6 +580,87 @@ def successor_key(investigation: str, version: int) -> str:
 def successor_dispatch_id(investigation: str, version: int) -> str:
     """Version 1 is the original recovery's replacement (`replacement_dispatch_id`)."""
     return investigation + ".recovery-" + str(version)
+
+
+def lineage_dispatch_id(investigation: str, version: int) -> str:
+    """The dispatch key a lineage version names: version 0 is the initial dispatch itself."""
+    return investigation if version == INITIAL_VERSION else successor_dispatch_id(investigation, version)
+
+
+def successor_version(lineage_version: int) -> int:
+    """The version of the successor of `lineage_version`; version 1 is never a successor."""
+    return max(lineage_version + 1, FIRST_SUCCESSOR)
+
+
+def validate_contract_request(document) -> dict:
+    """Strict version-4 owner request; returns the canonical copy. The predecessor pins the same identities
+    as version 3, but its lineage version may be 0 (the initial dispatch, no lineage request digest); the
+    failure pins the role, its task, its execution artifact and the exact safe field code."""
+    def check(condition, field):
+        if not condition:
+            raise InvestigationRefused("recovery_request_invalid", field)
+    check(isinstance(document, dict) and document.get("schema") == CONTRACT_SCHEMA, "schema")
+    check(set(document) == CONTRACT_FIELDS, "root")
+    check(document["mode"] == CONTRACT_MODE, "mode")
+    investigation = document["investigation"]
+    check(type(investigation) is str and INVESTIGATION_ID.fullmatch(investigation) is not None, "investigation")
+    old, new, failure = document["predecessor"], document["replacement"], document["failure"]
+    check(isinstance(old, dict) and set(old) == SUCCESSOR_PREDECESSOR_FIELDS, "predecessor")
+    version = old["lineage_version"]
+    check(type(version) is int and 0 <= version < 1000, "predecessor.lineage_version")
+    check(old["dispatch"] == lineage_dispatch_id(investigation, version), "predecessor.dispatch")
+    check(old["lineage_request_sha256"] is None if version == INITIAL_VERSION
+          else type(old["lineage_request_sha256"]) is str and SHA256.fullmatch(old["lineage_request_sha256"]) is not None,
+          "predecessor.lineage_request_sha256")
+    check(type(old["program"]) is str and PROGRAM_REF.fullmatch(old["program"]) is not None, "predecessor.program")
+    check(type(old["cycle"]) is str and CYCLE_REF.fullmatch(old["cycle"]) is not None, "predecessor.cycle")
+    check(type(old["run_id"]) is str and ID.fullmatch(old["run_id"]) is not None, "predecessor.run_id")
+    for key in ("config_sha256", "manifest_sha256", "snapshot_sha256"):
+        check(type(old[key]) is str and SHA256.fullmatch(old[key]) is not None, "predecessor." + key)
+    check(isinstance(failure, dict) and set(failure) == CONTRACT_FAILURE_FIELDS, "failure")
+    check(failure["role"] in CONTRACT_ROLES, "failure.role")
+    check(type(failure["task_id"]) is str and ID.fullmatch(failure["task_id"]) is not None, "failure.task_id")
+    check(type(failure["execution_ref"]) is str and EXECUTION_REF.fullmatch(failure["execution_ref"]) is not None,
+          "failure.execution_ref")
+    code = FIELD_CODE.fullmatch(failure["check"]) if type(failure["check"]) is str else None
+    check(code is not None and code.group(1) == failure["role"], "failure.check")
+    check(isinstance(new, dict) and set(new) == RECOVERY_REPLACEMENT_FIELDS, "replacement")
+    check(type(new["program"]) is str and PROGRAM_REF.fullmatch(new["program"]) is not None
+          and new["program"] != old["program"], "replacement.program")
+    check(type(new["config_sha256"]) is str and SHA256.fullmatch(new["config_sha256"]) is not None,
+          "replacement.config_sha256")
+    return {"schema": CONTRACT_SCHEMA, "mode": CONTRACT_MODE, "investigation": investigation,
+            "predecessor": {k: old[k] for k in sorted(SUCCESSOR_PREDECESSOR_FIELDS)},
+            "failure": {k: failure[k] for k in sorted(CONTRACT_FAILURE_FIELDS)},
+            "replacement": {k: new[k] for k in sorted(RECOVERY_REPLACEMENT_FIELDS)}}
+
+
+def validate_any_successor(document) -> dict:
+    """Version dispatch for the owner: version 3 and version 4 each keep their own strict validator."""
+    if isinstance(document, dict) and document.get("schema") == CONTRACT_SCHEMA:
+        return validate_contract_request(document)
+    return validate_successor_request(document)
+
+
+CONTRACT_OTHER = "contract_other"
+
+
+def contract_failure(role: str, answer, details) -> str | None:
+    """Replay `council_output` for `answer` under the identities and packet claims the role was actually
+    given (its immutable task details): None when it derives, the safe field code when a bounded field is
+    refused, `contract_other` for any other refusal. Pure: no model call, nothing is repaired or kept."""
+    if not isinstance(details, dict) or not isinstance(details.get("packet"), dict):
+        return CONTRACT_OTHER
+    claims = details["packet"].get("claims")
+    claim_ids = {c.get("id") for c in claims if isinstance(c, dict)} if isinstance(claims, list) else set()
+    identities = {"snapshot_digest": details.get("snapshot_digest"), "report_digest": details.get("report_digest")}
+    try:
+        council_output(role, answer, identities, claim_ids)
+    except CouncilFieldRefused as exc:
+        return exc.reason_code
+    except ContractError:
+        return CONTRACT_OTHER
+    return None
 
 
 def validate_successor_request(document) -> dict:
@@ -612,16 +732,27 @@ def check_successor(request: dict, *, investigation, required_state: str, lineag
     council whose run row, task rows, reservations and execution artifacts show ONLY succeeded
     researcher/DBA executions, each bound to its own settled accepted invocation, with nothing running,
     unknown, terminated, implemented or promoted. `artifacts` maps each execution_ref to its loaded
-    document or to a fixed unavailability code. Returns the fence targets and the bound evidence."""
+    document or to a fixed unavailability code. Returns the fence targets and the bound evidence.
+
+    A version-4 `settled_contract_failure_successor` request applies the same rule to a wider read-only
+    prefix: the pinned predecessor may be the INITIAL dispatch (lineage version 0: no recovery and no head,
+    `lineage` None) or the current head; its council settled exactly researcher, DBA and the debate roles up
+    to the pinned failed role (never the conductor), stopped at that role with the typed field code or the
+    legacy generic mapping, recorded only the earlier debate events, and the failed role's bound artifact
+    re-derives exactly the pinned field code. Returns the re-derived failure as evidence too."""
     old = request["predecessor"]
+    failure = request.get("failure") if request.get("mode") == CONTRACT_MODE else None
     _refuse(isinstance(investigation, dict) and investigation.get("kind", KIND) == KIND
             and investigation.get("state") == required_state,
             "recovery_investigation_changed", "investigation")
-    _refuse(isinstance(lineage, dict) and lineage.get("state") != "corrupt", "recovery_successor_corrupt", "predecessor")
-    _refuse(lineage["version"] == old["lineage_version"] and lineage["request_sha256"] == old["lineage_request_sha256"]
-            and lineage["dispatch"] == old["dispatch"], "recovery_successor_stale", "predecessor")
-    _refuse(lineage["state"] == RECOVERED, "recovery_predecessor_active", "predecessor")
-    _refuse(isinstance(dispatch, dict) and dispatch.get("id") == old["dispatch"]
+    if failure is not None and old["lineage_version"] == INITIAL_VERSION:
+        _refuse(lineage is None, "recovery_successor_stale", "predecessor")   # a lineage exists: not initial
+    else:
+        _refuse(isinstance(lineage, dict) and lineage.get("state") != "corrupt", "recovery_successor_corrupt", "predecessor")
+        _refuse(lineage["version"] == old["lineage_version"] and lineage["request_sha256"] == old["lineage_request_sha256"]
+                and lineage["dispatch"] == old["dispatch"], "recovery_successor_stale", "predecessor")
+        _refuse(lineage["state"] == RECOVERED, "recovery_predecessor_active", "predecessor")
+    _refuse(isinstance(dispatch, dict) and dispatch.get("id", dispatch.get("investigation")) == old["dispatch"]
             and dispatch.get("investigation") == request["investigation"] and dispatch.get("kind", KIND) == KIND
             and dispatch.get("program") == old["program"] and dispatch.get("cycle") == old["cycle"]
             and all(dispatch.get(k) == old[k] for k in ("run_id", "manifest_sha256", "snapshot_sha256")),
@@ -629,7 +760,20 @@ def check_successor(request: dict, *, investigation, required_state: str, lineag
     _refuse(dispatch.get("state") == RESOLVED, "recovery_predecessor_active", "predecessor")
     _refuse(dispatch.get("result") not in {"accepted", "rejected"}, "recovery_dispatch_not_failed", "predecessor")
     _refuse(dispatch.get("result") == "failed", "recovery_effect_unknown", "predecessor")
-    _refuse(dispatch.get("result_reason") == READ_ONLY_FAILURE, "recovery_not_settled_read_only", "predecessor")
+    if failure is None:
+        allowed, prefix, stages, events = READ_ONLY_ROLES, None, READ_ONLY_STAGES, 0
+        reasons, run_reasons = {READ_ONLY_FAILURE}, None   # version 3 unchanged: the safe reason head only
+    else:
+        # Exactly the council prefix up to the failed role; the debate events recorded are the earlier ones.
+        prefix = COUNCIL_ORDER[:COUNCIL_ORDER.index(failure["role"]) + 1]
+        allowed, stages = {r: CONTRACT_READ_ROLES[r] for r in prefix}, {failure["role"]}
+        events = len([r for r in prefix if r in COUNCIL_DEBATE]) - 1
+        # Any typed field code or the legacy mapping stops here; WHICH field is the proof step's question.
+        recorded = run.get("reason_code") if isinstance(run, dict) and type(run.get("reason_code")) is str else ""
+        reasons = CONTRACT_RESULT_REASONS
+        run_reasons = {recorded} if recorded == LEGACY_CONTRACT_FAILURE or FIELD_CODE.fullmatch(recorded) else set()
+    parties = {CONDUCTOR, *allowed.values()}
+    _refuse(dispatch.get("result_reason") in reasons, "recovery_not_settled_read_only", "predecessor")
     _refuse(isinstance(program, dict) and program.get("id") == old["program"]
             and program.get("config_sha256") == old["config_sha256"], "recovery_dispatch_mismatch", "predecessor.program")
     _refuse(program.get("state") == "blocked" and program.get("active_cycle") is None,
@@ -639,20 +783,23 @@ def check_successor(request: dict, *, investigation, required_state: str, lineag
             and cycle.get("status") == "completed" and council.get("run_id") == old["run_id"]
             and council.get("manifest_sha256") == old["manifest_sha256"] and council.get("status") == "failed",
             "recovery_cycle_mismatch", "predecessor.cycle")
-    _refuse(run_result.get("result") == "failed" and run_result.get("reason_code") == READ_ONLY_FAILURE
-            and isinstance(run, dict) and run.get("status") == "failed" and bool(run.get("finished_at")),
+    _refuse(run_result.get("result") == "failed" and run_result.get("reason_code") in reasons
+            and isinstance(run, dict) and run.get("status") == "failed" and bool(run.get("finished_at"))
+            and (run_reasons is None or run.get("reason_code") in run_reasons),
             "recovery_run_not_settled_read_only", "predecessor.run_id")
-    _refuse(run.get("stage") in READ_ONLY_STAGES and run.get("operation") is None and run.get("promotion") is None
+    _refuse(run.get("stage") in stages and run.get("operation") is None and run.get("promotion") is None
             and run.get("design") is None and not residue, "recovery_effect_outside_read_only", "predecessor.run_id")
     roles = run.get("roles") if isinstance(run.get("roles"), dict) else {}
-    _refuse(bool(roles) and set(roles) <= set(READ_ONLY_ROLES), "recovery_effect_outside_read_only", "predecessor.run_id")
-    _refuse(session is None or (isinstance(session, dict) and session.get("version") == 0
-                                and session.get("decision_event_id") is None and not session.get("findings")),
+    _refuse(bool(roles) and set(roles) <= set(allowed) and (prefix is None or set(roles) == set(prefix)),
+            "recovery_effect_outside_read_only", "predecessor.run_id")
+    _refuse((session is None and events == 0)
+            or (isinstance(session, dict) and session.get("version") == events
+                and session.get("decision_event_id") is None and not session.get("findings")),
             "recovery_effect_outside_read_only", "predecessor.run_id")
     starts = run.get("starts") if isinstance(run.get("starts"), dict) else {}
     slots = starts.get("slots") if isinstance(starts.get("slots"), list) else None
     _refuse(slots is not None and all(isinstance(s, dict) for s in slots), "recovery_invocation_unsettled", "predecessor.run_id")
-    _refuse(all(s.get("kind") == "task" and s.get("agent") in READ_ONLY_ROLES.values() and s.get("operation") is None
+    _refuse(all(s.get("kind") == "task" and s.get("agent") in allowed.values() and s.get("operation") is None
                 for s in slots), "recovery_effect_outside_read_only", "predecessor.run_id")
     _refuse(starts.get("reserved") == starts.get("settled") == len(slots) == len(roles)
             and all(s.get("settled") is True and s.get("settle_error") is None for s in slots),
@@ -660,12 +807,12 @@ def check_successor(request: dict, *, investigation, required_state: str, lineag
     _refuse(not terminations, "recovery_effect_unknown", "predecessor.run_id")
     _refuse(all(r.get("status") == "settled" for r in reservations), "recovery_invocation_unsettled", "predecessor.run_id")
     correlation = correlation_id({"id": old["run_id"]})
-    bound, reservation_ids = [], set()
+    bound, reservation_ids, threads, failed = [], set(), [], None
     for task in sorted(tasks, key=lambda t: str(t.get("id"))):
         message = task.get("message") if isinstance(task.get("message"), dict) else {}
         details = (message.get("what") or {}).get("details") if isinstance(message.get("what"), dict) else None
         role = details.get("role") if isinstance(details, dict) else None
-        _refuse(role in READ_ONLY_ROLES and task.get("agent") == READ_ONLY_ROLES[role]
+        _refuse(role in allowed and task.get("agent") == allowed[role]
                 and (message.get("what") or {}).get("action") == ROLE_ACTION,
                 "recovery_effect_outside_read_only", "predecessor.run_id")
         _refuse(task.get("status") not in {"queued", "running", "retry", "dispatching"},
@@ -684,12 +831,21 @@ def check_successor(request: dict, *, investigation, required_state: str, lineag
         reservation_id = (artifact.get("invocation") or {}).get("reservation") if isinstance(artifact.get("invocation"), dict) else None
         reservation = next((r for r in reservations if r.get("id") == reservation_id), None)
         try:
-            role_binding(task, role=role, base_revision=base, correlation=correlation, agent=READ_ONLY_ROLES[role])
+            role_binding(task, role=role, base_revision=base, correlation=correlation, agent=allowed[role])
             proof = execution_evidence(task, artifact, reservation, bucket="tasks", stage="dge:" + role,
                                        basis_revision=base, evidence_ref=evidence_ref_for(details), exact=True)
         except ContractError as exc:
             raise InvestigationRefused("recovery_evidence_mismatch", "predecessor.run_id") from exc
         reservation_ids.add(proof["reservation_id"])
+        threads.append(proof["thread_id"])
+        if failure is not None and role == failure["role"]:
+            _refuse(task.get("id") == failure["task_id"] and ref == failure["execution_ref"],
+                    "recovery_evidence_mismatch", "failure")
+            failed = (details, artifact["answer"])
+        elif failure is not None and role in COUNCIL_DEBATE:
+            # An earlier debate role was derived and recorded: its bound output must still derive cleanly.
+            _refuse(contract_failure(role, artifact["answer"], details) is None,
+                    "recovery_failure_not_proven", "failure")
         bound.append({"task_id": task["id"], "role": role, "agent": task["agent"], "generation": task.get("generation"),
                       "attempt": task.get("attempt"), "execution_ref": ref, "reservation_id": proof["reservation_id"],
                       "output_sha256": proof["output_sha256"]})
@@ -701,9 +857,9 @@ def check_successor(request: dict, *, investigation, required_state: str, lineag
         message = item.get("message") if isinstance(item.get("message"), dict) else {}
         who = message.get("who") if isinstance(message.get("who"), dict) else {}
         details = (message.get("what") or {}).get("details") if isinstance(message.get("what"), dict) else {}
-        _refuse(message.get("correlation_id") == correlation and who.get("sender") in READ_ONLY_PARTIES
-                and who.get("recipient") in READ_ONLY_PARTIES
-                and (message.get("type") != "task.assign" or (details or {}).get("role") in READ_ONLY_ROLES),
+        _refuse(message.get("correlation_id") == correlation and who.get("sender") in parties
+                and who.get("recipient") in parties
+                and (message.get("type") != "task.assign" or (details or {}).get("role") in allowed),
                 "recovery_effect_outside_read_only", "predecessor.run_id")
         message_id = message.get("message_id")
         delivery = deliveries.get(message_id)
@@ -725,8 +881,24 @@ def check_successor(request: dict, *, investigation, required_state: str, lineag
             "recovery_replacement_not_fresh", "replacement")
     _refuse(same_authority and replacement.get("repository") == program.get("repository"),
             "recovery_scope_changed", "replacement")
-    return {"fenced": fenced, "executions": bound,
-            "calls": {"reserved": starts["reserved"], "settled": starts["settled"], "reservations": len(reservations)}}
+    proof = {"fenced": fenced, "executions": bound,
+             "calls": {"reserved": starts["reserved"], "settled": starts["settled"], "reservations": len(reservations)}}
+    if failure is None:
+        return proof
+    # The recorded reason is never the proof: the failed role's OWN bound output, under the identities and
+    # packet claims its immutable task carried (the ones the run froze), must raise exactly the pinned code.
+    _refuse(failed is not None, "recovery_evidence_mismatch", "failure")
+    details, answer = failed
+    snapshot, report = run.get("snapshot"), run.get("report")
+    frozen = {"snapshot_digest": snapshot.get("sha256") if isinstance(snapshot, dict) else None,
+              "report_digest": report.get("sha256") if isinstance(report, dict) else None,
+              "packet_digest": run.get("packet_digest")}
+    _refuse(all(v is not None and details.get(k) == v for k, v in frozen.items()), "recovery_evidence_mismatch", "failure")
+    _refuse(run.get("reason_code") in {failure["check"], LEGACY_CONTRACT_FAILURE}, "recovery_failure_not_proven", "failure")
+    named = [t for t in threads if isinstance(t, str)]
+    _refuse(len(named) == len(set(named)), "recovery_failure_not_proven", "failure")   # would have stopped earlier
+    _refuse(contract_failure(failure["role"], answer, details) == failure["check"], "recovery_failure_not_proven", "failure")
+    return {**proof, "failure": {**failure, "output_sha256": digest(answer)}}
 
 
 def successor_held(investigation: str, head, chain: list, *, deliveries: dict, tasks: dict) -> str | None:
@@ -740,14 +912,21 @@ def successor_held(investigation: str, head, chain: list, *, deliveries: dict, t
     current = lineage_head(investigation, None, head, rows.get(head.get("version") if isinstance(head, dict) else None))
     if current is None or current["state"] == "corrupt":
         return "recovery_successor_corrupt"
-    for version in range(2, current["version"] + 1):
+    for version in range(FIRST_SUCCESSOR, current["version"] + 1):
         row = rows.get(version)
+        predecessor = (row.get("predecessor") or {}) if isinstance(row, dict) else {}
+        # The previous version is `version - 1`, except that a version-4 successor of the INITIAL dispatch
+        # (lineage version 0) is the first row of its chain: version 1 belongs to the original recovery only.
+        previous = INITIAL_VERSION if (version == FIRST_SUCCESSOR and predecessor.get("lineage_version") == INITIAL_VERSION
+                                       and row.get("proof") == CONTRACT_PROOF) else version - 1
         if not (isinstance(row, dict) and row.get("id") == successor_key(investigation, version)
                 and row.get("investigation") == investigation and type(row.get("request_sha256")) is str
                 and row.get("request_sha256") == digest(row.get("request"))
-                and (row.get("predecessor") or {}).get("lineage_version") == version - 1
-                and (row.get("predecessor") or {}).get("dispatch") == successor_dispatch_id(investigation, version - 1)
-                and row.get("state") in {AUTHORIZED, RECOVERED} and row.get("proof") == SUCCESSOR_PROOF):
+                and predecessor.get("lineage_version") == previous
+                and predecessor.get("dispatch") == lineage_dispatch_id(investigation, previous)
+                and row.get("state") in {AUTHORIZED, RECOVERED} and row.get("proof") in {SUCCESSOR_PROOF, CONTRACT_PROOF}
+                and row.get("proof") == (CONTRACT_PROOF if (row.get("request") or {}).get("mode") == CONTRACT_MODE
+                                         else SUCCESSOR_PROOF)):
             return "recovery_successor_corrupt"
         for fence in row.get("fence") or []:
             delivery = deliveries.get(fence.get("outbox"))
@@ -780,7 +959,11 @@ def successor_view(row: dict) -> dict:
     counts only."""
     keys = ("id", "investigation", "version", "state", "predecessor", "replacement", "fence", "proof", "evidence",
             "request_sha256", "requested_at", "authorized_at", "claimed_at", "updated_at")
-    return {**{k: row.get(k) for k in keys}, "mode": SUCCESSOR_MODE, "authority": SUCCESSOR_AUTHORITY}
+    # `failure` is additive: a version-3 row reads None; a version-4 row names its re-derived field code.
+    if (row.get("request") or {}).get("mode") == CONTRACT_MODE:
+        return {**{k: row.get(k) for k in keys}, "mode": CONTRACT_MODE, "failure": row.get("failure"),
+                "authority": CONTRACT_AUTHORITY}
+    return {**{k: row.get(k) for k in keys}, "mode": SUCCESSOR_MODE, "failure": None, "authority": SUCCESSOR_AUTHORITY}
 
 
 def recovery_view(row: dict) -> dict:
@@ -807,7 +990,9 @@ def dispatch_counts(rows: list) -> dict:
     return counts
 
 
-__all__ = ["AUTHORITY", "AUTHORIZED", "CLAIMED", "DISPATCHED", "DISPATCH_SCHEMA", "EXCLUSIONS", "FENCED",
+__all__ = ["AUTHORITY", "AUTHORIZED", "CLAIMED", "CONTRACT_MODE", "CONTRACT_PROOF", "CONTRACT_SCHEMA",
+           "DISPATCHED", "DISPATCH_SCHEMA", "EXCLUSIONS", "FENCED", "INITIAL_VERSION", "contract_failure",
+           "lineage_dispatch_id", "successor_version", "validate_any_successor", "validate_contract_request",
            "FENCE_REASON", "KIND", "MAX_JOB_SAMPLE", "MAX_PROJECTS", "MAX_REASON_CODES", "PRE_PROVIDER_FAILURE",
            "RECOVERED", "RECOVERY_SCHEMA", "REFUSED", "RESOLVED", "REVOCATION_BUCKET", "REVOCATION_GENERATION",
            "REVOCATION_MODE", "REVOCATION_PROOF", "REVOCATION_SCHEMA", "SNAPSHOT_SCHEMA", "SOURCE", "SUCCESSOR_MODE",
