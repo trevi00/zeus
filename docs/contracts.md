@@ -1936,6 +1936,38 @@ proof `settled_contract_failure`. Rows, head, fences, replay, conflict, serializ
 consumers and scoped-receipt holds are the version-3 ones; the row adds `failure` (the pinned fields plus the
 answer's `output_sha256`) and views gain additive `failure` (null for version 3). The failed run, tasks,
 outputs, session and dispatch are never rewritten or reused as accepted.
+Accepted investigation follow-up (SPEC "Accepted investigation follow-up for newly observed evidence"). NOT a
+failure recovery: its own request `urn:zeus:research-dispatch-followup:1` with `mode:
+accepted_evidence_followup`, taken by the same `recover --file` (no bus, transport or artifact port). It pins
+the investigation, the CURRENT accepted head exactly as version 4 (`predecessor` fields; lineage version 0 =
+the initial dispatch, admitted only while no recovery row and no head exist), `members {previous_sha256,
+job_ids, sha256}` (the accepted snapshot's captured-id digest, the exact intended new scoped ids, at most
+the snapshot sample bound, and their digest) and a NEW registered program with the same authority
+(`same_authority`, same repository; a narrowed or changed topic is not admitted). It qualifies only a
+dispatch resolved `accepted` from its own run row, whose program has the pinned config, no active cycle and a
+report-only template (every `plan.allowed_paths` entry a plain path under `docs/`, else
+`followup_not_report_only`), whose cycle completed `accepted` for that run and manifest, and whose run row is
+`accepted` and finished with an approved design, an accepted operation and a promotion, exactly seven settled
+starts (five council roles, worker, review), every reservation of those starts settled, no termination, every
+correlated task succeeded and every recorded role bound to its task's execution ref, every correlated
+publication sent, and a promotion receipt that is the accepted candidate of the accepting independent review
+(`accepted_candidate`, the same rule scope supplements use). Membership is compared to FRESH Portfolio jobs
+and bindings under the predecessor program's project authority (`scoped_job_ids`), never to owner facts: the
+captured sample must be untruncated and hash to `previous_sha256` (`followup_membership_unverifiable`), the
+fresh set must equal the pinned ids and meet the family minimum (`followup_membership_mismatch`) and add a
+member the accepted snapshot never captured (`followup_membership_unchanged`). Other named refusals:
+`followup_request_invalid`, `followup_predecessor_not_accepted`, `followup_acceptance_unproven`, and the
+version-3/4 lineage, dispatch, cycle, activity, effect, evidence, replacement and scope codes. ONE writer
+transaction re-reads everything, requires the retained chain to hold and appends the successor row with proof
+`accepted_report_followup`, no fence, `members` (plus `previous_total` and `added`) and `evidence`
+(bound role executions, counted calls, acceptance binding), and moves the head; replay, conflict and
+serialization are the version-3 ones and `successor_held` admits the row as the first link of an initial
+chain. Registration releases nothing: the head names a dispatch that exists only once the named program
+claims it, and the claim is released (and made) only while the fresh scoped membership still equals the
+pinned one (`followup_membership_drift`); drift is never recaptured silently. The follow-up council, report,
+review and scoped owner receipt are the normal fresh ones against the new dispatch; a failed or rejected
+follow-up stays held and is never followed up again. The accepted predecessor's dispatch, run, cycle, calls
+and receipts stay historical and are never reinterpreted as acceptance of the new snapshot.
 Run-scoped delivery. `zeus autonomous run` builds ONE `RedisBus.for_run(url, manifest id)`: the
 configured `HARNESS_REDIS_NAMESPACE` stays the prefix and `:run:<first 32 hex of sha256(run id)>` is
 appended, shared by the run's outbox relay, role drains and Operation, distinct across runs and equal on

@@ -23,6 +23,7 @@ from codex_harness.domain.autonomous import (
     execution_evidence,
     role_binding,
 )
+from codex_harness.domain.continuation import accepted_candidate
 from codex_harness.domain.council import (
     COUNCIL_AGENTS,
     COUNCIL_DEBATE,
@@ -915,18 +916,18 @@ def successor_held(investigation: str, head, chain: list, *, deliveries: dict, t
     for version in range(FIRST_SUCCESSOR, current["version"] + 1):
         row = rows.get(version)
         predecessor = (row.get("predecessor") or {}) if isinstance(row, dict) else {}
-        # The previous version is `version - 1`, except that a version-4 successor of the INITIAL dispatch
-        # (lineage version 0) is the first row of its chain: version 1 belongs to the original recovery only.
+        # The previous version is `version - 1`, except that a version-4 successor or an accepted follow-up of
+        # the INITIAL dispatch (lineage version 0) is the first row of its chain: version 1 belongs to the
+        # original recovery only.
         previous = INITIAL_VERSION if (version == FIRST_SUCCESSOR and predecessor.get("lineage_version") == INITIAL_VERSION
-                                       and row.get("proof") == CONTRACT_PROOF) else version - 1
+                                       and row.get("proof") in INITIAL_PROOFS) else version - 1
         if not (isinstance(row, dict) and row.get("id") == successor_key(investigation, version)
                 and row.get("investigation") == investigation and type(row.get("request_sha256")) is str
                 and row.get("request_sha256") == digest(row.get("request"))
                 and predecessor.get("lineage_version") == previous
                 and predecessor.get("dispatch") == lineage_dispatch_id(investigation, previous)
-                and row.get("state") in {AUTHORIZED, RECOVERED} and row.get("proof") in {SUCCESSOR_PROOF, CONTRACT_PROOF}
-                and row.get("proof") == (CONTRACT_PROOF if (row.get("request") or {}).get("mode") == CONTRACT_MODE
-                                         else SUCCESSOR_PROOF)):
+                and row.get("state") in {AUTHORIZED, RECOVERED}
+                and row.get("proof") == MODE_PROOF.get((row.get("request") or {}).get("mode"))):
             return "recovery_successor_corrupt"
         for fence in row.get("fence") or []:
             delivery = deliveries.get(fence.get("outbox"))
@@ -954,15 +955,228 @@ def successor_reads(chain: list) -> tuple[set, set]:
     return deliveries, tasks
 
 
+# ----- accepted investigation follow-up (SPEC "Accepted investigation follow-up for newly observed evidence") ----
+# An ACCEPTED current dispatch of a report-only program (its template may write docs only) whose run is proven
+# terminal and settled - every start, reservation and role task, the approved design, the accepted operation and
+# the promotion receipt with its accepting independent review - may be followed up ONCE per exact head when the
+# investigation's authoritative scoped membership (Portfolio jobs and bindings, read now) gained a member the
+# accepted snapshot never captured. It is NOT a failure recovery: its own schema and mode, the same successor rows
+# and versioned head, no fence (an accepted run has no unsent publication) and no reuse of the accepted council,
+# its receipts or its calls. The owner pins the exact new membership; any drift before the claim refuses.
+FOLLOWUP_SCHEMA = "urn:zeus:research-dispatch-followup:1"
+FOLLOWUP_MODE = "accepted_evidence_followup"
+FOLLOWUP_FIELDS = {"schema", "mode", "investigation", "predecessor", "members", "replacement"}
+FOLLOWUP_MEMBER_FIELDS = {"previous_sha256", "job_ids", "sha256"}
+FOLLOWUP_PROOF = "accepted_report_followup"
+# The accepted run's starts: the five council roles, the implementation worker and its independent review.
+ACCEPTED_STARTS = len(COUNCIL_ORDER) + 2
+REPORT_ONLY_ROOT = "docs/"
+ACTIVE_TASKS = {"queued", "running", "retry", "dispatching"}
+FOLLOWUP_AUTHORITY = ("owner-authorized follow-up of one accepted report-only research dispatch for newly observed "
+                      "authoritative member evidence; the accepted predecessor, its calls and its receipts stay "
+                      "historical and are never reinterpreted as acceptance of the new snapshot")
+MODE_PROOF = {SUCCESSOR_MODE: SUCCESSOR_PROOF, CONTRACT_MODE: CONTRACT_PROOF, FOLLOWUP_MODE: FOLLOWUP_PROOF}
+INITIAL_PROOFS = {CONTRACT_PROOF, FOLLOWUP_PROOF}
+
+
+def validate_followup_request(document) -> dict:
+    """Strict owner follow-up request; returns the canonical copy. The predecessor pins the exact accepted
+    current dispatch as in version 4 (lineage version 0 is the initial dispatch); `members` pins the digest of
+    the accepted snapshot's captured ids and the exact intended new scoped ids with their digest."""
+    def check(condition, field):
+        if not condition:
+            raise InvestigationRefused("followup_request_invalid", field)
+    check(isinstance(document, dict) and document.get("schema") == FOLLOWUP_SCHEMA, "schema")
+    check(set(document) == FOLLOWUP_FIELDS, "root")
+    check(document["mode"] == FOLLOWUP_MODE, "mode")
+    investigation = document["investigation"]
+    check(type(investigation) is str and INVESTIGATION_ID.fullmatch(investigation) is not None, "investigation")
+    old, members, new = document["predecessor"], document["members"], document["replacement"]
+    check(isinstance(old, dict) and set(old) == SUCCESSOR_PREDECESSOR_FIELDS, "predecessor")
+    version = old["lineage_version"]
+    check(type(version) is int and 0 <= version < 1000, "predecessor.lineage_version")
+    check(old["dispatch"] == lineage_dispatch_id(investigation, version), "predecessor.dispatch")
+    check(old["lineage_request_sha256"] is None if version == INITIAL_VERSION
+          else type(old["lineage_request_sha256"]) is str and SHA256.fullmatch(old["lineage_request_sha256"]) is not None,
+          "predecessor.lineage_request_sha256")
+    check(type(old["program"]) is str and PROGRAM_REF.fullmatch(old["program"]) is not None, "predecessor.program")
+    check(type(old["cycle"]) is str and CYCLE_REF.fullmatch(old["cycle"]) is not None, "predecessor.cycle")
+    check(type(old["run_id"]) is str and ID.fullmatch(old["run_id"]) is not None, "predecessor.run_id")
+    for key in ("config_sha256", "manifest_sha256", "snapshot_sha256"):
+        check(type(old[key]) is str and SHA256.fullmatch(old[key]) is not None, "predecessor." + key)
+    check(isinstance(members, dict) and set(members) == FOLLOWUP_MEMBER_FIELDS, "members")
+    ids = members["job_ids"]
+    check(isinstance(ids, list) and 1 <= len(ids) <= MAX_JOB_SAMPLE
+          and all(type(j) is str and INVESTIGATION_ID.fullmatch(j) is not None for j in ids)
+          and len(set(ids)) == len(ids), "members.job_ids")
+    for key in ("previous_sha256", "sha256"):
+        check(type(members[key]) is str and SHA256.fullmatch(members[key]) is not None, "members." + key)
+    check(members["sha256"] == digest(sorted(ids)), "members.sha256")
+    check(isinstance(new, dict) and set(new) == RECOVERY_REPLACEMENT_FIELDS, "replacement")
+    check(type(new["program"]) is str and PROGRAM_REF.fullmatch(new["program"]) is not None
+          and new["program"] != old["program"], "replacement.program")
+    check(type(new["config_sha256"]) is str and SHA256.fullmatch(new["config_sha256"]) is not None,
+          "replacement.config_sha256")
+    return {"schema": FOLLOWUP_SCHEMA, "mode": FOLLOWUP_MODE, "investigation": investigation,
+            "predecessor": {k: old[k] for k in sorted(SUCCESSOR_PREDECESSOR_FIELDS)},
+            "members": {"previous_sha256": members["previous_sha256"], "job_ids": sorted(ids),
+                        "sha256": members["sha256"]},
+            "replacement": {k: new[k] for k in sorted(RECOVERY_REPLACEMENT_FIELDS)}}
+
+
+def report_only(config) -> bool:
+    """The program's template may write docs only: every allowed path is a plain path under `docs/`."""
+    plan = ((config or {}).get("template") or {}).get("plan") if isinstance(config, dict) else None
+    paths = plan.get("allowed_paths") if isinstance(plan, dict) else None
+    return (isinstance(paths, list) and bool(paths)
+            and all(type(p) is str and p.startswith(REPORT_ONLY_ROOT) and "\\" not in p
+                    and ".." not in p.split("/") for p in paths))
+
+
+def followup_members(investigation, *, jobs: dict, bindings: dict, project_ids, required_state: str) -> list | None:
+    """The investigation's authoritative scoped membership NOW (`scoped_job_ids` over fresh Portfolio jobs and
+    bindings under the program's own project authority); None when the row is no longer this undecided
+    failure family or is malformed."""
+    if not (isinstance(investigation, dict) and investigation.get("kind", KIND) == KIND
+            and investigation.get("state") == required_state):
+        return None
+    return scoped_job_ids(investigation, jobs, bindings, set(project_ids))
+
+
+def check_followup(request: dict, *, investigation, required_state: str, minimum: int, lineage, dispatch, program,
+                   cycle, run_result: dict, run, tasks: list, reservations: list, terminations: list, outbox: list,
+                   acceptance: dict, jobs: dict, bindings: dict, replacement, same_authority: bool) -> dict:
+    """Every precondition of one accepted follow-up against authoritative reads; the first gap refuses by name.
+
+    `lineage` is `lineage_head` of the current authorization (None for the initial dispatch, lineage version 0).
+    The pinned dispatch must be resolved `accepted` from its own run row; its program registered with the pinned
+    config, report-only and idle; its cycle completed `accepted` for that run and manifest; its run row
+    `accepted` with an approved design, an accepted operation, a promotion, exactly ACCEPTED_STARTS settled
+    starts, every reservation settled, no termination, every task succeeded and bound to its recorded role, every
+    publication sent; and its promotion receipt must be the accepted candidate of the accepting review
+    (`domain.continuation.accepted_candidate`). The fresh scoped membership must equal the pinned ids and add a
+    member the accepted, untruncated snapshot never captured. Returns the bound evidence; nothing is fenced."""
+    old, members = request["predecessor"], request["members"]
+    _refuse(isinstance(investigation, dict) and investigation.get("kind", KIND) == KIND
+            and investigation.get("state") == required_state, "recovery_investigation_changed", "investigation")
+    if old["lineage_version"] == INITIAL_VERSION:
+        _refuse(lineage is None, "recovery_successor_stale", "predecessor")
+    else:
+        _refuse(isinstance(lineage, dict) and lineage.get("state") != "corrupt", "recovery_successor_corrupt", "predecessor")
+        _refuse(lineage["version"] == old["lineage_version"] and lineage["request_sha256"] == old["lineage_request_sha256"]
+                and lineage["dispatch"] == old["dispatch"], "recovery_successor_stale", "predecessor")
+        _refuse(lineage["state"] == RECOVERED, "recovery_predecessor_active", "predecessor")
+    _refuse(isinstance(dispatch, dict) and dispatch.get("id", dispatch.get("investigation")) == old["dispatch"]
+            and dispatch.get("investigation") == request["investigation"] and dispatch.get("kind", KIND) == KIND
+            and dispatch.get("program") == old["program"] and dispatch.get("cycle") == old["cycle"]
+            and all(dispatch.get(k) == old[k] for k in ("run_id", "manifest_sha256", "snapshot_sha256")),
+            "recovery_dispatch_mismatch", "predecessor")
+    _refuse(dispatch.get("state") == RESOLVED, "recovery_predecessor_active", "predecessor")
+    _refuse(dispatch.get("result") == "accepted", "followup_predecessor_not_accepted", "predecessor")
+    _refuse(isinstance(program, dict) and program.get("id") == old["program"]
+            and program.get("config_sha256") == old["config_sha256"], "recovery_dispatch_mismatch", "predecessor.program")
+    _refuse(program.get("active_cycle") is None, "recovery_predecessor_active", "predecessor.program")
+    _refuse(report_only(program.get("config")), "followup_not_report_only", "predecessor.program")
+    council = (cycle or {}).get("council") if isinstance(cycle, dict) else None
+    _refuse(isinstance(council, dict) and cycle.get("program") == old["program"] and cycle.get("result") == "accepted"
+            and cycle.get("status") == "completed" and council.get("run_id") == old["run_id"]
+            and council.get("manifest_sha256") == old["manifest_sha256"] and council.get("status") == "accepted",
+            "recovery_cycle_mismatch", "predecessor.cycle")
+    _refuse(run_result.get("result") == "accepted" and isinstance(run, dict) and run.get("status") == "accepted"
+            and bool(run.get("finished_at")), "followup_predecessor_not_accepted", "predecessor.run_id")
+    design, operation = run.get("design"), run.get("operation")
+    _refuse(isinstance(design, dict) and design.get("state") == "design_approved"
+            and isinstance(operation, dict) and operation.get("status") == "accepted"
+            and isinstance(run.get("promotion"), dict), "followup_acceptance_unproven", "predecessor.run_id")
+    starts = run.get("starts") if isinstance(run.get("starts"), dict) else {}
+    slots = starts.get("slots") if isinstance(starts.get("slots"), list) else None
+    _refuse(slots is not None and all(isinstance(s, dict) for s in slots)
+            and starts.get("reserved") == starts.get("settled") == len(slots) == ACCEPTED_STARTS
+            and all(s.get("settled") is True and s.get("settle_error") is None for s in slots),
+            "recovery_invocation_unsettled", "predecessor.run_id")
+    _refuse(not terminations, "recovery_effect_unknown", "predecessor.run_id")
+    _refuse(all(r.get("status") == "settled" for r in reservations), "recovery_invocation_unsettled", "predecessor.run_id")
+    roles = run.get("roles") if isinstance(run.get("roles"), dict) else {}
+    _refuse(bool(roles) and set(roles) <= set(COUNCIL_ORDER), "followup_acceptance_unproven", "predecessor.run_id")
+    by_id, bound = {t.get("id"): t for t in tasks if isinstance(t, dict)}, []
+    for task in sorted(by_id.values(), key=lambda t: str(t.get("id"))):
+        _refuse(task.get("status") not in ACTIVE_TASKS, "recovery_predecessor_active", "predecessor.run_id")
+        _refuse(task.get("status") == "succeeded", "recovery_effect_unknown", "predecessor.run_id")
+    for role in sorted(roles):
+        recorded = roles[role] if isinstance(roles[role], dict) else {}
+        task = by_id.get(recorded.get("task_id"))
+        result = task.get("result") if isinstance(task, dict) and isinstance(task.get("result"), dict) else {}
+        _refuse(isinstance(task, dict) and type(recorded.get("execution_ref")) is str
+                and result.get("execution_ref") == recorded["execution_ref"], "recovery_evidence_mismatch",
+                "predecessor.run_id")
+        bound.append({"task_id": task["id"], "role": role, "agent": task.get("agent"), "generation": task.get("generation"),
+                      "attempt": task.get("attempt"), "execution_ref": recorded["execution_ref"]})
+    _refuse(all(isinstance(i, dict) and i.get("sent") is True for i in outbox), "recovery_effect_unknown", "predecessor.run_id")
+    promotion, task = acceptance.get("promotion"), acceptance.get("task")
+    proof = promotion.get("evidence") if isinstance(promotion, dict) and isinstance(promotion.get("evidence"), dict) else {}
+    candidate = ((task.get("result") or {}).get("candidate") or {}) if isinstance(task, dict) and isinstance(task.get("result"), dict) else {}
+    binding = {"graph_sha256": run["promotion"].get("graph_sha256"), "decision_id": proof.get("decision_id"),
+               "candidate_revision": candidate.get("revision")}
+    _refuse(all(type(v) is str and v for v in binding.values())
+            and operation.get("task_id") == proof.get("implementation_task_id")
+            and operation.get("decision_id") == proof.get("decision_id")
+            and accepted_candidate(binding, old["run_id"], {**acceptance, "run": run}),
+            "followup_acceptance_unproven", "predecessor.run_id")
+    captured = dispatch.get("job_ids") if isinstance(dispatch.get("job_ids"), list) else None
+    _refuse(dispatch.get("job_ids_sha256") == members["previous_sha256"], "recovery_dispatch_mismatch",
+            "members.previous_sha256")
+    _refuse(captured is not None and dispatch.get("job_ids_total") == len(captured)
+            and digest(sorted(captured)) == members["previous_sha256"], "followup_membership_unverifiable",
+            "members.previous_sha256")
+    source = (program.get("config") or {}).get("investigation_source") or {}
+    fresh = followup_members(investigation, jobs=jobs, bindings=bindings, project_ids=source.get("project_ids") or [],
+                             required_state=required_state)
+    _refuse(fresh is not None, "followup_membership_unverifiable", "members.job_ids")
+    _refuse(fresh == members["job_ids"], "followup_membership_mismatch", "members.job_ids")
+    _refuse(len(fresh) >= minimum, "followup_membership_mismatch", "members.job_ids")
+    _refuse(not set(fresh) <= set(captured), "followup_membership_unchanged", "members.job_ids")
+    new = request["replacement"]
+    _refuse(isinstance(replacement, dict) and replacement.get("id") == new["program"]
+            and replacement.get("config_sha256") == new["config_sha256"], "recovery_replacement_mismatch", "replacement")
+    _refuse(replacement.get("state") == "paused" and replacement.get("cycles") == 0 and replacement.get("adoptions") == 0
+            and replacement.get("active_cycle") is None and replacement.get("next_cycle") == 1,
+            "recovery_replacement_not_fresh", "replacement")
+    _refuse(same_authority and replacement.get("repository") == program.get("repository"),
+            "recovery_scope_changed", "replacement")
+    return {"fenced": [], "executions": bound,
+            "calls": {"reserved": starts["reserved"], "settled": starts["settled"], "reservations": len(reservations)},
+            "acceptance": binding,
+            "members": {"previous_sha256": members["previous_sha256"], "previous_total": len(captured),
+                        "job_ids": list(fresh), "sha256": members["sha256"],
+                        "added": sorted(set(fresh) - set(captured))}}
+
+
+def followup_drift(row, *, investigation, jobs: dict, bindings: dict, project_ids, required_state: str) -> str | None:
+    """None while an authorized follow-up's pinned membership is still exactly the authoritative scoped
+    membership; otherwise `followup_membership_drift`. Never recaptured silently: the owner re-requests."""
+    members = (row or {}).get("members") if isinstance(row, dict) else None
+    fresh = followup_members(investigation, jobs=jobs, bindings=bindings, project_ids=project_ids,
+                             required_state=required_state)
+    if not (isinstance(members, dict) and fresh is not None and fresh == members.get("job_ids")
+            and digest(fresh) == members.get("sha256")):
+        return "followup_membership_drift"
+    return None
+
+
 def successor_view(row: dict) -> dict:
     """Bounded read-only projection of one successor authorization: identities, digests, fixed codes and
     counts only."""
     keys = ("id", "investigation", "version", "state", "predecessor", "replacement", "fence", "proof", "evidence",
             "request_sha256", "requested_at", "authorized_at", "claimed_at", "updated_at")
+    mode = (row.get("request") or {}).get("mode")
     # `failure` is additive: a version-3 row reads None; a version-4 row names its re-derived field code.
-    if (row.get("request") or {}).get("mode") == CONTRACT_MODE:
+    if mode == CONTRACT_MODE:
         return {**{k: row.get(k) for k in keys}, "mode": CONTRACT_MODE, "failure": row.get("failure"),
                 "authority": CONTRACT_AUTHORITY}
+    # `members` is additive on a follow-up: the pinned new scoped membership and the captured digest it extends.
+    if mode == FOLLOWUP_MODE:
+        return {**{k: row.get(k) for k in keys}, "mode": FOLLOWUP_MODE, "failure": None, "members": row.get("members"),
+                "authority": FOLLOWUP_AUTHORITY}
     return {**{k: row.get(k) for k in keys}, "mode": SUCCESSOR_MODE, "failure": None, "authority": SUCCESSOR_AUTHORITY}
 
 
@@ -992,6 +1206,8 @@ def dispatch_counts(rows: list) -> dict:
 
 __all__ = ["AUTHORITY", "AUTHORIZED", "CLAIMED", "CONTRACT_MODE", "CONTRACT_PROOF", "CONTRACT_SCHEMA",
            "DISPATCHED", "DISPATCH_SCHEMA", "EXCLUSIONS", "FENCED", "INITIAL_VERSION", "contract_failure",
+           "FOLLOWUP_MODE", "FOLLOWUP_PROOF", "FOLLOWUP_SCHEMA", "check_followup", "followup_drift",
+           "followup_members", "report_only", "validate_followup_request",
            "lineage_dispatch_id", "successor_version", "validate_any_successor", "validate_contract_request",
            "FENCE_REASON", "KIND", "MAX_JOB_SAMPLE", "MAX_PROJECTS", "MAX_REASON_CODES", "PRE_PROVIDER_FAILURE",
            "RECOVERED", "RECOVERY_SCHEMA", "REFUSED", "RESOLVED", "REVOCATION_BUCKET", "REVOCATION_GENERATION",
