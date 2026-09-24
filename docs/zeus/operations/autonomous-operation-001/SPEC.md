@@ -1,5 +1,30 @@
 # Whole autonomous operating loop
 
+## Scoped capacity correction: fresh source at each effect, 2026-09-24 21:23 UTC
+
+Same exact-grant matrix. Candidate2ae589e5738cb3478213358747a52a39b1ea734f/task5143d554
+passed inspector4a523cf2 (6/6) but independent review76f97704 rejected one P2 boundary.
+_grant_bindings reads ctx.jobs captured at tick entry. A source updated_at change AFTER
+lane.bind and BEFORE the second _authorize escapes detection and admits the successor.
+Root deterministic labelled MemoryStore fault confirms admitted/successor_exists=true at
+this exact candidate. Reproducer and JSON: D:/workspaces/zeus/artifacts/autonomous-operation-001/
+reproduce-capacity-stale-source.py/.json. No production writes. This upgrades the review's
+static trace to an executed fixture observation, not a live incident claim.
+
+One correction batch: refresh authoritative Fleet source/family rows at every grant guard,
+not from the tick-entry ctx snapshot. Carry the fresh row through all source checks and
+downstream admission qualification, retaining existing transaction/ownership contracts.
+Exercise actual bind -> state-change -> admission with a deterministic callback: updated_at
+change must prevent new admission; also active/unknown source and fresh unrelated family
+work must preserve guards. Check restart after partial binding: reuse binding without a new
+effect while stale, and reconcile exact same successor when valid. Do not hold DB tx across
+external I/O or claim atomicity where only an observed read is proven. Keep original refusal,
+grant reservation/capacity, counters and all accepted tests. No unrelated redesign or new audit.
+Correction feedback is delivered through the existing trusted review-artifact path. Use
+seven focused suites + Ruff from the owner profile; no full suite. After independent acceptance,
+root Windows+isolated PG and CI precede live grant and checklist recovery. No success claim now.
+
+
 ## Exact evidence-repair capacity authorization, 2026-09-24 20:45 UTC
 
 Original whole-loop goal and accepted gates unchanged. PR197 merged b550d36 and Fleet consumed
