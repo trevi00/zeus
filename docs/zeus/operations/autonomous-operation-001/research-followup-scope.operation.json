@@ -1,0 +1,44 @@
+{
+  "schema": "urn:zeus:operation:1",
+  "id": "autonomous-operation-001-research-followup-scope",
+  "base_revision": "d8497ec528a75dbe9489fffefd5769055136bd49",
+  "goal": {
+    "path": "docs/zeus/operations/autonomous-operation-001/SPEC.md",
+    "sha256": "203d243ff5a478893bcf4541917d88a4b854afc63508b637f8a2b6c93615ce8c",
+    "criterion": "Complete the existing autonomous operating loop with independently verified session, continuation and actual runtime ownership",
+    "rationale": "Finish the existing whole-goal acceptance matrix without manual user relay or weaker verification."
+  },
+  "budget": {
+    "mode": "subscription",
+    "total": 192,
+    "per_host": 192
+  },
+  "claude": {
+    "model": "claude-opus-5-5",
+    "timeout_seconds": 3600,
+    "max_budget_usd": 2
+  },
+  "plan": {
+    "objective": "Implement ONLY Accepted follow-up report scope binding in SPEC.md. Explicit owner-pinned report content may target new authorized members; preserve unchanged effect authority and all existing safety gates. Do not loosen legacy recovery same_authority. Targeted tests and Ruff; no model calls, live state edits, merge or deployment.",
+    "allowed_paths": [
+      "src/codex_harness/domain/research_investigations.py",
+      "src/codex_harness/application/research_program.py",
+      "src/codex_harness/adapters/research_program.py",
+      "src/codex_harness/adapters/research_program_cli.py",
+      "src/codex_harness/application/continuation.py",
+      "src/codex_harness/domain/continuation.py",
+      "tests/test_research_recovery.py",
+      "tests/test_research_program.py",
+      "tests/test_research_program_cli.py",
+      "tests/test_research_investigations.py",
+      "tests/test_continuation_research.py",
+      "docs/contracts.md",
+      "src/codex_harness/domain/research_program.py"
+    ],
+    "acceptance_criteria": [
+      "Explicit followup request binds old/new report content for new members without widening repository/project/reason/model/budget/path authority.",
+      "Actual recover/claim flow accepts valid scope refresh and refuses authority broadening or stale/malformed bindings; all previously accepted safety gates and legacy recovery preserved.",
+      "Content and authority transition evidence recorded honestly; exact targeted regression checks and Ruff, no self-approval."
+    ]
+  }
+}
