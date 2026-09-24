@@ -22,6 +22,9 @@ blocking value, unknown with blocking false and any list. What no local schema c
 cross-array rule that an answered question cites only fact/inference claims: that stays the domain
 validator's authority (`domain.dge._questions`) and is carried to the model as guidance only.
 The consumers are not loosened and no output is coerced or repaired here.
+Council text length is the same boundary once more (release-checklist-research-001.c001: an improvement-lead
+summary of 6046 characters against the consumer's 4000): the council-owned text fields state the bound of
+`domain.council.FIELD_LIMITS` in their schema description and in the role guidance; the consumer still refuses.
 """
 from __future__ import annotations
 
@@ -37,6 +40,7 @@ from codex_harness.domain.council import (
     AGENTS,
     CONDUCTOR_ROLE,
     DBA,
+    FIELD_LIMITS,
     IMPROVEMENT_LEAD,
     RESEARCH_LEAD,
 )
@@ -64,6 +68,21 @@ def _object(properties: dict) -> dict:
 def _enum(values) -> dict:
     """A closed string set from a domain constant; `type` is explicit as the output-schema subset requires."""
     return {"type": "string", "enum": sorted(values)}
+
+
+def _limited(role: str, field: str) -> dict:
+    """A council text field whose consumer bound is `domain.council.FIELD_LIMITS`: the bound is stated to the
+    provider as a `description` annotation (inside the subset every transport accepts), not `maxLength`, and the
+    consumer stays the authority that refuses a longer value with its fixed code."""
+    return {"type": "string", "description": "At most " + str(FIELD_LIMITS[role][field]) + " characters; a longer "
+            "value is refused, never truncated."}
+
+
+def _limits(role: str) -> str:
+    """The producer guidance sentence for one role's bounded fields, from the same table."""
+    return ("Length contract: " + ", ".join(field + " at most " + str(limit) + " characters"
+                                            for field, limit in FIELD_LIMITS[role].items())
+            + " (each value, after trimming); a longer value is refused, never truncated, so be concise.")
 
 
 NULLABLE_TEXT = {"type": ["string", "null"]}
@@ -117,9 +136,14 @@ DISPOSITION = _object({"finding_id": TEXT, "decision": _enum(DECISIONS), "reason
 ARBITER_OUTPUT = _object({"verdict": _enum(VERDICTS), "rationale": TEXT,
                           "dispositions": {"type": "array", "items": DISPOSITION}, "research_question": NULLABLE_TEXT})
 # INV-COUNCIL-001 council roles: every downstream output names the snapshot (and report) digest it worked from.
-DBA_OUTPUT = _object({"snapshot_digest": TEXT, "summary": TEXT, "claim_ids": STRINGS, "unknowns": STRINGS})
+# The council-owned text fields carry their consumer bound (FIELD_LIMITS); DGE-owned text keeps plain TEXT.
+DBA_OUTPUT = _object({"snapshot_digest": TEXT, "summary": _limited(DBA, "summary"), "claim_ids": STRINGS,
+                      "unknowns": {"type": "array", "items": _limited(DBA, "unknowns")}})
 RESEARCH_LEAD_OUTPUT = _object({"summary": TEXT, "claim_ids": STRINGS, "snapshot_digest": TEXT, "report_digest": TEXT})
-IMPROVEMENT_LEAD_OUTPUT = _object({"summary": TEXT, "decision": _enum(SSOT_DECISIONS), "rationale": TEXT, "transition": TRANSITION,
+IMPROVEMENT_TRANSITION = {**TRANSITION, "properties": {k: _limited(IMPROVEMENT_LEAD, "transition." + k)
+                                                       for k in TRANSITION["properties"]}}
+IMPROVEMENT_LEAD_OUTPUT = _object({"summary": _limited(IMPROVEMENT_LEAD, "summary"), "decision": _enum(SSOT_DECISIONS),
+                                   "rationale": _limited(IMPROVEMENT_LEAD, "rationale"), "transition": IMPROVEMENT_TRANSITION,
                                    "claim_ids": STRINGS, "findings": {"type": "array", "items": FINDING},
                                    "snapshot_digest": TEXT, "report_digest": TEXT})
 CONDUCTOR_OUTPUT = _object({**ARBITER_OUTPUT["properties"], "snapshot_digest": TEXT, "report_digest": TEXT})
@@ -177,14 +201,15 @@ OBJECTIVES = {
           "Name the exact snapshot_digest, summarize what the selected records show (found/missing/unknown and "
           "their whitelisted status fields), cite only packet claim ids, and list unknowns. A missing key is absent "
           "at that snapshot in the explicit scope only; an unknown record is not a success. Your report is an "
-          "interpretation, never a new Git-supported fact and never a substitute for the observation."),
+          "interpretation, never a new Git-supported fact and never a substitute for the observation. " + _limits(DBA)),
     RESEARCH_LEAD: ("Propose the design for the fixed plan from the packet AND the frozen DBA report, citing packet "
                     "claims only; echo the snapshot_digest and report_digest you worked from; do not change the plan."),
     IMPROVEMENT_LEAD: ("Respond with a constructive alternative: summary, decision (" + _listed(SSOT_DECISIONS) + "), "
                        "rationale, transition (compatibility, rollback, retirement for improve/migrate, null otherwise), "
                        "claim ids, plus findings under the existing rule: only material blockers are critical (concrete "
                        "reachable trigger, cited claims, exact fixed criterion, impact, minimal mitigation); everything "
-                       "else is minor, and no objection is compulsory. Echo the snapshot_digest and report_digest."),
+                       "else is minor, and no objection is compulsory. Echo the snapshot_digest and report_digest. "
+                       + _limits(IMPROVEMENT_LEAD)),
     # Measured whole-layout revision (SPEC "Prepared whole-layout batch"): the conductor objective is concise; the
     # phase rule lives once in council_delivery.guidance, the enums stay listed as the schema declares them.
     CONDUCTOR_ROLE: ("Arbitrate the supplied proposals. Account for every finding; never defer a critical finding. "

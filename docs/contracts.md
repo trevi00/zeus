@@ -1906,6 +1906,36 @@ dispatch and hold on a broken chain (`recovery_successor_corrupt`, `recovery_suc
 `recovery_publication_changed`, any revocation code; continuation prefixes `research_`). Another
 failure is never authorized automatically. `status` gains additive `successors` and `current` (the
 head), reported apart. No bus, transport read or model call.
+Settled council contract failure successor (SPEC "Settled council contract failure recovery"). Council
+field bounds have ONE table, `domain.council.FIELD_LIMITS` (DBA `summary` 4000, each `unknowns` item
+1024; improvement lead `summary`, `rationale` and each `transition` field 4000, characters of the trimmed
+value, the unchanged `_text` rule). The consumer refuses a value of the wrong type, empty or over its bound
+with `CouncilFieldRefused`, whose fixed `reason_code` is `council_field_invalid:<role>.<field>:<type|empty|
+too_long>` and never echoes the value; a council run stops with that exact code (the DBA keeps
+`report_invalid`), nothing is truncated or retried and the role output stays as recorded. The provider-facing
+schema states the same bound as a `description` annotation (not `maxLength`) and the role guidance repeats
+it; text the DGE validator owns keeps its own limits. A SEPARATE request version
+`urn:zeus:research-dispatch-recovery:4` with `mode: settled_contract_failure_successor` carries the version-3
+fields plus `failure {role, task_id, execution_ref, check}`: `role` `improvement_lead`, `check` a field code
+of that role. `predecessor.lineage_version` 0 names the INITIAL dispatch (`dispatch` = investigation id,
+`lineage_request_sha256` null) and is admitted only while no recovery row and no head exist
+(`recovery_successor_stale`); version >= 1 is the current head exactly as in version 3. It qualifies only a
+dispatch resolved `failed` with `council_field_invalid` or legacy `debate_refused`, whose run row is terminal
+`failed` at the failed role's stage with reason the typed code or the legacy `debate_refused:ContractError`,
+whose roles, tasks and slots are exactly the council prefix up to the failed role (researcher, DBA,
+research lead, improvement lead; never the conductor or a worker), every one succeeded, bound to its own
+settled accepted reservation and artifact, with the session holding only the earlier debate events and no
+decision, no operation, promotion, design or `.impl` residue and no termination. The pinned task and artifact
+must be the failed role's own (`recovery_evidence_mismatch`), the earlier debate outputs must still derive,
+and the failed role's bound artifact answer, replayed through `council_output` under the snapshot, report
+and packet its task carried (equal to the run's frozen digests), must raise EXACTLY the pinned code: a
+recorded reason, legacy or typed, is never accepted alone (`recovery_failure_not_proven`). Version 1 stays
+the original recovery's replacement, so a successor of the initial dispatch is version 2
+(`<investigation>.recovery-2`, head `previous.version` 0); `successor_held` admits that first row only with
+proof `settled_contract_failure`. Rows, head, fences, replay, conflict, serialization, claim, current-dispatch
+consumers and scoped-receipt holds are the version-3 ones; the row adds `failure` (the pinned fields plus the
+answer's `output_sha256`) and views gain additive `failure` (null for version 3). The failed run, tasks,
+outputs, session and dispatch are never rewritten or reused as accepted.
 Run-scoped delivery. `zeus autonomous run` builds ONE `RedisBus.for_run(url, manifest id)`: the
 configured `HARNESS_REDIS_NAMESPACE` stays the prefix and `:run:<first 32 hex of sha256(run id)>` is
 appended, shared by the run's outbox relay, role drains and Operation, distinct across runs and equal on

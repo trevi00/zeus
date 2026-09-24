@@ -12,7 +12,10 @@ from codex_harness.domain.council import (
     AGENTS,
     COUNCIL_AGENTS,
     COUNCIL_ORDER,
+    FIELD_CODE,
+    FIELD_LIMITS,
     INTERNAL_SLOT,
+    CouncilFieldRefused,
     council_output,
     report_from_dba,
     topology,
@@ -105,3 +108,75 @@ def test_swapped_identities_missing_transition_and_unsupported_critical_are_refu
         council_output("dba", OUTPUTS["dba"], IDS, CLAIMS)
     bad = schema_check("improvement_lead", {**OUTPUTS["improvement_lead"], "decision": "keep"})
     assert bad["answer"] is None and bad["failure"]["output_reason"] == "schema_mismatch" and "keep" not in str(bad["failure"])
+
+
+# ----- council field bounds (SPEC "Settled council contract failure recovery") ---------------------------
+# ACTUAL-SHAPED fixture: release-checklist-research-001.c001's improvement lead returned a 6046-character
+# summary; the domain replay refused it against the 4000 bound. The text below is a LABELLED stand-in of that
+# length (the original bytes are not in this repository); no model is called.
+ORIGINAL6046 = ("SECRET-summary-body " * 400)[:6046]
+BOUNDED = {("dba", "summary"): lambda o, v: {**o, "summary": v},
+           ("dba", "unknowns"): lambda o, v: {**o, "unknowns": ["known gap", v]},
+           ("improvement_lead", "summary"): lambda o, v: {**o, "summary": v},
+           ("improvement_lead", "rationale"): lambda o, v: {**o, "rationale": v},
+           **{("improvement_lead", "transition." + k): (lambda key: lambda o, v: {**o, "transition": {**o["transition"], key: v}})(k)
+              for k in ("compatibility", "rollback", "retirement")}}
+
+
+def consume(role, output):
+    if role == "dba":
+        return report_from_dba(output, snapshot_digest_value=SNAP, claim_ids={"c1"})
+    return council_output(role, output, IDS, CLAIMS)
+
+
+def test_the_bounded_fields_are_one_table_for_the_consumer_the_schema_and_the_guidance():
+    assert set(BOUNDED) == {(role, field) for role, fields in FIELD_LIMITS.items() for field in fields}
+    assert FIELD_LIMITS["improvement_lead"]["summary"] == 4000, "the consumer bound is kept, never raised"
+    for (role, field), limit in ((k, FIELD_LIMITS[k[0]][k[1]]) for k in BOUNDED):
+        node = SCHEMAS[role]["properties"]
+        for part in field.split("."):
+            node = node[part]["properties"] if "properties" in node.get(part, {}) else node[part]
+        node = node["items"] if field == "unknowns" else node
+        assert node["type"] == "string" and node["description"].startswith("At most " + str(limit) + " characters")
+        assert "maxLength" not in node, "the bound is stated as an annotation; the consumer stays the authority"
+        assert field + " at most " + str(limit) + " characters" in OBJECTIVES[role]
+    # Text the DGE validator owns keeps plain TEXT: nothing unrelated is shrunk.
+    assert SCHEMAS["research_lead"]["properties"]["summary"] == {"type": "string"}
+    assert SCHEMAS["conductor"]["properties"]["rationale"] == {"type": "string"}
+    assert SCHEMAS["improvement_lead"]["properties"]["findings"]["items"]["properties"]["scenario"] == {"type": "string"}
+    for role in ("dba", "improvement_lead"):
+        assert preflight(SCHEMAS[role])["checks"]
+
+
+@pytest.mark.parametrize("role, field", sorted(BOUNDED))
+def test_each_bounded_field_admits_its_limit_and_refuses_one_more_with_a_fixed_code(role, field):
+    limit, build = FIELD_LIMITS[role][field], BOUNDED[(role, field)]
+    assert consume(role, build(OUTPUTS[role], "y" * limit)), "the boundary value is admitted"
+    assert consume(role, build(OUTPUTS[role], " " + "y" * limit + "\n")), "the existing trimmed-length rule is kept"
+    for value, problem in (("y" * (limit + 1), "too_long"), ("  ", "empty"), (7, "type")):
+        with pytest.raises(CouncilFieldRefused) as info:
+            consume(role, build(OUTPUTS[role], value))
+        code = role + "." + field + ":" + problem
+        assert info.value.reason_code == "council_field_invalid:" + code and FIELD_CODE.fullmatch(info.value.reason_code)
+        assert "yyyy" not in str(info.value), "the refused value is never echoed"
+        # A schema-valid value the consumer refuses: the provider boundary states the bound, it does not coerce.
+        if role == "improvement_lead" and problem == "too_long":
+            assert schema_check(role, build(OUTPUTS[role], value))["answer"] is not None
+
+
+def test_the_original6046_summary_is_a_deterministic_safe_refusal_not_a_truncation():
+    output = {**OUTPUTS["improvement_lead"], "summary": ORIGINAL6046}
+    codes = set()
+    for _ in range(3):
+        with pytest.raises(CouncilFieldRefused) as info:
+            council_output("improvement_lead", output, IDS, CLAIMS)
+        codes.add(info.value.reason_code)
+        assert "SECRET-summary-body" not in str(info.value)
+        # The legacy message is kept for existing readers; the code is appended.
+        assert str(info.value).startswith("Improvement lead proposal needs a summary, a rationale and a decision")
+    assert codes == {"council_field_invalid:improvement_lead.summary:too_long"}
+    assert output["summary"] == ORIGINAL6046 and len(output["summary"]) == 6046, "the output is not rewritten"
+    # A wrong decision is still the generic refusal (it is not a bounded text field).
+    with pytest.raises(ContractError) as info:
+        council_output("improvement_lead", {**output, "decision": "keep"}, IDS, CLAIMS)
+    assert not isinstance(info.value, CouncilFieldRefused)

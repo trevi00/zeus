@@ -1,5 +1,101 @@
 # Operating status
 
+## Current checkpoint: 2026-09-24 11:52 UTC (owner facts, SPEC Item A-current)
+
+Whole autonomous operation is NOT accepted. This checkpoint restates the owner facts recorded in
+SPEC.md "Current-source useful-item qualification after actual repair, 2026-09-24"; it adds no new
+execution. Every dated section below stays as the evidence of its own time. The heading
+"Current checkpoint: 2026-09-23 13:00 KST" below is now historical, and its image ae070306 is not
+the current operating image.
+
+Three layers are kept apart:
+
+| Layer | State at this checkpoint | Source |
+| --- | --- | --- |
+| Deployed code | PR191 ([#191](https://github.com/trevi00/zeus/pull/191)) merged at f2b392d9d1e770878699be88699872a143a26351, including PR190's ([#190](https://github.com/trevi00/zeus/pull/190)) project inheritance / scope supplement. The scheduled Fleet consumed that revision on image 1ee94821, with its active module path in runtime-delivery-tree. Previous deployment: PR189 ([#189](https://github.com/trevi00/zeus/pull/189)) at 131cb262. | owner facts, SPEC |
+| Configured policy / release | The scheduled Fleet is the sole operating owner. Release 2144c661 names the OLD candidate b31a9112 / tree 52b232ab and is awaiting the owner for target zeus-fleet-managed. It is NOT the current deployment: the scheduled cutover used integrated f2b392d, not that release. The exact continuation policy content in the running service is not restated in the owner facts (unknown here). | owner facts, SPEC |
+| Actual qualification | One real failed family recovered end to end, up to candidate acceptance (below). Managed exact-candidate cutover, canary, rollback, duplicate/restart control and a second useful item have not been observed. | owner facts, SPEC |
+
+Observed, with each actor named:
+
+- Failure history (unchanged): original task 1fa1026d and automatic successor 4dde540d both
+  failed the evidence gate for candidate b31a9112 / tree 52b232ab (SPEC "Two-strike investigation").
+  The original failure rows are retained. Nothing was rewritten as success.
+- Research (Fleet model run): actual council003 was accepted, with seven settled starts.
+- Owner actions: the explicit append-only scope supplement 4a94f1aa and receipt cd95fdee released
+  exactly the two-attempt delivery-tree family. No other held family was released. The SPEC records
+  the coverage attestation as the owner's semantic judgment, not a model verdict.
+- Repair (Fleet model run plus independent review): successor cont-f7ed34f73b048bd5b698b3bb passed
+  its declared container checks, then independent lead and conductor acceptance. The Fleet finalized
+  it as accepted, with no held execution units.
+- Delivery of code (owner action): PR191 was merged, and the scheduled Fleet consumed it as above.
+- CI: exact-head attempt 1 failed on Windows 3.12 in two unchanged guardian wall-time assertions
+  (2.234s vs 2s; 2.547s vs 1s). The same-head attempt 2 passed, and two local targeted tests passed.
+  The cause of the attempt 1 failure is **unconfirmed**. The second attempt passing does not explain it.
+
+```mermaid
+flowchart TD
+    classDef observed fill:#d8f5d0,stroke:#2e7d32
+    classDef owner fill:#dbe9ff,stroke:#1565c0
+    classDef pending fill:#fff4d6,stroke:#b26a00,stroke-dasharray: 4 3
+    classDef unknown fill:#f3e0e0,stroke:#8e2424,stroke-dasharray: 2 2
+
+    F["Failed pair 1fa1026d + 4dde540d<br/>candidate b31a9112, rows retained"]:::observed
+    C["council003 accepted<br/>seven settled starts"]:::observed
+    S["Owner supplement 4a94f1aa<br/>+ receipt cd95fdee, exact pair only"]:::owner
+    R["Repair cont-f7ed34f7...<br/>container checks, lead + conductor accepted"]:::observed
+    M["PR191 merged f2b392d9<br/>incl. PR190"]:::owner
+    CI["Exact-head CI: attempt 1 failed wall-time,<br/>attempt 2 passed, cause unconfirmed"]:::unknown
+    SF["Scheduled Fleet consumed f2b392d<br/>image 1ee94821, sole operating owner"]:::owner
+    OLD["Release 2144c661 = old b31a9112<br/>awaiting owner, zeus-fleet-managed"]:::pending
+    A["A-current docs item<br/>(this batch)"]:::pending
+    RV["Independent Codex review"]:::pending
+    PR["Exact-head PR + CI"]:::pending
+    REL["Register its actual release, or<br/>record the concrete missing gate"]:::pending
+    MC["Single-owner managed cutover<br/>tree / instance / canary / rollback gates"]:::pending
+    B["B-current runbook,<br/>chosen on the deployed revision"]:::pending
+    W["Whole-loop acceptance<br/>SPEC Fixed acceptance matrix"]:::pending
+
+    F --> C --> S --> R
+    R --> M --> CI
+    M --> SF
+    R -. "release still names old tree" .-> OLD
+    SF --> A --> RV --> PR --> REL --> MC --> B --> W
+```
+
+Legend: green = observed; blue = owner action (observed); amber dashed = pending; red dashed =
+observed result with an unconfirmed cause. Arrows show order, not automation. Only the steps
+labelled as model runs above were done by Fleet workers or reviewers.
+
+Unknowns stated honestly:
+
+- The cause of the Windows 3.12 guardian wall-time failure in CI attempt 1.
+- Whether release 2144c661 will be delivered, superseded by a reviewed successor lineage, or left
+  waiting. It remains an honest awaiting-owner record either way.
+- The merge revision of PR190 is not in the owner facts; only its inclusion in f2b392d is stated.
+- Nobody has yet observed whether the managed target can take over from the scheduled Fleet with no
+  second active Fleet, or whether a rollback of an exact candidate restores the predecessor.
+- The continuation `next_item` handoff after an `active` delivery has never been observed.
+
+Remaining operator checklist (the owner fills each evidence column; nothing below has been run by
+this batch):
+
+| # | Step | Gate that must hold | Evidence to record |
+| --- | --- | --- | --- |
+| 1 | Independent review of this A-current candidate | exact document facts, diagram and scope | review id / verdict |
+| 2 | Exact-head PR and CI | all required checks on that head; a failure is recorded, not rerun until green | PR number, run id, head |
+| 3 | Register the actual release of that head for zeus-fleet-managed, or record the concrete missing gate | exact Git tree identity and candidate binding ([HOST-DELIVERY.md](HOST-DELIVERY.md)) | release id, tree, or the named gate |
+| 4 | Single-owner managed cutover | pause admission; no reserving jobs or held units; old launcher preserved; scheduled owner stopped before the managed start; no second active Fleet ([HOST-RUNTIME.md](HOST-RUNTIME.md) "Activation gate") | receipt with loaded module path, revision, PID, admission restored |
+| 5 | Canary and rollback | canary bound to the exact release; rollback through the managed lifecycle, never a bare `git revert` ([CONTINUATION.md](CONTINUATION.md) "Two-strike ownership correction") | canary result, rollback receipt |
+| 6 | Duplicate/restart control | a duplicate tick or restart creates no second invocation; unknown effects stay as held debt | intent / unit ids before and after |
+| 7 | Second useful item | B-current runbook selected automatically from the approved backlog on the deployed revision | admission intent, job id, review result |
+| 8 | Keep the old records | release 2144c661 and the held families are kept as they are, not relabelled | unchanged row reference |
+
+Links: [SPEC.md](SPEC.md) (owner facts and "Fixed acceptance matrix"), [CONTINUATION.md](CONTINUATION.md),
+[HOST-DELIVERY.md](HOST-DELIVERY.md), [HOST-RUNTIME.md](HOST-RUNTIME.md), [RUNBOOK.md](RUNBOOK.md),
+[WORKER-SESSIONS.md](WORKER-SESSIONS.md). The raw owner evidence named in SPEC (Fleet/PG rows,
+receipts, CI runs) lives in owner artifact stores. This batch names it but did not execute or re-read it.
+
 ## Evidence recovery checkpoint: 2026-09-23 14:04 KST
 
 PR182 merged at 04:27:48Z (ce81f885); no live deployment was attempted. Session correction 973a903f
