@@ -2859,6 +2859,50 @@ table (an evidence-refused child gets one `evidence_repair` under the existing `
 reset). `status` shows `receipt.causes`, `captured`, `lineage`, `acceptance`, `attestation_ref`; a
 schema-1 view is unchanged. It is not an acceptance, a repair verdict, a budget or a release.
 
+Exact evidence-repair capacity grant (SPEC "Exact evidence-repair capacity authorization"):
+`max_corrections` stays immutable, every successor keeps counting and nothing resets or re-labels a
+family. The ONLY way past `correction_budget_exhausted` is the owner's typed one-use grant
+(`urn:zeus:continuation-capacity-grant:1`, `zeus continuation capacity-grant --file`,
+`adapters.continuation.grant_capacity` -> `Continuation.grant_capacity`) for ONE exact intent. Strict
+fields (`capacity_grant_invalid`): `policy_id`, `policy_sha256`, `family`, `intent_id`, `route` (only
+`evidence_repair`, else `capacity_route_unsupported`), `refusal` (only `correction_budget_exhausted`, else
+`capacity_refusal_unsupported`), `source {job, generation, attempt, evidence_sha256, inspection}`,
+`candidate {revision, tree}`, `research_receipt_sha256` and a content-addressed `rationale_ref`. Verified
+before any write against: the registered policy row, its pin re-read through Git now
+(`policy_unavailable`, `capacity_policy_foreign`; no pin or runtime port is `capacity_policy_unverified`);
+the named intent of that policy and family, route `evidence_repair`, refused at creation for an
+exhausted budget and never the owner of an effect (`capacity_intent_unknown`, `capacity_family_mismatch`,
+`capacity_refusal_mismatch`); the current runtime/frame authorization (the eligibility guard's codes);
+the source Fleet row unchanged and the origin's lane evidence re-read now - same route, decisive digest,
+attempt, handoff inspection and retained candidate revision/tree, no unknown-effect marker
+(`capacity_source_mismatch`, `_source_changed`, `_inspection_changed`, `_candidate_changed`); no other
+active, unknown or unresolved row, Fleet job or held conductor unit in the family and the origin not
+owned by another policy (`capacity_family_active`, `capacity_scope_foreign`); the family's LATEST
+research intent completed by exactly the pinned receipt before the refusal (`capacity_research_unresolved`,
+`capacity_research_mismatch`), whose stored receipt passes every consumption check again against the
+current rows, lane evidence and evidence bytes (the `research_*` codes); and the rationale bytes through
+the research evidence port (`capacity_rationale_missing|unreadable|oversized|corrupt|invalid`). The
+existing manifest validator decides the successor (`capacity_successor_refused`). ONE control-store
+transaction then rechecks the intent version, policy row, source row, receipt row, family and that no
+earlier grant used the same rationale (`capacity_rationale_reused`: another grant needs a distinct owner
+decision), stores the grant in `continuation_capacity_grants` keyed by the intent id (original cap and
+count, explicit capacity 1, refusal snapshot, successor id) and moves THAT intent `refused -> intended`
+with the successor it always derived (`successor_id(intent)`, its manifest and lane binding built as for
+any evidence repair), `reason_code: capacity_grant_authorized`, `capacity_grant` digest, the `refusal`
+snapshot and an appended history entry; this is the only such edge and it is not in `TRANSITIONS`. The
+identical grant replays (`cached`, same successor), any other grant for the intent is
+`capacity_grant_conflict`, so concurrent grants reserve at most one successor. Nothing external happens
+in the grant: the tick's existing `publish` binds and admits it, and `_authorize` rechecks the stored
+grant (`capacity_grant_missing`, `_corrupt`) and every binding above before the lane binding and before
+the Fleet admission; stale authority is a hold with no new effect until it verifies again. A reserved
+successor stays charged whatever its outcome: its failure is observed through the unchanged table
+(research after two distinct failures, then the unchanged budget), never replenishes the grant, and
+cannot be granted again by the same rationale. `status` shows `capacity.grants[]` (original cap and count,
+explicit capacity, linked refusal, successor, consumed, remaining) and `capacity.families[]` (original
+cap, current count, explicit capacity, remaining) beside, never merged into, the cap; an intent view shows
+`capacity_grant` and `refusal`. The grant is not a code acceptance, a budget-ledger change, a model
+authority, a deployment or an incident closure.
+
 An intent id is `origin job + generation/attempt + decisive evidence digest + route`; a successor id is
 `cont-` plus 24 hex of it. Every external effect has a durable pre-effect state: `intended` (complete
 successor manifest and binding recorded) -> `published` (lane binding written; identical replay cached,

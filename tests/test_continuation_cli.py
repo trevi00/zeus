@@ -369,3 +369,62 @@ def test_a_mixed_family_receipt_file_flows_through_the_production_tick_into_evid
     assert str(tmp_path) not in json.dumps(status)
     assert adapter.accept_research(world.control, config, HOST, adapter.read_receipt(path),
                                    lanes=world.lanes)["cached"] is True and research["id"] in receipts(world)
+
+
+def test_capacity_grant_command_reserves_one_repair_that_the_production_tick_admits_once(tmp_path, monkeypatch):
+    """`zeus continuation capacity-grant --file` through `continuation_cli.execute`: the Git-pinned policy is
+    re-read, the configured runtime evidence store verifies the rationale, the lane ports are the
+    production factories' seams (LABELLED: they return the World's MemoryStore lane), and nothing is
+    admitted until the production `tick_policy` runs the existing path; a second tick adds nothing."""
+    from test_continuation_research import budget_refused, grant_for, grants
+
+    args = parser().parse_args(["continuation", "capacity-grant", "--file", "g.json"])
+    assert args.continuation_command == "capacity-grant" and args.file == Path("g.json")
+    for name in ("HARNESS_RUNTIME_DIR", "ZEUS_RUNTIME_DIR"):
+        monkeypatch.setenv(name, str(tmp_path / "runtime"))
+    world = World(tmp_path, max_corrections=2)
+    repo, revision = policy_repository(world)
+    world.pin = {"revision": revision, "path": "ops/continuation.json", "lane": "a",
+                 "sha256": hashlib.sha256((repo / "ops" / "continuation.json").read_bytes()).hexdigest()}
+    family = budget_refused(world, tmp_path)
+    refused, config = family["refused"], world.fleet.registered()["config"]
+    monkeypatch.setattr(adapter, "lane_stores", lambda config, host: world.lanes)
+    monkeypatch.setattr(adapter, "lane_runtime", lambda config, host: world.runtime)
+    service = SimpleNamespace(store=world.control)
+    path = tmp_path / "grant.json"
+    # A malformed file refuses by code before any store, lane or Git access; no path leaves.
+    path.write_text("{not json " + str(tmp_path), encoding="utf-8")
+    with pytest.raises(dc.ContinuationRefused) as info:
+        continuation_cli.execute(service, SimpleNamespace(continuation_command="capacity-grant", file=path))
+    assert continuation_cli.refusal(info.value)["reason_code"] == "capacity_grant_invalid"
+    assert str(tmp_path) not in json.dumps(continuation_cli.refusal(info.value))
+    document = grant_for(world, family)
+    path.write_text(json.dumps(document), encoding="utf-8")
+    jobs = deepcopy(world.jobs())
+    granted = continuation_cli.execute(service, SimpleNamespace(continuation_command="capacity-grant", file=path))
+    assert granted["exit_code"] == 0 and granted["cached"] is False and granted["state"] == dc.INTENDED
+    assert granted["successor_job"] == dc.successor_id(refused["id"]) and world.jobs() == jobs
+    assert continuation_cli.execute(service, SimpleNamespace(continuation_command="capacity-grant",
+                                                             file=path))["cached"] is True
+    ticked = adapter.tick_policy(world.control, config, HOST, "policy-1", lanes=world.lanes, conductor=world.conductor,
+                                 runtime=world.runtime)
+    assert {"subject": refused["id"], "effect": dc.ADMITTED, "route": dc.EVIDENCE_REPAIR,
+            "successor_job": granted["successor_job"]} in ticked["actions"]
+    adapter.tick_policy(world.control, config, HOST, "policy-1", lanes=world.lanes, conductor=world.conductor,
+                        runtime=world.runtime)
+    assert set(world.jobs()) == set(jobs) | {granted["successor_job"]} and len(grants(world)) == 1
+    status = continuation_cli.execute(service, SimpleNamespace(continuation_command="status", policy="policy-1"))
+    assert status["capacity"]["families"][0] | {"grants": None} == {
+        "policy_id": "policy-1", "family": family["root"], "original_cap": 2, "counted": 3, "explicit_capacity": 1,
+        "grants": None, "remaining": 0}
+    assert status["capacity"]["grants"][0]["refusal"]["reason_code"] == "correction_budget_exhausted"
+    assert str(tmp_path) not in json.dumps(status)
+    # A pin that moved since registration refuses the grant path by name.
+    with world.control.transaction() as tx:
+        row = tx.get("continuation_policies", "policy-1")
+        tx.put("continuation_policies", "policy-1", {**row, "pin": {**row["pin"], "revision": "0" * 40}})
+    other = tmp_path / "other-grant.json"
+    other.write_text(json.dumps({**document, "rationale_ref": "sha256:" + "a" * 64}), encoding="utf-8")
+    with pytest.raises(dc.ContinuationRefused, match="policy_unavailable"):
+        continuation_cli.execute(service, SimpleNamespace(continuation_command="capacity-grant", file=other))
+    assert len(grants(world)) == 1

@@ -2244,3 +2244,396 @@ def test_consumption_rechecks_the_mixed_receipt_and_holds_until_it_verifies_agai
     assert receipts(world) == stored
     world.tick()
     assert world.intents()[family["research"]["id"]]["state"] == dc.COMPLETED and len(world.jobs()) == jobs + 1
+
+
+# ---- exact evidence-repair capacity grant (SPEC "Exact evidence-repair capacity authorization") ----------
+RATIONALE = ("LABELLED fixture owner rationale: one extra evidence repair of this exact retained candidate under "
+             "the corrected evidence profile; not a code acceptance and not a budget change\n")
+
+
+def budget_refused(world, tmp_path):
+    """The actual shape of intent 53f2d12f: `max_corrections` 2, two prior corrections, the second hold
+    released by the mixed receipt, and the child's evidence repair refused `correction_budget_exhausted`."""
+    family = mixed_family(world, tmp_path)
+    world.controller.accept_research(mixed_for(world, family))
+    world.tick()
+    refused = only(world.intents(), origin_job=family["child"], route=dc.EVIDENCE_REPAIR)
+    assert refused["state"] == dc.REFUSED and refused["reason_code"] == "correction_budget_exhausted"
+    assert world.controller.policy("policy-1")["policy"]["max_corrections"] == 2
+    return {**family, "refused": refused}
+
+
+def grant_for(world, family, **overrides):
+    """What the owner submits: the exact refused intent, its source attempt, the inspection and retained
+    candidate its lane shows, the completed research receipt digest and a stored rationale."""
+    refused = family["refused"]
+    rationale = world.artifacts.put(RATIONALE, "owner-rationale")["ref"]
+    evidence = LaneEvidence(world.lane.store).read(world.jobs()[family["child"]])
+    candidate = evidence["task"]["result"]["candidate"]
+    return {"schema": dc.CAPACITY_GRANT_SCHEMA, "policy_id": "policy-1",
+            "policy_sha256": world.controller.policy("policy-1")["policy_sha256"], "family": refused["family"],
+            "intent_id": refused["id"], "route": dc.EVIDENCE_REPAIR, "refusal": "correction_budget_exhausted",
+            "source": {"job": family["child"], "generation": refused["generation"], "attempt": refused["attempt"],
+                       "evidence_sha256": refused["evidence_sha256"],
+                       "inspection": evidence["operation"]["owner_handoff"]["inspection"]["id"]},
+            "candidate": {"revision": candidate["revision"], "tree": candidate["tree"]},
+            "research_receipt_sha256": world.intents()[family["research"]["id"]]["research_receipt"],
+            "rationale_ref": rationale, **overrides}
+
+
+def grant(world, document, controller=None, **ports):
+    ports = {"pin_sha256": world.pin["sha256"], "runtime": world.runtime, **ports}
+    return (controller or world.controller).grant_capacity(document, **ports)
+
+
+def grants(world):
+    with world.control.transaction() as tx:
+        return {row["id"]: row for row in tx.scan("continuation_capacity_grants")}
+
+
+def test_without_a_grant_the_exhausted_budget_is_unchanged_and_status_names_the_owner_action(tmp_path):
+    world = World(tmp_path, max_corrections=2)
+    family = budget_refused(world, tmp_path)
+    before = (deepcopy(world.intents()), deepcopy(world.jobs()))
+    world.tick()
+    world.tick(controller=world.build())
+    assert (world.intents(), world.jobs()) == before, "no successor, no revived refusal, nothing written"
+    status = world.controller.status("policy-1")
+    shown = {row["id"]: row for row in status["intents"]}[family["refused"]["id"]]
+    assert "capacity-grant" in shown["next_action"] and shown["capacity_grant"] is None
+    assert status["capacity"] == {"grants": [], "families": []}
+
+
+def test_one_exact_grant_admits_one_retained_candidate_repair_and_keeps_history_counts_and_gates(tmp_path):
+    world = World(tmp_path, max_corrections=2)
+    family = budget_refused(world, tmp_path)
+    refused = family["refused"]
+    before_intents = {k: v for k, v in deepcopy(world.intents()).items() if k != refused["id"]}
+    before_jobs, before_receipts = deepcopy(world.jobs()), deepcopy(receipts(world))
+    before_rows = research_rows(world, family["investigation"])
+    document = grant_for(world, family)
+
+    granted = grant(world, document)
+    successor = dc.successor_id(refused["id"])
+    assert granted["granted"] is True and granted["cached"] is False and granted["successor_job"] == successor
+    assert (granted["original_cap"], granted["original_count"], granted["explicit_capacity"]) == (2, 2, 1)
+    assert granted["consumed"] is True and granted["remaining"] == 0 and granted["state"] == dc.INTENDED
+    assert granted["refusal"]["reason_code"] == "correction_budget_exhausted"
+    # Reserved, not yet effected: no lane binding and no Fleet job until the tick's existing path.
+    assert world.jobs() == before_jobs and world.binding(successor) is None
+    intent = world.intents()[refused["id"]]
+    assert [(h["state"], h.get("reason_code")) for h in intent["history"]] == [
+        (dc.REFUSED, "correction_budget_exhausted"), (dc.INTENDED, dc.CAPACITY_AUTHORIZED)]
+    assert intent["refusal"]["history"] == refused["history"] and intent["refusal"]["version"] == refused["version"]
+    assert intent["capacity_grant"] == granted["grant_sha256"] and intent["evidence_sha256"] == refused["evidence_sha256"]
+
+    result = world.tick()
+    assert {"subject": refused["id"], "effect": dc.ADMITTED, "route": dc.EVIDENCE_REPAIR,
+            "successor_job": successor} in result["actions"]
+    intent = world.intents()[refused["id"]]
+    assert intent["state"] == dc.ADMITTED and intent["ownership"]["state"] == "inherited"
+    job = world.jobs()[successor]
+    assert "Evidence repair" in job["manifest"]["plan"]["objective"]
+    assert job["manifest"]["plan"]["allowed_paths"] == before_jobs[family["child"]]["manifest"]["plan"]["allowed_paths"]
+    binding = world.binding(successor)
+    assert binding["workspace"]["head"] == "c" * 40 and binding["session"] is None
+    assert binding["predecessor"]["inspection_id"] == document["source"]["inspection"]
+    # History, counts, receipts and research rows: untouched; the policy cap never grew.
+    assert {k: world.intents()[k] for k in before_intents} == before_intents
+    assert {k: world.jobs()[k] for k in before_jobs} == before_jobs
+    assert receipts(world) == before_receipts and research_rows(world, family["investigation"]) == before_rows
+    assert world.controller.policy("policy-1")["policy"]["max_corrections"] == 2
+    status = world.controller.status("policy-1")
+    assert status["capacity"]["families"] == [{"policy_id": "policy-1", "family": family["root"], "original_cap": 2,
+                                               "counted": 3, "explicit_capacity": 1,
+                                               "grants": [granted["grant_sha256"]], "remaining": 0}]
+    shown = {row["id"]: row for row in status["intents"]}[refused["id"]]
+    assert shown["capacity_grant"] == granted["grant_sha256"] and shown["refusal"]["state"] == dc.REFUSED
+    # A replayed grant (lost response) is the same grant and successor; a restarted controller adds nothing.
+    assert grant(world, document, controller=world.build())["cached"] is True
+    count = len(world.jobs())
+    world.tick(controller=world.build())
+    assert len(world.jobs()) == count
+
+    # The repair fails again: the capacity stays spent and every gate still applies.
+    ran, _ = world.run_next(inspection="incomplete")
+    assert ran == successor
+    world.tick()
+    intents = world.intents()
+    assert intents[refused["id"]]["state"] == dc.COMPLETED
+    again = only(intents, origin_job=successor)
+    assert again["route"] == dc.RESEARCH and again["state"] == dc.RESEARCH_REQUIRED, "the research gate still holds"
+    assert grant(world, document)["cached"] is True and len(world.jobs()) == count
+    with pytest.raises(dc.ContinuationRefused, match="capacity_grant_conflict"):
+        grant(world, {**document, "rationale_ref": world.artifacts.put(RATIONALE + "again\n", "owner-rationale")["ref"]})
+    with pytest.raises(dc.ContinuationRefused, match="capacity_refusal_mismatch"):
+        grant(world, {**document, "intent_id": again["id"], "rationale_ref": world.artifacts.put(
+            RATIONALE + "other\n", "owner-rationale")["ref"]})
+    assert len(world.jobs()) == count and set(grants(world)) == {refused["id"]}
+
+
+def _job_row(key_of, change):
+    """A LABELLED injected fault on one Fleet row."""
+    def fault(document, world, family):
+        with world.control.transaction() as tx:
+            row = tx.get("fleet_jobs", key_of(family))
+            tx.put("fleet_jobs", row["id"], {**row, **change})
+        return {}
+    return fault
+
+
+def _marker(document, world, family):
+    with world.lane.store.transaction() as tx:   # LABELLED injected fault: an unconfirmed execution marker
+        task = tx.get("operations", family["child"])["owner_handoff"]["task_id"]
+        tx.put("observation_terminations", "marker-1", {"record_id": "marker-1", "task_id": task,
+                                                         "status": "unconfirmed"})
+    return {}
+
+
+def _lost_rationale(document, world, family):
+    stored_path(world, document["rationale_ref"]).unlink()   # LABELLED injected fault: the bytes are gone
+    return {}
+
+
+def _pending_research(document, world, family):
+    with world.control.transaction() as tx:   # LABELLED injected fault: an unresolved research hold
+        row = tx.get("continuation_intents", family["research"]["id"])
+        tx.put("continuation_intents", row["id"], {**row, "state": dc.RESEARCH_REQUIRED})
+    return {}
+
+
+CAPACITY_FAULTS = [
+    ("invalid_field", lambda d, w, f: {"extra": True}, "capacity_grant_invalid"),
+    ("wrong_route", lambda d, w, f: {"route": dc.CORRECTION}, "capacity_route_unsupported"),
+    ("wrong_refusal", lambda d, w, f: {"refusal": "successor_manifest_refused"}, "capacity_refusal_unsupported"),
+    ("foreign_policy_sha", lambda d, w, f: {"policy_sha256": "0" * 64}, "capacity_policy_foreign"),
+    ("unregistered_policy", lambda d, w, f: {"policy_id": "policy-9"}, "capacity_policy_foreign"),
+    ("changed_pin", lambda d, w, f: {"_pin_sha256": "0" * 64}, "capacity_policy_foreign"),
+    ("unverified_pin", lambda d, w, f: {"_pin_sha256": None}, "capacity_policy_unverified"),
+    ("changed_image", lambda d, w, f: {"_runtime": lambda lane: {**w.runtime(lane), "image": "other:1"}},
+     "image_changed"),
+    ("unknown_intent", lambda d, w, f: {"intent_id": "0" * 64}, "capacity_intent_unknown"),
+    ("wrong_intent", lambda d, w, f: {"intent_id": f["edge"]["id"]}, "capacity_refusal_mismatch"),
+    ("research_intent", lambda d, w, f: {"intent_id": f["research"]["id"]}, "capacity_refusal_mismatch"),
+    ("foreign_family", lambda d, w, f: {"family": "op-z"}, "capacity_family_mismatch"),
+    ("changed_evidence", lambda d, w, f: {"source": {**d["source"], "evidence_sha256": "1" * 64}},
+     "capacity_source_mismatch"),
+    ("changed_attempt", lambda d, w, f: {"source": {**d["source"], "attempt": d["source"]["attempt"] + 1}},
+     "capacity_source_mismatch"),
+    ("changed_inspection", lambda d, w, f: {"source": {**d["source"], "inspection": "insp-other"}},
+     "capacity_inspection_changed"),
+    ("foreign_candidate", lambda d, w, f: {"candidate": {**d["candidate"], "revision": "8" * 40}},
+     "capacity_candidate_changed"),
+    ("foreign_tree", lambda d, w, f: {"candidate": {**d["candidate"], "tree": "8" * 40}},
+     "capacity_candidate_changed"),
+    ("stale_receipt", lambda d, w, f: {"research_receipt_sha256": receipts(w)[f["earlier"]["id"]]["receipt_sha256"]},
+     "capacity_research_mismatch"),
+    ("missing_rationale", lambda d, w, f: {"rationale_ref": "sha256:" + hashlib.sha256(b"never").hexdigest()},
+     "capacity_rationale_missing"),
+    ("lost_rationale", _lost_rationale, "capacity_rationale_missing"),
+    ("unknown_execution", _marker, "capacity_source_changed"),
+    ("changed_source_row", _job_row(lambda f: f["child"], {"updated_at": "2099-01-01T00:00:00+00:00"}),
+     "capacity_source_changed"),
+    ("active_family_job", _job_row(lambda f: f["parent"], {"status": "dispatching"}), "capacity_family_active"),
+    ("unknown_family_job", _job_row(lambda f: f["root"], {"status": "unknown"}), "capacity_family_active"),
+    ("unresolved_research", _pending_research, "capacity_family_active"),
+    ("tampered_receipt", _mutate_row(BUCKET_RESEARCH_RECEIPTS, lambda f: f["research"]["id"], {"coverage": "x"}),
+     "research_coverage_changed"),
+    ("withdrawn_review", _mutate_row("decisions_pending", lambda f: "review-003", {"status": "retry"}),
+     "research_mixed_acceptance_unproven"),
+    ("changed_ownership", _mutate_row(BUCKET_BINDINGS, lambda f: f["parent"], {"project_id": "other"}),
+     "research_mixed_ownership_mismatch"),
+]
+
+
+@pytest.mark.parametrize("name, change, reason", CAPACITY_FAULTS, ids=[fault[0] for fault in CAPACITY_FAULTS])
+def test_foreign_stale_unknown_active_or_unproven_grants_refuse_with_no_effect(tmp_path, name, change, reason):
+    world = World(tmp_path, max_corrections=2)
+    family = budget_refused(world, tmp_path)
+    document = grant_for(world, family)
+    changed = change(document, world, family)
+    ports = {key[1:]: changed.pop(key) for key in list(changed) if key.startswith("_")}
+    document = {**document, **changed}
+    before = (deepcopy(world.intents()), deepcopy(world.jobs()))
+    with pytest.raises(dc.ContinuationRefused) as info:
+        grant(world, document, **ports)
+    assert info.value.reason_code == reason
+    assert grants(world) == {} and (world.intents(), world.jobs()) == before, "nothing stored, nothing revived"
+    assert world.binding(dc.successor_id(family["refused"]["id"])) is None
+
+
+def test_concurrent_identical_and_conflicting_grants_reserve_one_successor_once(tmp_path):
+    world = World(tmp_path, max_corrections=2)
+    family = budget_refused(world, tmp_path)
+    document = grant_for(world, family)
+    other = {**document, "rationale_ref": world.artifacts.put(RATIONALE + "competing\n", "owner-rationale")["ref"]}
+    start, results = threading.Barrier(3), []
+
+    def submit(doc):
+        start.wait()
+        try:
+            results.append(grant(world, doc, controller=world.build()))
+        except dc.ContinuationRefused as exc:
+            results.append(exc.reason_code)
+    threads = [threading.Thread(target=submit, args=(doc,)) for doc in (document, document, other)]
+    for thread in threads:
+        thread.start()
+    for thread in threads:
+        thread.join()
+    stored = grants(world)
+    assert len(stored) == 1
+    winner = stored[family["refused"]["id"]]["grant"]
+    fresh = [r for r in results if isinstance(r, dict) and not r["cached"]]
+    assert len(fresh) == 1 and len(results) == 3
+    loser = document if winner == other else other
+    assert results.count("capacity_grant_conflict") == (2 if loser == document else 1)
+    intent = world.intents()[family["refused"]["id"]]
+    assert [h["state"] for h in intent["history"]] == [dc.REFUSED, dc.INTENDED]
+    # Two controllers race the admission: one successor, admitted once.
+    start = threading.Barrier(2)
+
+    def tick(controller):
+        start.wait()
+        world.tick(controller=controller)
+    threads = [threading.Thread(target=tick, args=(world.build(),)) for _ in range(2)]
+    for thread in threads:
+        thread.start()
+    for thread in threads:
+        thread.join()
+    world.tick(controller=world.build())
+    assert world.intents()[family["refused"]["id"]]["state"] == dc.ADMITTED
+    assert [job for job in world.jobs() if job == dc.successor_id(family["refused"]["id"])] == [intent["successor_job"]]
+
+
+class GrantCrash(BaseException):
+    """LABELLED injected process death at an exact grant boundary (escapes every handler)."""
+
+
+@pytest.mark.parametrize("boundary", ["before_grant_commit", "after_grant_commit", "before_binding", "published",
+                                      "enqueued"])
+def test_a_crash_at_each_grant_boundary_reconciles_the_same_successor(tmp_path, boundary):
+    world = World(tmp_path, max_corrections=2)
+    family = budget_refused(world, tmp_path)
+    document, refused = grant_for(world, family), family["refused"]
+
+    class CrashPlan(Continuation):
+        def _successor_plan(self, *args):
+            super()._successor_plan(*args)
+            raise GrantCrash("verified, before the grant transaction")
+
+    class CrashEmit(Continuation):
+        def _emit(self, previous, row):
+            if previous == dc.REFUSED:
+                raise GrantCrash("after the grant commit, response lost")
+            return super()._emit(previous, row)
+
+    class CrashBind(LaneEvidence):
+        def bind(self, document):
+            raise GrantCrash("after the reserved commit, before the lane binding")
+
+    class CrashEnqueue(Fleet):
+        def enqueue(self, *args):
+            if boundary == "enqueued":
+                super().enqueue(*args)
+            raise GrantCrash("around the Fleet admission")
+    if boundary in {"before_grant_commit", "after_grant_commit"}:
+        cls = CrashPlan if boundary == "before_grant_commit" else CrashEmit
+        with pytest.raises(GrantCrash):
+            grant(world, document, controller=world.build(cls=cls))
+        assert set(grants(world)) == (set() if cls is CrashPlan else {refused["id"]})
+        assert grant(world, document, controller=world.build())["cached"] is (cls is CrashEmit)
+    else:
+        grant(world, document)
+        crashing = (world.build(lanes=lambda lane: CrashBind(world.lane.store, world.sessions))
+                    if boundary == "before_binding" else world.build(fleet=CrashEnqueue(world.control)))
+        with pytest.raises(GrantCrash):
+            world.tick(controller=crashing)
+        left = {"before_binding": dc.INTENDED, "published": dc.PUBLISHED, "enqueued": dc.PUBLISHED}[boundary]
+        assert world.intents()[refused["id"]]["state"] == left
+    world.tick(controller=world.build())
+    world.tick(controller=world.build())
+    intent = world.intents()[refused["id"]]
+    assert intent["state"] == dc.ADMITTED and intent["successor_job"] == dc.successor_id(refused["id"])
+    assert [job for job in world.jobs() if job.startswith("cont-") and job == intent["successor_job"]] == [
+        intent["successor_job"]]
+    assert [h["state"] for h in intent["history"]].count(dc.INTENDED) == 1 and len(grants(world)) == 1
+
+
+def _grant_tampered(world, refused):
+    with world.control.transaction() as tx:   # LABELLED injected fault: the stored grant was edited
+        row = tx.get("continuation_capacity_grants", refused["id"])
+        tx.put("continuation_capacity_grants", row["id"], {**row, "grant": {**row["grant"], "family": "op-z"}})
+    return "capacity_grant_corrupt", ("continuation_capacity_grants", row["id"], row)
+
+
+def _rationale_gone(world, refused):
+    ref = grants(world)[refused["id"]]["grant"]["rationale_ref"]
+    path = stored_path(world, ref)
+    data = path.read_bytes()
+    path.unlink()   # LABELLED injected fault: the rationale bytes are gone after the grant
+    return "capacity_rationale_missing", ("file", path, data)
+
+
+def _source_moved(world, refused):
+    with world.control.transaction() as tx:   # LABELLED injected fault: the source Fleet row changed
+        row = tx.get("fleet_jobs", refused["origin_job"])
+        tx.put("fleet_jobs", row["id"], {**row, "updated_at": "2099-01-01T00:00:00+00:00"})
+    return "capacity_source_changed", ("fleet_jobs", row["id"], row)
+
+
+@pytest.mark.parametrize("fault", [_grant_tampered, _rationale_gone, _source_moved])
+def test_stale_grant_authority_holds_before_each_new_effect_until_it_verifies_again(tmp_path, fault):
+    world = World(tmp_path, max_corrections=2)
+    family = budget_refused(world, tmp_path)
+    refused = family["refused"]
+    grant(world, grant_for(world, family))
+    reason, undo = fault(world, refused)
+    jobs = deepcopy(world.jobs())
+    result = world.tick(controller=world.build())
+    assert [s["reason_code"] for s in result["skipped"] if s["subject"] == refused["id"]] == [reason]
+    intent = world.intents()[refused["id"]]
+    assert intent["state"] == dc.INTENDED and intent["hold"]["reason_code"] == reason
+    assert world.jobs() == jobs and world.binding(intent["successor_job"]) is None, "no new effect"
+    if undo[0] == "file":
+        undo[1].write_bytes(undo[2])
+    else:
+        with world.control.transaction() as tx:
+            tx.put(*undo)
+    world.tick()
+    intent = world.intents()[refused["id"]]
+    assert intent["state"] == dc.ADMITTED and intent["hold"] is None and len(world.jobs()) == len(jobs) + 1
+
+
+def test_a_known_failed_repair_never_replenishes_and_another_grant_needs_a_distinct_decision(tmp_path):
+    world = World(tmp_path, max_corrections=2)
+    family = budget_refused(world, tmp_path)
+    document = grant_for(world, family)
+    grant(world, document)
+    world.tick()
+    successor = world.intents()[family["refused"]["id"]]["successor_job"]
+    world.run_next(inspection="incomplete")
+    world.tick()
+    status = world.controller.status("policy-1")
+    [shown] = status["capacity"]["grants"]
+    assert shown["consumed"] is True and shown["remaining"] == 0 and shown["state"] == dc.COMPLETED
+    assert status["capacity"]["families"][0]["remaining"] == 0
+    assert world.intents()[family["refused"]["id"]]["successor_job"] == successor
+    # The failed repair's own next observation is a new research hold, never a grantable refusal.
+    with pytest.raises(dc.ContinuationRefused, match="capacity_refusal_mismatch"):
+        grant(world, {**document, "intent_id": only(world.intents(), origin_job=successor)["id"]})
+    assert set(grants(world)) == {family["refused"]["id"]}
+
+
+def test_a_rationale_already_used_by_another_grant_is_not_a_distinct_owner_decision(tmp_path):
+    world = World(tmp_path, max_corrections=2)
+    family = budget_refused(world, tmp_path)
+    document = grant_for(world, family)
+    with world.control.transaction() as tx:   # LABELLED synthetic earlier grant carrying the same rationale
+        tx.put("continuation_capacity_grants", "e" * 64, {"id": "e" * 64, "grant": {
+            **document, "intent_id": "e" * 64}, "grant_sha256": "0" * 64})
+    before = deepcopy(world.intents())
+    with pytest.raises(dc.ContinuationRefused, match="capacity_rationale_reused"):
+        grant(world, document)
+    assert world.intents() == before and set(grants(world)) == {"e" * 64}
+    fresh = world.artifacts.put(RATIONALE + "distinct decision\n", "owner-rationale")["ref"]
+    assert grant(world, {**document, "rationale_ref": fresh})["cached"] is False
