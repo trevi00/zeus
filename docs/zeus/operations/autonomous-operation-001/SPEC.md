@@ -1,5 +1,22 @@
 # Whole autonomous operating loop
 
+## Current docs evidence contract correction, 2026-09-24
+
+Actual Item A-current produced candidate7b93b7fa, task0c3f24dd, but inspector ef6dc46d refused
+no_claims (0 checked). Worker honestly reported shell permission denials and tests=[]; no model
+review occurred. Preserve this failure and exact candidate. Original no-Python instruction did not
+provide a replayable host evidence contract. This is owner configuration, not a proven content defect.
+For ONE evidence-repair successor, explicitly authorize existing pytest tests/test_ci_scope.py and
+Ruff through a container project-evidence v2 profile. These verify CI routing/tooling and baseline
+lint, NOT document semantics. Independent Codex must inspect the two document changes and source
+facts/links/diagram; do not equate tooling passes with factual accuracy. No full suite or new code.
+Reuse the existing continuation evidence_repair route under a new narrow current-docs policy pinned
+to the original goal hash, paths and acceptance criteria. Host profile applies only to that family;
+do not alter global profile, old policy or failed rows. Existing scheduled owner is paused/drained
+before the bounded Fleet owner starts and restored after settlement. This is explicitly the owner
+correcting its evidence instructions; not claimed as automatic diagnosis. Next is real candidate
+review/release and exact managed delivery, then B-current, with existing whole-task gates preserved.
+
 ## Current-source useful-item qualification after actual repair, 2026-09-24
 
 Owner facts at11:52UTC: PR191 merged atf2b392d9d1e770878699be88699872a143a26351 and scheduled
