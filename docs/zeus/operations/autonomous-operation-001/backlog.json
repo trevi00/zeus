@@ -490,6 +490,19 @@
       "dependencies": [
         "native-fixture"
       ]
+    },
+    {
+      "id": "council-contract-recovery",
+      "project_id": "research-improvement",
+      "criterion_id": "verified-loop",
+      "lane": "harness",
+      "manifest_path": "docs/zeus/operations/autonomous-operation-001/council-contract-recovery.operation.json",
+      "manifest_revision": "b5d685b51fb9de445535e17793f044666784db1a",
+      "manifest_sha256": "8fad43219f427486a96cef6460ad72cacba228f6cb7587332cc4dec87a9ed196",
+      "priority": 360,
+      "dependencies": [
+        "native-fixture"
+      ]
     }
   ]
 }
