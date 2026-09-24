@@ -29,6 +29,8 @@ Dispatch transport recovery (research-dispatch-recovery-001) is the one owner-au
 "a failed dispatch keeps its claim": a proven pre-provider failure may be replaced ONCE by a new
 registered program with the same authority, through `research_dispatch_recoveries`. The failed rows
 stay history; the lineage names the replacement key that is the investigation's current dispatch.
+The explicit `execution_revocation` request (version 2) substitutes ONLY the transport proof with a
+durable revocation through the existing task identity fence (`execution_fence`), in one transaction.
 """
 from __future__ import annotations
 
@@ -46,6 +48,8 @@ from codex_harness.application.audit_progress import (
 from codex_harness.application.autonomous import BUCKET as BUCKET_RUNS
 from codex_harness.application.autonomous import OPERATIONS, RESERVATIONS
 from codex_harness.application.dge import SESSIONS
+from codex_harness.application.execution_fence import advance as advance_fence
+from codex_harness.application.execution_fence import current as current_fence
 from codex_harness.application.fleet import BUCKET_JOBS
 from codex_harness.application.outbox import _quarantine as quarantine_outbox
 from codex_harness.application.portfolio import (
@@ -75,6 +79,10 @@ from codex_harness.domain.research_investigations import (
     RECOVERED,
     REFUSED,
     RESOLVED,
+    REVOCATION_BUCKET,
+    REVOCATION_GENERATION,
+    REVOCATION_MODE,
+    REVOCATION_PROOF,
     InvestigationRefused,
     candidate_identity,
     check_recovery,
@@ -85,6 +93,10 @@ from codex_harness.domain.research_investigations import (
     eligible_investigations,
     recovery_view,
     replacement_dispatch_id,
+    revocation_evidence,
+    revocation_held,
+    revocation_owner,
+    revocation_task_id,
     snapshot,
     validate_recovery_request,
 )
@@ -334,8 +346,10 @@ class ResearchProgram:
         claimed = {d["investigation"] for d in tx.scan(BUCKET_DISPATCHES) if type(d.get("investigation")) is str}
         # research-dispatch-recovery-001: an authorized, not yet claimed replacement is unclaimed for
         # ITS named program only; every other program still sees the failed claim.
+        # A revocation-mode lineage releases it only while its own retained fence still holds.
         claimed -= {r["investigation"] for r in tx.scan(BUCKET_RECOVERIES)
-                    if r.get("state") == AUTHORIZED and (r.get("replacement") or {}).get("program") == row["id"]}
+                    if r.get("state") == AUTHORIZED and (r.get("replacement") or {}).get("program") == row["id"]
+                    and self._revocation_held(tx, r) is None}
         found = eligible_investigations(investigations=tx.scan(BUCKET_INVESTIGATIONS), jobs=tx.scan(BUCKET_JOBS),
                                         bindings=tx.scan(BUCKET_BINDINGS), source=source, claimed=claimed,
                                         required_state=RESEARCH_REQUIRED, minimum=FAMILY_MINIMUM)
@@ -442,6 +456,7 @@ class ResearchProgram:
         recovery = tx.get(BUCKET_RECOVERIES, chosen["investigation"])
         if (isinstance(recovery, dict) and recovery.get("state") == AUTHORIZED
                 and recovery["replacement"]["program"] == cycle["program"]):
+            self._require_revocation(tx, recovery)   # before the replacement claim, never after
             # The ONE replacement: its own key, bound to the lineage and the failed identity it
             # supersedes; the failed row is never rewritten. The lineage records the claim here, in
             # the same transaction, so a repeat, a restart or a concurrent tick cannot claim twice.
@@ -502,7 +517,8 @@ class ResearchProgram:
            records the durable refusal when the message is present on the bound transport.
 
         Attempts recorded before transport bindings existed refuse `recovery_transport_unbound`
-        in step 1 and write nothing: their destination is unknown and is never backfilled.
+        in step 1 and write nothing: their destination is unknown and is never backfilled. Only an
+        explicit version-2 `execution_revocation` request takes `_revoke_dispatch` instead.
 
         The identical request replays (`cached`); any other for the same investigation is
         `recovery_conflict`: one recovery per investigation, ever, and a failed replacement is held.
@@ -513,6 +529,8 @@ class ResearchProgram:
             raise ProgramRefused(exc.reason_code, exc.field) from exc
         request_sha = digest(request)
         investigation = request["investigation"]
+        if request.get("mode") == REVOCATION_MODE:
+            return self._revoke_dispatch(request, request_sha)
         with self.store.transaction() as tx:
             row = self._recovery_row(tx, investigation, request_sha)
             if row is not None and row["state"] != FENCED:
@@ -561,6 +579,62 @@ class ResearchProgram:
         if refused is not None:
             raise ProgramRefused(refused)
         return self._recovery_result(row, cached=False)
+
+    def _revoke_dispatch(self, request: dict, request_sha: str) -> dict:
+        """The explicit `execution_revocation` mode: ONE store transaction, no transport read, no
+        model call. It re-reads every record `check_recovery` reads (no task, reservation or residue
+        included), refuses an existing task fence as foreign, quarantines the unsent assignment through
+        the existing outbox fence, advances the task identity fence of that assignment's id while the
+        task is still absent (so `Workflow.submit` of a late delivery refuses before any task,
+        reservation or provider start), and records the lineage `authorized` with the immutable
+        revocation evidence. Admission and revocation serialize on the store's writer transaction:
+        whichever commits first wins and the other refuses. Historical delivery stays unknown.
+
+        A replay re-validates the EXACT retained fence before answering `cached`; a missing, changed
+        or corrupt one refuses by name and never re-arms or re-authorizes."""
+        investigation = request["investigation"]
+        with self.store.transaction() as tx:
+            row = self._recovery_row(tx, investigation, request_sha)
+            if row is not None:
+                self._require_revocation(tx, row)
+                return self._recovery_result(row, cached=True)
+            proof = self._recovery_check(tx, request, None)
+            task_id = proof["message_id"]
+            if current_fence(tx, REVOCATION_BUCKET, task_id) is not None:
+                raise ProgramRefused("recovery_fence_exists", "revoke.message_id")
+            now = self.clock()
+            quarantine_outbox(tx, task_id, tx.get("outbox", task_id), proof["source_hash"], FENCE_REASON,
+                              tx.get("outbox_delivery", task_id) or {})
+            advance_fence(tx, REVOCATION_BUCKET, task_id, REVOCATION_GENERATION, revocation_owner(request_sha))
+            fence = current_fence(tx, REVOCATION_BUCKET, task_id)
+            row = {"id": investigation, "investigation": investigation, "state": AUTHORIZED, "reason_code": None,
+                   "request": request, "request_sha256": request_sha, "failed": dict(request["failed"]),
+                   "replacement": {**request["replacement"], "dispatch": replacement_dispatch_id(investigation),
+                                   "cycle": None},
+                   "fence": {"outbox": task_id, "source_hash": proof["source_hash"], "attempts": proof["attempts"],
+                             "reason": FENCE_REASON, "transport": None},
+                   "revocation": revocation_evidence(request_sha256=request_sha, fence=fence,
+                                                     source_hash=proof["source_hash"]),
+                   "proof": REVOCATION_PROOF, "requested_at": now, "authorized_at": now, "claimed_at": None,
+                   "updated_at": now}
+            tx.put(BUCKET_RECOVERIES, investigation, row)
+        return self._recovery_result(row, cached=False)
+
+    @staticmethod
+    def _revocation_held(tx, row) -> str | None:
+        """The named held condition of a revocation-mode lineage row, from the authoritative fence,
+        task and delivery rows in THIS transaction; None when intact or not a revocation."""
+        task_id = revocation_task_id(row)
+        if task_id is None:
+            return None
+        return revocation_held(row, fence=current_fence(tx, REVOCATION_BUCKET, task_id) if task_id else None,
+                               task=tx.get(REVOCATION_BUCKET, task_id) if task_id else None,
+                               delivery=tx.get("outbox_delivery", task_id) if task_id else None)
+
+    def _require_revocation(self, tx, row) -> None:
+        held = self._revocation_held(tx, row)
+        if held is not None:
+            raise ProgramRefused(held, "revoke")
 
     @staticmethod
     def _recovery_row(tx, investigation: str, request_sha: str) -> dict | None:

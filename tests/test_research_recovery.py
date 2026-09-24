@@ -46,6 +46,7 @@ from codex_harness.application.service import Harness
 from codex_harness.application.workflow import Workflow
 from codex_harness.bootstrap import organization
 from codex_harness.domain.council import validate_any_manifest
+from codex_harness.domain.model import ContractError, digest
 from codex_harness.domain.research_investigations import replacement_dispatch_id
 from codex_harness.domain.research_program import ProgramRefused, config_digest, validate_config
 from codex_harness.ports import MessageDeliveryError
@@ -744,3 +745,387 @@ def test_domain_transport_rules_are_pure_and_fail_closed():
         with pytest.raises(InvestigationRefused) as info:
             check_transport_proof(IDENTITY, observation)
         assert info.value.reason_code == code
+
+
+# ----- explicit execution revocation (SPEC "Actual legacy research recovery: execution revocation") -----------
+# The actual-shaped fixture: the REAL council fails before provider entry on a LABELLED legacy bus that
+# has no transport identity, so its one `retry` attempt carries NO binding, zero tasks and reservations.
+# Revocation never claims the assignment was not delivered: the explicit owner request advances the
+# existing task identity fence of that assignment's id, so the REAL `Workflow.submit` refuses a late
+# delivery before any task, reservation or provider start in this store.
+REVOCATION = "urn:zeus:research-dispatch-recovery:2"
+
+
+def legacy_world(tmp_path, store=None):
+    return failed_world(tmp_path, council=lambda s: PublicationFailingCouncil(s, UnreachableBus(bound=False)),
+                        store=store)
+
+
+def assignment(env) -> dict:
+    [item] = history(env.store)["outbox"]
+    return item
+
+
+def revocation(env, config_sha256, program_id="rp-002", **revoke):
+    item = assignment(env)
+    pinned = {"message_id": item["message"]["message_id"], "source_sha256": digest(item)}
+    return {**request(env, config_sha256, program_id), "schema": REVOCATION, "mode": "execution_revocation",
+            "revoke": {**pinned, **revoke}}
+
+
+def late_delivery(env):
+    """The ORIGINAL assignment reaching the real workflow admission after the fact (a delayed
+    consumer of an old stream entry). Returns the refusal, or the task if it was admitted."""
+    try:
+        return Workflow(env.store, organization()).submit(deepcopy(assignment(env)["message"]))
+    except ContractError as exc:
+        return exc
+
+
+def no_execution(env) -> bool:
+    with env.store.transaction() as tx:
+        return (tx.scan("tasks") == [] and tx.scan("invocation_reservations") == []
+                and tx.get("autonomous_runs", "rp-001.c001")["starts"] == {"reserved": 0, "settled": 0, "slots": []})
+
+
+def fence_of(env):
+    with env.store.transaction() as tx:
+        return tx.get("execution_fences", "tasks:" + assignment(env)["message"]["message_id"])
+
+
+def test_explicit_revocation_blocks_the_late_original_and_authorizes_exactly_one_replacement(tmp_path):
+    env, _ = legacy_world(tmp_path)
+    before = history(env.store)
+    assert "transport" not in before["attempts"][0] and before["attempts"][0]["status"] == "retry"
+    _, sha = replacement(env)
+    # The existing strict transport-proof mode still refuses this row and writes nothing.
+    assert refused(env.programs.recover_dispatch, request(env, sha), FakeTransport()) == "recovery_transport_unbound"
+    assert _untouched(env) and fence_of(env) is None
+
+    transport = FakeTransport(error=AssertionError("revocation never reads a transport"))
+    result = env.programs.recover_dispatch(revocation(env, sha), transport)
+    message_id = assignment(env)["message"]["message_id"]
+    assert transport.calls == [] and result["recovered"] is True and result["cached"] is False
+    assert result["state"] == "authorized" and result["mode"] == "execution_revocation"
+    assert result["proof"] == "execution_revoked" and result["fence"]["transport"] is None
+    fence = fence_of(env)
+    assert fence["generation"] == 1 and fence["owner"] == "research-dispatch-recovery:" + result["request_sha256"]
+    assert result["revocation"]["delivery"] == "unknown", "revocation is never reported as non-delivery"
+    assert result["revocation"]["fenced_at"] == fence["at"] and result["revocation"]["row_id"] == message_id
+    assert "not delivered" in result["revocation"]["authority"] and "unknown" in result["revocation"]["authority"]
+
+    # The delayed original delivery cannot create a task, reserve or start a provider.
+    refusal = late_delivery(env)
+    assert isinstance(refusal, ContractError) and "used before" in str(refusal)
+    assert no_execution(env)
+    bus = RecordingBus()
+    assert relay(env.store, organization(), bus)["published"] == 0 and bus.published == []
+    assert history(env.store) == before, "run, retry attempt and unsent outbox history are preserved"
+
+    # No downgrade and no second recovery: the old-mode request is a conflict now.
+    assert refused(env.programs.recover_dispatch, request(env, sha), FakeTransport()) == "recovery_conflict"
+
+    env.programs.resume("rp-002")
+    runner = replacement_runner(env)
+    tick = runner.tick("rp-002")
+    assert tick["investigation"] == INVESTIGATION and tick["result"] == "accepted"
+    with env.store.transaction() as tx:
+        assert tx.get(BUCKET_RECOVERIES, INVESTIGATION)["state"] == "claimed"
+    assert refused(env.programs.recover_dispatch, revocation(env, sha, "rp-003"), FakeTransport()) == "recovery_conflict"
+    again = ResearchProgram(env.store, clock=env.clock).recover_dispatch(revocation(env, sha), None)
+    assert again["cached"] is True and again["state"] == "claimed" and fence_of(env) == fence
+    assert isinstance(late_delivery(env), ContractError) and no_execution(env)
+    assert len(runner.council.manifests) == 1 and history(env.store) == before
+
+
+def test_admission_first_refuses_the_revocation_and_authorizes_nothing(tmp_path):
+    env, _ = legacy_world(tmp_path)
+    _, sha = replacement(env)
+    task = late_delivery(env)   # the original reached admission first: a real queued task
+    assert task["status"] == "queued"
+    assert refused(env.programs.recover_dispatch, revocation(env, sha), None) == "recovery_task_exists"
+    assert _untouched(env) and fence_of(env) is None, "this delivery is never a cancellation of a task"
+
+
+@pytest.mark.parametrize("first", ["admission", "revocation"])
+def test_forced_interleavings_leave_exactly_one_winner(tmp_path, first):
+    """Both orders forced through the one writer transaction: the first writer is paused INSIDE its
+    transaction while the other is started; the loser refuses and leaves no partial state."""
+    from contextlib import contextmanager
+    env, _ = legacy_world(tmp_path)
+    _, sha = replacement(env)
+    entered, release, outcome = threading.Event(), threading.Event(), {}
+    workflow = Workflow(env.store, organization())
+    original = env.store.transaction
+    # Both inputs are read before the pause is installed: each call then opens exactly ONE writer
+    # transaction (submit's, or the revocation's), so the pause holds the first writer itself.
+    document, message = revocation(env, sha), deepcopy(assignment(env)["message"])
+
+    @contextmanager
+    def holding():   # LABELLED injected pause inside the first writer's transaction
+        with original() as tx:
+            entered.set()
+            release.wait(5)
+            yield tx
+
+    def admit():
+        try:
+            outcome["admission"] = workflow.submit(deepcopy(message))
+        except ContractError as exc:
+            outcome["admission"] = exc
+
+    def revoke():
+        try:
+            outcome["revocation"] = ResearchProgram(env.store, clock=env.clock).recover_dispatch(document, None)
+        except ProgramRefused as exc:
+            outcome["revocation"] = exc
+    runs = {"admission": admit, "revocation": revoke}
+    env.store.transaction = holding
+    winner = threading.Thread(target=runs[first])
+    winner.start()
+    assert entered.wait(5)
+    env.store.transaction = original
+    loser = threading.Thread(target=runs["revocation" if first == "admission" else "admission"])
+    loser.start()
+    release.set()
+    winner.join(10)
+    loser.join(10)
+    with env.store.transaction() as tx:
+        tasks, recoveries = tx.scan("tasks"), tx.scan(BUCKET_RECOVERIES)
+    if first == "admission":
+        assert outcome["admission"]["status"] == "queued" and len(tasks) == 1
+        assert outcome["revocation"].reason_code == "recovery_task_exists" and recoveries == [] and fence_of(env) is None
+    else:
+        assert outcome["revocation"]["state"] == "authorized" and len(recoveries) == 1
+        assert isinstance(outcome["admission"], ContractError) and tasks == [] and no_execution(env)
+
+
+def test_a_concurrent_race_between_admission_and_revocation_never_yields_both(tmp_path):
+    env, _ = legacy_world(tmp_path)
+    _, sha = replacement(env)
+    document, start, outcome = revocation(env, sha), threading.Barrier(2), {}
+
+    def admit():
+        start.wait()
+        outcome["admission"] = late_delivery(env)
+
+    def revoke():
+        start.wait()
+        try:
+            outcome["revocation"] = env.programs.recover_dispatch(document, None)
+        except ProgramRefused as exc:
+            outcome["revocation"] = exc
+    threads = [threading.Thread(target=admit), threading.Thread(target=revoke)]
+    for thread in threads:
+        thread.start()
+    for thread in threads:
+        thread.join()
+    admitted = isinstance(outcome["admission"], dict)
+    authorized = isinstance(outcome["revocation"], dict)
+    assert admitted != authorized, "exactly one of admission and revocation wins"
+
+
+def test_an_existing_foreign_fence_is_not_this_revocation(tmp_path):
+    from codex_harness.application.execution_fence import advance
+    env, _ = legacy_world(tmp_path)
+    _, sha = replacement(env)
+    message_id = assignment(env)["message"]["message_id"]
+    with env.store.transaction() as tx:   # LABELLED injected fault: an arbitrary fence for the identity
+        advance(tx, "tasks", message_id, 1, "someone-else")
+    assert refused(env.programs.recover_dispatch, revocation(env, sha), None) == "recovery_fence_exists"
+    assert _untouched(env)
+
+
+@pytest.mark.parametrize("revoke", [{"source_sha256": "f" * 64}, {"message_id": "0f0f0f0f-other-message"}])
+def test_a_changed_message_refuses_before_any_fence(tmp_path, revoke):
+    env, _ = legacy_world(tmp_path)
+    _, sha = replacement(env)
+    assert refused(env.programs.recover_dispatch, revocation(env, sha, **revoke), None) == "recovery_message_changed"
+    assert _untouched(env) and fence_of(env) is None
+
+
+@pytest.mark.parametrize("change, reason", [
+    (_put("tasks", "{id}", {"id": "task", "status": "queued"}), "recovery_task_exists"),
+    (_put("invocation_reservations", "res-1", {"id": "res-1", "task_id": None}), "recovery_invocation_exists"),
+    (_put("dge_sessions", "rp-001.c001.design", {"id": "rp-001.c001.design"}), "recovery_residue"),
+    (_in_flight, "recovery_effect_unknown"),
+    (_provider_slot, "recovery_provider_entered"),
+    (_disposition, "recovery_investigation_changed")])
+def test_revocation_keeps_every_other_precondition(tmp_path, change, reason):
+    env, _ = legacy_world(tmp_path)
+    _, sha = replacement(env)
+    document = revocation(env, sha)
+    change(env, assignment(env)["message"]["message_id"])
+    assert refused(env.programs.recover_dispatch, document, None) == reason
+    assert _untouched(env) and fence_of(env) is None
+
+
+def test_an_accepted_original_or_a_changed_scope_refuses_revocation(tmp_path):
+    (tmp_path / "accepted").mkdir()
+    env, _ = failed_world(tmp_path / "accepted", council=lambda store: FakeCouncil(store, status="accepted"))
+    _, sha = replacement(env)
+    document = {**request(env, sha), "schema": REVOCATION, "mode": "execution_revocation",
+                "revoke": {"message_id": "m-1", "source_sha256": "a" * 64}}
+    assert refused(env.programs.recover_dispatch, document, None) == "recovery_dispatch_not_failed"
+    (tmp_path / "scope").mkdir()
+    env, _ = legacy_world(tmp_path / "scope")
+    _, wide = replacement(env, "rp-wide", max_adoptions=2)
+    assert refused(env.programs.recover_dispatch, revocation(env, wide, "rp-wide"), None) == "recovery_scope_changed"
+    assert _untouched(env) and fence_of(env) is None
+
+
+@pytest.mark.parametrize("document", [
+    lambda d: {**d, "mode": "transport_proof"},
+    lambda d: {k: v for k, v in d.items() if k != "revoke"},
+    lambda d: {**d, "revoke": {"message_id": d["revoke"]["message_id"]}},
+    lambda d: {**d, "schema": "urn:zeus:research-dispatch-recovery:1"}])
+def test_the_revocation_request_is_strict(tmp_path, document):
+    env, _ = legacy_world(tmp_path)
+    _, sha = replacement(env)
+    assert refused(env.programs.recover_dispatch, document(revocation(env, sha)), None) == "recovery_request_invalid"
+
+
+def _drop_fence(env):
+    key = "tasks:" + assignment(env)["message"]["message_id"]
+    with env.store.lock:   # LABELLED injected fault: the fence row was lost (partial restore)
+        env.store.data.pop(("execution_fences", key))
+
+
+def _rewrite(**changes):
+    def fault(env):
+        with env.store.transaction() as tx:   # LABELLED injected fault: the fence row was rewritten
+            key = "tasks:" + assignment(env)["message"]["message_id"]
+            tx.put("execution_fences", key, {**tx.get("execution_fences", key), **changes})
+    return fault
+
+
+def _corrupt_row(env):
+    with env.store.transaction() as tx:   # LABELLED injected fault: the lineage evidence was edited
+        row = tx.get(BUCKET_RECOVERIES, INVESTIGATION)
+        row["revocation"]["owner"] = "someone-else"
+        tx.put(BUCKET_RECOVERIES, INVESTIGATION, row)
+
+
+def _task_appeared(env):
+    message_id = assignment(env)["message"]["message_id"]
+    with env.store.transaction() as tx:   # LABELLED injected fault: a task row appeared anyway
+        tx.put("tasks", message_id, {"id": message_id, "status": "queued"})
+
+
+def _moved_quarantine(env):
+    message_id = assignment(env)["message"]["message_id"]
+    with env.store.transaction() as tx:   # LABELLED injected fault: the outbox fence was released
+        tx.put("outbox_delivery", message_id, {**tx.get("outbox_delivery", message_id), "status": "retry"})
+
+
+@pytest.mark.parametrize("fault, reason", [
+    (_drop_fence, "recovery_revocation_fence_missing"),
+    (_rewrite(owner="someone-else"), "recovery_revocation_fence_changed"),
+    (_rewrite(generation=2), "recovery_revocation_fence_changed"),
+    (_rewrite(at="2000-01-01T00:00:00+00:00"), "recovery_revocation_fence_changed"),
+    (_corrupt_row, "recovery_revocation_corrupt"),
+    (_task_appeared, "recovery_revocation_breached"),
+    (_moved_quarantine, "recovery_publication_changed")])
+def test_a_missing_changed_or_corrupt_retained_fence_holds_replay_and_the_replacement_claim(tmp_path, fault, reason):
+    env, _ = legacy_world(tmp_path)
+    _, sha = replacement(env)
+    document = revocation(env, sha)
+    env.programs.recover_dispatch(document, None)
+    fault(env)
+    restarted = ResearchProgram(env.store, clock=env.clock)
+    assert refused(restarted.recover_dispatch, document, None) == reason
+    env.programs.resume("rp-002")
+    tick = replacement_runner(env).tick("rp-002")
+    assert tick.get("investigation") is None and tick["selected"] != "inv-" + INVESTIGATION[:24], \
+        "no replacement claim on a held revocation (an ordinary local candidate may still run)"
+    with env.store.transaction() as tx:
+        assert tx.get(BUCKET_DISPATCHES, REPLACEMENT) is None
+        assert tx.get(BUCKET_RECOVERIES, INVESTIGATION)["state"] == "authorized"
+
+
+def test_concurrent_and_restarted_revocations_record_one_lineage_one_fence_one_quarantine(tmp_path):
+    env, _ = legacy_world(tmp_path)
+    _, sha = replacement(env)
+    document, results, errors = revocation(env, sha), [], []
+
+    def owner():
+        try:
+            results.append(ResearchProgram(env.store, clock=env.clock).recover_dispatch(document, None))
+        except Exception as exc:   # pragma: no cover - reported below
+            errors.append(exc)
+    threads = [threading.Thread(target=owner) for _ in range(4)]
+    for thread in threads:
+        thread.start()
+    for thread in threads:
+        thread.join()
+    assert errors == [] and len(results) == 4 and sum(not r["cached"] for r in results) == 1
+    with env.store.transaction() as tx:
+        assert len(tx.scan(BUCKET_RECOVERIES)) == 1 and len(tx.scan("outbox_quarantine")) == 1
+        assert len(tx.scan("execution_fences")) == 1
+    assert ResearchProgram(env.store, clock=env.clock).recover_dispatch(document, None)["cached"] is True
+
+
+def test_a_failed_replacement_after_revocation_is_held(tmp_path):
+    env, _ = legacy_world(tmp_path)
+    _, sha = replacement(env)
+    env.programs.recover_dispatch(revocation(env, sha), None)
+    env.programs.resume("rp-002")
+    assert replacement_runner(env, status="failed").tick("rp-002")["result"] == "failed"
+    _, next_sha = replacement(env, "rp-004")
+    assert refused(env.programs.recover_dispatch, revocation(env, next_sha, "rp-004"), None) == "recovery_conflict"
+    assert isinstance(late_delivery(env), ContractError) and no_execution(env)
+
+
+def test_the_cli_revocation_builds_no_bus(tmp_path, monkeypatch):
+    env, _ = legacy_world(tmp_path)
+    _, sha = replacement(env)
+    path = tmp_path / "revocation.json"
+    path.write_text(json.dumps(revocation(env, sha)), encoding="utf-8")
+
+    def forbidden(*args, **kwargs):
+        raise AssertionError("revocation must not build a bus")
+    monkeypatch.setattr("codex_harness.adapters.bus.RedisBus", forbidden)
+    service, args = type("Service", (), {"store": env.store})(), type("Args", (), {"file": path})()
+    result = recover_cli(service, args)
+    assert result["exit_code"] == 0 and result["proof"] == "execution_revoked" and result["mode"] == "execution_revocation"
+
+
+def test_postgres_revocation_and_admission_serialize_to_one_winner(tmp_path, isolated_pgstore):
+    """Real isolated PostgreSQL (HARNESS_INTEGRATION=1): the writer-locked transactions serialize a
+    concurrent late admission against repeated owner revocation requests."""
+    env, _ = legacy_world(tmp_path, store=isolated_pgstore)
+    before = history(env.store)
+    _, sha = replacement(env)
+    document, outcome, results = revocation(env, sha), {}, []
+    start = threading.Barrier(3)
+
+    def admit():
+        start.wait()
+        outcome["admission"] = late_delivery(env)
+
+    def revoke():
+        start.wait()
+        try:
+            results.append(ResearchProgram(env.store, clock=env.clock).recover_dispatch(document, None))
+        except ProgramRefused as exc:
+            results.append(exc)
+    threads = [threading.Thread(target=admit)] + [threading.Thread(target=revoke) for _ in range(2)]
+    for thread in threads:
+        thread.start()
+    for thread in threads:
+        thread.join()
+    authorized = [r for r in results if isinstance(r, dict)]
+    with env.store.transaction() as tx:
+        tasks, recoveries = tx.scan("tasks"), tx.scan(BUCKET_RECOVERIES)
+    if isinstance(outcome["admission"], dict):
+        assert authorized == [] and len(tasks) == 1 and recoveries == []
+        assert all(r.reason_code == "recovery_task_exists" for r in results)
+        return
+    assert len(authorized) == 2 and sum(not r["cached"] for r in authorized) == 1 and tasks == []
+    assert isinstance(late_delivery(env), ContractError) and no_execution(env)
+    env.programs.resume("rp-002")
+    assert replacement_runner(env).tick("rp-002")["result"] == "accepted"
+    with env.store.transaction() as tx:
+        assert len(tx.scan(BUCKET_RECOVERIES)) == 1 and len(tx.scan("outbox_quarantine")) == 1
+        assert sorted(r["id"] for r in tx.scan(BUCKET_DISPATCHES)) == [INVESTIGATION, REPLACEMENT]
+    assert history(env.store) == before

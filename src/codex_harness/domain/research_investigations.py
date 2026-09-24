@@ -237,16 +237,44 @@ EFFECT_POSSIBLE_ATTEMPTS = {"retry"}
 UNSENT_ATTEMPTS = PRE_PUBLISH_ATTEMPTS | EFFECT_POSSIBLE_ATTEMPTS
 RECOVERY_AUTHORITY = ("owner-authorized replacement of one proven pre-provider dispatch failure; the "
                       "failed dispatch, run and cycle are retained history, never accepted or deleted")
+# Explicit execution revocation (SPEC "Actual legacy research recovery: execution revocation"): a
+# SEPARATE request version for an attempt whose transport history is unknown. It never claims the old
+# message was not delivered; it revokes that message's execution authority in THIS control store by
+# advancing the existing task identity fence while the task is still absent, so a late delivery can
+# never be admitted by `Workflow.submit`. Every other recovery precondition is unchanged.
+REVOCATION_SCHEMA = "urn:zeus:research-dispatch-recovery:2"
+REVOCATION_MODE = "execution_revocation"
+REVOCATION_FIELDS = RECOVERY_FIELDS | {"mode", "revoke"}
+REVOCATION_REVOKE_FIELDS = {"message_id", "source_sha256"}
+REVOCATION_PROOF = "execution_revoked"
+REVOCATION_BUCKET, REVOCATION_GENERATION = "tasks", 1
+REVOCATION_AUTHORITY = ("execution authority of the named assignment revoked in this control store only; its "
+                        "historical delivery stays unknown and is never reported as not delivered")
+
+
+def revocation_owner(request_sha256: str) -> str:
+    """The fence owner that marks THIS request's revocation; an arbitrary fence never carries it."""
+    return "research-dispatch-recovery:" + request_sha256
 
 
 def validate_recovery_request(document) -> dict:
     """Strict owner request; returns the canonical copy. It pins the investigation, the exact failed
-    dispatch identity and the registered replacement program by its immutable config digest."""
+    dispatch identity and the registered replacement program by its immutable config digest. Version 2
+    is the explicit `execution_revocation` mode and additionally pins the exact assignment revoked."""
     def check(condition, field):
         if not condition:
             raise InvestigationRefused("recovery_request_invalid", field)
-    check(isinstance(document, dict) and set(document) == RECOVERY_FIELDS, "root")
-    check(document["schema"] == RECOVERY_SCHEMA, "schema")
+    check(isinstance(document, dict) and document.get("schema") in {RECOVERY_SCHEMA, REVOCATION_SCHEMA}, "schema")
+    revocation = document["schema"] == REVOCATION_SCHEMA
+    check(set(document) == (REVOCATION_FIELDS if revocation else RECOVERY_FIELDS), "root")
+    if revocation:
+        check(document["mode"] == REVOCATION_MODE, "mode")
+        revoke = document["revoke"]
+        check(isinstance(revoke, dict) and set(revoke) == REVOCATION_REVOKE_FIELDS, "revoke")
+        check(type(revoke["message_id"]) is str and ID.fullmatch(revoke["message_id"]) is not None,
+              "revoke.message_id")
+        check(type(revoke["source_sha256"]) is str and SHA256.fullmatch(revoke["source_sha256"]) is not None,
+              "revoke.source_sha256")
     check(type(document["investigation"]) is str and INVESTIGATION_ID.fullmatch(document["investigation"]) is not None,
           "investigation")
     failed, replacement = document["failed"], document["replacement"]
@@ -262,9 +290,13 @@ def validate_recovery_request(document) -> dict:
     check(replacement["program"] != failed["program"], "replacement.program")
     check(type(replacement["config_sha256"]) is str and SHA256.fullmatch(replacement["config_sha256"]) is not None,
           "replacement.config_sha256")
-    return {"schema": RECOVERY_SCHEMA, "investigation": document["investigation"],
-            "failed": {k: failed[k] for k in sorted(RECOVERY_FAILED_FIELDS)},
-            "replacement": {k: replacement[k] for k in sorted(RECOVERY_REPLACEMENT_FIELDS)}}
+    canonical = {"schema": document["schema"], "investigation": document["investigation"],
+                 "failed": {k: failed[k] for k in sorted(RECOVERY_FAILED_FIELDS)},
+                 "replacement": {k: replacement[k] for k in sorted(RECOVERY_REPLACEMENT_FIELDS)}}
+    if revocation:
+        canonical.update(mode=REVOCATION_MODE,
+                         revoke={k: document["revoke"][k] for k in sorted(REVOCATION_REVOKE_FIELDS)})
+    return canonical
 
 
 def replacement_dispatch_id(investigation: str) -> str:
@@ -292,8 +324,13 @@ def check_recovery(request: dict, *, investigation, required_state: str, dispatc
     is the researcher assignment still unsent with no delivered, started or errored attempt. `fence`
     None expects the unfenced record; otherwise the delivery row must still be exactly that fence.
     The replacement program must be registered with the pinned digest, never ticked, in the same
-    repository and carry the same authority. Returns the identities of the fenced assignment."""
+    repository and carry the same authority. Returns the identities of the fenced assignment.
+
+    An `execution_revocation` request skips ONLY the transport derivation: its assignment must be the
+    exact message id and source digest it pinned (`recovery_message_changed`), and `transport` is
+    returned None because its history stays unknown; every other check above still applies."""
     failed = request["failed"]
+    revoke = request.get("revoke") if request.get("mode") == REVOCATION_MODE else None
     if not (isinstance(investigation, dict) and investigation.get("kind", KIND) == KIND
             and investigation.get("state") == required_state):
         raise InvestigationRefused("recovery_investigation_changed", "investigation")
@@ -340,7 +377,10 @@ def check_recovery(request: dict, *, investigation, required_state: str, dispatc
         raise InvestigationRefused("recovery_message_delivered", "failed.run_id")
     if not statuses <= UNSENT_ATTEMPTS:
         raise InvestigationRefused("recovery_effect_unknown", "failed.run_id")
-    transport = attempted_transport(attempts)
+    if revoke is not None and (message["message_id"] != revoke["message_id"]
+                               or digest(outbox[0]) != revoke["source_sha256"]):
+        raise InvestigationRefused("recovery_message_changed", "revoke")
+    transport = None if revoke is not None else attempted_transport(attempts)
     if fence is None:
         if delivery is not None and delivery.get("status") != "retry":
             raise InvestigationRefused("recovery_effect_unknown", "failed.run_id")
@@ -407,11 +447,63 @@ def check_transport_proof(bound, observation) -> bool:
     return absent
 
 
+def revocation_evidence(*, request_sha256: str, fence: dict, source_hash: str) -> dict:
+    """The immutable revocation record, copied from the task identity fence written in the same
+    transaction. `delivery` stays `unknown`: revocation is not a non-delivery claim."""
+    return {"bucket": fence["bucket"], "row_id": fence["row_id"], "generation": fence["generation"],
+            "owner": fence["owner"], "fenced_at": fence["at"], "message_sha256": source_hash,
+            "request_sha256": request_sha256, "delivery": "unknown", "authority": REVOCATION_AUTHORITY}
+
+
+def revocation_task_id(row) -> str | None:
+    """The task identity a revocation-mode lineage row fenced; None for a transport-proof row."""
+    if not (isinstance(row, dict) and row.get("proof") == REVOCATION_PROOF):
+        return None
+    revocation = row.get("revocation")
+    task_id = revocation.get("row_id") if isinstance(revocation, dict) else None
+    return task_id if type(task_id) is str and task_id else ""
+
+
+def revocation_held(row, *, fence, task, delivery) -> str | None:
+    """None when a revocation-mode lineage row still holds its OWN retained fence; otherwise the named
+    held condition. A transport-proof row is not judged here (None). An existing fence is proof only
+    when it is exactly the one this request wrote: same identity, generation, owner and time; a
+    missing, changed or corrupt fence, a task that appeared, or a quarantine that moved never releases
+    a replacement claim or a scoped receipt."""
+    task_id = revocation_task_id(row)
+    if task_id is None:
+        return None
+    revocation, request_sha = row.get("revocation"), row.get("request_sha256")
+    source = (row.get("fence") or {}).get("source_hash") if isinstance(row.get("fence"), dict) else None
+    if not (task_id and type(request_sha) is str and revocation.get("request_sha256") == request_sha
+            and revocation.get("bucket") == REVOCATION_BUCKET
+            and revocation.get("generation") == REVOCATION_GENERATION
+            and revocation.get("owner") == revocation_owner(request_sha)
+            and type(source) is str and revocation.get("message_sha256") == source
+            and (row.get("fence") or {}).get("outbox") == task_id):
+        return "recovery_revocation_corrupt"
+    if task is not None:
+        return "recovery_revocation_breached"
+    if fence is None:
+        return "recovery_revocation_fence_missing"
+    expected = {"id": REVOCATION_BUCKET + ":" + task_id, "bucket": REVOCATION_BUCKET, "row_id": task_id,
+                "generation": REVOCATION_GENERATION, "owner": revocation["owner"], "at": revocation.get("fenced_at")}
+    if not (isinstance(fence, dict) and fence == expected):
+        return "recovery_revocation_fence_changed"
+    if not (isinstance(delivery, dict) and delivery.get("status") == "quarantined"
+            and delivery.get("source_hash") == source):
+        return "recovery_publication_changed"
+    return None
+
+
 def recovery_view(row: dict) -> dict:
-    """Bounded read-only projection of one lineage row: identities, state and fixed codes only."""
+    """Bounded read-only projection of one lineage row: identities, state and fixed codes only.
+    `mode` and `revocation` are additive: a transport-proof row reads `transport_proof`, None."""
     keys = ("investigation", "state", "reason_code", "failed", "replacement", "fence", "proof", "request_sha256",
             "requested_at", "authorized_at", "claimed_at", "updated_at")
-    return {**{k: row.get(k) for k in keys}, "authority": RECOVERY_AUTHORITY}
+    mode = (row.get("request") or {}).get("mode") or "transport_proof"
+    return {**{k: row.get(k) for k in keys}, "mode": mode, "revocation": row.get("revocation"),
+            "authority": RECOVERY_AUTHORITY}
 
 
 def dispatch_counts(rows: list) -> dict:
@@ -430,9 +522,11 @@ def dispatch_counts(rows: list) -> dict:
 
 __all__ = ["AUTHORITY", "AUTHORIZED", "CLAIMED", "DISPATCHED", "DISPATCH_SCHEMA", "EXCLUSIONS", "FENCED",
            "FENCE_REASON", "KIND", "MAX_JOB_SAMPLE", "MAX_PROJECTS", "MAX_REASON_CODES", "PRE_PROVIDER_FAILURE",
-           "RECOVERED", "RECOVERY_SCHEMA", "REFUSED", "RESOLVED", "SNAPSHOT_SCHEMA", "SOURCE", "TRUST",
+           "RECOVERED", "RECOVERY_SCHEMA", "REFUSED", "RESOLVED", "REVOCATION_BUCKET", "REVOCATION_GENERATION",
+           "REVOCATION_MODE", "REVOCATION_PROOF", "REVOCATION_SCHEMA", "SNAPSHOT_SCHEMA", "SOURCE", "TRUST",
            "InvestigationRefused", "attempted_transport", "candidate_identity", "candidate_key", "check_recovery",
            "check_transport_proof", "current_dispatch_id",
            "dispatch_counts", "dispatch_row", "dispatch_view", "eligible_investigations", "recovery_view",
-           "replacement_dispatch_id", "scope_reference", "scoped_job_ids", "snapshot", "validate_recovery_request",
+           "replacement_dispatch_id", "revocation_evidence", "revocation_held", "revocation_owner",
+           "revocation_task_id", "scope_reference", "scoped_job_ids", "snapshot", "validate_recovery_request",
            "validate_source"]

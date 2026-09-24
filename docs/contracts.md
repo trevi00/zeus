@@ -1851,6 +1851,31 @@ naming the failed attempt is `research_dispatch_mismatch` and an unclaimed repla
 `research_dispatch_unknown`. `status` gains additive `recoveries` (lineage views) and `dispatches`
 rows gain `id`, `recovery`, `supersedes` and `current`; neither schedules work. No model, council or
 provider runs in the recovery, and no row is deleted or rewritten as accepted.
+Explicit execution revocation (SPEC "Actual legacy research recovery: execution revocation"). A
+SEPARATE request version `urn:zeus:research-dispatch-recovery:2` with `mode: execution_revocation`
+and `revoke` = the assignment's exact `message_id` and outbox `source_sha256` (strict fields; version
+1 stays the default strict transport-proof mode with every refusal above, including
+`recovery_transport_unbound`). It substitutes ONLY the transport proof: every other precondition
+above still applies, the pinned message must be the one recorded (`recovery_message_changed`), and an
+existing task fence for that id is foreign (`recovery_fence_exists`). In ONE store transaction, with
+no transport read, bus construction, model call or network, it quarantines the unsent assignment
+through the existing outbox fence, advances the existing `execution_fences` task identity fence of
+that message id to generation 1 with owner `research-dispatch-recovery:<request_sha256>` while the
+task is still absent, and records the lineage `authorized` with `proof: execution_revoked`,
+`fence.transport` null and the immutable `revocation` evidence (fence identity, generation, owner and
+time, message digest, request digest, `delivery: unknown`). `Workflow.submit` of a late identical
+delivery then refuses at `require_unused` before any task, reservation or provider start; admission
+that commits first makes the revocation refuse `recovery_task_exists` and write nothing. The
+guarantee covers consumers of THIS authoritative store through the existing Workflow admission only;
+it is not a non-delivery claim, not a cancellation of an existing task and not control of any other
+database or process. A replay (`cached`), the named program's replacement selection and claim, and
+the continuation owner's `accept_research` and its consumption each re-validate the EXACT retained
+fence first; a missing, changed or corrupt fence, a task that appeared or a released quarantine hold
+by name (`recovery_revocation_fence_missing`, `_fence_changed`, `_corrupt`, `_breached`,
+`recovery_publication_changed`; continuation prefixes `research_`) and never release. Any other
+request for the investigation, including a version-1 request after a revocation, is
+`recovery_conflict`. Lineage views gain additive `mode` (`transport_proof` for version 1) and
+`revocation`.
 `status`, the additive read-only monitor source `research_programs`
 (`urn:zeus:research-program-monitor:1`, at most 20 programs, `truncated` explicit) and the bounded
 `runtime/research-program/<id>/report.md` project counts, states, codes and outcomes from the store
