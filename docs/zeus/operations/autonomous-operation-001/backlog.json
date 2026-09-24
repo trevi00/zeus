@@ -386,6 +386,19 @@
       "dependencies": [
         "native-fixture"
       ]
+    },
+    {
+      "id": "outbox-observer",
+      "project_id": "research-improvement",
+      "criterion_id": "verified-loop",
+      "lane": "harness",
+      "manifest_path": "docs/zeus/operations/autonomous-operation-001/outbox-observer.operation.json",
+      "manifest_revision": "967c0e20cf0a0eb8a4cb1d9b0f4ba5cb50304e14",
+      "manifest_sha256": "83155338856767f2abf99b9917f0c22f55771a66452c5a392eaba94580f50701",
+      "priority": 280,
+      "dependencies": [
+        "native-fixture"
+      ]
     }
   ]
 }
