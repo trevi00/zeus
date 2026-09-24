@@ -1,0 +1,47 @@
+{
+  "schema": "urn:zeus:operation:1",
+  "id": "autonomous-operation-001-council-contract-recovery",
+  "base_revision": "644ac7daea19889501d1a048db3245255d2e490e",
+  "goal": {
+    "path": "docs/zeus/operations/autonomous-operation-001/SPEC.md",
+    "sha256": "d80e491f2bcbd47e11578b033e077e22dd6882213626f401fb06848337d4ec94",
+    "criterion": "Complete the existing autonomous operating loop with independently verified session, continuation and actual runtime ownership",
+    "rationale": "Finish the existing whole-goal acceptance matrix without manual user relay or weaker verification."
+  },
+  "budget": {
+    "mode": "subscription",
+    "total": 192,
+    "per_host": 192
+  },
+  "claude": {
+    "model": "claude-opus-5-5",
+    "timeout_seconds": 3600,
+    "max_budget_usd": 2
+  },
+  "plan": {
+    "objective": "Implement ONLY Settled council contract failure recovery in SPEC.md: align existing council field limits, and explicit same-scope initial/current dispatch successor after proven settled read-only output-contract failure. Preserve old recovery proofs/history and all research receipt gates. Targeted tests + Ruff only. No runtime deployment, live DB edits, full suite or self-approval.",
+    "allowed_paths": [
+      "src/codex_harness/domain/council.py",
+      "src/codex_harness/adapters/autonomous_roles.py",
+      "src/codex_harness/application/council.py",
+      "src/codex_harness/domain/research_investigations.py",
+      "src/codex_harness/application/research_program.py",
+      "src/codex_harness/adapters/research_program.py",
+      "src/codex_harness/adapters/research_program_cli.py",
+      "tests/test_council_roles.py",
+      "tests/test_council.py",
+      "tests/test_autonomous_roles.py",
+      "tests/test_research_recovery.py",
+      "tests/test_research_program.py",
+      "tests/test_research_program_cli.py",
+      "tests/test_research_investigations.py",
+      "tests/test_continuation_research.py",
+      "docs/contracts.md"
+    ],
+    "acceptance_criteria": [
+      "Producer schema/guidance and consumer council text limits agree; original6046 case is deterministic safe refusal, not truncation or relaxed limit.",
+      "Explicit successor requires exact immutable complete settled read-only proof, no conductor/implementation/promotion/unknown effect, and unchanged scope; initial and existing lineage supported without altering failed history.",
+      "Concurrent/replayed requests create one successor and retained fences/scoped receipt validation remain intact; negative evidence cases and existing recovery contracts tested."
+    ]
+  }
+}

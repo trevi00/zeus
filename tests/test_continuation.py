@@ -14,6 +14,7 @@ from copy import deepcopy
 from pathlib import Path
 
 import pytest
+from test_correction_feedback import seed_rejection
 from test_fleet import config as fleet_config
 from test_git_workspace import repository
 from test_operation import Bus, Collector, FakeBudget, FakeExecutor
@@ -784,18 +785,21 @@ def continuation_executor(tmp_path, monkeypatch, *, origin_status="succeeded", s
     rejected = git.capture(origin)
     service = Harness(MemoryStore(), organization())
     sessions = RecordingSessions()
-    executor = Executor(service, git, FileArtifacts(str(tmp_path / "artifacts")), worker_sessions=sessions)
+    artifacts = FileArtifacts(str(tmp_path / "artifacts"))
+    executor = Executor(service, git, artifacts, worker_sessions=sessions)
+    # A correction binding names its bound rejected review; the executor now reads those findings
+    # (SPEC "Readable correction evidence delivery"), so the fixture commits the real review rows.
+    predecessor = seed_rejection(service.store, artifacts, rejected, task_status=origin_status)
     binding = {"schema": dc.BINDING_SCHEMA, "operation_id": "cont-1", "policy_sha256": "a" * 64,
                "intent_id": "b" * 64, "family": "op-1", "route": dc.CORRECTION,
                "session": {"task_id": "op-1", "repository": "r" * 64},
                "workspace": {"origin_task_id": "origin-task", "head": rejected["revision"], "base": rejected["base"]},
-               "predecessor": {"job_id": "op-1"}}
+               "predecessor": predecessor}
     message = envelope("task.assign", "lead:improvement", "worker:implementation", "implement",
                        {"plan": {"objective": "fix", "acceptance_criteria": ["ok"], "allowed_paths": ["change.txt"]},
                         "operation": {"id": "cont-1"}, "continuation": binding}, "operation:cont-1")
     message["where"]["revision"] = rejected["base"]
     with service.store.transaction() as tx:
-        tx.put("tasks", "origin-task", {"id": "origin-task", "status": origin_status, "agent": "worker:implementation"})
         if stored:
             tx.put(LANE_BINDINGS, "cont-1", binding)
     Workflow(service.store, service.org).submit(message)
@@ -815,6 +819,8 @@ def test_executor_continues_the_workspace_and_passes_the_task_session_as_one_cal
     executor, service, sessions, calls, origin, rejected = continuation_executor(tmp_path, monkeypatch)
     task = executor.execute_one("worker:implementation")
     assert task["status"] == "succeeded", task.get("error")
+    feedback = calls[0].pop("correction_feedback")
+    assert feedback["decision_id"] == "dec-1" and "P1 release_suite.py" in feedback["findings"]["reason"]
     assert calls == [{"cwd": origin["path"], "workload": "implementation", "action": "implement",
                       "importance": None, "task_session": {"task_id": "op-1", "repository": "r" * 64},
                       "max_handoffs": 1}]

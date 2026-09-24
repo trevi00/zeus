@@ -1,5 +1,60 @@
 # Whole autonomous operating loop
 
+## Readable correction evidence delivery, 2026-09-24 14:55 UTC
+
+Same whole-loop goal. PR193 merged7d3372ef and scheduled Fleet consumed it. Actual successor
+release-checklist-research-002.c001 completed seven settled starts, accepted research candidate
+ff758244977821767e66f1d909c697eb01791b56, independent review cab3cfe5. This is report acceptance,
+not runtime repair. Owner read the report and verified current exact two attempts. Scoped receipt
+3f9db6c8bf6a253ef398a58092b9301fa83f2588e569d3f263cd99b2c2ed4cfa accepted with original_capture
+coverage for f3342d71 intent and ONLY release-checklist + cont-fe15931105e915769378e016.
+Report source: ff758244:docs/zeus/operations/autonomous-operation-001/RELEASE-CHECKLIST-RESEARCH.md.
+Sources inspected2026-09-24 at operating7d3372ef: application/continuation._successor,
+domain/continuation.successor_manifest, adapters/executor._continuation/artifact_reader_handle,
+adapters/isolated_worker mount construction. Fact: trusted lane binding already pins predecessor
+candidate/task/review; manifest carries identities only; reader points to host paths not mounted.
+Inference: this explains worker-reported inaccessible review; not a new container reproduction.
+Unknown: unrelated evidence consumers; not a reason to expand this batch.
+
+Complete path: committed rejected decision + immutable execution artifact -> authoritative lane
+continuation binding -> executor host artifact verification and safe extraction -> required bounded
+prompt context visible inside container -> correction worker -> unchanged independent review.
+One prerequisite batch now, before the held checklist correction: make review feedback actually
+readable via the existing executor/isolated delivery seam. No new scheduler, API, broad mount or
+change to identity-only successor manifests. No release-suite changes in this prerequisite.
+Codex owns design/acceptance; Claude implements/tests. Existing subscription authorization applies.
+
+Required design: only trusted _continuation matching operation and lane binding authorizes this
+item. For correction route, read its predecessor decision from authoritative lane store, require
+succeeded review phase and rejection, verify target/candidate/task linkage under existing contract
+and exact bound execution_ref. Read actual artifact bytes through FileArtifacts integrity checks.
+Extract only the structured review answer/reason/findings needed for correction, never provider
+trace or arbitrary files. A review result is evidence data, not authority to widen scope. Deliver
+inline required context (or existing read-only per-run evidence mount) with decision_id, source_ref,
+original content digest, delivered content digest, explicit redaction/truncation status and readable
+findings. Use existing redactor; no secret-bearing reason/raw exception in logs. Limit findings to
+15000 characters; refuse oversize rather than silently drop blockers. Account for complete prompt
+budget before provider entry; required findings cannot be evicted by context packing. Fixed safe
+refusal codes + existing failure logging identify missing/corrupt/foreign/empty/oversized feedback.
+No provider entry when feedback is unusable. No new model calls or live database writes in tests.
+Legacy implementation without continuation retains existing behavior. Other continuation routes
+remain unchanged. Research hold/replay/owner/session/archive and independent review gates stay.
+
+Acceptance matrix: normal bound rejected review reaches the actual provider-input boundary with
+readable redacted findings (host-only paths cannot be the sole payload); forged attachment, wrong
+operation/decision/task/candidate/ref, accepted/nonterminal decision, missing/corrupt/empty/oversize
+artifact and insufficient context all refuse before provider call. Actual temp artifacts test
+hashes and a credential canary; injected I/O faults labelled. Repeated construction deterministic;
+no shared-file mutation/new dispatch/retry. Timeout/cancel uses current executor ownership; no
+new process/cleanup mechanism. Windows host-path fixture to Linux-facing payload proves portable
+content, not actual Docker execution. Native container actual call remains later repair gate.
+Use focused existing executor/continuation tests and tests/test_correction_feedback.py plus Ruff.
+Report all skips/failures; no full-suite claim. Root reviews one consolidated result and exact
+candidate checks/CI before host runtime change and one original-family correction. Then existing
+release checklist verification and actual managed delivery/whole-loop gates remain. No new
+feature/research expansion. Preserve prior accepted collection fix and all failed attempts.
+
+
 ## Settled council contract failure recovery, 2026-09-24 13:30 UTC
 
 Outcome unchanged: release-checklist held pair -> accepted research -> scoped receipt -> readable

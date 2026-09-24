@@ -12,6 +12,8 @@ from uuid import uuid4
 from codex_harness.adapters.app_server import AppServer
 from codex_harness.adapters.autonomous_roles import admitted_delivery, role_context
 from codex_harness.adapters.claude_cli import ClaudeCodeRuntime, claude_settings
+from codex_harness.adapters.correction_feedback import deliver as correction_feedback
+from codex_harness.adapters.correction_feedback import require_context as require_feedback_context
 from codex_harness.adapters.embeddings import LocalEmbeddings
 from codex_harness.adapters.evidence_inspection import EvidenceInspector, trusted_interpreter
 from codex_harness.adapters.execution_output import evidence_json, persist_result, tool_usage
@@ -510,7 +512,7 @@ class Executor:
              schema: dict, read_only: bool = False, heartbeat=None, lease=None, stage=None,
              workload: str = "final_validation", importance: str | None = None,
              action: str | None = None, max_handoffs: int = 4, delivery: dict | None = None,
-             task_session: dict | None = None) -> dict:
+             task_session: dict | None = None, correction_feedback: dict | None = None) -> dict:
         # Codex model routing still decides every Codex model and names no other provider's model.
         # Which provider runs at all comes from the packaged policy and the host configuration;
         # the assignment message and the task details never take part (INV-CLAUDE-WORKER-001).
@@ -619,6 +621,9 @@ class Executor:
                 required["review_context"]["project_evidence"] = self._project_instructions(cwd)
         elif action == "implement" and self.evidence_profile is not None:
             required["project_evidence"] = self._project_instructions(cwd)
+        if correction_feedback is not None:
+            # Required, never an evictable evidence item: the findings themselves, not a host path.
+            required["correction_feedback"] = correction_feedback
         # INV-SESSION-001: task identity is stable, but recovery belongs to one
         # stage, evidence set and harness revision; never replay shortlist as final.
         binding = {"stage": stage, "evidence_ref": raw["ref"], "basis_revision": basis_revision}
@@ -688,6 +693,11 @@ class Executor:
                 # The compiler itself is unchanged; the final rendered guard after evidence assembly stays.
                 admit_required(len(ContextPacket(agent, key, snapshot, contract).render().encode("utf-8")),
                                council["delivery_bytes"])
+            if correction_feedback is not None:
+                # The complete required envelope with the findings is measured before compilation, so
+                # an overflow is the fixed `feedback_context_insufficient` refusal before any provider.
+                require_feedback_context(len(ContextPacket(agent, key, snapshot, contract).render().encode("utf-8")),
+                                         window - reserved)
             packet = compile_context(agent, key, snapshot, contract, items + recovery_items, window, reserved)
             before_counts = packet.estimated_tokens
             included = sum(item['id'].startswith('project-skill:') for item in packet.evidence)
@@ -1196,6 +1206,10 @@ class Executor:
                 # INV-CONTINUATION-001: only the trusted lane binding an Operation claim attached
                 # (never plan or model text) selects a continued workspace or a task session.
                 continuation = self._continuation(details)
+                # SPEC "Readable correction evidence delivery": a correction binding carries identities
+                # only; its bound review findings are verified and extracted here, before any workspace
+                # or provider effect, and travel inline as required context. Unusable feedback refuses.
+                feedback = correction_feedback(self.service.store, self.artifacts, continuation)
                 if continuation is not None and continuation["workspace"] is not None:
                     workspace = self._continued_workspace(task, continuation["workspace"])
                 else:
@@ -1218,7 +1232,8 @@ class Executor:
                                    workload="implementation", action="implement",
                                    importance=details.get("plan", {}).get("origin", {}).get("importance"),
                                    # A task-session turn is exactly one provider call (INV-WORKER-SESSION-001).
-                                   **({"task_session": task_session, "max_handoffs": 1} if task_session else {}))
+                                   **({"task_session": task_session, "max_handoffs": 1} if task_session else {}),
+                                   **({"correction_feedback": feedback} if feedback is not None else {}))
                 heartbeat()
                 result["candidate"] = self.git.capture(workspace)
                 if task_session and (result.get("task_session") or {}).get("adopted"):
