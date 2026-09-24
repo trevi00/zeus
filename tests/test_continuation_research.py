@@ -32,11 +32,17 @@ from codex_harness.adapters import continuation as adapter
 from codex_harness.adapters import continuation_cli
 from codex_harness.application.continuation import (
     BUCKET_RESEARCH_RECEIPTS,
+    BUCKET_RESEARCH_SUPPLEMENTS,
     Continuation,
     LaneEvidence,
 )
 from codex_harness.application.fleet import Fleet
-from codex_harness.application.portfolio import BUCKET_INVESTIGATIONS, Portfolio, family_id
+from codex_harness.application.portfolio import (
+    BUCKET_BINDINGS,
+    BUCKET_INVESTIGATIONS,
+    Portfolio,
+    family_id,
+)
 from codex_harness.application.research_program import BUCKET_DISPATCHES
 from codex_harness.domain import continuation as dc
 from codex_harness.domain.model import digest
@@ -857,3 +863,407 @@ def test_postgres_replay_and_concurrent_insertion_recheck_the_fence_in_one_write
     assert world.build().accept_research(document)["cached"] is True and receipts(world) == stored
     world.tick()
     assert only(world.intents(), id=research["id"])["state"] == dc.COMPLETED
+
+
+# ---- research coverage ownership (SPEC "Research coverage ownership: accepted003 receipt refusal") -----
+ATTESTATION = ("LABELLED fixture owner coverage attestation: the owner read the accepted report and judges that it "
+               "covers the captured root and its continuation successor (owner judgment, not a model verdict)\n")
+
+
+def bindings(world):
+    with world.control.transaction() as tx:
+        return {row["id"]: row for row in tx.scan(BUCKET_BINDINGS)}
+
+
+def supplements(world):
+    with world.control.transaction() as tx:
+        return {row["id"]: row for row in tx.scan(BUCKET_RESEARCH_SUPPLEMENTS)}
+
+
+class LostAfterEnqueue(Fleet):
+    def enqueue(self, *args):
+        super().enqueue(*args)
+        raise ConnectionError("response lost after the Fleet commit (injected fault)")
+
+
+def failed_root(world, op_id="op-x", path="docs/a.md", bind=True):
+    world.enqueue(op_id, path)
+    world.tick()
+    root, receipt = world.run_next(inspection="incomplete")
+    assert receipt["reason_code"] == "evidence_gate_refused"
+    if bind:
+        Portfolio(world.control, DEFINITIONS).bind(root, "ops", "c1")
+    return root
+
+
+def test_a_new_successor_inherits_its_origins_project_once_and_an_unbound_origin_is_never_guessed(tmp_path):
+    world = World(tmp_path)
+    world.register()
+    bound = failed_root(world, "op-x", "docs/a.md")
+    unbound = failed_root(world, "op-y", "docs/b.md", bind=False)
+    world.tick()
+    intents = world.intents()
+    x = only(intents, origin_job=bound, route=dc.EVIDENCE_REPAIR)
+    y = only(intents, origin_job=unbound, route=dc.EVIDENCE_REPAIR)
+    assert x["state"] == y["state"] == dc.ADMITTED
+    assert x["ownership"] == {"state": "inherited", "project_id": "ops", "criterion_id": "c1"}
+    assert y["ownership"] == {"state": "origin_unbound", "project_id": None, "criterion_id": None}
+    rows = bindings(world)
+    assert rows[x["successor_job"]]["project_id"] == "ops" and rows[x["successor_job"]]["criterion_id"] == "c1"
+    assert rows[x["successor_job"]]["lineage"] == {"origin_job": bound, "intent_id": x["id"]}
+    assert rows[x["successor_job"]]["recorded_by"] == "continuation_lineage"
+    assert y["successor_job"] not in rows and unbound not in rows, "no project is guessed for unbound work"
+    # Restart and further ticks: the same single binding, never rewritten.
+    stored = deepcopy(bindings(world))
+    world.tick(controller=world.build())
+    world.tick()
+    assert bindings(world) == stored
+
+
+def test_an_interrupted_admission_binds_once_on_replay_and_a_conflicting_binding_holds_the_intent(tmp_path):
+    world = World(tmp_path)
+    world.register()
+    failed_root(world)
+    lost = world.tick(controller=world.build(fleet=LostAfterEnqueue(world.control)))
+    assert lost["skipped"][0]["error_type"] == "ConnectionError"
+    intent = only(world.intents(), route=dc.EVIDENCE_REPAIR)
+    successor = intent["successor_job"]
+    assert intent["state"] == dc.PUBLISHED and successor in world.jobs() and successor not in bindings(world)
+    # The owner binds the admitted successor elsewhere meanwhile: the replay refuses and never overwrites.
+    Portfolio(world.control, DEFINITIONS).bind(successor, "other", "c1")
+    conflict = world.tick(controller=world.build())
+    assert {"subject": intent["id"], "reason_code": "successor_binding_conflict",
+            "next_owner": "portfolio"} in conflict["skipped"]
+    assert world.intents()[intent["id"]]["state"] == dc.PUBLISHED, "the intent does not advance"
+    assert bindings(world)[successor]["project_id"] == "other" and len(world.jobs()) == 2
+
+
+def test_concurrent_controllers_after_an_interrupted_admission_bind_and_admit_exactly_once(tmp_path):
+    world = World(tmp_path)
+    world.register()
+    root = failed_root(world)
+    world.tick(controller=world.build(fleet=LostAfterEnqueue(world.control)))
+    start = threading.Barrier(2)
+
+    def tick(controller):
+        start.wait()
+        world.tick(controller=controller)
+    threads = [threading.Thread(target=tick, args=(world.build(),)) for _ in range(2)]
+    for thread in threads:
+        thread.start()
+    for thread in threads:
+        thread.join()
+    intent = only(world.intents(), route=dc.EVIDENCE_REPAIR)
+    assert intent["state"] == dc.ADMITTED and len(world.jobs()) == 2
+    assert [h["state"] for h in intent["history"]].count(dc.ADMITTED) == 1
+    row = bindings(world)[intent["successor_job"]]
+    assert (row["project_id"], row["lineage"]) == ("ops", {"origin_job": root, "intent_id": intent["id"]})
+
+
+def accepted003(world, tmp_path):
+    """The actual accepted003 shape: the root and another family's jobs are bound and captured by the
+    accepted current dispatch; the root's evidence-repair successor (`cont-...`) was admitted unbound
+    before any binding existed, so the immutable sample excludes it and the receipt refuses."""
+    world.register()
+    root, successor, research = two_strikes(world, "op-x", "docs/a.md")
+    two_strikes(world, "op-z", "docs/c.md")
+    jobs = world.jobs()
+    other = sorted(job for job in jobs if job not in {root, successor} and jobs[job]["status"] == "failed")
+    investigation, dispatch = research_dispatch(world, tmp_path, [root, *other])
+    assert successor not in dispatch["job_ids"] and successor not in bindings(world)
+    with world.control.transaction() as tx:
+        assert successor in tx.get(BUCKET_INVESTIGATIONS, investigation)["job_ids"], "the broad family includes it"
+    repair = only(world.intents(), origin_job=root, route=dc.EVIDENCE_REPAIR)
+    return root, successor, research, investigation, dispatch, repair
+
+
+def accepted_promotion(world, dispatch, revision="9" * 40):
+    """LABELLED synthetic promotion evidence of the accepted council run (the rows the real promotion
+    writes: the run's promotion digest, the promotion receipt, the implementation task and the
+    accepting independent review); no model or provider produced them."""
+    run_id, graph = dispatch["run_id"], "7" * 64
+    with world.control.transaction() as tx:
+        run = tx.get("autonomous_runs", run_id)
+        tx.put("autonomous_runs", run_id, {**run, "promotion": {"id": run_id, "graph_sha256": graph}})
+        tx.put("tasks", "impl-003", {"id": "impl-003", "agent": "worker", "status": "succeeded",
+                                     "result": {"candidate": {"revision": revision}}})
+        tx.put("decisions_pending", "review-003", {"id": "review-003", "phase": "review_lead", "status": "succeeded",
+                                                   "input": {"candidate": {"revision": revision}},
+                                                   "result": {"accepted": True}})
+        tx.put("promotions", run_id, {"id": run_id, "graph_sha256": graph,
+                                      "evidence": {"decision_id": "review-003", "implementation_task_id": "impl-003"}})
+    return {"graph_sha256": graph, "candidate_revision": revision, "decision_id": "review-003"}
+
+
+def supplement_for(world, research, investigation, dispatch, repair, acceptance, **overrides):
+    receipt = receipt_for(world, research, investigation, dispatch)
+    attestation = world.artifacts.put(ATTESTATION, "owner-attestation")["ref"]
+    return {"schema": dc.SUPPLEMENT_SCHEMA,
+            **{k: receipt[k] for k in ("intent_id", "policy_id", "policy_sha256", "family", "attempts", "investigation")},
+            "dispatch": {**receipt["dispatch"], "id": dispatch["id"], "job_ids_sha256": dispatch["job_ids_sha256"]},
+            "captured": [repair["origin_job"]],
+            "descendants": [{"job": repair["successor_job"], "parent_job": repair["origin_job"], "intent_id": repair["id"]}],
+            "acceptance": acceptance, "report_ref": EVIDENCE[0], "attestation_ref": attestation, **overrides}
+
+
+def owned003(world, tmp_path):
+    root, successor, research, investigation, dispatch, repair = accepted003(world, tmp_path)
+    world.controller.reconcile_ownership(repair["id"])
+    acceptance = accepted_promotion(world, dispatch)
+    document = supplement_for(world, research, investigation, dispatch, repair, acceptance)
+    return root, successor, research, investigation, dispatch, repair, document
+
+
+def test_explicit_ownership_reconcile_proves_exact_lineage_only(tmp_path):
+    world = World(tmp_path)
+    root, successor, research, investigation, dispatch, repair = accepted003(world, tmp_path)
+    before = deepcopy((world.intents(), world.jobs()))
+    result = world.controller.reconcile_ownership(repair["id"])
+    assert result["reconciled"] is True and result["cached"] is False
+    assert (result["successor_job"], result["origin_job"], result["project_id"]) == (successor, root, "ops")
+    assert "not historical capture" in result["authority"]
+    assert bindings(world)[successor]["lineage"] == {"origin_job": root, "intent_id": repair["id"]}
+    assert world.controller.reconcile_ownership(repair["id"])["cached"] is True
+    assert (world.intents(), world.jobs()) == before, "no intent or Fleet row is written"
+    with world.control.transaction() as tx:
+        assert tx.get(BUCKET_DISPATCHES, investigation) == dispatch, "the capture is never rewritten"
+    for intent_id, reason in ((research["id"], "ownership_intent_invalid"), ("0" * 64, "ownership_intent_invalid")):
+        with pytest.raises(dc.ContinuationRefused, match=reason):
+            world.controller.reconcile_ownership(intent_id)
+
+
+def test_ownership_reconcile_refuses_an_unbound_origin_and_a_broken_lineage(tmp_path):
+    world = World(tmp_path)
+    world.register()
+    root, successor, research = two_strikes(world, "op-x", "docs/a.md")
+    repair = only(world.intents(), origin_job=root, route=dc.EVIDENCE_REPAIR)
+    with pytest.raises(dc.ContinuationRefused, match="ownership_origin_unbound"):
+        world.controller.reconcile_ownership(repair["id"])
+    assert bindings(world) == {}
+    Portfolio(world.control, DEFINITIONS).bind(root, "ops", "c1")
+    with world.control.transaction() as tx:   # LABELLED injected fault: the admitted manifest differs
+        job = tx.get("fleet_jobs", successor)
+        tx.put("fleet_jobs", successor, {**job, "manifest": {**job["manifest"], "id": "op-forged"}})
+    with pytest.raises(dc.ContinuationRefused, match="ownership_lineage_unproven"):
+        world.controller.reconcile_ownership(repair["id"])
+    with world.control.transaction() as tx:
+        tx.put("fleet_jobs", successor, job)
+    Portfolio(world.control, DEFINITIONS).bind(successor, "other", "c1")
+    with pytest.raises(dc.ContinuationRefused, match="successor_binding_conflict"):
+        world.controller.reconcile_ownership(repair["id"])
+    assert bindings(world)[successor]["project_id"] == "other", "never overwritten"
+
+
+def test_baseline_the_unbound_successor_is_excluded_and_the_receipt_refuses_even_after_ownership(tmp_path):
+    world = World(tmp_path)
+    root, successor, research, investigation, dispatch, repair = accepted003(world, tmp_path)
+    document = receipt_for(world, research, investigation, dispatch)
+    with pytest.raises(dc.ContinuationRefused, match="research_scope_unverified"):
+        world.controller.accept_research(document)
+    world.controller.reconcile_ownership(repair["id"])
+    accepted_promotion(world, dispatch)
+    with pytest.raises(dc.ContinuationRefused, match="research_scope_unverified"):
+        world.controller.accept_research(document)   # present ownership alone never widens the sample
+    assert receipts(world) == {}
+
+
+def test_accepted003_owner_supplement_releases_exactly_the_two_attempt_receipt_once(tmp_path):
+    world = World(tmp_path)
+    root, successor, research, investigation, dispatch, repair, document = owned003(world, tmp_path)
+    before = research_rows(world, investigation)
+    old_jobs = deepcopy(world.jobs())
+    recorded = world.controller.supplement_research_scope(document)
+    assert recorded["supplemented"] is True and recorded["cached"] is False
+    assert recorded["captured"] == [root] and [d["job"] for d in recorded["descendants"]] == [successor]
+    assert recorded["coverage"] == "owner_supplement" and "not the original capture" in recorded["authority"]
+    world.tick()
+    assert only(world.intents(), id=research["id"])["state"] == dc.RESEARCH_REQUIRED, "a supplement releases nothing"
+    assert world.controller.supplement_research_scope(document)["cached"] is True
+    with pytest.raises(dc.ContinuationRefused, match="research_supplement_conflict"):
+        world.controller.supplement_research_scope({**document, "captured": [root, successor]})
+
+    receipt = receipt_for(world, research, investigation, dispatch)
+    assert [a["job"] for a in receipt["attempts"]] == sorted([root, successor])
+    accepted = world.controller.accept_research(receipt)
+    assert accepted["coverage"] == "owner_supplement"
+    assert accepted["supplement_sha256"] == supplements(world)[research["id"]]["supplement_sha256"]
+    world.tick()
+    intents = world.intents()
+    assert intents[research["id"]]["state"] == dc.COMPLETED
+    assert intents[research["id"]]["research_coverage"] == "owner_supplement"
+    third = only(intents, origin_job=successor, route=dc.EVIDENCE_REPAIR)
+    assert third["state"] == dc.ADMITTED and third["ownership"]["state"] == "inherited"
+    # The original capture, the investigation and every failure verdict are exactly as they were.
+    assert research_rows(world, investigation) == before
+    assert {job: world.jobs()[job] for job in old_jobs} == old_jobs
+    status = world.controller.status("policy-1")
+    shown = only({row["id"]: row for row in status["intents"]}, id=research["id"])
+    assert shown["receipt"]["coverage"] == "owner_supplement" and shown["supplement"]["captured"] == [root]
+    other = [row for row in status["intents"] if row["route"] == dc.RESEARCH and row["id"] != research["id"]]
+    assert other and all(row["supplement"] is None for row in other), "no other job or family is covered"
+    world.tick(controller=world.build())
+    assert len(world.jobs()) == len(old_jobs) + 1, "one successor across replays"
+
+
+def _descendant(document, **change):
+    return {"descendants": [{**document["descendants"][0], **change}]}
+
+
+def _via_research_intent(document, world, ids):
+    return _descendant(document, intent_id=document["intent_id"])
+
+
+def _foreign_parent(document, world, ids):
+    other = next(row for row in world.intents().values() if row["route"] == dc.EVIDENCE_REPAIR
+                 and row["family"] != document["family"])
+    return _descendant(document, parent_job=other["origin_job"], intent_id=other["id"])
+
+
+def _arbitrary_job(document, world, ids):
+    other = next(row for row in world.intents().values() if row["route"] == dc.EVIDENCE_REPAIR
+                 and row["family"] != document["family"])
+    extra = {"job": other["successor_job"], "parent_job": other["origin_job"], "intent_id": other["id"]}
+    return {"descendants": document["descendants"] + [extra]}
+
+
+def _captured_too_much(document, world, ids):
+    return {"captured": sorted(document["captured"] + [document["descendants"][0]["job"]])}
+
+
+def _incomplete(document, world, ids):
+    return {"attempts": document["attempts"][:1]}
+
+
+def _stale_sample(document, world, ids):
+    return {"dispatch": {**document["dispatch"], "job_ids_sha256": "0" * 64}}
+
+
+def _other_candidate(document, world, ids):
+    return {"acceptance": {**document["acceptance"], "candidate_revision": "8" * 40}}
+
+
+def _missing_attestation(document, world, ids):
+    return {"attestation_ref": "sha256:" + hashlib.sha256(b"never stored").hexdigest()}
+
+
+def _no_descendants(document, world, ids):
+    return {"descendants": []}
+
+
+@pytest.mark.parametrize("change, reason", [
+    (_via_research_intent, "research_supplement_lineage_broken"),
+    (_foreign_parent, "research_supplement_lineage_broken"),
+    (_arbitrary_job, "research_supplement_scope_mismatch"),
+    (_captured_too_much, "research_supplement_capture_mismatch"),
+    (_incomplete, "research_coverage_partial"), (_stale_sample, "research_dispatch_mismatch"),
+    (_other_candidate, "research_supplement_acceptance_unproven"),
+    (_missing_attestation, "research_evidence_missing"), (_no_descendants, "research_supplement_invalid")])
+def test_a_forged_foreign_partial_or_unproven_supplement_is_refused_and_stores_nothing(tmp_path, change, reason):
+    world = World(tmp_path)
+    root, successor, research, investigation, dispatch, repair, document = owned003(world, tmp_path)
+    with pytest.raises(dc.ContinuationRefused) as info:
+        world.controller.supplement_research_scope({**document, **change(document, world, (root, successor))})
+    assert info.value.reason_code == reason
+    assert supplements(world) == {}
+    with pytest.raises(dc.ContinuationRefused, match="research_scope_unverified"):
+        world.controller.accept_research(receipt_for(world, research, investigation, dispatch))
+
+
+def test_an_unowned_successor_or_an_unaccepted_review_never_registers(tmp_path):
+    world = World(tmp_path)
+    root, successor, research, investigation, dispatch, repair = accepted003(world, tmp_path)
+    acceptance = accepted_promotion(world, dispatch)
+    document = supplement_for(world, research, investigation, dispatch, repair, acceptance)
+    with pytest.raises(dc.ContinuationRefused, match="research_supplement_ownership_mismatch"):
+        world.controller.supplement_research_scope(document)
+    world.controller.reconcile_ownership(repair["id"])
+    with world.control.transaction() as tx:   # LABELLED injected fault: the review did not accept
+        row = tx.get("decisions_pending", "review-003")
+        tx.put("decisions_pending", "review-003", {**row, "result": {"accepted": False}})
+    with pytest.raises(dc.ContinuationRefused, match="research_supplement_acceptance_unproven"):
+        world.controller.supplement_research_scope(document)
+    assert supplements(world) == {}
+
+
+def test_concurrent_identical_supplements_store_one_row(tmp_path):
+    world = World(tmp_path)
+    root, successor, research, investigation, dispatch, repair, document = owned003(world, tmp_path)
+    start, results = threading.Barrier(2), []
+
+    def submit():
+        start.wait()
+        owner = Continuation(world.control, lanes=world.lanes, evidence=world.evidence)
+        results.append(owner.supplement_research_scope(document))
+    threads = [threading.Thread(target=submit) for _ in range(2)]
+    for thread in threads:
+        thread.start()
+    for thread in threads:
+        thread.join()
+    assert sorted(r["cached"] for r in results) == [False, True] and len(supplements(world)) == 1
+
+
+def _review_withdrawn(world, successor):
+    with world.control.transaction() as tx:   # LABELLED injected fault: the accepted review changed
+        row = tx.get("decisions_pending", "review-003")
+        tx.put("decisions_pending", "review-003", {**row, "status": "retry"})
+    return "research_supplement_acceptance_unproven", ("decisions_pending", "review-003", row)
+
+
+def _attestation_lost(world, successor):
+    ref = supplements(world)[next(iter(supplements(world)))]["supplement"]["attestation_ref"]
+    path = stored_path(world, ref)
+    data = path.read_bytes()
+    path.unlink()   # LABELLED injected fault: the attestation bytes are gone
+    return "research_evidence_missing", ("file", path, data)
+
+
+def _ownership_changed(world, successor):
+    with world.control.transaction() as tx:   # LABELLED injected fault: the successor's binding changed
+        row = tx.get(BUCKET_BINDINGS, successor)
+        tx.put(BUCKET_BINDINGS, successor, {**row, "project_id": "other"})
+    return "research_supplement_ownership_mismatch", (BUCKET_BINDINGS, successor, row)
+
+
+def _supplement_tampered(world, successor):
+    with world.control.transaction() as tx:   # LABELLED injected fault: the stored supplement was edited
+        [row] = tx.scan(BUCKET_RESEARCH_SUPPLEMENTS)
+        tx.put(BUCKET_RESEARCH_SUPPLEMENTS, row["id"], {**row, "supplement": {**row["supplement"], "captured": []}})
+    return "research_supplement_corrupt", (BUCKET_RESEARCH_SUPPLEMENTS, row["id"], row)
+
+
+@pytest.mark.parametrize("fault", [_review_withdrawn, _attestation_lost, _ownership_changed, _supplement_tampered])
+def test_consumption_rechecks_the_supplement_and_holds_until_it_verifies_again(tmp_path, fault):
+    world = World(tmp_path)
+    root, successor, research, investigation, dispatch, repair, document = owned003(world, tmp_path)
+    world.controller.supplement_research_scope(document)
+    world.controller.accept_research(receipt_for(world, research, investigation, dispatch))
+    stored = deepcopy(receipts(world))
+    reason, undo = fault(world, successor)
+    result = world.tick(controller=world.build())
+    assert [s["reason_code"] for s in result["skipped"] if s["subject"] == research["id"]] == [reason]
+    assert world.intents()[research["id"]]["state"] == dc.RESEARCH_REQUIRED and receipts(world) == stored
+    jobs = len(world.jobs())
+    if undo[0] == "file":
+        undo[1].write_bytes(undo[2])
+    else:
+        with world.control.transaction() as tx:
+            tx.put(*undo)
+    world.tick()
+    assert world.intents()[research["id"]]["state"] == dc.COMPLETED and len(world.jobs()) == jobs + 1
+
+
+def test_a_new_attempt_after_the_supplement_refuses_both_its_receipt_and_a_reused_supplement(tmp_path):
+    world = World(tmp_path)
+    root, successor, research, investigation, dispatch, repair, document = owned003(world, tmp_path)
+    world.controller.supplement_research_scope(document)
+    receipt = receipt_for(world, research, investigation, dispatch)
+    world.controller.accept_research(receipt)
+    world.tick()
+    third, _ = world.run_next(inspection="incomplete")   # the released repair fails again
+    world.tick()
+    again = only(world.intents(), origin_job=third, route=dc.RESEARCH)
+    with pytest.raises(dc.ContinuationRefused, match="research_attempts_changed"):
+        world.controller.supplement_research_scope({**document, "intent_id": again["id"]})
+    with pytest.raises(dc.ContinuationRefused, match="research_attempts_changed"):
+        world.controller.accept_research({**receipt, "intent_id": again["id"]})
+    assert set(supplements(world)) == {research["id"]} and set(receipts(world)) == {research["id"]}

@@ -1,7 +1,10 @@
-"""`zeus continuation register|tick|status|identity|conduct|research-accept` (INV-CONTINUATION-001).
+"""`zeus continuation register|tick|status|identity|conduct|research-accept|research-supplement|
+ownership-reconcile` (INV-CONTINUATION-001).
 
-`register`, `tick`, `status`, `identity` and `research-accept` (the owner's scoped research receipt,
-verified and stored once; it moves no intent) run against the Fleet control store; `conduct` is the
+`register`, `tick`, `status`, `identity`, `research-accept` (the owner's scoped research receipt,
+verified and stored once; it moves no intent), `research-supplement` (the owner's typed scope
+supplement, stored once; it releases nothing) and `ownership-reconcile` (one admitted successor's
+Portfolio ownership through its persisted lineage) run against the Fleet control store; `conduct` is the
 lane-side child the controller launches (it is also the owner's manual command for one accepted
 operation). Refusals print a code and a type, never a manifest, a path, a DSN or a raw exception.
 """
@@ -35,6 +38,12 @@ def add_parser(commands) -> None:
     research = sub.add_parser("research-accept", help="Owner: record one scoped research receipt "
                               "(urn:zeus:continuation-research-receipt:1) for an exact research intent")
     research.add_argument("--file", type=Path, required=True, help="The owner's receipt JSON")
+    supplement = sub.add_parser("research-supplement", help="Owner: record one typed research scope supplement "
+                                "(urn:zeus:continuation-research-scope-supplement:1); releases nothing by itself")
+    supplement.add_argument("--file", type=Path, required=True, help="The owner's supplement JSON")
+    ownership = sub.add_parser("ownership-reconcile", help="Owner: bind one admitted continuation successor to its "
+                               "origin's Portfolio target through the persisted intent lineage")
+    ownership.add_argument("--intent", required=True, help="The successor's continuation intent id")
 
 
 def _config(service) -> dict:
@@ -116,6 +125,8 @@ def execute(service, args) -> dict:
         return {**Continuation(service.store).status(args.policy), "exit_code": 0}
     if command == "conduct":
         return conduct(service, args)
+    if command == "ownership-reconcile":
+        return {**adapter.reconcile_ownership(service.store, args.intent), "exit_code": 0}
     config = _config(service)
     if command == "identity":
         from codex_harness.domain.fleet import lane_of, repository_identity
@@ -127,6 +138,10 @@ def execute(service, args) -> dict:
     if command == "research-accept":
         from codex_harness.adapters.configuration import settings
         return {**adapter.accept_research(service.store, config, settings(), adapter.read_receipt(args.file)),
+                "exit_code": 0}
+    if command == "research-supplement":
+        from codex_harness.adapters.configuration import settings
+        return {**adapter.supplement_research(service.store, config, settings(), adapter.read_receipt(args.file)),
                 "exit_code": 0}
     from codex_harness.adapters.configuration import settings
     from codex_harness.bootstrap import build_observer

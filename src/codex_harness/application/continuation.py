@@ -43,6 +43,7 @@ the authorization stored on the intent; reconciling an already started effect ne
 from __future__ import annotations
 
 from codex_harness.application.execution_fence import current as current_fence
+from codex_harness.application.portfolio import BUCKET_BINDINGS, PortfolioRefused, inherit_binding
 from codex_harness.domain.continuation import (
     ADMITTED,
     AUTHORITY,
@@ -51,6 +52,8 @@ from codex_harness.domain.continuation import (
     COMPLETED,
     CONDUCTOR,
     CORRECTION,
+    COVERAGE_ORIGINAL,
+    COVERAGE_SUPPLEMENT,
     DELIVERY,
     DELIVERY_ABSENT,
     DELIVERY_BOUND,
@@ -90,6 +93,7 @@ from codex_harness.domain.continuation import (
     check_authorization,
     check_research_receipt,
     check_scope,
+    check_scope_supplement,
     classify,
     delivery_tuple,
     effect_free,
@@ -110,10 +114,12 @@ from codex_harness.domain.continuation import (
     research_attempts,
     successor_id,
     successor_manifest,
+    supplement_view,
     transition,
     validate_binding,
     validate_policy,
     validate_research_receipt,
+    validate_scope_supplement,
     view,
 )
 from codex_harness.domain.fleet import UNIT_CONDUCTOR, FleetRefused, held_units
@@ -136,6 +142,8 @@ LANE_BINDINGS = "continuation_bindings"
 FLEET_JOBS = "fleet_jobs"
 FLEET_UNITS = "fleet_units"
 BUCKET_RESEARCH_RECEIPTS = "continuation_research_receipts"
+BUCKET_RESEARCH_SUPPLEMENTS = "continuation_research_supplements"
+PROMOTIONS = "promotions"
 INVESTIGATIONS = "portfolio_investigations"
 RESEARCH_DISPATCHES = "research_investigation_dispatches"
 RESEARCH_RECOVERIES = "research_dispatch_recoveries"
@@ -297,13 +305,17 @@ class Continuation:
             policies = tx.scan(BUCKET_POLICIES)
             intents = tx.scan(BUCKET_INTENTS)
             receipts = tx.scan(BUCKET_RESEARCH_RECEIPTS)
+            supplements = tx.scan(BUCKET_RESEARCH_SUPPLEMENTS)
         if policy_id is not None:
             policies = [row for row in policies if row["id"] == policy_id]
             intents = [row for row in intents if row.get("policy_id") == policy_id]
         # A research intent shows the exact attempt set an owner receipt must cover, and the stored
-        # receipt (covered jobs, inspections, dispatch, evidence) once the owner recorded one.
+        # receipt (covered jobs, inspections, dispatch, evidence) once the owner recorded one. An owner
+        # scope supplement is shown beside it, never merged into the original capture.
         receipts = {row["id"]: receipt_view(row) for row in receipts}
-        views = [{**view(row), "attempts": research_attempts(intents, row), "receipt": receipts.get(row["id"])}
+        supplements = {row["id"]: supplement_view(row) for row in supplements}
+        views = [{**view(row), "attempts": research_attempts(intents, row), "receipt": receipts.get(row["id"]),
+                  "supplement": supplements.get(row["id"])}
                  if row["route"] == RESEARCH else view(row)
                  for row in sorted(intents, key=lambda r: (str(r.get("created_at")), r["id"]))]
         counts: dict = {}
@@ -330,6 +342,7 @@ class Continuation:
         receipt = validate_research_receipt(document)
         facts = self._research_facts(receipt)
         stored = facts.pop("stored")
+        supplement = self._supplement_of(facts)
         if stored is not None:
             refuse(stored.get("receipt") == receipt, "research_receipt_conflict", "operator", "intent_id")
             self._require_recovery(facts)   # a cached acceptance answers only while the fence still holds
@@ -337,8 +350,10 @@ class Continuation:
         self._require_recovery(facts)
         if isinstance(facts["intent"], dict) and facts["intent"].get("state") == RESEARCH_REQUIRED:
             facts["observed"] = self._observe_attempts(facts["jobs"])
-        check_research_receipt(receipt, **facts)
-        self._verify_evidence(receipt)
+        coverage = check_research_receipt(receipt, **facts)
+        self._verify_evidence(receipt["evidence_refs"])
+        if coverage == COVERAGE_SUPPLEMENT:
+            self._verify_evidence([supplement["supplement"]["report_ref"], supplement["supplement"]["attestation_ref"]])
         now = self.clock()
         with self.store.transaction() as tx:
             old = tx.get(BUCKET_RESEARCH_RECEIPTS, receipt["intent_id"])
@@ -356,8 +371,15 @@ class Continuation:
             intents = [row for row in tx.scan(BUCKET_INTENTS) if row.get("policy_id") == receipt["policy_id"]]
             refuse(research_attempts(intents, intent) == facts["attempts"], "research_attempts_changed", "operator",
                    "attempts")
+            # How the attempt set is covered is part of the stored row: consumption requires the same
+            # coverage (and the same immutable supplement) again, so status never merges the two.
+            if coverage == COVERAGE_SUPPLEMENT:
+                refuse(tx.get(BUCKET_RESEARCH_SUPPLEMENTS, receipt["intent_id"]) == supplement,
+                       "research_coverage_changed", ROUTE_OWNERS[RESEARCH], "supplement")
             row = {"id": receipt["intent_id"], "schema": RESEARCH_RECEIPT_SCHEMA, "receipt": receipt,
-                   "receipt_sha256": digest(receipt), "accepted_at": now, "recorded_by": "owner"}
+                   "receipt_sha256": digest(receipt), "accepted_at": now, "recorded_by": "owner",
+                   "coverage": coverage,
+                   "supplement_sha256": supplement["supplement_sha256"] if coverage == COVERAGE_SUPPLEMENT else None}
             tx.put(BUCKET_RESEARCH_RECEIPTS, row["id"], row)
         return self._receipt_result(row, cached=False)
 
@@ -365,10 +387,79 @@ class Continuation:
     def _receipt_result(row: dict, cached: bool) -> dict:
         return {"accepted": True, "cached": cached, **receipt_view(row)}
 
+    @staticmethod
+    def _supplement_of(facts: dict) -> dict | None:
+        """Move the stored supplement row out of the facts; the checks receive only its document."""
+        row = facts.pop("supplement_row")
+        if row is None:
+            facts["supplement"] = None
+            return None
+        # A stored row that no longer matches its own digest is not the supplement that was verified.
+        refuse(isinstance(row, dict) and isinstance(row.get("supplement"), dict)
+               and row.get("supplement_sha256") == digest(row["supplement"]), "research_supplement_corrupt",
+               ROUTE_OWNERS[RESEARCH], "supplement")
+        facts["supplement"] = row["supplement"]
+        return row
+
+    # ----- owner research scope supplement ------------------------------------------------
+    def supplement_research_scope(self, document) -> dict:
+        """Record the owner's typed scope supplement for one `research_required` intent whose accepted
+        current research dispatch sampled only part of its attempt set (SPEC "Research coverage
+        ownership: accepted003 receipt refusal").
+
+        Append-only and immutable: one row per intent in `continuation_research_supplements`, the
+        identical document replays (`cached`), any other is `research_supplement_conflict`. The
+        dispatch, its snapshot, the investigation, every failure verdict and every receipt stay as
+        they are. Verified against the same authoritative reads as a receipt plus the persisted
+        continuation lineage, the Portfolio bindings and the accepted run's promotion evidence
+        (`check_scope_supplement`), and the report/attestation bytes through the trusted evidence
+        port. It releases nothing by itself: a receipt still has to be accepted and consumed, and
+        both re-verify it."""
+        supplement = validate_scope_supplement(document)
+        facts = self._research_facts(supplement)
+        facts.pop("stored")
+        stored = facts.pop("supplement_row")
+        if stored is not None:
+            refuse(stored.get("supplement") == supplement, "research_supplement_conflict", "operator", "intent_id")
+            self._require_recovery(facts)
+            return self._supplement_result(stored, cached=True)
+        self._require_recovery(facts)
+        if isinstance(facts["intent"], dict) and facts["intent"].get("state") == RESEARCH_REQUIRED:
+            facts["observed"] = self._observe_attempts(facts["jobs"])
+        check_scope_supplement(supplement, **facts)
+        self._verify_evidence([supplement["report_ref"], supplement["attestation_ref"]])
+        now = self.clock()
+        with self.store.transaction() as tx:
+            old = tx.get(BUCKET_RESEARCH_SUPPLEMENTS, supplement["intent_id"])
+            if old is not None:
+                refuse(old.get("supplement") == supplement, "research_supplement_conflict", "operator", "intent_id")
+            self._require_recovery({"recovery_held": self._recovery_held(tx, supplement["investigation"])})
+            if old is not None:
+                return self._supplement_result(old, cached=True)
+            intent = tx.get(BUCKET_INTENTS, supplement["intent_id"])
+            refuse(isinstance(intent, dict) and intent.get("version") == facts["intent"].get("version")
+                   and intent.get("state") == RESEARCH_REQUIRED, "research_intent_changed", "operator", "intent_id")
+            intents = [row for row in tx.scan(BUCKET_INTENTS) if row.get("policy_id") == supplement["policy_id"]]
+            refuse(research_attempts(intents, intent) == facts["attempts"], "research_attempts_changed", "operator",
+                   "attempts")
+            investigation = supplement["investigation"]
+            current = current_dispatch_id(investigation, tx.get(RESEARCH_RECOVERIES, investigation),
+                                          tx.get(RESEARCH_HEADS, investigation))
+            refuse(current == supplement["dispatch"]["id"] and tx.get(RESEARCH_DISPATCHES, current) == facts["dispatch"],
+                   "research_dispatch_mismatch", ROUTE_OWNERS[RESEARCH], "dispatch")
+            row = {"id": supplement["intent_id"], "schema": supplement["schema"], "supplement": supplement,
+                   "supplement_sha256": digest(supplement), "recorded_at": now, "recorded_by": "owner"}
+            tx.put(BUCKET_RESEARCH_SUPPLEMENTS, row["id"], row)
+        return self._supplement_result(row, cached=False)
+
+    @staticmethod
+    def _supplement_result(row: dict, cached: bool) -> dict:
+        return {"supplemented": True, "cached": cached, **supplement_view(row)}
+
     def _research_facts(self, receipt: dict) -> dict:
-        """The authoritative reads one receipt is checked against: control-store rows in ONE short
-        transaction, then each attempt's lane evidence outside it. A lane or store failure raises:
-        an unread attempt never approves."""
+        """The authoritative reads one receipt (or scope supplement) is checked against: control-store
+        rows in ONE short transaction, then each attempt's lane evidence outside it. A lane or store
+        failure raises: an unread attempt never approves."""
         with self.store.transaction() as tx:
             policy = tx.get(BUCKET_POLICIES, receipt["policy_id"])
             intent = tx.get(BUCKET_INTENTS, receipt["intent_id"])
@@ -387,12 +478,25 @@ class Continuation:
             run_id = (dispatch or {}).get("run_id") if isinstance(dispatch, dict) else None
             run = tx.get(RESEARCH_RUNS, run_id) if type(run_id) is str else None
             jobs = {a["job"]: tx.get(FLEET_JOBS, a["job"]) for a in receipt["attempts"]}
+            # What an owner scope supplement is checked against: the stored supplement, the Portfolio
+            # binding of every attempt job and the accepted run's own promotion evidence rows.
+            supplement_row = tx.get(BUCKET_RESEARCH_SUPPLEMENTS, receipt["intent_id"])
+            bindings = {a["job"]: tx.get(BUCKET_BINDINGS, a["job"]) for a in receipt["attempts"]}
+            promotion = tx.get(PROMOTIONS, run_id) if type(run_id) is str else None
+            proof = (promotion.get("evidence") if isinstance(promotion, dict) else None) or {}
+            proof = proof if isinstance(proof, dict) else {}
+            task_id, decision_id = proof.get("implementation_task_id"), proof.get("decision_id")
+            acceptance = {"run": run, "promotion": promotion,
+                          "task": tx.get("tasks", task_id) if type(task_id) is str else None,
+                          "decision": tx.get("decisions_pending", decision_id) if type(decision_id) is str else None}
         held = isinstance(intent, dict) and intent.get("route") == RESEARCH
         run_result = (council_result(run_id, dispatch.get("manifest_sha256"), run) if type(run_id) is str
                       else {"result": "unknown", "reason_code": "dispatch_not_started", "row_status": None})
         return {"stored": stored, "intent": intent, "attempts": research_attempts(intents, intent) if held else [],
                 "policy": policy, "jobs": jobs, "observed": {}, "investigation": investigation,
-                "dispatch": dispatch, "run_result": run_result, "recovery_held": recovery_held}
+                "dispatch": dispatch, "run_result": run_result, "recovery_held": recovery_held,
+                "supplement_row": supplement_row, "lineage": {row["id"]: row for row in intents},
+                "bindings": bindings, "acceptance": acceptance}
 
     @staticmethod
     def _recovery_held(tx, investigation: str) -> str | None:
@@ -421,13 +525,14 @@ class Continuation:
         code = facts.pop("recovery_held")
         refuse(code is None, "research_" + str(code), ROUTE_OWNERS[RESEARCH], "dispatch")
 
-    def _verify_evidence(self, receipt: dict) -> None:
-        """Every evidence ref's actual bytes, read now through the trusted store and digest checked,
-        outside any store transaction. Integrity holds at this observed read only: acceptance checks
-        it, and each tick checks it again before consuming the receipt (a cached acceptance is
-        history, never a substitute). A missing verifier or any port failure refuses by code."""
+    def _verify_evidence(self, refs) -> None:
+        """Every evidence ref's actual bytes (a receipt's `evidence_refs`, a supplement's report and
+        attestation), read now through the trusted store and digest checked, outside any store
+        transaction. Integrity holds at this observed read only: acceptance checks it, and each tick
+        checks it again before consuming the receipt (a cached acceptance is history, never a
+        substitute). A missing verifier or any port failure refuses by code."""
         refuse(self.evidence is not None, "research_evidence_unverified", "operator", "evidence_refs")
-        for ref in receipt["evidence_refs"]:
+        for ref in refs:
             try:
                 self.evidence.verify(ref)
             except ContinuationRefused:
@@ -793,12 +898,70 @@ class Continuation:
             with self.store.transaction() as tx:
                 origin = tx.get(FLEET_JOBS, intent["origin_job"])
             self.fleet.enqueue(intent["lane"], intent["manifest"], origin["goal"], [])
+            # Admission is confirmed, the origin's Portfolio ownership inherited and the intent moved in
+            # ONE control-store transaction (no nested one): an interruption after the enqueue leaves
+            # `published`, the replay re-admits the same id and binds once, and a conflicting target
+            # binding refuses without advancing the intent (SPEC "Research coverage ownership").
             with self.store.transaction() as tx:
                 admitted = tx.get(FLEET_JOBS, intent["successor_job"])
-            refuse(admitted is not None and admitted.get("manifest_sha256") is not None, "admission_unconfirmed", "fleet")
-            intent = self._move(intent, ADMITTED)
+                refuse(admitted is not None and admitted.get("manifest_sha256") is not None, "admission_unconfirmed",
+                       "fleet")
+                ownership, _ = self._inherit(tx, intent)
+                previous, intent = self._apply(tx, intent, ADMITTED, {"ownership": ownership})
+            self._emit(previous, intent)
         return {"subject": intent["id"], "effect": intent["state"], "route": intent["route"],
                 "successor_job": intent.get("successor_job")}
+
+    def _inherit(self, tx, intent: dict) -> tuple[dict, bool]:
+        """The successor inherits exactly its origin's Portfolio binding through this persisted intent
+        (`portfolio.inherit_binding`); an unbound origin stays unbound, never guessed. Returns the
+        ownership recorded on the intent and whether the binding already existed."""
+        try:
+            bound = inherit_binding(tx, intent["successor_job"], intent["origin_job"], {"intent_id": intent["id"]},
+                                    self.clock())
+        except PortfolioRefused as exc:
+            raise ContinuationRefused("successor_" + exc.reason_code, "portfolio", "binding") from None
+        if bound is None:
+            return {"state": "origin_unbound", "project_id": None, "criterion_id": None}, False
+        binding = bound["binding"]
+        return ({"state": "inherited", "project_id": binding["project_id"], "criterion_id": binding["criterion_id"]},
+                bound["cached"])
+
+    # ----- explicit ownership reconciliation ----------------------------------------------
+    def reconcile_ownership(self, intent_id: str) -> dict:
+        """The owner's explicit reconciliation of ONE already admitted successor admitted before
+        ownership was inherited. Proven only from the persisted exact parent/successor intent and both
+        Fleet rows (the successor row carries the intent's own manifest on its lane; the origin row is
+        the job the intent was authorized on), never from arbitrary job ids, names or text. It asserts
+        PRESENT ownership only: no dispatch snapshot, capture or failure verdict is touched, and the
+        intent itself is not moved. One transaction; identical replays are cached."""
+        refuse(type(intent_id) is str and bool(intent_id), "ownership_intent_invalid", "operator", "intent_id")
+        with self.store.transaction() as tx:
+            intent = tx.get(BUCKET_INTENTS, intent_id)
+            refuse(isinstance(intent, dict) and intent.get("route") in SUCCESSOR_ROUTES
+                   and intent.get("state") in {ADMITTED, RETURNED, COMPLETED}
+                   and type(intent.get("successor_job")) is str, "ownership_intent_invalid", "operator", "intent_id")
+            refuse(tx.get(BUCKET_POLICIES, intent.get("policy_id")) is not None, "policy_unregistered", "operator",
+                   "policy_id")
+            successor = tx.get(FLEET_JOBS, intent["successor_job"])
+            origin = tx.get(FLEET_JOBS, intent["origin_job"])
+            source = (intent.get("authorization") or {}).get("source") or {}
+            predecessor = (intent.get("binding") or {}).get("predecessor") or {}
+            refuse(isinstance(successor, dict) and successor_id(intent["id"]) == intent["successor_job"]
+                   and successor.get("id") == intent["successor_job"] and successor.get("lane") == intent.get("lane")
+                   and successor.get("manifest") == intent.get("manifest")
+                   and successor.get("manifest_sha256") is not None
+                   and (intent.get("binding") or {}).get("operation_id") == intent["successor_job"],
+                   "ownership_lineage_unproven", "operator", "successor_job")
+            refuse(isinstance(origin, dict) and origin.get("lane") == intent.get("lane")
+                   and source.get("job") == intent["origin_job"] == predecessor.get("job_id")
+                   and source.get("manifest_sha256") == origin.get("manifest_sha256") is not None,
+                   "ownership_lineage_unproven", "operator", "origin_job")
+            ownership, cached = self._inherit(tx, intent)
+            refuse(ownership["state"] == "inherited", "ownership_origin_unbound", "portfolio", "origin_job")
+        return {"reconciled": True, "cached": cached, "intent_id": intent_id, "successor_job": intent["successor_job"], "origin_job": intent["origin_job"],
+                **{k: ownership[k] for k in ("project_id", "criterion_id")},
+                "authority": "present ownership through continuation lineage; not historical capture membership"}
 
     def _dispatch(self, ctx, intent: dict, job: dict) -> dict | None:
         """Guard, then ONE Fleet transaction reserves the shared execution unit and commits the
@@ -1042,12 +1205,21 @@ class Continuation:
                "research_policy_foreign", "operator", "policy")
         facts = self._research_facts(receipt)
         facts.pop("stored")
+        supplement = self._supplement_of(facts)
         self._require_recovery(facts)   # before the lane reads and before the hold is released
         facts["observed"] = self._observe_attempts(facts["jobs"])
-        check_research_receipt(receipt, **facts)
-        self._verify_evidence(receipt)
+        coverage = check_research_receipt(receipt, **facts)
+        # The coverage the receipt was accepted under, again: an original-capture receipt never
+        # becomes a supplement one, and a supplement receipt needs the same immutable supplement.
+        refuse(coverage == (stored.get("coverage") or COVERAGE_ORIGINAL)
+               and (coverage == COVERAGE_ORIGINAL or supplement["supplement_sha256"] == stored.get("supplement_sha256")),
+               "research_coverage_changed", ROUTE_OWNERS[RESEARCH], "supplement")
+        self._verify_evidence(receipt["evidence_refs"])
+        if coverage == COVERAGE_SUPPLEMENT:
+            self._verify_evidence([supplement["supplement"]["report_ref"], supplement["supplement"]["attestation_ref"]])
         moved = self._move(intent, COMPLETED, reason_code="research_receipt_accepted",
-                           evidence_refs=list(receipt["evidence_refs"]), research_receipt=stored["receipt_sha256"])
+                           evidence_refs=list(receipt["evidence_refs"]), research_receipt=stored["receipt_sha256"],
+                           research_coverage=coverage)
         return {"subject": moved["id"], "effect": "research_resolved", "route": RESEARCH}
 
     def _resume_await_backlog(self, ctx, intent, job):
@@ -1151,5 +1323,6 @@ def _code(reason):
     return cleaned if cleaned[:1].isalpha() else None
 
 
-__all__ = ["BUCKET_INTENTS", "BUCKET_POLICIES", "BUCKET_PROGRESS", "BUCKET_RESEARCH_RECEIPTS", "LANE_BINDINGS",
+__all__ = ["BUCKET_INTENTS", "BUCKET_POLICIES", "BUCKET_PROGRESS", "BUCKET_RESEARCH_RECEIPTS",
+           "BUCKET_RESEARCH_SUPPLEMENTS", "LANE_BINDINGS",
            "Continuation", "IntentChanged", "LaneEvidence"]
