@@ -477,6 +477,19 @@
       "dependencies": [
         "research-coverage"
       ]
+    },
+    {
+      "id": "release-checklist",
+      "project_id": "research-improvement",
+      "criterion_id": "verified-loop",
+      "lane": "harness",
+      "manifest_path": "docs/zeus/operations/autonomous-operation-001/release-checklist.operation.json",
+      "manifest_revision": "513e079d1905f191bc00de99dd33a6fc890a9644",
+      "manifest_sha256": "c9e2924a5fbb97d60a0629f98ff6531c0814b72386a5002b56828a82c46014f7",
+      "priority": 350,
+      "dependencies": [
+        "native-fixture"
+      ]
     }
   ]
 }
