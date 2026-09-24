@@ -568,6 +568,19 @@
       "dependencies": [
         "native-fixture"
       ]
+    },
+    {
+      "id": "capacity-monitoring",
+      "project_id": "research-improvement",
+      "criterion_id": "verified-loop",
+      "lane": "harness",
+      "manifest_path": "docs/zeus/operations/autonomous-operation-001/capacity-monitoring.operation.json",
+      "manifest_revision": "3a19174e5f7a488289494d45db9a58dfd375cc0e",
+      "manifest_sha256": "86a24310ea22e1c8c05608c347677378f7ac3dce7cc5cca6b7d73d68d129e5a9",
+      "priority": 420,
+      "dependencies": [
+        "native-fixture"
+      ]
     }
   ]
 }
