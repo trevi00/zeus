@@ -1,5 +1,67 @@
 # Whole autonomous operating loop
 
+## Real council progress: isolated delivery and settled-read-only successor, 2026-09-24
+
+Preserve PR188 operating06503dd. Legacy revocation succeeded, real delayed original admission was
+refused, original task/reservations remain absent. Replacement autonomous-recovery-research-002.c001
+actually completed researcher AND DBA roles (two succeeded tasks, two settled invocations) then
+failed foreign_message at dba. Actual receipt/facts: owner artifacts live-research-replacement-result
+and replacement-failure-facts.json. This is NOT pre-provider failure and cannot use that recovery mode.
+No automatic retry was made; original001 and replacement002 are immutable failed history.
+
+Source: autonomous_cli builds RedisBus(redis_url()) with shared configured namespace; RedisBus.stream
+is namespace:agent:role, receive XAUTOCLAIM/XREADGROUP workers; AutonomousRun._drain refuses foreign
+correlation. Different runs compete for role queues despite exact-correlation ownership. Observed
+foreign_message establishes rejection, not the foreign sender identity (not yet captured). Official
+Redis XREADGROUP docs fetched2026-09-24 https://redis.io/docs/latest/commands/xreadgroup/ describe
+stream/group delivery, not JSON correlation filtering. Current Redis7.4 supports those existing
+commands; no need for newer Redis or a second broker. Discriminating regression: two actual production
+CLI-wired run buses with identical agents and different run IDs; interleave assignments/reports.
+
+One coherent Claude batch: pin a deterministic run-scoped namespace/bus identity at the autonomous
+CLI owner, shared by every publisher/consumer within that run, separate across runs, stable on restart.
+Preserve configured namespace as prefix, safe bounded digest of run identity; correlation authorization
+remains strict. Trace scoped outbox, executor-produced reports/notices, drain and recovery probe
+together. No deleting/ACKing foreign messages or weakening foreign_message. Existing global Fleet
+and audit consumers keep existing routes. Retain old shared streams/pending entries as evidence;
+this change must not silently migrate/resume an in-flight run or republish old messages elsewhere.
+Production wiring test must catch old global bus. Record namespace identity safely in existing
+observations/receipt so routing failures are diagnosable without raw payloads/secrets.
+
+Companion owner capability for THIS observed failed successor: explicit exact-scope new authorization
+for a terminal foreign_message run after ONLY completed read-only researcher/DBA stages. Require
+all recorded tasks/invocations settled and bound to actual execution evidence, no running/unknown
+lease/reservation/termination/cleanup, no implementation/promotion/provider effect outside those
+read-only roles. Unknown/refused proof holds. Do not relabel two calls as zero or reuse their outputs
+as a newly accepted council. A fresh council may recompute them with measured usage.
+
+Use the existing research-program recovery owner/CLI and lineage, an explicit new request version
+for this post-read-only successor; existing strict transport and legacy revocation modes unchanged.
+Pin current failed dispatch/run/cycle/config, original investigation and new registered same-authority
+program; preserve every predecessor and its original task fence. Do not overwrite the sole original
+recovery receipt to pretend another attempt was the first. Append immutable authorization history
+and derive/update a versioned current pointer under existing transaction ownership. Exactly one
+successor per exact failed current head/request, idempotent/concurrent/restart safe. Another failure
+does not automatically get permission; owner must assess it. Reject active, successful, rejected,
+unknown and implementation-started predecessors. Quarantine old unsent publications through existing
+owner; completed task identities must remain non-reusable, no destructive broker cleanup. Receipt
+acceptance/consumption binds current successor and validates retained predecessor fences; stale
+receipts/foreign requests cannot release holds. Read-only status reports chain/current separately.
+
+Fixed acceptance matrix: real-shaped002 -> explicit fresh same-scope003 -> one successor and scoped
+receipt; arbitrary role/provider activity refuses. Evidence unavailable/corrupt refuses. Two buses
+interleaved don't steal delivery; same run identity restarts consistently; old global entries untouched.
+Replay/concurrent claims/stale current pointer/retained original fence corruption all fail safely or
+deduplicate as appropriate. Memory+isolated PG, actual disposable Redis integration where available;
+fixture faults labelled. No OS process changes, existing Windows/Linux CI applies. No network/model
+inside store tx, no nested writer observers, no universal recovery scheduler or autonomous widening.
+
+Run targeted autonomous/research_recovery/program/investigation/continuation tests and Ruff only;
+CI owns whole suite. Independent acceptance, owner PG/Redis checks, CI, cutover, then actual explicit
+successor003. No worker operating-data edits, new model calls for tests, issue closure or self-approval.
+Completion remains actual research -> scoped receipt -> candidate repair -> useful delivery, not
+passing these fixtures. This revises the SAME goal frame after a real state-boundary obstacle.
+
 ## Revocation resubmission: replay acceptance, 2026-09-24
 
 Candidate1e961d3 staged ONLY as correction input, not accepted/deployed. Review91d63405 found one
