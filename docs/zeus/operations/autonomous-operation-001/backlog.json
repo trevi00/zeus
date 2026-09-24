@@ -581,6 +581,19 @@
       "dependencies": [
         "native-fixture"
       ]
+    },
+    {
+      "id": "release-nesting",
+      "project_id": "research-improvement",
+      "criterion_id": "verified-loop",
+      "lane": "harness",
+      "manifest_path": "docs/zeus/operations/autonomous-operation-001/release-nesting.operation.json",
+      "manifest_revision": "fc4a38f07aa59f3146396ab38a5a984889eccc02",
+      "manifest_sha256": "80753cefed3a13f5aada53e8c3e1238c72d0e4f38ade17cedd7e9436570136f7",
+      "priority": 430,
+      "dependencies": [
+        "native-fixture"
+      ]
     }
   ]
 }
