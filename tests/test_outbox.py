@@ -5,11 +5,13 @@ from datetime import datetime, timedelta, timezone
 from types import SimpleNamespace
 from uuid import uuid4
 
+import psycopg
 import pytest
+from psycopg import sql
 
 from codex_harness.adapters.contracts import validate_message
 from codex_harness.adapters.monitoring import DatabaseFacts
-from codex_harness.adapters.store import MemoryStore
+from codex_harness.adapters.store import MemoryStore, PostgresStore
 from codex_harness.application.monitoring import Monitoring
 from codex_harness.application.service import Harness
 from codex_harness.bootstrap import organization
@@ -169,9 +171,29 @@ def test_bounded_cursor_reaches_later_records_and_retains_legacy_semantics(servi
     assert len(bus.messages) == 1
 
 
+def committed_started_attempts(store):
+    """Independent observer of the COMMITTED intent at publish time. `_publish` calls the bus while
+    its own transaction holds the writer lock, so PostgreSQL is read on a separate read-only
+    connection that never takes `pg_advisory_xact_lock` and sees only committed rows, confined to
+    the fixture's isolated schema; the memory store's lock is re-entrant and holds only commits."""
+    if not isinstance(store, PostgresStore):
+        with store.transaction() as tx:
+            return [deepcopy(a) for a in tx.scan('outbox_attempts') if a['status'] == 'started']
+    with psycopg.connect(store.dsn, connect_timeout=5) as conn:
+        conn.read_only = True
+        with conn.transaction():
+            conn.execute("SET LOCAL statement_timeout = '5s'")
+            [schema] = conn.execute('SELECT current_schema()').fetchone()
+            assert schema.startswith('test_'), 'observer is confined to the isolated fixture schema'
+            rows = conn.execute(sql.SQL("""SELECT body FROM {} WHERE bucket = 'outbox_attempts'
+                AND body->>'status' = 'started' ORDER BY id LIMIT 100""").format(
+                sql.Identifier(schema, 'documents'))).fetchall()
+    return [row[0] for row in rows]
+
+
 class BoundBus(Bus):
-    """LABELLED binding-capable bus: a fixed credential-free identity; `seen` records what the store
-    held for the attempt AT the publish call, and `refuse` raises the pre-write refusal."""
+    """LABELLED binding-capable bus: a fixed credential-free identity; `seen` records what was
+    committed for the attempt AT the publish call, and `refuse` raises the pre-write refusal."""
 
     def __init__(self, service, name='a', refuse=False, fail=None):
         super().__init__()
@@ -185,8 +207,7 @@ class BoundBus(Bus):
 
     def publish(self, message, transport=None):
         self.bound.append(transport)
-        with self.service.store.transaction() as tx:
-            self.seen.append([deepcopy(a) for a in tx.scan('outbox_attempts') if a['status'] == 'started'])
+        self.seen.append(committed_started_attempts(self.service.store))
         if self.refuse:
             raise TransportChanged('transport_changed')
         return super().publish(message)
