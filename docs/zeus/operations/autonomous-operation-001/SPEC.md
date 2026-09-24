@@ -1,5 +1,50 @@
 # Whole autonomous operating loop
 
+## Release CI cancellation: audit-service signal ownership, 2026-09-24
+
+Same release completion matrix; preserve accepted nesting e8511d0 and all earlier
+accounting/redaction/fencing/cleanup evidence. PR199 exact e8511d0 CI36071816137
+Ubuntu3.12/3.14 failed two release cancellation checks; Ubuntu3.12 had
+3815 passed/492 skipped/2 failed. Root focused Windows+PG71 passed did not include
+prior audit-service entrypoint calls. No merge or deployment is approved.
+
+Discriminating root check: actual tests/test_audit_service.py (23 passed), then
+real child process + interrupt_main in the SAME Windows Python process. SIGINT
+changed from default_int_handler to audit_service.run.<locals>.<lambda>; child
+exited normally and cancellation was false. Evidence D:/workspaces/zeus/artifacts/
+autonomous-operation-001/release-cancel-handler-probe/result.json and
+probe-release-cancel-handler.py. This establishes the leak and swallowed cancellation
+locally, not a captured CI signal trace. CI raw logs release-ci-ubuntu312.log and
+release-ci-ubuntu314.log are preserved in that artifact directory.
+Primary source consulted 2026-09-25: Python3.14.7 _thread documentation,
+https://docs.python.org/3/library/_thread.html#_thread.interrupt_main : interrupt_main
+schedules the associated handler, not an unconditional KeyboardInterrupt. Source
+audit_service.run installs handlers and has no restoration in its finally block.
+Alternatives (slow timer/OS timing) do not explain this observed handler replacement.
+
+One bounded Claude implementation: restore only signal handlers installed by
+audit_service.run on all exits, including runner exception and partial installation
+failure; existing host_delivery entrypoint restoration is a local SSOT reference.
+Retain graceful runner.stop behavior while running, original exceptions and observer/
+lock cleanup. Do not force default handlers in release tests to conceal service leakage.
+Do not change unrelated entrypoints, release accounting, deadlines or acceptance.
+Test normal and exceptional exit, partial installation cleanup, actual graceful stop,
+and audit-service tests followed by release cancellation in one pytest process.
+Use deterministic handler observations plus existing REAL subprocess cancellation
+tests; do not replace actual child execution with mocks. Handler-install fault may be
+labelled injection. Platform unsupported signals stay conditional; do not weaken skip
+or expected cancellation. No concurrency feature redesign; lifetime restoration is scope.
+
+Worker checks: python -m pytest tests/test_audit_service.py tests/test_release_suite.py
+tests/test_release_runner.py tests/test_release_recovery.py tests/test_release_health.py
+tests/test_check_binding.py tests/test_runner_categories.py -q -p no:cacheprovider;
+python -m ruff check . . Full repository checks belong to CI. Independent Codex review,
+root same-process reproducer, Windows+PG focused checks and CI precede PR199 integration.
+This is a linked owner assignment for the evidenced adjacent service boundary, not
+a grant replay or counter reset. Original spent capacity grant and family unchanged.
+No additional model call outside Fleet, no merge/deploy/live service writes by worker.
+
+
 ## Release checklist nested accounting correction, 2026-09-24 23:00 UTC
 
 Original release checklist outcome, same matrix. Live capacity granta098efcb admitted
