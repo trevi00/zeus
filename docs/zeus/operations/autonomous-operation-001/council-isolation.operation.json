@@ -1,0 +1,56 @@
+{
+  "schema": "urn:zeus:operation:1",
+  "id": "autonomous-operation-001-council-isolation",
+  "base_revision": "c57b72d1dd8ae8a8ba5b862d64d9352541c490e0",
+  "goal": {
+    "path": "docs/zeus/operations/autonomous-operation-001/SPEC.md",
+    "sha256": "be6996bfe3cc61e855fde5769e4277387f78555ee861b03b9cf2fd8298ff3fee",
+    "criterion": "Complete the existing autonomous operating loop with independently verified session, continuation and actual runtime ownership",
+    "rationale": "Finish the existing whole-goal acceptance matrix without manual user relay or weaker verification."
+  },
+  "budget": {
+    "mode": "subscription",
+    "total": 192,
+    "per_host": 192
+  },
+  "claude": {
+    "model": "claude-opus-5-5",
+    "timeout_seconds": 3600,
+    "max_budget_usd": 2
+  },
+  "plan": {
+    "objective": "Implement ONLY Real council progress: isolated delivery and settled-read-only successor in SPEC.md. Preserve all PR188 gates; bind production buses per run and explicit immutable same-scope successor lineage after proven settled researcher/DBA-only foreign_message. Targeted tests/Ruff, no full suite, no operating edits.",
+    "allowed_paths": [
+      "src/codex_harness/domain/research_program.py",
+      "src/codex_harness/domain/research_investigations.py",
+      "src/codex_harness/application/research_program.py",
+      "src/codex_harness/adapters/research_program.py",
+      "src/codex_harness/adapters/research_program_cli.py",
+      "src/codex_harness/application/continuation.py",
+      "src/codex_harness/domain/continuation.py",
+      "tests/test_research_program.py",
+      "tests/test_research_program_cli.py",
+      "tests/test_research_investigations.py",
+      "tests/test_research_recovery.py",
+      "tests/test_continuation_research.py",
+      "docs/contracts.md",
+      "src/codex_harness/application/execution_fence.py",
+      "src/codex_harness/application/workflow.py",
+      "tests/test_workflow.py",
+      "tests/test_execution_fence.py",
+      "src/codex_harness/adapters/autonomous_cli.py",
+      "src/codex_harness/adapters/bus.py",
+      "src/codex_harness/application/autonomous.py",
+      "src/codex_harness/adapters/autonomous_evidence.py",
+      "tests/test_autonomous.py",
+      "tests/test_bus.py",
+      "tests/test_autonomous_roles.py"
+    ],
+    "acceptance_criteria": [
+      "Run-scoped production buses retain exact correlation guards; two concurrent runs do not steal messages and old shared streams untouched.",
+      "Explicit owner successor of exact failed current read-only run requires actual settled execution evidence and no active/unknown/effectful work; immutable lineage/current receipt binding.",
+      "Atomic replay/concurrency/restart safe, retained original revocation fence still validated, stale receipts refuse, no automatic retry or terminal history rewrite.",
+      "Targeted tests/Ruff and PG/Redis integration coverage with honest executed/skipped distinction."
+    ]
+  }
+}
