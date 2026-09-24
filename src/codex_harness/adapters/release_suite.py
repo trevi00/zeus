@@ -31,12 +31,13 @@ from codex_harness.domain.check_results import (
     reconcile_nodes,
 )
 from codex_harness.domain.model import canonical
-from codex_harness.domain.observation import redact_text
+from codex_harness.domain.observation import redact_text, redact_value
 
 BATCH_NODES = 200
 LOG_HEAD_BYTES = 16 * 1024
 LOG_TAIL_BYTES = 240 * 1024
 EVENTS_TAIL_BYTES = 1024 * 1024
+NODE_FIELD_CHARS = 4096
 PLUGIN_MODULE = "release_accounting_plugin"
 REPORT_ENV = "RELEASE_ACCOUNTING_REPORT"
 SELECT_ENV = "RELEASE_ACCOUNTING_SELECT"
@@ -193,11 +194,14 @@ class ReleaseSuite:
     def _receipt(self, label, argv, observation, events, torn, stdout, stderr, report, verdict, **extra):
         raw = report.read_bytes()[-EVENTS_TAIL_BYTES:] if report.exists() else b""
         text, redactions = redact_text(raw.decode("utf-8", errors="replace"))
+        # Progress and reconciliation name node IDs, and a parameter ID can carry a credential.
+        (progress, verdict, extra), fields_redacted, _ = redact_value([_progress(events), verdict, extra],
+                                                                       max_chars=NODE_FIELD_CHARS)
         body = {"kind": "release-suite-process", "label": label, "argv": argv, **observation,
                 "stdout": bounded_log(stdout), "stderr": bounded_log(stderr),
                 "events": {"text": text, "bytes": report.stat().st_size if report.exists() else 0,
                            "parsed": len(events), "torn": torn, "redactions": redactions},
-                "progress": _progress(events), "verdict": verdict, **extra}
+                "progress": progress, "verdict": verdict, "redacted_fields": fields_redacted, **extra}
         return self.artifacts.put(canonical(body), "canary-suite")["ref"]
 
     def _suite(self, argv, cwd, timeout, env, root, context):

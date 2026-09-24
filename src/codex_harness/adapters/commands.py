@@ -9,6 +9,8 @@ import time
 # has to be able to describe the Windows policy from a Linux test.
 CREATE_NO_WINDOW = getattr(subprocess, "CREATE_NO_WINDOW", 0x08000000)
 CREATE_NEW_PROCESS_GROUP = getattr(subprocess, "CREATE_NEW_PROCESS_GROUP", 0x00000200)
+# How long a killed logged child may take to be reaped before cleanup reports it as unreaped.
+REAP_SECONDS = 10
 
 
 def python_channel_environment(base: dict | None = None) -> dict:
@@ -100,7 +102,10 @@ def _cleanup(process: subprocess.Popen) -> dict:
     """Kill the tree, reap the child and say whether the descendants are provably gone.
 
     `descendants_gone` is True only when the POSIX process group is observed empty; Windows
-    `taskkill /T` does not enumerate what it killed, so there the answer is None (unknown).
+    `taskkill /T` does not enumerate what it killed, so there the answer is None (unknown). When
+    the tree kill fails the direct child is killed on its own, and reaping is bounded by
+    REAP_SECONDS: a child that survives is reported `reaped: False` instead of hanging the owner
+    before its timeout or cancel evidence is written.
     """
     try:
         cleanup = _kill_tree(process)
@@ -108,7 +113,17 @@ def _cleanup(process: subprocess.Popen) -> dict:
         cleanup = {"method": "killpg", "exit_code": None}
     except (OSError, subprocess.SubprocessError) as exc:
         cleanup = {"method": "taskkill" if os.name == "nt" else "killpg", "error": type(exc).__name__}
-    process.wait()
+        try:
+            process.kill()
+            cleanup["fallback"] = "kill"
+        except OSError as kill_error:
+            cleanup["fallback"] = "kill failed: " + type(kill_error).__name__
+    try:
+        process.wait(timeout=REAP_SECONDS)
+    except subprocess.TimeoutExpired:
+        return {**cleanup, "reaped": False, "descendants_gone": None,
+                "reason": f"child not reaped within {REAP_SECONDS}s of the kill; descendants unknown"}
+    cleanup["reaped"] = True
     if os.name == "nt":
         return {**cleanup, "descendants_gone": None,
                 "reason": "taskkill /T does not enumerate descendants; not independently observed"}

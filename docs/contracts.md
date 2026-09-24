@@ -370,8 +370,12 @@ every process; a lost fence or a cancel, during collection or any batch, raises 
 report is stored, and nothing is verified. Failing to delete the owner temporary directory (a
 Windows descendant still holding a file) never replaces the verdict or the interruption. Output streams to owner files, so a timeout or cancel keeps it. Each process receipt
 holds a redacted head+tail of stdout/stderr, the accounting events, the last started and finished
-test (explicitly not blamed as the cause) and the cleanup. On POSIX, `descendants_gone` is true only
-when the process group is seen empty; on Windows it is null (unknown). One suite report links the
+test (explicitly not blamed as the cause) and the cleanup. Node IDs in the progress and
+reconciliation fields are redacted like the logs (a parameter ID can carry a credential), and the
+receipt counts those redactions. On POSIX, `descendants_gone` is true only
+when the process group is seen empty; on Windows it is null (unknown). When the tree kill fails
+the direct child is killed on its own, and reaping is bounded: a child still alive after
+`REAP_SECONDS` is `reaped: false` with unknown descendants, and the receipt is still written. One suite report links the
 collection receipt, the manifest, every batch and its counts, the not_run count and the verdict.
 `run_process` keeps its interface and behaviour; `run_logged_process` is the separate facility.
 

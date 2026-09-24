@@ -153,6 +153,62 @@ def test_unexpected_or_unfinished_accounting_is_not_a_pass():
                                                        "missing": ["b"], "duplicate": ["a"], "unexpected": []}
 
 
+SECRET_RUN, SECRET_OMITTED = "ghp_" + "A" * 24, "ghp_" + "B" * 24
+
+
+def test_credential_shaped_parameter_ids_are_redacted_in_every_receipt_field(tmp_path):
+    # FAULT: parameter IDs shaped like tokens; a batch conftest omits the second, so the
+    # node ID reaches both the progress fields and the reconciliation's `missing` list.
+    root = suite_tree(tmp_path / "suite", {
+        "conftest.py": "import os\n\ndef pytest_collection_finish(session):\n"
+                       "    if os.environ.get('RELEASE_ACCOUNTING_SELECT'):\n"
+                       "        session.items[:] = [i for i in session.items if 'B' * 24 not in i.name]\n",
+        "test_s.py": "import pytest\n\n"
+                     f"@pytest.mark.parametrize('value', [{SECRET_RUN!r}, {SECRET_OMITTED!r}])\n"
+                     "def test_p(value):\n    assert value\n"})
+    result, artifacts = run_suite(root, batch_nodes=10)
+    assert result["passed"] is False and result["outcome"] == "coverage_mismatch", result
+    batch = artifacts.document(artifacts.document(result["evidence"])["batches"][0]["evidence"])
+    assert batch["progress"]["last_finished"] == "tests/test_s.py::test_p[[REDACTED token]]"
+    assert batch["verdict"]["reconciliation"]["missing"] == ["tests/test_s.py::test_p[[REDACTED token]]"]
+    assert batch["redacted_fields"] >= 2
+    stored = [p.read_text() for p in (tmp_path / "suite-artifacts").rglob("*") if p.is_file()]
+    assert stored and not any(SECRET_RUN in text or SECRET_OMITTED in text for text in stored)
+
+
+def test_failed_tree_kill_never_leaves_reaping_unbounded(tmp_path, monkeypatch):
+    from codex_harness.adapters import commands
+
+    def refuse(process):
+        raise PermissionError("FAULT: tree kill refused")
+
+    monkeypatch.setattr(commands, "_kill_tree", refuse)
+    monkeypatch.setattr(commands, "REAP_SECONDS", 1)
+    script = "import os, time; print(os.getpid(), flush=True); print('BEFORE', flush=True); time.sleep(60)"
+    # The direct-child fallback reaps the child when only the tree kill failed.
+    out = tmp_path / "fallback.out"
+    observation = run_logged_process([PY, "-c", script], stdout_path=out, stderr_path=tmp_path / "e", timeout=2)
+    assert observation["timed_out"] is True and "BEFORE" in out.read_text()
+    assert observation["cleanup"]["error"] == "PermissionError" and observation["cleanup"]["fallback"] == "kill"
+    assert observation["cleanup"]["reaped"] is True
+    # FAULT: the fallback kill is also ineffective, so the child survives; cleanup must still return.
+    import subprocess
+    monkeypatch.setattr(subprocess.Popen, "kill", lambda self: None)
+    out = tmp_path / "stuck.out"
+    started = time.monotonic()
+    try:
+        observation = run_logged_process([PY, "-c", script], stdout_path=out, stderr_path=tmp_path / "e2", timeout=2)
+        assert time.monotonic() - started < 20, "reaping is bounded, not a wait for the child's own exit"
+        assert observation["timed_out"] is True and "BEFORE" in out.read_text()
+        assert observation["cleanup"]["reaped"] is False and observation["cleanup"]["descendants_gone"] is None
+    finally:
+        pid = int(out.read_text().split()[0])
+        try:
+            os.kill(pid, 9)
+        except OSError:
+            pass
+
+
 def test_batch_plan_is_deterministic_and_portable():
     ids = ["tests/a.py::t[x::y]", "tests/a.py::u", "tests/b/c.py::C::t", "tests/d.py::t1", "tests/d.py::t2", "tests/d.py::t3"]
     assert plan_batches(ids, 2) == [["tests/a.py::t[x::y]", "tests/a.py::u"], ["tests/b/c.py::C::t"],
