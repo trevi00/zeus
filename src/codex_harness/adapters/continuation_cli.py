@@ -1,5 +1,8 @@
 """`zeus continuation register|tick|status|identity|conduct|research-accept|research-supplement|
-ownership-reconcile` (INV-CONTINUATION-001).
+ownership-reconcile|capacity-grant` (INV-CONTINUATION-001).
+
+`capacity-grant` records the owner's one-use grant for one exact budget-refused evidence repair and
+reserves its one successor; the next tick admits it through the existing path.
 
 `register`, `tick`, `status`, `identity`, `research-accept` (the owner's scoped research receipt,
 verified and stored once; it moves no intent), `research-supplement` (the owner's typed scope
@@ -45,6 +48,10 @@ def add_parser(commands) -> None:
     ownership = sub.add_parser("ownership-reconcile", help="Owner: bind one admitted continuation successor to its "
                                "origin's Portfolio target through the persisted intent lineage")
     ownership.add_argument("--intent", required=True, help="The successor's continuation intent id")
+    capacity = sub.add_parser("capacity-grant", help="Owner: one-use capacity for ONE exact evidence_repair intent "
+                              "refused for correction_budget_exhausted (urn:zeus:continuation-capacity-grant:1); "
+                              "the budget itself never grows")
+    capacity.add_argument("--file", type=Path, required=True, help="The owner's grant JSON")
 
 
 def _config(service) -> dict:
@@ -143,6 +150,10 @@ def execute(service, args) -> dict:
     if command == "research-supplement":
         from codex_harness.adapters.configuration import settings
         return {**adapter.supplement_research(service.store, config, settings(), adapter.read_receipt(args.file)),
+                "exit_code": 0}
+    if command == "capacity-grant":
+        from codex_harness.adapters.configuration import settings
+        return {**adapter.grant_capacity(service.store, config, settings(), adapter.read_grant(args.file)),
                 "exit_code": 0}
     from codex_harness.adapters.configuration import settings
     from codex_harness.bootstrap import build_observer

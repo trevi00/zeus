@@ -4,7 +4,8 @@ A thin coordinator, not a second executor, scheduler, reviewer or release author
 buckets in the Fleet control store - `continuation_policies` (one registered Git-pinned owner
 policy per id), `continuation_intents` (one durable intent per routed observation),
 `continuation_progress` (one selection-progress row per policy: attempts only) and
-`continuation_research_receipts` (one immutable owner receipt per research intent) - and one in
+`continuation_research_receipts` (one immutable owner receipt per research intent;
+`continuation_capacity_grants` holds one owner capacity grant per budget-refused repair intent) - and one in
 each lane store, `continuation_bindings` (the trusted document a lane Operation claim attaches to
 its assignment). Everything else is reached through its existing owner:
 
@@ -49,6 +50,9 @@ from codex_harness.domain.continuation import (
     AUTHORITY,
     AWAITING_OWNER,
     BINDING_SCHEMA,
+    CAPACITY_AUTHORIZED,
+    CAPACITY_EXTRA,
+    CAPACITY_GRANT_SCHEMA,
     COMPLETED,
     CONDUCTOR,
     CORRECTION,
@@ -91,7 +95,12 @@ from codex_harness.domain.continuation import (
     authorization,
     bind_delivery,
     blocked_families,
+    capacity_count,
+    capacity_view,
     check_authorization,
+    check_capacity_family,
+    check_capacity_refusal,
+    check_capacity_source,
     check_mixed_receipt,
     check_research_receipt,
     check_scope,
@@ -120,6 +129,7 @@ from codex_harness.domain.continuation import (
     supplement_view,
     transition,
     validate_binding,
+    validate_capacity_grant,
     validate_policy,
     validate_receipt,
     validate_scope_supplement,
@@ -146,6 +156,7 @@ FLEET_JOBS = "fleet_jobs"
 FLEET_UNITS = "fleet_units"
 BUCKET_RESEARCH_RECEIPTS = "continuation_research_receipts"
 BUCKET_RESEARCH_SUPPLEMENTS = "continuation_research_supplements"
+BUCKET_CAPACITY_GRANTS = "continuation_capacity_grants"
 PROMOTIONS = "promotions"
 INVESTIGATIONS = "portfolio_investigations"
 RESEARCH_DISPATCHES = "research_investigation_dispatches"
@@ -309,9 +320,23 @@ class Continuation:
             intents = tx.scan(BUCKET_INTENTS)
             receipts = tx.scan(BUCKET_RESEARCH_RECEIPTS)
             supplements = tx.scan(BUCKET_RESEARCH_SUPPLEMENTS)
+            grants = tx.scan(BUCKET_CAPACITY_GRANTS)
         if policy_id is not None:
             policies = [row for row in policies if row["id"] == policy_id]
             intents = [row for row in intents if row.get("policy_id") == policy_id]
+            grants = [row for row in grants if (row.get("grant") or {}).get("policy_id") == policy_id]
+        # Explicit capacity is shown beside, never merged into, each family's original cap and count.
+        by_id = {row["id"]: row for row in intents}
+        grants = [capacity_view(row, by_id.get(row["id"])) for row in sorted(grants, key=lambda r: r["id"])]
+        caps = {row["id"]: row["policy"]["max_corrections"] for row in policies}
+        families = []
+        for owner, family in sorted({(g["policy_id"], g["family"]) for g in grants}):
+            mine = [g for g in grants if (g["policy_id"], g["family"]) == (owner, family)]
+            cap, counted = caps.get(owner), capacity_count(intents, owner, family)
+            extra = sum(g["explicit_capacity"] or 0 for g in mine)
+            families.append({"policy_id": owner, "family": family, "original_cap": cap, "counted": counted,
+                             "explicit_capacity": extra, "grants": [g["grant_sha256"] for g in mine],
+                             "remaining": None if cap is None else max(0, cap + extra - counted)})
         # A research intent shows the exact attempt set an owner receipt must cover, and the stored
         # receipt (covered jobs, inspections, dispatch, evidence) once the owner recorded one. An owner
         # scope supplement is shown beside it, never merged into the original capture.
@@ -328,7 +353,7 @@ class Continuation:
                 "policies": [{"id": row["id"], "enabled": row["policy"]["enabled"], "policy_sha256": row["policy_sha256"],
                               "pin": row["pin"]} for row in policies],
                 "intents": views[-200:], "truncated": len(views) > 200, "counts": counts,
-                "held_families": blocked_families(intents)}
+                "held_families": blocked_families(intents), "capacity": {"grants": grants, "families": families}}
 
     # ----- scoped research completion (owner receipt) -------------------------------------
     def accept_research(self, document) -> dict:
@@ -833,12 +858,26 @@ class Continuation:
     def _successor(self, ctx, base, job, evidence, route, routed, evidence_sha, lane):
         """Intent first (with the complete successor identity), then the lane binding, then the
         existing Fleet admission - each step replayable to the same result after a lost response."""
-        operation = evidence["operation"]
-        task = evidence.get("task") or {}
-        candidate = ((task.get("result") or {}).get("candidate") or {}) if isinstance(task, dict) else {}
         attempt = attempt_of(evidence)
         with self.store.transaction() as tx:
             key, _ = self._claim(tx, intent_id(job["id"], attempt, evidence_sha, route), base["policy_id"])
+        plan = self._successor_plan(ctx["sha"], base["family"], job, evidence, route, routed, key, lane)
+        if plan is None:
+            # Recorded once for this evidence: the existing validator decides, nothing is trimmed.
+            return self._create({**base, "route": route, "state": REFUSED, "reason_code": "successor_manifest_refused",
+                                 "next_owner": "operator", "evidence_sha256": evidence_sha}, attempt, key=key)
+        created = self._create({**base, "route": route, "state": INTENDED, "reason_code": routed["reason_code"],
+                                "next_owner": ROUTE_OWNERS[route], "evidence_sha256": evidence_sha, **plan},
+                               attempt, key=key)
+        return self._publish(ctx, created)
+
+    def _successor_plan(self, sha, family, job, evidence, route, routed, key, lane) -> dict | None:
+        """The complete successor identity of intent `key`: manifest (the existing validator decides;
+        None when it refuses), lane binding and session mode. Shared by a new observation and an
+        owner capacity grant, so both derive the same successor for the same intent."""
+        operation = evidence["operation"]
+        task = evidence.get("task") or {}
+        candidate = ((task.get("result") or {}).get("candidate") or {}) if isinstance(task, dict) else {}
         successor = successor_id(key)
         decision = evidence.get("conductor") if routed["reason_code"] == "conductor_rejected" else evidence.get("lead")
         references = {"predecessor_job": job["id"], "candidate_revision": candidate.get("revision"),
@@ -853,15 +892,13 @@ class Continuation:
             try:
                 manifest = self.validate(manifest)
             except ContractError:
-                # Recorded once for this evidence: the existing validator decides, nothing is trimmed.
-                return self._create({**base, "route": route, "state": REFUSED, "reason_code": "successor_manifest_refused",
-                                     "next_owner": "operator", "evidence_sha256": evidence_sha}, attempt, key=key)
+                return None
         # The logical session of a family is keyed by its root job (see `_bind_initial`). Only a
         # correction of a session the owner moved to `correction_ready` on THIS review decision is
         # eligible for native resume; everything else is an explicit fresh evidence handoff.
         session, mode = None, "fresh_evidence_handoff"
         binding = evidence.get("binding") if isinstance(evidence.get("binding"), dict) else {}
-        logical = {"task_id": base["family"], "repository": job["repository"]}
+        logical = {"task_id": family, "repository": job["repository"]}
         if route == CORRECTION and isinstance(decision, dict) and lane.sessions is not None:
             try:
                 row = lane.record_review(logical["task_id"], decision["id"])
@@ -874,20 +911,15 @@ class Continuation:
         if isinstance(task.get("id"), str) and candidate.get("revision") and candidate.get("base"):
             workspace = {"origin_task_id": (binding.get("workspace") or {}).get("origin_task_id") or task["id"],
                          "head": candidate["revision"], "base": candidate["base"]}
-        document = {"schema": BINDING_SCHEMA, "operation_id": successor, "policy_sha256": ctx["sha"], "intent_id": key,
-                    "family": base["family"], "route": route, "session": session, "workspace": workspace,
+        document = {"schema": BINDING_SCHEMA, "operation_id": successor, "policy_sha256": sha, "intent_id": key,
+                    "family": family, "route": route, "session": session, "workspace": workspace,
                     "predecessor": {"job_id": job["id"], "task_id": task.get("id"),
                                     "candidate_revision": candidate.get("revision"),
                                     "decision_id": (decision or {}).get("id") if route == CORRECTION else None,
                                     "review_execution_ref": references["review_execution_ref"],
                                     "inspection_id": references["inspection"]}}
-        created = self._create({**base, "route": route, "state": INTENDED, "reason_code": routed["reason_code"],
-                                "next_owner": ROUTE_OWNERS[route], "evidence_sha256": evidence_sha,
-                                "successor_job": successor, "manifest": manifest, "binding": document,
-                                "session_mode": mode,
-                                "evidence_refs": [ref for ref in (references["review_execution_ref"],) if ref]},
-                               attempt, key=key)
-        return self._publish(ctx, created)
+        return {"successor_job": successor, "manifest": manifest, "binding": document, "session_mode": mode,
+                "evidence_refs": [ref for ref in (references["review_execution_ref"],) if ref]}
 
     # ----- the one eligibility guard ------------------------------------------------------
     def _authorize(self, ctx, intent: dict) -> dict:
@@ -905,6 +937,8 @@ class Continuation:
             current = ctx["runtime"](job["lane"]) if ctx["runtime"] else None
             check_scope(ctx["policy"], job, current)
             check_authorization(intent.get("authorization"), authorization(ctx["sha"], ctx["pin"], job, current))
+            if intent.get("capacity_grant") is not None:
+                self._check_grant(ctx, intent)   # a granted repair: the grant and its bindings again
         except ContinuationRefused as exc:
             hold = {"reason_code": exc.reason_code, "next_owner": exc.owner, "field": exc.field}
             if intent.get("hold") != hold:
@@ -993,6 +1027,138 @@ class Continuation:
         return {"reconciled": True, "cached": cached, "intent_id": intent_id, "successor_job": intent["successor_job"], "origin_job": intent["origin_job"],
                 **{k: ownership[k] for k in ("project_id", "criterion_id")},
                 "authority": "present ownership through continuation lineage; not historical capture membership"}
+
+    # ----- owner evidence-repair capacity grant -------------------------------------------
+    def grant_capacity(self, document, *, pin_sha256: str | None = None, runtime=None) -> dict:
+        """Record the owner's one-use capacity grant for ONE exact `evidence_repair` intent refused for
+        `correction_budget_exhausted` (SPEC "Exact evidence-repair capacity authorization").
+
+        Verified first against authoritative reads (`_grant_bindings`): the registered policy and the
+        re-read pin, the intent refused at creation, the current runtime/frame authorization, the origin
+        job's unchanged lane evidence, inspection and retained candidate, the family's latest research
+        completed by exactly the pinned receipt (every consumption check rerun) and the rationale bytes.
+        Then ONE control-store transaction stores the grant and moves THAT intent `refused -> intended`
+        with the successor it always derived (compare-and-swap on its version), keeping the refusal as a
+        snapshot and in the history. Nothing external happens here: the next tick binds and admits
+        through the existing path, rechecking the grant before each new effect. The identical grant
+        replays (`cached`); any other grant for the same intent is `capacity_grant_conflict`, and a
+        reserved successor stays charged whatever its outcome."""
+        grant = validate_capacity_grant(document)
+        with self.store.transaction() as tx:
+            stored = tx.get(BUCKET_CAPACITY_GRANTS, grant["intent_id"])
+            row = tx.get(BUCKET_POLICIES, grant["policy_id"])
+            intent = tx.get(BUCKET_INTENTS, grant["intent_id"])
+            jobs = {job["id"]: job for job in tx.scan(FLEET_JOBS)}
+        if stored is not None:
+            refuse(stored.get("grant") == grant, "capacity_grant_conflict", "operator", "intent_id")
+            return self._grant_result(stored, intent, cached=True)
+        refuse(pin_sha256 is not None and runtime is not None, "capacity_policy_unverified", "operator", "pin")
+        refuse(isinstance(row, dict) and row["policy_sha256"] == grant["policy_sha256"] and row["policy"]["enabled"]
+               and row["pin"].get("sha256") == pin_sha256, "capacity_policy_foreign", "operator", "policy")
+        check_capacity_refusal(grant, intent)
+        ctx = {"policy": row["policy"], "sha": row["policy_sha256"], "pin": row["pin"].get("sha256"),
+               "runtime": LaneRuntime(runtime), "jobs": jobs}
+        job = jobs.get(intent["origin_job"])
+        refuse(isinstance(job, dict), "capacity_source_changed", "operator", "source.job")
+        current = ctx["runtime"](job["lane"])
+        check_scope(ctx["policy"], job, current)
+        check_authorization(intent["authorization"], authorization(ctx["sha"], ctx["pin"], job, current))
+        bound = self._grant_bindings(ctx, grant, intent)
+        job = bound["job"]   # the source row the bindings verified, compared again at commit
+        plan = self._successor_plan(ctx["sha"], grant["family"], job, bound["evidence"], EVIDENCE_REPAIR,
+                                    classify(job, bound["evidence"]), intent["id"], self.lanes(job["lane"]))
+        refuse(plan is not None, "capacity_successor_refused", "operator", "manifest")
+        grant_sha, now = digest(grant), self.clock()
+        with self.store.transaction() as tx:
+            old = tx.get(BUCKET_CAPACITY_GRANTS, grant["intent_id"])
+            if old is not None:
+                refuse(old.get("grant") == grant, "capacity_grant_conflict", "operator", "intent_id")
+                return self._grant_result(old, tx.get(BUCKET_INTENTS, grant["intent_id"]), cached=True)
+            # Nothing the verification read moved: same intent version, policy row, source row and receipt.
+            current = tx.get(BUCKET_INTENTS, intent["id"])
+            refuse(current == intent, "capacity_intent_changed", "operator", "intent_id")
+            refuse(tx.get(BUCKET_POLICIES, grant["policy_id"]) == row, "capacity_policy_foreign", "operator", "policy")
+            refuse(tx.get(FLEET_JOBS, job["id"]) == job, "capacity_source_changed", "operator", "source.job")
+            refuse(tx.get(BUCKET_RESEARCH_RECEIPTS, bound["research"]["id"]) == bound["receipt"],
+                   "capacity_research_mismatch", ROUTE_OWNERS[RESEARCH], "research_receipt_sha256")
+            refuse(tx.get(FLEET_JOBS, plan["successor_job"]) is None, "capacity_successor_exists", "fleet",
+                   "successor_job")
+            every = tx.scan(BUCKET_INTENTS)
+            check_capacity_family(grant, current, every, {j["id"]: j for j in tx.scan(FLEET_JOBS)})
+            # A distinct owner decision per grant: an earlier grant's rationale never authorizes another.
+            refuse(not any((other.get("grant") or {}).get("rationale_ref") == grant["rationale_ref"]
+                           for other in tx.scan(BUCKET_CAPACITY_GRANTS)), "capacity_rationale_reused", "operator",
+                   "rationale_ref")
+            refusal = {key: current.get(key) for key in ("state", "reason_code", "next_owner", "evidence_sha256",
+                                                          "version", "created_at", "updated_at")}
+            refusal["history"] = list(current.get("history") or [])
+            stored = {"id": intent["id"], "schema": CAPACITY_GRANT_SCHEMA, "grant": grant, "grant_sha256": grant_sha,
+                      "successor_job": plan["successor_job"], "research_intent": bound["research"]["id"],
+                      "capacity": {"max_corrections": ctx["policy"]["max_corrections"],
+                                   "counted": capacity_count(every, grant["policy_id"], grant["family"]),
+                                   "extra": CAPACITY_EXTRA},
+                      "refusal": refusal, "recorded_at": now, "recorded_by": "owner"}
+            # The one explicit authorization transition of this intent (never a TRANSITIONS edge).
+            current.update(state=INTENDED, reason_code=CAPACITY_AUTHORIZED, next_owner=ROUTE_OWNERS[EVIDENCE_REPAIR],
+                           capacity_grant=grant_sha, refusal=refusal, version=current["version"] + 1, updated_at=now,
+                           **plan)
+            current["history"] = current["history"][-(MAX_HISTORY - 1):] + [
+                {"state": INTENDED, "previous": REFUSED, "reason_code": CAPACITY_AUTHORIZED, "error_type": None,
+                 "grant": grant_sha, "at": now}]
+            tx.put(BUCKET_CAPACITY_GRANTS, stored["id"], stored)
+            tx.put(BUCKET_INTENTS, current["id"], current)
+        self._emit(REFUSED, current)
+        return self._grant_result(stored, current, cached=False)
+
+    @staticmethod
+    def _grant_result(row: dict, intent, cached: bool) -> dict:
+        return {"granted": True, "cached": cached, **capacity_view(row, intent)}
+
+    def _grant_bindings(self, ctx, grant: dict, intent: dict) -> dict:
+        """What a grant is bound to, re-read now outside any transaction: this policy's scope, no active
+        or unknown family work (Fleet jobs and units included), the origin's lane evidence, the latest
+        family research and its stored receipt rechecked as at consumption, and the rationale bytes.
+        Fleet rows are read here too, never taken from a tick-entry snapshot: a source row that moved
+        between two effects of one tick (lane binding, then admission) refuses the second.
+        Returns {evidence, research, receipt, job}; the first gap refuses by name."""
+        with self.store.transaction() as tx:
+            every = tx.scan(BUCKET_INTENTS)
+            units = [row for row in tx.scan(FLEET_UNITS) if row.get("kind") == UNIT_CONDUCTOR]
+            jobs = {row["id"]: row for row in tx.scan(FLEET_JOBS)}
+        refuse(intent["origin_job"] not in owners(every, grant["policy_id"]), "capacity_scope_foreign", "operator",
+               "source.job")
+        family = {row["id"] for row in every if row.get("policy_id") == grant["policy_id"]
+                  and row.get("family") == grant["family"]}
+        refuse(not held_units(unit for unit in units if unit.get("subject") in family), "capacity_family_active",
+               "operator", "family")
+        research = check_capacity_family(grant, intent, every, jobs)
+        job = jobs.get(intent["origin_job"])
+        evidence = self.lanes(intent["lane"]).read(job, ctx["policy"]["delivery_target"])
+        check_capacity_source(grant, intent, job, evidence)
+        with self.store.transaction() as tx:
+            receipt = tx.get(BUCKET_RESEARCH_RECEIPTS, research["id"])
+        refuse(isinstance(receipt, dict), "capacity_research_mismatch", ROUTE_OWNERS[RESEARCH], "research_receipt_sha256")
+        self._recheck_receipt(grant["policy_id"], grant["policy_sha256"], research, receipt, consumed=True)
+        try:
+            self._verify_evidence([grant["rationale_ref"]])
+        except ContinuationRefused as exc:
+            raise ContinuationRefused(exc.reason_code.replace("research_evidence", "capacity_rationale", 1), "operator",
+                                      "rationale_ref") from None
+        return {"evidence": evidence, "research": research, "receipt": receipt, "job": job}
+
+    def _check_grant(self, ctx, intent: dict) -> None:
+        """Before a granted intent's NEW effect: its stored grant, intact and naming this intent and
+        successor under the current policy, and every binding re-read (`_grant_bindings`)."""
+        with self.store.transaction() as tx:
+            row = tx.get(BUCKET_CAPACITY_GRANTS, intent["id"])
+        refuse(isinstance(row, dict), "capacity_grant_missing", "operator", "capacity_grant")
+        grant = row.get("grant")
+        refuse(isinstance(grant, dict) and row.get("grant_sha256") == digest(grant) == intent["capacity_grant"]
+               and grant.get("intent_id") == intent["id"] and row.get("successor_job") == intent.get("successor_job")
+               == successor_id(intent["id"]), "capacity_grant_corrupt", "operator", "capacity_grant")
+        refuse(grant["policy_id"] == ctx["policy"]["id"] and grant["policy_sha256"] == ctx["sha"],
+               "capacity_policy_foreign", "operator", "policy")
+        self._grant_bindings(ctx, grant, intent)
 
     def _dispatch(self, ctx, intent: dict, job: dict) -> dict | None:
         """Guard, then ONE Fleet transaction reserves the shared execution unit and commits the
@@ -1230,9 +1396,20 @@ class Continuation:
             stored = tx.get(BUCKET_RESEARCH_RECEIPTS, intent["id"])
         if stored is None:
             return None
+        receipt, coverage = self._recheck_receipt(ctx["policy"]["id"], ctx["sha"], intent, stored)
+        moved = self._move(intent, COMPLETED, reason_code="research_receipt_accepted",
+                           evidence_refs=list(receipt["evidence_refs"]), research_receipt=stored["receipt_sha256"],
+                           research_coverage=coverage)
+        return {"subject": moved["id"], "effect": "research_resolved", "route": RESEARCH}
+
+    def _recheck_receipt(self, policy_id: str, sha: str, intent: dict, stored: dict, consumed: bool = False) -> tuple:
+        """Every consumption check of one stored receipt, against the current rows, lane evidence and
+        evidence bytes; returns (receipt, coverage). `consumed`: the research intent already completed
+        on exactly this receipt (a capacity grant rechecking it), whose held attempt set is still the
+        one the receipt was checked against."""
         receipt = stored.get("receipt")
         refuse(isinstance(receipt, dict) and receipt.get("intent_id") == intent["id"]
-               and receipt.get("policy_id") == ctx["policy"]["id"] and receipt.get("policy_sha256") == ctx["sha"],
+               and receipt.get("policy_id") == policy_id and receipt.get("policy_sha256") == sha,
                "research_policy_foreign", "operator", "policy")
         if receipt.get("schema") == MIXED_RECEIPT_SCHEMA:
             # A mixed-cause row answers only as the exact canonical document that was accepted.
@@ -1245,6 +1422,12 @@ class Continuation:
         facts.pop("stored")
         supplement = self._supplement_of(facts, receipt)
         self._require_recovery(facts)   # before the lane reads and before the hold is released
+        if consumed:
+            current = facts["intent"]
+            refuse(isinstance(current, dict) and current.get("state") == COMPLETED
+                   and current.get("research_receipt") == stored.get("receipt_sha256") == digest(receipt),
+                   "research_receipt_corrupt", ROUTE_OWNERS[RESEARCH], "receipt")
+            facts["intent"] = {**current, "state": RESEARCH_REQUIRED}   # the hold this receipt released
         facts["observed"] = self._observe_attempts(facts["jobs"])
         coverage = self._coverage(receipt, facts)
         # The coverage the receipt was accepted under, again: an original-capture receipt never
@@ -1255,10 +1438,7 @@ class Continuation:
         self._verify_evidence(receipt_refs(receipt))
         if coverage == COVERAGE_SUPPLEMENT:
             self._verify_evidence([supplement["supplement"]["report_ref"], supplement["supplement"]["attestation_ref"]])
-        moved = self._move(intent, COMPLETED, reason_code="research_receipt_accepted",
-                           evidence_refs=list(receipt["evidence_refs"]), research_receipt=stored["receipt_sha256"],
-                           research_coverage=coverage)
-        return {"subject": moved["id"], "effect": "research_resolved", "route": RESEARCH}
+        return receipt, coverage
 
     def _resume_await_backlog(self, ctx, intent, job):
         return None  # the approved backlog owns the next item; nothing to do here
@@ -1361,6 +1541,6 @@ def _code(reason):
     return cleaned if cleaned[:1].isalpha() else None
 
 
-__all__ = ["BUCKET_INTENTS", "BUCKET_POLICIES", "BUCKET_PROGRESS", "BUCKET_RESEARCH_RECEIPTS",
+__all__ = ["BUCKET_CAPACITY_GRANTS", "BUCKET_INTENTS","BUCKET_POLICIES", "BUCKET_PROGRESS", "BUCKET_RESEARCH_RECEIPTS",
            "BUCKET_RESEARCH_SUPPLEMENTS", "LANE_BINDINGS",
            "Continuation", "IntentChanged", "LaneEvidence"]

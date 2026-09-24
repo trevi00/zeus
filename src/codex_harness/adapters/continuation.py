@@ -159,6 +159,35 @@ def supplement_research(store, config: dict, host: dict, document, *, lanes=None
                         evidence=evidence or research_evidence()).supplement_research_scope(document)
 
 
+def read_grant(path) -> dict:
+    """The owner's capacity grant file, read under the same bounds as a receipt file."""
+    try:
+        return read_receipt(path)
+    except ContinuationRefused as exc:
+        raise ContinuationRefused(exc.reason_code.replace("research_receipt", "capacity_grant", 1), "operator",
+                                  "file") from None
+
+
+def grant_capacity(store, config: dict, host: dict, document, *, lanes=None, evidence=None, runtime=None,
+                   source_factory=GitSource) -> dict:
+    """The owner's one-use evidence-repair capacity grant (`Continuation.grant_capacity`), verified
+    against the registered pin re-read through Git now, the lanes' actual runtime identity, the lane
+    stores and the trusted evidence bytes. It starts nothing: the next tick admits the successor."""
+    owner = Continuation(store, lanes=lanes or lane_stores(config, host), validate=validator(),
+                         evidence=evidence or research_evidence())
+    row = owner.policy(document.get("policy_id")) if isinstance(document, dict) and type(
+        document.get("policy_id")) is str else None
+    sha = None
+    if row is not None:
+        pin = row["pin"]
+        try:
+            sha = load_policy(source_factory(lane_of(config, pin["lane"])["repository"]), pin["revision"],
+                              pin["path"])["pin"]["sha256"]
+        except Exception as exc:
+            raise ContinuationRefused("policy_unavailable", "operator", "pin") from exc
+    return owner.grant_capacity(document, pin_sha256=sha, runtime=runtime or lane_runtime(config, host))
+
+
 def reconcile_ownership(store, intent_id: str) -> dict:
     """The owner's explicit present-ownership reconciliation of one admitted continuation successor
     (`Continuation.reconcile_ownership`): control-store rows only, no lane, Git or process."""
@@ -282,6 +311,6 @@ def configured_policy(settings: dict) -> str | None:
 
 
 __all__ = ["ConductorProcesses", "ContinuationPass", "POLICY_SETTING", "ResearchEvidence", "accept_research",
-           "archive_identity", "configured_policy", "continuation_ticker", "coordinator", "lane_runtime",
-           "lane_stores", "load_policy", "read_receipt", "reconcile_ownership", "register_policy", "research_evidence",
+           "archive_identity", "configured_policy", "continuation_ticker", "coordinator", "grant_capacity",
+           "lane_runtime", "lane_stores", "load_policy", "read_grant", "read_receipt","reconcile_ownership", "register_policy", "research_evidence",
            "supplement_research", "tick_policy"]
