@@ -412,6 +412,19 @@
       "dependencies": [
         "native-fixture"
       ]
+    },
+    {
+      "id": "recovery-replay",
+      "project_id": "research-improvement",
+      "criterion_id": "verified-loop",
+      "lane": "harness",
+      "manifest_path": "docs/zeus/operations/autonomous-operation-001/recovery-replay.operation.json",
+      "manifest_revision": "dbe3d36cdcf94dba03cd287fb3e4e3d7a2f3fc59",
+      "manifest_sha256": "7c55002311e1deec97e46b5765763c916c3db4cc52d1b604d83c854321eba63a",
+      "priority": 300,
+      "dependencies": [
+        "native-fixture"
+      ]
     }
   ]
 }
