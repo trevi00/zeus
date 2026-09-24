@@ -1,5 +1,61 @@
 # Whole autonomous operating loop
 
+## Actual legacy research recovery: execution revocation, 2026-09-24
+
+Outcome unchanged: complete the real failed research -> scoped acceptance -> repair -> useful work
+loop. PR187 is merged and operating at 9aac878. Preserve all accepted transport-proof behavior.
+Actual read-only observation at 2026-09-24T03:58:27Z: old run autonomous-recovery-research-001.c001
+failed publication_incomplete; assignment32d63806-14e9-5806-9c43-bc321e381ad7 has one retry attempt
+99a5cb12 with NO transport binding; zero tasks and invocation reservations. New attempted_transport
+correctly refuses recovery_transport_unbound. Owner artifact live-recovery-eligibility.json retains
+the observation. This proves missing historical proof, NOT non-delivery. Do not backfill identity.
+
+Reframe: historical non-delivery cannot be reconstructed. Instead use explicit owner revocation of
+the never-admitted assignment, then one same-scope replacement. These are DIFFERENT proof claims:
+old message may exist, but it cannot gain execution authority in this control store after revocation.
+SSOT at PR187: application/execution_fence.py advance + require_unused; Workflow.submit calls
+require_unused_fence before creating an absent task; Workflow._owned checks current generation;
+InvocationLedger reserves under ownership guard. Existing PG writer transactions serialize admission.
+Reuse those owners, not a second scheduler, invented success row, inbox deletion, broker purge or
+new interpretation that unknown means absent. Recovery authority is trusted local owner only.
+
+One bounded Claude batch: add an explicit revocation-based recovery mode through the existing
+research-program owner/CLI request. Keep existing schema/mode default strict transport proof and
+all its refusal tests. A new explicit version/mode must identify the same original investigation,
+program/run/manifest/snapshot and same-authority registered replacement. It may bypass ONLY the
+need to prove historical transport absence, substituting actual durable execution revocation.
+All terminal failed research/pre-provider record checks, no task/reservation/residue, one authorized
+replacement and scope/receipt rules still apply. Unknown provider/cleanup or any existing task
+(even queued) refuses; this delivery is not cancellation of an in-flight task.
+
+In ONE existing store transaction: validate original source/message hash and zero task/reservation/
+residue; fence the old outbox via existing quarantine; advance the task identity fence while task
+is still absent; record immutable revocation evidence tied to message hash, fence generation and
+recovery request; authorize one replacement lineage. If submission wins the race, refuse and do
+not authorize; if revocation wins, late identical delivery cannot create task/reserve/call provider.
+Preserve run, retry attempt and unsent outbox history; never relabel as not-delivered or successful.
+An existing arbitrary fence is not proof of this revocation: validate exact owned receipt on replay.
+Repeat/restart must recognize same request and exact retained fence; changed/corrupt/missing fence
+refuses before replacement claim or scoped receipt consumption. Prevent downgrade of old proof into
+revocation without explicit authorization. No model call, Redis probe or network inside this tx.
+No broker deletion required. Guarantee is limited to consumers sharing this authoritative store and
+existing Workflow admission/ownership protocol; do not claim control of foreign databases/processes.
+
+Acceptance matrix: actual-shaped unbound retry + absent task -> explicit owner revokes -> delayed
+original delivery refused, provider starts0 -> replacement allowed once and exact scoped receipt;
+existing normal transport mode still refuses that row. Admission-first and revocation-first forced
+interleavings, repeated/concurrent/restarted request, missing/wrong fence, changed message/scope,
+active/unknown task or reservation, stale original accepted result and failed replacement all covered.
+Memory and isolated PostgreSQL tests; no nested writer-lock observations in fake publish. Preserve
+existing late-publication quarantine tests. No new OS resources; Python platform CI covers behavior.
+Logs distinguish revoked execution authority from non-delivery and expose named held conditions.
+
+Run targeted research_recovery, research_program/investigations, workflow/execution_fence and
+continuation_research tests plus Ruff. No full suite in worker. Owner/CI runs PG integration.
+Independent acceptance -> owner checks -> CI -> idle cutover -> owner explicit actual request.
+No implementation-phase operating row edits, issue closure or self-approval. Scope excludes generic
+task cancellation, new recovery team and unrelated historical jobs. Report limitations honestly.
+
 ## PR187 integration correction: committed intent observer, 2026-09-24
 
 Goal and accepted transport implementation unchanged. PR187 head 4f8bf53 passed independent review,
