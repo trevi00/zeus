@@ -229,9 +229,12 @@ FENCED, AUTHORIZED, RECOVERED, REFUSED = "fenced", "authorized", "claimed", "ref
 FENCE_REASON = "ResearchDispatchSuperseded"
 PROGRAM_REF = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,59}$")
 CYCLE_REF = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,59}:[0-9]{3,}$")
-# Attempt statuses that prove the transport was never handed the bytes, or that it refused them with
-# a delivery error whose effect the transport probe must still rule out. Anything else is unknown.
-UNSENT_ATTEMPTS = {"retry", "superseded_before_publish"}
+# Attempt statuses recorded before any transport was handed the bytes: no probe is needed for them.
+PRE_PUBLISH_ATTEMPTS = {"superseded_before_publish", "transport_unavailable", "transport_changed_before_publish"}
+# A delivery error AFTER the publish call: the bytes may have landed on the attempt's bound transport,
+# which the probe must prove absent on that SAME transport. Anything else is unknown.
+EFFECT_POSSIBLE_ATTEMPTS = {"retry"}
+UNSENT_ATTEMPTS = PRE_PUBLISH_ATTEMPTS | EFFECT_POSSIBLE_ATTEMPTS
 RECOVERY_AUTHORITY = ("owner-authorized replacement of one proven pre-provider dispatch failure; the "
                       "failed dispatch, run and cycle are retained history, never accepted or deleted")
 
@@ -337,12 +340,14 @@ def check_recovery(request: dict, *, investigation, required_state: str, dispatc
         raise InvestigationRefused("recovery_message_delivered", "failed.run_id")
     if not statuses <= UNSENT_ATTEMPTS:
         raise InvestigationRefused("recovery_effect_unknown", "failed.run_id")
+    transport = attempted_transport(attempts)
     if fence is None:
         if delivery is not None and delivery.get("status") != "retry":
             raise InvestigationRefused("recovery_effect_unknown", "failed.run_id")
     elif not (delivery is not None and delivery.get("status") == "quarantined"
               and delivery.get("source_hash") == fence.get("source_hash") == digest(outbox[0])
-              and len(attempts) == fence.get("attempts") and delivery.get("attempts", 0) == fence.get("attempts")):
+              and len(attempts) == fence.get("attempts") and delivery.get("attempts", 0) == fence.get("attempts")
+              and fence.get("transport") == transport):
         raise InvestigationRefused("recovery_publication_changed", "failed.run_id")
     new = request["replacement"]
     if not (isinstance(replacement, dict) and replacement.get("id") == new["program"]
@@ -354,12 +359,57 @@ def check_recovery(request: dict, *, investigation, required_state: str, dispatc
     if not (same_authority and replacement.get("repository") == program.get("repository")):
         raise InvestigationRefused("recovery_scope_changed", "replacement")
     return {"message_id": message["message_id"], "recipient": agent, "correlation_id": correlation,
-            "source_hash": digest(outbox[0]), "attempts": len(attempts)}
+            "source_hash": digest(outbox[0]), "attempts": len(attempts), "transport": transport}
+
+
+def _binding(value) -> bool:
+    return (isinstance(value, dict) and type(value.get("schema")) is str and bool(value["schema"])
+            and all(value[key] is not None and value[key] != "" for key in value))
+
+
+def attempted_transport(attempts: list):
+    """The ONE transport the failed assignment may have reached, from the bindings its outbox
+    attempts committed BEFORE publishing. None: no attempt ever called publish, so no transport can
+    hold it. An effect-possible attempt without a binding (every attempt recorded before bindings
+    existed) is `recovery_transport_unbound`: today's configuration or an owner assertion is never
+    substituted for it. Two different bound transports are `recovery_transport_changed`: one probe
+    cannot prove absence on both."""
+    bindings = []
+    for attempt in attempts:
+        if attempt.get("status") not in EFFECT_POSSIBLE_ATTEMPTS:
+            continue
+        if not _binding(attempt.get("transport")):
+            raise InvestigationRefused("recovery_transport_unbound", "failed.run_id")
+        if attempt["transport"] not in bindings:
+            bindings.append(attempt["transport"])
+    if len(bindings) > 1:
+        raise InvestigationRefused("recovery_transport_changed", "failed.run_id")
+    return bindings[0] if bindings else None
+
+
+def check_transport_proof(bound, observation) -> bool:
+    """Absence counts ONLY on the bound transport: the probe's identity read before and after its
+    complete stream read must both equal the committed binding. An unreadable identity is
+    `recovery_transport_unavailable`; any other identity (another endpoint, database, namespace,
+    server process or storage token) is `recovery_transport_changed`. Returns True when the message
+    is absent there. Equality proves the same identity, not that no entry was ever deleted."""
+    if not isinstance(observation, dict):
+        raise InvestigationRefused("recovery_transport_unavailable", "transport")
+    before, after = observation.get("before"), observation.get("after")
+    if not (isinstance(before, dict) and isinstance(after, dict)):
+        raise InvestigationRefused("recovery_transport_unavailable", "transport")
+    # A probe never creates the storage token: a server without it reads `storage` None, never equal.
+    if not (_binding(bound) and before == after == bound):
+        raise InvestigationRefused("recovery_transport_changed", "transport")
+    absent = observation.get("absent")
+    if type(absent) is not bool:
+        raise InvestigationRefused("recovery_transport_unavailable", "transport")
+    return absent
 
 
 def recovery_view(row: dict) -> dict:
     """Bounded read-only projection of one lineage row: identities, state and fixed codes only."""
-    keys = ("investigation", "state", "reason_code", "failed", "replacement", "fence", "request_sha256",
+    keys = ("investigation", "state", "reason_code", "failed", "replacement", "fence", "proof", "request_sha256",
             "requested_at", "authorized_at", "claimed_at", "updated_at")
     return {**{k: row.get(k) for k in keys}, "authority": RECOVERY_AUTHORITY}
 
@@ -381,7 +431,8 @@ def dispatch_counts(rows: list) -> dict:
 __all__ = ["AUTHORITY", "AUTHORIZED", "CLAIMED", "DISPATCHED", "DISPATCH_SCHEMA", "EXCLUSIONS", "FENCED",
            "FENCE_REASON", "KIND", "MAX_JOB_SAMPLE", "MAX_PROJECTS", "MAX_REASON_CODES", "PRE_PROVIDER_FAILURE",
            "RECOVERED", "RECOVERY_SCHEMA", "REFUSED", "RESOLVED", "SNAPSHOT_SCHEMA", "SOURCE", "TRUST",
-           "InvestigationRefused", "candidate_identity", "candidate_key", "check_recovery", "current_dispatch_id",
+           "InvestigationRefused", "attempted_transport", "candidate_identity", "candidate_key", "check_recovery",
+           "check_transport_proof", "current_dispatch_id",
            "dispatch_counts", "dispatch_row", "dispatch_view", "eligible_investigations", "recovery_view",
            "replacement_dispatch_id", "scope_reference", "scoped_job_ids", "snapshot", "validate_recovery_request",
            "validate_source"]

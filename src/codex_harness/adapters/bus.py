@@ -1,11 +1,14 @@
 import json
+from uuid import uuid4
 
 from redis import Redis
 from redis.exceptions import RedisError, ResponseError
 
 from codex_harness.adapters.contracts import validate_message
-from codex_harness.domain.model import canonical
-from codex_harness.ports import MessageDeliveryError
+from codex_harness.domain.model import canonical, digest
+from codex_harness.ports import MessageDeliveryError, TransportChanged
+
+TRANSPORT_SCHEMA = "urn:zeus:transport:redis-stream:1"
 
 
 class RedisBus:
@@ -61,26 +64,85 @@ end
 return redis.call('XTRIM', key, 'MINID', '=', boundary)
 """
 
+    # research-dispatch-recovery-001: the storage check and the write are ONE atomic script, so a
+    # replaced, reset or different server behind the committed endpoint refuses without writing.
+    _PUBLISH_SCRIPT = """
+if redis.call('GET', KEYS[1]) ~= ARGV[1] then return false end
+return redis.call('XADD', KEYS[2], '*', 'body', ARGV[2])
+"""
+
     def __init__(self, url: str, namespace: str | None = None):
         from codex_harness.adapters.configuration import settings
 
         self.client = Redis.from_url(url, decode_responses=True, socket_timeout=10)
         self.namespace = namespace if namespace is not None else settings().get(
             "HARNESS_REDIS_NAMESPACE", "codex-harness")
+        # Credential-free location from the parsed URL: host/port or socket path only, digested, so
+        # neither the raw URL, a username nor a password can reach a record, log or evidence.
+        kwargs = self.client.connection_pool.connection_kwargs
+        location = {"path": str(kwargs["path"])} if kwargs.get("path") else \
+            {"host": str(kwargs.get("host")), "port": int(kwargs.get("port") or 6379)}
+        self._endpoint, self._database = digest(location), int(kwargs.get("db") or 0)
 
     def stream(self, agent: str) -> str:
         return f"{self.namespace}:agent:{agent}"
+
+    def incarnation_key(self) -> str:
+        return f"{self.namespace}:transport-incarnation"
+
+    def transport(self, create: bool = True) -> dict:
+        """The credential-free identity of THIS bus (research-dispatch-recovery-001): endpoint digest,
+        database, namespace, the server process `run_id` and a random storage token kept in the
+        namespace. The publisher creates the token once (`SET NX`); a probe passes `create=False` and
+        reads a missing token as None, never inventing one.
+
+        What it establishes: equal identities mean the same endpoint text, database and namespace
+        on a server process that was not restarted, whose namespace still holds the token written
+        by the first publisher. What it cannot establish: that stream entries were not deleted or
+        trimmed, or that a snapshot restore did not replace the data under the same process; a
+        restart, a token loss or an alias of the same server under another endpoint reads as a
+        different identity, so recovery refuses rather than proving continuity."""
+        key = self.incarnation_key()
+        try:
+            if create:
+                self.client.set(key, uuid4().hex, nx=True)
+            storage = self.client.get(key)
+            server = (self.client.info("server") or {}).get("run_id")
+        except RedisError as exc:
+            raise MessageDeliveryError(type(exc).__name__) from exc
+        return {"schema": TRANSPORT_SCHEMA, "endpoint_sha256": self._endpoint, "database": self._database,
+                "namespace": self.namespace, "server": server if isinstance(server, str) and server else None,
+                "storage": storage if isinstance(storage, str) and storage else None}
 
     @staticmethod
     def validate(message: dict) -> dict:
         return validate_message(message)
 
-    def publish(self, message: dict) -> str:
+    def publish(self, message: dict, transport: dict | None = None) -> str:
+        """Without `transport` the legacy unbound XADD. With the identity the outbox committed for
+        this attempt, the bus rechecks its own static identity and server process, then publishes
+        through the atomic storage check; any mismatch raises `TransportChanged` before a write."""
         self.validate(message)
+        stream, body = self.stream(message["who"]["recipient"]), canonical(message)
+        if transport is None:
+            try:
+                return self.client.xadd(stream, {"body": body})
+            except RedisError as exc:
+                raise MessageDeliveryError(type(exc).__name__) from exc
+        static = {"schema": TRANSPORT_SCHEMA, "endpoint_sha256": self._endpoint, "database": self._database,
+                  "namespace": self.namespace}
+        storage = transport.get("storage") if isinstance(transport, dict) else None
+        if not isinstance(storage, str) or not storage or any(transport.get(k) != v for k, v in static.items()):
+            raise TransportChanged("transport_changed")
         try:
-            return self.client.xadd(self.stream(message["who"]["recipient"]), {"body": canonical(message)})
+            if (self.client.info("server") or {}).get("run_id") != transport.get("server"):
+                raise TransportChanged("transport_server_changed")
+            entry = self.client.eval(self._PUBLISH_SCRIPT, 2, self.incarnation_key(), stream, storage, body)
         except RedisError as exc:
             raise MessageDeliveryError(type(exc).__name__) from exc
+        if entry is None:
+            raise TransportChanged("transport_storage_changed")
+        return entry
 
     def ensure_group(self, agent: str) -> None:
         try:

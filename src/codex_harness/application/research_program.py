@@ -78,6 +78,7 @@ from codex_harness.domain.research_investigations import (
     InvestigationRefused,
     candidate_identity,
     check_recovery,
+    check_transport_proof,
     current_dispatch_id,
     dispatch_row,
     dispatch_view,
@@ -490,11 +491,18 @@ class ResearchProgram:
            request, fences the failed run's unsent assignment through the existing outbox quarantine
            (source copy retained, `sent` untouched, never claimed as sent) and records the lineage
            row `fenced`, so no relay can publish it after this point;
-        2. `transport.absent(recipient, message_id)` inspects the configured transport for that
-           exact message; a delivery error before the fence may still have delivered it, so a
-           timeout alone is never proof. Unavailable proof refuses and the row stays `fenced`;
+        2. the transport the failed attempts committed BEFORE publishing (`attempted_transport`,
+           pinned in the fence) is the only one whose absence counts. No publish call at all needs
+           no probe. Otherwise `transport.inspect(recipient, message_id)` reads the configured
+           bus; its identity before and after the read must equal that binding, so an empty other
+           endpoint, database, namespace, server process or storage never proves the original was
+           not delivered. A delivery error may still have delivered, so a timeout alone is never
+           proof. An unavailable or other transport refuses and the row stays `fenced`;
         3. one transaction re-reads every record again and moves `fenced` -> `authorized`, or
-           records the durable refusal when the message is present.
+           records the durable refusal when the message is present on the bound transport.
+
+        Attempts recorded before transport bindings existed refuse `recovery_transport_unbound`
+        in step 1 and write nothing: their destination is unknown and is never backfilled.
 
         The identical request replays (`cached`); any other for the same investigation is
         `recovery_conflict`: one recovery per investigation, ever, and a failed replacement is held.
@@ -520,13 +528,23 @@ class ResearchProgram:
                        "replacement": {**request["replacement"], "dispatch": replacement_dispatch_id(investigation),
                                        "cycle": None},
                        "fence": {"outbox": proof["message_id"], "source_hash": proof["source_hash"],
-                                 "attempts": proof["attempts"], "reason": FENCE_REASON},
-                       "requested_at": now, "authorized_at": None, "claimed_at": None, "updated_at": now}
+                                 "attempts": proof["attempts"], "reason": FENCE_REASON,
+                                 "transport": proof["transport"]},
+                       "proof": None, "requested_at": now, "authorized_at": None, "claimed_at": None,
+                       "updated_at": now}
                 tx.put(BUCKET_RECOVERIES, investigation, row)
-        try:
-            absent = transport.absent(proof["recipient"], proof["message_id"])
-        except Exception as exc:
-            raise ProgramRefused("recovery_transport_unavailable") from exc
+        bound = proof["transport"]   # recomputed from the attempts; an existing fence must pin the same
+        if bound is None:
+            absent, basis = True, "no_publish_call"
+        else:
+            try:
+                observation = transport.inspect(proof["recipient"], proof["message_id"])
+            except Exception as exc:
+                raise ProgramRefused("recovery_transport_unavailable") from exc
+            try:
+                absent, basis = check_transport_proof(bound, observation), "absent_on_bound_transport"
+            except InvestigationRefused as exc:
+                raise ProgramRefused(exc.reason_code, exc.field) from exc
         refused = None
         with self.store.transaction() as tx:
             row = self._recovery_row(tx, investigation, request_sha)
@@ -538,7 +556,7 @@ class ResearchProgram:
                 refused = "recovery_message_delivered"
                 row.update(state=REFUSED, reason_code=refused, updated_at=now)
             else:
-                row.update(state=AUTHORIZED, authorized_at=now, updated_at=now)
+                row.update(state=AUTHORIZED, proof=basis, authorized_at=now, updated_at=now)
             tx.put(BUCKET_RECOVERIES, investigation, row)
         if refused is not None:
             raise ProgramRefused(refused)

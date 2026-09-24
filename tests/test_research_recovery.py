@@ -60,18 +60,27 @@ class Unreachable:
         raise AssertionError("pre-provider failure touched " + name)
 
 
-class UnreachableBus:
-    """LABELLED injected transport fault: the real message contract validates, then the publish
-    raises the adapter's delivery error, exactly what a Redis timeout produces."""
+IDENTITY = {"schema": "urn:test:transport:1", "storage": "token-a"}   # LABELLED fixture transport identity
 
-    def __init__(self):
-        self.attempts = 0
+
+class UnreachableBus:
+    """LABELLED injected transport fault: the real message contract validates, the attempt binds the
+    fixture identity, then the publish raises the adapter's delivery error, exactly what a Redis
+    timeout produces. `bound=False` is the legacy bus that has no identity at all."""
+
+    def __init__(self, bound=True):
+        self.attempts, self.bound = 0, bound
+
+    def __getattr__(self, name):
+        if name == "transport" and self.bound:
+            return lambda: dict(IDENTITY)
+        raise AttributeError(name)
 
     @staticmethod
     def validate(message):
         return validate_message(message)
 
-    def publish(self, message):
+    def publish(self, message, transport=None):
         self.attempts += 1
         raise MessageDeliveryError("TimeoutError")
 
@@ -96,8 +105,8 @@ class PublicationFailingCouncil:
     writes the researcher assignment to the outbox, fails the correlation-scoped publication and ends
     `failed:publication_incomplete` before any reservation, task or provider start."""
 
-    def __init__(self, store):
-        self.store, self.bus, self.receipts = store, UnreachableBus(), []
+    def __init__(self, store, bus=None):
+        self.store, self.bus, self.receipts = store, bus or UnreachableBus(), []
 
     def __call__(self, service, args):
         manifest = validate_any_manifest(json.loads(Path(args.file).read_text(encoding="utf-8")), packaged_policy())
@@ -112,16 +121,18 @@ class PublicationFailingCouncil:
 
 class FakeTransport:
     """LABELLED transport proof: `present` says the message is in the stream, `error` that the bus is
-    unreachable. Records each inspected (recipient, message id)."""
+    unreachable, `identity`/`after` the bus identity read before/after the stream read. Records each
+    inspected (recipient, message id)."""
 
-    def __init__(self, present=False, error=None):
+    def __init__(self, present=False, error=None, identity=IDENTITY, after=None):
         self.present, self.error, self.calls = present, error, []
+        self.identity, self.after = identity, identity if after is None else after
 
-    def absent(self, recipient, message_id):
+    def inspect(self, recipient, message_id):
         self.calls.append((recipient, message_id))
         if self.error is not None:
             raise self.error
-        return not self.present
+        return {"before": self.identity, "absent": not self.present, "after": self.after}
 
 
 def failed_world(tmp_path, council=PublicationFailingCouncil, store=None):
@@ -382,11 +393,11 @@ def test_a_publication_change_after_the_fence_refuses_the_authorization(tmp_path
     message_id = history(env.store)["outbox"][0]["message"]["message_id"]
 
     class Racing(FakeTransport):
-        def absent(self, recipient, message_id_):
+        def inspect(self, recipient, message_id_):
             with env.store.transaction() as tx:   # LABELLED injected race: a delivery record appears
                 delivery = tx.get("outbox_delivery", message_id)
                 tx.put("outbox_delivery", message_id, {**delivery, "status": "delivered", "delivered_entry_id": "9-0"})
-            return True
+            return super().inspect(recipient, message_id_)
 
     assert refused(env.programs.recover_dispatch, request(env, sha), Racing()) == "recovery_message_delivered"
     with env.store.transaction() as tx:
@@ -497,22 +508,27 @@ class FakeRedis:
 
 
 def probe(streams, fail=False, limit=10000):
-    bus = type("FixtureBus", (), {"namespace": "ns", "stream": staticmethod(lambda agent: "ns:agent:" + agent)})()
+    bus = type("FixtureBus", (), {"namespace": "ns", "stream": staticmethod(lambda agent: "ns:agent:" + agent),
+                                  "transport": lambda self, create=True: dict(IDENTITY)})()
     bus.client = FakeRedis(streams, fail)
     return TransportProbe(bus, limit=limit)
 
 
 def test_the_transport_probe_reads_the_recipient_and_dead_letter_streams_completely_or_refuses():
     body = json.dumps({"message_id": "m-1"})
-    assert probe({}).absent("lead:researcher", "m-1") is True
-    assert probe({"ns:agent:lead:researcher": [("1-0", {"body": json.dumps({"message_id": "m-2"})})]}).absent(
-        "lead:researcher", "m-1") is True
-    assert probe({"ns:agent:lead:researcher": [("1-0", {"body": body})]}).absent("lead:researcher", "m-1") is False
-    assert probe({"ns:dead-letter": [("1-0", {"body": body, "reason": "x"})]}).absent("lead:researcher", "m-1") is False
+
+    def absent(p):
+        observed = p.inspect("lead:researcher", "m-1")
+        assert observed["before"] == observed["after"] == IDENTITY
+        return observed["absent"]
+    assert absent(probe({})) is True
+    assert absent(probe({"ns:agent:lead:researcher": [("1-0", {"body": json.dumps({"message_id": "m-2"})})]})) is True
+    assert absent(probe({"ns:agent:lead:researcher": [("1-0", {"body": body})]})) is False
+    assert absent(probe({"ns:dead-letter": [("1-0", {"body": body, "reason": "x"})]})) is False
     with pytest.raises(ProgramRefused, match="recovery_transport_unbounded"):
-        probe({"ns:agent:lead:researcher": [("1-0", {})] * 3}, limit=2).absent("lead:researcher", "m-1")
+        probe({"ns:agent:lead:researcher": [("1-0", {})] * 3}, limit=2).inspect("lead:researcher", "m-1")
     with pytest.raises(ConnectionError):
-        probe({}, fail=True).absent("lead:researcher", "m-1")
+        probe({}, fail=True).inspect("lead:researcher", "m-1")
 
 
 def test_the_cli_entry_reads_the_owner_file_and_refuses_an_unreachable_bus(tmp_path):
@@ -527,3 +543,204 @@ def test_the_cli_entry_reads_the_owner_file_and_refuses_an_unreachable_bus(tmp_p
     result = recover_cli(service, args, transport=probe({}))
     assert result["exit_code"] == 0 and result["state"] == "authorized" and result["investigation"] == INVESTIGATION
     assert replacement_dispatch_id(INVESTIGATION) == REPLACEMENT
+
+
+# ----- original transport ownership (SPEC "Research recovery resubmission: original transport ownership") -----
+class SecondBus(UnreachableBus):
+    """LABELLED: the same injected delivery fault on a DIFFERENT fixture transport."""
+
+    def __getattr__(self, name):
+        if name == "transport":
+            return lambda: {**IDENTITY, "storage": "token-b"}
+        raise AttributeError(name)
+
+
+class UnidentifiedBus(UnreachableBus):
+    """LABELLED: a binding-capable bus whose identity read times out, so nothing is published."""
+
+    def __getattr__(self, name):
+        if name == "transport":
+            def unreadable():
+                raise MessageDeliveryError("TimeoutError")
+            return unreadable
+        raise AttributeError(name)
+
+
+def test_the_failed_attempt_committed_its_transport_and_the_fence_pins_it(tmp_path):
+    env, _ = failed_world(tmp_path)
+    [attempt] = history(env.store)["attempts"]
+    assert attempt["status"] == "retry" and attempt["transport"] == IDENTITY
+    _, sha = replacement(env)
+    result = env.programs.recover_dispatch(request(env, sha), FakeTransport())
+    assert result["fence"]["transport"] == IDENTITY and result["proof"] == "absent_on_bound_transport"
+
+
+def test_a_legacy_attempt_without_a_binding_refuses_as_unknown_and_writes_nothing(tmp_path):
+    """Our historical failed run's attempt predates bindings: its destination is unknown and is never
+    backfilled from today's configuration or an owner assertion."""
+    env, _ = failed_world(tmp_path, council=lambda store: PublicationFailingCouncil(store, UnreachableBus(bound=False)))
+    assert "transport" not in history(env.store)["attempts"][0]
+    _, sha = replacement(env)
+    transport = FakeTransport()
+    assert refused(env.programs.recover_dispatch, request(env, sha), transport) == "recovery_transport_unbound"
+    assert transport.calls == [] and _untouched(env)
+
+
+@pytest.mark.parametrize("probe_view", [
+    {"identity": {**IDENTITY, "storage": "token-b"}},              # another server behind the configuration
+    {"identity": {**IDENTITY, "storage": None}},                   # a server that never held the token
+    {"after": {**IDENTITY, "storage": "token-b"}},                 # the identity changed during the read
+    {"identity": {**IDENTITY, "namespace": "other"}}])             # another namespace
+def test_absence_on_any_other_transport_refuses_keeps_the_fence_and_the_bound_one_authorizes_once(tmp_path, probe_view):
+    env, _ = failed_world(tmp_path)
+    before = history(env.store)
+    _, sha = replacement(env)
+    assert refused(env.programs.recover_dispatch, request(env, sha), FakeTransport(**probe_view)) == \
+        "recovery_transport_changed"
+    with env.store.transaction() as tx:
+        assert tx.get(BUCKET_RECOVERIES, INVESTIGATION)["state"] == "fenced"
+        assert tx.get(BUCKET_DISPATCHES, REPLACEMENT) is None
+    assert {d["id"]: d for d in env.programs.dispatches()}[INVESTIGATION]["current"] is True
+    unreadable = FakeTransport()
+    unreadable.identity = None
+    assert refused(env.programs.recover_dispatch, request(env, sha), unreadable) == "recovery_transport_unavailable"
+    assert env.programs.recover_dispatch(request(env, sha), FakeTransport())["state"] == "authorized"
+    assert history(env.store) == before
+
+
+def test_attempts_on_two_different_transports_refuse_before_any_fence(tmp_path):
+    env, _ = failed_world(tmp_path)
+    message_id = history(env.store)["outbox"][0]["message"]["message_id"]
+    relay(env.store, organization(), SecondBus(), correlation_id="autonomous:rp-001.c001")   # a later attempt elsewhere
+    with env.store.transaction() as tx:
+        attempts = [a for a in tx.scan("outbox_attempts") if a["outbox_id"] == message_id]
+        assert sorted(a["transport"]["storage"] for a in attempts) == ["token-a", "token-b"]
+        assert tx.get("outbox_delivery", message_id)["transport"] == IDENTITY, "the first binding is kept"
+    _, sha = replacement(env)
+    transport = FakeTransport()
+    assert refused(env.programs.recover_dispatch, request(env, sha), transport) == "recovery_transport_changed"
+    assert transport.calls == [] and _untouched(env)
+
+
+def test_no_publish_call_needs_no_probe(tmp_path):
+    """The bus identity was unreadable, so the outbox committed `transport_unavailable` and never
+    called publish: no transport can hold the assignment."""
+    env, _ = failed_world(tmp_path, council=lambda store: PublicationFailingCouncil(store, UnidentifiedBus()))
+    assert [a["status"] for a in history(env.store)["attempts"]] == ["transport_unavailable"]
+    assert env.runner.council.bus.attempts == 0
+    _, sha = replacement(env)
+    transport = FakeTransport(error=AssertionError("not read"))
+    result = env.programs.recover_dispatch(request(env, sha), transport)
+    assert result["state"] == "authorized" and result["proof"] == "no_publish_call" and transport.calls == []
+
+
+# ----- actual production adapters: RedisBus publisher, TransportProbe and the CLI wiring -------------------------
+def _redis_world(tmp_path, monkeypatch, lose_reply):
+    """The REAL CouncilRun publishes through the REAL RedisBus to LABELLED fixture server A; the
+    injected fault is a lost reply AFTER the XADD landed, or a timeout of the publish script before
+    its write. The owner recovery then runs the REAL CLI wiring (`RedisBus(redis_url())` and
+    `TransportProbe`) against whatever HARNESS_REDIS_URL/NAMESPACE now name."""
+    from test_bus import SECRET, FakeRedisFactory, FakeRedisServer
+
+    from codex_harness.adapters.bus import RedisBus
+    servers = {("a.example", 6379): FakeRedisServer("run-a"), ("b.example", 6379): FakeRedisServer("run-b")}
+    monkeypatch.setattr("codex_harness.adapters.bus.Redis", FakeRedisFactory(servers))
+    url_a = "redis://owner:" + SECRET + "@a.example:6379/0"
+    a = servers[("a.example", 6379)]
+    a.lose_reply, a.fail_write = lose_reply, not lose_reply
+    env, tick = failed_world(tmp_path, council=lambda store: PublicationFailingCouncil(store, RedisBus(url_a, namespace="ns")))
+    a.lose_reply = a.fail_write = False
+    assert tick["reason_code"] == "publication_incomplete"
+    _, sha = replacement(env)
+    path = tmp_path / "recovery.json"
+    path.write_text(json.dumps(request(env, sha)), encoding="utf-8")
+    service, args = type("Service", (), {"store": env.store})(), type("Args", (), {"file": path})()
+
+    def recover(url, namespace="ns"):
+        monkeypatch.setenv("HARNESS_REDIS_URL", url)
+        monkeypatch.setenv("HARNESS_REDIS_NAMESPACE", namespace)
+        return recover_cli(service, args)
+    return env, servers, url_a, recover
+
+
+def _no_secret(env, *values):
+    from test_bus import SECRET
+    with env.store.transaction() as tx:
+        text = json.dumps(tx.records(), default=str)
+    assert SECRET not in text and "a.example" not in text
+    assert all(SECRET not in json.dumps(value, default=str) for value in values)
+
+
+def test_production_wiring_lost_reply_on_a_then_empty_b_refuses_before_any_replacement(tmp_path, monkeypatch):
+    env, servers, url_a, recover = _redis_world(tmp_path, monkeypatch, lose_reply=True)
+    assert len(servers[("a.example", 6379)].database(0)["streams"]["ns:agent:lead:researcher"]) == 1, \
+        "the fixture's lost reply really wrote on A"
+    [attempt] = history(env.store)["attempts"]
+    assert attempt["status"] == "retry" and attempt["transport"]["server"] == "run-a"
+    with pytest.raises(ProgramRefused, match="recovery_transport_changed"):
+        recover("redis://b.example:6379/0")                     # configuration now names empty B
+    assert servers[("b.example", 6379)].database(0) == {"strings": {}, "streams": {}}, "the probe wrote nothing"
+    with env.store.transaction() as tx:
+        assert tx.get(BUCKET_RECOVERIES, INVESTIGATION)["state"] == "fenced"
+        assert tx.get(BUCKET_DISPATCHES, REPLACEMENT) is None
+    with pytest.raises(ProgramRefused, match="recovery_message_delivered"):
+        recover(url_a)                                           # the bound transport holds the assignment
+    with env.store.transaction() as tx:
+        assert tx.get(BUCKET_RECOVERIES, INVESTIGATION)["state"] == "refused"
+        assert tx.get(BUCKET_DISPATCHES, REPLACEMENT) is None
+    _no_secret(env)
+
+
+def test_production_wiring_changed_database_namespace_server_or_storage_refuse_and_a_authorizes(tmp_path, monkeypatch):
+    env, servers, url_a, recover = _redis_world(tmp_path, monkeypatch, lose_reply=False)
+    a = servers[("a.example", 6379)]
+    assert a.database(0)["streams"] == {}, "the injected timeout came before the write"
+    [attempt] = history(env.store)["attempts"]
+    assert attempt["status"] == "retry" and attempt["transport"]["database"] == 0
+    for url, namespace in ((url_a.replace("/0", "/1"), "ns"), (url_a, "other")):
+        with pytest.raises(ProgramRefused, match="recovery_transport_changed"):
+            recover(url, namespace)
+    a.restart("run-a2")
+    with pytest.raises(ProgramRefused, match="recovery_transport_changed"):
+        recover(url_a)
+    a.restart("run-a")
+    token = a.database(0)["strings"].pop("ns:transport-incarnation")
+    with pytest.raises(ProgramRefused, match="recovery_transport_changed"):
+        recover(url_a)                                           # storage reset: the probe never recreates it
+    assert "ns:transport-incarnation" not in a.database(0)["strings"]
+    a.database(0)["strings"]["ns:transport-incarnation"] = token
+    a.fail_before = True
+    with pytest.raises(ProgramRefused, match="recovery_transport_unavailable"):
+        recover(url_a)
+    a.fail_before = False
+    result = recover(url_a)
+    assert result["state"] == "authorized" and result["proof"] == "absent_on_bound_transport"
+    assert recover("redis://b.example:6379/0")["cached"] is True, "an authorized row is never re-probed"
+    _no_secret(env, result)
+
+
+def test_domain_transport_rules_are_pure_and_fail_closed():
+    from codex_harness.domain.research_investigations import (
+        InvestigationRefused,
+        attempted_transport,
+        check_transport_proof,
+    )
+    b = {**IDENTITY, "storage": "token-b"}
+    assert attempted_transport([]) is None
+    assert attempted_transport([{"status": "superseded_before_publish"}, {"status": "transport_unavailable"}]) is None
+    assert attempted_transport([{"status": "retry", "transport": IDENTITY}] * 2) == IDENTITY
+    for attempts, code in (([{"status": "retry"}], "recovery_transport_unbound"),
+                           ([{"status": "retry", "transport": {**IDENTITY, "storage": None}}], "recovery_transport_unbound"),
+                           ([{"status": "retry", "transport": IDENTITY}, {"status": "retry", "transport": b}],
+                            "recovery_transport_changed")):
+        with pytest.raises(InvestigationRefused) as info:
+            attempted_transport(attempts)
+        assert info.value.reason_code == code
+    assert check_transport_proof(IDENTITY, {"before": IDENTITY, "absent": True, "after": IDENTITY}) is True
+    assert check_transport_proof(IDENTITY, {"before": IDENTITY, "absent": False, "after": IDENTITY}) is False
+    for observation, code in ((None, "recovery_transport_unavailable"),
+                              ({"before": IDENTITY, "absent": "yes", "after": IDENTITY}, "recovery_transport_unavailable"),
+                              ({"before": b, "absent": True, "after": b}, "recovery_transport_changed")):
+        with pytest.raises(InvestigationRefused) as info:
+            check_transport_proof(IDENTITY, observation)
+        assert info.value.reason_code == code

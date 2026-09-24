@@ -1,8 +1,9 @@
 """INV-MESSAGE-001: isolate poison records, retain at-least-once delivery evidence."""
+import inspect
 from uuid import uuid4
 
 from codex_harness.domain.model import ContractError, digest, require, utcnow
-from codex_harness.ports import MessageDeliveryError
+from codex_harness.ports import MessageDeliveryError, TransportChanged
 
 BASE_COUNTS = ("published", "quarantined", "quarantined_existing", "retry", "skipped", "legacy_sent", "error")
 # Ordered read page of the scoped selection walk; it bounds memory per read, never the batch itself.
@@ -52,7 +53,44 @@ def _selectable(item, scope):
     return isinstance(item, dict) and item.get("sent") is False and _correlation(item) == scope
 
 
-def _prepare(tx, identity, org, bus, audit=None, scope=None):
+def _bind_transport(bus):
+    """(binding, unavailable error type), read OUTSIDE any transaction (research-dispatch-recovery-001).
+    A bus without `transport()`, or whose `publish` cannot take the binding back for its recheck (an
+    override with the old signature), is legacy: (None, None), its attempts stay unbound rather than
+    claiming a transport nobody rechecked. A binding-capable bus whose identity cannot be read yields
+    no binding and the error type: nothing is published."""
+    identify = getattr(bus, "transport", None)
+    if not callable(identify):
+        return None, None
+    try:
+        rechecks = "transport" in inspect.signature(bus.publish).parameters
+    except (TypeError, ValueError):
+        rechecks = False
+    if not rechecks:
+        return None, None
+    try:
+        binding = identify()
+    except MessageDeliveryError as exc:
+        return None, type(exc).__name__
+    if not (isinstance(binding, dict) and binding and all(value is not None for value in binding.values())):
+        return None, "TransportIdentityUnavailable"
+    return binding, None
+
+
+def _failure_evidence(tx, item, identity, attempt, result, audit):
+    tx.put("events", attempt["id"], {"type": "outbox." + result, "outbox_id": identity,
+           "evidence_id": attempt["id"], "error_type": attempt["error_type"], "at": attempt["finished_at"]})
+    if audit is not None:
+        facts = _message_facts(item)
+        audit(tx, "general.message_delivery_" + result, "failed" if result == "retry" else "unknown",
+              identity=["outbox_attempt", attempt["id"], result], severity="warning" if result == "retry" else "error",
+              correlation_id=facts.get("correlation_id"), causation_id=facts.get("causation_id"),
+              reason_code=attempt["error_type"], attributes={"outbox_id": identity, "attempt_id": attempt["id"],
+                                                             "attempt_number": attempt["number"],
+                                                             "error_type": attempt["error_type"]})
+
+
+def _prepare(tx, identity, org, bus, audit=None, scope=None, binding=None, unavailable=None):
     item = tx.get("outbox", identity)
     if not _in_scope(item, scope):
         # Re-read inside the transaction: the scope cannot change between selection and preparation.
@@ -91,6 +129,19 @@ def _prepare(tx, identity, org, bus, audit=None, scope=None):
     delivery = {**delivery, "id": identity, "bound_message_hash": message_hash,
                 "source_hash": source_hash, "attempts": attempt["number"], "updated_at": at,
                 "last_attempt_id": attempt_id, "status": "publishing"}
+    if binding is not None:
+        # research-dispatch-recovery-001: the transport this attempt WILL use is committed with the
+        # intent, before the network call. Each attempt keeps its own binding; the delivery row keeps
+        # the FIRST one, so a later attempt elsewhere is its own record, never a rewrite of history.
+        attempt["transport"] = binding
+        delivery.setdefault("transport", binding)
+    if unavailable is not None:
+        # The identity could not be read: nothing is handed to any transport by this attempt.
+        attempt.update(status="transport_unavailable", error_type=unavailable, finished_at=at)
+        tx.put("outbox_attempts", attempt_id, attempt)
+        tx.put("outbox_delivery", identity, {**delivery, "status": "retry"})
+        _failure_evidence(tx, item, identity, attempt, "retry", audit)
+        return "retry", None
     tx.put("outbox_attempts", attempt_id, attempt)
     tx.put("outbox_delivery", identity, delivery)
     return "prepared", {"identity": identity, "source_hash": source_hash, "attempt_id": attempt_id}
@@ -108,14 +159,19 @@ def _publish(tx, prepared, bus, audit=None, scope=None):
         if delivery["last_attempt_id"] == attempt_id:
             tx.put("outbox_delivery", identity, {**delivery, "status": "retry", "updated_at": utcnow()})
         return "skipped", None
-    fatal = None
+    fatal, bound = None, attempt.get("transport")
     try:
-        entry_id = bus.publish(item["message"])
+        entry_id = bus.publish(item["message"]) if bound is None else bus.publish(item["message"], transport=bound)
         require(isinstance(entry_id, str) and bool(entry_id), "MissingTransportReceipt")
         attempt.update(status="delivered", entry_id=entry_id)
         delivery.update(status="delivered", delivered_entry_id=entry_id)
         tx.put("outbox", identity, {**item, "sent": True})
         result = "published"
+    except TransportChanged as exc:
+        # The publisher refused before writing: this attempt handed nothing to any transport.
+        attempt.update(status="transport_changed_before_publish", error_type=type(exc).__name__)
+        delivery.update(status="retry")
+        result = "retry"
     except MessageDeliveryError as exc:
         attempt.update(status="retry", error_type=type(exc).__name__)
         delivery.update(status="retry")
@@ -130,23 +186,16 @@ def _publish(tx, prepared, bus, audit=None, scope=None):
     tx.put("outbox_attempts", attempt_id, attempt)
     tx.put("outbox_delivery", identity, delivery)
     if result != "published":
-        tx.put("events", attempt_id, {"type": "outbox." + result, "outbox_id": identity,
-               "evidence_id": attempt_id, "error_type": attempt["error_type"], "at": attempt["finished_at"]})
-    if audit is not None:
+        _failure_evidence(tx, item, identity, attempt, result, audit)
+    elif audit is not None:
         # INV-OBSERVATION-001: a transport acknowledgement (stream entry id) is a delivery fact,
         # recorded with the attempt in the same transaction; it is never a task completion.
         facts = _message_facts(item)
-        common = {"outbox_id": identity, "attempt_id": attempt_id, "attempt_number": attempt["number"]}
-        if result == "published":
-            audit(tx, "general.message_published", "succeeded", identity=["outbox_attempt", attempt_id, "published"],
-                  correlation_id=facts.get("correlation_id"), causation_id=facts.get("causation_id"),
-                  attributes={**common, "stream_entry_id": entry_id,
-                              **{k: facts[k] for k in ("message_type", "recipient") if k in facts}})
-        else:
-            audit(tx, "general.message_delivery_" + result, "failed" if result == "retry" else "unknown",
-                  identity=["outbox_attempt", attempt_id, result], severity="warning" if result == "retry" else "error",
-                  correlation_id=facts.get("correlation_id"), causation_id=facts.get("causation_id"),
-                  reason_code=attempt["error_type"], attributes={**common, "error_type": attempt["error_type"]})
+        audit(tx, "general.message_published", "succeeded", identity=["outbox_attempt", attempt_id, "published"],
+              correlation_id=facts.get("correlation_id"), causation_id=facts.get("causation_id"),
+              attributes={"outbox_id": identity, "attempt_id": attempt_id, "attempt_number": attempt["number"],
+                          "stream_entry_id": entry_id,
+                          **{k: facts[k] for k in ("message_type", "recipient") if k in facts}})
     return result, fatal
 
 
@@ -209,6 +258,8 @@ def relay(store, org, bus, limit=100, audit=None, correlation_id=None):
         with store.transaction() as tx:
             rows = _scoped_rows(tx, scope, limit)
         expected_cursor = None
+    # Read once per batch outside every transaction; each publish rechecks it against the bus.
+    binding, unavailable = _bind_transport(bus) if rows else (None, None)
     owns_cursor = True
     def advance(tx, identity):
         nonlocal expected_cursor, owns_cursor
@@ -222,7 +273,7 @@ def relay(store, org, bus, limit=100, audit=None, correlation_id=None):
             owns_cursor = False
     for row in rows:
         with store.transaction() as tx:
-            result, prepared = _prepare(tx, row["id"], org, bus, audit, scope)
+            result, prepared = _prepare(tx, row["id"], org, bus, audit, scope, binding, unavailable)
             if not prepared:
                 counts[result] += 1
                 advance(tx, row["id"])
