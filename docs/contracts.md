@@ -1942,8 +1942,20 @@ accepted_evidence_followup`, taken by the same `recover --file` (no bus, transpo
 the investigation, the CURRENT accepted head exactly as version 4 (`predecessor` fields; lineage version 0 =
 the initial dispatch, admitted only while no recovery row and no head exist), `members {previous_sha256,
 job_ids, sha256}` (the accepted snapshot's captured-id digest, the exact intended new scoped ids, at most
-the snapshot sample bound, and their digest) and a NEW registered program with the same authority
-(`same_authority`, same repository; a narrowed or changed topic is not admitted). It qualifies only a
+the snapshot sample bound, and their digest) and a NEW registered program under the same authority, same
+repository (SPEC "Accepted follow-up report scope binding"): `followup_scope` of the predecessor and
+replacement configs, for this follow-up ONLY (`same_authority` of failure recovery is unchanged). Besides its own
+id, base and deadline the pinned replacement may change only the report content - `goal.sha256`,
+`goal.criterion`, `plan.objective`, `plan.acceptance_criteria`, `research` and `current_state` - to analyze the
+newly authorized members, may lower `max_cycles`/`max_adoptions`, and may narrow `plan.allowed_paths` to a
+subset of the predecessor's, still under `docs/`; topics, local candidates, interval, investigation source
+(project ids, reason codes, topic), budget, `claude` (provider/model, timeout, spend), goal path and rationale,
+template id and schema must be equal, else `recovery_scope_changed`. The config is validated at registration by
+`validate_config` (the CLI also binds goal bytes at base) and bound by the request's two config hashes; report
+text never mutates scope. The row and view record `scope {authority {previous_sha256, sha256, narrowed},
+content {previous_sha256, sha256, changed}}` (null on an earlier row), and the claim is also withheld while the
+claiming program's registration differs from the pinned config hash or, for a row with `scope`, the transition
+no longer recomputes exactly from both registered configs. It qualifies only a
 dispatch resolved `accepted` from its own run row, whose program has the pinned config, no active cycle and a
 report-only template (every `plan.allowed_paths` entry a plain path under `docs/`, else
 `followup_not_report_only`), whose cycle completed `accepted` for that run and manifest, and whose run row is
@@ -1964,7 +1976,8 @@ transaction re-reads everything, requires the retained chain to hold and appends
 serialization are the version-3 ones and `successor_held` admits the row as the first link of an initial
 chain. Registration releases nothing: the head names a dispatch that exists only once the named program
 claims it, and the claim is released (and made) only while the fresh scoped membership still equals the
-pinned one (`followup_membership_drift`); drift is never recaptured silently. The follow-up council, report,
+pinned one (`followup_membership_drift`) and the scope still holds (`followup_scope_drift`); drift is never
+recaptured silently. The follow-up council, report,
 review and scoped owner receipt are the normal fresh ones against the new dispatch; a failed or rejected
 follow-up stays held and is never followed up again. The accepted predecessor's dispatch, run, cycle, calls
 and receipts stay historical and are never reinterpreted as acceptance of the new snapshot.

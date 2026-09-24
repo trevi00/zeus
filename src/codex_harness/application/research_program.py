@@ -40,7 +40,8 @@ or current dispatch whose read-only council refused a named output field, re-der
 The explicit `accepted_evidence_followup` request (`urn:zeus:research-dispatch-followup:1`) is not a failure
 recovery: it follows up the ACCEPTED current dispatch of a report-only program whose authoritative scoped
 membership gained a member, through the same successor rows and head; the claim refuses any drift from the
-pinned membership, and the accepted predecessor and its receipts stay history.
+pinned membership, and the accepted predecessor and its receipts stay history. Its replacement config may
+re-point only the report content at the new members (`followup_scope`); `same_authority` is not loosened.
 """
 from __future__ import annotations
 
@@ -158,6 +159,7 @@ from codex_harness.domain.research_program import (
     cycle_id,
     due,
     expired,
+    followup_scope,
     headroom,
     match_topics,
     monitor_projection,
@@ -861,7 +863,7 @@ class ResearchProgram:
                    "reason_code": None, "request": request, "request_sha256": request_sha, "predecessor": dict(old),
                    "replacement": {**request["replacement"], "dispatch": successor_dispatch_id(investigation, version),
                                    "cycle": None},
-                   "fence": [], "proof": FOLLOWUP_PROOF, "members": proof["members"],
+                   "fence": [], "proof": FOLLOWUP_PROOF, "members": proof["members"], "scope": proof["scope"],
                    "evidence": {"executions": proof["executions"], "calls": proof["calls"],
                                 "acceptance": proof["acceptance"]},
                    "requested_at": now, "authorized_at": now, "claimed_at": None, "updated_at": now}
@@ -912,8 +914,8 @@ class ResearchProgram:
                 jobs={j["id"]: j for j in tx.scan(BUCKET_JOBS) if type(j.get("id")) is str},
                 bindings={b["job_id"]: b for b in tx.scan(BUCKET_BINDINGS) if type(b.get("job_id")) is str},
                 replacement=replacement,
-                same_authority=isinstance(program, dict) and isinstance(replacement, dict)
-                and same_authority(program["config"], replacement["config"]))
+                scope=followup_scope(program["config"], replacement["config"])
+                if isinstance(program, dict) and isinstance(replacement, dict) else None)
         except InvestigationRefused as exc:
             raise ProgramRefused(exc.reason_code, exc.field) from exc
 
@@ -959,7 +961,17 @@ class ResearchProgram:
 
     @staticmethod
     def _followup_drift(tx, row: dict) -> str | None:
-        program = tx.get(BUCKET_PROGRAMS, (row.get("replacement") or {}).get("program"))
+        replacement = row.get("replacement") or {}
+        program = tx.get(BUCKET_PROGRAMS, replacement.get("program"))
+        # The claiming program must still be the pinned registration, and a row that bound a scope transition
+        # must still recompute to exactly that transition from the predecessor's registered config.
+        if not (isinstance(program, dict) and program.get("config_sha256") == replacement.get("config_sha256")):
+            return "followup_scope_drift"
+        if "scope" in row:
+            predecessor = tx.get(BUCKET_PROGRAMS, (row.get("predecessor") or {}).get("program"))
+            if not (isinstance(predecessor, dict) and row["scope"] is not None
+                    and followup_scope(predecessor.get("config"), program.get("config")) == row["scope"]):
+                return "followup_scope_drift"
         source = ((program or {}).get("config") or {}).get("investigation_source") or {}
         return followup_drift(row, investigation=tx.get(BUCKET_INVESTIGATIONS, row["investigation"]),
                               jobs={j["id"]: j for j in tx.scan(BUCKET_JOBS) if type(j.get("id")) is str},
