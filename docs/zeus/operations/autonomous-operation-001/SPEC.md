@@ -1,5 +1,36 @@
 # Whole autonomous operating loop
 
+## PR187 integration correction: committed intent observer, 2026-09-24
+
+Goal and accepted transport implementation unchanged. PR187 head 4f8bf53 passed independent review,
+native 131 tests (21 skipped), Ruff, and all four Windows/Linux CI jobs. Integration run35940055696
+failed exactly three new tests/test_outbox.py tests with psycopg LockNotAvailable, while 3978 passed.
+No blind CI retry; retain this failure. This is not established infrastructure flakiness.
+
+Source-traced cause: BoundBus.publish calls service.store.transaction while relay._publish already
+holds a PostgresStore.transaction. Both acquire pg_advisory_xact_lock(734219) on different connections;
+the inner call waits for outer completion, which waits for publish to return. MemoryStore hides this.
+The test's intention is valid: observe committed binding before publication from another connection.
+The observer accidentally requested the writer lock. No production lock change is needed or allowed.
+
+One test-only Claude batch, tests/test_outbox.py: give BoundBus a committed read observer that does
+not acquire the control-plane writer lock. For PostgreSQL use a separate read-only connection to the
+fixture's exact isolated schema/DSN and query the committed outbox_attempts rows, with a bounded
+statement timeout; do not reuse the publishing connection or observe an uncommitted transaction.
+MemoryStore uses its existing safe inspection path. Preserve assertions and both backends; no skips,
+no larger lock timeout, no disabling global locks, no production modifications. Fixture connection
+closes deterministically. Keep lost acknowledgement explicitly labelled injected fault.
+
+Acceptance: the three failing tests plus adjacent outbox tests pass in both backends; committed
+binding is visible before publish; wrong/uncommitted or missing binding must still fail the assertion;
+transport refusal/lost reply behavior unchanged. Explain why production locking stays intact.
+Use narrow test-local helper rather than a new runtime abstraction. Timeout/cleanup: observer has
+bounded query and context-managed connection. Concurrent relay coverage remains as already tested.
+No new OS behavior or scheduling changes. Run targeted test_outbox and Ruff; report PG skipped if
+worker lacks PG, never claim that proves this fix. Owner/CI MUST run the PG tests before merge.
+Complete through existing PR187, exact-head CI then previously prepared idle runtime cutover.
+Actual research recovery and full autonomous loop qualification remain separate pending acceptance.
+
 ## Research recovery resubmission: original transport ownership, 2026-09-24
 
 Candidate a64b7c3 is staged as correction input ONLY, not accepted or deployed. Independent review
