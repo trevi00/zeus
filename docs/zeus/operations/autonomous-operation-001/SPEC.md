@@ -1,5 +1,25 @@
 # Whole autonomous operating loop
 
+## Release checklist consolidated correction R1, 2026-09-24 13:08 UTC
+
+Candidate67317ab8 task19c50b65 was independently rejected by lead6453d76d; review artifact
+252c1c71. Root confirmed all three reachable code paths by reading exact candidate. Keep original
+failure and accepted checklist architecture. Correct only these directly affected boundaries:
+(1) Redact all persisted structured node-derived fields, including progress/reconciliation/extra
+verdict/argv fields; exact IDs remain internal for accounting, hashes/counts retain identity. Real
+parameterized credential-canary must be absent from every emitted artifact, including interruptions.
+(2) Put collection, initial/post-collection fence, manifest and batches under one interruption
+report owner, so cancel/fence loss always links partial evidence even before a batch exists. Re-raise
+and never verify on interruption. Test collection cancellation and both fence positions explicitly.
+(3) Bound reap after kill failure; cleanup failure/timeout is unknown, not success. Preserve partial
+logs even if process survives. Test injected kill failure plus actual sleeping owned process, bounded
+return and eventual test-owned cleanup. Do not leave a child intentionally running after the test.
+Windows unknown descendant proof remains honest; no inferred clean shutdown or retry-safe verdict.
+One continuation correction through existing Fleet, same candidate/session when supported, then
+independent acceptance. Targeted release-suite/runner/commands regression checks and Ruff; no full
+suite/model calls in worker. Existing whole-loop completion conditions remain unchanged.
+
+
 ## Checklist-complete release verification, 2026-09-24 12:43 UTC
 
 Outcome: finish unchanged release acceptance through complete, observable incumbent and candidate

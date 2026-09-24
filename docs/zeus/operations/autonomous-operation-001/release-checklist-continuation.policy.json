@@ -1,0 +1,41 @@
+{
+  "schema": "urn:zeus:continuation-policy:1",
+  "id": "autonomous-release-checklist-001",
+  "enabled": true,
+  "repository": "fe13e1ed40e5b9ba64a3fa8bed3a3f46d1bf486634b337fca46a5f5179622c63",
+  "lanes": [
+    "harness"
+  ],
+  "goals": [
+    {
+      "path": "docs/zeus/operations/autonomous-operation-001/SPEC.md",
+      "sha256": "5ba483eae4422b0d7d4e3e9a73a0056c5f5dcaf9587f766bf4da7dd2712530e5",
+      "criterion": "Complete the existing autonomous operating loop with independently verified session, continuation and actual runtime ownership"
+    }
+  ],
+  "allowed_paths": [
+    "src/codex_harness/adapters/deployment.py",
+    "src/codex_harness/adapters/commands.py",
+    "src/codex_harness/adapters/release_suite.py",
+    "src/codex_harness/domain/check_results.py",
+    "tests/test_deployment.py",
+    "tests/test_commands.py",
+    "tests/test_check_results.py",
+    "tests/test_release_suite.py",
+    "docs/contracts.md"
+  ],
+  "acceptance_criteria": [
+    "Both suites use immutable exact collection manifests and bounded serial batches; complete actual node accounting is required before success; no dropped tests or silent policy change.",
+    "Timeout/failure/cancel preserves diagnostic evidence and owns process cleanup; failed/unknown checks never become approval and fencing remains intact.",
+    "Actual tiny pytest-process tests cover complete/empty/failed collection, parameterized IDs, missing/duplicate/unexpected coverage, skips, timeout logs and compatible existing release behavior.",
+    "Consolidated lead correction: redact every node-derived persisted field, retain collection/fence interruption report, and bound cleanup after failed tree termination with unknown outcome."
+  ],
+  "session_archive_sha256": "1ab370f40de98823e63e1b7a80ed0d781ef7143ec94a67930e9b57417829e63c",
+  "qualified": {
+    "model": "claude-opus-5-5",
+    "image": "sha256:1ee94821ead80039a2ea1070079ce47ba3137771f56ef7a115e779ebeb06b267",
+    "profile": "worker-v1"
+  },
+  "delivery_target": "zeus-fleet-managed",
+  "max_corrections": 2
+}
