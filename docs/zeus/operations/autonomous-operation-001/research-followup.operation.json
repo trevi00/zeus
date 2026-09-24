@@ -1,0 +1,43 @@
+{
+  "schema": "urn:zeus:operation:1",
+  "id": "autonomous-operation-001-research-followup",
+  "base_revision": "10b5ea5ca95afd63c796231e026bca69980c2305",
+  "goal": {
+    "path": "docs/zeus/operations/autonomous-operation-001/SPEC.md",
+    "sha256": "92de262d2b9786dab3944a2354dd86d2884df2a21ba658bf75e193cd3fff9d36",
+    "criterion": "Complete the existing autonomous operating loop with independently verified session, continuation and actual runtime ownership",
+    "rationale": "Finish the existing whole-goal acceptance matrix without manual user relay or weaker verification."
+  },
+  "budget": {
+    "mode": "subscription",
+    "total": 192,
+    "per_host": 192
+  },
+  "claude": {
+    "model": "claude-opus-5-5",
+    "timeout_seconds": 3600,
+    "max_budget_usd": 2
+  },
+  "plan": {
+    "objective": "Implement ONLY Accepted investigation follow-up for newly observed evidence in SPEC.md. Reuse explicit owner versioned research lineage for accepted report-only predecessor and new authoritative members. Preserve old receipts, fences, failed-dispatch recovery and all research holds. Targeted tests + Ruff; no model calls, live mutations, merge or deployment.",
+    "allowed_paths": [
+      "src/codex_harness/domain/research_investigations.py",
+      "src/codex_harness/application/research_program.py",
+      "src/codex_harness/adapters/research_program.py",
+      "src/codex_harness/adapters/research_program_cli.py",
+      "src/codex_harness/application/continuation.py",
+      "src/codex_harness/domain/continuation.py",
+      "tests/test_research_recovery.py",
+      "tests/test_research_program.py",
+      "tests/test_research_program_cli.py",
+      "tests/test_research_investigations.py",
+      "tests/test_continuation_research.py",
+      "docs/contracts.md"
+    ],
+    "acceptance_criteria": [
+      "Explicit exact pinned accepted report-only predecessor plus newly observed authoritative membership opens one follow-up; no unchanged replay or authority expansion.",
+      "Full terminal/settled evidence and atomic replay/concurrency/head checks preserve old history and fences; membership drift at claim refuses.",
+      "Fresh council and scoped owner acceptance remain required; legacy recovery and historical receipts preserved, targeted positive/negative/restart tests and Ruff."
+    ]
+  }
+}
