@@ -24,6 +24,11 @@ windows, revalidates all of it inside the selection transaction, and claims thro
 cross-program dispatch bucket. Failure-family eligibility, its counts and its snapshot are
 untouched, the two kinds are counted and reported apart, and no audit, partition, task or window row
 is ever written here: a claim is a research dispatch, never an audit decision or a promotion.
+
+Dispatch transport recovery (research-dispatch-recovery-001) is the one owner-authorized exception to
+"a failed dispatch keeps its claim": a proven pre-provider failure may be replaced ONCE by a new
+registered program with the same authority, through `research_dispatch_recoveries`. The failed rows
+stay history; the lineage names the replacement key that is the investigation's current dispatch.
 """
 from __future__ import annotations
 
@@ -39,7 +44,10 @@ from codex_harness.application.audit_progress import (
     packaged_policy,
 )
 from codex_harness.application.autonomous import BUCKET as BUCKET_RUNS
+from codex_harness.application.autonomous import OPERATIONS, RESERVATIONS
+from codex_harness.application.dge import SESSIONS
 from codex_harness.application.fleet import BUCKET_JOBS
+from codex_harness.application.outbox import _quarantine as quarantine_outbox
 from codex_harness.application.portfolio import (
     BUCKET_BINDINGS,
     BUCKET_INVESTIGATIONS,
@@ -58,15 +66,27 @@ from codex_harness.domain.audit_progress import (
 from codex_harness.domain.audit_progress import (
     snapshot as progress_snapshot,
 )
-from codex_harness.domain.model import require, utcnow
+from codex_harness.domain.model import digest, require, utcnow
 from codex_harness.domain.research_investigations import (
+    AUTHORIZED,
     DISPATCHED,
+    FENCE_REASON,
+    FENCED,
+    RECOVERED,
+    REFUSED,
     RESOLVED,
+    InvestigationRefused,
     candidate_identity,
+    check_recovery,
+    check_transport_proof,
+    current_dispatch_id,
     dispatch_row,
     dispatch_view,
     eligible_investigations,
+    recovery_view,
+    replacement_dispatch_id,
     snapshot,
+    validate_recovery_request,
 )
 from codex_harness.domain.research_investigations import (
     SOURCE as INVESTIGATION,
@@ -100,12 +120,14 @@ from codex_harness.domain.research_program import (
     monitor_projection,
     program_view,
     safe_code,
+    same_authority,
     select_candidate,
 )
 
 BUCKET_PROGRAMS, BUCKET_CANDIDATES, BUCKET_CYCLES = ("research_programs", "research_program_candidates",
                                                      "research_program_cycles")
 BUCKET_DISPATCHES = "research_investigation_dispatches"
+BUCKET_RECOVERIES = "research_dispatch_recoveries"
 ELIGIBLE_REASON, INELIGIBLE_REASON = "portfolio_investigation_eligible", "investigation_ineligible"
 PROGRESS_ELIGIBLE_REASON, PROGRESS_INELIGIBLE_REASON = "audit_progress_eligible", "audit_progress_ineligible"
 
@@ -310,6 +332,10 @@ class ResearchProgram:
         if source is None:
             return None
         claimed = {d["investigation"] for d in tx.scan(BUCKET_DISPATCHES) if type(d.get("investigation")) is str}
+        # research-dispatch-recovery-001: an authorized, not yet claimed replacement is unclaimed for
+        # ITS named program only; every other program still sees the failed claim.
+        claimed -= {r["investigation"] for r in tx.scan(BUCKET_RECOVERIES)
+                    if r.get("state") == AUTHORIZED and (r.get("replacement") or {}).get("program") == row["id"]}
         found = eligible_investigations(investigations=tx.scan(BUCKET_INVESTIGATIONS), jobs=tx.scan(BUCKET_JOBS),
                                         bindings=tx.scan(BUCKET_BINDINGS), source=source, claimed=claimed,
                                         required_state=RESEARCH_REQUIRED, minimum=FAMILY_MINIMUM)
@@ -413,6 +439,17 @@ class ResearchProgram:
         require(isinstance(document, dict) and document.get("investigation") == chosen["investigation"],
                 "Research investigation candidate must carry its snapshot")
         dispatch = dispatch_row(document=document, candidate_id=chosen["id"], cycle_ref=cycle["id"], now=now)
+        recovery = tx.get(BUCKET_RECOVERIES, chosen["investigation"])
+        if (isinstance(recovery, dict) and recovery.get("state") == AUTHORIZED
+                and recovery["replacement"]["program"] == cycle["program"]):
+            # The ONE replacement: its own key, bound to the lineage and the failed identity it
+            # supersedes; the failed row is never rewritten. The lineage records the claim here, in
+            # the same transaction, so a repeat, a restart or a concurrent tick cannot claim twice.
+            dispatch.update(id=recovery["replacement"]["dispatch"], recovery=recovery["id"],
+                            supersedes={"dispatch": chosen["investigation"], **recovery["failed"]})
+            recovery.update(state=RECOVERED, claimed_at=now, updated_at=now,
+                            replacement={**recovery["replacement"], "cycle": cycle["id"]})
+            tx.put(BUCKET_RECOVERIES, recovery["id"], recovery)
         if tx.get(BUCKET_DISPATCHES, dispatch["id"]) is not None:
             raise ProgramRefused("investigation_already_claimed")
         tx.put(BUCKET_DISPATCHES, dispatch["id"], dispatch)
@@ -426,17 +463,149 @@ class ResearchProgram:
         candidate = tx.get(BUCKET_CANDIDATES, row["id"] + ":" + selected)
         if candidate is None or candidate.get("source") != INVESTIGATION:
             return None
-        dispatch = tx.get(BUCKET_DISPATCHES, candidate["investigation"])
+        investigation = candidate["investigation"]
+        dispatch = tx.get(BUCKET_DISPATCHES, current_dispatch_id(investigation, tx.get(BUCKET_RECOVERIES, investigation)))
         if dispatch is None or dispatch.get("cycle") != cycle["id"] or dispatch.get("program") != row["id"]:
             return None   # another program's claim is never rewritten from this cycle
         return dispatch
 
     def dispatches(self, program_id: str | None = None) -> list:
-        """Bounded read-only projection of the claims; no config, prompt, output or error text."""
+        """Bounded read-only projection of the claims; no config, prompt, output or error text.
+        `current` marks the one row that answers for its investigation now: a failed original that
+        was replaced stays listed as history with `current` False."""
         with self.store.transaction() as tx:
             rows = tx.scan(BUCKET_DISPATCHES)
-        return [dispatch_view(r) for r in sorted(rows, key=lambda r: r["investigation"])
+            recoveries = {r["investigation"]: r for r in tx.scan(BUCKET_RECOVERIES)}
+        return [{**dispatch_view(r),
+                 "current": r.get("id", r["investigation"]) == current_dispatch_id(r["investigation"],
+                                                                                   recoveries.get(r["investigation"]))}
+                for r in sorted(rows, key=lambda r: (r["investigation"], r.get("id", r["investigation"])))
                 if program_id is None or r.get("program") == program_id]
+
+    # ----- failed-dispatch recovery (research-dispatch-recovery-001) -----------------------------
+    def recover_dispatch(self, document, transport) -> dict:
+        """Authorize ONE replacement of a proven pre-provider failed investigation dispatch for a NEW
+        registered program. Three steps, no transaction across the transport read:
+
+        1. one transaction re-reads every authoritative record (`check_recovery`) and, on the first
+           request, fences the failed run's unsent assignment through the existing outbox quarantine
+           (source copy retained, `sent` untouched, never claimed as sent) and records the lineage
+           row `fenced`, so no relay can publish it after this point;
+        2. the transport the failed attempts committed BEFORE publishing (`attempted_transport`,
+           pinned in the fence) is the only one whose absence counts. No publish call at all needs
+           no probe. Otherwise `transport.inspect(recipient, message_id)` reads the configured
+           bus; its identity before and after the read must equal that binding, so an empty other
+           endpoint, database, namespace, server process or storage never proves the original was
+           not delivered. A delivery error may still have delivered, so a timeout alone is never
+           proof. An unavailable or other transport refuses and the row stays `fenced`;
+        3. one transaction re-reads every record again and moves `fenced` -> `authorized`, or
+           records the durable refusal when the message is present on the bound transport.
+
+        Attempts recorded before transport bindings existed refuse `recovery_transport_unbound`
+        in step 1 and write nothing: their destination is unknown and is never backfilled.
+
+        The identical request replays (`cached`); any other for the same investigation is
+        `recovery_conflict`: one recovery per investigation, ever, and a failed replacement is held.
+        Nothing is deleted, no failed row becomes accepted and no model or council runs here."""
+        try:
+            request = validate_recovery_request(document)
+        except InvestigationRefused as exc:
+            raise ProgramRefused(exc.reason_code, exc.field) from exc
+        request_sha = digest(request)
+        investigation = request["investigation"]
+        with self.store.transaction() as tx:
+            row = self._recovery_row(tx, investigation, request_sha)
+            if row is not None and row["state"] != FENCED:
+                return self._recovery_result(row, cached=True)
+            proof = self._recovery_check(tx, request, None if row is None else row["fence"])
+            if row is None:
+                now = self.clock()
+                item = tx.get("outbox", proof["message_id"])
+                quarantine_outbox(tx, proof["message_id"], item, proof["source_hash"], FENCE_REASON,
+                                  tx.get("outbox_delivery", proof["message_id"]) or {})
+                row = {"id": investigation, "investigation": investigation, "state": FENCED, "reason_code": None,
+                       "request": request, "request_sha256": request_sha, "failed": dict(request["failed"]),
+                       "replacement": {**request["replacement"], "dispatch": replacement_dispatch_id(investigation),
+                                       "cycle": None},
+                       "fence": {"outbox": proof["message_id"], "source_hash": proof["source_hash"],
+                                 "attempts": proof["attempts"], "reason": FENCE_REASON,
+                                 "transport": proof["transport"]},
+                       "proof": None, "requested_at": now, "authorized_at": None, "claimed_at": None,
+                       "updated_at": now}
+                tx.put(BUCKET_RECOVERIES, investigation, row)
+        bound = proof["transport"]   # recomputed from the attempts; an existing fence must pin the same
+        if bound is None:
+            absent, basis = True, "no_publish_call"
+        else:
+            try:
+                observation = transport.inspect(proof["recipient"], proof["message_id"])
+            except Exception as exc:
+                raise ProgramRefused("recovery_transport_unavailable") from exc
+            try:
+                absent, basis = check_transport_proof(bound, observation), "absent_on_bound_transport"
+            except InvestigationRefused as exc:
+                raise ProgramRefused(exc.reason_code, exc.field) from exc
+        refused = None
+        with self.store.transaction() as tx:
+            row = self._recovery_row(tx, investigation, request_sha)
+            if row["state"] != FENCED:
+                return self._recovery_result(row, cached=True)   # a concurrent request finished first
+            self._recovery_check(tx, request, row["fence"])
+            now = self.clock()
+            if absent is not True:
+                refused = "recovery_message_delivered"
+                row.update(state=REFUSED, reason_code=refused, updated_at=now)
+            else:
+                row.update(state=AUTHORIZED, proof=basis, authorized_at=now, updated_at=now)
+            tx.put(BUCKET_RECOVERIES, investigation, row)
+        if refused is not None:
+            raise ProgramRefused(refused)
+        return self._recovery_result(row, cached=False)
+
+    @staticmethod
+    def _recovery_row(tx, investigation: str, request_sha: str) -> dict | None:
+        row = tx.get(BUCKET_RECOVERIES, investigation)
+        if row is None:
+            return None
+        if row.get("request_sha256") != request_sha:
+            raise ProgramRefused("recovery_conflict")
+        if row["state"] == REFUSED:
+            raise ProgramRefused(row["reason_code"])
+        return row
+
+    def _recovery_check(self, tx, request: dict, fence) -> dict:
+        """The authoritative reads of one recovery, checked by the pure domain rule."""
+        failed, investigation = request["failed"], request["investigation"]
+        program = tx.get(BUCKET_PROGRAMS, failed["program"])
+        replacement = tx.get(BUCKET_PROGRAMS, request["replacement"]["program"])
+        dispatch, run = tx.get(BUCKET_DISPATCHES, investigation), tx.get(BUCKET_RUNS, failed["run_id"])
+        correlation = "autonomous:" + failed["run_id"]
+        outbox = [item for item in tx.scan("outbox")
+                  if isinstance(item, dict) and (item.get("message") or {}).get("correlation_id") == correlation]
+        ids = {(item.get("message") or {}).get("message_id") for item in outbox}
+        ids.discard(None)
+        message_id = next(iter(ids)) if len(ids) == 1 else None
+        try:
+            return check_recovery(
+                request, investigation=tx.get(BUCKET_INVESTIGATIONS, investigation), required_state=RESEARCH_REQUIRED,
+                dispatch=dispatch, program=program, cycle=tx.get(BUCKET_CYCLES, failed["cycle"]),
+                run_result=council_result(failed["run_id"], failed["manifest_sha256"], run), run=run, outbox=outbox,
+                tasks=[i for i in ids if tx.get("tasks", i) is not None],
+                reservations=[r for r in tx.scan(RESERVATIONS) if r.get("task_id") in ids],
+                residue=[k for b, k in ((SESSIONS, failed["run_id"] + ".design"), (OPERATIONS, failed["run_id"] + ".impl"))
+                         if tx.get(b, k) is not None],
+                delivery=tx.get("outbox_delivery", message_id) if message_id else None,
+                attempts=[a for a in tx.scan("outbox_attempts") if message_id and a.get("outbox_id") == message_id],
+                replacement=replacement,
+                same_authority=isinstance(program, dict) and isinstance(replacement, dict)
+                and same_authority(program["config"], replacement["config"]),
+                fence=fence)
+        except InvestigationRefused as exc:
+            raise ProgramRefused(exc.reason_code, exc.field) from exc
+
+    @staticmethod
+    def _recovery_result(row: dict, cached: bool) -> dict:
+        return {"recovered": row["state"] in {AUTHORIZED, RECOVERED}, "cached": cached, **recovery_view(row)}
 
     # ----- capture and council ----------------------------------------------------------------
     def record_capture(self, cycle_ref: str, owner: str, capture: dict) -> dict:
@@ -564,7 +733,9 @@ class ResearchProgram:
             cycles = [c for c in tx.scan(BUCKET_CYCLES) if c["program"] == program_id]
             candidates = [c for c in tx.scan(BUCKET_CANDIDATES) if c["program"] == program_id]
             dispatches = [d for d in tx.scan(BUCKET_DISPATCHES) if d.get("program") == program_id]
-        return program_view(row, cycles, candidates, dispatches)
+            recoveries = [r for r in tx.scan(BUCKET_RECOVERIES)
+                          if program_id in {r["failed"]["program"], r["replacement"]["program"]}]
+        return program_view(row, cycles, candidates, dispatches, recoveries)
 
     def candidates(self, program_id: str) -> list:
         with self.store.transaction() as tx:
@@ -577,4 +748,5 @@ class ResearchProgram:
         return monitor_projection(programs, cycles)
 
 
-__all__ = ["BUCKET_CANDIDATES", "BUCKET_CYCLES", "BUCKET_DISPATCHES", "BUCKET_PROGRAMS", "ResearchProgram"]
+__all__ = ["BUCKET_CANDIDATES", "BUCKET_CYCLES", "BUCKET_DISPATCHES", "BUCKET_PROGRAMS", "BUCKET_RECOVERIES",
+           "ResearchProgram"]

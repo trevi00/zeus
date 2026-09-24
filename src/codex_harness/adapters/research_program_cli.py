@@ -1,4 +1,4 @@
-"""`zeus research-program register|run|status|pause|resume`: thin wiring around the application
+"""`zeus research-program register|run|status|pause|resume|recover`: thin wiring around the application
 state machine and the adapters (INV-RESEARCH-PROGRAM-001). Register verifies the template goal and
 every local candidate through git at base and never builds a provider, bus or budget. Status, pause
 and resume touch the store only. Run is the finite synchronous runner an existing scheduled launcher
@@ -29,6 +29,9 @@ def add_parser(commands) -> None:
     for name, text in (("status", "Safe read-only projection; store read only"), ("pause", "Block new ticks; an owned cycle finishes"),
                        ("resume", "Allow new ticks again (paused only)")):
         sub.add_parser(name, help=text).add_argument("program_id")
+    recover = sub.add_parser("recover", help="Owner request (urn:zeus:research-dispatch-recovery:1): authorize ONE "
+                                             "replacement of a proven pre-provider failed dispatch; no models")
+    recover.add_argument("--file", type=Path, required=True)
 
 
 def register(service, args) -> dict:
@@ -66,6 +69,21 @@ def run(service, args) -> dict:
     return {**result, "exit_code": 1 if bad else 0}
 
 
+def recover(service, args, transport=None) -> dict:
+    """The owner's explicit recovery request. The transport proof reads the CONFIGURED bus
+    (`HARNESS_REDIS_URL`, `HARNESS_REDIS_NAMESPACE`) through the same `RedisBus` the publisher uses;
+    its readiness is the owner's preflight. An unreachable bus refuses with
+    `recovery_transport_unavailable` instead of being assumed empty, and a bus that is not the one
+    the failed attempt committed before publishing refuses with `recovery_transport_changed`."""
+    if transport is None:
+        from codex_harness.adapters.bus import RedisBus
+        from codex_harness.adapters.research_program import TransportProbe
+        from codex_harness.bootstrap import redis_url
+        transport = TransportProbe(RedisBus(redis_url()))
+    document = read_document(args.file, "Research dispatch recovery request")
+    return {**ResearchProgram(service.store).recover_dispatch(document, transport), "exit_code": 0}
+
+
 def execute(service, args) -> dict:
     command = args.research_program_command
     try:
@@ -73,6 +91,8 @@ def execute(service, args) -> dict:
             return register(service, args)
         if command == "run":
             return run(service, args)
+        if command == "recover":
+            return recover(service, args)
         programs = ResearchProgram(service.store)
         if command == "pause":
             return {**programs.pause(args.program_id), "exit_code": 0}
@@ -83,4 +103,4 @@ def execute(service, args) -> dict:
         return refusal(exc)
 
 
-__all__ = ["add_parser", "execute", "register", "run"]
+__all__ = ["add_parser", "execute", "recover", "register", "run"]

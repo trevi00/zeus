@@ -1,0 +1,45 @@
+{
+  "schema": "urn:zeus:operation:1",
+  "id": "autonomous-operation-001-research-recovery",
+  "base_revision": "cb89f237374b7f7becec78d1e869e24a35f8676b",
+  "goal": {
+    "path": "docs/zeus/operations/autonomous-operation-001/SPEC.md",
+    "sha256": "788de4b7c34a286c8a25000178a77cad2db6b3c98d3654ec856a3a235b1b6db4",
+    "criterion": "Complete the existing autonomous operating loop with independently verified session, continuation and actual runtime ownership",
+    "rationale": "Finish the existing whole-goal acceptance matrix without manual user relay or weaker verification."
+  },
+  "budget": {
+    "mode": "subscription",
+    "total": 192,
+    "per_host": 192
+  },
+  "claude": {
+    "model": "claude-opus-5-5",
+    "timeout_seconds": 3600,
+    "max_budget_usd": 2
+  },
+  "plan": {
+    "objective": "Implement ONLY Research dispatch transport recovery section in SPEC.md. Existing owner-approved new program must be able to replace a proven pre-provider failed investigation dispatch once without late old publication, duplicate calls, history erasure or scoped-receipt weakening. No unrelated feature, deployment or full-suite worker execution.",
+    "allowed_paths": [
+      "src/codex_harness/domain/research_program.py",
+      "src/codex_harness/domain/research_investigations.py",
+      "src/codex_harness/application/research_program.py",
+      "src/codex_harness/adapters/research_program.py",
+      "src/codex_harness/adapters/research_program_cli.py",
+      "src/codex_harness/application/continuation.py",
+      "src/codex_harness/domain/continuation.py",
+      "tests/test_research_program.py",
+      "tests/test_research_program_cli.py",
+      "tests/test_research_investigations.py",
+      "tests/test_research_recovery.py",
+      "tests/test_continuation_research.py",
+      "docs/contracts.md"
+    ],
+    "acceptance_criteria": [
+      "Only explicit exact-scope owner request and confirmed terminal pre-provider failure authorize one new research attempt; unavailable or ambiguous effect proof refuses.",
+      "Original run/dispatch/publication evidence is preserved and old pending publication cannot start a late role; no terminal record is rewritten as accepted.",
+      "Repeat/concurrent/restart recovery creates one current replacement; scoped research receipt binds new accepted run and rejects stale results.",
+      "Normal research path and artifact-integrity checks retained; targeted tests and Ruff pass, incomplete diagnostics clearly excluded from passing test claims."
+    ]
+  }
+}

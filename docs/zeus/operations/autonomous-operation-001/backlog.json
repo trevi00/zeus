@@ -360,6 +360,45 @@
       "dependencies": [
         "native-fixture"
       ]
+    },
+    {
+      "id": "research-recovery",
+      "project_id": "research-improvement",
+      "criterion_id": "verified-loop",
+      "lane": "harness",
+      "manifest_path": "docs/zeus/operations/autonomous-operation-001/research-recovery.operation.json",
+      "manifest_revision": "379cc1681374e9c4c10b316c0350aad226ceab31",
+      "manifest_sha256": "355d22646c8267129464dc832cf6283e185e9b63ddeb9f65bc4c98f77aec68ed",
+      "priority": 260,
+      "dependencies": [
+        "native-fixture"
+      ]
+    },
+    {
+      "id": "research-transport",
+      "project_id": "research-improvement",
+      "criterion_id": "verified-loop",
+      "lane": "harness",
+      "manifest_path": "docs/zeus/operations/autonomous-operation-001/research-transport.operation.json",
+      "manifest_revision": "69bb2cafa0a33421719d3231fd44365053f4d895",
+      "manifest_sha256": "7be08b9d79327e1d6fa8d0df346d5091ecf9dc3cfd1b98cb41ee330034c6a90d",
+      "priority": 270,
+      "dependencies": [
+        "native-fixture"
+      ]
+    },
+    {
+      "id": "outbox-observer",
+      "project_id": "research-improvement",
+      "criterion_id": "verified-loop",
+      "lane": "harness",
+      "manifest_path": "docs/zeus/operations/autonomous-operation-001/outbox-observer.operation.json",
+      "manifest_revision": "967c0e20cf0a0eb8a4cb1d9b0f4ba5cb50304e14",
+      "manifest_sha256": "83155338856767f2abf99b9917f0c22f55771a66452c5a392eaba94580f50701",
+      "priority": 280,
+      "dependencies": [
+        "native-fixture"
+      ]
     }
   ]
 }

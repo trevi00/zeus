@@ -1,0 +1,51 @@
+{
+  "schema": "urn:zeus:operation:1",
+  "id": "autonomous-operation-001-research-transport",
+  "base_revision": "86fe80934bb09307be4dd44278047a629c693ba0",
+  "goal": {
+    "path": "docs/zeus/operations/autonomous-operation-001/SPEC.md",
+    "sha256": "25d0fff4ce79a5acb5d29c93bcba75ac26ac7629f05639dfad50e5ad340c3814",
+    "criterion": "Complete the existing autonomous operating loop with independently verified session, continuation and actual runtime ownership",
+    "rationale": "Finish the existing whole-goal acceptance matrix without manual user relay or weaker verification."
+  },
+  "budget": {
+    "mode": "subscription",
+    "total": 192,
+    "per_host": 192
+  },
+  "claude": {
+    "model": "claude-opus-5-5",
+    "timeout_seconds": 3600,
+    "max_budget_usd": 2
+  },
+  "plan": {
+    "objective": "Implement ONLY Research recovery resubmission: original transport ownership in SPEC.md. Correct rejected a64b7c3 as one coherent transport-intent/proof batch; preserve fencing, lineage and receipt checks. Legacy missing proof refuses honestly. Targeted tests/Ruff, no full suite, no deployment.",
+    "allowed_paths": [
+      "src/codex_harness/domain/research_program.py",
+      "src/codex_harness/domain/research_investigations.py",
+      "src/codex_harness/application/research_program.py",
+      "src/codex_harness/adapters/research_program.py",
+      "src/codex_harness/adapters/research_program_cli.py",
+      "src/codex_harness/application/continuation.py",
+      "src/codex_harness/domain/continuation.py",
+      "tests/test_research_program.py",
+      "tests/test_research_program_cli.py",
+      "tests/test_research_investigations.py",
+      "tests/test_research_recovery.py",
+      "tests/test_continuation_research.py",
+      "docs/contracts.md",
+      "src/codex_harness/application/outbox.py",
+      "src/codex_harness/adapters/bus.py",
+      "src/codex_harness/ports.py",
+      "tests/test_outbox.py",
+      "tests/test_bus.py"
+    ],
+    "acceptance_criteria": [
+      "Only explicit exact-scope owner request and confirmed terminal pre-provider failure authorize one new research attempt; unavailable or ambiguous effect proof refuses.",
+      "Original run/dispatch/publication evidence is preserved and old pending publication cannot start a late role; no terminal record is rewritten as accepted.",
+      "Repeat/concurrent/restart recovery creates one current replacement; scoped research receipt binds new accepted run and rejects stale results.",
+      "Normal research path and artifact-integrity checks retained; targeted tests and Ruff pass, incomplete diagnostics clearly excluded from passing test claims.",
+      "Original transport identity committed before publish matches actual publisher and recovery probe; lost reply on A plus empty B refuses; missing historical binding is never invented; credential-free evidence and production wiring tested."
+    ]
+  }
+}

@@ -5,16 +5,18 @@ from datetime import datetime, timedelta, timezone
 from types import SimpleNamespace
 from uuid import uuid4
 
+import psycopg
 import pytest
+from psycopg import sql
 
 from codex_harness.adapters.contracts import validate_message
 from codex_harness.adapters.monitoring import DatabaseFacts
-from codex_harness.adapters.store import MemoryStore
+from codex_harness.adapters.store import MemoryStore, PostgresStore
 from codex_harness.application.monitoring import Monitoring
 from codex_harness.application.service import Harness
 from codex_harness.bootstrap import organization
 from codex_harness.domain.model import envelope
-from codex_harness.ports import MessageDeliveryError
+from codex_harness.ports import MessageDeliveryError, TransportChanged
 
 
 @pytest.fixture(params=['memory', 'postgres'])
@@ -167,6 +169,109 @@ def test_bounded_cursor_reaches_later_records_and_retains_legacy_semantics(servi
     assert sum(r['legacy_sent'] for r in results) == 5
     assert results[-1]['published'] == 1
     assert len(bus.messages) == 1
+
+
+def committed_started_attempts(store):
+    """Independent observer of the COMMITTED intent at publish time. `_publish` calls the bus while
+    its own transaction holds the writer lock, so PostgreSQL is read on a separate read-only
+    connection that never takes `pg_advisory_xact_lock` and sees only committed rows, confined to
+    the fixture's isolated schema; the memory store's lock is re-entrant and holds only commits."""
+    if not isinstance(store, PostgresStore):
+        with store.transaction() as tx:
+            return [deepcopy(a) for a in tx.scan('outbox_attempts') if a['status'] == 'started']
+    with psycopg.connect(store.dsn, connect_timeout=5) as conn:
+        conn.read_only = True
+        with conn.transaction():
+            conn.execute("SET LOCAL statement_timeout = '5s'")
+            [schema] = conn.execute('SELECT current_schema()').fetchone()
+            assert schema.startswith('test_'), 'observer is confined to the isolated fixture schema'
+            rows = conn.execute(sql.SQL("""SELECT body FROM {} WHERE bucket = 'outbox_attempts'
+                AND body->>'status' = 'started' ORDER BY id LIMIT 100""").format(
+                sql.Identifier(schema, 'documents'))).fetchall()
+    return [row[0] for row in rows]
+
+
+class BoundBus(Bus):
+    """LABELLED binding-capable bus: a fixed credential-free identity; `seen` records what was
+    committed for the attempt AT the publish call, and `refuse` raises the pre-write refusal."""
+
+    def __init__(self, service, name='a', refuse=False, fail=None):
+        super().__init__()
+        self.service, self.identity = service, {'schema': 'urn:test:transport:1', 'storage': 'token-' + name}
+        self.refuse, self.fail, self.seen, self.bound = refuse, fail, [], []
+
+    def transport(self):
+        if self.fail:
+            raise MessageDeliveryError('TimeoutError')
+        return dict(self.identity)
+
+    def publish(self, message, transport=None):
+        self.bound.append(transport)
+        self.seen.append(committed_started_attempts(self.service.store))
+        if self.refuse:
+            raise TransportChanged('transport_changed')
+        return super().publish(message)
+
+
+def test_transport_binding_is_committed_before_publish_and_passed_to_the_publisher(service):
+    identity = put(service, 1)
+    bus = BoundBus(service)
+    assert service.flush_outbox(bus)['published'] == 1
+    [[started]] = bus.seen
+    assert started['transport'] == bus.identity and bus.bound == [bus.identity], 'intent held the binding first'
+    with service.store.transaction() as tx:
+        assert tx.get('outbox_delivery', identity)['transport'] == bus.identity
+
+
+def test_retry_keeps_the_first_binding_and_each_attempt_records_its_own_transport(service):
+    identity = put(service, 1)
+    class Lost(BoundBus):
+        def publish(self, message, transport=None):
+            super().publish(message, transport)
+            raise MessageDeliveryError('Acknowledgement lost')   # LABELLED lost reply after the write
+    first, second = Lost(service, 'a'), BoundBus(service, 'b')
+    assert service.flush_outbox(first)['retry'] == 1
+    assert service.flush_outbox(second)['published'] == 1
+    with service.store.transaction() as tx:
+        attempts = sorted(tx.scan('outbox_attempts'), key=lambda a: a['number'])
+        assert [(a['status'], a['transport']['storage']) for a in attempts] == [('retry', 'token-a'), ('delivered', 'token-b')]
+        assert tx.get('outbox_delivery', identity)['transport'] == first.identity, 'history is never rewritten'
+
+
+def test_pre_write_refusal_and_unreadable_identity_hand_nothing_to_the_transport(service):
+    identity = put(service, 1)
+    refusing = BoundBus(service, refuse=True)
+    assert service.flush_outbox(refusing)['retry'] == 1 and refusing.messages == []
+    unreadable = BoundBus(service, fail=True)
+    assert service.flush_outbox(unreadable)['retry'] == 1 and unreadable.bound == []
+    with service.store.transaction() as tx:
+        statuses = sorted(a['status'] for a in tx.scan('outbox_attempts'))
+        assert statuses == ['transport_changed_before_publish', 'transport_unavailable']
+        assert tx.get('outbox_delivery', identity)['status'] == 'retry'
+        assert {e['error_type'] for e in tx.scan('events')} == {'TransportChanged', 'MessageDeliveryError'}
+    assert service.flush_outbox(BoundBus(service))['published'] == 1
+
+
+def test_a_bus_without_identity_keeps_the_legacy_unbound_records(service):
+    identity = put(service, 1)
+    assert service.flush_outbox(Bus())['published'] == 1
+    with service.store.transaction() as tx:
+        [attempt] = tx.scan('outbox_attempts')
+        assert 'transport' not in attempt and 'transport' not in tx.get('outbox_delivery', identity)
+
+
+def test_a_publish_override_that_cannot_recheck_stays_unbound_and_delivers(service):
+    """A subclass that overrides `publish(message)` with the old signature cannot take the binding
+    back, so no binding is claimed for it; its delivery is unchanged."""
+    identity = put(service, 1)
+    class OldSignature(BoundBus):
+        def publish(self, message):
+            return Bus.publish(self, message)
+    bus = OldSignature(service)
+    assert service.flush_outbox(bus)['published'] == 1 and len(bus.messages) == 1
+    with service.store.transaction() as tx:
+        assert 'transport' not in tx.scan('outbox_attempts')[0]
+        assert 'transport' not in tx.get('outbox_delivery', identity)
 
 
 def test_monitor_keeps_quarantine_attention_after_later_empty_successful_batches(service):
