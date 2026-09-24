@@ -103,7 +103,8 @@ class AutonomousRun:
         keys = ("id", "status", "stage", "reason_code", "manifest_sha256", "identity", "goal", "correlation_id", "session_id",
                 "operation_id", "deadline", "max_starts", "starts", "invocations", "roles", "packet_digest", "ssot_decision",
                 "design", "operation", "residuals", "promotion", "durations", "history", "claimed_at", "updated_at", "finished_at",
-                "topology", "snapshot", "report")  # INV-COUNCIL-001: v2 receipts; None on v1 rows
+                "topology", "snapshot", "report",  # INV-COUNCIL-001: v2 receipts; None on v1 rows
+                "bus")  # run-scoped delivery namespace; None on rows claimed before it was recorded
         return {"schema": RECEIPT_SCHEMA, "trust": TRUST, "authority": "autonomous_receipt; not merge, deploy, completion or truth",
                 **{k: row.get(k) for k in keys}}
 
@@ -128,7 +129,7 @@ class AutonomousRun:
             row = {"id": run_id, "status": "running", "stage": "research", "reason_code": None, **binding,
                    "correlation_id": correlation_id(manifest), "session_id": session, "operation_id": operation,
                    "deadline": manifest["deadline"], "max_starts": shape["max_starts"], "topology": shape["topology"],
-                   "starts": {"reserved": 0, "settled": 0, "slots": []},
+                   "starts": {"reserved": 0, "settled": 0, "slots": []}, "bus": bus_view(self.bus),
                    "invocations": {}, "roles": {}, "packet_digest": None, "ssot_decision": None, "design": None,
                    "operation": None, "residuals": {"critical": [], "minor": []}, "promotion": None, "durations": {},
                    "history": [{"at": now, "from": None, "to": "research"}], "claimed_at": now, "updated_at": now, "finished_at": None}
@@ -523,6 +524,14 @@ class AutonomousRun:
         if self.observer is not None:
             self.observer.emit("operations.autonomous_stage", "observed", correlation_id="autonomous:" + run_id,
                                attributes={"run_id": run_id, "stage": stage, "state": state})
+
+
+def bus_view(bus) -> dict | None:
+    """The delivery namespace this run publishes and consumes on, so a routing failure is diagnosable
+    from the receipt: the namespace text only (configured prefix plus run digest), never the URL,
+    endpoint or a payload. None when the bus names none (a test double or no bus)."""
+    namespace = getattr(bus, "namespace", None)
+    return {"namespace": namespace} if isinstance(namespace, str) and namespace else None
 
 
 def _safe_binding(binding: dict) -> dict:

@@ -12,7 +12,7 @@ from codex_harness.adapters.operation_cli import GitSource, bind_goal, refusal
 from codex_harness.adapters.providers import packaged_policy
 from codex_harness.application.dge import DgeRefused
 from codex_harness.application.research_program import ResearchProgram
-from codex_harness.domain.research_investigations import REVOCATION_SCHEMA
+from codex_harness.domain.research_investigations import REVOCATION_SCHEMA, SUCCESSOR_SCHEMA
 from codex_harness.domain.research_program import ProgramRefused, validate_config
 
 MAX_TICKS = 100
@@ -32,7 +32,9 @@ def add_parser(commands) -> None:
         sub.add_parser(name, help=text).add_argument("program_id")
     recover = sub.add_parser("recover", help="Owner request (urn:zeus:research-dispatch-recovery:1): authorize ONE "
                                              "replacement of a proven pre-provider failed dispatch; version 2 "
-                                             "(execution_revocation) revokes instead of proving; no models")
+                                             "(execution_revocation) revokes instead of proving; version 3 "
+                                             "(settled_read_only_successor) succeeds a current failed "
+                                             "read-only council once; no models")
     recover.add_argument("--file", type=Path, required=True)
 
 
@@ -71,7 +73,7 @@ def run(service, args) -> dict:
     return {**result, "exit_code": 1 if bad else 0}
 
 
-def recover(service, args, transport=None) -> dict:
+def recover(service, args, transport=None, evidence=None) -> dict:
     """The owner's explicit recovery request. The transport proof reads the CONFIGURED bus
     (`HARNESS_REDIS_URL`, `HARNESS_REDIS_NAMESPACE`) through the same `RedisBus` the publisher uses;
     its readiness is the owner's preflight. An unreachable bus refuses with
@@ -81,11 +83,26 @@ def recover(service, args, transport=None) -> dict:
     An explicit `urn:zeus:research-dispatch-recovery:2` `execution_revocation` request builds no bus
     and reads no transport: it revokes execution authority in the control store only."""
     document = read_document(args.file, "Research dispatch recovery request")
-    if transport is None and not (isinstance(document, dict) and document.get("schema") == REVOCATION_SCHEMA):
+    schema = document.get("schema") if isinstance(document, dict) else None
+    if schema == SUCCESSOR_SCHEMA:
+        # The settled read-only successor reads the predecessor's execution artifacts from the executor's
+        # own content store and builds no bus: it never proves or reads transport history.
+        if evidence is None:
+            from codex_harness.adapters.artifacts import FileArtifacts
+            from codex_harness.adapters.autonomous_evidence import ExecutionEvidence
+            from codex_harness.adapters.configuration import runtime_dir
+            evidence = ExecutionEvidence(FileArtifacts(str(runtime_dir() / "artifacts")))
+        return {**ResearchProgram(service.store).recover_dispatch(document, None, evidence), "exit_code": 0}
+    if transport is None and schema != REVOCATION_SCHEMA:
         from codex_harness.adapters.bus import RedisBus
         from codex_harness.adapters.research_program import TransportProbe
         from codex_harness.bootstrap import redis_url
-        transport = TransportProbe(RedisBus(redis_url()))
+        failed = document.get("failed") if isinstance(document, dict) else None
+        run_id = failed.get("run_id") if isinstance(failed, dict) else None
+        # A run-scoped council published under its own namespace; the probe reads it when that run's
+        # storage token exists (see TransportProbe._select). A malformed request refuses in the owner.
+        transport = TransportProbe(RedisBus(redis_url()), scoped=RedisBus.for_run(redis_url(), run_id)
+                                   if isinstance(run_id, str) and run_id else None)
     return {**ResearchProgram(service.store).recover_dispatch(document, transport), "exit_code": 0}
 
 

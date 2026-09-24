@@ -28,6 +28,7 @@ from codex_harness.domain.research_investigations import (
     InvestigationRefused,
     dispatch_counts,
     recovery_view,
+    successor_view,
     validate_source,
 )
 from codex_harness.domain.usage_policy import NUMERIC_FIELDS, UsagePolicyError, accounting_mode
@@ -415,7 +416,7 @@ def candidate_view(candidate: dict) -> dict:
 
 
 def program_view(row: dict, cycles: list, candidates: list, dispatches: list | None = None,
-                 recoveries: list | None = None) -> dict:
+                 recoveries: list | None = None, successors: list | None = None, heads: list | None = None) -> dict:
     """`urn:zeus:research-program-status:1`: identities, state, counts, codes and per-cycle facts;
     never the template text, config bodies, exception text, DSNs or feed bodies."""
     config = row["config"]
@@ -443,6 +444,13 @@ def program_view(row: dict, cycles: list, candidates: list, dispatches: list | N
                                                if d.get("kind") == AUDIT_PROGRESS]),
             # Additive lineage: a failed original and its owner-authorized replacement, read-only.
             "recoveries": [recovery_view(r) for r in sorted(recoveries or [], key=lambda r: r["investigation"])],
+            # Settled read-only successors: the immutable authorization chain, and apart from it the
+            # versioned head naming the current dispatch (no integrity verdict: that is the owner's).
+            "successors": [successor_view(r) for r in sorted(successors or [],
+                                                             key=lambda r: (r["investigation"], r["version"]))],
+            "current": [{k: h.get(k) for k in ("investigation", "version", "successor", "dispatch", "request_sha256",
+                                               "previous", "updated_at")}
+                        for h in sorted(heads or [], key=lambda h: h["investigation"])],
             "authority": "research program status; counts from the store, not model claims; no merge, deploy or truth"}
 
 
