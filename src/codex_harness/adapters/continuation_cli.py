@@ -36,7 +36,8 @@ def add_parser(commands) -> None:
     conduct = sub.add_parser("conduct", help="Lane side: the guarded conductor review of one accepted operation")
     conduct.add_argument("--file", type=Path, required=True, help="The operation's frozen manifest JSON")
     research = sub.add_parser("research-accept", help="Owner: record one scoped research receipt "
-                              "(urn:zeus:continuation-research-receipt:1) for an exact research intent")
+                              "(urn:zeus:continuation-research-receipt:1, or :2 for a mixed-cause family) for an "
+                              "exact research intent")
     research.add_argument("--file", type=Path, required=True, help="The owner's receipt JSON")
     supplement = sub.add_parser("research-supplement", help="Owner: record one typed research scope supplement "
                                 "(urn:zeus:continuation-research-scope-supplement:1); releases nothing by itself")

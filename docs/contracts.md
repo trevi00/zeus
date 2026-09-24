@@ -2830,6 +2830,35 @@ at every consumption, with its report/attestation bytes read again; the receipt 
 Evidence refs alone never imply coverage; the original dispatch, snapshot, investigation and failure
 verdicts are never rewritten.
 
+Mixed-cause family receipt (SPEC "Mixed-cause continuation research receipt"): `research_attempts`
+groups successive failures of ONE policy family, a Portfolio investigation groups jobs by ONE
+(status, reason code), so a held family whose members failed differently (a lead-rejected parent and
+its evidence-refused correction) truthfully fails the schema-1 `research_investigation_membership`
+gate, which stays unchanged. The owner then submits the versioned
+`urn:zeus:continuation-research-receipt:2` through the SAME `research-accept` / `accept_research`
+(`domain.continuation.validate_receipt` selects by `schema`; stored in `continuation_research_receipts`
+with `coverage: mixed_family`, no supplement read or needed). Strict fields: the schema-1 part (intent,
+policy/digest, family, `investigation` = the dispatched one, `evidence_refs`), `attempts[] {job,
+evidence_sha256, inspection, investigation, status, reason_code}` spanning at least two investigations,
+`dispatch {program, run_id, manifest_sha256, snapshot_sha256, id, job_ids_sha256}`, `captured`
+(non-empty, not every member), `lineage[] {parent_job, job, intent_id}` (exactly members-1 member
+edges), the accepted run's `acceptance {graph_sha256, candidate_revision, decision_id}` and an
+`attestation_ref` distinct from the evidence refs; anything else is `research_receipt_invalid`.
+`check_mixed_receipt` runs the shared held-intent/complete-attempt/fresh-lane checks, then requires
+each member in its OWN named investigation with exactly its Fleet status and reason code (no shared
+cause asserted; `research_investigation_unknown`/`_mismatch`/`_membership`), the current dispatch
+of `investigation` resolved and accepted with the same id and sample digest, `captured` exactly the
+members in its sample and all of that investigation (`research_mixed_capture_mismatch`), every other
+member connected to a captured one, ancestor or descendant, through the persisted successor intents
+checked as for a supplement descendant (`research_mixed_lineage_broken`, `_ownership_mismatch`), and
+`accepted_candidate` over the promotion rows (`research_mixed_acceptance_unproven`). The report and
+attestation bytes are read through the evidence port; the writer transaction also rechecks the current
+dispatch row. Consumption re-validates the stored canonical document and its digest
+(`research_receipt_corrupt`) and reruns every check; completion routes the job through the unchanged
+table (an evidence-refused child gets one `evidence_repair` under the existing `max_corrections`, never
+reset). `status` shows `receipt.causes`, `captured`, `lineage`, `acceptance`, `attestation_ref`; a
+schema-1 view is unchanged. It is not an acceptance, a repair verdict, a budget or a release.
+
 An intent id is `origin job + generation/attempt + decisive evidence digest + route`; a successor id is
 `cont-` plus 24 hex of it. Every external effect has a durable pre-effect state: `intended` (complete
 successor manifest and binding recorded) -> `published` (lane binding written; identical replay cached,

@@ -71,7 +71,7 @@ def two_strikes(world, op_id, path):
     return root, successor, research
 
 
-def research_dispatch(world, tmp_path, jobs, status="accepted", project="ops"):
+def research_dispatch(world, tmp_path, jobs, status="accepted", project="ops", program="rp-001", folder="research"):
     """The existing research path end to end: the Portfolio groups the jobs, the owner binds them,
     an opted-in program claims the investigation and records the (LABELLED) council's run row."""
     rows = world.jobs()
@@ -80,12 +80,13 @@ def research_dispatch(world, tmp_path, jobs, status="accepted", project="ops"):
     for job in jobs:
         owner.bind(job, project, "c1")
     owner.reconcile()
-    root = tmp_path / "research"
+    root = tmp_path / folder
     root.mkdir(exist_ok=True)
     env = build(root, store=world.control, council=FakeCouncil(world.control, status=status))
-    registered(env, investigation_source={"topic": "storage", "project_ids": ["ops"], "reason_codes": [family[1]]})
+    registered(env, id=program,
+               investigation_source={"topic": "storage", "project_ids": ["ops"], "reason_codes": [family[1]]})
     investigation = family_id(*family)
-    ticked = env.runner.tick("rp-001")
+    ticked = env.runner.tick(program)
     assert ticked["investigation"] == investigation
     with world.control.transaction() as tx:
         return investigation, tx.get(BUCKET_DISPATCHES, investigation)
@@ -1886,3 +1887,360 @@ def test_a_scope_bound_follow_up_is_held_at_claim_when_either_registered_config_
     assert env.runner.tick("rp-002")["result"] == "accepted"
     with world.control.transaction() as tx:
         assert tx.get(BUCKET_DISPATCHES, investigation + ".recovery-2") is not None
+
+
+# ---- mixed-cause family receipt (SPEC "Mixed-cause continuation research receipt") ------------------------
+MIXED_ATTESTATION = ("LABELLED fixture owner attestation: the owner read the accepted report and judges that it covers "
+                     "the lead-rejected parent and its evidence-refused successor as distinct causes (owner "
+                     "judgment, not a model verdict)\n")
+
+
+def mixed_family(world, tmp_path):
+    """The actual shape of hold ed1af386: a rejected root whose correction was rejected again (the
+    first research hold, released by its own schema-1 receipt over the `lead_rejected` investigation),
+    then the next correction failed the evidence gate. The second hold covers the rejected parent and the
+    evidence-refused child; an unrelated evidence-refused family fills the `evidence_gate_refused`
+    investigation, whose accepted current dispatch captures the child but never the parent."""
+    world.register()
+    world.enqueue("op-x", "docs/a.md")
+    world.tick()
+    root, first = world.run_next(verdict=False)
+    world.tick()
+    parent, second = world.run_next(verdict=False)
+    assert (first["status"], first["reason_code"]) == (second["status"], second["reason_code"]) == ("rejected",
+                                                                                                    "lead_rejected")
+    world.tick()
+    earlier = only(world.intents(), origin_job=parent, route=dc.RESEARCH)
+    rejected_investigation, rejected_dispatch = research_dispatch(world, tmp_path, [root, parent])
+    world.controller.accept_research(receipt_for(world, earlier, rejected_investigation, rejected_dispatch))
+    world.tick()
+    assert world.intents()[earlier["id"]]["state"] == dc.COMPLETED
+    edge = only(world.intents(), origin_job=parent, route=dc.CORRECTION)
+    child, receipt = world.run_next(inspection="incomplete")
+    assert child == edge["successor_job"] and receipt["reason_code"] == "evidence_gate_refused"
+    world.tick()
+    research = only(world.intents(), origin_job=child, route=dc.RESEARCH)
+    assert research["state"] == dc.RESEARCH_REQUIRED and research["family"] == root
+    other, other_successor, _ = two_strikes(world, "op-z", "docs/c.md")
+    investigation, dispatch = research_dispatch(world, tmp_path, [child, other, other_successor], program="rp-002",
+                                                folder="research-mixed")
+    assert child in dispatch["job_ids"] and parent not in dispatch["job_ids"]
+    return {"root": root, "parent": parent, "child": child, "edge": edge, "earlier": earlier, "research": research,
+            "investigation": investigation, "dispatch": dispatch, "rejected_investigation": rejected_investigation,
+            "acceptance": accepted_promotion(world, dispatch)}
+
+
+def mixed_for(world, family, **overrides):
+    """What the owner submits: the status projection's attempt set, each member's inspection from its
+    lane and its OWN investigation, status and reason from the Fleet row, the persisted edge, the current
+    dispatch, the accepted report's promotion binding and the stored attestation."""
+    base = receipt_for(world, family["research"], family["investigation"], family["dispatch"])
+    jobs = world.jobs()
+    attempts = [{**a, "status": jobs[a["job"]]["status"], "reason_code": jobs[a["job"]]["reason_code"],
+                 "investigation": family_id(jobs[a["job"]]["status"], jobs[a["job"]]["reason_code"])}
+                for a in base["attempts"]]
+    attestation = world.artifacts.put(MIXED_ATTESTATION, "owner-attestation")["ref"]
+    return {**base, "schema": dc.MIXED_RECEIPT_SCHEMA, "attempts": attempts,
+            "lineage": [{"parent_job": family["parent"], "job": family["child"], "intent_id": family["edge"]["id"]}],
+            "dispatch": {**base["dispatch"], "id": family["dispatch"]["id"],
+                         "job_ids_sha256": family["dispatch"]["job_ids_sha256"]},
+            "captured": [family["child"]], "acceptance": family["acceptance"], "attestation_ref": attestation,
+            **overrides}
+
+
+def test_actual_mixed_family_is_refused_by_schema1_and_released_once_by_the_mixed_receipt_into_evidence_repair(
+        tmp_path):
+    world = World(tmp_path)
+    family = mixed_family(world, tmp_path)
+    research, parent, child = family["research"], family["parent"], family["child"]
+    # The reproduced boundary: the unchanged schema-1 gate refuses the truthful mixed set by membership.
+    with pytest.raises(dc.ContinuationRefused, match="research_investigation_membership"):
+        world.controller.accept_research(receipt_for(world, research, family["investigation"], family["dispatch"]))
+    assert set(receipts(world)) == {family["earlier"]["id"]}
+    before_rows = research_rows(world, family["investigation"]) + research_rows(world, family["rejected_investigation"])
+    before_intents = {key: row for key, row in deepcopy(world.intents()).items() if key != research["id"]}
+    before_jobs, before_receipts = deepcopy(world.jobs()), deepcopy(receipts(world))
+
+    document = mixed_for(world, family)
+    assert [a["job"] for a in document["attempts"]] == sorted([parent, child])
+    accepted = world.controller.accept_research(document)
+    assert accepted["accepted"] is True and accepted["cached"] is False and accepted["coverage"] == "mixed_family"
+    assert {c["job"]: (c["status"], c["reason_code"]) for c in accepted["causes"]} == {
+        parent: ("rejected", "lead_rejected"), child: ("failed", "evidence_gate_refused")}
+    assert accepted["captured"] == [child] and accepted["lineage"][0]["intent_id"] == family["edge"]["id"]
+    assert accepted["acceptance"] == family["acceptance"] and "no shared cause" in accepted["mixed_authority"]
+    assert world.intents()[research["id"]]["state"] == dc.RESEARCH_REQUIRED, "acceptance moves nothing"
+
+    result = world.tick()
+    intents = world.intents()
+    done = intents[research["id"]]
+    assert {"subject": research["id"], "effect": "research_resolved", "route": dc.RESEARCH} in result["actions"]
+    assert done["state"] == dc.COMPLETED and done["research_coverage"] == "mixed_family"
+    assert done["research_receipt"] == receipts(world)[research["id"]]["receipt_sha256"]
+    # The existing route selection continues: evidence repair of the retained candidate, never a new correction.
+    repair = only(intents, origin_job=child, route=dc.EVIDENCE_REPAIR)
+    assert repair["state"] == dc.ADMITTED and repair["family"] == family["root"]
+    assert world.binding(repair["successor_job"])["workspace"]["head"] == "c" * 40
+    assert "Evidence repair" in world.jobs()[repair["successor_job"]]["manifest"]["plan"]["objective"]
+    # The correction count is the family's history, never reset: three successors, old rows untouched.
+    successors = [row for row in intents.values() if row["family"] == family["root"] and row["route"] in
+                  dc.SUCCESSOR_ROUTES]
+    assert sorted(row["route"] for row in successors) == [dc.CORRECTION, dc.CORRECTION, dc.EVIDENCE_REPAIR]
+    assert {key: intents[key] for key in before_intents} == before_intents
+    assert {job: world.jobs()[job] for job in before_jobs} == before_jobs
+    assert world.jobs()[parent]["status"] == "rejected", "the historical rejection stays rejected"
+    after_rows = research_rows(world, family["investigation"]) + research_rows(world, family["rejected_investigation"])
+    assert after_rows == before_rows
+    assert {key: receipts(world)[key] for key in before_receipts} == before_receipts
+    # Replays: the identical receipt is cached, a restarted controller admits nothing more.
+    stored, count = deepcopy(receipts(world)), len(world.jobs())
+    assert world.controller.accept_research(document)["cached"] is True
+    world.tick(controller=world.build())
+    assert receipts(world) == stored and len(world.jobs()) == count
+    status = world.controller.status("policy-1")
+    shown = {row["id"]: row for row in status["intents"]}
+    assert shown[research["id"]]["receipt"]["coverage"] == "mixed_family"
+    assert shown[research["id"]]["receipt"]["causes"] == accepted["causes"]
+    legacy = shown[family["earlier"]["id"]]["receipt"]
+    assert legacy["coverage"] == "original_capture" and "causes" not in legacy, "a schema-1 view is unchanged"
+
+
+def _attempt(document, job, **change):
+    return {"attempts": [{**a, **change} if a["job"] == job else a for a in document["attempts"]]}
+
+
+def _edge(document, **change):
+    return {"lineage": [{**document["lineage"][0], **change}]}
+
+
+def _unrelated(document, world, family):
+    """A well-formed receipt that adds another family's captured evidence-refused job, joined by that
+    family's own persisted repair intent: same reason, not a member of this hold."""
+    other = next(row for row in world.intents().values() if row["route"] == dc.EVIDENCE_REPAIR
+                 and row["family"] != document["family"] and row["successor_job"] in family["dispatch"]["job_ids"])
+    child = next(a for a in document["attempts"] if a["job"] == family["child"])
+    return {"attempts": document["attempts"] + [{**child, "job": other["successor_job"]}],
+            "lineage": document["lineage"] + [{"parent_job": family["child"], "job": other["successor_job"],
+                                               "intent_id": other["id"]}],
+            "captured": sorted([family["child"], other["successor_job"]])}
+
+
+def _mutate_row(bucket, key_of, change):
+    """A LABELLED injected fault: one authoritative row changed in place before the check."""
+    def fault(document, world, family):
+        key = key_of(family)
+        with world.control.transaction() as tx:
+            row = tx.get(bucket, key)
+            tx.put(bucket, key, {**row, **change})
+        return {}
+    return fault
+
+
+MIXED_FAULTS = [
+    ("partial", lambda d, w, f: {"attempts": d["attempts"][:1], "lineage": [], "captured": d["captured"]},
+     "research_receipt_invalid"),
+    ("foreign_policy_sha", lambda d, w, f: {"policy_sha256": "0" * 64}, "research_policy_foreign"),
+    ("foreign_family", lambda d, w, f: {"family": "op-z"}, "research_family_mismatch"),
+    ("foreign_lane", _mutate_row("continuation_intents", lambda f: f["edge"]["id"], {"lane": "b"}),
+     "research_mixed_lineage_broken"),
+    ("foreign_project", _mutate_row(BUCKET_BINDINGS, lambda f: f["parent"], {"project_id": "other"}),
+     "research_mixed_ownership_mismatch"),
+    ("foreign_criterion", _mutate_row(BUCKET_BINDINGS, lambda f: f["parent"], {"criterion_id": "c2"}),
+     "research_mixed_ownership_mismatch"),
+    ("wrong_reason", lambda d, w, f: _attempt(d, f["parent"], reason_code="evidence_gate_refused"),
+     "research_investigation_membership"),
+    ("wrong_status", lambda d, w, f: _attempt(d, f["parent"], status="failed"), "research_investigation_membership"),
+    ("unknown_investigation", lambda d, w, f: _attempt(d, f["parent"], investigation="0" * 64),
+     "research_investigation_unknown"),
+    ("same_investigation", lambda d, w, f: _attempt(d, f["parent"], investigation=f["investigation"]),
+     "research_receipt_invalid"),
+    ("missing_lineage", lambda d, w, f: {"lineage": []}, "research_receipt_invalid"),
+    ("cyclic_lineage", lambda d, w, f: {"lineage": d["lineage"] + [{**d["lineage"][0], "parent_job": f["child"],
+                                                                     "job": f["parent"]}]},
+     "research_receipt_invalid"),
+    ("broken_lineage", lambda d, w, f: _edge(d, intent_id=f["earlier"]["id"]), "research_mixed_lineage_broken"),
+    ("reversed_lineage", lambda d, w, f: _edge(d, parent_job=f["child"], job=f["parent"]),
+     "research_mixed_lineage_broken"),
+    ("similar_named_edge", lambda d, w, f: _edge(d, intent_id=f["edge"]["id"][:-1]
+                                                 + ("1" if f["edge"]["id"].endswith("0") else "0")),
+     "research_mixed_lineage_broken"),
+    ("unrelated_same_reason_job", lambda d, w, f: _unrelated(d, w, f), "research_attempts_changed"),
+    ("changed_evidence", lambda d, w, f: _attempt(d, f["parent"], evidence_sha256="1" * 64),
+     "research_attempts_changed"),
+    ("changed_inspection", lambda d, w, f: _attempt(d, f["child"], inspection="insp-other"),
+     "research_inspection_mismatch"),
+    ("captured_parent", lambda d, w, f: {"captured": [f["parent"]]}, "research_mixed_capture_mismatch"),
+    ("stale_sample", lambda d, w, f: {"dispatch": {**d["dispatch"], "job_ids_sha256": "0" * 64}},
+     "research_dispatch_mismatch"),
+    ("stale_run", lambda d, w, f: {"dispatch": {**d["dispatch"], "run_id": "run-old"}}, "research_dispatch_mismatch"),
+    ("other_dispatch_investigation", lambda d, w, f: {"investigation": f["rejected_investigation"]},
+     "research_dispatch_mismatch"),
+    ("unaccepted_report", _mutate_row("decisions_pending", lambda f: "review-003", {"result": {"accepted": False}}),
+     "research_mixed_acceptance_unproven"),
+    ("foreign_candidate", lambda d, w, f: {"acceptance": {**d["acceptance"], "candidate_revision": "8" * 40}},
+     "research_mixed_acceptance_unproven"),
+    ("foreign_decision", lambda d, w, f: {"acceptance": {**d["acceptance"], "decision_id": "review-other"}},
+     "research_mixed_acceptance_unproven"),
+    ("foreign_promotion", lambda d, w, f: {"acceptance": {**d["acceptance"], "graph_sha256": "6" * 64}},
+     "research_mixed_acceptance_unproven"),
+    ("missing_attestation", lambda d, w, f: {"attestation_ref": "sha256:" + hashlib.sha256(b"never").hexdigest()},
+     "research_evidence_missing"),
+    ("attestation_is_report", lambda d, w, f: {"attestation_ref": d["evidence_refs"][0]}, "research_receipt_invalid"),
+    ("rejected_council", _mutate_row("autonomous_runs", lambda f: f["dispatch"]["run_id"], {"status": "rejected"}),
+     "research_not_accepted"),
+]
+
+
+@pytest.mark.parametrize("name, change, reason", MIXED_FAULTS, ids=[fault[0] for fault in MIXED_FAULTS])
+def test_partial_foreign_stale_unproven_or_unreadable_mixed_evidence_refuses_with_no_mutation(tmp_path, name, change,
+                                                                                               reason):
+    world = World(tmp_path)
+    family = mixed_family(world, tmp_path)
+    document = mixed_for(world, family)
+    document = {**document, **change(document, world, family)}
+    before = (deepcopy(receipts(world)), deepcopy(world.jobs()))
+    with pytest.raises(dc.ContinuationRefused) as info:
+        world.controller.accept_research(document)
+    assert info.value.reason_code == reason
+    assert (receipts(world), world.jobs()) == before, "nothing is stored"
+    world.tick()
+    assert world.intents()[family["research"]["id"]]["state"] == dc.RESEARCH_REQUIRED
+
+
+def test_a_receipt_releases_no_correction_budget(tmp_path):
+    """The mixed receipt releases the hold; the existing `max_corrections` still decides the successor."""
+    world = World(tmp_path, max_corrections=2)
+    family = mixed_family(world, tmp_path)
+    world.controller.accept_research(mixed_for(world, family))
+    world.tick()
+    intents = world.intents()
+    assert intents[family["research"]["id"]]["state"] == dc.COMPLETED
+    refused = only(intents, origin_job=family["child"], route=dc.EVIDENCE_REPAIR)
+    assert refused["state"] == dc.REFUSED and refused["reason_code"] == "correction_budget_exhausted"
+    assert refused["successor_job"] is None
+    assert world.controller.status("policy-1")["held_families"][family["root"]] == "correction_budget_exhausted"
+
+
+def test_an_unavailable_lane_or_an_unknown_or_active_execution_never_approves(tmp_path):
+    world = World(tmp_path)
+    family = mixed_family(world, tmp_path)
+    document = mixed_for(world, family)
+
+    class Down(LaneEvidence):
+        def read(self, job, target=None):
+            raise ConnectionError("lane store unavailable (injected fault)")
+    with pytest.raises(ConnectionError):
+        world.build(lanes=lambda lane: Down(world.lane.store)).accept_research(document)
+    with world.lane.store.transaction() as tx:   # LABELLED injected fault: an unconfirmed execution marker
+        task = tx.get("operations", family["child"])["owner_handoff"]["task_id"]
+        tx.put("observation_terminations", "marker-1", {"record_id": "marker-1", "task_id": task,
+                                                         "status": "unconfirmed"})
+    with pytest.raises(dc.ContinuationRefused, match="research_attempt_changed"):
+        world.controller.accept_research(document)
+    with world.lane.store.transaction() as tx:   # its owner resolved the marker
+        tx.put("observation_terminations", "marker-1", {"record_id": "marker-1", "task_id": task, "status": "resolved"})
+    with world.control.transaction() as tx:   # LABELLED injected fault: the parent is active again
+        job = tx.get("fleet_jobs", family["parent"])
+        tx.put("fleet_jobs", family["parent"], {**job, "status": "dispatching"})
+    with pytest.raises(dc.ContinuationRefused, match="research_attempt_changed"):
+        world.controller.accept_research(document)
+    with world.control.transaction() as tx:
+        tx.put("fleet_jobs", family["parent"], job)
+    assert set(receipts(world)) == {family["earlier"]["id"]}
+    assert world.controller.accept_research(document)["cached"] is False
+
+
+def test_concurrent_mixed_submissions_store_one_receipt_and_a_different_one_conflicts(tmp_path):
+    world = World(tmp_path)
+    family = mixed_family(world, tmp_path)
+    document = mixed_for(world, family)
+    start, results = threading.Barrier(2), []
+
+    def submit():
+        start.wait()
+        results.append(Continuation(world.control, lanes=world.lanes, evidence=world.evidence).accept_research(document))
+    threads = [threading.Thread(target=submit) for _ in range(2)]
+    for thread in threads:
+        thread.start()
+    for thread in threads:
+        thread.join()
+    assert sorted(r["cached"] for r in results) == [False, True]
+    stored = deepcopy(receipts(world))
+    other = world.artifacts.put(MIXED_ATTESTATION + "second judgment\n", "owner-attestation")["ref"]
+    with pytest.raises(dc.ContinuationRefused, match="research_receipt_conflict"):
+        world.controller.accept_research({**document, "attestation_ref": other})
+    assert receipts(world) == stored, "a conflict never overwrites"
+
+
+def test_restart_and_concurrent_controllers_consume_the_mixed_receipt_once_with_its_provenance(tmp_path):
+    world = World(tmp_path)
+    family = mixed_family(world, tmp_path)
+    world.controller.accept_research(mixed_for(world, family))
+    stored = deepcopy(receipts(world))
+    start = threading.Barrier(2)
+
+    def tick(controller):
+        start.wait()
+        world.tick(controller=controller)
+    threads = [threading.Thread(target=tick, args=(world.build(),)) for _ in range(2)]
+    for thread in threads:
+        thread.start()
+    for thread in threads:
+        thread.join()
+    world.tick(controller=world.build())
+    intents = world.intents()
+    done = intents[family["research"]["id"]]
+    assert done["state"] == dc.COMPLETED and [h["state"] for h in done["history"]].count(dc.COMPLETED) == 1
+    assert len([row for row in intents.values() if row["origin_job"] == family["child"]
+                and row["route"] == dc.EVIDENCE_REPAIR]) == 1
+    assert receipts(world) == stored and done["research_receipt"] == stored[done["id"]]["receipt_sha256"]
+
+
+def _mixed_ownership_changed(world, family):
+    with world.control.transaction() as tx:   # LABELLED injected fault: the parent's binding changed
+        row = tx.get(BUCKET_BINDINGS, family["parent"])
+        tx.put(BUCKET_BINDINGS, family["parent"], {**row, "project_id": "other"})
+    return "research_mixed_ownership_mismatch", (BUCKET_BINDINGS, family["parent"], row)
+
+
+def _mixed_review_withdrawn(world, family):
+    with world.control.transaction() as tx:   # LABELLED injected fault: the accepted review changed
+        row = tx.get("decisions_pending", "review-003")
+        tx.put("decisions_pending", "review-003", {**row, "status": "retry"})
+    return "research_mixed_acceptance_unproven", ("decisions_pending", "review-003", row)
+
+
+def _mixed_receipt_tampered(world, family):
+    with world.control.transaction() as tx:   # LABELLED injected fault: the stored receipt was edited
+        row = tx.get(BUCKET_RESEARCH_RECEIPTS, family["research"]["id"])
+        tx.put(BUCKET_RESEARCH_RECEIPTS, row["id"], {**row, "receipt": {**row["receipt"], "captured": []}})
+    return "research_receipt_corrupt", (BUCKET_RESEARCH_RECEIPTS, row["id"], row)
+
+
+def _mixed_attestation_lost(world, family):
+    path = stored_path(world, receipts(world)[family["research"]["id"]]["receipt"]["attestation_ref"])
+    data = path.read_bytes()
+    path.unlink()   # LABELLED injected fault: the attestation bytes are gone
+    return "research_evidence_missing", ("file", path, data)
+
+
+@pytest.mark.parametrize("fault", [_mixed_ownership_changed, _mixed_review_withdrawn, _mixed_receipt_tampered,
+                                   _mixed_attestation_lost])
+def test_consumption_rechecks_the_mixed_receipt_and_holds_until_it_verifies_again(tmp_path, fault):
+    world = World(tmp_path)
+    family = mixed_family(world, tmp_path)
+    world.controller.accept_research(mixed_for(world, family))
+    stored = deepcopy(receipts(world))
+    reason, undo = fault(world, family)
+    result = world.tick(controller=world.build())
+    assert [s["reason_code"] for s in result["skipped"] if s["subject"] == family["research"]["id"]] == [reason]
+    assert world.intents()[family["research"]["id"]]["state"] == dc.RESEARCH_REQUIRED
+    jobs = len(world.jobs())
+    if undo[0] == "file":
+        undo[1].write_bytes(undo[2])
+    else:
+        with world.control.transaction() as tx:
+            tx.put(*undo)
+    assert receipts(world) == stored
+    world.tick()
+    assert world.intents()[family["research"]["id"]]["state"] == dc.COMPLETED and len(world.jobs()) == jobs + 1
