@@ -1,0 +1,32 @@
+{
+  "schema": "urn:zeus:operation:1",
+  "id": "autonomous-operation-001-capacity-monitoring",
+  "base_revision": "e601d4d24d5bca77f79bff95dc80df8e69b1c17e",
+  "goal": {
+    "path": "docs/zeus/operations/autonomous-operation-001/SPEC.md",
+    "sha256": "e25bd580ea9923a18265100a82baf13729c8e288e57d9fe2984ba0c306ca003d",
+    "criterion": "Complete the existing autonomous operating loop with independently verified session, continuation and actual runtime ownership",
+    "rationale": "Finish the existing whole-goal acceptance matrix without manual user relay or weaker verification."
+  },
+  "budget": {
+    "mode": "subscription",
+    "total": 192,
+    "per_host": 192
+  },
+  "claude": {
+    "model": "claude-opus-5-5",
+    "timeout_seconds": 3600,
+    "max_budget_usd": 2
+  },
+  "plan": {
+    "objective": "Implement ONLY Capacity monitoring compatibility in SPEC.md. Fix exact collector expected status for intended capacity field without weakening read-only assertions. Tests-only delta. Run monitoring, monitoring_observations, continuation, continuation_research, continuation_cli and Ruff; no full suite. No runtime edits, models, production writes, merge or deployment.",
+    "allowed_paths": [
+      "tests/test_monitoring.py",
+      "tests/test_monitoring_observations.py"
+    ],
+    "acceptance_criteria": [
+      "Exact collector expectation includes intended capacity data and preserves all existing read-only/no-executor assertions.",
+      "Focused monitoring and continuation suites plus Ruff pass, with no runtime changes or unrelated test weakening."
+    ]
+  }
+}
