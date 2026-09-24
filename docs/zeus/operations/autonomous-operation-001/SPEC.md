@@ -1,5 +1,40 @@
 # Whole autonomous operating loop
 
+## Accepted follow-up report scope binding, 2026-09-24 17:42 UTC
+
+Same original goal. PR195 merged2621423f and Fleet consumed it. Before actual new research root
+read the real predecessor autonomous-recovery-research-003 config: report objective says ONLY
+old delivery-tree/cont-8a33 pair. Current required pair is cont-fe15931105e915769378e016 and
+cont-6adfa87f8938c830ab60ac35. Pure same_authority(old,new) with ONLY report objective replaced
+returns False. Running unchanged would investigate the wrong pair. No model run was launched.
+This is the original frame's explicitly requested narrowed/changed topic support, previously
+reported as unsupported and wrongly accepted by root as a residual. Preserve the accepted safety
+fixes; close this applicability gap as one bounded batch, not another general redesign.
+
+Existing explicit followup request already pins replacement registered config SHA plus exact
+new members and old lineage. Add followup-specific authority comparison; DO NOT loosen legacy
+failure recovery same_authority. Permit owner-pinned report content changes (goal SHA/criterion,
+plan objective/acceptance criteria, research topic/questions/search scope and read-only current
+snapshot request) necessary to analyze the newly authorized members at pinned new base. Preserve
+same repository/project IDs/reason codes/investigation kind, report path subset of predecessor
+under docs/, provider/model, budget/cycle/adoption caps (no increase), and all other effect controls.
+Validate replacement config through existing schema/source owners. Owner request with old+new
+config hashes authorizes content transition only; report text cannot mutate scope. Record both
+content/authority digests in proof/receipt so downstream sees what was changed, not claimed same.
+Immutable explicit request, fresh program, accepted report-only predecessor, settled effects,
+changed exact authoritative members, atomic replay/concurrency and claim-time drift checks remain.
+No broad path mount, scheduler, runtime edit authorization, automatic receipt or hold release.
+
+Tests: real-shaped old ONLY-pair objective -> explicitly pinned new ONLY-pair at newer valid goal
+passes authority for FOLLOWUP only; exact old behavior preserved. Repository/project/reason/model,
+provider/budget/cap broadening, report allowed-path widening, missing/stale request/config/goal,
+malformed and mixed-scope members refuse. Duplicate/new request conflict remains. End-to-end
+MemoryStore + isolated PG if available through actual recover/claim APIs; preserve seven-start and
+termination tests. Use five research/continuation suites and Ruff, exact existing files only.
+Root should exercise actual predecessor/request proof after independent review/host checks/CI,
+then one actual scoped council and owner receipt before checklist correction. No completion claim.
+
+
 ## Research follow-up scoped correction, 2026-09-24 16:45 UTC
 
 Candidate bd2a6d7307ecaa41f5130630c1a03f6b71774219/task3373cf74 rejected by independent Codex
