@@ -1,0 +1,32 @@
+{
+  "schema": "urn:zeus:operation:1",
+  "id": "autonomous-operation-001-outbox-observer",
+  "base_revision": "5d76ef0bf0207cac7b0966bd99679d15cdabbf49",
+  "goal": {
+    "path": "docs/zeus/operations/autonomous-operation-001/SPEC.md",
+    "sha256": "5aa9481c9a42c21f70462ef4beff6e80ad6f5f784ff4e41fbb9b9b05f309d79e",
+    "criterion": "Complete the existing autonomous operating loop with independently verified session, continuation and actual runtime ownership",
+    "rationale": "Finish the existing whole-goal acceptance matrix without manual user relay or weaker verification."
+  },
+  "budget": {
+    "mode": "subscription",
+    "total": 192,
+    "per_host": 192
+  },
+  "claude": {
+    "model": "claude-opus-5-5",
+    "timeout_seconds": 3600,
+    "max_budget_usd": 2
+  },
+  "plan": {
+    "objective": "Implement ONLY PR187 integration correction: committed intent observer in SPEC.md. Test-only fix to nested writer-lock acquisition; preserve production and assertions. Targeted tests/Ruff, no full suite or deploy.",
+    "allowed_paths": [
+      "tests/test_outbox.py"
+    ],
+    "acceptance_criteria": [
+      "Independent committed observer in BoundBus must not acquire nested PostgreSQL writer lock; exact isolated fixture schema, bounded read-only query, deterministic connection cleanup.",
+      "Original binding-before-publication, retry and refusal assertions remain, no skipped PostgreSQL parametrization or weakened production locks.",
+      "Run targeted outbox tests/Ruff; report absent PG honestly, CI integration is mandatory before merge."
+    ]
+  }
+}
