@@ -207,11 +207,13 @@ def test_collector_entrypoint_is_read_only_and_needs_no_executor(monkeypatch, tm
     assert sessions['data'] == {'schema': 'zeus.worker-session.v1', 'sessions': [], 'truncated': False,
                                 'counts': {}, 'blocked': 0, 'authority': sessions['data']['authority']}
     # No registered continuation policy: an `ok` envelope with no policy and no intent
-    # (INV-CONTINUATION-001); collecting it ticks, dispatches and admits nothing.
+    # (INV-CONTINUATION-001); collecting it ticks, dispatches and admits nothing. The capacity view
+    # is present and empty: no grant and no family is recorded or created by collecting it.
     continuation = snapshot['sources']['continuation']
     assert continuation['status'] == 'ok'
     assert continuation['data'] == {'schema': 'urn:zeus:continuation-status:1', 'policies': [], 'intents': [],
                                     'truncated': False, 'counts': {}, 'held_families': {},
+                                    'capacity': {'grants': [], 'families': []},
                                     'authority': continuation['data']['authority']}
     assert snapshot['sources']['observations']['data']['local'] == {'status': 'unavailable',
                                                                     'reason': 'directory_missing'}

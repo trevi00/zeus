@@ -542,6 +542,32 @@
       "dependencies": [
         "native-fixture"
       ]
+    },
+    {
+      "id": "mixed-family-receipt",
+      "project_id": "research-improvement",
+      "criterion_id": "verified-loop",
+      "lane": "harness",
+      "manifest_path": "docs/zeus/operations/autonomous-operation-001/mixed-family-receipt.operation.json",
+      "manifest_revision": "7fbb65abfd9a8e4f038fa8e3011c05b094df1129",
+      "manifest_sha256": "6676c6bd7d62a07d01aa4fc871bed1392c1de25e731af93239e5618b24db0a3c",
+      "priority": 400,
+      "dependencies": [
+        "native-fixture"
+      ]
+    },
+    {
+      "id": "scoped-repair-capacity",
+      "project_id": "research-improvement",
+      "criterion_id": "verified-loop",
+      "lane": "harness",
+      "manifest_path": "docs/zeus/operations/autonomous-operation-001/scoped-repair-capacity.operation.json",
+      "manifest_revision": "8d651bfa075eb79664d9e21115cf50d6f219f914",
+      "manifest_sha256": "bafc56e06351211c6e90fe69922d1f9dc7f6c4d4aac4ce00b0888b0f88203585",
+      "priority": 410,
+      "dependencies": [
+        "native-fixture"
+      ]
     }
   ]
 }

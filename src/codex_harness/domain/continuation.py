@@ -1028,6 +1028,150 @@ def check_mixed_receipt(receipt: dict, *, intent, attempts: list, policy, jobs: 
     return COVERAGE_MIXED
 
 
+# ---- exact evidence-repair capacity grant (SPEC "Exact evidence-repair capacity authorization") --------
+# `max_corrections` stays immutable and every successor keeps counting. The ONLY way past an exhausted
+# budget is the owner's typed one-use grant for ONE exact `evidence_repair` intent refused at creation
+# with `correction_budget_exhausted`: it pins the policy, family, source attempt and inspection, the
+# retained candidate, the family's latest completed research receipt and an immutable owner rationale.
+# Recorded together with the move of THAT intent from `refused` to `intended` (its successor id is the
+# one the intent always derived), so it authorizes one successor at most; the original refusal stays
+# as a snapshot and in the intent history. It is not an acceptance, a budget-ledger change, a model
+# authority, a deployment or an incident closure.
+CAPACITY_GRANT_SCHEMA = "urn:zeus:continuation-capacity-grant:1"
+CAPACITY_FIELDS = {"schema", "policy_id", "policy_sha256", "family", "intent_id", "route", "refusal", "source",
+                   "candidate", "research_receipt_sha256", "rationale_ref"}
+CAPACITY_SOURCE_FIELDS = {"job", "generation", "attempt", "evidence_sha256", "inspection"}
+CAPACITY_CANDIDATE_FIELDS = {"revision", "tree"}
+CAPACITY_REFUSAL = "correction_budget_exhausted"
+CAPACITY_AUTHORIZED = "capacity_grant_authorized"
+CAPACITY_EXTRA = 1
+CAPACITY_AUTHORITY = ("owner one-use evidence-repair capacity for one exact refused intent: not a code "
+                      "acceptance, a budget-ledger change, a model authority, a deployment or an incident closure")
+# Family rows that are still owed an effect or an owner: an active, unknown or unresolved lineage.
+CAPACITY_ACTIVE = OPEN_STATES | {RECOVERY_REQUIRED, PAUSED}
+
+
+def _grant(condition, field: str) -> None:
+    refuse(condition, "capacity_grant_invalid", "operator", field)
+
+
+def validate_capacity_grant(document) -> dict:
+    """Strict owner grant; returns the canonical copy. Only an `evidence_repair` refused for
+    `correction_budget_exhausted` is grantable; unknown or missing fields are refused."""
+    _grant(isinstance(document, dict) and set(document) == CAPACITY_FIELDS, "root")
+    _grant(document["schema"] == CAPACITY_GRANT_SCHEMA, "schema")
+    _grant(type(document["policy_id"]) is str and TOKEN.fullmatch(document["policy_id"]) is not None, "policy_id")
+    for key in ("policy_sha256", "intent_id", "research_receipt_sha256"):
+        _grant(type(document[key]) is str and SHA256.fullmatch(document[key]) is not None, key)
+    _grant(type(document["family"]) is str and TOKEN.fullmatch(document["family"]) is not None, "family")
+    refuse(document["route"] == EVIDENCE_REPAIR, "capacity_route_unsupported", "operator", "route")
+    refuse(document["refusal"] == CAPACITY_REFUSAL, "capacity_refusal_unsupported", "operator", "refusal")
+    source = document["source"]
+    _grant(isinstance(source, dict) and set(source) == CAPACITY_SOURCE_FIELDS, "source")
+    _grant(type(source["job"]) is str and TOKEN.fullmatch(source["job"]) is not None, "source.job")
+    _grant(all(type(source[k]) is int and 0 <= source[k] < 10_000 for k in ("generation", "attempt")),
+           "source.attempt")
+    _grant(type(source["evidence_sha256"]) is str and SHA256.fullmatch(source["evidence_sha256"]) is not None,
+           "source.evidence_sha256")
+    _grant(type(source["inspection"]) is str and TOKEN.fullmatch(source["inspection"]) is not None,
+           "source.inspection")
+    candidate = document["candidate"]
+    _grant(isinstance(candidate, dict) and set(candidate) == CAPACITY_CANDIDATE_FIELDS
+           and all(type(candidate[k]) is str and REVISION.fullmatch(candidate[k]) for k in CAPACITY_CANDIDATE_FIELDS),
+           "candidate")
+    _grant(type(document["rationale_ref"]) is str and EVIDENCE_REF.fullmatch(document["rationale_ref"]) is not None,
+           "rationale_ref")
+    return {"schema": CAPACITY_GRANT_SCHEMA, **{k: document[k] for k in (
+                "policy_id", "policy_sha256", "family", "intent_id", "route", "refusal", "research_receipt_sha256",
+                "rationale_ref")},
+            "source": {k: source[k] for k in sorted(CAPACITY_SOURCE_FIELDS)},
+            "candidate": {k: candidate[k] for k in sorted(CAPACITY_CANDIDATE_FIELDS)}}
+
+
+def check_capacity_refusal(grant: dict, intent) -> None:
+    """The intent a NEW grant names: this policy's exact `evidence_repair` observation, refused at
+    creation for an exhausted budget and never the owner of any effect."""
+    refuse(isinstance(intent, dict), "capacity_intent_unknown", "operator", "intent_id")
+    refuse(intent.get("policy_id") == grant["policy_id"] and intent.get("policy_sha256") == grant["policy_sha256"],
+           "capacity_policy_foreign", "operator", "policy")
+    refuse(intent.get("family") == grant["family"], "capacity_family_mismatch", "operator", "family")
+    refuse(intent.get("route") == EVIDENCE_REPAIR and intent.get("state") == REFUSED
+           and intent.get("reason_code") == CAPACITY_REFUSAL and effect_free(intent)
+           and isinstance(intent.get("authorization"), dict), "capacity_refusal_mismatch", "operator", "intent_id")
+
+
+def check_capacity_source(grant: dict, intent: dict, job, evidence: dict) -> None:
+    """The refused observation is still exactly what the lane shows now: the same terminal Fleet row,
+    route, decisive evidence, attempt, inspection and retained candidate. Anything else holds."""
+    source = grant["source"]
+    refuse(intent.get("origin_job") == source["job"] and intent.get("evidence_sha256") == source["evidence_sha256"]
+           and (intent.get("generation"), intent.get("attempt")) == (source["generation"], source["attempt"]),
+           "capacity_source_mismatch", "operator", "source")
+    refuse(isinstance(job, dict) and job.get("id") == source["job"] and job.get("lane") == intent.get("lane")
+           and job.get("updated_at") == intent.get("job_updated_at")
+           and (intent["authorization"].get("source") or {}).get("manifest_sha256") == job.get("manifest_sha256"),
+           "capacity_source_changed", "operator", "source.job")
+    routed = classify(job, evidence)
+    refuse(routed.get("route") == EVIDENCE_REPAIR and attempt_of(evidence) == {
+               "generation": source["generation"], "attempt": source["attempt"]}
+           and evidence_digest(job, evidence, EVIDENCE_REPAIR) == source["evidence_sha256"],
+           "capacity_source_changed", "operator", "source")
+    handoff = (evidence.get("operation") or {}).get("owner_handoff") or {}
+    refuse((handoff.get("inspection") or {}).get("id") == source["inspection"], "capacity_inspection_changed",
+           "operator", "source.inspection")
+    task = evidence.get("task") if isinstance(evidence.get("task"), dict) else {}
+    candidate = (task.get("result") or {}).get("candidate") or {}
+    refuse({k: candidate.get(k) for k in CAPACITY_CANDIDATE_FIELDS} == grant["candidate"],
+           "capacity_candidate_changed", "operator", "candidate")
+
+
+def check_capacity_family(grant: dict, intent: dict, intents: list, jobs: dict) -> dict:
+    """The family around the granted intent, from durable rows: no other active, unknown or
+    unresolved row, every family job terminal and known, and the family's LATEST research is completed
+    by exactly the pinned receipt before the refusal was observed. Returns that research intent."""
+    family = [row for row in intents if row.get("policy_id") == grant["policy_id"]
+              and row.get("family") == grant["family"] and row["id"] != intent["id"]]
+    refuse(not any(row.get("state") in CAPACITY_ACTIVE for row in family), "capacity_family_active", "operator",
+           "family")
+    members = {job for row in family + [intent] for job in (row.get("origin_job"), row.get("successor_job")) if job}
+    members.discard(intent.get("successor_job"))   # the granted successor itself, once reserved
+    refuse(all(isinstance(jobs.get(job), dict) and jobs[job].get("status") in {"accepted", "rejected", "failed",
+                                                                                "exhausted"} for job in members),
+           "capacity_family_active", "operator", "family")
+    research = sorted((row for row in family if row.get("route") == RESEARCH),
+                      key=lambda r: (str(r.get("created_at")), r["id"]))
+    refuse(research, "capacity_research_unresolved", ROUTE_OWNERS[RESEARCH], "research_receipt_sha256")
+    latest = research[-1]
+    refuse(latest.get("state") == COMPLETED and latest.get("research_receipt") == grant["research_receipt_sha256"]
+           and (str(latest.get("created_at")), latest["id"]) < (str(intent.get("created_at")), intent["id"]),
+           "capacity_research_mismatch", ROUTE_OWNERS[RESEARCH], "research_receipt_sha256")
+    return latest
+
+
+def capacity_count(intents: list, policy_id: str, family: str) -> int:
+    """The family's successors as `_observe` counts them against `max_corrections`."""
+    return sum(1 for row in intents if row.get("policy_id") == policy_id and row.get("family") == family
+               and row.get("route") in SUCCESSOR_ROUTES and row.get("state") != REFUSED)
+
+
+def capacity_view(row: dict, intent) -> dict:
+    """Bounded projection of one stored grant: the original cap and count kept apart from the explicit
+    extra capacity, the linked refusal, the successor it reserved and what remains of the grant."""
+    grant, recorded = row.get("grant") or {}, row.get("capacity") or {}
+    intent = intent if isinstance(intent, dict) else {}
+    reserved = intent.get("capacity_grant") == row.get("grant_sha256") and intent.get("state") != REFUSED \
+        and intent.get("successor_job") == row.get("successor_job")
+    return {"intent_id": row.get("id"), "policy_id": grant.get("policy_id"), "family": grant.get("family"),
+            "grant_sha256": row.get("grant_sha256"),
+            "rationale_ref": grant.get("rationale_ref"), "research_receipt_sha256": grant.get("research_receipt_sha256"),
+            "source": grant.get("source"), "candidate": grant.get("candidate"),
+            "original_cap": recorded.get("max_corrections"), "original_count": recorded.get("counted"),
+            "explicit_capacity": recorded.get("extra"), "successor_job": row.get("successor_job"),
+            "consumed": reserved, "remaining": 0 if reserved else recorded.get("extra"),
+            "state": intent.get("state"), "refusal": row.get("refusal"), "recorded_at": row.get("recorded_at"),
+            "authority": CAPACITY_AUTHORITY}
+
+
 # ---- fair selection -----------------------------------------------------------------------------
 def blocked_families(intents: list) -> dict:
     """family -> the reason its lineage is held. Only the family is held; others stay selectable."""
@@ -1179,6 +1323,9 @@ def next_action(row: dict) -> str:
     if state == PAUSED:
         return "family held after release rejection or rollback; acceptance authority preserved"
     if state == REFUSED:
+        if route == EVIDENCE_REPAIR and row.get("reason_code") == CAPACITY_REFUSAL:
+            return ("correction budget exhausted; only an explicit owner capacity grant for this exact intent "
+                    "(zeus continuation capacity-grant) admits one repair; the budget itself never grows")
         return "named owner resolves the refusal; the continuation never widens its own permission"
     return "none"
 
@@ -1197,5 +1344,8 @@ def view(row: dict) -> dict:
             "delivery_binding": (delivery_tuple(row["delivery_binding"])
                                  if isinstance(row.get("delivery_binding"), dict) else None),
             "research_receipt": row.get("research_receipt"),
+            "capacity_grant": row.get("capacity_grant"),
+            "refusal": ({k: row["refusal"].get(k) for k in ("state", "reason_code", "next_owner", "version", "updated_at")}
+                        if isinstance(row.get("refusal"), dict) else None),
             "next_action": next_action(row), "completion": ROUTE_COMPLETION.get(row["route"]),
             "version": row.get("version"), "created_at": row.get("created_at"), "updated_at": row.get("updated_at")}

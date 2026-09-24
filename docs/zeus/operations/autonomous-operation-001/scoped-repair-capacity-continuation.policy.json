@@ -1,0 +1,41 @@
+{
+  "schema": "urn:zeus:continuation-policy:1",
+  "id": "autonomous-scoped-repair-capacity-001",
+  "enabled": true,
+  "repository": "fe13e1ed40e5b9ba64a3fa8bed3a3f46d1bf486634b337fca46a5f5179622c63",
+  "lanes": [
+    "harness"
+  ],
+  "goals": [
+    {
+      "path": "docs/zeus/operations/autonomous-operation-001/SPEC.md",
+      "sha256": "257d7b16e5ee64afda1672631989c7de99d5b1a9c459ce7f69d388c0b98114b3",
+      "criterion": "Complete the existing autonomous operating loop with independently verified session, continuation and actual runtime ownership"
+    }
+  ],
+  "allowed_paths": [
+    "src/codex_harness/domain/continuation.py",
+    "src/codex_harness/application/continuation.py",
+    "src/codex_harness/adapters/continuation.py",
+    "src/codex_harness/adapters/continuation_cli.py",
+    "tests/test_continuation.py",
+    "tests/test_continuation_research.py",
+    "tests/test_continuation_cli.py",
+    "tests/test_continuation_routing.py",
+    "tests/test_continuation_process.py",
+    "docs/contracts.md"
+  ],
+  "acceptance_criteria": [
+    "One explicit exact grant admits one retained-candidate evidence repair while preserving original refused history, counts and all research/review gates.",
+    "Actual application/CLI plus concurrent/restart/failure-boundary tests prove deterministic successor and no authority or capacity reuse.",
+    "Foreign/stale/unknown/active/missing/spent bindings fail closed; status exposes original cap and explicit capacity separately; focused tests and Ruff pass."
+  ],
+  "session_archive_sha256": "1ab370f40de98823e63e1b7a80ed0d781ef7143ec94a67930e9b57417829e63c",
+  "qualified": {
+    "model": "claude-opus-5-5",
+    "image": "sha256:1ee94821ead80039a2ea1070079ce47ba3137771f56ef7a115e779ebeb06b267",
+    "profile": "worker-v1"
+  },
+  "delivery_target": "zeus-fleet-managed",
+  "max_corrections": 2
+}
