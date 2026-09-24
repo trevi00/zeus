@@ -1,5 +1,76 @@
 # Whole autonomous operating loop
 
+## Exact evidence-repair capacity authorization, 2026-09-24 20:45 UTC
+
+Original whole-loop goal and accepted gates unchanged. PR197 merged b550d36 and Fleet consumed
+that exact runtime. Host405passed14platformskips, independent review and CI passed. Live schema2
+receipt5e7b81adc76bad7490021f8553a72caa0a29bd819900262f15650905ec4f7f93 accepted both attempts;
+hold ed1af38692cd7198847816719bd556de1cd954b1d6c89112c42b9768c3aaf491 is now completed.
+Actual existing ticker then created evidence_repair intent
+53f2d12f8884dc8204458c9393ad037b2eea7b0f4e12314ddeafa76da550153e, refused
+correction_budget_exhausted. No successor/provider launched. Fleet idle, zero held units.
+Source application/continuation.py counts every SUCCESSOR_ROUTES intent against immutable
+max_corrections=2; two prior code-correction successors consumed it. register refuses policy
+changes and _create does not automatically revive an existing refused row. There is no existing
+typed capacity amendment. This is a measured policy boundary, not another code-rejection claim.
+
+Authority: user has explicitly authorized continuing original autonomous goal and objected to
+repeated permission for routine work. Codex authorizes ONE extra evidence-repair of this exact
+retained candidate under an explicit immutable grant. This is not blanket/unlimited retries.
+Do not reset counts, create another family/policy to evade counts, rewrite prior refusals or
+silently stop counting evidence repair globally. Prior max_corrections and all histories remain.
+
+Bounded implementation: add an owner-only typed one-use evidence-repair capacity grant through
+the existing Continuation adapter/CLI. Pin current policy id+SHA, family, exact refused intent,
+source job+attempt+evidence SHA+inspection, retained candidate revision/tree, completed research
+receipt SHA and immutable owner rationale ref. Limit to evidence_repair refused ONLY for
+correction_budget_exhausted. Validate current source/lane/candidate and receipt through existing
+owners (including receipt consumption rechecks); no unknown/active effect, unresolved research,
+foreign scope or changed observation. One grant authorizes ONE deterministic successor of the
+original refused intent. Keep its original refusal as durable history/linked snapshot; append
+explicit authorization transition. Do not derive a new anonymous operation/family to evade history.
+
+Reserve/bind grant under the existing primary transaction/intent ownership BEFORE new effects.
+Reuse _successor, lane binding, retained workspace, Fleet admission and eligibility checks. Do
+not duplicate session/provider scheduling. Same request/response-loss replays the same grant and
+successor. Competing conflicting grants cannot allocate two slots; once a successor is reserved,
+capacity remains charged even if execution fails. Crash at grant/reservation/binding/admission
+boundaries reconciles the SAME successor. Recheck relevant policy/source/receipt and grant
+binding before admission/new effects; stale authority holds. A known failed repair does not
+replenish the grant; another request requires a distinct explicit owner decision. Grant is NOT
+code acceptance, budget-ledger change, model authority expansion, deployment or incident closure.
+
+Actual target: policy autonomous-release-checklist-001; family
+autonomous-operation-001-release-checklist; origin cont-6adfa87f8938c830ab60ac35;
+candidate adeab8c79b5c6b34832d88eac43607d70307ddef/tree b2d37f705542c88e84247428287e785c27d5e5a8;
+inspection6b2bfd54ff8aa9cc83ec1a51c1e6121bde01759794ae1851b08afd67f089cf70;
+source evidence a5fd0ec3e9a2b62050aae6308851f1bd0f01f4505adf6a448235521602c329bd.
+Owner corrected project-evidence-v2 profile uses EXISTING release_suite/release_runner/
+release_recovery/release_health/check_binding/runner_categories tests plus Ruff. The grant
+does not waive inspection or change that execution profile; root's existing scoped launcher
+will supply it. Original bad test list, failed inspection and rejection remain historical.
+
+Acceptance matrix: real-shaped two prior corrections + mixed receipt + refused evidence repair
+gets exactly one retained-candidate successor. Without explicit grant, existing exhausted
+behavior unchanged. Same/conflicting concurrent requests, process restart and response loss
+at grant/reserve/bind/admit yield at most one effect and preserved original count/history.
+Changed policy/family/lane/candidate/tree/inspection/evidence/receipt, missing/unreadable rationale,
+unresolved or corrupt research proof, unknown execution/active owner, wrong route/refusal and
+spent grant all refuse/hold without new effects. Actual application/CLI test exercises existing
+Fleet admission and second tick; testing only the pure validator is insufficient. Admitted or
+failed successor consumes capacity; it cannot be reused for a later failure/candidate. Status
+shows original cap/count, explicit extra capacity, linked refusal, grant and remaining capacity.
+No new platform process behavior: Windows/Linux and isolated PG through existing checks; no
+production writes or models in tests. Keep schema1/schema2 research and previous ownership tests.
+
+One Claude batch, independent Codex review then exact host checks and CI. Implement only this
+owner authority boundary, reuse existing transaction/eligibility/artifact conventions. Focused
+continuation/research/process/routing/architecture/CI-scope tests and Ruff, not the full suite.
+No unrelated refactor or general policy amendment framework. After merge root submits live
+grant then existing scoped Fleet evidence repair, independent candidate review, release checks,
+managed delivery and whole-loop qualification. This prerequisite alone is not full autonomy.
+
+
 ## Mixed-family receipt evidence repair, 2026-09-24 19:45 UTC
 
 Same bounded matrix below. Candidate3c60c7157bdaab8441d8cb4c3466a701df2fe145,
