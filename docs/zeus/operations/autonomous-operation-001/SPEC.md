@@ -1,5 +1,70 @@
 # Whole autonomous operating loop
 
+## Mixed-cause continuation research receipt, 2026-09-24 19:05 UTC
+
+Same original outcome; this batch repairs the research-to-evidence-repair boundary, not a new
+research framework. PR196 is merged598088 and consumed by Fleet. Actual follow-up
+checklist-owner-profile-research-001.c001 completed7/7 settled starts, accepted design,
+Claude report961cf616659da32a63dcfc8068b658cec4eb8bb6 and independent review
+sha256:8cd6bcd40c1e9950e94e7230d91ac8b6a5fed0b7ca8fdbdc85bbe79fb45f7c94.
+Only RESEARCH-RESULT.md changed; accepted report is available in the pinned handoff below.
+Report distinguishes code rejection cont-fe15931105e915769378e016 from owner test-profile
+failure cont-6adfa87f8938c830ab60ac35. Root invoked actual accept_research with fresh lane
+observations matching both stored attempt digests; it refused research_investigation_membership.
+No receipt/hold was changed. Fleet idle, no held units. This is a reproduced boundary failure,
+not a speculative missing feature. Original accepted results remain accepted.
+
+Invalid assumption: continuation research_attempts groups successive failures of one policy/family,
+whereas _check_research requires ALL attempts share one Portfolio status/reason investigation.
+Those partitions differ. New accepted dispatch captures9 project-scoped evidence_gate_refused jobs,
+including cont-6adfa but not its lead-rejected parent cont-fe15. Portfolio's earlier total19 versus
+scoped9 is not evidence of deleted history. Existing scope supplement supports missing descendants
+of a captured member, not a missing ancestor or a different reason. Do NOT fabricate membership,
+relabel reasons, rewrite captures, reuse old report as new analysis or reset correction counters.
+
+One bounded design: explicit versioned mixed-family research receipt under the existing
+Continuation owner/CLI (keep schema1 behavior unchanged). Bind exact held intent, policy SHA,
+complete current attempt set, per-attempt fresh lane evidence+inspection and existing immutable
+continuation lineage linking them within SAME policy/family/lane/Portfolio project+criterion.
+Bind each member's actual authoritative Portfolio investigation/status/reason, allowing different
+reason codes without asserting a shared cause. Require a current accepted research dispatch and
+accepted report candidate/promotion/task/decision bindings (reuse accepted_candidate proof),
+plus immutable owner semantic attestation that this exact report covers the exact complete set.
+Owner attestation is a narrow semantic judgment, not model output or a substitute for ownership
+proof. At least one member must be captured by that dispatch; every extra member must be proven
+connected through persisted continuation parent-successor edges, not string prefix/similarity.
+The accepted report here explicitly names both attempts; support this actual shape without
+another council run or reclassification. Historical rejected candidates remain rejected.
+
+Path: accepted report -> explicit typed owner request -> fresh cross-store observations and
+primary lineage/Portfolio/current-dispatch/accepted-candidate checks -> atomic immutable receipt
+and exact hold completion -> existing route selection -> evidence_repair of retained adeab8c7
+under corrected profile -> new bound inspection -> independent review. Receipt grants NO code
+acceptance, correction-budget increase, deployment or unrelated hold release. Recheck on replay
+according to existing idempotency contracts; conflicting/stale bindings refuse. Expose distinct
+coverage and exact per-attempt causes/lineage/report binding in receipt/status evidence.
+
+Acceptance matrix: actual-shaped rejected-parent + failed-child with accepted report and all
+bindings passes one receipt; normal schema1 and descendant supplement stay unchanged. Partial,
+foreign policy/family/lane/project/criterion, wrong reason/investigation, missing/broken/cyclic
+lineage, unrelated same-reason jobs, changed evidence/inspection, stale dispatch, unaccepted or
+foreign report/promotion/decision, missing/unreadable attestation all refuse with no mutation.
+Concurrent replay yields one receipt; conflict does not overwrite. Unavailable lane/evidence and
+unknown or active execution cannot approve. Restart replay preserves provenance. No new external
+process/platform cleanup behavior; Windows/Linux and isolated PG via existing tests/owner gate.
+End-to-end application/CLI test MUST continue from successful receipt through existing route
+selection to evidence_repair, preserving correction count and old failure records. If existing
+policy refuses a distinct material boundary, return its concrete proof in this SAME batch; do
+not silently loosen policy or claim operational completion. Tests execute no models/live writes.
+
+Implementation scope: continuation domain/application/adapters/CLI and tests, reuse research
+program current-dispatch proof and Portfolio reads. Focused continuation, research and CLI suites
+plus Ruff; verify paths before claiming checks. No runtime deployment, arbitrary global changes,
+new scheduler or broad research. Root verifies exact candidate and independent review/CI, then
+applies live receipt, scoped retained-candidate repair, release checklist and whole-loop gates.
+Unrelated unknowns are recorded, not new blockers. Completion of this batch is NOT full autonomy.
+
+
 ## Accepted follow-up report scope binding, 2026-09-24 17:42 UTC
 
 Same original goal. PR195 merged2621423f and Fleet consumed it. Before actual new research root
