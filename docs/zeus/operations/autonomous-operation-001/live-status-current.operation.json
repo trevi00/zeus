@@ -1,0 +1,32 @@
+{
+  "schema": "urn:zeus:operation:1",
+  "id": "autonomous-operation-001-live-status-current",
+  "base_revision": "4066e4e2992066631f371bb914b3527627973ee7",
+  "goal": {
+    "path": "docs/zeus/operations/autonomous-operation-001/SPEC.md",
+    "sha256": "56edc4ef309d5abfbd7e84a96ca054afe6272d1e69193140aafc92751c833bc6",
+    "criterion": "Complete the existing autonomous operating loop with independently verified session, continuation and actual runtime ownership",
+    "rationale": "Finish the existing whole-goal acceptance matrix without manual user relay or weaker verification."
+  },
+  "budget": {
+    "mode": "subscription",
+    "total": 192,
+    "per_host": 192
+  },
+  "claude": {
+    "model": "claude-opus-5-5",
+    "timeout_seconds": 3600,
+    "max_budget_usd": 2
+  },
+  "plan": {
+    "objective": "Implement ONLY Item A-current in Current-source useful-item qualification after actual repair, SPEC.md. Update STATUS.md and CONTINUATION.md including Mermaid observed/pending diagram and remaining checklist. Use owner facts honestly. Docs-only diff/reference checks; no Python, full suite, runtime modifications or fabricated tests. Root owns actual delivery.",
+    "allowed_paths": [
+      "docs/zeus/operations/autonomous-operation-001/STATUS.md",
+      "docs/zeus/operations/autonomous-operation-001/CONTINUATION.md"
+    ],
+    "acceptance_criteria": [
+      "Only the authorized document paths change; preserve prior evidence and separate deployed code, configured policy and actual qualification.",
+      "Document claims match the owner facts in SPEC and current SSOT; no invented execution, release or autonomy claims."
+    ]
+  }
+}
