@@ -1,5 +1,30 @@
 # Whole autonomous operating loop
 
+## Revocation resubmission: replay acceptance, 2026-09-24
+
+Candidate1e961d3 staged ONLY as correction input, not accepted/deployed. Review91d63405 found one
+P2 in the fixed retained-fence matrix: Continuation.accept_research returns cached accepted:true
+before _require_recovery. A lost/changed fence after acceptance is still reported accepted on exact
+replay. Consumption already rechecks, so unsafe release is NOT established. Source-traced finding;
+reviewer ran no reproducer. All other accepted revocation/fencing/lineage checks remain in scope
+only for directly affected interactions; do not redesign recovery or widen operating authority.
+
+One Claude correction in existing continuation owner: validate retained revocation evidence before
+EVERY successful return, including the initial cached branch and the concurrent insertion branch.
+Trace authoritative reads and transaction ownership together. Do not create nested writer-lock
+transactions when rechecking inside the write transaction; reuse an existing reader/tx boundary
+where needed. Preserve immutable receipt and its historical accepted_at; rejection of current replay
+does not erase prior acceptance. Keep conflict semantics and ordinary non-revocation replay intact.
+
+Acceptance: accept then delete/change/malformed retained fence -> replay refuses named recovery
+condition; intact fence -> idempotent accepted cached true; conflict still refuses. Force concurrent
+receipt insertion branch with fence mutation to prove it also cannot return current acceptance.
+Consumption/restart still holds on lost fence with no successor. Test actual owner method, and
+include PostgreSQL coverage where available without a nested writer observer. Scope is this exact
+acceptance boundary, no broad unrelated verification or permanent artifact availability claim.
+Run targeted continuation_research/research_recovery and Ruff only; owner/CI owns broad/PG checks.
+Finish independent acceptance -> owner checks -> CI -> operating cutover -> actual legacy recovery.
+
 ## Actual legacy research recovery: execution revocation, 2026-09-24
 
 Outcome unchanged: complete the real failed research -> scoped acceptance -> repair -> useful work
