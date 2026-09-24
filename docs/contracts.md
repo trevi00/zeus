@@ -345,6 +345,40 @@ the release stays reviewed; nothing downstream is a pass. Zeus installs no Git h
 Codex hooks are verified per candidate manifest and discovered through the transport, and no
 installation success, file presence or string marker is a check result.
 
+## INV-CHECK-002
+
+A release pytest check (`ReleaseRunner._check` with a pytest argv, incumbent and candidate suites
+alike) is checklist-complete. It first collects exact node IDs under the check's own argv, config,
+cwd, environment and import mode, with an accounting plugin the controller writes into its own
+temporary directory (never taken from either checkout). A collection that fails, times out,
+reports nothing or has duplicate IDs is not an empty passing suite: `executed` failure,
+`observation_error`, `coverage_mismatch`; no tests is `empty_check`. The manifest artifact keeps
+the ordered node IDs (redacted copy; the hash binds the exact list), their count and sha256, the
+binding, the argv and the config file digest. The manifest is split deterministically into
+serial batches (`BATCH_NODES`, 200: whole files in collection order, oversized files split in
+order). Each batch is its own owned process under the unchanged `release_check_seconds`; the
+deadline bounds each process, not the suite, and the finite manifest bounds total work. Each batch
+re-collects, must match the manifest count and hash (otherwise drift), and selects only its
+planned nodes. It passes only when the multiset of finished node IDs equals the plan (missing,
+duplicate or unexpected is `coverage_mismatch`), a session finish was reported, the exit is 0 and
+no node failed, errored or has an unknown outcome. Per-node outcomes come from the plugin's
+setup/call/teardown reports, not from progress text. The skip policy is unchanged: skips are
+accounted but not executed, and a suite that executed nothing is `empty_check`. The first failing
+batch stops the rest as `not_run`. A timeout, a spawn error or a process that ends without a
+session finish is `observation_error` (retry), never a pass. The fence is checked before and after
+every process; a lost fence or a cancel, during collection or any batch, raises after a partial
+report is stored, and nothing is verified. Failing to delete the owner temporary directory (a
+Windows descendant still holding a file) never replaces the verdict or the interruption. Output streams to owner files, so a timeout or cancel keeps it. Each process receipt
+holds a redacted head+tail of stdout/stderr, the accounting events, the last started and finished
+test (explicitly not blamed as the cause) and the cleanup. Node IDs in the progress and
+reconciliation fields are redacted like the logs (a parameter ID can carry a credential), and the
+receipt counts those redactions. On POSIX, `descendants_gone` is true only
+when the process group is seen empty; on Windows it is null (unknown). When the tree kill fails
+the direct child is killed on its own, and reaping is bounded: a child still alive after
+`REAP_SECONDS` is `reaped: false` with unknown descendants, and the receipt is still written. One suite report links the
+collection receipt, the manifest, every batch and its counts, the not_run count and the verdict.
+`run_process` keeps its interface and behaviour; `run_logged_process` is the separate facility.
+
 ## INV-RUNNER-001
 
 An isolated source run is named by where the attempt ended and what it produced, never by an
