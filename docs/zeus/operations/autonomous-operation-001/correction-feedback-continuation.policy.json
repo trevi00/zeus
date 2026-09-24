@@ -1,0 +1,40 @@
+{
+  "schema": "urn:zeus:continuation-policy:1",
+  "id": "autonomous-correction-feedback-001",
+  "enabled": true,
+  "repository": "fe13e1ed40e5b9ba64a3fa8bed3a3f46d1bf486634b337fca46a5f5179622c63",
+  "lanes": [
+    "harness"
+  ],
+  "goals": [
+    {
+      "path": "docs/zeus/operations/autonomous-operation-001/SPEC.md",
+      "sha256": "998424e47667eb4d4a162249f922af65b819739a63f3cb4df292320618a689b7",
+      "criterion": "Complete the existing autonomous operating loop with independently verified session, continuation and actual runtime ownership"
+    }
+  ],
+  "allowed_paths": [
+    "src/codex_harness/adapters/executor.py",
+    "src/codex_harness/adapters/correction_feedback.py",
+    "src/codex_harness/adapters/isolated_worker.py",
+    "tests/test_correction_feedback.py",
+    "tests/test_executor.py",
+    "tests/test_executor_continuation.py",
+    "tests/test_continuation.py",
+    "tests/test_isolated_worker.py",
+    "docs/contracts.md"
+  ],
+  "acceptance_criteria": [
+    "Trusted lane/predecessor review binding and artifact integrity validated before provider entry; missing/foreign/empty/oversize evidence refuses without raw leaks.",
+    "Readable bounded redacted findings with source/delivered digests actually reach provider input across host/container boundary; required context cannot be evicted.",
+    "Existing legacy execution, identity-only manifests, continuation ownership and independent review gates preserved; focused real artifact and negative-boundary tests plus Ruff."
+  ],
+  "session_archive_sha256": "1ab370f40de98823e63e1b7a80ed0d781ef7143ec94a67930e9b57417829e63c",
+  "qualified": {
+    "model": "claude-opus-5-5",
+    "image": "sha256:1ee94821ead80039a2ea1070079ce47ba3137771f56ef7a115e779ebeb06b267",
+    "profile": "worker-v1"
+  },
+  "delivery_target": "zeus-fleet-managed",
+  "max_corrections": 2
+}

@@ -437,3 +437,50 @@ def test_postgres_two_programs_claim_one_investigation(isolated_pgstore):
     assert len(rows) == 1 and rows[0]["investigation"] == INVESTIGATION
     assert sum(r["cycle"]["investigations"]["claimed"] is not None for r in results.values()) == 1
     assert owner_rows[0]["state"] == "research_required", "no owner disposition is written by the bridge"
+
+
+# ----- accepted investigation follow-up: pure rules (SPEC "Accepted investigation follow-up") -----------
+def test_report_only_admits_plain_docs_paths_only():
+    from codex_harness.domain.research_investigations import report_only
+
+    def program(paths):
+        return {"template": {"plan": {"allowed_paths": paths}}}
+    assert report_only(program(["docs/RUNBOOK.md", "docs/zeus/report.md"]))
+    for paths in ([], None, ["src/codex_harness/x.py"], ["docs/../src/x.py"], ["docs\\x.md"], ["docs/a.md", "README.md"],
+                  [1]):
+        assert not report_only(program(paths)), paths
+    assert not report_only(None) and not report_only({"template": None})
+
+
+def test_the_follow_up_row_is_a_valid_first_link_of_an_initial_chain_and_drift_is_named():
+    from codex_harness.domain.research_investigations import (
+        FOLLOWUP_MODE,
+        FOLLOWUP_PROOF,
+        followup_drift,
+        successor_held,
+    )
+
+    investigation = "inv-1"
+    request = {"mode": FOLLOWUP_MODE, "investigation": investigation}
+    row = {"id": investigation + ":2", "investigation": investigation, "version": 2, "state": "authorized",
+           "proof": FOLLOWUP_PROOF, "request": request, "request_sha256": digest(request),
+           "predecessor": {"lineage_version": 0, "dispatch": investigation},
+           "replacement": {"dispatch": investigation + ".recovery-2"}, "fence": [], "evidence": {"executions": []}}
+    head = {"version": 2, "successor": row["id"], "request_sha256": row["request_sha256"],
+            "dispatch": investigation + ".recovery-2"}
+    assert successor_held(investigation, head, [row], deliveries={}, tasks={}) is None
+    # The proof must be the one its request mode names: a relabelled row is corrupt, never a follow-up.
+    for proof in ("settled_read_only", "settled_contract_failure", None):
+        assert successor_held(investigation, head, [{**row, "proof": proof}], deliveries={}, tasks={}) \
+            == "recovery_successor_corrupt"
+
+    members = {"job_ids": ["a", "b"], "sha256": digest(["a", "b"])}
+    family = {"id": investigation, "kind": "failure_family", "state": "research_required", "family_status": "failed",
+              "reason_code": "r", "job_ids": ["a", "b", "c"]}
+    jobs = {j: {"id": j, "status": "failed", "reason_code": "r"} for j in "abc"}
+    bindings = {j: {"job_id": j, "project_id": "ops"} for j in "ab"}
+    exact = dict(investigation=family, jobs=jobs, bindings=bindings, project_ids=["ops"], required_state="research_required")
+    assert followup_drift({"members": members}, **exact) is None
+    for change in ({"bindings": {**bindings, "c": {"job_id": "c", "project_id": "ops"}}},
+                   {"investigation": {**family, "state": "researched"}}, {"project_ids": ["other"]}):
+        assert followup_drift({"members": members}, **{**exact, **change}) == "followup_membership_drift", change
