@@ -425,6 +425,32 @@
       "dependencies": [
         "native-fixture"
       ]
+    },
+    {
+      "id": "council-isolation",
+      "project_id": "research-improvement",
+      "criterion_id": "verified-loop",
+      "lane": "harness",
+      "manifest_path": "docs/zeus/operations/autonomous-operation-001/council-isolation.operation.json",
+      "manifest_revision": "b0a44d28f1288d63f6afe1d074551cb63150185b",
+      "manifest_sha256": "d74be941c25a92464c0878413b9b73b9977c00d746fd9e39f6915e191e142aba",
+      "priority": 310,
+      "dependencies": [
+        "native-fixture"
+      ]
+    },
+    {
+      "id": "council-routing",
+      "project_id": "research-improvement",
+      "criterion_id": "verified-loop",
+      "lane": "harness",
+      "manifest_path": "docs/zeus/operations/autonomous-operation-001/council-routing.operation.json",
+      "manifest_revision": "507c38a253defa03fbd2adb0c8abde0efc4b3b29",
+      "manifest_sha256": "ae175c278e95a4594f04f32bd1520920abda094882ed8a251d48eac7346325cd",
+      "priority": 320,
+      "dependencies": [
+        "native-fixture"
+      ]
     }
   ]
 }

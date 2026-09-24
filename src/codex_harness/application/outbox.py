@@ -6,8 +6,81 @@ from codex_harness.domain.model import ContractError, digest, require, utcnow
 from codex_harness.ports import MessageDeliveryError, TransportChanged
 
 BASE_COUNTS = ("published", "quarantined", "quarantined_existing", "retry", "skipped", "legacy_sent", "error")
+# Route outcomes are counted only when they occur, so existing result shapes stay unchanged.
+ROUTE_COUNTS = ("route_held", "route_refused", "route_unavailable")
 # Ordered read page of the scoped selection walk; it bounds memory per read, never the batch itself.
 SELECTION_PAGE = 500
+# SPEC "Council isolation resubmission": the durable publication route of one correlation.
+ROUTES = "outbox_routes"
+ROUTE_SCHEMA = "urn:zeus:outbox-route:1"
+ROUTE_FIELDS = ("scope", "run_id", "namespace")
+# Owners whose rows record a run-scoped bus; a known scoped correlation without a valid pin is held.
+RUNS = "autonomous_runs"
+
+
+def _run_route(route):
+    return (isinstance(route, dict) and route.get("scope") == "run"
+            and all(type(route.get(k)) is str and route[k] for k in ROUTE_FIELDS))
+
+
+def bus_route(bus):
+    """The trusted run route a bus was configured with (`RedisBus.for_run`), or None for the unscoped
+    bus and for every bus that names none. A route that disagrees with the bus's own namespace is None:
+    it cannot be the owner of any pin."""
+    route = getattr(bus, "route", None)
+    if not (_run_route(route) and route["namespace"] == getattr(bus, "namespace", None)):
+        return None
+    return {k: route[k] for k in ROUTE_FIELDS}
+
+
+def pin_route(tx, correlation, route, at):
+    """Pin `correlation` to `route` inside the caller's transaction, before any of its messages is
+    committed. A pin is written once: the same route is idempotent, a different one raises
+    `route_conflict` and the retained pin is never replaced. No network inside this transaction."""
+    require(type(correlation) is str and bool(correlation) and _run_route(route), "route_invalid")
+    intended = {"id": correlation, "schema": ROUTE_SCHEMA, **{k: route[k] for k in ROUTE_FIELDS}}
+    old = tx.get(ROUTES, correlation)
+    if old is None:
+        tx.put(ROUTES, correlation, {**intended, "pinned_at": at})
+        return
+    require(isinstance(old, dict) and {k: old.get(k) for k in intended} == intended, "route_conflict")
+
+
+def _known_scoped(tx, correlation):
+    """True when an autonomous run row records that it pinned a run route (`bus.scope == "run"`) for
+    this exact correlation (its role correlation or its Operation's). The row, not the correlation
+    text, decides: rows claimed without that record, including rows that only name a namespace,
+    stay legacy and are never reinterpreted as scoped."""
+    if correlation.startswith("autonomous:"):
+        run_id, field, value = correlation[len("autonomous:"):], "correlation_id", correlation
+    elif correlation.startswith("operation:") and correlation.endswith(".impl"):
+        run_id, field, value = correlation[len("operation:"):-len(".impl")], "operation_id", correlation[len("operation:"):]
+    else:
+        return False
+    row = tx.get(RUNS, run_id) if run_id else None
+    bus = row.get("bus") if isinstance(row, dict) else None
+    return row is not None and row.get(field) == value and isinstance(bus, dict) and bus.get("scope") == "run"
+
+
+def _route_hold(tx, item, bus):
+    """None when this bus may publish the record; otherwise the named reason it stays pending.
+
+    Unpinned records of correlations no run owns keep the legacy route of any relay. A pinned record
+    is published only by a bus configured with exactly the pinned run route; the unscoped relay holds
+    it, a different run route refuses it. A malformed pin, or a known scoped run without its pin, is
+    unavailable authority: nobody publishes it, never a fallback to the global route."""
+    correlation = _correlation(item)
+    if correlation is None:
+        return None
+    pin = tx.get(ROUTES, correlation)
+    if pin is None:
+        return "route_unavailable" if _known_scoped(tx, correlation) else None
+    if not (isinstance(pin, dict) and pin.get("id") == correlation and pin.get("schema") == ROUTE_SCHEMA and _run_route(pin)):
+        return "route_unavailable"
+    route = bus_route(bus)
+    if route is None:
+        return "route_held"
+    return None if route == {k: pin[k] for k in ROUTE_FIELDS} else "route_refused"
 
 
 def _quarantine(tx, identity, item, source_hash, reason, delivery, audit=None):
@@ -95,6 +168,11 @@ def _prepare(tx, identity, org, bus, audit=None, scope=None, binding=None, unava
     if not _in_scope(item, scope):
         # Re-read inside the transaction: the scope cannot change between selection and preparation.
         return "out_of_scope", None
+    held = _route_hold(tx, item, bus)
+    if held is not None:
+        # Before any validation, quarantine, intent or sent flag: the record stays pending, untouched,
+        # for the relay of its pinned route (SPEC "Council isolation resubmission").
+        return held, None
     delivery = tx.get("outbox_delivery", identity) or {}
     source_hash = digest(item)
     if delivery.get("status") == "quarantined" and delivery["source_hash"] == source_hash:
@@ -159,6 +237,14 @@ def _publish(tx, prepared, bus, audit=None, scope=None):
         if delivery["last_attempt_id"] == attempt_id:
             tx.put("outbox_delivery", identity, {**delivery, "status": "retry", "updated_at": utcnow()})
         return "skipped", None
+    held = _route_hold(tx, item, bus)
+    if held is not None:
+        # The route is rechecked at the publication transaction boundary: a pin changed or lost since
+        # the intent was committed hands nothing to this transport and marks nothing sent.
+        tx.put("outbox_attempts", attempt_id, {**attempt, "status": "route_changed_before_publish",
+                                               "error_type": held, "finished_at": utcnow()})
+        tx.put("outbox_delivery", identity, {**delivery, "status": "retry", "updated_at": utcnow()})
+        return held, None
     fatal, bound = None, attempt.get("transport")
     try:
         entry_id = bus.publish(item["message"]) if bound is None else bus.publish(item["message"], transport=bound)
@@ -241,6 +327,11 @@ def relay(store, org, bus, limit=100, audit=None, correlation_id=None):
     commands), never reads or advances the global cursor, never publishes, marks sent or
     quarantines a foreign record, and returns `remaining`/`unfinished`/`complete` so the caller can
     fail safely on a backlog or a failed delivery instead of treating `examined` as published.
+
+    Every batch, global or scoped, honours the durable route pin of each record's correlation
+    (`pin_route`): a record pinned to a run route is published only through a bus configured with that
+    route; otherwise it is left pending and counted as `route_held`, `route_refused` or
+    `route_unavailable` (keys present only when they occur).
     """
     require(type(limit) is int and 1 <= limit <= 1000, "Outbox batch limit must be 1..1000")
     scope = correlation_id
@@ -275,14 +366,14 @@ def relay(store, org, bus, limit=100, audit=None, correlation_id=None):
         with store.transaction() as tx:
             result, prepared = _prepare(tx, row["id"], org, bus, audit, scope, binding, unavailable)
             if not prepared:
-                counts[result] += 1
+                counts[result] = counts.get(result, 0) + 1
                 advance(tx, row["id"])
         if not prepared:
             continue
         fatal = None
         with store.transaction() as tx:
             result, fatal = _publish(tx, prepared, bus, audit, scope)
-            counts[result] += 1
+            counts[result] = counts.get(result, 0) + 1
             advance(tx, row["id"])
         if fatal:
             raise fatal
@@ -297,6 +388,7 @@ def relay(store, org, bus, limit=100, audit=None, correlation_id=None):
     # These are last-batch counters, not a complete queue census or proof of consumption.
     with store.transaction() as tx:
         tx.put("health", "outbox", {"id": "outbox", "at": utcnow(), "scope": "last_batch",
-               "status": "attention" if counts["quarantined"] or counts["quarantined_existing"] or counts["retry"] else "observed",
+               "status": "attention" if counts["quarantined"] or counts["quarantined_existing"] or counts["retry"]
+               or any(counts.get(k) for k in ROUTE_COUNTS if k != "route_held") else "observed",
                "examined": len(rows), "limit": limit, **counts})
     return {"examined": len(rows), "limit": limit, **counts}

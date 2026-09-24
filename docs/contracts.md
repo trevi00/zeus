@@ -1876,6 +1876,61 @@ by name (`recovery_revocation_fence_missing`, `_fence_changed`, `_corrupt`, `_br
 request for the investigation, including a version-1 request after a revocation, is
 `recovery_conflict`. Lineage views gain additive `mode` (`transport_proof` for version 1) and
 `revocation`.
+Settled read-only successor (SPEC "Real council progress: isolated delivery and settled-read-only
+successor"). A SEPARATE request version `urn:zeus:research-dispatch-recovery:3` with `mode:
+settled_read_only_successor` pins the investigation, the CURRENT head (`predecessor.lineage_version`,
+`lineage_request_sha256` and its `dispatch` `<investigation>.recovery-<version>`), that failed dispatch's
+program with its `config_sha256`, cycle, run, manifest and snapshot, and a NEW registered program with
+the same authority. It qualifies only a head already claimed by that dispatch, resolved `failed` with
+`foreign_message`, whose program is blocked, whose run row is terminal `failed:foreign_message` at a
+read-only stage (research/packet/snapshot/dba) with no operation, promotion, design or `.impl`
+residue, no session event, roles and slots only `researcher`/`dba` (`lead:researcher`, `lead:dba`),
+every slot and every reservation settled, no termination record, and every task of the run a succeeded
+read-only role bound (`role_binding` + `execution_evidence`) to its OWN settled accepted reservation and
+execution artifact, read through the executor's artifact store (`recovery_evidence_missing`,
+`_corrupt`, `_unavailable`, `_mismatch`). Named refusals: `recovery_successor_stale`,
+`recovery_predecessor_active`, `recovery_dispatch_not_failed`, `recovery_effect_unknown`,
+`recovery_not_settled_read_only`, `recovery_run_not_settled_read_only`,
+`recovery_effect_outside_read_only`, `recovery_invocation_unsettled`, plus the program, cycle,
+replacement and scope codes above. Artifacts are read OUTSIDE the store transaction; ONE writer
+transaction then re-reads everything, requires the retained chain to hold (the original revocation
+fence first), quarantines the run's unsent publications through the existing outbox fence, and appends
+the immutable row `research_dispatch_successors/<investigation>:<version>` (predecessor, replacement
+dispatch `<investigation>.recovery-<version>`, fence list, bound executions and the predecessor's
+`calls` counted as settled - never relabelled or reused) and moves the versioned head
+`research_dispatch_heads/<investigation>`. The original recovery row is never rewritten. The identical
+request replays `cached` after revalidating the chain and that the head still reaches the row; any
+other request for that head is `recovery_conflict`; concurrent requests serialize to one row. Claim
+release, the claim itself, `accept_research` and its consumption all use the head as the current
+dispatch and hold on a broken chain (`recovery_successor_corrupt`, `recovery_successor_history_changed`,
+`recovery_publication_changed`, any revocation code; continuation prefixes `research_`). Another
+failure is never authorized automatically. `status` gains additive `successors` and `current` (the
+head), reported apart. No bus, transport read or model call.
+Run-scoped delivery. `zeus autonomous run` builds ONE `RedisBus.for_run(url, manifest id)`: the
+configured `HARNESS_REDIS_NAMESPACE` stays the prefix and `:run:<first 32 hex of sha256(run id)>` is
+appended, shared by the run's outbox relay, role drains and Operation, distinct across runs and equal on
+restart. Exact-correlation guards and `foreign_message` are unchanged; old shared streams, groups and
+pending entries are never migrated, ACKed, deleted or republished. The run row and receipt carry
+additive `bus: {namespace}` (null when the bus names none). The version-1 transport probe reads the
+failed run's scoped namespace only when that namespace holds its own storage token, otherwise the
+configured one; the owner still compares the full committed identity. Other global consumers keep the
+unscoped bus.
+Authoritative publication route (SPEC "Council isolation resubmission"). `RedisBus.for_run` carries the
+trusted `route {scope: run, run_id, namespace}`; the unscoped bus carries none. `AutonomousRun.claim`
+refuses `route_mismatch` when that route names another run, and in the claim transaction (before any
+message of the run) pins `outbox_routes/<correlation>` = `urn:zeus:outbox-route:1 {scope, run_id,
+namespace, pinned_at}` for `autonomous:<id>` and `operation:<id>.impl`; the row's `bus` then gains
+`scope: run`. A pin is written once: an equal route is idempotent, a different one refuses
+`route_conflict` and is never replaced. Every relay, global or correlation-scoped, rechecks the pin in the
+prepare AND the publish transaction: only a bus whose route equals the pin publishes; the unscoped relay
+leaves the record pending (`route_held`), another run route refuses (`route_refused`), and a malformed pin
+or a row with `bus.scope: run` whose pin is missing is `route_unavailable` for every relay, never a global
+fallback. Held records get no intent, attempt, quarantine or sent flag; a pin changed after the intent
+marks that attempt `route_changed_before_publish`. Route counters appear in relay results only when
+non-zero; `route_refused`/`route_unavailable` set the global health row to `attention`. Unpinned
+correlations, including historical rows with no bus or a bare namespace, keep the legacy route; nothing
+already sent is moved or resent. Rollback limit: reverting the code leaves `outbox_routes` rows as inert
+history, and the old global relay would again publish pending pinned records on the shared streams.
 `status`, the additive read-only monitor source `research_programs`
 (`urn:zeus:research-program-monitor:1`, at most 20 programs, `truncated` explicit) and the bounded
 `runtime/research-program/<id>/report.md` project counts, states, codes and outcomes from the store

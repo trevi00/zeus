@@ -1,12 +1,14 @@
 import json
+import os
 from copy import deepcopy
 from unittest.mock import Mock
+from uuid import uuid4
 
 import pytest
 from redis import Redis as RealRedis
 from redis.exceptions import TimeoutError as RedisTimeout
 
-from codex_harness.adapters.bus import TRANSPORT_SCHEMA, RedisBus
+from codex_harness.adapters.bus import TRANSPORT_SCHEMA, RedisBus, run_namespace
 from codex_harness.domain.model import envelope
 from codex_harness.ports import MessageDeliveryError, TransportChanged
 
@@ -101,6 +103,39 @@ class FakeRedisClient:
         self._fault()
         return list(self.data["streams"].get(stream, []))[:count]
 
+    # LABELLED minimal consumer-group emulation (one group per stream): `>` delivers the next
+    # undelivered entry and records it pending for that consumer; nothing is ever idle long enough to
+    # be auto-claimed; XACK removes it from pending. It is not a Redis observation.
+    def _group(self, stream):
+        return self.data.setdefault("groups", {}).get(stream)
+
+    def xgroup_create(self, stream, group, id="0", mkstream=False):
+        from redis.exceptions import ResponseError
+        self._fault()
+        if self._group(stream) is not None:
+            raise ResponseError("BUSYGROUP Consumer Group name already exists")
+        self.data["streams"].setdefault(stream, [])
+        self.data.setdefault("groups", {})[stream] = {"name": group, "delivered": 0, "pending": {}}
+
+    def xautoclaim(self, stream, group, consumer, idle_ms, start_id="0-0", count=1):
+        self._fault()
+        return ["0-0", []]
+
+    def xreadgroup(self, group, consumer, streams, count=1, block=None):
+        self._fault()
+        [(stream, cursor)] = streams.items()
+        state, entries = self._group(stream), self.data["streams"].get(stream, [])
+        if cursor != ">" or state["delivered"] >= len(entries):
+            return []
+        entry = entries[state["delivered"]]
+        state["delivered"] += 1
+        state["pending"][entry[0]] = consumer
+        return [[stream, [entry]]]
+
+    def xack(self, stream, group, entry_id):
+        self._fault()
+        return 1 if self._group(stream)["pending"].pop(entry_id, None) is not None else 0
+
 
 class FakeRedisFactory:
     """LABELLED replacement for `redis.Redis` in the bus module: `from_url` parses the URL with the
@@ -175,3 +210,91 @@ def test_legacy_publish_and_transport_errors_keep_the_delivery_error_contract(mo
     server.lose_reply, server.fail_before = False, True
     with pytest.raises(MessageDeliveryError):
         bus.transport()
+
+
+# ----- run-scoped delivery (SPEC "Real council progress: isolated delivery", 2026-09-24) -----------------
+def assignment(run_id, recipient="lead:researcher"):
+    """A role assignment of ONE autonomous run (exact correlation `autonomous:<run>`)."""
+    return envelope("task.assign", "conductor", recipient, "dge_role", {"role": "researcher"}, "autonomous:" + run_id)
+
+
+def drain(bus, agent, consumer):
+    """What one run's drain consumer actually receives, ACKing each entry (the real RedisBus calls)."""
+    seen = []
+    while (row := bus.receive(agent, consumer)) is not None:
+        seen.append(bus.decode(row[1])["correlation_id"])
+        bus.ack(agent, row[0])
+    return seen
+
+
+def test_the_run_namespace_is_deterministic_bounded_prefixed_and_carries_no_run_text():
+    a, again, b = run_namespace("ns", "run-A.c001"), run_namespace("ns", "run-A.c001"), run_namespace("ns", "run-B.c001")
+    assert a == again and a != b and a.startswith("ns:run:") and b.startswith("ns:run:")
+    assert len(a) == len("ns:run:") + 32 and "run-A" not in a
+    assert run_namespace("other", "run-A.c001") != a, "the configured namespace stays the prefix"
+    for prefix, run_id in (("", "r"), ("ns", ""), (None, "r"), ("ns", None)):
+        with pytest.raises(ValueError):
+            run_namespace(prefix, run_id)
+
+
+def test_two_run_buses_interleaved_never_steal_and_the_old_global_stream_is_untouched(monkeypatch):
+    """Discriminating regression over the REAL RedisBus publish/receive/ack code on a LABELLED fixture
+    server: two runs with identical agents and different run ids, assignments interleaved. The control
+    (the old unscoped bus of both runs) shows the stealing this change removes."""
+    server = FakeRedisServer()
+    servers = {("a.example", 6379): server}
+    url = "redis://a.example:6379/0"
+    legacy = bus_on(monkeypatch, servers, url)
+    old = legacy.publish(assignment("old-run"))           # retained evidence on the shared stream
+    legacy.ensure_group("lead:researcher")
+
+    # Control: both runs on the one global namespace -> run A's consumer receives run B's assignment.
+    control_a, control_b = bus_on(monkeypatch, servers, url), bus_on(monkeypatch, servers, url)
+    control_b.publish(assignment("run-B"))
+    control_a.publish(assignment("run-A"))
+    assert drain(control_a, "lead:researcher", "lead:researcher:autonomous") == \
+        ["autonomous:old-run", "autonomous:run-B", "autonomous:run-A"]
+    before = deepcopy(server.database(0))
+
+    monkeypatch.setattr("codex_harness.adapters.bus.Redis", FakeRedisFactory(servers))
+    a, b = RedisBus.for_run(url, "run-A", namespace="ns"), RedisBus.for_run(url, "run-B", namespace="ns")
+    for bus, run_id in ((a, "run-A"), (b, "run-B"), (a, "run-A"), (b, "run-B")):
+        bus.publish(assignment(run_id), transport=bus.transport())
+    assert drain(a, "lead:researcher", "lead:researcher:autonomous") == ["autonomous:run-A"] * 2
+    assert drain(b, "lead:researcher", "lead:researcher:autonomous") == ["autonomous:run-B"] * 2
+    assert a.transport()["namespace"] == a.namespace != b.transport()["namespace"], "the binding names the run scope"
+
+    restarted = RedisBus.for_run(url, "run-A", namespace="ns")
+    assert restarted.stream("lead:researcher") == a.stream("lead:researcher"), "a restart derives the same streams"
+    assert restarted.route == a.route == {"scope": "run", "run_id": "run-A", "namespace": a.namespace} != b.route
+    assert legacy.route is None, "the unscoped bus names no run route and cannot own a pin"
+    assert restarted.transport(create=False) == a.transport(create=False)
+    after = server.database(0)
+    global_keys = (legacy.stream("lead:researcher"), legacy.incarnation_key())
+    assert {k: after["streams"].get(k) for k in global_keys} == {k: before["streams"].get(k) for k in global_keys}
+    assert after["groups"][legacy.stream("lead:researcher")] == before["groups"][legacy.stream("lead:researcher")]
+    assert after["streams"][legacy.stream("lead:researcher")][0][0] == old, \
+        "the old shared entry is retained, never moved, deleted or republished elsewhere"
+
+
+@pytest.mark.integration
+@pytest.mark.skipif(os.environ.get("HARNESS_INTEGRATION") != "1", reason="Set HARNESS_INTEGRATION=1 for local services")
+def test_real_redis_run_scoped_buses_interleave_without_stealing_and_leave_the_global_stream():
+    """Actual disposable Redis namespace (HARNESS_INTEGRATION=1): the same interleaving on real streams
+    and consumer groups; every key under the random prefix is removed afterwards."""
+    from codex_harness.bootstrap import redis_url
+    prefix = "zeus-run-scope-test-" + uuid4().hex
+    legacy = RedisBus(redis_url(), namespace=prefix)
+    a, b = RedisBus.for_run(redis_url(), "run-A", namespace=prefix), RedisBus.for_run(redis_url(), "run-B", namespace=prefix)
+    try:
+        old = legacy.publish(assignment("old-run"))
+        legacy.ensure_group("lead:researcher")
+        for bus, run_id in ((a, "run-A"), (b, "run-B"), (a, "run-A"), (b, "run-B")):
+            bus.publish(assignment(run_id), transport=bus.transport())
+        assert drain(a, "lead:researcher", "c-a") == ["autonomous:run-A"] * 2
+        assert drain(b, "lead:researcher", "c-b") == ["autonomous:run-B"] * 2
+        assert [entry[0] for entry in legacy.client.xrange(legacy.stream("lead:researcher"))] == [old]
+        assert legacy.client.xpending(legacy.stream("lead:researcher"), "workers")["pending"] == 0
+    finally:
+        for key in list(legacy.client.scan_iter(match=prefix + ":*")):
+            legacy.client.delete(key)

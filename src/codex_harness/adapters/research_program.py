@@ -448,19 +448,29 @@ class TransportProbe:
     with the transport the failed attempt committed: absence here proves nothing about any OTHER
     transport, and the owner never counts it for one."""
 
-    def __init__(self, bus, limit: int = 10000):
-        self.bus, self.limit = bus, limit
+    def __init__(self, bus, limit: int = 10000, scoped=None):
+        self.bus, self.limit, self.scoped = bus, limit, scoped
 
     def inspect(self, recipient: str, message_id: str) -> dict:
-        before = self.bus.transport(create=False)
-        absent = self._absent(recipient, message_id)
-        return {"before": before, "absent": absent, "after": self.bus.transport(create=False)}
+        bus = self._select()
+        before = bus.transport(create=False)
+        absent = self._absent(bus, recipient, message_id)
+        return {"before": before, "absent": absent, "after": bus.transport(create=False)}
 
-    def _absent(self, recipient: str, message_id: str) -> bool:
-        for stream in (self.bus.stream(recipient), self.bus.namespace + ":dead-letter"):
-            if self.bus.client.xlen(stream) > self.limit:
+    def _select(self):
+        """`scoped` is the failed run's own run-scoped bus (`RedisBus.for_run`). Its storage token
+        exists only if that run published under its namespace, so it is read then; a run from before
+        run scoping has none and the configured bus is read. Either way the owner still compares the
+        identity with the committed binding, so a wrong choice refuses and never proves absence."""
+        if self.scoped is not None and self.scoped.transport(create=False).get("storage"):
+            return self.scoped
+        return self.bus
+
+    def _absent(self, bus, recipient: str, message_id: str) -> bool:
+        for stream in (bus.stream(recipient), bus.namespace + ":dead-letter"):
+            if bus.client.xlen(stream) > self.limit:
                 raise ProgramRefused("recovery_transport_unbounded")
-            for _, fields in self.bus.client.xrange(stream, count=self.limit):
+            for _, fields in bus.client.xrange(stream, count=self.limit):
                 if any(isinstance(value, str) and message_id in value for value in fields.values()):
                     return False
         return True

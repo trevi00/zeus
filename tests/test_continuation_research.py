@@ -635,6 +635,111 @@ def test_an_execution_revocation_releases_the_receipt_only_while_its_retained_fe
     assert only(world.intents(), id=research["id"])["state"] == dc.COMPLETED
 
 
+# ---- settled read-only successor (SPEC "Real council progress", 2026-09-24) ---------------------------
+def test_a_settled_read_only_successor_binds_the_receipt_to_the_current_successor_only(tmp_path):
+    """rp-001 revoked -> rp-002's REAL council settles researcher + DBA and fails `foreign_message`
+    (LABELLED executor, bus, snapshot) -> the owner's explicit successor authorizes rp-003, whose
+    (LABELLED) council accepts. A receipt naming the failed predecessor never approves; the current
+    successor's does, and only while the retained chain holds (LABELLED injected fault)."""
+    from test_research_recovery import ForeignMessageCouncil
+
+    world = World(tmp_path)
+    research, investigation, replacement, fence_key = revoked_research_failing(world, tmp_path)
+    with pytest.raises(dc.ContinuationRefused, match="research_not_accepted"):
+        world.controller.accept_research(receipt_for(world, research, investigation, replacement))
+    env = world.research_env
+    cfg = validate_config(config(env.head, id="rp-003", investigation_source=dict(world.research_source)), POLICY)
+    env.programs.register(cfg, env.identity, [])
+    with world.control.transaction() as tx:
+        lineage = tx.get("research_dispatch_recoveries", investigation)
+        program = tx.get("research_programs", "rp-002")
+    council = world.research_council
+    assert isinstance(council, ForeignMessageCouncil)
+    result = env.programs.recover_dispatch(
+        {"schema": "urn:zeus:research-dispatch-recovery:3", "mode": "settled_read_only_successor",
+         "investigation": investigation,
+         "predecessor": {"dispatch": investigation + ".recovery-1", "lineage_version": 1,
+                         "lineage_request_sha256": lineage["request_sha256"], "program": "rp-002",
+                         "config_sha256": program["config_sha256"],
+                         **{k: replacement[k] for k in ("cycle", "run_id", "manifest_sha256", "snapshot_sha256")}},
+         "replacement": {"program": "rp-003", "config_sha256": config_digest(cfg, env.identity)}}, None, council.artifacts)
+    assert result["state"] == "authorized"
+    # Authorized, not yet claimed: the predecessor no longer answers and nothing approves.
+    with pytest.raises(dc.ContinuationRefused, match="research_dispatch_unknown"):
+        world.controller.accept_research(receipt_for(world, research, investigation, replacement))
+    env.programs.resume("rp-003")
+    env.runner.council = FakeCouncil(world.control, status="accepted")
+    assert env.runner.tick("rp-003")["result"] == "accepted"
+    with world.control.transaction() as tx:
+        current = deepcopy(tx.get(BUCKET_DISPATCHES, investigation + ".recovery-2"))
+        assert tx.get(BUCKET_DISPATCHES, investigation + ".recovery-1") == replacement, "the predecessor is retained"
+    with pytest.raises(dc.ContinuationRefused, match="research_dispatch_mismatch"):
+        world.controller.accept_research(receipt_for(world, research, investigation, replacement))
+    assert receipts(world) == {}
+
+    with world.control.lock:   # LABELLED injected fault: the ORIGINAL retained revocation fence is lost
+        fence = world.control.data.pop(fence_key)
+    with pytest.raises(dc.ContinuationRefused, match="research_recovery_revocation_fence_missing"):
+        world.controller.accept_research(receipt_for(world, research, investigation, current))
+    with world.control.lock:
+        world.control.data[fence_key] = fence
+    accepted = world.controller.accept_research(receipt_for(world, research, investigation, current))
+    assert accepted["accepted"] is True and accepted["dispatch"]["run_id"] == "rp-003.c001"
+
+    with world.control.transaction() as tx:   # LABELLED injected fault: a bound predecessor execution changed
+        task = next(t for t in tx.scan("tasks") if t["agent"] == "lead:dba")
+        tx.put("tasks", task["id"], {**task, "status": "retry"})
+    stored = deepcopy(receipts(world))
+    result = world.tick()
+    assert {"subject": research["id"], "reason_code": "research_recovery_successor_history_changed",
+            "next_owner": "portfolio_research"} in result["skipped"]
+    assert only(world.intents(), id=research["id"])["state"] == dc.RESEARCH_REQUIRED and receipts(world) == stored
+    with world.control.transaction() as tx:
+        tx.put("tasks", task["id"], task)
+    world.tick()
+    assert only(world.intents(), id=research["id"])["state"] == dc.COMPLETED
+
+
+def revoked_research_failing(world, tmp_path):
+    """`revoked_research` with the replacement rp-002 run by the REAL council that settles researcher +
+    DBA and then fails `foreign_message`. Keeps the env, source and council on the world object."""
+    from test_research_recovery import ForeignMessageCouncil
+
+    world.register()
+    root, successor, research = two_strikes(world, "op-x", "docs/a.md")
+    owner = Portfolio(world.control, DEFINITIONS)
+    for job in (root, successor):
+        owner.bind(job, "ops", "c1")
+    owner.reconcile()
+    investigation = family_id("failed", "evidence_gate_refused")
+    source = {"topic": "storage", "project_ids": ["ops"], "reason_codes": ["evidence_gate_refused"]}
+    (tmp_path / "research").mkdir()
+    env = build(tmp_path / "research", store=world.control,
+                council=PublicationFailingCouncil(world.control, UnreachableBus(bound=False)))
+    registered(env, investigation_source=source)
+    assert env.runner.tick("rp-001")["reason_code"] == "publication_incomplete"
+    with world.control.transaction() as tx:
+        failed = deepcopy(tx.get(BUCKET_DISPATCHES, investigation))
+        [item] = [o for o in tx.scan("outbox") if o["message"]["correlation_id"] == "autonomous:rp-001.c001"]
+    cfg = validate_config(config(env.head, id="rp-002", investigation_source=source), POLICY)
+    env.programs.register(cfg, env.identity, [])
+    pinned = {k: failed[k] for k in ("program", "cycle", "run_id", "manifest_sha256", "snapshot_sha256")}
+    env.programs.recover_dispatch(
+        {"schema": "urn:zeus:research-dispatch-recovery:2", "mode": "execution_revocation",
+         "investigation": investigation, "failed": pinned,
+         "replacement": {"program": "rp-002", "config_sha256": config_digest(cfg, env.identity)},
+         "revoke": {"message_id": item["message"]["message_id"], "source_sha256": digest(item)}}, None)
+    env.programs.resume("rp-002")
+    council = ForeignMessageCouncil(world.control)
+    env.runner.council = council
+    assert env.runner.tick("rp-002")["result"] == "failed"
+    world.research_env, world.research_source, world.research_council = env, source, council
+    with world.control.transaction() as tx:
+        replacement = deepcopy(tx.get(BUCKET_DISPATCHES, investigation + ".recovery-1"))
+    assert replacement["result_reason"] == "foreign_message"
+    return research, investigation, replacement, ("execution_fences", "tasks:" + item["message"]["message_id"])
+
+
 # ---- revocation resubmission: replay acceptance (SPEC 2026-09-24) ------------------------------------
 # Every accepted return, the initial cached replay and the concurrent insertion branch included,
 # answers only while the retained fence holds; the immutable receipt and its accepted_at are kept.

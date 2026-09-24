@@ -59,7 +59,10 @@ def run(service, args) -> dict:
         # The evidence port reads the very artifact store the executor persists execution results to.
         wiring = dict(verify_sources=lambda packet: verify_sources(packet, source), repository=repository_identity(repository),
                       observer=observer, evidence=ExecutionEvidence(executor.artifacts))
-        common = (service, executor, RedisBus(redis_url()), Workflow(service.store, service.org), CallBudget(),
+        # SPEC "Real council progress: isolated delivery": ONE run-scoped bus for every publisher and
+        # consumer of this run (outbox relay, role drains, the Operation), derived from the manifest id,
+        # so concurrent runs never compete for a role queue and a restart derives the same streams.
+        common = (service, executor, RedisBus.for_run(redis_url(), manifest["id"]), Workflow(service.store, service.org), CallBudget(),
                   build_collector(service.store, observer))
         if profile(manifest)["version"] == 2:
             # INV-COUNCIL-001: the snapshot port is a separate read-only connection to the same database

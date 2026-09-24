@@ -1,0 +1,60 @@
+{
+  "schema": "urn:zeus:operation:1",
+  "id": "autonomous-operation-001-council-routing",
+  "base_revision": "8b60ef0cfa720687d043a0ceebe8facac3ec5567",
+  "goal": {
+    "path": "docs/zeus/operations/autonomous-operation-001/SPEC.md",
+    "sha256": "f6c9cff3d74855724107abd45a30aeb40e0d87f482e7165727daef5590b98cbd",
+    "criterion": "Complete the existing autonomous operating loop with independently verified session, continuation and actual runtime ownership",
+    "rationale": "Finish the existing whole-goal acceptance matrix without manual user relay or weaker verification."
+  },
+  "budget": {
+    "mode": "subscription",
+    "total": 192,
+    "per_host": 192
+  },
+  "claude": {
+    "model": "claude-opus-5-5",
+    "timeout_seconds": 3600,
+    "max_budget_usd": 2
+  },
+  "plan": {
+    "objective": "Implement ONLY Council isolation resubmission: authoritative publication route in SPEC.md. Persist trusted run routing before messages and enforce it for every relay, preserving legacy routes and accepted successor design. Targeted tests/Ruff only; no full suite or operating edits.",
+    "allowed_paths": [
+      "src/codex_harness/domain/research_program.py",
+      "src/codex_harness/domain/research_investigations.py",
+      "src/codex_harness/application/research_program.py",
+      "src/codex_harness/adapters/research_program.py",
+      "src/codex_harness/adapters/research_program_cli.py",
+      "src/codex_harness/application/continuation.py",
+      "src/codex_harness/domain/continuation.py",
+      "tests/test_research_program.py",
+      "tests/test_research_program_cli.py",
+      "tests/test_research_investigations.py",
+      "tests/test_research_recovery.py",
+      "tests/test_continuation_research.py",
+      "docs/contracts.md",
+      "src/codex_harness/application/execution_fence.py",
+      "src/codex_harness/application/workflow.py",
+      "tests/test_workflow.py",
+      "tests/test_execution_fence.py",
+      "src/codex_harness/adapters/autonomous_cli.py",
+      "src/codex_harness/adapters/bus.py",
+      "src/codex_harness/application/autonomous.py",
+      "src/codex_harness/adapters/autonomous_evidence.py",
+      "tests/test_autonomous.py",
+      "tests/test_bus.py",
+      "tests/test_autonomous_roles.py",
+      "src/codex_harness/application/outbox.py",
+      "src/codex_harness/application/service.py",
+      "src/codex_harness/supervisor.py",
+      "tests/test_outbox.py",
+      "tests/test_supervisor.py"
+    ],
+    "acceptance_criteria": [
+      "Global relay interleaved after run outbox commit cannot publish scoped messages globally or mark them sent; correct run relay/drain works once.",
+      "Durable route authoritative for all publishers/restarts/reports, wrong or unavailable scoped authority never falls back globally; legacy routing retained.",
+      "Deterministic negative regression exposes81ce6b9; preserve accepted successor/fence/receipt checks and run targeted tests/Ruff with honest integration coverage."
+    ]
+  }
+}

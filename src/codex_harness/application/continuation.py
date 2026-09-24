@@ -123,6 +123,9 @@ from codex_harness.domain.research_investigations import (
     current_dispatch_id,
     revocation_held,
     revocation_task_id,
+    successor_held,
+    successor_key,
+    successor_reads,
 )
 from codex_harness.domain.research_program import council_result
 
@@ -136,6 +139,8 @@ BUCKET_RESEARCH_RECEIPTS = "continuation_research_receipts"
 INVESTIGATIONS = "portfolio_investigations"
 RESEARCH_DISPATCHES = "research_investigation_dispatches"
 RESEARCH_RECOVERIES = "research_dispatch_recoveries"
+RESEARCH_SUCCESSORS, RESEARCH_HEADS = "research_dispatch_successors", "research_dispatch_heads"
+MAX_LINEAGE = 1000
 RESEARCH_RUNS = "autonomous_runs"
 EVENT_TRANSITION = "operations.continuation_transition"
 EVENT_BLOCKED = "operations.continuation_blocked"
@@ -341,8 +346,7 @@ class Continuation:
                 refuse(old.get("receipt") == receipt, "research_receipt_conflict", "operator", "intent_id")
             # The retained fence again in THIS writer transaction (never a nested one): a concurrent
             # insertion, or a fence lost since the read, never returns acceptance.
-            self._require_recovery({"recovery_held": self._recovery_held(
-                tx, tx.get(RESEARCH_RECOVERIES, receipt["investigation"]))})
+            self._require_recovery({"recovery_held": self._recovery_held(tx, receipt["investigation"])})
             if old is not None:
                 return self._receipt_result(old, cached=True)
             # Nothing moved between the verification and this write: same intent version, same set.
@@ -374,9 +378,12 @@ class Continuation:
             # The CURRENT dispatch of the investigation: after an owner-authorized recovery that is
             # the replacement (research-dispatch-recovery-001), so a receipt naming the failed
             # original, or a result of its run, can never approve.
+            # A settled read-only successor head names the current one after that; a stale receipt
+            # naming a predecessor then mismatches, and a broken retained chain holds.
             recovery = tx.get(RESEARCH_RECOVERIES, receipt["investigation"])
-            dispatch = tx.get(RESEARCH_DISPATCHES, current_dispatch_id(receipt["investigation"], recovery))
-            recovery_held = self._recovery_held(tx, recovery)
+            dispatch = tx.get(RESEARCH_DISPATCHES, current_dispatch_id(receipt["investigation"], recovery,
+                                                                       tx.get(RESEARCH_HEADS, receipt["investigation"])))
+            recovery_held = self._recovery_held(tx, receipt["investigation"])
             run_id = (dispatch or {}).get("run_id") if isinstance(dispatch, dict) else None
             run = tx.get(RESEARCH_RUNS, run_id) if type(run_id) is str else None
             jobs = {a["job"]: tx.get(FLEET_JOBS, a["job"]) for a in receipt["attempts"]}
@@ -388,14 +395,25 @@ class Continuation:
                 "dispatch": dispatch, "run_result": run_result, "recovery_held": recovery_held}
 
     @staticmethod
-    def _recovery_held(tx, recovery) -> str | None:
-        """An execution-revocation lineage answers only while its OWN retained task fence holds: the
-        named held condition, read through the caller's open transaction, else None."""
+    def _recovery_held(tx, investigation: str) -> str | None:
+        """An execution-revocation lineage answers only while its OWN retained task fence holds, and a
+        settled read-only successor chain only while every retained predecessor fence and bound execution
+        still holds: the named held condition, read through the caller's open transaction, else None."""
+        recovery = tx.get(RESEARCH_RECOVERIES, investigation)
         revoked = revocation_task_id(recovery)
-        return None if revoked is None else revocation_held(
+        held = None if revoked is None else revocation_held(
             recovery, fence=current_fence(tx, REVOCATION_BUCKET, revoked) if revoked else None,
             task=tx.get(REVOCATION_BUCKET, revoked) if revoked else None,
             delivery=tx.get("outbox_delivery", revoked) if revoked else None)
+        head = tx.get(RESEARCH_HEADS, investigation)
+        if held is not None or head is None:
+            return held
+        version = head.get("version") if isinstance(head, dict) else None
+        chain = [tx.get(RESEARCH_SUCCESSORS, successor_key(investigation, v)) for v in range(2, version + 1)] \
+            if type(version) is int and 2 <= version < MAX_LINEAGE else []
+        deliveries, tasks = successor_reads(chain)
+        return successor_held(investigation, head, chain, deliveries={d: tx.get("outbox_delivery", d) for d in deliveries},
+                              tasks={t: tx.get("tasks", t) for t in tasks})
 
     @staticmethod
     def _require_recovery(facts: dict) -> None:

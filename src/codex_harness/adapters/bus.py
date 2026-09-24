@@ -1,3 +1,4 @@
+import hashlib
 import json
 from uuid import uuid4
 
@@ -9,6 +10,18 @@ from codex_harness.domain.model import canonical, digest
 from codex_harness.ports import MessageDeliveryError, TransportChanged
 
 TRANSPORT_SCHEMA = "urn:zeus:transport:redis-stream:1"
+RUN_SCOPE = "run"
+
+
+def run_namespace(prefix: str, run_id: str) -> str:
+    """The deterministic run-scoped namespace (SPEC "Real council progress: isolated delivery"): the
+    configured namespace stays the prefix and a bounded digest of the run id is appended, so every
+    publisher and consumer of ONE run shares its streams, two runs never compete for one role queue
+    and a restart of the same run id derives the same streams. The run id itself never reaches Redis
+    keys, so no caller text is interpolated there."""
+    if not (isinstance(prefix, str) and prefix and isinstance(run_id, str) and run_id):
+        raise ValueError("run namespace needs a configured prefix and a run id")
+    return f"{prefix}:{RUN_SCOPE}:{hashlib.sha256(run_id.encode('utf-8')).hexdigest()[:32]}"
 
 
 class RedisBus:
@@ -83,6 +96,19 @@ return redis.call('XADD', KEYS[2], '*', 'body', ARGV[2])
         location = {"path": str(kwargs["path"])} if kwargs.get("path") else \
             {"host": str(kwargs.get("host")), "port": int(kwargs.get("port") or 6379)}
         self._endpoint, self._database = digest(location), int(kwargs.get("db") or 0)
+        # SPEC "Council isolation resubmission": the unscoped bus names no run route; the outbox relay
+        # leaves every pinned run message pending for its owner instead of publishing it here.
+        self.route = None
+
+    @classmethod
+    def for_run(cls, url: str, run_id: str, namespace: str | None = None):
+        """The bus of ONE autonomous run: the configured (or given) namespace as prefix, scoped by
+        `run_namespace`. Existing global consumers keep constructing the unscoped bus. `route` is the
+        trusted adapter configuration the run owner pins durably and every relay checks."""
+        bus = cls(url, namespace)
+        bus.namespace = run_namespace(bus.namespace, run_id)
+        bus.route = {"scope": RUN_SCOPE, "run_id": run_id, "namespace": bus.namespace}
+        return bus
 
     def stream(self, agent: str) -> str:
         return f"{self.namespace}:agent:{agent}"
