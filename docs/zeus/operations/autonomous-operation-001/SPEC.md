@@ -1,5 +1,45 @@
 # Whole autonomous operating loop
 
+## Release checklist nested accounting correction, 2026-09-24 23:00 UTC
+
+Original release checklist outcome, same matrix. Live capacity granta098efcb admitted
+cont-53f2d12f8884dc8204458c93 once; it is SPENT, not reusable. Inspectorc5502d78 verified
+both corrected-profile checks; worker63passed5skipped/Ruff. Independent reviewf0496a00 rejected
+adeab8c79b5c6b34832d88eac43607d70307ddef for nested release accounting selection leakage.
+Root executed actual outer ReleaseSuite on the single real nested-suite test
+tests/test_release_suite.py::test_complete_manifest_runs_every_parameterized_node_in_bounded_batches.
+Result exit1, collected1/failed1: inherited RELEASE_ACCOUNTING_SELECT prevented nested collection.
+Evidence D:/workspaces/zeus/artifacts/autonomous-operation-001/release-nesting-repro/result.json
+and its content-addressed artifacts; reproducer reproduce-release-nesting.py. Actual child pytest
+execution, not a mocked runner. Prior direct68 host passes did not exercise outer -> inner flow.
+
+Codex explicit implementation assignment under the user's original completion authorization:
+fix this proven code defect in the retained checklist implementation integrated with current main.
+This is an owner-assigned code-change batch, NOT an automatic policy successor or another use of
+the spent evidence-repair grant. Keep original family's cap, all refused/rejected rows, research
+receipts and spent grant intact. Record linkage to cont-53f2d12f and reviewf0496a00 in the task;
+do not claim this manual handoff proves autonomous recovery. No new continuation policy or counter
+reset is authorized. The work does not confer acceptance of the integrated rejected candidate.
+
+One batch: ReleaseSuite owns its child accounting environment. Remove inherited selection before
+collection; a batch supplies only its own selection. Review adjacent accounting env ownership
+(report/plugin path) together so nested suites cannot filter against or overwrite outer evidence.
+Preserve unrelated caller environment and do not mutate os.environ/caller dict. Keep all prior
+manifest denominators, redaction, cancellation/fencing and bounded cleanup behavior. Reuse APIs.
+Regression MUST execute a real outer ReleaseSuite whose selected test invokes an inner suite;
+outer and inner exact counts must both pass with independently bound artifacts. Also exercise a
+caller-supplied stale selection, normal non-nested suite and unknown/failed inner result without
+false success. Previously accepted failure/redaction/cleanup tests remain. Scope to release_suite.py
+and test_release_suite.py plus necessary contract note; no unrelated runtime redesign.
+
+Run focused release_suite/release_runner/release_recovery/release_health/check_binding/
+runner_categories suites and Ruff, no full repository suite. Reproduce old failure with exact
+same nested scenario then show corrected success; failed attempts are diagnostics not tests.
+Independent Codex review, exact Windows+isolatedPG and CI precede any merge or runtime activation.
+Full incumbent/candidate checklist execution, managed delivery and whole-loop qualification follow;
+none is established by this small regression. This closes a reachable original acceptance path.
+
+
 ## Capacity monitoring compatibility, 2026-09-24 21:55 UTC
 
 Same acceptance matrix, no runtime redesign. PR198 head7b09be482aa445c2711363ecb102bdc43e2618f3
