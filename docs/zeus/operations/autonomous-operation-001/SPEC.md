@@ -1,5 +1,97 @@
 # Whole autonomous operating loop
 
+## Checklist-complete release verification, 2026-09-24 12:43 UTC
+
+Outcome: finish unchanged release acceptance through complete, observable incumbent and candidate
+suite checks. Keep all earlier independent approvals and failures. Current release9bae8c30 is
+reviewed, not verified; no host cutover. uv sync passed; incumbent suite timed out900s with lost
+partial output. A separate300s diagnostic collected4127 items and progressed to13%, no FAILED/ERROR
+or60s faulthandler event observed. This establishes progress only, not total duration or absence of
+later failures. Raw evidence D:/workspaces/zeus/artifacts/autonomous-operation-001/release-diagnostic-001.
+Do not claim a deadlock or code defect in docs. Existing one-command full-suite deadline and timeout
+output loss prevent actionable qualification. Reuse existing ReleaseRunner and VerificationServices.
+
+One Claude implementation batch: checklist-complete bounded release suites with durable diagnostics.
+Affected path: approved release/base -> isolated incumbent/candidate checkouts and services -> collect
+exact pytest node IDs -> immutable suite manifest -> deterministic serial bounded batches -> individual
+results and complete denominator reconciliation -> existing Releases.verify -> later HostDelivery.
+No new approval authority, executor, model routing, timeout inflation, test exclusion or live DB edits.
+
+Design: collect each suite before execution using the exact incumbent/candidate configuration and
+import semantics. A failed/empty/unavailable collection is not an empty passing suite. Preserve exact
+node IDs and count, revision/tree/cleanliness/config and manifest hash. Split deterministically by
+file or bounded node batches without duplicate/missing ids, serially against same isolated stack.
+Existing release_check_seconds applies to EACH owned process, not one whole 4127-test invocation;
+finite manifest bounds total work. Keep release fence alive between batches and refuse lost owner.
+Each execution must produce machine-readable actual collected/results accounting, not parse names
+from progress to infer coverage. Reconcile executed node multiset to planned nodes; unexpected,
+missing, duplicate or drift refuses. Existing explicit skip policy remains, no synthetic success.
+Preserve incumbent tests on candidate code and candidate own suite. A failed batch stops remaining
+batches as not_run, never reports suite success. Unknown/timeouts remain observation_error/retry.
+
+Persist progress, stdout/stderr and timeout diagnostic to artifact store with redaction policy;
+stream to owner-controlled temporary evidence files if needed so timeout cannot discard progress.
+Use existing process-tree cleanup; prove owned descendants gone on timeout/cancel or report unknown.
+No raw credentials in evidence. Keep commands.run_process default interface/behavior compatible;
+prefer narrow optional observation facility or release-specific adapter. One release report links
+manifest, each batch, collected/executed/pass/fail/skip/not_run counts and final verdict. Logs must
+survive timeout and include last observed test, without claiming that test caused the timeout.
+
+Acceptance matrix: normal complete manifest; collection failure/empty; injected omitted/duplicate/
+unexpected node IDs; actual failure and skips; deadline/cancel with retained partial log and owned
+process cleanup; lost fence/restart does not grant approval; incumbent-vs-candidate binding; Windows
+and Linux portable paths. Use actual tiny pytest suites/processes for positive and failure cases,
+including parameterized IDs; faults labelled. No full main suite inside worker. Targeted deployment,
+check-result and new suite tests plus Ruff; isolated PG if useful, otherwise no new PG schema change.
+Independent Codex review, owner checks and CI before runtime deployment. Then retry original release
+through its owner with new complete-checklist evaluator, preserving original policy/hash and receipts.
+Out of scope: canonical Git diff (process-scoped abbreviation7 already re-derives original digest),
+PR192 branch reconciliation, managed cutover and remaining rollback/two-item gates stay owner steps.
+Do not weaken those gates or quietly classify them completed.
+
+
+## Release verification observation gap, 2026-09-24 12:35 UTC
+
+Actual incumbent-policy evaluation: uv sync passed; first incumbent pytest suite timed out at900s,
+receipt a9527add. Candidate remained reviewed, queue retry; no image/file canary or deployment.
+The command runner discards captured progress when timeout is raised, so absence of final results
+cannot distinguish slow completion from a blocked test or failures. Do not extend timeout blindly.
+One discriminating diagnostic: same isolated service/venv/incumbent definitions, -x -vv and stack
+at60s, streamed log, at most300s, owned process-tree cleanup. It is NOT an acceptance check.
+Read first failure or last progress/stack; consolidate root cause and required correction before
+another whole-suite attempt. Preserve accepted document reviews/CI and original timeout. Default
+Git diff abbreviation caused earlier check mismatch; process-scoped7 matches original digest
+exactly. Its general canonicalization belongs to follow-up, not candidate rewriting.
+
+
+## Exact current release delivery composition, 2026-09-24 12:14 UTC
+
+PR192 exact candidate7b93b7fa/treec8020a5a passed docs CI gate and merged as ae7eab8a.
+Independent lead and conductor accepted release9bae8c30 in zeus_fleet_harness. Primary owns
+actual Fleet jobs/units and registered target zeus-fleet-managed; neither store has delivery plans.
+Reuse HostDelivery over the lane Releases/ReleaseQueue, with ManagedFleetTarget explicitly bound
+to Fleet(primary), never Fleet(lane). This is owner composition of existing ports, not copying
+release/review rows. Preserve all original acceptance gates and pending historical releases.
+Follow-up observed gate: release status is reviewed with checks={}, not verified. Its unchanged
+policy requires tests, cli_start and cli_file_task. Run existing ReleaseRunner checks in a dedicated
+D evaluator at the incumbent base, under existing ReleaseQueue fence; override only promotion to
+return verified without publication/activation. Preserve failed checks, no automatic reruns. This
+may execute one real file canary only after the earlier checks pass. PR192 was published by owner
+under docs/current-operating-checkpoint-001, whereas immutable candidate branch is harness/0c3...;
+GitHubDelivery branch-only observation cannot adopt it without an explicit exact-head publication
+binding. Reconcile that owner handoff before any publish tick; do not create duplicate PRs or alter
+approved candidate identity. Registered target/source and scheduled owner remain untouched.
+
+Next bounded handoff: preflight exact release/review/tree, registered target and environment-lock;
+materialize sealed candidate without switching descriptors, stopping services or starting Fleet.
+For new sealed runtime/state storage use D; report a draft target separately from the registered
+C target. Verify no existing active managed instance before any later registry change. Retain
+scheduled Fleet as sole operating owner. Preparation does not prove consumption or canary.
+Then register Git-pinned exact-release plan and perform drained single-owner managed cutover;
+record rollback/restart and next-item gates through existing owners. Any missing gate is evidence,
+not approval. No additional model calls for mechanical preparation.
+
+
 ## Current docs evidence contract correction, 2026-09-24
 
 Actual Item A-current produced candidate7b93b7fa, task0c3f24dd, but inspector ef6dc46d refused
