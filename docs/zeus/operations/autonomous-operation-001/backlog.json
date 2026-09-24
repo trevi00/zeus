@@ -438,6 +438,19 @@
       "dependencies": [
         "native-fixture"
       ]
+    },
+    {
+      "id": "council-routing",
+      "project_id": "research-improvement",
+      "criterion_id": "verified-loop",
+      "lane": "harness",
+      "manifest_path": "docs/zeus/operations/autonomous-operation-001/council-routing.operation.json",
+      "manifest_revision": "507c38a253defa03fbd2adb0c8abde0efc4b3b29",
+      "manifest_sha256": "ae175c278e95a4594f04f32bd1520920abda094882ed8a251d48eac7346325cd",
+      "priority": 320,
+      "dependencies": [
+        "native-fixture"
+      ]
     }
   ]
 }
