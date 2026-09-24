@@ -572,6 +572,123 @@ def test_the_run_entry_releases_its_lock_and_observer_and_maps_the_exit_code(
     lock.release()
 
 
+def owned_signals():
+    import signal
+
+    return [getattr(signal, name) for name in ("SIGINT", "SIGTERM", "SIGBREAK") if hasattr(signal, name)]
+
+
+def run_entry(tmp_path, monkeypatch, connected, service_runner, closed):
+    """`zeus audit-service run` with the real lock, gate and signal installation around a runner."""
+    import codex_harness.bootstrap as bootstrap
+    from codex_harness.adapters import configuration
+
+    monkeypatch.setattr(configuration, "runtime_dir", lambda: tmp_path)
+    monkeypatch.setattr(audit_service, "current_revision", lambda: REVISION)
+    monkeypatch.setattr(bootstrap, "build_observer",
+                        lambda *args, **kwargs: SimpleNamespace(close=lambda: closed.append(True)))
+    monkeypatch.setattr(audit_service, "build_runner",
+                        lambda service, args, observer, gate: service_runner)
+    return audit_service.execute(connected.service, SimpleNamespace(
+        audit_service_command="run", audit_id=connected.audit_id, max_tasks=None, once=True))
+
+
+def assert_lock_free(tmp_path):
+    from filelock import FileLock
+
+    lock = FileLock(str(tmp_path / "audit-service.lock"), timeout=0)
+    lock.acquire()
+    lock.release()
+
+
+def test_an_actual_signal_while_running_stops_gracefully_and_the_handlers_are_restored(
+        tmp_path, monkeypatch, connected):
+    """Release CI cancellation: the run's handlers close over its runner, so a leaked handler
+    swallowed a later interrupt in the same process. A real SIGINT delivered while running goes
+    through the installed handler to `stop`; after the exit the previous handlers are back."""
+    import signal
+
+    before = {number: signal.getsignal(number) for number in owned_signals()}
+    during = {}
+
+    class SignallingBus(FixtureBus):
+        def receive(self, agent, consumer, idle_ms=60000):
+            entry = super().receive(agent, consumer, idle_ms)
+            during.update({number: signal.getsignal(number) for number in owned_signals()})
+            signal.raise_signal(signal.SIGINT)
+            return entry
+
+    service_runner, _, executor = runner(connected, bus=SignallingBus())
+    closed = []
+    result = run_entry(tmp_path, monkeypatch, connected, service_runner, closed)
+    assert all(during[number] is not before[number] for number in before), "installed while running"
+    assert result["stop_reason"] == "service_stopped" and result["exit_code"] == 0
+    assert executor.calls == [] and result["completed_tasks"] == 0
+    assert {number: signal.getsignal(number) for number in before} == before
+    assert closed == [True]
+    assert_lock_free(tmp_path)
+
+
+def test_a_runner_exception_restores_the_handlers_and_keeps_the_original_error(
+        tmp_path, monkeypatch, connected):
+    import signal
+
+    before = {number: signal.getsignal(number) for number in owned_signals()}
+
+    class Failing:
+        def stop(self):
+            raise AssertionError("no signal was delivered")
+
+        def run(self, once):
+            assert signal.getsignal(signal.SIGINT) is not before[signal.SIGINT]
+            raise RuntimeError("runner failed")
+
+    closed = []
+    result = run_entry(tmp_path, monkeypatch, connected, Failing(), closed)
+    assert result["status"] == "refused" and result["error_type"] == "RuntimeError"
+    assert result["exit_code"] == 1
+    assert {number: signal.getsignal(number) for number in before} == before
+    assert closed == [True]
+    assert_lock_free(tmp_path)
+
+
+def test_a_partial_handler_installation_restores_only_what_it_installed(
+        tmp_path, monkeypatch, connected):
+    """INJECTED FAULT: installing the second owned handler fails after the first was replaced."""
+    import signal
+
+    numbers = owned_signals()
+    if len(numbers) < 2:
+        pytest.skip("this platform exposes fewer than two owned signals")
+    before = {number: signal.getsignal(number) for number in numbers}
+    real, calls = signal.signal, []
+
+    def failing_install(number, handler):
+        calls.append((number, handler))
+        if number == numbers[1] and handler is not before[number]:
+            raise OSError("injected handler installation failure")
+        return real(number, handler)
+
+    monkeypatch.setattr(signal, "signal", failing_install)
+
+    class NeverRuns:
+        def stop(self):
+            raise AssertionError("no signal was delivered")
+
+        def run(self, once):
+            raise AssertionError("the runner ran after a failed installation")
+
+    closed = []
+    result = run_entry(tmp_path, monkeypatch, connected, NeverRuns(), closed)
+    assert result["status"] == "refused" and result["error_type"] == "OSError"
+    # Installed first, failed second, then only the first is handed back; later signals untouched.
+    assert [number for number, _ in calls] == [numbers[0], numbers[1], numbers[0]]
+    assert calls[-1][1] is before[numbers[0]]
+    assert {number: signal.getsignal(number) for number in numbers} == before
+    assert closed == [True]
+    assert_lock_free(tmp_path)
+
+
 def test_max_tasks_and_audit_id_bounds_are_refused_before_a_runner_exists(connected):
     for value in (0, 101, "2", True):
         with pytest.raises(audit_service.AuditServiceRefused, match="max_tasks_invalid"):

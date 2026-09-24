@@ -2095,6 +2095,9 @@ attempt is `reconciliation_required` and admits nothing, and a recorded predeces
 succeed keeps blocking until its own row succeeds or its execution generation advances through the
 existing recovery or cancellation path. Nothing here retries an attempt, rewrites a historical
 failed task or restarts a lost one; the existing process-tree owner handles children on a signal.
+The SIGINT/SIGTERM/SIGBREAK handlers `run` installs (graceful `stop`) are owned for the run's
+lifetime only: every exit - normal, runner exception, or a failed partial installation - restores
+exactly the previous handlers it replaced, so a later owner in the same process keeps its own.
 What an execution DID and what its content was JUDGED to be are two separate facts everywhere this
 service reports: the step, the summary, the durable row, the task observation and `status` carry
 the task status AND the analysis outcome read from that execution's own durable result
