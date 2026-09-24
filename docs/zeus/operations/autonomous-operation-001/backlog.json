@@ -373,6 +373,19 @@
       "dependencies": [
         "native-fixture"
       ]
+    },
+    {
+      "id": "research-transport",
+      "project_id": "research-improvement",
+      "criterion_id": "verified-loop",
+      "lane": "harness",
+      "manifest_path": "docs/zeus/operations/autonomous-operation-001/research-transport.operation.json",
+      "manifest_revision": "69bb2cafa0a33421719d3231fd44365053f4d895",
+      "manifest_sha256": "7be08b9d79327e1d6fa8d0df346d5091ecf9dc3cfd1b98cb41ee330034c6a90d",
+      "priority": 270,
+      "dependencies": [
+        "native-fixture"
+      ]
     }
   ]
 }
