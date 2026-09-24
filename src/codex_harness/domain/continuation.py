@@ -598,14 +598,41 @@ def observed_attempt(job: dict, evidence: dict) -> dict:
 
 
 def check_research_receipt(receipt: dict, *, intent, attempts: list, policy, jobs: dict, observed: dict,
-                           investigation, dispatch, run_result) -> None:
+                           investigation, dispatch, run_result, supplement=None, lineage=None, bindings=None,
+                           acceptance=None) -> str:
     """Every binding of one owner receipt against authoritative reads; the first gap refuses by name.
 
     `intent` is the stored research intent, `attempts` its current `research_attempts`, `policy` the
     registered policy row, `jobs` the Fleet rows of the attempts, `observed` job -> `observed_attempt`
     from the lane (absent: unread), `investigation` the Portfolio row, `dispatch` the research
     dispatch row keyed by that investigation and `run_result` the existing `council_result` over its
-    bound run row. Unknown, unavailable, partial, foreign or stale evidence never approves."""
+    bound run row. Unknown, unavailable, partial, foreign or stale evidence never approves.
+
+    Returns how the attempt set is covered: `original_capture` when the dispatch's own job sample
+    names every member (the default gate, unchanged), else `owner_supplement` - ONLY when the stored
+    typed scope supplement for this intent (`supplement`, with the `lineage`, `bindings` and
+    `acceptance` reads it is checked against) passes `check_scope_supplement` again now and names
+    exactly this receipt's binding. Evidence refs never imply coverage."""
+    members = _check_research(receipt, intent=intent, attempts=attempts, policy=policy, jobs=jobs, observed=observed,
+                              investigation=investigation, dispatch=dispatch, run_result=run_result)
+    # The dispatch snapshot names at most its job sample; a member outside it is unverifiable here.
+    if set(members) <= set(dispatch.get("job_ids") or []):
+        return COVERAGE_ORIGINAL
+    refuse(isinstance(supplement, dict), "research_scope_unverified", ROUTE_OWNERS[RESEARCH], "dispatch")
+    refuse(all(supplement.get(key) == receipt[key] for key in ("intent_id", "policy_id", "policy_sha256", "family",
+                                                               "attempts", "investigation"))
+           and {k: (supplement.get("dispatch") or {}).get(k) for k in RECEIPT_DISPATCH_FIELDS} == receipt["dispatch"],
+           "research_supplement_mismatch", ROUTE_OWNERS[RESEARCH], "dispatch")
+    check_scope_supplement(supplement, intent=intent, attempts=attempts, policy=policy, jobs=jobs, observed=observed,
+                           investigation=investigation, dispatch=dispatch, run_result=run_result, lineage=lineage,
+                           bindings=bindings, acceptance=acceptance)
+    return COVERAGE_SUPPLEMENT
+
+
+def _check_research(receipt: dict, *, intent, attempts: list, policy, jobs: dict, observed: dict, investigation,
+                    dispatch, run_result) -> list:
+    """The bindings a receipt and a scope supplement share (everything but the job-sample scope);
+    returns the member jobs."""
     research = ROUTE_OWNERS[RESEARCH]
     refuse(isinstance(intent, dict), "research_intent_unknown", "operator", "intent_id")
     refuse(isinstance(policy, dict) and intent.get("policy_id") == receipt["policy_id"] == policy.get("id")
@@ -642,19 +669,193 @@ def check_research_receipt(receipt: dict, *, intent, attempts: list, policy, job
     refuse(dispatch.get("state") == "resolved", "research_unfinished", research, "dispatch")
     refuse(dispatch.get("result") == RESEARCH_ACCEPTED and (run_result or {}).get("result") == RESEARCH_ACCEPTED,
            "research_not_accepted", research, "dispatch")
-    # The dispatch snapshot names at most its job sample; a member outside it is unverifiable here.
-    refuse(set(members) <= set(dispatch.get("job_ids") or []), "research_scope_unverified", research, "dispatch")
+    return members
 
 
 def receipt_view(row: dict) -> dict:
-    """Bounded projection of one stored receipt: what it covers, never who typed what."""
+    """Bounded projection of one stored receipt: what it covers, never who typed what. `coverage`
+    distinguishes the original dispatch capture from the owner scope supplement (a legacy row could
+    only have been stored under the original capture)."""
     receipt = row.get("receipt") or {}
     return {"intent_id": row.get("id"), "policy_id": receipt.get("policy_id"), "family": receipt.get("family"),
             "covered_jobs": [a.get("job") for a in receipt.get("attempts") or []],
             "inspections": [a.get("inspection") for a in receipt.get("attempts") or []],
             "investigation": receipt.get("investigation"), "dispatch": receipt.get("dispatch"),
             "evidence_refs": list(receipt.get("evidence_refs") or []), "receipt_sha256": row.get("receipt_sha256"),
+            "coverage": row.get("coverage") or COVERAGE_ORIGINAL, "supplement_sha256": row.get("supplement_sha256"),
             "accepted_at": row.get("accepted_at"), "authority": RECEIPT_AUTHORITY}
+
+
+# ---- owner research scope supplement (SPEC "Research coverage ownership: accepted003 receipt refusal") --
+# An accepted CURRENT research dispatch whose immutable job sample omitted a proven continuation
+# successor of a captured member. The owner appends ONE typed supplement per research intent: it never
+# rewrites the dispatch, its snapshot or any failure verdict. It records current lineage membership
+# (every missing member an exact persisted successor intent of a captured member, same policy, family,
+# lane and Portfolio target, a terminal known failure) and, SEPARATELY, the owner's explicit semantic
+# judgment that the accepted report covers those members (`attestation_ref`): owner judgment, not a
+# model verdict and not an algorithmic proof. It is checked at registration AND at every receipt use.
+SUPPLEMENT_SCHEMA = "urn:zeus:continuation-research-scope-supplement:1"
+SUPPLEMENT_FIELDS = {"schema", "intent_id", "policy_id", "policy_sha256", "family", "attempts", "investigation",
+                     "dispatch", "captured", "descendants", "acceptance", "report_ref", "attestation_ref"}
+SUPPLEMENT_DISPATCH_FIELDS = RECEIPT_DISPATCH_FIELDS | {"id", "job_ids_sha256"}
+SUPPLEMENT_DESCENDANT_FIELDS = {"job", "parent_job", "intent_id"}
+SUPPLEMENT_ACCEPTANCE_FIELDS = {"graph_sha256", "candidate_revision", "decision_id"}
+SUPPLEMENT_AUTHORITY = ("owner scope supplement: current continuation lineage membership plus the owner's explicit "
+                        "semantic coverage judgment; not the original capture, a model verdict, an algorithmic "
+                        "proof, a receipt or a repair verdict")
+COVERAGE_ORIGINAL, COVERAGE_SUPPLEMENT = "original_capture", "owner_supplement"
+LINEAGE_ADMITTED = frozenset({ADMITTED, RETURNED, COMPLETED})
+KNOWN_FAILURES = frozenset({"failed", "rejected"})
+
+
+def _supplement(condition, field: str) -> None:
+    refuse(condition, "research_supplement_invalid", "operator", field)
+
+
+def validate_scope_supplement(document) -> dict:
+    """Strict owner supplement; returns the canonical copy. Its receipt-shaped part (intent, policy,
+    family, complete attempts, investigation, dispatch binding) is validated by the receipt rules."""
+    _supplement(isinstance(document, dict) and set(document) == SUPPLEMENT_FIELDS, "root")
+    _supplement(document["schema"] == SUPPLEMENT_SCHEMA, "schema")
+    dispatch = document["dispatch"]
+    _supplement(isinstance(dispatch, dict) and set(dispatch) == SUPPLEMENT_DISPATCH_FIELDS, "dispatch")
+    _supplement(type(dispatch["id"]) is str and INVESTIGATION_REF.fullmatch(dispatch["id"]) is not None, "dispatch.id")
+    _supplement(type(dispatch["job_ids_sha256"]) is str and SHA256.fullmatch(dispatch["job_ids_sha256"]) is not None,
+                "dispatch.job_ids_sha256")
+    refs = [document["report_ref"], document["attestation_ref"]]
+    _supplement(all(type(ref) is str and EVIDENCE_REF.fullmatch(ref) for ref in refs) and refs[0] != refs[1],
+                "report_ref/attestation_ref")
+    try:
+        shared = validate_research_receipt({
+            "schema": RESEARCH_RECEIPT_SCHEMA, "evidence_refs": refs,
+            "dispatch": {k: dispatch[k] for k in RECEIPT_DISPATCH_FIELDS},
+            **{k: document[k] for k in ("intent_id", "policy_id", "policy_sha256", "family", "attempts",
+                                        "investigation")}})
+    except ContinuationRefused as exc:
+        raise ContinuationRefused("research_supplement_invalid", "operator", exc.field) from None
+    captured = document["captured"]
+    _supplement(isinstance(captured, list) and 0 < len(captured) <= MAX_RECEIPT_ATTEMPTS
+                and len(set(captured)) == len(captured)
+                and all(type(job) is str and TOKEN.fullmatch(job) for job in captured), "captured")
+    descendants = document["descendants"]
+    _supplement(isinstance(descendants, list) and 0 < len(descendants) <= MAX_RECEIPT_ATTEMPTS, "descendants")
+    for row in descendants:
+        _supplement(isinstance(row, dict) and set(row) == SUPPLEMENT_DESCENDANT_FIELDS, "descendants[]")
+        _supplement(all(type(row[k]) is str and TOKEN.fullmatch(row[k]) for k in ("job", "parent_job"))
+                    and row["job"] != row["parent_job"], "descendants[].job")
+        _supplement(type(row["intent_id"]) is str and SHA256.fullmatch(row["intent_id"]) is not None,
+                    "descendants[].intent_id")
+    _supplement(len({row["job"] for row in descendants}) == len(descendants), "descendants[].job")
+    acceptance = document["acceptance"]
+    _supplement(isinstance(acceptance, dict) and set(acceptance) == SUPPLEMENT_ACCEPTANCE_FIELDS, "acceptance")
+    _supplement(type(acceptance["graph_sha256"]) is str and SHA256.fullmatch(acceptance["graph_sha256"]) is not None,
+                "acceptance.graph_sha256")
+    _supplement(type(acceptance["candidate_revision"]) is str and REVISION.fullmatch(acceptance["candidate_revision"])
+                is not None, "acceptance.candidate_revision")
+    _supplement(type(acceptance["decision_id"]) is str and TOKEN.fullmatch(acceptance["decision_id"]) is not None,
+                "acceptance.decision_id")
+    return {"schema": SUPPLEMENT_SCHEMA, **{k: shared[k] for k in ("intent_id", "policy_id", "policy_sha256", "family",
+                                                                   "attempts", "investigation")},
+            "dispatch": {k: dispatch[k] for k in sorted(SUPPLEMENT_DISPATCH_FIELDS)}, "captured": sorted(captured),
+            "descendants": sorted(({k: row[k] for k in sorted(SUPPLEMENT_DESCENDANT_FIELDS)} for row in descendants),
+                                  key=lambda row: row["job"]),
+            "acceptance": {k: acceptance[k] for k in sorted(SUPPLEMENT_ACCEPTANCE_FIELDS)},
+            "report_ref": document["report_ref"], "attestation_ref": document["attestation_ref"]}
+
+
+def accepted_candidate(binding: dict, run_id, acceptance) -> bool:
+    """The accepted council's own promotion evidence, read mechanically from authoritative rows: the
+    run row and the promotion receipt carry the same graph digest, the receipt names the decision,
+    the implementation task succeeded with that candidate revision, and that decision is the
+    succeeded accepting `review_lead` of the same revision."""
+    acceptance = acceptance if isinstance(acceptance, dict) else {}
+    run, promotion = acceptance.get("run"), acceptance.get("promotion")
+    task, decision = acceptance.get("task"), acceptance.get("decision")
+    if not (isinstance(run, dict) and isinstance(run.get("promotion"), dict) and isinstance(promotion, dict)
+            and isinstance(task, dict) and isinstance(decision, dict)):
+        return False
+    candidate = ((task.get("result") or {}).get("candidate") or {}) if isinstance(task.get("result"), dict) else {}
+    reviewed = ((decision.get("input") or {}).get("candidate") or {}) if isinstance(decision.get("input"), dict) else {}
+    verdict = decision.get("result") if isinstance(decision.get("result"), dict) else {}
+    return (run.get("id") == run_id and run["promotion"].get("graph_sha256") == binding["graph_sha256"]
+            and promotion.get("id") == run_id and promotion.get("graph_sha256") == binding["graph_sha256"]
+            and (promotion.get("evidence") or {}).get("decision_id") == binding["decision_id"]
+            and (promotion.get("evidence") or {}).get("implementation_task_id") == task.get("id")
+            and task.get("status") == "succeeded" and candidate.get("revision") == binding["candidate_revision"]
+            and decision.get("id") == binding["decision_id"] and decision.get("status") == "succeeded"
+            and decision.get("phase") == "review_lead" and verdict.get("accepted") is True
+            and reviewed.get("revision") == binding["candidate_revision"])
+
+
+def check_scope_supplement(supplement: dict, *, intent, attempts: list, policy, jobs: dict, observed: dict,
+                           investigation, dispatch, run_result, lineage, bindings, acceptance) -> None:
+    """Every binding of one owner scope supplement against authoritative reads (the receipt's own
+    checks first); the first gap refuses by name. `lineage` is intent id -> the stored intent row of
+    this policy, `bindings` job -> its `portfolio_bindings` row, `acceptance` the accepted run's
+    {run, promotion, task, decision} rows. Only exact proven descendants are admitted: an arbitrary
+    same-reason job, a foreign family, a broken lineage or a changed current dispatch refuses."""
+    research = ROUTE_OWNERS[RESEARCH]
+    members = _check_research(supplement, intent=intent, attempts=attempts, policy=policy, jobs=jobs,
+                              observed=observed, investigation=investigation, dispatch=dispatch, run_result=run_result)
+    bound = supplement["dispatch"]
+    refuse(dispatch.get("id", dispatch.get("investigation")) == bound["id"]
+           and dispatch.get("job_ids_sha256") == bound["job_ids_sha256"], "research_dispatch_mismatch", research,
+           "dispatch")
+    sample = set(dispatch.get("job_ids") or [])
+    captured = sorted(set(members) & sample)
+    refuse(captured and supplement["captured"] == captured, "research_supplement_capture_mismatch", research,
+           "captured")
+    missing = set(members) - sample
+    refuse(missing and {row["job"] for row in supplement["descendants"]} == missing,
+           "research_supplement_scope_mismatch", research, "descendants")
+    lineage = lineage if isinstance(lineage, dict) else {}
+    bindings = bindings if isinstance(bindings, dict) else {}
+    # A descendant's parent is a captured member or an already proven descendant (a chain of
+    # successors); resolved in lineage order, so a cycle or an orphan never resolves.
+    proven, pending = set(captured), list(supplement["descendants"])
+    while pending:
+        ready = [row for row in pending if row["parent_job"] in proven]
+        refuse(ready, "research_supplement_lineage_broken", research, "descendants[].parent_job")
+        for row in ready:
+            _check_descendant(row, intent, lineage.get(row["intent_id"]), jobs, bindings)
+            proven.add(row["job"])
+            pending.remove(row)
+    refuse(accepted_candidate(supplement["acceptance"], bound["run_id"], acceptance),
+           "research_supplement_acceptance_unproven", research, "acceptance")
+
+
+def _check_descendant(row: dict, intent: dict, successor: dict | None, jobs: dict, bindings: dict) -> None:
+    research = ROUTE_OWNERS[RESEARCH]
+    job, parent = jobs.get(row["job"]), jobs.get(row["parent_job"])
+    refuse(isinstance(successor, dict) and successor.get("id") == row["intent_id"]
+           and successor.get("policy_id") == intent.get("policy_id")
+           and successor.get("policy_sha256") == intent.get("policy_sha256")
+           and successor.get("family") == intent.get("family") and successor.get("lane") == intent.get("lane")
+           and successor.get("route") in SUCCESSOR_ROUTES and successor.get("state") in LINEAGE_ADMITTED
+           and successor.get("origin_job") == row["parent_job"] and successor.get("successor_job") == row["job"]
+           and successor_id(row["intent_id"]) == row["job"]
+           and ((successor.get("binding") or {}).get("predecessor") or {}).get("job_id") == row["parent_job"],
+           "research_supplement_lineage_broken", research, "descendants[].intent_id")
+    refuse(isinstance(job, dict) and isinstance(parent, dict) and job.get("lane") == parent.get("lane")
+           == intent.get("lane") and job.get("status") in KNOWN_FAILURES and parent.get("status") in KNOWN_FAILURES,
+           "research_supplement_lineage_broken", research, "descendants[].job")
+    child, origin = bindings.get(row["job"]), bindings.get(row["parent_job"])
+    refuse(isinstance(child, dict) and isinstance(origin, dict)
+           and (child.get("project_id"), child.get("criterion_id")) == (origin.get("project_id"),
+                                                                        origin.get("criterion_id")),
+           "research_supplement_ownership_mismatch", research, "descendants[].job")
+
+
+def supplement_view(row: dict) -> dict:
+    """Bounded projection of one stored supplement, kept apart from the original capture."""
+    supplement = row.get("supplement") or {}
+    return {"intent_id": row.get("id"), "coverage": COVERAGE_SUPPLEMENT,
+            "captured": list(supplement.get("captured") or []),
+            "descendants": [dict(d) for d in supplement.get("descendants") or []],
+            "dispatch": supplement.get("dispatch"), "acceptance": supplement.get("acceptance"),
+            "report_ref": supplement.get("report_ref"), "attestation_ref": supplement.get("attestation_ref"),
+            "supplement_sha256": row.get("supplement_sha256"), "recorded_at": row.get("recorded_at"),
+            "authority": SUPPLEMENT_AUTHORITY}
 
 
 # ---- fair selection -----------------------------------------------------------------------------
