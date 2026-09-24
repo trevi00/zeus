@@ -31,6 +31,10 @@ registered program with the same authority, through `research_dispatch_recoverie
 stay history; the lineage names the replacement key that is the investigation's current dispatch.
 The explicit `execution_revocation` request (version 2) substitutes ONLY the transport proof with a
 durable revocation through the existing task identity fence (`execution_fence`), in one transaction.
+The explicit `settled_read_only_successor` request (version 3) succeeds the CURRENT failed replacement
+whose council settled only read-only researcher/DBA executions: an immutable successor row plus the
+versioned head in `research_dispatch_successors`/`research_dispatch_heads`, never an edit of the
+original recovery row, and every consumer rechecks the retained predecessor fences before trusting it.
 """
 from __future__ import annotations
 
@@ -70,7 +74,7 @@ from codex_harness.domain.audit_progress import (
 from codex_harness.domain.audit_progress import (
     snapshot as progress_snapshot,
 )
-from codex_harness.domain.model import digest, require, utcnow
+from codex_harness.domain.model import ContractError, digest, require, utcnow
 from codex_harness.domain.research_investigations import (
     AUTHORIZED,
     DISPATCHED,
@@ -83,14 +87,18 @@ from codex_harness.domain.research_investigations import (
     REVOCATION_GENERATION,
     REVOCATION_MODE,
     REVOCATION_PROOF,
+    SUCCESSOR_PROOF,
+    SUCCESSOR_SCHEMA,
     InvestigationRefused,
     candidate_identity,
     check_recovery,
+    check_successor,
     check_transport_proof,
     current_dispatch_id,
     dispatch_row,
     dispatch_view,
     eligible_investigations,
+    lineage_head,
     recovery_view,
     replacement_dispatch_id,
     revocation_evidence,
@@ -98,7 +106,13 @@ from codex_harness.domain.research_investigations import (
     revocation_owner,
     revocation_task_id,
     snapshot,
+    successor_dispatch_id,
+    successor_held,
+    successor_key,
+    successor_reads,
+    successor_view,
     validate_recovery_request,
+    validate_successor_request,
 )
 from codex_harness.domain.research_investigations import (
     SOURCE as INVESTIGATION,
@@ -140,6 +154,9 @@ BUCKET_PROGRAMS, BUCKET_CANDIDATES, BUCKET_CYCLES = ("research_programs", "resea
                                                      "research_program_cycles")
 BUCKET_DISPATCHES = "research_investigation_dispatches"
 BUCKET_RECOVERIES = "research_dispatch_recoveries"
+# Settled read-only successors: immutable authorization rows and the versioned current head.
+BUCKET_SUCCESSORS, BUCKET_HEADS = "research_dispatch_successors", "research_dispatch_heads"
+MAX_LINEAGE = 1000
 ELIGIBLE_REASON, INELIGIBLE_REASON = "portfolio_investigation_eligible", "investigation_ineligible"
 PROGRESS_ELIGIBLE_REASON, PROGRESS_INELIGIBLE_REASON = "audit_progress_eligible", "audit_progress_ineligible"
 
@@ -350,6 +367,10 @@ class ResearchProgram:
         claimed -= {r["investigation"] for r in tx.scan(BUCKET_RECOVERIES)
                     if r.get("state") == AUTHORIZED and (r.get("replacement") or {}).get("program") == row["id"]
                     and self._revocation_held(tx, r) is None}
+        # A settled read-only successor releases it the same way, for ITS program, only while the whole
+        # retained chain (original fence included) still holds.
+        claimed -= {h["investigation"] for h in tx.scan(BUCKET_HEADS)
+                    if self._authorized_successor(tx, h.get("investigation"), row["id"]) is not None}
         found = eligible_investigations(investigations=tx.scan(BUCKET_INVESTIGATIONS), jobs=tx.scan(BUCKET_JOBS),
                                         bindings=tx.scan(BUCKET_BINDINGS), source=source, claimed=claimed,
                                         required_state=RESEARCH_REQUIRED, minimum=FAMILY_MINIMUM)
@@ -454,7 +475,20 @@ class ResearchProgram:
                 "Research investigation candidate must carry its snapshot")
         dispatch = dispatch_row(document=document, candidate_id=chosen["id"], cycle_ref=cycle["id"], now=now)
         recovery = tx.get(BUCKET_RECOVERIES, chosen["investigation"])
-        if (isinstance(recovery, dict) and recovery.get("state") == AUTHORIZED
+        successor = self._authorized_successor(tx, chosen["investigation"], cycle["program"])
+        if successor is not None:
+            # The ONE successor of the exact failed head: its own versioned key, bound to the
+            # authorization row and the predecessor it supersedes; the predecessor row, the original
+            # recovery row and the head are never rewritten. Claimed in this same transaction.
+            old = successor["predecessor"]
+            dispatch.update(id=successor["replacement"]["dispatch"], recovery=successor["id"],
+                            supersedes={"dispatch": old["dispatch"],
+                                        **{k: old[k] for k in ("program", "cycle", "run_id", "manifest_sha256",
+                                                               "snapshot_sha256")}})
+            successor.update(state=RECOVERED, claimed_at=now, updated_at=now,
+                             replacement={**successor["replacement"], "cycle": cycle["id"]})
+            tx.put(BUCKET_SUCCESSORS, successor["id"], successor)
+        elif (isinstance(recovery, dict) and recovery.get("state") == AUTHORIZED
                 and recovery["replacement"]["program"] == cycle["program"]):
             self._require_revocation(tx, recovery)   # before the replacement claim, never after
             # The ONE replacement: its own key, bound to the lineage and the failed identity it
@@ -479,7 +513,8 @@ class ResearchProgram:
         if candidate is None or candidate.get("source") != INVESTIGATION:
             return None
         investigation = candidate["investigation"]
-        dispatch = tx.get(BUCKET_DISPATCHES, current_dispatch_id(investigation, tx.get(BUCKET_RECOVERIES, investigation)))
+        dispatch = tx.get(BUCKET_DISPATCHES, current_dispatch_id(investigation, tx.get(BUCKET_RECOVERIES, investigation),
+                                                                 tx.get(BUCKET_HEADS, investigation)))
         if dispatch is None or dispatch.get("cycle") != cycle["id"] or dispatch.get("program") != row["id"]:
             return None   # another program's claim is never rewritten from this cycle
         return dispatch
@@ -491,14 +526,16 @@ class ResearchProgram:
         with self.store.transaction() as tx:
             rows = tx.scan(BUCKET_DISPATCHES)
             recoveries = {r["investigation"]: r for r in tx.scan(BUCKET_RECOVERIES)}
+            heads = {h["investigation"]: h for h in tx.scan(BUCKET_HEADS)}
         return [{**dispatch_view(r),
                  "current": r.get("id", r["investigation"]) == current_dispatch_id(r["investigation"],
-                                                                                   recoveries.get(r["investigation"]))}
+                                                                                   recoveries.get(r["investigation"]),
+                                                                                   heads.get(r["investigation"]))}
                 for r in sorted(rows, key=lambda r: (r["investigation"], r.get("id", r["investigation"])))
                 if program_id is None or r.get("program") == program_id]
 
     # ----- failed-dispatch recovery (research-dispatch-recovery-001) -----------------------------
-    def recover_dispatch(self, document, transport) -> dict:
+    def recover_dispatch(self, document, transport, evidence=None) -> dict:
         """Authorize ONE replacement of a proven pre-provider failed investigation dispatch for a NEW
         registered program. Three steps, no transaction across the transport read:
 
@@ -522,7 +559,12 @@ class ResearchProgram:
 
         The identical request replays (`cached`); any other for the same investigation is
         `recovery_conflict`: one recovery per investigation, ever, and a failed replacement is held.
-        Nothing is deleted, no failed row becomes accepted and no model or council runs here."""
+        Nothing is deleted, no failed row becomes accepted and no model or council runs here.
+
+        An explicit version-3 `settled_read_only_successor` request takes `_succeed_dispatch` with the
+        `evidence` port (the executor's artifact store) instead; it never reads a transport."""
+        if isinstance(document, dict) and document.get("schema") == SUCCESSOR_SCHEMA:
+            return self._succeed_dispatch(document, evidence)
         try:
             request = validate_recovery_request(document)
         except InvestigationRefused as exc:
@@ -619,6 +661,164 @@ class ResearchProgram:
                    "updated_at": now}
             tx.put(BUCKET_RECOVERIES, investigation, row)
         return self._recovery_result(row, cached=False)
+
+    # ----- settled read-only successor (SPEC "Real council progress") --------------------------
+    def _succeed_dispatch(self, document, evidence) -> dict:
+        """Authorize ONE successor of the exact failed CURRENT head whose council settled only the
+        read-only researcher/DBA executions. Three steps, no transaction across the artifact reads:
+
+        1. a short read transaction answers an existing authorization for this exact head (the
+           identical request replays `cached` after revalidating the whole retained chain; any other
+           is `recovery_conflict`) and otherwise collects the predecessor tasks' execution refs;
+        2. each execution artifact is loaded through the evidence port (the executor's content store);
+           an unavailable or corrupt artifact is recorded by its fixed code and refuses in step 3;
+        3. ONE writer transaction re-reads every authoritative record, requires the retained chain
+           (the original revocation fence included) to hold, applies `check_successor`, quarantines the
+           predecessor run's unsent publications through the existing outbox fence, appends the
+           immutable successor row and moves the versioned head. Concurrent or restarted requests
+           serialize on that transaction: exactly one writes, the others replay it.
+
+        The failed predecessor, its run, tasks, reservations, cycle and the original recovery row are
+        never edited; its settled calls are recorded as counted, never reused. No model runs here."""
+        try:
+            request = validate_successor_request(document)
+        except InvestigationRefused as exc:
+            raise ProgramRefused(exc.reason_code, exc.field) from exc
+        request_sha, investigation, old = digest(request), request["investigation"], request["predecessor"]
+        version = old["lineage_version"] + 1
+        key = successor_key(investigation, version)
+        with self.store.transaction() as tx:
+            row = tx.get(BUCKET_SUCCESSORS, key)
+            if row is not None:
+                return self._successor_replay(tx, row, request_sha)
+            refs = sorted({(t.get("result") or {}).get("execution_ref") for t in self._run_tasks(tx, old["run_id"])
+                           if isinstance(t.get("result"), dict) and type(t["result"].get("execution_ref")) is str})
+        if evidence is None:
+            raise ProgramRefused("recovery_evidence_unavailable", "predecessor.run_id")
+        artifacts = {ref: self._artifact(evidence, ref) for ref in refs}
+        with self.store.transaction() as tx:
+            row = tx.get(BUCKET_SUCCESSORS, key)
+            if row is not None:
+                return self._successor_replay(tx, row, request_sha)   # a concurrent request finished first
+            lineage = self._lineage(tx, investigation)
+            if lineage["held"] is not None:
+                raise ProgramRefused(lineage["held"], "predecessor")
+            proof = self._successor_check(tx, request, lineage["current"], artifacts)
+            now = self.clock()
+            for fence in proof["fenced"]:
+                quarantine_outbox(tx, fence["outbox"], tx.get("outbox", fence["outbox"]), fence["source_hash"], FENCE_REASON,
+                                  tx.get("outbox_delivery", fence["outbox"]) or {})
+            row = {"id": key, "investigation": investigation, "version": version, "state": AUTHORIZED,
+                   "reason_code": None, "request": request, "request_sha256": request_sha,
+                   "predecessor": dict(old),
+                   "replacement": {**request["replacement"], "dispatch": successor_dispatch_id(investigation, version),
+                                   "cycle": None},
+                   "fence": proof["fenced"], "proof": SUCCESSOR_PROOF,
+                   "evidence": {"executions": proof["executions"], "calls": proof["calls"]},
+                   "requested_at": now, "authorized_at": now, "claimed_at": None, "updated_at": now}
+            tx.put(BUCKET_SUCCESSORS, key, row)
+            tx.put(BUCKET_HEADS, investigation, {
+                "id": investigation, "investigation": investigation, "version": version, "successor": key,
+                "dispatch": row["replacement"]["dispatch"], "request_sha256": request_sha,
+                "previous": {"version": old["lineage_version"], "request_sha256": old["lineage_request_sha256"],
+                             "dispatch": old["dispatch"]}, "updated_at": now})
+        return self._successor_result(row, cached=False)
+
+    def _successor_replay(self, tx, row: dict, request_sha: str) -> dict:
+        """The identical request answers only while the whole retained chain still holds; any other
+        request for the same head is a conflict. Nothing is re-armed or rewritten."""
+        if row.get("request_sha256") != request_sha:
+            raise ProgramRefused("recovery_conflict")
+        lineage = self._lineage(tx, row["investigation"])
+        if lineage["held"] is not None:
+            raise ProgramRefused(lineage["held"], "predecessor")
+        # The head must still reach this authorization (it or a later successor): a lost or rolled
+        # back head never answers an orphaned successor row as authorized.
+        if not (isinstance(lineage["current"], dict) and type(lineage["current"]["version"]) is int
+                and lineage["current"]["version"] >= row.get("version", 0) >= 2
+                and len(lineage["chain"]) >= row["version"] - 1 and lineage["chain"][row["version"] - 2] == row):
+            raise ProgramRefused("recovery_successor_corrupt", "predecessor")
+        return self._successor_result(row, cached=True)
+
+    @staticmethod
+    def _successor_result(row: dict, cached: bool) -> dict:
+        return {"recovered": row["state"] in {AUTHORIZED, RECOVERED}, "cached": cached, **successor_view(row)}
+
+    @staticmethod
+    def _artifact(evidence, ref: str):
+        """The loaded document, or its fixed unavailability code; a port fault's text is never kept."""
+        try:
+            return evidence.document(ref)
+        except ContractError as exc:
+            code = getattr(exc, "reason_code", None)
+            return code if code in {"evidence_missing", "evidence_corrupt"} else "evidence_unavailable"
+        except Exception:
+            return "evidence_unavailable"
+
+    @staticmethod
+    def _run_tasks(tx, run_id: str) -> list:
+        correlation = "autonomous:" + run_id
+        return [t for t in tx.scan("tasks")
+                if isinstance(t, dict) and ((t.get("message") or {}).get("correlation_id") == correlation)]
+
+    def _successor_check(self, tx, request: dict, current, artifacts: dict) -> dict:
+        """The authoritative reads of one successor, checked by the pure domain rule."""
+        old, investigation = request["predecessor"], request["investigation"]
+        run_id, correlation = old["run_id"], "autonomous:" + old["run_id"]
+        program = tx.get(BUCKET_PROGRAMS, old["program"])
+        replacement = tx.get(BUCKET_PROGRAMS, request["replacement"]["program"])
+        run = tx.get(BUCKET_RUNS, run_id)
+        tasks = self._run_tasks(tx, run_id)
+        ids = {t.get("id") for t in tasks}
+        outbox = [item for item in tx.scan("outbox")
+                  if isinstance(item, dict) and (item.get("message") or {}).get("correlation_id") == correlation]
+        message_ids = {(item.get("message") or {}).get("message_id") for item in outbox} - {None}
+        try:
+            return check_successor(
+                request, investigation=tx.get(BUCKET_INVESTIGATIONS, investigation), required_state=RESEARCH_REQUIRED,
+                lineage=current, dispatch=tx.get(BUCKET_DISPATCHES, old["dispatch"]), program=program,
+                cycle=tx.get(BUCKET_CYCLES, old["cycle"]),
+                run_result=council_result(run_id, old["manifest_sha256"], run), run=run, tasks=tasks,
+                reservations=[r for r in tx.scan(RESERVATIONS) if r.get("task_id") in ids], artifacts=artifacts,
+                outbox=outbox, deliveries={m: tx.get("outbox_delivery", m) for m in message_ids},
+                attempts=[a for a in tx.scan("outbox_attempts") if a.get("outbox_id") in message_ids],
+                terminations=[t for t in tx.scan("observation_terminations")
+                              if (t.get("record_id") or t.get("task_id")) in ids],
+                session=tx.get(SESSIONS, run_id + ".design"),
+                residue=[k for b, k in ((OPERATIONS, run_id + ".impl"),) if tx.get(b, k) is not None],
+                replacement=replacement,
+                same_authority=isinstance(program, dict) and isinstance(replacement, dict)
+                and same_authority(program["config"], replacement["config"]))
+        except InvestigationRefused as exc:
+            raise ProgramRefused(exc.reason_code, exc.field) from exc
+
+    def _lineage(self, tx, investigation: str) -> dict:
+        """The investigation's current authorization and its named held condition, from the original
+        recovery row, the head and every successor row on its chain in THIS transaction: the original
+        revocation fence first, then each successor's own retained fences and bound executions."""
+        recovery, head = tx.get(BUCKET_RECOVERIES, investigation), tx.get(BUCKET_HEADS, investigation)
+        version = head.get("version") if isinstance(head, dict) else None
+        chain = [tx.get(BUCKET_SUCCESSORS, successor_key(investigation, v)) for v in range(2, version + 1)] \
+            if type(version) is int and 2 <= version < MAX_LINEAGE else []
+        current = lineage_head(investigation, recovery, head, chain[-1] if chain else None)
+        held = self._revocation_held(tx, recovery) if isinstance(recovery, dict) else None
+        if held is None and head is not None:
+            deliveries, tasks = successor_reads(chain)
+            held = successor_held(investigation, head, chain, deliveries={d: tx.get("outbox_delivery", d) for d in deliveries},
+                                  tasks={t: tx.get("tasks", t) for t in tasks})
+        return {"recovery": recovery, "head": head, "chain": chain, "current": current, "held": held}
+
+    def _authorized_successor(self, tx, investigation, program_id: str) -> dict | None:
+        """The head successor row when it is authorized, not yet claimed, names `program_id` and its
+        whole retained chain holds; otherwise None (a held chain never releases a claim)."""
+        if type(investigation) is not str:
+            return None
+        lineage = self._lineage(tx, investigation)
+        row = lineage["chain"][-1] if lineage["chain"] else None
+        if not (lineage["held"] is None and isinstance(row, dict) and row.get("state") == AUTHORIZED
+                and (row.get("replacement") or {}).get("program") == program_id):
+            return None
+        return row
 
     @staticmethod
     def _revocation_held(tx, row) -> str | None:
@@ -809,7 +1009,12 @@ class ResearchProgram:
             dispatches = [d for d in tx.scan(BUCKET_DISPATCHES) if d.get("program") == program_id]
             recoveries = [r for r in tx.scan(BUCKET_RECOVERIES)
                           if program_id in {r["failed"]["program"], r["replacement"]["program"]}]
-        return program_view(row, cycles, candidates, dispatches, recoveries)
+            successors = [r for r in tx.scan(BUCKET_SUCCESSORS)
+                          if program_id in {(r.get("predecessor") or {}).get("program"),
+                                            (r.get("replacement") or {}).get("program")}]
+            investigations = {r["investigation"] for r in recoveries} | {r["investigation"] for r in successors}
+            heads = [h for h in tx.scan(BUCKET_HEADS) if h.get("investigation") in investigations]
+        return program_view(row, cycles, candidates, dispatches, recoveries, successors, heads)
 
     def candidates(self, program_id: str) -> list:
         with self.store.transaction() as tx:
@@ -822,5 +1027,5 @@ class ResearchProgram:
         return monitor_projection(programs, cycles)
 
 
-__all__ = ["BUCKET_CANDIDATES", "BUCKET_CYCLES", "BUCKET_DISPATCHES", "BUCKET_PROGRAMS", "BUCKET_RECOVERIES",
-           "ResearchProgram"]
+__all__ = ["BUCKET_CANDIDATES", "BUCKET_CYCLES", "BUCKET_DISPATCHES", "BUCKET_HEADS", "BUCKET_PROGRAMS",
+           "BUCKET_RECOVERIES", "BUCKET_SUCCESSORS", "ResearchProgram"]

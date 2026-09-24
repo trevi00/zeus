@@ -377,3 +377,67 @@ def test_promotion_is_idempotent_refuses_conflict_and_rolls_back_with_the_receip
             raise RuntimeError("commit failure (fixture)")
     with store.transaction() as tx:
         assert tx.get("promotions", "run-3") is None and len(tx.scan("knowledge_nodes")) == 5, "rollback wrote neither"
+
+
+# ----- run-scoped production wiring (SPEC "Real council progress: isolated delivery", 2026-09-24) ---------
+def test_the_cli_owner_wires_one_run_scoped_bus_per_run_and_records_it_on_the_receipt(monkeypatch, tmp_path):
+    """The REAL `autonomous_cli.run` wiring and the REAL RedisBus constructor (on the LABELLED fixture
+    Redis factory, no network); every heavier service it composes is a LABELLED stand-in. The one
+    bus handed to the run must be scoped to the manifest id: two runs differ, a restart of the same
+    run id gets the same namespace, and the old global namespace is never the run's bus."""
+    from test_bus import FakeRedisFactory, FakeRedisServer
+
+    from codex_harness import bootstrap
+    from codex_harness.adapters import autonomous_cli, call_budget, configuration, project_evidence
+    from codex_harness.adapters.bus import run_namespace
+
+    handed = []
+
+    class Recording:   # LABELLED stand-in for AutonomousRun/CouncilRun: records the bus it is given
+        def __init__(self, service, executor, bus, *rest, **wiring):
+            handed.append(bus)
+
+        def run(self, manifest, bound, goal):
+            return {"bus": bus_view_of(handed[-1])}
+
+    class Observer:
+        def close(self):
+            pass
+
+    def bus_view_of(bus):
+        from codex_harness.application.autonomous import bus_view
+        return bus_view(bus)
+
+    monkeypatch.setattr("codex_harness.adapters.bus.Redis", FakeRedisFactory({("a.example", 6379): FakeRedisServer()}))
+    monkeypatch.setattr(configuration, "settings", lambda: {"HARNESS_REDIS_NAMESPACE": "ns"})
+    monkeypatch.setattr(configuration, "repository_root", lambda: tmp_path)
+    monkeypatch.setattr(configuration, "runtime_dir", lambda: tmp_path)
+    monkeypatch.setattr(project_evidence, "load_profile", lambda host: None)
+    monkeypatch.setattr(call_budget, "CallBudget", lambda: None)
+    for name, value in (("redis_url", lambda: "redis://a.example:6379/0"), ("host_isolation", lambda profile: None),
+                        ("build_observer", lambda store, name: Observer()), ("build_collector", lambda store, observer: None),
+                        ("build_executor", lambda service, **kw: type("Executor", (), {"artifacts": None})())):
+        monkeypatch.setattr(bootstrap, name, value)
+    for name, value in (("read_document", lambda path, label: dict(path)), ("validate_any_manifest", lambda doc, policy: doc),
+                        ("packaged_policy", lambda: None), ("execution_policy", lambda manifest, host: None),
+                        ("GitSource", lambda root: None), ("bind_goal", lambda manifest, source: {}),
+                        ("identity", lambda *args, **kwargs: {}), ("repository_identity", lambda root: "r"),
+                        ("profile", lambda manifest: {"version": 1}), ("AutonomousRun", Recording), ("CouncilRun", Recording)):
+        monkeypatch.setattr(autonomous_cli, name, value)
+    service = Harness(MemoryStore(), organization())
+    receipts = [autonomous_cli.run(service, type("Args", (), {"file": {"id": run_id}})())
+                for run_id in ("rp-002.c001", "rp-003.c001", "rp-002.c001")]
+    namespaces = [bus.namespace for bus in handed]
+    assert namespaces == [run_namespace("ns", "rp-002.c001"), run_namespace("ns", "rp-003.c001"),
+                          run_namespace("ns", "rp-002.c001")]
+    assert "ns" not in namespaces and namespaces[0] != namespaces[1], "never the old global bus"
+    assert [r["bus"] for r in receipts] == [{"namespace": n} for n in namespaces]
+
+
+def test_the_run_row_records_its_delivery_namespace_and_a_bus_without_one_records_none():
+    svc, run, executor, budget = build()
+    run.bus.namespace = "ns:run:" + "0" * 32
+    receipt = run.run(valid(), IDENTITY, BOUND_GOAL)
+    assert receipt["bus"] == {"namespace": "ns:run:" + "0" * 32}
+    svc, run, executor, budget = build()
+    assert run.run(valid(), IDENTITY, BOUND_GOAL)["bus"] is None
