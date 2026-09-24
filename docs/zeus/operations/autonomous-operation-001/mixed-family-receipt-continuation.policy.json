@@ -1,0 +1,42 @@
+{
+  "schema": "urn:zeus:continuation-policy:1",
+  "id": "autonomous-mixed-family-receipt-001",
+  "enabled": true,
+  "repository": "fe13e1ed40e5b9ba64a3fa8bed3a3f46d1bf486634b337fca46a5f5179622c63",
+  "lanes": [
+    "harness"
+  ],
+  "goals": [
+    {
+      "path": "docs/zeus/operations/autonomous-operation-001/SPEC.md",
+      "sha256": "c698f8c4615e5f559ac48e7cbd58a9830e8530c65fb641ff13a396a4ac445249",
+      "criterion": "Complete the existing autonomous operating loop with independently verified session, continuation and actual runtime ownership"
+    }
+  ],
+  "allowed_paths": [
+    "src/codex_harness/domain/continuation.py",
+    "src/codex_harness/application/continuation.py",
+    "src/codex_harness/adapters/continuation.py",
+    "src/codex_harness/adapters/continuation_cli.py",
+    "src/codex_harness/application/research_program.py",
+    "tests/test_continuation.py",
+    "tests/test_continuation_research.py",
+    "tests/test_continuation_cli.py",
+    "tests/test_research_recovery.py",
+    "tests/test_research_program.py",
+    "docs/contracts.md"
+  ],
+  "acceptance_criteria": [
+    "Actual mixed-cause family receipt proves complete attempt lineage, per-member cause and accepted report authority; legacy receipts unchanged.",
+    "Partial, foreign, stale, active/unknown, unavailable and conflicting evidence refuses; concurrency/restart retains immutable provenance.",
+    "Actual application/CLI receipt-to-evidence_repair flow preserves budgets, historical refusals and independent acceptance; targeted tests and Ruff pass."
+  ],
+  "session_archive_sha256": "1ab370f40de98823e63e1b7a80ed0d781ef7143ec94a67930e9b57417829e63c",
+  "qualified": {
+    "model": "claude-opus-5-5",
+    "image": "sha256:1ee94821ead80039a2ea1070079ce47ba3137771f56ef7a115e779ebeb06b267",
+    "profile": "worker-v1"
+  },
+  "delivery_target": "zeus-fleet-managed",
+  "max_corrections": 2
+}

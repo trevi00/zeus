@@ -1,5 +1,24 @@
 # Whole autonomous operating loop
 
+## Mixed-family receipt evidence repair, 2026-09-24 19:45 UTC
+
+Same bounded matrix below. Candidate3c60c7157bdaab8441d8cb4c3466a701df2fe145,
+task1c6a1fde-7f7a-551e-ae19-0158ff10c9bb stopped before independent review.
+Inspectione8352a8d checked10 claims without mismatch and failed replay of one claim.
+Worker reports seven focused suites349passed/7skips and Ruff success, but included an
+additional full-suite command in tests despite reporting ENOSPC and lost output. That
+full-suite attempt is NOT successful evidence. No accepted review or PR exists. Fleet idle.
+Host C/D have230/427GB free; container ENOSPC is worker-observed, not a host-capacity diagnosis.
+Use existing evidence_repair at retained candidate and versioned explicit project-evidence
+profile: seven continuation/research suites plus architecture/CI scope and Ruff only. This
+is the original focused scope, not waiving an agreed failing check. Preserve original
+incomplete inspection, failed extra full-suite attempt and all historical records. New
+profile replay and independent review decide acceptance. No full-suite rerun or blanket
+cleanup. Correct code only if a required check reveals a concrete defect. Retain known
+max_corrections=2 refusal as explicit policy evidence; do not raise counters or claim live
+receipt/release success. Root Windows+isolated PG and CI follow independent acceptance.
+
+
 ## Mixed-cause continuation research receipt, 2026-09-24 19:05 UTC
 
 Same original outcome; this batch repairs the research-to-evidence-repair boundary, not a new
