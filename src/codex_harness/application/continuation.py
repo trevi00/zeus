@@ -1064,6 +1064,7 @@ class Continuation:
         check_scope(ctx["policy"], job, current)
         check_authorization(intent["authorization"], authorization(ctx["sha"], ctx["pin"], job, current))
         bound = self._grant_bindings(ctx, grant, intent)
+        job = bound["job"]   # the source row the bindings verified, compared again at commit
         plan = self._successor_plan(ctx["sha"], grant["family"], job, bound["evidence"], EVIDENCE_REPAIR,
                                     classify(job, bound["evidence"]), intent["id"], self.lanes(job["lane"]))
         refuse(plan is not None, "capacity_successor_refused", "operator", "manifest")
@@ -1117,18 +1118,21 @@ class Continuation:
         """What a grant is bound to, re-read now outside any transaction: this policy's scope, no active
         or unknown family work (Fleet jobs and units included), the origin's lane evidence, the latest
         family research and its stored receipt rechecked as at consumption, and the rationale bytes.
-        Returns {evidence, research, receipt}; the first gap refuses by name."""
+        Fleet rows are read here too, never taken from a tick-entry snapshot: a source row that moved
+        between two effects of one tick (lane binding, then admission) refuses the second.
+        Returns {evidence, research, receipt, job}; the first gap refuses by name."""
         with self.store.transaction() as tx:
             every = tx.scan(BUCKET_INTENTS)
             units = [row for row in tx.scan(FLEET_UNITS) if row.get("kind") == UNIT_CONDUCTOR]
+            jobs = {row["id"]: row for row in tx.scan(FLEET_JOBS)}
         refuse(intent["origin_job"] not in owners(every, grant["policy_id"]), "capacity_scope_foreign", "operator",
                "source.job")
         family = {row["id"] for row in every if row.get("policy_id") == grant["policy_id"]
                   and row.get("family") == grant["family"]}
         refuse(not held_units(unit for unit in units if unit.get("subject") in family), "capacity_family_active",
                "operator", "family")
-        research = check_capacity_family(grant, intent, every, ctx["jobs"])
-        job = ctx["jobs"].get(intent["origin_job"])
+        research = check_capacity_family(grant, intent, every, jobs)
+        job = jobs.get(intent["origin_job"])
         evidence = self.lanes(intent["lane"]).read(job, ctx["policy"]["delivery_target"])
         check_capacity_source(grant, intent, job, evidence)
         with self.store.transaction() as tx:
@@ -1140,7 +1144,7 @@ class Continuation:
         except ContinuationRefused as exc:
             raise ContinuationRefused(exc.reason_code.replace("research_evidence", "capacity_rationale", 1), "operator",
                                       "rationale_ref") from None
-        return {"evidence": evidence, "research": research, "receipt": receipt}
+        return {"evidence": evidence, "research": research, "receipt": receipt, "job": job}
 
     def _check_grant(self, ctx, intent: dict) -> None:
         """Before a granted intent's NEW effect: its stored grant, intact and naming this intent and

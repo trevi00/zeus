@@ -2604,6 +2604,45 @@ def test_stale_grant_authority_holds_before_each_new_effect_until_it_verifies_ag
     assert intent["state"] == dc.ADMITTED and intent["hold"] is None and len(world.jobs()) == len(jobs) + 1
 
 
+@pytest.mark.parametrize("key_of, change, reason", [
+    (lambda r, f: r["origin_job"], {"updated_at": "2099-01-01T00:00:00+00:00"}, "capacity_source_changed"),
+    (lambda r, f: f["parent"], {"status": "dispatching"}, "capacity_family_active"),
+], ids=["source_row", "family_job"])
+def test_a_fleet_row_moved_between_binding_and_admission_of_one_tick_refuses_the_admission(tmp_path, key_of, change,
+                                                                                           reason):
+    """The second grant guard of one tick re-reads Fleet: a row moved after the lane binding (tick-entry
+    snapshot still unchanged) holds the admission with no Fleet job, then admits once it verifies again."""
+    world = World(tmp_path, max_corrections=2)
+    family = budget_refused(world, tmp_path)
+    refused = family["refused"]
+    grant(world, grant_for(world, family))
+    moved = []
+
+    class MoveAfterBind(LaneEvidence):
+        def bind(self, document):
+            result = super().bind(document)
+            with world.control.transaction() as tx:   # LABELLED injected fault: a Fleet row moved after binding
+                row = tx.get("fleet_jobs", key_of(refused, family))
+                tx.put("fleet_jobs", row["id"], {**row, **change})
+            moved.append(row)
+            return result
+    jobs = deepcopy(world.jobs())
+    result = world.tick(controller=world.build(lanes=lambda lane: MoveAfterBind(world.lane.store, world.sessions)))
+    assert len(moved) == 1
+    assert [s["reason_code"] for s in result["skipped"] if s["subject"] == refused["id"]] == [reason]
+    intent = world.intents()[refused["id"]]
+    assert intent["state"] == dc.PUBLISHED and intent["hold"]["reason_code"] == reason
+    assert intent["successor_job"] not in world.jobs(), "no admission on a stale source"
+    assert {k: v for k, v in world.jobs().items() if k != moved[0]["id"]} == {
+        k: v for k, v in jobs.items() if k != moved[0]["id"]}
+    with world.control.transaction() as tx:
+        tx.put("fleet_jobs", moved[0]["id"], moved[0])
+    world.tick(controller=world.build())
+    intent = world.intents()[refused["id"]]
+    assert intent["state"] == dc.ADMITTED and intent["hold"] is None and len(world.jobs()) == len(jobs) + 1
+    assert [h["state"] for h in intent["history"]].count(dc.INTENDED) == 1 and len(grants(world)) == 1
+
+
 def test_a_known_failed_repair_never_replenishes_and_another_grant_needs_a_distinct_decision(tmp_path):
     world = World(tmp_path, max_corrections=2)
     family = budget_refused(world, tmp_path)
