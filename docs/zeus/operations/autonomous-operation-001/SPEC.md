@@ -1,5 +1,21 @@
 # Whole autonomous operating loop
 
+## Correction feedback evidence handoff, 2026-09-24 15:16 UTC
+
+Same acceptance frame below. Actual candidate e8e25b31420b5c7ecbb526ccb219bb9d0fa8e9bb,
+task67532314-92ae-5986-bee3-24b0bd3521e9, stopped BEFORE independent review with evidence_gate_refused.
+Inspection df8f294a6c3560cc269424c88e6b5d7e21ada23546b63dcbd8c96ae79b3d192f checked six test/lint
+claims, zero mismatch/failure. Only python -m ruff --version was not_checked because it is outside
+the existing replay prefix policy. Not a code review rejection; no active jobs/held units/unconfirmed
+effects. Preserve original evidence; don't waive/rewrite its incomplete verdict or broaden global
+command authority. Existing version2 project-evidence profile will declare the scoped pytest suite
+and lint commands explicitly for one evidence_repair successor at the retained workspace. Version
+probe remains historical diagnostic, not an acceptance check. Claude reuses code and reports every
+declared check through existing observations; independent Codex review follows. This handoff has
+no proven code defect to fix and requires no new feature. Original implementation matrix unchanged.
+The receipt resolves evidence presentation only after successful actual replays, not runtime delivery.
+
+
 ## Readable correction evidence delivery, 2026-09-24 14:55 UTC
 
 Same whole-loop goal. PR193 merged7d3372ef and scheduled Fleet consumed it. Actual successor
