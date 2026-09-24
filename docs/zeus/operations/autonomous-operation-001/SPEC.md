@@ -1,5 +1,60 @@
 # Whole autonomous operating loop
 
+## Accepted investigation follow-up for newly observed evidence, 2026-09-24 16:16 UTC
+
+Same whole-loop outcome; no new product scope. Exact checklist candidate adeab8c79b5c6b34832d88eac43607d70307ddef
+passed owner Windows+isolated PG68 tests and Ruff at16:12UTC. Historical inspector6b2bfd54 remains
+failed because the OWNER supplied nonexistent test paths. No independent review yet. Current hold
+ed1af38692cd7198847816719bd556de1cd954b1d6c89112c42b9768c3aaf491 covers cont-fe15931105e915769378e016
+and cont-6adfa87f8938c830ab60ac35. Former was code rejection, latter owner test-profile failure;
+same continuation family does not establish same cause. Corrected profile has actual pinned paths.
+
+Discriminating SSOT check2026-09-24 at operating51bff060: domain.research_investigations.eligible_investigations
+excludes any claimed investigation across programs; application.research_program synthesizes no new
+candidate for it. Current evidence_gate_refused investigation aab8c6d6d16bbfa008306c149b180badc63918ee202f2b74479ad210824e0be8
+contains19 jobs incl newest cont-6adfa, while accepted current dispatch .recovery-2/run autonomous-recovery-research-003.c001
+captured only five old jobs; job_ids_sha25608b571d5c422d7a978655030c58ae1ea3523579266e5f48cc74e574713fb4b2a.
+Head version2 request3613563601ea7a65d38b50021ca5a0b6abe56acfdc994e9229211664411cbe34.
+Existing successor contracts accept FAILED dispatch classes only; scoped supplement cannot truthfully
+claim old report coverage for this new pair. Do not delete claims, rename investigation, forge new
+failure or call old research accepted for new evidence. This is the one architecture gap to close.
+
+One bounded Claude batch: explicit owner-authorized follow-up of an ACCEPTED terminal investigation
+when authoritative eligible member evidence has changed. Reuse existing research_program CLI,
+versioned lineage/head, immutable program pin, transaction CAS and receipt owners. New distinct
+schema/mode (not pretend failure recovery) pins exact current dispatch/run/config/manifest/snapshot,
+lineage head, old captured member digest, exact intended new member IDs/digest and replacement
+registered config. Compare to fresh authoritative Portfolio jobs/bindings, not owner-supplied facts.
+Require a material new member/evidence set; unchanged set, stale head, absent/unknown/active run,
+changed project/reason authority or malformed evidence refuses. Scope may narrow to the exact new
+research question under same project/reason authority; changed topic must be explicitly pinned,
+not silently rewritten. Limit this contract to previously accepted REPORT-ONLY research programs
+whose allowed paths are docs and whose seven slots, operation/decision/candidate/promotion are
+all proven terminal/accepted/settled; no unconfirmed invocation or held execution/cleanup. Reuse
+existing actual artifact/owner proof where available; never infer safety from just status strings.
+No previous model execution, candidate or promotion is replayed or relabelled. Old current receipts
+remain valid historical records, never reinterpreted as acceptance of the new snapshot.
+
+Path: owner pinned request -> current accepted-run and changed-member proof -> one atomic new
+lineage head -> one registered program/cycle claim capturing exact authorized new membership ->
+normal fresh council/report/review -> explicit scoped owner receipt -> later repair. Registration
+alone releases no research hold and grants no correction/promotion. New request duplicates and
+response loss return same result; concurrent competing requests one winner; membership drift
+before claim refuses, no silent recapture. Preserve earlier failed-dispatch recovery v1-v4,
+retained outbox fences and current-dispatch receipt validation. Update related consumers only
+where new lineage type needs support; no scheduler, gate bypass or correction budget change.
+
+Acceptance matrix: accepted report-only predecessor + changed authoritative members permits one
+explicit follow-up and fresh snapshot; unchanged/stale/foreign/missing evidence, active/unknown
+effects, runtime-edit predecessor, changed authority and post-authorization drift refuse. Two
+simultaneous/replayed requests one claim. New research fails stays held. Old receipts/fences remain
+historical and old recovery tests pass. MemoryStore+isolated PG fixtures when available; no actual
+production mutation/model call in tests. Narrow research recovery/program/continuation receipt
+suites and Ruff; no full suite. Worker tests successful commands only; no version probe in tests.
+Root independent review, exact host checks/CI/runtime qualification precede actual new research.
+Completion of this prerequisite is not completion of checklist/release/whole-loop qualification.
+
+
 ## Checklist test-profile correction, 2026-09-24 16:08 UTC
 
 Preserve the same outcome and matrix. PR194 merged51bff060 and Fleet consumed that runtime.
