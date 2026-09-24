@@ -28,6 +28,7 @@ from codex_harness.domain.research_investigations import (
     InvestigationRefused,
     dispatch_counts,
     recovery_view,
+    report_only,
     successor_view,
     validate_source,
 )
@@ -218,6 +219,59 @@ def same_authority(failed: dict, replacement: dict) -> bool:
                 "template": {k: v for k, v in config["template"].items() if k not in REPLACEMENT_TEMPLATE_OWN}}
     return ("investigation_source" in failed and isinstance(replacement, dict) and "template" in replacement
             and fixed(failed) == fixed(replacement))
+
+
+# An accepted report follow-up (SPEC "Accepted follow-up report scope binding") ALONE may also re-point the
+# report at the newly authorized members: the owner-pinned replacement config may change only this report
+# content, may narrow the cycle/adoption caps and the docs report paths, and must keep every other field -
+# topics, investigation source, budget, provider/model, template id - exactly. `same_authority` is unchanged.
+FOLLOWUP_CONTENT = {"goal": ("sha256", "criterion"), "plan": ("objective", "acceptance_criteria"),
+                    "research": None, "current_state": None}
+FOLLOWUP_CAPS = ("max_cycles", "max_adoptions")
+
+
+def _followup_split(config: dict) -> tuple[dict, dict]:
+    """(authority, content) of one canonical config: content is exactly FOLLOWUP_CONTENT; authority is every
+    other field except the replacement's own identity, base and deadline."""
+    template = config["template"]
+    content = {name: template[name] if keys is None else {k: template[name][k] for k in keys}
+               for name, keys in FOLLOWUP_CONTENT.items()}
+    kept = {name: template[name] if keys is None else {k: v for k, v in template[name].items() if k not in keys}
+            for name, keys in FOLLOWUP_CONTENT.items() if keys is not None}
+    authority = {**{k: v for k, v in config.items() if k not in REPLACEMENT_OWN},
+                 "template": {**{k: v for k, v in template.items()
+                                 if k not in REPLACEMENT_TEMPLATE_OWN and k not in FOLLOWUP_CONTENT}, **kept}}
+    return authority, content
+
+
+def followup_scope(accepted, replacement) -> dict | None:
+    """The bound scope transition of one accepted report follow-up, or None when the replacement would widen
+    or move authority. Fixed: everything but content, caps and report paths; caps never increase; report paths
+    are a subset of the predecessor's, all under `docs/`. Returns both sides' authority and content digests and
+    the changed field names, so a reader sees what changed instead of a claim that nothing did."""
+    try:
+        old_authority, old_content = _followup_split(accepted)
+        new_authority, new_content = _followup_split(replacement)
+    except (KeyError, TypeError, AttributeError):
+        return None
+
+    def fixed(authority):
+        plan = {k: v for k, v in authority["template"]["plan"].items() if k != "allowed_paths"}
+        return {**{k: v for k, v in authority.items() if k not in FOLLOWUP_CAPS},
+                "template": {**authority["template"], "plan": plan}}
+    old_paths, new_paths = old_authority["template"]["plan"]["allowed_paths"], new_authority["template"]["plan"]["allowed_paths"]
+    if not ("investigation_source" in accepted and fixed(old_authority) == fixed(new_authority)
+            and all(_integer(replacement[k]) and replacement[k] <= accepted[k] for k in FOLLOWUP_CAPS)
+            and report_only(replacement) and set(new_paths) <= set(old_paths)):
+        return None
+    changed = sorted(name + ("" if keys is None else "." + key)
+                     for name, keys in FOLLOWUP_CONTENT.items() for key in (keys or (None,))
+                     if (old_content[name] if keys is None else old_content[name][key])
+                     != (new_content[name] if keys is None else new_content[name][key]))
+    narrowed = sorted([k for k in FOLLOWUP_CAPS if replacement[k] != accepted[k]]
+                      + (["template.plan.allowed_paths"] if set(new_paths) != set(old_paths) else []))
+    return {"authority": {"previous_sha256": digest(old_authority), "sha256": digest(new_authority), "narrowed": narrowed},
+            "content": {"previous_sha256": digest(old_content), "sha256": digest(new_content), "changed": changed}}
 
 
 # ----- identity and relevance -----------------------------------------------------------------------
@@ -481,5 +535,5 @@ __all__ = ["ACTIVE", "AUDIT_PROGRESS", "BLOCKED", "CAPTURE_SCHEMA", "CLAIMED", "
            "ELIGIBLE", "FAMILY", "HEADROOM",
            "IGNORED", "INVESTIGATION", "MONITOR_SCHEMA", "PAUSED", "STATUS_SCHEMA", "ProgramRefused", "candidate_id",
            "candidate_key", "capture_path", "capture_ref", "config_digest", "council_result", "derive_manifest",
-           "headroom", "match_topics", "monitor_projection", "normalize_url", "program_view", "same_authority",
+           "followup_scope", "headroom", "match_topics", "monitor_projection", "normalize_url", "program_view", "same_authority",
            "select_candidate", "snapshot_document", "validate_config"]
