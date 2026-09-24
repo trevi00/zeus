@@ -5,6 +5,10 @@ continuation) and "Conductor continuation SSOT finding" (routing table). Contrac
 `docs/contracts.md`, INV-CONTINUATION-001. Base revision 60f79586. This is an implementation
 candidate for independent review; it is not deployed, enabled or qualified.
 
+Dated update, 2026-09-24: the sentence above describes base 60f79586 and is kept as history. See
+"Operating observation, 2026-09-24" at the end of this file for the current deployed, configured and
+qualified state. The whole loop is still not qualified.
+
 ## Composition (reuse, not a second engine)
 
 | Stage | Existing owner reused | Added connection |
@@ -156,3 +160,42 @@ that job (`breakaway: False`) and controller teardown then leaves unknown debt.
 - A managed Fleet run with the policy enabled, actual HostDelivery consumption/rollback, and two
   useful unattended jobs.
 - Native Windows execution of these tests.
+
+## Operating observation, 2026-09-24 (SPEC Item A-current)
+
+This section restates the owner facts in SPEC.md "Current-source useful-item qualification after
+actual repair". It runs nothing new. The list above is kept as it was written. The rows below say
+which of its gates have since been observed on the operating runtime.
+
+Deployed code: PR191 at f2b392d9, including PR190. It was consumed by the scheduled Fleet on image
+1ee94821. Release 2144c661 names the old b31a9112 / tree 52b232ab. It is awaiting the owner for
+zeus-fleet-managed and is not the current deployment. The policy file bound to the running service
+is not restated in the owner facts.
+
+| Route stage (table above) | Observed on the operating runtime | Still pending |
+| --- | --- | --- |
+| Evidence refusal -> successor | original 1fa1026d and successor 4dde540d refused; rows retained | - |
+| Two distinct failures -> research hold | family held; council003 accepted, with seven settled starts | - |
+| Research completion | owner scope supplement 4a94f1aa + receipt cd95fdee released exactly this pair; no other family | - |
+| Evidence-repair successor | cont-f7ed34f73b048bd5b698b3bb passed its declared container checks | - |
+| Accepted lead -> conductor | independent lead and conductor accepted; Fleet finalized accepted, no held units | - |
+| Release / `host_delivery` handoff | release 2144c661 for the old tree is awaiting the owner | exact-candidate managed cutover, canary, rollback |
+| Next item | not observed | `next_item` after an `active` delivery (B-current) |
+| Rejection -> same-session correction | not observed in this family | a real rejection; none may be forced |
+| Stop / restart / duplicate tick | not observed on the operating runtime | duplicate/restart control with no second invocation |
+
+```mermaid
+stateDiagram-v2
+    [*] --> Refused: original + successor evidence gate
+    Refused --> ResearchHeld: two-strike family hold
+    ResearchHeld --> ResearchReleased: owner supplement 4a94f1aa + receipt cd95fdee
+    ResearchReleased --> RepairAccepted: cont-f7ed... checks, lead, conductor
+    RepairAccepted --> DeliveryWaiting: release 2144c661 (old tree), awaiting owner
+    DeliveryWaiting --> DeliveredActive: PENDING exact-candidate managed cutover
+    DeliveredActive --> NextItem: PENDING next_item handoff
+    NextItem --> [*]
+```
+
+States up to DeliveryWaiting have been observed. States marked PENDING have not. The CI attempt 1
+wall-time failure on Windows 3.12 has an unconfirmed cause (see STATUS.md). The operator checklist
+for the remaining gates is in [STATUS.md](STATUS.md) "Current checkpoint: 2026-09-24 11:52 UTC".
