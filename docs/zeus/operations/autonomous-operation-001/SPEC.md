@@ -1,5 +1,36 @@
 # Whole autonomous operating loop
 
+## Release checklist two-strike research and readable feedback, 2026-09-24 13:20 UTC
+
+Same goal, scope and acceptance matrix. Actual originaljob autonomous-operation-001-release-checklist,
+candidate67317ab8, task19c50b65, review6453d76d/ref252c1c71 rejected three boundaries. Correction
+cont-fe15931105e915769378e016 candidate92da6a74/task93bb51d9/ref71f5467e rejected two remaining.
+Both provider calls settled, no Fleet jobs/units held. Current continuation research intent
+f3342d71dab09a8a097b28ee044f329110b08af5e30224146c36caf11d4092d3 is research_required.
+Worker explicitly reported review body unavailable: only ID/ref and a Windows host artifact path
+inside a Linux workspace. Root's revised frame was at a newer commit than the original goal pin;
+policy acceptance text alone did not supply readable findings. Root confirms its earlier claim
+of complete correction handoff was insufficient. This is an owner/input delivery issue, not proof
+that Claude ignored readable findings. Do not bypass research hold or reclassify any failed attempt.
+
+Exact readable review bodies (static code trace, not reviewer-executed reproductions):
+Reject candidate 67317ab8aa3f. Frame: inspected collection → manifest → batches → evidence → verification, including failure, cancellation, fencing and cleanup. Three findings require correction: P1 release_suite.py:194–199 persists unredacted node IDs in progress and reconciliation fields, allowing credential-bearing parameter IDs into artifacts. P2 release_suite.py:204–210 handles collection outside the interruption handler, so collection cancellation or immediate fence loss produces no linked partial suite report. P2 commands.py:105–111 waits indefinitely after tree-kill failure, potentially preventing timeout evidence from being persisted. Fix together and supply isolated regression evidence.
+Reject 92da6a74af96. Frame: reviewed collection, manifests, batches, receipts and verification across normal, failure, cancellation, fencing and cleanup paths. The prior collection-interruption finding is fixed. Two prior blockers remain: P1 release_suite.py:193–201 persists unredacted parameter IDs through progress and reconciliation fields, allowing credentials into artifacts. P2 commands.py:105–111 calls process.wait() without a deadline after tree-kill failure, potentially hanging timeout/cancel handling before evidence is persisted. Correct both together and supply isolated regression evidence.
+
+Worker fixed collection interruption (accepted in second review), but credential-bearing parameter
+IDs still reach progress/reconciliation artifacts and cleanup still has process.wait() without a
+bound after failed tree kill. Root read the exact original code paths. Preserve accepted collection
+fix. Do not expand to generic logging overhaul or arbitrary extra blockers.
+One existing ResearchProgram/council cycle must research this exact pair, trace correction payload
+construction/artifact transport/container-visible evidence, and recommend the narrow existing-owner
+repair. Compare readable bounded reviewer findings+source ref/digest versus host-only pointers;
+use local SSOT first. No runtime changes in the research report, no broad Portfolio disposition,
+no new scheduler. Report fact/inference/unknown, exact job/review/candidate bindings and remaining
+two acceptance cases. Root will explicitly assess research coverage, scoped receipt, then one
+consolidated corrective batch with actual readable feedback and independent verification.
+Completion of research is not completion of correction, release verification or autonomy.
+
+
 ## Release checklist consolidated correction R1, 2026-09-24 13:08 UTC
 
 Candidate67317ab8 task19c50b65 was independently rejected by lead6453d76d; review artifact
