@@ -37,6 +37,7 @@ from codex_harness.application.continuation import (
     LaneEvidence,
 )
 from codex_harness.application.fleet import Fleet
+from codex_harness.application.observations import Observer
 from codex_harness.application.portfolio import (
     BUCKET_BINDINGS,
     BUCKET_INVESTIGATIONS,
@@ -1466,6 +1467,23 @@ def _add(bucket, key, body):
     return fault
 
 
+def _termination(bucket, task, status):
+    """An actual-shaped termination record (`Observer.mark_unconfirmed`): keyed by its digest `record_id`,
+    owned by its (`bucket`, `task_id`), never by its key."""
+    def fault(world, dispatch):
+        task_id = task(dispatch) if callable(task) else task
+        record_id = Observer.termination_id({"id": task_id, "_bucket": bucket, "generation": 1, "attempt": 1})
+        with world.control.transaction() as tx:
+            tx.put("observation_terminations", record_id, {
+                "record_id": record_id, "status": status, "task_id": task_id, "bucket": bucket, "generation": 1,
+                "attempt": 1, "reservation_id": "res-" + task_id, "boundary": "reserved", "invocation_outcome": "unknown"})
+    return fault
+
+
+def _council_task(dispatch):
+    return dispatch["run_id"] + ".dba"
+
+
 FOLLOWUP_FAULTS = [
     ("slot_unsettled", _run(lambda r, d: r["starts"]["slots"][0].update(settled=False)), "recovery_invocation_unsettled"),
     ("six_starts", _run(lambda r, d: r["starts"].update(slots=r["starts"]["slots"][:6], reserved=6, settled=6)),
@@ -1473,6 +1491,11 @@ FOLLOWUP_FAULTS = [
     ("reservation_open", _mutate("invocation_reservations", lambda d: "res-" + d["run_id"] + ".dba",
                                  lambda r, d: r.update(status="reserved")), "recovery_invocation_unsettled"),
     ("terminated", _add("observation_terminations", "term-1", {"id": "term-1"}), "recovery_effect_unknown"),
+    ("council_unconfirmed", _termination("tasks", _council_task, "unconfirmed"), "recovery_effect_unknown"),
+    ("council_pending", _termination("tasks", _council_task, "pending_reconciliation"), "recovery_effect_unknown"),
+    ("worker_unconfirmed", _termination("tasks", "impl-003", "unconfirmed"), "recovery_effect_unknown"),
+    ("review_pending", _termination("decisions_pending", "review-003", "pending_reconciliation"),
+     "recovery_effect_unknown"),
     ("task_running", _task(lambda r, d: r.update(status="running")), "recovery_predecessor_active"),
     ("task_failed", _task(lambda r, d: r.update(status="failed")), "recovery_effect_unknown"),
     ("execution_changed", _task(lambda r, d: r.update(result={"execution_ref": "sha256:" + "0" * 64})),
@@ -1515,6 +1538,21 @@ def test_active_unknown_unproven_or_runtime_edit_predecessors_refuse_and_write_n
             world.control.data = deepcopy(clean)
     assert observed == {name: code for name, _, code in FOLLOWUP_FAULTS}
     assert env.programs.recover_dispatch(document, None)["state"] == "authorized", "the clean world authorizes"
+
+
+def test_settled_or_foreign_termination_records_do_not_block_the_followup(tmp_path):
+    """Closed and operator-resolved markers of the run's own tasks, and an unresolved marker of another
+    task (or of the right id in another bucket), are not the accepted predecessor's unknown effects."""
+    world = World(tmp_path)
+    env, owner, root, successor, research, investigation, dispatch = accepted_report(world, tmp_path)
+    owner.bind(successor, "ops", "c1")
+    document = followup_request(world, dispatch, [*dispatch["job_ids"], successor], followup_program(env))
+    for fault in (_termination("tasks", _council_task, "closed"), _termination("tasks", "impl-003", "resolved"),
+                  _termination("decisions_pending", "review-003", "closed"),
+                  _termination("tasks", "foreign-task", "unconfirmed"),
+                  _termination("decisions_pending", "impl-003", "pending_reconciliation")):
+        fault(world, dispatch)
+    assert env.programs.recover_dispatch(document, None)["state"] == "authorized"
 
 
 def test_stale_foreign_or_missing_evidence_and_changed_authority_refuse_and_write_nothing(tmp_path):

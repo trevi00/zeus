@@ -1347,6 +1347,15 @@ def _terminated(env, council):
         tx.put("observation_terminations", "term-1", {"id": "term-1", "task_id": task["id"]})
 
 
+def _marked(env, council):
+    from codex_harness.application.observations import Observer
+    with env.store.transaction() as tx:   # LABELLED injected fault: an actual-shaped marker, keyed by its digest id
+        task = next(t for t in tx.scan("tasks") if t["agent"] == "lead:researcher")
+        record_id = Observer.termination_id({"id": task["id"], "_bucket": "tasks"})
+        tx.put("observation_terminations", record_id, {"record_id": record_id, "status": "unconfirmed",
+                                                        "task_id": task["id"], "bucket": "tasks"})
+
+
 def _answer_changed(env, council):
     with env.store.transaction() as tx:   # LABELLED injected fault: the stored answer is not the artifact's
         task = next(t for t in tx.scan("tasks") if t["agent"] == "lead:dba")
@@ -1375,6 +1384,7 @@ def _unsent_foreign_role(env, council):
     (_other_role, "recovery_effect_outside_read_only"),
     (_unsent_foreign_role, "recovery_effect_outside_read_only"),
     (_terminated, "recovery_effect_unknown"),
+    (_marked, "recovery_effect_unknown"),
     (_answer_changed, "recovery_evidence_mismatch"),
     (_corrupt_artifact, "recovery_evidence_corrupt"),
     (_drop_fence, "recovery_revocation_fence_missing")])

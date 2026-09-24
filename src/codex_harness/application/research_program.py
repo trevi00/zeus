@@ -174,6 +174,9 @@ BUCKET_RECOVERIES = "research_dispatch_recoveries"
 # Settled read-only successors: immutable authorization rows and the versioned current head.
 BUCKET_SUCCESSORS, BUCKET_HEADS = "research_dispatch_successors", "research_dispatch_heads"
 MAX_LINEAGE = 1000
+# A termination record is keyed by its own digest `record_id` (`observations.termination_id`) and owned by its
+# (`bucket`, `task_id`); only a `closed` or operator-`resolved` one is settled, any other status (or none) is unresolved.
+BUCKET_TERMINATIONS, SETTLED_TERMINATIONS = "observation_terminations", frozenset({"closed", "resolved"})
 ELIGIBLE_REASON, INELIGIBLE_REASON = "portfolio_investigation_eligible", "investigation_ineligible"
 PROGRESS_ELIGIBLE_REASON, PROGRESS_INELIGIBLE_REASON = "audit_progress_eligible", "audit_progress_ineligible"
 
@@ -816,8 +819,7 @@ class ResearchProgram:
                 reservations=[r for r in tx.scan(RESERVATIONS) if r.get("task_id") in ids], artifacts=artifacts,
                 outbox=outbox, deliveries={m: tx.get("outbox_delivery", m) for m in message_ids},
                 attempts=[a for a in tx.scan("outbox_attempts") if a.get("outbox_id") in message_ids],
-                terminations=[t for t in tx.scan("observation_terminations")
-                              if (t.get("record_id") or t.get("task_id")) in ids],
+                terminations=self._unresolved_terminations(tx, {("tasks", i) for i in ids}),
                 session=tx.get(SESSIONS, run_id + ".design"),
                 residue=[k for b, k in ((OPERATIONS, run_id + ".impl"),) if tx.get(b, k) is not None],
                 replacement=replacement,
@@ -887,6 +889,13 @@ class ResearchProgram:
         evidence = (promotion.get("evidence") if isinstance(promotion, dict) else None) or {}
         evidence = evidence if isinstance(evidence, dict) else {}
         task_id, decision_id = evidence.get("implementation_task_id"), evidence.get("decision_id")
+        operation = (run or {}).get("operation") if isinstance(run, dict) else None
+        operation = operation if isinstance(operation, dict) else {}
+        # The council role tasks, and the operation's worker task and review decision as its receipt and its
+        # promotion name them: a termination is theirs by (bucket, task_id), never by its digest record id.
+        owners = {("tasks", t.get("id")) for t in tasks} | {("tasks", operation.get("task_id")), ("tasks", task_id),
+                                                            ("decisions_pending", operation.get("decision_id")),
+                                                            ("decisions_pending", decision_id)}
         try:
             return check_followup(
                 request, investigation=tx.get(BUCKET_INVESTIGATIONS, investigation), required_state=RESEARCH_REQUIRED,
@@ -894,8 +903,7 @@ class ResearchProgram:
                 program=program, cycle=tx.get(BUCKET_CYCLES, old["cycle"]),
                 run_result=council_result(run_id, old["manifest_sha256"], run), run=run, tasks=tasks,
                 reservations=[r for r in tx.scan(RESERVATIONS) if r.get("task_id") in ids],
-                terminations=[t for t in tx.scan("observation_terminations")
-                              if (t.get("record_id") or t.get("task_id")) in ids],
+                terminations=self._unresolved_terminations(tx, owners),
                 outbox=[item for item in tx.scan("outbox")
                         if isinstance(item, dict) and (item.get("message") or {}).get("correlation_id") == correlation],
                 acceptance={"promotion": promotion,
@@ -908,6 +916,14 @@ class ResearchProgram:
                 and same_authority(program["config"], replacement["config"]))
         except InvestigationRefused as exc:
             raise ProgramRefused(exc.reason_code, exc.field) from exc
+
+    @staticmethod
+    def _unresolved_terminations(tx, owners: set) -> list:
+        """Every termination record of one of the `(bucket, task_id)` owners that is not settled."""
+        owners = {(b, t) for b, t in owners if type(t) is str}
+        return [r for r in tx.scan(BUCKET_TERMINATIONS)
+                if not isinstance(r, dict) or ((r.get("bucket") or "tasks", r.get("task_id")) in owners
+                                               and r.get("status") not in SETTLED_TERMINATIONS)]
 
     def _lineage(self, tx, investigation: str) -> dict:
         """The investigation's current authorization and its named held condition, from the original
