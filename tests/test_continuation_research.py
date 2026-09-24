@@ -22,6 +22,7 @@ from pathlib import Path
 
 import pytest
 from test_continuation import World, only
+from test_fleet import config as fleet_config
 from test_research_investigations import DEFINITIONS
 from test_research_program import POLICY, build, registered
 from test_research_program_fixtures import FakeCouncil, config
@@ -34,6 +35,7 @@ from codex_harness.application.continuation import (
     Continuation,
     LaneEvidence,
 )
+from codex_harness.application.fleet import Fleet
 from codex_harness.application.portfolio import BUCKET_INVESTIGATIONS, Portfolio, family_id
 from codex_harness.application.research_program import BUCKET_DISPATCHES
 from codex_harness.domain import continuation as dc
@@ -568,12 +570,11 @@ def test_a_recovered_dispatch_binds_the_scoped_receipt_to_the_accepted_replaceme
     assert only(world.intents(), id=research["id"])["state"] == dc.COMPLETED
 
 
-def test_an_execution_revocation_releases_the_receipt_only_while_its_retained_fence_holds(tmp_path):
-    """SPEC "Actual legacy research recovery: execution revocation": the REAL council fails before
-    provider entry on a LABELLED legacy bus with NO transport binding; the owner's explicit revocation
-    authorizes the replacement. A lost retained fence (LABELLED injected fault) holds both acceptance
-    and consumption by name; the exact fence restored releases exactly once."""
-    world = World(tmp_path)
+def revoked_research(world, tmp_path):
+    """The REAL council fails before provider entry on a LABELLED legacy bus with NO transport
+    binding; the owner's explicit revocation authorizes the replacement, whose (LABELLED) council
+    accepts. Returns the held intent, the investigation, the accepted replacement dispatch and the
+    retained fence's key."""
     world.register()
     root, successor, research = two_strikes(world, "op-x", "docs/a.md")
     owner = Portfolio(world.control, DEFINITIONS)
@@ -604,7 +605,15 @@ def test_an_execution_revocation_releases_the_receipt_only_while_its_retained_fe
     assert env.runner.tick("rp-002")["result"] == "accepted"
     with world.control.transaction() as tx:
         current = deepcopy(tx.get(BUCKET_DISPATCHES, investigation + ".recovery-1"))
-    key = ("execution_fences", "tasks:" + item["message"]["message_id"])
+    return research, investigation, current, ("execution_fences", "tasks:" + item["message"]["message_id"])
+
+
+def test_an_execution_revocation_releases_the_receipt_only_while_its_retained_fence_holds(tmp_path):
+    """SPEC "Actual legacy research recovery: execution revocation": a lost retained fence (LABELLED
+    injected fault) holds both acceptance and consumption by name; the exact fence restored releases
+    exactly once."""
+    world = World(tmp_path)
+    research, investigation, current, key = revoked_research(world, tmp_path)
     with world.control.lock:   # LABELLED injected fault: the retained fence row is lost
         fence = world.control.data.pop(key)
     with pytest.raises(dc.ContinuationRefused, match="research_recovery_revocation_fence_missing"):
@@ -622,5 +631,124 @@ def test_an_execution_revocation_releases_the_receipt_only_while_its_retained_fe
     assert only(world.intents(), id=research["id"])["state"] == dc.RESEARCH_REQUIRED and receipts(world) == stored
     with world.control.lock:
         world.control.data[key] = fence
+    world.tick()
+    assert only(world.intents(), id=research["id"])["state"] == dc.COMPLETED
+
+
+# ---- revocation resubmission: replay acceptance (SPEC 2026-09-24) ------------------------------------
+# Every accepted return, the initial cached replay and the concurrent insertion branch included,
+# answers only while the retained fence holds; the immutable receipt and its accepted_at are kept.
+def _lose(world, key):
+    with world.control.lock:   # LABELLED injected fault: the retained fence row is lost
+        world.control.data.pop(key)
+
+
+def _change(world, key):
+    with world.control.transaction() as tx:   # LABELLED injected fault: the retained fence row is rewritten
+        tx.put(*key, {**tx.get(*key), "owner": "someone-else"})
+
+
+def _malform(world, key):
+    with world.control.transaction() as tx:   # LABELLED injected fault: the retained fence row is malformed
+        tx.put(*key, {"id": key[1], "generation": "one"})
+
+
+def _restore(world, key, fence):
+    with world.control.transaction() as tx:
+        tx.put(*key, fence)
+
+
+def _fence(world, key):
+    with world.control.transaction() as tx:
+        return deepcopy(tx.get(*key))
+
+
+@pytest.mark.parametrize("fault, reason", [
+    (_lose, "research_recovery_revocation_fence_missing"),
+    (_change, "research_recovery_revocation_fence_changed"),
+    (_malform, "research_recovery_revocation_fence_changed")])
+def test_a_cached_replay_answers_only_while_the_retained_fence_holds(tmp_path, fault, reason):
+    world = World(tmp_path)
+    research, investigation, current, key = revoked_research(world, tmp_path)
+    document, fence = receipt_for(world, research, investigation, current), _fence(world, key)
+    assert world.controller.accept_research(document)["cached"] is False
+    stored = deepcopy(receipts(world))
+    replay = world.controller.accept_research(document)
+    assert replay["accepted"] is True and replay["cached"] is True, "intact fence: idempotent replay"
+    fault(world, key)
+    with pytest.raises(dc.ContinuationRefused, match=reason):
+        world.build().accept_research(document)
+    with pytest.raises(dc.ContinuationRefused, match="research_receipt_conflict"):
+        world.controller.accept_research({**document, "evidence_refs": ["sha256:" + "6" * 64]})
+    assert receipts(world) == stored, "a refused replay never erases the prior acceptance"
+    result = world.tick()
+    assert {"subject": research["id"], "reason_code": reason, "next_owner": "portfolio_research"} in result["skipped"]
+    assert only(world.intents(), id=research["id"])["state"] == dc.RESEARCH_REQUIRED and receipts(world) == stored
+    _restore(world, key, fence)
+    again = world.controller.accept_research(document)
+    assert again["cached"] is True and receipts(world) == stored
+    world.tick()
+    assert only(world.intents(), id=research["id"])["state"] == dc.COMPLETED
+
+
+def _interleave(world, key, controller, document, insert, fault):
+    """LABELLED forced interleaving: after the checked reads and the evidence read, before the write
+    transaction, a second controller records the identical receipt and/or the fence is mutated."""
+    verify = controller._verify_evidence
+
+    def between(receipt):
+        verify(receipt)
+        if insert:
+            assert world.build().accept_research(document)["cached"] is False
+        if fault is not None:
+            fault(world, key)
+    controller._verify_evidence = between
+
+
+@pytest.mark.parametrize("insert, fault, reason", [
+    (True, None, None),
+    (True, _lose, "research_recovery_revocation_fence_missing"),
+    (True, _change, "research_recovery_revocation_fence_changed"),
+    (False, _change, "research_recovery_revocation_fence_changed")])
+def test_the_write_transaction_rechecks_the_fence_on_concurrent_insertion_and_on_insert(tmp_path, insert, fault,
+                                                                                         reason):
+    world = World(tmp_path)
+    research, investigation, current, key = revoked_research(world, tmp_path)
+    document, controller = receipt_for(world, research, investigation, current), world.build()
+    _interleave(world, key, controller, document, insert, fault)
+    if reason is None:
+        assert controller.accept_research(document)["cached"] is True, "the concurrent insertion branch was taken"
+        return
+    with pytest.raises(dc.ContinuationRefused, match=reason):
+        controller.accept_research(document)
+    kept = list(receipts(world).values())
+    assert len(kept) == int(insert), "the concurrent receipt is kept; a refused insert writes nothing"
+    assert all(row["receipt"] == document for row in kept)
+    assert only(world.intents(), id=research["id"])["state"] == dc.RESEARCH_REQUIRED
+
+
+def test_postgres_replay_and_concurrent_insertion_recheck_the_fence_in_one_writer_transaction(tmp_path,
+                                                                                               isolated_pgstore):
+    """Real isolated PostgreSQL (HARNESS_INTEGRATION=1): the same control store backs the Fleet, the
+    research program and the continuation owner. The fault is a transactional rewrite (no in-memory
+    row surgery); the recheck reuses the open writer transaction rather than nesting one."""
+    world = World(tmp_path)
+    world.control, world.fleet = isolated_pgstore, Fleet(isolated_pgstore)
+    world.fleet.register(fleet_config(tmp_path, max_parallel=2))
+    world.controller = world.build()
+    research, investigation, current, key = revoked_research(world, tmp_path)
+    document, fence = receipt_for(world, research, investigation, current), _fence(world, key)
+    controller = world.build()
+    _interleave(world, key, controller, document, True, _change)
+    with pytest.raises(dc.ContinuationRefused, match="research_recovery_revocation_fence_changed"):
+        controller.accept_research(document)
+    stored = deepcopy(receipts(world))
+    assert len(stored) == 1
+    with pytest.raises(dc.ContinuationRefused, match="research_recovery_revocation_fence_changed"):
+        world.build().accept_research(document)
+    world.tick()
+    assert only(world.intents(), id=research["id"])["state"] == dc.RESEARCH_REQUIRED and receipts(world) == stored
+    _restore(world, key, fence)
+    assert world.build().accept_research(document)["cached"] is True and receipts(world) == stored
     world.tick()
     assert only(world.intents(), id=research["id"])["state"] == dc.COMPLETED
