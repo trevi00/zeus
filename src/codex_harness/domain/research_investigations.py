@@ -13,7 +13,9 @@ from __future__ import annotations
 
 import re
 
+from codex_harness.domain.autonomous import RESEARCHER, ROLE_AGENTS, correlation_id
 from codex_harness.domain.model import ContractError, digest
+from codex_harness.domain.operation import ID, SHA256
 
 SOURCE = "investigation"
 # The candidate kind THIS rule owns. A `portfolio_investigations` row without a kind is a legacy
@@ -204,7 +206,162 @@ def dispatch_view(row: dict) -> dict:
     keys = ("investigation", "program", "cycle", "cycle_number", "state", "result", "result_reason", "row_status",
             "reported_result", "run_id", "manifest_sha256", "snapshot_sha256", "family_status", "reason_code",
             "job_ids_total", "job_ids_sha256", "failure", "claimed_at", "started_at", "finished_at", "updated_at")
-    return {**{k: row.get(k) for k in keys}, "kind": row.get("kind", KIND), "scope": row.get("scope")}
+    # `id`, `recovery` and `supersedes` are additive: a replacement dispatch names the failed one it
+    # replaced, and a legacy row reads as its own original (`id` = investigation, no lineage).
+    return {**{k: row.get(k) for k in keys}, "kind": row.get("kind", KIND), "scope": row.get("scope"),
+            "id": row.get("id", row.get("investigation")), "recovery": row.get("recovery"),
+            "supersedes": row.get("supersedes")}
+
+
+# ----- failed-dispatch recovery (research-dispatch-recovery-001) --------------------------------------
+# ONE owner-authorized replacement of a failure-family dispatch whose council provably failed before
+# any provider entry. The failed dispatch, its run, cycle and outbox record stay historical facts; the
+# lineage row (`research_dispatch_recoveries`, keyed by investigation id, one per investigation ever)
+# names the replacement dispatch key, so there is exactly one current dispatch per investigation.
+RECOVERY_SCHEMA = "urn:zeus:research-dispatch-recovery:1"
+RECOVERY_FIELDS = {"schema", "investigation", "failed", "replacement"}
+RECOVERY_FAILED_FIELDS = {"program", "cycle", "run_id", "manifest_sha256", "snapshot_sha256"}
+RECOVERY_REPLACEMENT_FIELDS = {"program", "config_sha256"}
+# The only qualifying failure: the council's own first assignment was never proven published, so the
+# run stopped before any reservation, task admission or provider entry (INV-MESSAGE-001).
+PRE_PROVIDER_FAILURE = "publication_incomplete"
+FENCED, AUTHORIZED, RECOVERED, REFUSED = "fenced", "authorized", "claimed", "refused"
+FENCE_REASON = "ResearchDispatchSuperseded"
+PROGRAM_REF = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,59}$")
+CYCLE_REF = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,59}:[0-9]{3,}$")
+# Attempt statuses that prove the transport was never handed the bytes, or that it refused them with
+# a delivery error whose effect the transport probe must still rule out. Anything else is unknown.
+UNSENT_ATTEMPTS = {"retry", "superseded_before_publish"}
+RECOVERY_AUTHORITY = ("owner-authorized replacement of one proven pre-provider dispatch failure; the "
+                      "failed dispatch, run and cycle are retained history, never accepted or deleted")
+
+
+def validate_recovery_request(document) -> dict:
+    """Strict owner request; returns the canonical copy. It pins the investigation, the exact failed
+    dispatch identity and the registered replacement program by its immutable config digest."""
+    def check(condition, field):
+        if not condition:
+            raise InvestigationRefused("recovery_request_invalid", field)
+    check(isinstance(document, dict) and set(document) == RECOVERY_FIELDS, "root")
+    check(document["schema"] == RECOVERY_SCHEMA, "schema")
+    check(type(document["investigation"]) is str and INVESTIGATION_ID.fullmatch(document["investigation"]) is not None,
+          "investigation")
+    failed, replacement = document["failed"], document["replacement"]
+    check(isinstance(failed, dict) and set(failed) == RECOVERY_FAILED_FIELDS, "failed")
+    check(type(failed["program"]) is str and PROGRAM_REF.fullmatch(failed["program"]) is not None, "failed.program")
+    check(type(failed["cycle"]) is str and CYCLE_REF.fullmatch(failed["cycle"]) is not None, "failed.cycle")
+    check(type(failed["run_id"]) is str and ID.fullmatch(failed["run_id"]) is not None, "failed.run_id")
+    for key in ("manifest_sha256", "snapshot_sha256"):
+        check(type(failed[key]) is str and SHA256.fullmatch(failed[key]) is not None, "failed." + key)
+    check(isinstance(replacement, dict) and set(replacement) == RECOVERY_REPLACEMENT_FIELDS, "replacement")
+    check(type(replacement["program"]) is str and PROGRAM_REF.fullmatch(replacement["program"]) is not None,
+          "replacement.program")
+    check(replacement["program"] != failed["program"], "replacement.program")
+    check(type(replacement["config_sha256"]) is str and SHA256.fullmatch(replacement["config_sha256"]) is not None,
+          "replacement.config_sha256")
+    return {"schema": RECOVERY_SCHEMA, "investigation": document["investigation"],
+            "failed": {k: failed[k] for k in sorted(RECOVERY_FAILED_FIELDS)},
+            "replacement": {k: replacement[k] for k in sorted(RECOVERY_REPLACEMENT_FIELDS)}}
+
+
+def replacement_dispatch_id(investigation: str) -> str:
+    """The deterministic key of the ONE replacement dispatch; the failed row keeps the plain id."""
+    return investigation + ".recovery-1"
+
+
+def current_dispatch_id(investigation: str, recovery) -> str:
+    """The key of the dispatch that currently answers for `investigation`. Once a recovery is
+    authorized the replacement is current - even before it is claimed, so the failed row can never
+    answer again - and a fenced or refused recovery leaves the original row current."""
+    if isinstance(recovery, dict) and recovery.get("state") in {AUTHORIZED, RECOVERED}:
+        return (recovery.get("replacement") or {}).get("dispatch") or replacement_dispatch_id(investigation)
+    return investigation
+
+
+def check_recovery(request: dict, *, investigation, required_state: str, dispatch, program, cycle, run_result: dict,
+                   run, outbox: list, tasks: list, reservations: list, residue: list, delivery, attempts: list,
+                   replacement, same_authority: bool, fence) -> dict:
+    """Every precondition of one recovery against authoritative reads; the first gap refuses by name.
+
+    Qualifies ONLY a failure-family dispatch resolved `failed` with `publication_incomplete`, whose run
+    row is terminal `failed` at stage `research` with zero reserved starts, no invocation, no role, no
+    packet, no task, no reservation and no session/operation residue, and whose single outbox record
+    is the researcher assignment still unsent with no delivered, started or errored attempt. `fence`
+    None expects the unfenced record; otherwise the delivery row must still be exactly that fence.
+    The replacement program must be registered with the pinned digest, never ticked, in the same
+    repository and carry the same authority. Returns the identities of the fenced assignment."""
+    failed = request["failed"]
+    if not (isinstance(investigation, dict) and investigation.get("kind", KIND) == KIND
+            and investigation.get("state") == required_state):
+        raise InvestigationRefused("recovery_investigation_changed", "investigation")
+    if not (isinstance(dispatch, dict) and dispatch.get("id") == request["investigation"]
+            and dispatch.get("investigation") == request["investigation"] and dispatch.get("kind", KIND) == KIND
+            and dispatch.get("program") == failed["program"] and dispatch.get("cycle") == failed["cycle"]
+            and all(dispatch.get(key) == failed[key] for key in ("run_id", "manifest_sha256", "snapshot_sha256"))):
+        raise InvestigationRefused("recovery_dispatch_mismatch", "failed")
+    if dispatch.get("state") != RESOLVED or dispatch.get("result") != "failed":
+        raise InvestigationRefused("recovery_dispatch_not_failed", "failed")
+    if dispatch.get("result_reason") != PRE_PROVIDER_FAILURE:
+        raise InvestigationRefused("recovery_not_pre_provider", "failed")
+    if not (isinstance(program, dict) and program.get("state") == "blocked" and program.get("active_cycle") is None):
+        raise InvestigationRefused("recovery_program_not_blocked", "failed.program")
+    council = (cycle or {}).get("council") if isinstance(cycle, dict) else None
+    if not (isinstance(council, dict) and cycle.get("program") == failed["program"] and cycle.get("result") == "failed"
+            and cycle.get("status") == "completed" and council.get("run_id") == failed["run_id"]
+            and council.get("manifest_sha256") == failed["manifest_sha256"] and council.get("status") == "failed"):
+        raise InvestigationRefused("recovery_cycle_mismatch", "failed.cycle")
+    if not (run_result.get("result") == "failed" and run_result.get("reason_code") == PRE_PROVIDER_FAILURE
+            and isinstance(run, dict) and run.get("status") == "failed" and run.get("finished_at")):
+        raise InvestigationRefused("recovery_run_not_pre_provider", "failed.run_id")
+    starts = run.get("starts") if isinstance(run.get("starts"), dict) else {}
+    if not (run.get("stage") == "research" and starts.get("reserved") == 0 and starts.get("settled") == 0
+            and starts.get("slots") == [] and not run.get("invocations") and not run.get("roles")
+            and run.get("packet_digest") is None):
+        raise InvestigationRefused("recovery_provider_entered", "failed.run_id")
+    if tasks:
+        raise InvestigationRefused("recovery_task_exists", "failed.run_id")
+    if reservations:
+        raise InvestigationRefused("recovery_invocation_exists", "failed.run_id")
+    if residue:
+        raise InvestigationRefused("recovery_residue", "failed.run_id")
+    agent, correlation = ROLE_AGENTS[RESEARCHER], correlation_id({"id": failed["run_id"]})
+    message = outbox[0].get("message") if len(outbox) == 1 and isinstance(outbox[0], dict) else None
+    if not (isinstance(message, dict) and message.get("type") == "task.assign" and message.get("correlation_id") == correlation
+            and (message.get("who") or {}).get("recipient") == agent
+            and ((message.get("what") or {}).get("details") or {}).get("role") == RESEARCHER
+            and type(message.get("message_id")) is str):
+        raise InvestigationRefused("recovery_outbox_unexpected", "failed.run_id")
+    delivery = delivery if isinstance(delivery, dict) else None
+    statuses = {a.get("status") for a in attempts}
+    if outbox[0].get("sent") is not False or (delivery or {}).get("delivered_entry_id") or "delivered" in statuses:
+        raise InvestigationRefused("recovery_message_delivered", "failed.run_id")
+    if not statuses <= UNSENT_ATTEMPTS:
+        raise InvestigationRefused("recovery_effect_unknown", "failed.run_id")
+    if fence is None:
+        if delivery is not None and delivery.get("status") != "retry":
+            raise InvestigationRefused("recovery_effect_unknown", "failed.run_id")
+    elif not (delivery is not None and delivery.get("status") == "quarantined"
+              and delivery.get("source_hash") == fence.get("source_hash") == digest(outbox[0])
+              and len(attempts) == fence.get("attempts") and delivery.get("attempts", 0) == fence.get("attempts")):
+        raise InvestigationRefused("recovery_publication_changed", "failed.run_id")
+    new = request["replacement"]
+    if not (isinstance(replacement, dict) and replacement.get("id") == new["program"]
+            and replacement.get("config_sha256") == new["config_sha256"]):
+        raise InvestigationRefused("recovery_replacement_mismatch", "replacement")
+    if not (replacement.get("state") == "paused" and replacement.get("cycles") == 0 and replacement.get("adoptions") == 0
+            and replacement.get("active_cycle") is None and replacement.get("next_cycle") == 1):
+        raise InvestigationRefused("recovery_replacement_not_fresh", "replacement")
+    if not (same_authority and replacement.get("repository") == program.get("repository")):
+        raise InvestigationRefused("recovery_scope_changed", "replacement")
+    return {"message_id": message["message_id"], "recipient": agent, "correlation_id": correlation,
+            "source_hash": digest(outbox[0]), "attempts": len(attempts)}
+
+
+def recovery_view(row: dict) -> dict:
+    """Bounded read-only projection of one lineage row: identities, state and fixed codes only."""
+    keys = ("investigation", "state", "reason_code", "failed", "replacement", "fence", "request_sha256",
+            "requested_at", "authorized_at", "claimed_at", "updated_at")
+    return {**{k: row.get(k) for k in keys}, "authority": RECOVERY_AUTHORITY}
 
 
 def dispatch_counts(rows: list) -> dict:
@@ -221,8 +378,10 @@ def dispatch_counts(rows: list) -> dict:
     return counts
 
 
-__all__ = ["AUTHORITY", "CLAIMED", "DISPATCHED", "DISPATCH_SCHEMA", "EXCLUSIONS", "KIND", "MAX_JOB_SAMPLE",
-           "MAX_PROJECTS", "MAX_REASON_CODES", "RESOLVED", "SNAPSHOT_SCHEMA", "SOURCE", "TRUST",
-           "InvestigationRefused", "candidate_identity", "candidate_key", "dispatch_counts", "dispatch_row",
-           "dispatch_view", "eligible_investigations", "scope_reference", "scoped_job_ids", "snapshot",
+__all__ = ["AUTHORITY", "AUTHORIZED", "CLAIMED", "DISPATCHED", "DISPATCH_SCHEMA", "EXCLUSIONS", "FENCED",
+           "FENCE_REASON", "KIND", "MAX_JOB_SAMPLE", "MAX_PROJECTS", "MAX_REASON_CODES", "PRE_PROVIDER_FAILURE",
+           "RECOVERED", "RECOVERY_SCHEMA", "REFUSED", "RESOLVED", "SNAPSHOT_SCHEMA", "SOURCE", "TRUST",
+           "InvestigationRefused", "candidate_identity", "candidate_key", "check_recovery", "current_dispatch_id",
+           "dispatch_counts", "dispatch_row", "dispatch_view", "eligible_investigations", "recovery_view",
+           "replacement_dispatch_id", "scope_reference", "scoped_job_ids", "snapshot", "validate_recovery_request",
            "validate_source"]

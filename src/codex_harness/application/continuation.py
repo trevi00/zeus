@@ -117,6 +117,7 @@ from codex_harness.domain.continuation import (
 )
 from codex_harness.domain.fleet import UNIT_CONDUCTOR, FleetRefused, held_units
 from codex_harness.domain.model import ContractError, digest, utcnow
+from codex_harness.domain.research_investigations import current_dispatch_id
 from codex_harness.domain.research_program import council_result
 
 BUCKET_POLICIES = "continuation_policies"
@@ -128,6 +129,7 @@ FLEET_UNITS = "fleet_units"
 BUCKET_RESEARCH_RECEIPTS = "continuation_research_receipts"
 INVESTIGATIONS = "portfolio_investigations"
 RESEARCH_DISPATCHES = "research_investigation_dispatches"
+RESEARCH_RECOVERIES = "research_dispatch_recoveries"
 RESEARCH_RUNS = "autonomous_runs"
 EVENT_TRANSITION = "operations.continuation_transition"
 EVENT_BLOCKED = "operations.continuation_blocked"
@@ -355,7 +357,11 @@ class Continuation:
             intents = [row for row in tx.scan(BUCKET_INTENTS) if row.get("policy_id") == receipt["policy_id"]]
             stored = tx.get(BUCKET_RESEARCH_RECEIPTS, receipt["intent_id"])
             investigation = tx.get(INVESTIGATIONS, receipt["investigation"])
-            dispatch = tx.get(RESEARCH_DISPATCHES, receipt["investigation"])
+            # The CURRENT dispatch of the investigation: after an owner-authorized recovery that is
+            # the replacement (research-dispatch-recovery-001), so a receipt naming the failed
+            # original, or a result of its run, can never approve.
+            recovery = tx.get(RESEARCH_RECOVERIES, receipt["investigation"])
+            dispatch = tx.get(RESEARCH_DISPATCHES, current_dispatch_id(receipt["investigation"], recovery))
             run_id = (dispatch or {}).get("run_id") if isinstance(dispatch, dict) else None
             run = tx.get(RESEARCH_RUNS, run_id) if type(run_id) is str else None
             jobs = {a["job"]: tx.get(FLEET_JOBS, a["job"]) for a in receipt["attempts"]}

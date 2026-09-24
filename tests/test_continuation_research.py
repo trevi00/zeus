@@ -23,8 +23,9 @@ from pathlib import Path
 import pytest
 from test_continuation import World, only
 from test_research_investigations import DEFINITIONS
-from test_research_program import build, registered
-from test_research_program_fixtures import FakeCouncil
+from test_research_program import POLICY, build, registered
+from test_research_program_fixtures import FakeCouncil, config
+from test_research_recovery import FakeTransport, PublicationFailingCouncil
 
 from codex_harness.adapters import continuation as adapter
 from codex_harness.adapters import continuation_cli
@@ -36,6 +37,7 @@ from codex_harness.application.continuation import (
 from codex_harness.application.portfolio import BUCKET_INVESTIGATIONS, Portfolio, family_id
 from codex_harness.application.research_program import BUCKET_DISPATCHES
 from codex_harness.domain import continuation as dc
+from codex_harness.domain.research_program import config_digest, validate_config
 
 # The owner's research evidence: real bytes stored in the World's temporary FileArtifacts root by
 # `receipt_for`, and read back (bounded, digest checked) at acceptance and again at consumption.
@@ -513,3 +515,53 @@ def test_evidence_lost_after_acceptance_keeps_the_hold_until_it_verifies_again(t
     assert intents[research["id"]]["state"] == dc.COMPLETED and len(world.jobs()) == 3
     assert only(intents, origin_job=successor, route=dc.EVIDENCE_REPAIR)["state"] == dc.ADMITTED
     assert receipts(world) == stored
+
+
+# ---- research dispatch transport recovery (research-dispatch-recovery-001) ---------------------------
+def test_a_recovered_dispatch_binds_the_scoped_receipt_to_the_accepted_replacement_only(tmp_path):
+    """The REAL council fails before provider entry (LABELLED transport fault), the owner authorizes
+    one replacement program, and only a receipt naming THAT accepted run releases the hold."""
+    world = World(tmp_path)
+    world.register()
+    root, successor, research = two_strikes(world, "op-x", "docs/a.md")
+    owner = Portfolio(world.control, DEFINITIONS)
+    for job in (root, successor):
+        owner.bind(job, "ops", "c1")
+    owner.reconcile()
+    investigation = family_id("failed", "evidence_gate_refused")
+    source = {"topic": "storage", "project_ids": ["ops"], "reason_codes": ["evidence_gate_refused"]}
+    (tmp_path / "research").mkdir()
+    env = build(tmp_path / "research", store=world.control, council=PublicationFailingCouncil(world.control))
+    registered(env, investigation_source=source)
+    assert env.runner.tick("rp-001")["reason_code"] == "publication_incomplete"
+    with world.control.transaction() as tx:
+        failed = deepcopy(tx.get(BUCKET_DISPATCHES, investigation))
+    with pytest.raises(dc.ContinuationRefused, match="research_not_accepted"):
+        world.controller.accept_research(receipt_for(world, research, investigation, failed))
+
+    cfg = validate_config(config(env.head, id="rp-002", investigation_source=source), POLICY)
+    env.programs.register(cfg, env.identity, [])
+    pinned = {k: failed[k] for k in ("program", "cycle", "run_id", "manifest_sha256", "snapshot_sha256")}
+    env.programs.recover_dispatch({"schema": "urn:zeus:research-dispatch-recovery:1", "investigation": investigation,
+                                   "failed": pinned, "replacement": {"program": "rp-002",
+                                                                     "config_sha256": config_digest(cfg, env.identity)}},
+                                  FakeTransport())
+    # Authorized but not yet claimed: the failed original no longer answers, nothing approves.
+    with pytest.raises(dc.ContinuationRefused, match="research_dispatch_unknown"):
+        world.controller.accept_research(receipt_for(world, research, investigation, failed))
+    env.programs.resume("rp-002")
+    env.runner.council = FakeCouncil(world.control, status="accepted")
+    assert env.runner.tick("rp-002")["result"] == "accepted"
+    with world.control.transaction() as tx:
+        current = deepcopy(tx.get(BUCKET_DISPATCHES, investigation + ".recovery-1"))
+        assert tx.get(BUCKET_DISPATCHES, investigation) == failed, "the failed original is retained as it was"
+    # A stale receipt naming the failed attempt never approves, even though a replacement was accepted.
+    with pytest.raises(dc.ContinuationRefused, match="research_dispatch_mismatch"):
+        world.controller.accept_research(receipt_for(world, research, investigation, failed))
+    assert receipts(world) == {}
+    world.tick()
+    assert only(world.intents(), id=research["id"])["state"] == dc.RESEARCH_REQUIRED
+    accepted = world.controller.accept_research(receipt_for(world, research, investigation, current))
+    assert accepted["accepted"] is True and accepted["dispatch"]["run_id"] == "rp-002.c001"
+    world.tick()
+    assert only(world.intents(), id=research["id"])["state"] == dc.COMPLETED

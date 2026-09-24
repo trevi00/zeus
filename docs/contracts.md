@@ -1793,6 +1793,43 @@ an incident resolution or a promotion. `status` gains the additive `investigatio
 cycle receipts gain `investigations` (bounded counts plus the claimed id, `null` when disabled), the
 report names dispatch separately from acceptance and the event log gains claim, capture and outcome
 identifiers with codes only.
+Dispatch transport recovery (research-dispatch-recovery-001). `zeus research-program recover --file`
+takes one owner request (`urn:zeus:research-dispatch-recovery:1`: `investigation`, `failed` = the exact
+program, cycle, run id, manifest and snapshot digests of the claimed dispatch, `replacement` = a NEW
+registered program id and its config digest; strict fields, the failed program is never its own
+replacement). It qualifies ONLY a failure-family dispatch resolved `failed` with
+`publication_incomplete` whose program is blocked with no owned cycle, whose cycle and
+`autonomous_runs` row agree (row `failed:publication_incomplete` at stage `research`, zero reserved
+or settled starts, no invocation, role or packet), with no task, invocation reservation, DGE session
+or operation for that run, exactly one outbox record for its correlation - the researcher
+`task.assign`, `sent` false, no delivered entry and only `retry`/`superseded_before_publish` attempts -
+a still `research_required` investigation, and a replacement that is paused and never ticked in the
+same repository whose config equals the failed program's except id, base_revision and deadline (the
+template's base and deadline included), so no source, cap, budget, goal, plan or scope widens. Any
+gap refuses with a fixed `recovery_*` code and writes nothing. Three steps, none holding a
+transaction across I/O: (1) the first request re-reads those records and, in the same transaction,
+fences the unsent assignment through the existing outbox quarantine (`ResearchDispatchSuperseded`;
+source copy retained, `sent` untouched, never reported as sent; the global and scoped relays then
+return `quarantined_existing`) and records the lineage row in `research_dispatch_recoveries` (keyed
+by investigation id, `fenced`); (2) `TransportProbe` reads the configured Redis recipient stream and
+the dead-letter stream completely and read-only for that message id - an unreachable bus
+(`recovery_transport_unavailable`) or a stream above the bound (`recovery_transport_unbounded`)
+refuses and the row stays `fenced`, because a delivery error or timeout alone never proves that
+nothing was delivered, and the probe cannot speak for any other endpoint an earlier configuration
+used; (3) the records are re-read, the fence must be unchanged (`recovery_publication_changed`) and
+the row becomes `authorized`, or `refused` with `recovery_message_delivered` when the message is
+present. The identical request replays `cached`; any other request for the investigation is
+`recovery_conflict`: one recovery per investigation, and a failed replacement is held, never retried.
+Once authorized the replacement key `<investigation>.recovery-1` is the investigation's current
+dispatch, even before it is claimed: only the named program sees the investigation as unclaimed, its
+normal tick claims it through the same selection transaction (the dispatch carries `recovery` and
+`supersedes`, the lineage becomes `claimed` with the cycle), and the failed dispatch, run, cycle,
+candidate, program counters and outbox attempts remain unchanged history. The continuation owner's
+`accept_research` and its consumption read the CURRENT dispatch through the lineage, so a receipt
+naming the failed attempt is `research_dispatch_mismatch` and an unclaimed replacement is
+`research_dispatch_unknown`. `status` gains additive `recoveries` (lineage views) and `dispatches`
+rows gain `id`, `recovery`, `supersedes` and `current`; neither schedules work. No model, council or
+provider runs in the recovery, and no row is deleted or rewritten as accepted.
 `status`, the additive read-only monitor source `research_programs`
 (`urn:zeus:research-program-monitor:1`, at most 20 programs, `truncated` explicit) and the bounded
 `runtime/research-program/<id>/report.md` project counts, states, codes and outcomes from the store
