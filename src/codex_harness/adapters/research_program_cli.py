@@ -12,6 +12,7 @@ from codex_harness.adapters.operation_cli import GitSource, bind_goal, refusal
 from codex_harness.adapters.providers import packaged_policy
 from codex_harness.application.dge import DgeRefused
 from codex_harness.application.research_program import ResearchProgram
+from codex_harness.domain.research_investigations import REVOCATION_SCHEMA
 from codex_harness.domain.research_program import ProgramRefused, validate_config
 
 MAX_TICKS = 100
@@ -30,7 +31,8 @@ def add_parser(commands) -> None:
                        ("resume", "Allow new ticks again (paused only)")):
         sub.add_parser(name, help=text).add_argument("program_id")
     recover = sub.add_parser("recover", help="Owner request (urn:zeus:research-dispatch-recovery:1): authorize ONE "
-                                             "replacement of a proven pre-provider failed dispatch; no models")
+                                             "replacement of a proven pre-provider failed dispatch; version 2 "
+                                             "(execution_revocation) revokes instead of proving; no models")
     recover.add_argument("--file", type=Path, required=True)
 
 
@@ -74,13 +76,16 @@ def recover(service, args, transport=None) -> dict:
     (`HARNESS_REDIS_URL`, `HARNESS_REDIS_NAMESPACE`) through the same `RedisBus` the publisher uses;
     its readiness is the owner's preflight. An unreachable bus refuses with
     `recovery_transport_unavailable` instead of being assumed empty, and a bus that is not the one
-    the failed attempt committed before publishing refuses with `recovery_transport_changed`."""
-    if transport is None:
+    the failed attempt committed before publishing refuses with `recovery_transport_changed`.
+
+    An explicit `urn:zeus:research-dispatch-recovery:2` `execution_revocation` request builds no bus
+    and reads no transport: it revokes execution authority in the control store only."""
+    document = read_document(args.file, "Research dispatch recovery request")
+    if transport is None and not (isinstance(document, dict) and document.get("schema") == REVOCATION_SCHEMA):
         from codex_harness.adapters.bus import RedisBus
         from codex_harness.adapters.research_program import TransportProbe
         from codex_harness.bootstrap import redis_url
         transport = TransportProbe(RedisBus(redis_url()))
-    document = read_document(args.file, "Research dispatch recovery request")
     return {**ResearchProgram(service.store).recover_dispatch(document, transport), "exit_code": 0}
 
 

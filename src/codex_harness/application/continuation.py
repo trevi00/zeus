@@ -42,6 +42,7 @@ the authorization stored on the intent; reconciling an already started effect ne
 """
 from __future__ import annotations
 
+from codex_harness.application.execution_fence import current as current_fence
 from codex_harness.domain.continuation import (
     ADMITTED,
     AUTHORITY,
@@ -117,7 +118,12 @@ from codex_harness.domain.continuation import (
 )
 from codex_harness.domain.fleet import UNIT_CONDUCTOR, FleetRefused, held_units
 from codex_harness.domain.model import ContractError, digest, utcnow
-from codex_harness.domain.research_investigations import current_dispatch_id
+from codex_harness.domain.research_investigations import (
+    REVOCATION_BUCKET,
+    current_dispatch_id,
+    revocation_held,
+    revocation_task_id,
+)
 from codex_harness.domain.research_program import council_result
 
 BUCKET_POLICIES = "continuation_policies"
@@ -313,14 +319,17 @@ class Continuation:
         evidence digest and inspection, the Portfolio investigation holding those jobs and the
         resolved existing research dispatch whose bound run row is accepted. Stored once and never
         edited: the identical receipt replays (`cached`), any other for the same intent is
-        `research_receipt_conflict`. It moves no intent: the next tick consumes it after verifying
+        `research_receipt_conflict`. Every accepted return, a replay included, first rechecks an
+        execution-revocation lineage's retained fence; a refused replay keeps the stored receipt. It moves no intent: the next tick consumes it after verifying
         it again, so a restart or a second controller completes the hold exactly once."""
         receipt = validate_research_receipt(document)
         facts = self._research_facts(receipt)
         stored = facts.pop("stored")
         if stored is not None:
             refuse(stored.get("receipt") == receipt, "research_receipt_conflict", "operator", "intent_id")
+            self._require_recovery(facts)   # a cached acceptance answers only while the fence still holds
             return self._receipt_result(stored, cached=True)
+        self._require_recovery(facts)
         if isinstance(facts["intent"], dict) and facts["intent"].get("state") == RESEARCH_REQUIRED:
             facts["observed"] = self._observe_attempts(facts["jobs"])
         check_research_receipt(receipt, **facts)
@@ -330,6 +339,11 @@ class Continuation:
             old = tx.get(BUCKET_RESEARCH_RECEIPTS, receipt["intent_id"])
             if old is not None:
                 refuse(old.get("receipt") == receipt, "research_receipt_conflict", "operator", "intent_id")
+            # The retained fence again in THIS writer transaction (never a nested one): a concurrent
+            # insertion, or a fence lost since the read, never returns acceptance.
+            self._require_recovery({"recovery_held": self._recovery_held(
+                tx, tx.get(RESEARCH_RECOVERIES, receipt["investigation"]))})
+            if old is not None:
                 return self._receipt_result(old, cached=True)
             # Nothing moved between the verification and this write: same intent version, same set.
             intent = tx.get(BUCKET_INTENTS, receipt["intent_id"])
@@ -362,6 +376,7 @@ class Continuation:
             # original, or a result of its run, can never approve.
             recovery = tx.get(RESEARCH_RECOVERIES, receipt["investigation"])
             dispatch = tx.get(RESEARCH_DISPATCHES, current_dispatch_id(receipt["investigation"], recovery))
+            recovery_held = self._recovery_held(tx, recovery)
             run_id = (dispatch or {}).get("run_id") if isinstance(dispatch, dict) else None
             run = tx.get(RESEARCH_RUNS, run_id) if type(run_id) is str else None
             jobs = {a["job"]: tx.get(FLEET_JOBS, a["job"]) for a in receipt["attempts"]}
@@ -370,7 +385,23 @@ class Continuation:
                       else {"result": "unknown", "reason_code": "dispatch_not_started", "row_status": None})
         return {"stored": stored, "intent": intent, "attempts": research_attempts(intents, intent) if held else [],
                 "policy": policy, "jobs": jobs, "observed": {}, "investigation": investigation,
-                "dispatch": dispatch, "run_result": run_result}
+                "dispatch": dispatch, "run_result": run_result, "recovery_held": recovery_held}
+
+    @staticmethod
+    def _recovery_held(tx, recovery) -> str | None:
+        """An execution-revocation lineage answers only while its OWN retained task fence holds: the
+        named held condition, read through the caller's open transaction, else None."""
+        revoked = revocation_task_id(recovery)
+        return None if revoked is None else revocation_held(
+            recovery, fence=current_fence(tx, REVOCATION_BUCKET, revoked) if revoked else None,
+            task=tx.get(REVOCATION_BUCKET, revoked) if revoked else None,
+            delivery=tx.get("outbox_delivery", revoked) if revoked else None)
+
+    @staticmethod
+    def _require_recovery(facts: dict) -> None:
+        """A revocation-mode lineage whose retained fence no longer holds never approves or releases."""
+        code = facts.pop("recovery_held")
+        refuse(code is None, "research_" + str(code), ROUTE_OWNERS[RESEARCH], "dispatch")
 
     def _verify_evidence(self, receipt: dict) -> None:
         """Every evidence ref's actual bytes, read now through the trusted store and digest checked,
@@ -993,6 +1024,7 @@ class Continuation:
                "research_policy_foreign", "operator", "policy")
         facts = self._research_facts(receipt)
         facts.pop("stored")
+        self._require_recovery(facts)   # before the lane reads and before the hold is released
         facts["observed"] = self._observe_attempts(facts["jobs"])
         check_research_receipt(receipt, **facts)
         self._verify_evidence(receipt)

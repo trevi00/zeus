@@ -1,0 +1,35 @@
+{
+  "schema": "urn:zeus:operation:1",
+  "id": "autonomous-operation-001-recovery-replay",
+  "base_revision": "a8fd87ff9cf19cebda8a5df32db77e562a1cde0b",
+  "goal": {
+    "path": "docs/zeus/operations/autonomous-operation-001/SPEC.md",
+    "sha256": "7d01df683f7d035fffe2ac3d8ce3510d191700136c7a9a11c07330039c590f21",
+    "criterion": "Complete the existing autonomous operating loop with independently verified session, continuation and actual runtime ownership",
+    "rationale": "Finish the existing whole-goal acceptance matrix without manual user relay or weaker verification."
+  },
+  "budget": {
+    "mode": "subscription",
+    "total": 192,
+    "per_host": 192
+  },
+  "claude": {
+    "model": "claude-opus-5-5",
+    "timeout_seconds": 3600,
+    "max_budget_usd": 2
+  },
+  "plan": {
+    "objective": "Implement ONLY Revocation resubmission: replay acceptance in SPEC.md. Fix both cached success exits while preserving accepted recovery design. Targeted tests/Ruff, no full suite or operating changes.",
+    "allowed_paths": [
+      "src/codex_harness/application/continuation.py",
+      "src/codex_harness/application/research_program.py",
+      "tests/test_continuation_research.py",
+      "tests/test_research_recovery.py"
+    ],
+    "acceptance_criteria": [
+      "Every accepted return validates retained revocation fence, initial cached and concurrent insertion paths included; no nested PG writer transaction.",
+      "Lost/changed/malformed fence refuses replay without deleting immutable receipt; intact replay remains idempotent and conflict semantics preserved.",
+      "Regression covers replay, concurrent insertion and consumption hold; targeted tests and Ruff with honest PG availability."
+    ]
+  }
+}

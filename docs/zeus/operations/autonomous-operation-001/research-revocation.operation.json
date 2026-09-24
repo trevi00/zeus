@@ -1,0 +1,49 @@
+{
+  "schema": "urn:zeus:operation:1",
+  "id": "autonomous-operation-001-research-revocation",
+  "base_revision": "e0f2978573dbc6e061fe0abc5fb1a92beecc50c4",
+  "goal": {
+    "path": "docs/zeus/operations/autonomous-operation-001/SPEC.md",
+    "sha256": "e50babc9a2a94fdc5df9d4fd3b7e35e854e9887ae7d92bddcc1071a50664afcc",
+    "criterion": "Complete the existing autonomous operating loop with independently verified session, continuation and actual runtime ownership",
+    "rationale": "Finish the existing whole-goal acceptance matrix without manual user relay or weaker verification."
+  },
+  "budget": {
+    "mode": "subscription",
+    "total": 192,
+    "per_host": 192
+  },
+  "claude": {
+    "model": "claude-opus-5-5",
+    "timeout_seconds": 3600,
+    "max_budget_usd": 2
+  },
+  "plan": {
+    "objective": "Implement ONLY Actual legacy research recovery: execution revocation in SPEC.md. Explicit owner mode uses existing durable task fence and outbox quarantine atomically; retain strict transport-proof recovery. Targeted tests/Ruff, no full suite, no operating edits or deploy.",
+    "allowed_paths": [
+      "src/codex_harness/domain/research_program.py",
+      "src/codex_harness/domain/research_investigations.py",
+      "src/codex_harness/application/research_program.py",
+      "src/codex_harness/adapters/research_program.py",
+      "src/codex_harness/adapters/research_program_cli.py",
+      "src/codex_harness/application/continuation.py",
+      "src/codex_harness/domain/continuation.py",
+      "tests/test_research_program.py",
+      "tests/test_research_program_cli.py",
+      "tests/test_research_investigations.py",
+      "tests/test_research_recovery.py",
+      "tests/test_continuation_research.py",
+      "docs/contracts.md",
+      "src/codex_harness/application/execution_fence.py",
+      "src/codex_harness/application/workflow.py",
+      "tests/test_workflow.py",
+      "tests/test_execution_fence.py"
+    ],
+    "acceptance_criteria": [
+      "Explicit exact-scope owner revocation uses existing task identity fence before replacement; unbound transport history remains unknown, existing strict mode unchanged.",
+      "No task/reservation/residue plus atomic quarantine/fence/receipt protects admission races; late old delivery cannot execute; existing task refuses without authorization.",
+      "Repeat/restart/concurrency and replacement/receipt consumption validate retained owned fence; stale/missing/corrupt evidence cannot release or approve; old history preserved.",
+      "Targeted tests/Ruff, Memory and PG coverage where available, honest skip and proof limits; no operating data edits."
+    ]
+  }
+}
