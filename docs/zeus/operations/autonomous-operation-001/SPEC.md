@@ -1,5 +1,29 @@
 # Whole autonomous operating loop
 
+## Capacity monitoring compatibility, 2026-09-24 21:55 UTC
+
+Same acceptance matrix, no runtime redesign. PR198 head7b09be482aa445c2711363ecb102bdc43e2618f3
+has accepted independent review and root309passed14platformskips with isolated PostgreSQL/Ruff.
+CI run36063176583 Ubuntu3.14 job107846758607 failed ONE test after3797passed492skipped:
+test_monitoring.py::test_collector_entrypoint_is_read_only_and_needs_no_executor at line213.
+The collector correctly exposes new continuation capacity={families:[],grants:[]}, but the
+test asserts exact old dictionary without that field. Raw CI log retained on D as
+capacity-ci-ubuntu314-attempt1.log. This neighboring test was omitted from owner allowed paths
+and focused profile. Correct this owner handoff omission; do not remove the status feature.
+
+One tiny Claude batch: update exact expected collector continuation status to include the
+intended empty capacity view while preserving all prior fields, read-only/no-executor/no-write
+assertions and source semantics. Review directly affected monitoring assertions for the same
+contract only. No runtime code changes, no weakening to partial dictionary assertions, no
+unrelated testing framework changes. Run tests/test_monitoring.py and
+tests/test_monitoring_observations.py plus tests/test_continuation.py,
+tests/test_continuation_research.py, tests/test_continuation_cli.py and Ruff. Only successful
+commands belong in tests; do not run full suite. Preserve all accepted capacity code and history.
+Independent review of this test-only delta, exact focused host checks and PR198 updated-head CI
+decide acceptance. PR198 remains unmerged until required checks pass. Existing runtime b550d36
+is unchanged. Live grant, checklist recovery and whole-loop qualification remain pending.
+
+
 ## Scoped capacity correction: fresh source at each effect, 2026-09-24 21:23 UTC
 
 Same exact-grant matrix. Candidate2ae589e5738cb3478213358747a52a39b1ea734f/task5143d554
