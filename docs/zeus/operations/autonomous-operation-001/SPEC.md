@@ -1,5 +1,33 @@
 # Whole autonomous operating loop
 
+## Current-source useful-item qualification after actual repair, 2026-09-24
+
+Owner facts at11:52UTC: PR191 merged atf2b392d9d1e770878699be88699872a143a26351 and scheduled
+Fleet consumed that revision/image1ee94821 with active module path in runtime-delivery-tree.
+CI attempt1 Windows3.12 failed two unchanged guardian wall-time assertions (2.234s vs2s;
+2.547s vs1s). Same-head attempt2 passed, local targeted2 tests passed; cause remains unconfirmed.
+PR190's project inheritance/scope supplement is included. Actual council003 accepted seven settled
+starts; explicit owner supplement4a94f1aa and receiptcd95fdee released exactly the two-attempt
+delivery-tree family. Actual repair cont-f7ed34f73b048bd5b698b3bb accepted after declared container
+checks, independent lead and conductor; no held execution units. Original failure rows retained.
+Release2144c661 still names old b31a9112/tree52b232ab and is awaiting owner for zeus-fleet-managed.
+Do NOT relabel that release as current deployment: scheduled cutover used integrated f2b392d.
+
+Item A-current (this bounded Claude batch): refresh STATUS.md and CONTINUATION.md against these
+owner facts and repository contracts, with a clear Mermaid diagram of observed vs pending stages.
+Preserve historical results, distinguish independent model review from owner actions, show unknowns
+honestly. Include useful operator checklist for remaining exact-candidate managed cutover, rollback,
+duplicate/restart control and second useful-item selection. Link existing docs and PR189/190/191;
+paths to raw owner evidence are descriptive, not worker execution. Do not claim full autonomy done.
+Docs only; allowed paths unchanged. Inspect Git diff/whitespace and document references only; no
+Python/full-suite/test commands are required and no invented test claims. Independent Codex review
+checks exact document facts/diagram and scope. Runtime/CI/canary checks are owned later by root.
+This item is automatically selected from the approved backlog using current code, not a relabel of
+the old accepted status candidate. After acceptance: exact-head PR/CI, register its actual release
+for a single-owner managed cutover or record concrete missing gate; only after delivery choose B-current
+runbook based on that deployed revision. Preserve old queued releases/held families. Do not create
+second active Fleet, widen policy or weaken exact tree/instance/canary/rollback gates.
+
 ## Actual repair accepted; current-source delivery qualification, 2026-09-24
 
 Real successor cont-f7ed34f73b048bd5b698b3bb completed declared evidence checks, independent lead
