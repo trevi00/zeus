@@ -1,5 +1,48 @@
 # Whole autonomous operating loop
 
+## Research recovery resubmission: original transport ownership, 2026-09-24
+
+Candidate a64b7c3 is staged as correction input ONLY, not accepted or deployed. Independent review
+727928b4 rejected one P1 within the existing ambiguity condition: recover CLI probes today's Redis,
+while recover_dispatch accepts its absence result without binding the original publication endpoint.
+Reachable trigger: endpoint A receives XADD but reply is lost; configuration changes to empty B;
+absence on B permits replacement while A retains the old assignment. This is source-traced, not an
+observed duplicate execution. Preserve accepted fencing/lineage/receipt behavior and original review.
+
+SSOT inspected at a64b7c3: adapters/research_program_cli.py recover; adapters/research_program.py
+TransportProbe; application/research_program.py recover_dispatch; application/outbox.py _prepare
+commits intent before publish but currently records no transport binding; adapters/bus.py RedisBus
+owns URL/client/database/namespace. The adapter must own a credential-free transport identity; pure
+domain consumes immutable facts. Same endpoint text is not eternal proof of same server/storage.
+
+One Claude batch: extend existing publication intent and recovery proof so original attempted
+transport is durably bound BEFORE the external publish effect, and the probe proves that same
+transport/database/namespace. Recheck actual publishing adapter against the committed identity.
+Do not add a parallel outbox or scheduler. Preserve a binding across retry; a changed destination
+cannot silently replace history. Credentials/raw URLs must not enter logs or evidence. Record what
+identity establishes and what restart/replacement/aliasing cannot establish. Unavailable or ambiguous
+identity fails closed for recovery. Preserve normal legacy message delivery compatibility; legacy
+recovery without historical binding is UNKNOWN, never backfill it from today's config or an owner
+assertion. Explicitly report the consequence for our failed historical run; do not fabricate proof
+to unlock it. No changes to terminal old task/run outcomes, operating rows or current Fleet settings.
+
+Acceptance matrix: same bound endpoint confirmed absent may recover once; A accepted/lost reply
+then empty B must refuse before replacement claim; changed database or namespace must refuse;
+missing binding, unreadable identity and changed server/storage incarnation refuse or return named
+unknown where the chosen mechanism cannot prove continuity. Persisted intent must exist before
+publish, including failure and restart; concurrent/repeated recovery remains idempotent. Preserve
+old outbox quarantine, late-publish fence, exact new dispatch receipt and no unrelated release.
+Exercise actual production adapter wiring, not only a test-injected matching identity. Tests may
+use two explicit transport fixtures with labelled lost-reply injection; distinguish live Redis
+checks if available. Tests verify no credentials leak. Existing platform-neutral Python path means
+Windows/Linux CI suffices; no new OS process cleanup design. New binding/metadata cannot claim a
+stream absence check proves historical non-delivery after arbitrary deletion or storage reset.
+
+Run targeted research recovery/program/investigation/continuation/outbox/bus tests and Ruff only.
+No worker full-suite run; CI owns broad suite. Consolidate changes and evidence in one candidate;
+independent review then owner checks/CI/operating cutover. Completion of this correction is NOT full
+autonomy: real historical recovery qualification is still required and may need explicit evidence.
+
 ## Research dispatch transport recovery: one revised delivery batch, 2026-09-24
 
 Goal unchanged: exact two-strike research -> independently accepted report -> scoped owner receipt
