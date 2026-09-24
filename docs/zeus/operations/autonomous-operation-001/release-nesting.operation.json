@@ -1,0 +1,34 @@
+{
+  "schema": "urn:zeus:operation:1",
+  "id": "autonomous-operation-001-release-nesting",
+  "base_revision": "dd64c77047c8aa80feb377d4b07d71a9695cf3df",
+  "goal": {
+    "path": "docs/zeus/operations/autonomous-operation-001/SPEC.md",
+    "sha256": "00c94a744042ea0b05a947406ba312b5948a816622108aee760ccf90e43d48df",
+    "criterion": "Complete the existing autonomous operating loop with independently verified session, continuation and actual runtime ownership",
+    "rationale": "Finish the existing whole-goal acceptance matrix without manual user relay or weaker verification."
+  },
+  "budget": {
+    "mode": "subscription",
+    "total": 192,
+    "per_host": 192
+  },
+  "claude": {
+    "model": "claude-opus-5-5",
+    "timeout_seconds": 3600,
+    "max_budget_usd": 2
+  },
+  "plan": {
+    "objective": "Implement ONLY Release checklist nested accounting correction in SPEC.md. Explicit Codex owner handoff linked to rejected cont-53f2d12f8884dc8204458c93/review f0496a00; original spent grant and policy unchanged. Fix inherited RELEASE_ACCOUNTING_SELECT across actual outer/inner ReleaseSuite. Preserve original acceptance and isolation. Real nested pytest regression, focused six release suites and Ruff only; no full suite, live writes, models, merge or deployment.",
+    "allowed_paths": [
+      "src/codex_harness/adapters/release_suite.py",
+      "tests/test_release_suite.py",
+      "docs/contracts.md"
+    ],
+    "acceptance_criteria": [
+      "Real outer/inner suite execution accounts for every own node and preserves separate evidence; inherited selection cannot leak and caller environment is unchanged.",
+      "Original redaction, collection failure, timeout/cancel, fencing and bounded cleanup checks remain intact; failed inner suite cannot be accepted.",
+      "Focused six release suites and Ruff pass; before/after nested execution evidence is labelled accurately."
+    ]
+  }
+}
