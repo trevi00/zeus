@@ -13,7 +13,7 @@ import pytest
 
 from codex_harness.adapters.artifacts import FileArtifacts
 from codex_harness.adapters.commands import ProcessCancelled, run_logged_process, run_process
-from codex_harness.adapters.release_suite import SELECT_ENV, ReleaseSuite
+from codex_harness.adapters.release_suite import REPORT_ENV, SELECT_ENV, ReleaseSuite
 from codex_harness.domain.check_results import (
     classify_batch,
     classify_collection,
@@ -36,11 +36,11 @@ def suite_tree(root: Path, files: dict) -> Path:
     return root
 
 
-def run_suite(root, *, batch_nodes=2, timeout=60, fence=None, extra=()):
+def run_suite(root, *, batch_nodes=2, timeout=60, fence=None, extra=(), env=None):
     artifacts = FileArtifacts(root.parent / (root.name + "-artifacts"))
     suite = ReleaseSuite(artifacts, fence or (lambda: None), batch_nodes=batch_nodes)
     argv = [PY, "-m", "pytest", "-q", "-p", "no:cacheprovider", "tests", *extra]
-    return suite.check(argv, cwd=str(root), timeout=timeout, env=None, binding=BINDING), artifacts
+    return suite.check(argv, cwd=str(root), timeout=timeout, env=env, binding=BINDING), artifacts
 
 
 PASSING = {
@@ -70,6 +70,85 @@ def test_complete_manifest_runs_every_parameterized_node_in_bounded_batches(tmp_
     assert batch["verdict"]["reconciliation"]["complete"] and batch["planned"]["count"] == 2
     assert batch["manifest_sha256"] == manifest["sha256"]
     assert report["config"]["rootpath"] and report["accounting"]["env_keys"][1:] == ["RELEASE_ACCOUNTING_REPORT", SELECT_ENV]
+
+
+# An outer suite whose selected test runs an inner ReleaseSuite from inside its batch process, so the
+# inner suite starts with the outer batch's accounting environment (report and selection) inherited.
+NESTED = {
+    "test_outer_plain.py": "def test_plain():\n    pass\n",
+    "test_outer_nested.py": "import json\nimport os\nfrom pathlib import Path\n\n"
+                            "from codex_harness.adapters.artifacts import FileArtifacts\n"
+                            "from codex_harness.adapters.release_suite import ReleaseSuite\n\n"
+                            "def test_inner_suite():\n"
+                            "    plan = json.loads(Path(__file__).with_name('nested.json').read_text('utf-8'))\n"
+                            "    before = dict(os.environ)\n"
+                            "    suite = ReleaseSuite(FileArtifacts(plan['store']), lambda: None, batch_nodes=2)\n"
+                            "    result = suite.check(plan['argv'], cwd=plan['cwd'], timeout=60, env=None, binding={})\n"
+                            "    Path(plan['out']).write_text(json.dumps(result), 'utf-8')\n"
+                            "    assert dict(os.environ) == before\n"
+                            "    assert result['passed'] is True, result\n",
+}
+
+
+def nested_suite(tmp_path, inner_files):
+    import json
+
+    from codex_harness.adapters import release_suite
+    inner = suite_tree(tmp_path / "inner", inner_files)
+    outer = suite_tree(tmp_path / "outer", NESTED)
+    plan = {"store": str(tmp_path / "inner-store" / "artifacts"), "cwd": str(inner),
+            "out": str(tmp_path / "inner-result.json"),
+            "argv": [PY, "-m", "pytest", "-q", "-p", "no:cacheprovider", "tests"]}
+    (outer / "tests" / "nested.json").write_text(json.dumps(plan), encoding="utf-8")
+    src = str(Path(release_suite.__file__).resolve().parents[2])
+    env = {**os.environ, "PYTHONPATH": os.pathsep.join([src] + ([os.environ["PYTHONPATH"]]
+                                                               if os.environ.get("PYTHONPATH") else []))}
+    snapshot, caller = dict(env), dict(os.environ)
+    result, artifacts = run_suite(outer, batch_nodes=10, timeout=120, env=env)
+    assert env == snapshot and dict(os.environ) == caller, "the caller's environment is never mutated"
+    out = Path(plan["out"])
+    return result, artifacts, (json.loads(out.read_text("utf-8")) if out.exists() else None), FileArtifacts(plan["store"])
+
+
+def test_nested_suite_accounts_outer_and_inner_nodes_with_separate_evidence(tmp_path):
+    result, artifacts, inner, inner_store = nested_suite(tmp_path, PASSING)
+    assert inner is not None and inner["passed"] is True and inner["outcome"] == "executed", inner
+    d = inner["denominator"]
+    assert (d["collected"], d["passed"], d["skipped"], d["xfailed"], d["failed"], d["not_run"], d["batches"]) == (
+        7, 5, 1, 1, 0, 0, 4), "the inner suite collected and ran its own nodes, not the outer selection"
+    assert result["passed"] is True and result["outcome"] == "executed", result
+    d = result["denominator"]
+    assert (d["collected"], d["passed"], d["failed"], d["not_run"], d["batches"]) == (2, 2, 0, 0, 1)
+    outer_report = artifacts.document(result["evidence"])
+    assert artifacts.document(outer_report["manifest"])["nodeids"] == [
+        "tests/test_outer_nested.py::test_inner_suite", "tests/test_outer_plain.py::test_plain"]
+    inner_report = inner_store.document(inner["evidence"])
+    assert inner_store.document(inner_report["manifest"])["count"] == 7
+    batch = artifacts.document(outer_report["batches"][0]["evidence"])
+    assert "test_alpha.py" not in batch["events"]["text"], "the inner suite never wrote to the outer report"
+    assert inner["evidence"] != result["evidence"] and inner_store.root != artifacts.root
+
+
+def test_nested_failed_inner_suite_is_never_an_outer_pass(tmp_path):
+    result, _, inner, _ = nested_suite(tmp_path, {"test_bad.py": "def test_ok():\n    pass\n\n"
+                                                                 "def test_bad():\n    assert False\n"})
+    assert inner is not None and inner["passed"] is False and inner["denominator"]["failed"] == 1, inner
+    assert result["passed"] is False and result["outcome"] == "executed", result
+    assert result["denominator"]["failed"] == 1 and result["denominator"]["passed"] == 1
+
+
+def test_caller_supplied_stale_accounting_environment_is_not_inherited(tmp_path):
+    import json
+    stale_select, stale_report = tmp_path / "stale.select.json", tmp_path / "stale.jsonl"
+    stale_select.write_text(json.dumps(["tests/elsewhere.py::test_gone"]), encoding="utf-8")
+    env = {**os.environ, SELECT_ENV: str(stale_select), REPORT_ENV: str(stale_report)}
+    snapshot = dict(env)
+    result, artifacts = run_suite(suite_tree(tmp_path / "suite", PASSING), batch_nodes=2, env=env)
+    assert result["passed"] is True and result["denominator"]["collected"] == 7, result
+    assert not stale_report.exists() and env == snapshot
+    report = artifacts.document(result["evidence"])
+    assert report["accounting"]["inherited_removed"] == [REPORT_ENV, SELECT_ENV]
+    assert SELECT_ENV in report["env_keys"], "the caller's key list is still recorded as supplied"
 
 
 def test_collection_failure_and_empty_collection_are_never_passes(tmp_path):

@@ -163,10 +163,15 @@ class ReleaseSuite:
             (root / "plugin").mkdir()
             (root / "plugin" / (PLUGIN_MODULE + ".py")).write_text(PLUGIN_SOURCE, encoding="utf-8")
             base = dict(os.environ if env is None else env)
+            # The accounting variables belong to this suite alone: a suite started inside another
+            # suite's batch (or by a caller holding stale values) must neither filter its collection
+            # against that selection nor inherit that report. A batch sets only its own selection.
+            inherited = sorted(key for key in (REPORT_ENV, SELECT_ENV) if base.pop(key, None) is not None)
             base["PYTHONPATH"] = os.pathsep.join([str(root / "plugin")] + (
                 [base["PYTHONPATH"]] if base.get("PYTHONPATH") else []))
             context = {"argv": argv, "binding": binding, "env_keys": sorted(env) if isinstance(env, dict) else None,
-                       "accounting": {"plugin": PLUGIN_MODULE, "env_keys": ["PYTHONPATH", REPORT_ENV, SELECT_ENV]},
+                       "accounting": {"plugin": PLUGIN_MODULE, "env_keys": ["PYTHONPATH", REPORT_ENV, SELECT_ENV],
+                                      "inherited_removed": inherited},
                        "timeout_seconds": timeout, "batch_nodes": self.batch_nodes}
             return self._suite(argv, cwd, timeout, base, root, context)
 

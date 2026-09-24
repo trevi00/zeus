@@ -350,7 +350,12 @@ installation success, file presence or string marker is a check result.
 A release pytest check (`ReleaseRunner._check` with a pytest argv, incumbent and candidate suites
 alike) is checklist-complete. It first collects exact node IDs under the check's own argv, config,
 cwd, environment and import mode, with an accounting plugin the controller writes into its own
-temporary directory (never taken from either checkout). A collection that fails, times out,
+temporary directory (never taken from either checkout). The suite owns its accounting variables:
+an inherited `RELEASE_ACCOUNTING_REPORT` or `RELEASE_ACCOUNTING_SELECT` (a suite run inside another
+suite's batch, or a stale caller value) is removed from the child environment before collection
+and named in the report's `accounting.inherited_removed`; each process gets its own report and
+only a batch gets its own selection, so a nested suite neither filters against nor writes into the
+outer suite's evidence. The caller's dict and `os.environ` are never mutated. A collection that fails, times out,
 reports nothing or has duplicate IDs is not an empty passing suite: `executed` failure,
 `observation_error`, `coverage_mismatch`; no tests is `empty_check`. The manifest artifact keeps
 the ordered node IDs (redacted copy; the hash binds the exact list), their count and sha256, the
