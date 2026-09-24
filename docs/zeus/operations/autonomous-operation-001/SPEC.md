@@ -1,5 +1,95 @@
 # Whole autonomous operating loop
 
+## Research coverage ownership: accepted003 receipt refusal, 2026-09-24
+
+Actual acceptance path refused research_scope_unverified. Council003 accepted docs candidate
+9d1662e7734e0ae3204cf52856283404c007f121, seven real settled starts, reviewed report names both
+delivery-tree and cont-8a33f46baefb1ebfc17e871b. Current Fleet/inspection digests match both attempts.
+However the immutable dispatch recovery-2 names only five project-bound original jobs, not cont.
+DB observation: original portfolio_bindings -> research-improvement/verified-loop, cont -> null.
+scoped_job_ids correctly excludes unbound jobs; continuation._publish enqueues a successor but
+does not carry Portfolio ownership. Current broad investigation includes cont, dispatch does not.
+Thus the report's semantic scope and trusted dispatch scope diverge. Preserve the strict refusal.
+No repair model call was started; four owner-helper attempts stopped and restored scheduled Fleet.
+The first three were helper artifact API misuse, not runtime defects; fourth is this actual gap.
+
+Outcome: complete the SAME accepted research's owner coverage without rewriting its capture,
+inventing historical membership, changing failure verdicts or rerunning the whole research council.
+Reuse Portfolio.bind and existing continuation lineage/receipt/artifact verification. No new executor.
+Affected path: originating project+criterion -> immutable continuation intent and Fleet successor
+admission -> project binding -> research selection/capture -> accepted council/report/review ->
+explicit owner scope supplement -> exact current receipt -> existing evidence-repair dispatch.
+
+One Claude batch, two inseparable ownership seams:
+1. New successors inherit an existing origin project/criterion through explicit trusted continuation
+lineage, never text/name heuristics. Preserve unbound legacy origins; never guess a project. Existing
+conflicting target binding refuses. Resume after enqueue-before-bind interruption idempotently, and
+do not advance the intent while required binding is missing. No nested store transactions. Reuse
+Portfolio owner methods. Provide an explicit owner reconciliation of already-admitted missing
+bindings using the persisted exact parent/successor intent and both Fleet manifests, not arbitrary
+job ids or a DB write script. This reconciliation asserts present ownership only, never historic capture.
+2. Add an opt-in append-only owner scope-supplement contract for an accepted CURRENT research
+dispatch whose job sample omitted a proven continuation successor. Old receipt behavior unchanged.
+The owner supplies exact intent/policy/family and complete attempts with evidence digests/inspections,
+current dispatch hashes and accepted run/candidate/review bindings, plus content-addressed report
+and owner coverage attestation. Attestation is explicitly owner semantic judgment (report covers this
+pair), NOT a model verdict or algorithmic semantic proof. Root Codex supplies it only after reading.
+Validate all actual bytes through trusted artifact roots; bound accepted executor/review evidence
+may use document() for mechanical parsing, but model-facing report/attestation stays bounded.
+Require missing members be exact persisted continuation descendants of an already-captured member,
+same lane/project/criterion, terminal known failures, current complete attempt set unchanged, no
+unknown effects, no new topic or broader authority. Refuse arbitrary same-reason jobs/foreign family.
+Original dispatch job_ids/snapshot and all failures remain unchanged; supplement records current
+lineage/membership and explicit later owner judgment separately. Identical submission is idempotent,
+different binding conflicts; stale dispatch, new attempt, missing evidence, unaccepted council,
+broken retained fences/lineage or changed inspection refuses both at registration AND receipt use.
+Only this typed supplement may close the sample gap; never remove the default subset check or
+let receipt evidence_refs alone imply coverage. Status must distinguish original capture from supplement.
+No generic bypass, broad Portfolio disposition, automatic acceptance, deployment or operating row edits.
+
+Acceptance matrix: baseline actual-shaped unbound successor is excluded and receipt refuses;
+new continuation admission/restart binds same project once, conflict/missing origin behaves honestly;
+explicit historical ownership reconcile succeeds only proven exact lineage; accepted003-shaped
+owner supplement + unchanged original snapshot allows exact two-attempt receipt, not other jobs.
+Tampered/missing artifacts, foreign ids, incomplete attempt set, concurrent duplicate/conflict,
+later changed attempt/dispatch/inspection and retained fence failure must hold. An unexecuted check
+stays labelled. No network research/platform changes: this is portable PG/MemoryStore ownership logic;
+exercise isolated PG if available and label skips. No new provider calls in tests.
+Targeted continuation/research/portfolio tests + Ruff only; full suite belongs to CI. Preserve all
+accepted routing/recovery gates. Independent Codex acceptance and owner checks precede deployment;
+then actual supplement/receipt/one scoped repair and whole-loop qualification, still not complete now.
+
+## Accepted council003 to one scoped evidence repair, 2026-09-24
+
+Actual council003 completed seven settled starts and independent acceptance of9d1662e7. Its
+99-line report diagnoses the exact original/successor claim-scope mismatch. Historical statements
+about absent research dispatches are base-revision facts, not current state; a longer timeout's
+inevitable failure is not established. Neither statement is needed for the scoped recovery.
+Owner reads current Fleet/lane attempt bindings and content-addressed research/review bytes,
+then records a receipt for ONLY the delivery-tree pair. Retain all failed history and other holds.
+Run one existing Fleet continuation/repair pass with the prepared container evidence profile
+applied only to this family's evidence-repair job. Pause admission and prove no held units before
+stopping the scheduled owner; the bounded owner then claims through existing Fleet transactions.
+Other jobs retain normal settings; no global profile or verifier change. Restore the scheduled
+owner after bounded dispatch/review drains. Any unconfirmed active work blocks owner switching.
+Success requires the repaired candidate's actual declared checks and independent review; this
+handoff alone neither merges/deploys it nor qualifies the whole loop. Publish terminal progress
+to the owner observer for the next acceptance/delivery step.
+
+## Owner continuation after PR189 deployment, 2026-09-24
+
+PR189 is merged at131cb262 and scheduled Fleet consumed that clean runtime. CI and isolated PG
+passed. The preserved Fleet review held routing32b20e2 only for the missing baseline reproducer;
+root Codex supplied the failing81ce6b9/passing32b20e2 execution and separate owner acceptance under
+D:/workspaces/zeus/artifacts/council-routing-review. The original Fleet verdict is not rewritten.
+Next bounded delivery is explicit successor003 of failed002 through the accepted settled-read-only
+API: pin current dispatch/config/lineage, validate settled task artifacts and retained fences, then
+one same-authority research cycle on run-scoped Redis. No duplicate worker or automatic retry.
+The existing deadline, topic, template, resource limits and original failed history remain intact.
+Success is evidence for owner review, not automatic research acceptance or full-loop completion.
+Record any refusal/failure as terminal owner delivery for continuation; only an accepted actual
+council plus exact scoped receipt may release the pending repair. Existing whole-loop gates remain.
+
 ## Council isolation resubmission: authoritative publication route, 2026-09-24
 
 Candidate81ce6b9 staged ONLY as correction input, not accepted/deployed. Review72d5b41 reports one

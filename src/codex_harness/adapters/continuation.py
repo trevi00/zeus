@@ -151,6 +151,20 @@ def accept_research(store, config: dict, host: dict, document, *, lanes=None, ev
                         evidence=evidence or research_evidence()).accept_research(document)
 
 
+def supplement_research(store, config: dict, host: dict, document, *, lanes=None, evidence=None) -> dict:
+    """The owner's typed research scope supplement, verified against the same control-store rows,
+    lane stores and trusted evidence bytes as a receipt, then stored once
+    (`Continuation.supplement_research_scope`). It releases nothing by itself."""
+    return Continuation(store, lanes=lanes or lane_stores(config, host),
+                        evidence=evidence or research_evidence()).supplement_research_scope(document)
+
+
+def reconcile_ownership(store, intent_id: str) -> dict:
+    """The owner's explicit present-ownership reconciliation of one admitted continuation successor
+    (`Continuation.reconcile_ownership`): control-store rows only, no lane, Git or process."""
+    return Continuation(store).reconcile_ownership(intent_id)
+
+
 def lane_runtime(config: dict, host: dict):
     """What each lane actually runs, for the policy's qualified identity check."""
     from codex_harness.adapters.isolated_worker import load_isolation
@@ -269,4 +283,5 @@ def configured_policy(settings: dict) -> str | None:
 
 __all__ = ["ConductorProcesses", "ContinuationPass", "POLICY_SETTING", "ResearchEvidence", "accept_research",
            "archive_identity", "configured_policy", "continuation_ticker", "coordinator", "lane_runtime",
-           "lane_stores", "load_policy", "read_receipt", "register_policy", "research_evidence", "tick_policy"]
+           "lane_stores", "load_policy", "read_receipt", "reconcile_ownership", "register_policy", "research_evidence",
+           "supplement_research", "tick_policy"]

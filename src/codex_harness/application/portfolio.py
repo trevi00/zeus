@@ -398,6 +398,37 @@ def status_projection(definitions: dict, jobs: list[dict], bindings: list[dict],
             "unbound_jobs": len(rows) - len(bound_ids), "unclassified_failures": unclassified}
 
 
+LINEAGE_AUTHORITY = ("present ownership inherited through verified continuation lineage; not historical "
+                     "capture membership and not criterion acceptance")
+
+
+def inherit_binding(tx, job_id: str, origin_job_id: str, lineage: dict, now: str) -> dict | None:
+    """Bind `job_id` to exactly the project and criterion its continuation origin is bound to, inside
+    the CALLER's open transaction (never a nested one; SPEC "Research coverage ownership").
+
+    The caller has already proven the lineage (the persisted successor intent and both Fleet rows);
+    nothing is inferred from a title, objective or path. An unbound origin returns None: legacy
+    unbound work stays unbound and no project is guessed. An existing binding of the same target
+    replays (`cached`), any other target is `binding_conflict` and nothing is overwritten. The row is
+    immutable like an owner binding and additionally names its lineage."""
+    origin = tx.get(BUCKET_BINDINGS, origin_job_id)
+    if origin is None:
+        return None
+    target = (origin["project_id"], origin["criterion_id"])
+    old = tx.get(BUCKET_BINDINGS, job_id)
+    if old is not None:
+        if (old["project_id"], old["criterion_id"]) != target:
+            raise PortfolioRefused("binding_conflict")
+        return {"bound": True, "cached": True, "binding": dict(old)}
+    if tx.get(BUCKET_JOBS, job_id) is None:
+        raise PortfolioRefused("job_unknown", "job_id")
+    row = {"id": job_id, "job_id": job_id, "project_id": target[0], "criterion_id": target[1],
+           "recorded_by": "continuation_lineage", "lineage": {"origin_job": origin_job_id, **lineage},
+           "authority": LINEAGE_AUTHORITY, "created_at": now}
+    tx.put(BUCKET_BINDINGS, job_id, row)
+    return {"bound": True, "cached": False, "binding": dict(row)}
+
+
 class Portfolio:
     """Owner-only operations over validated definitions; every method is one store transaction."""
 
@@ -549,5 +580,5 @@ class Portfolio:
 __all__ = ["ACTIVITY_MODES", "BUCKET_ACCEPTANCES", "BUCKET_BINDINGS", "BUCKET_FOLLOWUPS",
            "BUCKET_INVESTIGATIONS", "DEFERRED", "FOLLOWUP_LINKED", "FOLLOWUP_UNKNOWN",
            "RESEARCHED", "RESEARCH_REQUIRED", "STATUS_SCHEMA", "Portfolio", "PortfolioRefused",
-           "activity_mode", "family_id", "follow_up_view", "project_activity", "reconcile",
+           "activity_mode", "family_id", "follow_up_view", "inherit_binding", "project_activity", "reconcile",
            "status_projection", "validate_definitions"]

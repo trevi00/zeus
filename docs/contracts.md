@@ -2706,6 +2706,54 @@ acceptance is history, never a substitute for the consumption read; an absent fi
 empty report. Integrity holds at the observed read time only, not as a lasting availability
 guarantee: a later tick rechecks before any new hold-release effect.
 
+Research coverage ownership (SPEC "Research coverage ownership: accepted003 receipt refusal"). Successor
+ownership: a successor's Fleet admission is confirmed, its origin's `portfolio_bindings` target
+inherited (`application.portfolio.inherit_binding`, `recorded_by: continuation_lineage`, with
+`lineage {origin_job, intent_id}`) and the intent moved to `admitted` in ONE control-store transaction
+(no nested one); the intent records `ownership {state: inherited|origin_unbound, project_id,
+criterion_id}`. An unbound origin stays unbound (no project is guessed from text or names); an
+existing binding of another target is `successor_binding_conflict` (owner `portfolio`), nothing is
+overwritten and the intent stays `published`; an interruption after the enqueue replays the same job
+id and binds once. `zeus continuation ownership-reconcile --intent` (`Continuation.reconcile_ownership`)
+binds ONE already admitted successor only from the persisted exact successor intent (route
+`evidence_repair`/`correction`, state `admitted|returned|completed`, successor id derived from the
+intent, the lane binding's predecessor) and both Fleet rows (the successor row carries the intent's
+manifest on its lane; the origin row's manifest digest is the one the intent was authorized on):
+`ownership_intent_invalid`, `ownership_lineage_unproven`, `ownership_origin_unbound`,
+`successor_binding_conflict`. It asserts present ownership only, never historical capture membership,
+and writes no intent, Fleet, dispatch or investigation row. Scope supplement: the research dispatch
+snapshot stays immutable and the default `research_scope_unverified` gate is unchanged. The ONLY way to
+close a sample gap is the owner's typed, append-only supplement
+(`urn:zeus:continuation-research-scope-supplement:1`, `zeus continuation research-supplement --file`,
+`Continuation.supplement_research_scope`), one immutable row per research intent in
+`continuation_research_supplements` (identical replay `cached`, any other `research_supplement_conflict`).
+It names the receipt's intent/policy/family, the COMPLETE attempt set with evidence digests and
+inspections, the investigation, the CURRENT dispatch (`dispatch {program, run_id, manifest_sha256,
+snapshot_sha256, id, job_ids_sha256}`), `captured` (exactly the members inside the original sample),
+`descendants[] {job, parent_job, intent_id}` (exactly the members outside it), the accepted run's
+`acceptance {graph_sha256, candidate_revision, decision_id}` and two distinct content-addressed refs:
+`report_ref` and `attestation_ref`. The attestation is the owner's explicit semantic judgment that the
+report covers those members: not a model verdict and not an algorithmic proof. `check_scope_supplement`
+runs every receipt check, then requires the current dispatch id and sample digest, each descendant an
+exact persisted successor intent of a captured member or of an already proven descendant (same policy
+and digest, family and lane, admitted, successor id derived from the intent, lane binding predecessor),
+both jobs terminal known failures (`failed`/`rejected`) and the same Portfolio target, and the accepted
+promotion evidence read mechanically from rows (run `promotion.graph_sha256` = promotion receipt,
+its decision and implementation task, the task succeeded with that candidate revision, the decision
+the succeeded accepting `review_lead` of it). Refusals: `research_supplement_invalid`,
+`_capture_mismatch`, `_scope_mismatch`, `_lineage_broken`, `_ownership_mismatch`,
+`_acceptance_unproven`, `research_dispatch_mismatch` and every receipt/evidence code; the retained
+recovery fence is checked as for a receipt, and the write transaction rechecks intent version, attempt
+set and the current dispatch row. A supplement releases nothing. When the sample does not cover a
+receipt's members, `check_research_receipt` accepts only a stored supplement naming exactly the
+receipt's binding (`research_supplement_mismatch`) that passes the full check again, at acceptance AND
+at every consumption, with its report/attestation bytes read again; the receipt row stores
+`coverage: original_capture|owner_supplement` and `supplement_sha256`, consumption requires the same
+(`research_coverage_changed`), a stored row whose digest no longer matches is
+`research_supplement_corrupt`, and `status` shows `receipt.coverage` and a separate `supplement` view.
+Evidence refs alone never imply coverage; the original dispatch, snapshot, investigation and failure
+verdicts are never rewritten.
+
 An intent id is `origin job + generation/attempt + decisive evidence digest + route`; a successor id is
 `cont-` plus 24 hex of it. Every external effect has a durable pre-effect state: `intended` (complete
 successor manifest and binding recorded) -> `published` (lane binding written; identical replay cached,
