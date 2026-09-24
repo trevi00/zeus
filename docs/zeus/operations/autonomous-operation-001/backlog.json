@@ -594,6 +594,19 @@
       "dependencies": [
         "native-fixture"
       ]
+    },
+    {
+      "id": "release-signal",
+      "project_id": "research-improvement",
+      "criterion_id": "verified-loop",
+      "lane": "harness",
+      "manifest_path": "docs/zeus/operations/autonomous-operation-001/release-signal.operation.json",
+      "manifest_revision": "04bc5751ed5fd512eabca6d7097fc4243a8fc53c",
+      "manifest_sha256": "98a70fe6635d58ca164471733687a5d455c7fc6e6143fa9bef5df9f2d8742b4b",
+      "priority": 440,
+      "dependencies": [
+        "native-fixture"
+      ]
     }
   ]
 }
