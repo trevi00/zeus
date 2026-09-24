@@ -1,5 +1,52 @@
 # Whole autonomous operating loop
 
+## Settled council contract failure recovery, 2026-09-24 13:30 UTC
+
+Outcome unchanged: release-checklist held pair -> accepted research -> scoped receipt -> readable
+correction -> independent verification -> actual managed delivery. Do not rerun or bypass the held
+pair. Actual research release-checklist-research-001.c001 failed at improvement_lead before conductor,
+implementation or promotion; four read-only role starts all succeeded/settled. Recorded cause is
+debate_refused:ContractError. Root replayed council_output on immutable execution10560304 and got
+Improvement lead proposal needs a summary...; summary length6046 exceeds domain.council._text
+limit4000. Fields/decision exist. This is a local domain replay, not another model call or proof of
+other runs' causes. Provider-facing autonomous_roles uses general TEXT for summary; inspect exact
+schema/role guidance to align it with the existing consumer, never truncate accepted outputs.
+Existing settled_read_only_successor accepts only foreign_message after researcher/DBA and requires
+prior recovery lineage version>=1. This initial dispatch with four settled roles is outside that
+contract. Reuse owners; do not delete claims, change failed run, or use a fake legacy recovery.
+
+One bounded Claude batch, two connected seams:
+1. Single-source council field bounds between domain validation and role output schema/guidance.
+Constrain summaries/rationales/transition text to their actual consuming rules and concise guidance.
+Do not globally shrink unrelated TEXT or raise4000. Name safe fixed reason codes for rejected field
+shape/length, without echoing content. Keep committed prior outputs/readable evidence and schemas
+compatible. Tests actual-shaped6046 case and boundary values; no model calls in tests.
+2. Explicit owner-authorized same-scope successor for INITIAL or current dispatch that failed a
+named council output-contract check after only read-only researcher/DBA/proposer/attacker tasks.
+Extend existing recovery owner/CLI/versioned lineage additively, preserve old v1/v2/v3 proofs. Require
+actual immutable run/task/artifact identity, every reservation settled, every provider effect known,
+all tasks terminal, no conductor decision/implementation/promotion, no operation or held cleanup.
+The recorded legacy generic ContractError of THIS shape needs independently re-derived exact safe
+field rejection from bound artifact, not generic error acceptance. Check run-scoped bus/outbox and
+fence old pending publications using existing owners; don't assume terminal means drained. Refuse
+unavailable/corrupt/foreign evidence, active/unknown effects or scope changes. Original dispatch,
+run, tasks, failed outputs and spent calls stay unchanged; no output is rewritten/reused as accepted.
+New request pins exact predecessor and new immutable program config; replacement may narrow prompt
+length instructions without broadening topic/project/reason/repair scope. Atomic idempotency and
+replay/concurrent requests make one successor. Current-dispatch consumers and scoped receipt must
+bind new accepted run and retained predecessor fences, not stale original result. No new scheduler.
+
+Acceptance matrix: initial exact-shaped four settled read-only role failure permits one explicit
+successor; existing replacement chain still works. All role artifacts bound. Negative wrong failure,
+foreign/stale/missing artifact, nonterminal task, unconfirmed invocation, conductor or worker entry,
+changed scope and broken fence refuse. Duplicate/concurrent/restart request one result. Successor
+failure stays held. Pure/domain plus MemoryStore and isolated PG when available; no live DB edits.
+Targeted council-role/research-recovery/continuation tests + Ruff only, not full suite. Root independent
+review/CI/runtime activation precede actual same-scope successor. Original report is NOT accepted;
+no scoped receipt can be issued now. Remaining checklist code redaction+cleanup correction retains
+its earlier accepted collection fix. No other product feature belongs to this batch.
+
+
 ## Release checklist two-strike research and readable feedback, 2026-09-24 13:20 UTC
 
 Same goal, scope and acceptance matrix. Actual originaljob autonomous-operation-001-release-checklist,
