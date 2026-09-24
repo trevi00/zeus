@@ -52,6 +52,7 @@ from codex_harness.domain.continuation import (
     COMPLETED,
     CONDUCTOR,
     CORRECTION,
+    COVERAGE_MIXED,
     COVERAGE_ORIGINAL,
     COVERAGE_SUPPLEMENT,
     DELIVERY,
@@ -69,6 +70,7 @@ from codex_harness.domain.continuation import (
     MAX_HISTORY,
     MAX_LAUNCHES,
     MAX_SLOTS,
+    MIXED_RECEIPT_SCHEMA,
     NEXT_ITEM,
     OPEN_STATES,
     PAUSED,
@@ -77,7 +79,6 @@ from codex_harness.domain.continuation import (
     RECOVERY_REQUIRED,
     REFUSED,
     RESEARCH,
-    RESEARCH_RECEIPT_SCHEMA,
     RESEARCH_REQUIRED,
     RESUME,
     RETURNED,
@@ -91,6 +92,7 @@ from codex_harness.domain.continuation import (
     bind_delivery,
     blocked_families,
     check_authorization,
+    check_mixed_receipt,
     check_research_receipt,
     check_scope,
     check_scope_supplement,
@@ -108,6 +110,7 @@ from codex_harness.domain.continuation import (
     owners,
     policy_digest,
     progress_order,
+    receipt_refs,
     receipt_view,
     record_attempt,
     refuse,
@@ -118,7 +121,7 @@ from codex_harness.domain.continuation import (
     transition,
     validate_binding,
     validate_policy,
-    validate_research_receipt,
+    validate_receipt,
     validate_scope_supplement,
     view,
 )
@@ -338,11 +341,15 @@ class Continuation:
         edited: the identical receipt replays (`cached`), any other for the same intent is
         `research_receipt_conflict`. Every accepted return, a replay included, first rechecks an
         execution-revocation lineage's retained fence; a refused replay keeps the stored receipt. It moves no intent: the next tick consumes it after verifying
-        it again, so a restart or a second controller completes the hold exactly once."""
-        receipt = validate_research_receipt(document)
+        it again, so a restart or a second controller completes the hold exactly once.
+
+        A schema-2 document is the mixed-cause family receipt (`check_mixed_receipt`): same entry,
+        bucket, replay, conflict, fence and commit checks; it never reads or needs a scope supplement,
+        and its row records `coverage: mixed_family`."""
+        receipt = validate_receipt(document)
         facts = self._research_facts(receipt)
         stored = facts.pop("stored")
-        supplement = self._supplement_of(facts)
+        supplement = self._supplement_of(facts, receipt)
         if stored is not None:
             refuse(stored.get("receipt") == receipt, "research_receipt_conflict", "operator", "intent_id")
             self._require_recovery(facts)   # a cached acceptance answers only while the fence still holds
@@ -350,8 +357,8 @@ class Continuation:
         self._require_recovery(facts)
         if isinstance(facts["intent"], dict) and facts["intent"].get("state") == RESEARCH_REQUIRED:
             facts["observed"] = self._observe_attempts(facts["jobs"])
-        coverage = check_research_receipt(receipt, **facts)
-        self._verify_evidence(receipt["evidence_refs"])
+        coverage = self._coverage(receipt, facts)
+        self._verify_evidence(receipt_refs(receipt))
         if coverage == COVERAGE_SUPPLEMENT:
             self._verify_evidence([supplement["supplement"]["report_ref"], supplement["supplement"]["attestation_ref"]])
         now = self.clock()
@@ -376,7 +383,14 @@ class Continuation:
             if coverage == COVERAGE_SUPPLEMENT:
                 refuse(tx.get(BUCKET_RESEARCH_SUPPLEMENTS, receipt["intent_id"]) == supplement,
                        "research_coverage_changed", ROUTE_OWNERS[RESEARCH], "supplement")
-            row = {"id": receipt["intent_id"], "schema": RESEARCH_RECEIPT_SCHEMA, "receipt": receipt,
+            if coverage == COVERAGE_MIXED:
+                # The dispatch that captured the members is still the CURRENT one, byte for byte.
+                investigation = receipt["investigation"]
+                current = current_dispatch_id(investigation, tx.get(RESEARCH_RECOVERIES, investigation),
+                                              tx.get(RESEARCH_HEADS, investigation))
+                refuse(tx.get(RESEARCH_DISPATCHES, current) == facts["dispatch"], "research_dispatch_mismatch",
+                       ROUTE_OWNERS[RESEARCH], "dispatch")
+            row = {"id": receipt["intent_id"], "schema": receipt["schema"], "receipt": receipt,
                    "receipt_sha256": digest(receipt), "accepted_at": now, "recorded_by": "owner",
                    "coverage": coverage,
                    "supplement_sha256": supplement["supplement_sha256"] if coverage == COVERAGE_SUPPLEMENT else None}
@@ -388,9 +402,21 @@ class Continuation:
         return {"accepted": True, "cached": cached, **receipt_view(row)}
 
     @staticmethod
-    def _supplement_of(facts: dict) -> dict | None:
-        """Move the stored supplement row out of the facts; the checks receive only its document."""
+    def _coverage(receipt: dict, facts: dict) -> str:
+        """The check owning the receipt's version; returns how its attempt set is covered."""
+        if receipt["schema"] == MIXED_RECEIPT_SCHEMA:
+            return check_mixed_receipt(receipt, **{k: facts[k] for k in (
+                "intent", "attempts", "policy", "jobs", "observed", "investigations", "dispatch", "run_result",
+                "lineage", "bindings", "acceptance")})
+        return check_research_receipt(receipt, **facts)
+
+    @staticmethod
+    def _supplement_of(facts: dict, receipt: dict | None = None) -> dict | None:
+        """Move the stored supplement row out of the facts; the checks receive only its document. A
+        mixed-cause receipt never uses a supplement, so none is read into its facts."""
         row = facts.pop("supplement_row")
+        if receipt is not None and receipt.get("schema") == MIXED_RECEIPT_SCHEMA:
+            return None
         if row is None:
             facts["supplement"] = None
             return None
@@ -489,14 +515,19 @@ class Continuation:
             acceptance = {"run": run, "promotion": promotion,
                           "task": tx.get("tasks", task_id) if type(task_id) is str else None,
                           "decision": tx.get("decisions_pending", decision_id) if type(decision_id) is str else None}
+            # A mixed-cause receipt names each member's OWN investigation; each is read here as well.
+            mixed = receipt.get("schema") == MIXED_RECEIPT_SCHEMA
+            investigations = ({name: tx.get(INVESTIGATIONS, name)
+                               for name in sorted({a["investigation"] for a in receipt["attempts"]})} if mixed else None)
         held = isinstance(intent, dict) and intent.get("route") == RESEARCH
         run_result = (council_result(run_id, dispatch.get("manifest_sha256"), run) if type(run_id) is str
                       else {"result": "unknown", "reason_code": "dispatch_not_started", "row_status": None})
-        return {"stored": stored, "intent": intent, "attempts": research_attempts(intents, intent) if held else [],
-                "policy": policy, "jobs": jobs, "observed": {}, "investigation": investigation,
-                "dispatch": dispatch, "run_result": run_result, "recovery_held": recovery_held,
-                "supplement_row": supplement_row, "lineage": {row["id"]: row for row in intents},
-                "bindings": bindings, "acceptance": acceptance}
+        facts = {"stored": stored, "intent": intent, "attempts": research_attempts(intents, intent) if held else [],
+                 "policy": policy, "jobs": jobs, "observed": {}, "investigation": investigation,
+                 "dispatch": dispatch, "run_result": run_result, "recovery_held": recovery_held,
+                 "supplement_row": supplement_row, "lineage": {row["id"]: row for row in intents},
+                 "bindings": bindings, "acceptance": acceptance}
+        return {**facts, "investigations": investigations} if mixed else facts
 
     @staticmethod
     def _recovery_held(tx, investigation: str) -> str | None:
@@ -1203,18 +1234,25 @@ class Continuation:
         refuse(isinstance(receipt, dict) and receipt.get("intent_id") == intent["id"]
                and receipt.get("policy_id") == ctx["policy"]["id"] and receipt.get("policy_sha256") == ctx["sha"],
                "research_policy_foreign", "operator", "policy")
+        if receipt.get("schema") == MIXED_RECEIPT_SCHEMA:
+            # A mixed-cause row answers only as the exact canonical document that was accepted.
+            try:
+                intact = validate_receipt(receipt) == receipt and digest(receipt) == stored.get("receipt_sha256")
+            except ContinuationRefused:
+                intact = False
+            refuse(intact, "research_receipt_corrupt", ROUTE_OWNERS[RESEARCH], "receipt")
         facts = self._research_facts(receipt)
         facts.pop("stored")
-        supplement = self._supplement_of(facts)
+        supplement = self._supplement_of(facts, receipt)
         self._require_recovery(facts)   # before the lane reads and before the hold is released
         facts["observed"] = self._observe_attempts(facts["jobs"])
-        coverage = check_research_receipt(receipt, **facts)
+        coverage = self._coverage(receipt, facts)
         # The coverage the receipt was accepted under, again: an original-capture receipt never
         # becomes a supplement one, and a supplement receipt needs the same immutable supplement.
         refuse(coverage == (stored.get("coverage") or COVERAGE_ORIGINAL)
-               and (coverage == COVERAGE_ORIGINAL or supplement["supplement_sha256"] == stored.get("supplement_sha256")),
+               and (coverage != COVERAGE_SUPPLEMENT or supplement["supplement_sha256"] == stored.get("supplement_sha256")),
                "research_coverage_changed", ROUTE_OWNERS[RESEARCH], "supplement")
-        self._verify_evidence(receipt["evidence_refs"])
+        self._verify_evidence(receipt_refs(receipt))
         if coverage == COVERAGE_SUPPLEMENT:
             self._verify_evidence([supplement["supplement"]["report_ref"], supplement["supplement"]["attestation_ref"]])
         moved = self._move(intent, COMPLETED, reason_code="research_receipt_accepted",

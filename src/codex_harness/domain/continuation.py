@@ -634,6 +634,21 @@ def _check_research(receipt: dict, *, intent, attempts: list, policy, jobs: dict
     """The bindings a receipt and a scope supplement share (everything but the job-sample scope);
     returns the member jobs."""
     research = ROUTE_OWNERS[RESEARCH]
+    members = _check_held(receipt, intent=intent, attempts=attempts, policy=policy, jobs=jobs, observed=observed)
+    refuse(isinstance(investigation, dict), "research_investigation_unknown", research, "investigation")
+    refuse(investigation.get("id") == receipt["investigation"] and investigation.get("kind", "failure_family")
+           == "failure_family", "research_investigation_mismatch", research, "investigation")
+    refuse(set(members) <= set(investigation.get("job_ids") or [])
+           and all(jobs[job].get("status") == investigation.get("family_status")
+                   and jobs[job].get("reason_code") == investigation.get("reason_code") for job in members),
+           "research_investigation_membership", research, "investigation")
+    _check_dispatch(receipt, dispatch, run_result)
+    return members
+
+
+def _check_held(receipt: dict, *, intent, attempts: list, policy, jobs: dict, observed: dict) -> list:
+    """The held intent and its COMPLETE current attempt set, each attempt's lane evidence read now;
+    returns the member jobs."""
     refuse(isinstance(intent, dict), "research_intent_unknown", "operator", "intent_id")
     refuse(isinstance(policy, dict) and intent.get("policy_id") == receipt["policy_id"] == policy.get("id")
            and receipt["policy_sha256"] == intent.get("policy_sha256") == policy.get("policy_sha256"),
@@ -653,14 +668,12 @@ def _check_research(receipt: dict, *, intent, attempts: list, policy, jobs: dict
                "attempts[].evidence_sha256")
         refuse(seen["inspection"] == attempt["inspection"], "research_inspection_mismatch", "operator",
                "attempts[].inspection")
-    members = [a["job"] for a in receipt["attempts"]]
-    refuse(isinstance(investigation, dict), "research_investigation_unknown", research, "investigation")
-    refuse(investigation.get("id") == receipt["investigation"] and investigation.get("kind", "failure_family")
-           == "failure_family", "research_investigation_mismatch", research, "investigation")
-    refuse(set(members) <= set(investigation.get("job_ids") or [])
-           and all(jobs[job].get("status") == investigation.get("family_status")
-                   and jobs[job].get("reason_code") == investigation.get("reason_code") for job in members),
-           "research_investigation_membership", research, "investigation")
+    return [a["job"] for a in receipt["attempts"]]
+
+
+def _check_dispatch(receipt: dict, dispatch, run_result) -> None:
+    """The current research dispatch of the receipt's investigation: same binding, resolved, accepted."""
+    research = ROUTE_OWNERS[RESEARCH]
     refuse(isinstance(dispatch, dict), "research_dispatch_unknown", research, "dispatch")
     bound = receipt["dispatch"]
     refuse(dispatch.get("investigation") == receipt["investigation"] and dispatch.get("kind", "failure_family")
@@ -669,7 +682,6 @@ def _check_research(receipt: dict, *, intent, attempts: list, policy, jobs: dict
     refuse(dispatch.get("state") == "resolved", "research_unfinished", research, "dispatch")
     refuse(dispatch.get("result") == RESEARCH_ACCEPTED and (run_result or {}).get("result") == RESEARCH_ACCEPTED,
            "research_not_accepted", research, "dispatch")
-    return members
 
 
 def receipt_view(row: dict) -> dict:
@@ -677,13 +689,22 @@ def receipt_view(row: dict) -> dict:
     distinguishes the original dispatch capture from the owner scope supplement (a legacy row could
     only have been stored under the original capture)."""
     receipt = row.get("receipt") or {}
-    return {"intent_id": row.get("id"), "policy_id": receipt.get("policy_id"), "family": receipt.get("family"),
-            "covered_jobs": [a.get("job") for a in receipt.get("attempts") or []],
-            "inspections": [a.get("inspection") for a in receipt.get("attempts") or []],
-            "investigation": receipt.get("investigation"), "dispatch": receipt.get("dispatch"),
-            "evidence_refs": list(receipt.get("evidence_refs") or []), "receipt_sha256": row.get("receipt_sha256"),
-            "coverage": row.get("coverage") or COVERAGE_ORIGINAL, "supplement_sha256": row.get("supplement_sha256"),
-            "accepted_at": row.get("accepted_at"), "authority": RECEIPT_AUTHORITY}
+    shown = {"intent_id": row.get("id"), "policy_id": receipt.get("policy_id"), "family": receipt.get("family"),
+             "covered_jobs": [a.get("job") for a in receipt.get("attempts") or []],
+             "inspections": [a.get("inspection") for a in receipt.get("attempts") or []],
+             "investigation": receipt.get("investigation"), "dispatch": receipt.get("dispatch"),
+             "evidence_refs": list(receipt.get("evidence_refs") or []), "receipt_sha256": row.get("receipt_sha256"),
+             "coverage": row.get("coverage") or COVERAGE_ORIGINAL, "supplement_sha256": row.get("supplement_sha256"),
+             "accepted_at": row.get("accepted_at"), "authority": RECEIPT_AUTHORITY}
+    if receipt.get("schema") != MIXED_RECEIPT_SCHEMA:
+        return shown
+    # A mixed-family receipt also shows each member's own cause and the lineage and report it is bound to.
+    return {**shown, "schema": MIXED_RECEIPT_SCHEMA,
+            "causes": [{k: a.get(k) for k in ("job", "investigation", "status", "reason_code")}
+                       for a in receipt.get("attempts") or []],
+            "captured": list(receipt.get("captured") or []), "lineage": [dict(e) for e in receipt.get("lineage") or []],
+            "acceptance": receipt.get("acceptance"), "attestation_ref": receipt.get("attestation_ref"),
+            "mixed_authority": MIXED_AUTHORITY}
 
 
 # ---- owner research scope supplement (SPEC "Research coverage ownership: accepted003 receipt refusal") --
@@ -824,7 +845,11 @@ def check_scope_supplement(supplement: dict, *, intent, attempts: list, policy, 
            "research_supplement_acceptance_unproven", research, "acceptance")
 
 
-def _check_descendant(row: dict, intent: dict, successor: dict | None, jobs: dict, bindings: dict) -> None:
+def _check_descendant(row: dict, intent: dict, successor: dict | None, jobs: dict, bindings: dict,
+                      prefix: str = "research_supplement") -> None:
+    """One persisted parent -> successor edge of the held family: the exact admitted successor
+    intent (same policy, digest, family and lane), both jobs terminal known failures on that lane and
+    bound to the same Portfolio target. `prefix` names the gate that asked."""
     research = ROUTE_OWNERS[RESEARCH]
     job, parent = jobs.get(row["job"]), jobs.get(row["parent_job"])
     refuse(isinstance(successor, dict) and successor.get("id") == row["intent_id"]
@@ -835,15 +860,15 @@ def _check_descendant(row: dict, intent: dict, successor: dict | None, jobs: dic
            and successor.get("origin_job") == row["parent_job"] and successor.get("successor_job") == row["job"]
            and successor_id(row["intent_id"]) == row["job"]
            and ((successor.get("binding") or {}).get("predecessor") or {}).get("job_id") == row["parent_job"],
-           "research_supplement_lineage_broken", research, "descendants[].intent_id")
+           prefix + "_lineage_broken", research, "descendants[].intent_id")
     refuse(isinstance(job, dict) and isinstance(parent, dict) and job.get("lane") == parent.get("lane")
            == intent.get("lane") and job.get("status") in KNOWN_FAILURES and parent.get("status") in KNOWN_FAILURES,
-           "research_supplement_lineage_broken", research, "descendants[].job")
+           prefix + "_lineage_broken", research, "descendants[].job")
     child, origin = bindings.get(row["job"]), bindings.get(row["parent_job"])
     refuse(isinstance(child, dict) and isinstance(origin, dict)
            and (child.get("project_id"), child.get("criterion_id")) == (origin.get("project_id"),
                                                                         origin.get("criterion_id")),
-           "research_supplement_ownership_mismatch", research, "descendants[].job")
+           prefix + "_ownership_mismatch", research, "descendants[].job")
 
 
 def supplement_view(row: dict) -> dict:
@@ -856,6 +881,151 @@ def supplement_view(row: dict) -> dict:
             "report_ref": supplement.get("report_ref"), "attestation_ref": supplement.get("attestation_ref"),
             "supplement_sha256": row.get("supplement_sha256"), "recorded_at": row.get("recorded_at"),
             "authority": SUPPLEMENT_AUTHORITY}
+
+
+# ---- mixed-cause family receipt (SPEC "Mixed-cause continuation research receipt") ---------------------
+# `research_attempts` groups successive failures of ONE policy family, while a Portfolio investigation
+# groups jobs by ONE (status, reason code); a family whose members failed for different reasons (a
+# rejected parent and its evidence-refused successor) is held by one intent but lies in several
+# investigations, so the schema-1 membership gate truthfully refuses it. This versioned receipt,
+# submitted through the same `research-accept`, covers such a set without asserting a shared cause:
+# every member names its OWN authoritative investigation, status and reason code; at least one member
+# is captured by the current accepted research dispatch of `investigation`; every other member is
+# connected to a captured one through persisted continuation parent -> successor intents (an ancestor
+# or a descendant, never a name, prefix or similarity) inside the same policy, family, lane and Portfolio
+# target; the accepted report is bound through its promotion evidence (`accepted_candidate`); and the
+# owner's immutable attestation states that this exact report covers this exact set. Schema 1 and the
+# scope supplement are unchanged. It grants no acceptance, correction budget, deployment or release.
+MIXED_RECEIPT_SCHEMA = "urn:zeus:continuation-research-receipt:2"
+MIXED_FIELDS = {"schema", "intent_id", "policy_id", "policy_sha256", "family", "attempts", "lineage", "investigation",
+                "dispatch", "captured", "acceptance", "evidence_refs", "attestation_ref"}
+MIXED_ATTEMPT_FIELDS = RECEIPT_ATTEMPT_FIELDS | {"investigation", "status", "reason_code"}
+MIXED_AUTHORITY = ("owner mixed-cause family coverage: each member's own authoritative failure cause, persisted "
+                   "continuation lineage and the owner's attestation that one accepted report covers the exact "
+                   "set; no shared cause is asserted, and it is not an acceptance, a repair verdict or a budget")
+COVERAGE_MIXED = "mixed_family"
+
+
+def validate_mixed_receipt(document) -> dict:
+    """Strict owner mixed-cause receipt; returns the canonical copy. Its schema-1 part (intent,
+    policy, family, attempts, investigation, dispatch binding, evidence refs) is validated by the
+    schema-1 rules; members must lie in at least two distinct investigations."""
+    _receipt(isinstance(document, dict) and set(document) == MIXED_FIELDS, "root")
+    _receipt(document["schema"] == MIXED_RECEIPT_SCHEMA, "schema")
+    attempts, dispatch = document["attempts"], document["dispatch"]
+    _receipt(isinstance(attempts, list) and all(isinstance(a, dict) and set(a) == MIXED_ATTEMPT_FIELDS for a in attempts),
+             "attempts[]")
+    _receipt(isinstance(dispatch, dict) and set(dispatch) == SUPPLEMENT_DISPATCH_FIELDS, "dispatch")
+    shared = validate_research_receipt({
+        "schema": RESEARCH_RECEIPT_SCHEMA, "dispatch": {k: dispatch[k] for k in RECEIPT_DISPATCH_FIELDS},
+        "attempts": [{k: a[k] for k in RECEIPT_ATTEMPT_FIELDS} for a in attempts],
+        **{k: document[k] for k in ("intent_id", "policy_id", "policy_sha256", "family", "investigation",
+                                    "evidence_refs")}})
+    for attempt in attempts:
+        _receipt(type(attempt["investigation"]) is str and INVESTIGATION_REF.fullmatch(attempt["investigation"]),
+                 "attempts[].investigation")
+        _receipt(attempt["status"] in KNOWN_FAILURES, "attempts[].status")
+        _receipt(type(attempt["reason_code"]) is str and TOKEN.fullmatch(attempt["reason_code"]) is not None,
+                 "attempts[].reason_code")
+    _receipt(len({a["investigation"] for a in attempts}) > 1, "attempts[].investigation")
+    _receipt(type(dispatch["id"]) is str and INVESTIGATION_REF.fullmatch(dispatch["id"]) is not None, "dispatch.id")
+    _receipt(type(dispatch["job_ids_sha256"]) is str and SHA256.fullmatch(dispatch["job_ids_sha256"]) is not None,
+             "dispatch.job_ids_sha256")
+    members = {a["job"] for a in attempts}
+    captured = document["captured"]
+    _receipt(isinstance(captured, list) and 0 < len(captured) < len(members) and len(set(captured)) == len(captured)
+             and set(captured) <= members, "captured")
+    lineage = document["lineage"]
+    _receipt(isinstance(lineage, list) and len(lineage) == len(members) - 1, "lineage")
+    for edge in lineage:
+        _receipt(isinstance(edge, dict) and set(edge) == SUPPLEMENT_DESCENDANT_FIELDS, "lineage[]")
+        _receipt(all(type(edge[k]) is str and edge[k] in members for k in ("job", "parent_job"))
+                 and edge["job"] != edge["parent_job"], "lineage[].job")
+        _receipt(type(edge["intent_id"]) is str and SHA256.fullmatch(edge["intent_id"]) is not None,
+                 "lineage[].intent_id")
+    _receipt(len({(e["parent_job"], e["job"]) for e in lineage}) == len(lineage), "lineage[].job")
+    acceptance = document["acceptance"]
+    _receipt(isinstance(acceptance, dict) and set(acceptance) == SUPPLEMENT_ACCEPTANCE_FIELDS
+             and type(acceptance["graph_sha256"]) is str and SHA256.fullmatch(acceptance["graph_sha256"]) is not None
+             and type(acceptance["candidate_revision"]) is str
+             and REVISION.fullmatch(acceptance["candidate_revision"]) is not None
+             and type(acceptance["decision_id"]) is str and TOKEN.fullmatch(acceptance["decision_id"]) is not None,
+             "acceptance")
+    attestation = document["attestation_ref"]
+    _receipt(type(attestation) is str and EVIDENCE_REF.fullmatch(attestation) is not None
+             and attestation not in shared["evidence_refs"], "attestation_ref")
+    causes = {a["job"]: {k: a[k] for k in ("investigation", "status", "reason_code")} for a in attempts}
+    return {**shared, "schema": MIXED_RECEIPT_SCHEMA,
+            "attempts": [{**a, **causes[a["job"]]} for a in shared["attempts"]],
+            "dispatch": {k: dispatch[k] for k in sorted(SUPPLEMENT_DISPATCH_FIELDS)}, "captured": sorted(captured),
+            "lineage": sorted(({k: e[k] for k in sorted(SUPPLEMENT_DESCENDANT_FIELDS)} for e in lineage),
+                              key=lambda e: (e["parent_job"], e["job"])),
+            "acceptance": {k: acceptance[k] for k in sorted(SUPPLEMENT_ACCEPTANCE_FIELDS)},
+            "attestation_ref": attestation}
+
+
+def validate_receipt(document) -> dict:
+    """The owner's receipt under its declared version: schema 2 is the mixed-cause family receipt,
+    anything else is held to the unchanged schema-1 rules."""
+    if isinstance(document, dict) and document.get("schema") == MIXED_RECEIPT_SCHEMA:
+        return validate_mixed_receipt(document)
+    return validate_research_receipt(document)
+
+
+def receipt_refs(receipt: dict) -> list:
+    """Every content-addressed ref whose actual bytes a receipt depends on."""
+    refs = list(receipt["evidence_refs"])
+    return refs + [receipt["attestation_ref"]] if receipt.get("schema") == MIXED_RECEIPT_SCHEMA else refs
+
+
+def check_mixed_receipt(receipt: dict, *, intent, attempts: list, policy, jobs: dict, observed: dict, investigations,
+                        dispatch, run_result, lineage, bindings, acceptance) -> str:
+    """Every binding of one mixed-cause receipt against authoritative reads; the first gap refuses by
+    name. `investigations` is investigation id -> the Portfolio row for every member's named one,
+    `dispatch` the CURRENT dispatch of `receipt.investigation` with `run_result` over its run row,
+    `lineage` intent id -> stored intent row of this policy, `bindings` job -> Portfolio binding and
+    `acceptance` the accepted run's {run, promotion, task, decision}. Returns `mixed_family`."""
+    research = ROUTE_OWNERS[RESEARCH]
+    members = _check_held(receipt, intent=intent, attempts=attempts, policy=policy, jobs=jobs, observed=observed)
+    investigations = investigations if isinstance(investigations, dict) else {}
+    # Each member's OWN cause: the authoritative Portfolio investigation holding it under exactly the
+    # status and reason code its Fleet row carries. Different causes are allowed; none is merged.
+    for attempt in receipt["attempts"]:
+        row, job = investigations.get(attempt["investigation"]), jobs[attempt["job"]]
+        refuse(isinstance(row, dict), "research_investigation_unknown", research, "attempts[].investigation")
+        refuse(row.get("id") == attempt["investigation"] and row.get("kind", "failure_family") == "failure_family",
+               "research_investigation_mismatch", research, "attempts[].investigation")
+        refuse(attempt["job"] in (row.get("job_ids") or [])
+               and job.get("status") == row.get("family_status") == attempt["status"]
+               and job.get("reason_code") == row.get("reason_code") == attempt["reason_code"],
+               "research_investigation_membership", research, "attempts[].investigation")
+    _check_dispatch(receipt, dispatch, run_result)
+    bound = receipt["dispatch"]
+    refuse(dispatch.get("id", dispatch.get("investigation")) == bound["id"]
+           and dispatch.get("job_ids_sha256") == bound["job_ids_sha256"], "research_dispatch_mismatch", research,
+           "dispatch")
+    # The dispatch's own immutable sample names the captured members, and only members of its investigation.
+    causes = {a["job"]: a["investigation"] for a in receipt["attempts"]}
+    captured = sorted(set(members) & set(dispatch.get("job_ids") or []))
+    refuse(captured and receipt["captured"] == captured
+           and all(causes[job] == receipt["investigation"] for job in captured),
+           "research_mixed_capture_mismatch", research, "captured")
+    # Every other member through persisted parent -> successor edges, walked from the captured ones in
+    # either direction; a cycle, an orphan or an edge to a non-member never resolves.
+    lineage = lineage if isinstance(lineage, dict) else {}
+    bindings = bindings if isinstance(bindings, dict) else {}
+    proven, pending = set(captured), list(receipt["lineage"])
+    while pending:
+        ready = [e for e in pending if (e["parent_job"] in proven) != (e["job"] in proven)]
+        refuse(ready, "research_mixed_lineage_broken", research, "lineage")
+        for edge in ready:
+            _check_descendant(edge, intent, lineage.get(edge["intent_id"]), jobs, bindings, prefix="research_mixed")
+            proven.update((edge["job"], edge["parent_job"]))
+            pending.remove(edge)
+    refuse(proven == set(members), "research_mixed_lineage_broken", research, "lineage")
+    refuse(accepted_candidate(receipt["acceptance"], bound["run_id"], acceptance),
+           "research_mixed_acceptance_unproven", research, "acceptance")
+    return COVERAGE_MIXED
 
 
 # ---- fair selection -----------------------------------------------------------------------------

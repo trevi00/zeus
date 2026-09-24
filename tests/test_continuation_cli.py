@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+from copy import deepcopy
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -327,3 +328,44 @@ def test_both_production_paths_read_research_evidence_from_the_configured_runtim
     assert runner.evidence.root.resolve() == (tmp_path / "runtime" / "artifacts").resolve()
     assert {"subject": research["id"], "effect": "research_resolved", "route": dc.RESEARCH} in runner()["actions"]
     assert world.intents()[research["id"]]["state"] == dc.COMPLETED and len(world.jobs()) == 3
+
+
+def test_a_mixed_family_receipt_file_flows_through_the_production_tick_into_evidence_repair(tmp_path, monkeypatch):
+    """The owner's schema-2 file through `read_receipt` -> `accept_research` -> the production
+    `tick_policy` (Git-pinned policy, configured runtime evidence store, no injected verifier) -> the
+    unchanged route selection: one evidence repair, the correction count and old refusals kept."""
+    from test_continuation_research import mixed_family, mixed_for, receipt_for, receipts
+
+    for name in ("HARNESS_RUNTIME_DIR", "ZEUS_RUNTIME_DIR"):
+        monkeypatch.setenv(name, str(tmp_path / "runtime"))
+    world = World(tmp_path)
+    repo, revision = policy_repository(world)
+    world.pin = {"revision": revision, "path": "ops/continuation.json", "lane": "a",
+                 "sha256": hashlib.sha256((repo / "ops" / "continuation.json").read_bytes()).hexdigest()}
+    family = mixed_family(world, tmp_path)
+    research, config = family["research"], world.fleet.registered()["config"]
+    legacy = receipt_for(world, research, family["investigation"], family["dispatch"])
+    with pytest.raises(dc.ContinuationRefused) as info:   # the historical refusal is still what schema 1 says
+        adapter.accept_research(world.control, config, HOST, legacy, lanes=world.lanes)
+    assert continuation_cli.refusal(info.value)["reason_code"] == "research_investigation_membership"
+    path = tmp_path / "mixed-receipt.json"
+    path.write_text(json.dumps(mixed_for(world, family)), encoding="utf-8")
+    stored = adapter.accept_research(world.control, config, HOST, adapter.read_receipt(path), lanes=world.lanes)
+    assert stored["coverage"] == "mixed_family" and stored["covered_jobs"] == sorted([family["parent"], family["child"]])
+    before = {key: row for key, row in deepcopy(world.intents()).items() if key != research["id"]}
+    ticked = adapter.tick_policy(world.control, config, HOST, "policy-1", lanes=world.lanes, conductor=world.conductor,
+                                 runtime=world.runtime)
+    assert {"subject": research["id"], "effect": "research_resolved", "route": dc.RESEARCH} in ticked["actions"]
+    intents = world.intents()
+    repair = [row for row in intents.values() if row["origin_job"] == family["child"] and row["route"] == dc.EVIDENCE_REPAIR]
+    assert len(repair) == 1 and repair[0]["state"] == dc.ADMITTED
+    assert {key: intents[key] for key in before} == before, "old corrections and refusals are history"
+    assert len([row for row in intents.values() if row["family"] == family["root"]
+                and row["route"] in dc.SUCCESSOR_ROUTES]) == 3
+    status = continuation_cli.execute(SimpleNamespace(store=world.control),
+                                      SimpleNamespace(continuation_command="status", policy="policy-1"))
+    shown = next(row for row in status["intents"] if row["id"] == research["id"])
+    assert shown["receipt"]["coverage"] == "mixed_family" and len(shown["receipt"]["causes"]) == 2
+    assert str(tmp_path) not in json.dumps(status)
+    assert adapter.accept_research(world.control, config, HOST, adapter.read_receipt(path),
+                                   lanes=world.lanes)["cached"] is True and research["id"] in receipts(world)
