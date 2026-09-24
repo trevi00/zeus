@@ -1,0 +1,41 @@
+{
+  "schema": "urn:zeus:operation:1",
+  "id": "autonomous-operation-001-scoped-repair-capacity",
+  "base_revision": "cbe40f0b59e8693568d62c86aa243cc008c35379",
+  "goal": {
+    "path": "docs/zeus/operations/autonomous-operation-001/SPEC.md",
+    "sha256": "257d7b16e5ee64afda1672631989c7de99d5b1a9c459ce7f69d388c0b98114b3",
+    "criterion": "Complete the existing autonomous operating loop with independently verified session, continuation and actual runtime ownership",
+    "rationale": "Finish the existing whole-goal acceptance matrix without manual user relay or weaker verification."
+  },
+  "budget": {
+    "mode": "subscription",
+    "total": 192,
+    "per_host": 192
+  },
+  "claude": {
+    "model": "claude-opus-5-5",
+    "timeout_seconds": 3600,
+    "max_budget_usd": 2
+  },
+  "plan": {
+    "objective": "Implement ONLY Exact evidence-repair capacity authorization in SPEC.md. One owner-pinned grant for an exact budget-refused evidence repair, preserved history/counters, existing ownership and deterministic Fleet successor. No blanket cap increase. Actual application/CLI concurrency/restart/unknown tests. Run ONLY focused continuation/research/process/routing/architecture/CI-scope suites and Ruff, never full suite. Report successful declared checks only; failed attempts remain diagnostics. No model calls, production mutation, merge or deployment.",
+    "allowed_paths": [
+      "src/codex_harness/domain/continuation.py",
+      "src/codex_harness/application/continuation.py",
+      "src/codex_harness/adapters/continuation.py",
+      "src/codex_harness/adapters/continuation_cli.py",
+      "tests/test_continuation.py",
+      "tests/test_continuation_research.py",
+      "tests/test_continuation_cli.py",
+      "tests/test_continuation_routing.py",
+      "tests/test_continuation_process.py",
+      "docs/contracts.md"
+    ],
+    "acceptance_criteria": [
+      "One explicit exact grant admits one retained-candidate evidence repair while preserving original refused history, counts and all research/review gates.",
+      "Actual application/CLI plus concurrent/restart/failure-boundary tests prove deterministic successor and no authority or capacity reuse.",
+      "Foreign/stale/unknown/active/missing/spent bindings fail closed; status exposes original cap and explicit capacity separately; focused tests and Ruff pass."
+    ]
+  }
+}
