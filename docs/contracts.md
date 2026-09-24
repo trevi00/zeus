@@ -2819,6 +2819,32 @@ records a scheduling attempt only (no intent, verdict or evidence); an entry is 
 is no longer a candidate and it predates the writer's snapshot, so a concurrent controller's newer
 attempt is never reset. `status` and `drain` never write it; a tick with no candidate writes nothing.
 
+Readable correction evidence (SPEC "Readable correction evidence delivery"): the successor manifest
+and the lane binding stay identity-only. For an `implement` assignment whose trusted binding
+(`Executor._continuation`) has route `correction`, the executor calls
+`adapters.correction_feedback.deliver` BEFORE workspace preparation, reservation or provider entry.
+It requires the binding predecessor to carry exactly `job_id, task_id, candidate_revision,
+decision_id, review_execution_ref, inspection_id` (as `_successor` records them), reads the lane rows
+in one short read transaction and proves: the `operations` row names the task and the reviewed lead
+decision; the decision is `succeeded`, a `review_lead` or `review_conductor` (the latter bound to
+that lead decision) with `accepted: false`; its message names the task, its input and the task
+result name the candidate (and the binding workspace head); its `execution_ref` equals the bound
+ref. The artifact is read through `FileArtifacts.document` (content address re-verified over every
+byte; mechanical parsing only) and its structured `answer` must equal the committed decision result.
+Only `accepted`, `reason` and `risks` leave; the provider trace and every other field stay behind.
+Strings pass the existing `redact_text`; at most 15000 characters are delivered and more is refused,
+never truncated. The block (`urn:zeus:correction-feedback:1`: predecessor identities, `decision_id`,
+`phase`, `source_ref`, `original_sha256`, `delivered_sha256`, `redaction`, `truncation`, `findings`)
+is placed in the REQUIRED prompt contract, so context packing can never evict it, and the complete
+required envelope is measured against the usable budget before compilation. Inline content crosses
+the host/container boundary in the request itself; it contains no host path. Refusals are fixed codes
+of `CorrectionFeedbackRefused` (`feedback_binding_invalid`, `_operation_mismatch`, `_decision_missing`,
+`_decision_unsettled`, `_decision_not_rejection`, `_task_mismatch`, `_candidate_mismatch`,
+`_ref_mismatch`, `_artifact_missing`, `_artifact_unreadable`, `_artifact_corrupt`, `_artifact_foreign`,
+`_empty`, `_oversize`, `_context_insufficient`) recorded through the existing task failure path, with
+no content, path or exception text. Integrity holds at the observed read, not forever; every attempt
+re-reads. Legacy implementation without a binding and every other route are unchanged.
+
 Effect ownership across policies sharing one control store: the intent id (and with it the successor
 and launch ids) carries NO policy, so overlapping policies derive the same effect and can never
 admit or launch it twice. A row belongs to the policy that wrote it. Another policy never replays,
