@@ -1,5 +1,46 @@
 # Whole autonomous operating loop
 
+## Council isolation resubmission: authoritative publication route, 2026-09-24
+
+Candidate81ce6b9 staged ONLY as correction input, not accepted/deployed. Review72d5b41 reports one
+P1 in the same routing matrix: run CLI uses scoped RedisBus but global supervisor relay may publish
+the committed assignment first through the global bus and set sent=true. Scoped relay then skips
+it, and run drain cannot receive it. Source-traced interleaving, not a measured operating incident.
+Existing read-only-successor evidence/lineage design remains accepted pending this bounded correction.
+
+Affected complete path: autonomous run registration -> task/report/notice outbox commit -> ANY relay
+(global supervisor, CLI run relay, restart owner) -> bound route -> stream -> exact-correlation drain.
+One producer's local bus cannot be route authority. Pin run delivery ownership durably BEFORE its
+first outbox message can be published. Reuse existing run/outbox records and transaction owners;
+route selection belongs to trusted application/adapter configuration, not model message payload.
+All relays must honor the same pin, either dispatch through the bound run route or leave it pending
+for its actual owner. A global relay must not publish/mark sent/quarantine a scoped message merely
+because its own bus cannot deliver there. A scoped relay with wrong namespace/identity refuses or
+skips before network/mark-sent. Recheck the route at the publication transaction boundary so a
+selection-time check alone does not hide concurrent changes. Keep transport intent binding intact.
+
+Preserve legacy unbound/global routes; do not reinterpret historical shared-stream runs as scoped
+from their correlation text alone. No retroactive move or resend of sent messages. Different runs
+use stable distinct routes. Registration/restart with changed route cannot silently replace ownership.
+Run identity, correlation and expected publication identity must agree; do not create a bypass by
+allowing arbitrary messages to claim scoped ownership. No Redis/model/network inside the route-pin
+transaction, no new scheduler. All run reports/notices use the same rule through existing outbox.
+Document operational rollback limitations honestly; retained route history cannot be erased.
+
+Tests: deterministic barrier AFTER assignment commit BEFORE scoped flush, global relay executes
+first -> no wrong-route entry or sent flag, subsequent correct flush/drain succeeds once. Exercise
+production adapter wiring and real relay, not separate fake queues. Repeat for generated role report
+or notice; two run owners interleave; global legacy work still progresses; wrong route/refused or
+unavailable route/restart/changed pin preserve unsent evidence. Missing/unavailable authority cannot
+fall back to global for a known scoped run. Scoped and global concurrent PG test where available,
+without nested writer-lock observer. A targeted negative test on81ce6b9 must reproduce wrong route.
+Keep existing strict foreign_message handling and all accepted successor/receipt/fence tests.
+
+One Claude implementation batch, targeted autonomous/outbox/bus/research tests plus Ruff only.
+CI owns broad suite; owner PG/Redis validation before merge. No operating row edits, broker cleanup,
+self-approval or new unrelated feature. Completion is independently accepted routing, CI, idle
+cutover, then actual successor003 qualification under the existing owner. Preserve failed002.
+
 ## Real council progress: isolated delivery and settled-read-only successor, 2026-09-24
 
 Preserve PR188 operating06503dd. Legacy revocation succeeded, real delayed original admission was
