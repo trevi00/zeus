@@ -376,6 +376,26 @@ def test_unknown_claim_id_in_a_lead_contribution_is_refused_before_the_next_role
                            {"snapshot_digest": "1" * 64, "report_digest": "2" * 64}, {"c1"})
 
 
+def test_an_oversized_improvement_summary_stops_with_the_fixed_field_code_and_keeps_the_output():
+    """Actual-shaped (release-checklist-research-001.c001): four read-only roles settle, the improvement lead's
+    6046-character summary (LABELLED stand-in text) is refused by the consumer with a fixed code, never
+    truncated; no conductor starts, no event is derived from it and the task result keeps every character."""
+    long = ("SECRET-summary-body " * 400)[:6046]
+    svc, run, executor, budget, port = build(outputs={"improvement_lead": {**IMPROVEMENT, "summary": long}})
+    receipt = run.run(valid(), IDENTITY, BOUND_GOAL)
+    assert receipt["status"] == "failed" and receipt["stage"] == "improvement_lead"
+    assert receipt["reason_code"] == "council_field_invalid:improvement_lead.summary:too_long"
+    assert executor.calls == ORDER[:4] and receipt["promotion"] is None and receipt["operation"] is None
+    assert "SECRET-summary-body" not in json.dumps(receipt)
+    with svc.store.transaction() as tx:
+        assert [e["role"] for e in tx.scan("dge_events")] == ["proposer"], "the refused contribution is no event"
+        [task] = [t for t in tx.scan("tasks") if t["agent"] == "lead:improvement"]
+        assert task["status"] == "succeeded" and task["result"]["summary"] == long
+    # The unchanged generic refusals keep their legacy code (a claim id is not a bounded field).
+    svc, run, executor, budget, port = build(outputs={"improvement_lead": {**IMPROVEMENT, "claim_ids": ["c404"]}})
+    assert run.run(valid(), IDENTITY, BOUND_GOAL)["reason_code"] == "debate_refused:ContractError"
+
+
 def test_normal_council_cycle_uses_real_agents_shares_one_report_reaches_the_conductor_and_promotes():
     svc, run, executor, budget, port = build()
     receipt = run.run(valid(), IDENTITY, BOUND_GOAL)

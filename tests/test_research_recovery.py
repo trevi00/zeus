@@ -1119,12 +1119,20 @@ class ReadOnlyCouncilExecutor:
     the stage, the task's own base and its exact input evidence) and files each role's `task.result`
     through the outbox, as `Workflow.complete` does. Any other role reaching it fails the test."""
 
+    ROLES = {"researcher", "dba"}
+
     def __init__(self, svc, artifacts):
         self.svc, self.artifacts, self.calls = svc, artifacts, []
 
-    def execute_one(self, agent, expected=None):
-        from test_autonomous import RESEARCH, evidence_ref_of
+    @staticmethod
+    def answer(role, details, base):
+        from test_autonomous import RESEARCH
         from test_council import DBA_REPORT
+        return ({**RESEARCH, "sources": [{**RESEARCH["sources"][0], "revision": base}]} if role == "researcher"
+                else {"snapshot_digest": details["snapshot_digest"], **DBA_REPORT})
+
+    def execute_one(self, agent, expected=None):
+        from test_autonomous import evidence_ref_of
 
         from codex_harness.domain.model import canonical, envelope
         self.calls.append(agent)
@@ -1133,9 +1141,8 @@ class ReadOnlyCouncilExecutor:
             message = task["message"]
             details, base = message["what"]["details"], message["where"]["revision"]
             role = details["role"]
-            assert role in {"researcher", "dba"}, "only the read-only roles may execute in this fixture"
-            answer = ({**RESEARCH, "sources": [{**RESEARCH["sources"][0], "revision": base}]} if role == "researcher"
-                      else {"snapshot_digest": details["snapshot_digest"], **DBA_REPORT})
+            assert role in self.ROLES, "only the read-only roles may execute in this fixture"
+            answer = self.answer(role, details, base)
             reservation = {"id": "res-" + task["id"], "bucket": "tasks", "task_id": task["id"], "generation": 1,
                            "attempt": 1, "invocation": 1, "stage": "dge:" + role, "status": "settled",
                            "outcome": "accepted", "usage": {"source": "provider", "total_tokens": 1}}
@@ -1589,3 +1596,464 @@ def test_postgres_revocation_and_admission_serialize_to_one_winner(tmp_path, iso
         assert len(tx.scan(BUCKET_RECOVERIES)) == 1 and len(tx.scan("outbox_quarantine")) == 1
         assert sorted(r["id"] for r in tx.scan(BUCKET_DISPATCHES)) == [INVESTIGATION, REPLACEMENT]
     assert history(env.store) == before
+
+
+# ----- settled council contract failure successor (SPEC "Settled council contract failure recovery") ---------
+# The actual-shaped fixture of release-checklist-research-001.c001: the REAL CouncilRun settles researcher, DBA,
+# research lead and improvement lead (four succeeded tasks, four settled accepted reservations, four execution
+# artifacts), then the improvement lead's 6046-character summary (LABELLED stand-in text) fails the council
+# field bound. LABELLED stand-ins: the role executor, the call budget, the in-memory bus, the snapshot port, the
+# artifact store, the clock and - for the legacy variant - the pre-typed-code mapping of that refusal.
+CONTRACT_SCHEMA = "urn:zeus:research-dispatch-recovery:4"
+SUMMARY_TOO_LONG = "council_field_invalid:improvement_lead.summary:too_long"
+LONG_SUMMARY = ("SECRET-summary-body " * 400)[:6046]
+
+
+class ContractCouncilExecutor(ReadOnlyCouncilExecutor):
+    """LABELLED fixture executor: the read-only fixture plus the two leads (never the conductor or a worker);
+    `improvement` overrides fields of the improvement lead's output."""
+
+    ROLES = {"researcher", "dba", "research_lead", "improvement_lead"}
+
+    def __init__(self, svc, artifacts, improvement):
+        super().__init__(svc, artifacts)
+        self.improvement = improvement
+
+    def answer(self, role, details, base):
+        from test_autonomous import ROLE_OUTPUTS
+        from test_council import IMPROVEMENT
+        if role in {"researcher", "dba"}:
+            return ReadOnlyCouncilExecutor.answer(role, details, base)
+        identities = {"snapshot_digest": details["snapshot_digest"], "report_digest": details["report_digest"]}
+        if role == "research_lead":
+            return {**ROLE_OUTPUTS["proposer"], **identities}
+        return {**IMPROVEMENT, **identities, **self.improvement}
+
+
+def _pre_typed_council_output(role, output, identities, claim_ids):
+    """LABELLED legacy consumer: before the typed code existed the same field check raised a plain
+    ContractError, which the council mapped to the generic `debate_refused:ContractError` the recorded run
+    carries. Only the exception type is replayed; the check and its bound are the current domain's."""
+    from codex_harness.domain.council import CouncilFieldRefused, council_output
+    try:
+        return council_output(role, output, identities, claim_ids)
+    except CouncilFieldRefused as exc:
+        raise ContractError("Improvement lead proposal needs a summary, a rationale and a decision") from exc
+
+
+class ContractFailureCouncil:
+    """The REAL CouncilRun (v2) on the shared store over the LABELLED four-role executor."""
+
+    def __init__(self, store, improvement=None, legacy=False):
+        from test_autonomous import Artifacts
+        self.store, self.artifacts, self.receipts, self.executor = store, Artifacts(), [], None
+        self.improvement = {"summary": LONG_SUMMARY} if improvement is None else improvement
+        self.legacy = legacy
+
+    def __call__(self, service, args):
+        from contextlib import nullcontext
+        from unittest import mock
+
+        from test_council import FakeSnapshotPort, SnapshotArtifacts
+        from test_operation import Bus, Collector, FakeBudget
+
+        from codex_harness.application import council as council_module
+        from codex_harness.domain.model import utcnow
+        manifest = validate_any_manifest(json.loads(Path(args.file).read_text(encoding="utf-8")), packaged_policy())
+        harness = Harness(self.store, organization())
+        self.executor = ContractCouncilExecutor(harness, self.artifacts, self.improvement)
+        run = CouncilRun(harness, self.executor, Bus(), Workflow(self.store, harness.org), FakeBudget(), Collector(),
+                         verify_sources=lambda packet: [{**s, "bytes": 1} for s in packet["sources"]], repository="r",
+                         evidence=self.artifacts, snapshot=FakeSnapshotPort(utcnow), artifacts=SnapshotArtifacts(self.artifacts))
+        legacy = (mock.patch.object(council_module, "council_output", _pre_typed_council_output) if self.legacy
+                  else nullcontext())
+        with legacy:
+            receipt = run.run(manifest, {"repository": "fixture"}, {"path": "docs/GOAL.md", "sha256": "0" * 64})
+        self.receipts.append(receipt)
+        return receipt
+
+
+def initial_world(tmp_path, store=None, **council):
+    """rp-001 claims the investigation (its INITIAL dispatch, no lineage) and the real council fails at the
+    improvement lead. Returns the env and the council (its artifact store is the evidence port)."""
+    env, tick = failed_world(tmp_path, council=lambda s: ContractFailureCouncil(s, **council), store=store)
+    assert tick["result"] == "failed", tick
+    return env, env.runner.council
+
+
+def current_world(tmp_path, **council):
+    """rp-001 revoked -> rp-002 claims `.recovery-1` -> the real council fails at the improvement lead."""
+    env, _ = legacy_world(tmp_path)
+    _, sha = replacement(env)
+    env.programs.recover_dispatch(revocation(env, sha), None)
+    env.programs.resume("rp-002")
+    runner = build(env.root.parent, store=env.store, root=env.root, head=env.head).runner
+    runner.council = ContractFailureCouncil(env.store, **council)
+    tick = runner.tick("rp-002")
+    assert tick["investigation"] == INVESTIGATION and tick["result"] == "failed", tick
+    return env, runner.council
+
+
+def contract_request(env, replacement_sha256, program_id="rp-002", *, program="rp-001", dispatch=INVESTIGATION,
+                     version=0, check=SUMMARY_TOO_LONG, failure=None, **pinned):
+    with env.store.transaction() as tx:
+        row, config = tx.get(BUCKET_DISPATCHES, dispatch), tx.get(BUCKET_PROGRAMS, program)
+        [task] = [t for t in tx.scan("tasks") if t["agent"] == "lead:improvement"
+                  and t["message"]["correlation_id"] == "autonomous:" + row["run_id"]]
+        lineage = tx.get(BUCKET_RECOVERIES, INVESTIGATION)
+    old = {"dispatch": dispatch, "lineage_version": version,
+           "lineage_request_sha256": None if version == 0 else lineage["request_sha256"],
+           "program": program, "config_sha256": config["config_sha256"],
+           **{k: row[k] for k in ("cycle", "run_id", "manifest_sha256", "snapshot_sha256")}}
+    bound = {"role": "improvement_lead", "task_id": task["id"], "execution_ref": task["result"]["execution_ref"], "check": check}
+    return {"schema": CONTRACT_SCHEMA, "mode": "settled_contract_failure_successor", "investigation": INVESTIGATION,
+            "predecessor": {**old, **pinned}, "failure": {**bound, **(failure or {})},
+            "replacement": {"program": program_id, "config_sha256": replacement_sha256}}
+
+
+def run_history(env, run_id="rp-001.c001", dispatch=INVESTIGATION) -> dict:
+    """Every record of the failed contract-failure predecessor that must stay exactly as it was."""
+    correlation = "autonomous:" + run_id
+    with env.store.transaction() as tx:
+        tasks = sorted([t for t in tx.scan("tasks") if t["message"]["correlation_id"] == correlation], key=lambda t: t["id"])
+        ids = {t["id"] for t in tasks}
+        return deepcopy({"run": tx.get("autonomous_runs", run_id), "tasks": tasks,
+                         "reservations": sorted([r for r in tx.scan("invocation_reservations") if r["task_id"] in ids],
+                                                key=lambda r: r["id"]),
+                         "dispatch": tx.get(BUCKET_DISPATCHES, dispatch), "recovery": tx.get(BUCKET_RECOVERIES, INVESTIGATION),
+                         "session": tx.get("dge_sessions", run_id + ".design"),
+                         "events": sorted(tx.scan("dge_events"), key=lambda e: e["id"]),
+                         "outbox": sorted([o for o in tx.scan("outbox") if o["message"]["correlation_id"] == correlation],
+                                          key=lambda o: o["message"]["message_id"])})
+
+
+def no_contract_successor(env) -> bool:
+    with env.store.transaction() as tx:
+        return (tx.scan("research_dispatch_successors") == [] and tx.scan("research_dispatch_heads") == []
+                and tx.get(BUCKET_DISPATCHES, SECOND) is None and tx.get(BUCKET_DISPATCHES, REPLACEMENT) is None)
+
+
+@pytest.mark.parametrize("legacy, reason", [(False, SUMMARY_TOO_LONG), (True, "debate_refused:ContractError")])
+def test_the_fixture_is_the_actual_shaped_settled_four_role_contract_failure(tmp_path, legacy, reason):
+    env, council = initial_world(tmp_path, legacy=legacy)
+    facts = run_history(env)
+    assert council.executor.calls == ["lead:researcher", "lead:dba", "lead:research", "lead:improvement"]
+    run = facts["run"]
+    assert run["status"] == "failed" and run["reason_code"] == reason and run["stage"] == "improvement_lead"
+    assert run["starts"]["reserved"] == run["starts"]["settled"] == 4
+    assert set(run["roles"]) == {"researcher", "dba", "research_lead", "improvement_lead"}
+    assert [t["status"] for t in facts["tasks"]] == ["succeeded"] * 4
+    assert [r["status"] for r in facts["reservations"]] == ["settled"] * 4
+    assert facts["session"]["version"] == 1 and facts["session"]["decision_event_id"] is None
+    assert facts["dispatch"]["result"] == "failed"
+    assert facts["dispatch"]["result_reason"] == ("debate_refused" if legacy else "council_field_invalid")
+    assert facts["recovery"] is None, "the initial dispatch: no recovery lineage exists"
+    assert refused(env.programs.resume, "rp-001") == "program_blocked", "no automatic retry"
+    # Neither existing mode applies to this failure.
+    _, sha = replacement(env)
+    assert refused(env.programs.recover_dispatch, request(env, sha), FakeTransport()) == "recovery_not_pre_provider"
+
+
+@pytest.mark.parametrize("legacy", [False, True])
+def test_one_explicit_successor_of_the_initial_contract_failure_is_claimed_once_and_history_is_kept(tmp_path, legacy):
+    from codex_harness.application.continuation import Continuation
+    env, council = initial_world(tmp_path, legacy=legacy)
+    before = run_history(env)
+    _, sha = replacement(env)
+    document = contract_request(env, sha)
+    result = env.programs.recover_dispatch(document, FakeTransport(error=AssertionError("never read")), council.artifacts)
+    assert result["recovered"] is True and result["cached"] is False and result["state"] == "authorized"
+    assert result["mode"] == "settled_contract_failure_successor" and result["proof"] == "settled_contract_failure"
+    assert result["version"] == 2, "version 1 stays reserved for the original recovery"
+    assert result["replacement"] == {"program": "rp-002", "config_sha256": sha, "dispatch": SECOND, "cycle": None}
+    assert result["predecessor"]["dispatch"] == INVESTIGATION and result["predecessor"]["lineage_version"] == 0
+    assert result["failure"]["check"] == SUMMARY_TOO_LONG and result["failure"]["task_id"] == document["failure"]["task_id"]
+    answer = council.artifacts.document(document["failure"]["execution_ref"])["answer"]
+    assert result["failure"]["output_sha256"] == digest(answer) and len(answer["summary"]) == 6046
+    assert result["evidence"]["calls"] == {"reserved": 4, "settled": 4, "reservations": 4}, "four calls stay counted"
+    assert sorted(e["role"] for e in result["evidence"]["executions"]) == ["dba", "improvement_lead", "research_lead",
+                                                                           "researcher"]
+    assert "SECRET-summary-body" not in json.dumps(result)
+    assert run_history(env) == before, "the failed run, tasks, outputs, session and dispatch are untouched"
+    with env.store.transaction() as tx:
+        assert Continuation._recovery_held(tx, INVESTIGATION) is None, "the scoped-receipt consumer reads the chain"
+        head = tx.get("research_dispatch_heads", INVESTIGATION)
+        assert tx.get(BUCKET_DISPATCHES, REPLACEMENT) is None, "`.recovery-1` stays unused"
+    assert head["previous"] == {"version": 0, "request_sha256": None, "dispatch": INVESTIGATION}
+
+    env.programs.resume("rp-002")
+    runner = replacement_runner(env)
+    tick = runner.tick("rp-002")
+    assert tick["investigation"] == INVESTIGATION and tick["result"] == "accepted" and tick["run_id"] == "rp-002.c001"
+    views = {d["id"]: d for d in env.programs.dispatches()}
+    assert set(views) == {INVESTIGATION, SECOND} and views[SECOND]["current"] is True and not views[INVESTIGATION]["current"]
+    assert views[SECOND]["supersedes"] == {"dispatch": INVESTIGATION, **{k: before["dispatch"][k] for k in
+                                           ("program", "cycle", "run_id", "manifest_sha256", "snapshot_sha256")}}
+    assert run_history(env) == before
+    # Replays: the identical request is cached (no evidence read); another for the same head conflicts.
+    assert ResearchProgram(env.store, clock=env.clock).recover_dispatch(document, None, None)["cached"] is True
+    _, other = replacement(env, "rp-003")
+    assert refused(env.programs.recover_dispatch, contract_request(env, other, "rp-003"), None,
+                   council.artifacts) == "recovery_conflict"
+    assert len(runner.council.manifests) == 1
+
+
+def test_an_existing_lineage_current_dispatch_contract_failure_has_one_successor(tmp_path):
+    env, council = current_world(tmp_path)
+    before = run_history(env, "rp-002.c001", REPLACEMENT)
+    _, sha = replacement(env, "rp-003")
+    document = contract_request(env, sha, "rp-003", program="rp-002", dispatch=REPLACEMENT, version=1)
+    # The initial dispatch is not the current one here: a version-0 request naming it is stale.
+    with env.store.transaction() as tx:
+        original = tx.get(BUCKET_DISPATCHES, INVESTIGATION)
+    stale = {**document, "predecessor": {**document["predecessor"], "dispatch": INVESTIGATION, "lineage_version": 0,
+                                         "lineage_request_sha256": None, "program": "rp-001",
+                                         **{k: original[k] for k in ("cycle", "run_id", "manifest_sha256", "snapshot_sha256")}}}
+    assert refused(env.programs.recover_dispatch, stale, None, council.artifacts) == "recovery_successor_stale"
+    result = env.programs.recover_dispatch(document, None, council.artifacts)
+    assert result["version"] == 2 and result["replacement"]["dispatch"] == SECOND and result["state"] == "authorized"
+    assert run_history(env, "rp-002.c001", REPLACEMENT) == before
+    assert env.programs.status("rp-002")["recoveries"][0]["state"] == "claimed", "the original row is not rewritten"
+    env.programs.resume("rp-003")
+    assert replacement_runner(env).tick("rp-003")["result"] == "accepted"
+    assert {d["id"]: d["current"] for d in env.programs.dispatches()} == {INVESTIGATION: False, REPLACEMENT: False,
+                                                                          SECOND: True}
+
+
+def _ctask_status(status):
+    def fault(env, council):
+        with env.store.transaction() as tx:   # LABELLED injected fault on the predecessor's improvement task
+            [task] = [t for t in tx.scan("tasks") if t["agent"] == "lead:improvement"]
+            tx.put("tasks", task["id"], {**task, "status": status})
+    return fault
+
+
+def _creservation_unknown(env, council):
+    with env.store.transaction() as tx:   # LABELLED injected fault: a reservation never settled
+        row = tx.scan("invocation_reservations")[0]
+        tx.put("invocation_reservations", row["id"], {**row, "status": "unsettled_unknown"})
+
+
+def _cconductor_entry(env, council):
+    from codex_harness.domain.model import envelope
+    with env.store.transaction() as tx:   # LABELLED injected fault: a conductor role task of the run
+        message = envelope("task.assign", "conductor", "conductor", "dge_role", {"role": "conductor"},
+                           "autonomous:rp-001.c001")
+        tx.put("tasks", message["message_id"], {"id": message["message_id"], "agent": "conductor",
+                                                "status": "succeeded", "message": message, "result": {}})
+
+
+def _cworker_entry(env, council):
+    with env.store.transaction() as tx:   # LABELLED injected fault: an implementation operation residue exists
+        tx.put("operations", "rp-001.c001.impl", {"id": "rp-001.c001.impl", "status": "running"})
+
+
+def _cterminated(env, council):
+    with env.store.transaction() as tx:   # LABELLED injected fault: an unresolved termination record
+        task = next(t for t in tx.scan("tasks") if t["agent"] == "lead:research")
+        tx.put("observation_terminations", "term-1", {"id": "term-1", "task_id": task["id"]})
+
+
+def _cmissing_artifact(env, council):
+    with env.store.transaction() as tx:   # LABELLED injected fault: the failed role's artifact is gone
+        task = next(t for t in tx.scan("tasks") if t["agent"] == "lead:improvement")
+    council.artifacts.bodies.pop(task["result"]["execution_ref"][7:])
+
+
+def _ccorrupt_artifact(env, council):
+    with env.store.transaction() as tx:
+        task = next(t for t in tx.scan("tasks") if t["agent"] == "lead:improvement")
+    council.artifacts.corrupt(task["result"]["execution_ref"])   # LABELLED injected fault
+
+
+def _cdecision_recorded(env, council):
+    with env.store.transaction() as tx:   # LABELLED injected fault: a conductor decision exists in the session
+        session = tx.get("dge_sessions", "rp-001.c001.design")
+        tx.put("dge_sessions", "rp-001.c001.design", {**session, "decision_event_id": "evt-x"})
+
+
+@pytest.mark.parametrize("fault, reason", [
+    (_ctask_status("running"), "recovery_predecessor_active"),
+    (_ctask_status("failed"), "recovery_effect_unknown"),
+    (_creservation_unknown, "recovery_invocation_unsettled"),
+    (_cconductor_entry, "recovery_effect_outside_read_only"),
+    (_cworker_entry, "recovery_effect_outside_read_only"),
+    (_cdecision_recorded, "recovery_effect_outside_read_only"),
+    (_cterminated, "recovery_effect_unknown"),
+    (_cmissing_artifact, "recovery_evidence_unavailable"),   # the raw fixture store raises uncoded; see the real port below
+    (_ccorrupt_artifact, "recovery_evidence_corrupt")])
+def test_unsettled_unknown_effectful_or_unproven_contract_predecessors_refuse_and_write_nothing(tmp_path, fault, reason):
+    env, council = initial_world(tmp_path)
+    _, sha = replacement(env)
+    document = contract_request(env, sha)
+    fault(env, council)
+    assert refused(env.programs.recover_dispatch, document, None, council.artifacts) == reason
+    assert no_contract_successor(env)
+
+
+def test_a_wrong_failure_foreign_evidence_or_stale_pin_refuses_and_writes_nothing(tmp_path):
+    from test_autonomous import Artifacts
+
+    from codex_harness.adapters.autonomous_evidence import ExecutionEvidence
+    env, council = initial_world(tmp_path)
+    _, sha = replacement(env)
+    with env.store.transaction() as tx:
+        dba = next(t for t in tx.scan("tasks") if t["agent"] == "lead:dba")
+    for failure, code in (({"check": "council_field_invalid:improvement_lead.rationale:too_long"}, "recovery_failure_not_proven"),
+                          ({"check": "council_field_invalid:improvement_lead.summary:empty"}, "recovery_failure_not_proven"),
+                          ({"task_id": dba["id"]}, "recovery_evidence_mismatch"),
+                          ({"execution_ref": dba["result"]["execution_ref"]}, "recovery_evidence_mismatch"),
+                          ({"execution_ref": "sha256:" + "e" * 64}, "recovery_evidence_mismatch")):
+        assert refused(env.programs.recover_dispatch, contract_request(env, sha, failure=failure), None,
+                       council.artifacts) == code, failure
+    for pin in ({"manifest_sha256": "f" * 64}, {"config_sha256": "f" * 64}, {"cycle": "rp-001:002"},
+                {"run_id": "rp-001.c002"}):
+        assert refused(env.programs.recover_dispatch, contract_request(env, sha, **pin), None,
+                       council.artifacts) == "recovery_dispatch_mismatch", pin
+    assert refused(env.programs.recover_dispatch, contract_request(env, sha), None, None) == "recovery_evidence_unavailable"
+    assert refused(env.programs.recover_dispatch, contract_request(env, sha), None,
+                   ExecutionEvidence(Artifacts())) == "recovery_evidence_missing"
+    _, wide = replacement(env, "rp-wide", max_adoptions=2)
+    assert refused(env.programs.recover_dispatch, contract_request(env, wide, "rp-wide"), None,
+                   council.artifacts) == "recovery_scope_changed"
+    assert no_contract_successor(env)
+
+
+@pytest.mark.parametrize("change", [
+    {"failure": {"role": "conductor"}}, {"failure": {"role": "dba", "check": "council_field_invalid:dba.summary:too_long"}},
+    {"failure": {"check": "debate_refused:ContractError"}},
+    {"failure": {"check": "council_field_invalid:dba.summary:too_long"}},
+    {"failure": {"execution_ref": "not-a-ref"}}, {"failure": {"extra": 1}},
+    {"predecessor": {"lineage_request_sha256": "a" * 64}}, {"predecessor": {"dispatch": REPLACEMENT}},
+    {"mode": "settled_read_only_successor"}, {"replacement": {"program": "rp-001"}}])
+def test_the_contract_request_is_strict(tmp_path, change):
+    env, council = initial_world(tmp_path)
+    _, sha = replacement(env)
+    base = contract_request(env, sha)
+    changed = {**base, **{k: ({**base[k], **v} if isinstance(v, dict) else v) for k, v in change.items()}}
+    assert refused(env.programs.recover_dispatch, changed, None, council.artifacts) == "recovery_request_invalid"
+    assert no_contract_successor(env)
+
+
+def test_another_contract_error_or_a_read_only_failure_is_not_this_contract_failure(tmp_path):
+    # A generic refusal with the SAME legacy code (an unknown claim id, not a bounded field): the recorded reason
+    # alone never qualifies; the bound artifact re-derives another refusal, not the pinned field code.
+    env, council = initial_world(tmp_path, improvement={"claim_ids": ["c404"]})
+    assert run_history(env)["run"]["reason_code"] == "debate_refused:ContractError"
+    _, sha = replacement(env)
+    assert refused(env.programs.recover_dispatch, contract_request(env, sha), None,
+                   council.artifacts) == "recovery_failure_not_proven"
+    assert no_contract_successor(env)
+    # A `foreign_message` read-only predecessor is version 3's case, never version 4's.
+    other, ro_council, _ = read_only_world(tmp_path / "ro")
+    _, sha3 = replacement(other, "rp-003")
+    document = {**successor_request(other, sha3), "schema": CONTRACT_SCHEMA, "mode": "settled_contract_failure_successor",
+                "failure": {"role": "improvement_lead", "task_id": "t-1", "execution_ref": "sha256:" + "a" * 64,
+                            "check": SUMMARY_TOO_LONG}}
+    assert refused(other.programs.recover_dispatch, document, None, ro_council.artifacts) == "recovery_not_settled_read_only"
+
+
+def test_a_broken_retained_fence_holds_replay_the_claim_and_the_scoped_receipt_consumer(tmp_path):
+    from codex_harness.application.continuation import Continuation
+    from codex_harness.domain.model import envelope
+    env, council = initial_world(tmp_path)
+    with env.store.transaction() as tx:   # LABELLED: one more unsent report of the predecessor run, never attempted
+        task = next(t for t in tx.scan("tasks") if t["agent"] == "lead:improvement")
+        report = envelope("task.result", "lead:improvement", "conductor", "dge_role", {"task_id": task["id"], "result": {}},
+                          "autonomous:rp-001.c001")
+        tx.put("outbox", report["message_id"], {"message": report, "sent": False})
+    _, sha = replacement(env)
+    document = contract_request(env, sha)
+    result = env.programs.recover_dispatch(document, None, council.artifacts)
+    assert report["message_id"] in [f["outbox"] for f in result["fence"]]
+    bus = RecordingBus()
+    assert relay(env.store, organization(), bus)["published"] == 0 and bus.published == [], "the unsent report is fenced"
+    _move_quarantine(env, report["message_id"])   # LABELLED injected fault: the fence was released
+    assert refused(ResearchProgram(env.store, clock=env.clock).recover_dispatch, document, None, None) \
+        == "recovery_publication_changed"
+    with env.store.transaction() as tx:
+        assert Continuation._recovery_held(tx, INVESTIGATION) == "recovery_publication_changed"
+    env.programs.resume("rp-002")
+    assert replacement_runner(env).tick("rp-002").get("investigation") is None, "a held chain never releases the claim"
+    with env.store.transaction() as tx:
+        assert tx.get(BUCKET_DISPATCHES, SECOND) is None
+        assert tx.get("research_dispatch_successors", INVESTIGATION + ":2")["state"] == "authorized"
+
+
+def test_a_failed_contract_successor_stays_held(tmp_path):
+    env, council = initial_world(tmp_path)
+    _, sha = replacement(env)
+    document = contract_request(env, sha)
+    env.programs.recover_dispatch(document, None, council.artifacts)
+    env.programs.resume("rp-002")
+    tick = replacement_runner(env, status="failed").tick("rp-002")
+    assert tick["investigation"] == INVESTIGATION and tick["result"] == "failed"
+    assert refused(env.programs.resume, "rp-002") == "program_blocked", "no automatic retry of the successor"
+    assert ResearchProgram(env.store, clock=env.clock).recover_dispatch(document, None, None)["state"] == "claimed"
+    _, other = replacement(env, "rp-003")
+    # The initial dispatch is history now: another version-0 request conflicts on the one version-2 key.
+    assert refused(env.programs.recover_dispatch, contract_request(env, other, "rp-003"), None,
+                   council.artifacts) == "recovery_conflict"
+    with env.store.transaction() as tx:
+        assert len(tx.scan("research_dispatch_successors")) == 1 and tx.get(BUCKET_DISPATCHES, SECOND)["result"] == "failed"
+
+
+def test_concurrent_and_restarted_contract_requests_record_one_row_one_head(tmp_path):
+    env, council = initial_world(tmp_path)
+    _, sha = replacement(env)
+    document, results, errors = contract_request(env, sha), [], []
+
+    def owner():
+        try:
+            results.append(ResearchProgram(env.store, clock=env.clock).recover_dispatch(document, None, council.artifacts))
+        except Exception as exc:   # pragma: no cover - reported below
+            errors.append(exc)
+    threads = [threading.Thread(target=owner) for _ in range(4)]
+    for thread in threads:
+        thread.start()
+    for thread in threads:
+        thread.join()
+    assert errors == [] and len(results) == 4 and sum(not r["cached"] for r in results) == 1
+    with env.store.transaction() as tx:
+        assert len(tx.scan("research_dispatch_successors")) == 1 and len(tx.scan("research_dispatch_heads")) == 1
+    assert ResearchProgram(env.store, clock=env.clock).recover_dispatch(document, None, None)["cached"] is True
+
+
+def test_the_cli_contract_successor_reads_the_artifact_store_and_builds_no_bus(tmp_path, monkeypatch):
+    env, council = initial_world(tmp_path)
+    _, sha = replacement(env)
+    path = tmp_path / "contract.json"
+    path.write_text(json.dumps(contract_request(env, sha)), encoding="utf-8")
+
+    def forbidden(*args, **kwargs):
+        raise AssertionError("the successor must not build a bus")
+    monkeypatch.setattr("codex_harness.adapters.bus.RedisBus", forbidden)
+    service, args = type("Service", (), {"store": env.store})(), type("Args", (), {"file": path})()
+    result = recover_cli(service, args, evidence=council.artifacts)
+    assert result["exit_code"] == 0 and result["proof"] == "settled_contract_failure" and result["state"] == "authorized"
+
+
+def test_postgres_contract_successor_requests_serialize_to_one_authorization(tmp_path, isolated_pgstore):
+    """Real isolated PostgreSQL (HARNESS_INTEGRATION=1): concurrent owner requests over the writer-locked
+    transaction record one successor row and one head; the claim follows once."""
+    env, council = initial_world(tmp_path, store=isolated_pgstore)
+    before = run_history(env)
+    _, sha = replacement(env)
+    document, results = contract_request(env, sha), []
+    start = threading.Barrier(3)
+
+    def owner():
+        start.wait()
+        results.append(ResearchProgram(env.store, clock=env.clock).recover_dispatch(document, None, council.artifacts))
+    threads = [threading.Thread(target=owner) for _ in range(3)]
+    for thread in threads:
+        thread.start()
+    for thread in threads:
+        thread.join()
+    assert len(results) == 3 and sum(not r["cached"] for r in results) == 1
+    env.programs.resume("rp-002")
+    assert replacement_runner(env).tick("rp-002")["result"] == "accepted"
+    with env.store.transaction() as tx:
+        assert len(tx.scan("research_dispatch_successors")) == 1 and len(tx.scan("research_dispatch_heads")) == 1
+        assert tx.get(BUCKET_DISPATCHES, SECOND)["run_id"] == "rp-002.c001"
+    assert run_history(env) == before

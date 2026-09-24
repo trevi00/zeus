@@ -35,6 +35,8 @@ The explicit `settled_read_only_successor` request (version 3) succeeds the CURR
 whose council settled only read-only researcher/DBA executions: an immutable successor row plus the
 versioned head in `research_dispatch_successors`/`research_dispatch_heads`, never an edit of the
 original recovery row, and every consumer rechecks the retained predecessor fences before trusting it.
+The explicit `settled_contract_failure_successor` request (version 4) uses the same rows for the INITIAL
+or current dispatch whose read-only council refused a named output field, re-derived from its artifact.
 """
 from __future__ import annotations
 
@@ -77,9 +79,13 @@ from codex_harness.domain.audit_progress import (
 from codex_harness.domain.model import ContractError, digest, require, utcnow
 from codex_harness.domain.research_investigations import (
     AUTHORIZED,
+    CONTRACT_MODE,
+    CONTRACT_PROOF,
+    CONTRACT_SCHEMA,
     DISPATCHED,
     FENCE_REASON,
     FENCED,
+    INITIAL_VERSION,
     RECOVERED,
     REFUSED,
     RESOLVED,
@@ -110,9 +116,10 @@ from codex_harness.domain.research_investigations import (
     successor_held,
     successor_key,
     successor_reads,
+    successor_version,
     successor_view,
+    validate_any_successor,
     validate_recovery_request,
-    validate_successor_request,
 )
 from codex_harness.domain.research_investigations import (
     SOURCE as INVESTIGATION,
@@ -563,7 +570,7 @@ class ResearchProgram:
 
         An explicit version-3 `settled_read_only_successor` request takes `_succeed_dispatch` with the
         `evidence` port (the executor's artifact store) instead; it never reads a transport."""
-        if isinstance(document, dict) and document.get("schema") == SUCCESSOR_SCHEMA:
+        if isinstance(document, dict) and document.get("schema") in {SUCCESSOR_SCHEMA, CONTRACT_SCHEMA}:
             return self._succeed_dispatch(document, evidence)
         try:
             request = validate_recovery_request(document)
@@ -679,13 +686,19 @@ class ResearchProgram:
            serialize on that transaction: exactly one writes, the others replay it.
 
         The failed predecessor, its run, tasks, reservations, cycle and the original recovery row are
-        never edited; its settled calls are recorded as counted, never reused. No model runs here."""
+        never edited; its settled calls are recorded as counted, never reused. No model runs here.
+
+        An explicit version-4 `settled_contract_failure_successor` request takes the same three steps
+        and the same rows (SPEC "Settled council contract failure recovery"): its predecessor may be the
+        INITIAL dispatch (lineage version 0, only while no recovery row and no head exist; its successor
+        is version 2) and `check_successor` additionally re-derives the pinned field code from the failed
+        role's bound artifact. Its row records `proof` `settled_contract_failure` and that `failure`."""
         try:
-            request = validate_successor_request(document)
+            request = validate_any_successor(document)
         except InvestigationRefused as exc:
             raise ProgramRefused(exc.reason_code, exc.field) from exc
         request_sha, investigation, old = digest(request), request["investigation"], request["predecessor"]
-        version = old["lineage_version"] + 1
+        version = successor_version(old["lineage_version"])
         key = successor_key(investigation, version)
         with self.store.transaction() as tx:
             row = tx.get(BUCKET_SUCCESSORS, key)
@@ -703,19 +716,24 @@ class ResearchProgram:
             lineage = self._lineage(tx, investigation)
             if lineage["held"] is not None:
                 raise ProgramRefused(lineage["held"], "predecessor")
+            if old["lineage_version"] == INITIAL_VERSION and (lineage["recovery"] is not None or lineage["head"] is not None):
+                raise ProgramRefused("recovery_successor_stale", "predecessor")   # the initial dispatch is no longer current
             proof = self._successor_check(tx, request, lineage["current"], artifacts)
             now = self.clock()
             for fence in proof["fenced"]:
                 quarantine_outbox(tx, fence["outbox"], tx.get("outbox", fence["outbox"]), fence["source_hash"], FENCE_REASON,
                                   tx.get("outbox_delivery", fence["outbox"]) or {})
+            contract = request["mode"] == CONTRACT_MODE
             row = {"id": key, "investigation": investigation, "version": version, "state": AUTHORIZED,
                    "reason_code": None, "request": request, "request_sha256": request_sha,
                    "predecessor": dict(old),
                    "replacement": {**request["replacement"], "dispatch": successor_dispatch_id(investigation, version),
                                    "cycle": None},
-                   "fence": proof["fenced"], "proof": SUCCESSOR_PROOF,
+                   "fence": proof["fenced"], "proof": CONTRACT_PROOF if contract else SUCCESSOR_PROOF,
                    "evidence": {"executions": proof["executions"], "calls": proof["calls"]},
                    "requested_at": now, "authorized_at": now, "claimed_at": None, "updated_at": now}
+            if contract:
+                row["failure"] = proof["failure"]
             tx.put(BUCKET_SUCCESSORS, key, row)
             tx.put(BUCKET_HEADS, investigation, {
                 "id": investigation, "investigation": investigation, "version": version, "successor": key,

@@ -50,6 +50,7 @@ from codex_harness.domain.council import (
     IMPROVEMENT_LEAD,
     INTERNAL_SLOT,
     RESEARCH_LEAD,
+    CouncilFieldRefused,
     SnapshotError,
     check_snapshot,
     council_output,
@@ -156,6 +157,10 @@ class CouncilRun(AutonomousRun):
                 event = event_from_role(INTERNAL_SLOT[role], derived["event_payload"], digest_value, version, binding["task_id"])
                 recorded = sessions.submit(row["session_id"], event, owner=run_id, binding=_safe_binding(binding))
             except CouncilInputOverflow as exc:
+                raise AutonomousRefused(exc.reason_code) from exc
+            except CouncilFieldRefused as exc:
+                # The fixed `council_field_invalid:<role>.<field>:<problem>` code, never the text; the output
+                # and its artifact stay as recorded (no truncation, retry or relaxed bound).
                 raise AutonomousRefused(exc.reason_code) from exc
             except DgeRefused as exc:
                 raise AutonomousRefused("debate_refused:" + exc.reason_code) from exc

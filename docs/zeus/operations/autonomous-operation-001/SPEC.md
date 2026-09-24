@@ -1,5 +1,212 @@
 # Whole autonomous operating loop
 
+## Settled council contract failure recovery, 2026-09-24 13:30 UTC
+
+Outcome unchanged: release-checklist held pair -> accepted research -> scoped receipt -> readable
+correction -> independent verification -> actual managed delivery. Do not rerun or bypass the held
+pair. Actual research release-checklist-research-001.c001 failed at improvement_lead before conductor,
+implementation or promotion; four read-only role starts all succeeded/settled. Recorded cause is
+debate_refused:ContractError. Root replayed council_output on immutable execution10560304 and got
+Improvement lead proposal needs a summary...; summary length6046 exceeds domain.council._text
+limit4000. Fields/decision exist. This is a local domain replay, not another model call or proof of
+other runs' causes. Provider-facing autonomous_roles uses general TEXT for summary; inspect exact
+schema/role guidance to align it with the existing consumer, never truncate accepted outputs.
+Existing settled_read_only_successor accepts only foreign_message after researcher/DBA and requires
+prior recovery lineage version>=1. This initial dispatch with four settled roles is outside that
+contract. Reuse owners; do not delete claims, change failed run, or use a fake legacy recovery.
+
+One bounded Claude batch, two connected seams:
+1. Single-source council field bounds between domain validation and role output schema/guidance.
+Constrain summaries/rationales/transition text to their actual consuming rules and concise guidance.
+Do not globally shrink unrelated TEXT or raise4000. Name safe fixed reason codes for rejected field
+shape/length, without echoing content. Keep committed prior outputs/readable evidence and schemas
+compatible. Tests actual-shaped6046 case and boundary values; no model calls in tests.
+2. Explicit owner-authorized same-scope successor for INITIAL or current dispatch that failed a
+named council output-contract check after only read-only researcher/DBA/proposer/attacker tasks.
+Extend existing recovery owner/CLI/versioned lineage additively, preserve old v1/v2/v3 proofs. Require
+actual immutable run/task/artifact identity, every reservation settled, every provider effect known,
+all tasks terminal, no conductor decision/implementation/promotion, no operation or held cleanup.
+The recorded legacy generic ContractError of THIS shape needs independently re-derived exact safe
+field rejection from bound artifact, not generic error acceptance. Check run-scoped bus/outbox and
+fence old pending publications using existing owners; don't assume terminal means drained. Refuse
+unavailable/corrupt/foreign evidence, active/unknown effects or scope changes. Original dispatch,
+run, tasks, failed outputs and spent calls stay unchanged; no output is rewritten/reused as accepted.
+New request pins exact predecessor and new immutable program config; replacement may narrow prompt
+length instructions without broadening topic/project/reason/repair scope. Atomic idempotency and
+replay/concurrent requests make one successor. Current-dispatch consumers and scoped receipt must
+bind new accepted run and retained predecessor fences, not stale original result. No new scheduler.
+
+Acceptance matrix: initial exact-shaped four settled read-only role failure permits one explicit
+successor; existing replacement chain still works. All role artifacts bound. Negative wrong failure,
+foreign/stale/missing artifact, nonterminal task, unconfirmed invocation, conductor or worker entry,
+changed scope and broken fence refuse. Duplicate/concurrent/restart request one result. Successor
+failure stays held. Pure/domain plus MemoryStore and isolated PG when available; no live DB edits.
+Targeted council-role/research-recovery/continuation tests + Ruff only, not full suite. Root independent
+review/CI/runtime activation precede actual same-scope successor. Original report is NOT accepted;
+no scoped receipt can be issued now. Remaining checklist code redaction+cleanup correction retains
+its earlier accepted collection fix. No other product feature belongs to this batch.
+
+
+## Release checklist two-strike research and readable feedback, 2026-09-24 13:20 UTC
+
+Same goal, scope and acceptance matrix. Actual originaljob autonomous-operation-001-release-checklist,
+candidate67317ab8, task19c50b65, review6453d76d/ref252c1c71 rejected three boundaries. Correction
+cont-fe15931105e915769378e016 candidate92da6a74/task93bb51d9/ref71f5467e rejected two remaining.
+Both provider calls settled, no Fleet jobs/units held. Current continuation research intent
+f3342d71dab09a8a097b28ee044f329110b08af5e30224146c36caf11d4092d3 is research_required.
+Worker explicitly reported review body unavailable: only ID/ref and a Windows host artifact path
+inside a Linux workspace. Root's revised frame was at a newer commit than the original goal pin;
+policy acceptance text alone did not supply readable findings. Root confirms its earlier claim
+of complete correction handoff was insufficient. This is an owner/input delivery issue, not proof
+that Claude ignored readable findings. Do not bypass research hold or reclassify any failed attempt.
+
+Exact readable review bodies (static code trace, not reviewer-executed reproductions):
+Reject candidate 67317ab8aa3f. Frame: inspected collection → manifest → batches → evidence → verification, including failure, cancellation, fencing and cleanup. Three findings require correction: P1 release_suite.py:194–199 persists unredacted node IDs in progress and reconciliation fields, allowing credential-bearing parameter IDs into artifacts. P2 release_suite.py:204–210 handles collection outside the interruption handler, so collection cancellation or immediate fence loss produces no linked partial suite report. P2 commands.py:105–111 waits indefinitely after tree-kill failure, potentially preventing timeout evidence from being persisted. Fix together and supply isolated regression evidence.
+Reject 92da6a74af96. Frame: reviewed collection, manifests, batches, receipts and verification across normal, failure, cancellation, fencing and cleanup paths. The prior collection-interruption finding is fixed. Two prior blockers remain: P1 release_suite.py:193–201 persists unredacted parameter IDs through progress and reconciliation fields, allowing credentials into artifacts. P2 commands.py:105–111 calls process.wait() without a deadline after tree-kill failure, potentially hanging timeout/cancel handling before evidence is persisted. Correct both together and supply isolated regression evidence.
+
+Worker fixed collection interruption (accepted in second review), but credential-bearing parameter
+IDs still reach progress/reconciliation artifacts and cleanup still has process.wait() without a
+bound after failed tree kill. Root read the exact original code paths. Preserve accepted collection
+fix. Do not expand to generic logging overhaul or arbitrary extra blockers.
+One existing ResearchProgram/council cycle must research this exact pair, trace correction payload
+construction/artifact transport/container-visible evidence, and recommend the narrow existing-owner
+repair. Compare readable bounded reviewer findings+source ref/digest versus host-only pointers;
+use local SSOT first. No runtime changes in the research report, no broad Portfolio disposition,
+no new scheduler. Report fact/inference/unknown, exact job/review/candidate bindings and remaining
+two acceptance cases. Root will explicitly assess research coverage, scoped receipt, then one
+consolidated corrective batch with actual readable feedback and independent verification.
+Completion of research is not completion of correction, release verification or autonomy.
+
+
+## Release checklist consolidated correction R1, 2026-09-24 13:08 UTC
+
+Candidate67317ab8 task19c50b65 was independently rejected by lead6453d76d; review artifact
+252c1c71. Root confirmed all three reachable code paths by reading exact candidate. Keep original
+failure and accepted checklist architecture. Correct only these directly affected boundaries:
+(1) Redact all persisted structured node-derived fields, including progress/reconciliation/extra
+verdict/argv fields; exact IDs remain internal for accounting, hashes/counts retain identity. Real
+parameterized credential-canary must be absent from every emitted artifact, including interruptions.
+(2) Put collection, initial/post-collection fence, manifest and batches under one interruption
+report owner, so cancel/fence loss always links partial evidence even before a batch exists. Re-raise
+and never verify on interruption. Test collection cancellation and both fence positions explicitly.
+(3) Bound reap after kill failure; cleanup failure/timeout is unknown, not success. Preserve partial
+logs even if process survives. Test injected kill failure plus actual sleeping owned process, bounded
+return and eventual test-owned cleanup. Do not leave a child intentionally running after the test.
+Windows unknown descendant proof remains honest; no inferred clean shutdown or retry-safe verdict.
+One continuation correction through existing Fleet, same candidate/session when supported, then
+independent acceptance. Targeted release-suite/runner/commands regression checks and Ruff; no full
+suite/model calls in worker. Existing whole-loop completion conditions remain unchanged.
+
+
+## Checklist-complete release verification, 2026-09-24 12:43 UTC
+
+Outcome: finish unchanged release acceptance through complete, observable incumbent and candidate
+suite checks. Keep all earlier independent approvals and failures. Current release9bae8c30 is
+reviewed, not verified; no host cutover. uv sync passed; incumbent suite timed out900s with lost
+partial output. A separate300s diagnostic collected4127 items and progressed to13%, no FAILED/ERROR
+or60s faulthandler event observed. This establishes progress only, not total duration or absence of
+later failures. Raw evidence D:/workspaces/zeus/artifacts/autonomous-operation-001/release-diagnostic-001.
+Do not claim a deadlock or code defect in docs. Existing one-command full-suite deadline and timeout
+output loss prevent actionable qualification. Reuse existing ReleaseRunner and VerificationServices.
+
+One Claude implementation batch: checklist-complete bounded release suites with durable diagnostics.
+Affected path: approved release/base -> isolated incumbent/candidate checkouts and services -> collect
+exact pytest node IDs -> immutable suite manifest -> deterministic serial bounded batches -> individual
+results and complete denominator reconciliation -> existing Releases.verify -> later HostDelivery.
+No new approval authority, executor, model routing, timeout inflation, test exclusion or live DB edits.
+
+Design: collect each suite before execution using the exact incumbent/candidate configuration and
+import semantics. A failed/empty/unavailable collection is not an empty passing suite. Preserve exact
+node IDs and count, revision/tree/cleanliness/config and manifest hash. Split deterministically by
+file or bounded node batches without duplicate/missing ids, serially against same isolated stack.
+Existing release_check_seconds applies to EACH owned process, not one whole 4127-test invocation;
+finite manifest bounds total work. Keep release fence alive between batches and refuse lost owner.
+Each execution must produce machine-readable actual collected/results accounting, not parse names
+from progress to infer coverage. Reconcile executed node multiset to planned nodes; unexpected,
+missing, duplicate or drift refuses. Existing explicit skip policy remains, no synthetic success.
+Preserve incumbent tests on candidate code and candidate own suite. A failed batch stops remaining
+batches as not_run, never reports suite success. Unknown/timeouts remain observation_error/retry.
+
+Persist progress, stdout/stderr and timeout diagnostic to artifact store with redaction policy;
+stream to owner-controlled temporary evidence files if needed so timeout cannot discard progress.
+Use existing process-tree cleanup; prove owned descendants gone on timeout/cancel or report unknown.
+No raw credentials in evidence. Keep commands.run_process default interface/behavior compatible;
+prefer narrow optional observation facility or release-specific adapter. One release report links
+manifest, each batch, collected/executed/pass/fail/skip/not_run counts and final verdict. Logs must
+survive timeout and include last observed test, without claiming that test caused the timeout.
+
+Acceptance matrix: normal complete manifest; collection failure/empty; injected omitted/duplicate/
+unexpected node IDs; actual failure and skips; deadline/cancel with retained partial log and owned
+process cleanup; lost fence/restart does not grant approval; incumbent-vs-candidate binding; Windows
+and Linux portable paths. Use actual tiny pytest suites/processes for positive and failure cases,
+including parameterized IDs; faults labelled. No full main suite inside worker. Targeted deployment,
+check-result and new suite tests plus Ruff; isolated PG if useful, otherwise no new PG schema change.
+Independent Codex review, owner checks and CI before runtime deployment. Then retry original release
+through its owner with new complete-checklist evaluator, preserving original policy/hash and receipts.
+Out of scope: canonical Git diff (process-scoped abbreviation7 already re-derives original digest),
+PR192 branch reconciliation, managed cutover and remaining rollback/two-item gates stay owner steps.
+Do not weaken those gates or quietly classify them completed.
+
+
+## Release verification observation gap, 2026-09-24 12:35 UTC
+
+Actual incumbent-policy evaluation: uv sync passed; first incumbent pytest suite timed out at900s,
+receipt a9527add. Candidate remained reviewed, queue retry; no image/file canary or deployment.
+The command runner discards captured progress when timeout is raised, so absence of final results
+cannot distinguish slow completion from a blocked test or failures. Do not extend timeout blindly.
+One discriminating diagnostic: same isolated service/venv/incumbent definitions, -x -vv and stack
+at60s, streamed log, at most300s, owned process-tree cleanup. It is NOT an acceptance check.
+Read first failure or last progress/stack; consolidate root cause and required correction before
+another whole-suite attempt. Preserve accepted document reviews/CI and original timeout. Default
+Git diff abbreviation caused earlier check mismatch; process-scoped7 matches original digest
+exactly. Its general canonicalization belongs to follow-up, not candidate rewriting.
+
+
+## Exact current release delivery composition, 2026-09-24 12:14 UTC
+
+PR192 exact candidate7b93b7fa/treec8020a5a passed docs CI gate and merged as ae7eab8a.
+Independent lead and conductor accepted release9bae8c30 in zeus_fleet_harness. Primary owns
+actual Fleet jobs/units and registered target zeus-fleet-managed; neither store has delivery plans.
+Reuse HostDelivery over the lane Releases/ReleaseQueue, with ManagedFleetTarget explicitly bound
+to Fleet(primary), never Fleet(lane). This is owner composition of existing ports, not copying
+release/review rows. Preserve all original acceptance gates and pending historical releases.
+Follow-up observed gate: release status is reviewed with checks={}, not verified. Its unchanged
+policy requires tests, cli_start and cli_file_task. Run existing ReleaseRunner checks in a dedicated
+D evaluator at the incumbent base, under existing ReleaseQueue fence; override only promotion to
+return verified without publication/activation. Preserve failed checks, no automatic reruns. This
+may execute one real file canary only after the earlier checks pass. PR192 was published by owner
+under docs/current-operating-checkpoint-001, whereas immutable candidate branch is harness/0c3...;
+GitHubDelivery branch-only observation cannot adopt it without an explicit exact-head publication
+binding. Reconcile that owner handoff before any publish tick; do not create duplicate PRs or alter
+approved candidate identity. Registered target/source and scheduled owner remain untouched.
+
+Next bounded handoff: preflight exact release/review/tree, registered target and environment-lock;
+materialize sealed candidate without switching descriptors, stopping services or starting Fleet.
+For new sealed runtime/state storage use D; report a draft target separately from the registered
+C target. Verify no existing active managed instance before any later registry change. Retain
+scheduled Fleet as sole operating owner. Preparation does not prove consumption or canary.
+Then register Git-pinned exact-release plan and perform drained single-owner managed cutover;
+record rollback/restart and next-item gates through existing owners. Any missing gate is evidence,
+not approval. No additional model calls for mechanical preparation.
+
+
+## Current docs evidence contract correction, 2026-09-24
+
+Actual Item A-current produced candidate7b93b7fa, task0c3f24dd, but inspector ef6dc46d refused
+no_claims (0 checked). Worker honestly reported shell permission denials and tests=[]; no model
+review occurred. Preserve this failure and exact candidate. Original no-Python instruction did not
+provide a replayable host evidence contract. This is owner configuration, not a proven content defect.
+For ONE evidence-repair successor, explicitly authorize existing pytest tests/test_ci_scope.py and
+Ruff through a container project-evidence v2 profile. These verify CI routing/tooling and baseline
+lint, NOT document semantics. Independent Codex must inspect the two document changes and source
+facts/links/diagram; do not equate tooling passes with factual accuracy. No full suite or new code.
+Reuse the existing continuation evidence_repair route under a new narrow current-docs policy pinned
+to the original goal hash, paths and acceptance criteria. Host profile applies only to that family;
+do not alter global profile, old policy or failed rows. Existing scheduled owner is paused/drained
+before the bounded Fleet owner starts and restored after settlement. This is explicitly the owner
+correcting its evidence instructions; not claimed as automatic diagnosis. Next is real candidate
+review/release and exact managed delivery, then B-current, with existing whole-task gates preserved.
+
 ## Current-source useful-item qualification after actual repair, 2026-09-24
 
 Owner facts at11:52UTC: PR191 merged atf2b392d9d1e770878699be88699872a143a26351 and scheduled
