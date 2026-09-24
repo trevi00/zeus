@@ -503,6 +503,19 @@
       "dependencies": [
         "native-fixture"
       ]
+    },
+    {
+      "id": "correction-feedback",
+      "project_id": "research-improvement",
+      "criterion_id": "verified-loop",
+      "lane": "harness",
+      "manifest_path": "docs/zeus/operations/autonomous-operation-001/correction-feedback.operation.json",
+      "manifest_revision": "af1bc091d79a8c5a3f213d29cde027e0f7d23b78",
+      "manifest_sha256": "834471ff36f211422d1420ecb5ac2c103efc8df36395015ddeb4cd42124fe209",
+      "priority": 370,
+      "dependencies": [
+        "native-fixture"
+      ]
     }
   ]
 }
