@@ -1,0 +1,42 @@
+{
+  "schema": "urn:zeus:operation:1",
+  "id": "autonomous-operation-001-research-coverage",
+  "base_revision": "e41602d03988e20e3ea81614c448ef3ef8cf536f",
+  "goal": {
+    "path": "docs/zeus/operations/autonomous-operation-001/SPEC.md",
+    "sha256": "41488016b797e661a17972de48c08e263f8d92e0d5f4a35ba1f1a450f5286127",
+    "criterion": "Complete the existing autonomous operating loop with independently verified session, continuation and actual runtime ownership",
+    "rationale": "Finish the existing whole-goal acceptance matrix without manual user relay or weaker verification."
+  },
+  "budget": {
+    "mode": "subscription",
+    "total": 192,
+    "per_host": 192
+  },
+  "claude": {
+    "model": "claude-opus-5-5",
+    "timeout_seconds": 3600,
+    "max_budget_usd": 2
+  },
+  "plan": {
+    "objective": "Implement ONLY Research coverage ownership: accepted003 receipt refusal in SPEC.md. Reuse immutable Portfolio binding and continuation lineage; add explicit narrow owner scope supplement preserving original accepted capture and strict default receipt gates. Targeted tests and Ruff only. No full suite, live state edits, self-approval, merge or deployment.",
+    "allowed_paths": [
+      "src/codex_harness/application/continuation.py",
+      "src/codex_harness/domain/continuation.py",
+      "src/codex_harness/adapters/continuation.py",
+      "src/codex_harness/adapters/continuation_cli.py",
+      "src/codex_harness/application/portfolio.py",
+      "src/codex_harness/domain/research_investigations.py",
+      "tests/test_continuation.py",
+      "tests/test_continuation_research.py",
+      "tests/test_portfolio.py",
+      "tests/test_research_investigations.py",
+      "docs/contracts.md"
+    ],
+    "acceptance_criteria": [
+      "Successor project ownership is durably inherited through verified lineage and reconciled idempotently without guessing or conflicting overwrite.",
+      "Explicit append-only owner coverage supplement releases only exact proven missing descendants of accepted current research; original snapshots and default gates unchanged.",
+      "Actual-shaped negative/positive cases, stale/foreign/partial evidence, concurrency/restart and consumption revalidation are covered; targeted tests/Ruff honest evidence."
+    ]
+  }
+}
