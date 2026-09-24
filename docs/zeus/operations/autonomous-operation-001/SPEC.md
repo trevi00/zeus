@@ -1,5 +1,23 @@
 # Whole autonomous operating loop
 
+## Research follow-up scoped correction, 2026-09-24 16:45 UTC
+
+Candidate bd2a6d7307ecaa41f5130630c1a03f6b71774219/task3373cf74 rejected by independent Codex
+review3b636889 for one material actual-shaped boundary. Root static confirmation: application/
+research_program.py `_followup_check` selects observation_terminations by (record_id or task_id)
+in task IDs, but observations.mark_unconfirmed creates distinct digest record_id plus task_id and
+bucket. Thus real unconfirmed marker is omitted. Fixture1475 lacks record_id and misses the path.
+One consolidated correction: use authoritative task/bucket ownership (including implementation
+and review slots), refuse unresolved unconfirmed/pending_reconciliation and unknown statuses,
+respect proven closed/resolved records and unrelated owner records. Read the real termination
+writer/closer schemas; don't infer closure from absence, falsy status or name alone. Actual-shaped
+regressions cover active council, implementation/review, closed/unrelated and malformed evidence.
+Preserve accepted lineage, membership, race and legacy recovery tests; no wider feature changes.
+Review body is now delivered inline by operating51bff060. Owner-declared profile uses checked
+existing five research/continuation files plus architecture/CI scope tests and Ruff. Prior8/8
+inspection remains history. PostgreSQL variants and host qualification remain required separately.
+
+
 ## Accepted investigation follow-up for newly observed evidence, 2026-09-24 16:16 UTC
 
 Same whole-loop outcome; no new product scope. Exact checklist candidate adeab8c79b5c6b34832d88eac43607d70307ddef
