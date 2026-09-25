@@ -244,19 +244,28 @@ def migrate_host(service, args) -> dict:
 
     The observation is a callback so an identical replay is answered from the receipt without
     reading the journal, checkouts, Docker or the database. The target schemas are checked under
-    the lane search-path rule against this host's configured database."""
+    the lane search-path rule against this host's configured database.
+
+    The job rows the observation needs are resolved once, outside the application's transaction
+    (see `_resolved`); the journal, the checkouts, Docker and the target schemas are read again on
+    the re-read, and `Fleet.migrate_host` still judges the proof against the queued set its own
+    commit reads."""
     from codex_harness.adapters.configuration import settings
     from codex_harness.domain.fleet_recovery import validate_host_migration_request
 
     request = validate_host_migration_request(read_manifest(args.file))
     fleet = Fleet(service.store)
 
+    def pinned_jobs() -> list:
+        with service.store.transaction() as tx:
+            return tx.scan(BUCKET_JOBS)
+
+    jobs = _resolved(pinned_jobs)
+
     def observe() -> dict:
         from codex_harness.adapters.fleet_recovery import collect_host_migration_proof, docker_state
 
-        with service.store.transaction() as tx:
-            jobs = tx.scan(BUCKET_JOBS)
-        return collect_host_migration_proof(request, jobs, journal=args.journal,
+        return collect_host_migration_proof(request, jobs(), journal=args.journal,
                                             host_dsn=settings().get("HARNESS_DATABASE_URL") or "",
                                             state=lambda container: docker_state(container, args.docker))
 

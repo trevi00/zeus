@@ -2,15 +2,23 @@
 
 Memory store and a fabricated TARGET-host observation only; the real observation and a real
 PostgreSQL registry are exercised by tests/test_host_migration_pg_rehearsal.py when disposable
-servers are named.
+servers are named. The `zeus fleet migrate-host` adapter command is exercised at the end of this file
+over real target files and Git, and over the real primary store in tests/test_fleet_recovery_postgres.py.
 """
 from __future__ import annotations
 
 import copy
+import hashlib
+import json
 import os
+import subprocess
+from contextlib import contextmanager
+from types import SimpleNamespace
 
 import pytest
 
+from codex_harness.adapters import fleet_cli, fleet_recovery
+from codex_harness.adapters.fleet_recovery import checkout_identity, run_root
 from codex_harness.adapters.store import MemoryStore
 from codex_harness.application.fleet import BUCKET_JOBS, BUCKET_REGISTRY, Fleet
 from codex_harness.domain.fleet import (
@@ -147,3 +155,186 @@ def test_unpaused_fleet_or_running_runner_refuses():
         Fleet(store(jobs=[queued])).migrate_host(request(), proof())
     bound = proof(harness={"queued_bindings": [{"job_id": "job-q", "base_present": True, "goal_matches": True}]})
     assert Fleet(store(jobs=[queued])).migrate_host(request(), copy.deepcopy(bound))["migrated"]
+
+
+# ----- the shipped `zeus fleet migrate-host` adapter command ---------------------------------
+# The target checkout, runtimes and service journal below are REAL files and Git; Docker is never
+# asked because every runs root is empty. The target-schema check is a labelled fixture here (no
+# database in a unit run) and real in tests/test_fleet_recovery_postgres.py.
+
+
+class NestedStoreRead(AssertionError):
+    """Labelled stand-in for `psycopg.errors.LockNotAvailable` on advisory lock 734219."""
+
+
+class NonReentrant:
+    """Injected fault: the primary store's non-reentrant PostgreSQL boundary made visible over
+    `MemoryStore` (whose RLock would accept a nested transaction silently)."""
+
+    def __init__(self, store):
+        self.store, self.depth = store, 0
+
+    @contextmanager
+    def transaction(self):
+        if self.depth:
+            raise NestedStoreRead("nested primary-store transaction while advisory lock 734219 is held")
+        self.depth += 1
+        try:
+            with self.store.transaction() as tx:
+                yield tx
+        finally:
+            self.depth -= 1
+
+
+def git(repo, *argv):
+    return subprocess.run(["git", "-C", str(repo), "-c", "user.email=f@x", "-c", "user.name=f", *argv],
+                          check=True, capture_output=True, text=True).stdout.strip()
+
+
+def stopped_journal(path, run_id="r1"):
+    path.write_text(json.dumps({"event": "start", "run_id": run_id}) + "\n"
+                    + json.dumps({"event": "exit", "run_id": run_id}) + "\n", encoding="utf-8")
+
+
+def cli_state(tmp_path, backing, *, schemas=None):
+    """A restored registry on `backing` (paused, one queued job) and a real target host tree."""
+    root = tmp_path / "srv"
+    repo = root / "repo"
+    repo.mkdir(parents=True)
+    git(repo, "init", "-q")
+    (repo / "docs").mkdir()
+    (repo / "docs" / "goal.md").write_text("goal\n", encoding="utf-8")
+    git(repo, "add", "docs/goal.md")
+    git(repo, "commit", "-q", "-m", "root")
+    head = git(repo, "rev-parse", "HEAD")
+    runtimes = {lane: root / "runtime" / lane for lane in TARGETS}
+    for path in runtimes.values():
+        run_root(str(path)).mkdir(parents=True)  # initialized runtime: an empty runs root
+    journal = root / "journal.jsonl"
+    stopped_journal(journal)
+    queued = {"id": "op-q", "lane": "harness", "status": "queued", "repository": repository_identity(OLD_REPO),
+              "goal": {"base_revision": head, "path": "docs/goal.md",
+                       "sha256": hashlib.sha256(b"goal\n").hexdigest()}}
+    with backing.transaction() as tx:
+        tx.put(BUCKET_REGISTRY, CONFIG["id"], {"id": CONFIG["id"], "schema": CONFIG["schema"], "config": CONFIG,
+                                               "config_sha256": config_digest(CONFIG), "registered_at": "t0"})
+        tx.put(BUCKET_JOBS, queued["id"], queued)
+    Fleet(backing).pause()
+    schemas = schemas or {lane: TARGETS[lane][1] for lane in TARGETS}
+    document = request(source_repository_identity=checkout_identity(str(repo)))
+    for move in document["lanes"]:
+        move["repository"]["to"] = str(repo)
+        move["runtime"]["to"] = str(runtimes[move["lane"]])
+        move["schema"]["to"] = schemas[move["lane"]]
+    return {"store": backing, "journal": journal, "request": document, "repo": repo}
+
+
+def cli_migrate(state, tmp_path, *, store=None, name="request.json"):
+    path = tmp_path / name
+    path.write_text(json.dumps(state["request"], sort_keys=True), encoding="utf-8")
+    return fleet_cli.execute(SimpleNamespace(store=state["store"] if store is None else store),
+                             SimpleNamespace(fleet_command="migrate-host", file=path,
+                                             journal=state["journal"], docker="docker"))
+
+
+def spy(monkeypatch, name, before=None):
+    """Counts calls to a REAL fleet_recovery reader; `before(n)` runs ahead of call n."""
+    real, calls = getattr(fleet_recovery, name), []
+
+    def wrapped(*args, **kwargs):
+        calls.append(args)
+        if before is not None:
+            before(len(calls))
+        return real(*args, **kwargs)
+
+    monkeypatch.setattr(fleet_recovery, name, wrapped)
+    return calls
+
+
+def fault(*_, **__):
+    """Injected fault: a committed migration must be answered without observing anything."""
+    raise AssertionError("a committed receipt must be answered without observing anything")
+
+
+def unit_schema_fixture(monkeypatch):
+    """Labelled fixture for the target-schema check: no database exists in a unit run."""
+    calls = []
+    monkeypatch.setattr(fleet_recovery, "_schema_provisioned",
+                        lambda dsn, schema, verify=None: calls.append(schema) or True)
+    return calls
+
+
+def test_the_migrate_host_cli_pins_only_jobs_and_observes_external_facts_twice(tmp_path, monkeypatch):
+    """C3: the second observation runs inside the commit, so it must not open a primary-store
+    transaction; the journal, checkout and schema facts are still read on both observations."""
+    state = cli_state(tmp_path, NonReentrant(MemoryStore()))
+    schemas = unit_schema_fixture(monkeypatch)
+    journals = spy(monkeypatch, "runner_state")
+    answer = cli_migrate(state, tmp_path)
+    assert answer["exit_code"] == 0 and answer["migrated"] is True and answer["cached"] is False
+    assert len(journals) == 2 and len(schemas) == 4
+    with state["store"].transaction() as tx:
+        receipt = tx.get("fleet_host_migrations", answer["receipt"]["id"])
+    assert {lane["id"]: lane["queued_bindings"] for lane in receipt["proof"]["lanes"]} == \
+        {"harness": [{"job_id": "op-q", "base_present": True, "goal_matches": True}], "interface": []}
+    for name in ("collect_host_migration_proof", "runner_state", "docker_state", "_schema_provisioned"):
+        monkeypatch.setattr(fleet_recovery, name, fault)
+    state["journal"].unlink()
+    replay = cli_migrate(state, tmp_path, name="replay.json")
+    assert replay["cached"] is True and replay["receipt"] == answer["receipt"]
+
+
+def test_the_pre_fix_migrate_host_observation_reads_the_store_inside_the_commit(tmp_path, monkeypatch):
+    """Control: the pre-fix callback scanned jobs through the primary store on every observation."""
+    state = cli_state(tmp_path, NonReentrant(MemoryStore()))
+    unit_schema_fixture(monkeypatch)
+    with pytest.raises(NestedStoreRead):
+        Fleet(state["store"]).migrate_host(state["request"], observe=nested_observer(state),
+                                           reread=nested_observer(state))
+    with state["store"].transaction() as tx:
+        assert tx.scan("fleet_host_migrations") == []
+
+
+def nested_observer(state):
+    """The PRE-FIX adapter callback (258336a): a primary-store job scan on every observation."""
+    from codex_harness.adapters.configuration import settings
+
+    def observe():
+        with state["store"].transaction() as tx:
+            jobs = tx.scan(BUCKET_JOBS)
+        return fleet_recovery.collect_host_migration_proof(state["request"], jobs, journal=state["journal"],
+                                                           host_dsn=settings().get("HARNESS_DATABASE_URL") or "",
+                                                           state=fault)
+    return observe
+
+
+def test_a_journal_change_between_observations_refuses_without_commit(tmp_path, monkeypatch):
+    state = cli_state(tmp_path, NonReentrant(MemoryStore()))
+    unit_schema_fixture(monkeypatch)
+    spy(monkeypatch, "runner_state", before=lambda n: n == 2 and stopped_journal(state["journal"], "r2"))
+    with pytest.raises(FleetRefused, match="proof_changed"):
+        cli_migrate(state, tmp_path)
+    with state["store"].transaction() as tx:
+        assert tx.scan("fleet_host_migrations") == []
+        assert tx.get(BUCKET_REGISTRY, CONFIG["id"])["config_sha256"] == config_digest(CONFIG)
+
+
+def test_a_job_queued_after_the_pinned_scan_refuses_on_the_commits_own_queued_set(tmp_path, monkeypatch):
+    """The pinned job rows never become the denominator: the commit re-reads the queued set."""
+    state = cli_state(tmp_path, NonReentrant(MemoryStore()))
+    unit_schema_fixture(monkeypatch)
+    real, observed = fleet_recovery.collect_host_migration_proof, []
+
+    def first_then_enqueue(*args, **kwargs):
+        proof = real(*args, **kwargs)
+        observed.append(proof)
+        if len(observed) == 1:  # after the first observation, before the commit's transaction opens
+            with state["store"].transaction() as tx:
+                tx.put(BUCKET_JOBS, "op-late", {**tx.get(BUCKET_JOBS, "op-q"), "id": "op-late"})
+        return proof
+
+    monkeypatch.setattr(fleet_recovery, "collect_host_migration_proof", first_then_enqueue)
+    with pytest.raises(FleetRefused, match="queued_binding_incomplete"):
+        cli_migrate(state, tmp_path)
+    with state["store"].transaction() as tx:
+        assert tx.scan("fleet_host_migrations") == []
