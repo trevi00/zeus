@@ -1,5 +1,25 @@
 # Whole autonomous operating loop
 
+## Release r3 environment diagnosis, 2026-09-25
+
+PR199 merged as 275f8ade after exact-head CI success. Release b5650fe9 at
+4586049f was conductor-reviewed with evidence21d3037f, then actual incumbent
+verification rejected: 4318 collected, 1070 passed, 19 skipped, 11 failed,
+3218 not run. No image or real file canary ran. Preserve that rejection.
+All 11 failures in council_delivery/council_input are FileNotFoundError on
+deep TEMP-derived artifact paths. Root helper selected the long TEMP root;
+Windows path-length impact is a hypothesis, not yet proven by a passing CI.
+One discriminating check runs the same two incumbent files against the same
+candidate interpreter/code/config with shorter D:/workspaces/zeus/scratch/rt1
+TEMP. No production store or acceptance mutation. Evidence and runnable helper:
+D:/workspaces/zeus/artifacts/autonomous-operation-001/check-release-temp-path.py,
+release-temp-path-result.json and checklist-batch5-failure.log. Passing proves
+this scoped environment comparison only, not whole release success.
+Next: classify observed result and choose an explicit history-preserving
+release recovery path; ReleaseQueue.retry refuses rejected releases. Do not
+silently reset status/reviews, drop failing tests or promote on this diagnostic.
+Existing whole-loop criteria, accepted code/CI and all failed attempts remain.
+
 ## Release incumbent test fixture bytecode collision, 2026-09-25
 
 Keep the whole release frame and accepted signal/accounting fixes. Candidate51b4cb37
