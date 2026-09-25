@@ -75,6 +75,7 @@ from codex_harness.domain.host_delivery import (
     KIND_MANAGED,
     KIND_PROCESS,
     KIND_SCHEDULED_TASK,
+    KIND_SYSTEMD,
     RECEIPT_SCHEMA,
     REPLACEABLE_INSTANCES,
     DeliveryRefused,
@@ -799,18 +800,42 @@ class ScheduledTaskHostTarget(HostTargetBase):
         return {"started": True, "service": target["service"], "launch": record}
 
 
-def host_ports(*, fleet=None, **kwargs) -> dict:
+def host_ports(*, fleet=None, systemd_control=None, **kwargs) -> dict:
     """The host adapters by target kind, as the coordinator expects them.
 
     The managed Fleet target is only ever USED for a target the owner registered with that kind;
     registering none keeps every existing target exactly as it was. `fleet` is its activation-gate
     authority (the host store's Fleet); without one a managed start refuses rather than assuming
-    that no execution debt exists.
+    that no execution debt exists. `systemd_control` is the validated launcher control directory
+    of the systemd target (`systemd_control_dir`); without one a systemd start refuses by name.
     """
+    from codex_harness.adapters.host_migration import SystemdHostTarget
     from codex_harness.adapters.managed_runtime import ManagedFleetTarget
 
     return {KIND_PROCESS: ProcessHostTarget(**kwargs), KIND_SCHEDULED_TASK: ScheduledTaskHostTarget(),
-            KIND_MANAGED: ManagedFleetTarget(fleet=fleet)}
+            KIND_MANAGED: ManagedFleetTarget(fleet=fleet),
+            KIND_SYSTEMD: SystemdHostTarget(control=systemd_control or {"control_dir": None,
+                                                                        "reason_code": "control_dir_unconfigured"})}
+
+
+def systemd_control_dir(settings: dict) -> dict:
+    """The launcher control directory from `ZEUS_AIBOX_ROOT` (the setting the deploy/aibox units
+    set): `<root>/runtime/control`, absolute, an existing real directory, no link on the way.
+
+    Returned as `{"control_dir", "reason_code"}` so a missing or invalid setting is reported by
+    the systemd target at its first effect instead of failing every other target's construction.
+    """
+    value = (settings or {}).get("ZEUS_AIBOX_ROOT")
+    if not (type(value) is str and value.strip()):
+        return {"control_dir": None, "reason_code": "control_dir_unconfigured"}
+    root = Path(value)
+    control = root / "runtime" / "control"
+    if not root.is_absolute() or ".." in root.parts:
+        return {"control_dir": None, "reason_code": "control_dir_invalid"}
+    for path in (root, root / "runtime", control):
+        if path.is_symlink() or not path.is_dir():
+            return {"control_dir": None, "reason_code": "control_dir_invalid"}
+    return {"control_dir": str(control), "reason_code": None}
 
 
 # ----- the incumbent fixed canary checks --------------------------------------------------------
@@ -987,7 +1012,8 @@ def controller(service, *, enabled=None, observer=None, git=None, store=None) ->
         enabled = configured_enabled(settings())
     github = None if git is None else GitHubDelivery(git)
     # The managed target's activation gate reads the ACTUAL Fleet of this host store.
-    return HostDelivery(store, service.org, github=github, hosts=host_ports(fleet=Fleet(store)),
+    return HostDelivery(store, service.org, github=github,
+                        hosts=host_ports(fleet=Fleet(store), systemd_control=systemd_control_dir(settings())),
                         canaries=canary_checks(store), observer=observer, enabled=enabled)
 
 

@@ -482,7 +482,170 @@ def relocation_view(receipt: dict) -> dict:
             "recorded_at": receipt["recorded_at"]}
 
 
-__all__ = ["COPY_MANIFEST_SCHEMA", "COPY_OWNERSHIP", "EVIDENCE_SCHEMA", "INTERRUPTED", "PROOF_SCHEMA",
+# ----- host migration: the registry binding of a whole-fleet move to another host -------------
+# `relocate` above moves paths on ONE host and reads both ends of every move. A move to another
+# host cannot read the source paths (they are on the source host) and must also rename the lane
+# schemas the target database restored under new names (INV-HOST-MIGRATION-001). This is that
+# operation: every lane moves at once, only repository/runtime/schema change, and the source
+# repository is identified by its root commits (`checkout_identity`), never by its old path.
+HOST_MIGRATION_SCHEMA = "urn:zeus:fleet-host-migration:1"
+HOST_MIGRATION_PROOF_SCHEMA = "urn:zeus:fleet-host-migration-proof:1"
+HOST_MIGRATION_RECEIPT_SCHEMA = "urn:zeus:fleet-host-migration-receipt:1"
+HOST_MIGRATION_AUTHORITY = ("owner_host_migration; lane repository, runtime and schema bindings only; "
+                            "lane/team identity, Redis namespaces, history and provider authority unchanged")
+HOST_MIGRATION_FIELDS = {"schema", "fleet", "operator", "migration_id", "manifest_sha256",
+                         "expected_config_sha256", "source_repository_identity", "lanes", "recorded_at"}
+HOST_LANE_FIELDS = {"lane", "repository", "runtime", "schema"}
+HOST_MOVABLE = ("repository", "runtime", "schema")
+SCHEMA_IDENT = re.compile(r"^[a-z][a-z0-9_]{0,62}$")
+WINDOWS_ABSOLUTE = re.compile(r"^[A-Za-z]:\\[^\x00]*$|^[A-Za-z]:/[^\x00]*$")
+
+
+def _any_absolute(value) -> bool:
+    """The FROM side is the source host's spelling: a Windows drive path or a POSIX path."""
+    return type(value) is str and 0 < len(value) <= 400 and (
+        absolute_resolved(value) or (WINDOWS_ABSOLUTE.fullmatch(value) is not None
+                                     and ".." not in value.replace("\\", "/").split("/")))
+
+
+def validate_host_migration_request(document) -> dict:
+    """Strict validation of `urn:zeus:fleet-host-migration:1`; returns the canonical copy."""
+    if not isinstance(document, dict) or document.get("schema") != HOST_MIGRATION_SCHEMA:
+        raise FleetRefused("host_migration_schema")
+    _shape(document, HOST_MIGRATION_FIELDS, "root", "host_migration_invalid")
+    for key in ("fleet", "operator", "migration_id"):
+        if not _token(document[key]):
+            raise FleetRefused("host_migration_invalid", key)
+    for key in ("manifest_sha256", "expected_config_sha256", "source_repository_identity"):
+        if not _hex(document[key], HEX64):
+            raise FleetRefused("host_migration_invalid", key)
+    lanes = document["lanes"]
+    if not (isinstance(lanes, list) and 1 <= len(lanes) <= 16):
+        raise FleetRefused("host_migration_invalid", "lanes")
+    canonical = []
+    for index, lane in enumerate(lanes):
+        name = "lanes[" + str(index) + "]"
+        _shape(lane, HOST_LANE_FIELDS, name, "host_migration_invalid")
+        if not _token(lane["lane"]):
+            raise FleetRefused("host_migration_invalid", name + ".lane")
+        row = {"lane": lane["lane"]}
+        for key in HOST_MOVABLE:
+            change = _shape(lane[key], PATH_FIELDS, name + "." + key, "host_migration_invalid")
+            if key == "schema":
+                if not all(type(change[side]) is str and SCHEMA_IDENT.fullmatch(change[side]) for side in PATH_FIELDS):
+                    raise FleetRefused("host_migration_invalid", name + ".schema")
+            else:
+                if not _any_absolute(change["from"]):
+                    raise FleetRefused("host_migration_invalid", name + "." + key + ".from")
+                if not absolute_resolved(change["to"]):
+                    raise FleetRefused("host_migration_invalid", name + "." + key + ".to")
+            row[key] = {"from": change["from"], "to": change["to"]}
+        canonical.append(row)
+    if len({row["lane"] for row in canonical}) != len(canonical):
+        raise FleetRefused("host_migration_duplicate", "lanes[].lane")
+    return {"schema": HOST_MIGRATION_SCHEMA, "fleet": document["fleet"], "operator": document["operator"],
+            "migration_id": document["migration_id"], "manifest_sha256": document["manifest_sha256"],
+            "expected_config_sha256": document["expected_config_sha256"],
+            "source_repository_identity": document["source_repository_identity"],
+            "lanes": sorted(canonical, key=lambda row: row["lane"]),
+            "recorded_at": _timestamp(document["recorded_at"], "recorded_at")}
+
+
+def host_migrated_config(config: dict, request: dict) -> dict:
+    """The registered configuration with EVERY lane's repository, runtime and schema rebound.
+
+    Every configured lane must be named exactly once and each `from` must be what is registered
+    now. Lane id, team and Redis namespace, and the root id, concurrency and budget are compared
+    afterwards and must be identical; the result is re-validated by `validate_config`.
+    """
+    lanes = {lane["id"]: lane for lane in config["lanes"]}
+    moves = {row["lane"]: row for row in request["lanes"]}
+    if set(moves) != set(lanes):
+        raise FleetRefused("host_migration_lanes_incomplete", "lanes")
+    revised = []
+    for lane in config["lanes"]:
+        move, updated = moves[lane["id"]], dict(lane)
+        for key in HOST_MOVABLE:
+            if lane[key] != move[key]["from"]:
+                raise FleetRefused("source_binding_mismatch", "lanes[]." + lane["id"] + "." + key)
+            updated[key] = move[key]["to"]
+        revised.append(updated)
+    new = validate_config({**config, "lanes": revised})
+    for old_lane, new_lane in zip(config["lanes"], new["lanes"]):
+        if any(old_lane[key] != new_lane[key] for key in ("id", "team", "redis_namespace")):
+            raise FleetRefused("host_migration_changes_identity", "lanes[]." + old_lane["id"])
+    if any(config[key] != new[key] for key in ("schema", "id", "max_parallel")) or config["budget"] != new["budget"]:
+        raise FleetRefused("host_migration_changes_identity", "root")
+    if config_digest(new) == config_digest(config):
+        raise FleetRefused("host_migration_unchanged", "lanes")
+    return new
+
+
+def check_host_migration_proof(request: dict, proof, queued: dict) -> dict:
+    """The TARGET host observation: runner stopped, lanes quiet, the target checkout is the same
+    repository as the source (root commits) and carries every queued job's base and goal, every
+    runtime is writable and every target schema is provisioned under the lane search-path rule."""
+    if not isinstance(proof, dict) or proof.get("schema") != HOST_MIGRATION_PROOF_SCHEMA:
+        raise FleetRefused("proof_schema")
+    runner = proof.get("runner")
+    if not isinstance(runner, dict) or runner.get("state") != "stopped":
+        raise FleetRefused("runner_not_stopped", "runner.state")
+    observed = {lane.get("id"): lane for lane in proof.get("lanes") or [] if isinstance(lane, dict)}
+    for move in request["lanes"]:
+        name = "lanes[]." + move["lane"]
+        lane = observed.get(move["lane"])
+        if lane is None:
+            raise FleetRefused("proof_mismatch", name)
+        if lane.get("active_runs") != 0:
+            raise FleetRefused("lane_run_active", name)
+        repository = lane.get("repository")
+        if not isinstance(repository, dict) or repository.get("independent") is not True:
+            raise FleetRefused("target_not_independent", name + ".repository")
+        if repository.get("target_identity") != request["source_repository_identity"]:
+            raise FleetRefused("repository_identity_mismatch", name + ".repository")
+        runtime = lane.get("runtime")
+        if not isinstance(runtime, dict) or runtime.get("writable") is not True:
+            raise FleetRefused("runtime_unwritable", name + ".runtime")
+        schema = lane.get("schema")
+        if not isinstance(schema, dict) or schema.get("name") != move["schema"]["to"] \
+                or schema.get("provisioned") is not True:
+            raise FleetRefused("target_schema_unprovisioned", name + ".schema")
+        bindings = {row.get("job_id"): row for row in lane.get("queued_bindings") or [] if isinstance(row, dict)}
+        if set(bindings) != set(queued.get(move["lane"], ())):
+            raise FleetRefused("queued_binding_incomplete", name)
+        if any(row.get("base_present") is not True or row.get("goal_matches") is not True
+               for row in bindings.values()):
+            raise FleetRefused("queued_base_missing", name)
+    return proof_binding(proof)
+
+
+def host_migration_receipt_id(request: dict) -> str:
+    return digest(["fleet-host-migration-v1", request])
+
+
+def host_migration_receipt(request: dict, proof: dict, prior: dict, new: dict, now: str) -> dict:
+    """What the registry was and what it became; the prior configuration is kept verbatim."""
+    return {"id": host_migration_receipt_id(request), "schema": HOST_MIGRATION_RECEIPT_SCHEMA,
+            "fleet": prior["id"], "operator": request["operator"], "authority": HOST_MIGRATION_AUTHORITY,
+            "migration_id": request["migration_id"], "manifest_sha256": request["manifest_sha256"],
+            "prior_config": prior["config"], "prior_config_sha256": prior["config_sha256"],
+            "config": new, "config_sha256": config_digest(new),
+            "repository_aliases": repository_aliases(prior["config"], new),
+            "request": request, "proof": proof, "binding": proof_binding(proof), "recorded_at": now}
+
+
+def host_migration_view(receipt: dict) -> dict:
+    return {"schema": HOST_MIGRATION_RECEIPT_SCHEMA, "id": receipt["id"], "fleet": receipt["fleet"],
+            "operator": receipt["operator"], "authority": receipt["authority"],
+            "migration_id": receipt["migration_id"], "prior_config_sha256": receipt["prior_config_sha256"],
+            "config_sha256": receipt["config_sha256"],
+            "lanes": [{"id": row["lane"], "schema": row["schema"]["to"]} for row in receipt["request"]["lanes"]],
+            "recorded_at": receipt["recorded_at"]}
+
+
+__all__ = ["COPY_MANIFEST_SCHEMA", "COPY_OWNERSHIP", "HOST_MIGRATION_PROOF_SCHEMA", "HOST_MIGRATION_RECEIPT_SCHEMA",
+           "HOST_MIGRATION_SCHEMA", "check_host_migration_proof", "host_migrated_config", "host_migration_receipt",
+           "host_migration_receipt_id", "host_migration_view", "validate_host_migration_request", "EVIDENCE_SCHEMA", "INTERRUPTED", "PROOF_SCHEMA",
            "RECEIPT_SCHEMA", "RELOCATION_PROOF_SCHEMA", "RELOCATION_RECEIPT_SCHEMA", "REQUEST_SCHEMA",
            "SLOT_BINDINGS", "canonical_repositories",
            "check_recovery_proof", "check_relocation_proof", "proof_binding", "recovery_receipt",

@@ -61,7 +61,10 @@ KIND_PROCESS = "process"
 # runtime directories, and the descriptor names the one directory of its revision. The two kinds
 # above keep their registry fields and their meaning unchanged.
 KIND_MANAGED = "managed_fleet"
-TARGET_KINDS = (KIND_SCHEDULED_TASK, KIND_PROCESS, KIND_MANAGED)
+# The Linux service target (INV-HOST-MIGRATION-001): an owner-installed systemd unit named by
+# `service`, with the same registry fields, descriptor, switch and startup-receipt contract.
+KIND_SYSTEMD = "systemd_unit"
+TARGET_KINDS = (KIND_SCHEDULED_TASK, KIND_PROCESS, KIND_MANAGED, KIND_SYSTEMD)
 # Where the sealed runtime of one revision lives under a managed root.
 RUNTIMES_DIR = "runtimes"
 
@@ -881,7 +884,7 @@ __all__ = ["ACTIVATION_GATE_CODES", "ACTIVE", "AUTHORITY", "AWAITING_CI", "AWAIT
            "EVENT_SWITCHED", "EXTERNAL_STAGES", "FAILED", "FAILED_OUTCOMES", "HALTED_STAGES",
            "INSTANCE_ABSENT", "INSTANCE_AUTHORIZED", "INSTANCE_FOREIGN", "INSTANCE_INTENDED",
            "INSTANCE_INTERRUPTED", "INSTANCE_UNKNOWN", "REPLACEABLE_INSTANCES",
-           "KIND_MANAGED", "KIND_PROCESS", "KIND_SCHEDULED_TASK", "MANAGED_TARGET_FIELDS",
+           "KIND_MANAGED", "KIND_PROCESS", "KIND_SCHEDULED_TASK", "KIND_SYSTEMD", "MANAGED_TARGET_FIELDS",
            "MAX_STAGE_ATTEMPTS", "MERGED", "MERGE_INTENDED", "RUNTIMES_DIR",
            "OPEN_STAGES", "OUTCOME_ACTIVE", "OUTCOME_BLOCKED", "OUTCOME_BUSY", "OUTCOME_CONFLICT",
            "OUTCOME_DISABLED", "OUTCOME_IDLE", "OUTCOME_PENDING", "OUTCOME_PROGRESSED",

@@ -57,6 +57,13 @@ def add_parser(commands) -> None:
     relocate.add_argument("--journal", type=Path, required=True,
                           help="Service lifecycle journal of the Fleet CLI; the runner must be stopped in it")
     relocate.add_argument("--docker", default="docker", help="Docker client used to inspect retained lane runs")
+    migrate = sub.add_parser("migrate-host", help="Rebind every lane's repository/runtime/schema to this "
+                             "target host after a host migration restore (urn:zeus:fleet-host-migration:1); "
+                             "paused, idle fleet, owner CLI only")
+    migrate.add_argument("--file", type=Path, required=True, help="Owner host migration request document JSON")
+    migrate.add_argument("--journal", type=Path, required=True,
+                         help="Service lifecycle journal of the Fleet service; the runner must be stopped in it")
+    migrate.add_argument("--docker", default="docker", help="Docker client used to inspect retained lane runs")
     sub.add_parser("status", help="Read the fleet projection; store read only")
     backlog = sub.add_parser("backlog", help="Approved Git-pinned backlog: register, tick, status")
     backlog_sub = backlog.add_subparsers(dest="backlog_command", required=True)
@@ -232,6 +239,30 @@ def reconcile_interrupted(service, args) -> dict:
     return {**fleet.reconcile_interrupted(evidence, observe=observe, reread=observe), "exit_code": 0}
 
 
+def migrate_host(service, args) -> dict:
+    """Owner host migration of the registry bindings (INV-HOST-MIGRATION-001) on the target host.
+
+    The observation is a callback so an identical replay is answered from the receipt without
+    reading the journal, checkouts, Docker or the database. The target schemas are checked under
+    the lane search-path rule against this host's configured database."""
+    from codex_harness.adapters.configuration import settings
+    from codex_harness.domain.fleet_recovery import validate_host_migration_request
+
+    request = validate_host_migration_request(read_manifest(args.file))
+    fleet = Fleet(service.store)
+
+    def observe() -> dict:
+        from codex_harness.adapters.fleet_recovery import collect_host_migration_proof, docker_state
+
+        with service.store.transaction() as tx:
+            jobs = tx.scan(BUCKET_JOBS)
+        return collect_host_migration_proof(request, jobs, journal=args.journal,
+                                            host_dsn=settings().get("HARNESS_DATABASE_URL") or "",
+                                            state=lambda container: docker_state(container, args.docker))
+
+    return {**fleet.migrate_host(request, observe=observe, reread=observe), "exit_code": 0}
+
+
 def relocate(service, args) -> dict:
     """Owner relocation of lane repository/runtime paths to already-copied, verified targets. The
     copy itself is the owner's preparation step: nothing here moves, deletes or rewrites files,
@@ -322,6 +353,8 @@ def execute(service, args) -> dict:
         return reconcile_interrupted(service, args)
     if command == "relocate":
         return relocate(service, args)
+    if command == "migrate-host":
+        return migrate_host(service, args)
     if command == "authorize-budget":
         grant = Fleet(service.store).authorize_budget(args.per_host, args.total, args.expected_total,
                                                       mode=getattr(args, "mode", None))
