@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from contextlib import nullcontext
+from datetime import datetime, timezone
 from uuid import uuid4
 
 from codex_harness.application.tickets import TicketSuperseded, ticket_binding
@@ -105,6 +106,72 @@ class Releases:
             except TicketSuperseded as exc:
                 record.update(status="superseded_by_ticket_revision", reason=str(exc))
             tx.put("releases", release_id, record)
+            return record
+
+    def request_reverification(self, release_id: str, actor: str, expected_revision: str,
+                               expected_policy_hash: str, reason: str, evidence: str, *,
+                               now: datetime | None = None) -> dict:
+        """INV-RELEASE-REVERIFY-001: one reviewed successor of a check-rejected release.
+
+        The explicit trusted conductor request re-arms nothing: the rejected source stays byte for
+        byte unchanged, the successor inherits only the exact code reviews and starts with EMPTY
+        checks, so the normal queue and runner must produce every check again for the new id.
+        """
+        require(isinstance(reason, str) and reason.strip() and isinstance(evidence, str)
+                and evidence.strip(), "Reverification reason and evidence required")
+        self.org.actor(actor, "conductor")
+        now = now or datetime.now(timezone.utc)
+        successor_id = digest({"reverify_of": release_id})
+        request = {"actor": actor, "reason": reason, "evidence": evidence,
+                   "expected_revision": expected_revision, "expected_policy_hash": expected_policy_hash}
+        with self.store.transaction() as tx:
+            source = tx.get("releases", release_id)
+            require(source is not None, "Release not found")
+            existing = tx.get("releases", successor_id)
+            if existing:
+                # A replay after a restart returns the same successor without any write.
+                receipt = existing.get("reverification") or {}
+                require(existing.get("reverify_of") == release_id
+                        and {k: receipt.get(k) for k in request} == request,
+                        "Conflicting reverification request")
+                return existing
+            require(source["status"] == "rejected", "Release is not check-rejected")
+            candidate, reviews, checks = source["candidate"], source["reviews"], source["checks"]
+            require(candidate["revision"] == expected_revision
+                    and source["policy_hash"] == expected_policy_hash, "Stale candidate or evaluator")
+            require(source["policy_hash"] == digest(source["policy"]), "Evaluator changed")
+            ticket_binding(tx, candidate)
+            author = self.org.actor(candidate["author"], "worker")
+            require(all(r["accepted"] is True for r in reviews), "Release review rejected")
+            accepted = {r["actor"] for r in reviews
+                        if r["revision"] == candidate["revision"] and r.get("evidence")}
+            require(len(reviews) == len(accepted) and {author.parent, "conductor"} <= accepted,
+                    "Release reviews incomplete")
+            require(set(checks) == set(source["policy"]["checks"])
+                    and all(isinstance(c, dict) and type(c.get("passed")) is bool and c.get("evidence")
+                            for c in checks.values()), "Rejection check evidence incomplete")
+            require(any(c["passed"] is False and not c.get("skipped") for c in checks.values()),
+                    "No executed failed check")
+            lock = tx.get("deployment_locks", "controller") or {}
+            require(not lock.get("lease_until") or datetime.fromisoformat(lock["lease_until"]) <= now,
+                    "Release controller still running")
+            require((tx.get("release_queue", release_id) or {}).get("status") != "running",
+                    "Release controller still running")
+            require(tx.get("promotion_intents", release_id) is None
+                    and (tx.get("deployment", "active") or {}).get("release_id") != release_id,
+                    "Promotion effects exist for the release")
+            at = now.isoformat()
+            receipt = {**request, "source_checks_digest": digest(checks),
+                       "source_digest": digest(source), "at": at}
+            record = {"id": successor_id, "candidate": candidate, "policy": source["policy"],
+                      "policy_hash": source["policy_hash"], "status": "reviewed", "reviews": reviews,
+                      "checks": {}, "created_at": at, "reverify_of": release_id,
+                      "inherited_reviews": {"release_id": release_id, "digest": digest(reviews)},
+                      "reverification": receipt}
+            tx.put("releases", successor_id, record)
+            tx.put("events", "release.reverification_requested:" + successor_id,
+                   {"type": "release.reverification_requested", "at": at, "release_id": successor_id,
+                    "reverify_of": release_id, "actor": actor})
             return record
 
     def promote(self, release_id: str, expected_active: str | None, *, transaction=None) -> dict:

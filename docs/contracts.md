@@ -3121,3 +3121,54 @@ Fixture tests prove the composition with labelled worker/lead/conductor executor
 ownership is proven with real local sleeping children (tests/test_continuation_process.py), never a
 model. They do not prove real PostgreSQL/Redis behaviour, a real two-turn model session, the managed
 Fleet, native Windows execution or two useful unattended jobs; those are owner qualification gates.
+
+## INV-RELEASE-REVERIFY-001
+
+A release rejected by its actual checks can only get fresh verification through
+`Releases.request_reverification(release_id, actor, expected_revision, expected_policy_hash, reason,
+evidence)`. The owner calls this API explicitly. It is not an automatic retry, a CLI, web or model
+permission, or something inferred from an error, and `ReleaseQueue.retry` still refuses a rejected
+release. The actor must hold the `conductor` role, and `reason` and `evidence` must be non-empty
+strings. All of the following are checked in one store transaction:
+
+- The source is `rejected`.
+- Its candidate revision and `policy_hash` equal the expected values, and the hash still equals
+  the digest of the stored policy.
+- The ticket binding is valid (INV-TICKET-001).
+- Every review is accepted, bound to that exact revision and carries evidence, and both the
+  author's lead and the conductor have reviewed.
+- The checks are exactly the policy checks, each with a boolean `passed` and evidence, and at least
+  one executed (not skipped) check failed.
+- No controller lease is active, the source has no running queue row, it has no promotion intent,
+  and it is not the active deployment.
+
+If any guard fails, the request is refused with no write.
+
+On success the API writes ONE successor, `digest({"reverify_of": source_id})`, and one event,
+`release.reverification_requested:<successor>`. The successor has these fields:
+
+- `status: reviewed`.
+- The exact candidate, policy and `policy_hash`.
+- The source reviews, copied verbatim as inherited provenance: `inherited_reviews {release_id,
+  digest}`.
+- `checks: {}`.
+- `reverify_of`.
+- A `reverification` receipt: the actor, reason, evidence and expected values, plus
+  `source_checks_digest`, `source_digest` and `at`.
+
+The source record, its checks, reviews, queue row and history are not changed. Nothing is copied
+from the source: no image, pointer, prior check, promotion intent or deployment grant. Creating the
+successor runs nothing and queues nothing. The existing `ReleaseQueue.enqueue` queues it, and the
+normal `ReleaseRunner` must produce every policy check again before `verify` can pass. The `propose`
+identity for the same candidate still names the source.
+
+An identical request, including one repeated after a restart, returns the same successor with no
+write. A request for the same source with a different actor, reason, evidence or expected value is
+refused with `Conflicting reverification request`. Concurrent requests serialize on the store
+transaction (the PostgreSQL advisory lock), so a source never gets two children. A failure inside
+the transaction leaves no successor and no event.
+
+tests/test_release_reverification.py runs these cases on the memory store. It runs the
+PostgreSQL-backed cases (creation, fresh-check gate, replay, concurrency, fault rollback) only with
+`HARNESS_INTEGRATION=1`. Without it they skip and prove nothing about PostgreSQL. The runner
+integration uses labelled fixture checks, never an actual release verification.
