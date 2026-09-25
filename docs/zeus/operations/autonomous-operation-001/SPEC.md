@@ -1,5 +1,59 @@
 # Whole autonomous operating loop
 
+## History-preserving release reverification, 2026-09-25
+
+Same whole-loop outcome. PR199 merged; accepted code and full CI remain valid.
+Actual release b5650fe9 rejected on11 deep-TEMP artifact writes. The same two incumbent
+test files/code/config with short D:/workspaces/zeus/scratch/rt1 passed92 tests. This is
+scoped diagnostic evidence, not full release success or proof of exact path limit.
+Original rejection, failed checks and skipped downstream stages must remain immutable.
+
+SSOT inspected: application/releases.py propose/review/verify, release_queue.py retry,
+adapter deployment.py run. Queue.retry only permits reviewed/verified; no rejected-release
+reverification API exists. Store transaction uses existing PG advisory serialization.
+Do not change policy to manufacture a new release identity or edit rejected status.
+
+One bounded implementation: add Releases.request_reverification(release_id, actor,
+expected_revision, expected_policy_hash, reason, evidence). This is explicit trusted
+owner API, not automatic retry, CLI/web/model permission or inference from an error.
+Actor must be conductor. Nonempty reason/evidence required. Original must be rejected
+by actual checks (at least one passed=False with evidence), have complete accepted
+lead+conductor reviews bound to exact candidate and no rejecting review, exact current
+candidate revision/policy hash, unchanged valid policy hash, valid ticket binding.
+Reject source with review rejection, missing/unknown evidence, stale bindings, active
+controller lease or active/uncertain promotion effects. Read guards in one transaction.
+
+Create ONE deterministic successor per rejected source, with explicit reverify_of link
+and request receipt (actor,reason,evidence,source checks digest,at). Source remains byte
+for byte unchanged, including checks/reviews/queue/history. Copy exact candidate and
+policy/hash; retain exact prior code-review evidence as inherited review provenance
+(code/policy unchanged), set successor reviewed with EMPTY checks. It is NOT verified
+or active. Enqueue is separate existing ReleaseQueue.enqueue; creation runs nothing.
+Do not copy images, pointers, prior successful checks or deployment grants. Normal
+ReleaseRunner must execute ALL incumbent/candidate/image/file checks for new id.
+Identical request replay returns the same successor without writes; conflicting request
+for same source refuses. Existing propose identity remains unchanged. Transaction failure
+must not leave partial successor/request/event. Existing storage port only, no migration.
+One durable event for creation if consistent with existing releases event conventions.
+
+Acceptance matrix: eligible check rejection -> new reviewed/empty-checks successor;
+old records unchanged; inherited code reviews reference same candidate/policy; verify
+still requires all fresh evidence. Unauthorized actor, stale candidate/policy, review
+rejection, missing failed-check evidence, invalid ticket, active lease/promotion refuse
+without writes. Same request repeated/restart is idempotent; conflicting and concurrent
+requests cannot make multiple children (real isolated PG coverage). Fault rollback
+tested on store transaction. No platform-specific filesystem operations added. Tests
+must exercise actual use case and normal queue/verification integration, not just helper
+predicates. Runtime main/operator switch is excluded; do not edit live records.
+
+Run focused tests/test_release_reverification.py, test_release_recovery.py,
+test_release_runner.py, test_release_health.py, test_release_suite.py and Ruff.
+No full repo suite inside worker. Independent review, root isolated PG and CI required.
+Owner then uses new API with this diagnosis receipt, short TEMP, and full verification;
+do not silently approve the failed run. This closes a demonstrated recovery gap without
+adding retry loops or broad orchestration changes. Original granted budgets untouched.
+
+
 ## Release r3 environment diagnosis, 2026-09-25
 
 PR199 merged as 275f8ade after exact-head CI success. Release b5650fe9 at
