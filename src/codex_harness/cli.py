@@ -314,6 +314,8 @@ def parser() -> argparse.ArgumentParser:
     add_worker_session_parser(commands)
     from codex_harness.adapters.continuation_cli import add_parser as add_continuation_parser
     add_continuation_parser(commands)
+    from codex_harness.adapters.owner_actions import add_parser as add_owner_actions_parser
+    add_owner_actions_parser(commands)
     from codex_harness.adapters.frontdesk_cli import add_parser as add_desk_parser
     add_desk_parser(commands)
     from codex_harness.adapters.autonomous_cli import add_parser as add_autonomous_parser
@@ -536,6 +538,20 @@ def continuation_command(service, args):
         result = continuation_cli.execute(service, args)
     except Exception as exc:
         emit(continuation_cli.refusal(exc))
+        raise SystemExit(1) from exc
+    emit(result)
+    if result.get("exit_code", 1) != 0:
+        raise SystemExit(1)
+
+
+def owner_actions_command(service, args):
+    """INV-OWNER-ACTIONS-001: exit 0 only for a completed command; refusals print a code and a type,
+    never a receipt, a plan, a report, a path, a DSN or a raw exception."""
+    from codex_harness.adapters import owner_actions
+    try:
+        result = owner_actions.execute(service, args)
+    except Exception as exc:
+        emit(owner_actions.refusal(exc))
         raise SystemExit(1) from exc
     emit(result)
     if result.get("exit_code", 1) != 0:
@@ -780,6 +796,8 @@ def main() -> None:
             worker_session_command(service, args)
         elif args.command == "continuation":
             continuation_command(service, args)
+        elif args.command == "owner-actions":
+            owner_actions_command(service, args)
         elif args.command == "desk":
             desk_command(service, args)
         elif args.command == "audit-service":

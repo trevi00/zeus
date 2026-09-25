@@ -73,6 +73,7 @@ from codex_harness.domain.host_delivery import (
     FAILED_OUTCOMES,
     INSTANCE_INTENDED,
     KIND_MANAGED,
+    KIND_MANAGED_SYSTEMD,
     KIND_PROCESS,
     KIND_SCHEDULED_TASK,
     KIND_SYSTEMD,
@@ -80,6 +81,7 @@ from codex_harness.domain.host_delivery import (
     REPLACEABLE_INSTANCES,
     DeliveryRefused,
     LifecycleInterrupted,
+    canary_request_matches,
     descriptor_digest,
     instance_authority,
     receipt_identity,
@@ -108,6 +110,8 @@ STOP_FILE = "stop"
 # replacement AND the pause, stop, cleanup, launch and state publication of that target's service.
 LOCK_DIR = "switch.lock"
 CANARY_RECEIPT_FILE = "owner-canary-receipt.json"
+# The server owner's request for its actual canary of one exact published plan (aibox SPEC s14 G2).
+CANARY_REQUEST_FILE = "owner-canary-request.json"
 
 # Bounded waits for the host boundary; nothing here is unbounded and nothing sleeps under a lease.
 STOP_TIMEOUT = 20.0
@@ -810,10 +814,12 @@ def host_ports(*, fleet=None, systemd_control=None, **kwargs) -> dict:
     of the systemd target (`systemd_control_dir`); without one a systemd start refuses by name.
     """
     from codex_harness.adapters.host_migration import SystemdHostTarget
-    from codex_harness.adapters.managed_runtime import ManagedFleetTarget
+    from codex_harness.adapters.managed_runtime import ManagedFleetTarget, SystemdManagedFleetTarget
 
     return {KIND_PROCESS: ProcessHostTarget(**kwargs), KIND_SCHEDULED_TASK: ScheduledTaskHostTarget(),
             KIND_MANAGED: ManagedFleetTarget(fleet=fleet),
+            # The same managed target, its guardian owned by the owner-fixed unit (aibox SPEC s14 G3).
+            KIND_MANAGED_SYSTEMD: SystemdManagedFleetTarget(fleet=fleet),
             KIND_SYSTEMD: SystemdHostTarget(control=systemd_control or {"control_dir": None,
                                                                         "reason_code": "control_dir_unconfigured"})}
 
@@ -908,6 +914,11 @@ def owner_qualified_canary(target: dict, descriptor: dict, startup: dict) -> dic
     """
     receipt = _read_json(HostTargetBase.path(target, CANARY_RECEIPT_FILE))
     if not isinstance(receipt, dict):
+        if canary_request_matches(_read_json(HostTargetBase.path(target, CANARY_REQUEST_FILE)), target, descriptor):
+            # The owner is running its actual canary of exactly this delivery: not passed, and pending
+            # only until the delivery's own consumption deadline (`HostDelivery._consume`).
+            return {"passed": False, "pending": True, "reason_code": "canary_owner_receipt_pending",
+                    "evidence": None}
         return {"passed": False, "reason_code": "canary_owner_receipt_missing", "evidence": None}
     if receipt.get("descriptor_sha256") != descriptor_digest(descriptor):
         return {"passed": False, "reason_code": "canary_owner_receipt_stale", "evidence": None}
@@ -1118,7 +1129,7 @@ def main(argv=None) -> int:
     return serve(args.state_dir, args.max_seconds)
 
 
-__all__ = ["CANARY_RECEIPT_FILE", "DESCRIPTOR_FILE", "ENABLED_SETTING", "MAX_PLAN_BYTES",
+__all__ = ["CANARY_RECEIPT_FILE", "CANARY_REQUEST_FILE", "DESCRIPTOR_FILE", "ENABLED_SETTING", "MAX_PLAN_BYTES",
            "RECEIPT_FILE", "RUNTIME_FILE", "STATE_FILE", "WORK_FILE", "GitHubDelivery",
            "HostTargetBase", "ProcessHostTarget", "ScheduledTaskHostTarget", "add_parser",
            "canary_checks", "checkout_revision", "collect_monitor_canary", "configured_enabled",

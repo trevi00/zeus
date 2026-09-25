@@ -1,0 +1,12 @@
+// The ONE systemd right the delivery controller needs for the managed Fleet target (aibox SPEC s14 G3):
+// `start` of exactly the owner-fixed unit, for exactly the service user. No stop, restart, kill, enable
+// or any other unit: a managed stop is the target's graceful pause/idle/stop file, never systemd.
+// Rendered by `zeus_aibox_service.py render`; installing it is an owner action.
+polkit.addRule(function(action, subject) {
+    if (action.id == "org.freedesktop.systemd1.manage-units" &&
+        action.lookup("unit") == "zeus-aibox-managed-fleet.service" &&
+        action.lookup("verb") == "start" &&
+        subject.user == "@SERVICE_USER@") {
+        return polkit.Result.YES;
+    }
+});

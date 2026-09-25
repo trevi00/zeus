@@ -3378,3 +3378,37 @@ tests/test_fleet_host_migration.py runs the D2 policy on the memory store.
 tests/test_host_migration_pg_rehearsal.py runs the D1-D3 rehearsal only with
 `ZEUS_MIGRATION_TEST_PG_{SOURCE,TARGET}_{CONTAINER,SOCKET}` naming disposable PG17 + pgvector
 servers. Without them it skips and proves nothing about PostgreSQL.
+
+## INV-OWNER-ACTIONS-001
+
+`codex_harness.application.owner_actions.OwnerActions` is the server-owned pending-action coordinator of
+aibox-migration-001 SPEC s14 (G1/G2/G3). It approves nothing. It hands exact, identity-bound work to the
+existing owners: `Continuation.accept_research`, the guarded `decide_one` of the independent assessor,
+`Releases`/`HostDelivery` and the incumbent `fleet_worker_operation` canary check.
+
+- One row per action in `owner_actions` (Fleet control store), keyed by the digest of its kind and
+  complete binding. The row names the state BEFORE that state's effect (`intended`, `assessing`,
+  `invoking`, `publishing`, `published`, `requested`). Each move is a compare-and-swap on its version. No
+  transaction is held across a lane store, Git, a process or an artifact write. An idle tick writes and
+  calls nothing.
+- `rejected`, `unknown` and `refused` are terminal and never retried by a timer. Changed evidence is a
+  new action; the old one keeps its history.
+- Research acceptance: an executed `owner_assessment` decision bound to exactly the binding digest is
+  reused. Otherwise ONE decision row is written in the same transaction as `assessing` and run by the
+  DB-free guardian. There are at most two launches, and the second only when the first provably never
+  claimed the row. The receipt is assembled from `Continuation.research_facts` only (schema 1, or schema 2
+  for a mixed-cause family) and persisted before `accept_research` is called.
+- Plan publication: owner policy + the approved exact release only. The deterministic commit is created
+  on `refs/zeus/owner-plans/<plan_id>` only when the ref is absent; other content is `plan_ref_conflict`.
+  Only the plan read back from Git is registered.
+- Canary: a matching `owner-canary-request.json` makes a missing owner receipt `pending` only until the
+  plan's own consumption deadline. The receipt is written only from the actual canary operation's
+  accepted outcome and its independent lead review, bound to descriptor and instance.
+- `managed_fleet_systemd` targets: `service` must be `zeus-aibox-managed-fleet`. The controller only
+  writes `managed-launch.json` and runs `systemctl start` of that unit. The unit's `supervise`
+  re-validates request, target, descriptor, sealed manifest, stop request, previous-instance liveness and
+  the Fleet activation gate before the incumbent `launch`.
+
+Tests: tests/test_owner_actions.py, tests/test_owner_delivery.py, tests/test_managed_systemd.py,
+tests/test_owner_actions_adapters.py, tests/test_aibox_owner_units.py. Models, the canary executor and
+systemd are labelled fixtures or a labelled simulation there. Live qualification is out of their scope.

@@ -25,7 +25,7 @@ from datetime import datetime
 
 from codex_harness.domain.host_delivery import (
     INSTANCE,
-    KIND_MANAGED,
+    MANAGED_KINDS,
     REVISION,
     SHA256,
     DeliveryRefused,
@@ -172,7 +172,7 @@ def check_runtime_path(target: dict, descriptor: dict) -> str:
     A descriptor that names another directory - the live checkout, a sibling revision, a path
     outside the managed root or a staging directory - is refused before anything is read from it.
     """
-    if target.get("kind") != KIND_MANAGED:
+    if target.get("kind") not in MANAGED_KINDS:
         raise DeliveryRefused("target_not_managed", "kind")
     if descriptor.get("target_id") != target["target_id"]:
         raise DeliveryRefused("runtime_target_mismatch", "target_id")

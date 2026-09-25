@@ -507,6 +507,12 @@ class Continuation:
     def _supplement_result(row: dict, cached: bool) -> dict:
         return {"supplemented": True, "cached": cached, **supplement_view(row)}
 
+    def research_facts(self, document: dict) -> dict:
+        """The exact authoritative reads `accept_research` checks a receipt against, for a server owner
+        that assembles one (INV-OWNER-ACTIONS-001): the same reader, never a second copy of its rules.
+        `document` names the policy, intent, investigation and attempt jobs (and its schema)."""
+        return self._research_facts(document)
+
     def _research_facts(self, receipt: dict) -> dict:
         """The authoritative reads one receipt (or scope supplement) is checked against: control-store
         rows in ONE short transaction, then each attempt's lane evidence outside it. A lane or store
