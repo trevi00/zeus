@@ -568,6 +568,58 @@
       "dependencies": [
         "native-fixture"
       ]
+    },
+    {
+      "id": "capacity-monitoring",
+      "project_id": "research-improvement",
+      "criterion_id": "verified-loop",
+      "lane": "harness",
+      "manifest_path": "docs/zeus/operations/autonomous-operation-001/capacity-monitoring.operation.json",
+      "manifest_revision": "3a19174e5f7a488289494d45db9a58dfd375cc0e",
+      "manifest_sha256": "86a24310ea22e1c8c05608c347677378f7ac3dce7cc5cca6b7d73d68d129e5a9",
+      "priority": 420,
+      "dependencies": [
+        "native-fixture"
+      ]
+    },
+    {
+      "id": "release-nesting",
+      "project_id": "research-improvement",
+      "criterion_id": "verified-loop",
+      "lane": "harness",
+      "manifest_path": "docs/zeus/operations/autonomous-operation-001/release-nesting.operation.json",
+      "manifest_revision": "fc4a38f07aa59f3146396ab38a5a984889eccc02",
+      "manifest_sha256": "80753cefed3a13f5aada53e8c3e1238c72d0e4f38ade17cedd7e9436570136f7",
+      "priority": 430,
+      "dependencies": [
+        "native-fixture"
+      ]
+    },
+    {
+      "id": "release-signal",
+      "project_id": "research-improvement",
+      "criterion_id": "verified-loop",
+      "lane": "harness",
+      "manifest_path": "docs/zeus/operations/autonomous-operation-001/release-signal.operation.json",
+      "manifest_revision": "04bc5751ed5fd512eabca6d7097fc4243a8fc53c",
+      "manifest_sha256": "98a70fe6635d58ca164471733687a5d455c7fc6e6143fa9bef5df9f2d8742b4b",
+      "priority": 440,
+      "dependencies": [
+        "native-fixture"
+      ]
+    },
+    {
+      "id": "signal-lifetime",
+      "project_id": "research-improvement",
+      "criterion_id": "verified-loop",
+      "lane": "harness",
+      "manifest_path": "docs/zeus/operations/autonomous-operation-001/signal-lifetime.operation.json",
+      "manifest_revision": "e445953acbcc0b3b789bdb6d816880c1aa406d3a",
+      "manifest_sha256": "3bb321a3948a93b0fc7ce7dcd3257d54ff5b76072d9b79c66a696f7bd4269c17",
+      "priority": 450,
+      "dependencies": [
+        "native-fixture"
+      ]
     }
   ]
 }

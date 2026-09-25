@@ -11,11 +11,12 @@ from pathlib import Path
 from codex_harness.adapters.commands import run_process
 from codex_harness.adapters.configuration import compose_environment, runtime_dir
 from codex_harness.adapters.hooks import NativeHooks
+from codex_harness.adapters.release_suite import ReleaseSuite
 from codex_harness.adapters.verification import VerificationServices, verification_environment
 from codex_harness.application.releases import Releases
 from codex_harness.application.tickets import TicketSuperseded, ticket_binding
 from codex_harness.application.workflow import Workflow
-from codex_harness.domain.check_results import bind_revision, classify_test_run, is_test_run
+from codex_harness.domain.check_results import bind_revision, is_test_run
 from codex_harness.domain.model import canonical, digest, require, utcnow
 from codex_harness.domain.policy import POLICY
 
@@ -58,12 +59,15 @@ class ReleaseRunner:
                 receipt = self.artifacts.put(canonical({"argv": argv, "binding": binding, "executed": False}), "canary")
                 return {"passed": False, "evidence": receipt["ref"], "outcome": "revision_mismatch",
                         "reason": binding["reason"], "binding": binding}
+        if is_test_run(argv):
+            # INV-CHECK-002: a release test suite is an exact collected manifest run in bounded
+            # serial batches; `timeout` bounds each owned process, not the whole suite.
+            return ReleaseSuite(self.artifacts, self.fence).check(argv, cwd=cwd, timeout=timeout,
+                                                                 env=env, binding=binding)
         try:
             process = run_process(argv, cwd=cwd, timeout=timeout, env=env)
             self.fence()
             verdict = {"passed": process.returncode == 0, "outcome": "executed"}
-            if is_test_run(argv):
-                verdict = classify_test_run(process.returncode, process.stdout)
             receipt = self.artifacts.put(canonical({"argv": argv, "exit_code": process.returncode,
                                          "stdout": process.stdout, "stderr": process.stderr,
                                          "binding": binding, "verdict": verdict}), "canary")
@@ -76,7 +80,6 @@ class ReleaseRunner:
                 unavailable = server.returncode != 0
             return {"passed": verdict["passed"] and not unavailable, "evidence": receipt["ref"],
                     "outcome": "observation_error" if unavailable else verdict["outcome"],
-                    **({"denominator": verdict["denominator"], "reason": verdict["reason"]} if "denominator" in verdict else {}),
                     "binding": binding}
         except (subprocess.TimeoutExpired, OSError) as exc:
             receipt = self.artifacts.put(canonical({"argv": argv, "binding": binding, "error": str(exc)}), "canary-failure")

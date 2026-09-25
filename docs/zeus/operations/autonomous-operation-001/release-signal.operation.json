@@ -1,0 +1,35 @@
+{
+  "schema": "urn:zeus:operation:1",
+  "id": "autonomous-operation-001-release-signal",
+  "base_revision": "95cfbaa00191d3de40fb937e95c68ba9a4eae101",
+  "goal": {
+    "path": "docs/zeus/operations/autonomous-operation-001/SPEC.md",
+    "sha256": "8dd81ac92e2469c97e3c81f82d949c0399d6f60ba9350ec3b210ff6e6689d625",
+    "criterion": "Complete the existing autonomous operating loop with independently verified session, continuation and actual runtime ownership",
+    "rationale": "Finish the existing whole-goal acceptance matrix without manual user relay or weaker verification."
+  },
+  "budget": {
+    "mode": "subscription",
+    "total": 192,
+    "per_host": 192
+  },
+  "claude": {
+    "model": "claude-opus-5-5",
+    "timeout_seconds": 3600,
+    "max_budget_usd": 2
+  },
+  "plan": {
+    "objective": "Implement ONLY Release CI cancellation: audit-service signal ownership in SPEC.md. Restore audit_service.run owned signal handlers on exit and exceptions without weakening actual cancellation tests. Linked PR199 CI failure; preserve accepted e8511d0 nesting. Run audit_service then six release suites in the SAME pytest process and Ruff. No full suite or runtime activation. Original spent grant unchanged.",
+    "allowed_paths": [
+      "src/codex_harness/adapters/audit_service.py",
+      "tests/test_audit_service.py",
+      "tests/test_release_suite.py",
+      "docs/contracts.md"
+    ],
+    "acceptance_criteria": [
+      "Owned handlers restored on normal/error/partial install exits; graceful stop while running and observer/lock cleanup retained.",
+      "Actual audit-service tests then release cancellation in the same process pass; no forced default handler workaround or child-process mocking.",
+      "Existing six release suites, ordered audit-service check and Ruff pass; independent acceptance and owner CI required."
+    ]
+  }
+}

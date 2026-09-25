@@ -1,0 +1,36 @@
+{
+  "schema": "urn:zeus:operation:1",
+  "id": "autonomous-operation-001-signal-lifetime",
+  "base_revision": "b9f99d04c843903145a3270aeb55822c8a4122cc",
+  "goal": {
+    "path": "docs/zeus/operations/autonomous-operation-001/SPEC.md",
+    "sha256": "373c8bc4c7e4c0ee50d06c29905678bd5c2aaa7f8dbd917595de605adcf0fffd",
+    "criterion": "Complete the existing autonomous operating loop with independently verified session, continuation and actual runtime ownership",
+    "rationale": "Finish the existing whole-goal acceptance matrix without manual user relay or weaker verification."
+  },
+  "budget": {
+    "mode": "subscription",
+    "total": 192,
+    "per_host": 192
+  },
+  "claude": {
+    "model": "claude-opus-5-5",
+    "timeout_seconds": 3600,
+    "max_budget_usd": 2
+  },
+  "plan": {
+    "objective": "Implement ONLY Release cancellation reframe: all same-process service owners in SPEC.md. Restore fleet_cli.run AND frontdesk_cli.run installed handlers on all exits using existing audit/host_delivery pattern. Preserve accepted audit/nesting fixes; no release-test workaround. Run the ordered 12 suites in SPEC and Ruff, no full suite, no live writes or deployment.",
+    "allowed_paths": [
+      "src/codex_harness/adapters/fleet_cli.py",
+      "src/codex_harness/adapters/frontdesk_cli.py",
+      "tests/test_fleet_backlog_cli.py",
+      "tests/test_frontdesk.py",
+      "docs/contracts.md"
+    ],
+    "acceptance_criteria": [
+      "Both service owners restore previous handlers on normal/error/partial-install exits while retaining graceful stop and cleanup.",
+      "Ordered same-process entrypoint suites followed by real release cancellation pass; no signal-reset test workaround, changed skip or weakened assertion.",
+      "Accepted audit/nesting behavior retained; ordered suites and Ruff pass; independent review and owner full CI required."
+    ]
+  }
+}

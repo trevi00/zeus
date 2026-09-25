@@ -345,6 +345,45 @@ the release stays reviewed; nothing downstream is a pass. Zeus installs no Git h
 Codex hooks are verified per candidate manifest and discovered through the transport, and no
 installation success, file presence or string marker is a check result.
 
+## INV-CHECK-002
+
+A release pytest check (`ReleaseRunner._check` with a pytest argv, incumbent and candidate suites
+alike) is checklist-complete. It first collects exact node IDs under the check's own argv, config,
+cwd, environment and import mode, with an accounting plugin the controller writes into its own
+temporary directory (never taken from either checkout). The suite owns its accounting variables:
+an inherited `RELEASE_ACCOUNTING_REPORT` or `RELEASE_ACCOUNTING_SELECT` (a suite run inside another
+suite's batch, or a stale caller value) is removed from the child environment before collection
+and named in the report's `accounting.inherited_removed`; each process gets its own report and
+only a batch gets its own selection, so a nested suite neither filters against nor writes into the
+outer suite's evidence. The caller's dict and `os.environ` are never mutated. A collection that fails, times out,
+reports nothing or has duplicate IDs is not an empty passing suite: `executed` failure,
+`observation_error`, `coverage_mismatch`; no tests is `empty_check`. The manifest artifact keeps
+the ordered node IDs (redacted copy; the hash binds the exact list), their count and sha256, the
+binding, the argv and the config file digest. The manifest is split deterministically into
+serial batches (`BATCH_NODES`, 200: whole files in collection order, oversized files split in
+order). Each batch is its own owned process under the unchanged `release_check_seconds`; the
+deadline bounds each process, not the suite, and the finite manifest bounds total work. Each batch
+re-collects, must match the manifest count and hash (otherwise drift), and selects only its
+planned nodes. It passes only when the multiset of finished node IDs equals the plan (missing,
+duplicate or unexpected is `coverage_mismatch`), a session finish was reported, the exit is 0 and
+no node failed, errored or has an unknown outcome. Per-node outcomes come from the plugin's
+setup/call/teardown reports, not from progress text. The skip policy is unchanged: skips are
+accounted but not executed, and a suite that executed nothing is `empty_check`. The first failing
+batch stops the rest as `not_run`. A timeout, a spawn error or a process that ends without a
+session finish is `observation_error` (retry), never a pass. The fence is checked before and after
+every process; a lost fence or a cancel, during collection or any batch, raises after a partial
+report is stored, and nothing is verified. Failing to delete the owner temporary directory (a
+Windows descendant still holding a file) never replaces the verdict or the interruption. Output streams to owner files, so a timeout or cancel keeps it. Each process receipt
+holds a redacted head+tail of stdout/stderr, the accounting events, the last started and finished
+test (explicitly not blamed as the cause) and the cleanup. Node IDs in the progress and
+reconciliation fields are redacted like the logs (a parameter ID can carry a credential), and the
+receipt counts those redactions. On POSIX, `descendants_gone` is true only
+when the process group is seen empty; on Windows it is null (unknown). When the tree kill fails
+the direct child is killed on its own, and reaping is bounded: a child still alive after
+`REAP_SECONDS` is `reaped: false` with unknown descendants, and the receipt is still written. One suite report links the
+collection receipt, the manifest, every batch and its counts, the not_run count and the verdict.
+`run_process` keeps its interface and behaviour; `run_logged_process` is the separate facility.
+
 ## INV-RUNNER-001
 
 An isolated source run is named by where the attempt ended and what it produced, never by an
@@ -1380,6 +1419,9 @@ reason (`paused`, `budget_exhausted`, `budget_stale`, `capacity`, `lane_busy`, `
 `path_conflict`) is persisted on its queued job in that same transaction, its row and `updated_at`
 changing only when the reason differs from the recorded one, and cleared on admission. The claim is
 durable as `dispatching` with a fresh owner token before any process; only that owner finalizes.
+The SIGINT/SIGTERM/SIGBREAK handlers `zeus fleet run` (and likewise `zeus desk run`) installs for a
+graceful `stop` are owned for the run's lifetime only: every exit - normal, runner exception, or a
+failed partial installation - restores exactly the previous handlers it replaced.
 The child is the existing `zeus operate run` with both `ZEUS_`/`HARNESS_` lane overrides and the
 lane DSN built by psycopg.conninfo (`search_path=<schema>`, current_schema verified, never public,
 never created); Docker isolation must be selected. `accepted` needs exit 0 and the exact durable lane
@@ -2056,6 +2098,9 @@ attempt is `reconciliation_required` and admits nothing, and a recorded predeces
 succeed keeps blocking until its own row succeeds or its execution generation advances through the
 existing recovery or cancellation path. Nothing here retries an attempt, rewrites a historical
 failed task or restarts a lost one; the existing process-tree owner handles children on a signal.
+The SIGINT/SIGTERM/SIGBREAK handlers `run` installs (graceful `stop`) are owned for the run's
+lifetime only: every exit - normal, runner exception, or a failed partial installation - restores
+exactly the previous handlers it replaced, so a later owner in the same process keeps its own.
 What an execution DID and what its content was JUDGED to be are two separate facts everywhere this
 service reports: the step, the summary, the durable row, the task observation and `status` carry
 the task status AND the analysis outcome read from that execution's own durable result

@@ -1,5 +1,182 @@
 # Whole autonomous operating loop
 
+## Release incumbent test fixture bytecode collision, 2026-09-25
+
+Keep the whole release frame and accepted signal/accounting fixes. Candidate51b4cb37
+passed both Ubuntu CI versions, root Windows+PG313 passed/9 platform skips and the
+unchanged signal trace now has zero handler changes. Integration CI36078583390 had
+one DIFFERENT failure: test_incumbent_tests_run_against_candidate_code_with_incumbent_config
+expected changed product.VALUE to fail but got pass (4288 passed/29 skipped/1 failed).
+Prior cancellation failures no longer occur in that run. Do not re-open signal design.
+
+Root discriminating experiment probe-release-bytecode.py/.json (D:/workspaces/zeus/
+artifacts/autonomous-operation-001): invoke the actual existing test with real ReleaseSuite
+and child pytest, bytecode enabled, INJECT both product source writes with identical mtime.
+Same-length VALUE=2 -> VALUE=3 yields test failure and one .pyc. Change only replacement
+to VALUE=300 (different source size): test passes with one .pyc. Thus the synthetic fixture
+can retain valid timestamp/size cache while assuming a fresh candidate. This establishes
+the mechanism under injected equal mtime, not the exact CI file timestamps.
+Primary source Python3.14.7 import reference cached-bytecode-invalidation, consulted
+2026-09-25: https://docs.python.org/3/reference/import.html#cached-bytecode-invalidation
+timestamp-based cache checks source mtime and size. Root prior checks used
+PYTHONDONTWRITEBYTECODE and could not expose this fixture assumption.
+
+One tests-only Claude correction: in this test make the second candidate source
+unambiguously different in size (e.g. VALUE=300), preserving first success and second
+failure assertions, incumbent node/config binding and actual child process execution.
+Make the equal-mtime condition deterministic in this test, and explicitly enable child
+bytecode writing for this scenario so caller environment cannot conceal the regression.
+Do not sleep, retry until green, delete arbitrary caches, weaken assertions or change
+release runtime. This test models two candidate contents; runtime checkouts are pinned
+separately. This observation alone does not prove runtime bytecode isolation generally.
+
+Acceptance: actual first candidate passes, changed candidate fails with same mtime and
+bytecode enabled; original incumbent manifest/config still checked; tests/test_release_suite.py
+and Ruff pass. Existing cancellation/nesting/redaction tests retained. No new platform,
+restart or concurrency mechanism; those accepted paths unchanged. Root repeats exact
+injected scenario then CI; tests-only change reuses prior runtime acceptance. No models
+outside Fleet, no merge/deploy or live writes. Keep failed CI and diagnostics as history.
+
+
+## Release cancellation reframe: all same-process service owners, 2026-09-25
+
+Outcome and original completion gates unchanged. e85b191a audit repair independently
+accepted, Windows+PG97 passed, root same-process audit->cancel probe now cancelled=true
+and sigint_changed=false. Preserve that fix. Whole CI36075348849 still fails the SAME
+two release cancellation assertions (Ubuntu3.14:3818 passed/492 skipped/2 failed).
+This invalidates our prior assumption that audit_service was the sole contaminating
+entrypoint. Do NOT retry CI unchanged or patch individual assertions.
+
+Research/SSOT: Python3.14.7 _thread.interrupt_main documentation consulted2026-09-25
+https://docs.python.org/3/library/_thread.html#_thread.interrupt_main explains it calls
+the installed handler, not an unconditional exception. Existing host_delivery.run and
+accepted audit_service.run demonstrate lifetime restoration. Source-wide signal.signal
+inventory finds fleet_cli.run and frontdesk_cli.run installing identical process-wide
+stop handlers without restoration. background_service restores its SIGTERM scope;
+continuation_process is a dedicated child process and outside this same-process scope.
+
+Discriminating check: root plugin observes SIGINT before/after each actual selected
+entrypoint test, WITHOUT resetting handlers. Evidence probe-signal-owners.py/.json in
+D:/workspaces/zeus/artifacts/autonomous-operation-001. Observed changes:
+- tests/test_frontdesk.py::test_an_injected_storage_loss_is_a_durable_failure_and_a_nonzero_desk_exit -> {'module': 'codex_harness.adapters.frontdesk_cli', 'name': 'run.<locals>.<lambda>'}
+- tests/test_frontdesk.py::test_a_storage_stopped_desk_run_exits_the_process_nonzero -> {'module': 'codex_harness.adapters.frontdesk_cli', 'name': 'run.<locals>.<lambda>'}
+- tests/test_frontdesk.py::test_a_normal_idle_or_interrupted_desk_run_stays_successful -> {'module': 'codex_harness.adapters.frontdesk_cli', 'name': 'run.<locals>.<lambda>'}
+This is actual local test execution, not an exact captured CI signal trace. Multiple
+leaking owners explain why correcting audit alone was insufficient. Preserve old CI
+and failed reproductions. No reason to expand into unrelated timing or orchestration.
+
+One complete bounded implementation batch: apply process-lifetime handler ownership
+to BOTH fleet_cli.run and frontdesk_cli.run. Save each prior handler as installed,
+restore acquired handlers on normal/exception/partial-install exits, preserve original
+error and existing observer/lock cleanup and runner.stop during active run. Reuse the
+existing established restoration pattern; no broad abstraction or domain redesign needed.
+Do not make release tests forcibly reset SIGINT, hide order-dependency with fixtures,
+weaken cancellation, skip tests, alter deadlines or unrelated service behavior.
+
+Acceptance matrix: both owners normal/error/partial-install cleanup and actual graceful
+stop; sequential owners preserve incoming handler (including custom Python handler);
+SIGINT after all selected service tests remains original and real release child
+cancellation still cleans up and preserves partial evidence. Existing nesting/accounting/
+redaction/fence/timeout paths retained. Unsupported signals conditional by platform;
+native non-Python handler unknown remains documented, no supported trigger shown.
+Concurrency redesign/restart protocols are unchanged and not new scope. Test install
+faults may be injected and labelled; actual cancellation must retain real subprocesses.
+
+Run ONE ordered pytest command with test_audit_service, test_fleet_backlog_cli,
+test_fleet_recovery, test_fleet_relocation, test_frontdesk, test_portfolio, then the six
+release suites (release_suite,release_runner,release_recovery,release_health,check_binding,
+runner_categories), and Ruff. No full repo suite in worker. Root repeats handler trace,
+Windows+isolatedPG ordered suite; CI runs full repo. Collect findings into one verdict.
+Completion here is passing these checks and updating existing PR199; deployment and
+whole-loop qualification remain separate. Owner assignment under original authorization,
+not another spent-grant replay, counter reset or claim of autonomous recovery.
+
+
+## Release CI cancellation: audit-service signal ownership, 2026-09-24
+
+Same release completion matrix; preserve accepted nesting e8511d0 and all earlier
+accounting/redaction/fencing/cleanup evidence. PR199 exact e8511d0 CI36071816137
+Ubuntu3.12/3.14 failed two release cancellation checks; Ubuntu3.12 had
+3815 passed/492 skipped/2 failed. Root focused Windows+PG71 passed did not include
+prior audit-service entrypoint calls. No merge or deployment is approved.
+
+Discriminating root check: actual tests/test_audit_service.py (23 passed), then
+real child process + interrupt_main in the SAME Windows Python process. SIGINT
+changed from default_int_handler to audit_service.run.<locals>.<lambda>; child
+exited normally and cancellation was false. Evidence D:/workspaces/zeus/artifacts/
+autonomous-operation-001/release-cancel-handler-probe/result.json and
+probe-release-cancel-handler.py. This establishes the leak and swallowed cancellation
+locally, not a captured CI signal trace. CI raw logs release-ci-ubuntu312.log and
+release-ci-ubuntu314.log are preserved in that artifact directory.
+Primary source consulted 2026-09-25: Python3.14.7 _thread documentation,
+https://docs.python.org/3/library/_thread.html#_thread.interrupt_main : interrupt_main
+schedules the associated handler, not an unconditional KeyboardInterrupt. Source
+audit_service.run installs handlers and has no restoration in its finally block.
+Alternatives (slow timer/OS timing) do not explain this observed handler replacement.
+
+One bounded Claude implementation: restore only signal handlers installed by
+audit_service.run on all exits, including runner exception and partial installation
+failure; existing host_delivery entrypoint restoration is a local SSOT reference.
+Retain graceful runner.stop behavior while running, original exceptions and observer/
+lock cleanup. Do not force default handlers in release tests to conceal service leakage.
+Do not change unrelated entrypoints, release accounting, deadlines or acceptance.
+Test normal and exceptional exit, partial installation cleanup, actual graceful stop,
+and audit-service tests followed by release cancellation in one pytest process.
+Use deterministic handler observations plus existing REAL subprocess cancellation
+tests; do not replace actual child execution with mocks. Handler-install fault may be
+labelled injection. Platform unsupported signals stay conditional; do not weaken skip
+or expected cancellation. No concurrency feature redesign; lifetime restoration is scope.
+
+Worker checks: python -m pytest tests/test_audit_service.py tests/test_release_suite.py
+tests/test_release_runner.py tests/test_release_recovery.py tests/test_release_health.py
+tests/test_check_binding.py tests/test_runner_categories.py -q -p no:cacheprovider;
+python -m ruff check . . Full repository checks belong to CI. Independent Codex review,
+root same-process reproducer, Windows+PG focused checks and CI precede PR199 integration.
+This is a linked owner assignment for the evidenced adjacent service boundary, not
+a grant replay or counter reset. Original spent capacity grant and family unchanged.
+No additional model call outside Fleet, no merge/deploy/live service writes by worker.
+
+
+## Release checklist nested accounting correction, 2026-09-24 23:00 UTC
+
+Original release checklist outcome, same matrix. Live capacity granta098efcb admitted
+cont-53f2d12f8884dc8204458c93 once; it is SPENT, not reusable. Inspectorc5502d78 verified
+both corrected-profile checks; worker63passed5skipped/Ruff. Independent reviewf0496a00 rejected
+adeab8c79b5c6b34832d88eac43607d70307ddef for nested release accounting selection leakage.
+Root executed actual outer ReleaseSuite on the single real nested-suite test
+tests/test_release_suite.py::test_complete_manifest_runs_every_parameterized_node_in_bounded_batches.
+Result exit1, collected1/failed1: inherited RELEASE_ACCOUNTING_SELECT prevented nested collection.
+Evidence D:/workspaces/zeus/artifacts/autonomous-operation-001/release-nesting-repro/result.json
+and its content-addressed artifacts; reproducer reproduce-release-nesting.py. Actual child pytest
+execution, not a mocked runner. Prior direct68 host passes did not exercise outer -> inner flow.
+
+Codex explicit implementation assignment under the user's original completion authorization:
+fix this proven code defect in the retained checklist implementation integrated with current main.
+This is an owner-assigned code-change batch, NOT an automatic policy successor or another use of
+the spent evidence-repair grant. Keep original family's cap, all refused/rejected rows, research
+receipts and spent grant intact. Record linkage to cont-53f2d12f and reviewf0496a00 in the task;
+do not claim this manual handoff proves autonomous recovery. No new continuation policy or counter
+reset is authorized. The work does not confer acceptance of the integrated rejected candidate.
+
+One batch: ReleaseSuite owns its child accounting environment. Remove inherited selection before
+collection; a batch supplies only its own selection. Review adjacent accounting env ownership
+(report/plugin path) together so nested suites cannot filter against or overwrite outer evidence.
+Preserve unrelated caller environment and do not mutate os.environ/caller dict. Keep all prior
+manifest denominators, redaction, cancellation/fencing and bounded cleanup behavior. Reuse APIs.
+Regression MUST execute a real outer ReleaseSuite whose selected test invokes an inner suite;
+outer and inner exact counts must both pass with independently bound artifacts. Also exercise a
+caller-supplied stale selection, normal non-nested suite and unknown/failed inner result without
+false success. Previously accepted failure/redaction/cleanup tests remain. Scope to release_suite.py
+and test_release_suite.py plus necessary contract note; no unrelated runtime redesign.
+
+Run focused release_suite/release_runner/release_recovery/release_health/check_binding/
+runner_categories suites and Ruff, no full repository suite. Reproduce old failure with exact
+same nested scenario then show corrected success; failed attempts are diagnostics not tests.
+Independent Codex review, exact Windows+isolatedPG and CI precede any merge or runtime activation.
+Full incumbent/candidate checklist execution, managed delivery and whole-loop qualification follow;
+none is established by this small regression. This closes a reachable original acceptance path.
+
+
 ## Capacity monitoring compatibility, 2026-09-24 21:55 UTC
 
 Same acceptance matrix, no runtime redesign. PR198 head7b09be482aa445c2711363ecb102bdc43e2618f3

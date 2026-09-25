@@ -831,6 +831,110 @@ def test_a_normal_idle_or_interrupted_desk_run_stays_successful(tmp_path, monkey
     assert frontdesk_cli.run(svc, args)["exit_code"] == 0
 
 
+def owned_signals():
+    import signal
+
+    return [getattr(signal, name) for name in ("SIGINT", "SIGTERM", "SIGBREAK") if hasattr(signal, name)]
+
+
+def handlers():
+    import signal
+
+    return {number: signal.getsignal(number) for number in owned_signals()}
+
+
+def test_an_actual_signal_while_running_stops_the_desk_gracefully_and_the_handlers_are_restored(
+        tmp_path, monkeypatch):
+    """Release CI cancellation: the run's handlers close over its runner, so a leaked handler
+    swallowed a later interrupt in the same process. A real SIGINT delivered while the continuous
+    desk polls goes through the installed handler to `stop`; afterwards the previous handlers,
+    including a custom Python handler an earlier owner installed, are back."""
+    import signal
+
+    received = []
+    incoming = signal.signal(signal.SIGINT, lambda *_: received.append(True))
+    try:
+        before, during, waits = handlers(), {}, []
+
+        def signalling_wait(seconds):
+            # The idle continuous desk waits for the next turn; the interrupt arrives meanwhile.
+            waits.append(seconds)
+            during.update(handlers())
+            signal.raise_signal(signal.SIGINT)
+
+        svc, desk, _ = opened()
+        desk_runner, _ = runner(svc, desk, FakeExecutor(svc))
+        desk_runner.sleep = signalling_wait
+        frontdesk_cli, args = desk_cli(tmp_path, monkeypatch, desk_runner)
+        result = frontdesk_cli.run(svc, SimpleNamespace(**{**vars(args), "once": False}))
+        assert len(waits) == 1, "the stopped desk never waits for more turns"
+        assert all(during[number] is not before[number] for number in before), "installed while running"
+        assert result["exit_code"] == 0 and result["stopped"] is True and result["failure"] is None
+        assert handlers() == before and received == []
+        signal.raise_signal(signal.SIGINT)
+        assert received == [True], "a later interrupt reaches the incoming owner, not the stopped desk"
+    finally:
+        signal.signal(signal.SIGINT, incoming)  # this test's own custom handler, not the run's
+
+
+def test_a_desk_runner_exception_restores_the_handlers_and_keeps_the_original_error(tmp_path, monkeypatch):
+    import signal
+
+    from filelock import FileLock
+
+    before = handlers()
+
+    class Failing:
+        def stop(self):
+            raise AssertionError("no signal was delivered")
+
+        def run(self, once):
+            assert signal.getsignal(signal.SIGINT) is not before[signal.SIGINT]
+            raise RuntimeError("runner failed")
+
+    frontdesk_cli, args = desk_cli(tmp_path, monkeypatch, Failing())
+    with pytest.raises(RuntimeError, match="runner failed"):
+        frontdesk_cli.run(service(), args)
+    assert handlers() == before
+    lock = FileLock(str(tmp_path / "frontdesk.lock"), timeout=0)
+    lock.acquire()  # the desk lock is free for the next start; it was not leaked
+    lock.release()
+
+
+def test_a_partial_desk_handler_installation_restores_only_what_it_installed(tmp_path, monkeypatch):
+    """INJECTED FAULT: installing the second owned handler fails after the first was replaced."""
+    import signal
+
+    numbers = owned_signals()
+    if len(numbers) < 2:
+        pytest.skip("this platform exposes fewer than two owned signals")
+    before = handlers()
+    real, calls = signal.signal, []
+
+    def failing_install(number, handler):
+        calls.append((number, handler))
+        if number == numbers[1] and handler is not before[number]:
+            raise OSError("injected handler installation failure")
+        return real(number, handler)
+
+    monkeypatch.setattr(signal, "signal", failing_install)
+
+    class NeverRuns:
+        def stop(self):
+            raise AssertionError("no signal was delivered")
+
+        def run(self, once):
+            raise AssertionError("the runner ran after a failed installation")
+
+    frontdesk_cli, args = desk_cli(tmp_path, monkeypatch, NeverRuns())
+    with pytest.raises(OSError, match="injected"):
+        frontdesk_cli.run(service(), args)
+    # Installed first, failed second, then only the first is handed back; later signals untouched.
+    assert [number for number, _ in calls] == [numbers[0], numbers[1], numbers[0]]
+    assert calls[-1][1] is before[numbers[0]]
+    assert handlers() == before
+
+
 # ----- the sanitized owner-runtime monitoring evidence -----------------------------------------
 FLEET_DATA = {"schema": "urn:zeus:fleet-status:1", "registered": True, "id": "fleet-local",
               "paused": False, "max_parallel": 2,
