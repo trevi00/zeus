@@ -488,7 +488,7 @@ def view(row: dict) -> dict:
     shown = {k: row.get(k) for k in ("id", "kind", "state", "reason_code", "binding_sha256", "policy_id",
                                      "created_at", "updated_at", "version")}
     shown["subject"] = row.get("subject")
-    for key in ("decision_id", "verdict", "receipt_sha256", "assessment_ref", "plan_id", "plan_sha256", "commit",
+    for key in ("decision_id", "verdict", "decided", "receipt_sha256", "assessment_ref", "plan_id", "plan_sha256", "commit",
                 "job_id", "launches"):
         if row.get(key) is not None:
             shown[key] = row[key]

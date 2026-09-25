@@ -42,6 +42,7 @@ from codex_harness.adapters.host_delivery import (
     startup_identity_canary,
 )
 from codex_harness.adapters.owner_actions import GitPlanPublisher, TargetFiles
+from codex_harness.adapters.store import MemoryStore
 from codex_harness.application.host_delivery import HostDelivery
 from codex_harness.application.owner_actions import BUCKET_ACTIONS, OwnerActions, plan_json
 from codex_harness.application.releases import Releases
@@ -508,3 +509,95 @@ def test_the_canary_verdict_needs_the_actual_accepted_operation_and_its_independ
     assert do.canary_outcome({**job, "status": "rejected"}, good)["state"] == do.VERDICT_REJECTED
     assert do.canary_outcome({**job, "status": "unknown"}, good)["state"] == do.VERDICT_UNKNOWN
 
+
+
+# ---- R2: a persisted canary intent admits work only while its delivery binding is still current ------------
+class CapturingFleet:
+    """LABELLED Fleet stand-in: records admissions and writes the job row as the real `enqueue` would."""
+
+    def __init__(self, store):
+        self.store, self.calls = store, []
+
+    def enqueue(self, lane, manifest, goal, dependencies):
+        self.calls.append(manifest["id"])
+        with self.store.transaction() as tx:
+            tx.put("fleet_jobs", manifest["id"], {"id": manifest["id"], "lane": lane, "status": "queued"})
+        return {"job": {"id": manifest["id"]}, "cached": False}
+
+
+class StartupFiles:
+    """LABELLED target-file port: the candidate's startup receipt as the owner would read it."""
+
+    def __init__(self, receipt):
+        self.receipt = receipt
+
+    def startup(self, target):
+        return self.receipt
+
+
+def admission(stage=AWAITING_CONSUMPTION, plan_sha="1" * 64, descriptor="2" * 64, instance="inst-1",
+              state=do.INTENDED):
+    """Control and delivery MemoryStores holding one completed plan action, its delivery intent and one
+    canary action bound to (plan, target, descriptor, instance); the parameters move one piece."""
+    control, lane = MemoryStore(), MemoryStore()
+    plan = {"plan_id": "plan-1", "target_id": TARGET}
+    plan_action = {"id": "p" * 64, "kind": do.DELIVERY_PLAN, "state": do.COMPLETED, "plan": plan,
+                   "plan_id": "plan-1", "plan_sha256": "1" * 64, "subject": {"intent_id": "s" * 64, "lane": "a"}}
+    binding = {"plan_id": "plan-1", "plan_sha256": "1" * 64, "target_id": TARGET, "descriptor_sha256": "2" * 64,
+               "instance_id": "inst-1"}
+    action = {"id": "c" * 64, "kind": do.DELIVERY_CANARY, "state": state, "binding": binding,
+              "subject": {"intent_id": "s" * 64, "lane": "a"}, "version": 2, "history": [], "reason_code": None}
+    if state == do.REQUESTED:
+        action["job_id"] = do.canary_job_id(action["id"])
+    with control.transaction() as tx:
+        tx.put(BUCKET_ACTIONS, plan_action["id"], plan_action)
+        tx.put(BUCKET_ACTIONS, action["id"], action)
+    with lane.transaction() as tx:
+        tx.put("host_delivery_intents", "plan-1", {"plan_id": "plan-1", "stage": stage, "plan_sha256": plan_sha,
+                                                   "target_id": TARGET, "descriptor_sha256": descriptor})
+        tx.put("host_delivery_targets", TARGET, {"id": TARGET})
+    fleet = CapturingFleet(control)
+    owner = OwnerActions(control, lanes=lambda lane_id: None, fleet=fleet,
+                         deliveries=lambda lane_id: type("Delivery", (), {"store": lane})(),
+                         targets=StartupFiles({"instance_id": instance, "descriptor_sha256": "2" * 64}))
+    policy = {"policy": {"canary": {"lane": "a", "manifest": {"id": "template"}, "goal": {}}}}
+    return owner, policy, action, fleet, control
+
+
+def current(control, identity):
+    with control.transaction() as tx:
+        return tx.get(BUCKET_ACTIONS, identity)
+
+
+@pytest.mark.parametrize("state", [do.INTENDED, do.REQUESTED])
+# Deadline passed (rolling back / rolled back), replaced instance, switched descriptor, another plan version.
+@pytest.mark.parametrize("moved", [{"stage": "rolling_back"}, {"stage": ROLLED_BACK},
+                                   {"instance": "inst-replaced"}, {"descriptor": "3" * 64}, {"plan_sha": "9" * 64}])
+def test_a_stale_canary_intent_is_refused_before_first_admission_and_before_missing_job_replay(state, moved):
+    owner, policy, action, fleet, control = admission(state=state, **moved)
+    effect = owner._advance_canary(policy, {}, action)
+    assert effect["state"] == do.REFUSED and effect["reason_code"] == "canary_delivery_moved"
+    assert fleet.calls == [] and current(control, action["id"])["state"] == do.REFUSED
+    # Refused is terminal: a later wakeup admits nothing either.
+    assert owner._advance_canary(policy, {}, current(control, action["id"])) is None and fleet.calls == []
+
+
+def test_a_current_canary_intent_admits_once_and_a_missing_job_replay_keeps_the_same_identity():
+    owner, policy, action, fleet, control = admission()
+    effect = owner._advance_canary(policy, {}, action)
+    assert effect["state"] == do.REQUESTED and fleet.calls == [do.canary_job_id(action["id"])]
+    # LABELLED lost admission response: the row is REQUESTED but its job row never committed.
+    owner, policy, action, fleet, control = admission(state=do.REQUESTED)
+    assert owner._advance_canary(policy, {}, action) is None
+    assert fleet.calls == [action["job_id"]] and current(control, action["id"])["state"] == do.REQUESTED
+    # Once the job exists the replay admits nothing more.
+    owner._advance_canary(policy, {}, current(control, action["id"]))
+    assert fleet.calls == [action["job_id"]]
+
+
+def test_an_admitted_canary_whose_delivery_moved_keeps_the_result_time_refusal():
+    owner, policy, action, fleet, control = admission(state=do.REQUESTED, instance="inst-replaced")
+    with control.transaction() as tx:
+        tx.put("fleet_jobs", action["job_id"], {"id": action["job_id"], "lane": "a", "status": "accepted"})
+    effect = owner._advance_canary(policy, {}, action)
+    assert effect["state"] == do.UNKNOWN and effect["reason_code"] == "canary_delivery_moved" and fleet.calls == []

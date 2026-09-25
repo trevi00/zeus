@@ -119,7 +119,7 @@ CONTINUATION_INTENTS = "continuation_intents"
 CONTINUATION_RECEIPTS = "continuation_research_receipts"
 FLEET_JOBS = "fleet_jobs"
 DECISIONS = "decisions_pending"
-LAUNCH_RUNNING, LAUNCH_ABSENT, LAUNCH_UNKNOWN = "running", "absent", "unknown"
+LAUNCH_RUNNING, LAUNCH_ABSENT, LAUNCH_UNKNOWN, LAUNCH_EXITED = "running", "absent", "unknown", "exited"
 
 
 class ActionChanged(ContractError):
@@ -372,11 +372,20 @@ class OwnerActions:
             decisions = [d for d in tx.scan(DECISIONS) if d.get("phase") == OWNER_PHASE]
         reused = reusable_assessment(decisions, action)
         if reused is not None:
-            # An executed independent assessment already binds exactly this action: no new call.
+            # An executed independent assessment already binds exactly this action: no new call. It is
+            # promoted only through the same bound launch outcome as a fresh one (R1): the verdict is
+            # kept as `decided` evidence and never asked for again.
+            if self.assessments is None:
+                raise OwnerActionRefused("assessor_unconfigured", "assessments")
             verdict = assessment_verdict(reused, action)
-            return self._effect(self._move(action, ASSESSED, verdict["reason_code"], verdict=verdict["verdict"],
-                                           decision_id=verdict["decision_id"],
-                                           execution_ref=verdict.get("execution_ref"), reused=True))
+            bound = self._reused_launch(action, reused)
+            if bound is None:
+                return self._effect(self._move(action, UNKNOWN, "assessment_execution_unbound",
+                                               decided=_decided(verdict), decision_id=reused["id"], reused=True))
+            sequence, launch_id = bound
+            row = self._move(action, ASSESSING, "assessment_reused", decided=_decided(verdict),
+                             decision_id=reused["id"], launches=sequence, launch_id=launch_id, reused=True)
+            return self._observe_assessment(row) or self._effect(row)
         if self.assessments is None or self.org is None:
             raise OwnerActionRefused("assessor_unconfigured", "assessments")
         try:
@@ -414,12 +423,11 @@ class OwnerActions:
         with self.store.transaction() as tx:
             decision = tx.get(DECISIONS, action["decision_id"])
         verdict = assessment_verdict(decision, action)
-        if verdict["verdict"] is not None:
-            return self._effect(self._move(action, ASSESSED, verdict["reason_code"], verdict=verdict["verdict"],
-                                           execution_ref=verdict.get("execution_ref")))
         if self.assessments is None:
             return None
         launch = self.assessments.poll(action["launch_id"])
+        if verdict["verdict"] is not None:
+            return self._settle_assessment(action, verdict, launch)
         state = launch.get("state")
         if state == LAUNCH_RUNNING:
             return None
@@ -436,6 +444,41 @@ class OwnerActions:
             self.assessments.start(launch_id, action["decision_id"], action["correlation_id"])
             return self._effect(row)
         return self._effect(self._move(action, ASSESSED, "assessment_unfinished", verdict=VERDICT_UNKNOWN))
+
+    def _settle_assessment(self, action: dict, verdict: dict, launch: dict) -> dict | None:
+        """A decided assessment is promoted only on ONE authoritative bound execution outcome (R1): its
+        guardian's cleanup proof, whose exit code is the assess child's own ownership and call-ledger
+        settlement result. A success persisted while the launch still runs waits; unknown cleanup, a
+        timeout, an unsettled or unowned execution, or no bound execution at all ends as a named unknown
+        that keeps the verdict as `decided` evidence and never asks the model again."""
+        decided = _decided(verdict)
+        state = launch.get("state")
+        if state == LAUNCH_RUNNING:
+            if action.get("decided") == decided:
+                return None
+            return self._effect(self._move(action, ASSESSING, "assessment_awaiting_cleanup", decided=decided))
+        if state == LAUNCH_UNKNOWN or launch.get("cleanup_confirmed") is not True:
+            reason = "assessment_execution_unbound" if state == LAUNCH_ABSENT else "assessment_launch_unknown"
+        elif state != LAUNCH_EXITED:
+            reason = "assessment_launch_timeout"
+        elif launch.get("exit_code") != 0:
+            reason = "assessment_settlement_unresolved"
+        else:
+            return self._effect(self._move(action, ASSESSED, verdict["reason_code"], verdict=verdict["verdict"],
+                                           execution_ref=verdict.get("execution_ref"), decided=decided))
+        return self._effect(self._move(action, UNKNOWN, reason, decided=decided))
+
+    def _reused_launch(self, action: dict, decision: dict) -> tuple | None:
+        """The one launch of this action that executed `decision`: only the action's own decision row has
+        launch identities; exactly one of them may have entered. Anything else is no bound execution."""
+        if decision.get("id") != assessment_decision_id(action["id"]):
+            return None
+        entered = []
+        for sequence in range(1, MAX_ASSESSMENT_LAUNCHES + 1):
+            launch_id = assessment_launch_id(action["id"], sequence)
+            if self.assessments.poll(launch_id).get("state") != LAUNCH_ABSENT:
+                entered.append((sequence, launch_id))
+        return entered[0] if len(entered) == 1 else None
 
     def _assemble(self, continuation: dict, action: dict) -> dict:
         verdict = action.get("verdict")
@@ -594,6 +637,16 @@ class OwnerActions:
         policy = policy_row["policy"]
         if self.fleet is None or self.lanes is None:
             raise OwnerActionRefused("canary_ports_unconfigured", "fleet")
+        if action["state"] not in {INTENDED, REQUESTED}:
+            return None
+        with self.store.transaction() as tx:
+            job = tx.get(FLEET_JOBS, action["job_id"]) if action["state"] == REQUESTED else None
+            plan_action = next((r for r in tx.scan(BUCKET_ACTIONS) if r["kind"] == DELIVERY_PLAN
+                                and r.get("plan_id") == action["binding"]["plan_id"]), None)
+        if job is None and not self._canary_still_bound(plan_action, action):
+            # R2: a persisted intent whose plan, delivery, descriptor or candidate instance moved on
+            # (deadline, rollback, replaced instance) admits no work, neither first nor on replay.
+            return self._effect(self._move(action, REFUSED, "canary_delivery_moved"))
         if action["state"] == INTENDED:
             job_id = canary_job_id(action["id"])
             manifest = canary_manifest(policy, job_id)
@@ -602,12 +655,6 @@ class OwnerActions:
             row = self._move(action, REQUESTED, "canary_requested", job_id=job_id)
             self.fleet.enqueue(policy["canary"]["lane"], manifest, dict(policy["canary"]["goal"]), [])
             return self._effect(row)
-        if action["state"] != REQUESTED:
-            return None
-        with self.store.transaction() as tx:
-            job = tx.get(FLEET_JOBS, action["job_id"])
-            plan_action = next((r for r in tx.scan(BUCKET_ACTIONS) if r["kind"] == DELIVERY_PLAN
-                                and r.get("plan_id") == action["binding"]["plan_id"]), None)
         if job is None:
             # The admission's response was lost before the row existed: the same id admits once.
             manifest = canary_manifest(policy, action["job_id"])
@@ -630,18 +677,26 @@ class OwnerActions:
                                        outcome={k: outcome.get(k) for k in ("state", "reason_code", "evidence")}))
 
     def _canary_still_bound(self, plan_action, action: dict) -> bool:
-        """The delivery still awaits consumption of the same descriptor and the SAME candidate instance
-        is the one reporting it: an answer is written only for the instance it was taken against."""
-        if plan_action is None:
+        """The same published plan's delivery still awaits consumption of the same descriptor and the SAME
+        candidate instance is the one reporting it: work is admitted and an answer is written only for the
+        instance it was taken against (R2 at admission, the result gate after it)."""
+        binding = action["binding"]
+        if plan_action is None or plan_action.get("plan_sha256") != binding["plan_sha256"]:
             return False
         intent, target = self._delivery_view(plan_action)
-        binding = action["binding"]
         if not (isinstance(intent, dict) and intent.get("stage") == AWAITING_CONSUMPTION
+                and intent.get("plan_sha256") == binding["plan_sha256"]
+                and intent.get("target_id") == binding["target_id"]
                 and intent.get("descriptor_sha256") == binding["descriptor_sha256"] and isinstance(target, dict)):
             return False
         receipt = self.targets.startup(target)
         return isinstance(receipt, dict) and receipt.get("instance_id") == binding["instance_id"] \
             and receipt.get("descriptor_sha256") == binding["descriptor_sha256"]
+
+
+def _decided(verdict: dict) -> dict:
+    """The executed decision's verdict as retained evidence; it is not a promotion by itself."""
+    return {k: verdict.get(k) for k in ("verdict", "reason_code", "decision_id", "execution_ref")}
 
 
 def digest_bytes(data: bytes) -> str:

@@ -105,3 +105,43 @@ def test_the_run_loop_only_wakes_and_stops_after_its_bound():
     outcomes = iter(["idle", "idle", "progressed"])
     result = adapter.run_loop(lambda: {"outcome": next(outcomes)}, interval=1, max_ticks=3, sleep=lambda s: None)
     assert result["ticks"] == 3 and result["outcomes"] == {"idle": 2, "progressed": 1}
+
+
+class LedgerFixture:
+    """LABELLED machine call ledger: reserves a slot; `settle` fails when `settle_fails` (an unsettled slot)."""
+
+    def __init__(self, settle_fails=False):
+        self.settle_fails, self.settled = settle_fails, []
+
+    def reserve(self, **arguments):
+        return {"id": "slot-1", "reserved_at": "2026-09-25T00:00:00+00:00"}
+
+    def settle(self, slot_id, **kwargs):
+        if self.settle_fails:
+            raise OSError("ledger settlement failed (labelled injected fault)")
+        self.settled.append(slot_id)
+
+
+class DecidingExecutor:
+    """LABELLED executor: claims (or not) the row and commits a succeeded decision; no model is called."""
+
+    def __init__(self, store, claims=True):
+        self.store, self.claims = store, claims
+
+    def decide_one(self, agent, expected=None):
+        with self.store.transaction() as tx:
+            tx.put("decisions_pending", DECISION, {"id": DECISION, "phase": do.OWNER_PHASE, "status": "succeeded",
+                                                   "result": {"accepted": True}})
+        return {"status": "succeeded"} if self.claims else None
+
+
+@pytest.mark.parametrize("settle_fails, claims, exit_code", [(False, True, 0), (True, True, 1), (False, False, 1)])
+def test_the_assess_child_exits_zero_only_when_it_owned_the_claim_and_settled_every_reservation(settle_fails,
+                                                                                               claims, exit_code):
+    store = MemoryStore()
+    service = SimpleNamespace(store=store)
+    result = adapter.assess(service, DECISION, "c", "labelled-fixture-assessor",
+                            executor=DecidingExecutor(store, claims), budget=LedgerFixture(settle_fails))
+    # A succeeded decision alone is not the launch's outcome (R1): ownership and settlement are.
+    assert result["status"] == "succeeded" and result["exit_code"] == exit_code
+    assert result["calls"]["reserved"] == 1 and result["calls"]["settled"] == (0 if settle_fails else 1)

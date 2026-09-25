@@ -3396,14 +3396,21 @@ existing owners: `Continuation.accept_research`, the guarded `decide_one` of the
 - Research acceptance: an executed `owner_assessment` decision bound to exactly the binding digest is
   reused. Otherwise ONE decision row is written in the same transaction as `assessing` and run by the
   DB-free guardian. There are at most two launches, and the second only when the first provably never
-  claimed the row. The receipt is assembled from `Continuation.research_facts` only (schema 1, or schema 2
+  claimed the row. A decided verdict, fresh or reused, is promoted to `assessed` only on the bound launch's
+  cleanup proof with exit 0: the assess child exits 0 only when it owned the claim, the decision
+  succeeded and every call reservation settled. While that launch runs, the action waits. Unknown
+  cleanup, a timeout, an unsettled or unowned execution, or a reused decision without this action's own
+  launch is a named `unknown` that keeps the verdict as `decided` and never calls the model again. The receipt is
+  assembled from `Continuation.research_facts` only (schema 1, or schema 2
   for a mixed-cause family) and persisted before `accept_research` is called.
 - Plan publication: owner policy + the approved exact release only. The deterministic commit is created
   on `refs/zeus/owner-plans/<plan_id>` only when the ref is absent; other content is `plan_ref_conflict`.
   Only the plan read back from Git is registered.
 - Canary: a matching `owner-canary-request.json` makes a missing owner receipt `pending` only until the
   plan's own consumption deadline. The receipt is written only from the actual canary operation's
-  accepted outcome and its independent lead review, bound to descriptor and instance.
+  accepted outcome and its independent lead review, bound to descriptor and instance. The same binding
+  (plan digest, awaiting-consumption delivery, target, descriptor and candidate instance) is re-validated
+  before the first enqueue and before a missing-job replay. A stale intent is `refused` without admission.
 - `managed_fleet_systemd` targets: `service` must be `zeus-aibox-managed-fleet`. The controller only
   writes `managed-launch.json` and runs `systemctl start` of that unit. The unit's `supervise`
   re-validates request, target, descriptor, sealed manifest, stop request, previous-instance liveness and

@@ -237,10 +237,13 @@ def assess(service, decision_id: str, correlation_id: str, model_label: str, *, 
     with service.store.transaction() as tx:
         decision = tx.get("decisions_pending", decision_id) or {}
     accepted = (decision.get("result") or {}).get("accepted")
+    calls = {"reserved": len(wrapped.slots), "settled": sum(s["settled"] for s in wrapped.slots)}
+    # The exit code is the launch's bound execution outcome the coordinator promotes on (R1): THIS
+    # launch owned the claim, the decision succeeded and every call reservation it took is settled.
+    resolved = result is not None and decision.get("status") == "succeeded" and calls["reserved"] == calls["settled"]
     return {"decision_id": decision_id, "claimed": result is not None, "status": decision.get("status"),
-            "accepted": accepted if isinstance(accepted, bool) else None,
-            "calls": {"reserved": len(wrapped.slots), "settled": sum(s["settled"] for s in wrapped.slots)},
-            "exit_code": 0 if decision.get("status") == "succeeded" else 1}
+            "accepted": accepted if isinstance(accepted, bool) else None, "calls": calls,
+            "exit_code": 0 if resolved else 1}
 
 
 # ----- the coordinator with its real ports -------------------------------------------------------------

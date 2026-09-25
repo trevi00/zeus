@@ -91,12 +91,19 @@ class FakeAssessor:
             tx.put("decisions_pending", decision_id, row)
 
     def poll(self, launch):
+        # The launch directory's observation shapes of `continuation_process.observe`; `exit_code` is the
+        # assess child's own exit (0 only when it owned the claim and settled every call reservation).
         state = self.launches.get(launch)
         if state is None:
             return {"state": "absent", "owned": False, "proof": {"kind": "fenced"}}
         if state == "running":
             return {"state": "running", "owned": True}
-        return {"state": "exited", "owned": False, "exit_code": 0, "cleanup_confirmed": True}
+        if state == "unknown":
+            return {"state": "unknown", "owned": False, "exit_code": None, "cleanup_confirmed": False}
+        if state == "timeout":
+            return {"state": "timeout", "owned": False, "exit_code": None, "cleanup_confirmed": True}
+        return {"state": "exited", "owned": False, "exit_code": 1 if state == "unsettled" else 0,
+                "cleanup_confirmed": True}
 
 
 def owners_for(world, assessor, **ports):
@@ -270,6 +277,7 @@ def test_an_executed_assessment_bound_to_the_exact_binding_is_reused_without_a_n
     # decision bound to exactly this binding digest and reuses it.
     del world.control.data[BUCKET_ACTIONS, action["id"]]   # LABELLED injected loss of the action row
     second = FakeAssessor(world)
+    second.launches = first.launches        # the same launch directories (the executed launch's proof)
     settle(owners_for(world, second))
     [again] = actions(world).values()
     assert again["state"] == do.COMPLETED and again.get("reused") is True and second.starts == []
@@ -368,3 +376,114 @@ def test_the_mixed_cause_family_is_assembled_as_a_schema2_receipt_and_released_o
         (do.assessment_launch_id(action["id"], 1), action["decision_id"])]
     others = [row for row in actions(world).values() if row["id"] != action["id"]]
     assert all(row["subject"]["intent_id"] != research["id"] for row in others)
+
+
+# ---- R1: a decided assessment is promoted only on its bound launch's cleanup and settlement proof ----------
+def test_a_success_persisted_before_the_launch_exits_waits_and_completes_only_after_the_proof(tmp_path):
+    world = World(tmp_path)
+    _, _, research, _, _ = held(world, tmp_path)
+    assessor = FakeAssessor(world, verdict=None)       # the guardian (and its call ledger) is still running
+    owner, _ = registered(world, assessor)
+    owner.tick("owners-1")
+    [decision] = decisions(world)
+    assessor.decide(decision["id"], True)              # LABELLED: the verdict row commits before the exit
+    settle(owner, 3)
+    [action] = actions(world).values()
+    assert action["state"] == do.ASSESSING and action["reason_code"] == "assessment_awaiting_cleanup"
+    assert action["decided"]["verdict"] == do.VERDICT_ACCEPTED and receipts(world) == {}
+    waiting = deepcopy(world.control.data)
+    settle(owner, 2)
+    assert world.control.data == waiting, "a still-running launch writes nothing more"
+    assessor.launches = {k: "exited" for k in assessor.launches}
+    settle(owner)
+    [action] = actions(world).values()
+    assert action["state"] == do.COMPLETED and research["id"] in receipts(world)
+    assert len(assessor.starts) == 1 and len(decisions(world)) == 1
+
+
+@pytest.mark.parametrize("launch, code", [
+    ("unknown", "assessment_launch_unknown"), ("unsettled", "assessment_settlement_unresolved"),
+    ("timeout", "assessment_launch_timeout")])
+@pytest.mark.parametrize("verdict", [True, False])
+def test_an_unproven_cleanup_or_settlement_after_a_verdict_is_a_named_unknown_never_a_receipt(tmp_path, launch,
+                                                                                            code, verdict):
+    world = World(tmp_path)
+    _, _, research, _, _ = held(world, tmp_path)
+    assessor = FakeAssessor(world, verdict=None)
+    owner, _ = registered(world, assessor)
+    owner.tick("owners-1")
+    [decision] = decisions(world)
+    assessor.decide(decision["id"], verdict)
+    assessor.launches = {k: launch for k in assessor.launches}   # LABELLED injected launch outcome
+    settle(owner, 4)
+    [action] = actions(world).values()
+    assert action["state"] == do.UNKNOWN and action["reason_code"] == code
+    # The executed verdict is retained as evidence; it is neither promoted nor asked for again.
+    assert action["decided"]["verdict"] == (do.VERDICT_ACCEPTED if verdict else do.VERDICT_REJECTED)
+    assert action["decided"]["decision_id"] == decision["id"] and "receipt" not in action
+    assert receipts(world) == {} and len(assessor.starts) == 1
+    world.tick()
+    assert world.intents()[research["id"]]["state"] == dc.RESEARCH_REQUIRED
+    snapshot = deepcopy(world.control.data)
+    settle(owner, 3)
+    assert world.control.data == snapshot and len(assessor.starts) == 1
+
+
+def test_the_review_probe_accepted_decision_with_an_unknown_guardian_stores_no_receipt(tmp_path):
+    """REVIEW-pr202 R1 probe: succeeded bound decision, poll unknown with cleanup_confirmed false."""
+    world = World(tmp_path)
+    _, _, research, _, _ = held(world, tmp_path)
+    assessor = FakeAssessor(world, verdict=True)
+    assessor.poll = lambda _: {"state": "unknown", "cleanup_confirmed": False}
+    owner, _ = registered(world, assessor)
+    settle(owner, 5)
+    [action] = actions(world).values()
+    assert action["state"] == do.UNKNOWN and action["reason_code"] == "assessment_launch_unknown"
+    assert research["id"] not in receipts(world)
+
+
+@pytest.mark.parametrize("launch, state, code", [
+    ("running", do.ASSESSING, "assessment_reused"), ("unknown", do.UNKNOWN, "assessment_launch_unknown"),
+    ("unsettled", do.UNKNOWN, "assessment_settlement_unresolved"), (None, do.UNKNOWN, "assessment_execution_unbound")])
+def test_a_reused_decision_after_a_restart_passes_the_same_launch_gate_without_a_new_call(tmp_path, launch, state,
+                                                                                          code):
+    world = World(tmp_path)
+    _, _, research, _, _ = held(world, tmp_path)
+    first = FakeAssessor(world)
+    owner, _ = registered(world, first)
+    owner.tick("owners-1")
+    [action] = actions(world).values()
+    del world.control.data[BUCKET_ACTIONS, action["id"]]   # LABELLED injected loss of the action row
+    second = FakeAssessor(world)
+    # LABELLED launch directory state seen by the restarted coordinator; None = no launch ever entered.
+    second.launches = {} if launch is None else {k: launch for k in first.launches}
+    settle(owners_for(world, second), 3)
+    [again] = actions(world).values()
+    assert (again["state"], again["reason_code"]) == (state, code) and again["reused"] is True
+    assert again["decided"]["verdict"] == do.VERDICT_ACCEPTED and research["id"] not in receipts(world)
+    assert second.starts == [] and len(decisions(world)) == 1
+    if launch == "running":
+        second.launches = {k: "exited" for k in second.launches}
+        settle(owners_for(world, second))
+        [again] = actions(world).values()
+        assert again["state"] == do.COMPLETED and research["id"] in receipts(world) and second.starts == []
+
+
+def test_a_reused_decision_without_this_actions_launch_identity_is_unbound(tmp_path):
+    world = World(tmp_path)
+    held(world, tmp_path)
+    first = FakeAssessor(world)
+    owner, _ = registered(world, first)
+    owner.tick("owners-1")
+    [action] = actions(world).values()
+    [decision] = decisions(world)
+    # LABELLED: the same executed row under a foreign id (e.g. run by hand), and the action row lost.
+    world.control.data["decisions_pending", "hand-run"] = {**decision, "id": "hand-run"}
+    del world.control.data["decisions_pending", decision["id"]]
+    del world.control.data[BUCKET_ACTIONS, action["id"]]
+    second = FakeAssessor(world)
+    second.launches = dict(first.launches)
+    settle(owners_for(world, second), 2)
+    [again] = actions(world).values()
+    assert again["state"] == do.UNKNOWN and again["reason_code"] == "assessment_execution_unbound"
+    assert second.starts == []
