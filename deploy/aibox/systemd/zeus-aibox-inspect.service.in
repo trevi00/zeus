@@ -1,0 +1,24 @@
+# zeus-aibox-inspect: one read-only lifecycle inspection written to the journal and to
+# @ZEUS_ROOT@/runtime/control/lifecycle-inspection.json. It stops, starts and deletes nothing.
+[Unit]
+Description=Zeus aibox lifecycle inspection (read-only)
+Documentation=file://@ZEUS_ROOT@/deploy/aibox/README.md
+After=docker.service
+
+[Service]
+Type=oneshot
+User=@SERVICE_USER@
+Group=@SERVICE_GROUP@
+SupplementaryGroups=docker
+WorkingDirectory=@ZEUS_ROOT@/runtime/control
+Environment=PATH=@SERVICE_PATH@
+Environment=HOME=@SERVICE_HOME@
+Environment=LANG=C.UTF-8
+Environment=ZEUS_AIBOX_ROOT=@ZEUS_ROOT@
+UMask=0027
+# Exit 1 (findings) is reported, not a unit failure: the JSON is the result.
+SuccessExitStatus=1
+ExecStart=@PYTHON@ @TOOL@ inspect --root @ZEUS_ROOT@ --output @ZEUS_ROOT@/runtime/control/lifecycle-inspection.json
+TimeoutStartSec=60
+NoNewPrivileges=yes
+ProtectSystem=full

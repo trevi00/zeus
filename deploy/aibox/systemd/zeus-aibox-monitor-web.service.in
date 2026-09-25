@@ -1,0 +1,40 @@
+# zeus-aibox-monitor-web: the monitoring page. The harness binds it to 127.0.0.1 only
+# (monitoring_web.serve); a person reaches it through an SSH tunnel, never a LAN IP in config.
+[Unit]
+Description=Zeus aibox monitor web (loopback only)
+Documentation=file://@ZEUS_ROOT@/deploy/aibox/README.md
+PartOf=zeus-aibox.target
+After=network-online.target zeus-aibox-monitor-collect.service
+Wants=network-online.target
+StartLimitIntervalSec=600
+StartLimitBurst=5
+
+[Service]
+Type=exec
+User=@SERVICE_USER@
+Group=@SERVICE_GROUP@
+WorkingDirectory=@ZEUS_ROOT@/runtime/control
+Environment=PATH=@SERVICE_PATH@
+Environment=HOME=@SERVICE_HOME@
+Environment=LANG=C.UTF-8
+Environment=PYTHONUNBUFFERED=1
+Environment=ZEUS_AIBOX_ROOT=@ZEUS_ROOT@
+Environment=HARNESS_RUNTIME_DIR=@ZEUS_ROOT@/runtime/control
+Environment=ZEUS_AIBOX_WEB_PORT=@WEB_PORT@
+EnvironmentFile=@CONFIG_ENV@
+EnvironmentFile=@SECRET_ENV@
+UMask=0027
+ExecStart=@PYTHON@ @TOOL@ launch --role monitor-web
+KillMode=control-group
+KillSignal=SIGTERM
+SendSIGKILL=yes
+TimeoutStartSec=60
+TimeoutStopSec=30
+Restart=on-failure
+RestartSec=10
+RestartPreventExitStatus=78
+NoNewPrivileges=yes
+ProtectSystem=full
+
+[Install]
+WantedBy=zeus-aibox.target
