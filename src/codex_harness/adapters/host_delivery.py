@@ -980,6 +980,10 @@ def serve(state_dir: str, max_seconds: int = SERVICE_MAX_SECONDS) -> int:
 
 
 # ----- CLI -----------------------------------------------------------------------------------------
+LANE_HELP = ("One registered Fleet lane whose store, repository and runtime own this delivery; "
+             "omitted keeps the control store. The Fleet activation gate stays the control store's")
+
+
 def add_parser(commands) -> None:
     delivery = commands.add_parser("host-delivery",
                                    help="Durable delivery of a reviewed release to a host target; "
@@ -1002,6 +1006,8 @@ def add_parser(commands) -> None:
                              help="Stop after this many ticks; 0 runs until stopped")
     status = sub.add_parser("status", help="Read the delivery projection; store read only")
     status.add_argument("--plan", default=None, help="One plan id; omitted reads every plan")
+    for command in (targets, register, tick, run_command, status):
+        command.add_argument("--lane", default=None, help=LANE_HELP)
 
 
 def refusal(exc: Exception) -> dict:
@@ -1014,7 +1020,15 @@ def refusal(exc: Exception) -> dict:
 
 
 def controller(service, *, enabled=None, observer=None, git=None, store=None) -> HostDelivery:
-    """The coordinator with its existing owners and this host's real ports wired."""
+    """The coordinator with its existing owners and this host's real ports wired.
+
+    `store` is where this delivery's records live: the control store by default, or the store of
+    the one lane `resolve_lane` selected. Releases, the ReleaseQueue fence, targets, descriptors and
+    the collect canary all read it. The managed target's activation gate does NOT: it is always
+    the ACTUAL Fleet of the control store (`service.store`), because that is where admission, the
+    reserving jobs and the held execution units are. A lane store has no Fleet registry of its own,
+    so gating on it would hide the real debt instead of reading it.
+    """
     from codex_harness.adapters.configuration import settings
     from codex_harness.application.fleet import Fleet
 
@@ -1022,10 +1036,92 @@ def controller(service, *, enabled=None, observer=None, git=None, store=None) ->
     if enabled is None:
         enabled = configured_enabled(settings())
     github = None if git is None else GitHubDelivery(git)
-    # The managed target's activation gate reads the ACTUAL Fleet of this host store.
     return HostDelivery(store, service.org, github=github,
-                        hosts=host_ports(fleet=Fleet(store), systemd_control=systemd_control_dir(settings())),
+                        hosts=host_ports(fleet=Fleet(service.store),
+                                         systemd_control=systemd_control_dir(settings())),
                         canaries=canary_checks(store), observer=observer, enabled=enabled)
+
+
+# ----- explicit lane routing -----------------------------------------------------------------------
+def _control_schema(store):
+    """The schema the control store's own connection selects, or None for a store without a DSN.
+
+    A lane that resolves to this same schema IS the control store, not a lane, and is refused."""
+    dsn = getattr(store, "dsn", None)
+    if dsn is None:
+        return None
+    import psycopg
+
+    try:
+        with psycopg.connect(dsn, connect_timeout=5) as connection:
+            return connection.execute("SELECT current_schema()").fetchone()[0]
+    except Exception as exc:
+        raise DeliveryRefused("lane_control_unidentified", "lane") from exc
+
+
+def resolve_lane(service, lane_id, *, host=None, store_factory=None, verify=None,
+                 control_schema=_control_schema) -> dict:
+    """The ONE registered Fleet lane a `--lane` command acts on, or a named refusal. No fallback.
+
+    The lane comes from the Fleet registry of the CONTROL store, through the same `lane_of`,
+    `lane_dsn`, `verify_lane_schema` and `lane_stores` the Fleet launcher and the owner actions
+    already use, so this command and `owner-actions` reach the same lane store. A registry that is
+    missing or unreadable, an unknown or duplicated lane id, a lane schema that is not provisioned
+    or does not select itself, and a lane that is the control schema all refuse before any store,
+    Git or host effect; nothing is ever routed back to the control store instead.
+
+    No process environment is changed: the lane DSN exists only inside the returned store, so every
+    child this controller starts (the managed launcher, the systemd unit) keeps the control env.
+    """
+    from codex_harness.adapters.continuation import lane_stores
+    from codex_harness.adapters.fleet_runtime import lane_dsn, verify_lane_schema
+    from codex_harness.application.fleet import Fleet
+    from codex_harness.domain.fleet import FleetRefused
+
+    if not (type(lane_id) is str and lane_id):
+        raise DeliveryRefused("lane_invalid", "lane")
+    try:
+        config = Fleet(service.store).registered()["config"]
+    except FleetRefused as exc:
+        code = "lane_registry_unregistered" if exc.reason_code == "unregistered" else "lane_registry_invalid"
+        raise DeliveryRefused(code, "lane") from exc
+    except Exception as exc:
+        raise DeliveryRefused("lane_registry_unavailable", "lane") from exc
+    matches = [lane for lane in config.get("lanes") or [] if lane.get("id") == lane_id]
+    if not matches:
+        raise DeliveryRefused("lane_unknown", "lane")
+    if len(matches) > 1:
+        raise DeliveryRefused("lane_ambiguous", "lane")
+    lane = matches[0]
+    host = _settings() if host is None else host
+    try:
+        (verify or verify_lane_schema)(lane_dsn(host.get("HARNESS_DATABASE_URL"), lane["schema"]),
+                                       lane["schema"])
+    except FleetRefused as exc:
+        code = exc.reason_code if exc.reason_code.startswith("lane_") else "lane_" + exc.reason_code
+        raise DeliveryRefused(code, "lane") from exc
+    if control_schema is not None and control_schema(service.store) == lane["schema"]:
+        raise DeliveryRefused("lane_is_control", "lane")
+    store = lane_stores(config, host, store_factory)(lane_id).store
+    return {"lane": lane, "store": store}
+
+
+def lane_git(lane: dict, host: dict):
+    """The lane's OWN registered repository as the Git/GitHub workspace, with its workspaces under
+    the lane runtime - where the lane's own candidates were cut - and the host's GitHub setting
+    that the Fleet launcher forwards into every lane child (`lane_environment`)."""
+    from codex_harness.adapters.git import GitWorkspace
+
+    return GitWorkspace(lane["repository"], str(Path(lane["runtime"]) / "workspaces"),
+                        host.get("HARNESS_GITHUB_REPO"))
+
+
+def _lane_observer(route: dict):
+    """The tick observer of a lane delivery: the lane store, the lane runtime's own spool."""
+    from codex_harness.bootstrap import build_observer
+
+    return build_observer(route["store"], "cli.host-delivery",
+                          root=Path(route["lane"]["runtime"]) / "observations")
 
 
 def _git(service):
@@ -1037,26 +1133,34 @@ def _git(service):
 
 def execute(service, args) -> dict:
     command = args.delivery_command
+    lane_id = getattr(args, "lane", None)
+    # Without `--lane` every command is exactly what it was: the control store and its workspace.
+    route = None if lane_id is None else resolve_lane(service, lane_id)
+    store = service.store if route is None else route["store"]
+    routed = {} if route is None else {"lane": route["lane"]["id"]}
     if command == "register-targets":
         document = json.loads(Path(args.file).read_text("utf-8"))
-        return {**HostDelivery(service.store, service.org).register_targets(document), "exit_code": 0}
+        return {**HostDelivery(store, service.org).register_targets(document), **routed, "exit_code": 0}
     if command == "register":
-        git = _git(service)
-        loaded = load_plan(GitSource(str(git.repository)), args.revision, args.path)
-        receipt = HostDelivery(service.store, service.org).register(loaded["plan"], loaded["pin"])
-        return {**receipt, "bytes": loaded["bytes"], "exit_code": 0}
+        repository = (str(_git(service).repository) if route is None
+                      else route["lane"]["repository"])
+        loaded = load_plan(GitSource(repository), args.revision, args.path)
+        receipt = HostDelivery(store, service.org).register(loaded["plan"], loaded["pin"])
+        return {**receipt, **routed, "bytes": loaded["bytes"], "exit_code": 0}
     if command == "status":
-        projection = HostDelivery(service.store, service.org,
+        projection = HostDelivery(store, service.org,
                                   enabled=configured_enabled(_settings())).status(args.plan)
-        return {**projection, "exit_code": 0 if projection.get("registered") or args.plan is None else 1}
-    observer = _observer(service)
+        return {**projection, **routed,
+                "exit_code": 0 if projection.get("registered") or args.plan is None else 1}
+    observer = _observer(service) if route is None else _lane_observer(route)
     try:
-        delivery = controller(service, observer=observer, git=_git(service))
+        git = _git(service) if route is None else lane_git(route["lane"], _settings())
+        delivery = controller(service, observer=observer, git=git, store=store)
         if command == "tick":
             result = delivery.tick(args.plan)
-            return {**result, "exit_code": 1 if result["outcome"] in FAILED_OUTCOMES else 0}
+            return {**result, **routed, "exit_code": 1 if result["outcome"] in FAILED_OUTCOMES else 0}
         return {**run_loop(delivery, once=bool(args.once), interval=args.interval,
-                           max_ticks=args.max_ticks), "exit_code": 0}
+                           max_ticks=args.max_ticks), **routed, "exit_code": 0}
     finally:
         if observer is not None:
             observer.close()
@@ -1134,8 +1238,8 @@ __all__ = ["CANARY_RECEIPT_FILE", "CANARY_REQUEST_FILE", "DESCRIPTOR_FILE", "ENA
            "HostTargetBase", "ProcessHostTarget", "ScheduledTaskHostTarget", "add_parser",
            "canary_checks", "checkout_revision", "collect_monitor_canary", "configured_enabled",
            "controller", "effective_profile_digest", "effective_worker_image", "execute",
-           "host_ports", "load_plan", "loaded_runtime", "main", "normalize_checks",
-           "owner_qualified_canary", "refusal", "run_loop", "runtime_revision", "serve",
+           "host_ports", "lane_git", "load_plan", "loaded_runtime", "main", "normalize_checks",
+           "owner_qualified_canary", "refusal", "resolve_lane", "run_loop", "runtime_revision", "serve",
            "startup_identity_canary", "startup_receipt"]
 
 

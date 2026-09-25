@@ -2466,6 +2466,18 @@ process the only thing that runs. Delivery is opt-in: without `ZEUS_HOST_DELIVER
 registers, projects and refuses every external action, and while it is off not even a durable intent
 is written. The legacy Docker `ReleaseRunner` is not enabled, driven or replaced by this component.
 
+Every one of those commands takes an optional `--lane <id>`. Without it nothing changes: the
+control store and its configured workspace. With it, the lane is the ONE entry of the control
+store's registered Fleet configuration with that id, reached through `lane_dsn`, `verify_lane_schema`
+and `lane_stores` (the store `owner-actions` registers plans into). Its store holds the targets,
+plans, intents, descriptors, `Releases`, the `ReleaseQueue` fence, the collect canary and the tick
+observer (spooled under the lane runtime); the plan is read from, and published and merged through,
+the lane's own registered repository. The managed target's activation gate is always the Fleet of
+the CONTROL store, never the lane's. An unregistered or unreadable registry, an unknown or duplicated
+id, a lane schema that is not provisioned or does not select itself, and a lane that is the control
+schema refuse (`lane_*`, field `lane`) before any effect, and nothing falls back to the control
+store. No process environment is changed, so every launched child keeps the control environment.
+
 A delivery plan (`urn:zeus:host-delivery:1`) is owner-authored, read through the existing `GitSource`
 at an explicit 40-hex commit and never from the working tree: `plan_id`, the EXISTING `release_id`,
 the candidate `revision`/`tree` (the tree is the exact Git object id the candidate recorded, 40 or 64

@@ -33,14 +33,17 @@ def observation_root():
     return runtime_dir() / "observations"
 
 
-def build_observer(store, component: str, role: str | None = None):
-    """One durable observer per process: spool, health and termination records under the runtime dir."""
+def build_observer(store, component: str, role: str | None = None, root=None):
+    """One durable observer per process: spool, health and termination records under the runtime dir.
+
+    `root` is the spool directory of an explicitly selected Fleet lane (its own runtime's
+    `observations`); None keeps this process's runtime dir, exactly as every caller had it."""
     from codex_harness.adapters.observation_spool import FileSpool, SpoolDirectory
     from codex_harness.application.observations import Observer
     from codex_harness.domain.observation import new_process_run_id
     from codex_harness.domain.policy import POLICY
 
-    root = observation_root()
+    root = observation_root() if root is None else root
     spool = FileSpool(root, new_process_run_id(), max_bytes=POLICY.observation_spool_bytes)
     return Observer(store, spool, component=component, directory=SpoolDirectory(root), role=role)
 
