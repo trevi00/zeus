@@ -1,0 +1,7 @@
+{
+  "schema": "urn:zeus:host-delivery-targets:1",
+  "targets": [
+    {"target_id": "aibox-owner", "kind": "systemd_unit", "root": "/srv/zeus/releases/current",
+     "state_dir": "/srv/zeus/runtime/control/owner", "service": "zeus-owner"}
+  ]
+}

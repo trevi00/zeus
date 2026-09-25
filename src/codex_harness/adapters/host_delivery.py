@@ -75,6 +75,7 @@ from codex_harness.domain.host_delivery import (
     KIND_MANAGED,
     KIND_PROCESS,
     KIND_SCHEDULED_TASK,
+    KIND_SYSTEMD,
     RECEIPT_SCHEMA,
     REPLACEABLE_INSTANCES,
     DeliveryRefused,
@@ -807,10 +808,11 @@ def host_ports(*, fleet=None, **kwargs) -> dict:
     authority (the host store's Fleet); without one a managed start refuses rather than assuming
     that no execution debt exists.
     """
+    from codex_harness.adapters.host_migration import SystemdHostTarget
     from codex_harness.adapters.managed_runtime import ManagedFleetTarget
 
     return {KIND_PROCESS: ProcessHostTarget(**kwargs), KIND_SCHEDULED_TASK: ScheduledTaskHostTarget(),
-            KIND_MANAGED: ManagedFleetTarget(fleet=fleet)}
+            KIND_MANAGED: ManagedFleetTarget(fleet=fleet), KIND_SYSTEMD: SystemdHostTarget()}
 
 
 # ----- the incumbent fixed canary checks --------------------------------------------------------

@@ -3172,3 +3172,68 @@ tests/test_release_reverification.py runs these cases on the memory store. It ru
 PostgreSQL-backed cases (creation, fresh-check gate, replay, concurrency, fault rollback) only with
 `HARNESS_INTEGRATION=1`. Without it they skip and prove nothing about PostgreSQL. The runner
 integration uses labelled fixture checks, never an actual release verification.
+
+## INV-HOST-MIGRATION-001
+
+`python -m codex_harness.adapters.host_migration` moves the Zeus control plane between hosts under
+one `migration_id` (docs/zeus/operations/aibox-migration-001/RUNBOOK.md, SPEC aibox-migration-001).
+It adds no admission, executor, approval or deployment authority: the Fleet registry still moves
+only through `Fleet.relocate` (INV-FLEET-001) and a host runtime still activates only through
+HostDelivery (INV-HOST-DELIVERY-001).
+
+- The manifest `urn:zeus:host-migration-manifest:1` is strict. It carries identities, counts and
+  digests only. A secret-named key or a credential-shaped value (URL userinfo with a password,
+  `password=`) is refused by field name before anything else is read, and the value never reaches
+  an error. Source and target PostgreSQL/Redis majors and extensions must be equal (no upgrade
+  rides along). Redis namespaces must be preserved and the target Redis must be dedicated. Schema
+  and path maps must be bijective. `public` is refused, as are overlapping target paths. Every Zeus
+  writer must be `stop_and_fence` or `absorb_on_target`; a foreign one must be
+  `leave_untouched_not_zeus`. A manifest without a reverse path and retained source is refused.
+- `HostMigrations` (application) records one row per id in `host_migrations`. `plan` is idempotent
+  on the identical manifest and refuses a different one (`manifest_conflict`). `advance` is
+  compare-and-swap on `from` and the manifest digest: the identical transition replays, a stale one
+  refuses (`state_stale`, `manifest_stale`). The only moves are one forward step through
+  `planned → network_ready → staged → draining → source_fenced → snapshot_sealed →
+  restored_paused → limited_active → qualified`, `failed`/`rollback_required` with a reason code,
+  re-entry from `failed` into the state it failed from, and `rollback_required → rolled_back`.
+  Each target state names the gate evidence digests it requires (`GATES`). A transition without
+  them refuses (`gate_evidence_missing`), and a non-failure transition must have exit code 0.
+- Restore checkpoints (`checkpoint`) are keyed by step. The same input digest replays; a different
+  one refuses (`checkpoint_conflict`). Forward steps run only in `snapshot_sealed`. Reverse steps
+  run only in `rollback_required` after the target had written (R1).
+- Rollback mode comes from history. R0 applies before `limited_active` has ever been entered. R1
+  applies after it: reverse migration with the exact inverse maps, and restarting the original
+  source snapshot is listed as forbidden.
+- Comparisons carry the full denominator:
+  - PG compares bucket count and digest after the schema map. Only named `(schema, bucket)`
+    pairs may differ, and each one is reported as an `allowed_delta`.
+  - Redis compares key, type, logical value digest, absolute `PEXPIRETIME`, stream length, last
+    generated id, groups and last delivered ids. The PEL (id, consumer, delivery count) is part of
+    the value digest. A key whose expiry passed before the restore is `expired_in_downtime`, never
+    `equal` and never revived.
+  - Artifacts compare path to sha256/bytes. Symlinks, special files, unreadable entries and
+    case-fold collisions are anomalies that block the copy.
+- The adapters observe and copy only:
+  - The artifact copy re-hashes the source, writes a temporary file with fsync, and publishes it
+    with a no-overwrite hard link. It skips a destination with equal bytes and refuses a differing
+    one.
+  - `copy_redis` uses `DUMP`/`RESTORE ... ABSTTL` without `REPLACE`, so groups and the PEL travel
+    with the stream. Entries are never re-added with XADD.
+  - `pg_dump`/`pg_restore` run inside the named database container over its local socket. No DSN
+    or password is ever in argv. A restore refuses when the source or renamed schema already
+    exists.
+  - `schema_store` uses the lane search-path rule and refuses a public fallback.
+  - DSNs come from a named environment variable only.
+- `SystemdHostTarget` (`kind: systemd_unit`) starts, stops and queries an owner-installed unit by
+  its registered `service` name through `systemctl`, with the shared HostDelivery descriptor,
+  receipt and drain lifecycle. An unknown `is-active` state raises instead of reading as stopped.
+  `render_unit` (`urn:zeus:systemd-service:1`) renders a unit with an explicit non-root
+  User/Group, absolute WorkingDirectory/ExecStart argv, an explicit PATH, allowlisted non-secret
+  `ZEUS_`/`HARNESS_` environment, `KillMode=control-group`, bounded stop, `Restart=on-failure`
+  and a start limit. Docker containers are not in the unit's cgroup and are reconciled by label
+  separately.
+
+tests/test_host_migration.py runs the policy, coordinator, artifact, bucket, systemd (fake
+`systemctl`), pg-tool (fake `docker`) and layout cases on fixture data and the memory store. The
+Redis round trip runs only with `ZEUS_MIGRATION_TEST_REDIS_SOURCE`/`_TARGET` naming two disposable
+servers. Without them it skips and proves nothing about Redis.

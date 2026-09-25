@@ -1,0 +1,16 @@
+{
+  "schema": "urn:zeus:systemd-service:1",
+  "unit": "zeus-owner",
+  "description": "Zeus owner (aibox)",
+  "user": "trevi",
+  "group": "trevi",
+  "working_directory": "/srv/zeus/releases/current",
+  "exec_start": ["/srv/zeus/releases/current/.venv/bin/python", "-m", "codex_harness.adapters.host_delivery",
+                 "service", "--state-dir", "/srv/zeus/runtime/control/owner"],
+  "path": "/srv/zeus/releases/current/.venv/bin:/usr/local/bin:/usr/bin:/bin",
+  "environment": {"ZEUS_RUNTIME_DIR": "/srv/zeus/runtime/control"},
+  "stop_timeout_seconds": 90,
+  "restart_seconds": 10,
+  "start_limit_burst": 3,
+  "start_limit_interval_seconds": 300
+}
