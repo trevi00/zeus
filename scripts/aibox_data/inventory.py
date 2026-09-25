@@ -147,16 +147,35 @@ def verify_manifest_digest(manifest: dict) -> bool:
     return manifest.get("schema") == MANIFEST_SCHEMA and manifest.get("digest") == manifest_digest(manifest)
 
 
+def blocking_findings(root: dict) -> dict:
+    """Source findings that make a copy of this root unacceptable until explicitly decided: an
+    unreadable subtree is unknown content (never an empty one), and special files or links that
+    escape the root cannot be reproduced. Case collisions block only a Windows restore (R1)."""
+    found = root.get("findings") or findings(root["entries"])
+    return {"source_unreadable": sorted(e["path"] for e in root.get("unreadable", [])),
+            "special_files": list(found["special_files"]),
+            "external_symlinks": list(found["external_symlinks"])}
+
+
 def compare_roots(expected: dict, actual: dict) -> dict:
-    """Entry-level comparison of two scans of the same logical root (source vs copy)."""
+    """Entry-level comparison of two scans of the same logical root (source vs copy). The expected
+    side's blocking findings are carried through, so an unreadable source never compares equal."""
     want = {e["path"]: _identity(e) for e in expected["entries"]}
     have = {e["path"]: _identity(e) for e in actual["entries"]}
     mismatched = sorted(path for path in want.keys() & have.keys() if want[path] != have[path])
     result = {"missing": sorted(want.keys() - have.keys()), "extra": sorted(have.keys() - want.keys()),
               "mismatched": mismatched,
-              "unreadable": sorted(e["path"] for e in actual.get("unreadable", []))}
+              "unreadable": sorted(e["path"] for e in actual.get("unreadable", [])),
+              **blocking_findings(expected)}
     result["match"] = not any(result.values())
     return result
+
+
+def validate_entry_path(relative: str) -> None:
+    """Manifest paths are relative POSIX paths without empty, `.` or `..` components."""
+    parts = relative.split("/") if isinstance(relative, str) else [""]
+    if relative.startswith("/") or any(p in {"", ".", ".."} for p in parts):
+        raise ValueError(f"unsafe manifest path: {relative!r}")
 
 
 def verify_artifact_store(root: str | Path) -> dict:

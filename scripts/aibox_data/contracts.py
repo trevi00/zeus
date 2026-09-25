@@ -56,7 +56,13 @@ def _version_major(value) -> int | None:
     return value // 10000 if type(value) is int and value >= 100000 else None
 
 
-def validate_pg(inventory: dict) -> list[str]:
+def validate_pg(inventory: dict, role: str) -> list[str]:
+    """`role` is "source" or "target". The Windows source keeps its control ledger in `public`
+    (source-inventory.json, 2026-09-25), so an explicitly inventoried source `public` schema is
+    valid; a target schema named `public` is refused because lane/control connections must never
+    fall back to it (SPEC §8)."""
+    if role not in {"source", "target"}:
+        raise ValueError("role must be source or target")
     problems = []
     if inventory.get("schema") != PG_SCHEMA:
         problems.append("schema")
@@ -68,7 +74,7 @@ def validate_pg(inventory: dict) -> list[str]:
     if not isinstance(schemas, dict) or not schemas:
         return problems + ["schemas"]
     for name, schema in schemas.items():
-        if name == "public" or not IDENT.fullmatch(name):
+        if (name == "public" and role == "target") or not IDENT.fullmatch(name):
             problems.append(f"schema_name:{name}")
         if not isinstance(schema, dict):
             problems.append(f"schema_body:{name}")
@@ -90,7 +96,8 @@ def validate_pg(inventory: dict) -> list[str]:
 def compare_pg(source: dict, target: dict, schema_map: dict[str, str], delta: dict | None = None) -> dict:
     """A2 PG row: same major/extensions, a total injective schema map, identical rows except the
     changes listed in the binding delta receipt, whose before/after hashes must both hold."""
-    problems = [f"source:{p}" for p in validate_pg(source)] + [f"target:{p}" for p in validate_pg(target)]
+    problems = ([f"source:{p}" for p in validate_pg(source, "source")]
+                + [f"target:{p}" for p in validate_pg(target, "target")])
     if problems:
         return {"match": False, "problems": problems}
     if _version_major(source["server_version_num"]) != _version_major(target["server_version_num"]):

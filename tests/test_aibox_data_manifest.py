@@ -105,44 +105,51 @@ def test_path_references_are_reported_not_rewritten(tmp_path):
 
 # --- staged copy, resume and refusal ----------------------------------------------------------
 
+def partial_of(work: Path, root_id: str, relative: str) -> Path:
+    return work / "partials" / (hashlib.sha256(f"{root_id}\0{relative}".encode()).hexdigest() + ".part")
+
+
 def test_stage_copies_verifies_and_is_idempotent(tree, tmp_path):
     manifest = inventory.build_manifest("mig-1", {"art": str(tree)}, "h")
-    staging, journal = tmp_path / "staging", tmp_path / "journal.json"
-    first = transfer.stage_root(manifest, "art", tree, staging, journal)
+    staging, work = tmp_path / "staging", tmp_path / "work"
+    first = transfer.stage_root(manifest, "art", tree, staging, work)
     assert first["status"] == "complete"
-    assert transfer.verify_staged(manifest, "art", staging)["match"]
+    assert transfer.verify_staged(manifest, "art", staging, work)["match"]
     assert os.readlink(staging / "latest") == "logs/run.log"
-    second = transfer.stage_root(manifest, "art", tree, staging, journal)
+    assert sorted(os.listdir(work)) == ["journal.json", "partials"]  # no state inside staging
+    second = transfer.stage_root(manifest, "art", tree, staging, work)
     assert {e["action"] for e in second["events"]} == {"verified_existing"}
 
 
 def test_interrupted_copy_resumes_from_verified_partial(tree, tmp_path):
     manifest = inventory.build_manifest("mig-1", {"art": str(tree)}, "h")
-    staging, journal = tmp_path / "staging", tmp_path / "journal.json"
-    stopped = transfer.stage_root(manifest, "art", tree, staging, journal, limit_bytes=1024 * 1024)
+    staging, work = tmp_path / "staging", tmp_path / "work"
+    stopped = transfer.stage_root(manifest, "art", tree, staging, work, limit_bytes=1024 * 1024)
     assert stopped["status"] == "interrupted"
-    part = staging / "big.bin.part"
+    part = partial_of(work, "art", "big.bin")
     assert part.exists() and 0 < part.stat().st_size < (tree / "big.bin").stat().st_size
-    assert not transfer.verify_staged(manifest, "art", staging)["match"]
-    resumed = transfer.stage_root(manifest, "art", tree, staging, journal)
+    assert not os.path.lexists(staging / "big.bin")
+    interrupted = transfer.verify_staged(manifest, "art", staging, work)
+    assert not interrupted["match"] and interrupted["partials"] == [part.name]
+    resumed = transfer.stage_root(manifest, "art", tree, staging, work)
     big = next(e for e in resumed["events"] if e["path"] == "big.bin")
     assert big["resumed_from_bytes"] == 1024 * 1024
     assert (staging / "big.bin").read_bytes() == (tree / "big.bin").read_bytes()
-    assert transfer.verify_staged(manifest, "art", staging)["match"]
+    assert transfer.verify_staged(manifest, "art", staging, work)["match"]
 
 
 def test_diverged_partial_and_conflicting_staged_file_are_refused(tree, tmp_path):
     manifest = inventory.build_manifest("mig-1", {"art": str(tree)}, "h")
-    staging = tmp_path / "staging"
-    staging.mkdir()
-    (staging / "big.bin.part").write_bytes(b"not the source prefix")
+    staging, work = tmp_path / "staging", tmp_path / "work"
+    assert transfer.stage_root(manifest, "art", tree, staging, work, limit_bytes=1024)["status"] == "interrupted"
+    partial_of(work, "art", "big.bin").write_bytes(b"not the source prefix")
     with pytest.raises(transfer.TransferRefused) as refused:
-        transfer.stage_root(manifest, "art", tree, staging, tmp_path / "j.json")
+        transfer.stage_root(manifest, "art", tree, staging, work)
     assert refused.value.reason == "partial_diverged"
-    (staging / "big.bin.part").unlink()
+    staging.mkdir(exist_ok=True)
     (staging / "empty.txt").write_bytes(b"different")
     with pytest.raises(transfer.TransferRefused) as conflict:
-        transfer.stage_root(manifest, "art", tree, staging, tmp_path / "j2.json")
+        transfer.stage_root(manifest, "art", tree, staging, tmp_path / "work2")
     assert conflict.value.reason == "staged_conflict"
     assert (staging / "empty.txt").read_bytes() == b"different"  # never overwritten
 
@@ -151,29 +158,187 @@ def test_source_change_after_seal_is_refused(tree, tmp_path):
     manifest = inventory.build_manifest("mig-1", {"art": str(tree)}, "h")
     (tree / "logs" / "run.log").write_bytes(b"changed after seal")
     with pytest.raises(transfer.TransferRefused) as refused:
-        transfer.stage_root(manifest, "art", tree, tmp_path / "staging", tmp_path / "j.json")
+        transfer.stage_root(manifest, "art", tree, tmp_path / "staging", tmp_path / "work")
     assert refused.value.reason == "source_changed_after_seal"
     assert not (tmp_path / "staging" / "logs" / "run.log").exists()
 
 
 def test_same_migration_id_with_different_digest_is_refused(tree, tmp_path):
     manifest = inventory.build_manifest("mig-1", {"art": str(tree)}, "h")
-    journal = tmp_path / "j.json"
-    transfer.stage_root(manifest, "art", tree, tmp_path / "staging", journal)
+    work = tmp_path / "work"
+    transfer.stage_root(manifest, "art", tree, tmp_path / "staging", work)
     (tree / "new.txt").write_text("new")
     changed = inventory.build_manifest("mig-1", {"art": str(tree)}, "h")
     with pytest.raises(transfer.TransferRefused) as refused:
-        transfer.stage_root(changed, "art", tree, tmp_path / "staging", journal)
+        transfer.stage_root(changed, "art", tree, tmp_path / "staging", work)
     assert refused.value.reason == "journal_binding_mismatch"
 
 
 def test_external_symlink_is_not_created_and_blocks_verification(tree, tmp_path):
     os.symlink("/etc/hostname", tree / "outside")
     manifest = inventory.build_manifest("mig-1", {"art": str(tree)}, "h")
-    report = transfer.stage_root(manifest, "art", tree, tmp_path / "staging", tmp_path / "j.json")
-    assert report["status"] == "needs_decision"
+    report = transfer.stage_root(manifest, "art", tree, tmp_path / "staging", tmp_path / "work")
+    assert report["status"] == "blocked"
+    assert report["blocking"]["external_symlinks"] == ["outside"]
     assert not os.path.lexists(tmp_path / "staging" / "outside")
-    assert transfer.verify_staged(manifest, "art", tmp_path / "staging")["missing"] == ["outside"]
+    verified = transfer.verify_staged(manifest, "art", tmp_path / "staging")
+    assert verified["missing"] == ["outside"] and not verified["match"]
+
+
+# Review defect 2 (b7cbe79): a symlinked destination ancestor was followed and written through.
+
+def test_symlinked_staging_ancestor_is_refused_before_any_write(tmp_path):
+    source, staging, outside = tmp_path / "source", tmp_path / "staging", tmp_path / "outside"
+    (source / "sub").mkdir(parents=True)
+    (source / "sub" / "evidence").write_bytes(b"proof")
+    staging.mkdir()
+    outside.mkdir()
+    os.symlink(outside, staging / "sub")
+    manifest = inventory.build_manifest("mig-1", {"art": str(source)}, "h")
+    with pytest.raises(transfer.TransferRefused) as refused:
+        transfer.stage_root(manifest, "art", source, staging, tmp_path / "work")
+    assert refused.value.reason == "staging_ancestor_symlink"
+    assert os.listdir(outside) == []
+    assert os.listdir(tmp_path / "work" / "partials") == []
+    assert not transfer.verify_staged(manifest, "art", staging)["match"]
+
+
+def test_symlinked_nested_ancestor_created_after_first_level_is_refused(tmp_path):
+    source, staging, outside = tmp_path / "source", tmp_path / "staging", tmp_path / "outside"
+    (source / "a" / "b").mkdir(parents=True)
+    (source / "a" / "b" / "f").write_bytes(b"x")
+    (staging / "a").mkdir(parents=True)
+    outside.mkdir()
+    os.symlink(outside, staging / "a" / "b")
+    manifest = inventory.build_manifest("mig-1", {"art": str(source)}, "h")
+    with pytest.raises(transfer.TransferRefused) as refused:
+        transfer.stage_root(manifest, "art", source, staging, tmp_path / "work")
+    assert refused.value.reason == "staging_ancestor_symlink"
+    assert os.listdir(outside) == []
+
+
+def test_symlinked_staging_root_work_dir_partial_and_journal_are_refused(tree, tmp_path):
+    manifest = inventory.build_manifest("mig-1", {"art": str(tree)}, "h")
+    outside = tmp_path / "outside"
+    outside.mkdir()
+    os.symlink(outside, tmp_path / "staging-link")
+    with pytest.raises(transfer.TransferRefused) as root_link:
+        transfer.stage_root(manifest, "art", tree, tmp_path / "staging-link", tmp_path / "w1")
+    assert root_link.value.reason == "staging_root_symlink"
+    os.symlink(outside, tmp_path / "work-link")
+    with pytest.raises(transfer.TransferRefused) as work_link:
+        transfer.stage_root(manifest, "art", tree, tmp_path / "s2", tmp_path / "work-link")
+    assert work_link.value.reason == "work_dir_symlink"
+    victim = outside / "victim"
+    victim.write_bytes(b"keep")
+    work = tmp_path / "w3"
+    transfer.stage_root(manifest, "art", tree, tmp_path / "s3", work, limit_bytes=1024)
+    partial_of(work, "art", "big.bin").unlink()
+    os.symlink(victim, partial_of(work, "art", "big.bin"))
+    with pytest.raises(transfer.TransferRefused) as part_link:
+        transfer.stage_root(manifest, "art", tree, tmp_path / "s3", work)
+    assert part_link.value.reason == "partial_not_regular"
+    work4 = tmp_path / "w4"
+    work4.mkdir()
+    os.symlink(victim, work4 / "journal.json")
+    with pytest.raises(transfer.TransferRefused) as journal_link:
+        transfer.stage_root(manifest, "art", tree, tmp_path / "s4", work4)
+    assert journal_link.value.reason == "journal_not_regular"
+    assert victim.read_bytes() == b"keep" and os.listdir(outside) == ["victim"]
+
+
+def test_work_dir_must_be_migration_owned_and_separate(tree, tmp_path):
+    manifest = inventory.build_manifest("mig-1", {"art": str(tree)}, "h")
+    foreign = tmp_path / "foreign"
+    foreign.mkdir()
+    (foreign / "notes.txt").write_text("someone else's")
+    with pytest.raises(transfer.TransferRefused) as refused:
+        transfer.stage_root(manifest, "art", tree, tmp_path / "staging", foreign)
+    assert refused.value.reason == "work_dir_not_migration_owned"
+    with pytest.raises(transfer.TransferRefused) as inside:
+        transfer.stage_root(manifest, "art", tree, tmp_path / "staging", tmp_path / "staging" / "w")
+    assert inside.value.reason == "work_dir_overlaps"
+    with pytest.raises(transfer.TransferRefused) as overlap:
+        transfer.stage_root(manifest, "art", tree, tree / "copy", tmp_path / "work")
+    assert overlap.value.reason == "staging_overlaps_source"
+
+
+def test_unsafe_manifest_paths_are_refused_even_with_a_valid_digest(tree, tmp_path):
+    manifest = inventory.build_manifest("mig-1", {"art": str(tree)}, "h")
+    manifest["roots"]["art"]["entries"][0]["path"] = "../escape"
+    manifest["digest"] = inventory.manifest_digest(manifest)
+    with pytest.raises(transfer.TransferRefused) as refused:
+        transfer.stage_root(manifest, "art", tree, tmp_path / "staging", tmp_path / "work")
+    assert refused.value.reason == "unsafe_manifest_path"
+    assert not (tmp_path / "escape").exists()
+
+
+# Review defect 3 (b7cbe79): an unreadable source subtree staged "complete" and verified as a match.
+
+@pytest.mark.skipif(os.geteuid() == 0, reason="root bypasses directory permissions")
+def test_unreadable_source_subtree_blocks_stage_and_verification(tmp_path):
+    source = tmp_path / "source"
+    (source / "denied").mkdir(parents=True)
+    (source / "denied" / "proof.txt").write_bytes(b"hidden")
+    os.chmod(source / "denied", 0)
+    try:
+        manifest = inventory.build_manifest("mig-1", {"art": str(source)}, "h")
+    finally:
+        os.chmod(source / "denied", 0o700)
+    root = manifest["roots"]["art"]
+    assert root["entries"] == [] and root["unreadable"] == [{"path": "denied", "error": "PermissionError"}]
+    report = transfer.stage_root(manifest, "art", source, tmp_path / "staging", tmp_path / "work")
+    assert report["status"] == "blocked"
+    assert report["blocking"]["source_unreadable"] == ["denied"]
+    verified = transfer.verify_staged(manifest, "art", tmp_path / "staging", tmp_path / "work")
+    assert not verified["match"] and verified["source_unreadable"] == ["denied"]
+    assert inventory.compare_roots(root, root)["match"] is False
+
+
+def test_truly_empty_root_stages_and_verifies(tmp_path):
+    source = tmp_path / "source"
+    source.mkdir()
+    manifest = inventory.build_manifest("mig-1", {"art": str(source)}, "h")
+    report = transfer.stage_root(manifest, "art", source, tmp_path / "staging", tmp_path / "work")
+    assert report == {"status": "complete", "blocking": {"source_unreadable": [], "special_files": [],
+                                                        "external_symlinks": []},
+                      "events": [], "journal": str(tmp_path / "work" / "journal.json")}
+    assert transfer.verify_staged(manifest, "art", tmp_path / "staging", tmp_path / "work")["match"]
+
+
+# Review defect 4 (b7cbe79): a legitimate source file ending in .part was hidden by suffix exclusion.
+
+def test_source_files_named_part_stage_and_verify_under_real_names(tmp_path):
+    source = tmp_path / "source"
+    source.mkdir()
+    (source / "log").write_bytes(os.urandom(2 * 1024 * 1024))
+    (source / "log.part").write_bytes(b"a real file whose name ends in .part\n")
+    (source / "big.bin.part").write_bytes(b"another")
+    manifest = inventory.build_manifest("mig-1", {"art": str(source)}, "h")
+    staging, work = tmp_path / "staging", tmp_path / "work"
+    stopped = transfer.stage_root(manifest, "art", source, staging, work, limit_bytes=1024 * 1024)
+    assert stopped["status"] == "interrupted"
+    assert [e["path"] for e in stopped["events"]] == ["big.bin.part", "log"]
+    assert (staging / "big.bin.part").read_bytes() == b"another"
+    assert not os.path.lexists(staging / "log")
+    resumed = transfer.stage_root(manifest, "art", source, staging, work)
+    assert resumed["status"] == "complete"
+    # The byte budget is shared: big.bin.part consumed 7 bytes before log was interrupted.
+    assert next(e for e in resumed["events"] if e["path"] == "log")["resumed_from_bytes"] == 1024 * 1024 - 7
+    for name in ("log", "log.part", "big.bin.part"):
+        assert (staging / name).read_bytes() == (source / name).read_bytes()
+    verified = transfer.verify_staged(manifest, "art", staging, work)
+    assert verified["match"], verified
+    assert verified["partials"] == [] and verified["missing"] == []
+
+
+def test_leftover_staged_part_named_file_is_extra_not_hidden(tree, tmp_path):
+    manifest = inventory.build_manifest("mig-1", {"art": str(tree)}, "h")
+    staging = tmp_path / "staging"
+    transfer.stage_root(manifest, "art", tree, staging, tmp_path / "work")
+    (staging / "stray.part").write_bytes(b"not in the manifest")
+    verified = transfer.verify_staged(manifest, "art", staging, tmp_path / "work")
+    assert verified["extra"] == ["stray.part"] and not verified["match"]
 
 
 # --- mapping allowlist ------------------------------------------------------------------------
@@ -247,7 +412,57 @@ def test_pg_comparison_rejects_missing_rows_public_and_version_skew(tmp_path):
     assert "sequence_behind:zeus_control.s" in result["problems"]
     assert result["rows"] == [{"schema": "zeus_control", "bucket": "t", "id": "2", "problem": "missing"}]
     public = pg_inventory(tmp_path, "public", [])
-    assert "schema_name:public" in contracts.validate_pg(public)
+    assert "schema_name:public" in contracts.validate_pg(public, "target")
+
+
+# Review defect 1 (b7cbe79): the real source keeps its control ledger in `public`
+# (aibox-migration-001/source-inventory.json lists `public` plus lane schemas such as
+# zeus_asset_operation_001). Names below mirror that inventory; the rows are fixtures.
+
+def two_schema_inventory(tmp_path, names, rows):
+    merged = None
+    for name in names:
+        one = pg_inventory(tmp_path, name, rows)
+        merged = one if merged is None else merged | {"schemas": merged["schemas"] | one["schemas"]}
+    return merged
+
+
+def test_source_public_control_schema_is_supported(tmp_path):
+    rows = [{"bucket": "audit_progress_windows", "id": "w1", "body": {"n": 1}}]
+    source = two_schema_inventory(tmp_path, ["public", "zeus_asset_operation_001"], rows)
+    target = two_schema_inventory(tmp_path, ["zeus_aibox_control", "zeus_aibox_asset_operation_001"], rows)
+    assert contracts.validate_pg(source, "source") == []
+    schema_map = {"public": "zeus_aibox_control",
+                  "zeus_asset_operation_001": "zeus_aibox_asset_operation_001"}
+    assert contracts.compare_pg(source, target, schema_map)["match"]
+
+
+def test_public_stays_forbidden_as_target_schema_and_map_destination(tmp_path):
+    rows = [{"bucket": "t", "id": "1", "body": {}}]
+    source = pg_inventory(tmp_path, "public", rows)
+    target = pg_inventory(tmp_path, "public", rows)
+    assert contracts.validate_pg(target, "target") == ["schema_name:public"]
+    result = contracts.compare_pg(source, target, {"public": "public"})
+    assert result["problems"] == ["target:schema_name:public"]
+    ok_target = pg_inventory(tmp_path, "zeus_aibox_control", rows)
+    mapped_to_public = contracts.compare_pg(source, ok_target, {"public": "public"})
+    assert "schema_map_not_injective_or_public" in mapped_to_public["problems"]
+    with pytest.raises(ValueError):
+        contracts.validate_pg(source, "either")
+
+
+def test_cli_pg_inventory_requires_role_and_accepts_source_public(tmp_path, capsys):
+    export = tmp_path / "public.jsonl"
+    export.write_text('{"bucket":"tasks","id":"t1","body":{"a":1}}\n')
+    meta = tmp_path / "meta.json"
+    meta.write_text(json.dumps({"schema": contracts.PG_SCHEMA, "server_version_num": 170011,
+                                "extensions": {"plpgsql": "1.0", "vector": "0.8.6"},
+                                "schemas": {"public": {"tables": ["documents"], "sequences": {}}}}))
+    base = ["pg-inventory", "--meta", str(meta), "--export", f"public={export}"]
+    assert cli.main(base + ["--role", "source"]) == 0
+    assert json.loads(capsys.readouterr().out)["schemas"]["public"]["buckets"]["tasks"]["count"] == 1
+    assert cli.main(base + ["--role", "target"]) == 1
+    assert cli.main(base) == 2
 
 
 def test_pg_export_rejects_duplicate_rows(tmp_path):
@@ -382,10 +597,10 @@ def test_cli_inventory_stage_verify_roundtrip(tree, tmp_path, capsys):
                      "--host", "fixture", "--out", str(out)]) == 0
     capsys.readouterr()
     assert cli.main(["stage", "--manifest", str(out), "--root-id", "art", "--source", str(tree),
-                     "--staging", str(tmp_path / "s"), "--journal", str(tmp_path / "j.json")]) == 0
+                     "--staging", str(tmp_path / "s"), "--work", str(tmp_path / "w")]) == 0
     capsys.readouterr()
     assert cli.main(["verify-staged", "--manifest", str(out), "--root-id", "art",
-                     "--staging", str(tmp_path / "s")]) == 0
+                     "--staging", str(tmp_path / "s"), "--work", str(tmp_path / "w")]) == 0
     assert json.loads(capsys.readouterr().out)["match"] is True
     evidence = tmp_path / "r0.json"
     evidence.write_text(json.dumps(R0_OK | {"target_fenced": False}))

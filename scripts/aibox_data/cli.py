@@ -47,8 +47,8 @@ def run(args: argparse.Namespace) -> int:
     if args.command == "inventory":
         manifest = inventory.build_manifest(args.migration_id, _pairs(args.root),
                                             args.host or socket.gethostname())
-        blocking = any(root["unreadable"] or root["findings"]["case_collisions"]
-                       or root["findings"]["special_files"] or root["findings"]["external_symlinks"]
+        blocking = any(root["findings"]["case_collisions"]
+                       or any(inventory.blocking_findings(root).values())
                        for root in manifest["roots"].values())
         return _emit(manifest, not blocking, args.out)
     if args.command == "verify-manifest":
@@ -63,19 +63,19 @@ def run(args: argparse.Namespace) -> int:
     if args.command == "stage":
         try:
             report = transfer.stage_root(_load(args.manifest), args.root_id, args.source, args.staging,
-                                         args.journal, args.limit_bytes)
+                                         args.work, args.limit_bytes)
         except transfer.TransferRefused as exc:
             return _emit({"status": "refused", "reason": exc.reason, "path": exc.path}, False)
-        return _emit(report, report["status"] == "complete")
+        return _emit(report, report["status"] == "complete")  # blocked/interrupted/needs decision -> 1
     if args.command == "verify-staged":
-        report = transfer.verify_staged(_load(args.manifest), args.root_id, args.staging)
+        report = transfer.verify_staged(_load(args.manifest), args.root_id, args.staging, args.work)
         return _emit(report, report["match"])
     if args.command == "pg-inventory":
         meta = _load(args.meta)
         for name, path in _pairs(args.export).items():
             meta.setdefault("schemas", {}).setdefault(name, {})["buckets"] = \
                 contracts.pg_schema_from_export(path)
-        problems = contracts.validate_pg(meta)
+        problems = contracts.validate_pg(meta, args.role)
         return _emit(meta if not problems else {"problems": problems}, not problems, args.out)
     if args.command == "compare-pg":
         report = contracts.compare_pg(_load(args.source), _load(args.target), _load(args.schema_map),
@@ -115,13 +115,15 @@ def parser() -> argparse.ArgumentParser:
         p.add_argument("--manifest", required=True)
         p.add_argument("--root-id", required=True)
         p.add_argument("--staging", required=True)
+        p.add_argument("--work", required=name == "stage",
+                       help="migration-owned work dir (journal, partials) on the staging filesystem")
         if name == "stage":
             p.add_argument("--source", required=True)
-            p.add_argument("--journal", required=True)
             p.add_argument("--limit-bytes", type=int)
     p = sub.add_parser("pg-inventory", help="build a PG inventory from documents JSONL exports")
     p.add_argument("--meta", required=True)
     p.add_argument("--export", action="append", required=True, metavar="SCHEMA=JSONL")
+    p.add_argument("--role", choices=["source", "target"], required=True)
     p.add_argument("--out")
     p = sub.add_parser("compare-pg")
     p.add_argument("--source", required=True)
