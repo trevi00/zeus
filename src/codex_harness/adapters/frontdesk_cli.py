@@ -81,6 +81,7 @@ def run(service, args) -> dict:
     except Timeout:
         return {"status": "refused", "reason_code": "desk_lock_busy", "exit_code": 1}
     observer = None
+    installed = []  # (signal, previous handler) for each handler THIS run replaced
     try:
         # The observer exists before the rest of the wiring, so a failure while building the
         # executor, the bus or the budget still releases the spool AND this host lock.
@@ -89,9 +90,15 @@ def run(service, args) -> dict:
         for name in ("SIGINT", "SIGTERM", "SIGBREAK"):
             if hasattr(signal, name):
                 # Interrupt shutdown: no new turn is claimed; a claimed turn records its outcome.
-                signal.signal(getattr(signal, name), lambda *_: runner.stop())
+                number = getattr(signal, name)
+                installed.append((number, signal.signal(number, lambda *_: runner.stop())))
         summary = runner.run(once=bool(args.once))
     finally:
+        # The handlers close over this run's runner: every exit, including an exception and a
+        # partial installation, hands the process its previous handlers back.
+        for number, previous in reversed(installed):
+            with suppress(Exception):  # a restore failure never replaces the original outcome
+                signal.signal(number, previous)
         if observer is not None:
             with suppress(Exception):  # a close failure never replaces the original outcome
                 observer.close()

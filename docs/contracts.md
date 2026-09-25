@@ -1419,6 +1419,9 @@ reason (`paused`, `budget_exhausted`, `budget_stale`, `capacity`, `lane_busy`, `
 `path_conflict`) is persisted on its queued job in that same transaction, its row and `updated_at`
 changing only when the reason differs from the recorded one, and cleared on admission. The claim is
 durable as `dispatching` with a fresh owner token before any process; only that owner finalizes.
+The SIGINT/SIGTERM/SIGBREAK handlers `zeus fleet run` (and likewise `zeus desk run`) installs for a
+graceful `stop` are owned for the run's lifetime only: every exit - normal, runner exception, or a
+failed partial installation - restores exactly the previous handlers it replaced.
 The child is the existing `zeus operate run` with both `ZEUS_`/`HARNESS_` lane overrides and the
 lane DSN built by psycopg.conninfo (`search_path=<schema>`, current_schema verified, never public,
 never created); Docker isolation must be selected. `accepted` needs exit 0 and the exact durable lane
