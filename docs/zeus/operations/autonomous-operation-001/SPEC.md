@@ -1,5 +1,43 @@
 # Whole autonomous operating loop
 
+## Release incumbent test fixture bytecode collision, 2026-09-25
+
+Keep the whole release frame and accepted signal/accounting fixes. Candidate51b4cb37
+passed both Ubuntu CI versions, root Windows+PG313 passed/9 platform skips and the
+unchanged signal trace now has zero handler changes. Integration CI36078583390 had
+one DIFFERENT failure: test_incumbent_tests_run_against_candidate_code_with_incumbent_config
+expected changed product.VALUE to fail but got pass (4288 passed/29 skipped/1 failed).
+Prior cancellation failures no longer occur in that run. Do not re-open signal design.
+
+Root discriminating experiment probe-release-bytecode.py/.json (D:/workspaces/zeus/
+artifacts/autonomous-operation-001): invoke the actual existing test with real ReleaseSuite
+and child pytest, bytecode enabled, INJECT both product source writes with identical mtime.
+Same-length VALUE=2 -> VALUE=3 yields test failure and one .pyc. Change only replacement
+to VALUE=300 (different source size): test passes with one .pyc. Thus the synthetic fixture
+can retain valid timestamp/size cache while assuming a fresh candidate. This establishes
+the mechanism under injected equal mtime, not the exact CI file timestamps.
+Primary source Python3.14.7 import reference cached-bytecode-invalidation, consulted
+2026-09-25: https://docs.python.org/3/reference/import.html#cached-bytecode-invalidation
+timestamp-based cache checks source mtime and size. Root prior checks used
+PYTHONDONTWRITEBYTECODE and could not expose this fixture assumption.
+
+One tests-only Claude correction: in this test make the second candidate source
+unambiguously different in size (e.g. VALUE=300), preserving first success and second
+failure assertions, incumbent node/config binding and actual child process execution.
+Make the equal-mtime condition deterministic in this test, and explicitly enable child
+bytecode writing for this scenario so caller environment cannot conceal the regression.
+Do not sleep, retry until green, delete arbitrary caches, weaken assertions or change
+release runtime. This test models two candidate contents; runtime checkouts are pinned
+separately. This observation alone does not prove runtime bytecode isolation generally.
+
+Acceptance: actual first candidate passes, changed candidate fails with same mtime and
+bytecode enabled; original incumbent manifest/config still checked; tests/test_release_suite.py
+and Ruff pass. Existing cancellation/nesting/redaction tests retained. No new platform,
+restart or concurrency mechanism; those accepted paths unchanged. Root repeats exact
+injected scenario then CI; tests-only change reuses prior runtime acceptance. No models
+outside Fleet, no merge/deploy or live writes. Keep failed CI and diagnostics as history.
+
+
 ## Release cancellation reframe: all same-process service owners, 2026-09-25
 
 Outcome and original completion gates unchanged. e85b191a audit repair independently
