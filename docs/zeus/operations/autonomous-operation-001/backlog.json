@@ -607,6 +607,19 @@
       "dependencies": [
         "native-fixture"
       ]
+    },
+    {
+      "id": "signal-lifetime",
+      "project_id": "research-improvement",
+      "criterion_id": "verified-loop",
+      "lane": "harness",
+      "manifest_path": "docs/zeus/operations/autonomous-operation-001/signal-lifetime.operation.json",
+      "manifest_revision": "e445953acbcc0b3b789bdb6d816880c1aa406d3a",
+      "manifest_sha256": "3bb321a3948a93b0fc7ce7dcd3257d54ff5b76072d9b79c66a696f7bd4269c17",
+      "priority": 450,
+      "dependencies": [
+        "native-fixture"
+      ]
     }
   ]
 }
