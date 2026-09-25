@@ -81,7 +81,8 @@ GATES = {
     SOURCE_FENCED: {"writer_inventory": (OBSERVATION,), "restart_refusal": (OBSERVATION,)},
     SNAPSHOT_SEALED: {"pg_inventory": ("pg-inventory",), "redis_inventory": ("redis-inventory",),
                       "artifact_inventory": ("inventory",)},
-    RESTORED_PAUSED: {"pg_comparison": ("pg-coverage",), "redis_comparison": ("compare-redis",),
+    RESTORED_PAUSED: {"pg_comparison": ("pg-coverage",), "pg_catalog": ("pg-catalog",),
+                      "redis_comparison": ("compare-redis",),
                       "pel_owners": ("pel-owners",), "artifact_comparison": ("verify-staged",),
                       "registry_relocation": ("fleet-relocation",), "admission_paused": (OBSERVATION,)},
     LIMITED_ACTIVE: {"host_activation": ("host-activation",), "service_consumption": ("service-startup",),
@@ -91,7 +92,7 @@ GATES = {
     ROLLBACK_REQUIRED: {"failure": None},
     ROLLED_BACK: {"rollback_gate": ("gate-r0", "gate-r1")},
 }
-CHECKS = frozenset({OBSERVATION, "pg-coverage", "pg-inventory", "redis-inventory", "inventory",
+CHECKS = frozenset({OBSERVATION, "pg-coverage", "pg-catalog", "pg-inventory", "redis-inventory", "inventory",
                     "compare-redis", "pel-owners", "verify-staged", "stage", "compare-pg",
                     "fleet-relocation", "host-activation", "service-startup", "independent-review",
                     "gate-r0", "gate-r1", "gate-c", "verify-artifacts"})
@@ -533,6 +534,128 @@ def pg_coverage(schema_map: dict, receipts: list) -> dict:
             "ok": not (missing or duplicated or extra or failed)}
 
 
+# ----- PostgreSQL whole-database restore: rename plan, catalog comparison, receipt ----------------
+RESTORE_SCHEMA = "urn:zeus:host-migration-pg-restore:1"
+CATALOG_SCHEMA = "urn:zeus:host-migration-pg-catalog:1"
+EXTENSION_HOME = "public"
+# The one temporary schema the rename transaction creates and drops again; never a source name.
+EXTENSION_PARKING = "zeus_migration_extensions"
+RESTORE_STATES = ("created", "restore_failed", "restored", "renamed")
+CATALOG_SECTIONS = ("relations", "indexes", "constraints", "sequences", "views", "functions", "triggers")
+
+
+def _schema_empty(schema: dict) -> bool:
+    return not any(schema.get(section) for section in CATALOG_SECTIONS)
+
+
+def catalog_schemas(catalog: dict) -> list:
+    """The schemas a restore must account for: every non-empty schema, and `public` even when
+    empty only if it is not the bare extension home (an empty public is template furniture)."""
+    return sorted(name for name, body in catalog["schemas"].items()
+                  if not (name == EXTENSION_HOME and _schema_empty(body)))
+
+
+def rename_plan(catalog: dict, schema_map: dict, *, reverse: bool = False) -> dict:
+    """The renames of one whole-database restore, over EXACTLY the catalog's schemas.
+
+    Forward, `public` may only become `zeus_aibox_control`; reverse (R1), only `zeus_aibox_control`
+    may become `public`. Every other source schema either keeps its name or is renamed to a name no
+    other source schema holds. The map is total: a restored schema nobody mapped is a refusal.
+    """
+    if not isinstance(schema_map, dict) or not schema_map:
+        raise MigrationRefused("rename_map_invalid", "schema_map")
+    for key, value in schema_map.items():
+        _match(key, IDENT, "schema_map")
+        _match(value, IDENT, "schema_map." + key)
+        if value == EXTENSION_PARKING or key == EXTENSION_PARKING:
+            raise MigrationRefused("rename_map_reserved", "schema_map." + key)
+        if not reverse and value == SOURCE_PUBLIC:
+            raise MigrationRefused("public_schema", "schema_map." + key)
+        if not reverse and key == SOURCE_PUBLIC and value != CONTROL_SCHEMA:
+            raise MigrationRefused("source_public_mapping", "schema_map.public")
+        if reverse and value == SOURCE_PUBLIC and key != CONTROL_SCHEMA:
+            raise MigrationRefused("source_public_mapping", "schema_map." + key)
+    if len(set(schema_map.values())) != len(schema_map):
+        raise MigrationRefused("map_not_bijective", "schema_map")
+    schemas = catalog_schemas(catalog)
+    if sorted(schema_map) != schemas:
+        missing = sorted(set(schemas) - set(schema_map)) or sorted(set(schema_map) - set(schemas))
+        raise MigrationRefused("rename_map_not_total", "schema_map." + missing[0])
+    renames = sorted((k, v) for k, v in schema_map.items() if k != v)
+    if any(target in schemas for _, target in renames):
+        # A target that is any source schema name - kept or itself renamed - would need an ordered
+        # chain of renames through an occupied name; that is refused rather than sequenced.
+        raise MigrationRefused("rename_target_occupied", "schema_map")
+    return {"renames": [list(pair) for pair in renames], "reverse": reverse,
+            "extension_home": EXTENSION_HOME, "parking": EXTENSION_PARKING}
+
+
+def _normalizer(renames: list, members: list):
+    """Text normalization of catalog definitions: a qualified `<from>.` becomes `<to>.`, except a
+    reference to an extension member (e.g. `public.vector`), which lives in the extension home on
+    both sides and so keeps its spelling."""
+    if not renames:
+        return lambda text: text
+    keep = "|".join(sorted(re.escape(name) for name in members))
+    patterns = [(re.compile(r"\b" + re.escape(old) + r"\." + (r"(?!(?:" + keep + r")\b)" if keep else "")), new + ".")
+                for old, new in renames]
+
+    def normalize(text):
+        if not isinstance(text, str):
+            return text
+        for pattern, replacement in patterns:
+            text = pattern.sub(replacement, text)
+        return text
+    return normalize
+
+
+def _mapped(value, normalize):
+    if isinstance(value, dict):
+        return {k: _mapped(v, normalize) for k, v in value.items()}
+    if isinstance(value, list):
+        return [_mapped(v, normalize) for v in value]
+    return normalize(value)
+
+
+def compare_catalogs(source: dict, target: dict, schema_map: dict) -> dict:
+    """Source catalog through the schema map against the target catalog, section by section.
+
+    Row counts and row digests of every table (documents, knowledge_nodes/edges, schema_migrations
+    and anything else), columns with their types, indexes, constraints, sequences, views,
+    functions, triggers, schema owner/ACL/comment and the extension list (name, version, schema)
+    must all be equal. Missing and extra schemas are differences, never silently accepted.
+    """
+    for name, document in (("source", source), ("target", target)):
+        if not isinstance(document, dict) or document.get("schema") != CATALOG_SCHEMA:
+            raise MigrationRefused("catalog_schema", name)
+    renames = [[k, v] for k, v in sorted(schema_map.items()) if k != v]
+    normalize = _normalizer(renames, source.get("extension_members") or [])
+    diffs = []
+    if source["extensions"] != target["extensions"]:
+        diffs.append({"schema": None, "section": "extensions"})
+    expected = {schema_map.get(name, name): _mapped(source["schemas"][name], normalize)
+                for name in catalog_schemas(source)}
+    observed = {name: target["schemas"][name] for name in catalog_schemas(target)}
+    if set(schema_map) != set(catalog_schemas(source)):
+        diffs.append({"schema": None, "section": "map_not_total"})
+    for name in sorted(set(expected) | set(observed)):
+        left, right = expected.get(name), observed.get(name)
+        if left is None or right is None:
+            diffs.append({"schema": name, "section": "missing_on_target" if right is None else "extra_on_target"})
+            continue
+        for section in ("owner", "acl", "comment") + CATALOG_SECTIONS:
+            if left.get(section) != right.get(section):
+                diffs.append({"schema": name, "section": section})
+    tables = sum(len(body.get("relations") or {}) for body in observed.values())
+    rows = sum(rel.get("rows") or 0 for body in observed.values() for rel in (body.get("relations") or {}).values())
+    return {"match": not diffs, "schemas": len(expected), "tables": tables, "rows": rows,
+            "diffs": diffs[:200], "diff_count": len(diffs)}
+
+
+def restore_id(database: str, archive_sha256: str, catalog_sha256: str, plan: dict) -> str:
+    return digest(["host-migration-pg-restore-v1", database, archive_sha256, catalog_sha256, plan])
+
+
 # ----- the state machine --------------------------------------------------------------------------
 def allowed(current: str, to: str) -> bool:
     """Forward one step; `failed`/`rollback_required` from any non-terminal state; a failed
@@ -678,6 +801,6 @@ __all__ = ["ACTIVATION_SCHEMA", "CHECKPOINT_SCHEMA", "CONTROL_SCHEMA", "EVIDENCE
            "PLANNED", "QUALIFIED", "REGISTRY_DELTA_BUCKETS", "RESTORED_PAUSED", "REVERSE_STEPS", "ROLLBACK_R0",
            "ROLLBACK_R1", "ROLLBACK_REQUIRED", "ROLLED_BACK", "SNAPSHOT_SEALED", "SOURCE_PUBLIC", "STATES",
            "STEPS", "TRANSITION_SCHEMA", "activation_receipt", "allowed", "evidence_receipt", "intent_id",
-           "manifest_digest", "pg_coverage", "refuse_secrets", "schema_comparison", "schema_subject", "resume_state", "reverse_maps", "rollback_mode", "step_allowed",
+           "catalog_schemas", "compare_catalogs", "manifest_digest", "pg_coverage", "rename_plan", "restore_id", "refuse_secrets", "schema_comparison", "schema_subject", "resume_state", "reverse_maps", "rollback_mode", "step_allowed",
            "target_written", "transition_id", "validate_checkpoint", "validate_evidence", "validate_intent",
            "validate_manifest", "validate_transition"]

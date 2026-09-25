@@ -3274,6 +3274,71 @@ Comparisons run one source schema per invocation, through the canonical `compare
   - Docker containers are reconciled by run label separately (deploy/aibox `inspect`,
     `fleet reconcile-interrupted`).
 
+### HostDelivery wiring of the systemd target
+
+`controller()` (every normal HostDelivery construction) derives the systemd target's control
+directory from `ZEUS_AIBOX_ROOT`, the setting the deploy/aibox units set: `<root>/runtime/control`.
+The directory must be absolute and an existing real directory, with no link anywhere on the path.
+A missing setting refuses the first systemd start with `control_dir_unconfigured`, and an invalid
+one with `control_dir_invalid`. Other target kinds are unaffected.
+
+### Registry host migration (D2; also INV-FLEET-001)
+
+`Fleet.migrate_host` (`zeus fleet migrate-host`, `urn:zeus:fleet-host-migration:1`) exists because
+`relocate` works only on one host. It moves paths and keeps the lane schema fixed, and it re-reads
+the old source paths, which do not exist on the target host.
+
+`migrate_host` rebinds every lane at once, and only its repository, runtime and schema.
+
+- Unchanged: lane id, team, Redis namespace, root id, concurrency and budget.
+- Guards (the same as `relocate`):
+  - the fleet is paused, with nothing dispatching or held;
+  - compare-and-swap on the registered digest;
+  - the observation is taken twice and must be equal;
+  - an identical request replays, and a different request against the same digest conflicts.
+- Target-host proof:
+  - the runner journal says stopped, and the initialized lane runtimes have no active run;
+  - the target checkout is an independent checkout whose root commits equal the request's
+    `source_repository_identity`;
+  - every queued job's base commit and goal are present in it;
+  - every runtime is writable;
+  - every target schema passes the lane search-path rule on this host's database.
+- The receipt (`fleet_host_migrations`) keeps the prior config and its digest. Frozen job rows and
+  history keep their original paths. Admission resolves old repository identities through the
+  receipt's aliases, folded together with the relocation receipts.
+
+### Whole-database restore (D3)
+
+1. `pg-dump-db` writes one custom archive of the whole database.
+2. `pg-restore-db` restores it only into a NEW dedicated database:
+   - created from template0, owned by the restoring role;
+   - marked with the restore id;
+   - the receipt is written before `pg_restore --exit-on-error --single-transaction` runs.
+3. An exit 0 alone is never success. The restored catalog must equal the source catalog before any
+   rename, and the renamed catalog must equal it through the map. The catalog covers every
+   table's row count and row digest, columns and types, indexes, constraints, sequences, views,
+   functions, triggers, schema owner/ACL/comment, and extensions with version and schema.
+4. Renames run in one transaction:
+   1. park the extensions that live in `public`;
+   2. drop an emptied `public` (RESTRICT) only when `public` is a rename target (reverse);
+   3. rename;
+   4. recreate a standard `public` if it was renamed away;
+   5. re-home the extensions to `public` and drop the parking schema.
+5. The rename plan must be total over the catalog's schemas.
+   - Forward, `public` may only become `zeus_aibox_control`; reverse, only `zeus_aibox_control`
+     may become `public`.
+   - A target that is any source schema name is refused.
+6. Receipts and recovery:
+   - A `renamed` receipt replays read-only.
+   - An existing database without this receipt refuses (`target_occupied`).
+   - An interrupted restore resumes only with `--recover`, into this restore's marked database
+     with no user objects. Nothing is dropped or cleaned.
+7. Schema ACLs that pg_dump omits because they equal the recorded initial privileges are filled
+   in on the restored copy only where they are NULL, and they are listed in the receipt.
+8. The control connection on the target must list `public` after the control schema
+   (`search_path=zeus_aibox_control,public`), so unqualified `::vector` casts and operators
+   resolve.
+
 ### Tests
 
 tests/test_host_migration.py runs these cases on fixture data and the memory store:
@@ -3289,3 +3354,8 @@ tests/test_host_migration.py runs these cases on fixture data and the memory sto
 
 The Redis round trip runs only with `ZEUS_MIGRATION_TEST_REDIS_SOURCE`/`_TARGET`. Without them it
 skips and proves nothing about Redis.
+
+tests/test_fleet_host_migration.py runs the D2 policy on the memory store.
+tests/test_host_migration_pg_rehearsal.py runs the D1-D3 rehearsal only with
+`ZEUS_MIGRATION_TEST_PG_{SOURCE,TARGET}_{CONTAINER,SOCKET}` naming disposable PG17 + pgvector
+servers. Without them it skips and proves nothing about PostgreSQL.

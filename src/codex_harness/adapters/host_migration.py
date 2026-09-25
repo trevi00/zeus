@@ -55,6 +55,8 @@ from codex_harness.adapters.host_delivery import (
 from codex_harness.domain.host_delivery import KIND_SYSTEMD, descriptor_digest
 from codex_harness.domain.host_migration import (
     ACTIVATION_SCHEMA,
+    CATALOG_SCHEMA,
+    RESTORE_SCHEMA,
     SOURCE_PUBLIC,
     MigrationRefused,
     evidence_receipt,
@@ -234,51 +236,305 @@ def _docker_pg(container: str, user: str, argv: list, runner=run_process, timeou
                   timeout=timeout)
 
 
-def pg_dump(container: str, user: str, database: str, schema: str, path: str, runner=run_process) -> dict:
-    """A custom-format logical dump of exactly one schema, written INSIDE the container at `path`."""
-    for value, name in ((database, "database"), (schema, "schema")):
-        if not IDENT.fullmatch(value):
-            raise MigrationRefused("pg_tool_invalid", name)
-    result = _docker_pg(container, user, ["pg_dump", "-d", database, "-n", schema, "-Fc", "-f", path], runner)
-    if result.returncode:
-        raise MigrationRefused("pg_dump_failed", "exit_code")
+def _archive_facts(container: str, user: str, path: str, runner) -> dict:
     listing = _docker_pg(container, user, ["pg_restore", "-l", path], runner)
     checksum = runner(["docker", "exec", container, "sha256sum", path], timeout=600)
     if listing.returncode or checksum.returncode:
-        raise MigrationRefused("pg_dump_unverified", "path")
-    return {"schema": schema, "database": database, "path": path,
-            "sha256": (checksum.stdout or "").split()[0],
-            "toc_entries": sum(1 for line in (listing.stdout or "").splitlines() if line and not line.startswith(";"))}
+        raise MigrationRefused("pg_archive_unreadable", "path")
+    # The listing header carries the dump time; the entries alone identify the archive contents.
+    entries = [line for line in (listing.stdout or "").splitlines() if line.strip() and not line.startswith(";")]
+    return {"archive_sha256": (checksum.stdout or "").split()[0], "toc_entries": len(entries),
+            "toc_sha256": _sha256_bytes("\n".join(entries).encode("utf-8"))}
 
 
-def pg_restore(container: str, user: str, database: str, path: str, schema: str, rename_to: str,
-               runner=run_process) -> dict:
-    """Restore one schema dump into a STAGING database and rename it to the mapped target schema.
-
-    Refused if either schema already exists there: a restore never merges into, or replaces, a
-    schema. A source `public` dump is refused here: every database already has `public`, and the
-    extension objects living in it make an in-place rename unsafe; its reviewed procedure is an
-    open gate (RUNBOOK section 5)."""
-    for value, name in ((database, "database"), (schema, "schema"), (rename_to, "rename_to")):
-        if not IDENT.fullmatch(value):
-            raise MigrationRefused("pg_tool_invalid", name)
-    if schema == SOURCE_PUBLIC or rename_to == SOURCE_PUBLIC:
-        raise MigrationRefused("public_restore_unsupported", "schema")
-    probe = _docker_pg(container, user, ["psql", "-d", database, "-tAc",
-                                         "SELECT count(*) FROM pg_namespace WHERE nspname IN ('" + schema + "','"
-                                         + rename_to + "')"], runner)
-    if probe.returncode or (probe.stdout or "").strip() != "0":
-        raise MigrationRefused("pg_restore_schema_present", "schema")
-    result = _docker_pg(container, user, ["pg_restore", "--exit-on-error", "--single-transaction",
-                                          "--no-owner", "-d", database, path], runner)
+def pg_dump_database(container: str, user: str, database: str, path: str, runner=run_process) -> dict:
+    """ONE portable custom-format archive of the whole database: every schema, the extensions,
+    tables, indexes, constraints, sequences and data (D3). Roles are globals and not included."""
+    if not IDENT.fullmatch(database):
+        raise MigrationRefused("pg_tool_invalid", "database")
+    result = _docker_pg(container, user, ["pg_dump", "-d", database, "-Fc", "-f", path], runner)
     if result.returncode:
+        raise MigrationRefused("pg_dump_failed", "exit_code")
+    facts = _archive_facts(container, user, path, runner)
+    if facts["toc_entries"] == 0:
+        raise MigrationRefused("pg_dump_empty", "path")
+    return {"database": database, "path": path, **facts}
+
+
+CATALOG_SQL = {
+    "schemas": """SELECT n.nspname, pg_get_userbyid(n.nspowner), n.nspacl::text, obj_description(n.oid, 'pg_namespace')
+        FROM pg_namespace n WHERE n.nspname NOT LIKE 'pg\\_%' AND n.nspname <> 'information_schema' ORDER BY 1""",
+    "extensions": """SELECT e.extname, e.extversion, n.nspname FROM pg_extension e
+        JOIN pg_namespace n ON n.oid = e.extnamespace ORDER BY 1""",
+    "members": """SELECT DISTINCT coalesce(t.typname, p.proname, o.oprname) FROM pg_depend d
+        LEFT JOIN pg_type t ON d.classid = 'pg_type'::regclass AND t.oid = d.objid
+        LEFT JOIN pg_proc p ON d.classid = 'pg_proc'::regclass AND p.oid = d.objid
+        LEFT JOIN pg_operator o ON d.classid = 'pg_operator'::regclass AND o.oid = d.objid
+        WHERE d.deptype = 'e' AND coalesce(t.typname, p.proname, o.oprname) ~ '^[A-Za-z_][A-Za-z0-9_]*$'
+        ORDER BY 1""",
+    "relations": """SELECT n.nspname, c.relname, c.relkind::text, c.oid FROM pg_class c
+        JOIN pg_namespace n ON n.oid = c.relnamespace
+        WHERE c.relkind IN ('r', 'p', 'm') AND n.nspname NOT LIKE 'pg\\_%' AND n.nspname <> 'information_schema'
+          AND NOT EXISTS (SELECT 1 FROM pg_depend d WHERE d.classid = 'pg_class'::regclass AND d.objid = c.oid
+                          AND d.deptype = 'e') ORDER BY 1, 2""",
+    "columns": """SELECT a.attname, format_type(a.atttypid, a.atttypmod), a.attnotnull,
+        pg_get_expr(ad.adbin, ad.adrelid) FROM pg_attribute a
+        LEFT JOIN pg_attrdef ad ON ad.adrelid = a.attrelid AND ad.adnum = a.attnum
+        WHERE a.attrelid = %s AND a.attnum > 0 AND NOT a.attisdropped ORDER BY a.attnum""",
+    "indexes": """SELECT schemaname, indexname, indexdef FROM pg_indexes
+        WHERE schemaname NOT LIKE 'pg\\_%' AND schemaname <> 'information_schema' ORDER BY 1, 2""",
+    "constraints": """SELECT n.nspname, c.relname, k.conname, k.contype::text, pg_get_constraintdef(k.oid)
+        FROM pg_constraint k JOIN pg_class c ON c.oid = k.conrelid JOIN pg_namespace n ON n.oid = c.relnamespace
+        WHERE n.nspname NOT LIKE 'pg\\_%' AND n.nspname <> 'information_schema' ORDER BY 1, 2, 3""",
+    "sequences": """SELECT schemaname, sequencename, data_type::text, last_value FROM pg_sequences
+        WHERE schemaname NOT LIKE 'pg\\_%' ORDER BY 1, 2""",
+    "views": """SELECT n.nspname, c.relname, pg_get_viewdef(c.oid) FROM pg_class c
+        JOIN pg_namespace n ON n.oid = c.relnamespace WHERE c.relkind = 'v'
+          AND n.nspname NOT LIKE 'pg\\_%' AND n.nspname <> 'information_schema'
+          AND NOT EXISTS (SELECT 1 FROM pg_depend d WHERE d.objid = c.oid AND d.deptype = 'e') ORDER BY 1, 2""",
+    "functions": """SELECT n.nspname, p.proname, pg_get_function_identity_arguments(p.oid), md5(pg_get_functiondef(p.oid))
+        FROM pg_proc p JOIN pg_namespace n ON n.oid = p.pronamespace
+        WHERE p.prokind IN ('f', 'p') AND n.nspname NOT LIKE 'pg\\_%' AND n.nspname <> 'information_schema'
+          AND NOT EXISTS (SELECT 1 FROM pg_depend d WHERE d.classid = 'pg_proc'::regclass AND d.objid = p.oid
+                          AND d.deptype = 'e') ORDER BY 1, 2, 3""",
+    "triggers": """SELECT n.nspname, c.relname, t.tgname, pg_get_triggerdef(t.oid) FROM pg_trigger t
+        JOIN pg_class c ON c.oid = t.tgrelid JOIN pg_namespace n ON n.oid = c.relnamespace
+        WHERE NOT t.tgisinternal AND n.nspname NOT LIKE 'pg\\_%' ORDER BY 1, 2, 3""",
+}
+
+
+def pg_catalog(dsn: str, database: str, *, connect=None) -> dict:
+    """The whole-database catalog of one database, read in ONE read-only REPEATABLE READ snapshot.
+
+    `search_path` is pg_catalog only, so every definition and type is printed schema-qualified and
+    a renamed schema shows up as a different spelling rather than hiding behind a search path.
+    Every table's rows are counted and digested (`record::text`, sorted), so documents, graph
+    tables and schema_migrations are all covered, not just `documents`.
+    """
+    import psycopg
+    from psycopg import sql
+    from psycopg.conninfo import make_conninfo
+
+    if not IDENT.fullmatch(database):
+        raise MigrationRefused("pg_tool_invalid", "database")
+    connect = connect or psycopg.connect
+    with connect(make_conninfo(dsn, dbname=database, options="-c search_path=pg_catalog"), connect_timeout=5) as conn:
+        conn.execute("SET TRANSACTION ISOLATION LEVEL REPEATABLE READ, READ ONLY")
+        schemas = {name: {"owner": owner, "acl": acl, "comment": comment, **{k: {} if k == "relations" else []
+                                                                             for k in ("relations", "indexes",
+                                                                                       "constraints", "sequences",
+                                                                                       "views", "functions",
+                                                                                       "triggers")}}
+                   for name, owner, acl, comment in conn.execute(CATALOG_SQL["schemas"]).fetchall()}
+        if "zeus_migration_extensions" in schemas:
+            raise MigrationRefused("rename_incomplete", "zeus_migration_extensions")
+        for schema, name, kind, oid in conn.execute(CATALOG_SQL["relations"]).fetchall():
+            columns = [list(row) for row in conn.execute(CATALOG_SQL["columns"], (oid,)).fetchall()]
+            count, rows = conn.execute(sql.SQL(
+                "SELECT count(*), encode(sha256(convert_to(coalesce(string_agg(t::text, E'\\n' ORDER BY t::text), ''),"
+                " 'UTF8')), 'hex') FROM {}.{} t").format(sql.Identifier(schema), sql.Identifier(name))).fetchone()
+            schemas[schema]["relations"][name] = {"kind": kind, "columns": columns, "rows": count, "rows_sha256": rows}
+        for section in ("indexes", "constraints", "sequences", "views", "functions", "triggers"):
+            for row in conn.execute(CATALOG_SQL[section]).fetchall():
+                schemas[row[0]][section].append([str(value) if value is not None else None for value in row[1:]])
+        extensions = [list(row) for row in conn.execute(CATALOG_SQL["extensions"]).fetchall()]
+        members = [row[0] for row in conn.execute(CATALOG_SQL["members"]).fetchall()]
+        version = int(conn.execute("SHOW server_version_num").fetchone()[0])
+    return {"schema": CATALOG_SCHEMA, "database": database, "server_version_num": version,
+            "extensions": extensions, "extension_members": members, "schemas": schemas}
+
+
+def catalog_digest(catalog: dict) -> str:
+    body = {k: v for k, v in catalog.items() if k != "database"}
+    return _sha256_bytes(json.dumps(body, sort_keys=True).encode("utf-8"))
+
+
+def _maintenance(dsn: str, connect):
+    from psycopg.conninfo import make_conninfo
+
+    return connect(make_conninfo(dsn, dbname="postgres"), connect_timeout=5, autocommit=True)
+
+
+def _database_state(dsn: str, database: str, connect) -> dict:
+    """Whether the database exists, its marker comment and whether it holds any user object."""
+    from psycopg.conninfo import make_conninfo
+
+    with _maintenance(dsn, connect) as conn:
+        row = conn.execute("SELECT d.oid, shobj_description(d.oid, 'pg_database') FROM pg_database d "
+                           "WHERE d.datname = %s", (database,)).fetchone()
+    if row is None:
+        return {"exists": False, "marker": None, "user_objects": 0}
+    with connect(make_conninfo(dsn, dbname=database), connect_timeout=5) as conn:
+        objects = conn.execute("""SELECT count(*) FROM pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace
+            WHERE n.nspname NOT LIKE 'pg\\_%' AND n.nspname <> 'information_schema'""").fetchone()[0]
+        schemas = conn.execute("""SELECT count(*) FROM pg_namespace WHERE nspname NOT LIKE 'pg\\_%'
+            AND nspname NOT IN ('information_schema', 'public')""").fetchone()[0]
+        extensions = conn.execute("SELECT count(*) FROM pg_extension WHERE extname <> 'plpgsql'").fetchone()[0]
+    return {"exists": True, "marker": row[1], "user_objects": int(objects) + int(schemas) + int(extensions)}
+
+
+def _rename(dsn: str, database: str, plan: dict, connect) -> None:
+    """The renames, in ONE transaction; extensions homed in `public` are parked and re-homed.
+
+    1. every extension in `public` moves to the parking schema;
+    2. a `public` that is a rename TARGET (reverse) must now be empty and is dropped (RESTRICT);
+    3. the planned renames run;
+    4. a missing `public` is recreated as the standard one (owner pg_database_owner, USAGE to PUBLIC);
+    5. the parked extensions return to `public` and the parking schema is dropped.
+    Any failure rolls the whole transaction back, leaving the restored names untouched.
+    """
+    from psycopg import sql
+    from psycopg.conninfo import make_conninfo
+
+    home, parking = plan["extension_home"], plan["parking"]
+    with connect(make_conninfo(dsn, dbname=database), connect_timeout=5) as conn:
+        with conn.transaction():
+            parked = [row[0] for row in conn.execute(
+                "SELECT e.extname FROM pg_extension e JOIN pg_namespace n ON n.oid = e.extnamespace "
+                "WHERE n.nspname = %s ORDER BY 1", (home,)).fetchall()]
+            conn.execute(sql.SQL("CREATE SCHEMA {}").format(sql.Identifier(parking)))
+            for name in parked:
+                conn.execute(sql.SQL("ALTER EXTENSION {} SET SCHEMA {}").format(sql.Identifier(name),
+                                                                                sql.Identifier(parking)))
+            if any(new == home for _, new in plan["renames"]):
+                conn.execute(sql.SQL("DROP SCHEMA {} RESTRICT").format(sql.Identifier(home)))
+            for old, new in plan["renames"]:
+                conn.execute(sql.SQL("ALTER SCHEMA {} RENAME TO {}").format(sql.Identifier(old), sql.Identifier(new)))
+            exists = conn.execute("SELECT 1 FROM pg_namespace WHERE nspname = %s", (home,)).fetchone()
+            if exists is None:
+                conn.execute(sql.SQL("CREATE SCHEMA {} AUTHORIZATION pg_database_owner").format(sql.Identifier(home)))
+                conn.execute(sql.SQL("GRANT USAGE ON SCHEMA {} TO PUBLIC").format(sql.Identifier(home)))
+                conn.execute(sql.SQL("COMMENT ON SCHEMA {} IS 'standard public schema'").format(sql.Identifier(home)))
+            for name in parked:
+                conn.execute(sql.SQL("ALTER EXTENSION {} SET SCHEMA {}").format(sql.Identifier(name),
+                                                                                sql.Identifier(home)))
+            conn.execute(sql.SQL("DROP SCHEMA {} RESTRICT").format(sql.Identifier(parking)))
+
+
+ACL_ITEM = re.compile(r"^(?P<grantee>[A-Za-z_][A-Za-z0-9_]*|)=(?P<privs>[UC]+)/(?P<grantor>[A-Za-z_][A-Za-z0-9_]*)$")
+
+
+def _reapply_schema_acls(dsn: str, database: str, source_catalog: dict, connect) -> list:
+    """Schema ACLs pg_dump leaves out because they equal the recorded initial privileges.
+
+    The schema that was `public` keeps public's initial ACL through a rename, and pg_dump does not
+    emit privileges equal to `pg_init_privs`, so a restored copy of it comes back with a NULL ACL.
+    Only a restored ACL that is NULL is filled in, only from the source catalog's own aclitems, only
+    USAGE/CREATE granted by the schema owner; an existing ACL is never replaced. The exact catalog
+    comparison that follows still decides whether the restore matches.
+    """
+    from psycopg import sql
+    from psycopg.conninfo import make_conninfo
+
+    applied = []
+    with connect(make_conninfo(dsn, dbname=database), connect_timeout=5) as conn:
+        with conn.transaction():
+            for name, body in sorted(source_catalog["schemas"].items()):
+                wanted = body.get("acl")
+                row = conn.execute("SELECT nspacl::text, pg_get_userbyid(nspowner) FROM pg_namespace "
+                                   "WHERE nspname = %s", (name,)).fetchone()
+                if row is None or row[0] is not None or not wanted:
+                    continue
+                items = [item for item in wanted.strip("{}").split(",") if item]
+                parsed = [ACL_ITEM.fullmatch(item) for item in items]
+                if any(match is None or match["grantor"] != row[1] for match in parsed):
+                    raise MigrationRefused("schema_acl_unsupported", "schemas." + name)
+                for match in parsed:
+                    if match["grantee"] == row[1]:
+                        continue  # the owner's entry is materialized by the first grant
+                    privileges = sql.SQL(", ").join(sql.SQL({"U": "USAGE", "C": "CREATE"}[p]) for p in match["privs"])
+                    grantee = sql.SQL("PUBLIC") if match["grantee"] == "" else sql.Identifier(match["grantee"])
+                    conn.execute(sql.SQL("GRANT {} ON SCHEMA {} TO {}").format(privileges, sql.Identifier(name), grantee))
+                applied.append(name)
+    return applied
+
+
+def _write_receipt(path: Path, receipt: dict) -> None:
+    _atomic_write(path.parent, path.name, receipt)
+
+
+def pg_restore_database(container: str, user: str, dsn: str, database: str, archive: str, archive_sha256: str,
+                        source_catalog: dict, schema_map: dict, receipt_path, *, reverse: bool = False,
+                        recover: bool = False, runner=run_process, connect=None) -> dict:
+    """Whole-archive restore into a NEW dedicated database, verified, then the atomic renames (D3).
+
+    * The database must not exist. It is created from template0, owned by `user`, and marked with
+      the restore id; the receipt (state `created`) is written before pg_restore runs.
+    * `pg_restore --exit-on-error --single-transaction` restores everything or nothing. Its exit 0
+      is not believed: the restored catalog must equal the source catalog exactly (every table's
+      rows, columns, indexes, constraints, sequences, extensions) before any rename.
+    * The renames run in one transaction (`_rename`); the renamed catalog must equal the source
+      catalog through the schema map.
+    * The same receipt replays read-only once `renamed`: the catalog is re-read and must match.
+      An existing database without that receipt refuses (`target_occupied`). An interrupted
+      restore resumes only with `recover=True`, into a database carrying this restore's marker and
+      no user object; nothing is ever dropped or cleaned.
+    """
+    import psycopg
+
+    from codex_harness.domain.host_migration import compare_catalogs, rename_plan, restore_id
+
+    connect = connect or psycopg.connect
+    if not IDENT.fullmatch(database) or database in ("postgres", "template0", "template1"):
+        raise MigrationRefused("pg_tool_invalid", "database")
+    plan = rename_plan(source_catalog, schema_map, reverse=reverse)
+    identity = restore_id(database, archive_sha256, catalog_digest(source_catalog), plan)
+    marker = "zeus-host-migration-restore:" + identity
+    receipt_path = Path(receipt_path)
+    receipt = json.loads(receipt_path.read_text("utf-8")) if receipt_path.exists() else None
+    if receipt is not None and receipt.get("restore_id") != identity:
+        raise MigrationRefused("restore_conflict", "receipt")
+    state = _database_state(dsn, database, connect)
+    if receipt is not None and receipt["state"] == "renamed":
+        observed = pg_catalog(dsn, database, connect=connect)
+        if not state["exists"] or catalog_digest(observed) != receipt["renamed_catalog_sha256"]:
+            raise MigrationRefused("restore_replay_mismatch", "database")
+        return {**receipt, "cached": True}
+    facts = _archive_facts(container, user, archive, runner)
+    if facts["archive_sha256"] != archive_sha256:
+        raise MigrationRefused("archive_digest_mismatch", "archive")
+    if facts["toc_entries"] == 0:
+        raise MigrationRefused("pg_dump_empty", "archive")
+    base = {"schema": RESTORE_SCHEMA, "restore_id": identity, "database": database, "archive_sha256": archive_sha256,
+            "toc_sha256": facts["toc_sha256"], "toc_entries": facts["toc_entries"],
+            "source_catalog_sha256": catalog_digest(source_catalog), "plan": plan}
+    if state["exists"]:
+        known = receipt is not None and receipt["state"] in ("created", "restore_failed")
+        if not (recover and known and state["marker"] == marker and state["user_objects"] == 0):
+            raise MigrationRefused("target_occupied", "database")
+    else:
+        if receipt is not None and receipt["state"] != "created":
+            raise MigrationRefused("restore_receipt_without_database", "receipt")
+        from psycopg import sql
+
+        with _maintenance(dsn, connect) as conn:
+            conn.execute(sql.SQL("CREATE DATABASE {} OWNER {} TEMPLATE template0").format(
+                sql.Identifier(database), sql.Identifier(user)))
+            conn.execute(sql.SQL("COMMENT ON DATABASE {} IS {}").format(sql.Identifier(database), sql.Literal(marker)))
+        _write_receipt(receipt_path, {**base, "state": "created", "at": _utcnow()})
+    restored = _docker_pg(container, user, ["pg_restore", "--exit-on-error", "--single-transaction",
+                                            "-d", database, archive], runner)
+    if restored.returncode:
+        _write_receipt(receipt_path, {**base, "state": "restore_failed", "exit_code": restored.returncode,
+                                      "at": _utcnow()})
         raise MigrationRefused("pg_restore_failed", "exit_code")
-    if rename_to != schema:
-        renamed = _docker_pg(container, user, ["psql", "-d", database, "-v", "ON_ERROR_STOP=1", "-c",
-                                               "ALTER SCHEMA " + schema + " RENAME TO " + rename_to], runner)
-        if renamed.returncode:
-            raise MigrationRefused("pg_rename_failed", "rename_to")
-    return {"database": database, "schema": rename_to, "restored_from": schema}
+    acls = _reapply_schema_acls(dsn, database, source_catalog, connect)
+    base["acl_reapplied"] = acls
+    identity_map = {name: name for name in schema_map}
+    before = compare_catalogs(source_catalog, pg_catalog(dsn, database, connect=connect), identity_map)
+    if not before["match"] or before["tables"] == 0:
+        _write_receipt(receipt_path, {**base, "state": "restored", "verified": False, "at": _utcnow()})
+        raise MigrationRefused("restore_contents_mismatch", "database")
+    _write_receipt(receipt_path, {**base, "state": "restored", "verified": True, "at": _utcnow()})
+    _rename(dsn, database, plan, connect)
+    renamed = pg_catalog(dsn, database, connect=connect)
+    after = compare_catalogs(source_catalog, renamed, schema_map)
+    if not after["match"]:
+        raise MigrationRefused("renamed_contents_mismatch", "database")
+    final = {**base, "state": "renamed", "verified": True, "renamed_catalog_sha256": catalog_digest(renamed),
+             "tables": after["tables"], "rows": after["rows"], "schemas": after["schemas"], "at": _utcnow()}
+    _write_receipt(receipt_path, final)
+    return {**final, "cached": False}
 
 
 # ----- Redis: the canonical E4 inventory --------------------------------------------------------
@@ -422,9 +678,13 @@ class SystemdHostTarget(HostTargetBase):
 
     kind = KIND_SYSTEMD
 
-    def __init__(self, *, runner=run_process, timeout: int = 60, control_dir=None, **kwargs):
+    def __init__(self, *, runner=run_process, timeout: int = 60, control_dir=None, control=None, **kwargs):
         super().__init__(**kwargs)
-        self.runner, self.timeout, self.control_dir = runner, timeout, control_dir
+        self.runner, self.timeout = runner, timeout
+        # `control` is the factory's validated `systemd_control_dir` result; `control_dir` a direct path.
+        control = control or {"control_dir": control_dir,
+                              "reason_code": None if control_dir else "control_dir_unconfigured"}
+        self.control_dir, self.control_reason = control["control_dir"], control["reason_code"]
 
     @staticmethod
     def unit(target: dict) -> str:
@@ -456,8 +716,10 @@ class SystemdHostTarget(HostTargetBase):
         return {"stopped": not self.running(target), "exit_code": result.returncode, "invocation_id": invocation}
 
     def _launch(self, target: dict, descriptor: dict, context) -> dict:
-        control = Path(self.control_dir) if self.control_dir else None
-        if control is None or not (control / ACTIVATION_FILE).is_file():
+        if not self.control_dir:
+            raise DeliveryRefused(self.control_reason or "control_dir_unconfigured", "control_dir")
+        control = Path(self.control_dir)
+        if not (control / ACTIVATION_FILE).is_file():
             raise DeliveryRefused("activation_receipt_required", "control_dir")
         if os.path.lexists(control / FENCE_FILE):
             raise DeliveryRefused("host_fenced", "control_dir")
@@ -572,10 +834,24 @@ def execute(args) -> tuple[dict, bool]:
                                           args.source_schema, _read(args.delta) if args.delta else None))
     if command == "pg-coverage":
         return _checked(pg_coverage_receipt(_read(args.schema_map), [_read(path) for path in args.receipt]))
-    if command == "pg-dump":
-        return pg_dump(args.container, args.user, args.database, args.schema, args.path), True
-    if command == "pg-restore":
-        return pg_restore(args.container, args.user, args.database, args.path, args.schema, args.rename_to), True
+    if command == "pg-dump-db":
+        return pg_dump_database(args.container, args.user, args.database, args.path), True
+    if command == "pg-catalog":
+        catalog = pg_catalog(_env(args.dsn_env), args.database)
+        Path(args.out).write_text(json.dumps(catalog, sort_keys=True, indent=1) + "\n", encoding="utf-8")
+        return {"written": args.out, "catalog_sha256": catalog_digest(catalog),
+                "schemas": len(catalog["schemas"])}, True
+    if command == "pg-compare-catalog":
+        from codex_harness.domain.host_migration import compare_catalogs
+
+        report = compare_catalogs(_read(args.source), _read(args.target), _read(args.schema_map))
+        return {"result": report, "receipt": evidence_receipt(
+            "pg-catalog", None, 0 if report["match"] else 1, report["match"],
+            _sha256_bytes(json.dumps(report, sort_keys=True).encode()))}, report["match"]
+    if command == "pg-restore-db":
+        return pg_restore_database(args.container, args.user, _env(args.dsn_env), args.database, args.path,
+                                   args.archive_sha256, _read(args.source_catalog), _read(args.schema_map),
+                                   args.receipt, reverse=args.reverse, recover=args.recover), True
     if command == "redis-inventory":
         document = redis_inventory(_redis_client(args.url_env, args.socket), args.namespace)
         Path(args.out).write_text(json.dumps(document, sort_keys=True, indent=1) + "\n", encoding="utf-8")
@@ -661,15 +937,32 @@ def parser() -> argparse.ArgumentParser:
     command = sub.add_parser("pg-coverage")
     command.add_argument("--schema-map", required=True)
     command.add_argument("--receipt", action="append", required=True, help="compare-pg receipt JSON; repeatable")
-    for name in ("pg-dump", "pg-restore"):
-        command = sub.add_parser(name)
-        command.add_argument("--container", required=True)
-        command.add_argument("--user", default="postgres")
-        command.add_argument("--database", required=True)
-        command.add_argument("--schema", required=True)
-        command.add_argument("--path", required=True, help="Dump path inside the container")
-        if name == "pg-restore":
-            command.add_argument("--rename-to", required=True)
+    command = sub.add_parser("pg-dump-db", help="Whole-database custom archive (D3)")
+    command.add_argument("--container", required=True)
+    command.add_argument("--user", required=True)
+    command.add_argument("--database", required=True)
+    command.add_argument("--path", required=True, help="Archive path inside the container")
+    command = sub.add_parser("pg-catalog", help="Whole-database catalog with every table's row digest")
+    command.add_argument("--dsn-env", required=True)
+    command.add_argument("--database", required=True)
+    command.add_argument("--out", required=True)
+    command = sub.add_parser("pg-compare-catalog")
+    command.add_argument("--source", required=True)
+    command.add_argument("--target", required=True)
+    command.add_argument("--schema-map", required=True)
+    command = sub.add_parser("pg-restore-db", help="Restore into a NEW dedicated DB, verify, rename atomically")
+    command.add_argument("--container", required=True)
+    command.add_argument("--user", required=True)
+    command.add_argument("--dsn-env", required=True, help="Env var NAME of the target server DSN")
+    command.add_argument("--database", required=True)
+    command.add_argument("--path", required=True, help="Archive path inside the container")
+    command.add_argument("--archive-sha256", required=True)
+    command.add_argument("--source-catalog", required=True)
+    command.add_argument("--schema-map", required=True)
+    command.add_argument("--receipt", required=True)
+    command.add_argument("--reverse", action="store_true", help="R1: the inverse map back to source names")
+    command.add_argument("--recover", action="store_true",
+                         help="Resume an interrupted restore of THIS receipt into its own empty database")
     command = sub.add_parser("redis-inventory")
     command.add_argument("--url-env")
     command.add_argument("--socket")
@@ -711,5 +1004,6 @@ if __name__ == "__main__":  # pragma: no cover
 
 
 __all__ = ["SystemdHostTarget", "canonical_module", "canonical_tool", "copy_redis", "execute", "main", "parser",
-           "pg_compare_schema", "pg_coverage_receipt", "pg_dump", "pg_export", "pg_restore", "prepare_layout",
+           "pg_catalog", "pg_compare_schema", "pg_coverage_receipt", "pg_dump_database", "pg_export",
+           "pg_restore_database", "prepare_layout",
            "redis_inventory", "run_canonical", "schema_store", "write_activation", "write_fence"]

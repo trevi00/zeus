@@ -615,33 +615,92 @@ def test_systemd_target_controls_only_the_registered_zeus_aibox_unit(tmp_path):
 
 # ----- pg tools, layout, CLI ------------------------------------------------------------------------
 class Docker:
-    def __init__(self, probe="0"):
-        self.calls, self.probe = [], probe
+    def __init__(self, listing="; header\n1; 2615 SCHEMA\n2; 1259 TABLE\n"):
+        self.calls, self.listing = [], listing
 
     def __call__(self, argv, timeout):
         self.calls.append(argv)
-        stdout = {"sha256sum": "d" * 64 + "  /dump/x.dump\n", "psql": self.probe + "\n",
-                  "pg_restore": "; header\n1; 2615 SCHEMA\n2; 1259 TABLE\n"}.get(argv[3], "")
+        stdout = {"sha256sum": "d" * 64 + "  /dump/x.dump\n", "pg_restore": self.listing}.get(argv[3], "")
         return subprocess.CompletedProcess(argv, 0, stdout, "")
 
 
-def test_pg_tools_run_inside_the_container_without_a_dsn_and_never_merge_a_schema():
+def test_whole_database_dump_runs_in_the_container_without_a_dsn_and_refuses_an_empty_archive():
     runner = Docker()
-    dump = adapter.pg_dump("zeus-pg", "postgres", "zeus", "zeus_fleet_harness", "/dump/x.dump", runner=runner)
-    assert dump["sha256"] == "d" * 64 and dump["toc_entries"] == 2
+    dump = adapter.pg_dump_database("zeus-pg", "zeus", "zeus", "/dump/x.dump", runner=runner)
+    assert dump["archive_sha256"] == "d" * 64 and dump["toc_entries"] == 2
+    assert runner.calls[0] == ["docker", "exec", "zeus-pg", "pg_dump", "-U", "zeus", "-h", "/var/run/postgresql",
+                               "-d", "zeus", "-Fc", "-f", "/dump/x.dump"]  # no -n: the whole database
     assert all("://" not in arg and "password" not in arg.lower() for call in runner.calls for arg in call)
-    restore = Docker()
-    adapter.pg_restore("zeus-pg", "postgres", "zeus_aibox", "/dump/x.dump", "zeus_fleet_harness",
-                       "zeus_aibox_harness", runner=restore)
-    assert restore.calls[-1][-1] == "ALTER SCHEMA zeus_fleet_harness RENAME TO zeus_aibox_harness"
-    with pytest.raises(MigrationRefused, match="pg_restore_schema_present"):
-        adapter.pg_restore("zeus-pg", "postgres", "zeus_aibox", "/dump/x.dump", "zeus_fleet_harness",
-                           "zeus_aibox_harness", runner=Docker(probe="1"))
-    with pytest.raises(MigrationRefused, match="public_restore_unsupported"):
-        adapter.pg_restore("zeus-pg", "postgres", "zeus_aibox", "/dump/x.dump", "public",
-                           "zeus_aibox_control", runner=Docker())
+    with pytest.raises(MigrationRefused, match="pg_dump_empty"):
+        adapter.pg_dump_database("zeus-pg", "zeus", "zeus", "/dump/x.dump", runner=Docker(listing="; only\n"))
     with pytest.raises(MigrationRefused, match="pg_tool_invalid"):
-        adapter.pg_dump("zeus-pg", "postgres", "zeus", "x; DROP", "/dump/x.dump", runner=Docker())
+        adapter.pg_dump_database("zeus-pg", "zeus", "x; DROP", "/dump/x.dump", runner=Docker())
+
+
+def catalog(**schemas):
+    body = {"owner": "zeus", "acl": None, "comment": None, "relations": {}, "indexes": [], "constraints": [],
+            "sequences": [], "views": [], "functions": [], "triggers": []}
+    return {"schema": policy.CATALOG_SCHEMA, "database": "zeus", "server_version_num": 171100,
+            "extensions": [["vector", "0.8.6", "public"]], "extension_members": ["vector"],
+            "schemas": {name: {**body, **extra} for name, extra in schemas.items()}}
+
+
+REL = {"documents": {"kind": "r", "columns": [["embedding", "public.vector", False, None]], "rows": 2,
+                     "rows_sha256": H}}
+D1 = {"public": "zeus_aibox_control", "zeus_fleet_harness": "zeus_aibox_harness",
+      "zeus_fleet_interface": "zeus_aibox_interface", "zeus_team_profile_001": "zeus_team_profile_001"}
+
+
+def source_catalog():
+    fk = {"constraints": [["knowledge_edges", "fk", "f", "FOREIGN KEY (source) REFERENCES public.knowledge_nodes(id)"]]}
+    return catalog(public={"relations": copy.deepcopy(REL), **fk}, zeus_fleet_harness={"relations": copy.deepcopy(REL)},
+                   zeus_fleet_interface={"relations": copy.deepcopy(REL)},
+                   zeus_team_profile_001={"relations": copy.deepcopy(REL)})
+
+
+def test_rename_plan_is_total_and_allows_public_only_as_the_control_ledger():
+    plan = policy.rename_plan(source_catalog(), D1)
+    assert plan["renames"] == [["public", "zeus_aibox_control"], ["zeus_fleet_harness", "zeus_aibox_harness"],
+                               ["zeus_fleet_interface", "zeus_aibox_interface"]]
+    with pytest.raises(MigrationRefused, match="rename_map_not_total"):
+        policy.rename_plan(source_catalog(), {k: v for k, v in D1.items() if k != "zeus_team_profile_001"})
+    with pytest.raises(MigrationRefused, match="source_public_mapping"):
+        policy.rename_plan(source_catalog(), {**D1, "public": "zeus_other"})
+    with pytest.raises(MigrationRefused, match="public_schema"):
+        policy.rename_plan(source_catalog(), {**D1, "zeus_team_profile_001": "public"})
+    with pytest.raises(MigrationRefused, match="rename_target_occupied"):
+        policy.rename_plan(source_catalog(), {**D1, "zeus_fleet_harness": "zeus_team_profile_001",
+                                              "zeus_team_profile_001": "zeus_team_profile_x"})
+    reverse = policy.reverse_maps({"schema_map": D1, "path_map": []})["schema_map"]
+    target = catalog(public={}, zeus_aibox_control={"relations": REL}, zeus_aibox_harness={"relations": REL},
+                     zeus_aibox_interface={"relations": REL}, zeus_team_profile_001={"relations": REL})
+    assert ["zeus_aibox_control", "public"] in policy.rename_plan(target, reverse, reverse=True)["renames"]
+    with pytest.raises(MigrationRefused, match="public_schema"):
+        policy.rename_plan(target, reverse)  # only an explicit reverse may name public as a target
+
+
+def test_catalog_comparison_maps_names_but_keeps_extension_references():
+    source = source_catalog()
+    renamed = copy.deepcopy(source)
+    renamed["schemas"] = {D1[k]: v for k, v in renamed["schemas"].items()}
+    renamed["schemas"]["zeus_aibox_control"]["constraints"] = [
+        ["knowledge_edges", "fk", "f", "FOREIGN KEY (source) REFERENCES zeus_aibox_control.knowledge_nodes(id)"]]
+    renamed["schemas"]["public"] = catalog(public={})["schemas"]["public"]  # the bare extension home
+    assert policy.compare_catalogs(source, renamed, D1)["match"]
+    changed = copy.deepcopy(renamed)
+    changed["schemas"]["zeus_aibox_harness"]["relations"]["documents"]["rows"] = 1
+    report = policy.compare_catalogs(source, changed, D1)
+    assert report["diffs"] == [{"schema": "zeus_aibox_harness", "section": "relations"}]
+    typed = copy.deepcopy(renamed)
+    typed["schemas"]["zeus_aibox_harness"]["relations"]["documents"]["columns"][0][1] = "zeus_aibox_control.vector"
+    assert not policy.compare_catalogs(source, typed, D1)["match"]  # vector must stay in public
+    missing = copy.deepcopy(renamed)
+    del missing["schemas"]["zeus_team_profile_001"]
+    assert {"schema": "zeus_team_profile_001", "section": "missing_on_target"} in \
+        policy.compare_catalogs(source, missing, D1)["diffs"]
+    other_ext = copy.deepcopy(renamed)
+    other_ext["extensions"] = [["vector", "0.8.5", "public"]]
+    assert {"schema": None, "section": "extensions"} in policy.compare_catalogs(source, other_ext, D1)["diffs"]
 
 
 def test_prepare_layout_is_dry_run_by_default_and_idempotent(tmp_path):
@@ -668,3 +727,64 @@ def test_cli_validate_reports_digest_and_never_echoes_a_secret(tmp_path, capsys)
 def test_canonical_tool_is_resolved_from_this_checkout():
     assert adapter.canonical_tool() == ROOT / "scripts" / "aibox_data"
     assert sys.executable
+
+
+# ----- HostDelivery factory wiring of the systemd control directory ---------------------------------
+def test_controller_wires_the_configured_control_dir_into_the_systemd_start(tmp_path, monkeypatch):
+    from types import SimpleNamespace
+
+    from codex_harness.adapters.host_delivery import controller
+    from codex_harness.bootstrap import organization
+
+    root = tmp_path / "srv" / "zeus"
+    control = root / "runtime" / "control"
+    control.mkdir(parents=True)
+    monkeypatch.setenv("ZEUS_AIBOX_ROOT", str(root))
+    store = MemoryStore()
+    wired = controller(SimpleNamespace(store=store, org=organization()), enabled=False)
+    host = wired.hosts[KIND_SYSTEMD]
+    assert host.control_dir == str(control) and host.control_reason is None
+    host.runner = Systemctl(["inactive"] * 10)  # only the systemctl client is faked
+    registered = target(tmp_path)
+    host.switch(registered, DESCRIPTOR, expected=None)
+    with pytest.raises(DeliveryRefused, match="activation_receipt_required"):
+        host.start(registered, DESCRIPTOR)  # the shared lifecycle, before any unit start
+    assert not any(call[1] == "start" for call in host.runner.calls)
+    coordinator = HostMigrations(store)
+    sha = coordinator.plan(manifest())["manifest_sha256"]
+    walk(coordinator, sha, "restored_paused")
+    coordinator.intend_activation(INTENT)
+    adapter.write_activation(control, coordinator.activation_document("aibox-migration-001"))
+    started = host.start(registered, DESCRIPTOR)
+    assert started["started"] is True and started["launch"]["intent_id"]
+    assert [call[1:] for call in host.runner.calls if call[1] == "start"] == [["start", "zeus-aibox-fleet.service"]]
+
+
+@pytest.mark.parametrize("setting, reason", [(None, "control_dir_unconfigured"), ("relative/root", "control_dir_invalid"),
+                                             ("link", "control_dir_invalid")])
+def test_controller_without_a_valid_control_dir_refuses_the_systemd_start_by_name(tmp_path, monkeypatch,
+                                                                                    setting, reason):
+    from types import SimpleNamespace
+
+    from codex_harness.adapters.host_delivery import controller
+    from codex_harness.bootstrap import organization
+
+    if setting is None:
+        monkeypatch.delenv("ZEUS_AIBOX_ROOT", raising=False)
+        monkeypatch.delenv("HARNESS_AIBOX_ROOT", raising=False)
+    elif setting == "link":
+        real = tmp_path / "real" / "runtime" / "control"
+        real.mkdir(parents=True)
+        (tmp_path / "linked").symlink_to(tmp_path / "real")
+        monkeypatch.setenv("ZEUS_AIBOX_ROOT", str(tmp_path / "linked"))
+    else:
+        monkeypatch.setenv("ZEUS_AIBOX_ROOT", setting)
+    wired = controller(SimpleNamespace(store=MemoryStore(), org=organization()), enabled=False)
+    host = wired.hosts[KIND_SYSTEMD]
+    host.runner = Systemctl(["inactive"] * 10)
+    registered = target(tmp_path)
+    host.switch(registered, DESCRIPTOR, expected=None)
+    with pytest.raises(DeliveryRefused) as refused:
+        host.start(registered, DESCRIPTOR)
+    assert refused.value.reason_code == reason
+    assert not any(call[1] == "start" for call in host.runner.calls)

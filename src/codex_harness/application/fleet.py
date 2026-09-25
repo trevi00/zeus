@@ -55,8 +55,13 @@ from codex_harness.domain.fleet_backlog import safe_error_type as safe_backlog_e
 from codex_harness.domain.fleet_recovery import (
     INTERRUPTED,
     canonical_repositories,
+    check_host_migration_proof,
     check_recovery_proof,
     check_relocation_proof,
+    host_migrated_config,
+    host_migration_receipt,
+    host_migration_receipt_id,
+    host_migration_view,
     proof_binding,
     recovery_receipt,
     recovery_receipt_id,
@@ -65,6 +70,7 @@ from codex_harness.domain.fleet_recovery import (
     relocation_receipt,
     relocation_receipt_id,
     relocation_view,
+    validate_host_migration_request,
     validate_recovery_evidence,
     validate_relocation_request,
 )
@@ -77,6 +83,7 @@ BUCKET_GRANTS = "fleet_budget_grants"
 BUCKET_DELIVERY = "fleet_delivery"
 BUCKET_RECOVERY = "fleet_recovery_receipts"
 BUCKET_RELOCATION = "fleet_relocations"
+BUCKET_HOST_MIGRATION = "fleet_host_migrations"
 BUCKET_UNITS = "fleet_units"
 # Control-row field naming the managed host activation that paused admission (`activation_gate`).
 ACTIVATION_HOLD = "activation_hold"
@@ -510,9 +517,9 @@ class Fleet:
         equivalence class per repository (`canonical_repositories`) is what keeps that true after
         repeated moves and after a rollback: A->B->A is a cycle, and a plain chain walk over it
         would answer differently depending on which identity a job happens to carry."""
+        rows = tx.scan(BUCKET_RELOCATION) + tx.scan(BUCKET_HOST_MIGRATION)
         return canonical_repositories(row.get("repository_aliases") or {}
-                                      for row in sorted(tx.scan(BUCKET_RELOCATION),
-                                                        key=lambda r: (r["recorded_at"], r["id"])))
+                                      for row in sorted(rows, key=lambda r: (r["recorded_at"], r["id"])))
 
     def _recovery_replay(self, document: dict) -> dict | None:
         """The committed answer for this evidence, read BEFORE anything is observed.
@@ -701,6 +708,64 @@ class Fleet:
                                                      "config_sha256": receipt["config_sha256"],
                                                      "relocated_at": now, "relocation_id": receipt["id"]})
         return {"relocated": True, "cached": False, "receipt": relocation_view(receipt),
+                "config": sanitized_config(new), "config_sha256": receipt["config_sha256"]}
+
+    def migrate_host(self, request, proof=None, *, observe=None, reread=None) -> dict:
+        """Rebind EVERY lane's repository, runtime and schema to the target host (trusted owner CLI).
+
+        INV-HOST-MIGRATION-001: the restored registry of the source moves to the target host's
+        paths and renamed schemas. The same guards as `relocate` apply - paused fleet, nothing
+        dispatching or held, compare-and-swap on the registered digest, the observation taken
+        twice and compared - with a target-host proof: the checkout is the source repository by
+        root commits, queued jobs' bases are present, runtimes are writable and every target
+        schema is provisioned. Lane/team ids and Redis namespaces stay. Frozen job rows,
+        manifests and history keep their original paths; the receipt keeps the prior config and
+        its digest, and admission resolves old repository identities through its aliases.
+        """
+        document = validate_host_migration_request(request)
+        require(proof is not None or observe is not None, "Fleet host migration needs an observation")
+        receipt_id = host_migration_receipt_id(document)
+        with self.store.transaction() as tx:
+            if self._registry(tx) is None:
+                raise FleetRefused("unregistered")
+            old = tx.get(BUCKET_HOST_MIGRATION, receipt_id)
+            if old is not None:
+                return {"migrated": True, "cached": True, "receipt": host_migration_view(old),
+                        "config_sha256": old["config_sha256"]}
+            if any(row["request"]["expected_config_sha256"] == document["expected_config_sha256"]
+                   for row in tx.scan(BUCKET_HOST_MIGRATION)):
+                raise FleetRefused("host_migration_conflict")
+        if proof is None:
+            proof = observe()
+        with self.store.transaction() as tx:
+            registry = self._registry(tx)
+            if tx.get(BUCKET_HOST_MIGRATION, receipt_id) is not None:
+                raise FleetRefused("host_migration_conflict")
+            if registry["id"] != document["fleet"]:
+                raise FleetRefused("fleet_mismatch", "fleet")
+            if not bool(self._control(tx).get("paused")):
+                raise FleetRefused("fleet_not_paused")
+            if registry["config_sha256"] != document["expected_config_sha256"]:
+                raise FleetRefused("config_expected_mismatch", "expected_config_sha256")
+            jobs = tx.scan(BUCKET_JOBS)
+            if any(row["status"] in RESERVING for row in jobs) or held_units(tx.scan(BUCKET_UNITS)):
+                raise FleetRefused("fleet_not_idle")
+            new = host_migrated_config(registry["config"], document)
+            queued = {row["lane"]: sorted(job["id"] for job in jobs
+                                          if job["status"] == QUEUED and job["lane"] == row["lane"])
+                      for row in document["lanes"]}
+            check_host_migration_proof(document, proof, queued)
+            fresh = proof if reread is None else reread()
+            check_host_migration_proof(document, fresh, queued)
+            if proof_binding(fresh) != proof_binding(proof):
+                raise FleetRefused("proof_changed")
+            now = self.clock()
+            receipt = host_migration_receipt(document, fresh, registry, new, now)
+            tx.put(BUCKET_HOST_MIGRATION, receipt["id"], receipt)
+            tx.put(BUCKET_REGISTRY, registry["id"], {**registry, "config": new,
+                                                     "config_sha256": receipt["config_sha256"],
+                                                     "host_migrated_at": now, "host_migration_id": receipt["id"]})
+        return {"migrated": True, "cached": False, "receipt": host_migration_view(receipt),
                 "config": sanitized_config(new), "config_sha256": receipt["config_sha256"]}
 
     def relocations(self) -> list[dict]:

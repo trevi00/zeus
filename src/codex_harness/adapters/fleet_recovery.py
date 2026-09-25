@@ -60,6 +60,7 @@ from codex_harness.domain.fleet_recovery import (
     COPY_MANIFEST_SCHEMA,
     COPY_OWNERSHIP,
     HEX64,
+    HOST_MIGRATION_PROOF_SCHEMA,
     MOVABLE,
     PROOF_SCHEMA,
     RELOCATION_PROOF_SCHEMA,
@@ -706,5 +707,45 @@ def collect_relocation_proof(request: dict, config: dict, jobs: list, *, journal
             "copy_manifest": verify_copy_manifest(request), "observed_at": clock()}
 
 
-__all__ = ["LaneReader", "checkout_identity", "collect_recovery_proof", "collect_relocation_proof",
+def _schema_provisioned(host_dsn: str, schema: str, verify=None) -> bool:
+    """The lane search-path rule on the TARGET database: exactly `schema`, holding `documents`."""
+    from codex_harness.adapters.fleet_runtime import lane_dsn, verify_lane_schema
+
+    try:
+        (verify or verify_lane_schema)(lane_dsn(host_dsn, schema), schema)
+    except FleetRefused:
+        return False
+    return True
+
+
+def collect_host_migration_proof(request: dict, jobs: list, *, journal, host_dsn: str,
+                                 state=docker_state, verify_schema=None, clock=utcnow) -> dict:
+    """Observe on the TARGET host that a whole-fleet host migration may bind these lanes.
+
+    Nothing on the source host is read: the source repository is identified by the request's
+    root-commit identity, and every check runs against the stated targets.
+    """
+    runner = runner_state(journal)
+    if runner["state"] != "stopped":
+        raise FleetRefused("runner_state_unknown" if runner["state"] == "unknown" else "runner_not_stopped", "runner")
+    observed = []
+    for move in request["lanes"]:
+        name = "lanes[]." + move["lane"]
+        repository = _resolved_directory(move["repository"]["to"], name + ".repository.to")
+        runtime = _resolved_directory(move["runtime"]["to"], name + ".runtime.to")
+        queued = [job for job in jobs if job["lane"] == move["lane"] and job["status"] == "queued"]
+        observed.append({
+            "id": move["lane"],
+            "active_runs": _active_runs(str(runtime), move["lane"], state),
+            "repository": {"target_identity": checkout_identity(str(repository)),
+                           "independent": _independent(repository),
+                           "path_identity": repository_identity(str(repository))},
+            "runtime": {"writable": _writable(runtime)},
+            "schema": {"name": move["schema"]["to"],
+                       "provisioned": _schema_provisioned(host_dsn, move["schema"]["to"], verify_schema)},
+            "queued_bindings": _queued_bindings(str(repository), queued)})
+    return {"schema": HOST_MIGRATION_PROOF_SCHEMA, "runner": runner, "lanes": observed, "observed_at": clock()}
+
+
+__all__ = ["LaneReader", "checkout_identity", "collect_host_migration_proof", "collect_recovery_proof", "collect_relocation_proof",
            "docker_state", "listed_runs", "run_root", "runner_state", "verify_copy_manifest"]
