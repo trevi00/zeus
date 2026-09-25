@@ -906,6 +906,7 @@ def run(service, args) -> dict:
     except Timeout:
         return {"status": "refused", "reason_code": "audit_service_lock_busy", "exit_code": 1}
     observer = None
+    installed = []  # (signal, previous handler) for each handler THIS run replaced
     try:
         gate = activation(service.store, service.org, args.audit_id, current_revision())
         observer = build_observer(service.store, "cli.audit-service", role=AGENT)
@@ -914,9 +915,15 @@ def run(service, args) -> dict:
             if hasattr(signal, name):
                 # Graceful stop: no new assignment is bound; existing process-tree ownership
                 # handles children and nothing lost is restarted here.
-                signal.signal(getattr(signal, name), lambda *_: runner.stop())
+                number = getattr(signal, name)
+                installed.append((number, signal.signal(number, lambda *_: runner.stop())))
         summary = runner.run(once=bool(args.once))
     finally:
+        # The handlers close over this run's runner: every exit, including an exception and a
+        # partial installation, hands the process its previous handlers back.
+        for number, previous in reversed(installed):
+            with suppress(Exception):  # a restore failure never replaces the original outcome
+                signal.signal(number, previous)
         if observer is not None:
             with suppress(Exception):  # a close failure never replaces the original outcome
                 observer.close()
