@@ -3333,11 +3333,30 @@ the old source paths, which do not exist on the target host.
    - An existing database without this receipt refuses (`target_occupied`).
    - An interrupted restore resumes only with `--recover`, into this restore's marked database
      with no user objects. Nothing is dropped or cleaned.
+   - An interruption after a successful restore or rename but before its receipt fails closed,
+     and is not resumed automatically. The operator keeps that database and retries into a new,
+     uniquely named staging database.
+   - A cached `renamed` replay is read-only catalog validation, never activation proof.
 7. Schema ACLs that pg_dump omits because they equal the recorded initial privileges are filled
    in on the restored copy only where they are NULL, and they are listed in the receipt.
 8. The control connection on the target must list `public` after the control schema
    (`search_path=zeus_aibox_control,public`), so unqualified `::vector` casts and operators
    resolve.
+
+### Platforms
+
+The target-side operations are Linux-only by contract: the systemd target, the launcher files'
+directory fsync, the deploy/aibox launcher and the whole-database restore into the target stack.
+The source-side commands run on the Windows source host and on Linux alike: `pg-catalog`,
+`pg-export`, `pg-dump-db` (docker exec, container-internal paths), the canonical inventory and
+exports, and the manifest/receipt/coordinator policy.
+
+- Text outputs are written LF-only.
+- The canonical transfer opens its descriptors with `O_BINARY` where the platform has it.
+- A directory is fsynced only where `O_DIRECTORY` exists.
+- Tests skip only for missing abilities, and only before the offending call: symlink creation
+  (probed), POSIX permission bits, a case-sensitive filesystem, or the Linux-only launcher
+  import. Every other test runs on both platforms.
 
 ### Tests
 

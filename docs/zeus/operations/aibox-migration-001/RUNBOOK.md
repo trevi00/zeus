@@ -101,6 +101,17 @@ Each step first checks `completed_step`, and ends with `M checkpoint` over its i
    - The same receipt replays read-only.
    - Use `--recover` only for this receipt's own empty, marked DB.
    - Never `--clean`, never a shared DB.
+   - **Accepted limit, and the operator recovery for it:** an interruption after a successful
+     restore or rename, but before its receipt was written, fails closed. The receipt still says
+     `created`/`restored` while the DB holds objects, so the command refuses with
+     `target_occupied` or `restore_contents_mismatch`. It does not resume automatically.
+     1. Keep that DB untouched as evidence; do not drop or clean it.
+     2. Retry into a NEW, uniquely named staging DB (e.g. `zeus_aibox_<run>`) with a new receipt
+        path.
+     3. Point the target DSNs at the verified DB only after its `renamed` receipt and a passing
+        `pg-compare-catalog`.
+   - A cached `renamed` replay re-reads and validates the catalog read-only. It is not proof of
+     activation, consumption or acceptance.
 5. Verify:
    - `M pg-catalog` on the target, then `M pg-compare-catalog` → `pg_catalog` receipt;
    - `M pg-export` and `M pg-inventory` per schema, then `M pg-compare-schema` with NO delta,

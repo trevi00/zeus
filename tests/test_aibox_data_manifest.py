@@ -17,6 +17,27 @@ from aibox_data import cli, contracts, gates, inventory, mapping, transfer  # no
 SHA = "sha256:" + "a" * 64
 
 
+def _can_symlink() -> bool:
+    """Whether this process may create symlinks here (Windows needs a privilege or Developer Mode;
+    WinError 1314 otherwise). Probed for real, never assumed from the platform name."""
+    import tempfile
+
+    with tempfile.TemporaryDirectory() as scratch:
+        try:
+            os.symlink("target", os.path.join(scratch, "probe"))
+        except (OSError, NotImplementedError):
+            return False
+    return True
+
+
+SYMLINKS = _can_symlink()
+needs_symlink = pytest.mark.skipif(not SYMLINKS, reason="this process cannot create symlinks "
+                                   "(e.g. Windows without SeCreateSymbolicLinkPrivilege); link handling is untested here")
+# POSIX permission bits: chmod(0) blocks a directory listing only on POSIX, and never for root.
+posix_permissions = pytest.mark.skipif(os.name != "posix" or os.geteuid() == 0,
+                                       reason="needs POSIX directory permissions enforced for a non-root user")
+
+
 def put_artifact(root: Path, body: bytes, meta: dict | None = None) -> str:
     key = hashlib.sha256(body).hexdigest()
     (root / f"{key}.txt").write_bytes(body)
@@ -32,12 +53,14 @@ def tree(tmp_path):
     (source / "logs" / "run.log").write_bytes(b"line\n" * 1000)
     (source / "big.bin").write_bytes(os.urandom(3 * 1024 * 1024 + 17))
     (source / "empty.txt").write_bytes(b"")
-    os.symlink("logs/run.log", source / "latest")
+    if SYMLINKS:  # the staging/verification tests run either way; link-specific ones are marked
+        os.symlink("logs/run.log", source / "latest")
     return source
 
 
 # --- inventory and manifest -------------------------------------------------------------------
 
+@needs_symlink
 def test_manifest_records_bytes_hashes_and_links_without_following(tree, tmp_path):
     os.symlink(str(tmp_path), tree / "outside")
     manifest = inventory.build_manifest("mig-1", {"art": str(tree)}, "fixture-host")
@@ -60,6 +83,8 @@ def test_manifest_digest_is_stable_and_detects_tampering(tree):
     assert not inventory.verify_manifest_digest(first)
 
 
+@pytest.mark.skipif(os.name == "nt", reason="the fixture needs a case-sensitive filesystem that can hold "
+                    "`bad:name` and `con.txt` (on NTFS these are one file, an alternate stream and a device)")
 def test_case_collisions_and_windows_names_are_reported(tmp_path):
     (tmp_path / "Report.json").write_text("a")
     (tmp_path / "report.JSON").write_text("b")
@@ -115,7 +140,8 @@ def test_stage_copies_verifies_and_is_idempotent(tree, tmp_path):
     first = transfer.stage_root(manifest, "art", tree, staging, work)
     assert first["status"] == "complete"
     assert transfer.verify_staged(manifest, "art", staging, work)["match"]
-    assert os.readlink(staging / "latest") == "logs/run.log"
+    if SYMLINKS:
+        assert os.readlink(staging / "latest") == "logs/run.log"
     assert sorted(os.listdir(work)) == ["journal.json", "partials"]  # no state inside staging
     second = transfer.stage_root(manifest, "art", tree, staging, work)
     assert {e["action"] for e in second["events"]} == {"verified_existing"}
@@ -174,6 +200,7 @@ def test_same_migration_id_with_different_digest_is_refused(tree, tmp_path):
     assert refused.value.reason == "journal_binding_mismatch"
 
 
+@needs_symlink
 def test_external_symlink_is_not_created_and_blocks_verification(tree, tmp_path):
     os.symlink("/etc/hostname", tree / "outside")
     manifest = inventory.build_manifest("mig-1", {"art": str(tree)}, "h")
@@ -187,6 +214,7 @@ def test_external_symlink_is_not_created_and_blocks_verification(tree, tmp_path)
 
 # Review defect 2 (b7cbe79): a symlinked destination ancestor was followed and written through.
 
+@needs_symlink
 def test_symlinked_staging_ancestor_is_refused_before_any_write(tmp_path):
     source, staging, outside = tmp_path / "source", tmp_path / "staging", tmp_path / "outside"
     (source / "sub").mkdir(parents=True)
@@ -203,6 +231,7 @@ def test_symlinked_staging_ancestor_is_refused_before_any_write(tmp_path):
     assert not transfer.verify_staged(manifest, "art", staging)["match"]
 
 
+@needs_symlink
 def test_symlinked_nested_ancestor_created_after_first_level_is_refused(tmp_path):
     source, staging, outside = tmp_path / "source", tmp_path / "staging", tmp_path / "outside"
     (source / "a" / "b").mkdir(parents=True)
@@ -217,6 +246,7 @@ def test_symlinked_nested_ancestor_created_after_first_level_is_refused(tmp_path
     assert os.listdir(outside) == []
 
 
+@needs_symlink
 def test_symlinked_staging_root_work_dir_partial_and_journal_are_refused(tree, tmp_path):
     manifest = inventory.build_manifest("mig-1", {"art": str(tree)}, "h")
     outside = tmp_path / "outside"
@@ -275,7 +305,7 @@ def test_unsafe_manifest_paths_are_refused_even_with_a_valid_digest(tree, tmp_pa
 
 # Review defect 3 (b7cbe79): an unreadable source subtree staged "complete" and verified as a match.
 
-@pytest.mark.skipif(os.geteuid() == 0, reason="root bypasses directory permissions")
+@posix_permissions
 def test_unreadable_source_subtree_blocks_stage_and_verification(tmp_path):
     source = tmp_path / "source"
     (source / "denied").mkdir(parents=True)

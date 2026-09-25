@@ -184,13 +184,13 @@ def pg_export(dsn: str, schema: str, role: str, meta_out, rows_out, *, connect=N
                         (schema,)).fetchall()}}}}
         if "documents" not in meta["schemas"][schema]["tables"]:
             raise MigrationRefused("lane_schema_unprovisioned", "schema")
-        with open(rows_out, "w", encoding="utf-8") as stream:
+        with open(rows_out, "w", encoding="utf-8", newline="\n") as stream:
             for bucket, identifier, body in conn.execute(
                     "SELECT bucket, id, body FROM documents ORDER BY bucket, id"):
                 stream.write(json.dumps({"bucket": bucket, "id": identifier, "body": body},
                                         sort_keys=True, ensure_ascii=False) + "\n")
                 rows += 1
-    Path(meta_out).write_text(json.dumps(meta, sort_keys=True, indent=1) + "\n", encoding="utf-8")
+    Path(meta_out).write_text(json.dumps(meta, sort_keys=True, indent=1) + "\n", encoding="utf-8", newline="\n")
     return {"schema": schema, "role": role, "rows": rows, "tables": len(meta["schemas"][schema]["tables"])}
 
 
@@ -210,11 +210,11 @@ def pg_compare_schema(source: dict, target: dict, schema_map: dict, source_schem
                  "target": _single_schema(target, decision["target_schema"]),
                  "map": {source_schema: decision["target_schema"]}}
         for name, document in files.items():
-            (work / (name + ".json")).write_text(json.dumps(document), encoding="utf-8")
+            (work / (name + ".json")).write_text(json.dumps(document), encoding="utf-8", newline="\n")
         argv = ["compare-pg", "--source", str(work / "source.json"), "--target", str(work / "target.json"),
                 "--schema-map", str(work / "map.json")]
         if delta is not None:
-            (work / "delta.json").write_text(json.dumps(delta), encoding="utf-8")
+            (work / "delta.json").write_text(json.dumps(delta), encoding="utf-8", newline="\n")
             argv += ["--delta", str(work / "delta.json")]
         return run_canonical(argv, subject=schema_subject(source_schema), runner=runner)
 
@@ -635,12 +635,20 @@ def _atomic_write(directory: Path, name: str, document: dict) -> str:
         if os.path.exists(temporary):
             os.unlink(temporary)
         raise
-    handle = os.open(directory, os.O_RDONLY)
+    _fsync_directory(directory)
+    return _sha256_bytes(data)
+
+
+def _fsync_directory(directory: Path) -> None:
+    """Persist the rename. POSIX only: Windows cannot open a directory as a file (os.open raises
+    PermissionError there) and its MoveFileEx replace is not made durable through a directory fd."""
+    if not hasattr(os, "O_DIRECTORY"):
+        return
+    handle = os.open(directory, os.O_RDONLY | os.O_DIRECTORY)
     try:
         os.fsync(handle)
     finally:
         os.close(handle)
-    return _sha256_bytes(data)
 
 
 def write_activation(control_dir, document: dict) -> dict:
@@ -838,7 +846,7 @@ def execute(args) -> tuple[dict, bool]:
         return pg_dump_database(args.container, args.user, args.database, args.path), True
     if command == "pg-catalog":
         catalog = pg_catalog(_env(args.dsn_env), args.database)
-        Path(args.out).write_text(json.dumps(catalog, sort_keys=True, indent=1) + "\n", encoding="utf-8")
+        Path(args.out).write_text(json.dumps(catalog, sort_keys=True, indent=1) + "\n", encoding="utf-8", newline="\n")
         return {"written": args.out, "catalog_sha256": catalog_digest(catalog),
                 "schemas": len(catalog["schemas"])}, True
     if command == "pg-compare-catalog":
@@ -854,7 +862,7 @@ def execute(args) -> tuple[dict, bool]:
                                    args.receipt, reverse=args.reverse, recover=args.recover), True
     if command == "redis-inventory":
         document = redis_inventory(_redis_client(args.url_env, args.socket), args.namespace)
-        Path(args.out).write_text(json.dumps(document, sort_keys=True, indent=1) + "\n", encoding="utf-8")
+        Path(args.out).write_text(json.dumps(document, sort_keys=True, indent=1) + "\n", encoding="utf-8", newline="\n")
         return {"written": args.out, "keys": len(document["keys"]), "streams": len(document["streams"])}, True
     if command == "redis-copy":
         source = _redis_client(args.source_url_env, args.source_socket)
@@ -864,7 +872,7 @@ def execute(args) -> tuple[dict, bool]:
         after = redis_inventory(target, args.namespace)
         with tempfile.TemporaryDirectory(prefix="zeus-redis-compare-") as work:
             for name, document in (("source", before), ("target", after)):
-                (Path(work) / (name + ".json")).write_text(json.dumps(document), encoding="utf-8")
+                (Path(work) / (name + ".json")).write_text(json.dumps(document), encoding="utf-8", newline="\n")
             outcome = run_canonical(["compare-redis", "--source", str(Path(work) / "source.json"),
                                      "--target", str(Path(work) / "target.json")])
         return {**outcome, "copy": copied}, outcome["receipt"]["ok"]

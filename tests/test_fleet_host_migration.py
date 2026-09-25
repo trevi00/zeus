@@ -7,6 +7,7 @@ servers are named.
 from __future__ import annotations
 
 import copy
+import os
 
 import pytest
 
@@ -32,8 +33,13 @@ CONFIG = {"schema": "urn:zeus:fleet:1", "id": "zeus-local-fleet", "max_parallel"
                      "runtime": "C:\\workspaces\\zeus\\artifacts\\f2i"}]}
 CONFIG["lanes"] = [{k: lane[k] for k in sorted(lane)} for lane in CONFIG["lanes"]]
 # D2: repository /srv/zeus/repo, runtimes per lane, the renamed schemas; ids/teams/namespaces kept.
-TARGETS = {"harness": ("/srv/zeus/runtime/lanes/harness", "zeus_aibox_harness"),
-           "interface": ("/srv/zeus/runtime/lanes/interface", "zeus_aibox_interface")}
+# The TARGET side is the host's own native absolute path (the rebinding runs on the target host):
+# /srv/zeus on aibox. On a Windows test host the same policy is exercised with a drive-rooted
+# equivalent, so the rules run everywhere instead of being skipped there.
+SRV = "/srv/zeus" if os.name != "nt" else "C:\\srv\\zeus"
+REPO = os.path.join(SRV, "repo")
+TARGETS = {"harness": (os.path.join(SRV, "runtime", "lanes", "harness"), "zeus_aibox_harness"),
+           "interface": (os.path.join(SRV, "runtime", "lanes", "interface"), "zeus_aibox_interface")}
 
 
 def store(paused=True, jobs=()):
@@ -52,7 +58,7 @@ def request(**overrides):
     document = {"schema": HOST_MIGRATION_SCHEMA, "fleet": CONFIG["id"], "operator": "owner",
                 "migration_id": "aibox-migration-001", "manifest_sha256": "a" * 64,
                 "expected_config_sha256": config_digest(CONFIG), "source_repository_identity": IDENTITY,
-                "lanes": [{"lane": lane["id"], "repository": {"from": OLD_REPO, "to": "/srv/zeus/repo"},
+                "lanes": [{"lane": lane["id"], "repository": {"from": OLD_REPO, "to": REPO},
                            "runtime": {"from": lane["runtime"], "to": TARGETS[lane["id"]][0]},
                            "schema": {"from": lane["schema"], "to": TARGETS[lane["id"]][1]}}
                           for lane in CONFIG["lanes"]],
@@ -85,13 +91,13 @@ def test_d2_rebinds_every_lane_keeps_identities_and_resolves_frozen_history():
         aliases = fleet._repository_aliases(tx)
     lanes = {lane["id"]: lane for lane in registry["config"]["lanes"]}
     assert {k: (v["repository"], v["runtime"], v["schema"]) for k, v in lanes.items()} == \
-        {k: ("/srv/zeus/repo", *TARGETS[k]) for k in TARGETS}
+        {k: (REPO, *TARGETS[k]) for k in TARGETS}
     assert [(v["team"], v["redis_namespace"]) for v in lanes.values()] == \
         [("harness", "zeus-fleet-harness"), ("interface", "zeus-fleet-interface")]
     assert receipt["prior_config"] == CONFIG and receipt["prior_config_sha256"] == config_digest(CONFIG)
     assert registry["config_sha256"] == receipt["config_sha256"] != config_digest(CONFIG)
     assert job == frozen  # history keeps its original path identity
-    assert resolve_repository(job["repository"], aliases) == repository_identity("/srv/zeus/repo")
+    assert resolve_repository(job["repository"], aliases) == repository_identity(REPO)
     assert fleet.migrate_host(request(), proof())["cached"] is True
     with pytest.raises(FleetRefused, match="host_migration_conflict"):
         fleet.migrate_host(request(recorded_at="2026-09-25T10:00:00Z"), proof())

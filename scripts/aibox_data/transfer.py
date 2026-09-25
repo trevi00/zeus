@@ -40,6 +40,9 @@ from .inventory import (
 
 JOURNAL_SCHEMA = "zeus.aibox-stage-journal/2"
 NOFOLLOW = getattr(os, "O_NOFOLLOW", 0)
+# Windows opens os.open() descriptors in TEXT mode unless O_BINARY is set (CRLF translation and
+# Ctrl-Z end of file on read), which would hash and copy different bytes; POSIX has no such flag.
+BINARY = getattr(os, "O_BINARY", 0)
 
 
 class TransferRefused(Exception):
@@ -85,7 +88,7 @@ def _ancestors(root: Path, relative: str, create: bool, reason: str) -> bool:
 
 def _open_regular(path: Path, flags: int, reason: str, label: str, mode: int = 0o666) -> int:
     try:
-        handle = os.open(path, flags | NOFOLLOW, mode)
+        handle = os.open(path, flags | NOFOLLOW | BINARY, mode)
     except OSError as exc:
         raise TransferRefused(reason, label) from exc
     if not stat.S_ISREG(os.fstat(handle).st_mode):

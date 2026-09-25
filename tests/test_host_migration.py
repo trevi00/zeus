@@ -9,6 +9,7 @@ disposable servers named by ZEUS_MIGRATION_TEST_REDIS_SOURCE / ZEUS_MIGRATION_TE
 from __future__ import annotations
 
 import copy
+import hashlib
 import importlib.util
 import json
 import os
@@ -28,6 +29,24 @@ from codex_harness.domain.host_delivery import KIND_SYSTEMD, validate_targets
 from codex_harness.domain.host_migration import MigrationRefused
 
 ROOT = Path(__file__).resolve().parents[1]
+
+
+def _can_symlink() -> bool:
+    """A real probe: Windows needs a privilege or Developer Mode (WinError 1314 otherwise)."""
+    import tempfile
+
+    with tempfile.TemporaryDirectory() as scratch:
+        try:
+            os.symlink("target", os.path.join(scratch, "probe"))
+        except (OSError, NotImplementedError):
+            return False
+    return True
+
+
+needs_symlink = pytest.mark.skipif(not _can_symlink(), reason="this process cannot create symlinks; the "
+                                   "link counterexample is untested here, not passed")
+posix_permissions = pytest.mark.skipif(os.name != "posix" or os.geteuid() == 0,
+                                       reason="needs POSIX directory permissions enforced for a non-root user")
 H = "a" * 64
 COMMIT = "b" * 40
 IMAGE = "sha256:" + "c" * 64
@@ -330,13 +349,10 @@ def test_writer_start_receipt_gap_is_reconciled_by_r1_never_r0(tmp_path):
     assert not (control / "host-activation.json").exists()
     first.intend_activation(INTENT)
     written = adapter.write_activation(control, first.activation_document("aibox-migration-001"))
-    # The launcher of deploy/aibox accepts exactly this file for this host and revision.
-    service = launcher()
-    release = tmp_path / "releases" / COMMIT
-    accepted = service.check_activation(control, release, HOST_ID)
+    accepted = json.loads((control / "host-activation.json").read_text("utf-8"))
+    assert accepted == first.activation_document("aibox-migration-001")
     assert accepted["state"] == "restored_paused" and accepted["intent_id"] == written["intent_id"]
-    with pytest.raises(service.Refused):
-        service.check_activation(control, tmp_path / "releases" / ("9" * 40), HOST_ID)
+    assert written["sha256"] == hashlib.sha256((control / "host-activation.json").read_bytes()).hexdigest()
     del first  # --- crash here: no limited_active receipt was ever written ---
     second = HostMigrations(store)
     assert second.status("aibox-migration-001")["state"] == policy.RESTORED_PAUSED
@@ -362,6 +378,21 @@ def test_writer_start_receipt_gap_is_reconciled_by_r1_never_r0(tmp_path):
     for step in policy.REVERSE_STEPS:
         second.checkpoint(checkpoint(step))
     assert second.advance(r1)["state"] == policy.ROLLED_BACK
+
+
+def test_the_linux_launcher_accepts_exactly_the_coordinator_written_receipt(tmp_path):
+    service = launcher()  # skips BEFORE importing the Linux-only tool on a non-POSIX host
+    coordinator = HostMigrations(MemoryStore())
+    sha = coordinator.plan(manifest())["manifest_sha256"]
+    walk(coordinator, sha, "restored_paused")
+    coordinator.intend_activation(INTENT)
+    control = tmp_path / "runtime" / "control"
+    control.mkdir(parents=True)
+    written = adapter.write_activation(control, coordinator.activation_document("aibox-migration-001"))
+    accepted = service.check_activation(control, tmp_path / "releases" / COMMIT, HOST_ID)
+    assert accepted["state"] == "restored_paused" and accepted["intent_id"] == written["intent_id"]
+    with pytest.raises(service.Refused):
+        service.check_activation(control, tmp_path / "releases" / ("9" * 40), HOST_ID)
 
 
 def test_rollback_without_any_intent_is_r0_with_its_own_gate():
@@ -397,6 +428,7 @@ def cli(capsys, *argv):
     return code, json.loads(capsys.readouterr().out)
 
 
+@posix_permissions
 def test_unreadable_nested_directory_is_a_failed_inventory_not_an_empty_one(tmp_path, capsys):
     source = tmp_path / "source"
     (source / "a" / "denied").mkdir(parents=True)
@@ -412,6 +444,7 @@ def test_unreadable_nested_directory_is_a_failed_inventory_not_an_empty_one(tmp_
     assert manifest["roots"]["art"]["unreadable"] == [{"path": "a/denied", "error": "PermissionError"}]
 
 
+@needs_symlink
 def test_stage_refuses_preexisting_destination_ancestor_symlink_and_writes_nothing_outside(tmp_path, capsys):
     source, staging, outside = tmp_path / "source", tmp_path / "staging", tmp_path / "outside"
     (source / "sub").mkdir(parents=True)
@@ -761,7 +794,7 @@ def test_controller_wires_the_configured_control_dir_into_the_systemd_start(tmp_
 
 
 @pytest.mark.parametrize("setting, reason", [(None, "control_dir_unconfigured"), ("relative/root", "control_dir_invalid"),
-                                             ("link", "control_dir_invalid")])
+                                             pytest.param("link", "control_dir_invalid", marks=needs_symlink)])
 def test_controller_without_a_valid_control_dir_refuses_the_systemd_start_by_name(tmp_path, monkeypatch,
                                                                                     setting, reason):
     from types import SimpleNamespace
@@ -788,3 +821,104 @@ def test_controller_without_a_valid_control_dir_refuses_the_systemd_start_by_nam
         host.start(registered, DESCRIPTOR)
     assert refused.value.reason_code == reason
     assert not any(call[1] == "start" for call in host.runner.calls)
+
+
+# ----- source-side command construction (runs on Windows and Linux; no server, no guarantee) --------
+class FakeCursor:
+    def __init__(self, rows):
+        self.rows = rows
+
+    def fetchone(self):
+        return self.rows[0] if self.rows else None
+
+    def fetchall(self):
+        return list(self.rows)
+
+    def __iter__(self):
+        return iter(self.rows)
+
+
+class FakeConnection:
+    """Records every statement; answers from a table keyed by a statement prefix."""
+
+    def __init__(self, answers):
+        self.answers, self.statements = answers, []
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *exc):
+        return False
+
+    def execute(self, statement, params=None):
+        text = statement if isinstance(statement, str) else statement.as_string(None)
+        self.statements.append(" ".join(text.split()))
+        for prefix, rows in self.answers.items():
+            if " ".join(text.split()).startswith(prefix):
+                return FakeCursor(rows)
+        return FakeCursor([])
+
+
+def recording_connect(answers):
+    calls = []
+
+    def connect(conninfo, **kwargs):
+        connection = FakeConnection(answers)
+        calls.append({"conninfo": conninfo, "kwargs": kwargs, "connection": connection})
+        return connection
+    return connect, calls
+
+
+def test_source_pg_export_is_one_read_only_snapshot_scoped_to_the_schema_with_lf_bytes(tmp_path):
+    connect, calls = recording_connect({
+        "SELECT current_schema()": [("public",)], "SHOW server_version_num": [("171100",)],
+        "SELECT extname": [("plpgsql", "1.0"), ("vector", "0.8.6")],
+        "SELECT table_name": [("documents",), ("knowledge_nodes",)], "SELECT sequencename": [],
+        "SELECT bucket, id, body": [("events", "e1", {"path": "C:\\workspaces\\zeus\\x"}), ("events", "e2", {"n": 2})]})
+    meta, rows = tmp_path / "meta.json", tmp_path / "rows.jsonl"
+    result = adapter.pg_export("host=/tmp dbname=zeus user=zeus", "public", "source", meta, rows, connect=connect)
+    assert result == {"schema": "public", "role": "source", "rows": 2, "tables": 2}
+    statements = calls[0]["connection"].statements
+    assert statements[0] == "SET TRANSACTION ISOLATION LEVEL REPEATABLE READ, READ ONLY"
+    assert "search_path=public" in calls[0]["conninfo"] and "dbname=zeus" in calls[0]["conninfo"]
+    data = rows.read_bytes()
+    assert b"\r" not in data and data.count(b"\n") == 2  # LF-only on every platform
+    assert b"\r" not in meta.read_bytes()
+    assert json.loads(data.splitlines()[0])["body"]["path"] == "C:\\workspaces\\zeus\\x"
+    with pytest.raises(MigrationRefused, match="public_schema"):
+        adapter.pg_export("host=/tmp dbname=zeus", "public", "target", meta, rows, connect=connect)
+
+
+def test_source_pg_catalog_reads_one_snapshot_with_pg_catalog_search_path():
+    connect, calls = recording_connect({"SELECT n.nspname, pg_get_userbyid": [("public", "pg_database_owner", None, None)],
+                                        "SHOW server_version_num": [("171100",)]})
+    catalog = adapter.pg_catalog("host=C:\\pg dbname=postgres user=zeus", "zeus", connect=connect)
+    assert catalog["database"] == "zeus" and catalog["server_version_num"] == 171100
+    assert "dbname=zeus" in calls[0]["conninfo"] and "search_path=pg_catalog" in calls[0]["conninfo"]
+    assert calls[0]["connection"].statements[0] == "SET TRANSACTION ISOLATION LEVEL REPEATABLE READ, READ ONLY"
+    assert not any(s.split()[0] in ("INSERT", "UPDATE", "DELETE", "CREATE", "ALTER", "DROP")
+                   for s in calls[0]["connection"].statements)
+    with pytest.raises(MigrationRefused, match="pg_tool_invalid"):
+        adapter.pg_catalog("host=/tmp", "zeus; DROP", connect=connect)
+
+
+def test_source_dump_argv_keeps_the_container_path_and_parses_crlf_output_identically():
+    lf, crlf = Docker(), Docker(listing="; header\r\n1; 2615 SCHEMA\r\n2; 1259 TABLE\r\n")
+    unix = adapter.pg_dump_database("zeus-local-ops-pg", "zeus", "zeus", "/dump/zeus.dump", runner=lf)
+    windows = adapter.pg_dump_database("zeus-local-ops-pg", "zeus", "zeus", "/dump/zeus.dump", runner=crlf)
+    assert unix == windows  # docker on Windows may print CRLF; the TOC digest must not change
+    assert lf.calls[0][:4] == ["docker", "exec", "zeus-local-ops-pg", "pg_dump"]
+    assert all(arg == "/dump/zeus.dump" for call in lf.calls for arg in call if arg.endswith(".dump"))
+
+
+def test_canonical_tool_runs_under_this_interpreter_with_its_checkout_path():
+    seen = []
+
+    def runner(argv, **kwargs):
+        seen.append(argv)
+        return subprocess.CompletedProcess(argv, 0, json.dumps({"valid": True}).encode(), b"")
+
+    outcome = adapter.run_canonical(["pel-owners", "--inventory", "C:\\x\\i.json", "--owners", "o.json"], runner=runner)
+    assert seen[0][:2] == [sys.executable, str(ROOT / "scripts" / "aibox_data")]
+    assert seen[0][2:] == ["pel-owners", "--inventory", "C:\\x\\i.json", "--owners", "o.json"]
+    assert outcome["receipt"]["ok"] is True
