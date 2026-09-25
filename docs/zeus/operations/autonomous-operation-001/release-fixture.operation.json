@@ -1,0 +1,31 @@
+{
+  "schema": "urn:zeus:operation:1",
+  "id": "autonomous-operation-001-release-fixture",
+  "base_revision": "f638061b45911f5fbf6b77b2899a409d924cc7d7",
+  "goal": {
+    "path": "docs/zeus/operations/autonomous-operation-001/SPEC.md",
+    "sha256": "818e7ff523d0e2f510123ed8452f044da52b69f39973c5327e1da7ab5c50ba05",
+    "criterion": "Complete the existing autonomous operating loop with independently verified session, continuation and actual runtime ownership",
+    "rationale": "Finish the existing whole-goal acceptance matrix without manual user relay or weaker verification."
+  },
+  "budget": {
+    "mode": "subscription",
+    "total": 192,
+    "per_host": 192
+  },
+  "claude": {
+    "model": "claude-opus-5-5",
+    "timeout_seconds": 3600,
+    "max_budget_usd": 2
+  },
+  "plan": {
+    "objective": "Implement ONLY Release incumbent test fixture bytecode collision in SPEC.md. Tests-only: change replacement source size, force equal mtime and enable child bytecode for the incumbent-config test. Preserve all assertions and real subprocesses. Run python -m pytest tests/test_release_suite.py -q -p no:cacheprovider and python -m ruff check .; no full suite or runtime edit.",
+    "allowed_paths": [
+      "tests/test_release_suite.py"
+    ],
+    "acceptance_criteria": [
+      "Same-mtime bytecode-enabled incumbent test passes first candidate and rejects changed-size replacement; config and manifest assertions unchanged.",
+      "Release suite and Ruff pass without runtime changes, sleeps, retry or assertion weakening."
+    ]
+  }
+}
