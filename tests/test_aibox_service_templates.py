@@ -5,18 +5,40 @@ computed with --dry-run semantics (no exec), `/proc`, the cgroup tree, `systemct
 are fake directories and fake runners. No unit is installed, enabled, started or stopped, and no
 live Docker container or Fleet store is read. The one real-host check is `systemd-analyze verify`
 on rendered files in tmp_path, which is skipped (and says so) where that binary is absent.
+On a non-POSIX host (Windows CI) the whole module is skipped before the Linux-only tool is
+imported; that skip is not evidence of Windows support.
 """
 from __future__ import annotations
 
 import hashlib
 import importlib.util
 import json
+import os
 import shutil
 import subprocess
 from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
+
+
+def _linux_tool_importable() -> bool:
+    """The tool is Linux/systemd-only and imports POSIX modules (fcntl, pwd) at module level."""
+    if os.name != "posix":
+        return False
+    try:
+        import fcntl  # noqa: F401
+        import pwd  # noqa: F401
+    except ImportError:
+        return False
+    return True
+
+
+# Guard BEFORE loading the tool: on Windows the import itself fails (ModuleNotFoundError: fcntl).
+# This is a skip of the whole module, not Windows support: the aibox tooling has none.
+if not _linux_tool_importable():
+    pytest.skip("aibox service tooling is Linux-only (needs POSIX fcntl/pwd); not supported on "
+                "this platform", allow_module_level=True)
 
 ROOT = Path(__file__).resolve().parents[1]
 TOOL = ROOT / "deploy" / "aibox" / "zeus_aibox_service.py"
