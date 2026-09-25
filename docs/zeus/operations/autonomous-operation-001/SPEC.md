@@ -1,5 +1,59 @@
 # Whole autonomous operating loop
 
+## Release cancellation reframe: all same-process service owners, 2026-09-25
+
+Outcome and original completion gates unchanged. e85b191a audit repair independently
+accepted, Windows+PG97 passed, root same-process audit->cancel probe now cancelled=true
+and sigint_changed=false. Preserve that fix. Whole CI36075348849 still fails the SAME
+two release cancellation assertions (Ubuntu3.14:3818 passed/492 skipped/2 failed).
+This invalidates our prior assumption that audit_service was the sole contaminating
+entrypoint. Do NOT retry CI unchanged or patch individual assertions.
+
+Research/SSOT: Python3.14.7 _thread.interrupt_main documentation consulted2026-09-25
+https://docs.python.org/3/library/_thread.html#_thread.interrupt_main explains it calls
+the installed handler, not an unconditional exception. Existing host_delivery.run and
+accepted audit_service.run demonstrate lifetime restoration. Source-wide signal.signal
+inventory finds fleet_cli.run and frontdesk_cli.run installing identical process-wide
+stop handlers without restoration. background_service restores its SIGTERM scope;
+continuation_process is a dedicated child process and outside this same-process scope.
+
+Discriminating check: root plugin observes SIGINT before/after each actual selected
+entrypoint test, WITHOUT resetting handlers. Evidence probe-signal-owners.py/.json in
+D:/workspaces/zeus/artifacts/autonomous-operation-001. Observed changes:
+- tests/test_frontdesk.py::test_an_injected_storage_loss_is_a_durable_failure_and_a_nonzero_desk_exit -> {'module': 'codex_harness.adapters.frontdesk_cli', 'name': 'run.<locals>.<lambda>'}
+- tests/test_frontdesk.py::test_a_storage_stopped_desk_run_exits_the_process_nonzero -> {'module': 'codex_harness.adapters.frontdesk_cli', 'name': 'run.<locals>.<lambda>'}
+- tests/test_frontdesk.py::test_a_normal_idle_or_interrupted_desk_run_stays_successful -> {'module': 'codex_harness.adapters.frontdesk_cli', 'name': 'run.<locals>.<lambda>'}
+This is actual local test execution, not an exact captured CI signal trace. Multiple
+leaking owners explain why correcting audit alone was insufficient. Preserve old CI
+and failed reproductions. No reason to expand into unrelated timing or orchestration.
+
+One complete bounded implementation batch: apply process-lifetime handler ownership
+to BOTH fleet_cli.run and frontdesk_cli.run. Save each prior handler as installed,
+restore acquired handlers on normal/exception/partial-install exits, preserve original
+error and existing observer/lock cleanup and runner.stop during active run. Reuse the
+existing established restoration pattern; no broad abstraction or domain redesign needed.
+Do not make release tests forcibly reset SIGINT, hide order-dependency with fixtures,
+weaken cancellation, skip tests, alter deadlines or unrelated service behavior.
+
+Acceptance matrix: both owners normal/error/partial-install cleanup and actual graceful
+stop; sequential owners preserve incoming handler (including custom Python handler);
+SIGINT after all selected service tests remains original and real release child
+cancellation still cleans up and preserves partial evidence. Existing nesting/accounting/
+redaction/fence/timeout paths retained. Unsupported signals conditional by platform;
+native non-Python handler unknown remains documented, no supported trigger shown.
+Concurrency redesign/restart protocols are unchanged and not new scope. Test install
+faults may be injected and labelled; actual cancellation must retain real subprocesses.
+
+Run ONE ordered pytest command with test_audit_service, test_fleet_backlog_cli,
+test_fleet_recovery, test_fleet_relocation, test_frontdesk, test_portfolio, then the six
+release suites (release_suite,release_runner,release_recovery,release_health,check_binding,
+runner_categories), and Ruff. No full repo suite in worker. Root repeats handler trace,
+Windows+isolatedPG ordered suite; CI runs full repo. Collect findings into one verdict.
+Completion here is passing these checks and updating existing PR199; deployment and
+whole-loop qualification remain separate. Owner assignment under original authorization,
+not another spent-grant replay, counter reset or claim of autonomous recovery.
+
+
 ## Release CI cancellation: audit-service signal ownership, 2026-09-24
 
 Same release completion matrix; preserve accepted nesting e8511d0 and all earlier
