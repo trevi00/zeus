@@ -1,4 +1,4 @@
-"""Host migration policy: one manifest, one resumable state machine, verified comparisons.
+"""Host migration policy: one manifest, one resumable state machine, typed evidence receipts.
 
 @invariant INV-HOST-MIGRATION-001
 
@@ -8,25 +8,29 @@ artifact bodies) from one host to another under one `migration_id`
 dictionaries: no store, process, Docker, socket or filesystem access, and no value ever reaches an
 error message - only a fixed reason code and a field name do.
 
-* The manifest (`urn:zeus:host-migration-manifest:1`) is strict versioned JSON. It carries
-  identities, counts and digests and never a credential: a DSN with a password, or any field named
-  like a secret, is refused before anything else is read.
-* The state machine is fixed. Every transition is compare-and-swap on the stated current state and
-  the manifest digest, carries its actor, host, UTC, config/commit/image/profile identity and its
-  input/output evidence digests, and is idempotent on the identical request.
+The coordinator built on this policy is a RECEIPT RECORDER. A recorded state is never itself proof
+that a source was fenced, a target activated or an acceptance passed; it is proof that typed
+evidence receipts with exit code 0 and a passing typed result were presented for that state.
+
+* The manifest (`urn:zeus:host-migration-manifest:1`) is strict versioned JSON with identities,
+  counts and digests and never a credential. A source schema named `public` (the Windows control
+  ledger) is accepted only when it is explicitly inventoried and mapped to `zeus_aibox_control`; a
+  target schema named `public` is always refused.
+* Every non-failure transition carries, per gate, typed evidence receipts
+  (`urn:zeus:host-migration-evidence:1`) of an allowed check kind, each with exit code 0 and
+  `ok: true`. A mismatch, an unknown or a non-zero exit is never promoted to a pass.
 * Restore steps are checkpoints keyed by (migration_id, step): the same input digest replays, a
   different one refuses, so an interrupted restore resumes and never restores twice.
-* Rollback is decided from the recorded history, never from a caller's word. Before the target
-  ever became a writer (`limited_active`) the source snapshot may be resumed (R0). After it, only
-  a reverse migration of the target's newest state is allowed (R1): restarting the old source
-  snapshot would lose the target's records and repeat its external effects.
-* Comparisons carry the whole denominator. A missing bucket, key, group or file is a difference,
-  never an empty match, and an expiry that passed during the downtime is reported apart from one
-  that was lost.
+* Activation is intent-first. A durable activation intent is recorded BEFORE any target writer is
+  enabled; from that moment rollback is R1 (reverse migration of the target), whether or not a
+  `limited_active` receipt was ever written, because an interruption between the intent and that
+  receipt leaves the target's effects unknown. R0 (resume the retained source) is only for a
+  migration whose target never had an activation intent.
+* The activation receipt (`urn:zeus:aibox-host-activation:1`) is derived from the recorded intent
+  and is exactly what the Linux launcher (deploy/aibox) checks: host id, release revision, state.
 """
 from __future__ import annotations
 
-import posixpath
 import re
 
 from codex_harness.domain.model import ContractError, digest
@@ -34,7 +38,17 @@ from codex_harness.domain.model import ContractError, digest
 MANIFEST_SCHEMA = "urn:zeus:host-migration-manifest:1"
 TRANSITION_SCHEMA = "urn:zeus:host-migration-transition:1"
 CHECKPOINT_SCHEMA = "urn:zeus:host-migration-checkpoint:1"
-UNIT_SCHEMA = "urn:zeus:systemd-service:1"
+EVIDENCE_SCHEMA = "urn:zeus:host-migration-evidence:1"
+INTENT_SCHEMA = "urn:zeus:host-migration-activation-intent:1"
+# The launcher contract of deploy/aibox (INTEGRATION-CONTRACT.md s2.1); the schema, field names and
+# states must stay identical to `zeus_aibox_service.check_activation`.
+ACTIVATION_SCHEMA = "urn:zeus:aibox-host-activation:1"
+CONTROL_SCHEMA = "zeus_aibox_control"
+SOURCE_PUBLIC = "public"
+# The only source->target binding a PG comparison may accept as a delta: the Fleet registry row of
+# the source control ledger, rewritten by `Fleet.relocate`. Every other schema and bucket compares
+# unchanged.
+REGISTRY_DELTA_BUCKETS = ("fleet_registry",)
 
 PLANNED = "planned"
 NETWORK_READY = "network_ready"
@@ -55,24 +69,36 @@ STATES = FORWARD + (FAILED, ROLLBACK_REQUIRED, ROLLED_BACK)
 TERMINAL = frozenset({QUALIFIED, ROLLED_BACK})
 # `failed` is a recorded stop with its reason; it is resumed only by the explicit rollback path or
 # by re-entering the SAME forward state it failed in, never by skipping ahead.
-# The evidence a transition INTO a state must name. Names only: the adapter produces the digests,
-# the coordinator records them, and nothing here believes a claim that a check passed.
+# Per target state: gate name -> the evidence check kinds that may satisfy it. The kinds are the
+# canonical offline data tooling commands (scripts/aibox_data), the per-schema PG coverage
+# aggregate, and observations the owner records from host receipts. A kind names what produced the
+# receipt; it never makes a hand-typed claim true, which is why the result digest is kept.
+OBSERVATION = "observation"
 GATES = {
-    NETWORK_READY: ("network_receipt",),
-    STAGED: ("target_layout", "staging_restore"),
-    DRAINING: ("admission_pause",),
-    SOURCE_FENCED: ("writer_inventory", "restart_refusal"),
-    SNAPSHOT_SEALED: ("pg_inventory", "redis_inventory", "artifact_inventory"),
-    RESTORED_PAUSED: ("pg_comparison", "redis_comparison", "artifact_comparison",
-                      "registry_relocation"),
-    LIMITED_ACTIVE: ("host_activation", "canary_admission"),
-    QUALIFIED: ("acceptance_a", "acceptance_b"),
-    FAILED: ("failure",),
-    ROLLBACK_REQUIRED: ("failure",),
-    ROLLED_BACK: ("rollback_receipt",),
+    NETWORK_READY: {"network_receipt": (OBSERVATION,)},
+    STAGED: {"target_layout": (OBSERVATION,), "staging_restore": ("pg-coverage",)},
+    DRAINING: {"admission_pause": (OBSERVATION,)},
+    SOURCE_FENCED: {"writer_inventory": (OBSERVATION,), "restart_refusal": (OBSERVATION,)},
+    SNAPSHOT_SEALED: {"pg_inventory": ("pg-inventory",), "redis_inventory": ("redis-inventory",),
+                      "artifact_inventory": ("inventory",)},
+    RESTORED_PAUSED: {"pg_comparison": ("pg-coverage",), "redis_comparison": ("compare-redis",),
+                      "pel_owners": ("pel-owners",), "artifact_comparison": ("verify-staged",),
+                      "registry_relocation": ("fleet-relocation",), "admission_paused": (OBSERVATION,)},
+    LIMITED_ACTIVE: {"host_activation": ("host-activation",), "service_consumption": ("service-startup",),
+                     "canary_admission": (OBSERVATION,)},
+    QUALIFIED: {"acceptance_a": ("independent-review",), "acceptance_b": ("independent-review",)},
+    FAILED: {"failure": None},
+    ROLLBACK_REQUIRED: {"failure": None},
+    ROLLED_BACK: {"rollback_gate": ("gate-r0", "gate-r1")},
 }
+CHECKS = frozenset({OBSERVATION, "pg-coverage", "pg-inventory", "redis-inventory", "inventory",
+                    "compare-redis", "pel-owners", "verify-staged", "stage", "compare-pg",
+                    "fleet-relocation", "host-activation", "service-startup", "independent-review",
+                    "gate-r0", "gate-r1", "gate-c", "verify-artifacts"})
+MAX_RECEIPTS = 128
 STEPS = ("pg_restore", "redis_restore", "artifact_copy", "registry_relocation",
          "reverse_pg_restore", "reverse_redis_restore", "reverse_artifact_copy")
+REVERSE_STEPS = ("reverse_pg_restore", "reverse_redis_restore", "reverse_artifact_copy")
 ROLLBACK_R0 = "R0"
 ROLLBACK_R1 = "R1"
 
@@ -283,8 +309,11 @@ def validate_manifest(document) -> dict:
     for key, value in schema_map.items():
         _match(key, IDENT, "schema_map")
         _match(value, IDENT, "schema_map." + key)
-        if value == "public" or key == "public":
+        if value == "public":
             raise MigrationRefused("public_schema", "schema_map." + key)
+        if key == SOURCE_PUBLIC and value != CONTROL_SCHEMA:
+            # The source control ledger lives in `public`; it has exactly one reviewed destination.
+            raise MigrationRefused("source_public_mapping", "schema_map.public")
     if len(set(schema_map.values())) != len(schema_map):
         raise MigrationRefused("map_not_bijective", "schema_map")
     paths = []
@@ -329,6 +358,9 @@ def validate_manifest(document) -> dict:
                         "sha256": _match(entry["sha256"], HEX64, name + ".sha256")})
     if len({(b["schema"], b["bucket"]) for b in buckets}) != len(buckets):
         raise MigrationRefused("manifest_duplicate", "pg_buckets")
+    if SOURCE_PUBLIC in schema_map and not any(b["schema"] == SOURCE_PUBLIC for b in buckets):
+        # Mapping `public` is allowed only for an explicitly inventoried source public schema.
+        raise MigrationRefused("source_public_not_inventoried", "pg_buckets")
     keys = []
     for index, entry in enumerate(_list(document["redis_keys"], "redis_keys", maximum=100000)):
         name = "redis_keys[" + str(index) + "]"
@@ -405,6 +437,102 @@ def reverse_maps(manifest: dict) -> dict:
     return {"schema_map": dict(sorted(schemas.items())), "path_map": paths}
 
 
+# ----- typed evidence receipts --------------------------------------------------------------------
+EVIDENCE_FIELDS = {"schema", "check", "subject", "exit_code", "ok", "result_sha256"}
+SUBJECT = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.:=/-]{0,199}$")
+
+
+def validate_evidence(document, name: str) -> dict:
+    """One typed receipt: which check ran, over what, its exit code, its typed result and digest."""
+    _fields(document, EVIDENCE_FIELDS, name)
+    if document.get("schema") != EVIDENCE_SCHEMA:
+        raise MigrationRefused("evidence_schema", name)
+    if document["check"] not in CHECKS:
+        raise MigrationRefused("evidence_check_unknown", name + ".check")
+    if document["subject"] is not None:
+        _match(document["subject"], SUBJECT, name + ".subject")
+    if type(document["exit_code"]) is not int or type(document["ok"]) is not bool:
+        raise MigrationRefused("evidence_invalid", name)
+    if document["ok"] != (document["exit_code"] == 0):
+        # A wrapper that reports a pass beside a failing exit (or the reverse) is inconsistent;
+        # neither side is believed.
+        raise MigrationRefused("evidence_inconsistent", name)
+    return {"schema": EVIDENCE_SCHEMA, "check": document["check"], "subject": document["subject"],
+            "exit_code": document["exit_code"], "ok": document["ok"],
+            "result_sha256": _match(document["result_sha256"], HEX64, name + ".result_sha256")}
+
+
+def evidence_receipt(check: str, subject, exit_code: int, ok: bool, result_sha256: str) -> dict:
+    return validate_evidence({"schema": EVIDENCE_SCHEMA, "check": check, "subject": subject,
+                              "exit_code": exit_code, "ok": ok, "result_sha256": result_sha256}, "evidence")
+
+
+def _gate_evidence(to: str, evidence) -> dict:
+    gates = GATES.get(to, {})
+    if not isinstance(evidence, dict) or set(evidence) != set(gates):
+        raise MigrationRefused("gate_evidence_fields", "evidence")
+    canonical = {}
+    for gate, kinds in sorted(gates.items()):
+        value = evidence[gate]
+        receipts = value if isinstance(value, list) else [value]
+        if not 1 <= len(receipts) <= MAX_RECEIPTS:
+            raise MigrationRefused("gate_evidence_missing", "evidence." + gate)
+        checked = [validate_evidence(r, "evidence." + gate + "[" + str(i) + "]") for i, r in enumerate(receipts)]
+        for receipt in checked:
+            if kinds is not None and receipt["check"] not in kinds:
+                raise MigrationRefused("gate_evidence_kind", "evidence." + gate)
+            if kinds is not None and not receipt["ok"]:
+                raise MigrationRefused("gate_evidence_failed", "evidence." + gate)
+        canonical[gate] = sorted(checked, key=lambda r: (r["check"], r["subject"] or "", r["result_sha256"]))
+    return canonical
+
+
+# ----- PostgreSQL: one schema per comparison, exact coverage -------------------------------------
+def schema_comparison(schema_map: dict, source_schema: str, delta) -> dict:
+    """Policy of ONE per-schema PG comparison: which target schema, and whether a delta may apply.
+
+    Only the source control ledger (`public` -> `zeus_aibox_control`) may carry a binding delta,
+    and only for the registry buckets `Fleet.relocate` rewrites. Every other schema - lanes and all
+    historical schemas - must compare unchanged, with no delta at all.
+    """
+    if source_schema not in schema_map:
+        raise MigrationRefused("schema_unmapped", "source_schema")
+    target = schema_map[source_schema]
+    if target == "public":
+        raise MigrationRefused("public_schema", "schema_map." + source_schema)
+    if delta is not None:
+        if source_schema != SOURCE_PUBLIC or target != CONTROL_SCHEMA:
+            raise MigrationRefused("delta_not_allowed", "source_schema")
+        changes = delta.get("changes") if isinstance(delta, dict) else None
+        if not isinstance(changes, list) or not changes:
+            raise MigrationRefused("delta_invalid", "delta.changes")
+        if any(not isinstance(c, dict) or c.get("bucket") not in REGISTRY_DELTA_BUCKETS for c in changes):
+            raise MigrationRefused("delta_bucket_not_allowed", "delta.changes")
+    return {"source_schema": source_schema, "target_schema": target, "delta": delta is not None}
+
+
+def schema_subject(source_schema: str) -> str:
+    return "schema=" + source_schema
+
+
+def pg_coverage(schema_map: dict, receipts: list) -> dict:
+    """Aggregate: every mapped source schema compared exactly once, each comparison passing."""
+    checked = [validate_evidence(r, "receipts[" + str(i) + "]") for i, r in enumerate(receipts)]
+    wanted = {schema_subject(name) for name in schema_map}
+    seen: dict = {}
+    for receipt in checked:
+        if receipt["check"] != "compare-pg":
+            raise MigrationRefused("coverage_kind", "receipts")
+        seen[receipt["subject"]] = seen.get(receipt["subject"], 0) + 1
+    duplicated = sorted(subject for subject, count in seen.items() if count > 1)
+    missing = sorted(wanted - set(seen))
+    extra = sorted(set(seen) - wanted)
+    failed = sorted(r["subject"] for r in checked if not r["ok"])
+    return {"schemas": len(wanted), "covered": len(set(seen) & wanted), "missing": missing,
+            "duplicated": duplicated, "extra": extra, "failed": failed,
+            "ok": not (missing or duplicated or extra or failed)}
+
+
 # ----- the state machine --------------------------------------------------------------------------
 def allowed(current: str, to: str) -> bool:
     """Forward one step; `failed`/`rollback_required` from any non-terminal state; a failed
@@ -429,18 +557,20 @@ def allowed(current: str, to: str) -> bool:
 def resume_state(history: list) -> str | None:
     """The forward state a `failed` migration may re-enter: the one it failed from."""
     for record in reversed(history):
-        if record["to"] == FAILED:
+        if record.get("to") == FAILED:
             return record["from"]
     return None
 
 
 def target_written(history: list) -> bool:
-    """Whether the target ever became an authoritative writer (canary admission onward)."""
-    return any(record["to"] in (LIMITED_ACTIVE, QUALIFIED) for record in history)
+    """Whether the target may have become a writer: an activation intent exists or the target
+    reached limited_active. The intent alone is enough; its effects are unknown until reconciled."""
+    return any(record.get("event") == "activation_intent" or record.get("to") in (LIMITED_ACTIVE, QUALIFIED)
+               for record in history)
 
 
 def rollback_mode(history: list) -> str:
-    """R0 before the target wrote anything; R1 (reverse migration of the target) after."""
+    """R0 only while the target never had an activation intent; R1 (reverse migration) after."""
     return ROLLBACK_R1 if target_written(history) else ROLLBACK_R0
 
 
@@ -462,15 +592,7 @@ def validate_transition(document) -> dict:
         _match(identity["image"], IMAGE_DIGEST, "identity.image")
     if identity["profile_sha256"] is not None:
         _match(identity["profile_sha256"], HEX64, "identity.profile_sha256")
-    evidence = document["evidence"]
-    if not (isinstance(evidence, dict) and len(evidence) <= MAX_ENTRIES):
-        raise MigrationRefused("transition_invalid", "evidence")
-    for name, value in evidence.items():
-        _match(name, re.compile(r"^[a-z][a-z0-9_]{0,63}$"), "evidence")
-        _match(value, HEX64, "evidence." + name)
-    missing = [gate for gate in GATES.get(document["to"], ()) if gate not in evidence]
-    if missing:
-        raise MigrationRefused("gate_evidence_missing", "evidence." + missing[0])
+    evidence = _gate_evidence(document["to"], document["evidence"])
     if type(document["exit_code"]) is not int:
         raise MigrationRefused("transition_invalid", "exit_code")
     failing = document["to"] in (FAILED, ROLLBACK_REQUIRED)
@@ -486,12 +608,12 @@ def validate_transition(document) -> dict:
             "actor": _match(document["actor"], TOKEN, "actor"), "host": _match(document["host"], TOKEN, "host"),
             "at": _utc(document["at"], "at"),
             "identity": {k: identity[k] for k in sorted(identity)},
-            "evidence": dict(sorted(evidence.items())), "exit_code": document["exit_code"],
+            "evidence": evidence, "exit_code": document["exit_code"],
             "reason_code": document["reason_code"]}
 
 
 def transition_id(transition: dict) -> str:
-    return digest(["host-migration-transition-v1", transition["migration_id"], transition["from"],
+    return digest(["host-migration-transition-v2", transition["migration_id"], transition["from"],
                    transition["to"], transition["manifest_sha256"], transition["evidence"]])
 
 
@@ -511,172 +633,51 @@ def validate_checkpoint(document) -> dict:
 
 
 def step_allowed(step: str, state: str, history: list) -> bool:
-    """Forward restore steps run only between the sealed snapshot and the paused target; reverse
-    steps only once a rollback is required AND the target had written (R1)."""
-    if step.startswith("reverse_"):
+    """Forward restore steps run only between the sealed snapshot and the paused target, and never
+    once an activation intent exists; reverse steps only once a rollback is required under R1."""
+    if step in REVERSE_STEPS:
         return state == ROLLBACK_REQUIRED and rollback_mode(history) == ROLLBACK_R1
-    return state == SNAPSHOT_SEALED
+    return state == SNAPSHOT_SEALED and not target_written(history)
 
 
-# ----- comparisons -------------------------------------------------------------------------------
-def compare_buckets(source: list, target: list, schema_map: dict, allowed_delta=()) -> dict:
-    """Bucket-by-bucket count and digest after the schema map; nothing missing reads as empty.
-
-    `allowed_delta` names the (target schema, bucket) pairs a reviewed binding change may alter,
-    e.g. the Fleet registry after a relocation receipt; each still has to be present on both sides
-    and is reported, never silently accepted.
-    """
-    mapped = {(schema_map.get(row["schema"], "<unmapped>"), row["bucket"]): row for row in source}
-    observed = {(row["schema"], row["bucket"]): row for row in target}
-    allowed_pairs = {tuple(pair) for pair in allowed_delta}
-    rows = []
-    for key in sorted(set(mapped) | set(observed)):
-        left, right = mapped.get(key), observed.get(key)
-        if left is None or right is None:
-            status = "missing_on_target" if right is None else "unexpected_on_target"
-        elif left["count"] == right["count"] and left["sha256"] == right["sha256"]:
-            status = "equal"
-        else:
-            status = "allowed_delta" if key in allowed_pairs else "different"
-        rows.append({"schema": key[0], "bucket": key[1], "status": status,
-                     "source": None if left is None else {"count": left["count"], "sha256": left["sha256"]},
-                     "target": None if right is None else {"count": right["count"], "sha256": right["sha256"]}})
-    failed = [row for row in rows if row["status"] not in ("equal", "allowed_delta")]
-    return {"equal": not failed, "buckets": len(rows), "failed": len(failed), "rows": rows}
+# ----- activation: intent first, then the launcher receipt -------------------------------------------
+HOST_ID = re.compile(r"^machine-id-sha256:[0-9a-f]{64}$")
+INTENT_FIELDS = {"schema", "migration_id", "host_id", "release_revision", "image", "profile_sha256",
+                 "actor", "at"}
 
 
-def compare_redis(source: list, target: list, *, restored_at_ms: int) -> dict:
-    """Keys, types, value digests, stream ids, groups, PEL counts and absolute expiry.
-
-    A key whose absolute expiry had already passed when the restore ran is `expired_in_downtime`:
-    it is reported apart from a key that was lost, and its TTL is never extended to keep it.
-    """
-    left = {row["key"]: row for row in source}
-    right = {row["key"]: row for row in target}
-    rows = []
-    for key in sorted(set(left) | set(right)):
-        a, b = left.get(key), right.get(key)
-        if b is None:
-            expired = a["expires_at_ms"] is not None and a["expires_at_ms"] <= restored_at_ms
-            status = "expired_in_downtime" if expired else "missing_on_target"
-        elif a is None:
-            status = "unexpected_on_target"
-        elif a["type"] != b["type"] or a["sha256"] != b["sha256"]:
-            status = "value_different"
-        elif a["expires_at_ms"] != b["expires_at_ms"]:
-            status = "expiry_different"
-        elif a["stream"] != b["stream"]:
-            status = "stream_state_different"
-        else:
-            status = "equal"
-        rows.append({"key": key, "status": status})
-    failed = [row for row in rows if row["status"] not in ("equal", "expired_in_downtime")]
-    pending = sum(g["pending"] for row in source if row["stream"] for g in row["stream"]["groups"])
-    return {"equal": not failed, "keys": len(rows), "failed": len(failed), "pending_total": pending,
-            "rows": rows}
+def validate_intent(document) -> dict:
+    """The durable activation intent, recorded BEFORE any target writer is enabled."""
+    refuse_secrets(document, "intent")
+    if not isinstance(document, dict) or document.get("schema") != INTENT_SCHEMA:
+        raise MigrationRefused("intent_schema")
+    _fields(document, INTENT_FIELDS, "intent")
+    return {"schema": INTENT_SCHEMA, "migration_id": _match(document["migration_id"], TOKEN, "migration_id"),
+            "host_id": _match(document["host_id"], HOST_ID, "intent.host_id"),
+            "release_revision": _match(document["release_revision"], COMMIT, "intent.release_revision"),
+            "image": _match(document["image"], IMAGE_DIGEST, "intent.image"),
+            "profile_sha256": _match(document["profile_sha256"], HEX64, "intent.profile_sha256"),
+            "actor": _match(document["actor"], TOKEN, "intent.actor"), "at": _utc(document["at"], "intent.at")}
 
 
-def compare_trees(source: dict, target: dict) -> dict:
-    """Two artifact inventories (relative path -> {sha256, bytes}); every file on both sides."""
-    rows, failed = [], 0
-    for name in sorted(set(source["files"]) | set(target["files"])):
-        a, b = source["files"].get(name), target["files"].get(name)
-        status = ("missing_on_target" if b is None else "unexpected_on_target" if a is None
-                  else "equal" if a == b else "different")
-        failed += status != "equal"
-        if status != "equal":
-            rows.append({"path": name, "status": status})
-    anomalies = sorted(set(source.get("anomalies", [])) | set(target.get("anomalies", [])))
-    return {"equal": failed == 0 and not anomalies, "files": len(set(source["files"]) | set(target["files"])),
-            "failed": failed, "differences": rows[:200], "anomalies": anomalies}
+def intent_id(intent: dict) -> str:
+    return digest(["host-migration-activation-intent-v1", intent])
 
 
-def tree_digest(files: dict) -> str:
-    return digest(["artifact-tree-v1", sorted((name, row["sha256"], row["bytes"]) for name, row in files.items())])
+def activation_receipt(intent: dict, manifest_sha256: str, state: str) -> dict:
+    """The launcher's `host-activation.json`, derived from the recorded intent and nothing else."""
+    if state not in (RESTORED_PAUSED, LIMITED_ACTIVE, QUALIFIED):
+        raise MigrationRefused("activation_state", "state")
+    return {"schema": ACTIVATION_SCHEMA, "migration_id": intent["migration_id"], "host_id": intent["host_id"],
+            "state": state, "release_revision": intent["release_revision"], "intent_id": intent_id(intent),
+            "manifest_sha256": manifest_sha256}
 
 
-# ----- the Linux service descriptor ---------------------------------------------------------------
-UNIT_FIELDS = {"schema", "unit", "description", "user", "group", "working_directory", "exec_start",
-               "path", "environment", "stop_timeout_seconds", "restart_seconds",
-               "start_limit_burst", "start_limit_interval_seconds"}
-UNIT_NAME = re.compile(r"^zeus-[a-z0-9][a-z0-9-]{0,48}$")
-ENV_NAME = re.compile(r"^(ZEUS|HARNESS)_[A-Z0-9_]{1,60}$")
-
-
-def _absolute_posix(value, name: str) -> str:
-    if not (type(value) is str and value.startswith("/") and len(value) <= MAX_TEXT
-            and posixpath.normpath(value) == value and re.fullmatch(r"[A-Za-z0-9/._@+-]+", value)):
-        raise MigrationRefused("unit_invalid", name)
-    return value
-
-
-def validate_unit(document) -> dict:
-    """A systemd service for one Zeus component: absolute paths, explicit UID, no login shell.
-
-    ExecStart is an argv of absolute or plain tokens, never a shell string; the environment is an
-    allowlist of non-secret ZEUS_/HARNESS_ settings, so a credential cannot be placed in a unit.
-    """
-    refuse_secrets(document, "unit")
-    if not isinstance(document, dict) or document.get("schema") != UNIT_SCHEMA:
-        raise MigrationRefused("unit_schema")
-    _fields(document, UNIT_FIELDS, "unit")
-    _match(document["unit"], UNIT_NAME, "unit.unit")
-    if not (type(document["description"]) is str and re.fullmatch(r"[A-Za-z0-9 ._()/-]{1,120}", document["description"])):
-        raise MigrationRefused("unit_invalid", "unit.description")
-    for key in ("user", "group"):
-        if not (type(document[key]) is str and re.fullmatch(r"[a-z_][a-z0-9_-]{0,31}", document[key])) \
-                or document[key] == "root":
-            raise MigrationRefused("unit_invalid", "unit." + key)
-    _absolute_posix(document["working_directory"], "unit.working_directory")
-    argv = _list(document["exec_start"], "unit.exec_start", minimum=1)
-    _absolute_posix(argv[0], "unit.exec_start[0]")
-    for index, arg in enumerate(argv[1:], 1):
-        if not (type(arg) is str and re.fullmatch(r"[A-Za-z0-9/._=:@+-]{1,200}", arg)):
-            raise MigrationRefused("unit_invalid", "unit.exec_start[" + str(index) + "]")
-    path = document["path"]
-    if not (type(path) is str and all(_absolute_posix(p, "unit.path") for p in path.split(":"))):
-        raise MigrationRefused("unit_invalid", "unit.path")
-    environment = document["environment"]
-    if not isinstance(environment, dict) or len(environment) > 32:
-        raise MigrationRefused("unit_invalid", "unit.environment")
-    for key, value in environment.items():
-        _match(key, ENV_NAME, "unit.environment")
-        if not (type(value) is str and re.fullmatch(r"[A-Za-z0-9/._=:@+,-]{0,200}", value)):
-            raise MigrationRefused("unit_invalid", "unit.environment." + key)
-    bounds = {"stop_timeout_seconds": (1, 900), "restart_seconds": (1, 600),
-              "start_limit_burst": (1, 10), "start_limit_interval_seconds": (10, 3600)}
-    for key, (low, high) in bounds.items():
-        if type(document[key]) is not int or not low <= document[key] <= high:
-            raise MigrationRefused("unit_invalid", "unit." + key)
-    return {key: document[key] for key in sorted(UNIT_FIELDS)}
-
-
-def render_unit(document) -> str:
-    """The unit file text. KillMode=control-group ends every process of the service; Docker
-    containers the service created are NOT in that cgroup and are reconciled separately by label."""
-    unit = validate_unit(document)
-    environment = [f"Environment={key}={value}" for key, value in sorted(unit["environment"].items())]
-    lines = ["# Generated from " + UNIT_SCHEMA + "; do not edit by hand.",
-             "[Unit]", "Description=" + unit["description"],
-             "After=network-online.target docker.service", "Wants=network-online.target",
-             "StartLimitIntervalSec=" + str(unit["start_limit_interval_seconds"]),
-             "StartLimitBurst=" + str(unit["start_limit_burst"]), "",
-             "[Service]", "Type=simple", "User=" + unit["user"], "Group=" + unit["group"],
-             "WorkingDirectory=" + unit["working_directory"],
-             "ExecStart=" + " ".join(unit["exec_start"]),
-             "Environment=PATH=" + unit["path"], *environment,
-             "KillMode=control-group", "KillSignal=SIGTERM",
-             "TimeoutStopSec=" + str(unit["stop_timeout_seconds"]),
-             "Restart=on-failure", "RestartSec=" + str(unit["restart_seconds"]),
-             "NoNewPrivileges=yes", "UMask=0027", "",
-             "[Install]", "WantedBy=multi-user.target", ""]
-    return "\n".join(lines)
-
-
-__all__ = ["CHECKPOINT_SCHEMA", "FAILED", "FORWARD", "GATES", "LIMITED_ACTIVE", "MANIFEST_SCHEMA",
-           "MigrationRefused", "PLANNED", "QUALIFIED", "ROLLBACK_R0", "ROLLBACK_R1", "ROLLBACK_REQUIRED",
-           "ROLLED_BACK", "SNAPSHOT_SEALED", "STATES", "STEPS", "TRANSITION_SCHEMA", "UNIT_SCHEMA",
-           "allowed", "compare_buckets", "compare_redis", "compare_trees", "manifest_digest",
-           "refuse_secrets", "render_unit", "resume_state", "reverse_maps", "rollback_mode",
-           "step_allowed", "target_written", "transition_id", "tree_digest", "validate_checkpoint",
-           "validate_manifest", "validate_transition", "validate_unit"]
+__all__ = ["ACTIVATION_SCHEMA", "CHECKPOINT_SCHEMA", "CONTROL_SCHEMA", "EVIDENCE_SCHEMA", "FAILED", "FORWARD",
+           "GATES", "INTENT_SCHEMA", "LIMITED_ACTIVE", "MANIFEST_SCHEMA", "MigrationRefused", "OBSERVATION",
+           "PLANNED", "QUALIFIED", "REGISTRY_DELTA_BUCKETS", "RESTORED_PAUSED", "REVERSE_STEPS", "ROLLBACK_R0",
+           "ROLLBACK_R1", "ROLLBACK_REQUIRED", "ROLLED_BACK", "SNAPSHOT_SEALED", "SOURCE_PUBLIC", "STATES",
+           "STEPS", "TRANSITION_SCHEMA", "activation_receipt", "allowed", "evidence_receipt", "intent_id",
+           "manifest_digest", "pg_coverage", "refuse_secrets", "schema_comparison", "schema_subject", "resume_state", "reverse_maps", "rollback_mode", "step_allowed",
+           "target_written", "transition_id", "validate_checkpoint", "validate_evidence", "validate_intent",
+           "validate_manifest", "validate_transition"]

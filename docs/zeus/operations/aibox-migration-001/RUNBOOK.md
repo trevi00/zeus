@@ -1,131 +1,137 @@
-# aibox migration runbook (INV-HOST-MIGRATION-001)
+# aibox migration live runbook (INV-HOST-MIGRATION-001)
 
-SSOT: `SPEC-d116d26` (Codex, 2026-09-25). This runbook covers the reviewed-ready tools and the
-staged order they are used in. It records no cutover. Every step below that touches the Windows
-source, `/srv`, shared `~/infra`, networking or secrets is an **owner step**: run it only with the
-named gate, and never as part of this first delivery.
+SSOT: SPEC-retirement-update (aibox-migration-001). The components are:
 
-`M` = `python -m codex_harness.adapters.host_migration` run from the reviewed checkout's venv.
-DSNs are passed by environment-variable NAME only (`--dsn-env`, `--url-env`). Values never go in
-argv or output.
+- the core coordinator (`src/codex_harness/*/host_migration.py`);
+- the canonical offline data tooling (`scripts/aibox_data`, see its RUNBOOK);
+- the Linux service templates and launcher (`deploy/aibox`, see README and
+  INTEGRATION-CONTRACT).
 
-## 0. What exists and what is new
+No step here has been run live. Every step that touches the Windows source, `/srv`, systemd,
+networking or secrets is an **owner step** at the named gate.
 
-| Need (SPEC §) | Reused | Added here |
+Terms:
+
+- `M` = `python -m codex_harness.adapters.host_migration`, run from the reviewed release venv.
+- DSNs are passed only by environment-variable NAME.
+- Every check command exits 0 only when its typed receipt is `ok`. A receipt goes into a
+  transition's `evidence` unchanged.
+- The coordinator records receipts. A state is not itself proof.
+
+## 0. Ownership map
+
+| Concern | Owner | Tool |
 |---|---|---|
-| registry relocation (§6) | `Fleet.relocate` + `collect_relocation_proof` + copy manifest (`urn:zeus:fleet-relocation:1`) | none; the coordinator gates it as the `registry_relocation` step |
-| host activation (§9–10) | HostDelivery descriptor/receipt/drain, `ProcessHostTarget` | `SystemdHostTarget` (`kind: systemd_unit`), `render-unit` |
-| admission pause (§7) | `Fleet.pause`, HostDelivery `drain` | none |
-| state machine + manifest (§6) | none | `HostMigrations` + `urn:zeus:host-migration-manifest:1` |
-| PG/Redis/artifact copy + compare (§8) | lane search-path rule, store `records()` | `pg-inventory/-dump/-restore/-compare`, `redis-inventory/-copy`, `artifact-inventory/-copy/-compare` |
+| State, checkpoints, activation intent, rollback mode | coordinator | `M plan/advance/checkpoint/intend-activation/rollback-plan/status` |
+| Artifact inventory, stage, verify | canonical | `M artifact-inventory/-stage/-verify` (delegated) |
+| PG export | core (live, read-only) | `M pg-export` |
+| PG inventory, compare | canonical | `M pg-inventory`, `M pg-compare-schema` (one schema each), `M pg-coverage` |
+| Redis export, copy | core | `M redis-inventory`, `M redis-copy` (verified by canonical `compare-redis`) |
+| PEL owners, R0/R1/C gates | canonical | `M pel-owners`, `M gate r0\|r1\|c` |
+| Registry relocation | Fleet | `zeus fleet relocate` (reuses INV-FLEET-001) |
+| Units, launcher, fence/activation checks, inspection | deploy/aibox | `zeus_aibox_service.py render/verify/launch/inspect/host-id` |
+| Launcher files | coordinator-derived | `M activation-write` (from the intent), `M fence-write` |
+| Unit control | HostDelivery `systemd_unit` target | `systemctl show/start/stop zeus-aibox-*.service`, restricted rights |
 
-## 1. N: network (current LAN)
+## 1. N and plan (owner)
 
-Re-read `ip -br addr`, `ip route` and `/sys/class/net/enp6s0/speed`. Also check SSH both ways,
-outbound HTTPS to the model/GitHub endpoints, and NTP (`timedatectl`). Digest the receipt and
-record it as `network_receipt`. The 2026-09-25 observation is in
-`artifacts/aibox-migration-001/inventory-aibox.json`: 192.168.0.10/24, a 100 Mbps link, and
-docker0 172.17/16 plus infra_default 172.18/16. No overlap with 192.168.0.0/24 was seen.
+1. Re-read the address, route and link. Check SSH both ways, outbound HTTPS and NTP. Record the
+   result as an `observation` receipt for `network_receipt`.
+2. Supply the missing exports and decisions in `SOURCE-EXPORT-REQUIREMENTS.json`. D1 is the
+   schema classification and map, D2 the mapping allowlist, D3 the public restore procedure.
+3. `M validate --file manifest.json`, then `M plan --file manifest.json --dsn-env ZEUS_AIBOX_DSN
+   --schema zeus_aibox_migration`. The coordinator schema is created and migrated by the owner.
 
-## 2. Plan
+## 2. staged (owner, root)
 
-1. Fill the manifest from `SOURCE-EXPORT-REQUIREMENTS.json` (S1–S12) and the target facts.
-2. `M validate --file manifest.json` checks the manifest. It refuses secrets, major/extension
-   mismatches, namespace rewrites, non-bijective maps and `public`.
-3. Create the dedicated migration schema. On the target stack, create `zeus_aibox_migration` and
-   run `PostgresStore.migrate()` there. Then run
-   `M plan --file manifest.json --dsn-env ZEUS_AIBOX_DSN --schema zeus_aibox_migration`.
-4. Each state change is `M advance --file transition.json ...` with the gate digests from
-   `GATES`. The identical file replays. A stale `from` refuses.
+1. Create `/srv/zeus` (`M prepare-layout --root /srv/zeus`, then `--apply`).
+2. Stand up the dedicated `zeus-aibox` stack: pgvector pg17 and Redis 7.4, both pinned by digest,
+   published to loopback or the Docker network only.
+3. Build the release at its final path: `/srv/zeus/releases/<40-hex>/.venv` via
+   `uv sync --frozen` AT that path. Never copy a venv. `current` points to it.
+4. Render and verify the units (`deploy/aibox/zeus_aibox_service.py render` / `verify
+   --systemd-analyze`). Install them, and grant a polkit or sudoers rule limited to
+   `systemctl start|stop zeus-aibox-*.service` for the service UID. `reset-failed` stays a human
+   action.
+5. Rehearse the staging restore with a dry-run export (§5). Its `pg-coverage` receipt is
+   `staging_restore`.
 
-## 3. staged (target preparation; owner step, needs root)
+## 3. draining → source_fenced → snapshot_sealed (owner, Windows)
 
-- Layout: `M prepare-layout --root /srv/zeus` (dry run), then `--apply` under an owner-approved
-  `sudo install -d -o trevi -g trevi /srv/zeus`. The dry run was run on 2026-09-25; `/srv/zeus`
-  does not exist yet.
-- Dedicated stack: compose project `zeus-aibox`, with its own volumes and network. It uses the
-  source-matched images pinned by digest: pgvector pg17 (observed
-  `pgvector/pgvector@sha256:cf134a76…8e6f`) and the source Redis 7.4 digest. DB/Redis are
-  published to loopback or the Docker network only. Do not reuse `infra-postgres-1` or
-  `infra-redis-1`.
-- Service units: render them with `M render-unit --file unit.json`; see `examples/`. Install
-  under `/etc/systemd/system` (owner, root). Register the HostDelivery target with
-  `kind: systemd_unit` and `service: zeus-owner`. Starting a system unit as `trevi` needs a
-  sudoers/polkit rule for exactly that unit. Otherwise use `user_scope`, which needs
-  `loginctl enable-linger trevi`; linger is currently `no`.
-- Staging restore rehearsal: run §5 against a staging DB and staging Redis with the dry-run export.
-  Record the result as `staging_restore`.
+1. `zeus fleet pause`, then drain HostDelivery and settle unknowns (`fleet reconcile-interrupted`).
+   Record this as `admission_pause`.
+2. Stop and fence every `stop_and_fence` writer. Record `writer_inventory` (processes, labels,
+   leases) and `restart_refusal`.
+3. Seal at the barrier:
+   - `M pg-export --role source` for every mapped schema (public included), then
+     `M pg-inventory --role source` → `pg_inventory`;
+   - `M redis-inventory` → `redis_inventory`;
+   - `M artifact-inventory` → `artifact_inventory`.
 
-## 4. draining → source_fenced → snapshot_sealed (owner step on Windows)
+## 4. restore (snapshot_sealed → restored_paused)
 
-1. `zeus fleet pause` pauses admission. Drain HostDelivery. Settle unknown jobs with
-   `fleet reconcile-interrupted`; unknown is never success. Nothing queued is deleted.
-2. Stop and fence every `writers[]` entry with `disposition: stop_and_fence`. Leave
-   `leave_untouched_not_zeus` entries alone. Record the observed writer count (processes, Docker
-   labels, DB leases) as `writer_inventory`. Record a refused restart attempt under the marker as
-   `restart_refusal`.
-3. At the quiescent barrier, run `pg-inventory` per schema, `redis-inventory` per namespace and
-   `artifact-inventory` per root. These give the `pg_inventory`, `redis_inventory` and
-   `artifact_inventory` digests. PG and Redis share no snapshot transaction: quiescence is the
-   consistency condition.
+Each step first checks `completed_step`, and ends with `M checkpoint` over its input digest.
 
-## 5. restore (snapshot_sealed → restored_paused)
+- **PG restore:**
+  - Run `M pg-dump` and `M pg-restore` per non-public schema.
+  - For `public`, follow D3's reviewed procedure; it is refused until one exists.
+  - The restored registry must still be paused.
+- **PG comparison:**
+  1. Run `M pg-export --role target` and `M pg-inventory --role target`.
+  2. Run `M pg-compare-schema --source-schema <s>` once per source schema.
+  3. For `public` only, run `--delta registry-delta.json`. The delta comes from
+     `scripts/aibox_data plan-bindings` over the `fleet_registry` rows. `zeus fleet relocate`
+     applies the change on the paused target.
+  4. `M pg-coverage --schema-map map.json --receipt …` gives `pg_comparison`.
+- **Redis:**
+  1. `M redis-copy …` gives `redis_comparison`.
+  2. `M pel-owners` gives `pel_owners`.
+- **Artifacts:** `M artifact-stage`, then `M artifact-verify` per root → `artifact_comparison`.
+- **Relocation:** the `zeus fleet relocate` receipt → `registry_relocation`.
+- **Admission:** `zeus fleet status` shows the Fleet paused → `admission_paused`.
 
-Each step checks `completed_step` first and ends with `M checkpoint` over its input digest.
-A resumed run skips completed steps. A different input refuses.
+## 5. Activation (restored_paused → limited_active)
 
-- PG, one schema at a time:
-  1. `M pg-dump --container <src-pg> --database <db> --schema <s> --path /dump/<s>.dump` runs on
-     the source.
-  2. Transfer the dump and re-hash it.
-  3. `M pg-restore --container zeus-aibox-postgres --database zeus_aibox --schema <s>
-     --rename-to <mapped> --path /dump/<s>.dump` restores it. The command refuses when either
-     schema already exists. After an interrupted run, the owner drops the staging schema, and the
-     checkpoint shows which input was used.
-  4. Create any extension the dump needs in the target DB first. `vector` lives in `public` and
-     is not in a `-n` dump.
-- Compare with `M pg-compare --source src.json --target dst.json --schema-map map.json
-  [--allow-delta zeus_aibox_control fleet_registry]`. Only buckets changed by a reviewed binding
-  (the relocation receipt) may be allowed deltas.
-- Redis: `M redis-copy --source-url-env … --target-url-env … --namespace <ns>…` runs
-  DUMP/RESTORE ABSTTL, never REPLACE. It re-inventories and compares: groups, last-delivered
-  ids, PEL, absolute expiry. `expired_in_downtime` is reported, never revived.
-- Artifacts: `M artifact-copy --source <root> --target /srv/zeus/artifacts/<id>
-  --expected-tree-sha256 <sealed>` refuses if the source changed after the seal. It never
-  overwrites. Then run `M artifact-compare`.
-- Registry: run `zeus fleet relocate --file relocation.json --journal …` on the target with the
-  runner stopped. Old paths are resolved through the relocation receipt; history is not
-  rewritten.
+The order below is fixed. After step 1, any interruption or unknown effect is reconciled under R1.
 
-## 6. limited_active → qualified
+1. `M intend-activation --file intent.json`. The intent carries the host id (`zeus_aibox_service.py
+   host-id`), the release revision, image and profile.
+2. `M activation-write --control-dir /srv/zeus/runtime/control …` writes `host-activation.json`
+   atomically, derived from the intent. It is refused beside `host-fence.json`.
+3. Start the monitors, check the read-only monitor, then start `zeus-aibox-fleet.service` through
+   the `systemd_unit` target. The launcher re-checks the host id and revision.
+4. Transition to `limited_active` with three receipts:
+   - `host_activation` with subject = the intent id;
+   - `service_consumption`, from the startup receipt, with subject `revision=<rev>`;
+   - `canary_admission`, after the owner runs `zeus fleet resume` for the limited canary.
 
-Start the single owner with admission paused through HostDelivery (`host_activation`). Check the
-read-only monitor, then run the limited canary admission (`canary_admission`). A1–A8 become
-`acceptance_a`; B1–B5 become `acceptance_b`. Each of those needs Codex's independent review.
+## 6. qualified
+
+`acceptance_a` and `acceptance_b` are independent-review receipts for A1–A8 and B1–B5.
+`qualified` is still only a recorded label. Live acceptance is the review itself.
 
 ## 7. Rollback
 
-Run `M rollback-plan --migration-id aibox-migration-001 …`.
+Run `M rollback-plan` first; it shows the mode and the steps.
 
-- R0 applies while `limited_active` was never entered. Fence the target, verify zero writers,
-  then resume the retained source snapshot and runtime.
-- R1 applies after that. The plan lists the exact inverse maps and the `reverse_*` steps.
-  `restart_source_from_original_snapshot` is forbidden. The reverse copy uses the same tools with
-  source and target swapped, into a NEW isolated Windows restore DB.
-- Reverse Redis note: DUMP payloads from a newer Redis cannot be restored into an older one. The
-  target therefore stays on the source major (7.4); this is enforced by the manifest.
-- External effects (GitHub merges, deploys) are reconciled, never re-run.
+- **Target fence:** `M fence-write --control-dir …`. The fence refuses every launcher role,
+  monitors included. Stop the running units separately.
+- **R0**, only while no activation intent exists: `M gate r0 --evidence …` → `rollback_gate`.
+  Then resume the retained source.
+- **R1**, once an intent exists, even if `limited_active` was never recorded:
+  1. Stop and drain the target, and reconcile Docker residue by label (`zeus_aibox_service.py
+     inspect`, `fleet reconcile-interrupted`).
+  2. Reverse-copy the target's latest state into a NEW isolated Windows restore, using
+     `reverse_maps`.
+  3. Checkpoint `reverse_pg_restore`, `reverse_redis_restore` and `reverse_artifact_copy`.
+  4. `M gate r1` → `rollback_gate`.
+  5. Starting the original Windows snapshot is forbidden.
 
-## Unsupported / untested in this delivery
+## Not established by this delivery
 
-- Windows source inventory, real source data, and a real cutover or rollback were not attempted.
-- `systemctl` on a real installed unit was not run. The target was exercised with a fake runner
-  only. SSH-drop, SIGTERM, restart-limit, cold boot and disk-full behaviour of a real unit are
-  untested.
-- Docker container residue reconciliation by label for systemd-owned runs is not implemented. The
-  existing Fleet `docker_state`/run-label checks remain the tool for it.
-- Claude/Codex container authentication (A4) and live model canaries were not run.
-- The Redis rehearsal used disposable `redis:8` servers, since no 7.4 image is on aibox. It is
-  fixture evidence of the DUMP/RESTORE/PEL/ABSTTL mechanics, not of 7.4 compatibility.
-- The coordinator runs on PostgreSQL through the existing advisory-lock store. Concurrent
-  coordinators were not load-tested beyond that serialization.
+- Live export, restore, cutover and rollback.
+- Installed systemd lifecycle (SIGTERM, restart limit, SSH drop, cold boot), polkit or sudo rights.
+- Container authentication, managed runtime consumption and model canaries.
+- The public restore procedure (D3), schema classification (D1) and mapping allowlist (D2).
+- The Redis 7.4 compatibility of DUMP payloads (rehearsed on redis:8 only).
+- Adversarial concurrent path replacement during staging (see scripts/aibox_data RUNBOOK §3).

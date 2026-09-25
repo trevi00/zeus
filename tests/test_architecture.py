@@ -6,7 +6,8 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def test_inner_layers_do_not_import_adapters_or_sdk():
-    banned = {"psycopg", "redis", "tree_sitter", "tree_sitter_python", "subprocess", "jsonschema"}
+    banned = {"psycopg", "redis", "tree_sitter", "tree_sitter_python", "subprocess", "jsonschema",
+              "aibox_data", "scripts"}  # the canonical offline tooling is reached only by adapters
     for folder in ("domain", "application"):
         for source in (ROOT / "src/codex_harness" / folder).rglob("*.py"):
             tree = ast.parse(source.read_text(encoding="utf-8"))
