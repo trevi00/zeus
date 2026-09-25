@@ -64,7 +64,14 @@ KIND_MANAGED = "managed_fleet"
 # The Linux service target (INV-HOST-MIGRATION-001): an owner-installed systemd unit named by
 # `service`, with the same registry fields, descriptor, switch and startup-receipt contract.
 KIND_SYSTEMD = "systemd_unit"
-TARGET_KINDS = (KIND_SCHEDULED_TASK, KIND_PROCESS, KIND_MANAGED, KIND_SYSTEMD)
+# The managed Fleet target supervised by ONE owner-fixed systemd unit (INV-OWNER-ACTIONS-001, aibox SPEC
+# s14 G3): the same sealed runtime, descriptor, entry, receipt, heartbeat and drain as `managed_fleet`;
+# only who launches and supervises the guardian changes. Its `service` must be exactly this unit, so a
+# registry can never point the binding at another unit and a plan can never name one at all.
+KIND_MANAGED_SYSTEMD = "managed_fleet_systemd"
+MANAGED_SYSTEMD_UNIT = "zeus-aibox-managed-fleet"
+MANAGED_KINDS = (KIND_MANAGED, KIND_MANAGED_SYSTEMD)
+TARGET_KINDS = (KIND_SCHEDULED_TASK, KIND_PROCESS, KIND_MANAGED, KIND_SYSTEMD, KIND_MANAGED_SYSTEMD)
 # Where the sealed runtime of one revision lives under a managed root.
 RUNTIMES_DIR = "runtimes"
 
@@ -92,6 +99,25 @@ CANARY_COLLECT = "collect_monitor_source"
 CANARY_FLEET = "fleet_worker_operation"
 CANARY_STARTUP = "startup_identity"
 CANARY_CHECKS = (CANARY_COLLECT, CANARY_FLEET, CANARY_STARTUP)
+
+# The owner's actual qualified canary (INV-OWNER-ACTIONS-001, aibox SPEC s14 G2): the server owner files
+# a request naming the exact plan it published BEFORE registering it; while that request matches the
+# descriptor being consumed and no owner receipt exists yet, `fleet_worker_operation` is PENDING rather
+# than failed, but only until the plan's own consumption deadline - then the missing receipt is the
+# same refusal as before. Without a matching request nothing changes: a missing receipt fails at once.
+CANARY_REQUEST_SCHEMA = "urn:zeus:owner-canary-request:1"
+CANARY_REQUEST_FIELDS = {"schema", "action_id", "plan_id", "plan_sha256", "target_id", "revision",
+                         "expected_descriptor", "requested_at"}
+OWNER_CANARY_RECEIPT_SCHEMA = "urn:zeus:owner-canary-receipt:1"
+
+
+def canary_request_matches(request, target: dict, descriptor: dict) -> bool:
+    """Whether an owner canary request names exactly this target, revision and predecessor."""
+    return (isinstance(request, dict) and set(request) == CANARY_REQUEST_FIELDS
+            and request["schema"] == CANARY_REQUEST_SCHEMA and request["target_id"] == target.get("target_id")
+            == descriptor.get("target_id") and request["revision"] == descriptor.get("revision")
+            and request["expected_descriptor"] == descriptor.get("predecessor"))
+
 
 # "the image or the profile does not change in this delivery", stated explicitly rather than left
 # out: an absent binding would be indistinguishable from an unknown one.
@@ -342,7 +368,7 @@ def plan_digest(plan: dict) -> str:
 
 def _target(entry, index: int) -> dict:
     name = "targets[" + str(index) + "]"
-    managed = isinstance(entry, dict) and entry.get("kind") == KIND_MANAGED
+    managed = isinstance(entry, dict) and entry.get("kind") in MANAGED_KINDS
     fields = MANAGED_TARGET_FIELDS if managed else TARGET_FIELDS
     _fields(entry, fields, name)
     if not _token(entry["target_id"]):
@@ -357,6 +383,9 @@ def _target(entry, index: int) -> dict:
             raise DeliveryRefused("target_invalid", name + "." + key)
     if not (type(entry["service"]) is str and TOKEN.fullmatch(entry["service"]) is not None):
         raise DeliveryRefused("target_invalid", name + ".service")
+    if entry["kind"] == KIND_MANAGED_SYSTEMD and entry["service"] != MANAGED_SYSTEMD_UNIT:
+        # The supervising unit is owner-fixed code configuration, not a registry choice.
+        raise DeliveryRefused("target_unit_not_allowed", name + ".service")
     if managed:
         _managed_target(entry, name)
     return {key: entry[key] for key in sorted(fields)}
@@ -427,7 +456,7 @@ def resolve_descriptor(target: dict, plan: dict, current: dict | None) -> dict:
             raise DeliveryRefused("unchanged_without_predecessor", "target_descriptor." + key)
         resolved[key] = current[key]
     root = (managed_runtime_root(target, plan_descriptor["revision"])
-            if target.get("kind") == KIND_MANAGED else target["root"])
+            if target.get("kind") in MANAGED_KINDS else target["root"])
     return {"schema": DESCRIPTOR_SCHEMA, "target_id": target["target_id"], "root": root,
             "revision": plan_descriptor["revision"], "worker_image": resolved["worker_image"],
             "profile_digest": resolved["profile_digest"],
@@ -878,13 +907,15 @@ def target_progress(row: dict) -> dict:
 
 
 __all__ = ["ACTIVATION_GATE_CODES", "ACTIVE", "AUTHORITY", "AWAITING_CI", "AWAITING_CONSUMPTION", "AWAITING_REVIEW",
-           "BLOCKED", "CANARY_CHECKS", "CANARY_COLLECT", "CANARY_FLEET", "CANARY_STARTUP",
+           "BLOCKED", "CANARY_CHECKS", "CANARY_COLLECT", "CANARY_FLEET", "CANARY_REQUEST_FIELDS",
+           "CANARY_REQUEST_SCHEMA", "CANARY_STARTUP", "OWNER_CANARY_RECEIPT_SCHEMA", "canary_request_matches",
            "CI_FAILED", "CI_HEAD_CHANGED", "CI_PASSED", "CI_PENDING", "DESCRIPTOR_FIELDS",
            "DESCRIPTOR_SCHEMA", "EVENT_BLOCKED", "EVENT_CHECK", "EVENT_ROLLBACK", "EVENT_STAGE",
            "EVENT_SWITCHED", "EXTERNAL_STAGES", "FAILED", "FAILED_OUTCOMES", "HALTED_STAGES",
            "INSTANCE_ABSENT", "INSTANCE_AUTHORIZED", "INSTANCE_FOREIGN", "INSTANCE_INTENDED",
            "INSTANCE_INTERRUPTED", "INSTANCE_UNKNOWN", "REPLACEABLE_INSTANCES",
-           "KIND_MANAGED", "KIND_PROCESS", "KIND_SCHEDULED_TASK", "KIND_SYSTEMD", "MANAGED_TARGET_FIELDS",
+           "KIND_MANAGED", "KIND_MANAGED_SYSTEMD", "KIND_PROCESS", "KIND_SCHEDULED_TASK", "KIND_SYSTEMD",
+           "MANAGED_KINDS", "MANAGED_SYSTEMD_UNIT", "MANAGED_TARGET_FIELDS",
            "MAX_STAGE_ATTEMPTS", "MERGED", "MERGE_INTENDED", "RUNTIMES_DIR",
            "OPEN_STAGES", "OUTCOME_ACTIVE", "OUTCOME_BLOCKED", "OUTCOME_BUSY", "OUTCOME_CONFLICT",
            "OUTCOME_DISABLED", "OUTCOME_IDLE", "OUTCOME_PENDING", "OUTCOME_PROGRESSED",

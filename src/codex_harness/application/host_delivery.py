@@ -198,6 +198,12 @@ class HostDelivery:
                 "pin": pin, "target_id": plan["target_id"], "release_id": plan["release_id"],
                 "authority": AUTHORITY}
 
+    def approval(self, document) -> dict:
+        """What the EXISTING release record says about one plan document, before it is registered: the
+        same read-only gate a tick applies (`release_gate`). A server owner publishing a plan uses it to
+        publish only an approved exact candidate (INV-OWNER-ACTIONS-001); it approves nothing."""
+        return self._gate(validate_plan(document))
+
     def plan(self, plan_id: str):
         with self.store.transaction() as tx:
             return tx.get(BUCKET_PLANS, plan_id)
@@ -835,6 +841,10 @@ class HostDelivery:
             plan, intent, descriptor, consumed=False, instance_id=None, claim=claim,
             startup=startup))
         canary = self._canary(plan, target, descriptor, startup)
+        if canary.get("pending") and not self._expired(intent):
+            # The owner's requested actual canary has not answered yet: an external wait under the
+            # stage's own deadline, never a pass. Expired, it is the failure below and rolls back.
+            return self._pending(plan, intent, claim, canary.get("reason_code") or "canary_pending")
         # A canary state of its own, so a passed canary is never mistaken for the CI verdict that
         # preceded it and neither one suppresses the other's transition.
         self._emit_check(plan, intent, AWAITING_CONSUMPTION,
@@ -1069,8 +1079,10 @@ class HostDelivery:
             return {"passed": False, "reason_code": "canary_error", "evidence": None,
                     "error_type": safe_error_type(type(exc).__name__),
                     "check_id": plan["canary_check_id"]}
-        return {"passed": bool(result.get("passed")), "evidence": result.get("evidence"),
-                "reason_code": result.get("reason_code"), "check_id": plan["canary_check_id"]}
+        passed = bool(result.get("passed"))
+        return {"passed": passed, "evidence": result.get("evidence"), "reason_code": result.get("reason_code"),
+                "check_id": plan["canary_check_id"], **({"pending": True} if result.get("pending") and not passed
+                                                        else {})}
 
     # ----- durable bookkeeping ----------------------------------------------------------------
     def _enter(self, plan: dict, intent: dict, stage: str, claim, *, outcome=None, reason_code=None,

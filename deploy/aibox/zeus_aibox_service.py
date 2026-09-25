@@ -11,7 +11,10 @@ harness (`zeus fleet ...`, HostDelivery). This file only
 * `launch`   - the unit's ExecStart: refuses fail-closed (exit 78) when the host is fenced, the
                release pointer is not a pinned revision or the Fleet has no activation receipt for
                this host and revision, then execs the release interpreter. It never resumes
-               admission;
+               admission. Exactly ONE Fleet owner runs: once the owner records the managed Fleet as
+               the host's Fleet owner (`fleet-owner.json`), the bootstrap `fleet` role refuses and the
+               `managed-fleet` role starts only while the bootstrap unit is observed inactive
+               (aibox SPEC s14 G3);
 * `journal`  - the start/exit lifecycle journal the Fleet relocation proof reads (runner_state);
 * `inspect`  - read-only: unit state, control-group processes, Fleet runners outside the unit,
                labelled Docker containers (which are NOT in the unit cgroup), fence/activation
@@ -43,11 +46,24 @@ HERE = Path(__file__).resolve().parent
 TEMPLATES = HERE / "systemd"
 UNITS = ("zeus-aibox-fleet.service", "zeus-aibox-monitor-collect.service",
          "zeus-aibox-monitor-web.service", "zeus-aibox-inspect.service",
-         "zeus-aibox-inspect.timer", "zeus-aibox.target")
+         "zeus-aibox-inspect.timer", "zeus-aibox.target",
+         "zeus-aibox-managed-fleet.service", "zeus-aibox-owner-actions.service")
 SERVICES = UNITS[:3]
 FLEET_UNIT = "zeus-aibox-fleet.service"
+# The owner-fixed unit of the managed Fleet target (domain.host_delivery.MANAGED_SYSTEMD_UNIT) and the
+# server-owned pending-action coordinator (INV-OWNER-ACTIONS-001), aibox SPEC s14.
+MANAGED_FLEET_UNIT = "zeus-aibox-managed-fleet.service"
+OWNER_ACTIONS_UNIT = "zeus-aibox-owner-actions.service"
+OWNER_SERVICES = (MANAGED_FLEET_UNIT, OWNER_ACTIONS_UNIT)
 ROLES = {"fleet": FLEET_UNIT, "monitor-collect": "zeus-aibox-monitor-collect.service",
-         "monitor-web": "zeus-aibox-monitor-web.service"}
+         "monitor-web": "zeus-aibox-monitor-web.service", "managed-fleet": MANAGED_FLEET_UNIT,
+         "owner-actions": OWNER_ACTIONS_UNIT}
+# The owner's record that the managed Fleet target (not the bootstrap unit) is this host's Fleet owner.
+FLEET_OWNER_FILE = "fleet-owner.json"
+FLEET_OWNER_SCHEMA = "urn:zeus:aibox-fleet-owner:1"
+MANAGED_STATE = ("runtime", "managed-fleet")
+POLKIT = HERE / "polkit" / "50-zeus-aibox-managed-fleet.rules.in"
+POLICY_TOKEN = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]{0,63}")
 
 # The isolated worker's run label (adapters/isolated_worker.py LABEL); read, never changed here.
 RUN_LABEL = "zeus.isolated.run"
@@ -60,7 +76,7 @@ REVISION = re.compile(r"[0-9a-f]{40}")
 PLACEHOLDER = re.compile(r"@[A-Z_]+@")
 # Directories systemd loads units from; rendering into them would be an installation.
 LIVE_UNIT_DIRS = ("/etc/systemd", "/run/systemd", "/lib/systemd", "/usr/lib/systemd",
-                  "/usr/local/lib/systemd")
+                  "/usr/local/lib/systemd", "/etc/polkit-1", "/usr/share/polkit-1")
 DEFAULT_PATH = "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 WINDOWS_PATH = re.compile(r"(?i)(/mnt/[a-z]/|\b[a-z]:[\\/]|\\\\)")
 IPV4 = re.compile(r"(?<![\d.])(\d{1,3}(?:\.\d{1,3}){3})(?![\d.])")
@@ -145,14 +161,15 @@ def render(args) -> dict:
         raise Refused("output_is_live_systemd_directory", output=str(output))
     values = render_values(args)
     # Every unit is rendered in memory first, so a refusal leaves no partial output behind.
-    rendered = {unit: render_text((TEMPLATES / (unit + ".in")).read_text("utf-8"), values)
-                for unit in UNITS}
+    sources = {unit: TEMPLATES / (unit + ".in") for unit in UNITS}
+    sources[POLKIT.name[:-3]] = POLKIT
+    rendered = {name: render_text(path.read_text("utf-8"), values) for name, path in sources.items()}
     output.mkdir(parents=True, exist_ok=True)
     files = {}
     for unit, text in rendered.items():
         (output / unit).write_text(text, "utf-8")
         files[unit] = {"sha256": hashlib.sha256(text.encode()).hexdigest(),
-                       "template_sha256": sha256_file(TEMPLATES / (unit + ".in"))}
+                       "template_sha256": sha256_file(sources[unit])}
     manifest = {"schema": "urn:zeus:aibox-service-render:1", "rendered_at": utcnow(),
                 "uid": args.uid, "values": values, "files": files,
                 "tool_sha256": sha256_file(Path(__file__).resolve()), "installed": False}
@@ -312,7 +329,38 @@ def check_activation(control: Path, release: Path, identity: str) -> dict:
     return receipt
 
 
-def launch_plan(role: str, environ: dict, *, machine_id_path: Path = Path("/etc/machine-id")) -> dict:
+def fleet_owner(control: Path) -> str | None:
+    """`managed-fleet` when the owner recorded the managed target as this host's Fleet owner; an
+    unreadable or malformed record is a refusal, never a silent bootstrap owner."""
+    path = control / FLEET_OWNER_FILE
+    if not os.path.lexists(path):
+        return None
+    try:
+        record = json.loads(path.read_text("utf-8"))
+    except (OSError, ValueError):
+        raise Refused("fleet_owner_unreadable") from None
+    if not (isinstance(record, dict) and record.get("schema") == FLEET_OWNER_SCHEMA
+            and record.get("owner") == "managed-fleet" and record.get("unit") == MANAGED_FLEET_UNIT):
+        raise Refused("fleet_owner_invalid")
+    return "managed-fleet"
+
+
+def bootstrap_inactive(run) -> None:
+    """The bootstrap Fleet unit must be observed stopped; an unknown state refuses."""
+    try:
+        result = run(["systemctl", "show", FLEET_UNIT, "-p", "ActiveState"], capture_output=True, text=True,
+                     timeout=20)
+    except (OSError, subprocess.TimeoutExpired):
+        raise Refused("bootstrap_fleet_state_unknown") from None
+    state = dict(line.split("=", 1) for line in (result.stdout or "").splitlines() if "=" in line).get("ActiveState")
+    if result.returncode or state not in ("inactive", "failed", "active", "activating", "deactivating", "reloading"):
+        raise Refused("bootstrap_fleet_state_unknown")
+    if state not in ("inactive", "failed"):
+        raise Refused("bootstrap_fleet_active")
+
+
+def launch_plan(role: str, environ: dict, *, machine_id_path: Path = Path("/etc/machine-id"),
+                run=subprocess.run) -> dict:
     """Everything the launch decides, without executing; the unit's ExecStart execs the result."""
     if role not in ROLES:
         raise Refused("role_unknown")
@@ -330,11 +378,28 @@ def launch_plan(role: str, environ: dict, *, machine_id_path: Path = Path("/etc/
         raise Refused("host_fenced")
     release = pinned_release(root)
     activation = None
-    if role == "fleet":
+    if role in ("fleet", "managed-fleet", "owner-actions"):
         activation = check_activation(control, release, host_id(machine_id_path))
     python = str(release / ".venv" / "bin" / "python")
+    owner = fleet_owner(control) if role in ("fleet", "managed-fleet") else None
+    if role == "fleet" and owner == "managed-fleet":
+        # The bootstrap owner is retired: only the managed target's unit runs the Fleet now.
+        raise Refused("fleet_owner_managed")
     if role == "fleet":
         argv = [python, "-m", "zeus", "fleet", "run"]
+    elif role == "managed-fleet":
+        if owner != "managed-fleet":
+            raise Refused("fleet_owner_not_managed")
+        bootstrap_inactive(run)
+        # The fixed state directory of the registered managed target; `supervise` re-validates the
+        # persisted launch request, target, descriptor, sealed runtime and Fleet debt before starting.
+        argv = [python, "-m", "codex_harness.adapters.managed_runtime", "supervise", "--state-dir",
+                str(root.joinpath(*MANAGED_STATE))]
+    elif role == "owner-actions":
+        policy = environ.get("ZEUS_OWNER_ACTIONS_POLICY", "")
+        if not POLICY_TOKEN.fullmatch(policy):
+            raise Refused("owner_actions_policy_unset")
+        argv = [python, "-m", "zeus", "owner-actions", "run", "--policy", policy]
     elif role == "monitor-collect":
         argv = [python, "-m", "codex_harness.monitor", "collect", "--repository", str(release)]
     else:

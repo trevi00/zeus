@@ -44,7 +44,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 import codex_harness
-from codex_harness.adapters.commands import no_console_kwargs
+from codex_harness.adapters.commands import no_console_kwargs, run_process
 from codex_harness.adapters.host_delivery import (
     DESCRIPTOR_FILE,
     PAUSE_FILE,
@@ -62,8 +62,12 @@ from codex_harness.adapters.host_delivery import (
 )
 from codex_harness.domain.host_delivery import (
     KIND_MANAGED,
+    KIND_MANAGED_SYSTEMD,
+    MANAGED_KINDS,
+    MANAGED_SYSTEMD_UNIT,
     MANAGED_TARGET_FIELDS,
     REGISTRY_SCHEMA,
+    SHA256,
     DeliveryRefused,
     descriptor_digest,
     same_path,
@@ -451,12 +455,9 @@ class ManagedFleetTarget(ProcessHostTarget):
             gate = self.fleet.activation_gate(target["target_id"], descriptor_digest(descriptor))
         except Exception as exc:
             raise DeliveryRefused("fleet_pause_unknown", "fleet") from exc
-        if gate.get("reason_code") == "debt_unknown":
-            raise DeliveryRefused("fleet_debt_unknown", "fleet")
-        if gate.get("reason_code") == "control_changed":
-            raise DeliveryRefused("fleet_control_changed", "fleet")
-        if gate.get("paused") is not True or gate.get("settled") is not True:
-            raise DeliveryRefused("fleet_debt_held", "fleet")
+        refusal = gate_refusal(gate)
+        if refusal is not None:
+            raise DeliveryRefused(refusal, "fleet")
 
     def _retire(self, target: dict) -> None:
         super()._retire(target)
@@ -464,6 +465,174 @@ class ManagedFleetTarget(ProcessHostTarget):
             self.path(target, HEARTBEAT_FILE).unlink()
         except OSError:
             pass
+
+
+def gate_refusal(gate: dict) -> str | None:
+    """The named refusal of one `Fleet.activation_gate` answer, or None when admission is paused and
+    the Fleet debt is settled. Unknown is never settled."""
+    if gate.get("reason_code") == "debt_unknown":
+        return "fleet_debt_unknown"
+    if gate.get("reason_code") == "control_changed":
+        return "fleet_control_changed"
+    if gate.get("paused") is not True or gate.get("settled") is not True:
+        return "fleet_debt_held"
+    return None
+
+
+# ----- the systemd-supervised binding (aibox SPEC s14 G3, INV-OWNER-ACTIONS-001) ------------------------
+# The managed target above launches its trusted launcher as a detached child of the CONTROLLER. On a
+# Linux host whose delivery controller is itself a systemd service that child stays in the controller's
+# control group, so a controller restart would end the Fleet (KillMode=control-group) and
+# `KillMode=process` would weaken the agreed ownership policy. This binding changes only WHO launches and
+# supervises the guardian: the controller writes the launch request under the target guard and starts the
+# ONE owner-fixed unit; the unit's ExecStart (`supervise`, controller code from the stable release)
+# re-validates the persisted request, target, descriptor, sealed runtime and Fleet debt, then runs the
+# incumbent `launch` in the unit's own control group. Materialize, verify, drain, stop, heartbeat and
+# startup receipt are inherited unchanged; nothing here sends a signal or runs `systemctl stop`.
+LAUNCH_REQUEST_FILE = "managed-launch.json"
+LAUNCH_REQUEST_SCHEMA = "urn:zeus:managed-launch-request:1"
+LAUNCH_REQUEST_FIELDS = {"schema", "target_id", "descriptor_sha256", "manifest_sha256", "workload", "requested_at"}
+SUPERVISOR_JOURNAL = "supervisor-journal.jsonl"
+UNIT_ACTIVE_STATES = ("active", "activating", "deactivating", "reloading")
+UNIT_STOPPED_STATES = ("inactive", "failed")
+
+
+def validate_launch_request(document) -> dict:
+    """The controller's persisted launch request; anything else starts nothing."""
+    if not (isinstance(document, dict) and set(document) == LAUNCH_REQUEST_FIELDS
+            and document["schema"] == LAUNCH_REQUEST_SCHEMA and document["workload"] in WORKLOADS
+            and all(type(document[key]) is str and SHA256.fullmatch(document[key])
+                    for key in ("descriptor_sha256", "manifest_sha256"))
+            and type(document["target_id"]) is str and type(document["requested_at"]) is str):
+        raise DeliveryRefused("launch_request_invalid", "request")
+    return dict(document)
+
+
+class SystemdManagedFleetTarget(ManagedFleetTarget):
+    """The managed Fleet target whose guardian is owned by the owner-fixed systemd unit.
+
+    `runner` is the `systemctl` port (argv only). Control rights used: `show` and `start` of exactly
+    `MANAGED_SYSTEMD_UNIT`; a stop is the inherited graceful stop (pause, proven idle heartbeat, stop
+    file) and the unit ends when its launcher returns. Unit state is read, never guessed: an unknown
+    `ActiveState` raises instead of reading as stopped."""
+
+    kind = KIND_MANAGED_SYSTEMD
+
+    def __init__(self, *, runner=run_process, timeout: int = 60, **kwargs):
+        super().__init__(**kwargs)
+        self.runner, self.timeout = runner, timeout
+
+    @staticmethod
+    def unit(target: dict) -> str:
+        if target.get("service") != MANAGED_SYSTEMD_UNIT:
+            raise DeliveryRefused("target_unit_not_allowed", "service")
+        return MANAGED_SYSTEMD_UNIT + ".service"
+
+    def _show(self, target: dict) -> dict:
+        result = self.runner(["systemctl", "show", self.unit(target), "-p", "ActiveState", "-p", "MainPID",
+                              "-p", "InvocationID"], timeout=self.timeout)
+        if result.returncode:
+            raise RuntimeError("managed unit state unavailable")
+        return dict(line.split("=", 1) for line in (result.stdout or "").splitlines() if "=" in line)
+
+    def unit_active(self, target: dict) -> bool:
+        state = self._show(target).get("ActiveState")
+        if state in UNIT_ACTIVE_STATES:
+            return True
+        if state in UNIT_STOPPED_STATES:
+            return False
+        raise RuntimeError("managed unit state unavailable")
+
+    def running(self, target: dict) -> bool:
+        """The unit's control group owns the launcher and the sealed child, so its state answers
+        first; a recorded or self-reported pid still alive is also a runner on this target."""
+        return self.unit_active(target) or super().running(target)
+
+    def _launch(self, target: dict, descriptor: dict, context: dict) -> dict:
+        """The launch request, then ONE `systemctl start` of the owner-fixed unit, under the guard."""
+        _write_json(self.path(target, TARGET_FILE), owner_target(target))
+        request = validate_launch_request({
+            "schema": LAUNCH_REQUEST_SCHEMA, "target_id": target["target_id"],
+            "descriptor_sha256": descriptor_digest(descriptor),
+            "manifest_sha256": manifest_digest(context["manifest"]), "workload": self.workload,
+            "requested_at": _utcnow()})
+        _write_json(self.path(target, LAUNCH_REQUEST_FILE), request)
+        result = self.runner(["systemctl", "start", self.unit(target)], timeout=self.timeout)
+        if result.returncode:
+            raise RuntimeError("managed unit could not be started")
+        shown = self._show(target)
+        main_pid = shown.get("MainPID") or ""
+        record = {"pid": int(main_pid) if main_pid.isdigit() and int(main_pid) > 0 else None,
+                  "service": target["service"], "invocation_id": shown.get("InvocationID") or None,
+                  "started_at": _utcnow(), "descriptor_sha256": request["descriptor_sha256"],
+                  "manifest_sha256": request["manifest_sha256"]}
+        _write_json(self.path(target, STATE_FILE), record)
+        return {"started": True, "pid": record["pid"], "launch": record}
+
+
+def fleet_gate(target_id: str, descriptor_sha256: str) -> dict:
+    """The production debt authority of `supervise`: the host store's actual Fleet."""
+    from codex_harness.application.fleet import Fleet
+    from codex_harness.bootstrap import build
+
+    return Fleet(build().store).activation_gate(target_id, descriptor_sha256)
+
+
+def _journal(root: Path, event: str, **facts) -> None:
+    """One flushed JSON line of what `supervise` decided: codes and ids, never paths or values."""
+    line = json.dumps({"event": event, "at": _utcnow(), "invocation_id": os.environ.get("INVOCATION_ID"),
+                       **facts}, sort_keys=True)
+    with open(root / SUPERVISOR_JOURNAL, "a", encoding="utf-8") as handle:
+        handle.write(line + "\n")
+        handle.flush()
+        os.fsync(handle.fileno())
+
+
+def supervise(state_dir: str, *, gate=fleet_gate, launcher=None) -> int:
+    """The unit's ExecStart after the host launcher's fence/activation checks: re-validate everything the
+    controller persisted, then run the incumbent `launch` in THIS unit's control group.
+
+    A (re)start of the unit - the controller's start, a bounded `Restart=on-failure` or a boot - passes
+    the same checks: the persisted request names this target and the descriptor that is on it now, the
+    sealed runtime still verifies to the manifest the controller launched, no stop was requested, the
+    instance that reported last is not still alive, and the Fleet's activation gate (a committed pause,
+    then settled debt) holds. Any refusal starts nothing and
+    exits `EXIT_REFUSED`, which the unit declares non-restartable; unresolved debt refuses new work."""
+    root = Path(state_dir)
+    try:
+        request = validate_launch_request(_read_json(root / LAUNCH_REQUEST_FILE))
+        target = validate_targets({"schema": REGISTRY_SCHEMA,
+                                   "targets": [_read_json(root / TARGET_FILE)]})["targets"][0]
+        if target["kind"] != KIND_MANAGED_SYSTEMD or not same_path(target["state_dir"], root) \
+                or request["target_id"] != target["target_id"]:
+            raise DeliveryRefused("launch_request_foreign", "target_id")
+        if os.path.lexists(root / (STOP_FILE + ".json")):
+            raise DeliveryRefused("stop_requested", "state_dir")
+        previous = _read_json(root / RECEIPT_FILE)
+        if isinstance(previous, dict) and _alive(previous.get("pid")):
+            # The instance that reported last is still running (a restart whose control-group cleanup did
+            # not end it): starting another would make two Fleet runners. Held for its owner instead.
+            raise DeliveryRefused("previous_instance_alive", "pid")
+        descriptor = validate_descriptor(_read_json(root / DESCRIPTOR_FILE))
+        if descriptor_digest(descriptor) != request["descriptor_sha256"]:
+            raise DeliveryRefused("descriptor_changed", "descriptor")
+        if manifest_digest(Materializer(target).verify(descriptor)) != request["manifest_sha256"]:
+            raise DeliveryRefused("runtime_manifest_changed", "root")
+        try:
+            verdict = gate(target["target_id"], request["descriptor_sha256"])
+        except Exception as exc:
+            raise DeliveryRefused("fleet_pause_unknown", "fleet") from exc
+        refusal = gate_refusal(verdict if isinstance(verdict, dict) else {})
+        if refusal is not None:
+            raise DeliveryRefused(refusal, "fleet")
+    except (DeliveryRefused, EnvironmentUnqualified) as exc:
+        try:
+            _journal(root, "refused", reason_code=getattr(exc, "reason_code", "environment_unqualified"))
+        except OSError:
+            pass
+        return EXIT_REFUSED
+    _journal(root, "launch", descriptor_sha256=request["descriptor_sha256"], workload=request["workload"])
+    return (launcher or launch)(str(root), request["descriptor_sha256"], request["workload"])
 
 
 # ----- inside the sealed runtime ------------------------------------------------------------------
@@ -608,7 +777,7 @@ def launch(state_dir: str, descriptor_sha256: str, workload: str) -> int:
         target = validate_targets({"schema": REGISTRY_SCHEMA,
                                    "targets": [_read_json(root / TARGET_FILE)]})["targets"][0]
         descriptor = validate_descriptor(_read_json(root / DESCRIPTOR_FILE))
-        if target["kind"] != KIND_MANAGED or not same_path(target["state_dir"], root) \
+        if target["kind"] not in MANAGED_KINDS or not same_path(target["state_dir"], root) \
                 or descriptor_digest(descriptor) != descriptor_sha256 or workload not in WORKLOADS:
             return EXIT_REFUSED
         Materializer(target).verify(descriptor)
@@ -620,9 +789,10 @@ def launch(state_dir: str, descriptor_sha256: str, workload: str) -> int:
 
 
 def main(argv=None) -> int:
-    """`python -m codex_harness.adapters.managed_runtime launch|entry --state-dir DIR ...`.
+    """`python -m codex_harness.adapters.managed_runtime launch|entry|supervise --state-dir DIR ...`.
 
-    Only the managed target itself starts these; every owner command goes through `zeus host-delivery`.
+    Only the managed target itself (or, for `supervise`, its owner-fixed unit) starts these; every owner
+    command goes through `zeus host-delivery`.
     """
     parser = argparse.ArgumentParser(prog=MODULE)
     sub = parser.add_subparsers(dest="command", required=True)
@@ -633,16 +803,21 @@ def main(argv=None) -> int:
     child = sub.add_parser("entry")
     child.add_argument("--state-dir", required=True, dest="state_dir")
     child.add_argument("--workload", required=True, choices=list(WORKLOADS))
+    supervised = sub.add_parser("supervise")
+    supervised.add_argument("--state-dir", required=True, dest="state_dir")
     args = parser.parse_args(list(sys.argv[1:] if argv is None else argv))
     if args.command == "launch":
         return launch(args.state_dir, args.descriptor_sha256, args.workload)
+    if args.command == "supervise":
+        return supervise(args.state_dir)
     return entry(args.state_dir, args.workload)
 
 
-__all__ = ["FIXTURE_JOBS_FILE", "LAUNCHER_JOURNAL", "MODULE", "TARGET_FILE",
-           "FixtureLauncher", "ManagedFleetTarget", "Materializer", "RuntimeControl", "entry",
-           "fixture_config", "launch", "launcher_environment", "main", "owner_target", "run_fixture",
-           "run_fleet", "runtime_environment", "runtime_image", "scan"]
+__all__ = ["FIXTURE_JOBS_FILE", "LAUNCHER_JOURNAL", "LAUNCH_REQUEST_FILE", "LAUNCH_REQUEST_SCHEMA", "MODULE",
+           "SUPERVISOR_JOURNAL", "TARGET_FILE", "FixtureLauncher", "ManagedFleetTarget", "Materializer",
+           "RuntimeControl", "SystemdManagedFleetTarget", "entry", "fixture_config", "fleet_gate", "gate_refusal",
+           "launch", "launcher_environment", "main", "owner_target", "run_fixture", "run_fleet",
+           "runtime_environment", "runtime_image", "scan", "supervise", "validate_launch_request"]
 
 
 if __name__ == "__main__":

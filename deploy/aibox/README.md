@@ -15,6 +15,9 @@ The core coordinator contract is in [INTEGRATION-CONTRACT.md](INTEGRATION-CONTRA
 | `systemd/zeus-aibox-monitor-web.service.in` | monitor page, `127.0.0.1` only (harness-fixed bind) |
 | `systemd/zeus-aibox-inspect.{service,timer}.in` | read-only lifecycle inspection every 5 min |
 | `systemd/zeus-aibox.target.in` | groups the three services (`PartOf=`) |
+| `systemd/zeus-aibox-managed-fleet.service.in` | owner-fixed unit of the managed Fleet target (SPEC s14 G3); started by HostDelivery only |
+| `systemd/zeus-aibox-owner-actions.service.in` | server-owned research-acceptance / plan / canary coordinator (SPEC s14 G1/G2) |
+| `polkit/50-zeus-aibox-managed-fleet.rules.in` | `start` of exactly the managed Fleet unit for the service user; nothing else |
 | `env/zeus-aibox.env.example` | non-secret settings; secret names only |
 | `zeus_aibox_service.py` | render / verify / launch / journal / inspect / network / host-id (stdlib) |
 
@@ -93,6 +96,20 @@ Static policy per service: explicit `User`/`Group` (non-root), absolute `Working
 5. When the coordinator reaches `restored_paused` it writes `host-activation.json`. Then
    `systemctl start zeus-aibox-fleet`. Confirm the Fleet is paused (`zeus fleet status`) and run
    `inspect`. Enable `zeus-aibox.target` only after A acceptance.
+
+## Managed Fleet and owner actions (SPEC s14; owner actions, not executed by this task)
+
+- Only one Fleet runner exists: writing `runtime/control/fleet-owner.json`
+  (`{"schema": "urn:zeus:aibox-fleet-owner:1", "owner": "managed-fleet",
+  "unit": "zeus-aibox-managed-fleet.service"}`) retires the bootstrap `fleet` role (it then refuses
+  `fleet_owner_managed`). The managed role starts only while `zeus-aibox-fleet.service` is inactive.
+- The managed target's registry entry is kind `managed_fleet_systemd`, `service`
+  `zeus-aibox-managed-fleet` and `state_dir` `<root>/runtime/managed-fleet`. `releases/current` stays the
+  stable controller code. The candidate runtime is the descriptor's sealed root and its startup receipt.
+- Install the rendered polkit rule only together with the managed unit. The delivery controller never
+  stops that unit: a managed stop is the target's graceful pause/idle/stop file.
+- `zeus-aibox-owner-actions.service` needs `ZEUS_OWNER_ACTIONS_POLICY` in the non-secret config and a
+  registered owner policy (`zeus owner-actions register`). An idle tick calls no model.
 
 ## Monitoring without Windows
 
