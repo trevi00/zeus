@@ -413,10 +413,14 @@ def test_incumbent_tests_run_against_candidate_code_with_incumbent_config(tmp_pa
                                                     "def test_value():\n    assert product.VALUE == 2\n"})
     (incumbent / "pyproject.toml").write_text("[tool.pytest.ini_options]\n", encoding="utf-8")
     candidate = suite_tree(tmp_path / "candidate", {"test_own.py": "def test_own():\n    pass\n"})
-    (candidate / "product.py").write_text("VALUE = 2\n", encoding="utf-8")
+    product = candidate / "product.py"
+    product.write_text("VALUE = 2\n", encoding="utf-8")
+    first = product.stat()
     artifacts = FileArtifacts(tmp_path / "artifacts")
     suite = ReleaseSuite(artifacts, lambda: None)
-    env = {**os.environ, "PYTHONPATH": os.pathsep.join([str(candidate), os.environ.get("PYTHONPATH", "")])}
+    # Child bytecode stays enabled so a caller's PYTHONDONTWRITEBYTECODE cannot hide a stale .pyc.
+    inherited = {key: value for key, value in os.environ.items() if key != "PYTHONDONTWRITEBYTECODE"}
+    env = {**inherited, "PYTHONPATH": os.pathsep.join([str(candidate), os.environ.get("PYTHONPATH", "")])}
     argv = [PY, "-m", "pytest", str(incumbent / "tests"), "-c", str(incumbent / "pyproject.toml"),
             "--import-mode=importlib", "-p", "no:cacheprovider"]
     result = suite.check(argv, cwd=str(candidate), timeout=60, env=env, binding=BINDING)
@@ -426,7 +430,11 @@ def test_incumbent_tests_run_against_candidate_code_with_incumbent_config(tmp_pa
     assert report["config"]["inifile_sha256"] and "PYTHONPATH" in report["env_keys"]
     manifest = artifacts.document(report["manifest"])
     assert manifest["nodeids"] == ["tests/test_contract.py::test_value"], "incumbent definitions, not candidate's"
-    (candidate / "product.py").write_text("VALUE = 3\n", encoding="utf-8")
+    assert list((candidate / "__pycache__").glob("product.*.pyc")), "child bytecode was written"
+    # The changed candidate differs in source size; its mtime is forced equal to the first candidate's.
+    product.write_text("VALUE = 300\n", encoding="utf-8")
+    os.utime(product, ns=(first.st_atime_ns, first.st_mtime_ns))
+    assert product.stat().st_mtime_ns == first.st_mtime_ns
     assert suite.check(argv, cwd=str(candidate), timeout=60, env=env, binding=BINDING)["passed"] is False
 
 
