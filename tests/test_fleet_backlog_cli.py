@@ -545,13 +545,9 @@ def test_the_configured_runner_continues_successors_and_emits_the_structured_tra
     monkeypatch.setattr(configuration, "settings", lambda: {PLAN_SETTING: "plan-1"})
     monkeypatch.setattr(fleet_runtime, "LaneLauncher", FakeLauncher)
     monkeypatch.setattr(bootstrap, "build_observer", lambda store, component, role=None: observer)
-    installed = {name: signal.getsignal(getattr(signal, name))
-                 for name in ("SIGINT", "SIGTERM", "SIGBREAK") if hasattr(signal, name)}
-    try:
-        summary = fleet_cli.execute(service, SimpleNamespace(fleet_command="run", once=True))
-    finally:
-        for name, handler in installed.items():
-            signal.signal(getattr(signal, name), handler)
+    before = handlers()
+    summary = fleet_cli.execute(service, SimpleNamespace(fleet_command="run", once=True))
+    assert handlers() == before, "the run hands the process its previous handlers back"
     assert summary["exit_code"] == 0 and summary["admitted"] == ["op-one", "op-two"]
     assert FakeLauncher.launched_ids == ["op-one", "op-two"]
     assert [entry["status"] for entry in summary["finalized"]] == ["accepted", "accepted"]
@@ -577,17 +573,100 @@ def test_the_runner_without_the_host_setting_builds_no_backlog_and_no_observer(s
     monkeypatch.setattr(bootstrap, "build_observer",
                         lambda *a, **k: pytest.fail("no observer is built without the opt-in"))
     before = deepcopy(service.store.data)
-    installed = {name: signal.getsignal(getattr(signal, name))
-                 for name in ("SIGINT", "SIGTERM", "SIGBREAK") if hasattr(signal, name)}
-    try:
-        summary = fleet_cli.execute(service, SimpleNamespace(fleet_command="run", once=True))
-    finally:
-        for name, handler in installed.items():
-            signal.signal(getattr(signal, name), handler)
+    installed = handlers()
+    summary = fleet_cli.execute(service, SimpleNamespace(fleet_command="run", once=True))
+    assert handlers() == installed, "the run hands the process its previous handlers back"
     assert summary["backlog"] == {"state": "disabled", "outcome": None, "reason_code": None,
                                   "error_type": None}
     assert summary["admitted"] == [] and FakeLauncher.launched_ids == []
     assert service.store.data == before, "the default runtime selects nothing and writes nothing"
+
+
+def owned_signals():
+    return [getattr(signal, name) for name in ("SIGINT", "SIGTERM", "SIGBREAK") if hasattr(signal, name)]
+
+
+def handlers():
+    return {number: signal.getsignal(number) for number in owned_signals()}
+
+
+def plain_run(service, repository, monkeypatch, launcher):
+    """`zeus fleet run` without the opt-in settings: the real runner, lane launcher replaced."""
+    from codex_harness.adapters import configuration
+
+    register(service, repository)
+    monkeypatch.setattr(configuration, "settings", lambda: {})
+    monkeypatch.setattr(fleet_runtime, "LaneLauncher", launcher)
+    return fleet_cli.execute(service, SimpleNamespace(fleet_command="run", once=False))
+
+
+def test_an_actual_signal_while_running_stops_gracefully_and_the_handlers_are_restored(
+        service, repository, monkeypatch):
+    """Release CI cancellation: the run's handlers close over its runner, so a leaked handler
+    swallowed a later interrupt in the same process. A real SIGINT delivered while the continuous
+    runner scans goes through the installed handler to `stop`; afterwards the previous handlers,
+    including a custom Python handler an earlier owner installed, are back."""
+    received = []
+    incoming = signal.signal(signal.SIGINT, lambda *_: received.append(True))
+    try:
+        before, during = handlers(), {}
+
+        class SignallingLauncher(FakeLauncher):
+            def budget_exhausted(self, budget):
+                during.update(handlers())
+                signal.raise_signal(signal.SIGINT)
+                return False
+
+        summary = plain_run(service, repository, monkeypatch, SignallingLauncher)
+        assert all(during[number] is not before[number] for number in before), "installed while running"
+        assert summary["exit_code"] == 0 and summary["stopped"] is True and summary["admitted"] == []
+        assert handlers() == before and received == []
+        signal.raise_signal(signal.SIGINT)
+        assert received == [True], "a later interrupt reaches the incoming owner, not the stopped runner"
+    finally:
+        signal.signal(signal.SIGINT, incoming)  # this test's own custom handler, not the run's
+
+
+def test_a_runner_exception_restores_the_handlers_and_keeps_the_original_error(
+        service, repository, monkeypatch):
+    before = handlers()
+
+    class FailingLauncher(FakeLauncher):
+        def budget_exhausted(self, budget):
+            assert signal.getsignal(signal.SIGINT) is not before[signal.SIGINT]
+            raise RuntimeError("runner failed")
+
+    with pytest.raises(RuntimeError, match="runner failed"):
+        plain_run(service, repository, monkeypatch, FailingLauncher)
+    assert handlers() == before
+
+
+def test_a_partial_handler_installation_restores_only_what_it_installed(service, repository, monkeypatch):
+    """INJECTED FAULT: installing the second owned handler fails after the first was replaced."""
+    numbers = owned_signals()
+    if len(numbers) < 2:
+        pytest.skip("this platform exposes fewer than two owned signals")
+    before = handlers()
+    real, calls = signal.signal, []
+
+    def failing_install(number, handler):
+        calls.append((number, handler))
+        if number == numbers[1] and handler is not before[number]:
+            raise OSError("injected handler installation failure")
+        return real(number, handler)
+
+    monkeypatch.setattr(signal, "signal", failing_install)
+
+    class NeverRuns(FakeLauncher):
+        def budget_exhausted(self, budget):
+            raise AssertionError("the runner ran after a failed installation")
+
+    with pytest.raises(OSError, match="injected"):
+        plain_run(service, repository, monkeypatch, NeverRuns)
+    # Installed first, failed second, then only the first is handed back; later signals untouched.
+    assert [number for number, _ in calls] == [numbers[0], numbers[1], numbers[0]]
+    assert calls[-1][1] is before[numbers[0]]
+    assert handlers() == before
 
 
 def test_a_refusal_prints_a_code_and_a_type_never_the_document_or_a_path(tmp_path):

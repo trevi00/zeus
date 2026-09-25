@@ -5,6 +5,7 @@ Contracts: INV-FLEET-001 and INV-FLEET-BACKLOG-001.
 from __future__ import annotations
 
 import signal
+from contextlib import suppress
 from pathlib import Path
 
 from codex_harness.adapters.operation_cli import GitSource, bind_goal, read_manifest, refusal
@@ -162,11 +163,21 @@ def run(service, args, *, control=None) -> dict:
     # dependency and a reconciliation outage never blocks admission (operating-portfolio-001).
     runner = FleetRunner(fleet, LaneLauncher(config, host), reconcile=portfolio_reconciler(service.store),
                          backlog=backlog_tick, control=control, continuation=continuation_tick)
-    for name in ("SIGINT", "SIGTERM", "SIGBREAK"):
-        if hasattr(signal, name):
-            # Graceful stop: admission closes, owned children are drained, nothing is killed.
-            signal.signal(getattr(signal, name), lambda *_: runner.stop())
-    return {**runner.run(once=bool(args.once)), "exit_code": 0}
+    installed = []  # (signal, previous handler) for each handler THIS run replaced
+    try:
+        for name in ("SIGINT", "SIGTERM", "SIGBREAK"):
+            if hasattr(signal, name):
+                # Graceful stop: admission closes, owned children are drained, nothing is killed.
+                number = getattr(signal, name)
+                installed.append((number, signal.signal(number, lambda *_: runner.stop())))
+        summary = runner.run(once=bool(args.once))
+    finally:
+        # The handlers close over this run's runner: every exit, including an exception and a
+        # partial installation, hands the process its previous handlers back.
+        for number, previous in reversed(installed):
+            with suppress(Exception):  # a restore failure never replaces the original outcome
+                signal.signal(number, previous)
+    return {**summary, "exit_code": 0}
 
 
 def record_delivery(service, args) -> dict:
