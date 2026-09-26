@@ -24,12 +24,34 @@ No transaction is open across a lane store, Git, a process, an artifact write or
 own transactions. Rejected, unknown and refused are named terminal states: nothing here retries a model
 call on a timer, and changed evidence is a NEW action while the old one keeps its history. An idle tick
 writes nothing and calls nothing.
+
+Policy v2 adds two opt-in handoffs, each to its existing owner (aibox whole-goal adjudication C1/C3):
+
+* `delivery_requalify` - a completed plan of this policy whose delivery the controller BLOCKED as
+  `reviewed_base_moved` is withdrawn through the lane's GitHub-capable `HostDelivery.withdraw` (the host was
+  never touched; staleness observed now) and then requalified through `Continuation.requalify_delivery` on
+  the observed current main with a persisted owner document (never a goal migration). A per-family cap
+  slot is taken atomically with the move out of `intended`; the cap counts slots already held, never the
+  action itself. Unobservable GitHub or main keeps the row where it is: the debt stays owned.
+* `research_dispatch` - a held family the ported RO-1 rule scopes exactly gets ONE guarded
+  `research-program run <program> --ticks 1` child: the provider probe runs before any resume,
+  reservation or spawn, the launch id (which is also the cycle owner token) is persisted before the
+  spawn, later ticks only poll, and the child's own cycle rows decide the outcome. A launch that provably
+  never entered is relaunched at most once; unknown cleanup or a foreign cycle is `unknown`, never relaunched.
 """
 from __future__ import annotations
 
 import hashlib
 
-from codex_harness.application.portfolio import family_id
+from codex_harness.application.portfolio import BUCKET_BINDINGS, BUCKET_INVESTIGATIONS, family_id
+from codex_harness.application.research_program import (
+    BUCKET_CYCLES,
+    BUCKET_DISPATCHES,
+    BUCKET_HEADS,
+    BUCKET_PROGRAMS,
+    BUCKET_RECOVERIES,
+    ResearchProgram,
+)
 from codex_harness.domain.continuation import (
     AWAITING_OWNER,
     DELIVERY,
@@ -37,6 +59,7 @@ from codex_harness.domain.continuation import (
     DELIVERY_BOUND,
     DELIVERY_STALE,
     MIXED_RECEIPT_SCHEMA,
+    REQUALIFICATION_REQUALIFIABLE,
     RESEARCH,
     RESEARCH_RECEIPT_SCHEMA,
     RESEARCH_REQUIRED,
@@ -47,6 +70,7 @@ from codex_harness.domain.continuation import (
 )
 from codex_harness.domain.host_delivery import (
     AWAITING_CONSUMPTION,
+    BLOCKED,
     CANARY_FLEET,
     TERMINAL_STAGES,
     DeliveryRefused,
@@ -65,18 +89,26 @@ from codex_harness.domain.owner_actions import (
     COMPLETED,
     DELIVERY_CANARY,
     DELIVERY_PLAN,
+    DELIVERY_REQUALIFY,
     EVIDENCE_REF,
     INTENDED,
     INVOKING,
+    LAUNCHING,
     MAX_ACTIONS_PER_TICK,
     MAX_ASSESSMENT_LAUNCHES,
+    MAX_RESEARCH_LAUNCHES,
     OWNER_PHASE,
     PUBLISHED,
     PUBLISHING,
     REFUSED,
     REJECTED,
+    REQUALIFY_REASON,
+    REQUALIFYING,
     REQUESTED,
+    RESEARCH_DISPATCH,
     RESEARCH_RECEIPT,
+    RESEARCH_TRANSIENT,
+    RUNNING,
     STATUS_SCHEMA,
     TERMINAL,
     TICK_SCHEMA,
@@ -84,6 +116,7 @@ from codex_harness.domain.owner_actions import (
     VERDICT_ACCEPTED,
     VERDICT_REJECTED,
     VERDICT_UNKNOWN,
+    WITHDRAWING,
     OwnerActionRefused,
     action_id,
     assemble_receipt,
@@ -107,11 +140,22 @@ from codex_harness.domain.owner_actions import (
     plan_path,
     plan_ref,
     policy_digest,
+    requalification_document,
+    requalification_policy,
+    requalification_rationale,
+    requalify_binding,
+    requalify_slots,
     research_binding,
+    research_decision,
+    research_dispatch_binding,
+    research_launch_id,
+    research_outcome,
+    research_policy,
     reusable_assessment,
     validate_policy,
     view,
 )
+from codex_harness.domain.research_program import cycle_id, headroom
 
 BUCKET_POLICIES = "owner_action_policies"
 BUCKET_ACTIONS = "owner_actions"
@@ -136,13 +180,23 @@ class OwnerActions:
     `assessments` the independent-assessment port (`context`, `document`, `start`, `poll`); `targets`
     the target-file port over the incumbent state files (`startup`, and the plan-scoped `request`,
     `write_request`, `write_receipt`); `fleet` the Fleet admitting the owner's canary; `validate` the
-    incumbent operation-manifest validator."""
+    incumbent operation-manifest validator.
+
+    Policy v2 ports: `withdrawals(lane_id)` the lane's GitHub-capable `HostDelivery` (the same one
+    `host-delivery withdraw --lane` builds); `mainline(lane_id)` the lane's remote-main reader;
+    `requalify(document)` the existing `Continuation.requalify_delivery` with its pin, runtime and
+    mainline verification; `artifacts` the trusted content-addressed store the rationale is put in;
+    `research` the guarded research-tick port (`probe`, `start`, `poll`); `ledger()` the machine call
+    ledger counts the program's headroom is read from."""
 
     def __init__(self, store, *, continuation=None, org=None, lanes=None, deliveries=None, publisher=None,
-                 assessments=None, targets=None, fleet=None, validate=None, clock=utcnow):
+                 assessments=None, targets=None, fleet=None, validate=None, clock=utcnow, withdrawals=None,
+                 mainline=None, requalify=None, artifacts=None, research=None, ledger=None):
         self.store, self.continuation, self.org, self.lanes = store, continuation, org, lanes
         self.deliveries, self.publisher, self.assessments = deliveries, publisher, assessments
         self.targets, self.fleet, self.validate, self.clock = targets, fleet, validate, clock
+        self.withdrawals, self.mainline, self.requalify, self.artifacts = withdrawals, mainline, requalify, artifacts
+        self.research, self.ledger = research, ledger
 
     # ----- registry -------------------------------------------------------------------------------
     def register(self, document, pin: dict) -> dict:
@@ -227,9 +281,20 @@ class OwnerActions:
             intents = [r for r in tx.scan(CONTINUATION_INTENTS) if r.get("policy_id") == continuation["id"]]
             receipts = {r["id"] for r in tx.scan(CONTINUATION_RECEIPTS)}
             actions = [r for r in tx.scan(BUCKET_ACTIONS) if r.get("policy_id") == row["id"]]
+            dispatched = {(a.get("subject") or {}).get("intent_id") for a in tx.scan(BUCKET_ACTIONS)
+                          if a.get("kind") == RESEARCH_DISPATCH}
         busy = {(a["kind"], (a.get("subject") or {}).get("intent_id")) for a in actions if a["state"] not in TERMINAL}
         created = []
+        research = research_policy(row["policy"])
         for intent in sorted(intents, key=lambda r: (str(r.get("created_at")), r["id"])):
+            # ONE guarded dispatch per held intent, whatever its outcome: a refused, empty, rejected or
+            # unknown one is the owner's named exception, never a second tick (no collection-only spin).
+            if research is not None and intent.get("route") == RESEARCH and intent.get("state") == RESEARCH_REQUIRED \
+                    and intent["id"] not in receipts and intent["id"] not in dispatched:
+                try:
+                    created += self._discover_research(row, research, intent, intents)
+                except (ContractError, OSError, RuntimeError, ValueError) as exc:
+                    waits[RESEARCH_DISPATCH + ":" + intent["id"]] = getattr(exc, "reason_code", None) or type(exc).__name__
             try:
                 if intent.get("route") == RESEARCH and intent.get("state") == RESEARCH_REQUIRED \
                         and intent["id"] not in receipts and (RESEARCH_RECEIPT, intent["id"]) not in busy:
@@ -253,6 +318,18 @@ class OwnerActions:
                     created += self._create(row, DELIVERY_CANARY, binding, dict(plan["subject"]))
             except (ContractError, OSError, RuntimeError, ValueError) as exc:
                 waits[plan["id"]] = getattr(exc, "reason_code", None) or type(exc).__name__
+        block = requalification_policy(row["policy"])
+        if block is not None:
+            # A plan that already has its requalify action (in any state) is decided: no further read.
+            decided = {a["binding"]["plan_id"] for a in actions if a["kind"] == DELIVERY_REQUALIFY}
+            for plan in [a for a in actions if a["kind"] == DELIVERY_PLAN and a["state"] == COMPLETED]:
+                if plan["plan_id"] in decided or (DELIVERY_REQUALIFY, plan["subject"]["intent_id"]) in busy:
+                    continue
+                try:
+                    created += self._discover_requalify(row, block, plan)
+                except (ContractError, OSError, RuntimeError, ValueError) as exc:
+                    waits[DELIVERY_REQUALIFY + ":" + plan["id"]] = getattr(exc, "reason_code", None) \
+                        or type(exc).__name__
         return created
 
     def _create(self, row: dict, kind: str, binding: dict, subject: dict) -> list:
@@ -282,7 +359,8 @@ class OwnerActions:
 
     def _advance(self, policy_row: dict, continuation: dict, action: dict) -> dict | None:
         handler = {RESEARCH_RECEIPT: self._advance_research, DELIVERY_PLAN: self._advance_plan,
-                   DELIVERY_CANARY: self._advance_canary}[action["kind"]]
+                   DELIVERY_CANARY: self._advance_canary, RESEARCH_DISPATCH: self._advance_dispatch,
+                   DELIVERY_REQUALIFY: self._advance_requalify}[action["kind"]]
         return handler(policy_row, continuation, action)
 
     # ===== G1: scoped research acceptance ===========================================================
@@ -722,10 +800,278 @@ class OwnerActions:
         return isinstance(receipt, dict) and receipt.get("instance_id") == binding["instance_id"] \
             and receipt.get("descriptor_sha256") == binding["descriptor_sha256"]
 
+    # ===== C1: policy-triggered requalification of a stale reviewed base ===========================
+    def _discover_requalify(self, row: dict, block: dict, plan: dict) -> list:
+        """Owed only for a completed plan of THIS policy whose delivery the controller blocked for exactly
+        an authorized reason, while its continuation intent can still be requalified. Nothing else."""
+        lane = plan["subject"]["lane"]
+        delivery = self.deliveries(lane)
+        with delivery.store.transaction() as tx:
+            observed = tx.get("host_delivery_intents", plan["plan_id"])
+        if not (isinstance(observed, dict) and observed.get("stage") == BLOCKED
+                and observed.get("reason_code") in block["reasons"]
+                and observed.get("plan_sha256") == plan["plan_sha256"]):
+            return []
+        with self.store.transaction() as tx:
+            intent = tx.get(CONTINUATION_INTENTS, plan["subject"]["intent_id"])
+        if not (isinstance(intent, dict) and intent.get("route") == DELIVERY
+                and intent.get("state") in REQUALIFICATION_REQUALIFIABLE):
+            return []
+        return self._create(row, DELIVERY_REQUALIFY, requalify_binding(plan, intent, observed),
+                            {"intent_id": intent["id"], "lane": lane})
+
+    def _advance_requalify(self, policy_row: dict, continuation: dict, action: dict) -> dict | None:
+        state = action["state"]
+        if state == INTENDED:
+            return self._take_slot(policy_row, continuation, action)
+        if state == WITHDRAWING:
+            return self._withdraw(action)
+        if state == REQUALIFYING:
+            return self._requalify(continuation, action)
+        return None
+
+    def _take_slot(self, policy_row: dict, continuation: dict, action: dict) -> dict:
+        """Before any effect: the action is still owed, its rationale is in the trusted store, and ONE cap
+        slot is taken in the transaction that moves it - the count, the check and the move commit together
+        (`Store.transaction` serializes writers), so two coordinators can never overshoot the family cap."""
+        binding = action["binding"]
+        block = requalification_policy(policy_row["policy"])
+        if block is None or binding["reason"] not in block["reasons"]:
+            return self._effect(self._move(action, REFUSED, "requalification_policy_disabled"))
+        if binding["continuation_policy"] != continuation["id"]:
+            return self._effect(self._move(action, REFUSED, "requalification_policy_foreign"))
+        if self.withdrawals is None or self.requalify is None or self.mainline is None or self.artifacts is None:
+            raise OwnerActionRefused("requalify_ports_unconfigured", "withdrawals")
+        lane = action["subject"]["lane"]
+        with self.deliveries(lane).store.transaction() as tx:
+            observed = tx.get("host_delivery_intents", binding["plan_id"])
+        if not (isinstance(observed, dict) and observed.get("stage") == BLOCKED
+                and observed.get("reason_code") == binding["reason"]
+                and observed.get("plan_sha256") == binding["plan_sha256"]):
+            return self._effect(self._move(action, REFUSED, "requalification_delivery_moved"))
+        rationale = requalification_rationale(action, observed)
+        reference = self.artifacts.put(canonical(rationale), "owner-requalification-rationale")["ref"]
+        with self.store.transaction() as tx:
+            current = tx.get(BUCKET_ACTIONS, action["id"])
+            if not (isinstance(current, dict) and current.get("version") == action.get("version")):
+                raise ActionChanged(action["id"])
+            taken = requalify_slots(tx.scan(BUCKET_ACTIONS), binding, action["id"])
+            if taken >= block["max_per_family"]:
+                row = moved(current, REFUSED, self.clock(), "requalification_exhausted", slots_taken=taken)
+            else:
+                row = moved(current, WITHDRAWING, self.clock(), "requalification_slot_taken", cap_slot=taken + 1,
+                            max_per_family=block["max_per_family"], rationale_ref=reference,
+                            rationale_sha256=digest(rationale))
+            tx.put(BUCKET_ACTIONS, row["id"], row)
+        if row["state"] == REFUSED:
+            return self._effect(row)
+        return self._withdraw(row)
+
+    def _withdraw(self, action: dict) -> dict:
+        """The lane's own GitHub-capable withdrawal, citing the stored rationale. Its identical replay is
+        cached; an unobservable GitHub or store raises (the row waits and the blocked plan keeps the target
+        busy: that debt stays owned); a definite refusal is named."""
+        binding = action["binding"]
+        try:
+            result = self.withdrawals(action["subject"]["lane"]).withdraw(
+                binding["plan_id"], binding["plan_sha256"], REQUALIFY_REASON, action["rationale_ref"])
+        except DeliveryRefused as exc:
+            if exc.reason_code == "withdraw_unobservable":
+                raise
+            return self._effect(self._move(action, REFUSED, exc.reason_code))
+        withdrawal = result.get("withdrawal") or {}
+        row = self._move(action, REQUALIFYING, "delivery_withdrawn",
+                         withdrawal={"cached": result.get("cached"), "previous_stage": withdrawal.get("previous_stage"),
+                                     "main_effect": withdrawal.get("main_effect"),
+                                     "observed_main": (withdrawal.get("observed") or {}).get("main")})
+        return self._requalify(None, row)
+
+    def _requalify(self, continuation, action: dict) -> dict:
+        """The owner document is built ONCE on the main observed now and persisted before the call; every
+        later attempt replays exactly those bytes (the existing API answers an identical one `cached`)."""
+        binding = action["binding"]
+        row = action
+        if action.get("document") is None:
+            policy = self.continuation.policy(binding["continuation_policy"]) if continuation is None else continuation
+            if policy is None:
+                raise OwnerActionRefused("continuation_policy_unregistered", "continuation_policy")
+            lane = action["subject"]["lane"]
+            with self.deliveries(lane).store.transaction() as tx:
+                release = tx.get("releases", binding["release_id"])
+            if not isinstance(release, dict):
+                raise OwnerActionRefused("release_missing", "release_id")
+            try:
+                main = self.mainline(lane).remote_main()
+            except Exception as exc:
+                raise OwnerActionRefused("requalification_main_unreadable", "main_revision") from exc
+            document = requalification_document(action, policy, release.get("candidate") or {}, main)
+            row = self._move(action, REQUALIFYING, "requalification_document_persisted", document=document,
+                             document_sha256=digest(document))
+        try:
+            result = self.requalify(row["document"])
+        except ContinuationRefused as exc:
+            if exc.reason_code in REQUALIFY_WAITS:
+                raise
+            return self._effect(self._move(row, REFUSED, exc.reason_code))
+        return self._effect(self._move(row, COMPLETED, "requalification_recorded",
+                                       requalified={"cached": result.get("cached"),
+                                                    "requalification_intent": result.get("requalification_intent"),
+                                                    "successor_job": result.get("successor_job")}))
+
+    # ===== C3: asynchronous guarded research dispatch ================================================
+    def _research_scope(self, intent: dict, intents: list, program_id: str) -> dict:
+        """The held family's exact attempt set and its one investigation, and every durable row the ported
+        RO-1 rule reads, in ONE control-store read; the ledger is read outside it."""
+        attempts = sorted({a["job"] for a in research_attempts(intents, intent)})
+        with self.store.transaction() as tx:
+            rows = {name: tx.scan(name) for name in (BUCKET_PROGRAMS, BUCKET_DISPATCHES, BUCKET_RECOVERIES,
+                                                     BUCKET_HEADS, BUCKET_INVESTIGATIONS, FLEET_JOBS, BUCKET_BINDINGS)}
+        jobs = {job["id"]: job for job in rows[FLEET_JOBS] if isinstance(job, dict) and job.get("id") in attempts}
+        if set(jobs) != set(attempts):
+            raise OwnerActionRefused("research_attempt_unavailable", "attempts")
+        families = {family_id(job.get("status"), job.get("reason_code")) for job in jobs.values()}
+        if len(families) != 1:
+            raise OwnerActionRefused("research_scope_mixed", "attempts")
+        program = next((r for r in rows[BUCKET_PROGRAMS] if r.get("id") == program_id), None)
+        room = None
+        if isinstance(program, dict) and self.ledger is not None:
+            try:
+                room = headroom((program.get("config") or {}).get("budget"), self.ledger())
+            except Exception:  # an unreadable ledger is uncertainty: wait, never tick
+                room = None
+        return {"attempts": attempts, "investigation": families.pop(), "program": program, "room": room,
+                "rows": {"research_programs": rows[BUCKET_PROGRAMS],
+                         "research_investigation_dispatches": rows[BUCKET_DISPATCHES],
+                         "research_dispatch_recoveries": rows[BUCKET_RECOVERIES],
+                         "research_dispatch_heads": rows[BUCKET_HEADS],
+                         "portfolio_investigations": rows[BUCKET_INVESTIGATIONS], "fleet_jobs": rows[FLEET_JOBS],
+                         "portfolio_bindings": rows[BUCKET_BINDINGS]}}
+
+    def _research_decide(self, intent: dict, intents: list, program_id: str) -> tuple:
+        scope = self._research_scope(intent, intents, program_id)
+        decision = research_decision(program_id=program_id, investigation=scope["investigation"],
+                                     attempts=scope["attempts"], rows=scope["rows"], room=scope["room"],
+                                     now=self.clock())
+        return scope, decision
+
+    def _discover_research(self, row: dict, block: dict, intent: dict, intents: list) -> list:
+        if self.research is None:
+            raise OwnerActionRefused("research_ports_unconfigured", "research")
+        scope, decision = self._research_decide(intent, intents, block["program_id"])
+        if not decision["act"]:
+            if decision["reason"] == "research_dispatch_claimed":
+                return []       # F5 reached: the research receipt path names its own wait
+            raise OwnerActionRefused(decision["reason"], "research")
+        with self.store.transaction() as tx:
+            pending = [a for a in tx.scan(BUCKET_ACTIONS) if a.get("kind") == RESEARCH_DISPATCH
+                       and a["state"] not in TERMINAL and a["binding"]["program_id"] == block["program_id"]]
+        if pending:
+            raise OwnerActionRefused("research_dispatch_in_flight", "research")
+        binding = research_dispatch_binding(intent, block, scope["investigation"], scope["attempts"],
+                                            decision["detail"]["expected_cycle"])
+        return self._create(row, RESEARCH_DISPATCH, binding, {"intent_id": intent["id"], "lane": intent.get("lane")})
+
+    def _advance_dispatch(self, policy_row: dict, continuation: dict, action: dict) -> dict | None:
+        if self.research is None:
+            raise OwnerActionRefused("research_ports_unconfigured", "research")
+        state = action["state"]
+        if state == INTENDED:
+            return self._begin_dispatch(policy_row, continuation, action)
+        if state == LAUNCHING:
+            return self._launch_dispatch(action)
+        if state == RUNNING:
+            return self._observe_dispatch(action)
+        return None
+
+    def _begin_dispatch(self, policy_row: dict, continuation: dict, action: dict) -> dict:
+        """Re-decided now; the provider probe precedes any resume, reservation or spawn; then the launch id
+        is persisted (LAUNCHING) BEFORE the spawn."""
+        binding = action["binding"]
+        block = research_policy(policy_row["policy"])
+        if block is None or block["program_id"] != binding["program_id"]:
+            return self._effect(self._move(action, REFUSED, "research_policy_changed"))
+        with self.store.transaction() as tx:
+            intent = tx.get(CONTINUATION_INTENTS, binding["intent_id"])
+            intents = [r for r in tx.scan(CONTINUATION_INTENTS) if r.get("policy_id") == continuation["id"]]
+            receipt = tx.get(CONTINUATION_RECEIPTS, binding["intent_id"])
+        if not (isinstance(intent, dict) and intent.get("state") == RESEARCH_REQUIRED) or receipt is not None:
+            return self._effect(self._move(action, REFUSED, "research_intent_not_held"))
+        scope, decision = self._research_decide(intent, intents, binding["program_id"])
+        if not decision["act"]:
+            if decision["reason"] in RESEARCH_TRANSIENT:
+                raise OwnerActionRefused(decision["reason"], "research")
+            return self._effect(self._move(action, REFUSED, decision["reason"]))
+        if (scope["investigation"], scope["attempts"], decision["detail"]["expected_cycle"]) != (
+                binding["investigation"], binding["attempts"], binding["expected_cycle"]):
+            return self._effect(self._move(action, REFUSED, "research_binding_changed"))
+        try:
+            probe = self.research.probe()
+        except Exception as exc:
+            probe = {"ok": False, "reason_code": "research_provider_probe_failed", "error_type": type(exc).__name__}
+        if not (isinstance(probe, dict) and probe.get("ok") is True):
+            # Before any resume, reservation or spawn: nothing is counted, nothing is left owned.
+            return self._effect(self._move(action, REFUSED, "research_provider_unavailable",
+                                           probe=_probe_view(probe)))
+        if "resume" in decision["steps"]:
+            ResearchProgram(self.store, clock=self.clock).resume(binding["program_id"])
+        row = self._move(action, LAUNCHING, "research_launch_intended", launches=1,
+                         launch_id=research_launch_id(action["id"], 1), child_lane=block["lane"],
+                         probe=_probe_view(probe))
+        return self._launch_dispatch(row)
+
+    def _launch_dispatch(self, action: dict) -> dict:
+        """ONE spawn per launch id (the port's exclusive marker makes a lost response or a restart
+        `cached`); the tick never waits for the child."""
+        self.research.start(action["launch_id"], action["binding"]["program_id"], action["child_lane"])
+        return self._effect(self._move(action, RUNNING, "research_launched"))
+
+    def _observe_dispatch(self, action: dict) -> dict | None:
+        binding = action["binding"]
+        launch = self.research.poll(action["launch_id"])
+        state = launch.get("state")
+        if state == LAUNCH_RUNNING:
+            return None
+        if state == LAUNCH_UNKNOWN or launch.get("cleanup_confirmed") is False:
+            return self._effect(self._move(action, UNKNOWN, "research_launch_unknown", launch=_launch_view(launch)))
+        with self.store.transaction() as tx:
+            program = tx.get(BUCKET_PROGRAMS, binding["program_id"])
+            cycle = tx.get(BUCKET_CYCLES, cycle_id(binding["program_id"], binding["expected_cycle"]))
+            dispatch = tx.get(BUCKET_DISPATCHES, binding["investigation"])
+        if state == LAUNCH_ABSENT:
+            untouched = isinstance(program, dict) and program.get("active_cycle") is None \
+                and program.get("next_cycle") == binding["expected_cycle"] and cycle is None
+            if untouched and int(action.get("launches") or 0) < MAX_RESEARCH_LAUNCHES:
+                # Fenced before it entered and the program provably unchanged: ONE bounded relaunch.
+                sequence = int(action["launches"]) + 1
+                row = self._move(action, LAUNCHING, "research_relaunched", launches=sequence,
+                                 launch_id=research_launch_id(action["id"], sequence))
+                return self._launch_dispatch(row)
+            return self._effect(self._move(action, UNKNOWN, "research_launch_unknown", launch=_launch_view(launch)))
+        outcome = research_outcome(binding, action["launch_id"], program, cycle, dispatch)
+        return self._effect(self._move(action, outcome["state"], outcome["reason_code"],
+                                       outcome={"launch": _launch_view(launch),
+                                                "cycle": (cycle or {}).get("id") if isinstance(cycle, dict) else None,
+                                                "dispatch_result": (dispatch or {}).get("result")
+                                                if isinstance(dispatch, dict) else None}))
+
 
 def _request_of(plan_action: dict) -> dict:
     """The one canary request a published plan files: a function of its immutable action row only."""
     return canary_request(plan_action, plan_action["plan"], plan_action["plan_sha256"], plan_action["published_at"])
+
+
+# Requalification refusals that are an outage or another owner's open work, never a verdict on this action:
+# the row stays where it is and the next tick replays the same persisted document.
+REQUALIFY_WAITS = frozenset({"requalification_main_unreadable", "policy_unavailable", "requalification_family_open"})
+
+
+def _probe_view(probe) -> dict:
+    probe = probe if isinstance(probe, dict) else {}
+    return {k: probe.get(k) for k in ("ok", "reason_code", "error_type", "codex", "node")}
+
+
+def _launch_view(launch: dict) -> dict:
+    return {k: launch.get(k) for k in ("state", "exit_code", "cleanup_confirmed", "reason_code")}
 
 
 def _decided(verdict: dict) -> dict:
