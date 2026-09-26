@@ -186,3 +186,51 @@ def test_read_manifest_refuses_missing_oversized_and_invalid_json(tmp_path):
     with pytest.raises(ContractError, match="exceeds budget"):
         operation_cli.read_manifest(big)
     assert Operation(Harness(MemoryStore(), organization())).__class__ is Operation
+
+
+def test_read_manifest_refuses_malformed_encodings_and_duplicate_keys_as_contract_errors(tmp_path):
+    """Operator bytes never escape read_manifest as UnicodeDecodeError: one strict shared reader."""
+    bom = b"\xef\xbb\xbf"
+    path = tmp_path / "manifest.json"
+    for content, label in ((b'{"a": "\xff"}', "not valid JSON"),
+                           (b'{"id": "\xff\xfe"}', "not valid JSON"),
+                           ('{"id": "a"}'.encode("utf-16"), "not valid JSON"),
+                           ('{"id": "a"}'.encode("utf-16-be"), "not valid JSON"),
+                           (bom + bom + b'{"id": "a"}', "not valid JSON"),
+                           (b'{"id": "a", "id": "b"}', "Operation manifest has a duplicate JSON key"),
+                           (bom + b'{"id": "a", "id": "b"}', "duplicate JSON key")):
+        path.write_bytes(content)
+        with pytest.raises(ContractError, match=label):
+            operation_cli.read_manifest(path)
+    path.write_bytes(bom + b'{"note": "a' + bom + b'b"}')  # interior U+FEFF is data
+    assert operation_cli.read_manifest(path) == {"note": "a\N{ZERO WIDTH NO-BREAK SPACE}b"}
+    body = b'["' + b"a" * (operation_cli.MAX_MANIFEST_BYTES - 4) + b'"]'
+    path.write_bytes(body)
+    assert operation_cli.read_manifest(path) == ["a" * (operation_cli.MAX_MANIFEST_BYTES - 4)]
+    path.write_bytes(bom + body)  # the raw byte budget counts the BOM
+    with pytest.raises(ContractError, match="Operation manifest exceeds budget"):
+        operation_cli.read_manifest(path)
+    with pytest.raises(ContractError, match="Operation manifest unavailable"):
+        operation_cli.read_manifest(tmp_path / "absent.json")
+
+
+def test_read_manifest_accepts_one_leading_bom_and_keeps_the_validated_manifest(tmp_path):
+    """BOM/no BOM x LF/CRLF x non-ASCII text parse to the same document and validated manifest."""
+    document = manifest("a" * 40)
+    document["goal"]["rationale"] = "운영자 매니페스트"
+    text = json.dumps(document, ensure_ascii=False, indent=2)
+    baseline = validate_manifest(document, packaged_policy())
+    for bom in (False, True):
+        for crlf in (False, True):
+            path = tmp_path / ("m-%d%d.json" % (bom, crlf))
+            path.write_bytes((b"\xef\xbb\xbf" if bom else b"")
+                             + (text.replace("\n", "\r\n") if crlf else text).encode("utf-8"))
+            parsed = operation_cli.read_manifest(path)
+            assert parsed == document
+            assert validate_manifest(parsed, packaged_policy()) == baseline
+
+
+def test_dge_read_document_is_the_shared_operation_reader():
+    from codex_harness.adapters import dge_cli
+    assert dge_cli.read_document is operation_cli.read_document
+    assert dge_cli.MAX_DOCUMENT_BYTES == operation_cli.MAX_MANIFEST_BYTES == 256 * 1024
