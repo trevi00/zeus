@@ -1041,7 +1041,13 @@ def add_parser(commands) -> None:
                           help="The registered plan digest (from status)")
     withdraw.add_argument("--reason", required=True, choices=WITHDRAW_REASONS)
     withdraw.add_argument("--evidence", required=True, help="sha256:<64 hex> reference of the owner decision")
-    for command in (targets, register, tick, run_command, status, withdraw):
+    resume = sub.add_parser("resume", help="Owner: move a delivery that merged a never verified release and "
+                                           "halted before the host back to verification (one transaction)")
+    resume.add_argument("--plan", required=True, help="The registered plan id")
+    resume.add_argument("--plan-sha256", required=True, dest="plan_sha256",
+                        help="The registered plan digest (from status)")
+    resume.add_argument("--evidence", required=True, help="sha256:<64 hex> reference of the owner decision")
+    for command in (targets, register, tick, run_command, status, withdraw, resume):
         command.add_argument("--lane", default=None, help=LANE_HELP)
 
 
@@ -1052,6 +1058,29 @@ def refusal(exc: Exception) -> dict:
         code = "contract_refused"
     return {"status": "refused", "reason_code": code or "error", "error_type": type(exc).__name__,
             "exit_code": 1}
+
+
+def release_verifier(service, store, git):
+    """INV-HOST-DELIVERY-VERIFY-001: the owned-attempt port over the existing `ReleaseRunner`.
+
+    The runner gets this delivery's store and the lane's own Git workspace, and never merges or
+    promotes (only `evaluate` is driven). Nothing is created here: the artifact store and the
+    verification root are touched only when an attempt actually runs.
+    """
+    from types import SimpleNamespace
+
+    from codex_harness.adapters.artifacts import FileArtifacts
+    from codex_harness.adapters.configuration import codex_auth, runtime_dir
+    from codex_harness.adapters.deployment import ReleaseRunner
+    from codex_harness.adapters.release_verifier import ReleaseVerifier
+
+    runtime = runtime_dir()
+    root = runtime / "verification"
+    owner = SimpleNamespace(store=store, org=service.org)
+    return ReleaseVerifier(
+        lambda fence: ReleaseRunner(owner, git, FileArtifacts(str(runtime / "artifacts")), str(codex_auth()),
+                                    auto_merge=False, fence=fence, verification_root=root),
+        root=root, artifacts=lambda: FileArtifacts(str(runtime / "artifacts")))
 
 
 def controller(service, *, enabled=None, observer=None, git=None, store=None) -> HostDelivery:
@@ -1071,10 +1100,12 @@ def controller(service, *, enabled=None, observer=None, git=None, store=None) ->
     if enabled is None:
         enabled = configured_enabled(settings())
     github = None if git is None else GitHubDelivery(git)
+    verifier = release_verifier(service, store, git) if enabled and git is not None else None
     return HostDelivery(store, service.org, github=github,
                         hosts=host_ports(fleet=Fleet(service.store),
                                          systemd_control=systemd_control_dir(settings())),
-                        canaries=canary_checks(store), observer=observer, enabled=enabled)
+                        canaries=canary_checks(store), observer=observer, enabled=enabled,
+                        verifier=verifier)
 
 
 # ----- explicit lane routing -----------------------------------------------------------------------
@@ -1196,6 +1227,10 @@ def execute(service, args) -> dict:
             # nothing, and it is exactly how a held controller retires stale work.
             return {**delivery.withdraw(args.plan, args.plan_sha256, args.reason, args.evidence), **routed,
                     "exit_code": 0}
+        if command == "resume":
+            # Like withdrawal, resume is a store transition only: it publishes, merges, verifies and
+            # switches nothing, and the configured opt-in is not consulted.
+            return {**delivery.resume(args.plan, args.plan_sha256, args.evidence), **routed, "exit_code": 0}
         if command == "tick":
             result = delivery.tick(args.plan)
             return {**result, **routed, "exit_code": 1 if result["outcome"] in FAILED_OUTCOMES else 0}
@@ -1223,12 +1258,21 @@ def run_loop(delivery: HostDelivery, *, once: bool = False, interval: int = 15,
     """Bounded tick loop. An idle queue sleeps; it calls no provider and starts no model.
 
     A stop is graceful: the signal sets a flag, the tick in flight finishes, and the loop returns
-    its counts. Nothing here kills a service, a child or a lease.
+    its counts. Nothing here kills a service or a lease. The one exception is an owned verification
+    evaluation in flight (INV-HOST-DELIVERY-VERIFY-001): the FIRST signal also raises
+    `EvaluationCancelled` into it, once, so its own children and containers are ended and its
+    cleanup is proven before the tick records `verification_interrupted`; later signals only set
+    the flag and never interrupt that cleanup.
     """
     stopping = {"stop": False}
+    boundary = getattr(getattr(delivery, "verifier", None), "boundary", None)
+    if boundary is not None:
+        boundary.reset()
 
     def stop(*_):
         stopping["stop"] = True
+        if boundary is not None:
+            boundary.signal()
 
     installed = []
     for name in ("SIGINT", "SIGTERM", "SIGBREAK"):
@@ -1278,7 +1322,7 @@ __all__ = ["DESCRIPTOR_FILE", "ENABLED_SETTING", "MAX_PLAN_BYTES",
            "HostTargetBase", "ProcessHostTarget", "ScheduledTaskHostTarget", "add_parser",
            "canary_checks", "canary_receipt_file", "canary_request_file", "checkout_revision",
            "collect_monitor_canary", "configured_enabled",
-           "controller", "effective_profile_digest", "effective_worker_image", "execute",
+           "controller", "effective_profile_digest", "effective_worker_image", "execute", "release_verifier",
            "host_ports", "lane_git", "load_plan", "loaded_runtime", "main", "normalize_checks",
            "owner_qualified_canary", "refusal", "resolve_lane", "run_loop", "runtime_revision", "serve",
            "startup_identity_canary", "startup_receipt"]

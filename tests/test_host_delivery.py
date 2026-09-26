@@ -82,6 +82,7 @@ from codex_harness.domain.host_delivery import (
     ROLLED_BACK,
     ROLLING_BACK,
     SWITCHING,
+    VERIFYING,
     DeliveryRefused,
     LifecycleInterrupted,
     ci_verdict,
@@ -544,9 +545,24 @@ def test_only_the_conductor_review_of_the_authors_own_lead_opens_the_delivery(tm
 
 
 def test_an_unverified_release_stops_before_the_host_is_touched(tmp_path):
+    # Updated deliberately for INV-HOST-DELIVERY-VERIFY-001: a reviewed, unverified release now
+    # waits in `verifying` BEFORE publication. Without a verifier port that wait is an explicit
+    # `verifier_unavailable`, never a halt, and nothing is published, merged or switched.
     system = build(tmp_path, verified=False)
     results = drive(system, until=MERGED, limit=8)
-    assert stages(results)[-1] == MERGED
+    assert set(stages(results)) == {VERIFYING}
+    reasons = {r["reason_code"] for r in results[1:]}
+    assert "verifier_unavailable" in reasons and reasons <= {"verifier_unavailable", "release_retry_not_due"}
+    assert system["github"].publishes == 0 and system["github"].merges == 0
+    assert descriptor_of(system) is None
+    assert not (tmp_path / "state-canary-service" / DESCRIPTOR_FILE).exists()
+    # Defence in depth stays: a delivery that reaches `merged` with an unverified release (the
+    # legacy shape, crafted here through the store) still halts before the host is touched.
+    with system["store"].transaction() as tx:
+        intent = tx.get(BUCKET_INTENTS, system["plan"]["plan_id"])
+        tx.put(BUCKET_INTENTS, intent["id"], {**intent, "stage": MERGED, "merged_revision": MERGED_REVISION})
+        row = tx.get("release_queue", system["release"]["id"])
+        tx.put("release_queue", row["id"], {**row, "status": "queued", "attempt": 0, "retry_at": None})
     blocked = system["delivery"].tick()
     assert blocked["outcome"] == "blocked" and blocked["reason_code"] == "release_not_verified"
     assert descriptor_of(system) is None

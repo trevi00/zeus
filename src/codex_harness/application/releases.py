@@ -90,8 +90,11 @@ class Releases:
             tx.put("releases", release_id, record)
             return record
 
-    def verify(self, release_id: str, revision: str, policy_hash: str, checks: dict) -> dict:
-        with self.store.transaction() as tx:
+    def verify(self, release_id: str, revision: str, policy_hash: str, checks: dict, *,
+               transaction=None) -> dict:
+        # INV-HOST-DELIVERY-VERIFY-001: a caller holding the release fence records the verdict in
+        # the same transaction that re-checks that fence; the body is unchanged.
+        with (nullcontext(transaction) if transaction is not None else self.store.transaction()) as tx:
             record = tx.get("releases", release_id)
             require(record is not None and record["status"] == "reviewed", "Reviews incomplete")
             require(record["candidate"]["revision"] == revision

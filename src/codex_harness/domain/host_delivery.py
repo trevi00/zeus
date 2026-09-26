@@ -153,6 +153,10 @@ INSTANCE = re.compile(r"^[0-9a-f]{32}$")
 # names, so a lost response can only ever reconcile what already happened.
 REGISTERED = "registered"
 AWAITING_REVIEW = "awaiting_review"
+# INV-HOST-DELIVERY-VERIFY-001: a reviewed, not yet verified release is evaluated by the existing
+# incumbent evaluator BEFORE publication, under this delivery's release fence. Nothing on GitHub or
+# the host is touched here; the evaluation's own external resources are owned per attempt.
+VERIFYING = "verifying"
 PUBLISHING = "publishing"
 AWAITING_CI = "awaiting_ci"
 MERGE_INTENDED = "merge_intended"
@@ -173,7 +177,7 @@ FAILED = "failed"
 # continuation's requalification, never this plan again.
 WITHDRAWN = "withdrawn"
 
-STAGE_ORDER = (REGISTERED, AWAITING_REVIEW, PUBLISHING, AWAITING_CI, MERGE_INTENDED, MERGED,
+STAGE_ORDER = (REGISTERED, AWAITING_REVIEW, VERIFYING, PUBLISHING, AWAITING_CI, MERGE_INTENDED, MERGED,
                DRAIN_INTENDED, SWITCHING, AWAITING_CONSUMPTION, ACTIVE)
 TERMINAL_STAGES = frozenset({ACTIVE, ROLLED_BACK, FAILED, WITHDRAWN})
 HALTED_STAGES = frozenset({BLOCKED, ROLLING_BACK, ROLLED_BACK, FAILED, WITHDRAWN})
@@ -187,11 +191,17 @@ OPEN_STAGES = frozenset(STAGE_ORDER) - {ACTIVE}
 POST_MERGE_OPEN = frozenset({MERGED, DRAIN_INTENDED, SWITCHING, AWAITING_CONSUMPTION, ROLLING_BACK})
 # Where the owner may still withdraw: nothing on the host was bound or touched yet. A `blocked` or
 # `failed` delivery qualifies only while it never bound a descriptor (checked by the caller).
-WITHDRAWABLE_STAGES = frozenset({REGISTERED, AWAITING_REVIEW, PUBLISHING, AWAITING_CI, MERGE_INTENDED,
-                                 BLOCKED, FAILED})
+WITHDRAWABLE_STAGES = frozenset({REGISTERED, AWAITING_REVIEW, VERIFYING, PUBLISHING, AWAITING_CI,
+                                 MERGE_INTENDED, BLOCKED, FAILED})
 WITHDRAW_REASONS = ("reviewed_base_moved", "descriptor_predecessor_moved", "merged_tree_mismatch")
 # The owner's decision record a withdrawal names: a content-addressed evidence reference only.
 EVIDENCE_REF = re.compile(r"^sha256:[0-9a-f]{64}$")
+# The one supported recovery (INV-HOST-DELIVERY-VERIFY-001): a delivery that merged a reviewed but
+# never verified release and halted before the host was touched is moved back to `verifying`.
+RECOVERY_VERIFICATION_MISSING = "release_verification_missing"
+# The cleanup states that close one verification attempt: its exact resources were proven gone,
+# or - for an attempt that never wrote its disk record - proven never to have existed.
+ATTEMPT_RESOLVED = frozenset({"confirmed", "never_started"})
 # The stages that have already changed something outside this store: a restart reconciles the
 # external identity before it is allowed to act again.
 EXTERNAL_STAGES = frozenset({PUBLISHING, AWAITING_CI, MERGE_INTENDED, MERGED, DRAIN_INTENDED,
@@ -809,6 +819,48 @@ def new_intent(plan: dict, plan_sha256: str, now: str) -> dict:
             "stage_entered_at": now, "created_at": now, "updated_at": now, "evidence": []}
 
 
+def attempts_of(intent) -> list:
+    """The verification attempts one delivery recorded, oldest first; an old row has none."""
+    verification = (intent or {}).get("verification")
+    rows = verification.get("attempts") if isinstance(verification, dict) else None
+    return [row for row in rows or [] if isinstance(row, dict)]
+
+
+def attempt_resolved(attempt: dict) -> bool:
+    """An attempt is closed only by a recorded cleanup whose state proves its resources gone."""
+    cleanup = attempt.get("cleanup")
+    return isinstance(cleanup, dict) and cleanup.get("state") in ATTEMPT_RESOLVED
+
+
+def unresolved_attempts(intent) -> list:
+    return [row for row in attempts_of(intent) if not attempt_resolved(row)]
+
+
+def recoveries_of(intent, kind: str = RECOVERY_VERIFICATION_MISSING) -> list:
+    return [row for row in (intent or {}).get("recoveries") or []
+            if isinstance(row, dict) and row.get("kind") == kind]
+
+
+def resumable(intent) -> bool:
+    """The ONE shape `resume` may move (INV-HOST-DELIVERY-VERIFY-001), from the record alone.
+
+    A delivery that merged its reviewed candidate and halted at `merged` because the release was
+    never verified, and that never bound, wrote or started anything on the host. Everything else -
+    a mismatched merged tree, a bound descriptor, a rollback, another halt - is not this recovery.
+    A recovery of this kind already recorded is never repeated: its replay is recognized by the
+    caller from its evidence reference, and a second one is exhausted.
+    """
+    if not isinstance(intent, dict):
+        return False
+    return (intent.get("stage") in {BLOCKED, FAILED}
+            and intent.get("reason_code") == "release_not_verified"
+            and intent.get("previous_stage") == MERGED
+            and bool(intent.get("merged_revision"))
+            and all(intent.get(key) is None for key in ("descriptor", "descriptor_sha256", "instance_id",
+                                                        "candidate_instance_id", "rollback"))
+            and not recoveries_of(intent))
+
+
 def next_stage(stage: str) -> str:
     """The stage that follows a completed one; `active` is terminal and follows nothing."""
     if stage not in STAGE_ORDER:
@@ -829,6 +881,8 @@ def stage_next_action(stage: str, outcome=None) -> str:
         return "owner_requalify_candidate"
     if stage == AWAITING_REVIEW:
         return "await_independent_review"
+    if stage == VERIFYING:
+        return "await_incumbent_verification"
     if stage == AWAITING_CI:
         return "await_required_checks"
     if stage == AWAITING_CONSUMPTION:
@@ -870,6 +924,11 @@ def delivery_progress(row: dict, intent, descriptor_row) -> dict:
             "runtime": _runtime_view((intent or {}).get("runtime")),
             "work": _work_view((intent or {}).get("work")),
             "withdrawal": _withdrawal_view((intent or {}).get("withdrawal")),
+            # Additive (INV-HOST-DELIVERY-VERIFY-001): where verification leads, the last recovery
+            # and the last attempt with its cleanup state; codes and ids only.
+            "after_verification": (intent or {}).get("after_verification"),
+            "recovery": _recovery_view(((intent or {}).get("recoveries") or [None])[-1]),
+            "verification": _attempt_view((attempts_of(intent) or [None])[-1]),
             "updated_at": (intent or {}).get("updated_at") or row.get("updated_at")}
     view["next_action"] = stage_next_action(stage, view["outcome"])
     return view
@@ -881,6 +940,20 @@ def _withdrawal_view(record) -> dict | None:
         return None
     return {key: record.get(key) for key in ("reason_code", "evidence_ref", "previous_stage", "main_effect",
                                              "merged_revision", "observed", "at")}
+
+
+def _recovery_view(record) -> dict | None:
+    if not isinstance(record, dict):
+        return None
+    return {"kind": record.get("kind"), "evidence_ref": record.get("evidence_ref"),
+            "halted_reason_code": (record.get("halted") or {}).get("reason_code"), "at": record.get("at")}
+
+
+def _attempt_view(record) -> dict | None:
+    if not isinstance(record, dict):
+        return None
+    return {"attempt_id": record.get("attempt_id"), "state": record.get("state"),
+            "cleanup": (record.get("cleanup") or {}).get("state"), "outcome": record.get("outcome")}
 
 
 def _runtime_view(record) -> dict | None:
@@ -934,7 +1007,9 @@ def target_progress(row: dict) -> dict:
             "history": len(row.get("history") or [])}
 
 
-__all__ = ["ACTIVATION_GATE_CODES", "ACTIVE", "AUTHORITY", "AWAITING_CI", "AWAITING_CONSUMPTION", "AWAITING_REVIEW",
+__all__ = ["ATTEMPT_RESOLVED", "RECOVERY_VERIFICATION_MISSING", "VERIFYING", "attempt_resolved",
+           "attempts_of", "recoveries_of", "resumable", "unresolved_attempts",
+           "ACTIVATION_GATE_CODES", "ACTIVE", "AUTHORITY", "AWAITING_CI", "AWAITING_CONSUMPTION", "AWAITING_REVIEW",
            "BLOCKED", "CANARY_CHECKS", "CANARY_COLLECT", "CANARY_FLEET", "CANARY_REQUEST_FIELDS",
            "CANARY_REQUEST_SCHEMA", "CANARY_STARTUP", "OWNER_CANARY_RECEIPT_SCHEMA", "canary_request_matches",
            "CI_FAILED", "CI_HEAD_CHANGED", "CI_PASSED", "CI_PENDING", "DESCRIPTOR_FIELDS",

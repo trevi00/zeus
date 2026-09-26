@@ -3,7 +3,9 @@ from __future__ import annotations
 import os
 import signal
 import subprocess
+import threading
 import time
+from contextlib import contextmanager
 
 # Win32 creation flags by value: `subprocess` exposes them only on Windows, and the helper below
 # has to be able to describe the Windows policy from a Linux test.
@@ -50,6 +52,35 @@ def no_console_kwargs(*, process_group: bool = False, creationflags: int = 0,
     return {"start_new_session": True} if process_group else {}
 
 
+_SPAWN_OBSERVERS: list = []
+_SPAWN_LOCK = threading.Lock()
+
+
+@contextmanager
+def observe_spawns(callback):
+    """Report the pid of every owned child `run_process`/`run_logged_process` creates while active.
+
+    INV-HOST-DELIVERY-VERIFY-001: an owner that must reclaim its children after its OWN death
+    records each one durably, exactly when it is created. A callback that raises (its record could
+    not be written) gets the child killed before the error propagates, so no unrecorded child runs.
+    """
+    with _SPAWN_LOCK:
+        _SPAWN_OBSERVERS.append(callback)
+    try:
+        yield
+    finally:
+        with _SPAWN_LOCK:
+            _SPAWN_OBSERVERS.remove(callback)
+
+
+def _announce(process: subprocess.Popen) -> None:
+    """Called inside each caller's kill-on-failure block: a raise here ends the child there."""
+    with _SPAWN_LOCK:
+        observers = list(_SPAWN_OBSERVERS)
+    for callback in observers:
+        callback(process.pid)
+
+
 def _kill_tree(process: subprocess.Popen) -> dict:
     """Kill the child's whole tree: its process group on POSIX, `taskkill /T` on Windows."""
     if os.name == "nt":
@@ -67,8 +98,14 @@ def run_process(argv: list[str], cwd: str | None = None, timeout: int = 120,
                                stderr=subprocess.PIPE, text=True, encoding="utf-8", errors="replace", env=env,
                                **no_console_kwargs(process_group=True))
     try:
+        _announce(process)
         stdout, stderr = process.communicate(input_text, timeout=timeout)
     except (subprocess.TimeoutExpired, KeyboardInterrupt):
+        _kill_tree(process)
+        process.communicate()
+        raise
+    except BaseException:
+        # An owner that could not record this child never leaves it running.
         _kill_tree(process)
         process.communicate()
         raise
@@ -146,6 +183,7 @@ def run_logged_process(argv: list[str], *, stdout_path, stderr_path, cwd: str | 
         process = subprocess.Popen(argv, cwd=cwd, stdin=subprocess.DEVNULL, stdout=stdout,
                                    stderr=stderr, env=env, **no_console_kwargs(process_group=True))
         try:
+            _announce(process)
             returncode = process.wait(timeout=timeout)
         except subprocess.TimeoutExpired:
             return {"exit_code": None, "timed_out": True, "timeout_seconds": timeout,
@@ -153,6 +191,9 @@ def run_logged_process(argv: list[str], *, stdout_path, stderr_path, cwd: str | 
         except KeyboardInterrupt:
             raise ProcessCancelled({"exit_code": None, "timed_out": False, "cancelled": True,
                                     "cleanup": _cleanup(process)}) from None
+        except BaseException:
+            _cleanup(process)
+            raise
     observation = {"exit_code": returncode, "timed_out": False}
     if os.name != "nt" and not _group_gone(process.pid, seconds=0):
         observation["stray_descendants"] = True
