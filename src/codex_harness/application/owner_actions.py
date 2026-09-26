@@ -134,8 +134,9 @@ class OwnerActions:
     assessment decision envelope; `lanes(lane_id)` the lane's `LaneEvidence`; `deliveries(lane_id)` the
     lane's `HostDelivery`; `publisher(lane_id)` the Git plan publisher of that lane's repository;
     `assessments` the independent-assessment port (`context`, `document`, `start`, `poll`); `targets`
-    the target-file port over the incumbent state files (`startup`, `write_request`, `write_receipt`);
-    `fleet` the Fleet admitting the owner's canary; `validate` the incumbent operation-manifest validator."""
+    the target-file port over the incumbent state files (`startup`, and the plan-scoped `request`,
+    `write_request`, `write_receipt`); `fleet` the Fleet admitting the owner's canary; `validate` the
+    incumbent operation-manifest validator."""
 
     def __init__(self, store, *, continuation=None, org=None, lanes=None, deliveries=None, publisher=None,
                  assessments=None, targets=None, fleet=None, validate=None, clock=utcnow):
@@ -246,6 +247,7 @@ class OwnerActions:
         for plan in [a for a in actions if a["kind"] == DELIVERY_PLAN and a["state"] == COMPLETED
                      and (a.get("plan") or {}).get("canary_check_id") == CANARY_FLEET]:
             try:
+                self._refile_request(plan)
                 binding = self._canary_binding(plan)
                 if binding is not None and (DELIVERY_CANARY, plan["subject"]["intent_id"]) not in busy:
                     created += self._create(row, DELIVERY_CANARY, binding, dict(plan["subject"]))
@@ -599,8 +601,7 @@ class OwnerActions:
                 target = tx.get("host_delivery_targets", action["plan"]["target_id"])
             if self.targets is None or target is None:
                 raise OwnerActionRefused("canary_targets_unconfigured", "targets")
-            self.targets.write_request(target, canary_request(action, action["plan"], action["plan_sha256"],
-                                                             action["published_at"]))
+            self.targets.write_request(target, action["plan_id"], _request_of(action))
         try:
             registered = delivery.register(loaded["plan"], loaded["pin"])
         except DeliveryRefused as exc:
@@ -616,6 +617,24 @@ class OwnerActions:
         with delivery.store.transaction() as tx:
             return (tx.get("host_delivery_intents", plan["plan_id"]),
                     tx.get("host_delivery_targets", plan["target_id"]))
+
+    def _refile_request(self, plan_action: dict) -> None:
+        """Keep a registered plan's OWN canary request filed while its delivery is open.
+
+        This is the explicit compatibility path for plans registered while the request was one
+        target-global file, where a later registration replaced it (the actual own-a98e.../own-fe54...
+        state). The document is exactly the one `_register` filed, rebuilt from the immutable action
+        row; nothing is written when it is already there, for a finished or foreign delivery, or to
+        the former global file, and no action row changes."""
+        if self.deliveries is None or self.targets is None:
+            return
+        intent, target = self._delivery_view(plan_action)
+        if not isinstance(target, dict) or (isinstance(intent, dict) and (
+                intent.get("stage") in TERMINAL_STAGES or intent.get("plan_sha256") != plan_action["plan_sha256"])):
+            return
+        document = _request_of(plan_action)
+        if self.targets.request(target, plan_action["plan_id"]) != document:
+            self.targets.write_request(target, plan_action["plan_id"], document)
 
     def _canary_binding(self, plan_action: dict) -> dict | None:
         """Owed once the delivery of exactly this plan awaits consumption and its candidate instance has
@@ -671,7 +690,7 @@ class OwnerActions:
             # No receipt: the delivery's own deadline rolls it back; the unknown effect stays named.
             return self._effect(self._move(action, UNKNOWN, outcome["reason_code"]))
         _, target = self._delivery_view(plan_action)
-        self.targets.write_receipt(target, canary_receipt(action, outcome, self.clock()))
+        self.targets.write_receipt(target, action["binding"]["plan_id"], canary_receipt(action, outcome, self.clock()))
         target_state = COMPLETED if outcome["state"] == VERDICT_ACCEPTED else REJECTED
         return self._effect(self._move(action, target_state, outcome["reason_code"],
                                        outcome={k: outcome.get(k) for k in ("state", "reason_code", "evidence")}))
@@ -692,6 +711,11 @@ class OwnerActions:
         receipt = self.targets.startup(target)
         return isinstance(receipt, dict) and receipt.get("instance_id") == binding["instance_id"] \
             and receipt.get("descriptor_sha256") == binding["descriptor_sha256"]
+
+
+def _request_of(plan_action: dict) -> dict:
+    """The one canary request a published plan files: a function of its immutable action row only."""
+    return canary_request(plan_action, plan_action["plan"], plan_action["plan_sha256"], plan_action["published_at"])
 
 
 def _decided(verdict: dict) -> dict:

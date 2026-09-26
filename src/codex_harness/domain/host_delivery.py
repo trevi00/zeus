@@ -105,16 +105,20 @@ CANARY_CHECKS = (CANARY_COLLECT, CANARY_FLEET, CANARY_STARTUP)
 # descriptor being consumed and no owner receipt exists yet, `fleet_worker_operation` is PENDING rather
 # than failed, but only until the plan's own consumption deadline - then the missing receipt is the
 # same refusal as before. Without a matching request nothing changes: a missing receipt fails at once.
+# The request and the receipt belong to ONE plan: another plan registered on the same target never
+# grants, replaces or answers this plan's wait (G-H1 finding: a target-global request let a later
+# registration turn the consuming plan's wait into an immediate failure).
 CANARY_REQUEST_SCHEMA = "urn:zeus:owner-canary-request:1"
 CANARY_REQUEST_FIELDS = {"schema", "action_id", "plan_id", "plan_sha256", "target_id", "revision",
                          "expected_descriptor", "requested_at"}
 OWNER_CANARY_RECEIPT_SCHEMA = "urn:zeus:owner-canary-receipt:1"
 
 
-def canary_request_matches(request, target: dict, descriptor: dict) -> bool:
-    """Whether an owner canary request names exactly this target, revision and predecessor."""
+def canary_request_matches(request, target: dict, descriptor: dict, plan: dict) -> bool:
+    """Whether an owner canary request names exactly this plan, target, revision and predecessor."""
     return (isinstance(request, dict) and set(request) == CANARY_REQUEST_FIELDS
-            and request["schema"] == CANARY_REQUEST_SCHEMA and request["target_id"] == target.get("target_id")
+            and request["schema"] == CANARY_REQUEST_SCHEMA and request["plan_id"] == plan.get("plan_id")
+            and request["plan_sha256"] == plan_digest(plan) and request["target_id"] == target.get("target_id")
             == descriptor.get("target_id") and request["revision"] == descriptor.get("revision")
             and request["expected_descriptor"] == descriptor.get("predecessor"))
 

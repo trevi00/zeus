@@ -33,13 +33,13 @@ import pytest
 from codex_harness.adapters.configuration import aliases, read_env
 from codex_harness.adapters.git import GitWorkspace
 from codex_harness.adapters.host_delivery import (
-    CANARY_RECEIPT_FILE,
     DESCRIPTOR_FILE,
     RECEIPT_FILE,
     STATE_FILE,
     WORK_FILE,
     ProcessHostTarget,
     ScheduledTaskHostTarget,
+    canary_receipt_file,
     collect_monitor_canary,
     effective_profile_digest,
     effective_worker_image,
@@ -1112,24 +1112,25 @@ def test_an_owner_qualified_canary_needs_the_owners_own_receipt(tmp_path):
                   "root": target["root"], "revision": REVISION, "worker_image": FIXTURE_IMAGE,
                   "profile_digest": FIXTURE_PROFILE, "predecessor": None}
     startup = {"instance_id": "1" * 32, "runtime_root": target["root"]}
+    plan = {"plan_id": "delivery-plan-1"}
     assert owner_qualified_canary(target, descriptor,
-                                  startup)["reason_code"] == "canary_owner_receipt_missing"
+                                  startup, plan=plan)["reason_code"] == "canary_owner_receipt_missing"
     state = tmp_path / "state-canary-service"
     state.mkdir(parents=True, exist_ok=True)
-    (state / CANARY_RECEIPT_FILE).write_text(
+    (state / canary_receipt_file(plan["plan_id"])).write_text(
         json.dumps({"descriptor_sha256": "0" * 64, "passed": True}), encoding="utf-8")
     assert owner_qualified_canary(target, descriptor,
-                                  startup)["reason_code"] == "canary_owner_receipt_stale"
-    (state / CANARY_RECEIPT_FILE).write_text(
+                                  startup, plan=plan)["reason_code"] == "canary_owner_receipt_stale"
+    (state / canary_receipt_file(plan["plan_id"])).write_text(
         json.dumps({"descriptor_sha256": descriptor_digest(descriptor), "passed": True,
                     "instance_id": "2" * 32, "evidence": "sha256:" + "a" * 64}), encoding="utf-8")
     # The owner qualified ANOTHER instance of this descriptor; that receipt is not this one's.
     assert owner_qualified_canary(target, descriptor,
-                                  startup)["reason_code"] == "canary_owner_receipt_stale"
-    (state / CANARY_RECEIPT_FILE).write_text(
+                                  startup, plan=plan)["reason_code"] == "canary_owner_receipt_stale"
+    (state / canary_receipt_file(plan["plan_id"])).write_text(
         json.dumps({"descriptor_sha256": descriptor_digest(descriptor), "passed": True,
                     "instance_id": "1" * 32, "evidence": "sha256:" + "a" * 64}), encoding="utf-8")
-    assert owner_qualified_canary(target, descriptor, startup)["passed"] is True
+    assert owner_qualified_canary(target, descriptor, startup, plan=plan)["passed"] is True
 
 
 # ----- outages, concurrency and the store boundary --------------------------------------------------------
