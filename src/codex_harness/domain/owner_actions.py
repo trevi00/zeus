@@ -12,6 +12,12 @@ anything. Every authority stays with its existing owner:
   exact reviewed release record. A candidate cannot choose a target, command, unit, path or check.
 * the incumbent `fleet_worker_operation` canary reads the owner receipt; this module only decides what an
   ACTUAL finished canary operation and its independent lead review say, and shapes that receipt.
+* policy v2 only, each block opt-in: `Continuation.requalify_delivery` stays the only producer that rebinds
+  a stale candidate to the current main; this module only BUILDS its owner document (never a goal
+  migration) for a `reviewed_base_moved` withdrawal, under a durable per-family cap. The existing
+  `research-program run --ticks 1` CLI stays the only research council runner; this module only decides,
+  with the rule ported from the accepted RO-1 helper, whether ONE guarded tick of it is owed, and what the
+  child's own cycle rows say afterwards.
 
 Identities are exact: an action id is the digest of its kind and complete binding, so a replay, a
 restart or a second coordinator derives the same row, and changed evidence is a different action whose
@@ -45,9 +51,31 @@ from codex_harness.domain.host_delivery import (
     validate_plan,
 )
 from codex_harness.domain.model import ContractError, digest
+from codex_harness.domain.research_investigations import eligible_investigations
+from codex_harness.domain.research_program import (
+    ACTIVE,
+    BLOCKED,
+    CYCLE_DONE,
+    CYCLE_FAILED,
+    PAUSED,
+    cycle_id,
+    due,
+)
+from codex_harness.domain.research_program import (
+    COMPLETED as PROGRAM_COMPLETED,
+)
 
 POLICY_SCHEMA = "urn:zeus:owner-actions-policy:1"
 POLICY_FIELDS = {"schema", "id", "enabled", "continuation_policy", "assessment", "delivery", "canary"}
+# Version 2 is version 1 plus two opt-in blocks (each null or an owner block). Version 1 stays valid and
+# its canonical form, and therefore its registered digest, is exactly what it was.
+POLICY_SCHEMA_V2 = "urn:zeus:owner-actions-policy:2"
+POLICY_V2_FIELDS = POLICY_FIELDS | {"requalification", "research"}
+REQUALIFICATION_POLICY_FIELDS = {"enabled", "reasons", "max_per_family"}
+RESEARCH_POLICY_FIELDS = {"enabled", "program_id", "lane"}
+# Only a moved reviewed base: a moved predecessor descriptor or a merged-tree mismatch stays owner-triggered.
+REQUALIFY_REASONS = ("reviewed_base_moved",)
+MAX_REQUALIFICATIONS_PER_FAMILY = 3
 ASSESSMENT_POLICY_FIELDS = {"model_label"}
 DELIVERY_POLICY_FIELDS = {"target_id", "repository", "required_checks", "canary_check_id", "ci_timeout_seconds",
                           "consumption_timeout_seconds"}
@@ -63,7 +91,9 @@ AUTHORITY = ("owner_actions: server-owned handoff to the existing research-accep
 RESEARCH_RECEIPT = "research_receipt"
 DELIVERY_PLAN = "delivery_plan"
 DELIVERY_CANARY = "delivery_canary"
-KINDS = (RESEARCH_RECEIPT, DELIVERY_PLAN, DELIVERY_CANARY)
+RESEARCH_DISPATCH = "research_dispatch"      # policy v2 `research`: one guarded research-program tick
+DELIVERY_REQUALIFY = "delivery_requalify"    # policy v2 `requalification`: withdraw, then requalify
+KINDS = (RESEARCH_RECEIPT, DELIVERY_PLAN, DELIVERY_CANARY, RESEARCH_DISPATCH, DELIVERY_REQUALIFY)
 
 # ---- states: intent before effect, observation after it ------------------------------------------
 INTENDED = "intended"          # the row exists; no effect has been started for it
@@ -73,6 +103,10 @@ INVOKING = "invoking"          # research: the assembled receipt is persisted; t
 PUBLISHING = "publishing"      # plan: the exact plan bytes and Git identity are persisted before any Git write
 PUBLISHED = "published"        # plan: the Git commit carrying exactly those bytes is recorded
 REQUESTED = "requested"        # canary: the fixed canary job id is persisted before admission
+LAUNCHING = "launching"        # research: the probe passed and the launch id is persisted before the spawn
+RUNNING = "running"            # research: the guardian was started; later ticks poll it, never wait on it
+WITHDRAWING = "withdrawing"    # requalify: the cap slot and the rationale are persisted before the withdrawal
+REQUALIFYING = "requalifying"  # requalify: withdrawn; the exact owner document is persisted before the call
 COMPLETED = "completed"
 REJECTED = "rejected"
 UNKNOWN = "unknown"
@@ -84,6 +118,10 @@ TRANSITIONS = {
     DELIVERY_PLAN: {INTENDED: {PUBLISHING, REFUSED}, PUBLISHING: {PUBLISHED, UNKNOWN, REFUSED},
                     PUBLISHED: {COMPLETED, REFUSED, UNKNOWN}},
     DELIVERY_CANARY: {INTENDED: {REQUESTED, REFUSED}, REQUESTED: {COMPLETED, REJECTED, UNKNOWN, REFUSED}},
+    RESEARCH_DISPATCH: {INTENDED: {LAUNCHING, REFUSED}, LAUNCHING: {RUNNING},
+                        RUNNING: {LAUNCHING, COMPLETED, REJECTED, REFUSED, UNKNOWN}},
+    DELIVERY_REQUALIFY: {INTENDED: {WITHDRAWING, REFUSED}, WITHDRAWING: {REQUALIFYING, REFUSED},
+                         REQUALIFYING: {REQUALIFYING, COMPLETED, REFUSED}},
 }
 
 # ---- the independent assessment (G1) ---------------------------------------------------------------
@@ -146,7 +184,9 @@ def validate_policy(document) -> dict:
     checks, canary id, timeouts); `canary` is null or the ONE fixed canary operation (lane, manifest,
     goal) the owner's actual canary runs. The manifest is validated by the operation validator where it
     is used; here it is only an object."""
-    refuse(isinstance(document, dict) and set(document) == POLICY_FIELDS and document.get("schema") == POLICY_SCHEMA,
+    version2 = isinstance(document, dict) and document.get("schema") == POLICY_SCHEMA_V2
+    refuse(isinstance(document, dict) and (set(document) == POLICY_FIELDS and document.get("schema") == POLICY_SCHEMA
+                                           or version2 and set(document) == POLICY_V2_FIELDS),
            "policy_invalid", "root")
     refuse(type(document["id"]) is str and TOKEN.fullmatch(document["id"]) is not None, "policy_invalid", "id")
     refuse(type(document["enabled"]) is bool, "policy_invalid", "enabled")
@@ -186,8 +226,8 @@ def validate_policy(document) -> dict:
     # The owner's actual canary is the only thing that can answer `fleet_worker_operation`; a policy that
     # selects it without configuring that canary would publish plans that can only ever roll back.
     refuse(delivery["canary_check_id"] != CANARY_FLEET or canary is not None, "policy_invalid", "canary")
-    return {"schema": POLICY_SCHEMA, "id": document["id"], "enabled": document["enabled"],
-            "continuation_policy": document["continuation_policy"],
+    canonical = {"schema": POLICY_SCHEMA, "id": document["id"], "enabled": document["enabled"],
+                 "continuation_policy": document["continuation_policy"],
             "assessment": {"model_label": assessment["model_label"]},
             "delivery": {"target_id": delivery["target_id"], "repository": delivery["repository"],
                          "required_checks": list(checks), "canary_check_id": delivery["canary_check_id"],
@@ -195,6 +235,50 @@ def validate_policy(document) -> dict:
                          "consumption_timeout_seconds": delivery["consumption_timeout_seconds"]},
             "canary": None if canary is None else {"lane": canary["lane"], "manifest": canary["manifest"],
                                                    "goal": {k: canary["goal"][k] for k in sorted(CANARY_GOAL_FIELDS)}}}
+    if not version2:
+        return canonical
+    return {**canonical, "schema": POLICY_SCHEMA_V2,
+            "requalification": _requalification_block(document["requalification"]),
+            "research": _research_block(document["research"])}
+
+
+def _requalification_block(block) -> dict | None:
+    """Null, or the owner's explicit authorization of policy-triggered requalification: which withdrawal
+    reasons (only `reviewed_base_moved`) and how many requalifications one family may ever get."""
+    if block is None:
+        return None
+    refuse(isinstance(block, dict) and set(block) == REQUALIFICATION_POLICY_FIELDS and type(block["enabled"]) is bool,
+           "policy_invalid", "requalification")
+    reasons = block["reasons"]
+    refuse(isinstance(reasons, list) and reasons and len(set(reasons)) == len(reasons)
+           and all(reason in REQUALIFY_REASONS for reason in reasons), "policy_invalid", "requalification.reasons")
+    refuse(_bounded(block["max_per_family"], 1, MAX_REQUALIFICATIONS_PER_FAMILY), "policy_invalid",
+           "requalification.max_per_family")
+    return {"enabled": block["enabled"], "reasons": sorted(reasons), "max_per_family": block["max_per_family"]}
+
+
+def _research_block(block) -> dict | None:
+    """Null, or the ONE registered research program this policy may tick for its held families, and the
+    Fleet lane whose registered repository that program's child runs in."""
+    if block is None:
+        return None
+    refuse(isinstance(block, dict) and set(block) == RESEARCH_POLICY_FIELDS and type(block["enabled"]) is bool,
+           "policy_invalid", "research")
+    for key in ("program_id", "lane"):
+        refuse(type(block[key]) is str and TOKEN.fullmatch(block[key]) is not None, "policy_invalid",
+               "research." + key)
+    return {"enabled": block["enabled"], "program_id": block["program_id"], "lane": block["lane"]}
+
+
+def requalification_policy(policy: dict) -> dict | None:
+    """The enabled requalification block of a validated policy, else None (always None for version 1)."""
+    block = policy.get("requalification")
+    return block if isinstance(block, dict) and block["enabled"] else None
+
+
+def research_policy(policy: dict) -> dict | None:
+    block = policy.get("research")
+    return block if isinstance(block, dict) and block["enabled"] else None
 
 
 def policy_digest(policy: dict) -> str:
@@ -482,6 +566,197 @@ def canary_receipt(row: dict, outcome: dict, now: str) -> dict:
             "reason_code": outcome.get("reason_code"), "recorded_at": now}
 
 
+# ---- C1: policy-triggered delivery requalification (policy v2) --------------------------------------
+REQUALIFY_REASON = "reviewed_base_moved"
+RATIONALE_SCHEMA = "urn:zeus:owner-requalification-rationale:1"
+REQUALIFICATION_DOCUMENT_SCHEMA = "urn:zeus:continuation-delivery-requalification:1"
+
+
+def requalify_binding(plan_action: dict, intent: dict, delivery: dict) -> dict:
+    """What ONE policy-triggered requalification is bound to: the published plan (id and digest), the
+    continuation delivery intent and its family, release and origin job, and the observed block reason.
+    No owner-action policy id: a replay or a second policy derives the same action, never another."""
+    return {"plan_id": plan_action["plan_id"], "plan_sha256": plan_action["plan_sha256"],
+            "intent_id": intent["id"], "continuation_policy": intent.get("policy_id"),
+            "family": intent.get("family"), "release_id": intent.get("release_id"),
+            "origin_job": intent.get("origin_job"), "reason": delivery.get("reason_code")}
+
+
+def requalify_slots(actions: list, binding: dict, exclude: str) -> int:
+    """How many requalifications this continuation family already HOLDS a cap slot for: every action of
+    the family that ever passed `intended` (a slot is taken with that move and never given back, whatever
+    its later outcome). The action being decided is excluded, so a replay never counts itself."""
+    return sum(1 for row in actions
+               if row.get("kind") == DELIVERY_REQUALIFY and row.get("id") != exclude
+               and row.get("cap_slot") is not None
+               and (row.get("binding") or {}).get("continuation_policy") == binding["continuation_policy"]
+               and (row.get("binding") or {}).get("family") == binding["family"])
+
+
+def requalification_rationale(row: dict, delivery: dict) -> dict:
+    """The owner-policy rationale the withdrawal and the requalification cite: the exact binding and the
+    observed blocked delivery. Deterministic (no clock), so a replay stores and cites the same bytes."""
+    return {"schema": RATIONALE_SCHEMA, "owner_action": row["id"], "binding": row["binding"],
+            "binding_sha256": row["binding_sha256"], "policy_id": row["policy_id"],
+            "policy_sha256": row["policy_sha256"],
+            "observed": {"stage": delivery.get("stage"), "reason_code": delivery.get("reason_code"),
+                         "plan_id": delivery.get("plan_id"), "plan_sha256": delivery.get("plan_sha256")},
+            "authority": "owner-actions policy v2 requalification block: reviewed_base_moved only; the withdrawal "
+                         "and the requalification are decided by HostDelivery and Continuation, never here"}
+
+
+def requalification_document(row: dict, continuation: dict, candidate: dict, main_revision: str) -> dict:
+    """The `Continuation.requalify_delivery` owner document: the bound intent, plan and candidate on the
+    observed current main, citing the stored rationale. Never a `goal_migration` block: a changed goal is
+    the owner's own decision (INV-CONTINUATION-001)."""
+    binding = row["binding"]
+    return {"schema": REQUALIFICATION_DOCUMENT_SCHEMA, "policy_id": continuation["id"],
+            "policy_sha256": continuation["policy_sha256"], "intent_id": binding["intent_id"],
+            "family": binding["family"], "release_id": binding["release_id"],
+            "candidate": {k: candidate.get(k) for k in ("revision", "tree", "base")},
+            "plan": {"plan_id": binding["plan_id"], "plan_sha256": binding["plan_sha256"]},
+            "withdrawal_reason": REQUALIFY_REASON, "main_revision": main_revision,
+            "rationale_ref": row["rationale_ref"]}
+
+
+# ---- C3: asynchronous research dispatch (policy v2) ------------------------------------------------------
+MAX_RESEARCH_LAUNCHES = 2
+RESEARCH_REQUIRED_STATE = "research_required"
+FAILURE_FAMILY = "failure_family"
+# Waits that change with time or another owner's progress, never with the binding: an `intended` action
+# that meets one stays where it is. Every other decision reason refuses it by name.
+RESEARCH_TRANSIENT = frozenset({"research_headroom_unreadable", "research_headroom_insufficient",
+                                "research_program_not_due"})
+
+
+def research_dispatch_binding(intent: dict, block: dict, investigation: str, attempts: list,
+                              expected_cycle: int) -> dict:
+    """ONE guarded tick of the policy's program for ONE held family: its program, investigation, exact
+    attempt set and the cycle number that tick must reserve."""
+    return {"intent_id": intent["id"], "continuation_policy": intent.get("policy_id"),
+            "family": intent.get("family"), "program_id": block["program_id"], "investigation": investigation,
+            "attempts": sorted(attempts), "expected_cycle": expected_cycle}
+
+
+def research_launch_id(identity: str, sequence: int) -> str:
+    """The guardian launch identity, which is ALSO the cycle owner token the child reserves under."""
+    return digest(["owner-research-launch", identity, sequence])
+
+
+def _one(rows, **match):
+    found = [r for r in rows if isinstance(r, dict) and all(r.get(k) == v for k, v in match.items())]
+    return found[0] if len(found) == 1 else (None if not found else "ambiguous")
+
+
+def research_decision(*, program_id: str, investigation: str, attempts: list, rows: dict, room, now: str) -> dict:
+    """Whether ONE `research-program run <program> --ticks 1` is owed for exactly this held family.
+
+    Ported from the accepted RO-1 helper's `decide` (research_owner.py b28098aa, review-accepted in
+    research-owner-r1) without its b2 constants: the family, attempts and program come from the held
+    intent and the owner policy. `rows` are durable control-store rows (`research_programs`,
+    `research_investigation_dispatches`, `research_dispatch_recoveries`, `research_dispatch_heads`,
+    `portfolio_investigations`, `fleet_jobs`, `portfolio_bindings`); `room` is the program budget's
+    headroom reading or None when the ledger is unreadable. Returns `{"act", "reason", "steps"}`; a
+    reserved cycle is counted even when it only collects, so nothing acts before the exact scope holds."""
+    def wait(reason, **detail):
+        return {"act": False, "reason": reason, "steps": [], "detail": detail}
+
+    program = _one(rows["research_programs"], id=program_id)
+    if not isinstance(program, dict):
+        return wait("research_program_unregistered" if program is None else "research_program_ambiguous")
+    if program.get("state") in {PROGRAM_COMPLETED, BLOCKED}:
+        # Exhaustion or a blocked program is the owner's decision; never renewed here.
+        return wait("research_program_" + program["state"], stop_reason=program.get("stop_reason"))
+    config = program.get("config") or {}
+    source = config.get("investigation_source")
+    if not isinstance(source, dict):
+        return wait("research_program_unscoped")
+    claims = sorted({"dispatch" for r in rows["research_investigation_dispatches"] if r.get("investigation") == investigation}
+                    | {"recovery" for r in rows["research_dispatch_recoveries"] if r.get("investigation") == investigation}
+                    | {"head" for r in rows["research_dispatch_heads"] if r.get("investigation") == investigation})
+    if claims:
+        # F5 reached or pre-empted: the existing receipt path (or the owner) has it now.
+        return wait("research_dispatch_claimed", claims=claims)
+    if program.get("active_cycle") is not None:
+        # An owned cycle is never assumed empty: crash residue or a foreign live tick keeps the program busy.
+        return wait("research_program_busy", active_cycle=program["active_cycle"])
+    if program.get("adoptions", 0) >= config.get("max_adoptions", 0):
+        return wait("research_program_adoptions_consumed", adoptions=program.get("adoptions"))
+    family = _one(rows["portfolio_investigations"], id=investigation)
+    if family == "ambiguous" or (isinstance(family, dict) and (
+            family.get("state") != RESEARCH_REQUIRED_STATE or family.get("kind", FAILURE_FAMILY) != FAILURE_FAMILY)):
+        return wait("research_family_dispositioned")
+    reason = (family or {}).get("reason_code")
+    rivals = sorted(r.get("id") for r in rows["research_programs"]
+                    if r.get("id") != program_id and r.get("state") not in {PROGRAM_COMPLETED, BLOCKED}
+                    and reason in (((r.get("config") or {}).get("investigation_source") or {}).get("reason_codes") or []))
+    if rivals:
+        return wait("research_competing_program", programs=rivals)
+    found = eligible_investigations(investigations=rows["portfolio_investigations"], jobs=rows["fleet_jobs"],
+                                    bindings=rows["portfolio_bindings"], source=source,
+                                    claimed={r.get("investigation") for r in rows["research_investigation_dispatches"]},
+                                    required_state=RESEARCH_REQUIRED_STATE, minimum=2)
+    mine = [c for c in found["candidates"] if c["investigation"] == investigation]
+    other = [c["investigation"] for c in found["candidates"] if c["investigation"] != investigation]
+    if other:
+        # The program's tick selects in its own stable order: another eligible family could take the one
+        # adoption, so nothing is reserved while the scope is not exactly this family.
+        return wait("research_eligible_ambiguous", investigations=other)
+    if not mine:
+        return wait("research_family_not_eligible", counts=found["counts"])
+    if mine[0]["job_ids"] != sorted(attempts):
+        return wait("research_scope_mixed", scoped=mine[0]["job_ids"], attempts=sorted(attempts))
+    if not isinstance(room, dict):
+        return wait("research_headroom_unreadable")
+    if room.get("ok") is not True:
+        return wait("research_headroom_insufficient")
+    if program.get("cycles", 0) >= config.get("max_cycles", 0):
+        return wait("research_program_completed", cycles=program.get("cycles"))
+    if program.get("state") == PAUSED:
+        if program.get("cycles", 0) != 0:
+            return wait("research_program_paused_by_owner", cycles=program.get("cycles"))
+        return {"act": True, "reason": "research_ready_resume_then_tick", "steps": ["resume", "tick"],
+                "detail": {"expected_cycle": program.get("next_cycle")}}
+    if program.get("state") == ACTIVE:
+        if not due(program.get("last_tick_at"), config["interval_seconds"], now):
+            return wait("research_program_not_due", last_tick_at=program.get("last_tick_at"))
+        return {"act": True, "reason": "research_ready_tick", "steps": ["tick"],
+                "detail": {"expected_cycle": program.get("next_cycle")}}
+    return wait("research_program_state_unknown", state=program.get("state"))
+
+
+def research_outcome(binding: dict, launch_id: str, program, cycle, dispatch) -> dict:
+    """What the child's OWN durable rows say after its guardian proved cleanup. The cycle counts only when
+    it is the expected number AND its owner is this launch's id: a cycle another owner reserved under that
+    number is foreign (unknown, never ours by number alone). `state` is completed, rejected, refused or
+    unknown with a fixed reason code."""
+    expected = binding["expected_cycle"]
+    if not isinstance(program, dict):
+        return {"state": UNKNOWN, "reason_code": "research_program_unreadable"}
+    if not isinstance(cycle, dict):
+        if program.get("active_cycle") is None and program.get("next_cycle") == expected:
+            return {"state": REFUSED, "reason_code": "research_cycle_not_reserved"}
+        return {"state": UNKNOWN, "reason_code": "research_cycle_foreign"}
+    if cycle.get("id") != cycle_id(binding["program_id"], expected) or cycle.get("owner") != launch_id:
+        return {"state": UNKNOWN, "reason_code": "research_cycle_foreign"}
+    if program.get("active_cycle") == cycle["id"] or cycle.get("status") not in {CYCLE_DONE, CYCLE_FAILED}:
+        # Ours, still owned, and its guardian is gone: the program stays busy; never cleared here.
+        return {"state": UNKNOWN, "reason_code": "research_cycle_unfinished"}
+    mine = isinstance(dispatch, dict) and dispatch.get("cycle") == cycle["id"]
+    if cycle["status"] == CYCLE_FAILED:
+        return {"state": REJECTED if mine else REFUSED, "reason_code": "research_cycle_failed"}
+    if mine:
+        result = dispatch.get("result")
+        if result == VERDICT_ACCEPTED:
+            return {"state": COMPLETED, "reason_code": "research_dispatch_accepted"}
+        return {"state": REJECTED, "reason_code": "research_dispatch_" + (result if isinstance(result, str)
+                                                                          and TOKEN.fullmatch(result) else "unresolved")}
+    if ((cycle.get("selection") or {}).get("candidate")) is None:
+        # Collection only: counted by the program, never retried here (no collection-only exhaustion spin).
+        return {"state": REFUSED, "reason_code": "research_cycle_empty"}
+    return {"state": REFUSED, "reason_code": "research_cycle_other_candidate"}
+
+
 # ---- projection --------------------------------------------------------------------------------------
 def view(row: dict) -> dict:
     """Bounded projection: identities, states and codes; never report text, manifests or paths."""
@@ -489,13 +764,18 @@ def view(row: dict) -> dict:
                                      "created_at", "updated_at", "version")}
     shown["subject"] = row.get("subject")
     for key in ("decision_id", "verdict", "decided", "receipt_sha256", "assessment_ref", "plan_id", "plan_sha256", "commit",
-                "job_id", "launches"):
+                "job_id", "launches", "launch_id", "cap_slot", "rationale_ref", "document_sha256", "outcome"):
         if row.get(key) is not None:
             shown[key] = row[key]
     return shown
 
 
-__all__ = ["ASSESSED", "ASSESSING", "ASSESSMENT_ACTION", "ASSESSMENT_SCHEMA", "ASSESSMENT_SENDER", "ASSESSOR",
+__all__ = ["DELIVERY_REQUALIFY", "LAUNCHING", "MAX_RESEARCH_LAUNCHES", "POLICY_SCHEMA_V2", "REQUALIFYING",
+           "REQUALIFY_REASON", "REQUALIFY_REASONS", "RESEARCH_DISPATCH", "RESEARCH_TRANSIENT", "RUNNING", "WITHDRAWING",
+           "requalification_document", "requalification_policy", "requalification_rationale", "requalify_binding",
+           "requalify_slots", "research_decision", "research_dispatch_binding", "research_launch_id",
+           "research_outcome", "research_policy",
+           "ASSESSED", "ASSESSING", "ASSESSMENT_ACTION", "ASSESSMENT_SCHEMA", "ASSESSMENT_SENDER", "ASSESSOR",
            "AUTHORITY", "COMPLETED", "DELIVERY_CANARY", "DELIVERY_PLAN", "INTENDED", "INVOKING", "KINDS",
            "MAX_ACTIONS_PER_TICK", "MAX_ASSESSMENT_LAUNCHES", "OWNER_PHASE", "POLICY_SCHEMA", "PUBLISHED",
            "PUBLISHING", "QUESTION", "REFUSED", "REJECTED", "REQUESTED", "RESEARCH_RECEIPT", "STATUS_SCHEMA",
