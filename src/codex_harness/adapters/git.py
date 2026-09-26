@@ -2,15 +2,65 @@ from __future__ import annotations
 
 import json
 import re
+import subprocess
 import tempfile
 from pathlib import Path
 
 from codex_harness.adapters.commands import run_process
-from codex_harness.domain.model import digest, require
+from codex_harness.domain.model import ContractError, digest, require
 
 
 class GitCommandError(RuntimeError):
     """Transport/tool failure, distinct from a violated candidate contract."""
+
+
+class MergeRefused(ContractError):
+    """A DEFINITE refusal of the mainline update: main was provably not changed by this merge.
+
+    Only a positively recognized per-ref rejection of exactly `refs/heads/main` (or a refusal
+    decided before any push was attempted) is one. Everything whose effect is not known - a remote
+    failure, a missing or malformed status, a timeout, a transport error - is `GitCommandError`
+    instead and is reconciled from the remote history before anything is retried or withdrawn.
+    """
+
+    def __init__(self, reason_code: str):
+        super().__init__("merge refused: " + reason_code)
+        self.reason_code = reason_code
+
+
+MAIN_REF = "refs/heads/main"
+# The per-ref reasons git reports when the remote main was not the expected old value, either on
+# the client's lease check (`stale info`) or in receive-pack's own old-id check (`incorrect old
+# value provided`), or as an ordinary non-fast-forward (`fetch first`, `non-fast-forward`).
+BASE_MOVED_REASONS = frozenset({"stale info", "incorrect old value provided", "fetch first",
+                                "non-fast-forward"})
+PORCELAIN_STATUS = re.compile(r"^(?P<flag>[ +\-*=!])\t(?P<from>[^\t:]*):(?P<to>[^\t]+)\t(?P<summary>.*)$")
+REJECTION = re.compile(r"^\[(?P<kind>rejected|remote rejected)\](?: \((?P<reason>[^()]*)\))?$")
+
+
+def classify_push(stdout: str, revision: str) -> str:
+    """The outcome of one `git push --porcelain` of `revision` to `refs/heads/main`.
+
+    `pushed` (the ref is now the revision: a fast-forward or already up to date), `base_moved` and
+    `refused` are the only definite answers, and each needs exactly ONE status line for exactly the
+    main ref from exactly this revision. `[remote failure]`, any other flag, a second or foreign
+    line, a malformed or missing status line are all `unknown`: the effect may or may not have
+    happened, so the caller reconciles instead of concluding (git-push(1) OUTPUT).
+    """
+    rows = [line for line in (stdout or "").splitlines() if line and line[0] in " +-*=!" and "\t" in line]
+    if len(rows) != 1:
+        return "unknown"
+    match = PORCELAIN_STATUS.match(rows[0])
+    if match is None or match["to"] != MAIN_REF or match["from"] != revision:
+        return "unknown"
+    if match["flag"] in {" ", "="}:
+        return "pushed"
+    if match["flag"] != "!":
+        return "unknown"
+    rejection = REJECTION.match(match["summary"].strip())
+    if rejection is None:
+        return "unknown"   # `[remote failure]` and anything a future git reports: not a refusal
+    return "base_moved" if (rejection["reason"] or "") in BASE_MOVED_REASONS else "refused"
 
 
 GITHUB_REMOTE = re.compile(r"(?:(?:https?://|ssh://git@|git@)(?:www\.)?github\.com[:/])?"
@@ -172,8 +222,7 @@ class GitWorkspace:
         self.require_target(candidate)
         require(bool(re.fullmatch(r"[\w.-]+/[\w.-]+", self.remote)), "Invalid GitHub repository")
         branch = candidate["branch"]
-        self._git("push", "https://github.com/" + self.remote + ".git",
-                  candidate["revision"] + ":refs/heads/" + branch)
+        self._git("push", self._remote_url(), candidate["revision"] + ":refs/heads/" + branch)
         existing = run_process(["gh", "pr", "list", "--repo", self.remote, "--head", branch,
                                 "--state", "all", "--json", "number,url,headRefOid,state"], timeout=60)
         if existing.returncode:
@@ -213,12 +262,82 @@ class GitWorkspace:
         require(bool(re.fullmatch(r"[0-9a-f]{40}", str(merged_revision or ""))),
                 "Merged revision required")
         if fetch and self.remote:
-            self._git("fetch", "https://github.com/" + self.remote + ".git", "main")
+            self._git("fetch", self._remote_url(), "main")
         tree = self._git("rev-parse", merged_revision + "^{tree}")
         require(tree == candidate["tree"], "Merged tree differs from reviewed candidate")
         return {"merged_revision": merged_revision, "tree": tree}
 
-    def merge(self, candidate: dict) -> dict:
+    def _remote_url(self) -> str:
+        """The configured GitHub repository's transport URL: the one place a push or fetch names it."""
+        return "https://github.com/" + self.remote + ".git"
+
+    def remote_main(self) -> str:
+        """The remote main's exact commit id, read with `ls-remote` (no fetch, no local ref moves).
+        An unreadable or ambiguous answer is a transport failure, never a guessed revision."""
+        require(bool(self.remote), "GitHub repository must be configured")
+        rows = [line.split("\t") for line in self._git("ls-remote", self._remote_url(), MAIN_REF).splitlines()
+                if line.strip()]
+        if len(rows) != 1 or len(rows[0]) != 2 or rows[0][1] != MAIN_REF \
+                or not re.fullmatch(r"[0-9a-f]{40}", rows[0][0]):
+            raise GitCommandError("Remote main unreadable")
+        return rows[0][0]
+
+    def _on_mainline(self, revision: str, main: str) -> bool:
+        """`revision` is on main's FIRST-PARENT history: main itself moved through exactly it (a
+        fast-forward of it, by anyone). Reachable only through a merge commit's other parent is not
+        this: that merge's own tree is what main carries, and it is recognized from the PR."""
+        result = run_process(["git", "merge-base", "--is-ancestor", revision, main], cwd=str(self.repository))
+        if result.returncode not in {0, 1}:
+            raise GitCommandError("Cannot establish mainline ancestry")
+        return result.returncode == 0 and revision in self._git("rev-list", "--first-parent", main).split()
+
+    def merge_state(self, candidate: dict, observed=None) -> dict:
+        """What the remote main says about this candidate NOW; read-only apart from the fetch.
+
+        In this order: `merged` at the candidate revision when it is on main's first-parent history
+        (R1, the lease fast-forward or anyone's fast-forward of exactly it); `merged` at the PR's
+        merge commit when `observed` is this exact head's PR in state MERGED (R2); `unmerged` when
+        main is still exactly the reviewed base (R3); `base_moved` otherwise (R4). A lost response
+        of an effect that DID happen is therefore always recognized here before anything is
+        refused, retried or withdrawn. A fetch that fails raises: unknown is never `unmerged`.
+        """
+        require(bool(self.remote), "GitHub repository must be configured")
+        revision = candidate["revision"]
+        self._git("fetch", self._remote_url(), "main")
+        main = self._git("rev-parse", "FETCH_HEAD")
+        state = {"main": main, "merged_revision": None, "recognized": None}
+        if self._on_mainline(revision, main):
+            return {**state, "state": "merged", "merged_revision": revision, "recognized": "mainline"}
+        merged = (observed or {}).get("merged_revision") if isinstance(observed, dict) else None
+        if isinstance(observed, dict) and observed.get("state") == "MERGED" and observed.get("head") == revision \
+                and re.fullmatch(r"[0-9a-f]{40}", str(merged or "")):
+            return {**state, "state": "merged", "merged_revision": merged, "recognized": "pull_request"}
+        if main == candidate["base"]:
+            return {**state, "state": "unmerged"}
+        return {**state, "state": "base_moved"}
+
+    def _lease_push(self, candidate: dict) -> None:
+        """ONE server-side compare-and-swap of main from exactly the reviewed base to exactly the
+        reviewed revision: the full ref and the explicit expected value, never a tracking-ref
+        shorthand, `--force` or a permissive refspec. Its per-ref status decides (`classify_push`);
+        a return code that disagrees with it is a conflict and therefore unknown."""
+        revision, base = candidate["revision"], candidate["base"]
+        argv = ["git", "push", "--porcelain", "--force-with-lease=" + MAIN_REF + ":" + base, self._remote_url(),
+                revision + ":" + MAIN_REF]
+        try:
+            result = run_process(argv, cwd=str(self.repository), timeout=120)
+        except subprocess.TimeoutExpired as exc:
+            raise GitCommandError("Mainline update outcome unknown (timeout)") from exc
+        outcome = classify_push(result.stdout, revision)
+        if outcome == "pushed" and result.returncode == 0:
+            return
+        if outcome == "base_moved" and result.returncode != 0:
+            raise MergeRefused("reviewed_base_moved")
+        if outcome == "refused" and result.returncode != 0:
+            raise MergeRefused("merge_push_refused")
+        raise GitCommandError("Mainline update outcome unknown")
+
+    def merge(self, candidate: dict, observed=None) -> dict:
         target = self.require_target(candidate)
         require(self._git("rev-parse", candidate["revision"] + "^{tree}") == candidate["tree"],
                 "Candidate tree changed")
@@ -226,15 +345,25 @@ class GitWorkspace:
             require(digest(self._git("diff", "--no-ext-diff", candidate["base"], candidate["revision"], "--"))
                     == candidate["diff_hash"], "Candidate patch changed")
         if self.remote:
-            result = run_process(["gh", "pr", "merge", candidate["branch"], "--repo", self.remote,
-                                  "--merge", "--match-head-commit", candidate["revision"]], timeout=120)
-            if result.returncode:
-                raise GitCommandError("PR merge failed: " + result.stderr[-1000:])
-            self._git("fetch", "https://github.com/" + self.remote + ".git", "main")
-            merged_revision = self._git("rev-parse", "FETCH_HEAD")
-            self.qualify_merged(candidate, merged_revision, fetch=False)
-            self._git("merge", "--ff-only", merged_revision)
-            return {"merged": True, "revision": candidate["revision"], "merged_revision": merged_revision,
+            # INV-RELEASE-001: the GitHub merge is a fast-forward of main from the reviewed base to the
+            # reviewed revision, so the merged tree IS the reviewed tree. An effect that already
+            # happened is recognized first; a new one needs exact ancestry and the server-side
+            # old-id compare-and-swap, never `gh pr merge` (which binds the head only).
+            state = self.merge_state(candidate, observed)
+            if state["state"] == "merged":
+                merged_revision = state["merged_revision"]
+                self.qualify_merged(candidate, merged_revision, fetch=False)
+                self._git("merge", "--ff-only", merged_revision)
+                return {"merged": True, "revision": candidate["revision"], "merged_revision": merged_revision,
+                        "transport": "github", "target": target, "recovered": True}
+            if not self.is_ancestor(candidate["base"], candidate["revision"]):
+                raise MergeRefused("candidate_not_fast_forward")
+            if state["state"] != "unmerged":
+                raise MergeRefused("reviewed_base_moved")
+            self._lease_push(candidate)
+            self.qualify_merged(candidate, candidate["revision"], fetch=False)
+            self._git("merge", "--ff-only", candidate["revision"])
+            return {"merged": True, "revision": candidate["revision"], "merged_revision": candidate["revision"],
                     "transport": "github", "target": target}
         require(not self._git("status", "--porcelain"), "Main worktree is dirty")
         require(self._git("rev-parse", "HEAD") == candidate["base"], "Main changed; rebase and review again")

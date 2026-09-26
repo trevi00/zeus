@@ -532,7 +532,7 @@ class OwnerActions:
         delivery = self.deliveries(lane_id)
         with delivery.store.transaction() as tx:
             return {"delivery": delivery, "release": tx.get("releases", release_id) if release_id else None,
-                    "intents": tx.scan("host_delivery_intents"),
+                    "intents": tx.scan("host_delivery_intents"), "plans": tx.scan("host_delivery_plans"),
                     "descriptor": tx.get("host_delivery_descriptors", target_id),
                     "target": tx.get("host_delivery_targets", target_id)}
 
@@ -559,7 +559,17 @@ class OwnerActions:
         # `stale` only says the target has deliveries of OTHER revisions; none exists for this candidate.
         if rows["target"] is None:
             raise OwnerActionRefused("target_unregistered", "target_id")
-        if any(r.get("target_id") == target_id and r.get("stage") not in TERMINAL_STAGES for r in rows["intents"]):
+        # SPEC s14.3 "no in-progress delivery on the target": every REGISTERED plan of the target counts,
+        # including one no tick has given an intent yet, so a successor binds its expected predecessor
+        # only after the delivery before it is terminal. Terminal is not safe-to-switch evidence; the
+        # delivery's own pre-merge and switch checks still decide that (INV-OWNER-ACTIONS-001).
+        stages = {r.get("plan_id") or r.get("id"): r.get("stage") for r in rows["intents"]}
+        mine = [p for p in rows["plans"] if p.get("target_id") == target_id]
+        if any((p.get("plan") or {}).get("release_id") == release.get("id")
+               and (p.get("plan") or {}).get("revision") == candidate.get("revision") for p in mine):
+            return None     # this exact candidate is already planned; its delivery is simply not started
+        if any(stages.get(p.get("plan_id")) not in TERMINAL_STAGES for p in mine) or any(
+                r.get("target_id") == target_id and r.get("stage") not in TERMINAL_STAGES for r in rows["intents"]):
             raise OwnerActionRefused("delivery_target_busy", "target_id")
         current = (rows["descriptor"] or {}).get("descriptor")
         binding = plan_binding(row, intent, release, None if current is None else descriptor_digest(current))

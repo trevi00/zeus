@@ -6,7 +6,7 @@
 | INV-RECURRENCE-001 | Two independent occurrences with the same confirmed cause/scope require a hook. Redelivery is not recurrence. Active-hook recurrence requires a version update while preserving the previous verified version. |
 | INV-CONTEXT-001 | Required role, goal, acceptance, policy and provenance are never silently truncated. UTF-8 bytes are a conservative composition budget, distinct from measured tokens. External evidence is bounded data. |
 | INV-ARTIFACT-001 | Artifact queries address one exact SHA-256 reference under one explicit store root, validate the retained bytes, and emit a deterministic JSON projection whose complete successful stdout is within the requested character limit. JSON pointers follow RFC 6901; paging and search expose explicit continuation cursors. The limit bounds reader output, not arbitrary tool or provider usage. |
-| INV-RELEASE-001 | Exact commit/tree and incumbent policy bind lead review, conductor review, incumbent tests and actual CLI canaries. Failed checks cannot promote. Changed commits require new approvals. A captured candidate also names its canonical target repository — the normalized GitHub repository (`github:owner/repo`, whatever spelling configured it) or, without a remote, this exact local repository's Git common directory re-read from Git on every check (a clone or copy is another target) — and the hash of the exact base→revision patch beside the preimage base and postimage tree; the runner re-derives the patch and the merge/publish path re-checks the target, so a drifted patch or a reconfigured repository can never consume a review granted for another. Candidates recorded before this binding carry no target and merge as an explicit `legacy_unverified` exception, never as a verified target. |
+| INV-RELEASE-001 | Exact commit/tree and incumbent policy bind lead review, conductor review, incumbent tests and actual CLI canaries. Failed checks cannot promote. Changed commits require new approvals. A captured candidate also names its canonical target repository — the normalized GitHub repository (`github:owner/repo`, whatever spelling configured it) or, without a remote, this exact local repository's Git common directory re-read from Git on every check (a clone or copy is another target) — and the hash of the exact base→revision patch beside the preimage base and postimage tree; the runner re-derives the patch and the merge/publish path re-checks the target, so a drifted patch or a reconfigured repository can never consume a review granted for another. Candidates recorded before this binding carry no target and merge as an explicit `legacy_unverified` exception, never as a verified target. The GitHub-path merge honours the preimage base exactly as the local merge does: it is ONE fast-forward of `refs/heads/main` from exactly `candidate.base` to exactly `candidate.revision` (`git push --porcelain --force-with-lease=refs/heads/main:<base> <remote> <revision>:refs/heads/main`, after an explicit `is_ancestor(base, revision)` refusal `candidate_not_fast_forward`; never `--force`, a tracking-ref shorthand, a permissive refspec or `gh pr merge`, whose `--match-head-commit` binds the head only), so the merged tree is the reviewed tree by construction and a moved main is refused rather than merged around. Only a per-ref `[rejected]`/`[remote rejected]` of exactly `refs/heads/main` is a definite refusal (`reviewed_base_moved` for a stale or incorrect old value, else `merge_push_refused`); `[remote failure]`, a missing, malformed, foreign, duplicated or exit-code-contradicted status, a timeout and a transport error are unknown and reconciled from the remote history (`GitWorkspace.merge_state`: the revision on main's first-parent history, else the exact head's PR merge commit, else main still the base, else base moved) before any retry or withdrawal. The enforcement basis is git's documented receive-pack old-id check plus that explicit ancestry; tests against a local bare repository demonstrate stock git, not GitHub's server, permissions or PR bookkeeping. |
 | INV-MODEL-001 | Unqualified tasks run on Astra. Difficulty, model answers and narrow transfer pilots cannot authorize Sol/Terra production routing; versioned task qualification and enforced transfer gates are required. |
 | INV-SESSION-001 | Current context at 70% requests safe-point handoff. Checkpoint generation and execution lease fence stale writers. Busy agents do not hibernate; identity survives replacement. |
 | INV-GRAPH-001 | Git owns definitions; PostgreSQL owns runtime facts. Graph/vectors are versioned derived views. Unchanged symbols retain IDs; stale evidence cannot enter commit-bound review. |
@@ -2549,6 +2549,48 @@ owner itself (`GitWorkspace.qualify_merged`), and the merge this controller perf
 only observed after a lost response take exactly the same path, so a merged tree that is not the
 reviewed one is `merged_tree_mismatch` and stays blocked on every later tick.
 
+Pre-merge bindings (aibox SPEC s15, D2). A candidate whose reviewed base is no longer the remote main can
+never be fast-forwarded, so `publishing` refuses it before any PR or CI (`reviewed_base_moved`). At
+`merge_intended` an effect that already happened is reconciled FIRST (`merge_state`: our fast-forward
+whose response was lost, or anyone's merge of the exact head) and goes through the unchanged
+qualification. Before a NEW merge: another plan of the same target that has merged and not settled the
+host (`merged`, `drain_intended`, `switching`, `awaiting_consumption`, `rolling_back`, or a `blocked` or
+`failed` one that bound a descriptor without a verified rollback - terminal is not safe-to-switch
+evidence) is `pending` / `predecessor_in_flight` with no effect and no attempt spent; a current descriptor
+that is not the plan's `expected_descriptor` is `descriptor_predecessor_moved`; a remote main that is not
+the base is `reviewed_base_moved`; and the gates of that new effect are re-read from the provider now:
+the exact PR still `OPEN` at the reviewed head (`publication_missing`, `ci_head_changed`,
+`publication_not_open`) and every required check passing on it (the `ci_*` codes). Recognizing an effect
+is recovery; it never stands in for these gates, and a PR GitHub marks merged indirectly is not CI
+approval. The merge itself is the fast-forward compare-and-swap of INV-RELEASE-001; a definite refusal
+halts with its code, an unknown outcome is `unavailable` and the next fenced tick reconciles before
+anything is repeated. The pre-merge predecessor read is one store read under the single ReleaseQueue
+serialization and is not atomic with the switch, so `_prepare_switch`'s
+`descriptor_predecessor_mismatch` and the host switch's `expected` CAS stay mandatory.
+
+Owner withdrawal (D3; `zeus host-delivery withdraw --lane L --plan P --plan-sha256 S --reason R --evidence
+sha256:<hex>`, `HostDelivery.withdraw`). `withdrawn` is a terminal, stopped stage whose next action is
+`owner_requalify_candidate`. It is allowed only while the host was never touched (intent absent,
+`registered`, `awaiting_review`, `publishing`, `awaiting_ci`, `merge_intended`, or `blocked`/`failed` with
+no descriptor; else `withdraw_host_touched`), and only on staleness observed NOW: `reviewed_base_moved`
+needs `merge_state` = base moved; `descriptor_predecessor_moved` needs the target's descriptor to differ
+from the plan's with no delivery unsettled on it; any recognized merge is `withdraw_merge_observed`,
+except that `merged_tree_mismatch` retires a delivery whose RECORDED merge is still what main shows,
+keeping its `merged_revision` and recording `main_effect: merged` (never a no-effect withdrawal); main
+still at the base is `withdraw_not_stale`; an unreadable GitHub, remote or store is
+`withdraw_unobservable`. Every refusal writes nothing. An open stage is fenced exactly as a tick is -
+`ReleaseQueue.enqueue` + `claim` of the release (a release that is not queueable is
+`withdraw_queue_refused`; a refused claim reports the tick's own codes, e.g. `controller_lease_held`), the staleness re-observed under the claim, the intent written in the
+transaction that re-checks the claim and an unchanged intent (`withdraw_intent_changed`), then
+`queue.finish` with status `withdrawn`; a refusal after the claim returns the lease through `defer`. The
+intent keeps its evidence and gains `withdrawal {reason_code, evidence_ref, previous_stage, main_effect,
+merged_revision, observed {main, merge_state, pr_state, pr_head, pr_number, descriptor_sha256}, at}`. The
+plan row, its owner action, its canary request files and any PR or branch are never modified or
+deleted. The identical replay is `cached` and finishes a queue row a crash left runnable, with no other
+effect; any other reason or evidence is `withdrawal_conflict`. A withdrawn plan is never selected,
+re-planned, re-filed or requalified in place: a new candidate comes only from INV-CONTINUATION-001's
+owner requalification.
+
 The host boundary is descriptor-first, and ONE service is ONE lifecycle. Replacing the descriptor,
 pausing, stopping the old instance, retiring its files, launching the new one and publishing the
 state that identifies it all run under a single target-specific guard (`HostTargetBase.guard`),
@@ -2959,6 +3001,62 @@ explicit capacity, linked refusal, successor, consumed, remaining) and `capacity
 cap, current count, explicit capacity, remaining) beside, never merged into, the cap; an intent view shows
 `capacity_grant` and `refusal`. The grant is not a code acceptance, a budget-ledger change, a model
 authority, a deployment or an incident closure.
+
+Owner delivery requalification (aibox SPEC s15, D5): a DELIVERY intent whose bound HostDelivery plan
+the owner withdrew is a named wait (`delivery_withdrawn`, nothing written) until the owner's typed
+document (`urn:zeus:continuation-delivery-requalification:1`, `zeus continuation delivery-requalify
+--file`, `adapters.continuation.requalify_delivery` -> `Continuation.requalify_delivery`). Strict fields
+(`requalification_invalid`): `policy_id`, `policy_sha256`, `intent_id`, `family`, `release_id`,
+`candidate {revision, tree, base}`, `plan {plan_id, plan_sha256}`, `withdrawal_reason`
+(`reviewed_base_moved|descriptor_predecessor_moved|merged_tree_mismatch`, else
+`requalification_reason_unsupported`), `main_revision` and a content-addressed `rationale_ref`. Verified
+before any write: the registered, enabled policy at its pin re-read through Git now
+(`requalification_unverified`, `_policy_foreign`); the intent of that policy, route `host_delivery` in
+`awaiting_owner` or `paused` with the same family and release (`_intent_unknown`, `_intent_state`,
+`_intent_mismatch`); the current runtime/frame authorization of its origin job (the eligibility guard's
+codes); the lane delivery bound to exactly that plan and digest at stage `withdrawn` for exactly that
+reason (`_delivery_unbound`, `_plan_mismatch`, `_plan_not_withdrawn`, `_reason_mismatch`); the release
+record and the origin task's candidate (`_candidate_mismatch`); `main_revision` equal to the remote main
+read now (`ls-remote`), present in the lane repository and, for `reviewed_base_moved`, not the withdrawn
+candidate's base (`_main_unreadable`, `_main_changed`, `_main_missing`, `_main_not_moved`); the goal blob at
+that main still the goal's pinned digest (`requalification_goal_changed`: a changed goal needs the
+owner's explicit migration block below); no other open requalification in the family (`_family_open`);
+and the rationale bytes (`requalification_rationale_*`). Optional strict `goal_migration {path,
+criterion, from_sha256, to_sha256, review_ref}` (owner review R1; absent = the unchanged-goal rule
+above): the same path and criterion as the origin goal (`_goal_migration_scope`); `from_sha256` equal to
+the origin Fleet job goal, the intent's stored authorization goal and the real blob at the origin goal's
+`base_revision` (`_goal_migration_origin`); `to_sha256` the real regular blob at `main_revision`
+(`_goal_migration_target`); from != to and a content-addressed `review_ref` distinct from the rationale
+(`requalification_invalid`) whose bytes verify (`requalification_goal_review_*`). The stored row keeps
+the comparison inputs `goal_migration {path, criterion, from {revision, sha256, bytes}, to {revision,
+sha256, bytes}, review_ref, review: owner_reference_recorded}`: recorded hashes, not a controller review
+of the diff. Membership (`check_membership`) reads the policy through `goal_frame`: its pinned goals plus
+each migration target, reachable from a pinned goal, of this policy digest's intact stored rows
+(`migrated_goals`); the pin, digest and every other field are unchanged. The existing manifest validator
+decides (`_manifest_refused`). ONE control-store transaction then rechecks that no requalification of the
+family opened meanwhile (`_family_open`, owner review R2: inside the same transaction, which
+`Store.transaction` serializes behind its advisory lock), the intent, policy row and origin row and that
+the successor is new (`_intent_changed`, `_source_changed`, `_successor_exists`), stores the document in
+`continuation_requalifications` keyed by the intent, moves THAT intent to terminal `superseded`
+(`superseded_by`, `requalification` digest, appended history; an explicit owner transition, never a
+`TRANSITIONS` edge) and creates ONE `requalification` intent (`requalification_id(intent)`, same family,
+origin job and stored authorization, `predecessor_intent`) whose manifest keeps the origin's goal, plan,
+allowed paths, acceptance criteria, budget and Claude controls with `base_revision = main_revision` and a
+fixed preface of identities, whose goal binding is the same goal at that main (with a migration: the
+same path, criterion and rationale at `to_sha256`, in the manifest and the Fleet goal binding), and whose lane binding has
+route `requalification`, no session and no workspace (a fresh workspace at the new base, never a rebase of
+the immutable candidate). The identical document replays (`cached`); any other for the intent is
+`requalification_conflict`. Nothing external happens in the command: the tick's existing `publish` binds
+and admits it (`_authorize` also rechecks the stored document, the intent and manifest goal against it
+and a migration's comparison and review bytes, `requalification_missing`/`_corrupt`/`_goal_review_*`), its
+terminal outcome is observed like any job, and its candidate needs its own lead review, conductor and a new
+delivery plan. `requalification` is in the binding route set and `RESUME` but deliberately NOT in
+`SUCCESSOR_ROUTES`/`FAILURE_ROUTES`: it answers no failure, so it never counts against
+`max_corrections`, the two-strike research trigger, a capacity grant, research lineage membership or
+ownership reconciliation; a CORRECTION of its rejected candidate is an ordinary successor on the same new
+base. It is owner-triggered only - a later main change needs another owner withdrawal and document, never
+an automatic loop. `status` shows `requalifications[]` and each intent's `requalification` and
+`superseded_by`.
 
 An intent id is `origin job + generation/attempt + decisive evidence digest + route`; a successor id is
 `cont-` plus 24 hex of it. Every external effect has a durable pre-effect state: `intended` (complete
@@ -3417,7 +3515,12 @@ existing owners: `Continuation.accept_research`, the guarded `decide_one` of the
   for a mixed-cause family) and persisted before `accept_research` is called.
 - Plan publication: owner policy + the approved exact release only. The deterministic commit is created
   on `refs/zeus/owner-plans/<plan_id>` only when the ref is absent; other content is `plan_ref_conflict`.
-  Only the plan read back from Git is registered.
+  Only the plan read back from Git is registered. The target is busy (`delivery_target_busy`) while ANY
+  registered plan of it has an absent or non-terminal delivery intent - a plan no tick has picked up
+  counts too (SPEC s14.3), so a successor binds its expected predecessor only after the delivery before
+  it is `active`, `rolled_back`, `failed` or `withdrawn`; a plan already registered for this exact
+  candidate is simply planned. Terminal is not safe-to-switch evidence: HostDelivery's own pre-merge and
+  switch checks still decide that.
 - Canary: request and receipt are the files of ONE plan (`owner-canary-request.<plan_id>.json`,
   `owner-canary-receipt.<plan_id>.json`) in the target state directory; the controller hands the consumed
   plan to `owner_qualified_canary`. A request matching that plan's id and digest, target, revision and

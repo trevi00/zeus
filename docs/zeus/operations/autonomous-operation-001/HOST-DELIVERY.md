@@ -24,7 +24,7 @@ keep every authority they had:
 |---|---|---|
 | `application.releases.Releases` | lead + conductor approval, the incumbent checks, the active-release CAS | reads the record, re-derives the approval, calls `promote` only after the prescribed checks **and** an actual consumption receipt |
 | `application.release_queue.ReleaseQueue` | one controller per host, generation/lease/fence, attempts and backoff | claims under it, re-checks ownership inside every committing transaction, returns the lease for external waits |
-| `adapters.git.GitWorkspace` | target repository, tree and patch re-derivation, `--match-head-commit` merge | publishes and merges through it; nothing re-implements those checks |
+| `adapters.git.GitWorkspace` | target repository, tree and patch re-derivation; the merge as ONE fast-forward of main from exactly the reviewed base to exactly the reviewed revision (explicit ancestry + full-ref base lease; `gh pr merge` is no longer used); `merge_state` recognition of an effect that already happened | publishes and merges through it; nothing re-implements those checks |
 | the registered scheduled task / owned child process | what actually runs on the host | starts and ends exactly the service the owner registered |
 
 The legacy Docker `ReleaseRunner` is untouched: it is not enabled, driven or replaced here. Do not
@@ -74,15 +74,16 @@ registered -> awaiting_review -> publishing -> awaiting_ci -> merge_intended -> 
            -> drain_intended -> switching -> awaiting_consumption -> active
 ```
 
-`blocked`, `rolling_back`, `rolled_back` and `failed` preserve the stage they happened at, the fixed
-reason code, the error TYPE and the evidence. One tick advances at most one stage.
+`blocked`, `rolling_back`, `rolled_back`, `failed` and the owner's terminal `withdrawn` preserve the
+stage they happened at, the fixed reason code, the error TYPE and the evidence. One tick advances at
+most one stage.
 
 | stage | what must be true to leave it |
 |---|---|
 | `awaiting_review` | the release record itself carries the author's own lead **and** a conductor accepting exactly this revision with evidence, and the candidate's revision, tree, evaluator hash and repository are exactly the plan's |
-| `publishing` | a pull request exists for exactly the intended head — adopted if a previous tick already created it |
+| `publishing` | the remote main is still the reviewed base (else `reviewed_base_moved`, no PR, no CI), and a pull request exists for exactly the intended head — adopted if a previous tick already created it |
 | `awaiting_ci` | every named check FINISHED SUCCESSFULLY for that head; absent, running, skipped, cancelled, neutral and failed are not a pass, and a moved head goes to requalification |
-| `merge_intended` | the merge happened — recognized rather than repeated if a previous tick already merged — **and** the merged revision was qualified against the reviewed tree by the merge owner itself, on the performed and the observed path alike |
+| `merge_intended` | an effect that already happened is recognized first (the revision on main's first-parent history, or the exact head's PR merge commit); a NEW merge needs no other delivery of the target unsettled (`predecessor_in_flight`, a pending wait), the target still at the plan's expected predecessor (`descriptor_predecessor_moved`), main still the reviewed base (`reviewed_base_moved`) and the exact PR still open at the head with every required check passing now; it is the fast-forward compare-and-swap, and only a per-ref `[rejected]`/`[remote rejected]` of main is a definite refusal — anything else is unknown and reconciled next tick. Either way the merged revision is qualified against the reviewed tree by the merge owner itself |
 | `merged` | the incumbent evaluator recorded `verified`, the target is registered, the current descriptor is the approved predecessor, and the whole target tuple plus the expected active release are written durably |
 | `drain_intended` | new admission is paused and the target reports no active and no unconfirmed work |
 | `switching` | what is on the host was reconciled first (the intended descriptor, the expected predecessor, or a **foreign** state that blocks), then the immutable descriptor was replaced atomically under the target's lifecycle guard against its expected predecessor, and the service was started exactly once from the registered runtime root — reconciled, classified against the instance this intent is authorized to replace, stopped, retired, launched and recorded inside that same guard |
@@ -232,7 +233,21 @@ zeus host-delivery register --revision <40-hex> --path docs/zeus/.../delivery.js
 zeus host-delivery status
 ZEUS_HOST_DELIVERY_ENABLED=1 zeus host-delivery tick        # one bounded stage
 ZEUS_HOST_DELIVERY_ENABLED=1 zeus host-delivery run         # bounded loop; an empty queue idles
+zeus host-delivery withdraw --lane L --plan P --plan-sha256 S \
+    --reason reviewed_base_moved --evidence sha256:<owner decision>   # owner: retire a stale, untouched delivery
 ```
+
+`withdraw` is the owner's retirement of ONE delivery whose reviewed base or expected predecessor no
+longer holds (reasons `reviewed_base_moved`, `descriptor_predecessor_moved`, and
+`merged_tree_mismatch` for a recorded mismatched merge, which keeps `main_effect: merged`). It
+re-observes staleness now, refuses with nothing written when the host was touched
+(`withdraw_host_touched`), a merge is observed (`withdraw_merge_observed`), main is still the base
+(`withdraw_not_stale`) or GitHub, the remote or the store cannot be read (`withdraw_unobservable`), and
+takes the same queue fence a tick does (`controller_lease_held` when another controller holds it). It
+does not need `ZEUS_HOST_DELIVERY_ENABLED`: it publishes, merges and switches nothing, so a held
+controller can retire stale work. The plan, its owner action, its canary request and any PR are kept
+exactly as they were; replay is `cached`, anything else `withdrawal_conflict`; the next action is the
+owner's requalification (`zeus continuation delivery-requalify`, CONTINUATION.md).
 
 Delivery is **off** by default: without `ZEUS_HOST_DELIVERY_ENABLED` a tick registers, projects and
 refuses every external action, and not even a durable intent is written. `run` idles without

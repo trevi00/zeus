@@ -22,7 +22,6 @@ from test_host_delivery import (
     await_receipt,
     binds_a_runtime,
     build,
-    candidate,
     descriptor_of,
     drive,
     fixture_git,
@@ -32,6 +31,7 @@ from test_host_delivery import (
     release_policy,
     reviewed_release,
     stop_target,
+    successor_candidate,
     targets_document,
 )
 
@@ -267,6 +267,33 @@ def test_an_unapproved_foreign_or_busy_release_publishes_nothing(tmp_path):
     assert action["state"] == do.COMPLETED and busy["host"].plan(action["plan_id"]) is not None
 
 
+def test_a_registered_plan_without_an_intent_keeps_the_target_busy_until_it_is_terminal(tmp_path):
+    """D4 (SPEC s14.3 "no in-progress delivery on the target"): the recorded H1/H2 state bound both plans
+    with `expected_descriptor: null` because a plan no tick had given an intent yet was invisible here."""
+    busy = delivery_world(tmp_path)
+    with busy["world"].lane.store.transaction() as tx:   # labelled: an earlier plan, registered, never ticked
+        tx.put("host_delivery_plans", "earlier-plan", {
+            "id": "earlier-plan", "plan_id": "earlier-plan", "target_id": TARGET, "plan_sha256": "3" * 64,
+            "plan": {"plan_id": "earlier-plan", "release_id": "earlier", "revision": "1" * 40, "target_id": TARGET}})
+    lane_before = deepcopy(busy["world"].lane.store.data)
+    result = busy["owner"].tick("owners-1")
+    assert "delivery_target_busy" in result["waits"].values() and rows(busy["world"]) == {}
+    assert busy["world"].lane.store.data == lane_before and git(busy["repo"], "for-each-ref", "refs/zeus") == ""
+    # A blocked delivery keeps it busy too; only a terminal one (here the owner's withdrawal) frees it.
+    for stage, owed in (("blocked", False), ("withdrawn", True)):
+        with busy["world"].lane.store.transaction() as tx:
+            tx.put("host_delivery_intents", "earlier-plan", {"id": "earlier-plan", "plan_id": "earlier-plan",
+                                                             "target_id": TARGET, "revision": "1" * 40,
+                                                             "release_id": "earlier", "stage": stage})
+        settle(busy["owner"])
+        assert bool(rows(busy["world"])) is owed, stage
+    [action] = rows(busy["world"]).values()
+    # Bound only now, and to the target as it is: no descriptor yet, so the expected predecessor is null.
+    assert action["state"] == do.COMPLETED and action["plan"]["expected_descriptor"] is None
+    # Its own registered plan (no intent yet) is recognized as planned, never as a busy target.
+    assert busy["owner"].tick("owners-1")["waits"] == {}
+
+
 def test_the_plan_can_never_carry_a_candidate_chosen_target_path_or_command():
     policy = do.validate_policy(owner_policy())
     binding = {"policy_id": "owners-1", "policy_sha256": "a" * 64, "intent_id": "b" * 64, "target_id": TARGET,
@@ -328,7 +355,7 @@ def canary_system(tmp_path, *, consumption_timeout=120):
     assert drive(system)[-1]["stage"] == ACTIVE
     good = descriptor_of(system, TARGET)
     successor = reviewed_release(system["store"], system["org"],
-                                 record_candidate={**candidate(), "revision": "5" * 40, "branch": "harness/two",
+                                 record_candidate={**successor_candidate(system), "revision": "5" * 40, "branch": "harness/two",
                                                    "task_id": "two"})
     plan = plan_document(successor, plan_id="delivery-plan-2", target_id=TARGET, expected=good["descriptor_sha256"],
                          canary=CANARY_FLEET, consumption_timeout=consumption_timeout)

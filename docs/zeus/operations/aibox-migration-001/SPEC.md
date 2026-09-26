@@ -391,6 +391,8 @@ family, 현재 전체 attempt 집합과 각 lane 관측 evidence/inspection, 혼
   (`HostDelivery.approval`)로 approved이고 이 후보의 delivery가 없으며(`absent` 또는 다른 revision만 있는 `stale`)
   target에 진행 중 delivery가 없을 때만, owner delivery policy + 정확한 release 기록으로 `urn:zeus:host-delivery:1`
   plan을 만든다(target_descriptor revision = 검토된 후보, image/profile = `unchanged`; 새 환경은 별도 자격).
+  (15절 D4 적합성 교정: "진행 중 delivery"는 intent가 아직 없는 등록 plan까지 포함한다. 이전 구현은 intent만 보아
+  H1/H2가 모두 `expected_descriptor: null`로 묶였다.)
   plan 바이트·경로·ref를 `publishing`으로 먼저 영속하고, owner source repo에 고정 author/날짜의 결정적 commit을
   `refs/zeus/owner-plans/<plan_id>`에 **없을 때만** 생성한다(다른 내용의 기존 ref = `plan_ref_conflict`, 덮어쓰지 않음).
   재시작 시 같은 commit을 재도출·인식한다. Git에서 되읽은 plan만 기존 `HostDelivery.register`로 등록한다.
@@ -455,3 +457,138 @@ family, 현재 전체 attempt 집합과 각 lane 관측 evidence/inspection, 혼
 qualification. unit·polkit·정책·target registry·continuation/backlog 설정 설치는 owner 조치이며 이번 세션에서
 수행하지 않았다. 후보 unplanned restart는 새 instance id를 만들므로 다음 delivery는 기존 `target_instance_mismatch`
 게이트로 보류될 수 있다(안전 방향, owner 조정 필요).
+
+## 15. Delivery requalification D1–D6 구현 프레임 (2026-09-26 추가)
+
+출처: `RESULT-delivery-requalification-design.md`(설계)와 `delivery-requalification-design-owner-review.md`(수용 +
+구속 교정). 기준: `origin/main` = `deab096ccc1fca3593d94a1b00266df43c9823fe`(작업 시작 시 원격 재확인, 변화 없음).
+브랜치 `fix/delivery-requalification`, 격리 worktree `delivery-requalification-001`. 이 절은 1–14절과 PR206/owner
+upgrade 수용을 바꾸지 않는다. 구현 명세이며 GitHub 운영 검증이 아니다.
+
+### 15.1 구속 교정 (owner review; 설계보다 우선)
+
+1. **push 결과는 ref별 전체 상태로 분류한다.** `refs/heads/main` 한 줄의 `[rejected]`·`[remote rejected]`만 확정
+   거부(효과 없음)다. `[remote failure]`, 상태 줄 없음·형식 오류·다른 ref·중복 줄, timeout, transport 오류는 모두
+   unknown이며 재시도·withdraw 전에 원격 이력과 PR로 reconcile한다(원격이 이미 candidate인 lost-response 포함).
+2. **fast-forward 전용.** lease push 전에 `is_ancestor(candidate.base, candidate.revision)`을 명시 검사하고, lease는
+   항상 `--force-with-lease=refs/heads/main:<base>`(완전 ref + 정확 기대값)이다. 추적 ref 약칭·`--force`·허용적
+   refspec은 쓰지 않는다. divergent 후보는 push 0회.
+3. **U1 교정.** 서버가 old-id를 무시한다면 사후 tree qualification은 덮어쓴 main을 되돌리지 못한다. 근거는 문서화된
+   git receive-pack old-id 계약 + 명시적 ancestry다. bare-repo 시험은 stock Git 동작의 증거일 뿐 GitHub 운영 증거가
+   아니다. GitHub 고유 수용·권한은 미실행으로 남긴다.
+4. **새 효과 전 기존 게이트 유지.** 새 push 전에 PR 정체(OPEN, 같은 head)와 plan의 required check 통과를 그 시점
+   관측으로 다시 요구한다. 이력 기반 인식(R1/R2)은 이미 일어난 효과의 복구이지 새 push 권한이 아니며, 간접 PR 인식은
+   CI 승인이 아니다. 레거시 `Deployment`의 review/check 권한은 그대로 둔다.
+5. D2 미정착 target 검사는 `failed`/`blocked`이면서 descriptor가 묶였고 rollback 검증이 없는 intent도 멈춘다. D4의
+   terminal 분류는 switch 안전 증명이 아니다.
+6. D3 `merged_tree_mismatch` 예외: host 미접촉일 때만 은퇴를 허용하되 `merged_revision`/효과 이력을 보존하고 "GitHub
+   효과 없음"으로 표기하지 않는다(`main_effect: merged`). intent 기록 후 `queue.finish` 전 재실행은 외부 효과 없이
+   queue 종결만 reconcile한다.
+
+### 15.2 SSOT 재사용/확장 결정
+
+| 소유자 | 결정 |
+|---|---|
+| `GitWorkspace` (INV-RELEASE-001) | 확장: `merge_state` 읽기 전용 관측, GitHub merge = ancestry + lease fast-forward, `MergeRefused`. `gh pr merge` 호출 제거 |
+| `HostDelivery` (INV-HOST-DELIVERY-001) | 확장: pre-merge 관측·predecessor 바인딩, 새 push 전 PR/check 재검증, terminal `withdrawn`, `withdraw` |
+| `ReleaseQueue` | 재사용(변경 없음): withdraw의 fence는 tick과 같은 enqueue+claim/finish(거부 시 defer) |
+| `OwnerActions` (INV-OWNER-ACTIONS-001) | 교정: busy 규칙이 `host_delivery_plans`까지 읽음(SPEC 14.3) |
+| `Continuation` (INV-CONTINUATION-001) | 확장: owner 문서 `continuation-delivery-requalification:1`, 상태 `superseded`, 경로 `requalification`(capacity grant 선례) |
+| 새 scheduler·새 승인 권한·plan 스키마 변경 | 없음 |
+
+### 15.3 고정 수용 행렬 → 시험 위치
+
+| 행렬 항목 | 시험 파일 |
+|---|---|
+| 현재 후보 lease push 1회, `gh pr merge` 미호출 / divergent 0 push / main drift(사전·race) / 확정 거부 / `[remote failure]`·timeout·형식 오류 unknown(원격=candidate 및 원격=base) / 로컬 ff 실패 | `tests/test_git_merge_cas.py`(bare repo, 네트워크 없음) |
+| publish 전 drift, merge 전 drift, predecessor in-flight/moved/미정착 failed, H1/H2 모양, lost response, unknown push, 외부 merge(같은/다른 tree), PR·check 게이트 유지, 재시작·중복 tick | `tests/test_host_delivery_requalification.py`, `tests/test_host_delivery.py`(post-merge CAS 유지) |
+| withdraw 성공·replay cached·conflict·거부 코드·fence·queue-finish 틈·재시작 후 비선택·요청 파일 보존·CLI | `tests/test_host_delivery_requalification.py`, `tests/test_host_delivery_cli.py` |
+| D4 busy 규칙(intent 없는 등록 plan) | `tests/test_owner_delivery.py` |
+| requalify 성공·replay·conflict·거부·crash 사이·중복 admission·실패한 대체·route-set audit·manifest base | `tests/test_continuation_requalification.py`(기존 `tests/test_continuation.py` 표 검사 유지) |
+| 레거시 `Deployment` merge 호출자 | `tests/test_release_runner.py`(기존 유지) |
+
+### 15.4 수정 파일
+
+`adapters/git.py`, `adapters/host_delivery.py`, `application/host_delivery.py`, `domain/host_delivery.py`,
+`application/owner_actions.py`, `domain/continuation.py`, `application/continuation.py`, `adapters/continuation.py`,
+`adapters/continuation_cli.py`, `docs/contracts.md`, `docs/zeus/operations/autonomous-operation-001/HOST-DELIVERY.md`,
+`CONTINUATION.md`, 이 SPEC, 위 시험 파일. `_prepare_switch`, host adapter, canary, `Releases`, `ReleaseQueue`,
+deploy/unit/설정 파일은 변경하지 않는다.
+
+### 15.5 이 구현이 증명하지 않는 것
+
+GitHub 서버의 old-id 강제·권한·간접 merge 표시 시점(U1/U2), 운영 PG/Redis, 실제 withdraw/requalify 실행(R0–R7은
+Codex 수용 후 owner 조치), controller 재시작. controller hold는 유지된다.
+
+### 15.6 R1/R2 교정 프레임 (2026-09-26, `delivery-requalification-implementation-owner-review.md`)
+
+검토 대상 head `9e2f3eca873ed026f525f228162589ff0cbddad5`는 두 교정으로 거부됐다. D1–D4와 다른 경계는 수용된 채
+재개하지 않는다. 같은 worktree·브랜치·PR207에서 한 배치로 고친다.
+
+**무효였던 가정.** (a) "requalify 시점의 새 main에서도 goal blob이 원래 goal 고정 digest와 같다." 실제 H1/H2는
+`SPEC.md`를 `cd2711a4…598`(ced2028, 41593 B)에 묶었고 main은 이미 `c97e2f7d…876317`(deab096, 42036 B), PR207 자체가
+이 파일에 §15를 더해 `0fd3f838…691de79d`(9e2f3ec)다. 이 절도 같은 파일을 또 바꾼다. 따라서 동일성 게이트만으로는
+R5/R7이 실행 불가능하고, 시험의 mainline double이 같은 hash를 돌려 그 사실을 가렸다. (b) "family 배타성은 외부 관측
+전 한 번 읽으면 충분하다." 검사는 commit transaction 밖이었고, 두 다른 intent의 교차 실행이 같은 family에 open
+requalification 둘을 commit했다(검토 반례 `61dc4eb3…`, `eed9d435…`).
+
+**R1 교정 — owner goal migration (기존 문서의 선택적 엄격 블록; 새 권한 체계 아님).**
+- 문서 `continuation-delivery-requalification:1`에 선택 필드 `goal_migration {path, criterion, from_sha256,
+  to_sha256, review_ref}`를 더한다. 블록이 없으면 기존 동작 그대로다(새 main의 blob = 원래 digest, 아니면
+  `requalification_goal_changed`). 동등성 게이트는 제거하지 않는다.
+- 블록이 있으면 모두 요구한다. path·criterion이 origin job goal과 정확히 같다(`_goal_migration_scope`).
+  `from_sha256`이 저장된 원래 binding과 같다: origin Fleet job goal, intent의 저장 authorization goal, 그리고 origin
+  goal `base_revision`의 실제 git blob(`_goal_migration_origin`). `to_sha256`은 `main_revision`의 실제 blob이며
+  mode는 100644다(`_goal_migration_target`). from과 to는 달라야 하고, `review_ref`는 `rationale_ref`와 다른
+  content-addressed 증거이며 신뢰 저장소에서 bytes가 검증된다(`requalification_goal_review_*`). 임의로 다른 blob은
+  자동 승인하지 않는다.
+- 저장 행에는 durable 비교 입력을 둔다: `goal_migration.from {revision, sha256, bytes}`, `.to {revision, sha256,
+  bytes}`, `review_ref`, `review: "owner_reference_recorded"`. 이것은 hash 기록일 뿐 diff 검토 실행의 증거가
+  아니다. 실제 goal diff(`git diff <from.revision> <to.revision> -- <path>`)는 Codex가 별도로 검토하고, 그 결과를
+  owner가 `review_ref`로 싣는다. 모델이 쓴 자기 승인은 인정하지 않는다. 명령은 owner CLI에서 pin 재읽기와
+  runtime 인증을 거친 경우에만 쓰기에 이른다.
+- 후속 intent의 manifest goal과 Fleet goal binding은 새 실제 sha(`to_sha256`)를 쓰고 base는 `main_revision`이다.
+  criterion·path·rationale·allowed paths·acceptance·budget·claude는 origin 값 그대로이며 넓힐 수 없다.
+  old intent·origin job·manifest·pin·history는 바이트 그대로 보존된다. SPEC 이력은 지우거나 고정하지 않는다.
+- **정책 membership 동등성:** 정책 문서의 `goals`는 pin에 묶여 바꿀 수 없다. 바꾸면 모든 intent가
+  `policy_changed`가 된다. 따라서 이 정책에 저장된 온전한 requalification 행의 `goal_migration`(같은 policy
+  id/sha256, `document_sha256 == digest(document)`)이 membership 판정에서만 `{path, to_sha256, criterion}`을
+  정책 goal 집합에 더한다(`migrated_goals`, `goal_frame`). capacity grant 행이 cap 옆에 저장된 owner 확장인
+  것과 같은 방식이다. 변조된 행은 더하지 않으며, 그 후속의 새 효과도 `_check_requalification`이
+  `requalification_corrupt`로 멈춘다. 정책 sha·pin·다른 필드는 바뀌지 않는다.
+- `_check_requalification`은 새 효과 전에 저장 문서와 intent·manifest goal의 일치(migration이 있으면 `to`, 없으면
+  origin sha)를 확인하고 `review_ref` bytes를 다시 검증한다.
+
+**R2 교정 — family 배타성의 transaction 내부 재검사.** `_commit_requalification`은 같은 transaction 안에서,
+문서·old intent·후속 intent를 쓰기 전에 같은 policy·family의 open(`OPEN_STATES|recovery_required`)
+requalification을 다시 scan한다(`requalification_family_open`, 쓰기 0). 사전 검사는 빠른 거절용으로 남긴다.
+PostgreSQL `Store.transaction`은 `pg_advisory_xact_lock(734219)`로 writer를 직렬화하므로 transaction 내부
+scan과 쓰기 사이에 다른 commit이 끼어들 수 없다. MemoryStore는 RLock과 draft 교체로 같은 성질을 가진다.
+같은 문서 replay는 `cached`, 다른 문서는 `requalification_conflict`로 남는다.
+
+**교정 수용 행렬 → 시험** (`tests/test_continuation_requalification.py`).
+
+| 항목 | 시험 |
+|---|---|
+| 실제 git repo에서 ced→main 모양으로 SPEC이 다르면: 블록 없음 거절, 올바른 블록이면 새 sha로 successor 생성·admission·Fleet goal이 실제 blob과 일치 | `test_a_real_goal_blob_that_changed_*` |
+| 블록 불일치: from≠저장 binding, to≠실제 blob, path/criterion 변경, from==to, review 누락/`rationale_ref`와 동일/검증 실패, 쓰기 0 | `GOAL_MIGRATION_REFUSALS` parametrized, `test_a_malformed_goal_migration_block_is_invalid` |
+| 블록 없음 + goal 불변: 기존 동작, 저장 문서에 블록 없음 | 기존 시험 전부 유지 |
+| 저장 승인 증거 변조(행의 migration 또는 review bytes): 다음 효과 멈춤, membership 확장 없음 | `test_a_tampered_goal_migration_*`, `test_review_evidence_changed_after_recording_*`, `test_a_migrated_successor_is_routed_only_while_*` |
+| successor 인가·conductor·correction이 새 goal로 이어짐, 범위 불변; replay cached, 다른 블록 conflict | `test_the_migrated_successor_*`, `test_goal_migration_replay_*` |
+| 두 다른 delivery intent 교차(외부 mainline 관측 중): 하나만 commit, 다른 쪽은 `requalification_family_open`이고 부분 쓰기 없음 | `test_two_intents_of_one_family_interleaved_*` |
+| PostgreSQL 동시 transaction 경계(격리 PG, integration) | `test_family_exclusion_holds_across_concurrent_postgresql_transactions` |
+
+**H1, 이후 H2 입력 준비 (Codex 수용·merge·배포 후 owner 조치. 여기서는 실행하지 않는다).**
+1. `M` = 원격 main을 R5 시점에 `git ls-remote`로 읽고 lane repository에 fetch한다. 비교 입력:
+   `git cat-file -p <M>:docs/zeus/operations/aibox-migration-001/SPEC.md | sha256sum` → `to_sha256`,
+   `git cat-file -p ced20281ba10fa3b16280cb73a20279b7e94052a:<같은 path> | sha256sum` →
+   `cd2711a4a335597172a0baf039236c531a84cf9d91ffc52e76c2e1cf0baef598`(from). diff는
+   `git diff ced20281ba10fa3b16280cb73a20279b7e94052a <M> -- <path>`이다.
+2. Codex가 그 diff를 검토해 criterion "aibox autonomous_qualified: finite B1-B5 qualification of the migrated
+   durable server owners (SPEC 11 B1-B5, 14)"와 H1 범위를 바꾸지 않는지 판정한다. 그 판정문을 신뢰 artifact
+   저장소에 넣은 ref를 `review_ref`로 쓴다. owner 근거는 별도 `rationale_ref`다.
+3. H1 문서 = 기존 R5 template + `goal_migration {path, criterion(위 문자열 그대로), from_sha256(위),
+   to_sha256(M의 blob), review_ref}`. 실행 뒤 `status`의 `requalifications[].goal_migration`으로 from·to를 대조한다.
+4. H2(R7)는 H1′가 `active`/`consumed`가 된 뒤의 main `M2`에서 1–3을 다시 한다. from은 여전히 H2 origin의
+   `cd2711a4…`이고 to는 `M2`의 blob이다. H1′ 자체가 SPEC을 바꾸면 그 변경도 같은 diff에 포함되어 검토된다.
+   `M2`와 `M`의 blob이 같다고 가정하지 않는다.

@@ -510,3 +510,41 @@ def test_the_service_entry_runs_as_a_real_child_process_and_reports_its_identity
         if child.poll() is None:
             child.kill()
             child.wait(timeout=10)
+
+
+# ----- the owner's withdrawal command (INV-HOST-DELIVERY-001, aibox SPEC s15 D3) -------------------------
+def test_the_withdraw_command_parses_the_exact_owner_arguments():
+    argv = ["host-delivery", "withdraw", "--lane", "harness", "--plan", "own-a98e38119629936ab85d1032",
+            "--plan-sha256", "c" * 64, "--reason", "reviewed_base_moved", "--evidence", "sha256:" + "e" * 64]
+    parsed = cli.parser().parse_args(argv)
+    assert (parsed.delivery_command, parsed.lane, parsed.plan, parsed.plan_sha256, parsed.reason, parsed.evidence) == (
+        "withdraw", "harness", "own-a98e38119629936ab85d1032", "c" * 64, "reviewed_base_moved", "sha256:" + "e" * 64)
+    for missing in ("--plan", "--plan-sha256", "--reason", "--evidence"):
+        index = argv.index(missing)
+        with pytest.raises(SystemExit):
+            cli.parser().parse_args(argv[:index] + argv[index + 2:])
+    with pytest.raises(SystemExit):
+        cli.parser().parse_args(argv[:-3] + ["because", "--evidence", "sha256:" + "e" * 64])
+
+
+def test_the_withdraw_command_routes_to_the_lane_controller_without_the_opt_in(tmp_path, monkeypatch):
+    """Withdrawal publishes, merges and switches nothing, so a held (disabled) controller can retire work."""
+    service, lane_store, calls = service_for(), MemoryStore(), []
+    route = {"lane": {"id": "harness", "repository": str(tmp_path), "runtime": str(tmp_path / "rt")},
+             "store": lane_store}
+
+    class Controller:
+        def withdraw(self, plan_id, plan_sha256, reason, evidence):
+            calls.append((plan_id, plan_sha256, reason, evidence))
+            return {"withdrawn": True, "cached": False, "plan_id": plan_id}
+    monkeypatch.setattr(host_delivery, "resolve_lane", lambda _service, lane_id: route)
+    monkeypatch.setattr(host_delivery, "lane_git", lambda lane, host: SimpleNamespace(remote="zeus-owner/zeus-harness"))
+    monkeypatch.setattr(host_delivery, "_lane_observer", lambda _route: None)
+    monkeypatch.setattr(host_delivery, "_settings", lambda: {})
+    monkeypatch.setattr(host_delivery, "controller",
+                        lambda _service, **kwargs: calls.append(kwargs["store"]) or Controller())
+    monkeypatch.delenv(ENABLED_SETTING, raising=False)
+    result = execute(service, args("withdraw", lane="harness", plan="own-plan", plan_sha256="c" * 64,
+                                   reason="reviewed_base_moved", evidence="sha256:" + "e" * 64))
+    assert result == {"withdrawn": True, "cached": False, "plan_id": "own-plan", "lane": "harness", "exit_code": 0}
+    assert calls == [lane_store, ("own-plan", "c" * 64, "reviewed_base_moved", "sha256:" + "e" * 64)]

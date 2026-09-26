@@ -188,6 +188,63 @@ def grant_capacity(store, config: dict, host: dict, document, *, lanes=None, evi
     return owner.grant_capacity(document, pin_sha256=sha, runtime=runtime or lane_runtime(config, host))
 
 
+def read_requalification(path) -> dict:
+    """The owner's delivery requalification file, read under the same bounds as a receipt file."""
+    try:
+        return read_receipt(path)
+    except ContinuationRefused as exc:
+        raise ContinuationRefused(exc.reason_code.replace("research_receipt", "requalification", 1), "operator",
+                                  "file") from None
+
+
+class LaneMainline:
+    """`lane_id -> port` over the lane's OWN registered repository and the host's GitHub setting (the
+    same pair `host-delivery --lane` merges with): `remote_main()` is an `ls-remote` read of the remote
+    main, `commit_exists` and `goal(revision, path)` (mode, SHA-256 and size of the blob) read the lane
+    repository at an explicit commit. Read only: no fetch, no ref move; an owner who names a main the
+    lane repository lacks fetches it first."""
+
+    def __init__(self, config: dict, host: dict, source_factory=GitSource):
+        self.config, self.host, self.source_factory = config, host, source_factory
+
+    def __call__(self, lane_id: str):
+        from types import SimpleNamespace
+
+        from codex_harness.adapters.git import GitWorkspace
+
+        lane = lane_of(self.config, lane_id)
+        workspace = GitWorkspace(lane["repository"], str(Path(lane["runtime"]) / "workspaces"),
+                                 self.host.get("HARNESS_GITHUB_REPO"))
+        source = self.source_factory(lane["repository"])
+        def goal(revision: str, path: str) -> dict | None:
+            mode, data = source.blob(revision, path)
+            return None if mode is None else {"mode": mode, "sha256": hashlib.sha256(data).hexdigest(),
+                                              "bytes": len(data)}
+        return SimpleNamespace(remote_main=workspace.remote_main, commit_exists=source.commit_exists, goal=goal)
+
+
+def requalify_delivery(store, config: dict, host: dict, document, *, lanes=None, evidence=None, runtime=None,
+                       mainline=None, source_factory=GitSource) -> dict:
+    """The owner's delivery requalification (`Continuation.requalify_delivery`), verified against the
+    registered pin re-read through Git now, the lanes' actual runtime identity, the lane stores (the
+    withdrawn HostDelivery plan and the release record), the remote main and the lane repository, and
+    the trusted rationale bytes. It starts nothing: the next tick binds and admits the successor."""
+    owner = Continuation(store, lanes=lanes or lane_stores(config, host), validate=validator(),
+                         evidence=evidence or research_evidence())
+    row = owner.policy(document.get("policy_id")) if isinstance(document, dict) and type(
+        document.get("policy_id")) is str else None
+    sha = None
+    if row is not None:
+        pin = row["pin"]
+        try:
+            sha = load_policy(source_factory(lane_of(config, pin["lane"])["repository"]), pin["revision"],
+                              pin["path"])["pin"]["sha256"]
+        except Exception as exc:
+            raise ContinuationRefused("policy_unavailable", "operator", "pin") from exc
+    return owner.requalify_delivery(document, pin_sha256=sha, runtime=runtime or lane_runtime(config, host),
+                                    mainline=mainline or LaneMainline(config, host, source_factory))
+
+
 def reconcile_ownership(store, intent_id: str) -> dict:
     """The owner's explicit present-ownership reconciliation of one admitted continuation successor
     (`Continuation.reconcile_ownership`): control-store rows only, no lane, Git or process."""

@@ -31,7 +31,7 @@ from pathlib import Path
 import pytest
 
 from codex_harness.adapters.configuration import aliases, read_env
-from codex_harness.adapters.git import GitWorkspace
+from codex_harness.adapters.git import GitWorkspace, MergeRefused
 from codex_harness.adapters.host_delivery import (
     DESCRIPTOR_FILE,
     RECEIPT_FILE,
@@ -167,13 +167,32 @@ class FakeGitHub:
     lost-response case; it never runs `gh`, opens a socket or touches a repository.
     """
 
-    def __init__(self, *, checks=((CHECK, "success"),), head=None, merged_tree=TREE):
+    def __init__(self, *, checks=((CHECK, "success"),), head=None, merged_tree=TREE, fast_forward=False):
         self.rows = [{"name": name, "state": state} for name, state in checks]
         self.head = head  # None: each candidate's own revision, as a real PR head would be
         self.prs = {}
         self.publishes = self.merges = self.observations = 0
         self.publish_error = self.merge_error = self.observe_error = None
         self.merged_tree, self.qualifications = merged_tree, []
+        # The remote main as the labelled double models it: the reviewed base until something moves
+        # it, and the revisions a fast-forward put on its first-parent history (R1 of merge_state).
+        # `fast_forward=True` models the lease fast-forward merger; the default models the former
+        # merge-commit provider so every earlier recognition test keeps its exact shape.
+        self.main, self.mainline, self.fast_forward = BASE, [], fast_forward
+        self.merge_refusal = None
+
+    def merge_state(self, candidate, observed=None):
+        """R1-R4 exactly as `GitWorkspace.merge_state` orders them, over this double's remote main."""
+        if self.observe_error is not None:
+            raise self.observe_error  # labelled injected GitHub outage
+        if candidate["revision"] in self.mainline:
+            return {"state": "merged", "merged_revision": candidate["revision"], "main": self.main}
+        if (observed or {}).get("state") == "MERGED" and (observed or {}).get("head") == candidate["revision"] \
+                and (observed or {}).get("merged_revision"):
+            return {"state": "merged", "merged_revision": observed["merged_revision"], "main": self.main}
+        if self.main == candidate["base"]:
+            return {"state": "unmerged", "merged_revision": None, "main": self.main}
+        return {"state": "base_moved", "merged_revision": None, "main": self.main}
 
     @property
     def pr(self):
@@ -202,10 +221,21 @@ class FakeGitHub:
             raise self.publish_error  # labelled injected loss of the publish RESPONSE
         return {**self.prs[candidate["branch"]], "checks": []}
 
-    def merge(self, candidate):
+    def merge(self, candidate, observed=None):
         self.merges += 1
+        if self.merge_refusal is not None:
+            raise MergeRefused(self.merge_refusal)  # labelled injected definite server refusal
+        if self.fast_forward:
+            # The lease fast-forward: main becomes exactly the reviewed revision; the PR's own state
+            # is left alone (whether GitHub marks it merged is not something this delivery needs).
+            self.main = candidate["revision"]
+            self.mainline.append(candidate["revision"])
+            if self.merge_error is not None:
+                raise self.merge_error  # labelled injected loss of the push RESPONSE
+            return {"merged": True, "merged_revision": candidate["revision"]}
         self.prs[candidate["branch"]] = {**self.prs[candidate["branch"]], "state": "MERGED",
                                          "merged_revision": MERGED_REVISION}
+        self.main = MERGED_REVISION
         if self.merge_error is not None:
             raise self.merge_error  # labelled injected loss of the merge RESPONSE
         return {"merged": True, "merged_revision": MERGED_REVISION}
@@ -226,6 +256,13 @@ def candidate(revision=REVISION, tree=TREE, repository=REPOSITORY):
     return {"revision": revision, "base": BASE, "tree": tree, "author": "worker:implementation",
             "branch": "harness/delivery-1", "task_id": "delivery-1", "repository": repository,
             "objective": CANARY_TEXT}
+
+
+def successor_candidate(system, **overrides):
+    """A candidate cut from the remote main AS IT IS NOW - what a real successor's reviewed base is.
+    Reusing the first candidate's base after that one merged is the stale shape a delivery now
+    refuses before any effect (`reviewed_base_moved`)."""
+    return {**candidate(), "base": system["github"].main, **overrides}
 
 
 def release_policy():
@@ -816,13 +853,27 @@ def test_unconfirmed_host_effects_block_the_switch_and_do_not_kill_active_work(t
     assert not (state / DESCRIPTOR_FILE).exists()
 
 
-def test_a_descriptor_that_moved_under_the_plan_refuses_before_any_host_change(tmp_path):
+def test_a_descriptor_that_moved_under_the_plan_refuses_before_any_merge(tmp_path):
+    """Pre-merge predecessor binding: main is never moved for a plan the target no longer fits."""
     system = build(tmp_path, plan_overrides={"expected": "4" * 64})
     results = drive(system, until=MERGED, limit=6)
+    assert results[-1]["stage"] == BLOCKED and results[-1]["reason_code"] == "descriptor_predecessor_moved"
+    assert intent_of(system)["previous_stage"] == MERGE_INTENDED
+    assert system["github"].merges == 0 and system["github"].main == BASE
+    assert descriptor_of(system) is None
+
+
+def test_a_descriptor_hand_edited_after_the_merge_is_still_refused_by_the_switch_cas(tmp_path):
+    """The retained post-merge CAS: the pre-merge read is not atomic with the switch."""
+    system = build(tmp_path)
+    results = drive(system, until=MERGED, limit=6)
     assert stages(results)[-1] == MERGED
+    with system["store"].transaction() as tx:   # labelled injected hand edit between merge and switch
+        tx.put(BUCKET_DESCRIPTORS, "canary-service", {"id": "canary-service", "target_id": "canary-service",
+                                                      "descriptor": {"schema": "fixture", "revision": "4" * 40}})
     blocked = system["delivery"].tick()
     assert blocked["reason_code"] == "descriptor_predecessor_mismatch"
-    assert descriptor_of(system) is None
+    assert intent_of(system)["descriptor"] is None
 
 
 def test_an_unchanged_binding_without_a_predecessor_refuses_instead_of_guessing(tmp_path):
@@ -1007,7 +1058,7 @@ def test_a_failed_canary_restores_the_exact_predecessor_and_proves_it_was_consum
         good = descriptor_of(system)
         verdicts["passed"] = False
         successor = reviewed_release(system["store"], system["org"],
-                                     record_candidate={**candidate(), "revision": "5" * 40,
+                                     record_candidate={**successor_candidate(system), "revision": "5" * 40,
                                                        "branch": "harness/two", "task_id": "two"})
         plan = plan_document(successor, plan_id="delivery-plan-2",
                              expected=good["descriptor_sha256"])
@@ -1082,7 +1133,7 @@ def test_an_unproven_restoration_blocks_with_a_critical_alert(tmp_path):
                 return {"started": True, "pid": None}
 
         successor = reviewed_release(system["store"], system["org"],
-                                     record_candidate={**candidate(), "revision": "5" * 40,
+                                     record_candidate={**successor_candidate(system), "revision": "5" * 40,
                                                        "branch": "harness/two", "task_id": "two"})
         system["delivery"].register(plan_document(successor, plan_id="delivery-plan-2",
                                                   expected=good["descriptor_sha256"],
@@ -1378,7 +1429,7 @@ def test_a_restoration_interrupted_before_its_acknowledgement_resumes_and_is_pro
         good = descriptor_of(system)
         verdicts["passed"] = False
         successor = reviewed_release(system["store"], system["org"],
-                                     record_candidate={**candidate(), "revision": "5" * 40,
+                                     record_candidate={**successor_candidate(system), "revision": "5" * 40,
                                                        "branch": "harness/two", "task_id": "two"})
         plan = plan_document(successor, plan_id="delivery-plan-2",
                              expected=good["descriptor_sha256"])
@@ -1414,7 +1465,7 @@ def test_a_rollback_onto_a_foreign_descriptor_blocks_rather_than_overwriting_it(
         good = descriptor_of(system)
         verdicts["passed"] = False
         successor = reviewed_release(system["store"], system["org"],
-                                     record_candidate={**candidate(), "revision": "5" * 40,
+                                     record_candidate={**successor_candidate(system), "revision": "5" * 40,
                                                        "branch": "harness/two", "task_id": "two"})
         plan = plan_document(successor, plan_id="delivery-plan-2",
                              expected=good["descriptor_sha256"])
@@ -1886,7 +1937,7 @@ def test_a_rollback_start_after_a_lost_acknowledgement_keeps_the_restored_instan
         good = descriptor_of(system)
         verdicts["passed"] = False
         successor = reviewed_release(system["store"], system["org"],
-                                     record_candidate={**candidate(), "revision": "5" * 40,
+                                     record_candidate={**successor_candidate(system), "revision": "5" * 40,
                                                        "branch": "harness/two", "task_id": "two"})
         plan = plan_document(successor, plan_id="delivery-plan-2",
                              expected=good["descriptor_sha256"])
@@ -2260,7 +2311,7 @@ def test_a_target_whose_liveness_cannot_be_read_refuses_before_any_effect(tmp_pa
 def second_plan(system, *, expected, plan_id="delivery-plan-2"):
     """A second reviewed candidate for the same target, registered through the existing authority."""
     successor = reviewed_release(system["store"], system["org"],
-                                 record_candidate={**candidate(), "revision": "5" * 40,
+                                 record_candidate={**successor_candidate(system), "revision": "5" * 40,
                                                    "branch": "harness/two", "task_id": "two"})
     plan = plan_document(successor, plan_id=plan_id, expected=expected)
     system["delivery"].register(plan, pin(path="docs/zeus/operations/delivery-2.json"))
