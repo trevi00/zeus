@@ -1007,7 +1007,87 @@ def target_progress(row: dict) -> dict:
             "history": len(row.get("history") or [])}
 
 
-__all__ = ["ATTEMPT_RESOLVED", "RECOVERY_VERIFICATION_MISSING", "VERIFYING", "attempt_resolved",
+# ----- evaluator migration of a rejected, merged delivery (INV-HOST-DELIVERY-MIGRATION-001) -------
+# The lane half of the ordered control/lane handoff: `staged` (old intent truthfully superseded,
+# reviewed successor release created, target reserved), `registered` (the migration's own exact plan
+# registered HELD), `active` (the durable control acknowledgement cleared the hold and queued the
+# successor). A reserving migration holds its target for every other plan.
+MIGRATION_STAGED = "staged"
+MIGRATION_REGISTERED = "registered"
+MIGRATION_ACTIVE = "active"
+MIGRATION_RESERVING = frozenset({MIGRATION_STAGED, MIGRATION_REGISTERED})
+MIGRATION_HELD = "migration_unacknowledged"
+MIGRATION_REQUEST_FIELDS = frozenset({"migration_id", "old_plan_id", "old_plan_sha256", "source_release_id",
+                                      "source_policy_hash", "candidate_revision", "target_id", "actor",
+                                      "approval"})
+MIGRATION_ACK_FIELDS = frozenset({"control_action_id", "plan_id", "plan_sha256", "request_sha256",
+                                  "canary_request_id", "lineage_sha256"})
+_HEX64 = re.compile(r"^[0-9a-f]{64}$")
+
+
+def migration_request_id(request: dict) -> str:
+    """The migration identity: the canonical digest of the request body WITHOUT `migration_id`."""
+    return digest({key: value for key, value in request.items() if key != "migration_id"})
+
+
+def validate_migration_request(request) -> dict:
+    """The exact prepared control request; its `migration_id` must be its own body digest."""
+    if not isinstance(request, dict) or set(request) != MIGRATION_REQUEST_FIELDS:
+        raise DeliveryRefused("migration_request_invalid", "request")
+    for key in MIGRATION_REQUEST_FIELDS - {"approval"}:
+        if type(request[key]) is not str or not request[key]:
+            raise DeliveryRefused("migration_request_invalid", key)
+    if not REVISION.fullmatch(request["candidate_revision"]) or not TOKEN.fullmatch(request["old_plan_id"]):
+        raise DeliveryRefused("migration_request_invalid", "candidate_revision")
+    if not _HEX64.fullmatch(request["old_plan_sha256"]) or not isinstance(request["approval"], dict):
+        raise DeliveryRefused("migration_request_invalid", "old_plan_sha256")
+    if request["migration_id"] != migration_request_id(request):
+        raise DeliveryRefused("migration_request_invalid", "migration_id")
+    return request
+
+
+def migration_lineage_digest(source_release_id: str, successor_release_id: str, old_plan_id: str,
+                             plan_id: str, migration_id: str) -> str:
+    """The `lineage_sha256` a migration readiness acknowledgement must carry: the canonical digest
+    of exactly these five identities, the same keys control's lineage record uses."""
+    return digest({"source_release_id": source_release_id, "successor_release_id": successor_release_id,
+                   "old_plan_id": old_plan_id, "plan_id": plan_id, "migration_id": migration_id})
+
+
+def validate_migration_ack(ack) -> dict:
+    if not isinstance(ack, dict) or set(ack) != MIGRATION_ACK_FIELDS or any(
+            type(value) is not str or not value.strip() for value in ack.values()):
+        raise DeliveryRefused("migration_ack_invalid", "ack")
+    canary = ack["canary_request_id"]
+    if canary != "not_requested" and not _HEX64.fullmatch(canary.removeprefix("sha256:")):
+        raise DeliveryRefused("migration_ack_invalid", "canary_request_id")
+    return ack
+
+
+def migration_rejected_source(intent, plan: dict, request: dict) -> str | None:
+    """Why this old intent is NOT the exact rejected, merged, host-untouched shape; None when it is."""
+    if not isinstance(intent, dict) or intent.get("stage") not in {BLOCKED, FAILED} \
+            or intent.get("reason_code") != "release_rejected":
+        return "migration_not_applicable"
+    if (plan["release_id"], plan["target_id"], plan["policy_hash"]) != (
+            request["source_release_id"], request["target_id"], request["source_policy_hash"]) \
+            or intent.get("release_id") != plan["release_id"]:
+        return "migration_source_mismatch"
+    if not intent.get("merged_revision") or intent.get("merged_revision") != request["candidate_revision"] \
+            or plan["revision"] != request["candidate_revision"]:
+        return "migration_candidate_mismatch"
+    if any(intent.get(key) is not None for key in ("descriptor", "descriptor_sha256", "instance_id",
+                                                    "candidate_instance_id", "rollback", "canary")):
+        return "migration_host_touched"
+    if unresolved_attempts(intent):
+        return "migration_attempt_debt"
+    return None
+
+
+__all__ = ["MIGRATION_ACK_FIELDS", "MIGRATION_ACTIVE", "MIGRATION_HELD", "MIGRATION_REGISTERED",
+           "MIGRATION_REQUEST_FIELDS", "MIGRATION_RESERVING", "MIGRATION_STAGED", "migration_rejected_source",
+           "migration_lineage_digest", "migration_request_id", "validate_migration_ack", "validate_migration_request",
+           "ATTEMPT_RESOLVED", "RECOVERY_VERIFICATION_MISSING", "VERIFYING", "attempt_resolved",
            "attempts_of", "recoveries_of", "resumable", "unresolved_attempts",
            "ACTIVATION_GATE_CODES", "ACTIVE", "AUTHORITY", "AWAITING_CI", "AWAITING_CONSUMPTION", "AWAITING_REVIEW",
            "BLOCKED", "CANARY_CHECKS", "CANARY_COLLECT", "CANARY_FLEET", "CANARY_REQUEST_FIELDS",

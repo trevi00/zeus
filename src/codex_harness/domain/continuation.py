@@ -193,6 +193,43 @@ def transition(current, target: str) -> str:
     return target
 
 
+# ---- the owner's evaluator migration: the ONE narrowly authorized resume (INV-OWNER-ACTIONS-MIGRATION-001)
+# Never a TRANSITIONS edge (the controller itself can never take it, and no other paused intent is ever
+# resumed): only a completed, finalized evaluator migration of exactly this source intent moves its
+# PAUSED delivery intent back to the state from which the controller observes the delivery (RESUME
+# OBSERVE_DELIVERY). The pause (reason, owner, plan) and the prior version stay in `migration_resume`.
+MIGRATION_RESUME = {(DELIVERY, PAUSED): AWAITING_OWNER}
+MIGRATION_SOURCE_FIELDS = ("id", "policy_id", "lane", "delivery_target", "release_id", "route", "state", "version")
+MIGRATION_SOURCE_STATES = frozenset({AWAITING_OWNER, PAUSED})
+
+
+def migration_source(intent: dict) -> dict:
+    """The exact source-intent snapshot a migration records at request time and re-checks at effect time."""
+    return {key: intent.get(key) for key in MIGRATION_SOURCE_FIELDS}
+
+
+def migration_resume(current, recorded: dict, lineage: dict, now: str) -> dict | None:
+    """The resumed row for a PAUSED source; None for an AWAITING_OWNER source (already observing).
+
+    `current` must still equal the recorded snapshot in every field (policy, lane, target, release,
+    route, state, version); any change refuses `migration_source_changed` and nothing is written."""
+    refuse(isinstance(current, dict) and migration_source(current) == recorded
+           and recorded.get("state") in MIGRATION_SOURCE_STATES, "migration_source_changed", "operator", "intent_id")
+    target = MIGRATION_RESUME.get((current["route"], current["state"]))
+    if target is None:
+        return None
+    resumed = {**current, "state": target, "reason_code": "migration_resumed", "next_owner": "host_delivery",
+               "version": current["version"] + 1, "updated_at": now,
+               "migration_resume": {**lineage, "from_state": current["state"], "from_version": current["version"],
+                                    "paused_reason_code": current.get("reason_code"),
+                                    "paused_next_owner": current.get("next_owner"),
+                                    "paused_delivery_plan": current.get("delivery_plan"), "at": now}}
+    resumed["history"] = (current.get("history") or [])[-(MAX_HISTORY - 1):] + [
+        {"state": target, "previous": current["state"], "reason_code": "migration_resumed", "error_type": None,
+         "at": now}]
+    return resumed
+
+
 # ---- policy -------------------------------------------------------------------------------------
 def _text_list(value, limit: int, item_limit: int) -> bool:
     return (isinstance(value, list) and 0 < len(value) <= limit and len(set(value)) == len(value)

@@ -342,7 +342,8 @@ class ReleaseVerifier:
                 except TicketSuperseded as exc:
                     outcome, state = {"verdict": "superseded", "reason": str(exc)[:200]}, "evaluated"
                 except ContractError as exc:
-                    outcome, state = {"verdict": "refused", "error_type": type(exc).__name__}, "evaluated"
+                    outcome, state = {"verdict": "refused", "error_type": type(exc).__name__,
+                                      "reason_code": getattr(exc, "reason_code", None)}, "evaluated"
                 except KeyboardInterrupt:
                     raise
                 except Exception as exc:

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 import re
@@ -20,7 +21,7 @@ from codex_harness.application.releases import Releases
 from codex_harness.application.tickets import TicketSuperseded, ticket_binding
 from codex_harness.application.workflow import Workflow
 from codex_harness.domain.check_results import bind_revision, is_test_run
-from codex_harness.domain.model import canonical, digest, require, utcnow
+from codex_harness.domain.model import ContractError, canonical, digest, require, utcnow
 from codex_harness.domain.policy import POLICY
 
 # INV-HOST-DELIVERY-VERIFY-001: the two containers one owned verification attempt may start. Their
@@ -33,6 +34,37 @@ RETRY_OBSERVATION = "verification_observation_unavailable"
 RETRY_ISOLATION = "verification_isolation_unavailable"
 RETRY_AUTH = "verification_auth_unavailable"
 RETRY_WORKSPACE = "verification_workspace_unavailable"
+
+
+class EvaluatorPinMismatch(ContractError):
+    """INV-RELEASE-EVALUATOR-MIGRATION-001: git disagrees with the recorded evaluator pin.
+
+    A named refusal, never an observation error: the verifier records it as `refused`, not retry.
+    """
+
+    reason_code = "evaluator_pin_mismatch"
+
+
+def evaluator_patch_sha256(diff: str) -> str:
+    """The `patch_sha256` of an evaluator approval.
+
+    SHA-256 over the UTF-8 bytes of `GitWorkspace.inspect(E, base)["diff"]`, i.e. the output of
+    `git diff --no-ext-diff <base> <E> --` with trailing whitespace stripped by the adapter.
+    """
+    return hashlib.sha256(diff.encode("utf-8")).hexdigest()
+
+
+def resolve_evaluator_pin(git, evaluator_revision: str, base: str) -> dict:
+    """The evaluator pin as the repository derives it (INV-RELEASE-EVALUATOR-MIGRATION-001).
+
+    The one derivation shared by migration creation (before any write) and the runner's
+    execution-time recheck: E and base resolved to commits, E's first parent, E's tree, the sorted
+    changed paths and `patch_sha256` of `git diff <base> <E>`. Git failures propagate unchanged.
+    """
+    inspected = git.inspect(evaluator_revision, base)
+    return {"evaluator_revision": inspected["revision"], "parent": git.parent(inspected["revision"]),
+            "base": inspected["base"], "evaluator_tree": inspected["tree"],
+            "paths": sorted(inspected["files"]), "patch_sha256": evaluator_patch_sha256(inspected["diff"])}
 
 
 def attempt_resources(attempt_id: str) -> dict:
@@ -198,8 +230,9 @@ class ReleaseRunner:
         if candidate.get("repository") is not None:
             require(candidate["repository"] == self.git.target_identity(),
                     "Candidate target repository changed since review")
+        test_source = self._test_source(release, inspected.get("revision"))
         try:
-            incumbent = self.git.review_workspace(candidate["base"], "evaluator-" + release_id[:16])
+            incumbent = self.git.review_workspace(test_source, "evaluator-" + release_id[:16])
             path = self.git.review_workspace(candidate["revision"], "canary-" + release_id[:16])
         except Exception as exc:
             if owned is None:
@@ -208,8 +241,10 @@ class ReleaseRunner:
                                                     "error_type": type(exc).__name__}), "canary-failure")
             return {"verdict": "retry", "reason_code": RETRY_WORKSPACE, "evidence": failure["ref"],
                     "checks": {}, "receipt": receipt}
-        receipt["workspaces"] = {"incumbent": {"path": str(incumbent), "revision": candidate["base"]},
+        receipt["workspaces"] = {"incumbent": {"path": str(incumbent), "revision": test_source},
                                  "candidate": {"path": str(path), "revision": candidate["revision"]}}
+        if test_source != candidate["base"]:
+            receipt["workspaces"]["incumbent"]["base"] = candidate["base"]
         # Fresh candidate venv; test definitions are taken from the incumbent commit.
         install = self._check([uv_command(), "sync", "--frozen"], path, expected_revision=candidate["revision"])
         if not install["passed"]:
@@ -268,6 +303,38 @@ class ReleaseRunner:
         if not task["passed"]:
             return self._stop(release, checks, task, receipt)
         return {"verdict": "checked", "passed": True, "image": image, "checks": checks, "receipt": receipt}
+
+    def _test_source(self, release, candidate_revision: str | None) -> str:
+        """The one commit whose incumbent tests evaluate this release (legacy and owned paths).
+
+        INV-RELEASE-EVALUATOR-MIGRATION-001: an ordinary release runs the tests of candidate.base,
+        exactly as before. Otherwise the release must carry the evaluator migration naming that
+        revision, and the pin is RE-DERIVED from git here - tree, tests-only paths, patch - never
+        trusted from the record; any disagreement is the named refusal `evaluator_pin_mismatch`.
+        """
+        candidate = release["candidate"]
+        source = release["policy"].get("revision", candidate["base"])
+        if source == candidate["base"]:
+            return source
+        pin = release.get("evaluator_migration")
+
+        def check(condition, reason):
+            if not condition:
+                raise EvaluatorPinMismatch("Evaluator pin mismatch: " + reason)
+
+        check(isinstance(pin, dict) and pin.get("evaluator_revision") == source
+              and pin.get("base") == candidate["base"], "no evaluator migration names the test source")
+        check(source not in {candidate["revision"], candidate_revision}, "evaluator is the candidate")
+        resolved = resolve_evaluator_pin(self.git, source, candidate["base"])
+        check(resolved["evaluator_revision"] == source, "evaluator revision")
+        # E is a direct child of the base: its one commit is the whole reviewed correction.
+        check(resolved["parent"] == resolved["base"], "evaluator parent")
+        check(resolved["evaluator_tree"] == pin["evaluator_tree"], "evaluator tree")
+        files = resolved["paths"]
+        check(bool(files) and files == pin["paths"] and all(f.startswith("tests/") for f in files),
+              "evaluator paths")
+        check(resolved["patch_sha256"] == pin["patch_sha256"], "evaluator patch")
+        return source
 
     def _run(self, release_id: str) -> dict:
         with self.service.store.transaction() as tx:

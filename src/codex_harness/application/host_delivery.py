@@ -37,7 +37,7 @@ import threading
 from datetime import datetime, timedelta
 
 from codex_harness.application.release_queue import ReleaseQueue
-from codex_harness.application.releases import Releases
+from codex_harness.application.releases import Releases, expected_evaluator_pin
 from codex_harness.application.tickets import ticket_binding
 from codex_harness.domain.host_delivery import (
     ACTIVATION_GATE_CODES,
@@ -63,6 +63,11 @@ from codex_harness.domain.host_delivery import (
     MAX_STAGE_ATTEMPTS,
     MERGE_INTENDED,
     MERGED,
+    MIGRATION_ACTIVE,
+    MIGRATION_HELD,
+    MIGRATION_REGISTERED,
+    MIGRATION_RESERVING,
+    MIGRATION_STAGED,
     OUTCOME_ACTIVE,
     OUTCOME_BLOCKED,
     OUTCOME_BUSY,
@@ -84,6 +89,7 @@ from codex_harness.domain.host_delivery import (
     STATUS_SCHEMA,
     STOPPED_STAGES,
     SWITCHING,
+    TERMINAL_STAGES,
     TICK_SCHEMA,
     VERIFYING,
     WITHDRAW_REASONS,
@@ -96,6 +102,8 @@ from codex_harness.domain.host_delivery import (
     consumption_verdict,
     delivery_status,
     descriptor_digest,
+    migration_lineage_digest,
+    migration_rejected_source,
     new_intent,
     plan_digest,
     recoveries_of,
@@ -105,18 +113,22 @@ from codex_harness.domain.host_delivery import (
     safe_error_type,
     stage_next_action,
     unresolved_attempts,
+    validate_migration_ack,
+    validate_migration_request,
     validate_pin,
     validate_plan,
     validate_targets,
 )
 from codex_harness.domain.managed_runtime import EnvironmentUnqualified
-from codex_harness.domain.model import ContractError, utcnow
+from codex_harness.domain.model import ContractError, digest, utcnow
 from codex_harness.domain.policy import POLICY
 
 BUCKET_TARGETS = "host_delivery_targets"
 BUCKET_PLANS = "host_delivery_plans"
 BUCKET_INTENTS = "host_delivery_intents"
 BUCKET_DESCRIPTORS = "host_delivery_descriptors"
+# INV-HOST-DELIVERY-MIGRATION-001: one evaluator migration per rejected source plan, keyed by it.
+BUCKET_MIGRATIONS = "host_delivery_migrations"
 LOGGER = logging.getLogger("zeus.host.delivery")
 
 # The stages at which another plan on the SAME target is already touching the host. A second plan
@@ -206,12 +218,15 @@ class HostDelivery:
 
     def __init__(self, store, org=None, *, github=None, hosts=None, canaries=None, clock=utcnow,
                  observer=None, enabled=False, releases=None, queue=None,
-                 resume_seconds: int = RESUME_SECONDS, verifier=None):
+                 resume_seconds: int = RESUME_SECONDS, verifier=None, evaluator_pins=None):
         self.store, self.org, self.clock = store, org, clock
         self.github, self.hosts, self.canaries = github, hosts or {}, canaries or {}
         # INV-HOST-DELIVERY-VERIFY-001: the owned-attempt port over the existing incumbent
         # evaluator. Without it a reviewed release waits in `verifying` as `verifier_unavailable`.
         self.verifier = verifier
+        # INV-RELEASE-EVALUATOR-MIGRATION-001: the repository resolver of an approved evaluator pin,
+        # (evaluator_revision, base) -> resolve_evaluator_pin(...). Without it no migration stages.
+        self.evaluator_pins = evaluator_pins
         self.observer, self.enabled = observer, bool(enabled)
         self.resume_seconds = int(resume_seconds)
         self.releases = releases if releases is not None else Releases(store, org)
@@ -244,24 +259,42 @@ class HostDelivery:
         pin = validate_pin(pin)
         sha, now = plan_digest(plan), self.clock()
         with self.store.transaction() as tx:
-            if tx.get(BUCKET_TARGETS, plan["target_id"]) is None:
-                raise DeliveryRefused("target_unregistered", "target_id")
-            old = tx.get(BUCKET_PLANS, plan["plan_id"])
-            intent = tx.get(BUCKET_INTENTS, plan["plan_id"])
-            if old is not None:
-                if old["plan_sha256"] == sha and old["pin"] == pin:
-                    return {"registered": True, "cached": True, "plan_id": plan["plan_id"],
-                            "plan_sha256": sha, "pin": pin, "target_id": plan["target_id"],
-                            "release_id": plan["release_id"], "authority": AUTHORITY}
-                if intent is not None and intent.get("stage") != REGISTERED:
-                    raise DeliveryRefused("delivery_in_flight", "plan_id")
-            row = {"id": plan["plan_id"], "plan_id": plan["plan_id"], "plan": plan,
-                   "plan_sha256": sha, "pin": pin, "target_id": plan["target_id"],
-                   "registered_at": (old or {}).get("registered_at") or now, "updated_at": now}
-            tx.put(BUCKET_PLANS, plan["plan_id"], row)
-        return {"registered": True, "cached": False, "plan_id": plan["plan_id"], "plan_sha256": sha,
+            cached = self._register_in(tx, plan, pin, sha, now)
+        return {"registered": True, "cached": cached, "plan_id": plan["plan_id"], "plan_sha256": sha,
                 "pin": pin, "target_id": plan["target_id"], "release_id": plan["release_id"],
                 "authority": AUTHORITY}
+
+    def _register_in(self, tx, plan: dict, pin: dict, sha: str, now: str, *, migration=None) -> bool:
+        """`register` inside a caller's transaction; True for the identical cached registration.
+
+        A target reserved by an unfinished evaluator migration (INV-HOST-DELIVERY-MIGRATION-001)
+        admits no NEW plan except that migration's own one, so terminalizing the rejected source
+        never frees its target for another delivery before the successor is registered."""
+        if tx.get(BUCKET_TARGETS, plan["target_id"]) is None:
+            raise DeliveryRefused("target_unregistered", "target_id")
+        old = tx.get(BUCKET_PLANS, plan["plan_id"])
+        intent = tx.get(BUCKET_INTENTS, plan["plan_id"])
+        if old is not None:
+            if old["plan_sha256"] == sha and old["pin"] == pin:
+                return True
+            if intent is not None and intent.get("stage") != REGISTERED:
+                raise DeliveryRefused("delivery_in_flight", "plan_id")
+        reserved = self._reservation_in(tx, plan["target_id"])
+        if reserved is not None and (migration is None or reserved["id"] != migration["id"]):
+            raise DeliveryRefused("target_reserved_by_migration", "target_id")
+        row = {"id": plan["plan_id"], "plan_id": plan["plan_id"], "plan": plan,
+               "plan_sha256": sha, "pin": pin, "target_id": plan["target_id"],
+               "registered_at": (old or {}).get("registered_at") or now, "updated_at": now}
+        tx.put(BUCKET_PLANS, plan["plan_id"], row)
+        return False
+
+    @staticmethod
+    def _reservation_in(tx, target_id: str):
+        """The unfinished migration (`staged`/`registered`) holding this target, or None."""
+        for record in tx.scan(BUCKET_MIGRATIONS):
+            if record.get("target_id") == target_id and record.get("state") in MIGRATION_RESERVING:
+                return record
+        return None
 
     def approval(self, document) -> dict:
         """What the EXISTING release record says about one plan document, before it is registered: the
@@ -281,12 +314,24 @@ class HostDelivery:
                     else [row for row in [tx.get(BUCKET_PLANS, plan_id)] if row])
             intents = {row["plan_id"]: row for row in tx.scan(BUCKET_INTENTS)}
             descriptors = {row["target_id"]: row for row in tx.scan(BUCKET_DESCRIPTORS)}
+            migrations = tx.scan(BUCKET_MIGRATIONS)
+        # INV-HOST-DELIVERY-MIGRATION-001: each migration's phase and its successor's hold, read only.
+        shown = sorted(({"old_plan_id": m.get("id"), "migration_id": m.get("migration_id"),
+                         "state": m.get("state"),
+                         "held": (intents.get(m.get("plan_id")) or {}).get("held") if m.get("plan_id") else None,
+                         "successor_release_id": m.get("successor_release_id"), "plan_id": m.get("plan_id"),
+                         "target_id": m.get("target_id"), "at": m.get("at")}
+                        for m in migrations if plan_id is None or plan_id in {m.get("id"), m.get("plan_id")}),
+                       key=lambda m: (str(m["old_plan_id"]), str(m["migration_id"])))
+        # The migration projection is additive: a store with no registered plan and no migration keeps
+        # the exact unregistered envelope it always had (INV-HOST-DELIVERY-MIGRATION-001).
+        projected = {"migrations": shown} if rows or migrations else {}
         if plan_id is not None and not rows:
             return {"schema": STATUS_SCHEMA, "plan_id": plan_id, "registered": False,
                     "enabled": self.enabled, "outcome": OUTCOME_UNREGISTERED, "deliveries": [],
                     "next_action": "register_plan", "targets": sorted(descriptors),
-                    "authority": AUTHORITY}
-        return delivery_status(rows, intents, descriptors, enabled=self.enabled)
+                    **projected, "authority": AUTHORITY}
+        return {**delivery_status(rows, intents, descriptors, enabled=self.enabled), **projected}
 
     # ----- one bounded tick ------------------------------------------------------------------
     def tick(self, plan_id: str | None = None) -> dict:
@@ -313,6 +358,9 @@ class HostDelivery:
         """Everything one tick does once its single plan has been selected."""
         row, intent = selection["plan"], selection["intent"]
         plan = row["plan"]
+        if (intent or {}).get("held"):
+            # Defensive: `_select` never chooses a held intent; nothing is enqueued or claimed.
+            return self._result(plan, intent, OUTCOME_BUSY, reason_code=str(intent["held"]))
         if not self.enabled:
             # Registration, reconciliation and projection stay available; nothing external happens.
             return self._result(plan, intent, OUTCOME_DISABLED, reason_code="delivery_disabled")
@@ -465,6 +513,10 @@ class HostDelivery:
     def _withdrawable(intent, reason: str) -> None:
         """The host was never touched: no descriptor bound, at a stage before the host is reached."""
         stage = (intent or {}).get("stage") or REGISTERED
+        if (intent or {}).get("held"):
+            # INV-HOST-DELIVERY-MIGRATION-001: a held migration successor is never claimed or queued,
+            # not even to be withdrawn; its handoff is resolved by its own owners.
+            raise DeliveryRefused("withdraw_migration_held", "stage")
         if stage not in WITHDRAWABLE_STAGES or (intent or {}).get("descriptor") is not None:
             raise DeliveryRefused("withdraw_host_touched", "stage")
         if unresolved_attempts(intent):
@@ -723,6 +775,230 @@ class HostDelivery:
                 "next_action": stage_next_action(intent["stage"], intent.get("outcome")),
                 "authority": AUTHORITY}
 
+    # ----- evaluator migration of a rejected, merged delivery (INV-HOST-DELIVERY-MIGRATION-001) ---
+    # The lane half of an ordered control/lane handoff; each step is ONE lane transaction and a
+    # crash between steps leaves a named `staged`/`registered` record that reserves the target and
+    # holds its successor, never a free target or an unowned runnable delivery.
+    def stage_migration(self, request: dict) -> dict:
+        """Step 1: supersede the exact rejected, merged, host-untouched source and reserve its target.
+
+        Read-only validation first; then ONE transaction re-checks the source intent and plan (CAS),
+        the controller lease, the source queue row and the target, creates the reviewed successor
+        release through `Releases.request_evaluator_migration` in that same transaction, terminalizes
+        the old intent truthfully (`withdrawn`/`release_rejected_superseded`, its halt copied) and
+        writes the `staged` record. Nothing is enqueued. The identical request replays `cached`
+        with no write; any other request for the same source is `migration_conflict`.
+        """
+        request = validate_migration_request(request)
+        sha, key = digest(request), request["old_plan_id"]
+        try:
+            with self.store.transaction() as tx:
+                record = tx.get(BUCKET_MIGRATIONS, key)
+                row = tx.get(BUCKET_PLANS, key)
+                intent = tx.get(BUCKET_INTENTS, key)
+        except Exception as exc:
+            raise DeliveryRefused("migration_unobservable", "store") from exc
+        if record is not None:
+            return self._migration_replay(record, sha)
+        if row is None:
+            raise DeliveryRefused("plan_unregistered", "old_plan_id")
+        if row["plan_sha256"] != request["old_plan_sha256"]:
+            raise DeliveryRefused("migration_plan_mismatch", "old_plan_sha256")
+        refusal = migration_rejected_source(intent, row["plan"], request)
+        if refusal is not None:
+            raise DeliveryRefused(refusal, "old_plan_id")
+        resolved = self._resolve_evaluator_pin(request["approval"])
+        now = self.clock()
+        try:
+            with self.store.transaction() as tx:
+                current = tx.get(BUCKET_MIGRATIONS, key)
+                staged = None if current is not None else self._stage_in(tx, row, intent, request, sha, now,
+                                                                         resolved)
+        except DeliveryRefused:
+            raise
+        except ContractError as exc:
+            raise DeliveryRefused("migration_release_refused", "source_release_id") from exc
+        except Exception as exc:
+            raise DeliveryRefused("migration_unobservable", "store") from exc
+        if staged is None:
+            # A concurrent request committed first: its record decides, nothing was written here.
+            return self._migration_replay(current, sha)
+        self._emit(EVENT_STAGE, "observed", row["plan"], attributes={
+            "plan_id": key, "release_id": row["plan"]["release_id"], "target_id": row["plan"]["target_id"],
+            "stage": WITHDRAWN, "previous_stage": intent["stage"]})
+        LOGGER.warning("host delivery migration staged plan=%s successor=%s", key, staged["successor_release_id"])
+        return self._migration_view(staged, cached=False)
+
+    def _resolve_evaluator_pin(self, approval: dict) -> dict:
+        """Derive the approved evaluator pin from the repository BEFORE any write and outside every
+        store transaction (INV-RELEASE-EVALUATOR-MIGRATION-001). An absent or failing resolver is
+        `migration_pin_unavailable`; any disagreement with the approval is `migration_pin_mismatch`.
+        Either refusal leaves the source release, the migration identity and the old intent untouched."""
+        if self.evaluator_pins is None:
+            raise DeliveryRefused("migration_pin_unavailable", "evaluator_revision")
+        try:
+            resolved = self.evaluator_pins(approval["evaluator_revision"], approval["base"])
+        except Exception as exc:
+            raise DeliveryRefused("migration_pin_unavailable", "evaluator_revision") from exc
+        if resolved != expected_evaluator_pin(approval):
+            raise DeliveryRefused("migration_pin_mismatch", "approval")
+        return resolved
+
+    def _stage_in(self, tx, row: dict, intent: dict, request: dict, sha: str, now: str,
+                  resolved_pin: dict) -> dict:
+        """Phase 2 of `stage_migration`, inside its one transaction; any refusal rolls back all."""
+        plan, key = row["plan"], row["plan_id"]
+        if tx.get(BUCKET_PLANS, key) != row or tx.get(BUCKET_INTENTS, key) != intent:
+            raise DeliveryRefused("migration_intent_changed", "old_plan_id")
+        lock = tx.get("deployment_locks", "controller") or {}
+        if (lock.get("lease_until") and datetime.fromisoformat(lock["lease_until"]) > self._now()) \
+                or (tx.get("release_queue", plan["release_id"]) or {}).get("status") == "running":
+            raise DeliveryRefused("migration_controller_running", "release_id")
+        for other in tx.scan(BUCKET_MIGRATIONS):
+            if other.get("source_release_id") == request["source_release_id"]:
+                raise DeliveryRefused("migration_conflict", "source_release_id")
+            if other.get("target_id") == plan["target_id"] and other.get("state") in MIGRATION_RESERVING:
+                raise DeliveryRefused("migration_target_busy", "target_id")
+        stages = {other["plan_id"]: other.get("stage") for other in tx.scan(BUCKET_INTENTS)}
+        if any(other["target_id"] == plan["target_id"] and other["plan_id"] != key
+               and stages.get(other["plan_id"]) not in TERMINAL_STAGES for other in tx.scan(BUCKET_PLANS)):
+            # Every other plan of the target, including one no tick has given an intent yet.
+            raise DeliveryRefused("migration_target_busy", "target_id")
+        successor = self.releases.request_evaluator_migration(
+            request["source_release_id"], request["actor"], expected_revision=request["candidate_revision"],
+            expected_policy_hash=request["source_policy_hash"], approval=request["approval"],
+            resolved_pin=resolved_pin, now=self._now(), transaction=tx)
+        if successor.get("status") != "reviewed" or successor.get("checks"):
+            raise DeliveryRefused("migration_successor_advanced", "successor_release_id")
+        if tx.get("release_queue", successor["id"]) is not None:
+            raise DeliveryRefused("migration_successor_queued", "successor_release_id")
+        original = {name: intent.get(name) for name in ("stage", "previous_stage", "reason_code", "outcome",
+                                                        "attempts", "error_type", "updated_at")}
+        tx.put(BUCKET_INTENTS, key, {
+            **intent, "stage": WITHDRAWN, "previous_stage": intent["stage"], "outcome": WITHDRAWN,
+            "reason_code": "release_rejected_superseded", "error_type": None, "stage_deadline": None,
+            "main_effect": "merged",
+            "supersession": {"migration_id": request["migration_id"], "successor_release_id": successor["id"],
+                             "original_halt": original},
+            "updated_at": now})
+        record = {"id": key, "migration_id": request["migration_id"], "request": request, "request_sha256": sha,
+                  "state": MIGRATION_STAGED, "successor_release_id": successor["id"],
+                  "source_release_id": request["source_release_id"], "target_id": plan["target_id"],
+                  "plan_id": None, "plan_sha256": None, "ack": None, "at": now}
+        tx.put(BUCKET_MIGRATIONS, key, record)
+        return record
+
+    def register_migration_plan(self, document, pin, migration_id: str) -> dict:
+        """Step 2: register ONLY this migration's exact successor plan, HELD at `verifying`.
+
+        The plan must name the staged successor release, the source's target and candidate
+        revision, and a predecessor the target still holds. It is registered through the same
+        `_register_in` as every plan; its intent keeps the source's observed merge (`verifying` then
+        `merged`, never a second publication) and stays `held` until `finalize_migration`. Nothing
+        is enqueued. The identical plan and pin replay `cached`; any other plan is a conflict.
+        """
+        plan, pin = validate_plan(document), validate_pin(pin)
+        sha, now = plan_digest(plan), self.clock()
+        with self.store.transaction() as tx:
+            record = self._migration_in(tx, migration_id)
+            if record["state"] != MIGRATION_STAGED:
+                registered = tx.get(BUCKET_PLANS, plan["plan_id"]) or {}
+                if (record["plan_id"], record["plan_sha256"], registered.get("pin")) == (plan["plan_id"], sha, pin):
+                    return self._migration_view(record, cached=True)
+                raise DeliveryRefused("migration_conflict", "plan_id")
+            request = record["request"]
+            if (plan["release_id"], plan["target_id"], plan["revision"]) != (
+                    record["successor_release_id"], record["target_id"], request["candidate_revision"]):
+                raise DeliveryRefused("migration_plan_mismatch", "plan_id")
+            old = tx.get(BUCKET_INTENTS, record["id"]) or {}
+            if old.get("stage") != WITHDRAWN or (old.get("supersession") or {}).get("migration_id") != migration_id:
+                raise DeliveryRefused("migration_predecessor_changed", "old_plan_id")
+            if tx.get(BUCKET_PLANS, plan["plan_id"]) is not None or tx.get(BUCKET_INTENTS, plan["plan_id"]):
+                raise DeliveryRefused("migration_plan_exists", "plan_id")
+            release = tx.get("releases", plan["release_id"])
+            if release_gate(release, plan, self._parent(release))["state"] != "approved":
+                raise DeliveryRefused("migration_release_not_approved", "release_id")
+            if tx.get("release_queue", plan["release_id"]) is not None:
+                raise DeliveryRefused("migration_successor_queued", "release_id")
+            predecessor = self._predecessor_in(tx, plan)
+            if predecessor != "held":
+                raise DeliveryRefused("migration_predecessor_" + predecessor, "target_id")
+            self._register_in(tx, plan, pin, sha, now, migration=record)
+            tx.put(BUCKET_INTENTS, plan["plan_id"], {
+                **new_intent(plan, sha, now), "stage": VERIFYING, "previous_stage": REGISTERED,
+                "outcome": OUTCOME_PROGRESSED, "after_verification": MERGED,
+                **{name: old.get(name) for name in ("merged_revision", "head", "pr_number", "pr_url",
+                                                    "last_check_state")},
+                "migration": {"migration_id": migration_id, "predecessor_plan_id": record["id"],
+                              "source_release_id": record["source_release_id"]},
+                "held": MIGRATION_HELD})
+            record = {**record, "state": MIGRATION_REGISTERED, "plan_id": plan["plan_id"], "plan_sha256": sha}
+            tx.put(BUCKET_MIGRATIONS, record["id"], record)
+        return self._migration_view(record, cached=False)
+
+    def finalize_migration(self, migration_id: str, ack: dict) -> dict:
+        """Step 3: the explicit durable control acknowledgement releases the held successor.
+
+        The acknowledgement must name exactly the registered plan id and digest and the staged
+        request digest. In ONE transaction the hold is cleared, the ack recorded, the record made
+        `active` and the successor release queued; only then may an ordinary tick claim and verify
+        it. The identical ack replays `cached`; another ack for an active migration conflicts.
+        """
+        ack = validate_migration_ack(ack)
+        with self.store.transaction() as tx:
+            record = self._migration_in(tx, migration_id)
+            if record["state"] == MIGRATION_ACTIVE:
+                if record["ack"] == ack:
+                    return self._migration_view(record, cached=True)
+                raise DeliveryRefused("migration_conflict", "ack")
+            if record["state"] != MIGRATION_REGISTERED:
+                raise DeliveryRefused("migration_not_registered", "migration_id")
+            if (ack["plan_id"], ack["plan_sha256"], ack["request_sha256"]) != (
+                    record["plan_id"], record["plan_sha256"], record["request_sha256"]):
+                raise DeliveryRefused("migration_ack_mismatch", "ack")
+            if ack["lineage_sha256"] != migration_lineage_digest(
+                    record["source_release_id"], record["successor_release_id"], record["id"],
+                    record["plan_id"], record["migration_id"]):
+                raise DeliveryRefused("migration_ack_mismatch", "lineage_sha256")
+            intent = tx.get(BUCKET_INTENTS, record["plan_id"]) or {}
+            if (intent.get("held") != MIGRATION_HELD or intent.get("stage") != VERIFYING
+                    or (intent.get("migration") or {}).get("migration_id") != migration_id
+                    or (tx.get(BUCKET_PLANS, record["plan_id"]) or {}).get("plan_sha256") != record["plan_sha256"]):
+                raise DeliveryRefused("migration_intent_changed", "plan_id")
+            try:
+                queued = self.queue.enqueue(record["successor_release_id"],
+                                            "host delivery migration " + record["plan_id"], transaction=tx)
+            except ContractError as exc:
+                raise DeliveryRefused("migration_queue_refused", "release_id") from exc
+            if queued.get("status") != "queued" or queued.get("attempt"):
+                # A row someone else created while held is never adopted as this successor's start.
+                raise DeliveryRefused("migration_queue_refused", "release_id")
+            tx.put(BUCKET_INTENTS, record["plan_id"], {**intent, "held": None, "updated_at": self.clock()})
+            record = {**record, "state": MIGRATION_ACTIVE, "ack": ack}
+            tx.put(BUCKET_MIGRATIONS, record["id"], record)
+        return self._migration_view(record, cached=False)
+
+    @staticmethod
+    def _migration_in(tx, migration_id) -> dict:
+        for record in tx.scan(BUCKET_MIGRATIONS):
+            if type(migration_id) is str and record.get("migration_id") == migration_id:
+                return record
+        raise DeliveryRefused("migration_unknown", "migration_id")
+
+    def _migration_replay(self, record: dict, sha: str) -> dict:
+        if record.get("request_sha256") != sha:
+            raise DeliveryRefused("migration_conflict", "request")
+        return self._migration_view(record, cached=True)
+
+    @staticmethod
+    def _migration_view(record: dict, *, cached: bool) -> dict:
+        return {"migration": True, "cached": cached,
+                **{name: record.get(name) for name in ("migration_id", "state", "request_sha256",
+                                                       "source_release_id", "successor_release_id", "target_id",
+                                                       "plan_id", "plan_sha256")},
+                "old_plan_id": record.get("id"), "acknowledged": record.get("ack") is not None,
+                "authority": AUTHORITY}
+
     def _predecessor(self, plan: dict) -> str:
         """The target as a NEW merge of this plan would find it: `in_flight` while another delivery of
         the target has merged and not settled the host - including a `blocked`/`failed` one that bound
@@ -854,6 +1130,8 @@ class HostDelivery:
             intents = {row["plan_id"]: row for row in tx.scan(BUCKET_INTENTS)}
             busy = {intent["target_id"] for intent in intents.values()
                     if intent.get("stage") in TARGET_BUSY_STAGES}
+            reserved = {record["target_id"]: record for record in tx.scan(BUCKET_MIGRATIONS)
+                        if record.get("state") in MIGRATION_RESERVING}
             blocked, chosen, chosen_intent, waiting = {}, None, None, None
             for index, row in enumerate(sorted(rows, key=lambda r: r["plan_id"])):
                 intent = intents.get(row["plan_id"])
@@ -861,8 +1139,18 @@ class HostDelivery:
                 if index >= MAX_SCAN:
                     blocked[row["plan_id"]] = "scan_bounded"
                     continue
+                if (intent or {}).get("held"):
+                    # INV-HOST-DELIVERY-MIGRATION-001: a held migration successor is never claimed,
+                    # evaluated or even projected as the waiting selection until its durable
+                    # control acknowledgement (`finalize_migration`) clears the hold.
+                    blocked[row["plan_id"]] = str(intent["held"])
+                    continue
                 if stage == ACTIVE or stage in STOPPED_STAGES:
                     blocked[row["plan_id"]] = stage
+                    continue
+                migration = reserved.get(row["target_id"])
+                if migration is not None and migration.get("plan_id") != row["plan_id"]:
+                    blocked[row["plan_id"]] = "target_reserved_by_migration"
                     continue
                 if row["target_id"] in busy and stage not in TARGET_BUSY_STAGES:
                     blocked[row["plan_id"]] = "target_busy"
@@ -1971,5 +2259,5 @@ class HostDelivery:
                                "canary_passed": canary_passed})
 
 
-__all__ = ["BUCKET_DESCRIPTORS", "BUCKET_INTENTS", "BUCKET_PLANS", "BUCKET_TARGETS", "LOGGER",
+__all__ = ["BUCKET_DESCRIPTORS", "BUCKET_INTENTS", "BUCKET_MIGRATIONS", "BUCKET_PLANS", "BUCKET_TARGETS", "LOGGER",
            "MAX_SCAN", "RESUME_SECONDS", "TARGET_BUSY_STAGES", "AmbiguousEffect", "HostDelivery"]

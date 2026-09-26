@@ -195,6 +195,10 @@ class GitWorkspace:
                 "diff": self._git("diff", "--no-ext-diff", base, revision, "--"),
                 "files": self._git("diff", "--name-only", base, revision, "--").splitlines()}
 
+    def parent(self, revision: str) -> str:
+        """The first parent commit of `revision`."""
+        return self._git("rev-parse", "--verify", revision + "^1^{commit}")
+
     def rebase(self, task_id: str, candidate: dict, new_base: str) -> dict:
         workspace = self.prepare(task_id, candidate["revision"])
         self._git("-c", "user.name=Codex Harness", "-c", "user.email=harness@localhost",

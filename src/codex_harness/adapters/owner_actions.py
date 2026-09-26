@@ -21,6 +21,7 @@ I/O OUTSIDE a store transaction; the application calls them between its own shor
 from __future__ import annotations
 
 import hashlib
+import json
 import os
 import signal
 import subprocess
@@ -268,8 +269,18 @@ def coordinator(service, config: dict, host: dict, *, lanes=None, assessments=No
     root = runtime_dir()
     assessments = assessments or Assessments(FileArtifacts(str(root / "artifacts")), root / "owner-actions")
     publisher_factory = publisher_factory or GitPlanPublisher
+
+    def evaluator_pins(lane_id):
+        # INV-RELEASE-EVALUATOR-MIGRATION-001: the approved E pin is re-derived from the lane's OWN
+        # registered repository before any migration write, never taken from the approval's fields.
+        from codex_harness.adapters.deployment import resolve_evaluator_pin
+        from codex_harness.adapters.host_delivery import lane_git
+
+        return lambda revision, base: resolve_evaluator_pin(lane_git(lane_of(config, lane_id), host), revision, base)
+
     return OwnerActions(store, continuation=continuation, org=service.org, lanes=lanes,
-                        deliveries=lambda lane_id: HostDelivery(lanes(lane_id).store, service.org),
+                        deliveries=lambda lane_id: HostDelivery(lanes(lane_id).store, service.org,
+                                                                evaluator_pins=evaluator_pins(lane_id)),
                         publisher=lambda lane_id: publisher_factory(lane_of(config, lane_id)["repository"]),
                         assessments=assessments, targets=TargetFiles(), fleet=Fleet(store), validate=validator())
 
@@ -341,6 +352,9 @@ def add_parser(commands) -> None:
     run.add_argument("--max-ticks", type=int, default=0, dest="max_ticks")
     status = sub.add_parser("status", help="Read the owner-action projection; store read only")
     status.add_argument("--policy", default=None)
+    migrate = sub.add_parser("migrate", help="Record ONE owner-approved evaluator migration of a check-rejected "
+                                             "merged release (INV-OWNER-ACTIONS-MIGRATION-001); tick advances it")
+    migrate.add_argument("--document", required=True, help="JSON migration document (exact keys)")
     assess_parser = sub.add_parser("assess", help="Guardian child: the guarded independent assessment of one row")
     assess_parser.add_argument("--decision", required=True)
     assess_parser.add_argument("--correlation", required=True)
@@ -365,6 +379,12 @@ def execute(service, args) -> dict:
     if command == "register":
         return {**register_policy(service.store, config, args.lane, args.revision, args.path), "exit_code": 0}
     owner = coordinator(service, config, settings())
+    if command == "migrate":
+        try:
+            document = json.loads(Path(args.document).read_text(encoding="utf-8"))
+        except (OSError, ValueError) as exc:
+            raise OwnerActionRefused("migration_document_unreadable", "document") from exc
+        return {**owner.request_migration(document), "exit_code": 0}
     if command == "tick":
         result = tick_policy(owner, config, args.policy)
         owner.assessments.join()

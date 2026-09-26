@@ -36,22 +36,30 @@ from codex_harness.domain.continuation import (
     DELIVERY_ABSENT,
     DELIVERY_BOUND,
     DELIVERY_STALE,
+    MIGRATION_SOURCE_STATES,
     MIXED_RECEIPT_SCHEMA,
     RESEARCH,
     RESEARCH_RECEIPT_SCHEMA,
     RESEARCH_REQUIRED,
     ContinuationRefused,
     bind_delivery,
+    migration_resume,
+    migration_source,
     observed_attempt,
     research_attempts,
 )
 from codex_harness.domain.host_delivery import (
     AWAITING_CONSUMPTION,
     CANARY_FLEET,
+    MIGRATION_ACTIVE,
+    MIGRATION_REGISTERED,
+    MIGRATION_RESERVING,
     TERMINAL_STAGES,
     DeliveryRefused,
     consumption_verdict,
     descriptor_digest,
+    migration_lineage_digest,
+    migration_request_id,
     plan_digest,
 )
 from codex_harness.domain.model import ContractError, canonical, digest, envelope, utcnow
@@ -104,6 +112,7 @@ from codex_harness.domain.owner_actions import (
     moved,
     new_action,
     plan_binding,
+    plan_id_for,
     plan_path,
     plan_ref,
     policy_digest,
@@ -119,6 +128,29 @@ CONTINUATION_INTENTS = "continuation_intents"
 CONTINUATION_RECEIPTS = "continuation_research_receipts"
 FLEET_JOBS = "fleet_jobs"
 DECISIONS = "decisions_pending"
+# INV-OWNER-ACTIONS-MIGRATION-001: the control half of an evaluator migration. A bucket of its own, keyed
+# by the rejected SOURCE release, that a coordinator of an older release never scans (its `_advance`
+# only knows the three action kinds), so no new kind is ever written into `owner_actions`.
+BUCKET_MIGRATIONS = "owner_action_migrations"
+# The effective delivery binding of a migrated continuation intent, keyed by intent id. The conductor's
+# own `release_id` on the intent stays untouched as provenance.
+CONTINUATION_BINDINGS = "continuation_effective_bindings"
+LANE_MIGRATIONS = "host_delivery_migrations"
+EVALUATOR_MIGRATION = "evaluator_migration"
+MIGRATION_DOCUMENT_FIELDS = frozenset({"policy_id", "intent_id", "lane", "target_id", "source_release_id",
+                                       "source_policy_hash", "candidate_revision", "old_plan_id", "old_plan_sha256",
+                                       "approval", "evidence", "actor"})
+MIGRATION_APPROVAL_FIELDS = frozenset({"source_release_id", "base", "evaluator_revision", "evaluator_tree",
+                                       "patch_sha256", "paths", "evidence", "approved_by"})
+# Control states, each naming the step BEFORE its effect: `intended` (lane stage owed), `staged` (lane
+# receipt recorded; successor plan action owed), `planning` (successor DELIVERY_PLAN action exists; its
+# publication, canary request and held registration owed), `bound` (continuation effective binding
+# recorded; the lane readiness acknowledgement owed).
+M_STAGED, M_PLANNING, M_BOUND = "staged", "planning", "bound"
+MIGRATION_TRANSITIONS = {INTENDED: {M_STAGED, REFUSED, UNKNOWN}, M_STAGED: {M_PLANNING, REFUSED, UNKNOWN},
+                         M_PLANNING: {M_BOUND, REFUSED, UNKNOWN}, M_BOUND: {COMPLETED, REFUSED, UNKNOWN}}
+# Lane refusals that name a transient condition, never a verdict: the row waits where it is.
+MIGRATION_RETRYABLE = frozenset({"migration_unobservable", "migration_controller_running"})
 LAUNCH_RUNNING, LAUNCH_ABSENT, LAUNCH_UNKNOWN, LAUNCH_EXITED = "running", "absent", "unknown", "exited"
 
 
@@ -164,9 +196,11 @@ class OwnerActions:
         with self.store.transaction() as tx:
             policies = tx.scan(BUCKET_POLICIES)
             rows = tx.scan(BUCKET_ACTIONS)
+            migrations = tx.scan(BUCKET_MIGRATIONS)
         if policy_id is not None:
             policies = [row for row in policies if row["id"] == policy_id]
             rows = [row for row in rows if row.get("policy_id") == policy_id]
+            migrations = [row for row in migrations if row.get("policy_id") == policy_id]
         views = [view(row) for row in sorted(rows, key=lambda r: (str(r.get("created_at")), r["id"]))]
         counts: dict = {}
         for row in views:
@@ -175,7 +209,9 @@ class OwnerActions:
                 "policies": [{"id": row["id"], "enabled": row["policy"]["enabled"],
                               "policy_sha256": row["policy_sha256"], "pin": row["pin"]} for row in policies],
                 "actions": views[-200:], "truncated": len(views) > 200, "counts": counts,
-                "held": [row for row in views if row["state"] in {UNKNOWN, REJECTED, REFUSED}][-50:]}
+                "held": [row for row in views if row["state"] in {UNKNOWN, REJECTED, REFUSED}][-50:],
+                "migrations": [_migration_status(row) for row in
+                               sorted(migrations, key=lambda r: (str(r.get("created_at")), r["id"]))][-50:]}
 
     # ----- one bounded tick -------------------------------------------------------------------------
     def tick(self, policy_id: str, *, pin_sha256: str | None = None) -> dict:
@@ -196,6 +232,7 @@ class OwnerActions:
             return self._receipt(policy_id, "refused", reason_code="delivery_target_mismatch")
         waits: dict = {}
         created = self._discover(row, continuation, waits)
+        migrated = self._advance_migrations(row, continuation, waits)
         with self.store.transaction() as tx:
             open_rows = sorted((r for r in tx.scan(BUCKET_ACTIONS)
                                 if r.get("policy_id") == policy_id and r["state"] not in TERMINAL),
@@ -212,6 +249,7 @@ class OwnerActions:
                 effect = None
             if effect is not None:
                 actions.append(effect)
+        actions = migrated + actions
         outcome = "progressed" if actions or created else "idle"
         return self._receipt(policy_id, outcome, actions=actions, created=created, waits=waits,
                              open=len(open_rows))
@@ -227,7 +265,11 @@ class OwnerActions:
             intents = [r for r in tx.scan(CONTINUATION_INTENTS) if r.get("policy_id") == continuation["id"]]
             receipts = {r["id"] for r in tx.scan(CONTINUATION_RECEIPTS)}
             actions = [r for r in tx.scan(BUCKET_ACTIONS) if r.get("policy_id") == row["id"]]
+            migrating = [r for r in tx.scan(BUCKET_MIGRATIONS) if r.get("policy_id") == row["id"]]
         busy = {(a["kind"], (a.get("subject") or {}).get("intent_id")) for a in actions if a["state"] not in TERMINAL}
+        # An intent under an open evaluator migration gets its plan ONLY from that migration.
+        busy |= {(DELIVERY_PLAN, (m.get("subject") or {}).get("intent_id")) for m in migrating
+                 if m["state"] not in TERMINAL}
         created = []
         for intent in sorted(intents, key=lambda r: (str(r.get("created_at")), r["id"])):
             try:
@@ -534,23 +576,33 @@ class OwnerActions:
             return {"delivery": delivery, "release": tx.get("releases", release_id) if release_id else None,
                     "intents": tx.scan("host_delivery_intents"), "plans": tx.scan("host_delivery_plans"),
                     "descriptor": tx.get("host_delivery_descriptors", target_id),
-                    "target": tx.get("host_delivery_targets", target_id)}
+                    "target": tx.get("host_delivery_targets", target_id),
+                    "migrations": tx.scan(LANE_MIGRATIONS)}
 
-    def _plan_binding(self, row: dict, intent: dict) -> dict | None:
+    def _plan_binding(self, row: dict, intent: dict, *, migration: dict | None = None) -> dict | None:
         """A plan is owed only for a conducted delivery intent whose release is approved for exactly this
-        target and has no delivery yet, while no other delivery is in flight on that target."""
+        target and has no delivery yet, while no other delivery is in flight on that target.
+
+        `migration` (the control migration row, INV-OWNER-ACTIONS-MIGRATION-001) binds the plan to that
+        migration's staged SUCCESSOR release instead of the conductor's release; only that migration's
+        own lane reservation does not make the target busy for it."""
         if self.deliveries is None or self.publisher is None:
             raise OwnerActionRefused("delivery_ports_unconfigured", "deliveries")
         policy = row["policy"]
         target_id = policy["delivery"]["target_id"]
         if intent.get("delivery_target") != target_id:
             return None
-        rows = self._lane_rows(intent["lane"], target_id, intent.get("release_id"))
+        release_id = intent.get("release_id") if migration is None else migration["successor_release_id"]
+        rows = self._lane_rows(intent["lane"], target_id, release_id)
         release = rows["release"]
         if not isinstance(release, dict):
             raise OwnerActionRefused("release_missing", "release_id")
         candidate = release.get("candidate") or {}
-        bound = bind_delivery(rows["intents"], target_id, release.get("id"), candidate.get("revision"), release)
+        # The superseded source intent carries the same candidate revision: a successor binds only the
+        # deliveries of its own release.
+        scope = rows["intents"] if migration is None else [
+            r for r in rows["intents"] if r.get("release_id") == release.get("id")]
+        bound = bind_delivery(scope, target_id, release.get("id"), candidate.get("revision"), release)
         if bound["binding"] == DELIVERY_BOUND:
             return None     # this exact candidate already has its delivery: nothing is owed
         if bound["binding"] not in {DELIVERY_ABSENT, DELIVERY_STALE}:
@@ -570,6 +622,11 @@ class OwnerActions:
             return None     # this exact candidate is already planned; its delivery is simply not started
         if any(stages.get(p.get("plan_id")) not in TERMINAL_STAGES for p in mine) or any(
                 r.get("target_id") == target_id and r.get("stage") not in TERMINAL_STAGES for r in rows["intents"]):
+            raise OwnerActionRefused("delivery_target_busy", "target_id")
+        # A staged/registered lane migration reserves its target for every plan but its own successor.
+        own = None if migration is None else migration["migration_id"]
+        if any(m.get("target_id") == target_id and m.get("state") in MIGRATION_RESERVING
+               and m.get("migration_id") != own for m in rows["migrations"]):
             raise OwnerActionRefused("delivery_target_busy", "target_id")
         current = (rows["descriptor"] or {}).get("descriptor")
         binding = plan_binding(row, intent, release, None if current is None else descriptor_digest(current))
@@ -612,8 +669,14 @@ class OwnerActions:
             if self.targets is None or target is None:
                 raise OwnerActionRefused("canary_targets_unconfigured", "targets")
             self.targets.write_request(target, action["plan_id"], _request_of(action))
+        migration = (action.get("subject") or {}).get("migration")
         try:
-            registered = delivery.register(loaded["plan"], loaded["pin"])
+            if isinstance(migration, dict):
+                # The migration's own successor plan registers HELD until the control acknowledgement.
+                registered = delivery.register_migration_plan(loaded["plan"], loaded["pin"],
+                                                              migration["migration_id"])
+            else:
+                registered = delivery.register(loaded["plan"], loaded["pin"])
         except DeliveryRefused as exc:
             return self._effect(self._move(action, REFUSED, exc.reason_code))
         return self._effect(self._move(action, COMPLETED, "plan_registered",
@@ -722,10 +785,433 @@ class OwnerActions:
         return isinstance(receipt, dict) and receipt.get("instance_id") == binding["instance_id"] \
             and receipt.get("descriptor_sha256") == binding["descriptor_sha256"]
 
+    # ===== H1: the owner's evaluator migration of a rejected, merged delivery ========================
+    # INV-OWNER-ACTIONS-MIGRATION-001: an ordered durable outbox across the control store and the lane
+    # store, never one transaction across both. Each step re-reads its durable inputs, calls one
+    # idempotent lane/control effect and records its receipt by a version CAS; a lost response or a
+    # restart replays the same step. A lane refusal is REFUSED with the lane's reason; an outage waits.
+    def request_migration(self, document) -> dict:
+        """Record ONE owner-only migration request per rejected source release (control store).
+
+        The document is validated against the control records: the owner policy, the continuation
+        delivery intent naming exactly this release/target/lane, and the ORIGINAL completed DELIVERY_PLAN
+        action of `old_plan_id` (kept untouched as history). The identical document replays; any other
+        document for the same source refuses `migration_conflict`."""
+        document = _migration_document(document)
+        source = document["source_release_id"]
+        request = {"old_plan_id": document["old_plan_id"], "old_plan_sha256": document["old_plan_sha256"],
+                   "source_release_id": source, "source_policy_hash": document["source_policy_hash"],
+                   "candidate_revision": document["candidate_revision"], "target_id": document["target_id"],
+                   "actor": document["actor"], "approval": document["approval"]}
+        request = {"migration_id": migration_request_id(request), **request}
+        now = self.clock()
+        with self.store.transaction() as tx:
+            old = tx.get(BUCKET_MIGRATIONS, source)
+            if old is not None:
+                if old.get("document") != document:
+                    raise OwnerActionRefused("migration_conflict", "source_release_id")
+                return {**_migration_view(old), "cached": True}
+            policy_row = tx.get(BUCKET_POLICIES, document["policy_id"])
+            intent = tx.get(CONTINUATION_INTENTS, document["intent_id"])
+            plans = [r for r in tx.scan(BUCKET_ACTIONS)
+                     if r.get("kind") == DELIVERY_PLAN and r.get("plan_id") == document["old_plan_id"]]
+            _check_migration_source(document, policy_row, intent, plans)
+            identity = digest(["owner-action", EVALUATOR_MIGRATION, {"source_release_id": source}])
+            row = {"id": source, "action_id": identity, "kind": EVALUATOR_MIGRATION, "state": INTENDED,
+                   "document": document, "document_sha256": digest(document), "request": request,
+                   "migration_id": request["migration_id"], "policy_id": document["policy_id"],
+                   "old_action_id": plans[0]["id"],
+                   # The exact source intent (policy, lane, target, release, route, state, version) every
+                   # later step re-checks; only the finalizing step may resume it, and only this snapshot.
+                   "source_intent": migration_source(intent),
+                   "subject": {"intent_id": document["intent_id"], "lane": document["lane"],
+                               "source_release_id": source, "old_plan_id": document["old_plan_id"]},
+                   "reason_code": None, "created_at": now, "updated_at": now, "version": 1,
+                   "history": [{"state": INTENDED, "at": now, "reason_code": None}]}
+            tx.put(BUCKET_MIGRATIONS, source, row)
+        return {**_migration_view(row), "cached": False}
+
+    def migration(self, source_release_id: str) -> dict | None:
+        """Read-only projection of one migration row; None when absent."""
+        with self.store.transaction() as tx:
+            row = tx.get(BUCKET_MIGRATIONS, source_release_id)
+        return None if row is None else _migration_view(row)
+
+    def _advance_migrations(self, policy_row: dict, continuation: dict, waits: dict) -> list:
+        with self.store.transaction() as tx:
+            rows = sorted((r for r in tx.scan(BUCKET_MIGRATIONS)
+                           if r.get("policy_id") == policy_row["id"] and r["state"] not in TERMINAL),
+                          key=lambda r: (str(r.get("created_at")), r["id"]))
+        effects = []
+        for row in rows[:MAX_ACTIONS_PER_TICK]:
+            try:
+                effect = self._advance_migration(policy_row, row)
+            except ActionChanged:
+                effect = None
+            except (ContractError, OSError, RuntimeError, ValueError) as exc:
+                waits[row["action_id"]] = getattr(exc, "reason_code", None) or type(exc).__name__
+                effect = None
+            if effect is not None:
+                effects.append(effect)
+        return effects
+
+    def _migration_move(self, row: dict, target: str, reason_code: str | None = None, *, extra=None,
+                        **fields) -> dict:
+        """Compare-and-swap on the migration row's version, under its own transition table."""
+        if target not in MIGRATION_TRANSITIONS.get(row["state"], set()):
+            raise OwnerActionRefused("invalid_transition", row["state"] + "->" + target)
+        now = self.clock()
+        with self.store.transaction() as tx:
+            current = tx.get(BUCKET_MIGRATIONS, row["id"])
+            if not (isinstance(current, dict) and current.get("version") == row.get("version")):
+                raise ActionChanged(row["id"])
+            history = (list(current.get("history") or []) + [{"state": target, "at": now,
+                                                               "reason_code": reason_code}])[-32:]
+            moved_row = {**current, **fields, "state": target, "reason_code": reason_code, "updated_at": now,
+                         "version": int(current.get("version") or 0) + 1, "history": history}
+            if extra is not None:
+                extra(tx)
+            tx.put(BUCKET_MIGRATIONS, moved_row["id"], moved_row)
+        return moved_row
+
+    @staticmethod
+    def _migration_effect(row: dict) -> dict:
+        return {"action": row["action_id"], "kind": EVALUATOR_MIGRATION, "state": row["state"],
+                "reason_code": row["reason_code"]}
+
+    def _lane_refused(self, row: dict, exc: DeliveryRefused) -> dict:
+        if exc.reason_code in MIGRATION_RETRYABLE:
+            raise exc
+        return self._migration_effect(self._migration_move(row, REFUSED, exc.reason_code))
+
+    def _advance_migration(self, policy_row: dict, row: dict) -> dict | None:
+        if self.deliveries is None or self.publisher is None:
+            raise OwnerActionRefused("delivery_ports_unconfigured", "deliveries")
+        state, lane = row["state"], row["subject"]["lane"]
+        delivery = self.deliveries(lane)
+        if state == INTENDED:
+            try:
+                record = delivery.stage_migration(row["request"])
+            except DeliveryRefused as exc:
+                return self._lane_refused(row, exc)
+            receipt = _stage_receipt(row, record)
+            if receipt is None:
+                return self._migration_effect(self._migration_move(row, UNKNOWN, "migration_receipt_mismatch"))
+            return self._migration_effect(self._migration_move(
+                row, M_STAGED, "migration_staged", lane_receipt=receipt, lane_receipt_sha256=digest(receipt),
+                successor_release_id=receipt["successor_release_id"]))
+        if state == M_STAGED:
+            return self._plan_successor(policy_row, row)
+        if state == M_PLANNING:
+            return self._bind_successor(row, delivery)
+        if state == M_BOUND:
+            return self._finalize(row, delivery)
+        return None
+
+    def _current_intent(self, row: dict) -> dict:
+        """The continuation intent, re-read; it must still be exactly the recorded source snapshot
+        (policy, lane, target, release, route, state AND version)."""
+        with self.store.transaction() as tx:
+            intent = tx.get(CONTINUATION_INTENTS, row["subject"]["intent_id"])
+        if not _source_unchanged(row, intent):
+            raise OwnerActionRefused("migration_intent_changed", "intent_id")
+        return intent
+
+    def _plan_successor(self, policy_row: dict, row: dict) -> dict:
+        """Create the migration's successor DELIVERY_PLAN action in the SAME control transaction that
+        records it on the migration row: both or neither."""
+        try:
+            intent = self._current_intent(row)
+        except OwnerActionRefused as exc:
+            return self._migration_effect(self._migration_move(row, REFUSED, exc.reason_code))
+        migration = {"migration_id": row["migration_id"], "successor_release_id": row["successor_release_id"]}
+        binding = self._plan_binding(policy_row, intent, migration=migration)
+        if binding is None:
+            return self._migration_effect(self._migration_move(row, UNKNOWN, "migration_plan_not_owed"))
+        identity = action_id(DELIVERY_PLAN, binding)
+        subject = {"intent_id": intent["id"], "lane": row["subject"]["lane"],
+                   "migration": {"migration_action_id": row["action_id"], "migration_id": row["migration_id"],
+                                 "source_release_id": row["id"],
+                                 "successor_release_id": row["successor_release_id"]}}
+        now = self.clock()
+
+        def create(tx):
+            existing = tx.get(BUCKET_ACTIONS, identity)
+            if existing is None:
+                tx.put(BUCKET_ACTIONS, identity, new_action(DELIVERY_PLAN, binding, policy_row, subject, now))
+            elif existing.get("subject") != subject:
+                raise OwnerActionRefused("migration_plan_conflict", "plan_id")
+
+        return self._migration_effect(self._migration_move(
+            row, M_PLANNING, "successor_plan_intended", extra=create, plan_action_id=identity,
+            plan_id=plan_id_for(identity)))
+
+    def _bind_successor(self, row: dict, delivery) -> dict | None:
+        """Once the successor plan is published, read back, its canary request filed and its registration
+        HELD in the lane, record the continuation's effective binding (CAS on the intent)."""
+        with self.store.transaction() as tx:
+            plan_action = tx.get(BUCKET_ACTIONS, row["plan_action_id"])
+        if not isinstance(plan_action, dict):
+            return self._migration_effect(self._migration_move(row, UNKNOWN, "migration_plan_action_missing"))
+        if plan_action["state"] in {REFUSED, UNKNOWN, REJECTED}:
+            target = REFUSED if plan_action["state"] == REFUSED else UNKNOWN
+            return self._migration_effect(self._migration_move(
+                row, target, "successor_plan_" + str(plan_action.get("reason_code") or plan_action["state"])))
+        if plan_action["state"] != COMPLETED:
+            return None     # the existing tick is publishing/registering it
+        with delivery.store.transaction() as tx:
+            record = tx.get(LANE_MIGRATIONS, row["subject"]["old_plan_id"])
+            target = tx.get("host_delivery_targets", row["document"]["target_id"])
+        if not (isinstance(record, dict) and record.get("migration_id") == row["migration_id"]
+                and record.get("state") in {MIGRATION_REGISTERED, MIGRATION_ACTIVE}
+                and record.get("plan_id") == plan_action["plan_id"]
+                and record.get("plan_sha256") == plan_action["plan_sha256"]
+                and record.get("successor_release_id") == row["successor_release_id"]):
+            raise OwnerActionRefused("migration_registration_unobserved", "plan_id")
+        if plan_action["plan"]["canary_check_id"] == CANARY_FLEET and (
+                self.targets is None or target is None
+                or self.targets.request(target, plan_action["plan_id"]) != _request_of(plan_action)):
+            raise OwnerActionRefused("migration_canary_request_missing", "plan_id")
+        try:
+            self._current_intent(row)
+        except OwnerActionRefused as exc:
+            return self._migration_effect(self._migration_move(row, REFUSED, exc.reason_code))
+        effective = {"intent_id": row["subject"]["intent_id"], "source_release_id": row["id"],
+                     "successor_release_id": row["successor_release_id"], "old_plan_id": row["subject"]["old_plan_id"],
+                     "plan_action_id": plan_action["id"], "plan_id": plan_action["plan_id"],
+                     "plan_sha256": plan_action["plan_sha256"], "migration_id": row["migration_id"],
+                     "migration_action_id": row["action_id"], "revision": row["document"]["candidate_revision"],
+                     "target_id": row["document"]["target_id"]}
+
+        def bind(tx):
+            intent = tx.get(CONTINUATION_INTENTS, effective["intent_id"])
+            if not _source_unchanged(row, intent):
+                raise OwnerActionRefused("migration_intent_changed", "intent_id")
+            old = tx.get(CONTINUATION_BINDINGS, effective["intent_id"])
+            if old is None:
+                tx.put(CONTINUATION_BINDINGS, effective["intent_id"], {
+                    "id": effective["intent_id"], "binding": effective, "binding_sha256": digest(effective),
+                    "at": self.clock()})
+            elif old.get("binding") != effective:
+                raise OwnerActionRefused("migration_binding_conflict", "intent_id")
+
+        return self._migration_effect(self._migration_move(
+            row, M_BOUND, "continuation_bound", extra=bind, effective=effective,
+            effective_sha256=digest(effective)))
+
+    def _finalize(self, row: dict, delivery) -> dict:
+        """The durable readiness acknowledgement (INV-OWNER-ACTIONS-MIGRATION-001). The step FIRST
+        re-observes the whole ready record, each from its own owner and never inside a control-store
+        transaction: the successor DELIVERY_PLAN action (completed, the recorded plan id/hash), the
+        effective binding and the exact source intent snapshot, the lane migration record (registered,
+        same plan id/hash), the published Git pin (the action's plan and bytes hash) and the plan-scoped
+        canary request (`not_requested` for a non-fleet canary). Anything missing, unreadable, replaced
+        or mismatched is a named `migration_readiness_*` wait: the row stays `bound` and no ack is sent.
+        A lane record already active with the identical ack (a lost finalize response) completes without
+        any further readiness read or effect."""
+        with self.store.transaction() as tx:
+            plan_action = tx.get(BUCKET_ACTIONS, row["plan_action_id"])
+            bound = tx.get(CONTINUATION_BINDINGS, row["subject"]["intent_id"])
+            intent = tx.get(CONTINUATION_INTENTS, row["subject"]["intent_id"])
+        effective = row["effective"]
+        if not (isinstance(plan_action, dict) and plan_action.get("state") == COMPLETED
+                and plan_action.get("id") == effective["plan_action_id"]
+                and plan_action.get("plan_id") == effective["plan_id"]
+                and plan_action.get("plan_sha256") == effective["plan_sha256"]):
+            raise OwnerActionRefused("migration_readiness_plan_action", "plan_id")
+        if not (isinstance(bound, dict) and bound.get("binding") == effective):
+            raise OwnerActionRefused("migration_readiness_binding", "intent_id")
+        if not _source_unchanged(row, intent):
+            raise OwnerActionRefused("migration_readiness_source_intent", "intent_id")
+        ack = migration_ack(row, plan_action)
+        with delivery.store.transaction() as tx:
+            record = tx.get(LANE_MIGRATIONS, row["subject"]["old_plan_id"])
+            target = tx.get("host_delivery_targets", row["document"]["target_id"])
+        if not (isinstance(record, dict) and record.get("migration_id") == row["migration_id"]
+                and record.get("plan_id") == plan_action["plan_id"]
+                and record.get("plan_sha256") == plan_action["plan_sha256"]
+                and record.get("successor_release_id") == row["successor_release_id"]
+                and record.get("state") in {MIGRATION_REGISTERED, MIGRATION_ACTIVE}):
+            raise OwnerActionRefused("migration_readiness_lane_record", "plan_id")
+        if record["state"] == MIGRATION_ACTIVE:
+            if record.get("ack") != ack:
+                raise OwnerActionRefused("migration_readiness_ack_conflict", "ack")
+            return self._complete(row, plan_action, ack, {"cached": True, "state": MIGRATION_ACTIVE}, None)
+        ready = {"plan_action_id": plan_action["id"], "plan_id": plan_action["plan_id"],
+                 "plan_sha256": plan_action["plan_sha256"], "bytes_sha256": self._observe_pin(row, plan_action),
+                 "canary_request_id": self._observe_request(plan_action, target),
+                 "binding_sha256": digest(effective), "source_intent": row["source_intent"],
+                 "lane_record": {"state": record["state"], "request_sha256": record.get("request_sha256")}}
+        if ready["canary_request_id"] != ack["canary_request_id"]:
+            raise OwnerActionRefused("migration_readiness_canary_request_replaced", "plan_id")
+        try:
+            result = delivery.finalize_migration(row["migration_id"], ack)
+        except DeliveryRefused as exc:
+            return self._lane_refused(row, exc)
+        if not (isinstance(result, dict) and result.get("state") == MIGRATION_ACTIVE
+                and result.get("plan_id") == ack["plan_id"] and result.get("plan_sha256") == ack["plan_sha256"]):
+            return self._migration_effect(self._migration_move(row, UNKNOWN, "migration_ack_unconfirmed"))
+        return self._complete(row, plan_action, ack, {"cached": result.get("cached"), "state": result.get("state")},
+                              ready)
+
+    def _observe_pin(self, row: dict, plan_action: dict) -> str:
+        """The published pin, read back now: exactly the action's plan and bytes hash."""
+        try:
+            loaded = self.publisher(row["subject"]["lane"]).load(plan_action["commit"], plan_action["path"])
+        except (ContractError, OSError, RuntimeError, ValueError, KeyError, TypeError):
+            raise OwnerActionRefused("migration_readiness_pin_unreadable", "plan_id") from None
+        if not (isinstance(loaded, dict) and loaded.get("plan") == plan_action["plan"]
+                and (loaded.get("pin") or {}).get("sha256") == plan_action["bytes_sha256"]):
+            raise OwnerActionRefused("migration_readiness_pin_mismatch", "plan_id")
+        return plan_action["bytes_sha256"]
+
+    def _observe_request(self, plan_action: dict, target) -> str:
+        """The plan-scoped canary request, read now; `not_requested` only for a non-fleet canary."""
+        if plan_action["plan"]["canary_check_id"] != CANARY_FLEET:
+            return "not_requested"
+        if self.targets is None or not isinstance(target, dict):
+            raise OwnerActionRefused("migration_readiness_canary_unconfigured", "targets")
+        try:
+            observed = self.targets.request(target, plan_action["plan_id"])
+        except (ContractError, OSError, RuntimeError, ValueError):
+            raise OwnerActionRefused("migration_readiness_canary_request_unreadable", "plan_id") from None
+        if observed is None:
+            raise OwnerActionRefused("migration_readiness_canary_request_missing", "plan_id")
+        if observed != _request_of(plan_action):
+            raise OwnerActionRefused("migration_readiness_canary_request_replaced", "plan_id")
+        return digest(observed)
+
+    def _complete(self, row: dict, plan_action: dict, ack: dict, finalized: dict, ready) -> dict:
+        """bound -> completed, and in the SAME control transaction the one authorized resume of exactly
+        the recorded source intent (PAUSED -> the delivery-observing state); a moved source refuses
+        `migration_source_changed` inside it and nothing is written (the row stays bound, a wait)."""
+        lineage = lineage_of(row, plan_action)
+        now = self.clock()
+
+        def resume(tx):
+            intent = tx.get(CONTINUATION_INTENTS, row["subject"]["intent_id"])
+            resumed = migration_resume(intent, row["source_intent"],
+                                       {"migration_action_id": row["action_id"], **lineage}, now)
+            if resumed is not None:
+                tx.put(CONTINUATION_INTENTS, resumed["id"], resumed)
+
+        return self._migration_effect(self._migration_move(
+            row, COMPLETED, "migration_finalized", extra=resume, ack=ack, lineage=lineage, finalized=finalized,
+            readiness=ready, source_resumed=row["source_intent"].get("state") != AWAITING_OWNER))
+
 
 def _request_of(plan_action: dict) -> dict:
     """The one canary request a published plan files: a function of its immutable action row only."""
     return canary_request(plan_action, plan_action["plan"], plan_action["plan_sha256"], plan_action["published_at"])
+
+
+def _migration_document(document) -> dict:
+    """The exact owner-only migration document shape (INV-OWNER-ACTIONS-MIGRATION-001)."""
+    if not isinstance(document, dict) or set(document) != MIGRATION_DOCUMENT_FIELDS:
+        raise OwnerActionRefused("migration_document_invalid", "document")
+    for key in MIGRATION_DOCUMENT_FIELDS - {"approval"}:
+        if type(document[key]) is not str or not document[key]:
+            raise OwnerActionRefused("migration_document_invalid", key)
+    if not EVIDENCE_REF.fullmatch(document["evidence"]):
+        raise OwnerActionRefused("migration_document_invalid", "evidence")
+    approval = document["approval"]
+    if not isinstance(approval, dict) or set(approval) != MIGRATION_APPROVAL_FIELDS:
+        raise OwnerActionRefused("migration_approval_invalid", "approval")
+    if approval["source_release_id"] != document["source_release_id"] or approval["evidence"] != document["evidence"]:
+        raise OwnerActionRefused("migration_approval_invalid", "approval")
+    return document
+
+
+def _check_migration_source(document: dict, policy_row, intent, plans: list) -> None:
+    """The control records the document must name exactly; the original plan action stays history."""
+    if not isinstance(policy_row, dict):
+        raise OwnerActionRefused("policy_unregistered", "policy_id")
+    policy = policy_row["policy"]
+    if policy["delivery"]["target_id"] != document["target_id"]:
+        raise OwnerActionRefused("delivery_target_mismatch", "target_id")
+    if not (isinstance(intent, dict) and intent.get("route") == DELIVERY
+            and intent.get("state") in MIGRATION_SOURCE_STATES and type(intent.get("version")) is int
+            and intent.get("policy_id") == policy["continuation_policy"]
+            and intent.get("release_id") == document["source_release_id"]
+            and intent.get("delivery_target") == document["target_id"] and intent.get("lane") == document["lane"]):
+        raise OwnerActionRefused("migration_intent_mismatch", "intent_id")
+    if len(plans) != 1:
+        raise OwnerActionRefused("migration_plan_action_missing", "old_plan_id")
+    plan = plans[0]
+    binding = plan.get("binding") or {}
+    if not (plan.get("state") == COMPLETED and plan.get("policy_id") == document["policy_id"]
+            and plan.get("plan_sha256") == document["old_plan_sha256"]
+            and (plan.get("subject") or {}).get("intent_id") == document["intent_id"]
+            and binding.get("release_id") == document["source_release_id"]
+            and binding.get("revision") == document["candidate_revision"]
+            and binding.get("policy_hash") == document["source_policy_hash"]
+            and binding.get("target_id") == document["target_id"]):
+        raise OwnerActionRefused("migration_plan_action_mismatch", "old_plan_id")
+
+
+def _source_unchanged(row: dict, intent) -> bool:
+    """The recorded source snapshot still names exactly this intent; a row without one never proceeds."""
+    document, recorded = row["document"], row.get("source_intent")
+    return (isinstance(intent, dict) and isinstance(recorded, dict) and migration_source(intent) == recorded
+            and intent.get("release_id") == document["source_release_id"]
+            and intent.get("delivery_target") == document["target_id"] and intent.get("lane") == document["lane"]
+            and intent.get("route") == DELIVERY)
+
+
+def _stage_receipt(row: dict, record) -> dict | None:
+    """The lane's stage receipt, exactly hash-linked to this row's request; None on any mismatch."""
+    request = row["request"]
+    if not (isinstance(record, dict) and record.get("migration_id") == row["migration_id"]
+            and record.get("request_sha256") == digest(request)
+            and record.get("source_release_id") == request["source_release_id"]
+            and record.get("target_id") == request["target_id"]
+            and record.get("old_plan_id", request["old_plan_id"]) == request["old_plan_id"]
+            and record.get("state") in {"staged", MIGRATION_REGISTERED, MIGRATION_ACTIVE}
+            and type(record.get("successor_release_id")) is str and record["successor_release_id"]
+            and record["successor_release_id"] != request["source_release_id"]):
+        return None
+    return {"migration_id": record["migration_id"], "request_sha256": record["request_sha256"],
+            "source_release_id": record["source_release_id"], "successor_release_id": record["successor_release_id"],
+            "target_id": record["target_id"], "old_plan_id": request["old_plan_id"]}
+
+
+def lineage_of(row: dict, plan_action: dict) -> dict:
+    return {"source_release_id": row["id"], "successor_release_id": row["successor_release_id"],
+            "old_plan_id": row["subject"]["old_plan_id"], "plan_id": plan_action["plan_id"],
+            "migration_id": row["migration_id"]}
+
+
+def migration_ack(row: dict, plan_action: dict) -> dict:
+    """The readiness acknowledgement: a function of durable control rows only, so a replay is identical."""
+    fleet = plan_action["plan"]["canary_check_id"] == CANARY_FLEET
+    return {"control_action_id": plan_action["id"], "plan_id": plan_action["plan_id"],
+            "plan_sha256": plan_action["plan_sha256"], "request_sha256": row["lane_receipt"]["request_sha256"],
+            "canary_request_id": digest(_request_of(plan_action)) if fleet else "not_requested",
+            "lineage_sha256": migration_lineage_digest(**lineage_of(row, plan_action))}
+
+
+def _migration_status(row: dict) -> dict:
+    """R-OBS: one migration's owner-facing status (read-only): state, its phase history and last reason,
+    the lineage identities and the effective owner (policy/lane) of the source intent."""
+    subject = row.get("subject") or {}
+    return {"source_release_id": row.get("id"), "state": row.get("state"), "reason_code": row.get("reason_code"),
+            "phases": [{"state": h.get("state"), "reason_code": h.get("reason_code"), "at": h.get("at")}
+                       for h in (row.get("history") or [])][-8:],
+            "successor_release_id": row.get("successor_release_id"), "plan_id": row.get("plan_id"),
+            "intent_id": subject.get("intent_id"), "source_intent_state": (row.get("source_intent") or {}).get("state"),
+            "owner": {"policy_id": row.get("policy_id"), "lane": subject.get("lane")},
+            "version": row.get("version")}
+
+
+def _migration_view(row: dict) -> dict:
+    shown = {k: row.get(k) for k in ("id", "action_id", "kind", "state", "reason_code", "migration_id",
+                                     "document_sha256", "policy_id", "subject", "old_action_id",
+                                     "successor_release_id", "plan_action_id", "plan_id", "lane_receipt_sha256",
+                                     "effective_sha256", "created_at", "updated_at", "version")}
+    for key in ("ack", "lineage"):
+        if row.get(key) is not None:
+            shown[key] = row[key]
+    return shown
 
 
 def _decided(verdict: dict) -> dict:
@@ -742,4 +1228,6 @@ def plan_json(plan: dict) -> bytes:
     return (canonical(plan) + "\n").encode("utf-8")
 
 
-__all__ = ["BUCKET_ACTIONS", "BUCKET_POLICIES", "ActionChanged", "OwnerActions", "digest_bytes", "plan_json"]
+__all__ = ["BUCKET_ACTIONS", "BUCKET_MIGRATIONS", "BUCKET_POLICIES", "CONTINUATION_BINDINGS", "EVALUATOR_MIGRATION",
+           "MIGRATION_DOCUMENT_FIELDS", "ActionChanged", "OwnerActions", "digest_bytes", "lineage_of",
+           "migration_ack", "plan_json"]

@@ -158,6 +158,41 @@ Refusals write nothing: `resume_evidence_invalid`, `plan_unregistered`, `resume_
 `resume_queue_<status>`, `resume_queue_refused`, `resume_predecessor_<moved|in_flight>`,
 `resume_release_ticket_changed`.
 
+### Runbook: evaluator migration of a merged, check-rejected release (INV-RELEASE-EVALUATOR-MIGRATION-001)
+
+This runbook is only for a merged plan that is `blocked` or `failed` with `release_rejected`, when the rejection came
+from an incumbent test that is wrong in the evaluator's two-checkout layout. An environment-caused rejection uses plain
+reverification instead. The candidate's own regression never qualifies.
+
+1. An owner-reviewed evaluator commit E is required: a direct child of the release base, `tests/`-only, and exactly the
+   reviewed paths. Its acceptance evidence digest is the approval `evidence`.
+2. The owner-actions service, the host-delivery controller AND the continuation consumer must all run code that
+   knows the migration. The continuation consumer is the existing `zeus continuation tick --policy` run from the
+   controller's code; the Fleet's embedded ticker stays unconfigured (`ZEUS_CONTINUATION_POLICY` unset for Fleet).
+   - An older owner-actions process cannot dispatch the migration and plans without the target reservation.
+   - An older controller does not honour the hold.
+3. `zeus owner-actions migrate --document <file>` records the ONE migration of the source. The document binds the
+   source release and policy hash, the candidate, the old plan and its sha256, the continuation intent, the target, the
+   lane, the E pin and the evidence. The owner-actions loop then advances it, in order:
+   1. The lane re-derives the E pin from its own repository (`migration_pin_unavailable` /
+      `migration_pin_mismatch` write nothing), then stages it: the successor release, the old plan `withdrawn` as
+      `release_rejected_superseded` with `main_effect: merged` and its halt copied, and the target reserved.
+   2. The successor `DELIVERY_PLAN` is published and read back, and its canary request is filed.
+   3. The lane registers that exact plan, HELD (`migration_unacknowledged`).
+   4. The continuation's effective binding is recorded.
+   5. Readiness is re-observed (plan action, source intent version, lane registration, published pin, canary
+      request); anything missing stays `bound` with a `migration_readiness_*` wait. Only then does
+      `finalize_migration` clear the hold and queue the successor, and a continuation intent PAUSED on the original
+      rejection resumes observation through the one authorized migration transition.
+   Both `owner-actions status` and `host-delivery status` show each migration's phase, wait and held reason.
+4. Every step replays after a restart or lost response. A staged or registered migration is a named wait, never a free
+   target.
+   - A different document for the same source is `migration_conflict`.
+   - A lane refusal stops the action with the lane's code.
+   - Nothing is ever deleted or relabelled by hand.
+5. The controller then verifies the successor normally, with every check fresh. A pin that no longer matches git halts
+   as `evaluator_pin_mismatch`.
+
 ### Controller rollback rule
 
 A controller built before the `verifying` stage does not count `verifying` as in flight or target
