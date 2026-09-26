@@ -181,16 +181,23 @@ Order (each step is a staged owner phase; none is run by this document):
    violation. Then `M activation-switch --expected-id <successor id> --control-dir … --releases-dir …
    --managed-state-dir …`. After an interruption, `--check` shows `receipt_written`; one
    completion run is a named reconciliation, not a retry. `activation_files_inconsistent` stops for
-   root.
+   root. The switch is POSIX only: on any other host both forms refuse
+   `successor_switch_posix_only` before the store, a receipt or a link is touched. A switch holds
+   the database-wide coordinator lock, so other store writers of that database wait at most their
+   10 s `lock_timeout` and then fail unwritten.
 3. Re-render the owner-actions and controller units for the activated revision (no restart).
 4. Reverse handoff: rename `fleet-owner.json` to a retired name. Only then may the bootstrap role
    start.
 5. Start the bootstrap Fleet (still paused) and restart the monitors.
 6. Startup acceptance while paused: exact runtime identity, provider readiness, a sole Fleet
-   owner, the pause preserved, and the requalified H1′ still `intended` (or its exact current
-   state). A paused runner only drains the continuation, so nothing new is admitted before resume.
-   Admission is not a precondition of this step.
-7. The owner resumes through the normal command. The ordinary pass then admits the intended work.
+   owner, the pause preserved, and the requalified H1′ in its exact current state. The bootstrap
+   `zeus fleet run` has no runtime control, so only the Fleet DB pause holds it, and that is not
+   drain-only. Its continuation pass may still bind, publish and enqueue: H1′ may be `intended`,
+   `published` or `admitted` with its Fleet job `queued`. Every conductor start (a Fleet execution
+   unit) and every worker admission is refused while paused (`conductor_paused`, `paused`), so
+   nothing is launched before resume. Admission is not a precondition of this step.
+7. The owner resumes through the normal command. The ordinary pass then starts the waiting
+   conductor and admits the queued work.
 
 Main after P5: recording a requalification checks the remote main; later runs do not. A main that
 moves after P5 does not stop H1′'s worker. The delivery gates refuse stale integration

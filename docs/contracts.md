@@ -3375,10 +3375,23 @@ another release revision of the same host. It never rewrites the intent.
 4. `activation-switch` writes `host-activation.json`, then replaces `releases/current` (a fresh
    temporary symlink renamed over it, then a directory fsync; only its own temporary link is ever
    removed).
+   - Platform: the switch is defined only on POSIX, as rename(2) of a fresh symlink over the
+     `releases/current` directory symlink followed by a directory fsync. On a non-POSIX host the
+     switch adapter, `--check` included, refuses `successor_switch_posix_only` before the
+     coordinator store is opened and before any receipt or temporary link exists. Recording, the
+     coordinator's serialization of the switch port and its refusal codes are platform-neutral and
+     are tested on every platform; only the real Linux adapter tests are skipped elsewhere, with a
+     reason naming this contract.
    - It runs its file classification and writes inside the SAME coordinator transaction as
      `record_successor`. Two switches, or a switch and a successor record, are therefore
      serialized; `--expected-id` is rechecked under that lock, so a stale switch is refused
      (`activation_head_moved`) and never writes an older pair over a newer one.
+   - On PostgreSQL that transaction holds the database-wide advisory lock 734219 for the whole
+     effect. Every store transaction sets `lock_timeout = '10s'` before taking it, so a waiter on
+     another connection (a successor record, a second switch, any other store writer of that
+     database) waits at most 10 s and then fails with `LockNotAvailable` having written nothing; it
+     is not retried. The timeout bounds the waiter, not the effect. The effect opens no store
+     transaction of its own.
    - The files are classified against the effective (E) and predecessor (P) receipts: P/P
      `recorded_not_switched`, E/P `receipt_written` (completion only, no second receipt write),
      E/E `switched` (cached, nothing written). Anything else is `activation_files_inconsistent`

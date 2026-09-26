@@ -26,6 +26,7 @@ intent. This module is the outer adapter boundary:
   effective (successor) activation: receipt first, then an atomic symlink replacement, both
   inside the coordinator transaction that also serializes successor recording. The two files are
   classified against the effective and predecessor receipts; anything else is refused unwritten.
+  It is POSIX only; elsewhere it is refused (`successor_switch_posix_only`) before any effect.
 * `SystemdHostTarget` controls only `zeus-aibox-*.service` units through `systemctl
   show|start|stop`. It never runs `reset-failed`, and a unit being active is never taken as
   consumption proof.
@@ -697,6 +698,13 @@ MANAGED_LAUNCH_FILES = ("managed-launch.json", DESCRIPTOR_FILE, HOST_STATE_FILE)
 FOREIGN = "foreign"
 RECORDED_NOT_SWITCHED, RECEIPT_WRITTEN, SWITCHED = "recorded_not_switched", "receipt_written", "switched"
 INCONSISTENT = "activation_files_inconsistent"
+POSIX_ONLY = "successor_switch_posix_only"
+
+
+def _posix() -> bool:
+    """The switch's platform check, a seam of its own so a test can exercise the non-POSIX refusal
+    without replacing the process-wide `os.name` (which pathlib reads)."""
+    return os.name == "posix"
 
 
 def current_revision(releases_dir) -> str | None:
@@ -866,7 +874,13 @@ def switch_effect(control_dir, releases_dir, managed_state_dir, *, check: bool =
     Order: classify; refuse inconsistent files, a host fence, an unready release or any violated
     recovery precondition, writing nothing; write the receipt (unless already written); replace
     `current`; re-classify. `check` only classifies and reports the preconditions it observes.
+
+    The switch is defined only on POSIX, as rename(2) of a fresh symlink over the `current` directory
+    symlink (INV-HOST-MIGRATION-001). Elsewhere, `check` included, it is refused here, before a
+    coordinator transaction, receipt, temporary link or any other effect exists.
     """
+    if not _posix():
+        raise MigrationRefused(POSIX_ONLY, "platform")
     control, releases = Path(control_dir), Path(releases_dir)
     observe = preconditions or (lambda c, m: recovery_preconditions(c, m))
 
@@ -1040,9 +1054,9 @@ def execute(args) -> tuple[dict, bool]:
         if not args.check and not args.expected_id:
             # The head the operator validated is rechecked under the coordinator lock before a write.
             raise MigrationRefused("expected_id_required", "expected_id")
-        result = _coordinator(args).activation_switch(
-            args.migration_id, switch_effect(args.control_dir, args.releases_dir, args.managed_state_dir,
-                                             check=args.check), expected_id=args.expected_id)
+        # The effect first: a non-POSIX host is refused before the coordinator store is opened.
+        effect = switch_effect(args.control_dir, args.releases_dir, args.managed_state_dir, check=args.check)
+        result = _coordinator(args).activation_switch(args.migration_id, effect, expected_id=args.expected_id)
         return result, result["classification"] != INCONSISTENT
     if command == "status":
         return _coordinator(args).status(args.migration_id), True

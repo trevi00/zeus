@@ -6,6 +6,11 @@ named `releases/<rev>` here are LABELLED fixtures (a stub interpreter, a package
 `runtime.json`), not built releases. `systemctl` answers and `/proc` are fixture stubs unless a
 test says otherwise. The PostgreSQL rows run only with `HARNESS_INTEGRATION=1` against a disposable
 server (`isolated_pgstore`); skipped, they prove nothing.
+
+Platform split (INV-HOST-MIGRATION-001): recording, the coordinator's serialization of the switch
+port and its refusals run on every platform. Only the real Linux adapter rows (`posix_only`: the
+actual symlink rename, file classification and launcher) are skipped elsewhere, with a reason that
+names their non-POSIX counterpart, `test_switch_refuses_on_non_posix`.
 """
 from __future__ import annotations
 
@@ -18,6 +23,9 @@ from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
+from test_continuation import LaneLauncher, accepted_item, only
+from test_continuation_requalification import document as requalification_document
+from test_continuation_requalification import requalify, withdrawn_world
 from test_fleet import GOAL, FakeLauncher, RecordingControl, fleet
 from test_fleet import manifest as operation
 from test_host_migration import (
@@ -37,8 +45,9 @@ from test_host_migration import (
 
 from codex_harness.adapters import host_migration as adapter
 from codex_harness.adapters.store import MemoryStore, PostgresStore
-from codex_harness.application.fleet import FleetRunner
+from codex_harness.application.fleet import BUCKET_UNITS, FleetRunner
 from codex_harness.application.host_migration import BUCKET, BUCKET_TRANSITIONS, HostMigrations
+from codex_harness.domain import continuation as dc
 from codex_harness.domain import host_migration as policy
 from codex_harness.domain.host_migration import MigrationRefused
 
@@ -46,6 +55,9 @@ MID = "aibox-migration-001"
 NEXT = "e" * 40  # the successor's revision (5aa220f in the live recovery)
 LATER = "7" * 40
 LOCK = "f" * 64
+posix_only = pytest.mark.skipif(os.name != "posix", reason=(
+    "INV-HOST-MIGRATION-001 Linux adapter contract: atomic rename(2) of a directory symlink; non-POSIX "
+    "refusal is tested by test_switch_refuses_on_non_posix"))
 
 
 def successor(predecessor_id: str, revision: str = NEXT, **overrides) -> dict:
@@ -199,7 +211,7 @@ def fixture_intent(h) -> dict:
     return {**INTENT, "host_id": "machine-id-sha256:" + hashlib.sha256(raw.encode()).hexdigest()}
 
 
-@needs_symlink
+@posix_only
 def test_t3_successor_receipt_adds_two_fields_and_the_unchanged_launcher_accepts_it(tmp_path):
     service = launcher()
     coordinator = HostMigrations(MemoryStore())
@@ -372,7 +384,7 @@ def spied(monkeypatch):
     return calls
 
 
-@needs_symlink
+@posix_only
 def test_a1_switch_writes_the_receipt_then_current_and_fsyncs_both_directories(tmp_path, monkeypatch):
     coordinator, _, intent_id = paused()
     h = host(tmp_path, coordinator)
@@ -391,7 +403,7 @@ def test_a1_switch_writes_the_receipt_then_current_and_fsyncs_both_directories(t
     assert not [p for p in h.releases.iterdir() if p.name.startswith(".current.")]
 
 
-@needs_symlink
+@posix_only
 def test_a2_crash_after_the_receipt_is_receipt_written_refused_by_the_launcher_and_completed_once(
         tmp_path, monkeypatch):
     service = launcher()
@@ -429,7 +441,7 @@ def test_a2_crash_after_the_receipt_is_receipt_written_refused_by_the_launcher_a
         launch(service, h)  # the owner marker still blocks the bootstrap role until S4
 
 
-@needs_symlink
+@posix_only
 def test_a3_a_rerun_when_switched_is_cached_and_touches_nothing(tmp_path, monkeypatch):
     coordinator, _, intent_id = paused()
     h = host(tmp_path, coordinator)
@@ -459,7 +471,7 @@ def tree(h) -> dict:
     return state
 
 
-@needs_symlink
+@posix_only
 @pytest.mark.parametrize("damage", ["foreign_receipt", "foreign_current", "absolute_elsewhere", "missing_current",
                                     "missing_receipt"])
 def test_a4_foreign_receipt_bytes_or_current_target_are_inconsistent_and_nothing_is_written(tmp_path, damage):
@@ -486,7 +498,7 @@ def test_a4_foreign_receipt_bytes_or_current_target_are_inconsistent_and_nothing
     assert tree(h) == before
 
 
-@needs_symlink
+@posix_only
 @pytest.mark.parametrize("damage, reason", [
     ("fence", "host_fenced"),
     ("missing", "release_not_ready"),
@@ -533,7 +545,7 @@ def release_seal(path: Path) -> None:
         Path(directory).chmod(0o555)
 
 
-@needs_symlink
+@posix_only
 def test_a6_a_failed_replace_removes_only_its_own_temporary_link(tmp_path, monkeypatch):
     coordinator, _, intent_id = paused()
     h = host(tmp_path, coordinator)
@@ -557,7 +569,7 @@ def test_a6_a_failed_replace_removes_only_its_own_temporary_link(tmp_path, monke
     assert os.readlink(h.releases / ".current.foreignleftover") == "0" * 40
 
 
-@needs_symlink
+@posix_only
 def test_a7_a_stale_reader_rewriting_the_intent_receipt_is_refused_by_the_launcher(tmp_path):
     service = launcher()
     coordinator = HostMigrations(MemoryStore())
@@ -596,7 +608,7 @@ def fake_process(proc: Path, pid: int, argv: list) -> None:
     (proc / str(pid) / "cmdline").write_bytes(b"\0".join(word.encode() for word in argv) + b"\0")
 
 
-@needs_symlink
+@posix_only
 @pytest.mark.parametrize("case, violation", [
     ("owner_missing", "owner_marker_missing"),
     ("owner_invalid", "owner_marker_invalid"),
@@ -670,15 +682,17 @@ def test_an_idle_host_passes_and_an_unreadable_process_table_is_a_violation(tmp_
 
 # ----- serialization: the coordinator transaction is the shared fence -----------------------------------
 class Paused:
-    """Wrap a switch effect so it stops, inside the coordinator transaction, after its classification
-    and before any write, until the test releases it (deterministic interleaving)."""
+    """Wrap a switch effect so it stops inside the coordinator transaction, after the head selection
+    and before the wrapped effect classifies or writes, until the test releases it (deterministic
+    interleaving)."""
 
-    def __init__(self, effect):
+    def __init__(self, effect, timeout=10):
         self.effect, self.entered, self.release = effect, threading.Event(), threading.Event()
+        self.timeout = timeout
 
     def __call__(self, plan):
         self.entered.set()
-        assert self.release.wait(10)
+        assert self.release.wait(self.timeout)
         return self.effect(plan)
 
 
@@ -695,7 +709,7 @@ def run_thread(target) -> tuple[threading.Thread, dict]:
     return thread, box
 
 
-@needs_symlink
+@posix_only
 def test_switch_switch_interleaving_the_second_waits_and_finds_the_pair_switched(tmp_path, monkeypatch):
     coordinator, _, intent_id = paused()
     h = host(tmp_path, coordinator)
@@ -715,7 +729,7 @@ def test_switch_switch_interleaving_the_second_waits_and_finds_the_pair_switched
     assert calls.count("receipt") == 1 and calls.count("current") == 1
 
 
-@needs_symlink
+@posix_only
 def test_record_switch_interleaving_a_successor_waits_and_a_stale_switch_never_overwrites_it(
         tmp_path, monkeypatch):
     coordinator, _, intent_id = paused()
@@ -746,7 +760,7 @@ def test_record_switch_interleaving_a_successor_waits_and_a_stale_switch_never_o
     assert json.loads((h.control / "host-activation.json").read_text())["intent_id"] == newer
 
 
-@needs_symlink
+@posix_only
 def test_a_successor_recorded_before_the_first_switch_leaves_files_inconsistent_not_overwritten(tmp_path):
     coordinator, _, intent_id = paused()
     h = host(tmp_path, coordinator)
@@ -760,8 +774,110 @@ def test_a_successor_recorded_before_the_first_switch_leaves_files_inconsistent_
     assert tree(h) == before
 
 
+# ----- portable: the coordinator side of the switch port, on every platform ---------------------------
+class PortFixture:
+    """LABELLED switch port: no file, no platform check; records each plan it is given."""
+
+    def __init__(self):
+        self.plans = []
+
+    def __call__(self, plan):
+        self.plans.append(plan)
+        return {"effective_id": plan["effective_id"], "revision": plan["effective"]["release_revision"]}
+
+
+def test_portable_the_port_gets_the_effective_and_predecessor_receipts_and_a_stale_head_never_reaches_it():
+    port = PortFixture()
+    with pytest.raises(MigrationRefused, match="migration_unknown"):
+        HostMigrations(MemoryStore()).activation_switch(MID, port)
+    coordinator, _, intent_id = paused()
+    assert coordinator.activation_switch(MID, port)["effective_id"] == intent_id  # the intent is the head
+    assert port.plans[0]["kind"] == "intent" and port.plans[0]["predecessor"] is None
+    head = coordinator.record_successor(successor(intent_id))["successor_id"]
+    before = snapshot(coordinator.store)
+    assert coordinator.activation_switch(MID, port, expected_id=head)["revision"] == NEXT
+    plan = port.plans[-1]
+    assert plan["kind"] == "successor" and plan["effective"] == coordinator.activation_document(MID)
+    assert (plan["predecessor"]["intent_id"], plan["predecessor"]["release_revision"]) == (intent_id, COMMIT)
+    with pytest.raises(MigrationRefused, match="activation_head_moved"):
+        coordinator.activation_switch(MID, port, expected_id=intent_id)
+    assert len(port.plans) == 2
+
+    def refusing(plan):
+        raise MigrationRefused("recovery_precondition", "unit_active:zeus-aibox-fleet.service")
+    with pytest.raises(MigrationRefused, match="recovery_precondition"):
+        coordinator.activation_switch(MID, refusing, expected_id=head)
+    assert coordinator.store.data == before  # the coordinator writes no row for a switch
+
+
+def test_portable_a_second_switch_then_a_record_wait_for_the_port_inside_the_transaction():
+    coordinator, _, intent_id = paused()
+    head = coordinator.record_successor(successor(intent_id))["successor_id"]
+    port = PortFixture()
+    held = Paused(port)
+    a, a_box = run_thread(lambda: coordinator.activation_switch(MID, held, expected_id=head))
+    assert held.entered.wait(10)
+    b, b_box = run_thread(lambda: coordinator.activation_switch(MID, port, expected_id=head))
+    b.join(0.3)
+    assert b.is_alive() and port.plans == []  # the second switch cannot even select a head yet
+    held.release.set()
+    a.join(10)
+    b.join(10)
+    assert "error" not in a_box and "error" not in b_box, (a_box, b_box)
+    assert [plan["effective_id"] for plan in port.plans] == [head, head]
+    held = Paused(port)
+    a, a_box = run_thread(lambda: coordinator.activation_switch(MID, held, expected_id=head))
+    assert held.entered.wait(10)
+    c, c_box = run_thread(lambda: coordinator.record_successor(successor(head, LATER)))
+    c.join(0.3)
+    assert c.is_alive()  # the record waits for the held switch (its row is read unlocked below)
+    assert len(coordinator.store.data[(BUCKET, MID)]["activation_successors"]) == 1
+    held.release.set()
+    a.join(10)
+    c.join(10)
+    assert a_box["result"]["revision"] == NEXT and c_box["result"]["recorded"] is True
+    with pytest.raises(MigrationRefused, match="activation_head_moved"):
+        coordinator.activation_switch(MID, port, expected_id=head)  # the older head is never switched again
+    assert port.plans[-1]["effective_id"] == head and len(port.plans) == 3
+
+
+def test_switch_refuses_on_non_posix(tmp_path, monkeypatch, capsys):
+    """The counterpart of every `posix_only` row: on a non-POSIX host as it is; on POSIX through the
+    adapter's own platform seam (never the process-wide `os.name`). Nothing is written: no receipt,
+    no temporary link, no store row, and the CLI never opens the coordinator store."""
+    if os.name == "posix":
+        monkeypatch.setattr(adapter, "_posix", lambda: False)
+    coordinator, _, intent_id = paused()
+    h = SimpleNamespace(control=tmp_path / "control", releases=tmp_path / "releases", managed=tmp_path / "managed")
+    for directory in (h.control, h.releases, h.managed):
+        directory.mkdir()
+    adapter.write_activation(h.control, coordinator.activation_document(MID))  # the intent's receipt
+    release(tmp_path, NEXT, seal=False)
+    head = coordinator.record_successor(successor(intent_id))["successor_id"]
+
+    def files():
+        return sorted((str(p.relative_to(tmp_path)), p.read_bytes() if p.is_file() else None)
+                      for p in tmp_path.rglob("*"))
+    before, rows = files(), snapshot(coordinator.store)
+    calls = spied(monkeypatch)
+    for check, expected in ((False, head), (True, None)):
+        with pytest.raises(MigrationRefused) as refused:
+            switch(coordinator, h, expected=expected, check=check,
+                   preconditions=lambda c, m: pytest.fail("no precondition is observed"))
+        assert (refused.value.reason_code, refused.value.field) == (adapter.POSIX_ONLY, "platform")
+    monkeypatch.setattr(adapter, "_coordinator", lambda args: pytest.fail("the coordinator store is never opened"))
+    paths = ["--migration-id", MID, "--control-dir", str(h.control), "--releases-dir", str(h.releases),
+             "--managed-state-dir", str(h.managed), "--dsn-env", "ZEUS_AIBOX_MIGRATION_DSN",
+             "--schema", "zeus_aibox_migration"]
+    for extra in (["--expected-id", head], ["--check"]):
+        assert adapter.main(["activation-switch", *extra, *paths]) == 1
+        assert json.loads(capsys.readouterr().out) == {"refused": adapter.POSIX_ONLY, "field": "platform"}
+    assert calls == [] and files() == before and coordinator.store.data == rows
+    assert not [name for name, _ in before if ".current." in name]
+
+
 # ----- CLI --------------------------------------------------------------------------------------------
-@needs_symlink
+@posix_only
 def test_cli_records_a_successor_and_switches_only_with_an_expected_head(tmp_path, monkeypatch, capsys):
     coordinator, _, intent_id = paused()
     h = host(tmp_path, coordinator)
@@ -786,7 +902,11 @@ def test_cli_records_a_successor_and_switches_only_with_an_expected_head(tmp_pat
     assert adapter.main(["activation-switch", "--check", *paths]) == 1  # inconsistent is not a pass
 
 
-# ----- S6 ordering on the actual FleetRunner: paused drains, only a resume admits -----------------------
+# ----- S6 ordering on the actual FleetRunner ------------------------------------------------------------
+# Two different pauses. A CLOSED runtime control (the managed runner's pause file, RecordingControl
+# here) makes the runner drain only. The S5/S6 bootstrap `zeus fleet run` has NO runtime control: only
+# the Fleet DB pause holds it, which lets continuation state and the queue progress but refuses every
+# conductor unit and worker admission (F-208-1; the second test below).
 class RequalificationContinuation:
     """LABELLED continuation fixture with the runner's port (`__call__`, `drain`, `owned`). Its
     ordinary pass is what admits the intended requalification: it enqueues the job the way the
@@ -811,7 +931,7 @@ class RequalificationContinuation:
         return []
 
 
-def test_s6_a_paused_runner_never_admits_the_intended_requalification_and_resume_does(tmp_path):
+def test_a_closed_runtime_control_only_drains_and_its_reopening_admits_the_requalification(tmp_path):
     f = fleet(tmp_path)
     control = RecordingControl()
     control.paused = True
@@ -827,11 +947,11 @@ def test_s6_a_paused_runner_never_admits_the_intended_requalification_and_resume
             control.stopping = True
     runner.sleep = sleep
     summary = runner.run(once=False)
-    # Paused start (S5/S6): the continuation is only drained; H1' stays intended, nothing admitted.
+    # Closed control (the managed path, not the S5/S6 bootstrap): the continuation is only drained.
     assert continuation.calls and set(continuation.calls) == {"drain"} and continuation.intent == "intended"
     assert summary["admitted"] == [] and f.status()["jobs"] == [] and launcher_.launched == []
     assert {"admission": "paused", "active": 0, "unresolved": 0} in control.beats
-    # P6a: the owner's resume opens admission; the ordinary pass admits and the job runs (P6b).
+    # The control reopens; the ordinary pass admits and the job runs.
     control.paused = control.stopping = False
     resumed = FleetRunner(f, launcher_, interval=0, control=control, continuation=continuation).run(once=True)
     first_pass = continuation.calls.index("pass")
@@ -841,9 +961,50 @@ def test_s6_a_paused_runner_never_admits_the_intended_requalification_and_resume
     assert resumed["finalized"] == [{"id": "h1-requal", "status": "accepted", "reason_code": "lead_accepted"}]
 
 
+def test_s6_the_control_less_bootstrap_on_a_db_paused_fleet_moves_state_but_starts_nothing(tmp_path):
+    """F-208-1, the S5/S6 shape: the REAL FleetRunner with control=None (`zeus fleet run`), the REAL
+    Continuation and Fleet of test_continuation's world (LABELLED fixture worker, lead and conductor
+    port). An accepted job awaits its conductor and an owner requalification is intended (H1'
+    shape) when the owner pauses the Fleet in its store."""
+    world, origin, delivery, rationale = withdrawn_world(tmp_path)
+    awaiting = accepted_item(world, "op-2", "docs/b.md")
+    requalify(world, requalification_document(delivery, rationale))
+    requalification = dc.requalification_id(delivery["id"])
+    assert world.intents()[requalification]["state"] == dc.INTENDED
+    world.fleet.pause()
+
+    def units():
+        with world.control.transaction() as tx:
+            return list(tx.scan(BUCKET_UNITS))
+    conducted, held = list(world.conductor.calls), units()
+    assert conducted == [origin]  # the first item's conductor ran (and was settled) before the pause
+    launcher_ = LaneLauncher(world, [True])
+    ticks = []
+    runner = FleetRunner(world.fleet, launcher_, sleep=lambda _: None,
+                         continuation=lambda: ticks.append(world.tick()) or ticks[-1])
+    assert runner.control is None
+    summary = runner.run(once=True)
+    intents = world.intents()
+    successor_job = intents[requalification]["successor_job"]
+    # Allowed while DB-paused: continuation state and the queue progress (not drain-only).
+    assert summary["continuation"]["state"] == "ok" and ticks
+    assert intents[requalification]["state"] == dc.ADMITTED and world.jobs()[successor_job]["status"] == "queued"
+    assert only(intents, route=dc.CONDUCTOR, origin_job=awaiting)["state"] == dc.INTENDED
+    assert {skip["reason_code"] for tick in ticks for skip in tick["skipped"]} == {"conductor_paused"}
+    # Refused while DB-paused: no conductor start, no new execution unit, no worker admission or launch.
+    assert world.conductor.calls == conducted and units() == held and summary["units_held"] == []
+    assert summary["admitted"] == [] and summary["blocked"] == {successor_job: "paused"}
+    assert launcher_.launched == []
+    # P6a: the owner's resume. The awaiting conductor starts once and the requalification is admitted once.
+    world.fleet.resume()
+    resumed = runner.run(once=True)
+    assert resumed["admitted"] == [successor_job] and launcher_.launched == [successor_job]
+    assert world.conductor.calls[:2] == [origin, awaiting] and world.conductor.calls.count(awaiting) == 1
+
+
 # ----- PostgreSQL: the same fence across two connections -----------------------------------------------
 @pytest.mark.integration
-@needs_symlink
+@posix_only
 def test_postgres_record_waits_for_a_switch_holding_the_coordinator_lock(tmp_path, isolated_pgstore):
     coordinator, _, intent_id = paused(isolated_pgstore)
     h = host(tmp_path, coordinator)
@@ -864,6 +1025,33 @@ def test_postgres_record_waits_for_a_switch_holding_the_coordinator_lock(tmp_pat
         other.activation_switch(MID, adapter.switch_effect(h.control, h.releases, h.managed,
                                                            preconditions=idle(h)), expected_id=first_id)
     assert switch(other, h, expected=b_box["result"]["successor_id"])["revision"] == LATER
+
+
+@pytest.mark.integration
+def test_postgres_a_waiter_past_the_10s_lock_timeout_is_refused_and_writes_nothing(isolated_pgstore):
+    """F-208-3: the wait on the coordinator lock is bounded by PostgresStore's `lock_timeout = '10s'`;
+    the held effect itself is not. Portable: the switch port is a fixture, not the Linux adapter."""
+    import time
+
+    import psycopg
+
+    coordinator, _, intent_id = paused(isolated_pgstore)
+    head = coordinator.record_successor(successor(intent_id))["successor_id"]
+    held = Paused(PortFixture(), timeout=60)
+    a, a_box = run_thread(lambda: coordinator.activation_switch(MID, held, expected_id=head))
+    assert held.entered.wait(10)
+    started = time.monotonic()
+    try:
+        with pytest.raises(psycopg.errors.LockNotAvailable):
+            HostMigrations(PostgresStore(isolated_pgstore.dsn)).record_successor(successor(head, LATER))
+        waited = time.monotonic() - started
+    finally:
+        held.release.set()
+        a.join(15)
+    assert 9.5 <= waited < 20, waited
+    assert "error" not in a_box and a_box["result"]["revision"] == NEXT  # the holder was never broken
+    view = coordinator.status(MID)
+    assert view["activation_current"] == head and len(view["activation_chain"]) == 2  # the waiter wrote nothing
 
 
 @pytest.mark.integration
@@ -896,7 +1084,7 @@ def dry_run(h, role: str) -> tuple[int, dict]:
     return completed.returncode, json.loads(completed.stderr)
 
 
-@needs_symlink
+@posix_only
 @pytest.mark.skipif(not Path("/etc/machine-id").is_file(), reason="the launcher process reads /etc/machine-id")
 def test_the_launcher_process_refuses_the_mixed_pair_and_launches_the_switched_revision(tmp_path, monkeypatch):
     """The receipts name THIS machine's id digest (read-only), because the launcher process reads

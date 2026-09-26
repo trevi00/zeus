@@ -226,9 +226,18 @@ class HostMigrations:
         The effective head is selected, the caller's expected head is rechecked and the effect
         classifies and writes the launcher files, all inside ONE store transaction: the same
         advisory lock `record_successor` takes. A successor recorded meanwhile, or a second
-        switch, waits until this effect returns, and then sees the files it left. The coordinator
-        itself still touches no file: `effect` is the adapter's port and is given pure data only.
-        It must not open another store transaction (the PostgreSQL lock is not reentrant).
+        switch, cannot run between the head selection and the writes: it waits for this
+        transaction and then sees the files it left. The coordinator itself still touches no file:
+        `effect` is the adapter's port and is given pure data only.
+
+        The wait is bounded on PostgreSQL. `PostgresStore.transaction` sets `lock_timeout = '10s'`
+        before `pg_advisory_xact_lock(734219)`, so a transaction on another connection waits at most
+        10 s for the lock, then fails with `LockNotAvailable` having written nothing: it is refused,
+        never interleaved, and it is not retried here. The timeout bounds only the waiter, not this
+        effect. The lock is database-wide, so every other store writer of that database waits the
+        same way. `MemoryStore` waits without a bound. `effect` must not open another store
+        transaction: that is a new connection, which would wait on the lock this one holds (a
+        repeated request inside the same session would succeed; a second connection does not).
         """
         with self.store.transaction() as tx:
             row = tx.get(BUCKET, migration_id)
