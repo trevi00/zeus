@@ -80,6 +80,7 @@ from codex_harness.domain.host_delivery import (
     RECEIPT_SCHEMA,
     REPLACEABLE_INSTANCES,
     TOKEN,
+    WITHDRAW_REASONS,
     DeliveryRefused,
     LifecycleInterrupted,
     canary_request_matches,
@@ -384,8 +385,15 @@ class GitHubDelivery:
                 "head": published.get("headRefOid") or candidate["revision"], "state": "OPEN",
                 "checks": []}
 
-    def merge(self, candidate: dict) -> dict:
-        merged = self.workspace.merge(candidate)
+    def merge_state(self, candidate: dict, observed=None) -> dict:
+        """R1-R4 of the remote main for this candidate, through the merge owner itself (read-only)."""
+        return self.workspace.merge_state(candidate, observed)
+
+    def merge(self, candidate: dict, observed=None) -> dict:
+        """The lease fast-forward of main to the reviewed revision (`GitWorkspace.merge`). A definite
+        refusal raises `MergeRefused` with its reason code; an unknown outcome raises a transport
+        error and is reconciled through `merge_state` by the next tick, never repeated blindly."""
+        merged = self.workspace.merge(candidate, **({} if observed is None else {"observed": observed}))
         return {"merged": bool(merged.get("merged")),
                 "merged_revision": merged.get("merged_revision") or merged.get("revision")}
 
@@ -1026,7 +1034,14 @@ def add_parser(commands) -> None:
                              help="Stop after this many ticks; 0 runs until stopped")
     status = sub.add_parser("status", help="Read the delivery projection; store read only")
     status.add_argument("--plan", default=None, help="One plan id; omitted reads every plan")
-    for command in (targets, register, tick, run_command, status):
+    withdraw = sub.add_parser("withdraw", help="Owner: retire one delivery the host never reached, on "
+                                               "staleness observed now; plan, request and PR are kept")
+    withdraw.add_argument("--plan", required=True, help="The registered plan id")
+    withdraw.add_argument("--plan-sha256", required=True, dest="plan_sha256",
+                          help="The registered plan digest (from status)")
+    withdraw.add_argument("--reason", required=True, choices=WITHDRAW_REASONS)
+    withdraw.add_argument("--evidence", required=True, help="sha256:<64 hex> reference of the owner decision")
+    for command in (targets, register, tick, run_command, status, withdraw):
         command.add_argument("--lane", default=None, help=LANE_HELP)
 
 
@@ -1176,6 +1191,11 @@ def execute(service, args) -> dict:
     try:
         git = _git(service) if route is None else lane_git(route["lane"], _settings())
         delivery = controller(service, observer=observer, git=git, store=store)
+        if command == "withdraw":
+            # The configured opt-in is not consulted: withdrawal publishes, merges and switches
+            # nothing, and it is exactly how a held controller retires stale work.
+            return {**delivery.withdraw(args.plan, args.plan_sha256, args.reason, args.evidence), **routed,
+                    "exit_code": 0}
         if command == "tick":
             result = delivery.tick(args.plan)
             return {**result, **routed, "exit_code": 1 if result["outcome"] in FAILED_OUTCOMES else 0}

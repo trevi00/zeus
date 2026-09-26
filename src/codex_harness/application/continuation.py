@@ -47,6 +47,7 @@ from codex_harness.application.execution_fence import current as current_fence
 from codex_harness.application.portfolio import BUCKET_BINDINGS, PortfolioRefused, inherit_binding
 from codex_harness.domain.continuation import (
     ADMITTED,
+    ADMITTING_ROUTES,
     AUTHORITY,
     AWAITING_OWNER,
     BINDING_SCHEMA,
@@ -82,6 +83,10 @@ from codex_harness.domain.continuation import (
     RECOVERY,
     RECOVERY_REQUIRED,
     REFUSED,
+    REQUALIFICATION,
+    REQUALIFICATION_AUTHORIZED,
+    REQUALIFICATION_REQUALIFIABLE,
+    REQUALIFICATION_SCHEMA,
     RESEARCH,
     RESEARCH_REQUIRED,
     RESUME,
@@ -89,6 +94,7 @@ from codex_harness.domain.continuation import (
     ROUTE_OWNERS,
     STATUS_SCHEMA,
     SUCCESSOR_ROUTES,
+    SUPERSEDED,
     TICK_SCHEMA,
     ContinuationRefused,
     attempt_of,
@@ -123,6 +129,9 @@ from codex_harness.domain.continuation import (
     receipt_view,
     record_attempt,
     refuse,
+    requalification_id,
+    requalification_manifest,
+    requalification_view,
     research_attempts,
     successor_id,
     successor_manifest,
@@ -132,6 +141,7 @@ from codex_harness.domain.continuation import (
     validate_capacity_grant,
     validate_policy,
     validate_receipt,
+    validate_requalification,
     validate_scope_supplement,
     view,
 )
@@ -157,6 +167,7 @@ FLEET_UNITS = "fleet_units"
 BUCKET_RESEARCH_RECEIPTS = "continuation_research_receipts"
 BUCKET_RESEARCH_SUPPLEMENTS = "continuation_research_supplements"
 BUCKET_CAPACITY_GRANTS = "continuation_capacity_grants"
+BUCKET_REQUALIFICATIONS = "continuation_requalifications"
 PROMOTIONS = "promotions"
 INVESTIGATIONS = "portfolio_investigations"
 RESEARCH_DISPATCHES = "research_investigation_dispatches"
@@ -170,6 +181,9 @@ TERMINAL_JOBS = frozenset({"accepted", "rejected", "failed", "exhausted", "unkno
 MARKERS = frozenset({"unconfirmed", "pending_reconciliation"})
 DELIVERY_ACTIVE = "active"
 DELIVERY_HALTED = frozenset({"rolled_back", "failed", "blocked"})
+# The owner withdrew the bound HostDelivery plan (INV-HOST-DELIVERY-001): a named wait for the owner's
+# requalification document, never a pause, a completion or a re-plan of the same candidate.
+WITHDRAWN_STAGE = "withdrawn"
 
 
 class IntentChanged(ContractError):
@@ -266,6 +280,16 @@ class LaneEvidence:
         with self.store.transaction() as tx:
             return tx.get(LANE_BINDINGS, operation_id)
 
+    def delivery_intent(self, plan_id: str) -> dict | None:
+        """The lane's HostDelivery intent of one plan (its stage and the owner's withdrawal); read only."""
+        with self.store.transaction() as tx:
+            return tx.get("host_delivery_intents", plan_id)
+
+    def release(self, release_id: str) -> dict | None:
+        """The lane's immutable Releases record of one release; read only."""
+        with self.store.transaction() as tx:
+            return tx.get("releases", release_id)
+
     def record_review(self, task_id: str, decision_id: str) -> dict | None:
         """The session owner reads the committed decision row itself; a duplicate is a no-op."""
         if self.sessions is None:
@@ -321,10 +345,13 @@ class Continuation:
             receipts = tx.scan(BUCKET_RESEARCH_RECEIPTS)
             supplements = tx.scan(BUCKET_RESEARCH_SUPPLEMENTS)
             grants = tx.scan(BUCKET_CAPACITY_GRANTS)
+            requalifications = tx.scan(BUCKET_REQUALIFICATIONS)
         if policy_id is not None:
             policies = [row for row in policies if row["id"] == policy_id]
             intents = [row for row in intents if row.get("policy_id") == policy_id]
             grants = [row for row in grants if (row.get("grant") or {}).get("policy_id") == policy_id]
+            requalifications = [row for row in requalifications
+                                if (row.get("document") or {}).get("policy_id") == policy_id]
         # Explicit capacity is shown beside, never merged into, each family's original cap and count.
         by_id = {row["id"]: row for row in intents}
         grants = [capacity_view(row, by_id.get(row["id"])) for row in sorted(grants, key=lambda r: r["id"])]
@@ -353,7 +380,8 @@ class Continuation:
                 "policies": [{"id": row["id"], "enabled": row["policy"]["enabled"], "policy_sha256": row["policy_sha256"],
                               "pin": row["pin"]} for row in policies],
                 "intents": views[-200:], "truncated": len(views) > 200, "counts": counts,
-                "held_families": blocked_families(intents), "capacity": {"grants": grants, "families": families}}
+                "held_families": blocked_families(intents), "capacity": {"grants": grants, "families": families},
+                "requalifications": [requalification_view(row) for row in sorted(requalifications, key=lambda r: r["id"])]}
 
     # ----- scoped research completion (owner receipt) -------------------------------------
     def accept_research(self, document) -> dict:
@@ -754,7 +782,7 @@ class Continuation:
         other terminal job is routed exactly once per job row."""
         mine = [intent for intent in intents if intent["origin_job"] == job["id"]]
         return bool(mine) and all(intent["state"] == COMPLETED for intent in mine) and not any(
-            intent["route"] in {NEXT_ITEM, *SUCCESSOR_ROUTES} for intent in mine)
+            intent["route"] in {NEXT_ITEM, *ADMITTING_ROUTES} for intent in mine)
 
     def _attempt(self, policy_id: str, candidate: dict, live: set, since: int) -> None:
         """Durable selection progress in its own short transaction BEFORE the lane read: a scheduling
@@ -945,6 +973,8 @@ class Continuation:
             check_authorization(intent.get("authorization"), authorization(ctx["sha"], ctx["pin"], job, current))
             if intent.get("capacity_grant") is not None:
                 self._check_grant(ctx, intent)   # a granted repair: the grant and its bindings again
+            if intent.get("route") == REQUALIFICATION:
+                self._check_requalification(ctx, intent)   # the owner's stored document, intact
         except ContinuationRefused as exc:
             hold = {"reason_code": exc.reason_code, "next_owner": exc.owner, "field": exc.field}
             if intent.get("hold") != hold:
@@ -968,7 +998,10 @@ class Continuation:
             intent = self._authorize(ctx, intent)
             with self.store.transaction() as tx:
                 origin = tx.get(FLEET_JOBS, intent["origin_job"])
-            self.fleet.enqueue(intent["lane"], intent["manifest"], origin["goal"], [])
+            # A requalification runs on its own base: its goal binding is the same goal bound at that
+            # main (verified when the owner recorded it), never the origin's older base.
+            goal = intent["goal"] if intent["route"] == REQUALIFICATION else origin["goal"]
+            self.fleet.enqueue(intent["lane"], intent["manifest"], goal, [])
             # Admission is confirmed, the origin's Portfolio ownership inherited and the intent moved in
             # ONE control-store transaction (no nested one): an interruption after the enqueue leaves
             # `published`, the replay re-admits the same id and binds once, and a conflicting target
@@ -1119,6 +1152,201 @@ class Continuation:
     @staticmethod
     def _grant_result(row: dict, intent, cached: bool) -> dict:
         return {"granted": True, "cached": cached, **capacity_view(row, intent)}
+
+    # ----- owner delivery requalification -------------------------------------------------
+    def requalify_delivery(self, document, *, pin_sha256: str | None = None, runtime=None, mainline=None) -> dict:
+        """Supersede ONE delivery intent whose HostDelivery plan the owner withdrew as stale by ONE fresh
+        `requalification` operation on the named current main (SPEC aibox-migration-001 s15, D5).
+
+        Verified first against authoritative reads (`_requalification_bindings`): the registered, enabled
+        policy at its re-read pin and the current runtime/frame authorization of the origin job; the
+        intent (this policy's `host_delivery` route, `awaiting_owner` or `paused`, same family and
+        release); the lane's HostDelivery row of exactly the named plan at stage `withdrawn` for the named
+        reason; the release candidate; `main_revision` equal to the remote main NOW, present in the lane
+        repository and (for `reviewed_base_moved`) not the withdrawn candidate's base; the goal bytes at
+        that main still the goal's pinned digest (a changed goal is the owner's, outside this path); no
+        other open requalification in the family; the rationale bytes. Then ONE control-store
+        transaction stores the document, moves the intent to `superseded` (an explicit owner transition,
+        never a TRANSITIONS edge; its snapshot and history stay) and creates the `requalification` intent
+        with the origin's goal, allowed paths, criteria, budget and controls on `main_revision`, a fresh
+        workspace (no session, no continued workspace) and explicit lineage. Nothing external happens:
+        the next tick binds and admits it through the existing path. The identical document replays
+        (`cached`); any other for the same intent is `requalification_conflict`. Owner-triggered only:
+        nothing here ever re-arms itself."""
+        requalification = validate_requalification(document)
+        key = requalification["intent_id"]
+        with self.store.transaction() as tx:
+            stored = tx.get(BUCKET_REQUALIFICATIONS, key)
+            row = tx.get(BUCKET_POLICIES, requalification["policy_id"])
+            intent = tx.get(BUCKET_INTENTS, key)
+            jobs = {job["id"]: job for job in tx.scan(FLEET_JOBS)}
+        if stored is not None:
+            refuse(stored.get("document") == requalification, "requalification_conflict", "operator", "intent_id")
+            return self._requalification_result(stored, cached=True)
+        refuse(pin_sha256 is not None and runtime is not None and mainline is not None,
+               "requalification_unverified", "operator", "pin")
+        refuse(isinstance(row, dict) and row["policy_sha256"] == requalification["policy_sha256"]
+               and row["policy"]["enabled"] and row["pin"].get("sha256") == pin_sha256,
+               "requalification_policy_foreign", "operator", "policy")
+        refuse(isinstance(intent, dict) and intent.get("policy_id") == requalification["policy_id"]
+               and intent.get("policy_sha256") == requalification["policy_sha256"],
+               "requalification_intent_unknown", "operator", "intent_id")
+        refuse(intent.get("route") == DELIVERY and intent.get("state") in REQUALIFICATION_REQUALIFIABLE,
+               "requalification_intent_state", "operator", "intent_id")
+        refuse(intent.get("family") == requalification["family"]
+               and intent.get("release_id") == requalification["release_id"],
+               "requalification_intent_mismatch", "operator", "intent_id")
+        ctx = {"policy": row["policy"], "sha": row["policy_sha256"], "pin": row["pin"].get("sha256"),
+               "runtime": LaneRuntime(runtime), "jobs": jobs}
+        job = jobs.get(intent["origin_job"])
+        refuse(isinstance(job, dict), "origin_job_missing", "fleet", "origin_job")
+        current = ctx["runtime"](job["lane"])
+        check_scope(ctx["policy"], job, current)
+        check_authorization(intent.get("authorization"), authorization(ctx["sha"], ctx["pin"], job, current))
+        goal = self._requalification_bindings(ctx, requalification, intent, job, mainline)
+        successor = successor_id(requalification_id(key))
+        manifest = requalification_manifest(job["manifest"], requalification["main_revision"], successor, {
+            "predecessor_job": job["id"], "predecessor_intent": key,
+            "candidate_revision": requalification["candidate"]["revision"],
+            "candidate_tree": requalification["candidate"]["tree"],
+            "candidate_base": requalification["candidate"]["base"], "release_id": requalification["release_id"],
+            "plan_id": requalification["plan"]["plan_id"], "withdrawal_reason": requalification["withdrawal_reason"]})
+        if self.validate is not None:
+            try:
+                manifest = self.validate(manifest)
+            except ContractError:
+                raise ContinuationRefused("requalification_manifest_refused", "operator", "manifest") from None
+        return self._commit_requalification(requalification, row, intent, job, manifest, goal)
+
+    def _requalification_bindings(self, ctx, requalification: dict, intent: dict, job: dict, mainline) -> dict:
+        """What one requalification is bound to, re-read now outside any transaction; returns the goal
+        binding at `main_revision`. The first gap refuses by name; an unreadable read refuses too."""
+        with self.store.transaction() as tx:
+            every = tx.scan(BUCKET_INTENTS)
+        refuse(not any(row.get("route") == REQUALIFICATION and row.get("state") in OPEN_STATES | {RECOVERY_REQUIRED}
+                       and row.get("policy_id") == requalification["policy_id"]
+                       and row.get("family") == requalification["family"] for row in every),
+               "requalification_family_open", "fleet", "family")
+        lane = self.lanes(intent["lane"])
+        evidence = lane.read(job, ctx["policy"]["delivery_target"])
+        delivery = evidence.get("delivery") or {}
+        plan = requalification["plan"]
+        refuse(delivery.get("binding") == DELIVERY_BOUND and delivery_tuple(delivery)
+               == delivery_tuple(intent.get("delivery_binding")), "requalification_delivery_unbound", "host_delivery",
+               "plan")
+        refuse((delivery.get("plan_id"), delivery.get("plan_sha256")) == (plan["plan_id"], plan["plan_sha256"]),
+               "requalification_plan_mismatch", "host_delivery", "plan")
+        withdrawn = lane.delivery_intent(plan["plan_id"])
+        refuse(delivery.get("stage") == WITHDRAWN_STAGE and isinstance(withdrawn, dict)
+               and withdrawn.get("stage") == WITHDRAWN_STAGE, "requalification_plan_not_withdrawn", "host_delivery",
+               "plan")
+        refuse((withdrawn.get("withdrawal") or {}).get("reason_code") == requalification["withdrawal_reason"],
+               "requalification_reason_mismatch", "host_delivery", "withdrawal_reason")
+        task = evidence.get("task") if isinstance(evidence.get("task"), dict) else {}
+        candidate = (task.get("result") or {}).get("candidate") or {}
+        release = lane.release(requalification["release_id"])
+        recorded = ((release or {}).get("candidate") or {}) if isinstance(release, dict) else {}
+        refuse(all({k: source.get(k) for k in ("revision", "tree", "base")} == requalification["candidate"]
+                   for source in (recorded, candidate)), "requalification_candidate_mismatch", "operator", "candidate")
+        main = requalification["main_revision"]
+        try:
+            port = mainline(intent["lane"])
+            remote = port.remote_main()
+            present = port.commit_exists(main)
+            observed = port.goal(main, job["goal"]["path"]) if present else None
+        except ContinuationRefused:
+            raise
+        except Exception:
+            raise ContinuationRefused("requalification_main_unreadable", "operator", "main_revision") from None
+        refuse(remote == main, "requalification_main_changed", "operator", "main_revision")
+        refuse(present, "requalification_main_missing", "operator", "main_revision")
+        if requalification["withdrawal_reason"] == "reviewed_base_moved":
+            refuse(main != requalification["candidate"]["base"], "requalification_main_not_moved", "operator",
+                   "main_revision")
+        # The same rule the operation's own goal binding applies at its base (`goal_binding`).
+        refuse(isinstance(observed, dict) and observed.get("mode") == "100644"
+               and observed.get("sha256") == job["goal"]["sha256"], "requalification_goal_changed", "operator", "goal")
+        try:
+            self._verify_evidence([requalification["rationale_ref"]])
+        except ContinuationRefused as exc:
+            raise ContinuationRefused(exc.reason_code.replace("research_evidence", "requalification_rationale", 1),
+                                      "operator", "rationale_ref") from None
+        return {"path": job["goal"]["path"], "sha256": job["goal"]["sha256"], "criterion": job["goal"]["criterion"],
+                "base_revision": main, "bytes": observed.get("bytes")}
+
+    def _commit_requalification(self, requalification: dict, row: dict, intent: dict, job: dict, manifest: dict,
+                                goal: dict) -> dict:
+        """ONE transaction: nothing the verification read moved, then the document, the superseded intent
+        and the requalification intent together - an interruption leaves all three or none."""
+        key, now = requalification["intent_id"], self.clock()
+        new_id = requalification_id(key)
+        successor = manifest["id"]
+        document_sha = digest(requalification)
+        with self.store.transaction() as tx:
+            old = tx.get(BUCKET_REQUALIFICATIONS, key)
+            if old is not None:
+                refuse(old.get("document") == requalification, "requalification_conflict", "operator", "intent_id")
+                return self._requalification_result(old, cached=True)
+            current = tx.get(BUCKET_INTENTS, key)
+            refuse(current == intent, "requalification_intent_changed", "operator", "intent_id")
+            refuse(tx.get(BUCKET_POLICIES, requalification["policy_id"]) == row, "requalification_policy_foreign",
+                   "operator", "policy")
+            refuse(tx.get(FLEET_JOBS, job["id"]) == job, "requalification_source_changed", "operator", "origin_job")
+            refuse(tx.get(BUCKET_INTENTS, new_id) is None and tx.get(FLEET_JOBS, successor) is None,
+                   "requalification_successor_exists", "fleet", "successor_job")
+            snapshot = {k: current.get(k) for k in ("state", "reason_code", "next_owner", "version", "updated_at")}
+            stored = {"id": key, "schema": REQUALIFICATION_SCHEMA, "document": requalification,
+                      "document_sha256": document_sha, "requalification_intent": new_id, "successor_job": successor,
+                      "superseded": snapshot, "recorded_at": now, "recorded_by": "owner"}
+            # The one explicit owner transition of the delivery intent (never a TRANSITIONS edge).
+            current.update(state=SUPERSEDED, reason_code=REQUALIFICATION_AUTHORIZED, next_owner="operator",
+                           superseded_by=new_id, requalification=document_sha, version=current["version"] + 1,
+                           updated_at=now)
+            current["history"] = current["history"][-(MAX_HISTORY - 1):] + [
+                {"state": SUPERSEDED, "previous": snapshot["state"], "reason_code": REQUALIFICATION_AUTHORIZED,
+                 "error_type": None, "requalification": document_sha, "at": now}]
+            binding = {"schema": BINDING_SCHEMA, "operation_id": successor, "policy_sha256": intent["policy_sha256"],
+                       "intent_id": new_id, "family": intent["family"], "route": REQUALIFICATION, "session": None,
+                       "workspace": None,
+                       "predecessor": {"job_id": job["id"], "intent_id": key, "release_id": requalification["release_id"],
+                                       "candidate_revision": requalification["candidate"]["revision"],
+                                       "plan_id": requalification["plan"]["plan_id"],
+                                       "withdrawal_reason": requalification["withdrawal_reason"]}}
+            created = {"id": new_id, "policy_id": intent["policy_id"], "policy_sha256": intent["policy_sha256"],
+                       "origin_job": intent["origin_job"], "lane": intent["lane"], "family": intent["family"],
+                       "predecessor_intent": key, "job_updated_at": intent.get("job_updated_at"),
+                       "route": REQUALIFICATION, "state": INTENDED, "reason_code": REQUALIFICATION_AUTHORIZED,
+                       "next_owner": ROUTE_OWNERS[REQUALIFICATION], "evidence_sha256": document_sha,
+                       "evidence_refs": [requalification["rationale_ref"]], "authorization": intent.get("authorization"),
+                       "successor_job": successor, "manifest": manifest, "goal": goal, "binding": binding,
+                       "session_mode": "fresh_workspace_requalification", "requalification": document_sha,
+                       "generation": intent.get("generation", 0), "attempt": intent.get("attempt", 0),
+                       "version": 1, "created_at": now, "updated_at": now,
+                       "history": [{"state": INTENDED, "reason_code": REQUALIFICATION_AUTHORIZED, "at": now}]}
+            tx.put(BUCKET_REQUALIFICATIONS, key, stored)
+            tx.put(BUCKET_INTENTS, key, current)
+            tx.put(BUCKET_INTENTS, new_id, created)
+        self._emit(snapshot["state"], current)
+        self._emit(None, created)
+        return self._requalification_result(stored, cached=False)
+
+    @staticmethod
+    def _requalification_result(row: dict, cached: bool) -> dict:
+        return {"requalified": True, "cached": cached, **requalification_view(row)}
+
+    def _check_requalification(self, ctx, intent: dict) -> None:
+        """Before a requalification intent's NEW effect: its stored owner document, intact and naming
+        exactly this intent, successor and policy."""
+        with self.store.transaction() as tx:
+            row = tx.get(BUCKET_REQUALIFICATIONS, intent.get("predecessor_intent") or "")
+        refuse(isinstance(row, dict), "requalification_missing", "operator", "requalification")
+        document = row.get("document")
+        refuse(isinstance(document, dict) and row.get("document_sha256") == digest(document) == intent["requalification"]
+               and row.get("requalification_intent") == intent["id"] == requalification_id(document["intent_id"])
+               and row.get("successor_job") == intent.get("successor_job") == successor_id(intent["id"]),
+               "requalification_corrupt", "operator", "requalification")
+        refuse(document["policy_id"] == ctx["policy"]["id"] and document["policy_sha256"] == ctx["sha"],
+               "requalification_policy_foreign", "operator", "policy")
 
     def _grant_bindings(self, ctx, grant: dict, intent: dict) -> dict:
         """What a grant is bound to, re-read now outside any transaction: this policy's scope, no active
@@ -1313,6 +1541,8 @@ class Continuation:
         plan = {"plan_id": delivery.get("plan_id"), "plan_sha256": delivery.get("plan_sha256"),
                 "stage": delivery.get("stage")}
         stage = delivery.get("stage")
+        # The owner withdrew exactly this plan: only its requalification document moves this intent.
+        refuse(stage != WITHDRAWN_STAGE, "delivery_withdrawn", "operator", "delivery")
         if stage == DELIVERY_ACTIVE:
             moved = self._move(intent, COMPLETED, reason_code="delivery_active", delivery_plan=plan)
             nxt = self._create({key: intent[key] for key in ("policy_id", "policy_sha256", "origin_job", "lane", "family",
@@ -1350,7 +1580,7 @@ class Continuation:
         """`returned` already holds the exact committed outcome (successor status, or the conductor
         decision); completing it needs no other read and no effect."""
         moved = self._move(intent, COMPLETED)
-        return {"subject": moved["id"], "effect": "successor_returned" if moved["route"] in SUCCESSOR_ROUTES
+        return {"subject": moved["id"], "effect": "successor_returned" if moved["route"] in ADMITTING_ROUTES
                 else "returned_completed", "route": moved["route"]}
 
     def _resume_dispatch(self, ctx, intent, job):
@@ -1547,6 +1777,7 @@ def _code(reason):
     return cleaned if cleaned[:1].isalpha() else None
 
 
-__all__ = ["BUCKET_CAPACITY_GRANTS", "BUCKET_INTENTS","BUCKET_POLICIES", "BUCKET_PROGRESS", "BUCKET_RESEARCH_RECEIPTS",
+__all__ = ["BUCKET_CAPACITY_GRANTS", "BUCKET_INTENTS","BUCKET_POLICIES", "BUCKET_PROGRESS", "BUCKET_REQUALIFICATIONS",
+           "BUCKET_RESEARCH_RECEIPTS",
            "BUCKET_RESEARCH_SUPPLEMENTS", "LANE_BINDINGS",
            "Continuation", "IntentChanged", "LaneEvidence"]

@@ -332,7 +332,8 @@ def test_a_failed_candidate_rolls_back_to_the_predecessor_through_the_same_unit(
         good = read(state(target, DESCRIPTOR_FILE))
         await_work(system["host"], target, "idle")
         release = reviewed_release(system["store"], system["org"],
-                                   record_candidate={**candidate(), "revision": "5" * 40, "branch": "harness/two",
+                                   record_candidate={**candidate(), "base": system["delivery"].github.main,
+                                                     "revision": "5" * 40, "branch": "harness/two",
                                                      "task_id": "two"})
         plan = plan_document(release, plan_id="managed-plan-2", target_id=TARGET_ID, expected=descriptor_digest(good),
                              image=runtime_image(source["root"]), profile=PROFILE, canary=CANARY_FLEET,

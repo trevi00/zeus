@@ -1,8 +1,12 @@
 """`zeus continuation register|tick|status|identity|conduct|research-accept|research-supplement|
-ownership-reconcile|capacity-grant` (INV-CONTINUATION-001).
+ownership-reconcile|capacity-grant|delivery-requalify` (INV-CONTINUATION-001).
 
 `capacity-grant` records the owner's one-use grant for one exact budget-refused evidence repair and
 reserves its one successor; the next tick admits it through the existing path.
+
+`delivery-requalify` records the owner's requalification of one delivery intent whose HostDelivery
+plan was withdrawn as stale: that intent becomes `superseded` and one fresh operation on the named
+current main is reserved; the next tick admits it through the existing path.
 
 `register`, `tick`, `status`, `identity`, `research-accept` (the owner's scoped research receipt,
 verified and stored once; it moves no intent), `research-supplement` (the owner's typed scope
@@ -52,6 +56,10 @@ def add_parser(commands) -> None:
                               "refused for correction_budget_exhausted (urn:zeus:continuation-capacity-grant:1); "
                               "the budget itself never grows")
     capacity.add_argument("--file", type=Path, required=True, help="The owner's grant JSON")
+    requalify = sub.add_parser("delivery-requalify", help="Owner: supersede ONE delivery intent whose plan was "
+                               "withdrawn by one fresh operation on the current main "
+                               "(urn:zeus:continuation-delivery-requalification:1); never automatic")
+    requalify.add_argument("--file", type=Path, required=True, help="The owner's requalification JSON")
 
 
 def _config(service) -> dict:
@@ -155,6 +163,10 @@ def execute(service, args) -> dict:
         from codex_harness.adapters.configuration import settings
         return {**adapter.grant_capacity(service.store, config, settings(), adapter.read_grant(args.file)),
                 "exit_code": 0}
+    if command == "delivery-requalify":
+        from codex_harness.adapters.configuration import settings
+        return {**adapter.requalify_delivery(service.store, config, settings(),
+                                             adapter.read_requalification(args.file)), "exit_code": 0}
     from codex_harness.adapters.configuration import settings
     from codex_harness.bootstrap import build_observer
     observer = build_observer(service.store, "cli.continuation")

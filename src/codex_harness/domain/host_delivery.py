@@ -167,16 +167,31 @@ BLOCKED = "blocked"
 ROLLING_BACK = "rolling_back"
 ROLLED_BACK = "rolled_back"
 FAILED = "failed"
+# The owner's explicit retirement of a delivery whose reviewed base or expected predecessor no
+# longer holds, taken only while the host was never touched (`HostDelivery.withdraw`). The plan, its
+# owner action, its canary request and any PR stay exactly as they were; a new candidate is the
+# continuation's requalification, never this plan again.
+WITHDRAWN = "withdrawn"
 
 STAGE_ORDER = (REGISTERED, AWAITING_REVIEW, PUBLISHING, AWAITING_CI, MERGE_INTENDED, MERGED,
                DRAIN_INTENDED, SWITCHING, AWAITING_CONSUMPTION, ACTIVE)
-TERMINAL_STAGES = frozenset({ACTIVE, ROLLED_BACK, FAILED})
-HALTED_STAGES = frozenset({BLOCKED, ROLLING_BACK, ROLLED_BACK, FAILED})
+TERMINAL_STAGES = frozenset({ACTIVE, ROLLED_BACK, FAILED, WITHDRAWN})
+HALTED_STAGES = frozenset({BLOCKED, ROLLING_BACK, ROLLED_BACK, FAILED, WITHDRAWN})
 # The stages a tick may no longer advance at all. `rolling_back` is deliberately NOT one of them:
 # a restoration is owed work, and a controller that stopped selecting it would leave the host on a
 # descriptor that failed its own canary.
-STOPPED_STAGES = frozenset({BLOCKED, ROLLED_BACK, FAILED})
+STOPPED_STAGES = frozenset({BLOCKED, ROLLED_BACK, FAILED, WITHDRAWN})
 OPEN_STAGES = frozenset(STAGE_ORDER) - {ACTIVE}
+# Another plan of the same target in one of these has merged and not yet settled the host: a new
+# merge for the target waits for it (INV-HOST-DELIVERY-001 pre-merge predecessor binding).
+POST_MERGE_OPEN = frozenset({MERGED, DRAIN_INTENDED, SWITCHING, AWAITING_CONSUMPTION, ROLLING_BACK})
+# Where the owner may still withdraw: nothing on the host was bound or touched yet. A `blocked` or
+# `failed` delivery qualifies only while it never bound a descriptor (checked by the caller).
+WITHDRAWABLE_STAGES = frozenset({REGISTERED, AWAITING_REVIEW, PUBLISHING, AWAITING_CI, MERGE_INTENDED,
+                                 BLOCKED, FAILED})
+WITHDRAW_REASONS = ("reviewed_base_moved", "descriptor_predecessor_moved", "merged_tree_mismatch")
+# The owner's decision record a withdrawal names: a content-addressed evidence reference only.
+EVIDENCE_REF = re.compile(r"^sha256:[0-9a-f]{64}$")
 # The stages that have already changed something outside this store: a restart reconciles the
 # external identity before it is allowed to act again.
 EXTERNAL_STAGES = frozenset({PUBLISHING, AWAITING_CI, MERGE_INTENDED, MERGED, DRAIN_INTENDED,
@@ -810,7 +825,7 @@ def stage_next_action(stage: str, outcome=None) -> str:
         return "restore_predecessor"
     if stage in {BLOCKED, FAILED}:
         return "owner_review"
-    if stage == ROLLED_BACK:
+    if stage in {ROLLED_BACK, WITHDRAWN}:
         return "owner_requalify_candidate"
     if stage == AWAITING_REVIEW:
         return "await_independent_review"
@@ -854,9 +869,18 @@ def delivery_progress(row: dict, intent, descriptor_row) -> dict:
             "consumed": bool((descriptor_row or {}).get("consumed")),
             "runtime": _runtime_view((intent or {}).get("runtime")),
             "work": _work_view((intent or {}).get("work")),
+            "withdrawal": _withdrawal_view((intent or {}).get("withdrawal")),
             "updated_at": (intent or {}).get("updated_at") or row.get("updated_at")}
     view["next_action"] = stage_next_action(stage, view["outcome"])
     return view
+
+
+def _withdrawal_view(record) -> dict | None:
+    """The owner's withdrawal: its reason, evidence ref and what was observed; codes and ids only."""
+    if not isinstance(record, dict):
+        return None
+    return {key: record.get(key) for key in ("reason_code", "evidence_ref", "previous_stage", "main_effect",
+                                             "merged_revision", "observed", "at")}
 
 
 def _runtime_view(record) -> dict | None:
@@ -885,7 +909,7 @@ def delivery_status(rows, intents: dict, descriptors: dict, *, enabled: bool) ->
     plans = [delivery_progress(row, intents.get(row["plan_id"]), descriptors.get(row["plan"]["target_id"]))
              for row in sorted(rows, key=lambda r: r["plan_id"])]
     counts = {stage: sum(1 for view in plans if view["stage"] == stage)
-              for stage in (*STAGE_ORDER, BLOCKED, ROLLING_BACK, ROLLED_BACK, FAILED)}
+              for stage in (*STAGE_ORDER, BLOCKED, ROLLING_BACK, ROLLED_BACK, FAILED, WITHDRAWN)}
     return {"schema": STATUS_SCHEMA, "registered": bool(plans), "enabled": bool(enabled),
             "deliveries": plans, "counts": {k: v for k, v in counts.items() if v},
             "targets": [target_progress(descriptors[target_id]) for target_id in sorted(descriptors)],
@@ -921,6 +945,7 @@ __all__ = ["ACTIVATION_GATE_CODES", "ACTIVE", "AUTHORITY", "AWAITING_CI", "AWAIT
            "KIND_MANAGED", "KIND_MANAGED_SYSTEMD", "KIND_PROCESS", "KIND_SCHEDULED_TASK", "KIND_SYSTEMD",
            "MANAGED_KINDS", "MANAGED_SYSTEMD_UNIT", "MANAGED_TARGET_FIELDS",
            "MAX_STAGE_ATTEMPTS", "MERGED", "MERGE_INTENDED", "RUNTIMES_DIR",
+           "EVIDENCE_REF", "POST_MERGE_OPEN", "WITHDRAWABLE_STAGES", "WITHDRAWN", "WITHDRAW_REASONS",
            "OPEN_STAGES", "OUTCOME_ACTIVE", "OUTCOME_BLOCKED", "OUTCOME_BUSY", "OUTCOME_CONFLICT",
            "OUTCOME_DISABLED", "OUTCOME_IDLE", "OUTCOME_PENDING", "OUTCOME_PROGRESSED",
            "OUTCOME_REFUSED", "OUTCOME_ROLLED_BACK", "OUTCOME_UNAVAILABLE", "OUTCOME_UNREGISTERED",

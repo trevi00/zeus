@@ -56,6 +56,7 @@ from codex_harness.domain.host_delivery import (
     EVENT_ROLLBACK,
     EVENT_STAGE,
     EVENT_SWITCHED,
+    EVIDENCE_REF,
     FAILED,
     MAX_STAGE_ATTEMPTS,
     MERGE_INTENDED,
@@ -72,6 +73,7 @@ from codex_harness.domain.host_delivery import (
     OUTCOME_ROLLED_BACK,
     OUTCOME_UNAVAILABLE,
     OUTCOME_UNREGISTERED,
+    POST_MERGE_OPEN,
     PUBLISHING,
     REGISTERED,
     ROLLED_BACK,
@@ -80,6 +82,9 @@ from codex_harness.domain.host_delivery import (
     STOPPED_STAGES,
     SWITCHING,
     TICK_SCHEMA,
+    WITHDRAW_REASONS,
+    WITHDRAWABLE_STAGES,
+    WITHDRAWN,
     DeliveryRefused,
     LifecycleInterrupted,
     ci_verdict,
@@ -271,21 +276,7 @@ class HostDelivery:
         except Exception as exc:  # the store itself is unreachable: an outage, not a verdict
             return self._unavailable(plan, intent, "queue_unavailable", exc, commit=False)
         if claim is None:
-            # Why this tick got nothing is an operational fact of its own: another controller holds
-            # the single host lease, or this release's own queue row is no longer runnable.
-            with self.store.transaction() as tx:
-                queued = tx.get("release_queue", plan["release_id"]) or {}
-            status = queued.get("status")
-            if status not in {"queued", "retry", "running"}:
-                reason = "release_queue_" + str(status)
-            elif int(queued.get("attempt") or 0) >= POLICY.release_max_attempts:
-                reason = "release_attempts_exhausted"
-            elif self._not_due(queued):
-                # Its own bounded backoff, not another controller: a distinct operational fact.
-                reason = "release_retry_not_due"
-            else:
-                reason = "controller_lease_held"
-            return self._result(plan, intent, OUTCOME_BUSY, reason_code=reason)
+            return self._result(plan, intent, OUTCOME_BUSY, reason_code=self._unclaimed(plan))
         try:
             result = self._advance(row, intent, claim)
         except AmbiguousEffect as ambiguous:
@@ -317,6 +308,204 @@ class HostDelivery:
                 plan, intent, reason, failure, claim=claim))
         self._settle(claim, result)
         return result
+
+    def _unclaimed(self, plan: dict) -> str:
+        """Why a claim of this plan's release got nothing - an operational fact of its own: another
+        controller holds the single host lease, or this release's own queue row is not runnable."""
+        with self.store.transaction() as tx:
+            queued = tx.get("release_queue", plan["release_id"]) or {}
+        status = queued.get("status")
+        if status not in {"queued", "retry", "running"}:
+            return "release_queue_" + str(status)
+        if int(queued.get("attempt") or 0) >= POLICY.release_max_attempts:
+            return "release_attempts_exhausted"
+        if self._not_due(queued):
+            # Its own bounded backoff, not another controller: a distinct operational fact.
+            return "release_retry_not_due"
+        return "controller_lease_held"
+
+    # ----- owner withdrawal of a stale, untouched delivery ---------------------------------------
+    def withdraw(self, plan_id: str, plan_sha256: str, reason: str, evidence_ref: str) -> dict:
+        """Retire ONE registered delivery whose reviewed base or expected predecessor no longer holds.
+
+        Allowed only while the host was never touched (no descriptor bound), and only on staleness
+        observed NOW, never on a claim: `reviewed_base_moved` needs the remote main to be neither the
+        reviewed base nor carrying this candidate, `descriptor_predecessor_moved` needs the target's
+        descriptor to differ from the plan's expected one with no other delivery unsettled on it, and
+        `merged_tree_mismatch` retires a delivery whose recorded merge is still exactly what main
+        shows (its merge stays in the record as `main_effect: merged`). A merge observed for any other
+        reason is `withdraw_merge_observed`; an unreadable GitHub or store is `withdraw_unobservable`
+        and writes nothing. An open stage is fenced exactly as a tick is - the release's queue row is
+        claimed, the intent written in the transaction that re-checks the claim, the row finished as
+        `withdrawn` - so no controller can publish or merge in between.
+
+        The plan row, its owner action, its canary request and any PR are never modified. The
+        identical replay is `cached` (and finishes a queue row a crash left runnable, with no other
+        effect); a different reason or evidence for a withdrawn plan is `withdrawal_conflict`.
+        """
+        if reason not in WITHDRAW_REASONS:
+            raise DeliveryRefused("withdraw_reason_unsupported", "reason")
+        if not (type(evidence_ref) is str and EVIDENCE_REF.fullmatch(evidence_ref)):
+            raise DeliveryRefused("withdraw_evidence_invalid", "evidence")
+        with self.store.transaction() as tx:
+            row = tx.get(BUCKET_PLANS, plan_id) if type(plan_id) is str else None
+            intent = tx.get(BUCKET_INTENTS, plan_id) if row is not None else None
+        if row is None:
+            raise DeliveryRefused("plan_unregistered", "plan_id")
+        if row["plan_sha256"] != plan_sha256:
+            raise DeliveryRefused("withdraw_plan_mismatch", "plan_sha256")
+        plan = row["plan"]
+        if (intent or {}).get("stage") == WITHDRAWN:
+            recorded = intent.get("withdrawal") or {}
+            if (recorded.get("reason_code"), recorded.get("evidence_ref")) != (reason, evidence_ref):
+                raise DeliveryRefused("withdrawal_conflict", "reason")
+            return self._withdrawn(plan, intent, cached=True, queue=self._finish_withdrawn(plan))
+        # Read-only first: an unobservable, fresh or merged delivery is refused with nothing written.
+        self._withdrawable(intent, reason)
+        self._stale_now(plan, intent, reason)
+        claim = None
+        if ((intent or {}).get("stage") or REGISTERED) not in STOPPED_STAGES:
+            claim = self._withdraw_claim(plan)
+        try:
+            # Again under the fence, from the intent as it is now: what is written is what was proven.
+            with self.store.transaction() as tx:
+                intent = tx.get(BUCKET_INTENTS, plan_id)
+            self._withdrawable(intent, reason)
+            observed = self._stale_now(plan, intent, reason)
+            settled = self._commit_withdrawal(row, intent, reason, evidence_ref, observed, claim)
+        except Exception as exc:
+            if claim is not None:
+                try:
+                    # Not an attempt of the release: the lease goes back with nothing else changed.
+                    self.queue.defer(claim, {"status": "withdraw_refused",
+                                             "reason": getattr(exc, "reason_code", None) or type(exc).__name__},
+                                     resume_after_seconds=0, now=self._now())
+                except ContractError:
+                    pass
+            raise
+        queue = None
+        if claim is not None:
+            try:
+                queue = self.queue.finish(claim, {"status": WITHDRAWN, "reason": reason}, self._now())["status"]
+            except ContractError:
+                queue = "controller_stale"   # the withdrawal is durable; a replay finishes the row
+        self._emit(EVENT_STAGE, "observed", plan, attributes={
+            "plan_id": plan["plan_id"], "release_id": plan["release_id"], "target_id": plan["target_id"],
+            "stage": WITHDRAWN, "previous_stage": settled["previous_stage"]})
+        LOGGER.warning("host delivery withdrawn plan=%s reason=%s previous_stage=%s", plan["plan_id"], reason,
+                       settled["previous_stage"])
+        return self._withdrawn(plan, settled, cached=False, queue=queue)
+
+    @staticmethod
+    def _withdrawable(intent, reason: str) -> None:
+        """The host was never touched: no descriptor bound, at a stage before the host is reached."""
+        stage = (intent or {}).get("stage") or REGISTERED
+        if stage not in WITHDRAWABLE_STAGES or (intent or {}).get("descriptor") is not None:
+            raise DeliveryRefused("withdraw_host_touched", "stage")
+        recorded = stage in {BLOCKED, FAILED} and intent.get("reason_code") == "merged_tree_mismatch"
+        if (reason == "merged_tree_mismatch") != recorded:
+            # A recorded merge is retired only under its own reason, and that reason needs one.
+            raise DeliveryRefused("withdraw_merge_observed" if recorded else "withdraw_not_stale", "reason")
+
+    def _stale_now(self, plan: dict, intent, reason: str) -> dict:
+        """Observe GitHub, the remote main and the target now; raise the named refusal, or return
+        what was observed. Unavailable is not absent: any failure to observe refuses."""
+        port = self.github
+        try:
+            if port is None:
+                raise DeliveryRefused("github_port_unavailable")
+            candidate = self._candidate(plan)
+            observed = port.observe(candidate)
+            state = port.merge_state(candidate, observed)
+            predecessor = self._predecessor(plan)
+            with self.store.transaction() as tx:
+                current = (tx.get(BUCKET_DESCRIPTORS, plan["target_id"]) or {}).get("descriptor")
+        except Exception as exc:
+            raise DeliveryRefused("withdraw_unobservable", "github") from exc
+        facts = {"main": state.get("main"), "merge_state": state["state"],
+                 "pr_state": (observed or {}).get("state"), "pr_head": (observed or {}).get("head"),
+                 "pr_number": (observed or {}).get("number"),
+                 "descriptor_sha256": None if current is None else descriptor_digest(current)}
+        if state["state"] == "merged":
+            if reason != "merged_tree_mismatch" or state["merged_revision"] != (intent or {}).get("merged_revision"):
+                raise DeliveryRefused("withdraw_merge_observed", "reason")
+            return {"main_effect": "merged", "observed": facts}
+        if reason == "merged_tree_mismatch":
+            raise DeliveryRefused("withdraw_not_stale", "reason")
+        if reason == "reviewed_base_moved" and state["state"] != "base_moved":
+            raise DeliveryRefused("withdraw_not_stale", "reason")
+        if reason == "descriptor_predecessor_moved" and predecessor != "moved":
+            raise DeliveryRefused("withdraw_not_stale", "reason")
+        return {"main_effect": "none", "observed": facts}
+
+    def _withdraw_claim(self, plan: dict):
+        """The same fence a tick takes for this release; refused with the tick's own reason codes."""
+        try:
+            self.queue.enqueue(plan["release_id"], "host delivery withdrawal " + plan["plan_id"])
+            claim = self.queue.claim(now=self._now(), eligible=lambda queued: queued["id"] == plan["release_id"])
+        except ContractError as exc:
+            raise DeliveryRefused("withdraw_queue_refused", "release_id") from exc
+        if claim is None:
+            raise DeliveryRefused(self._unclaimed(plan), "release_id")
+        return claim
+
+    def _commit_withdrawal(self, row: dict, intent, reason: str, evidence_ref: str, observed: dict,
+                           claim) -> dict:
+        """One transaction: the fence (when claimed) and an unchanged intent, then the terminal row.
+        An absent intent is created and withdrawn together, so nothing ever runs in between."""
+        plan, now = row["plan"], self.clock()
+        base = intent if intent is not None else new_intent(plan, row["plan_sha256"], now)
+        withdrawal = {"reason_code": reason, "evidence_ref": evidence_ref, "previous_stage": base["stage"],
+                      "main_effect": observed["main_effect"], "merged_revision": base.get("merged_revision"),
+                      "observed": observed["observed"], "at": now}
+        settled = {**base, "stage": WITHDRAWN, "previous_stage": base["stage"], "outcome": WITHDRAWN,
+                   "reason_code": reason, "error_type": None, "stage_deadline": None, "withdrawal": withdrawal,
+                   "updated_at": now}
+        with self.store.transaction() as tx:
+            if claim is not None:
+                self.queue.owned(tx, claim, self._now())
+            if tx.get(BUCKET_INTENTS, plan["plan_id"]) != intent:
+                raise DeliveryRefused("withdraw_intent_changed", "plan_id")
+            tx.put(BUCKET_INTENTS, plan["plan_id"], settled)
+        return settled
+
+    def _finish_withdrawn(self, plan: dict) -> str | None:
+        """A withdrawal whose queue row a crash left runnable: finish that row, and nothing else."""
+        with self.store.transaction() as tx:
+            queued = tx.get("release_queue", plan["release_id"])
+        if not isinstance(queued, dict) or queued.get("status") not in {"queued", "retry", "running"}:
+            return None if queued is None else queued.get("status")
+        claim = self.queue.claim(now=self._now(), eligible=lambda row: row["id"] == plan["release_id"])
+        if claim is None:
+            return self._unclaimed(plan)
+        return self.queue.finish(claim, {"status": WITHDRAWN, "reason": "withdrawal_replayed"}, self._now())["status"]
+
+    def _withdrawn(self, plan: dict, intent: dict, *, cached: bool, queue) -> dict:
+        return {"withdrawn": True, "cached": cached, "plan_id": plan["plan_id"], "release_id": plan["release_id"],
+                "target_id": plan["target_id"], "stage": WITHDRAWN, "queue": queue,
+                "withdrawal": dict(intent.get("withdrawal") or {}),
+                "next_action": stage_next_action(WITHDRAWN), "authority": AUTHORITY}
+
+    def _predecessor(self, plan: dict) -> str:
+        """The target as a NEW merge of this plan would find it: `in_flight` while another delivery of
+        the target has merged and not settled the host - including a `blocked`/`failed` one that bound
+        a descriptor without a verified rollback, which is never safe-to-switch evidence - else
+        `moved` when the current descriptor is not the plan's expected predecessor, else `held`.
+        One store read under the controller's serialization; the switch keeps its own CAS."""
+        with self.store.transaction() as tx:
+            intents = tx.scan(BUCKET_INTENTS)
+            current_row = tx.get(BUCKET_DESCRIPTORS, plan["target_id"])
+        for other in intents:
+            if other.get("target_id") != plan["target_id"] or other.get("plan_id") == plan["plan_id"]:
+                continue
+            stage = other.get("stage")
+            unsettled = stage in {BLOCKED, FAILED} and other.get("descriptor") is not None \
+                and not (other.get("rollback") or {}).get("verified")
+            if stage in POST_MERGE_OPEN or unsettled:
+                return "in_flight"
+        current = (current_row or {}).get("descriptor")
+        current_sha = None if current is None else descriptor_digest(current)
+        return "held" if current_sha == plan["expected_descriptor"] else "moved"
 
     # ----- the mutation boundary ---------------------------------------------------------------
     def _owned_now(self, claim) -> None:
@@ -539,10 +728,15 @@ class HostDelivery:
         return self._result(plan, intent, OUTCOME_IDLE, reason_code="stage_terminal")
 
     def _publish(self, plan: dict, intent: dict, claim) -> dict:
-        """Publish the reviewed candidate, or ADOPT the publication a lost response already made."""
+        """Publish the reviewed candidate, or ADOPT the publication a lost response already made.
+
+        A candidate whose reviewed base is no longer the remote main is refused here, before any PR
+        or CI is spent on it: it can never be fast-forwarded (INV-HOST-DELIVERY-001)."""
         port = self._require_port(self.github, "github_port_unavailable")
         candidate = self._candidate(plan)
         observed = port.observe(candidate)
+        if port.merge_state(candidate, observed)["state"] == "base_moved":
+            return self._halt(plan, intent, BLOCKED, OUTCOME_BLOCKED, "reviewed_base_moved", claim=claim)
         if observed is None:
             self._owned_now(claim)
             observed = port.publish(candidate)
@@ -583,7 +777,11 @@ class HostDelivery:
         return self._pending(plan, intent, claim, verdict["reason_code"], last_check_state=CI_PENDING)
 
     def _merge(self, plan: dict, intent: dict, claim) -> dict:
-        """Merge the exact reviewed head, or RECOGNIZE the merge a lost response already made.
+        """Fast-forward main to the exact reviewed head, or RECOGNIZE the merge already made.
+
+        Before a NEW effect the target must still hold the plan's expected predecessor with no other
+        delivery unsettled on it, and the remote main must still be the reviewed base; the merge
+        itself is the server-side compare-and-swap of exactly that (INV-HOST-DELIVERY-001).
 
         Both paths end at the SAME qualification: the merged revision must carry the reviewed tree,
         checked by the merge owner itself. A merge that happened is not a qualified deployment, so
@@ -597,12 +795,34 @@ class HostDelivery:
             return self._halt(plan, intent, BLOCKED, OUTCOME_BLOCKED, "publication_missing", claim=claim)
         if observed.get("head") != intent["head"]:
             return self._halt(plan, intent, BLOCKED, OUTCOME_BLOCKED, "ci_head_changed", claim=claim)
-        if observed.get("state") == "MERGED":
-            merged = {"merged": True, "merged_revision": observed.get("merged_revision")
-                      or intent["head"], "recovered": True}
+        # An effect that already happened (our fast-forward whose response was lost, or anyone's
+        # merge of this exact head) is reconciled FIRST, before any refusal or new effect.
+        state = port.merge_state(candidate, observed)
+        if state["state"] == "merged":
+            merged = {"merged": True, "merged_revision": state["merged_revision"], "recovered": True}
         else:
+            predecessor = self._predecessor(plan)
+            if predecessor == "in_flight":
+                # Another delivery of this target has merged and not settled the host: no effect, no
+                # attempt spent, the stage stays; it is decided once that delivery is terminal.
+                return self._pending(plan, intent, claim, "predecessor_in_flight")
+            if predecessor == "moved":
+                return self._halt(plan, intent, BLOCKED, OUTCOME_BLOCKED, "descriptor_predecessor_moved",
+                                  claim=claim)
+            if state["state"] != "unmerged":
+                return self._halt(plan, intent, BLOCKED, OUTCOME_BLOCKED, "reviewed_base_moved", claim=claim)
+            # A NEW mainline effect keeps the existing gates of that effect: the exact open PR of the
+            # reviewed head and the plan's required checks passing on it right now. Recognizing an
+            # effect above is recovery; it never stands in for this.
+            if observed.get("state") != "OPEN":
+                return self._halt(plan, intent, BLOCKED, OUTCOME_BLOCKED, "publication_not_open", claim=claim)
+            verdict = ci_verdict(plan["required_checks"], observed.get("checks"), intent["head"],
+                                 observed_head=observed.get("head"))
+            if verdict["state"] != CI_PASSED:
+                return self._halt(plan, intent, BLOCKED, OUTCOME_BLOCKED, verdict["reason_code"], claim=claim,
+                                  last_check_state=verdict["state"])
             self._owned_now(claim)
-            merged = port.merge(candidate)
+            merged = port.merge(candidate, observed)
         revision = merged.get("merged_revision") or intent["head"]
         qualify = getattr(port, "qualify", None)
         if qualify is None:

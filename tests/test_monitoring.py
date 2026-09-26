@@ -213,7 +213,7 @@ def test_collector_entrypoint_is_read_only_and_needs_no_executor(monkeypatch, tm
     assert continuation['status'] == 'ok'
     assert continuation['data'] == {'schema': 'urn:zeus:continuation-status:1', 'policies': [], 'intents': [],
                                     'truncated': False, 'counts': {}, 'held_families': {},
-                                    'capacity': {'grants': [], 'families': []},
+                                    'capacity': {'grants': [], 'families': []}, 'requalifications': [],
                                     'authority': continuation['data']['authority']}
     assert snapshot['sources']['observations']['data']['local'] == {'status': 'unavailable',
                                                                     'reason': 'directory_missing'}

@@ -149,6 +149,33 @@ exits `3` with zero conduct; the unit is released on the fence and a new identit
 `CREATE_BREAKAWAY_FROM_JOB`; if the controller's job forbids it the single fallback spawn keeps it in
 that job (`breakaway: False`) and controller teardown then leaves unknown debt.
 
+## Owner delivery requalification (aibox SPEC s15, D5; 2026-09-26)
+
+A DELIVERY intent whose HostDelivery plan the owner withdrew (`zeus host-delivery withdraw`) waits under
+`delivery_withdrawn` and writes nothing. The owner's `zeus continuation delivery-requalify --file doc.json`
+(`urn:zeus:continuation-delivery-requalification:1`) is verified against authoritative reads - the pinned
+policy, the runtime/frame authorization, the withdrawn plan and its reason, the release candidate, the
+remote main read now and present in the lane repository, the goal digest at that main and the rationale
+bytes - and then, in ONE control-store transaction, stores the document, moves the intent to terminal
+`superseded` and creates one `requalification` intent: the origin's goal, allowed paths, acceptance
+criteria, budget and Claude controls on `base_revision = main_revision`, with a fresh workspace and no
+session. The next tick admits it through the unchanged publish path; its candidate is reviewed, conducted
+and delivered as a new release. `requalification` is an admitting route but not a failure successor: it
+never counts against `max_corrections`, research or capacity. Decisions for every `SUCCESSOR_ROUTES` use
+(route-set audit):
+
+| use | decision |
+|---|---|
+| `validate_binding` route set | extended to `ADMITTING_ROUTES` (successors + requalification) |
+| `RESUME` / `ROUTE_STATES` | requalification gets the successor rows (publish, await_successor, complete); DELIVERY may end `superseded` |
+| `_observe` two-strike, `needs_research`/`prior_failures` (`FAILURE_ROUTES`) | unchanged: a requalification answers no failure |
+| `_observe` `max_corrections` count, `capacity_count` | unchanged: not charged |
+| `_reclassifiable` | extended to `ADMITTING_ROUTES`: the origin job is never re-routed after a requalification |
+| `_resume_complete` effect name | extended to `ADMITTING_ROUTES` (`successor_returned`) |
+| `successor_manifest` | unchanged; requalification has its own `requalification_manifest` |
+| `reconcile_ownership` | unchanged: a repair for failure successors admitted before inheritance; requalification inherits at admission |
+| research scope supplement lineage (`_check_descendant`), owner-actions research lineage | unchanged: failure lineage only |
+
 ## Not established here (owner qualification gates)
 
 - The ownership correction on Windows (job object, breakaway, guardian survival of controller

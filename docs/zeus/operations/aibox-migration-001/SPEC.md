@@ -391,6 +391,8 @@ family, 현재 전체 attempt 집합과 각 lane 관측 evidence/inspection, 혼
   (`HostDelivery.approval`)로 approved이고 이 후보의 delivery가 없으며(`absent` 또는 다른 revision만 있는 `stale`)
   target에 진행 중 delivery가 없을 때만, owner delivery policy + 정확한 release 기록으로 `urn:zeus:host-delivery:1`
   plan을 만든다(target_descriptor revision = 검토된 후보, image/profile = `unchanged`; 새 환경은 별도 자격).
+  (15절 D4 적합성 교정: "진행 중 delivery"는 intent가 아직 없는 등록 plan까지 포함한다. 이전 구현은 intent만 보아
+  H1/H2가 모두 `expected_descriptor: null`로 묶였다.)
   plan 바이트·경로·ref를 `publishing`으로 먼저 영속하고, owner source repo에 고정 author/날짜의 결정적 commit을
   `refs/zeus/owner-plans/<plan_id>`에 **없을 때만** 생성한다(다른 내용의 기존 ref = `plan_ref_conflict`, 덮어쓰지 않음).
   재시작 시 같은 commit을 재도출·인식한다. Git에서 되읽은 plan만 기존 `HostDelivery.register`로 등록한다.
@@ -455,3 +457,65 @@ family, 현재 전체 attempt 집합과 각 lane 관측 evidence/inspection, 혼
 qualification. unit·polkit·정책·target registry·continuation/backlog 설정 설치는 owner 조치이며 이번 세션에서
 수행하지 않았다. 후보 unplanned restart는 새 instance id를 만들므로 다음 delivery는 기존 `target_instance_mismatch`
 게이트로 보류될 수 있다(안전 방향, owner 조정 필요).
+
+## 15. Delivery requalification D1–D6 구현 프레임 (2026-09-26 추가)
+
+출처: `RESULT-delivery-requalification-design.md`(설계)와 `delivery-requalification-design-owner-review.md`(수용 +
+구속 교정). 기준: `origin/main` = `deab096ccc1fca3593d94a1b00266df43c9823fe`(작업 시작 시 원격 재확인, 변화 없음).
+브랜치 `fix/delivery-requalification`, 격리 worktree `delivery-requalification-001`. 이 절은 1–14절과 PR206/owner
+upgrade 수용을 바꾸지 않는다. 구현 명세이며 GitHub 운영 검증이 아니다.
+
+### 15.1 구속 교정 (owner review; 설계보다 우선)
+
+1. **push 결과는 ref별 전체 상태로 분류한다.** `refs/heads/main` 한 줄의 `[rejected]`·`[remote rejected]`만 확정
+   거부(효과 없음)다. `[remote failure]`, 상태 줄 없음·형식 오류·다른 ref·중복 줄, timeout, transport 오류는 모두
+   unknown이며 재시도·withdraw 전에 원격 이력과 PR로 reconcile한다(원격이 이미 candidate인 lost-response 포함).
+2. **fast-forward 전용.** lease push 전에 `is_ancestor(candidate.base, candidate.revision)`을 명시 검사하고, lease는
+   항상 `--force-with-lease=refs/heads/main:<base>`(완전 ref + 정확 기대값)이다. 추적 ref 약칭·`--force`·허용적
+   refspec은 쓰지 않는다. divergent 후보는 push 0회.
+3. **U1 교정.** 서버가 old-id를 무시한다면 사후 tree qualification은 덮어쓴 main을 되돌리지 못한다. 근거는 문서화된
+   git receive-pack old-id 계약 + 명시적 ancestry다. bare-repo 시험은 stock Git 동작의 증거일 뿐 GitHub 운영 증거가
+   아니다. GitHub 고유 수용·권한은 미실행으로 남긴다.
+4. **새 효과 전 기존 게이트 유지.** 새 push 전에 PR 정체(OPEN, 같은 head)와 plan의 required check 통과를 그 시점
+   관측으로 다시 요구한다. 이력 기반 인식(R1/R2)은 이미 일어난 효과의 복구이지 새 push 권한이 아니며, 간접 PR 인식은
+   CI 승인이 아니다. 레거시 `Deployment`의 review/check 권한은 그대로 둔다.
+5. D2 미정착 target 검사는 `failed`/`blocked`이면서 descriptor가 묶였고 rollback 검증이 없는 intent도 멈춘다. D4의
+   terminal 분류는 switch 안전 증명이 아니다.
+6. D3 `merged_tree_mismatch` 예외: host 미접촉일 때만 은퇴를 허용하되 `merged_revision`/효과 이력을 보존하고 "GitHub
+   효과 없음"으로 표기하지 않는다(`main_effect: merged`). intent 기록 후 `queue.finish` 전 재실행은 외부 효과 없이
+   queue 종결만 reconcile한다.
+
+### 15.2 SSOT 재사용/확장 결정
+
+| 소유자 | 결정 |
+|---|---|
+| `GitWorkspace` (INV-RELEASE-001) | 확장: `merge_state` 읽기 전용 관측, GitHub merge = ancestry + lease fast-forward, `MergeRefused`. `gh pr merge` 호출 제거 |
+| `HostDelivery` (INV-HOST-DELIVERY-001) | 확장: pre-merge 관측·predecessor 바인딩, 새 push 전 PR/check 재검증, terminal `withdrawn`, `withdraw` |
+| `ReleaseQueue` | 재사용(변경 없음): withdraw의 fence는 tick과 같은 enqueue+claim/finish(거부 시 defer) |
+| `OwnerActions` (INV-OWNER-ACTIONS-001) | 교정: busy 규칙이 `host_delivery_plans`까지 읽음(SPEC 14.3) |
+| `Continuation` (INV-CONTINUATION-001) | 확장: owner 문서 `continuation-delivery-requalification:1`, 상태 `superseded`, 경로 `requalification`(capacity grant 선례) |
+| 새 scheduler·새 승인 권한·plan 스키마 변경 | 없음 |
+
+### 15.3 고정 수용 행렬 → 시험 위치
+
+| 행렬 항목 | 시험 파일 |
+|---|---|
+| 현재 후보 lease push 1회, `gh pr merge` 미호출 / divergent 0 push / main drift(사전·race) / 확정 거부 / `[remote failure]`·timeout·형식 오류 unknown(원격=candidate 및 원격=base) / 로컬 ff 실패 | `tests/test_git_merge_cas.py`(bare repo, 네트워크 없음) |
+| publish 전 drift, merge 전 drift, predecessor in-flight/moved/미정착 failed, H1/H2 모양, lost response, unknown push, 외부 merge(같은/다른 tree), PR·check 게이트 유지, 재시작·중복 tick | `tests/test_host_delivery_requalification.py`, `tests/test_host_delivery.py`(post-merge CAS 유지) |
+| withdraw 성공·replay cached·conflict·거부 코드·fence·queue-finish 틈·재시작 후 비선택·요청 파일 보존·CLI | `tests/test_host_delivery_requalification.py`, `tests/test_host_delivery_cli.py` |
+| D4 busy 규칙(intent 없는 등록 plan) | `tests/test_owner_delivery.py` |
+| requalify 성공·replay·conflict·거부·crash 사이·중복 admission·실패한 대체·route-set audit·manifest base | `tests/test_continuation_requalification.py`(기존 `tests/test_continuation.py` 표 검사 유지) |
+| 레거시 `Deployment` merge 호출자 | `tests/test_release_runner.py`(기존 유지) |
+
+### 15.4 수정 파일
+
+`adapters/git.py`, `adapters/host_delivery.py`, `application/host_delivery.py`, `domain/host_delivery.py`,
+`application/owner_actions.py`, `domain/continuation.py`, `application/continuation.py`, `adapters/continuation.py`,
+`adapters/continuation_cli.py`, `docs/contracts.md`, `docs/zeus/operations/autonomous-operation-001/HOST-DELIVERY.md`,
+`CONTINUATION.md`, 이 SPEC, 위 시험 파일. `_prepare_switch`, host adapter, canary, `Releases`, `ReleaseQueue`,
+deploy/unit/설정 파일은 변경하지 않는다.
+
+### 15.5 이 구현이 증명하지 않는 것
+
+GitHub 서버의 old-id 강제·권한·간접 merge 표시 시점(U1/U2), 운영 PG/Redis, 실제 withdraw/requalify 실행(R0–R7은
+Codex 수용 후 owner 조치), controller 재시작. controller hold는 유지된다.

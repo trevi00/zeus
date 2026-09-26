@@ -21,11 +21,11 @@ import pytest
 from test_continuation import GOAL, manifest
 from test_host_delivery import (
     PROFILE,
-    candidate,
     pin,
     plan_document,
     reviewed_release,
     runtime_image,
+    successor_candidate,
 )
 from test_managed_runtime import (
     TARGET_ID,
@@ -108,7 +108,7 @@ def owner_for(system, control=None, plans=None):
 def owner_plan(system, source, owner, plan_id, *, revision, runtime, expected, when, consumption_timeout=900):
     """One owner plan action at `published`, as `_advance_plan` leaves it before `_register`."""
     release = reviewed_release(system["store"], system["org"],
-                               record_candidate={**candidate(), "revision": revision, "branch": "harness/" + plan_id,
+                               record_candidate={**successor_candidate(system), "revision": revision, "branch": "harness/" + plan_id,
                                                  "task_id": plan_id})
     plan = validate_plan(plan_document(release, plan_id=plan_id, target_id=TARGET_ID, expected=expected,
                                        image=runtime_image(source["root"]), profile=PROFILE, canary=CANARY_FLEET,

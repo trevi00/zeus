@@ -48,6 +48,7 @@ from test_host_delivery import (
     plan_document,
     reviewed_release,
     runtime_image,
+    successor_candidate,
 )
 
 from codex_harness.adapters.host_delivery import (
@@ -679,12 +680,12 @@ def managed_system(tmp_path, source, *, canaries=None, lock=LOCK_SHA, host=None)
                          profile=PROFILE, descriptor_revision=source["a"], consumption_timeout=900)
     delivery.register(plan, pin())
     return {"store": store, "org": org, "clock": clock, "delivery": delivery, "host": host,
-            "plan": plan, "target": validate_targets(document)["targets"][0]}
+            "plan": plan, "target": validate_targets(document)["targets"][0], "github": delivery.github}
 
 
 def successor(system, source, *, expected, canary=CANARY_STARTUP):
     release = reviewed_release(system["store"], system["org"],
-                               record_candidate={**candidate(), "revision": "5" * 40,
+                               record_candidate={**successor_candidate(system), "revision": "5" * 40,
                                                  "branch": "harness/two", "task_id": "two"})
     plan = plan_document(release, plan_id="managed-plan-2", target_id=TARGET_ID, expected=expected,
                          image=runtime_image(source["root"]), profile=PROFILE, canary=canary,
