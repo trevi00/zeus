@@ -16,9 +16,15 @@ the Fleet registry itself still moves only through `Fleet.relocate` (INV-FLEET-0
 * `intend_activation` records the durable activation intent in `restored_paused`, BEFORE the
   adapter writes the launcher's `host-activation.json` or starts any target writer. From then on
   the rollback mode is R1, including after an interruption before `limited_active` was recorded.
-* `limited_active` needs the host-activation receipt bound to that intent and a service startup
-  receipt whose revision/image/profile are the intent's; `rolled_back` needs the gate receipt of
-  the recorded mode and, under R1, every reverse step's checkpoint.
+* `record_successor` records a successor activation of the EFFECTIVE activation in
+  `restored_paused`: one successor per exact predecessor, the intent itself never rewritten.
+* `activation_switch` selects the effective head and hands it to the adapter's file effect INSIDE
+  the same store transaction `record_successor` takes, so a switch and a successor record (or two
+  switches) are serialized and a stale head can never be written after a newer one.
+* `limited_active` needs the host-activation receipt bound to the effective activation and a
+  service startup receipt whose revision/image/profile are the effective activation's;
+  `rolled_back` needs the gate receipt of the recorded mode and, under R1, every reverse step's
+  checkpoint.
 
 The row is a receipt record. Its state is never, by itself, proof that a source was fenced, a
 target activated or an acceptance passed (`authority` in every view says so).
@@ -35,18 +41,23 @@ from codex_harness.domain.host_migration import (
     ROLLBACK_REQUIRED,
     ROLLED_BACK,
     MigrationRefused,
+    activation_id,
     activation_receipt,
     allowed,
+    effective_activation,
     intent_id,
     manifest_digest,
     resume_state,
     reverse_maps,
     rollback_mode,
     step_allowed,
+    successor_allowed,
+    successor_id,
     transition_id,
     validate_checkpoint,
     validate_intent,
     validate_manifest,
+    validate_successor,
     validate_transition,
 )
 
@@ -115,20 +126,22 @@ class HostMigrations:
 
     @staticmethod
     def _require_activation(row: dict, transition: dict) -> None:
-        """The target writer may be recorded active only against the intent that enabled it."""
+        """The target writer may be recorded active only against the EFFECTIVE activation that
+        enabled it: after a successor, receipts bound to the superseded intent are refused."""
         intent = row.get("activation_intent")
         if intent is None:
             raise MigrationRefused("activation_intent_missing", "activation_intent")
-        key = intent_id(intent)
+        head = effective_activation(intent, row.get("activation_successors") or [])
+        activation, key = head["activation"], head["id"]
         if any(receipt["subject"] != key for receipt in transition["evidence"]["host_activation"]):
             raise MigrationRefused("activation_receipt_unbound", "evidence.host_activation")
-        consumed = "revision=" + intent["release_revision"]
+        consumed = "revision=" + activation["release_revision"]
         if any(receipt["subject"] != consumed for receipt in transition["evidence"]["service_consumption"]):
             # `systemctl is-active` is not consumption: the startup receipt must name the revision.
             raise MigrationRefused("service_consumption_unbound", "evidence.service_consumption")
         identity = transition["identity"]
         if (identity["commit"], identity["image"], identity["profile_sha256"]) != \
-                (intent["release_revision"], intent["image"], intent["profile_sha256"]):
+                (activation["release_revision"], activation["image"], activation["profile_sha256"]):
             raise MigrationRefused("activation_identity_mismatch", "identity")
 
     @staticmethod
@@ -163,16 +176,92 @@ class HostMigrations:
             tx.put(BUCKET, row["migration_id"], row)
         return {"recorded": True, "cached": False, "intent_id": key}
 
+    def record_successor(self, document) -> dict:
+        """Record a successor of the effective activation; CAS on the exact predecessor.
+
+        One store transaction under the coordinator lock. The identical successor replays; a
+        second successor of the same predecessor conflicts and a successor of a superseded head is
+        stale. The intent, state, manifest, transitions and checkpoints are never touched.
+        """
+        successor = validate_successor(document)
+        key = successor_id(successor)
+        with self.store.transaction() as tx:
+            row = tx.get(BUCKET, successor["migration_id"])
+            if row is None:
+                raise MigrationRefused("migration_unknown", "migration_id")
+            intent = row.get("activation_intent")
+            if intent is None:
+                raise MigrationRefused("activation_intent_missing", "activation_intent")
+            successors = row.get("activation_successors") or []
+            if any(successor_id(existing) == key for existing in successors):
+                return {"recorded": False, "cached": True, "successor_id": key,
+                        "predecessor_id": successor["predecessor_id"]}
+            if row["state"] != RESTORED_PAUSED:
+                raise MigrationRefused("activation_state", "state")
+            chain = [intent, *successors]
+            if any(activation_id(existing) == successor["predecessor_id"] for existing in chain[:-1]):
+                # Exactly one successor per head: this predecessor already has one.
+                raise MigrationRefused("activation_successor_conflict", "predecessor_id")
+            head = effective_activation(intent, successors)
+            if successor["predecessor_id"] != head["id"]:
+                raise MigrationRefused("activation_predecessor_stale", "predecessor_id")
+            successor_allowed(head["activation"], successor)
+            row["activation_successors"] = [*successors, successor]
+            row["history"].append({"event": "activation_successor", "successor_id": key,
+                                   "predecessor_id": successor["predecessor_id"],
+                                   "release_revision": successor["release_revision"],
+                                   "at": successor["at"], "actor": successor["actor"]})
+            tx.put(BUCKET, row["migration_id"], row)
+        return {"recorded": True, "cached": False, "successor_id": key,
+                "predecessor_id": successor["predecessor_id"]}
+
     def activation_document(self, migration_id: str) -> dict:
-        """The launcher's `host-activation.json` for the current state, derived from the intent."""
-        row = self._row(migration_id)
+        """The launcher's `host-activation.json` for the current state, derived from the effective
+        activation (the intent until a successor is recorded)."""
+        return self._activation_plan(self._row(migration_id))["effective"]
+
+    def activation_switch(self, migration_id: str, effect, *, expected_id: str | None = None):
+        """Run the adapter's file `effect(plan)` while holding this coordinator's transaction.
+
+        The effective head is selected, the caller's expected head is rechecked and the effect
+        classifies and writes the launcher files, all inside ONE store transaction: the same
+        advisory lock `record_successor` takes. A successor recorded meanwhile, or a second
+        switch, cannot run between the head selection and the writes: it waits for this
+        transaction and then sees the files it left. The coordinator itself still touches no file:
+        `effect` is the adapter's port and is given pure data only.
+
+        The wait is bounded on PostgreSQL. `PostgresStore.transaction` sets `lock_timeout = '10s'`
+        before `pg_advisory_xact_lock(734219)`, so a transaction on another connection waits at most
+        10 s for the lock, then fails with `LockNotAvailable` having written nothing: it is refused,
+        never interleaved, and it is not retried here. The timeout bounds only the waiter, not this
+        effect. The lock is database-wide, so every other store writer of that database waits the
+        same way. `MemoryStore` waits without a bound. `effect` must not open another store
+        transaction: that is a new connection, which would wait on the lock this one holds (a
+        repeated request inside the same session would succeed; a second connection does not).
+        """
+        with self.store.transaction() as tx:
+            row = tx.get(BUCKET, migration_id)
+            if row is None:
+                raise MigrationRefused("migration_unknown", "migration_id")
+            plan = self._activation_plan(row)
+            if expected_id is not None and expected_id != plan["effective_id"]:
+                raise MigrationRefused("activation_head_moved", "expected_id")
+            return effect(plan)
+
+    @staticmethod
+    def _activation_plan(row: dict) -> dict:
         intent = row.get("activation_intent")
         if intent is None:
             raise MigrationRefused("activation_intent_missing", "activation_intent")
         if row["state"] not in ACTIVATION_STATES:
             # A failed or rolling-back migration never re-issues an activation; the host is fenced.
             raise MigrationRefused("activation_state", "state")
-        return activation_receipt(intent, row["manifest_sha256"], row["state"])
+        head = effective_activation(intent, row.get("activation_successors") or [])
+        predecessor = head["predecessor"]
+        return {"migration_id": row["migration_id"], "effective_id": head["id"], "kind": head["kind"],
+                "effective": activation_receipt(head["activation"], row["manifest_sha256"], row["state"]),
+                "predecessor": None if predecessor is None
+                else activation_receipt(predecessor, row["manifest_sha256"], row["state"])}
 
     def checkpoint(self, document) -> dict:
         checkpoint = validate_checkpoint(document)
@@ -236,7 +325,22 @@ class HostMigrations:
                 "rollback_mode": rollback_mode(row["history"]),
                 "activation_intent": None if row.get("activation_intent") is None
                 else intent_id(row["activation_intent"]),
+                **HostMigrations._chain_view(row),
                 "authority": AUTHORITY}
+
+    @staticmethod
+    def _chain_view(row: dict) -> dict:
+        """`activation_intent` stays the original id; the effective head and chain are shown beside
+        it so the original is never confused with what the receipt currently names."""
+        intent = row.get("activation_intent")
+        if intent is None:
+            return {"activation_current": None, "activation_chain": []}
+        chain = [intent, *(row.get("activation_successors") or [])]
+        return {"activation_current": activation_id(chain[-1]),
+                "activation_chain": [{"id": activation_id(item), "release_revision": item["release_revision"],
+                                      "kind": "successor" if index else "intent",
+                                      "predecessor_id": item.get("predecessor_id")}
+                                     for index, item in enumerate(chain)]}
 
 
 __all__ = ["BUCKET", "BUCKET_CHECKPOINTS", "BUCKET_TRANSITIONS", "HostMigrations"]

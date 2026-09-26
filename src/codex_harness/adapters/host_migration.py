@@ -22,6 +22,11 @@ intent. This module is the outer adapter boundary:
     `compare-redis`.
 * The launcher files of deploy/aibox are written atomically: `host-activation.json`, derived from
   the coordinator's recorded intent, and `host-fence.json`.
+* `activation-switch` moves `host-activation.json` and `releases/current` to the coordinator's
+  effective (successor) activation: receipt first, then an atomic symlink replacement, both
+  inside the coordinator transaction that also serializes successor recording. The two files are
+  classified against the effective and predecessor receipts; anything else is refused unwritten.
+  It is POSIX only; elsewhere it is refused (`successor_switch_posix_only`) before any effect.
 * `SystemdHostTarget` controls only `zeus-aibox-*.service` units through `systemctl
   show|start|stop`. It never runs `reset-failed`, and a unit being active is never taken as
   consumption proof.
@@ -35,6 +40,8 @@ import hashlib
 import json
 import os
 import re
+import secrets
+import stat
 import subprocess
 import sys
 import tempfile
@@ -43,8 +50,8 @@ from pathlib import Path
 
 import codex_harness
 from codex_harness.adapters.commands import run_process
-from codex_harness.adapters.host_delivery import STATE_FILE as HOST_STATE_FILE
 from codex_harness.adapters.host_delivery import (
+    DESCRIPTOR_FILE,
     STOP_POLL,
     STOP_TIMEOUT,
     DeliveryRefused,
@@ -52,10 +59,12 @@ from codex_harness.adapters.host_delivery import (
     _utcnow,
     _write_json,
 )
+from codex_harness.adapters.host_delivery import STATE_FILE as HOST_STATE_FILE
 from codex_harness.domain.host_delivery import KIND_SYSTEMD, descriptor_digest
 from codex_harness.domain.host_migration import (
     ACTIVATION_SCHEMA,
     CATALOG_SCHEMA,
+    COMMIT,
     RESTORE_SCHEMA,
     SOURCE_PUBLIC,
     MigrationRefused,
@@ -619,9 +628,14 @@ def copy_redis(source, target, keys) -> dict:
 
 
 # ----- launcher files (deploy/aibox INTEGRATION-CONTRACT s2) --------------------------------------
+def _document_bytes(document: dict) -> bytes:
+    """The exact bytes every launcher file is written with (and classified against)."""
+    return (json.dumps(document, sort_keys=True, indent=1) + "\n").encode("utf-8")
+
+
 def _atomic_write(directory: Path, name: str, document: dict) -> str:
     """temp file in the same directory, fsync, rename, fsync the directory; returns the sha256."""
-    data = (json.dumps(document, sort_keys=True, indent=1) + "\n").encode("utf-8")
+    data = _document_bytes(document)
     if not directory.is_dir() or directory.is_symlink():
         raise MigrationRefused("control_dir_unavailable", "control_dir")
     descriptor, temporary = tempfile.mkstemp(prefix="." + name + ".", dir=directory)
@@ -668,6 +682,234 @@ def write_fence(control_dir, migration_id: str, reason: str) -> dict:
     control = Path(control_dir)
     sha = _atomic_write(control, FENCE_FILE, {"migration_id": migration_id, "reason": reason, "at": _utcnow()})
     return {"written": str(control / FENCE_FILE), "sha256": sha}
+
+
+# ----- successor activation: the receipt, then `current` (INV-HOST-MIGRATION-001) -----------------
+CURRENT_LINK = "current"
+FLEET_OWNER_FILE = "fleet-owner.json"
+FLEET_OWNER_SCHEMA = "urn:zeus:aibox-fleet-owner:1"
+# The Fleet-capable roles and the held controller that must be observed stopped at the effect
+# boundary of the supported initial recovery (bootstrap, managed Fleet, host-delivery controller).
+SWITCH_UNITS = ("zeus-aibox-fleet.service", "zeus-aibox-managed-fleet.service",
+                "zeus-aibox-host-delivery.service")
+# A managed launch request, descriptor or controller launch record means the managed role could
+# start or has started; the supported initial recovery has none of them.
+MANAGED_LAUNCH_FILES = ("managed-launch.json", DESCRIPTOR_FILE, HOST_STATE_FILE)
+FOREIGN = "foreign"
+RECORDED_NOT_SWITCHED, RECEIPT_WRITTEN, SWITCHED = "recorded_not_switched", "receipt_written", "switched"
+INCONSISTENT = "activation_files_inconsistent"
+POSIX_ONLY = "successor_switch_posix_only"
+
+
+def _posix() -> bool:
+    """The switch's platform check, a seam of its own so a test can exercise the non-POSIX refusal
+    without replacing the process-wide `os.name` (which pathlib reads)."""
+    return os.name == "posix"
+
+
+def current_revision(releases_dir) -> str | None:
+    """The revision `releases/current` names: None when absent, `foreign` for anything that is not
+    a symlink to a 40-hex directory name directly inside the releases directory."""
+    releases = Path(releases_dir)
+    link = releases / CURRENT_LINK
+    if not os.path.lexists(link):
+        return None
+    if not link.is_symlink():
+        return FOREIGN
+    target = Path(os.readlink(link))
+    inside = str(target.parent) in ("", ".") or (target.is_absolute() and target.parent == releases.resolve())
+    return target.name if inside and COMMIT.fullmatch(target.name) else FOREIGN
+
+
+def classify_activation_files(control_dir, releases_dir, plan: dict) -> dict:
+    """The file-level state of a switch against the coordinator's effective (E) and predecessor
+    (P) receipts: P/P recorded_not_switched, E/P receipt_written, E/E switched, anything else
+    inconsistent. The classification is recovery, not exclusion: the coordinator transaction the
+    caller holds is what serializes it against other switches and successor records."""
+    path = Path(control_dir) / ACTIVATION_FILE
+    try:
+        observed = path.read_bytes() if os.path.lexists(path) else None
+    except OSError:
+        observed = b""
+    current = current_revision(releases_dir)
+    effective, predecessor = plan["effective"], plan["predecessor"]
+    wanted = _document_bytes(effective)
+    prior = None if predecessor is None else _document_bytes(predecessor)
+    pair = (observed, current)
+    if pair == (wanted, effective["release_revision"]):
+        classification = SWITCHED
+    elif prior is not None and pair == (wanted, predecessor["release_revision"]):
+        classification = RECEIPT_WRITTEN
+    elif prior is not None and pair == (prior, predecessor["release_revision"]):
+        classification = RECORDED_NOT_SWITCHED
+    else:
+        classification = INCONSISTENT
+    return {"classification": classification, "current": current,
+            "receipt_sha256": None if observed is None else _sha256_bytes(observed),
+            "effective_id": plan["effective_id"], "effective_revision": effective["release_revision"],
+            "predecessor_revision": None if predecessor is None else predecessor["release_revision"]}
+
+
+def release_ready(releases_dir, revision: str) -> None:
+    """The release `current` will name: an immutable, attested 40-hex directory of THIS releases
+    directory with an executable venv interpreter, the package, a matching `runtime.json` and no
+    writable entry outside `.venv`. A failure names the field only."""
+    releases = Path(releases_dir)
+    release = releases / revision
+    if not COMMIT.fullmatch(revision) or release.is_symlink() or not release.is_dir() \
+            or release.resolve().parent != releases.resolve():
+        raise MigrationRefused("release_not_ready", "release")
+    if not os.access(release / ".venv" / "bin" / "python", os.X_OK):
+        raise MigrationRefused("release_not_ready", ".venv/bin/python")
+    if not (release / "src" / "codex_harness" / "__init__.py").is_file():
+        raise MigrationRefused("release_not_ready", "src/codex_harness")
+    try:
+        attested = json.loads((release / "runtime.json").read_text("utf-8"))
+    except (OSError, ValueError):
+        raise MigrationRefused("release_not_ready", "runtime.json") from None
+    if not isinstance(attested, dict) or attested.get("revision") != revision:
+        raise MigrationRefused("release_not_ready", "runtime.json.revision")
+    for directory, names, files in os.walk(release):
+        if Path(directory) == release:
+            names[:] = [name for name in names if name != ".venv"]
+        for name in [".", *names, *files]:
+            mode = os.lstat(os.path.join(directory, name)).st_mode
+            if not stat.S_ISLNK(mode) and mode & 0o222:
+                raise MigrationRefused("release_not_ready", "writable")
+
+
+def _runner_argv(words: list) -> bool:
+    """Exact argv words (never a joined string, so a shell naming them in one `-c` word never
+    matches): a Fleet runner, a managed runtime entry, or a non-dry-run Fleet-role launch."""
+    for index in range(len(words) - 1):
+        if words[index] == "fleet" and words[index + 1] == "run" and any(
+                w in ("zeus", "harness") or w.endswith(("/zeus", "/harness")) for w in words[:index]):
+            return True
+        if words[index] == "-m" and words[index + 1] == "codex_harness.adapters.managed_runtime":
+            return True
+    if any(w.endswith("zeus_aibox_service.py") for w in words) and "launch" in words and "--dry-run" not in words:
+        roles = [words[i + 1] for i in range(len(words) - 1) if words[i] == "--role"]
+        roles += [w.split("=", 1)[1] for w in words if w.startswith("--role=")]
+        return any(role in ("fleet", "managed-fleet") for role in roles)
+    return False
+
+
+def runner_processes(proc=Path("/proc")) -> list:
+    """PIDs whose argv is a Fleet-capable runner; an unreadable process table raises."""
+    proc = Path(proc)
+    found = []
+    for entry in sorted(proc.iterdir(), key=lambda e: e.name):
+        if not entry.name.isdigit() or int(entry.name) == os.getpid():
+            continue
+        try:
+            argv = (entry / "cmdline").read_bytes().split(b"\0")
+        except OSError:
+            continue  # exited between listing and reading
+        if _runner_argv([word.decode("utf-8", "replace") for word in argv if word]):
+            found.append(int(entry.name))
+    return found
+
+
+def recovery_preconditions(control_dir, managed_state_dir, *, runner=run_process, proc=Path("/proc")) -> list:
+    """The enforced preconditions of the supported initial recovery, observed at the effect
+    boundary (each read now, not taken from an earlier snapshot). Returns violation codes; an
+    unknown observation is a violation. This is a recheck, not a lock: it cannot stop an operator
+    who starts a unit after it returns, which is why the launcher's receipt/current check stays
+    the fail-closed backstop."""
+    violations = []
+    control = Path(control_dir)
+    owner = control / FLEET_OWNER_FILE
+    if not os.path.lexists(owner):
+        violations.append("owner_marker_missing")
+    else:
+        try:
+            record = json.loads(owner.read_text("utf-8"))
+        except (OSError, ValueError):
+            record = None
+        if not (isinstance(record, dict) and record.get("schema") == FLEET_OWNER_SCHEMA
+                and record.get("owner") == "managed-fleet"):
+            violations.append("owner_marker_invalid")
+    for unit in SWITCH_UNITS:
+        try:
+            result = runner(["systemctl", "show", unit, "-p", "ActiveState", "-p", "MainPID"], timeout=20)
+            facts = dict(line.split("=", 1) for line in (result.stdout or "").splitlines() if "=" in line)
+        except Exception:  # noqa: BLE001 - an unobservable unit is unknown, never inactive
+            result, facts = None, {}
+        state, pid = facts.get("ActiveState"), facts.get("MainPID")
+        if result is None or result.returncode or state is None or pid is None:
+            violations.append("unit_state_unknown:" + unit)
+        elif state not in ("inactive", "failed") or pid != "0":
+            violations.append("unit_active:" + unit)
+    managed = Path(managed_state_dir)
+    if not managed.is_dir():
+        violations.append("managed_state_unreadable")
+    for name in MANAGED_LAUNCH_FILES:
+        if os.path.lexists(managed / name):
+            violations.append("managed_launch_present:" + name)
+    try:
+        violations += ["runner_process:" + str(pid) for pid in runner_processes(proc)]
+    except OSError:
+        violations.append("process_table_unreadable")
+    return violations
+
+
+def _replace_current(releases: Path, revision: str) -> None:
+    """`current` -> revision by rename(2) of a fresh temporary symlink over it (atomic replace; never
+    `ln -sfn`, which unlinks first), then fsync of the releases directory. Only this call's own
+    temporary link is ever removed; a foreign `.current.*` leftover is left alone."""
+    temporary = releases / (".current." + secrets.token_hex(8))
+    os.symlink(revision, temporary)
+    try:
+        os.replace(temporary, releases / CURRENT_LINK)
+    except BaseException:
+        if os.path.lexists(temporary):
+            os.unlink(temporary)
+        raise
+    _fsync_directory(releases)
+
+
+def switch_effect(control_dir, releases_dir, managed_state_dir, *, check: bool = False, preconditions=None):
+    """The file effect `HostMigrations.activation_switch` runs under the coordinator transaction.
+
+    Order: classify; refuse inconsistent files, a host fence, an unready release or any violated
+    recovery precondition, writing nothing; write the receipt (unless already written); replace
+    `current`; re-classify. `check` only classifies and reports the preconditions it observes.
+
+    The switch is defined only on POSIX, as rename(2) of a fresh symlink over the `current` directory
+    symlink (INV-HOST-MIGRATION-001). Elsewhere, `check` included, it is refused here, before a
+    coordinator transaction, receipt, temporary link or any other effect exists.
+    """
+    if not _posix():
+        raise MigrationRefused(POSIX_ONLY, "platform")
+    control, releases = Path(control_dir), Path(releases_dir)
+    observe = preconditions or (lambda c, m: recovery_preconditions(c, m))
+
+    def effect(plan: dict) -> dict:
+        before = classify_activation_files(control, releases, plan)
+        if check:
+            return {**before, "check": True, "preconditions": observe(control, managed_state_dir),
+                    "host_fenced": os.path.lexists(control / FENCE_FILE)}
+        if before["classification"] == INCONSISTENT:
+            raise MigrationRefused(INCONSISTENT, "control_dir")
+        if before["classification"] == SWITCHED:
+            return {**before, "classification_before": SWITCHED, "cached": True, "receipt_written": False}
+        if os.path.lexists(control / FENCE_FILE):
+            raise MigrationRefused("host_fenced", FENCE_FILE)
+        revision = plan["effective"]["release_revision"]
+        release_ready(releases, revision)
+        violations = observe(control, managed_state_dir)
+        if violations:
+            raise MigrationRefused("recovery_precondition", violations[0])
+        written = before["classification"] == RECORDED_NOT_SWITCHED
+        if written:
+            write_activation(control, plan["effective"])
+        _replace_current(releases, revision)
+        after = classify_activation_files(control, releases, plan)
+        if after["classification"] != SWITCHED:
+            raise MigrationRefused("activation_switch_unverified", "control_dir")
+        return {**after, "classification_before": before["classification"], "cached": False,
+                "receipt_written": written, "revision": revision}
+    return effect
 
 
 # ----- the Linux systemd service target ----------------------------------------------------------
@@ -802,11 +1044,20 @@ def execute(args) -> tuple[dict, bool]:
         manifest = validate_manifest(_read(args.file))
         return {"valid": True, "migration_id": manifest["migration_id"],
                 "manifest_sha256": manifest_digest(manifest)}, True
-    if command in ("plan", "advance", "checkpoint", "intend-activation"):
+    if command in ("plan", "advance", "checkpoint", "intend-activation", "activation-successor"):
         coordinator = _coordinator(args)
         method = {"plan": coordinator.plan, "advance": coordinator.advance, "checkpoint": coordinator.checkpoint,
-                  "intend-activation": coordinator.intend_activation}[command]
+                  "intend-activation": coordinator.intend_activation,
+                  "activation-successor": coordinator.record_successor}[command]
         return method(_read(args.file)), True
+    if command == "activation-switch":
+        if not args.check and not args.expected_id:
+            # The head the operator validated is rechecked under the coordinator lock before a write.
+            raise MigrationRefused("expected_id_required", "expected_id")
+        # The effect first: a non-POSIX host is refused before the coordinator store is opened.
+        effect = switch_effect(args.control_dir, args.releases_dir, args.managed_state_dir, check=args.check)
+        result = _coordinator(args).activation_switch(args.migration_id, effect, expected_id=args.expected_id)
+        return result, result["classification"] != INCONSISTENT
     if command == "status":
         return _coordinator(args).status(args.migration_id), True
     if command == "rollback-plan":
@@ -899,7 +1150,7 @@ def parser() -> argparse.ArgumentParser:
         command.add_argument("--schema", required=True, help="The coordinator schema (never public)")
 
     sub.add_parser("validate").add_argument("--file", required=True)
-    for name in ("plan", "advance", "checkpoint", "intend-activation"):
+    for name in ("plan", "advance", "checkpoint", "intend-activation", "activation-successor"):
         command = sub.add_parser(name)
         command.add_argument("--file", required=True)
         store_args(command)
@@ -909,6 +1160,15 @@ def parser() -> argparse.ArgumentParser:
         store_args(command)
         if name == "activation-write":
             command.add_argument("--control-dir", required=True)
+    command = sub.add_parser("activation-switch",
+                             help="Receipt first, then `current`, under the coordinator transaction")
+    command.add_argument("--migration-id", required=True)
+    command.add_argument("--control-dir", required=True)
+    command.add_argument("--releases-dir", required=True)
+    command.add_argument("--managed-state-dir", required=True)
+    command.add_argument("--expected-id", help="The effective activation id the switch must still find")
+    command.add_argument("--check", action="store_true", help="Classify only; write nothing")
+    store_args(command)
     command = sub.add_parser("fence-write")
     command.add_argument("--control-dir", required=True)
     command.add_argument("--migration-id", required=True)
@@ -1011,7 +1271,9 @@ if __name__ == "__main__":  # pragma: no cover
     sys.exit(main())
 
 
-__all__ = ["SystemdHostTarget", "canonical_module", "canonical_tool", "copy_redis", "execute", "main", "parser",
+__all__ = ["SystemdHostTarget", "canonical_module", "canonical_tool", "classify_activation_files", "copy_redis",
+           "current_revision", "execute", "main", "parser", "recovery_preconditions", "release_ready",
+           "runner_processes", "switch_effect",
            "pg_catalog", "pg_compare_schema", "pg_coverage_receipt", "pg_dump_database", "pg_export",
            "pg_restore_database", "prepare_layout",
            "redis_inventory", "run_canonical", "schema_store", "write_activation", "write_fence"]
