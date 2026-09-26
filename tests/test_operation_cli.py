@@ -186,3 +186,70 @@ def test_read_manifest_refuses_missing_oversized_and_invalid_json(tmp_path):
     with pytest.raises(ContractError, match="exceeds budget"):
         operation_cli.read_manifest(big)
     assert Operation(Harness(MemoryStore(), organization())).__class__ is Operation
+
+
+BOM = b"\xef\xbb\xbf"
+
+
+def test_read_manifest_accepts_one_leading_bom_and_keeps_the_validated_manifest(tmp_path):
+    """Windows-authored operator manifests: BOM/no BOM x LF/CRLF x Korean text parse to the same
+    document and the same validated manifest; the BOM is transport, not data."""
+    _, head = repository(tmp_path)
+    document = {**manifest(head), "plan": {**manifest(head)["plan"], "objective": "한국어 목표 " + CANARY}}
+    expected = validate_manifest(document, packaged_policy())
+    text = json.dumps(document, ensure_ascii=False, indent=2)
+    for bom in (b"", BOM):
+        for body in (text, text.replace("\n", "\r\n")):
+            path = tmp_path / "op.json"
+            path.write_bytes(bom + body.encode("utf-8"))
+            parsed = operation_cli.read_manifest(path)
+            assert parsed == document
+            assert validate_manifest(parsed, packaged_policy()) == expected
+
+
+def test_read_manifest_refuses_malformed_bytes_and_counts_the_bom_against_the_budget(tmp_path):
+    """Only one leading BOM is dropped: malformed UTF-8, UTF-16, duplicates, oversize and missing
+    files refuse as ContractError with the fixed messages; interior U+FEFF stays data."""
+    path = tmp_path / "op.json"
+    for content, message in ((b'{"a": "\xff"}', "Operation manifest is not valid JSON"),
+                             (BOM + b'{"a": ', "Operation manifest is not valid JSON"),
+                             (BOM + BOM + b'{"a": 1}', "Operation manifest is not valid JSON"),
+                             ('{"a": 1}'.encode("utf-16"), "Operation manifest is not valid JSON"),
+                             ('{"a": 1}'.encode("utf-16-be"), "Operation manifest is not valid JSON"),
+                             (b'{"a": 1, "a": 2}', "Operation manifest has a duplicate JSON key"),
+                             (BOM + b'{"a": 1, "a": 2}', "Operation manifest has a duplicate JSON key")):
+        path.write_bytes(content)
+        with pytest.raises(ContractError) as info:
+            operation_cli.read_manifest(path)
+        assert str(info.value) == message
+    path.write_bytes(BOM + b'{"note": "a' + BOM + b'b", "' + BOM + b'key": 1}')
+    assert operation_cli.read_manifest(path) == {"note": "a\N{ZERO WIDTH NO-BREAK SPACE}b",
+                                                 "\N{ZERO WIDTH NO-BREAK SPACE}key": 1}
+    body = b'["' + b"a" * (operation_cli.MAX_MANIFEST_BYTES - 4) + b'"]'
+    path.write_bytes(body)
+    assert operation_cli.read_manifest(path) == ["a" * (operation_cli.MAX_MANIFEST_BYTES - 4)]
+    path.write_bytes(BOM + body)  # the raw byte budget counts the BOM; acceptance does not widen
+    with pytest.raises(ContractError) as info:
+        operation_cli.read_manifest(path)
+    assert str(info.value) == "Operation manifest exceeds budget"
+    with pytest.raises(ContractError) as info:
+        operation_cli.read_manifest(tmp_path / "absent.json")
+    assert str(info.value) == "Operation manifest unavailable"
+
+
+def test_operate_run_refuses_malformed_utf8_as_a_contract_refusal_not_a_decode_error(tmp_path, monkeypatch):
+    """The observed defect: `{"a": "\\xff"}` escaped read_manifest as UnicodeDecodeError."""
+    path = tmp_path / "op.json"
+    path.write_bytes(b'{"a": "\xff"}')
+    outputs = []
+    monkeypatch.setattr(cli, "emit", outputs.append)
+    with pytest.raises(SystemExit) as info:
+        cli.operate_command(None, cli.parser().parse_args(["operate", "run", "--file", str(path)]))
+    assert info.value.code == 1 and outputs[-1] == {"status": "refused", "reason_code": "contract_refused",
+                                                   "error_type": "ContractError", "exit_code": 1}
+
+
+def test_dge_read_document_is_the_one_shared_reader():
+    from codex_harness.adapters import dge_cli
+    assert dge_cli.read_document is operation_cli.read_document
+    assert dge_cli.MAX_DOCUMENT_BYTES == operation_cli.MAX_MANIFEST_BYTES == 256 * 1024

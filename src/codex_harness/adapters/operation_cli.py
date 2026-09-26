@@ -23,14 +23,28 @@ from codex_harness.domain.providers import parse_configuration
 MAX_MANIFEST_BYTES = 256 * 1024
 
 
-def read_manifest(path: Path) -> dict:
+def read_document(path: Path, label: str) -> dict:
+    """Bounded UTF-8 JSON with duplicate keys refused; errors name the file role, not its content.
+    utf-8-sig drops one optional leading BOM from operator-authored files: the raw byte budget still
+    counts it, interior U+FEFF stays data, and malformed UTF-8 or UTF-16 remains refused.
+    The one operator JSON reader, shared by `read_manifest` and `dge_cli.read_document`."""
+    def unique(pairs):
+        result = {}
+        for key, value in pairs:
+            require(key not in result, label + " has a duplicate JSON key")
+            result[key] = value
+        return result
     try:
-        require(path.stat().st_size <= MAX_MANIFEST_BYTES, "Operation manifest exceeds budget")
-        return json.loads(path.read_text(encoding="utf-8"))
+        require(path.stat().st_size <= MAX_MANIFEST_BYTES, label + " exceeds budget")
+        return json.loads(path.read_text(encoding="utf-8-sig"), object_pairs_hook=unique)
     except OSError as exc:
-        raise ContractError("Operation manifest unavailable") from exc
-    except json.JSONDecodeError as exc:
-        raise ContractError("Operation manifest is not valid JSON") from exc
+        raise ContractError(label + " unavailable") from exc
+    except (json.JSONDecodeError, UnicodeDecodeError) as exc:
+        raise ContractError(label + " is not valid JSON") from exc
+
+
+def read_manifest(path: Path) -> dict:
+    return read_document(path, "Operation manifest")
 
 
 class GitSource:
