@@ -159,6 +159,47 @@ The order below is fixed. After step 1, any interruption or unknown effect is re
    - `service_consumption`, from the startup receipt, with subject `revision=<rev>`;
    - `canary_admission`, after the owner runs `zeus fleet resume` for the limited canary.
 
+## 5a. Successor activation (same frame; `restored_paused` only)
+
+This moves the activated Fleet runtime from the intent's revision to another revision of the same
+host, image and profile (INV-HOST-MIGRATION-001 "Successor activation"). It is not a new migration
+and not a new intent. It adds no admission, resume or managed-descriptor authority.
+
+Three identities stay separate:
+
+- **N** is the merged coordinator code that provides these commands. It is used only for one-shot
+  coordinator CLI calls.
+- **The activated revision** (5aa220f for the bootstrap recovery) is what the successor names. The
+  bootstrap Fleet, the monitors, owner-actions, the controller and the managed supervisor run it.
+- **A later managed candidate** (the H1′ sealed runtime) is a separate identity reviewed on its own.
+
+Order (each step is a staged owner phase; none is run by this document):
+
+1. `M activation-successor --file successor.json`. Persist the document bytes first; after a lost
+   response replay the same bytes only (`cached`). Never send a different document.
+2. `M activation-switch --check …` must report `recorded_not_switched`, with no precondition
+   violation. Then `M activation-switch --expected-id <successor id> --control-dir … --releases-dir …
+   --managed-state-dir …`. After an interruption, `--check` shows `receipt_written`; one
+   completion run is a named reconciliation, not a retry. `activation_files_inconsistent` stops for
+   root.
+3. Re-render the owner-actions and controller units for the activated revision (no restart).
+4. Reverse handoff: rename `fleet-owner.json` to a retired name. Only then may the bootstrap role
+   start.
+5. Start the bootstrap Fleet (still paused) and restart the monitors.
+6. Startup acceptance while paused: exact runtime identity, provider readiness, a sole Fleet
+   owner, the pause preserved, and the requalified H1′ still `intended` (or its exact current
+   state). A paused runner only drains the continuation, so nothing new is admitted before resume.
+   Admission is not a precondition of this step.
+7. The owner resumes through the normal command. The ordinary pass then admits the intended work.
+
+Main after P5: recording a requalification checks the remote main; later runs do not. A main that
+moves after P5 does not stop H1′'s worker. The delivery gates refuse stale integration
+(`reviewed_base_moved` before publish and again before the fast-forward).
+
+SPEC.md is not changed by N, so the accepted goal diff can carry over only with evidence. At the
+merged N, root records N explicitly with the raw SPEC hash and the exact ced→N diff bytes, and
+compares them with the reviewed values. Any difference needs a fresh semantic review.
+
 ## 6. qualified
 
 `acceptance_a` and `acceptance_b` are independent-review receipts for A1–A8 and B1–B5.
@@ -191,3 +232,5 @@ Run `M rollback-plan` first; it shows the mode and the steps.
 - The D1–D3 procedure on real source data: rehearsed on disposable fixture servers only.
 - Redis 7.4 on real data (rehearsed 7.4.11 → 7.4.11 on fixtures only).
 - Adversarial concurrent path replacement during staging (see scripts/aibox_data RUNBOOK §3).
+- The successor activation on the live host: record, switch, restart and paused startup are
+  rehearsed on fixtures and a disposable PostgreSQL only.

@@ -3347,6 +3347,55 @@ Activation is intent-first.
    R1 it also requires every reverse step's checkpoint.
 5. No activation document is issued outside `restored_paused`, `limited_active` or `qualified`.
 
+### Successor activation
+
+A successor (`urn:zeus:host-migration-activation-successor:1`) moves the activated runtime to
+another release revision of the same host. It never rewrites the intent.
+
+1. `record_successor` (`activation-successor`) runs in `restored_paused` only, in one store
+   transaction under the coordinator lock.
+   - `predecessor_id` must be the current effective activation (the intent, or the last successor).
+     A second successor of the same predecessor is `activation_successor_conflict`; a superseded
+     predecessor is `activation_predecessor_stale`; the identical successor replays `cached`.
+   - It keeps the host, image and profile of its predecessor and changes the revision
+     (`successor_other_host`, `successor_image_changed`, `successor_profile_changed`,
+     `successor_same_revision`). A new image or profile needs its own qualification.
+   - Gates `release_identity` (`revision=<rev>`), `worker_compatibility` (`image=<digest>`) and
+     `admission_drained` (`fleet=paused-settled`) each need `observation` receipts with exit 0 and
+     exactly that subject. A receipt proves an observation was presented, not a later startup.
+   - The intent, state, manifest, transitions and checkpoints are untouched; one history event
+     `activation_successor` is appended. Rollback stays R1; `rollback_plan` is unchanged. A
+     rollback is another successor back to the older revision, never a rewrite.
+2. The launcher receipt is derived from the effective activation. With a successor, `intent_id`
+   names the successor and `supersedes` and `activation_kind: "successor"` are added; without one
+   the bytes are exactly the intent's derivation. `status` keeps `activation_intent` as the
+   original id and adds `activation_current` and `activation_chain`.
+3. `limited_active` binds to the effective activation: after a successor, receipts bound to the
+   superseded intent are refused.
+4. `activation-switch` writes `host-activation.json`, then replaces `releases/current` (a fresh
+   temporary symlink renamed over it, then a directory fsync; only its own temporary link is ever
+   removed).
+   - It runs its file classification and writes inside the SAME coordinator transaction as
+     `record_successor`. Two switches, or a switch and a successor record, are therefore
+     serialized; `--expected-id` is rechecked under that lock, so a stale switch is refused
+     (`activation_head_moved`) and never writes an older pair over a newer one.
+   - The files are classified against the effective (E) and predecessor (P) receipts: P/P
+     `recorded_not_switched`, E/P `receipt_written` (completion only, no second receipt write),
+     E/E `switched` (cached, nothing written). Anything else is `activation_files_inconsistent`
+     and nothing is written.
+   - It refuses beside `host-fence.json` (a fence is never cleared) and unless the target release
+     is an immutable attested directory (`release_not_ready`).
+   - The supported initial recovery preconditions are re-read at the effect boundary: the managed
+     owner record present, the bootstrap, managed and host-delivery units inactive with MainPID 0,
+     no managed launch request, descriptor or controller launch record, and no Fleet runner,
+     managed runtime or Fleet-role launch process. Unknown is a violation
+     (`recovery_precondition`).
+   - Scope: these are rechecks, not a lock on systemd or on an operator. Existing processes keep
+     the code they started with, and the monitors keep their old revision until restarted. A
+     newly started role that meets a mixed pair is refused by the launcher
+     (`activation_receipt_revision_mismatch`, exit 78). Coordinator code that predates successors
+     derives the intent receipt and is refused the same way.
+
 ### PostgreSQL comparisons
 
 Comparisons run one source schema per invocation, through the canonical `compare-pg`.

@@ -28,6 +28,10 @@ evidence receipts with exit code 0 and a passing typed result were presented for
   migration whose target never had an activation intent.
 * The activation receipt (`urn:zeus:aibox-host-activation:1`) is derived from the recorded intent
   and is exactly what the Linux launcher (deploy/aibox) checks: host id, release revision, state.
+* A successor activation (`urn:zeus:host-migration-activation-successor:1`) moves the activated
+  runtime to another release revision of the SAME host, image and profile without rewriting the
+  intent: exactly one successor per exact effective predecessor, each with its own id and typed
+  observation evidence. The receipt is then derived from the effective (last) activation.
 """
 from __future__ import annotations
 
@@ -686,10 +690,11 @@ def resume_state(history: list) -> str | None:
 
 
 def target_written(history: list) -> bool:
-    """Whether the target may have become a writer: an activation intent exists or the target
-    reached limited_active. The intent alone is enough; its effects are unknown until reconciled."""
-    return any(record.get("event") == "activation_intent" or record.get("to") in (LIMITED_ACTIVE, QUALIFIED)
-               for record in history)
+    """Whether the target may have become a writer: an activation intent (or a successor of it)
+    exists or the target reached limited_active. The intent alone is enough; its effects are
+    unknown until reconciled."""
+    return any(record.get("event") in ("activation_intent", "activation_successor")
+               or record.get("to") in (LIMITED_ACTIVE, QUALIFIED) for record in history)
 
 
 def rollback_mode(history: list) -> str:
@@ -787,20 +792,116 @@ def intent_id(intent: dict) -> str:
     return digest(["host-migration-activation-intent-v1", intent])
 
 
-def activation_receipt(intent: dict, manifest_sha256: str, state: str) -> dict:
-    """The launcher's `host-activation.json`, derived from the recorded intent and nothing else."""
+def activation_receipt(activation: dict, manifest_sha256: str, state: str) -> dict:
+    """The launcher's `host-activation.json`, derived from the recorded intent and nothing else,
+    or from a recorded successor: then `intent_id` names the successor (the field the launcher and
+    `SystemdHostTarget` read) and two fields are added, `supersedes` and `activation_kind`. Without
+    a successor the bytes are exactly the intent's derivation."""
     if state not in (RESTORED_PAUSED, LIMITED_ACTIVE, QUALIFIED):
         raise MigrationRefused("activation_state", "state")
-    return {"schema": ACTIVATION_SCHEMA, "migration_id": intent["migration_id"], "host_id": intent["host_id"],
-            "state": state, "release_revision": intent["release_revision"], "intent_id": intent_id(intent),
-            "manifest_sha256": manifest_sha256}
+    successor = activation.get("schema") == SUCCESSOR_SCHEMA
+    receipt = {"schema": ACTIVATION_SCHEMA, "migration_id": activation["migration_id"],
+               "host_id": activation["host_id"], "state": state, "release_revision": activation["release_revision"],
+               "intent_id": successor_id(activation) if successor else intent_id(activation),
+               "manifest_sha256": manifest_sha256}
+    if successor:
+        receipt.update(supersedes=activation["predecessor_id"], activation_kind="successor")
+    return receipt
+
+
+# ----- successor activation: a new effective head, the intent unchanged ------------------------------
+SUCCESSOR_SCHEMA = "urn:zeus:host-migration-activation-successor:1"
+SUCCESSOR_FIELDS = {"schema", "migration_id", "host_id", "predecessor_id", "release_revision", "image",
+                    "profile_sha256", "environment_lock", "reason_code", "evidence", "actor", "at"}
+# Gate -> the exact subject its observation receipt must name ("{field}" is the successor's value).
+SUCCESSOR_GATES = {"release_identity": "revision={release_revision}", "worker_compatibility": "image={image}",
+                   "admission_drained": "fleet=paused-settled"}
+
+
+def validate_successor(document) -> dict:
+    """Strict validation of a successor activation; returns the canonical copy.
+
+    Each gate needs typed `observation` receipts with exit 0 whose subject is exactly the gate's
+    (the revision that will run, the unchanged image, the settled paused Fleet). A receipt proves
+    that an observation was presented, not that the release later started (INV-HOST-MIGRATION-001).
+    """
+    refuse_secrets(document, "successor")
+    if not isinstance(document, dict) or document.get("schema") != SUCCESSOR_SCHEMA:
+        raise MigrationRefused("successor_schema")
+    _fields(document, SUCCESSOR_FIELDS, "successor")
+    successor = {"schema": SUCCESSOR_SCHEMA,
+                 "migration_id": _match(document["migration_id"], TOKEN, "migration_id"),
+                 "host_id": _match(document["host_id"], HOST_ID, "successor.host_id"),
+                 "predecessor_id": _match(document["predecessor_id"], HEX64, "successor.predecessor_id"),
+                 "release_revision": _match(document["release_revision"], COMMIT, "successor.release_revision"),
+                 "image": _match(document["image"], IMAGE_DIGEST, "successor.image"),
+                 "profile_sha256": _match(document["profile_sha256"], HEX64, "successor.profile_sha256"),
+                 "environment_lock": _match(document["environment_lock"], HEX64, "successor.environment_lock"),
+                 "reason_code": _match(document["reason_code"], TOKEN, "successor.reason_code"),
+                 "actor": _match(document["actor"], TOKEN, "successor.actor"),
+                 "at": _utc(document["at"], "successor.at")}
+    evidence = document["evidence"]
+    if not isinstance(evidence, dict) or set(evidence) != set(SUCCESSOR_GATES):
+        raise MigrationRefused("successor_evidence_fields", "evidence")
+    canonical = {}
+    for gate, template in sorted(SUCCESSOR_GATES.items()):
+        receipts = evidence[gate] if isinstance(evidence[gate], list) else [evidence[gate]]
+        if not 1 <= len(receipts) <= MAX_RECEIPTS:
+            raise MigrationRefused("successor_evidence_missing", "evidence." + gate)
+        checked = [validate_evidence(r, "evidence." + gate + "[" + str(i) + "]") for i, r in enumerate(receipts)]
+        subject = template.format(**successor)
+        for receipt in checked:
+            if receipt["check"] != OBSERVATION:
+                raise MigrationRefused("successor_evidence_kind", "evidence." + gate)
+            if not receipt["ok"]:
+                raise MigrationRefused("successor_evidence_failed", "evidence." + gate)
+            if receipt["subject"] != subject:
+                raise MigrationRefused("successor_evidence_subject", "evidence." + gate)
+        canonical[gate] = sorted(checked, key=lambda r: (r["check"], r["subject"] or "", r["result_sha256"]))
+    successor["evidence"] = canonical
+    return successor
+
+
+def successor_id(successor: dict) -> str:
+    return digest(["host-migration-activation-successor-v1", successor])
+
+
+def activation_id(activation: dict) -> str:
+    """The id of an effective activation: the intent's or the successor's."""
+    return successor_id(activation) if activation.get("schema") == SUCCESSOR_SCHEMA else intent_id(activation)
+
+
+def effective_activation(intent: dict, successors: list) -> dict:
+    """The effective head of an activation chain: the last recorded successor, else the intent.
+    `predecessor` is the activation it superseded (None for the original intent)."""
+    chain = [intent, *successors]
+    head = chain[-1]
+    return {"activation": head, "id": activation_id(head), "kind": "successor" if successors else "intent",
+            "predecessor": chain[-2] if successors else None}
+
+
+def successor_allowed(predecessor: dict, successor: dict) -> None:
+    """Pure refusals of a successor against the activation it supersedes: the same host, image and
+    profile, and a different revision. A new image or profile needs its own qualification."""
+    if successor["migration_id"] != predecessor["migration_id"]:
+        raise MigrationRefused("successor_other_migration", "migration_id")
+    if successor["host_id"] != predecessor["host_id"]:
+        raise MigrationRefused("successor_other_host", "host_id")
+    if successor["release_revision"] == predecessor["release_revision"]:
+        raise MigrationRefused("successor_same_revision", "release_revision")
+    if successor["image"] != predecessor["image"]:
+        raise MigrationRefused("successor_image_changed", "image")
+    if successor["profile_sha256"] != predecessor["profile_sha256"]:
+        raise MigrationRefused("successor_profile_changed", "profile_sha256")
 
 
 __all__ = ["ACTIVATION_SCHEMA", "CHECKPOINT_SCHEMA", "CONTROL_SCHEMA", "EVIDENCE_SCHEMA", "FAILED", "FORWARD",
            "GATES", "INTENT_SCHEMA", "LIMITED_ACTIVE", "MANIFEST_SCHEMA", "MigrationRefused", "OBSERVATION",
            "PLANNED", "QUALIFIED", "REGISTRY_DELTA_BUCKETS", "RESTORED_PAUSED", "REVERSE_STEPS", "ROLLBACK_R0",
            "ROLLBACK_R1", "ROLLBACK_REQUIRED", "ROLLED_BACK", "SNAPSHOT_SEALED", "SOURCE_PUBLIC", "STATES",
-           "STEPS", "TRANSITION_SCHEMA", "activation_receipt", "allowed", "evidence_receipt", "intent_id",
+           "STEPS", "SUCCESSOR_GATES", "SUCCESSOR_SCHEMA", "TRANSITION_SCHEMA", "activation_id",
+           "activation_receipt", "allowed", "effective_activation", "evidence_receipt", "intent_id",
+           "successor_allowed", "successor_id", "validate_successor",
            "catalog_schemas", "compare_catalogs", "manifest_digest", "pg_coverage", "rename_plan", "restore_id", "refuse_secrets", "schema_comparison", "schema_subject", "resume_state", "reverse_maps", "rollback_mode", "step_allowed",
            "target_written", "transition_id", "validate_checkpoint", "validate_evidence", "validate_intent",
            "validate_manifest", "validate_transition"]
