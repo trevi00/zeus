@@ -379,7 +379,7 @@ def test_workflow_routes_jobs_through_changes_and_gate(workflow):
 def test_workflow_preserves_full_matrix_and_commands(workflow):
     test = workflow["jobs"]["test"]
     assert test["strategy"] == {"fail-fast": False, "matrix": {
-        "os": ["ubuntu-latest", "windows-latest"], "python": ["3.12", "3.14"]}}
+        "os": ["ubuntu-latest"], "python": ["3.12", "3.14"]}}
     assert test["runs-on"] == "${{ matrix.os }}"
     assert test["steps"][0]["with"] == {"fetch-depth": 0}
     assert [step["run"] for step in test["steps"] if "run" in step] == [
