@@ -3019,21 +3019,36 @@ reason (`_delivery_unbound`, `_plan_mismatch`, `_plan_not_withdrawn`, `_reason_m
 record and the origin task's candidate (`_candidate_mismatch`); `main_revision` equal to the remote main
 read now (`ls-remote`), present in the lane repository and, for `reviewed_base_moved`, not the withdrawn
 candidate's base (`_main_unreadable`, `_main_changed`, `_main_missing`, `_main_not_moved`); the goal blob at
-that main still the goal's pinned digest (`requalification_goal_changed`: a new goal is the owner's,
-outside this path); no other open requalification in the family (`_family_open`); and the rationale bytes
-(`requalification_rationale_*`). The existing manifest validator decides (`_manifest_refused`). ONE
-control-store transaction then rechecks the intent, policy row and origin row and that the successor is
-new (`_intent_changed`, `_source_changed`, `_successor_exists`), stores the document in
+that main still the goal's pinned digest (`requalification_goal_changed`: a changed goal needs the
+owner's explicit migration block below); no other open requalification in the family (`_family_open`);
+and the rationale bytes (`requalification_rationale_*`). Optional strict `goal_migration {path,
+criterion, from_sha256, to_sha256, review_ref}` (owner review R1; absent = the unchanged-goal rule
+above): the same path and criterion as the origin goal (`_goal_migration_scope`); `from_sha256` equal to
+the origin Fleet job goal, the intent's stored authorization goal and the real blob at the origin goal's
+`base_revision` (`_goal_migration_origin`); `to_sha256` the real regular blob at `main_revision`
+(`_goal_migration_target`); from != to and a content-addressed `review_ref` distinct from the rationale
+(`requalification_invalid`) whose bytes verify (`requalification_goal_review_*`). The stored row keeps
+the comparison inputs `goal_migration {path, criterion, from {revision, sha256, bytes}, to {revision,
+sha256, bytes}, review_ref, review: owner_reference_recorded}`: recorded hashes, not a controller review
+of the diff. Membership (`check_membership`) reads the policy through `goal_frame`: its pinned goals plus
+each migration target, reachable from a pinned goal, of this policy digest's intact stored rows
+(`migrated_goals`); the pin, digest and every other field are unchanged. The existing manifest validator
+decides (`_manifest_refused`). ONE control-store transaction then rechecks that no requalification of the
+family opened meanwhile (`_family_open`, owner review R2: inside the same transaction, which
+`Store.transaction` serializes behind its advisory lock), the intent, policy row and origin row and that
+the successor is new (`_intent_changed`, `_source_changed`, `_successor_exists`), stores the document in
 `continuation_requalifications` keyed by the intent, moves THAT intent to terminal `superseded`
 (`superseded_by`, `requalification` digest, appended history; an explicit owner transition, never a
 `TRANSITIONS` edge) and creates ONE `requalification` intent (`requalification_id(intent)`, same family,
 origin job and stored authorization, `predecessor_intent`) whose manifest keeps the origin's goal, plan,
 allowed paths, acceptance criteria, budget and Claude controls with `base_revision = main_revision` and a
-fixed preface of identities, whose goal binding is the same goal at that main, and whose lane binding has
+fixed preface of identities, whose goal binding is the same goal at that main (with a migration: the
+same path, criterion and rationale at `to_sha256`, in the manifest and the Fleet goal binding), and whose lane binding has
 route `requalification`, no session and no workspace (a fresh workspace at the new base, never a rebase of
 the immutable candidate). The identical document replays (`cached`); any other for the intent is
 `requalification_conflict`. Nothing external happens in the command: the tick's existing `publish` binds
-and admits it (`_authorize` also rechecks the stored document, `requalification_missing`/`_corrupt`), its
+and admits it (`_authorize` also rechecks the stored document, the intent and manifest goal against it
+and a migration's comparison and review bytes, `requalification_missing`/`_corrupt`/`_goal_review_*`), its
 terminal outcome is observed like any job, and its candidate needs its own lead review, conductor and a new
 delivery plan. `requalification` is in the binding route set and `RESUME` but deliberately NOT in
 `SUCCESSOR_ROUTES`/`FAILURE_ROUTES`: it answers no failure, so it never counts against

@@ -1196,6 +1196,13 @@ def capacity_view(row: dict, intent) -> dict:
 REQUALIFICATION_SCHEMA = "urn:zeus:continuation-delivery-requalification:1"
 REQUALIFICATION_FIELDS = {"schema", "policy_id", "policy_sha256", "intent_id", "family", "release_id", "candidate",
                           "plan", "withdrawal_reason", "main_revision", "rationale_ref"}
+# Optional strict block (owner review R1): the goal document of the SAME goal (path and criterion) changed
+# between the origin's base and `main_revision`. Absent = the goal bytes at that main must be unchanged.
+GOAL_MIGRATION = "goal_migration"
+GOAL_MIGRATION_FIELDS = {"path", "criterion", "from_sha256", "to_sha256", "review_ref"}
+# What the stored comparison record claims: the owner recorded a review reference, not that this
+# controller reviewed the goal diff.
+GOAL_MIGRATION_REVIEW = "owner_reference_recorded"
 REQUALIFICATION_CANDIDATE_FIELDS = {"revision", "tree", "base"}
 REQUALIFICATION_PLAN_FIELDS = {"plan_id", "plan_sha256"}
 REQUALIFICATION_REASONS = ("reviewed_base_moved", "descriptor_predecessor_moved", "merged_tree_mismatch")
@@ -1211,8 +1218,10 @@ def _requalification(condition, field: str) -> None:
 
 
 def validate_requalification(document) -> dict:
-    """Strict owner document; returns the canonical copy. Unknown or missing fields are refused."""
-    _requalification(isinstance(document, dict) and set(document) == REQUALIFICATION_FIELDS, "root")
+    """Strict owner document; returns the canonical copy. Unknown or missing fields are refused; the
+    optional `goal_migration` block is kept only when present (absent keeps the canonical shape)."""
+    _requalification(isinstance(document, dict) and set(document) in (
+        REQUALIFICATION_FIELDS, REQUALIFICATION_FIELDS | {GOAL_MIGRATION}), "root")
     _requalification(document["schema"] == REQUALIFICATION_SCHEMA, "schema")
     _requalification(type(document["policy_id"]) is str and TOKEN.fullmatch(document["policy_id"]) is not None,
                      "policy_id")
@@ -1236,11 +1245,73 @@ def validate_requalification(document) -> dict:
                      is not None, "main_revision")
     _requalification(type(document["rationale_ref"]) is str and EVIDENCE_REF.fullmatch(document["rationale_ref"])
                      is not None, "rationale_ref")
-    return {"schema": REQUALIFICATION_SCHEMA,
-            **{k: document[k] for k in ("policy_id", "policy_sha256", "intent_id", "family", "release_id",
-                                        "withdrawal_reason", "main_revision", "rationale_ref")},
-            "candidate": {k: candidate[k] for k in sorted(REQUALIFICATION_CANDIDATE_FIELDS)},
-            "plan": {k: plan[k] for k in sorted(REQUALIFICATION_PLAN_FIELDS)}}
+    canonical = {"schema": REQUALIFICATION_SCHEMA,
+                 **{k: document[k] for k in ("policy_id", "policy_sha256", "intent_id", "family", "release_id",
+                                             "withdrawal_reason", "main_revision", "rationale_ref")},
+                 "candidate": {k: candidate[k] for k in sorted(REQUALIFICATION_CANDIDATE_FIELDS)},
+                 "plan": {k: plan[k] for k in sorted(REQUALIFICATION_PLAN_FIELDS)}}
+    if GOAL_MIGRATION in document:
+        canonical[GOAL_MIGRATION] = _goal_migration(document[GOAL_MIGRATION], document["rationale_ref"])
+    return canonical
+
+
+def _goal_migration(block, rationale_ref: str) -> dict:
+    """The strict block: an actual digest change of one goal document under an owner-recorded review
+    reference distinct from the rationale. Whether the digests are the stored and the real blobs is
+    decided against authoritative reads, not here."""
+    from codex_harness.domain.operation import safe_relative_path
+
+    def valid(condition):
+        _requalification(condition, GOAL_MIGRATION)
+
+    valid(isinstance(block, dict) and set(block) == GOAL_MIGRATION_FIELDS)
+    valid(type(block["path"]) is str and safe_relative_path(block["path"]) and block["path"].lower().endswith(".md"))
+    valid(type(block["criterion"]) is str and 0 < len(block["criterion"].strip()) <= 400)
+    valid(all(type(block[k]) is str and SHA256.fullmatch(block[k]) is not None for k in ("from_sha256", "to_sha256")))
+    valid(block["from_sha256"] != block["to_sha256"])
+    valid(type(block["review_ref"]) is str and EVIDENCE_REF.fullmatch(block["review_ref"]) is not None
+          and block["review_ref"] != rationale_ref)
+    return {k: block[k] for k in sorted(GOAL_MIGRATION_FIELDS)}
+
+
+def migrated_goals(policy_id: str, policy_sha256: str, rows) -> list:
+    """The goal migrations the owner recorded for THIS policy digest in intact stored requalifications
+    (`document_sha256 == digest(document)` and the stored comparison naming the same digests). A tampered
+    or foreign row contributes nothing."""
+    out = []
+    for row in rows or ():
+        document = row.get("document") if isinstance(row, dict) else None
+        block = document.get(GOAL_MIGRATION) if isinstance(document, dict) else None
+        recorded = row.get(GOAL_MIGRATION) if isinstance(row, dict) else None
+        if not (isinstance(block, dict) and isinstance(recorded, dict)
+                and row.get("document_sha256") == digest(document)
+                and document.get("policy_id") == policy_id and document.get("policy_sha256") == policy_sha256
+                and (recorded.get("from") or {}).get("sha256") == block.get("from_sha256")
+                and (recorded.get("to") or {}).get("sha256") == block.get("to_sha256")):
+            continue
+        out.append({k: block[k] for k in ("path", "criterion", "from_sha256", "to_sha256")})
+    return sorted(out, key=lambda m: (m["path"], m["criterion"], m["from_sha256"], m["to_sha256"]))
+
+
+def goal_frame(policy: dict, migrations: list) -> dict:
+    """The policy as membership reads it: its pinned goals plus every recorded migration target reachable
+    from one of them (same path and criterion, from a goal already in the frame). The pinned policy, its
+    digest and every other field are unchanged; this is the owner's recorded extension beside the pin, as
+    a capacity grant is beside the cap."""
+    goals = [dict(goal) for goal in policy["goals"]]
+    known = {(g["path"], g["sha256"], g["criterion"]) for g in goals}
+    changed = True
+    while changed:
+        changed = False
+        for m in migrations:
+            target = (m["path"], m["to_sha256"], m["criterion"])
+            if (m["path"], m["from_sha256"], m["criterion"]) in known and target not in known:
+                known.add(target)
+                goals.append({"path": m["path"], "sha256": m["to_sha256"], "criterion": m["criterion"]})
+                changed = True
+    if len(goals) == len(policy["goals"]):
+        return policy
+    return {**policy, "goals": sorted(goals, key=lambda g: (g["path"], g["criterion"], g["sha256"]))}
 
 
 def requalification_id(intent: str) -> str:
@@ -1255,16 +1326,23 @@ REQUALIFICATION_PREFACE = ("Requalification of an accepted change on a newer mai
                            "unchanged; the new candidate needs its own independent review.")
 
 
-def requalification_manifest(origin: dict, main_revision: str, successor: str, references: dict) -> dict:
+def requalification_manifest(origin: dict, main_revision: str, successor: str, references: dict,
+                             goal_sha256: str | None = None) -> dict:
     """The fresh operation: the origin's goal, plan, allowed paths, acceptance criteria, budget and
     Claude controls unchanged, the base moved to `main_revision` and only the id and the objective's
-    fixed preface differ. `references` are identities only, never model text."""
+    fixed preface differ. `references` are identities only, never model text. `goal_sha256` is the
+    verified owner goal migration's target digest (the same goal path, criterion and rationale at the
+    new base); None keeps the origin's digest."""
     refuse(REVISION.fullmatch(str(main_revision or "")) is not None, "requalification_invalid", field="main_revision")
     plan = origin["plan"]
     lines = [REQUALIFICATION_PREFACE, "Continuation references: " + ", ".join(
         f"{key}={references[key]}" for key in sorted(references) if references[key] is not None)]
+    goal = dict(origin["goal"])
+    if goal_sha256 is not None:
+        refuse(SHA256.fullmatch(str(goal_sha256)) is not None, "requalification_invalid", field=GOAL_MIGRATION)
+        goal["sha256"] = goal_sha256
     manifest = {"schema": origin["schema"], "id": successor, "base_revision": main_revision,
-                "goal": dict(origin["goal"]),
+                "goal": goal,
                 "plan": {"objective": "\n".join(lines) + "\n\n" + plan["objective"],
                          "acceptance_criteria": list(plan["acceptance_criteria"]),
                          "allowed_paths": list(plan["allowed_paths"])},
@@ -1282,6 +1360,7 @@ def requalification_view(row: dict) -> dict:
             "release_id": document.get("release_id"), "candidate": document.get("candidate"),
             "plan": document.get("plan"), "withdrawal_reason": document.get("withdrawal_reason"),
             "main_revision": document.get("main_revision"), "rationale_ref": document.get("rationale_ref"),
+            "goal_migration": row.get(GOAL_MIGRATION),
             "superseded": row.get("superseded"), "recorded_at": row.get("recorded_at"),
             "authority": REQUALIFICATION_AUTHORITY}
 

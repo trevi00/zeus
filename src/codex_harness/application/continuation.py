@@ -65,6 +65,8 @@ from codex_harness.domain.continuation import (
     DELIVERY_BOUND,
     DISPATCHED,
     EVIDENCE_REPAIR,
+    GOAL_MIGRATION,
+    GOAL_MIGRATION_REVIEW,
     INTENDED,
     LAUNCH_ABSENT,
     LAUNCH_EXITED,
@@ -116,10 +118,12 @@ from codex_harness.domain.continuation import (
     effect_free,
     evidence_digest,
     fair_order,
+    goal_frame,
     intent_id,
     intent_slot,
     is_member,
     launch_id,
+    migrated_goals,
     needs_research,
     observed_attempt,
     owners,
@@ -673,6 +677,7 @@ class Continuation:
         with self.store.transaction() as tx:
             jobs = {job["id"]: job for job in tx.scan(FLEET_JOBS)}
             every = tx.scan(BUCKET_INTENTS)
+            policy = self._framed(tx, row)
         intents = [intent for intent in every if intent.get("policy_id") == policy_id]
         ctx = {"policy": policy, "sha": row["policy_sha256"], "pin": row["pin"].get("sha256"),
                "runtime": LaneRuntime(runtime) if runtime else None, "jobs": jobs}
@@ -1088,6 +1093,7 @@ class Continuation:
             row = tx.get(BUCKET_POLICIES, grant["policy_id"])
             intent = tx.get(BUCKET_INTENTS, grant["intent_id"])
             jobs = {job["id"]: job for job in tx.scan(FLEET_JOBS)}
+            framed = self._framed(tx, row)
         if stored is not None:
             refuse(stored.get("grant") == grant, "capacity_grant_conflict", "operator", "intent_id")
             return self._grant_result(stored, intent, cached=True)
@@ -1095,7 +1101,7 @@ class Continuation:
         refuse(isinstance(row, dict) and row["policy_sha256"] == grant["policy_sha256"] and row["policy"]["enabled"]
                and row["pin"].get("sha256") == pin_sha256, "capacity_policy_foreign", "operator", "policy")
         check_capacity_refusal(grant, intent)
-        ctx = {"policy": row["policy"], "sha": row["policy_sha256"], "pin": row["pin"].get("sha256"),
+        ctx = {"policy": framed, "sha": row["policy_sha256"], "pin": row["pin"].get("sha256"),
                "runtime": LaneRuntime(runtime), "jobs": jobs}
         job = jobs.get(intent["origin_job"])
         refuse(isinstance(job, dict), "capacity_source_changed", "operator", "source.job")
@@ -1154,6 +1160,15 @@ class Continuation:
         return {"granted": True, "cached": cached, **capacity_view(row, intent)}
 
     # ----- owner delivery requalification -------------------------------------------------
+    @staticmethod
+    def _framed(tx, row):
+        """The registered policy as membership reads it, in the caller's transaction: the pinned goals
+        plus the goal migrations of this policy digest's intact stored requalifications (`goal_frame`)."""
+        if not isinstance(row, dict):
+            return None
+        return goal_frame(row["policy"], migrated_goals(row["id"], row["policy_sha256"],
+                                                        tx.scan(BUCKET_REQUALIFICATIONS)))
+
     def requalify_delivery(self, document, *, pin_sha256: str | None = None, runtime=None, mainline=None) -> dict:
         """Supersede ONE delivery intent whose HostDelivery plan the owner withdrew as stale by ONE fresh
         `requalification` operation on the named current main (SPEC aibox-migration-001 s15, D5).
@@ -1164,15 +1179,18 @@ class Continuation:
         release); the lane's HostDelivery row of exactly the named plan at stage `withdrawn` for the named
         reason; the release candidate; `main_revision` equal to the remote main NOW, present in the lane
         repository and (for `reviewed_base_moved`) not the withdrawn candidate's base; the goal bytes at
-        that main still the goal's pinned digest (a changed goal is the owner's, outside this path); no
-        other open requalification in the family; the rationale bytes. Then ONE control-store
-        transaction stores the document, moves the intent to `superseded` (an explicit owner transition,
-        never a TRANSITIONS edge; its snapshot and history stay) and creates the `requalification` intent
-        with the origin's goal, allowed paths, criteria, budget and controls on `main_revision`, a fresh
-        workspace (no session, no continued workspace) and explicit lineage. Nothing external happens:
-        the next tick binds and admits it through the existing path. The identical document replays
-        (`cached`); any other for the same intent is `requalification_conflict`. Owner-triggered only:
-        nothing here ever re-arms itself."""
+        that main still the goal's pinned digest, or - only with the owner's optional `goal_migration`
+        block - the block's exact old digest as the stored origin binding and the real blob at the
+        origin's base, and its new digest as the real blob at that main, same path and criterion, with
+        the review reference's bytes (owner review R1); no other open requalification in the family; the
+        rationale bytes. Then ONE control-store transaction rechecks the family (R2) and stores the
+        document, moves the intent to `superseded` (an explicit owner transition, never a TRANSITIONS
+        edge; its snapshot and history stay) and creates the `requalification` intent with the origin's
+        goal (at the migrated digest when recorded), allowed paths, criteria, budget and controls on
+        `main_revision`, a fresh workspace (no session, no continued workspace) and explicit lineage.
+        Nothing external happens: the next tick binds and admits it through the existing path. The
+        identical document replays (`cached`); any other for the same intent is
+        `requalification_conflict`. Owner-triggered only: nothing here ever re-arms itself."""
         requalification = validate_requalification(document)
         key = requalification["intent_id"]
         with self.store.transaction() as tx:
@@ -1180,6 +1198,7 @@ class Continuation:
             row = tx.get(BUCKET_POLICIES, requalification["policy_id"])
             intent = tx.get(BUCKET_INTENTS, key)
             jobs = {job["id"]: job for job in tx.scan(FLEET_JOBS)}
+            framed = self._framed(tx, row)
         if stored is not None:
             refuse(stored.get("document") == requalification, "requalification_conflict", "operator", "intent_id")
             return self._requalification_result(stored, cached=True)
@@ -1196,37 +1215,56 @@ class Continuation:
         refuse(intent.get("family") == requalification["family"]
                and intent.get("release_id") == requalification["release_id"],
                "requalification_intent_mismatch", "operator", "intent_id")
-        ctx = {"policy": row["policy"], "sha": row["policy_sha256"], "pin": row["pin"].get("sha256"),
+        ctx = {"policy": framed, "sha": row["policy_sha256"], "pin": row["pin"].get("sha256"),
                "runtime": LaneRuntime(runtime), "jobs": jobs}
         job = jobs.get(intent["origin_job"])
         refuse(isinstance(job, dict), "origin_job_missing", "fleet", "origin_job")
         current = ctx["runtime"](job["lane"])
         check_scope(ctx["policy"], job, current)
         check_authorization(intent.get("authorization"), authorization(ctx["sha"], ctx["pin"], job, current))
-        goal = self._requalification_bindings(ctx, requalification, intent, job, mainline)
+        goal, compared = self._requalification_bindings(ctx, requalification, intent, job, mainline)
         successor = successor_id(requalification_id(key))
+        migration = requalification.get(GOAL_MIGRATION)
         manifest = requalification_manifest(job["manifest"], requalification["main_revision"], successor, {
             "predecessor_job": job["id"], "predecessor_intent": key,
             "candidate_revision": requalification["candidate"]["revision"],
             "candidate_tree": requalification["candidate"]["tree"],
             "candidate_base": requalification["candidate"]["base"], "release_id": requalification["release_id"],
-            "plan_id": requalification["plan"]["plan_id"], "withdrawal_reason": requalification["withdrawal_reason"]})
+            "plan_id": requalification["plan"]["plan_id"], "withdrawal_reason": requalification["withdrawal_reason"],
+            "goal_from_sha256": (migration or {}).get("from_sha256"),
+            "goal_to_sha256": (migration or {}).get("to_sha256")}, goal["sha256"] if migration else None)
         if self.validate is not None:
             try:
                 manifest = self.validate(manifest)
             except ContractError:
                 raise ContinuationRefused("requalification_manifest_refused", "operator", "manifest") from None
-        return self._commit_requalification(requalification, row, intent, job, manifest, goal)
+        return self._commit_requalification(requalification, row, intent, job, manifest, goal, compared)
 
-    def _requalification_bindings(self, ctx, requalification: dict, intent: dict, job: dict, mainline) -> dict:
+    @staticmethod
+    def _family_open(rows, requalification: dict) -> bool:
+        """Another requalification of this policy's family is still open (one at a time per family)."""
+        return any(row.get("route") == REQUALIFICATION and row.get("state") in OPEN_STATES | {RECOVERY_REQUIRED}
+                   and row.get("policy_id") == requalification["policy_id"]
+                   and row.get("family") == requalification["family"] for row in rows)
+
+    def _requalification_bindings(self, ctx, requalification: dict, intent: dict, job: dict, mainline):
         """What one requalification is bound to, re-read now outside any transaction; returns the goal
-        binding at `main_revision`. The first gap refuses by name; an unreadable read refuses too."""
+        binding at `main_revision` and the stored goal comparison (None without a migration block). The
+        first gap refuses by name; an unreadable read refuses too. The family check here only refuses
+        early: `_commit_requalification` decides it again inside its transaction."""
         with self.store.transaction() as tx:
             every = tx.scan(BUCKET_INTENTS)
-        refuse(not any(row.get("route") == REQUALIFICATION and row.get("state") in OPEN_STATES | {RECOVERY_REQUIRED}
-                       and row.get("policy_id") == requalification["policy_id"]
-                       and row.get("family") == requalification["family"] for row in every),
-               "requalification_family_open", "fleet", "family")
+        refuse(not self._family_open(every, requalification), "requalification_family_open", "fleet", "family")
+        migration = requalification.get(GOAL_MIGRATION)
+        origin_goal = job["goal"]
+        if migration is not None:
+            # R1: the SAME goal (path and criterion), from exactly the digest the origin was bound and
+            # authorized under; never a wider or another goal.
+            refuse(migration["path"] == origin_goal["path"] and migration["criterion"] == origin_goal["criterion"],
+                   "requalification_goal_migration_scope", "operator", GOAL_MIGRATION)
+            refuse(migration["from_sha256"] == origin_goal["sha256"]
+                   == ((intent.get("authorization") or {}).get("goal") or {}).get("sha256"),
+                   "requalification_goal_migration_origin", "operator", GOAL_MIGRATION)
         lane = self.lanes(intent["lane"])
         evidence = lane.read(job, ctx["policy"]["delivery_target"])
         delivery = evidence.get("delivery") or {}
@@ -1253,7 +1291,10 @@ class Continuation:
             port = mainline(intent["lane"])
             remote = port.remote_main()
             present = port.commit_exists(main)
-            observed = port.goal(main, job["goal"]["path"]) if present else None
+            observed = port.goal(main, origin_goal["path"]) if present else None
+            # The real blob the origin was bound to at its own base (only read for a migration).
+            before = port.goal(origin_goal["base_revision"], origin_goal["path"]) if migration is not None \
+                and port.commit_exists(origin_goal["base_revision"]) else None
         except ContinuationRefused:
             raise
         except Exception:
@@ -1263,21 +1304,47 @@ class Continuation:
         if requalification["withdrawal_reason"] == "reviewed_base_moved":
             refuse(main != requalification["candidate"]["base"], "requalification_main_not_moved", "operator",
                    "main_revision")
-        # The same rule the operation's own goal binding applies at its base (`goal_binding`).
-        refuse(isinstance(observed, dict) and observed.get("mode") == "100644"
-               and observed.get("sha256") == job["goal"]["sha256"], "requalification_goal_changed", "operator", "goal")
+        regular = isinstance(observed, dict) and observed.get("mode") == "100644"
+        compared = None
+        if migration is None:
+            # The same rule the operation's own goal binding applies at its base (`goal_binding`).
+            refuse(regular and observed.get("sha256") == origin_goal["sha256"], "requalification_goal_changed",
+                   "operator", "goal")
+        else:
+            refuse(isinstance(before, dict) and before.get("mode") == "100644"
+                   and before.get("sha256") == migration["from_sha256"], "requalification_goal_migration_origin",
+                   "operator", GOAL_MIGRATION)
+            refuse(regular and observed.get("sha256") == migration["to_sha256"],
+                   "requalification_goal_migration_target", "operator", GOAL_MIGRATION)
+            self._verify_review(migration["review_ref"])
+            # Durable comparison inputs only (hashes, sizes, revisions): no claim the diff was reviewed here.
+            compared = {"path": migration["path"], "criterion": migration["criterion"],
+                        "from": {"revision": origin_goal["base_revision"], "sha256": migration["from_sha256"],
+                                 "bytes": before.get("bytes")},
+                        "to": {"revision": main, "sha256": migration["to_sha256"], "bytes": observed.get("bytes")},
+                        "review_ref": migration["review_ref"], "review": GOAL_MIGRATION_REVIEW}
         try:
             self._verify_evidence([requalification["rationale_ref"]])
         except ContinuationRefused as exc:
             raise ContinuationRefused(exc.reason_code.replace("research_evidence", "requalification_rationale", 1),
                                       "operator", "rationale_ref") from None
-        return {"path": job["goal"]["path"], "sha256": job["goal"]["sha256"], "criterion": job["goal"]["criterion"],
-                "base_revision": main, "bytes": observed.get("bytes")}
+        return ({"path": origin_goal["path"], "sha256": observed["sha256"], "criterion": origin_goal["criterion"],
+                 "base_revision": main, "bytes": observed.get("bytes")}, compared)
+
+    def _verify_review(self, ref: str) -> None:
+        """The owner's goal-diff review reference: its actual bytes through the trusted store, now."""
+        try:
+            self._verify_evidence([ref])
+        except ContinuationRefused as exc:
+            raise ContinuationRefused(exc.reason_code.replace("research_evidence", "requalification_goal_review", 1),
+                                      "operator", GOAL_MIGRATION) from None
 
     def _commit_requalification(self, requalification: dict, row: dict, intent: dict, job: dict, manifest: dict,
-                                goal: dict) -> dict:
-        """ONE transaction: nothing the verification read moved, then the document, the superseded intent
-        and the requalification intent together - an interruption leaves all three or none."""
+                                goal: dict, compared: dict | None) -> dict:
+        """ONE transaction: nothing the verification read moved and no other requalification of the
+        family opened meanwhile (owner review R2; `Store.transaction` serializes writers), then the
+        document, the superseded intent and the requalification intent together - an interruption
+        leaves all three or none, and a refusal writes none."""
         key, now = requalification["intent_id"], self.clock()
         new_id = requalification_id(key)
         successor = manifest["id"]
@@ -1287,6 +1354,8 @@ class Continuation:
             if old is not None:
                 refuse(old.get("document") == requalification, "requalification_conflict", "operator", "intent_id")
                 return self._requalification_result(old, cached=True)
+            refuse(not self._family_open(tx.scan(BUCKET_INTENTS), requalification), "requalification_family_open",
+                   "fleet", "family")
             current = tx.get(BUCKET_INTENTS, key)
             refuse(current == intent, "requalification_intent_changed", "operator", "intent_id")
             refuse(tx.get(BUCKET_POLICIES, requalification["policy_id"]) == row, "requalification_policy_foreign",
@@ -1297,7 +1366,7 @@ class Continuation:
             snapshot = {k: current.get(k) for k in ("state", "reason_code", "next_owner", "version", "updated_at")}
             stored = {"id": key, "schema": REQUALIFICATION_SCHEMA, "document": requalification,
                       "document_sha256": document_sha, "requalification_intent": new_id, "successor_job": successor,
-                      "superseded": snapshot, "recorded_at": now, "recorded_by": "owner"}
+                      GOAL_MIGRATION: compared, "superseded": snapshot, "recorded_at": now, "recorded_by": "owner"}
             # The one explicit owner transition of the delivery intent (never a TRANSITIONS edge).
             current.update(state=SUPERSEDED, reason_code=REQUALIFICATION_AUTHORIZED, next_owner="operator",
                            superseded_by=new_id, requalification=document_sha, version=current["version"] + 1,
@@ -1336,7 +1405,9 @@ class Continuation:
 
     def _check_requalification(self, ctx, intent: dict) -> None:
         """Before a requalification intent's NEW effect: its stored owner document, intact and naming
-        exactly this intent, successor and policy."""
+        exactly this intent, successor and policy; the goal the successor is admitted with is exactly
+        the recorded one (the origin's digest, or the migration's target with its stored comparison);
+        and a migration's review reference bytes, verified again now."""
         with self.store.transaction() as tx:
             row = tx.get(BUCKET_REQUALIFICATIONS, intent.get("predecessor_intent") or "")
         refuse(isinstance(row, dict), "requalification_missing", "operator", "requalification")
@@ -1347,6 +1418,21 @@ class Continuation:
                "requalification_corrupt", "operator", "requalification")
         refuse(document["policy_id"] == ctx["policy"]["id"] and document["policy_sha256"] == ctx["sha"],
                "requalification_policy_foreign", "operator", "policy")
+        origin = (ctx["jobs"].get(intent["origin_job"]) or {}).get("goal") or {}
+        migration, compared = document.get(GOAL_MIGRATION), row.get(GOAL_MIGRATION)
+        goal, manifest_goal = intent.get("goal") or {}, (intent.get("manifest") or {}).get("goal") or {}
+        expected = origin.get("sha256") if migration is None else migration["to_sha256"]
+        refuse(goal.get("sha256") == manifest_goal.get("sha256") == expected
+               and goal.get("path") == manifest_goal.get("path") == origin.get("path")
+               and goal.get("criterion") == manifest_goal.get("criterion") == origin.get("criterion")
+               and goal.get("base_revision") == document["main_revision"]
+               and (compared is None if migration is None else isinstance(compared, dict)
+                    and (compared.get("from") or {}).get("sha256") == migration["from_sha256"]
+                    and (compared.get("to") or {}).get("sha256") == migration["to_sha256"]
+                    and compared.get("review_ref") == migration["review_ref"]),
+               "requalification_corrupt", "operator", "requalification")
+        if migration is not None:
+            self._verify_review(migration["review_ref"])
 
     def _grant_bindings(self, ctx, grant: dict, intent: dict) -> dict:
         """What a grant is bound to, re-read now outside any transaction: this policy's scope, no active

@@ -176,6 +176,21 @@ never counts against `max_corrections`, research or capacity. Decisions for ever
 | `reconcile_ownership` | unchanged: a repair for failure successors admitted before inheritance; requalification inherits at admission |
 | research scope supplement lineage (`_check_descendant`), owner-actions research lineage | unchanged: failure lineage only |
 
+**Goal migration and family atomicity (owner review R1/R2, aibox SPEC s15.6).** When the goal document
+itself changed between the origin's base and the named main, the same owner document carries the optional
+strict `goal_migration {path, criterion, from_sha256, to_sha256, review_ref}` block. Without it the
+unchanged-goal rule still refuses (`requalification_goal_changed`). With it, `from` must be the origin's
+stored binding and the real blob at the origin's base, `to` must be the real blob at the main, path and
+criterion cannot change, and the review reference's bytes must verify. The successor's manifest and Fleet
+goal carry `to`; its scope, criteria and budget are the origin's. Equivalence with the existing mechanism:
+the pinned policy's `goals` are never rewritten, because that would change its digest and hold every
+intent under `policy_changed`. Instead, membership reads `goal_frame(policy, migrated_goals(...))`. This
+is the owner's recorded extension beside the pin, in the same way a capacity grant sits beside the cap,
+and a tampered row adds nothing. Recording hashes is not a review of the goal diff. That diff is reviewed
+separately, and its reference is what the owner records. The one-open-requalification-per-family rule is
+checked again inside the commit transaction, so two interleaved requests for different intents of one
+family commit at most one.
+
 ## Not established here (owner qualification gates)
 
 - The ownership correction on Windows (job object, breakaway, guardian survival of controller
