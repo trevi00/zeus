@@ -2464,7 +2464,9 @@ approval and the only active-release compare-and-swap, `ReleaseQueue` the only c
 `GitWorkspace` the only publisher and merger, and the registered scheduled task or owned child
 process the only thing that runs. Delivery is opt-in: without `ZEUS_HOST_DELIVERY_ENABLED` a tick
 registers, projects and refuses every external action, and while it is off not even a durable intent
-is written. The legacy Docker `ReleaseRunner` is not enabled, driven or replaced by this component.
+is written. The legacy Docker supervisor (`ReleaseRunner.run`, its merge and promotion) is not
+enabled, driven or replaced by this component; only the evaluation half of that one evaluator is
+driven, before publication, as INV-HOST-DELIVERY-VERIFY-001 states.
 
 Every one of those commands takes an optional `--lane <id>`. Without it nothing changes: the
 control store and its configured workspace. With it, the lane is the ONE entry of the control
@@ -2505,12 +2507,14 @@ exactly the plan's (`release_revision_mismatch`, `release_tree_mismatch`,
 conductor must both have accepted that exact revision with evidence. An incomplete review projects
 `awaiting_review` and runs nothing - no queue row, no lease, no publication - and a rejected,
 cancelled, rolled back or ticket-superseded record refuses. The host is touched only once the
-incumbent evaluator itself recorded `verified` (`release_not_verified`), and the active release
+incumbent evaluator itself recorded `verified` (`release_not_verified`, kept as a defence in depth at
+`merged`); a reviewed release that is not yet verified is verified in `verifying`, before anything is
+published (INV-HOST-DELIVERY-VERIFY-001), and the active release
 pointer moves only through `Releases.promote` with the expected active release recorded when the
 target tuple was bound, after the prescribed checks AND an actual consumption receipt.
 
 One delivery advances at most one stage per tick under the existing `ReleaseQueue` fence:
-`registered` -> `awaiting_review` -> `publishing` -> `awaiting_ci` -> `merge_intended` -> `merged` ->
+`registered` -> `awaiting_review` -> `verifying` -> `publishing` -> `awaiting_ci` -> `merge_intended` -> `merged` ->
 `drain_intended` -> `switching` -> `awaiting_consumption` -> `active`, with `blocked`,
 `rolling_back`, `rolled_back` and `failed` preserving the stage they happened at, the fixed reason
 code, the error TYPE and the evidence. The durable intent names the stage BEFORE the external action
@@ -2691,6 +2695,117 @@ carrying identifiers, digests, fixed codes and counts only; a repeated idle poll
 and emits nothing, and a switch with `consumed: false` is never read as an activation. A collected
 status is a durable-record projection: it is never evidence of a qualified live host, a passed owner
 canary or a semantically accepted release.
+
+## INV-HOST-DELIVERY-VERIFY-001
+
+Host delivery drives the ONE existing incumbent evaluator before publication; it adds no evaluator,
+no verdict owner and no second release controller. `ReleaseRunner.evaluate(release_id, attempt=)`
+is the legacy runner's own check sequence in the same order (ticket binding, tree/patch/repository
+re-derivation, the incumbent and candidate suites in isolated services, the image build, `cli_start`
+and the `cli_file_task` canary) and writes NOTHING to the store: it returns every policy check
+(skipped ones explicitly `not_run`) or a named observation `retry`, plus a receipt of the external
+results it produced. The legacy `ReleaseRunner.run` recomposes over it with unchanged order, names
+and effects, and the legacy supervisor (its rebase, merge and promotion) is never driven here.
+
+A delivery whose release is `reviewed` enters `verifying` (after `awaiting_review`, before
+`publishing`; an already `verified` or `active` release keeps the old path with no evaluation). A
+tick there, under its `ReleaseQueue` claim and in this order: reconciles every unresolved attempt;
+leaves for `after_verification` (or `publishing`) only if the release is already verified; halts a
+refused gate with its own code; halts a hook candidate (`release_hook_unsupported`) before any
+attempt; otherwise records an attempt and evaluates. The verdict (`Releases.verify(...,
+transaction=)`, the plan's exact revision and evaluator hash), the `images` row and the intent are
+ONE transaction that re-checks the claim (`ReleaseQueue.owned`) and the unchanged intent; a lost
+fence or a changed intent records nothing (an ambiguous effect, reconciled by the next owner), and a
+`Releases` refusal is a definite halt that keeps the closed attempt. `rejected` blocks as
+`release_rejected`; a superseded ticket is recorded as the legacy runner records it and blocks as
+`release_superseded_by_ticket_revision`; an observation error is `unavailable` with its own code
+(`verification_observation_unavailable`, `..._isolation_...`, `..._auth_...` - file presence only,
+never read - and `..._workspace_...`) under the queue's unchanged backoff and budget. Without the
+port, off the main thread or without `/proc` process identity, the stage waits as
+`verifier_unavailable`, never a halt.
+
+Each evaluation is an exactly owned attempt. `attempt_id` is 32 hex; its compose project is
+`zeus-verify-<id>`, its containers `zeus-release-start-<id>` and `zeus-release-canary-<id>` with the
+labels `zeus.isolated.run=<id>` and `zeus.isolated.role=<role>` (the names `OwnedContainer` computes),
+and its owner `{pid, start_ticks, boot_id, cgroup}` comes from `/proc`. The attempt is durable in the
+intent's `verification.attempts` (history only grows) BEFORE its disk record
+`<runtime>/verification/attempts/<id>/run.json` (atomic `_write_record`), and both exist before any
+effect; every host child it creates is appended to that record the moment it exists
+(`commands.observe_spawns`). Reconciliation runs before every evaluation AND before any transition
+out of `verifying`, including the already-verified shortcut, over every unresolved record under the
+verifier root (an unreadable one counts) and every store attempt without a resolving cleanup:
+- a live owner (same pid, start time and boot) that is not this process blocks as
+  `verification_owner_alive`: a stalled owner whose lease expired is never declared dead;
+- an owner is dead only on proof read from a `/proc` that shows this process as itself: another
+  boot, its pid absent (ENOENT/ESRCH), or that pid now under another start time. An owner identity
+  that cannot be observed (an unreadable boot id or `/proc/<pid>/stat`, an unparseable or truncated
+  stat, a proc root that does not show this process as itself, an incomplete record) is unknown:
+  nothing of that attempt is touched (no container stop or removal, compose down or kill) and the
+  tick waits as `verification_cleanup_unconfirmed`. An unreadable boot id is never another boot,
+  including in an attempt's own cleanup. Where this controller's own identity is not observable,
+  the port is unavailable (`verifier_unavailable`) and nothing is reconciled. Absence as proof
+  assumes the owner and the reconciler are the same service user under a `/proc` without
+  `hidepid`/`ProtectProc=invisible` and without a private pid namespace (the aibox controller unit:
+  `User=trevi`, `ProtectProc=default`, `PrivatePIDs=no`);
+- each container is looked up by exact name AND label; only a successful listing with zero rows is
+  absence, one exact row is stopped, removed and listed again, and ambiguity or a Docker error is
+  unknown (`OwnedContainer.recover_id`'s None alone is never absence);
+- the compose project is taken down through its own directory and must then list no container with
+  its exact project label;
+- a recorded child group is killed only while its leader is provably that recorded child (pid AND
+  start time), and a leader whose identity cannot be read is unknown; a group whose leader is gone
+  but which still has members is an unclassified survivor and stays debt; for a dead owner of this
+  boot, its recorded cgroup must hold nothing but this process - nothing found there is killed, and
+  a missing cgroup directory counts as empty only under a readable cgroup v2 root
+  (`cgroup.controllers`), otherwise it is unknown;
+- a store attempt with no disk record stays unresolved until the same exact checks prove nothing it
+  could have named exists (`never_started`).
+Anything unknown is `verification_cleanup_unconfirmed`: no evaluation, no attempt spent, no stage
+change, and the debt stays projected. Nothing is ever selected by a prefix, an age or another
+attempt's id; `collect_stale` and legacy `harness-canary-*` containers are not touched. A verdict whose
+own cleanup is unconfirmed is committed (it is executed evidence) but the delivery stays in
+`verifying` until the cleanup is proven. A withdrawal of a delivery with an unresolved attempt is
+refused (`withdraw_verification_unresolved`).
+
+Stop, lease and store: the first SIGTERM/SIGINT of `host-delivery run` during an evaluation raises
+`EvaluationCancelled` once in the main thread, so the existing primitives end their own process
+groups, services and containers; later signals only set the stop flag and never interrupt the
+attempt's cleanup; the result is `verification_interrupted` (pending, no attempt spent) unless the
+fence's store was unobserved (below). The fence between checks is the queue heartbeat observed within
+a bound (`FENCE_SECONDS`): a lost lease records nothing (`verification_fence_lost`), and an error or an
+observation that did not complete within the bound is `verification_fence_unobservable` - a blocked
+store call is never assumed to time out by itself. Such a tick does not use that store again: nothing
+is committed AND the claim is not settled (no `finish`, no `defer`; the receipt carries
+`"claim": "unsettled"`). A stop that ends the evaluation while its heartbeat is still in flight, or
+after that heartbeat ended in an error the evaluation never saw (a PostgreSQL `lock_timeout` during
+the cancelled attempt's cleanup), ends the same way, as `verification_fence_unobservable` rather than
+`verification_interrupted`; only a refused lease is the store's answer. The queue row stays `running`
+with its generation, the host-wide controller lock (`deployment_locks:controller`) stays held, and the
+attempt stays unresolved in the intent, until the lease expires (`release_lease_seconds`): no
+controller on the host claims before then - once the store answers again another tick is
+`controller_lease_held`, while it stays unavailable `store_unavailable` or `queue_unavailable` - and
+the next owner reconciles the attempt from its disk record before any new evaluation (the claim's
+queue attempt counts against the unchanged budget). The abandoned heartbeat was not cancelled - only
+the wait for it was bounded or interrupted - and it may still complete: a late success renews that
+same lease once, which only delays the reclaim. Cleanup never needs the store; a SIGKILL, OOM kill or
+power loss leaves the records for the next owner's reconciliation.
+
+`zeus host-delivery resume --plan P --plan-sha256 S --evidence sha256:<64 hex> [--lane L]` is the one
+supported recovery, for exactly the legacy shape: `blocked`/`failed` with `release_not_verified` at
+previous stage `merged`, a merged revision, and no descriptor, instance or rollback. Read-only first
+(plan and digest, the shape, the release gate `reviewed|verified`, GitHub's merge of exactly the
+recorded revision, the merge owner's tree qualification); then ONE store transaction, rolled back as a
+whole on any refusal, re-checks the intent (CAS) and plan row, a live controller lease
+(`resume_controller_running`), the queue row, the predecessor inside the transaction, the exact
+release identity and its ticket binding even when the queue row is already runnable, re-arms a
+`blocked`/`failed` row through `ReleaseQueue.retry(..., transaction=)` (one `manual_retries` entry)
+and writes `verifying` with `after_verification: merged` and a recovery record that copies the
+original halt. No claim, lease or generation is created, reset or finished; the queue attempt history,
+the reviews, the plan and the original halt are never rewritten. The same evidence is answered from the
+durable recovery record at any later stage as `cached` with no write; a different evidence is
+`resume_conflict`, and a second recovery of the kind is `resume_exhausted`. After rollout any use of it
+is an incident signal; a rejected resumed release stays merged and blocked (`release_rejected`) with
+no revert and no host effect.
 
 ## INV-WORKER-SESSION-001
 

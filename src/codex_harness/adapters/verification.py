@@ -337,10 +337,13 @@ def verification_environment(endpoints, environ=None):
 
 
 class VerificationServices:
-    def __init__(self, root, artifacts):
+    def __init__(self, root, artifacts, project=None):
         self.root = Path(root).resolve()
         self.artifacts = artifacts
-        self.project = "zeus-verify-" + uuid4().hex
+        # INV-HOST-DELIVERY-VERIFY-001: an owned attempt names its exact project; default random.
+        require(project is None or bool(re.fullmatch(r"zeus-verify-[0-9a-f]{32}", project)),
+                "Unknown verification stack")
+        self.project = project or "zeus-verify-" + uuid4().hex
         self.directory = self.root / self.project
         self.password = secrets.token_hex(24)
 

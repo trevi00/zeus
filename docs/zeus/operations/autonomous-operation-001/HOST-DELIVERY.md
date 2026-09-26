@@ -2,7 +2,8 @@
 
 2026-09-23. Frame: `SPEC.md`, "Durable delivery controller: consolidated Batch 3 implementation" and
 "Batch 3 correction and conductor continuation boundary". Contract: `docs/contracts.md`,
-INV-HOST-DELIVERY-001. Implementation: `src/codex_harness/domain/host_delivery.py`,
+INV-HOST-DELIVERY-001 and INV-HOST-DELIVERY-VERIFY-001 (the `verifying` stage and `resume`,
+section "Verification before publication" below). Implementation: `src/codex_harness/domain/host_delivery.py`,
 `src/codex_harness/application/host_delivery.py`, `src/codex_harness/adapters/host_delivery.py`,
 with narrow reusable additions to `src/codex_harness/application/release_queue.py`,
 `src/codex_harness/adapters/git.py`, `src/codex_harness/adapters/monitoring.py`,
@@ -27,7 +28,9 @@ keep every authority they had:
 | `adapters.git.GitWorkspace` | target repository, tree and patch re-derivation; the merge as ONE fast-forward of main from exactly the reviewed base to exactly the reviewed revision (explicit ancestry + full-ref base lease; `gh pr merge` is no longer used); `merge_state` recognition of an effect that already happened | publishes and merges through it; nothing re-implements those checks |
 | the registered scheduled task / owned child process | what actually runs on the host | starts and ends exactly the service the owner registered |
 
-The legacy Docker `ReleaseRunner` is untouched: it is not enabled, driven or replaced here. Do not
+The legacy Docker supervisor is untouched: `ReleaseRunner.run` (its rebase, merge and promotion) is
+not enabled, driven or replaced here. Only the evaluation half of that ONE evaluator,
+`ReleaseRunner.evaluate`, is driven, in `verifying`, before publication. Do not
 run the legacy supervisor on a host that uses this controller — both claim the same
 `deployment_locks:controller` lease, which serializes them, but the legacy loop does not filter the
 queue rows it claims and would run its own Docker pipeline on a delivery row.
@@ -70,7 +73,7 @@ revision fields stay 40 hex; accepting a 64-hex tree does not qualify SHA-256 re
 ## The stage path, and what each stage proves
 
 ```
-registered -> awaiting_review -> publishing -> awaiting_ci -> merge_intended -> merged
+registered -> awaiting_review -> verifying -> publishing -> awaiting_ci -> merge_intended -> merged
            -> drain_intended -> switching -> awaiting_consumption -> active
 ```
 
@@ -81,14 +84,85 @@ most one stage.
 | stage | what must be true to leave it |
 |---|---|
 | `awaiting_review` | the release record itself carries the author's own lead **and** a conductor accepting exactly this revision with evidence, and the candidate's revision, tree, evaluator hash and repository are exactly the plan's |
+| `verifying` | only for a `reviewed`, not yet verified release (a verified one goes straight to `publishing`): every unresolved verification attempt on this host was reconciled exactly and nothing is unknown, and the incumbent evaluator's verdict for exactly the plan's revision and evaluator hash was recorded by `Releases` in the same owned transaction as this intent; `verified` leaves for `publishing` (or, after `resume`, for `merged`) |
 | `publishing` | the remote main is still the reviewed base (else `reviewed_base_moved`, no PR, no CI), and a pull request exists for exactly the intended head — adopted if a previous tick already created it |
 | `awaiting_ci` | every named check FINISHED SUCCESSFULLY for that head; absent, running, skipped, cancelled, neutral and failed are not a pass, and a moved head goes to requalification |
 | `merge_intended` | an effect that already happened is recognized first (the revision on main's first-parent history, or the exact head's PR merge commit); a NEW merge needs no other delivery of the target unsettled (`predecessor_in_flight`, a pending wait), the target still at the plan's expected predecessor (`descriptor_predecessor_moved`), main still the reviewed base (`reviewed_base_moved`) and the exact PR still open at the head with every required check passing now; it is the fast-forward compare-and-swap, and only a per-ref `[rejected]`/`[remote rejected]` of main is a definite refusal — anything else is unknown and reconciled next tick. Either way the merged revision is qualified against the reviewed tree by the merge owner itself |
-| `merged` | the incumbent evaluator recorded `verified`, the target is registered, the current descriptor is the approved predecessor, and the whole target tuple plus the expected active release are written durably |
+| `merged` | the incumbent evaluator recorded `verified` (a defence in depth since `verifying`: `release_not_verified`), the target is registered, the current descriptor is the approved predecessor, and the whole target tuple plus the expected active release are written durably |
 | `drain_intended` | new admission is paused and the target reports no active and no unconfirmed work |
 | `switching` | what is on the host was reconciled first (the intended descriptor, the expected predecessor, or a **foreign** state that blocks), then the immutable descriptor was replaced atomically under the target's lifecycle guard against its expected predecessor, and the service was started exactly once from the registered runtime root — reconciled, classified against the instance this intent is authorized to replace, stopped, retired, launched and recorded inside that same guard |
 | `awaiting_consumption` | the launched process's own startup receipt names this target's registered root, a package imported from inside it, and the revision, effective image and profile that runtime actually has; that observed startup is recorded; and only then does the named canary decide whether it may be activated |
 | `active` | `Releases.promote` moved the pointer under its own compare-and-swap |
+
+## Verification before publication (INV-HOST-DELIVERY-VERIFY-001)
+
+Three different "checks" exist, and none stands in for another:
+
+| check | recorded by | proves |
+|---|---|---|
+| GitHub CI (`required_checks`) | observed in `awaiting_ci` | the candidate's own suite on the exact PR head |
+| the incumbent release policy (`tests`, `cli_start`, `cli_file_task`) | executed by `ReleaseRunner.evaluate`, recorded only by `Releases.verify` in `verifying` | the candidate passes the incumbent (base) suite and its own in isolated services, its image builds, and it runs a real Codex CLI start and a file task |
+| a code release build `/srv/zeus/releases/<sha>` | the operator's release build | packaging of controller/CLI code; it evaluates no candidate |
+
+Each evaluation is an **owned attempt** (`attempt_id`, 32 hex): compose project
+`zeus-verify-<id>`, containers `zeus-release-start-<id>` / `zeus-release-canary-<id>` labelled
+`zeus.isolated.run=<id>` / `zeus.isolated.role=<role>`, owner `{pid, start_ticks, boot_id, cgroup}`.
+It is recorded in the intent's `verification.attempts`, then in
+`<runtime>/verification/attempts/<id>/run.json`, before anything starts, and each host child is
+appended to that record when it is created. Before any evaluation and before the delivery may leave
+`verifying` every unresolved attempt is reconciled by exact identity only; see the contract for the
+rules. A named wait tells the owner what holds it:
+
+| reason | meaning | what an owner does |
+|---|---|---|
+| `verifier_unavailable` | no port wired (delivery disabled or no Git workspace), off the main thread, or no `/proc` identity (including a proc root that does not show this process as itself) | nothing; the controller wiring decides |
+| `verification_owner_alive` | a recorded attempt's owner process is still running (same pid, start time and boot) | wait for it; never kill it by hand to "unblock" |
+| `verification_cleanup_unconfirmed` | a resource of an attempt could not be proven gone: Docker unobservable or ambiguous, a compose container still listed, an unclassified survivor in a recorded group, or a foreign process in a dead owner's cgroup; or an attempt owner's identity (boot id, `/proc/<pid>/stat`, a proc root that does not show this process as itself, the cgroup root) could not be observed, which is never taken for a dead owner, so nothing of that attempt is touched | observe what the attempt record names; nothing is reclaimed by prefix or age |
+| `verification_interrupted` | the controller was stopped during an evaluation; its own resources were cleaned up | none; the next tick evaluates again |
+| `verification_fence_lost` | the lease was lost between checks; nothing was recorded | none; the next owner attaches the cleanup receipt |
+| `verification_fence_unobservable` | the store did not answer the heartbeat within the fence bound or answered with an error, or a stop ended the evaluation while that heartbeat was still in flight or after it failed with an error: nothing was committed AND the claim was not settled (`"claim": "unsettled"` on the receipt); the queue row stays `running` and the host-wide controller lock stays held until the lease expires, and an abandoned heartbeat may still complete and renew that lease once | none; once the store answers, other ticks report `controller_lease_held` until the lease expires, then the next owner attaches the cleanup receipt before any new evaluation |
+| `verification_*_unavailable` | an observation error of the evaluator (isolation, auth file presence, review workspace, other) | the queue's unchanged backoff and budget apply |
+
+Signals, leases and the store while evaluating:
+
+| event | behaviour |
+|---|---|
+| first SIGTERM/SIGINT of `host-delivery run` during an evaluation | `EvaluationCancelled` is raised once in the main thread: owned process groups are killed, the services stack exits, the canary container is removed by exact name, then the attempt's own cleanup is proven; `verification_interrupted`, no attempt spent - unless its heartbeat was still blocked or had failed, which ends as `verification_fence_unobservable`, unsettled (the store row below) |
+| further signals | the stop flag only; the cleanup in progress is never interrupted |
+| SIGTERM outside an evaluation | unchanged: the flag, and the tick finishes |
+| stop window exceeded -> SIGKILL, OOM kill, power loss | no cleanup runs; the durable records stay and the next owner reconciles them. Correctness does not depend on finishing inside `TimeoutStopSec` |
+| the store blocks | the heartbeat between checks is observed within `FENCE_SECONDS`; not completing (or an error) is `verification_fence_unobservable`; cleanup needs no store, and the tick then neither commits nor settles through that store (no `finish`/`defer`): the claim stays `running` until lease expiry. The abandoned heartbeat is not cancelled and may still complete later. A stop while the heartbeat is blocked ends the same way (not `verification_interrupted`), also when that heartbeat fails with an error (e.g. `lock_timeout`) during the attempt's cleanup; further signals only set the flag |
+| lease expiry while the owner is alive (a stall) | any other claimant sees `verification_owner_alive` and does not evaluate; the stalled owner's next fence fails and it records no verdict |
+| evaluation off the main thread | refused as `verifier_unavailable` |
+
+### Runbook: resume a delivery that merged a never-verified release
+
+Only for the legacy shape `blocked`/`failed` with `release_not_verified` at previous stage `merged`,
+a merged revision, and no descriptor, instance or rollback. After the verifying controller is
+deployed, any need for it is an incident.
+
+1. `zeus host-delivery status --plan P [--lane L]`: note `plan_sha256`; confirm the stage and reason.
+2. Stop no service for this: `resume` is one store transaction and refuses while a controller holds
+   the lease (`resume_controller_running`).
+3. `zeus host-delivery resume --plan P --plan-sha256 S --evidence sha256:<owner decision digest> [--lane L]`.
+   The receipt carries ids, codes and digests only: `stage: verifying`, the recovery with the copied
+   halt, and the queue row with its one added `manual_retries` entry.
+4. The ordinary tick then verifies. Verified: `merged` and the normal path on. Rejected: `blocked`
+   `release_rejected`, the merge stays, nothing is reverted and the host is not touched.
+5. Repeating the same command at any later stage answers `cached` and writes nothing. A different
+   evidence is `resume_conflict`; a second recovery of the kind is `resume_exhausted`.
+
+Refusals write nothing: `resume_evidence_invalid`, `plan_unregistered`, `resume_plan_mismatch`,
+`resume_not_applicable`, `resume_release_<code>`, `resume_merge_mismatch`, `resume_tree_mismatch`,
+`resume_unobservable`, `resume_intent_changed`, `resume_controller_running`, `resume_queue_changed`,
+`resume_queue_<status>`, `resume_queue_refused`, `resume_predecessor_<moved|in_flight>`,
+`resume_release_ticket_changed`.
+
+### Controller rollback rule
+
+A controller built before the `verifying` stage does not count `verifying` as in flight or target
+busy. While ANY intent is `verifying`, rolling the controller back means **stop only** (stopping only
+defers). Reinstalling the prior controller unit is allowed only when no intent is `verifying`.
 
 ## Idempotence, restart and the fence
 

@@ -1,4 +1,5 @@
 """Fenced single-controller release dispatch with bounded durable retries."""
+from contextlib import nullcontext
 from datetime import datetime, timedelta, timezone
 from uuid import uuid4
 
@@ -13,10 +14,12 @@ class ReleaseQueue:
     def __init__(self, store):
         self.store = store
 
-    def retry(self, release_id, reason):
+    def retry(self, release_id, reason, *, transaction=None):
+        """Re-arm a stopped row. `transaction` runs this unchanged body inside the caller's
+        transaction, so a caller's own refusal rolls the re-arm back with it (INV-HOST-DELIVERY-VERIFY-001)."""
         require(isinstance(reason, str) and reason.strip(), "Retry reason required")
         now = datetime.now(timezone.utc)
-        with self.store.transaction() as tx:
+        with (nullcontext(transaction) if transaction is not None else self.store.transaction()) as tx:
             lock = tx.get("deployment_locks", "controller") or {}
             require(not lock.get("lease_until") or datetime.fromisoformat(lock["lease_until"]) <= now,
                     "Release controller still running")

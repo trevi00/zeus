@@ -33,10 +33,12 @@ tick resumes the same logical intent under its own durable stage deadline.
 from __future__ import annotations
 
 import logging
+import threading
 from datetime import datetime, timedelta
 
 from codex_harness.application.release_queue import ReleaseQueue
 from codex_harness.application.releases import Releases
+from codex_harness.application.tickets import ticket_binding
 from codex_harness.domain.host_delivery import (
     ACTIVATION_GATE_CODES,
     ACTIVE,
@@ -75,6 +77,7 @@ from codex_harness.domain.host_delivery import (
     OUTCOME_UNREGISTERED,
     POST_MERGE_OPEN,
     PUBLISHING,
+    RECOVERY_VERIFICATION_MISSING,
     REGISTERED,
     ROLLED_BACK,
     ROLLING_BACK,
@@ -82,21 +85,26 @@ from codex_harness.domain.host_delivery import (
     STOPPED_STAGES,
     SWITCHING,
     TICK_SCHEMA,
+    VERIFYING,
     WITHDRAW_REASONS,
     WITHDRAWABLE_STAGES,
     WITHDRAWN,
     DeliveryRefused,
     LifecycleInterrupted,
+    attempts_of,
     ci_verdict,
     consumption_verdict,
     delivery_status,
     descriptor_digest,
     new_intent,
     plan_digest,
+    recoveries_of,
     release_gate,
     resolve_descriptor,
+    resumable,
     safe_error_type,
     stage_next_action,
+    unresolved_attempts,
     validate_pin,
     validate_plan,
     validate_targets,
@@ -137,6 +145,54 @@ class AmbiguousEffect(Exception):
         self.effect, self.cause = effect, cause
 
 
+class _FenceObservations:
+    """The fence `_verify` hands the evaluator: this claim's heartbeat, with its calls in flight counted.
+
+    INV-HOST-DELIVERY-VERIFY-001: the evaluator observes each call within its bound in a helper
+    thread and ABANDONS one that does not complete. Its join timed out or a stop interrupted it;
+    nothing cancelled the call, and it may still complete later - a late successful heartbeat renews
+    the abandoned lease once, which only delays its reclaim. The count is kept here, not read from
+    that helper thread: once a stop interrupts the join, CPython 3.12 marks the still-running thread
+    stopped. The store's completion is unobserved when an observation is still in flight as the
+    evaluation returns, OR when one ended in an error instead of the store's answer. Under a stop
+    the evaluator never sees that error (a blocked PostgreSQL call ends in `lock_timeout` during the
+    cancelled attempt's cleanup), and the store it could not reach is the one every commit and
+    settlement would wait on. A refusal (`ContractError`, a lost lease) IS the store's answer and
+    stays `fence_lost`. `close` answers exactly that and refuses every later call, so an observation
+    that had not yet begun can never reach the store after this controller stopped looking.
+    """
+
+    def __init__(self, heartbeat):
+        self._heartbeat, self._lock = heartbeat, threading.Lock()
+        self._flying, self._failed, self._closed = 0, False, False
+
+    def __call__(self):
+        with self._lock:
+            if self._closed:
+                raise DeliveryRefused("verification_fence_closed")
+            self._flying += 1
+        answered = False
+        try:
+            result = self._heartbeat()
+            answered = True
+            return result
+        except ContractError:
+            answered = True
+            raise
+        finally:
+            # One step, so `close` sees this call either still in flight or with how it ended.
+            with self._lock:
+                self._flying -= 1
+                self._failed = self._failed or not answered
+
+    def close(self) -> bool:
+        """End the evaluation's use of this fence; True when the store's completion is unobserved:
+        an observation still in flight, or one that ended in an error instead of an answer."""
+        with self._lock:
+            self._closed = True
+            return self._flying > 0 or self._failed
+
+
 class HostDelivery:
     """One store, the existing release authority and fence, and three injected host-side ports.
 
@@ -150,9 +206,12 @@ class HostDelivery:
 
     def __init__(self, store, org=None, *, github=None, hosts=None, canaries=None, clock=utcnow,
                  observer=None, enabled=False, releases=None, queue=None,
-                 resume_seconds: int = RESUME_SECONDS):
+                 resume_seconds: int = RESUME_SECONDS, verifier=None):
         self.store, self.org, self.clock = store, org, clock
         self.github, self.hosts, self.canaries = github, hosts or {}, canaries or {}
+        # INV-HOST-DELIVERY-VERIFY-001: the owned-attempt port over the existing incumbent
+        # evaluator. Without it a reviewed release waits in `verifying` as `verifier_unavailable`.
+        self.verifier = verifier
         self.observer, self.enabled = observer, bool(enabled)
         self.resume_seconds = int(resume_seconds)
         self.releases = releases if releases is not None else Releases(store, org)
@@ -258,7 +317,9 @@ class HostDelivery:
             # Registration, reconciliation and projection stay available; nothing external happens.
             return self._result(plan, intent, OUTCOME_DISABLED, reason_code="delivery_disabled")
         gate = self._gate(plan)
-        if gate["state"] == OUTCOME_REFUSED:
+        if gate["state"] == OUTCOME_REFUSED and intent["stage"] != VERIFYING:
+            # A `verifying` delivery halts only from inside `_verify`, after its attempts are
+            # reconciled, so a refused verdict never leaves attempt debt unreconciled here.
             return self._halt(plan, intent, BLOCKED, OUTCOME_REFUSED, gate["reason_code"])
         if gate["state"] == AWAITING_REVIEW:
             # A registered plan whose review is not complete PROJECTS the wait; it never runs, and
@@ -306,7 +367,11 @@ class HostDelivery:
                       else "stage_unavailable")
             result = self._guard(plan, intent, OUTCOME_UNAVAILABLE, lambda: self._unavailable(
                 plan, intent, reason, failure, claim=claim))
-        self._settle(claim, result)
+        if result.get("claim") != "unsettled":
+            # An unobserved verification fence (`_unobserved`) is not settled through the store it
+            # could not observe: the claim stays running until its lease expires, and the next
+            # owner reconciles the attempt first (INV-HOST-DELIVERY-VERIFY-001).
+            self._settle(claim, result)
         return result
 
     def _unclaimed(self, plan: dict) -> str:
@@ -402,6 +467,9 @@ class HostDelivery:
         stage = (intent or {}).get("stage") or REGISTERED
         if stage not in WITHDRAWABLE_STAGES or (intent or {}).get("descriptor") is not None:
             raise DeliveryRefused("withdraw_host_touched", "stage")
+        if unresolved_attempts(intent):
+            # INV-HOST-DELIVERY-VERIFY-001: a withdrawal never orphans verification ownership debt.
+            raise DeliveryRefused("withdraw_verification_unresolved", "stage")
         recorded = stage in {BLOCKED, FAILED} and intent.get("reason_code") == "merged_tree_mismatch"
         if (reason == "merged_tree_mismatch") != recorded:
             # A recorded merge is retired only under its own reason, and that reason needs one.
@@ -486,6 +554,175 @@ class HostDelivery:
                 "withdrawal": dict(intent.get("withdrawal") or {}),
                 "next_action": stage_next_action(WITHDRAWN), "authority": AUTHORITY}
 
+    # ----- owner resume of a merged, never verified delivery (INV-HOST-DELIVERY-VERIFY-001) ------
+    def resume(self, plan_id: str, plan_sha256: str, evidence_ref: str) -> dict:
+        """Move exactly the legacy `release_not_verified`-at-`merged` shape back to `verifying`.
+
+        Read-only first: the plan and its digest, the resumable shape, the release gate, GitHub's
+        merge of exactly the recorded revision and the merge owner's own tree qualification. Then
+        ONE store transaction - rolled back as a whole on any refusal - re-checks the intent (CAS),
+        the controller lease, the queue row, the predecessor, the exact release identity and its
+        ticket binding, re-arms a stopped queue row through `ReleaseQueue.retry` (one
+        `manual_retries` entry) and writes `verifying` with the original halt copied into the
+        recovery record. No claim, lease or generation is created, reset or finished here: the next
+        ordinary tick claims the row and verifies.
+
+        The same evidence is recognized as a replay from the durable recovery record at ANY later
+        stage and answers `cached` with no write; a different evidence is refused.
+        """
+        if not (type(evidence_ref) is str and EVIDENCE_REF.fullmatch(evidence_ref)):
+            raise DeliveryRefused("resume_evidence_invalid", "evidence")
+        try:
+            with self.store.transaction() as tx:
+                row = tx.get(BUCKET_PLANS, plan_id) if type(plan_id) is str else None
+                intent = tx.get(BUCKET_INTENTS, plan_id) if row is not None else None
+                queued = tx.get("release_queue", row["plan"]["release_id"]) if row is not None else None
+        except Exception as exc:
+            raise DeliveryRefused("resume_unobservable", "store") from exc
+        if row is None:
+            raise DeliveryRefused("plan_unregistered", "plan_id")
+        if row["plan_sha256"] != plan_sha256:
+            raise DeliveryRefused("resume_plan_mismatch", "plan_sha256")
+        plan = row["plan"]
+        replayed = self._resume_replay(plan, intent, evidence_ref)
+        if replayed is not None:
+            return replayed
+        if not resumable(intent):
+            raise DeliveryRefused("resume_not_applicable", "stage")
+        try:
+            gate = self._gate(plan)
+        except Exception as exc:
+            raise DeliveryRefused("resume_unobservable", "store") from exc
+        self._resume_gate(gate)
+        observed = self._resume_merge(plan, intent)
+        now = self.clock()
+        recovery = {"kind": RECOVERY_VERIFICATION_MISSING, "evidence_ref": evidence_ref,
+                    "halted": {key: intent.get(key) for key in ("stage", "previous_stage", "reason_code",
+                                                                "outcome", "attempts", "error_type",
+                                                                "updated_at")},
+                    "observed": {**observed, "tree_qualified": True, "predecessor": "held"}, "at": now}
+        try:
+            with self.store.transaction() as tx:
+                current = tx.get(BUCKET_INTENTS, plan["plan_id"])
+                settled = (None if self._replay_of(current, evidence_ref)
+                           else self._resume_in(tx, row, intent, queued, current, recovery, now))
+        except DeliveryRefused:
+            raise
+        except Exception as exc:
+            raise DeliveryRefused("resume_unobservable", "store") from exc
+        if settled is None:
+            # A concurrent same-evidence resume committed first: its record answers, nothing written.
+            return self._resumed(plan, current, cached=True, evidence_ref=evidence_ref)
+        self._emit(EVENT_STAGE, "observed", plan, attributes={
+            "plan_id": plan["plan_id"], "release_id": plan["release_id"], "target_id": plan["target_id"],
+            "stage": VERIFYING, "previous_stage": intent["stage"]})
+        LOGGER.warning("host delivery resumed plan=%s from=%s reason=%s", plan["plan_id"], intent["stage"],
+                       intent.get("reason_code"))
+        return self._resumed(plan, settled, cached=False)
+
+    def _resume_in(self, tx, row: dict, intent: dict, queued, current, recovery: dict, now: str) -> dict:
+        """Phase 2, inside the one transaction; any refusal raised here rolls every write back."""
+        plan = row["plan"]
+        if current != intent or tx.get(BUCKET_PLANS, plan["plan_id"]) != row:
+            raise DeliveryRefused("resume_intent_changed", "plan_id")
+        lock = tx.get("deployment_locks", "controller") or {}
+        if lock.get("lease_until") and datetime.fromisoformat(lock["lease_until"]) > self._now():
+            raise DeliveryRefused("resume_controller_running", "release_id")
+        if tx.get("release_queue", plan["release_id"]) != queued:
+            raise DeliveryRefused("resume_queue_changed", "release_id")
+        predecessor = self._predecessor_in(tx, plan)
+        if predecessor != "held":
+            raise DeliveryRefused("resume_predecessor_" + predecessor, "target_id")
+        # The exact immutable release identity and its ticket binding, whatever the queue shows.
+        record = tx.get("releases", plan["release_id"])
+        self._resume_gate(release_gate(record, plan, self._parent(record)))
+        try:
+            ticket_binding(tx, record["candidate"])
+        except ContractError as exc:
+            raise DeliveryRefused("resume_release_ticket_changed", "release_id") from exc
+        status = (queued or {}).get("status")
+        if status in {"blocked", "failed"}:
+            try:
+                self.queue.retry(plan["release_id"], "host delivery resume " + plan["plan_id"] + " "
+                                 + recovery["evidence_ref"], transaction=tx)
+            except ContractError as exc:
+                raise DeliveryRefused("resume_queue_refused", "release_id") from exc
+        elif not (queued is None or status in {"queued", "retry"}
+                  or (status == "running" and not self._leased(queued))):
+            raise DeliveryRefused("resume_queue_" + str(status), "release_id")
+        settled = {**current, "stage": VERIFYING, "previous_stage": current["stage"],
+                   "outcome": OUTCOME_PROGRESSED, "reason_code": None, "error_type": None, "attempts": 0,
+                   "after_verification": MERGED,
+                   "recoveries": [*(current.get("recoveries") or []), recovery],
+                   "stage_entered_at": now, "updated_at": now}
+        tx.put(BUCKET_INTENTS, plan["plan_id"], settled)
+        return settled
+
+    @staticmethod
+    def _resume_gate(gate: dict) -> None:
+        if gate["state"] == "approved" and gate["status"] in {"reviewed", "verified"}:
+            return
+        code = gate.get("reason_code") or "release_" + str(gate.get("status"))
+        raise DeliveryRefused("resume_" + (code if code.startswith("release_") else "release_" + code),
+                              "release_id")
+
+    def _resume_merge(self, plan: dict, intent: dict) -> dict:
+        """GitHub merged exactly the recorded revision, and it carries the reviewed tree. Read-only
+        for the store; the qualification may refresh fetched refs, exactly as `_merge` does."""
+        port = self.github
+        qualify = getattr(port, "qualify", None)
+        if port is None or qualify is None:
+            raise DeliveryRefused("resume_unobservable", "github")
+        try:
+            candidate = self._candidate(plan)
+            state = port.merge_state(candidate, port.observe(candidate))
+        except Exception as exc:
+            raise DeliveryRefused("resume_unobservable", "github") from exc
+        if state.get("state") != "merged" or state.get("merged_revision") != intent["merged_revision"]:
+            raise DeliveryRefused("resume_merge_mismatch", "merged_revision")
+        try:
+            qualify(candidate, intent["merged_revision"])
+        except ContractError as exc:
+            raise DeliveryRefused("resume_tree_mismatch", "merged_revision") from exc
+        except Exception as exc:
+            raise DeliveryRefused("resume_unobservable", "github") from exc
+        return {"main": state.get("main"), "merged_revision": intent["merged_revision"]}
+
+    def _resume_replay(self, plan: dict, intent, evidence_ref: str):
+        """The durable recovery record decides a repeated call, at whatever stage it now is."""
+        if not self._replay_of(intent, evidence_ref):
+            return None
+        return self._resumed(plan, intent, cached=True, evidence_ref=evidence_ref)
+
+    @staticmethod
+    def _replay_of(intent, evidence_ref: str) -> bool:
+        """True for this evidence's own recorded recovery; another evidence is refused. Pure."""
+        recorded = recoveries_of(intent)
+        if not recorded:
+            return False
+        if any(row.get("evidence_ref") == evidence_ref for row in recorded):
+            return True
+        # One recovery of this kind per delivery: halted again in the same shape is exhausted.
+        if resumable({**intent, "recoveries": []}):
+            raise DeliveryRefused("resume_exhausted", "evidence")
+        raise DeliveryRefused("resume_conflict", "evidence")
+
+    def _resumed(self, plan: dict, intent: dict, *, cached: bool, evidence_ref=None) -> dict:
+        recorded = [row for row in recoveries_of(intent)
+                    if evidence_ref is None or row.get("evidence_ref") == evidence_ref][-1]
+        with self.store.transaction() as tx:
+            queued = tx.get("release_queue", plan["release_id"]) or {}
+        return {"resumed": True, "cached": cached, "plan_id": plan["plan_id"], "release_id": plan["release_id"],
+                "target_id": plan["target_id"], "stage": intent["stage"],
+                "after_verification": intent.get("after_verification"),
+                "recovery": {"kind": recorded["kind"], "evidence_ref": recorded["evidence_ref"],
+                             "halted_reason_code": (recorded.get("halted") or {}).get("reason_code"),
+                             "at": recorded.get("at")},
+                "queue": {"status": queued.get("status"),
+                          "manual_retries": len(queued.get("manual_retries") or [])},
+                "next_action": stage_next_action(intent["stage"], intent.get("outcome")),
+                "authority": AUTHORITY}
+
     def _predecessor(self, plan: dict) -> str:
         """The target as a NEW merge of this plan would find it: `in_flight` while another delivery of
         the target has merged and not settled the host - including a `blocked`/`failed` one that bound
@@ -493,15 +730,22 @@ class HostDelivery:
         `moved` when the current descriptor is not the plan's expected predecessor, else `held`.
         One store read under the controller's serialization; the switch keeps its own CAS."""
         with self.store.transaction() as tx:
-            intents = tx.scan(BUCKET_INTENTS)
-            current_row = tx.get(BUCKET_DESCRIPTORS, plan["target_id"])
+            return self._predecessor_in(tx, plan)
+
+    @staticmethod
+    def _predecessor_in(tx, plan: dict) -> str:
+        """`_predecessor` inside a caller's transaction. A `verifying` delivery that already merged
+        (a resumed one, INV-HOST-DELIVERY-VERIFY-001) is in flight on its target, too."""
+        intents = tx.scan(BUCKET_INTENTS)
+        current_row = tx.get(BUCKET_DESCRIPTORS, plan["target_id"])
         for other in intents:
             if other.get("target_id") != plan["target_id"] or other.get("plan_id") == plan["plan_id"]:
                 continue
             stage = other.get("stage")
             unsettled = stage in {BLOCKED, FAILED} and other.get("descriptor") is not None \
                 and not (other.get("rollback") or {}).get("verified")
-            if stage in POST_MERGE_OPEN or unsettled:
+            merged_verifying = stage == VERIFYING and bool(other.get("merged_revision"))
+            if stage in POST_MERGE_OPEN or unsettled or merged_verifying:
                 return "in_flight"
         current = (current_row or {}).get("descriptor")
         current_sha = None if current is None else descriptor_digest(current)
@@ -708,7 +952,13 @@ class HostDelivery:
     def _advance(self, row: dict, intent: dict, claim) -> dict:
         plan, stage = row["plan"], intent["stage"]
         if stage in {REGISTERED, AWAITING_REVIEW}:
-            return self._enter(plan, intent, PUBLISHING, claim)
+            # An already verified (or active) release keeps today's path; a reviewed one is verified
+            # by the incumbent evaluator BEFORE anything is published (INV-HOST-DELIVERY-VERIFY-001).
+            gate = self._gate(plan)
+            return self._enter(plan, intent, PUBLISHING if gate["status"] in {"verified", "active"}
+                               else VERIFYING, claim)
+        if stage == VERIFYING:
+            return self._verify(plan, intent, claim)
         if stage == PUBLISHING:
             return self._publish(plan, intent, claim)
         if stage == AWAITING_CI:
@@ -726,6 +976,212 @@ class HostDelivery:
         if stage == ROLLING_BACK:
             return self._rollback(plan, intent, claim)
         return self._result(plan, intent, OUTCOME_IDLE, reason_code="stage_terminal")
+
+    # ----- verification before publication (INV-HOST-DELIVERY-VERIFY-001) ---------------------
+    def _verify(self, plan: dict, intent: dict, claim) -> dict:
+        """Drive the existing incumbent evaluator for a reviewed release, under this fence.
+
+        In this order, and each step before any later one:
+        0. every unresolved attempt on this host is reconciled exactly (never by prefix or age); an
+           owner still alive or any resource not proven gone is a named wait - no evaluation, no
+           attempt spent and NO transition, including the already-verified shortcut of step 1;
+        1. a release already verified leaves for `after_verification` (or `publishing`); a refused
+           one halts with the gate's own code;
+        2. a hook candidate halts before any attempt exists;
+        3. the attempt is durable in this store, then on disk, and only then evaluated;
+        4. the verdict, the image and this intent are one owned transaction (`_verdict`).
+        Nothing here publishes, merges or touches the host. After the attempt is recorded every
+        write carries it, so no later halt or outage report can drop the attempt history.
+        """
+        port = self.verifier
+        if port is None or not port.available():
+            # No owned cancellation boundary here (no port, off the main thread, no /proc): a wait.
+            return self._unavailable(plan, intent, "verifier_unavailable",
+                                     DeliveryRefused("verifier_unavailable"), claim=claim)
+        current = intent
+        try:
+            reconciled = port.reconcile(self._open_attempts())
+            current = self._attach_cleanups(plan, current, claim, reconciled.get("resolved") or {})
+            if reconciled["state"] != "clear":
+                return self._pending(plan, current, claim, reconciled["reason_code"])
+            if unresolved_attempts(current):
+                return self._pending(plan, current, claim, "verification_cleanup_unconfirmed")
+            gate = self._gate(plan)
+            if gate["state"] == OUTCOME_REFUSED:
+                return self._halt(plan, current, BLOCKED, OUTCOME_REFUSED, gate["reason_code"], claim=claim)
+            if gate["status"] in {"verified", "active"}:
+                return self._enter(plan, current, current.get("after_verification") or PUBLISHING, claim)
+            if self._candidate(plan).get("hook_id"):
+                # The legacy evaluator records hook canaries itself; this driver never does.
+                return self._halt(plan, current, BLOCKED, OUTCOME_BLOCKED, "release_hook_unsupported",
+                                  claim=claim)
+            attempt = port.new_attempt(plan_id=plan["plan_id"], release_id=plan["release_id"],
+                                       generation=claim["generation"])
+            current = self._commit_verification(current, claim, lambda _tx, base: {
+                **base, "verification": {"attempts": [*attempts_of(base), {
+                    **attempt, "state": "prepared", "cleanup": None, "outcome": None}]},
+                "updated_at": self.clock()})
+            try:
+                port.prepare(attempt)
+            except Exception as exc:
+                # The DB attempt without its disk record stays unresolved until reconcile proves
+                # that nothing it could have named exists (`never_started`).
+                return self._unavailable(plan, current, "verification_record_unavailable", exc, claim=claim)
+            fence = _FenceObservations(lambda: self.queue.heartbeat(claim, now=self._now()))
+            try:
+                outcome = port.evaluate(plan["release_id"], attempt, fence=fence)
+            except Exception as exc:
+                if fence.close():
+                    return self._unobserved(plan, current, exc)
+                raise
+            return self._verdict(plan, current, claim, attempt, outcome, unobserved=fence.close())
+        except AmbiguousEffect:
+            raise
+        except ContractError as refusal:
+            failure = refusal
+            return self._halt(plan, current, BLOCKED, OUTCOME_REFUSED,
+                              getattr(failure, "reason_code", None) or "verification_refused",
+                              claim=claim, error_type=type(failure).__name__)
+        except Exception as outage:
+            return self._unavailable(plan, current, "verification_unavailable", outage, claim=claim)
+
+    def _open_attempts(self) -> list:
+        """Every attempt any delivery of this store recorded without a resolving cleanup."""
+        with self.store.transaction() as tx:
+            intents = tx.scan(BUCKET_INTENTS)
+        return [{"plan_id": row.get("plan_id"), **{key: attempt.get(key) for key in
+                                                   ("attempt_id", "generation", "owner", "started_at")}}
+                for row in intents for attempt in unresolved_attempts(row)]
+
+    def _attach_cleanups(self, plan: dict, intent: dict, claim, resolved: dict) -> dict:
+        """Record reconciled cleanups on the attempts they close, in the owned transaction. An
+        attempt already closed is never rewritten; this plan's intent is returned as stored."""
+        if not resolved:
+            return intent
+        with self.store.transaction() as tx:
+            self.queue.owned(tx, claim, self._now())
+            for row in tx.scan(BUCKET_INTENTS):
+                attempts = attempts_of(row)
+                changed = [{**attempt, "state": "resolved", "cleanup": resolved[attempt["attempt_id"]]}
+                           if attempt.get("attempt_id") in resolved and attempt in unresolved_attempts(row)
+                           else attempt for attempt in attempts]
+                if changed != attempts:
+                    tx.put(BUCKET_INTENTS, row["id"], {**row, "verification": {
+                        **(row.get("verification") or {}), "attempts": changed}})
+            return tx.get(BUCKET_INTENTS, plan["plan_id"])
+
+    def _commit_verification(self, intent: dict, claim, build) -> dict:
+        """One transaction: this claim's fence, this intent unchanged (CAS), then `build`'s writes.
+
+        A lost fence or a changed intent after an evaluation is an ambiguity about an external
+        effect, never a refusal of it, so nothing is written; a refusal raised by `build` itself
+        (the `Releases` verdict owner) rolls everything back and propagates as that refusal.
+        """
+        with self.store.transaction() as tx:
+            try:
+                self.queue.owned(tx, claim, self._now())
+                if tx.get(BUCKET_INTENTS, intent["id"]) != intent:
+                    raise DeliveryRefused("verification_intent_changed", "plan_id")
+            except ContractError as exc:
+                raise AmbiguousEffect("verification", exc) from exc
+            settled = build(tx, intent)
+            tx.put(BUCKET_INTENTS, settled["id"], settled)
+        return settled
+
+    @staticmethod
+    def _closed(intent: dict, attempt: dict, outcome: dict) -> dict:
+        """This intent with its attempt closed by what the evaluation and its own cleanup observed."""
+        cleanup = outcome.get("cleanup") if isinstance(outcome.get("cleanup"), dict) else None
+        result = {"verdict": outcome.get("verdict"), "reason_code": outcome.get("reason_code"),
+                  "evaluation": outcome.get("evaluation"), "error_type": outcome.get("error_type")}
+        attempts = [{**row, "state": outcome.get("state") or row.get("state"), "cleanup": cleanup,
+                     "outcome": result} if row.get("attempt_id") == attempt["attempt_id"] else row
+                    for row in attempts_of(intent)]
+        return {**intent, "verification": {**(intent.get("verification") or {}), "attempts": attempts}}
+
+    def _verdict(self, plan: dict, intent: dict, claim, attempt: dict, outcome: dict, *,
+                 unobserved: bool = False) -> dict:
+        """What one owned evaluation ends in. Only `checked` and `superseded` write a verdict.
+
+        `unobserved` is the fence's own answer (`_FenceObservations.close`): a heartbeat still in
+        flight, or one that ended in an error, when the evaluation returned. A stop can end the
+        evaluation while its heartbeat is blocked, and that heartbeat may fail only during the
+        cancelled attempt's cleanup. Like `fence_unobservable`, the store's completion is
+        unobserved, so whatever the verdict nothing is recorded or settled (L-3).
+        """
+        verdict = outcome.get("verdict")
+        if unobserved or verdict == "fence_unobservable":
+            return self._unobserved(plan, intent)
+        if verdict == "fence_lost":
+            # This controller no longer owns the release: it records nothing. Its disk record says
+            # what its own cleanup proved, and the next reconcile attaches it (L-2).
+            return {**self._result(plan, intent, OUTCOME_CONFLICT, reason_code="verification_fence_lost"),
+                    "controller": "stale"}
+        closed = self._closed(intent, attempt, outcome)
+        if verdict == "interrupted":
+            settled = self._commit_verification(intent, claim, lambda _tx, _base: self._pended(
+                closed, "verification_interrupted"))
+            return self._result(plan, settled, OUTCOME_PENDING, reason_code="verification_interrupted")
+        if verdict == "retry":
+            reason = outcome.get("reason_code") or "verification_observation_unavailable"
+            settled = self._commit_verification(intent, claim, lambda _tx, _base: {
+                **closed, "outcome": OUTCOME_UNAVAILABLE, "reason_code": reason,
+                "error_type": safe_error_type(outcome.get("error_type")), "updated_at": self.clock()})
+            return self._result(plan, settled, OUTCOME_UNAVAILABLE, reason_code=reason)
+        if verdict == "refused":
+            settled = self._commit_verification(intent, claim, lambda _tx, _base: self._halted(
+                closed, BLOCKED, OUTCOME_REFUSED, "verification_refused",
+                error_type=outcome.get("error_type")))
+            return self._report_halted(plan, intent, settled)
+        if verdict not in {"checked", "superseded"}:
+            raise DeliveryRefused("verification_outcome_unknown", "verdict")
+        confirmed = (outcome.get("cleanup") or {}).get("state") == "confirmed"
+
+        def record(tx, _base):
+            status = self._record_release(tx, plan, outcome)
+            if not confirmed:
+                # The verdict is real executed evidence and stays; leaving this stage waits for
+                # the attempt's own cleanup to be proven (final review C1).
+                return self._pended(closed, "verification_cleanup_unconfirmed")
+            if status == "verified":
+                return self._entered(closed, closed.get("after_verification") or PUBLISHING)
+            return self._halted(closed, BLOCKED, OUTCOME_BLOCKED, "release_" + str(status))
+
+        try:
+            settled = self._commit_verification(intent, claim, record)
+        except AmbiguousEffect:
+            raise
+        except ContractError as refusal:
+            # `Releases` refused the verdict itself (a stale evaluator hash, a changed check set):
+            # a definite stop, recorded WITH the closed attempt, never retried into a new evaluation.
+            failure = refusal
+            return self._halt(plan, closed, BLOCKED, OUTCOME_REFUSED,
+                              getattr(failure, "reason_code", None) or "release_verdict_refused",
+                              claim=claim, error_type=type(failure).__name__)
+        if settled["stage"] == BLOCKED or settled["stage"] == FAILED:
+            return self._report_halted(plan, intent, settled)
+        if settled["outcome"] == OUTCOME_PENDING:
+            return self._result(plan, settled, OUTCOME_PENDING, reason_code=settled["reason_code"])
+        return self._report_entered(plan, intent, settled)
+
+    def _record_release(self, tx, plan: dict, outcome: dict) -> str:
+        """The release side of a verdict, through its owner and inside the caller's transaction."""
+        if outcome["verdict"] == "superseded":
+            record = tx.get("releases", plan["release_id"])
+            if record is None or record.get("status") != "reviewed":
+                raise DeliveryRefused("release_not_reviewed", "release_id")
+            # The legacy runner's own record of a superseded ticket, written the same way.
+            record.update(status="superseded_by_ticket_revision",
+                          reason=str(outcome.get("reason") or "ticket superseded")[:500])
+            tx.put("releases", plan["release_id"], record)
+            return record["status"]
+        if outcome.get("passed") and outcome.get("image"):
+            tx.put("images", plan["release_id"], {"id": plan["release_id"], "image": outcome["image"],
+                                                  "revision": plan["revision"]})
+        # The plan's exact revision and evaluator hash: `Releases` refuses any other.
+        record = self.releases.verify(plan["release_id"], plan["revision"], plan["policy_hash"],
+                                      outcome["checks"], transaction=tx)
+        return record["status"]
 
     def _publish(self, plan: dict, intent: dict, claim) -> dict:
         """Publish the reviewed candidate, or ADOPT the publication a lost response already made.
@@ -1312,46 +1768,63 @@ class HostDelivery:
     def _enter(self, plan: dict, intent: dict, stage: str, claim, *, outcome=None, reason_code=None,
                error_type=None, active_pointer=None, **fields) -> dict:
         """Write the durable intent for the stage that is now owed, and report this tick."""
-        now = self.clock()
-        settled = {**intent, **fields, "stage": stage, "previous_stage": intent["stage"],
-                   "outcome": outcome or (OUTCOME_ACTIVE if stage == ACTIVE else OUTCOME_PROGRESSED),
-                   "reason_code": reason_code, "error_type": error_type, "attempts": 0,
-                   "stage_entered_at": now if stage != intent["stage"] else intent["stage_entered_at"],
-                   "updated_at": now}
+        settled = self._entered(intent, stage, outcome=outcome, reason_code=reason_code,
+                                error_type=error_type, **fields)
         self._write(settled, claim)
-        if stage != intent["stage"]:
+        return self._report_entered(plan, intent, settled, active_pointer=active_pointer)
+
+    def _entered(self, intent: dict, stage: str, *, outcome=None, reason_code=None, error_type=None,
+                 **fields) -> dict:
+        now = self.clock()
+        return {**intent, **fields, "stage": stage, "previous_stage": intent["stage"],
+                "outcome": outcome or (OUTCOME_ACTIVE if stage == ACTIVE else OUTCOME_PROGRESSED),
+                "reason_code": reason_code, "error_type": error_type, "attempts": 0,
+                "stage_entered_at": now if stage != intent["stage"] else intent["stage_entered_at"],
+                "updated_at": now}
+
+    def _report_entered(self, plan: dict, intent: dict, settled: dict, *, active_pointer=None) -> dict:
+        if settled["stage"] != intent["stage"]:
             self._emit(EVENT_STAGE, "observed", plan, attributes={
                 "plan_id": plan["plan_id"], "release_id": plan["release_id"],
-                "target_id": plan["target_id"], "stage": stage, "previous_stage": intent["stage"]})
-        return self._result(plan, settled, settled["outcome"], reason_code=reason_code,
+                "target_id": plan["target_id"], "stage": settled["stage"], "previous_stage": intent["stage"]})
+        return self._result(plan, settled, settled["outcome"], reason_code=settled["reason_code"],
                             active=active_pointer)
 
     def _pending(self, plan: dict, intent: dict, claim, reason_code: str, **fields) -> dict:
         """A bounded external wait: the lease goes back, the stage and its deadline do not move."""
-        now = self.clock()
-        settled = {**intent, **fields, "outcome": OUTCOME_PENDING, "reason_code": reason_code,
-                   "error_type": None, "updated_at": now}
+        settled = self._pended(intent, reason_code, **fields)
         self._write(settled, claim)
         return self._result(plan, settled, OUTCOME_PENDING, reason_code=reason_code)
+
+    def _pended(self, intent: dict, reason_code: str, **fields) -> dict:
+        return {**intent, **fields, "outcome": OUTCOME_PENDING, "reason_code": reason_code,
+                "error_type": None, "updated_at": self.clock()}
 
     def _halt(self, plan: dict, intent: dict, stage: str, outcome: str, reason_code: str, *,
               claim=None, error_type=None, **fields) -> dict:
         """A definite stop that PRESERVES the stage it happened at, its evidence and its reason."""
-        now = self.clock()
+        settled = self._halted(intent, stage, outcome, reason_code, error_type=error_type, **fields)
+        self._write(settled, claim)
+        return self._report_halted(plan, intent, settled)
+
+    def _halted(self, intent: dict, stage: str, outcome: str, reason_code: str, *, error_type=None,
+                **fields) -> dict:
         attempts = int(intent.get("attempts") or 0) + 1
         final = FAILED if attempts >= MAX_STAGE_ATTEMPTS and stage == BLOCKED else stage
-        settled = {**intent, **fields, "stage": final, "previous_stage": intent["stage"],
-                   "outcome": outcome, "reason_code": reason_code,
-                   "error_type": safe_error_type(error_type), "attempts": attempts,
-                   "updated_at": now}
-        self._write(settled, claim)
+        return {**intent, **fields, "stage": final, "previous_stage": intent["stage"],
+                "outcome": outcome, "reason_code": reason_code,
+                "error_type": safe_error_type(error_type), "attempts": attempts,
+                "updated_at": self.clock()}
+
+    def _report_halted(self, plan: dict, intent: dict, settled: dict) -> dict:
+        reason_code, attempts = settled["reason_code"], settled["attempts"]
         self._emit(EVENT_BLOCKED, "blocked", plan, severity="error", reason_code=reason_code,
                    attributes={"plan_id": plan["plan_id"], "target_id": plan["target_id"],
-                               "stage": intent["stage"], "outcome": outcome,
+                               "stage": intent["stage"], "outcome": settled["outcome"],
                                "error_type": settled["error_type"], "attempts": attempts})
         LOGGER.warning("host delivery halted plan=%s stage=%s reason=%s attempts=%d",
                        plan["plan_id"], intent["stage"], reason_code, attempts)
-        return self._result(plan, settled, outcome, reason_code=reason_code)
+        return self._result(plan, settled, settled["outcome"], reason_code=reason_code)
 
     def _unavailable(self, plan: dict, intent: dict, reason_code: str, exc, *, claim=None,
                      commit: bool = True) -> dict:
@@ -1369,6 +1842,21 @@ class HostDelivery:
                        plan["plan_id"], intent["stage"], reason_code, error_type)
         return self._result(plan, settled, OUTCOME_UNAVAILABLE, reason_code=reason_code,
                             error_type=error_type)
+
+    def _unobserved(self, plan: dict, intent: dict, exc=None) -> dict:
+        """The verification fence's completion was not observed (INV-HOST-DELIVERY-VERIFY-001, L-3).
+
+        The store that did not answer the heartbeat is the one every write and settlement would go
+        through, and a blocked call there does not end by itself: nothing is committed, and the
+        claim is NOT settled - no `finish`, no `defer`, no release. The receipt says so
+        (`"claim": "unsettled"`). The row stays `running` with this generation and the attempt
+        stays unresolved in the intent; nothing else acts until the lease expires, and the next
+        owner reconciles the attempt from its disk record before any new evaluation. The abandoned
+        heartbeat is not claimed to be cancelled: it may still complete and renew this lease once.
+        """
+        result = self._unavailable(plan, intent, "verification_fence_unobservable",
+                                   exc or DeliveryRefused("verification_fence_unobservable"), commit=False)
+        return {**result, "claim": "unsettled"}
 
     def _write(self, intent: dict, claim) -> None:
         """Commit one durable observation in the SAME transaction that re-checks the fence."""

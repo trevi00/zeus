@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import json
 import os
+import re
+import shutil
 import subprocess
 import tempfile
 from contextlib import ExitStack
@@ -11,6 +13,7 @@ from pathlib import Path
 from codex_harness.adapters.commands import run_process
 from codex_harness.adapters.configuration import compose_environment, runtime_dir
 from codex_harness.adapters.hooks import NativeHooks
+from codex_harness.adapters.isolated_worker import LABEL, LIMITS, ROLE_LABEL, OwnedContainer
 from codex_harness.adapters.release_suite import ReleaseSuite
 from codex_harness.adapters.verification import VerificationServices, verification_environment
 from codex_harness.application.releases import Releases
@@ -20,16 +23,57 @@ from codex_harness.domain.check_results import bind_revision, is_test_run
 from codex_harness.domain.model import canonical, digest, require, utcnow
 from codex_harness.domain.policy import POLICY
 
+# INV-HOST-DELIVERY-VERIFY-001: the two containers one owned verification attempt may start. Their
+# names are the ones `OwnedContainer` computes for these roles, so creation and reconciliation use
+# one exact name and one exact label pair and never a prefix.
+ROLE_START, ROLE_CANARY = "release-start", "release-canary"
+ATTEMPT_ID = re.compile(r"^[0-9a-f]{32}$")
+# The observation-error codes an owned evaluation answers with instead of a verdict.
+RETRY_OBSERVATION = "verification_observation_unavailable"
+RETRY_ISOLATION = "verification_isolation_unavailable"
+RETRY_AUTH = "verification_auth_unavailable"
+RETRY_WORKSPACE = "verification_workspace_unavailable"
+
+
+def attempt_resources(attempt_id: str) -> dict:
+    """The exact resources one verification attempt may create (INV-HOST-DELIVERY-VERIFY-001)."""
+    require(isinstance(attempt_id, str) and bool(ATTEMPT_ID.fullmatch(attempt_id)),
+            "Invalid verification attempt id")
+    names = {role: OwnedContainer({"limits": LIMITS, "image": None}, "docker", attempt_id, role).name
+             for role in (ROLE_START, ROLE_CANARY)}
+    return {"attempt_id": attempt_id, "project": "zeus-verify-" + attempt_id, "containers": names,
+            "labels": {role: [LABEL + "=" + attempt_id, ROLE_LABEL + "=" + role] for role in names}}
+
+
+def uv_command() -> str:
+    """The `uv` the evaluator installs a candidate with: `uv` itself whenever PATH has it (the legacy argv,
+    unchanged), else the service user's standard install `~/.local/bin/uv`. The aibox controller unit's PATH is
+    pinned to the release venv and the system directories (M1 `controller_env_exact`), and uv is installed there
+    only for the user, as the host's release build pins it; an absent uv stays an observation error."""
+    if shutil.which("uv"):
+        return "uv"
+    local = Path.home() / ".local" / "bin" / "uv"
+    return str(local) if local.is_file() and os.access(local, os.X_OK) else "uv"
+
+
+def _labels(owned, role) -> list:
+    if owned is None:
+        return []
+    return ["--name", owned["containers"][role],
+            *[part for label in owned["labels"][role] for part in ("--label", label)]]
+
 
 class ReleaseRunner:
     """Host-side canary controller, independent of the candidate's Codex process."""
 
-    def __init__(self, service, git, artifacts, auth: str, auto_merge: bool = True, fence=None):
+    def __init__(self, service, git, artifacts, auth: str, auto_merge: bool = True, fence=None,
+                 verification_root=None):
         self.service, self.git, self.artifacts = service, git, artifacts
         self.auth = Path(auth).resolve()
         self.auto_merge = auto_merge
         self.releases = Releases(service.store, service.org)
         self.fence = fence or (lambda: None)
+        self.verification_root = verification_root
 
     def _observe_workspace(self, cwd):
         """What the check will actually run against: HEAD and cleanliness of the cwd, read from Git."""
@@ -99,20 +143,131 @@ class ReleaseRunner:
                 tx.put("releases", release_id, release)
             return {"status": "superseded_by_ticket_revision", "reason": str(exc)}
 
-    def _reject_remaining(self, release, completed, failed):
-        if failed.get("outcome") == "observation_error":
-            return {"status": "retry", "reason": "verification observation unavailable",
-                    "evidence": failed["evidence"], "checks": completed}
+    def _rejection_checks(self, release, completed, failed) -> dict:
         # INV-RELEASE-001: skipped checks are explicitly unexecuted, never synthetic passes.
         receipt = self.artifacts.put(canonical({"status": "not_run",
             "reason": "prerequisite_failed", "prerequisite_ref": failed["evidence"]}),
             "canary-skipped")
-        checks = {name: completed.get(name, {"passed": False, "skipped": True,
-                                             "evidence": receipt["ref"]})
-                  for name in release["policy"]["checks"]}
-        verified = self.releases.verify(release["id"], release["candidate"]["revision"],
-                                        release["policy_hash"], checks)
-        return {"status": verified["status"], "checks": checks}
+        return {name: completed.get(name, {"passed": False, "skipped": True,
+                                           "evidence": receipt["ref"]})
+                for name in release["policy"]["checks"]}
+
+    def _stop(self, release, completed, failed, receipt, reason_code=RETRY_OBSERVATION) -> dict:
+        """The evaluation ends at a failed check: an observation error is a retry, never a verdict."""
+        if failed.get("outcome") == "observation_error":
+            return {"verdict": "retry", "reason_code": reason_code, "evidence": failed["evidence"],
+                    "checks": completed, "receipt": receipt}
+        return {"verdict": "checked", "passed": False, "image": None,
+                "checks": self._rejection_checks(release, completed, failed), "receipt": receipt}
+
+    def evaluate(self, release_id: str, *, attempt: str | None = None) -> dict:
+        """E1 of INV-HOST-DELIVERY-VERIFY-001: the incumbent checks of one reviewed release.
+
+        The same steps, in the same order, as the legacy runner, and it WRITES NOTHING TO THE STORE:
+        it is not pure either - it builds images and runs containers - so it returns a receipt of
+        the external results it produced next to one of `checked` (every policy check, skipped ones
+        explicitly `not_run`) or `retry` (an observation error, with its code). `attempt` names the
+        owned attempt whose exact compose project and container names are used; None keeps the
+        legacy random names. Cancellation and a lost fence propagate as exceptions.
+        """
+        with self.service.store.transaction() as tx:
+            release = tx.get("releases", release_id)
+            require(release is not None, "Release not found")
+            require(release["status"] == "reviewed", "Release not reviewed")
+            ticket_binding(tx, release["candidate"])
+        return self._evaluate(release, None if attempt is None else attempt_resources(attempt))
+
+    def _evaluate(self, release, owned) -> dict:
+        release_id, candidate = release["id"], release["candidate"]
+        receipt = {"release_id": release_id, "revision": candidate["revision"],
+                   "attempt_id": None if owned is None else owned["attempt_id"],
+                   "project": None if owned is None else owned["project"],
+                   "containers": {} if owned is None else dict(owned["containers"]),
+                   "workspaces": {}, "image": None}
+        if owned is not None and not self.auth.is_file():
+            # Presence only, before any work; the file is never opened here.
+            receipt_ref = self.artifacts.put(canonical({"stage": "verification_auth", "present": False}),
+                                             "canary-failure")["ref"]
+            return {"verdict": "retry", "reason_code": RETRY_AUTH, "evidence": receipt_ref, "checks": {},
+                    "receipt": receipt}
+        inspected = self.git.inspect(candidate["revision"], candidate["base"])
+        require(inspected["tree"] == candidate["tree"], "Candidate tree mismatch")
+        # FA-015: the reviewed patch and target repository are re-derived, never trusted from the record.
+        if candidate.get("diff_hash"):
+            require(digest(inspected["diff"]) == candidate["diff_hash"], "Candidate patch mismatch")
+        if candidate.get("repository") is not None:
+            require(candidate["repository"] == self.git.target_identity(),
+                    "Candidate target repository changed since review")
+        try:
+            incumbent = self.git.review_workspace(candidate["base"], "evaluator-" + release_id[:16])
+            path = self.git.review_workspace(candidate["revision"], "canary-" + release_id[:16])
+        except Exception as exc:
+            if owned is None:
+                raise
+            failure = self.artifacts.put(canonical({"stage": "review_workspace",
+                                                    "error_type": type(exc).__name__}), "canary-failure")
+            return {"verdict": "retry", "reason_code": RETRY_WORKSPACE, "evidence": failure["ref"],
+                    "checks": {}, "receipt": receipt}
+        receipt["workspaces"] = {"incumbent": {"path": str(incumbent), "revision": candidate["base"]},
+                                 "candidate": {"path": str(path), "revision": candidate["revision"]}}
+        # Fresh candidate venv; test definitions are taken from the incumbent commit.
+        install = self._check([uv_command(), "sync", "--frozen"], path, expected_revision=candidate["revision"])
+        if not install["passed"]:
+            return self._stop(release, {}, install, receipt)
+        python = Path(path) / ".venv" / ("Scripts/python.exe" if os.name == "nt" else "bin/python")
+        # The services context is entered exactly once (review, PR #57: a second __enter__ re-created
+        # the compose directory and left the first stack running). Entry failure is its own receipt;
+        # once entered, the stack is always exited, whether the body returns or raises.
+        root = Path(self.verification_root) if self.verification_root else runtime_dir() / "verification"
+        stack = ExitStack()
+        try:
+            services = (VerificationServices(root, self.artifacts) if owned is None
+                        else VerificationServices(root, self.artifacts, project=owned["project"]))
+            endpoints = stack.enter_context(services)
+        except Exception as exc:
+            # INV-CHECK-001: a runner that cannot isolate stops; nothing downstream is a pass.
+            failure = self.artifacts.put(canonical({"stage": "verification_isolation", "error": type(exc).__name__ + ": " + str(exc)[:500]}),
+                                         "canary-failure")
+            return self._stop(release, {}, {"passed": False, "evidence": failure["ref"],
+                                            "outcome": "observation_error",
+                                            "reason": "verification isolation unavailable"},
+                              receipt, RETRY_ISOLATION)
+        receipt["project"] = getattr(services, "project", receipt["project"])
+        with stack:
+            test_env = verification_environment(endpoints)
+            incumbent_env = {**test_env, "PYTHONPATH": str(Path(incumbent) / "tests")}
+            tests = self._check([str(python), "-m", "pytest", str(Path(incumbent) / "tests"),
+                "-c", str(Path(incumbent) / "pyproject.toml"), "--import-mode=importlib", "-q"], path, env=incumbent_env,
+                expected_revision=candidate["revision"])
+            if not tests["passed"]:
+                return self._stop(release, {"tests": tests}, tests, receipt)
+            candidate_tests = self._check([str(python), "-m", "pytest", "-q"], path, env=test_env,
+                                          expected_revision=candidate["revision"])
+            if not candidate_tests["passed"]:
+                return self._stop(release, {"tests": candidate_tests}, candidate_tests, receipt)
+            tests = {"passed": True, "evidence": self.artifacts.put(
+                canonical({"incumbent": tests, "candidate": candidate_tests}), "test-suites:" + release_id)["ref"]}
+        image = "zeus:candidate-" + candidate["revision"][:16]
+        build = self._check(["docker", "build", "-t", image, path], cwd=path, timeout=600, expected_revision=candidate["revision"])
+        if not build["passed"]:
+            return self._stop(release, {"tests": tests}, build, receipt)
+        inspected_image = run_process(["docker", "image", "inspect", image, "--format", "{{.Id}}"], timeout=30)
+        require(inspected_image.returncode == 0, "Candidate image missing")
+        # U-2: the id is this attempt's own inspection right after its own build; a later re-tag of
+        # the same tag cannot change what is recorded.
+        receipt["image"] = {"tag": image, "id": inspected_image.stdout.strip()}
+        image = inspected_image.stdout.strip()
+        start = self._check(["docker", "run", "--rm", *_labels(owned, ROLE_START), "--memory", "512m",
+                             "--cpus", "1", "--entrypoint", "codex", image, "--version"])
+        if not start["passed"]:
+            return self._stop(release, {"tests": tests, "cli_start": start}, start, receipt)
+        task = (self.file_canary(image) if owned is None
+                else self.file_canary(image, name=owned["containers"][ROLE_CANARY],
+                                      labels=owned["labels"][ROLE_CANARY]))
+        checks = {"tests": tests, "cli_start": start, "cli_file_task": task}
+        if not task["passed"]:
+            return self._stop(release, checks, task, receipt)
+        return {"verdict": "checked", "passed": True, "image": image, "checks": checks, "receipt": receipt}
 
     def _run(self, release_id: str) -> dict:
         with self.service.store.transaction() as tx:
@@ -134,65 +289,18 @@ class ReleaseRunner:
         if current_main != candidate["base"]:
             request = Workflow(self.service.store, self.service.org).request_rebase(candidate["task_id"], current_main)
             return {"status": "rebasing", "task_id": request["message_id"]}
-        inspected = self.git.inspect(candidate["revision"], candidate["base"])
-        require(inspected["tree"] == candidate["tree"], "Candidate tree mismatch")
-        # FA-015: the reviewed patch and target repository are re-derived, never trusted from the record.
-        if candidate.get("diff_hash"):
-            require(digest(inspected["diff"]) == candidate["diff_hash"], "Candidate patch mismatch")
-        if candidate.get("repository") is not None:
-            require(candidate["repository"] == self.git.target_identity(),
-                    "Candidate target repository changed since review")
-        incumbent = self.git.review_workspace(candidate["base"], "evaluator-" + release_id[:16])
-        path = self.git.review_workspace(candidate["revision"], "canary-" + release_id[:16])
-        # Fresh candidate venv; test definitions are taken from the incumbent commit.
-        install = self._check(["uv", "sync", "--frozen"], path, expected_revision=candidate["revision"])
-        if not install["passed"]:
-            return self._reject_remaining(release, {}, install)
-        python = Path(path) / ".venv" / ("Scripts/python.exe" if os.name == "nt" else "bin/python")
-        # The services context is entered exactly once (review, PR #57: a second __enter__ re-created
-        # the compose directory and left the first stack running). Entry failure is its own receipt;
-        # once entered, the stack is always exited, whether the body returns or raises.
-        stack = ExitStack()
-        try:
-            endpoints = stack.enter_context(VerificationServices(runtime_dir() / "verification", self.artifacts))
-        except Exception as exc:
-            # INV-CHECK-001: a runner that cannot isolate stops; nothing downstream is a pass.
-            receipt = self.artifacts.put(canonical({"stage": "verification_isolation", "error": type(exc).__name__ + ": " + str(exc)[:500]}),
-                                         "canary-failure")
-            return self._reject_remaining(release, {}, {"passed": False, "evidence": receipt["ref"],
-                                                        "outcome": "observation_error", "reason": "verification isolation unavailable"})
-        with stack:
-            test_env = verification_environment(endpoints)
-            incumbent_env = {**test_env, "PYTHONPATH": str(Path(incumbent) / "tests")}
-            tests = self._check([str(python), "-m", "pytest", str(Path(incumbent) / "tests"),
-                "-c", str(Path(incumbent) / "pyproject.toml"), "--import-mode=importlib", "-q"], path, env=incumbent_env,
-                expected_revision=candidate["revision"])
-            if not tests["passed"]:
-                return self._reject_remaining(release, {"tests": tests}, tests)
-            candidate_tests = self._check([str(python), "-m", "pytest", "-q"], path, env=test_env,
-                                          expected_revision=candidate["revision"])
-            if not candidate_tests["passed"]:
-                return self._reject_remaining(release, {"tests": candidate_tests}, candidate_tests)
-            tests = {"passed": True, "evidence": self.artifacts.put(
-                canonical({"incumbent": tests, "candidate": candidate_tests}), "test-suites:" + release_id)["ref"]}
-        image = "zeus:candidate-" + candidate["revision"][:16]
-        build = self._check(["docker", "build", "-t", image, path], cwd=path, timeout=600, expected_revision=candidate["revision"])
-        if not build["passed"]:
-            return self._reject_remaining(release, {"tests": tests}, build)
-        else:
-            inspected_image = run_process(["docker", "image", "inspect", image, "--format", "{{.Id}}"], timeout=30)
-            require(inspected_image.returncode == 0, "Candidate image missing")
-            image = inspected_image.stdout.strip()
-            start = self._check(["docker", "run", "--rm", "--memory", "512m", "--cpus", "1",
-                                 "--entrypoint", "codex", image, "--version"])
-            if not start["passed"]:
-                return self._reject_remaining(release, {"tests": tests, "cli_start": start}, start)
-            task = self.file_canary(image)
-            checks = {"tests": tests, "cli_start": start, "cli_file_task": task}
-            if not task["passed"]:
-                return self._reject_remaining(release, checks, task)
-            with self.service.store.transaction() as tx:
-                tx.put("images", release_id, {"id": release_id, "image": image, "revision": candidate["revision"]})
+        # The legacy recorder over the one evaluator: random names, and it alone writes here.
+        evaluation = self._evaluate(release, None)
+        checks = evaluation["checks"]
+        if evaluation["verdict"] == "retry":
+            return {"status": "retry", "reason": "verification observation unavailable",
+                    "evidence": evaluation["evidence"], "checks": checks}
+        if not evaluation["passed"]:
+            verified = self.releases.verify(release_id, candidate["revision"], release["policy_hash"], checks)
+            return {"status": verified["status"], "checks": checks}
+        image = evaluation["image"]
+        with self.service.store.transaction() as tx:
+            tx.put("images", release_id, {"id": release_id, "image": image, "revision": candidate["revision"]})
         if candidate.get("hook_id"):
             hook_checks = NativeHooks(self.service, self.git, self.artifacts).canary(candidate["hook_id"])
             checks.update({"hook_" + name: check for name, check in hook_checks.items()})
@@ -306,7 +414,7 @@ class ReleaseRunner:
                 tx.put("release_queue", release_id, {**queue, "status": "cancelled", "reason": reason})
             return {"status": "abandoned", "release_id": release_id}
 
-    def file_canary(self, image: str) -> dict:
+    def file_canary(self, image: str, name: str | None = None, labels=()) -> dict:
         require(self.auth.is_file(), "Codex runtime authentication missing")
         with tempfile.TemporaryDirectory(prefix="harness-container-canary-") as directory:
             root = Path(directory)
@@ -315,8 +423,11 @@ class ReleaseRunner:
             schema = {"type": "object", "additionalProperties": False,
                       "properties": {"value": {"type": "string"}}, "required": ["value"]}
             (root / "schema.json").write_text(canonical(schema), encoding="utf-8")
-            name = "harness-canary-" + os.urandom(6).hex()
-            command = ["docker", "run", "--rm", "--name", name, "--memory", "768m", "--cpus", "1",
+            # An owned attempt passes its exact name and labels; the legacy runner keeps its random name.
+            name = name or "harness-canary-" + os.urandom(6).hex()
+            command = ["docker", "run", "--rm", "--name", name,
+                       *[part for label in labels for part in ("--label", label)],
+                       "--memory", "768m", "--cpus", "1",
                        "--mount", f"type=bind,source={root},target=/canary",
                        "--mount", f"type=bind,source={self.auth},target=/root/.codex/auth.json,readonly",
                        "--entrypoint", "codex", image, "exec", "--ephemeral", "--skip-git-repo-check",
