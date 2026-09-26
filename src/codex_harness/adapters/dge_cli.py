@@ -6,34 +6,19 @@ or knowledge adapter is built by any of these commands.
 """
 from __future__ import annotations
 
-import json
 from pathlib import Path
 
-from codex_harness.adapters.operation_cli import GitSource, refusal
+from codex_harness.adapters.operation_cli import (
+    MAX_MANIFEST_BYTES,
+    GitSource,
+    read_document,
+    refusal,
+)
 from codex_harness.application.dge import DebateSessions, DgeRefused
 from codex_harness.domain.dge import source_binding, validate_packet
-from codex_harness.domain.model import ContractError, digest, require
+from codex_harness.domain.model import ContractError, digest
 
-MAX_DOCUMENT_BYTES = 256 * 1024
-
-
-def read_document(path: Path, label: str) -> dict:
-    """Bounded UTF-8 JSON with duplicate keys refused; errors name the file role, not its content.
-    utf-8-sig drops one optional leading BOM from operator-authored files: the raw byte budget still
-    counts it, interior U+FEFF stays data, and malformed UTF-8 or UTF-16 remains refused."""
-    def unique(pairs):
-        result = {}
-        for key, value in pairs:
-            require(key not in result, label + " has a duplicate JSON key")
-            result[key] = value
-        return result
-    try:
-        require(path.stat().st_size <= MAX_DOCUMENT_BYTES, label + " exceeds budget")
-        return json.loads(path.read_text(encoding="utf-8-sig"), object_pairs_hook=unique)
-    except OSError as exc:
-        raise ContractError(label + " unavailable") from exc
-    except (json.JSONDecodeError, UnicodeDecodeError) as exc:
-        raise ContractError(label + " is not valid JSON") from exc
+MAX_DOCUMENT_BYTES = MAX_MANIFEST_BYTES  # read_document is operation_cli's one shared operator JSON reader
 
 
 def repository_identity(repository) -> str:
