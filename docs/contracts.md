@@ -3054,8 +3054,13 @@ delivery plan. `requalification` is in the binding route set and `RESUME` but de
 `SUCCESSOR_ROUTES`/`FAILURE_ROUTES`: it answers no failure, so it never counts against
 `max_corrections`, the two-strike research trigger, a capacity grant, research lineage membership or
 ownership reconciliation; a CORRECTION of its rejected candidate is an ordinary successor on the same new
-base. It is owner-triggered only - a later main change needs another owner withdrawal and document, never
-an automatic loop. `status` shows `requalifications[]` and each intent's `requalification` and
+base. It is owner-triggered, or owner-POLICY-triggered by INV-OWNER-ACTIONS-001 `delivery_requalify` under an
+enabled `requalification` block of a registered `urn:zeus:owner-actions-policy:2`: only for
+`reviewed_base_moved`, never with a `goal_migration` block (a changed goal is refused
+`requalification_goal_changed` and stays the owner's decision), through this same API and checks, and at
+most `max_per_family` times per family. `descriptor_predecessor_moved` and `merged_tree_mismatch` stay
+owner-triggered only. Nothing here re-arms itself: a later main change needs another withdrawal and
+document within that cap, never an automatic loop. `status` shows `requalifications[]` and each intent's `requalification` and
 `superseded_by`.
 
 An intent id is `origin job + generation/attempt + decisive evidence digest + route`; a successor id is
@@ -3532,12 +3537,57 @@ existing owners: `Continuation.accept_research`, the guarded `decide_one` of the
   accepted outcome and its independent lead review, bound to descriptor and instance. The same binding
   (plan digest, awaiting-consumption delivery, target, descriptor and candidate instance) is re-validated
   before the first enqueue and before a missing-job replay. A stale intent is `refused` without admission.
+- Policy `urn:zeus:owner-actions-policy:2` is version 1 plus two blocks, each `null` or opt-in; version 1
+  stays valid with its exact canonical form and digest, and never discovers the kinds below.
+  `owner-actions run` takes `--policy` once per registered policy and ticks them in turn in ONE process
+  (the aibox launcher reads a comma-separated `ZEUS_OWNER_ACTIONS_POLICY`, each id once), so their plans
+  bind serially against the one lane store, controller and target.
+- `requalification {enabled, reasons: ["reviewed_base_moved"], max_per_family 1..3}` -> `delivery_requalify`,
+  owed only for a COMPLETED plan of this policy whose HostDelivery intent is `blocked` for an authorized
+  reason with the same plan digest, while its continuation intent is `awaiting_owner` or `paused`. The id
+  binds plan, digest, intent, continuation policy, family, release, origin job and reason, never the owner
+  policy id. `intended -> withdrawing`: the deterministic rationale is put in the trusted artifact store
+  and ONE cap slot is taken in the transaction that moves the row - the family's slot count (every action
+  that ever left `intended`, excluding this one) is read, checked and written together, so the first
+  action under `max_per_family: 1` is allowed and the next is `refused requalification_exhausted`, and two
+  coordinators never overshoot. `withdrawing`: the lane's GitHub-capable `HostDelivery.withdraw` (the one
+  `host-delivery withdraw --lane` uses) with that rationale; `withdraw_unobservable` leaves the row where
+  it is (the blocked plan keeps the target busy: the debt stays owned), any other refusal is named.
+  `requalifying`: the `Continuation.requalify_delivery` document on the remote main observed now is
+  persisted BEFORE the call and every replay sends exactly those bytes (`cached`); an unreadable main,
+  an unavailable pin or another open requalification of the family waits, every other refusal (including
+  `requalification_main_changed` and `requalification_goal_changed`) is terminal. The requalified work is
+  the continuation's new intent and fresh job on that main with a full independent review; nothing here
+  rewrites a plan, intent or manifest.
+- `research {enabled, program_id, lane}` -> `research_dispatch`, at most ONE per held research intent
+  whatever its outcome (a refused, empty, rejected or unknown one is the owner's named exception, never a
+  second tick) and one open per program. Owed only when the rule ported from the accepted RO-1 helper holds
+  on durable rows: the family's attempts share one investigation whose eligible scoped job set is exactly
+  them, no other investigation is eligible, nothing claims it, the program is registered, scoped, not
+  busy, completed, blocked or out of adoptions or cycles, no other live program takes its reason code,
+  the ledger headroom is readable and sufficient, and the program is due (or paused with no cycle yet).
+  `intended`: re-decided; the provider probe (codex and node resolved on the unit's PATH, each answering
+  `--version`) runs before any resume, reservation or spawn and a failure is `refused
+  research_provider_unavailable`; then the launch id is persisted (`launching`) and ONE guardian is spawned
+  under an exclusive marker running the existing `research-program run <program> --ticks 1 --cycle-owner
+  <launch id>` in the lane repository, bounded by the implementation allowance plus the conductor margin.
+  `running` is only polled, so a council never blocks this or another policy's tick. With the guardian's
+  cleanup proof the child's own rows decide: the expected cycle owned by exactly that launch id and its
+  accepted dispatch is `completed` (the existing `research_receipt` action continues), a rejected or
+  failed council is `rejected`, a collection-only cycle is `refused research_cycle_empty`, no reservation
+  is `refused research_cycle_not_reserved`; a cycle of another owner under that number is `unknown
+  research_cycle_foreign`, and a still-owned cycle `unknown research_cycle_unfinished` (the program stays
+  busy). A launch fenced before it entered, with the program provably unchanged, is relaunched ONCE;
+  unknown cleanup is `unknown research_launch_unknown` and never relaunched. Program exhaustion is never
+  renewed here.
 - `managed_fleet_systemd` targets: `service` must be `zeus-aibox-managed-fleet`. The controller only
   writes `managed-launch.json` and runs `systemctl start` of that unit. The unit's `supervise`
   re-validates request, target, descriptor, sealed manifest, stop request, previous-instance liveness and
   the Fleet activation gate before the incumbent `launch`.
 
 Tests: tests/test_owner_actions.py, tests/test_owner_delivery.py, tests/test_owner_canary_plan.py,
-tests/test_managed_systemd.py,
+tests/test_managed_systemd.py, tests/test_owner_actions_recovery.py (the two-family chain on one lane
+store and target, the requalification restart/concurrency/new-base matrix and the ported RO-1 table),
+tests/test_owner_actions_research_process.py (the actual guardian lifecycle with a labelled child),
 tests/test_owner_actions_adapters.py, tests/test_aibox_owner_units.py. Models, the canary executor and
 systemd are labelled fixtures or a labelled simulation there. Live qualification is out of their scope.

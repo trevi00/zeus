@@ -125,6 +125,21 @@ def test_the_owner_actions_role_needs_activation_and_a_named_policy(host):
     assert result["argv"][1:] == ["-m", "zeus", "owner-actions", "run", "--policy", "owners-1"]
 
 
+def test_the_owner_actions_role_ticks_a_policy_list_in_one_process(host):
+    """Whole-goal adjudication C2: one owner process, several disjoint policies, each named once."""
+    activate(host)
+    result = plan(host, "owner-actions", ZEUS_OWNER_ACTIONS_POLICY="aibox-owner-actions-002,aibox-owner-actions-i1")
+    assert result["argv"][1:] == ["-m", "zeus", "owner-actions", "run", "--policy", "aibox-owner-actions-002",
+                                  "--policy", "aibox-owner-actions-i1"]
+    for value in ("a,", ",a", "a,,b", "a, b", "a,../x"):
+        with pytest.raises(svc.Refused) as unset:
+            plan(host, "owner-actions", ZEUS_OWNER_ACTIONS_POLICY=value)
+        assert unset.value.reason == "owner_actions_policy_unset", value
+    with pytest.raises(svc.Refused) as duplicate:
+        plan(host, "owner-actions", ZEUS_OWNER_ACTIONS_POLICY="a,b,a")
+    assert duplicate.value.reason == "owner_actions_policy_duplicate"
+
+
 def test_a_fence_refuses_the_new_roles_too(host):
     activate(host)
     owner_record(host)
