@@ -12,6 +12,8 @@ What is a labelled SYNTHETIC HOST FIXTURE (tests/verification_fixtures.py): the 
 executables, the compose-backed verification services, the placeholder auth FILE (created empty and
 never opened by anything here), and the GitHub port (`FakeGitHub` of tests/test_host_delivery.py).
 The legacy halted H1 shape is crafted through the real queue API plus one labelled intent write.
+The unavailable store of the L-3 tests is a labelled fault (`StoreOutage`): one shared event in front
+of the in-memory store, or the real controller advisory lock held by a separate PostgreSQL session.
 No production service, database, configuration, credential, provider or model is touched, and
 nothing here is a rollout or a live verification.
 """
@@ -70,8 +72,10 @@ from codex_harness.domain.host_delivery import (
     DeliveryRefused,
     new_intent,
     plan_digest,
+    unresolved_attempts,
     validate_plan,
 )
+from codex_harness.domain.policy import POLICY
 
 POLICY_CHECKS = {"checks": ["tests", "cli_start", "cli_file_task"], "evaluator": "fixture-incumbent-policy"}
 EVIDENCE = "sha256:" + "ab" * 32
@@ -384,36 +388,375 @@ def test_a_lease_lost_between_suite_batches_records_nothing_and_cleans_up(tmp_pa
     assert disk_record(system, attempt["attempt_id"])["state"] == "resolved"
 
 
+def queue_row(system):
+    with system["store"].transaction() as tx:
+        return tx.get("release_queue", system["release"]["id"])
+
+
+class StoreCallFailed(Exception):
+    """LABELLED FAULT: a blocked store call that ends in an error, as `lock_timeout` does on PostgreSQL."""
+
+
+class StoreOutage:
+    """LABELLED FAULT: the store becomes unavailable at the evaluation's first fence observation.
+
+    By default ONE shared event is the store's availability for every caller: once the first queue
+    heartbeat arms it, every store transaction - that heartbeat's own, a settlement's
+    (`ReleaseQueue.finish`/`defer`), an intent write, anything else - waits on the same event, as a
+    call against a blocked store does. `fail` ends that first heartbeat's own wait with
+    `StoreCallFailed` once `expired` is set, while the store stays unavailable for everyone else.
+    `arm` replaces the event with a real cause (the PostgreSQL controller advisory lock taken
+    elsewhere). Settlement entries, the evaluations and how that abandoned heartbeat ended are
+    recorded; `ended` is set once its call has returned through the controller's own fence. (That
+    helper thread's `is_alive`/`join` cannot say so: once a stop interrupts the evaluator's join,
+    CPython 3.12 marks the still-running thread stopped.) The event wait is bounded ONLY so that a
+    controller that re-enters the store fails this test instead of hanging it; a real blocked call
+    has no such bound.
+    """
+
+    def __init__(self, system, monkeypatch, *, arm=None, bound=10, fail=False):
+        store, queue, verifier = system["store"], system["delivery"].queue, system["verifier"]
+        self.available, self.armed, self.observed = threading.Event(), threading.Event(), threading.Event()
+        self.expired, self.ended = threading.Event(), threading.Event()
+        self.available.set()
+        self.armed_at, self.waiters, self.settled, self.claims, self.late, self.evaluations = \
+            None, [], [], [], [], []
+        arming = threading.local()
+        real_transaction, real_heartbeat = store.transaction, queue.heartbeat
+        real_evaluate = verifier.evaluate
+
+        def transaction():
+            if not self.available.is_set():
+                # Which caller waited on the unavailable store: the controller's own thread or not.
+                self.waiters.append(threading.current_thread() is threading.main_thread())
+                self.available.wait(bound)
+            return real_transaction()
+
+        def heartbeat(claim, now=None):
+            if self.armed.is_set():
+                return real_heartbeat(claim, now=now)
+            self.claims.append(claim)
+            arming.call = True
+            if arm is None:
+                self.available.clear()
+            else:
+                arm()
+            self.armed_at = time.monotonic()
+            self.armed.set()
+            try:
+                if fail:
+                    self.waiters.append(threading.current_thread() is threading.main_thread())
+                    self.expired.wait(bound)
+                    raise StoreCallFailed("labelled fault: the blocked store call failed")
+                real_heartbeat(claim, now=now)
+                self.late.append("renewed")
+            except BaseException as exc:
+                self.late.append(type(exc).__name__)
+                raise
+            finally:
+                self.observed.set()
+
+        def settle(name, real):
+            def call(*args, **kwargs):
+                self.settled.append(name)
+                return real(*args, **kwargs)
+            return call
+
+        def evaluate(release_id, attempt, *, fence):
+            # The intent as stored when an evaluation begins (no transaction is open here).
+            self.evaluations.append(intent_of(system))
+
+            def observed(*args, **kwargs):
+                try:
+                    return fence(*args, **kwargs)
+                finally:
+                    if getattr(arming, "call", False):
+                        self.ended.set()
+
+            return real_evaluate(release_id, attempt, fence=observed)
+
+        if arm is None:
+            monkeypatch.setattr(store, "transaction", transaction)
+        monkeypatch.setattr(queue, "heartbeat", heartbeat)
+        monkeypatch.setattr(queue, "finish", settle("finish", queue.finish))
+        monkeypatch.setattr(queue, "defer", settle("defer", queue.defer))
+        monkeypatch.setattr(verifier, "evaluate", evaluate)
+
+
 def test_an_unobservable_store_cancels_without_a_write_and_the_next_tick_attaches_the_receipt(
         tmp_path, monkeypatch):
     system = build(tmp_path, monkeypatch, SerialStore(), fence_seconds=0.5)
     delivery = system["delivery"]
     assert delivery.tick()["stage"] == VERIFYING
     real = delivery.queue.heartbeat
-    blocked = threading.Event()
+    blocked, observed = threading.Event(), threading.Event()
+    claims = []
 
     def heartbeat(claim, now=None):
         # Labelled: a store call that neither returns nor fails within the fence bound.
-        blocked.wait(5)
-        return real(claim, now=now)
+        claims.append(claim)
+        try:
+            blocked.wait(5)
+            return real(claim, now=now)
+        finally:
+            observed.set()
 
     monkeypatch.setattr(delivery.queue, "heartbeat", heartbeat)
     started = time.monotonic()
     result = delivery.tick()
     blocked.set()
     assert result["outcome"] == "unavailable" and result["reason_code"] == "verification_fence_unobservable"
+    assert result["claim"] == "unsettled"  # nothing was settled through the unobserved store either
     assert time.monotonic() - started < 60
+    assert observed.wait(10)  # the abandoned observation was never cancelled; it completes later
     (attempt,) = intent_of(system)["verification"]["attempts"]
     assert attempt["cleanup"] is None  # nothing committed after the evaluation
     assert disk_record(system, attempt["attempt_id"])["state"] == "resolved"
     monkeypatch.setattr(delivery.queue, "heartbeat", real)
-    with system["store"].transaction() as tx:
-        row = tx.get("release_queue", system["release"]["id"])
-        tx.put("release_queue", row["id"], {**row, "retry_at": None})  # skip the backoff wait
+    # The claim was neither finished nor released: the row stays running until its lease expires.
+    row = queue_row(system)
+    assert row["status"] == "running" and row["generation"] == claims[0]["generation"]
+    system["clock"].advance(POLICY.release_lease_seconds + 60)  # past the (once renewed) lease
     results = drive(system, until=PUBLISHING)
     attempts = intent_of(system)["verification"]["attempts"]
     assert attempts[0]["cleanup"]["state"] == "confirmed"  # attached from the disk record
     assert results[-1]["stage"] == PUBLISHING and len(attempts) == 2
+
+
+def test_an_unobservable_fence_settles_and_writes_nothing_through_the_same_unavailable_store(
+        tmp_path, monkeypatch):
+    """R1: ONE unavailable store blocks the heartbeat AND every settlement or write after it; the
+    tick returns on its own, the claim stays running for lease expiry, and only the next owner,
+    after reconciling the first attempt from its disk record, evaluates again."""
+    system = build(tmp_path, monkeypatch, SerialStore(), fence_seconds=0.1)
+    delivery = system["delivery"]
+    assert delivery.tick()["stage"] == VERIFYING
+    system["clock"].advance(1)
+    before, queued = intent_of(system), queue_row(system)
+    outage = StoreOutage(system, monkeypatch)
+    try:
+        result = delivery.tick()
+        returned = time.monotonic()
+        # The store is STILL unavailable here: the tick came back on its own and says so.
+        assert outage.armed.is_set() and not outage.available.is_set()
+        assert returned - outage.armed_at < 5
+        assert result["outcome"] == "unavailable" and result["reason_code"] == "verification_fence_unobservable"
+        assert result["claim"] == "unsettled" and result["stage"] == VERIFYING
+        # Neither `finish` nor `defer` was entered, and only the abandoned heartbeat waited on the store.
+        assert outage.settled == [] and outage.waiters == [False]
+        assert not outage.observed.is_set()  # that heartbeat is still in flight: nothing cancelled it
+    finally:
+        outage.available.set()
+    assert outage.observed.wait(10) and outage.late == ["renewed"]  # a late renewal of the same lease
+    claim = outage.claims[0]
+    row = queue_row(system)
+    assert row["status"] == "running" and row["owner"] == claim["owner"]
+    assert row["generation"] == claim["generation"] and row["attempt"] == claim["attempt"]
+    assert row.get("attempts") == queued.get("attempts")  # no finish/defer entry was ever appended
+    after = intent_of(system)
+    (attempt,) = after["verification"]["attempts"]
+    assert attempt["state"] == "prepared" and attempt["cleanup"] is None and attempt["outcome"] is None
+    assert {k: v for k, v in after.items() if k not in {"verification", "updated_at"}} == \
+        {k: v for k, v in before.items() if k not in {"verification", "updated_at"}}
+    record = disk_record(system, attempt["attempt_id"])
+    assert record["state"] == "resolved" and record["cleanup"]["state"] == "confirmed"
+    assert [step.get("verdict") for step in record["lifecycle"] if step["state"] == "interrupted"] == \
+        ["fence_unobservable"]
+    # Before the lease expires nothing else acts: no second evaluation and no second attempt.
+    monkeypatch.setattr(system["verifier"], "fence_seconds", 30)  # later observations are unhurried
+    busy = delivery.tick()
+    assert busy["outcome"] == "controller_busy" and busy["reason_code"] == "controller_lease_held"
+    assert len(outage.evaluations) == 1 and len(intent_of(system)["verification"]["attempts"]) == 1
+    # Past the lease the next owner reconciles FIRST, and only then evaluates a second attempt.
+    system["clock"].advance(POLICY.release_lease_seconds + 60)
+    results = drive(system, until=PUBLISHING)
+    assert results[-1]["stage"] == PUBLISHING
+    attempts = intent_of(system)["verification"]["attempts"]
+    assert len(attempts) == 2 and attempts[0]["cleanup"]["state"] == "confirmed"
+    assert len(outage.evaluations) == 2
+    assert [row["attempt_id"] for row in unresolved_attempts(outage.evaluations[1])] == \
+        [attempts[1]["attempt_id"]]
+    assert all(len(unresolved_attempts(snapshot)) == 1 for snapshot in outage.evaluations)
+
+
+def test_a_stop_during_a_blocked_fence_touches_no_store_and_a_repeated_signal_is_only_the_flag(
+        tmp_path, monkeypatch):
+    """The first SIGTERM lands while the heartbeat is blocked (well inside the default fence bound):
+    the attempt is cancelled and cleaned up, and the tick returns without finish, defer or an intent
+    write through the store that is still unavailable. A second SIGTERM only sets the flag."""
+    system = build(tmp_path, monkeypatch, SerialStore())
+    delivery = system["delivery"]
+    assert delivery.tick()["stage"] == VERIFYING
+    system["clock"].advance(1)
+    before = intent_of(system)
+    outage = StoreOutage(system, monkeypatch)
+    signals = []
+
+    def deliver():
+        if outage.armed.wait(120):
+            signals.append("first")  # recorded BEFORE the signal, which the main thread handles at once
+            os.kill(os.getpid(), signal.SIGTERM)
+
+    real_put = system["artifacts"].put
+
+    def put(*args, **kwargs):
+        # The attempt's own receipt after its cancellation, in the main thread: a repeated stop.
+        if signals == ["first"]:
+            signals.append("second")
+            os.kill(os.getpid(), signal.SIGTERM)
+        return real_put(*args, **kwargs)
+
+    monkeypatch.setattr(system["artifacts"], "put", put)
+    sender = threading.Thread(target=deliver, daemon=True)
+    sender.start()
+    try:
+        summary = run_loop(delivery, interval=1, max_ticks=3, sleep=lambda _s: None)
+        returned = time.monotonic()
+        sender.join(30)
+        assert signals == ["first", "second"] and not sender.is_alive()
+        assert summary["stopped"] is True and summary["ticks"] == 1
+        assert summary["outcomes"] == {"unavailable": 1}
+        assert returned - outage.armed_at < 5  # neither the fence bound nor the store ended it
+        assert outage.settled == [] and outage.waiters == [False]
+        assert not outage.observed.is_set()
+    finally:
+        outage.available.set()
+    assert outage.observed.wait(10)
+    claim = outage.claims[0]
+    row = queue_row(system)
+    assert row["status"] == "running" and row["owner"] == claim["owner"]
+    assert row["generation"] == claim["generation"]
+    after = intent_of(system)
+    (attempt,) = after["verification"]["attempts"]
+    assert attempt["state"] == "prepared" and attempt["cleanup"] is None
+    assert after["reason_code"] == before["reason_code"]  # no `verification_interrupted` write either
+    record = disk_record(system, attempt["attempt_id"])
+    assert record["state"] == "resolved" and record["cleanup"]["state"] == "confirmed"
+    assert [step.get("verdict") for step in record["lifecycle"] if step["state"] == "interrupted"] == \
+        ["interrupted"]
+    release, image = release_of(system)
+    assert release["status"] == "reviewed" and image is None
+
+
+def stop_then_fail_the_heartbeat(system, monkeypatch, outage):
+    """Run the loop: the first SIGTERM lands while the heartbeat is blocked, and the cancelled
+    attempt's receipt (main thread) goes on only after that heartbeat's call has ENDED in a failure
+    and returned through the controller's fence - the cleanup outlasted the store's own bound.
+    Returns the loop summary, every tick receipt and when the heartbeat ended and the loop returned."""
+    delivery, signals, receipts, failed = system["delivery"], [], [], []
+    real_put, real_tick = system["artifacts"].put, delivery.tick
+
+    def deliver():
+        if outage.armed.wait(120):
+            signals.append("first")  # recorded BEFORE the signal, which the main thread handles at once
+            os.kill(os.getpid(), signal.SIGTERM)
+
+    def put(*args, **kwargs):
+        if signals == ["first"] and not failed:
+            outage.expired.set()
+            outage.ended.wait(30)  # asserted below: an error raised here would be the receipt's own
+            failed.append(time.monotonic())
+        return real_put(*args, **kwargs)
+
+    def tick():
+        receipts.append(real_tick())
+        return receipts[-1]
+
+    monkeypatch.setattr(system["artifacts"], "put", put)
+    monkeypatch.setattr(delivery, "tick", tick)
+    sender = threading.Thread(target=deliver, daemon=True)
+    sender.start()
+    summary = run_loop(delivery, interval=1, max_ticks=3, sleep=lambda _s: None)
+    returned = time.monotonic()
+    sender.join(30)
+    assert signals == ["first"] and not sender.is_alive()
+    assert len(failed) == 1 and outage.ended.is_set()
+    return {"summary": summary, "receipts": receipts, "failed": failed[0], "returned": returned}
+
+
+def test_a_stop_during_a_blocked_fence_whose_heartbeat_then_fails_still_settles_nothing(tmp_path, monkeypatch):
+    """R1 repair: the heartbeat blocked under a stop FAILS before the evaluation returns, so no
+    observation is in flight any more - yet the store never answered it, and the same outage still
+    blocks every settlement and intent write. The tick commits, writes and settles nothing."""
+    system = build(tmp_path, monkeypatch, SerialStore())
+    assert system["delivery"].tick()["stage"] == VERIFYING
+    system["clock"].advance(1)
+    before = intent_of(system)
+    outage = StoreOutage(system, monkeypatch, fail=True)
+    try:
+        run = stop_then_fail_the_heartbeat(system, monkeypatch, outage)
+        assert outage.late == ["StoreCallFailed"] and not outage.available.is_set()
+        assert run["summary"]["stopped"] is True and run["summary"]["ticks"] == 1
+        (result,) = run["receipts"]
+        assert result["outcome"] == "unavailable" and result["reason_code"] == "verification_fence_unobservable"
+        assert result["claim"] == "unsettled"
+        assert run["returned"] - outage.armed_at < 5
+        # Neither `finish` nor `defer` was entered, and the controller's thread never waited on the store.
+        assert outage.settled == [] and outage.waiters == [False]
+    finally:
+        outage.available.set()
+    claim = outage.claims[0]
+    row = queue_row(system)
+    assert row["status"] == "running" and row["owner"] == claim["owner"]
+    assert row["generation"] == claim["generation"]
+    after = intent_of(system)
+    (attempt,) = after["verification"]["attempts"]
+    assert attempt["state"] == "prepared" and attempt["cleanup"] is None
+    assert after["reason_code"] == before["reason_code"]  # no `verification_interrupted` write either
+    record = disk_record(system, attempt["attempt_id"])
+    assert record["state"] == "resolved" and record["cleanup"]["state"] == "confirmed"
+    assert [step.get("verdict") for step in record["lifecycle"] if step["state"] == "interrupted"] == \
+        ["interrupted"]
+
+
+def test_the_verification_fence_reports_an_observation_in_flight_and_refuses_a_later_one():
+    """The fence `_verify` hands the evaluator: `close` says whether an abandoned heartbeat is still
+    in flight, and a heartbeat that had not begun by then never reaches the store at all."""
+    from codex_harness.application.host_delivery import _FenceObservations
+
+    answered, calls = threading.Event(), []
+
+    def heartbeat():
+        calls.append("heartbeat")
+        if len(calls) > 1:
+            answered.wait(10)  # labelled: the store stops answering from the second call on
+
+    fence = _FenceObservations(heartbeat)
+    fence()
+    abandoned = threading.Thread(target=fence, daemon=True)
+    abandoned.start()
+    deadline = time.monotonic() + 10
+    while len(calls) < 2 and time.monotonic() < deadline:
+        time.sleep(0.01)
+    assert fence.close() is True  # in flight: nothing may be committed or settled
+    with pytest.raises(DeliveryRefused):
+        fence()  # closed: refused before the store is touched
+    assert calls == ["heartbeat", "heartbeat"]
+    answered.set()
+    abandoned.join(10)
+    assert not abandoned.is_alive() and fence.close() is False
+
+
+def test_the_verification_fence_counts_a_failed_observation_as_unobserved_but_not_a_refused_lease():
+    """A heartbeat that ended in a store error was never answered, even after it stopped being in
+    flight; a refused lease (`ContractError`) is the store's answer and stays `fence_lost`."""
+    from codex_harness.application.host_delivery import _FenceObservations
+    from codex_harness.domain.model import ContractError
+
+    def refused():
+        raise ContractError("Stale release controller")
+
+    def failed():
+        raise StoreCallFailed("labelled fault")
+
+    answered = _FenceObservations(refused)
+    with pytest.raises(ContractError):
+        answered()
+    assert answered.close() is False
+    unanswered = _FenceObservations(failed)
+    with pytest.raises(StoreCallFailed):
+        unanswered()
+    assert unanswered.close() is True
 
 
 @pytest.mark.integration
@@ -444,6 +787,74 @@ def test_a_blocked_postgres_heartbeat_is_bounded_by_the_fence_not_by_an_assumed_
         assert time.monotonic() - started < 5
         holder.execute("SELECT pg_advisory_unlock(734219)")
     fence()  # observable again once the store answers
+
+
+@pytest.mark.integration
+def test_a_blocked_postgres_store_returns_the_whole_tick_unsettled_well_before_lock_timeout(
+        tmp_path, monkeypatch, isolated_pgstore):
+    """R1 on the real store: from the first heartbeat on the controller advisory lock is held
+    elsewhere, so that heartbeat AND any settlement would wait up to `lock_timeout` (10 s) and then
+    raise. The whole tick returns well before that, without raising, and leaves the claim running."""
+    import psycopg
+
+    system = build(tmp_path, monkeypatch, isolated_pgstore, fence_seconds=0.5)
+    delivery = system["delivery"]
+    assert delivery.tick()["stage"] == VERIFYING
+    system["clock"].advance(1)
+    with psycopg.connect(isolated_pgstore.dsn, autocommit=True) as holder:
+        outage = StoreOutage(system, monkeypatch,
+                             arm=lambda: holder.execute("SELECT pg_advisory_lock(734219)"))
+        try:
+            result = delivery.tick()
+            returned = time.monotonic()
+            assert outage.armed.is_set() and returned - outage.armed_at < 5
+            assert result["outcome"] == "unavailable"
+            assert result["reason_code"] == "verification_fence_unobservable"
+            assert result["claim"] == "unsettled" and outage.settled == []
+        finally:
+            holder.execute("SELECT pg_advisory_unlock(734219)")
+    assert outage.observed.wait(15)  # the abandoned heartbeat ends on its own once the store answers
+    claim = outage.claims[0]
+    row = queue_row(system)
+    assert row["status"] == "running" and row["owner"] == claim["owner"]
+    assert row["generation"] == claim["generation"]
+    (attempt,) = intent_of(system)["verification"]["attempts"]
+    assert attempt["state"] == "prepared" and attempt["cleanup"] is None
+    assert disk_record(system, attempt["attempt_id"])["state"] == "resolved"
+
+
+@pytest.mark.integration
+def test_a_stop_while_a_blocked_postgres_heartbeat_times_out_settles_nothing(
+        tmp_path, monkeypatch, isolated_pgstore):
+    """R1 repair on the real store: a stop lands while the heartbeat waits for the controller
+    advisory lock held elsewhere; that heartbeat then ends in `LockNotAvailable` (lock_timeout)
+    during the cancelled attempt's cleanup, and the lock is still held. The tick returns without
+    raising and without waiting on the store again, and leaves the claim running."""
+    import psycopg
+
+    system = build(tmp_path, monkeypatch, isolated_pgstore)
+    assert system["delivery"].tick()["stage"] == VERIFYING
+    system["clock"].advance(1)
+    with psycopg.connect(isolated_pgstore.dsn, autocommit=True) as holder:
+        outage = StoreOutage(system, monkeypatch,
+                             arm=lambda: holder.execute("SELECT pg_advisory_lock(734219)"))
+        try:
+            run = stop_then_fail_the_heartbeat(system, monkeypatch, outage)
+            assert outage.late == ["LockNotAvailable"]
+            (result,) = run["receipts"]
+            assert result["outcome"] == "unavailable"
+            assert result["reason_code"] == "verification_fence_unobservable"
+            assert result["claim"] == "unsettled" and outage.settled == []
+            assert run["returned"] - run["failed"] < 5  # well under another lock_timeout
+        finally:
+            holder.execute("SELECT pg_advisory_unlock(734219)")
+    claim = outage.claims[0]
+    row = queue_row(system)
+    assert row["status"] == "running" and row["owner"] == claim["owner"]
+    assert row["generation"] == claim["generation"]
+    (attempt,) = intent_of(system)["verification"]["attempts"]
+    assert attempt["state"] == "prepared" and attempt["cleanup"] is None
+    assert disk_record(system, attempt["attempt_id"])["state"] == "resolved"
 
 
 # ----- L-11: the evaluator split keeps the legacy contract ---------------------------------------

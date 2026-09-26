@@ -2736,15 +2736,28 @@ out of `verifying`, including the already-verified shortcut, over every unresolv
 verifier root (an unreadable one counts) and every store attempt without a resolving cleanup:
 - a live owner (same pid, start time and boot) that is not this process blocks as
   `verification_owner_alive`: a stalled owner whose lease expired is never declared dead;
+- an owner is dead only on proof read from a `/proc` that shows this process as itself: another
+  boot, its pid absent (ENOENT/ESRCH), or that pid now under another start time. An owner identity
+  that cannot be observed (an unreadable boot id or `/proc/<pid>/stat`, an unparseable or truncated
+  stat, a proc root that does not show this process as itself, an incomplete record) is unknown:
+  nothing of that attempt is touched (no container stop or removal, compose down or kill) and the
+  tick waits as `verification_cleanup_unconfirmed`. An unreadable boot id is never another boot,
+  including in an attempt's own cleanup. Where this controller's own identity is not observable,
+  the port is unavailable (`verifier_unavailable`) and nothing is reconciled. Absence as proof
+  assumes the owner and the reconciler are the same service user under a `/proc` without
+  `hidepid`/`ProtectProc=invisible` and without a private pid namespace (the aibox controller unit:
+  `User=trevi`, `ProtectProc=default`, `PrivatePIDs=no`);
 - each container is looked up by exact name AND label; only a successful listing with zero rows is
   absence, one exact row is stopped, removed and listed again, and ambiguity or a Docker error is
   unknown (`OwnedContainer.recover_id`'s None alone is never absence);
 - the compose project is taken down through its own directory and must then list no container with
   its exact project label;
 - a recorded child group is killed only while its leader is provably that recorded child (pid AND
-  start time); a group whose leader is gone but which still has members is an unclassified survivor
-  and stays debt; for a dead owner of this boot, its recorded cgroup must hold nothing but this
-  process - nothing found there is killed;
+  start time), and a leader whose identity cannot be read is unknown; a group whose leader is gone
+  but which still has members is an unclassified survivor and stays debt; for a dead owner of this
+  boot, its recorded cgroup must hold nothing but this process - nothing found there is killed, and
+  a missing cgroup directory counts as empty only under a readable cgroup v2 root
+  (`cgroup.controllers`), otherwise it is unknown;
 - a store attempt with no disk record stays unresolved until the same exact checks prove nothing it
   could have named exists (`never_started`).
 Anything unknown is `verification_cleanup_unconfirmed`: no evaluation, no attempt spent, no stage
@@ -2757,12 +2770,25 @@ refused (`withdraw_verification_unresolved`).
 Stop, lease and store: the first SIGTERM/SIGINT of `host-delivery run` during an evaluation raises
 `EvaluationCancelled` once in the main thread, so the existing primitives end their own process
 groups, services and containers; later signals only set the stop flag and never interrupt the
-attempt's cleanup; the result is `verification_interrupted` (pending, no attempt spent). The fence
-between checks is the queue heartbeat observed within a bound (`FENCE_SECONDS`): a lost lease records
-nothing (`verification_fence_lost`), and an error or an observation that did not complete within the
-bound is `verification_fence_unobservable` with nothing committed - a blocked store call is never
-assumed to time out by itself. Cleanup never needs the store; a SIGKILL, OOM kill or power loss leaves
-the records for the next owner's reconciliation.
+attempt's cleanup; the result is `verification_interrupted` (pending, no attempt spent) unless the
+fence's store was unobserved (below). The fence between checks is the queue heartbeat observed within
+a bound (`FENCE_SECONDS`): a lost lease records nothing (`verification_fence_lost`), and an error or an
+observation that did not complete within the bound is `verification_fence_unobservable` - a blocked
+store call is never assumed to time out by itself. Such a tick does not use that store again: nothing
+is committed AND the claim is not settled (no `finish`, no `defer`; the receipt carries
+`"claim": "unsettled"`). A stop that ends the evaluation while its heartbeat is still in flight, or
+after that heartbeat ended in an error the evaluation never saw (a PostgreSQL `lock_timeout` during
+the cancelled attempt's cleanup), ends the same way, as `verification_fence_unobservable` rather than
+`verification_interrupted`; only a refused lease is the store's answer. The queue row stays `running`
+with its generation, the host-wide controller lock (`deployment_locks:controller`) stays held, and the
+attempt stays unresolved in the intent, until the lease expires (`release_lease_seconds`): no
+controller on the host claims before then - once the store answers again another tick is
+`controller_lease_held`, while it stays unavailable `store_unavailable` or `queue_unavailable` - and
+the next owner reconciles the attempt from its disk record before any new evaluation (the claim's
+queue attempt counts against the unchanged budget). The abandoned heartbeat was not cancelled - only
+the wait for it was bounded or interrupted - and it may still complete: a late success renews that
+same lease once, which only delays the reclaim. Cleanup never needs the store; a SIGKILL, OOM kill or
+power loss leaves the records for the next owner's reconciliation.
 
 `zeus host-delivery resume --plan P --plan-sha256 S --evidence sha256:<64 hex> [--lane L]` is the one
 supported recovery, for exactly the legacy shape: `blocked`/`failed` with `release_not_verified` at

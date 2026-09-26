@@ -115,22 +115,23 @@ rules. A named wait tells the owner what holds it:
 
 | reason | meaning | what an owner does |
 |---|---|---|
-| `verifier_unavailable` | no port wired (delivery disabled or no Git workspace), off the main thread, or no `/proc` identity | nothing; the controller wiring decides |
+| `verifier_unavailable` | no port wired (delivery disabled or no Git workspace), off the main thread, or no `/proc` identity (including a proc root that does not show this process as itself) | nothing; the controller wiring decides |
 | `verification_owner_alive` | a recorded attempt's owner process is still running (same pid, start time and boot) | wait for it; never kill it by hand to "unblock" |
-| `verification_cleanup_unconfirmed` | a resource of an attempt could not be proven gone: Docker unobservable or ambiguous, a compose container still listed, an unclassified survivor in a recorded group, or a foreign process in a dead owner's cgroup | observe what the attempt record names; nothing is reclaimed by prefix or age |
+| `verification_cleanup_unconfirmed` | a resource of an attempt could not be proven gone: Docker unobservable or ambiguous, a compose container still listed, an unclassified survivor in a recorded group, or a foreign process in a dead owner's cgroup; or an attempt owner's identity (boot id, `/proc/<pid>/stat`, a proc root that does not show this process as itself, the cgroup root) could not be observed, which is never taken for a dead owner, so nothing of that attempt is touched | observe what the attempt record names; nothing is reclaimed by prefix or age |
 | `verification_interrupted` | the controller was stopped during an evaluation; its own resources were cleaned up | none; the next tick evaluates again |
-| `verification_fence_lost` / `verification_fence_unobservable` | the lease was lost, or the store could not be observed within the fence bound; nothing was recorded | none; the next owner attaches the cleanup receipt |
+| `verification_fence_lost` | the lease was lost between checks; nothing was recorded | none; the next owner attaches the cleanup receipt |
+| `verification_fence_unobservable` | the store did not answer the heartbeat within the fence bound or answered with an error, or a stop ended the evaluation while that heartbeat was still in flight or after it failed with an error: nothing was committed AND the claim was not settled (`"claim": "unsettled"` on the receipt); the queue row stays `running` and the host-wide controller lock stays held until the lease expires, and an abandoned heartbeat may still complete and renew that lease once | none; once the store answers, other ticks report `controller_lease_held` until the lease expires, then the next owner attaches the cleanup receipt before any new evaluation |
 | `verification_*_unavailable` | an observation error of the evaluator (isolation, auth file presence, review workspace, other) | the queue's unchanged backoff and budget apply |
 
 Signals, leases and the store while evaluating:
 
 | event | behaviour |
 |---|---|
-| first SIGTERM/SIGINT of `host-delivery run` during an evaluation | `EvaluationCancelled` is raised once in the main thread: owned process groups are killed, the services stack exits, the canary container is removed by exact name, then the attempt's own cleanup is proven; `verification_interrupted`, no attempt spent |
+| first SIGTERM/SIGINT of `host-delivery run` during an evaluation | `EvaluationCancelled` is raised once in the main thread: owned process groups are killed, the services stack exits, the canary container is removed by exact name, then the attempt's own cleanup is proven; `verification_interrupted`, no attempt spent - unless its heartbeat was still blocked or had failed, which ends as `verification_fence_unobservable`, unsettled (the store row below) |
 | further signals | the stop flag only; the cleanup in progress is never interrupted |
 | SIGTERM outside an evaluation | unchanged: the flag, and the tick finishes |
 | stop window exceeded -> SIGKILL, OOM kill, power loss | no cleanup runs; the durable records stay and the next owner reconciles them. Correctness does not depend on finishing inside `TimeoutStopSec` |
-| the store blocks | the heartbeat between checks is observed within `FENCE_SECONDS`; not completing is `verification_fence_unobservable`; cleanup needs no store |
+| the store blocks | the heartbeat between checks is observed within `FENCE_SECONDS`; not completing (or an error) is `verification_fence_unobservable`; cleanup needs no store, and the tick then neither commits nor settles through that store (no `finish`/`defer`): the claim stays `running` until lease expiry. The abandoned heartbeat is not cancelled and may still complete later. A stop while the heartbeat is blocked ends the same way (not `verification_interrupted`), also when that heartbeat fails with an error (e.g. `lock_timeout`) during the attempt's cleanup; further signals only set the flag |
 | lease expiry while the owner is alive (a stall) | any other claimant sees `verification_owner_alive` and does not evaluate; the stalled owner's next fence fails and it records no verdict |
 | evaluation off the main thread | refused as `verifier_unavailable` |
 

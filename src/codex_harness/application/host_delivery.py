@@ -33,6 +33,7 @@ tick resumes the same logical intent under its own durable stage deadline.
 from __future__ import annotations
 
 import logging
+import threading
 from datetime import datetime, timedelta
 
 from codex_harness.application.release_queue import ReleaseQueue
@@ -142,6 +143,54 @@ class AmbiguousEffect(Exception):
     def __init__(self, effect: str, cause: Exception):
         super().__init__(effect)
         self.effect, self.cause = effect, cause
+
+
+class _FenceObservations:
+    """The fence `_verify` hands the evaluator: this claim's heartbeat, with its calls in flight counted.
+
+    INV-HOST-DELIVERY-VERIFY-001: the evaluator observes each call within its bound in a helper
+    thread and ABANDONS one that does not complete. Its join timed out or a stop interrupted it;
+    nothing cancelled the call, and it may still complete later - a late successful heartbeat renews
+    the abandoned lease once, which only delays its reclaim. The count is kept here, not read from
+    that helper thread: once a stop interrupts the join, CPython 3.12 marks the still-running thread
+    stopped. The store's completion is unobserved when an observation is still in flight as the
+    evaluation returns, OR when one ended in an error instead of the store's answer. Under a stop
+    the evaluator never sees that error (a blocked PostgreSQL call ends in `lock_timeout` during the
+    cancelled attempt's cleanup), and the store it could not reach is the one every commit and
+    settlement would wait on. A refusal (`ContractError`, a lost lease) IS the store's answer and
+    stays `fence_lost`. `close` answers exactly that and refuses every later call, so an observation
+    that had not yet begun can never reach the store after this controller stopped looking.
+    """
+
+    def __init__(self, heartbeat):
+        self._heartbeat, self._lock = heartbeat, threading.Lock()
+        self._flying, self._failed, self._closed = 0, False, False
+
+    def __call__(self):
+        with self._lock:
+            if self._closed:
+                raise DeliveryRefused("verification_fence_closed")
+            self._flying += 1
+        answered = False
+        try:
+            result = self._heartbeat()
+            answered = True
+            return result
+        except ContractError:
+            answered = True
+            raise
+        finally:
+            # One step, so `close` sees this call either still in flight or with how it ended.
+            with self._lock:
+                self._flying -= 1
+                self._failed = self._failed or not answered
+
+    def close(self) -> bool:
+        """End the evaluation's use of this fence; True when the store's completion is unobserved:
+        an observation still in flight, or one that ended in an error instead of an answer."""
+        with self._lock:
+            self._closed = True
+            return self._flying > 0 or self._failed
 
 
 class HostDelivery:
@@ -318,7 +367,11 @@ class HostDelivery:
                       else "stage_unavailable")
             result = self._guard(plan, intent, OUTCOME_UNAVAILABLE, lambda: self._unavailable(
                 plan, intent, reason, failure, claim=claim))
-        self._settle(claim, result)
+        if result.get("claim") != "unsettled":
+            # An unobserved verification fence (`_unobserved`) is not settled through the store it
+            # could not observe: the claim stays running until its lease expires, and the next
+            # owner reconciles the attempt first (INV-HOST-DELIVERY-VERIFY-001).
+            self._settle(claim, result)
         return result
 
     def _unclaimed(self, plan: dict) -> str:
@@ -974,9 +1027,14 @@ class HostDelivery:
                 # The DB attempt without its disk record stays unresolved until reconcile proves
                 # that nothing it could have named exists (`never_started`).
                 return self._unavailable(plan, current, "verification_record_unavailable", exc, claim=claim)
-            outcome = port.evaluate(plan["release_id"], attempt,
-                                    fence=lambda: self.queue.heartbeat(claim, now=self._now()))
-            return self._verdict(plan, current, claim, attempt, outcome)
+            fence = _FenceObservations(lambda: self.queue.heartbeat(claim, now=self._now()))
+            try:
+                outcome = port.evaluate(plan["release_id"], attempt, fence=fence)
+            except Exception as exc:
+                if fence.close():
+                    return self._unobserved(plan, current, exc)
+                raise
+            return self._verdict(plan, current, claim, attempt, outcome, unobserved=fence.close())
         except AmbiguousEffect:
             raise
         except ContractError as refusal:
@@ -1041,20 +1099,25 @@ class HostDelivery:
                     for row in attempts_of(intent)]
         return {**intent, "verification": {**(intent.get("verification") or {}), "attempts": attempts}}
 
-    def _verdict(self, plan: dict, intent: dict, claim, attempt: dict, outcome: dict) -> dict:
-        """What one owned evaluation ends in. Only `checked` and `superseded` write a verdict."""
+    def _verdict(self, plan: dict, intent: dict, claim, attempt: dict, outcome: dict, *,
+                 unobserved: bool = False) -> dict:
+        """What one owned evaluation ends in. Only `checked` and `superseded` write a verdict.
+
+        `unobserved` is the fence's own answer (`_FenceObservations.close`): a heartbeat still in
+        flight, or one that ended in an error, when the evaluation returned. A stop can end the
+        evaluation while its heartbeat is blocked, and that heartbeat may fail only during the
+        cancelled attempt's cleanup. Like `fence_unobservable`, the store's completion is
+        unobserved, so whatever the verdict nothing is recorded or settled (L-3).
+        """
         verdict = outcome.get("verdict")
+        if unobserved or verdict == "fence_unobservable":
+            return self._unobserved(plan, intent)
         if verdict == "fence_lost":
             # This controller no longer owns the release: it records nothing. Its disk record says
             # what its own cleanup proved, and the next reconcile attaches it (L-2).
             return {**self._result(plan, intent, OUTCOME_CONFLICT, reason_code="verification_fence_lost"),
                     "controller": "stale"}
         closed = self._closed(intent, attempt, outcome)
-        if verdict == "fence_unobservable":
-            # The store could not be observed within the fence bound: nothing is committed (L-3).
-            return self._unavailable(plan, intent, "verification_fence_unobservable",
-                                     DeliveryRefused("verification_fence_unobservable"),
-                                     claim=claim, commit=False)
         if verdict == "interrupted":
             settled = self._commit_verification(intent, claim, lambda _tx, _base: self._pended(
                 closed, "verification_interrupted"))
@@ -1779,6 +1842,21 @@ class HostDelivery:
                        plan["plan_id"], intent["stage"], reason_code, error_type)
         return self._result(plan, settled, OUTCOME_UNAVAILABLE, reason_code=reason_code,
                             error_type=error_type)
+
+    def _unobserved(self, plan: dict, intent: dict, exc=None) -> dict:
+        """The verification fence's completion was not observed (INV-HOST-DELIVERY-VERIFY-001, L-3).
+
+        The store that did not answer the heartbeat is the one every write and settlement would go
+        through, and a blocked call there does not end by itself: nothing is committed, and the
+        claim is NOT settled - no `finish`, no `defer`, no release. The receipt says so
+        (`"claim": "unsettled"`). The row stays `running` with this generation and the attempt
+        stays unresolved in the intent; nothing else acts until the lease expires, and the next
+        owner reconciles the attempt from its disk record before any new evaluation. The abandoned
+        heartbeat is not claimed to be cancelled: it may still complete and renew this lease once.
+        """
+        result = self._unavailable(plan, intent, "verification_fence_unobservable",
+                                   exc or DeliveryRefused("verification_fence_unobservable"), commit=False)
+        return {**result, "claim": "unsettled"}
 
     def _write(self, intent: dict, claim) -> None:
         """Commit one durable observation in the SAME transaction that re-checks the fence."""

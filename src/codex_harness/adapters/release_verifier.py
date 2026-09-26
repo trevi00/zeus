@@ -13,14 +13,18 @@ build, two containers and host child processes - so every evaluation is one exac
   `<root>/attempts/<id>/run.json` through the existing atomic `_write_record`, and every host child
   the evaluation creates is appended to that record the moment it exists (`observe_spawns`);
 * before ANY later evaluation, and before a verified delivery may leave `verifying`, every
-  unresolved attempt is reconciled EXACTLY: an owner still alive blocks; each container is looked up
-  by exact name AND label and only a successful listing with zero rows is absence (one row is
-  stopped, removed and listed again; ambiguity or a Docker error is unknown); the compose project is
-  taken down through its own directory and then listed by its exact project label; a host child
-  group is killed only while its recorded leader is provably the same process (pid AND start time),
-  a group whose leader is gone but which still has members is an unclassified survivor and stays
-  debt, and a dead owner's recorded cgroup must be empty of everything but this process. Nothing
-  is ever selected by a prefix, an age or another attempt's id, and `collect_stale` is not called.
+  unresolved attempt is reconciled EXACTLY: an owner still alive blocks, and an owner is dead only
+  on proof read from a `/proc` that shows this process as itself (another boot, its pid absent, or
+  that pid under another start time) - an identity that cannot be observed is unknown and nothing
+  of it is touched; each container is looked up by exact name AND label and only a successful
+  listing with zero rows is absence (one row is stopped, removed and listed again; ambiguity or a
+  Docker error is unknown);
+  the compose project is taken down through its own directory and then listed by its exact project
+  label; a host child group is killed only while its recorded leader is provably the same process
+  (pid AND start time), a group whose leader is gone but which still has members is an
+  unclassified survivor and stays debt, and a dead owner's recorded cgroup must be empty of
+  everything but this process (an unobservable cgroup root proves nothing). Nothing is ever
+  selected by a prefix, an age or another attempt's id, and `collect_stale` is not called.
 
 Signal, lease and store semantics (A1.4): the first SIGTERM/SIGINT during an evaluation raises
 `EvaluationCancelled` once in the main thread (`CancellationBoundary`), so the existing primitives
@@ -128,47 +132,124 @@ def bounded_fence(heartbeat, seconds: float = FENCE_SECONDS):
     return fence
 
 
+PRESENT, ABSENT, UNKNOWN = "present", "absent", "unknown"
+
+
 class HostFacts:
-    """What `/proc` and the cgroup v2 tree say about processes; every unreadable fact is None."""
+    """What `/proc` and the cgroup v2 tree say about processes.
+
+    An unreadable fact is None (unknown). Absence is reported only where it is proven
+    (INV-HOST-DELIVERY-VERIFY-001): a failed or unparseable observation is never read as "gone".
+    A process fact or boot id is an observation only under a proc root that shows this process as
+    itself; under any other root every one of them is unknown.
+    """
 
     def __init__(self, proc="/proc", cgroup_root="/sys/fs/cgroup"):
         self.proc, self.cgroup_root = Path(proc), Path(cgroup_root)
 
     def boot_id(self):
+        """None when unreadable, or read under a root that is not observable for this process: such
+        a boot id is never taken for another boot (INV-HOST-DELIVERY-VERIFY-001)."""
         try:
-            return (self.proc / "sys" / "kernel" / "random" / "boot_id").read_text("ascii").strip() or None
-        except OSError:
+            boot = (self.proc / "sys" / "kernel" / "random" / "boot_id").read_text("ascii").strip() or None
+        except (OSError, ValueError):
             return None
+        return boot if boot and self._observable() else None
+
+    def _ticks(self, name: str, pid: int) -> int:
+        """Field 22 of `/proc/<name>/stat`, whose first field must be `pid`. Raises OSError when it
+        cannot be read and ValueError when it is not a whole stat line of that pid."""
+        text = (self.proc / name / "stat").read_text("utf-8", errors="replace")
+        fields = text[text.rindex(")") + 1:].split()
+        if text.split(" (", 1)[0] != str(pid) or len(fields) < 20 or not (
+                fields[19].isascii() and fields[19].isdigit()):
+            raise ValueError("unparseable stat")
+        return int(fields[19])
+
+    def _observable(self) -> bool:
+        """This proc root shows THIS process as itself (same mount, same pid namespace)."""
+        try:
+            self._ticks("self", os.getpid())
+        except (OSError, ValueError):
+            return False
+        return True
+
+    def process(self, pid):
+        """`(PRESENT, start_ticks)`, `(ABSENT, None)` or `(UNKNOWN, None)` for one pid.
+
+        INV-HOST-DELIVERY-VERIFY-001: ABSENT is confirmed only when `/proc/<pid>` does not exist
+        (ENOENT/ESRCH), and PRESENT only when its whole stat names that pid - both under a proc
+        root that is observable for this very process: under any other root (another pid
+        namespace's mount, no `self`) a pid names nothing recorded here, so neither its absence nor
+        its start time proves anything. EACCES, EIO or any other read error, an unparseable or
+        truncated stat, a stat of another pid, an unobservable proc root or a pid that is not a
+        positive int is UNKNOWN - never absence, never another start time.
+        """
+        if type(pid) is not int or pid <= 0:
+            return UNKNOWN, None
+        try:
+            answer = PRESENT, self._ticks(str(pid), pid)
+        except (FileNotFoundError, ProcessLookupError):
+            answer = self._missing(pid)
+        except (OSError, ValueError):
+            return UNKNOWN, None
+        return answer if answer[0] != UNKNOWN and self._observable() else (UNKNOWN, None)
+
+    def _missing(self, pid: int):
+        """After ENOENT/ESRCH on its stat: ABSENT only if `/proc/<pid>` itself is gone too."""
+        try:
+            os.lstat(self.proc / str(pid))
+        except (FileNotFoundError, ProcessLookupError):
+            return ABSENT, None
+        except OSError:
+            return UNKNOWN, None
+        return UNKNOWN, None  # its directory is still there without a readable stat: no proof
 
     def start_ticks(self, pid):
-        """Field 22 of `/proc/<pid>/stat`: the start time that makes a pid a process identity."""
-        try:
-            text = (self.proc / str(pid) / "stat").read_text("utf-8", errors="replace")
-            return int(text[text.rindex(")") + 1:].split()[19])
-        except (OSError, ValueError, IndexError):
-            return None
+        """Field 22 of `/proc/<pid>/stat`: the start time that makes a pid a process identity.
+        None when absent OR unknown; `process` is what tells the two apart."""
+        return self.process(pid)[1]
 
     def cgroup(self, pid="self"):
         try:
             lines = (self.proc / str(pid) / "cgroup").read_text("utf-8").splitlines()
-        except OSError:
+        except (OSError, ValueError):
             return None
         paths = [line[3:] for line in lines if line.startswith("0::")]
         return paths[0] if len(paths) == 1 and paths[0].startswith("/") else None
 
     def members(self, cgroup):
-        """The pids of one cgroup: [] when it no longer exists, None when it cannot be read."""
+        """The pids of one cgroup: [] only when it provably no longer exists, None when unknown.
+
+        INV-HOST-DELIVERY-VERIFY-001: a missing directory is absence (a unit's cgroup is removed
+        when it is empty) only under an observable cgroup v2 root - its `cgroup.controllers` is
+        readable. A missing or unmounted root, a hybrid layout, an unreadable path or a directory
+        without its member list is unknown, never an empty cgroup.
+        """
         if not (isinstance(cgroup, str) and cgroup.startswith("/") and ".." not in cgroup.split("/")):
             return None
-        directory = self.cgroup_root / cgroup.lstrip("/")
-        if not directory.exists():
-            return []
         try:
-            return [int(value) for value in (directory / "cgroup.procs").read_text("ascii").split()]
+            (self.cgroup_root / "cgroup.controllers").read_text("ascii")
         except (OSError, ValueError):
             return None
+        directory = self.cgroup_root / cgroup.lstrip("/")
+        try:
+            return [int(value) for value in (directory / "cgroup.procs").read_text("ascii").split()]
+        except FileNotFoundError:
+            pass
+        except (OSError, ValueError):
+            return None
+        try:
+            os.lstat(directory)
+        except FileNotFoundError:
+            return []
+        except OSError:
+            return None
+        return None
 
     def owner(self):
+        """This process's identity, or None when it is not observable here: an attempt never
+        records an identity read under a foreign or unobservable proc root."""
         pid = os.getpid()
         owner = {"pid": pid, "start_ticks": self.start_ticks(pid), "boot_id": self.boot_id(),
                  "cgroup": self.cgroup()}
@@ -302,7 +383,9 @@ class ReleaseVerifier:
             return None
 
     def _spawned(self, record: dict, pid: int) -> None:
-        """Every host child of this attempt, durably, the moment it exists (final review C1)."""
+        """Every host child of this attempt, durably, the moment it exists (final review C1). A
+        start time that could not be read is recorded as None: that group is never killed later,
+        only observed gone."""
         with self._lock:
             record["children"].append({"pid": pid, "pgid": pid, "start_ticks": self.facts.start_ticks(pid)})
             _write_record(self._path(record["attempt_id"]), record)
@@ -348,17 +431,30 @@ class ReleaseVerifier:
         return {"state": "clear", "reason_code": None, "resolved": resolved}
 
     def _owner(self, owner) -> str:
-        """`self`, `alive` (another live process), `dead`, or `unknown`."""
-        if not isinstance(owner, dict) or not isinstance(owner.get("pid"), int):
+        """`self`, `alive` (another live process), `dead`, or `unknown`.
+
+        `dead` is proof only (INV-HOST-DELIVERY-VERIFY-001): another boot, a pid that does not
+        exist, or a pid now held by another process (a different start time). An identity that
+        cannot be observed - an unreadable boot id or `/proc/<pid>/stat`, an unparseable stat, an
+        unobservable proc root, an incomplete record - is `unknown`: a live stalled owner is never
+        reclaimed because a read failed.
+        """
+        if not isinstance(owner, dict) or type(owner.get("pid")) is not int:
             return "unknown"
-        boot = self.facts.boot_id()
-        if boot is None:
+        boot, recorded = self.facts.boot_id(), owner.get("boot_id")
+        if boot is None or not (isinstance(recorded, str) and recorded):
             return "unknown"
-        if owner.get("boot_id") != boot:
+        if recorded != boot:
             return "dead"  # another boot: nothing it started is still running
-        ticks = self.facts.start_ticks(owner["pid"])
-        if ticks is None or ticks != owner.get("start_ticks"):
+        if type(owner.get("start_ticks")) is not int:
+            return "unknown"  # no recorded identity to compare the pid with
+        state, ticks = self.facts.process(owner["pid"])
+        if state == ABSENT:
             return "dead"
+        if state != PRESENT:
+            return "unknown"
+        if ticks != owner["start_ticks"]:
+            return "dead"  # the pid now names another process
         mine = self.facts.owner()
         if mine is not None and mine["pid"] == owner["pid"] and mine["start_ticks"] == ticks:
             return "self"
@@ -479,8 +575,14 @@ class ReleaseVerifier:
                 "directory_left": directory.exists()}
 
     def _processes_gone(self, record: dict, *, self_owned: bool) -> dict:
-        owner = record.get("owner") or {}
-        if owner.get("boot_id") != self.facts.boot_id():
+        owner = record.get("owner") if isinstance(record.get("owner"), dict) else {}
+        boot, recorded = self.facts.boot_id(), owner.get("boot_id")
+        if boot is None or not (isinstance(recorded, str) and recorded):
+            # An unreadable boot id (or one under an unobservable proc root) is not another boot:
+            # nothing is proven gone and nothing is killed (INV-HOST-DELIVERY-VERIFY-001),
+            # including in the attempt's own close.
+            return {"state": "unknown", "reason": "boot_unobservable"}
+        if recorded != boot:
             return {"state": "confirmed", "reason": "owner_boot_ended"}
         groups = [self._reclaim(child) for child in record.get("children") or []]
         result = {"groups": groups}
@@ -505,7 +607,9 @@ class ReleaseVerifier:
             return {"state": "confirmed", "pgid": pgid}
         except PermissionError:
             return {"state": "unknown", "pgid": pgid, "reason": "not_ours"}
-        ticks = self.facts.start_ticks(child.get("pid"))
+        state, ticks = self.facts.process(child.get("pid"))
+        if state == UNKNOWN:
+            return {"state": "unknown", "pgid": pgid, "reason": "leader_unobservable"}
         if child.get("start_ticks") is None or ticks != child.get("start_ticks"):
             return {"state": "unknown", "pgid": pgid, "reason": "unclassified_survivor"}
         try:
@@ -518,5 +622,6 @@ class ReleaseVerifier:
         return {"state": "confirmed" if gone else "unknown", "pgid": pgid, "killed": True}
 
 
-__all__ = ["ATTEMPTS_DIR", "FENCE_SECONDS", "CancellationBoundary", "EvaluationCancelled", "FenceLost",
-           "FenceUnobservable", "HostFacts", "ReleaseVerifier", "bounded_fence"]
+__all__ = ["ABSENT", "ATTEMPTS_DIR", "FENCE_SECONDS", "PRESENT", "UNKNOWN", "CancellationBoundary",
+           "EvaluationCancelled", "FenceLost", "FenceUnobservable", "HostFacts", "ReleaseVerifier",
+           "bounded_fence"]
