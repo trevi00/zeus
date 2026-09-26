@@ -2793,7 +2793,11 @@ editing any of them (docs/zeus/operations/autonomous-operation-001/CONTINUATION.
 twice: the owner registers a Git-pinned policy (`urn:zeus:continuation-policy:1`, `zeus continuation
 register --lane --revision --path`, read through `GitSource` at the commit, never the working tree),
 and either the host setting `ZEUS_CONTINUATION_POLICY` names it for `zeus fleet run` or the owner runs
-one `zeus continuation tick --policy`. An unregistered or disabled policy is `disabled` with zero
+one `zeus continuation tick --policy`. The setting may name several disjoint registered policies separated
+by commas (each a policy token, once; anything else refuses `continuation_policy_list_invalid|_duplicate`
+before the runner starts): the ONE Fleet runner ticks them in turn over one shared conductor port and
+the Fleet's shared unit capacity (`ContinuationPasses`), a refused or failing policy is its own row and
+never stops another, and a single value is exactly the previous single pass. An unregistered or disabled policy is `disabled` with zero
 actions: no Git read, lane connection, process, write or model call. Every other command, the finite
 Operation, LocalCycle and Fleet defaults are unchanged.
 
@@ -3513,7 +3517,11 @@ existing owners: `Continuation.accept_research`, the guarded `decide_one` of the
   DB-free guardian. There are at most two launches, and the second only when the first provably never
   claimed the row. A decided verdict, fresh or reused, is promoted to `assessed` only on the bound launch's
   cleanup proof with exit 0: the assess child exits 0 only when it owned the claim, the decision
-  succeeded and every call reservation settled. While that launch runs, the action waits. Unknown
+  succeeded and every call reservation settled. The child's one decision call is reserved and settled
+  under the Fleet's CURRENT effective budget and accounting mode (`Fleet.registered`, grants included):
+  finite keeps that ceiling, subscription counts without a lifetime ceiling and needs a readable ledger;
+  no or an unreadable Fleet registry refuses `assessment_budget_unregistered|_unreadable` before any
+  reservation or provider entry. While that launch runs, the action waits. Unknown
   cleanup, a timeout, an unsettled or unowned execution, or a reused decision without this action's own
   launch is a named `unknown` that keeps the verdict as `decided` and never calls the model again. The receipt is
   assembled from `Continuation.research_facts` only (schema 1, or schema 2

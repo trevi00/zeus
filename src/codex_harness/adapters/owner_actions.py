@@ -298,11 +298,37 @@ def _resolve_provider() -> dict:
     return {"codex": resolve_codex(), "node": shutil.which("node")}
 
 
-def assess(service, decision_id: str, correlation_id: str, model_label: str, *, executor=None, budget=None) -> dict:
+def assessment_ceilings(store) -> dict:
+    """The accounting the independent assessment is budgeted under: the Fleet's CURRENT effective budget
+    (`Fleet.registered`, the registered config with any owner grant, including its accounting `mode`),
+    i.e. the same authority every Fleet worker and continuation start is admitted against. Finite keeps
+    that finite ceiling; subscription counts every reservation and settlement without a lifetime ceiling
+    and still needs a readable ledger (`CallBudget.reserve`). No Fleet registry or an unreadable one is a
+    named refusal BEFORE any executor, reservation or provider entry - never a guessed default."""
+    from codex_harness.application.fleet import Fleet
+    from codex_harness.domain.fleet import FleetRefused
+    from codex_harness.domain.usage_policy import UsagePolicyError, validate_budget
+
+    try:
+        budget = Fleet(store).registered()["config"]["budget"]
+    except FleetRefused as exc:
+        raise OwnerActionRefused("assessment_budget_unregistered", "budget") from exc
+    except Exception as exc:
+        raise OwnerActionRefused("assessment_budget_unreadable", "budget") from exc
+    try:
+        return validate_budget(budget)
+    except UsagePolicyError as exc:
+        raise OwnerActionRefused("assessment_budget_invalid", "budget") from exc
+
+
+def assess(service, decision_id: str, correlation_id: str, model_label: str, *, executor=None, budget=None,
+           ceilings=None) -> dict:
     """The guardian's child: the existing guarded `decide_one` of the independent assessor for EXACTLY
-    this pending owner-assessment row, under the machine call ledger. A second dispatcher claims nothing."""
+    this pending owner-assessment row, under the machine call ledger and the Fleet's effective accounting
+    (`assessment_ceilings`). ONE decision call per launch; a second dispatcher claims nothing."""
     from codex_harness.application.operation import BudgetedExecutor
 
+    ceilings = assessment_ceilings(service.store) if ceilings is None else ceilings
     if executor is None:
         from codex_harness.adapters.call_budget import CallBudget
         from codex_harness.bootstrap import build_executor, build_observer
@@ -311,13 +337,13 @@ def assess(service, decision_id: str, correlation_id: str, model_label: str, *, 
                                   knowledge=False)
         budget = CallBudget()
     expected = {"id": decision_id, "correlation_id": correlation_id, "statuses": {"pending", "retry"}}
-    wrapped = BudgetedExecutor(executor, budget, {"per_host": 1, "total": 1}, "owner-assessment:" + decision_id,
-                               model_label)
+    wrapped = BudgetedExecutor(executor, budget, ceilings, "owner-assessment:" + decision_id, model_label)
     result = wrapped.decide_one(ASSESSOR, expected=expected)
     with service.store.transaction() as tx:
         decision = tx.get("decisions_pending", decision_id) or {}
     accepted = (decision.get("result") or {}).get("accepted")
-    calls = {"reserved": len(wrapped.slots), "settled": sum(s["settled"] for s in wrapped.slots)}
+    calls = {"reserved": len(wrapped.slots), "settled": sum(s["settled"] for s in wrapped.slots),
+             "accounting_mode": wrapped.mode}
     # The exit code is the launch's bound execution outcome the coordinator promotes on (R1): THIS
     # launch owned the claim, the decision succeeded and every call reservation it took is settled.
     resolved = result is not None and decision.get("status") == "succeeded" and calls["reserved"] == calls["settled"]
@@ -499,6 +525,7 @@ def refusal(exc: Exception) -> dict:
             "error_type": type(exc).__name__, "exit_code": 1}
 
 
-__all__ = ["Assessments", "GitPlanPublisher", "ResearchLaunches", "TargetFiles", "add_parser", "assess", "coordinator",
+__all__ = ["Assessments", "GitPlanPublisher", "ResearchLaunches", "TargetFiles", "add_parser", "assess",
+           "assessment_ceilings", "coordinator",
            "execute", "load_policy", "policy_list", "refusal", "register_policy", "run_loop", "tick_policies",
            "tick_policy"]
