@@ -402,3 +402,21 @@ def test_plan_scoped_file_names_accept_only_plan_tokens():
             canary_request_file(bad)
         with pytest.raises(ValueError):
             canary_receipt_file(bad)
+
+
+def test_the_actual_first_delivery_shape_with_no_predecessor_keeps_each_plans_own_wait(tmp_path):
+    """The host's H1 and H2 requests both name `expected_descriptor: null` (no managed descriptor yet)."""
+    target = {"target_id": TARGET_ID, "state_dir": str(tmp_path / "state")}
+    h1 = {"plan_id": H1, "target_id": TARGET_ID, "target_descriptor": {"revision": "9" * 40}}
+    h2 = {"plan_id": H2, "target_id": TARGET_ID, "target_descriptor": {"revision": "8" * 40}}
+    for plan in (h1, h2):
+        TargetFiles.write_request(target, plan["plan_id"], {
+            "schema": "urn:zeus:owner-canary-request:1", "action_id": "a" * 64, "plan_id": plan["plan_id"],
+            "plan_sha256": plan_digest(plan), "target_id": TARGET_ID,
+            "revision": plan["target_descriptor"]["revision"], "expected_descriptor": None, "requested_at": "t"})
+    consumed = {"target_id": TARGET_ID, "revision": "9" * 40, "predecessor": None}
+    assert owner_qualified_canary(target, consumed, {}, plan=h1)["reason_code"] == "canary_owner_receipt_pending"
+    # H2's request never covers H1's descriptor, and H1's never covers H2's.
+    assert owner_qualified_canary(target, consumed, {}, plan=h2)["reason_code"] == "canary_owner_receipt_missing"
+    assert owner_qualified_canary(target, {**consumed, "revision": "8" * 40}, {},
+                                  plan=h1)["reason_code"] == "canary_owner_receipt_missing"
