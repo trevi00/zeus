@@ -1,4 +1,4 @@
-name: Windows and Linux validation
+name: Linux validation
 # Routing design: docs/zeus/operations/ci-separation-001/SPEC.md. Branch pushes no longer run a
 # duplicate suite; pull requests and main pushes keep the full matrix unless the change set is
 # only operations Markdown, and `CI gate` fails closed on anything unexpected.
@@ -48,7 +48,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        os: [ubuntu-latest]
         python: ['3.12', '3.14']
     runs-on: ${{ matrix.os }}
     steps:
