@@ -1046,10 +1046,21 @@ def validate_migration_request(request) -> dict:
     return request
 
 
+def migration_lineage_digest(source_release_id: str, successor_release_id: str, old_plan_id: str,
+                             plan_id: str, migration_id: str) -> str:
+    """The `lineage_sha256` a migration readiness acknowledgement must carry: the canonical digest
+    of exactly these five identities, the same keys control's lineage record uses."""
+    return digest({"source_release_id": source_release_id, "successor_release_id": successor_release_id,
+                   "old_plan_id": old_plan_id, "plan_id": plan_id, "migration_id": migration_id})
+
+
 def validate_migration_ack(ack) -> dict:
     if not isinstance(ack, dict) or set(ack) != MIGRATION_ACK_FIELDS or any(
-            type(value) is not str or not value for value in ack.values()):
+            type(value) is not str or not value.strip() for value in ack.values()):
         raise DeliveryRefused("migration_ack_invalid", "ack")
+    canary = ack["canary_request_id"]
+    if canary != "not_requested" and not _HEX64.fullmatch(canary.removeprefix("sha256:")):
+        raise DeliveryRefused("migration_ack_invalid", "canary_request_id")
     return ack
 
 
@@ -1075,7 +1086,7 @@ def migration_rejected_source(intent, plan: dict, request: dict) -> str | None:
 
 __all__ = ["MIGRATION_ACK_FIELDS", "MIGRATION_ACTIVE", "MIGRATION_HELD", "MIGRATION_REGISTERED",
            "MIGRATION_REQUEST_FIELDS", "MIGRATION_RESERVING", "MIGRATION_STAGED", "migration_rejected_source",
-           "migration_request_id", "validate_migration_ack", "validate_migration_request",
+           "migration_lineage_digest", "migration_request_id", "validate_migration_ack", "validate_migration_request",
            "ATTEMPT_RESOLVED", "RECOVERY_VERIFICATION_MISSING", "VERIFYING", "attempt_resolved",
            "attempts_of", "recoveries_of", "resumable", "unresolved_attempts",
            "ACTIVATION_GATE_CODES", "ACTIVE", "AUTHORITY", "AWAITING_CI", "AWAITING_CONSUMPTION", "AWAITING_REVIEW",

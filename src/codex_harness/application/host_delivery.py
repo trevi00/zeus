@@ -37,7 +37,7 @@ import threading
 from datetime import datetime, timedelta
 
 from codex_harness.application.release_queue import ReleaseQueue
-from codex_harness.application.releases import Releases
+from codex_harness.application.releases import Releases, expected_evaluator_pin
 from codex_harness.application.tickets import ticket_binding
 from codex_harness.domain.host_delivery import (
     ACTIVATION_GATE_CODES,
@@ -102,6 +102,7 @@ from codex_harness.domain.host_delivery import (
     consumption_verdict,
     delivery_status,
     descriptor_digest,
+    migration_lineage_digest,
     migration_rejected_source,
     new_intent,
     plan_digest,
@@ -217,12 +218,15 @@ class HostDelivery:
 
     def __init__(self, store, org=None, *, github=None, hosts=None, canaries=None, clock=utcnow,
                  observer=None, enabled=False, releases=None, queue=None,
-                 resume_seconds: int = RESUME_SECONDS, verifier=None):
+                 resume_seconds: int = RESUME_SECONDS, verifier=None, evaluator_pins=None):
         self.store, self.org, self.clock = store, org, clock
         self.github, self.hosts, self.canaries = github, hosts or {}, canaries or {}
         # INV-HOST-DELIVERY-VERIFY-001: the owned-attempt port over the existing incumbent
         # evaluator. Without it a reviewed release waits in `verifying` as `verifier_unavailable`.
         self.verifier = verifier
+        # INV-RELEASE-EVALUATOR-MIGRATION-001: the repository resolver of an approved evaluator pin,
+        # (evaluator_revision, base) -> resolve_evaluator_pin(...). Without it no migration stages.
+        self.evaluator_pins = evaluator_pins
         self.observer, self.enabled = observer, bool(enabled)
         self.resume_seconds = int(resume_seconds)
         self.releases = releases if releases is not None else Releases(store, org)
@@ -310,12 +314,24 @@ class HostDelivery:
                     else [row for row in [tx.get(BUCKET_PLANS, plan_id)] if row])
             intents = {row["plan_id"]: row for row in tx.scan(BUCKET_INTENTS)}
             descriptors = {row["target_id"]: row for row in tx.scan(BUCKET_DESCRIPTORS)}
+            migrations = tx.scan(BUCKET_MIGRATIONS)
+        # INV-HOST-DELIVERY-MIGRATION-001: each migration's phase and its successor's hold, read only.
+        shown = sorted(({"old_plan_id": m.get("id"), "migration_id": m.get("migration_id"),
+                         "state": m.get("state"),
+                         "held": (intents.get(m.get("plan_id")) or {}).get("held") if m.get("plan_id") else None,
+                         "successor_release_id": m.get("successor_release_id"), "plan_id": m.get("plan_id"),
+                         "target_id": m.get("target_id"), "at": m.get("at")}
+                        for m in migrations if plan_id is None or plan_id in {m.get("id"), m.get("plan_id")}),
+                       key=lambda m: (str(m["old_plan_id"]), str(m["migration_id"])))
+        # The migration projection is additive: a store with no registered plan and no migration keeps
+        # the exact unregistered envelope it always had (INV-HOST-DELIVERY-MIGRATION-001).
+        projected = {"migrations": shown} if rows or migrations else {}
         if plan_id is not None and not rows:
             return {"schema": STATUS_SCHEMA, "plan_id": plan_id, "registered": False,
                     "enabled": self.enabled, "outcome": OUTCOME_UNREGISTERED, "deliveries": [],
                     "next_action": "register_plan", "targets": sorted(descriptors),
-                    "authority": AUTHORITY}
-        return delivery_status(rows, intents, descriptors, enabled=self.enabled)
+                    **projected, "authority": AUTHORITY}
+        return {**delivery_status(rows, intents, descriptors, enabled=self.enabled), **projected}
 
     # ----- one bounded tick ------------------------------------------------------------------
     def tick(self, plan_id: str | None = None) -> dict:
@@ -791,11 +807,13 @@ class HostDelivery:
         refusal = migration_rejected_source(intent, row["plan"], request)
         if refusal is not None:
             raise DeliveryRefused(refusal, "old_plan_id")
+        resolved = self._resolve_evaluator_pin(request["approval"])
         now = self.clock()
         try:
             with self.store.transaction() as tx:
                 current = tx.get(BUCKET_MIGRATIONS, key)
-                staged = None if current is not None else self._stage_in(tx, row, intent, request, sha, now)
+                staged = None if current is not None else self._stage_in(tx, row, intent, request, sha, now,
+                                                                         resolved)
         except DeliveryRefused:
             raise
         except ContractError as exc:
@@ -811,7 +829,23 @@ class HostDelivery:
         LOGGER.warning("host delivery migration staged plan=%s successor=%s", key, staged["successor_release_id"])
         return self._migration_view(staged, cached=False)
 
-    def _stage_in(self, tx, row: dict, intent: dict, request: dict, sha: str, now: str) -> dict:
+    def _resolve_evaluator_pin(self, approval: dict) -> dict:
+        """Derive the approved evaluator pin from the repository BEFORE any write and outside every
+        store transaction (INV-RELEASE-EVALUATOR-MIGRATION-001). An absent or failing resolver is
+        `migration_pin_unavailable`; any disagreement with the approval is `migration_pin_mismatch`.
+        Either refusal leaves the source release, the migration identity and the old intent untouched."""
+        if self.evaluator_pins is None:
+            raise DeliveryRefused("migration_pin_unavailable", "evaluator_revision")
+        try:
+            resolved = self.evaluator_pins(approval["evaluator_revision"], approval["base"])
+        except Exception as exc:
+            raise DeliveryRefused("migration_pin_unavailable", "evaluator_revision") from exc
+        if resolved != expected_evaluator_pin(approval):
+            raise DeliveryRefused("migration_pin_mismatch", "approval")
+        return resolved
+
+    def _stage_in(self, tx, row: dict, intent: dict, request: dict, sha: str, now: str,
+                  resolved_pin: dict) -> dict:
         """Phase 2 of `stage_migration`, inside its one transaction; any refusal rolls back all."""
         plan, key = row["plan"], row["plan_id"]
         if tx.get(BUCKET_PLANS, key) != row or tx.get(BUCKET_INTENTS, key) != intent:
@@ -833,7 +867,7 @@ class HostDelivery:
         successor = self.releases.request_evaluator_migration(
             request["source_release_id"], request["actor"], expected_revision=request["candidate_revision"],
             expected_policy_hash=request["source_policy_hash"], approval=request["approval"],
-            now=self._now(), transaction=tx)
+            resolved_pin=resolved_pin, now=self._now(), transaction=tx)
         if successor.get("status") != "reviewed" or successor.get("checks"):
             raise DeliveryRefused("migration_successor_advanced", "successor_release_id")
         if tx.get("release_queue", successor["id"]) is not None:
@@ -922,6 +956,10 @@ class HostDelivery:
             if (ack["plan_id"], ack["plan_sha256"], ack["request_sha256"]) != (
                     record["plan_id"], record["plan_sha256"], record["request_sha256"]):
                 raise DeliveryRefused("migration_ack_mismatch", "ack")
+            if ack["lineage_sha256"] != migration_lineage_digest(
+                    record["source_release_id"], record["successor_release_id"], record["id"],
+                    record["plan_id"], record["migration_id"]):
+                raise DeliveryRefused("migration_ack_mismatch", "lineage_sha256")
             intent = tx.get(BUCKET_INTENTS, record["plan_id"]) or {}
             if (intent.get("held") != MIGRATION_HELD or intent.get("stage") != VERIFYING
                     or (intent.get("migration") or {}).get("migration_id") != migration_id

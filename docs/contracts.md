@@ -3413,12 +3413,24 @@ check-rejected source release:
   exact bytes: the source release, `base`, the evaluator commit E, its tree, the sha256 of the
   base..E patch, its non-empty `tests/`-only path list, the evidence and the approving actor, who is
   not the candidate's author. E is neither the base nor the candidate revision.
+- The pin is derived from the actual repository BEFORE anything is written: the caller's trusted
+  resolver (`deployment.resolve_evaluator_pin`, the same derivation the runner uses) is run outside
+  any store transaction, and creation requires its result (`resolved_pin`) to equal the approval
+  exactly - E, its direct parent = base, tree, paths and patch digest - as an immutable CAS inside the
+  transaction. A wrong tree, patch or ancestry, or an unavailable E, therefore writes nothing: the
+  source, the migration identity and delivery ownership stay unchanged and a correct request can
+  still succeed. Field shapes alone are never accepted as a pin.
 - It writes ONE successor per source, `digest({"evaluator_migration_of": source_id})`, whatever E is:
   the exact candidate and reviews, `policy = {**source.policy, "revision": E}` (the check list is
   unchanged) with its own `policy_hash`, `checks: {}`, no image, `reverify_of` and an
   `evaluator_migration` receipt. The source record, its failed checks, attempts and history are never
   changed. An identical request replays with no write; any other approval, evidence or actor for the
-  same source is refused, and a source that already has a plain reverification successor is refused.
+  same source is refused. The source key is symmetric with INV-RELEASE-REVERIFY-001: a migration is
+  refused when the source already has a plain reverification successor, and a plain reverification is
+  refused when it already has a migration successor, in either order and under concurrency (both run
+  in one store transaction). A release that is itself an evaluator-migrated successor cannot be
+  reverified or migrated again: an honestly failed migrated successor is refused before anything is
+  created as `unsupported_evaluator_reverification` (no recursive migration in this contract).
 - `ReleaseRunner` re-derives the pin at execution, never trusting the record: E's tree, the base..E
   path list and patch digest must equal the approval, or the evaluation is refused as
   `evaluator_pin_mismatch` (a halt, not a retry). The candidate binding, the accounted denominator
@@ -3436,6 +3448,10 @@ The lane half of an evaluator migration, keyed by the old plan in `host_delivery
 identical call as `cached` with no write, and refuses any other call for the same source as
 `migration_conflict`:
 
+- Before any write, `stage_migration` re-derives the approved E pin through the lane's own
+  repository resolver outside the transaction: no resolver or an unreadable E is
+  `migration_pin_unavailable`, any difference from the approval is `migration_pin_mismatch`; both leave
+  the source release, the old intent and the target untouched.
 - `stage_migration(request)`: the request (`migration_id` = the canonical digest of its body) must
   match the old plan and intent exactly: `blocked`/`failed` with `release_rejected`, the plan's release,
   sha256, target and merged candidate revision, no descriptor, instance or rollback, no unresolved
@@ -3451,9 +3467,15 @@ identical call as `cached` with no write, and refuses any other call for the sam
   `after_verification: merged`, the old merge fields and `held: migration_unacknowledged`. A held intent
   is never selected, claimed or withdrawn (`withdraw_migration_held`), including after a restart.
 - `finalize_migration(migration_id, ack)` requires the acknowledgement's plan id, plan sha256 and
-  request digest to equal the record (`migration_ack_mismatch`), clears the hold, stores the ack and
-  queues the successor in the same transaction. There is no abort: a staged or registered migration
-  holds its target until it is finalized, which fails closed.
+  request digest to equal the record and its `lineage_sha256` to equal
+  `migration_lineage_digest(source, successor, old plan, plan, migration)` computed from the record;
+  `canary_request_id` must be a digest (or `not_requested` for a non-fleet canary) and
+  `control_action_id` present (`migration_ack_mismatch` otherwise). It clears the hold, stores the ack
+  and queues the successor in the same transaction; an identical ack after that replays as `cached`
+  without re-running anything. There is no abort: a staged or registered migration holds its target
+  until it is finalized, which fails closed.
+- `host-delivery status` projects every migration record read-only (phase, held reason, successor,
+  plan, target), so a held or staged handoff is observable without reading the store directly.
 
 ## INV-OWNER-ACTIONS-MIGRATION-001
 
@@ -3471,7 +3493,29 @@ record, plan and request agree; `continuation_effective_bindings[intent]` is wri
 intent's own release id stays as provenance) `-> completed` (`finalize_migration` with the matching
 acknowledgement). A lane refusal ends `refused` with the lane's code; an outage waits in place; nothing
 is completed on a missing or mismatched lane state. While the lane reserves the target, no other plan is
-created there (`delivery_target_busy`). `LaneEvidence.read` follows ONLY an `active` migration edge
+created there (`delivery_target_busy`).
+
+Readiness is re-observed immediately before the acknowledgement, never taken from cached control rows:
+the successor `DELIVERY_PLAN` action and its plan hash, the continuation source intent and its version,
+the lane registration, the published pin read back from Git, and the plan-scoped canary request. Any
+of them missing, unreadable, replaced or failing to re-file keeps the migration `bound` with a named
+`migration_readiness_*` wait - it is never finalized beside a recorded wait - and the acknowledgement
+is built from that re-observed record. A source continuation intent the delivery had PAUSED on the
+original rejection resumes observation only through one authorized migration transition, after the
+lane migration is active: `MIGRATION_RESUME` (`delivery`/`paused` -> `awaiting_owner`, a table apart
+from `TRANSITIONS` that no controller uses), in the same control transaction that completes the
+migration, as a CAS on the exact policy, lane, target, release, route, state and version recorded at
+request time; it keeps the prior pause reason and history in `migration_resume` and increments the
+version. Any change to that source is the named wait `migration_source_changed` with no write. No
+other paused intent resumes; an `awaiting_owner` source is observed as before. `owner-actions status` projects each migration (phase, wait, successor,
+plan, intent, effective owner) read-only.
+
+The continuation consumer that observes the successor must itself run code that has this reader,
+and exactly one consumer may observe it. The intended aibox division keeps the delivered candidate
+unchanged, moves observation to the existing `zeus continuation tick --policy` run from the
+controller's code, and leaves the Fleet's embedded ticker unconfigured (`ZEUS_CONTINUATION_POLICY`
+absent for Fleet). Where the host's pinned environment still sets that key for the Fleet, the division
+is not available until the owner changes that configuration and its gate; nothing bypasses the pin. `LaneEvidence.read` follows ONLY an `active` migration edge
 from a `release_rejected_superseded` source to a successor with the identical candidate (revision,
 tree, base) and that migration's own plan; the result keeps the source `release_id` and adds
 `effective_release_id` and `migration`. The owner-actions service and the host-delivery controller must

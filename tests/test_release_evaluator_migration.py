@@ -4,6 +4,7 @@ Every candidate, review, check, approval and repository here is a labelled fixtu
 an actual Codex, GitHub or production verification. PostgreSQL cases run only with
 HARNESS_INTEGRATION=1.
 """
+import threading
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from types import SimpleNamespace
@@ -17,10 +18,15 @@ from codex_harness.adapters.deployment import (
     EvaluatorPinMismatch,
     ReleaseRunner,
     evaluator_patch_sha256,
+    resolve_evaluator_pin,
 )
 from codex_harness.adapters.git import GitWorkspace
 from codex_harness.adapters.store import MemoryStore
-from codex_harness.application.releases import Releases
+from codex_harness.application.releases import (
+    Releases,
+    UnsupportedEvaluatorReverification,
+    expected_evaluator_pin,
+)
 from codex_harness.bootstrap import organization
 from codex_harness.domain.model import ContractError, digest
 
@@ -35,10 +41,13 @@ def approval_for(release, **overrides):
 
 
 def migrate(releases, release, *, actor="conductor", approval=None, **overrides):
+    approval = approval if approval is not None else approval_for(release)
+    # Labelled: the trusted resolver's result for a fixture repository that agrees with the approval.
+    resolved = overrides.pop("resolved_pin", None) or expected_evaluator_pin(approval)
     return releases.request_evaluator_migration(
         release["id"], actor, expected_revision=overrides.pop("expected_revision", "candidate"),
         expected_policy_hash=overrides.pop("expected_policy_hash", release["policy_hash"]),
-        approval=approval if approval is not None else approval_for(release), **overrides)
+        approval=approval, resolved_pin=resolved, **overrides)
 
 
 @backends()
@@ -320,12 +329,160 @@ def test_an_approved_migration_is_evaluated_end_to_end_up_to_the_suite(tmp_path,
         "tests": {"passed": False, "evidence": "fixture:incumbent-assumes-checkout"},
         "cli_start": {"passed": False, "skipped": True, "evidence": "fixture:not-run"},
         "cli_file_task": {"passed": False, "skipped": True, "evidence": "fixture:not-run"}})
+    workspace = GitWorkspace(str(repo["root"]), str(tmp_path / "resolver"))
     child = releases.request_evaluator_migration(
         source["id"], "conductor", expected_revision=repo["revision"],
         expected_policy_hash=source["policy_hash"],
         approval={"source_release_id": source["id"], "base": repo["base"],
-                  "evidence": "sha256:" + "c" * 64, "approved_by": "conductor", **pin})
+                  "evidence": "sha256:" + "c" * 64, "approved_by": "conductor", **pin},
+        resolved_pin=resolve_evaluator_pin(workspace, pin["evaluator_revision"], repo["base"]))
     runner, calls = runner_for(tmp_path, repo, child, monkeypatch)
     answer = runner.evaluate(child["id"])
     assert answer["receipt"]["workspaces"]["incumbent"]["revision"] == pin["evaluator_revision"]
     assert answer["verdict"] == "checked" and answer["passed"] is False and len(calls) == 2
+
+
+# ---- one successor policy for a source (F1) and the creation-time pin (F2) ------------------------
+
+def test_a_migration_successor_blocks_plain_reverification_and_stays_unchanged():
+    store = MemoryStore()
+    releases, source = rejected_release(store)
+    child = migrate(releases, source)
+    before = snapshot(store)
+    with pytest.raises(ContractError, match="Release already has an evaluator migration successor"):
+        reverify(releases, source)
+    assert snapshot(store) == before and migrate(releases, source) == child
+
+
+def failed_migrated_successor(store):
+    releases, source = rejected_release(store)
+    child = migrate(releases, source)
+    failed = releases.verify(child["id"], "candidate", child["policy_hash"], {
+        "tests": {"passed": False, "evidence": "fixture:evaluator-tests-failed"},
+        **{name: {"passed": False, "skipped": True, "evidence": "fixture:not-run"}
+           for name in ("cli_start", "cli_file_task")}})
+    assert failed["status"] == "rejected"
+    return releases, failed
+
+
+def test_an_honestly_failed_migrated_successor_is_not_reverified_or_migrated_again():
+    store = MemoryStore()
+    releases, failed = failed_migrated_successor(store)
+    before = snapshot(store)
+    with pytest.raises(UnsupportedEvaluatorReverification) as refused:
+        reverify(releases, failed)
+    assert refused.value.reason_code == "unsupported_evaluator_reverification"
+    assert "unsupported_evaluator_reverification" in str(refused.value)
+    assert isinstance(refused.value, ContractError)
+    with pytest.raises(UnsupportedEvaluatorReverification):
+        migrate(releases, failed, approval=approval_for(failed, base=failed["candidate"]["base"],
+                                                        evaluator_revision="d" * 40))
+    assert snapshot(store) == before
+
+
+def test_a_non_base_policy_without_a_receipt_is_also_refused():
+    store = MemoryStore()
+    releases, failed = failed_migrated_successor(store)
+    with store.transaction() as tx:
+        legacy = {**tx.get("releases", failed["id"])}
+        del legacy["evaluator_migration"]
+        tx.put("releases", failed["id"], legacy)
+    before = snapshot(store)
+    with pytest.raises(UnsupportedEvaluatorReverification):
+        reverify(releases, legacy)
+    assert snapshot(store) == before
+
+
+@pytest.mark.parametrize("field", ["evaluator_revision", "parent", "base", "evaluator_tree", "paths",
+                                   "patch_sha256", "missing", "extra"])
+def test_a_resolved_pin_that_differs_from_the_approval_writes_nothing(field):
+    store = MemoryStore()
+    releases, source = rejected_release(store)
+    resolved = expected_evaluator_pin(approval_for(source))
+    if field == "missing":
+        del resolved["patch_sha256"]
+    elif field == "extra":
+        resolved["files"] = []
+    else:
+        resolved[field] = ["tests/other.py"] if field == "paths" else "0" * 40
+    before = snapshot(store)
+    with pytest.raises(ContractError, match="Evaluator pin does not match the repository"):
+        migrate(releases, source, resolved_pin=resolved)
+    assert snapshot(store) == before
+    assert migrate(releases, source)["status"] == "reviewed"
+
+
+def test_the_resolved_pin_is_required():
+    store = MemoryStore()
+    releases, source = rejected_release(store)
+    before = snapshot(store)
+    with pytest.raises(TypeError):
+        releases.request_evaluator_migration(source["id"], "conductor", expected_revision="candidate",
+                                             expected_policy_hash=source["policy_hash"],
+                                             approval=approval_for(source))
+    assert snapshot(store) == before
+
+
+@pytest.mark.parametrize("tamper", ["tree", "patch", "grandchild"])
+def test_the_repository_resolver_exposes_a_wrong_or_ancestral_pin(tmp_path, tamper):
+    """Labelled fixture repository: the real `resolve_evaluator_pin` over git, compared at creation."""
+    repo = source_repository(tmp_path / "repo")
+    pin = evaluator_commit(repo, grandchild=tamper == "grandchild")
+    resolved = resolve_evaluator_pin(GitWorkspace(str(repo["root"]), str(tmp_path / "probe")),
+                                     pin["evaluator_revision"], repo["base"])
+    approval = {"source_release_id": "s" * 64, "base": repo["base"], "evidence": "sha256:" + "c" * 64,
+                "approved_by": "conductor", **pin}
+    if tamper == "tree":
+        approval["evaluator_tree"] = "0" * 40
+    elif tamper == "patch":
+        approval["patch_sha256"] = "0" * 64
+    assert resolved != expected_evaluator_pin(approval)
+    if tamper == "grandchild":
+        assert resolved["parent"] != resolved["base"] == repo["base"]
+    approval = {**approval, **pin}
+    assert (resolved == expected_evaluator_pin(approval)) is (tamper != "grandchild")
+
+
+def race(store, source, first):
+    results, gate = {}, threading.Barrier(2)
+
+    def run(name):
+        gate.wait()
+        try:
+            releases = Releases(store, organization())
+            results[name] = reverify(releases, source) if name == "reverify" else migrate(releases, source)
+        except ContractError as exc:
+            results[name] = str(exc)
+
+    order = ["reverify", "migrate"] if first == "reverify" else ["migrate", "reverify"]
+    threads = [threading.Thread(target=run, args=(name,)) for name in order]
+    for thread in threads:
+        thread.start()
+    for thread in threads:
+        thread.join(timeout=60)
+    return results
+
+
+@pytest.mark.integration
+@pytest.mark.parametrize("first", ["reverify", "migrate"])
+def test_concurrent_reverification_and_migration_create_exactly_one_successor(isolated_pgstore, first):
+    releases, source = rejected_release(isolated_pgstore)
+    results = race(isolated_pgstore, source, first)
+    with isolated_pgstore.transaction() as tx:
+        children = [r for r in tx.scan("releases") if r.get("reverify_of") == source["id"]]
+    assert len(children) == 1 and len(results) == 2
+    winners = [name for name, value in results.items() if isinstance(value, dict)]
+    assert len(winners) == 1 and results[winners[0]] == children[0]
+    loser = ({"reverify", "migrate"} - set(winners)).pop()
+    assert results[loser] == ("Release already has an evaluator migration successor" if loser == "reverify"
+                              else "Release already has a reverification successor")
+
+
+@pytest.mark.parametrize("first", ["reverify", "migrate"])
+def test_memory_reverification_and_migration_in_either_order_create_one_successor(first):
+    store = MemoryStore()
+    releases, source = rejected_release(store)
+    results = race(store, source, first)
+    with store.transaction() as tx:
+        children = [r for r in tx.scan("releases") if r.get("reverify_of") == source["id"]]
+    assert len(children) == 1 and sum(isinstance(v, dict) for v in results.values()) == 1

@@ -54,6 +54,19 @@ def evaluator_patch_sha256(diff: str) -> str:
     return hashlib.sha256(diff.encode("utf-8")).hexdigest()
 
 
+def resolve_evaluator_pin(git, evaluator_revision: str, base: str) -> dict:
+    """The evaluator pin as the repository derives it (INV-RELEASE-EVALUATOR-MIGRATION-001).
+
+    The one derivation shared by migration creation (before any write) and the runner's
+    execution-time recheck: E and base resolved to commits, E's first parent, E's tree, the sorted
+    changed paths and `patch_sha256` of `git diff <base> <E>`. Git failures propagate unchanged.
+    """
+    inspected = git.inspect(evaluator_revision, base)
+    return {"evaluator_revision": inspected["revision"], "parent": git.parent(inspected["revision"]),
+            "base": inspected["base"], "evaluator_tree": inspected["tree"],
+            "paths": sorted(inspected["files"]), "patch_sha256": evaluator_patch_sha256(inspected["diff"])}
+
+
 def attempt_resources(attempt_id: str) -> dict:
     """The exact resources one verification attempt may create (INV-HOST-DELIVERY-VERIFY-001)."""
     require(isinstance(attempt_id, str) and bool(ATTEMPT_ID.fullmatch(attempt_id)),
@@ -312,15 +325,15 @@ class ReleaseRunner:
         check(isinstance(pin, dict) and pin.get("evaluator_revision") == source
               and pin.get("base") == candidate["base"], "no evaluator migration names the test source")
         check(source not in {candidate["revision"], candidate_revision}, "evaluator is the candidate")
-        inspected = self.git.inspect(source, candidate["base"])
-        check(inspected["revision"] == source, "evaluator revision")
+        resolved = resolve_evaluator_pin(self.git, source, candidate["base"])
+        check(resolved["evaluator_revision"] == source, "evaluator revision")
         # E is a direct child of the base: its one commit is the whole reviewed correction.
-        check(self.git.parent(source) == inspected["base"], "evaluator parent")
-        check(inspected["tree"] == pin["evaluator_tree"], "evaluator tree")
-        files = sorted(inspected["files"])
+        check(resolved["parent"] == resolved["base"], "evaluator parent")
+        check(resolved["evaluator_tree"] == pin["evaluator_tree"], "evaluator tree")
+        files = resolved["paths"]
         check(bool(files) and files == pin["paths"] and all(f.startswith("tests/") for f in files),
               "evaluator paths")
-        check(evaluator_patch_sha256(inspected["diff"]) == pin["patch_sha256"], "evaluator patch")
+        check(resolved["patch_sha256"] == pin["patch_sha256"], "evaluator patch")
         return source
 
     def _run(self, release_id: str) -> dict:

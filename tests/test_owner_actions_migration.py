@@ -530,17 +530,17 @@ def test_an_unacknowledged_or_non_identical_successor_is_never_followed(store):
 
 
 # ----- REAL lane code: the Lane-2 HostDelivery migration owner over its own lane store ---------------
-def test_the_real_lane_owner_completes_the_ordered_handoff_from_a_separate_control_store(tmp_path):
+def real_lane(tmp_path, control, lane_store):
     """REAL `HostDelivery`/`Releases`/`ReleaseQueue` in the lane store (the Lane-2 fixture's labelled
-    H1-shaped halted intent); a SEPARATE control store; LABELLED publisher and target files."""
+    H1-shaped halted intent and its LABELLED evaluator-pin resolver); a SEPARATE control store with a
+    real `OwnerActions`; LABELLED publisher and target files."""
     from test_host_delivery import CHECK
     from test_host_delivery import REPOSITORY as LANE_REPOSITORY
     from test_host_delivery_migration import rejected_merged
 
-    lane_store = SerialStore()
     system = rejected_merged(tmp_path, lane_store)
     release, plan, delivery = system["release"], system["plan"], system["delivery"]
-    control, log = SerialStore(), Log()
+    log = Log()
     publisher, targets = FakePublisher(log), FakeTargets(log)
     policy = policy_document()
     policy["delivery"] = {**policy["delivery"], "target_id": plan["target_id"], "repository": LANE_REPOSITORY,
@@ -550,8 +550,9 @@ def test_the_real_lane_owner_completes_the_ordered_handoff_from_a_separate_contr
         def policy(self, name):
             return {"id": "policy-1", "policy": {"delivery_target": plan["target_id"]}}
 
-    owner = OwnerActions(control, continuation=Stub(), deliveries=lambda lane_id: delivery,
-                         publisher=lambda lane_id: publisher, targets=targets, clock=lambda: NOW)
+    ports = {"continuation": Stub(), "deliveries": lambda lane_id: delivery,
+             "publisher": lambda lane_id: publisher, "targets": targets}
+    owner = OwnerActions(control, clock=lambda: NOW, **ports)
     owner.register(policy, PIN)
     intent = {"id": "intent-1", "policy_id": "policy-1", "route": dc.DELIVERY, "state": dc.AWAITING_OWNER,
               "release_id": release["id"], "delivery_target": plan["target_id"], "lane": "a", "created_at": NOW,
@@ -567,27 +568,503 @@ def test_the_real_lane_owner_completes_the_ordered_handoff_from_a_separate_contr
         tx.put("continuation_intents", intent["id"], intent)
         tx.put(BUCKET_ACTIONS, old_action["id"], old_action)
     request = system["request"]
-    evidence = request["approval"]["evidence"]
-    owner.request_migration({"policy_id": "owners-1", "intent_id": "intent-1", "lane": "a",
-                             "target_id": plan["target_id"], "source_release_id": release["id"],
-                             "source_policy_hash": release["policy_hash"],
-                             "candidate_revision": release["candidate"]["revision"], "old_plan_id": plan["plan_id"],
-                             "old_plan_sha256": plan_digest(plan), "approval": request["approval"],
-                             "evidence": evidence, "actor": request["actor"]})
-    for _ in range(12):
-        owner.tick("owners-1")
-        with control.transaction() as tx:
-            row = tx.get(BUCKET_MIGRATIONS, release["id"])
-        if row["state"] in do.TERMINAL:
+    doc = {"policy_id": "owners-1", "intent_id": "intent-1", "lane": "a", "target_id": plan["target_id"],
+           "source_release_id": release["id"], "source_policy_hash": release["policy_hash"],
+           "candidate_revision": release["candidate"]["revision"], "old_plan_id": plan["plan_id"],
+           "old_plan_sha256": plan_digest(plan), "approval": request["approval"],
+           "evidence": request["approval"]["evidence"], "actor": request["actor"]}
+    return {"system": system, "control": control, "lane_store": lane_store, "owner": owner, "ports": ports,
+            "delivery": delivery, "release": release, "plan": plan, "log": log, "targets": targets,
+            "publisher": publisher, "old_action": old_action, "request": request, "doc": doc}
+
+
+def real_row(r):
+    with r["control"].transaction() as tx:
+        return tx.get(BUCKET_MIGRATIONS, r["release"]["id"])
+
+
+def real_ticks(r, *, until=do.COMPLETED, restart=False, ticks=12):
+    receipts = []
+    for _ in range(ticks):
+        owner = OwnerActions(r["control"], clock=lambda: NOW, **r["ports"]) if restart else r["owner"]
+        receipts.append(owner.tick("owners-1"))
+        row = real_row(r)
+        if row["state"] == until or row["state"] in do.TERMINAL:
             break
+    return row, receipts
+
+
+def assert_real_lineage(r, row):
+    """Exactly one migration, successor release, successor action and plan; the ack identity is bound
+    to the final plan-scoped canary request; the original action is untouched history."""
     assert (row["state"], row["reason_code"]) == (do.COMPLETED, "migration_finalized"), row["history"]
-    assert row["migration_id"] == request["migration_id"]      # the same identity both halves compute
-    with lane_store.transaction() as tx:
-        record = tx.get("host_delivery_migrations", plan["plan_id"])
-        successor_intent = tx.get("host_delivery_intents", record["plan_id"])
-        queued = tx.get("release_queue", record["successor_release_id"])
-    assert record["state"] == "active" and record["ack"] == row["ack"]
-    assert successor_intent["held"] is None and queued is not None
-    assert [e[0] for e in log] == ["publish", "request"]       # the request is filed before registration
-    with control.transaction() as tx:
-        assert tx.get(BUCKET_ACTIONS, old_action["id"]) == old_action
+    assert row["migration_id"] == r["request"]["migration_id"]     # the same identity both halves compute
+    with r["lane_store"].transaction() as tx:
+        records = tx.scan("host_delivery_migrations")
+        successor_intent = tx.get("host_delivery_intents", row["plan_id"])
+        queued = tx.get("release_queue", row["successor_release_id"])
+        successors = [x for x in tx.scan("releases") if x["id"] == row["successor_release_id"]]
+    assert len(records) == 1 and records[0]["state"] == "active" and records[0]["ack"] == row["ack"]
+    assert len(successors) == 1 and successor_intent["held"] is None and queued is not None
+    with r["control"].transaction() as tx:
+        actions = tx.scan(BUCKET_ACTIONS)
+        assert tx.get(BUCKET_ACTIONS, r["old_action"]["id"]) == r["old_action"]
+    assert len([a for a in actions if (a.get("subject") or {}).get("migration")]) == 1
+    assert list(r["targets"].requests) == [row["plan_id"]]
+    assert row["ack"]["canary_request_id"] == digest(r["targets"].requests[row["plan_id"]])
+    # One publication; the request is filed before registration (a retried register or a readiness
+    # refile writes the SAME plan-scoped document again, never another plan's).
+    assert [e[0] for e in r["log"]][:2] == ["publish", "request"]
+    assert {e for e in r["log"] if e[0] == "request"} == {("request", row["plan_id"])}
+    assert len([e for e in r["log"] if e[0] == "publish"]) == 1
+
+
+def test_the_real_lane_owner_completes_the_ordered_handoff_from_a_separate_control_store(tmp_path):
+    r = real_lane(tmp_path, SerialStore(), SerialStore())
+    r["owner"].request_migration(r["doc"])
+    row, _ = real_ticks(r)
+    assert_real_lineage(r, row)
+
+
+class LosingDelivery:
+    """LABELLED proxy of the REAL lane HostDelivery: `lose` commits the real call then loses its response;
+    `down` fails once before any effect (an outage)."""
+
+    def __init__(self, real):
+        self.real, self.lose, self.down = real, set(), set()
+
+    def __getattr__(self, name):
+        attr = getattr(self.real, name)
+        if name not in {"stage_migration", "register_migration_plan", "finalize_migration"}:
+            return attr
+
+        def call(*args):
+            if name in self.down:
+                self.down.discard(name)
+                raise OSError("lane unavailable (labelled injected fault)")
+            result = attr(*args)
+            if name in self.lose:
+                self.lose.discard(name)
+                raise TimeoutError("lane response lost after commit (labelled injected fault)")
+            return result
+        return call
+
+
+@pytest.fixture
+def second_pgstore():
+    """A SECOND schema-isolated PostgreSQL store (the lane store), made exactly as `isolated_pgstore`."""
+    import os
+    from uuid import uuid4
+
+    import psycopg
+    from psycopg import sql
+    from psycopg.conninfo import make_conninfo
+
+    from codex_harness.adapters.store import PostgresStore
+    from codex_harness.bootstrap import database_url
+
+    if os.environ.get("HARNESS_INTEGRATION") != "1":
+        pytest.skip("Integration environment required")
+    dsn, schema = database_url(), "test_" + uuid4().hex
+    with psycopg.connect(dsn) as connection:
+        connection.execute(sql.SQL("CREATE SCHEMA {}").format(sql.Identifier(schema)))
+    try:
+        store = PostgresStore(make_conninfo(dsn, options=f"-c search_path={schema},public"))
+        store.migrate()
+        yield store
+    finally:
+        with psycopg.connect(dsn) as connection:
+            connection.execute(sql.SQL("DROP SCHEMA {} CASCADE").format(sql.Identifier(schema)))
+
+
+@pytest.mark.integration
+@pytest.mark.parametrize("fault", ["none", "restart", "lose:stage_migration", "lose:register_migration_plan",
+                                   "lose:finalize_migration", "down:stage_migration", "down:register_migration_plan",
+                                   "down:finalize_migration"])
+def test_pg_separate_control_and_lane_schemas_complete_one_lineage_across_lost_responses_and_restarts(
+        tmp_path, isolated_pgstore, second_pgstore, fault):
+    """TWO isolated PostgreSQL schemas: control (OwnerActions) and lane (REAL HostDelivery)."""
+    r = real_lane(tmp_path, isolated_pgstore, second_pgstore)
+    proxy = LosingDelivery(r["delivery"])
+    r["ports"]["deliveries"] = lambda lane_id: proxy
+    r["owner"] = OwnerActions(r["control"], clock=lambda: NOW, **r["ports"])
+    kind, _, method = fault.partition(":")
+    if kind in {"lose", "down"}:
+        getattr(proxy, kind).add(method)
+    r["owner"].request_migration(r["doc"])
+    row, receipts = real_ticks(r, restart=fault == "restart", ticks=16)
+    assert_real_lineage(r, row)
+    if kind in {"lose", "down"}:
+        # The fault is a named wait of the step that met it (the migration row, or the successor plan
+        # action whose registration it is); never a refusal or a second lineage.
+        assert any(set(receipt["waits"].values()) & {"TimeoutError", "OSError"} for receipt in receipts)
+
+
+@pytest.mark.integration
+@pytest.mark.parametrize("hold", ["request_deleted", "request_unreadable", "request_replaced", "source_moved"])
+def test_pg_readiness_failures_hold_bound_then_a_competing_h2_plan_is_refused_and_the_restored_tuple_completes(
+        tmp_path, isolated_pgstore, second_pgstore, hold):
+    from test_host_delivery_migration import pin as lane_pin
+    from test_host_delivery_migration import plan_document, refused
+
+    from codex_harness.application.releases import Releases
+
+    r = real_lane(tmp_path, isolated_pgstore, second_pgstore)
+    r["owner"].request_migration(r["doc"])
+    row, _ = real_ticks(r, until="bound")
+    assert row["state"] == "bound", row["history"]
+    # A competing H2 plan on the reserved target is refused by the REAL lane while the migration is held.
+    competitor = Releases(r["lane_store"], r["system"]["org"]).propose(
+        {**r["release"]["candidate"], "revision": "8" * 40},
+        {"checks": ["tests"], "evaluator": "fixture-incumbent-policy"})
+    refused("target_reserved_by_migration", r["delivery"].register,
+            plan_document(competitor, plan_id="delivery-plan-h2"), lane_pin())
+    base = r["targets"]
+    if hold == "request_deleted":
+        del base.requests[row["plan_id"]]
+        targets = DownTargets(base, write=True)
+        reason = "migration_readiness_canary_request_missing"
+    elif hold == "request_unreadable":
+        targets, reason = DownTargets(base, read=True), "migration_readiness_canary_request_unreadable"
+    elif hold == "request_replaced":
+        base.requests[row["plan_id"]] = {**base.requests[row["plan_id"]], "plan_sha256": "0" * 64}
+        targets, reason = DownTargets(base, write=True), "migration_readiness_canary_request_replaced"
+    else:
+        with r["control"].transaction() as tx:
+            intent = tx.get("continuation_intents", "intent-1")
+            tx.put("continuation_intents", "intent-1", {**intent, "version": intent["version"] + 1})
+        targets, reason = base, "migration_readiness_source_intent"
+    held = OwnerActions(r["control"], clock=lambda: NOW, **{**r["ports"], "targets": targets})
+    for _ in range(2):
+        assert held.tick("owners-1")["waits"][row["action_id"]] == reason
+        assert real_row(r) == row
+        with r["lane_store"].transaction() as tx:
+            assert tx.get("host_delivery_migrations", r["plan"]["plan_id"])["state"] == "registered"
+    if hold == "source_moved":
+        return      # the moved source is the owner's to resolve; nothing proceeds
+    done, _ = real_ticks(r)     # the owner's own port refiles the identical request; readiness now holds
+    assert_real_lineage(r, done)
+
+
+# ----- L2: the readiness tuple is re-observed in the finalizing step (bound -> completed) ----------------
+def to_bound(w):
+    w["owner"].request_migration(document(w))
+    for _ in range(12):
+        w["owner"].tick("owners-1")
+        if migration_row(w)["state"] == "bound":
+            break
+    assert migration_row(w)["state"] == "bound", migration_row(w)["history"]
+    return migration_row(w)
+
+
+class DownTargets(FakeTargets):
+    """LABELLED target-file port whose reads and/or writes fail (injected outage)."""
+
+    def __init__(self, base, *, read=False, write=False):
+        super().__init__(base.log)
+        self.requests, self.read_down, self.write_down = base.requests, read, write
+
+    def request(self, target, plan_id):
+        if self.read_down:
+            raise OSError("target file unreadable (labelled injected fault)")
+        return super().request(target, plan_id)
+
+    def write_request(self, target, plan_id, document):
+        if self.write_down:
+            raise OSError("target file unwritable (labelled injected fault)")
+        super().write_request(target, plan_id, document)
+
+
+def held_tick(w, targets=None, publisher=None):
+    ports = {**w["ports"], **({"targets": targets} if targets else {}), **({"publisher": publisher} if publisher else {})}
+    before = (deepcopy(rows(w["control"], BUCKET_MIGRATIONS)), deepcopy(rows(w["lane_store"], "host_delivery_migrations")))
+    receipt = OwnerActions(w["control"], clock=lambda: NOW, **ports).tick("owners-1")
+    after = (rows(w["control"], BUCKET_MIGRATIONS), rows(w["lane_store"], "host_delivery_migrations"))
+    assert after == before, "a readiness wait writes nothing in either store"
+    assert not [e for e in w["log"] if e[0] == "finalize"]
+    return receipt
+
+
+@pytest.mark.parametrize("case, reason", [
+    ("deleted_refile_fails", "migration_readiness_canary_request_missing"),
+    ("unreadable", "migration_readiness_canary_request_unreadable"),
+    ("replaced_refile_fails", "migration_readiness_canary_request_replaced"),
+    ("pin_unreadable", "migration_readiness_pin_unreadable"),
+    ("pin_replaced", "migration_readiness_pin_mismatch"),
+    ("source_moved", "migration_readiness_source_intent"),
+    ("binding_replaced", "migration_readiness_binding"),
+])
+def test_unavailable_or_replaced_readiness_evidence_holds_bound_with_a_named_wait_and_never_finalizes(case, reason):
+    w = world()
+    row = to_bound(w)
+    plan_id, targets, publisher = row["plan_id"], None, None
+    if case == "deleted_refile_fails":
+        del w["targets"].requests[plan_id]
+        targets = DownTargets(w["targets"], write=True)
+    elif case == "unreadable":
+        targets = DownTargets(w["targets"], read=True)
+    elif case == "replaced_refile_fails":
+        w["targets"].requests[plan_id] = {**w["targets"].requests[plan_id], "plan_sha256": "0" * 64}
+        targets = DownTargets(w["targets"], write=True)
+    elif case in {"pin_unreadable", "pin_replaced"}:
+        publisher = FakePublisher(w["log"])
+        if case == "pin_replaced":
+            action = rows(w["control"], BUCKET_ACTIONS)[row["plan_action_id"]]
+            publisher.commits[action["commit"]] = (action["path"], b'{"replaced": true}\n')
+    elif case == "source_moved":
+        with w["control"].transaction() as tx:
+            intent = tx.get("continuation_intents", "intent-1")
+            tx.put("continuation_intents", "intent-1", {**intent, "version": intent["version"] + 1})
+    elif case == "binding_replaced":
+        with w["control"].transaction() as tx:
+            bound = tx.get(CONTINUATION_BINDINGS, "intent-1")
+            tx.put(CONTINUATION_BINDINGS, "intent-1", {**bound, "binding": {**bound["binding"], "plan_sha256": "0" * 64}})
+    receipt = held_tick(w, targets=targets, publisher=publisher and (lambda lane_id: publisher))
+    assert receipt["waits"][row["action_id"]] == reason
+    assert migration_row(w)["state"] == "bound"
+    with w["lane_store"].transaction() as tx:
+        assert tx.get("host_delivery_migrations", w["plan"]["plan_id"])["state"] == "registered"
+
+
+def test_a_restored_readiness_tuple_finalizes_once_and_a_lost_finalize_response_replays_without_readiness():
+    w = world()
+    row = to_bound(w)
+    del w["targets"].requests[row["plan_id"]]
+    held_tick(w, targets=DownTargets(w["targets"], write=True))
+    w["lane"].lose.add("finalize_migration")
+    first = w["owner"].tick("owners-1")              # refiled, re-observed, finalized; response lost
+    assert migration_row(w)["state"] == "bound" and first["waits"][row["action_id"]] == "TimeoutError"
+    # The lane already holds the identical ack: the replay completes with NO further readiness read.
+    w["targets"].requests.clear()
+    replay = OwnerActions(w["control"], clock=lambda: NOW, **{**w["ports"], "targets": DownTargets(
+        w["targets"], read=True, write=True)}).tick("owners-1")
+    done = migration_row(w)
+    assert (done["state"], done["reason_code"]) == (do.COMPLETED, "migration_finalized"), replay
+    assert done["finalized"]["cached"] is True and done["readiness"] is None
+    assert len([e for e in w["log"] if e[0] == "finalize"]) == 1
+    from codex_harness.domain.host_delivery import migration_lineage_digest
+    assert done["ack"]["lineage_sha256"] == migration_lineage_digest(**done["lineage"])
+    assert done["ack"]["canary_request_id"] != "not_requested"
+
+
+def test_a_completed_migration_carries_its_observed_ready_record_and_status_shows_the_lineage():
+    w = world()
+    w["owner"].request_migration(document(w))
+    settle(w)
+    done = migration_row(w)
+    assert done["state"] == do.COMPLETED and done["source_resumed"] is False
+    ready = done["readiness"]
+    action = rows(w["control"], BUCKET_ACTIONS)[done["plan_action_id"]]
+    assert (ready["plan_id"], ready["plan_sha256"], ready["bytes_sha256"]) == (
+        action["plan_id"], action["plan_sha256"], action["bytes_sha256"])
+    assert ready["canary_request_id"] == done["ack"]["canary_request_id"] == digest(w["targets"].requests[action["plan_id"]])
+    status = w["owner"].status("owners-1")["migrations"]
+    assert status == [{"source_release_id": "rel-old", "state": do.COMPLETED, "reason_code": "migration_finalized",
+                       "phases": [{"state": h["state"], "reason_code": h["reason_code"], "at": h["at"]}
+                                  for h in done["history"]][-8:],
+                       "successor_release_id": done["successor_release_id"], "plan_id": done["plan_id"],
+                       "intent_id": "intent-1", "source_intent_state": dc.AWAITING_OWNER,
+                       "owner": {"policy_id": "owners-1", "lane": "a"}, "version": done["version"]}]
+    intent = rows(w["control"], "continuation_intents")["intent-1"]
+    assert intent == w["intent"], "an AWAITING_OWNER source is never rewritten by the migration"
+
+
+# ----- L1: a PAUSED source through the REAL Continuation consumer (test_continuation.World) ------------
+# REAL: Fleet, lane Operation/Harness store, Continuation.tick with LaneEvidence over the lane store,
+# OwnerActions over the control store. LABELLED: the conductor fixture, FakeLane (HostDelivery migration
+# interface) over the SAME lane store the Continuation reads, the Git publisher and the target files, and
+# the one step that stands in for the lane controller's verification of the successor (stage -> active).
+def pg_continuation_world(tmp_path, control, lane_store):
+    """test_continuation.World rebuilt over TWO PostgreSQL stores: the Fleet/Continuation control store
+    and the lane Harness store (REAL Fleet, Operation, WorkerSessions, Continuation, LaneEvidence)."""
+    from test_continuation import ConductorFixture, World
+    from test_fleet import config as fleet_config
+
+    from codex_harness.adapters.worker_sessions import SessionArchives
+    from codex_harness.application.fleet import Fleet
+    from codex_harness.application.service import Harness
+    from codex_harness.application.worker_sessions import WorkerSessions
+    from codex_harness.bootstrap import organization
+
+    world = World(tmp_path)
+    world.control, world.fleet = control, Fleet(control)
+    world.fleet.register(fleet_config(tmp_path, max_parallel=2))
+    world.lane = Harness(lane_store, organization())
+    world.sessions = WorkerSessions(lane_store, SessionArchives(tmp_path / "pg-archives"))
+    world.conductor = ConductorFixture(world.lane)
+    world.controller = world.build()
+    return world
+
+
+def paused_world(tmp_path, world=None):
+    from test_continuation import World, accepted_item, only
+
+    world = world or World(tmp_path)
+    world.register()
+    accepted_item(world)
+    world.tick()
+    world.tick()
+    source = only(world.intents(), route=dc.DELIVERY)
+    assert source["state"] == dc.AWAITING_OWNER
+    log = Log()
+    lane, publisher, targets = FakeLane(world.lane.store, log), FakePublisher(log), FakeTargets(log)
+    ports = {"continuation": world.controller, "deliveries": lambda lane_id: lane,
+             "publisher": lambda lane_id: publisher, "targets": targets}
+    owner = OwnerActions(world.control, clock=lambda: NOW, **ports)
+    owner.register(policy_document(), PIN)
+    release_id = source["release_id"]
+    with world.lane.store.transaction() as tx:
+        release = tx.get("releases", release_id)
+        release = {**release, "candidate": {**release["candidate"], "repository": REPOSITORY},
+                   "policy_hash": "e" * 64, "status": "rejected"}
+        tx.put("releases", release_id, release)
+        tx.put("host_delivery_targets", TARGET, {"target_id": TARGET})
+    policy_row = rows(world.control, BUCKET_POLICIES)["owners-1"]
+    binding = do.plan_binding(policy_row, source, release, None)
+    identity = do.action_id(do.DELIVERY_PLAN, binding)
+    plan = do.build_plan(policy_row["policy"], binding, identity)
+    old_action = {**do.new_action(do.DELIVERY_PLAN, binding, policy_row, {"intent_id": source["id"], "lane": "a"}, NOW),
+                  "state": do.COMPLETED, "reason_code": "plan_registered", "plan": plan, "plan_id": plan["plan_id"],
+                  "plan_sha256": plan_digest(plan), "published_at": NOW, "version": 4}
+    with world.control.transaction() as tx:
+        tx.put(BUCKET_ACTIONS, identity, old_action)
+    with world.lane.store.transaction() as tx:
+        tx.put("host_delivery_plans", plan["plan_id"], {"plan_id": plan["plan_id"], "plan": plan,
+                                                        "plan_sha256": plan_digest(plan), "target_id": TARGET})
+        tx.put("host_delivery_intents", plan["plan_id"], {
+            "id": plan["plan_id"], "plan_id": plan["plan_id"], "plan_sha256": plan_digest(plan), "target_id": TARGET,
+            "release_id": release_id, "revision": release["candidate"]["revision"], "stage": "blocked",
+            "reason_code": "release_rejected", "merged_revision": release["candidate"]["revision"]})
+    world.tick()        # the REAL consumer observes the original rejection and pauses the family
+    paused = only(world.intents(), route=dc.DELIVERY)
+    assert (paused["state"], paused["reason_code"]) == (dc.PAUSED, "delivery_blocked")
+    approval = {"source_release_id": release_id, "base": release["candidate"]["base"],
+                "evaluator_revision": "7" * 40, "evaluator_tree": "8" * 40, "patch_sha256": "6" * 64,
+                "paths": ["tests/test_x.py"], "evidence": "sha256:" + "9" * 64, "approved_by": "lead:root"}
+    doc = {"policy_id": "owners-1", "intent_id": paused["id"], "lane": "a", "target_id": TARGET,
+           "source_release_id": release_id, "source_policy_hash": "e" * 64,
+           "candidate_revision": release["candidate"]["revision"], "old_plan_id": plan["plan_id"],
+           "old_plan_sha256": plan_digest(plan), "approval": approval, "evidence": approval["evidence"],
+           "actor": "lead:root"}
+    return {"world": world, "owner": owner, "ports": ports, "lane": lane, "log": log, "targets": targets,
+            "paused": paused, "doc": doc, "release_id": release_id, "only": only}
+
+
+def owner_ticks(p, *, restart=False, until="completed", ticks=12):
+    for _ in range(ticks):
+        owner = OwnerActions(p["world"].control, clock=lambda: NOW, **p["ports"]) if restart else p["owner"]
+        receipt = owner.tick("owners-1")
+        row = rows(p["world"].control, BUCKET_MIGRATIONS)[p["release_id"]]
+        if row["state"] == until or row["state"] in do.TERMINAL:
+            return row, receipt
+    return row, receipt
+
+
+def lane_verifies_successor(p, row):
+    """LABELLED stand-in for the lane controller's verification of the (acknowledged) successor."""
+    with p["world"].lane.store.transaction() as tx:
+        intent = tx.get("host_delivery_intents", row["plan_id"])
+        assert intent["held"] is None, "only an acknowledged successor is ever verified"
+        tx.put("host_delivery_intents", row["plan_id"], {**intent, "stage": "active"})
+
+
+@pytest.mark.parametrize("restart", [False, True])
+def test_a_paused_source_is_resumed_once_by_the_finalized_migration_and_the_real_tick_reaches_next_item(
+        tmp_path, restart):
+    p = paused_world(tmp_path)
+    world, only = p["world"], p["only"]
+    p["owner"].request_migration(p["doc"])
+    assert rows(world.control, BUCKET_MIGRATIONS)[p["release_id"]]["source_intent"]["state"] == dc.PAUSED
+    row, _ = owner_ticks(p, restart=restart, until="bound")
+    assert row["state"] == "bound"
+    controller = world.build() if restart else world.controller
+    world.tick(controller)
+    assert only(world.intents(), route=dc.DELIVERY) == p["paused"], "no auto-resume before the acknowledgement"
+    row, _ = owner_ticks(p, restart=restart)
+    assert (row["state"], row["source_resumed"]) == (do.COMPLETED, True), row["history"]
+    resumed = only(world.intents(), route=dc.DELIVERY)
+    assert (resumed["state"], resumed["reason_code"], resumed["version"]) == (
+        dc.AWAITING_OWNER, "migration_resumed", p["paused"]["version"] + 1)
+    record = resumed["migration_resume"]
+    assert (record["from_state"], record["from_version"], record["paused_reason_code"]) == (
+        dc.PAUSED, p["paused"]["version"], "delivery_blocked")
+    assert (record["migration_id"], record["plan_id"]) == (row["migration_id"], row["plan_id"])
+    assert resumed["history"][:-1] == p["paused"]["history"] and resumed["history"][-1]["previous"] == dc.PAUSED
+    assert resumed["release_id"] == p["release_id"], "the conductor's release id stays as provenance"
+    controller = world.build() if restart else world.controller
+    world.tick(controller)                                   # successor still verifying: a quiet wait
+    assert only(world.intents(), route=dc.DELIVERY)["state"] == dc.AWAITING_OWNER
+    lane_verifies_successor(p, row)
+    world.tick(world.build() if restart else controller)
+    intents = world.intents()
+    delivered = only(intents, route=dc.DELIVERY)
+    assert (delivered["state"], delivered["reason_code"]) == (dc.COMPLETED, "delivery_active")
+    assert delivered["delivery_plan"]["plan_id"] == row["plan_id"]
+    assert only(intents, route=dc.NEXT_ITEM)["predecessor_intent"] == delivered["id"]
+    assert len([e for e in p["log"] if e[0] == "finalize"]) == 1
+    settled = rows(world.control, "continuation_intents")
+    owner_ticks(p, restart=restart, ticks=2)
+    world.tick()
+    assert rows(world.control, "continuation_intents") == settled, "nothing is resumed or delivered twice"
+
+
+def test_a_source_moved_between_bound_and_finalize_is_held_and_never_resumed(tmp_path):
+    p = paused_world(tmp_path)
+    world, only = p["world"], p["only"]
+    p["owner"].request_migration(p["doc"])
+    row, _ = owner_ticks(p, until="bound")
+    with world.control.transaction() as tx:          # LABELLED: another owner moved the source (a CAS)
+        intent = tx.get("continuation_intents", p["paused"]["id"])
+        tx.put("continuation_intents", intent["id"], {**intent, "version": intent["version"] + 1})
+    moved = only(world.intents(), route=dc.DELIVERY)
+    lane_before = deepcopy(rows(world.lane.store, "host_delivery_migrations"))
+    for _ in range(3):
+        receipt = p["owner"].tick("owners-1")
+        assert receipt["waits"][row["action_id"]] == "migration_readiness_source_intent"
+    assert rows(world.control, BUCKET_MIGRATIONS)[p["release_id"]] == row
+    assert rows(world.lane.store, "host_delivery_migrations") == lane_before
+    world.tick()
+    assert only(world.intents(), route=dc.DELIVERY) == moved, "PAUSED stays PAUSED: no global resume"
+
+
+def test_a_source_moved_after_the_lane_ack_refuses_the_resume_inside_the_completing_transaction(tmp_path):
+    p = paused_world(tmp_path)
+    world, only = p["world"], p["only"]
+    p["owner"].request_migration(p["doc"])
+    row, _ = owner_ticks(p, until="bound")
+    lane, finalize = p["lane"], p["lane"].finalize_migration
+
+    def finalize_then_move(migration_id, ack):     # LABELLED: the source moves after the lane commit
+        result = finalize(migration_id, ack)
+        with world.control.transaction() as tx:
+            intent = tx.get("continuation_intents", p["paused"]["id"])
+            tx.put("continuation_intents", intent["id"], {**intent, "version": intent["version"] + 1})
+        return result
+
+    lane.finalize_migration = finalize_then_move
+    receipt = p["owner"].tick("owners-1")
+    assert receipt["waits"][row["action_id"]] == "migration_source_changed"
+    assert rows(world.control, BUCKET_MIGRATIONS)[p["release_id"]] == row, "bound, nothing written"
+    assert only(world.intents(), route=dc.DELIVERY)["state"] == dc.PAUSED
+    again = p["owner"].tick("owners-1")
+    assert again["waits"][row["action_id"]] == "migration_readiness_source_intent"
+
+
+@pytest.mark.integration
+def test_pg_paused_source_resumes_through_the_real_continuation_tick_to_next_item(
+        tmp_path, isolated_pgstore, second_pgstore):
+    """TWO isolated PostgreSQL schemas: control (Fleet, Continuation, OwnerActions) and lane (Harness,
+    LaneEvidence, the LABELLED FakeLane migration interface); restart = fresh owners every tick."""
+    p = paused_world(tmp_path, pg_continuation_world(tmp_path, isolated_pgstore, second_pgstore))
+    world, only = p["world"], p["only"]
+    assert world.control is isolated_pgstore and world.lane.store is second_pgstore
+    assert isolated_pgstore is not second_pgstore
+    p["owner"].request_migration(p["doc"])
+    row, _ = owner_ticks(p, restart=True)
+    assert (row["state"], row["source_resumed"]) == (do.COMPLETED, True), row["history"]
+    assert only(world.intents(), route=dc.DELIVERY)["state"] == dc.AWAITING_OWNER
+    lane_verifies_successor(p, row)
+    world.tick(world.build())
+    delivered = only(world.intents(), route=dc.DELIVERY)
+    assert (delivered["state"], delivered["delivery_plan"]["plan_id"]) == (dc.COMPLETED, row["plan_id"])
+    assert only(world.intents(), route=dc.NEXT_ITEM)["predecessor_intent"] == delivered["id"]

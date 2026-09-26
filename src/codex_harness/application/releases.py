@@ -6,7 +6,37 @@ from datetime import datetime, timezone
 from uuid import uuid4
 
 from codex_harness.application.tickets import TicketSuperseded, ticket_binding
-from codex_harness.domain.model import digest, require, utcnow
+from codex_harness.domain.model import ContractError, digest, require, utcnow
+
+
+class UnsupportedEvaluatorReverification(ContractError):
+    """INV-RELEASE-EVALUATOR-MIGRATION-001: an evaluator-migrated release gets no further successor.
+
+    An ordinary reverification would drop the evaluator receipt the runner requires for a non-base
+    test source, and a second migration would chain evaluator authority; both refuse before any write.
+    """
+
+    reason_code = "unsupported_evaluator_reverification"
+
+    def __init__(self):
+        super().__init__("unsupported_evaluator_reverification: "
+                         "release is an evaluator-migrated successor")
+
+
+def _evaluator_migrated(release: dict) -> bool:
+    """True for a release whose incumbent tests are not candidate.base (INV-RELEASE-EVALUATOR-MIGRATION-001)."""
+    policy = release.get("policy") or {}
+    candidate = release.get("candidate") or {}
+    return ("evaluator_migration" in release
+            or policy.get("revision", candidate.get("base")) != candidate.get("base"))
+
+
+def evaluator_successor_id(release_id: str) -> str:
+    return digest({"evaluator_migration_of": release_id})
+
+
+def reverification_successor_id(release_id: str) -> str:
+    return digest({"reverify_of": release_id})
 
 
 class Releases:
@@ -160,12 +190,14 @@ class Releases:
                 and evidence.strip(), "Reverification reason and evidence required")
         self.org.actor(actor, "conductor")
         now = now or datetime.now(timezone.utc)
-        successor_id = digest({"reverify_of": release_id})
+        successor_id = reverification_successor_id(release_id)
         request = {"actor": actor, "reason": reason, "evidence": evidence,
                    "expected_revision": expected_revision, "expected_policy_hash": expected_policy_hash}
         with self.store.transaction() as tx:
             source = tx.get("releases", release_id)
             require(source is not None, "Release not found")
+            if _evaluator_migrated(source):
+                raise UnsupportedEvaluatorReverification()
             existing = tx.get("releases", successor_id)
             if existing:
                 # A replay after a restart returns the same successor without any write.
@@ -174,6 +206,10 @@ class Releases:
                         and {k: receipt.get(k) for k in request} == request,
                         "Conflicting reverification request")
                 return existing
+            # One successor per source whichever request commits first; the store transaction
+            # serializes both kinds (INV-RELEASE-EVALUATOR-MIGRATION-001).
+            require(tx.get("releases", evaluator_successor_id(release_id)) is None,
+                    "Release already has an evaluator migration successor")
             candidate, reviews, checks = self._check_rejected_source(
                 tx, source, expected_revision, expected_policy_hash, now)
             at = now.isoformat()
@@ -191,7 +227,7 @@ class Releases:
             return record
 
     def request_evaluator_migration(self, release_id: str, actor: str, *, expected_revision: str,
-                                    expected_policy_hash: str, approval: dict,
+                                    expected_policy_hash: str, approval: dict, resolved_pin: dict,
                                     now: datetime | None = None, transaction=None) -> dict:
         """INV-RELEASE-EVALUATOR-MIGRATION-001: one owner-approved evaluator successor per source.
 
@@ -200,17 +236,23 @@ class Releases:
         The source stays byte for byte unchanged; the successor (keyed by the source alone, so a
         second E is a conflict, never a second successor) inherits the exact reviews and the check
         set, starts with EMPTY checks and changes only `policy.revision`, hence the policy hash.
-        The pin is recorded, never trusted: the runner re-derives tree, paths and patch from git.
+        The pin is recorded, never trusted: `resolved_pin` is the trusted resolver's derivation
+        (`adapters.deployment.resolve_evaluator_pin`) made BEFORE this call and outside any lock; it
+        must equal the approved pin exactly, with E a direct child of the approved base, or nothing
+        is written. The runner still re-derives tree, paths and patch from git at execution time.
         """
         _require_evaluator_approval(approval, release_id)
         self.org.actor(actor, "conductor")
         approver = self.org.actor(approval["approved_by"], "conductor")
         now = now or datetime.now(timezone.utc)
-        successor_id = digest({"evaluator_migration_of": release_id})
+        successor_id = evaluator_successor_id(release_id)
         request = {**approval, "actor": actor, "source_policy_hash": expected_policy_hash}
         with (nullcontext(transaction) if transaction is not None else self.store.transaction()) as tx:
             source = tx.get("releases", release_id)
             require(source is not None, "Release not found")
+            if _evaluator_migrated(source):
+                raise UnsupportedEvaluatorReverification()  # no recursive migration
+            require(resolved_pin == expected_evaluator_pin(approval), "Evaluator pin does not match the repository")
             existing = tx.get("releases", successor_id)
             if existing:
                 # A replay returns the one successor without any write; anything else conflicts.
@@ -220,7 +262,7 @@ class Releases:
                         and {k: receipt.get(k) for k in request} == request,
                         "Conflicting evaluator migration")
                 return existing
-            require(tx.get("releases", digest({"reverify_of": release_id})) is None,
+            require(tx.get("releases", reverification_successor_id(release_id)) is None,
                     "Release already has a reverification successor")
             candidate, reviews, checks = self._check_rejected_source(
                 tx, source, expected_revision, expected_policy_hash, now)
@@ -308,6 +350,13 @@ class Releases:
             tx.put("events", str(uuid4()), {"type": "release.rolled_back", "at": utcnow(),
                                            "release_id": expected_active, "reason": reason})
             return previous
+
+
+def expected_evaluator_pin(approval: dict) -> dict:
+    """The resolver result an approval requires: E itself, a DIRECT child of the approved base."""
+    return {"evaluator_revision": approval["evaluator_revision"], "parent": approval["base"],
+            "base": approval["base"], "evaluator_tree": approval["evaluator_tree"],
+            "paths": approval["paths"], "patch_sha256": approval["patch_sha256"]}
 
 
 EVALUATOR_APPROVAL_KEYS = ("source_release_id", "base", "evaluator_revision", "evaluator_tree",

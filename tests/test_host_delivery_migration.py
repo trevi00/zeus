@@ -27,6 +27,7 @@ from codex_harness.domain.host_delivery import (
     VERIFYING,
     WITHDRAWN,
     DeliveryRefused,
+    migration_lineage_digest,
     migration_request_id,
     new_intent,
     plan_digest,
@@ -40,6 +41,28 @@ def store(request):
     if request.param == "memory":
         return SerialStore()
     return request.getfixturevalue("isolated_pgstore")
+
+
+class FixtureEvaluatorRepository:
+    """Labelled fixture resolver port: what `resolve_evaluator_pin` would derive for each known E.
+
+    A real git derivation is exercised in tests/test_release_evaluator_migration.py; here the lane
+    only needs the port's contract: a dict, an exception when E is unavailable."""
+
+    def __init__(self):
+        self.commits, self.calls, self.fail = {}, [], None
+
+    def add(self, revision, **overrides):
+        self.commits[revision] = {"evaluator_tree": "2" * 40, "paths": ["tests/test_fixture.py"],
+                                  "patch_sha256": "3" * 64, **overrides}
+
+    def __call__(self, revision, base):
+        self.calls.append((revision, base))
+        if self.fail is not None:
+            raise self.fail
+        commit = self.commits[revision]
+        return {"evaluator_revision": revision, "parent": commit.get("parent", base), "base": base,
+                **{k: v for k, v in commit.items() if k != "parent"}}
 
 
 def rejected_merged(tmp_path, store, **fields):
@@ -64,6 +87,9 @@ def rejected_merged(tmp_path, store, **fields):
         tx.put(BUCKET_INTENTS, plan["plan_id"], halted)
     system["halted"] = halted
     system["request"] = request_for(system)
+    system["pins"] = delivery.evaluator_pins = FixtureEvaluatorRepository()
+    for revision in ("1" * 40, "6" * 40):
+        system["pins"].add(revision)
     return system
 
 
@@ -86,9 +112,12 @@ def successor_plan(system, staged, **overrides):
 
 
 def ack_for(staged_request, registered, **overrides):
+    lineage = migration_lineage_digest(registered["source_release_id"], registered["successor_release_id"],
+                                       registered["old_plan_id"], registered["plan_id"],
+                                       registered["migration_id"])
     return {"control_action_id": "action-1", "plan_id": registered["plan_id"],
             "plan_sha256": registered["plan_sha256"], "request_sha256": digest(staged_request),
-            "canary_request_id": "canary-1", "lineage_sha256": "5" * 64, **overrides}
+            "canary_request_id": "not_requested", "lineage_sha256": lineage, **overrides}
 
 
 def snapshot(store):
@@ -199,7 +228,7 @@ def test_every_step_replays_cached_and_refuses_a_conflicting_one(tmp_path, store
     assert delivery.finalize_migration(request["migration_id"], dict(ack))["cached"] is True
     assert snapshot(store) == before
     refused("migration_conflict", delivery.finalize_migration, request["migration_id"],
-            ack_for(request, registered, canary_request_id="canary-2"))
+            ack_for(request, registered, canary_request_id="sha256:" + "9" * 64))
     refused("migration_unknown", delivery.finalize_migration, "f" * 64, ack)
     assert snapshot(store) == before
 
@@ -228,8 +257,13 @@ def test_a_stale_digest_wrong_candidate_or_forged_identity_is_refused_without_a_
             request_for(system, candidate_revision="7" * 40))
     refused("migration_request_invalid", delivery.stage_migration,
             {**system["request"], "migration_id": "0" * 64})
-    refused("migration_release_refused", delivery.stage_migration,
+    refused("migration_pin_mismatch", delivery.stage_migration,
             request_for(system, approval={**system["request"]["approval"], "paths": ["src/x.py"]}))
+    # A repository that really has that code-touching E: the pin agrees, the release owner refuses.
+    system["pins"].add("9" * 40, paths=["src/x.py"])
+    refused("migration_release_refused", delivery.stage_migration,
+            request_for(system, approval={**system["request"]["approval"], "evaluator_revision": "9" * 40,
+                                          "paths": ["src/x.py"]}))
     assert snapshot(store) == before
 
 
@@ -303,7 +337,7 @@ def test_a_crash_between_steps_leaves_a_named_pending_handoff_never_a_free_targe
             plan_document(system["release"], plan_id="delivery-plan-x"), pin(), request["migration_id"])
     refused("migration_not_registered", restarted.finalize_migration, request["migration_id"],
             {"control_action_id": "a", "plan_id": "b", "plan_sha256": "c", "request_sha256": "d",
-             "canary_request_id": "e", "lineage_sha256": "f"})
+             "canary_request_id": "not_requested", "lineage_sha256": "f"})
     restarted.register_migration_plan(successor_plan(system, staged), pin(), request["migration_id"])
     again = HostDelivery(store, system["org"], github=system["github"], clock=system["clock"], enabled=True)
     assert row(store, BUCKET_MIGRATIONS, system["plan"]["plan_id"])["state"] == "registered"
@@ -367,3 +401,100 @@ def test_a_competing_plan_and_the_migration_admit_exactly_one_owner_of_the_targe
         assert results["h2"] == "target_reserved_by_migration"
     else:
         assert results["stage"] == "migration_target_busy" and results["h2"]["registered"] is True
+
+
+# ---- creation-time evaluator pin, readiness lineage and the read-only projection -------------------
+
+@pytest.mark.parametrize("case, code", [
+    ("tree", "migration_pin_mismatch"), ("patch", "migration_pin_mismatch"),
+    ("grandchild", "migration_pin_mismatch"), ("paths", "migration_pin_mismatch"),
+    ("unavailable", "migration_pin_unavailable"), ("unknown", "migration_pin_unavailable"),
+    ("no_port", "migration_pin_unavailable"), ("not_a_dict", "migration_pin_mismatch")])
+def test_an_unresolvable_or_disagreeing_pin_stages_nothing_and_the_right_request_then_succeeds(
+        tmp_path, store, case, code):
+    system = rejected_merged(tmp_path, store)
+    delivery, pins, request = system["delivery"], system["pins"], system["request"]
+    if case == "tree":
+        pins.add("1" * 40, evaluator_tree="0" * 40)
+    elif case == "patch":
+        pins.add("1" * 40, patch_sha256="0" * 64)
+    elif case == "grandchild":
+        pins.add("1" * 40, parent="7" * 40)  # E's parent is not the approved base
+    elif case == "paths":
+        pins.add("1" * 40, paths=["tests/test_fixture.py", "tests/test_other.py"])
+    elif case == "unavailable":
+        pins.fail = OSError("fixture: repository unreadable")
+    elif case == "unknown":
+        pins.commits.clear()
+    elif case == "no_port":
+        delivery.evaluator_pins = None
+    elif case == "not_a_dict":
+        delivery.evaluator_pins = lambda revision, base: None
+    before = snapshot(store)
+    refused(code, delivery.stage_migration, request)
+    # Nothing: the source release, the migration identity, the reservation and the old intent.
+    assert snapshot(store) == before
+    assert row(store, BUCKET_INTENTS, system["plan"]["plan_id"]) == system["halted"]
+    delivery.evaluator_pins, pins.fail = pins, None
+    pins.add("1" * 40)
+    staged = delivery.stage_migration(request)
+    assert staged["state"] == "staged" and staged["cached"] is False
+    assert pins.calls[-1] == ("1" * 40, system["release"]["candidate"]["base"])
+
+
+def test_a_staged_replay_needs_no_resolver(tmp_path, store):
+    system = rejected_merged(tmp_path, store)
+    staged = system["delivery"].stage_migration(system["request"])
+    system["delivery"].evaluator_pins = None
+    assert system["delivery"].stage_migration(system["request"]) == {**staged, "cached": True}
+
+
+@pytest.mark.parametrize("field", ["source_release_id", "successor_release_id", "old_plan_id", "plan_id",
+                                   "migration_id"])
+def test_an_ack_with_another_lineage_is_refused_and_the_exact_one_finalizes_once(tmp_path, store, field):
+    system = rejected_merged(tmp_path, store)
+    delivery, request = system["delivery"], system["request"]
+    staged = delivery.stage_migration(request)
+    registered = delivery.register_migration_plan(successor_plan(system, staged), pin(), request["migration_id"])
+    before = snapshot(store)
+    identity = {name: registered[name] for name in ("source_release_id", "successor_release_id", "old_plan_id",
+                                                     "plan_id", "migration_id")}
+    identity[field] = "x" + str(identity[field])
+    wrong = ack_for(request, registered, lineage_sha256=migration_lineage_digest(**identity))
+    caught = refused("migration_ack_mismatch", delivery.finalize_migration, request["migration_id"], wrong)
+    assert caught.field == "lineage_sha256" and snapshot(store) == before
+    for bad in ({"canary_request_id": "canary-1"}, {"canary_request_id": "sha256:" + "z" * 64},
+                {"control_action_id": " "}):
+        refused("migration_ack_invalid", delivery.finalize_migration, request["migration_id"],
+                ack_for(request, registered, **bad))
+    assert snapshot(store) == before
+    ack = ack_for(request, registered, canary_request_id=digest({"fixture": "canary request"}))
+    assert delivery.finalize_migration(request["migration_id"], ack)["state"] == "active"
+    finalized = snapshot(store)
+    # The replay is cached and runs no readiness effect again: the queue is not touched.
+    delivery.queue = None
+    assert delivery.finalize_migration(request["migration_id"], dict(ack))["cached"] is True
+    assert snapshot(store) == finalized
+
+
+def test_status_projects_each_migration_phase_and_hold(tmp_path, store):
+    system = rejected_merged(tmp_path, store)
+    delivery, request, old = system["delivery"], system["request"], system["plan"]["plan_id"]
+    assert delivery.status()["migrations"] == []
+    staged = delivery.stage_migration(request)
+    view = delivery.status()["migrations"]
+    assert view == [{"old_plan_id": old, "migration_id": request["migration_id"], "state": "staged",
+                     "held": None, "successor_release_id": staged["successor_release_id"], "plan_id": None,
+                     "target_id": system["plan"]["target_id"], "at": view[0]["at"]}]
+    registered = delivery.register_migration_plan(successor_plan(system, staged), pin(), request["migration_id"])
+    shown = delivery.status("delivery-plan-migrated")["migrations"]
+    assert [(m["state"], m["held"], m["plan_id"]) for m in shown] == [
+        ("registered", "migration_unacknowledged", "delivery-plan-migrated")]
+    assert delivery.status(old)["migrations"] == shown
+    assert delivery.status("delivery-plan-none")["migrations"] == []
+    before = snapshot(store)
+    delivery.finalize_migration(request["migration_id"], ack_for(request, registered))
+    assert [(m["state"], m["held"]) for m in delivery.status()["migrations"]] == [("active", None)]
+    after = snapshot(store)
+    delivery.status()
+    assert snapshot(store) == after != before

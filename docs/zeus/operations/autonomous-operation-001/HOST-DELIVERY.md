@@ -166,18 +166,25 @@ reverification instead. The candidate's own regression never qualifies.
 
 1. An owner-reviewed evaluator commit E is required: a direct child of the release base, `tests/`-only, and exactly the
    reviewed paths. Its acceptance evidence digest is the approval `evidence`.
-2. The owner-actions service AND the host-delivery controller must both run code that knows the migration.
+2. The owner-actions service, the host-delivery controller AND the continuation consumer must all run code that
+   knows the migration. The continuation consumer is the existing `zeus continuation tick --policy` run from the
+   controller's code; the Fleet's embedded ticker stays unconfigured (`ZEUS_CONTINUATION_POLICY` unset for Fleet).
    - An older owner-actions process cannot dispatch the migration and plans without the target reservation.
    - An older controller does not honour the hold.
 3. `zeus owner-actions migrate --document <file>` records the ONE migration of the source. The document binds the
    source release and policy hash, the candidate, the old plan and its sha256, the continuation intent, the target, the
    lane, the E pin and the evidence. The owner-actions loop then advances it, in order:
-   1. The lane stages it: the successor release, the old plan `withdrawn` as `release_rejected_superseded` with
-      `main_effect: merged` and its halt copied, and the target reserved.
+   1. The lane re-derives the E pin from its own repository (`migration_pin_unavailable` /
+      `migration_pin_mismatch` write nothing), then stages it: the successor release, the old plan `withdrawn` as
+      `release_rejected_superseded` with `main_effect: merged` and its halt copied, and the target reserved.
    2. The successor `DELIVERY_PLAN` is published and read back, and its canary request is filed.
    3. The lane registers that exact plan, HELD (`migration_unacknowledged`).
    4. The continuation's effective binding is recorded.
-   5. `finalize_migration` clears the hold and queues the successor.
+   5. Readiness is re-observed (plan action, source intent version, lane registration, published pin, canary
+      request); anything missing stays `bound` with a `migration_readiness_*` wait. Only then does
+      `finalize_migration` clear the hold and queue the successor, and a continuation intent PAUSED on the original
+      rejection resumes observation through the one authorized migration transition.
+   Both `owner-actions status` and `host-delivery status` show each migration's phase, wait and held reason.
 4. Every step replays after a restart or lost response. A staged or registered migration is a named wait, never a free
    target.
    - A different document for the same source is `migration_conflict`.

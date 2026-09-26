@@ -269,8 +269,18 @@ def coordinator(service, config: dict, host: dict, *, lanes=None, assessments=No
     root = runtime_dir()
     assessments = assessments or Assessments(FileArtifacts(str(root / "artifacts")), root / "owner-actions")
     publisher_factory = publisher_factory or GitPlanPublisher
+
+    def evaluator_pins(lane_id):
+        # INV-RELEASE-EVALUATOR-MIGRATION-001: the approved E pin is re-derived from the lane's OWN
+        # registered repository before any migration write, never taken from the approval's fields.
+        from codex_harness.adapters.deployment import resolve_evaluator_pin
+        from codex_harness.adapters.host_delivery import lane_git
+
+        return lambda revision, base: resolve_evaluator_pin(lane_git(lane_of(config, lane_id), host), revision, base)
+
     return OwnerActions(store, continuation=continuation, org=service.org, lanes=lanes,
-                        deliveries=lambda lane_id: HostDelivery(lanes(lane_id).store, service.org),
+                        deliveries=lambda lane_id: HostDelivery(lanes(lane_id).store, service.org,
+                                                                evaluator_pins=evaluator_pins(lane_id)),
                         publisher=lambda lane_id: publisher_factory(lane_of(config, lane_id)["repository"]),
                         assessments=assessments, targets=TargetFiles(), fleet=Fleet(store), validate=validator())
 
