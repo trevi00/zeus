@@ -3418,8 +3418,14 @@ existing owners: `Continuation.accept_research`, the guarded `decide_one` of the
 - Plan publication: owner policy + the approved exact release only. The deterministic commit is created
   on `refs/zeus/owner-plans/<plan_id>` only when the ref is absent; other content is `plan_ref_conflict`.
   Only the plan read back from Git is registered.
-- Canary: a matching `owner-canary-request.json` makes a missing owner receipt `pending` only until the
-  plan's own consumption deadline. The receipt is written only from the actual canary operation's
+- Canary: request and receipt are the files of ONE plan (`owner-canary-request.<plan_id>.json`,
+  `owner-canary-receipt.<plan_id>.json`) in the target state directory; the controller hands the consumed
+  plan to `owner_qualified_canary`. A request matching that plan's id and digest, target, revision and
+  predecessor makes a missing receipt of that plan `pending` only until the plan's own consumption
+  deadline. Another plan's request or receipt, and the former target-global files, never grant, replace or
+  answer the wait. While a completed plan's delivery is open, each tick re-files that plan's own request
+  (rebuilt from its immutable action row) when absent or different; this is the compatibility path for
+  plans registered under the target-global request, and it rewrites no action row and no global file. The receipt is written only from the actual canary operation's
   accepted outcome and its independent lead review, bound to descriptor and instance. The same binding
   (plan digest, awaiting-consumption delivery, target, descriptor and candidate instance) is re-validated
   before the first enqueue and before a missing-job replay. A stale intent is `refused` without admission.
@@ -3428,6 +3434,7 @@ existing owners: `Continuation.accept_research`, the guarded `decide_one` of the
   re-validates request, target, descriptor, sealed manifest, stop request, previous-instance liveness and
   the Fleet activation gate before the incumbent `launch`.
 
-Tests: tests/test_owner_actions.py, tests/test_owner_delivery.py, tests/test_managed_systemd.py,
+Tests: tests/test_owner_actions.py, tests/test_owner_delivery.py, tests/test_owner_canary_plan.py,
+tests/test_managed_systemd.py,
 tests/test_owner_actions_adapters.py, tests/test_aibox_owner_units.py. Models, the canary executor and
 systemd are labelled fixtures or a labelled simulation there. Live qualification is out of their scope.

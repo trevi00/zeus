@@ -26,8 +26,8 @@ import pytest
 from codex_harness import cli
 from codex_harness.adapters import host_delivery
 from codex_harness.adapters.host_delivery import (
-    CANARY_RECEIPT_FILE,
     ENABLED_SETTING,
+    canary_receipt_file,
     controller,
     execute,
     lane_git,
@@ -404,13 +404,14 @@ def test_the_collect_canary_reads_the_lane_and_the_owner_canary_stays_file_bound
     # The owner-qualified canary is the incumbent file check: bound to the target's descriptor
     # receipt file, never to either store.
     assert wired.canaries[CANARY_FLEET] is owner_qualified_canary
-    assert wired.canaries[CANARY_FLEET](target, descriptor(), {"instance_id": "i-1"})["reason_code"] \
+    plan = {"plan_id": "plan-1"}
+    assert wired.canaries[CANARY_FLEET](target, descriptor(), {"instance_id": "i-1"}, plan=plan)["reason_code"] \
         == "canary_owner_receipt_missing"
     Path(target["state_dir"]).mkdir(parents=True)
-    (Path(target["state_dir"]) / CANARY_RECEIPT_FILE).write_text(json.dumps(
+    (Path(target["state_dir"]) / canary_receipt_file("plan-1")).write_text(json.dumps(
         {"descriptor_sha256": descriptor_digest(descriptor()), "instance_id": "i-1", "passed": True,
          "evidence": "owner-evidence"}), encoding="utf-8")
-    passed = wired.canaries[CANARY_FLEET](target, descriptor(), {"instance_id": "i-1"})
+    passed = wired.canaries[CANARY_FLEET](target, descriptor(), {"instance_id": "i-1"}, plan=plan)
     assert passed["passed"] is True and passed["evidence"] == "owner-evidence"
 
 

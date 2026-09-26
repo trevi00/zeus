@@ -45,6 +45,7 @@ from codex_harness.domain.host_delivery import (
     AWAITING_CONSUMPTION,
     AWAITING_REVIEW,
     BLOCKED,
+    CANARY_FLEET,
     CI_FAILED,
     CI_HEAD_CHANGED,
     CI_PASSED,
@@ -1073,8 +1074,11 @@ class HostDelivery:
         if check is None:
             return {"passed": False, "reason_code": "canary_unavailable", "evidence": None,
                     "check_id": plan["canary_check_id"]}
+        # The owner's canary answers for exactly the plan being consumed (aibox SPEC s14 G2), never for
+        # whichever plan of this target filed its request last.
+        bound = {"plan": plan} if plan["canary_check_id"] == CANARY_FLEET else {}
         try:
-            result = check(target, descriptor, startup)
+            result = check(target, descriptor, startup, **bound)
         except Exception as exc:
             return {"passed": False, "reason_code": "canary_error", "evidence": None,
                     "error_type": safe_error_type(type(exc).__name__),

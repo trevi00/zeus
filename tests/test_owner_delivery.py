@@ -36,8 +36,8 @@ from test_host_delivery import (
 )
 
 from codex_harness.adapters.host_delivery import (
-    CANARY_RECEIPT_FILE,
     RECEIPT_FILE,
+    canary_receipt_file,
     owner_qualified_canary,
     startup_identity_canary,
 )
@@ -343,7 +343,7 @@ def request_for(system, **overrides):
                 "plan_sha256": plan_digest(validate_plan(plan)), "target_id": TARGET,
                 "revision": plan["target_descriptor"]["revision"], "expected_descriptor": plan["expected_descriptor"],
                 "requested_at": "2026-09-25T00:00:00+00:00", **overrides}
-    TargetFiles.write_request(system["target"], document)
+    TargetFiles.write_request(system["target"], plan["plan_id"], document)
 
 
 def consuming(system, limit=40):
@@ -357,10 +357,10 @@ def consuming(system, limit=40):
 def owner_receipt(system, passed):
     intent = intent_of(system)
     startup = json.loads((Path(system["target"]["state_dir"]) / RECEIPT_FILE).read_text("utf-8"))
-    TargetFiles.write_receipt(system["target"], {"schema": "urn:zeus:owner-canary-receipt:1",
-                                                 "descriptor_sha256": intent["descriptor_sha256"],
-                                                 "instance_id": startup["instance_id"], "passed": passed,
-                                                 "evidence": {"labelled": "fixture owner canary outcome"}})
+    TargetFiles.write_receipt(system["target"], system["plan"]["plan_id"], {
+        "schema": "urn:zeus:owner-canary-receipt:1", "descriptor_sha256": intent["descriptor_sha256"],
+        "instance_id": startup["instance_id"], "passed": passed,
+        "evidence": {"labelled": "fixture owner canary outcome"}})
 
 
 @binds_a_runtime
@@ -424,7 +424,8 @@ def canary_owner(tmp_path, system, *, verdict=True):
     completed = {"id": "p" * 64, "kind": do.DELIVERY_PLAN, "state": do.COMPLETED, "binding": {},
                  "binding_sha256": "q" * 64, "policy_id": "owners-1", "policy_sha256": "r" * 64,
                  "subject": {"intent_id": "s" * 64, "lane": "a"}, "plan": plan, "plan_id": plan["plan_id"],
-                 "plan_sha256": plan_digest(plan), "created_at": "2026-09-25T00:00:00+00:00", "version": 4,
+                 "plan_sha256": plan_digest(plan), "created_at": "2026-09-25T00:00:00+00:00",
+                 "published_at": "2026-09-25T00:00:00+00:00", "version": 4,
                  "history": [], "reason_code": "plan_registered"}
     with world.control.transaction() as tx:
         # LABELLED: the completed plan action the G2 publication test above produces for this plan.
@@ -449,13 +450,13 @@ def test_the_owner_runs_the_fixed_canary_and_writes_the_instance_bound_receipt_o
         assert canary["binding"]["descriptor_sha256"] == intent_of(system)["descriptor_sha256"]
         # While the actual operation runs, nothing is written for the delivery and it only waits.
         owner.tick("owners-1")
-        assert not (Path(system["target"]["state_dir"]) / CANARY_RECEIPT_FILE).exists()
+        assert not (Path(system["target"]["state_dir"]) / canary_receipt_file(system["plan"]["plan_id"])).exists()
         assert system["delivery"].tick()["reason_code"] == "canary_owner_receipt_pending"
         job, receipt = world.run_next(verdict=verdict)
         assert job == canary["job_id"] and receipt["status"] == ("accepted" if verdict else "rejected")
         owner.tick("owners-1")
         [canary] = [r for r in rows(world).values() if r["kind"] == do.DELIVERY_CANARY]
-        written = json.loads((Path(system["target"]["state_dir"]) / CANARY_RECEIPT_FILE).read_text("utf-8"))
+        written = json.loads((Path(system["target"]["state_dir"]) / canary_receipt_file(system["plan"]["plan_id"])).read_text("utf-8"))
         assert written["passed"] is verdict and written["instance_id"] == startup["instance_id"]
         assert written["evidence"]["job_id"] == job
         if verdict:
@@ -488,7 +489,7 @@ def test_an_unknown_canary_writes_no_receipt_and_the_delivery_rolls_back_at_its_
         owner.tick("owners-1")
         [canary] = [r for r in rows(world).values() if r["kind"] == do.DELIVERY_CANARY]
         assert canary["state"] == do.UNKNOWN and canary["reason_code"] == "canary_job_unknown"
-        assert not (Path(system["target"]["state_dir"]) / CANARY_RECEIPT_FILE).exists()
+        assert not (Path(system["target"]["state_dir"]) / canary_receipt_file(system["plan"]["plan_id"])).exists()
         assert drive(system, until=ROLLED_BACK, limit=60)[-1]["stage"] == ROLLED_BACK
     finally:
         stop_target(system)

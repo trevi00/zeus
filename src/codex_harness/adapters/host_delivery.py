@@ -79,6 +79,7 @@ from codex_harness.domain.host_delivery import (
     KIND_SYSTEMD,
     RECEIPT_SCHEMA,
     REPLACEABLE_INSTANCES,
+    TOKEN,
     DeliveryRefused,
     LifecycleInterrupted,
     canary_request_matches,
@@ -109,15 +110,30 @@ STOP_FILE = "stop"
 # The one lifecycle lock of a target, under its original name: it guards the descriptor
 # replacement AND the pause, stop, cleanup, launch and state publication of that target's service.
 LOCK_DIR = "switch.lock"
-CANARY_RECEIPT_FILE = "owner-canary-receipt.json"
-# The server owner's request for its actual canary of one exact published plan (aibox SPEC s14 G2).
-CANARY_REQUEST_FILE = "owner-canary-request.json"
 
 # Bounded waits for the host boundary; nothing here is unbounded and nothing sleeps under a lease.
 STOP_TIMEOUT = 20.0
 STOP_POLL = 0.1
 LOCK_TIMEOUT = 20.0
 SERVICE_MAX_SECONDS = 900
+
+
+# The server owner's request for its actual canary of one exact published plan, and its receipt
+# (aibox SPEC s14 G2). Both are named by the plan: a target-global `owner-canary-request.json` or
+# `owner-canary-receipt.json` left by earlier code is never read, so no other plan's file can grant,
+# replace or answer this plan's canary.
+def canary_request_file(plan_id) -> str:
+    return "owner-canary-request." + _plan_token(plan_id) + ".json"
+
+
+def canary_receipt_file(plan_id) -> str:
+    return "owner-canary-receipt." + _plan_token(plan_id) + ".json"
+
+
+def _plan_token(plan_id) -> str:
+    if not (isinstance(plan_id, str) and TOKEN.fullmatch(plan_id)):
+        raise ValueError("plan_id is not a plan token")
+    return plan_id
 
 
 def configured_enabled(settings: dict) -> bool:
@@ -905,16 +921,20 @@ def collect_monitor_canary(target: dict, descriptor: dict, startup: dict, *, sto
     return {"passed": True, "reason_code": None, "evidence": row.get("observed_instance_id")}
 
 
-def owner_qualified_canary(target: dict, descriptor: dict, startup: dict) -> dict:
+def owner_qualified_canary(target: dict, descriptor: dict, startup: dict, *, plan=None) -> dict:
     """A real qualified worker operation is OWNER acceptance work, not something a controller runs.
 
-    This check therefore looks for the owner's own receipt for exactly this descriptor, and for the
-    instance it was taken against when the owner recorded one. No model, provider or worker is
-    started from here, and an absent receipt is an honest not-passed.
+    This check therefore looks for the owner's own receipt for exactly this plan and descriptor, and
+    for the instance it was taken against when the owner recorded one. `plan` is the delivery being
+    consumed; without it there is no plan-scoped request or receipt to read. No model, provider or
+    worker is started from here, and an absent receipt is an honest not-passed.
     """
-    receipt = _read_json(HostTargetBase.path(target, CANARY_RECEIPT_FILE))
+    if not isinstance(plan, dict):
+        return {"passed": False, "reason_code": "canary_owner_receipt_missing", "evidence": None}
+    receipt = _read_json(HostTargetBase.path(target, canary_receipt_file(plan["plan_id"])))
     if not isinstance(receipt, dict):
-        if canary_request_matches(_read_json(HostTargetBase.path(target, CANARY_REQUEST_FILE)), target, descriptor):
+        request = _read_json(HostTargetBase.path(target, canary_request_file(plan["plan_id"])))
+        if canary_request_matches(request, target, descriptor, plan):
             # The owner is running its actual canary of exactly this delivery: not passed, and pending
             # only until the delivery's own consumption deadline (`HostDelivery._consume`).
             return {"passed": False, "pending": True, "reason_code": "canary_owner_receipt_pending",
@@ -1233,10 +1253,11 @@ def main(argv=None) -> int:
     return serve(args.state_dir, args.max_seconds)
 
 
-__all__ = ["CANARY_RECEIPT_FILE", "CANARY_REQUEST_FILE", "DESCRIPTOR_FILE", "ENABLED_SETTING", "MAX_PLAN_BYTES",
+__all__ = ["DESCRIPTOR_FILE", "ENABLED_SETTING", "MAX_PLAN_BYTES",
            "RECEIPT_FILE", "RUNTIME_FILE", "STATE_FILE", "WORK_FILE", "GitHubDelivery",
            "HostTargetBase", "ProcessHostTarget", "ScheduledTaskHostTarget", "add_parser",
-           "canary_checks", "checkout_revision", "collect_monitor_canary", "configured_enabled",
+           "canary_checks", "canary_receipt_file", "canary_request_file", "checkout_revision",
+           "collect_monitor_canary", "configured_enabled",
            "controller", "effective_profile_digest", "effective_worker_image", "execute",
            "host_ports", "lane_git", "load_plan", "loaded_runtime", "main", "normalize_checks",
            "owner_qualified_canary", "refusal", "resolve_lane", "run_loop", "runtime_revision", "serve",

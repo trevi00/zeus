@@ -40,12 +40,12 @@ from codex_harness.adapters.continuation_process import (
 )
 from codex_harness.adapters.fleet_backlog import _parse, read_blob
 from codex_harness.adapters.host_delivery import (
-    CANARY_RECEIPT_FILE,
-    CANARY_REQUEST_FILE,
     RECEIPT_FILE,
     HostTargetBase,
     _read_json,
     _write_json,
+    canary_receipt_file,
+    canary_request_file,
     load_plan,
 )
 from codex_harness.adapters.operation_cli import GitSource
@@ -140,20 +140,25 @@ class GitPlanPublisher:
 
 # ----- target files ----------------------------------------------------------------------------------------
 class TargetFiles:
-    """The incumbent target state files; reads are bounded, writes are atomic replacements."""
+    """The incumbent target state files; reads are bounded, writes are atomic replacements. The owner
+    canary request and receipt are the files of ONE plan (`canary_request_file`/`canary_receipt_file`)."""
 
     @staticmethod
     def startup(target: dict):
         return _read_json(HostTargetBase.path(target, RECEIPT_FILE))
 
     @staticmethod
-    def write_request(target: dict, document: dict) -> None:
-        HostTargetBase.state_dir(target).mkdir(parents=True, exist_ok=True)
-        _write_json(HostTargetBase.path(target, CANARY_REQUEST_FILE), document)
+    def request(target: dict, plan_id: str):
+        return _read_json(HostTargetBase.path(target, canary_request_file(plan_id)))
 
     @staticmethod
-    def write_receipt(target: dict, document: dict) -> None:
-        _write_json(HostTargetBase.path(target, CANARY_RECEIPT_FILE), document)
+    def write_request(target: dict, plan_id: str, document: dict) -> None:
+        HostTargetBase.state_dir(target).mkdir(parents=True, exist_ok=True)
+        _write_json(HostTargetBase.path(target, canary_request_file(plan_id)), document)
+
+    @staticmethod
+    def write_receipt(target: dict, plan_id: str, document: dict) -> None:
+        _write_json(HostTargetBase.path(target, canary_receipt_file(plan_id)), document)
 
 
 # ----- the independent assessor ------------------------------------------------------------------------

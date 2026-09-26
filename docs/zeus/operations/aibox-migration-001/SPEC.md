@@ -395,8 +395,11 @@ family, 현재 전체 attempt 집합과 각 lane 관측 evidence/inspection, 혼
   `refs/zeus/owner-plans/<plan_id>`에 **없을 때만** 생성한다(다른 내용의 기존 ref = `plan_ref_conflict`, 덮어쓰지 않음).
   재시작 시 같은 commit을 재도출·인식한다. Git에서 되읽은 plan만 기존 `HostDelivery.register`로 등록한다.
 - **Canary 요청**: plan의 canary가 `fleet_worker_operation`이면 등록 **전**에 target state에
-  `owner-canary-request.json`(plan/target/revision/expected predecessor)을 쓴다. 기존 `owner_qualified_canary`는
-  이 요청이 소비 중 descriptor와 정확히 일치하고 receipt가 없을 때만 `pending`을 반환하며, `HostDelivery._consume`은
+  plan 전용 `owner-canary-request.<plan_id>.json`(plan id/digest/target/revision/expected predecessor)을 쓴다.
+  receipt도 plan 전용 `owner-canary-receipt.<plan_id>.json`이다. 같은 target의 다른 plan 등록은 소비 중 plan의
+  요청·receipt를 대체하거나 답하지 못한다(G-H1 finding). delivery가 열린 completed plan은 tick마다 불변 action
+  행에서 재구성한 자기 요청을 없거나 다를 때만 다시 쓴다(target 전역 요청 시절 등록 plan의 명시적 호환 경로).
+  기존 `owner_qualified_canary`는 이 요청이 소비 중 descriptor와 정확히 일치하고 receipt가 없을 때만 `pending`을 반환하며, `HostDelivery._consume`은
   plan 자신의 consumption deadline까지만 기다린다. 만료 시 기존과 같은 거부 → rollback. 요청이 없거나 불일치하면
   동작은 이전과 동일(즉시 missing → rollback). 게이트 완화 없음.
 - **실제 canary**: 소비 중 후보 instance의 자기 startup receipt가 확인되면 binding(plan, descriptor, instance)으로
