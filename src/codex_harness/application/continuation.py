@@ -216,6 +216,44 @@ class LaneRuntime:
         return self.seen.get(lane_id, (None, None))[1] is not None
 
 
+def _migrated_delivery(tx, deliveries: list, target, release_id: str, revision, release) -> dict | None:
+    """INV-OWNER-ACTIONS-MIGRATION-001: the delivery of the conductor's release after an ACTIVE evaluator
+    migration superseded it, following ONLY the verified lane edge; None keeps today's binding.
+
+    The source intent of this target must be `withdrawn`/`release_rejected_superseded` naming exactly one
+    active lane migration of this release, the successor release must carry the identical candidate
+    (revision, tree, base) and its one delivery must be that migration's registered plan. The binding keeps
+    the conductor's `release_id` (provenance) and names the successor as `effective_release_id`."""
+    superseded = [row for row in deliveries if row.get("target_id") == target and row.get("stage") == "withdrawn"
+                  and row.get("reason_code") == "release_rejected_superseded"]
+    if not superseded:
+        return None
+    records = [row for row in tx.scan("host_delivery_migrations")
+               if row.get("source_release_id") == release_id and row.get("target_id") == target
+               and row.get("state") == "active"]
+    if len(records) != 1:
+        return None
+    record = records[0]
+    edge = [row for row in superseded if (row.get("plan_id") or row.get("id")) == record.get("id")
+            and (row.get("supersession") or {}).get("migration_id") == record.get("migration_id")
+            and (row.get("supersession") or {}).get("successor_release_id") == record.get("successor_release_id")]
+    successor = tx.get("releases", record.get("successor_release_id")) if len(edge) == 1 else None
+    if not (isinstance(successor, dict) and isinstance(release, dict)):
+        return None
+    source, moved = release.get("candidate") or {}, successor.get("candidate") or {}
+    if source.get("revision") != revision or any(
+            source.get(key) is None or source.get(key) != moved.get(key) for key in ("revision", "tree", "base")):
+        return None
+    rows = [row for row in tx.scan("host_delivery_intents") if row.get("release_id") == successor["id"]]
+    bound = bind_delivery(rows, target, successor["id"], revision, successor)
+    if bound["binding"] != DELIVERY_BOUND or (bound["plan_id"], bound["plan_sha256"]) != (
+            record.get("plan_id"), record.get("plan_sha256")):
+        return None
+    return {**bound, "release_id": release_id, "effective_release_id": successor["id"],
+            "migration": {"migration_id": record["migration_id"], "source_release_id": release_id,
+                          "successor_release_id": successor["id"], "old_plan_id": record["id"],
+                          "plan_id": record["plan_id"]}}
+
 # ---- one lane store -----------------------------------------------------------------------------
 class LaneEvidence:
     """Reads and the two narrow effects on ONE lane store. Every method is its own short
@@ -259,8 +297,10 @@ class LaneEvidence:
                     deliveries = [row for row in tx.scan("host_delivery_intents") if row.get("release_id") == release_id]
                     task = evidence["task"] if isinstance(evidence["task"], dict) else {}
                     candidate = (task.get("result") or {}).get("candidate") or {}
-                    evidence["delivery"] = bind_delivery(deliveries, target, release_id, candidate.get("revision"),
-                                                         tx.get("releases", release_id))
+                    release = tx.get("releases", release_id)
+                    evidence["delivery"] = _migrated_delivery(tx, deliveries, target, release_id,
+                                                              candidate.get("revision"), release) \
+                        or bind_delivery(deliveries, target, release_id, candidate.get("revision"), release)
             session = (binding or {}).get("session") if isinstance(binding, dict) else None
             if isinstance(session, dict):
                 evidence["session"] = tx.get("worker_sessions", session["task_id"])

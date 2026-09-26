@@ -21,6 +21,7 @@ I/O OUTSIDE a store transaction; the application calls them between its own shor
 from __future__ import annotations
 
 import hashlib
+import json
 import os
 import signal
 import subprocess
@@ -341,6 +342,9 @@ def add_parser(commands) -> None:
     run.add_argument("--max-ticks", type=int, default=0, dest="max_ticks")
     status = sub.add_parser("status", help="Read the owner-action projection; store read only")
     status.add_argument("--policy", default=None)
+    migrate = sub.add_parser("migrate", help="Record ONE owner-approved evaluator migration of a check-rejected "
+                                             "merged release (INV-OWNER-ACTIONS-MIGRATION-001); tick advances it")
+    migrate.add_argument("--document", required=True, help="JSON migration document (exact keys)")
     assess_parser = sub.add_parser("assess", help="Guardian child: the guarded independent assessment of one row")
     assess_parser.add_argument("--decision", required=True)
     assess_parser.add_argument("--correlation", required=True)
@@ -365,6 +369,12 @@ def execute(service, args) -> dict:
     if command == "register":
         return {**register_policy(service.store, config, args.lane, args.revision, args.path), "exit_code": 0}
     owner = coordinator(service, config, settings())
+    if command == "migrate":
+        try:
+            document = json.loads(Path(args.document).read_text(encoding="utf-8"))
+        except (OSError, ValueError) as exc:
+            raise OwnerActionRefused("migration_document_unreadable", "document") from exc
+        return {**owner.request_migration(document), "exit_code": 0}
     if command == "tick":
         result = tick_policy(owner, config, args.policy)
         owner.assessments.join()

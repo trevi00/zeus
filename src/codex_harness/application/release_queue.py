@@ -33,18 +33,19 @@ class ReleaseQueue:
             tx.put("release_queue", release_id, row)
             return row
 
-    def enqueue(self, release_id, reason):
+    def enqueue(self, release_id, reason, *, transaction=None):
         """Queue an ALREADY reviewed release for the single release controller; idempotent.
 
         This is the same row the executor writes on conductor acceptance, created here for a
         release that was reviewed outside that path. It grants nothing: the row is refused unless
         the release record itself is `reviewed` or `verified` and its ticket binding still holds,
         an existing row of any status is returned untouched (a failed or cancelled release is never
-        silently re-armed), and no lease, attempt, generation or fence is changed.
+        silently re-armed), and no lease, attempt, generation or fence is changed. `transaction`
+        runs this unchanged body inside the caller's transaction (INV-HOST-DELIVERY-MIGRATION-001).
         """
         require(isinstance(reason, str) and reason.strip(), "Enqueue reason required")
         now = datetime.now(timezone.utc)
-        with self.store.transaction() as tx:
+        with (nullcontext(transaction) if transaction is not None else self.store.transaction()) as tx:
             existing = tx.get("release_queue", release_id)
             if existing:
                 return existing

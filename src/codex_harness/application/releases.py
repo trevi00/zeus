@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from contextlib import nullcontext
 from datetime import datetime, timezone
 from uuid import uuid4
@@ -111,6 +112,41 @@ class Releases:
             tx.put("releases", release_id, record)
             return record
 
+    def _check_rejected_source(self, tx, source: dict, expected_revision: str,
+                               expected_policy_hash: str, now: datetime) -> tuple:
+        """The guards every successor of a check-rejected release shares (INV-RELEASE-REVERIFY-001).
+
+        Returns the source's (candidate, reviews, checks); refuses unless the source is a complete,
+        honestly check-rejected, fully reviewed release with no running controller or promotion effect.
+        """
+        release_id = source["id"]
+        require(source["status"] == "rejected", "Release is not check-rejected")
+        candidate, reviews, checks = source["candidate"], source["reviews"], source["checks"]
+        require(candidate["revision"] == expected_revision
+                and source["policy_hash"] == expected_policy_hash, "Stale candidate or evaluator")
+        require(source["policy_hash"] == digest(source["policy"]), "Evaluator changed")
+        ticket_binding(tx, candidate)
+        author = self.org.actor(candidate["author"], "worker")
+        require(all(r["accepted"] is True for r in reviews), "Release review rejected")
+        accepted = {r["actor"] for r in reviews
+                    if r["revision"] == candidate["revision"] and r.get("evidence")}
+        require(len(reviews) == len(accepted) and {author.parent, "conductor"} <= accepted,
+                "Release reviews incomplete")
+        require(set(checks) == set(source["policy"]["checks"])
+                and all(isinstance(c, dict) and type(c.get("passed")) is bool and c.get("evidence")
+                        for c in checks.values()), "Rejection check evidence incomplete")
+        require(any(c["passed"] is False and not c.get("skipped") for c in checks.values()),
+                "No executed failed check")
+        lock = tx.get("deployment_locks", "controller") or {}
+        require(not lock.get("lease_until") or datetime.fromisoformat(lock["lease_until"]) <= now,
+                "Release controller still running")
+        require((tx.get("release_queue", release_id) or {}).get("status") != "running",
+                "Release controller still running")
+        require(tx.get("promotion_intents", release_id) is None
+                and (tx.get("deployment", "active") or {}).get("release_id") != release_id,
+                "Promotion effects exist for the release")
+        return candidate, reviews, checks
+
     def request_reverification(self, release_id: str, actor: str, expected_revision: str,
                                expected_policy_hash: str, reason: str, evidence: str, *,
                                now: datetime | None = None) -> dict:
@@ -138,31 +174,8 @@ class Releases:
                         and {k: receipt.get(k) for k in request} == request,
                         "Conflicting reverification request")
                 return existing
-            require(source["status"] == "rejected", "Release is not check-rejected")
-            candidate, reviews, checks = source["candidate"], source["reviews"], source["checks"]
-            require(candidate["revision"] == expected_revision
-                    and source["policy_hash"] == expected_policy_hash, "Stale candidate or evaluator")
-            require(source["policy_hash"] == digest(source["policy"]), "Evaluator changed")
-            ticket_binding(tx, candidate)
-            author = self.org.actor(candidate["author"], "worker")
-            require(all(r["accepted"] is True for r in reviews), "Release review rejected")
-            accepted = {r["actor"] for r in reviews
-                        if r["revision"] == candidate["revision"] and r.get("evidence")}
-            require(len(reviews) == len(accepted) and {author.parent, "conductor"} <= accepted,
-                    "Release reviews incomplete")
-            require(set(checks) == set(source["policy"]["checks"])
-                    and all(isinstance(c, dict) and type(c.get("passed")) is bool and c.get("evidence")
-                            for c in checks.values()), "Rejection check evidence incomplete")
-            require(any(c["passed"] is False and not c.get("skipped") for c in checks.values()),
-                    "No executed failed check")
-            lock = tx.get("deployment_locks", "controller") or {}
-            require(not lock.get("lease_until") or datetime.fromisoformat(lock["lease_until"]) <= now,
-                    "Release controller still running")
-            require((tx.get("release_queue", release_id) or {}).get("status") != "running",
-                    "Release controller still running")
-            require(tx.get("promotion_intents", release_id) is None
-                    and (tx.get("deployment", "active") or {}).get("release_id") != release_id,
-                    "Promotion effects exist for the release")
+            candidate, reviews, checks = self._check_rejected_source(
+                tx, source, expected_revision, expected_policy_hash, now)
             at = now.isoformat()
             receipt = {**request, "source_checks_digest": digest(checks),
                        "source_digest": digest(source), "at": at}
@@ -175,6 +188,60 @@ class Releases:
             tx.put("events", "release.reverification_requested:" + successor_id,
                    {"type": "release.reverification_requested", "at": at, "release_id": successor_id,
                     "reverify_of": release_id, "actor": actor})
+            return record
+
+    def request_evaluator_migration(self, release_id: str, actor: str, *, expected_revision: str,
+                                    expected_policy_hash: str, approval: dict,
+                                    now: datetime | None = None, transaction=None) -> dict:
+        """INV-RELEASE-EVALUATOR-MIGRATION-001: one owner-approved evaluator successor per source.
+
+        The SAME reviewed candidate of a check-rejected release is evaluated again with incumbent
+        tests taken from an owner-approved, tests-only evaluator commit E instead of candidate.base.
+        The source stays byte for byte unchanged; the successor (keyed by the source alone, so a
+        second E is a conflict, never a second successor) inherits the exact reviews and the check
+        set, starts with EMPTY checks and changes only `policy.revision`, hence the policy hash.
+        The pin is recorded, never trusted: the runner re-derives tree, paths and patch from git.
+        """
+        _require_evaluator_approval(approval, release_id)
+        self.org.actor(actor, "conductor")
+        approver = self.org.actor(approval["approved_by"], "conductor")
+        now = now or datetime.now(timezone.utc)
+        successor_id = digest({"evaluator_migration_of": release_id})
+        request = {**approval, "actor": actor, "source_policy_hash": expected_policy_hash}
+        with (nullcontext(transaction) if transaction is not None else self.store.transaction()) as tx:
+            source = tx.get("releases", release_id)
+            require(source is not None, "Release not found")
+            existing = tx.get("releases", successor_id)
+            if existing:
+                # A replay returns the one successor without any write; anything else conflicts.
+                receipt = existing.get("evaluator_migration") or {}
+                require(existing.get("reverify_of") == release_id
+                        and existing["candidate"]["revision"] == expected_revision
+                        and {k: receipt.get(k) for k in request} == request,
+                        "Conflicting evaluator migration")
+                return existing
+            require(tx.get("releases", digest({"reverify_of": release_id})) is None,
+                    "Release already has a reverification successor")
+            candidate, reviews, checks = self._check_rejected_source(
+                tx, source, expected_revision, expected_policy_hash, now)
+            require(approver.id != candidate["author"], "Evaluator approver is the candidate author")
+            require(approval["base"] == candidate["base"], "Evaluator approval base differs from candidate")
+            require(approval["evaluator_revision"] not in {candidate["revision"], candidate["base"]},
+                    "Evaluator revision must differ from candidate and base")
+            at = now.isoformat()
+            policy = {**source["policy"], "revision": approval["evaluator_revision"]}
+            receipt = {**request, "source_checks_digest": digest(checks),
+                       "source_digest": digest(source), "at": at}
+            record = {"id": successor_id, "candidate": candidate, "policy": policy,
+                      "policy_hash": digest(policy), "status": "reviewed", "reviews": reviews,
+                      "checks": {}, "created_at": at, "reverify_of": release_id,
+                      "inherited_reviews": {"release_id": release_id, "digest": digest(reviews)},
+                      "evaluator_migration": receipt}
+            tx.put("releases", successor_id, record)
+            tx.put("events", "release.evaluator_migration_requested:" + successor_id,
+                   {"type": "release.evaluator_migration_requested", "at": at,
+                    "release_id": successor_id, "reverify_of": release_id, "actor": actor,
+                    "evaluator_revision": approval["evaluator_revision"]})
             return record
 
     def promote(self, release_id: str, expected_active: str | None, *, transaction=None) -> dict:
@@ -241,3 +308,27 @@ class Releases:
             tx.put("events", str(uuid4()), {"type": "release.rolled_back", "at": utcnow(),
                                            "release_id": expected_active, "reason": reason})
             return previous
+
+
+EVALUATOR_APPROVAL_KEYS = ("source_release_id", "base", "evaluator_revision", "evaluator_tree",
+                           "patch_sha256", "paths", "evidence", "approved_by")
+_HEX40, _HEX64 = re.compile(r"[0-9a-f]{40}"), re.compile(r"[0-9a-f]{64}")
+
+
+def _require_evaluator_approval(approval, release_id: str) -> None:
+    """The exact owner-authored approval shape of INV-RELEASE-EVALUATOR-MIGRATION-001."""
+    require(isinstance(approval, dict) and set(approval) == set(EVALUATOR_APPROVAL_KEYS)
+            and all(type(approval[k]) is str for k in EVALUATOR_APPROVAL_KEYS if k != "paths"),
+            "Evaluator migration approval incomplete")
+    require(bool(_HEX40.fullmatch(approval["evaluator_revision"]))
+            and bool(_HEX40.fullmatch(approval["evaluator_tree"]))
+            and bool(_HEX64.fullmatch(approval["patch_sha256"]))
+            and approval["evidence"].startswith("sha256:")
+            and bool(_HEX64.fullmatch(approval["evidence"][7:])), "Evaluator migration pin malformed")
+    paths = approval["paths"]
+    require(type(paths) is list and bool(paths) and all(type(p) is str for p in paths)
+            and paths == sorted(set(paths)), "Evaluator paths must be a sorted non-empty list")
+    require(all(p.startswith("tests/") and ".." not in p.split("/") for p in paths),
+            "Evaluator migration may change only tests/")
+    require(approval["source_release_id"] == release_id, "Evaluator approval names another release")
+    require(bool(approval["base"]) and bool(approval["approved_by"]), "Evaluator migration approval incomplete")

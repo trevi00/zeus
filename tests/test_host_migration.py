@@ -757,8 +757,25 @@ def test_cli_validate_reports_digest_and_never_echoes_a_secret(tmp_path, capsys)
     assert "hunter2" not in output and json.loads(output)["refused"] == "secret_value"
 
 
-def test_canonical_tool_is_resolved_from_this_checkout():
-    assert adapter.canonical_tool() == ROOT / "scripts" / "aibox_data"
+def _package_checkout() -> Path:
+    """The checkout of the imported package under test (not of this test file).
+
+    A release evaluation runs the incumbent's tests against the candidate's package, so the test
+    file's checkout and the package's checkout legitimately differ; the canonical tool must follow
+    the package that runs it, never a foreign checkout, PATH or the working directory.
+    """
+    import codex_harness
+
+    checkout = Path(codex_harness.__file__).resolve().parents[2]
+    assert Path(adapter.__file__).resolve().is_relative_to(checkout / "src")
+    return checkout
+
+
+def test_canonical_tool_is_resolved_from_this_checkout(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)  # resolution must not depend on the working directory
+    tool = adapter.canonical_tool()
+    assert tool == _package_checkout() / "scripts" / "aibox_data"
+    assert (tool / "__main__.py").is_file()
     assert sys.executable
 
 
@@ -911,7 +928,8 @@ def test_source_dump_argv_keeps_the_container_path_and_parses_crlf_output_identi
     assert all(arg == "/dump/zeus.dump" for call in lf.calls for arg in call if arg.endswith(".dump"))
 
 
-def test_canonical_tool_runs_under_this_interpreter_with_its_checkout_path():
+def test_canonical_tool_runs_under_this_interpreter_with_its_checkout_path(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
     seen = []
 
     def runner(argv, **kwargs):
@@ -919,6 +937,6 @@ def test_canonical_tool_runs_under_this_interpreter_with_its_checkout_path():
         return subprocess.CompletedProcess(argv, 0, json.dumps({"valid": True}).encode(), b"")
 
     outcome = adapter.run_canonical(["pel-owners", "--inventory", "C:\\x\\i.json", "--owners", "o.json"], runner=runner)
-    assert seen[0][:2] == [sys.executable, str(ROOT / "scripts" / "aibox_data")]
+    assert seen[0][:2] == [sys.executable, str(_package_checkout() / "scripts" / "aibox_data")]
     assert seen[0][2:] == ["pel-owners", "--inventory", "C:\\x\\i.json", "--owners", "o.json"]
     assert outcome["receipt"]["ok"] is True
