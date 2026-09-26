@@ -141,7 +141,106 @@ def test_the_assess_child_exits_zero_only_when_it_owned_the_claim_and_settled_ev
     store = MemoryStore()
     service = SimpleNamespace(store=store)
     result = adapter.assess(service, DECISION, "c", "labelled-fixture-assessor",
-                            executor=DecidingExecutor(store, claims), budget=LedgerFixture(settle_fails))
+                            executor=DecidingExecutor(store, claims), budget=LedgerFixture(settle_fails),
+                            ceilings={"per_host": 4, "total": 8})
     # A succeeded decision alone is not the launch's outcome (R1): ownership and settlement are.
     assert result["status"] == "succeeded" and result["exit_code"] == exit_code
     assert result["calls"]["reserved"] == 1 and result["calls"]["settled"] == (0 if settle_fails else 1)
+
+
+# ---- F-C2: the assessment is accounted under the Fleet's effective budget (review of PR #209) -------------
+class CountingExecutor(DecidingExecutor):
+    """LABELLED executor: counts provider entries (decide calls); no model is called."""
+
+    def __init__(self, store):
+        super().__init__(store)
+        self.calls = 0
+
+    def decide_one(self, agent, expected=None):
+        self.calls += 1
+        return super().decide_one(agent, expected)
+
+
+def fleet_store(tmp_path, budget):
+    from test_fleet import config as fleet_config
+
+    from codex_harness.application.fleet import Fleet
+
+    store = MemoryStore()
+    Fleet(store).register(fleet_config(tmp_path, budget=budget))
+    return store
+
+
+def ledger_with_history(root, n=12):
+    """A REAL CallBudget ledger in a temporary directory holding `n` settled synthetic records."""
+    from codex_harness.adapters.call_budget import CallBudget
+
+    ledger = CallBudget(root)
+    for index in range(n):
+        slot = ledger.reserve(per_host=100, total=100, purpose="synthetic-history-%d" % index,
+                              provider="fixture", model="fixture")
+        ledger.settle(slot["id"], outcome="succeeded")
+    return ledger
+
+
+def test_subscription_accounting_counts_and_settles_the_assessment_after_historical_calls(tmp_path):
+    from codex_harness.adapters.call_budget import CallBudget
+
+    store = fleet_store(tmp_path, {"per_host": 4, "total": 8, "mode": "subscription"})
+    ledger = ledger_with_history(tmp_path / "ledger")
+    assert adapter.assessment_ceilings(store)["mode"] == "subscription"
+    executor = CountingExecutor(store)
+    result = adapter.assess(SimpleNamespace(store=store), DECISION, "c", "labelled-fixture-assessor",
+                            executor=executor, budget=CallBudget(tmp_path / "ledger"))
+    assert result["exit_code"] == 0 and executor.calls == 1
+    assert result["calls"] == {"reserved": 1, "settled": 1, "accounting_mode": "subscription"}
+    slots = ledger.slots()
+    assert len(slots) == 13 and ledger.counts()["all_hosts"] == 13
+    [mine] = [row for row in slots if row["purpose"].startswith("owner-assessment:")]
+    assert mine["status"] == "used" and mine["accounting_mode"] == "subscription"
+
+
+def test_finite_accounting_keeps_the_fleet_ceiling_and_refuses_before_any_provider_entry(tmp_path):
+    from codex_harness.adapters.call_budget import CallBudget
+    from codex_harness.application.operation import BudgetRefused
+
+    store = fleet_store(tmp_path, {"per_host": 12, "total": 12})
+    ledger_with_history(tmp_path / "ledger")
+    executor = CountingExecutor(store)
+    with pytest.raises(BudgetRefused, match="budget_exhausted"):
+        adapter.assess(SimpleNamespace(store=store), DECISION, "c", "labelled-fixture-assessor",
+                       executor=executor, budget=CallBudget(tmp_path / "ledger"))
+    assert executor.calls == 0 and len(CallBudget(tmp_path / "ledger").slots()) == 12
+    # Below the finite ceiling the same call is counted and settled.
+    roomy = fleet_store(tmp_path / "roomy", {"per_host": 13, "total": 13})
+    result = adapter.assess(SimpleNamespace(store=roomy), DECISION, "c", "labelled-fixture-assessor",
+                            executor=CountingExecutor(roomy), budget=CallBudget(tmp_path / "ledger"))
+    assert result["exit_code"] == 0 and result["calls"]["accounting_mode"] == "finite"
+
+
+def test_an_unreadable_ledger_under_subscription_refuses_before_any_provider_entry(tmp_path):
+    from codex_harness.adapters.call_budget import CallBudget
+    from codex_harness.application.operation import BudgetRefused
+
+    store = fleet_store(tmp_path, {"per_host": 4, "total": 8, "mode": "subscription"})
+    ledger_with_history(tmp_path / "ledger", 2)
+    (tmp_path / "ledger" / "slots" / "damaged.json").write_text("{not json", "utf-8")   # LABELLED damage
+    executor = CountingExecutor(store)
+    with pytest.raises(BudgetRefused, match="budget_exhausted"):
+        adapter.assess(SimpleNamespace(store=store), DECISION, "c", "labelled-fixture-assessor",
+                       executor=executor, budget=CallBudget(tmp_path / "ledger"))
+    assert executor.calls == 0
+
+
+def test_a_missing_or_unreadable_fleet_budget_source_is_a_named_refusal_not_a_default(tmp_path):
+    from codex_harness.adapters.call_budget import CallBudget
+
+    for store, code in ((MemoryStore(), "assessment_budget_unregistered"),
+                        (SimpleNamespace(transaction=lambda: (_ for _ in ()).throw(OSError("store down"))),
+                         "assessment_budget_unreadable")):
+        executor = CountingExecutor(MemoryStore())
+        with pytest.raises(do.OwnerActionRefused, match=code):
+            adapter.assess(SimpleNamespace(store=store), DECISION, "c", "labelled-fixture-assessor",
+                           executor=executor, budget=CallBudget(tmp_path / "ledger"))
+        assert executor.calls == 0
+    assert not (tmp_path / "ledger" / "slots").exists(), "no reservation was taken"

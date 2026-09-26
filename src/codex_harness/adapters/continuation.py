@@ -32,6 +32,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
 from pathlib import Path
 
 from codex_harness.adapters.artifacts import FileArtifacts
@@ -357,9 +358,78 @@ class ContinuationPass:
         return self._owner().unresolved(self.policy_id, self.processes.active())
 
 
-def continuation_ticker(store, config: dict, host: dict, policy_id: str, observer=None) -> ContinuationPass:
-    """The optional `FleetRunner(..., continuation=...)` pass; disabled by default."""
-    return ContinuationPass(store, config, host, policy_id, observer=observer)
+class ContinuationPasses:
+    """Several registered policies ticked in turn by the ONE Fleet runner (aibox whole-goal adjudication C2:
+    disjoint families, e.g. `aibox-qualification-001` and `aibox-qualification-i1`, on one harness lane).
+
+    One `ContinuationPass` per policy, all sharing ONE `ConductorProcesses` (so the runner's owned,
+    stop and drain accounting sees every launch once; capacity stays the Fleet's shared unit reservation)
+    and one lane-store cache. A policy whose tick raises is that policy's `unavailable` row and never
+    stops the others; the combined outcome is `refused`/`disabled` only when EVERY policy says so, and
+    the pass raises (the runner's own `unavailable`) only when every policy raised."""
+
+    def __init__(self, store, config: dict, host: dict, policy_ids, *, observer=None, processes=None, lanes=None,
+                 runtime=None, source_factory=GitSource, evidence=None):
+        self.policy_ids = list(policy_ids)
+        self.processes = processes if processes is not None else ConductorProcesses(config, host)
+        lanes = lanes or lane_stores(config, host)
+        evidence = evidence or research_evidence()
+        self.passes = [ContinuationPass(store, config, host, policy_id, observer=observer, processes=self.processes,
+                                        lanes=lanes, runtime=runtime, source_factory=source_factory,
+                                        evidence=evidence) for policy_id in self.policy_ids]
+
+    def _each(self, call) -> dict:
+        rows, errors = [], []
+        for policy_id, one in zip(self.policy_ids, self.passes):
+            try:
+                row = call(one)
+            except Exception as exc:
+                errors.append(exc)
+                row = {"policy_id": policy_id, "outcome": "unavailable", "error_type": type(exc).__name__}
+            rows.append(row if isinstance(row, dict) else {"policy_id": policy_id})
+        if errors and len(errors) == len(rows):
+            raise errors[0]
+        outcomes = {row.get("outcome") for row in rows}
+        if outcomes <= {"refused"} or outcomes <= {"disabled"}:
+            outcome = rows[0].get("outcome")
+            reason = next((row.get("reason_code") for row in rows if row.get("reason_code")), None)
+        else:
+            outcome = next(row.get("outcome") for row in rows if row.get("outcome") not in {"refused", "disabled",
+                                                                                             "unavailable"}) \
+                if outcomes - {"refused", "disabled", "unavailable"} else "partial"
+            reason = None
+        return {"schema": "urn:zeus:continuation-ticks:1", "outcome": outcome, "reason_code": reason,
+                "actions": [action for row in rows for action in row.get("actions") or []], "policies": rows}
+
+    def __call__(self) -> dict:
+        return self._each(lambda one: one())
+
+    def drain(self) -> dict:
+        return self._each(lambda one: one.drain())
+
+    def request_stop(self) -> dict:
+        return self.processes.request_stop()
+
+    def owned(self) -> list:
+        return self.processes.active()
+
+    def unresolved(self) -> list:
+        found = []
+        for one in self.passes:
+            found += [launch for launch in one.unresolved() if launch not in found]
+        return found
+
+
+def continuation_ticker(store, config: dict, host: dict, policy_id, observer=None):
+    """The optional `FleetRunner(..., continuation=...)` pass; disabled by default. One policy id (or a
+    one-element list) is exactly the single `ContinuationPass` it always was; several share one pass."""
+    ids = [policy_id] if isinstance(policy_id, str) else list(policy_id)
+    if len(ids) == 1:
+        return ContinuationPass(store, config, host, ids[0], observer=observer)
+    return ContinuationPasses(store, config, host, ids, observer=observer)
+
+
+POLICY_ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$")
 
 
 def configured_policy(settings: dict) -> str | None:
@@ -367,7 +437,24 @@ def configured_policy(settings: dict) -> str | None:
     return value.strip() if type(value) is str and value.strip() else None
 
 
-__all__ = ["ConductorProcesses", "ContinuationPass", "POLICY_SETTING", "ResearchEvidence", "accept_research",
+def configured_policies(settings: dict) -> list | None:
+    """The host setting as the policy list the ONE Fleet runner continues: absent or blank is None (no
+    continuation, exactly as before); a single value is `[that value]` unchanged; a comma-separated list
+    must name each registered-policy token once, and anything else refuses before any pass is built."""
+    value = configured_policy(settings)
+    if value is None:
+        return None
+    if "," not in value:
+        return [value]
+    ids = [part.strip() for part in value.split(",")]
+    if not all(POLICY_ID.fullmatch(part) for part in ids):
+        raise ContinuationRefused("continuation_policy_list_invalid", "operator", POLICY_SETTING)
+    if len(set(ids)) != len(ids):
+        raise ContinuationRefused("continuation_policy_list_duplicate", "operator", POLICY_SETTING)
+    return ids
+
+
+__all__ = ["ConductorProcesses", "ContinuationPass", "ContinuationPasses", "POLICY_SETTING", "configured_policies", "ResearchEvidence", "accept_research",
            "archive_identity", "configured_policy", "continuation_ticker", "coordinator", "grant_capacity",
            "lane_runtime", "lane_stores", "load_policy", "read_grant", "read_receipt","reconcile_ownership", "register_policy", "research_evidence",
            "supplement_research", "tick_policy"]

@@ -158,13 +158,14 @@ def run(service, args, *, control=None) -> dict:
                                       observer=build_observer(service.store, "fleet-backlog"))
     # Opt-in only (INV-CONTINUATION-001): without the host policy setting no continuation pass,
     # lane connection, conductor process or observer is built, and the runner is unchanged.
-    from codex_harness.adapters.continuation import configured_policy, continuation_ticker
-    policy_id = configured_policy(host)
+    # A comma-separated setting names several disjoint policies; the ONE runner ticks them in turn.
+    from codex_harness.adapters.continuation import configured_policies, continuation_ticker
+    policy_ids = configured_policies(host)
     continuation_tick = None
-    if policy_id is not None:
+    if policy_ids is not None:
         from codex_harness.bootstrap import build_observer
 
-        continuation_tick = continuation_ticker(service.store, config, host, policy_id,
+        continuation_tick = continuation_ticker(service.store, config, host, policy_ids,
                                                 observer=build_observer(service.store, "fleet-continuation"))
     # The bounded portfolio pass is wired here, in the adapter: the runner keeps no portfolio
     # dependency and a reconciliation outage never blocks admission (operating-portfolio-001).

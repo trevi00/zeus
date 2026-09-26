@@ -428,3 +428,97 @@ def test_capacity_grant_command_reserves_one_repair_that_the_production_tick_adm
     with pytest.raises(dc.ContinuationRefused, match="policy_unavailable"):
         continuation_cli.execute(service, SimpleNamespace(continuation_command="capacity-grant", file=other))
     assert len(grants(world)) == 1
+
+
+# ---- F-C1 (review of PR #209): several disjoint policies continued by the ONE Fleet runner ---------------
+def two_policies(world):
+    """`policy-1` (docs/a.md) and `policy-i1` (docs/b.md), both committed in the lane repository at a real
+    revision and registered from their Git pins through the production adapter."""
+    world.document["allowed_paths"] = ["docs/a.md"]
+    root, _ = policy_repository(world)
+    (root / "ops" / "continuation-i1.json").write_text(json.dumps(
+        {**world.document, "id": "policy-i1", "allowed_paths": ["docs/b.md"]}), encoding="utf-8")
+    git(root, "add", ".")
+    git(root, "commit", "-m", "second owner policy")
+    revision = git(root, "rev-parse", "HEAD")
+    config = world.fleet.registered()["config"]
+    for path in ("ops/continuation.json", "ops/continuation-i1.json"):
+        adapter.register_policy(world.control, config, "a", revision, path)
+    return config
+
+
+def test_the_policy_setting_is_one_value_unchanged_or_a_strict_list():
+    setting = adapter.POLICY_SETTING
+    assert adapter.configured_policies({}) is None and adapter.configured_policies({setting: "  "}) is None
+    assert adapter.configured_policies({setting: "policy-1"}) == ["policy-1"]
+    assert adapter.configured_policies({setting: " policy-1 , policy-i1 "}) == ["policy-1", "policy-i1"]
+    for value, code in (("a,,b", "continuation_policy_list_invalid"), ("a,../x", "continuation_policy_list_invalid"),
+                        ("a,", "continuation_policy_list_invalid"), ("a,b,a", "continuation_policy_list_duplicate")):
+        with pytest.raises(dc.ContinuationRefused, match=code):
+            adapter.configured_policies({setting: value})
+
+
+def test_the_configured_list_builds_one_pass_over_one_process_port_and_a_single_value_is_unchanged(tmp_path):
+    world = World(tmp_path)
+    config = world.fleet.registered()["config"]
+    single = adapter.continuation_ticker(world.control, config, HOST, ["policy-1"])
+    assert type(single) is adapter.ContinuationPass and single.policy_id == "policy-1"
+    assert type(adapter.continuation_ticker(world.control, config, HOST, "policy-1")) is adapter.ContinuationPass
+    ids = adapter.configured_policies({adapter.POLICY_SETTING: "policy-1,policy-i1"})
+    many = adapter.continuation_ticker(world.control, config, HOST, ids)
+    assert type(many) is adapter.ContinuationPasses and many.policy_ids == ["policy-1", "policy-i1"]
+    assert all(one.processes is many.processes for one in many.passes), "one conductor port, one accounting"
+
+
+def test_one_fleet_runner_continues_both_disjoint_families_to_their_delivery_intents(tmp_path):
+    from test_continuation import LaneLauncher
+
+    from codex_harness.application.fleet import FleetRunner
+
+    world = World(tmp_path)
+    config = two_policies(world)
+    ids = adapter.configured_policies({adapter.POLICY_SETTING: "policy-1,policy-i1"})
+    passes = adapter.ContinuationPasses(world.control, config, HOST, ids, processes=world.conductor,
+                                        lanes=world.lanes, runtime=world.runtime)
+    world.enqueue("op-b2", "docs/a.md")
+    world.enqueue("op-i1", "docs/b.md")
+    runner = FleetRunner(world.fleet, LaneLauncher(world, [True, True]), sleep=lambda _: None, continuation=passes)
+    for _ in range(4):
+        summary = runner.run(once=True)
+    assert summary["continuation"]["state"] == "ok"
+    intents = world.intents()
+    delivered = {(row["policy_id"], row["origin_job"]) for row in intents.values() if row["route"] == dc.DELIVERY}
+    assert delivered == {("policy-1", "op-b2"), ("policy-i1", "op-i1")}
+    assert sorted(world.conductor.calls) == ["op-b2", "op-i1"]
+    assert passes.owned() == [] and passes.unresolved() == []
+
+
+def test_one_policys_refusal_or_outage_never_starves_the_other(tmp_path):
+    world = World(tmp_path)
+    config = two_policies(world)
+    passes = adapter.ContinuationPasses(world.control, config, HOST, ["policy-1", "policy-i1"],
+                                        processes=world.conductor, lanes=world.lanes, runtime=world.runtime)
+    with world.control.transaction() as tx:   # LABELLED: policy-1's pinned commit disappeared
+        row = tx.get("continuation_policies", "policy-1")
+        tx.put("continuation_policies", "policy-1", {**row, "pin": {**row["pin"], "revision": "0" * 40}})
+    world.enqueue("op-i1", "docs/b.md")
+    result = passes()
+    rows = {row["policy_id"]: row for row in result["policies"]}
+    assert rows["policy-1"]["outcome"] == "refused" and rows["policy-1"]["reason_code"] == "policy_unavailable"
+    assert {"subject": "op-i1", "effect": "session_bound"} in rows["policy-i1"]["actions"]
+    assert result["outcome"] != "refused" and result["actions"] == rows["policy-i1"]["actions"]
+
+    class Broken:
+        def __call__(self):
+            raise ConnectionError("lane store outage for this policy (labelled injected fault)")
+
+        def drain(self):
+            raise ConnectionError("labelled")
+    passes.passes[0] = Broken()
+    world.enqueue("op-i2", "docs/b.md")
+    result = passes()
+    assert result["policies"][0] == {"policy_id": "policy-1", "outcome": "unavailable", "error_type": "ConnectionError"}
+    assert result["policies"][1]["policy_id"] == "policy-i1" and result["outcome"] != "refused"
+    passes.passes[1] = Broken()
+    with pytest.raises(ConnectionError):   # every policy failed: the runner's own `unavailable`
+        passes()
