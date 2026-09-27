@@ -1,5 +1,5 @@
 import type { ReactNode } from "react"
-import { Activity, ChevronDown, Layers, Monitor, Users } from "lucide-react"
+import { Activity, AlertTriangle, ChevronDown, Layers, Monitor, Users } from "lucide-react"
 
 import { KeyValue, StatCard } from "@/components/stat-card"
 import { StatusBadge } from "@/components/status-badge"
@@ -39,7 +39,7 @@ function SessionDetails({ row, screenNotice }: { row: SessionRow; screenNotice: 
           ["결정 판정", row.verdict ? <ModelBadge value={row.verdict} /> : missing],
           ["단계", row.phase ?? missing],
           ["세대 / 시도", `${number(row.lineage.generation)} / ${number(row.lineage.attempt)}`],
-          ["경과", formatSeconds(row.elapsed.ms)],
+          ["경과", row.elapsed.text],
           ["시작 시각", time(row.elapsed.startedAt)],
           ["종료 시각", time(row.elapsed.endedAt)],
           ["소유 리스", <StatusBadge tone={row.liveness.tone} title="소유 리스는 진행 증거가 아님">{row.liveness.label}</StatusBadge>],
@@ -54,7 +54,7 @@ function SessionDetails({ row, screenNotice }: { row: SessionRow; screenNotice: 
           ["마지막 완료", row.activity.lastCompleted ?? missing],
           ["이벤트 시각", time(row.activity.occurredAt)],
           ["수집 시각", time(row.activity.collectedAt)],
-          ["기록 경과", row.activity.recorded ? formatSeconds(row.activity.ageMs) : "진행 기록 없음"],
+          ["기록 경과", row.activity.ageText],
           ["형식 오류 수", number(row.activity.malformed)],
         ]} />
       </DetailGroup>
@@ -66,7 +66,7 @@ function SessionDetails({ row, screenNotice }: { row: SessionRow; screenNotice: 
           ["사유 코드", operation.reasonCode ?? missing],
           ["리드 판정", <ModelBadge value={operation.lead} />],
           ["호출", operation.calls],
-          ["handoff", String(operation.handoff)],
+          ["인계", operation.handoffText],
         ]} /> : <p className="text-sm text-muted-foreground">{missing}</p>}
       </DetailGroup>
       <DetailGroup title="호출">
@@ -78,13 +78,13 @@ function SessionDetails({ row, screenNotice }: { row: SessionRow; screenNotice: 
             ["모델 출처", invocation.modelSource],
             ["응답 모델", invocation.reportedModel],
             ["사용량", invocation.usage],
-            ["예약 상태", invocation.status ?? missing],
+            ["예약 상태", <ModelBadge value={invocation.statusLabel} />],
             ["단계", invocation.stage ?? missing],
             ["호출 수", number(invocation.count)],
-            ["호출 경과", invocation.elapsedSeconds === null ? "알 수 없음" : `${formatNumber(invocation.elapsedSeconds)}초`],
+            ["호출 경과", invocation.elapsedText],
           ]} />
           <div className="mt-3 flex min-w-0 flex-wrap gap-1.5" aria-label="호출 상태별 수">
-            {invocation.byStatus.map((entry) => <StatusBadge key={entry.status}>{entry.status} · {number(entry.count)}</StatusBadge>)}
+            {invocation.byStatusLabels.map((entry) => <StatusBadge key={entry.status}>{entry.label} · {number(entry.count)}</StatusBadge>)}
           </div>
         </> : <p className="text-sm text-muted-foreground">{missing}</p>}
       </DetailGroup>
@@ -96,7 +96,7 @@ function SessionDetails({ row, screenNotice }: { row: SessionRow; screenNotice: 
             ["소유", workerSession.owner],
             ["다음 소유자", workerSession.nextOwner],
             ["다음 행동", workerSession.nextAction ?? missing],
-            ["blocked", String(workerSession.blocked)],
+            ["차단", workerSession.blockedText],
           ]} />
           <h5 className="mb-2 mt-4 text-xs font-medium text-muted-foreground">검토 기록</h5>
           {workerSession.reviews.length ? <ul className="space-y-2">
@@ -132,8 +132,8 @@ function SessionItem({ row, screenNotice }: { row: SessionRow; screenNotice: str
           </div>
           <div className="min-w-0 space-y-2">
             <StatusBadge tone={row.liveness.tone} title="소유 리스는 진행 증거가 아님">{row.liveness.label}</StatusBadge>
-            <p className="text-xs"><span className="text-muted-foreground">마지막 활동 · </span>{row.activity.recorded ? formatSeconds(row.activity.ageMs) : "진행 기록 없음"}</p>
-            <p className="text-xs"><span className="text-muted-foreground">경과 · </span>{formatSeconds(row.elapsed.ms)}</p>
+            <p className="text-xs"><span className="text-muted-foreground">마지막 활동 · </span>{row.activity.ageText}</p>
+            <p className="text-xs"><span className="text-muted-foreground">경과 · </span>{row.elapsed.text}</p>
           </div>
           <div className="min-w-0 space-y-2">
             {row.operation ? <ModelBadge value={row.operation.lead} /> : <span className="text-xs text-muted-foreground">리드 판정 · {missing}</span>}
@@ -158,7 +158,7 @@ function LaneSection({ lane, screenNotice }: { lane: LaneView; screenNotice: str
               <h3 className="font-mono text-base font-semibold">{lane.id}</h3>
             </div>
             <div className="min-w-0 space-y-1 text-xs">
-              <StatusBadge>{lane.status}</StatusBadge>
+              <ModelBadge value={lane.statusLabel} />
               <p className="text-muted-foreground">관측 {time(lane.observedAt)}</p>
             </div>
           </div>
@@ -186,7 +186,7 @@ export function SessionsPanel({ model }: { model: SessionsModel }) {
           <p className="mt-1 text-sm text-muted-foreground">레인별 실행과 작업 세션의 읽기 전용 관측</p>
         </div>
         <div className="min-w-0 space-y-1 text-xs">
-          <StatusBadge title={model.freshness.reason}>{model.freshness.state}</StatusBadge>
+          <ModelBadge value={model.freshnessLabel} />
           <p className="text-muted-foreground">관측 {time(model.freshness.observed_at)} · 경과 {formatSeconds(model.freshness.age)}</p>
           <p className="text-muted-foreground">{model.freshness.reason}</p>
         </div>
@@ -199,9 +199,15 @@ export function SessionsPanel({ model }: { model: SessionsModel }) {
       <Alert>
         <AlertTitle>관측 범위 밖</AlertTitle>
         <AlertDescription className="min-w-0 [overflow-wrap:anywhere]">
-          {model.coverage?.uninstrumented.length ? model.coverage.uninstrumented.map((line, index) => <p key={index}>{line}</p>) : <p>{missing}</p>}
+          <p>{model.coverageNotice}</p>
+          {model.coverage?.uninstrumented.map((line, index) => <p key={index} className="text-xs text-muted-foreground">{line}</p>)}
         </AlertDescription>
       </Alert>
+      {model.staleWarning !== null ? <Alert className="border-warning/40 bg-warning/10">
+        <AlertTriangle aria-hidden="true" />
+        <AlertTitle>관측 주의</AlertTitle>
+        <AlertDescription className="[overflow-wrap:anywhere]">{model.staleWarning}</AlertDescription>
+      </Alert> : null}
       {model.state !== "ready" ? <Alert>
         <AlertTitle>{model.state === "unregistered" ? "등록된 레인 없음" : "확인 불가"}</AlertTitle>
         <AlertDescription className="[overflow-wrap:anywhere]">{model.reason}</AlertDescription>
