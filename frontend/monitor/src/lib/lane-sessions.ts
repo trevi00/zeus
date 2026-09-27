@@ -14,8 +14,8 @@
 // - `coverage.uninstrumented` is shown verbatim: sessions outside Zeus task ownership are not observed.
 // Nothing here reads the network or writes anything; `now` is passed in so a render is reproducible.
 
-import { formatNumber, laneSessionsFreshness, parseTime, type Freshness, type Snapshot } from "./snapshot"
-import type { Tone } from "./tones"
+import { STATE_LABELS, formatNumber, laneSessionsFreshness, parseTime, type Freshness, type Snapshot } from "./snapshot"
+import { freshnessTone, type Tone } from "./tones"
 
 export const LANE_SESSIONS_SCHEMA = "urn:zeus:lane-sessions:1"
 
@@ -328,10 +328,13 @@ export type SessionRow = {
     sequence: number | null
     lastCompleted: string | null
     malformed: number
+    /** `ageMs` as display text ("12분 5초 전"), or "진행 기록 없음". */
+    ageText: string
   }
-  elapsed: { startedAt: string | null; endedAt: string | null; ms: number | null; running: boolean }
+  elapsed: { startedAt: string | null; endedAt: string | null; ms: number | null; running: boolean; text: string }
   verdict: Label | null
-  operation: null | { id: string; status: Label; reasonCode: string | null; lead: Label; calls: string; handoff: boolean }
+  operation: null | { id: string; status: Label; reasonCode: string | null; lead: Label; calls: string; handoff: boolean
+    handoffText: string }
   invocation: null | {
     count: number
     byStatus: Array<{ status: string; count: number }>
@@ -345,6 +348,10 @@ export type SessionRow = {
     status: string | null
     stage: string | null
     elapsedSeconds: number | null
+    /** Korean label of the latest reservation's status and the by-status chips. */
+    statusLabel: Label
+    byStatusLabels: Array<{ status: string; label: string; count: number }>
+    elapsedText: string
   }
   workerSession: null | {
     state: Label
@@ -353,13 +360,14 @@ export type SessionRow = {
     nextOwner: string
     nextAction: string | null
     blocked: boolean
+    blockedText: string
     reviews: Array<{ decisionId: string | null; phase: string | null; outcome: string | null }>
   }
 }
 export type LaneView =
-  | { id: string; team: string; status: "unavailable"; error: string | null; observedAt: string | null }
-  | { id: string; team: string; status: "ok"; observedAt: string | null; total: number; shown: number; truncated: boolean;
-      counts: Array<{ key: string; label: string; count: number }>; rows: SessionRow[] }
+  | { id: string; team: string; status: "unavailable"; statusLabel: Label; error: string | null; observedAt: string | null }
+  | { id: string; team: string; status: "ok"; statusLabel: Label; observedAt: string | null; total: number; shown: number;
+      truncated: boolean; counts: Array<{ key: string; label: string; count: number }>; rows: SessionRow[] }
 /**
  * Every lane execution is a headless provider run (`claude -p` stream-json or `codex exec`): there is no
  * interactive terminal or desktop screen to show. The emitted-event activity pane is a later slice (S2);
@@ -367,8 +375,20 @@ export type LaneView =
  */
 export const SCREEN_NOTICE = "CLI 전용 실행 · 대화형 터미널·화면 없음 (headless). 방출 이벤트 활동 창은 이후 단계에서 제공되며, 브라우저 화면은 Zeus 소유 테스트 세션에만 해당합니다."
 
+/**
+ * The fixed coverage boundary in Korean. The collector's `coverage.uninstrumented` statements stay verbatim
+ * beside it; this notice is shown even when no coverage record could be read.
+ */
+export const COVERAGE_NOTICE = "Zeus 작업 소유 밖에서 시작된 세션(외부 조율자·보조 프로세스 등)은 이 화면에서 관측되지 않으며, 유닛 이름이나 프로세스 번호로 추정해 표시하지 않습니다."
+
 export type SessionsModel = {
   freshness: Freshness
+  /** Korean label and tone of `freshness.state`. */
+  freshnessLabel: Label
+  /** Set when rows are shown from an observation that is not fresh: they may not be the current state. */
+  staleWarning: string | null
+  /** Always shown: what this view cannot see (see COVERAGE_NOTICE). */
+  coverageNotice: string
   /** What a session "screen" can truthfully be here; shown with every session detail. */
   screenNotice: string
   /** Why the lanes cannot be shown; `ready` and `unregistered` are the two states with a truthful body. */
@@ -398,6 +418,27 @@ function elapsedMs(started: number, ended: number, active: boolean, now: number)
   if (!Number.isFinite(started)) return null
   const end = Number.isFinite(ended) ? ended : active ? now : NaN
   return Number.isFinite(end) ? Math.max(0, end - started) : null
+}
+
+/** Milliseconds as Korean display text; null stays unknown. Formatting only: no hang/stall judgement. */
+export function formatDuration(ms: number | null): string {
+  if (ms === null || !Number.isFinite(ms)) return "알 수 없음"
+  const total = Math.floor(ms / 1000)
+  const hours = Math.floor(total / 3600), minutes = Math.floor((total % 3600) / 60), seconds = total % 60
+  if (hours > 0) return `${hours}시간 ${minutes}분`
+  if (minutes > 0) return `${minutes}분 ${seconds}초`
+  return `${seconds}초`
+}
+
+const RESERVATION_STATUS: Record<string, Label> = {
+  reserved: { label: "예약됨", tone: "neutral", note: "호출이 진행 중이거나 아직 정산되지 않음" },
+  settled: { label: "정산됨", tone: "success", note: "호출이 끝나고 결과와 사용량 출처가 기록됨" },
+  unsettled_unknown: { label: "미정산 · 알 수 없음", tone: "unknown", note: "정산되지 못한 호출 · 사용량은 0이 아니라 알 수 없음" },
+}
+
+const LANE_STATUS: Record<"ok" | "unavailable", Label> = {
+  ok: { label: "관측됨", tone: "success", note: "이 레인의 저장소를 읽음 · 진행이나 수락의 증거는 아님" },
+  unavailable: { label: "확인 불가", tone: "error", note: "이 레인의 저장소를 읽지 못함 · 비어 있다는 뜻이 아님" },
 }
 
 function shortId(id: string): string {
@@ -437,6 +478,8 @@ function row(lane: string, wire: WireExecution, now: number): SessionRow {
       lastCompleted: progress?.last_completed
         ? [progress.last_completed.type, progress.last_completed.status].filter(Boolean).join(" · ") || null : null,
       malformed: progress?.malformed_events ?? 0,
+      ageText: progress === null ? "진행 기록 없음" : age(progress.collected_at, now) === null ? "수집 시각 해석 불가"
+        : `${formatDuration(age(progress.collected_at, now))} 전`,
     },
     elapsed: {
       startedAt: wire.created_at,
@@ -444,6 +487,7 @@ function row(lane: string, wire: WireExecution, now: number): SessionRow {
       // Recorded times only: an active row counts to `now`, a finished one to its completion.
       ms: elapsedMs(started, ended, active, now),
       running: active,
+      text: formatDuration(elapsedMs(started, ended, active, now)),
     },
     verdict: wire.kind !== "decision" ? null
       : wire.accepted === true ? { label: "검토 수락", tone: "success", note: "이 결정의 판정" }
@@ -457,6 +501,7 @@ function row(lane: string, wire: WireExecution, now: number): SessionRow {
       calls: operation.calls === null ? "종료 시 기록 (진행 중)"
         : `예약 ${formatNumber(operation.calls.reserved)} · 정산 ${formatNumber(operation.calls.settled)}`,
       handoff: operation.owner_handoff,
+      handoffText: operation.owner_handoff ? "소유자 인계 기록 있음 (팀 작업 화면에서 확인)" : "인계 기록 없음",
     },
     invocation: latest === null ? null : {
       count: wire.invocations.count,
@@ -473,6 +518,10 @@ function row(lane: string, wire: WireExecution, now: number): SessionRow {
       status: latest.status,
       stage: latest.stage,
       elapsedSeconds: latest.elapsed_seconds,
+      statusLabel: lookup(RESERVATION_STATUS, latest.status),
+      byStatusLabels: Object.entries(wire.invocations.by_status).map(([key, count]) => (
+        { status: key, label: lookup(RESERVATION_STATUS, key).label, count })),
+      elapsedText: latest.elapsed_seconds === null ? "정산 전 · 알 수 없음" : formatDuration(latest.elapsed_seconds * 1000),
     },
     workerSession: wire.worker_session === null ? null : {
       state: lookup(SESSION_STATE, wire.worker_session.state),
@@ -483,6 +532,8 @@ function row(lane: string, wire: WireExecution, now: number): SessionRow {
         : NEXT_OWNER[wire.worker_session.next_owner] ?? wire.worker_session.next_owner,
       nextAction: wire.worker_session.next_action,
       blocked: wire.worker_session.blocked === true,
+      blockedText: wire.worker_session.blocked === true ? "차단됨 · 운영자 확인 필요"
+        : wire.worker_session.blocked === false ? "차단 아님" : "기록 없음",
       reviews: wire.worker_session.reviews.map((review) => ({ decisionId: review.decision_id, phase: review.phase, outcome: review.outcome })),
     },
   }
@@ -492,10 +543,11 @@ const COUNT_LABELS: Record<string, string> = { task: "작업", decision: "결정
 
 function lane(wire: WireLane, now: number): LaneView {
   const base = { id: wire.lane, team: wire.team ?? "팀 기록 없음", observedAt: wire.observed_at }
-  if (wire.status === "unavailable") return { ...base, status: "unavailable", error: wire.error }
+  if (wire.status === "unavailable") return { ...base, status: "unavailable", statusLabel: LANE_STATUS.unavailable, error: wire.error }
   return {
     ...base,
     status: "ok",
+    statusLabel: LANE_STATUS.ok,
     total: wire.total,
     shown: wire.executions.length,
     truncated: wire.truncated,
@@ -510,7 +562,11 @@ function lane(wire: WireLane, now: number): LaneView {
 /** The whole 세션 view model for one snapshot at one moment. */
 export function laneSessionsModel(snapshot: Snapshot | null, now: number): SessionsModel {
   const freshness = laneSessionsFreshness(snapshot, now)
-  const empty = { coverage: null, lanes: [], authority: "", screenNotice: SCREEN_NOTICE }
+  const common = {
+    freshnessLabel: { label: STATE_LABELS[freshness.state], tone: freshnessTone(freshness.state), note: freshness.reason },
+    coverageNotice: COVERAGE_NOTICE, screenNotice: SCREEN_NOTICE,
+  }
+  const empty = { ...common, staleWarning: null, coverage: null, lanes: [], authority: "" }
   if (!snapshot) return { freshness, state: "no_response", reason: "응답 없음", ...empty }
   const envelope = snapshot.sources?.lane_sessions
   if (!envelope) return { freshness, state: "absent", reason: "이 수집기는 레인 세션을 수집하지 않음 (이전 버전)", ...empty }
@@ -523,9 +579,11 @@ export function laneSessionsModel(snapshot: Snapshot | null, now: number): Sessi
   const coverage = { registered: data.coverage.lanes_registered, observed: data.coverage.lanes_observed,
     unavailable: data.coverage.lanes_unavailable, uninstrumented: data.coverage.uninstrumented }
   if (!data.registered) {
-    return { freshness, state: "unregistered", reason: "등록된 Fleet 레인 없음", coverage, lanes: [], authority: data.authority,
-      screenNotice: SCREEN_NOTICE }
+    return { ...common, freshness, state: "unregistered", reason: "등록된 Fleet 레인 없음", staleWarning: null, coverage,
+      lanes: [], authority: data.authority }
   }
-  return { freshness, state: "ready", reason: "", coverage, lanes: data.lanes.map((item) => lane(item, now)),
-    authority: data.authority, screenNotice: SCREEN_NOTICE }
+  return { ...common, freshness, state: "ready", reason: "", coverage, lanes: data.lanes.map((item) => lane(item, now)),
+    authority: data.authority,
+    staleWarning: freshness.state === "fresh" ? null
+      : `${STATE_LABELS[freshness.state]} 관측 · 아래 기록은 현재 상태가 아닐 수 있습니다${freshness.reason ? ` (${freshness.reason})` : ""}` }
 }
