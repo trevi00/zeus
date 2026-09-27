@@ -52,3 +52,23 @@ the failure is retained. Explicit byte-copy instructions passed with the same st
 comparison, as did the final image canaries. Token/cost savings have not been measured.
 The queue fairness and inspection-classification issues documented in
 [the autonomy observation](autonomy-observation-2026-09-08.md) remain unresolved.
+
+## Provider responsibility routing
+
+Which provider runs a role is separate from which Codex model is requested. Design-heavy read-only
+roles MAY run on Claude through a proven read-only execution; detail, verification and
+state-correctness roles stay on Codex (INV-CLAUDE-WORKER-001). The packaged policy permits these
+read-only `design` pairs; none runs on Claude until the host enables it in `ZEUS_CLAUDE_ASSIGNMENTS`:
+
+| Roles | Action | Responsibility |
+|---|---|---|
+| `lead:research`, `lead:improvement` | `dge_role` | council v2 research-lead proposal and improvement-lead alternative |
+| `conductor` | `dge_role` | council v2 design arbitration |
+| `lead:researcher`, `lead:proposer`, `lead:arbiter` | `dge_role` | v1 packet synthesis, proposal, design arbitration |
+| `lead:frontdesk` | `frontdesk` | request framing |
+| `lead:improvement` | `plan` | the improvement plan |
+
+`lead:dba` and `lead:attacker` (`dge_role`), every review and decision phase, final validation,
+diagnosis and the research workers stay on Codex. The writable `worker:implementation/implement`
+pair is unchanged. The isolated (Docker) worker still refuses read-only runs, so an isolation-enabled
+host cannot run these pairs yet.

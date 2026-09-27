@@ -50,12 +50,13 @@ def store(request):
     return MemoryStore() if request.param == "memory" else request.getfixturevalue("isolated_pgstore")
 
 
-def build(tmp_path, monkeypatch, store, *, scenario="normal", claude=True, patch_runtime=None):
+def build(tmp_path, monkeypatch, store, *, scenario="normal", claude=True, patch_runtime=None,
+          pairs="worker:implementation/implement", message=None):
     """One implement assignment for worker:implementation, optionally configured onto Claude."""
     for name in ("ZEUS_CLAUDE_ASSIGNMENTS", "ZEUS_CLAUDE_MODEL", "ZEUS_CLAUDE_MAX_BUDGET_USD"):
         monkeypatch.delenv(name, raising=False)
     if claude:
-        monkeypatch.setenv("ZEUS_CLAUDE_ASSIGNMENTS", "worker:implementation/implement")
+        monkeypatch.setenv("ZEUS_CLAUDE_ASSIGNMENTS", pairs)
         monkeypatch.setenv("ZEUS_CLAUDE_MODEL", "claude-stub-" + scenario)
         monkeypatch.setenv("ZEUS_CLAUDE_MAX_BUDGET_USD", "1")
     workspace = tmp_path / "workspace"
@@ -100,8 +101,8 @@ def build(tmp_path, monkeypatch, store, *, scenario="normal", claude=True, patch
     executor = Executor(service, git, artifacts, observer=observer)
     monkeypatch.setattr(executor, "_inspect_evidence",
                         lambda *args, **kwargs: {"verdict": "not_inspected_in_unit", "claims": 0})
-    message = envelope("task.assign", "lead:improvement", "worker:implementation", "implement",
-                       {"plan": dict(PLAN)}, "corr-claude")
+    message = message or envelope("task.assign", "lead:improvement", "worker:implementation", "implement",
+                                  {"plan": dict(PLAN)}, "corr-claude")
     task = executor.workflow.submit(message)
 
     def starts():
@@ -431,10 +432,66 @@ def test_the_reservation_records_which_option_effects_were_verified_here(tmp_pat
         [reservation] = tx.scan("invocation_reservations")
     request = reservation["request"]
     assert request["transport"] == "claude_cli"
-    assert request["effect_verified_here"] == ["model", "output_schema", "timeout"]
+    # Accepted metadata delta (responsibility routing): read_only is verified here, writable included.
+    assert request["effect_verified_here"] == ["model", "output_schema", "read_only", "timeout"]
     assert request["effect_left_to_provider"] == ["max_budget_usd", "permission_mode"]
-    assert request["unconfirmed"] == ["read_only"]
+    assert request["unconfirmed"] == []
     assert request["assignment"]["policy_version"] == "provider-policy.v1"
+    assert "read_only_profile_applied" not in request["assignment"]
+
+
+# ---- responsibility routing: a read-only design execution on Claude --------------------------------
+
+def plan_build(tmp_path, monkeypatch, store, scenario):
+    """The improvement plan (conductor -> lead:improvement), enabled onto Claude as a read-only pair."""
+    message = envelope("task.assign", "conductor", "lead:improvement", "plan",
+                       {"objective": "Add a slug helper", "acceptance_criteria": ["the helper is tested"]},
+                       "corr-plan")
+    s = build(tmp_path, monkeypatch, store, scenario=scenario, pairs="lead:improvement/plan", message=message)
+    # The plan branch runs in the repository directory, which is where the child logs its starts.
+    s.starts = lambda: (len((tmp_path / "stub-runs.log").read_text("utf-8").strip().splitlines())
+                        if (tmp_path / "stub-runs.log").exists() else 0)
+    return s
+
+
+def test_read_only_violation_is_persisted_and_never_completes_task(tmp_path, monkeypatch, store):
+    s = plan_build(tmp_path, monkeypatch, store, "ro-before-bash")
+    row = s.executor.execute_one("lead:improvement")
+    assert s.starts() == 1 and s.codex_starts == []
+    assert row["status"] != "succeeded"
+    with store.transaction() as tx:
+        assert tx.get("tasks", s.task["id"])["status"] != "succeeded"
+        assert not [r for r in tx.scan("outbox") if r["message"]["what"]["action"] == "implement"], \
+            "no downstream implementation assignment"
+        [reservation] = tx.scan("invocation_reservations")
+    assert reservation["request"]["assignment"]["read_only_profile_applied"] is True
+    assert reservation["request"]["options"]["read_only"] is True
+    assert reservation["request"]["options"]["permission_mode"] == "dontAsk"
+    settled = audits(store, "development.invocation_settled")
+    assert settled and settled[0]["attributes"]["invocation_outcome"] == "provider_failure"
+    # The evidence of the refused run is persisted with its diagnostic code.
+    stored = [json.loads(path.read_text("utf-8")) for path in s.artifacts.root.glob("*.txt")]
+    failures = [body["failure"] for body in stored if isinstance(body, dict) and isinstance(body.get("failure"), dict)]
+    assert any(failure.get("reason_code") == "read_only_violation" for failure in failures)
+    assert CANARY not in json.dumps(failures)
+
+
+def test_a_clean_read_only_plan_runs_on_claude_without_profile_or_project_grants(tmp_path, monkeypatch, store):
+    s = plan_build(tmp_path, monkeypatch, store, "ro-clean-plan")
+    row = s.executor.execute_one("lead:improvement")
+    assert row["status"] == "succeeded" and s.starts() == 1 and s.codex_starts == []
+    seen = json.loads((tmp_path / "stub-observation.json").read_text("utf-8"))
+    assert "--restricted" in seen["argv"] and "--append-system-prompt" not in seen["argv"]
+    assert seen["argv"][seen["argv"].index("--tools") + 1] == "Read,Glob,Grep"
+    permissions = json.loads(seen["settings"])["permissions"]
+    assert permissions["allow"] == ["Read", "Glob", "Grep"] and permissions["defaultMode"] == "dontAsk"
+    assert not [rule for rule in permissions["allow"] if rule.startswith("Bash")]
+    receipt = receipt_of(s, row)
+    assert receipt["execution_assignment"]["action"] == "plan"
+    assert receipt["execution_assignment"]["read_only_profile_applied"] is True
+    assert receipt["command"]["read_only_profile"]["applied"] is True
+    with store.transaction() as tx:
+        assert [r for r in tx.scan("outbox") if r["message"]["what"]["action"] == "implement"]
 
 
 # ---- first review: a refused provider result must not reach task success --------------------------

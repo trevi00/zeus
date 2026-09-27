@@ -1195,7 +1195,7 @@ class Executor:
                                    "review/planning restrictions do not prohibit the downstream implementer "
                                    "from editing its assigned workspace; do not copy them into the objective.", details,
                                    str(self.git.repository), PLAN, True, heartbeat, task,
-                                   workload="design")
+                                   workload="design", action="plan")
                 result["origin"] = details
                 if details.get("plan", {}).get("origin", {}).get("hook"):
                     result["origin"]["hook"] = details["plan"]["origin"]["hook"]

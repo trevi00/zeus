@@ -818,6 +818,36 @@ under a lock before any process can start, and a slot that was reserved and neve
 counted because an interrupted experiment may already have reached the provider. A run's label and
 output directory are names and places, never budget authority.
 
+Responsibility routing (fleet-autonomy-001): roles are assigned by their concrete task
+responsibility, design-heavy to Claude and detail, verification and state correctness to Codex. The
+packaged policy permits, besides the writable `worker:implementation/implement` pair, exactly eight
+read-only `design` pairs: `lead:research`, `lead:improvement`, `conductor`, `lead:researcher`,
+`lead:proposer` and `lead:arbiter` with `dge_role`; `lead:frontdesk` with `frontdesk`; and
+`lead:improvement` with `plan` (the executor's plan branch passes `action="plan"`). Permission is not
+enablement: every pair stays on Codex until the host lists it in `ZEUS_CLAUDE_ASSIGNMENTS`, an
+unlisted pair is refused as before, and an enabled pair used with another workload or read-only
+flag is refused rather than redirected. `lead:dba` and `lead:attacker` (`dge_role`), every review
+and decision phase, final validation, diagnosis and the research workers have no rule and stay on
+Codex. A read-only Claude execution is proven, not asserted: the `claude` provider's
+`read_only_runtime` overlay (exactly `tools` and `allowed_tools` within Read/Glob/Grep by exact
+name, `disallowed_tools` naming at least Bash/Edit/Write/NotebookEdit, `permission_mode` exactly
+`dontAsk`, `restricted` exactly true) is validated by one domain predicate at policy parse, at
+selection and again by the transport against the EFFECTIVE runtime and the final per-run settings
+before any process starts; a present-but-invalid overlay is never absent, and a read-only claude
+rule without one refuses the policy. Selection copies the base runtime and overlays it for
+read-only executions only (the base stays `restricted: false`), and the assignment receipt then
+names the applied profile and its digest. A read-only run carrying a worker profile, project
+delivery, task session or added settings is refused before spawn. During the run every observed
+tool use is checked before any retention limit; one outside the profile, or without a name or id,
+stops the run through the normal termination path and ends as `provider_failure` with reason
+`read_only_violation` and no answer, ahead of any success terminal and of the missing terminal the
+stop causes; cleanup and stream-loss facts are kept and no tool payload is echoed. `claude_cli`
+therefore declares `read_only` as supported. This proves the host transport only: the isolated
+worker still refuses read-only runs, council enablement through the operation overlay and the
+accounting labels are follow-ups, the plan branch has no before/after checkout check, stream
+observation detects a tool use after it was emitted (prevention rests on the restricted exposure
+and permissions), and fixture runs are not a real-call qualification.
+
 ## INV-WORKER-PROFILE-001
 
 A worker profile is a packaged document, a packaged standard-library hook and a manifest that pins
