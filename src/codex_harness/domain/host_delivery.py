@@ -1151,8 +1151,16 @@ def _recoveries_view(record: dict) -> dict:
         halted = record.get("halted") or {}
         interval = record.get("interval") or {}
         observed = record.get("observed") or {}
-        view.update({"halted": {key: halted.get(key) for key in ("stage_deadline", "stage_entered_at",
-                                                                  "updated_at", "reason_code")},
+        # The EXACT halt the owner document binds (stage, previous stage, reason, time, expired deadline), plus
+        # the halted stage entry and the pending-canary facts, so a gate verifies it without a store read.
+        rollback = halted.get("rollback") if isinstance(halted.get("rollback"), dict) else {}
+        canary = halted.get("canary") if isinstance(halted.get("canary"), dict) else {}
+        view.update({"halted": {**{key: halted.get(key) for key in ("stage", "previous_stage", "reason_code",
+                                                                     "outcome", "updated_at", "stage_deadline",
+                                                                     "stage_entered_at", "candidate_instance_id")},
+                                "rollback": {key: rollback.get(key) for key in ("requested", "restored", "verified",
+                                                                                 "reason_code")},
+                                "canary": {key: canary.get(key) for key in ("passed", "pending", "reason_code")}},
                      "interval": {key: interval.get(key) for key in ("started_at", "deadline")},
                      "observed": {key: observed.get(key) for key in ("observed_instance_id",
                                                                       "descriptor_sha256")}})

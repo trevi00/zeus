@@ -191,6 +191,13 @@ def test_the_retry_consumes_the_same_instance_and_promotes(system):
     shown = view["recoveries"][-1]
     assert shown["kind"] == RECOVERY_CONSUMPTION_RETRY and shown["evidence_ref"] == recovery["evidence_ref"]
     assert shown["halted"]["stage_deadline"] == halted_intent["stage_deadline"]
+    # the exact halt a document binds, and its pending-canary facts, are projected (no private store read)
+    assert {k: shown["halted"][k] for k in ("stage", "previous_stage", "reason_code", "updated_at")} == {
+        "stage": "blocked", "previous_stage": "awaiting_consumption", "reason_code": "no_known_good_predecessor",
+        "updated_at": halted_intent["updated_at"]}
+    assert shown["halted"]["rollback"] == {"requested": True, "restored": False, "verified": False,
+                                           "reason_code": "canary_owner_receipt_pending"}
+    assert shown["halted"]["canary"]["pending"] is True and shown["halted"]["canary"]["passed"] is False
     assert shown["interval"] == recovery["interval"]
     assert shown["observed"] == {"observed_instance_id": observed,
                                  "descriptor_sha256": intent["descriptor_sha256"]}
