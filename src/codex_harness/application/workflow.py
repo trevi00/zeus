@@ -352,8 +352,9 @@ class Workflow:
 
     def fail_execution(self, task: dict, error: Exception, *, transaction=None) -> dict:
         # INV-RECURRENCE-001: containment applies to this execution, not an account.
+        # INV-WORKER-CREDENTIALS-001: a Claude usage limit is contained the same way (never replayed blind).
         confirmed = (isinstance(error, ExecutionFailure)
-                     and error.cause == "codex-provider-usage-limit-exceeded")
+                     and error.cause in {"codex-provider-usage-limit-exceeded", "claude-provider-usage-limit-exceeded"})
         return self.fail(task, type(error).__name__ + ": " + str(error),
                          retryable=not confirmed,
                          failure=error.evidence if isinstance(error, ExecutionFailure) else None,

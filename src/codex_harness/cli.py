@@ -316,6 +316,10 @@ def parser() -> argparse.ArgumentParser:
     add_continuation_parser(commands)
     from codex_harness.adapters.owner_actions import add_parser as add_owner_actions_parser
     add_owner_actions_parser(commands)
+    from codex_harness.adapters.worker_credentials_cli import (
+        add_parser as add_worker_credentials_parser,
+    )
+    add_worker_credentials_parser(commands)
     from codex_harness.adapters.frontdesk_cli import add_parser as add_desk_parser
     add_desk_parser(commands)
     from codex_harness.adapters.autonomous_cli import add_parser as add_autonomous_parser
@@ -552,6 +556,20 @@ def owner_actions_command(service, args):
         result = owner_actions.execute(service, args)
     except Exception as exc:
         emit(owner_actions.refusal(exc))
+        raise SystemExit(1) from exc
+    emit(result)
+    if result.get("exit_code", 1) != 0:
+        raise SystemExit(1)
+
+
+def worker_credentials_command(service, args):
+    """INV-WORKER-CREDENTIALS-001: exit 0 only for a completed command (a hold exits 1 with its codes);
+    output is redacted, and refusals print a code and a type, never a secret, a path's content or an exception."""
+    from codex_harness.adapters import worker_credentials_cli
+    try:
+        result = worker_credentials_cli.execute(service, args)
+    except Exception as exc:
+        emit(worker_credentials_cli.refusal(exc))
         raise SystemExit(1) from exc
     emit(result)
     if result.get("exit_code", 1) != 0:
@@ -798,6 +816,8 @@ def main() -> None:
             continuation_command(service, args)
         elif args.command == "owner-actions":
             owner_actions_command(service, args)
+        elif args.command == "worker-credentials":
+            worker_credentials_command(service, args)
         elif args.command == "desk":
             desk_command(service, args)
         elif args.command == "audit-service":

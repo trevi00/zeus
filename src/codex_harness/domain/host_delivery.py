@@ -220,6 +220,23 @@ CONSUMPTION_RETRY_FIELDS = {"schema", "kind", "plan_id", "plan_sha256", "pin_sha
                             "candidate_revision", "candidate_tree", "halt", "first_activation_evidence",
                             "descriptor_sha256", "observed_instance_id", "approved_by"}
 CONSUMPTION_RETRY_HALT_FIELDS = {"stage", "previous_stage", "reason_code", "updated_at", "stage_deadline"}
+# INV-HOST-DELIVERY-FIRST-ACTIVATION-001 (extended): the fourth recovery kind. The observed instance of that
+# SAME halted first activation is POSITIVELY no longer running (a host restart ended it; its receipt remains),
+# so the one consumption retry has nothing live to consume. The owner restarts the SAME bound descriptor ONCE
+# through the target's own guarded lifecycle; the fresh startup receipt names the new generation, and the one
+# consumption retry then consumes exactly that linked instance. The halt, its expired deadline, the release
+# verification and every earlier recovery stay as they were; nothing else is started, retried or re-verified.
+RECOVERY_GENERATION_RESTART = "first_activation_generation_restart"
+GENERATION_RESTART_SCHEMA = "urn:zeus:host-delivery-generation-restart:1"
+GENERATION_RESTART_FIELDS = {"schema", "kind", "plan_id", "plan_sha256", "pin_sha256", "target_id", "release_id",
+                             "candidate_revision", "candidate_tree", "halt", "first_activation_evidence",
+                             "descriptor_sha256", "stopped_instance_id", "reason", "approved_by"}
+GENERATION_RESTART_REASONS = frozenset({"host_restarted", "generation_exited"})
+# The restart record's own states: persisted `requested` BEFORE the one start, `launched` once the start
+# returned without a confirming receipt yet, `started` once the fresh receipt names the new instance.
+RESTART_REQUESTED, RESTART_LAUNCHED, RESTART_STARTED = "requested", "launched", "started"
+# The consumption retry that follows a restart names it (the link is explicit, never inferred).
+CONSUMPTION_RETRY_RESTART_FIELD = "generation_restart_evidence"
 CANARY_RECEIPT_PENDING = "canary_owner_receipt_pending"
 WORKER_IMAGE_ID = re.compile(r"^sha256:[0-9a-f]{64}$")
 DIGEST_HEX = re.compile(r"^[0-9a-f]{64}$")
@@ -995,8 +1012,24 @@ def _consumption_halt(intent) -> bool:
 
 def consumption_retryable(intent) -> bool:
     """The ONE shape `resume_consumption_retry` may move (INV-HOST-DELIVERY-FIRST-ACTIVATION-001):
-    the pending-canary halt of a bound first activation, with exactly one binding and no retry yet."""
-    return _consumption_halt(intent) and not recoveries_of(intent, RECOVERY_CONSUMPTION_RETRY)
+    the pending-canary halt of a bound first activation, with exactly one binding and no retry yet. A
+    generation restart, when recorded, must have STARTED (its fresh receipt named the new instance)."""
+    restarts = recoveries_of(intent, RECOVERY_GENERATION_RESTART)
+    return (_consumption_halt(intent) and not recoveries_of(intent, RECOVERY_CONSUMPTION_RETRY)
+            and (not restarts or (len(restarts) == 1 and restarts[0].get("state") == RESTART_STARTED)))
+
+
+def generation_restartable(intent) -> bool:
+    """The ONE shape `resume_generation_restart` may move: the same consumption halt, before any retry and
+    before any restart (INV-HOST-DELIVERY-FIRST-ACTIVATION-001). One restart per delivery."""
+    return (_consumption_halt(intent) and not recoveries_of(intent, RECOVERY_CONSUMPTION_RETRY)
+            and not recoveries_of(intent, RECOVERY_GENERATION_RESTART))
+
+
+def generation_restart_of(intent) -> dict | None:
+    """The recorded restart of this delivery, or None. Pure."""
+    restarts = recoveries_of(intent, RECOVERY_GENERATION_RESTART)
+    return restarts[-1] if restarts else None
 
 
 def consumption_retry_exhausted(intent) -> bool:
@@ -1017,8 +1050,12 @@ def validate_consumption_retry(document) -> dict:
     deadline; the first-activation evidence it builds on; the bound descriptor and the observed
     instance; the approver. Its values are claims only: the lane compares them with its records and
     the live host before anything is written. Every defect is `consumption_retry_invalid`."""
-    if not isinstance(document, dict) or set(document) != CONSUMPTION_RETRY_FIELDS:
+    if not isinstance(document, dict) or set(document) not in (
+            CONSUMPTION_RETRY_FIELDS, CONSUMPTION_RETRY_FIELDS | {CONSUMPTION_RETRY_RESTART_FIELD}):
         raise _consumption_retry_refused("document")
+    if CONSUMPTION_RETRY_RESTART_FIELD in document and not _hex(document[CONSUMPTION_RETRY_RESTART_FIELD],
+                                                                 EVIDENCE_REF):
+        raise _consumption_retry_refused(CONSUMPTION_RETRY_RESTART_FIELD)
     if document["schema"] != CONSUMPTION_RETRY_SCHEMA:
         raise _consumption_retry_refused("schema")
     if document["kind"] != RECOVERY_CONSUMPTION_RETRY:
@@ -1044,6 +1081,48 @@ def validate_consumption_retry(document) -> dict:
             BLOCKED, AWAITING_CONSUMPTION, "no_known_good_predecessor") or not all(
             type(halt[key]) is str and 0 < len(halt[key]) <= 64 for key in ("updated_at", "stage_deadline")):
         raise _consumption_retry_refused("halt")
+    return {**document, "halt": dict(halt)}
+
+
+def _generation_restart_refused(field: str):
+    return DeliveryRefused("generation_restart_invalid", field)
+
+
+def validate_generation_restart(document) -> dict:
+    """The owner's generation-restart document, exactly (INV-HOST-DELIVERY-FIRST-ACTIVATION-001, extended).
+
+    The same identity as a consumption retry (plan, pin, release, candidate, the recorded halt INCLUDING its
+    expired deadline, the first-activation evidence, the bound descriptor), plus the STOPPED instance it names,
+    why it stopped, and the approver. Its values are claims only; every defect is `generation_restart_invalid`."""
+    if not isinstance(document, dict) or set(document) != GENERATION_RESTART_FIELDS:
+        raise _generation_restart_refused("document")
+    if document["schema"] != GENERATION_RESTART_SCHEMA:
+        raise _generation_restart_refused("schema")
+    if document["kind"] != RECOVERY_GENERATION_RESTART:
+        raise _generation_restart_refused("kind")
+    for key in ("plan_id", "release_id", "target_id", "stopped_instance_id"):
+        if not _token(document[key]):
+            raise _generation_restart_refused(key)
+    if document["reason"] not in GENERATION_RESTART_REASONS:
+        raise _generation_restart_refused("reason")
+    if not _hex(document["approved_by"], ACTOR_ID):
+        raise _generation_restart_refused("approved_by")
+    for key in ("plan_sha256", "pin_sha256", "descriptor_sha256"):
+        if not _hex(document[key], DIGEST_HEX):
+            raise _generation_restart_refused(key)
+    if not _hex(document["candidate_revision"], REVISION):
+        raise _generation_restart_refused("candidate_revision")
+    if not _hex(document["candidate_tree"], TREE_ID):
+        raise _generation_restart_refused("candidate_tree")
+    if not _hex(document["first_activation_evidence"], EVIDENCE_REF):
+        raise _generation_restart_refused("first_activation_evidence")
+    halt = document["halt"]
+    if not isinstance(halt, dict) or set(halt) != CONSUMPTION_RETRY_HALT_FIELDS:
+        raise _generation_restart_refused("halt")
+    if (halt["stage"], halt["previous_stage"], halt["reason_code"]) != (
+            BLOCKED, AWAITING_CONSUMPTION, "no_known_good_predecessor") or not all(
+            type(halt[key]) is str and 0 < len(halt[key]) <= 64 for key in ("updated_at", "stage_deadline")):
+        raise _generation_restart_refused("halt")
     return {**document, "halt": dict(halt)}
 
 
@@ -1145,6 +1224,15 @@ def _recoveries_view(record: dict) -> dict:
     binding = record.get("binding")
     view = {"kind": record.get("kind"), "evidence_ref": record.get("evidence_ref"),
             "binding": dict(binding) if isinstance(binding, dict) else None, "at": record.get("at")}
+    if record.get("kind") == RECOVERY_GENERATION_RESTART:
+        # Additive for the restart kind only: the stopped and the started generation, ids and times only.
+        stopped, started = record.get("stopped") or {}, record.get("started") or {}
+        view.update({"state": record.get("state"), "reason": record.get("reason"),
+                     "stopped": {key: stopped.get(key) for key in ("instance_id", "descriptor_sha256")},
+                     "started": {key: started.get(key) for key in ("instance_id", "revision", "started_at")},
+                     "halted": {key: (record.get("halted") or {}).get(key)
+                                for key in ("stage", "previous_stage", "reason_code", "updated_at",
+                                            "stage_deadline")}})
     if record.get("kind") == RECOVERY_CONSUMPTION_RETRY:
         # Additive for the retry kind only (INV-HOST-DELIVERY-FIRST-ACTIVATION-001): the ORIGINAL
         # halt's timing, the new interval and the observed identity; ids, digests and times only.
@@ -1162,8 +1250,10 @@ def _recoveries_view(record: dict) -> dict:
                                                                                  "reason_code")},
                                 "canary": {key: canary.get(key) for key in ("passed", "pending", "reason_code")}},
                      "interval": {key: interval.get(key) for key in ("started_at", "deadline")},
-                     "observed": {key: observed.get(key) for key in ("observed_instance_id",
-                                                                      "descriptor_sha256")}})
+                     "observed": {**{key: observed.get(key) for key in ("observed_instance_id",
+                                                                         "descriptor_sha256")},
+                                  **({CONSUMPTION_RETRY_RESTART_FIELD: observed[CONSUMPTION_RETRY_RESTART_FIELD]}
+                                     if CONSUMPTION_RETRY_RESTART_FIELD in observed else {})}})
     return view
 
 

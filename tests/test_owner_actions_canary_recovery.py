@@ -524,6 +524,154 @@ def test_the_real_owner_and_real_lane_recover_the_halted_canary_end_to_end(tmp_p
         stop_target(system)
 
 
+@binds_a_runtime
+def test_after_a_host_restart_the_real_owner_rebinds_the_same_canary_to_the_restarted_generation(tmp_path, monkeypatch):
+    """INV-HOST-DELIVERY-FIRST-ACTIVATION-001 (extended), the reboot case end to end. REAL: HostDelivery (first
+    activation, pending-canary halt, the stopped generation, the ONE restart, the linked consumption retry) on
+    its OWN store with a real process target and the incumbent `owner_qualified_canary`; OwnerActions and the
+    real Fleet on a SEPARATE control store. LABELLED: exactly the fixtures of the test above."""
+    from test_host_delivery import (
+        PROFILE,
+        await_receipt,
+        build,
+        drive,
+        intent_of,
+        register_historical,
+        stop_target,
+    )
+    from test_host_delivery_consumption_retry import document as retry_document
+    from test_host_delivery_consumption_retry import retry
+    from test_host_delivery_first_activation import IMAGE_ID, CountingVerifier, FixedFacts
+    from test_host_delivery_first_activation import document as binding_document
+    from test_host_delivery_generation_restart import restart, restart_document
+    from test_owner_delivery import canary_owner
+
+    from codex_harness.adapters.host_delivery import owner_qualified_canary
+    from codex_harness.adapters.owner_actions import TargetFiles
+    from codex_harness.domain.host_delivery import (
+        ACTIVE,
+        BLOCKED,
+        CANARY_FLEET,
+        CANARY_REQUEST_SCHEMA,
+        CONSUMPTION_RETRY_RESTART_FIELD,
+        MERGED,
+        UNCHANGED,
+        plan_digest,
+        validate_plan,
+    )
+
+    monkeypatch.setenv("ZEUS_WORKER_IMAGE", IMAGE_ID)
+    system = build(tmp_path / "delivery", plan_overrides={"image": UNCHANGED, "profile": UNCHANGED,
+                                                          "canary": CANARY_FLEET, "consumption_timeout": 900},
+                   register_plan=False, canaries={CANARY_FLEET: owner_qualified_canary})
+    try:
+        register_historical(system)
+        drive(system, until=MERGED, limit=8)
+        assert system["delivery"].tick()["reason_code"] == "unchanged_without_predecessor"
+        system["delivery"].first_activation = FixedFacts(profile=PROFILE)
+        system["verifier"] = CountingVerifier()
+        system["delivery"].verifier = system["verifier"]
+        body, evidence = binding_document(system, profile_digest=PROFILE)
+        system["delivery"].resume_first_activation(system["plan"]["plan_id"], body["plan_sha256"], body, evidence)
+        system["binding_evidence"] = evidence
+        plan = validate_plan(system["plan"])
+        TargetFiles.write_request(system["target"], plan["plan_id"], {
+            "schema": CANARY_REQUEST_SCHEMA, "action_id": "a" * 64, "plan_id": plan["plan_id"],
+            "plan_sha256": plan_digest(plan), "target_id": plan["target_id"],
+            "revision": plan["target_descriptor"]["revision"], "expected_descriptor": plan["expected_descriptor"],
+            "requested_at": system["clock"]()})
+        drive(system, until=AWAITING_CONSUMPTION, limit=40)
+        await_receipt(system["target"], intent_of(system)["descriptor_sha256"], timeout=30.0)
+        world, owner = canary_owner(tmp_path, system)
+        owner.clock = system["clock"]
+        world.fleet.pause()
+        owner.tick("owners-1")
+        [canary] = _canaries(world)
+        assert canary["state"] == do.REQUESTED
+        stopped_instance = canary["binding"]["instance_id"]
+        system["clock"].advance(900)
+        halted = drive(system, until=ACTIVE, limit=40)[-1]
+        assert (halted["stage"], halted["reason_code"]) == (BLOCKED, "no_known_good_predecessor"), halted
+        owner.tick("owners-1")
+        [canary] = _canaries(world)
+        assert (canary["state"], canary["reason_code"]) == (do.UNKNOWN, "canary_delivery_moved")
+        # the host restart: the generation is gone, its receipt remains; the old D1 path refuses
+        stop_target(system)
+        with pytest.raises(Exception) as caught:
+            retry(system)
+        assert getattr(caught.value, "reason_code", None) == "consumption_retry_instance_stopped"
+        restart_body, restart_evidence = restart_document(system)
+        restart(system, restart_body, restart_evidence)
+        new = intent_of(system)["recoveries"][-1]["started"]["instance_id"]
+        assert new != stopped_instance
+        retry_body, retry_evidence = retry_document(system, observed_instance_id=new,
+                                                    **{CONSUMPTION_RETRY_RESTART_FIELD: restart_evidence})
+        assert retry(system, retry_body, retry_evidence)["stage"] == AWAITING_CONSUMPTION
+        # discovery sees the restarted generation but creates NO second canary: the halted one is owed
+        jobs_before = dict(world.jobs())
+        owner.tick("owners-1")
+        assert len(_canaries(world)) == 1 and world.jobs() == jobs_before
+        # the typed recovery re-binds the SAME action and the SAME queued job to the restarted instance
+        recovery = {"schema": do.CANARY_RECOVERY_SCHEMA, "kind": do.CANARY_RECOVERY_KIND, "action_id": canary["id"],
+                    "action_version": canary["version"], "binding_sha256": canary["binding_sha256"],
+                    "binding": dict(canary["binding"]), "policy_id": canary["policy_id"],
+                    "policy_sha256": canary["policy_sha256"], "job_id": canary["job_id"],
+                    "halt": {"state": canary["state"], "reason_code": canary["reason_code"],
+                             "updated_at": canary["updated_at"]},
+                    "lane_retry_evidence": retry_evidence, "margin_seconds": 600, "approved_by": "conductor"}
+        receipt = owner.recover_canary(recovery, "sha256:" + digest(recovery))
+        assert receipt["state"] == do.REQUESTED and receipt["job_id"] == canary["job_id"]
+        [recovered] = _canaries(world)
+        assert recovered["id"] == canary["id"] and recovered["binding"]["instance_id"] == new
+        assert recovered["binding_sha256"] == digest(recovered["binding"]) != canary["binding_sha256"]
+        rebound = recovered["recoveries"][-1]["rebound"]
+        assert (rebound["from_instance_id"], rebound["to_instance_id"], rebound["restart_evidence"]) == (
+            stopped_instance, new, restart_evidence)
+        assert world.jobs() == jobs_before, "the SAME job, never re-enqueued"
+        owner.tick("owners-1")
+        assert len(_canaries(world)) == 1, "still one canary after the recovery"
+        world.fleet.resume()
+        job, outcome = world.run_next(verdict=True)
+        assert job == canary["job_id"] and outcome["status"] == "accepted"
+        owner.tick("owners-1")
+        [done] = _canaries(world)
+        assert done["state"] == do.COMPLETED
+        written = TargetFiles.receipt(system["target"], plan["plan_id"])
+        assert written["passed"] is True and written["instance_id"] == new
+        assert drive(system, until=ACTIVE, limit=40)[-1]["stage"] == ACTIVE
+        assert owner.recover_canary(recovery, "sha256:" + digest(recovery))["cached"] is True
+    finally:
+        stop_target(system)
+
+
+def test_a_retry_observing_another_instance_without_a_linked_restart_is_refused():
+    """Pure: the re-binding needs the explicit two-sided link; anything else stays an instance mismatch."""
+    intent = {"recoveries": [{"kind": "first_activation_binding"},
+                             {"kind": do.LANE_RESTART_KIND, "state": "started", "evidence_ref": "sha256:" + "a" * 64,
+                              "stopped": {"instance_id": "old"}, "started": {"instance_id": "new"}},
+                             {"kind": do.LANE_RETRY_KIND, "observed": {"observed_instance_id": "new",
+                                                                       do.LANE_RESTART_LINK: "sha256:" + "a" * 64}}]}
+    assert do.linked_restart(intent) == {"evidence_ref": "sha256:" + "a" * 64, "stopped_instance_id": "old",
+                                         "started_instance_id": "new"}
+    for broken in ({"state": "launched"}, {"evidence_ref": "sha256:" + "b" * 64}, {"started": {"instance_id": "old"}}):
+        variant = copy.deepcopy(intent)
+        variant["recoveries"][1].update(broken)
+        assert do.linked_restart(variant) is None, broken
+    unlinked = copy.deepcopy(intent)
+    del unlinked["recoveries"][2]["observed"][do.LANE_RESTART_LINK]
+    assert do.linked_restart(unlinked) is None
+    other = copy.deepcopy(intent)
+    other["recoveries"][2]["observed"]["observed_instance_id"] = "third"
+    assert do.linked_restart(other) is None
+    owed = {"kind": do.DELIVERY_CANARY, "state": do.UNKNOWN, "reason_code": do.CANARY_RECOVERY_HALT_REASON,
+            "binding": {"instance_id": "old"}}
+    restart = do.linked_restart(intent)
+    assert do.restart_owed_canary(owed, restart) is True
+    assert do.restart_owed_canary({**owed, "binding": {"instance_id": "new"}}, restart) is False
+    assert do.restart_owed_canary({**owed, "recoveries": [{}]}, restart) is False
+    assert do.restart_owed_canary(owed, None) is False
+
+
 def _canaries(world):
     with world.control.transaction() as tx:
         return [r for r in tx.scan(BUCKET_ACTIONS) if r["kind"] == do.DELIVERY_CANARY]

@@ -1453,6 +1453,69 @@ or generated work. `sources.fleet` in the monitor snapshot (an additive source b
 the persisted queued reasons), call counts, effective `budget`, last 100 jobs with `truncated`,
 `active_job` from all reserving jobs; never manifests, paths, schemas, DSNs or raw output.
 
+## INV-WORKER-CREDENTIALS-001
+
+Named worker credentials with primary-preferred selection and a provider-usage bound for the secondary. The module
+split is `domain.worker_credentials` (pure policy), `application.worker_credentials` (the one admission use case),
+`adapters.worker_credentials` (secret and telemetry ports) and `zeus worker-credentials`.
+
+- **Configuration** (`urn:zeus:worker-credentials:1`, referenced by the host setting `ZEUS_WORKER_CREDENTIALS`;
+  absent = the exact previous one-token behaviour, present but invalid = refused, never a silent fallback).
+  - It names `primary` (required) and `secondary` by alias and generation.
+  - Each row carries a secret REFERENCE (`env_file_key` with key `CLAUDE_CODE_OAUTH_TOKEN`, or `token_file`) under
+    the private secret root, and never a value.
+  - A row may carry telemetry: `claude_cli_usage`, a private LOGIN credential path, the pinned CLI version, and a
+    provisioning binding {generation, attested_by, attested_at}. The binding associates that login with THIS token
+    generation; it cannot be verified pre-dispatch through supported interfaces, so it is named, never implied.
+  - Each row has an in-flight bound.
+  - The policy bound `secondary_weekly_below_percent` may be stricter, never looser, than 80.
+- **Selection** (one serialized store transaction per admission; the grant is a reservation for exactly one owner):
+  - PRIMARY whenever eligible: configured, not revoked, not cooling down, and within its in-flight bound. A busy
+    primary holds `held_primary_in_flight_bound` and never spends the secondary.
+  - SECONDARY only when the primary is unavailable AND a fresh (≤ `telemetry_max_age_seconds`, not future-dated,
+    taken after the secondary's own last refusal) KNOWN observation of this generation, from the pinned CLI version,
+    reports all-model weekly usage STRICTLY below the bound and the five-hour window below 100 percent.
+  - Missing, stale, unknown, invalid, foreign or unpinned telemetry, a bound reached, or both credentials
+    unavailable is a HOLD (`held_no_eligible_credential` with each alias's reason). Queued work keeps its owner and
+    is not admitted; nothing is failed, retried or replayed.
+- **Telemetry** is ONE supported `claude -p /usage` read (tools disabled, no session persistence, no setting
+  sources).
+  - It runs in a new private configuration directory holding only a copy of the bound login, with no token variable
+    in its environment and with the version pinned.
+  - Any defect is a named `unknown` observation: another version, a model call (nonzero tokens), an error, a timeout,
+    a nonzero exit, malformed output, or missing windows (a static token reports none).
+  - A held admission may refresh a held alias at most once per freshness bound. No model request is ever used to
+    discover usage.
+  - The reading is what the provider reported at `observed_at`. It is not a billing cap: other devices, in-flight
+    calls and latency can cross it.
+- **Outcomes.** The lane launcher reads the finished worker's durable task failure cause.
+  - `claude-provider-usage-limit-exceeded` (provider HTTP 429) cools that credential down until the reported reset,
+    or `unknown_reset_seconds` when none was reported.
+  - After an unreported reset, a primary with telemetry is eligible again only on a fresh known observation taken
+    after the refusal with both windows below 100.
+  - `claude-provider-authentication-failed` (401/403), or a granted secret that cannot be read as a private,
+    well-shaped token, revokes the generation until an owner configures a new one (a new generation starts clean).
+  - A refusal observed OUTSIDE a Fleet dispatch (for example by a managed generation's own worker) has the same effect
+    only through the explicit owner command `worker-credentials record-refusal --alias --cause --evidence
+    sha256:<digest>`. It never calls a provider, and the same evidence replays `cached`.
+  - A usage-limited execution is contained, never replayed.
+  - In-flight workers are never killed or re-credentialed. A crashed owner's reservation ends at its lease, and a late
+    release still applies its outcome.
+- **Delivery to the worker.** `FleetRunner` reserves BEFORE admission, and the grant is bound to the one admitted
+  job.
+  - It reserves only when a read-only preview (`Fleet.admissible`) shows a job it would claim, so idle, paused
+    or otherwise-blocked ticks spend no reservation and no usage read.
+  - Without a grant, `admit_one(hold="credential_held")` records that reason on every OTHERWISE admissible queued
+    job. Jobs blocked for their own reason keep it, and nothing is claimed, failed or retried.
+  - `LaneLauncher` sets `CLAUDE_CODE_OAUTH_TOKEN` in THAT child's environment only; the isolated runtime forwards it
+    by name.
+  - No admitted job returns the reservation, and a refused launch returns it.
+  - For a managed generation, `worker-credentials select-env` writes the reserved credential as a one-variable
+    EnvironmentFile (0600) for a reviewed unit drop-in. It takes effect at the NEXT generation start, never
+    mid-generation.
+- **Records and output** carry aliases, generations, owners, codes, times, provider-reported percentages, a bounded
+  audit and the switch log. They never carry a secret, a secret digest or an account identifier.
+
 ## INV-FLEET-BACKLOG-001
 
 `zeus fleet backlog register|tick|status` admits ALREADY APPROVED work into the existing
@@ -3570,6 +3633,63 @@ no current descriptor to be unchanged from.
     - The ordinary tick still re-checks the lane binding before any result is written. A lane change between the
       stores becomes UNKNOWN again, a named hold.
     - The job runs only after the independent gates resume the Fleet.
+
+- **Generation restart of a stopped first activation** (`first_activation_generation_restart`, schema
+  `urn:zeus:host-delivery-generation-restart:1`). A host restart or an exited generation kills the running candidate
+  while the delivery is halted `no_known_good_predecessor`. Its startup receipt remains, and the live host reports
+  the instance as not running. The consumption retry above requires that same instance to be alive, so it refuses
+  `consumption_retry_instance_stopped`. There is no supported way forward without this explicit typed step.
+  - **Qualifying halt.** It is the SAME halt the consumption retry qualifies from, with no consumption retry and no
+    generation restart yet recorded. There is at most ONE restart per delivery.
+  - **The owner document binds:**
+    - the plan, its sha256 and pin sha256;
+    - the target, release, candidate revision and tree;
+    - the recorded halt;
+    - the first-activation evidence;
+    - the descriptor digest;
+    - the STOPPED instance id;
+    - a reason (`host_restarted` or `generation_exited`);
+    - a conductor approver who is not the author.
+    - It is evidenced by its own digest.
+  - **Trusted checks** (read-only, before any write):
+    - the release is verified;
+    - the descriptor row is equal to the bound descriptor, unconsumed, and its observed instance equals the stopped
+      instance and the intent's candidate instance;
+    - the live host reports that exact instance and descriptor as NOT running. A running instance refuses
+      `generation_restart_instance_running`, and an unobservable one refuses `generation_restart_unobservable`;
+    - no active pointer, promotion, lease or competing target.
+  - **ONE lane transaction** (compare-and-swap on the plan, intent, row, release, queue and lease):
+    - `ReleaseQueue.retry`;
+    - one recovery appended with state `requested`, the copied halt, and the stopped instance, descriptor and launch
+      record.
+    - The halt, stage, deadline, rollback and canary facts are never rewritten.
+  - **The start is then performed under the release-queue claim.** It uses the ordinary `host.start` of the SAME bound
+    descriptor, with `replaces` equal to the stopped generation, and is recorded `launched`.
+    - A launch record that differs from the one observed at the request (a lost response) is recognized, never
+      started twice.
+    - The fresh startup receipt (consumed, running, instance ≠ the stopped one) supplies the new identity: the
+      recovery becomes `started` with {instance, pid, revision, runtime root, module root, started_at}.
+    - An unconfirmed start stays `launched` (`generation_restart_launch_unconfirmed`), and its replay re-arms and
+      confirms without another start.
+    - The queue row returns to `blocked`. The delivery stays halted until the ONE consumption retry.
+  - **Link to the consumption retry.** With a restart, the consumption retry document MUST name it
+    (`generation_restart_evidence`). Without one, it must not. A mismatch refuses
+    `consumption_retry_restart_link_mismatch`.
+    - The retry then requires the restart to be `started`, the descriptor row's observed instance to be the STOPPED
+      one, and the live instance to be the STARTED one.
+    - It records the started instance and its launch as the candidate. Its one-shot rule, its interval (from its own
+      commit, the plan's `consumption_timeout_seconds`), its margin and its exhaustion are unchanged.
+  - **Owner canary.** The SAME canary action is recovered (never a second canary).
+    - The owner discovery holds `canary_recovery_owed` for a delivery whose linked restart owes an UNKNOWN
+      `canary_delivery_moved` action.
+    - `canary-recover` accepts an observed instance different from the action's binding ONLY through an explicit
+      two-sided link: a restart whose stopped instance is the binding's and whose started instance is the observed
+      one.
+    - The action is re-bound (binding and binding digest move; same id and job), and the recovery records `rebound`
+      {from, to, restart evidence, previous binding digest}.
+  - The same document replays `cached` (`requested`/`launched` replays complete the start). Another document of the
+    kind is `resume_conflict`. No manual start, store edit, first-activation replay or window extension is ever part
+    of it.
 ## INV-HOST-DELIVERY-MIGRATION-001
 
 The lane half of an evaluator migration, keyed by the old plan in `host_delivery_migrations`

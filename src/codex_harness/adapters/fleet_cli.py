@@ -166,9 +166,14 @@ def run(service, args, *, control=None) -> dict:
 
         continuation_tick = continuation_ticker(service.store, config, host, policy_id,
                                                 observer=build_observer(service.store, "fleet-continuation"))
+    # Opt-in only (INV-WORKER-CREDENTIALS-001): without the host setting the one inherited token reaches every
+    # child exactly as before; with it, each admission reserves ONE named credential or holds.
+    from codex_harness.adapters.worker_credentials import configured_credentials
+    credentials = configured_credentials(service.store, host)
+    launcher = LaneLauncher(config, host) if credentials is None else LaneLauncher(config, host, credentials=credentials)
     # The bounded portfolio pass is wired here, in the adapter: the runner keeps no portfolio
     # dependency and a reconciliation outage never blocks admission (operating-portfolio-001).
-    runner = FleetRunner(fleet, LaneLauncher(config, host), reconcile=portfolio_reconciler(service.store),
+    runner = FleetRunner(fleet, launcher, reconcile=portfolio_reconciler(service.store),
                          backlog=backlog_tick, control=control, continuation=continuation_tick)
     installed = []  # (signal, previous handler) for each handler THIS run replaced
     try:

@@ -243,6 +243,7 @@ INVOCATION_OUTCOMES = {"accepted": "succeeded", "empty_answer": "failed", "inval
 OUTPUT_REASONS = ("empty", "invalid_text", "invalid_json", "schema_mismatch", "schema_configuration")
 FAILURE_OWNERS = ("agent_output", "configuration", "provider")
 PROVIDER_CAUSES = ("codex-provider-usage-limit-exceeded", "claude-provider-budget-exhausted",
+                   "claude-provider-usage-limit-exceeded", "claude-provider-authentication-failed",
                    "claude-provider-cancelled", "claude-provider-conflicting-terminal",
                    "claude-provider-error-result", "claude-provider-exit-conflict",
                    "claude-provider-max-turns", "claude-provider-missing-terminal",

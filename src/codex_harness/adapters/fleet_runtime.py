@@ -13,6 +13,7 @@ import os
 import subprocess
 import sys
 import time
+import uuid
 from pathlib import Path
 
 import psycopg
@@ -85,12 +86,54 @@ def read_receipt(dsn: str, schema: str, operation_id: str, connect=psycopg.conne
         return None, type(exc).__name__
 
 
+CREDENTIAL_TOKEN = "CLAUDE_CODE_OAUTH_TOKEN"
+PROVIDER_CREDENTIAL_CAUSES = ("claude-provider-authentication-failed", "claude-provider-usage-limit-exceeded")
+
+
+def read_provider_cause(dsn: str, schema: str, receipt, connect=psycopg.connect):
+    """The named provider cause the lane recorded for this operation's task failure, or None. A read failure
+    is None (no effect is inferred from uncertainty); only known Claude causes are returned."""
+    task_id = receipt.get("task_id") if isinstance(receipt, dict) else None
+    if not isinstance(task_id, str) or not task_id:
+        return None
+    try:
+        with connect(dsn, connect_timeout=5) as conn:
+            if conn.execute("SELECT current_schema()").fetchone()[0] != schema:
+                return None
+            row = conn.execute("SELECT body FROM documents WHERE bucket='tasks' AND id=%s", (task_id,)).fetchone()
+    except Exception:
+        return None
+    body = (row[0] or {}) if row else {}
+    failures = [body.get("failure"), *[o.get("failure") for o in (body.get("attempt_outcomes") or [])
+                                       if isinstance(o, dict)]]
+    causes = {f.get("cause") for f in failures if isinstance(f, dict)}
+    # Authentication outranks a usage limit: a revoked credential must never merely cool down.
+    return next((c for c in PROVIDER_CREDENTIAL_CAUSES if c in causes), None)
+
+
 class LaneLauncher:
     def __init__(self, config: dict, host_settings: dict, *, argv=DEFAULT_ARGV, connect=psycopg.connect,
-                 budget=None, environ=None):
+                 budget=None, environ=None, credentials=None):
         self.config, self.host, self.argv, self.connect = config, host_settings, tuple(argv), connect
         self.budget, self.environ = budget if budget is not None else CallBudget(), environ
         self.lanes = {lane["id"]: lane for lane in config["lanes"]}
+        # INV-WORKER-CREDENTIALS-001: the named-credential admission (`application.worker_credentials`), or None -
+        # the default - for the exact previous behaviour (the host's one token reaches every child).
+        self.credentials = credentials
+
+    @property
+    def reserves_credentials(self) -> bool:
+        return self.credentials is not None
+
+    def reserve(self):
+        """ONE credential reserved for the next admission, or a hold; only with the credential port."""
+        if self.credentials is None:
+            return None
+        return self.credentials.admit_fresh("fleet-dispatch:" + uuid.uuid4().hex)
+
+    def unreserve(self, grant) -> None:
+        if self.credentials is not None and isinstance(grant, dict) and grant.get("granted"):
+            self.credentials.release(grant["owner"])
 
     def budget_exhausted(self, budget: dict) -> bool:
         """Counts only, under the shared usage policy (finite ceilings, or subscription: readable
@@ -98,12 +141,22 @@ class LaneLauncher:
         actual provider start, never here."""
         return exhausted(budget, self.budget.counts())
 
-    def launch(self, job: dict) -> dict:
+    def launch(self, job: dict, grant=None) -> dict:
         lane = self.lanes[job["lane"]]
         try:
             env = lane_environment(lane, self.host, self.environ)
         except IsolationError as exc:
             raise LaunchRefused(exc.reason_code) from exc
+        credential = None
+        if self.credentials is not None:
+            if not (isinstance(grant, dict) and grant.get("granted")):
+                raise LaunchRefused("credential_not_granted")
+            try:
+                # Only THIS child's environment carries the reserved credential; it cannot change mid-call.
+                env[CREDENTIAL_TOKEN] = self.credentials.token(grant)
+            except Exception as exc:
+                raise LaunchRefused("credential_unavailable") from exc
+            credential = {"owner": grant["owner"], "alias": grant["alias"], "generation": grant["generation"]}
         verify_lane_schema(env["ZEUS_DATABASE_URL"], lane["schema"], self.connect)
         directory = Path(lane["runtime"]) / "fleet" / job["id"]
         try:
@@ -122,7 +175,8 @@ class LaneLauncher:
             stdout.close(), stderr.close()
             raise LaunchRefused("spawn_failed") from exc
         return {"job_id": job["id"], "process": process, "files": (stdout, stderr), "lane": lane["id"],
-                "dsn": env["ZEUS_DATABASE_URL"], "schema": lane["schema"], "directory": directory}
+                "dsn": env["ZEUS_DATABASE_URL"], "schema": lane["schema"], "directory": directory,
+                **({"credential": credential} if credential is not None else {})}
 
     @staticmethod
     def wait(handles: list, seconds: float) -> list:
@@ -140,6 +194,17 @@ class LaneLauncher:
         exit_code = handle["process"].returncode
         receipt, error = read_receipt(handle["dsn"], handle["schema"], job["operation_id"], self.connect)
         outcome = classify_outcome(exit_code, receipt, job, error)
+        if handle.get("credential") is not None:
+            # The worker's own durable provider cause decides what it means for the credential that served it.
+            cause = read_provider_cause(handle["dsn"], handle["schema"], receipt, self.connect)
+            try:
+                released = self.credentials.release(handle["credential"]["owner"], cause=cause, subject=job["id"])
+            except Exception as exc:
+                # Never changes the job's outcome: the reservation ends at its own lease, visibly unreleased.
+                released = {"effect": None, "reason_code": "credential_release_failed", "error_type": type(exc).__name__}
+            outcome = {**outcome, "credential": {"alias": handle["credential"]["alias"],
+                                                 "effect": released.get("effect"),
+                                                 "reason_code": released.get("reason_code")}}
         # INV-OPERATION-001: the lane operation's own durable owner handoff travels up as it was
         # written. The classification above is untouched by it; `Fleet.finalize` projects it safely.
         handoff = receipt.get("owner_handoff") if isinstance(receipt, dict) else None

@@ -79,6 +79,7 @@ from codex_harness.domain.host_delivery import (
     KIND_SYSTEMD,
     RECEIPT_SCHEMA,
     RECOVERY_CONSUMPTION_RETRY,
+    RECOVERY_GENERATION_RESTART,
     REPLACEABLE_INSTANCES,
     REVISION,
     TOKEN,
@@ -1322,10 +1323,13 @@ def execute(service, args) -> dict:
                 document = _read_json(Path(args.document))
                 if document is None:
                     raise DeliveryRefused("first_activation_document_unreadable", "document")
-                # The document's own `kind` selects the typed recovery; its validator refuses the rest.
-                owner = (delivery.resume_consumption_retry
-                         if isinstance(document, dict) and document.get("kind") == RECOVERY_CONSUMPTION_RETRY
-                         else delivery.resume_first_activation)
+                # The document's own `kind` selects the typed recovery; its validator refuses the rest. The
+                # generation restart is the ONE kind with a host effect: the target's own guarded start of the
+                # SAME bound descriptor, under the single release fence (INV-HOST-DELIVERY-FIRST-ACTIVATION-001).
+                kind = document.get("kind") if isinstance(document, dict) else None
+                owner = getattr(delivery, {RECOVERY_CONSUMPTION_RETRY: "resume_consumption_retry",
+                                           RECOVERY_GENERATION_RESTART: "resume_generation_restart"}.get(
+                                               kind, "resume_first_activation"))
                 return {**owner(args.plan, args.plan_sha256, document, args.evidence), **routed, "exit_code": 0}
             return {**delivery.resume(args.plan, args.plan_sha256, args.evidence), **routed, "exit_code": 0}
         if command == "tick":

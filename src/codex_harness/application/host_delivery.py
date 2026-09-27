@@ -35,6 +35,7 @@ from __future__ import annotations
 import copy
 import logging
 import threading
+import time
 from datetime import datetime, timedelta
 
 from codex_harness.application.release_queue import ReleaseQueue
@@ -58,6 +59,7 @@ from codex_harness.domain.host_delivery import (
     CI_HEAD_CHANGED,
     CI_PASSED,
     CI_PENDING,
+    CONSUMPTION_RETRY_RESTART_FIELD,
     DRAIN_INTENDED,
     EVENT_BLOCKED,
     EVENT_CHECK,
@@ -91,8 +93,12 @@ from codex_harness.domain.host_delivery import (
     PUBLISHING,
     RECOVERY_CONSUMPTION_RETRY,
     RECOVERY_FIRST_ACTIVATION,
+    RECOVERY_GENERATION_RESTART,
     RECOVERY_VERIFICATION_MISSING,
     REGISTERED,
+    RESTART_LAUNCHED,
+    RESTART_REQUESTED,
+    RESTART_STARTED,
     ROLLED_BACK,
     ROLLING_BACK,
     STATUS_SCHEMA,
@@ -115,6 +121,8 @@ from codex_harness.domain.host_delivery import (
     descriptor_digest,
     first_activation_resumable,
     first_activation_unbound,
+    generation_restart_of,
+    generation_restartable,
     migration_kind,
     migration_lineage_digest,
     migration_rejected_source,
@@ -129,6 +137,7 @@ from codex_harness.domain.host_delivery import (
     unresolved_attempts,
     validate_consumption_retry,
     validate_first_activation,
+    validate_generation_restart,
     validate_migration_ack,
     validate_migration_request,
     validate_pin,
@@ -788,6 +797,8 @@ class HostDelivery:
         if any(row.get("evidence_ref") == evidence_ref for row in recorded):
             return True
         # One recovery of this kind per delivery: halted again in the same shape is exhausted.
+        if kind == RECOVERY_GENERATION_RESTART:
+            raise DeliveryRefused("resume_conflict", "evidence")
         if kind == RECOVERY_CONSUMPTION_RETRY:
             if consumption_retry_exhausted(intent):
                 raise DeliveryRefused("resume_exhausted", "evidence")
@@ -1072,7 +1083,14 @@ class HostDelivery:
         binding = recoveries_of(intent, RECOVERY_FIRST_ACTIVATION)[0]
         if binding.get("evidence_ref") != retry["first_activation_evidence"]:
             raise DeliveryRefused("consumption_retry_first_activation_mismatch", "first_activation_evidence")
-        self._retry_descriptor(intent, current_row, retry)
+        # A recorded generation restart is EXPLICITLY linked: the document names its evidence, and the one retry
+        # consumes exactly the instance that restart started (never a weaker same-instance check).
+        restarted = generation_restart_of(intent)
+        if (restarted is None) != (CONSUMPTION_RETRY_RESTART_FIELD not in retry):
+            raise DeliveryRefused("consumption_retry_restart_link_mismatch", CONSUMPTION_RETRY_RESTART_FIELD)
+        if restarted is not None and restarted.get("evidence_ref") != retry[CONSUMPTION_RETRY_RESTART_FIELD]:
+            raise DeliveryRefused("consumption_retry_restart_link_mismatch", CONSUMPTION_RETRY_RESTART_FIELD)
+        self._retry_descriptor(intent, current_row, retry, restarted)
         self._retry_host(plan, record, active, others, lock)
         receipt = self._retry_live(plan, intent, retry)
         # ONE authoritative time anchor (INV-HOST-DELIVERY-FIRST-ACTIVATION-001): the clock is read ONCE and the
@@ -1086,7 +1104,9 @@ class HostDelivery:
                         "stage", "previous_stage", "reason_code", "outcome", "updated_at", "stage_entered_at",
                         "stage_deadline", "rollback", "canary", "candidate_instance_id", "attempts")}),
                     "observed": {"descriptor_sha256": intent["descriptor_sha256"],
-                                 "observed_instance_id": retry["observed_instance_id"], "receipt": receipt},
+                                 "observed_instance_id": retry["observed_instance_id"], "receipt": receipt,
+                                 **({CONSUMPTION_RETRY_RESTART_FIELD: restarted["evidence_ref"]}
+                                    if restarted is not None else {})},
                     "interval": {"started_at": now, "deadline": deadline}, "at": now}
         try:
             with self.store.transaction() as tx:
@@ -1107,6 +1127,286 @@ class HostDelivery:
         LOGGER.warning("host delivery consumption retry plan=%s from=%s", plan["plan_id"], intent["stage"])
         return self._resumed(plan, settled, cached=False, kind=RECOVERY_CONSUMPTION_RETRY)
 
+    # ----- generation restart of a stopped first activation (INV-HOST-DELIVERY-FIRST-ACTIVATION-001) ----
+    def resume_generation_restart(self, plan_id: str, plan_sha256: str, document, evidence_ref: str, *,
+                                  startup_seconds: float = 120.0, poll_seconds: float = 1.0) -> dict:
+        """Restart the SAME bound descriptor ONCE after its observed generation positively stopped.
+
+        The consumption-retry halt of a bound first activation whose observed instance is no longer running
+        (a host restart ended it; its receipt remains) has nothing live for the one consumption retry. Read-only
+        first, exactly as that retry: the plan, pin, halt INCLUDING its expired deadline, the VERIFIED release
+        and candidate, a conductor approver who is not the author, the first-activation evidence, the bound,
+        observed, never consumed descriptor row naming the stopped instance, no competing delivery or active
+        pointer, and the TRUSTED host showing this descriptor with that instance NOT running. Then ONE
+        transaction records the restart `requested` BEFORE any effect (the halt and deadline are kept
+        unchanged; only `recoveries` grows) and re-arms the queue row; the ONE start runs under the single
+        release fence through the target's own guarded lifecycle (its Fleet activation gate, reconciliation and
+        one launch), authorized to replace only this delivery's own candidate. The fresh startup receipt names
+        the new generation and the record becomes `started`. A lost response or a replay never starts twice:
+        a launch newer than the stopped one is recognized, a live instance of this descriptor is recognized,
+        and an unconfirmed launch refuses for the owner. The same evidence answers `cached` once started.
+        """
+        if not (type(evidence_ref) is str and EVIDENCE_REF.fullmatch(evidence_ref)):
+            raise DeliveryRefused("resume_evidence_invalid", "evidence")
+        restart = validate_generation_restart(document)
+        document_sha256 = digest(restart)
+        if evidence_ref != "sha256:" + document_sha256:
+            raise DeliveryRefused("generation_restart_evidence_mismatch", "evidence")
+        try:
+            with self.store.transaction() as tx:
+                row = tx.get(BUCKET_PLANS, plan_id) if type(plan_id) is str else None
+                intent = tx.get(BUCKET_INTENTS, plan_id) if row is not None else None
+                queued = tx.get("release_queue", row["plan"]["release_id"]) if row is not None else None
+                current_row = tx.get(BUCKET_DESCRIPTORS, row["plan"]["target_id"]) if row is not None else None
+                active = tx.get("deployment", "active") or {}
+                others = [other for other in tx.scan(BUCKET_INTENTS)] if row is not None else []
+                lock = tx.get("deployment_locks", "controller") or {}
+                record = tx.get("releases", row["plan"]["release_id"]) if row is not None else None
+        except Exception as exc:
+            raise DeliveryRefused("resume_unobservable", "store") from exc
+        if row is None:
+            raise DeliveryRefused("plan_unregistered", "plan_id")
+        if row["plan_sha256"] != plan_sha256 or restart["plan_sha256"] != plan_sha256:
+            raise DeliveryRefused("resume_plan_mismatch", "plan_sha256")
+        plan = row["plan"]
+        if restart["plan_id"] != plan["plan_id"]:
+            raise DeliveryRefused("generation_restart_plan_mismatch", "plan_id")
+        if (row.get("pin") or {}).get("sha256") != restart["pin_sha256"]:
+            raise DeliveryRefused("generation_restart_pin_mismatch", "pin_sha256")
+        recorded = generation_restart_of(intent)
+        if recorded is not None:
+            if recorded.get("evidence_ref") != evidence_ref:
+                raise DeliveryRefused("resume_conflict", "evidence")
+            if recorded.get("state") == RESTART_STARTED:
+                return self._resumed(plan, intent, cached=True, evidence_ref=evidence_ref,
+                                     kind=RECOVERY_GENERATION_RESTART)
+        elif not generation_restartable(intent):
+            raise DeliveryRefused("resume_not_applicable", "stage")
+        halted = {key: intent.get(key) for key in ("stage", "previous_stage", "reason_code", "updated_at",
+                                                    "stage_deadline")}
+        if restart["halt"] != halted:
+            raise DeliveryRefused("generation_restart_halt_mismatch", "halt")
+        for key, expected in (("release_id", plan["release_id"]), ("target_id", plan["target_id"]),
+                              ("candidate_revision", plan["revision"]), ("candidate_tree", plan["tree"])):
+            if restart[key] != expected:
+                raise DeliveryRefused("generation_restart_" + key + "_mismatch", key)
+        self._retry_gate(release_gate(record, plan, self._parent(record)))
+        candidate = (record or {}).get("candidate") or {}
+        if (candidate.get("revision"), candidate.get("tree")) != (restart["candidate_revision"],
+                                                                   restart["candidate_tree"]):
+            raise DeliveryRefused("generation_restart_candidate_mismatch", "candidate_revision")
+        self._first_activation_approver(restart["approved_by"], candidate.get("author"), "generation_restart")
+        binding = recoveries_of(intent, RECOVERY_FIRST_ACTIVATION)[0]
+        if binding.get("evidence_ref") != restart["first_activation_evidence"]:
+            raise DeliveryRefused("generation_restart_first_activation_mismatch", "first_activation_evidence")
+        self._restart_descriptor(intent, current_row, restart)
+        self._retry_host(plan, record, active, others, lock)
+        host, target = self._host(plan)
+        if recorded is None:
+            stopped = self._restart_stopped(host, target, intent, restart)
+            now = self.clock()
+            recovery = {"kind": RECOVERY_GENERATION_RESTART, "evidence_ref": evidence_ref,
+                        "document_sha256": document_sha256, "approved_by": restart["approved_by"],
+                        "reason": restart["reason"], "state": RESTART_REQUESTED,
+                        "halted": copy.deepcopy({key: intent.get(key) for key in (
+                            "stage", "previous_stage", "reason_code", "outcome", "updated_at", "stage_entered_at",
+                            "stage_deadline", "rollback", "canary", "candidate_instance_id", "attempts")}),
+                        "stopped": stopped, "at": now}
+            try:
+                with self.store.transaction() as tx:
+                    current = tx.get(BUCKET_INTENTS, plan["plan_id"])
+                    if self._replay_of(current, evidence_ref, RECOVERY_GENERATION_RESTART):
+                        intent = current
+                    else:
+                        intent = self._restart_request_in(tx, row, intent, queued, current_row, record, current,
+                                                          recovery)
+            except DeliveryRefused:
+                raise
+            except Exception as exc:
+                raise DeliveryRefused("resume_unobservable", "store") from exc
+            LOGGER.warning("host delivery generation restart requested plan=%s stopped=%s", plan["plan_id"],
+                           restart["stopped_instance_id"])
+        else:
+            # A recorded, not yet started restart (a held fence, a lost response or a crash): the same evidence
+            # re-arms the stopped queue row under the same checks and completes it; it never starts twice.
+            self._restart_rearm(plan, row, intent, queued, evidence_ref)
+        return self._restart_effect(plan, host, target, evidence_ref, startup_seconds, poll_seconds)
+
+    def _restart_rearm(self, plan: dict, row: dict, intent: dict, queued, evidence_ref: str) -> None:
+        """Re-arm the queue row a recorded restart left `blocked`, in ONE transaction re-checking the intent."""
+        try:
+            with self.store.transaction() as tx:
+                if tx.get(BUCKET_INTENTS, plan["plan_id"]) != intent or tx.get(BUCKET_PLANS, plan["plan_id"]) != row:
+                    raise DeliveryRefused("resume_intent_changed", "plan_id")
+                current = tx.get("release_queue", plan["release_id"])
+                if current != queued:
+                    raise DeliveryRefused("resume_queue_changed", "release_id")
+                status = (current or {}).get("status")
+                if status in {"blocked", "failed"}:
+                    self.queue.retry(plan["release_id"], "host delivery generation restart " + plan["plan_id"] + " "
+                                     + evidence_ref, transaction=tx)
+                elif not (current is None or status in {"queued", "retry"}
+                          or (status == "running" and not self._leased(current))):
+                    raise DeliveryRefused("resume_queue_" + str(status), "release_id")
+        except DeliveryRefused:
+            raise
+        except ContractError as exc:
+            raise DeliveryRefused("resume_queue_refused", "release_id") from exc
+        except Exception as exc:
+            raise DeliveryRefused("resume_unobservable", "store") from exc
+
+    @staticmethod
+    def _restart_descriptor(intent: dict, current_row, restart: dict) -> None:
+        """The recorded descriptor row is exactly the bound, observed, never consumed one of the STOPPED
+        instance the document names (the same row the one consumption retry reads)."""
+        row = current_row or {}
+        if (row.get("descriptor") != intent["descriptor"]
+                or row.get("descriptor_sha256") != intent["descriptor_sha256"]
+                or restart["descriptor_sha256"] != intent["descriptor_sha256"]):
+            raise DeliveryRefused("generation_restart_descriptor_mismatch", "descriptor_sha256")
+        if row.get("consumed") or row.get("instance_id") is not None or not row.get("startup_observed"):
+            raise DeliveryRefused("generation_restart_descriptor_state", "descriptor_sha256")
+        if not (row.get("observed_instance_id") == restart["stopped_instance_id"]
+                == intent.get("candidate_instance_id")):
+            raise DeliveryRefused("generation_restart_instance_mismatch", "stopped_instance_id")
+
+    @staticmethod
+    def _restart_stopped(host, target: dict, intent: dict, restart: dict) -> dict:
+        """The TRUSTED host shows THIS descriptor and the named instance POSITIVELY not running: its own
+        receipt still names it, and nothing runs. A live instance is the consumption retry's case."""
+        try:
+            identity = host.identity(target)
+        except Exception as exc:
+            raise DeliveryRefused("generation_restart_host_unobservable", "target_id") from exc
+        if identity.get("descriptor_sha256") != intent["descriptor_sha256"]:
+            raise DeliveryRefused("generation_restart_host_descriptor_changed", "descriptor_sha256")
+        if identity.get("running") is None:
+            raise DeliveryRefused("generation_restart_host_unobservable", "target_id")
+        if identity.get("running") is True:
+            raise DeliveryRefused("generation_restart_instance_running", "stopped_instance_id")
+        if identity.get("instance_id") != restart["stopped_instance_id"]:
+            raise DeliveryRefused("generation_restart_instance_mismatch", "stopped_instance_id")
+        return {"instance_id": restart["stopped_instance_id"], "descriptor_sha256": intent["descriptor_sha256"],
+                "launch": intent.get("candidate_launch"), "observed_launch": identity.get("launch")}
+
+    def _restart_request_in(self, tx, row: dict, intent: dict, queued, current_row, record, current,
+                            recovery: dict) -> dict:
+        """Phase 2, inside ONE transaction: every read re-checked (CAS), the queue row re-armed, the restart
+        recorded `requested` BEFORE any effect. The halt, its deadline and every earlier recovery are kept."""
+        plan = row["plan"]
+        if current != intent or tx.get(BUCKET_PLANS, plan["plan_id"]) != row:
+            raise DeliveryRefused("resume_intent_changed", "plan_id")
+        if tx.get(BUCKET_DESCRIPTORS, plan["target_id"]) != current_row:
+            raise DeliveryRefused("generation_restart_descriptor_changed", "descriptor_sha256")
+        if tx.get("releases", plan["release_id"]) != record:
+            raise DeliveryRefused("generation_restart_release_changed", "release_id")
+        if tx.get("release_queue", plan["release_id"]) != queued:
+            raise DeliveryRefused("resume_queue_changed", "release_id")
+        lock = tx.get("deployment_locks", "controller") or {}
+        self._retry_host(plan, record, tx.get("deployment", "active") or {}, tx.scan(BUCKET_INTENTS), lock)
+        self._retry_gate(release_gate(record, plan, self._parent(record)))
+        status = (queued or {}).get("status")
+        if status in {"blocked", "failed"}:
+            try:
+                self.queue.retry(plan["release_id"], "host delivery generation restart " + plan["plan_id"] + " "
+                                 + recovery["evidence_ref"], transaction=tx)
+            except ContractError as exc:
+                raise DeliveryRefused("resume_queue_refused", "release_id") from exc
+        elif not (queued is None or status in {"queued", "retry"}
+                  or (status == "running" and not self._leased(queued))):
+            raise DeliveryRefused("resume_queue_" + str(status), "release_id")
+        settled = {**current, "recoveries": [*(current.get("recoveries") or []), recovery]}
+        tx.put(BUCKET_INTENTS, plan["plan_id"], settled)
+        return settled
+
+    def _restart_effect(self, plan: dict, host, target: dict, evidence_ref: str, startup_seconds: float,
+                        poll_seconds: float) -> dict:
+        """The ONE start of the restart, under the single release fence, then the fresh receipt."""
+        try:
+            claim = self.queue.claim(now=self._now(), eligible=lambda queued: queued["id"] == plan["release_id"])
+        except ContractError as exc:
+            raise DeliveryRefused("resume_queue_refused", "release_id") from exc
+        if claim is None:
+            # Another controller holds the host lease (or the row is not runnable): the recorded request
+            # stays, and the same evidence completes it later; nothing was started here.
+            raise DeliveryRefused("resume_controller_running", "release_id")
+        state = "unconfirmed"
+        try:
+            with self.store.transaction() as tx:
+                self.queue.owned(tx, claim, self._now())
+                intent = tx.get(BUCKET_INTENTS, plan["plan_id"])
+            recorded = generation_restart_of(intent)
+            if recorded is None or recorded.get("evidence_ref") != evidence_ref:
+                raise DeliveryRefused("resume_intent_changed", "plan_id")
+            if recorded.get("state") == RESTART_REQUESTED:
+                launch = self._launch_record(host, target)
+                if launch is not None and launch != (recorded.get("stopped") or {}).get("observed_launch"):
+                    # A launch newer than the stopped generation's: this restart already started it and lost
+                    # the response. It is recognized, never started a second time.
+                    started = {"started": False, "recovered": True, "launch": launch}
+                else:
+                    self._owned_now(claim)
+                    started = self._lifecycle(lambda: host.start(
+                        target, intent["descriptor"], authorize=self._authorizer(claim),
+                        replaces=self._replaces(intent, forward=False)))
+                intent = self._record("generation_restart_launched", lambda: self._restart_state(
+                    plan, claim, evidence_ref, RESTART_LAUNCHED,
+                    launch={"record": started.get("launch") or self._launch_record(host, target),
+                            "started": bool(started.get("started")), "recovered": bool(started.get("recovered"))}))
+                recorded = generation_restart_of(intent)
+            receipt = self._restart_receipt(host, target, intent, recorded, startup_seconds, poll_seconds)
+            if receipt is None:
+                state = RESTART_LAUNCHED
+            else:
+                intent = self._record("generation_restart_started", lambda: self._restart_state(
+                    plan, claim, evidence_ref, RESTART_STARTED, started=receipt))
+                state = RESTART_STARTED
+                LOGGER.warning("host delivery generation restart started plan=%s instance=%s", plan["plan_id"],
+                               receipt["instance_id"])
+        finally:
+            try:
+                self.queue.finish(claim, {"status": "blocked", "reason": "generation_restart_" + state}, self._now())
+            except ContractError:
+                pass
+        if state != RESTART_STARTED:
+            raise DeliveryRefused("generation_restart_launch_unconfirmed", "target_id")
+        return self._resumed(plan, intent, cached=False, evidence_ref=evidence_ref, kind=RECOVERY_GENERATION_RESTART)
+
+    def _restart_state(self, plan: dict, claim, evidence_ref: str, state: str, **fields) -> dict:
+        """One owned transaction: the restart record advances; nothing else on the intent changes."""
+        with self.store.transaction() as tx:
+            self.queue.owned(tx, claim, self._now())
+            intent = tx.get(BUCKET_INTENTS, plan["plan_id"])
+            recoveries = list(intent.get("recoveries") or [])
+            index = next(i for i, rec in enumerate(recoveries)
+                         if rec.get("kind") == RECOVERY_GENERATION_RESTART and rec.get("evidence_ref") == evidence_ref)
+            recoveries[index] = {**recoveries[index], "state": state, **fields, state + "_at": self.clock()}
+            settled = {**intent, "recoveries": recoveries}
+            tx.put(BUCKET_INTENTS, plan["plan_id"], settled)
+            return settled
+
+    @staticmethod
+    def _restart_receipt(host, target: dict, intent: dict, recorded: dict, startup_seconds: float,
+                         poll_seconds: float):
+        """The new generation's OWN fresh receipt: this descriptor, a running instance other than the stopped
+        one. Bounded wait; None when it has not confirmed yet (the launch stays recorded, nothing restarts)."""
+        stopped = (recorded.get("stopped") or {}).get("instance_id")
+        deadline = time.monotonic() + max(0.0, startup_seconds)
+        while True:
+            try:
+                receipt = host.receipt(target)
+                verdict = consumption_verdict(intent["descriptor"], receipt)
+                running = host.running(target)
+            except Exception:
+                receipt, verdict, running = None, {"consumed": False}, False
+            if verdict.get("consumed") and verdict.get("instance_id") not in (None, stopped) and running:
+                return {**{key: verdict.get(key) for key in ("instance_id", "pid", "revision", "runtime_root",
+                                                             "module_root")},
+                        "started_at": receipt.get("started_at") if isinstance(receipt, dict) else None}
+            if time.monotonic() >= deadline:
+                return None
+            time.sleep(max(0.0, poll_seconds))
+
     @staticmethod
     def _retry_gate(gate: dict) -> None:
         """The release must be VERIFIED and not yet promoted: the retry never re-enters verification."""
@@ -1117,8 +1417,10 @@ class HostDelivery:
                               "release_id")
 
     @staticmethod
-    def _retry_descriptor(intent: dict, current_row, retry: dict) -> None:
-        """The recorded descriptor row is exactly the bound, observed, never consumed one."""
+    def _retry_descriptor(intent: dict, current_row, retry: dict, restarted: dict | None = None) -> None:
+        """The recorded descriptor row is exactly the bound, observed, never consumed one. After a linked
+        generation restart the row still names the STOPPED instance (it is never rewritten), and the retry
+        names exactly the instance the restart started."""
         row = current_row or {}
         if (row.get("descriptor") != intent["descriptor"]
                 or row.get("descriptor_sha256") != intent["descriptor_sha256"]
@@ -1126,6 +1428,13 @@ class HostDelivery:
             raise DeliveryRefused("consumption_retry_descriptor_mismatch", "descriptor_sha256")
         if row.get("consumed") or row.get("instance_id") is not None or not row.get("startup_observed"):
             raise DeliveryRefused("consumption_retry_descriptor_state", "descriptor_sha256")
+        if restarted is not None:
+            stopped = (restarted.get("stopped") or {}).get("instance_id")
+            started = (restarted.get("started") or {}).get("instance_id")
+            if not (row.get("observed_instance_id") == stopped == intent.get("candidate_instance_id")
+                    and started not in (None, stopped) and retry["observed_instance_id"] == started):
+                raise DeliveryRefused("consumption_retry_instance_mismatch", "observed_instance_id")
+            return
         if not (row.get("observed_instance_id") == retry["observed_instance_id"]
                 == intent.get("candidate_instance_id")):
             raise DeliveryRefused("consumption_retry_instance_mismatch", "observed_instance_id")
@@ -1190,9 +1499,14 @@ class HostDelivery:
         elif not (queued is None or status in {"queued", "retry"}
                   or (status == "running" and not self._leased(queued))):
             raise DeliveryRefused("resume_queue_" + str(status), "release_id")
+        restarted = generation_restart_of(current)
+        candidate = {} if restarted is None else {
+            # The linked restart's generation is now this delivery's own candidate: a rollback replaces it.
+            "candidate_instance_id": (restarted.get("started") or {}).get("instance_id"),
+            "candidate_launch": (restarted.get("launch") or {}).get("record") or current.get("candidate_launch")}
         settled = {**current, "stage": AWAITING_CONSUMPTION, "previous_stage": current["stage"],
                    "outcome": OUTCOME_PENDING, "reason_code": None, "error_type": None, "attempts": 0,
-                   "rollback": None, "canary": None,
+                   "rollback": None, "canary": None, **candidate,
                    "recoveries": [*(current.get("recoveries") or []), recovery],
                    "stage_entered_at": now, "stage_deadline": recovery["interval"]["deadline"],
                    "updated_at": now}

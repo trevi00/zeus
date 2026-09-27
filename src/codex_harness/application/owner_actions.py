@@ -116,6 +116,7 @@ from codex_harness.domain.owner_actions import (
     dispatch_acceptance,
     first_activation_tuple,
     lineage_edges,
+    linked_restart,
     moved,
     new_action,
     plan_binding,
@@ -125,6 +126,7 @@ from codex_harness.domain.owner_actions import (
     policy_digest,
     recovered_canary,
     research_binding,
+    restart_owed_canary,
     reusable_assessment,
     validate_canary_recovery,
     validate_policy,
@@ -326,7 +328,12 @@ class OwnerActions:
             try:
                 self._refile_request(plan)
                 binding = self._canary_binding(plan)
-                if binding is not None and (DELIVERY_CANARY, plan["subject"]["intent_id"]) not in busy:
+                if binding is not None and self._restart_owed(plan, actions):
+                    # INV-HOST-DELIVERY-FIRST-ACTIVATION-001: the lane restarted this plan's stopped generation and
+                    # retried it; the halted canary of the stopped instance is owed its typed recovery onto the
+                    # restarted one (same action, same job). A second canary is never created for it.
+                    waits[plan["id"]] = "canary_recovery_owed"
+                elif binding is not None and (DELIVERY_CANARY, plan["subject"]["intent_id"]) not in busy:
                     created += self._create(row, DELIVERY_CANARY, binding, dict(plan["subject"]))
             except (ContractError, OSError, RuntimeError, ValueError) as exc:
                 waits[plan["id"]] = getattr(exc, "reason_code", None) or type(exc).__name__
@@ -772,6 +779,13 @@ class OwnerActions:
         if self.targets.request(target, plan_action["plan_id"]) != document:
             self.targets.write_request(target, plan_action["plan_id"], document)
 
+    def _restart_owed(self, plan_action: dict, actions: list) -> bool:
+        """True while a linked lane restart leaves this plan's halted canary owed its typed recovery."""
+        intent, _target = self._delivery_view(plan_action)
+        restart = linked_restart(intent)
+        return any(restart_owed_canary(a, restart) and (a.get("binding") or {}).get("plan_id") == plan_action["plan_id"]
+                   and (a.get("binding") or {}).get("plan_sha256") == plan_action["plan_sha256"] for a in actions)
+
     def _canary_binding(self, plan_action: dict) -> dict | None:
         """Owed once the delivery of exactly this plan awaits consumption and its candidate instance has
         reported the switched descriptor; the binding names that instance."""
@@ -899,7 +913,8 @@ class OwnerActions:
                     "approved_by": recovery_doc["approved_by"],
                     "halted": {"state": action["state"], "reason_code": action["reason_code"],
                                "updated_at": action["updated_at"], "version": action["version"]},
-                    "job_snapshot": _job_snapshot(job), "lane": lane, "at": now}
+                    "job_snapshot": _job_snapshot(job), "lane": {k: v for k, v in lane.items() if k != "rebound"},
+                    **({"rebound": lane["rebound"]} if "rebound" in lane else {}), "at": now}
         with self.store.transaction() as tx:
             current = tx.get(BUCKET_ACTIONS, action["id"])
             if isinstance(current, dict) and any(r.get("evidence_ref") == evidence_ref
@@ -998,11 +1013,20 @@ class OwnerActions:
         if retry.get("kind") != LANE_RETRY_KIND or retry.get("evidence_ref") != document["lane_retry_evidence"]:
             raise OwnerActionRefused("canary_recovery_lane_not_retried", "lane_retry_evidence")
         observed = retry.get("observed") or {}
+        rebound = None
         if observed.get("observed_instance_id") != binding["instance_id"]:
-            raise OwnerActionRefused("canary_recovery_instance_mismatch", "instance_id")
+            # Only an EXPLICITLY linked lane restart of exactly this binding's instance moves the binding.
+            restart = linked_restart(intent)
+            if restart is None or restart["stopped_instance_id"] != binding["instance_id"] \
+                    or restart["started_instance_id"] != observed.get("observed_instance_id"):
+                raise OwnerActionRefused("canary_recovery_instance_mismatch", "instance_id")
+            rebound = {"binding": {**binding, "instance_id": restart["started_instance_id"]},
+                       "from_instance_id": binding["instance_id"], "to_instance_id": restart["started_instance_id"],
+                       "restart_evidence": restart["evidence_ref"], "previous_binding_sha256": action["binding_sha256"]}
         if observed.get("descriptor_sha256") != binding["descriptor_sha256"]:
             raise OwnerActionRefused("canary_recovery_descriptor_mismatch", "descriptor_sha256")
-        if not self._canary_still_bound(plan_action, action):
+        bound = action if rebound is None else {**action, "binding": rebound["binding"]}
+        if not self._canary_still_bound(plan_action, bound):
             raise OwnerActionRefused("canary_recovery_delivery_moved", "binding")
         reader = getattr(self.targets, "receipt", None)
         if reader is None:
@@ -1018,8 +1042,9 @@ class OwnerActions:
             raise OwnerActionRefused("canary_recovery_margin", "margin_seconds")
         self._recovery_approver(document["approved_by"], ((record or {}).get("candidate") or {}).get("author"))
         return {"retry_evidence": document["lane_retry_evidence"], "stage": intent["stage"],
-                "stage_deadline": intent["stage_deadline"], "instance_id": binding["instance_id"],
-                "descriptor_sha256": binding["descriptor_sha256"]}
+                "stage_deadline": intent["stage_deadline"], "instance_id": bound["binding"]["instance_id"],
+                "descriptor_sha256": binding["descriptor_sha256"],
+                **({"rebound": rebound} if rebound is not None else {})}
 
     def _recovery_approver(self, approved_by: str, author) -> None:
         """A conductor of the existing organization who is not the candidate's own author."""
