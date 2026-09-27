@@ -32,6 +32,7 @@ tick resumes the same logical intent under its own durable stage deadline.
 """
 from __future__ import annotations
 
+import copy
 import logging
 import threading
 from datetime import datetime, timedelta
@@ -88,6 +89,7 @@ from codex_harness.domain.host_delivery import (
     OUTCOME_UNREGISTERED,
     POST_MERGE_OPEN,
     PUBLISHING,
+    RECOVERY_CONSUMPTION_RETRY,
     RECOVERY_FIRST_ACTIVATION,
     RECOVERY_VERIFICATION_MISSING,
     REGISTERED,
@@ -106,6 +108,8 @@ from codex_harness.domain.host_delivery import (
     LifecycleInterrupted,
     attempts_of,
     ci_verdict,
+    consumption_retry_exhausted,
+    consumption_retryable,
     consumption_verdict,
     delivery_status,
     descriptor_digest,
@@ -123,6 +127,7 @@ from codex_harness.domain.host_delivery import (
     safe_error_type,
     stage_next_action,
     unresolved_attempts,
+    validate_consumption_retry,
     validate_first_activation,
     validate_migration_ack,
     validate_migration_request,
@@ -783,6 +788,10 @@ class HostDelivery:
         if any(row.get("evidence_ref") == evidence_ref for row in recorded):
             return True
         # One recovery of this kind per delivery: halted again in the same shape is exhausted.
+        if kind == RECOVERY_CONSUMPTION_RETRY:
+            if consumption_retry_exhausted(intent):
+                raise DeliveryRefused("resume_exhausted", "evidence")
+            raise DeliveryRefused("resume_conflict", "evidence")
         shape = resumable if kind == RECOVERY_VERIFICATION_MISSING else first_activation_resumable
         if shape({**intent, "recoveries": []}):
             raise DeliveryRefused("resume_exhausted", "evidence")
@@ -931,16 +940,16 @@ class HostDelivery:
         if lock.get("lease_until") and datetime.fromisoformat(lock["lease_until"]) > self._now():
             raise DeliveryRefused("resume_controller_running", "release_id")
 
-    def _first_activation_approver(self, approved_by: str, author) -> None:
+    def _first_activation_approver(self, approved_by: str, author, prefix: str = "first_activation") -> None:
         """A conductor of the existing organization who is not the candidate's own author."""
         if self.org is None:
-            raise DeliveryRefused("first_activation_approver_unavailable", "approved_by")
+            raise DeliveryRefused(prefix + "_approver_unavailable", "approved_by")
         try:
             self.org.actor(approved_by, "conductor")
         except Exception as exc:
-            raise DeliveryRefused("first_activation_approver_invalid", "approved_by") from exc
+            raise DeliveryRefused(prefix + "_approver_invalid", "approved_by") from exc
         if approved_by == author:
-            raise DeliveryRefused("first_activation_approver_author", "approved_by")
+            raise DeliveryRefused(prefix + "_approver_author", "approved_by")
 
     def _first_activation_facts(self, plan: dict, binding: dict) -> dict:
         """The trusted port's re-derivation must equal the document; a claim alone binds nothing."""
@@ -997,6 +1006,193 @@ class HostDelivery:
                    "outcome": OUTCOME_PROGRESSED, "reason_code": None, "error_type": None, "attempts": 0,
                    "recoveries": [*(current.get("recoveries") or []), recovery],
                    "stage_entered_at": now, "updated_at": now}
+        tx.put(BUCKET_INTENTS, plan["plan_id"], settled)
+        return settled
+
+    # ----- first-activation consumption retry (INV-HOST-DELIVERY-FIRST-ACTIVATION-001, extended) ----
+    def resume_consumption_retry(self, plan_id: str, plan_sha256: str, document, evidence_ref: str) -> dict:
+        """Retry consumption of the SAME observed instance once, after a pending-canary expiry.
+
+        `evidence_ref` is exactly `"sha256:" + digest(document)`, as for the first-activation binding.
+        Read-only first: the plan, its digests, the `consumption_retryable` shape, the recorded halt
+        including its EXPIRED deadline, the VERIFIED release and its candidate, a conductor approver who
+        is not the author, the recorded binding's evidence, the descriptor row (bound, observed, never
+        consumed) and the TRUSTED LIVE HOST: the host port must show the same instance, alive, reporting
+        exactly this descriptor. Then ONE transaction re-checks it (CAS), re-arms the queue row through
+        `ReleaseQueue.retry` and writes `awaiting_consumption` with a fresh interval derived from the
+        plan's `consumption_timeout_seconds`; the original halt is kept only in the recovery record, and
+        the descriptor row is never rewritten. The same evidence answers `cached` at any later stage.
+        """
+        if not (type(evidence_ref) is str and EVIDENCE_REF.fullmatch(evidence_ref)):
+            raise DeliveryRefused("resume_evidence_invalid", "evidence")
+        retry = validate_consumption_retry(document)
+        document_sha256 = digest(retry)
+        if evidence_ref != "sha256:" + document_sha256:
+            raise DeliveryRefused("consumption_retry_evidence_mismatch", "evidence")
+        try:
+            with self.store.transaction() as tx:
+                row = tx.get(BUCKET_PLANS, plan_id) if type(plan_id) is str else None
+                intent = tx.get(BUCKET_INTENTS, plan_id) if row is not None else None
+                queued = tx.get("release_queue", row["plan"]["release_id"]) if row is not None else None
+                current_row = tx.get(BUCKET_DESCRIPTORS, row["plan"]["target_id"]) if row is not None else None
+                active = tx.get("deployment", "active") or {}
+                others = [other for other in tx.scan(BUCKET_INTENTS)] if row is not None else []
+                lock = tx.get("deployment_locks", "controller") or {}
+                record = tx.get("releases", row["plan"]["release_id"]) if row is not None else None
+        except Exception as exc:
+            raise DeliveryRefused("resume_unobservable", "store") from exc
+        if row is None:
+            raise DeliveryRefused("plan_unregistered", "plan_id")
+        if row["plan_sha256"] != plan_sha256 or retry["plan_sha256"] != plan_sha256:
+            raise DeliveryRefused("resume_plan_mismatch", "plan_sha256")
+        plan = row["plan"]
+        if retry["plan_id"] != plan["plan_id"]:
+            raise DeliveryRefused("consumption_retry_plan_mismatch", "plan_id")
+        if (row.get("pin") or {}).get("sha256") != retry["pin_sha256"]:
+            raise DeliveryRefused("consumption_retry_pin_mismatch", "pin_sha256")
+        replayed = self._resume_replay(plan, intent, evidence_ref, RECOVERY_CONSUMPTION_RETRY)
+        if replayed is not None:
+            return replayed
+        if not consumption_retryable(intent):
+            raise DeliveryRefused("resume_not_applicable", "stage")
+        halted = {key: intent.get(key) for key in ("stage", "previous_stage", "reason_code", "updated_at",
+                                                    "stage_deadline")}
+        if retry["halt"] != halted:
+            raise DeliveryRefused("consumption_retry_halt_mismatch", "halt")
+        for key, expected in (("release_id", plan["release_id"]), ("target_id", plan["target_id"]),
+                              ("candidate_revision", plan["revision"]), ("candidate_tree", plan["tree"])):
+            if retry[key] != expected:
+                raise DeliveryRefused("consumption_retry_" + key + "_mismatch", key)
+        self._retry_gate(release_gate(record, plan, self._parent(record)))
+        candidate = (record or {}).get("candidate") or {}
+        if (candidate.get("revision"), candidate.get("tree")) != (retry["candidate_revision"],
+                                                                   retry["candidate_tree"]):
+            raise DeliveryRefused("consumption_retry_candidate_mismatch", "candidate_revision")
+        self._first_activation_approver(retry["approved_by"], candidate.get("author"), "consumption_retry")
+        binding = recoveries_of(intent, RECOVERY_FIRST_ACTIVATION)[0]
+        if binding.get("evidence_ref") != retry["first_activation_evidence"]:
+            raise DeliveryRefused("consumption_retry_first_activation_mismatch", "first_activation_evidence")
+        self._retry_descriptor(intent, current_row, retry)
+        self._retry_host(plan, record, active, others, lock)
+        receipt = self._retry_live(plan, intent, retry)
+        now = self.clock()
+        deadline = self._deadline(plan["consumption_timeout_seconds"])
+        recovery = {"kind": RECOVERY_CONSUMPTION_RETRY, "evidence_ref": evidence_ref,
+                    "document_sha256": document_sha256, "approved_by": retry["approved_by"],
+                    "halted": copy.deepcopy({key: intent.get(key) for key in (
+                        "stage", "previous_stage", "reason_code", "outcome", "updated_at", "stage_entered_at",
+                        "stage_deadline", "rollback", "canary", "candidate_instance_id", "attempts")}),
+                    "observed": {"descriptor_sha256": intent["descriptor_sha256"],
+                                 "observed_instance_id": retry["observed_instance_id"], "receipt": receipt},
+                    "interval": {"started_at": now, "deadline": deadline}, "at": now}
+        try:
+            with self.store.transaction() as tx:
+                current = tx.get(BUCKET_INTENTS, plan["plan_id"])
+                settled = (None if self._replay_of(current, evidence_ref, RECOVERY_CONSUMPTION_RETRY)
+                           else self._consumption_retry_in(tx, row, intent, queued, current_row, record,
+                                                           current, recovery, now))
+        except DeliveryRefused:
+            raise
+        except Exception as exc:
+            raise DeliveryRefused("resume_unobservable", "store") from exc
+        if settled is None:
+            return self._resumed(plan, current, cached=True, evidence_ref=evidence_ref,
+                                 kind=RECOVERY_CONSUMPTION_RETRY)
+        self._emit(EVENT_STAGE, "observed", plan, attributes={
+            "plan_id": plan["plan_id"], "release_id": plan["release_id"], "target_id": plan["target_id"],
+            "stage": AWAITING_CONSUMPTION, "previous_stage": intent["stage"]})
+        LOGGER.warning("host delivery consumption retry plan=%s from=%s", plan["plan_id"], intent["stage"])
+        return self._resumed(plan, settled, cached=False, kind=RECOVERY_CONSUMPTION_RETRY)
+
+    @staticmethod
+    def _retry_gate(gate: dict) -> None:
+        """The release must be VERIFIED and not yet promoted: the retry never re-enters verification."""
+        if gate["state"] == "approved" and gate["status"] == "verified":
+            return
+        code = gate.get("reason_code") or "release_" + str(gate.get("status"))
+        raise DeliveryRefused("consumption_retry_" + (code if code.startswith("release_") else "release_" + code),
+                              "release_id")
+
+    @staticmethod
+    def _retry_descriptor(intent: dict, current_row, retry: dict) -> None:
+        """The recorded descriptor row is exactly the bound, observed, never consumed one."""
+        row = current_row or {}
+        if (row.get("descriptor") != intent["descriptor"]
+                or row.get("descriptor_sha256") != intent["descriptor_sha256"]
+                or retry["descriptor_sha256"] != intent["descriptor_sha256"]):
+            raise DeliveryRefused("consumption_retry_descriptor_mismatch", "descriptor_sha256")
+        if row.get("consumed") or row.get("instance_id") is not None or not row.get("startup_observed"):
+            raise DeliveryRefused("consumption_retry_descriptor_state", "descriptor_sha256")
+        if not (row.get("observed_instance_id") == retry["observed_instance_id"]
+                == intent.get("candidate_instance_id")):
+            raise DeliveryRefused("consumption_retry_instance_mismatch", "observed_instance_id")
+
+    def _retry_host(self, plan: dict, record, active: dict, others: list, lock: dict) -> None:
+        """No active pointer or promotion of this release, no competing delivery, no running controller."""
+        if active.get("release_id") == plan["release_id"] or (record or {}).get("status") == "active":
+            raise DeliveryRefused("consumption_retry_release_active", "release_id")
+        for other in others:
+            if (other.get("target_id") == plan["target_id"] and other.get("plan_id") != plan["plan_id"]
+                    and other.get("stage") not in TERMINAL_STAGES):
+                raise DeliveryRefused("consumption_retry_target_in_flight", "target_id")
+        if lock.get("lease_until") and datetime.fromisoformat(lock["lease_until"]) > self._now():
+            raise DeliveryRefused("resume_controller_running", "release_id")
+
+    def _retry_live(self, plan: dict, intent: dict, retry: dict) -> dict:
+        """The TRUSTED live host, through the same port `_consume` reads: the same instance, alive,
+        reporting exactly this descriptor. Anything else is a named refusal and nothing is written."""
+        host, target = self._host(plan)
+        try:
+            identity = host.identity(target)
+            verdict = consumption_verdict(intent["descriptor"], host.receipt(target))
+        except Exception as exc:
+            raise DeliveryRefused("consumption_retry_host_unobservable", "target_id") from exc
+        if identity.get("descriptor_sha256") != intent["descriptor_sha256"]:
+            raise DeliveryRefused("consumption_retry_host_descriptor_changed", "descriptor_sha256")
+        if not verdict["consumed"] or identity.get("instance_id") is None:
+            raise DeliveryRefused("consumption_retry_instance_missing", "observed_instance_id")
+        if verdict["instance_id"] != retry["observed_instance_id"] \
+                or identity.get("instance_id") != retry["observed_instance_id"]:
+            raise DeliveryRefused("consumption_retry_instance_changed", "observed_instance_id")
+        if identity.get("running") is not True:
+            raise DeliveryRefused("consumption_retry_instance_stopped", "observed_instance_id")
+        return {key: verdict.get(key) for key in ("instance_id", "pid", "revision")}
+
+    def _consumption_retry_in(self, tx, row: dict, intent: dict, queued, current_row, record, current,
+                              recovery: dict, now: str) -> dict:
+        """Phase 2, inside the one transaction (modelled on `_first_activation_in`)."""
+        plan = row["plan"]
+        if current != intent or tx.get(BUCKET_PLANS, plan["plan_id"]) != row:
+            raise DeliveryRefused("resume_intent_changed", "plan_id")
+        if tx.get(BUCKET_DESCRIPTORS, plan["target_id"]) != current_row:
+            raise DeliveryRefused("consumption_retry_descriptor_changed", "descriptor_sha256")
+        if tx.get("releases", plan["release_id"]) != record:
+            raise DeliveryRefused("consumption_retry_release_changed", "release_id")
+        if tx.get("release_queue", plan["release_id"]) != queued:
+            raise DeliveryRefused("resume_queue_changed", "release_id")
+        lock = tx.get("deployment_locks", "controller") or {}
+        self._retry_host(plan, record, tx.get("deployment", "active") or {}, tx.scan(BUCKET_INTENTS), lock)
+        self._retry_gate(release_gate(record, plan, self._parent(record)))
+        try:
+            ticket_binding(tx, record["candidate"])
+        except ContractError as exc:
+            raise DeliveryRefused("resume_release_ticket_changed", "release_id") from exc
+        status = (queued or {}).get("status")
+        if status in {"blocked", "failed"}:
+            try:
+                self.queue.retry(plan["release_id"], "host delivery consumption retry " + plan["plan_id"] + " "
+                                 + recovery["evidence_ref"], transaction=tx)
+            except ContractError as exc:
+                raise DeliveryRefused("resume_queue_refused", "release_id") from exc
+        elif not (queued is None or status in {"queued", "retry"}
+                  or (status == "running" and not self._leased(queued))):
+            raise DeliveryRefused("resume_queue_" + str(status), "release_id")
+        settled = {**current, "stage": AWAITING_CONSUMPTION, "previous_stage": current["stage"],
+                   "outcome": OUTCOME_PENDING, "reason_code": None, "error_type": None, "attempts": 0,
+                   "rollback": None, "canary": None,
+                   "recoveries": [*(current.get("recoveries") or []), recovery],
+                   "stage_entered_at": now, "stage_deadline": recovery["interval"]["deadline"],
+                   "updated_at": now}
         tx.put(BUCKET_INTENTS, plan["plan_id"], settled)
         return settled
 
@@ -2080,6 +2276,11 @@ class HostDelivery:
             # A wrong receipt never grants activation, and an expired wait is not an unknown that
             # can be waited out: the exact predecessor is restored.
             return self._begin_rollback(plan, intent, claim, verdict["reason_code"])
+        retry = ((intent.get("recoveries") or [None])[-1]) or {}
+        if retry.get("kind") == RECOVERY_CONSUMPTION_RETRY \
+                and verdict["instance_id"] != (retry.get("observed") or {}).get("observed_instance_id"):
+            # INV-HOST-DELIVERY-FIRST-ACTIVATION-001: a retry consumes ONLY the instance it observed.
+            return self._halt(plan, intent, BLOCKED, OUTCOME_BLOCKED, "retry_instance_changed", claim=claim)
         startup = {key: verdict.get(key) for key in
                    ("instance_id", "pid", "runtime_root", "module_root", "revision")}
         self._record("startup_observed", lambda: self._record_descriptor(

@@ -158,6 +158,17 @@ class TargetFiles:
         _write_json(HostTargetBase.path(target, canary_request_file(plan_id)), document)
 
     @staticmethod
+    def receipt(target: dict, plan_id: str):
+        """The plan's owner canary receipt, read only (the canary recovery refuses when one exists). A file
+        that exists but cannot be read as a JSON object is an UNKNOWN receipt, never an absent one: it is
+        returned as a non-None marker so the recovery refuses rather than ignoring it."""
+        path = HostTargetBase.path(target, canary_receipt_file(plan_id))
+        if not path.exists():
+            return None
+        document = _read_json(path)
+        return document if isinstance(document, dict) else {"unreadable": True}
+
+    @staticmethod
     def write_receipt(target: dict, plan_id: str, document: dict) -> None:
         _write_json(HostTargetBase.path(target, canary_receipt_file(plan_id)), document)
 
@@ -369,6 +380,11 @@ def add_parser(commands) -> None:
     migrate = sub.add_parser("migrate", help="Record ONE owner-approved evaluator migration of a check-rejected "
                                              "merged release (INV-OWNER-ACTIONS-MIGRATION-001); tick advances it")
     migrate.add_argument("--document", required=True, help="JSON migration document (exact keys)")
+    # INV-OWNER-ACTIONS-001 x INV-HOST-DELIVERY-FIRST-ACTIVATION-001: the typed owner canary recovery.
+    recover = sub.add_parser("canary-recover", help="Return ONE halted owner canary to its SAME queued job after "
+                             "the lane consumption retry (exact document and its sha256 evidence)")
+    recover.add_argument("--document", required=True, help="JSON owner canary-recovery document (exact keys)")
+    recover.add_argument("--evidence", required=True, help="sha256:<digest of the document>")
     assess_parser = sub.add_parser("assess", help="Guardian child: the guarded independent assessment of one row")
     assess_parser.add_argument("--decision", required=True)
     assess_parser.add_argument("--correlation", required=True)
@@ -399,6 +415,12 @@ def execute(service, args) -> dict:
         except (OSError, ValueError) as exc:
             raise OwnerActionRefused("migration_document_unreadable", "document") from exc
         return {**owner.request_migration(document), "exit_code": 0}
+    if command == "canary-recover":
+        try:
+            document = json.loads(Path(args.document).read_text(encoding="utf-8"))
+        except (OSError, ValueError) as exc:
+            raise OwnerActionRefused("canary_recovery_document_unreadable", "document") from exc
+        return {**owner.recover_canary(document, args.evidence), "exit_code": 0}
     if command == "tick":
         result = tick_policy(owner, config, args.policy)
         owner.assessments.join()

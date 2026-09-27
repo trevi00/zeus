@@ -3504,6 +3504,72 @@ no current descriptor to be unchanged from.
 - **Continuation.** The continuation intent paused `delivery_blocked` is NOT resumed by this lane recovery, because
   `PAUSED` leaves only through `MIGRATION_RESUME`. Its family stays held until an owner-authorized resume.
 
+- **Consumption retry of an expired first activation** (`first_activation_consumption_retry`; the same document form,
+  schema `urn:zeus:host-delivery-consumption-retry:1`). A first activation has no known-good predecessor, so when
+  its consumption window expires while the owner canary is still PENDING, it halts `blocked`
+  `no_known_good_predecessor`. The candidate stays running, unconsumed and bound.
+  - **Exactly ONCE per delivery**, `HostDelivery.resume` may re-arm that SAME instance for ONE new window. It never
+    replaces the process, and it creates no new plan, release, successor or re-verification.
+  - **Qualifying halt:**
+    - previous stage `awaiting_consumption`;
+    - rollback requested, not restored, not verified, with reason `canary_owner_receipt_pending`;
+    - canary pending, not passed; a canary that actually FAILED never qualifies;
+    - no previous descriptor, and exactly one `first_activation_binding` recovery;
+    - the descriptor bound, and the target descriptor row equal to it, unconsumed, with its observed instance equal to
+      the intent's candidate instance.
+  - **The owner document binds:**
+    - the plan, sha and pin;
+    - the release, candidate revision and tree;
+    - the halt, including its previous stage, timestamp and EXPIRED deadline;
+    - the first-activation evidence;
+    - the descriptor digest and the observed instance;
+    - a conductor approver who is not the author.
+    - It is evidenced by its own digest.
+  - **Trusted checks.** The live host (the same port `_consume` uses) must show that instance alive and reporting that
+    descriptor; a missing, stopped, foreign or changed instance refuses. It also requires: the release verified; no
+    active pointer, promotion, lease or competing target.
+  - **ONE lane transaction:**
+    - compare-and-swap on the plan, intent, descriptor row, release, queue, lease and pointer;
+    - `ReleaseQueue.retry`;
+    - one recovery appended: the COPIED original halt (stage times, the expired deadline, rollback, canary, candidate
+      instance) plus a new interval {started_at = the commit time, deadline = started_at + the plan's
+      `consumption_timeout_seconds`; no caller duration};
+    - the intent returns to `awaiting_consumption` with that deadline. The original evidence is never extended, reset
+      or presented as a fresh startup.
+  - The descriptor row keeps `instance_id` null until an actual consume.
+  - While the retry is in effect, only its recorded instance can be consumed (`retry_instance_changed` otherwise).
+    Receipt revalidation, the owner canary, promotion and rollback on a new expiry stay the authority.
+  - The same evidence replays `cached` at any later stage. Other evidence is `resume_conflict`. A second expiry
+    halts again, and that halt is `resume_exhausted`.
+  - Status exposes the row `stage_deadline` and each recovery's kind, evidence, halted facts, interval and observed
+    instance, so gates need no private store read.
+  - **The owner canary of that delivery must be recovered explicitly, in the CONTROL store**
+    (`OwnerActions.recover_canary`, `zeus owner-actions canary-recover --document FILE --evidence sha256:<digest>`,
+    schema `urn:zeus:owner-canary-recovery:1`, kind `delivery_canary_consumption_retry`).
+    - Why: when the lane window expired, the owner tick moved the REQUESTED canary action to UNKNOWN
+      `canary_delivery_moved`. UNKNOWN is terminal to the tick, and the identical binding is deduplicated. So the lane
+      retry alone never yields an owner receipt.
+    - It applies to exactly ONE action per delivery, and only when:
+      - the action is UNKNOWN `canary_delivery_moved` after REQUESTED;
+      - its stored binding, version, policy and pin are exact;
+      - its SAME Fleet job is still `queued`, never dispatched, with no call reservation, settlement, execution or
+        evidence, and no canary receipt exists;
+      - the Fleet is paused;
+      - READING the lane (never writing it), the delivery is `awaiting_consumption` under the lane
+        `first_activation_consumption_retry` recovery named by the document, with the same instance and descriptor.
+        The existing still-bound check passes, at least `margin_seconds` (≥ 600) of the new window remain, and the
+        approver is a conductor who is not the author.
+    - ONE control transaction compare-and-swaps the action version, the exact job snapshot and the paused Fleet. It
+      moves the action back to REQUESTED with the SAME job and appends the recovery: the copied halt, the job snapshot
+      and the lane evidence.
+      - There is NO transaction spanning the lane and control stores. The lane retry commits first, and this step only
+        reads it.
+      - It never re-enqueues, never creates a canary or model job, never writes a receipt and never unpauses the
+        Fleet or the continuation.
+    - The same document replays `cached`; another is `canary_recovery_conflict`.
+    - The ordinary tick still re-checks the lane binding before any result is written. A lane change between the
+      stores becomes UNKNOWN again, a named hold.
+    - The job runs only after the independent gates resume the Fleet.
 ## INV-HOST-DELIVERY-MIGRATION-001
 
 The lane half of an evaluator migration, keyed by the old plan in `host_delivery_migrations`

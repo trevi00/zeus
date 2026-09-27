@@ -78,6 +78,7 @@ from codex_harness.domain.host_delivery import (
     KIND_SCHEDULED_TASK,
     KIND_SYSTEMD,
     RECEIPT_SCHEMA,
+    RECOVERY_CONSUMPTION_RETRY,
     REPLACEABLE_INSTANCES,
     REVISION,
     TOKEN,
@@ -1126,7 +1127,8 @@ def add_parser(commands) -> None:
                         help="The registered plan digest (from status)")
     resume.add_argument("--evidence", required=True, help="sha256:<64 hex> reference of the owner decision")
     resume.add_argument("--document", default=None,
-                        help="A first-activation binding document (urn:zeus:host-delivery-first-activation:1); "
+                        help="A typed recovery document (urn:zeus:host-delivery-first-activation:1 or "
+                             "urn:zeus:host-delivery-consumption-retry:1, by its kind); "
                              "--evidence must be sha256 of its canonical JSON")
     for command in (targets, register, tick, run_command, status, withdraw, resume):
         command.add_argument("--lane", default=None, help=LANE_HELP)
@@ -1320,8 +1322,11 @@ def execute(service, args) -> dict:
                 document = _read_json(Path(args.document))
                 if document is None:
                     raise DeliveryRefused("first_activation_document_unreadable", "document")
-                return {**delivery.resume_first_activation(args.plan, args.plan_sha256, document, args.evidence),
-                        **routed, "exit_code": 0}
+                # The document's own `kind` selects the typed recovery; its validator refuses the rest.
+                owner = (delivery.resume_consumption_retry
+                         if isinstance(document, dict) and document.get("kind") == RECOVERY_CONSUMPTION_RETRY
+                         else delivery.resume_first_activation)
+                return {**owner(args.plan, args.plan_sha256, document, args.evidence), **routed, "exit_code": 0}
             return {**delivery.resume(args.plan, args.plan_sha256, args.evidence), **routed, "exit_code": 0}
         if command == "tick":
             result = delivery.tick(args.plan)

@@ -210,6 +210,17 @@ FIRST_ACTIVATION_FIELDS = {"schema", "kind", "plan_id", "plan_sha256", "pin_sha2
                            "worker_image", "profile_digest", "qualification", "approved_by"}
 FIRST_ACTIVATION_HALT_FIELDS = {"stage", "previous_stage", "reason_code", "updated_at"}
 FIRST_ACTIVATION_QUALIFICATION_FIELDS = {"image_source_revision", "evidence"}
+# INV-HOST-DELIVERY-FIRST-ACTIVATION-001 (extended): the third recovery kind. A bound first activation
+# whose started instance was observed but whose owner canary receipt was still PENDING when the
+# consumption deadline expired halts at `no_known_good_predecessor`; the owner retries consumption
+# of that SAME observed instance once, in a fresh interval derived from the plan.
+RECOVERY_CONSUMPTION_RETRY = "first_activation_consumption_retry"
+CONSUMPTION_RETRY_SCHEMA = "urn:zeus:host-delivery-consumption-retry:1"
+CONSUMPTION_RETRY_FIELDS = {"schema", "kind", "plan_id", "plan_sha256", "pin_sha256", "target_id", "release_id",
+                            "candidate_revision", "candidate_tree", "halt", "first_activation_evidence",
+                            "descriptor_sha256", "observed_instance_id", "approved_by"}
+CONSUMPTION_RETRY_HALT_FIELDS = {"stage", "previous_stage", "reason_code", "updated_at", "stage_deadline"}
+CANARY_RECEIPT_PENDING = "canary_owner_receipt_pending"
 WORKER_IMAGE_ID = re.compile(r"^sha256:[0-9a-f]{64}$")
 DIGEST_HEX = re.compile(r"^[0-9a-f]{64}$")
 # An organization actor id (`conductor`, `lead:improvement`); the organization decides its role.
@@ -961,6 +972,81 @@ def validate_first_activation(document) -> dict:
     return {**document, "halt": dict(halt), "qualification": dict(qualification)}
 
 
+def _consumption_halt(intent) -> bool:
+    """The halted shape a consumption retry answers, recoveries aside (INV-HOST-DELIVERY-FIRST-ACTIVATION-001).
+
+    A bound first activation stopped at `no_known_good_predecessor` from `awaiting_consumption`
+    because the owner canary was still PENDING at the deadline: the rollback was only requested, and
+    the canary neither passed nor failed. A canary that actually failed never matches."""
+    if not isinstance(intent, dict):
+        return False
+    rollback, canary = intent.get("rollback"), intent.get("canary")
+    return (intent.get("stage") == BLOCKED
+            and intent.get("reason_code") == "no_known_good_predecessor"
+            and intent.get("previous_stage") == AWAITING_CONSUMPTION
+            and rollback == {"requested": True, "restored": False, "verified": False,
+                             "reason_code": CANARY_RECEIPT_PENDING}
+            and isinstance(canary, dict) and canary.get("pending") is True and canary.get("passed") is False
+            and canary.get("reason_code") == CANARY_RECEIPT_PENDING
+            and intent.get("previous_descriptor") is None
+            and isinstance(intent.get("descriptor"), dict) and bool(intent.get("descriptor_sha256"))
+            and len(recoveries_of(intent, RECOVERY_FIRST_ACTIVATION)) == 1)
+
+
+def consumption_retryable(intent) -> bool:
+    """The ONE shape `resume_consumption_retry` may move (INV-HOST-DELIVERY-FIRST-ACTIVATION-001):
+    the pending-canary halt of a bound first activation, with exactly one binding and no retry yet."""
+    return _consumption_halt(intent) and not recoveries_of(intent, RECOVERY_CONSUMPTION_RETRY)
+
+
+def consumption_retry_exhausted(intent) -> bool:
+    """The same halt again after the one retry already recorded: exhausted, never retried twice."""
+    others = [row for row in (intent or {}).get("recoveries") or []
+              if not (isinstance(row, dict) and row.get("kind") == RECOVERY_CONSUMPTION_RETRY)]
+    return _consumption_halt({**(intent or {}), "recoveries": others})
+
+
+def _consumption_retry_refused(field: str):
+    return DeliveryRefused("consumption_retry_invalid", field)
+
+
+def validate_consumption_retry(document) -> dict:
+    """The owner's consumption-retry document, exactly (INV-HOST-DELIVERY-FIRST-ACTIVATION-001).
+
+    Identity of the plan, pin, release and candidate; the recorded halt INCLUDING its expired stage
+    deadline; the first-activation evidence it builds on; the bound descriptor and the observed
+    instance; the approver. Its values are claims only: the lane compares them with its records and
+    the live host before anything is written. Every defect is `consumption_retry_invalid`."""
+    if not isinstance(document, dict) or set(document) != CONSUMPTION_RETRY_FIELDS:
+        raise _consumption_retry_refused("document")
+    if document["schema"] != CONSUMPTION_RETRY_SCHEMA:
+        raise _consumption_retry_refused("schema")
+    if document["kind"] != RECOVERY_CONSUMPTION_RETRY:
+        raise _consumption_retry_refused("kind")
+    for key in ("plan_id", "release_id", "target_id", "observed_instance_id"):
+        if not _token(document[key]):
+            raise _consumption_retry_refused(key)
+    if not _hex(document["approved_by"], ACTOR_ID):
+        raise _consumption_retry_refused("approved_by")
+    for key in ("plan_sha256", "pin_sha256", "descriptor_sha256"):
+        if not _hex(document[key], DIGEST_HEX):
+            raise _consumption_retry_refused(key)
+    if not _hex(document["candidate_revision"], REVISION):
+        raise _consumption_retry_refused("candidate_revision")
+    if not _hex(document["candidate_tree"], TREE_ID):
+        raise _consumption_retry_refused("candidate_tree")
+    if not _hex(document["first_activation_evidence"], EVIDENCE_REF):
+        raise _consumption_retry_refused("first_activation_evidence")
+    halt = document["halt"]
+    if not isinstance(halt, dict) or set(halt) != CONSUMPTION_RETRY_HALT_FIELDS:
+        raise _consumption_retry_refused("halt")
+    if (halt["stage"], halt["previous_stage"], halt["reason_code"]) != (
+            BLOCKED, AWAITING_CONSUMPTION, "no_known_good_predecessor") or not all(
+            type(halt[key]) is str and 0 < len(halt[key]) <= 64 for key in ("updated_at", "stage_deadline")):
+        raise _consumption_retry_refused("halt")
+    return {**document, "halt": dict(halt)}
+
+
 def next_stage(stage: str) -> str:
     """The stage that follows a completed one; `active` is terminal and follows nothing."""
     if stage not in STAGE_ORDER:
@@ -1033,6 +1119,8 @@ def delivery_progress(row: dict, intent, descriptor_row) -> dict:
             "recoveries": [_recoveries_view(record) for record in (intent or {}).get("recoveries") or []
                            if isinstance(record, dict)],
             "verification": _attempt_view((attempts_of(intent) or [None])[-1]),
+            # Additive (INV-HOST-DELIVERY-FIRST-ACTIVATION-001): the current stage deadline.
+            "stage_deadline": (intent or {}).get("stage_deadline"),
             "updated_at": (intent or {}).get("updated_at") or row.get("updated_at")}
     view["next_action"] = stage_next_action(stage, view["outcome"])
     return view
@@ -1055,8 +1143,20 @@ def _recovery_view(record) -> dict | None:
 
 def _recoveries_view(record: dict) -> dict:
     binding = record.get("binding")
-    return {"kind": record.get("kind"), "evidence_ref": record.get("evidence_ref"),
+    view = {"kind": record.get("kind"), "evidence_ref": record.get("evidence_ref"),
             "binding": dict(binding) if isinstance(binding, dict) else None, "at": record.get("at")}
+    if record.get("kind") == RECOVERY_CONSUMPTION_RETRY:
+        # Additive for the retry kind only (INV-HOST-DELIVERY-FIRST-ACTIVATION-001): the ORIGINAL
+        # halt's timing, the new interval and the observed identity; ids, digests and times only.
+        halted = record.get("halted") or {}
+        interval = record.get("interval") or {}
+        observed = record.get("observed") or {}
+        view.update({"halted": {key: halted.get(key) for key in ("stage_deadline", "stage_entered_at",
+                                                                  "updated_at", "reason_code")},
+                     "interval": {key: interval.get(key) for key in ("started_at", "deadline")},
+                     "observed": {key: observed.get(key) for key in ("observed_instance_id",
+                                                                      "descriptor_sha256")}})
+    return view
 
 
 def _attempt_view(record) -> dict | None:
