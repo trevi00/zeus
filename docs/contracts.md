@@ -4346,7 +4346,8 @@ which reads the authoritative Fleet, backlog and continuation rows. The row is n
 - **W** counts queued jobs whose only blockers are capacity or their lane. The complete blocker set is used: a
   lane-busy job with a failed dependency or a path conflict does not count.
 - **Deduplication:** a backlog item or continuation intent that already has its job contributes nothing of its
-  own.
+  own. That includes an open (interrupted) enqueue whose job exists. A continuation intent carrying a `hold` is
+  not dispatchable now, so it is neither waiting work nor unknown.
 - **Incomplete W:** some work may be dispatchable but its readiness cannot be proven read-only in this slice.
   Such work makes W incomplete. That covers:
   - an eligible pending or open backlog item without a job, and an unknown item;

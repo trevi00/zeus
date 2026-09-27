@@ -327,6 +327,23 @@ def test_two_ticks_dedup_select_once_capture_and_record_the_rejected_council(tmp
     assert Path(view["cycle_receipts"][0]["council"]["manifest_ref"].replace("sha256:", "")).name  # stored manifest reference
 
 
+def test_a_policy_paused_feed_is_recorded_paused_not_degraded_and_the_cycle_still_completes(tmp_path):
+    """INV-DISCOVERY-PRESSURE-001 T1-12 at tick level: both external feeds are held by pressure; the cycle records
+    them as paused/policy_paused (never unavailable or an empty feed), emits no source_degraded, and the local
+    candidate is still selected and dispatched."""
+    env = build(tmp_path)
+    registered(env)
+    env.sources.paused = {"github", "geeknews"}
+    tick = env.runner.tick("rp-001", intent="proactive")
+    assert tick["selected"] == "local-note" and tick["result"] == "rejected", "local work continues"
+    cycle = env.programs.status("rp-001")["cycle_receipts"][0]
+    for name in ("github", "geeknews"):
+        assert cycle["sources"][name]["status"] == "paused" and cycle["sources"][name]["code"] == "policy_paused"
+        assert cycle["sources"][name]["items"] is None and cycle["sources"][name]["artifact"] is None
+    events = [json.loads(line) for line in (env.runtime / "research-program" / "rp-001" / "events.jsonl").read_text("utf-8").splitlines()]
+    assert "source_degraded" not in [event["event"] for event in events]
+
+
 def candidates_seen(env, candidate_id):
     return env.programs.candidate("rp-001", candidate_id)["seen"]
 

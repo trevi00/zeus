@@ -123,6 +123,8 @@ def census(*, config, control, jobs: dict, units, plans, intents, continuation_i
         by_item = {intent["item_id"]: intent for intent in intents if intent.get("plan_id") == plan.get("plan_id")}
         decision = select(plan, by_item, jobs, False)
         for view in decision["progress"]:
+            if view["state"] == ITEM_OPEN and view.get("job_id") in jobs:
+                continue  # an interrupted enqueue whose job exists: the job is its single identity
             if view["state"] == ITEM_UNKNOWN or (
                     view["state"] in (ITEM_PENDING, ITEM_OPEN) and view["item_id"] not in decision["blocked"]):
                 backlog_unknown += 1
@@ -130,6 +132,8 @@ def census(*, config, control, jobs: dict, units, plans, intents, continuation_i
     for intent in continuation_intents:
         route, state = intent.get("route"), intent.get("state")
         successor = intent.get("successor_job")
+        if isinstance(intent.get("hold"), dict):
+            continue  # held (authority drift, a paused family): not dispatchable now, so not waiting work
         if route in ADMITTING_ROUTES and state in CONTINUATION_OPEN and not (successor and successor in jobs):
             continuation_unknown += 1
         elif route == CONDUCTOR and state == INTENDED:

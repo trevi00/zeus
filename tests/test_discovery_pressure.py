@@ -153,6 +153,23 @@ def test_a_continuation_intent_counts_once_through_its_job_and_otherwise_makes_w
     assert evaluator(store).admit()["basis"]["complete"] is True, "a research intent is not dispatch work"
 
 
+def test_a_held_intent_is_excluded_and_an_open_backlog_intent_with_its_job_counts_once():
+    store = fleet_store()
+    put(store, "continuation_intents", {"id": "held", "route": "correction", "state": "intended",
+                                        "hold": {"reason_code": "authority_drift"}})
+    assert evaluator(store).admit()["basis"]["complete"] is True, "a held intent is not waiting work, nor unknown"
+    plan = {"schema": "urn:zeus:fleet-backlog:1", "plan_id": "plan-1", "repository": "r" * 64, "enabled": True,
+            "items": [{"id": "item-1", "project_id": "p", "criterion_id": "c", "lane": "a", "manifest_path": "m.json",
+                       "manifest_revision": "a" * 40, "manifest_sha256": "b" * 64, "priority": 1, "dependencies": []}]}
+    put(store, "fleet_backlog_plans", {"plan_id": "plan-1", "plan": plan, "plan_sha256": "c" * 64,
+                                       "pin": {"revision": "a" * 40, "path": "b.json", "sha256": "d" * 64}}, "plan-1")
+    put(store, "fleet_backlog_intents", {"id": "i-1", "plan_id": "plan-1", "item_id": "item-1", "state": "intended",
+                                         "job_id": "job-of-item", "attempts": 1})
+    put(store, "fleet_jobs", job("job-of-item"))
+    decision = evaluator(store).admit()
+    assert decision["basis"]["unknown_counts"]["backlog"] == 0 and decision["waiting"] == 1, "counted once, as the job"
+
+
 # ----- T1-06 intent -----------------------------------------------------------------------------------------------
 class NoFetch(ResearchSources):
     def fetch(self, url):  # noqa: D401 - FIXTURE: any fetch here is a test failure
