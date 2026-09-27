@@ -88,6 +88,7 @@ from codex_harness.domain.host_delivery import (
     OUTCOME_UNREGISTERED,
     POST_MERGE_OPEN,
     PUBLISHING,
+    RECOVERY_FIRST_ACTIVATION,
     RECOVERY_VERIFICATION_MISSING,
     REGISTERED,
     ROLLED_BACK,
@@ -108,6 +109,8 @@ from codex_harness.domain.host_delivery import (
     consumption_verdict,
     delivery_status,
     descriptor_digest,
+    first_activation_resumable,
+    first_activation_unbound,
     migration_kind,
     migration_lineage_digest,
     migration_rejected_source,
@@ -120,6 +123,7 @@ from codex_harness.domain.host_delivery import (
     safe_error_type,
     stage_next_action,
     unresolved_attempts,
+    validate_first_activation,
     validate_migration_ack,
     validate_migration_request,
     validate_pin,
@@ -226,7 +230,7 @@ class HostDelivery:
     def __init__(self, store, org=None, *, github=None, hosts=None, canaries=None, clock=utcnow,
                  observer=None, enabled=False, releases=None, queue=None,
                  resume_seconds: int = RESUME_SECONDS, verifier=None, evaluator_pins=None,
-                 controller_code=None):
+                 controller_code=None, first_activation=None):
         self.store, self.org, self.clock = store, org, clock
         self.github, self.hosts, self.canaries = github, hosts or {}, canaries or {}
         # INV-HOST-DELIVERY-VERIFY-001: the owned-attempt port over the existing incumbent
@@ -238,6 +242,10 @@ class HostDelivery:
         # INV-RELEASE-ENVIRONMENT-REVERIFY-001: () -> the revision of the ACTUAL running controller code
         # (the adapters bind the runtime_revision SSOT). Without it no environment reverification stages.
         self.controller_code = controller_code
+        # INV-HOST-DELIVERY-FIRST-ACTIVATION-001: (revision) -> {worker_image, profile_digest,
+        # image_source_revision}, re-derived by the adapter from the host settings SSOT, the local image
+        # and the candidate's committed profile. Without it no first-activation binding is accepted.
+        self.first_activation = first_activation
         self.observer, self.enabled = observer, bool(enabled)
         self.resume_seconds = int(resume_seconds)
         self.releases = releases if releases is not None else Releases(store, org)
@@ -290,6 +298,10 @@ class HostDelivery:
                 return True
             if intent is not None and intent.get("stage") != REGISTERED:
                 raise DeliveryRefused("delivery_in_flight", "plan_id")
+        if first_activation_unbound(plan):
+            # INV-HOST-DELIVERY-FIRST-ACTIVATION-001: a NEW plan that expects no predecessor yet says
+            # `unchanged` could never resolve; only the identical, already stored plan replays above.
+            raise DeliveryRefused("first_activation_unbound", "target_descriptor")
         reserved = self._reservation_in(tx, plan["target_id"])
         if reserved is not None and (migration is None or reserved["id"] != migration["id"]):
             raise DeliveryRefused("target_reserved_by_migration", "target_id")
@@ -751,27 +763,34 @@ class HostDelivery:
             raise DeliveryRefused("resume_unobservable", "github") from exc
         return {"main": state.get("main"), "merged_revision": intent["merged_revision"]}
 
-    def _resume_replay(self, plan: dict, intent, evidence_ref: str):
+    def _resume_replay(self, plan: dict, intent, evidence_ref: str, kind: str = RECOVERY_VERIFICATION_MISSING):
         """The durable recovery record decides a repeated call, at whatever stage it now is."""
-        if not self._replay_of(intent, evidence_ref):
+        if not self._replay_of(intent, evidence_ref, kind):
             return None
-        return self._resumed(plan, intent, cached=True, evidence_ref=evidence_ref)
+        # The verification kind keeps its exact original call; only the new kind names itself.
+        named = {} if kind == RECOVERY_VERIFICATION_MISSING else {"kind": kind}
+        return self._resumed(plan, intent, cached=True, evidence_ref=evidence_ref, **named)
 
     @staticmethod
-    def _replay_of(intent, evidence_ref: str) -> bool:
-        """True for this evidence's own recorded recovery; another evidence is refused. Pure."""
-        recorded = recoveries_of(intent)
+    def _replay_of(intent, evidence_ref: str, kind: str = RECOVERY_VERIFICATION_MISSING) -> bool:
+        """True for this evidence's own recorded recovery of `kind`; another evidence is refused. Pure.
+
+        Per kind (INV-HOST-DELIVERY-FIRST-ACTIVATION-001): one recovery of EACH kind per delivery, so a
+        verification recovery never makes a first-activation binding a conflict, or the reverse."""
+        recorded = recoveries_of(intent, kind)
         if not recorded:
             return False
         if any(row.get("evidence_ref") == evidence_ref for row in recorded):
             return True
         # One recovery of this kind per delivery: halted again in the same shape is exhausted.
-        if resumable({**intent, "recoveries": []}):
+        shape = resumable if kind == RECOVERY_VERIFICATION_MISSING else first_activation_resumable
+        if shape({**intent, "recoveries": []}):
             raise DeliveryRefused("resume_exhausted", "evidence")
         raise DeliveryRefused("resume_conflict", "evidence")
 
-    def _resumed(self, plan: dict, intent: dict, *, cached: bool, evidence_ref=None) -> dict:
-        recorded = [row for row in recoveries_of(intent)
+    def _resumed(self, plan: dict, intent: dict, *, cached: bool, evidence_ref=None,
+                 kind: str = RECOVERY_VERIFICATION_MISSING) -> dict:
+        recorded = [row for row in recoveries_of(intent, kind)
                     if evidence_ref is None or row.get("evidence_ref") == evidence_ref][-1]
         with self.store.transaction() as tx:
             queued = tx.get("release_queue", plan["release_id"]) or {}
@@ -780,11 +799,206 @@ class HostDelivery:
                 "after_verification": intent.get("after_verification"),
                 "recovery": {"kind": recorded["kind"], "evidence_ref": recorded["evidence_ref"],
                              "halted_reason_code": (recorded.get("halted") or {}).get("reason_code"),
-                             "at": recorded.get("at")},
+                             "at": recorded.get("at"),
+                             **({"binding": dict(recorded["binding"])} if "binding" in recorded else {})},
                 "queue": {"status": queued.get("status"),
                           "manual_retries": len(queued.get("manual_retries") or [])},
                 "next_action": stage_next_action(intent["stage"], intent.get("outcome")),
                 "authority": AUTHORITY}
+
+    # ----- first activation binding (INV-HOST-DELIVERY-FIRST-ACTIVATION-001) ---------------------
+    def resume_first_activation(self, plan_id: str, plan_sha256: str, document, evidence_ref: str) -> dict:
+        """Bind a FIRST managed deployment's concrete tuple and move it from `blocked` back to `merged`.
+
+        `evidence_ref` is exactly `"sha256:" + digest(document)`: the SHA-256 of the document's
+        canonical JSON (sorted keys, `,`/`:` separators, UTF-8, no ASCII escaping) as
+        `domain.model.canonical` writes it. Any other reference is refused before anything is read.
+
+        Read-only first: the plan, its digest and pin digest, the `first_activation_resumable` shape,
+        the recorded halt, the VERIFIED release and its candidate identity, the absence of any
+        predecessor descriptor, active deployment of this release or other open delivery of the target,
+        a free controller lease, a conductor approver who is not the candidate author, and the trusted
+        port's re-derived image, image source revision and committed profile digest. Approval strings
+        are never evidence: the document's values must EQUAL the port's. Then ONE transaction re-checks
+        all of it (CAS), re-arms the stopped queue row through `ReleaseQueue.retry` exactly as `resume`
+        does and writes `merged` with the binding recorded in `recoveries`. It never re-enters
+        `verifying` and creates no claim, lease or generation; the next ordinary tick binds the
+        descriptor in `_prepare_switch`, and everything after it is unchanged.
+
+        The same evidence answers `cached` at any later stage; a different one is `resume_conflict`.
+        """
+        if not (type(evidence_ref) is str and EVIDENCE_REF.fullmatch(evidence_ref)):
+            raise DeliveryRefused("resume_evidence_invalid", "evidence")
+        binding = validate_first_activation(document)
+        document_sha256 = digest(binding)
+        if evidence_ref != "sha256:" + document_sha256:
+            raise DeliveryRefused("first_activation_evidence_mismatch", "evidence")
+        try:
+            with self.store.transaction() as tx:
+                row = tx.get(BUCKET_PLANS, plan_id) if type(plan_id) is str else None
+                intent = tx.get(BUCKET_INTENTS, plan_id) if row is not None else None
+                queued = tx.get("release_queue", row["plan"]["release_id"]) if row is not None else None
+                current_row = tx.get(BUCKET_DESCRIPTORS, row["plan"]["target_id"]) if row is not None else None
+                active = tx.get("deployment", "active") or {}
+                others = [other for other in tx.scan(BUCKET_INTENTS)] if row is not None else []
+                lock = tx.get("deployment_locks", "controller") or {}
+        except Exception as exc:
+            raise DeliveryRefused("resume_unobservable", "store") from exc
+        if row is None:
+            raise DeliveryRefused("plan_unregistered", "plan_id")
+        if row["plan_sha256"] != plan_sha256 or binding["plan_sha256"] != plan_sha256:
+            raise DeliveryRefused("resume_plan_mismatch", "plan_sha256")
+        plan = row["plan"]
+        if binding["plan_id"] != plan["plan_id"]:
+            raise DeliveryRefused("first_activation_plan_mismatch", "plan_id")
+        if (row.get("pin") or {}).get("sha256") != binding["pin_sha256"]:
+            raise DeliveryRefused("first_activation_pin_mismatch", "pin_sha256")
+        replayed = self._resume_replay(plan, intent, evidence_ref, RECOVERY_FIRST_ACTIVATION)
+        if replayed is not None:
+            return replayed
+        if not first_activation_resumable(intent) or not first_activation_unbound(plan):
+            raise DeliveryRefused("resume_not_applicable", "stage")
+        halted = {key: intent.get(key) for key in ("stage", "previous_stage", "reason_code", "updated_at")}
+        if binding["halt"] != halted:
+            raise DeliveryRefused("first_activation_halt_mismatch", "halt")
+        for key, expected in (("release_id", plan["release_id"]), ("target_id", plan["target_id"]),
+                              ("candidate_revision", plan["revision"]), ("candidate_tree", plan["tree"])):
+            if binding[key] != expected:
+                raise DeliveryRefused("first_activation_" + key + "_mismatch", key)
+        try:
+            with self.store.transaction() as tx:
+                record = tx.get("releases", plan["release_id"])
+        except Exception as exc:
+            raise DeliveryRefused("resume_unobservable", "store") from exc
+        self._first_activation_gate(release_gate(record, plan, self._parent(record)))
+        candidate = (record or {}).get("candidate") or {}
+        if (candidate.get("revision"), candidate.get("tree")) != (binding["candidate_revision"],
+                                                                   binding["candidate_tree"]):
+            raise DeliveryRefused("first_activation_candidate_mismatch", "candidate_revision")
+        self._first_activation_host(plan, current_row, active, others, lock)
+        self._first_activation_approver(binding["approved_by"], candidate.get("author"))
+        observed = self._first_activation_facts(plan, binding)
+        now = self.clock()
+        recovery = {"kind": RECOVERY_FIRST_ACTIVATION, "evidence_ref": evidence_ref,
+                    "binding": {"worker_image": binding["worker_image"],
+                                "profile_digest": binding["profile_digest"],
+                                "image_source_revision": binding["qualification"]["image_source_revision"],
+                                "qualification_evidence": binding["qualification"]["evidence"]},
+                    "halted": {key: intent.get(key) for key in ("stage", "previous_stage", "reason_code",
+                                                                "outcome", "attempts", "error_type",
+                                                                "updated_at")},
+                    "observed": observed, "approved_by": binding["approved_by"],
+                    "document_sha256": document_sha256, "at": now}
+        try:
+            with self.store.transaction() as tx:
+                current = tx.get(BUCKET_INTENTS, plan["plan_id"])
+                settled = (None if self._replay_of(current, evidence_ref, RECOVERY_FIRST_ACTIVATION)
+                           else self._first_activation_in(tx, row, intent, queued, current, recovery, now))
+        except DeliveryRefused:
+            raise
+        except Exception as exc:
+            raise DeliveryRefused("resume_unobservable", "store") from exc
+        if settled is None:
+            # A concurrent same-evidence resume committed first: its record answers, nothing written.
+            return self._resumed(plan, current, cached=True, evidence_ref=evidence_ref,
+                                 kind=RECOVERY_FIRST_ACTIVATION)
+        self._emit(EVENT_STAGE, "observed", plan, attributes={
+            "plan_id": plan["plan_id"], "release_id": plan["release_id"], "target_id": plan["target_id"],
+            "stage": MERGED, "previous_stage": intent["stage"]})
+        LOGGER.warning("host delivery first activation bound plan=%s from=%s", plan["plan_id"], intent["stage"])
+        return self._resumed(plan, settled, cached=False, kind=RECOVERY_FIRST_ACTIVATION)
+
+    @staticmethod
+    def _first_activation_gate(gate: dict) -> None:
+        """The release must already be VERIFIED: this recovery never re-enters verification."""
+        if gate["state"] == "approved" and gate["status"] == "verified":
+            return
+        code = gate.get("reason_code") or "release_" + str(gate.get("status"))
+        raise DeliveryRefused("first_activation_" + (code if code.startswith("release_") else "release_" + code),
+                              "release_id")
+
+    def _first_activation_host(self, plan: dict, current_row, active: dict, others: list, lock: dict) -> None:
+        """No predecessor descriptor, no active deployment of this release, no other open delivery of
+        the target and no running controller: a first activation replaces nothing and races nothing."""
+        if current_row is not None:
+            raise DeliveryRefused("first_activation_predecessor_present", "target_id")
+        if active.get("release_id") == plan["release_id"]:
+            raise DeliveryRefused("first_activation_release_active", "release_id")
+        for other in others:
+            if (other.get("target_id") == plan["target_id"] and other.get("plan_id") != plan["plan_id"]
+                    and other.get("stage") not in TERMINAL_STAGES):
+                raise DeliveryRefused("first_activation_target_in_flight", "target_id")
+        if lock.get("lease_until") and datetime.fromisoformat(lock["lease_until"]) > self._now():
+            raise DeliveryRefused("resume_controller_running", "release_id")
+
+    def _first_activation_approver(self, approved_by: str, author) -> None:
+        """A conductor of the existing organization who is not the candidate's own author."""
+        if self.org is None:
+            raise DeliveryRefused("first_activation_approver_unavailable", "approved_by")
+        try:
+            self.org.actor(approved_by, "conductor")
+        except Exception as exc:
+            raise DeliveryRefused("first_activation_approver_invalid", "approved_by") from exc
+        if approved_by == author:
+            raise DeliveryRefused("first_activation_approver_author", "approved_by")
+
+    def _first_activation_facts(self, plan: dict, binding: dict) -> dict:
+        """The trusted port's re-derivation must equal the document; a claim alone binds nothing."""
+        port = self.first_activation
+        if port is None:
+            raise DeliveryRefused("first_activation_unavailable", "first_activation")
+        try:
+            facts = port(plan["revision"])
+        except DeliveryRefused:
+            raise
+        except Exception as exc:
+            raise DeliveryRefused("first_activation_unavailable", "first_activation") from exc
+        if not isinstance(facts, dict):
+            raise DeliveryRefused("first_activation_unavailable", "first_activation")
+        for key, value, code in (
+                ("worker_image", binding["worker_image"], "first_activation_image_mismatch"),
+                ("profile_digest", binding["profile_digest"], "first_activation_profile_mismatch"),
+                ("image_source_revision", binding["qualification"]["image_source_revision"],
+                 "first_activation_qualification_mismatch")):
+            if facts.get(key) != value:
+                raise DeliveryRefused(code, key)
+        return {key: facts[key] for key in ("worker_image", "profile_digest", "image_source_revision")}
+
+    def _first_activation_in(self, tx, row: dict, intent: dict, queued, current, recovery: dict,
+                             now: str) -> dict:
+        """Phase 2, inside the one transaction (modelled on `_resume_in`); any refusal rolls it back."""
+        plan = row["plan"]
+        if current != intent or tx.get(BUCKET_PLANS, plan["plan_id"]) != row:
+            raise DeliveryRefused("resume_intent_changed", "plan_id")
+        lock = tx.get("deployment_locks", "controller") or {}
+        if lock.get("lease_until") and datetime.fromisoformat(lock["lease_until"]) > self._now():
+            raise DeliveryRefused("resume_controller_running", "release_id")
+        if tx.get("release_queue", plan["release_id"]) != queued:
+            raise DeliveryRefused("resume_queue_changed", "release_id")
+        self._first_activation_host(plan, tx.get(BUCKET_DESCRIPTORS, plan["target_id"]),
+                                    tx.get("deployment", "active") or {}, tx.scan(BUCKET_INTENTS), lock)
+        record = tx.get("releases", plan["release_id"])
+        self._first_activation_gate(release_gate(record, plan, self._parent(record)))
+        try:
+            ticket_binding(tx, record["candidate"])
+        except ContractError as exc:
+            raise DeliveryRefused("resume_release_ticket_changed", "release_id") from exc
+        status = (queued or {}).get("status")
+        if status in {"blocked", "failed"}:
+            try:
+                self.queue.retry(plan["release_id"], "host delivery first activation " + plan["plan_id"] + " "
+                                 + recovery["evidence_ref"], transaction=tx)
+            except ContractError as exc:
+                raise DeliveryRefused("resume_queue_refused", "release_id") from exc
+        elif not (queued is None or status in {"queued", "retry"}
+                  or (status == "running" and not self._leased(queued))):
+            raise DeliveryRefused("resume_queue_" + str(status), "release_id")
+        settled = {**current, "stage": MERGED, "previous_stage": current["stage"],
+                   "outcome": OUTCOME_PROGRESSED, "reason_code": None, "error_type": None, "attempts": 0,
+                   "recoveries": [*(current.get("recoveries") or []), recovery],
+                   "stage_entered_at": now, "updated_at": now}
+        tx.put(BUCKET_INTENTS, plan["plan_id"], settled)
+        return settled
 
     # ----- evaluator migration of a rejected, merged delivery (INV-HOST-DELIVERY-MIGRATION-001) ---
     # The lane half of an ordered control/lane handoff; each step is ONE lane transaction and a
@@ -1692,7 +1906,10 @@ class HostDelivery:
             # Nothing is switched, stopped or started on contradictory evidence.
             return self._halt(plan, intent, BLOCKED, OUTCOME_BLOCKED, "target_instance_mismatch",
                               claim=claim)
-        descriptor = resolve_descriptor(target, plan, current)
+        # INV-HOST-DELIVERY-FIRST-ACTIVATION-001: the owner's re-derived first-activation tuple, if
+        # any; `resolve_descriptor` uses it only when there is no current descriptor to resolve against.
+        bound = recoveries_of(intent, RECOVERY_FIRST_ACTIVATION)
+        descriptor = resolve_descriptor(target, plan, current, bound[-1].get("binding") if bound else None)
         # A managed target runs an immutable sealed runtime: it is materialized (or, after a lost
         # response, revalidated as the same immutable result) BEFORE the drain, so nothing on the
         # running instance is paused for a runtime that cannot exist. Other kinds have no such port.

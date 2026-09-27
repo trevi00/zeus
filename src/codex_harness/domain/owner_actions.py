@@ -375,37 +375,67 @@ def investigation_ok(value) -> bool:
 
 
 # ---- G2: exact approved delivery plan ---------------------------------------------------------------
-def plan_binding(policy_row: dict, intent: dict, release: dict, expected_descriptor) -> dict:
+def plan_binding(policy_row: dict, intent: dict, release: dict, expected_descriptor,
+                 first_activation: dict | None = None) -> dict:
     """What one published plan is bound to: the owner policy, the continuation delivery intent and
-    target, the exact reviewed release candidate and the descriptor it will replace."""
+    target, the exact reviewed release candidate and the descriptor it will replace.
+
+    A first activation (no current descriptor) also binds its concrete environment tuple
+    (`first_activation_tuple`), so the action identity names the image and profile it publishes. The
+    key is absent otherwise, so every upgrade binding keeps its identity."""
     candidate = release.get("candidate") or {}
-    return {"policy_id": policy_row["id"], "policy_sha256": policy_row["policy_sha256"],
-            "intent_id": intent["id"], "target_id": intent.get("delivery_target"),
-            "release_id": release.get("id"), "revision": candidate.get("revision"), "tree": candidate.get("tree"),
-            "policy_hash": release.get("policy_hash"), "repository": candidate.get("repository"),
-            "expected_descriptor": expected_descriptor}
+    binding = {"policy_id": policy_row["id"], "policy_sha256": policy_row["policy_sha256"],
+               "intent_id": intent["id"], "target_id": intent.get("delivery_target"),
+               "release_id": release.get("id"), "revision": candidate.get("revision"), "tree": candidate.get("tree"),
+               "policy_hash": release.get("policy_hash"), "repository": candidate.get("repository"),
+               "expected_descriptor": expected_descriptor}
+    if first_activation is not None:
+        binding["first_activation"] = dict(first_activation)
+    return binding
 
 
 def plan_id_for(identity: str) -> str:
     return "own-" + identity[:24]
 
 
-def build_plan(policy: dict, binding: dict, identity: str) -> dict:
+def first_activation_tuple(facts) -> dict:
+    """The concrete environment of a first activation, from the owner/lane boundary's trusted facts.
+
+    `worker_image` must be an image digest (`sha256:<64 hex>`) and `profile_digest` a 64-hex digest;
+    anything else (absent facts included) refuses `first_activation_unbound`: `unchanged` has nothing to
+    resolve against when the target has no descriptor, so such a plan could only halt after merge
+    (INV-HOST-DELIVERY-001). `image_source_revision` is provenance only: a 40-hex revision, else None."""
+    refuse(isinstance(facts, dict) and type(facts.get("worker_image")) is str
+           and EVIDENCE_REF.fullmatch(facts["worker_image"]) is not None
+           and type(facts.get("profile_digest")) is str and SHA256.fullmatch(facts["profile_digest"]) is not None,
+           "first_activation_unbound", "target_descriptor")
+    source = facts.get("image_source_revision")
+    return {"worker_image": facts["worker_image"], "profile_digest": facts["profile_digest"],
+            "image_source_revision": source if type(source) is str and REVISION.fullmatch(source) else None}
+
+
+def build_plan(policy: dict, binding: dict, identity: str, first_activation: dict | None = None) -> dict:
     """The owner-approved plan document, from the fixed delivery policy and the exact release only.
 
     The target, repository, checks, canary id and timeouts are the owner's; the release, revision, tree
-    and evaluator hash are the reviewed record's; the descriptor revision is the reviewed candidate and
-    its image and profile are `unchanged` (a new environment is a separate qualification). The result is
-    validated by the incumbent plan validator."""
+    and evaluator hash are the reviewed record's; the descriptor revision is the reviewed candidate. For
+    an upgrade (a current descriptor exists) its image and profile are `unchanged` (a new environment is
+    a separate qualification). For a first activation (`expected_descriptor` null) they are the CONCRETE
+    `first_activation` tuple, and without a well-formed one the plan is refused before any action or
+    publication (`first_activation_unbound`). The result is validated by the incumbent plan validator."""
     delivery = policy["delivery"]
     refuse(binding["target_id"] == delivery["target_id"], "delivery_target_foreign", "target_id")
     refuse(binding["repository"] == delivery["repository"], "candidate_repository_foreign", "repository")
+    image = profile = UNCHANGED
+    if binding["expected_descriptor"] is None:
+        bound = first_activation_tuple(first_activation)
+        image, profile = bound["worker_image"], bound["profile_digest"]
     return validate_plan({
         "schema": PLAN_SCHEMA, "plan_id": plan_id_for(identity), "release_id": binding["release_id"],
         "revision": binding["revision"], "tree": binding["tree"], "policy_hash": binding["policy_hash"],
         "repository": delivery["repository"], "required_checks": list(delivery["required_checks"]),
         "target_id": delivery["target_id"], "expected_descriptor": binding["expected_descriptor"],
-        "target_descriptor": {"revision": binding["revision"], "worker_image": UNCHANGED, "profile_digest": UNCHANGED},
+        "target_descriptor": {"revision": binding["revision"], "worker_image": image, "profile_digest": profile},
         "canary_check_id": delivery["canary_check_id"], "ci_timeout_seconds": delivery["ci_timeout_seconds"],
         "consumption_timeout_seconds": delivery["consumption_timeout_seconds"]})
 
@@ -503,6 +533,6 @@ __all__ = ["ASSESSED", "ASSESSING", "ASSESSMENT_ACTION", "ASSESSMENT_SCHEMA", "A
            "OwnerActionRefused", "action_id", "assemble_receipt", "assessment_decision_id", "assessment_document",
            "assessment_input", "assessment_launch_id", "assessment_verdict", "build_plan", "canary_binding",
            "canary_job_id", "canary_manifest", "canary_outcome", "canary_receipt", "canary_request",
-           "dispatch_acceptance", "investigation_ok", "lineage_edges", "moved", "new_action", "plan_binding",
+           "dispatch_acceptance", "first_activation_tuple", "investigation_ok", "lineage_edges", "moved", "new_action", "plan_binding",
            "plan_id_for", "plan_path", "plan_ref", "policy_digest", "research_binding", "reusable_assessment",
            "transition", "validate_policy", "view"]

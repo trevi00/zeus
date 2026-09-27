@@ -282,12 +282,21 @@ def coordinator(service, config: dict, host: dict, *, lanes=None, assessments=No
     # SSOT of the running harness code (the same resolver the runner's own-code guard uses).
     from codex_harness.adapters.deployment import controller_code_revision
 
+    def first_activation(lane_id, revision):
+        # INV-HOST-DELIVERY-001 first activation: the concrete image/profile of a target without a
+        # descriptor come from the lane boundary's trusted facts, the same ports the lane re-derives.
+        # Imported at call time: an unavailable resolver is the coordinator's named wait, not a crash.
+        from codex_harness.adapters.host_delivery import first_activation_facts
+
+        return first_activation_facts(lane_of(config, lane_id), host, revision)
+
     return OwnerActions(store, continuation=continuation, org=service.org, lanes=lanes,
                         deliveries=lambda lane_id: HostDelivery(lanes(lane_id).store, service.org,
                                                                 evaluator_pins=evaluator_pins(lane_id),
                                                                 controller_code=controller_code_revision),
                         publisher=lambda lane_id: publisher_factory(lane_of(config, lane_id)["repository"]),
-                        assessments=assessments, targets=TargetFiles(), fleet=Fleet(store), validate=validator())
+                        assessments=assessments, targets=TargetFiles(), fleet=Fleet(store), validate=validator(),
+                        first_activation=first_activation)
 
 
 def tick_policy(owner: OwnerActions, config: dict, policy_id: str, *, source_factory=GitSource) -> dict:

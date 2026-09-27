@@ -79,8 +79,10 @@ from codex_harness.domain.host_delivery import (
     KIND_SYSTEMD,
     RECEIPT_SCHEMA,
     REPLACEABLE_INSTANCES,
+    REVISION,
     TOKEN,
     WITHDRAW_REASONS,
+    WORKER_IMAGE_ID,
     DeliveryRefused,
     LifecycleInterrupted,
     canary_request_matches,
@@ -266,6 +268,82 @@ def effective_profile_digest() -> str | None:
         return digest_of(load_profile("worker-v1"))
     except Exception:
         return None
+
+
+# INV-HOST-DELIVERY-FIRST-ACTIVATION-001: the committed worker profile resources the incumbent
+# `worker_profile.load_profile` packages, read at a revision from the repository, never imported.
+PROFILE_RESOURCES = "src/codex_harness/resources/"
+IMAGE_REVISION_LABEL = "org.opencontainers.image.revision"
+IMAGE_INSPECT_TIMEOUT = 30
+
+
+def committed_profile_digest(source, revision: str) -> str:
+    """The `worker-v1` profile digest of the COMMITTED resources at `revision`, read-only.
+
+    The same verification and digest as the incumbent `load_profile`/`profile_digest`, over the
+    resource bytes `git show <revision>:<path>` returns, so no candidate code is imported or run.
+    Any defect is `first_activation_profile_unresolved`; nothing is guessed."""
+    from codex_harness.adapters import worker_profile as incumbent
+
+    def committed(name) -> str:
+        if not (type(name) is str and re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._-]{0,127}", name)):
+            raise ValueError("profile resource name")
+        mode, data = source.blob(revision, PROFILE_RESOURCES + name)
+        if mode is None:
+            raise ValueError("profile resource missing")
+        return data.decode("utf-8")
+
+    try:
+        manifest_text = committed(incumbent.PROFILES["worker-v1"])
+        manifest = json.loads(manifest_text)
+        if not isinstance(manifest, dict) or manifest.get("id") != "worker-v1":
+            raise ValueError("profile manifest")
+        for key in ("version", "document", "document_sha256", "hook", "hook_sha256", "sources"):
+            if key not in manifest:
+                raise ValueError("profile manifest field")
+        document = incumbent._normalized(committed(manifest["document"]))
+        if incumbent._sha256(document) != manifest["document_sha256"]:
+            raise ValueError("profile document digest")
+        if len(document) > incumbent.MAX_CHARACTERS:
+            raise ValueError("profile document length")
+        if incumbent._sha256(committed(manifest["hook"])) != manifest["hook_sha256"]:
+            raise ValueError("profile hook digest")
+        allow = manifest.get("permissions", {}).get("allow", [])
+        if any(not (type(rule) is str and rule.startswith("Bash(")) for rule in allow):
+            raise ValueError("profile permissions")
+        return incumbent.profile_digest({"id": "worker-v1", "version": str(manifest["version"]),
+                                         "document_sha256": manifest["document_sha256"],
+                                         "manifest_sha256": incumbent._sha256(manifest_text)})
+    except Exception as exc:
+        raise DeliveryRefused("first_activation_profile_unresolved", "profile_digest") from exc
+
+
+def first_activation_facts(lane: dict, host: dict, revision: str, *, run=None, source=None) -> dict:
+    """The trusted first-activation port (INV-HOST-DELIVERY-FIRST-ACTIVATION-001).
+
+    `worker_image` is the host settings SSOT (`effective_worker_image`) and must be an immutable
+    `sha256:<64 hex>` image id; the local Docker image must report exactly that id, and its OCI
+    revision label is the image source revision. `profile_digest` is the candidate's committed
+    `worker-v1` profile at `revision`, read from the lane repository. Only ids and digests are
+    returned; no setting value, output or path is printed or raised."""
+    image = effective_worker_image(host)
+    if not WORKER_IMAGE_ID.fullmatch(image):
+        raise DeliveryRefused("first_activation_image_unconfigured", "worker_image")
+    try:
+        completed = (run or run_process)(
+            ["docker", "image", "inspect", image, "--format",
+             "{{.Id}} {{index .Config.Labels \"" + IMAGE_REVISION_LABEL + "\"}}"],
+            timeout=IMAGE_INSPECT_TIMEOUT)
+    except Exception as exc:
+        raise DeliveryRefused("first_activation_image_unavailable", "worker_image") from exc
+    parts = str(completed.stdout or "").split()
+    if completed.returncode != 0 or len(parts) != 2 or parts[0] != image or not REVISION.fullmatch(parts[1]):
+        raise DeliveryRefused("first_activation_image_unavailable", "worker_image")
+    if not (type(revision) is str and REVISION.fullmatch(revision)):
+        raise DeliveryRefused("first_activation_profile_unresolved", "profile_digest")
+    source = GitSource(lane["repository"]) if source is None else source
+    return {"worker_image": image, "profile_digest": committed_profile_digest(source, revision),
+            "image_source_revision": parts[1]}
 
 
 def _host_settings() -> dict:
@@ -1047,6 +1125,9 @@ def add_parser(commands) -> None:
     resume.add_argument("--plan-sha256", required=True, dest="plan_sha256",
                         help="The registered plan digest (from status)")
     resume.add_argument("--evidence", required=True, help="sha256:<64 hex> reference of the owner decision")
+    resume.add_argument("--document", default=None,
+                        help="A first-activation binding document (urn:zeus:host-delivery-first-activation:1); "
+                             "--evidence must be sha256 of its canonical JSON")
     for command in (targets, register, tick, run_command, status, withdraw, resume):
         command.add_argument("--lane", default=None, help=LANE_HELP)
 
@@ -1101,11 +1182,15 @@ def controller(service, *, enabled=None, observer=None, git=None, store=None) ->
         enabled = configured_enabled(settings())
     github = None if git is None else GitHubDelivery(git)
     verifier = release_verifier(service, store, git) if enabled and git is not None else None
+    # INV-HOST-DELIVERY-FIRST-ACTIVATION-001: the trusted port over THIS workspace's repository (the
+    # lane's own for a `--lane` route) and the host settings SSOT, read only when a binding is resumed.
+    first_activation = None if git is None else (
+        lambda revision: first_activation_facts({"repository": str(git.repository)}, settings(), revision))
     return HostDelivery(store, service.org, github=github,
                         hosts=host_ports(fleet=Fleet(service.store),
                                          systemd_control=systemd_control_dir(settings())),
                         canaries=canary_checks(store), observer=observer, enabled=enabled,
-                        verifier=verifier)
+                        verifier=verifier, first_activation=first_activation)
 
 
 # ----- explicit lane routing -----------------------------------------------------------------------
@@ -1230,6 +1315,13 @@ def execute(service, args) -> dict:
         if command == "resume":
             # Like withdrawal, resume is a store transition only: it publishes, merges, verifies and
             # switches nothing, and the configured opt-in is not consulted.
+            if getattr(args, "document", None) is not None:
+                # INV-HOST-DELIVERY-FIRST-ACTIVATION-001: the owner's first-activation binding.
+                document = _read_json(Path(args.document))
+                if document is None:
+                    raise DeliveryRefused("first_activation_document_unreadable", "document")
+                return {**delivery.resume_first_activation(args.plan, args.plan_sha256, document, args.evidence),
+                        **routed, "exit_code": 0}
             return {**delivery.resume(args.plan, args.plan_sha256, args.evidence), **routed, "exit_code": 0}
         if command == "tick":
             result = delivery.tick(args.plan)
@@ -1322,7 +1414,7 @@ __all__ = ["DESCRIPTOR_FILE", "ENABLED_SETTING", "MAX_PLAN_BYTES",
            "HostTargetBase", "ProcessHostTarget", "ScheduledTaskHostTarget", "add_parser",
            "canary_checks", "canary_receipt_file", "canary_request_file", "checkout_revision",
            "collect_monitor_canary", "configured_enabled",
-           "controller", "effective_profile_digest", "effective_worker_image", "execute", "release_verifier",
+           "committed_profile_digest", "controller", "effective_profile_digest", "first_activation_facts", "effective_worker_image", "execute", "release_verifier",
            "host_ports", "lane_git", "load_plan", "loaded_runtime", "main", "normalize_checks",
            "owner_qualified_canary", "refusal", "resolve_lane", "run_loop", "runtime_revision", "serve",
            "startup_identity_canary", "startup_receipt"]

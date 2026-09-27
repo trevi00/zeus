@@ -88,6 +88,7 @@ from codex_harness.domain.host_delivery import (
     ci_verdict,
     consumption_verdict,
     descriptor_digest,
+    plan_digest,
     validate_plan,
     validate_targets,
 )
@@ -892,8 +893,22 @@ def test_a_descriptor_hand_edited_after_the_merge_is_still_refused_by_the_switch
     assert intent_of(system)["descriptor"] is None
 
 
+def register_historical(system):
+    """LABELLED FIXTURE: a plan stored BEFORE registration refused `first_activation_unbound`
+    (INV-HOST-DELIVERY-FIRST-ACTIVATION-001), written as the row `register` used to write."""
+    plan = validate_plan(system["plan"])
+    with system["store"].transaction() as tx:
+        tx.put(BUCKET_PLANS, plan["plan_id"], {
+            "id": plan["plan_id"], "plan_id": plan["plan_id"], "plan": plan, "plan_sha256": plan_digest(plan),
+            "pin": pin(), "target_id": plan["target_id"], "registered_at": START, "updated_at": START})
+
+
 def test_an_unchanged_binding_without_a_predecessor_refuses_instead_of_guessing(tmp_path):
-    system = build(tmp_path, plan_overrides={"image": "unchanged"})
+    system = build(tmp_path, plan_overrides={"image": "unchanged"}, register_plan=False)
+    with pytest.raises(DeliveryRefused) as refused_registration:
+        system["delivery"].register(system["plan"], pin())
+    assert refused_registration.value.reason_code == "first_activation_unbound"
+    register_historical(system)
     results = drive(system, until=MERGED, limit=6)
     assert stages(results)[-1] == MERGED
     refused = system["delivery"].tick()

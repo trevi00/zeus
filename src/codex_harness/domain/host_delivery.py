@@ -199,6 +199,21 @@ EVIDENCE_REF = re.compile(r"^sha256:[0-9a-f]{64}$")
 # The one supported recovery (INV-HOST-DELIVERY-VERIFY-001): a delivery that merged a reviewed but
 # never verified release and halted before the host was touched is moved back to `verifying`.
 RECOVERY_VERIFICATION_MISSING = "release_verification_missing"
+# INV-HOST-DELIVERY-FIRST-ACTIVATION-001: the second recovery kind. A FIRST managed deployment (no
+# predecessor descriptor) whose plan said `unchanged` halted at `merged` before touching the host; the
+# owner binds the concrete, re-derived worker image and profile digest and the delivery re-enters
+# `merged`. The binding is used ONLY where `unchanged` has nothing to resolve against.
+RECOVERY_FIRST_ACTIVATION = "first_activation_binding"
+FIRST_ACTIVATION_SCHEMA = "urn:zeus:host-delivery-first-activation:1"
+FIRST_ACTIVATION_FIELDS = {"schema", "kind", "plan_id", "plan_sha256", "pin_sha256", "target_id", "release_id",
+                           "candidate_revision", "candidate_tree", "halt", "expected_descriptor", "predecessor",
+                           "worker_image", "profile_digest", "qualification", "approved_by"}
+FIRST_ACTIVATION_HALT_FIELDS = {"stage", "previous_stage", "reason_code", "updated_at"}
+FIRST_ACTIVATION_QUALIFICATION_FIELDS = {"image_source_revision", "evidence"}
+WORKER_IMAGE_ID = re.compile(r"^sha256:[0-9a-f]{64}$")
+DIGEST_HEX = re.compile(r"^[0-9a-f]{64}$")
+# An organization actor id (`conductor`, `lead:improvement`); the organization decides its role.
+ACTOR_ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,63}$")
 # The cleanup states that close one verification attempt: its exact resources were proven gone,
 # or - for an attempt that never wrote its disk record - proven never to have existed.
 ATTEMPT_RESOLVED = frozenset({"confirmed", "never_started"})
@@ -463,7 +478,7 @@ def validate_targets(document) -> dict:
     return {"schema": REGISTRY_SCHEMA, "targets": entries}
 
 
-def resolve_descriptor(target: dict, plan: dict, current: dict | None) -> dict:
+def resolve_descriptor(target: dict, plan: dict, current: dict | None, binding: dict | None = None) -> dict:
     """The COMPLETE descriptor this delivery must make the target consume.
 
     The root comes from the registered target, never from the plan; for a managed target it is the
@@ -473,13 +488,21 @@ def resolve_descriptor(target: dict, plan: dict, current: dict | None) -> dict:
     cannot resolve it at all - that is a refusal, never a guess or an empty binding. `predecessor`
     is the digest of exactly the descriptor this switch replaces, so a rollback restores a full
     tuple rather than a remembered revision.
+
+    `binding` (INV-HOST-DELIVERY-FIRST-ACTIVATION-001) is consulted ONLY for a first activation: no
+    current descriptor AND a plan that expected none. Everywhere else it is ignored, so an upgrade
+    still resolves `unchanged` against the running descriptor and `predecessor` is never invented.
     """
     plan_descriptor = plan["target_descriptor"]
+    first = current is None and plan.get("expected_descriptor") is None and isinstance(binding, dict)
     resolved = {}
     for key in ("worker_image", "profile_digest"):
         value = plan_descriptor[key]
         if value != UNCHANGED:
             resolved[key] = value
+            continue
+        if first and type(binding.get(key)) is str and binding[key] not in ("", UNCHANGED):
+            resolved[key] = binding[key]
             continue
         if not isinstance(current, dict) or current.get(key) in (None, UNCHANGED):
             raise DeliveryRefused("unchanged_without_predecessor", "target_descriptor." + key)
@@ -861,6 +884,83 @@ def resumable(intent) -> bool:
             and not recoveries_of(intent))
 
 
+def first_activation_unbound(plan) -> bool:
+    """A plan that can never resolve on a first activation (INV-HOST-DELIVERY-FIRST-ACTIVATION-001):
+    no expected predecessor, yet `unchanged` for the image or the profile. NEW registrations refuse
+    it; `validate_plan` does not, so an already stored plan stays readable history."""
+    descriptor = (plan or {}).get("target_descriptor") or {}
+    return (plan or {}).get("expected_descriptor") is None and UNCHANGED in (
+        descriptor.get("worker_image"), descriptor.get("profile_digest"))
+
+
+def first_activation_resumable(intent) -> bool:
+    """The ONE shape `resume_first_activation` may move (INV-HOST-DELIVERY-FIRST-ACTIVATION-001).
+
+    A delivery that merged its verified candidate and halted binding its descriptor because
+    `unchanged` had no predecessor to resolve against, and that bound, sealed or started nothing on
+    the host. It never matches `resumable()` (a different halt reason)."""
+    if not isinstance(intent, dict):
+        return False
+    return (intent.get("stage") == BLOCKED
+            and intent.get("reason_code") == "unchanged_without_predecessor"
+            and intent.get("previous_stage") == MERGED
+            and bool(intent.get("merged_revision"))
+            and all(intent.get(key) is None for key in ("descriptor", "descriptor_sha256", "runtime",
+                                                        "instance_id", "previous_descriptor")))
+
+
+def _first_activation_refused(field: str):
+    return DeliveryRefused("first_activation_invalid", field)
+
+
+def validate_first_activation(document) -> dict:
+    """The owner's first-activation binding document, exactly (INV-HOST-DELIVERY-FIRST-ACTIVATION-001).
+
+    Identity of the plan, pin, release and candidate; the recorded halt it answers; the explicit
+    absence of a predecessor; the concrete image id and profile digest; the qualification refs and
+    the approver. Its values are claims only: the lane re-derives image and profile from trusted
+    ports before anything is written. Every defect is `first_activation_invalid` naming the field."""
+    if not isinstance(document, dict) or set(document) != FIRST_ACTIVATION_FIELDS:
+        raise _first_activation_refused("document")
+    if document["schema"] != FIRST_ACTIVATION_SCHEMA:
+        raise _first_activation_refused("schema")
+    if document["kind"] != RECOVERY_FIRST_ACTIVATION:
+        raise _first_activation_refused("kind")
+    for key in ("plan_id", "release_id", "target_id"):
+        if not _token(document[key]):
+            raise _first_activation_refused(key)
+    if not _hex(document["approved_by"], ACTOR_ID):
+        raise _first_activation_refused("approved_by")
+    for key in ("plan_sha256", "pin_sha256", "profile_digest"):
+        if not _hex(document[key], DIGEST_HEX):
+            raise _first_activation_refused(key)
+    if not _hex(document["candidate_revision"], REVISION):
+        raise _first_activation_refused("candidate_revision")
+    if not _hex(document["candidate_tree"], TREE_ID):
+        raise _first_activation_refused("candidate_tree")
+    halt = document["halt"]
+    if not isinstance(halt, dict) or set(halt) != FIRST_ACTIVATION_HALT_FIELDS:
+        raise _first_activation_refused("halt")
+    if (halt["stage"], halt["previous_stage"], halt["reason_code"]) != (
+            BLOCKED, MERGED, "unchanged_without_predecessor") or not (
+            type(halt["updated_at"]) is str and 0 < len(halt["updated_at"]) <= 64):
+        raise _first_activation_refused("halt")
+    if document["expected_descriptor"] is not None:
+        raise _first_activation_refused("expected_descriptor")
+    if document["predecessor"] is not None:
+        raise _first_activation_refused("predecessor")
+    if not _hex(document["worker_image"], WORKER_IMAGE_ID):
+        raise _first_activation_refused("worker_image")
+    qualification = document["qualification"]
+    if not isinstance(qualification, dict) or set(qualification) != FIRST_ACTIVATION_QUALIFICATION_FIELDS:
+        raise _first_activation_refused("qualification")
+    if not _hex(qualification["image_source_revision"], REVISION):
+        raise _first_activation_refused("qualification.image_source_revision")
+    if not _hex(qualification["evidence"], EVIDENCE_REF):
+        raise _first_activation_refused("qualification.evidence")
+    return {**document, "halt": dict(halt), "qualification": dict(qualification)}
+
+
 def next_stage(stage: str) -> str:
     """The stage that follows a completed one; `active` is terminal and follows nothing."""
     if stage not in STAGE_ORDER:
@@ -928,6 +1028,10 @@ def delivery_progress(row: dict, intent, descriptor_row) -> dict:
             # and the last attempt with its cleanup state; codes and ids only.
             "after_verification": (intent or {}).get("after_verification"),
             "recovery": _recovery_view(((intent or {}).get("recoveries") or [None])[-1]),
+            # Additive (INV-HOST-DELIVERY-FIRST-ACTIVATION-001): every recovery's kind, evidence and
+            # bound tuple (ids and digests only), so a first-activation binding keeps its provenance.
+            "recoveries": [_recoveries_view(record) for record in (intent or {}).get("recoveries") or []
+                           if isinstance(record, dict)],
             "verification": _attempt_view((attempts_of(intent) or [None])[-1]),
             "updated_at": (intent or {}).get("updated_at") or row.get("updated_at")}
     view["next_action"] = stage_next_action(stage, view["outcome"])
@@ -947,6 +1051,12 @@ def _recovery_view(record) -> dict | None:
         return None
     return {"kind": record.get("kind"), "evidence_ref": record.get("evidence_ref"),
             "halted_reason_code": (record.get("halted") or {}).get("reason_code"), "at": record.get("at")}
+
+
+def _recoveries_view(record: dict) -> dict:
+    binding = record.get("binding")
+    return {"kind": record.get("kind"), "evidence_ref": record.get("evidence_ref"),
+            "binding": dict(binding) if isinstance(binding, dict) else None, "at": record.get("at")}
 
 
 def _attempt_view(record) -> dict | None:
