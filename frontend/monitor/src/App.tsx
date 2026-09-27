@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { ExternalLink, FileText, LayoutDashboard, MessageSquare, Palette, RefreshCw, ScrollText, Target, Users, type LucideIcon } from "lucide-react"
+import { Activity, ExternalLink, FileText, LayoutDashboard, MessageSquare, Palette, RefreshCw, ScrollText, Target, Users, type LucideIcon } from "lucide-react"
 
 import { SourceStrip } from "@/components/source-strip"
 import { StatusBadge } from "@/components/status-badge"
@@ -15,8 +15,9 @@ import { LogsView } from "@/views/logs"
 import { OverviewView } from "@/views/overview"
 import { ProjectsView } from "@/views/projects"
 import { ReportView } from "@/views/report"
+import { SessionsView } from "@/views/sessions"
 
-type ViewName = "overview" | "projects" | "logs" | "fleet" | "desk" | "report" | "design"
+type ViewName = "overview" | "projects" | "logs" | "fleet" | "sessions" | "desk" | "report" | "design"
 const VIEWS: Array<{ id: ViewName; label: string; icon: LucideIcon }> = [
   { id: "overview", label: "개요", icon: LayoutDashboard },
   // 프로젝트 reads the optional `sources.portfolio` envelope only (operating-portfolio-001 SPEC).
@@ -34,6 +35,11 @@ const VIEWS: Array<{ id: ViewName; label: string; icon: LucideIcon }> = [
   // absent from SOURCE_NAMES: the source strip, the header warnings below and the pinned report
   // keep the fixed four-source contract, and the fleet view shows its own freshness and notices.
   { id: "fleet", label: "팀 작업", icon: Users },
+  // 세션 reads the optional `sources.lane_sessions` envelope only (INV-LANE-SESSIONS-001): each registered
+  // lane's task/decision executions with their operation, progress, latest invocation and worker session.
+  // Like fleet it is absent from SOURCE_NAMES and carries its own freshness; it is read-only and names the
+  // sessions it cannot see (outside Zeus task ownership) instead of omitting them.
+  { id: "sessions", label: "세션", icon: Activity },
   { id: "report", label: "보고서", icon: FileText },
   { id: "design", label: "디자인 시스템", icon: Palette },
 ]
@@ -106,6 +112,7 @@ export function App() {
           {view === "projects" ? <ProjectsView snapshot={snapshot} now={now} /> : null}
           {view === "logs" ? <LogsView snapshot={snapshot} retained={retained} now={now} /> : null}
           {view === "fleet" ? <FleetView snapshot={snapshot} now={now} /> : null}
+          {view === "sessions" ? <SessionsView snapshot={snapshot} now={now} /> : null}
           {view === "desk" ? <DeskView /> : null}
           {view === "report" ? <ReportView snapshot={snapshot} transport={transport} now={now} /> : null}
           {view === "design" ? <DesignSystemView /> : null}

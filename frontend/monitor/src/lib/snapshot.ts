@@ -27,7 +27,10 @@ export type Snapshot = {
   // `portfolio` is additive in the same way (operating-portfolio-001 SPEC, wire contract
   // `sources.portfolio`): independent of the legacy four sources and of `fleet`, read only by the
   // 프로젝트 view. Its absence is an older collector, never an empty portfolio.
-  sources: Partial<Record<SourceName, Envelope>> & { fleet?: Envelope; portfolio?: Envelope }
+  // `lane_sessions` is additive in the same way (INV-LANE-SESSIONS-001): every registered lane's executions
+  // read from the lane's own store, read only by the 세션 view (lib/lane-sessions.ts). Its absence is an
+  // older collector, never an empty lane.
+  sources: Partial<Record<SourceName, Envelope>> & { fleet?: Envelope; portfolio?: Envelope; lane_sessions?: Envelope }
 }
 
 // Wire shape of `sources.fleet.data` (fleet-001 SPEC "Monitoring wire contract"). Projection only:
@@ -381,6 +384,12 @@ export function fleetFreshness(snapshot: Snapshot | null, now: number): Freshnes
 export function portfolioFreshness(snapshot: Snapshot | null, now: number): Freshness {
   if (!snapshot) return { state: "unavailable", observed_at: null, age: null, reason: "응답 없음" }
   return envelopeFreshness(snapshot.sources?.portfolio, now)
+}
+
+/** Same accepted freshness rules applied to the optional `sources.lane_sessions` envelope. */
+export function laneSessionsFreshness(snapshot: Snapshot | null, now: number): Freshness {
+  if (!snapshot) return { state: "unavailable", observed_at: null, age: null, reason: "응답 없음" }
+  return envelopeFreshness(snapshot.sources?.lane_sessions, now)
 }
 
 function envelopeFreshness(source: Envelope | undefined, now: number): Freshness {
