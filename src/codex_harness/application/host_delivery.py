@@ -91,6 +91,7 @@ from codex_harness.domain.host_delivery import (
     OUTCOME_UNREGISTERED,
     POST_MERGE_OPEN,
     PUBLISHING,
+    RECOVERY_CONSUMPTION_REARM,
     RECOVERY_CONSUMPTION_RETRY,
     RECOVERY_FIRST_ACTIVATION,
     RECOVERY_GENERATION_RESTART,
@@ -114,6 +115,8 @@ from codex_harness.domain.host_delivery import (
     LifecycleInterrupted,
     attempts_of,
     ci_verdict,
+    consumption_rearm_exhausted,
+    consumption_rearmable,
     consumption_retry_exhausted,
     consumption_retryable,
     consumption_verdict,
@@ -135,6 +138,7 @@ from codex_harness.domain.host_delivery import (
     safe_error_type,
     stage_next_action,
     unresolved_attempts,
+    validate_consumption_rearm,
     validate_consumption_retry,
     validate_first_activation,
     validate_generation_restart,
@@ -803,6 +807,10 @@ class HostDelivery:
             if consumption_retry_exhausted(intent):
                 raise DeliveryRefused("resume_exhausted", "evidence")
             raise DeliveryRefused("resume_conflict", "evidence")
+        if kind == RECOVERY_CONSUMPTION_REARM:
+            if consumption_rearm_exhausted(intent):
+                raise DeliveryRefused("resume_exhausted", "evidence")
+            raise DeliveryRefused("resume_conflict", "evidence")
         shape = resumable if kind == RECOVERY_VERIFICATION_MISSING else first_activation_resumable
         if shape({**intent, "recoveries": []}):
             raise DeliveryRefused("resume_exhausted", "evidence")
@@ -1126,6 +1134,131 @@ class HostDelivery:
             "stage": AWAITING_CONSUMPTION, "previous_stage": intent["stage"]})
         LOGGER.warning("host delivery consumption retry plan=%s from=%s", plan["plan_id"], intent["stage"])
         return self._resumed(plan, settled, cached=False, kind=RECOVERY_CONSUMPTION_RETRY)
+
+    # ----- the ONE consumption re-arm after an exhausted retry (INV-HOST-DELIVERY-FIRST-ACTIVATION-001) ----
+    def resume_consumption_rearm(self, plan_id: str, plan_sha256: str, document, evidence_ref: str) -> dict:
+        """Re-arm consumption of the SAME observed instance ONCE more, after the one retry expired again.
+
+        Every read-only check of `resume_consumption_retry`, on the `consumption_rearmable` shape: the plan, pin,
+        the recorded halt INCLUDING its expired deadline, the VERIFIED release and candidate, a conductor approver
+        who is not the author, the first-activation evidence, the SPENT retry (the document names its evidence and
+        its observed instance), the restart link when one is recorded, the descriptor row (bound, observed, never
+        consumed, observing that SAME instance: the retry's ordinary consumption tick recorded it) and the TRUSTED
+        live host showing that instance alive with this descriptor. The interval is the document's explicit
+        `window_seconds` (bounded by CONSUMPTION_REARM_MAX_SECONDS) from ONE clock read. ONE transaction re-checks
+        all of it (CAS), re-arms the queue row and writes `awaiting_consumption`; every earlier halt, deadline and
+        recovery is kept. The same evidence answers `cached`; another is `resume_conflict`, and after a further
+        expiry `resume_exhausted` (final).
+        """
+        if not (type(evidence_ref) is str and EVIDENCE_REF.fullmatch(evidence_ref)):
+            raise DeliveryRefused("resume_evidence_invalid", "evidence")
+        rearm = validate_consumption_rearm(document)
+        document_sha256 = digest(rearm)
+        if evidence_ref != "sha256:" + document_sha256:
+            raise DeliveryRefused("consumption_rearm_evidence_mismatch", "evidence")
+        try:
+            with self.store.transaction() as tx:
+                row = tx.get(BUCKET_PLANS, plan_id) if type(plan_id) is str else None
+                intent = tx.get(BUCKET_INTENTS, plan_id) if row is not None else None
+                queued = tx.get("release_queue", row["plan"]["release_id"]) if row is not None else None
+                current_row = tx.get(BUCKET_DESCRIPTORS, row["plan"]["target_id"]) if row is not None else None
+                active = tx.get("deployment", "active") or {}
+                others = [other for other in tx.scan(BUCKET_INTENTS)] if row is not None else []
+                lock = tx.get("deployment_locks", "controller") or {}
+                record = tx.get("releases", row["plan"]["release_id"]) if row is not None else None
+        except Exception as exc:
+            raise DeliveryRefused("resume_unobservable", "store") from exc
+        if row is None:
+            raise DeliveryRefused("plan_unregistered", "plan_id")
+        if row["plan_sha256"] != plan_sha256 or rearm["plan_sha256"] != plan_sha256:
+            raise DeliveryRefused("resume_plan_mismatch", "plan_sha256")
+        plan = row["plan"]
+        if rearm["plan_id"] != plan["plan_id"]:
+            raise DeliveryRefused("consumption_rearm_plan_mismatch", "plan_id")
+        if (row.get("pin") or {}).get("sha256") != rearm["pin_sha256"]:
+            raise DeliveryRefused("consumption_rearm_pin_mismatch", "pin_sha256")
+        replayed = self._resume_replay(plan, intent, evidence_ref, RECOVERY_CONSUMPTION_REARM)
+        if replayed is not None:
+            return replayed
+        if not consumption_rearmable(intent):
+            raise DeliveryRefused("resume_not_applicable", "stage")
+        halted = {key: intent.get(key) for key in ("stage", "previous_stage", "reason_code", "updated_at",
+                                                    "stage_deadline")}
+        if rearm["halt"] != halted:
+            raise DeliveryRefused("consumption_rearm_halt_mismatch", "halt")
+        for key, expected in (("release_id", plan["release_id"]), ("target_id", plan["target_id"]),
+                              ("candidate_revision", plan["revision"]), ("candidate_tree", plan["tree"])):
+            if rearm[key] != expected:
+                raise DeliveryRefused("consumption_rearm_" + key + "_mismatch", key)
+        self._retry_gate(release_gate(record, plan, self._parent(record)))
+        candidate = (record or {}).get("candidate") or {}
+        if (candidate.get("revision"), candidate.get("tree")) != (rearm["candidate_revision"],
+                                                                   rearm["candidate_tree"]):
+            raise DeliveryRefused("consumption_rearm_candidate_mismatch", "candidate_revision")
+        self._first_activation_approver(rearm["approved_by"], candidate.get("author"), "consumption_rearm")
+        binding = recoveries_of(intent, RECOVERY_FIRST_ACTIVATION)[0]
+        if binding.get("evidence_ref") != rearm["first_activation_evidence"]:
+            raise DeliveryRefused("consumption_rearm_first_activation_mismatch", "first_activation_evidence")
+        spent = recoveries_of(intent, RECOVERY_CONSUMPTION_RETRY)[0]
+        spent_instance = (spent.get("observed") or {}).get("observed_instance_id")
+        if spent.get("evidence_ref") != rearm["retry_evidence"] or rearm["observed_instance_id"] != spent_instance:
+            raise DeliveryRefused("consumption_rearm_retry_mismatch", "retry_evidence")
+        restarted = generation_restart_of(intent)
+        if (restarted is None) != (CONSUMPTION_RETRY_RESTART_FIELD not in rearm) or (
+                restarted is not None and restarted.get("evidence_ref") != rearm[CONSUMPTION_RETRY_RESTART_FIELD]):
+            raise DeliveryRefused("consumption_rearm_restart_link_mismatch", CONSUMPTION_RETRY_RESTART_FIELD)
+        self._rearm_descriptor(intent, current_row, rearm)
+        self._retry_host(plan, record, active, others, lock)
+        receipt = self._retry_live(plan, intent, rearm)
+        # ONE authoritative time anchor, as the retry: the interval is exactly that instant + the EXPLICIT window.
+        now = self.clock()
+        deadline = self._deadline_from(now, rearm["window_seconds"])
+        recovery = {"kind": RECOVERY_CONSUMPTION_REARM, "evidence_ref": evidence_ref,
+                    "document_sha256": document_sha256, "approved_by": rearm["approved_by"],
+                    "authority": rearm["authority"], "retry_evidence": rearm["retry_evidence"],
+                    "window_seconds": rearm["window_seconds"],
+                    "halted": copy.deepcopy({key: intent.get(key) for key in (
+                        "stage", "previous_stage", "reason_code", "outcome", "updated_at", "stage_entered_at",
+                        "stage_deadline", "rollback", "canary", "candidate_instance_id", "attempts")}),
+                    "observed": {"descriptor_sha256": intent["descriptor_sha256"],
+                                 "observed_instance_id": rearm["observed_instance_id"], "receipt": receipt,
+                                 **({CONSUMPTION_RETRY_RESTART_FIELD: restarted["evidence_ref"]}
+                                    if restarted is not None else {})},
+                    "interval": {"started_at": now, "deadline": deadline}, "at": now}
+        try:
+            with self.store.transaction() as tx:
+                current = tx.get(BUCKET_INTENTS, plan["plan_id"])
+                settled = (None if self._replay_of(current, evidence_ref, RECOVERY_CONSUMPTION_REARM)
+                           else self._consumption_retry_in(tx, row, intent, queued, current_row, record,
+                                                           current, recovery, now, label="consumption re-arm"))
+        except DeliveryRefused:
+            raise
+        except Exception as exc:
+            raise DeliveryRefused("resume_unobservable", "store") from exc
+        if settled is None:
+            return self._resumed(plan, current, cached=True, evidence_ref=evidence_ref,
+                                 kind=RECOVERY_CONSUMPTION_REARM)
+        self._emit(EVENT_STAGE, "observed", plan, attributes={
+            "plan_id": plan["plan_id"], "release_id": plan["release_id"], "target_id": plan["target_id"],
+            "stage": AWAITING_CONSUMPTION, "previous_stage": intent["stage"]})
+        LOGGER.warning("host delivery consumption re-arm plan=%s from=%s window=%s", plan["plan_id"],
+                       intent["stage"], rearm["window_seconds"])
+        return self._resumed(plan, settled, cached=False, kind=RECOVERY_CONSUMPTION_REARM)
+
+    @staticmethod
+    def _rearm_descriptor(intent: dict, current_row, rearm: dict) -> None:
+        """The descriptor row is the bound, never consumed one, and observes EXACTLY the spent retry's instance (the
+        retry's ordinary consumption tick recorded its startup), which is also the intent's candidate."""
+        row = current_row or {}
+        if (row.get("descriptor") != intent["descriptor"]
+                or row.get("descriptor_sha256") != intent["descriptor_sha256"]
+                or rearm["descriptor_sha256"] != intent["descriptor_sha256"]):
+            raise DeliveryRefused("consumption_rearm_descriptor_mismatch", "descriptor_sha256")
+        if row.get("consumed") or row.get("instance_id") is not None or not row.get("startup_observed"):
+            raise DeliveryRefused("consumption_rearm_descriptor_state", "descriptor_sha256")
+        if not (row.get("observed_instance_id") == rearm["observed_instance_id"]
+                == intent.get("candidate_instance_id")):
+            raise DeliveryRefused("consumption_rearm_instance_mismatch", "observed_instance_id")
 
     # ----- generation restart of a stopped first activation (INV-HOST-DELIVERY-FIRST-ACTIVATION-001) ----
     def resume_generation_restart(self, plan_id: str, plan_sha256: str, document, evidence_ref: str, *,
@@ -1471,7 +1604,7 @@ class HostDelivery:
         return {key: verdict.get(key) for key in ("instance_id", "pid", "revision")}
 
     def _consumption_retry_in(self, tx, row: dict, intent: dict, queued, current_row, record, current,
-                              recovery: dict, now: str) -> dict:
+                              recovery: dict, now: str, label: str = "consumption retry") -> dict:
         """Phase 2, inside the one transaction (modelled on `_first_activation_in`)."""
         plan = row["plan"]
         if current != intent or tx.get(BUCKET_PLANS, plan["plan_id"]) != row:
@@ -1492,7 +1625,7 @@ class HostDelivery:
         status = (queued or {}).get("status")
         if status in {"blocked", "failed"}:
             try:
-                self.queue.retry(plan["release_id"], "host delivery consumption retry " + plan["plan_id"] + " "
+                self.queue.retry(plan["release_id"], "host delivery " + label + " " + plan["plan_id"] + " "
                                  + recovery["evidence_ref"], transaction=tx)
             except ContractError as exc:
                 raise DeliveryRefused("resume_queue_refused", "release_id") from exc
@@ -2594,9 +2727,9 @@ class HostDelivery:
             # can be waited out: the exact predecessor is restored.
             return self._begin_rollback(plan, intent, claim, verdict["reason_code"])
         retry = ((intent.get("recoveries") or [None])[-1]) or {}
-        if retry.get("kind") == RECOVERY_CONSUMPTION_RETRY \
+        if retry.get("kind") in (RECOVERY_CONSUMPTION_RETRY, RECOVERY_CONSUMPTION_REARM) \
                 and verdict["instance_id"] != (retry.get("observed") or {}).get("observed_instance_id"):
-            # INV-HOST-DELIVERY-FIRST-ACTIVATION-001: a retry consumes ONLY the instance it observed.
+            # INV-HOST-DELIVERY-FIRST-ACTIVATION-001: a retry or re-arm consumes ONLY the instance it observed.
             return self._halt(plan, intent, BLOCKED, OUTCOME_BLOCKED, "retry_instance_changed", claim=claim)
         startup = {key: verdict.get(key) for key in
                    ("instance_id", "pid", "runtime_root", "module_root", "revision")}

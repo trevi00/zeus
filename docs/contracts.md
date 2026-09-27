@@ -3627,6 +3627,49 @@ no current descriptor to be unchanged from.
   - The same document replays `cached` (`requested`/`launched` replays complete the start). Another document of the
     kind is `resume_conflict`. No manual start, store edit, first-activation replay or window extension is ever part
     of it.
+
+- **Consumption re-arm after an exhausted retry** (`first_activation_consumption_rearm`, schema
+  `urn:zeus:host-delivery-consumption-rearm:1`). The ONE consumption retry expired AGAIN with the owner canary still
+  PENDING: the delivery halted in the same `no_known_good_predecessor` shape, and another retry is
+  `resume_exhausted`. One explicit re-arm, recorded user decision required, opens ONE further consumption interval for
+  the SAME observed instance.
+  - **Qualifying shape** (`consumption_rearmable`):
+    - the retry's halt shape again;
+    - exactly one retry, whose row is the LATEST recovery;
+    - no re-arm yet;
+    - a recorded restart, if any, is `started`.
+  - **The document binds** everything a retry document binds (with the restart link iff a restart is recorded),
+    plus:
+    - `retry_evidence`: the spent retry, whose observed instance the document must name;
+    - `window_seconds`: the explicit window length, a whole number of seconds, 1..3600
+      (`CONSUMPTION_REARM_MAX_SECONDS`), never the plan's timeout;
+    - `authority`: the evidence of the recorded user decision.
+  - **Trusted checks** are the retry's:
+    - the release is verified;
+    - the approver is a conductor who is not the author;
+    - no active pointer, lease or competing target;
+    - the live host shows that instance alive with this descriptor.
+
+    The descriptor row must be the bound, never consumed row. It observes exactly that instance, because the retry's
+    ordinary consumption tick recorded its startup, and the intent's candidate is that instance.
+  - **ONE lane transaction:**
+    - `ReleaseQueue.retry`;
+    - one recovery appended: the copied halt, the observed identity and receipt, `retry_evidence`, `window_seconds`,
+      `authority`, and an interval {started_at = the commit time read ONCE, deadline = started_at +
+      `window_seconds`};
+    - `awaiting_consumption` with that deadline.
+
+    Every earlier halt, deadline and recovery is kept; nothing is restarted, re-verified or replayed.
+  - **Consumption.** While the re-arm is in effect, only its recorded instance can be consumed
+    (`retry_instance_changed` otherwise). The same evidence replays `cached`, and other evidence is `resume_conflict`.
+    A further expiry halts again, and that halt is FINAL: another re-arm or retry is `resume_exhausted`.
+  - **Owner canary.** The SAME halted canary is recovered once more by its own typed kind
+    (`delivery_canary_consumption_rearm`; `lane_rearm_evidence`, `lane_window_seconds`).
+    - It applies only after exactly one retry-kind recovery, and only while the lane's LATEST recovery is that re-arm
+      with that window.
+    - The binding is unchanged (never re-bound). The same job must still be queued and never dispatched, and the
+      Fleet paused. `margin_seconds` must be below the window and at least that much of the window must remain.
+    - While it is owed, owner discovery holds `canary_recovery_owed` and never creates a second canary for the plan.
 ## INV-HOST-DELIVERY-MIGRATION-001
 
 The lane half of an evaluator migration, keyed by the old plan in `host_delivery_migrations`

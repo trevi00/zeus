@@ -73,6 +73,7 @@ from codex_harness.domain.owner_actions import (
     ASSESSMENT_SENDER,
     ASSESSOR,
     AUTHORITY,
+    CANARY_REARM_KIND,
     CANARY_RECOVERY_HALT_REASON,
     CANARY_RECOVERY_KIND,
     COMPLETED,
@@ -81,6 +82,7 @@ from codex_harness.domain.owner_actions import (
     EVIDENCE_REF,
     INTENDED,
     INVOKING,
+    LANE_REARM_KIND,
     LANE_RETRY_KIND,
     MAX_ACTIONS_PER_TICK,
     MAX_ASSESSMENT_LAUNCHES,
@@ -124,6 +126,7 @@ from codex_harness.domain.owner_actions import (
     plan_path,
     plan_ref,
     policy_digest,
+    rearm_owed_canary,
     recovered_canary,
     research_binding,
     restart_owed_canary,
@@ -332,6 +335,7 @@ class OwnerActions:
                     # INV-HOST-DELIVERY-FIRST-ACTIVATION-001: the lane restarted this plan's stopped generation and
                     # retried it; the halted canary of the stopped instance is owed its typed recovery onto the
                     # restarted one (same action, same job). A second canary is never created for it.
+                    # (extended) After the lane's ONE re-arm the SAME halted canary is owed its typed re-arm recovery.
                     waits[plan["id"]] = "canary_recovery_owed"
                 elif binding is not None and (DELIVERY_CANARY, plan["subject"]["intent_id"]) not in busy:
                     created += self._create(row, DELIVERY_CANARY, binding, dict(plan["subject"]))
@@ -780,10 +784,12 @@ class OwnerActions:
             self.targets.write_request(target, plan_action["plan_id"], document)
 
     def _restart_owed(self, plan_action: dict, actions: list) -> bool:
-        """True while a linked lane restart leaves this plan's halted canary owed its typed recovery."""
+        """True while a linked lane restart, or the lane's ONE consumption re-arm, leaves this plan's halted canary
+        owed its typed recovery (INV-HOST-DELIVERY-FIRST-ACTIVATION-001, extended)."""
         intent, _target = self._delivery_view(plan_action)
         restart = linked_restart(intent)
-        return any(restart_owed_canary(a, restart) and (a.get("binding") or {}).get("plan_id") == plan_action["plan_id"]
+        return any((restart_owed_canary(a, restart) or rearm_owed_canary(a, intent))
+                   and (a.get("binding") or {}).get("plan_id") == plan_action["plan_id"]
                    and (a.get("binding") or {}).get("plan_sha256") == plan_action["plan_sha256"] for a in actions)
 
     def _canary_binding(self, plan_action: dict) -> dict | None:
@@ -902,14 +908,14 @@ class OwnerActions:
                  and r.get("plan_id") == (action.get("binding") or {}).get("plan_id")), None)
         if not isinstance(action, dict) or action.get("kind") != DELIVERY_CANARY:
             raise OwnerActionRefused("canary_recovery_action_missing", "action_id")
-        cached = self._recovery_replay(action, evidence_ref)
+        cached = self._recovery_replay(action, evidence_ref, recovery_doc["kind"])
         if cached is not None:
             return cached
         self._recovery_action(action, recovery_doc, policy_row)
         self._recovery_job(action, recovery_doc, policy_row, job, control)
         lane = self._recovery_lane(plan_action, action, recovery_doc)
         now = self.clock()
-        recovery = {"kind": CANARY_RECOVERY_KIND, "evidence_ref": evidence_ref, "document_sha256": document_sha256,
+        recovery = {"kind": recovery_doc["kind"], "evidence_ref": evidence_ref, "document_sha256": document_sha256,
                     "approved_by": recovery_doc["approved_by"],
                     "halted": {"state": action["state"], "reason_code": action["reason_code"],
                                "updated_at": action["updated_at"], "version": action["version"]},
@@ -938,11 +944,21 @@ class OwnerActions:
                 "evidence_ref": evidence_ref, "recovery": view(written)["recoveries"][-1]}
 
     @staticmethod
-    def _recovery_replay(action: dict, evidence_ref: str) -> dict | None:
-        """One recovery per action: the same evidence is `cached` at any later state; other evidence
-        against an action that already has one is a named conflict."""
+    def _recovery_replay(action: dict, evidence_ref: str, kind: str = CANARY_RECOVERY_KIND) -> dict | None:
+        """One recovery of each typed kind per action: the same evidence is `cached` at any later state; other
+        evidence is a named conflict. The re-arm kind (INV-HOST-DELIVERY-FIRST-ACTIVATION-001, extended) follows
+        EXACTLY one retry-kind recovery and never repeats."""
         recorded = [r for r in action.get("recoveries") or [] if isinstance(r, dict)]
+        if any(r.get("evidence_ref") == evidence_ref for r in recorded):
+            return {"recovered": True, "cached": True, "action_id": action["id"], "state": action["state"],
+                    "reason_code": action["reason_code"], "version": action["version"],
+                    "job_id": action.get("job_id"), "evidence_ref": evidence_ref,
+                    "recovery": next(r for r in view(action)["recoveries"] if r.get("evidence_ref") == evidence_ref)}
+        if kind == CANARY_REARM_KIND and [r.get("kind") for r in recorded] == [CANARY_RECOVERY_KIND]:
+            return None
         if not recorded:
+            if kind == CANARY_REARM_KIND:
+                raise OwnerActionRefused("canary_recovery_not_applicable", "recoveries")
             return None
         if recorded[-1].get("evidence_ref") != evidence_ref:
             raise OwnerActionRefused("canary_recovery_conflict", "evidence")
@@ -1010,10 +1026,20 @@ class OwnerActions:
         if not (isinstance(intent, dict) and intent.get("stage") == AWAITING_CONSUMPTION):
             raise OwnerActionRefused("canary_recovery_lane_not_awaiting", "stage")
         retry = ((intent.get("recoveries") or [None])[-1]) or {}
-        if retry.get("kind") != LANE_RETRY_KIND or retry.get("evidence_ref") != document["lane_retry_evidence"]:
+        rearm = document["kind"] == CANARY_REARM_KIND
+        if rearm:
+            # the lane's ONE re-arm, named by the document, of the EXPLICIT window the document binds
+            if retry.get("kind") != LANE_REARM_KIND or retry.get("evidence_ref") != document["lane_rearm_evidence"]:
+                raise OwnerActionRefused("canary_recovery_lane_not_rearmed", "lane_rearm_evidence")
+            if retry.get("window_seconds") != document["lane_window_seconds"]:
+                raise OwnerActionRefused("canary_recovery_lane_window_mismatch", "lane_window_seconds")
+        elif retry.get("kind") != LANE_RETRY_KIND or retry.get("evidence_ref") != document["lane_retry_evidence"]:
             raise OwnerActionRefused("canary_recovery_lane_not_retried", "lane_retry_evidence")
         observed = retry.get("observed") or {}
         rebound = None
+        if rearm and observed.get("observed_instance_id") != binding["instance_id"]:
+            # the re-arm never re-binds: the retry already bound this action to the instance it observes
+            raise OwnerActionRefused("canary_recovery_instance_mismatch", "instance_id")
         if observed.get("observed_instance_id") != binding["instance_id"]:
             # Only an EXPLICITLY linked lane restart of exactly this binding's instance moves the binding.
             restart = linked_restart(intent)
@@ -1041,7 +1067,9 @@ class OwnerActions:
         if remaining < document["margin_seconds"]:
             raise OwnerActionRefused("canary_recovery_margin", "margin_seconds")
         self._recovery_approver(document["approved_by"], ((record or {}).get("candidate") or {}).get("author"))
-        return {"retry_evidence": document["lane_retry_evidence"], "stage": intent["stage"],
+        return {**({"rearm_evidence": document["lane_rearm_evidence"], "window_seconds": document["lane_window_seconds"]}
+                   if rearm else {"retry_evidence": document["lane_retry_evidence"]}),
+                "stage": intent["stage"],
                 "stage_deadline": intent["stage_deadline"], "instance_id": bound["binding"]["instance_id"],
                 "descriptor_sha256": binding["descriptor_sha256"],
                 **({"rebound": rebound} if rebound is not None else {})}
