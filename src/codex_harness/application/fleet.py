@@ -87,9 +87,6 @@ BUCKET_HOST_MIGRATION = "fleet_host_migrations"
 BUCKET_UNITS = "fleet_units"
 # Control-row field naming the managed host activation that paused admission (`activation_gate`).
 ACTIVATION_HOLD = "activation_hold"
-# INV-WORKER-CREDENTIALS-001: the one admission hold a runner may name (no eligible worker credential).
-CREDENTIAL_HELD = "credential_held"
-ADMISSION_HOLDS = frozenset({CREDENTIAL_HELD})
 CONTROL_KEY = "admission"
 LOGGER = logging.getLogger("zeus.fleet.runner")
 
@@ -348,21 +345,7 @@ class Fleet:
         with self.store.transaction() as tx:
             return tx.scan(BUCKET_GRANTS)
 
-    def admissible(self, budget_exhausted: bool = False) -> str | None:
-        """Read-only preview of `admit_one`: the job id it would claim now, or None. Nothing is written; the
-        claim itself stays `admit_one`'s, which re-decides in its own transaction."""
-        with self.store.transaction() as tx:
-            registry = self._registry(tx)
-            if registry is None:
-                raise FleetRefused("unregistered")
-            control = self._control(tx)
-            config = effective_config(registry["config"], control)
-            jobs = {row["id"]: row for row in tx.scan(BUCKET_JOBS)}
-            decision = select_admission(config, bool(control.get("paused")), jobs, budget_exhausted,
-                                        self._repository_aliases(tx), units=len(held_units(tx.scan(BUCKET_UNITS))))
-        return decision["job"]["id"] if decision["job"] is not None else None
-
-    def admit_one(self, budget_exhausted: bool = False, hold: str | None = None) -> dict:
+    def admit_one(self, budget_exhausted: bool = False) -> dict:
         """One transaction: choose the oldest admissible queued job and claim it as dispatching
         with a fresh owner token. Returns `job` None with the blocking reasons when nothing fits.
         Every observed reason (paused, budget_exhausted, budget_stale, capacity, lane_busy,
@@ -377,11 +360,8 @@ class Fleet:
             jobs = {row["id"]: row for row in tx.scan(BUCKET_JOBS)}
             # Held execution units (a reserved, running or cleanup-unknown conductor) take the same
             # `max_parallel` slots, read in this same serialized transaction.
-            if hold is not None and hold not in ADMISSION_HOLDS:
-                raise FleetRefused("hold_invalid")
             decision = select_admission(config, bool(control.get("paused")), jobs, budget_exhausted,
-                                        self._repository_aliases(tx), units=len(held_units(tx.scan(BUCKET_UNITS))),
-                                        hold=hold)
+                                        self._repository_aliases(tx), units=len(held_units(tx.scan(BUCKET_UNITS))))
             job = decision["job"]
             now = self.clock()
             if job is not None:
@@ -1128,38 +1108,18 @@ class FleetRunner:
         # `admit_one` is the only capacity authority: its transaction counts reserving jobs AND held
         # execution units (a conductor of any controller or standalone tick), so no local count here
         # authorizes a start or counts a durable reservation twice. `children` only bounds the loop.
-        reserve = self.launcher.reserve if getattr(self.launcher, "reserves_credentials", False) else None
         while not self.stopping and len(self.children) < config["max_parallel"]:
             exhausted = bool(self.launcher.budget_exhausted(config["budget"]))
-            # INV-WORKER-CREDENTIALS-001: a launcher with named worker credentials reserves ONE eligible credential
-            # before admission, and only when a job is actually admissible (read-only preview), so idle ticks spend
-            # no reservation or usage read. Without a grant, the job that would be claimed waits `credential_held`
-            # (persisted on it: pending ownership stays visible) and nothing is failed or retried. A launcher
-            # without the port keeps this runner's exact previous behaviour.
-            grant, hold = None, None
-            if reserve is not None:
-                if self.fleet.admissible(budget_exhausted=exhausted) is not None:
-                    grant = reserve()
-                if not (grant is not None and grant.get("granted")):
-                    hold = CREDENTIAL_HELD
-                if grant is not None and not grant.get("granted"):
-                    summary["credential"] = {"state": "held", "reason_code": grant.get("reason_code"),
-                                             "reasons": grant.get("reasons")}
-            decision = self.fleet.admit_one(budget_exhausted=exhausted, hold=hold) if hold is not None \
-                else self.fleet.admit_one(budget_exhausted=exhausted)
+            decision = self.fleet.admit_one(budget_exhausted=exhausted)
             summary["blocked"] = decision["blocked"]
             job = decision["job"]
             if job is None:
-                if grant is not None and grant.get("granted"):
-                    self.launcher.unreserve(grant)
                 break
             progressed = True
             summary["admitted"].append(job["id"])
             try:
-                handle = self.launcher.launch(job, grant) if grant is not None else self.launcher.launch(job)
+                handle = self.launcher.launch(job)
             except LaunchRefused as exc:
-                if grant is not None:
-                    self.launcher.unreserve(grant)
                 self._finalize(job, {"status": FAILED, "reason_code": exc.reason_code}, summary)
             except Exception as exc:
                 # The process may or may not exist: the claim, lane and paths stay reserved.

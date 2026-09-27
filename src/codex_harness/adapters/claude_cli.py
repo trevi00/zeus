@@ -1001,8 +1001,8 @@ def _provider_failure(*, terminal, conflict, state: _StreamState, termination, r
     if raw.get("is_error") or subtype != "success":
         status = raw.get("api_error_status")
         if type(status) is int and status == 429:
-            # INV-WORKER-CREDENTIALS-001: the provider refused this credential's request for its usage limit.
-            # A named cause, so the credential cools down and the execution is contained, never replayed blind.
+            # The provider refused this credential's request for its usage limit (HTTP 429): a named cause, so the
+            # execution is contained (INV-RECURRENCE-001), never replayed blind and never moved to another credential.
             cause = "claude-provider-usage-limit-exceeded"
         elif type(status) is int and status in (401, 403):
             cause = "claude-provider-authentication-failed"

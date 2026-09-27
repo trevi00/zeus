@@ -360,13 +360,11 @@ def blocking_reason(job: dict, jobs: dict, config: dict, aliases=None) -> str | 
 
 
 def select_admission(config: dict, paused: bool, jobs: dict, budget_exhausted: bool, aliases=None,
-                     units: int = 0, hold: str | None = None) -> dict:
+                     units: int = 0) -> dict:
     """The one queued job to dispatch next (oldest first) and the reason every other queued job
     waits. At most `max_parallel` execution units reserve at once - reserving jobs plus the `units`
     held by other execution kinds (a conductor decision) - one job per lane. `config` carries the
-    effective ceilings; the caller persists every observed reason in the same transaction.
-    `hold` (INV-WORKER-CREDENTIALS-001) is the reason every OTHERWISE admissible job waits when the
-    runner holds no worker credential for it; jobs blocked for their own reason keep it."""
+    effective ceilings; the caller persists every observed reason in the same transaction."""
     queued = sorted((j for j in jobs.values() if j["status"] == QUEUED), key=lambda j: (j["created_at"], j["id"]))
     reserving = sum(1 for j in jobs.values() if j["status"] in RESERVING) + units
     blocked, chosen = {}, None
@@ -379,8 +377,6 @@ def select_admission(config: dict, paused: bool, jobs: dict, budget_exhausted: b
             reason = "capacity"
         else:
             reason = blocking_reason(job, jobs, config, aliases)
-        if reason is None and hold is not None:
-            reason = hold
         if reason is None and chosen is None:
             chosen = job
             reserving += 1  # the next candidates see this claim: capacity, lane and paths

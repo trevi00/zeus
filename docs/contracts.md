@@ -1453,69 +1453,6 @@ or generated work. `sources.fleet` in the monitor snapshot (an additive source b
 the persisted queued reasons), call counts, effective `budget`, last 100 jobs with `truncated`,
 `active_job` from all reserving jobs; never manifests, paths, schemas, DSNs or raw output.
 
-## INV-WORKER-CREDENTIALS-001
-
-Named worker credentials with primary-preferred selection and a provider-usage bound for the secondary. The module
-split is `domain.worker_credentials` (pure policy), `application.worker_credentials` (the one admission use case),
-`adapters.worker_credentials` (secret and telemetry ports) and `zeus worker-credentials`.
-
-- **Configuration** (`urn:zeus:worker-credentials:1`, referenced by the host setting `ZEUS_WORKER_CREDENTIALS`;
-  absent = the exact previous one-token behaviour, present but invalid = refused, never a silent fallback).
-  - It names `primary` (required) and `secondary` by alias and generation.
-  - Each row carries a secret REFERENCE (`env_file_key` with key `CLAUDE_CODE_OAUTH_TOKEN`, or `token_file`) under
-    the private secret root, and never a value.
-  - A row may carry telemetry: `claude_cli_usage`, a private LOGIN credential path, the pinned CLI version, and a
-    provisioning binding {generation, attested_by, attested_at}. The binding associates that login with THIS token
-    generation; it cannot be verified pre-dispatch through supported interfaces, so it is named, never implied.
-  - Each row has an in-flight bound.
-  - The policy bound `secondary_weekly_below_percent` may be stricter, never looser, than 80.
-- **Selection** (one serialized store transaction per admission; the grant is a reservation for exactly one owner):
-  - PRIMARY whenever eligible: configured, not revoked, not cooling down, and within its in-flight bound. A busy
-    primary holds `held_primary_in_flight_bound` and never spends the secondary.
-  - SECONDARY only when the primary is unavailable AND a fresh (≤ `telemetry_max_age_seconds`, not future-dated,
-    taken after the secondary's own last refusal) KNOWN observation of this generation, from the pinned CLI version,
-    reports all-model weekly usage STRICTLY below the bound and the five-hour window below 100 percent.
-  - Missing, stale, unknown, invalid, foreign or unpinned telemetry, a bound reached, or both credentials
-    unavailable is a HOLD (`held_no_eligible_credential` with each alias's reason). Queued work keeps its owner and
-    is not admitted; nothing is failed, retried or replayed.
-- **Telemetry** is ONE supported `claude -p /usage` read (tools disabled, no session persistence, no setting
-  sources).
-  - It runs in a new private configuration directory holding only a copy of the bound login, with no token variable
-    in its environment and with the version pinned.
-  - Any defect is a named `unknown` observation: another version, a model call (nonzero tokens), an error, a timeout,
-    a nonzero exit, malformed output, or missing windows (a static token reports none).
-  - A held admission may refresh a held alias at most once per freshness bound. No model request is ever used to
-    discover usage.
-  - The reading is what the provider reported at `observed_at`. It is not a billing cap: other devices, in-flight
-    calls and latency can cross it.
-- **Outcomes.** The lane launcher reads the finished worker's durable task failure cause.
-  - `claude-provider-usage-limit-exceeded` (provider HTTP 429) cools that credential down until the reported reset,
-    or `unknown_reset_seconds` when none was reported.
-  - After an unreported reset, a primary with telemetry is eligible again only on a fresh known observation taken
-    after the refusal with both windows below 100.
-  - `claude-provider-authentication-failed` (401/403), or a granted secret that cannot be read as a private,
-    well-shaped token, revokes the generation until an owner configures a new one (a new generation starts clean).
-  - A refusal observed OUTSIDE a Fleet dispatch (for example by a managed generation's own worker) has the same effect
-    only through the explicit owner command `worker-credentials record-refusal --alias --cause --evidence
-    sha256:<digest>`. It never calls a provider, and the same evidence replays `cached`.
-  - A usage-limited execution is contained, never replayed.
-  - In-flight workers are never killed or re-credentialed. A crashed owner's reservation ends at its lease, and a late
-    release still applies its outcome.
-- **Delivery to the worker.** `FleetRunner` reserves BEFORE admission, and the grant is bound to the one admitted
-  job.
-  - It reserves only when a read-only preview (`Fleet.admissible`) shows a job it would claim, so idle, paused
-    or otherwise-blocked ticks spend no reservation and no usage read.
-  - Without a grant, `admit_one(hold="credential_held")` records that reason on every OTHERWISE admissible queued
-    job. Jobs blocked for their own reason keep it, and nothing is claimed, failed or retried.
-  - `LaneLauncher` sets `CLAUDE_CODE_OAUTH_TOKEN` in THAT child's environment only; the isolated runtime forwards it
-    by name.
-  - No admitted job returns the reservation, and a refused launch returns it.
-  - For a managed generation, `worker-credentials select-env` writes the reserved credential as a one-variable
-    EnvironmentFile (0600) for a reviewed unit drop-in. It takes effect at the NEXT generation start, never
-    mid-generation.
-- **Records and output** carry aliases, generations, owners, codes, times, provider-reported percentages, a bounded
-  audit and the switch log. They never carry a secret, a secret digest or an account identifier.
-
 ## INV-FLEET-BACKLOG-001
 
 `zeus fleet backlog register|tick|status` admits ALREADY APPROVED work into the existing
