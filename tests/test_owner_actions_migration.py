@@ -43,6 +43,15 @@ REPOSITORY = "github:zeus-owner/zeus-harness"
 PIN = {"revision": "e" * 40, "path": "ops/owner-actions.json", "sha256": "d" * 64, "lane": "a"}
 CANDIDATE = {"revision": "c" * 40, "tree": "d" * 40, "base": "b" * 40, "repository": REPOSITORY}
 NOW = "2026-09-26T00:00:00+00:00"
+# LABELLED fake first-activation facts (INV-HOST-DELIVERY-001): what the lane boundary's trusted port
+# reports for a target without a descriptor. No image, profile or host is resolved here.
+FIRST_ACTIVATION = {"worker_image": "sha256:" + "9" * 64, "profile_digest": "c" * 64,
+                    "image_source_revision": "a" * 40}
+
+
+def first_activation_port(lane_id, revision):
+    """LABELLED fake of the owner's `first_activation(lane_id, revision)` port."""
+    return dict(FIRST_ACTIVATION)
 
 
 class SerialStore:
@@ -252,7 +261,7 @@ def world():
     control, lane_store, log = SerialStore(), SerialStore(), Log()
     lane, publisher, targets = FakeLane(lane_store, log), FakePublisher(log), FakeTargets(log)
     ports = {"continuation": StubContinuation(), "deliveries": lambda lane_id: lane,
-             "publisher": lambda lane_id: publisher, "targets": targets}
+             "publisher": lambda lane_id: publisher, "targets": targets, "first_activation": first_activation_port}
     owner = OwnerActions(control, clock=lambda: NOW, **ports)
     owner.register(policy_document(), PIN)
     source = {"id": "rel-old", "candidate": dict(CANDIDATE), "policy_hash": "e" * 64, "status": "rejected"}
@@ -262,7 +271,7 @@ def world():
         policy_row = tx.get(BUCKET_POLICIES, "owners-1")
     binding = do.plan_binding(policy_row, intent, source, None)
     identity = do.action_id(do.DELIVERY_PLAN, binding)
-    plan = do.build_plan(policy_row["policy"], binding, identity)
+    plan = do.build_plan(policy_row["policy"], binding, identity, first_activation=FIRST_ACTIVATION)
     old_action = {**do.new_action(do.DELIVERY_PLAN, binding, policy_row, {"intent_id": "intent-1", "lane": "a"}, NOW),
                   "state": do.COMPLETED, "reason_code": "plan_registered", "plan": plan, "plan_id": plan["plan_id"],
                   "plan_sha256": plan_digest(plan), "version": 4}
@@ -559,7 +568,7 @@ def real_lane(tmp_path, control, lane_store):
             return {"id": "policy-1", "policy": {"delivery_target": plan["target_id"]}}
 
     ports = {"continuation": Stub(), "deliveries": lambda lane_id: delivery,
-             "publisher": lambda lane_id: publisher, "targets": targets}
+             "publisher": lambda lane_id: publisher, "targets": targets, "first_activation": first_activation_port}
     owner = OwnerActions(control, clock=lambda: NOW, **ports)
     owner.register(policy, PIN)
     intent = {"id": "intent-1", "policy_id": "policy-1", "route": dc.DELIVERY, "state": dc.AWAITING_OWNER,
@@ -918,7 +927,7 @@ def paused_world(tmp_path, world=None):
     log = Log()
     lane, publisher, targets = FakeLane(world.lane.store, log), FakePublisher(log), FakeTargets(log)
     ports = {"continuation": world.controller, "deliveries": lambda lane_id: lane,
-             "publisher": lambda lane_id: publisher, "targets": targets}
+             "publisher": lambda lane_id: publisher, "targets": targets, "first_activation": first_activation_port}
     owner = OwnerActions(world.control, clock=lambda: NOW, **ports)
     owner.register(policy_document(), PIN)
     release_id = source["release_id"]
@@ -931,7 +940,7 @@ def paused_world(tmp_path, world=None):
     policy_row = rows(world.control, BUCKET_POLICIES)["owners-1"]
     binding = do.plan_binding(policy_row, source, release, None)
     identity = do.action_id(do.DELIVERY_PLAN, binding)
-    plan = do.build_plan(policy_row["policy"], binding, identity)
+    plan = do.build_plan(policy_row["policy"], binding, identity, first_activation=FIRST_ACTIVATION)
     old_action = {**do.new_action(do.DELIVERY_PLAN, binding, policy_row, {"intent_id": source["id"], "lane": "a"}, NOW),
                   "state": do.COMPLETED, "reason_code": "plan_registered", "plan": plan, "plan_id": plan["plan_id"],
                   "plan_sha256": plan_digest(plan), "published_at": NOW, "version": 4}

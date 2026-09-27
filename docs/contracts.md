@@ -3441,6 +3441,69 @@ an ordered, durable handoff, never one transaction: INV-OWNER-ACTIONS-MIGRATION-
 half and INV-HOST-DELIVERY-MIGRATION-001 the lane half. A crash leaves a named `staged` or `registered`
 migration, never a free target or a runnable unacknowledged delivery.
 
+## INV-HOST-DELIVERY-FIRST-ACTIVATION-001
+
+A target's FIRST host-delivery activation has no descriptor to inherit from. A plan whose `expected_descriptor` is
+`null` AND whose `target_descriptor` says `unchanged` for the worker image or the profile can never resolve
+(`unchanged_without_predecessor`). Resolution requires the current descriptor digest to equal `null`, so there is
+no current descriptor to be unchanged from.
+- **Prevention.**
+  - The owner builds a first-activation plan with CONCRETE values from the trusted ports below, or refuses
+    `first_activation_unbound` before any plan action, publication or verification. The builder handles both the
+    ordinary callsite and the migration-successor callsite.
+  - The owner binding of a first activation carries the resolved image and profile, so they are part of the plan
+    action's identity: different facts are a different action.
+  - A pre-change `intended` action with a null descriptor and no stored facts is refused `first_activation_unbound`
+    rather than published.
+  - A missing or failing port is a named wait (`first_activation_unconfigured`, `first_activation_unavailable` or the
+    port's own refusal) that writes nothing.
+  - Registration of a NEW plan refuses the combination (`first_activation_unbound`, before any write).
+  - `unchanged` stays the upgrade form for a target that already runs a descriptor.
+  - Plan validation itself is unchanged, so a stored historical plan stays readable and its registration replays.
+- **Trusted ports** (never a caller's assertion):
+  - The worker image is the host's effective `ZEUS_WORKER_IMAGE`. This is the same settings source of truth the
+    launched runtime reports in its startup receipt. It must be an image id (`sha256:<64 hex>`) that is present
+    locally with that exact id; its `org.opencontainers.image.revision` label is the qualification source revision.
+  - The profile digest is the digest of the candidate's COMMITTED `worker-v1` profile at the candidate revision,
+    read from the lane repository and digested by the incumbent profile code.
+  - The candidate's own build image (the release `images` record) is never a worker image.
+- **Recovery of an already verified first activation.** This is `HostDelivery.resume` with a typed owner document
+  (`urn:zeus:host-delivery-first-activation:1`, kind `first_activation_binding`). It applies only when the intent is
+  `blocked` with `unchanged_without_predecessor` at previous stage `merged`, and nothing was bound, materialized or
+  started.
+  - **The document binds exactly:**
+    - the plan id, its sha256 and pin sha256;
+    - the target, release, candidate revision and tree;
+    - the recorded halt;
+    - the absent predecessor;
+    - the image, profile and qualification (source revision label and evidence);
+    - the conductor approver, who is never the candidate author.
+  - The evidence reference is the document's own digest.
+  - **Read-only checks** before any write:
+    - the release is `verified` with the plan's revision, tree and evaluator hash;
+    - no descriptor row exists for the target; no active deployment; no other delivery in flight on the target;
+    - no controller lease;
+    - the trusted ports equal the document.
+  - **ONE lane transaction** then re-checks the intent, plan, queue, lease and descriptor absence by
+    compare-and-swap, and:
+    - re-arms the queue row through `ReleaseQueue.retry` (one `manual_retries` entry);
+    - appends the recovery (kind, evidence, binding, the copied halt, the observed port values) to the intent's
+      `recoveries`;
+    - returns the intent to `merged`, never `verifying`: the release's verification is reused as recorded, and no
+      evaluator runs.
+  - The same document replays `cached` at any later stage. Another document of the same kind is `resume_conflict`.
+  - The plan, its pin, the halt, the release, its checks, its reviews and its image record are never rewritten.
+- **Descriptor resolution.** `_prepare_switch` resolves ONLY the plan's `unchanged` fields from that recovery's
+  binding, and only while there is no current descriptor and the plan expects none. The descriptor's
+  `predecessor` stays `null`.
+  - Everything after it is the ordinary contract and remains the authority for operational success: materialize,
+    drain, switch, the startup receipt (whose observed image and profile must equal the descriptor), the canary,
+    consumption, promotion and rollback.
+- **Provenance.** Status shows each recovery's kind, evidence and binding. No predecessor is ever invented, and no
+  store row is edited outside these transactions.
+- **Continuation.** The continuation intent paused `delivery_blocked` is NOT resumed by this lane recovery, because
+  `PAUSED` leaves only through `MIGRATION_RESUME`. Its family stays held until an owner-authorized resume.
+
 ## INV-HOST-DELIVERY-MIGRATION-001
 
 The lane half of an evaluator migration, keyed by the old plan in `host_delivery_migrations`

@@ -109,6 +109,7 @@ from codex_harness.domain.owner_actions import (
     canary_receipt,
     canary_request,
     dispatch_acceptance,
+    first_activation_tuple,
     lineage_edges,
     moved,
     new_action,
@@ -183,13 +184,16 @@ class OwnerActions:
     `assessments` the independent-assessment port (`context`, `document`, `start`, `poll`); `targets`
     the target-file port over the incumbent state files (`startup`, and the plan-scoped `request`,
     `write_request`, `write_receipt`); `fleet` the Fleet admitting the owner's canary; `validate` the
-    incumbent operation-manifest validator."""
+    incumbent operation-manifest validator; `first_activation(lane_id, revision)` the lane boundary's
+    trusted environment facts (`worker_image`, `profile_digest`, `image_source_revision`) of a target
+    that has no descriptor yet, consulted only for such a first activation."""
 
     def __init__(self, store, *, continuation=None, org=None, lanes=None, deliveries=None, publisher=None,
-                 assessments=None, targets=None, fleet=None, validate=None, clock=utcnow):
+                 assessments=None, targets=None, fleet=None, validate=None, first_activation=None, clock=utcnow):
         self.store, self.continuation, self.org, self.lanes = store, continuation, org, lanes
         self.deliveries, self.publisher, self.assessments = deliveries, publisher, assessments
         self.targets, self.fleet, self.validate, self.clock = targets, fleet, validate, clock
+        self.first_activation = first_activation
 
     # ----- registry -------------------------------------------------------------------------------
     def register(self, document, pin: dict) -> dict:
@@ -644,17 +648,45 @@ class OwnerActions:
                and m.get("migration_id") != own for m in rows["migrations"]):
             raise OwnerActionRefused("delivery_target_busy", "target_id")
         current = (rows["descriptor"] or {}).get("descriptor")
-        binding = plan_binding(row, intent, release, None if current is None else descriptor_digest(current))
-        plan = build_plan(policy, binding, action_id(DELIVERY_PLAN, binding))
+        # INV-HOST-DELIVERY-001: `unchanged` resolves only against a current descriptor. A first activation
+        # binds the concrete tuple here, BEFORE any action row exists; an upgrade never consults the port.
+        facts = None if current is not None else self._first_activation_facts(intent["lane"],
+                                                                                 candidate.get("revision"))
+        binding = plan_binding(row, intent, release, None if current is None else descriptor_digest(current),
+                               first_activation=facts)
+        plan = build_plan(policy, binding, action_id(DELIVERY_PLAN, binding), first_activation=facts)
         gate = rows["delivery"].approval(plan)
         if gate.get("state") != "approved":
             raise OwnerActionRefused(gate.get("reason_code") or "release_not_approved", "release_id")
         return binding
 
+    def _first_activation_facts(self, lane_id: str, revision) -> dict:
+        """The first-activation tuple from the lane boundary's trusted port, validated. No port, a port
+        failure or malformed facts is a named refusal raised before any action row or publication: the
+        caller's discovery (or migration step) records it as a wait and writes nothing."""
+        if self.first_activation is None:
+            raise OwnerActionRefused("first_activation_unconfigured", "first_activation")
+        try:
+            facts = self.first_activation(lane_id, revision)
+        except ContractError as exc:
+            raise OwnerActionRefused(getattr(exc, "reason_code", None) or "first_activation_unavailable",
+                                     "first_activation") from None
+        except Exception:  # an adapter outage of any type is a wait, never an unbound plan
+            raise OwnerActionRefused("first_activation_unavailable", "first_activation") from None
+        return first_activation_tuple(facts)
+
     def _advance_plan(self, policy_row: dict, continuation: dict, action: dict) -> dict | None:
         state, lane = action["state"], action["subject"]["lane"]
         if state == INTENDED:
-            plan = build_plan(policy_row["policy"], action["binding"], action["id"])
+            try:
+                # The tuple bound at discovery is the one published; the port is not consulted again.
+                plan = build_plan(policy_row["policy"], action["binding"], action["id"],
+                                  first_activation=action["binding"].get("first_activation"))
+            except OwnerActionRefused as exc:
+                if exc.reason_code != "first_activation_unbound":
+                    raise
+                # A row recorded before first activations were bound: refused before any publication.
+                return self._effect(self._move(action, REFUSED, exc.reason_code))
             data = plan_json(plan)
             return self._effect(self._move(action, PUBLISHING, "plan_intended", plan=plan, plan_id=plan["plan_id"],
                                            plan_sha256=plan_digest(plan), path=plan_path(plan["plan_id"]),

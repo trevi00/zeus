@@ -391,6 +391,7 @@ family, 현재 전체 attempt 집합과 각 lane 관측 evidence/inspection, 혼
   (`HostDelivery.approval`)로 approved이고 이 후보의 delivery가 없으며(`absent` 또는 다른 revision만 있는 `stale`)
   target에 진행 중 delivery가 없을 때만, owner delivery policy + 정확한 release 기록으로 `urn:zeus:host-delivery:1`
   plan을 만든다(target_descriptor revision = 검토된 후보, image/profile = `unchanged`; 새 환경은 별도 자격).
+  첫 활성화(`expected_descriptor: null`)에는 `unchanged`가 해석될 수 없으므로 신뢰 포트의 구체 값(호스트 자격 `ZEUS_WORKER_IMAGE`, 후보가 패키징한 `worker-v1` 프로필 digest)을 쓰고, 없으면 게시 전에 `first_activation_unbound`로 거절한다(INV-HOST-DELIVERY-FIRST-ACTIVATION-001).
   (15절 D4 적합성 교정: "진행 중 delivery"는 intent가 아직 없는 등록 plan까지 포함한다. 이전 구현은 intent만 보아
   H1/H2가 모두 `expected_descriptor: null`로 묶였다.)
   plan 바이트·경로·ref를 `publishing`으로 먼저 영속하고, owner source repo에 고정 author/날짜의 결정적 commit을

@@ -61,7 +61,12 @@ service name or credential, and nothing in it is executed or interpolated anywhe
 the explicit statement that this delivery does not move the image or the profile; it resolves
 against the descriptor the target is actually running, and a target with no current descriptor
 refuses it rather than guessing. `expected_descriptor` is the digest of the descriptor the owner
-approved switching **from**; `null` means this target has none yet.
+approved switching **from**; `null` means this target has none yet. The example above is therefore an UPGRADE form
+only.
+- A FIRST activation (`expected_descriptor: null`) must name the concrete `worker_image` (`sha256:<64 hex>`, the host's
+  qualified `ZEUS_WORKER_IMAGE`) and `profile_digest` (the candidate's packaged `worker-v1`).
+- Registering `null` together with `unchanged` is refused `first_activation_unbound`
+  (INV-HOST-DELIVERY-FIRST-ACTIVATION-001).
 
 `tree` is the candidate's Git tree object id exactly as `git rev-parse <revision>^{tree}` reports it
 and as the release candidate recorded it: lowercase 40 hex in a SHA-1 repository, 64 hex in a
@@ -157,6 +162,31 @@ Refusals write nothing: `resume_evidence_invalid`, `plan_unregistered`, `resume_
 `resume_unobservable`, `resume_intent_changed`, `resume_controller_running`, `resume_queue_changed`,
 `resume_queue_<status>`, `resume_queue_refused`, `resume_predecessor_<moved|in_flight>`,
 `resume_release_ticket_changed`.
+
+### Runbook: first activation binding of a verified, never-bound delivery (INV-HOST-DELIVERY-FIRST-ACTIVATION-001)
+
+Use this only for `blocked` `unchanged_without_predecessor` at previous stage `merged`, when the release is verified
+and nothing was bound, materialized or started. The typical cause is an older plan built before prevention.
+
+1. `zeus host-delivery status --plan P --lane L`. Note `plan_sha256`, the pin, the halt and the release.
+2. Write the owner document `urn:zeus:host-delivery-first-activation:1`. It carries:
+   - the exact plan, pin, target, release, candidate and halt;
+   - `expected_descriptor`/`predecessor` null;
+   - the qualified image (the full `sha256:` id), the source-revision label, the candidate profile digest and the
+     qualification evidence;
+   - a conductor approver.
+3. `zeus host-delivery resume --lane L --plan P --plan-sha256 S --document FILE --evidence sha256:<digest of FILE>`.
+   - The ports re-derive the image (host config + the local image id and label) and the profile (the candidate's
+     committed `worker-v1`). A mismatch refuses and writes nothing.
+   - The receipt shows `stage: merged`, the recovery and the one `manual_retries` entry.
+4. The ordinary tick prepares the switch with the bound values. From there, drain, switch, startup, canary,
+   consumption and promotion are the normal contract.
+5. The same command later answers `cached`. Another document is `resume_conflict`.
+
+Refusals write nothing: `first_activation_invalid`, `first_activation_unavailable`,
+`first_activation_image_unconfigured`, `first_activation_image_unavailable`, `first_activation_image_mismatch`,
+`first_activation_profile_unresolved`, `first_activation_profile_mismatch`, `first_activation_qualification_mismatch`,
+plus the existing `resume_*` refusals (shape, plan, lease, queue, predecessor, conflict).
 
 ### Runbook: evaluator migration of a merged, check-rejected release (INV-RELEASE-EVALUATOR-MIGRATION-001)
 

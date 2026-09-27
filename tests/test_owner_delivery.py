@@ -34,6 +34,10 @@ from test_host_delivery import (
     successor_candidate,
     targets_document,
 )
+from test_owner_actions_migration import (  # LABELLED fake first-activation port
+    FIRST_ACTIVATION,
+    first_activation_port,
+)
 
 from codex_harness.adapters.host_delivery import (
     RECEIPT_FILE,
@@ -169,7 +173,7 @@ def delivery_world(tmp_path, *, publisher_factory=GitPlanPublisher, conductor_re
     publisher = publisher_factory(repo)
     owner = OwnerActions(world.control, continuation=world.controller, org=org, lanes=world.lanes,
                          deliveries=deliveries or (lambda lane: host), publisher=lambda lane: publisher,
-                         targets=TargetFiles())
+                         targets=TargetFiles(), first_activation=first_activation_port)
     owner.register(owner_policy(), OWNER_PIN)
     world.enqueue("op-1", "docs/a.md")
     world.tick()
@@ -211,8 +215,11 @@ def test_a_conducted_release_is_published_as_the_exact_owner_plan_and_registered
     assert plan["repository"] == REPOSITORY and plan["canary_check_id"] == CANARY_STARTUP
     assert (plan["release_id"], plan["revision"], plan["tree"], plan["policy_hash"]) == (
         release["id"], release["candidate"]["revision"], release["candidate"]["tree"], release["policy_hash"])
-    assert plan["target_descriptor"] == {"revision": release["candidate"]["revision"], "worker_image": "unchanged",
-                                         "profile_digest": "unchanged"}
+    # A first activation (no descriptor yet) binds the concrete tuple the lane port reports (labelled fake).
+    assert plan["target_descriptor"] == {"revision": release["candidate"]["revision"],
+                                         "worker_image": FIRST_ACTIVATION["worker_image"],
+                                         "profile_digest": FIRST_ACTIVATION["profile_digest"]}
+    assert action["binding"]["first_activation"] == FIRST_ACTIVATION
     assert plan["expected_descriptor"] is None and validate_plan(plan) == plan
     # Git holds exactly these bytes at the recorded commit on the owner ref; the working tree is untouched.
     assert git(repo, "rev-parse", do.plan_ref(plan["plan_id"])) == action["commit"]
@@ -230,7 +237,8 @@ def test_a_conducted_release_is_published_as_the_exact_owner_plan_and_registered
     refs = git(repo, "for-each-ref", "refs/zeus")
     settle(owner, 3)
     settle(OwnerActions(world.control, continuation=world.controller, org=organization(), lanes=world.lanes,
-                        deliveries=lambda _: host, publisher=lambda _: system["publisher"], targets=TargetFiles()), 3)
+                        deliveries=lambda _: host, publisher=lambda _: system["publisher"], targets=TargetFiles(),
+                        first_activation=first_activation_port), 3)
     assert world.control.data == snapshot and world.lane.store.data == lane
     assert git(repo, "for-each-ref", "refs/zeus") == refs
 
@@ -299,7 +307,7 @@ def test_the_plan_can_never_carry_a_candidate_chosen_target_path_or_command():
     binding = {"policy_id": "owners-1", "policy_sha256": "a" * 64, "intent_id": "b" * 64, "target_id": TARGET,
                "release_id": "r1", "revision": "c" * 40, "tree": "d" * 40, "policy_hash": "e" * 64,
                "repository": REPOSITORY, "expected_descriptor": None}
-    plan = do.build_plan(policy, binding, "f" * 64)
+    plan = do.build_plan(policy, binding, "f" * 64, first_activation=FIRST_ACTIVATION)
     assert set(plan) == set(validate_plan(plan)) and "root" not in plan and "service" not in plan
     with pytest.raises(do.OwnerActionRefused, match="delivery_target_foreign"):
         do.build_plan(policy, {**binding, "target_id": "another-target"}, "f" * 64)

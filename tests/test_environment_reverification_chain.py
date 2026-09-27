@@ -15,6 +15,7 @@ from test_owner_actions_migration import (  # noqa: F401  (second_pgstore is a f
     CANDIDATE,
     NOW,
     TARGET,
+    first_activation_port,
     lane_verifies_successor,
     paused_world,
     pg_continuation_world,
@@ -335,7 +336,7 @@ def real_env(tmp_path, control, lane_store, monkeypatch):
             return {"id": "policy-1", "policy": {"delivery_target": plan["target_id"]}}
 
     ports = {"continuation": Stub(), "deliveries": lambda lane_id: system["delivery"],
-             "publisher": lambda lane_id: publisher, "targets": targets}
+             "publisher": lambda lane_id: publisher, "targets": targets, "first_activation": first_activation_port}
     owner = OwnerActions(control, clock=lambda: NOW, **ports)
     owner.register(policy, PIN)
     intent = {"id": "intent-1", "policy_id": "policy-1", "route": dc.DELIVERY, "state": dc.PAUSED,
