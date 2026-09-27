@@ -61,10 +61,12 @@ def init(session, model="stub-reported-model"):
           "tools": ["Read", "Edit"], "mcp_servers": [], "plugins": [], "cwd": os.getcwd()})
 
 
-def tool_round(session, identifier="toolu_fixture_1", failed=False):
+def tool_round(session, identifier="toolu_fixture_1", failed=False, name="Edit", payload=None):
+    """One tool use and its result. `name` or `identifier` None omits that field (a malformed use)."""
+    use = {"type": "tool_use", "id": identifier, "name": name, "input": payload or {}}
+    use = {key: value for key, value in use.items() if value is not None}
     emit({"type": "assistant", "session_id": session, "parent_tool_use_id": None,
-          "message": {"id": "msg_1", "role": "assistant",
-                      "content": [{"type": "tool_use", "id": identifier, "name": "Edit", "input": {}}]}})
+          "message": {"id": "msg_1", "role": "assistant", "content": [use]}})
     emit({"type": "user", "session_id": session,
           "message": {"role": "user", "content": [{"type": "tool_result", "tool_use_id": identifier,
                                                    "is_error": failed, "content": "ok"}]}})
@@ -116,6 +118,54 @@ def session_turn(argv, session, model, digest):
           "usage": {"input_tokens": 100 * turns, "output_tokens": 10 * turns,
                     "cache_creation_input_tokens": 0, "cache_read_input_tokens": 5 * turns},
           "structured_output": {"summary": digest, "tests": [f"turn {turns}", "resumed" if resumed else "fresh"]}})
+    return 0
+
+
+# Read-only scenarios `ro-<when>-<tool>` (lowercase, so the name is also a valid configured model).
+READ_ONLY_TOOLS = {"bash": "Bash", "edit": "Edit", "write": "Write", "notebookedit": "NotebookEdit",
+                   "task": "Task", "mcp": "mcp__fixture__write", "unknown": "Frobnicate",
+                   "pattern": "Read(*)", "noname": None, "noid": "Read",
+                   # Near the answer channel's name but not it: still outside the profile.
+                   "lookalike": "StructuredOutputs"}
+
+
+def read_only_scenario(scenario, session, model, digest):
+    """clean: Read, Glob and Grep only. before/after: the forbidden use precedes/follows a success
+    terminal. late: many allowed uses first, to pass any retention limit. hang: the forbidden use and
+    then silence, so only the adapter's stop ends the run. The tool payload carries the canary."""
+    _, when, key = scenario.split("-", 2)
+    answer = ({"objective": digest, "acceptance_criteria": ["fixture"], "allowed_paths": ["src/"]}
+              if key == "plan" else {"summary": digest, "tests": ["read-only fixture"]})
+
+    def forbidden():
+        tool_round(session, identifier=None if key == "noid" else "toolu_forbidden",
+                   name=READ_ONLY_TOOLS[key], payload={"command": "rm -rf " + CANARY})
+
+    def answer_channel():
+        # The real CLI (2.1.280, preserved runs) returns a --json-schema answer by calling its synthetic
+        # StructuredOutput tool with the answer as input, before the result line.
+        tool_round(session, identifier="toolu_structured_output", name="StructuredOutput", payload=answer)
+
+    init(session, model)
+    if when == "clean":
+        for index, name in enumerate(("Read", "Glob", "Grep")):
+            tool_round(session, identifier=f"toolu_ro_{index}", name=name)
+        answer_channel()
+        result(session, structured=answer)
+        return 0
+    if when == "late":
+        for index in range(30):
+            tool_round(session, identifier=f"toolu_ro_{index}", name="Read")
+    if when == "after":
+        answer_channel()
+        result(session, structured=answer)
+    forbidden()
+    if when == "hang":
+        time.sleep(90)
+        return 0
+    if when in ("before", "late"):
+        answer_channel()
+        result(session, structured=answer)
     return 0
 
 
@@ -182,6 +232,8 @@ def main(argv):
         init(session, init_model)
         result(session, structured={"summary": digest, "tests": ["profile hooks invoked"]})
         return 0
+    if scenario.startswith("ro-"):
+        return read_only_scenario(scenario, session, init_model, digest)
     if scenario == "normal":
         init(session, init_model)
         tool_round(session)

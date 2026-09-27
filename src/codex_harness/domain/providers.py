@@ -35,10 +35,72 @@ CONTROL_KINDS = ("number", "integer", "path")
 TOKEN = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@+-]{0,99}$")
 SETTING_NAME = re.compile(r"^[A-Z][A-Z0-9_]{0,63}$")
 PAIR = re.compile(r"^(?P<role>[a-z][a-z0-9_]*(?::[a-z0-9_]+)?)/(?P<action>[a-z][a-z0-9_]*)$")
+# INV-CLAUDE-WORKER-001 responsibility routing: the restricted profile a read-only execution runs
+# under. Grants name exact read-only tools (never a pattern such as `Read(*)`); denies must name
+# every mutating tool; the mode is exactly dontAsk and the CLI `--restricted` flag is required.
+READ_ONLY_TOOLS = ("Read", "Glob", "Grep")
+MUTATING_TOOLS = ("Bash", "Edit", "Write", "NotebookEdit")
+READ_ONLY_KEYS = ("tools", "allowed_tools", "disallowed_tools", "permission_mode", "restricted")
+READ_ONLY_MODE = "dontAsk"
+READ_ONLY_PROMPTS = "none"
 
 
 def _token(value) -> bool:
     return type(value) is str and TOKEN.fullmatch(value) is not None
+
+
+def _names(value, label: str) -> list:
+    require(isinstance(value, list) and bool(value) and all(type(name) is str and name for name in value),
+            f"Read-only profile {label} must be a non-empty list of names")
+    return list(value)
+
+
+def read_only_profile(profile) -> dict:
+    """Validate a read-only overlay and return a copy; the one predicate the policy parse, the
+    selection and the transport preflight share. Present-but-null, empty or malformed is refused,
+    never read as absent."""
+    require(isinstance(profile, dict), "Read-only profile must be an object")
+    require(sorted(profile) == sorted(READ_ONLY_KEYS),
+            "Read-only profile must declare exactly " + ", ".join(READ_ONLY_KEYS))
+    tools = _names(profile["tools"], "tools")
+    allowed = _names(profile["allowed_tools"], "allowed_tools")
+    denied = _names(profile["disallowed_tools"], "disallowed_tools")
+    require(all(name in READ_ONLY_TOOLS for name in tools + allowed),
+            "Read-only profile may grant only " + ", ".join(READ_ONLY_TOOLS) + " by exact name")
+    require(all(name in tools for name in allowed), "Read-only profile allows a tool it does not expose")
+    require(all(name in denied for name in MUTATING_TOOLS),
+            "Read-only profile must deny " + ", ".join(MUTATING_TOOLS))
+    require(profile["permission_mode"] == READ_ONLY_MODE, "Read-only profile permission_mode must be " + READ_ONLY_MODE)
+    require(profile["restricted"] is True, "Read-only profile must be restricted")
+    return {"tools": tools, "allowed_tools": allowed, "disallowed_tools": denied,
+            "permission_mode": READ_ONLY_MODE, "restricted": True}
+
+
+def read_only_runtime_check(runtime) -> dict:
+    """The profile an EFFECTIVE runtime carries, validated by the same predicate; a marker or a
+    partial overlay is never trusted. Prompts must also be auto-denied."""
+    require(isinstance(runtime, dict), "Read-only runtime must be an object")
+    missing = [key for key in READ_ONLY_KEYS if key not in runtime]
+    require(not missing, "Read-only runtime lacks " + ", ".join(missing))
+    require(runtime.get("permission_prompts") == READ_ONLY_PROMPTS,
+            "Read-only runtime must auto-deny permission prompts")
+    return read_only_profile({key: runtime[key] for key in READ_ONLY_KEYS})
+
+
+def read_only_settings_check(settings, profile: dict) -> None:
+    """The final per-run settings of a read-only execution carry permissions only: the profile's
+    grants, its denies and its mode. Hooks, environment or any added grant refuses."""
+    require(isinstance(settings, dict) and list(settings) == ["permissions"],
+            "Read-only settings must carry permissions only")
+    permissions = settings["permissions"]
+    require(isinstance(permissions, dict) and sorted(permissions) == ["allow", "defaultMode", "deny"],
+            "Read-only settings permissions must be allow, deny and defaultMode")
+    allow, deny = permissions["allow"], permissions["deny"]
+    require(isinstance(allow, list) and all(name in profile["allowed_tools"] for name in allow),
+            "Read-only settings grant a tool outside the profile")
+    require(isinstance(deny, list) and all(name in deny for name in profile["disallowed_tools"]),
+            "Read-only settings drop a denied tool")
+    require(permissions["defaultMode"] == READ_ONLY_MODE, "Read-only settings mode must be " + READ_ONLY_MODE)
 
 
 @dataclass(frozen=True)
@@ -53,6 +115,8 @@ class Provider:
     model_pattern: str | None
     controls: dict
     runtime: dict
+    # Overlaid on `runtime` for read-only executions only; None when the provider declares none.
+    read_only_runtime: dict | None = None
 
     def receipt(self) -> dict:
         return {"provider": self.name, "identity": self.identity, "transport": self.transport,
@@ -123,10 +187,12 @@ def parse_policy(document) -> ProviderPolicy:
             require(type(spec.get("required")) is bool, f"Provider {name} control {control} needs required")
         runtime = body.get("runtime", {})
         require(isinstance(runtime, dict), f"Provider {name} runtime must be an object")
+        # A present key is validated whatever its value: null or {} is malformed, not absent.
+        overlay = read_only_profile(body["read_only_runtime"]) if "read_only_runtime" in body else None
         providers[name] = Provider(name=name, identity=body["identity"], transport=body["transport"],
                                    model_source=body["model_source"], session_resume=body["session_resume"],
                                    enable_setting=enable, model_setting=model_setting, model_pattern=pattern,
-                                   controls=controls, runtime=runtime)
+                                   controls=controls, runtime=runtime, read_only_runtime=overlay)
     default = document.get("default_provider")
     require(_token(default) and default in providers, "Provider policy must name a known default provider")
     require(providers[default].enable_setting is None,
@@ -143,6 +209,9 @@ def parse_policy(document) -> ProviderPolicy:
             require(isinstance(values, list) and values and all(type(v) is str and v for v in values),
                     f"Provider assignment {key} must be a non-empty list of names")
         require(type(rule.get("read_only")) is bool, "Provider assignment must state read_only")
+        require(not (rule["read_only"] and providers[rule["provider"]].transport == "claude_cli"
+                     and providers[rule["provider"]].read_only_runtime is None),
+                "A read-only claude_cli assignment needs a valid read_only_runtime")
         assignments.append({"provider": rule["provider"], "roles": list(rule["roles"]),
                             "actions": list(rule["actions"]), "workloads": list(rule["workloads"]),
                             "read_only": rule["read_only"]})
@@ -275,6 +344,8 @@ class ExecutionAssignment:
     # The usage-accounting mode this execution runs under (usage_policy MODES). Under subscription
     # `controls` carries no dollar cap and `runtime["accounting_mode"]` tells the transport so.
     accounting_mode: str = FINITE
+    # Digest of the read-only profile overlaid on `runtime`; None for every other execution.
+    read_only_profile_digest: str | None = None
 
     @property
     def is_default(self) -> bool:
@@ -283,14 +354,19 @@ class ExecutionAssignment:
     def receipt(self) -> dict:
         """Everything a reviewer needs to know which policy chose this provider; no secret values.
         `controls` lists exactly what is forwarded, so a receipt never claims a ceiling that was not
-        passed; `accounting_mode` names why one is absent."""
-        return {"provider": self.provider, "identity": self.identity, "transport": self.transport,
-                "model_source": self.model_source, "session_resume": self.session_resume,
-                "policy_version": self.policy_version, "policy_digest": self.policy_digest,
-                "config_digest": self.config_digest, "selected_by": self.selected_by,
-                "role": self.role, "action": self.action, "workload": self.workload,
-                "read_only": self.read_only, "controls": dict(self.controls),
-                "accounting_mode": self.accounting_mode}
+        passed; `accounting_mode` names why one is absent. Only an overlaid read-only execution
+        names its profile, so every other receipt keeps its exact shape."""
+        receipt = {"provider": self.provider, "identity": self.identity, "transport": self.transport,
+                   "model_source": self.model_source, "session_resume": self.session_resume,
+                   "policy_version": self.policy_version, "policy_digest": self.policy_digest,
+                   "config_digest": self.config_digest, "selected_by": self.selected_by,
+                   "role": self.role, "action": self.action, "workload": self.workload,
+                   "read_only": self.read_only, "controls": dict(self.controls),
+                   "accounting_mode": self.accounting_mode}
+        if self.read_only_profile_digest is not None:
+            receipt["read_only_profile_applied"] = True
+            receipt["read_only_profile_digest"] = self.read_only_profile_digest
+        return receipt
 
 
 def select_execution(policy: ProviderPolicy, configuration: ProviderConfiguration, *, role: str,
@@ -312,6 +388,13 @@ def select_execution(policy: ProviderPolicy, configuration: ProviderConfiguratio
         entry = configuration.enabled[name]
         mode = entry.get("accounting_mode", FINITE)
         runtime = dict(provider.runtime)
+        profile_digest = None
+        if read_only and provider.read_only_runtime is not None:
+            # A copy of the base with the validated profile on top; Provider.runtime is never
+            # touched and nothing from the host or a model output can replace these keys.
+            profile = read_only_profile(provider.read_only_runtime)
+            runtime.update(profile)
+            profile_digest = digest(profile)
         if mode == SUBSCRIPTION:
             # Bound into the selected runtime, which is the one dictionary every Claude transport
             # (host or isolated request) already receives; finite runtimes stay byte-identical.
@@ -323,7 +406,7 @@ def select_execution(policy: ProviderPolicy, configuration: ProviderConfiguratio
             runtime=runtime, policy_version=policy.version,
             policy_digest=policy.policy_digest, config_digest=configuration.config_digest,
             selected_by="host_configuration", role=role, action=action, workload=workload,
-            read_only=read_only, accounting_mode=mode)
+            read_only=read_only, accounting_mode=mode, read_only_profile_digest=profile_digest)
     default = policy.provider(policy.default_provider)
     return ExecutionAssignment(
         provider=default.name, identity=default.identity, transport=default.transport,

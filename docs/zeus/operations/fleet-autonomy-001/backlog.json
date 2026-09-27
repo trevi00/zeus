@@ -1,0 +1,30 @@
+{
+  "schema": "urn:zeus:fleet-backlog:1",
+  "plan_id": "fleet-autonomy-001",
+  "repository": "0e1313688199540ac290c64394f505e21682904c968f46e448272f377fda8557",
+  "enabled": true,
+  "items": [
+    {
+      "id": "routing-slice",
+      "project_id": "research-improvement",
+      "criterion_id": "verified-loop",
+      "lane": "harness",
+      "manifest_path": "docs/zeus/operations/fleet-autonomy-001/routing-slice.operation.json",
+      "manifest_revision": "484d574fd67c0fc7be096cb74567ff51b36e7d5b",
+      "manifest_sha256": "f46d5c01686d017b4c321d5339c3183ed2a528469d007215159e5a3230928276",
+      "priority": 10,
+      "dependencies": []
+    },
+    {
+      "id": "routing-slice-r2",
+      "project_id": "research-improvement",
+      "criterion_id": "verified-loop",
+      "lane": "harness",
+      "manifest_path": "docs/zeus/operations/fleet-autonomy-001/routing-slice-r2.operation.json",
+      "manifest_revision": "cf4b5315792b4d2b72c4c11dbb8758d8f7500a8a",
+      "manifest_sha256": "ace9540f748d2d3ca22bf0ceaf51cf24cc0c5be8f00e96c57653dfb3a4c99631",
+      "priority": 10,
+      "dependencies": []
+    }
+  ]
+}

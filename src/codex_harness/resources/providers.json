@@ -89,6 +89,30 @@
           "total": 4,
           "note": "Real provider calls allowed for acceptance experiments. Counted in a per-machine ledger outside any checkout, reserved before a process can start, and kept if a run is interrupted. A run's label and output directory are names, not authority."
         }
+      },
+      "read_only_runtime": {
+        "tools": [
+          "Read",
+          "Glob",
+          "Grep"
+        ],
+        "allowed_tools": [
+          "Read",
+          "Glob",
+          "Grep"
+        ],
+        "disallowed_tools": [
+          "Bash",
+          "Edit",
+          "Write",
+          "NotebookEdit",
+          "Task",
+          "WebFetch",
+          "WebSearch",
+          "mcp__*"
+        ],
+        "permission_mode": "dontAsk",
+        "restricted": true
       }
     }
   },
@@ -105,6 +129,50 @@
         "implementation"
       ],
       "read_only": false
+    },
+    {
+      "provider": "claude",
+      "roles": [
+        "lead:research",
+        "lead:improvement",
+        "conductor",
+        "lead:researcher",
+        "lead:proposer",
+        "lead:arbiter"
+      ],
+      "actions": [
+        "dge_role"
+      ],
+      "workloads": [
+        "design"
+      ],
+      "read_only": true
+    },
+    {
+      "provider": "claude",
+      "roles": [
+        "lead:frontdesk"
+      ],
+      "actions": [
+        "frontdesk"
+      ],
+      "workloads": [
+        "design"
+      ],
+      "read_only": true
+    },
+    {
+      "provider": "claude",
+      "roles": [
+        "lead:improvement"
+      ],
+      "actions": [
+        "plan"
+      ],
+      "workloads": [
+        "design"
+      ],
+      "read_only": true
     }
   ]
 }

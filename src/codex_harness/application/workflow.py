@@ -75,8 +75,11 @@ def require_expected(row: dict, expected: dict | None) -> None:
 
 
 # Provider refusals of the execution's own credential (INV-RECURRENCE-001 containment; never a retry).
+# A read-only profile breach is contained as well: the model reached for a tool outside its read-only
+# profile, and replaying the task would spend another real call on the same breach (INV-CLAUDE-WORKER-001).
 CONTAINED_PROVIDER_CAUSES = frozenset({"codex-provider-usage-limit-exceeded", "claude-provider-usage-limit-exceeded",
-                                       "claude-provider-authentication-failed"})
+                                       "claude-provider-authentication-failed",
+                                       "claude-provider-read-only-violation"})
 
 
 class Workflow:

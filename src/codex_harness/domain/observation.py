@@ -247,7 +247,8 @@ PROVIDER_CAUSES = ("codex-provider-usage-limit-exceeded", "claude-provider-budge
                    "claude-provider-cancelled", "claude-provider-conflicting-terminal",
                    "claude-provider-error-result", "claude-provider-exit-conflict",
                    "claude-provider-max-turns", "claude-provider-missing-terminal",
-                   "claude-provider-model-mismatch", "claude-provider-session-conflicting",
+                   "claude-provider-model-mismatch", "claude-provider-read-only-violation",
+                   "claude-provider-session-conflicting",
                    "claude-provider-session-mismatch", "claude-provider-session-unreported",
                    "claude-provider-startup-failed", "claude-provider-stream-truncated",
                    "claude-provider-timeout")

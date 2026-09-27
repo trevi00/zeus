@@ -106,6 +106,45 @@ def test_assignment_preserves_trusted_importance_into_implementation(tmp_path, m
     assert calls[1]['importance'] == expected
 
 
+def test_plan_passes_trusted_action_and_keeps_review_default(tmp_path, monkeypatch):
+    for name in ('ZEUS_CLAUDE_ASSIGNMENTS', 'ZEUS_CLAUDE_MODEL', 'ZEUS_CLAUDE_MAX_BUDGET_USD'):
+        monkeypatch.delenv(name, raising=False)
+    service = Harness(MemoryStore(), organization())
+    git = SimpleNamespace(
+        repository=tmp_path, _git=lambda *args, **kwargs: 'revision',
+        prepare=lambda *args: {'path': str(tmp_path)},
+        capture=lambda workspace: {'revision': 'candidate', 'base': 'revision', 'tree': 'tree'},
+    )
+    executor = Executor(service, git, FileArtifacts(str(tmp_path / 'artifacts')))
+    calls = []
+
+    def run(*args, **kwargs):
+        calls.append((args, kwargs))
+        if kwargs['workload'] == 'design':
+            return {'objective': 'change', 'acceptance_criteria': ['works'], 'allowed_paths': ['src/']}
+        return {'summary': 'done', 'tests': [], 'execution_ref': 'sha256:fixture'}
+
+    monkeypatch.setattr(executor, '_run', run)
+    executor.workflow.submit(envelope('task.assign', 'conductor', 'lead:improvement', 'plan',
+                                      {'objective': 'change', 'acceptance_criteria': ['works']}, 'routing'))
+    assert executor.execute_one('lead:improvement')['status'] == 'succeeded'
+    with service.store.transaction() as tx:
+        implement = next(row['message'] for row in tx.scan('outbox')
+                         if row['message']['what']['action'] == 'implement')
+    executor.workflow.submit(implement)
+    assert executor.execute_one('worker:implementation')['status'] == 'succeeded'
+
+    (plan_args, plan_kwargs), (_, implement_kwargs) = calls
+    assert plan_args[0] == 'lead:improvement' and plan_args[6] is True
+    assert plan_kwargs['action'] == 'plan' and plan_kwargs['workload'] == 'design'
+    assert implement_kwargs['action'] == 'implement' and implement_kwargs['workload'] == 'implementation'
+    # Without host enablement the plan stays on Codex; a decision (action None) always does.
+    policy = executor.execution_policy
+    assert policy.select(role='lead:improvement', action='plan', workload='design', read_only=True).provider == 'codex'
+    assert policy.select(role='lead:improvement', action=None, workload='final_validation',
+                         read_only=True).provider == 'codex'
+
+
 @pytest.mark.parametrize(('phase', 'actor', 'next_action'), [
     ('review_lead', 'lead:improvement', 'implement'),
     ('review_conductor', 'conductor', 'plan'),

@@ -55,6 +55,7 @@ from codex_harness.domain.model import ContractError, canonical, digest, require
 from codex_harness.domain.observation import redact_text
 from codex_harness.domain.policy import POLICY
 from codex_harness.domain.provider_stream import ClaudeStream
+from codex_harness.domain.providers import read_only_runtime_check, read_only_settings_check
 from codex_harness.domain.usage_policy import FINITE, MODES, SUBSCRIPTION
 from codex_harness.domain.worker_sessions import (
     MODE_FRESH,
@@ -69,6 +70,9 @@ SESSION_ID = re.compile(r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a
 # Names that stand for "whatever the latest model of this family is". A provider that answers with
 # a concrete model has not disagreed with an alias, and this harness cannot decide the pairing.
 MODEL_ALIASES = ("fable", "opus", "sonnet", "haiku", "default")
+# The CLI's synthetic tool that carries a `--json-schema` answer (its tool_use input IS the answer). It has no
+# file, process or network effect, and a read-only run accepts it beside the profile grants: see run().
+ANSWER_CHANNEL_TOOLS = frozenset({"StructuredOutput"})
 FLAG = re.compile(r"--[a-zA-Z][a-zA-Z0-9-]*")
 
 # The child inherits only what it needs to start and to authenticate as this host already does.
@@ -341,9 +345,14 @@ class ClaudeCodeRuntime:
                 "Execution timeout must be finite and positive")
         require(type(prompt) is str and bool(prompt), "Claude execution requires a prompt")
         require(isinstance(schema, dict) and bool(schema), "Claude execution requires an output schema")
-        # `read_only` has a mechanism here (tool and permission restrictions) whose effect this
-        # adapter has not independently verified, so it is refused rather than claimed.
-        require(not read_only, "claude_cli cannot prove a read-only execution; it is not assigned reviews")
+        # INV-CLAUDE-WORKER-001: a read-only run starts only under the validated restricted profile of
+        # its EFFECTIVE runtime, never on a marker. A worker profile, project delivery or task session
+        # can add Bash grants or hooks, so each refuses here, before any directory or process exists.
+        read_only_profile = None
+        if read_only:
+            require(self.profile is None and self.project_delivery is None and task_session is None,
+                    "A read-only claude_cli run carries no worker profile, project delivery or task session")
+            read_only_profile = read_only_runtime_check(self.runtime)
         require(self.process is None, "This transport object already ran; every attempt builds its own")
         require(model is None or model == self.model,
                 "The requested model differs from the configured Claude model")
@@ -382,6 +391,9 @@ class ClaudeCodeRuntime:
                                "compliance": "not judged here: delivery is recorded, the worker's execution is not"}
             environment_report = {**environment_report, "project_evidence": {"pythonpath": None}}
         settings_document = self._run_settings(evidence_directory)
+        if read_only_profile is not None:
+            # The final settings, not only the runtime lists: added settings are refused pre-spawn.
+            read_only_settings_check(settings_document, read_only_profile)
         argv, manifest = self._command(schema=schema, session_id=session_id,
                                        settings_document=settings_document, resume=resume)
         limits = {"line_bytes": POLICY.claude_line_bytes, "stream_bytes": POLICY.claude_stream_bytes,
@@ -404,6 +416,18 @@ class ClaudeCodeRuntime:
                    "accounting_mode": self.accounting_mode, "limits": limits,
                    "environment": environment_report,
                    "uncontrolled_inheritance": list(self.runtime.get("uncontrolled_inheritance", []))}
+        allowed_names = None
+        if read_only_profile is not None:
+            # The profile's grants plus the transport's own answer channel: this adapter always passes
+            # `--json-schema`, and the CLI returns that answer by calling its synthetic `StructuredOutput`
+            # tool (observed in preserved real 2.1.280 runs). It is not a profile grant, is never added to
+            # `--tools` or the permissions, and any other name, lookalikes included, still latches.
+            allowed_names = frozenset(read_only_profile["allowed_tools"]) | ANSWER_CHANNEL_TOOLS
+            command["read_only_profile"] = {"applied": True, "profile_sha256": digest(read_only_profile),
+                                            "allowed_tools": sorted(read_only_profile["allowed_tools"]),
+                                            "answer_channel_tools": sorted(ANSWER_CHANNEL_TOOLS),
+                                            "enforcement": "validated before spawn; every observed tool use "
+                                                           "checked during the run"}
 
         deadline = time.monotonic() + float(timeout)
         events, state = [], _StreamState(limits)
@@ -445,7 +469,7 @@ class ClaudeCodeRuntime:
             reader.start()
 
         terminal, conflict, sequence = None, None, 0
-        reason, open_readers = None, 2
+        reason, open_readers, violation = None, 2, None
         try:
             while True:
                 if cancel is not None and cancel():
@@ -472,6 +496,16 @@ class ClaudeCodeRuntime:
                 for normalized in _normalize(item, sequence):
                     sequence += 1
                     normalized["sequence"] = sequence
+                    if (allowed_names is not None and violation is None
+                            and normalized["type"] == "tool_started"):
+                        # Checked on every event, before any retention limit; a missing name or id
+                        # is as much a violation as a mutating tool. The name is not echoed.
+                        if not normalized.get("id"):
+                            violation = {"sequence": sequence, "observed": "tool use without an id"}
+                        elif normalized.get("tool") not in allowed_names:
+                            violation = {"sequence": sequence,
+                                         "observed": ("tool use without a name" if not normalized.get("tool")
+                                                      else "tool outside the read-only profile")}
                     state.observe(normalized)
                     if len(events) < limits["retained_events"]:
                         events.append(normalized)
@@ -486,6 +520,10 @@ class ClaudeCodeRuntime:
                             state.redelivered_terminals += 1
                     if on_event is not None:
                         on_event(normalized)
+                if violation is not None:
+                    # Latched: stop through the same termination and cleanup path as any other stop.
+                    reason = "read_only_violation"
+                    break
         finally:
             if reason == "stream_closed" and process.poll() is None:
                 # Its output ended; give it a moment to end by itself so the receipt can say
@@ -514,7 +552,7 @@ class ClaudeCodeRuntime:
         result = self._result(events=events, terminal=terminal, conflict=conflict, state=state,
                               termination=termination, command=command, schema=schema,
                               elapsed=time.monotonic() - started, reason=reason, session_id=session_id,
-                              resume=resume)
+                              resume=resume, violation=violation)
         if task_session is not None:
             # After the tree is confirmed gone: the transcript is final. Adoption is not decided here.
             result["task_session"] = self._export_task_session(task_session, session_id, workspace, resume)
@@ -592,7 +630,7 @@ class ClaudeCodeRuntime:
 
     # ---- result ---------------------------------------------------------------------------------
     def _result(self, *, events, terminal, conflict, state, termination, command, schema, elapsed,
-                reason, session_id, resume: bool = False) -> dict:
+                reason, session_id, resume: bool = False, violation=None) -> dict:
         raw_terminal = terminal.get("raw") if terminal else None
         reported_model = _text(raw_terminal, "model") or state.init_model
         reported_session = _text(raw_terminal, "session_id") or state.init_session
@@ -632,7 +670,7 @@ class ClaudeCodeRuntime:
         }
         failure = _provider_failure(terminal=terminal, conflict=conflict, state=state,
                                     termination=termination, reason=reason, binding=binding,
-                                    agreement=agreement)
+                                    agreement=agreement, violation=violation)
         if failure:
             result["failure"] = failure
             return result
@@ -968,7 +1006,7 @@ def _process_conflict(termination, reason) -> str | None:
 
 
 def _provider_failure(*, terminal, conflict, state: _StreamState, termination, reason,
-                      binding=None, agreement=None) -> dict | None:
+                      binding=None, agreement=None, violation=None) -> dict | None:
     """Name what the provider did wrong, before any answer is read out of it."""
     # A failure travels outward (task row, notice, diagnosis request). Foreign diagnostic text
     # never goes with it: the digest and the byte count identify the same stderr in the artifact.
@@ -979,6 +1017,12 @@ def _provider_failure(*, terminal, conflict, state: _StreamState, termination, r
               # Carried on every failure, not only the one it causes: a run that ended at its
               # deadline *and* lost output should not read as a clean timeout.
               "lost_output": lost}
+    if violation is not None:
+        # INV-CLAUDE-WORKER-001: precedes a success terminal seen before or after it and the missing
+        # terminal the stop itself causes; stream-loss facts stay in `lost_output`.
+        return {**shared, "cause": "claude-provider-read-only-violation", "reason_code": "read_only_violation",
+                "violation": dict(violation),
+                "detail": "a read-only run used a tool outside its restricted profile"}
     if conflict is not None:
         return {**shared, "cause": "claude-provider-conflicting-terminal",
                 "detail": "two different result messages arrived for one run"}

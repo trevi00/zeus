@@ -26,7 +26,9 @@ SUPPORT = {
     #   unsupported - refused when present, by name
     'claude_cli': {'model': 'supported', 'timeout': 'supported', 'output_schema': 'supported',
                    'max_budget_usd': 'declared', 'permission_mode': 'declared',
-                   'read_only': 'unconfirmed', 'session_resume': 'unsupported',
+                   # read_only: the validated restricted profile (argv, tools, settings) is checked
+                   # before spawn and every observed tool use during the run (INV-CLAUDE-WORKER-001).
+                   'read_only': 'supported', 'session_resume': 'unsupported',
                    'system': 'unsupported', 'temperature': 'unsupported',
                    'max_output_tokens': 'unsupported', 'response_format': 'unsupported'},
 }
