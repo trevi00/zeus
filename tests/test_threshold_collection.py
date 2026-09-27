@@ -7,6 +7,7 @@ from pathlib import Path
 
 import pytest
 
+import codex_harness
 from codex_harness.adapters.artifacts import FileArtifacts
 from codex_harness.adapters.git import GitWorkspace
 from codex_harness.adapters.skill_import import import_file
@@ -32,11 +33,14 @@ def policy_repo(tmp_path):
     git._git('init', '-q')
     git._git('config', 'user.name', 'Fixture')
     git._git('config', 'user.email', 'fixture@localhost')
-    candidate = Path(__file__).resolve().parents[1]
+    # The committed fixture must equal the LOADED package, which `current_policy` compares against: under the
+    # release evaluator's two-checkout layout (incumbent tests, candidate package) the tests' own checkout is not it.
+    package = Path(codex_harness.__file__).resolve().parent
     for relative in POLICY_PATHS:
         target = root / relative
         target.parent.mkdir(parents=True, exist_ok=True)
-        target.write_text((candidate / relative).read_text(encoding='utf-8'), encoding='utf-8')
+        loaded = package / relative.removeprefix('src/codex_harness/')
+        target.write_text(loaded.read_text(encoding='utf-8'), encoding='utf-8')
     git._git('add', '.')
     git._git('commit', '-qm', 'policy fixture')
     return root, git
