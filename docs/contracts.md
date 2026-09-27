@@ -4234,3 +4234,56 @@ store and target, the requalification restart/concurrency/new-base matrix and th
 tests/test_owner_actions_research_process.py (the actual guardian lifecycle with a labelled child),
 tests/test_owner_actions_adapters.py, tests/test_aibox_owner_units.py. Models, the canary executor and
 systemd are labelled fixtures or a labelled simulation there. Live qualification is out of their scope.
+
+## INV-LANE-SESSIONS-001
+
+The monitor's control-store sources cannot see lane work: a Fleet lane's tasks, lead reviews, progress,
+invocation reservations and durable worker sessions live in the lane's own schema. The collector
+therefore adds one read-only source, `lane_sessions` (`urn:zeus:lane-sessions:1`). For every lane of the
+REGISTERED Fleet config it opens that lane's schema through the same `lane_dsn` path the Fleet launcher
+and the owner actions use, so there is no second registry. The lane store is cached per (lane id,
+schema) and wrapped in the monitor's read-only store. Each lane is read in ONE
+`REPEATABLE READ READ ONLY` snapshot with bounded connect and statement timeouts, the council snapshot
+pattern: the schema the connection selected is verified, the snapshot is always rolled back, and it
+never takes the advisory lock that `PostgresStore.transaction` uses to serialize writers.
+
+- **Rows.** One row per lane task or decision, under its lane, so equal ids in two lanes stay distinct.
+  A row carries:
+  - the agent, status, phase, generation and attempt;
+  - `lease_until` (ownership liveness, not progress);
+  - its operation, joined by the operation's first task (`assignment_message_id`), its finalized
+    `task_id`/`decision_id`, or the shared correlation id, so a RUNNING operation is joined as well:
+    status, reason code, `lead_accepted`, and call counts (`null` while running, because they are written
+    at finalization);
+  - progress `occurred_at` kept apart from `collected_at`, the last event label and the last
+    completed item's type, status and evidence reference;
+  - the latest invocation reservation's stage, status, outcome, assignment provider, transport and
+    `model_source`, and `requested_model`, the model the request recorded under `options`.
+    `reported_model` is `not_projected`: it lives in the execution receipt, which this source does not
+    read. `usage_source` is always present, and
+    `total_tokens` is `null` whenever the source is `unknown` (INV-INVOCATION-001);
+  - on task rows only, the worker session's `status_view` subset (INV-WORKER-SESSION-001), with its
+    owner reduced to generation and attempt: the owning execution's identifier is never emitted. The
+    session is reached through the operation's continuation binding (`continuation.session.task_id`,
+    the Fleet job or its family root), not by the lane task id.
+
+  An execution status, a lead verdict (`accepted`/`lead_accepted`) and a worker-session review
+  outcome are separate fields; none is derived from another. No `productive`/`hung` label is derived.
+- **Bounds.** At most 50 rows per lane: non-terminal first, then the latest activity. `total` and
+  `truncated` are explicit.
+- **Failure.** A lane whose read fails is `unavailable` with its error TYPE only, never an empty ok
+  lane. An unregistered Fleet is `registered: false` with no lane. Any other control-store failure
+  makes the envelope `unavailable`.
+- **Coverage.** `coverage` counts the lanes registered, observed and unavailable, and names in
+  `uninstrumented` that sessions started outside Zeus task ownership are not observed. They are never
+  inferred from unit names or process ids.
+- **Never emitted:** objectives, manifests, goals, prompts, transcripts, tool text, reasoning,
+  worktrees, context references, repository paths, DSNs, owner ids, review text or raw errors.
+- **Wiring.** `collect()` adds the source only when given a lane resolver; the collector CLI always
+  passes one. A collected row is a durable-record projection only: never evidence of useful progress,
+  acceptance, release or delivery.
+
+Tests: tests/test_monitoring_lane_sessions.py (labelled synthetic lane rows and a fake connection, with no
+provider, process or database; plus one integration test on real PostgreSQL, run with
+`HARNESS_INTEGRATION=1`, showing that a lane snapshot is not blocked by a held writer lock) and the
+collector entrypoint test in tests/test_monitoring.py.
