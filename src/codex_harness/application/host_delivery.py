@@ -65,6 +65,7 @@ from codex_harness.domain.host_delivery import (
     MERGED,
     MIGRATION_ACTIVE,
     MIGRATION_HELD,
+    MIGRATION_KIND_ENVIRONMENT,
     MIGRATION_REGISTERED,
     MIGRATION_RESERVING,
     MIGRATION_STAGED,
@@ -102,6 +103,7 @@ from codex_harness.domain.host_delivery import (
     consumption_verdict,
     delivery_status,
     descriptor_digest,
+    migration_kind,
     migration_lineage_digest,
     migration_rejected_source,
     new_intent,
@@ -317,7 +319,7 @@ class HostDelivery:
             migrations = tx.scan(BUCKET_MIGRATIONS)
         # INV-HOST-DELIVERY-MIGRATION-001: each migration's phase and its successor's hold, read only.
         shown = sorted(({"old_plan_id": m.get("id"), "migration_id": m.get("migration_id"),
-                         "state": m.get("state"),
+                         "kind": m.get("kind", "evaluator_migration"), "state": m.get("state"),
                          "held": (intents.get(m.get("plan_id")) or {}).get("held") if m.get("plan_id") else None,
                          "successor_release_id": m.get("successor_release_id"), "plan_id": m.get("plan_id"),
                          "target_id": m.get("target_id"), "at": m.get("at")}
@@ -807,7 +809,10 @@ class HostDelivery:
         refusal = migration_rejected_source(intent, row["plan"], request)
         if refusal is not None:
             raise DeliveryRefused(refusal, "old_plan_id")
-        resolved = self._resolve_evaluator_pin(request["approval"])
+        if migration_kind(request) == MIGRATION_KIND_ENVIRONMENT:
+            resolved = self._resolve_source_pin(request["source_release_id"])
+        else:
+            resolved = self._resolve_evaluator_pin(request["approval"])
         now = self.clock()
         try:
             with self.store.transaction() as tx:
@@ -844,6 +849,28 @@ class HostDelivery:
             raise DeliveryRefused("migration_pin_mismatch", "approval")
         return resolved
 
+    def _resolve_source_pin(self, release_id: str) -> dict:
+        """INV-RELEASE-ENVIRONMENT-REVERIFY-001: re-derive the migrated source's OWN evaluator pin
+        (its recorded E and base) from the repository, outside every store transaction. The release
+        service compares it with the source's receipt again inside the staging transaction."""
+        try:
+            with self.store.transaction() as tx:
+                source = tx.get("releases", release_id)
+        except Exception as exc:
+            raise DeliveryRefused("migration_unobservable", "store") from exc
+        receipt = (source or {}).get("evaluator_migration")
+        if not isinstance(receipt, dict):
+            raise DeliveryRefused("migration_release_refused", "source_release_id")
+        if self.evaluator_pins is None:
+            raise DeliveryRefused("migration_pin_unavailable", "evaluator_revision")
+        try:
+            resolved = self.evaluator_pins(receipt["evaluator_revision"], receipt["base"])
+        except Exception as exc:
+            raise DeliveryRefused("migration_pin_unavailable", "evaluator_revision") from exc
+        if resolved != expected_evaluator_pin(receipt):
+            raise DeliveryRefused("migration_pin_mismatch", "approval")
+        return resolved
+
     def _stage_in(self, tx, row: dict, intent: dict, request: dict, sha: str, now: str,
                   resolved_pin: dict) -> dict:
         """Phase 2 of `stage_migration`, inside its one transaction; any refusal rolls back all."""
@@ -864,7 +891,10 @@ class HostDelivery:
                and stages.get(other["plan_id"]) not in TERMINAL_STAGES for other in tx.scan(BUCKET_PLANS)):
             # Every other plan of the target, including one no tick has given an intent yet.
             raise DeliveryRefused("migration_target_busy", "target_id")
-        successor = self.releases.request_evaluator_migration(
+        kind = migration_kind(request)
+        successor_of = (self.releases.request_environment_reverification if kind == MIGRATION_KIND_ENVIRONMENT
+                        else self.releases.request_evaluator_migration)
+        successor = successor_of(
             request["source_release_id"], request["actor"], expected_revision=request["candidate_revision"],
             expected_policy_hash=request["source_policy_hash"], approval=request["approval"],
             resolved_pin=resolved_pin, now=self._now(), transaction=tx)
@@ -881,8 +911,8 @@ class HostDelivery:
             "supersession": {"migration_id": request["migration_id"], "successor_release_id": successor["id"],
                              "original_halt": original},
             "updated_at": now})
-        record = {"id": key, "migration_id": request["migration_id"], "request": request, "request_sha256": sha,
-                  "state": MIGRATION_STAGED, "successor_release_id": successor["id"],
+        record = {"id": key, "migration_id": request["migration_id"], "kind": kind, "request": request,
+                  "request_sha256": sha, "state": MIGRATION_STAGED, "successor_release_id": successor["id"],
                   "source_release_id": request["source_release_id"], "target_id": plan["target_id"],
                   "plan_id": None, "plan_sha256": None, "ack": None, "at": now}
         tx.put(BUCKET_MIGRATIONS, key, record)
@@ -992,7 +1022,7 @@ class HostDelivery:
 
     @staticmethod
     def _migration_view(record: dict, *, cached: bool) -> dict:
-        return {"migration": True, "cached": cached,
+        return {"migration": True, "cached": cached, "kind": record.get("kind", "evaluator_migration"),
                 **{name: record.get(name) for name in ("migration_id", "state", "request_sha256",
                                                        "source_release_id", "successor_release_id", "target_id",
                                                        "plan_id", "plan_sha256")},

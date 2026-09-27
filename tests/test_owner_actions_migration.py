@@ -859,7 +859,8 @@ def test_a_completed_migration_carries_its_observed_ready_record_and_status_show
         action["plan_id"], action["plan_sha256"], action["bytes_sha256"])
     assert ready["canary_request_id"] == done["ack"]["canary_request_id"] == digest(w["targets"].requests[action["plan_id"]])
     status = w["owner"].status("owners-1")["migrations"]
-    assert status == [{"source_release_id": "rel-old", "state": do.COMPLETED, "reason_code": "migration_finalized",
+    assert status == [{"source_release_id": "rel-old", "kind": "evaluator_migration", "state": do.COMPLETED,
+                       "reason_code": "migration_finalized",
                        "phases": [{"state": h["state"], "reason_code": h["reason_code"], "at": h["at"]}
                                   for h in done["history"]][-8:],
                        "successor_release_id": done["successor_release_id"], "plan_id": done["plan_id"],

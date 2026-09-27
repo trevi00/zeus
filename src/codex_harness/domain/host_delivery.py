@@ -1020,6 +1020,13 @@ MIGRATION_HELD = "migration_unacknowledged"
 MIGRATION_REQUEST_FIELDS = frozenset({"migration_id", "old_plan_id", "old_plan_sha256", "source_release_id",
                                       "source_policy_hash", "candidate_revision", "target_id", "actor",
                                       "approval"})
+# INV-RELEASE-ENVIRONMENT-REVERIFY-001: the optional request `kind`; absent means the original
+# evaluator migration, so every existing request body, identity and record keeps its bytes.
+MIGRATION_KIND_EVALUATOR = "evaluator_migration"
+MIGRATION_KIND_ENVIRONMENT = "environment_reverification"
+MIGRATION_KINDS = frozenset({MIGRATION_KIND_EVALUATOR, MIGRATION_KIND_ENVIRONMENT})
+# The environment approval must name exactly the request's own source, plan and target.
+_ENVIRONMENT_BOUND = ("source_release_id", "source_policy_hash", "old_plan_id", "old_plan_sha256", "target_id")
 MIGRATION_ACK_FIELDS = frozenset({"control_action_id", "plan_id", "plan_sha256", "request_sha256",
                                   "canary_request_id", "lineage_sha256"})
 _HEX64 = re.compile(r"^[0-9a-f]{64}$")
@@ -1030,10 +1037,17 @@ def migration_request_id(request: dict) -> str:
     return digest({key: value for key, value in request.items() if key != "migration_id"})
 
 
+def migration_kind(request: dict) -> str:
+    """The request kind; a request without `kind` is the original evaluator migration."""
+    return request.get("kind", MIGRATION_KIND_EVALUATOR)
+
+
 def validate_migration_request(request) -> dict:
     """The exact prepared control request; its `migration_id` must be its own body digest."""
-    if not isinstance(request, dict) or set(request) != MIGRATION_REQUEST_FIELDS:
+    if not isinstance(request, dict) or set(request) - {"kind"} != MIGRATION_REQUEST_FIELDS:
         raise DeliveryRefused("migration_request_invalid", "request")
+    if type(migration_kind(request)) is not str or migration_kind(request) not in MIGRATION_KINDS:
+        raise DeliveryRefused("migration_request_invalid", "kind")
     for key in MIGRATION_REQUEST_FIELDS - {"approval"}:
         if type(request[key]) is not str or not request[key]:
             raise DeliveryRefused("migration_request_invalid", key)
@@ -1041,6 +1055,11 @@ def validate_migration_request(request) -> dict:
         raise DeliveryRefused("migration_request_invalid", "candidate_revision")
     if not _HEX64.fullmatch(request["old_plan_sha256"]) or not isinstance(request["approval"], dict):
         raise DeliveryRefused("migration_request_invalid", "old_plan_sha256")
+    if migration_kind(request) == MIGRATION_KIND_ENVIRONMENT:
+        approval = request["approval"]
+        if approval.get("kind") != MIGRATION_KIND_ENVIRONMENT or any(
+                approval.get(key) != request[key] for key in _ENVIRONMENT_BOUND):
+            raise DeliveryRefused("migration_request_invalid", "approval")
     if request["migration_id"] != migration_request_id(request):
         raise DeliveryRefused("migration_request_invalid", "migration_id")
     return request
@@ -1084,7 +1103,8 @@ def migration_rejected_source(intent, plan: dict, request: dict) -> str | None:
     return None
 
 
-__all__ = ["MIGRATION_ACK_FIELDS", "MIGRATION_ACTIVE", "MIGRATION_HELD", "MIGRATION_REGISTERED",
+__all__ = ["MIGRATION_KIND_ENVIRONMENT", "MIGRATION_KIND_EVALUATOR", "MIGRATION_KINDS", "migration_kind",
+           "MIGRATION_ACK_FIELDS", "MIGRATION_ACTIVE", "MIGRATION_HELD", "MIGRATION_REGISTERED",
            "MIGRATION_REQUEST_FIELDS", "MIGRATION_RESERVING", "MIGRATION_STAGED", "migration_rejected_source",
            "migration_lineage_digest", "migration_request_id", "validate_migration_ack", "validate_migration_request",
            "ATTEMPT_RESOLVED", "RECOVERY_VERIFICATION_MISSING", "VERIFYING", "attempt_resolved",
