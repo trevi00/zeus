@@ -6,6 +6,7 @@ Codex, GitHub or production verification. PostgreSQL cases run only with HARNESS
 import threading
 from contextlib import contextmanager
 from datetime import datetime, timedelta, timezone
+from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
@@ -24,6 +25,12 @@ TICKET_CONTENT = {"title": "fixture ticket"}
 TICKET = {"id": "ticket-1", "revision": "r1", "content_hash": digest(TICKET_CONTENT)}
 REQUEST = {"actor": "conductor", "expected_revision": "candidate", "reason": "fixture: short TEMP diagnosis",
            "evidence": "fixture:diagnosis-receipt"}
+
+
+def _is_uv_sync(argv) -> bool:
+    """The install step, whichever `uv` the evaluator resolved: bare `uv` on PATH, or the service user's
+    absolute `~/.local/bin/uv` when PATH has none (`deployment.uv_command`, the aibox controller)."""
+    return bool(argv) and Path(argv[0]).name == "uv" and list(argv[1:2]) == ["sync"]
 
 
 def store_for(backend, request):
@@ -124,7 +131,7 @@ def test_normal_queue_and_runner_execute_every_check_for_the_successor(tmp_path,
     calls, failing = [], {"tests"}
 
     def check(argv, *args, **kwargs):
-        stage = ("install" if argv[:2] == ["uv", "sync"] else "tests" if "pytest" in argv else
+        stage = ("install" if _is_uv_sync(argv) else "tests" if "pytest" in argv else
                  "startup" if argv[:2] == ["docker", "run"] else "build")
         calls.append(stage)
         return {"passed": stage not in failing, "evidence": artifacts.put(stage, "fixture")["ref"]}
