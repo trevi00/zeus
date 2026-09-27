@@ -5,6 +5,7 @@ and resume touch the store only. Run is the finite synchronous runner an existin
 may call; it installs nothing."""
 from __future__ import annotations
 
+import re
 from pathlib import Path
 
 from codex_harness.adapters.dge_cli import read_document, repository_identity, verify_sources
@@ -21,6 +22,7 @@ from codex_harness.domain.research_investigations import (
 from codex_harness.domain.research_program import ProgramRefused, validate_config
 
 MAX_TICKS = 100
+CYCLE_OWNER = re.compile(r"^[0-9a-f]{64}$")
 
 
 def add_parser(commands) -> None:
@@ -32,6 +34,9 @@ def add_parser(commands) -> None:
     run = sub.add_parser("run", help="Run up to N collection ticks under the program bounds")
     run.add_argument("program_id")
     run.add_argument("--ticks", type=int, required=True, help="Requested cap for this invocation; never above max_cycles")
+    run.add_argument("--cycle-owner", default=None, dest="cycle_owner",
+                     help="64-hex owner token of the ONE cycle this run reserves (--ticks 1 only): the owner-actions "
+                          "launch id, so its observer binds the cycle to that launch and never to a number alone")
     for name, text in (("status", "Safe read-only projection; store read only"), ("pause", "Block new ticks; an owned cycle finishes"),
                        ("resume", "Allow new ticks again (paused only)")):
         sub.add_parser(name, help=text).add_argument("program_id")
@@ -69,10 +74,14 @@ def run(service, args) -> dict:
 
     if type(args.ticks) is not int or not 1 <= args.ticks <= MAX_TICKS:
         raise ProgramRefused("ticks_invalid")
+    owner = getattr(args, "cycle_owner", None)
+    if owner is not None and not (args.ticks == 1 and CYCLE_OWNER.fullmatch(owner)):
+        raise ProgramRefused("cycle_owner_invalid")
+    programs = ResearchProgram(service.store) if owner is None else ResearchProgram(service.store, token=lambda: owner)
     repository, runtime = repository_root(), runtime_dir()
     artifacts = FileArtifacts(str(runtime / "artifacts"))
     sources = ResearchSources(artifacts)
-    runner = ProgramRunner(service, ResearchProgram(service.store), sources, GitSource(repository), GitCapture(repository),
+    runner = ProgramRunner(service, programs, sources, GitSource(repository), GitCapture(repository),
                            CallBudget(), artifacts, runtime, council=autonomous_cli.run, github_detail=sources.github_detail,
                            repository=repository_identity(repository))  # R1: current root, checked before any tick effect
     result = runner.run(args.program_id, args.ticks)

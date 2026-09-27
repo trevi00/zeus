@@ -109,7 +109,10 @@ Static policy per service: explicit `User`/`Group` (non-root), absolute `Working
 - Install the rendered polkit rule only together with the managed unit. The delivery controller never
   stops that unit: a managed stop is the target's graceful pause/idle/stop file.
 - `zeus-aibox-owner-actions.service` needs `ZEUS_OWNER_ACTIONS_POLICY` in the non-secret config and a
-  registered owner policy (`zeus owner-actions register`). An idle tick calls no model.
+  registered owner policy (`zeus owner-actions register`). An idle tick calls no model. Several disjoint
+  owner policies are one comma-separated value (each id once), ticked in turn by the one unit.
+- The Fleet runner's `ZEUS_CONTINUATION_POLICY` likewise takes one registered continuation policy id or a
+  comma-separated list of disjoint ones; the one Fleet process continues each of them.
 
 ## Monitoring without Windows
 

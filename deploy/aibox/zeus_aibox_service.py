@@ -396,10 +396,16 @@ def launch_plan(role: str, environ: dict, *, machine_id_path: Path = Path("/etc/
         argv = [python, "-m", "codex_harness.adapters.managed_runtime", "supervise", "--state-dir",
                 str(root.joinpath(*MANAGED_STATE))]
     elif role == "owner-actions":
-        policy = environ.get("ZEUS_OWNER_ACTIONS_POLICY", "")
-        if not POLICY_TOKEN.fullmatch(policy):
+        # One registered policy id, or several separated by commas: ONE process ticks them in turn
+        # (`owner-actions run --policy A --policy B`), so their plans bind serially against one store.
+        policies = environ.get("ZEUS_OWNER_ACTIONS_POLICY", "").split(",")
+        if not all(POLICY_TOKEN.fullmatch(policy) for policy in policies):
             raise Refused("owner_actions_policy_unset")
-        argv = [python, "-m", "zeus", "owner-actions", "run", "--policy", policy]
+        if len(set(policies)) != len(policies):
+            raise Refused("owner_actions_policy_duplicate")
+        argv = [python, "-m", "zeus", "owner-actions", "run"]
+        for policy in policies:
+            argv += ["--policy", policy]
     elif role == "monitor-collect":
         argv = [python, "-m", "codex_harness.monitor", "collect", "--repository", str(release)]
     else:
