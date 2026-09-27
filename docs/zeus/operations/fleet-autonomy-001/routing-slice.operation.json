@@ -1,0 +1,44 @@
+{
+ "schema": "urn:zeus:operation:1",
+ "id": "fleet-autonomy-001-routing-slice",
+ "base_revision": "f6c526ba54292d870c335e52d94ada3c05006a33",
+ "goal": {
+  "path": "docs/zeus/operations/fleet-autonomy-001/SPEC.md",
+  "sha256": "ae9edf1e7d11cca2915db99d1a1a6e0bdec883d511c0f350b803236819568bdb",
+  "criterion": "Design-heavy read-only Zeus roles can be routed to Claude only through a proven read-only Claude execution, while every independent review, verification and state-correctness role stays on Codex.",
+  "rationale": "The user's 2026-09-28 role policy maps design-heavy leads/workers to Claude and detail/verification to Codex by task responsibility; today the Claude transport refuses every read-only run, so no design-heavy role can be routed."
+ },
+ "budget": {
+  "mode": "subscription",
+  "total": 192,
+  "per_host": 192
+ },
+ "claude": {
+  "model": "claude-opus-5-5",
+  "timeout_seconds": 3600,
+  "max_budget_usd": 2
+ },
+ "plan": {
+  "objective": "Implement ONLY docs/zeus/operations/fleet-autonomy-001/SPEC.md sections 2.1-2.3, using DETAIL.md in the same directory for the exact edit sites, test names and boundaries (SPEC decides where DETAIL.md offers a choice). (1) providers.json: add a strict `read_only_runtime` beside `runtime` under providers.claude with tools/allowed_tools exactly [Read, Glob, Grep], disallowed_tools including Bash, Edit, Write, NotebookEdit, Task, WebFetch, WebSearch, mcp__*, permission_mode exactly dontAsk, restricted exactly true; keep the base runtime, default provider and the writable worker rule byte-identical; add the eight read-only design assignments of SPEC 2.2 (lead:research, lead:improvement, conductor, lead:researcher, lead:proposer, lead:arbiter with dge_role; lead:frontdesk with frontdesk; lead:improvement with plan), workload design, read_only true. (2) domain/providers.py: one shared strict validator for the overlay (policy parse and transport preflight), present-but-invalid is never absent, a read-only claude rule without a valid overlay refuses the policy; select_execution copies base runtime and overlays only for read_only, never mutating Provider.runtime; the assignment receipt marks profile application and its digest only for overlay runs. (3) adapters/claude_cli.py: replace the unconditional read-only refusal with pre-spawn validation of the EFFECTIVE runtime and final per-run settings; refuse read-only runs carrying worker profile, project delivery, task session or added settings; check every normalized tool_started event in the event loop before retention, latch any tool outside the allowed names (missing name or id included), stop via the existing termination path, and return the existing provider_failure with reason read_only_violation and answer None, taking precedence over any success terminal and over the stop-induced missing terminal; keep cleanup/stream-loss facts; echo no tool payload. (4) domain/invocation.py: claude_cli read_only becomes supported (vocabulary and OUTCOMES unchanged; accept the two metadata expectation updates named in DETAIL.md). (5) adapters/executor.py: the plan branch passes action=\"plan\"; nothing else changes there. (6) docs/contracts.md INV-CLAUDE-WORKER-001 responsibility-routing addendum and a short docs/model-routing.md section. Reuse tests/claude_protocol_child.py (keep its default behaviour) for fake-process scenarios; add the tests named in DETAIL.md section 3. Do NOT touch isolation (adapters/isolated_worker.py), autonomous_cli/operation_cli overlays, ledger labels, host settings, credentials, organization.json or any file outside allowed_paths; do not change the default provider or route any review to Claude; make no real model call. Run: python -m pytest -q tests/test_claude_assignment.py tests/test_claude_cli_process.py tests/test_claude_execution.py tests/test_model_routing.py; python -m pytest -q tests/test_claude_review_boundaries.py tests/test_invocation_ledger.py tests/test_subscription_accounting.py tests/test_operation_cli.py tests/test_worker_profile.py tests/test_autonomous_roles.py tests/test_council_roles.py tests/test_frontdesk.py; python -m ruff check .",
+  "allowed_paths": [
+   "src/codex_harness/resources/providers.json",
+   "src/codex_harness/domain/providers.py",
+   "src/codex_harness/domain/invocation.py",
+   "src/codex_harness/adapters/claude_cli.py",
+   "src/codex_harness/adapters/executor.py",
+   "tests/test_claude_assignment.py",
+   "tests/test_claude_cli_process.py",
+   "tests/claude_protocol_child.py",
+   "tests/test_claude_execution.py",
+   "tests/test_model_routing.py",
+   "docs/contracts.md",
+   "docs/model-routing.md"
+  ],
+  "acceptance_criteria": [
+   "A read-only Claude run starts only under the validated overlay (exact tools, denies, dontAsk, restricted true); any profile or effective settings granting a mutating tool, or carrying worker profile/project delivery/task session/added settings, is refused before spawn; a stream tool use outside Read/Glob/Grep (or with a missing name/id) ends as provider_failure read_only_violation with answer None even after a success terminal; fake-process tests cover refusal, violation and a clean read-only run.",
+   "The packaged policy permits exactly the existing writable pair plus the eight read-only design pairs; a table-driven test shows disabled pairs select Codex, enabled listed pairs in the design/read-only shape select Claude, an enabled pair in the wrong shape refuses, lead:dba/lead:attacker dge_role, reviews, final_validation, diagnosis and research workers select Codex, and enabling an unlisted pair is refused.",
+   "Plan tasks pass action plan; the writable implementation path (argv, tools, sessions, outcomes, receipts except the named read_only support metadata) and all existing tests keep their behaviour; the base runtime stays restricted false.",
+   "The named focused and adjacent test modules and python -m ruff check . pass; no file outside allowed_paths changes; no real model call is made."
+  ]
+ }
+}
