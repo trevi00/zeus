@@ -539,8 +539,11 @@ def _execution_view(row, kind, operation, progress, reservations, session):
                 'reserved_at': latest.get('reserved_at'), 'settled_at': latest.get('settled_at'),
                 'elapsed_seconds': latest.get('elapsed_seconds'), 'within_budget': latest.get('within_budget')}},
         'worker_session': None if session is None else {
-            k: session.get(k) for k in ('state', 'version', 'owner', 'reviews', 'next_owner', 'next_action',
-                                        'blocked', 'reason')}}
+            **{k: session.get(k) for k in ('state', 'version', 'reviews', 'next_owner', 'next_action', 'blocked',
+                                           'reason')},
+            # Ownership and its lineage only: the owning execution's identifier is never emitted.
+            'owner': {k: session['owner'].get(k) for k in ('generation', 'attempt')}
+            if isinstance(session.get('owner'), dict) else None}}
 
 
 def lane_view(store):

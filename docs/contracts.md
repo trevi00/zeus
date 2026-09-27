@@ -4236,9 +4236,10 @@ never takes the advisory lock that `PostgresStore.transaction` uses to serialize
     `reported_model` is `not_projected`: it lives in the execution receipt, which this source does not
     read. `usage_source` is always present, and
     `total_tokens` is `null` whenever the source is `unknown` (INV-INVOCATION-001);
-  - on task rows only, the worker session's `status_view` subset (INV-WORKER-SESSION-001). The session is
-    reached through the operation's continuation binding (`continuation.session.task_id`, the Fleet job
-    or its family root), not by the lane task id.
+  - on task rows only, the worker session's `status_view` subset (INV-WORKER-SESSION-001), with its
+    owner reduced to generation and attempt: the owning execution's identifier is never emitted. The
+    session is reached through the operation's continuation binding (`continuation.session.task_id`,
+    the Fleet job or its family root), not by the lane task id.
 
   An execution status, a lead verdict (`accepted`/`lead_accepted`) and a worker-session review
   outcome are separate fields; none is derived from another. No `productive`/`hung` label is derived.
@@ -4256,5 +4257,7 @@ never takes the advisory lock that `PostgresStore.transaction` uses to serialize
   passes one. A collected row is a durable-record projection only: never evidence of useful progress,
   acceptance, release or delivery.
 
-Tests: tests/test_monitoring_lane_sessions.py (labelled synthetic lane rows; no provider, process or
-database) and the collector entrypoint test in tests/test_monitoring.py.
+Tests: tests/test_monitoring_lane_sessions.py (labelled synthetic lane rows and a fake connection, with no
+provider, process or database; plus one integration test on real PostgreSQL, run with
+`HARNESS_INTEGRATION=1`, showing that a lane snapshot is not blocked by a held writer lock) and the
+collector entrypoint test in tests/test_monitoring.py.

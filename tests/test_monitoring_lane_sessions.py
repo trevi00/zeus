@@ -68,6 +68,7 @@ def lane_a_fixture():
                               'owner_handoff': {'code': 'fixture'}, 'claimed_at': T0,
                               'updated_at': '2026-09-27T20:30:00+00:00', 'finished_at': '2026-09-27T20:30:00+00:00'})
     put(store, 'operations', {'id': 'op-2', 'status': 'running', 'reason_code': None,
+                              'continuation': {'session': {'task_id': 'job-2', 'repository': '/srv/' + CANARY}},
                               'correlation_id': 'operation:op-2', 'assignment_message_id': 'task-3',
                               'task_id': None, 'decision_id': None, 'lead_accepted': None,
                               'calls': {'reserved': 0, 'settled': 0, 'slots': []}, 'claimed_at': T0,
@@ -109,6 +110,11 @@ def lane_a_fixture():
                                    'identity': {'model': CANARY}, 'checkpoints': [{'archive': 'sha256:' + 'f' * 64}],
                                    'reviews': [{'decision_id': 'dec-1', 'phase': 'lead_review', 'outcome': 'rejected',
                                                 'text': CANARY}]})
+    # The running operation's session is OWNED by an execution: its identifier must never be emitted.
+    put(store, 'worker_sessions', {'id': 'job-2', 'task_id': 'job-2', 'state': 'active', 'version': 2,
+                                   'session_id': 'fixture-session-2', 'identity': {'model': CANARY},
+                                   'owner': {'execution': 'exec-' + CANARY, 'generation': 4, 'attempt': 2},
+                                   'checkpoints': [], 'reviews': []})
     # A second task whose only invocation never settled: its usage is unknown, never zero.
     put(store, 'tasks', {'id': 'task-2', 'agent': 'implementer', 'status': 'failed', 'generation': 1, 'attempt': 1,
                          'created_at': '2026-09-27T19:00:00+00:00'})
@@ -170,7 +176,12 @@ def test_lane_sessions_show_lane_executions_the_control_store_does_not_hold(tmp_
     running_task, running_review = by_id['task-3'], by_id['dec-3']
     assert running_task['operation']['id'] == running_review['operation']['id'] == 'op-2'
     assert (running_task['operation']['status'], running_task['operation']['calls']) == ('running', None)
-    assert running_task['worker_session'] is None and by_id['task-2']['operation'] is None
+    assert by_id['task-2']['operation'] is None and running_review['worker_session'] is None
+    # An owned session shows that it is owned and at which generation/attempt, never by which execution.
+    assert running_task['worker_session']['owner'] == {'generation': 4, 'attempt': 2}
+    assert (running_task['worker_session']['state'], running_task['worker_session']['next_owner']) == (
+        'active', 'execution')
+    assert task['worker_session']['owner'] is None
     # A6: measured usage is shown with its source; unknown usage stays unknown (null), never zero.
     latest = task['invocations']['latest']
     assert (latest['usage_source'], latest['total_tokens'], latest['generation']) == ('claude/result.usage', 1234, 2)
