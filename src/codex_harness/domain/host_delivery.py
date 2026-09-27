@@ -237,6 +237,16 @@ GENERATION_RESTART_REASONS = frozenset({"host_restarted", "generation_exited"})
 RESTART_REQUESTED, RESTART_LAUNCHED, RESTART_STARTED = "requested", "launched", "started"
 # The consumption retry that follows a restart names it (the link is explicit, never inferred).
 CONSUMPTION_RETRY_RESTART_FIELD = "generation_restart_evidence"
+# INV-HOST-DELIVERY-FIRST-ACTIVATION-001 (extended): the fifth recovery kind. The ONE consumption retry of that SAME
+# halted first activation expired AGAIN with the owner canary still PENDING (the retry is exhausted). ONE explicit
+# owner re-arm, bound to the exhausted halt, the spent retry, the linked restart (when one is recorded) and the
+# recorded user decision (`authority`), opens ONE further consumption interval of an EXPLICIT length
+# (`window_seconds`, at most CONSUMPTION_REARM_MAX_SECONDS) for the SAME observed instance. It never restarts,
+# re-verifies, replays the retry or rewrites an earlier halt or deadline; a further expiry is final.
+RECOVERY_CONSUMPTION_REARM = "first_activation_consumption_rearm"
+CONSUMPTION_REARM_SCHEMA = "urn:zeus:host-delivery-consumption-rearm:1"
+CONSUMPTION_REARM_FIELDS = CONSUMPTION_RETRY_FIELDS | {"retry_evidence", "window_seconds", "authority"}
+CONSUMPTION_REARM_MAX_SECONDS = 3600
 CANARY_RECEIPT_PENDING = "canary_owner_receipt_pending"
 WORKER_IMAGE_ID = re.compile(r"^sha256:[0-9a-f]{64}$")
 DIGEST_HEX = re.compile(r"^[0-9a-f]{64}$")
@@ -1032,11 +1042,37 @@ def generation_restart_of(intent) -> dict | None:
     return restarts[-1] if restarts else None
 
 
+def _without_consumption_windows(intent) -> dict:
+    """The intent with its consumption retry/re-arm rows set aside (the halt shape is judged without them)."""
+    others = [row for row in (intent or {}).get("recoveries") or []
+              if not (isinstance(row, dict) and row.get("kind") in (RECOVERY_CONSUMPTION_RETRY,
+                                                                    RECOVERY_CONSUMPTION_REARM))]
+    return {**(intent or {}), "recoveries": others}
+
+
 def consumption_retry_exhausted(intent) -> bool:
     """The same halt again after the one retry already recorded: exhausted, never retried twice."""
-    others = [row for row in (intent or {}).get("recoveries") or []
-              if not (isinstance(row, dict) and row.get("kind") == RECOVERY_CONSUMPTION_RETRY)]
-    return _consumption_halt({**(intent or {}), "recoveries": others})
+    return _consumption_halt(_without_consumption_windows(intent))
+
+
+def consumption_rearmable(intent) -> bool:
+    """The ONE shape `resume_consumption_rearm` may move (INV-HOST-DELIVERY-FIRST-ACTIVATION-001, extended): the
+    same pending-canary halt AGAIN after exactly one consumption retry, whose row is the LATEST recovery (nothing
+    happened after it), and no re-arm yet. A recorded generation restart must have STARTED."""
+    if not isinstance(intent, dict):
+        return False
+    recoveries = [row for row in intent.get("recoveries") or [] if isinstance(row, dict)]
+    retries = recoveries_of(intent, RECOVERY_CONSUMPTION_RETRY)
+    restarts = recoveries_of(intent, RECOVERY_GENERATION_RESTART)
+    return (consumption_retry_exhausted(intent) and len(retries) == 1 and bool(recoveries)
+            and recoveries[-1].get("kind") == RECOVERY_CONSUMPTION_RETRY
+            and not recoveries_of(intent, RECOVERY_CONSUMPTION_REARM)
+            and (not restarts or (len(restarts) == 1 and restarts[0].get("state") == RESTART_STARTED)))
+
+
+def consumption_rearm_exhausted(intent) -> bool:
+    """The same halt again after the one re-arm already recorded: final, never re-armed twice."""
+    return bool(recoveries_of(intent, RECOVERY_CONSUMPTION_REARM)) and consumption_retry_exhausted(intent)
 
 
 def _consumption_retry_refused(field: str):
@@ -1082,6 +1118,40 @@ def validate_consumption_retry(document) -> dict:
             type(halt[key]) is str and 0 < len(halt[key]) <= 64 for key in ("updated_at", "stage_deadline")):
         raise _consumption_retry_refused("halt")
     return {**document, "halt": dict(halt)}
+
+
+def _consumption_rearm_refused(field: str):
+    return DeliveryRefused("consumption_rearm_invalid", field)
+
+
+def validate_consumption_rearm(document) -> dict:
+    """The owner's consumption re-arm document, exactly (INV-HOST-DELIVERY-FIRST-ACTIVATION-001, extended).
+
+    Everything a consumption retry binds (plan, pin, release, candidate, the recorded halt INCLUDING its expired
+    deadline, the first-activation evidence, the bound descriptor, the observed instance, the approver, the
+    restart link when one is recorded), plus the SPENT retry's evidence, the explicit window length in whole
+    seconds (1..CONSUMPTION_REARM_MAX_SECONDS) and the evidence of the recorded user decision (`authority`).
+    Its values are claims only. Every defect is `consumption_rearm_invalid`."""
+    if not isinstance(document, dict) or set(document) not in (
+            CONSUMPTION_REARM_FIELDS, CONSUMPTION_REARM_FIELDS | {CONSUMPTION_RETRY_RESTART_FIELD}):
+        raise _consumption_rearm_refused("document")
+    if document.get("schema") != CONSUMPTION_REARM_SCHEMA:
+        raise _consumption_rearm_refused("schema")
+    if document.get("kind") != RECOVERY_CONSUMPTION_REARM:
+        raise _consumption_rearm_refused("kind")
+    window = document["window_seconds"]
+    if type(window) is not int or not 0 < window <= CONSUMPTION_REARM_MAX_SECONDS:
+        raise _consumption_rearm_refused("window_seconds")
+    for key in ("retry_evidence", "authority"):
+        if not _hex(document[key], EVIDENCE_REF):
+            raise _consumption_rearm_refused(key)
+    shaped = {key: value for key, value in document.items() if key not in ("retry_evidence", "window_seconds",
+                                                                            "authority")}
+    try:
+        validate_consumption_retry({**shaped, "schema": CONSUMPTION_RETRY_SCHEMA, "kind": RECOVERY_CONSUMPTION_RETRY})
+    except DeliveryRefused as exc:
+        raise _consumption_rearm_refused(exc.field) from None
+    return {**document, "halt": dict(document["halt"])}
 
 
 def _generation_restart_refused(field: str):
@@ -1233,8 +1303,8 @@ def _recoveries_view(record: dict) -> dict:
                      "halted": {key: (record.get("halted") or {}).get(key)
                                 for key in ("stage", "previous_stage", "reason_code", "updated_at",
                                             "stage_deadline")}})
-    if record.get("kind") == RECOVERY_CONSUMPTION_RETRY:
-        # Additive for the retry kind only (INV-HOST-DELIVERY-FIRST-ACTIVATION-001): the ORIGINAL
+    if record.get("kind") in (RECOVERY_CONSUMPTION_RETRY, RECOVERY_CONSUMPTION_REARM):
+        # Additive for the retry and re-arm kinds only (INV-HOST-DELIVERY-FIRST-ACTIVATION-001): the ORIGINAL
         # halt's timing, the new interval and the observed identity; ids, digests and times only.
         halted = record.get("halted") or {}
         interval = record.get("interval") or {}
@@ -1254,6 +1324,9 @@ def _recoveries_view(record: dict) -> dict:
                                                                          "descriptor_sha256")},
                                   **({CONSUMPTION_RETRY_RESTART_FIELD: observed[CONSUMPTION_RETRY_RESTART_FIELD]}
                                      if CONSUMPTION_RETRY_RESTART_FIELD in observed else {})}})
+    if record.get("kind") == RECOVERY_CONSUMPTION_REARM:
+        # The re-arm names the spent retry, its explicit window and the recorded user decision.
+        view.update({key: record.get(key) for key in ("retry_evidence", "window_seconds", "authority")})
     return view
 
 
