@@ -28,6 +28,9 @@ from test_continuation_research import two_strikes
 from test_host_delivery import CHECK, Clock, FakeGitHub, targets_document
 from test_operation import FakeExecutor
 from test_owner_actions import REPORT, FakeAssessor
+from test_owner_actions_migration import (
+    first_activation_port,  # LABELLED fake first-activation port
+)
 from test_owner_delivery import ReleasingConductor, git_repository
 from test_research_investigations import DEFINITIONS
 from test_research_program import build
@@ -205,7 +208,10 @@ class Chain:
                  "assessments": self.assessor, "targets": TargetFiles(),
                  "withdrawals": lambda lane: self.host, "mainline": self.mainline, "requalify": self.requalify,
                  "artifacts": self.world.artifacts, "research": self.research,
-                 "ledger": lambda: FakeBudget().counts(), **overrides}
+                 "ledger": lambda: FakeBudget().counts(),
+                 # INV-HOST-DELIVERY-001 first activation (main, PR #215): a target without a descriptor gets its
+                 # image/profile from the lane boundary's trusted port; here the LABELLED fake of main's tests.
+                 "first_activation": first_activation_port, **overrides}
         return OwnerActions(self.world.control, **ports)
 
     def requalify(self, document):
