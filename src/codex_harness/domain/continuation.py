@@ -1491,6 +1491,46 @@ def successor_manifest(origin: dict, route: str, successor: str, references: dic
     return manifest
 
 
+# ---- research handoff (SPEC "Scoped research completion and evidence-repair delivery") -----------
+# The FIRST successor derived after a family's research hold was released carries a reference to the
+# accepted receipt in its binding predecessor (`research`); the executor delivers that evidence inline
+# through the correction-feedback seam. Every other binding keeps its exact shape.
+RESEARCH_REFERENCE_FIELDS = frozenset({"intent_id", "receipt_sha256", "evidence_refs", "policy_sha256", "family"})
+
+
+def research_handoff(intents: list, policy_id: str, family: str, key: str) -> dict | None:
+    """The completed research intent whose receipt the successor of intent `key` carries: the latest
+    research of this policy and family, completed, with no successor derived since. None before any
+    completed research and for every later successor. From durable rows only (`key` itself excluded),
+    so a replay, a restart and an owner capacity grant derive the same answer."""
+    rows = sorted((row for row in intents if row.get("policy_id") == policy_id and row.get("family") == family
+                   and row["id"] != key), key=lambda r: (str(r.get("created_at")), r["id"]))
+    latest = None
+    for row in rows:
+        if row["route"] == RESEARCH:
+            latest = row if row["state"] == COMPLETED else None
+        elif row["route"] in SUCCESSOR_ROUTES and row.get("successor_job") is not None:
+            latest = None   # that successor already carried the research
+    return latest
+
+
+def research_reference(research: dict, stored) -> dict:
+    """The trusted binding reference to exactly the stored receipt that completed `research`: the
+    receipt must still be the one the intent completed on (same digest, intent, policy, family and
+    evidence refs), else `research_receipt_corrupt`. Identities and digests only, never report text."""
+    receipt = stored.get("receipt") if isinstance(stored, dict) else None
+    refuse(isinstance(receipt, dict) and receipt.get("intent_id") == research["id"]
+           and receipt.get("policy_id") == research.get("policy_id")
+           and receipt.get("policy_sha256") == research.get("policy_sha256")
+           and receipt.get("family") == research.get("family")
+           and stored.get("receipt_sha256") == digest(receipt) == research.get("research_receipt")
+           and list(receipt.get("evidence_refs") or []) == list(research.get("evidence_refs") or []),
+           "research_receipt_corrupt", ROUTE_OWNERS[RESEARCH], "receipt")
+    return {"intent_id": research["id"], "receipt_sha256": stored["receipt_sha256"],
+            "evidence_refs": list(receipt["evidence_refs"]), "policy_sha256": research["policy_sha256"],
+            "family": research["family"]}
+
+
 def validate_binding(document) -> dict:
     """The trusted lane-side continuation binding an Operation claim may attach to its assignment."""
     refuse(isinstance(document, dict) and document.get("schema") == BINDING_SCHEMA, "binding_invalid",

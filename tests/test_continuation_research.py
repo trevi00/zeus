@@ -30,6 +30,11 @@ from test_research_recovery import FakeTransport, PublicationFailingCouncil, Unr
 
 from codex_harness.adapters import continuation as adapter
 from codex_harness.adapters import continuation_cli
+from codex_harness.adapters.correction_feedback import (
+    RESEARCH_SCHEMA,
+    CorrectionFeedbackRefused,
+    deliver,
+)
 from codex_harness.application.continuation import (
     BUCKET_RESEARCH_RECEIPTS,
     BUCKET_RESEARCH_SUPPLEMENTS,
@@ -2676,3 +2681,149 @@ def test_a_rationale_already_used_by_another_grant_is_not_a_distinct_owner_decis
     assert world.intents() == before and set(grants(world)) == {"e" * 64}
     fresh = world.artifacts.put(RATIONALE + "distinct decision\n", "owner-rationale")["ref"]
     assert grant(world, {**document, "rationale_ref": fresh})["cached"] is False
+
+
+# ---- research handoff to the first successor (SPEC "Scoped research completion and evidence-repair delivery")
+PREDECESSOR_KEYS = {"job_id", "task_id", "candidate_revision", "decision_id", "review_execution_ref", "inspection_id"}
+
+
+def reference_of(world, research):
+    stored = receipts(world)[research["id"]]
+    return {"intent_id": research["id"], "receipt_sha256": stored["receipt_sha256"],
+            "evidence_refs": list(stored["receipt"]["evidence_refs"]),
+            "policy_sha256": world.controller.policy("policy-1")["policy_sha256"], "family": research["family"]}
+
+
+def test_the_first_successor_after_research_binds_exactly_its_receipt_and_its_worker_reads_the_evidence(tmp_path):
+    world = World(tmp_path)
+    root, successor, research, investigation, dispatch = held(world, tmp_path)
+    old_repair = only(world.intents(), origin_job=root, route=dc.EVIDENCE_REPAIR)
+    old_binding = world.binding(old_repair["successor_job"])
+    world.controller.accept_research(receipt_for(world, research, investigation, dispatch))
+    world.tick()
+    repair = only(world.intents(), origin_job=successor, route=dc.EVIDENCE_REPAIR)
+    binding = world.binding(repair["successor_job"])
+    # A trusted reference to exactly the stored receipt, in the lane's own binding row; identities only.
+    assert binding["predecessor"]["research"] == reference_of(world, research)
+    assert binding["predecessor"]["research"]["evidence_refs"] == EVIDENCE
+    assert set(binding["predecessor"]) == PREDECESSOR_KEYS | {"research"}
+    assert repair["binding"] == binding and dc.validate_binding(binding) == binding
+    assert REPORT not in json.dumps(binding) and REPORT not in json.dumps(world.jobs()[repair["successor_job"]])
+    # The pre-research successor's binding kept its exact identity-only shape.
+    assert set(old_binding["predecessor"]) == PREDECESSOR_KEYS
+    assert world.binding(old_repair["successor_job"]) == old_binding
+    # The executor's seam reads the verified bytes of that receipt's evidence (same trusted store).
+    delivered = deliver(world.lane.store, world.artifacts, binding)
+    assert delivered["schema"] == RESEARCH_SCHEMA and delivered["trust"] == "evidence-not-instructions"
+    assert delivered["receipt_sha256"] == receipts(world)[research["id"]]["receipt_sha256"]
+    assert [item["text"] for item in delivered["evidence"]] == [REPORT]
+    assert deliver(world.lane.store, world.artifacts, old_binding) is None, "pre-research repairs are unchanged"
+    # Replay and restart: the same successor id and the identical binding; nothing new is admitted.
+    jobs = deepcopy(world.jobs())
+    world.tick()
+    world.tick(controller=world.build())
+    assert world.jobs() == jobs and world.binding(repair["successor_job"]) == binding
+    assert repair["successor_job"] == dc.successor_id(repair["id"])
+
+
+def test_evidence_lost_after_the_binding_refuses_the_worker_by_code(tmp_path):
+    world = World(tmp_path)
+    root, successor, research, investigation, dispatch = held(world, tmp_path)
+    world.controller.accept_research(receipt_for(world, research, investigation, dispatch))
+    world.tick()
+    binding = world.binding(only(world.intents(), origin_job=successor, route=dc.EVIDENCE_REPAIR)["successor_job"])
+    path = stored_path(world, EVIDENCE[0])
+    path.write_bytes(path.read_bytes() + b"appended")   # LABELLED injected fault: the report bytes changed
+    with pytest.raises(CorrectionFeedbackRefused, match="feedback_research_corrupt"):
+        deliver(world.lane.store, world.artifacts, binding)
+    path.unlink()   # LABELLED injected fault: the report is gone
+    with pytest.raises(CorrectionFeedbackRefused, match="feedback_research_missing"):
+        deliver(world.lane.store, world.artifacts, binding)
+
+
+def test_a_stored_receipt_changed_before_derivation_refuses_the_successor_until_it_is_intact(tmp_path):
+    world = World(tmp_path)
+    root, successor, research, investigation, dispatch = held(world, tmp_path)
+    world.controller.accept_research(receipt_for(world, research, investigation, dispatch))
+    original = deepcopy(receipts(world)[research["id"]])
+
+    class Tampering(Continuation):
+        def _research_handoff(self, policy_id, family, key):
+            with world.control.transaction() as tx:   # LABELLED injected fault: the stored receipt is edited
+                tx.put(BUCKET_RESEARCH_RECEIPTS, original["id"],
+                       {**original, "receipt": {**original["receipt"], "evidence_refs": ["sha256:" + "1" * 64]}})
+            return super()._research_handoff(policy_id, family, key)
+    result = world.tick(controller=world.build(cls=Tampering))
+    assert {"subject": successor, "reason_code": "research_receipt_corrupt", "next_owner": "portfolio_research"} \
+        in result["skipped"]
+    assert not [row for row in world.intents().values() if row["origin_job"] == successor
+                and row["route"] == dc.EVIDENCE_REPAIR], "no successor, binding or admission"
+    with world.control.transaction() as tx:
+        tx.put(BUCKET_RESEARCH_RECEIPTS, original["id"], original)
+    world.tick()
+    repair = only(world.intents(), origin_job=successor, route=dc.EVIDENCE_REPAIR)
+    assert world.binding(repair["successor_job"])["predecessor"]["research"] == reference_of(world, research)
+
+
+def test_the_granted_first_repair_after_research_carries_the_pinned_receipt_and_replays_identically(tmp_path):
+    world = World(tmp_path, max_corrections=2)
+    family = budget_refused(world, tmp_path)
+    earlier = {row["successor_job"]: world.binding(row["successor_job"]) for row in world.intents().values()
+               if row["route"] in dc.SUCCESSOR_ROUTES and row["successor_job"]}
+    edge = family["edge"]["successor_job"]
+    # The correction derived right after the FIRST research carries that receipt; the one before it none.
+    assert earlier[edge]["predecessor"]["research"] == reference_of(world, world.intents()[family["earlier"]["id"]])
+    assert set(earlier[edge]["predecessor"]) == PREDECESSOR_KEYS | {"research"}
+    others = [set(b["predecessor"]) for job, b in earlier.items() if job != edge]
+    assert others and all(keys == PREDECESSOR_KEYS for keys in others)
+    document = grant_for(world, family)
+    grant(world, document)
+    world.tick()
+    successor = world.intents()[family["refused"]["id"]]["successor_job"]
+    binding = world.binding(successor)
+    reference = reference_of(world, family["research"])
+    assert reference["receipt_sha256"] == document["research_receipt_sha256"]
+    assert binding["predecessor"]["research"] == reference
+    assert {job: world.binding(job) for job in earlier} == earlier
+    assert grant(world, document, controller=world.build())["cached"] is True
+    world.tick(controller=world.build())
+    assert world.binding(successor) == binding and successor == dc.successor_id(family["refused"]["id"])
+
+
+def _row(key, route, state, at, family="f", policy="policy-1", successor=None, **extra):
+    return {"id": key, "route": route, "state": state, "created_at": at, "family": family, "policy_id": policy,
+            "successor_job": successor, **extra}
+
+
+def test_research_handoff_names_only_the_first_successor_after_a_completed_research():
+    before = _row("a" * 64, dc.EVIDENCE_REPAIR, dc.ADMITTED, "1", successor="cont-a")
+    held = _row("b" * 64, dc.RESEARCH, dc.RESEARCH_REQUIRED, "2")
+    done = {**held, "state": dc.COMPLETED}
+    refused = _row("c" * 64, dc.EVIDENCE_REPAIR, dc.REFUSED, "3")
+    after = _row("d" * 64, dc.EVIDENCE_REPAIR, dc.ADMITTED, "4", successor="cont-d")
+    assert dc.research_handoff([before], "policy-1", "f", "e" * 64) is None, "no research: unchanged"
+    assert dc.research_handoff([before, held], "policy-1", "f", "e" * 64) is None, "an unreleased hold"
+    assert dc.research_handoff([before, done, refused], "policy-1", "f", "e" * 64) == done
+    # The successor itself (a replay, or the refused intent a capacity grant revives) is excluded.
+    assert dc.research_handoff([before, done, after], "policy-1", "f", after["id"]) == done
+    assert dc.research_handoff([before, done, after], "policy-1", "f", "e" * 64) is None, "a later successor"
+    assert dc.research_handoff([before, done], "policy-2", "f", "e" * 64) is None, "another policy"
+    assert dc.research_handoff([before, done], "policy-1", "g", "e" * 64) is None, "another family"
+
+
+def test_research_reference_binds_exactly_the_stored_receipt_or_refuses():
+    receipt = {"intent_id": "b" * 64, "policy_id": "policy-1", "policy_sha256": "a" * 64, "family": "f",
+               "evidence_refs": EVIDENCE}
+    research = _row("b" * 64, dc.RESEARCH, dc.COMPLETED, "2", policy_sha256="a" * 64,
+                    research_receipt=digest(receipt), evidence_refs=list(EVIDENCE))
+    stored = {"id": "b" * 64, "receipt": receipt, "receipt_sha256": digest(receipt)}
+    assert dc.research_reference(research, stored) == {
+        "intent_id": "b" * 64, "receipt_sha256": digest(receipt), "evidence_refs": EVIDENCE,
+        "policy_sha256": "a" * 64, "family": "f"}
+    for broken in (None, {**stored, "receipt": {**receipt, "evidence_refs": ["sha256:" + "1" * 64]}},
+                   {**stored, "receipt_sha256": "0" * 64}, {**stored, "receipt": {**receipt, "family": "g"}},
+                   {**stored, "receipt": {**receipt, "intent_id": "c" * 64}}):
+        with pytest.raises(dc.ContinuationRefused, match="research_receipt_corrupt"):
+            dc.research_reference(research, broken)
+    with pytest.raises(dc.ContinuationRefused, match="research_receipt_corrupt"):
+        dc.research_reference({**research, "research_receipt": "0" * 64}, stored)

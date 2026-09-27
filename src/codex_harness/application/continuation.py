@@ -137,6 +137,8 @@ from codex_harness.domain.continuation import (
     requalification_manifest,
     requalification_view,
     research_attempts,
+    research_handoff,
+    research_reference,
     successor_id,
     successor_manifest,
     supplement_view,
@@ -963,7 +965,8 @@ class Continuation:
         attempt = attempt_of(evidence)
         with self.store.transaction() as tx:
             key, _ = self._claim(tx, intent_id(job["id"], attempt, evidence_sha, route), base["policy_id"])
-        plan = self._successor_plan(ctx["sha"], base["family"], job, evidence, route, routed, key, lane)
+        plan = self._successor_plan(ctx["sha"], base["family"], job, evidence, route, routed, key, lane,
+                                    self._research_handoff(base["policy_id"], base["family"], key))
         if plan is None:
             # Recorded once for this evidence: the existing validator decides, nothing is trimmed.
             return self._create({**base, "route": route, "state": REFUSED, "reason_code": "successor_manifest_refused",
@@ -973,10 +976,22 @@ class Continuation:
                                attempt, key=key)
         return self._publish(ctx, created)
 
-    def _successor_plan(self, sha, family, job, evidence, route, routed, key, lane) -> dict | None:
+    def _research_handoff(self, policy_id: str, family: str, key: str) -> dict | None:
+        """The binding reference of the first successor after a completed research intent of this
+        policy and family (`domain.continuation.research_handoff`), bound to exactly its stored receipt;
+        None for every other successor. A receipt that no longer matches refuses by name."""
+        with self.store.transaction() as tx:
+            intents = tx.scan(BUCKET_INTENTS)
+            research = research_handoff(intents, policy_id, family, key)
+            stored = tx.get(BUCKET_RESEARCH_RECEIPTS, research["id"]) if research is not None else None
+        return research_reference(research, stored) if research is not None else None
+
+    def _successor_plan(self, sha, family, job, evidence, route, routed, key, lane, research=None) -> dict | None:
         """The complete successor identity of intent `key`: manifest (the existing validator decides;
         None when it refuses), lane binding and session mode. Shared by a new observation and an
-        owner capacity grant, so both derive the same successor for the same intent."""
+        owner capacity grant, so both derive the same successor for the same intent. `research` (the
+        `_research_handoff` reference, or None) is added to the binding predecessor only when present,
+        so every other binding keeps its exact shape."""
         operation = evidence["operation"]
         task = evidence.get("task") or {}
         candidate = ((task.get("result") or {}).get("candidate") or {}) if isinstance(task, dict) else {}
@@ -1020,6 +1035,8 @@ class Continuation:
                                     "decision_id": (decision or {}).get("id") if route == CORRECTION else None,
                                     "review_execution_ref": references["review_execution_ref"],
                                     "inspection_id": references["inspection"]}}
+        if research is not None:
+            document["predecessor"]["research"] = research
         return {"successor_job": successor, "manifest": manifest, "binding": document, "session_mode": mode,
                 "evidence_refs": [ref for ref in (references["review_execution_ref"],) if ref]}
 
@@ -1174,7 +1191,8 @@ class Continuation:
         bound = self._grant_bindings(ctx, grant, intent)
         job = bound["job"]   # the source row the bindings verified, compared again at commit
         plan = self._successor_plan(ctx["sha"], grant["family"], job, bound["evidence"], EVIDENCE_REPAIR,
-                                    classify(job, bound["evidence"]), intent["id"], self.lanes(job["lane"]))
+                                    classify(job, bound["evidence"]), intent["id"], self.lanes(job["lane"]),
+                                    self._research_handoff(grant["policy_id"], grant["family"], intent["id"]))
         refuse(plan is not None, "capacity_successor_refused", "operator", "manifest")
         grant_sha, now = digest(grant), self.clock()
         with self.store.transaction() as tx:

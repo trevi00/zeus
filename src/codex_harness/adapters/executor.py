@@ -1209,6 +1209,7 @@ class Executor:
                 # SPEC "Readable correction evidence delivery": a correction binding carries identities
                 # only; its bound review findings are verified and extracted here, before any workspace
                 # or provider effect, and travel inline as required context. Unusable feedback refuses.
+                # The first successor after a completed research intent gets that receipt's evidence here too.
                 feedback = correction_feedback(self.service.store, self.artifacts, continuation)
                 if continuation is not None and continuation["workspace"] is not None:
                     workspace = self._continued_workspace(task, continuation["workspace"])

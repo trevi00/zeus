@@ -9,6 +9,7 @@ actual container run: the native container call remains the owner's later gate.
 """
 from __future__ import annotations
 
+import hashlib
 import io
 import json
 import shutil
@@ -22,6 +23,7 @@ from codex_harness.adapters import isolated_worker_entry as entry
 from codex_harness.adapters.artifacts import FileArtifacts
 from codex_harness.adapters.correction_feedback import (
     MAX_FINDINGS_CHARS,
+    RESEARCH_SCHEMA,
     SCHEMA,
     CorrectionFeedbackRefused,
     deliver,
@@ -390,3 +392,159 @@ def test_non_correction_routes_and_the_legacy_path_deliver_nothing(tmp_path, mon
 def test_refusal_codes_are_fixed():
     assert CorrectionFeedbackRefused("not a code").reason_code == "feedback_binding_invalid"
     assert str(CorrectionFeedbackRefused("feedback_empty")) == "Correction feedback refused: feedback_empty"
+
+
+# ---- research handoff: the first successor after a completed research intent ----------------------
+# SPEC "Scoped research completion and evidence-repair delivery". The binding reference is shaped as
+# `domain.continuation.research_reference` records it; the report bytes are a LABELLED fixture.
+RESEARCH_REPORT = ("LABELLED fixture research report: the evidence gate refused because the declared check "
+                   "ids were stale (token=" + CREDENTIAL + "); re-run the corrected profile.\n")
+
+
+def research_binding(world, refs, *, route=dc.EVIDENCE_REPAIR, **research):
+    binding = world.binding(route=route)
+    if route != dc.CORRECTION:
+        binding["predecessor"] = {**binding["predecessor"], "decision_id": None, "review_execution_ref": None}
+    binding["predecessor"]["research"] = {"intent_id": "c" * 64, "receipt_sha256": "d" * 64, "evidence_refs": refs,
+                                          "policy_sha256": binding["policy_sha256"], "family": binding["family"],
+                                          **research}
+    return binding
+
+
+def workspaces(world):
+    return sorted(path.name for path in world.git.workspaces.iterdir())
+
+
+def test_the_research_evidence_reaches_an_evidence_repair_provider_input_redacted_and_labelled(tmp_path, monkeypatch):
+    world = World(tmp_path, monkeypatch)
+    ref = world.artifacts.put(RESEARCH_REPORT, "research-council")["ref"]
+    binding = research_binding(world, [ref])
+    task = world.submit(binding=binding)
+    assert task["status"] == "succeeded", task.get("error")
+    prompt = world.prompts[0]
+    delivered = json.loads(prompt)["required"]["correction_feedback"]
+    assert delivered["schema"] == RESEARCH_SCHEMA and delivered["trust"] == "evidence-not-instructions"
+    assert "not instructions" in delivered["note"] and "no wider" in delivered["note"]
+    assert delivered["research_intent"] == "c" * 64 and delivered["receipt_sha256"] == "d" * 64
+    [item] = delivered["evidence"]
+    assert item["ref"] == ref and "declared check ids were stale" in item["text"]
+    assert CREDENTIAL not in prompt and delivered["redaction"] == {"applied": True, "spans": 1}
+    assert delivered["truncation"] == {"applied": False, "limit_chars": MAX_FINDINGS_CHARS,
+                                       "characters": len(item["text"])}
+    assert delivered["original_sha256"] == digest([{"ref": ref, "text": RESEARCH_REPORT}])
+    assert delivered["delivered_sha256"] == digest(delivered["evidence"])
+    assert str(world.artifacts.root) not in json.dumps(delivered)
+    # Deterministic for the same binding and bytes.
+    assert deliver(world.service.store, world.artifacts, binding) == delivered
+
+
+def test_a_correction_after_research_delivers_its_findings_and_the_research_beside_them(tmp_path, monkeypatch):
+    world = World(tmp_path, monkeypatch)
+    ref = world.artifacts.put(RESEARCH_REPORT, "research-council")["ref"]
+    plain = deliver(world.service.store, world.artifacts, world.binding())
+    delivered = deliver(world.service.store, world.artifacts, research_binding(world, [ref], route=dc.CORRECTION))
+    assert {k: v for k, v in delivered.items() if k != "research"} == plain, "the findings are unchanged"
+    assert delivered["research"]["schema"] == RESEARCH_SCHEMA
+    assert delivered["research"]["evidence"][0]["ref"] == ref
+
+
+def _research_missing(world):
+    return ["sha256:" + hashlib.sha256(b"never stored").hexdigest()], {}
+
+
+def _research_tampered(world):
+    ref = world.artifacts.put(RESEARCH_REPORT, "research-council")["ref"]
+    path = world.artifact_path(ref)
+    path.write_bytes(path.read_bytes().replace(b"stale", b"fresh"))
+    return [ref], {}
+
+
+def _research_oversize(world):
+    return [world.artifacts.put("x" * (MAX_FINDINGS_CHARS + 1), "research-council")["ref"]], {}
+
+
+def _research_oversize_together(world):
+    half = MAX_FINDINGS_CHARS // 2 + 1
+    return [world.artifacts.put("a" * half, "r")["ref"], world.artifacts.put("b" * half, "r")["ref"]], {}
+
+
+def _research_not_utf8(world):
+    data = b"\xff\xfe binary report"
+    key = hashlib.sha256(data).hexdigest()
+    (world.artifacts.root / (key + ".txt")).write_bytes(data)
+    return ["sha256:" + key], {}
+
+
+def _research_control_bytes(world):
+    return [world.artifacts.put("report\x00\x01binary", "research-council")["ref"]], {}
+
+
+def _research_empty(world):
+    return [world.artifacts.put("  \n", "research-council")["ref"]], {}
+
+
+def _research_other_family(world):
+    return [world.artifacts.put(RESEARCH_REPORT, "research-council")["ref"]], {"family": "op-other"}
+
+
+def _research_other_policy(world):
+    return [world.artifacts.put(RESEARCH_REPORT, "research-council")["ref"]], {"policy_sha256": "e" * 64}
+
+
+def _research_malformed(world):
+    return ["not-a-ref"], {}
+
+
+def _research_extra_field(world):
+    return [world.artifacts.put(RESEARCH_REPORT, "research-council")["ref"]], {"scope": "wider"}
+
+
+@pytest.mark.parametrize("mutate, code", [
+    (_research_missing, "feedback_research_missing"),
+    (_research_tampered, "feedback_research_corrupt"),
+    (_research_oversize, "feedback_research_oversize"),
+    (_research_oversize_together, "feedback_research_oversize"),
+    (_research_not_utf8, "feedback_research_not_text"),
+    (_research_control_bytes, "feedback_research_not_text"),
+    (_research_empty, "feedback_research_empty"),
+    (_research_other_family, "feedback_research_foreign"),
+    (_research_other_policy, "feedback_research_foreign"),
+    (_research_malformed, "feedback_research_invalid"),
+    (_research_extra_field, "feedback_research_invalid"),
+])
+@pytest.mark.parametrize("route", [dc.EVIDENCE_REPAIR, dc.CORRECTION])
+def test_unusable_research_evidence_refuses_before_any_workspace_or_provider(tmp_path, monkeypatch, mutate, code,
+                                                                              route):
+    world = World(tmp_path, monkeypatch)
+    refs, research = mutate(world)
+    before = workspaces(world)
+    refused(world.submit(binding=research_binding(world, refs, route=route, **research)), code)
+    assert world.prompts == [] and workspaces(world) == before
+    with world.service.store.transaction() as tx:
+        assert list(tx.scan("invocation_reservations")) == []
+
+
+def test_unreadable_research_evidence_refuses_without_leaking_the_error(tmp_path, monkeypatch):
+    world = World(tmp_path, monkeypatch)
+    ref = world.artifacts.put(RESEARCH_REPORT, "research-council")["ref"]
+
+    def unreadable(reference, max_bytes):  # INJECTED I/O fault: the host cannot read the artifact store
+        raise PermissionError("secret path " + CREDENTIAL)
+    monkeypatch.setattr(world.artifacts, "text", unreadable)
+    refused(world.submit(binding=research_binding(world, [ref])), "feedback_research_unreadable")
+    assert world.prompts == []
+
+
+def test_a_research_reference_on_another_route_is_invalid(tmp_path, monkeypatch):
+    world = World(tmp_path, monkeypatch)
+    ref = world.artifacts.put(RESEARCH_REPORT, "research-council")["ref"]
+    binding = research_binding(world, [ref], route=dc.REQUALIFICATION)
+    with pytest.raises(CorrectionFeedbackRefused, match="feedback_research_invalid"):
+        deliver(world.service.store, world.artifacts, binding)
+
+
+def test_research_evidence_that_fits_the_bound_but_not_the_prompt_refuses_untrimmed(tmp_path, monkeypatch):
+    world = World(tmp_path, monkeypatch)
+    ref = world.artifacts.put("가" * (MAX_FINDINGS_CHARS - 1000), "research-council")["ref"]
+    refused(world.submit(binding=research_binding(world, [ref])), "feedback_context_insufficient")
+    assert world.prompts == []

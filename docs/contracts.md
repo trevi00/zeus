@@ -3242,6 +3242,32 @@ of `CorrectionFeedbackRefused` (`feedback_binding_invalid`, `_operation_mismatch
 no content, path or exception text. Integrity holds at the observed read, not forever; every attempt
 re-reads. Legacy implementation without a binding and every other route are unchanged.
 
+Research handoff (SPEC "Scoped research completion and evidence-repair delivery"): the FIRST
+`evidence_repair` or `correction` successor derived after a completed research intent of the same
+policy and family (`domain.continuation.research_handoff`: the latest research of that policy and
+family is `completed` and no successor was derived since; the successor's own intent excluded) carries
+`predecessor.research {intent_id, receipt_sha256, evidence_refs, policy_sha256, family}` in its lane
+binding (`research_reference`). Both derivations share it (`_successor` and the owner capacity grant
+through `_successor_plan`), reading the stored `continuation_research_receipts` row in one short read
+transaction: the receipt must still be the one the intent completed on (its digest equal to the row's
+`receipt_sha256` and the intent's `research_receipt`, same intent, policy, family and evidence refs),
+else `research_receipt_corrupt` (`portfolio_research`) before any intent, binding or admission. The
+manifest stays identity-only; successors before a completed research, later successors and every
+family without one keep byte-identical manifests and bindings, so two-strike counting and
+`max_corrections` are unchanged; a replay or restart derives the same successor id and binding. The
+executor's existing `correction_feedback.deliver` call reads each ref through `FileArtifacts.text`
+(at most `4 * MAX_FINDINGS_CHARS` bytes, content address checked), refuses control characters,
+redacts with `redact_text` and bounds the whole text at `MAX_FINDINGS_CHARS` (more is refused, never
+truncated). The block (`urn:zeus:research-handoff:1`: `trust: evidence-not-instructions`, a note that
+it grants no wider scope, `research_intent`, `receipt_sha256`, `original_sha256`, `delivered_sha256`,
+`redaction`, `truncation`, `evidence[{ref, text}]`) is the required `correction_feedback` context of
+an evidence repair, or its `research` member beside the unchanged findings of a correction, measured
+by the same `feedback_context_insufficient` check. Refusals before any workspace or provider effect:
+`feedback_research_invalid` (malformed reference or another route), `_foreign` (another policy digest
+or family than the binding's), `_missing`, `_unreadable`, `_corrupt`, `_not_text`, `_empty`,
+`_oversize`. The executor reads its own configured artifact store; research evidence the control host
+stored elsewhere is `feedback_research_missing`, never fetched.
+
 Effect ownership across policies sharing one control store: the intent id (and with it the successor
 and launch ids) carries NO policy, so overlapping policies derive the same effect and can never
 admit or launch it twice. A row belongs to the policy that wrote it. Another policy never replays,
