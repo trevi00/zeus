@@ -490,3 +490,40 @@ def test_an_actually_failed_canary_halt_is_not_retryable(tmp_path, monkeypatch):
         refused(system, "resume_not_applicable")
     finally:
         stop_target(system)
+
+
+class AdvancingClock:
+    """LABELLED: a production-like clock that advances one microsecond on EVERY read (frozen fixture clocks hid F1)."""
+
+    def __init__(self, start: str):
+        from datetime import datetime
+        self.at, self.reads = datetime.fromisoformat(start), 0
+
+    def __call__(self) -> str:
+        from datetime import timedelta
+        self.reads += 1
+        self.at += timedelta(microseconds=1)
+        return self.at.isoformat()
+
+
+def test_an_advancing_clock_still_records_exactly_the_plan_window_from_one_anchor(system):
+    """PR216 review F1: the interval is ONE clock read + the plan's immutable timeout; the recovery, the intent's
+    stage entry/deadline and the status projection agree to the microsecond, and the old deadline stays history."""
+    from datetime import datetime, timedelta
+    delivery = system["delivery"]
+    halted_intent = intent_of(system)
+    delivery.clock = AdvancingClock(system["clock"]())
+    # retained control: a SECOND read (the pre-fix code path) drifts past the plan window
+    anchor = delivery.clock()
+    assert datetime.fromisoformat(delivery._deadline(10)) - datetime.fromisoformat(anchor) > timedelta(seconds=10)
+    retry(system)
+    intent = intent_of(system)
+    recovery = intent["recoveries"][-1]
+    started, deadline = (datetime.fromisoformat(recovery["interval"][k]) for k in ("started_at", "deadline"))
+    assert deadline - started == timedelta(seconds=10), (started, deadline)
+    assert (intent["stage_entered_at"], intent["stage_deadline"]) == (recovery["interval"]["started_at"],
+                                                                      recovery["interval"]["deadline"])
+    assert recovery["halted"]["stage_deadline"] == halted_intent["stage_deadline"], "the expired deadline is history"
+    view = delivery.status()["deliveries"][0]
+    assert view["stage_deadline"] == recovery["interval"]["deadline"]
+    assert view["recoveries"][-1]["interval"] == recovery["interval"]

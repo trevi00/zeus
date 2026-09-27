@@ -1075,8 +1075,11 @@ class HostDelivery:
         self._retry_descriptor(intent, current_row, retry)
         self._retry_host(plan, record, active, others, lock)
         receipt = self._retry_live(plan, intent, retry)
+        # ONE authoritative time anchor (INV-HOST-DELIVERY-FIRST-ACTIVATION-001): the clock is read ONCE and the
+        # new interval is exactly that instant + the plan's immutable timeout, so the recorded interval, the
+        # intent's stage entry and deadline, and every exact-interval gate agree however the clock advances.
         now = self.clock()
-        deadline = self._deadline(plan["consumption_timeout_seconds"])
+        deadline = self._deadline_from(now, plan["consumption_timeout_seconds"])
         recovery = {"kind": RECOVERY_CONSUMPTION_RETRY, "evidence_ref": evidence_ref,
                     "document_sha256": document_sha256, "approved_by": retry["approved_by"],
                     "halted": copy.deepcopy({key: intent.get(key) for key in (
@@ -2684,6 +2687,11 @@ class HostDelivery:
 
     def _deadline(self, seconds: int) -> str:
         return (self._now() + timedelta(seconds=int(seconds))).isoformat()
+
+    @staticmethod
+    def _deadline_from(anchor: str, seconds: int) -> str:
+        """A deadline derived from an ALREADY-READ instant (no second clock read)."""
+        return (datetime.fromisoformat(anchor) + timedelta(seconds=int(seconds))).isoformat()
 
     def _expired(self, intent: dict) -> bool:
         deadline = intent.get("stage_deadline")
