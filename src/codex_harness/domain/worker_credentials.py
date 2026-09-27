@@ -234,8 +234,9 @@ def eligibility(config: dict, alias: str, state: dict | None, now: datetime) -> 
                         "telemetry": "window_exhausted", **reading["facts"]}
             return {"alias": alias, "eligible": True, "reason_code": "primary_eligible", "reset_confirmed": True,
                     **reading["facts"]}
+        # A provider-REPORTED reset that has passed is itself the confirmation; the bounded default is not.
         return {"alias": alias, "eligible": True, "reason_code": "primary_eligible",
-                **({"reset_confirmed": False} if elapsed else {})}
+                **({"reset_confirmed": bool(elapsed.get("reset_reported"))} if elapsed else {})}
     policy = config["policy"]
     # After its own refusal, a reading from before the refusal says nothing about the secondary either.
     reading = _reading(config, alias, row, state, now, after=_instant((state.get("cooldown") or {}).get("at")))

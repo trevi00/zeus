@@ -261,7 +261,8 @@ class WorkerCredentials:
             elif effect["effect"] == EFFECT_REVOKED:
                 state["revoked"] = {"reason_code": effect["reason_code"], "at": now.isoformat()}
             tx.put(BUCKET, alias, self._audit(state, "refusal_recorded", evidence=evidence_ref, effect=effect["effect"],
-                                              reason_code=effect["reason_code"], until=effect.get("until")))
+                                              reason_code=effect["reason_code"], until=effect.get("until"),
+                                              reset_reported=effect.get("reset_reported")))
         return {"recorded": True, "cached": False, "alias": alias, **effect}
 
     # ----- projection ----------------------------------------------------------------------------

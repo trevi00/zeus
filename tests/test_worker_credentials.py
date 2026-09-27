@@ -286,7 +286,8 @@ def test_a_reported_primary_reset_switches_back_to_the_primary(root):
     status = service.status()
     assert [(s["from"], s["to"]) for s in status["switches"]][-1] == ("secondary", "primary")
     assert status["credentials"][0]["cooldown"] is None
-    assert any(e["event"] == "cooldown_cleared" for e in status["credentials"][0]["audit"])
+    cleared = [e for e in status["credentials"][0]["audit"] if e["event"] == "cooldown_cleared"]
+    assert cleared[-1]["reset_confirmed"] is True, "a provider-reported reset that passed confirms the switch back"
 
 
 def test_an_unreported_reset_is_confirmed_by_fresh_primary_telemetry_after_the_refusal(root):
