@@ -115,114 +115,138 @@ export type WireLaneSessions = {
 
 type Parsed = { ok: true; data: WireLaneSessions } | { ok: false; reason: string }
 
+/**
+ * Off-contract wire: one malformed supplied value makes the whole body invalid. A key that is absent or
+ * `null` is a legitimate unknown; a value of the wrong type, a negative count, a non-list collection or a
+ * contradictory shape is never defaulted to "none" or 0 (that would turn untrustworthy data into facts).
+ */
+class OffContract extends Error {}
+const fail = (field: string): never => { throw new OffContract(field) }
 const isRecord = (value: unknown): value is Record<string, unknown> => !!value && typeof value === "object" && !Array.isArray(value)
-const str = (value: unknown): string | null => (typeof value === "string" ? value : null)
-const int = (value: unknown): number | null => (typeof value === "number" && Number.isInteger(value) ? value : null)
-const num = (value: unknown): number | null => (typeof value === "number" && Number.isFinite(value) ? value : null)
-const bool = (value: unknown): boolean | null => (typeof value === "boolean" ? value : null)
-const counts = (value: unknown): Record<string, number> | null => {
-  if (!isRecord(value)) return null
-  const out: Record<string, number> = {}
-  for (const [key, count] of Object.entries(value)) {
-    if (int(count) === null) return null
-    out[key] = count as number
-  }
-  return out
+const absent = (value: unknown) => value === null || value === undefined
+const str = (value: unknown, field: string): string | null => absent(value) ? null : typeof value === "string" ? value : fail(field)
+const bool = (value: unknown, field: string): boolean | null => absent(value) ? null : typeof value === "boolean" ? value : fail(field)
+/** A non-negative integer (counts, generations, sequences). */
+const count = (value: unknown, field: string): number | null =>
+  absent(value) ? null : typeof value === "number" && Number.isInteger(value) && value >= 0 ? value : fail(field)
+const seconds = (value: unknown, field: string): number | null =>
+  absent(value) ? null : typeof value === "number" && Number.isFinite(value) && value >= 0 ? value : fail(field)
+const requiredCount = (value: unknown, field: string): number => count(value, field) ?? fail(field)
+const counts = (value: unknown, field: string): Record<string, number> => {
+  if (!isRecord(value)) return fail(field)
+  return Object.fromEntries(Object.entries(value).map(([key, item]) => [key, requiredCount(item, `${field}.${key}`)]))
 }
+const record = (value: unknown, field: string): Record<string, unknown> | null => absent(value) ? null : isRecord(value) ? value : fail(field)
 
-function readOperation(value: unknown): WireOperation | null | false {
-  if (value === null || value === undefined) return null
-  if (!isRecord(value) || typeof value.id !== "string") return false
-  const calls = value.calls === null ? null : isRecord(value.calls) ? { reserved: int(value.calls.reserved), settled: int(value.calls.settled) } : false
-  if (calls === false) return false
+function readOperation(value: unknown): WireOperation | null {
+  const row = record(value, "operation")
+  if (row === null) return null
+  const status = str(row.status, "operation.status")
+  const callRow = record(row.calls, "operation.calls")
+  // INV-LANE-SESSIONS-001: call counts are written at finalization, so a running operation carries none.
+  if (status === "running" && callRow !== null) fail("operation.calls (running)")
   return {
-    id: value.id, status: str(value.status), reason_code: str(value.reason_code), decision_id: str(value.decision_id),
-    lead_accepted: bool(value.lead_accepted), calls, owner_handoff: value.owner_handoff === true,
-    claimed_at: str(value.claimed_at), updated_at: str(value.updated_at), finished_at: str(value.finished_at),
+    id: str(row.id, "operation.id") ?? fail("operation.id"), status, reason_code: str(row.reason_code, "operation.reason_code"),
+    decision_id: str(row.decision_id, "operation.decision_id"), lead_accepted: bool(row.lead_accepted, "operation.lead_accepted"),
+    calls: callRow === null ? null : { reserved: count(callRow.reserved, "operation.calls.reserved"),
+                                       settled: count(callRow.settled, "operation.calls.settled") },
+    owner_handoff: bool(row.owner_handoff, "operation.owner_handoff") === true,
+    claimed_at: str(row.claimed_at, "operation.claimed_at"), updated_at: str(row.updated_at, "operation.updated_at"),
+    finished_at: str(row.finished_at, "operation.finished_at"),
   }
 }
 
-function readProgress(value: unknown): WireProgress | null | false {
-  if (value === null || value === undefined) return null
-  if (!isRecord(value)) return false
-  const completed = value.last_completed
-  if (!(completed === null || completed === undefined || isRecord(completed))) return false
+function readProgress(value: unknown): WireProgress | null {
+  const row = record(value, "progress")
+  if (row === null) return null
+  const completed = record(row.last_completed, "progress.last_completed")
   return {
-    sequence: int(value.sequence), generation: int(value.generation), attempt: int(value.attempt), provider: str(value.provider),
-    occurred_at: str(value.occurred_at), collected_at: str(value.collected_at), last_event: str(value.last_event),
-    last_completed: isRecord(completed) ? {
-      type: str(completed.type), status: str(completed.status), sequence: int(completed.sequence),
-      occurred_at: str(completed.occurred_at), evidence: str(completed.evidence),
-    } : null,
-    malformed_events: int(value.malformed_events) ?? 0,
+    sequence: count(row.sequence, "progress.sequence"), generation: count(row.generation, "progress.generation"),
+    attempt: count(row.attempt, "progress.attempt"), provider: str(row.provider, "progress.provider"),
+    occurred_at: str(row.occurred_at, "progress.occurred_at"), collected_at: str(row.collected_at, "progress.collected_at"),
+    last_event: str(row.last_event, "progress.last_event"),
+    last_completed: completed === null ? null : {
+      type: str(completed.type, "progress.last_completed.type"), status: str(completed.status, "progress.last_completed.status"),
+      sequence: count(completed.sequence, "progress.last_completed.sequence"),
+      occurred_at: str(completed.occurred_at, "progress.last_completed.occurred_at"),
+      evidence: str(completed.evidence, "progress.last_completed.evidence"),
+    },
+    // Absent means no malformed event was recorded; a supplied non-count is corrupt, never a clean 0.
+    malformed_events: count(row.malformed_events, "progress.malformed_events") ?? 0,
   }
 }
 
-function readInvocation(value: unknown): WireInvocation | null | false {
-  if (value === null || value === undefined) return null
-  if (!isRecord(value) || typeof value.usage_source !== "string") return false
-  const tokens = value.total_tokens
+function readInvocation(value: unknown): WireInvocation | null {
+  const row = record(value, "invocations.latest")
+  if (row === null) return null
+  const source = str(row.usage_source, "invocations.latest.usage_source") ?? fail("invocations.latest.usage_source")
+  const tokens = count(row.total_tokens, "invocations.latest.total_tokens")
   // INV-INVOCATION-001: unknown usage carries no count. A count beside `unknown` is off-contract.
-  if (value.usage_source === "unknown" ? tokens !== null : !(tokens === null || int(tokens) !== null)) return false
+  if (source === "unknown" && tokens !== null) fail("invocations.latest.total_tokens (unknown usage)")
   return {
-    stage: str(value.stage), status: str(value.status), outcome: str(value.outcome), reason: str(value.reason),
-    generation: int(value.generation), attempt: int(value.attempt), invocation: int(value.invocation),
-    provider: str(value.provider), identity: str(value.identity), transport: str(value.transport),
-    model_source: str(value.model_source), requested_model: str(value.requested_model),
-    reported_model: str(value.reported_model), usage_source: value.usage_source, total_tokens: int(tokens),
-    reserved_at: str(value.reserved_at), settled_at: str(value.settled_at),
-    elapsed_seconds: num(value.elapsed_seconds), within_budget: bool(value.within_budget),
+    stage: str(row.stage, "invocations.latest.stage"), status: str(row.status, "invocations.latest.status"),
+    outcome: str(row.outcome, "invocations.latest.outcome"), reason: str(row.reason, "invocations.latest.reason"),
+    generation: count(row.generation, "invocations.latest.generation"), attempt: count(row.attempt, "invocations.latest.attempt"),
+    invocation: count(row.invocation, "invocations.latest.invocation"), provider: str(row.provider, "invocations.latest.provider"),
+    identity: str(row.identity, "invocations.latest.identity"), transport: str(row.transport, "invocations.latest.transport"),
+    model_source: str(row.model_source, "invocations.latest.model_source"),
+    requested_model: str(row.requested_model, "invocations.latest.requested_model"),
+    reported_model: str(row.reported_model, "invocations.latest.reported_model"), usage_source: source, total_tokens: tokens,
+    reserved_at: str(row.reserved_at, "invocations.latest.reserved_at"), settled_at: str(row.settled_at, "invocations.latest.settled_at"),
+    elapsed_seconds: seconds(row.elapsed_seconds, "invocations.latest.elapsed_seconds"),
+    within_budget: bool(row.within_budget, "invocations.latest.within_budget"),
   }
 }
 
-function readWorkerSession(value: unknown): WireWorkerSession | null | false {
-  if (value === null || value === undefined) return null
-  if (!isRecord(value)) return false
-  const owner = value.owner
-  if (!(owner === null || owner === undefined || isRecord(owner))) return false
+function readWorkerSession(value: unknown): WireWorkerSession | null {
+  const row = record(value, "worker_session")
+  if (row === null) return null
+  const owner = record(row.owner, "worker_session.owner")
   // The wire never carries the owning execution's id; an owner object with more than lineage is off-contract.
-  if (isRecord(owner) && Object.keys(owner).some((key) => key !== "generation" && key !== "attempt")) return false
-  const reviews = Array.isArray(value.reviews) ? value.reviews : []
+  if (owner !== null && Object.keys(owner).some((key) => key !== "generation" && key !== "attempt")) fail("worker_session.owner")
+  if (!absent(row.reviews) && !Array.isArray(row.reviews)) fail("worker_session.reviews")
+  const reviews = (Array.isArray(row.reviews) ? row.reviews : []).map((review) => {
+    if (!isRecord(review)) return fail("worker_session.reviews[]")
+    return { decision_id: str(review.decision_id, "worker_session.reviews[].decision_id"),
+             phase: str(review.phase, "worker_session.reviews[].phase"), outcome: str(review.outcome, "worker_session.reviews[].outcome") }
+  })
   return {
-    state: str(value.state), version: int(value.version),
-    reviews: reviews.filter(isRecord).map((review) => ({
-      decision_id: str(review.decision_id), phase: str(review.phase), outcome: str(review.outcome) })),
-    next_owner: str(value.next_owner), next_action: str(value.next_action), blocked: bool(value.blocked),
-    reason: str(value.reason),
-    owner: isRecord(owner) ? { generation: int(owner.generation), attempt: int(owner.attempt) } : null,
+    state: str(row.state, "worker_session.state"), version: count(row.version, "worker_session.version"), reviews,
+    next_owner: str(row.next_owner, "worker_session.next_owner"), next_action: str(row.next_action, "worker_session.next_action"),
+    blocked: bool(row.blocked, "worker_session.blocked"), reason: str(row.reason, "worker_session.reason"),
+    owner: owner === null ? null : { generation: count(owner.generation, "worker_session.owner.generation"),
+                                     attempt: count(owner.attempt, "worker_session.owner.attempt") },
   }
 }
 
-function readExecution(value: unknown): WireExecution | false {
-  if (!isRecord(value) || (value.kind !== "task" && value.kind !== "decision") || typeof value.id !== "string") return false
-  const operation = readOperation(value.operation)
-  const progress = readProgress(value.progress)
-  const invocations = value.invocations
-  if (operation === false || progress === false || !isRecord(invocations)) return false
-  const latest = readInvocation(invocations.latest)
-  const byStatus = counts(invocations.by_status)
-  const session = readWorkerSession(value.worker_session)
-  if (latest === false || byStatus === null || int(invocations.count) === null || session === false) return false
+function readExecution(value: unknown): WireExecution {
+  if (!isRecord(value)) return fail("execution")
+  if (value.kind !== "task" && value.kind !== "decision") return fail("execution.kind")
+  const invocations = isRecord(value.invocations) ? value.invocations : fail("execution.invocations")
   return {
-    kind: value.kind, id: value.id, agent: str(value.agent), status: str(value.status), phase: str(value.phase),
-    generation: int(value.generation), attempt: int(value.attempt), lease_until: str(value.lease_until),
-    created_at: str(value.created_at), completed_at: str(value.completed_at), accepted: bool(value.accepted),
-    operation, progress, invocations: { count: invocations.count as number, by_status: byStatus, latest },
-    worker_session: session,
+    kind: value.kind, id: str(value.id, "execution.id") ?? fail("execution.id"), agent: str(value.agent, "execution.agent"),
+    status: str(value.status, "execution.status"), phase: str(value.phase, "execution.phase"),
+    generation: count(value.generation, "execution.generation"), attempt: count(value.attempt, "execution.attempt"),
+    lease_until: str(value.lease_until, "execution.lease_until"), created_at: str(value.created_at, "execution.created_at"),
+    completed_at: str(value.completed_at, "execution.completed_at"), accepted: bool(value.accepted, "execution.accepted"),
+    operation: readOperation(value.operation), progress: readProgress(value.progress),
+    invocations: { count: requiredCount(invocations.count, "invocations.count"), by_status: counts(invocations.by_status, "invocations.by_status"),
+                   latest: readInvocation(invocations.latest) },
+    worker_session: readWorkerSession(value.worker_session),
   }
 }
 
-function readLane(value: unknown): WireLane | false {
-  if (!isRecord(value) || typeof value.lane !== "string") return false
-  const base = { lane: value.lane, team: str(value.team), observed_at: str(value.observed_at) }
-  if (value.status === "unavailable") return { ...base, status: "unavailable", error: str(value.error) }
-  if (value.status !== "ok" || !Array.isArray(value.executions)) return false
-  const executions = value.executions.map(readExecution)
-  const laneCounts = counts(value.counts), invocations = counts(value.invocations), sessions = counts(value.worker_sessions)
-  if (executions.some((row) => row === false) || int(value.total) === null || typeof value.truncated !== "boolean"
-      || laneCounts === null || invocations === null || sessions === null) return false
-  return { ...base, status: "ok", executions: executions as WireExecution[], total: value.total as number,
-    truncated: value.truncated, counts: laneCounts, invocations, worker_sessions: sessions }
+function readLane(value: unknown): WireLane {
+  if (!isRecord(value)) return fail("lane")
+  const base = { lane: str(value.lane, "lane.lane") ?? fail("lane.lane"), team: str(value.team, "lane.team"),
+                 observed_at: str(value.observed_at, "lane.observed_at") }
+  if (value.status === "unavailable") return { ...base, status: "unavailable", error: str(value.error, "lane.error") }
+  if (value.status !== "ok") return fail("lane.status")
+  if (!Array.isArray(value.executions)) return fail("lane.executions")
+  if (typeof value.truncated !== "boolean") return fail("lane.truncated")
+  return { ...base, status: "ok", executions: value.executions.map(readExecution), total: requiredCount(value.total, "lane.total"),
+    truncated: value.truncated, counts: counts(value.counts, "lane.counts"), invocations: counts(value.invocations, "lane.invocations"),
+    worker_sessions: counts(value.worker_sessions, "lane.worker_sessions") }
 }
 
 /** Narrow `envelope.data` to the INV-LANE-SESSIONS-001 shape; anything off-contract is invalid, not empty. */
@@ -231,23 +255,23 @@ export function readLaneSessions(data: unknown): Parsed {
   if (data.schema !== LANE_SESSIONS_SCHEMA) {
     return { ok: false, reason: `schema ${typeof data.schema === "string" ? data.schema : "없음"} ≠ ${LANE_SESSIONS_SCHEMA}` }
   }
-  if (typeof data.registered !== "boolean" || !Array.isArray(data.lanes) || !isRecord(data.coverage)) {
-    return { ok: false, reason: "registered/lanes/coverage 형식 아님" }
+  try {
+    if (typeof data.registered !== "boolean") fail("registered")
+    if (!Array.isArray(data.lanes)) fail("lanes")
+    const coverage = isRecord(data.coverage) ? data.coverage : fail("coverage")
+    const uninstrumented = Array.isArray(coverage.uninstrumented) && coverage.uninstrumented.every((line) => typeof line === "string")
+      ? (coverage.uninstrumented as string[]) : fail("coverage.uninstrumented")
+    return { ok: true, data: {
+      schema: LANE_SESSIONS_SCHEMA, registered: data.registered as boolean, authority: str(data.authority, "authority") ?? "",
+      lanes: (data.lanes as unknown[]).map(readLane),
+      coverage: { lanes_registered: requiredCount(coverage.lanes_registered, "coverage.lanes_registered"),
+                  lanes_observed: requiredCount(coverage.lanes_observed, "coverage.lanes_observed"),
+                  lanes_unavailable: requiredCount(coverage.lanes_unavailable, "coverage.lanes_unavailable"), uninstrumented },
+    } }
+  } catch (error) {
+    if (error instanceof OffContract) return { ok: false, reason: `형식 아님 · ${error.message}` }
+    throw error
   }
-  const coverage = data.coverage
-  const uninstrumented = Array.isArray(coverage.uninstrumented) && coverage.uninstrumented.every((line) => typeof line === "string")
-    ? (coverage.uninstrumented as string[]) : null
-  const [registered, observed, unavailable] = [int(coverage.lanes_registered), int(coverage.lanes_observed), int(coverage.lanes_unavailable)]
-  if (uninstrumented === null || registered === null || observed === null || unavailable === null) {
-    return { ok: false, reason: "coverage 형식 아님" }
-  }
-  const lanes = data.lanes.map(readLane)
-  if (lanes.some((lane) => lane === false)) return { ok: false, reason: "레인 항목 형식 아님" }
-  return { ok: true, data: {
-    schema: LANE_SESSIONS_SCHEMA, registered: data.registered, authority: str(data.authority) ?? "",
-    lanes: lanes as WireLane[],
-    coverage: { lanes_registered: registered, lanes_observed: observed, lanes_unavailable: unavailable, uninstrumented },
-  } }
 }
 
 // ----- view model ------------------------------------------------------------------------------------
@@ -498,7 +522,7 @@ function row(lane: string, wire: WireExecution, now: number): SessionRow {
       status: lookup(OPERATION_STATUS, operation.status),
       reasonCode: operation.reason_code,
       lead,
-      calls: operation.calls === null ? "종료 시 기록 (진행 중)"
+      calls: operation.calls === null || operation.status === "running" ? "종료 시 기록 (진행 중)"
         : `예약 ${formatNumber(operation.calls.reserved)} · 정산 ${formatNumber(operation.calls.settled)}`,
       handoff: operation.owner_handoff,
       handoffText: operation.owner_handoff ? "소유자 인계 기록 있음 (팀 작업 화면에서 확인)" : "인계 기록 없음",
