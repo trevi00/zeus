@@ -17,7 +17,7 @@ def test_task_failure_and_diagnosis_share_current_lease(tmp_path, monkeypatch, r
     store = MemoryStore() if backend == "memory" else request.getfixturevalue("isolated_pgstore")
     service = Harness(store, organization())
     executor = Executor(service, SimpleNamespace(repository=tmp_path), FileArtifacts(tmp_path / "artifacts"),
-                        research=SimpleNamespace(collect=lambda *a: {"items": []}))
+                        research=SimpleNamespace(collect=lambda *a, **k: {"items": []}))
     message = envelope("task.assign", "lead:research", "worker:github", "research", {}, "fixture")
     executor.workflow.submit(message)
 
