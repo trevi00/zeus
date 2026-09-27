@@ -17,6 +17,7 @@ from codex_harness.adapters.commands import run_process
 from codex_harness.adapters.monitoring_observations import observation_facts
 from codex_harness.application.fleet import Fleet
 from codex_harness.application.monitoring import Monitoring
+from codex_harness.domain.fleet import FleetRefused
 from codex_harness.domain.model import ContractError
 
 CONTAINER_NAME = re.compile(r'[A-Za-z0-9][A-Za-z0-9_.-]{0,127}')
@@ -415,6 +416,221 @@ def continuation_facts(store):
     return Continuation(store).status()
 
 
+LANE_SESSIONS_SCHEMA = 'urn:zeus:lane-sessions:1'
+LANE_SESSION_LIMIT = 50
+ACTIVE_EXECUTION = frozenset({'queued', 'pending', 'retry', 'running'})
+UNINSTRUMENTED = ('sessions started outside Zeus task ownership (an external coordinator or helper process) '
+                  'are not observed here and are never inferred from unit names or process ids')
+
+
+LANE_SNAPSHOT_BEGIN = 'BEGIN ISOLATION LEVEL REPEATABLE READ READ ONLY'
+
+
+class LaneSnapshotStore:
+    """A lane store for the monitor that never takes the writers' advisory lock
+    (`PostgresStore.transaction` serializes every writer of the database through it). Each
+    transaction is ONE `REPEATABLE READ READ ONLY` snapshot (the council_snapshot pattern) with
+    bounded connect and statement timeouts, over a connection whose selected schema is verified to be
+    the lane's; it is always rolled back, and a write is refused here and by the server."""
+
+    def __init__(self, dsn, schema, *, connect=None, statement_timeout_ms=5000):
+        if connect is None:  # imported lazily so a store-free unit test needs no driver
+            import psycopg
+            connect = psycopg.connect
+        self.dsn, self.schema, self.connect, self.statement_timeout_ms = dsn, schema, connect, statement_timeout_ms
+
+    @contextmanager
+    def transaction(self):
+        with self.connect(self.dsn, connect_timeout=5, autocommit=True) as conn:
+            conn.execute(LANE_SNAPSHOT_BEGIN)
+            try:
+                conn.execute("SET LOCAL statement_timeout = '%dms'" % self.statement_timeout_ms)
+                if conn.execute('SELECT current_schema()').fetchone()[0] != self.schema:
+                    raise ContractError('Lane snapshot selected another schema')
+                yield LaneSnapshotTransaction(conn)
+            finally:
+                conn.execute('ROLLBACK')
+
+
+class LaneSnapshotTransaction:
+    def __init__(self, conn):
+        self._conn = conn
+
+    def get(self, bucket, key):
+        row = self._conn.execute('SELECT body FROM documents WHERE bucket=%s AND id=%s', (bucket, key)).fetchone()
+        return row[0] if row else None
+
+    def scan(self, bucket):
+        return [row[0] for row in self._conn.execute(
+            'SELECT body FROM documents WHERE bucket=%s ORDER BY id', (bucket,)).fetchall()]
+
+    def put(self, *args, **kwargs):
+        raise ContractError('Monitor store is read-only')
+
+
+def lane_resolver(host_dsn, store_factory=None):
+    """`lane -> read-only store` over the lane's own schema through the SAME `lane_dsn` path the Fleet
+    launcher and the owner actions use (no second registry). Cached per (lane id, schema), so a
+    changed registration never reuses another schema's store; nothing is created here. The default
+    store is the lock-free `LaneSnapshotStore`; `store_factory(dsn, schema)` is injectable."""
+    from codex_harness.adapters.fleet_runtime import lane_dsn
+    store_factory = store_factory or LaneSnapshotStore
+    cache = {}
+
+    def resolve(lane):
+        key = (lane['id'], lane['schema'])
+        if key not in cache:
+            cache[key] = ReadOnlyStore(store_factory(lane_dsn(host_dsn, lane['schema']), lane['schema']))
+        return cache[key]
+    return resolve
+
+
+def _execution_view(row, kind, operation, progress, reservations, session):
+    message = row.get('message') or {}
+    completed = (progress or {}).get('last_completed') or {}
+    latest = max(reservations, key=lambda r: (r.get('generation', 0), r.get('attempt', 0), r.get('invocation', 0)),
+                 default=None)
+    usage = (latest or {}).get('usage') or {}
+    assignment = ((latest or {}).get('request') or {}).get('assignment') or {}
+    measured = usage.get('source') not in (None, 'unknown')
+    return {
+        'kind': kind, 'id': row['id'], 'agent': row.get('actor' if kind == 'decision' else 'agent'),
+        'status': row.get('status'), 'phase': row.get('phase', (message.get('what') or {}).get('action')),
+        'generation': row.get('generation'), 'attempt': row.get('attempt'),
+        # Ownership liveness only: a renewed lease is not evidence of useful work.
+        'lease_until': row.get('lease_until'),
+        'created_at': row.get('created_at') or (message.get('when') or {}).get('created_at'),
+        'completed_at': row.get('completed_at'),
+        # A review verdict is its own field, never folded into the execution status.
+        'accepted': (row.get('result') or {}).get('accepted') if kind == 'decision' else None,
+        'operation': None if operation is None else {
+            'id': operation['id'], 'status': operation.get('status'), 'reason_code': operation.get('reason_code'),
+            'decision_id': operation.get('decision_id'), 'lead_accepted': operation.get('lead_accepted'),
+            # Call counts are written only when the operation finalizes; while it runs they are unknown.
+            'calls': None if operation.get('status') == 'running' else {
+                k: (operation.get('calls') or {}).get(k) for k in ('reserved', 'settled')},
+            'owner_handoff': bool(operation.get('owner_handoff')), 'claimed_at': operation.get('claimed_at'),
+            'updated_at': operation.get('updated_at'), 'finished_at': operation.get('finished_at')},
+        'progress': None if progress is None else {
+            'sequence': progress.get('sequence'), 'generation': progress.get('generation'),
+            'attempt': progress.get('attempt'), 'provider': progress.get('provider'),
+            # Event time and collection time stay apart (a replay never reorders by the merge moment).
+            'occurred_at': progress.get('occurred_at'), 'collected_at': progress.get('collected_at'),
+            'last_event': progress.get('last_event'),
+            'last_completed': {k: completed.get(k) for k in ('type', 'status', 'sequence', 'occurred_at',
+                                                               'evidence')} if completed else None,
+            'malformed_events': progress.get('malformed_events', 0)},
+        'invocations': {
+            'count': len(reservations),
+            'by_status': dict(Counter(r.get('status') for r in reservations)),
+            'latest': None if latest is None else {
+                'stage': latest.get('stage'), 'status': latest.get('status'), 'outcome': latest.get('outcome'),
+                'reason': latest.get('reason'), 'generation': latest.get('generation'),
+                'attempt': latest.get('attempt'), 'invocation': latest.get('invocation'),
+                'provider': assignment.get('provider'), 'identity': assignment.get('identity'),
+                'transport': assignment.get('transport'), 'model_source': assignment.get('model_source'),
+                # The model the reservation request recorded (`parse_request` keeps it under `options`);
+                # the model the provider reported lives in the execution receipt and is not read here.
+                'requested_model': ((latest.get('request') or {}).get('options') or {}).get('model'),
+                'reported_model': 'not_projected',
+                # INV-INVOCATION-001: unknown usage carries no count; it is never read as zero.
+                'usage_source': usage.get('source', 'unknown'),
+                'total_tokens': usage.get('total_tokens') if measured else None,
+                'reserved_at': latest.get('reserved_at'), 'settled_at': latest.get('settled_at'),
+                'elapsed_seconds': latest.get('elapsed_seconds'), 'within_budget': latest.get('within_budget')}},
+        'worker_session': None if session is None else {
+            k: session.get(k) for k in ('state', 'version', 'owner', 'reviews', 'next_owner', 'next_action',
+                                        'blocked', 'reason')}}
+
+
+def lane_view(store):
+    """One lane's executions from ONE read transaction of its own store: task and decision rows, the
+    operation that names them, their progress, invocation reservations and durable worker session.
+    Rows are keyed by the lane-local id; the caller adds the lane, so equal ids in two lanes stay
+    distinct. Never objectives, prompts, transcripts, tool text, worktrees, context refs or raw errors."""
+    from codex_harness.application.worker_sessions import BUCKET as SESSIONS
+    from codex_harness.domain.worker_sessions import status_view
+    with store.transaction() as tx:
+        rows = {name: tx.scan(name) for name in ('operations', 'tasks', 'decisions_pending', 'execution_progress',
+                                                 'invocation_reservations', SESSIONS)}
+    # An operation names its first task (`assignment_message_id`) from the claim, but `task_id` and
+    # `decision_id` only when it finalizes; every execution of it carries the operation's correlation id.
+    by_execution, by_correlation = {}, {}
+    for row in rows['operations']:
+        for key in ('assignment_message_id', 'task_id', 'decision_id'):
+            if isinstance(row.get(key), str):
+                by_execution.setdefault(row[key], row)
+        if isinstance(row.get('correlation_id'), str):
+            by_correlation.setdefault(row['correlation_id'], row)
+
+    def operation_of(row):
+        correlation = (row.get('message') or {}).get('correlation_id')
+        return by_execution.get(row['id']) or (by_correlation.get(correlation) if isinstance(correlation, str) else None)
+
+    progress = {row['id']: row for row in rows['execution_progress']}
+    reservations = {}
+    for row in rows['invocation_reservations']:
+        reservations.setdefault((row.get('bucket', 'tasks'), row.get('task_id')), []).append(row)
+    # A durable worker session is keyed by the continuation binding's session task id (the Fleet job or
+    # its family root), recorded on the lane operation at claim; it is reached through that operation.
+    sessions = {row.get('task_id'): status_view(row) for row in rows[SESSIONS]}
+
+    def session_of(operation):
+        session = ((operation or {}).get('continuation') or {}).get('session')
+        return sessions.get(session.get('task_id')) if isinstance(session, dict) else None
+
+    executions = []
+    for kind, bucket in (('task', 'tasks'), ('decision', 'decisions_pending')):
+        for row in rows[bucket]:
+            operation = operation_of(row)
+            # The durable session is the implementer's; a review decision of the same operation is not it.
+            executions.append(_execution_view(row, kind, operation, progress.get(row['id']),
+                                              reservations.get((bucket, row['id']), []),
+                                              session_of(operation) if kind == 'task' else None))
+
+    def activity(view):
+        latest = view['invocations']['latest'] or {}
+        return max((str(value) for value in (view['created_at'], view['completed_at'],
+                                             (view['progress'] or {}).get('collected_at'),
+                                             latest.get('reserved_at'), latest.get('settled_at')) if value),
+                   default='')
+    executions.sort(key=lambda view: (view['status'] in ACTIVE_EXECUTION, activity(view)), reverse=True)
+    return {'executions': executions[:LANE_SESSION_LIMIT], 'total': len(executions),
+            'truncated': len(executions) > LANE_SESSION_LIMIT,
+            'counts': dict(Counter(f"{view['kind']}:{view['status']}" for view in executions)),
+            'invocations': dict(Counter(row.get('status') for row in rows['invocation_reservations'])),
+            'worker_sessions': dict(Counter(view['state'] for view in sessions.values()))}
+
+
+def lane_session_facts(store, resolve):
+    """INV-LANE-SESSIONS-001 (`urn:zeus:lane-sessions:1`): every REGISTERED lane's executions, read
+    from the lane's own store (the control store holds none of them). Each lane fails independently as `unavailable` with its
+    error type only, never as an empty ok lane. An unregistered Fleet is `registered: false` with no
+    lane (as the `fleet` source reports it); any other store failure propagates so the envelope is
+    `unavailable`. `coverage.uninstrumented` names what this source cannot see. A collected row is
+    a durable-record projection only: never evidence of useful progress, acceptance or delivery."""
+    try:
+        lanes = Fleet(store).registered()['config']['lanes']
+    except FleetRefused as exc:
+        if exc.reason_code != 'unregistered':
+            raise
+        lanes = None
+    views = []
+    for lane in lanes or ():
+        observed = datetime.now(timezone.utc).isoformat()
+        try:
+            view = {'status': 'ok', **lane_view(resolve(lane))}
+        except Exception as exc:
+            view = {'status': 'unavailable', 'error': type(exc).__name__}
+        views.append({'lane': lane['id'], 'team': lane.get('team'), 'observed_at': observed, **view})
+    observed = sum(view['status'] == 'ok' for view in views)
+    return {'schema': LANE_SESSIONS_SCHEMA, 'registered': lanes is not None,
+            'authority': 'durable-record projection; not progress, acceptance or delivery evidence',
+            'lanes': views,
+            'coverage': {'lanes_registered': len(lanes or ()), 'lanes_observed': observed,
+                         'lanes_unavailable': len(views) - observed, 'uninstrumented': [UNINSTRUMENTED]}}
+
+
 def scope_label(repository, label=None):
     """ZEUS_MONITOR_SCOPE names what is observed; the default is the repository name. It is a
     label for the page toolbar, not a status or success claim."""
@@ -422,10 +638,10 @@ def scope_label(repository, label=None):
     return text or f'repository {Path(repository).resolve().name}'
 
 
-def collect(service, artifacts, repository, redis_url, containers=None, scope=None, runtime=None):
+def collect(service, artifacts, repository, redis_url, containers=None, scope=None, runtime=None, lanes=None):
     """The three legacy sources (`database`, `docker`, `redis`) plus the additive store-backed
-    projections; with a runtime directory also `observations` (observatory-001). Every envelope
-    fails independently."""
+    projections; with a runtime directory also `observations` (observatory-001) and with a lane
+    resolver also `lane_sessions`. Every envelope fails independently."""
     def sample(callback):
         try:
             return {'status': 'ok', 'observed_at': datetime.now(timezone.utc).isoformat(), 'data': callback()}
@@ -459,6 +675,10 @@ def collect(service, artifacts, repository, redis_url, containers=None, scope=No
             'continuation': lambda: continuation_facts(service.store)}
     if runtime is not None:
         jobs['observations'] = lambda: observation_facts(service.store, runtime)
+    if lanes is not None:
+        # Additive lane-session envelope: every registered lane's own read-only store, each lane
+        # failing independently inside it; nothing is written, ticked or resumed.
+        jobs['lane_sessions'] = lambda: lane_session_facts(service.store, lanes)
     with ThreadPoolExecutor(max_workers=4) as pool:
         futures = {name: pool.submit(sample, callback) for name, callback in jobs.items()}
         sources = {name: future.result() for name, future in futures.items()}

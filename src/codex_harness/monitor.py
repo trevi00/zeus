@@ -55,7 +55,7 @@ def source_states(result):
 
 def run_collector(args, root, runtime, snapshot):
     from codex_harness.adapters.artifacts import FileArtifacts
-    from codex_harness.adapters.monitoring import collect, container_scope, read_only
+    from codex_harness.adapters.monitoring import collect, container_scope, lane_resolver, read_only
     from codex_harness.bootstrap import build, redis_url
     journal = Journal(runtime / 'monitor-collector.log')
     config = settings()
@@ -69,13 +69,15 @@ def run_collector(args, root, runtime, snapshot):
     try:
         with FileLock(str(runtime / 'monitor-collector.lock'), timeout=0):
             service, artifacts = read_only(build(), FileArtifacts(str(runtime / 'artifacts')))
+            # Registered lanes are read through their own schemas (read-only, cached per lane).
+            lanes = lane_resolver(config.get('HARNESS_DATABASE_URL'))
             url = redis_url()
             journal.write('startup', mode='collect', once=bool(args.once),
                           scope='named' if containers is not None else 'compose',
                           containers=len(containers) if containers is not None else None)
             previous = {}
             while True:
-                result = collect(service, artifacts, str(root), url, containers, scope, runtime=runtime)
+                result = collect(service, artifacts, str(root), url, containers, scope, runtime=runtime, lanes=lanes)
                 for name, state in source_states(result).items():
                     if previous.get(name) != state:
                         journal.write('source_state', source=name, status=state[0], error=state[1])

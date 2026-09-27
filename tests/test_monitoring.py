@@ -178,8 +178,9 @@ def test_collector_entrypoint_is_read_only_and_needs_no_executor(monkeypatch, tm
     # additive portfolio envelope and autonomous-operation-001 the additive fleet_backlog envelope
     # (INV-FLEET-BACKLOG-001), the additive host_delivery envelope (INV-HOST-DELIVERY-001) and the
     # additive worker_sessions envelope (INV-WORKER-SESSION-001) and the additive continuation
-    # envelope (INV-CONTINUATION-001).
-    assert [line['event'] for line in lines] == (['startup'] + ['source_state'] * 11 + ['shutdown']) * 2
+    # envelope (INV-CONTINUATION-001), and the additive lane_sessions envelope (the CLI passes a
+    # lane resolver).
+    assert [line['event'] for line in lines] == (['startup'] + ['source_state'] * 12 + ['shutdown']) * 2
     assert snapshot['sources']['observations']['status'] == 'ok'
     # Unregistered fleet: an ok envelope with the fixed empty shape; the read-only store is unchanged
     # (asserted above) and no executor was built.
@@ -215,6 +216,10 @@ def test_collector_entrypoint_is_read_only_and_needs_no_executor(monkeypatch, tm
                                     'truncated': False, 'counts': {}, 'held_families': {},
                                     'capacity': {'grants': [], 'families': []}, 'requalifications': [],
                                     'authority': continuation['data']['authority']}
+    # No registered Fleet: the lane-session envelope says so; no lane store is opened.
+    lanes = snapshot['sources']['lane_sessions']
+    assert lanes['status'] == 'ok'
+    assert (lanes['data']['registered'], lanes['data']['lanes']) == (False, [])
     assert snapshot['sources']['observations']['data']['local'] == {'status': 'unavailable',
                                                                     'reason': 'directory_missing'}
     assert lines[0] == {'at': lines[0]['at'], 'event': 'startup', 'mode': 'collect', 'once': True,
