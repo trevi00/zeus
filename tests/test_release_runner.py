@@ -1,3 +1,4 @@
+from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
@@ -27,7 +28,7 @@ def test_failed_prerequisite_stops_downstream_execution(tmp_path, monkeypatch, f
     calls = []
 
     def check(argv, *args, **kwargs):
-        stage = ("install" if argv[:2] == ["uv", "sync"] else
+        stage = ("install" if _is_uv_sync(argv) else
                  "tests" if "pytest" in argv else
                  "startup" if argv[:2] == ["docker", "run"] else "build")
         calls.append(stage)
@@ -74,6 +75,12 @@ def test_runner_refuses_reviewed_candidate_whose_patch_or_target_drifted(tmp_pat
     with service.store.transaction() as tx:
         assert tx.get("releases", release["id"])["status"] == "reviewed"
         assert not tx.scan("promotion_intents") and not tx.scan("deployment")
+
+
+def _is_uv_sync(argv) -> bool:
+    """The install step, whichever `uv` the evaluator resolved: bare `uv` on PATH, or the service user's
+    absolute `~/.local/bin/uv` when PATH has none (`deployment.uv_command`, the aibox controller)."""
+    return bool(argv) and Path(argv[0]).name == "uv" and list(argv[1:2]) == ["sync"]
 
 
 def test_verified_retry_rebases_before_remote_side_effects(tmp_path, monkeypatch):

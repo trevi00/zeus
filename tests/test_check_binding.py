@@ -137,7 +137,7 @@ def test_isolation_failure_stops_the_runner_before_any_test_check(tmp_path, monk
     calls = []
 
     def fake_check(argv, cwd=None, timeout=None, env=None, expected_revision=None):
-        calls.append(argv[:2])
+        calls.append([Path(argv[0]).name, *argv[1:2]])  # the install argv, whichever `uv` was resolved
         return {'passed': True, 'evidence': 'fixture:install', 'outcome': 'executed', 'binding': {}}
 
     class Unavailable:
@@ -180,7 +180,7 @@ def test_verification_services_are_entered_once_and_always_exited(tmp_path, monk
             return False
 
     def fake_check(argv, cwd=None, timeout=None, env=None, expected_revision=None):
-        if argv[:2] == ['uv', 'sync']:
+        if Path(argv[0]).name == 'uv' and argv[1:2] == ['sync']:  # bare or absolute `uv` (deployment.uv_command)
             return {'passed': True, 'evidence': 'fixture:install', 'outcome': 'executed', 'binding': {}}
         if body == 'raises':
             raise RuntimeError('fixture: test runner exploded inside the services context')
