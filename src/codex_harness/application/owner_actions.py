@@ -161,8 +161,11 @@ _REVISION40 = re.compile(r"^[0-9a-f]{40}$")
 M_STAGED, M_PLANNING, M_BOUND = "staged", "planning", "bound"
 MIGRATION_TRANSITIONS = {INTENDED: {M_STAGED, REFUSED, UNKNOWN}, M_STAGED: {M_PLANNING, REFUSED, UNKNOWN},
                          M_PLANNING: {M_BOUND, REFUSED, UNKNOWN}, M_BOUND: {COMPLETED, REFUSED, UNKNOWN}}
-# Lane refusals that name a transient condition, never a verdict: the row waits where it is.
-MIGRATION_RETRYABLE = frozenset({"migration_unobservable", "migration_controller_running"})
+# Lane refusals that name a transient condition, never a verdict: the row waits where it is. The
+# controller-code preflight (INV-RELEASE-ENVIRONMENT-REVERIFY-001) waits too: code that changed after
+# the request never consumes the one successor, and the approved deployed code stages it later.
+MIGRATION_RETRYABLE = frozenset({"migration_unobservable", "migration_controller_running",
+                                 "migration_controller_code_unavailable", "migration_controller_code_mismatch"})
 LAUNCH_RUNNING, LAUNCH_ABSENT, LAUNCH_UNKNOWN, LAUNCH_EXITED = "running", "absent", "unknown", "exited"
 
 
@@ -818,6 +821,12 @@ class OwnerActions:
         if kind != EVALUATOR_MIGRATION:
             request["kind"] = kind      # absent for the evaluator kind: its request identity is unchanged
         request = {"migration_id": migration_request_id(request), **request}
+        controller = None
+        if kind == ENVIRONMENT_REVERIFICATION:
+            with self.store.transaction() as tx:
+                known = tx.get(BUCKET_MIGRATIONS, source) is not None
+            if not known:
+                controller = self._require_controller_code(document)
         now = self.clock()
         with self.store.transaction() as tx:
             old = tx.get(BUCKET_MIGRATIONS, source)
@@ -845,8 +854,23 @@ class OwnerActions:
                                "source_release_id": source, "old_plan_id": document["old_plan_id"]},
                    "reason_code": None, "created_at": now, "updated_at": now, "version": 1,
                    "history": [{"state": INTENDED, "at": now, "reason_code": None}]}
+            if controller is not None:
+                row["controller_code"] = controller      # the preflight's resolution, not the request's
             tx.put(BUCKET_MIGRATIONS, source, row)
         return {**_migration_view(row), "cached": False}
+
+    def _require_controller_code(self, document: dict) -> str:
+        """INV-RELEASE-ENVIRONMENT-REVERIFY-001 creation preflight at the owner/lane boundary, before the
+        request row exists: the lane's trusted port resolves the ACTUAL running controller code and it
+        must be the approved revision. A refusal writes nothing, so the source, its intent and the one
+        source-keyed request identity stay unused for the approved deployed code."""
+        if self.deliveries is None:
+            raise OwnerActionRefused("delivery_ports_unconfigured", "deliveries")
+        try:
+            return self.deliveries(document["lane"]).require_controller_code(
+                document["approval"]["controller_revision"])
+        except DeliveryRefused as exc:
+            raise OwnerActionRefused(exc.reason_code, "controller_revision") from exc
 
     def migration(self, source_release_id: str) -> dict | None:
         """Read-only projection of one migration row; None when absent."""

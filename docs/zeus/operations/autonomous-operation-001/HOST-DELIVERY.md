@@ -198,7 +198,12 @@ reverification instead. The candidate's own regression never qualifies.
 Use this only when a successor created by an evaluator migration was rejected, its incumbent and candidate tests
 passed, and a non-test check failed because of a reviewed evaluator-environment defect. The file canary's ownership
 boundary (INV-RELEASE-FILE-CANARY-001) is such a defect.
-- The controller must first run the reviewed fix (V3).
+- The controller AND the owner-actions service must first run the reviewed fix (V3), the exact merged revision.
+- Creation is preflighted: the owner-actions process resolves the ACTUAL running code through the runtime_revision SSOT
+  before any request row or stage. Code other than the approved `controller_revision` refuses
+  `migration_controller_code_mismatch`, and unknown code refuses `migration_controller_code_unavailable`.
+  - Nothing is written, so the same document can be submitted again once V3 runs.
+  - Code that changes after the request makes the request wait rather than consume the successor.
 - Submit the same `zeus owner-actions migrate --document FILE` with `"kind": "environment_reverification"` and its
   approval. The approval binds: the source release and policy hash, the old plan and its sha256, the intent, the owner
   policy, the target, the lane, the fix evidence and `controller_revision` = V3.

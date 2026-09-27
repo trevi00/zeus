@@ -86,6 +86,14 @@ class FakeLane:
     def __init__(self, store, log):
         self.store, self.log = store, log
         self.lose, self.down, self.refuse = set(), set(), {}
+        self.controller = "3" * 40      # labelled: the running controller code the lane's port reports
+
+    def require_controller_code(self, expected):
+        if self.controller is None:
+            raise DeliveryRefused("migration_controller_code_unavailable", "controller_revision")
+        if self.controller != expected:
+            raise DeliveryRefused("migration_controller_code_mismatch", "controller_revision")
+        return self.controller
 
     def _fault(self, name, before):
         if before and name in self.down:

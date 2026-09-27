@@ -81,3 +81,25 @@ def test_the_running_revision_is_this_checkout_by_the_runtime_revision_ssot():
         pytest.skip("not a git checkout")
     from codex_harness.adapters.host_delivery import runtime_revision
     assert controller_code_revision() == runtime_revision(root)
+
+
+def test_the_owner_coordinator_binds_the_runtime_revision_ssot_as_the_trusted_controller_port(tmp_path,
+                                                                                               monkeypatch):
+    """PR214 review B1: the owner/lane boundary resolves the running controller code through the SAME
+    SSOT the runner's own-code guard uses, never through the requester's approval string."""
+    from types import SimpleNamespace
+
+    from codex_harness.adapters import owner_actions as adapter
+    from codex_harness.adapters.store import MemoryStore
+    from codex_harness.bootstrap import organization
+
+    monkeypatch.setenv("HARNESS_RUNTIME_DIR", str(tmp_path / "runtime"))
+    lane = SimpleNamespace(store=MemoryStore())
+    owner = adapter.coordinator(SimpleNamespace(store=MemoryStore(), org=organization()), {}, {},
+                                lanes=lambda lane_id: lane, assessments=object(), continuation=object())
+    delivery = owner.deliveries("a")
+    assert delivery.controller_code is deployment.controller_code_revision
+    monkeypatch.setattr(delivery, "controller_code", lambda: "0" * 40)
+    with pytest.raises(Exception) as caught:
+        delivery.require_controller_code("7" * 40)
+    assert caught.value.reason_code == "migration_controller_code_mismatch"

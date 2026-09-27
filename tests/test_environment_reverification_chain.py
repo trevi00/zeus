@@ -406,3 +406,79 @@ def test_the_real_lane_environment_kind_completes_from_a_separate_control_store(
         row["successor_release_id"], row["plan_id"], 2)
     resumed = rows(r["control"], "continuation_intents")["intent-1"]
     assert (resumed["state"], resumed["reason_code"]) == (dc.AWAITING_OWNER, "migration_resumed")
+
+
+# ----- PR214 review B1: the creation-time controller-code preflight at the owner/lane boundary ---------
+def _stores(backend, request):
+    import test_host_delivery as delivery_fixtures
+    from test_owner_actions_migration import SerialStore
+
+    if backend == "memory":
+        return SerialStore(), delivery_fixtures.SerialStore()
+    return request.getfixturevalue("isolated_pgstore"), request.getfixturevalue("second_pgstore")
+
+
+def _everything(store):
+    buckets = ("continuation_intents", CONTINUATION_BINDINGS, BUCKET_MIGRATIONS, BUCKET_ACTIONS, "releases",
+               "host_delivery_intents", "host_delivery_plans", "host_delivery_migrations", "release_queue",
+               "deployment_locks")
+    with store.transaction() as tx:
+        return {bucket: sorted(tx.scan(bucket), key=lambda r: str(r.get("id"))) for bucket in buckets}
+
+
+BACKENDS = ["memory", pytest.param("postgres", marks=pytest.mark.integration)]
+
+
+@pytest.mark.parametrize("backend", BACKENDS)
+@pytest.mark.parametrize("running, code", [("0" * 40, "migration_controller_code_mismatch"),
+                                           (None, "migration_controller_code_unavailable")])
+def test_wrong_or_unknown_running_controller_code_leaves_everything_unused(tmp_path, monkeypatch, request,
+                                                                           backend, running, code):
+    """The approval's `controller_revision` is compared with what the lane's trusted port RESOLVES
+    for the running code, before the owner request row exists: other or unknown code refuses by name
+    and the source, its intent, the source-keyed request identity and the lane are unchanged. The
+    identical document then proceeds once the approved code is the running code."""
+    from codex_harness.application.releases import environment_successor_id
+
+    control, lane_store = _stores(backend, request)
+    r = real_env(tmp_path, control, lane_store, monkeypatch)
+    delivery, approved = r["system"]["delivery"], r["doc"]["approval"]["controller_revision"]
+    before = (_everything(control), _everything(lane_store))
+    delivery.controller_code = (lambda: running) if running else None
+    with pytest.raises(OwnerActionRefused) as caught:
+        r["owner"].request_migration(r["doc"])
+    assert (caught.value.reason_code, before) == (code, (_everything(control), _everything(lane_store)))
+    delivery.controller_code = lambda: approved
+    created = r["owner"].request_migration(r["doc"])
+    assert created["cached"] is False, "the refused attempt consumed no request identity"
+    assert rows(control, BUCKET_MIGRATIONS)[r["source"]["id"]]["controller_code"] == approved
+    p = {"world": type("W", (), {"control": control})(), "ports": r["ports"], "owner": r["owner"]}
+    row = ticks_of(p, r["source"]["id"], restart=True)
+    assert (row["state"], row["successor_release_id"]) == (do.COMPLETED, environment_successor_id(r["source"]["id"]))
+    with lane_store.transaction() as tx:
+        receipt = tx.get("releases", row["successor_release_id"])["environment_reverification"]
+    assert receipt["controller_resolved"] == approved
+
+
+@pytest.mark.parametrize("backend", BACKENDS)
+def test_code_that_changes_after_the_request_waits_and_never_consumes_the_successor(tmp_path, monkeypatch,
+                                                                                    request, backend):
+    """Code redeployed between the request and the stage: the lane refuses before any effect and the
+    owner row WAITS in `intended` (a named wait, not a verdict); the approved code then completes it."""
+    from codex_harness.application.releases import environment_successor_id
+
+    control, lane_store = _stores(backend, request)
+    r = real_env(tmp_path, control, lane_store, monkeypatch)
+    delivery, approved = r["system"]["delivery"], r["doc"]["approval"]["controller_revision"]
+    r["owner"].request_migration(r["doc"])
+    lane_before = _everything(lane_store)
+    delivery.controller_code = lambda: "9" * 40
+    p = {"world": type("W", (), {"control": control})(), "ports": r["ports"], "owner": r["owner"]}
+    row = ticks_of(p, r["source"]["id"], restart=True, ticks=3)
+    assert (row["state"], row["version"]) == (do.INTENDED, 1)
+    assert _everything(lane_store) == lane_before
+    with lane_store.transaction() as tx:
+        assert tx.get("releases", environment_successor_id(r["source"]["id"])) is None
+    delivery.controller_code = lambda: approved
+    row = ticks_of(p, r["source"]["id"], restart=True)
+    assert (row["state"], row["reason_code"]) == (do.COMPLETED, "migration_finalized")

@@ -306,7 +306,8 @@ class Releases:
 
     def request_environment_reverification(self, release_id: str, actor: str, *, expected_revision: str,
                                            expected_policy_hash: str, approval: dict, resolved_pin: dict,
-                                           now: datetime | None = None, transaction=None) -> dict:
+                                           resolved_controller, now: datetime | None = None,
+                                           transaction=None) -> dict:
         """INV-RELEASE-ENVIRONMENT-REVERIFY-001: one conductor-approved re-evaluation of a migrated source.
 
         The source is an evaluator-migrated successor (INV-RELEASE-EVALUATOR-MIGRATION-001) whose
@@ -317,9 +318,13 @@ class Releases:
         approved `controller_revision` and `fix_evidence`) and starts with EMPTY checks. Depth is
         bounded to one: a source that is itself an environment successor is refused. `resolved_pin`
         is the trusted resolver's derivation of the source's (E, base), made outside any lock; it
-        must equal the source's recorded pin exactly. Every refusal happens before any write.
+        must equal the source's recorded pin exactly. `resolved_controller` is the trusted
+        integration boundary's resolution of the ACTUAL running controller code (never the approval's
+        own string); it must equal the approved `controller_revision` and is recorded with the
+        receipt. Every refusal happens before any write.
         """
         _require_environment_approval(approval, release_id)
+        require_controller_code(resolved_controller, approval["controller_revision"])
         if approval["source_policy_hash"] != expected_policy_hash:
             # The receipt records ONE source policy hash; a replay must not mask a differing approval.
             raise EnvironmentReverificationRefused("environment_reverification_approval_invalid",
@@ -373,7 +378,7 @@ class Releases:
                     "no executed failed non-test check")
             at = now.isoformat()
             receipt = {**request, "source_checks_digest": digest(checks),
-                       "source_digest": digest(source), "at": at}
+                       "source_digest": digest(source), "controller_resolved": resolved_controller, "at": at}
             record = {"id": successor_id, "candidate": candidate, "policy": source["policy"],
                       "policy_hash": source["policy_hash"], "status": "reviewed", "reviews": reviews,
                       "checks": {}, "created_at": at, "reverify_of": release_id,
@@ -486,6 +491,21 @@ def _require_evaluator_approval(approval, release_id: str) -> None:
 ENVIRONMENT_APPROVAL_KEYS = ("kind", "source_release_id", "source_policy_hash", "old_plan_id",
                              "old_plan_sha256", "intent_id", "policy_id", "target_id", "lane",
                              "fix_evidence", "controller_revision", "approved_by")
+
+
+def require_controller_code(resolved, expected: str) -> str:
+    """INV-RELEASE-ENVIRONMENT-REVERIFY-001 creation preflight: the controller code the integration
+    boundary RESOLVED (the runtime_revision SSOT of the running harness code, never a requester's
+    string) must be a known revision equal to the approved one. Unknown code is
+    `environment_reverification_controller_unavailable`, other code `..._controller_mismatch`; both
+    are raised before any write, so the source, its intent and the one successor identity stay unused."""
+    if type(resolved) is not str or not _HEX40.fullmatch(resolved):
+        raise EnvironmentReverificationRefused("environment_reverification_controller_unavailable",
+                                               "the running controller code is unknown")
+    if resolved != expected:
+        raise EnvironmentReverificationRefused("environment_reverification_controller_mismatch",
+                                               "the running controller code is not the approved revision")
+    return resolved
 
 
 def _require_environment_approval(approval, release_id: str) -> None:

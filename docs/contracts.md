@@ -3559,14 +3559,29 @@ reviewed evaluator-environment defect (for example INV-RELEASE-FILE-CANARY-001).
 - A plain reverification of such a release stays refused (`unsupported_evaluator_reverification`).
 - A recursive evaluator migration stays refused.
 - `Releases.request_environment_reverification(release_id, actor, expected_revision, expected_policy_hash, approval,
-  resolved_pin)` is conductor/owner-only.
+  resolved_pin, resolved_controller)` is conductor/owner-only.
 - The approval binds exactly: the source release and its policy hash, the old plan and its sha256, the continuation
   intent, the owner policy, the target, the lane, the reviewed fix evidence, the approved controller code revision and
   the approving actor.
 - Before any write it requires:
   - a rejected source that carries `evaluator_migration` and no prior environment reverification (bounded depth);
   - `tests` passed and not skipped, and at least one executed, failed non-test check;
-  - the E pin re-derived from the repository and equal to the source's migration pin.
+  - the E pin re-derived from the repository and equal to the source's migration pin;
+  - the TRUSTED creation-time controller-code preflight described below.
+- **Creation-time controller-code preflight.** The approval's `controller_revision` string is never evidence.
+  - At the owner/lane integration boundary, the lane's trusted port (`HostDelivery.controller_code`) resolves the
+    ACTUAL running harness code. The adapters bind the same runtime_revision SSOT (`adapters.deployment.
+    controller_code_revision`) that the runner's own-code guard uses.
+  - The resolved revision must be a known 40-hex revision equal to the approved one. Otherwise the result is a named
+    refusal: `migration_controller_code_unavailable` or `migration_controller_code_mismatch` (the release service
+    names them `environment_reverification_controller_unavailable` / `..._mismatch`).
+  - It runs before the owner request row exists (`OwnerActions.request_migration`) and again before the lane's staging
+    transaction. The resolved value travels into that transaction, and the receipt records it as `controller_resolved`.
+  - A refusal writes nothing. The source, its intent (never withdrawn), the source-keyed request identity, the one
+    successor identity and the target reservation stay unused, so the approved deployed code proceeds later.
+  - Code that changes between the request and the stage makes the owner row WAIT in `intended`. It is never refused
+    and never consumed.
+  - The execution-time own-code guard below stays independent, and the E pin is re-derived again at execution.
 - It writes ONE successor per source, `digest({"environment_reverify_of": source})`.
   - The candidate, reviews, policy and policy hash are identical to the source's (policy revision E). The source's
     `evaluator_migration` receipt is copied verbatim, so the runner re-derives E exactly as before.

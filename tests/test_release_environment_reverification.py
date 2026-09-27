@@ -87,7 +87,9 @@ def env_reverify(releases, source, *, actor="conductor", approval=None, **overri
     return releases.request_environment_reverification(
         source["id"], actor, expected_revision=overrides.pop("expected_revision", "candidate"),
         expected_policy_hash=overrides.pop("expected_policy_hash", source["policy_hash"]),
-        approval=approval, resolved_pin=resolved, **overrides)
+        approval=approval, resolved_pin=resolved,
+        # Labelled: the trusted boundary's resolution of the running controller code.
+        resolved_controller=overrides.pop("resolved_controller", CONTROLLER), **overrides)
 
 
 @backends()
@@ -129,8 +131,10 @@ def test_replay_writes_nothing_and_any_difference_conflicts(backend, request):
     assert snapshot(store) == before
     for changed in ({"controller_revision": "8" * 40}, {"fix_evidence": "sha256:" + "e" * 64},
                     {"lane": "other-lane"}, {"intent_id": "control-intent-2"}):
+        # A differing controller approval is resolved as running here, so the recorded one conflicts.
         with pytest.raises(ContractError, match="Conflicting environment reverification"):
-            env_reverify(releases, source, approval=approval_for(source, **changed))
+            env_reverify(releases, source, approval=approval_for(source, **changed),
+                         resolved_controller=changed.get("controller_revision", CONTROLLER))
     # An approval naming another evaluator never replays into the recorded successor.
     with pytest.raises(EnvironmentReverificationRefused, match="environment_reverification_approval_invalid"):
         env_reverify(releases, source, approval=approval_for(source, source_policy_hash="other"))
@@ -225,7 +229,7 @@ def test_source_shape_refusals_are_named_and_write_nothing():
     with pytest.raises(EnvironmentReverificationRefused) as caught:
         releases.request_environment_reverification(
             plain["id"], "conductor", expected_revision="candidate", expected_policy_hash=plain["policy_hash"],
-            approval=approval_for(plain), resolved_pin={})
+            approval=approval_for(plain), resolved_pin={}, resolved_controller=CONTROLLER)
     assert caught.value.reason_code == "environment_reverification_requires_migrated_source"
     assert snapshot(store) == before
 
@@ -306,7 +310,7 @@ def race(store, source):
         try:
             releases = Releases(store, organization())
             revision = CONTROLLER if name == "first" else "8" * 40
-            results[name] = env_reverify(releases, source,
+            results[name] = env_reverify(releases, source, resolved_controller=revision,
                                          approval=approval_for(source, controller_revision=revision))
         except ContractError as exc:
             results[name] = str(exc)
@@ -386,6 +390,8 @@ def migrated_rejected_plan(tmp_path, store, monkeypatch):
     _halt(system, store, system["release"], plan, first)
     system["pins"] = delivery.evaluator_pins = FixtureEvaluatorRepository()
     system["pins"].add("1" * 40)
+    # Labelled: the trusted port reports the approved controller code as the running code.
+    delivery.controller_code = lambda: CONTROLLER
     request = request_for(system)
     staged = delivery.stage_migration(request)
     document = successor_plan(system, staged)
@@ -490,10 +496,63 @@ def test_lane_environment_refusals_write_nothing(tmp_path, store, monkeypatch):
     refused("migration_pin_unavailable", delivery.stage_migration, good)
     system["pins"].fail = None
     system["pins"].add("1" * 40)
-    # Malformed controller revision: the release service refuses inside the transaction, rolled back.
-    refused("migration_release_refused", delivery.stage_migration,
+    # A malformed controller revision is never the running code: refused before the transaction.
+    refused("migration_controller_code_mismatch", delivery.stage_migration,
             env_request_for(system, approval={**good["approval"], "controller_revision": "x" * 40}))
     assert lane_snapshot(store) == before
+
+
+@pytest.mark.parametrize("port, code", [
+    (None, "migration_controller_code_unavailable"),
+    (lambda: None, "migration_controller_code_unavailable"),
+    (lambda: "not-a-revision", "migration_controller_code_unavailable"),
+    (lambda: (_ for _ in ()).throw(OSError("fixture: runtime unreadable")), "migration_controller_code_unavailable"),
+    (lambda: "0" * 40, "migration_controller_code_mismatch"),
+])
+def test_unknown_or_other_running_controller_code_refuses_before_any_stage_effect(tmp_path, store, monkeypatch,
+                                                                                  port, code):
+    """PR214 review B1: the trusted port's resolution of the RUNNING controller code, never the approval's
+    own string, gates the stage. Unknown or other code writes nothing: the source, its intent (not
+    withdrawn), the one successor identity and the target stay unused - the approved code then stages."""
+    system = migrated_rejected_plan(tmp_path, store, monkeypatch)
+    delivery, source = system["delivery"], system["migrated"]
+    good = env_request_for(system)
+    before = lane_snapshot(store)
+    delivery.controller_code = port
+    refused(code, delivery.stage_migration, good)
+    assert lane_snapshot(store) == before
+    assert row(store, "releases", environment_successor_id(source["id"])) is None
+    assert row(store, BUCKET_INTENTS, system["migrated_plan"]["plan_id"])["stage"] != WITHDRAWN
+    delivery.controller_code = lambda: CONTROLLER
+    staged = delivery.stage_migration(good)
+    assert staged["state"] == "staged"
+    successor = row(store, "releases", staged["successor_release_id"])
+    assert successor["environment_reverification"]["controller_resolved"] == CONTROLLER
+
+
+def test_the_reviewer_zero_controller_approval_never_consumes_the_successor(tmp_path, store, monkeypatch):
+    """The exact PR214 review reproduction: an approval naming 40 zeros while the approved code runs."""
+    system = migrated_rejected_plan(tmp_path, store, monkeypatch)
+    delivery, source = system["delivery"], system["migrated"]
+    zero = env_request_for(system, approval={**env_request_for(system)["approval"], "controller_revision": "0" * 40})
+    before = lane_snapshot(store)
+    refused("migration_controller_code_mismatch", delivery.stage_migration, zero)
+    assert lane_snapshot(store) == before, "no successor, no withdrawn intent, no reservation"
+    staged = delivery.stage_migration(env_request_for(system))
+    assert staged["successor_release_id"] == environment_successor_id(source["id"])
+
+
+def test_the_release_service_refuses_an_unresolved_or_other_controller_before_any_write(store):
+    releases, source = migrated_rejected(store)
+    before = snapshot(store)
+    for resolved, code in ((None, "environment_reverification_controller_unavailable"),
+                           ("0" * 40, "environment_reverification_controller_mismatch"),
+                           ("F" * 40, "environment_reverification_controller_unavailable")):
+        with pytest.raises(EnvironmentReverificationRefused) as caught:
+            env_reverify(releases, source, resolved_controller=resolved)
+        assert caught.value.reason_code == code
+    assert snapshot(store) == before
+    assert env_reverify(releases, source)["environment_reverification"]["controller_resolved"] == CONTROLLER
 
 
 def test_lane_source_moved_is_refused(tmp_path, store, monkeypatch):
