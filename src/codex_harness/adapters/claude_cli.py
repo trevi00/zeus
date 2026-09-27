@@ -70,6 +70,9 @@ SESSION_ID = re.compile(r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a
 # Names that stand for "whatever the latest model of this family is". A provider that answers with
 # a concrete model has not disagreed with an alias, and this harness cannot decide the pairing.
 MODEL_ALIASES = ("fable", "opus", "sonnet", "haiku", "default")
+# The CLI's synthetic tool that carries a `--json-schema` answer (its tool_use input IS the answer). It has no
+# file, process or network effect, and a read-only run accepts it beside the profile grants: see run().
+ANSWER_CHANNEL_TOOLS = frozenset({"StructuredOutput"})
 FLAG = re.compile(r"--[a-zA-Z][a-zA-Z0-9-]*")
 
 # The child inherits only what it needs to start and to authenticate as this host already does.
@@ -415,9 +418,14 @@ class ClaudeCodeRuntime:
                    "uncontrolled_inheritance": list(self.runtime.get("uncontrolled_inheritance", []))}
         allowed_names = None
         if read_only_profile is not None:
-            allowed_names = frozenset(read_only_profile["allowed_tools"])
+            # The profile's grants plus the transport's own answer channel: this adapter always passes
+            # `--json-schema`, and the CLI returns that answer by calling its synthetic `StructuredOutput`
+            # tool (observed in preserved real 2.1.280 runs). It is not a profile grant, is never added to
+            # `--tools` or the permissions, and any other name, lookalikes included, still latches.
+            allowed_names = frozenset(read_only_profile["allowed_tools"]) | ANSWER_CHANNEL_TOOLS
             command["read_only_profile"] = {"applied": True, "profile_sha256": digest(read_only_profile),
-                                            "allowed_tools": sorted(allowed_names),
+                                            "allowed_tools": sorted(read_only_profile["allowed_tools"]),
+                                            "answer_channel_tools": sorted(ANSWER_CHANNEL_TOOLS),
                                             "enforcement": "validated before spawn; every observed tool use "
                                                            "checked during the run"}
 

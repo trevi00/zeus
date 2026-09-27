@@ -475,8 +475,11 @@ def test_read_only_rejects_unrestricted_or_conflicting_effective_settings_before
     runtime_object = read_only_transport("ro-clean-all", runtime=runtime, **kwargs)
     if case == "worker_profile":
         runtime_object.profile = {"document": "a profile may add Bash grants and hooks"}
+    # The three carriers refuse on the read-only guard itself, not on a later check that would also
+    # refuse them (a task session without an owned home, for example).
+    carrier = case in ("worker_profile", "project_delivery", "task_session")
     with runtime_object as opened:
-        with pytest.raises(ContractError):
+        with pytest.raises(ContractError, match="read-only claude_cli run carries no" if carrier else None):
             opened.run("p", str(tmp_path), SCHEMA, timeout=30, read_only=True, **run_kwargs)
     assert runtime_object.process is None, "refused before any process started"
     assert not (tmp_path / "stub-runs.log").exists()
@@ -498,8 +501,15 @@ def test_read_only_allowed_tools_complete_with_restricted_argv(tmp_path):
                                         "defaultMode": "dontAsk"}}
     applied = result["command"]["read_only_profile"]
     assert applied["applied"] is True and applied["allowed_tools"] == ["Glob", "Grep", "Read"]
+    assert applied["answer_channel_tools"] == ["StructuredOutput"]
     assert applied["profile_sha256"]
-    assert result["tool_usage_observed"]["started"] == ["toolu_ro_0", "toolu_ro_1", "toolu_ro_2"]
+    # The real CLI returns the --json-schema answer through its synthetic StructuredOutput tool (the
+    # fixture emits that exact sequence); it is accepted as the answer channel, never granted in argv.
+    assert result["tool_usage_observed"]["started"] == ["toolu_ro_0", "toolu_ro_1", "toolu_ro_2",
+                                                        "toolu_structured_output"]
+    assert "StructuredOutput" not in argv[argv.index("--tools") + 1]
+    assert "StructuredOutput" not in json.dumps(settings)
+    assert result["answer_source"] == "structured_output"
     # A writable run records no read-only profile: its command receipt keeps its shape.
     writable, _, _, _ = execute("normal", tmp_path)
     assert "read_only_profile" not in writable["command"]
@@ -507,7 +517,8 @@ def test_read_only_allowed_tools_complete_with_restricted_argv(tmp_path):
 
 @pytest.mark.parametrize("scenario,limits,profile", [
     *[("ro-before-" + key, None, None) for key in
-      ("bash", "edit", "write", "notebookedit", "task", "mcp", "unknown", "pattern", "noname", "noid")],
+      ("bash", "edit", "write", "notebookedit", "task", "mcp", "unknown", "pattern", "noname", "noid",
+       "lookalike")],
     ("ro-after-bash", None, None),
     ("ro-late-bash", {"retained_events": 5}, None),
     ("ro-hang-edit", None, None),

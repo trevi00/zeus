@@ -196,6 +196,13 @@ def test_read_only_overlay_is_strict_and_required_for_read_only_rules(name, over
     document["providers"]["claude"]["read_only_runtime"] = overlay
     with pytest.raises(ContractError):
         parse_policy(document)
+    # Present-but-invalid never counts as absent: the same overlay refuses even where no read-only rule
+    # would have required one.
+    without_rules = packaged_document()
+    without_rules["providers"]["claude"]["read_only_runtime"] = overlay
+    without_rules["assignments"] = [rule for rule in without_rules["assignments"] if not rule["read_only"]]
+    with pytest.raises(ContractError):
+        parse_policy(without_rules)
     # Absent overlay: the writable rule alone still parses, the read-only design rules do not.
     absent = packaged_document()
     del absent["providers"]["claude"]["read_only_runtime"]

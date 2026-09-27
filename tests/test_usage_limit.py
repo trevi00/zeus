@@ -231,6 +231,8 @@ def test_prompt_incident_text_cannot_classify_success(monkeypatch):
     ('claude-provider-usage-limit-exceeded', True),       # HTTP 429 of the execution's own credential
     ('claude-provider-authentication-failed', True),      # HTTP 401/403 of the execution's own credential
     ('codex-provider-usage-limit-exceeded', True),
+    # A read-only profile breach: replaying it would spend another real call on the same breach.
+    ('claude-provider-read-only-violation', True),
     ('claude-provider-error-result', False),              # control: an ordinary provider error stays retryable
 ])
 def test_a_provider_refusal_of_the_own_credential_is_contained_never_replayed(cause, contained):

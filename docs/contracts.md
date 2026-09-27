@@ -841,8 +841,14 @@ delivery, task session or added settings is refused before spawn. During the run
 tool use is checked before any retention limit; one outside the profile, or without a name or id,
 stops the run through the normal termination path and ends as `provider_failure` with reason
 `read_only_violation` and no answer, ahead of any success terminal and of the missing terminal the
-stop causes; cleanup and stream-loss facts are kept and no tool payload is echoed. `claude_cli`
-therefore declares `read_only` as supported. This proves the host transport only: the isolated
+stop causes; cleanup and stream-loss facts are kept and no tool payload is echoed. The one name
+accepted beside the profile grants is the CLI's synthetic `StructuredOutput` tool, the channel that
+carries the `--json-schema` answer this adapter always requests (observed in preserved real 2.1.280
+runs). It is never added to `--tools` or the permissions, the command receipt lists it as
+`answer_channel_tools`, and any other name, lookalikes included, still latches. The violation cause
+`claude-provider-read-only-violation` is a declared provider cause and is contained like a refusal of
+the execution's own credential: the task fails without replay rather than spending another real call
+on the same breach. `claude_cli` therefore declares `read_only` as supported. This proves the host transport only: the isolated
 worker still refuses read-only runs, council enablement through the operation overlay and the
 accounting labels are follow-ups, the plan branch has no before/after checkout check, stream
 observation detects a tool use after it was emitted (prevention rests on the restricted exposure

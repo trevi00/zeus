@@ -124,7 +124,9 @@ def session_turn(argv, session, model, digest):
 # Read-only scenarios `ro-<when>-<tool>` (lowercase, so the name is also a valid configured model).
 READ_ONLY_TOOLS = {"bash": "Bash", "edit": "Edit", "write": "Write", "notebookedit": "NotebookEdit",
                    "task": "Task", "mcp": "mcp__fixture__write", "unknown": "Frobnicate",
-                   "pattern": "Read(*)", "noname": None, "noid": "Read"}
+                   "pattern": "Read(*)", "noname": None, "noid": "Read",
+                   # Near the answer channel's name but not it: still outside the profile.
+                   "lookalike": "StructuredOutputs"}
 
 
 def read_only_scenario(scenario, session, model, digest):
@@ -139,22 +141,30 @@ def read_only_scenario(scenario, session, model, digest):
         tool_round(session, identifier=None if key == "noid" else "toolu_forbidden",
                    name=READ_ONLY_TOOLS[key], payload={"command": "rm -rf " + CANARY})
 
+    def answer_channel():
+        # The real CLI (2.1.280, preserved runs) returns a --json-schema answer by calling its synthetic
+        # StructuredOutput tool with the answer as input, before the result line.
+        tool_round(session, identifier="toolu_structured_output", name="StructuredOutput", payload=answer)
+
     init(session, model)
     if when == "clean":
         for index, name in enumerate(("Read", "Glob", "Grep")):
             tool_round(session, identifier=f"toolu_ro_{index}", name=name)
+        answer_channel()
         result(session, structured=answer)
         return 0
     if when == "late":
         for index in range(30):
             tool_round(session, identifier=f"toolu_ro_{index}", name="Read")
     if when == "after":
+        answer_channel()
         result(session, structured=answer)
     forbidden()
     if when == "hang":
         time.sleep(90)
         return 0
     if when in ("before", "late"):
+        answer_channel()
         result(session, structured=answer)
     return 0
 
