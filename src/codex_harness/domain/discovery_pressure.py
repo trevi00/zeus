@@ -25,7 +25,7 @@ from codex_harness.domain.continuation import (
 from codex_harness.domain.fleet import QUEUED, RESERVING, held_units, job_blockers
 from codex_harness.domain.fleet_backlog import ITEM_OPEN, ITEM_PENDING, ITEM_UNKNOWN, select
 from codex_harness.domain.model import ContractError, digest
-from codex_harness.domain.usage_policy import accounting_mode
+from codex_harness.domain.usage_policy import exhausted, readable_counts
 
 POLICY_SCHEMA = "urn:zeus:discovery-pressure-policy:1"
 ROW_SCHEMA = "urn:zeus:discovery-pressure:1"
@@ -93,12 +93,14 @@ def validate_policy(document) -> dict:
     return {**document, "digest": digest(document)}
 
 
-def census(*, config, control, jobs: dict, units, plans, intents, continuation_intents, aliases=None) -> dict:
+def census(*, config, control, jobs: dict, units, plans, intents, continuation_intents, aliases=None,
+           ledger=None) -> dict:
     """W, C and the occupancy from ONE consistent read of the authoritative rows (never a monitor list).
 
     Deduplication: a job is the single identity of its work; a backlog item or continuation intent that
     already names a job contributes nothing of its own. `unknown` counts work that may be dispatchable but
-    whose readiness this slice cannot prove; any unknown makes W incomplete."""
+    whose readiness this slice cannot prove; any unknown makes W incomplete. `ledger` is the call-ledger counts
+    read just before the transaction (the Fleet runner's own admission input), or None when unreadable."""
     if config is None:
         return {"registered": False}
     capacity = config["max_parallel"]
@@ -132,10 +134,17 @@ def census(*, config, control, jobs: dict, units, plans, intents, continuation_i
             continuation_unknown += 1
         elif route == CONDUCTOR and state == INTENDED:
             continuation_unknown += 1
-    # Finite-budget exhaustion is decided outside this transaction (the call ledger), so under finite accounting
-    # waiting jobs may be admission-blocked without this read knowing it; subscription accounting has no
-    # finite exhaustion. It matters only when it could change W.
-    budget_unknown = 1 if waiting and accounting_mode(config["budget"]) != "subscription" else 0
+    # Admission also consults the call ledger (outside this transaction) in BOTH accounting modes: finite
+    # exhaustion, and under subscription an unreadable ledger refuses admission. The same reading the Fleet runner
+    # uses decides it here: unreadable makes W incomplete while jobs wait; exhausted means the waiting jobs are
+    # admission-blocked, so they leave W with a named exclusion.
+    budget_unknown = 0
+    if waiting:
+        if not readable_counts(ledger):
+            budget_unknown = 1
+        elif exhausted(config["budget"], ledger):
+            excluded["budget_exhausted"] = waiting
+            waiting = 0
     unknown = {"backlog": backlog_unknown, "continuation": continuation_unknown, "budget": budget_unknown}
     return {"registered": True, "paused": paused, "capacity": capacity, "waiting": waiting,
             "complete": not any(unknown.values()), "unknown": unknown, "excluded": excluded,

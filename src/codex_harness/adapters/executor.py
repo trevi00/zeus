@@ -59,6 +59,7 @@ from codex_harness.application.tickets import TicketSuperseded, ticket_binding
 from codex_harness.application.workflow import Workflow
 from codex_harness.domain.council_input import SCHEMA as COUNCIL_INPUT_POLICY
 from codex_harness.domain.council_input import admit_required, council_budget
+from codex_harness.domain.discovery_pressure import DiscoveryPaused, DiscoveryRefused
 from codex_harness.domain.evidence import STATES
 from codex_harness.domain.invocation import classify_result, parse_request, usage_record
 from codex_harness.domain.model import (
@@ -1286,9 +1287,27 @@ class Executor:
             return self._block_for_reconciliation(task, agent, exc)
         except PostExecutionRecordFailure as exc:
             return self._fail_task(task, agent, exc, block=[exc.record_id])
+        except (DiscoveryPaused, DiscoveryRefused) as exc:
+            return self._policy_refusal(task, agent, exc)
         except Exception as exc:
             error, disposition = self._failure_disposition(task, exc)
             return self._fail_task(task, agent, error, **disposition)
+
+    def _policy_refusal(self, task, agent, refusal):
+        """INV-DISCOVERY-PRESSURE-001: a held or intent-less research fetch is a named policy decision, not a
+        provider or code failure. The task ends `failed` WITHOUT replay (a retry would only meet the same
+        policy) and WITHOUT a model diagnosis (it would spend a real call on a known reason). Nothing was fetched
+        and no provider ran."""
+        try:
+            current = self.workflow.fail(task, "discovery_policy: " + str(refusal.reason_code), retryable=False)
+        except ContractError as exc:
+            return self._lost_execution(task, refusal, exc)
+        self.observer.emit("development.task_failed", "failed", severity="warning",
+                           execution=self.observer.for_lease(task, role=agent), correlation_id=self.observer.correlation(task),
+                           causation_id=task["id"], reason_code=str(refusal.reason_code),
+                           attributes={"status": current["status"], "error_type": type(refusal).__name__,
+                                       "failure_receipt": current.get("failure_receipt")})
+        return current
 
     def _failure_disposition(self, lease, exc):
         """INV-OBSERVATION-001: how a failure outside `_run` closes or keeps this attempt's marker.

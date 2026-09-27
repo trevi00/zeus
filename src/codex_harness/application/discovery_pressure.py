@@ -31,9 +31,11 @@ AUTHORITY = ("proactive discovery admission only; never a Fleet pause, an admiss
 
 
 class DiscoveryPressure:
-    def __init__(self, store, policy_document, observer, clock=utcnow):
+    def __init__(self, store, policy_document, observer, clock=utcnow, ledger=None):
         require(observer is not None, "Discovery pressure transitions need the mandatory audit observer")
-        self.store, self.observer, self.clock = store, observer, clock
+        # `ledger()` returns the call-ledger counts the Fleet runner admits against (read-only, taken just before
+        # the transaction); None or a failing reader is unreadable, never an empty ledger.
+        self.store, self.observer, self.clock, self.ledger = store, observer, clock, ledger
         if policy_document is None:
             self.policy, self.policy_problem = None, "config_missing"
         else:
@@ -44,6 +46,10 @@ class DiscoveryPressure:
 
     def admit(self) -> dict:
         """Decide whether ONE proactive fetch may start now, recording the evaluation."""
+        try:
+            ledger = self.ledger() if self.ledger is not None else None
+        except Exception:
+            ledger = None
         with self.store.transaction() as tx:
             registry = Fleet._registry(tx)
             control = Fleet._control(tx)
@@ -52,7 +58,7 @@ class DiscoveryPressure:
             observed = census(config=config, control=control, jobs=jobs, units=tx.scan(BUCKET_UNITS),
                               plans=tx.scan(BUCKET_PLANS), intents=tx.scan(BACKLOG_INTENTS),
                               continuation_intents=tx.scan(CONTINUATION_INTENTS),
-                              aliases=Fleet._repository_aliases(tx) if registry is not None else None)
+                              aliases=Fleet._repository_aliases(tx) if registry is not None else None, ledger=ledger)
             prior = tx.get(BUCKET, KEY)
             outcome = decide(prior, observed, self.policy)
             now = self.clock()

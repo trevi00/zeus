@@ -267,3 +267,30 @@ def test_preflight_failure_uses_existing_execution_failure_reporting(setup):
         assert CAUSE in receipt['error']
         assert receipt['task_id'] == s.task['id']
         assert tx.get('tasks', s.task['id'])['status'] != 'succeeded'
+
+
+@pytest.mark.parametrize("intent,pressure,code", [
+    (None, None, "discovery_intent_required"),
+    ("proactive", SimpleNamespace(admit=lambda: {"decision": "hold", "reason_code": "pressure_high"}), "pressure_high"),
+    ("proactive", None, "pressure_unavailable"),
+])
+def test_a_held_or_intent_less_research_task_fails_once_without_fetch_retry_or_diagnosis(tmp_path, intent, pressure, code):
+    """INV-DISCOVERY-PRESSURE-001 through the REAL ResearchSources: a policy decision ends the task `failed` after ONE
+    attempt, with no fetch, no shortlist or model call, no retry and no diagnose decision."""
+    from codex_harness.adapters.research import ResearchSources
+
+    class NoFetch(ResearchSources):
+        def fetch(self, url):
+            raise AssertionError("fetched " + url)
+    service = Harness(MemoryStore(), organization())
+    artifacts = FileArtifacts(str(tmp_path / 'artifacts'))
+    executor = Executor(service, SimpleNamespace(repository=tmp_path, _git=lambda *a, **kw: 'harness'), artifacts,
+                        research=NoFetch(artifacts, pressure=pressure))
+    details = {'source': 'github'} if intent is None else {'source': 'github', 'intent': intent}
+    executor.workflow.submit(envelope('task.assign', 'lead:research', 'worker:github', 'research', details, 'fixture'))
+    failed = executor.execute_one('worker:github')
+    assert failed['status'] == 'failed' and failed['error'] == 'discovery_policy: ' + code
+    assert failed['attempt'] == 1 and executor.execute_one('worker:github') is None, 'never replayed'
+    with service.store.transaction() as tx:
+        assert [row for row in tx.scan('decisions_pending') if row.get('phase') == 'diagnose'] == [], 'no diagnosis call'
+

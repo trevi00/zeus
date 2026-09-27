@@ -32,6 +32,9 @@ BUDGET = {"per_host": 192, "total": 192, "mode": "subscription"}
 POLICY = {"schema": "urn:zeus:discovery-pressure-policy:1", "id": "fixture-policy", "k_pause": 3, "k_resume": 1,
           "threshold_status": "suggested_unconfirmed", "input_max_age_seconds": 300}
 T0 = "2026-09-28T00:00:00+00:00"
+# FIXTURE call-ledger readings (the counts FleetLauncher.budget_exhausted admits against).
+LEDGER = {"host": "fixture", "this_host": 0, "all_hosts": 0, "unreadable": 0}
+LEDGER_DAMAGED = {"host": "fixture", "this_host": 1, "all_hosts": 1, "unreadable": 1}
 
 
 def fleet_store(max_parallel=2, budget=BUDGET):
@@ -60,8 +63,8 @@ def observer(store):
     return Observer(store, MemorySpool(new_process_run_id()), component="test-pressure", directory=MemoryDirectory())
 
 
-def evaluator(store, policy=POLICY):
-    return DiscoveryPressure(store, policy, observer(store))
+def evaluator(store, policy=POLICY, ledger=LEDGER):
+    return DiscoveryPressure(store, policy, observer(store), ledger=None if ledger is None else (lambda: ledger))
 
 
 def audits(store):
@@ -113,7 +116,7 @@ def test_only_jobs_waiting_for_capacity_or_their_lane_count_as_waiting():
         registry = Fleet._registry(tx)
         jobs = {row["id"]: row for row in tx.scan("fleet_jobs")}
     observed = census(config=registry["config"], control={"paused": False}, jobs=jobs, units=[], plans=[],
-                      intents=[], continuation_intents=[])
+                      intents=[], continuation_intents=[], ledger=LEDGER)
     assert observed["waiting"] == 2 and observed["complete"] is True
     assert observed["excluded"] == {"path_conflict": 1, "dependency_failed": 1, "budget_stale": 1}
     assert observed["occupancy"]["jobs_reserving"] == 2, "an unknown job keeps its reservation, never counts as waiting"
@@ -290,13 +293,44 @@ def test_a_missing_or_invalid_policy_holds_with_a_named_detail(policy, detail):
     assert (decision["decision"], decision["reason_code"], decision["detail"]) == ("hold", "pressure_unknown", detail)
 
 
-def test_finite_accounting_with_waiting_jobs_is_unknown_because_exhaustion_lives_outside_the_read():
-    store = fleet_store(budget={"per_host": 4, "total": 8})
-    put(store, "fleet_jobs", job("ready", budget={"per_host": 4, "total": 8}))
-    decision = evaluator(store).admit()
-    assert decision["reason_code"] == "pressure_unknown" and decision["basis"]["unknown_counts"]["budget"] == 1
-    empty = fleet_store(budget={"per_host": 4, "total": 8})
-    assert evaluator(empty).admit()["decision"] == "allow", "with no waiting job exhaustion cannot change W"
+@pytest.mark.parametrize("budget", [BUDGET, {"per_host": 4, "total": 8}], ids=["subscription", "finite"])
+def test_an_unreadable_call_ledger_with_waiting_jobs_is_unknown_in_both_modes(budget):
+    store = fleet_store(budget=budget)
+    put(store, "fleet_jobs", job("ready", budget=budget))
+    for reader in (None, lambda: (_ for _ in ()).throw(OSError("ledger unreadable")), lambda: {"broken": True}):
+        decision = DiscoveryPressure(store, POLICY, observer(store), ledger=reader).admit()
+        assert decision["reason_code"] == "pressure_unknown" and decision["basis"]["unknown_counts"]["budget"] == 1
+    assert evaluator(fleet_store(budget=budget), ledger=None).admit()["decision"] == "allow", \
+        "with no waiting job the ledger cannot change W"
+
+
+def test_an_exhausted_ledger_blocks_admission_so_waiting_jobs_leave_w():
+    finite = {"per_host": 1, "total": 1}
+    store = fleet_store(max_parallel=1, budget=finite)
+    queued_rows = [job(f"q{index}", budget=finite, paths=(f"src/{index}/",)) for index in range(3)]
+    for row in queued_rows:
+        put(store, "fleet_jobs", row)
+    full = {"host": "fixture", "this_host": 1, "all_hosts": 1, "unreadable": 0}
+    decision = evaluator(store, ledger=full).admit()
+    assert (decision["waiting"], decision["decision"]) == (0, "allow")
+    assert decision["basis"]["excluded_counts"] == {"budget_exhausted": 3}
+    # Subscription: a damaged ledger (an unreadable slot) refuses admission, exactly as the Fleet runner does.
+    damaged = fleet_store(max_parallel=1)
+    queued(damaged, 3)
+    assert evaluator(damaged, ledger=LEDGER_DAMAGED).admit()["basis"]["excluded_counts"] == {"budget_exhausted": 3}
+    assert evaluator(damaged, ledger=LEDGER).admit()["hysteresis_state"] == "paused", "a clean ledger lets W count"
+
+
+def test_a_hold_for_unknown_input_keeps_the_hysteresis_memory():
+    store = fleet_store(max_parallel=1)
+    queued(store, 3)
+    assert evaluator(store).admit()["hysteresis_state"] == "paused"
+    held = evaluator(store, ledger=None).admit()
+    assert (held["decision"], held["reason_code"], held["hysteresis_state"]) == ("hold", "pressure_unknown", "paused")
+    with store.transaction() as tx:
+        tx.put("fleet_jobs", "qa0", {**tx.get("fleet_jobs", "qa0"), "status": "accepted"})
+    in_band = evaluator(store).admit()
+    assert (in_band["waiting"], in_band["hysteresis_state"], in_band["decision"]) == (2, "paused", "hold")
 
 
 def test_the_packaged_policy_is_the_suggested_unconfirmed_three_and_one():

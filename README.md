@@ -131,8 +131,8 @@ GitHub Trending·GeekNews를 6시간마다 수집합니다. 팀원은 한 토픽
 main이 바뀌면 자동 rebase 작업을 만들고 새 커밋을 다시 심사합니다.
 
 ```powershell
-uv run zeus research github
-uv run zeus research geeknews
+uv run zeus research github --intent user_request
+uv run zeus research geeknews --intent user_request
 uv run zeus improve "개선 목표" --acceptance "측정 가능한 완료 조건"
 uv run zeus inspect tasks
 uv run zeus inspect releases

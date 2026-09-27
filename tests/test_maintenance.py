@@ -89,3 +89,8 @@ def test_research_schedule_deduplicates_each_interval():
     assert schedule_research(service, now=0) == 2
     assert schedule_research(service, now=1) == 0
     assert schedule_research(service, now=6 * 3600) == 2
+    # INV-DISCOVERY-PRESSURE-001: a periodic fetch is proactive discovery and says so (gated, never refused).
+    with service.store.transaction() as tx:
+        intents = {row["message"]["what"]["details"].get("intent") for row in tx.scan("outbox")
+                   if row["message"]["what"]["action"] == "research"}
+    assert intents == {"proactive"}

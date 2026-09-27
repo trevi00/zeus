@@ -4249,7 +4249,7 @@ existing owners: `Continuation.accept_research`, the guarded `decide_one` of the
   `--version`) runs before any resume, reservation or spawn and a failure is `refused
   research_provider_unavailable`; then the launch id is persisted (`launching`) and ONE guardian is spawned
   under an exclusive marker running the existing `research-program run <program> --ticks 1 --cycle-owner
-  <launch id>` in the lane repository, bounded by the implementation allowance plus the conductor margin.
+  <launch id> --intent incident` (INV-DISCOVERY-PRESSURE-001) in the lane repository, bounded by the implementation allowance plus the conductor margin.
   `running` is only polled, so a council never blocks this or another policy's tick. With the guardian's
   cleanup proof the child's own rows decide: the expected cycle owned by exactly that launch id and its
   accepted dispatch is `completed` (the existing `research_receipt` action continues), a rejected or
@@ -4351,7 +4351,9 @@ which reads the authoritative Fleet, backlog and continuation rows. The row is n
   Such work makes W incomplete. That covers:
   - an eligible pending or open backlog item without a job, and an unknown item;
   - an admitting continuation intent without its job, and an intended conductor review;
-  - waiting jobs under finite accounting (exhaustion lives in the call ledger).
+  - waiting jobs whose call-ledger reading is unreadable. The evaluator reads, just before its transaction, the
+    same host ledger counts the Fleet runner admits against. In both accounting modes an unreadable reading makes W
+    incomplete, and an exhausted one excludes the waiting jobs as `budget_exhausted`.
 
   Incomplete W holds with `pressure_unknown` and W `null`. The jobs count is kept only as a labelled lower bound.
 - **Holds:** an unregistered Fleet (`fleet_unregistered`, also every lane store), a paused Fleet (`fleet_paused`)
@@ -4382,8 +4384,13 @@ transition.
 - The read-only monitor source `discovery_pressure` projects the row, or `evaluated: false`; reading never
   evaluates or writes.
 
+**Outcome on the executor path:** a held or intent-less research task ends `failed` with the fixed reason
+`discovery_policy: <code>`. It is not replayed and no diagnosis is queued (no model call), because it is a policy
+decision, not a failure. The periodic research scheduler states `proactive`.
+
 **Status:** this slice has no effect on aibox until a proactive runner exists (none is live). The readiness seams
-that turn the incomplete cases into exact counts are a named follow-up (T1b).
+that turn the incomplete cases into exact counts are a named follow-up (T1b). T1b will also cover:
+- a conductor `awaiting_owner` intent that its controller may still redispatch (not counted in T1a).
 
 Tests: tests/test_discovery_pressure.py (labelled fixtures; the real-PostgreSQL concurrency case runs with
 `HARNESS_INTEGRATION=1`), plus the explicit intents in the research, owner-actions and continuation-research

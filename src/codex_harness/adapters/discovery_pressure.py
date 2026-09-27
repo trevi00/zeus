@@ -22,5 +22,7 @@ def pressure(store, observer):
     """The evaluator over THIS process's store. In a lane process that store has no Fleet registry, so
     pressure reads as unregistered and holds proactive discovery: a lane store never stands in for the
     control store's pressure."""
+    from codex_harness.adapters.call_budget import CallBudget
     from codex_harness.application.discovery_pressure import DiscoveryPressure
-    return DiscoveryPressure(store, packaged_policy(), observer)
+    # The same host ledger reading the Fleet runner admits against (FleetLauncher.budget_exhausted).
+    return DiscoveryPressure(store, packaged_policy(), observer, ledger=lambda: CallBudget().counts())
