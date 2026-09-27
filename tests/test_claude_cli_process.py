@@ -114,6 +114,8 @@ def test_c02_the_child_environment_carries_no_zeus_credential(tmp_path, monkeypa
     ("error", "provider_failure", "claude-provider-error-result"),
     ("budget", "provider_failure", "claude-provider-budget-exhausted"),
     ("maxturns", "provider_failure", "claude-provider-max-turns"),
+    ("ratelimit", "provider_failure", "claude-provider-usage-limit-exceeded"),
+    ("unauthorized", "provider_failure", "claude-provider-authentication-failed"),
 ])
 def test_c03_each_observed_ending_gets_its_own_name(tmp_path, scenario, outcome, cause):
     result, events, _, _ = execute(scenario, tmp_path)

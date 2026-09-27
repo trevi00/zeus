@@ -70,9 +70,12 @@ def tool_round(session, identifier="toolu_fixture_1", failed=False):
                                                    "is_error": failed, "content": "ok"}]}})
 
 
-def result(session, *, subtype="success", is_error=False, text="", structured=None, usage=True, cost=0.0123):
+def result(session, *, subtype="success", is_error=False, text="", structured=None, usage=True, cost=0.0123,
+           api_error_status=None):
     body = {"type": "result", "subtype": subtype, "is_error": is_error, "duration_ms": 12,
             "num_turns": 1, "result": text, "session_id": session}
+    if api_error_status is not None:
+        body["api_error_status"] = api_error_status
     if usage:
         body["usage"] = {"input_tokens": 120, "output_tokens": 30,
                          "cache_creation_input_tokens": 5, "cache_read_input_tokens": 7}
@@ -265,6 +268,13 @@ def main(argv):
     if scenario == "budget":
         init(session, init_model)
         result(session, subtype="error_during_execution", is_error=True, text="Budget limit reached")
+        return 1
+    if scenario in ("ratelimit", "unauthorized"):
+        # Shaped like the observed managed-worker refusal: an error result with the provider's HTTP status and no
+        # tokens. The text is fixture text, never parsed for the cause.
+        init(session, init_model)
+        result(session, subtype="success", is_error=True, text="fixture refusal", usage=False,
+               api_error_status=429 if scenario == "ratelimit" else 401)
         return 1
     if scenario == "maxturns":
         init(session, init_model)

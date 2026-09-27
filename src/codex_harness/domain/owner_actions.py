@@ -40,6 +40,7 @@ from codex_harness.domain.host_delivery import (
     MIN_CONSUMPTION_TIMEOUT,
     OWNER_CANARY_RECEIPT_SCHEMA,
     PLAN_SCHEMA,
+    RECOVERY_CONSUMPTION_RETRY,
     REPOSITORY,
     UNCHANGED,
     validate_plan,
@@ -512,6 +513,118 @@ def canary_receipt(row: dict, outcome: dict, now: str) -> dict:
             "reason_code": outcome.get("reason_code"), "recorded_at": now}
 
 
+# ---- the typed owner canary recovery (INV-OWNER-ACTIONS-001 x INV-HOST-DELIVERY-FIRST-ACTIVATION-001) ----
+# The OWNER half of the lane `first_activation_consumption_retry`: a REQUESTED canary whose delivery halted
+# at the pending-canary deadline was moved to UNKNOWN `canary_delivery_moved` by the result gate; once the
+# lane retried consumption of the SAME observed instance, this one document returns exactly that action to
+# REQUESTED with the SAME still-queued job. It is not a generic UNKNOWN retry: `TRANSITIONS` is unchanged.
+CANARY_RECOVERY_SCHEMA = "urn:zeus:owner-canary-recovery:1"
+CANARY_RECOVERY_KIND = "delivery_canary_consumption_retry"
+CANARY_RECOVERY_FIELDS = {"schema", "kind", "action_id", "action_version", "binding_sha256", "binding",
+                          "policy_id", "policy_sha256", "job_id", "halt", "lane_retry_evidence", "margin_seconds",
+                          "approved_by"}
+CANARY_RECOVERY_BINDING_FIELDS = {"plan_id", "plan_sha256", "target_id", "descriptor_sha256", "instance_id"}
+CANARY_RECOVERY_HALT_FIELDS = {"state", "reason_code", "updated_at"}
+CANARY_RECOVERY_HALT_REASON = "canary_delivery_moved"
+CANARY_RECOVERED = "canary_recovered"
+MIN_RECOVERY_MARGIN = 600
+MAX_RECOVERY_MARGIN = 86400
+ACTOR = re.compile(r"^[a-z][a-z0-9_-]{0,31}(:[a-z][a-z0-9_-]{0,31})?$")
+# The retry kind the lane records; the owner recovery pairs only with it.
+LANE_RETRY_KIND = RECOVERY_CONSUMPTION_RETRY
+# INV-HOST-DELIVERY-FIRST-ACTIVATION-001 (extended): after a lane `first_activation_generation_restart`, the
+# one retry consumes the RESTARTED generation. The halted canary is owed to that SAME linked instance: it is
+# re-bound (same action, same job), never replaced by a second canary.
+LANE_RESTART_KIND = "first_activation_generation_restart"
+LANE_RESTART_LINK = "generation_restart_evidence"
+
+
+def linked_restart(intent) -> dict | None:
+    """The lane's STARTED generation restart that its latest consumption retry explicitly names, or None.
+
+    Pure. The link is explicit on both sides: the retry's `observed` names the restart's evidence, and the
+    retry observes exactly the instance the restart started, which is not the instance it stopped."""
+    if not isinstance(intent, dict):
+        return None
+    recoveries = [r for r in intent.get("recoveries") or [] if isinstance(r, dict)]
+    restarts = [r for r in recoveries if r.get("kind") == LANE_RESTART_KIND]
+    if len(restarts) != 1 or restarts[0].get("state") != "started" or not recoveries:
+        return None
+    restart, retry = restarts[0], recoveries[-1]
+    observed = retry.get("observed") or {}
+    stopped = (restart.get("stopped") or {}).get("instance_id")
+    started = (restart.get("started") or {}).get("instance_id")
+    if (retry.get("kind") != RECOVERY_CONSUMPTION_RETRY or observed.get(LANE_RESTART_LINK) != restart.get("evidence_ref")
+            or started in (None, stopped) or observed.get("observed_instance_id") != started):
+        return None
+    return {"evidence_ref": restart["evidence_ref"], "stopped_instance_id": stopped, "started_instance_id": started}
+
+
+def restart_owed_canary(action: dict, restart: dict | None) -> bool:
+    """A halted canary whose binding names exactly the instance a linked restart STOPPED is owed its typed
+    recovery onto the restarted generation: discovery must not create a second canary for that plan."""
+    binding = action.get("binding") or {}
+    return (restart is not None and action.get("kind") == DELIVERY_CANARY and action.get("state") == UNKNOWN
+            and action.get("reason_code") == CANARY_RECOVERY_HALT_REASON and not action.get("recoveries")
+            and binding.get("instance_id") == restart["stopped_instance_id"])
+
+
+def validate_canary_recovery(document) -> dict:
+    """The owner canary-recovery document, exactly. Its values are CLAIMS: `recover_canary` compares
+    every one with the stored action, the policy row, the Fleet job and the lane before any write.
+    Every defect is `canary_recovery_invalid` with the offending field."""
+    refuse(isinstance(document, dict) and set(document) == CANARY_RECOVERY_FIELDS, "canary_recovery_invalid",
+           "document")
+    refuse(document["schema"] == CANARY_RECOVERY_SCHEMA, "canary_recovery_invalid", "schema")
+    refuse(document["kind"] == CANARY_RECOVERY_KIND, "canary_recovery_invalid", "kind")
+    for key in ("action_id", "binding_sha256", "policy_sha256"):
+        refuse(type(document[key]) is str and bool(SHA256.fullmatch(document[key])), "canary_recovery_invalid", key)
+    refuse(type(document["action_version"]) is int and document["action_version"] > 0, "canary_recovery_invalid",
+           "action_version")
+    binding = document["binding"]
+    refuse(isinstance(binding, dict) and set(binding) == CANARY_RECOVERY_BINDING_FIELDS
+           and all(type(value) is str and 0 < len(value) <= 128 for value in binding.values()),
+           "canary_recovery_invalid", "binding")
+    refuse(type(document["policy_id"]) is str and bool(TOKEN.fullmatch(document["policy_id"])),
+           "canary_recovery_invalid", "policy_id")
+    refuse(type(document["job_id"]) is str and bool(TOKEN.fullmatch(document["job_id"])), "canary_recovery_invalid",
+           "job_id")
+    halt = document["halt"]
+    refuse(isinstance(halt, dict) and set(halt) == CANARY_RECOVERY_HALT_FIELDS
+           and (halt["state"], halt["reason_code"]) == (UNKNOWN, CANARY_RECOVERY_HALT_REASON)
+           and type(halt["updated_at"]) is str and 0 < len(halt["updated_at"]) <= 64,
+           "canary_recovery_invalid", "halt")
+    refuse(type(document["lane_retry_evidence"]) is str and bool(EVIDENCE_REF.fullmatch(document["lane_retry_evidence"])),
+           "canary_recovery_invalid", "lane_retry_evidence")
+    refuse(type(document["margin_seconds"]) is int and MIN_RECOVERY_MARGIN <= document["margin_seconds"]
+           <= MAX_RECOVERY_MARGIN, "canary_recovery_invalid", "margin_seconds")
+    refuse(type(document["approved_by"]) is str and bool(ACTOR.fullmatch(document["approved_by"])),
+           "canary_recovery_invalid", "approved_by")
+    return {**document, "binding": dict(binding), "halt": dict(halt)}
+
+
+def canary_recovery_ref(document: dict) -> str:
+    """`sha256:` + the canonical digest of the exact document, as for the lane recovery kinds."""
+    return "sha256:" + digest(document)
+
+
+def recovered_canary(row: dict, recovery: dict, now: str) -> dict:
+    """The next version of a halted canary: REQUESTED with the SAME job id, `canary_recovered`, and the
+    recovery appended. Deliberately NOT `moved`: UNKNOWN stays terminal in `TRANSITIONS` for every other
+    path; only this typed, preflighted recovery writes this one step (INV-OWNER-ACTIONS-001). A recovery
+    that carries a linked lane restart (`rebound`) re-binds the SAME action to the restarted instance: its
+    identity and job stay, the binding and its digest move, and the previous binding is kept in the record."""
+    refuse(row["kind"] == DELIVERY_CANARY and row["state"] == UNKNOWN, "canary_recovery_not_applicable", "state")
+    history = (list(row.get("history") or []) + [{"state": REQUESTED, "at": now,
+                                                   "reason_code": CANARY_RECOVERED}])[-32:]
+    rebound = recovery.get("rebound")
+    binding = {} if not isinstance(rebound, dict) else {"binding": dict(rebound["binding"]),
+                                                        "binding_sha256": digest(rebound["binding"])}
+    return {**row, "state": REQUESTED, "reason_code": CANARY_RECOVERED, "updated_at": now,
+            "version": int(row.get("version") or 0) + 1, "history": history, **binding,
+            "recoveries": [*(row.get("recoveries") or []), recovery]}
+
+
 # ---- projection --------------------------------------------------------------------------------------
 def view(row: dict) -> dict:
     """Bounded projection: identities, states and codes; never report text, manifests or paths."""
@@ -522,10 +635,21 @@ def view(row: dict) -> dict:
                 "job_id", "launches"):
         if row.get(key) is not None:
             shown[key] = row[key]
+    if row.get("recoveries"):
+        # Additive: the typed canary recoveries; ids, digests, codes and times only.
+        shown["recoveries"] = [{key: (record or {}).get(key) for key in (
+            "kind", "evidence_ref", "document_sha256", "approved_by", "halted", "lane", "at")}
+            | ({"rebound": {key: (record.get("rebound") or {}).get(key) for key in (
+                "from_instance_id", "to_instance_id", "restart_evidence", "previous_binding_sha256")}}
+               if isinstance((record or {}).get("rebound"), dict) else {})
+            for record in row["recoveries"]]
     return shown
 
 
-__all__ = ["ASSESSED", "ASSESSING", "ASSESSMENT_ACTION", "ASSESSMENT_SCHEMA", "ASSESSMENT_SENDER", "ASSESSOR",
+__all__ = ["CANARY_RECOVERED", "CANARY_RECOVERY_HALT_REASON", "CANARY_RECOVERY_KIND", "CANARY_RECOVERY_SCHEMA", "LANE_RETRY_KIND",
+           "LANE_RESTART_KIND", "LANE_RESTART_LINK", "linked_restart", "restart_owed_canary",
+           "MIN_RECOVERY_MARGIN", "canary_recovery_ref", "recovered_canary", "validate_canary_recovery",
+           "ASSESSED", "ASSESSING", "ASSESSMENT_ACTION", "ASSESSMENT_SCHEMA", "ASSESSMENT_SENDER", "ASSESSOR",
            "AUTHORITY", "COMPLETED", "DELIVERY_CANARY", "DELIVERY_PLAN", "INTENDED", "INVOKING", "KINDS",
            "MAX_ACTIONS_PER_TICK", "MAX_ASSESSMENT_LAUNCHES", "OWNER_PHASE", "POLICY_SCHEMA", "PUBLISHED",
            "PUBLISHING", "QUESTION", "REFUSED", "REJECTED", "REQUESTED", "RESEARCH_RECEIPT", "STATUS_SCHEMA",

@@ -74,6 +74,11 @@ def require_expected(row: dict, expected: dict | None) -> None:
         raise ClaimGuardRefused("Claim policy selected " + str(row["id"]) + " instead of " + expected["id"])
 
 
+# Provider refusals of the execution's own credential (INV-RECURRENCE-001 containment; never a retry).
+CONTAINED_PROVIDER_CAUSES = frozenset({"codex-provider-usage-limit-exceeded", "claude-provider-usage-limit-exceeded",
+                                       "claude-provider-authentication-failed"})
+
+
 class Workflow:
     """Durable, fenced task graph. External work never holds a database transaction."""
 
@@ -351,9 +356,11 @@ class Workflow:
             return current
 
     def fail_execution(self, task: dict, error: Exception, *, transaction=None) -> dict:
-        # INV-RECURRENCE-001: containment applies to this execution, not an account.
+        # INV-RECURRENCE-001: containment applies to this execution, not an account. A provider usage limit or an
+        # authentication refusal of the credential this execution ran with is contained the same way: the SAME
+        # credential would only be refused again, so it is never replayed and no other credential is substituted.
         confirmed = (isinstance(error, ExecutionFailure)
-                     and error.cause == "codex-provider-usage-limit-exceeded")
+                     and error.cause in CONTAINED_PROVIDER_CAUSES)
         return self.fail(task, type(error).__name__ + ": " + str(error),
                          retryable=not confirmed,
                          failure=error.evidence if isinstance(error, ExecutionFailure) else None,

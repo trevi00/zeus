@@ -225,3 +225,22 @@ def test_prompt_incident_text_cannot_classify_success(monkeypatch):
     monkeypatch.setattr(server, '_receive', lambda *a, **k: next(incoming))
     result = server.run(json.dumps(rejected()), str(ROOT), {'type': 'object'})
     assert result['answer']['accepted'] and 'failure' not in result
+
+
+@pytest.mark.parametrize('cause,contained', [
+    ('claude-provider-usage-limit-exceeded', True),       # HTTP 429 of the execution's own credential
+    ('claude-provider-authentication-failed', True),      # HTTP 401/403 of the execution's own credential
+    ('codex-provider-usage-limit-exceeded', True),
+    ('claude-provider-error-result', False),              # control: an ordinary provider error stays retryable
+])
+def test_a_provider_refusal_of_the_own_credential_is_contained_never_replayed(cause, contained):
+    from codex_harness.adapters.store import MemoryStore
+    workflow = Workflow(MemoryStore(), organization())
+    message = envelope('task.assign', 'lead:research', 'worker:github', 'research', {}, 'fixture')
+    workflow.submit(message)
+    task = workflow.claim('worker:github', 'owner')
+    failed = workflow.fail_execution(task, ExecutionFailure(cause, {'execution_ref': 'fixture'}))
+    assert failed['status'] == ('failed' if contained else 'retry')
+    assert failed['failure'] == {'execution_ref': 'fixture'}
+    again = workflow.claim('worker:github', 'owner')
+    assert (again is None) is contained, 'a contained refusal is never re-claimed (no replay, no fallback)'

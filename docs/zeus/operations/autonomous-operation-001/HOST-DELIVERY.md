@@ -188,6 +188,34 @@ Refusals write nothing: `first_activation_invalid`, `first_activation_unavailabl
 `first_activation_profile_unresolved`, `first_activation_profile_mismatch`, `first_activation_qualification_mismatch`,
 plus the existing `resume_*` refusals (shape, plan, lease, queue, predecessor, conflict).
 
+### Runbook: consumption retry of an expired first activation (INV-HOST-DELIVERY-FIRST-ACTIVATION-001)
+
+Use this only for `blocked` `no_known_good_predecessor` from `awaiting_consumption`, when the owner canary was still
+pending (never failed), the first-activation recovery exists, and the candidate instance still runs unconsumed. It is
+allowed once per delivery.
+
+1. Read `zeus host-delivery status --plan P --lane L` with the controller's runtime. Note `plan_sha256`, the pin, the
+   halt (`updated_at`, `stage_deadline`), the first-activation `evidence_ref`, the target `descriptor_sha256` and
+   `observed_instance_id`.
+2. Before the retry, make everything that follows ready: the gates, bindings and timing. The new window is the plan's
+   `consumption_timeout_seconds` from the retry commit. The Fleet resume must follow within that window minus the gate
+   margin.
+3. Write the owner document `urn:zeus:host-delivery-consumption-retry:1`: exact plan, pin, release, candidate, halt,
+   first-activation evidence, descriptor, observed instance and a conductor approver.
+4. `zeus host-delivery resume --lane L --plan P --plan-sha256 S --document FILE --evidence sha256:<digest of FILE>`.
+   - The live host must show the same instance with that descriptor. Otherwise it refuses and writes nothing.
+   - The receipt shows `awaiting_consumption`, the new interval, the copied halt and one `manual_retries` entry.
+5. Owner canary. The expiry moved the owner's canary action to UNKNOWN `canary_delivery_moved`.
+   - After the lane retry commits, recover it once in the control store:
+     `zeus owner-actions canary-recover --document FILE --evidence sha256:<digest>`.
+   - The document names the exact action, version, binding, policy, job, halt, the lane retry evidence,
+     `margin_seconds` (≥ 600) and a conductor approver.
+   - It returns the SAME action to REQUESTED with the SAME still-queued job. It never re-enqueues or unpauses.
+6. The independent gates resume the Fleet, and the existing job runs.
+   - The owner writes the receipt only if the lane still binds the same instance.
+   - The ordinary tick revalidates the same startup receipt and consumes only that instance.
+   - A second expiry halts again and is exhausted.
+
 ### Runbook: evaluator migration of a merged, check-rejected release (INV-RELEASE-EVALUATOR-MIGRATION-001)
 
 This runbook is only for a merged plan that is `blocked` or `failed` with `release_rejected`, when the rejection came
