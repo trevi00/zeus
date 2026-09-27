@@ -123,10 +123,14 @@ def build_executor(service=None, observer=None, execution_policy=None, knowledge
     if knowledge:
         from codex_harness.adapters.knowledge import PostgresKnowledge
         adapter = PostgresKnowledge(database_url())
+    from codex_harness.adapters.discovery_pressure import pressure
+    observer = observer or build_observer(service.store, "executor")
     return Executor(service, git, artifacts, adapter,
-                    ResearchSources(artifacts),
+                    # INV-DISCOVERY-PRESSURE-001: pressure over THIS process's store (a lane store has no Fleet
+                    # registry, so proactive fetches hold there; exempt intents are unaffected).
+                    ResearchSources(artifacts, pressure=pressure(service.store, observer)),
                     audit_runner=AuditRunner(runtime / "audit-sources", artifacts, host_execution=True),
-                    observer=observer or build_observer(service.store, "executor"),
+                    observer=observer,
                     execution_policy=execution_policy, evidence_profile=profile,
                     # INV-WORKER-SESSION-001: only an entry point that holds a trusted continuation
                     # binding passes an owner; None keeps every other caller's exact fresh path.

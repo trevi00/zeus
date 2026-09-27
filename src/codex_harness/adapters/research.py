@@ -8,14 +8,23 @@ from html import unescape
 from urllib.parse import quote
 from urllib.request import Request, urlopen
 
+from codex_harness.domain.discovery_pressure import (
+    ALLOW,
+    HOLD,
+    PROACTIVE,
+    DiscoveryPaused,
+    validate_intent,
+)
 from codex_harness.domain.model import require, utcnow
 
 
 class ResearchSources:
     URLS = {"github": "https://github.com/trending", "geeknews": "https://news.hada.io/rss/news"}
 
-    def __init__(self, artifacts):
-        self.artifacts = artifacts
+    def __init__(self, artifacts, pressure=None):
+        # INV-DISCOVERY-PRESSURE-001: the control store's pressure evaluator; None holds every PROACTIVE fetch
+        # (fail-closed) and never touches the exempt intents.
+        self.artifacts, self.pressure = artifacts, pressure
 
     def fetch(self, url: str) -> str:
         request = Request(url, headers={"User-Agent": "codex-harness/0.1 (research)"})
@@ -24,8 +33,17 @@ class ResearchSources:
             require(len(data) <= 2_000_000, "Research response exceeds size budget")
             return data.decode("utf-8", errors="replace")
 
-    def collect(self, source: str) -> dict:
+    def collect(self, source: str, *, intent: str) -> dict:
+        """Fetch one feed. The caller states WHY (INV-DISCOVERY-PRESSURE-001): a missing or unknown intent refuses
+        before any IO; a proactive fetch starts only when the pressure evaluator allows it now, and a held one
+        raises `DiscoveryPaused` (never a network error or an empty feed). Exempt intents fetch normally."""
+        validate_intent(intent)
         require(source in self.URLS, "Unknown research source")
+        if intent == PROACTIVE:
+            decision = (self.pressure.admit() if self.pressure is not None
+                        else {"decision": HOLD, "reason_code": "pressure_unavailable"})
+            if decision.get("decision") != ALLOW:
+                raise DiscoveryPaused(decision)
         url = self.URLS[source]
         body = self.fetch(url)
         receipt = self.artifacts.put(body, url)

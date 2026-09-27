@@ -1,0 +1,8 @@
+{
+  "schema": "urn:zeus:discovery-pressure-policy:1",
+  "id": "discovery-pressure-001",
+  "k_pause": 3,
+  "k_resume": 1,
+  "threshold_status": "suggested_unconfirmed",
+  "input_max_age_seconds": 300
+}

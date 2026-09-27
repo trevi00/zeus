@@ -332,31 +332,45 @@ def binding(job: dict) -> dict:
             "dependencies": list(job["dependencies"]), "goal": dict(job["goal"])}
 
 
+def job_blockers(job: dict, jobs: dict, config: dict, aliases=None) -> list[str]:
+    """EVERY reason this queued job cannot be admitted now, in the order `blocking_reason` checks them
+    (it returns the first). Capacity and pause are fleet-wide and checked by the caller. A read-only
+    projection needs the complete set: a job that is lane-busy AND has a failed dependency is not
+    waiting only for its lane (INV-DISCOVERY-PRESSURE-001)."""
+    reasons = []
+    if job["manifest"].get("budget") != config["budget"]:
+        reasons.append("budget_stale")
+    reserving = [other for other in jobs.values() if other["status"] in RESERVING]
+    if any(other["lane"] == job["lane"] for other in reserving):
+        reasons.append("lane_busy")
+    for dependency in job["dependencies"]:
+        other = jobs.get(dependency)
+        if other is None:
+            reasons.append("dependency_missing")
+            break
+        if other["status"] in DEPENDENCY_BLOCKING:
+            reasons.append("dependency_" + other["status"])
+            break
+        if other["status"] != ACCEPTED:
+            reasons.append("dependency_waiting")
+            break
+    mine = resolve_repository(job["repository"], aliases)
+    for other in reserving:
+        if resolve_repository(other["repository"], aliases) == mine and conflicting_paths(
+                job["manifest"]["plan"]["allowed_paths"], other["manifest"]["plan"]["allowed_paths"]):
+            reasons.append("path_conflict")
+            break
+    return reasons
+
+
 def blocking_reason(job: dict, jobs: dict, config: dict, aliases=None) -> str | None:
     """Why this queued job cannot be admitted now, or None. Capacity and pause are fleet-wide and
     checked by the caller; this covers a stale budget, the lane, the dependencies and the path
     exclusion. A job frozen with ceilings other than the effective ones is never dispatched.
     `aliases` resolves the repository identities of jobs frozen before an owner relocation, so the
     path exclusion still compares two jobs of one repository under its current path."""
-    if job["manifest"].get("budget") != config["budget"]:
-        return "budget_stale"
-    reserving = [other for other in jobs.values() if other["status"] in RESERVING]
-    if any(other["lane"] == job["lane"] for other in reserving):
-        return "lane_busy"
-    for dependency in job["dependencies"]:
-        other = jobs.get(dependency)
-        if other is None:
-            return "dependency_missing"
-        if other["status"] in DEPENDENCY_BLOCKING:
-            return "dependency_" + other["status"]
-        if other["status"] != ACCEPTED:
-            return "dependency_waiting"
-    mine = resolve_repository(job["repository"], aliases)
-    for other in reserving:
-        if resolve_repository(other["repository"], aliases) == mine and conflicting_paths(
-                job["manifest"]["plan"]["allowed_paths"], other["manifest"]["plan"]["allowed_paths"]):
-            return "path_conflict"
-    return None
+    reasons = job_blockers(job, jobs, config, aliases)
+    return reasons[0] if reasons else None
 
 
 def select_admission(config: dict, paused: bool, jobs: dict, budget_exhausted: bool, aliases=None,

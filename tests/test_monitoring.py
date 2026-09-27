@@ -180,7 +180,11 @@ def test_collector_entrypoint_is_read_only_and_needs_no_executor(monkeypatch, tm
     # additive worker_sessions envelope (INV-WORKER-SESSION-001) and the additive continuation
     # envelope (INV-CONTINUATION-001), and the additive lane_sessions envelope (the CLI passes a
     # lane resolver).
-    assert [line['event'] for line in lines] == (['startup'] + ['source_state'] * 12 + ['shutdown']) * 2
+    # ... and the additive discovery_pressure envelope (INV-DISCOVERY-PRESSURE-001).
+    assert [line['event'] for line in lines] == (['startup'] + ['source_state'] * 13 + ['shutdown']) * 2
+    pressure = snapshot['sources']['discovery_pressure']
+    assert pressure['status'] == 'ok' and pressure['data'] == {'schema': 'urn:zeus:discovery-pressure:1',
+                                                               'evaluated': False, 'row': None}
     assert snapshot['sources']['observations']['status'] == 'ok'
     # Unregistered fleet: an ok envelope with the fixed empty shape; the read-only store is unchanged
     # (asserted above) and no executor was built.
@@ -316,7 +320,8 @@ def test_collect_keeps_source_failures_independent(monkeypatch):
     assert result['schema'] == 'harness-monitor.v1'
     assert result['scope'] == {'label': 'repository ' + Path('.').resolve().name, 'docker': 'compose', 'containers': None}
     assert set(sources) == {'database', 'docker', 'redis', 'fleet', 'research_programs', 'portfolio',
-                            'fleet_backlog', 'host_delivery', 'worker_sessions', 'continuation'}
+                            'fleet_backlog', 'host_delivery', 'worker_sessions', 'continuation', 'discovery_pressure'}
+    assert sources['discovery_pressure']['status'] == 'unavailable' and sources['discovery_pressure']['data'] is None
     # The additive continuation source (INV-CONTINUATION-001) reads the same store: unavailable with
     # the exception TYPE only, never an empty intent list reported as a healthy read.
     assert sources['continuation']['status'] == 'unavailable'

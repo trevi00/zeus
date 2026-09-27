@@ -87,7 +87,7 @@ def stop(chain, row):
 def child_records(chain, row):
     """LABELLED: the child's own effects, written in-process by the REAL runner under the launch id."""
     chain.env.programs.token = lambda: row["launch_id"]
-    return chain.env.runner.tick(PROGRAM)
+    return chain.env.runner.tick(PROGRAM, intent="incident")
 
 
 # ---- T3-1: the tick never joins the child; the other policy advances meanwhile -----------------------------
@@ -238,8 +238,9 @@ def test_the_child_argv_is_the_existing_cli_with_the_launch_id_as_cycle_owner_in
     assert port.start(launch, PROGRAM, "harness")["cached"] is False
     assert port.start(launch, PROGRAM, "harness")["cached"] is True
     [(argv, kwargs)] = captured
-    assert argv[-9:] == ["--", *adapter.DEFAULT_ARGV[1:], "research-program", "run", PROGRAM, "--ticks", "1",
-                         "--cycle-owner", launch][-9:]
+    # INV-DISCOVERY-PRESSURE-001: the owner-dispatched launch states its exempt intent explicitly.
+    assert argv[-11:] == ["--", *adapter.DEFAULT_ARGV[1:], "research-program", "run", PROGRAM, "--ticks", "1",
+                          "--cycle-owner", launch, "--intent", "incident"][-11:]
     assert kwargs["cwd"] == str(tmp_path / "repo-harness")
     assert kwargs["env"]["ZEUS_REPOSITORY"] == kwargs["env"]["HARNESS_REPOSITORY"] == str(tmp_path / "repo-harness")
     # The guardian bound comes from domain.policy; never restated here.
@@ -253,13 +254,14 @@ def test_the_cycle_owner_option_is_one_tick_and_one_exact_token():
 
     parser = argparse.ArgumentParser()
     add_program_parser(parser.add_subparsers(dest="command"))
-    parsed = parser.parse_args(["research-program", "run", PROGRAM, "--ticks", "1", "--cycle-owner", "a" * 64])
+    parsed = parser.parse_args(["research-program", "run", PROGRAM, "--ticks", "1", "--cycle-owner", "a" * 64,
+                                "--intent", "incident"])
     assert parsed.cycle_owner == "a" * 64
-    assert parser.parse_args(["research-program", "run", PROGRAM, "--ticks", "2"]).cycle_owner is None
+    assert parser.parse_args(["research-program", "run", PROGRAM, "--ticks", "2", "--intent", "incident"]).cycle_owner is None
     service = SimpleNamespace(store=None)
     for ticks, owner in ((2, "a" * 64), (1, "A" * 64), (1, "a" * 63), (1, "../x")):
         with pytest.raises(ProgramRefused, match="cycle_owner_invalid"):
-            program_run(service, argparse.Namespace(program_id=PROGRAM, ticks=ticks, cycle_owner=owner))
+            program_run(service, argparse.Namespace(program_id=PROGRAM, ticks=ticks, cycle_owner=owner, intent="incident"))
 
 
 def test_one_owner_process_ticks_every_named_policy_and_one_refusal_never_stops_the_others():

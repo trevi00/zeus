@@ -275,7 +275,7 @@ def test_capture_commit_writes_only_the_snapshot_and_ref_and_leaves_the_checkout
 def test_two_ticks_dedup_select_once_capture_and_record_the_rejected_council(tmp_path):
     env = build(tmp_path, outages=("geeknews",))
     cfg = registered(env)
-    first = env.runner.tick("rp-001")
+    first = env.runner.tick("rp-001", intent="proactive")
     assert first["selected"] == "local-note" and first["result"] == "rejected" and first["run_id"] == "rp-001.c001"
     assert first["state"] == "active" and first["reason_code"] == "fixture_rejected"
     view = env.programs.status("rp-001")
@@ -303,10 +303,10 @@ def test_two_ticks_dedup_select_once_capture_and_record_the_rejected_council(tmp
     eligible = [c for c in candidates.values() if c["status"] == "eligible"]
     assert eligible[0]["url"] == "https://github.com/acme/pgtool" and eligible[0]["reason"] == "keyword:postgres in summary"
     # ----- second tick: not due, then due: dedup, cap exhausted still collects -----
-    assert env.runner.tick("rp-001") == {"reserved": False, "reason": "not_due", "state": "active"}
+    assert env.runner.tick("rp-001", intent="proactive") == {"reserved": False, "reason": "not_due", "state": "active"}
     env.clock.value = "2028-01-01T02:00:00+00:00"
     env.sources.outages.clear()
-    second = env.runner.tick("rp-001")
+    second = env.runner.tick("rp-001", intent="proactive")
     assert second["selected"] is None and second["reason"] == "adoption_cap_reached" and second["state"] == "completed"
     view = env.programs.status("rp-001")
     cycle2 = view["cycle_receipts"][1]
@@ -315,7 +315,7 @@ def test_two_ticks_dedup_select_once_capture_and_record_the_rejected_council(tmp
     assert view["state"] == "completed" and view["stop_reason"] == "max_cycles_reached" and view["adoptions"]["dispatched"] == 1
     assert len(env.council.manifests) == 1, "at most one dispatch per tick and none after the cap"
     assert candidates_seen(env, "local-note") == 2
-    assert env.runner.tick("rp-001")["reason"] == "program_completed"
+    assert env.runner.tick("rp-001", intent="proactive")["reason"] == "program_completed"
     text = json.dumps(view)
     assert CANARY not in text and "template" not in view and str(env.root) not in text
     report = (env.runtime / "research-program" / "rp-001" / "report.md").read_text(encoding="utf-8")
@@ -335,7 +335,7 @@ def test_unknown_council_and_crash_after_row_block_the_program_and_keep_the_clai
     store = MemoryStore()
     env = build(tmp_path, store=store, council=FakeCouncil(store, status="unknown"))
     registered(env)
-    receipt = env.runner.tick("rp-001")
+    receipt = env.runner.tick("rp-001", intent="proactive")
     assert receipt["result"] == "unknown" and receipt["state"] == "blocked"
     view = env.programs.status("rp-001")
     assert view["blocked_reason"] == "council_unknown:fixture_unknown" and view["cycles"]["completed"] == 1
@@ -343,16 +343,16 @@ def test_unknown_council_and_crash_after_row_block_the_program_and_keep_the_clai
     with pytest.raises(ProgramRefused, match="program_blocked"):
         env.programs.resume("rp-001")
     assert env.programs.candidate("rp-001", "local-note")["status"] == "claimed"
-    assert env.runner.run("rp-001", 3)["ticks"][0]["reason"] == "program_blocked"
+    assert env.runner.run("rp-001", 3, intent="proactive")["ticks"][0]["reason"] == "program_blocked"
     store2 = MemoryStore()
     crash = build(tmp_path / "b", store=store2, council=FakeCouncil(store2, status="accepted", raise_after_row=True))
     registered(crash)
-    receipt = crash.runner.tick("rp-001")
+    receipt = crash.runner.tick("rp-001", intent="proactive")
     assert receipt["result"] == "accepted" and receipt["state"] == "active", "the row, not the exception, is the authority"
     store3 = MemoryStore()
     refused = build(tmp_path / "c", store=store3, council=FakeCouncil(store3, status=None))
     registered(refused)
-    receipt = refused.runner.tick("rp-001")
+    receipt = refused.runner.tick("rp-001", intent="proactive")
     assert receipt["result"] == "failed" and receipt["reason_code"] == "council_refused:RuntimeError" and receipt["state"] == "blocked"
     assert CANARY not in json.dumps(refused.programs.status("rp-001"))
 
@@ -361,7 +361,7 @@ def test_capture_failure_is_persisted_and_no_council_starts(tmp_path):
     env = build(tmp_path)
     registered(env)
     git(env.root, "update-ref", "refs/zeus/research/rp-001/001", env.head)  # a stale ref from an earlier attempt
-    receipt = env.runner.tick("rp-001")
+    receipt = env.runner.tick("rp-001", intent="proactive")
     assert receipt["failure"] == {"stage": "capture", "code": "capture_ref_exists"} and receipt["state"] == "blocked"
     view = env.programs.status("rp-001")
     assert view["cycle_receipts"][0]["status"] == "failed" and view["cycle_receipts"][0]["council"] is None
@@ -372,27 +372,27 @@ def test_capture_failure_is_persisted_and_no_council_starts(tmp_path):
 def test_ticks_stop_at_the_requested_cap_and_a_reserved_cycle_blocks_fetching(tmp_path):
     env = build(tmp_path)
     registered(env, max_cycles=5, max_adoptions=0)
-    result = env.runner.run("rp-001", 2)
+    result = env.runner.run("rp-001", 2, intent="proactive")
     assert len(result["ticks"]) == 2 and result["ticks"][0]["reason"] == "adoption_cap_reached"
     assert result["ticks"][1]["reason"] == "not_due", "the clock did not advance; the second tick is not_due"
     assert env.programs.status("rp-001")["cycles"]["completed"] == 1
     env.clock.value = "2028-01-01T02:00:00+00:00"
     env.programs.reserve_cycle("rp-001", env.identity)  # a crashed owner: reserved, never finished
     env.sources.calls.clear()
-    assert env.runner.tick("rp-001")["reason"] == "busy" and env.sources.calls == [], "busy: no fetch, no model"
+    assert env.runner.tick("rp-001", intent="proactive")["reason"] == "busy" and env.sources.calls == [], "busy: no fetch, no model"
     with pytest.raises(ProgramRefused, match="ticks_invalid"):
-        env.runner.run("rp-001", 0)
+        env.runner.run("rp-001", 0, intent="proactive")
 
 
 def test_local_verification_failure_marks_local_unavailable_not_empty(tmp_path):
     env = build(tmp_path)
     bad = dict(config(env.head)["local_candidates"][0], sha256="0" * 64)
     registered(env, local_candidates=[bad])
-    receipt = env.runner.tick("rp-001")
+    receipt = env.runner.tick("rp-001", intent="proactive")
     cycle = env.programs.status("rp-001")["cycle_receipts"][0]
     assert cycle["sources"]["local"] == {"status": "unavailable", "code": "source_digest_mismatch", "artifact": None, "fetched_at": None, "items": None}
     assert cycle["counts"]["discovered"] == 3 and receipt["selected"] is not None, "external work continues, degraded is visible"
-    status, items = collect_live(FakeSources(FileArtifacts(str(tmp_path / "a")), outages=("github", "geeknews")))
+    status, items = collect_live(FakeSources(FileArtifacts(str(tmp_path / "a")), outages=("github", "geeknews")), intent="proactive")
     assert items == [] and {s["status"] for s in status.values()} == {"unavailable"}
     assert CANARY not in json.dumps(status)
 
@@ -400,7 +400,7 @@ def test_local_verification_failure_marks_local_unavailable_not_empty(tmp_path):
 def test_monitor_projection_is_additive_bounded_and_read_only(tmp_path):
     env = build(tmp_path)
     registered(env)
-    env.runner.tick("rp-001")
+    env.runner.tick("rp-001", intent="proactive")
     facts = monitoring.research_program_facts(env.store)
     assert facts["schema"] == "urn:zeus:research-program-monitor:1" and facts["truncated"] is False
     program = facts["programs"][0]
@@ -429,9 +429,9 @@ def test_r1_wrong_repository_refuses_before_any_effect_and_the_registered_root_c
     assert repository_identity(other) != env.identity
     wrong = build(tmp_path / "w", store=env.store, clock=env.clock, root=other, head=env.head)
     with pytest.raises(ProgramRefused, match="repository_mismatch"):
-        wrong.runner.tick("rp-001")
+        wrong.runner.tick("rp-001", intent="proactive")
     with pytest.raises(ProgramRefused, match="repository_mismatch"):
-        wrong.runner.run("rp-001", 2)
+        wrong.runner.run("rp-001", 2, intent="proactive")
     with env.store.transaction() as tx:
         assert tx.scan(BUCKET_CYCLES) == [] and tx.get("research_programs", "rp-001")["next_cycle"] == 1, "0 new cycles"
     assert wrong.sources.calls == [] and wrong.council.manifests == [], "0 fetches, 0 council calls"
@@ -439,7 +439,7 @@ def test_r1_wrong_repository_refuses_before_any_effect_and_the_registered_root_c
         assert git(root, "for-each-ref", "refs/zeus/").stdout == "", "0 capture refs"
     assert not (wrong.runtime / "research-program").exists(), "0 log/filesystem effects"
     assert env.programs.status("rp-001")["state"] == "active" and env.programs.status("rp-001")["cycles"]["completed"] == 0
-    receipt = env.runner.tick("rp-001")
+    receipt = env.runner.tick("rp-001", intent="proactive")
     assert receipt["reserved"] and receipt["selected"] == "local-note" and receipt["result"] == "rejected", "matching root continues"
 
 
@@ -449,7 +449,7 @@ def test_r2_actual_manifest_file_write_failure_is_a_durable_blocked_receipt_with
     manifests = env.runtime / "research-program" / "rp-001" / "manifests"
     manifests.parent.mkdir(parents=True)
     manifests.write_text("a regular file where the manifest directory must be created\n", encoding="utf-8")  # real OS failure
-    receipt = env.runner.tick("rp-001")
+    receipt = env.runner.tick("rp-001", intent="proactive")
     assert receipt["failure"]["stage"] == "manifest_file" and receipt["failure"]["code"] == "FileExistsError"
     assert receipt["failure"]["recorded"] is True and receipt["state"] == "blocked" and receipt["result"] is None
     assert env.council.manifests == [], "zero council calls"
@@ -479,7 +479,7 @@ def test_r2_injected_artifact_failure_and_unavailable_store_keep_ownership_hones
             raise PermissionError("fixture: manifest artifact denied " + CANARY)
         return real_put(body, source)
     monkeypatch.setattr(env.runner.artifacts, "put", failing_put)
-    receipt = env.runner.tick("rp-001")
+    receipt = env.runner.tick("rp-001", intent="proactive")
     assert receipt["failure"]["stage"] == "manifest_artifact" and receipt["failure"]["code"] == "PermissionError"
     assert receipt["state"] == "blocked" and receipt["failure"]["recorded"] is True and env.council.manifests == []
     view = env.programs.status("rp-001")
@@ -508,7 +508,7 @@ def test_r2_injected_artifact_failure_and_unavailable_store_keep_ownership_hones
             raise PermissionError("fixture " + CANARY)
         return real_put2(body, source)
     monkeypatch.setattr(env2.runner.artifacts, "put", cut_then_fail)
-    receipt = env2.runner.tick("rp-001")
+    receipt = env2.runner.tick("rp-001", intent="proactive")
     assert receipt["failure"] == {"stage": "manifest_artifact", "code": "PermissionError", "recorded": False,
                                   "record_code": "OSError", "capture": receipt["failure"]["capture"]}
     assert receipt["state"] == "unknown" and receipt["report"] is None and env2.council.manifests == []

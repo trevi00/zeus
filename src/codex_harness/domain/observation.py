@@ -172,6 +172,13 @@ REGISTRY = {
     "operations.backlog_unavailable": {"plan_id": _S, "item_id": _S, "lane": _S, "error_type": _N,
                                        "deferrals": _I, "exhausted": _B},
     "operations.backlog_recovered": {"plan_id": _S, "item_id": _S, "lane": _S, "deferrals": _I},
+    # INV-DISCOVERY-PRESSURE-001: one transition of the proactive discovery pressure row. States, decisions,
+    # counts, the completeness flag and the policy digest only; the reason travels as the reason_code.
+    # W and C are null whenever they are not known, never 0.
+    "operations.discovery_pressure_changed": {"version": _I, "from_state": _N, "to_state": _S,
+                                              "from_decision": _N, "to_decision": _S, "waiting": _NI,
+                                              "capacity": _NI, "complete": _B, "policy_digest": _N,
+                                              "evaluated_at": _S},
     # INV-HOST-DELIVERY-001: what one host delivery tick did. Plan, release, target and instance
     # IDENTIFIERS, descriptor DIGESTS, fixed stage/outcome codes and counts only - never a PR title,
     # a check log, a descriptor body, a host path, a command line or an exception message. Entering

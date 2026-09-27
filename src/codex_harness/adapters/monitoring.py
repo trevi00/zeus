@@ -634,6 +634,15 @@ def lane_session_facts(store, resolve):
                          'lanes_unavailable': len(views) - observed, 'uninstrumented': [UNINSTRUMENTED]}}
 
 
+def discovery_pressure_facts(store):
+    """INV-DISCOVERY-PRESSURE-001 projection (`urn:zeus:discovery-pressure:1`) from store reads only: the
+    recorded proactive-discovery decision, its hysteresis state, W/C (null when unknown, never 0), occupancy,
+    basis and policy, or `evaluated: false` when no evaluator ever ran. Reading never evaluates or writes; a
+    store failure propagates so the envelope becomes `unavailable`."""
+    from codex_harness.application.discovery_pressure import status
+    return status(store)
+
+
 def scope_label(repository, label=None):
     """ZEUS_MONITOR_SCOPE names what is observed; the default is the repository name. It is a
     label for the page toolbar, not a status or success claim."""
@@ -675,7 +684,10 @@ def collect(service, artifacts, repository, redis_url, containers=None, scope=No
             'worker_sessions': lambda: worker_session_facts(service.store),
             # Additive continuation envelope (INV-CONTINUATION-001): same read-only store, fails
             # independently, and never ticks, dispatches or admits what it observes.
-            'continuation': lambda: continuation_facts(service.store)}
+            'continuation': lambda: continuation_facts(service.store),
+            # Additive discovery-pressure envelope (INV-DISCOVERY-PRESSURE-001): same read-only store, fails
+            # independently, and never evaluates, initializes or writes the pressure row.
+            'discovery_pressure': lambda: discovery_pressure_facts(service.store)}
     if runtime is not None:
         jobs['observations'] = lambda: observation_facts(service.store, runtime)
     if lanes is not None:

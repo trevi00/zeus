@@ -1143,7 +1143,8 @@ class Executor:
                 result = self.audit_execution.execute(task)
             elif action == "research":
                 require(self.research is not None, "Research provider unavailable")
-                sources = self.research.collect(details.get("source", "github"))
+                # INV-DISCOVERY-PRESSURE-001: the task states its intent; a missing one refuses before any fetch.
+                sources = self.research.collect(details.get("source", "github"), intent=details.get("intent"))
                 if details.get("source", "github") == "github":
                     shortlist = self._run(agent, task["id"],
                         "Shortlist exactly one repository URL from the collected entries for detailed evaluation",

@@ -13,6 +13,7 @@ from codex_harness.adapters.operation_cli import GitSource, bind_goal, refusal
 from codex_harness.adapters.providers import packaged_policy
 from codex_harness.application.dge import DgeRefused
 from codex_harness.application.research_program import ResearchProgram
+from codex_harness.domain.discovery_pressure import INTENTS, PROACTIVE
 from codex_harness.domain.research_investigations import (
     CONTRACT_SCHEMA,
     FOLLOWUP_SCHEMA,
@@ -34,6 +35,10 @@ def add_parser(commands) -> None:
     run = sub.add_parser("run", help="Run up to N collection ticks under the program bounds")
     run.add_argument("program_id")
     run.add_argument("--ticks", type=int, required=True, help="Requested cap for this invocation; never above max_cycles")
+    # INV-DISCOVERY-PRESSURE-001: why this run fetches external feeds; no default and no inference.
+    run.add_argument("--intent", required=True, choices=INTENTS,
+                     help="proactive (pressure-gated) or an exempt reason: user_request, incident, "
+                          "existing_work_result, task_required")
     run.add_argument("--cycle-owner", default=None, dest="cycle_owner",
                      help="64-hex owner token of the ONE cycle this run reserves (--ticks 1 only): the owner-actions "
                           "launch id, so its observer binds the cycle to that launch and never to a number alone")
@@ -80,11 +85,18 @@ def run(service, args) -> dict:
     programs = ResearchProgram(service.store) if owner is None else ResearchProgram(service.store, token=lambda: owner)
     repository, runtime = repository_root(), runtime_dir()
     artifacts = FileArtifacts(str(runtime / "artifacts"))
-    sources = ResearchSources(artifacts)
+    evaluator = None
+    if args.intent == PROACTIVE:
+        # Only a proactive run consults pressure, and the evaluator's transitions need the mandatory audit
+        # observer; exempt runs keep their exact lightweight path (INV-DISCOVERY-PRESSURE-001).
+        from codex_harness.adapters.discovery_pressure import pressure
+        from codex_harness.bootstrap import build_observer
+        evaluator = pressure(service.store, build_observer(service.store, "discovery-pressure"))
+    sources = ResearchSources(artifacts, pressure=evaluator)
     runner = ProgramRunner(service, programs, sources, GitSource(repository), GitCapture(repository),
                            CallBudget(), artifacts, runtime, council=autonomous_cli.run, github_detail=sources.github_detail,
                            repository=repository_identity(repository))  # R1: current root, checked before any tick effect
-    result = runner.run(args.program_id, args.ticks)
+    result = runner.run(args.program_id, args.ticks, intent=args.intent)
     bad = any(t.get("failure") or t.get("result") in {"failed", "unknown"} for t in result["ticks"])
     return {**result, "exit_code": 1 if bad else 0}
 

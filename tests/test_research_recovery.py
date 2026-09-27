@@ -146,7 +146,7 @@ def failed_world(tmp_path, council=PublicationFailingCouncil, store=None):
     cfg = validate_config(config(env.head, investigation_source=dict(SOURCE)), POLICY)
     env.programs.register(cfg, env.identity, [])
     env.programs.resume("rp-001")
-    tick = env.runner.tick("rp-001")
+    tick = env.runner.tick("rp-001", intent="incident")
     assert tick["investigation"] == INVESTIGATION
     return env, tick
 
@@ -241,7 +241,7 @@ def test_one_owner_request_fences_the_old_assignment_and_one_replacement_is_clai
 
     env.programs.resume("rp-002")
     runner = replacement_runner(env)
-    tick = runner.tick("rp-002")
+    tick = runner.tick("rp-002", intent="incident")
     assert tick["investigation"] == INVESTIGATION and tick["result"] == "accepted" and tick["run_id"] == "rp-002.c001"
     views = {d["id"]: d for d in env.programs.dispatches()}
     assert set(views) == {INVESTIGATION, REPLACEMENT}
@@ -370,7 +370,7 @@ def test_an_unavailable_transport_refuses_keeps_the_fence_and_a_later_proof_auth
     views = {d["id"]: d for d in env.programs.dispatches()}
     assert views[INVESTIGATION]["current"] is True, "a fenced request authorizes nothing"
     env.programs.resume("rp-002")
-    assert replacement_runner(env).tick("rp-002")["selected"] != "inv-" + INVESTIGATION[:24]
+    assert replacement_runner(env).tick("rp-002", intent="incident")["selected"] != "inv-" + INVESTIGATION[:24]
     with env.store.transaction() as tx:
         assert tx.get(BUCKET_DISPATCHES, REPLACEMENT) is None
     assert history(env.store) == before
@@ -434,11 +434,11 @@ def test_concurrent_and_restarted_requests_and_ticks_create_one_replacement(tmp_
     cfg = validate_config(config(env.head, id="rp-003", investigation_source=dict(SOURCE)), POLICY)
     env.programs.register(cfg, env.identity, [])
     env.programs.resume("rp-003")
-    assert replacement_runner(env).tick("rp-003").get("investigation") is None
+    assert replacement_runner(env).tick("rp-003", intent="incident").get("investigation") is None
     env.programs.resume("rp-002")
     ticks = []
     runners = [replacement_runner(env) for _ in range(2)]
-    workers = [threading.Thread(target=lambda r=r: ticks.append(r.tick("rp-002"))) for r in runners]
+    workers = [threading.Thread(target=lambda r=r: ticks.append(r.tick("rp-002", intent="incident"))) for r in runners]
     for worker in workers:
         worker.start()
     for worker in workers:
@@ -456,7 +456,7 @@ def test_a_failed_replacement_is_held_and_never_opens_a_second_recovery(tmp_path
     document = request(env, sha)
     env.programs.recover_dispatch(document, FakeTransport())
     env.programs.resume("rp-002")
-    tick = replacement_runner(env, status="failed").tick("rp-002")
+    tick = replacement_runner(env, status="failed").tick("rp-002", intent="incident")
     assert tick["result"] == "failed" and env.programs.status("rp-002")["state"] == "blocked"
     views = {d["id"]: d for d in env.programs.dispatches()}
     assert views[REPLACEMENT]["current"] is True and views[REPLACEMENT]["result"] == "failed"
@@ -485,7 +485,7 @@ def test_postgres_concurrent_requests_record_one_lineage_and_one_replacement(tmp
         thread.join()
     assert len(results) == 3 and all(r["recovered"] for r in results)
     env.programs.resume("rp-002")
-    assert replacement_runner(env).tick("rp-002")["result"] == "accepted"
+    assert replacement_runner(env).tick("rp-002", intent="incident")["result"] == "accepted"
     with env.store.transaction() as tx:
         assert len(tx.scan(BUCKET_RECOVERIES)) == 1 and len(tx.scan("outbox_quarantine")) == 1
         assert sorted(r["id"] for r in tx.scan(BUCKET_DISPATCHES)) == [INVESTIGATION, REPLACEMENT]
@@ -840,7 +840,7 @@ def test_explicit_revocation_blocks_the_late_original_and_authorizes_exactly_one
 
     env.programs.resume("rp-002")
     runner = replacement_runner(env)
-    tick = runner.tick("rp-002")
+    tick = runner.tick("rp-002", intent="incident")
     assert tick["investigation"] == INVESTIGATION and tick["result"] == "accepted"
     with env.store.transaction() as tx:
         assert tx.get(BUCKET_RECOVERIES, INVESTIGATION)["state"] == "claimed"
@@ -1048,7 +1048,7 @@ def test_a_missing_changed_or_corrupt_retained_fence_holds_replay_and_the_replac
     restarted = ResearchProgram(env.store, clock=env.clock)
     assert refused(restarted.recover_dispatch, document, None) == reason
     env.programs.resume("rp-002")
-    tick = replacement_runner(env).tick("rp-002")
+    tick = replacement_runner(env).tick("rp-002", intent="incident")
     assert tick.get("investigation") is None and tick["selected"] != "inv-" + INVESTIGATION[:24], \
         "no replacement claim on a held revocation (an ordinary local candidate may still run)"
     with env.store.transaction() as tx:
@@ -1083,7 +1083,7 @@ def test_a_failed_replacement_after_revocation_is_held(tmp_path):
     _, sha = replacement(env)
     env.programs.recover_dispatch(revocation(env, sha), None)
     env.programs.resume("rp-002")
-    assert replacement_runner(env, status="failed").tick("rp-002")["result"] == "failed"
+    assert replacement_runner(env, status="failed").tick("rp-002", intent="incident")["result"] == "failed"
     _, next_sha = replacement(env, "rp-004")
     assert refused(env.programs.recover_dispatch, revocation(env, next_sha, "rp-004"), None) == "recovery_conflict"
     assert isinstance(late_delivery(env), ContractError) and no_execution(env)
@@ -1199,7 +1199,7 @@ def read_only_world(tmp_path, store=None):
     runner = build(env.root.parent, store=env.store, root=env.root, head=env.head).runner
     council = ForeignMessageCouncil(env.store)
     runner.council = council
-    tick = runner.tick("rp-002")
+    tick = runner.tick("rp-002", intent="incident")
     assert tick["investigation"] == INVESTIGATION and tick["result"] == "failed", tick
     assert council.receipts[0]["reason_code"] == "foreign_message"
     return env, council, runner
@@ -1283,7 +1283,7 @@ def test_one_explicit_successor_of_the_exact_failed_head_is_claimed_once_and_his
 
     env.programs.resume("rp-003")
     runner.council = FakeCouncil(env.store, status="accepted")
-    tick = runner.tick("rp-003")
+    tick = runner.tick("rp-003", intent="incident")
     assert tick["investigation"] == INVESTIGATION and tick["result"] == "accepted" and tick["run_id"] == "rp-003.c001"
     views = {d["id"]: d for d in env.programs.dispatches()}
     assert set(views) == {INVESTIGATION, REPLACEMENT, SECOND} and views[SECOND]["current"] is True
@@ -1431,7 +1431,7 @@ def test_accepted_rejected_or_other_failed_predecessors_are_never_succeeded(tmp_
     _, sha = replacement(env)
     env.programs.recover_dispatch(revocation(env, sha), None)
     env.programs.resume("rp-002")
-    assert replacement_runner(env, status=status).tick("rp-002")["investigation"] == INVESTIGATION
+    assert replacement_runner(env, status=status).tick("rp-002", intent="incident")["investigation"] == INVESTIGATION
     _, sha3 = replacement(env, "rp-003")
     assert refused(env.programs.recover_dispatch, successor_request(env, sha3), None, ForeignMessageCouncil(env.store).artifacts) \
         == reason
@@ -1496,7 +1496,7 @@ def test_a_broken_retained_chain_holds_replay_and_the_successor_claim(tmp_path, 
     assert refused(ResearchProgram(env.store, clock=env.clock).recover_dispatch, document, None, None) == reason
     env.programs.resume("rp-003")
     runner.council = FakeCouncil(env.store, status="accepted")
-    tick = runner.tick("rp-003")
+    tick = runner.tick("rp-003", intent="incident")
     assert tick.get("investigation") is None, "a held chain never releases the successor claim"
     with env.store.transaction() as tx:
         assert tx.get(BUCKET_DISPATCHES, SECOND) is None
@@ -1560,7 +1560,7 @@ def test_postgres_successor_requests_serialize_to_one_authorization(tmp_path, is
     assert len(results) == 3 and sum(not r["cached"] for r in results) == 1
     env.programs.resume("rp-003")
     runner.council = FakeCouncil(env.store, status="accepted")
-    assert runner.tick("rp-003")["result"] == "accepted"
+    assert runner.tick("rp-003", intent="incident")["result"] == "accepted"
     with env.store.transaction() as tx:
         assert len(tx.scan("research_dispatch_successors")) == 1 and len(tx.scan("research_dispatch_heads")) == 1
         assert tx.get(BUCKET_DISPATCHES, SECOND)["run_id"] == "rp-003.c001"
@@ -1601,7 +1601,7 @@ def test_postgres_revocation_and_admission_serialize_to_one_winner(tmp_path, iso
     assert len(authorized) == 2 and sum(not r["cached"] for r in authorized) == 1 and tasks == []
     assert isinstance(late_delivery(env), ContractError) and no_execution(env)
     env.programs.resume("rp-002")
-    assert replacement_runner(env).tick("rp-002")["result"] == "accepted"
+    assert replacement_runner(env).tick("rp-002", intent="incident")["result"] == "accepted"
     with env.store.transaction() as tx:
         assert len(tx.scan(BUCKET_RECOVERIES)) == 1 and len(tx.scan("outbox_quarantine")) == 1
         assert sorted(r["id"] for r in tx.scan(BUCKET_DISPATCHES)) == [INVESTIGATION, REPLACEMENT]
@@ -1699,7 +1699,7 @@ def current_world(tmp_path, **council):
     env.programs.resume("rp-002")
     runner = build(env.root.parent, store=env.store, root=env.root, head=env.head).runner
     runner.council = ContractFailureCouncil(env.store, **council)
-    tick = runner.tick("rp-002")
+    tick = runner.tick("rp-002", intent="incident")
     assert tick["investigation"] == INVESTIGATION and tick["result"] == "failed", tick
     return env, runner.council
 
@@ -1793,7 +1793,7 @@ def test_one_explicit_successor_of_the_initial_contract_failure_is_claimed_once_
 
     env.programs.resume("rp-002")
     runner = replacement_runner(env)
-    tick = runner.tick("rp-002")
+    tick = runner.tick("rp-002", intent="incident")
     assert tick["investigation"] == INVESTIGATION and tick["result"] == "accepted" and tick["run_id"] == "rp-002.c001"
     views = {d["id"]: d for d in env.programs.dispatches()}
     assert set(views) == {INVESTIGATION, SECOND} and views[SECOND]["current"] is True and not views[INVESTIGATION]["current"]
@@ -1825,7 +1825,7 @@ def test_an_existing_lineage_current_dispatch_contract_failure_has_one_successor
     assert run_history(env, "rp-002.c001", REPLACEMENT) == before
     assert env.programs.status("rp-002")["recoveries"][0]["state"] == "claimed", "the original row is not rewritten"
     env.programs.resume("rp-003")
-    assert replacement_runner(env).tick("rp-003")["result"] == "accepted"
+    assert replacement_runner(env).tick("rp-003", intent="incident")["result"] == "accepted"
     assert {d["id"]: d["current"] for d in env.programs.dispatches()} == {INVESTIGATION: False, REPLACEMENT: False,
                                                                           SECOND: True}
 
@@ -1984,7 +1984,7 @@ def test_a_broken_retained_fence_holds_replay_the_claim_and_the_scoped_receipt_c
     with env.store.transaction() as tx:
         assert Continuation._recovery_held(tx, INVESTIGATION) == "recovery_publication_changed"
     env.programs.resume("rp-002")
-    assert replacement_runner(env).tick("rp-002").get("investigation") is None, "a held chain never releases the claim"
+    assert replacement_runner(env).tick("rp-002", intent="incident").get("investigation") is None, "a held chain never releases the claim"
     with env.store.transaction() as tx:
         assert tx.get(BUCKET_DISPATCHES, SECOND) is None
         assert tx.get("research_dispatch_successors", INVESTIGATION + ":2")["state"] == "authorized"
@@ -1996,7 +1996,7 @@ def test_a_failed_contract_successor_stays_held(tmp_path):
     document = contract_request(env, sha)
     env.programs.recover_dispatch(document, None, council.artifacts)
     env.programs.resume("rp-002")
-    tick = replacement_runner(env, status="failed").tick("rp-002")
+    tick = replacement_runner(env, status="failed").tick("rp-002", intent="incident")
     assert tick["investigation"] == INVESTIGATION and tick["result"] == "failed"
     assert refused(env.programs.resume, "rp-002") == "program_blocked", "no automatic retry of the successor"
     assert ResearchProgram(env.store, clock=env.clock).recover_dispatch(document, None, None)["state"] == "claimed"
@@ -2062,7 +2062,7 @@ def test_postgres_contract_successor_requests_serialize_to_one_authorization(tmp
         thread.join()
     assert len(results) == 3 and sum(not r["cached"] for r in results) == 1
     env.programs.resume("rp-002")
-    assert replacement_runner(env).tick("rp-002")["result"] == "accepted"
+    assert replacement_runner(env).tick("rp-002", intent="incident")["result"] == "accepted"
     with env.store.transaction() as tx:
         assert len(tx.scan("research_dispatch_successors")) == 1 and len(tx.scan("research_dispatch_heads")) == 1
         assert tx.get(BUCKET_DISPATCHES, SECOND)["run_id"] == "rp-002.c001"

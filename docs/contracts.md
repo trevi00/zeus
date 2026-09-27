@@ -4323,3 +4323,68 @@ Tests: tests/test_monitoring_lane_sessions.py (labelled synthetic lane rows and 
 provider, process or database; plus one integration test on real PostgreSQL, run with
 `HARNESS_INTEGRATION=1`, showing that a lane snapshot is not blocked by a held writer lock) and the
 collector entrypoint test in tests/test_monitoring.py.
+
+## INV-DISCOVERY-PRESSURE-001
+
+Proactive external discovery pauses while enough runnable work already waits, and resumes once it drains.
+This is the user's backlog-collection throttling direction. The thresholds are the user's initial
+suggestion, not confirmed constants.
+
+**Intent.** Every external feed fetch (`ResearchSources.collect`, the research-program ticks, `zeus research`)
+states WHY it fetches:
+- `proactive`;
+- or an exempt reason: `user_request`, `incident`, `existing_work_result`, `task_required`.
+
+There is no default and no inference: a missing or unknown intent refuses before any IO
+(`discovery_intent_required` / `discovery_intent_invalid`). Exempt intents never consult pressure. The owner's
+research launch states `incident`. Queued tasks without an intent refuse safely; they are not rewritten.
+
+**Decision.** A proactive fetch starts only when the single evaluator allows it now. The evaluator writes ONE
+control-store row (`discovery_pressure`/`proactive`, schema `urn:zeus:discovery-pressure:1`) in ONE transaction,
+which reads the authoritative Fleet, backlog and continuation rows. The row is never read from a monitor list.
+- **C** is the effective `max_parallel`, not free slots. Reserving jobs and held units are reported beside it.
+- **W** counts queued jobs whose only blockers are capacity or their lane. The complete blocker set is used: a
+  lane-busy job with a failed dependency or a path conflict does not count.
+- **Deduplication:** a backlog item or continuation intent that already has its job contributes nothing of its
+  own.
+- **Incomplete W:** some work may be dispatchable but its readiness cannot be proven read-only in this slice.
+  Such work makes W incomplete. That covers:
+  - an eligible pending or open backlog item without a job, and an unknown item;
+  - an admitting continuation intent without its job, and an intended conductor review;
+  - waiting jobs under finite accounting (exhaustion lives in the call ledger).
+
+  Incomplete W holds with `pressure_unknown` and W `null`. The jobs count is kept only as a labelled lower bound.
+- **Holds:** an unregistered Fleet (`fleet_unregistered`, also every lane store), a paused Fleet (`fleet_paused`)
+  or a missing or invalid policy (`pressure_unknown`, detail `config_missing`/`config_invalid`) holds proactive
+  discovery. Nothing holds exempt discovery.
+
+**Hysteresis** uses the packaged policy document `resources/discovery-pressure-policy.json` (k_pause 3, k_resume 1,
+`threshold_status: suggested_unconfirmed`):
+- it pauses at W ≥ k_pause·C and resumes at W ≤ k_resume·C;
+- in the band it keeps the recorded state;
+- the initial state is `active`, and the first reading is still evaluated;
+- a hold for unknown input keeps the memory;
+- a restart reads the row back.
+
+A transition (a change of state, decision or reason) increments `version` and appends the mandatory
+`operations.discovery_pressure_changed` audit in the same transaction. A repeat only advances
+`evaluation_sequence`. Concurrent evaluators serialize on the store transaction, so one crossing gives one
+transition.
+
+**Scope limits.**
+- Each admitted fetch then runs once, outside the transaction, and is never cancelled. The next fetch checks
+  again, so a transition between two feeds pauses only the second.
+- There is no global fetch mutex.
+- A held feed in a research cycle is recorded `paused` with code `policy_paused` and no items. It is never
+  `unavailable`, a network error or an empty feed, and it is not degraded.
+- Local, investigation and audit work in the cycle continues.
+- Pressure never pauses, admits, ticks or rewrites the Fleet, a backlog or a continuation.
+- The read-only monitor source `discovery_pressure` projects the row, or `evaluated: false`; reading never
+  evaluates or writes.
+
+**Status:** this slice has no effect on aibox until a proactive runner exists (none is live). The readiness seams
+that turn the incomplete cases into exact counts are a named follow-up (T1b).
+
+Tests: tests/test_discovery_pressure.py (labelled fixtures; the real-PostgreSQL concurrency case runs with
+`HARNESS_INTEGRATION=1`), plus the explicit intents in the research, owner-actions and continuation-research
+tests.

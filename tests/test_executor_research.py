@@ -28,7 +28,7 @@ def setup(tmp_path, monkeypatch):
                   'items': [{'url': URL, 'summary': '한' * 30000}]}
     readme = artifacts.put('README한' * 10000, 'fixture')['ref']
 
-    def collect(source):
+    def collect(source, *, intent):
         calls.append('collect')
         return collection
 
@@ -65,7 +65,7 @@ def setup(tmp_path, monkeypatch):
     executor = Executor(service, SimpleNamespace(repository=tmp_path, _git=lambda *a, **kw: 'harness'),
                         artifacts, research=SimpleNamespace(collect=collect, github_detail=detail))
     message = envelope('task.assign', 'lead:research', 'worker:github', 'research',
-                       {'source': 'github'}, 'fixture')
+                       {'source': 'github', 'intent': 'user_request'}, 'fixture')
     task = executor.workflow.submit(message)
     return SimpleNamespace(executor=executor, service=service, artifacts=artifacts, calls=calls,
                            prompts=prompts, config=config, collection=collection, task=task)

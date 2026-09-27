@@ -91,7 +91,7 @@ def research_dispatch(world, tmp_path, jobs, status="accepted", project="ops", p
     registered(env, id=program,
                investigation_source={"topic": "storage", "project_ids": ["ops"], "reason_codes": [family[1]]})
     investigation = family_id(*family)
-    ticked = env.runner.tick(program)
+    ticked = env.runner.tick(program, intent="incident")
     assert ticked["investigation"] == investigation
     with world.control.transaction() as tx:
         return investigation, tx.get(BUCKET_DISPATCHES, investigation)
@@ -549,7 +549,7 @@ def test_a_recovered_dispatch_binds_the_scoped_receipt_to_the_accepted_replaceme
     (tmp_path / "research").mkdir()
     env = build(tmp_path / "research", store=world.control, council=PublicationFailingCouncil(world.control))
     registered(env, investigation_source=source)
-    assert env.runner.tick("rp-001")["reason_code"] == "publication_incomplete"
+    assert env.runner.tick("rp-001", intent="incident")["reason_code"] == "publication_incomplete"
     with world.control.transaction() as tx:
         failed = deepcopy(tx.get(BUCKET_DISPATCHES, investigation))
     with pytest.raises(dc.ContinuationRefused, match="research_not_accepted"):
@@ -567,7 +567,7 @@ def test_a_recovered_dispatch_binds_the_scoped_receipt_to_the_accepted_replaceme
         world.controller.accept_research(receipt_for(world, research, investigation, failed))
     env.programs.resume("rp-002")
     env.runner.council = FakeCouncil(world.control, status="accepted")
-    assert env.runner.tick("rp-002")["result"] == "accepted"
+    assert env.runner.tick("rp-002", intent="incident")["result"] == "accepted"
     with world.control.transaction() as tx:
         current = deepcopy(tx.get(BUCKET_DISPATCHES, investigation + ".recovery-1"))
         assert tx.get(BUCKET_DISPATCHES, investigation) == failed, "the failed original is retained as it was"
@@ -600,7 +600,7 @@ def revoked_research(world, tmp_path):
     council = PublicationFailingCouncil(world.control, UnreachableBus(bound=False))
     env = build(tmp_path / "research", store=world.control, council=council)
     registered(env, investigation_source=source)
-    assert env.runner.tick("rp-001")["reason_code"] == "publication_incomplete"
+    assert env.runner.tick("rp-001", intent="incident")["reason_code"] == "publication_incomplete"
     with world.control.transaction() as tx:
         failed = deepcopy(tx.get(BUCKET_DISPATCHES, investigation))
         [item] = [o for o in tx.scan("outbox") if o["message"]["correlation_id"] == "autonomous:rp-001.c001"]
@@ -615,7 +615,7 @@ def revoked_research(world, tmp_path):
     assert result["proof"] == "execution_revoked"
     env.programs.resume("rp-002")
     env.runner.council = FakeCouncil(world.control, status="accepted")
-    assert env.runner.tick("rp-002")["result"] == "accepted"
+    assert env.runner.tick("rp-002", intent="incident")["result"] == "accepted"
     with world.control.transaction() as tx:
         current = deepcopy(tx.get(BUCKET_DISPATCHES, investigation + ".recovery-1"))
     return research, investigation, current, ("execution_fences", "tasks:" + item["message"]["message_id"])
@@ -682,7 +682,7 @@ def test_a_settled_read_only_successor_binds_the_receipt_to_the_current_successo
         world.controller.accept_research(receipt_for(world, research, investigation, replacement))
     env.programs.resume("rp-003")
     env.runner.council = FakeCouncil(world.control, status="accepted")
-    assert env.runner.tick("rp-003")["result"] == "accepted"
+    assert env.runner.tick("rp-003", intent="incident")["result"] == "accepted"
     with world.control.transaction() as tx:
         current = deepcopy(tx.get(BUCKET_DISPATCHES, investigation + ".recovery-2"))
         assert tx.get(BUCKET_DISPATCHES, investigation + ".recovery-1") == replacement, "the predecessor is retained"
@@ -730,7 +730,7 @@ def revoked_research_failing(world, tmp_path):
     env = build(tmp_path / "research", store=world.control,
                 council=PublicationFailingCouncil(world.control, UnreachableBus(bound=False)))
     registered(env, investigation_source=source)
-    assert env.runner.tick("rp-001")["reason_code"] == "publication_incomplete"
+    assert env.runner.tick("rp-001", intent="incident")["reason_code"] == "publication_incomplete"
     with world.control.transaction() as tx:
         failed = deepcopy(tx.get(BUCKET_DISPATCHES, investigation))
         [item] = [o for o in tx.scan("outbox") if o["message"]["correlation_id"] == "autonomous:rp-001.c001"]
@@ -745,7 +745,7 @@ def revoked_research_failing(world, tmp_path):
     env.programs.resume("rp-002")
     council = ForeignMessageCouncil(world.control)
     env.runner.council = council
-    assert env.runner.tick("rp-002")["result"] == "failed"
+    assert env.runner.tick("rp-002", intent="incident")["result"] == "failed"
     world.research_env, world.research_source, world.research_council = env, source, council
     with world.control.transaction() as tx:
         replacement = deepcopy(tx.get(BUCKET_DISPATCHES, investigation + ".recovery-1"))
@@ -1330,7 +1330,7 @@ def accepted_report(world, tmp_path):
     env = build(tmp_path / "research", store=world.control, council=FakeCouncil(world.control, status="accepted"))
     registered(env, investigation_source=dict(FOLLOWUP_SOURCE))
     investigation = family_id("failed", "evidence_gate_refused")
-    assert env.runner.tick("rp-001")["investigation"] == investigation
+    assert env.runner.tick("rp-001", intent="incident")["investigation"] == investigation
     with world.control.transaction() as tx:
         dispatch = deepcopy(tx.get(BUCKET_DISPATCHES, investigation))
         assert successor in tx.get(BUCKET_INVESTIGATIONS, investigation)["job_ids"]
@@ -1415,7 +1415,7 @@ def test_an_accepted_report_follow_up_captures_the_new_member_once_and_binds_onl
     env.programs.resume("rp-002")
     env.runner.council = FakeCouncil(world.control, status="accepted")
     env.clock.value = "2028-01-01T02:00:00+00:00"
-    assert env.runner.tick("rp-002")["result"] == "accepted"
+    assert env.runner.tick("rp-002", intent="incident")["result"] == "accepted"
     with world.control.transaction() as tx:
         current = deepcopy(tx.get(BUCKET_DISPATCHES, investigation + ".recovery-2"))
         after = {b: {k: tx.get(b, k) for k in keys} for b in buckets}
@@ -1615,7 +1615,7 @@ def test_membership_drift_after_authorization_holds_the_claim_until_it_is_exact_
         tx.put(BUCKET_BINDINGS, successor, binding)
     env.runner.council = FakeCouncil(world.control, status="accepted")
     env.clock.value = "2028-01-01T04:00:00+00:00"
-    assert env.runner.tick("rp-002")["result"] == "accepted"
+    assert env.runner.tick("rp-002", intent="incident")["result"] == "accepted"
     with world.control.transaction() as tx:
         assert tx.get(BUCKET_DISPATCHES, investigation + ".recovery-2")["job_ids_sha256"] == document["members"]["sha256"]
 
@@ -1644,7 +1644,7 @@ def test_concurrent_follow_up_requests_record_one_row_and_one_claim(tmp_path):
     assert len(successors) == 1 and len(heads) == 1
     env.programs.resume("rp-002")
     env.clock.value = "2028-01-01T02:00:00+00:00"
-    env.runner.tick("rp-002")
+    env.runner.tick("rp-002", intent="incident")
     with world.control.transaction() as tx:
         assert sorted(d["id"] for d in tx.scan(BUCKET_DISPATCHES)) == [investigation, investigation + ".recovery-2"]
 
@@ -1658,7 +1658,7 @@ def test_a_failed_follow_up_stays_held_and_is_never_followed_up_again(tmp_path):
     env.programs.resume("rp-002")
     env.runner.council = FakeCouncil(world.control, status="rejected")
     env.clock.value = "2028-01-01T02:00:00+00:00"
-    assert env.runner.tick("rp-002")["result"] == "rejected"
+    assert env.runner.tick("rp-002", intent="incident")["result"] == "rejected"
     with world.control.transaction() as tx:
         current = deepcopy(tx.get(BUCKET_DISPATCHES, investigation + ".recovery-2"))
         head = deepcopy(tx.get("research_dispatch_heads", investigation))
@@ -1806,7 +1806,7 @@ def test_an_owner_pinned_new_pair_report_follow_up_authorizes_claims_and_records
     env.programs.resume("rp-002")
     env.runner.council = council = FakeCouncil(world.control, status="accepted")
     env.clock.value = "2028-01-01T02:00:00+00:00"
-    assert env.runner.tick("rp-002")["result"] == "accepted"
+    assert env.runner.tick("rp-002", intent="incident")["result"] == "accepted"
     manifest = council.manifests[-1]
     assert manifest["plan"]["objective"] == NEW_PAIR
     assert manifest["plan"]["allowed_paths"] == old["config"]["template"]["plan"]["allowed_paths"]
@@ -1889,7 +1889,7 @@ def test_a_scope_bound_follow_up_is_held_at_claim_when_either_registered_config_
         tx.put("research_programs", key, {**tx.get("research_programs", key), field: clean})
     env.runner.council = FakeCouncil(world.control, status="accepted")
     env.clock.value = "2028-01-01T04:00:00+00:00"
-    assert env.runner.tick("rp-002")["result"] == "accepted"
+    assert env.runner.tick("rp-002", intent="incident")["result"] == "accepted"
     with world.control.transaction() as tx:
         assert tx.get(BUCKET_DISPATCHES, investigation + ".recovery-2") is not None
 
