@@ -28,6 +28,7 @@ writes nothing and calls nothing.
 from __future__ import annotations
 
 import hashlib
+import re
 
 from codex_harness.application.portfolio import family_id
 from codex_harness.domain.continuation import (
@@ -142,6 +143,17 @@ MIGRATION_DOCUMENT_FIELDS = frozenset({"policy_id", "intent_id", "lane", "target
                                        "approval", "evidence", "actor"})
 MIGRATION_APPROVAL_FIELDS = frozenset({"source_release_id", "base", "evaluator_revision", "evaluator_tree",
                                        "patch_sha256", "paths", "evidence", "approved_by"})
+# INV-RELEASE-ENVIRONMENT-REVERIFY-001: the second migration kind, an environment reverification of an
+# already migrated (and then rejected) successor. The document carries `kind`; an absent `kind` is the
+# evaluator migration with its exact old shape, request and identity. The approval is exactly the
+# Releases approval shape and must name the same source/plan/intent/policy/target/lane as the document.
+ENVIRONMENT_REVERIFICATION = "environment_reverification"
+MIGRATION_KINDS = frozenset({EVALUATOR_MIGRATION, ENVIRONMENT_REVERIFICATION})
+ENVIRONMENT_APPROVAL_FIELDS = frozenset({"kind", "source_release_id", "source_policy_hash", "old_plan_id",
+                                         "old_plan_sha256", "intent_id", "policy_id", "target_id", "lane",
+                                         "fix_evidence", "controller_revision", "approved_by"})
+_FIX_EVIDENCE = re.compile(r"^sha256:[0-9a-f]{64}$")
+_REVISION40 = re.compile(r"^[0-9a-f]{40}$")
 # Control states, each naming the step BEFORE its effect: `intended` (lane stage owed), `staged` (lane
 # receipt recorded; successor plan action owed), `planning` (successor DELIVERY_PLAN action exists; its
 # publication, canary request and held registration owed), `bound` (continuation effective binding
@@ -149,8 +161,11 @@ MIGRATION_APPROVAL_FIELDS = frozenset({"source_release_id", "base", "evaluator_r
 M_STAGED, M_PLANNING, M_BOUND = "staged", "planning", "bound"
 MIGRATION_TRANSITIONS = {INTENDED: {M_STAGED, REFUSED, UNKNOWN}, M_STAGED: {M_PLANNING, REFUSED, UNKNOWN},
                          M_PLANNING: {M_BOUND, REFUSED, UNKNOWN}, M_BOUND: {COMPLETED, REFUSED, UNKNOWN}}
-# Lane refusals that name a transient condition, never a verdict: the row waits where it is.
-MIGRATION_RETRYABLE = frozenset({"migration_unobservable", "migration_controller_running"})
+# Lane refusals that name a transient condition, never a verdict: the row waits where it is. The
+# controller-code preflight (INV-RELEASE-ENVIRONMENT-REVERIFY-001) waits too: code that changed after
+# the request never consumes the one successor, and the approved deployed code stages it later.
+MIGRATION_RETRYABLE = frozenset({"migration_unobservable", "migration_controller_running",
+                                 "migration_controller_code_unavailable", "migration_controller_code_mismatch"})
 LAUNCH_RUNNING, LAUNCH_ABSENT, LAUNCH_UNKNOWN, LAUNCH_EXITED = "running", "absent", "unknown", "exited"
 
 
@@ -798,12 +813,20 @@ class OwnerActions:
         action of `old_plan_id` (kept untouched as history). The identical document replays; any other
         document for the same source refuses `migration_conflict`."""
         document = _migration_document(document)
-        source = document["source_release_id"]
+        source, kind = document["source_release_id"], _kind(document)
         request = {"old_plan_id": document["old_plan_id"], "old_plan_sha256": document["old_plan_sha256"],
                    "source_release_id": source, "source_policy_hash": document["source_policy_hash"],
                    "candidate_revision": document["candidate_revision"], "target_id": document["target_id"],
                    "actor": document["actor"], "approval": document["approval"]}
+        if kind != EVALUATOR_MIGRATION:
+            request["kind"] = kind      # absent for the evaluator kind: its request identity is unchanged
         request = {"migration_id": migration_request_id(request), **request}
+        controller = None
+        if kind == ENVIRONMENT_REVERIFICATION:
+            with self.store.transaction() as tx:
+                known = tx.get(BUCKET_MIGRATIONS, source) is not None
+            if not known:
+                controller = self._require_controller_code(document)
         now = self.clock()
         with self.store.transaction() as tx:
             old = tx.get(BUCKET_MIGRATIONS, source)
@@ -816,8 +839,11 @@ class OwnerActions:
             plans = [r for r in tx.scan(BUCKET_ACTIONS)
                      if r.get("kind") == DELIVERY_PLAN and r.get("plan_id") == document["old_plan_id"]]
             _check_migration_source(document, policy_row, intent, plans)
-            identity = digest(["owner-action", EVALUATOR_MIGRATION, {"source_release_id": source}])
-            row = {"id": source, "action_id": identity, "kind": EVALUATOR_MIGRATION, "state": INTENDED,
+            if kind == ENVIRONMENT_REVERIFICATION:
+                _check_environment_source(document, intent, tx.get(CONTINUATION_BINDINGS, document["intent_id"]),
+                                          tx.get)
+            identity = digest(["owner-action", kind, {"source_release_id": source}])
+            row = {"id": source, "action_id": identity, "kind": kind, "state": INTENDED,
                    "document": document, "document_sha256": digest(document), "request": request,
                    "migration_id": request["migration_id"], "policy_id": document["policy_id"],
                    "old_action_id": plans[0]["id"],
@@ -828,8 +854,23 @@ class OwnerActions:
                                "source_release_id": source, "old_plan_id": document["old_plan_id"]},
                    "reason_code": None, "created_at": now, "updated_at": now, "version": 1,
                    "history": [{"state": INTENDED, "at": now, "reason_code": None}]}
+            if controller is not None:
+                row["controller_code"] = controller      # the preflight's resolution, not the request's
             tx.put(BUCKET_MIGRATIONS, source, row)
         return {**_migration_view(row), "cached": False}
+
+    def _require_controller_code(self, document: dict) -> str:
+        """INV-RELEASE-ENVIRONMENT-REVERIFY-001 creation preflight at the owner/lane boundary, before the
+        request row exists: the lane's trusted port resolves the ACTUAL running controller code and it
+        must be the approved revision. A refusal writes nothing, so the source, its intent and the one
+        source-keyed request identity stay unused for the approved deployed code."""
+        if self.deliveries is None:
+            raise OwnerActionRefused("delivery_ports_unconfigured", "deliveries")
+        try:
+            return self.deliveries(document["lane"]).require_controller_code(
+                document["approval"]["controller_revision"])
+        except DeliveryRefused as exc:
+            raise OwnerActionRefused(exc.reason_code, "controller_revision") from exc
 
     def migration(self, source_release_id: str) -> dict | None:
         """Read-only projection of one migration row; None when absent."""
@@ -876,7 +917,7 @@ class OwnerActions:
 
     @staticmethod
     def _migration_effect(row: dict) -> dict:
-        return {"action": row["action_id"], "kind": EVALUATOR_MIGRATION, "state": row["state"],
+        return {"action": row["action_id"], "kind": _kind(row), "state": row["state"],
                 "reason_code": row["reason_code"]}
 
     def _lane_refused(self, row: dict, exc: DeliveryRefused) -> dict:
@@ -988,11 +1029,22 @@ class OwnerActions:
             if not _source_unchanged(row, intent):
                 raise OwnerActionRefused("migration_intent_changed", "intent_id")
             old = tx.get(CONTINUATION_BINDINGS, effective["intent_id"])
-            if old is None:
+            if old is None and _kind(row) == EVALUATOR_MIGRATION:
                 tx.put(CONTINUATION_BINDINGS, effective["intent_id"], {
                     "id": effective["intent_id"], "binding": effective, "binding_sha256": digest(effective),
                     "at": self.clock()})
-            elif old.get("binding") != effective:
+            elif isinstance(old, dict) and old.get("binding") == effective:
+                return
+            elif (_kind(row) == ENVIRONMENT_REVERIFICATION and isinstance(old, dict)
+                  and (old.get("binding") or {}).get("successor_release_id") == row["id"]
+                  and (old.get("binding") or {}).get("plan_id") == row["subject"]["old_plan_id"]):
+                # INV-RELEASE-ENVIRONMENT-REVERIFY-001: the second hop replaces exactly the binding whose
+                # successor is this source; the replaced binding is kept (digest + body) as the prior hop.
+                tx.put(CONTINUATION_BINDINGS, effective["intent_id"], {
+                    "id": effective["intent_id"], "binding": effective, "binding_sha256": digest(effective),
+                    "previous": {"binding": old.get("binding"), "binding_sha256": old.get("binding_sha256")},
+                    "at": self.clock()})
+            else:
                 raise OwnerActionRefused("migration_binding_conflict", "intent_id")
 
         return self._migration_effect(self._migration_move(
@@ -1105,21 +1157,72 @@ def _request_of(plan_action: dict) -> dict:
     return canary_request(plan_action, plan_action["plan"], plan_action["plan_sha256"], plan_action["published_at"])
 
 
+def _kind(document: dict) -> str:
+    """The migration kind of a document or control row; absent is the evaluator migration."""
+    return document.get("kind") or EVALUATOR_MIGRATION
+
+
 def _migration_document(document) -> dict:
-    """The exact owner-only migration document shape (INV-OWNER-ACTIONS-MIGRATION-001)."""
-    if not isinstance(document, dict) or set(document) != MIGRATION_DOCUMENT_FIELDS:
+    """The exact owner-only migration document shape (INV-OWNER-ACTIONS-MIGRATION-001). An optional
+    `kind` selects the environment reverification (INV-RELEASE-ENVIRONMENT-REVERIFY-001); an explicit
+    `evaluator_migration` is normalized away so the evaluator document keeps its one identity."""
+    if not isinstance(document, dict) or set(document) - {"kind"} != MIGRATION_DOCUMENT_FIELDS:
         raise OwnerActionRefused("migration_document_invalid", "document")
+    if "kind" in document:
+        if document["kind"] not in MIGRATION_KINDS:
+            raise OwnerActionRefused("migration_document_invalid", "kind")
+        if document["kind"] == EVALUATOR_MIGRATION:
+            document = {k: v for k, v in document.items() if k != "kind"}
     for key in MIGRATION_DOCUMENT_FIELDS - {"approval"}:
         if type(document[key]) is not str or not document[key]:
             raise OwnerActionRefused("migration_document_invalid", key)
     if not EVIDENCE_REF.fullmatch(document["evidence"]):
         raise OwnerActionRefused("migration_document_invalid", "evidence")
     approval = document["approval"]
+    if _kind(document) == ENVIRONMENT_REVERIFICATION:
+        _check_environment_approval(document, approval)
+        return document
     if not isinstance(approval, dict) or set(approval) != MIGRATION_APPROVAL_FIELDS:
         raise OwnerActionRefused("migration_approval_invalid", "approval")
     if approval["source_release_id"] != document["source_release_id"] or approval["evidence"] != document["evidence"]:
         raise OwnerActionRefused("migration_approval_invalid", "approval")
     return document
+
+
+def _check_environment_approval(document: dict, approval) -> None:
+    """INV-RELEASE-ENVIRONMENT-REVERIFY-001: exactly the Releases approval shape, consistent with the
+    document in every shared identity; refused before any read or effect."""
+    if not isinstance(approval, dict) or set(approval) != ENVIRONMENT_APPROVAL_FIELDS:
+        raise OwnerActionRefused("migration_approval_invalid", "approval")
+    if any(type(value) is not str or not value for value in approval.values()):
+        raise OwnerActionRefused("migration_approval_invalid", "approval")
+    if approval["kind"] != ENVIRONMENT_REVERIFICATION:
+        raise OwnerActionRefused("migration_approval_invalid", "kind")
+    for key in ("source_release_id", "source_policy_hash", "old_plan_id", "old_plan_sha256", "intent_id",
+                "policy_id", "target_id", "lane"):
+        if approval[key] != document[key]:
+            raise OwnerActionRefused("migration_approval_invalid", key)
+    if not _FIX_EVIDENCE.fullmatch(approval["fix_evidence"]):
+        raise OwnerActionRefused("migration_approval_invalid", "fix_evidence")
+    if not _REVISION40.fullmatch(approval["controller_revision"]):
+        raise OwnerActionRefused("migration_approval_invalid", "controller_revision")
+
+
+def _check_environment_source(document: dict, intent: dict, bound, get) -> None:
+    """INV-RELEASE-ENVIRONMENT-REVERIFY-001: the source of an environment reverification is the
+    SUCCESSOR of a completed evaluator migration of this very intent: the intent's effective binding
+    names it (and the old plan) and the migration row of the conductor's release is completed. The
+    conductor's `release_id` on the intent stays the provenance (the first hop's source)."""
+    binding = (bound or {}).get("binding") if isinstance(bound, dict) else None
+    if not (isinstance(binding, dict) and binding.get("successor_release_id") == document["source_release_id"]
+            and binding.get("plan_id") == document["old_plan_id"]
+            and binding.get("source_release_id") == intent.get("release_id")
+            and binding.get("target_id") == document["target_id"]):
+        raise OwnerActionRefused("migration_intent_mismatch", "intent_id")
+    first = get(BUCKET_MIGRATIONS, binding["source_release_id"])
+    if not (isinstance(first, dict) and first.get("state") == COMPLETED and _kind(first) == EVALUATOR_MIGRATION
+            and first.get("successor_release_id") == document["source_release_id"]):
+        raise OwnerActionRefused("migration_intent_mismatch", "intent_id")
 
 
 def _check_migration_source(document: dict, policy_row, intent, plans: list) -> None:
@@ -1132,7 +1235,9 @@ def _check_migration_source(document: dict, policy_row, intent, plans: list) -> 
     if not (isinstance(intent, dict) and intent.get("route") == DELIVERY
             and intent.get("state") in MIGRATION_SOURCE_STATES and type(intent.get("version")) is int
             and intent.get("policy_id") == policy["continuation_policy"]
-            and intent.get("release_id") == document["source_release_id"]
+            # an environment reverification's source is the intent's effective successor, checked apart
+            and (_kind(document) == ENVIRONMENT_REVERIFICATION
+                 or intent.get("release_id") == document["source_release_id"])
             and intent.get("delivery_target") == document["target_id"] and intent.get("lane") == document["lane"]):
         raise OwnerActionRefused("migration_intent_mismatch", "intent_id")
     if len(plans) != 1:
@@ -1153,7 +1258,8 @@ def _source_unchanged(row: dict, intent) -> bool:
     """The recorded source snapshot still names exactly this intent; a row without one never proceeds."""
     document, recorded = row["document"], row.get("source_intent")
     return (isinstance(intent, dict) and isinstance(recorded, dict) and migration_source(intent) == recorded
-            and intent.get("release_id") == document["source_release_id"]
+            and (_kind(document) == ENVIRONMENT_REVERIFICATION
+                 or intent.get("release_id") == document["source_release_id"])
             and intent.get("delivery_target") == document["target_id"] and intent.get("lane") == document["lane"]
             and intent.get("route") == DELIVERY)
 
@@ -1194,7 +1300,8 @@ def _migration_status(row: dict) -> dict:
     """R-OBS: one migration's owner-facing status (read-only): state, its phase history and last reason,
     the lineage identities and the effective owner (policy/lane) of the source intent."""
     subject = row.get("subject") or {}
-    return {"source_release_id": row.get("id"), "state": row.get("state"), "reason_code": row.get("reason_code"),
+    return {"source_release_id": row.get("id"), "kind": _kind(row), "state": row.get("state"),
+            "reason_code": row.get("reason_code"),
             "phases": [{"state": h.get("state"), "reason_code": h.get("reason_code"), "at": h.get("at")}
                        for h in (row.get("history") or [])][-8:],
             "successor_release_id": row.get("successor_release_id"), "plan_id": row.get("plan_id"),
@@ -1228,6 +1335,7 @@ def plan_json(plan: dict) -> bytes:
     return (canonical(plan) + "\n").encode("utf-8")
 
 
-__all__ = ["BUCKET_ACTIONS", "BUCKET_MIGRATIONS", "BUCKET_POLICIES", "CONTINUATION_BINDINGS", "EVALUATOR_MIGRATION",
+__all__ = ["BUCKET_ACTIONS", "BUCKET_MIGRATIONS", "BUCKET_POLICIES", "CONTINUATION_BINDINGS", "ENVIRONMENT_REVERIFICATION",
+           "EVALUATOR_MIGRATION",
            "MIGRATION_DOCUMENT_FIELDS", "ActionChanged", "OwnerActions", "digest_bytes", "lineage_of",
            "migration_ack", "plan_json"]

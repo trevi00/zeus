@@ -216,43 +216,66 @@ class LaneRuntime:
         return self.seen.get(lane_id, (None, None))[1] is not None
 
 
-def _migrated_delivery(tx, deliveries: list, target, release_id: str, revision, release) -> dict | None:
-    """INV-OWNER-ACTIONS-MIGRATION-001: the delivery of the conductor's release after an ACTIVE evaluator
-    migration superseded it, following ONLY the verified lane edge; None keeps today's binding.
+# INV-RELEASE-ENVIRONMENT-REVERIFY-001: at most two migration edges (evaluator migration, then one
+# environment reverification of its successor) are ever followed from the conductor's release.
+MAX_MIGRATION_HOPS = 2
 
-    The source intent of this target must be `withdrawn`/`release_rejected_superseded` naming exactly one
-    active lane migration of this release, the successor release must carry the identical candidate
-    (revision, tree, base) and its one delivery must be that migration's registered plan. The binding keeps
-    the conductor's `release_id` (provenance) and names the successor as `effective_release_id`."""
-    superseded = [row for row in deliveries if row.get("target_id") == target and row.get("stage") == "withdrawn"
-                  and row.get("reason_code") == "release_rejected_superseded"]
-    if not superseded:
+
+def _migrated_delivery(tx, deliveries: list, target, release_id: str, revision, release) -> dict | None:
+    """INV-OWNER-ACTIONS-MIGRATION-001 / INV-RELEASE-ENVIRONMENT-REVERIFY-001: the delivery of the
+    conductor's release after ACTIVE migrations superseded it, following ONLY a verified CHAIN of
+    immutable lane edges; None keeps today's binding.
+
+    Each hop from the current release R requires: R's delivery of this target `withdrawn`/
+    `release_rejected_superseded` naming exactly the ONE lane migration record sourced at R (two records
+    are a branch), that record `active`, the successor release carrying the candidate (revision, tree,
+    base) identical to the ORIGINAL release, and no revisit (cycle). A missing edge or a non-active
+    (staged/registered/held/stopped) record ends the walk at R, as today. A branch, a mismatched edge
+    or candidate, a cycle or a hop beyond `MAX_MIGRATION_HOPS` refuses the whole chain (None). The
+    walk's final release R != the original must have its one delivery bound to the last followed
+    record's plan. The binding keeps the conductor's `release_id` (provenance), names the final release
+    as `effective_release_id`, the last edge as `migration` and every edge in `hops`."""
+    if not isinstance(release, dict):
         return None
-    records = [row for row in tx.scan("host_delivery_migrations")
-               if row.get("source_release_id") == release_id and row.get("target_id") == target
-               and row.get("state") == "active"]
-    if len(records) != 1:
+    origin = release.get("candidate") or {}
+    if origin.get("revision") != revision or any(origin.get(key) is None for key in ("revision", "tree", "base")):
         return None
-    record = records[0]
-    edge = [row for row in superseded if (row.get("plan_id") or row.get("id")) == record.get("id")
-            and (row.get("supersession") or {}).get("migration_id") == record.get("migration_id")
-            and (row.get("supersession") or {}).get("successor_release_id") == record.get("successor_release_id")]
-    successor = tx.get("releases", record.get("successor_release_id")) if len(edge) == 1 else None
-    if not (isinstance(successor, dict) and isinstance(release, dict)):
+    records = [row for row in tx.scan("host_delivery_migrations") if row.get("target_id") == target]
+    current, rows, visited, hops, last = release_id, deliveries, {release_id}, [], None
+    while True:
+        superseded = [row for row in rows if row.get("target_id") == target and row.get("stage") == "withdrawn"
+                      and row.get("reason_code") == "release_rejected_superseded"]
+        sourced = [row for row in records if row.get("source_release_id") == current]
+        if not superseded or not sourced:
+            break                                   # no edge from here: the walk ends at `current`
+        if len(sourced) != 1 or len(hops) >= MAX_MIGRATION_HOPS:
+            return None                             # a branch, or a hop beyond the bounded depth
+        record = sourced[0]
+        if record.get("state") != "active":
+            break                                   # a held/stopped hop is never followed (as today)
+        edge = [row for row in superseded if (row.get("plan_id") or row.get("id")) == record.get("id")
+                and (row.get("supersession") or {}).get("migration_id") == record.get("migration_id")
+                and (row.get("supersession") or {}).get("successor_release_id") == record.get("successor_release_id")]
+        successor = tx.get("releases", record.get("successor_release_id")) if len(edge) == 1 else None
+        if not isinstance(successor, dict) or successor.get("id") in visited:
+            return None                             # an unverifiable edge or a cycle
+        moved = successor.get("candidate") or {}
+        if any(origin.get(key) != moved.get(key) for key in ("revision", "tree", "base")):
+            return None
+        visited.add(successor["id"])
+        hops.append({"migration_id": record["migration_id"], "source_release_id": current,
+                     "successor_release_id": successor["id"], "old_plan_id": record["id"],
+                     "plan_id": record.get("plan_id")})
+        current, last, final = successor["id"], record, successor
+        rows = [row for row in tx.scan("host_delivery_intents") if row.get("release_id") == current]
+    if not hops:
         return None
-    source, moved = release.get("candidate") or {}, successor.get("candidate") or {}
-    if source.get("revision") != revision or any(
-            source.get(key) is None or source.get(key) != moved.get(key) for key in ("revision", "tree", "base")):
-        return None
-    rows = [row for row in tx.scan("host_delivery_intents") if row.get("release_id") == successor["id"]]
-    bound = bind_delivery(rows, target, successor["id"], revision, successor)
+    bound = bind_delivery(rows, target, current, revision, final)
     if bound["binding"] != DELIVERY_BOUND or (bound["plan_id"], bound["plan_sha256"]) != (
-            record.get("plan_id"), record.get("plan_sha256")):
+            last.get("plan_id"), last.get("plan_sha256")):
         return None
-    return {**bound, "release_id": release_id, "effective_release_id": successor["id"],
-            "migration": {"migration_id": record["migration_id"], "source_release_id": release_id,
-                          "successor_release_id": successor["id"], "old_plan_id": record["id"],
-                          "plan_id": record["plan_id"]}}
+    return {**bound, "release_id": release_id, "effective_release_id": current, "migration": hops[-1],
+            "hops": hops}
 
 # ---- one lane store -----------------------------------------------------------------------------
 class LaneEvidence:

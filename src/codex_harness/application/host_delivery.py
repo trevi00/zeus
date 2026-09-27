@@ -37,7 +37,12 @@ import threading
 from datetime import datetime, timedelta
 
 from codex_harness.application.release_queue import ReleaseQueue
-from codex_harness.application.releases import Releases, expected_evaluator_pin
+from codex_harness.application.releases import (
+    EnvironmentReverificationRefused,
+    Releases,
+    expected_evaluator_pin,
+    require_controller_code,
+)
 from codex_harness.application.tickets import ticket_binding
 from codex_harness.domain.host_delivery import (
     ACTIVATION_GATE_CODES,
@@ -65,6 +70,7 @@ from codex_harness.domain.host_delivery import (
     MERGED,
     MIGRATION_ACTIVE,
     MIGRATION_HELD,
+    MIGRATION_KIND_ENVIRONMENT,
     MIGRATION_REGISTERED,
     MIGRATION_RESERVING,
     MIGRATION_STAGED,
@@ -102,6 +108,7 @@ from codex_harness.domain.host_delivery import (
     consumption_verdict,
     delivery_status,
     descriptor_digest,
+    migration_kind,
     migration_lineage_digest,
     migration_rejected_source,
     new_intent,
@@ -218,7 +225,8 @@ class HostDelivery:
 
     def __init__(self, store, org=None, *, github=None, hosts=None, canaries=None, clock=utcnow,
                  observer=None, enabled=False, releases=None, queue=None,
-                 resume_seconds: int = RESUME_SECONDS, verifier=None, evaluator_pins=None):
+                 resume_seconds: int = RESUME_SECONDS, verifier=None, evaluator_pins=None,
+                 controller_code=None):
         self.store, self.org, self.clock = store, org, clock
         self.github, self.hosts, self.canaries = github, hosts or {}, canaries or {}
         # INV-HOST-DELIVERY-VERIFY-001: the owned-attempt port over the existing incumbent
@@ -227,6 +235,9 @@ class HostDelivery:
         # INV-RELEASE-EVALUATOR-MIGRATION-001: the repository resolver of an approved evaluator pin,
         # (evaluator_revision, base) -> resolve_evaluator_pin(...). Without it no migration stages.
         self.evaluator_pins = evaluator_pins
+        # INV-RELEASE-ENVIRONMENT-REVERIFY-001: () -> the revision of the ACTUAL running controller code
+        # (the adapters bind the runtime_revision SSOT). Without it no environment reverification stages.
+        self.controller_code = controller_code
         self.observer, self.enabled = observer, bool(enabled)
         self.resume_seconds = int(resume_seconds)
         self.releases = releases if releases is not None else Releases(store, org)
@@ -317,7 +328,7 @@ class HostDelivery:
             migrations = tx.scan(BUCKET_MIGRATIONS)
         # INV-HOST-DELIVERY-MIGRATION-001: each migration's phase and its successor's hold, read only.
         shown = sorted(({"old_plan_id": m.get("id"), "migration_id": m.get("migration_id"),
-                         "state": m.get("state"),
+                         "kind": m.get("kind", "evaluator_migration"), "state": m.get("state"),
                          "held": (intents.get(m.get("plan_id")) or {}).get("held") if m.get("plan_id") else None,
                          "successor_release_id": m.get("successor_release_id"), "plan_id": m.get("plan_id"),
                          "target_id": m.get("target_id"), "at": m.get("at")}
@@ -807,13 +818,18 @@ class HostDelivery:
         refusal = migration_rejected_source(intent, row["plan"], request)
         if refusal is not None:
             raise DeliveryRefused(refusal, "old_plan_id")
-        resolved = self._resolve_evaluator_pin(request["approval"])
+        controller = None
+        if migration_kind(request) == MIGRATION_KIND_ENVIRONMENT:
+            controller = self.require_controller_code(request["approval"]["controller_revision"])
+            resolved = self._resolve_source_pin(request["source_release_id"])
+        else:
+            resolved = self._resolve_evaluator_pin(request["approval"])
         now = self.clock()
         try:
             with self.store.transaction() as tx:
                 current = tx.get(BUCKET_MIGRATIONS, key)
                 staged = None if current is not None else self._stage_in(tx, row, intent, request, sha, now,
-                                                                         resolved)
+                                                                         resolved, controller)
         except DeliveryRefused:
             raise
         except ContractError as exc:
@@ -844,8 +860,50 @@ class HostDelivery:
             raise DeliveryRefused("migration_pin_mismatch", "approval")
         return resolved
 
+    def require_controller_code(self, expected: str) -> str:
+        """INV-RELEASE-ENVIRONMENT-REVERIFY-001 creation preflight, outside every store transaction:
+        resolve the ACTUAL running controller code through the trusted port and require the approved
+        revision. The approval's own string is never evidence. Unknown code refuses
+        `migration_controller_code_unavailable`, other code `migration_controller_code_mismatch`;
+        nothing is read from or written to the stores, so the source, its intent and the one successor
+        identity stay unused and the approved deployed code can stage later."""
+        if self.controller_code is None:
+            raise DeliveryRefused("migration_controller_code_unavailable", "controller_revision")
+        try:
+            resolved = self.controller_code()
+        except Exception as exc:
+            raise DeliveryRefused("migration_controller_code_unavailable", "controller_revision") from exc
+        try:
+            return require_controller_code(resolved, expected)
+        except EnvironmentReverificationRefused as exc:
+            reason = ("migration_controller_code_mismatch" if exc.reason_code.endswith("_mismatch")
+                      else "migration_controller_code_unavailable")
+            raise DeliveryRefused(reason, "controller_revision") from exc
+
+    def _resolve_source_pin(self, release_id: str) -> dict:
+        """INV-RELEASE-ENVIRONMENT-REVERIFY-001: re-derive the migrated source's OWN evaluator pin
+        (its recorded E and base) from the repository, outside every store transaction. The release
+        service compares it with the source's receipt again inside the staging transaction."""
+        try:
+            with self.store.transaction() as tx:
+                source = tx.get("releases", release_id)
+        except Exception as exc:
+            raise DeliveryRefused("migration_unobservable", "store") from exc
+        receipt = (source or {}).get("evaluator_migration")
+        if not isinstance(receipt, dict):
+            raise DeliveryRefused("migration_release_refused", "source_release_id")
+        if self.evaluator_pins is None:
+            raise DeliveryRefused("migration_pin_unavailable", "evaluator_revision")
+        try:
+            resolved = self.evaluator_pins(receipt["evaluator_revision"], receipt["base"])
+        except Exception as exc:
+            raise DeliveryRefused("migration_pin_unavailable", "evaluator_revision") from exc
+        if resolved != expected_evaluator_pin(receipt):
+            raise DeliveryRefused("migration_pin_mismatch", "approval")
+        return resolved
+
     def _stage_in(self, tx, row: dict, intent: dict, request: dict, sha: str, now: str,
-                  resolved_pin: dict) -> dict:
+                  resolved_pin: dict, controller: str | None) -> dict:
         """Phase 2 of `stage_migration`, inside its one transaction; any refusal rolls back all."""
         plan, key = row["plan"], row["plan_id"]
         if tx.get(BUCKET_PLANS, key) != row or tx.get(BUCKET_INTENTS, key) != intent:
@@ -864,10 +922,15 @@ class HostDelivery:
                and stages.get(other["plan_id"]) not in TERMINAL_STAGES for other in tx.scan(BUCKET_PLANS)):
             # Every other plan of the target, including one no tick has given an intent yet.
             raise DeliveryRefused("migration_target_busy", "target_id")
-        successor = self.releases.request_evaluator_migration(
+        kind = migration_kind(request)
+        successor_of, extra = self.releases.request_evaluator_migration, {}
+        if kind == MIGRATION_KIND_ENVIRONMENT:
+            # The resolved controller code travels into the same transaction and is recorded there.
+            successor_of, extra = self.releases.request_environment_reverification, {"resolved_controller": controller}
+        successor = successor_of(
             request["source_release_id"], request["actor"], expected_revision=request["candidate_revision"],
             expected_policy_hash=request["source_policy_hash"], approval=request["approval"],
-            resolved_pin=resolved_pin, now=self._now(), transaction=tx)
+            resolved_pin=resolved_pin, now=self._now(), transaction=tx, **extra)
         if successor.get("status") != "reviewed" or successor.get("checks"):
             raise DeliveryRefused("migration_successor_advanced", "successor_release_id")
         if tx.get("release_queue", successor["id"]) is not None:
@@ -881,8 +944,8 @@ class HostDelivery:
             "supersession": {"migration_id": request["migration_id"], "successor_release_id": successor["id"],
                              "original_halt": original},
             "updated_at": now})
-        record = {"id": key, "migration_id": request["migration_id"], "request": request, "request_sha256": sha,
-                  "state": MIGRATION_STAGED, "successor_release_id": successor["id"],
+        record = {"id": key, "migration_id": request["migration_id"], "kind": kind, "request": request,
+                  "request_sha256": sha, "state": MIGRATION_STAGED, "successor_release_id": successor["id"],
                   "source_release_id": request["source_release_id"], "target_id": plan["target_id"],
                   "plan_id": None, "plan_sha256": None, "ack": None, "at": now}
         tx.put(BUCKET_MIGRATIONS, key, record)
@@ -992,7 +1055,7 @@ class HostDelivery:
 
     @staticmethod
     def _migration_view(record: dict, *, cached: bool) -> dict:
-        return {"migration": True, "cached": cached,
+        return {"migration": True, "cached": cached, "kind": record.get("kind", "evaluator_migration"),
                 **{name: record.get(name) for name in ("migration_id", "state", "request_sha256",
                                                        "source_release_id", "successor_release_id", "target_id",
                                                        "plan_id", "plan_sha256")},

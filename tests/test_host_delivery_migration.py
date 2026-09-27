@@ -162,7 +162,7 @@ def test_stage_register_finalize_then_tick_runs_only_after_the_acknowledgement(t
                                        "stage", "previous_stage", "reason_code", "outcome", "attempts",
                                        "error_type", "updated_at")}}
     record = row(store, BUCKET_MIGRATIONS, plan["plan_id"])
-    assert set(record) == {"id", "migration_id", "request", "request_sha256", "state", "successor_release_id",
+    assert set(record) == {"id", "migration_id", "kind", "request", "request_sha256", "state", "successor_release_id",
                            "source_release_id", "target_id", "plan_id", "plan_sha256", "ack", "at"}
     successor = row(store, "releases", staged["successor_release_id"])
     assert successor["status"] == "reviewed" and successor["checks"] == {}
@@ -483,7 +483,8 @@ def test_status_projects_each_migration_phase_and_hold(tmp_path, store):
     assert delivery.status()["migrations"] == []
     staged = delivery.stage_migration(request)
     view = delivery.status()["migrations"]
-    assert view == [{"old_plan_id": old, "migration_id": request["migration_id"], "state": "staged",
+    assert view == [{"old_plan_id": old, "migration_id": request["migration_id"], "kind": "evaluator_migration",
+                     "state": "staged",
                      "held": None, "successor_release_id": staged["successor_release_id"], "plan_id": None,
                      "target_id": system["plan"]["target_id"], "at": view[0]["at"]}]
     registered = delivery.register_migration_plan(successor_plan(system, staged), pin(), request["migration_id"])

@@ -5,6 +5,7 @@ import json
 import os
 import re
 import shutil
+import stat
 import subprocess
 import tempfile
 from contextlib import ExitStack
@@ -43,6 +44,122 @@ class EvaluatorPinMismatch(ContractError):
     """
 
     reason_code = "evaluator_pin_mismatch"
+
+
+class EvaluatorCodeMismatch(ContractError):
+    """INV-RELEASE-ENVIRONMENT-REVERIFY-001: this controller is not the code the release names.
+
+    An environment re-verification is evaluated only by controller code at exactly the recorded
+    `controller_revision`; an unknown or different running revision is this named refusal, raised
+    before any workspace, check or container.
+    """
+
+    reason_code = "evaluator_code_mismatch"
+
+
+def controller_code_revision() -> str | None:
+    """The revision of the codex_harness package this process runs (runtime_revision SSOT)."""
+    import codex_harness
+    from codex_harness.adapters.host_delivery import runtime_revision
+
+    try:
+        return runtime_revision(Path(codex_harness.__file__).resolve().parents[2])
+    except Exception:  # unknown is refused by the caller, never assumed equal
+        return None
+
+
+# INV-RELEASE-FILE-CANARY-001: the two files the file canary's container writes and the host reads.
+CANARY_FILES = ("result.json", "output.txt")
+
+
+def canary_handoff_script(uid, gid) -> str:
+    """The fixed /bin/sh wrapper: the unchanged codex argv, then a no-follow ownership handoff.
+
+    The codex exit code is preserved; only the two fixed files are handed to the numeric controller
+    uid:gid, `-h` so a symlink is never followed. Umask, credentials and modes are not changed.
+    """
+    require(type(uid) is int and type(gid) is int and uid >= 0 and gid >= 0,
+            "Invalid controller uid/gid for the file canary handoff")
+    targets = " ".join("/canary/" + name for name in CANARY_FILES)
+    return f'codex "$@"; rc=$?; chown -h {uid}:{gid} {targets} 2>/dev/null; exit $rc'
+
+
+def _controller_ids() -> tuple:
+    getuid, getgid = getattr(os, "getuid", None), getattr(os, "getgid", None)
+    require(getuid is not None and getgid is not None,
+            "The file canary ownership handoff needs a POSIX controller uid/gid")
+    return getuid(), getgid()
+
+
+def _file_type(mode: int) -> str:
+    if stat.S_ISLNK(mode):
+        return "symlink"
+    if stat.S_ISREG(mode):
+        return "file"
+    return "directory" if stat.S_ISDIR(mode) else "other"
+
+
+def inspect_canary_file(path: Path, token: str) -> dict:
+    """INV-RELEASE-FILE-CANARY-001: one file's sanitized observation and named outcome.
+
+    lstat first (a symlink or directory is `not_regular`, never followed), then an O_NOFOLLOW read.
+    The entry carries metadata and a digest only - never the bytes or the token.
+    """
+    entry = {"exists": False, "type": None, "mode": None, "uid": None, "gid": None, "size": None,
+             "sha256": None, "read": None, "parse": None, "compare": None}
+    try:
+        info = os.lstat(path)
+    except FileNotFoundError:
+        return {**entry, "outcome": "missing"}
+    except OSError as exc:
+        return {**entry, "read": "error:" + type(exc).__name__, "outcome": "unreadable:" + type(exc).__name__}
+    entry.update(exists=True, type=_file_type(info.st_mode), mode=format(stat.S_IMODE(info.st_mode), "04o"),
+                 uid=info.st_uid, gid=info.st_gid, size=info.st_size)
+    if entry["type"] != "file":
+        return {**entry, "outcome": "not_regular"}
+    try:
+        descriptor = os.open(path, os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0))
+        with os.fdopen(descriptor, "rb") as handle:
+            if not stat.S_ISREG(os.fstat(handle.fileno()).st_mode):
+                return {**entry, "outcome": "not_regular"}
+            data = handle.read()
+    except OSError as exc:
+        return {**entry, "read": "error:" + type(exc).__name__, "outcome": "unreadable:" + type(exc).__name__}
+    entry.update(read="ok", sha256=hashlib.sha256(data).hexdigest())
+    if path.name == "output.txt":
+        match = data == token.encode("utf-8")
+        return {**entry, "compare": "match" if match else "mismatch", "outcome": "ok" if match else "bytes_mismatch"}
+    try:
+        answer = json.loads(data.decode("utf-8"))
+    except ValueError:  # UnicodeDecodeError and JSONDecodeError are both ValueError
+        return {**entry, "parse": "not_json", "outcome": "not_json"}
+    if not isinstance(answer, dict):
+        return {**entry, "parse": "not_object", "outcome": "not_object"}
+    if "value" not in answer:
+        return {**entry, "parse": "object", "compare": "no_value", "outcome": "no_value"}
+    match = type(answer["value"]) is str and answer["value"] == token
+    return {**entry, "parse": "object", "compare": "match" if match else "mismatch",
+            "outcome": "ok" if match else "value_mismatch"}
+
+
+def canary_postcondition(root: Path, token: str) -> dict:
+    """Every fixed file's observation, and the first failing outcome in fixed order, else `ok`."""
+    files = {name: inspect_canary_file(Path(root) / name, token) for name in CANARY_FILES}
+    failing = [(name, entry["outcome"]) for name, entry in files.items() if entry["outcome"] != "ok"]
+    return {"files": files, "reason": failing[0][1] if failing else "ok",
+            "reason_file": failing[0][0] if failing else None,
+            "token_sha256": hashlib.sha256(token.encode("utf-8")).hexdigest()}
+
+
+def _remove_canary_directory(directory: str) -> dict:
+    """Remove the canary directory and record what is actually left; never raises."""
+    error = None
+    try:
+        shutil.rmtree(directory)
+    except Exception as exc:
+        error = type(exc).__name__
+    removed = not os.path.lexists(directory)
+    return {"removed": removed} if error is None and removed else {"removed": removed, "error_type": error}
 
 
 def evaluator_patch_sha256(diff: str) -> str:
@@ -210,6 +327,7 @@ class ReleaseRunner:
         return self._evaluate(release, None if attempt is None else attempt_resources(attempt))
 
     def _evaluate(self, release, owned) -> dict:
+        self._require_controller_code(release)
         release_id, candidate = release["id"], release["candidate"]
         receipt = {"release_id": release_id, "revision": candidate["revision"],
                    "attempt_id": None if owned is None else owned["attempt_id"],
@@ -303,6 +421,25 @@ class ReleaseRunner:
         if not task["passed"]:
             return self._stop(release, checks, task, receipt)
         return {"verdict": "checked", "passed": True, "image": image, "checks": checks, "receipt": receipt}
+
+    @staticmethod
+    def _require_controller_code(release) -> None:
+        """INV-RELEASE-ENVIRONMENT-REVERIFY-001: the recorded controller code, or nothing runs.
+
+        A release without `environment_reverification` is unchanged. One that carries it is evaluated
+        only when this process's own code revision is known and equals `controller_revision`.
+        """
+        if "environment_reverification" not in release:
+            return
+        record = release["environment_reverification"]
+        expected = record.get("controller_revision") if isinstance(record, dict) else None
+        if not (type(expected) is str and re.fullmatch(r"[0-9a-f]{40}", expected)):
+            raise EvaluatorCodeMismatch("Evaluator code mismatch: no valid controller_revision recorded")
+        running = controller_code_revision()
+        if running is None:
+            raise EvaluatorCodeMismatch("Evaluator code mismatch: running controller revision unknown")
+        if running != expected:
+            raise EvaluatorCodeMismatch("Evaluator code mismatch: running " + running + " != recorded " + expected)
 
     def _test_source(self, release, candidate_revision: str | None) -> str:
         """The one commit whose incumbent tests evaluate this release (legacy and owned paths).
@@ -482,38 +619,57 @@ class ReleaseRunner:
             return {"status": "abandoned", "release_id": release_id}
 
     def file_canary(self, image: str, name: str | None = None, labels=()) -> dict:
+        """INV-RELEASE-FILE-CANARY-001: the codex file task, its ownership handoff and exact postcondition.
+
+        The same owned container, name, labels, auth mount and codex argv as before; only the
+        entrypoint is `/bin/sh` running the fixed handoff wrapper. The host then reads both files
+        exactly (no stdout fallback), stores a sanitized receipt before the directory is removed and
+        records the removal truthfully. `passed` = the command passed AND the postcondition is `ok`.
+        """
         require(self.auth.is_file(), "Codex runtime authentication missing")
-        with tempfile.TemporaryDirectory(prefix="harness-container-canary-") as directory:
+        script = canary_handoff_script(*_controller_ids())
+        directory = tempfile.mkdtemp(prefix="harness-container-canary-")
+        # An owned attempt passes its exact name and labels; the legacy runner keeps its random name.
+        name = name or "harness-canary-" + os.urandom(6).hex()
+        try:
             root = Path(directory)
             token = "HARNESS_CANARY_" + os.urandom(8).hex()
             (root / "input.txt").write_text(token, encoding="utf-8")
             schema = {"type": "object", "additionalProperties": False,
                       "properties": {"value": {"type": "string"}}, "required": ["value"]}
             (root / "schema.json").write_text(canonical(schema), encoding="utf-8")
-            # An owned attempt passes its exact name and labels; the legacy runner keeps its random name.
-            name = name or "harness-canary-" + os.urandom(6).hex()
             command = ["docker", "run", "--rm", "--name", name,
                        *[part for label in labels for part in ("--label", label)],
                        "--memory", "768m", "--cpus", "1",
                        "--mount", f"type=bind,source={root},target=/canary",
                        "--mount", f"type=bind,source={self.auth},target=/root/.codex/auth.json,readonly",
-                       "--entrypoint", "codex", image, "exec", "--ephemeral", "--skip-git-repo-check",
+                       "--entrypoint", "/bin/sh", image, "-c", script, "sh",
+                       "exec", "--ephemeral", "--skip-git-repo-check",
                        "--sandbox", "danger-full-access", "-c", 'approval_policy="never"',
                        "--output-schema", "/canary/schema.json", "--output-last-message", "/canary/result.json",
                        "-C", "/canary", "Read input.txt and write its exact contents to output.txt. "
                        "Return the input contents in value. Do not use network."]
             try:
                 check = self._check(command, timeout=180)
+                postcondition = canary_postcondition(root, token)
                 try:
-                    answer = json.loads((root / "result.json").read_text("utf-8"))
-                    valid = answer["value"] == token and (root / "output.txt").read_text("utf-8") == token
-                except (OSError, ValueError, KeyError):
-                    valid = False
-                check["passed"] = check["passed"] and valid
-                return check
+                    ref = self.artifacts.put(canonical({"command_ref": check.get("evidence"),
+                                                        "command_passed": bool(check["passed"]),
+                                                        **postcondition}), "canary-postcondition")["ref"]
+                except Exception as exc:
+                    # No durable receipt: never a pass, and not a verdict about the candidate either.
+                    result = {**check, "passed": False, "outcome": "observation_error", "postcondition": None,
+                              "postcondition_reason": "postcondition_artifact_unavailable:" + type(exc).__name__}
+                else:
+                    result = {**check, "passed": bool(check["passed"]) and postcondition["reason"] == "ok",
+                              "postcondition": ref, "postcondition_reason": postcondition["reason"]}
             finally:
                 # Docker client timeout alone does not terminate the daemon-owned container.
                 run_process(["docker", "rm", "-f", name], timeout=30)
+        finally:
+            # Recorded, never raised over the verdict, and never able to turn a failure into a pass.
+            cleanup = _remove_canary_directory(directory)
+        return {**result, "cleanup": cleanup}
 
     def _probe_status(self, active, check, component):
         # INV-RECOVERY-001: missing observations cannot certify a bad deployment.

@@ -86,6 +86,14 @@ class FakeLane:
     def __init__(self, store, log):
         self.store, self.log = store, log
         self.lose, self.down, self.refuse = set(), set(), {}
+        self.controller = "3" * 40      # labelled: the running controller code the lane's port reports
+
+    def require_controller_code(self, expected):
+        if self.controller is None:
+            raise DeliveryRefused("migration_controller_code_unavailable", "controller_revision")
+        if self.controller != expected:
+            raise DeliveryRefused("migration_controller_code_mismatch", "controller_revision")
+        return self.controller
 
     def _fault(self, name, before):
         if before and name in self.down:
@@ -859,7 +867,8 @@ def test_a_completed_migration_carries_its_observed_ready_record_and_status_show
         action["plan_id"], action["plan_sha256"], action["bytes_sha256"])
     assert ready["canary_request_id"] == done["ack"]["canary_request_id"] == digest(w["targets"].requests[action["plan_id"]])
     status = w["owner"].status("owners-1")["migrations"]
-    assert status == [{"source_release_id": "rel-old", "state": do.COMPLETED, "reason_code": "migration_finalized",
+    assert status == [{"source_release_id": "rel-old", "kind": "evaluator_migration", "state": do.COMPLETED,
+                       "reason_code": "migration_finalized",
                        "phases": [{"state": h["state"], "reason_code": h["reason_code"], "at": h["at"]}
                                   for h in done["history"]][-8:],
                        "successor_release_id": done["successor_release_id"], "plan_id": done["plan_id"],

@@ -3521,6 +3521,86 @@ tree, base) and that migration's own plan; the result keeps the source `release_
 `effective_release_id` and `migration`. The owner-actions service and the host-delivery controller must
 both run code that knows these rules before a migration is submitted.
 
+## INV-RELEASE-FILE-CANARY-001
+
+The `cli_file_task` canary (`ReleaseRunner.file_canary`) crosses a file-ownership boundary. The controller is a
+non-root service with a restrictive unit umask, and the canary container runs as root in the controller's private
+temporary directory. Files the container creates keep root ownership and whatever mode their writer chose, so the
+controller may be unable to read them. The actual H1 attempt `35b3fcc3…` reproduces this: its root-owned `output.txt`
+kept the controller input's `0640`. That attempt's own exception was discarded and stays unknown, and its failed
+record stays failed. The contract is:
+
+- The SAME owned container runs the UNCHANGED codex argv, with the same name, labels, auth mount, prompt, schema and
+  output paths. Only its entrypoint is a fixed `/bin/sh` wrapper, which runs codex with the argv as positional
+  arguments, keeps codex's exit status, and then hands ownership of exactly `/canary/result.json` and
+  `/canary/output.txt` to the controller's numeric uid:gid with `chown -h` (never following a link). Modes,
+  credentials, the unit umask and world-readability are not changed.
+- The host postcondition is exact, and stdout is never accepted in its place:
+  - both paths must be regular files (a symlink or directory is refused);
+  - `output.txt` bytes must equal the token;
+  - `result.json` must be a JSON object whose `value` equals the token.
+  Each file has its own named outcome: `missing`, `not_regular`, `unreadable:<ErrorType>`, `not_json`, `not_object`,
+  `no_value`, `value_mismatch`, `bytes_mismatch` or `ok`. The check passes only when the command passed and the reason
+  is `ok`.
+- Before the temporary directory is removed, a sanitized postcondition artifact is stored and referenced by the check.
+  It holds the command evidence, and for each file its existence, type, mode, uid/gid, size, sha256 and its read,
+  parse and compare outcomes, plus the named reason and the token's sha256. It never holds raw file content or the
+  token. An artifact that cannot be written fails the check as the named observation error
+  `postcondition_artifact_unavailable:<ErrorType>`, which is a retry and never a pass or a verdict against the
+  candidate.
+- Removal of the temporary directory is recorded truthfully. A cleanup failure is kept as recorded debt and never
+  turns a failure into a pass; the existing container removal is unchanged.
+
+## INV-RELEASE-ENVIRONMENT-REVERIFY-001
+
+This is the one supported re-verification of a REJECTED EVALUATOR-MIGRATED successor (INV-RELEASE-EVALUATOR-MIGRATION-001)
+whose incumbent and candidate tests passed and whose rejection came from a non-test check that failed through a
+reviewed evaluator-environment defect (for example INV-RELEASE-FILE-CANARY-001).
+- A plain reverification of such a release stays refused (`unsupported_evaluator_reverification`).
+- A recursive evaluator migration stays refused.
+- `Releases.request_environment_reverification(release_id, actor, expected_revision, expected_policy_hash, approval,
+  resolved_pin, resolved_controller)` is conductor/owner-only.
+- The approval binds exactly: the source release and its policy hash, the old plan and its sha256, the continuation
+  intent, the owner policy, the target, the lane, the reviewed fix evidence, the approved controller code revision and
+  the approving actor.
+- Before any write it requires:
+  - a rejected source that carries `evaluator_migration` and no prior environment reverification (bounded depth);
+  - `tests` passed and not skipped, and at least one executed, failed non-test check;
+  - the E pin re-derived from the repository and equal to the source's migration pin;
+  - the TRUSTED creation-time controller-code preflight described below.
+- **Creation-time controller-code preflight.** The approval's `controller_revision` string is never evidence.
+  - At the owner/lane integration boundary, the lane's trusted port (`HostDelivery.controller_code`) resolves the
+    ACTUAL running harness code. The adapters bind the same runtime_revision SSOT (`adapters.deployment.
+    controller_code_revision`) that the runner's own-code guard uses.
+  - The resolved revision must be a known 40-hex revision equal to the approved one. Otherwise the result is a named
+    refusal: `migration_controller_code_unavailable` or `migration_controller_code_mismatch` (the release service
+    names them `environment_reverification_controller_unavailable` / `..._mismatch`).
+  - It runs before the owner request row exists (`OwnerActions.request_migration`) and again before the lane's staging
+    transaction. The resolved value travels into that transaction, and the receipt records it as `controller_resolved`.
+  - A refusal writes nothing. The source, its intent (never withdrawn), the source-keyed request identity, the one
+    successor identity and the target reservation stay unused, so the approved deployed code proceeds later.
+  - Code that changes between the request and the stage makes the owner row WAIT in `intended`. It is never refused
+    and never consumed.
+  - The execution-time own-code guard below stays independent, and the E pin is re-derived again at execution.
+- It writes ONE successor per source, `digest({"environment_reverify_of": source})`.
+  - The candidate, reviews, policy and policy hash are identical to the source's (policy revision E). The source's
+    `evaluator_migration` receipt is copied verbatim, so the runner re-derives E exactly as before.
+  - It adds an `environment_reverification` receipt and `checks: {}`, and carries no image.
+- Identical requests replay. A different request is refused. Plain reverification, evaluator migration and
+  environment reverification of the same source conflict with each other in either order.
+- The runner evaluates such a release only while its OWN code revision (`adapters.host_delivery.runtime_revision` of
+  the running package root) equals the approved controller revision; otherwise it refuses `evaluator_code_mismatch`
+  before any workspace or effect. A self-declared revision is never execution proof, and every policy check runs again.
+- Delivery reuses the INV-OWNER-ACTIONS-MIGRATION-001 / INV-HOST-DELIVERY-MIGRATION-001 handoff unchanged, with a
+  `kind` of `environment_reverification`.
+  - The blocked successor plan is superseded truthfully (`release_rejected_superseded`, its halt copied).
+  - A new owner-authored plan registers held until the readiness acknowledgement.
+  - A paused source intent resumes only through `MIGRATION_RESUME`.
+- `LaneEvidence` follows a verified CHAIN of active migration edges from the conductor's original release (at most two
+  hops, for example `1923e5 → 42022d → new`). Each hop requires exactly one active edge, a superseded source delivery
+  and a successor with the identical candidate. A branch, a cycle, a non-active hop or a greater depth is not followed.
+- Every earlier release, attempt, halt and history record stays unchanged.
+
 ## INV-HOST-MIGRATION-001
 
 `python -m codex_harness.adapters.host_migration` moves the Zeus control plane between hosts under

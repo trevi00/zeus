@@ -224,6 +224,9 @@ def migration_resume(current, recorded: dict, lineage: dict, now: str) -> dict |
                                     "paused_reason_code": current.get("reason_code"),
                                     "paused_next_owner": current.get("next_owner"),
                                     "paused_delivery_plan": current.get("delivery_plan"), "at": now}}
+    if isinstance(current.get("migration_resume"), dict):
+        # INV-RELEASE-ENVIRONMENT-REVERIFY-001: a second hop keeps the first resume record unchanged.
+        resumed["migration_resume"]["previous"] = current["migration_resume"]
     resumed["history"] = (current.get("history") or [])[-(MAX_HISTORY - 1):] + [
         {"state": target, "previous": current["state"], "reason_code": "migration_resumed", "error_type": None,
          "at": now}]

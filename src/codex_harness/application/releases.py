@@ -39,6 +39,18 @@ def reverification_successor_id(release_id: str) -> str:
     return digest({"reverify_of": release_id})
 
 
+def environment_successor_id(release_id: str) -> str:
+    return digest({"environment_reverify_of": release_id})
+
+
+class EnvironmentReverificationRefused(ContractError):
+    """INV-RELEASE-ENVIRONMENT-REVERIFY-001: a named refusal raised before any write."""
+
+    def __init__(self, reason_code: str, message: str):
+        self.reason_code = reason_code
+        super().__init__(reason_code + ": " + message)
+
+
 class Releases:
     """Approval evidence is immutable and evaluated against the incumbent policy."""
 
@@ -210,6 +222,9 @@ class Releases:
             # serializes both kinds (INV-RELEASE-EVALUATOR-MIGRATION-001).
             require(tx.get("releases", evaluator_successor_id(release_id)) is None,
                     "Release already has an evaluator migration successor")
+            # INV-RELEASE-ENVIRONMENT-REVERIFY-001: the three successor kinds block each other.
+            require(tx.get("releases", environment_successor_id(release_id)) is None,
+                    "Release already has an environment reverification successor")
             candidate, reviews, checks = self._check_rejected_source(
                 tx, source, expected_revision, expected_policy_hash, now)
             at = now.isoformat()
@@ -264,6 +279,9 @@ class Releases:
                 return existing
             require(tx.get("releases", reverification_successor_id(release_id)) is None,
                     "Release already has a reverification successor")
+            # INV-RELEASE-ENVIRONMENT-REVERIFY-001: the three successor kinds block each other.
+            require(tx.get("releases", environment_successor_id(release_id)) is None,
+                    "Release already has an environment reverification successor")
             candidate, reviews, checks = self._check_rejected_source(
                 tx, source, expected_revision, expected_policy_hash, now)
             require(approver.id != candidate["author"], "Evaluator approver is the candidate author")
@@ -284,6 +302,93 @@ class Releases:
                    {"type": "release.evaluator_migration_requested", "at": at,
                     "release_id": successor_id, "reverify_of": release_id, "actor": actor,
                     "evaluator_revision": approval["evaluator_revision"]})
+            return record
+
+    def request_environment_reverification(self, release_id: str, actor: str, *, expected_revision: str,
+                                           expected_policy_hash: str, approval: dict, resolved_pin: dict,
+                                           resolved_controller, now: datetime | None = None,
+                                           transaction=None) -> dict:
+        """INV-RELEASE-ENVIRONMENT-REVERIFY-001: one conductor-approved re-evaluation of a migrated source.
+
+        The source is an evaluator-migrated successor (INV-RELEASE-EVALUATOR-MIGRATION-001) whose
+        incumbent tests PASSED and whose rejection came only from an executed, failed non-test
+        (environment) check. The successor is the SAME candidate under the SAME policy (so the same
+        evaluator E) with the SAME reviews; it copies the source's `evaluator_migration` receipt
+        verbatim so the runner re-derives E exactly as before, records the approval (including the
+        approved `controller_revision` and `fix_evidence`) and starts with EMPTY checks. Depth is
+        bounded to one: a source that is itself an environment successor is refused. `resolved_pin`
+        is the trusted resolver's derivation of the source's (E, base), made outside any lock; it
+        must equal the source's recorded pin exactly. `resolved_controller` is the trusted
+        integration boundary's resolution of the ACTUAL running controller code (never the approval's
+        own string); it must equal the approved `controller_revision` and is recorded with the
+        receipt. Every refusal happens before any write.
+        """
+        _require_environment_approval(approval, release_id)
+        require_controller_code(resolved_controller, approval["controller_revision"])
+        if approval["source_policy_hash"] != expected_policy_hash:
+            # The receipt records ONE source policy hash; a replay must not mask a differing approval.
+            raise EnvironmentReverificationRefused("environment_reverification_approval_invalid",
+                                                   "environment approval names another evaluator")
+        self.org.actor(actor, "conductor")
+        approver = self.org.actor(approval["approved_by"], "conductor")
+        now = now or datetime.now(timezone.utc)
+        successor_id = environment_successor_id(release_id)
+        request = {**approval, "actor": actor, "source_policy_hash": expected_policy_hash}
+        with (nullcontext(transaction) if transaction is not None else self.store.transaction()) as tx:
+            source = tx.get("releases", release_id)
+            require(source is not None, "Release not found")
+            migration = source.get("evaluator_migration")
+            if not isinstance(migration, dict):
+                raise EnvironmentReverificationRefused(
+                    "environment_reverification_requires_migrated_source",
+                    "release is not an evaluator-migrated successor")
+            if "environment_reverification" in source:
+                raise EnvironmentReverificationRefused(
+                    "environment_reverification_depth", "release is already an environment successor")
+            if resolved_pin != expected_evaluator_pin(migration) \
+                    or source["policy"].get("revision") != migration["evaluator_revision"] \
+                    or migration["base"] != source["candidate"].get("base"):
+                raise EnvironmentReverificationRefused(
+                    "environment_reverification_pin_mismatch", "evaluator pin does not match the source")
+            existing = tx.get("releases", successor_id)
+            if existing:
+                # A replay returns the one successor without any write; anything else conflicts.
+                receipt = existing.get("environment_reverification") or {}
+                require(existing.get("reverify_of") == release_id
+                        and existing["candidate"]["revision"] == expected_revision
+                        and {k: receipt.get(k) for k in request} == request,
+                        "Conflicting environment reverification")
+                return existing
+            require(tx.get("releases", reverification_successor_id(release_id)) is None,
+                    "Release already has a reverification successor")
+            require(tx.get("releases", evaluator_successor_id(release_id)) is None,
+                    "Release already has an evaluator migration successor")
+            candidate, reviews, checks = self._check_rejected_source(
+                tx, source, expected_revision, expected_policy_hash, now)
+            require(approval["source_policy_hash"] == source["policy_hash"],
+                    "Environment approval names another evaluator")
+            require(approver.id != candidate["author"], "Environment approver is the candidate author")
+            tests = checks.get("tests") or {}
+            if tests.get("passed") is not True or tests.get("skipped"):
+                raise EnvironmentReverificationRefused("tests_not_passed", "incumbent tests did not pass")
+            if not any(name != "tests" and c["passed"] is False and not c.get("skipped")
+                       for name, c in checks.items()):
+                raise EnvironmentReverificationRefused(
+                    "environment_reverification_no_failed_environment_check",
+                    "no executed failed non-test check")
+            at = now.isoformat()
+            receipt = {**request, "source_checks_digest": digest(checks),
+                       "source_digest": digest(source), "controller_resolved": resolved_controller, "at": at}
+            record = {"id": successor_id, "candidate": candidate, "policy": source["policy"],
+                      "policy_hash": source["policy_hash"], "status": "reviewed", "reviews": reviews,
+                      "checks": {}, "created_at": at, "reverify_of": release_id,
+                      "inherited_reviews": {"release_id": release_id, "digest": digest(reviews)},
+                      "evaluator_migration": migration, "environment_reverification": receipt}
+            tx.put("releases", successor_id, record)
+            tx.put("events", "release.environment_reverification_requested:" + successor_id,
+                   {"type": "release.environment_reverification_requested", "at": at,
+                    "release_id": successor_id, "reverify_of": release_id, "actor": actor,
+                    "controller_revision": approval["controller_revision"]})
             return record
 
     def promote(self, release_id: str, expected_active: str | None, *, transaction=None) -> dict:
@@ -381,3 +486,41 @@ def _require_evaluator_approval(approval, release_id: str) -> None:
             "Evaluator migration may change only tests/")
     require(approval["source_release_id"] == release_id, "Evaluator approval names another release")
     require(bool(approval["base"]) and bool(approval["approved_by"]), "Evaluator migration approval incomplete")
+
+
+ENVIRONMENT_APPROVAL_KEYS = ("kind", "source_release_id", "source_policy_hash", "old_plan_id",
+                             "old_plan_sha256", "intent_id", "policy_id", "target_id", "lane",
+                             "fix_evidence", "controller_revision", "approved_by")
+
+
+def require_controller_code(resolved, expected: str) -> str:
+    """INV-RELEASE-ENVIRONMENT-REVERIFY-001 creation preflight: the controller code the integration
+    boundary RESOLVED (the runtime_revision SSOT of the running harness code, never a requester's
+    string) must be a known revision equal to the approved one. Unknown code is
+    `environment_reverification_controller_unavailable`, other code `..._controller_mismatch`; both
+    are raised before any write, so the source, its intent and the one successor identity stay unused."""
+    if type(resolved) is not str or not _HEX40.fullmatch(resolved):
+        raise EnvironmentReverificationRefused("environment_reverification_controller_unavailable",
+                                               "the running controller code is unknown")
+    if resolved != expected:
+        raise EnvironmentReverificationRefused("environment_reverification_controller_mismatch",
+                                               "the running controller code is not the approved revision")
+    return resolved
+
+
+def _require_environment_approval(approval, release_id: str) -> None:
+    """The exact conductor-authored approval shape of INV-RELEASE-ENVIRONMENT-REVERIFY-001."""
+    if not (isinstance(approval, dict) and set(approval) == set(ENVIRONMENT_APPROVAL_KEYS)
+            and all(type(approval[k]) is str and approval[k] for k in ENVIRONMENT_APPROVAL_KEYS)
+            and approval["kind"] == "environment_reverification"):
+        raise EnvironmentReverificationRefused("environment_reverification_approval_invalid",
+                                               "environment reverification approval incomplete")
+    if not (_HEX40.fullmatch(approval["controller_revision"])
+            and _HEX64.fullmatch(approval["old_plan_sha256"])
+            and approval["fix_evidence"].startswith("sha256:")
+            and _HEX64.fullmatch(approval["fix_evidence"][7:])):
+        raise EnvironmentReverificationRefused("environment_reverification_approval_invalid",
+                                               "environment reverification approval malformed")
+    if approval["source_release_id"] != release_id:
+        raise EnvironmentReverificationRefused("environment_reverification_approval_invalid",
+                                               "environment approval names another release")

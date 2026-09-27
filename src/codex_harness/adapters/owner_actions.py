@@ -278,9 +278,14 @@ def coordinator(service, config: dict, host: dict, *, lanes=None, assessments=No
 
         return lambda revision, base: resolve_evaluator_pin(lane_git(lane_of(config, lane_id), host), revision, base)
 
+    # INV-RELEASE-ENVIRONMENT-REVERIFY-001: the trusted controller-code port is the runtime_revision
+    # SSOT of the running harness code (the same resolver the runner's own-code guard uses).
+    from codex_harness.adapters.deployment import controller_code_revision
+
     return OwnerActions(store, continuation=continuation, org=service.org, lanes=lanes,
                         deliveries=lambda lane_id: HostDelivery(lanes(lane_id).store, service.org,
-                                                                evaluator_pins=evaluator_pins(lane_id)),
+                                                                evaluator_pins=evaluator_pins(lane_id),
+                                                                controller_code=controller_code_revision),
                         publisher=lambda lane_id: publisher_factory(lane_of(config, lane_id)["repository"]),
                         assessments=assessments, targets=TargetFiles(), fleet=Fleet(store), validate=validator())
 
