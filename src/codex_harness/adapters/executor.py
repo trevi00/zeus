@@ -90,10 +90,52 @@ from codex_harness.domain.observation import (
     safe_code,
 )
 from codex_harness.domain.policy import POLICY
+from codex_harness.domain.progress_activity import (
+    activity_label,
+    build_receipt,
+    claude_result_status,
+)
 from codex_harness.domain.project_evidence import requires_container, worker_schema
 from codex_harness.domain.provider_stream import CODEX_PROGRESS, CodexStream, stream_for
 from codex_harness.domain.research import require_dispatch
 from codex_harness.domain.worker_sessions import MODE_RESUME, usage_delta
+
+# S2b (FLEET-S2B-SPEC §3): the display-only activity writes wait at most this long for the artifact lock, and use
+# the store's fail-fast transaction, so a busy control plane drops a display record instead of stalling a run.
+ACTIVITY_LOCK_SECONDS = 0.5
+
+
+class _OwnerRefusal(Exception):
+    """Carries the `_owned` fence refusal of a display-only write past its containment boundary unchanged."""
+
+    def __init__(self, refusal: ContractError):
+        super().__init__(str(refusal))
+        self.refusal = refusal
+
+
+def activity_basis(row: dict):
+    """The (activity_sequence, sequence) counters a compact write predicts from, or None when they are not
+    non-negative integers (a start then waits for an authoritative write instead of guessing)."""
+    counters = (row.get("activity_sequence", 0), row.get("sequence", 0))
+    return counters if all(type(value) is int and value >= 0 for value in counters) else None
+
+
+def sync_activity(row: dict, old_sequence, linked_ref, failed: bool) -> None:
+    """Keep the compact ring truthful beside the raw progress it annotates (FLEET-S2B-SPEC §3, D11). A ring whose
+    watermark does not equal the progress sequence it was synchronized at (an older producer ran, or a compact
+    write was dropped) is cleared, never presented as continuous; a dropped compact write leaves the watermark
+    null so no reader selects a ring that misses it."""
+    ring, watermark = row.get("activity_recent"), row.get("activity_progress_sequence")
+    synced = (isinstance(ring, list) and type(watermark) is int and type(old_sequence) is int
+              and watermark == old_sequence)
+    if not synced:
+        ring = []
+    row.setdefault("activity_sequence", 0)
+    if linked_ref is not None:
+        ring = (ring + [linked_ref])[-6:]
+        row["activity_sequence"] += 1
+    row["activity_recent"] = ring
+    row["activity_progress_sequence"] = None if failed else row.get("sequence", 0)
 
 # Severity of one evaluated output (operating-portfolio-001): an accepted answer is information, a
 # refusal is not. A structurally invalid answer and a provider failure both lose the run, so neither
@@ -662,6 +704,9 @@ class Executor:
             recovery["checkpoint"] = checkpoint
         if progress and bound(progress):
             recovery["progress"] = progress
+        # S2b: the start-only prediction cache, refreshed by every authoritative progress write, and the activity
+        # drops not yet persisted (FLEET-S2B-SPEC §3).
+        activity_state = {"cache": activity_basis(progress if progress and bound(progress) else {}), "pending": 0}
         require(type(max_handoffs) is int and 1 <= max_handoffs <= 4, "Handoff cap must be 1..4")
         for handoff in range(max_handoffs):
             # @invariant INV-CONTEXT-001: every actual prompt, including recovery,
@@ -747,45 +792,55 @@ class Executor:
                 # is checked before any field is read (review, PR #49).
                 defect = stream.shape(event)
                 malformed = defect is not None
-                if malformed or stream.is_progress(event):
-                    with self.service.store.transaction() as tx:
-                        prior = tx.get("execution_progress", key) or {}
-                    receipt = self.artifacts.put(evidence_json({"event": event if not malformed else repr(event),
-                                                                "malformed": malformed, "defect": defect,
-                                                                "previous": prior.get("last_record") if bound(prior) else None}),
-                                                 "runtime-event:" + key)
-                    def note_progress(progress_sequence):
-                        self.observer.emit("development.progress_recorded", "observed",
-                                           execution=observed_execution(reservation_id), correlation_id=correlation,
-                                           causation_id=key, occurred_at=None if malformed else stream.occurrence(event),
-                                           severity="warning" if malformed else "debug", evidence_refs=[receipt["ref"]],
-                                           attributes={"progress_sequence": progress_sequence,
-                                                       "method": stream.label(event),
-                                                       "item_type": stream.item_type(event),
-                                                       "item_status": stream.item_status(event),
-                                                       "receipt_ref": receipt["ref"], "malformed": malformed, "defect": defect})
-                    with self.service.store.transaction() as tx:
-                        if lease:
-                            self.workflow._owned(tx, lease)
-                        previous = tx.get("execution_progress", key) or {"id": key, "recent": []}
-                        if not bound(previous):
-                            previous = {"id": key, "recent": []}
-                        previous["provider"] = assignment.provider
-                        if context_bound:
-                            previous["research_binding"] = binding
-                        if malformed:
-                            previous["malformed_events"] = previous.get("malformed_events", 0) + 1
-                            previous.setdefault("malformed_recent", [])
-                            previous["malformed_recent"] = (previous["malformed_recent"] + [receipt["ref"]])[-6:]
-                            previous.setdefault("malformed_defects", {})
-                            previous["malformed_defects"][defect] = previous["malformed_defects"].get(defect, 0) + 1
-                            tx.put("execution_progress", key, previous)
-                            note_progress(None)
-                            return
-                        # Occurrence time comes from the event itself; collection time is ours.
-                        # They are kept apart so replay never reorders by the merge moment.
+                label = None if malformed else activity_label(assignment.transport, event)
+                if not (malformed or stream.is_progress(event)):
+                    if label is not None:
+                        record_start(event)
+                    return
+                # Occurrence time comes from the event itself; collection time is ours, read ONCE when the event
+                # is accepted (S2b D7). They are kept apart so replay never reorders by the merge moment.
+                collected = utcnow()
+                with self.service.store.transaction() as tx:
+                    prior = tx.get("execution_progress", key) or {}
+                prior_bound = bound(prior)
+                receipt = self.artifacts.put(evidence_json({"event": event if not malformed else repr(event),
+                                                            "malformed": malformed, "defect": defect,
+                                                            "previous": prior.get("last_record") if prior_bound else None}),
+                                             "runtime-event:" + key)
+                # S2b: the compact display record of an activity event; any failure drops only the activity.
+                predicted = activity_basis(prior if prior_bound else {}) if label is not None else None
+                compact = put_activity(event, predicted, receipt["ref"], collected) if predicted else None
+                def note_progress(progress_sequence):
+                    self.observer.emit("development.progress_recorded", "observed",
+                                       execution=observed_execution(reservation_id), correlation_id=correlation,
+                                       causation_id=key, occurred_at=None if malformed else stream.occurrence(event),
+                                       severity="warning" if malformed else "debug", evidence_refs=[receipt["ref"]],
+                                       attributes={"progress_sequence": progress_sequence,
+                                                   "method": stream.label(event),
+                                                   "item_type": stream.item_type(event),
+                                                   "item_status": stream.item_status(event),
+                                                   "receipt_ref": receipt["ref"], "malformed": malformed, "defect": defect})
+                with self.service.store.transaction() as tx:
+                    if lease:
+                        self.workflow._owned(tx, lease)
+                    previous = tx.get("execution_progress", key) or {"id": key, "recent": []}
+                    current_bound = bound(previous)
+                    if not current_bound:
+                        previous = {"id": key, "recent": []}
+                    previous["provider"] = assignment.provider
+                    if context_bound:
+                        previous["research_binding"] = binding
+                    if malformed:
+                        previous["malformed_events"] = previous.get("malformed_events", 0) + 1
+                        previous.setdefault("malformed_recent", [])
+                        previous["malformed_recent"] = (previous["malformed_recent"] + [receipt["ref"]])[-6:]
+                        previous.setdefault("malformed_defects", {})
+                        previous["malformed_defects"][defect] = previous["malformed_defects"].get(defect, 0) + 1
+                        flushed = flush_drops(previous)
+                        tx.put("execution_progress", key, previous)
+                    else:
                         occurred = stream.occurrence(event)
-                        collected = utcnow()  # one clock read: `at` and `collected_at` are the same moment
+                        observed = activity_basis(previous)
                         previous["sequence"] = previous.get("sequence", 0) + 1
                         previous["recent"] = (previous["recent"] + [receipt["ref"]])[-6:]
                         previous["last_record"] = receipt["ref"]
@@ -797,10 +852,96 @@ class Executor:
                                         last_event=stream.label(event), worktree=cwd)
                         item = stream.completed_item(event)
                         if item is not None:
+                            if label == "result" and assignment.transport == "claude_cli":
+                                # S2b D9: the adapter's own failure rule, so S1a agrees with the activity entry.
+                                item = {**item, "status": claude_result_status(event)}
                             previous["last_completed"] = {**item, "evidence": receipt["ref"],
                                                           "sequence": previous["sequence"], "occurred_at": occurred}
+                        # The compact record links only when the row is still the one it was predicted from.
+                        linked = (compact is not None and prior_bound == current_bound and observed == predicted)
+                        if label is not None and not linked:
+                            activity_state["pending"] += 1
+                        sync_activity(previous, observed[1] if observed else None, compact if linked else None,
+                                      failed=label is not None and not linked)
+                        flushed = flush_drops(previous)
                         tx.put("execution_progress", key, previous)
-                    note_progress(previous.get("sequence"))
+                activity_state["pending"] -= flushed
+                activity_state["cache"] = activity_basis(previous)
+                note_progress(None if malformed else previous.get("sequence"))
+
+            def flush_drops(row):
+                """Persist the activity drops known so far in this successful owned write; the caller clears them
+                only after the commit, so a failed commit keeps them pending."""
+                pending = activity_state["pending"]
+                if pending:
+                    current = row.get("activity_dropped", 0)
+                    row["activity_dropped"] = (current if type(current) is int and current >= 0 else 0) + pending
+                return pending
+
+            def put_activity(event, basis, raw_ref, collected):
+                """Build and store ONE compact record for a raw-backed event; None drops the activity only."""
+                try:
+                    document = build_receipt(
+                        execution=key, transport=assignment.transport, event=event, activity_sequence=basis[0] + 1,
+                        progress_sequence=basis[1] + 1, generation=lease.get("generation") if lease else None,
+                        attempt=lease.get("attempt") if lease else None, collected_at=collected, raw_ref=raw_ref)
+                    return self.artifacts.put(evidence_json(document), "runtime-activity:" + key,
+                                              lock_timeout=ACTIVITY_LOCK_SECONDS)["ref"]
+                except Exception:
+                    return None
+
+            def record_start(event):
+                """A Claude tool start: ONE compact record and ONE fail-fast owned transaction, no raw receipt and
+                no legacy progress field (S2b D4/D5). Every failure drops only this activity, except the
+                `_owned` fence refusal, which ends the run exactly as a progress write would."""
+                basis = activity_state["cache"]
+                if basis is None:
+                    activity_state["pending"] += 1
+                    return
+                try:
+                    document = build_receipt(
+                        execution=key, transport=assignment.transport, event=event, activity_sequence=basis[0] + 1,
+                        progress_sequence=None, generation=lease.get("generation") if lease else None,
+                        attempt=lease.get("attempt") if lease else None, collected_at=utcnow(), raw_ref=None)
+                    compact = self.artifacts.put(evidence_json(document), "runtime-activity:" + key,
+                                                 lock_timeout=ACTIVITY_LOCK_SECONDS)["ref"]
+                except Exception:
+                    activity_state["pending"] += 1
+                    return
+                written, observed, flushed = None, None, 0
+                try:
+                    with self.service.store.transaction(fail_fast=True) as tx:
+                        if lease:
+                            try:
+                                self.workflow._owned(tx, lease)
+                            except ContractError as refusal:
+                                raise _OwnerRefusal(refusal) from refusal
+                        previous = tx.get("execution_progress", key) or {"id": key, "recent": []}
+                        if not bound(previous):
+                            previous = {"id": key, "recent": []}
+                        observed = activity_basis(previous)
+                        if observed == basis:
+                            previous["provider"] = assignment.provider
+                            if context_bound:
+                                previous["research_binding"] = binding
+                            previous["worktree"] = cwd
+                            sync_activity(previous, previous.get("sequence", 0), compact, failed=False)
+                            flushed = flush_drops(previous)
+                            tx.put("execution_progress", key, previous)
+                            written = previous
+                except _OwnerRefusal as wrapped:
+                    raise wrapped.refusal from None
+                except Exception:
+                    activity_state["pending"] += 1
+                    activity_state["cache"] = None
+                    return
+                if written is None:
+                    # Compare-and-set mismatch: nothing written, no retry; the observed row is the new prediction.
+                    activity_state["pending"] += 1
+                    activity_state["cache"] = observed
+                    return
+                activity_state["pending"] -= flushed
+                activity_state["cache"] = activity_basis(written)
 
             started = time.monotonic()
             result = None

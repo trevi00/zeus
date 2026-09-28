@@ -53,7 +53,8 @@ class MemoryStore:
         self.lock = RLock()
 
     @contextmanager
-    def transaction(self):
+    def transaction(self, fail_fast: bool = False):
+        # `fail_fast` only shortens lock waits in the PostgreSQL store; an in-process lock has nothing to shorten.
         with self.lock:
             draft = deepcopy(self.data)
             yield MemoryTransaction(draft)
@@ -123,10 +124,13 @@ class PostgresStore:
         return Migrator(self.dsn, config, str(root)).apply("store.migrate")
 
     @contextmanager
-    def transaction(self):
-        with psycopg.connect(self.dsn, connect_timeout=5) as conn:
+    def transaction(self, fail_fast: bool = False):
+        # `fail_fast` is for display-only writes (S2b activity) that must never wait behind the control-plane
+        # writer: a short connect and lock budget, and the caller drops its write instead of waiting. Every other
+        # caller keeps the normal budget.
+        with psycopg.connect(self.dsn, connect_timeout=2 if fail_fast else 5) as conn:
             # One control-plane writer at a time on this local bootstrap DB.
             # Replace with per-aggregate locks after measuring contention.
-            conn.execute("SET LOCAL lock_timeout = '10s'")
+            conn.execute("SET LOCAL lock_timeout = '500ms'" if fail_fast else "SET LOCAL lock_timeout = '10s'")
             conn.execute("SELECT pg_advisory_xact_lock(734219)")
             yield PostgresTransaction(conn)
