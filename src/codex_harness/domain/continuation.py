@@ -575,6 +575,18 @@ MAX_RECEIPT_ATTEMPTS, MAX_RECEIPT_REFS = 32, 16
 EVIDENCE_REF = re.compile(r"^sha256:[0-9a-f]{64}$")
 INVESTIGATION_REF = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$")
 RESEARCH_ACCEPTED = "accepted"
+# INV-RESEARCH-ATTEMPT-SCOPE-001 (U2(b)): the ONE claim identity of an attempt-scoped research claim, derived
+# from the held intent's own id, so every replay, restart and second controller derives the same key. It can
+# never equal a bare 64-hex failure-family or audit id, nor a `<id>.recovery-N` key.
+ATTEMPT_SCOPE = "attempt_scope"
+ATTEMPT_SCOPE_PREFIX = "attempt-scope."
+
+
+def attempt_scope_id(intent_id) -> str:
+    """`attempt-scope.<intent id>` for a valid intent id (64-hex); anything else refuses, never truncates."""
+    refuse(type(intent_id) is str and SHA256.fullmatch(intent_id) is not None, "research_scope_foreign", "operator",
+           "intent_id")
+    return ATTEMPT_SCOPE_PREFIX + intent_id
 
 
 def _receipt(condition, field: str) -> None:

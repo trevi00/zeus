@@ -22,6 +22,8 @@ from codex_harness.domain.council import SCHEMA_AUTONOMOUS_V2, validate_council_
 from codex_harness.domain.dge import parse_deadline
 from codex_harness.domain.model import ContractError, digest
 from codex_harness.domain.operation import ID, REVISION, SHA256, safe_relative_path
+from codex_harness.domain.research_attempt_scope import KIND as ATTEMPT_SCOPE
+from codex_harness.domain.research_attempt_scope import ScopeRefused, validate_scope_source
 from codex_harness.domain.research_investigations import KIND as FAMILY
 from codex_harness.domain.research_investigations import SOURCE as INVESTIGATION
 from codex_harness.domain.research_investigations import (
@@ -45,7 +47,7 @@ CONFIG_FIELDS = {"schema", "id", "base_revision", "deadline", "interval_seconds"
 # Opt-in only: an absent `investigation_source` or `audit_progress_source` keeps the legacy
 # canonical config and digest exactly. Each authorizes ONE scoped source for this program's
 # unchanged template plan; neither widens permissions, thresholds or the template.
-OPTIONAL_CONFIG_FIELDS = {"investigation_source", "audit_progress_source"}
+OPTIONAL_CONFIG_FIELDS = {"investigation_source", "audit_progress_source", "attempt_scope_source"}
 BUDGET_FIELDS = set(NUMERIC_FIELDS)  # the legacy finite shape; `mode` is optional (usage_policy)
 TOPIC_FIELDS = {"id", "keywords"}
 LOCAL_FIELDS = {"id", "topic", "path", "sha256", "rationale"}
@@ -198,6 +200,17 @@ def validate_config(document, policy) -> dict:
             canonical["audit_progress_source"] = validate_progress_source(
                 document["audit_progress_source"], {t["id"] for t in topics})
         except ProgressRefused as exc:
+            raise ProgramRefused(exc.reason_code, exc.field) from exc
+    if "attempt_scope_source" in document:
+        # INV-RESEARCH-ATTEMPT-SCOPE-001 (opt-in): this program's unchanged template plan for the held research
+        # intents of exactly one registered continuation policy. It excludes both other sources (the two legacy
+        # sources may still coexist, as before) and grants no qualification admission by itself.
+        if "investigation_source" in document or "audit_progress_source" in document:
+            raise ProgramRefused("config_fields", "attempt_scope_source")
+        try:
+            canonical["attempt_scope_source"] = validate_scope_source(
+                document["attempt_scope_source"], {t["id"] for t in topics})
+        except ScopeRefused as exc:
             raise ProgramRefused(exc.reason_code, exc.field) from exc
     return canonical
 
@@ -397,7 +410,9 @@ def snapshot_document(*, program_id: str, number: int, base_revision: str, fetch
     if candidate.get("source") == INVESTIGATION and isinstance(document_snapshot, dict):
         # The bridge snapshot travels verbatim under the name of the kind it describes, so a reader
         # cannot mistake an audit-progress symptom for a failed-job family.
-        key = "audit_progress" if document_snapshot.get("kind") == AUDIT_PROGRESS else "investigation"
+        kind = document_snapshot.get("kind")
+        key = ("audit_progress" if kind == AUDIT_PROGRESS else "attempt_scope" if kind == ATTEMPT_SCOPE
+               else "investigation")
         document[key] = document_snapshot
     return document
 
@@ -460,7 +475,11 @@ def cycle_view(cycle: dict) -> dict:
     keys = ("id", "number", "status", "counts", "sources", "selection", "budget", "capture", "council", "result",
             "failure", "stop_reason", "remaining", "started_at", "updated_at", "finished_at", "investigations",
             "audit_progress")
-    return {k: cycle.get(k) for k in keys}
+    view = {k: cycle.get(k) for k in keys}
+    if "attempt_scope" in cycle:
+        # Only an opted-in program's cycles carry it: legacy cycle bytes are unchanged (INV-RESEARCH-ATTEMPT-SCOPE-001).
+        view["attempt_scope"] = cycle["attempt_scope"]
+    return view
 
 
 def candidate_view(candidate: dict) -> dict:
@@ -505,7 +524,10 @@ def program_view(row: dict, cycles: list, candidates: list, dispatches: list | N
             "current": [{k: h.get(k) for k in ("investigation", "version", "successor", "dispatch", "request_sha256",
                                                "previous", "updated_at")}
                         for h in sorted(heads or [], key=lambda h: h["investigation"])],
-            "authority": "research program status; counts from the store, not model claims; no merge, deploy or truth"}
+            "authority": "research program status; counts from the store, not model claims; no merge, deploy or truth",
+            **({"attempt_scope": dispatch_counts([d for d in (dispatches or []) if d.get("kind") == ATTEMPT_SCOPE
+                                                  and d.get("program") == row["id"]])}
+               if "attempt_scope_source" in config else {})}
 
 
 def monitor_projection(programs: list, cycles: list) -> dict:
