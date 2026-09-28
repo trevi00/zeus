@@ -138,7 +138,7 @@ class InProcessResearch:
     def run(self, launch, program_id):
         token = "f" * 64 if self.foreign else launch       # foreign: another owner reserves the same number
         self.env.programs.token = lambda: token
-        self.env.runner.tick(program_id)
+        self.env.runner.tick(program_id, intent="incident")
         self.launches[launch] = "exited"
 
     def poll(self, launch):

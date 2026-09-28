@@ -21,7 +21,7 @@ see [SHORT-ROOT-VERIFICATION.md](SHORT-ROOT-VERIFICATION.md).
 ```
 zeus research-program register --file CONFIG.json   # validate, bind goal + local rows at base, store; no models
 zeus research-program resume ID                     # paused -> active (initial state is paused)
-zeus research-program run ID --ticks N              # up to N ticks, never beyond max_cycles/interval/deadline
+zeus research-program run ID --ticks N --intent I   # I: proactive (pressure-gated) | user_request | incident | existing_work_result | task_required
 zeus research-program status ID                     # store read only, urn:zeus:research-program-status:1
 zeus research-program pause ID                      # block new ticks; an owned cycle finishes
 ```

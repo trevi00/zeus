@@ -61,15 +61,20 @@ def config(head, **overrides):
 class FakeSources:
     """LABELLED synthetic feeds: no network. `outages` names sources that raise on collect."""
 
-    def __init__(self, artifacts, outages=(), items=None):
+    def __init__(self, artifacts, outages=(), items=None, pressure=None):
+        self.pressure = pressure  # the real class's pressure seam; this stand-in never fetches
         self.artifacts, self.outages, self.calls = artifacts, set(outages), []
+        self.paused = set()  # sources whose proactive fetch the pressure evaluator holds (INV-DISCOVERY-PRESSURE-001)
         self.items = items if items is not None else {
             "github": [{"url": "https://github.com/acme/pgtool#readme", "title": "acme/pgtool", "summary": "Postgres tooling"},
                        {"url": "https://github.com/acme/unrelated", "title": "acme/unrelated", "summary": "a game engine"}],
             "geeknews": [{"url": "https://news.hada.io/topic?id=1", "title": "Advisory lock patterns", "summary": "<p>x</p>"}]}
 
-    def collect(self, source):
+    def collect(self, source, *, intent):
         self.calls.append(source)
+        if source in self.paused:
+            from codex_harness.domain.discovery_pressure import DiscoveryPaused
+            raise DiscoveryPaused({"decision": "hold", "reason_code": "pressure_high"})
         if source in self.outages:
             raise OSError("fixture outage " + CANARY)
         receipt = self.artifacts.put("<html>fixture body " + source + "</html>", "fixture:" + source)

@@ -14,8 +14,10 @@ def schedule_research(service, now: float | None = None) -> int:
             key = f"research:{source}:{slot}"
             if tx.get("schedule", key):
                 continue
+            # INV-DISCOVERY-PRESSURE-001: a periodic feed fetch is proactive discovery by definition; it states
+            # so and is gated by pressure at fetch time, never refused for a missing intent.
             message = envelope("task.assign", "lead:research", "worker:" + source, "research",
-                               {"source": source}, key)
+                               {"source": source, "intent": "proactive"}, key)
             service.org.authorize(message)
             tx.put("outbox", message["message_id"], {"message": message, "sent": False})
             tx.put("schedule", key, {"id": key, "at": utcnow()})

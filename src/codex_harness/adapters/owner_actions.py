@@ -296,7 +296,10 @@ class ResearchLaunches:
     def start(self, launch: str, program_id: str, lane: str) -> dict:
         repository = str(self.repository(lane))
         command = (list(self.command(program_id, launch)) if self.command is not None else
-                   [*self.argv, "research-program", "run", program_id, "--ticks", "1", "--cycle-owner", launch])
+                   [*self.argv, "research-program", "run", program_id, "--ticks", "1", "--cycle-owner", launch,
+                    # INV-DISCOVERY-PRESSURE-001: an owner-dispatched research launch answers a recorded failure
+                    # family (an incident), so it is exempt from proactive-discovery pressure; stated, not defaulted.
+                    "--intent", "incident"])
         env = {**os.environ, "ZEUS_REPOSITORY": repository, "HARNESS_REPOSITORY": repository}
         return _start_guardian(self, launch, launch, command, env=env, cwd=repository)
 

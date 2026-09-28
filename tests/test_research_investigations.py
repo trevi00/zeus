@@ -158,7 +158,7 @@ def test_two_jobs_one_candidate_one_claim_immutable_snapshot_and_a_linked_run(tm
     env = build(tmp_path, store=store, council=FakeCouncil(store, status="accepted"))
     portfolio(store)
     registered(env, investigation_source=dict(SOURCE))
-    receipt = env.runner.tick("rp-001")
+    receipt = env.runner.tick("rp-001", intent="proactive")
     assert receipt["investigation"] == INVESTIGATION and receipt["result"] == "accepted"
     assert receipt["selected"] == "inv-" + INVESTIGATION[:24], "the investigation outranks the local lead"
     view = env.programs.status("rp-001")
@@ -208,7 +208,7 @@ def test_a_disabled_program_dispatches_nothing_and_keeps_the_legacy_path(tmp_pat
     env = build(tmp_path, store=store)
     portfolio(store)
     registered(env)   # no investigation_source: the opt-out program
-    receipt = env.runner.tick("rp-001")
+    receipt = env.runner.tick("rp-001", intent="proactive")
     assert receipt["selected"] == "local-note" and "investigation" not in receipt
     cycle = env.programs.status("rp-001")["cycle_receipts"][0]
     assert cycle["investigations"] is None and dispatches(store) == []
@@ -268,7 +268,7 @@ def test_the_claim_row_and_not_the_filter_is_what_makes_a_second_claim_impossibl
     portfolio(store)
     registered(env, investigation_source=dict(SOURCE))
     registered(env, id="rp-002", investigation_source=dict(SOURCE))
-    env.runner.tick("rp-001")
+    env.runner.tick("rp-001", intent="proactive")
     assert len(dispatches(store)) == 1
     import codex_harness.application.research_program as application
     forgetful = application.eligible_investigations
@@ -288,10 +288,10 @@ def test_replay_keeps_the_original_claim_and_never_opens_a_second_attempt(tmp_pa
     env = build(tmp_path, store=store, council=FakeCouncil(store, status="accepted"))
     portfolio(store)
     registered(env, investigation_source=dict(SOURCE), max_cycles=3, max_adoptions=3)
-    env.runner.tick("rp-001")
+    env.runner.tick("rp-001", intent="proactive")
     first = dispatches(store)[0]
     env.clock.value = "2028-01-01T02:00:00+00:00"
-    second = env.runner.tick("rp-001")
+    second = env.runner.tick("rp-001", intent="proactive")
     assert second["selected"] == "local-note", "the claimed investigation is not offered again"
     rows = dispatches(store)
     assert len(rows) == 1 and rows[0] == first, "the original reference is retained byte for byte"
@@ -324,14 +324,14 @@ def test_a_changed_owner_disposition_cannot_run_later_from_an_old_cache(tmp_path
     env = build(tmp_path, store=store, budget=FakeBudget(this_host=4, all_hosts=4))   # LABELLED: no headroom
     owner = portfolio(store)
     registered(env, investigation_source=dict(SOURCE), max_cycles=3, max_adoptions=2)
-    first = env.runner.tick("rp-001")
+    first = env.runner.tick("rp-001", intent="proactive")
     assert first["reason"] == "machine_headroom_insufficient" and dispatches(store) == []
     cached = env.programs.candidate("rp-001", "inv-" + INVESTIGATION[:24])
     assert cached["status"] == "eligible" and cached["snapshot"]["investigation"] == INVESTIGATION
     owner.disposition(INVESTIGATION, "researched", ["docs/zeus/operations/research-dispatch-001/SPEC.md"])
     env.runner.budget = FakeBudget()   # LABELLED: headroom restored; only the disposition changed
     env.clock.value = "2028-01-01T02:00:00+00:00"
-    second = env.runner.tick("rp-001")
+    second = env.runner.tick("rp-001", intent="proactive")
     assert second["selected"] == "local-note" and "investigation" not in second
     assert dispatches(store) == [], "a decided investigation is never dispatched from the cache"
     stale = env.programs.candidate("rp-001", "inv-" + INVESTIGATION[:24])
@@ -348,7 +348,7 @@ def test_a_capture_failure_keeps_a_failed_dispatch_with_a_fixed_stage_and_code(t
     portfolio(store)
     registered(env, investigation_source=dict(SOURCE))
     git(env.root, "update-ref", "refs/zeus/research/rp-001/001", env.head)   # a stale ref from an earlier attempt
-    receipt = env.runner.tick("rp-001")
+    receipt = env.runner.tick("rp-001", intent="proactive")
     assert receipt["failure"] == {"stage": "capture", "code": "capture_ref_exists"}
     assert receipt["investigation"] == INVESTIGATION and receipt["state"] == "blocked"
     row = dispatches(store)[0]
@@ -381,7 +381,7 @@ def test_a_mismatched_run_row_is_unknown_and_caller_prose_is_not_authority(tmp_p
     env = build(tmp_path, store=store, council=MismatchedCouncil(store))
     portfolio(store)
     registered(env, investigation_source=dict(SOURCE))
-    receipt = env.runner.tick("rp-001")
+    receipt = env.runner.tick("rp-001", intent="proactive")
     assert receipt["result"] == "unknown" and receipt["reason_code"] == "run_row_mismatch"
     row = dispatches(store)[0]
     assert row["result"] == "unknown" and row["result_reason"] == "run_row_mismatch" and row["row_status"] == "accepted"

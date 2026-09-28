@@ -34,7 +34,7 @@ def guarded(monkeypatch, root):
 def test_parser_wires_the_five_subcommands():
     args = cli.parser().parse_args(["research-program", "register", "--file", "p.json"])
     assert args.command == "research-program" and args.research_program_command == "register" and args.file.name == "p.json"
-    run = cli.parser().parse_args(["research-program", "run", "rp-001", "--ticks", "2"])
+    run = cli.parser().parse_args(["research-program", "run", "rp-001", "--ticks", "2", "--intent", "incident"])
     assert run.program_id == "rp-001" and run.ticks == 2
     for name in ("status", "pause", "resume"):
         assert cli.parser().parse_args(["research-program", name, "rp-001"]).program_id == "rp-001"
@@ -85,10 +85,10 @@ def test_run_uses_labelled_stand_ins_and_reports_exit_codes(tmp_path, monkeypatc
     path = tmp_path / "program.json"
     path.write_text(json.dumps(config(head)), encoding="utf-8")
     research_program_cli.execute(svc, SimpleNamespace(research_program_command="register", file=path))
-    paused = research_program_cli.execute(svc, SimpleNamespace(research_program_command="run", program_id="rp-001", ticks=1))
+    paused = research_program_cli.execute(svc, SimpleNamespace(research_program_command="run", program_id="rp-001", ticks=1, intent="incident"))
     assert paused["ticks"] == [{"reserved": False, "reason": "paused", "state": "paused"}] and paused["exit_code"] == 0
     research_program_cli.execute(svc, SimpleNamespace(research_program_command="resume", program_id="rp-001"))
-    result = research_program_cli.execute(svc, SimpleNamespace(research_program_command="run", program_id="rp-001", ticks=2))
+    result = research_program_cli.execute(svc, SimpleNamespace(research_program_command="run", program_id="rp-001", ticks=2, intent="incident"))
     assert result["exit_code"] == 0 and len(result["ticks"]) == 2
     assert result["ticks"][0]["selected"] == "local-note" and result["ticks"][0]["result"] == "rejected"
     assert result["ticks"][1] == {"reserved": False, "reason": "not_due", "state": "active"}
@@ -96,14 +96,14 @@ def test_run_uses_labelled_stand_ins_and_reports_exit_codes(tmp_path, monkeypatc
     assert (root / ".runtime" / "research-program" / "rp-001" / "report.md").is_file()
     assert CANARY not in json.dumps(result)
     for ticks in (0, 101):
-        out = research_program_cli.execute(svc, SimpleNamespace(research_program_command="run", program_id="rp-001", ticks=ticks))
+        out = research_program_cli.execute(svc, SimpleNamespace(research_program_command="run", program_id="rp-001", ticks=ticks, intent="incident"))
         assert out["reason_code"] == "ticks_invalid" and out["exit_code"] == 1
     unknown = FakeCouncil(svc.store, status="unknown")
     monkeypatch.setattr("codex_harness.adapters.autonomous_cli.run", unknown)
     path.write_text(json.dumps(config(head, id="rp-002")), encoding="utf-8")
     research_program_cli.execute(svc, SimpleNamespace(research_program_command="register", file=path))
     research_program_cli.execute(svc, SimpleNamespace(research_program_command="resume", program_id="rp-002"))
-    blocked = research_program_cli.execute(svc, SimpleNamespace(research_program_command="run", program_id="rp-002", ticks=1))
+    blocked = research_program_cli.execute(svc, SimpleNamespace(research_program_command="run", program_id="rp-002", ticks=1, intent="incident"))
     assert blocked["exit_code"] == 1 and blocked["ticks"][0]["result"] == "unknown" and blocked["ticks"][0]["state"] == "blocked"
 
 
@@ -133,7 +133,7 @@ def test_run_in_another_real_clone_is_refused_before_any_effect(tmp_path, monkey
     calls = []
 
     class Sources(FakeSources):
-        def collect(self, source):
+        def collect(self, source, *, intent):
             calls.append(source)
             return super().collect(source)
     monkeypatch.setattr("codex_harness.adapters.research.ResearchSources", Sources)
@@ -146,7 +146,7 @@ def test_run_in_another_real_clone_is_refused_before_any_effect(tmp_path, monkey
     other = tmp_path / "clone"
     git(root, "clone", "-q", str(root), str(other))
     monkeypatch.setenv("ZEUS_REPOSITORY", str(other))
-    refused = research_program_cli.execute(svc, SimpleNamespace(research_program_command="run", program_id="rp-001", ticks=2))
+    refused = research_program_cli.execute(svc, SimpleNamespace(research_program_command="run", program_id="rp-001", ticks=2, intent="incident"))
     assert refused == {"status": "refused", "reason_code": "repository_mismatch", "error_type": "ProgramRefused", "exit_code": 1}
     assert calls == [] and council.manifests == []
     assert git(other, "for-each-ref", "refs/zeus/").stdout == "" and git(root, "for-each-ref", "refs/zeus/").stdout == ""
@@ -154,5 +154,5 @@ def test_run_in_another_real_clone_is_refused_before_any_effect(tmp_path, monkey
     view = research_program_cli.execute(svc, SimpleNamespace(research_program_command="status", program_id="rp-001"))
     assert view["cycles"] == {"completed": 0, "max": 2, "remaining": 2, "active": None} and view["state"] == "active"
     monkeypatch.setenv("ZEUS_REPOSITORY", str(root))
-    result = research_program_cli.execute(svc, SimpleNamespace(research_program_command="run", program_id="rp-001", ticks=1))
+    result = research_program_cli.execute(svc, SimpleNamespace(research_program_command="run", program_id="rp-001", ticks=1, intent="incident"))
     assert result["exit_code"] == 0 and result["ticks"][0]["selected"] == "local-note" and len(council.manifests) == 1

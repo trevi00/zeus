@@ -654,7 +654,7 @@ def test_two_low_windows_route_through_the_existing_claim_capture_and_council(tm
     world = World(tmp_path)
     closed, observer = two_low_windows(world)
     env = program(tmp_path, world)
-    receipt = env.runner.tick("rp-001")
+    receipt = env.runner.tick("rp-001", intent="proactive")
     assert receipt["investigation"] == closed["candidate"] and receipt["result"] == "accepted"
     assert receipt["selected"] == "ap-" + closed["candidate"][:24]
     view = env.programs.status("rp-001")
@@ -698,7 +698,7 @@ def test_a_disallowed_audit_a_decided_owner_and_a_changed_epoch_are_all_ineligib
     closed, observer = two_low_windows(world)
     env = build(tmp_path / "program", store=world.store, council=FakeCouncil(world.store, status="accepted"))
     registered(env, audit_progress_source={"topic": "storage", "audit_ids": ["another-audit"]})
-    receipt = env.runner.tick("rp-001")
+    receipt = env.runner.tick("rp-001", intent="proactive")
     assert receipt["selected"] == "local-note", "an unauthorized audit is never claimed"
     cycle = env.programs.status("rp-001")["cycle_receipts"][0]
     assert cycle["audit_progress"]["counts"] == {"scanned": 1, "eligible": 0, "malformed": 0, "state": 0,
@@ -727,7 +727,7 @@ def _scan_counts(root, world, audit_ids) -> dict:
                           COUNCIL_POLICY)
     env.programs.register(cfg, env.identity, [])
     env.programs.resume(cfg["id"])
-    env.runner.tick(cfg["id"])
+    env.runner.tick(cfg["id"], intent="proactive")
     return env.programs.status(cfg["id"])["cycle_receipts"][0]["audit_progress"]["counts"]
 
 

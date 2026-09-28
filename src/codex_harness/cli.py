@@ -227,6 +227,9 @@ def parser() -> argparse.ArgumentParser:
     s.add_argument("--execute", action="store_true")
     research = commands.add_parser("research")
     research.add_argument("source", choices=["github", "geeknews"])
+    # INV-DISCOVERY-PRESSURE-001: why this fetch happens; carried in the task and checked before any fetch.
+    research.add_argument("--intent", required=True,
+                          choices=["proactive", "user_request", "incident", "existing_work_result", "task_required"])
     improve = commands.add_parser("improve")
     improve.add_argument("objective")
     improve.add_argument("--acceptance", action="append", required=True)
@@ -836,7 +839,7 @@ def main() -> None:
         elif args.command == "research":
             executor = build_executor(service)
             message = envelope("task.assign", "lead:research", "worker:" + args.source, "research",
-                               {"source": args.source}, "research:" + str(uuid4()))
+                               {"source": args.source, "intent": args.intent}, "research:" + str(uuid4()))
             message["where"]["revision"] = executor.git._git("rev-parse", "HEAD")
             emit({"message": message, "stream_id": RedisBus(redis_url()).publish(message)})
         elif args.command == "improve":

@@ -71,8 +71,8 @@ def build(tmp_path, monkeypatch, store, runtime_error=None, enter_error=None):
     collection = {"artifact": artifacts.put("collected", "fixture")["ref"], "items": [{"url": URL, "summary": "s"}]}
     observer = Observer(store, MemorySpool(new_process_run_id()), component="test-executor", directory=MemoryDirectory())
     executor = Executor(service, SimpleNamespace(repository=tmp_path, _git=lambda *a, **kw: "deadbeef"), artifacts,
-                        research=SimpleNamespace(collect=lambda source: collection), observer=observer)
-    message = envelope("task.assign", "lead:research", "worker:geeknews", "research", {"source": "geeknews"}, "corr-fixture")
+                        research=SimpleNamespace(collect=lambda source, *, intent: collection), observer=observer)
+    message = envelope("task.assign", "lead:research", "worker:geeknews", "research", {"source": "geeknews", "intent": "user_request"}, "corr-fixture")
     task = executor.workflow.submit(message)
     return SimpleNamespace(executor=executor, service=service, observer=observer, task=task, starts=starts, store=store,
                            artifacts=artifacts)
@@ -281,7 +281,7 @@ def test_default_executor_observer_still_audits_into_the_store(tmp_path, monkeyp
     monkeypatch.setattr("codex_harness.adapters.executor.AppServer", Runtime)
     collection = {"artifact": artifacts.put("collected", "fixture")["ref"], "items": [{"url": URL, "summary": "s"}]}
     executor = Executor(service, SimpleNamespace(repository=tmp_path, _git=lambda *a, **kw: "rev"), artifacts,
-                        research=SimpleNamespace(collect=lambda source: collection))
+                        research=SimpleNamespace(collect=lambda source, *, intent: collection))
     executor.workflow.submit(envelope("task.assign", "lead:research", "worker:geeknews", "research", {"source": "geeknews"}, "c"))
     assert executor.execute_one("worker:geeknews")["status"] == "succeeded"
     with store.transaction() as tx:

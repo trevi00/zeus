@@ -23,6 +23,7 @@ from codex_harness.application.dge import DgeRefused
 from codex_harness.application.research_program import ResearchProgram
 from codex_harness.domain.audit_progress import KIND as AUDIT_PROGRESS
 from codex_harness.domain.autonomous import manifest_digest
+from codex_harness.domain.discovery_pressure import DiscoveryPaused, validate_intent
 from codex_harness.domain.model import ContractError, canonical, digest, utcnow
 from codex_harness.domain.operation import safe_relative_path
 from codex_harness.domain.research_investigations import SOURCE as INVESTIGATION
@@ -54,13 +55,20 @@ class CaptureError(ContractError):
 
 
 # ----- collection --------------------------------------------------------------------------------------
-def collect_live(sources) -> tuple[dict, list]:
+def collect_live(sources, *, intent: str) -> tuple[dict, list]:
     """BOTH feeds through ResearchSources, each recorded ok/unavailable independently with the
-    exception TYPE only. Raw bodies stay in the artifact store; items are bounded title/summary."""
+    exception TYPE only. Raw bodies stay in the artifact store; items are bounded title/summary.
+    INV-DISCOVERY-PRESSURE-001: each feed checks pressure itself before its fetch, so a transition between
+    the two can pause only the second; a held feed is recorded `paused`/`policy_paused`, never unavailable."""
+    validate_intent(intent)
     status, items = {}, []
     for name in EXTERNAL_SOURCES:
         try:
-            result = sources.collect(name)
+            result = sources.collect(name, intent=intent)
+        except DiscoveryPaused as paused:
+            status[name] = {"status": "paused", "code": "policy_paused", "artifact": None, "fetched_at": None,
+                            "items": None, "pressure": paused.reason_code}
+            continue
         except Exception as exc:  # network, parse or size failures: a code, never the text
             status[name] = {"status": "unavailable", "code": type(exc).__name__, "artifact": None, "fetched_at": None, "items": None}
             continue
@@ -262,18 +270,20 @@ class ProgramRunner:
         # registered identity inside the reservation transaction, before any tick effect.
         self.repository = repository
 
-    def run(self, program_id: str, ticks: int) -> dict:
+    def run(self, program_id: str, ticks: int, *, intent: str) -> dict:
         if type(ticks) is not int or ticks < 1:
             raise ProgramRefused("ticks_invalid")
+        validate_intent(intent)  # before any cycle is reserved
         receipts = []
         for _ in range(ticks):
-            receipt = self.tick(program_id)
+            receipt = self.tick(program_id, intent=intent)
             receipts.append(receipt)
             if not receipt.get("reserved") or receipt.get("result") in {"failed", "unknown"} or receipt.get("failure"):
                 break
         return {"id": program_id, "requested_ticks": ticks, "ticks": receipts}
 
-    def tick(self, program_id: str) -> dict:
+    def tick(self, program_id: str, *, intent: str) -> dict:
+        validate_intent(intent)
         log = EventLog(self.runtime, program_id)
         reservation = self.programs.reserve_cycle(program_id, self.repository)  # raises repository_mismatch first
         if not reservation["reserved"]:
@@ -284,9 +294,10 @@ class ProgramRunner:
         log.emit("general", "tick_started", cycle=number)
         # ----- discovery: read-only, no model calls, no open transaction -----
         local_status, local_items = collect_local(config, self.git_source)
-        live_status, live_items = collect_live(self.sources)
+        live_status, live_items = collect_live(self.sources, intent=intent)
         sources = {"local": local_status, **live_status}
-        degraded = [name for name, row in sources.items() if row["status"] != "ok"]
+        # A policy-paused feed is a recorded decision, not a degraded source (INV-DISCOVERY-PRESSURE-001).
+        degraded = [name for name, row in sources.items() if row["status"] not in ("ok", "paused")]
         try:
             counts = self.budget.counts()
         except Exception as exc:

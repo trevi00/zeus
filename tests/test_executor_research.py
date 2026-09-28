@@ -28,7 +28,7 @@ def setup(tmp_path, monkeypatch):
                   'items': [{'url': URL, 'summary': '한' * 30000}]}
     readme = artifacts.put('README한' * 10000, 'fixture')['ref']
 
-    def collect(source):
+    def collect(source, *, intent):
         calls.append('collect')
         return collection
 
@@ -65,7 +65,7 @@ def setup(tmp_path, monkeypatch):
     executor = Executor(service, SimpleNamespace(repository=tmp_path, _git=lambda *a, **kw: 'harness'),
                         artifacts, research=SimpleNamespace(collect=collect, github_detail=detail))
     message = envelope('task.assign', 'lead:research', 'worker:github', 'research',
-                       {'source': 'github'}, 'fixture')
+                       {'source': 'github', 'intent': 'user_request'}, 'fixture')
     task = executor.workflow.submit(message)
     return SimpleNamespace(executor=executor, service=service, artifacts=artifacts, calls=calls,
                            prompts=prompts, config=config, collection=collection, task=task)
@@ -267,3 +267,37 @@ def test_preflight_failure_uses_existing_execution_failure_reporting(setup):
         assert CAUSE in receipt['error']
         assert receipt['task_id'] == s.task['id']
         assert tx.get('tasks', s.task['id'])['status'] != 'succeeded'
+
+
+@pytest.mark.parametrize("intent,pressure,code", [
+    (None, None, "discovery_intent_required"),
+    ("proactive", SimpleNamespace(admit=lambda: {"decision": "hold", "reason_code": "pressure_high"}), "pressure_high"),
+    ("proactive", None, "pressure_unavailable"),
+    # An evaluator that cannot complete (a raising one, or the real one over an unavailable store) is a hold too.
+    ("proactive", SimpleNamespace(admit=lambda: (_ for _ in ()).throw(OSError("store unreadable"))), "pressure_unknown"),
+    ("proactive", "unavailable-store", "pressure_unknown"),
+])
+def test_a_held_or_intent_less_research_task_fails_once_without_fetch_retry_or_diagnosis(tmp_path, intent, pressure, code):
+    """INV-DISCOVERY-PRESSURE-001 through the REAL ResearchSources: a policy decision ends the task `failed` after ONE
+    attempt, with no fetch, no shortlist or model call, no retry and no diagnose decision."""
+    from codex_harness.adapters.research import ResearchSources
+
+    class NoFetch(ResearchSources):
+        def fetch(self, url):
+            raise AssertionError("fetched " + url)
+    if pressure == "unavailable-store":
+        from codex_harness.adapters.discovery_pressure import packaged_policy
+        from codex_harness.application.discovery_pressure import DiscoveryPressure
+        unavailable = SimpleNamespace(transaction=lambda: (_ for _ in ()).throw(OSError("store unreadable")))
+        pressure = DiscoveryPressure(unavailable, packaged_policy(), SimpleNamespace(audit=None))
+    service = Harness(MemoryStore(), organization())
+    artifacts = FileArtifacts(str(tmp_path / 'artifacts'))
+    executor = Executor(service, SimpleNamespace(repository=tmp_path, _git=lambda *a, **kw: 'harness'), artifacts,
+                        research=NoFetch(artifacts, pressure=pressure))
+    details = {'source': 'github'} if intent is None else {'source': 'github', 'intent': intent}
+    executor.workflow.submit(envelope('task.assign', 'lead:research', 'worker:github', 'research', details, 'fixture'))
+    failed = executor.execute_one('worker:github')
+    assert failed['status'] == 'failed' and failed['error'] == 'discovery_policy: ' + code
+    assert failed['attempt'] == 1 and executor.execute_one('worker:github') is None, 'never replayed'
+    with service.store.transaction() as tx:
+        assert [row for row in tx.scan('decisions_pending') if row.get('phase') == 'diagnose'] == [], 'no diagnosis call'
