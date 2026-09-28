@@ -4352,14 +4352,22 @@ which reads the authoritative Fleet, backlog and continuation rows. The row is n
   Such work makes W incomplete. That covers:
   - an eligible pending or open backlog item without a job, and an unknown item;
   - an admitting continuation intent without its job, and an intended conductor review;
-  - waiting jobs whose call-ledger reading is unreadable. The evaluator reads, just before its transaction, the
-    same host ledger counts the Fleet runner admits against. In both accounting modes an unreadable reading makes W
-    incomplete, and an exhausted one excludes the waiting jobs as `budget_exhausted`.
+  - waiting jobs whose call-ledger reading is unreadable or stale. The evaluator reads, just before its
+    transaction (never under the store lock), the same host ledger counts the Fleet runner admits against. Once
+    the transaction holds, a reading older than the policy's `input_max_age_seconds` (or with an unverifiable
+    time) is `stale` and counts as unreadable. In both accounting modes an unreadable reading makes W incomplete,
+    and an exhausted one excludes the waiting jobs as `budget_exhausted`. The row names the reading as
+    `basis.ledger` (`fresh`, `stale`, `unreadable` or `unchecked` without a policy).
 
   Incomplete W holds with `pressure_unknown` and W `null`. The jobs count is kept only as a labelled lower bound.
 - **Holds:** an unregistered Fleet (`fleet_unregistered`, also every lane store), a paused Fleet (`fleet_paused`)
   or a missing or invalid policy (`pressure_unknown`, detail `config_missing`/`config_invalid`) holds proactive
   discovery. Nothing holds exempt discovery.
+- **An evaluation that cannot complete** (a store read, a malformed registry, the mandatory audit or the commit
+  fails) rolls back and holds as `pressure_unknown` with detail `evaluation_failed` and `recorded: false`: no
+  decision is claimed as recorded. The evaluator never raises into its caller, and `ResearchSources.collect`
+  treats any raising evaluator the same way. Only the evaluation is inside this boundary; the fetch keeps its own
+  source and network failures.
 
 **Hysteresis** uses the packaged policy document `resources/discovery-pressure-policy.json` (k_pause 3, k_resume 1,
 `threshold_status: suggested_unconfirmed`):

@@ -273,6 +273,9 @@ def test_preflight_failure_uses_existing_execution_failure_reporting(setup):
     (None, None, "discovery_intent_required"),
     ("proactive", SimpleNamespace(admit=lambda: {"decision": "hold", "reason_code": "pressure_high"}), "pressure_high"),
     ("proactive", None, "pressure_unavailable"),
+    # An evaluator that cannot complete (a raising one, or the real one over an unavailable store) is a hold too.
+    ("proactive", SimpleNamespace(admit=lambda: (_ for _ in ()).throw(OSError("store unreadable"))), "pressure_unknown"),
+    ("proactive", "unavailable-store", "pressure_unknown"),
 ])
 def test_a_held_or_intent_less_research_task_fails_once_without_fetch_retry_or_diagnosis(tmp_path, intent, pressure, code):
     """INV-DISCOVERY-PRESSURE-001 through the REAL ResearchSources: a policy decision ends the task `failed` after ONE
@@ -282,6 +285,11 @@ def test_a_held_or_intent_less_research_task_fails_once_without_fetch_retry_or_d
     class NoFetch(ResearchSources):
         def fetch(self, url):
             raise AssertionError("fetched " + url)
+    if pressure == "unavailable-store":
+        from codex_harness.adapters.discovery_pressure import packaged_policy
+        from codex_harness.application.discovery_pressure import DiscoveryPressure
+        unavailable = SimpleNamespace(transaction=lambda: (_ for _ in ()).throw(OSError("store unreadable")))
+        pressure = DiscoveryPressure(unavailable, packaged_policy(), SimpleNamespace(audit=None))
     service = Harness(MemoryStore(), organization())
     artifacts = FileArtifacts(str(tmp_path / 'artifacts'))
     executor = Executor(service, SimpleNamespace(repository=tmp_path, _git=lambda *a, **kw: 'harness'), artifacts,
@@ -293,4 +301,3 @@ def test_a_held_or_intent_less_research_task_fails_once_without_fetch_retry_or_d
     assert failed['attempt'] == 1 and executor.execute_one('worker:github') is None, 'never replayed'
     with service.store.transaction() as tx:
         assert [row for row in tx.scan('decisions_pending') if row.get('phase') == 'diagnose'] == [], 'no diagnosis call'
-

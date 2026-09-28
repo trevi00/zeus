@@ -13,6 +13,7 @@ from codex_harness.domain.discovery_pressure import (
     HOLD,
     PROACTIVE,
     DiscoveryPaused,
+    unrecorded_hold,
     validate_intent,
 )
 from codex_harness.domain.model import require, utcnow
@@ -40,10 +41,15 @@ class ResearchSources:
         validate_intent(intent)
         require(source in self.URLS, "Unknown research source")
         if intent == PROACTIVE:
-            decision = (self.pressure.admit() if self.pressure is not None
-                        else {"decision": HOLD, "reason_code": "pressure_unavailable"})
-            if decision.get("decision") != ALLOW:
-                raise DiscoveryPaused(decision)
+            # The policy boundary covers the evaluation only: a failing evaluator is an unknown-pressure hold, while
+            # the fetch below keeps its own source/network failures.
+            try:
+                decision = (self.pressure.admit() if self.pressure is not None
+                            else {"decision": HOLD, "reason_code": "pressure_unavailable"})
+            except Exception:
+                decision = unrecorded_hold("evaluation_failed")
+            if not isinstance(decision, dict) or decision.get("decision") != ALLOW:
+                raise DiscoveryPaused(decision if isinstance(decision, dict) else unrecorded_hold("evaluation_invalid"))
         url = self.URLS[source]
         body = self.fetch(url)
         receipt = self.artifacts.put(body, url)

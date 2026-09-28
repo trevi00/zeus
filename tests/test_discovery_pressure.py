@@ -5,6 +5,8 @@ in the shape of the real buckets; no provider, model, network fetch or process r
 fixture policy labelled `suggested_unconfirmed`, exactly like the packaged one, never from a library constant.
 """
 import copy
+from contextlib import contextmanager
+from datetime import datetime, timedelta
 from types import SimpleNamespace
 
 import pytest
@@ -270,16 +272,18 @@ def test_a_transition_is_audited_once_and_a_repeat_only_advances_the_evaluation_
     assert latest["reason_code"] == "pressure_high" and latest["attributes"]["waiting"] == 3
 
 
-def test_a_failed_audit_rolls_the_evaluation_back():
+def test_a_failed_audit_rolls_the_evaluation_back_and_holds_unrecorded():
     store = fleet_store()
 
     class Failing:
         def audit(self, tx, *args, **kwargs):
             raise RuntimeError("injected audit failure")
-    with pytest.raises(RuntimeError):
-        DiscoveryPressure(store, POLICY, Failing()).admit()
+    decision = DiscoveryPressure(store, POLICY, Failing()).admit()
+    assert (decision["decision"], decision["reason_code"], decision["detail"]) == ("hold", "pressure_unknown", "evaluation_failed")
+    assert decision["recorded"] is False, "a rolled-back evaluation never claims a recorded decision"
     with store.transaction() as tx:
         assert tx.get(BUCKET, KEY) is None, "no row without its mandatory audit event"
+    assert evaluator(store).admit()["recorded"] is True
 
 
 # ----- T1-10 an admitted fetch settles once; the next one checks again ------------------------------------------------
@@ -348,6 +352,83 @@ def test_a_hold_for_unknown_input_keeps_the_hysteresis_memory():
         tx.put("fleet_jobs", "qa0", {**tx.get("fleet_jobs", "qa0"), "status": "accepted"})
     in_band = evaluator(store).admit()
     assert (in_band["waiting"], in_band["hysteresis_state"], in_band["decision"]) == (2, "paused", "hold")
+
+
+class FailingReads:
+    """FIXTURE store whose read of one bucket fails inside the evaluation transaction."""
+
+    def __init__(self, store, bucket):
+        self.store, self.bucket = store, bucket
+
+    @contextmanager
+    def transaction(self):
+        with self.store.transaction() as tx:
+            yield ReadFailingTx(tx, self.bucket)
+
+
+class ReadFailingTx:
+    def __init__(self, tx, bucket):
+        self.tx, self.bucket = tx, bucket
+
+    def scan(self, bucket, *args, **kwargs):
+        if bucket == self.bucket:
+            raise OSError("injected read failure")
+        return self.tx.scan(bucket, *args, **kwargs)
+
+    def __getattr__(self, name):
+        return getattr(self.tx, name)
+
+
+@pytest.mark.parametrize("damage", ["jobs_unreadable", "registry_malformed", "store_unavailable"])
+def test_an_evaluation_that_cannot_complete_is_an_unrecorded_unknown_hold(damage):
+    """T1-11: a store read, a malformed registry or an unavailable store holds as `pressure_unknown`; the
+    evaluator never raises into its caller and never claims a recorded decision."""
+    store = fleet_store()
+    queued(store, 1)
+    if damage == "registry_malformed":
+        with store.transaction() as tx:
+            tx.put("fleet_registry", "second-fleet", {"id": "second-fleet"})
+        target = store
+    elif damage == "jobs_unreadable":
+        target = FailingReads(store, "fleet_jobs")
+    else:
+        target = SimpleNamespace(transaction=lambda: (_ for _ in ()).throw(OSError("store unavailable")))
+    decision = DiscoveryPressure(target, POLICY, observer(store), ledger=lambda: LEDGER).admit()
+    assert (decision["decision"], decision["reason_code"], decision["detail"], decision["recorded"]) == (
+        "hold", "pressure_unknown", "evaluation_failed", False)
+    assert status(store)["evaluated"] is False and audits(store) == []
+
+
+def instants(*seconds):
+    """FIXTURE clock: the ledger sample time, then the time the transaction holds (ISO, like utcnow)."""
+    values = [(datetime.fromisoformat(T0) + timedelta(seconds=value)).isoformat() for value in seconds]
+    return lambda: values.pop(0)
+
+
+def test_a_ledger_reading_older_than_the_input_age_once_the_transaction_holds_is_unknown():
+    """T1-11 / F2: the ledger is read before the transaction; if acquiring it took longer than
+    `input_max_age_seconds`, the reading cannot decide waiting work, so stale evidence neither pauses, resumes
+    nor allows. The hysteresis memory is kept, and within the limit nothing changes."""
+    store = fleet_store(max_parallel=1)
+    queued(store, 3)
+
+    def admit(*seconds):
+        return DiscoveryPressure(store, POLICY, observer(store), clock=instants(*seconds), ledger=lambda: LEDGER).admit()
+    within = admit(0, 300)
+    assert (within["hysteresis_state"], within["reason_code"], within["basis"]["ledger"]) == ("paused", "pressure_high", "fresh")
+    stale = admit(0, 301)
+    assert (stale["decision"], stale["reason_code"], stale["hysteresis_state"], stale["waiting"]) == (
+        "hold", "pressure_unknown", "paused", None)
+    assert stale["basis"]["ledger"] == "stale" and stale["basis"]["unknown_counts"]["budget"] == 1
+    for index in range(2):  # drain to W = 1 (<= resume): stale evidence must not resume ...
+        with store.transaction() as tx:
+            tx.put("fleet_jobs", f"qa{index}", {**tx.get("fleet_jobs", f"qa{index}"), "status": "accepted"})
+    assert admit(0, 900)["hysteresis_state"] == "paused"
+    assert admit(10, 0)["reason_code"] == "pressure_unknown", "a backwards clock is unverifiable, never fresh"
+    assert admit(0, 1)["hysteresis_state"] == "active", "... and a fresh reading does"
+    idle = fleet_store()
+    decision = DiscoveryPressure(idle, POLICY, observer(idle), clock=instants(0, 900), ledger=lambda: LEDGER).admit()
+    assert (decision["decision"], decision["basis"]["complete"]) == ("allow", True), "no waiting job: the ledger cannot change W"
 
 
 def test_the_packaged_policy_is_the_suggested_unconfirmed_three_and_one():

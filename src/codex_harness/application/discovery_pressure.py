@@ -21,10 +21,13 @@ from codex_harness.domain.discovery_pressure import (
     DiscoveryRefused,
     census,
     decide,
+    sample_fresh,
+    unrecorded_hold,
     validate_policy,
 )
 from codex_harness.domain.fleet import effective_config
 from codex_harness.domain.model import digest, require, utcnow
+from codex_harness.domain.usage_policy import readable_counts
 
 AUTHORITY = ("proactive discovery admission only; never a Fleet pause, an admission, a tick or a verdict about "
              "any job, and the thresholds are the policy document's own (suggested_unconfirmed until confirmed)")
@@ -45,12 +48,33 @@ class DiscoveryPressure:
                 self.policy, self.policy_problem = None, "config_invalid"
 
     def admit(self) -> dict:
-        """Decide whether ONE proactive fetch may start now, recording the evaluation."""
+        """Decide whether ONE proactive fetch may start now, recording the evaluation. Never raises: an evaluation
+        that cannot complete is an unrecorded `pressure_unknown` hold, so a caller never mistakes it for a
+        source, network or provider failure (and never retries or diagnoses it)."""
         try:
-            ledger = self.ledger() if self.ledger is not None else None
+            sampled_at = self.clock()
+            try:
+                ledger = self.ledger() if self.ledger is not None else None
+            except Exception:
+                ledger = None
+            return self._evaluate(ledger, sampled_at)
         except Exception:
-            ledger = None
+            return unrecorded_hold("evaluation_failed")
+
+    def _evaluate(self, ledger, sampled_at) -> dict:
         with self.store.transaction() as tx:
+            now = self.clock()
+            # The ledger is read before the transaction (never under the store lock); once the transaction holds,
+            # a reading older than the policy's input age is unverifiable, so waiting work it would decide leaves
+            # W incomplete (the census treats it as unreadable).
+            if ledger is None or not readable_counts(ledger):
+                ledger_state = "unreadable"
+            elif self.policy is None:
+                ledger_state = "unchecked"
+            elif sample_fresh(sampled_at, now, self.policy["input_max_age_seconds"]):
+                ledger_state = "fresh"
+            else:
+                ledger_state, ledger = "stale", None
             registry = Fleet._registry(tx)
             control = Fleet._control(tx)
             config = effective_config(registry["config"], control) if registry is not None else None
@@ -61,7 +85,6 @@ class DiscoveryPressure:
                               aliases=Fleet._repository_aliases(tx) if registry is not None else None, ledger=ledger)
             prior = tx.get(BUCKET, KEY)
             outcome = decide(prior, observed, self.policy)
-            now = self.clock()
             known = observed.get("registered") and observed.get("complete")
             key = (outcome["hysteresis_state"], outcome["decision"], outcome["reason_code"])
             transition = prior is None or (prior.get("hysteresis_state"), prior.get("decision"),
@@ -79,7 +102,7 @@ class DiscoveryPressure:
                 "occupancy": observed.get("occupancy"),
                 "basis": {"registered": bool(observed.get("registered")), "paused": observed.get("paused"),
                           "complete": observed.get("complete"), "unknown_counts": observed.get("unknown"),
-                          "excluded_counts": observed.get("excluded"),
+                          "excluded_counts": observed.get("excluded"), "ledger": ledger_state,
                           "fleet_config_sha256": digest(registry["config"]) if registry is not None else None},
                 "policy": None if self.policy is None else {
                     key_: self.policy[key_] for key_ in ("id", "k_pause", "k_resume", "threshold_status", "digest")},
@@ -96,7 +119,7 @@ class DiscoveryPressure:
                                 "to_decision": row["decision"], "waiting": row["waiting"], "capacity": row["capacity"],
                                 "complete": bool(observed.get("complete")),
                                 "policy_digest": (row["policy"] or {}).get("digest"), "evaluated_at": now})
-        return view(row)
+        return {**view(row), "recorded": True}
 
 
 def view(row: dict | None) -> dict | None:

@@ -14,6 +14,7 @@ incidents, results of existing work, research a current task needs) never consul
 from __future__ import annotations
 
 import math
+from datetime import datetime
 
 from codex_harness.domain.continuation import (
     ADMITTED,
@@ -93,6 +94,17 @@ def validate_policy(document) -> dict:
     return {**document, "digest": digest(document)}
 
 
+def sample_fresh(sampled_at, evaluated_at, max_age_seconds) -> bool:
+    """Whether an input read BEFORE the transaction is still current once it holds (the Fleet writer lock may
+    have made it wait). An unparseable, naive or backwards time is unverifiable, so not fresh."""
+    try:
+        sampled, evaluated = datetime.fromisoformat(sampled_at), datetime.fromisoformat(evaluated_at)
+        age = (evaluated - sampled).total_seconds()
+    except (TypeError, ValueError):
+        return False
+    return 0 <= age <= max_age_seconds
+
+
 def census(*, config, control, jobs: dict, units, plans, intents, continuation_intents, aliases=None,
            ledger=None) -> dict:
     """W, C and the occupancy from ONE consistent read of the authoritative rows (never a monitor list).
@@ -156,6 +168,14 @@ def census(*, config, control, jobs: dict, units, plans, intents, continuation_i
                           "units_held": len(held_units(units))}}
 
 
+def unrecorded_hold(detail: str) -> dict:
+    """The hold for an evaluation that could not complete (a store read, a malformed registry, the mandatory
+    audit or the commit failed): proactive discovery waits as unknown pressure, and nothing is claimed as
+    recorded because the transaction rolled back."""
+    return {"schema": ROW_SCHEMA, "recorded": False, "decision": HOLD, "reason_code": "pressure_unknown",
+            "detail": detail, "hysteresis_state": None, "waiting": None}
+
+
 def decide(prior: dict | None, observed: dict, policy: dict | None) -> dict:
     """The hysteresis state and the allow/hold decision for proactive discovery.
 
@@ -187,4 +207,4 @@ def decide(prior: dict | None, observed: dict, policy: dict | None) -> dict:
 
 __all__ = ["ACTIVE", "ALLOW", "BUCKET", "DiscoveryPaused", "DiscoveryRefused", "EVENT_CHANGED", "EXEMPT_INTENTS",
            "HOLD", "INTENTS", "KEY", "PAUSED", "POLICY_SCHEMA", "PROACTIVE", "ROW_SCHEMA", "census", "decide",
-           "validate_intent", "validate_policy"]
+           "sample_fresh", "unrecorded_hold", "validate_intent", "validate_policy"]

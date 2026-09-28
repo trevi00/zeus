@@ -344,6 +344,29 @@ def test_a_policy_paused_feed_is_recorded_paused_not_degraded_and_the_cycle_stil
     assert "source_degraded" not in [event["event"] for event in events]
 
 
+def test_an_evaluator_that_cannot_complete_pauses_the_feeds_without_degrading_the_cycle(tmp_path):
+    """T1-11/T1-12 through the REAL ResearchSources: the pressure evaluation raises (an unreadable store), so each
+    external feed is recorded paused/policy_paused with `pressure_unknown`, no fetch starts, no source_degraded is
+    emitted and the local candidate is still selected."""
+    from codex_harness.adapters.research import ResearchSources
+
+    class NoFetch(ResearchSources):
+        def fetch(self, url):
+            raise AssertionError("fetched " + url)
+    env = build(tmp_path)
+    registered(env)
+    env.runner.sources = NoFetch(FileArtifacts(str(tmp_path / "runtime" / "artifacts")),
+                                 pressure=SimpleNamespace(admit=lambda: (_ for _ in ()).throw(OSError("store unreadable"))))
+    tick = env.runner.tick("rp-001", intent="proactive")
+    assert tick["selected"] == "local-note", "local work continues"
+    cycle = env.programs.status("rp-001")["cycle_receipts"][0]
+    for name in ("github", "geeknews"):
+        assert (cycle["sources"][name]["status"], cycle["sources"][name]["code"], cycle["sources"][name]["pressure"]) == (
+            "paused", "policy_paused", "pressure_unknown")
+    events = [json.loads(line) for line in (env.runtime / "research-program" / "rp-001" / "events.jsonl").read_text("utf-8").splitlines()]
+    assert "source_degraded" not in [event["event"] for event in events]
+
+
 def candidates_seen(env, candidate_id):
     return env.programs.candidate("rp-001", candidate_id)["seen"]
 
