@@ -4066,11 +4066,13 @@ Activation is intent-first.
    derived from the intent and written atomically, and is refused beside `host-fence.json`.
 2. From the intent onward the rollback mode is R1, even if the coordinator is interrupted before
    `limited_active`. R0 applies only while no intent exists.
-3. `limited_active` requires all of:
-   - a `host-activation` receipt whose subject is the intent id;
-   - a `service-startup` receipt whose subject is `revision=<intent revision>` (unit
-     `active` is not consumption);
-   - a transition identity equal to the intent's revision, image and profile.
+3. `limited_active` binds to the effective activation, including any recorded successor. Without
+   `lineage`, its existing transition representation and receipt rules are unchanged:
+   host_activation names the effective activation id; service_consumption names
+   `revision=<effective activation revision>`; identity names that activation's revision, image
+   and profile. With the managed lineage form below, host activation and transition identity keep
+   those same bindings, while service consumption binds the managed descriptor instead. Unit active
+   is never consumption.
 4. `rolled_back` requires the gate receipt of the recorded mode (`gate-r0` or `gate-r1`). Under
    R1 it also requires every reverse step's checkpoint.
 5. No activation document is issued outside `restored_paused`, `limited_active` or `qualified`.
@@ -4100,6 +4102,33 @@ another release revision of the same host. It never rewrites the intent.
    original id and adds `activation_current` and `activation_chain`.
 3. `limited_active` binds to the effective activation: after a successor, receipts bound to the
    superseded intent are refused.
+
+   A transition to `limited_active` may contain exactly one optional `lineage` object with owner
+   `managed`, a validated host descriptor, an instance_id and a plan_id. No other transition
+   accepts lineage; absent lineage is the legacy form, and explicit null, bootstrap, unknown owner
+   or malformed lineage is refused. The descriptor's worker_image and profile_digest must equal the
+   effective activation's image and profile. Its revision is the consumed payload revision and
+   need not equal the launcher revision. Every service_consumption receipt names
+   `descriptor=<descriptor_digest(lineage.descriptor)>`; every canary_admission receipt names
+   `canary=<plan_id>:instance=<instance_id>`. A revision-labelled consumption receipt in the
+   managed form is refused. Every host_activation receipt still names the effective activation id.
+   A missing, failed, wrong-kind, superseded or mismatched binding never qualifies.
+
+   The external read-only observer produces these receipts only after checking the exact
+   activation document and launch provenance, the current managed descriptor and startup
+   consumption, and a passed owner canary explicitly bound to that same plan, descriptor and
+   instance. Observation of a historical launch or canary alone does not prove present
+   consumption. The observer never launches a canary, modifies activation, records a transition or
+   repairs state. Its result digest commits the common observation and all three receipt bindings.
+   Recording remains a receipt assertion, not an independent runtime measurement; independent
+   acceptance of the observation is required.
+
+   The canonical transition and its history retain managed lineage. Legacy transition bytes,
+   identities and replay behavior remain unchanged. Managed lineage cannot be changed under an
+   existing transition identity. A different attempted transition from an already advanced state
+   is refused. New activation successors still require restored_paused; recording limited_active
+   does not authorize changing current. Exact replay of an already recorded successor remains
+   cached as before and changes nothing.
 4. `activation-switch` writes `host-activation.json`, then replaces `releases/current` (a fresh
    temporary symlink renamed over it, then a directory fsync; only its own temporary link is ever
    removed).

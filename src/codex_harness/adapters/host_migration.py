@@ -1058,6 +1058,11 @@ def execute(args) -> tuple[dict, bool]:
         effect = switch_effect(args.control_dir, args.releases_dir, args.managed_state_dir, check=args.check)
         result = _coordinator(args).activation_switch(args.migration_id, effect, expected_id=args.expected_id)
         return result, result["classification"] != INCONSISTENT
+    if command == "observe-limited-active":
+        # Read-only producer of the managed limited_active receipts (INV-HOST-MIGRATION-001); no apply mode.
+        from codex_harness.adapters.host_migration_evidence import observe_command
+
+        return observe_command(args)
     if command == "status":
         return _coordinator(args).status(args.migration_id), True
     if command == "rollback-plan":
@@ -1168,6 +1173,22 @@ def parser() -> argparse.ArgumentParser:
     command.add_argument("--managed-state-dir", required=True)
     command.add_argument("--expected-id", help="The effective activation id the switch must still find")
     command.add_argument("--check", action="store_true", help="Classify only; write nothing")
+    store_args(command)
+    command = sub.add_parser("observe-limited-active",
+                             help="Read-only managed limited_active observation: prints {observation, evidence, "
+                                  "transition_draft}; writes, starts and submits nothing")
+    command.add_argument("--migration-id", required=True)
+    command.add_argument("--expected-id", required=True, help="The effective activation id the capture must find")
+    command.add_argument("--target-id", required=True, help="The registered managed Fleet target")
+    command.add_argument("--plan-id", required=True, help="The delivery plan whose owner canary admitted it")
+    command.add_argument("--actor", required=True, help="The actor the transition draft names")
+    command.add_argument("--root", required=True, help="ZEUS_AIBOX_ROOT: runtime/control, releases, managed state")
+    command.add_argument("--config-file", help="Host configuration hashed into the draft identity "
+                                               "(default <root>/config/zeus-aibox.env)")
+    command.add_argument("--control-dsn-env", default="HARNESS_DATABASE_URL",
+                         help="Env var NAME holding the control store DSN")
+    command.add_argument("--control-schema", required=True, help="The control schema (owner actions, Fleet registry)")
+    command.add_argument("--lane", help="The Fleet lane holding the delivery; omitted reads the control store")
     store_args(command)
     command = sub.add_parser("fence-write")
     command.add_argument("--control-dir", required=True)

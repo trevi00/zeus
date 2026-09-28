@@ -8,14 +8,17 @@ disposable servers named by ZEUS_MIGRATION_TEST_REDIS_SOURCE / ZEUS_MIGRATION_TE
 """
 from __future__ import annotations
 
+import builtins
 import copy
 import hashlib
 import importlib.util
 import json
 import os
+import socket
 import subprocess
 import sys
 import time
+from contextlib import contextmanager
 from pathlib import Path
 
 import pytest
@@ -23,10 +26,16 @@ import pytest
 from codex_harness.adapters import host_migration as adapter
 from codex_harness.adapters.host_delivery import DeliveryRefused
 from codex_harness.adapters.store import MemoryStore
-from codex_harness.application.host_migration import HostMigrations
+from codex_harness.application.host_migration import BUCKET, BUCKET_TRANSITIONS, HostMigrations
 from codex_harness.domain import host_migration as policy
-from codex_harness.domain.host_delivery import KIND_SYSTEMD, validate_targets
+from codex_harness.domain.host_delivery import (
+    DESCRIPTOR_SCHEMA,
+    KIND_SYSTEMD,
+    descriptor_digest,
+    validate_targets,
+)
 from codex_harness.domain.host_migration import MigrationRefused
+from codex_harness.domain.model import canonical, digest
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -319,6 +328,370 @@ def test_intent_is_recorded_only_in_restored_paused_and_blocks_further_forward_r
         coordinator.intend_activation(INTENT)
     with pytest.raises(MigrationRefused, match="activation_intent_missing"):
         coordinator.activation_document("aibox-migration-001")
+
+
+# ----- managed lineage (INV-HOST-MIGRATION-001, W0 Ph4 PR-2 rows PH4-1..5, 10, 13) ------------------
+MID = "aibox-migration-001"
+# LABELLED fixtures: the consumed managed payload (the ec8 descriptor of the live topology) is a
+# revision that is never the launcher's (intent COMMIT here, successor NEXT in the successor rows).
+PAYLOAD = "ec8aa0a2" + "0" * 32
+PLAN_ID = "managed-plan-001"
+INSTANCE_ID = "5" * 32
+MANAGED_DESCRIPTOR = {"schema": DESCRIPTOR_SCHEMA, "target_id": "aibox-managed-fleet",
+                      "root": "/srv/zeus/managed/runtimes/" + PAYLOAD, "revision": PAYLOAD,
+                      "worker_image": IMAGE, "profile_digest": H, "predecessor": "9" * 64}
+CANARY = "canary=" + PLAN_ID + ":instance=" + INSTANCE_ID
+# Golden values computed from the UNCHANGED coordinator at d795e26 (before the managed form existed)
+# over exactly these fixtures: a legacy transition's id, canonical bytes, history, row and launcher
+# receipt bytes never move.
+LEGACY_GOLDEN = {"limited_id": "9333e60f055d7f473b46f716f397bb335fe950c3cd85be9b68e6360914dc64a2",
+                 "limited_bytes": "416af8adfca672fc5d39d8e2bf8be8fdc500fae4102dfa648730ff9634dd2240",
+                 "network_id": "732d4b50e6d6d95b22893411b11775e4e7aa63471989fb5cd229a5252554d550",
+                 "history": "3948432c3cbc156b8cb7abe6aad6b20dbef1e84d097b388fc0cbec30097f6069",
+                 "row": "29ea9c6e124380adf27747580da02afdb3f19c25ded4d2ba3af401dde2865287",
+                 "activation_bytes": "9a644e4271e7603f75ab8b26fc65054efc1ae4e2a9da1ceb50034b4e5ec74437"}
+
+
+def lineage(**overrides) -> dict:
+    document = {"owner": "managed", "descriptor": copy.deepcopy(MANAGED_DESCRIPTOR), "instance_id": INSTANCE_ID,
+                "plan_id": PLAN_ID}
+    document.update(overrides)
+    return document
+
+
+def consumed(descriptor=None) -> str:
+    """The consumption subject recomputed by the test from the reused HostDelivery digest."""
+    return "descriptor=" + descriptor_digest(descriptor or MANAGED_DESCRIPTOR)
+
+
+def managed_transition(sha, activation_id, *, commit=COMMIT, lineage_document=None, host_activation=None,
+                       service_consumption=None, canary_admission=None) -> dict:
+    document = transition(sha, policy.RESTORED_PAUSED, policy.LIMITED_ACTIVE,
+                          identity={"config_sha256": H, "commit": commit, "image": IMAGE, "profile_sha256": H},
+                          evidence=gate_evidence(
+                              policy.LIMITED_ACTIVE,
+                              host_activation=host_activation or receipt("host-activation", activation_id),
+                              service_consumption=service_consumption or receipt("service-startup", consumed()),
+                              canary_admission=canary_admission or receipt(policy.OBSERVATION, CANARY)))
+    document["lineage"] = lineage() if lineage_document is None else lineage_document
+    return document
+
+
+def activation_ready() -> tuple[HostMigrations, str, str]:
+    coordinator = HostMigrations(MemoryStore())
+    sha = coordinator.plan(manifest())["manifest_sha256"]
+    walk(coordinator, sha, policy.RESTORED_PAUSED)
+    return coordinator, sha, coordinator.intend_activation(INTENT)["intent_id"]
+
+
+def test_ph4_1_legacy_transition_ids_bytes_history_and_launcher_bytes_are_golden():
+    coordinator, sha, _ = activation_ready()
+    document = activation_transition(coordinator, sha)
+    legacy = policy.validate_transition(document)
+    assert "lineage" not in legacy  # `lineage: null` is never added to an old document
+    assert policy.transition_id(legacy) == LEGACY_GOLDEN["limited_id"]
+    assert hashlib.sha256(canonical(legacy).encode()).hexdigest() == LEGACY_GOLDEN["limited_bytes"]
+    network = policy.validate_transition(transition(sha, policy.PLANNED, policy.NETWORK_READY))
+    assert policy.transition_id(network) == LEGACY_GOLDEN["network_id"]
+    coordinator.advance(document)
+    view = coordinator.status(MID)
+    assert all("lineage" not in entry for entry in view["history"])
+    assert digest(view["history"]) == LEGACY_GOLDEN["history"]
+    assert digest(coordinator.store.data[(BUCKET, MID)]) == LEGACY_GOLDEN["row"]
+    receipt_bytes = adapter._document_bytes(coordinator.activation_document(MID))
+    assert hashlib.sha256(receipt_bytes).hexdigest() == LEGACY_GOLDEN["activation_bytes"]
+    assert coordinator.advance(document)["cached"] is True
+
+
+def test_ph4_2_managed_lineage_binds_the_payload_and_keeps_the_activation_identity():
+    coordinator, sha, intent_id = activation_ready()
+    before = coordinator.activation_document(MID)
+    document = managed_transition(sha, intent_id)
+    view = coordinator.advance(document)
+    assert view["state"] == policy.LIMITED_ACTIVE and view["cached"] is False
+    expected = {"owner": "managed", "descriptor": MANAGED_DESCRIPTOR, "instance_id": INSTANCE_ID, "plan_id": PLAN_ID}
+    key = view["history"][-1]["id"]
+    recorded = coordinator.store.data[(BUCKET_TRANSITIONS, key)]
+    assert recorded == policy.validate_transition(document) and recorded["lineage"] == expected
+    assert recorded["identity"]["commit"] == COMMIT != PAYLOAD  # the launcher revision, not the payload's
+    assert view["history"][-1] == {"id": key, "from": policy.RESTORED_PAUSED, "to": policy.LIMITED_ACTIVE,
+                                   "at": document["at"], "actor": document["actor"], "host": document["host"],
+                                   "reason_code": None, "lineage": expected}
+    assert key == digest(["host-migration-transition-managed-v1", MID, policy.RESTORED_PAUSED,
+                          policy.LIMITED_ACTIVE, sha, recorded["evidence"], expected])
+    legacy_shape = {k: v for k, v in recorded.items() if k != "lineage"}
+    assert policy.transition_id(legacy_shape) != key  # the legacy tag never names a managed record
+    assert coordinator.activation_document(MID) == {**before, "state": policy.LIMITED_ACTIVE}
+
+
+def test_ph4_2_the_interface_is_a_new_canonical_object_with_recomputed_subjects():
+    document = lineage()
+    checked = policy.validate_managed_lineage(document)
+    assert checked == document and checked is not document and checked["descriptor"] is not document["descriptor"]
+    document["descriptor"]["root"] = "/elsewhere"
+    assert checked["descriptor"]["root"] == MANAGED_DESCRIPTOR["root"]
+    assert policy.managed_consumption_subject(checked) == consumed()
+    assert policy.managed_canary_subject(checked) == CANARY
+    for subject in (consumed(), CANARY):
+        assert policy.evidence_receipt(policy.OBSERVATION, subject, 0, True, H)["subject"] == subject
+
+
+@pytest.mark.parametrize("mutate, reason, field", [
+    (lambda d: d.update(lineage=None), "transition_lineage_invalid", "lineage"),
+    (lambda d: d.update(lineage="managed"), "transition_lineage_invalid", "lineage"),
+    (lambda d: d.update(lineage=[lineage()]), "transition_lineage_invalid", "lineage"),
+    (lambda d: d["lineage"].update(owner="bootstrap"), "transition_lineage_invalid", "lineage.owner"),
+    (lambda d: d["lineage"].update(owner="Managed"), "transition_lineage_invalid", "lineage.owner"),
+    (lambda d: d["lineage"].update(owner=None), "transition_lineage_invalid", "lineage.owner"),
+    (lambda d: d["lineage"].update(owner=["managed"]), "transition_lineage_invalid", "lineage.owner"),
+    # A supplied digest beside the descriptor is an extra key: the subject is only ever recomputed.
+    (lambda d: d["lineage"].update(descriptor_sha256=H), "transition_lineage_invalid", "lineage"),
+    (lambda d: d["lineage"].pop("plan_id"), "transition_lineage_invalid", "lineage"),
+    (lambda d: d["lineage"].update(descriptor=None), "transition_lineage_invalid", "lineage.descriptor"),
+    (lambda d: d["lineage"].update(descriptor=consumed()), "transition_lineage_invalid", "lineage.descriptor"),
+    (lambda d: d["lineage"]["descriptor"].update(extra=1), "transition_lineage_invalid", "lineage.descriptor"),
+    (lambda d: d["lineage"]["descriptor"].update(schema="urn:zeus:host-descriptor:2"), "transition_lineage_invalid",
+     "lineage.descriptor"),
+    (lambda d: d["lineage"]["descriptor"].update(revision="EC8"), "transition_lineage_invalid",
+     "lineage.descriptor.revision"),
+    (lambda d: d["lineage"]["descriptor"].update(worker_image=7), "transition_lineage_invalid",
+     "lineage.descriptor.worker_image"),
+    (lambda d: d["lineage"]["descriptor"].update(profile_digest="x"), "transition_lineage_invalid",
+     "lineage.descriptor.profile_digest"),
+    (lambda d: d["lineage"]["descriptor"].update(root=" "), "transition_lineage_invalid", "lineage.descriptor.root"),
+    (lambda d: d["lineage"]["descriptor"].update(root="/" + "r" * 400), "transition_lineage_invalid",
+     "lineage.descriptor.root"),
+    (lambda d: d["lineage"].update(instance_id="A" * 32), "transition_lineage_invalid", "lineage.instance_id"),
+    (lambda d: d["lineage"].update(instance_id="5" * 31), "transition_lineage_invalid", "lineage.instance_id"),
+    (lambda d: d["lineage"].update(instance_id=5), "transition_lineage_invalid", "lineage.instance_id"),
+    (lambda d: d["lineage"].update(plan_id=""), "transition_lineage_invalid", "lineage.plan_id"),
+    (lambda d: d["lineage"].update(plan_id="plan id"), "transition_lineage_invalid", "lineage.plan_id"),
+    (lambda d: d["lineage"].update(plan_id=True), "transition_lineage_invalid", "lineage.plan_id"),
+    (lambda d: d["lineage"]["descriptor"].update(root="postgres://zeus:hunter2@db/zeus"), "secret_value",
+     "transition.lineage.descriptor.root"),
+    (lambda d: d["lineage"].update(api_token="hunter2"), "secret_field", "transition.lineage.api_token"),
+])
+def test_ph4_3_null_unknown_owner_extra_key_or_wrong_type_is_refused_by_field_and_writes_nothing(
+        mutate, reason, field):
+    coordinator, sha, intent_id = activation_ready()
+    document = managed_transition(sha, intent_id)
+    mutate(document)
+    before = copy.deepcopy(coordinator.store.data)
+    with pytest.raises(MigrationRefused) as caught:
+        coordinator.advance(document)
+    assert (caught.value.reason_code, caught.value.field) == (reason, field)
+    assert str(caught.value) == reason + ": " + field  # a field name only, never a value
+    assert coordinator.store.data == before
+
+
+def test_ph4_3_the_pure_validator_refuses_by_field_and_keeps_secret_scanning():
+    for value, field in ((None, "lineage"), ({}, "lineage"), (lineage(owner="bootstrap"), "lineage.owner")):
+        with pytest.raises(MigrationRefused) as caught:
+            policy.validate_managed_lineage(value)
+        assert (caught.value.reason_code, caught.value.field) == ("transition_lineage_invalid", field)
+    leaking = lineage()
+    leaking["descriptor"]["root"] = "redis://:hunter2@host:6379/0"
+    with pytest.raises(MigrationRefused) as caught:
+        policy.validate_managed_lineage(leaking)
+    assert (caught.value.reason_code, caught.value.field) == ("secret_value", "lineage.descriptor.root")
+    assert "hunter2" not in str(caught.value)
+
+
+@pytest.mark.parametrize("frm, to, reason", [
+    (policy.PLANNED, policy.NETWORK_READY, None),
+    (policy.SNAPSHOT_SEALED, policy.RESTORED_PAUSED, None),
+    (policy.LIMITED_ACTIVE, policy.QUALIFIED, None),
+    (policy.RESTORED_PAUSED, policy.FAILED, "limited-active-refused"),
+    (policy.RESTORED_PAUSED, policy.ROLLBACK_REQUIRED, "limited-active-refused"),
+])
+def test_ph4_3_no_other_destination_accepts_lineage_not_even_null(frm, to, reason):
+    for value in (lineage(), None):
+        document = transition("a" * 64, frm, to, reason=reason, exit_code=1 if reason else 0)
+        document["lineage"] = value
+        with pytest.raises(MigrationRefused) as caught:
+            policy.validate_transition(document)
+        assert (caught.value.reason_code, caught.value.field) == ("transition_lineage_not_allowed", "lineage")
+
+
+def test_ph4_3_omitted_lineage_is_the_legacy_rule_and_neither_form_falls_back_to_the_other():
+    coordinator, sha, intent_id = activation_ready()
+    before = copy.deepcopy(coordinator.store.data)
+    descriptor_without_lineage = managed_transition(sha, intent_id)
+    del descriptor_without_lineage["lineage"]
+    with pytest.raises(MigrationRefused, match="service_consumption_unbound"):
+        coordinator.advance(descriptor_without_lineage)  # legacy form: the revision rule, unchanged
+    revision_with_lineage = managed_transition(
+        sha, intent_id, service_consumption=receipt("service-startup", "revision=" + COMMIT))
+    with pytest.raises(MigrationRefused, match="service_consumption_unbound"):
+        coordinator.advance(revision_with_lineage)  # managed form: never retried as the legacy form
+    assert coordinator.store.data == before
+    assert coordinator.advance(activation_transition(coordinator, sha))["state"] == policy.LIMITED_ACTIVE
+
+
+@pytest.mark.parametrize("gate, receipts, reason", [
+    # The revision-labelled relabel, alone or beside a good receipt: EVERY list receipt is checked.
+    ("service_consumption", [receipt("service-startup", consumed()), receipt("service-startup", "revision=" + COMMIT)],
+     "service_consumption_unbound"),
+    ("service_consumption", [receipt("service-startup", "revision=" + COMMIT)], "service_consumption_unbound"),
+    ("service_consumption", [receipt("service-startup", "revision=" + PAYLOAD)], "service_consumption_unbound"),
+    ("service_consumption", [receipt("service-startup", consumed()), receipt("service-startup", consumed(
+        {**MANAGED_DESCRIPTOR, "root": "/srv/zeus/managed/runtimes/other"}))], "service_consumption_unbound"),
+    ("service_consumption", [receipt("service-startup", "descriptor=" + H)], "service_consumption_unbound"),
+    ("service_consumption", [receipt("service-startup", None)], "service_consumption_unbound"),
+    ("service_consumption", [receipt("service-startup", consumed(), ok=False)], "gate_evidence_failed"),
+    ("service_consumption", [receipt(policy.OBSERVATION, consumed())], "gate_evidence_kind"),
+    ("canary_admission", [receipt(policy.OBSERVATION, CANARY),
+                          receipt(policy.OBSERVATION, "canary=other-plan:instance=" + INSTANCE_ID)],
+     "canary_admission_unbound"),
+    ("canary_admission", [receipt(policy.OBSERVATION, "canary=" + PLAN_ID + ":instance=" + "6" * 32)],
+     "canary_admission_unbound"),
+    ("canary_admission", [receipt(policy.OBSERVATION, None)], "canary_admission_unbound"),
+    ("canary_admission", [receipt(policy.OBSERVATION, "revision=" + COMMIT)], "canary_admission_unbound"),
+    ("canary_admission", [receipt(policy.OBSERVATION, CANARY, ok=False)], "gate_evidence_failed"),
+    ("canary_admission", [receipt("service-startup", CANARY)], "gate_evidence_kind"),
+])
+def test_ph4_4_every_consumption_and_admission_receipt_must_name_the_managed_binding(gate, receipts, reason):
+    coordinator, sha, intent_id = activation_ready()
+    document = managed_transition(sha, intent_id, **{gate: receipts})
+    before = copy.deepcopy(coordinator.store.data)
+    with pytest.raises(MigrationRefused) as caught:
+        coordinator.advance(document)
+    assert caught.value.reason_code == reason and caught.value.field == "evidence." + gate
+    assert coordinator.store.data == before
+
+
+def test_ph4_4_a_mutated_descriptor_or_an_unbound_host_receipt_never_qualifies():
+    coordinator, sha, intent_id = activation_ready()
+    before = copy.deepcopy(coordinator.store.data)
+    for change in ({"root": "/srv/zeus/managed/runtimes/other"}, {"revision": "1" * 40},
+                   {"predecessor": None}, {"target_id": "aibox-other"}):
+        mutated = lineage(descriptor={**MANAGED_DESCRIPTOR, **change})
+        with pytest.raises(MigrationRefused, match="service_consumption_unbound"):
+            coordinator.advance(managed_transition(sha, intent_id, lineage_document=mutated))
+    with pytest.raises(MigrationRefused, match="canary_admission_unbound"):
+        coordinator.advance(managed_transition(sha, intent_id, lineage_document=lineage(plan_id="other-plan")))
+    with pytest.raises(MigrationRefused, match="activation_receipt_unbound"):
+        coordinator.advance(managed_transition(sha, intent_id, host_activation=[
+            receipt("host-activation", intent_id), receipt("host-activation", "0" * 64)]))
+    assert coordinator.store.data == before
+
+
+@pytest.mark.parametrize("change, field", [
+    ({"worker_image": "sha256:" + "0" * 64}, "lineage.descriptor.worker_image"),
+    ({"profile_digest": "0" * 64}, "lineage.descriptor.profile_digest"),
+])
+def test_ph4_5_descriptor_image_or_profile_drift_refuses(change, field):
+    coordinator, sha, intent_id = activation_ready()
+    drifted = {**MANAGED_DESCRIPTOR, **change}
+    document = managed_transition(sha, intent_id, lineage_document=lineage(descriptor=drifted),
+                                  service_consumption=receipt("service-startup", consumed(drifted)))
+    with pytest.raises(MigrationRefused) as caught:
+        coordinator.advance(document)
+    assert (caught.value.reason_code, caught.value.field) == ("activation_lineage_identity_mismatch", field)
+    assert coordinator.status(MID)["state"] == policy.RESTORED_PAUSED
+
+
+def test_ph4_5_the_transition_identity_still_binds_the_activation_in_the_managed_form():
+    coordinator, sha, intent_id = activation_ready()
+    with pytest.raises(MigrationRefused, match="activation_identity_mismatch"):
+        coordinator.advance(managed_transition(sha, intent_id, commit=PAYLOAD))  # relabelled to the payload
+    other_image = managed_transition(sha, intent_id)
+    other_image["identity"]["image"] = "sha256:" + "0" * 64
+    with pytest.raises(MigrationRefused, match="activation_identity_mismatch"):
+        coordinator.advance(other_image)
+    assert coordinator.status(MID)["state"] == policy.RESTORED_PAUSED
+
+
+class FailingStore(MemoryStore):
+    """LABELLED: the row write fails after the transition write inside the SAME transaction."""
+
+    fail = False
+
+    @contextmanager
+    def transaction(self, fail_fast: bool = False):
+        with super().transaction(fail_fast) as tx:
+            put = tx.put
+
+            def failing(bucket, key, body):
+                put(bucket, key, body)
+                if self.fail and bucket == BUCKET:
+                    raise RuntimeError("LABELLED injected store failure")
+            tx.put = failing
+            yield tx
+
+
+def test_ph4_10_exact_managed_replay_is_cached_and_nothing_overwrites_it():
+    coordinator, sha, intent_id = activation_ready()
+    with pytest.raises(MigrationRefused, match="manifest_stale"):
+        coordinator.advance(managed_transition("e" * 64, intent_id))
+    stale_from = managed_transition(sha, intent_id)
+    stale_from["from"] = policy.SNAPSHOT_SEALED
+    with pytest.raises(MigrationRefused, match="state_stale"):
+        coordinator.advance(stale_from)
+    document = managed_transition(sha, intent_id)
+    coordinator.advance(document)
+    after = copy.deepcopy(coordinator.store.data)
+    assert coordinator.advance(copy.deepcopy(document))["cached"] is True
+    other_bytes = {**copy.deepcopy(document), "at": "2026-09-25T05:11:00Z"}  # same id, other bytes
+    with pytest.raises(MigrationRefused, match="transition_conflict"):
+        coordinator.advance(other_bytes)
+    other_instance = "6" * 32
+    other_lineage = managed_transition(  # a different lineage is a different id: the normal from-state CAS
+        sha, intent_id, lineage_document=lineage(instance_id=other_instance),
+        canary_admission=receipt(policy.OBSERVATION, "canary=" + PLAN_ID + ":instance=" + other_instance))
+    with pytest.raises(MigrationRefused, match="state_stale"):
+        coordinator.advance(other_lineage)
+    with pytest.raises(MigrationRefused, match="state_stale"):
+        coordinator.advance(activation_transition(coordinator, sha))  # nor the legacy form afterwards
+    assert coordinator.store.data == after
+    coordinator.advance(transition(sha, policy.LIMITED_ACTIVE, policy.QUALIFIED))
+    later = copy.deepcopy(coordinator.store.data)
+    assert coordinator.advance(copy.deepcopy(document))["cached"] is True  # historical replay after a later state
+    assert coordinator.store.data == later
+
+
+def test_ph4_10_legacy_replay_after_later_states_is_retained():
+    coordinator, sha, _ = activation_ready()
+    document = activation_transition(coordinator, sha)
+    coordinator.advance(document)
+    coordinator.advance(transition(sha, policy.LIMITED_ACTIVE, policy.QUALIFIED))
+    assert coordinator.advance(document)["cached"] is True
+    assert coordinator.status(MID)["state"] == policy.QUALIFIED
+
+
+def test_ph4_10_a_failed_transaction_leaves_no_partial_transition_or_history():
+    store = FailingStore()
+    coordinator = HostMigrations(store)
+    sha = coordinator.plan(manifest())["manifest_sha256"]
+    walk(coordinator, sha, policy.RESTORED_PAUSED)
+    intent_id = coordinator.intend_activation(INTENT)["intent_id"]
+    before = copy.deepcopy(store.data)
+    store.fail = True
+    with pytest.raises(RuntimeError, match="injected store failure"):
+        coordinator.advance(managed_transition(sha, intent_id))
+    assert store.data == before  # neither the transition record nor the history entry exists
+    store.fail = False
+    view = coordinator.advance(managed_transition(sha, intent_id))
+    assert view["cached"] is False and view["state"] == policy.LIMITED_ACTIVE
+
+
+def test_ph4_13_the_coordinator_checks_archived_bindings_only_and_samples_no_live_state(monkeypatch):
+    coordinator, sha, intent_id = activation_ready()
+    moved = {**MANAGED_DESCRIPTOR, "revision": "1" * 40, "root": "/srv/zeus/managed/runtimes/" + "1" * 40}
+    with pytest.raises(MigrationRefused, match="service_consumption_unbound"):
+        # The capture tuple changed before submission: the archived receipts no longer bind it.
+        coordinator.advance(managed_transition(sha, intent_id, lineage_document=lineage(descriptor=moved)))
+
+    def sampled(*args, **kwargs):
+        raise AssertionError("the coordinator sampled live state")
+    for owner, name in ((builtins, "open"), (os, "open"), (os, "kill"), (subprocess, "run"),
+                        (subprocess, "Popen"), (socket, "socket")):
+        monkeypatch.setattr(owner, name, sampled)
+    view = coordinator.advance(managed_transition(sha, intent_id))
+    monkeypatch.undo()
+    assert view["state"] == policy.LIMITED_ACTIVE
+    assert "not proof" in view["authority"] and "runtime consumption" in view["authority"]
+    assert not Path(MANAGED_DESCRIPTOR["root"]).exists()  # an archived binding, not a live path here
 
 
 def launcher():

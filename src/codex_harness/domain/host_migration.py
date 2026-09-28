@@ -32,11 +32,22 @@ evidence receipts with exit code 0 and a passing typed result were presented for
   runtime to another release revision of the SAME host, image and profile without rewriting the
   intent: exactly one successor per exact effective predecessor, each with its own id and typed
   observation evidence. The receipt is then derived from the effective (last) activation.
+* A `limited_active` transition may carry the managed `lineage` (owner `managed`, a validated
+  HostDelivery descriptor, the consuming instance and the plan). Host activation and identity still
+  bind the effective activation; consumption binds the recomputed descriptor digest and admission
+  the plan/instance canary. Its id has a separate tag; legacy ids and bytes are unchanged.
 """
 from __future__ import annotations
 
 import re
 
+from codex_harness.domain.host_delivery import INSTANCE as DELIVERY_INSTANCE
+from codex_harness.domain.host_delivery import TOKEN as DELIVERY_TOKEN
+from codex_harness.domain.host_delivery import (
+    DeliveryRefused,
+    descriptor_digest,
+    validate_descriptor,
+)
 from codex_harness.domain.model import ContractError, digest
 
 MANIFEST_SCHEMA = "urn:zeus:host-migration-manifest:1"
@@ -702,16 +713,76 @@ def rollback_mode(history: list) -> str:
     return ROLLBACK_R1 if target_written(history) else ROLLBACK_R0
 
 
+# ----- managed lineage: the consumed managed payload of a limited_active transition ---------------
+LINEAGE_FIELDS = {"owner", "descriptor", "instance_id", "plan_id"}
+LINEAGE_OWNER_MANAGED = "managed"
+
+
+def _lineage_refused(field: str) -> MigrationRefused:
+    return MigrationRefused("transition_lineage_invalid", field)
+
+
+def validate_managed_lineage(value) -> dict:
+    """Strict validation of the managed `lineage` object; returns a NEW canonical copy.
+
+    INV-HOST-MIGRATION-001: host launch authority (the effective activation) and the consumed
+    managed payload (a HostDelivery descriptor, INV-HOST-DELIVERY-001) are separate facts. The
+    lineage names exactly the payload: owner `managed`, the validated descriptor, the consuming
+    instance and the plan whose owner canary admitted it. Absent lineage is the legacy form and is
+    never represented here; `null`, another owner, an extra or missing key, a wrong type or a
+    malformed descriptor/identifier is `transition_lineage_invalid` naming the field, never a value.
+    """
+    refuse_secrets(value, "lineage")
+    if not isinstance(value, dict) or set(value) != LINEAGE_FIELDS:
+        raise _lineage_refused("lineage")
+    if not (type(value["owner"]) is str and value["owner"] == LINEAGE_OWNER_MANAGED):
+        raise _lineage_refused("lineage.owner")
+    try:
+        descriptor = validate_descriptor(value["descriptor"])
+    except DeliveryRefused as exc:
+        # Only the fixed field name crosses over; the descriptor's own message is never relayed.
+        raise _lineage_refused("lineage.descriptor" + ("." + exc.field if exc.field else "")) from None
+    if len(descriptor["root"]) > MAX_TEXT or "\x00" in descriptor["root"]:
+        raise _lineage_refused("lineage.descriptor.root")
+    instance_id, plan_id = value["instance_id"], value["plan_id"]
+    if not (type(instance_id) is str and DELIVERY_INSTANCE.fullmatch(instance_id)):
+        raise _lineage_refused("lineage.instance_id")
+    if not (type(plan_id) is str and DELIVERY_TOKEN.fullmatch(plan_id)):
+        raise _lineage_refused("lineage.plan_id")
+    return {"owner": LINEAGE_OWNER_MANAGED, "descriptor": descriptor, "instance_id": instance_id,
+            "plan_id": plan_id}
+
+
+def managed_consumption_subject(lineage: dict) -> str:
+    """The subject every managed service_consumption receipt names: the RECOMPUTED digest of the
+    validated descriptor, never a digest supplied beside it (INV-HOST-MIGRATION-001)."""
+    return "descriptor=" + descriptor_digest(lineage["descriptor"])
+
+
+def managed_canary_subject(lineage: dict) -> str:
+    """The subject every managed canary_admission receipt names: the owner canary of exactly this
+    plan and consuming instance (INV-HOST-MIGRATION-001, INV-OWNER-ACTIONS-001)."""
+    return "canary=" + lineage["plan_id"] + ":instance=" + lineage["instance_id"]
+
+
 def validate_transition(document) -> dict:
-    """Strict validation of `urn:zeus:host-migration-transition:1`; returns the canonical copy."""
+    """Strict validation of `urn:zeus:host-migration-transition:1`; returns the canonical copy.
+
+    Only a transition to `limited_active` may carry the optional managed `lineage`; without the key
+    the canonical copy is byte-identical to the legacy form and `lineage: null` is never added."""
     refuse_secrets(document, "transition")
     fields = {"schema", "migration_id", "manifest_sha256", "from", "to", "actor", "host", "at",
               "identity", "evidence", "exit_code", "reason_code"}
     if not isinstance(document, dict) or document.get("schema") != TRANSITION_SCHEMA:
         raise MigrationRefused("transition_schema")
-    _fields(document, fields, "transition")
+    managed = "lineage" in document
+    _fields(document, fields | {"lineage"} if managed else fields, "transition")
     if document["from"] not in STATES or document["to"] not in STATES:
         raise MigrationRefused("transition_invalid", "from/to")
+    if managed and document["to"] != LIMITED_ACTIVE:
+        # INV-HOST-MIGRATION-001: no other transition accepts lineage, not even an explicit null.
+        raise MigrationRefused("transition_lineage_not_allowed", "lineage")
+    lineage = validate_managed_lineage(document["lineage"]) if managed else None
     identity = _fields(document["identity"], {"config_sha256", "commit", "image", "profile_sha256"},
                        "transition.identity")
     _match(identity["config_sha256"], HEX64, "identity.config_sha256")
@@ -729,19 +800,33 @@ def validate_transition(document) -> dict:
         raise MigrationRefused("transition_invalid", "reason_code")
     if not failing and document["exit_code"] != 0:
         raise MigrationRefused("transition_nonzero_exit", "exit_code")
-    return {"schema": TRANSITION_SCHEMA,
-            "migration_id": _match(document["migration_id"], TOKEN, "migration_id"),
-            "manifest_sha256": _match(document["manifest_sha256"], HEX64, "manifest_sha256"),
-            "from": document["from"], "to": document["to"],
-            "actor": _match(document["actor"], TOKEN, "actor"), "host": _match(document["host"], TOKEN, "host"),
-            "at": _utc(document["at"], "at"),
-            "identity": {k: identity[k] for k in sorted(identity)},
-            "evidence": evidence, "exit_code": document["exit_code"],
-            "reason_code": document["reason_code"]}
+    canonical = {"schema": TRANSITION_SCHEMA,
+                 "migration_id": _match(document["migration_id"], TOKEN, "migration_id"),
+                 "manifest_sha256": _match(document["manifest_sha256"], HEX64, "manifest_sha256"),
+                 "from": document["from"], "to": document["to"],
+                 "actor": _match(document["actor"], TOKEN, "actor"), "host": _match(document["host"], TOKEN, "host"),
+                 "at": _utc(document["at"], "at"),
+                 "identity": {k: identity[k] for k in sorted(identity)},
+                 "evidence": evidence, "exit_code": document["exit_code"],
+                 "reason_code": document["reason_code"]}
+    if managed:
+        canonical["lineage"] = lineage
+    return canonical
+
+
+TRANSITION_TAG = "host-migration-transition-v2"
+TRANSITION_MANAGED_TAG = "host-migration-transition-managed-v1"
 
 
 def transition_id(transition: dict) -> str:
-    return digest(["host-migration-transition-v2", transition["migration_id"], transition["from"],
+    """The legacy v2 id is unchanged; a managed transition has its own tag over the same inputs
+    plus the canonical lineage, so a lineage can never be changed under an existing id
+    (INV-HOST-MIGRATION-001). The stored full transition stays authoritative on replay."""
+    if "lineage" in transition:
+        return digest([TRANSITION_MANAGED_TAG, transition["migration_id"], transition["from"],
+                       transition["to"], transition["manifest_sha256"], transition["evidence"],
+                       transition["lineage"]])
+    return digest([TRANSITION_TAG, transition["migration_id"], transition["from"],
                    transition["to"], transition["manifest_sha256"], transition["evidence"]])
 
 
@@ -902,6 +987,8 @@ __all__ = ["ACTIVATION_SCHEMA", "CHECKPOINT_SCHEMA", "CONTROL_SCHEMA", "EVIDENCE
            "STEPS", "SUCCESSOR_GATES", "SUCCESSOR_SCHEMA", "TRANSITION_SCHEMA", "activation_id",
            "activation_receipt", "allowed", "effective_activation", "evidence_receipt", "intent_id",
            "successor_allowed", "successor_id", "validate_successor",
+           "LINEAGE_OWNER_MANAGED", "TRANSITION_MANAGED_TAG", "managed_canary_subject",
+           "managed_consumption_subject", "validate_managed_lineage",
            "catalog_schemas", "compare_catalogs", "manifest_digest", "pg_coverage", "rename_plan", "restore_id", "refuse_secrets", "schema_comparison", "schema_subject", "resume_state", "reverse_maps", "rollback_mode", "step_allowed",
            "target_written", "transition_id", "validate_checkpoint", "validate_evidence", "validate_intent",
            "validate_manifest", "validate_transition"]

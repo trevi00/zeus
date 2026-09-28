@@ -29,13 +29,18 @@ from test_continuation_requalification import requalify, withdrawn_world
 from test_fleet import GOAL, FakeLauncher, RecordingControl, fleet
 from test_fleet import manifest as operation
 from test_host_migration import (
+    CANARY,
     COMMIT,
     HOST_ID,
     IMAGE,
     INTENT,
+    PAYLOAD,
     H,
+    consumed,
     gate_evidence,
     launcher,
+    lineage,
+    managed_transition,
     manifest,
     needs_symlink,
     receipt,
@@ -50,6 +55,7 @@ from codex_harness.application.host_migration import BUCKET, BUCKET_TRANSITIONS,
 from codex_harness.domain import continuation as dc
 from codex_harness.domain import host_migration as policy
 from codex_harness.domain.host_migration import MigrationRefused
+from codex_harness.domain.model import canonical, digest
 
 MID = "aibox-migration-001"
 NEXT = "e" * 40  # the successor's revision (5aa220f in the live recovery)
@@ -370,6 +376,118 @@ def test_t10_a_rollback_successor_is_cas_on_the_first_and_leaves_intent_and_r1_u
     assert document["release_revision"] == COMMIT and document["supersedes"] == first
     assert document["intent_id"] != intent_id  # the rollback is a new head, never the old receipt
     assert coordinator.store.data[(BUCKET, MID)]["activation_intent"] == policy.validate_intent(INTENT)
+
+
+# ----- PH4: the managed lineage over the effective successor (INV-HOST-MIGRATION-001) ---------------
+# Golden values computed from the UNCHANGED coordinator at d795e26 for the legacy successor-bound
+# limited_active of `test_t9` (PH4-1): id, canonical bytes, history and launcher receipt bytes.
+SUCCESSOR_GOLDEN = {"limited_id": "59e1d3636fefd60ba2957543e56a3c43f3effe8b56ee23e3c30905d07c3a814a",
+                    "limited_bytes": "a2cea4add33dd79d87ac9267ddd63f6e76bb611f28f2fbd9a1479fa5b31039ee",
+                    "history": "1dc84e211db4e68ac27f36e0bb05c865df452c750399f52a0c2bae820db3ebb7",
+                    "activation_bytes": "b44f5966f368266174eefe9880e2f251a940226e4d3e1cb1271a40921b24c6f5"}
+
+
+def on_successor() -> tuple[HostMigrations, str, str, str]:
+    """restored_paused with the intent (COMMIT, the retired bootstrap analog) superseded by the
+    successor NEXT (the 5aa launcher analog); returns the coordinator, manifest digest, intent id and
+    effective head id."""
+    coordinator, sha, intent_id = paused()
+    return coordinator, sha, intent_id, coordinator.record_successor(successor(intent_id))["successor_id"]
+
+
+def test_ph4_1_the_legacy_successor_bound_limited_active_is_golden():
+    coordinator, sha, _, head = on_successor()
+    document = transition(sha, policy.RESTORED_PAUSED, policy.LIMITED_ACTIVE,
+                          identity={"config_sha256": H, "commit": NEXT, "image": IMAGE, "profile_sha256": H},
+                          evidence=gate_evidence(policy.LIMITED_ACTIVE,
+                                                 host_activation=receipt("host-activation", head),
+                                                 service_consumption=receipt("service-startup", "revision=" + NEXT)))
+    legacy = policy.validate_transition(document)
+    assert "lineage" not in legacy
+    assert policy.transition_id(legacy) == SUCCESSOR_GOLDEN["limited_id"]
+    assert hashlib.sha256(canonical(legacy).encode()).hexdigest() == SUCCESSOR_GOLDEN["limited_bytes"]
+    coordinator.advance(document)
+    assert digest(coordinator.status(MID)["history"]) == SUCCESSOR_GOLDEN["history"]
+    data = adapter._document_bytes(coordinator.activation_document(MID))
+    assert hashlib.sha256(data).hexdigest() == SUCCESSOR_GOLDEN["activation_bytes"]
+
+
+def test_ph4_2_the_successor_launch_consumes_the_managed_payload_and_keeps_its_own_identity():
+    coordinator, sha, _, head = on_successor()
+    assert PAYLOAD not in (COMMIT, NEXT)  # the consumed payload is neither launcher revision
+    document = managed_transition(sha, head, commit=NEXT)
+    view = coordinator.advance(document)
+    assert view["state"] == policy.LIMITED_ACTIVE and view["activation_current"] == head
+    entry = view["history"][-1]
+    assert entry["lineage"] == policy.validate_managed_lineage(lineage())
+    recorded = coordinator.store.data[(BUCKET_TRANSITIONS, entry["id"])]
+    assert recorded["identity"]["commit"] == NEXT and recorded["lineage"]["descriptor"]["revision"] == PAYLOAD
+    assert {r["subject"] for r in recorded["evidence"]["host_activation"]} == {head}
+    assert {r["subject"] for r in recorded["evidence"]["service_consumption"]} == {consumed()}
+    assert {r["subject"] for r in recorded["evidence"]["canary_admission"]} == {CANARY}
+    activation = coordinator.activation_document(MID)
+    assert (activation["intent_id"], activation["release_revision"], activation["state"]) == \
+        (head, NEXT, policy.LIMITED_ACTIVE)
+
+
+@pytest.mark.parametrize("case, reason", [
+    ("identity_payload", "activation_identity_mismatch"),  # identity relabelled to the ec8 payload
+    ("identity_intent", "activation_identity_mismatch"),  # identity of the superseded intent
+    ("host_intent", "activation_receipt_unbound"),  # host receipt of the superseded intent
+    ("revision_relabel", "service_consumption_unbound"),  # `revision=<5aa>` beside the managed lineage
+])
+def test_ph4_2_relabels_toward_the_payload_or_the_superseded_intent_are_refused(case, reason):
+    coordinator, sha, intent_id, head = on_successor()
+    document = {
+        "identity_payload": lambda: managed_transition(sha, head, commit=PAYLOAD),
+        "identity_intent": lambda: managed_transition(sha, head, commit=COMMIT),
+        "host_intent": lambda: managed_transition(sha, intent_id, commit=NEXT),
+        "revision_relabel": lambda: managed_transition(
+            sha, head, commit=NEXT, service_consumption=receipt("service-startup", "revision=" + NEXT)),
+    }[case]()
+    before = snapshot(coordinator.store)
+    with pytest.raises(MigrationRefused) as caught:
+        coordinator.advance(document)
+    assert caught.value.reason_code == reason
+    assert coordinator.store.data == before
+
+
+def test_ph4_5_a_superseded_head_never_qualifies_in_the_managed_form():
+    coordinator, sha, _, head = on_successor()
+    later = coordinator.record_successor(successor(head, LATER))["successor_id"]
+    before = snapshot(coordinator.store)
+    with pytest.raises(MigrationRefused, match="activation_receipt_unbound"):
+        coordinator.advance(managed_transition(sha, head, commit=NEXT))
+    with pytest.raises(MigrationRefused, match="activation_identity_mismatch"):
+        coordinator.advance(managed_transition(sha, later, commit=NEXT))
+    assert coordinator.store.data == before
+    assert coordinator.advance(managed_transition(sha, later, commit=LATER))["state"] == policy.LIMITED_ACTIVE
+
+
+def test_ph4_11_a_new_successor_after_limited_active_is_refused_and_the_historic_one_replays_cached():
+    coordinator, sha, intent_id, head = on_successor()
+    coordinator.advance(managed_transition(sha, head, commit=NEXT))
+    before, document = snapshot(coordinator.store), coordinator.activation_document(MID)
+    with pytest.raises(MigrationRefused) as caught:
+        coordinator.record_successor(successor(head, LATER))
+    assert (caught.value.reason_code, caught.value.field) == ("activation_state", "state")
+    replay = coordinator.record_successor(successor(intent_id))  # the identical recorded successor
+    assert replay == {"recorded": False, "cached": True, "successor_id": head, "predecessor_id": intent_id}
+    assert coordinator.store.data == before and coordinator.activation_document(MID) == document
+
+
+@posix_only
+def test_ph4_11_recording_limited_active_writes_no_current_and_authorizes_no_new_successor(tmp_path):
+    coordinator, sha, intent_id = paused()
+    h = host(tmp_path, coordinator)
+    head = coordinator.record_successor(successor(intent_id))["successor_id"]
+    switch(coordinator, h, expected=head)
+    files = tree(h)
+    coordinator.advance(managed_transition(sha, head, commit=NEXT))
+    with pytest.raises(MigrationRefused, match="activation_state"):
+        coordinator.record_successor(successor(head, LATER))
+    assert coordinator.record_successor(successor(intent_id))["cached"] is True
+    assert tree(h) == files and os.readlink(h.releases / "current") == NEXT
 
 
 # ----- A1-A7: the file switch ----------------------------------------------------------------------------

@@ -22,7 +22,9 @@ the Fleet registry itself still moves only through `Fleet.relocate` (INV-FLEET-0
   the same store transaction `record_successor` takes, so a switch and a successor record (or two
   switches) are serialized and a stale head can never be written after a newer one.
 * `limited_active` needs the host-activation receipt bound to the effective activation and a
-  service startup receipt whose revision/image/profile are the effective activation's;
+  service startup receipt whose revision/image/profile are the effective activation's, or, in
+  the managed lineage form, startup receipts naming the recomputed managed descriptor digest and
+  canary receipts naming its plan and instance;
   `rolled_back` needs the gate receipt of the recorded mode and, under R1, every reverse step's
   checkpoint.
 
@@ -46,6 +48,8 @@ from codex_harness.domain.host_migration import (
     allowed,
     effective_activation,
     intent_id,
+    managed_canary_subject,
+    managed_consumption_subject,
     manifest_digest,
     resume_state,
     reverse_maps,
@@ -56,6 +60,7 @@ from codex_harness.domain.host_migration import (
     transition_id,
     validate_checkpoint,
     validate_intent,
+    validate_managed_lineage,
     validate_manifest,
     validate_successor,
     validate_transition,
@@ -117,9 +122,14 @@ class HostMigrations:
             if transition["to"] == ROLLED_BACK:
                 self._require_rollback(row, transition)
             tx.put(BUCKET_TRANSITIONS, key, transition)
-            row["history"].append({"id": key, "from": transition["from"], "to": transition["to"],
-                                   "at": transition["at"], "actor": transition["actor"],
-                                   "host": transition["host"], "reason_code": transition["reason_code"]})
+            summary = {"id": key, "from": transition["from"], "to": transition["to"],
+                       "at": transition["at"], "actor": transition["actor"],
+                       "host": transition["host"], "reason_code": transition["reason_code"]}
+            if "lineage" in transition:
+                # INV-HOST-MIGRATION-001: the history of a managed transition retains its lineage;
+                # a legacy summary never gains the key.
+                summary["lineage"] = validate_managed_lineage(transition["lineage"])
+            row["history"].append(summary)
             row["state"] = transition["to"]
             tx.put(BUCKET, row["migration_id"], row)
         return {**self._view(row), "cached": False}
@@ -127,22 +137,54 @@ class HostMigrations:
     @staticmethod
     def _require_activation(row: dict, transition: dict) -> None:
         """The target writer may be recorded active only against the EFFECTIVE activation that
-        enabled it: after a successor, receipts bound to the superseded intent are refused."""
+        enabled it: after a successor, receipts bound to the superseded intent are refused.
+
+        INV-HOST-MIGRATION-001: host activation and transition identity always bind the effective
+        activation. Without `lineage` consumption names its revision (the legacy form, unchanged);
+        with the managed lineage it names the recomputed descriptor digest and every canary
+        receipt names the lineage's plan and instance. The managed branch is an explicit form of
+        the document, never a fallback tried after the legacy check fails."""
         intent = row.get("activation_intent")
         if intent is None:
             raise MigrationRefused("activation_intent_missing", "activation_intent")
         head = effective_activation(intent, row.get("activation_successors") or [])
         activation, key = head["activation"], head["id"]
-        if any(receipt["subject"] != key for receipt in transition["evidence"]["host_activation"]):
+        evidence = transition["evidence"]
+        if any(receipt["subject"] != key for receipt in evidence["host_activation"]):
             raise MigrationRefused("activation_receipt_unbound", "evidence.host_activation")
-        consumed = "revision=" + activation["release_revision"]
-        if any(receipt["subject"] != consumed for receipt in transition["evidence"]["service_consumption"]):
-            # `systemctl is-active` is not consumption: the startup receipt must name the revision.
-            raise MigrationRefused("service_consumption_unbound", "evidence.service_consumption")
+        if "lineage" not in transition:
+            consumed = "revision=" + activation["release_revision"]
+            if any(receipt["subject"] != consumed for receipt in evidence["service_consumption"]):
+                # `systemctl is-active` is not consumption: the startup receipt must name the revision.
+                raise MigrationRefused("service_consumption_unbound", "evidence.service_consumption")
+        else:
+            HostMigrations._require_lineage(activation, transition["lineage"], evidence)
         identity = transition["identity"]
         if (identity["commit"], identity["image"], identity["profile_sha256"]) != \
                 (activation["release_revision"], activation["image"], activation["profile_sha256"]):
             raise MigrationRefused("activation_identity_mismatch", "identity")
+
+    @staticmethod
+    def _require_lineage(activation: dict, lineage: dict, evidence: dict) -> None:
+        """The managed payload the effective activation launched (INV-HOST-MIGRATION-001).
+
+        The descriptor's image and profile are the activation's; its revision is the consumed
+        payload revision and need not be the launcher revision. EVERY consumption receipt names
+        the digest recomputed here from the validated descriptor (a `revision=` receipt is
+        refused), and EVERY admission receipt names the owner canary of this plan and instance
+        (INV-HOST-DELIVERY-001, INV-OWNER-ACTIONS-001 for their provenance)."""
+        lineage = validate_managed_lineage(lineage)
+        descriptor = lineage["descriptor"]
+        for field, wanted in (("worker_image", activation["image"]),
+                              ("profile_digest", activation["profile_sha256"])):
+            if descriptor[field] != wanted:
+                raise MigrationRefused("activation_lineage_identity_mismatch", "lineage.descriptor." + field)
+        consumed = managed_consumption_subject(lineage)
+        if any(receipt["subject"] != consumed for receipt in evidence["service_consumption"]):
+            raise MigrationRefused("service_consumption_unbound", "evidence.service_consumption")
+        admitted = managed_canary_subject(lineage)
+        if any(receipt["subject"] != admitted for receipt in evidence["canary_admission"]):
+            raise MigrationRefused("canary_admission_unbound", "evidence.canary_admission")
 
     @staticmethod
     def _require_rollback(row: dict, transition: dict) -> None:
