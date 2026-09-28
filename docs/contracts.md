@@ -226,6 +226,32 @@ null); a stale generation cannot write progress, and a malformed runtime event i
 as evidence and counted instead of being dropped or allowed to overwrite the last
 well-formed state.
 
+**Compact activity records (S2b, FLEET-S2B-SPEC).** Beside these raw progress receipts, which stay byte-identical,
+the executor may write ONE compact activity receipt (`urn:zeus:progress-activity:1`) per activity event: Claude
+`session_started`, `tool_started`, `tool_completed`, `permission_denied` and `result`, and Codex `item/completed`.
+Codex token updates and malformed events stay raw-only.
+- **The record** is a NEW object with exactly 14 keys: fixed vocabularies, a built-in tool name for a tool start
+  only, the lease generation/attempt, the executor collection time, a validated Codex occurrence time, an
+  `activity_sequence`, and the raw `progress_sequence`/`raw_ref` (both null for a tool start). It never carries
+  payload, text, commands, paths, provider ids, subtypes or reasoning. A Claude result is `error` when `raw.is_error`
+  is truthy or its subtype is not `success`; only that one raw key is read, and `last_completed.status` uses the
+  same rule.
+- **A tool start** has an activity sequence but NO raw progress sequence and no event identity. It writes only the
+  binding fields and `activity_recent`, `activity_sequence`, `activity_progress_sequence` and `activity_dropped`;
+  every legacy field stays as it was.
+- **A display-only write failure is contained, never turned into a run failure.** A compact write predicts its
+  counters and links only if the row is still the one it predicted from (compare-and-set). Its artifact put and a
+  start's transaction use a fail-fast lock, so a busy control plane costs at most that short wait before the record
+  is dropped (not a proof against arbitrary OS or database stalls). Any failure drops only the activity: it is
+  counted in `activity_dropped` at the next successful owned write (a partial count; 0 once this producer has
+  written the row, absent for an older producer). The `_owned` fence refusal is never contained. A dropped compact
+  write nulls the watermark. A drop that could not (a tool start's own write failed) keeps the ring suspect: a
+  malformed write in between invalidates the watermark, and the next well-formed write clears the ring. So a ring
+  that misses a record is never shown as continuous. A drop with no later successful write in the same run cannot
+  be recorded; that limit is observational.
+- **The ring is a bounded display window:** the newest six, oldest first. It is not a durable event stream, and
+  displaced records are swept by the existing retention.
+
 ## INV-EXECUTION-TIME-001
 
 Timezone-aware UTC deadlines survive restart. Monotonic elapsed time is compared
@@ -4343,13 +4369,25 @@ terminal or a screen, and it is not a transcript. The executor keeps only progre
 
   Never text, input, output, reasoning, commands, paths, ids, subtypes, MCP names or unknown keys.
 - **Sequence and collection time** exist only for `last_record` (the executor assigns them to the row).
+- **Compact ring (S2b).** When `activity_recent` is non-empty and its `activity_progress_sequence` equals the
+  row's `sequence` (exact integers; 0 only when absent), the compact ring is shown instead of `recent`, and the two
+  are never merged or backfilled. Each compact member is read once, validated against the exact record contract,
+  and bound to THIS execution (another execution's record is `binding_mismatch` after its bounded read). Its
+  `raw_ref` is never followed. A compact entry carries its own activity sequence, raw progress sequence (null for a
+  tool start), collection time and lineage. Every entry names its `source` (`activity_receipt` or
+  `progress_receipt`), and a row projects its recorded `activity_dropped` (null when never recorded).
+- **Fixed S1a labels (S2b).** `progress.last_event`, `last_completed.type` and `last_completed.status` pass through
+  a fixed vocabulary: a provider subtype suffix collapses to its base; an `error…` status becomes `error`; anything
+  else becomes `unknown`. No external text is projected.
 - **Failure:** each ref fails on its own, with a fixed code (`missing_artifact`, `runtime_unavailable`,
-  `invalid_ref`, `too_large`, `integrity_failure`, `invalid_json`, `invalid_shape`, `io_error`). A consulted
+  `invalid_ref`, `too_large`, `integrity_failure`, `invalid_json`, `invalid_shape`, `io_error`,
+  `binding_mismatch`). A consulted
   field that is neither a string nor absent is `invalid_shape`, and a non-string ref is `invalid_ref`, beside
   the other entries; a row whose activity cannot be projected is `unavailable`, and its session facts stay. An
   empty retained list with malformed events is `malformed_not_in_recent`. The separate malformed ring is not read.
 
-Tests: tests/test_monitoring_activity.py (S2a, matrix S2-1..S2-9 on temporary artifact roots), tests/test_monitoring_lane_sessions.py (labelled synthetic lane rows and a fake connection, with no
+Tests: tests/test_monitoring_activity.py (S2a, matrix S2-1..S2-9 on temporary artifact roots), tests/test_progress_activity.py and
+tests/test_progress_activity_producer.py (S2b, matrix S2B-1..S2B-19), tests/test_monitoring_lane_sessions.py (labelled synthetic lane rows and a fake connection, with no
 provider, process or database; plus one integration test on real PostgreSQL, run with
 `HARNESS_INTEGRATION=1`, showing that a lane snapshot is not blocked by a held writer lock) and the
 collector entrypoint test in tests/test_monitoring.py.

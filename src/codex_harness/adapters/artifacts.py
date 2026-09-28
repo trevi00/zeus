@@ -17,8 +17,9 @@ class FileArtifacts:
         self.root = Path(root).resolve()
         self.root.mkdir(parents=True, exist_ok=True)
 
-    def put(self, body: str, source: str) -> dict:
-        with FileLock(str(self.root.parent / "artifacts.lock"), timeout=30):
+    def put(self, body: str, source: str, lock_timeout: float = 30) -> dict:
+        # A display-only writer (S2b activity) passes a short `lock_timeout` and drops its record on timeout.
+        with FileLock(str(self.root.parent / "artifacts.lock"), timeout=lock_timeout):
             return self._put(body, source)
 
     def _put(self, body: str, source: str) -> dict:

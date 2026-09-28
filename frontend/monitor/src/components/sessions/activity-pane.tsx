@@ -22,11 +22,11 @@ function EventLine({ entry }: { entry: EventEntry }) {
           <code tabIndex={0} aria-label="근거 참조 텍스트" className="mt-2 block select-all rounded border bg-background p-2 focus-visible:outline-2 focus-visible:outline-ring">{entry.ref}</code>
         </details> : null}
       </div>
-      {entry.isLastRecord ? <dl className="flex min-w-0 flex-wrap gap-x-4 gap-y-1 border-t border-dashed pt-2 text-muted-foreground">
-        <div className="flex gap-2"><dt className="font-sans">순번</dt><dd>{entry.sequence ?? "기록 없음"}</dd></div>
-        <div className="min-w-0"><dt className="inline font-sans">수집 시각</dt>{" "}
-          <dd className="inline" title={entry.collectedAt === null ? undefined : formatTime(entry.collectedAt)}>{entry.collectedAt ?? "기록 없음"}</dd>
-        </div>
+      {entry.metadataKind !== "none" ? <dl className="flex min-w-0 flex-wrap gap-x-4 gap-y-2 border-t border-dashed pt-2 text-muted-foreground">
+        {entry.metadata.map((item) => <div key={item.key} className="min-w-0">
+          <dt className="font-sans">{item.label}</dt>
+          <dd title={item.time === null ? undefined : formatTime(item.time)}>{item.value}</dd>
+        </div>)}
       </dl> : null}
     </li>
   )
@@ -45,8 +45,10 @@ export function ActivityPane({ events }: { events: EventLog }) {
         <div className="space-y-1 text-xs leading-relaxed text-muted-foreground">
           <p>{events.notices.retention}</p>
           <p>{events.notices.qualification}</p>
+          {events.notices.legacyResult !== null ? <p>{events.notices.legacyResult}</p> : null}
         </div>
       </header>
+      {events.dropped.text !== null ? <p className="mb-3 border-l-2 border-border bg-muted/20 px-3 py-2 text-sm leading-relaxed text-muted-foreground">{events.dropped.text}</p> : null}
       {events.gapText !== null ? <p className="mb-3 rounded-md border bg-muted/30 p-3 text-sm leading-relaxed">{events.gapText}</p> : null}
       {events.entries.length > 0 ? <ol aria-label="보관 순서의 활동 이벤트" className="min-w-0 divide-y rounded-md border bg-muted/10 font-mono text-xs leading-relaxed">
         {events.entries.map((entry) => <EventLine key={entry.key} entry={entry} />)}

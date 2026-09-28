@@ -52,7 +52,10 @@ function SessionDetails({ row, screenNotice }: { row: SessionRow; screenNotice: 
         <KeyValue items={[
           ["마지막 이벤트", row.activity.lastEvent ?? missing],
           ["순번", number(row.activity.sequence)],
-          ["마지막 완료", row.activity.lastCompleted ?? missing],
+          ["마지막 완료", <div className="space-y-1">
+            <span>{row.activity.lastCompleted ?? missing}</span>
+            {row.activity.lastCompletedNote !== null ? <p className="text-xs leading-relaxed text-muted-foreground">{row.activity.lastCompletedNote}</p> : null}
+          </div>],
           ["이벤트 시각", time(row.activity.occurredAt)],
           ["수집 시각", time(row.activity.collectedAt)],
           ["기록 경과", row.activity.ageText],
