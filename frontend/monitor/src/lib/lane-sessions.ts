@@ -11,7 +11,10 @@
 // - usage without a named measured source is 알 수 없음, never 0;
 // - operation call counts are written at finalization, so a running operation has none yet;
 // - an execution status, a review verdict and a worker-session review outcome are separate facts;
-// - `coverage.uninstrumented` is shown verbatim: sessions outside Zeus task ownership are not observed.
+// - `coverage.uninstrumented` is shown verbatim: sessions outside Zeus task ownership are not observed;
+// - the activity pane (S2a) is an emitted-event log of the RETAINED progress receipts, never a terminal, a
+//   screen or a transcript; a collector without it is "수집 안 함", never an empty log; every entry that
+//   failed stays listed with its fixed reason; sequence and collection time exist only for the last record.
 // Nothing here reads the network or writes anything; `now` is passed in so a render is reproducible.
 
 import { STATE_LABELS, formatNumber, laneSessionsFreshness, parseTime, type Freshness, type Snapshot } from "./snapshot"
@@ -74,6 +77,20 @@ export type WireWorkerSession = {
   reason: string | null
   owner: { generation: number | null; attempt: number | null } | null
 }
+/** One retained runtime-event receipt, projected by the collector's fixed allowlist (FLEET-S2-SPEC §4). */
+export type WireActivityEntry = {
+  receipt_ref: string | null
+  state: "ok" | "unavailable" | "unreadable" | "malformed"
+  error_type: string | null
+  event_label: string | null
+  tool_name: string | null
+  item_type: string | null
+  status: string | null
+  sequence: number | null
+  occurred_at: string | null
+  collected_at: string | null
+  malformed: boolean | null
+}
 export type WireExecution = {
   kind: "task" | "decision"
   id: string
@@ -90,6 +107,9 @@ export type WireExecution = {
   progress: WireProgress | null
   invocations: { count: number; by_status: Record<string, number>; latest: WireInvocation | null }
   worker_session: WireWorkerSession | null
+  /** Both null: the collector predates the activity pane (never an empty log). */
+  activity_status: string | null
+  activity: WireActivityEntry[] | null
 }
 export type WireLane =
   | { lane: string; team: string | null; observed_at: string | null; status: "unavailable"; error: string | null }
@@ -219,6 +239,48 @@ function readWorkerSession(value: unknown): WireWorkerSession | null {
   }
 }
 
+/** The executor retains at most six progress receipts per execution (FLEET-S2-SPEC §4). */
+export const ACTIVITY_LIMIT = 6
+const ENTRY_STATES = new Set(["ok", "unavailable", "unreadable", "malformed"])
+/** Activity statuses whose list is empty by definition; `ok` needs a readable entry, `unavailable` has none. */
+const EMPTY_ACTIVITY = new Set(["not_selected", "empty", "lineage_unconfirmed", "malformed_not_in_recent"])
+const RECEIPT_REF = /^sha256:[0-9a-f]{64}$/
+
+function readActivityEntry(value: unknown): WireActivityEntry {
+  if (!isRecord(value)) return fail("activity[]")
+  const state = typeof value.state === "string" && ENTRY_STATES.has(value.state)
+    ? value.state as WireActivityEntry["state"] : fail("activity[].state")
+  const errorType = str(value.error_type, "activity[].error_type")
+  // Each failed ref names its fixed reason; a readable one has none.
+  if (state === "ok" ? errorType !== null : (state === "unavailable" || state === "unreadable") && errorType === null) {
+    fail("activity[].error_type")
+  }
+  const ref = str(value.receipt_ref, "activity[].receipt_ref")
+  if (ref !== null && !RECEIPT_REF.test(ref)) fail("activity[].receipt_ref")
+  if (state === "ok" && ref === null) fail("activity[].receipt_ref (ok)")
+  return {
+    receipt_ref: ref, state, error_type: errorType, event_label: str(value.event_label, "activity[].event_label"),
+    tool_name: str(value.tool_name, "activity[].tool_name"), item_type: str(value.item_type, "activity[].item_type"),
+    status: str(value.status, "activity[].status"), sequence: count(value.sequence, "activity[].sequence"),
+    occurred_at: str(value.occurred_at, "activity[].occurred_at"), collected_at: str(value.collected_at, "activity[].collected_at"),
+    malformed: bool(value.malformed, "activity[].malformed"),
+  }
+}
+
+function readActivity(statusValue: unknown, listValue: unknown): { activity_status: string | null; activity: WireActivityEntry[] | null } {
+  // An older collector sends neither; one without the other is a contradictory shape.
+  if (absent(statusValue) && absent(listValue)) return { activity_status: null, activity: null }
+  const status = str(statusValue, "execution.activity_status") ?? fail("execution.activity_status")
+  if (!Array.isArray(listValue)) return fail("execution.activity")
+  if (listValue.length > ACTIVITY_LIMIT) return fail("execution.activity (over the retention bound)")
+  const entries = listValue.map(readActivityEntry)
+  const readable = entries.some((entry) => entry.state === "ok")
+  if ((EMPTY_ACTIVITY.has(status) && entries.length > 0) || (status === "ok" && !readable) || (status === "unavailable" && readable)) {
+    fail(`execution.activity (${status})`)
+  }
+  return { activity_status: status, activity: entries }
+}
+
 function readExecution(value: unknown): WireExecution {
   if (!isRecord(value)) return fail("execution")
   if (value.kind !== "task" && value.kind !== "decision") return fail("execution.kind")
@@ -233,6 +295,7 @@ function readExecution(value: unknown): WireExecution {
     invocations: { count: requiredCount(invocations.count, "invocations.count"), by_status: counts(invocations.by_status, "invocations.by_status"),
                    latest: readInvocation(invocations.latest) },
     worker_session: readWorkerSession(value.worker_session),
+    ...readActivity(value.activity_status, value.activity),
   }
 }
 
@@ -387,6 +450,41 @@ export type SessionRow = {
     blockedText: string
     reviews: Array<{ decisionId: string | null; phase: string | null; outcome: string | null }>
   }
+  /** The activity pane: the retained emitted events of this execution (see EventLog). */
+  events: EventLog
+}
+export type EventEntry = {
+  /** Unique within the row (position in retention order). */
+  key: string
+  /** The receipt ref as plain evidence text to copy, never a link; null when the ref itself was invalid. */
+  ref: string | null
+  refShort: string | null
+  state: Label & { raw: WireActivityEntry["state"] }
+  /** Korean reason of a failed entry; null when readable. */
+  error: string | null
+  event: Label & { raw: string | null }
+  /** A built-in tool name only (tool starts); a Claude tool completion never carries one. */
+  tool: string | null
+  item: string | null
+  outcome: Label | null
+  occurredAt: string | null
+  /** "발생 시각 기록 없음" when the event carries no time (Claude events never do). */
+  occurredText: string
+  /** Only the last record carries these (the executor assigns them per execution, not per event). */
+  sequence: number | null
+  collectedAt: string | null
+  isLastRecord: boolean
+}
+export type EventLog = {
+  /** false: the collector predates the activity pane; `status` then says so and `entries` is empty. */
+  collected: boolean
+  status: Label & { raw: string | null }
+  /** Retention order, oldest first (a log, not a feed). */
+  entries: EventEntry[]
+  /** Why the list is empty or has unreadable entries; null when every retained entry was read. */
+  gapText: string | null
+  /** Always shown with the pane. */
+  notices: { log: string; retention: string; qualification: string }
 }
 export type LaneView =
   | { id: string; team: string; status: "unavailable"; statusLabel: Label; error: string | null; observedAt: string | null }
@@ -394,10 +492,65 @@ export type LaneView =
       truncated: boolean; counts: Array<{ key: string; label: string; count: number }>; rows: SessionRow[] }
 /**
  * Every lane execution is a headless provider run (`claude -p` stream-json or `codex exec`): there is no
- * interactive terminal or desktop screen to show. The emitted-event activity pane is a later slice (S2);
+ * interactive terminal or desktop screen to show. The activity pane is the emitted-event log (S2a);
  * browser screenshots exist only for Zeus-owned test sessions and are not part of this source.
  */
-export const SCREEN_NOTICE = "CLI 전용 실행 · 대화형 터미널·화면 없음 (headless). 방출 이벤트 활동 창은 이후 단계에서 제공되며, 브라우저 화면은 Zeus 소유 테스트 세션에만 해당합니다."
+export const SCREEN_NOTICE = "CLI 전용 실행 · 대화형 터미널·화면 없음 (headless). 활동 창은 방출 이벤트 로그이며, 브라우저 화면은 Zeus 소유 테스트 세션에만 해당합니다."
+
+/** The pane's fixed notices (FLEET-S2-SPEC §6 and its D1 correction); shown whenever the pane is. */
+export const EVENT_LOG_NOTICES = {
+  log: "방출 이벤트 로그 · 터미널/화면 아님",
+  retention: "최근 6개 이벤트만 보관 (executor retention)",
+  qualification: "진행 기록으로 보관된 이벤트만 표시 · 시작/메시지 이벤트는 없을 수 있음",
+} as const
+
+const ACTIVITY_STATUS: Record<string, Label> = {
+  ok: { label: "보관 이벤트", tone: "neutral", note: "보관된 진행 이벤트를 읽음 · 진행이나 수락의 증거는 아님" },
+  empty: { label: "보관 이벤트 없음", tone: "neutral", note: "이 실행에 보관된 진행 이벤트가 없음" },
+  not_selected: { label: "표시 대상 아님", tone: "neutral",
+    note: "실행 중이 아니고 최근 종료 창(기본 10분) 밖이거나 상태를 알 수 없는 실행은 이벤트를 읽지 않음" },
+  lineage_unconfirmed: { label: "계보 불일치", tone: "warning", note: "진행 기록의 세대·시도가 이 실행과 달라 표시하지 않음" },
+  malformed_not_in_recent: { label: "형식 오류 이벤트만 있음", tone: "warning",
+    note: "보관 목록이 비어 있고 형식 오류 이벤트만 기록됨 · 그 내용은 읽지 않음" },
+  unavailable: { label: "확인 불가", tone: "error", note: "보관 이벤트를 읽지 못함 · 비어 있다는 뜻이 아님" },
+}
+const ENTRY_STATE: Record<WireActivityEntry["state"], Label> = {
+  ok: { label: "기록됨", tone: "neutral", note: "영수증을 읽고 허용 목록만 표시" },
+  unavailable: { label: "확인 불가", tone: "unknown", note: "영수증에 닿지 못함 · 없다는 뜻이 아님" },
+  unreadable: { label: "읽을 수 없음", tone: "error", note: "영수증을 안전하게 읽지 못함" },
+  malformed: { label: "형식 오류", tone: "warning", note: "기록된 이벤트의 형식이 계약과 다름 · 내용은 표시하지 않음" },
+}
+const ENTRY_ERROR: Record<string, string> = {
+  missing_artifact: "영수증 파일 없음", runtime_unavailable: "레인 런타임 저장소 없음", invalid_ref: "잘못된 참조",
+  foreign_ref: "이 실행에 속하지 않는 참조", too_large: "크기 한도 초과 (64 KiB)", integrity_failure: "무결성 불일치",
+  invalid_json: "JSON 해석 불가", invalid_shape: "형식 불일치", io_error: "읽기 오류",
+}
+const EVENT_LABEL: Record<string, Label> = {
+  tool_started: { label: "도구 시작", tone: "neutral", note: "Claude 도구 호출 시작" },
+  tool_completed: { label: "도구 완료", tone: "neutral", note: "Claude 도구 호출 완료 · 도구 이름은 기록되지 않음" },
+  session_started: { label: "세션 시작", tone: "neutral", note: "Claude 세션 시작" },
+  permission_denied: { label: "권한 거부", tone: "warning", note: "도구 사용 권한이 거부됨" },
+  message: { label: "메시지", tone: "neutral", note: "메시지 이벤트 · 내용은 표시하지 않음" },
+  result: { label: "실행 결과", tone: "neutral", note: "Claude 실행의 최종 결과 이벤트" },
+  item_completed: { label: "항목 완료", tone: "neutral", note: "Codex 항목 완료" },
+  token_usage_updated: { label: "토큰 사용량 갱신", tone: "neutral", note: "Codex 사용량 갱신 이벤트 · 값은 표시하지 않음" },
+  unknown: { label: "알 수 없는 이벤트", tone: "unknown", note: "허용 목록 밖의 이벤트 종류 · 이름은 표시하지 않음" },
+  malformed: { label: "형식 오류", tone: "warning", note: "이벤트를 해석하지 못함" },
+}
+const ITEM_TYPE: Record<string, string> = {
+  commandExecution: "명령 실행", fileChange: "파일 변경", mcpToolCall: "MCP 도구 호출", agentMessage: "에이전트 메시지",
+  reasoning: "추론 항목 (내용 없음)", unknown: "알 수 없는 항목",
+}
+const EVENT_STATUS: Record<string, Label> = {
+  started: { label: "시작", tone: "neutral", note: "" },
+  completed: { label: "완료", tone: "success", note: "이벤트가 완료로 기록됨 · 작업 수락과 다름" },
+  failed: { label: "실패", tone: "error", note: "이벤트가 실패로 기록됨" },
+  denied: { label: "거부", tone: "warning", note: "권한 거부" },
+  emitted: { label: "방출", tone: "neutral", note: "" },
+  success: { label: "성공", tone: "success", note: "실행 결과가 성공으로 기록됨 · 검토 수락과 다름" },
+  error: { label: "오류", tone: "error", note: "실행 결과가 오류로 기록됨" },
+  unknown: { label: "알 수 없음", tone: "unknown", note: "허용 목록 밖의 상태 값" },
+}
 
 /**
  * The fixed coverage boundary in Korean. The collector's `coverage.uninstrumented` statements stay verbatim
@@ -467,6 +620,45 @@ const LANE_STATUS: Record<"ok" | "unavailable", Label> = {
 
 function shortId(id: string): string {
   return id.length > 16 ? `${id.slice(0, 8)}…${id.slice(-4)}` : id
+}
+
+function eventEntry(entry: WireActivityEntry, index: number, now: number): EventEntry {
+  const occurred = age(entry.occurred_at, now)
+  return {
+    key: String(index),
+    ref: entry.receipt_ref,
+    refShort: entry.receipt_ref === null ? null : `${entry.receipt_ref.slice(0, 15)}…${entry.receipt_ref.slice(-4)}`,
+    state: { ...ENTRY_STATE[entry.state], raw: entry.state },
+    error: entry.error_type === null ? null : ENTRY_ERROR[entry.error_type] ?? `${entry.error_type} (정의되지 않은 사유)`,
+    event: entry.event_label === null
+      ? { label: entry.state === "ok" ? "기록 없음" : "읽지 못함", tone: "unknown", note: "이벤트 종류를 알 수 없음", raw: null }
+      : { ...lookup(EVENT_LABEL, entry.event_label), raw: entry.event_label },
+    tool: entry.tool_name,
+    item: entry.item_type === null ? null : ITEM_TYPE[entry.item_type] ?? `${entry.item_type} (정의되지 않은 항목)`,
+    outcome: entry.status === null ? null : lookup(EVENT_STATUS, entry.status),
+    occurredAt: entry.occurred_at,
+    occurredText: entry.occurred_at === null ? "발생 시각 기록 없음"
+      : occurred === null ? "발생 시각 해석 불가" : `${formatDuration(occurred)} 전 발생`,
+    sequence: entry.sequence,
+    collectedAt: entry.collected_at,
+    isLastRecord: entry.sequence !== null || entry.collected_at !== null,
+  }
+}
+
+function eventLog(wire: WireExecution, now: number): EventLog {
+  if (wire.activity_status === null || wire.activity === null) {
+    return { collected: false, status: { label: "수집 안 함", tone: "unknown", raw: null,
+      note: "이 수집기는 활동 이벤트를 수집하지 않음 (이전 버전) · 비어 있다는 뜻이 아님" },
+      entries: [], gapText: "이 수집기는 활동 이벤트를 수집하지 않음 (이전 버전)", notices: EVENT_LOG_NOTICES }
+  }
+  const entries = wire.activity.map((entry, index) => eventEntry(entry, index, now))
+  const status = { ...lookup(ACTIVITY_STATUS, wire.activity_status), raw: wire.activity_status }
+  const failed = entries.filter((entry) => entry.state.raw !== "ok").length
+  return {
+    collected: true, status, entries, notices: EVENT_LOG_NOTICES,
+    gapText: entries.length === 0 ? status.note
+      : failed > 0 ? `${entries.length}개 중 ${failed}개 항목을 읽지 못함 · 항목마다 사유 표시` : null,
+  }
 }
 
 function row(lane: string, wire: WireExecution, now: number): SessionRow {
@@ -560,6 +752,7 @@ function row(lane: string, wire: WireExecution, now: number): SessionRow {
         : wire.worker_session.blocked === false ? "차단 아님" : "기록 없음",
       reviews: wire.worker_session.reviews.map((review) => ({ decisionId: review.decision_id, phase: review.phase, outcome: review.outcome })),
     },
+    events: eventLog(wire, now),
   }
 }
 
