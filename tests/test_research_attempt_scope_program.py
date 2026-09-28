@@ -10,6 +10,7 @@ A passing fixture proves a transition contract, never a live research outcome.""
 import hashlib
 import json
 import threading
+from types import SimpleNamespace
 
 import pytest
 from test_research_program import POLICY, Clock, build, registered
@@ -838,6 +839,273 @@ def test_no_recovery_version_successor_or_followup_may_name_a_scope_and_nothing_
     fresh = collect(third, "rp-003")
     assert fresh["candidate"] is None and fresh["cycle"]["attempt_scope"]["counts"]["overlap"] == 1
     assert [d["id"] for d in scan(store, BUCKET_DISPATCHES)] == [SCOPE]
+
+
+# ----- U2B-10 / U2B-11: reverse exclusion at AUTHORIZATION, not only at the claim ----------------------------------
+# Each world is an existing, otherwise valid legacy authorization fixture of test_research_recovery (recovery v1 and
+# v2, successor v3 and v4) or test_continuation_research (the accepted-report follow-up): REAL store transactions,
+# state machine, Portfolio reconciler and CouncilRun; LABELLED councils, fixture role executors, transport proof,
+# artifact store and clock. The stored scope claims are LABELLED synthetic rows. No executor transport is driven.
+SCOPE_STATES = [("claimed", None), ("dispatched", None), ("resolved", "accepted"), ("resolved", "rejected"),
+                ("resolved", "failed"), ("resolved", "unknown")]
+RECOVERY_CAUSE = ("failed", "store_timeout")
+DISJOINT = ["x-held", "x-other"]    # LABELLED scope members that are in no family
+
+
+@pytest.fixture
+def inert_executor(monkeypatch):
+    """Belt and braces: none of these worlds drives the executor, and neither executor transport could start."""
+    from codex_harness.adapters import executor
+
+    def never(*args, **kwargs):
+        raise AssertionError("an executor transport was started")
+    monkeypatch.setattr(executor, "AppServer", never)
+    monkeypatch.setattr(executor, "ClaudeCodeRuntime", never)
+
+
+class EvidenceSpy:
+    """LABELLED wrapper of the executor artifact store: records every execution artifact read."""
+
+    def __init__(self, inner):
+        self.inner, self.calls = inner, []
+
+    def document(self, ref):
+        self.calls.append(ref)
+        return self.inner.document(ref)
+
+
+class CommitsFirst:
+    """LABELLED interleaving: the first port read (transport probe or artifact load, both outside any transaction)
+    commits a concurrent scope claim, after the read step and before the writing transaction."""
+
+    def __init__(self, inner, commit):
+        self.inner, self.commit, self.calls = inner, commit, []
+
+    def _read(self):
+        self.calls.append(True)
+        if len(self.calls) == 1:
+            self.commit()
+
+    def inspect(self, recipient, message_id):
+        self._read()
+        return self.inner.inspect(recipient, message_id)
+
+    def document(self, ref):
+        self._read()
+        return self.inner.document(ref)
+
+
+def scope_claim(key, ids, cause, state="resolved", result="failed"):
+    """A LABELLED stored attempt-scope claim of `cause` holding `ids`; whatever its state it is never released."""
+    listed = isinstance(ids, list)
+    ids = sorted(ids, key=str) if listed else ids
+    return {"schema": "urn:zeus:research-investigation-dispatch:1", "id": key, "investigation": key,
+            "kind": "attempt_scope", "program": "rp-scope", "cycle": "rp-scope:001", "cycle_number": 1,
+            "state": state, "family_status": cause[0], "reason_code": cause[1], "job_ids": ids,
+            "job_ids_total": len(ids) if listed else None, "job_ids_sha256": digest(ids) if listed else None,
+            "result": result, "claimed_at": T0, "updated_at": T0}
+
+
+def later_member(store, job_id="j-5"):
+    """A LABELLED later same-cause Fleet job that the REAL Portfolio binds and reconciles into the family AFTER its
+    dispatch was captured: the captured history is unchanged, the family's CURRENT scoped membership grew."""
+    from test_research_investigations import DEFINITIONS
+
+    from codex_harness.application.portfolio import Portfolio
+    with store.transaction() as tx:
+        tx.put("fleet_jobs", job_id, {"id": job_id, "lane": "lane-1", "status": RECOVERY_CAUSE[0],
+                                      "reason_code": RECOVERY_CAUSE[1], "error_type": None, "updated_at": T0})
+    owner = Portfolio(store, DEFINITIONS, clock=lambda: T0)
+    owner.bind(job_id, "ops", "c1")
+    owner.reconcile()
+    return job_id
+
+
+def _v1_transport(tmp_path):
+    from test_research_recovery import FakeTransport, failed_world, replacement, request
+    env, _ = failed_world(tmp_path)
+    _, sha = replacement(env)
+    return SimpleNamespace(store=env.store, clock=env.clock, document=request(env, sha), member=later_member(env.store),
+                           cause=RECOVERY_CAUSE, field="investigation", ports=lambda: (FakeTransport(), None))
+
+
+def _v2_revocation(tmp_path):
+    from test_research_recovery import legacy_world, replacement, revocation
+    env, _ = legacy_world(tmp_path)
+    _, sha = replacement(env)
+    return SimpleNamespace(store=env.store, clock=env.clock, document=revocation(env, sha),
+                           member=later_member(env.store), cause=RECOVERY_CAUSE, field="investigation",
+                           ports=lambda: (None, None))
+
+
+def _v3_successor(tmp_path):
+    from test_research_recovery import (
+        FakeTransport,
+        read_only_world,
+        replacement,
+        successor_request,
+    )
+    env, council, _ = read_only_world(tmp_path)
+    _, sha = replacement(env, "rp-003")
+    return SimpleNamespace(store=env.store, clock=env.clock, document=successor_request(env, sha),
+                           member=later_member(env.store), cause=RECOVERY_CAUSE, field="investigation",
+                           ports=lambda: (FakeTransport(error=AssertionError("never read")),
+                                          EvidenceSpy(council.artifacts)))
+
+
+def _v4_contract(tmp_path):
+    from test_research_recovery import FakeTransport, contract_request, initial_world, replacement
+    env, council = initial_world(tmp_path)
+    _, sha = replacement(env)
+    return SimpleNamespace(store=env.store, clock=env.clock, document=contract_request(env, sha),
+                           member=later_member(env.store), cause=RECOVERY_CAUSE, field="investigation",
+                           ports=lambda: (FakeTransport(error=AssertionError("never read")),
+                                          EvidenceSpy(council.artifacts)))
+
+
+def _followup(tmp_path):
+    from test_continuation import World
+    from test_continuation_research import accepted_report, followup_program, followup_request
+    world = World(tmp_path)
+    env, owner, _, successor, _, _, dispatch = accepted_report(world, tmp_path)
+    sha = followup_program(env)
+    owner.bind(successor, "ops", "c1")   # the newly observed member the follow-up pins
+    return SimpleNamespace(store=world.control, clock=env.clock,
+                           document=followup_request(world, dispatch, [*dispatch["job_ids"], successor], sha),
+                           member=successor, cause=("failed", "evidence_gate_refused"), field="members.job_ids",
+                           ports=lambda: (None, None))
+
+
+AUTHORIZATIONS = {"v1_transport": _v1_transport, "v2_revocation": _v2_revocation, "v3_successor": _v3_successor,
+                  "v4_contract": _v4_contract, "followup": _followup}
+
+
+def authorize(world, store=None, ports=None):
+    transport, evidence = ports or world.ports()
+    return ResearchProgram(store or world.store, clock=world.clock).recover_dispatch(world.document, transport, evidence)
+
+
+def copy_store(store) -> MemoryStore:
+    copy = MemoryStore()
+    rows = records(store)
+    with copy.transaction() as tx:
+        for row in rows:
+            tx.put(row["bucket"], row["id"], row["body"])
+    return copy
+
+
+@pytest.mark.parametrize("kind", sorted(AUTHORIZATIONS))
+def test_an_authorization_whose_claim_would_take_a_scope_held_job_refuses_in_every_state_with_zero_writes(
+        kind, tmp_path, inert_executor):
+    """Recovery v1-v4 and successor over the family's CURRENT scoped membership (which the replacement recaptures),
+    and the follow-up over its pinned members: a scope claim holding one member refuses the authorization
+    `investigation_scope_overlap` before any fence, quarantine, lineage row or head, in every scope state."""
+    world = AUTHORIZATIONS[kind](tmp_path)
+    key = attempt_scope_id(hexid("held-" + kind))
+    for state, result in SCOPE_STATES:
+        put(world.store, BUCKET_DISPATCHES, key, scope_claim(key, [world.member, "x-held"], world.cause, state, result))
+        before = records(world.store)
+        transport, evidence = world.ports()
+        error = refused(authorize, world, ports=(transport, evidence))
+        assert (error.reason_code, error.field) == ("investigation_scope_overlap", world.field), (state, result)
+        assert records(world.store) == before, (state, result, "zero writes")
+        assert getattr(transport, "calls", []) == [] and getattr(evidence, "calls", []) == [], "no port was read"
+    # LABELLED fixture step (a stored scope claim is never released in production): with the claim's members made
+    # disjoint the SAME request authorizes, so the one intersecting member alone refused it.
+    put(world.store, BUCKET_DISPATCHES, key, scope_claim(key, DISJOINT, world.cause))
+    assert authorize(world)["state"] == "authorized"
+
+
+@pytest.mark.parametrize("scope", ["none", "disjoint"])
+@pytest.mark.parametrize("kind", sorted(AUTHORIZATIONS))
+def test_pin_without_an_intersecting_scope_claim_the_same_authorization_is_byte_identical(
+        kind, scope, tmp_path, monkeypatch, inert_executor):
+    """PIN (U2B-10 K): with no scope claim, or a disjoint complete one of the same cause, every authorization is
+    exactly what it is without the guard: the same result and the same store bytes."""
+    world = AUTHORIZATIONS[kind](tmp_path)
+    if scope == "disjoint":
+        key = attempt_scope_id(hexid("disjoint-" + kind))
+        put(world.store, BUCKET_DISPATCHES, key, scope_claim(key, DISJOINT, world.cause))
+    # LABELLED fixed wall clock of the outbox quarantine and the task fence, so two stores compare byte for byte.
+    monkeypatch.setattr("codex_harness.application.outbox.utcnow", lambda: T0)
+    monkeypatch.setattr("codex_harness.application.execution_fence.utcnow", lambda: T0)
+    legacy = copy_store(world.store)
+    result = authorize(world)
+    # LABELLED: the same request on an identical copy with the authorization guard removed.
+    monkeypatch.setattr(application.ResearchProgram, "_refuse_scope_overlap", lambda self, tx, request: None,
+                        raising=False)
+    assert authorize(world, legacy) == result and result["state"] == "authorized"
+    assert records(world.store) == records(legacy)
+
+
+@pytest.mark.parametrize("kind", ["v1_transport", "v3_successor", "v4_contract"])
+def test_a_scope_claim_committed_during_the_port_read_is_refused_by_the_writing_transaction(
+        kind, tmp_path, inert_executor):
+    """The guard is re-read in the transaction that writes: a claim committed while the transport or the execution
+    artifacts are read (outside any transaction) still refuses, and no authorization, successor or head is
+    written. A v1 row fenced before the claim existed stays fenced, never authorized."""
+    world = AUTHORIZATIONS[kind](tmp_path)
+    key = attempt_scope_id(hexid("race-" + kind))
+    transport, evidence = world.ports()
+
+    def commit():
+        put(world.store, BUCKET_DISPATCHES, key, scope_claim(key, [world.member, "x-held"], world.cause))
+    if kind == "v1_transport":
+        transport = CommitsFirst(transport, commit)
+    else:
+        evidence = CommitsFirst(evidence, commit)
+
+    def lineage():
+        return {bucket: scan(world.store, bucket) for bucket in (BUCKET_RECOVERIES, BUCKET_SUCCESSORS, BUCKET_HEADS)}
+    before = lineage()
+    error = refused(authorize, world, ports=(transport, evidence))
+    assert (error.reason_code, error.field) == ("investigation_scope_overlap", "investigation")
+    assert get(world.store, BUCKET_DISPATCHES, key) is not None, "the interleaved claim did commit"
+    after = lineage()
+    if kind == "v1_transport":
+        assert before[BUCKET_RECOVERIES] == [] and [r["state"] for r in after[BUCKET_RECOVERIES]] == ["fenced"]
+        assert after[BUCKET_SUCCESSORS] == before[BUCKET_SUCCESSORS] and after[BUCKET_HEADS] == before[BUCKET_HEADS]
+    else:
+        assert after == before, "no successor row and no head"
+
+
+# ----- a scope claim whose job ids cannot be read holds its whole cause (the owner layer's rule, mirrored) --------
+@pytest.mark.parametrize("ids", [None, "hist-01", [""], [None]], ids=["null", "string", "empty_id", "null_id"])
+def test_a_scope_claim_whose_members_cannot_be_read_holds_every_family_of_its_cause(ids, monkeypatch):
+    store = MemoryStore()
+    reverse_world(store)
+    other = family_id("rejected", "review_rejected")
+    with store.transaction() as tx:
+        for member in ("r-1", "r-2"):
+            job(tx, member, "ops", status="rejected", reason="review_rejected")
+        tx.put("portfolio_investigations", other, {"id": other, "kind": "failure_family", "state": "research_required",
+                                                   "family_status": "rejected", "reason_code": "review_rejected",
+                                                   "job_ids": ["r-1", "r-2"], "count": 2})
+    key = attempt_scope_id(hexid("unreadable"))
+    put(store, BUCKET_DISPATCHES, key, scope_claim(key, ids, (STATUS, REASON)))
+    family = family_program(store)
+    recorded = collect(family, "rp-fam")
+    assert recorded["cycle"]["investigations"]["counts"]["claimed"] == 1, "unknown membership never proves disjoint"
+    assert recorded["candidate"]["investigation"] == other, "another cause keeps its legacy eligibility"
+    # LABELLED injected fault: the pre-filter forgets the scope; the claim defence still refuses the family whole.
+    monkeypatch.setattr(application.ResearchProgram, "_scope_held_families", staticmethod(lambda *a: set()))
+    second = family_program(store, program_id="rp-fam2")
+    reserved = second.reserve_cycle("rp-fam2", "repo-1")
+    before = records(store)
+    error = refused(second.record_collection, reserved["cycle"]["id"], reserved["cycle"]["owner"], {}, [], COUNTS)
+    assert error.reason_code == "investigation_scope_overlap" and records(store) == before
+
+
+def test_an_unreadable_same_cause_scope_claim_refuses_a_recovery_authorization_with_zero_writes(
+        tmp_path, inert_executor):
+    world = _v1_transport(tmp_path)
+    key = attempt_scope_id(hexid("unreadable-recovery"))
+    put(world.store, BUCKET_DISPATCHES, key, scope_claim(key, None, world.cause))
+    before = records(world.store)
+    transport, evidence = world.ports()
+    error = refused(authorize, world, ports=(transport, evidence))
+    assert (error.reason_code, error.field) == ("investigation_scope_overlap", "investigation")
+    assert records(world.store) == before and transport.calls == []
 
 
 # ----- U2B-8: concurrent claims (memory, and real isolated PostgreSQL when HARNESS_INTEGRATION=1) -------------------

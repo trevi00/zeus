@@ -49,7 +49,8 @@ intent's own identity `attempt-scope.<intent id>`, never a Portfolio failure fam
 for the owner `research_dispatch` launch whose id is the cycle owner token (`attempt_scope_target`), and its
 collection selects only that exact target, revalidated in the same transaction, or nothing: no feed, local or
 other candidate consumes its adoption. Every stored scope claim permanently holds its member jobs against any
-family, recovery, successor or follow-up claim, and a scope claim itself has no recovery lineage at all.
+family, recovery, successor or follow-up claim, and against the authorization of any such recovery, successor
+or follow-up; a scope claim itself has no recovery lineage at all.
 """
 from __future__ import annotations
 
@@ -110,9 +111,9 @@ from codex_harness.domain.research_attempt_scope import SOURCE_NAME as SCOPE_SOU
 from codex_harness.domain.research_attempt_scope import candidate_identity as scope_candidate
 from codex_harness.domain.research_attempt_scope import (
     eligible_attempt_scopes,
-    held_jobs,
     reservations,
     scope_claimed,
+    scope_holdings,
     scope_rivals,
     scope_snapshot,
 )
@@ -228,6 +229,8 @@ SCOPE_TARGET_UNAVAILABLE = "attempt_scope_target_unavailable"
 SCOPE_TARGET_INELIGIBLE, SCOPE_TARGET_AMBIGUOUS = "attempt_scope_target_ineligible", "attempt_scope_target_ambiguous"
 SCOPE_COMPETING = "attempt_scope_competing_program"
 SCOPE_FINAL = "attempt_scope_final"
+# A family claim, recovery, successor or follow-up that would take a scope-held job (reverse exclusion).
+SCOPE_OVERLAP = "investigation_scope_overlap"
 
 
 class ResearchProgram:
@@ -693,13 +696,14 @@ class ResearchProgram:
     @staticmethod
     def _scope_held_families(dispatches, investigations, jobs, bindings, source: dict) -> set:
         """Failure families this program may NOT claim because a stored attempt-scope claim, in ANY state, holds
-        one of their scoped jobs, or because their capture would be a truncated sample of a cause a scope claim
-        holds (disjointness unprovable at the claim). Empty while no scope claim exists: legacy is unchanged."""
-        held = held_jobs(dispatches)
-        if not held:
+        one of their scoped jobs, because they share the cause of a scope claim whose job ids cannot be read
+        (unknown membership never proves disjointness: the owner layer's `_scope_held_families` rule), or because
+        their capture would be a truncated sample of a cause a scope claim holds (disjointness unprovable at the
+        claim). Empty while no scope claim exists: legacy is unchanged."""
+        holdings = scope_holdings(dispatches)
+        if not holdings["causes"]:
             return set()
-        causes = {(d.get("family_status"), d.get("reason_code")) for d in dispatches
-                  if isinstance(d, dict) and d.get("kind") == ATTEMPT_SCOPE}
+        held = holdings["held"]
         job_rows = {j["id"]: j for j in jobs if isinstance(j, dict) and type(j.get("id")) is str}
         binding_rows = {b["job_id"]: b for b in bindings if isinstance(b, dict) and type(b.get("job_id")) is str}
         blocked = set()
@@ -707,11 +711,43 @@ class ResearchProgram:
             if not (isinstance(family, dict) and family.get("kind", FAMILY_KIND) == FAMILY_KIND
                     and type(family.get("id")) is str):
                 continue    # another kind, or malformed: the family rule counts it
+            cause = (family.get("family_status"), family.get("reason_code"))
+            if cause in holdings["unreadable"]:
+                blocked.add(family["id"])
+                continue
             scoped = scoped_job_ids(family, job_rows, binding_rows, set(source["project_ids"]))
-            if scoped is not None and (set(scoped) & held or (len(scoped) > MAX_JOB_SAMPLE and (
-                    family.get("family_status"), family.get("reason_code")) in causes)):
+            if scoped is not None and (set(scoped) & held or (len(scoped) > MAX_JOB_SAMPLE
+                                                              and cause in holdings["causes"])):
                 blocked.add(family["id"])
         return blocked
+
+    def _refuse_scope_overlap(self, tx, request: dict) -> None:
+        """INV-RESEARCH-ATTEMPT-SCOPE-001 reverse exclusion at AUTHORIZATION, not only at the claim: a family
+        recovery (any version), successor or follow-up is refused `investigation_scope_overlap` in the transaction
+        that would write it and before any write, so no lineage row, fence, quarantine or head names a claim that
+        could never be made. Refused when a stored scope claim, in ANY state, holds a pinned follow-up member, or
+        when `_scope_held_families` holds the family over the CURRENT scoped membership a recovery or successor
+        would recapture (under the project authority of the failed or predecessor program and the replacement).
+        With no scope claim stored nothing more is read and the legacy authorization is byte-identical."""
+        rows = tx.scan(BUCKET_DISPATCHES)
+        holdings = scope_holdings(rows)
+        if not holdings["causes"]:
+            return
+        pinned = (request.get("members") or {}).get("job_ids")
+        if isinstance(pinned, list) and set(pinned) & holdings["held"]:
+            raise ProgramRefused(SCOPE_OVERLAP, "members.job_ids")
+        names = {(request.get("failed") or request.get("predecessor") or {}).get("program"),
+                 (request.get("replacement") or {}).get("program")}
+        projects = set()
+        for name in sorted(n for n in names if type(n) is str):
+            program = tx.get(BUCKET_PROGRAMS, name)
+            source = ((program.get("config") or {}) if isinstance(program, dict) else {}).get("investigation_source")
+            if isinstance(source, dict):
+                projects |= set(source.get("project_ids") or [])
+        family = tx.get(BUCKET_INVESTIGATIONS, request["investigation"])
+        if self._scope_held_families(rows, [family], tx.scan(BUCKET_JOBS), tx.scan(BUCKET_BINDINGS),
+                                     {"project_ids": sorted(projects)}):
+            raise ProgramRefused(SCOPE_OVERLAP, "investigation")
 
     @staticmethod
     def _require_scope_disjoint(tx, document: dict, scoped: bool) -> None:
@@ -720,8 +756,9 @@ class ResearchProgram:
         A scope claim re-checks the forward direction: no lifecycle row may name the scope and no member may be
         reserved by any dispatch capture or pinned successor, nor sit in an unverifiable cause
         (`attempt_scope_overlap`). Any other claim (family original, recovery replacement, successor, follow-up)
-        refuses `investigation_scope_overlap` when its snapshot holds a scope-held job, or is a truncated sample
-        of a cause a scope claim holds. A kind without job membership, or a store without scope claims, passes."""
+        refuses `investigation_scope_overlap` when its snapshot holds a scope-held job, shares the cause of a scope
+        claim whose job ids cannot be read, or is a truncated sample of a cause a scope claim holds. A kind
+        without job membership, or a store without scope claims, passes."""
         rows = tx.scan(BUCKET_DISPATCHES)
         ids = document.get("job_ids")
         cause = (document.get("family_status"), document.get("reason_code"))
@@ -737,14 +774,13 @@ class ResearchProgram:
                     or None in reserved["unverifiable"]):
                 raise ProgramRefused("attempt_scope_overlap")
             return
-        held = held_jobs(rows)
-        if not held or not isinstance(ids, list):
+        holdings = scope_holdings(rows)
+        if not holdings["causes"] or not isinstance(ids, list):
             return
         truncated = bool(document.get("job_ids_truncated")) or document.get("job_ids_total") != len(ids)
-        same_cause = any(isinstance(r, dict) and r.get("kind") == ATTEMPT_SCOPE
-                         and (r.get("family_status"), r.get("reason_code")) == cause for r in rows)
-        if set(ids) & held or (truncated and same_cause):
-            raise ProgramRefused("investigation_scope_overlap")
+        if (set(ids) & holdings["held"] or cause in holdings["unreadable"]
+                or (truncated and cause in holdings["causes"])):
+            raise ProgramRefused(SCOPE_OVERLAP)
 
     def _claim_investigation(self, tx, chosen: dict, cycle: dict, now: str) -> dict:
         """The durable cross-program claim, keyed solely by investigation id. A row that appeared in
@@ -850,7 +886,11 @@ class ResearchProgram:
         Nothing is deleted, no failed row becomes accepted and no model or council runs here.
 
         An explicit version-3 `settled_read_only_successor` request takes `_succeed_dispatch` with the
-        `evidence` port (the executor's artifact store) instead; it never reads a transport."""
+        `evidence` port (the executor's artifact store) instead; it never reads a transport.
+
+        Every mode refuses `investigation_scope_overlap` (`_refuse_scope_overlap`) inside each transaction that
+        would write, before its first write, when a stored attempt-scope claim holds a job the authorized claim
+        would take (INV-RESEARCH-ATTEMPT-SCOPE-001); with no scope claim stored the modes are unchanged."""
         if isinstance(document, dict) and document.get("schema") in {SUCCESSOR_SCHEMA, CONTRACT_SCHEMA}:
             return self._succeed_dispatch(document, evidence)
         if isinstance(document, dict) and document.get("schema") == FOLLOWUP_SCHEMA:
@@ -868,6 +908,7 @@ class ResearchProgram:
             row = self._recovery_row(tx, investigation, request_sha)
             if row is not None and row["state"] != FENCED:
                 return self._recovery_result(row, cached=True)
+            self._refuse_scope_overlap(tx, request)   # before the fence: nothing is quarantined or written
             proof = self._recovery_check(tx, request, None if row is None else row["fence"])
             if row is None:
                 now = self.clock()
@@ -901,6 +942,7 @@ class ResearchProgram:
             row = self._recovery_row(tx, investigation, request_sha)
             if row["state"] != FENCED:
                 return self._recovery_result(row, cached=True)   # a concurrent request finished first
+            self._refuse_scope_overlap(tx, request)   # a scope claimed since the fence: the row stays fenced
             self._recovery_check(tx, request, row["fence"])
             now = self.clock()
             if absent is not True:
@@ -932,6 +974,7 @@ class ResearchProgram:
             if row is not None:
                 self._require_revocation(tx, row)
                 return self._recovery_result(row, cached=True)
+            self._refuse_scope_overlap(tx, request)   # before the quarantine and the task fence
             proof = self._recovery_check(tx, request, None)
             task_id = proof["message_id"]
             if current_fence(tx, REVOCATION_BUCKET, task_id) is not None:
@@ -990,6 +1033,7 @@ class ResearchProgram:
             row = tx.get(BUCKET_SUCCESSORS, key)
             if row is not None:
                 return self._successor_replay(tx, row, request_sha)
+            self._refuse_scope_overlap(tx, request)   # before any artifact read
             refs = sorted({(t.get("result") or {}).get("execution_ref") for t in self._run_tasks(tx, old["run_id"])
                            if isinstance(t.get("result"), dict) and type(t["result"].get("execution_ref")) is str})
         if evidence is None:
@@ -999,6 +1043,7 @@ class ResearchProgram:
             row = tx.get(BUCKET_SUCCESSORS, key)
             if row is not None:
                 return self._successor_replay(tx, row, request_sha)   # a concurrent request finished first
+            self._refuse_scope_overlap(tx, request)   # re-read in the writing transaction
             lineage = self._lineage(tx, investigation)
             if lineage["held"] is not None:
                 raise ProgramRefused(lineage["held"], "predecessor")
@@ -1118,6 +1163,7 @@ class ResearchProgram:
             row = tx.get(BUCKET_SUCCESSORS, key)
             if row is not None:
                 return self._successor_replay(tx, row, request_sha)
+            self._refuse_scope_overlap(tx, request)   # its pinned members and its family, before the row and head
             lineage = self._lineage(tx, investigation)
             if lineage["held"] is not None:
                 raise ProgramRefused(lineage["held"], "predecessor")

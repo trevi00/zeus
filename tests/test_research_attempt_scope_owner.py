@@ -378,8 +378,8 @@ def _owner_policy(schema):
 
 
 def test_version1_and_version2_owner_policy_digests_are_unchanged():
-    """U2B-12 pin: goldens computed from the anchor's (96d15cf) own domain module; the scope capability
-    adds no owner-policy field, so a registered v1/v2 policy keeps its digest."""
+    """U2B-12 pin: goldens computed from base main d71febf's own domain module (identical at 96d15cf); the scope
+    capability adds no owner-policy field, so a registered v1/v2 policy keeps its digest."""
     assert do.policy_digest(do.validate_policy(_owner_policy(do.POLICY_SCHEMA))) \
         == "84d7ff081aff643755738942434a20b355c8b79187aa90115946579710f9d270"
     assert do.policy_digest(do.validate_policy(_owner_policy(do.POLICY_SCHEMA_V2))) \

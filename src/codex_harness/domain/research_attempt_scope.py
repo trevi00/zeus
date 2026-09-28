@@ -43,6 +43,9 @@ CANDIDATE_PREFIX = "as-"
 EXCLUSIONS = ("malformed", "state", "policy", "family", "receipted", "insufficient_attempts", "attempt_unavailable",
               "mixed", "reason_code", "project", "family_state", "claimed", "overlap", "overlap_unverifiable")
 AUTHORIZED = "authorized"
+# The recovery lineage states (`research_investigations`) of a family recovery that is not yet claimed: authorized,
+# or fenced mid-authorization (its outbox assignment already quarantined, the transport proof still pending).
+PENDING_RECOVERY = frozenset({"fenced", AUTHORIZED})
 TERMINAL_PROGRAMS = frozenset({"completed", "blocked"})
 TRUST = ("the COMPLETE failed attempt set one held research intent was raised on, captured exactly; a shared "
          "symptom is a hypothesis, never a cause, an incident resolution or an approved repair")
@@ -120,7 +123,8 @@ def _members(row):
 
 def reservations(*, dispatches, successors, recoveries=(), families=()) -> dict:
     """Job membership that is already reserved by a claim, forward direction: every dispatch capture in ANY
-    state and kind, plus the pinned members of every authorized, not yet claimed successor. Rows whose
+    state and kind, plus the pinned members of every authorized, not yet claimed successor; an authorized or
+    fenced recovery and a read-only successor make their own family's cause unverifiable. Rows whose
     membership cannot be proven complete are returned by cause (family status, reason) as `unverifiable`;
     a kind without job membership (audit progress) reserves nothing and is never an invented conflict."""
     reserved, unverifiable = set(), set()
@@ -135,12 +139,13 @@ def reservations(*, dispatches, successors, recoveries=(), families=()) -> dict:
             unverifiable.add((row.get("family_status"), row.get("reason_code")))
         else:
             reserved |= members
-    # An authorized, not yet claimed family recovery will recapture its family's CURRENT members when claimed:
-    # that future membership is unknown now, so its cause is unverifiable (never assumed disjoint).
+    # An authorized OR fenced (mid-authorization), not yet claimed family recovery will recapture its family's
+    # CURRENT members when claimed: that future membership is unknown now, so its cause is unverifiable (never
+    # assumed disjoint). A fenced row may still become authorized, so it reserves exactly like an authorized one.
     causes = {row.get("id"): (row.get("family_status"), row.get("reason_code")) for row in families
               if isinstance(row, dict)}
     for row in recoveries:
-        if isinstance(row, dict) and row.get("state") == AUTHORIZED:
+        if isinstance(row, dict) and row.get("state") in PENDING_RECOVERY:
             unverifiable.add(causes.get(row.get("investigation")))
     for row in successors:
         if not isinstance(row, dict) or row.get("state") != AUTHORIZED:
@@ -159,14 +164,36 @@ def reservations(*, dispatches, successors, recoveries=(), families=()) -> dict:
     return {"reserved": reserved, "unverifiable": unverifiable}
 
 
+def _readable(row: dict) -> bool:
+    """Whether a scope claim's job ids can be read: a list of non-empty strings (the owner layer's rule)."""
+    ids = row.get("job_ids")
+    return isinstance(ids, list) and all(type(job) is str and job for job in ids)
+
+
+def scope_holdings(dispatches) -> dict:
+    """The reverse-direction facts of every stored attempt-scope claim, in ANY state (claimed, dispatched,
+    resolved accepted/rejected/failed/unknown): `held` is the union of the members of every claim whose job ids
+    can be read; `unreadable` the (family status, reason) causes of claims whose job ids cannot, because unknown
+    membership never proves disjointness, so every family of such a cause is held; `causes` the cause of every
+    claim. All three are empty while no scope claim is stored, so the legacy rules read nothing new."""
+    held, unreadable, causes = set(), set(), set()
+    for row in dispatches:
+        if not (isinstance(row, dict) and row.get("kind") == KIND):
+            continue
+        cause = (row.get("family_status"), row.get("reason_code"))
+        causes.add(cause)
+        if _readable(row):
+            held |= set(row["job_ids"])
+        else:
+            unreadable.add(cause)
+    return {"held": held, "unreadable": unreadable, "causes": causes}
+
+
 def held_jobs(dispatches) -> set:
     """Every job any attempt-scope claim holds, in ANY state (resolved, rejected, failed and unknown included):
-    permanently excluded from family, recovery, successor and follow-up claims (risk 3, FLEET-U2B-SPEC §1)."""
-    held = set()
-    for row in dispatches:
-        if isinstance(row, dict) and row.get("kind") == KIND:
-            held |= set(row.get("job_ids") or [])
-    return held
+    permanently excluded from family, recovery, successor and follow-up claims (risk 3, FLEET-U2B-SPEC §1).
+    A claim whose job ids cannot be read contributes no job here; `scope_holdings` names its cause instead."""
+    return scope_holdings(dispatches)["held"]
 
 
 def scope_claimed(scope: str, *, dispatches, recoveries, heads, successors) -> bool:
@@ -325,5 +352,5 @@ def check_scope_capture(dispatch, *, intent_id: str, attempts: list) -> bool:
 
 __all__ = ["CANDIDATE_PREFIX", "EXCLUSIONS", "KIND", "SCOPE_FIELDS", "SCOPE_SCHEMA", "SNAPSHOT_SCHEMA", "SOURCE_NAME",
            "ScopeRefused", "candidate_identity", "check_scope_capture", "eligible_attempt_scopes", "held_jobs",
-           "reservations", "scope_claimed", "scope_document", "scope_rivals", "scope_snapshot",
+           "reservations", "scope_claimed", "scope_document", "scope_holdings", "scope_rivals", "scope_snapshot",
            "validate_scope_source"]

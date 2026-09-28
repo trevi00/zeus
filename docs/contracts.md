@@ -2147,8 +2147,8 @@ Attempt-scoped research (U2(b), FLEET-U2B-SPEC) is an explicit OPTIONAL program 
   - no dispatch, recovery, head or successor exists at the scope id (claimed forever);
   - no member is in any dispatch capture of any kind or state, or in an authorized unclaimed successor's pinned
     members (`overlap`);
-  - relevant membership that is truncated, malformed, or an authorized unclaimed same-cause recovery's future
-    capture refuses (`overlap_unverifiable`).
+  - relevant membership that is truncated, malformed, or the future capture of a fenced or authorized unclaimed
+    same-cause recovery (or an unpinned read-only successor) refuses (`overlap_unverifiable`).
 
   Exclusions are bounded counts: `malformed`, `state`, `policy`, `family`, `receipted`, `insufficient_attempts`,
   `attempt_unavailable`, `mixed`, `reason_code`, `project`, `family_state`, `claimed`, `overlap`,
@@ -2162,7 +2162,11 @@ Attempt-scoped research (U2(b), FLEET-U2B-SPEC) is an explicit OPTIONAL program 
   recovery, head or successor row keyed by or naming a family id.
 - **Permanent exclusion.** Every stored scope claim, in ANY state, permanently excludes its member jobs from
   family, recovery, successor and follow-up claims (`investigation_scope_overlap`, and `claimed` in eligibility).
-  Disjoint complete sets remain eligible under their existing rules.
+  It is enforced at AUTHORIZATION too. A v1-v4 recovery, successor or follow-up authorization is refused
+  `investigation_scope_overlap`, with zero writes and before any artifact read, when its pinned members or the
+  scoped membership it would recapture intersect a scope-held job. So no family lineage row or head is ever left
+  pointing at a dispatch that can never be claimed. A scope claim whose members cannot be read holds every family of
+  its cause. Disjoint complete sets remain eligible under their existing rules.
 - **Final failure.** A scoped failure, rejection or unknown result is final: there is no scoped recovery,
   replacement, successor, follow-up, counter reset or member release.
 - **Receipt.** Acceptance keeps the held-policy, evidence and inspection checks, and requires:
@@ -2174,6 +2178,12 @@ Attempt-scoped research (U2(b), FLEET-U2B-SPEC) is an explicit OPTIONAL program 
 
   A scope claim forbids a receipt naming any other identity for that intent (`research_scope_claimed`). Scope
   coverage is `original_capture` only; a mixed or supplementary receipt cannot cover a scope.
+- **Version skew (not safe by itself).** An older release refuses to register the source, and its receipt reader
+  refuses a scope receipt (it holds and never grants coverage). But an older RUNNER that reads a stored opted-in
+  program ignores the source and may select an ordinary candidate, consuming the adoption. The guarantees above
+  therefore hold only while every writer and consumer that can touch an opted-in program runs a release containing
+  this capability: owner-actions and its research child, the program runner and the continuation consumer. Rollout
+  must gate that before registration or resume; a rollback pauses and drains the scoped program first.
 - **Not authorized by this capability:** program registration, activation, a gate replacement or a
   qualification-criteria change.
 
