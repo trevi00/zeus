@@ -23,7 +23,6 @@ from codex_harness.domain.model import ContractError
 from codex_harness.domain.progress_activity import (
     BUILTIN_TOOLS,
     CODEX_ITEM_TYPES,
-    ActivityInvalid,
     fixed_completed_status,
     fixed_completed_type,
     fixed_last_event,
@@ -750,12 +749,14 @@ def _compact_activity(row, refs, reader):
             activity.append(_failed_entry(reference, 'activity_receipt', state, code))
             continue
         try:
-            document = validate_receipt(_strict_json(text))
+            parsed = _strict_json(text)
         except (ValueError, RecursionError):
             activity.append({**_failed_entry(reference, 'activity_receipt', 'unreadable', 'invalid_json'),
                              'event_label': 'malformed', 'malformed': True})
             continue
-        except ActivityInvalid:
+        try:  # ActivityInvalid is a ContractError (a ValueError), so it is caught apart from the JSON parse
+            document = validate_receipt(parsed)
+        except Exception:
             activity.append({**_failed_entry(reference, 'activity_receipt', 'malformed', 'invalid_shape'),
                              'event_label': 'malformed', 'malformed': True})
             continue
