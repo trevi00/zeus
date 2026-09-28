@@ -17,6 +17,7 @@ from codex_harness.adapters.commands import run_process
 from codex_harness.adapters.monitoring_observations import observation_facts
 from codex_harness.application.fleet import Fleet
 from codex_harness.application.monitoring import Monitoring
+from codex_harness.domain.council import TASK_STATUSES
 from codex_harness.domain.fleet import FleetRefused
 from codex_harness.domain.model import ContractError
 
@@ -493,6 +494,9 @@ def lane_resolver(host_dsn, store_factory=None):
 ACTIVITY_REFS = 6
 ACTIVITY_BODY_BYTES = 65_536
 RECENT_TERMINAL_SECONDS = 600
+# Only a KNOWN terminal execution status opens the completion window; an unknown, missing or new status is
+# `not_selected` with no read (FLEET-S2-SPEC §5).
+TERMINAL_EXECUTION = TASK_STATUSES - ACTIVE_EXECUTION
 ARTIFACT_REF = re.compile(r'^sha256:([0-9a-f]{64})$')
 CLAUDE_LABELS = frozenset({'tool_started', 'tool_completed', 'session_started', 'permission_denied', 'message',
                            'result'})
@@ -503,6 +507,12 @@ BUILTIN_TOOLS = frozenset({'Read', 'Glob', 'Grep', 'Bash', 'Edit', 'Write', 'Not
                            'WebSearch', 'StructuredOutput'})
 PLAIN_STATUSES = frozenset({'started', 'completed', 'failed', 'denied', 'emitted'})
 ENVELOPE_KEYS = frozenset({'event', 'malformed', 'defect', 'previous'})
+
+
+def _optional_strings(mapping, keys) -> bool:
+    """Every consulted field is a string or absent; anything else makes the receipt `invalid_shape` before any
+    vocabulary lookup, so a list or object can never raise out of one entry."""
+    return all(mapping.get(key) is None or isinstance(mapping.get(key), str) for key in keys)
 
 
 class ArtifactReader:
@@ -587,6 +597,8 @@ def project_receipt(text) -> dict:
     view = {'state': 'ok', 'error_type': None, 'event_label': 'unknown', 'tool_name': None, 'item_type': None,
             'status': None, 'occurred_at': None, 'malformed': False}
     if event.get('provider') == 'claude-code-cli':
+        if not _optional_strings(event, ('type', 'status', 'tool')):
+            return {**empty, 'state': 'malformed', 'error_type': 'invalid_shape'}
         kind, status = event.get('type'), event.get('status')
         if kind in CLAUDE_LABELS:
             view['event_label'] = kind
@@ -604,6 +616,8 @@ def project_receipt(text) -> dict:
         view['event_label'] = CODEX_LABELS.get(event['method'], 'unknown')
         params = event.get('params') if isinstance(event.get('params'), dict) else {}
         item = params.get('item') if isinstance(params.get('item'), dict) else None
+        if item is not None and not _optional_strings(item, ('type', 'status')):
+            return {**empty, 'state': 'malformed', 'error_type': 'invalid_shape'}
         if item is not None:
             view['item_type'] = item.get('type') if item.get('type') in CODEX_ITEM_TYPES else 'unknown'
             status = item.get('status')
@@ -626,11 +640,16 @@ def execution_activity(row, progress, reader, now, recent_terminal_seconds=RECEN
     (the last six); `last_record` annotates a member but never widens it, and `previous` links are never
     followed, so no other artifact can be read through this row. Sequence and collection time exist only for
     `last_record` (the executor assigns them to the row, not to each receipt)."""
-    if row.get('status') in ACTIVE_EXECUTION:
+    status = row.get('status')
+    if not isinstance(status, str):
+        selected = False
+    elif status in ACTIVE_EXECUTION:
         selected = True
-    else:
+    elif status in TERMINAL_EXECUTION:
         completed = _aware(row.get('completed_at'))
         selected = completed is not None and 0 <= (now - completed).total_seconds() <= recent_terminal_seconds
+    else:
+        selected = False
     if not selected:
         return 'not_selected', []
     if progress is None:
@@ -653,20 +672,29 @@ def execution_activity(row, progress, reader, now, recent_terminal_seconds=RECEN
     activity, seen = [], set()
     for reference in refs:
         valid = isinstance(reference, str) and ARTIFACT_REF.fullmatch(reference) is not None
-        if valid and reference in seen:
-            continue
-        seen.add(reference)
         if not valid:
             activity.append({'receipt_ref': None, 'state': 'unreadable', 'error_type': 'invalid_ref',
                              'event_label': None, 'tool_name': None, 'item_type': None, 'status': None,
                              'sequence': None, 'occurred_at': None, 'collected_at': None, 'malformed': None})
             continue
-        state, code, text = reader.read(reference)
+        if reference in seen:
+            continue
+        seen.add(reference)
+        # Each selected ref fails on its own with a fixed code; no exception text leaves this entry.
+        try:
+            state, code, text = reader.read(reference)
+        except Exception:
+            state, code, text = 'unreadable', 'io_error', None
         if state != 'ok':
             entry = {'state': state, 'error_type': code, 'event_label': None, 'tool_name': None, 'item_type': None,
                      'status': None, 'occurred_at': None, 'malformed': None}
         else:
-            entry = project_receipt(text)
+            try:
+                entry = project_receipt(text)
+            except Exception:
+                entry = {'state': 'malformed', 'error_type': 'invalid_shape', 'event_label': 'malformed',
+                         'tool_name': None, 'item_type': None, 'status': None, 'occurred_at': None,
+                         'malformed': True}
         is_last = reference == last and entry['state'] == 'ok'
         activity.append({'receipt_ref': reference, **entry,
                          'sequence': sequence if is_last and type(sequence) is int and sequence > 0 else None,
@@ -807,8 +835,12 @@ def lane_view(store, reader=None, now=None, recent_terminal_seconds=RECENT_TERMI
                    for row in rows[bucket]}
     moment = now or datetime.now(timezone.utc)
     for view in shown:
-        status, items = execution_activity(rows_by_key[(view['kind'], view['id'])], progress.get(view['id']),
-                                           reader, moment, recent_terminal_seconds)
+        # Activity is additive: a row it cannot project is `unavailable`, never a lost lane or session fact.
+        try:
+            status, items = execution_activity(rows_by_key[(view['kind'], view['id'])], progress.get(view['id']),
+                                               reader, moment, recent_terminal_seconds)
+        except Exception:
+            status, items = 'unavailable', []
         view['activity_status'], view['activity'] = status, items
     return {'executions': shown, 'total': len(executions),
             'truncated': len(executions) > LANE_SESSION_LIMIT,

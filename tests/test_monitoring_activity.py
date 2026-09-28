@@ -154,6 +154,49 @@ def test_malformed_only_progress_says_so_and_never_reads_the_malformed_ring(tmp_
     assert (status, items, reader.calls) == ('malformed_not_in_recent', [], [])
 
 
+@pytest.mark.parametrize('event', [
+    claude(['tool_started'], 'started'),
+    claude({'kind': CANARY}, 'completed'),
+    claude('tool_started', ['started']),
+    claude('result', {'status': CANARY}),
+    claude('tool_completed', 7),
+    claude('tool_started', 'started', tool=['Read']),
+    claude('tool_started', 'started', tool={'name': CANARY}),
+    codex('item/completed', {'id': 'x', 'type': ['commandExecution']}),
+    codex('item/completed', {'id': 'x', 'type': {'kind': CANARY}}),
+    codex('item/completed', {'id': 'x', 'type': 'fileChange', 'status': [CANARY]}),
+])
+def test_a_wrong_typed_consulted_field_is_invalid_shape_never_an_exception(event):
+    """FIXTURE receipts flagged `malformed: false` whose consulted fields are lists, objects or numbers."""
+    view = project_receipt(json.dumps(envelope(event)))
+    assert (view['state'], view['error_type'], view['malformed']) == ('malformed', 'invalid_shape', True)
+    assert CANARY not in json.dumps(view)
+
+
+def test_wrong_typed_refs_and_a_failing_read_stay_single_entries_beside_readable_ones(tmp_path):
+    root = tmp_path / 'artifacts'
+    good = store_receipt(root, envelope(claude('tool_completed', 'completed')))
+    bad_body = store_receipt(root, envelope(claude(['tool_started'], 'started')))
+    raising = store_receipt(root, envelope(claude('result', 'success')))
+
+    class Failing(Spy):
+        def read(self, reference):
+            if reference == raising:
+                self.calls.append(reference)
+                raise PermissionError(CANARY)
+            return super().read(reference)
+
+    reader = Failing(root)
+    status, items = execution_activity(row(), progress([['x'], bad_body, {'ref': good}, raising, None, good]),
+                                       reader, NOW)
+    assert status == 'ok' and reader.calls == [bad_body, raising, good], 'no file call for a non-string ref'
+    assert [(item['state'], item['error_type']) for item in items] == [
+        ('unreadable', 'invalid_ref'), ('malformed', 'invalid_shape'), ('unreadable', 'invalid_ref'),
+        ('unreadable', 'io_error'), ('unreadable', 'invalid_ref'), ('ok', None)]
+    assert [item['receipt_ref'] for item in items] == [None, bad_body, None, raising, None, good]
+    assert items[-1]['sequence'] == 7 and CANARY not in json.dumps(items)
+
+
 # ----- S2-5 bounds and no writes -------------------------------------------------------------------------------------
 def test_only_the_last_six_refs_are_read_and_the_body_budget_is_exact(tmp_path):
     root = tmp_path / 'artifacts'
@@ -213,6 +256,10 @@ def test_retention_order_is_kept_duplicates_read_once_and_only_last_record_has_s
     ('succeeded', (NOW - timedelta(seconds=601)).isoformat(), False),
     ('failed', (NOW + timedelta(seconds=5)).isoformat(), False),
     ('failed', None, False), ('succeeded', 'not a time', False),
+    ('cancelled', NOW.isoformat(), True), ('superseded', NOW.isoformat(), True),
+    # An unknown, missing, empty or wrong-typed status never opens the completion window (spec §5).
+    ('unknown', NOW.isoformat(), False), ('archived', NOW.isoformat(), False), (None, NOW.isoformat(), False),
+    ('', NOW.isoformat(), False), (['succeeded'], NOW.isoformat(), False), ({'s': 'running'}, None, False),
 ])
 def test_active_rows_and_recently_completed_rows_only(tmp_path, status, completed, selected):
     root = tmp_path / 'artifacts'
@@ -257,3 +304,53 @@ def test_one_unreadable_lane_root_leaves_the_other_lane_and_every_session_fact_i
     assert lane_b['activity_status'] == 'unavailable' and lane_b['activity'][0]['error_type'] == 'runtime_unavailable'
     assert lane_b['status'] == 'running' and lane_b['progress']['sequence'] == 7, 'session facts stay listed'
     assert not (tmp_path / 'rt-b' / 'artifacts').exists()
+
+
+def lane_fixture(tmp_path, recent_of):
+    """A FIXTURE one-lane Fleet whose running task retains `recent_of(artifact_root)`."""
+    from codex_harness.application.fleet import Fleet
+    control = MemoryStore()
+    Fleet(control).register({'schema': 'urn:zeus:fleet:1', 'id': 'f', 'max_parallel': 1, 'budget': {'per_host': 4, 'total': 8},
+                             'lanes': [{'id': 'a', 'team': 'a', 'repository': str(tmp_path / 'repo-a'), 'schema': 'lane_a',
+                                        'redis_namespace': 'n-a', 'runtime': str(tmp_path / 'rt-a')}]})
+    store = MemoryStore()
+    recent = recent_of(tmp_path / 'rt-a' / 'artifacts')
+    with store.transaction() as tx:
+        tx.put('tasks', 'task-1', {'id': 'task-1', 'agent': 'implementer', 'status': 'running', 'generation': 2,
+                                   'attempt': 1, 'created_at': '2026-09-28T00:00:00+00:00'})
+        tx.put('execution_progress', 'task-1', progress(recent, last=recent[-1]))
+    return control, store
+
+
+def test_a_bad_ref_and_a_bad_receipt_between_good_ones_keep_the_lane_and_its_session_facts(tmp_path):
+    def recent(root):
+        return [store_receipt(root, envelope(claude('session_started', 'started'))), ['not', 'a', 'ref'],
+                store_receipt(root, envelope(codex('item/completed', {'id': 'x', 'type': {'k': CANARY}}))),
+                store_receipt(root, envelope(claude('tool_completed', 'completed')))]
+    control, store = lane_fixture(tmp_path, recent)
+    facts = monitoring.lane_session_facts(control, lambda lane: monitoring.ReadOnlyStore(store),
+                                          monitoring.lane_artifact_resolver(), now=NOW)
+    lane = facts['lanes'][0]
+    assert lane['status'] == 'ok' and facts['coverage']['lanes_unavailable'] == 0
+    execution = lane['executions'][0]
+    assert (execution['status'], execution['progress']['sequence']) == ('running', 7), 'session facts stay'
+    assert execution['activity_status'] == 'ok'
+    assert [(item['state'], item['error_type'], item['event_label']) for item in execution['activity']] == [
+        ('ok', None, 'session_started'), ('unreadable', 'invalid_ref', None),
+        ('malformed', 'invalid_shape', 'malformed'), ('ok', None, 'tool_completed')]
+    assert CANARY not in json.dumps(facts)
+
+
+def test_a_row_whose_activity_cannot_be_projected_is_unavailable_and_keeps_its_session_facts(tmp_path, monkeypatch):
+    control, store = lane_fixture(tmp_path, lambda root: [store_receipt(root, envelope(claude('result', 'success')))])
+
+    def explode(*args, **kwargs):
+        raise RuntimeError(CANARY)
+    monkeypatch.setattr(monitoring, 'execution_activity', explode)
+    facts = monitoring.lane_session_facts(control, lambda lane: monitoring.ReadOnlyStore(store),
+                                          monitoring.lane_artifact_resolver(), now=NOW)
+    lane = facts['lanes'][0]
+    execution = lane['executions'][0]
+    assert lane['status'] == 'ok' and (execution['activity_status'], execution['activity']) == ('unavailable', [])
+    assert execution['status'] == 'running' and execution['progress']['sequence'] == 7
+    assert CANARY not in json.dumps(facts)

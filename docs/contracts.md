@@ -4324,8 +4324,9 @@ row's RETAINED progress receipts, projected through a fixed allowlist. It is an 
 terminal or a screen, and it is not a transcript. The executor keeps only progress events (Codex
 `item/completed` and token updates; Claude `session_started`, `tool_completed`, `permission_denied`,
 `result`), at most six per task, and a Claude tool completion carries no tool name.
-- **Selection:** only non-terminal rows, and rows whose aware `completed_at` lies within
-  `RECENT_TERMINAL_SECONDS` (600, an implementation default) are read. Other rows are `not_selected`.
+- **Selection:** only non-terminal rows, and rows with a KNOWN terminal status whose aware `completed_at` lies
+  within `RECENT_TERMINAL_SECONDS` (600, an implementation default) are read. Other rows, including an unknown,
+  missing or wrong-typed status, are `not_selected` with no read.
 - **Lineage:** a progress row of another generation or attempt is `lineage_unconfirmed`, with no read.
 - **Membership:** only this row's bound `progress.recent` (the last six). `last_record` annotates a member but
   never widens it, `previous` links are never followed, and a foreign ref is refused before any file call.
@@ -4343,8 +4344,10 @@ terminal or a screen, and it is not a transcript. The executor keeps only progre
   Never text, input, output, reasoning, commands, paths, ids, subtypes, MCP names or unknown keys.
 - **Sequence and collection time** exist only for `last_record` (the executor assigns them to the row).
 - **Failure:** each ref fails on its own, with a fixed code (`missing_artifact`, `runtime_unavailable`,
-  `invalid_ref`, `too_large`, `integrity_failure`, `invalid_json`, `invalid_shape`, `io_error`). An empty
-  retained list with malformed events is `malformed_not_in_recent`. The separate malformed ring is not read.
+  `invalid_ref`, `too_large`, `integrity_failure`, `invalid_json`, `invalid_shape`, `io_error`). A consulted
+  field that is neither a string nor absent is `invalid_shape`, and a non-string ref is `invalid_ref`, beside
+  the other entries; a row whose activity cannot be projected is `unavailable`, and its session facts stay. An
+  empty retained list with malformed events is `malformed_not_in_recent`. The separate malformed ring is not read.
 
 Tests: tests/test_monitoring_activity.py (S2a, matrix S2-1..S2-9 on temporary artifact roots), tests/test_monitoring_lane_sessions.py (labelled synthetic lane rows and a fake connection, with no
 provider, process or database; plus one integration test on real PostgreSQL, run with
