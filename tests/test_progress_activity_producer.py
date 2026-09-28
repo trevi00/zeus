@@ -16,11 +16,14 @@ from codex_harness.adapters.artifacts import FileArtifacts
 from codex_harness.adapters.claude_cli import _normalize
 from codex_harness.adapters.executor import IMPLEMENTATION, Executor
 from codex_harness.adapters.git import GitWorkspace
+from codex_harness.adapters.observation_spool import MemorySpool
 from codex_harness.adapters.project_skills import initialize
 from codex_harness.adapters.store import MemoryStore
+from codex_harness.application.observations import MemoryDirectory, Observer
 from codex_harness.application.service import Harness
 from codex_harness.bootstrap import organization
 from codex_harness.domain.model import ContractError
+from codex_harness.domain.observation import new_process_run_id
 from codex_harness.domain.progress_activity import validate_receipt
 
 CANARY = 'CANARY-s2b-producer-payload'
@@ -57,7 +60,7 @@ class CountingStore(MemoryStore):
 
     def __init__(self):
         super().__init__()
-        self.transactions, self.fail_fast, self.open, self.before = 0, 0, False, None
+        self.transactions, self.fail_fast, self.open, self.before, self.after = 0, 0, False, None, None
 
     def transaction(self, fail_fast=False):
         store = self
@@ -74,6 +77,9 @@ class CountingStore(MemoryStore):
 
             def __exit__(self, *args):
                 store.open = False
+                if args[0] is None and store.after is not None and store.after(fail_fast):
+                    self.inner.__exit__(RuntimeError, RuntimeError('commit failed'), None)
+                    raise RuntimeError('injected commit failure')
                 return self.inner.__exit__(*args)
         return Scope()
 
@@ -151,7 +157,9 @@ def claude(workspace, monkeypatch, tmp_path):
     monkeypatch.setattr('codex_harness.adapters.executor.AppServer', Unreachable)
     store = CountingStore()
     artifacts = CountingArtifacts(str(tmp_path / 'counted-artifacts'), store)
-    executor = Executor(Harness(store, organization()), git, artifacts)
+    spool = MemorySpool(new_process_run_id())
+    observer = Observer(store, spool, component='test-s2b', directory=MemoryDirectory())
+    executor = Executor(Harness(store, organization()), git, artifacts, observer=observer)
     executor.workflow.submit(assignment())
     lease = executor.workflow.claim('worker:implementation', 'owner')
 
@@ -165,8 +173,11 @@ def claude(workspace, monkeypatch, tmp_path):
         with MemoryStore.transaction(store) as tx:
             return tx.get('execution_progress', lease['id'])
 
+    def progress_notes():
+        return [record for record in spool.records() if 'progress_recorded' in json.dumps(record)]
+
     return SimpleNamespace(run=run, row=row, store=store, artifacts=artifacts, lease=lease, executor=executor,
-                           monkeypatch=monkeypatch)
+                           monkeypatch=monkeypatch, root=root, progress_notes=progress_notes)
 
 
 def compact(s, row=None):
@@ -275,9 +286,9 @@ def test_a_fail_fast_transaction_failure_on_a_start_is_contained_and_no_stale_gu
     claude.store.before = None
     row = claude.row()
     # The failed start invalidated the prediction; the second start skipped instead of guessing; the completion
-    # (an authoritative write) persisted both drops and cleared nothing it had not seen.
+    # (an authoritative write) persisted both drops and CLEARED the ring, which misses the two dropped starts.
     assert row['activity_dropped'] == 2 and len(refused) == 1
-    assert [r['event_label'] for r in compact(claude, row)] == ['session_started', 'tool_completed']
+    assert [r['event_label'] for r in compact(claude, row)] == ['tool_completed']
 
 
 def test_a_compare_and_set_mismatch_drops_only_the_activity_and_the_raw_update_still_commits(claude):
@@ -303,6 +314,137 @@ def test_a_sustained_activity_lock_outage_never_ends_the_run(claude):
     claude.run(lines(INIT, *[use('Read') for _ in range(8)], done('x'), result()))
     row = claude.row()
     assert row['sequence'] == 3 and row['activity_dropped'] == 11 and row['activity_progress_sequence'] is None
+
+
+def test_a_dropped_start_never_leaves_a_ring_that_looks_continuous(claude):
+    """A start whose own write failed cannot null the watermark; the next successful write must clear the ring instead
+    of appending to it as if nothing were missing (review finding, FLEET-S2B-SPEC §3.4)."""
+    calls = []
+
+    def refuse_second(fail_fast):
+        if fail_fast:
+            calls.append(True)
+            if len(calls) == 2:
+                raise TimeoutError('lock timeout')
+    claude.store.before = refuse_second
+    claude.run(lines(INIT, use('Read'), use('Grep'), done('toolu_Read0'), use('Glob')))
+    claude.store.before = None
+    row = claude.row()
+    # Read linked; Grep's own write failed (a gap); the completion cleared the ring (it misses Grep) and persisted
+    # the drop; Glob linked on the refreshed basis.
+    assert [(r['event_label'], r['tool_name']) for r in compact(claude, row)] == [('tool_completed', None),
+                                                                                ('tool_started', 'Glob')]
+    assert row['activity_dropped'] == 1 and row['activity_progress_sequence'] == row['sequence']
+
+
+def test_a_start_compare_and_set_mismatch_refreshes_the_prediction_and_writes_nothing(claude):
+    claude.run(lines(INIT))
+    before = claude.row()
+
+    def move(fail_fast):
+        if fail_fast:
+            with MemoryStore.transaction(claude.store) as tx:
+                row = tx.get('execution_progress', claude.lease['id'])
+                tx.put('execution_progress', claude.lease['id'], {**row, 'activity_sequence': row['activity_sequence'] + 3})
+            claude.store.before = None
+    claude.store.before = move
+    claude.run(lines(use('Read'), use('Grep'), done('x')))
+    row = claude.row()
+    assert row['activity_sequence'] == before['activity_sequence'] + 3 + 2, 'Read dropped; Grep and done linked on the refreshed basis'
+    assert row['activity_dropped'] == 1
+    assert [r['tool_name'] for r in compact(claude, row)] == ['Grep', None], 'the ring restarted after the gap'
+
+
+def test_a_failed_flush_commit_keeps_the_pending_count(claude):
+    claude.artifacts.fail['runtime-activity'] = 1
+    failures = []
+
+    def fail_first_fast_commit(fail_fast):
+        if fail_fast and not failures:
+            failures.append(True)
+            return True
+        return False
+    claude.store.after = fail_first_fast_commit
+    claude.run(lines(use('Read'), use('Grep'), INIT))
+    claude.store.after = None
+    row = claude.row()
+    # Read: put dropped (1). Grep: its commit (carrying that flush) failed, so both stay pending (2). INIT persists 2.
+    assert row['activity_dropped'] == 2 and len(failures) == 1
+
+
+def test_a_start_only_write_leaves_every_legacy_field_and_emits_no_progress_observation(claude):
+    claude.run(lines(INIT))
+    before, notes = claude.row(), len(claude.progress_notes())
+    claude.run(lines(use('Read', 'Grep')))
+    after = claude.row()
+    legacy = ('sequence', 'recent', 'last_record', 'at', 'collected_at', 'occurred_at', 'event_id', 'last_event',
+              'last_completed', 'generation', 'attempt', 'agent', 'context_ref')
+    assert {k: after.get(k) for k in legacy} == {k: before.get(k) for k in legacy}
+    assert len(claude.progress_notes()) == notes, 'no progress_recorded observation for a start'
+    assert after['activity_sequence'] == before['activity_sequence'] + 2
+
+
+def test_a_provider_change_resets_the_activity_binding(claude):
+    claude.run(lines(INIT, use('Read')))
+    assert claude.row()['activity_sequence'] == 2
+    claude.monkeypatch.delenv('ZEUS_CLAUDE_ASSIGNMENTS')
+    claude.executor._execution_policy = None  # the policy is read once per executor
+    item = {'method': 'item/completed', 'params': {'item': {'id': 'a', 'type': 'fileChange', 'status': 'completed'}}}
+    claude.monkeypatch.setattr('codex_harness.adapters.executor.AppServer', runtime([item]))
+    claude.run([])
+    row = claude.row()
+    assert row['provider'] != 'claude' and row['activity_sequence'] == 1 and row['activity_dropped'] == 0
+    assert [r['event_label'] for r in compact(claude, row)] == ['item_completed']
+
+
+def test_the_raw_envelope_keeps_the_exact_normalized_event_and_its_lineage_is_the_lease(claude):
+    events = lines(INIT, done('x'), result('success', True))
+    snapshot = json.loads(json.dumps(events))
+    claude.run(events)
+    row = claude.row()
+    assert [claude.artifacts.document(ref)['event'] for ref in row['recent']] == snapshot, 'D9 never rewrites the event'
+    records = compact(claude, row)
+    assert all((r['generation'], r['attempt']) == (claude.lease['generation'], claude.lease['attempt']) for r in records)
+
+
+def test_a_raw_receipt_failure_still_ends_the_run_as_before(claude):
+    claude.artifacts.fail['runtime-event'] = 1
+    with pytest.raises(Exception) as failed:
+        claude.run(lines(INIT))
+    assert 'artifacts.lock' in str(failed.value) or 'artifacts.lock' in str(failed.value.__cause__ or failed.value.__context__)
+
+
+def test_the_real_adapters_use_their_short_activity_budgets(tmp_path, monkeypatch):
+    from filelock import FileLock
+
+    from codex_harness.adapters import store as store_module
+    artifacts = FileArtifacts(str(tmp_path / 'held'))
+    with FileLock(str(artifacts.root.parent / 'artifacts.lock')):
+        started = time.monotonic()
+        with pytest.raises(Timeout):
+            artifacts.put('x', 'runtime-activity:t', lock_timeout=0.5)
+        assert time.monotonic() - started < 2
+    executed = []
+
+    class Connection:
+        def __init__(self, dsn, connect_timeout):
+            executed.append(('connect_timeout', connect_timeout))
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *args):
+            return False
+
+        def execute(self, sql, *args):
+            executed.append(sql)
+    monkeypatch.setattr(store_module.psycopg, 'connect', Connection)
+    with store_module.PostgresStore('postgresql://fixture').transaction(fail_fast=True):
+        pass
+    with store_module.PostgresStore('postgresql://fixture').transaction():
+        pass
+    assert executed[:2] == [('connect_timeout', 2), "SET LOCAL lock_timeout = '500ms'"]
+    assert executed[3:5] == [('connect_timeout', 5), "SET LOCAL lock_timeout = '10s'"]
 
 
 # ----- S2B-8 the fence is never swallowed ----------------------------------------------------------------------------
@@ -348,8 +490,10 @@ def test_a_superseded_execution_mid_stream_ends_the_run_the_same_way_on_both_pat
             task = tx.get('tasks', claude.lease['id'])
             tx.put('tasks', task['id'], {**task, 'status': 'failed'})
             snapshot['row'] = tx.get('execution_progress', claude.lease['id'])
+    reached = []
     with pytest.raises(Exception) as refused:
-        claude.run([*lines(INIT), supersede, *lines(body)])
+        claude.run([*lines(INIT), supersede, *lines(body), lambda: reached.append(True)])
+    assert reached == [], 'the refusal ended the stream at that event; a swallowed refusal would continue it'
     assert 'Stale or expired task execution' in str(refused.value) or any(
         'Stale or expired task execution' in str(link) for link in (refused.value.__cause__, refused.value.__context__))
     assert claude.row() == snapshot['row'], 'the refused write changed nothing'

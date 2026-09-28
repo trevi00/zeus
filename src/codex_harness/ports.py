@@ -12,7 +12,8 @@ class Transaction(Protocol):
 
 
 class Store(Protocol):
-    def transaction(self) -> ContextManager[Transaction]: ...
+    # `fail_fast` (S2b): a display-only writer's short lock budget; stores without lock waits accept and ignore it.
+    def transaction(self, fail_fast: bool = False) -> ContextManager[Transaction]: ...
 
 
 class MessageDeliveryError(RuntimeError):
@@ -78,7 +79,8 @@ class SourceControl(Protocol):
 
 
 class ArtifactStore(Protocol):
-    def put(self, body: str, source: str) -> dict: ...
+    # `lock_timeout` (S2b): a display-only writer's short wait before it drops its record.
+    def put(self, body: str, source: str, lock_timeout: float = 30) -> dict: ...
     def read(self, reference: str, start: int = 0, length: int = 8000) -> str: ...
 
 

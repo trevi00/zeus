@@ -224,3 +224,21 @@ def test_the_sweep_keeps_linked_compact_records_and_their_raw_and_collects_displ
     result = ArtifactMaintenance(store, artifacts).collect(apply=True)
     assert result['files'] == 1 and not (artifacts.root / (displaced[7:] + '.txt')).exists()
     assert (artifacts.root / (linked[7:] + '.txt')).exists() and (artifacts.root / (raw[7:] + '.txt')).exists()
+
+
+def test_a_compact_ring_that_fails_entirely_never_falls_back_to_raw_and_raw_ref_is_never_read(tmp_path):
+    root = tmp_path / 'artifacts'
+    raw = store_text(root, json.dumps({'event': claude('tool_completed', status='completed'), 'malformed': False,
+                                       'defect': None, 'previous': None}))
+    linked = store_text(root, canonical(receipt(event=claude('tool_completed', status='completed'), progress_sequence=3,
+                                                raw_ref=raw, activity_sequence=2)))
+    reader = Spy(root)
+    status, items = execution_activity(row(), {**compact_progress([linked]), 'recent': [raw], 'last_record': raw}, reader,
+                                       monitoring.datetime.fromisoformat(NOW_ISO))
+    assert reader.calls == [linked] and items[0]['raw_ref'] == raw, 'raw_ref is data, never followed'
+    missing = 'sha256:' + 'c' * 64
+    reader = Spy(root)
+    status, items = execution_activity(row(), {**compact_progress([missing]), 'recent': [raw], 'last_record': raw}, reader,
+                                       monitoring.datetime.fromisoformat(NOW_ISO))
+    assert status == 'unavailable' and reader.calls == [missing], 'no fallback to the raw ring that would hide the failure'
+    assert [(i['source'], i['state'], i['error_type']) for i in items] == [('activity_receipt', 'unavailable', 'missing_artifact')]

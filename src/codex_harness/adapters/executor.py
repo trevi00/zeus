@@ -105,14 +105,6 @@ from codex_harness.domain.worker_sessions import MODE_RESUME, usage_delta
 ACTIVITY_LOCK_SECONDS = 0.5
 
 
-class _OwnerRefusal(Exception):
-    """Carries the `_owned` fence refusal of a display-only write past its containment boundary unchanged."""
-
-    def __init__(self, refusal: ContractError):
-        super().__init__(str(refusal))
-        self.refusal = refusal
-
-
 def activity_basis(row: dict):
     """The (activity_sequence, sequence) counters a compact write predicts from, or None when they are not
     non-negative integers (a start then waits for an authoritative write instead of guessing)."""
@@ -120,17 +112,20 @@ def activity_basis(row: dict):
     return counters if all(type(value) is int and value >= 0 for value in counters) else None
 
 
-def sync_activity(row: dict, old_sequence, linked_ref, failed: bool) -> None:
+def sync_activity(row: dict, old_sequence, linked_ref, failed: bool, gap: bool) -> None:
     """Keep the compact ring truthful beside the raw progress it annotates (FLEET-S2B-SPEC §3, D11). A ring whose
     watermark does not equal the progress sequence it was synchronized at (an older producer ran, or a compact
-    write was dropped) is cleared, never presented as continuous; a dropped compact write leaves the watermark
-    null so no reader selects a ring that misses it."""
+    write was dropped), or that misses a record this run dropped without being able to null the watermark (`gap`:
+    a tool start's own write failed), is cleared, never presented as continuous; a dropped compact write leaves
+    the watermark null so no reader selects a ring that misses it."""
     ring, watermark = row.get("activity_recent"), row.get("activity_progress_sequence")
-    synced = (isinstance(ring, list) and type(watermark) is int and type(old_sequence) is int
+    synced = (not gap and isinstance(ring, list) and type(watermark) is int and type(old_sequence) is int
               and watermark == old_sequence)
     if not synced:
         ring = []
     row.setdefault("activity_sequence", 0)
+    # Present means this producer wrote the row: zero recorded drops is a known 0, never the legacy "unknown".
+    row.setdefault("activity_dropped", 0)
     if linked_ref is not None:
         ring = (ring + [linked_ref])[-6:]
         row["activity_sequence"] += 1
@@ -859,10 +854,11 @@ class Executor:
                                                           "sequence": previous["sequence"], "occurred_at": occurred}
                         # The compact record links only when the row is still the one it was predicted from.
                         linked = (compact is not None and prior_bound == current_bound and observed == predicted)
+                        gap = activity_state["pending"] > 0  # an earlier drop this run left the ring incomplete
                         if label is not None and not linked:
                             activity_state["pending"] += 1
                         sync_activity(previous, observed[1] if observed else None, compact if linked else None,
-                                      failed=label is not None and not linked)
+                                      failed=label is not None and not linked, gap=gap)
                         flushed = flush_drops(previous)
                         tx.put("execution_progress", key, previous)
                 activity_state["pending"] -= flushed
@@ -908,14 +904,15 @@ class Executor:
                 except Exception:
                     activity_state["pending"] += 1
                     return
-                written, observed, flushed = None, None, 0
+                written, observed, flushed, refused = None, None, 0, False
                 try:
                     with self.service.store.transaction(fail_fast=True) as tx:
                         if lease:
                             try:
                                 self.workflow._owned(tx, lease)
-                            except ContractError as refusal:
-                                raise _OwnerRefusal(refusal) from refusal
+                            except ContractError:
+                                refused = True  # the fence refusal is never contained (re-raised below as is)
+                                raise
                         previous = tx.get("execution_progress", key) or {"id": key, "recent": []}
                         if not bound(previous):
                             previous = {"id": key, "recent": []}
@@ -925,13 +922,14 @@ class Executor:
                             if context_bound:
                                 previous["research_binding"] = binding
                             previous["worktree"] = cwd
-                            sync_activity(previous, previous.get("sequence", 0), compact, failed=False)
+                            sync_activity(previous, previous.get("sequence", 0), compact, failed=False,
+                                          gap=activity_state["pending"] > 0)
                             flushed = flush_drops(previous)
                             tx.put("execution_progress", key, previous)
                             written = previous
-                except _OwnerRefusal as wrapped:
-                    raise wrapped.refusal from None
                 except Exception:
+                    if refused:
+                        raise
                     activity_state["pending"] += 1
                     activity_state["cache"] = None
                     return

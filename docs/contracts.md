@@ -239,11 +239,14 @@ Codex token updates and malformed events stay raw-only.
 - **A tool start** has an activity sequence but NO raw progress sequence and no event identity. It writes only the
   binding fields and `activity_recent`, `activity_sequence`, `activity_progress_sequence` and `activity_dropped`;
   every legacy field stays as it was.
-- **Display-only writes never end a run.** A compact write predicts its counters and links only if the row is still
-  the one it predicted from (compare-and-set). Its artifact put and a start's transaction use a fail-fast lock.
-  Any failure drops only the activity: it is counted in `activity_dropped` at the next successful owned write (a
-  partial count). The `_owned` fence refusal is never contained. A dropped compact write nulls the watermark, so the
-  ring is cleared before the next one; an unsynchronized ring is never shown as continuous.
+- **A display-only write failure is contained, never turned into a run failure.** A compact write predicts its
+  counters and links only if the row is still the one it predicted from (compare-and-set). Its artifact put and a
+  start's transaction use a fail-fast lock, so a busy control plane costs at most that short wait before the record
+  is dropped (not a proof against arbitrary OS or database stalls). Any failure drops only the activity: it is
+  counted in `activity_dropped` at the next successful owned write (a partial count; 0 once this producer has
+  written the row, absent for an older producer). The `_owned` fence refusal is never contained. A dropped compact
+  write nulls the watermark, and a drop that could not (a tool start's own write failed) clears the ring at the
+  next successful write, so a ring that misses a record is never shown as continuous.
 - **The ring is a bounded display window:** the newest six, oldest first. It is not a durable event stream, and
   displaced records are swept by the existing retention.
 
