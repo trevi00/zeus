@@ -20,6 +20,15 @@ from codex_harness.application.monitoring import Monitoring
 from codex_harness.domain.council import TASK_STATUSES
 from codex_harness.domain.fleet import FleetRefused
 from codex_harness.domain.model import ContractError
+from codex_harness.domain.progress_activity import (
+    BUILTIN_TOOLS,
+    CODEX_ITEM_TYPES,
+    ActivityInvalid,
+    fixed_completed_status,
+    fixed_completed_type,
+    fixed_last_event,
+    validate_receipt,
+)
 
 CONTAINER_NAME = re.compile(r'[A-Za-z0-9][A-Za-z0-9_.-]{0,127}')
 MAX_CONTAINERS = 32
@@ -501,10 +510,7 @@ ARTIFACT_REF = re.compile(r'^sha256:([0-9a-f]{64})$')
 CLAUDE_LABELS = frozenset({'tool_started', 'tool_completed', 'session_started', 'permission_denied', 'message',
                            'result'})
 CODEX_LABELS = {'item/completed': 'item_completed', 'thread/tokenUsage/updated': 'token_usage_updated'}
-CODEX_ITEM_TYPES = frozenset({'commandExecution', 'fileChange', 'mcpToolCall', 'agentMessage', 'reasoning'})
-# Display labels only, never grants; anything else (custom and MCP names included) is null, never truncated text.
-BUILTIN_TOOLS = frozenset({'Read', 'Glob', 'Grep', 'Bash', 'Edit', 'Write', 'NotebookEdit', 'Task', 'WebFetch',
-                           'WebSearch', 'StructuredOutput'})
+# CODEX_ITEM_TYPES and BUILTIN_TOOLS (display labels only, never grants) are owned by domain/progress_activity.
 PLAIN_STATUSES = frozenset({'started', 'completed', 'failed', 'denied', 'emitted'})
 ENVELOPE_KEYS = frozenset({'event', 'malformed', 'defect', 'previous'})
 
@@ -636,10 +642,12 @@ def _aware(value):
 
 
 def execution_activity(row, progress, reader, now, recent_terminal_seconds=RECENT_TERMINAL_SECONDS):
-    """(activity_status, activity) for one lane row. Membership is ONLY this row's bound `progress.recent`
-    (the last six); `last_record` annotates a member but never widens it, and `previous` links are never
-    followed, so no other artifact can be read through this row. Sequence and collection time exist only for
-    `last_record` (the executor assigns them to the row, not to each receipt)."""
+    """(activity_status, activity) for one lane row. Membership is ONLY this row's bound ring: the compact
+    `activity_recent` when it is synchronized with the row's progress sequence (S2b, FLEET-S2B-SPEC §4), otherwise
+    the legacy `progress.recent`; the last six either way, never merged and never backfilled. `last_record`
+    annotates a legacy member but never widens it, and `previous`/`raw_ref` links are never followed, so no
+    other artifact can be read through this row. A legacy entry has sequence and collection time only as the
+    `last_record`; a compact entry carries its own."""
     status = row.get('status')
     if not isinstance(status, str):
         selected = False
@@ -657,15 +665,17 @@ def execution_activity(row, progress, reader, now, recent_terminal_seconds=RECEN
     lineage = (progress.get('generation'), progress.get('attempt'))
     if not all(type(value) is int for value in lineage) or lineage != (row.get('generation'), row.get('attempt')):
         return 'lineage_unconfirmed', []
-    recent = progress.get('recent')
+    compact = _compact_selected(progress)
+    source = 'activity_receipt' if compact else 'progress_receipt'
+    recent = progress.get('activity_recent' if compact else 'recent')
     refs = recent[-ACTIVITY_REFS:] if isinstance(recent, list) else []
     if not refs:
         malformed = progress.get('malformed_events')
         return ('malformed_not_in_recent' if type(malformed) is int and malformed > 0 else 'empty'), []
     if reader is None:
-        return 'unavailable', [{'receipt_ref': None, 'state': 'unavailable', 'error_type': 'runtime_unavailable',
-                                'event_label': None, 'tool_name': None, 'item_type': None, 'status': None,
-                                'sequence': None, 'occurred_at': None, 'collected_at': None, 'malformed': None}]
+        return 'unavailable', [_failed_entry(None, source, 'unavailable', 'runtime_unavailable')]
+    if compact:
+        return _compact_activity(row, refs, reader)
     last = progress.get('last_record')
     sequence = progress.get('sequence')
     collected = _aware(progress.get('collected_at'))
@@ -673,9 +683,7 @@ def execution_activity(row, progress, reader, now, recent_terminal_seconds=RECEN
     for reference in refs:
         valid = isinstance(reference, str) and ARTIFACT_REF.fullmatch(reference) is not None
         if not valid:
-            activity.append({'receipt_ref': None, 'state': 'unreadable', 'error_type': 'invalid_ref',
-                             'event_label': None, 'tool_name': None, 'item_type': None, 'status': None,
-                             'sequence': None, 'occurred_at': None, 'collected_at': None, 'malformed': None})
+            activity.append(_failed_entry(None, 'progress_receipt', 'unreadable', 'invalid_ref'))
             continue
         if reference in seen:
             continue
@@ -696,9 +704,71 @@ def execution_activity(row, progress, reader, now, recent_terminal_seconds=RECEN
                          'tool_name': None, 'item_type': None, 'status': None, 'occurred_at': None,
                          'malformed': True}
         is_last = reference == last and entry['state'] == 'ok'
-        activity.append({'receipt_ref': reference, **entry,
+        activity.append({'receipt_ref': reference, 'source': 'progress_receipt', **entry, **COMPACT_ONLY,
                          'sequence': sequence if is_last and type(sequence) is int and sequence > 0 else None,
                          'collected_at': collected.isoformat() if is_last and collected is not None else None})
+    return ('ok' if any(entry['state'] == 'ok' for entry in activity) else 'unavailable'), activity
+
+
+# Keys only a compact entry fills; a legacy entry carries them as null (additive, FLEET-S2B-SPEC §4).
+COMPACT_ONLY = {'activity_sequence': None, 'generation': None, 'attempt': None, 'raw_ref': None}
+
+
+def _failed_entry(reference, source, state, code):
+    return {'receipt_ref': reference, 'source': source, 'state': state, 'error_type': code, 'event_label': None,
+            'tool_name': None, 'item_type': None, 'status': None, 'sequence': None, 'occurred_at': None,
+            'collected_at': None, 'malformed': None, **COMPACT_ONLY}
+
+
+def _compact_selected(progress) -> bool:
+    """D11: the compact ring is shown only when it is non-empty and its watermark equals the row's progress
+    sequence (0 only when absent); exact integers, so a bool never passes for 0/1. Anything else is the
+    legacy path: an older producer ran after it, or a compact write was dropped."""
+    ring, watermark = progress.get('activity_recent'), progress.get('activity_progress_sequence')
+    sequence = progress.get('sequence', 0)
+    return (isinstance(ring, list) and len(ring) > 0 and type(watermark) is int and watermark >= 0
+            and type(sequence) is int and watermark == sequence)
+
+
+def _compact_activity(row, refs, reader):
+    """Compact entries: each member read once, bounded and integrity-checked, validated against the exact
+    receipt contract and bound to THIS execution; `raw_ref` is never followed. Every failure stays listed with a
+    fixed code and never falls back to the raw ring (that would conceal corruption)."""
+    activity, seen = [], set()
+    for reference in refs:
+        if not (isinstance(reference, str) and ARTIFACT_REF.fullmatch(reference)):
+            activity.append(_failed_entry(None, 'activity_receipt', 'unreadable', 'invalid_ref'))
+            continue
+        if reference in seen:
+            continue
+        seen.add(reference)
+        try:
+            state, code, text = reader.read(reference)
+        except Exception:
+            state, code, text = 'unreadable', 'io_error', None
+        if state != 'ok':
+            activity.append(_failed_entry(reference, 'activity_receipt', state, code))
+            continue
+        try:
+            document = validate_receipt(_strict_json(text))
+        except (ValueError, RecursionError):
+            activity.append({**_failed_entry(reference, 'activity_receipt', 'unreadable', 'invalid_json'),
+                             'event_label': 'malformed', 'malformed': True})
+            continue
+        except ActivityInvalid:
+            activity.append({**_failed_entry(reference, 'activity_receipt', 'malformed', 'invalid_shape'),
+                             'event_label': 'malformed', 'malformed': True})
+            continue
+        if document['execution'] != row.get('id'):
+            activity.append(_failed_entry(reference, 'activity_receipt', 'unreadable', 'binding_mismatch'))
+            continue
+        activity.append({'receipt_ref': reference, 'source': 'activity_receipt', 'state': 'ok', 'error_type': None,
+                         'event_label': document['event_label'], 'tool_name': document['tool_name'],
+                         'item_type': document['item_type'], 'status': document['status'],
+                         'sequence': document['progress_sequence'], 'occurred_at': document['occurred_at'],
+                         'collected_at': document['collected_at'], 'malformed': False,
+                         'activity_sequence': document['activity_sequence'], 'generation': document['generation'],
+                         'attempt': document['attempt'], 'raw_ref': document['raw_ref']})
     return ('ok' if any(entry['state'] == 'ok' for entry in activity) else 'unavailable'), activity
 
 
@@ -747,9 +817,11 @@ def _execution_view(row, kind, operation, progress, reservations, session):
             'attempt': progress.get('attempt'), 'provider': progress.get('provider'),
             # Event time and collection time stay apart (a replay never reorders by the merge moment).
             'occurred_at': progress.get('occurred_at'), 'collected_at': progress.get('collected_at'),
-            'last_event': progress.get('last_event'),
-            'last_completed': {k: completed.get(k) for k in ('type', 'status', 'sequence', 'occurred_at',
-                                                               'evidence')} if completed else None,
+            # Fixed vocabularies only (S2b D10): no provider subtype or unknown method text reaches the view.
+            'last_event': fixed_last_event(progress.get('last_event')),
+            'last_completed': {**{k: completed.get(k) for k in ('sequence', 'occurred_at', 'evidence')},
+                               'type': fixed_completed_type(completed.get('type')),
+                               'status': fixed_completed_status(completed.get('status'))} if completed else None,
             'malformed_events': progress.get('malformed_events', 0)},
         'invocations': {
             'count': len(reservations),
@@ -842,6 +914,9 @@ def lane_view(store, reader=None, now=None, recent_terminal_seconds=RECENT_TERMI
         except Exception:
             status, items = 'unavailable', []
         view['activity_status'], view['activity'] = status, items
+        # Recorded activity drops (S2b): a partial persisted count, null when this producer never wrote one.
+        dropped = (progress.get(view['id']) or {}).get('activity_dropped')
+        view['activity_dropped'] = dropped if type(dropped) is int and dropped >= 0 else None
     return {'executions': shown, 'total': len(executions),
             'truncated': len(executions) > LANE_SESSION_LIMIT,
             'counts': dict(Counter(f"{view['kind']}:{view['status']}" for view in executions)),
