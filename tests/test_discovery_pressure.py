@@ -26,6 +26,7 @@ from codex_harness.domain.discovery_pressure import (
     DiscoveryRefused,
     census,
     decide,
+    sample_fresh,
     validate_policy,
 )
 from codex_harness.domain.observation import new_process_run_id
@@ -429,6 +430,28 @@ def test_a_ledger_reading_older_than_the_input_age_once_the_transaction_holds_is
     idle = fleet_store()
     decision = DiscoveryPressure(idle, POLICY, observer(idle), clock=instants(0, 900), ledger=lambda: LEDGER).admit()
     assert (decision["decision"], decision["basis"]["complete"]) == ("allow", True), "no waiting job: the ledger cannot change W"
+
+
+@pytest.mark.parametrize("sampled,evaluated,fresh", [
+    ("2026-09-28T00:00:00+00:00", "2026-09-28T00:00:01+00:00", True),
+    ("2026-09-28T09:00:00+09:00", "2026-09-28T00:00:01+00:00", True),     # the same instant in another offset
+    ("2026-09-28T00:00:00", "2026-09-28T00:00:01", False),                 # both naive: unverifiable, never fresh
+    ("2026-09-28T00:00:00", "2026-09-28T00:00:01+00:00", False),           # mixed
+    ("2026-09-28T00:00:00+00:00", "2026-09-28T00:00:01", False),
+    ("not a time", "2026-09-28T00:00:01+00:00", False), (None, "2026-09-28T00:00:01+00:00", False),
+])
+def test_a_sample_is_fresh_only_between_two_aware_times(sampled, evaluated, fresh):
+    assert sample_fresh(sampled, evaluated, 300) is fresh
+
+
+def test_a_naive_clock_never_lets_a_ledger_reading_decide_waiting_work():
+    """T1-11 / F2 re-review: a clock without a UTC offset is unverifiable, so a waiting job holds as unknown."""
+    store = fleet_store()
+    queued(store, 1)
+    values = ["2026-09-28T00:00:00", "2026-09-28T00:00:01"]
+    decision = DiscoveryPressure(store, POLICY, observer(store), clock=lambda: values.pop(0), ledger=lambda: LEDGER).admit()
+    assert (decision["decision"], decision["reason_code"], decision["waiting"], decision["basis"]["ledger"]) == (
+        "hold", "pressure_unknown", None, "stale")
 
 
 def test_the_packaged_policy_is_the_suggested_unconfirmed_three_and_one():

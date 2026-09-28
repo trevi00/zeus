@@ -99,9 +99,12 @@ def sample_fresh(sampled_at, evaluated_at, max_age_seconds) -> bool:
     have made it wait). An unparseable, naive or backwards time is unverifiable, so not fresh."""
     try:
         sampled, evaluated = datetime.fromisoformat(sampled_at), datetime.fromisoformat(evaluated_at)
-        age = (evaluated - sampled).total_seconds()
     except (TypeError, ValueError):
         return False
+    # Two naive times subtract without error in Python, so awareness is checked explicitly (only a mixed pair raises).
+    if sampled.utcoffset() is None or evaluated.utcoffset() is None:
+        return False
+    age = (evaluated - sampled).total_seconds()
     return 0 <= age <= max_age_seconds
 
 
