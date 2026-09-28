@@ -77,9 +77,14 @@ export type WireWorkerSession = {
   reason: string | null
   owner: { generation: number | null; attempt: number | null } | null
 }
-/** One retained runtime-event receipt, projected by the collector's fixed allowlist (FLEET-S2-SPEC §4). */
+/**
+ * One retained activity record, projected by the collector's fixed allowlist (FLEET-S2-SPEC §4, FLEET-S2B-SPEC §4).
+ * `source` names which ring it came from: the compact `activity_receipt` (S2b, its own sequence, collection time
+ * and lineage) or the legacy `progress_receipt` (S2a, only the last record carries sequence/collection time).
+ */
 export type WireActivityEntry = {
   receipt_ref: string | null
+  source: "activity_receipt" | "progress_receipt"
   state: "ok" | "unavailable" | "unreadable" | "malformed"
   error_type: string | null
   event_label: string | null
@@ -90,6 +95,11 @@ export type WireActivityEntry = {
   occurred_at: string | null
   collected_at: string | null
   malformed: boolean | null
+  /** Compact entries only (null on legacy ones). */
+  activity_sequence: number | null
+  generation: number | null
+  attempt: number | null
+  raw_ref: string | null
 }
 export type WireExecution = {
   kind: "task" | "decision"
@@ -110,6 +120,8 @@ export type WireExecution = {
   /** Both null: the collector predates the activity pane (never an empty log). */
   activity_status: string | null
   activity: WireActivityEntry[] | null
+  /** Recorded activity drops (S2b); null when never recorded (an older producer or collector), never 0 by default. */
+  activity_dropped: number | null
 }
 export type WireLane =
   | { lane: string; team: string | null; observed_at: string | null; status: "unavailable"; error: string | null }
@@ -258,7 +270,22 @@ function readActivityEntry(value: unknown): WireActivityEntry {
   const ref = str(value.receipt_ref, "activity[].receipt_ref")
   if (ref !== null && !RECEIPT_REF.test(ref)) fail("activity[].receipt_ref")
   if (state === "ok" && ref === null) fail("activity[].receipt_ref (ok)")
+  // An older collector sends no source: its entries are legacy progress receipts. Any other value is off-contract.
+  const source = absent(value.source) ? "progress_receipt"
+    : value.source === "activity_receipt" || value.source === "progress_receipt" ? value.source : fail("activity[].source")
+  const compact = {
+    activity_sequence: count(value.activity_sequence, "activity[].activity_sequence"),
+    generation: count(value.generation, "activity[].generation"), attempt: count(value.attempt, "activity[].attempt"),
+    raw_ref: str(value.raw_ref, "activity[].raw_ref"),
+  }
+  if (compact.raw_ref !== null && !RECEIPT_REF.test(compact.raw_ref)) fail("activity[].raw_ref")
+  if (source === "progress_receipt" && Object.values(compact).some((field) => field !== null)) fail("activity[] (legacy with compact fields)")
+  // A readable compact entry carries its own activity sequence and collection time.
+  if (source === "activity_receipt" && state === "ok" && (compact.activity_sequence === null || absent(value.collected_at))) {
+    fail("activity[] (compact without its metadata)")
+  }
   return {
+    ...compact, source,
     receipt_ref: ref, state, error_type: errorType, event_label: str(value.event_label, "activity[].event_label"),
     tool_name: str(value.tool_name, "activity[].tool_name"), item_type: str(value.item_type, "activity[].item_type"),
     status: str(value.status, "activity[].status"), sequence: count(value.sequence, "activity[].sequence"),
@@ -274,6 +301,8 @@ function readActivity(statusValue: unknown, listValue: unknown): { activity_stat
   if (!Array.isArray(listValue)) return fail("execution.activity")
   if (listValue.length > ACTIVITY_LIMIT) return fail("execution.activity (over the retention bound)")
   const entries = listValue.map(readActivityEntry)
+  // One list comes from ONE ring: the collector never merges the compact and legacy rings.
+  if (new Set(entries.map((entry) => entry.source)).size > 1) fail("execution.activity (mixed sources)")
   const readable = entries.some((entry) => entry.state === "ok")
   if ((EMPTY_ACTIVITY.has(status) && entries.length > 0) || (status === "ok" && !readable) || (status === "unavailable" && readable)) {
     fail(`execution.activity (${status})`)
@@ -296,6 +325,7 @@ function readExecution(value: unknown): WireExecution {
                    latest: readInvocation(invocations.latest) },
     worker_session: readWorkerSession(value.worker_session),
     ...readActivity(value.activity_status, value.activity),
+    activity_dropped: count(value.activity_dropped, "execution.activity_dropped"),
   }
 }
 
@@ -414,6 +444,8 @@ export type SessionRow = {
     lastEvent: string | null
     sequence: number | null
     lastCompleted: string | null
+    /** Set for a Claude `result · success` whose provenance cannot establish the S2b status rule (legacy rows). */
+    lastCompletedNote: string | null
     malformed: number
     /** `ageMs` as display text ("12분 5초 전"), or "진행 기록 없음". */
     ageText: string
@@ -470,9 +502,18 @@ export type EventEntry = {
   occurredAt: string | null
   /** "발생 시각 기록 없음" when the event carries no time (Claude events never do). */
   occurredText: string
-  /** Only the last record carries these (the executor assigns them per execution, not per event). */
+  source: WireActivityEntry["source"]
+  /**
+   * What the metadata line means: `activity_receipt` — this entry's own activity order, raw progress order (null
+   * for a tool start), executor collection time and event lineage; `legacy_last_record` — the legacy row's
+   * sequence and collection time, which belong to the LAST record only; `none` — no metadata to show.
+   */
+  metadataKind: "none" | "legacy_last_record" | "activity_receipt"
+  /** Labelled metadata in display order; values are model text (times stay ISO, formatted by the component). */
+  metadata: Array<{ key: string; label: string; value: string; time: string | null }>
   sequence: number | null
   collectedAt: string | null
+  /** True only for the legacy last record (kept for older consumers; use `metadataKind`). */
   isLastRecord: boolean
 }
 export type EventLog = {
@@ -483,8 +524,10 @@ export type EventLog = {
   entries: EventEntry[]
   /** Why the list is empty or has unreadable entries; null when every retained entry was read. */
   gapText: string | null
-  /** Always shown with the pane. */
-  notices: { log: string; retention: string; qualification: string }
+  /** Always shown with the pane; `qualification` depends on the ring (compact or legacy). */
+  notices: { log: string; retention: string; qualification: string; legacyResult: string | null }
+  /** Recorded activity drops; `text` null when none are recorded, and an unknown count is never shown as 0. */
+  dropped: { count: number | null; text: string | null }
 }
 export type LaneView =
   | { id: string; team: string; status: "unavailable"; statusLabel: Label; error: string | null; observedAt: string | null }
@@ -503,6 +546,9 @@ export const EVENT_LOG_NOTICES = {
   retention: "최근 6개 이벤트만 보관 (executor retention)",
   qualification: "진행 기록으로 보관된 이벤트만 표시 · 시작/메시지 이벤트는 없을 수 있음",
 } as const
+/** FLEET-S2B-SPEC §6: the compact ring's coverage note, and the legacy Claude-result caveat. */
+export const COMPACT_QUALIFICATION = "최근 활동 이벤트만 표시 · 도구 시작 포함 · 완료와 연결하지 않음 · 새 이벤트가 이전 이벤트를 밀어낼 수 있음"
+export const LEGACY_RESULT_NOTE = "이전 형식의 Claude 결과 success는 기록된 subtype이며 실제 성공을 보증하지 않음"
 
 const ACTIVITY_STATUS: Record<string, Label> = {
   ok: { label: "보관 이벤트", tone: "neutral", note: "보관된 진행 이벤트를 읽음 · 진행이나 수락의 증거는 아님" },
@@ -524,6 +570,7 @@ const ENTRY_ERROR: Record<string, string> = {
   missing_artifact: "영수증 파일 없음", runtime_unavailable: "레인 런타임 저장소 없음", invalid_ref: "잘못된 참조",
   foreign_ref: "이 실행에 속하지 않는 참조", too_large: "크기 한도 초과 (64 KiB)", integrity_failure: "무결성 불일치",
   invalid_json: "JSON 해석 불가", invalid_shape: "형식 불일치", io_error: "읽기 오류",
+  binding_mismatch: "다른 실행의 기록 (표시하지 않음)",
 }
 const EVENT_LABEL: Record<string, Label> = {
   tool_started: { label: "도구 시작", tone: "neutral", note: "Claude 도구 호출 시작" },
@@ -639,23 +686,56 @@ function eventEntry(entry: WireActivityEntry, index: number, now: number): Event
     occurredAt: entry.occurred_at,
     occurredText: entry.occurred_at === null ? "발생 시각 기록 없음"
       : occurred === null ? "발생 시각 해석 불가" : `${formatDuration(occurred)} 전 발생`,
+    source: entry.source,
+    ...entryMetadata(entry),
     sequence: entry.sequence,
     collectedAt: entry.collected_at,
-    isLastRecord: entry.sequence !== null || entry.collected_at !== null,
+    isLastRecord: entry.source === "progress_receipt" && (entry.sequence !== null || entry.collected_at !== null),
   }
 }
 
+/** The metadata line of one entry; never inferred, only what the collector projected for this entry's ring. */
+function entryMetadata(entry: WireActivityEntry): Pick<EventEntry, "metadataKind" | "metadata"> {
+  if (entry.source === "activity_receipt") {
+    if (entry.state !== "ok") return { metadataKind: "none", metadata: [] }
+    const lineage = entry.generation === null && entry.attempt === null ? "리스 없음"
+      : `세대 ${entry.generation ?? "?"} · 시도 ${entry.attempt ?? "?"}`
+    return { metadataKind: "activity_receipt", metadata: [
+      { key: "activity_sequence", label: "활동 순번", value: String(entry.activity_sequence), time: null },
+      { key: "progress_sequence", label: "진행 순번", value: entry.sequence === null ? "없음 (도구 시작)" : String(entry.sequence), time: null },
+      { key: "collected_at", label: "실행기 수집 시각", value: entry.collected_at ?? "기록 없음", time: entry.collected_at },
+      { key: "lineage", label: "이벤트 세대/시도", value: lineage, time: null },
+    ] }
+  }
+  if (entry.sequence === null && entry.collected_at === null) return { metadataKind: "none", metadata: [] }
+  return { metadataKind: "legacy_last_record", metadata: [
+    { key: "sequence", label: "순번", value: entry.sequence === null ? "기록 없음" : String(entry.sequence), time: null },
+    { key: "collected_at", label: "수집 시각", value: entry.collected_at ?? "기록 없음", time: entry.collected_at },
+  ] }
+}
+
+function droppedText(count: number | null): EventLog["dropped"] {
+  return { count, text: count === null || count === 0 ? null
+    : `기록되지 못한 활동 이벤트 ${formatNumber(count)}개 · 표시 기록일 뿐이며 전체 이벤트 손실 수치가 아님` }
+}
+
 function eventLog(wire: WireExecution, now: number): EventLog {
+  const legacyNotices = { ...EVENT_LOG_NOTICES, legacyResult: null }
   if (wire.activity_status === null || wire.activity === null) {
     return { collected: false, status: { label: "수집 안 함", tone: "unknown", raw: null,
       note: "이 수집기는 활동 이벤트를 수집하지 않음 (이전 버전) · 비어 있다는 뜻이 아님" },
-      entries: [], gapText: "이 수집기는 활동 이벤트를 수집하지 않음 (이전 버전)", notices: EVENT_LOG_NOTICES }
+      entries: [], gapText: "이 수집기는 활동 이벤트를 수집하지 않음 (이전 버전)", notices: legacyNotices,
+      dropped: droppedText(wire.activity_dropped) }
   }
   const entries = wire.activity.map((entry, index) => eventEntry(entry, index, now))
   const status = { ...lookup(ACTIVITY_STATUS, wire.activity_status), raw: wire.activity_status }
   const failed = entries.filter((entry) => entry.state.raw !== "ok").length
+  const compact = wire.activity.some((entry) => entry.source === "activity_receipt")
+  const legacyResult = !compact && wire.activity.some((entry) => entry.event_label === "result" && entry.status === "success")
   return {
-    collected: true, status, entries, notices: EVENT_LOG_NOTICES,
+    collected: true, status, entries, dropped: droppedText(wire.activity_dropped),
+    notices: { ...EVENT_LOG_NOTICES, qualification: compact ? COMPACT_QUALIFICATION : EVENT_LOG_NOTICES.qualification,
+               legacyResult: legacyResult ? LEGACY_RESULT_NOTE : null },
     gapText: entries.length === 0 ? status.note
       : failed > 0 ? `${entries.length}개 중 ${failed}개 항목을 읽지 못함 · 항목마다 사유 표시` : null,
   }
@@ -693,6 +773,9 @@ function row(lane: string, wire: WireExecution, now: number): SessionRow {
       sequence: progress?.sequence ?? null,
       lastCompleted: progress?.last_completed
         ? [progress.last_completed.type, progress.last_completed.status].filter(Boolean).join(" · ") || null : null,
+      // Only a row shown from the compact ring proves the S2b producer (whose result status uses is_error) wrote it.
+      lastCompletedNote: progress?.last_completed?.type === "result" && progress.last_completed.status === "success"
+        && !(wire.activity ?? []).some((entry) => entry.source === "activity_receipt") ? LEGACY_RESULT_NOTE : null,
       malformed: progress?.malformed_events ?? 0,
       ageText: progress === null ? "진행 기록 없음" : age(progress.collected_at, now) === null ? "수집 시각 해석 불가"
         : `${formatDuration(age(progress.collected_at, now))} 전`,
