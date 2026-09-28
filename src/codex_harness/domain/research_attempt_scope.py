@@ -145,9 +145,15 @@ def reservations(*, dispatches, successors, recoveries=(), families=()) -> dict:
     for row in successors:
         if not isinstance(row, dict) or row.get("state") != AUTHORIZED:
             continue
-        pinned = (row.get("members") or {}).get("job_ids") if isinstance(row.get("members"), dict) else None
+        members = row.get("members")
+        if members is None:
+            # A read-only successor (no pinned set) recaptures its family's current members when claimed, like
+            # a recovery: its OWN cause is unverifiable, never every cause.
+            unverifiable.add(causes.get(row.get("investigation")))
+            continue
+        pinned = members.get("job_ids") if isinstance(members, dict) else None
         if not isinstance(pinned, list) or not all(type(j) is str and j for j in pinned):
-            unverifiable.add(None)
+            unverifiable.add(causes.get(row.get("investigation")))
         else:
             reserved |= set(pinned)
     return {"reserved": reserved, "unverifiable": unverifiable}

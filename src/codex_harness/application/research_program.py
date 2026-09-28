@@ -3,9 +3,9 @@
 Four buckets: `research_programs` (immutable config, digest, durable counters and state),
 `research_program_candidates` (dedup identity across cycles, relevance reason, claim and result),
 `research_program_cycles` (one receipt per reserved cycle) and `research_investigation_dispatches`
-(one claim per portfolio investigation, keyed SOLELY by investigation id, across every program).
-Every state change is one store transaction that re-reads the row it expects; no transaction stays
-open across network, Git or provider work: the adapter reserves, then fetches, then records. A
+(one claim per portfolio investigation or attempt scope, keyed SOLELY by that claim identity, across
+every program). Every state change is one store transaction that re-reads the row it expects; no
+transaction stays open across network, Git or provider work: the adapter reserves, then fetches, then records. A
 reserved cycle stays owned until its owner records a terminal fact; a crash leaves it owned and the
 program busy, never assumed empty. Counters never reset: the adoption cap counts every dispatched
 council, accepted or not.
@@ -42,6 +42,14 @@ recovery: it follows up the ACCEPTED current dispatch of a report-only program w
 membership gained a member, through the same successor rows and head; the claim refuses any drift from the
 pinned membership, and the accepted predecessor and its receipts stay history. Its replacement config may
 re-point only the report content at the new members (`followup_scope`); `same_authority` is not loosened.
+
+The attempt-scope bridge (INV-RESEARCH-ATTEMPT-SCOPE-001, FLEET-U2B-SPEC) is a third explicit opt-in kind: an
+`attempt_scope_source` program claims EXACTLY one held research intent's complete attempt set under the
+intent's own identity `attempt-scope.<intent id>`, never a Portfolio failure family. Its cycle is reserved only
+for the owner `research_dispatch` launch whose id is the cycle owner token (`attempt_scope_target`), and its
+collection selects only that exact target, revalidated in the same transaction, or nothing: no feed, local or
+other candidate consumes its adoption. Every stored scope claim permanently holds its member jobs against any
+family, recovery, successor or follow-up claim, and a scope claim itself has no recovery lineage at all.
 """
 from __future__ import annotations
 
@@ -82,7 +90,32 @@ from codex_harness.domain.audit_progress import (
 from codex_harness.domain.audit_progress import (
     snapshot as progress_snapshot,
 )
+from codex_harness.domain.continuation import (
+    ATTEMPT_SCOPE_PREFIX,
+    attempt_scope_id,
+    research_attempts,
+)
+from codex_harness.domain.continuation import RESEARCH as RESEARCH_ROUTE
+from codex_harness.domain.continuation import RESEARCH_REQUIRED as INTENT_HELD
 from codex_harness.domain.model import ContractError, digest, require, utcnow
+from codex_harness.domain.owner_actions import (
+    LAUNCHING,
+    RESEARCH_DISPATCH,
+    RUNNING,
+    action_id,
+    research_launch_id,
+)
+from codex_harness.domain.research_attempt_scope import KIND as ATTEMPT_SCOPE
+from codex_harness.domain.research_attempt_scope import SOURCE_NAME as SCOPE_SOURCE
+from codex_harness.domain.research_attempt_scope import candidate_identity as scope_candidate
+from codex_harness.domain.research_attempt_scope import (
+    eligible_attempt_scopes,
+    held_jobs,
+    reservations,
+    scope_claimed,
+    scope_rivals,
+    scope_snapshot,
+)
 from codex_harness.domain.research_investigations import (
     AUTHORIZED,
     CONTRACT_MODE,
@@ -94,6 +127,7 @@ from codex_harness.domain.research_investigations import (
     FOLLOWUP_PROOF,
     FOLLOWUP_SCHEMA,
     INITIAL_VERSION,
+    MAX_JOB_SAMPLE,
     RECOVERED,
     REFUSED,
     RESOLVED,
@@ -121,6 +155,7 @@ from codex_harness.domain.research_investigations import (
     revocation_held,
     revocation_owner,
     revocation_task_id,
+    scoped_job_ids,
     snapshot,
     successor_dispatch_id,
     successor_held,
@@ -132,6 +167,7 @@ from codex_harness.domain.research_investigations import (
     validate_followup_request,
     validate_recovery_request,
 )
+from codex_harness.domain.research_investigations import KIND as FAMILY_KIND
 from codex_harness.domain.research_investigations import (
     SOURCE as INVESTIGATION,
 )
@@ -181,6 +217,17 @@ MAX_LINEAGE = 1000
 BUCKET_TERMINATIONS, SETTLED_TERMINATIONS = "observation_terminations", frozenset({"closed", "resolved"})
 ELIGIBLE_REASON, INELIGIBLE_REASON = "portfolio_investigation_eligible", "investigation_ineligible"
 PROGRESS_ELIGIBLE_REASON, PROGRESS_INELIGIBLE_REASON = "audit_progress_eligible", "audit_progress_ineligible"
+# INV-RESEARCH-ATTEMPT-SCOPE-001: the continuation and owner-action rows an attempt scope reads and never writes,
+# named here as `application.owner_actions` names them, so this state machine imports neither owner.
+BUCKET_POLICIES, BUCKET_INTENTS, BUCKET_RECEIPTS = ("continuation_policies", "continuation_intents",
+                                                    "continuation_research_receipts")
+BUCKET_OWNER_ACTIONS = "owner_actions"
+SCOPE_ELIGIBLE_REASON, SCOPE_INELIGIBLE_REASON = "attempt_scope_eligible", "attempt_scope_ineligible"
+# The fixed no-selection reasons of a scoped cycle, and the refusal of any lineage request naming a scope.
+SCOPE_TARGET_UNAVAILABLE = "attempt_scope_target_unavailable"
+SCOPE_TARGET_INELIGIBLE, SCOPE_TARGET_AMBIGUOUS = "attempt_scope_target_ineligible", "attempt_scope_target_ambiguous"
+SCOPE_COMPETING = "attempt_scope_competing_program"
+SCOPE_FINAL = "attempt_scope_final"
 
 
 class ResearchProgram:
@@ -249,7 +296,11 @@ class ResearchProgram:
         """One transaction before any fetch: the current repository identity must equal the
         registered one (review001 R1: `repository_mismatch` is raised before any reservation, log,
         fetch, capture or model effect), then pause, deadline, cap, interval and busy checks, then
-        the next cycle number with a fresh owner token. `reserved` False carries the fixed reason."""
+        the next cycle number with a fresh owner token. `reserved` False carries the fixed reason.
+
+        An `attempt_scope_source` program reserves only for its bound owner launch (`_scope_target`): a
+        missing, ambiguous or foreign target refuses `attempt_scope_target_unavailable` here, before anything
+        is reserved, and only that cycle stores its `attempt_scope_target` (INV-RESEARCH-ATTEMPT-SCOPE-001)."""
         with self.store.transaction() as tx:
             row = self._row(tx, program_id)
             if not repository or row.get("repository") != repository:
@@ -272,18 +323,72 @@ class ResearchProgram:
                 return {"reserved": False, "reason": "max_cycles_reached", "state": COMPLETED}
             if not due(row["last_tick_at"], config["interval_seconds"], now):
                 return {"reserved": False, "reason": "not_due", "state": ACTIVE, "last_tick_at": row["last_tick_at"]}
-            number = row["next_cycle"]
-            cycle = {"id": cycle_id(program_id, number), "program": program_id, "number": number, "owner": self.token(),
+            number, owner = row["next_cycle"], self.token()
+            target = self._scope_target(tx, row, number, owner) if config.get(SCOPE_SOURCE) is not None else None
+            cycle = {"id": cycle_id(program_id, number), "program": program_id, "number": number, "owner": owner,
                      "status": COLLECTING, "counts": None, "sources": None, "selection": None, "budget": None,
                      "capture": None, "council": None, "result": None, "failure": None, "stop_reason": None,
                      "remaining": {"cycles": config["max_cycles"] - row["cycles"] - 1,
                                    "adoptions": config["max_adoptions"] - row["adoptions"]},
                      "started_at": now, "updated_at": now, "finished_at": None}
+            if target is not None:
+                cycle["attempt_scope_target"] = target   # an invocation restriction, never claim authority
             require(tx.get(BUCKET_CYCLES, cycle["id"]) is None, "Research program cycle row already exists")
             tx.put(BUCKET_CYCLES, cycle["id"], cycle)
             row.update(active_cycle=cycle["id"], next_cycle=number + 1, updated_at=now)
             tx.put(BUCKET_PROGRAMS, program_id, row)
         return {"reserved": True, "reason": None, "state": ACTIVE, "cycle": cycle, "config": config}
+
+    @staticmethod
+    def _scope_target(tx, row: dict, number: int, owner: str) -> dict:
+        """The ONE owner `research_dispatch` launch this scoped cycle serves (FLEET-U2B-SPEC §3), resolved from the
+        durable owner-action row whose launch id IS the cycle owner token (`--cycle-owner`), never from a matching
+        string alone: the action is `launching`/`running`, its binding is unchanged (its id, digest and derived
+        launch id recompute), it names this program and this cycle number, and it names the held intent's own
+        scope id and exactly that intent's complete attempt jobs, recomputed here from `research_attempts`.
+
+        Returns `{scope, intent_id, attempts_sha256}`: an invocation restriction the cycle keeps, never claim
+        authority (collection re-validates the whole rule). Anything else refuses `attempt_scope_target_unavailable`
+        with a field name only, so a direct or scheduled tick without a bound owner launch reserves nothing."""
+        def unavailable(field: str):
+            raise ProgramRefused(SCOPE_TARGET_UNAVAILABLE, field)
+
+        source = row["config"][SCOPE_SOURCE]
+        launches = [a for a in tx.scan(BUCKET_OWNER_ACTIONS)
+                    if isinstance(a, dict) and a.get("kind") == RESEARCH_DISPATCH and a.get("launch_id") == owner]
+        if len(launches) != 1:
+            unavailable("cycle_owner")
+        action = launches[0]
+        binding = action.get("binding")
+        if not (isinstance(binding, dict) and action.get("state") in {LAUNCHING, RUNNING}
+                and action.get("id") == action_id(RESEARCH_DISPATCH, binding)
+                and action.get("binding_sha256") == digest(binding) and type(action.get("launches")) is int
+                and owner == research_launch_id(action["id"], action["launches"])):
+            unavailable("owner_action")
+        if binding.get("program_id") != row["id"] or binding.get("expected_cycle") != number:
+            unavailable("binding")
+        intent_id = binding.get("intent_id")
+        try:
+            scope = attempt_scope_id(intent_id)
+        except ContractError:
+            unavailable("binding.intent_id")
+        intent = tx.get(BUCKET_INTENTS, intent_id)
+        if not (isinstance(intent, dict) and intent.get("id") == intent_id and intent.get("route") == RESEARCH_ROUTE
+                and intent.get("state") == INTENT_HELD and tx.get(BUCKET_RECEIPTS, intent_id) is None
+                and intent.get("policy_id") == binding.get("continuation_policy") == source["continuation_policy"]
+                and intent.get("family") == binding.get("family") and intent.get("family") in source["families"]
+                and binding.get("investigation") == scope):
+            unavailable("binding.intent_id")
+        intents = [r for r in tx.scan(BUCKET_INTENTS)
+                   if isinstance(r, dict) and r.get("policy_id") == intent["policy_id"]]
+        try:
+            attempts = research_attempts(intents, intent)
+        except (KeyError, TypeError):
+            unavailable("binding.attempts")
+        jobs = [a["job"] for a in attempts]
+        if len(set(jobs)) != len(jobs) or sorted(jobs) != binding.get("attempts"):
+            unavailable("binding.attempts")
+        return {"scope": scope, "intent_id": intent_id, "attempts_sha256": digest(attempts)}
 
     def _owned(self, tx, cycle_ref: str, owner: str, statuses) -> tuple[dict, dict]:
         cycle = tx.get(BUCKET_CYCLES, cycle_ref)
@@ -341,8 +446,15 @@ class ResearchProgram:
                 tx.put(BUCKET_CANDIDATES, candidate["_key"], candidate)
             bridge = self._investigations(tx, row, cycle, known, now)
             progress = self._audit_progress(tx, row, cycle, known, now)
+            scoped = self._attempt_scopes(tx, row, cycle, known, now)
             room = headroom(config["budget"], counts)
-            selection = select_candidate(list(known.values()), row["adoptions"], config["max_adoptions"], room)
+            pool, withheld = list(known.values()), None
+            if scoped is not None:
+                # INV-RESEARCH-ATTEMPT-SCOPE-001: the eligible input is constrained, never `select_candidate`
+                # itself: the cycle's exact target or nothing, so no other lead can consume its adoption.
+                pool, withheld = self._scope_pool(tx, row, cycle, known)
+            selection = (select_candidate(pool, row["adoptions"], config["max_adoptions"], room) if withheld is None
+                         else {"candidate": None, "reason": withheld})
             chosen = selection["candidate"]
             budget = {**{k: counts.get(k) for k in ("this_host", "all_hosts", "unreadable")}, **config["budget"], "headroom": room}
             if chosen is not None:
@@ -354,7 +466,7 @@ class ResearchProgram:
                     # The cross-program claim commits with this selection and this cycle
                     # bookkeeping. One bucket, one claim per candidate id, whatever the kind.
                     claimed = self._claim_investigation(tx, chosen, cycle, now)["investigation"]
-                    receipt = progress if chosen.get("kind") == AUDIT_PROGRESS else bridge
+                    receipt = {AUDIT_PROGRESS: progress, ATTEMPT_SCOPE: scoped}.get(chosen.get("kind"), bridge)
                     receipt["claimed"] = claimed
             cycle.update(status=SELECTED if chosen else NO_SELECTION, counts=tally, sources=sources, budget=budget,
                          investigations=bridge, audit_progress=progress,
@@ -362,6 +474,8 @@ class ResearchProgram:
                                     "source": None if chosen is None else chosen["source"]},
                          remaining={"cycles": cycle["remaining"]["cycles"], "adoptions": config["max_adoptions"] - row["adoptions"]},
                          updated_at=now)
+            if scoped is not None:
+                cycle["attempt_scope"] = scoped   # an opted-in program's cycles only: legacy cycle bytes unchanged
             tx.put(BUCKET_CYCLES, cycle["id"], cycle)
             row.update(updated_at=now)
             tx.put(BUCKET_PROGRAMS, row["id"], row)
@@ -382,7 +496,8 @@ class ResearchProgram:
         source = row["config"].get("investigation_source")
         if source is None:
             return None
-        claimed = {d["investigation"] for d in tx.scan(BUCKET_DISPATCHES) if type(d.get("investigation")) is str}
+        rows = tx.scan(BUCKET_DISPATCHES)
+        claimed = {d["investigation"] for d in rows if type(d.get("investigation")) is str}
         # research-dispatch-recovery-001: an authorized, not yet claimed replacement is unclaimed for
         # ITS named program only; every other program still sees the failed claim.
         # A revocation-mode lineage releases it only while its own retained fence still holds.
@@ -393,9 +508,12 @@ class ResearchProgram:
         # retained chain (original fence included) still holds.
         claimed -= {h["investigation"] for h in tx.scan(BUCKET_HEADS)
                     if self._authorized_successor(tx, h.get("investigation"), row["id"]) is not None}
-        found = eligible_investigations(investigations=tx.scan(BUCKET_INVESTIGATIONS), jobs=tx.scan(BUCKET_JOBS),
-                                        bindings=tx.scan(BUCKET_BINDINGS), source=source, claimed=claimed,
-                                        required_state=RESEARCH_REQUIRED, minimum=FAMILY_MINIMUM)
+        investigations, jobs, bindings = tx.scan(BUCKET_INVESTIGATIONS), tx.scan(BUCKET_JOBS), tx.scan(BUCKET_BINDINGS)
+        # INV-RESEARCH-ATTEMPT-SCOPE-001 reverse overlap, applied AFTER the recovery and successor releases so
+        # neither can erase it: a family whose scoped set holds a scope-held job is claimed, never selected.
+        claimed |= self._scope_held_families(rows, investigations, jobs, bindings, source)
+        found = eligible_investigations(investigations=investigations, jobs=jobs, bindings=bindings, source=source,
+                                        claimed=claimed, required_state=RESEARCH_REQUIRED, minimum=FAMILY_MINIMUM)
         current, new, ineligible = {}, 0, 0
         for entry in found["candidates"]:
             key = candidate_key(INVESTIGATION, entry["investigation"])
@@ -422,7 +540,7 @@ class ResearchProgram:
                                 seen=existing["seen"] + 1, updated_at=now)
             tx.put(BUCKET_CANDIDATES, existing["_key"], existing)
         for entry in known.values():
-            if (entry["source"] != INVESTIGATION or entry.get("kind") == AUDIT_PROGRESS
+            if (entry["source"] != INVESTIGATION or entry.get("kind") in (AUDIT_PROGRESS, ATTEMPT_SCOPE)
                     or entry["status"] != ELIGIBLE or entry.get("investigation") in current):
                 continue    # another kind's candidates are owned by their own rule, never by this one
             # State, scope or a competing claim changed: drop the cached snapshot with the eligibility.
@@ -489,15 +607,159 @@ class ResearchProgram:
         return {"counts": found["counts"], "new": new, "ineligible": ineligible, "claimed": None,
                 "result": None, "reported_result": None, "policy_sha256": self.progress_policy_sha256}
 
+    # ----- attempt-scope bridge (INV-RESEARCH-ATTEMPT-SCOPE-001) ------------------------------------------
+    def _attempt_scopes(self, tx, row: dict, cycle: dict, known: dict, now: str) -> dict | None:
+        """Synthesize and REVALIDATE this program's attempt-scope candidates from the authoritative rows in
+        this transaction, immediately before selection. `None` when the program did not opt in: nothing is
+        read and the legacy behaviour is byte-identical.
+
+        The one pure rule (`eligible_attempt_scopes`, shared with the owner decision) reads the registered
+        continuation policy, the held intents of that policy, their stored receipts, the Fleet jobs, the
+        Portfolio bindings and cause rows (read only) and every dispatch, recovery, head and successor row.
+        A cached scope snapshot that is no longer eligible is dropped; nothing outside the candidate rows
+        is written here and no discovery item can reach this rule."""
+        source = row["config"].get(SCOPE_SOURCE)
+        if source is None:
+            return None
+        found = eligible_attempt_scopes(source=source, **self._scope_rows(tx, source))
+        current, new, ineligible = set(), 0, 0
+        for entry in found["candidates"]:
+            key = candidate_key(INVESTIGATION, entry["investigation"])
+            current.add(entry["investigation"])
+            document = scope_snapshot(candidate=entry, program_id=row["id"], cycle_number=cycle["number"],
+                                      topic=source["topic"], observed_at=now)
+            existing = known.get(key)
+            if existing is None:
+                identity = scope_candidate(entry["intent_id"])    # the full intent id, never truncated
+                existing = {"id": identity, "program": row["id"], "key": key, "source": INVESTIGATION,
+                            "kind": ATTEMPT_SCOPE, "url": None, "path": None, "sha256": None, "title": None,
+                            "summary": None, "content_sha256": document["job_ids_sha256"], "topic": source["topic"],
+                            "reason": SCOPE_ELIGIBLE_REASON, "status": ELIGIBLE, "investigation": entry["investigation"],
+                            "snapshot": document, "first_cycle": cycle["number"], "last_cycle": cycle["number"],
+                            "seen": 1, "claimed_cycle": None, "result": None, "created_at": now, "updated_at": now,
+                            "_key": row["id"] + ":" + identity}
+                new += 1
+                known[key] = existing
+            elif existing["status"] == CLAIMED:
+                continue    # its dispatch owns the scope; a claim is never recomputed
+            else:
+                existing.update(status=ELIGIBLE, reason=SCOPE_ELIGIBLE_REASON, snapshot=document,
+                                content_sha256=document["job_ids_sha256"], last_cycle=cycle["number"],
+                                seen=existing["seen"] + 1, updated_at=now)
+            tx.put(BUCKET_CANDIDATES, existing["_key"], existing)
+        for entry in known.values():
+            if entry.get("kind") != ATTEMPT_SCOPE or entry["status"] != ELIGIBLE or entry.get("investigation") in current:
+                continue
+            entry.update(status=IGNORED, reason=SCOPE_INELIGIBLE_REASON, snapshot=None, updated_at=now)
+            tx.put(BUCKET_CANDIDATES, entry["_key"], entry)
+            ineligible += 1
+        return {"counts": found["counts"], "new": new, "ineligible": ineligible, "claimed": None,
+                "result": None, "reported_result": None}
+
+    @staticmethod
+    def _scope_rows(tx, source: dict) -> dict:
+        """ONE consistent read of every row the attempt-scope rule needs, in the caller's transaction."""
+        return {"policies": tx.scan(BUCKET_POLICIES),
+                "intents": [r for r in tx.scan(BUCKET_INTENTS)
+                            if isinstance(r, dict) and r.get("policy_id") == source["continuation_policy"]],
+                "receipts": tx.scan(BUCKET_RECEIPTS), "jobs": tx.scan(BUCKET_JOBS), "bindings": tx.scan(BUCKET_BINDINGS),
+                "investigations": tx.scan(BUCKET_INVESTIGATIONS), "dispatches": tx.scan(BUCKET_DISPATCHES),
+                "recoveries": tx.scan(BUCKET_RECOVERIES), "heads": tx.scan(BUCKET_HEADS),
+                "successors": tx.scan(BUCKET_SUCCESSORS)}
+
+    @staticmethod
+    def _scope_pool(tx, row: dict, cycle: dict, known: dict) -> tuple[list, str | None]:
+        """The ONLY candidate a scoped cycle may select (FLEET-U2B-SPEC §3 risk 6): its reserved target, when it is
+        still the unique eligible scope with the SAME attempt-pairs digest and no rival program could take the same
+        work. Otherwise `([], fixed reason)`: no feed, local, other held intent or cached snapshot substitutes, so
+        the cycle selects nothing and its adoption is never consumed."""
+        target = cycle.get("attempt_scope_target")
+        if not (isinstance(target, dict) and type(target.get("scope")) is str):
+            return [], SCOPE_TARGET_UNAVAILABLE   # a cycle reserved without a bound owner launch
+        eligible = [c for c in known.values() if c.get("kind") == ATTEMPT_SCOPE and c["status"] == ELIGIBLE]
+        chosen = known.get(candidate_key(INVESTIGATION, target["scope"]))
+        scope = ((chosen or {}).get("snapshot") or {}).get("scope") or {}
+        if not (chosen is not None and chosen.get("kind") == ATTEMPT_SCOPE and chosen["status"] == ELIGIBLE
+                and scope.get("intent_id") == target.get("intent_id")
+                and scope.get("attempts_sha256") == target.get("attempts_sha256")):
+            return [], SCOPE_TARGET_INELIGIBLE
+        if len(eligible) != 1:
+            return [], SCOPE_TARGET_AMBIGUOUS
+        if scope_rivals(tx.scan(BUCKET_PROGRAMS), program_id=row["id"], reason=chosen["snapshot"]["reason_code"],
+                        source=row["config"][SCOPE_SOURCE]):
+            return [], SCOPE_COMPETING
+        return [chosen], None
+
+    @staticmethod
+    def _scope_held_families(dispatches, investigations, jobs, bindings, source: dict) -> set:
+        """Failure families this program may NOT claim because a stored attempt-scope claim, in ANY state, holds
+        one of their scoped jobs, or because their capture would be a truncated sample of a cause a scope claim
+        holds (disjointness unprovable at the claim). Empty while no scope claim exists: legacy is unchanged."""
+        held = held_jobs(dispatches)
+        if not held:
+            return set()
+        causes = {(d.get("family_status"), d.get("reason_code")) for d in dispatches
+                  if isinstance(d, dict) and d.get("kind") == ATTEMPT_SCOPE}
+        job_rows = {j["id"]: j for j in jobs if isinstance(j, dict) and type(j.get("id")) is str}
+        binding_rows = {b["job_id"]: b for b in bindings if isinstance(b, dict) and type(b.get("job_id")) is str}
+        blocked = set()
+        for family in investigations:
+            if not (isinstance(family, dict) and family.get("kind", FAMILY_KIND) == FAMILY_KIND
+                    and type(family.get("id")) is str):
+                continue    # another kind, or malformed: the family rule counts it
+            scoped = scoped_job_ids(family, job_rows, binding_rows, set(source["project_ids"]))
+            if scoped is not None and (set(scoped) & held or (len(scoped) > MAX_JOB_SAMPLE and (
+                    family.get("family_status"), family.get("reason_code")) in causes)):
+                blocked.add(family["id"])
+        return blocked
+
+    @staticmethod
+    def _require_scope_disjoint(tx, document: dict, scoped: bool) -> None:
+        """The claim-time overlap defence, in the claiming transaction (INV-RESEARCH-ATTEMPT-SCOPE-001).
+
+        A scope claim re-checks the forward direction: no lifecycle row may name the scope and no member may be
+        reserved by any dispatch capture or pinned successor, nor sit in an unverifiable cause
+        (`attempt_scope_overlap`). Any other claim (family original, recovery replacement, successor, follow-up)
+        refuses `investigation_scope_overlap` when its snapshot holds a scope-held job, or is a truncated sample
+        of a cause a scope claim holds. A kind without job membership, or a store without scope claims, passes."""
+        rows = tx.scan(BUCKET_DISPATCHES)
+        ids = document.get("job_ids")
+        cause = (document.get("family_status"), document.get("reason_code"))
+        if scoped:
+            recoveries, heads, successors = tx.scan(BUCKET_RECOVERIES), tx.scan(BUCKET_HEADS), tx.scan(BUCKET_SUCCESSORS)
+            if scope_claimed(document["investigation"], dispatches=rows, recoveries=recoveries, heads=heads,
+                             successors=successors):
+                raise ProgramRefused("investigation_already_claimed")
+            families = [r for r in tx.scan(BUCKET_INVESTIGATIONS)
+                        if isinstance(r, dict) and r.get("kind", FAMILY_KIND) == FAMILY_KIND]
+            reserved = reservations(dispatches=rows, successors=successors, recoveries=recoveries, families=families)
+            if (set(ids) & reserved["reserved"] or cause in reserved["unverifiable"]
+                    or None in reserved["unverifiable"]):
+                raise ProgramRefused("attempt_scope_overlap")
+            return
+        held = held_jobs(rows)
+        if not held or not isinstance(ids, list):
+            return
+        truncated = bool(document.get("job_ids_truncated")) or document.get("job_ids_total") != len(ids)
+        same_cause = any(isinstance(r, dict) and r.get("kind") == ATTEMPT_SCOPE
+                         and (r.get("family_status"), r.get("reason_code")) == cause for r in rows)
+        if set(ids) & held or (truncated and same_cause):
+            raise ProgramRefused("investigation_scope_overlap")
+
     def _claim_investigation(self, tx, chosen: dict, cycle: dict, now: str) -> dict:
         """The durable cross-program claim, keyed solely by investigation id. A row that appeared in
-        the meantime refuses the whole transaction: two programs and two workers cannot both claim."""
+        the meantime refuses the whole transaction: two programs and two workers cannot both claim.
+
+        An attempt-scope claim is keyed by its scope id and never takes the recovery or successor branch;
+        every claim first passes the scope overlap defence (INV-RESEARCH-ATTEMPT-SCOPE-001)."""
         document = chosen.get("snapshot")
         require(isinstance(document, dict) and document.get("investigation") == chosen["investigation"],
                 "Research investigation candidate must carry its snapshot")
+        scoped = chosen.get("kind") == ATTEMPT_SCOPE
+        self._require_scope_disjoint(tx, document, scoped)
         dispatch = dispatch_row(document=document, candidate_id=chosen["id"], cycle_ref=cycle["id"], now=now)
-        recovery = tx.get(BUCKET_RECOVERIES, chosen["investigation"])
-        successor = self._authorized_successor(tx, chosen["investigation"], cycle["program"])
+        recovery = None if scoped else tx.get(BUCKET_RECOVERIES, chosen["investigation"])
+        successor = None if scoped else self._authorized_successor(tx, chosen["investigation"], cycle["program"])
         if successor is not None:
             # The ONE successor of the exact failed head: its own versioned key, bound to the
             # authorization row and the predecessor it supersedes; the predecessor row, the original
@@ -602,6 +864,7 @@ class ResearchProgram:
         if request.get("mode") == REVOCATION_MODE:
             return self._revoke_dispatch(request, request_sha)
         with self.store.transaction() as tx:
+            self._refuse_scope_lineage(tx, investigation)
             row = self._recovery_row(tx, investigation, request_sha)
             if row is not None and row["state"] != FENCED:
                 return self._recovery_result(row, cached=True)
@@ -664,6 +927,7 @@ class ResearchProgram:
         or corrupt one refuses by name and never re-arms or re-authorizes."""
         investigation = request["investigation"]
         with self.store.transaction() as tx:
+            self._refuse_scope_lineage(tx, investigation)
             row = self._recovery_row(tx, investigation, request_sha)
             if row is not None:
                 self._require_revocation(tx, row)
@@ -722,6 +986,7 @@ class ResearchProgram:
         version = successor_version(old["lineage_version"])
         key = successor_key(investigation, version)
         with self.store.transaction() as tx:
+            self._refuse_scope_lineage(tx, investigation, old["dispatch"])
             row = tx.get(BUCKET_SUCCESSORS, key)
             if row is not None:
                 return self._successor_replay(tx, row, request_sha)
@@ -849,6 +1114,7 @@ class ResearchProgram:
         version = successor_version(old["lineage_version"])
         key = successor_key(investigation, version)
         with self.store.transaction() as tx:
+            self._refuse_scope_lineage(tx, investigation, old["dispatch"])
             row = tx.get(BUCKET_SUCCESSORS, key)
             if row is not None:
                 return self._successor_replay(tx, row, request_sha)
@@ -995,6 +1261,16 @@ class ResearchProgram:
             raise ProgramRefused(held, "revoke")
 
     @staticmethod
+    def _refuse_scope_lineage(tx, investigation: str, dispatch: str | None = None) -> None:
+        """INV-RESEARCH-ATTEMPT-SCOPE-001: a scope claim is final. No recovery (any version), replacement,
+        successor or follow-up may name a scope identity or a scope dispatch: refused by kind at every entry,
+        first in its transaction, so nothing is fenced, quarantined or written (`attempt_scope_final`)."""
+        rows = [tx.get(BUCKET_DISPATCHES, key) for key in sorted({investigation, dispatch} - {None})]
+        if investigation.startswith(ATTEMPT_SCOPE_PREFIX) or any(
+                isinstance(r, dict) and r.get("kind") == ATTEMPT_SCOPE for r in rows):
+            raise ProgramRefused(SCOPE_FINAL, "investigation")
+
+    @staticmethod
     def _recovery_row(tx, investigation: str, request_sha: str) -> dict | None:
         row = tx.get(BUCKET_RECOVERIES, investigation)
         if row is None:
@@ -1111,7 +1387,8 @@ class ResearchProgram:
         """The cycle receipt carries the dispatch outcome beside the council outcome, so a status or
         report reader sees a dispatch that is NOT an acceptance without reading another bucket. The
         outcome lands on the receipt of the kind that was actually claimed."""
-        name = "audit_progress" if dispatch.get("kind") == AUDIT_PROGRESS else "investigations"
+        name = {AUDIT_PROGRESS: "audit_progress", ATTEMPT_SCOPE: "attempt_scope"}.get(dispatch.get("kind"),
+                                                                                    "investigations")
         if isinstance(cycle.get(name), dict):
             cycle[name].update(result=dispatch["result"], reported_result=dispatch.get("reported_result"))
 

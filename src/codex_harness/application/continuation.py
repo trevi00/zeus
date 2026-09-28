@@ -48,6 +48,7 @@ from codex_harness.application.portfolio import BUCKET_BINDINGS, PortfolioRefuse
 from codex_harness.domain.continuation import (
     ADMITTED,
     ADMITTING_ROUTES,
+    ATTEMPT_SCOPE_PREFIX,
     AUTHORITY,
     AWAITING_OWNER,
     BINDING_SCHEMA,
@@ -100,6 +101,7 @@ from codex_harness.domain.continuation import (
     TICK_SCHEMA,
     ContinuationRefused,
     attempt_of,
+    attempt_scope_id,
     authorization,
     bind_delivery,
     blocked_families,
@@ -490,7 +492,7 @@ class Continuation:
                 refuse(old.get("receipt") == receipt, "research_receipt_conflict", "operator", "intent_id")
             # The retained fence again in THIS writer transaction (never a nested one): a concurrent
             # insertion, or a fence lost since the read, never returns acceptance.
-            self._require_recovery({"recovery_held": self._recovery_held(tx, receipt["investigation"])})
+            self._require_recovery({"recovery_held": self._held(tx, receipt)})
             if old is not None:
                 return self._receipt_result(old, cached=True)
             # Nothing moved between the verification and this write: same intent version, same set.
@@ -581,7 +583,7 @@ class Continuation:
             old = tx.get(BUCKET_RESEARCH_SUPPLEMENTS, supplement["intent_id"])
             if old is not None:
                 refuse(old.get("supplement") == supplement, "research_supplement_conflict", "operator", "intent_id")
-            self._require_recovery({"recovery_held": self._recovery_held(tx, supplement["investigation"])})
+            self._require_recovery({"recovery_held": self._held(tx, supplement)})
             if old is not None:
                 return self._supplement_result(old, cached=True)
             intent = tx.get(BUCKET_INTENTS, supplement["intent_id"])
@@ -620,15 +622,20 @@ class Continuation:
             intents = [row for row in tx.scan(BUCKET_INTENTS) if row.get("policy_id") == receipt["policy_id"]]
             stored = tx.get(BUCKET_RESEARCH_RECEIPTS, receipt["intent_id"])
             investigation = tx.get(INVESTIGATIONS, receipt["investigation"])
-            # The CURRENT dispatch of the investigation: after an owner-authorized recovery that is
-            # the replacement (research-dispatch-recovery-001), so a receipt naming the failed
-            # original, or a result of its run, can never approve.
-            # A settled read-only successor head names the current one after that; a stale receipt
-            # naming a predecessor then mismatches, and a broken retained chain holds.
-            recovery = tx.get(RESEARCH_RECOVERIES, receipt["investigation"])
-            dispatch = tx.get(RESEARCH_DISPATCHES, current_dispatch_id(receipt["investigation"], recovery,
-                                                                       tx.get(RESEARCH_HEADS, receipt["investigation"])))
-            recovery_held = self._recovery_held(tx, receipt["investigation"])
+            if str(receipt["investigation"]).startswith(ATTEMPT_SCOPE_PREFIX):
+                # INV-RESEARCH-ATTEMPT-SCOPE-001: an attempt-scope claim is its own current dispatch; it has
+                # no recovery or successor, so no recovery or head row ever redirects it.
+                dispatch = tx.get(RESEARCH_DISPATCHES, receipt["investigation"])
+            else:
+                # The CURRENT dispatch of the investigation: after an owner-authorized recovery that is
+                # the replacement (research-dispatch-recovery-001), so a receipt naming the failed
+                # original, or a result of its run, can never approve.
+                # A settled read-only successor head names the current one after that; a stale receipt
+                # naming a predecessor then mismatches, and a broken retained chain holds.
+                recovery = tx.get(RESEARCH_RECOVERIES, receipt["investigation"])
+                dispatch = tx.get(RESEARCH_DISPATCHES, current_dispatch_id(
+                    receipt["investigation"], recovery, tx.get(RESEARCH_HEADS, receipt["investigation"])))
+            recovery_held = self._held(tx, receipt)
             run_id = (dispatch or {}).get("run_id") if isinstance(dispatch, dict) else None
             run = tx.get(RESEARCH_RUNS, run_id) if type(run_id) is str else None
             jobs = {a["job"]: tx.get(FLEET_JOBS, a["job"]) for a in receipt["attempts"]}
@@ -656,6 +663,25 @@ class Continuation:
                  "supplement_row": supplement_row, "lineage": {row["id"]: row for row in intents},
                  "bindings": bindings, "acceptance": acceptance}
         return {**facts, "investigations": investigations} if mixed else facts
+
+    def _held(self, tx, receipt: dict) -> str | None:
+        """The named held condition of one receipt's (or supplement's) binding, read through the
+        caller's open transaction: its intent's attempt-scope claim, else its investigation's lineage."""
+        return self._scope_held(tx, receipt) or self._recovery_held(tx, receipt["investigation"])
+
+    @staticmethod
+    def _scope_held(tx, receipt: dict) -> str | None:
+        """INV-RESEARCH-ATTEMPT-SCOPE-001: once an attempt-scope claim exists for the intent, in ANY state
+        (a scoped failure is final), it is the ONLY identity a receipt, supplement or owner binding of
+        that intent may name: any other (a family, a recovery, another scope) holds as `scope_claimed`.
+        With no claim this is None and nothing else changes."""
+        try:
+            scope = attempt_scope_id(receipt.get("intent_id"))
+        except ContinuationRefused:
+            return None     # not an intent id: no scope can be claimed for it; the checks refuse it by name
+        if receipt.get("investigation") == scope or tx.get(RESEARCH_DISPATCHES, scope) is None:
+            return None
+        return "scope_claimed"
 
     @staticmethod
     def _recovery_held(tx, investigation: str) -> str | None:

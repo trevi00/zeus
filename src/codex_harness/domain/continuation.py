@@ -678,9 +678,15 @@ def check_research_receipt(receipt: dict, *, intent, attempts: list, policy, job
     names every member (the default gate, unchanged), else `owner_supplement` - ONLY when the stored
     typed scope supplement for this intent (`supplement`, with the `lineage`, `bindings` and
     `acceptance` reads it is checked against) passes `check_scope_supplement` again now and names
-    exactly this receipt's binding. Evidence refs never imply coverage."""
+    exactly this receipt's binding. Evidence refs never imply coverage.
+
+    A receipt naming an attempt scope (INV-RESEARCH-ATTEMPT-SCOPE-001) is checked against that exact
+    claim instead of a Portfolio investigation, and is `original_capture` only: its full member set
+    was required, so it never reaches a supplement."""
     members = _check_research(receipt, intent=intent, attempts=attempts, policy=policy, jobs=jobs, observed=observed,
                               investigation=investigation, dispatch=dispatch, run_result=run_result)
+    if _names_scope(receipt["investigation"]):
+        return COVERAGE_ORIGINAL
     # The dispatch snapshot names at most its job sample; a member outside it is unverifiable here.
     if set(members) <= set(dispatch.get("job_ids") or []):
         return COVERAGE_ORIGINAL
@@ -701,6 +707,12 @@ def _check_research(receipt: dict, *, intent, attempts: list, policy, jobs: dict
     returns the member jobs."""
     research = ROUTE_OWNERS[RESEARCH]
     members = _check_held(receipt, intent=intent, attempts=attempts, policy=policy, jobs=jobs, observed=observed)
+    if _names_scope(receipt["investigation"]):
+        # INV-RESEARCH-ATTEMPT-SCOPE-001: the scope claim, not a Portfolio family, is the capture; no
+        # Portfolio membership is read for it (legacy receipts keep every check below).
+        _check_scope(receipt, attempts=attempts, jobs=jobs, dispatch=dispatch, members=members)
+        _check_dispatch(receipt, dispatch, run_result, kind=ATTEMPT_SCOPE)
+        return members
     refuse(isinstance(investigation, dict), "research_investigation_unknown", research, "investigation")
     refuse(investigation.get("id") == receipt["investigation"] and investigation.get("kind", "failure_family")
            == "failure_family", "research_investigation_mismatch", research, "investigation")
@@ -737,13 +749,56 @@ def _check_held(receipt: dict, *, intent, attempts: list, policy, jobs: dict, ob
     return [a["job"] for a in receipt["attempts"]]
 
 
-def _check_dispatch(receipt: dict, dispatch, run_result) -> None:
-    """The current research dispatch of the receipt's investigation: same binding, resolved, accepted."""
+def _names_scope(identity) -> bool:
+    """Whether a receipt-side identity names an attempt scope (INV-RESEARCH-ATTEMPT-SCOPE-001)."""
+    return type(identity) is str and identity.startswith(ATTEMPT_SCOPE_PREFIX)
+
+
+def _check_scope(receipt: dict, *, attempts: list, jobs: dict, dispatch, members: list) -> None:
+    """INV-RESEARCH-ATTEMPT-SCOPE-001: the one attempt-scope claim of this intent, exactly. Its identity
+    is derived from the intent; its scope binds this intent, policy, digest, root family and EXACTLY
+    the current attempt pairs; it captured the full member set (count and digest, never a sample); and
+    every member still carries the cause it was claimed under."""
+    # Imported here: `research_attempt_scope` imports this module.
+    from codex_harness.domain.research_attempt_scope import SCOPE_FIELDS, SCOPE_SCHEMA
+
+    research = ROUTE_OWNERS[RESEARCH]
+    scope_id = attempt_scope_id(receipt["intent_id"])
+    refuse(receipt["investigation"] == scope_id, "research_scope_foreign", research, "investigation")
+    refuse(isinstance(dispatch, dict), "research_dispatch_unknown", research, "dispatch")
+    scope = dispatch.get("scope")
+    pairs = [{"job": a["job"], "evidence_sha256": a["evidence_sha256"]} for a in attempts]
+    refuse(dispatch.get("id") == dispatch.get("investigation") == scope_id and isinstance(scope, dict)
+           and set(scope) == SCOPE_FIELDS and scope["schema"] == SCOPE_SCHEMA
+           and scope["intent_id"] == receipt["intent_id"] and scope["continuation_policy"] == receipt["policy_id"]
+           and scope["policy_sha256"] == receipt["policy_sha256"] and scope["family"] == receipt["family"]
+           and scope["attempts"] == pairs and scope["attempts_sha256"] == digest(pairs),
+           "research_scope_foreign", research, "dispatch.scope")
+    ids = sorted(members)
+    refuse(dispatch.get("job_ids") == ids and dispatch.get("job_ids_total") == len(ids)
+           and dispatch.get("job_ids_sha256") == digest(ids), "research_scope_mismatch", research, "dispatch.job_ids")
+    refuse(type(dispatch.get("family_status")) is str and type(dispatch.get("reason_code")) is str
+           and all((jobs[job].get("status"), jobs[job].get("reason_code"))
+                   == (dispatch["family_status"], dispatch["reason_code"]) for job in members),
+           "research_scope_membership", research, "dispatch")
+
+
+def _refuse_scope_coverage(*identities) -> None:
+    """INV-RESEARCH-ATTEMPT-SCOPE-001: an attempt scope is covered by its exact original capture only;
+    a mixed receipt or an owner supplement naming one can never manufacture or widen that coverage."""
+    refuse(not any(_names_scope(identity) for identity in identities), "research_scope_original_only",
+           ROUTE_OWNERS[RESEARCH], "investigation")
+
+
+def _check_dispatch(receipt: dict, dispatch, run_result, *, kind: str = "failure_family") -> None:
+    """The current research dispatch of the receipt's investigation: same binding, resolved, accepted.
+    `kind` is the claim kind the receipt's identity names: the legacy failure family, or an attempt
+    scope (INV-RESEARCH-ATTEMPT-SCOPE-001)."""
     research = ROUTE_OWNERS[RESEARCH]
     refuse(isinstance(dispatch, dict), "research_dispatch_unknown", research, "dispatch")
     bound = receipt["dispatch"]
     refuse(dispatch.get("investigation") == receipt["investigation"] and dispatch.get("kind", "failure_family")
-           == "failure_family" and all(dispatch.get(key) == bound[key] for key in RECEIPT_DISPATCH_FIELDS),
+           == kind and all(dispatch.get(key) == bound[key] for key in RECEIPT_DISPATCH_FIELDS),
            "research_dispatch_mismatch", research, "dispatch")
     refuse(dispatch.get("state") == "resolved", "research_unfinished", research, "dispatch")
     refuse(dispatch.get("result") == RESEARCH_ACCEPTED and (run_result or {}).get("result") == RESEARCH_ACCEPTED,
@@ -882,6 +937,7 @@ def check_scope_supplement(supplement: dict, *, intent, attempts: list, policy, 
     {run, promotion, task, decision} rows. Only exact proven descendants are admitted: an arbitrary
     same-reason job, a foreign family, a broken lineage or a changed current dispatch refuses."""
     research = ROUTE_OWNERS[RESEARCH]
+    _refuse_scope_coverage(supplement.get("investigation"), (supplement.get("dispatch") or {}).get("id"))
     members = _check_research(supplement, intent=intent, attempts=attempts, policy=policy, jobs=jobs,
                               observed=observed, investigation=investigation, dispatch=dispatch, run_result=run_result)
     bound = supplement["dispatch"]
@@ -1052,6 +1108,8 @@ def check_mixed_receipt(receipt: dict, *, intent, attempts: list, policy, jobs: 
     `lineage` intent id -> stored intent row of this policy, `bindings` job -> Portfolio binding and
     `acceptance` the accepted run's {run, promotion, task, decision}. Returns `mixed_family`."""
     research = ROUTE_OWNERS[RESEARCH]
+    _refuse_scope_coverage(receipt.get("investigation"), (receipt.get("dispatch") or {}).get("id"),
+                           *(attempt.get("investigation") for attempt in receipt.get("attempts") or []))
     members = _check_held(receipt, intent=intent, attempts=attempts, policy=policy, jobs=jobs, observed=observed)
     investigations = investigations if isinstance(investigations, dict) else {}
     # Each member's OWN cause: the authoritative Portfolio investigation holding it under exactly the

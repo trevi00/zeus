@@ -26,6 +26,7 @@ from codex_harness.domain.autonomous import manifest_digest
 from codex_harness.domain.discovery_pressure import DiscoveryPaused, validate_intent
 from codex_harness.domain.model import ContractError, canonical, digest, utcnow
 from codex_harness.domain.operation import safe_relative_path
+from codex_harness.domain.research_attempt_scope import KIND as ATTEMPT_SCOPE
 from codex_harness.domain.research_investigations import SOURCE as INVESTIGATION
 from codex_harness.domain.research_program import (
     CAPTURE_ROOT,
@@ -211,8 +212,12 @@ def render_report(view: dict) -> str:
              # The second candidate kind is reported apart: an observed low-yield audit window is a
              # research symptom, not a failed-job family and not an audit decision.
              "Audit progress dispatches (observed low-yield symptom only, never an audit verdict): "
-             + ", ".join(name + " " + str(count) for name, count in (view.get("audit_progress") or {}).items()), "",
-             "## Observed cycles", ""]
+             + ", ".join(name + " " + str(count) for name, count in (view.get("audit_progress") or {}).items()), ""]
+    if "attempt_scope" in view:
+        # INV-RESEARCH-ATTEMPT-SCOPE-001: an opted-in program only, so a legacy report keeps its exact bytes.
+        lines += ["Attempt scope dispatches (one held intent's exact attempts only, never a family or a disposition): "
+                  + ", ".join(name + " " + str(count) for name, count in view["attempt_scope"].items()), ""]
+    lines += ["## Observed cycles", ""]
     for cycle in view["cycle_receipts"]:
         sources = cycle.get("sources") or {}
         source_text = ", ".join(name + "=" + str(sources.get(name, {}).get("status", "missing"))
@@ -234,6 +239,13 @@ def render_report(view: dict) -> str:
                                + " ineligible " + str(progress["ineligible"]) + " claimed "
                                + str(progress["claimed"]) + "; dispatch result " + str(progress["result"])
                                + " (reported " + str(progress["reported_result"]) + ")")
+        scoped = cycle.get("attempt_scope")
+        investigation_text += ("" if scoped is None else
+                               "; attempt scope scanned " + str(scoped["counts"]["scanned"]) + " eligible "
+                               + str(scoped["counts"]["eligible"]) + " new " + str(scoped["new"])
+                               + " ineligible " + str(scoped["ineligible"]) + " claimed " + str(scoped["claimed"])
+                               + "; dispatch result " + str(scoped["result"])
+                               + " (reported " + str(scoped["reported_result"]) + ")")
         lines.append("- cycle " + str(cycle["number"]) + " [" + cycle["status"] + "]: sources " + source_text
                      + "; discovered " + str(counts.get("discovered")) + " new " + str(counts.get("new")) + " duplicate "
                      + str(counts.get("duplicate")) + " ignored " + str(counts.get("ignored")) + " selected " + str(counts.get("selected"))
@@ -307,7 +319,8 @@ class ProgramRunner:
         log.emit("development", "collection_recorded", cycle=number, counts=cycle["counts"], degraded=degraded,
                  selection=cycle["selection"], headroom=cycle["budget"]["headroom"])
         for name, event, claim_event in (("investigations", "investigations_scanned", "investigation_claimed"),
-                                         ("audit_progress", "audit_progress_scanned", "audit_progress_claimed")):
+                                         ("audit_progress", "audit_progress_scanned", "audit_progress_claimed"),
+                                         ("attempt_scope", "attempt_scope_scanned", "attempt_scope_claimed")):
             receipt = cycle.get(name)
             if receipt is None:   # opt-in bridge only: identifiers and bounded counts, no payload
                 continue
@@ -373,7 +386,8 @@ class ProgramRunner:
         log.emit(category, "council_result", cycle=number, run_id=manifest["id"], **verdict, **claim)
         dispatch = self._dispatch_outcome(candidate)
         if dispatch is not None:   # the store's own authoritative dispatch outcome, never the verdict text
-            event = "audit_progress_result" if dispatch["kind"] == AUDIT_PROGRESS else "investigation_result"
+            event = {AUDIT_PROGRESS: "audit_progress_result",
+                     ATTEMPT_SCOPE: "attempt_scope_result"}.get(dispatch["kind"], "investigation_result")
             log.emit(category, event, cycle=number, run_id=manifest["id"], **dispatch)
         return self._finish(program_id, log, number, {"reserved": True, "cycle": cycle["id"], "selected": candidate["id"],
                                                       "run_id": manifest["id"], "capture": capture["revision"], **verdict,

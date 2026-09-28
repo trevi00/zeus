@@ -476,9 +476,11 @@ def cycle_view(cycle: dict) -> dict:
             "failure", "stop_reason", "remaining", "started_at", "updated_at", "finished_at", "investigations",
             "audit_progress")
     view = {k: cycle.get(k) for k in keys}
-    if "attempt_scope" in cycle:
-        # Only an opted-in program's cycles carry it: legacy cycle bytes are unchanged (INV-RESEARCH-ATTEMPT-SCOPE-001).
-        view["attempt_scope"] = cycle["attempt_scope"]
+    for key in ("attempt_scope", "attempt_scope_target"):
+        if key in cycle:
+            # Only an opted-in program's cycles carry them: legacy cycle bytes are unchanged
+            # (INV-RESEARCH-ATTEMPT-SCOPE-001).
+            view[key] = cycle[key]
     return view
 
 
