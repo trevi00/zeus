@@ -202,9 +202,12 @@ def dispatch_row(*, document: dict, candidate_id: str, cycle_ref: str, now: str)
     empty list would read as a failed-job family with no members, which it is not.
     """
     kind = document.get("kind", KIND)
-    family = kind == KIND
+    # INV-RESEARCH-ATTEMPT-SCOPE-001: an attempt scope binds its EXACT complete member set like a family (never
+    # truncated) and carries its own scope binding; the family and audit-progress bytes are unchanged.
+    scoped = kind == "attempt_scope"
+    family = kind == KIND or scoped
     return {"schema": DISPATCH_SCHEMA, "id": document["investigation"], "investigation": document["investigation"],
-            "kind": kind, "scope": None if family else scope_reference(document),
+            "kind": kind, "scope": dict(document["scope"]) if scoped else None if family else scope_reference(document),
             "program": document["program"], "cycle": cycle_ref, "cycle_number": document["cycle"],
             "candidate": candidate_id, "state": CLAIMED, "snapshot_sha256": digest(document),
             "family_status": document.get("family_status"), "reason_code": document["reason_code"],

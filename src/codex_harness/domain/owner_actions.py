@@ -28,6 +28,7 @@ from __future__ import annotations
 import re
 
 from codex_harness.domain.continuation import (
+    ATTEMPT_SCOPE_PREFIX,
     INVESTIGATION_REF,
     LINEAGE_ADMITTED,
     MIXED_RECEIPT_SCHEMA,
@@ -52,7 +53,15 @@ from codex_harness.domain.host_delivery import (
     validate_plan,
 )
 from codex_harness.domain.model import ContractError, digest
-from codex_harness.domain.research_investigations import eligible_investigations
+from codex_harness.domain.research_attempt_scope import KIND as SCOPE_KIND
+from codex_harness.domain.research_attempt_scope import SOURCE_NAME as SCOPE_SOURCE
+from codex_harness.domain.research_attempt_scope import (
+    check_scope_capture,
+    eligible_attempt_scopes,
+    held_jobs,
+    scope_rivals,
+)
+from codex_harness.domain.research_investigations import eligible_investigations, scoped_job_ids
 from codex_harness.domain.research_program import (
     ACTIVE,
     BLOCKED,
@@ -820,7 +829,12 @@ def _one(rows, **match):
     return found[0] if len(found) == 1 else (None if not found else "ambiguous")
 
 
-def research_decision(*, program_id: str, investigation: str, attempts: list, rows: dict, room, now: str) -> dict:
+def _wait(reason, **detail) -> dict:
+    return {"act": False, "reason": reason, "steps": [], "detail": detail}
+
+
+def research_decision(*, program_id: str, investigation: str, attempts: list, rows: dict, room, now: str,
+                      family_investigation: str | None = None) -> dict:
     """Whether ONE `research-program run <program> --ticks 1` is owed for exactly this held family.
 
     Ported from the accepted RO-1 helper's `decide` (research_owner.py b28098aa, review-accepted in
@@ -829,10 +843,14 @@ def research_decision(*, program_id: str, investigation: str, attempts: list, ro
     `research_investigation_dispatches`, `research_dispatch_recoveries`, `research_dispatch_heads`,
     `portfolio_investigations`, `fleet_jobs`, `portfolio_bindings`); `room` is the program budget's
     headroom reading or None when the ledger is unreadable. Returns `{"act", "reason", "steps"}`; a
-    reserved cycle is counted even when it only collects, so nothing acts before the exact scope holds."""
-    def wait(reason, **detail):
-        return {"act": False, "reason": reason, "steps": [], "detail": detail}
+    reserved cycle is counted even when it only collects, so nothing acts before the exact scope holds.
 
+    A program opted in with `attempt_scope_source` (INV-RESEARCH-ATTEMPT-SCOPE-001) is decided by
+    `_scope_decision`: `investigation` is then the held intent's `attempt-scope.<intent id>`,
+    `family_investigation` the id of its Portfolio cause row, and `rows` also carries
+    `continuation_policies`, `continuation_intents`, `continuation_research_receipts` and
+    `research_dispatch_successors` from the same read. Any other program keeps this legacy rule."""
+    wait = _wait
     program = _one(rows["research_programs"], id=program_id)
     if not isinstance(program, dict):
         return wait("research_program_unregistered" if program is None else "research_program_ambiguous")
@@ -840,6 +858,9 @@ def research_decision(*, program_id: str, investigation: str, attempts: list, ro
         # Exhaustion or a blocked program is the owner's decision; never renewed here.
         return wait("research_program_" + program["state"], stop_reason=program.get("stop_reason"))
     config = program.get("config") or {}
+    if isinstance(config.get(SCOPE_SOURCE), dict):
+        return _scope_decision(program, program_id=program_id, investigation=investigation, attempts=attempts,
+                               rows=rows, room=room, now=now, family_investigation=family_investigation)
     source = config.get("investigation_source")
     if not isinstance(source, dict):
         return wait("research_program_unscoped")
@@ -866,7 +887,8 @@ def research_decision(*, program_id: str, investigation: str, attempts: list, ro
         return wait("research_competing_program", programs=rivals)
     found = eligible_investigations(investigations=rows["portfolio_investigations"], jobs=rows["fleet_jobs"],
                                     bindings=rows["portfolio_bindings"], source=source,
-                                    claimed={r.get("investigation") for r in rows["research_investigation_dispatches"]},
+                                    claimed={r.get("investigation") for r in rows["research_investigation_dispatches"]}
+                                    | _scope_held_families(rows, source),
                                     required_state=RESEARCH_REQUIRED_STATE, minimum=2)
     mine = [c for c in found["candidates"] if c["investigation"] == investigation]
     other = [c["investigation"] for c in found["candidates"] if c["investigation"] != investigation]
@@ -878,6 +900,103 @@ def research_decision(*, program_id: str, investigation: str, attempts: list, ro
         return wait("research_family_not_eligible", counts=found["counts"])
     if mine[0]["job_ids"] != sorted(attempts):
         return wait("research_scope_mixed", scoped=mine[0]["job_ids"], attempts=sorted(attempts))
+    return _research_ready(program, config, room, now)
+
+
+def _scope_held_families(rows: dict, source: dict) -> set:
+    """Reverse overlap for the legacy rule (INV-RESEARCH-ATTEMPT-SCOPE-001, risk 3): every failure family
+    whose scoped jobs intersect the members of ANY attempt-scope claim - resolved, rejected, failed or
+    unknown alike - or which shares the cause of a scope claim whose membership cannot be read, counts as
+    claimed. Only intersecting families are held; a disjoint family keeps its legacy eligibility. With no
+    scope claim stored this is empty, so the legacy decision is unchanged."""
+    scopes = [r for r in rows["research_investigation_dispatches"] if isinstance(r, dict) and r.get("kind") == SCOPE_KIND]
+    if not scopes:
+        return set()
+    readable, unreadable = [], set()
+    for row in scopes:
+        if isinstance(row.get("job_ids"), list) and all(type(job) is str and job for job in row["job_ids"]):
+            readable.append(row)
+        else:
+            unreadable.add((row.get("family_status"), row.get("reason_code")))
+    held = held_jobs(readable)
+    jobs = {j["id"]: j for j in rows["fleet_jobs"] if isinstance(j, dict) and type(j.get("id")) is str}
+    bindings = {b["job_id"]: b for b in rows["portfolio_bindings"] if isinstance(b, dict) and type(b.get("job_id")) is str}
+    families = set()
+    for row in rows["portfolio_investigations"]:
+        if not isinstance(row, dict) or row.get("kind", FAILURE_FAMILY) != FAILURE_FAMILY:
+            continue
+        if (row.get("family_status"), row.get("reason_code")) in unreadable:
+            families.add(row.get("id"))
+            continue
+        scoped = scoped_job_ids(row, jobs, bindings, set(source.get("project_ids") or []))
+        if scoped is not None and held & set(scoped):
+            families.add(row.get("id"))
+    return families
+
+
+def _scope_decision(program: dict, *, program_id: str, investigation: str, attempts: list, rows: dict, room,
+                    now: str, family_investigation) -> dict:
+    """The RO-1 rule for an opted-in attempt-scope program (INV-RESEARCH-ATTEMPT-SCOPE-001): the SAME
+    shared eligibility the transactional claim applies (`eligible_attempt_scopes`), over one read.
+
+    Kept from the family rule: a claim at the identity (here the scope id, any lifecycle row) is F5
+    reached; busy and consumed adoptions wait; `research_family_dispositioned` stays mandatory against
+    the Portfolio cause row, which must exist, be unique, undecided, a failure family and carry exactly
+    the attempts' shared cause (unknown, missing, ambiguous or malformed is never undecided). Rivals are
+    `scope_rivals` (paused, active, stopped and unknown programs; never completed or blocked ones, whose
+    stored claims still block through the overlap counts). Another eligible scope is ambiguous; no
+    eligible scope names its exclusion counts (forward overlap included); the scope must be exactly
+    these attempts. The ledger, cycle cap and program state are then decided as for a family."""
+    wait = _wait
+    config = program.get("config") or {}
+    source = config[SCOPE_SOURCE]
+    if type(investigation) is not str or not investigation.startswith(ATTEMPT_SCOPE_PREFIX):
+        return wait("research_scope_not_eligible")
+    buckets = (("dispatch", "research_investigation_dispatches"), ("recovery", "research_dispatch_recoveries"),
+               ("head", "research_dispatch_heads"), ("successor", "research_dispatch_successors"))
+    claims = sorted({name for name, bucket in buckets for r in rows[bucket]
+                     if isinstance(r, dict) and investigation in (r.get("id"), r.get("investigation"))})
+    if claims:
+        # Any lifecycle row at the scope id claims it forever; the receipt path (or the owner) has it now.
+        return wait("research_dispatch_claimed", claims=claims)
+    if program.get("active_cycle") is not None:
+        return wait("research_program_busy", active_cycle=program["active_cycle"])
+    if program.get("adoptions", 0) >= config.get("max_adoptions", 0):
+        return wait("research_program_adoptions_consumed", adoptions=program.get("adoptions"))
+    members = set(attempts)
+    causes = {(j.get("status"), j.get("reason_code")) for j in rows["fleet_jobs"]
+              if isinstance(j, dict) and j.get("id") in members}
+    family = _one(rows["portfolio_investigations"], id=family_investigation) \
+        if type(family_investigation) is str else None
+    if not (isinstance(family, dict) and family.get("state") == RESEARCH_REQUIRED_STATE
+            and family.get("kind", FAILURE_FAMILY) == FAILURE_FAMILY
+            and causes == {(family.get("family_status"), family.get("reason_code"))}):
+        return wait("research_family_dispositioned")
+    rivals = scope_rivals(rows["research_programs"], program_id=program_id, reason=family.get("reason_code"),
+                          source=source)
+    if rivals:
+        return wait("research_competing_program", programs=rivals)
+    found = eligible_attempt_scopes(
+        source=source, policies=rows["continuation_policies"], intents=rows["continuation_intents"],
+        receipts=rows["continuation_research_receipts"], jobs=rows["fleet_jobs"], bindings=rows["portfolio_bindings"],
+        investigations=rows["portfolio_investigations"], dispatches=rows["research_investigation_dispatches"],
+        recoveries=rows["research_dispatch_recoveries"], heads=rows["research_dispatch_heads"],
+        successors=rows["research_dispatch_successors"])
+    mine = [c for c in found["candidates"] if c["investigation"] == investigation]
+    other = [c["investigation"] for c in found["candidates"] if c["investigation"] != investigation]
+    if other:
+        return wait("research_eligible_ambiguous", investigations=other)
+    if not mine:
+        return wait("research_scope_not_eligible", counts=found["counts"])
+    if mine[0]["job_ids"] != sorted(attempts) or mine[0]["family_investigation"] != family_investigation:
+        return wait("research_scope_mixed", scoped=mine[0]["job_ids"], attempts=sorted(attempts))
+    return _research_ready(program, config, room, now)
+
+
+def _research_ready(program: dict, config: dict, room, now: str) -> dict:
+    """The tail both rules share once the exact scope holds: ledger headroom, the cycle cap and the
+    program state (a paused program never ticked before is resumed first)."""
+    wait = _wait
     if not isinstance(room, dict):
         return wait("research_headroom_unreadable")
     if room.get("ok") is not True:
@@ -897,11 +1016,17 @@ def research_decision(*, program_id: str, investigation: str, attempts: list, ro
     return wait("research_program_state_unknown", state=program.get("state"))
 
 
-def research_outcome(binding: dict, launch_id: str, program, cycle, dispatch) -> dict:
+def research_outcome(binding: dict, launch_id: str, program, cycle, dispatch, attempts=None) -> dict:
     """What the child's OWN durable rows say after its guardian proved cleanup. The cycle counts only when
     it is the expected number AND its owner is this launch's id: a cycle another owner reserved under that
     number is foreign (unknown, never ours by number alone). `state` is completed, rejected, refused or
-    unknown with a fixed reason code."""
+    unknown with a fixed reason code.
+
+    A scoped binding (INV-RESEARCH-ATTEMPT-SCOPE-001; `attempts` the held intent's current attempt pairs)
+    is ours only when the claim at its scope id was made by this cycle AND is exactly this intent's
+    scope (`check_scope_capture`: kind, identity, intent, attempt pairs and full membership, the same
+    jobs as the binding). Any other stored claim at that id is `unknown`/`research_scope_capture_mismatch`
+    before any failed, rejected or completed result is read from it."""
     expected = binding["expected_cycle"]
     if not isinstance(program, dict):
         return {"state": UNKNOWN, "reason_code": "research_program_unreadable"}
@@ -915,6 +1040,10 @@ def research_outcome(binding: dict, launch_id: str, program, cycle, dispatch) ->
         # Ours, still owned, and its guardian is gone: the program stays busy; never cleared here.
         return {"state": UNKNOWN, "reason_code": "research_cycle_unfinished"}
     mine = isinstance(dispatch, dict) and dispatch.get("cycle") == cycle["id"]
+    if str(binding.get("investigation")).startswith(ATTEMPT_SCOPE_PREFIX) and isinstance(dispatch, dict) and not (
+            mine and isinstance(attempts, list) and sorted(a["job"] for a in attempts) == binding["attempts"]
+            and check_scope_capture(dispatch, intent_id=binding["intent_id"], attempts=attempts)):
+        return {"state": UNKNOWN, "reason_code": "research_scope_capture_mismatch"}
     if cycle["status"] == CYCLE_FAILED:
         return {"state": REJECTED if mine else REFUSED, "reason_code": "research_cycle_failed"}
     if mine:

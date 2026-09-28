@@ -1878,7 +1878,9 @@ counts (`malformed`, `state`, `reason_code`, `insufficient_jobs`, `claimed`) and
 derived. Eligible investigations sort before local and external candidates by id, stored candidates
 are revalidated against the current state, scope and claim immediately before selection (a changed
 owner disposition drops the cached snapshot and can never run later), and the selected one reserves
-`research_investigation_dispatches` keyed SOLELY by investigation id - one claim across all programs,
+`research_investigation_dispatches` keyed by its claim identity - the failure-family or audit investigation id,
+or the held intent's attempt-scope id (INV-RESEARCH-ATTEMPT-SCOPE-001, where scope-held jobs are also
+excluded from every family claim) - one claim across all programs,
 in the SAME transaction as the selection and the cycle bookkeeping, refused as
 `investigation_already_claimed` and rolled back whole if a row appeared meanwhile. The claim binds
 program, cycle, the immutable snapshot digest, the scoped job ids, the family status and reason code
@@ -2116,6 +2118,85 @@ history, and the old global relay would again publish pending pinned records on 
 only; the local JSONL event log carries general/development/operations records with identifiers,
 counts and codes; none of them carry configs, feed bodies, exception text, credentials or DSNs.
 No retry, merge, deploy, service install, budget grant, scope change or generated goal.
+
+## INV-RESEARCH-ATTEMPT-SCOPE-001
+
+Attempt-scoped research (U2(b), FLEET-U2B-SPEC) is an explicit OPTIONAL program capability.
+- **Opt-in.** `attempt_scope_source` names exactly: a topic, a registered continuation policy and its digest, the
+  allowed root families (1-20), projects (1-20) and reason codes (1-50). It is strict, bounded and mutually
+  exclusive with `investigation_source` and `audit_progress_source` (`config_fields`); the two legacy sources may
+  still coexist. When it is absent, the legacy canonical config and digest, owner decisions and cycle/output bytes
+  are unchanged while no scoped claim exists. It grants no qualification admission by itself.
+- **Identity.** The one claim identity is `attempt-scope.<held intent id>` (`domain.continuation.attempt_scope_id`).
+  It is used by the candidate (`as-<full intent id>`), the dispatch (`research_investigation_dispatches`, kind
+  `attempt_scope`), the owner `research_dispatch`/`research_receipt` bindings and the schema-1 receipt. It can never
+  equal a failure-family, audit-progress or `<id>.recovery-N` key.
+- **Owner-bound cycle.** An opted-in program reserves a cycle only for its owner launch: `reserve_cycle` resolves
+  exactly one `research_dispatch` owner action whose launch id is the cycle owner, with the matching program,
+  expected cycle and held intent, and stores that intent's scope and complete attempt digest as the cycle's
+  `attempt_scope_target`. Otherwise `attempt_scope_target_unavailable`, before any reservation. A scoped tick
+  without a bound owner launch refuses.
+- **Eligibility and claim, in ONE store transaction.** `record_collection` re-reads the target and the full rule
+  (`domain.research_attempt_scope.eligible_attempt_scopes`). A target qualifies only if ALL hold:
+  - the held intent is route `research`, state `research_required`, the pinned policy digest (the registered row
+    and the intent's own), a listed root family, and has no stored receipt;
+  - its COMPLETE `research_attempts` are 2..32 distinct jobs with one evidence digest each, existing, sharing one
+    authorized (status, reason), each uniquely bound to an allowed project;
+  - the matching failure-family row exists, is unique and is undecided (`research_family_dispositioned`
+    otherwise). Its membership is NOT required and its history is never captured;
+  - no dispatch, recovery, head or successor exists at the scope id (claimed forever);
+  - no member is in any dispatch capture of any kind or state, or in an authorized unclaimed successor's pinned
+    members (`overlap`);
+  - relevant membership that is truncated, malformed, or the future capture of a fenced or authorized unclaimed
+    same-cause recovery (or an unpinned read-only successor) refuses (`overlap_unverifiable`).
+
+  Exclusions are bounded counts: `malformed`, `state`, `policy`, `family`, `receipted`, `insufficient_attempts`,
+  `attempt_unavailable`, `mixed`, `reason_code`, `project`, `family_state`, `claimed`, `overlap`,
+  `overlap_unverifiable`. The claim selects ONLY the exact target, and only while it is the unique eligible scope.
+  If it changed or vanished, the cycle has no selection and no other candidate (feed, local, another scope)
+  consumes its adoption. Selection, both overlap checks, the adoption reservation and the claim commit
+  atomically, or roll back whole (`investigation_already_claimed`, `attempt_scope_overlap`).
+- **What the claim records.** The claim records its exact `scope` (`urn:zeus:research-attempt-scope:1`: intent,
+  policy, digest, root family, cause id as provenance, attempt pairs and their digest) and the full member
+  set, count and digest, never truncated. It never writes a Portfolio, binding or Fleet row, nor any dispatch,
+  recovery, head or successor row keyed by or naming a family id.
+- **Permanent exclusion.** Every stored scope claim, in ANY state, permanently excludes its member jobs from
+  family, recovery, successor and follow-up claims (`investigation_scope_overlap`, and `claimed` in eligibility).
+  It is enforced at AUTHORIZATION too. A v1-v4 recovery, successor or follow-up authorization is refused
+  `investigation_scope_overlap`, with zero writes and before any artifact read, when its pinned members or the
+  scoped membership it would recapture intersect a scope-held job. So no family lineage row or head is ever left
+  pointing at a dispatch that can never be claimed. A scope claim whose members cannot be read holds every family of
+  its cause. Disjoint complete sets remain eligible under their existing rules.
+- **Final failure.** A scoped failure, rejection or unknown result is final: there is no scoped recovery,
+  replacement, successor, follow-up, counter reset or member release.
+- **Receipt.** Acceptance keeps the held-policy, evidence and inspection checks, and requires:
+  - the scope id derived from this intent, binding this intent, policy, digest, family and EXACTLY the current
+    attempt pairs (`research_scope_foreign`);
+  - the full dispatch members, count and digest (`research_scope_mismatch`);
+  - the unchanged Fleet cause of every member (`research_scope_membership`);
+  - the resolved, accepted dispatch of kind `attempt_scope` with its bound run.
+
+  A scope claim forbids a receipt naming any other identity for that intent (`research_scope_claimed`). Scope
+  coverage is `original_capture` only; a mixed or supplementary receipt cannot cover a scope.
+- **Version skew (not safe by itself).** An older release refuses to register the source, and its receipt reader
+  refuses a scope receipt (it holds and never grants coverage). But an older RUNNER that reads a stored opted-in
+  program ignores the source and may select an ordinary candidate, consuming the adoption. The guarantees above
+  therefore hold only while every writer and consumer that can touch an opted-in program runs a release containing
+  this capability: owner-actions and its research child, the program runner and the continuation consumer. Rollout
+  must gate that before registration or resume; a rollback pauses and drains the scoped program first.
+- **Not authorized by this capability:** program registration, activation, a gate replacement or a
+  qualification-criteria change.
+
+Fixed codes: reservation `attempt_scope_target_unavailable`; no-selection reasons
+`attempt_scope_target_ineligible`, `attempt_scope_target_ambiguous`, `attempt_scope_competing_program`; claim
+`attempt_scope_overlap`, `investigation_scope_overlap`, `investigation_already_claimed`; lineage refusal
+`attempt_scope_final` (v1-v4 recovery, successor and follow-up requests naming a scope, zero writes); candidate
+reasons `attempt_scope_eligible`/`attempt_scope_ineligible`; owner outcome `research_scope_capture_mismatch`;
+receipt `research_scope_foreign`/`_mismatch`/`_membership`/`_claimed`/`_original_only` (a mixed receipt or scope
+supplement naming a scope). Log events `attempt_scope_scanned`, `attempt_scope_claimed`, `attempt_scope_result`.
+
+Tests: tests/test_research_attempt_scope_program.py, tests/test_research_attempt_scope_owner.py,
+tests/test_research_attempt_scope_receipt.py (labelled synthetic fixtures only).
 
 ## INV-AUDIT-SERVICE-001
 
@@ -3018,7 +3099,10 @@ Scoped research completion (SPEC "Scoped research completion and evidence-repair
 (`attempts[] {job, evidence_sha256, inspection}`: the family's distinct failure observations of that
 policy since its last completed research plus the research intent's own,
 `domain.continuation.research_attempts`, shown as `attempts` on the research intent in `status`), the
-Portfolio `investigation` holding those jobs, the existing research dispatch binding
+Portfolio `investigation` holding those jobs (or, for an attempt-scoped claim, the held intent's own scope id:
+the exact-scope checks of INV-RESEARCH-ATTEMPT-SCOPE-001 replace the Portfolio membership read, and
+`research_scope_foreign`/`_mismatch`/`_membership`/`_claimed` refuse; the held-intent, evidence, inspection and
+accepted-run checks are unchanged), the existing research dispatch binding
 (`dispatch {program, run_id, manifest_sha256, snapshot_sha256}`) and 1-16 content-addressed
 `evidence_refs` (`sha256:<64 hex>`). It is verified against authoritative reads
 (`domain.continuation.check_research_receipt`): the registered policy row and the intent's own
@@ -4269,7 +4353,11 @@ existing owners: `Continuation.accept_research`, the guarded `decide_one` of the
   second tick) and one open per program. Owed only when the rule ported from the accepted RO-1 helper holds
   on durable rows: the family's attempts share one investigation whose eligible scoped job set is exactly
   them, no other investigation is eligible, nothing claims it, the program is registered, scoped, not
-  busy, completed, blocked or out of adoptions or cycles, no other live program takes its reason code,
+  busy, completed, blocked or out of adoptions or cycles, no other live program takes its reason code (for an
+  `attempt_scope_source` program: the held intent's scope id is the investigation; `research_family_dispositioned`
+  still applies to the matching cause row; a rival is any other program not completed or blocked naming the reason
+  or sharing the policy and a root family; the child's cycle is bound to this launch id; and `completed` also
+  requires the dispatch to capture exactly this intent's attempts, else `unknown research_scope_capture_mismatch`),
   the ledger headroom is readable and sufficient, and the program is due (or paused with no cycle yet).
   `intended`: re-decided; the provider probe (codex and node resolved on the unit's PATH, each answering
   `--version`) runs before any resume, reservation or spawn and a failure is `refused

@@ -53,9 +53,11 @@ from codex_harness.application.research_program import (
     BUCKET_HEADS,
     BUCKET_PROGRAMS,
     BUCKET_RECOVERIES,
+    BUCKET_SUCCESSORS,
     ResearchProgram,
 )
 from codex_harness.domain.continuation import (
+    ATTEMPT_SCOPE_PREFIX,
     AWAITING_OWNER,
     DELIVERY,
     DELIVERY_ABSENT,
@@ -67,7 +69,9 @@ from codex_harness.domain.continuation import (
     RESEARCH,
     RESEARCH_RECEIPT_SCHEMA,
     RESEARCH_REQUIRED,
+    SHA256,
     ContinuationRefused,
+    attempt_scope_id,
     bind_delivery,
     migration_resume,
     migration_source,
@@ -178,12 +182,15 @@ from codex_harness.domain.owner_actions import (
     validate_policy,
     view,
 )
+from codex_harness.domain.research_attempt_scope import SOURCE_NAME as SCOPE_SOURCE
+from codex_harness.domain.research_attempt_scope import check_scope_capture
 from codex_harness.domain.research_program import cycle_id, headroom
 
 BUCKET_POLICIES = "owner_action_policies"
 BUCKET_ACTIONS = "owner_actions"
 CONTINUATION_INTENTS = "continuation_intents"
 CONTINUATION_RECEIPTS = "continuation_research_receipts"
+CONTINUATION_POLICIES = "continuation_policies"
 FLEET_JOBS = "fleet_jobs"
 DECISIONS = "decisions_pending"
 # INV-OWNER-ACTIONS-MIGRATION-001: the control half of an evaluator migration. A bucket of its own, keyed
@@ -459,6 +466,8 @@ class OwnerActions:
         if self.lanes is None:
             raise OwnerActionRefused("lanes_unconfigured", "lanes")
         attempts = research_attempts(intents, intent)
+        scope = attempt_scope_id(intent["id"]) if type(intent.get("id")) is str and SHA256.fullmatch(intent["id"]) \
+            else None
         with self.store.transaction() as tx:
             jobs = {a["job"]: tx.get(FLEET_JOBS, a["job"]) for a in attempts}
             # A dispatch an earlier receipt of this family already consumed is that hold's history: the
@@ -467,12 +476,17 @@ class OwnerActions:
                          ((r.get("receipt") or {}).get("dispatch") or {}).get("run_id"))
                         for r in tx.scan(CONTINUATION_RECEIPTS)
                         if r.get("id") != intent["id"] and (r.get("receipt") or {}).get("family") == intent["family"]}
+            claimed = scope is not None and tx.get(BUCKET_DISPATCHES, scope) is not None
         if not all(isinstance(job, dict) for job in jobs.values()):
             raise OwnerActionRefused("research_attempt_unavailable", "attempts")
         causes = {job_id: (job.get("status"), job.get("reason_code")) for job_id, job in jobs.items()}
         members = sorted(jobs)
         candidates = []
-        for investigation in sorted({family_id(*cause) for cause in causes.values()}):
+        # INV-RESEARCH-ATTEMPT-SCOPE-001: once this intent's attempt scope is claimed it is the intent's ONLY
+        # research identity (schema 1, original capture): a historical family dispatch naming the same jobs
+        # never covers it, and a pending or failed scope never falls back to one.
+        names = [scope] if claimed else sorted({family_id(*cause) for cause in causes.values()})
+        for investigation in names:
             facts = self.continuation.research_facts({
                 "schema": RESEARCH_RECEIPT_SCHEMA, "policy_id": continuation["id"], "intent_id": intent["id"],
                 "investigation": investigation, "attempts": [{"job": job} for job in members]})
@@ -491,7 +505,14 @@ class OwnerActions:
             raise OwnerActionRefused("research_dispatch_ambiguous", "dispatch")
         investigation, facts = candidates[0]
         dispatch = facts["dispatch"]
-        mixed = len({family_id(*cause) for cause in causes.values()}) > 1
+        if claimed:
+            # Exactly this intent's scope and current attempt pairs, members of the one cause it captured: never
+            # a mixed receipt, and never widened by an owner supplement (named waits, not an assessment).
+            if not check_scope_capture(dispatch, intent_id=intent["id"], attempts=attempts):
+                raise OwnerActionRefused("research_scope_capture_mismatch", "dispatch")
+            if set(causes.values()) != {(dispatch.get("family_status"), dispatch.get("reason_code"))}:
+                raise OwnerActionRefused("research_scope_membership", "attempts")
+        mixed = not claimed and len({family_id(*cause) for cause in causes.values()}) > 1
         if not mixed and not set(members) <= set(dispatch.get("job_ids") or []):
             # A partial capture needs the owner's typed scope supplement; this coordinator never writes one.
             raise OwnerActionRefused("research_scope_supplement_required", "dispatch")
@@ -1634,37 +1655,61 @@ class OwnerActions:
     # ===== C3: asynchronous guarded research dispatch ================================================
     def _research_scope(self, intent: dict, intents: list, program_id: str) -> dict:
         """The held family's exact attempt set and its one investigation, and every durable row the ported
-        RO-1 rule reads, in ONE control-store read; the ledger is read outside it."""
+        RO-1 rule reads, in ONE control-store read; the ledger is read outside it.
+
+        A program opted in with `attempt_scope_source` (INV-RESEARCH-ATTEMPT-SCOPE-001) claims under the
+        intent's own `attempt-scope.<intent id>` (its Portfolio cause row is `family_investigation`). Its
+        continuation intents, receipts, registered policies and research successors are read in that SAME
+        transaction, and the attempt set is re-derived from those intents: the caller's older read is
+        never taken for one snapshot with the claim rows."""
         attempts = sorted({a["job"] for a in research_attempts(intents, intent)})
         with self.store.transaction() as tx:
             rows = {name: tx.scan(name) for name in (BUCKET_PROGRAMS, BUCKET_DISPATCHES, BUCKET_RECOVERIES,
                                                      BUCKET_HEADS, BUCKET_INVESTIGATIONS, FLEET_JOBS, BUCKET_BINDINGS)}
+            program = next((r for r in rows[BUCKET_PROGRAMS] if r.get("id") == program_id), None)
+            scoped = isinstance(program, dict) and isinstance((program.get("config") or {}).get(SCOPE_SOURCE), dict)
+            if scoped:
+                rows.update({name: tx.scan(name) for name in (CONTINUATION_POLICIES, CONTINUATION_INTENTS,
+                                                              CONTINUATION_RECEIPTS, BUCKET_SUCCESSORS)})
+        if scoped:
+            current = [r for r in rows[CONTINUATION_INTENTS] if isinstance(r, dict)
+                       and r.get("policy_id") == intent.get("policy_id")]
+            intent = next((r for r in current if r.get("id") == intent["id"]), None)
+            if intent is None:
+                raise OwnerActionRefused("research_intent_not_held", "intent_id")
+            attempts = sorted({a["job"] for a in research_attempts(current, intent)})
         jobs = {job["id"]: job for job in rows[FLEET_JOBS] if isinstance(job, dict) and job.get("id") in attempts}
         if set(jobs) != set(attempts):
             raise OwnerActionRefused("research_attempt_unavailable", "attempts")
         families = {family_id(job.get("status"), job.get("reason_code")) for job in jobs.values()}
         if len(families) != 1:
             raise OwnerActionRefused("research_scope_mixed", "attempts")
-        program = next((r for r in rows[BUCKET_PROGRAMS] if r.get("id") == program_id), None)
         room = None
         if isinstance(program, dict) and self.ledger is not None:
             try:
                 room = headroom((program.get("config") or {}).get("budget"), self.ledger())
             except Exception:  # an unreadable ledger is uncertainty: wait, never tick
                 room = None
-        return {"attempts": attempts, "investigation": families.pop(), "program": program, "room": room,
-                "rows": {"research_programs": rows[BUCKET_PROGRAMS],
-                         "research_investigation_dispatches": rows[BUCKET_DISPATCHES],
-                         "research_dispatch_recoveries": rows[BUCKET_RECOVERIES],
-                         "research_dispatch_heads": rows[BUCKET_HEADS],
-                         "portfolio_investigations": rows[BUCKET_INVESTIGATIONS], "fleet_jobs": rows[FLEET_JOBS],
-                         "portfolio_bindings": rows[BUCKET_BINDINGS]}}
+        found = {"attempts": attempts, "investigation": families.pop(), "program": program, "room": room,
+                 "rows": {"research_programs": rows[BUCKET_PROGRAMS],
+                          "research_investigation_dispatches": rows[BUCKET_DISPATCHES],
+                          "research_dispatch_recoveries": rows[BUCKET_RECOVERIES],
+                          "research_dispatch_heads": rows[BUCKET_HEADS],
+                          "portfolio_investigations": rows[BUCKET_INVESTIGATIONS], "fleet_jobs": rows[FLEET_JOBS],
+                          "portfolio_bindings": rows[BUCKET_BINDINGS]}}
+        if scoped:
+            found.update(investigation=attempt_scope_id(intent["id"]), family_investigation=found["investigation"])
+            found["rows"].update({"continuation_policies": rows[CONTINUATION_POLICIES],
+                                  "continuation_intents": rows[CONTINUATION_INTENTS],
+                                  "continuation_research_receipts": rows[CONTINUATION_RECEIPTS],
+                                  "research_dispatch_successors": rows[BUCKET_SUCCESSORS]})
+        return found
 
     def _research_decide(self, intent: dict, intents: list, program_id: str) -> tuple:
         scope = self._research_scope(intent, intents, program_id)
         decision = research_decision(program_id=program_id, investigation=scope["investigation"],
                                      attempts=scope["attempts"], rows=scope["rows"], room=scope["room"],
-                                     now=self.clock())
+                                     now=self.clock(), family_investigation=scope.get("family_investigation"))
         return scope, decision
 
     def _discover_research(self, row: dict, block: dict, intent: dict, intents: list) -> list:
@@ -1746,10 +1791,22 @@ class OwnerActions:
             return None
         if state == LAUNCH_UNKNOWN or launch.get("cleanup_confirmed") is False:
             return self._effect(self._move(action, UNKNOWN, "research_launch_unknown", launch=_launch_view(launch)))
+        scoped = str(binding["investigation"]).startswith(ATTEMPT_SCOPE_PREFIX)
         with self.store.transaction() as tx:
             program = tx.get(BUCKET_PROGRAMS, binding["program_id"])
             cycle = tx.get(BUCKET_CYCLES, cycle_id(binding["program_id"], binding["expected_cycle"]))
             dispatch = tx.get(BUCKET_DISPATCHES, binding["investigation"])
+            # INV-RESEARCH-ATTEMPT-SCOPE-001: a scoped claim is ours only as exactly the held intent's current
+            # attempt pairs, derived from the intent rows of this same read.
+            intent = tx.get(CONTINUATION_INTENTS, binding["intent_id"]) if scoped else None
+            intents = [r for r in tx.scan(CONTINUATION_INTENTS) if r.get("policy_id") == binding["continuation_policy"]] \
+                if scoped else []
+        attempts = None
+        if isinstance(intent, dict):
+            try:
+                attempts = research_attempts(intents, intent)
+            except (KeyError, TypeError):     # an unreadable lineage proves no capture: never ours
+                attempts = None
         if state == LAUNCH_ABSENT:
             untouched = isinstance(program, dict) and program.get("active_cycle") is None \
                 and program.get("next_cycle") == binding["expected_cycle"] and cycle is None
@@ -1760,7 +1817,7 @@ class OwnerActions:
                                  launch_id=research_launch_id(action["id"], sequence))
                 return self._launch_dispatch(row)
             return self._effect(self._move(action, UNKNOWN, "research_launch_unknown", launch=_launch_view(launch)))
-        outcome = research_outcome(binding, action["launch_id"], program, cycle, dispatch)
+        outcome = research_outcome(binding, action["launch_id"], program, cycle, dispatch, attempts=attempts)
         return self._effect(self._move(action, outcome["state"], outcome["reason_code"],
                                        outcome={"launch": _launch_view(launch),
                                                 "cycle": (cycle or {}).get("id") if isinstance(cycle, dict) else None,
