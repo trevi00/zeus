@@ -701,7 +701,10 @@ class Executor:
             recovery["progress"] = progress
         # S2b: the start-only prediction cache, refreshed by every authoritative progress write, and the activity
         # drops not yet persisted (FLEET-S2B-SPEC §3).
-        activity_state = {"cache": activity_basis(progress if progress and bound(progress) else {}), "pending": 0}
+        # `gap` is separate from `pending`: a drop is COUNTED by any later owned write, but the ring stays suspect
+        # until a committed write has cleared it or nulled its watermark (a malformed write only invalidates).
+        activity_state = {"cache": activity_basis(progress if progress and bound(progress) else {}), "pending": 0,
+                          "gap": False}
         require(type(max_handoffs) is int and 1 <= max_handoffs <= 4, "Handoff cap must be 1..4")
         for handoff in range(max_handoffs):
             # @invariant INV-CONTEXT-001: every actual prompt, including recovery,
@@ -831,6 +834,10 @@ class Executor:
                         previous["malformed_recent"] = (previous["malformed_recent"] + [receipt["ref"]])[-6:]
                         previous.setdefault("malformed_defects", {})
                         previous["malformed_defects"][defect] = previous["malformed_defects"].get(defect, 0) + 1
+                        if activity_state["gap"]:
+                            # The drop is counted here, but the ring still misses a record: invalidate it durably so
+                            # no reader (or a restarted run) selects it; malformed events never take a slot.
+                            previous["activity_progress_sequence"] = None
                         flushed = flush_drops(previous)
                         tx.put("execution_progress", key, previous)
                     else:
@@ -854,14 +861,17 @@ class Executor:
                                                           "sequence": previous["sequence"], "occurred_at": occurred}
                         # The compact record links only when the row is still the one it was predicted from.
                         linked = (compact is not None and prior_bound == current_bound and observed == predicted)
-                        gap = activity_state["pending"] > 0  # an earlier drop this run left the ring incomplete
+                        gap = activity_state["gap"]  # an earlier drop this run left the ring incomplete
                         if label is not None and not linked:
                             activity_state["pending"] += 1
+                            activity_state["gap"] = True
                         sync_activity(previous, observed[1] if observed else None, compact if linked else None,
                                       failed=label is not None and not linked, gap=gap)
                         flushed = flush_drops(previous)
                         tx.put("execution_progress", key, previous)
                 activity_state["pending"] -= flushed
+                # Committed: the ring was cleared, re-synchronized or its watermark nulled, so no gap is left open.
+                activity_state["gap"] = False
                 activity_state["cache"] = activity_basis(previous)
                 note_progress(None if malformed else previous.get("sequence"))
 
@@ -893,6 +903,7 @@ class Executor:
                 basis = activity_state["cache"]
                 if basis is None:
                     activity_state["pending"] += 1
+                    activity_state["gap"] = True
                     return
                 try:
                     document = build_receipt(
@@ -903,6 +914,7 @@ class Executor:
                                                  lock_timeout=ACTIVITY_LOCK_SECONDS)["ref"]
                 except Exception:
                     activity_state["pending"] += 1
+                    activity_state["gap"] = True
                     return
                 written, observed, flushed, refused = None, None, 0, False
                 try:
@@ -923,7 +935,7 @@ class Executor:
                                 previous["research_binding"] = binding
                             previous["worktree"] = cwd
                             sync_activity(previous, previous.get("sequence", 0), compact, failed=False,
-                                          gap=activity_state["pending"] > 0)
+                                          gap=activity_state["gap"])
                             flushed = flush_drops(previous)
                             tx.put("execution_progress", key, previous)
                             written = previous
@@ -931,14 +943,17 @@ class Executor:
                     if refused:
                         raise
                     activity_state["pending"] += 1
+                    activity_state["gap"] = True
                     activity_state["cache"] = None
                     return
                 if written is None:
                     # Compare-and-set mismatch: nothing written, no retry; the observed row is the new prediction.
                     activity_state["pending"] += 1
+                    activity_state["gap"] = True
                     activity_state["cache"] = observed
                     return
                 activity_state["pending"] -= flushed
+                activity_state["gap"] = False
                 activity_state["cache"] = activity_basis(written)
 
             started = time.monotonic()

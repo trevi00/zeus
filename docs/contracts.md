@@ -245,8 +245,10 @@ Codex token updates and malformed events stay raw-only.
   is dropped (not a proof against arbitrary OS or database stalls). Any failure drops only the activity: it is
   counted in `activity_dropped` at the next successful owned write (a partial count; 0 once this producer has
   written the row, absent for an older producer). The `_owned` fence refusal is never contained. A dropped compact
-  write nulls the watermark, and a drop that could not (a tool start's own write failed) clears the ring at the
-  next successful write, so a ring that misses a record is never shown as continuous.
+  write nulls the watermark. A drop that could not (a tool start's own write failed) keeps the ring suspect: a
+  malformed write in between invalidates the watermark, and the next well-formed write clears the ring. So a ring
+  that misses a record is never shown as continuous. A drop with no later successful write in the same run cannot
+  be recorded; that limit is observational.
 - **The ring is a bounded display window:** the newest six, oldest first. It is not a durable event stream, and
   displaced records are swept by the existing retention.
 

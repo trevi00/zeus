@@ -337,6 +337,27 @@ def test_a_dropped_start_never_leaves_a_ring_that_looks_continuous(claude):
     assert row['activity_dropped'] == 1 and row['activity_progress_sequence'] == row['sequence']
 
 
+def test_a_malformed_event_counts_a_dropped_start_but_keeps_the_ring_invalid_until_it_is_cleared(claude):
+    """Codex S2b F1: a malformed line between a dropped start and the next completion flushes the COUNT, but must not
+    re-arm the pre-gap ring; it invalidates the watermark durably and the completion starts a fresh ring."""
+    malformed = _normalize({'stream': 'stdout', 'line': b'not json at all'}, 99)
+    assert malformed[0]['type'] == 'malformed'
+    snapshots = []
+
+    def after_malformed():
+        snapshots.append(claude.row())
+    claude.artifacts.fail['runtime-activity'] = 0
+    claude.run([*lines(INIT), lambda: claude.artifacts.fail.update({'runtime-activity': 1}), *lines(use('Read')),
+                *malformed, after_malformed, *lines(done('toolu_Read0'))])
+    mid = snapshots[0]
+    assert mid['activity_dropped'] == 1 and mid['malformed_events'] == 1
+    assert mid['activity_progress_sequence'] is None, 'immediately after the flush, the old ring is not selectable'
+    assert mid['activity_recent'] and mid['sequence'] == 1, 'legacy progress and the ring itself are untouched'
+    row = claude.row()
+    assert [r['event_label'] for r in compact(claude, row)] == ['tool_completed'], 'a fresh ring after the gap'
+    assert row['activity_progress_sequence'] == row['sequence'] == 2 and row['activity_dropped'] == 1
+
+
 def test_a_start_compare_and_set_mismatch_refreshes_the_prediction_and_writes_nothing(claude):
     claude.run(lines(INIT))
     before = claude.row()
