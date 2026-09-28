@@ -17,6 +17,7 @@ from codex_harness.adapters.commands import run_process
 from codex_harness.adapters.monitoring_observations import observation_facts
 from codex_harness.application.fleet import Fleet
 from codex_harness.application.monitoring import Monitoring
+from codex_harness.domain.council import TASK_STATUSES
 from codex_harness.domain.fleet import FleetRefused
 from codex_harness.domain.model import ContractError
 
@@ -485,6 +486,236 @@ def lane_resolver(host_dsn, store_factory=None):
     return resolve
 
 
+# ----- S2a activity pane (INV-LANE-SESSIONS-001 activity; FLEET-S2-SPEC) ---------------------------------------
+# The executor keeps only progress receipts (Codex item/completed and token updates; Claude session_started,
+# tool_completed, permission_denied, result), at most six per task. This projection shows exactly those retained
+# receipts through a fixed allowlist: it is an emitted-event log, never a terminal or a screen, and a Claude tool
+# completion carries no tool name.
+ACTIVITY_REFS = 6
+ACTIVITY_BODY_BYTES = 65_536
+RECENT_TERMINAL_SECONDS = 600
+# Only a KNOWN terminal execution status opens the completion window; an unknown, missing or new status is
+# `not_selected` with no read (FLEET-S2-SPEC §5).
+TERMINAL_EXECUTION = TASK_STATUSES - ACTIVE_EXECUTION
+ARTIFACT_REF = re.compile(r'^sha256:([0-9a-f]{64})$')
+CLAUDE_LABELS = frozenset({'tool_started', 'tool_completed', 'session_started', 'permission_denied', 'message',
+                           'result'})
+CODEX_LABELS = {'item/completed': 'item_completed', 'thread/tokenUsage/updated': 'token_usage_updated'}
+CODEX_ITEM_TYPES = frozenset({'commandExecution', 'fileChange', 'mcpToolCall', 'agentMessage', 'reasoning'})
+# Display labels only, never grants; anything else (custom and MCP names included) is null, never truncated text.
+BUILTIN_TOOLS = frozenset({'Read', 'Glob', 'Grep', 'Bash', 'Edit', 'Write', 'NotebookEdit', 'Task', 'WebFetch',
+                           'WebSearch', 'StructuredOutput'})
+PLAIN_STATUSES = frozenset({'started', 'completed', 'failed', 'denied', 'emitted'})
+ENVELOPE_KEYS = frozenset({'event', 'malformed', 'defect', 'previous'})
+
+
+def _optional_strings(mapping, keys) -> bool:
+    """Every consulted field is a string or absent; anything else makes the receipt `invalid_shape` before any
+    vocabulary lookup, so a list or object can never raise out of one entry."""
+    return all(mapping.get(key) is None or isinstance(mapping.get(key), str) for key in keys)
+
+
+class ArtifactReader:
+    """Bounded, integrity-checked reads from ONE existing lane artifact root. Unlike FileArtifacts it never
+    creates a directory, locks, touches or writes, and it refuses symlinks and non-regular files before any
+    read, so a crafted entry can neither escape the root nor block on a FIFO. Each read answers a fixed code."""
+
+    def __init__(self, root):
+        self.root = Path(root)
+
+    def available(self) -> bool:
+        return self.root.is_dir() and not self.root.is_symlink()
+
+    def read(self, reference):
+        """(state, error_code, text): ok with the text, or unavailable/unreadable with a fixed code."""
+        import hashlib
+        import os
+        import stat as stat_module
+        match = ARTIFACT_REF.fullmatch(reference) if isinstance(reference, str) else None
+        if match is None:
+            return 'unreadable', 'invalid_ref', None
+        if not self.available():
+            return 'unavailable', 'runtime_unavailable', None
+        path = self.root / (match[1] + '.txt')
+        try:
+            info = os.lstat(path)
+        except FileNotFoundError:
+            return 'unavailable', 'missing_artifact', None
+        except OSError:
+            return 'unreadable', 'io_error', None
+        if not stat_module.S_ISREG(info.st_mode):
+            return 'unreadable', 'io_error', None
+        try:
+            descriptor = os.open(path, os.O_RDONLY | getattr(os, 'O_NOFOLLOW', 0) | getattr(os, 'O_NONBLOCK', 0))
+            with os.fdopen(descriptor, 'rb') as stream:
+                data = stream.read(ACTIVITY_BODY_BYTES + 1)
+        except OSError:
+            return 'unreadable', 'io_error', None
+        if len(data) > ACTIVITY_BODY_BYTES:
+            return 'unreadable', 'too_large', None
+        if hashlib.sha256(data).hexdigest() != match[1]:
+            return 'unreadable', 'integrity_failure', None
+        try:
+            return 'ok', None, data.decode('utf-8')
+        except UnicodeDecodeError:
+            return 'unreadable', 'invalid_json', None
+
+
+def _strict_json(text):
+    def pairs(items):
+        keys = [key for key, _ in items]
+        if len(keys) != len(set(keys)):
+            raise ValueError('duplicate key')
+        return dict(items)
+
+    def constant(name):
+        raise ValueError('non-finite number')
+    return json.loads(text, object_pairs_hook=pairs, parse_constant=constant)
+
+
+def _epoch_ms(value):
+    if type(value) is int and 0 < value < 10 ** 14:
+        return datetime.fromtimestamp(value / 1000, tz=timezone.utc).isoformat()
+    return None
+
+
+def project_receipt(text) -> dict:
+    """The allowlisted view of ONE runtime-event receipt: a NEW small object, never a redacted copy. Only fixed
+    vocabularies, a built-in tool name, validated epoch times and the malformed flag survive; payloads, text,
+    commands, paths, ids, subtypes and unknown keys are dropped."""
+    empty = {'event_label': 'malformed', 'tool_name': None, 'item_type': None, 'status': None, 'occurred_at': None,
+             'malformed': True}
+    try:
+        body = _strict_json(text)
+    except (ValueError, RecursionError):
+        return {**empty, 'state': 'unreadable', 'error_type': 'invalid_json'}
+    if not isinstance(body, dict) or not set(body) <= ENVELOPE_KEYS or type(body.get('malformed')) is not bool:
+        return {**empty, 'state': 'malformed', 'error_type': 'invalid_shape'}
+    event = body.get('event')
+    if body['malformed'] or not isinstance(event, dict):
+        return {**empty, 'state': 'malformed', 'error_type': None}
+    view = {'state': 'ok', 'error_type': None, 'event_label': 'unknown', 'tool_name': None, 'item_type': None,
+            'status': None, 'occurred_at': None, 'malformed': False}
+    if event.get('provider') == 'claude-code-cli':
+        if not _optional_strings(event, ('type', 'status', 'tool')):
+            return {**empty, 'state': 'malformed', 'error_type': 'invalid_shape'}
+        kind, status = event.get('type'), event.get('status')
+        if kind in CLAUDE_LABELS:
+            view['event_label'] = kind
+        if kind == 'tool_started' and event.get('tool') in BUILTIN_TOOLS:
+            view['tool_name'] = event['tool']
+        if kind == 'result':
+            view['status'] = ('success' if status == 'success'
+                              else 'error' if isinstance(status, str) and status.startswith('error') else 'unknown')
+        elif status in PLAIN_STATUSES:
+            view['status'] = status
+        elif status is not None:
+            view['status'] = 'unknown'
+        view['occurred_at'] = _epoch_ms(event.get('occurred_at_ms'))
+    elif isinstance(event.get('method'), str):
+        view['event_label'] = CODEX_LABELS.get(event['method'], 'unknown')
+        params = event.get('params') if isinstance(event.get('params'), dict) else {}
+        item = params.get('item') if isinstance(params.get('item'), dict) else None
+        if item is not None and not _optional_strings(item, ('type', 'status')):
+            return {**empty, 'state': 'malformed', 'error_type': 'invalid_shape'}
+        if item is not None:
+            view['item_type'] = item.get('type') if item.get('type') in CODEX_ITEM_TYPES else 'unknown'
+            status = item.get('status')
+            view['status'] = status if status in ('completed', 'failed') else (None if status is None else 'unknown')
+        for candidate in (params.get('completedAtMs'), (item or {}).get('completedAtMs'), event.get('emittedAtMs')):
+            moment = _epoch_ms(candidate)
+            if moment is not None:
+                view['occurred_at'] = moment
+                break
+    return view
+
+
+def _aware(value):
+    moment = parse_observed(value)
+    return moment.astimezone(timezone.utc) if moment is not None else None
+
+
+def execution_activity(row, progress, reader, now, recent_terminal_seconds=RECENT_TERMINAL_SECONDS):
+    """(activity_status, activity) for one lane row. Membership is ONLY this row's bound `progress.recent`
+    (the last six); `last_record` annotates a member but never widens it, and `previous` links are never
+    followed, so no other artifact can be read through this row. Sequence and collection time exist only for
+    `last_record` (the executor assigns them to the row, not to each receipt)."""
+    status = row.get('status')
+    if not isinstance(status, str):
+        selected = False
+    elif status in ACTIVE_EXECUTION:
+        selected = True
+    elif status in TERMINAL_EXECUTION:
+        completed = _aware(row.get('completed_at'))
+        selected = completed is not None and 0 <= (now - completed).total_seconds() <= recent_terminal_seconds
+    else:
+        selected = False
+    if not selected:
+        return 'not_selected', []
+    if progress is None:
+        return 'empty', []
+    lineage = (progress.get('generation'), progress.get('attempt'))
+    if not all(type(value) is int for value in lineage) or lineage != (row.get('generation'), row.get('attempt')):
+        return 'lineage_unconfirmed', []
+    recent = progress.get('recent')
+    refs = recent[-ACTIVITY_REFS:] if isinstance(recent, list) else []
+    if not refs:
+        malformed = progress.get('malformed_events')
+        return ('malformed_not_in_recent' if type(malformed) is int and malformed > 0 else 'empty'), []
+    if reader is None:
+        return 'unavailable', [{'receipt_ref': None, 'state': 'unavailable', 'error_type': 'runtime_unavailable',
+                                'event_label': None, 'tool_name': None, 'item_type': None, 'status': None,
+                                'sequence': None, 'occurred_at': None, 'collected_at': None, 'malformed': None}]
+    last = progress.get('last_record')
+    sequence = progress.get('sequence')
+    collected = _aware(progress.get('collected_at'))
+    activity, seen = [], set()
+    for reference in refs:
+        valid = isinstance(reference, str) and ARTIFACT_REF.fullmatch(reference) is not None
+        if not valid:
+            activity.append({'receipt_ref': None, 'state': 'unreadable', 'error_type': 'invalid_ref',
+                             'event_label': None, 'tool_name': None, 'item_type': None, 'status': None,
+                             'sequence': None, 'occurred_at': None, 'collected_at': None, 'malformed': None})
+            continue
+        if reference in seen:
+            continue
+        seen.add(reference)
+        # Each selected ref fails on its own with a fixed code; no exception text leaves this entry.
+        try:
+            state, code, text = reader.read(reference)
+        except Exception:
+            state, code, text = 'unreadable', 'io_error', None
+        if state != 'ok':
+            entry = {'state': state, 'error_type': code, 'event_label': None, 'tool_name': None, 'item_type': None,
+                     'status': None, 'occurred_at': None, 'malformed': None}
+        else:
+            try:
+                entry = project_receipt(text)
+            except Exception:
+                entry = {'state': 'malformed', 'error_type': 'invalid_shape', 'event_label': 'malformed',
+                         'tool_name': None, 'item_type': None, 'status': None, 'occurred_at': None,
+                         'malformed': True}
+        is_last = reference == last and entry['state'] == 'ok'
+        activity.append({'receipt_ref': reference, **entry,
+                         'sequence': sequence if is_last and type(sequence) is int and sequence > 0 else None,
+                         'collected_at': collected.isoformat() if is_last and collected is not None else None})
+    return ('ok' if any(entry['state'] == 'ok' for entry in activity) else 'unavailable'), activity
+
+
+def lane_artifact_resolver():
+    """`lane -> ArtifactReader` over the lane's REGISTERED runtime `artifacts` directory (never a path found in an
+    event, progress row or request), cached per (lane id, schema, runtime) so a changed registration never
+    reuses another root. Nothing is created."""
+    cache = {}
+
+    def resolve(lane):
+        key = (lane['id'], lane['schema'], lane['runtime'])
+        if key not in cache:
+            cache[key] = ArtifactReader(Path(lane['runtime']) / 'artifacts')
+        return cache[key]
+    return resolve
+
+
 def _execution_view(row, kind, operation, progress, reservations, session):
     message = row.get('message') or {}
     completed = (progress or {}).get('last_completed') or {}
@@ -546,7 +777,7 @@ def _execution_view(row, kind, operation, progress, reservations, session):
             if isinstance(session.get('owner'), dict) else None}}
 
 
-def lane_view(store):
+def lane_view(store, reader=None, now=None, recent_terminal_seconds=RECENT_TERMINAL_SECONDS):
     """One lane's executions from ONE read transaction of its own store: task and decision rows, the
     operation that names them, their progress, invocation reservations and durable worker session.
     Rows are keyed by the lane-local id; the caller adds the lane, so equal ids in two lanes stay
@@ -598,14 +829,27 @@ def lane_view(store):
                                              latest.get('reserved_at'), latest.get('settled_at')) if value),
                    default='')
     executions.sort(key=lambda view: (view['status'] in ACTIVE_EXECUTION, activity(view)), reverse=True)
-    return {'executions': executions[:LANE_SESSION_LIMIT], 'total': len(executions),
+    shown = executions[:LANE_SESSION_LIMIT]
+    # Artifact reads happen AFTER the store snapshot, only for the rows shown (FLEET-S2-SPEC §5).
+    rows_by_key = {(kind, row['id']): row for kind, bucket in (('task', 'tasks'), ('decision', 'decisions_pending'))
+                   for row in rows[bucket]}
+    moment = now or datetime.now(timezone.utc)
+    for view in shown:
+        # Activity is additive: a row it cannot project is `unavailable`, never a lost lane or session fact.
+        try:
+            status, items = execution_activity(rows_by_key[(view['kind'], view['id'])], progress.get(view['id']),
+                                               reader, moment, recent_terminal_seconds)
+        except Exception:
+            status, items = 'unavailable', []
+        view['activity_status'], view['activity'] = status, items
+    return {'executions': shown, 'total': len(executions),
             'truncated': len(executions) > LANE_SESSION_LIMIT,
             'counts': dict(Counter(f"{view['kind']}:{view['status']}" for view in executions)),
             'invocations': dict(Counter(row.get('status') for row in rows['invocation_reservations'])),
             'worker_sessions': dict(Counter(view['state'] for view in sessions.values()))}
 
 
-def lane_session_facts(store, resolve):
+def lane_session_facts(store, resolve, artifacts=None, now=None):
     """INV-LANE-SESSIONS-001 (`urn:zeus:lane-sessions:1`): every REGISTERED lane's executions, read
     from the lane's own store (the control store holds none of them). Each lane fails independently as `unavailable` with its
     error type only, never as an empty ok lane. An unregistered Fleet is `registered: false` with no
@@ -622,7 +866,7 @@ def lane_session_facts(store, resolve):
     for lane in lanes or ():
         observed = datetime.now(timezone.utc).isoformat()
         try:
-            view = {'status': 'ok', **lane_view(resolve(lane))}
+            view = {'status': 'ok', **lane_view(resolve(lane), artifacts(lane) if artifacts else None, now)}
         except Exception as exc:
             view = {'status': 'unavailable', 'error': type(exc).__name__}
         views.append({'lane': lane['id'], 'team': lane.get('team'), 'observed_at': observed, **view})
@@ -641,7 +885,8 @@ def scope_label(repository, label=None):
     return text or f'repository {Path(repository).resolve().name}'
 
 
-def collect(service, artifacts, repository, redis_url, containers=None, scope=None, runtime=None, lanes=None):
+def collect(service, artifacts, repository, redis_url, containers=None, scope=None, runtime=None, lanes=None,
+            lane_artifacts=None):
     """The three legacy sources (`database`, `docker`, `redis`) plus the additive store-backed
     projections; with a runtime directory also `observations` (observatory-001) and with a lane
     resolver also `lane_sessions`. Every envelope fails independently."""
@@ -681,7 +926,7 @@ def collect(service, artifacts, repository, redis_url, containers=None, scope=No
     if lanes is not None:
         # Additive lane-session envelope: every registered lane's own read-only store, each lane
         # failing independently inside it; nothing is written, ticked or resumed.
-        jobs['lane_sessions'] = lambda: lane_session_facts(service.store, lanes)
+        jobs['lane_sessions'] = lambda: lane_session_facts(service.store, lanes, lane_artifacts)
     with ThreadPoolExecutor(max_workers=4) as pool:
         futures = {name: pool.submit(sample, callback) for name, callback in jobs.items()}
         sources = {name: future.result() for name, future in futures.items()}
