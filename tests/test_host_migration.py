@@ -675,12 +675,18 @@ def test_ph4_10_a_failed_transaction_leaves_no_partial_transition_or_history():
     assert view["cached"] is False and view["state"] == policy.LIMITED_ACTIVE
 
 
-def test_ph4_13_the_coordinator_checks_archived_bindings_only_and_samples_no_live_state(monkeypatch):
+def test_ph4_4_a_lineage_descriptor_the_archived_consumption_receipts_do_not_name_refuses():
     coordinator, sha, intent_id = activation_ready()
     moved = {**MANAGED_DESCRIPTOR, "revision": "1" * 40, "root": "/srv/zeus/managed/runtimes/" + "1" * 40}
     with pytest.raises(MigrationRefused, match="service_consumption_unbound"):
-        # The capture tuple changed before submission: the archived receipts no longer bind it.
+        # The receipts name the recomputed digest of another descriptor than the lineage's.
         coordinator.advance(managed_transition(sha, intent_id, lineage_document=lineage(descriptor=moved)))
+
+
+def test_ph4_13_the_coordinator_checks_archived_bindings_only_and_samples_no_live_state(monkeypatch):
+    """The coordinator half of PH4-13. The pre-submit comparison and the post-transition check that
+    sample live state belong to the producer (tests/test_host_migration_evidence.py, `--expect`)."""
+    coordinator, sha, intent_id = activation_ready()
 
     def sampled(*args, **kwargs):
         raise AssertionError("the coordinator sampled live state")

@@ -1,4 +1,4 @@
-"""Read-only managed `limited_active` receipt producer (INV-HOST-MIGRATION-001): PH4-6, 7, 8, 9 and 12.
+"""Read-only managed `limited_active` receipt producer (INV-HOST-MIGRATION-001): PH4-6, 7, 8, 9, 12 and 13.
 
 Everything runs on fixture data: memory stores behind a read-only wrapper, a temporary `ZEUS_AIBOX_ROOT`
 with labelled release and sealed-runtime fixtures, a fixture `/proc` read through the accepted
@@ -6,7 +6,8 @@ with labelled release and sealed-runtime fixtures, a fixture `/proc` read throug
 provider or model is touched. The fixture reproduces the live topology the spec describes. The
 effective successor's revision (5aa analogue) owns launch and `current`. The consumed managed
 descriptor has another payload revision (ec8 analogue). The entry runs the registered interpreter of a
-third release. The journal lines are produced by the unchanged deploy/aibox launcher's own `emit`.
+third release. The journal lines are produced by the unchanged deploy/aibox launcher's own `emit`, and
+carry the unit's main pid as journald attributes every line of the stream the main process opened.
 """
 from __future__ import annotations
 
@@ -21,6 +22,7 @@ import os
 import shutil
 import socket
 import subprocess
+import sys
 import tempfile
 from contextlib import contextmanager
 from datetime import datetime, timedelta, timezone
@@ -129,6 +131,15 @@ def launch_event(**overrides) -> dict:
     return {"event": "launch", "role": "managed-fleet", "revision": ACT_REV, "migration_id": MID, **overrides}
 
 
+def main_line(message: str, *, index: int = 0) -> dict:
+    """One later line of the main pid's stream, as journald attributes it."""
+    return {"MESSAGE": message, "_PID": str(SUP_PID), "_STREAM_ID": "aab17a6192c242018273c435b78ae485",
+            "_BOOT_ID": BOOT_HEX, "_SYSTEMD_INVOCATION_ID": INVOCATION, "_SYSTEMD_UNIT": UNIT, "_TRANSPORT": "stdout",
+            "__CURSOR": "s=088ada45;i=" + format(145000 + index, "x"),
+            "__MONOTONIC_TIMESTAMP": str(LAUNCH_MONO + 900_000 + index),
+            "__REALTIME_TIMESTAMP": str(LAUNCH_REAL + 900_000 + index)}
+
+
 class ReadOnly:
     """A store view whose transactions can read and never write; it counts what it was asked."""
 
@@ -160,22 +171,26 @@ class _ReadTx:
 
 
 class Runner:
-    """`systemctl show` and `journalctl` answers; anything else is an unexpected command."""
+    """`systemctl show` and `journalctl` answers (bytes, as `bounded_run` returns them); anything else
+    is an unexpected command. Each call's environment is kept."""
 
     def __init__(self, world):
-        self.world, self.calls, self.shows, self.on_recheck = world, [], 0, None
+        self.world, self.calls, self.envs, self.shows, self.on_recheck = world, [], [], 0, None
 
-    def __call__(self, argv, timeout=None, **kwargs):
+    def __call__(self, argv, timeout=None, env=None, limit=None):
         self.calls.append(list(argv))
-        if argv[:2] == ["systemctl", "show"]:
+        self.envs.append(env)
+        if argv[:2] == [producer.SYSTEMCTL, "show"]:
             self.shows += 1
             if self.shows == 2 and self.on_recheck is not None:
                 self.on_recheck()
             text = "".join(key + "=" + value + "\n" for key, value in self.world.unit.items())
-            return subprocess.CompletedProcess(argv, self.world.show_rc, text, "")
-        if argv[:1] == ["journalctl"]:
+            rc = self.world.show_rc if self.shows == 1 else self.world.recheck_show_rc
+            return subprocess.CompletedProcess(argv, rc, text.encode(), b"")
+        if argv[:1] == [producer.JOURNALCTL]:
             text = "".join(json.dumps(entry) + "\n" for entry in self.world.journal)
-            return subprocess.CompletedProcess(argv, self.world.journal_rc, text, "")
+            return subprocess.CompletedProcess(argv, self.world.journal_rc, text.encode(),
+                                               self.world.journal_stderr)
         raise AssertionError("unexpected command")
 
 
@@ -336,13 +351,13 @@ class World:
         self.unit = {"ActiveState": "active", "SubState": "running", "MainPID": str(SUP_PID),
                      "ExecMainPID": str(SUP_PID), "InvocationID": INVOCATION, "ControlGroup": CGROUP,
                      "ExecMainStartTimestampMonotonic": str(EXEC_MAIN)}
-        # The launcher's own lines, and a Fleet runner document from the child that must be ignored.
-        self.journal = journal(launch_event()) + [{
-            "MESSAGE": json.dumps({"event": "launch", "job": "fleet-job"}), "_PID": str(ENTRY_PID),
-            "_STREAM_ID": "c" * 32, "_BOOT_ID": BOOT_HEX, "_SYSTEMD_INVOCATION_ID": INVOCATION,
-            "_SYSTEMD_UNIT": UNIT, "_TRANSPORT": "stdout", "__CURSOR": "s=1;i=2",
-            "__MONOTONIC_TIMESTAMP": str(LAUNCH_MONO + 900_000), "__REALTIME_TIMESTAMP": str(LAUNCH_REAL + 900_000)}]
-        self.show_rc = self.journal_rc = 0
+        # The launcher's own lines, then a later plain line on the SAME stream. journald gives it the
+        # main pid whichever process of the unit wrote it; it is no document and is ignored.
+        self.journal = journal(launch_event()) + [main_line("UserWarning: fleet runner started")]
+        self.show_rc = self.recheck_show_rc = self.journal_rc = 0
+        self.journal_stderr = b""
+        self.offset_usec = 0  # CLOCK_BOOTTIME - CLOCK_MONOTONIC: never suspended
+        self.output_limit = producer.MAX_COMMAND_BYTES
         self.runner = Runner(self)
 
     def supervisor_argv(self) -> list:
@@ -389,12 +404,16 @@ class World:
                        "delivery": ReadOnly(self.delivery)}
         return producer.Ports(coordinator=self.stores["coordinator"], control=self.stores["control"],
                               delivery=lambda control: self.stores["delivery"],
-                              host=producer.HostReader(runner=self.runner, facts=HostFacts(
-                                  proc=self.proc, cgroup_root=self.proc / "no-cgroup"), clk_tck=100),
-                              clock=Clock())
+                              host=self.host(), clock=Clock())
 
-    def observe(self, **overrides) -> dict:
-        return producer.observe(self.request(**overrides), self.ports())
+    def host(self) -> producer.HostReader:
+        return producer.HostReader(runner=self.runner, facts=HostFacts(proc=self.proc, cgroup_root=self.proc / "no-cgroup"),
+                                   clk_tck=100, boottime_offset=lambda: self.offset_usec,
+                                   output_limit=self.output_limit)
+
+    def observe(self, *, expect=None, post_transition=False, **overrides) -> dict:
+        return producer.observe(self.request(**overrides), self.ports(), expect=expect,
+                                post_transition=post_transition)
 
 
 @pytest.fixture
@@ -445,13 +464,18 @@ def test_genuine_launch_and_managed_consumption_produce_three_bound_receipts_and
         migration.RESTORED_PAUSED, migration.LIMITED_ACTIVE, "aibox", "claude-ph4", observation["observed_to"])
     assert draft["identity"] == {"config_sha256": hashlib.sha256(world.config.read_bytes()).hexdigest(),
                                  "commit": ACT_REV, "image": IMAGE, "profile_sha256": PROFILE}
+    # The draft's configuration digest is committed by the observation, inside the `migration` source.
+    migration_projection = result["projections"]["migration"]
+    assert migration_projection["config_sha256"] == draft["identity"]["config_sha256"]
+    assert observation["sources"]["migration"]["sha256"] == digest(migration_projection)
     assert draft["lineage"] == lineage and draft["manifest_sha256"] == world.manifest_sha256
     assert draft["evidence"] == {gate: [receipt] for gate, receipt in evidence.items()}
     assert migration.managed_consumption_subject(lineage) == evidence["service_consumption"]["subject"]
     assert migration.managed_canary_subject(lineage) == evidence["canary_admission"]["subject"]
     # Only the two read commands ran: one capture, then the recheck (which reads the unit, not the journal).
-    assert [call[:2] for call in world.runner.calls] == [["systemctl", "show"], ["journalctl", "--no-pager"],
-                                                         ["systemctl", "show"]]
+    assert [call[:2] for call in world.runner.calls] == [[producer.SYSTEMCTL, "show"],
+                                                         [producer.JOURNALCTL, "--no-pager"],
+                                                         [producer.SYSTEMCTL, "show"]]
 
 
 def test_consumption_uses_the_previous_instance_and_binds_the_current_one_separately(world):
@@ -613,8 +637,10 @@ def _entry_pid_reused(world):
 
 
 def _dry_run_only(world):
-    # The only launch event of the invocation came from another process (a dry run), not the main pid.
-    world.journal = journal(launch_event(), pid=9999)
+    # A dry run emits the same `launch` on the main pid's stream (journald attributes it so), but never
+    # execs: the unit's main process is still the launcher, not the supervisor (an argv/exec mismatch).
+    world.process(SUP_PID, 1, SUP_TICKS, ["/usr/bin/python3", str(ROOT / "deploy" / "aibox" / "zeus_aibox_service.py"),
+                                          "launch", "--role", "managed-fleet", "--dry-run"])
 
 
 def _not_execd(world):
@@ -661,8 +687,12 @@ PROCESS_CASES = {
                    policy.LAUNCH, "launch_boot"),
     "wrong_invocation": (lambda w: setattr(w, "journal", journal(launch_event(), invocation=OLD_INVOCATION)),
                          policy.LAUNCH, "launch_invocation"),
-    "no_launch_in_invocation": (lambda w: setattr(w, "journal", []), policy.LAUNCH, "launch_missing"),
-    "dry_run_launch_only": (_dry_run_only, policy.LAUNCH, "launch_missing"),
+    "no_launch_in_invocation": (lambda w: setattr(w, "journal", journal({"event": "supervisor_started"})),
+                                policy.LAUNCH, "launch_missing"),
+    "dry_run_launch_only": (_dry_run_only, policy.PROCESS, "supervisor_argv"),
+    # A descendant's document on the inherited stream carries the main pid too: a second event is ambiguous.
+    "child_document_on_main_stream": (lambda w: w.journal.append(main_line(json.dumps(
+        {"event": "launch", "job": "fleet-job"}), index=1)), policy.LAUNCH, "launch_ambiguous"),
     "wrong_launch_revision": (lambda w: setattr(w, "journal", journal(launch_event(revision=INTENT_REV))),
                               policy.LAUNCH, "launch_revision"),
     "wrong_launch_migration": (lambda w: setattr(w, "journal", journal(launch_event(migration_id="other"))),
@@ -734,6 +764,18 @@ UNREADABLE_CASES = {
     "config_missing": (lambda w: w.config.unlink(), "config"),
     "unit_unreadable": (lambda w: setattr(w, "show_rc", 1), "unit"),
     "journal_unreadable": (lambda w: setattr(w, "journal_rc", 1), "journal"),
+    # An empty answer for a unit with a current invocation is what an unprivileged reader sees, not
+    # `launch_missing`; so is any stderr, even beside entries, and an answer over the byte cap.
+    "journal_empty": (lambda w: setattr(w, "journal", []), "journal"),
+    "journal_permission_hint": (lambda w: (setattr(w, "journal", []), setattr(
+        w, "journal_stderr", b"No journal files were opened due to insufficient permissions.\n")), "journal"),
+    "journal_stderr_beside_entries": (lambda w: setattr(w, "journal_stderr", b"Hint: some entries hidden\n"),
+                                      "journal"),
+    "journal_over_cap": (lambda w: setattr(w, "output_limit", 1024), "journal"),
+    "main_pid_document_unparseable": (lambda w: w.journal.append(main_line("{not json}", index=1)),
+                                      "journal_entry"),
+    "main_pid_document_unterminated": (lambda w: setattr(w, "journal", journal(launch_event())[:-1]),
+                                       "journal_entry"),
     "boot_unreadable": (lambda w: (w.proc / "sys" / "kernel" / "random" / "boot_id").unlink(), "boot"),
     "supervisor_stat_garbage": (lambda w: (w.proc / str(SUP_PID) / "stat").write_text("garbage"), "supervisor"),
     "supervisor_journal_missing": (lambda w: (w.state / "supervisor-journal.jsonl").unlink(), "supervisor_journal"),
@@ -829,7 +871,8 @@ def no_effects(monkeypatch, attempts: list):
         patch.setattr(io, "open", guarded_open)
         patch.setattr(os, "open", guarded_os_open)
         for name in ("replace", "rename", "remove", "unlink", "rmdir", "mkdir", "makedirs", "symlink", "link",
-                     "chmod", "chown", "truncate", "kill", "killpg", "execv", "execve", "system"):
+                     "chmod", "chown", "truncate", "utime", "mkfifo", "kill", "killpg", "execv", "execve", "system",
+                     "fork", "posix_spawn", "posix_spawnp"):
             patch.setattr(os, name, forbid("os." + name))
         for module, names in ((shutil, ("rmtree", "move", "copy", "copy2", "copyfile", "copytree")),
                               (tempfile, ("mkstemp", "mkdtemp", "NamedTemporaryFile", "TemporaryDirectory")),
@@ -878,7 +921,9 @@ def test_producer_is_read_only_on_success_and_failure(world, monkeypatch, case):
     assert attempts == [] and all(store.puts == [] for store in world.stores.values())
     assert (tree(world.root, world.proc), world.coordinator.data, world.control_store.data,
             world.delivery.data) == before
-    assert all(call[:2] == ["systemctl", "show"] or call[:1] == ["journalctl"] for call in world.runner.calls)
+    assert all(call[:2] == [producer.SYSTEMCTL, "show"] or call[:1] == [producer.JOURNALCTL]
+               for call in world.runner.calls)
+    assert all(env == producer.COMMAND_ENV for env in world.runner.envs)
     assert result["observation"]["ok"] is (case == "success")
     recompute(result)
 
@@ -897,8 +942,15 @@ def test_every_source_hash_and_the_common_digest_recompute_from_the_archive(worl
         "supervisor", SUP_PID, SUP_TICKS, INVOCATION)
     assert (entry["role"], entry["pid"], entry["start_ticks"], entry["boot_id"]) == ("entry", ENTRY_PID, ENTRY_TICKS,
                                                                                      BOOT_HEX)
+    # A process that passed keeps only fixed validated facts and the digest of its cmdline, never argv.
+    assert supervisor["validated"] == {"command": "supervise", "module": MODULE, "revision": ACT_REV}
+    assert entry["validated"] == {"command": "entry", "module": MODULE, "workload": "fleet",
+                                  "interpreter": "registered"}
+    assert supervisor["argv_match"] is True and entry["argv_match"] is True
+    assert "argv" not in supervisor and "argv" not in entry
     # The entry runs the registered interpreter of a THIRD release; its provenance is the sealed runtime.
-    assert entry["argv"][0].split("/releases/")[1].startswith(INTENT_REV)
+    assert entry["argv_sha256"] == hashlib.sha256((world.proc / str(ENTRY_PID) / "cmdline").read_bytes()).hexdigest()
+    assert str(world.releases / INTENT_REV) not in json.dumps(entry)
     assert result["projections"]["descriptor"]["runtime"]["revision"] == PAYLOAD
 
 
@@ -935,7 +987,7 @@ def test_cli_store_failure_leaks_no_credential_and_reads_no_host(world, monkeypa
         raise AssertionError("host command")
 
     monkeypatch.setattr(psycopg, "connect", connect)
-    monkeypatch.setattr(producer, "run_process", host_command)
+    monkeypatch.setattr(producer, "bounded_run", host_command)
     code = adapter.main(_cli(world, "--dsn-env", "ZEUS_TEST_MIGRATION_DSN", "--control-dsn-env",
                                "ZEUS_TEST_CONTROL_DSN", "--lane", "harness"))
     captured = capsys.readouterr()
@@ -1018,3 +1070,441 @@ def test_observation_validation_is_strict_and_ok_means_everything_held(world):
             policy.validate_observation(broken)
     with pytest.raises(migration.MigrationRefused, match="observation_invalid"):
         policy.transition_draft({**good, "ok": False}, {}, host="aibox", actor="a", config_sha256="0" * 64)
+
+
+# ----- S1/S2/S3/S5/S6: no value leaks, bounded commands, no inherited environment, safe opens -----------
+@pytest.mark.parametrize("value", ["postgresql://zeus:hun%zzter2@127.0.0.1/zeus", "sk-live-hunter2-secret",
+                                   "postgresql://zeus:hunter2@[unterminated/zeus"])
+@pytest.mark.parametrize("option", ["--dsn-env", "--control-dsn-env"])
+def test_a_malformed_dsn_or_a_secret_variable_is_refused_without_its_value(world, monkeypatch, capsys, option,
+                                                                           value):
+    """libpq's parse errors quote what they could not parse; the refusal names the argument only and
+    no traceback is printed. Nothing is built, read or connected."""
+    monkeypatch.setenv("ZEUS_TEST_DSN", "postgresql://zeus@127.0.0.1:1/zeus")
+    monkeypatch.setenv("ZEUS_TEST_SECRET", value)
+    monkeypatch.setattr(producer, "HostReader", lambda **kwargs: pytest.fail("host reader built"))
+    other = "--control-dsn-env" if option == "--dsn-env" else "--dsn-env"
+    code = adapter.main(_cli(world, option, "ZEUS_TEST_SECRET", other, "ZEUS_TEST_DSN"))
+    captured = capsys.readouterr()
+    assert code == 1 and "hunter2" not in captured.out + captured.err and "Traceback" not in captured.err
+    assert json.loads(captured.out) == {"refused": "environment_invalid", "field": option[2:].replace("-", "_")}
+
+
+@pytest.mark.parametrize("role", ["supervisor", "entry"])
+def test_a_reused_pid_keeps_only_an_argv_digest_and_its_arguments_never_reach_the_output(world, monkeypatch,
+                                                                                         capsys, role):
+    secret = "--password=hunter2-argv-secret"
+    pid, ppid, ticks = (SUP_PID, 1, SUP_TICKS) if role == "supervisor" else (ENTRY_PID, SUP_PID, ENTRY_TICKS)
+    world.process(pid, ppid, ticks, ["/usr/bin/other-tool", secret])
+    ports = world.ports()
+    monkeypatch.setattr(producer, "cli_ports", lambda args: ports)
+    assert adapter.main(_cli(world)) == 1
+    captured = capsys.readouterr()
+    assert "hunter2" not in captured.out + captured.err
+    printed = json.loads(captured.out)
+    assert printed["diagnostic"] == {"reason_code": policy.PROCESS, "detail": role + "_argv"}
+    projection = printed["projections"][role]
+    assert "argv" not in projection and projection["argv_match"] is False and projection["validated"] is None
+    assert projection["argv_sha256"] == hashlib.sha256(b"/usr/bin/other-tool\0" + secret.encode() + b"\0").hexdigest()
+
+
+def test_host_commands_are_absolute_filtered_and_get_only_a_minimal_environment(world, monkeypatch):
+    monkeypatch.setenv("HARNESS_DATABASE_URL", "postgresql://zeus:hunter2@db/zeus")
+    assert world.observe()["observation"]["ok"] is True
+    show, journal_call, _ = world.runner.calls
+    assert show[:4] == [producer.SYSTEMCTL, "show", "--no-pager", UNIT]
+    assert journal_call == [producer.JOURNALCTL, "--no-pager", "-o", "json",
+                            "--output-fields=MESSAGE,_PID,_STREAM_ID,_SYSTEMD_UNIT,_SYSTEMD_INVOCATION_ID,_TRANSPORT",
+                            "_SYSTEMD_UNIT=" + UNIT, "_SYSTEMD_INVOCATION_ID=" + INVOCATION, "_BOOT_ID=" + BOOT_HEX,
+                            "_PID=" + str(SUP_PID)]
+    assert world.runner.envs == [producer.COMMAND_ENV] * 3
+    assert producer.COMMAND_ENV == {"LANG": "C.UTF-8", "PATH": "/usr/bin:/bin", "SYSTEMD_PAGER": "",
+                                    "SYSTEMD_COLORS": "0"}
+    assert (producer.SYSTEMCTL, producer.JOURNALCTL) == ("/usr/bin/systemctl", "/usr/bin/journalctl")
+
+
+def test_bounded_run_caps_output_kills_on_the_deadline_and_passes_only_the_given_environment(monkeypatch):
+    """The real runner, on a local interpreter only: no unit, journal or store."""
+    monkeypatch.setenv("HARNESS_DATABASE_URL", "postgresql://zeus:hunter2@db/zeus")
+    env = dict(producer.COMMAND_ENV)
+    shown = producer.bounded_run([sys.executable, "-c", "import json, os; print(json.dumps(sorted(os.environ)))"],
+                                 timeout=30, env=env, limit=4096)
+    assert shown.returncode == 0 and shown.stderr == b"" and isinstance(shown.stdout, bytes)
+    assert set(json.loads(shown.stdout)) - {"LC_CTYPE"} == set(producer.COMMAND_ENV)
+    flood = "import sys, time; sys.stdout.write('x' * 100000); sys.stdout.flush(); time.sleep(30)"
+    with pytest.raises(producer.Unreadable, match="command_output"):
+        producer.bounded_run([sys.executable, "-c", flood], timeout=30, env=env, limit=1000)
+    with pytest.raises(producer.Unreadable, match="command_timeout"):
+        producer.bounded_run([sys.executable, "-c", "import time; time.sleep(30)"], timeout=0.5, env=env, limit=1000)
+
+
+def test_a_fifo_in_place_of_a_file_is_unknown_and_never_blocks(world):
+    descriptor = world.state / "descriptor.json"
+    descriptor.unlink()
+    os.mkfifo(descriptor)
+    refused(world.observe(), policy.UNAVAILABLE, "descriptor")
+
+
+def test_a_link_in_place_of_a_file_is_unknown(world):
+    startup = world.state / "startup-receipt.json"
+    startup.rename(world.state / "elsewhere.json")
+    os.symlink(world.state / "elsewhere.json", startup)
+    refused(world.observe(), policy.UNAVAILABLE, "startup")
+
+
+def test_every_host_file_is_opened_read_only_without_following_or_blocking(world, monkeypatch):
+    opened, real_open = [], os.open
+    watched = (str(world.control), str(world.state), str(world.config), str(world.proc))
+
+    def recording(path, flags, *args, **kwargs):
+        if str(path).startswith(watched):
+            opened.append((str(path), flags))
+        return real_open(path, flags, *args, **kwargs)
+
+    monkeypatch.setattr(os, "open", recording)
+    assert world.observe()["observation"]["ok"] is True
+    names = {Path(path).name for path, _ in opened}
+    assert {"host-activation.json", "zeus-aibox.env", "descriptor.json", "startup-receipt.json", "cmdline",
+            "supervisor-journal.jsonl", RECEIPT_NAME, REQUEST_NAME} <= names
+    wanted, forbidden = os.O_NOFOLLOW | os.O_NONBLOCK, os.O_WRONLY | os.O_RDWR | os.O_CREAT | os.O_TRUNC | os.O_APPEND
+    assert all(flags & wanted == wanted and not flags & forbidden for _, flags in opened)
+
+
+# ----- S7: the lane path over read-only snapshots ------------------------------------------------------
+class _Rows:
+    def __init__(self, rows):
+        self.rows = rows
+
+    def fetchone(self):
+        return self.rows[0] if self.rows else None
+
+    def fetchall(self):
+        return list(self.rows)
+
+
+class RecordingConnection:
+    """A psycopg connection double serving the fixture store of the connection's search path; every
+    statement is kept."""
+
+    def __init__(self, stores, dsn, kwargs, log):
+        from psycopg.conninfo import conninfo_to_dict
+
+        options = conninfo_to_dict(dsn)["options"]
+        assert options.startswith("-c search_path=")
+        self.schema = options.split("=", 1)[1]
+        self.store, self.statements = stores[self.schema], []
+        log.append({"schema": self.schema, "kwargs": kwargs, "statements": self.statements})
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *exc):
+        return False
+
+    def execute(self, sql, params=()):
+        self.statements.append(sql)
+        if sql == "SELECT current_schema()":
+            return _Rows([(self.schema,)])
+        if sql == "SELECT body FROM documents WHERE bucket=%s AND id=%s":
+            body = self.store.data.get(tuple(params))
+            return _Rows([] if body is None else [(copy.deepcopy(body),)])
+        if sql == "SELECT body FROM documents WHERE bucket=%s ORDER BY id":
+            return _Rows([(copy.deepcopy(body),) for (bucket, _), body in sorted(self.store.data.items())
+                          if bucket == params[0]])
+        return _Rows([])
+
+
+def test_lane_path_reads_every_store_through_read_only_snapshots_with_the_exact_sql_shape(world, monkeypatch,
+                                                                                         capsys):
+    """`--lane`: the delivery rows are found through `Fleet(control).registered()` over the control
+    snapshot, then read on the lane's own schema. Every connection is one read-only snapshot: the
+    read-only begin, the statement timeout, the schema check, SELECTs only, then ROLLBACK. The writers'
+    advisory lock is never taken."""
+    import psycopg
+
+    with world.control_store.transaction() as tx:
+        tx.put("fleet_registry", "fleet", {"id": "fleet", "config": {"lanes": [
+            {"id": "harness", "schema": "zeus_lane_harness"}, {"id": "other", "schema": "zeus_lane_other"}]}})
+    stores = {"zeus_aibox_migration": world.coordinator, "zeus_aibox_control": world.control_store,
+              "zeus_lane_harness": world.delivery}
+    before = {name: copy.deepcopy(store.data) for name, store in stores.items()}
+    log: list = []
+    monkeypatch.setenv("ZEUS_TEST_MIGRATION_DSN", "postgresql://zeus@127.0.0.1:1/zeus")
+    monkeypatch.setenv("ZEUS_TEST_CONTROL_DSN", "postgresql://zeus@127.0.0.1:1/zeus")
+    monkeypatch.setattr(psycopg, "connect", lambda dsn, **kwargs: RecordingConnection(stores, dsn, kwargs, log))
+    host = world.host()
+    monkeypatch.setattr(producer, "HostReader", lambda **kwargs: host)
+    code = adapter.main(_cli(world, "--dsn-env", "ZEUS_TEST_MIGRATION_DSN", "--control-dsn-env",
+                               "ZEUS_TEST_CONTROL_DSN", "--lane", "harness"))
+    printed = json.loads(capsys.readouterr().out)
+    assert code == 0 and printed["observation"]["ok"] is True
+    assert {entry["schema"] for entry in log} == set(stores)
+    for entry in log:
+        statements = entry["statements"]
+        assert entry["kwargs"] == {"connect_timeout": 5, "autocommit": True}
+        assert statements[:3] == ["BEGIN ISOLATION LEVEL REPEATABLE READ READ ONLY",
+                                  "SET LOCAL statement_timeout = '5000ms'", "SELECT current_schema()"]
+        assert statements[-1] == "ROLLBACK" and len(statements) > 4
+        assert all(sql in ("SELECT body FROM documents WHERE bucket=%s AND id=%s",
+                           "SELECT body FROM documents WHERE bucket=%s ORDER BY id") for sql in statements[3:-1])
+        assert not any("pg_advisory" in sql.lower() for sql in statements)
+    lane_reads = [entry for entry in log if entry["schema"] == "zeus_lane_harness"]
+    assert len(lane_reads) == 2  # the capture and the recheck
+    assert {name: store.data for name, store in stores.items()} == before
+
+
+# ----- K3: /proc boottime ticks against systemd/journald monotonic timestamps --------------------------
+SUSPENDED_USEC = 3_600_000_000  # the host slept an hour before this unit started
+
+
+def test_process_starts_are_compared_on_the_monotonic_clock_after_a_suspend(world):
+    world.offset_usec = SUSPENDED_USEC
+    shift = SUSPENDED_USEC // 10_000  # boottime ticks at 100 Hz include the suspension
+    world.process(SUP_PID, 1, SUP_TICKS + shift, world.supervisor_argv())
+    world.process(ENTRY_PID, SUP_PID, ENTRY_TICKS + shift, world.read_cmdline(ENTRY_PID))
+    result = world.observe()
+    assert result["observation"]["ok"] is True
+    supervisor = result["projections"]["supervisor"]
+    assert (supervisor["boottime_offset_ticks"], supervisor["start_usec"]) == (shift, SUP_TICKS * 10_000)
+    world.offset_usec = 0  # the same host read without the offset: the boottime start looks an hour late
+    refused(world.observe(), policy.PROCESS, "supervisor_start")
+
+
+# ----- K4: a source gone at the recheck is a change; the configuration is committed -----------------------
+VANISH_CASES = {
+    "migration_row_gone": (lambda w: w.coordinator.data.pop((BUCKET, MID)), "migration"),
+    "config_gone": (lambda w: w.config.unlink(), "config"),
+    "activation_file_gone": (lambda w: (w.control / "host-activation.json").unlink(), "activation_file"),
+    "unit_stopped": (lambda w: w.unit.update(ActiveState="inactive", SubState="dead", MainPID="0", ExecMainPID="0",
+                                             InvocationID=""), "unit"),
+    "supervisor_gone": (lambda w: shutil.rmtree(w.proc / str(SUP_PID)), "supervisor"),
+    "supervisor_journal_gone": (lambda w: (w.state / "supervisor-journal.jsonl").unlink(), "supervisor_journal"),
+    "delivery_row_gone": (lambda w: w.delivery.data.pop((BUCKET_DESCRIPTORS, TARGET)), "delivery"),
+    "descriptor_gone": (lambda w: (w.state / "descriptor.json").unlink(), "descriptor"),
+    "startup_gone": (lambda w: (w.state / "startup-receipt.json").unlink(), "startup"),
+    "entry_gone": (lambda w: shutil.rmtree(w.proc / str(ENTRY_PID)), "entry"),
+    "canary_receipt_gone": (lambda w: (w.state / RECEIPT_NAME).unlink(), "canary_receipt"),
+    "canary_record_gone": (lambda w: w.control_store.data.pop(("owner_actions", w.action_id)), "canary_record"),
+}
+
+
+@pytest.mark.parametrize("case", sorted(VANISH_CASES))
+def test_a_source_gone_during_the_recheck_refuses_changed_not_unavailable(world, case):
+    mutate, detail = VANISH_CASES[case]
+    world.runner.on_recheck = lambda: mutate(world)
+    observation = refused(world.observe(), policy.CHANGED, detail)
+    assert [name for name, value in observation["checks"].items() if not value] == ["stable_capture"]
+
+
+def test_an_unreadable_recheck_is_unknown_but_a_change_beside_it_is_a_change(world):
+    world.recheck_show_rc = 1
+    refused(world.observe(), policy.UNAVAILABLE, "unit")
+    world.runner = Runner(world)
+    world.runner.on_recheck = lambda: world.edit("descriptor.json", predecessor="0" * 64)
+    refused(world.observe(), policy.CHANGED, "descriptor")
+
+
+# ----- PH4-13: pre-submit comparison and post-transition check (--expect, --post-transition) -------------
+def archived(result: dict) -> dict:
+    """What the operator archived: the printed output, read back."""
+    return json.loads(json.dumps(result, sort_keys=True, indent=2))
+
+
+def comparison(result: dict, *, mode: str, ok: bool, code=None, detail=None) -> dict:
+    compared = result["comparison"]
+    assert set(result) == {"observation", "result_sha256", "projections", "diagnostic", "comparison"}
+    assert compared["mode"] == mode and compared["ok"] is ok
+    assert (compared["reason_code"], compared["detail"]) == (code, detail)
+    assert compared["post_check"] == ("ok" if ok and mode == "post_transition" else None)
+    recompute(result)
+    return compared
+
+
+def submit(world, archive: dict) -> dict:
+    """The operator's ordinary coordinator advance of the archived draft (outside the producer)."""
+    return HostMigrations(world.coordinator).advance(copy.deepcopy(archive["transition_draft"]))
+
+
+def test_ph4_13_an_unchanged_capture_passes_the_pre_submit_comparison_and_emits_no_draft(world):
+    archive = archived(world.observe())
+    result = world.observe(expect=archive)
+    compared = comparison(result, mode="pre_submit", ok=True)
+    assert compared["expected_result_sha256"] == archive["result_sha256"]
+    assert {name: entry["sha256"] for name, entry in result["observation"]["sources"].items()} == {
+        name: entry["sha256"] for name, entry in archive["observation"]["sources"].items()}
+
+
+def _unit_restarted(world):
+    world.unit.update(InvocationID="f" * 32)
+
+
+PRE_SUBMIT_CASES = {
+    "entry_restarted": (_restarted_entry, policy.CHANGED, "entry"),
+    "delivery_row_updated": (lambda w: w.row(w.delivery, BUCKET_DESCRIPTORS, TARGET, updated_at="later"),
+                             policy.CHANGED, "delivery"),
+    "coordinator_moved": (_successor_recorded, policy.CHANGED, "migration"),
+    "configuration_changed": (lambda w: w.config.write_text("ZEUS_AIBOX_ROOT=elsewhere\n"), policy.CHANGED,
+                              "migration"),
+    "canary_receipt_rewritten": (lambda w: w.edit(RECEIPT_NAME, recorded_at=RECORDED_AT.replace("43.4", "44.4")),
+                                 policy.CHANGED, "canary_receipt"),
+    "canary_record_updated": (lambda w: w.row(w.control_store, "owner_actions", w.action_id, version=4),
+                              policy.CHANGED, "canary_record"),
+    "unit_restarted": (_unit_restarted, policy.LAUNCH, "launch_invocation"),
+    "already_advanced": (lambda w: submit(w, w.archive), policy.DOCUMENT, "migration_state"),
+}
+
+
+@pytest.mark.parametrize("case", sorted(PRE_SUBMIT_CASES))
+def test_ph4_13_a_pre_submit_tuple_change_is_refused(world, case):
+    mutate, code, detail = PRE_SUBMIT_CASES[case]
+    world.archive = archived(world.observe())
+    mutate(world)
+    comparison(world.observe(expect=world.archive), mode="pre_submit", ok=False, code=code, detail=detail)
+
+
+def test_ph4_13_the_post_check_passes_only_after_the_recorded_managed_transition(world):
+    archive = archived(world.observe())
+    launcher_bytes = (world.control / "host-activation.json").read_bytes()
+    assert submit(world, archive)["state"] == migration.LIMITED_ACTIVE
+    result = world.observe(expect=archive, post_transition=True)
+    comparison(result, mode="post_transition", ok=True)
+    assert result["observation"]["ok"] is True and result["diagnostic"] is None
+    projection = result["projections"]["migration"]
+    assert projection["state"] == migration.LIMITED_ACTIVE
+    assert projection["last_transition"]["lineage"] == archive["observation"]["lineage"]
+    assert projection["last_transition"]["id"] == migration.transition_id(archive["transition_draft"])
+    # The transition never rewrote the launcher file: it still equals the restored_paused receipt.
+    assert (world.control / "host-activation.json").read_bytes() == launcher_bytes
+    assert result["observation"]["activation"] == archive["observation"]["activation"]
+
+
+def _history(world, **changes):
+    with world.coordinator.transaction() as tx:
+        row = tx.get(BUCKET, MID)
+        row["history"][-1] = {**row["history"][-1], **changes}
+        tx.put(BUCKET, MID, row)
+
+
+def _later_entry(world):
+    with world.coordinator.transaction() as tx:
+        row = tx.get(BUCKET, MID)
+        row["history"].append({"event": "note"})
+        tx.put(BUCKET, MID, row)
+
+
+POST_CHECK_CASES = {
+    "not_yet_recorded": (False, lambda w: None, policy.DOCUMENT, "migration_state"),
+    "recorded_lineage_differs": (True, lambda w: _history(w, lineage={**w.archive["observation"]["lineage"],
+                                                                      "instance_id": "f" * 32}),
+                                 policy.CHANGED, "transition_lineage"),
+    "another_transition_recorded": (True, lambda w: _history(w, id="0" * 64), policy.CHANGED, "transition_id"),
+    "a_later_history_entry": (True, _later_entry, policy.DOCUMENT, "transition_last"),
+    "entry_restarted": (True, _restarted_entry, policy.CHANGED, "entry"),
+    "canary_record_updated": (True, lambda w: w.row(w.control_store, "owner_actions", w.action_id, version=4),
+                              policy.CHANGED, "canary_record"),
+    "configuration_changed": (True, lambda w: w.config.write_text("ZEUS_AIBOX_ROOT=elsewhere\n"),
+                              policy.CHANGED, "migration"),
+    "launcher_file_rewritten": (True, lambda w: _activation(w, state="limited_active"), policy.DOCUMENT,
+                                "activation_file"),
+}
+
+
+@pytest.mark.parametrize("case", sorted(POST_CHECK_CASES))
+def test_ph4_13_a_post_check_difference_is_refused(world, case):
+    record, mutate, code, detail = POST_CHECK_CASES[case]
+    world.archive = archived(world.observe())
+    if record:
+        submit(world, world.archive)
+    mutate(world)
+    comparison(world.observe(expect=world.archive, post_transition=True), mode="post_transition", ok=False,
+               code=code, detail=detail)
+
+
+def test_ph4_13_post_transition_without_an_archive_is_refused_before_any_read(world, monkeypatch, capsys):
+    ports = world.ports()
+    with pytest.raises(migration.MigrationRefused, match="request_invalid") as refusal:
+        producer.observe(world.request(), ports, post_transition=True)
+    assert refusal.value.field == "expect"
+    assert world.runner.calls == [] and all(store.transactions == 0 for store in world.stores.values())
+    monkeypatch.setattr(producer, "cli_ports", lambda args: pytest.fail("ports built"))
+    assert adapter.main(_cli(world, "--post-transition")) == 1
+    assert json.loads(capsys.readouterr().out) == {"refused": "request_invalid", "field": "expect"}
+
+
+def _failed_archive(world):
+    world.edit(RECEIPT_NAME, instance_id=None)
+    result = archived(world.observe())
+    world.edit(RECEIPT_NAME, instance_id=INSTANCE)
+    return result
+
+
+ARCHIVE_CASES = {
+    "failed_observation": (_failed_archive, {}, "observation"),
+    "tampered_observation": (lambda w: {**w.good, "observation": {**w.good["observation"],
+                                                                  "observed_to": "2026-09-28T11:31:00+00:00"}},
+                             {}, "result_sha256"),
+    "tampered_projection": (lambda w: {**w.good, "projections": {**w.good["projections"], "startup": {}}}, {},
+                            "projections"),
+    "receipt_swapped": (lambda w: {**w.good, "evidence": {**w.good["evidence"], "host_activation": {
+        **w.good["evidence"]["host_activation"], "subject": "0" * 64}}}, {}, "evidence"),
+    "draft_without_lineage": (lambda w: {**w.good, "transition_draft": {
+        key: value for key, value in w.good["transition_draft"].items() if key != "lineage"}}, {}, "transition_draft"),
+    "comparison_output": (lambda w: archived(w.observe(expect=w.good)), {}, "archive"),
+    "uncanonical_content": (lambda w: {**w.good, "projections": {**w.good["projections"], "startup": "\ud800"}}, {},
+                            "archive"),
+    "other_plan": (lambda w: w.good, {"plan_id": OTHER_PLAN}, "lineage"),
+    "other_activation": (lambda w: w.good, {"expected_id": "0" * 64}, "expected_id"),
+}
+
+
+@pytest.mark.parametrize("case", sorted(ARCHIVE_CASES))
+def test_ph4_13_an_archive_that_is_not_this_producers_complete_success_is_refused_before_any_read(world, case):
+    build, overrides, field_name = ARCHIVE_CASES[case]
+    world.good = archived(world.observe())
+    archive = build(world)
+    ports = world.ports()
+    world.runner.calls.clear()
+    with pytest.raises(migration.MigrationRefused, match="expect_invalid") as refusal:
+        producer.observe(world.request(**overrides), ports, expect=archive)
+    assert refusal.value.field == field_name
+    assert world.runner.calls == [] and all(store.transactions == 0 for store in world.stores.values())
+
+
+@pytest.mark.parametrize("post", [False, True])
+def test_ph4_13_the_comparison_is_read_only_and_exits_by_its_verdict(world, monkeypatch, capsys, tmp_path, post):
+    archive = archived(world.observe())
+    path = tmp_path / "archived-observation.json"
+    path.write_text(json.dumps(archive, sort_keys=True, indent=2))
+    if post:
+        submit(world, archive)
+    ports = world.ports()
+    monkeypatch.setattr(producer, "cli_ports", lambda args: ports)
+    before = (tree(world.root, world.proc), copy.deepcopy(world.coordinator.data),
+              copy.deepcopy(world.control_store.data), copy.deepcopy(world.delivery.data))
+    extra = ["--expect", str(path)] + (["--post-transition"] if post else [])
+    attempts: list = []
+    with no_effects(monkeypatch, attempts):
+        code = adapter.main(_cli(world, *extra))
+    assert attempts == [] and all(store.puts == [] for store in world.stores.values())
+    assert (tree(world.root, world.proc), world.coordinator.data, world.control_store.data,
+            world.delivery.data) == before
+    printed = json.loads(capsys.readouterr().out)
+    assert code == 0 and "transition_draft" not in printed and "evidence" not in printed
+    assert printed["comparison"]["post_check"] == ("ok" if post else None)
+    # The opposite mode refuses: before the transition nothing was recorded, after it the coordinator moved.
+    ports = world.ports()
+    assert adapter.main(_cli(world, "--expect", str(path), *([] if post else ["--post-transition"]))) == 1
+    assert json.loads(capsys.readouterr().out)["comparison"]["reason_code"] == policy.DOCUMENT
+
+
+@pytest.mark.parametrize("content", [None, "{not json", "[]", "NaN"])
+def test_ph4_13_an_unreadable_archive_file_is_refused_naming_the_argument_only(world, monkeypatch, capsys,
+                                                                              tmp_path, content):
+    path = tmp_path / "archived-observation.json"
+    if content is not None:
+        path.write_text(content)
+    monkeypatch.setattr(producer, "cli_ports", lambda args: pytest.fail("ports built"))
+    assert adapter.main(_cli(world, "--expect", str(path))) == 1
+    assert json.loads(capsys.readouterr().out) == {"refused": "expect_invalid", "field": "expect"}
+    assert adapter.main(_cli(world, "--expect", "relative/archive.json")) == 1
+    assert json.loads(capsys.readouterr().out) == {"refused": "request_invalid", "field": "expect"}

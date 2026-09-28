@@ -1176,7 +1176,8 @@ def parser() -> argparse.ArgumentParser:
     store_args(command)
     command = sub.add_parser("observe-limited-active",
                              help="Read-only managed limited_active observation: prints {observation, evidence, "
-                                  "transition_draft}; writes, starts and submits nothing")
+                                  "transition_draft}; with --expect, {observation, comparison} only; writes, "
+                                  "starts and submits nothing")
     command.add_argument("--migration-id", required=True)
     command.add_argument("--expected-id", required=True, help="The effective activation id the capture must find")
     command.add_argument("--target-id", required=True, help="The registered managed Fleet target")
@@ -1189,6 +1190,10 @@ def parser() -> argparse.ArgumentParser:
                          help="Env var NAME holding the control store DSN")
     command.add_argument("--control-schema", required=True, help="The control schema (owner actions, Fleet registry)")
     command.add_argument("--lane", help="The Fleet lane holding the delivery; omitted reads the control store")
+    command.add_argument("--expect", help="Absolute path of an archived success output: re-read every source and "
+                                          "compare (PH4-13); no draft or receipt is emitted")
+    command.add_argument("--post-transition", action="store_true",
+                         help="With --expect: the post-check after the recorded managed limited_active transition")
     store_args(command)
     command = sub.add_parser("fence-write")
     command.add_argument("--control-dir", required=True)

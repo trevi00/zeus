@@ -4129,6 +4129,11 @@ another release revision of the same host. It never rewrites the intent.
    is refused. New activation successors still require restored_paused; recording limited_active
    does not authorize changing current. Exact replay of an already recorded successor remains
    cached as before and changes nothing.
+
+   The consumption and canary provenance the observer checks is defined by INV-HOST-DELIVERY-001
+   (descriptor delivery and its consumption verdict), INV-HOST-DELIVERY-FIRST-ACTIVATION-001
+   (descriptor resolution on a target's first activation) and INV-OWNER-ACTIONS-001 (the owner
+   canary hand-off). This contract cites them and does not amend their semantics.
 4. `activation-switch` writes `host-activation.json`, then replaces `releases/current` (a fresh
    temporary symlink renamed over it, then a directory fsync; only its own temporary link is ever
    removed).

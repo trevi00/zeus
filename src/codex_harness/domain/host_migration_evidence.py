@@ -18,6 +18,12 @@ convention) is the `result_sha256` of three existing `evidence_receipt` objects:
 canary=<plan>:instance=<instance>)`. They carry exit 0 / ok only on complete success. A failure keeps
 its fixed code and never gets a success receipt. The transition draft is data for the operator; nothing
 here records it.
+
+A comparison (`--expect`, INV-HOST-MIGRATION-001 PH4-13) holds a fresh observation against an archived
+one. Before the operator submits, every source digest, the activation and the lineage must be unchanged.
+After the recorded managed transition (`post_transition`), the coordinator may have moved to
+`limited_active` ONLY by that one transition: the last history entry is the archived draft's id and
+lineage, and every other source is unchanged. A comparison emits no draft and no receipt.
 """
 from __future__ import annotations
 
@@ -62,6 +68,7 @@ from codex_harness.domain.host_migration import (
     managed_canary_subject,
     managed_consumption_subject,
     manifest_digest,
+    transition_id,
     validate_managed_lineage,
     validate_manifest,
     validate_transition,
@@ -92,16 +99,28 @@ CHANGED = "activation_observation_changed"
 REFUSALS = (UNAVAILABLE, DOCUMENT, LAUNCH, PROCESS, CONSUMPTION, CANARY, CHANGED)
 # A malformed observation document: the producer's own output is refused before any receipt exists.
 INVALID = "observation_invalid"
+# A comparison's archived input that is not a complete, self-consistent success output of this producer.
+EXPECT = "expect_invalid"
+ARCHIVE_FIELDS = {"observation", "result_sha256", "projections", "evidence", "transition_draft"}
+# The migration projection's fields a recorded transition legitimately changes; everything else in it
+# (manifest, effective head, derived launcher document, configuration digest) must stay equal.
+MIGRATION_PROGRESS = {"state", "transitions", "history_sha256", "previous_history_sha256", "last_transition"}
 DIAGNOSTIC = re.compile(r"^[a-z0-9][a-z0-9_.:-]{0,79}$")
 
 # The launcher's fixed `launch` event (deploy/aibox/zeus_aibox_service.py `launch`): emitted BEFORE the
 # exec, and emitted by a dry run as well, so the event alone never proves a launch.
 LAUNCH_EVENT_FIELDS = {"event", "role", "revision", "migration_id"}
+# The journal fields `launch_record` reads (`journalctl --output-fields`); json output always adds
+# `__CURSOR`, `__REALTIME_TIMESTAMP`, `__MONOTONIC_TIMESTAMP` and `_BOOT_ID`.
+JOURNAL_FIELDS = ("MESSAGE", "_PID", "_STREAM_ID", "_SYSTEMD_UNIT", "_SYSTEMD_INVOCATION_ID", "_TRANSPORT")
 LAUNCH_ROLE = "managed-fleet"
 MANAGED_UNIT = MANAGED_SYSTEMD_UNIT + ".service"
 MANAGED_MODULE = "codex_harness.adapters.managed_runtime"
 ENTRY_WORKLOAD = "fleet"
 # A process start is known to one clock tick; systemd records ExecMainStartTimestamp right after its fork.
+# Every `start_usec` below is CLOCK_MONOTONIC: `/proc` start ticks count CLOCK_BOOTTIME (suspend
+# included), and the producer subtracts the boottime-monotonic offset it measured at observation time
+# before comparing them with systemd's and journald's monotonic timestamps.
 FORK_WINDOW_USEC = 5_000_000
 # Tolerance between the journal's monotonic/realtime pair and a wall-clock timestamp a process wrote.
 SKEW_USEC = 2_000_000
@@ -163,7 +182,8 @@ def migration_view(row: dict) -> dict:
     history = list(row.get("history") or [])
     view = {"migration_id": row["migration_id"], "state": row["state"], "manifest_sha256": row["manifest_sha256"],
             "manifest_exact": exact, "target_host_id": host, "transitions": len(history),
-            "history_sha256": digest(history), "effective": None, "document": None}
+            "history_sha256": digest(history), "previous_history_sha256": digest(history[:-1]),
+            "last_transition": history[-1] if history else None, "effective": None, "document": None}
     intent = row.get("activation_intent")
     if intent is not None:
         head = effective_activation(intent, list(row.get("activation_successors") or []))
@@ -177,15 +197,25 @@ def migration_view(row: dict) -> dict:
     return view
 
 
-def require_head(view: dict, migration_id: str, expected_id: str) -> dict:
+def require_head(view: dict, migration_id: str, expected_id: str, *, post_transition: bool = False) -> dict:
     """Restored-paused, exact manifest, and the effective head is exactly the expected one. Returns the
-    observation's `activation` block."""
+    observation's `activation` block.
+
+    A post-transition check (PH4-13) instead requires `limited_active` reached by a managed transition
+    from `restored_paused` as the LAST history entry. Which transition and lineage that is, is the
+    comparison's to decide against the archived draft; the launcher document stays the
+    `restored_paused` derivation, because recording the transition never rewrites it."""
     if view["migration_id"] != migration_id:
         raise refused(DOCUMENT, "migration_id")
     if not view["manifest_exact"]:
         raise refused(DOCUMENT, "manifest")
-    if view["state"] != RESTORED_PAUSED:
+    if view["state"] != (LIMITED_ACTIVE if post_transition else RESTORED_PAUSED):
         raise refused(DOCUMENT, "migration_state")
+    if post_transition:
+        last = view["last_transition"]
+        if not (isinstance(last, dict) and last.get("from") == RESTORED_PAUSED and last.get("to") == LIMITED_ACTIVE
+                and isinstance(last.get("lineage"), dict)):
+            raise refused(DOCUMENT, "transition_last")
     if view["effective"] is None:
         raise refused(DOCUMENT, "activation_intent_missing")
     if view["effective"]["id"] != expected_id:
@@ -242,22 +272,33 @@ def _journal_number(entry: dict, key: str) -> int:
 
 
 def launch_record(entries, *, unit: str, invocation_id: str, boot_id: str, main_pid: int) -> dict:
-    """The ONE launcher document the unit's main process wrote to its journal in this invocation.
+    """The ONE launcher document on the main pid's journal streams in this invocation.
 
     journald stores each line of the launcher's indented JSON as one entry, so the document is
-    reassembled from the lines of the main process's own stream (`_PID`, `_STREAM_ID`), from a line
-    that is exactly `{` to one that is exactly `}`. Only the main process counts. The launcher emits
-    `launch` and then execs in place, so its pid IS the unit's main pid. A dry run, or any process
-    other than the main one, cannot supply the event. A `launch_refused` event, two launch events, or
-    a line from another boot, invocation, unit or transport refuses."""
+    reassembled per stream (`_STREAM_ID`) from a line that is exactly `{` to one that is exactly `}`.
+
+    journald attributes EVERY line of a stdout/stderr stream to the pid that opened the stream. systemd
+    connects the unit's streams from the forked main process before any exec, so the launcher's lines
+    before its exec, the exec'd supervisor's lines, and the lines of any descendant that inherited the
+    descriptor all carry the main pid. `_PID` therefore does not say which program wrote a line; it
+    only binds the lines to this unit's main process. The launch is proven apart from the journal:
+    the main process must be the exec'd supervisor with the exact argv, started in this invocation's
+    fork window (`require_supervisor`), and the event must follow that start (`require_launch`). A
+    dry run never execs, so its main process is not the supervisor. A second launch document on the
+    stream, from a dry run or a descendant, is ambiguous and refuses. A `launch_refused` event, or a
+    line from another boot, invocation, unit or transport refuses. A main-pid document that does not
+    parse, or does not end, is unknown: it is never skipped."""
     pid, open_documents, documents = str(main_pid), {}, []
     for entry in entries:
         if not isinstance(entry, dict):
             raise refused(UNAVAILABLE, "journal_entry")
-        message = entry.get("MESSAGE")
-        if entry.get("_PID") != pid or type(message) is not str:
+        if entry.get("_PID") != pid:
             continue
-        stream = entry.get("_STREAM_ID")
+        message, stream = entry.get("MESSAGE"), entry.get("_STREAM_ID")
+        if type(message) is not str:
+            if stream in open_documents:
+                raise refused(UNAVAILABLE, "journal_entry")
+            continue
         if stream not in open_documents:
             if message == "{":
                 open_documents[stream] = [entry]
@@ -267,12 +308,14 @@ def launch_record(entries, *, unit: str, invocation_id: str, boot_id: str, main_
         open_documents[stream].append(entry)
         if message == "}":
             documents.append(open_documents.pop(stream))
+    if open_documents:
+        raise refused(UNAVAILABLE, "journal_entry")
     parsed = []
     for lines in documents:
         try:
             document = json.loads("\n".join(line["MESSAGE"] for line in lines))
         except ValueError:
-            continue
+            raise refused(UNAVAILABLE, "journal_entry") from None
         if isinstance(document, dict) and "event" in document:
             parsed.append((document, lines))
     if any(document.get("event") == "launch_refused" for document, _ in parsed):
@@ -304,7 +347,8 @@ def launch_record(entries, *, unit: str, invocation_id: str, boot_id: str, main_
 
 def require_launch(record: dict, unit: dict, supervisor: dict, *, migration_id: str, revision: str) -> None:
     """A real launch of THIS activation that happened inside THIS invocation's main process: the fixed
-    event fields, then its time after the unit's exec-main start and after that process began."""
+    event fields, then its time after the unit's exec-main start and after that process began (both
+    CLOCK_MONOTONIC)."""
     event = record["event"]
     if set(event) != LAUNCH_EVENT_FIELDS:
         raise refused(LAUNCH, "launch_fields")
@@ -320,10 +364,11 @@ def require_launch(record: dict, unit: dict, supervisor: dict, *, migration_id: 
         raise refused(LAUNCH, "launch_before_process")
 
 
-def require_supervisor(unit: dict, supervisor: dict, *, argv: list) -> None:
+def require_supervisor(unit: dict, supervisor: dict, *, argv_sha256: str) -> None:
     """The unit's main process is the supervisor the launcher exec'd: running unit, main pid, its
-    cgroup, direct child of the service manager, the exact supervise argv of the activation release,
-    and a start inside the fork window of the unit's exec-main start (a reused pid starts later)."""
+    cgroup, direct child of the service manager, the exact supervise argv of the activation release
+    (compared by digest: the raw argv of a process is never kept), and a monotonic start inside the
+    fork window of the unit's exec-main start (a reused pid starts later)."""
     if unit["active_state"] != "active" or unit["sub_state"] != "running":
         raise refused(PROCESS, "unit_not_running")
     if unit["main_pid"] <= 0 or unit["main_pid"] != unit["exec_main_pid"]:
@@ -334,7 +379,7 @@ def require_supervisor(unit: dict, supervisor: dict, *, argv: list) -> None:
         raise refused(PROCESS, "supervisor_cgroup")
     if supervisor["ppid"] != 1:
         raise refused(PROCESS, "supervisor_parent")
-    if supervisor["argv"] != argv:
+    if supervisor["argv_sha256"] != argv_sha256:
         raise refused(PROCESS, "supervisor_argv")
     start, main = supervisor["start_usec"], unit["exec_main_start_usec"]
     if start > main + supervisor["tick_usec"] or main - start > FORK_WINDOW_USEC:
@@ -355,6 +400,17 @@ def supervisor_launches(text, invocation_id: str) -> list:
     return lines
 
 
+def supervisor_facts(revision: str) -> dict:
+    """What a supervisor that passed `require_supervisor` is: the only argv facts ever archived."""
+    return {"command": "supervise", "module": MANAGED_MODULE, "revision": revision}
+
+
+def entry_facts() -> dict:
+    """What an entry that passed `require_entry` is: the registered interpreter's managed entry of the
+    real Fleet workload. The interpreter is named by its binding, never by its path or argv."""
+    return {"command": "entry", "module": MANAGED_MODULE, "workload": ENTRY_WORKLOAD, "interpreter": "registered"}
+
+
 def require_supervisor_launch(lines: list, *, descriptor_sha256: str) -> None:
     """The supervisor of this invocation re-validated the request, descriptor, seal and Fleet gate and
     launched exactly the consumed descriptor's real Fleet workload, once, with no refusal."""
@@ -367,7 +423,7 @@ def require_supervisor_launch(lines: list, *, descriptor_sha256: str) -> None:
         raise refused(PROCESS, "supervisor_descriptor")
 
 
-def require_entry(entry: dict, supervisor: dict, unit: dict, launch: dict, *, argv: list, started_at) -> None:
+def require_entry(entry: dict, supervisor: dict, unit: dict, launch: dict, *, argv_sha256: str, started_at) -> None:
     """The live managed entry is the process whose startup receipt is consumed. It is the supervisor's
     child in the unit cgroup with the registered interpreter's entry argv. It started after the
     supervisor and no later than the receipt it wrote, and after this launch. The interpreter prefix
@@ -378,7 +434,7 @@ def require_entry(entry: dict, supervisor: dict, unit: dict, launch: dict, *, ar
         raise refused(PROCESS, "entry_parent")
     if entry["cgroup"] != unit["control_group"]:
         raise refused(PROCESS, "entry_cgroup")
-    if entry["argv"] != argv:
+    if entry["argv_sha256"] != argv_sha256:
         raise refused(PROCESS, "entry_argv")
     if entry["start_ticks"] < supervisor["start_ticks"]:
         raise refused(PROCESS, "entry_start")
@@ -644,10 +700,131 @@ def transition_draft(observation: dict, evidence: dict, *, host: str, actor: str
         "exit_code": 0, "reason_code": None, "lineage": observation["lineage"]})
 
 
-__all__ = ["ACTIVATION_FIELDS", "CANARY", "CHANGED", "CHECKS", "CONSUMPTION", "DOCUMENT", "INVALID", "LAUNCH",
-           "LAUNCH_ROLE", "MANAGED_MODULE", "MANAGED_UNIT", "OBSERVATION_FIELDS", "OBSERVATION_SCHEMA", "PROCESS",
-           "REFUSALS", "SOURCES", "UNAVAILABLE", "UNIT_PROPERTIES", "delivery_view", "diagnostic", "launch_record",
-           "migration_view", "observation_digest", "observation_receipts", "record_view", "require_activation_file",
-           "require_canary", "require_consumption", "require_current", "require_entry", "require_head",
-           "require_launch", "require_supervisor", "require_supervisor_launch", "source", "supervisor_launches", "transition_draft", "unit_facts", "usec_of",
-           "utc_from_usec", "validate_observation"]
+# ----- the comparison against an archived observation (PH4-13) ------------------------------------------
+def _expect(field: str) -> MigrationRefused:
+    return MigrationRefused(EXPECT, field)
+
+
+def validate_archive(document, *, migration_id: str, expected_id: str, target_id: str, plan_id: str) -> dict:
+    """The archived success output an operator compares against, refused before anything is read.
+
+    It must be this producer's own complete success: a valid `ok` observation whose canonical digest is
+    the archived `result_sha256`, every archived projection hashing to its source, the three receipts
+    recomputed from that observation, and a valid managed transition draft carrying exactly those
+    receipts, lineage, manifest, activation identity and the configuration digest the `migration`
+    projection committed. It must be for this migration, effective activation, target and plan. A
+    comparison output (no draft, no receipts) is never an archive. Content that cannot even be
+    canonicalized is the same fixed refusal, with no exception text."""
+    try:
+        return _validate_archive(document, migration_id=migration_id, expected_id=expected_id,
+                                 target_id=target_id, plan_id=plan_id)
+    except MigrationRefused:
+        raise
+    except Exception:  # noqa: BLE001 - e.g. a lone surrogate that canonical JSON cannot encode
+        pass
+    raise _expect("archive")
+
+
+def _validate_archive(document, *, migration_id: str, expected_id: str, target_id: str, plan_id: str) -> dict:
+    if not isinstance(document, dict) or not ARCHIVE_FIELDS <= set(document):
+        raise _expect("archive")
+    try:
+        observation = validate_observation(document["observation"])
+    except MigrationRefused:
+        raise _expect("observation") from None
+    if canonical(observation) != canonical(document["observation"]) or observation["ok"] is not True:
+        raise _expect("observation")
+    result_sha256 = digest(observation)
+    if document["result_sha256"] != result_sha256:
+        raise _expect("result_sha256")
+    projections = document["projections"]
+    if not (isinstance(projections, dict) and set(projections) == set(SOURCES)
+            and all(digest(projections[name]) == observation["sources"][name]["sha256"] for name in SOURCES)):
+        raise _expect("projections")
+    migration = projections["migration"]
+    if not (isinstance(migration, dict) and MIGRATION_PROGRESS <= set(migration) and "config_sha256" in migration
+            and type(migration["transitions"]) is int and type(migration["history_sha256"]) is str):
+        raise _expect("projections")
+    activation, lineage = observation["activation"], observation["lineage"]
+    if observation["migration_id"] != migration_id:
+        raise _expect("migration_id")
+    if activation["id"] != expected_id:
+        raise _expect("expected_id")
+    if lineage["plan_id"] != plan_id or lineage["descriptor"]["target_id"] != target_id:
+        raise _expect("lineage")
+    receipts = observation_receipts(observation, result_sha256, expected_id)
+    if canonical(document["evidence"]) != canonical(receipts):
+        raise _expect("evidence")
+    try:
+        draft = validate_transition(document["transition_draft"])
+    except MigrationRefused:
+        raise _expect("transition_draft") from None
+    identity = {"config_sha256": migration["config_sha256"], "commit": activation["release_revision"],
+                "image": activation["image"], "profile_sha256": activation["profile_sha256"]}
+    if canonical(draft) != canonical(document["transition_draft"]) or draft["migration_id"] != migration_id \
+            or (draft["from"], draft["to"]) != (RESTORED_PAUSED, LIMITED_ACTIVE) \
+            or draft["manifest_sha256"] != observation["manifest_sha256"] \
+            or canonical(draft.get("lineage")) != canonical(lineage) or canonical(draft["identity"]) != canonical(identity) \
+            or canonical(draft["evidence"]) != canonical({gate: [receipt] for gate, receipt in receipts.items()}):
+        raise _expect("transition_draft")
+    return {"observation": observation, "result_sha256": result_sha256, "projections": projections,
+            "transition_id": transition_id(draft)}
+
+
+def compare_observation(archive: dict, observation: dict, projections: dict, *, post_transition: bool,
+                        refusal: tuple = (None, None)) -> dict:
+    """The `comparison` wrapper entry: the fresh observation held against the validated archive.
+
+    A fresh observation that failed cannot be compared: its own fixed code is the comparison's. Then
+    the manifest, the activation, the lineage and every non-migration source digest must be unchanged
+    (`activation_observation_changed` names the first difference). Before submission the `migration`
+    source must be unchanged too. After the transition (`post_transition`) the migration may differ
+    ONLY by one appended history entry: the transition whose id is the archived draft's, whose lineage
+    is both the archived and the fresh one; manifest, head, launcher document and configuration
+    digest stay equal. `post_check` is `ok` only then. Nothing here is a receipt or a draft."""
+    mode = "post_transition" if post_transition else "pre_submit"
+
+    def verdict(code, detail) -> dict:
+        return {"mode": mode, "expected_result_sha256": archive["result_sha256"], "ok": code is None,
+                "reason_code": code, "detail": None if detail is None else diagnostic(detail),
+                "post_check": "ok" if post_transition and code is None else None}
+
+    if not observation["ok"]:
+        return verdict(observation["reason_code"], refusal[1] or "observation")
+    expected = archive["observation"]
+    for key in ("migration_id", "manifest_sha256", "activation", "lineage"):
+        if canonical(observation[key]) != canonical(expected[key]):
+            return verdict(CHANGED, key)
+    for name in SOURCES:
+        if name != "migration" and observation["sources"][name]["sha256"] != expected["sources"][name]["sha256"]:
+            return verdict(CHANGED, name)
+    if not post_transition:
+        if observation["sources"]["migration"]["sha256"] != expected["sources"]["migration"]["sha256"]:
+            return verdict(CHANGED, "migration")
+        return verdict(None, None)
+    before, after = archive["projections"]["migration"], projections["migration"]
+
+    def stable(view: dict) -> dict:
+        return {key: value for key, value in view.items() if key not in MIGRATION_PROGRESS}
+
+    if canonical(stable(after)) != canonical(stable(before)):
+        return verdict(CHANGED, "migration")
+    if after["transitions"] != before["transitions"] + 1 or after["previous_history_sha256"] != before["history_sha256"]:
+        return verdict(CHANGED, "transition_history")
+    last = after["last_transition"]
+    if last.get("id") != archive["transition_id"]:
+        return verdict(CHANGED, "transition_id")
+    if canonical(last.get("lineage")) != canonical(expected["lineage"]) \
+            or canonical(last.get("lineage")) != canonical(observation["lineage"]):
+        return verdict(CHANGED, "transition_lineage")
+    return verdict(None, None)
+
+
+__all__ = ["ACTIVATION_FIELDS", "CANARY", "CHANGED", "CHECKS", "CONSUMPTION", "DOCUMENT", "EXPECT", "INVALID",
+           "JOURNAL_FIELDS", "LAUNCH", "LAUNCH_ROLE", "MANAGED_MODULE", "MANAGED_UNIT", "OBSERVATION_FIELDS",
+           "OBSERVATION_SCHEMA", "PROCESS", "REFUSALS", "SOURCES", "UNAVAILABLE", "UNIT_PROPERTIES",
+           "compare_observation", "delivery_view", "diagnostic", "entry_facts", "launch_record", "migration_view",
+           "observation_digest", "observation_receipts", "record_view", "require_activation_file", "require_canary",
+           "require_consumption", "require_current", "require_entry", "require_head", "require_launch",
+           "require_supervisor", "require_supervisor_launch", "source", "supervisor_facts", "supervisor_launches",
+           "transition_draft", "unit_facts", "usec_of", "utc_from_usec", "validate_archive", "validate_observation"]
