@@ -1,6 +1,7 @@
 import type { ReactNode } from "react"
 import { Activity, AlertTriangle, ChevronDown, Layers, Monitor, Users } from "lucide-react"
 
+import { ActivityPane } from "@/components/sessions/activity-pane"
 import { KeyValue, StatCard } from "@/components/stat-card"
 import { StatusBadge } from "@/components/status-badge"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
@@ -107,10 +108,13 @@ function SessionDetails({ row, screenNotice }: { row: SessionRow; screenNotice: 
           </ul> : <p className="text-xs text-muted-foreground">{missing}</p>}
         </> : <p className="text-sm text-muted-foreground">{missing}</p>}
       </DetailGroup>
-      <DetailGroup title="화면">
-        <Monitor aria-hidden="true" className="mb-3 size-5 text-muted-foreground" />
-        <p className="text-sm leading-relaxed text-muted-foreground">{screenNotice}</p>
-      </DetailGroup>
+      <div className="col-span-full grid min-w-0 gap-3 md:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
+        <ActivityPane events={row.events} />
+        <DetailGroup title="화면">
+          <Monitor aria-hidden="true" className="mb-3 size-5 text-muted-foreground" />
+          <p className="text-sm leading-relaxed text-muted-foreground">{screenNotice}</p>
+        </DetailGroup>
+      </div>
     </div>
   )
 }
