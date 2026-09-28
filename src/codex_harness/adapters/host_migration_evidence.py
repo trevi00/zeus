@@ -32,7 +32,9 @@ Nothing is written, locked, registered, ticked, started, stopped or submitted. N
 No model, provider or network endpoint other than the stated store is contacted. Connection strings
 are read in this process from the NAMED environment variables the accepted loader sets. They never
 reach argv or the result. A read that fails is `activation_observation_unavailable` naming only its
-step, and no exception text, path or value is kept.
+step, and no exception text, path or value is kept. Every source reaches the result only through
+`Capture.record`, as its typed allowlist projection (`domain.host_migration_evidence.project`): a
+document that failed its check keeps its raw digest, fixed shape and typed identifiers, never itself.
 
 Files are opened `O_RDONLY | O_NOFOLLOW | O_NONBLOCK` and must be regular files by `fstat`, like
 `monitoring.ArtifactReader`.
@@ -349,7 +351,11 @@ class Capture:
     lineage: dict | None = None
     host: str | None = None
 
-    def record(self, name: str, projection) -> None:
+    def record(self, name: str, facts, *, accepted: bool = False) -> None:
+        """The one record path (PH4-12): what is returned, archived and hashed is the domain's typed
+        projection of what was read (`policy.project`), never the read object itself. `accepted` says
+        the source's own check accepted it."""
+        projection = policy.project(name, facts, accepted=accepted)
         self.projections[name] = projection
         self.sources[name] = policy.source(projection, self.clock())
 
@@ -442,8 +448,9 @@ def _process_identity(process: dict) -> tuple:
 
 
 def _process_projection(process: dict, role: str, expected_sha256: str, **facts) -> dict:
-    """The archived process source: identity, parent, cgroup, the argv digest and whether it matched.
-    `validated` stays None until the process passes its check; then it holds only fixed facts."""
+    """The facts of one process source: identity, parent, cgroup, the argv digest and whether it matched.
+    `validated` stays None until the process passes its check; then it holds only fixed facts. What is
+    archived is their typed projection."""
     return {**process, **facts, "role": role, "argv_match": process.get("argv_sha256") == expected_sha256,
             "validated": None}
 
@@ -499,9 +506,13 @@ def _capture(q: dict, ports: Ports, run: Capture, *, post_transition: bool = Fal
     run.manifest_sha256, run.activation, run.host = view["manifest_sha256"], activation, view["target_host_id"]
     # 2. The launcher's receipt equals the derived document as an object; no fence; `current` is it.
     files = _read("activation_file", _activation_file, host, q, activation["release_revision"])
-    run.record("activation_file", files)
     run.identity["activation_file"] = _file_identity(files)
-    policy.require_activation_file(files, view)
+    accepted = False
+    try:
+        policy.require_activation_file(files, view)
+        accepted = True
+    finally:
+        run.record("activation_file", files, accepted=accepted)
     run.checks["activation_equal"] = True
     policy.require_current(files, view)
     run.checks["current_equal"] = True
@@ -544,14 +555,18 @@ def _capture(q: dict, ports: Ports, run: Capture, *, post_transition: bool = Fal
     descriptor = _read("descriptor", json.loads, raw_descriptor)
     startup = _read("startup", json.loads, raw_startup)
     run.identity.update(descriptor=_sha256(raw_descriptor), startup=_sha256(raw_startup))
-    run.record("startup", {"document": startup, "raw_sha256": _sha256(raw_startup)})
     described = {"document": descriptor, "raw_sha256": _sha256(raw_descriptor), "runtime": None}
+    accepted = False
     try:
         consumed = policy.require_consumption(delivery, descriptor, startup, activation, target_id=q["target_id"],
                                               plan_id=q["plan_id"], state_dir=str(state_dir))
+        accepted = True
         described["runtime"] = _sealed(host, consumed)
     finally:
-        run.record("descriptor", described)
+        # Both documents were read as untrusted data: until the consumption check accepted them, only
+        # their raw digests, typed identifiers and shape are archived.
+        run.record("startup", {"document": startup, "raw_sha256": _sha256(raw_startup)}, accepted=accepted)
+        run.record("descriptor", described, accepted=accepted)
     run.lineage = consumed["lineage"]
     run.checks["consumption"] = True
     # 5. The live entry is the process that wrote the consumed receipt, in this unit, under this supervisor.
@@ -568,21 +583,26 @@ def _capture(q: dict, ports: Ports, run: Capture, *, post_transition: bool = Fal
     run.checks["process_bound"] = True
     # 6. A passed owner canary of this plan, descriptor and instance, agreeing with its accepted record.
     canary = _read("canary_receipt", _canary_files, host, q)
-    run.record("canary_receipt", canary)
     run.identity["canary_receipt"] = (canary["receipt_sha256"], canary["request_sha256"])
-    incumbent = _read("canary_receipt", lambda: owner_qualified_canary(
-        consumed["target"], consumed["descriptor"], {"instance_id": consumed["instance_id"]}, plan=consumed["plan"]))
-    receipt = canary["receipt"]
-    action_id = (receipt.get("evidence") or {}).get("action_id") if isinstance(receipt, dict) \
-        and isinstance(receipt.get("evidence"), dict) else None
-    record = None
-    if type(action_id) is str and HEX64.fullmatch(action_id):
-        record = _read("canary_record", _action_row, ports, action_id)
-        if isinstance(record, dict):
-            run.record("canary_record", policy.record_view(record))
-    run.identity["canary_record"] = digest(policy.record_view(record))
-    policy.require_canary(consumed, incumbent, receipt, canary["request"], record, intent=delivery["intent"],
-                          started_at=startup["started_at"])
+    accepted = False
+    try:
+        incumbent = _read("canary_receipt", lambda: owner_qualified_canary(
+            consumed["target"], consumed["descriptor"], {"instance_id": consumed["instance_id"]},
+            plan=consumed["plan"]))
+        receipt = canary["receipt"]
+        action_id = (receipt.get("evidence") or {}).get("action_id") if isinstance(receipt, dict) \
+            and isinstance(receipt.get("evidence"), dict) else None
+        record = None
+        if type(action_id) is str and HEX64.fullmatch(action_id):
+            record = _read("canary_record", _action_row, ports, action_id)
+            if isinstance(record, dict):
+                run.record("canary_record", record)
+        run.identity["canary_record"] = digest(policy.record_view(record))
+        policy.require_canary(consumed, incumbent, receipt, canary["request"], record, intent=delivery["intent"],
+                              started_at=startup["started_at"])
+        accepted = True
+    finally:
+        run.record("canary_receipt", canary, accepted=accepted)
     run.checks["canary_bound"] = True
     return {"supervisor_pid": unit["main_pid"], "entry_pid": startup["pid"], "action_id": action_id,
             "revision": activation["release_revision"], "invocation_id": unit["invocation_id"], "offset": offset}

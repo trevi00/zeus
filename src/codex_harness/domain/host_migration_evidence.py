@@ -19,6 +19,17 @@ canary=<plan>:instance=<instance>)`. They carry exit 0 / ok only on complete suc
 its fixed code and never gets a success receipt. The transition draft is data for the operator; nothing
 here records it.
 
+Every returned and archived source projection is built by `project`, the one record path (PH4-12). It
+copies a source field by field through that source's explicit typed allowlist, on success and on
+failure alike: a key outside the allowlist is never copied, not even its name, and a value that does
+not have its declared type is null. An untrusted host document (the launcher file, the descriptor, the
+startup receipt, the owner canary request and receipt) also keeps the digest of its raw bytes and fixed
+`shape` facts, and its free-text path fields only once its own check accepted it. A rejected object
+is never retained, and no source is redacted by name. The stable-capture recheck still compares the
+raw identities, and each projection still commits to its raw input by a digest (`raw_sha256`; the
+migration view through its own history, effective-head and manifest digests), so an `--expect`
+comparison sees a change the sanitization drops.
+
 A comparison (`--expect`, INV-HOST-MIGRATION-001 PH4-13) holds a fresh observation against an archived
 one. Before the operator submits, every source digest, the activation and the lineage must be unchanged.
 After the recorded managed transition (`post_transition`), the coordinator may have moved to
@@ -34,13 +45,19 @@ from datetime import datetime, timedelta, timezone
 from codex_harness.domain.host_delivery import (
     ACTIVE,
     CANARY_FLEET,
+    CANARY_REQUEST_SCHEMA,
+    DESCRIPTOR_SCHEMA,
+    EVIDENCE_REF,
     INSTANCE,
     KIND_MANAGED_SYSTEMD,
     MANAGED_SYSTEMD_UNIT,
     MANAGED_TARGET_FIELDS,
     OWNER_CANARY_RECEIPT_SCHEMA,
     POST_MERGE_OPEN,
+    RECEIPT_SCHEMA,
     REGISTRY_SCHEMA,
+    TARGET_KINDS,
+    TREE_ID,
     DeliveryRefused,
     canary_request_matches,
     consumption_verdict,
@@ -51,13 +68,19 @@ from codex_harness.domain.host_delivery import (
     validate_plan,
     validate_targets,
 )
+from codex_harness.domain.host_delivery import IMAGE as DELIVERY_IMAGE
+from codex_harness.domain.host_delivery import TOKEN as DELIVERY_TOKEN
 from codex_harness.domain.host_migration import (
+    ACTIVATION_SCHEMA,
     COMMIT,
     HEX64,
+    HOST_ID,
     IMAGE_DIGEST,
     LIMITED_ACTIVE,
+    MAX_TEXT,
     OBSERVATION,
     RESTORED_PAUSED,
+    STATES,
     TOKEN,
     TRANSITION_SCHEMA,
     UTC,
@@ -113,6 +136,8 @@ LAUNCH_EVENT_FIELDS = {"event", "role", "revision", "migration_id"}
 # The journal fields `launch_record` reads (`journalctl --output-fields`); json output always adds
 # `__CURSOR`, `__REALTIME_TIMESTAMP`, `__MONOTONIC_TIMESTAMP` and `_BOOT_ID`.
 JOURNAL_FIELDS = ("MESSAGE", "_PID", "_STREAM_ID", "_SYSTEMD_UNIT", "_SYSTEMD_INVOCATION_ID", "_TRANSPORT")
+# A journald cursor as `sd_journal_get_cursor` spells it: `s=<hex>;i=<hex>;b=<hex>;...`, lowercase hex only.
+CURSOR = re.compile(r"^[a-z]=[0-9a-f]{1,64}(?:;[a-z]=[0-9a-f]{1,64}){0,7}$")
 LAUNCH_ROLE = "managed-fleet"
 MANAGED_UNIT = MANAGED_SYSTEMD_UNIT + ".service"
 MANAGED_MODULE = "codex_harness.adapters.managed_runtime"
@@ -172,7 +197,7 @@ def source(projection, observed_at: str) -> dict:
 # ----- the coordinator record and the launcher files ----------------------------------------------------
 def migration_view(row: dict) -> dict:
     """The coordinator row as the observation binds it: state, exact manifest, effective head and the
-    launcher document derived from that head in `restored_paused`. It is the `migration` projection."""
+    launcher document derived from that head in `restored_paused`. `project` archives its typed copy."""
     try:
         manifest = validate_manifest(row["manifest"])
         exact = type(row["manifest_sha256"]) is str and manifest_digest(manifest) == row["manifest_sha256"]
@@ -337,7 +362,7 @@ def launch_record(entries, *, unit: str, invocation_id: str, boot_id: str, main_
             raise refused(LAUNCH, "launch_transport")
     first = lines[0]
     cursor = first.get("__CURSOR")
-    if not (type(cursor) is str and 0 < len(cursor) <= 400):
+    if not (type(cursor) is str and len(cursor) <= 400 and CURSOR.fullmatch(cursor)):
         raise refused(UNAVAILABLE, "journal_entry")
     realtime = _journal_number(first, "__REALTIME_TIMESTAMP")
     return {"unit": unit, "boot_id": boot_id, "invocation_id": invocation_id, "pid": main_pid, "cursor": cursor,
@@ -451,7 +476,8 @@ def require_entry(entry: dict, supervisor: dict, unit: dict, launch: dict, *, ar
 
 # ----- the consumed managed payload (INV-HOST-DELIVERY-001) ---------------------------------------------
 def delivery_view(target_row, plan_row, intent, descriptor_row, intents, *, target_id: str, plan_id: str) -> dict:
-    """The `delivery` projection: the typed binding fields the comparisons below repeat."""
+    """The delivery rows' binding fields the checks below read and the recheck compares; `project`
+    archives their typed copy."""
     for row, name in ((target_row, "delivery_target"), (plan_row, "delivery_plan"), (intent, "delivery_intent"),
                       (descriptor_row, "delivery_descriptor")):
         if not isinstance(row, dict):
@@ -533,7 +559,8 @@ def require_consumption(view: dict, descriptor_document, receipt, activation: di
 
 # ----- the owner canary (INV-OWNER-ACTIONS-001) ----------------------------------------------------------
 def record_view(record) -> dict | None:
-    """The `canary_record` projection: the accepted owner-canary action row's binding and outcome."""
+    """The owner-canary action row's binding and outcome as the recheck compares them; `project`
+    archives their typed copy."""
     if not isinstance(record, dict):
         return None
     return {key: record.get(key) for key in RECORD_FIELDS}
@@ -594,6 +621,225 @@ def require_canary(consumed: dict, incumbent: dict, receipt, request, record, *,
     if not (isinstance(canary, dict) and canary.get("passed") is True and canary.get("check_id") == CANARY_FLEET
             and canonical(canary.get("evidence")) == canonical(evidence)):
         raise refused(CANARY, "delivery_canary")
+
+
+# ----- the sanitized source projections: the one record path (PH4-12) -----------------------------------
+PATH = re.compile(r"^/[A-Za-z0-9._@+~,/-]{0,%d}$" % (MAX_TEXT - 1))
+
+
+class _Nullable:
+    """A field whose value may be JSON null."""
+
+    def __init__(self, kind):
+        self.kind = kind
+
+
+class _Free:
+    """A free-text field of an untrusted host document: kept only once that document's own check
+    accepted it (then it is bound to the owner-registered value), withheld as null before."""
+
+    def __init__(self, kind):
+        self.kind = kind
+
+
+class _List:
+    def __init__(self, kind):
+        self.kind = kind
+
+
+def _path_text(value) -> str:
+    """An absolute path as the registry, the descriptor and the startup receipt spell it: bounded, of
+    path characters only (no space, `=` or control character), without a parent step."""
+    if not (type(value) is str and PATH.fullmatch(value) and ".." not in value.split("/")):
+        raise ValueError("path")
+    return value
+
+
+HEX32 = INSTANCE
+CODE = DIAGNOSTIC
+# A cgroup path as the kernel and systemd print it (systemd escapes as `\x2d`).
+CGROUP = re.compile(r"^/[A-Za-z0-9._@:+\\/-]{0,399}$")
+CURRENT = re.compile(r"^(?:[0-9a-f]{40}|foreign)$")
+# The untrusted host documents and the journal's launch event, field by field.
+ACTIVATION_DOCUMENT = {"schema": frozenset({ACTIVATION_SCHEMA}), "migration_id": TOKEN, "host_id": HOST_ID,
+                       "state": frozenset(STATES), "release_revision": COMMIT, "intent_id": HEX64,
+                       "manifest_sha256": HEX64, "supersedes": HEX64, "activation_kind": frozenset({"successor"})}
+DESCRIPTOR_DOCUMENT = {"schema": frozenset({DESCRIPTOR_SCHEMA}), "target_id": DELIVERY_TOKEN,
+                       "root": _Free(_path_text), "revision": COMMIT, "worker_image": DELIVERY_IMAGE,
+                       "profile_digest": HEX64, "predecessor": _Nullable(HEX64)}
+STARTUP_DOCUMENT = {"schema": frozenset({RECEIPT_SCHEMA}), "target_id": DELIVERY_TOKEN, "instance_id": HEX32,
+                    "pid": int, "started_at": UTC, "runtime_root": _Free(_path_text),
+                    "module_root": _Free(_path_text), "descriptor_sha256": HEX64, "revision": COMMIT,
+                    "worker_image": DELIVERY_IMAGE, "profile_digest": HEX64}
+# The owner canary's evidence: the action and plan, then the accepted (or rejected) outcome's own facts.
+CANARY_EVIDENCE = {"action_id": HEX64, "plan_id": DELIVERY_TOKEN, "job_id": DELIVERY_TOKEN,
+                   "operation_id": DELIVERY_TOKEN, "decision_id": DELIVERY_TOKEN, "execution_ref": EVIDENCE_REF}
+CANARY_RECEIPT_DOCUMENT = {"schema": frozenset({OWNER_CANARY_RECEIPT_SCHEMA}),
+                           "descriptor_sha256": _Nullable(HEX64), "instance_id": _Nullable(HEX32), "passed": bool,
+                           "evidence": _Nullable(CANARY_EVIDENCE), "reason_code": _Nullable(CODE),
+                           "recorded_at": UTC}
+CANARY_REQUEST_DOCUMENT = {"schema": frozenset({CANARY_REQUEST_SCHEMA}), "action_id": HEX64,
+                           "plan_id": DELIVERY_TOKEN, "plan_sha256": HEX64, "target_id": DELIVERY_TOKEN,
+                           "revision": COMMIT, "expected_descriptor": _Nullable(HEX64), "requested_at": UTC}
+LAUNCH_EVENT = {"event": CODE, "role": CODE, "revision": COMMIT, "migration_id": TOKEN}
+# The coordinator record: the view `migration_view` derives, and the last history entry of any kind.
+EFFECTIVE_VIEW = {"id": HEX64, "kind": frozenset({"intent", "successor"}), "host_id": HOST_ID,
+                  "release_revision": COMMIT, "image": IMAGE_DIGEST, "profile_sha256": HEX64,
+                  "predecessor_id": _Nullable(HEX64)}
+HISTORY_ENTRY = {"id": HEX64, "event": CODE, "from": frozenset(STATES), "to": frozenset(STATES), "at": UTC,
+                 "actor": TOKEN, "host": TOKEN, "reason_code": _Nullable(TOKEN), "intent_id": HEX64,
+                 "successor_id": HEX64, "predecessor_id": HEX64, "release_revision": COMMIT,
+                 "lineage": validate_managed_lineage}
+MIGRATION_SOURCE = {"migration_id": TOKEN, "state": frozenset(STATES), "manifest_sha256": HEX64,
+                    "manifest_exact": bool, "target_host_id": _Nullable(TOKEN), "transitions": int,
+                    "history_sha256": HEX64, "previous_history_sha256": HEX64,
+                    "last_transition": _Nullable(HISTORY_ENTRY), "effective": _Nullable(EFFECTIVE_VIEW),
+                    "document": _Nullable(ACTIVATION_DOCUMENT), "config_sha256": _Nullable(HEX64)}
+ACTIVATION_FILE_FACTS = {"fence": bool, "current": _Nullable(CURRENT), "release_present": bool}
+# The unit, the journal's launch record and the two processes.
+UNIT_SOURCE = {"active_state": CODE, "sub_state": CODE, "main_pid": int, "exec_main_pid": int,
+               "invocation_id": HEX32, "control_group": CGROUP, "exec_main_start_usec": int}
+SUPERVISOR_LINE = {"event": CODE, "at": UTC, "invocation_id": _Nullable(HEX32), "descriptor_sha256": HEX64,
+                   "workload": CODE, "reason_code": CODE}
+VALIDATED_FACTS = {"command": CODE, "module": CODE, "revision": COMMIT, "workload": CODE, "interpreter": CODE}
+PROCESS_SOURCE = {"pid": int, "state": frozenset({"absent", "present", "replaced"}), "start_ticks": int,
+                  "boottime_offset_ticks": int, "start_usec": int, "tick_usec": int, "ppid": int,
+                  "cgroup": _Nullable(CGROUP), "argv_sha256": _Nullable(HEX64),
+                  "role": frozenset({"supervisor", "entry"}), "argv_match": bool,
+                  "validated": _Nullable(VALIDATED_FACTS), "boot_id": HEX32, "invocation_id": HEX32,
+                  "unit": UNIT_SOURCE, "launches": _List(SUPERVISOR_LINE)}
+LAUNCH_SOURCE = {"unit": CODE, "boot_id": HEX32, "invocation_id": HEX32, "pid": int, "cursor": CURSOR,
+                 "monotonic_usec": int, "realtime_usec": int, "at": UTC, "lines": int, "event": LAUNCH_EVENT}
+SEALED_RUNTIME = {"revision": COMMIT, "tree": TREE_ID, "files": int, "environment_lock": _Nullable(HEX64),
+                  "manifest_sha256": HEX64}
+# The delivery rows and the owner-action record, with their nested canary outcome and evidence.
+TARGET_ROW = {"target_id": DELIVERY_TOKEN, "kind": frozenset(TARGET_KINDS), "root": _path_text,
+              "state_dir": _path_text, "service": DELIVERY_TOKEN, "source": _path_text, "python": _path_text,
+              "environment_lock": _Nullable(HEX64)}
+INTENT_CANARY = {"passed": bool, "pending": bool, "evidence": _Nullable(CANARY_EVIDENCE),
+                 "reason_code": _Nullable(CODE), "check_id": CODE}
+ROLLBACK = {"requested": bool, "restored": bool, "verified": bool, "reason_code": _Nullable(CODE)}
+INTENT_ROW = {"plan_id": DELIVERY_TOKEN, "target_id": DELIVERY_TOKEN, "plan_sha256": HEX64, "stage": CODE,
+              "revision": COMMIT, "descriptor": _Nullable(DESCRIPTOR_DOCUMENT), "descriptor_sha256": _Nullable(HEX64),
+              "previous_descriptor_sha256": _Nullable(HEX64), "previous_instance_id": _Nullable(HEX32),
+              "instance_id": _Nullable(HEX32), "candidate_instance_id": _Nullable(HEX32),
+              "canary": _Nullable(INTENT_CANARY), "rollback": _Nullable(ROLLBACK), "updated_at": UTC}
+DESCRIPTOR_ROW = {"target_id": DELIVERY_TOKEN, "descriptor": _Nullable(DESCRIPTOR_DOCUMENT),
+                  "descriptor_sha256": _Nullable(HEX64), "consumed": bool, "startup_observed": bool,
+                  "observed_instance_id": _Nullable(HEX32), "observed_revision": _Nullable(COMMIT),
+                  "instance_id": _Nullable(HEX32), "plan_id": _Nullable(DELIVERY_TOKEN),
+                  "release_id": _Nullable(DELIVERY_TOKEN), "rolled_back": bool, "updated_at": UTC}
+DELIVERY_SOURCE = {"target": TARGET_ROW,
+                   "plan": {"plan_id": DELIVERY_TOKEN, "plan_sha256": HEX64, "plan": validate_plan},
+                   "intent": INTENT_ROW, "descriptor_row": DESCRIPTOR_ROW, "open_plans": _List(DELIVERY_TOKEN)}
+CANARY_BINDING = {"plan_id": DELIVERY_TOKEN, "plan_sha256": HEX64, "target_id": DELIVERY_TOKEN,
+                  "descriptor_sha256": HEX64, "instance_id": HEX32}
+RECORD_SOURCE = {"id": HEX64, "kind": CODE, "state": CODE, "reason_code": _Nullable(CODE),
+                 "binding": CANARY_BINDING, "binding_sha256": HEX64,
+                 "outcome": _Nullable({"state": CODE, "reason_code": _Nullable(CODE),
+                                       "evidence": _Nullable(CANARY_EVIDENCE)}),
+                 "version": int, "updated_at": UTC}
+
+
+def _typed(value, kind, free: bool = True) -> tuple:
+    """`(projection, typed)`: the value when it has the declared type, else None; an object keeps only
+    its allowlisted keys, each projected by its own kind. `typed` says whether nothing was dropped."""
+    if isinstance(kind, _Nullable):
+        return (None, True) if value is None else _typed(value, kind.kind, free)
+    if isinstance(kind, _Free):
+        projection, typed = _typed(value, kind.kind, free)
+        return (projection if free else None), typed
+    if isinstance(kind, dict):
+        if not isinstance(value, dict):
+            return None, False
+        fields = {key: _typed(value[key], sub, free) for key, sub in kind.items() if key in value}
+        return ({key: projection for key, (projection, _) in fields.items()},
+                set(value) <= set(kind) and all(typed for _, typed in fields.values()))
+    if isinstance(kind, _List):
+        if not isinstance(value, list):
+            return None, False
+        items = [_typed(item, kind.kind, free) for item in value]
+        return [projection for projection, _ in items], all(typed for _, typed in items)
+    if isinstance(kind, re.Pattern):
+        typed = type(value) is str and kind.fullmatch(value) is not None
+    elif isinstance(kind, frozenset):
+        typed = type(value) is str and value in kind
+    elif kind is int or kind is bool:
+        typed = type(value) is kind
+    else:
+        # The existing strict validator of that document: its canonical copy, or nothing of it.
+        try:
+            return kind(value), True
+        except Exception:  # noqa: BLE001 - any refusal keeps nothing of the value
+            return None, False
+    return (value if typed else None), typed
+
+
+def _json_type(value) -> str:
+    for kinds, name in ((dict, "object"), (list, "array"), (str, "string"), (bool, "boolean"),
+                        ((int, float), "number")):
+        if isinstance(value, kinds):
+            return name
+    return "null"
+
+
+def _shape(document, allowlist: dict) -> dict:
+    """Fixed facts about an untrusted document against its allowlist: its JSON type, the allowlisted
+    names missing or not of their type, and how many keys lie outside it (never their names)."""
+    if not isinstance(document, dict):
+        return {"type": _json_type(document), "missing": sorted(allowlist), "invalid": [], "extra": 0}
+    return {"type": "object", "missing": sorted(key for key in allowlist if key not in document),
+            "invalid": sorted(key for key, kind in allowlist.items()
+                              if key in document and not _typed(document[key], kind)[1]),
+            "extra": sum(1 for key in document if key not in allowlist)}
+
+
+def _host_document(raw_sha256, document, allowlist: dict, accepted: bool) -> dict:
+    """An untrusted host document: the digest of its raw bytes, whether its check accepted it, its
+    allowlisted typed fields (its free-text fields only when accepted) and its fixed shape."""
+    return {"raw_sha256": _typed(raw_sha256, HEX64)[0], "accepted": accepted is True,
+            "document": _typed(document, allowlist, accepted is True)[0], "shape": _shape(document, allowlist)}
+
+
+def _with_raw(facts, allowlist: dict) -> dict:
+    """A typed projection that commits to its whole raw input by digest, so an archive comparison
+    still sees any change the sanitization drops."""
+    return {**(_typed(facts, allowlist)[0] or {}), "raw_sha256": digest(facts)}
+
+
+def _canary_source(facts: dict, accepted: bool) -> dict:
+    return {name: None if facts[name + "_sha256"] is None else
+            _host_document(facts[name + "_sha256"], facts[name], allowlist, accepted)
+            for name, allowlist in (("receipt", CANARY_RECEIPT_DOCUMENT), ("request", CANARY_REQUEST_DOCUMENT))}
+
+
+_PROJECTIONS = {
+    # The coordinator view commits to its raw row through its own digests: the exact manifest, the
+    # history (whole and previous), the effective head's id and the configuration.
+    "migration": lambda facts, accepted: _typed(facts, MIGRATION_SOURCE)[0],
+    "activation_file": lambda facts, accepted: {
+        **_typed(facts, ACTIVATION_FILE_FACTS)[0],
+        **_host_document(facts["raw_sha256"], facts["document"], ACTIVATION_DOCUMENT, accepted)},
+    "launch": lambda facts, accepted: {**_with_raw(facts, LAUNCH_SOURCE),
+                                       "event_shape": _shape(facts.get("event"), LAUNCH_EVENT)},
+    "supervisor": lambda facts, accepted: _with_raw(facts, PROCESS_SOURCE),
+    "entry": lambda facts, accepted: _with_raw(facts, PROCESS_SOURCE),
+    "descriptor": lambda facts, accepted: {
+        **_host_document(facts["raw_sha256"], facts["document"], DESCRIPTOR_DOCUMENT, accepted),
+        "runtime": _typed(facts["runtime"], _Nullable(SEALED_RUNTIME))[0]},
+    "startup": lambda facts, accepted: _host_document(facts["raw_sha256"], facts["document"], STARTUP_DOCUMENT,
+                                                      accepted),
+    "delivery": lambda facts, accepted: _with_raw(facts, DELIVERY_SOURCE),
+    "canary_receipt": _canary_source,
+    "canary_record": lambda facts, accepted: _with_raw(record_view(facts), RECORD_SOURCE),
+}
+
+
+def project(name: str, facts, *, accepted: bool = False) -> dict:
+    """The sanitized projection of one source, exactly as it is returned, archived and hashed into
+    `sources` (INV-HOST-MIGRATION-001 PH4-12). `facts` is what the producer read; nothing of it passes
+    except through the source's typed allowlist. `accepted` says the source's own check accepted it."""
+    return _PROJECTIONS[name](facts, accepted)
 
 
 # ----- the observation document, its digest, receipts and draft ------------------------------------------
@@ -824,7 +1070,8 @@ __all__ = ["ACTIVATION_FIELDS", "CANARY", "CHANGED", "CHECKS", "CONSUMPTION", "D
            "JOURNAL_FIELDS", "LAUNCH", "LAUNCH_ROLE", "MANAGED_MODULE", "MANAGED_UNIT", "OBSERVATION_FIELDS",
            "OBSERVATION_SCHEMA", "PROCESS", "REFUSALS", "SOURCES", "UNAVAILABLE", "UNIT_PROPERTIES",
            "compare_observation", "delivery_view", "diagnostic", "entry_facts", "launch_record", "migration_view",
-           "observation_digest", "observation_receipts", "record_view", "require_activation_file", "require_canary",
-           "require_consumption", "require_current", "require_entry", "require_head", "require_launch",
-           "require_supervisor", "require_supervisor_launch", "source", "supervisor_facts", "supervisor_launches",
-           "transition_draft", "unit_facts", "usec_of", "utc_from_usec", "validate_archive", "validate_observation"]
+           "observation_digest", "observation_receipts", "project", "record_view", "require_activation_file",
+           "require_canary", "require_consumption", "require_current", "require_entry", "require_head",
+           "require_launch", "require_supervisor", "require_supervisor_launch", "source", "supervisor_facts",
+           "supervisor_launches", "transition_draft", "unit_facts", "usec_of", "utc_from_usec", "validate_archive",
+           "validate_observation"]

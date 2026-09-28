@@ -1508,3 +1508,246 @@ def test_ph4_13_an_unreadable_archive_file_is_refused_naming_the_argument_only(w
     assert json.loads(capsys.readouterr().out) == {"refused": "expect_invalid", "field": "expect"}
     assert adapter.main(_cli(world, "--expect", "relative/archive.json")) == 1
     assert json.loads(capsys.readouterr().out) == {"refused": "request_invalid", "field": "expect"}
+
+
+# ----- F1 / PH4-12: every source reaches the result only as its typed allowlist projection ------------------
+MARKER = "F1-canary-7c1e"
+SECRET = "password=" + MARKER + " free text"  # fits no declared type
+MARKER_PATH = "/srv/" + MARKER                 # path-shaped: withheld until the document's check accepts it
+
+
+def _supervisor_line(world, **changes):
+    world.supervisor_journal([{"event": "launch", "descriptor_sha256": world.descriptor_sha256, "workload": "fleet",
+                               "invocation_id": INVOCATION, "at": "2026-09-27T21:24:47.671458+00:00", **changes}])
+
+
+def _history_entry(world, entry: dict):
+    with world.coordinator.transaction() as tx:
+        row = tx.get(BUCKET, MID)
+        row["history"].append(entry)
+        tx.put(BUCKET, MID, row)
+
+
+def _outcome_evidence(world, **changes):
+    outcome = world.record["outcome"]
+    world.row(world.control_store, "owner_actions", world.action_id,
+              outcome={**outcome, "evidence": {**outcome["evidence"], **changes}})
+
+
+def _intent_canary_evidence(world, **changes):
+    with world.delivery.transaction() as tx:
+        canary = tx.get(BUCKET_INTENTS, PLAN)["canary"]
+    world.row(world.delivery, BUCKET_INTENTS, PLAN, canary={**canary, "evidence": {**canary["evidence"], **changes}})
+
+
+def _open_plan_named(world, plan_id: str):
+    with world.delivery.transaction() as tx:
+        tx.put(BUCKET_INTENTS, "open-" + MARKER, {"id": "open", "plan_id": plan_id, "target_id": TARGET,
+                                                 "stage": "switching"})
+
+
+# (mutation, expected refusal code or None for a success, fixed detail). Each source gets an excluded key
+# and a wrong-typed or free-text value; some pass their check, so the SUCCESS projection is covered too.
+LEAK_CASES = {
+    "activation_excluded_key": (lambda w: _activation(w, password=SECRET), policy.DOCUMENT, "activation_file"),
+    "activation_marker_named_key": (lambda w: _activation(w, **{MARKER: 1}), policy.DOCUMENT, "activation_file"),
+    "activation_wrong_type": (lambda w: _activation(w, release_revision=SECRET), policy.DOCUMENT, "activation_file"),
+    "activation_not_an_object": (lambda w: w.write(w.control / "host-activation.json", SECRET), policy.DOCUMENT,
+                                 "activation_file"),
+    "launch_event_excluded_key": (lambda w: setattr(w, "journal", journal(launch_event(password=SECRET))),
+                                  policy.LAUNCH, "launch_fields"),
+    "launch_event_wrong_type": (lambda w: setattr(w, "journal", journal(launch_event(revision=SECRET))),
+                                policy.LAUNCH, "launch_revision"),
+    "unit_free_text_state": (lambda w: w.unit.update(SubState=SECRET), policy.PROCESS, "unit_not_running"),
+    "supervisor_line_excluded_key": (lambda w: _supervisor_line(w, password=SECRET), None, None),
+    "supervisor_line_wrong_type": (lambda w: w.supervisor_journal([
+        {"event": "refused", "reason_code": SECRET, "invocation_id": INVOCATION},
+        {"event": "launch", "descriptor_sha256": w.descriptor_sha256, "workload": "fleet",
+         "invocation_id": INVOCATION}]), policy.PROCESS, "supervisor_refused"),
+    "entry_free_text_cgroup": (lambda w: w.process(ENTRY_PID, SUP_PID, ENTRY_TICKS, w.read_cmdline(ENTRY_PID),
+                                                   "/user.slice/" + SECRET), policy.PROCESS, "entry_cgroup"),
+    "descriptor_excluded_key": (lambda w: w.edit("descriptor.json", password=SECRET), policy.CONSUMPTION,
+                                "descriptor_fields"),
+    "descriptor_wrong_type": (lambda w: w.edit("descriptor.json", worker_image=SECRET), policy.CONSUMPTION,
+                              "descriptor_invalid"),
+    "descriptor_path_marker": (lambda w: w.edit("descriptor.json", root=MARKER_PATH), policy.CONSUMPTION,
+                               "runtime_path_foreign"),
+    "startup_excluded_key": (lambda w: w.edit("startup-receipt.json", password=SECRET), policy.CONSUMPTION,
+                             "receipt_fields"),
+    "startup_marker_named_key": (lambda w: w.edit("startup-receipt.json", **{MARKER: 1}), policy.CONSUMPTION,
+                                 "receipt_fields"),
+    "startup_wrong_type": (lambda w: w.edit("startup-receipt.json", pid=SECRET), policy.CONSUMPTION,
+                           "receipt_invalid"),
+    "startup_path_marker": (lambda w: w.edit("startup-receipt.json", runtime_root=MARKER_PATH,
+                                             module_root=MARKER_PATH + "/src"), policy.CONSUMPTION,
+                            "receipt_runtime_root_mismatch"),
+    "startup_not_an_object": (lambda w: w.write(w.state / "startup-receipt.json", SECRET), policy.CONSUMPTION,
+                              "receipt_schema"),
+    "canary_receipt_excluded_key": (lambda w: w.edit(RECEIPT_NAME, password=SECRET), policy.CANARY,
+                                    "canary_receipt_shape"),
+    "canary_receipt_wrong_type": (lambda w: w.edit(RECEIPT_NAME, recorded_at=SECRET), policy.CANARY,
+                                  "canary_before_startup"),
+    "canary_evidence_excluded_key": (lambda w: _evidence(w, password=SECRET), policy.CANARY,
+                                     "canary_record_evidence"),
+    "canary_evidence_wrong_type": (lambda w: _evidence(w, execution_ref=SECRET), policy.CANARY,
+                                   "canary_record_evidence"),
+    "canary_request_excluded_key": (lambda w: w.edit(REQUEST_NAME, password=SECRET), policy.CANARY,
+                                    "canary_request"),
+    "canary_request_wrong_type": (lambda w: w.edit(REQUEST_NAME, requested_at=SECRET), None, None),
+    "canary_request_wrong_type_bound_field": (lambda w: w.edit(REQUEST_NAME, plan_sha256=SECRET), policy.CANARY,
+                                              "canary_request"),
+    "record_excluded_key": (lambda w: w.row(w.control_store, "owner_actions", w.action_id, password=SECRET),
+                            None, None),
+    "record_wrong_type": (lambda w: w.row(w.control_store, "owner_actions", w.action_id, updated_at=SECRET),
+                          None, None),
+    "record_outcome_excluded_key": (lambda w: _outcome_evidence(w, password=SECRET), policy.CANARY,
+                                    "canary_record_evidence"),
+    "record_outcome_wrong_type": (lambda w: w.row(w.control_store, "owner_actions", w.action_id, outcome={
+        **w.record["outcome"], "reason_code": SECRET}), policy.CANARY, "canary_record_evidence"),
+    "history_excluded_key": (lambda w: _history_entry(w, {"event": "note", "password": SECRET}), None, None),
+    "history_wrong_type": (lambda w: _history_entry(w, {"event": SECRET, "at": SECRET, "lineage": SECRET}),
+                           None, None),
+    "migration_wrong_type_state": (lambda w: w.row(w.coordinator, BUCKET, MID, state=SECRET), policy.DOCUMENT,
+                                   "migration_state"),
+    "delivery_canary_evidence_excluded_key": (lambda w: _intent_canary_evidence(w, password=SECRET),
+                                              policy.CANARY, "delivery_canary"),
+    "delivery_plan_excluded_key": (lambda w: w.row(w.delivery, BUCKET_PLANS, PLAN, plan={**w.plan, "password": SECRET}),
+                                   policy.CONSUMPTION, "plan_invalid"),
+    "delivery_target_free_text_path": (lambda w: w.row(w.delivery, BUCKET_TARGETS, TARGET, python="/opt/" + SECRET),
+                                       policy.PROCESS, "entry_argv"),
+    "delivery_descriptor_row_wrong_type": (lambda w: w.row(w.delivery, BUCKET_DESCRIPTORS, TARGET,
+                                                           observed_revision=SECRET), None, None),
+    "delivery_open_plan_free_text": (lambda w: _open_plan_named(w, SECRET), policy.CONSUMPTION, "delivery_in_flight"),
+}
+
+
+@pytest.mark.parametrize("case", sorted(LEAK_CASES))
+def test_f1_no_excluded_key_or_untyped_value_reaches_the_result_or_the_cli(world, monkeypatch, capsys, case):
+    """Excluded keys (including one whose NAME is the marker) and wrong-typed or free-text values, per
+    source: the marker is in no part of the complete result nor of the CLI's stdout/stderr. A refusal keeps
+    its fixed code with failed receipts only and no draft; every archived source hash recomputes."""
+    mutate, code, detail = LEAK_CASES[case]
+    mutate(world)
+    result = world.observe()
+    assert MARKER not in json.dumps(result, sort_keys=True)
+    if code is None:
+        assert result["observation"]["ok"] is True and result["transition_draft"] is not None
+    else:
+        refused(result, code, detail)
+    recompute(result)
+    ports = world.ports()
+    monkeypatch.setattr(producer, "cli_ports", lambda args: ports)
+    assert adapter.main(_cli(world)) == (0 if code is None else 1)
+    captured = capsys.readouterr()
+    assert MARKER not in captured.out + captured.err and captured.err == ""
+    printed = json.loads(captured.out)
+    assert printed["result_sha256"] == result["result_sha256"]
+    if code is not None:
+        refused(printed, code, detail)
+    recompute(printed)
+
+
+def test_f1_a_rejected_host_document_keeps_its_raw_digest_shape_and_typed_identifiers_only(world):
+    """The two reviewed reproductions: an excluded field in the startup receipt, then in the canary receipt."""
+    original = (world.state / "startup-receipt.json").read_bytes()
+    world.edit("startup-receipt.json", password=SECRET, **{MARKER: 1})
+    raw = (world.state / "startup-receipt.json").read_bytes()
+    result = world.observe()
+    refused(result, policy.CONSUMPTION, "receipt_fields")
+    startup = result["projections"]["startup"]
+    assert set(startup) == {"raw_sha256", "accepted", "document", "shape"}
+    assert startup["raw_sha256"] == hashlib.sha256(raw).hexdigest() and startup["accepted"] is False
+    assert startup["shape"] == {"type": "object", "missing": [], "invalid": [], "extra": 2}
+    assert set(startup["document"]) == set(policy.STARTUP_DOCUMENT)
+    assert (startup["document"]["instance_id"], startup["document"]["pid"]) == (INSTANCE, ENTRY_PID)
+    # Free-text paths are withheld until the consumption check accepts the document, here and beside it.
+    assert startup["document"]["runtime_root"] is None and startup["document"]["module_root"] is None
+    descriptor = result["projections"]["descriptor"]
+    assert descriptor["accepted"] is False and descriptor["document"]["root"] is None
+    assert descriptor["document"]["revision"] == PAYLOAD and descriptor["runtime"] is None
+
+    (world.state / "startup-receipt.json").write_bytes(original)
+    world.edit(RECEIPT_NAME, password=SECRET, passed="yes")
+    raw = (world.state / RECEIPT_NAME).read_bytes()
+    result = world.observe()
+    refused(result, policy.CANARY, "canary_receipt_shape")
+    receipt = result["projections"]["canary_receipt"]["receipt"]
+    assert receipt["raw_sha256"] == hashlib.sha256(raw).hexdigest() and receipt["accepted"] is False
+    assert receipt["shape"] == {"type": "object", "missing": [], "invalid": ["passed"], "extra": 1}
+    assert receipt["document"]["passed"] is None and receipt["document"]["instance_id"] == INSTANCE
+    assert MARKER not in json.dumps(result)
+
+
+def test_f1_an_accepted_source_is_its_complete_typed_document(world):
+    """On success each host document passes its allowlist whole: accepted, nothing dropped, equal to the
+    document read. The success path is the same record path as a failure."""
+    result = world.observe()
+    assert result["observation"]["ok"] is True
+    projections = result["projections"]
+    documents = {"activation_file": (projections["activation_file"], world.activation_document),
+                 "descriptor": (projections["descriptor"], world.descriptor),
+                 "startup": (projections["startup"], world.read(world.state / "startup-receipt.json")),
+                 "receipt": (projections["canary_receipt"]["receipt"], world.read(world.state / RECEIPT_NAME)),
+                 "request": (projections["canary_receipt"]["request"], world.read(world.state / REQUEST_NAME))}
+    for name, (projection, document) in documents.items():
+        assert projection["accepted"] is True and projection["document"] == document, name
+        assert projection["shape"]["invalid"] == [] and projection["shape"]["extra"] == 0, name
+
+
+# A change in a field the sanitization drops is still a change: the recheck compares raw identities.
+RECHECK_RAW_CASES = {
+    "startup_excluded_key": (lambda w: w.edit("startup-receipt.json", password=SECRET), "startup"),
+    "descriptor_excluded_key": (lambda w: w.edit("descriptor.json", password=SECRET), "descriptor"),
+    "activation_excluded_key": (lambda w: _activation(w, password=SECRET), "activation_file"),
+    "canary_request_excluded_key": (lambda w: w.edit(REQUEST_NAME, password=SECRET), "canary_receipt"),
+    "supervisor_line_excluded_key": (lambda w: _supervisor_line(w, password=SECRET), "supervisor_journal"),
+    "record_outcome_excluded_key": (lambda w: _outcome_evidence(w, password=SECRET), "canary_record"),
+}
+
+
+@pytest.mark.parametrize("case", sorted(RECHECK_RAW_CASES))
+def test_f1_the_stable_capture_still_compares_raw_bytes(world, case):
+    mutate, detail = RECHECK_RAW_CASES[case]
+    world.runner.on_recheck = lambda: mutate(world)
+    result = world.observe()
+    refused(result, policy.CHANGED, detail)
+    assert MARKER not in json.dumps(result)
+    recompute(result)
+
+
+# ... and so is it before submission: every sanitized projection commits to its raw input by a digest.
+PRE_SUBMIT_RAW_CASES = {
+    "supervisor_line_excluded_key": (lambda w: _supervisor_line(w, password=SECRET), "supervisor"),
+    "canary_request_untyped_value": (lambda w: w.edit(REQUEST_NAME, requested_at=SECRET), "canary_receipt"),
+    "record_untyped_value": (lambda w: w.row(w.control_store, "owner_actions", w.action_id, updated_at=SECRET),
+                             "canary_record"),
+    "descriptor_row_untyped_value": (lambda w: w.row(w.delivery, BUCKET_DESCRIPTORS, TARGET,
+                                                     observed_revision=SECRET), "delivery"),
+    "history_excluded_key": (lambda w: _history_entry(w, {"event": "note", "password": SECRET}), "migration"),
+}
+
+
+@pytest.mark.parametrize("case", sorted(PRE_SUBMIT_RAW_CASES))
+def test_f1_a_pre_submit_change_only_in_dropped_content_is_still_refused(world, case):
+    mutate, detail = PRE_SUBMIT_RAW_CASES[case]
+    archive = archived(world.observe())
+    mutate(world)
+    result = world.observe(expect=archive)
+    assert result["observation"]["ok"] is True
+    comparison(result, mode="pre_submit", ok=False, code=policy.CHANGED, detail=detail)
+    assert MARKER not in json.dumps(result)
+
+
+@pytest.mark.parametrize("changes,ok,detail", [({"password": SECRET}, True, None),
+                                               ({"id": SECRET, MARKER: 1}, False, "transition_id")])
+def test_f1_the_recorded_history_entry_reaches_the_post_check_only_through_its_allowlist(world, changes, ok, detail):
+    """The coordinator's last history entry, the post-check's own subject: an excluded key is dropped (and
+    the recorded id and lineage still decide), a wrong-typed id is null and refuses."""
+    archive = archived(world.observe())
+    submit(world, archive)
+    _history(world, **changes)
+    result = world.observe(expect=archive, post_transition=True)
+    comparison(result, mode="post_transition", ok=ok, code=None if ok else policy.CHANGED, detail=detail)
+    assert MARKER not in json.dumps(result)
+    last = result["projections"]["migration"]["last_transition"]
+    assert set(last) <= set(policy.HISTORY_ENTRY) and last["lineage"] == archive["observation"]["lineage"]
