@@ -75,6 +75,7 @@ from codex_harness.execution.adapters.containers.staging import (
     stage_source,
 )
 from codex_harness.execution.adapters.providers.codex_app_server import AppServer
+from codex_harness.execution.adapters.providers.native_hooks import HOOK_MOUNT, bound_state, verify_bound
 from codex_harness.execution.domain.container_spec import (
     CODEX_IMPL_RW,
     CODEX_ROLE_RO,
@@ -633,7 +634,7 @@ class IsolatedCodexRuntime:
     def __init__(self, config: dict, root, *, profile: str, broker, docker: str = "docker",
                  environment: dict | None = None, watch: tuple = (), context_window=None, handoff=None,
                  state_root=None, lock_wait_seconds: float = 60.0, network: str = "bridge", host: ContainerHost,
-                 credentials: CredentialBoundary):
+                 credentials: CredentialBoundary, native_hooks=None):
         require(isinstance(config, dict) and config.get("mode") == MODE and IMAGE.fullmatch(str(config.get("image"))),
                 "Isolated runtime requires a validated isolation configuration")
         require(profile in (CODEX_ROLE_RO, CODEX_IMPL_RW), "Unsupported Codex container profile: " + str(profile))
@@ -644,6 +645,9 @@ class IsolatedCodexRuntime:
         self.state_root = None if state_root is None else Path(state_root)
         self.lock_wait_seconds = lock_wait_seconds
         self.host, self.credentials = host, credentials
+        # S3b (design v2 §5.4): `native_hooks(destination) -> ContainerHookSet | None` builds this run's
+        # verified, digest-addressed hook set (execution.adapters.providers.native_hooks); None = no hooks.
+        self.native_hooks = native_hooks
         self.container, self.tree, self.record, self.record_path = None, None, None, None
         self.used = False
 
@@ -731,6 +735,12 @@ class IsolatedCodexRuntime:
             mounts.append((handoff["source"], handoff["target"], True))
             expected[handoff["target"]] = False
         prepared["handoff"] = handoff
+        # S3b: the verified hook scripts, read-only at the fixed container path the commands name.
+        hook_set = self.native_hooks(run_directory / "hooks") if self.native_hooks is not None else None
+        if hook_set is not None:
+            mounts.append((hook_set.source, HOOK_MOUNT, True))
+            expected[HOOK_MOUNT] = False
+        prepared["hooks"] = hook_set
         home.mkdir(mode=0o700)
         if state_key is not None and self._state_directory(state_key).is_dir():
             shutil.copytree(self._state_directory(state_key), home, symlinks=True, dirs_exist_ok=True)
@@ -761,7 +771,19 @@ class IsolatedCodexRuntime:
                           source={key: prepared["source"][key] for key in ("revision",)},
                           handoff=None if prepared["handoff"] is None else prepared["handoff"]["summary"],
                           credential={"store": "per-run copy issued", "ledger": "issued"})
-            probe = AppServer(executable=CODEX_EXECUTABLE, context_window=self.context_window)
+            hook_set, hook_state = prepared["hooks"], {}
+            if hook_set is not None:
+                try:
+                    hook_state = self._bind_hooks(prepared, workspace, scrubber)
+                except BaseException as exc:
+                    if self.record["state"] == "prepared":
+                        # No run container was ever created: a refusal that never ran, resolved by name.
+                        self._advance("refused", reason="hook_discovery_" + getattr(exc, "reason_code",
+                                                                                   type(exc).__name__))
+                    raise
+            probe = AppServer(executable=CODEX_EXECUTABLE, context_window=self.context_window,
+                              hooks=None if hook_set is None else hook_set.configuration)
+            probe.hook_state = hook_state
             entry = [CODEX_EXECUTABLE, *probe.server_arguments()]
             args = container_args(self.config, name=self.container.name, run_id=run_id, role="codex",
                                      network=self.network, mounts=prepared["mounts"], environment=codex_environment(),
@@ -786,7 +808,8 @@ class IsolatedCodexRuntime:
                 except IsolationError:
                     pass
             self._settle_quietly(admission)
-            self._discard(self.prepared)
+            if self.record.get("state") != "hook_discovery_unconfirmed":
+                self._discard(self.prepared)
             raise
         started = time.monotonic()
         forwarded = {}
@@ -808,6 +831,12 @@ class IsolatedCodexRuntime:
             with server:
                 replaced = None
                 try:
+                    if hook_set is not None:
+                        # S3b: bound, discovered, trusted and unchanged, or refused (never silently skipped).
+                        server.hooks, server.hook_state = hook_set.configuration, hook_state
+                        rows = server.request("hooks/list", {"cwds": [WORKSPACE]}, 30)["data"]
+                        self._advance("hooks_verified", statuses=verify_bound(rows, hook_set, hook_state),
+                                      digests=list(hook_set.digests))
                     value = server.run(prompt, workspace, schema, timeout, thread_id=thread_id, on_event=forward,
                                        read_only=read_only, on_tick=on_tick, model=model)
                 except self.credentials.OutputUnsanitizable:
@@ -901,6 +930,77 @@ class IsolatedCodexRuntime:
         self._discard(prepared)
         return scrubber.scrub({**value, "isolation": isolation})
 
+    def _bind_hooks(self, prepared, workspace, scrubber) -> dict:
+        """S3b discover-then-bind, in its own owned container of the same profile, mounts and credential
+        copy: the App Server with the hook set configured and no trust state lists the hooks (no turn, no
+        model); the peer-reported hash of exactly this set's entries becomes the trust state the run's
+        container starts with. The discovery container follows the one lifecycle rule; if its stop cannot
+        be confirmed the run's record is left unresolved, so its credential copy stays unsettled."""
+        hook_set = prepared["hooks"]
+        run_id = uuid4().hex
+        directory = self.root / run_id
+        directory.mkdir(parents=True)
+        container = OwnedContainer(self.config, self.docker, run_id, "codex", runner=self.host.runner)
+        record = new_record(directory, role="codex", workspace=workspace, config=self.config, container=container,
+                            profile=self.role_profile, purpose="native_hook_discovery", parent=self.container.run_id)
+        probe = AppServer(executable=CODEX_EXECUTABLE, context_window=self.context_window,
+                          hooks=hook_set.configuration)
+        args = container_args(self.config, name=container.name, run_id=run_id, role="codex", network=self.network,
+                              mounts=prepared["mounts"], environment=codex_environment(), pass_names=(),
+                              entry=[CODEX_EXECUTABLE, *probe.server_arguments()], workdir=WORKSPACE,
+                              user=host_user())
+        try:
+            container_id = container.create(args, docker_environment(self.environment_source))
+        except IsolationError:
+            advance(record, "refused", reason="container_create_failed")
+            raise
+        record["container"] = container_id
+        try:
+            advance(record, "created", container=container_id)
+            container.verify(prepared["expected"], self.network)
+        except IsolationError as exc:
+            removal = container.remove()
+            advance(record, "refused" if removal["removed"] else "created", reason=exc.reason_code)
+            raise
+        trees = []
+
+        def discover():
+            trees.append(self.host.trees.spawn([self.docker, "start", "--attach", "--interactive", container.id],
+                                               env=docker_environment(self.environment_source),
+                                               stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE))
+            advance(record, "running", client_pid=trees[0].process.pid)
+            server = AttachedAppServer(trees[0].process, WORKSPACE)
+            server.hooks = hook_set.configuration
+            with server:
+                try:
+                    rows = server.request("hooks/list", {"cwds": [WORKSPACE]}, 30)["data"]
+                except Exception as exc:
+                    replaced = scrubber.failure(exc)
+                    if replaced is exc:
+                        raise
+                    raise replaced from None
+            return bound_state(rows, hook_set)
+
+        def end_client():
+            if not trees:
+                return {"confirmed": True}
+            ended = trees[0].terminate("container_stopped")
+            trees[0].close()
+            return ended
+        try:
+            state, stopped = hold(container, record, discover, client=end_client,
+                                  detail=lambda value: {"hooks": {"bound": len(value), "digests": list(hook_set.digests)}})
+        except BaseException:
+            if cleanup_debt(record) is not None:
+                self._advance("hook_discovery_unconfirmed", discovery=str(directory / "run.json"))
+            raise
+        if not stopped["confirmed"]:
+            self._advance("hook_discovery_unconfirmed", discovery=str(directory / "run.json"))
+            raise ContractError("Codex hook discovery container termination could not be confirmed; recovery record "
+                                + str(directory / "run.json"))
+        retire(container, record, {"hooks_bound": sorted(state)}, "hooks_bound")
+        return state
+
     def _after_stop(self, admission, prepared) -> dict:
         """After a confirmed stop and before removal: the read-only configuration must be byte-for-byte
         what was mounted, then the credential copy is settled. Either anomaly is a hold."""
@@ -915,8 +1015,11 @@ class IsolatedCodexRuntime:
         return admission.settle()
 
     def _settle_quietly(self, admission) -> None:
-        """A refusal before any container started: the untouched copy settles as unchanged."""
+        """A refusal before any container started: the untouched copy settles as unchanged. A hook
+        discovery container whose stop is unconfirmed keeps the copy unsettled (S3b)."""
         if admission.entry is None or admission.entry.get("state") != "issued":
+            return
+        if self.record is not None and self.record.get("state") == "hook_discovery_unconfirmed":
             return
         try:
             admission.settle()
