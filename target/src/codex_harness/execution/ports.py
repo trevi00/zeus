@@ -31,6 +31,10 @@ class TaskLedger(Protocol):
 
     def heartbeat(self, lease: dict) -> dict: ...
 
+    def remaining_seconds(self, lease: dict, maximum: int) -> float:
+        """Seconds left before the execution deadline; refuses a lost, superseded or expired lease."""
+        ...
+
 
 class ResearchAdmission(Protocol):
     """RF-RT (addendum A1 v2), S4 part: RunTask consults this before a design/implementation
