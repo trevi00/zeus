@@ -1,0 +1,423 @@
+{
+ "active_expired_lease": {
+  "value": false
+ },
+ "active_fresh": {
+  "value": true
+ },
+ "active_later": {
+  "value": true
+ },
+ "active_no_lease": {
+  "message": "InvalidExecutionLease",
+  "observation_keys": [
+   "deadline",
+   "domain",
+   "monotonic",
+   "time_basis",
+   "wall"
+  ],
+  "reason": "InvalidExecutionLease",
+  "refused": "ExecutionTimeError"
+ },
+ "active_past_deadline": {
+  "message": "deadline_exceeded",
+  "observation_keys": [
+   "deadline",
+   "domain",
+   "monotonic",
+   "time_basis",
+   "wall"
+  ],
+  "reason": "deadline_exceeded",
+  "refused": "ExecutionTimeError"
+ },
+ "check_clock": [
+  {
+   "value": [
+    null,
+    {}
+   ]
+  },
+  {
+   "message": "ClockDiscontinuity",
+   "observation_keys": [
+    "delta_monotonic",
+    "delta_wall",
+    "domain",
+    "monotonic",
+    "previous",
+    "wall"
+   ],
+   "reason": "ClockDiscontinuity",
+   "refused": "ExecutionTimeError"
+  },
+  {
+   "value": [
+    null,
+    {
+     "deadline_remaining": null,
+     "domain": "00000000-0000-4000-8000-00000000e4e4",
+     "lease_seconds": 600,
+     "monotonic": 1000.0,
+     "version": 1,
+     "wall": "2026-01-01T00:00:00+00:00"
+    }
+   ]
+  },
+  {
+   "message": "ClockDiscontinuity",
+   "observation_keys": [
+    "delta_monotonic",
+    "delta_wall",
+    "domain",
+    "monotonic",
+    "previous",
+    "wall"
+   ],
+   "reason": "ClockDiscontinuity",
+   "refused": "ExecutionTimeError"
+  },
+  {
+   "message": "InvalidExecutionClock",
+   "observation_keys": null,
+   "reason": "InvalidExecutionClock",
+   "refused": "ExecutionTimeError"
+  },
+  {
+   "message": "InvalidExecutionClock",
+   "observation_keys": null,
+   "reason": "InvalidExecutionClock",
+   "refused": "ExecutionTimeError"
+  },
+  {
+   "message": "InvalidExecutionClock",
+   "observation_keys": null,
+   "reason": "InvalidExecutionClock",
+   "refused": "ExecutionTimeError"
+  }
+ ],
+ "contain_block": {
+  "value": "blocked"
+ },
+ "contain_block_again": {
+  "value": "blocked"
+ },
+ "contain_deadline": {
+  "value": {
+   "attempt_outcomes": [
+    {
+     "at": "2026-01-01T00:00:30+00:00",
+     "attempt": 1,
+     "error": "deadline exceeded",
+     "status": "expired"
+    }
+   ],
+   "error": "deadline exceeded",
+   "status": "expired"
+  }
+ },
+ "deadline": [
+  {
+   "value": null
+  },
+  {
+   "value": "2026-01-01T01:00:00+00:00"
+  },
+  {
+   "message": "InvalidExecutionDeadline",
+   "observation_keys": null,
+   "reason": "InvalidExecutionDeadline",
+   "refused": "ExecutionTimeError"
+  },
+  {
+   "value": "2026-01-02T00:00:00+00:00"
+  },
+  {
+   "message": "InvalidExecutionDeadline",
+   "observation_keys": null,
+   "reason": "InvalidExecutionDeadline",
+   "refused": "ExecutionTimeError"
+  },
+  {
+   "value": null
+  }
+ ],
+ "domain_is_injected": true,
+ "observe_foreign": {
+  "value": null
+ },
+ "observe_legacy": {
+  "value": null
+ },
+ "observe_same_domain": {
+  "value": null
+ },
+ "pin": {
+  "value": null
+ },
+ "pin_renew": {
+  "value": null
+ },
+ "pinned": {
+  "deadline_remaining": 7200.0,
+  "domain": "00000000-0000-4000-8000-00000000e4e4",
+  "lease_seconds": 600.0,
+  "monotonic": 1000.0,
+  "version": 1,
+  "wall": "2026-01-01T00:00:00+00:00"
+ },
+ "reconcile": {
+  "expired_again": {
+   "value": {
+    "error": "stale write",
+    "id": "y",
+    "rejection_id": "273c7e8a874775ccda404552c214b271d77df93c2c1ca12a8ad8fdcb5b917dc2",
+    "status": "stale"
+   }
+  },
+  "expired_lease": {
+   "value": {
+    "error": "stale write",
+    "id": "y",
+    "rejection_id": "273c7e8a874775ccda404552c214b271d77df93c2c1ca12a8ad8fdcb5b917dc2",
+    "status": "stale"
+   }
+  },
+  "identity_changed": {
+   "value": {
+    "error": "stale write",
+    "id": "x",
+    "rejection_id": "c0d46b171e9d784e95b191a3a16d07e42c1d4571e9d52a8e3280c5cda5aae2d7",
+    "status": "stale"
+   }
+  },
+  "invalid_identity": {
+   "message": "Invalid submitted execution identity",
+   "refused": "ContractError"
+  },
+  "missing": {
+   "value": {
+    "error": "stale write",
+    "id": "zz",
+    "rejection_id": "5beadccb5360d6c319f7aaefb975c41e6a51cbbb67f4286114d083f5a0ff4df5",
+    "status": "stale"
+   }
+  },
+  "not_running": {
+   "value": {
+    "error": "stale write",
+    "id": "x",
+    "rejection_id": "bd1bf138eaff23fde780d3402f7289ba45f24d59256c85df19ded777523b5b3e",
+    "status": "stale"
+   }
+  },
+  "succeeded_same": {
+   "value": "succeeded"
+  },
+  "valid_owner_reraises": {
+   "message": "stale write",
+   "refused": "RuntimeError"
+  }
+ },
+ "records": [
+  [
+   "events",
+   "273c7e8a874775ccda404552c214b271d77df93c2c1ca12a8ad8fdcb5b917dc2",
+   "b482432840a1ea0d7191e45219247191bf465c19445cc787bb1f205e493a11b7"
+  ],
+  [
+   "events",
+   "5beadccb5360d6c319f7aaefb975c41e6a51cbbb67f4286114d083f5a0ff4df5",
+   "83aa1870aa2336d54ef887b7b64546f848f19bb374291a67e325a609f07270e6"
+  ],
+  [
+   "events",
+   "95925161f313c933c7cc081cbb0fe83e55e479a0ad53f2cde0d6e1bcf6b0eefe",
+   "7eb6c1548272c0e2ad1fa1ce9fc19740cb9cf499716a91c92ee857ec8d690642"
+  ],
+  [
+   "events",
+   "bc58388d4ca63d8105f36dbb4f37b15ca8cadf3471999a91c8e7b5879ded5cc8",
+   "142c6d95e7a749e42a52f004eb001fa643bae9455c4dfd869859bc34a32dba07"
+  ],
+  [
+   "events",
+   "bd1bf138eaff23fde780d3402f7289ba45f24d59256c85df19ded777523b5b3e",
+   "ce05ca5e53653a7e19d9f8c3009fbd3a8f7f6e9260ffe28608823b57dd3ddae7"
+  ],
+  [
+   "events",
+   "c0d46b171e9d784e95b191a3a16d07e42c1d4571e9d52a8e3280c5cda5aae2d7",
+   "4a924d77cbd098d7c5d77c4248ec93773206c7c6e3dc77c1629b23d6f031d0c4"
+  ],
+  [
+   "events",
+   "d49eabdcf8590adb384a231a97f854bd0499f8ee22fe7d83526a3e302cff8681",
+   "b532ad884a2a7ce156466f4497ad79112abf373f8007ed63967de4e1e42c80e9"
+  ],
+  [
+   "events",
+   "e3e9c15abdc81264f21b1f1b3b7b67a91edcd872c5cdc422991299c73dc0a0e0",
+   "2a5708782c3dc33b39e4e6f3ca57c366ea935baf2184973629af9d9a5ad8ea18"
+  ],
+  [
+   "events",
+   "ecebbd7becd0650bc84d27c9a3335bdbdb615558953d98afc614c925e1ff3b6c",
+   "ca3846490f618f7b96d014a616921fda1dc05bc82190f5ae206a06548a3edc16"
+  ],
+  [
+   "events",
+   "f1d8e0d194e4302adeb180197562ae983d35b8dfb8bbc40744823e5128153b3e",
+   "16cc74073fd555f44ffad3a00a282d991e9dc460f1fa7938d247db63fd36895c"
+  ],
+  [
+   "execution_notices",
+   "1c64d7af27d6069cd2be5e79af433f6a80263c95996698aa63bacb96622fd91c",
+   "05674d1949e609853fb3fea4da079e93a7e67b30a625ea4d6999f28e8eea6058"
+  ],
+  [
+   "execution_notices",
+   "44267ae43897a4af2626d87aec570a6983cd2c0a729310748ebfc501004410bf",
+   "9523a2f324b80b90370dc6ab3b61046b49f392cb01e8bc3592cfaf7b2fc63bbf"
+  ],
+  [
+   "execution_notices",
+   "9943b2b209c5cc97102494f5b01aa2d30ce3a1836754941851973ba212fb2201",
+   "bc941a4e42f827fdd3b366af465d623d2e3da010865db46a2991d2aa1b34be0f"
+  ],
+  [
+   "execution_notices",
+   "dfd5167b6349338933432b6ddf7e502579d5e5a5c74cb103fe23b80871eaf624",
+   "bc6fff021d70616a3e482f7c68628dad9bb7ada7dde08127952574cc336ac1c3"
+  ],
+  [
+   "execution_rejections",
+   "273c7e8a874775ccda404552c214b271d77df93c2c1ca12a8ad8fdcb5b917dc2",
+   "cd9a53bc73ebe65e1e72bca80228b90a2860cbabeadcaaa510f32efedbab957b"
+  ],
+  [
+   "execution_rejections",
+   "5beadccb5360d6c319f7aaefb975c41e6a51cbbb67f4286114d083f5a0ff4df5",
+   "29500ff0f487a2cf25af0070c2077542d9fef0a7cf5463c4df95a017e600e300"
+  ],
+  [
+   "execution_rejections",
+   "bd1bf138eaff23fde780d3402f7289ba45f24d59256c85df19ded777523b5b3e",
+   "17aec52495c950764167c489ee77037d714bce9737b9cd8932fdf2e9b59697bc"
+  ],
+  [
+   "execution_rejections",
+   "c0d46b171e9d784e95b191a3a16d07e42c1d4571e9d52a8e3280c5cda5aae2d7",
+   "1f4573ef7375fee48e1a8032129255dce1307d02340d852d7244337f1517ece3"
+  ],
+  [
+   "execution_time_events",
+   "18b8b77d8026c5445d674234b3dbae84b693a06c828cb5be4944c3cb8adfb947",
+   "50b71e079ddaf75eb8c268a8b9897fea29f8d32c5c26bbb095e0b52c582da045"
+  ],
+  [
+   "execution_time_events",
+   "50339cd555fb81275a928d8b0746adf0d095ec987979d4d2713b99ae1acd810e",
+   "96556056fa1eaf1de92074ebce07a76a4b0c88f35ef4f9686d22a6d681e4f0f7"
+  ],
+  [
+   "execution_time_events",
+   "6941860edcb7d4b8b5ae38829aa5817be45ae5881649e2ce2611c4e553ea6704",
+   "0f45d9309e130fbb73ec4c7ffa0e8981d5228df4c4a7ab43dab8561288a2c2b0"
+  ],
+  [
+   "execution_time_events",
+   "991a10da3fbed66066baa454e6ec667507a3b81e755a0bb6d4f27080fa71f18e",
+   "7d6b013aef6b50c3052cb9c232cf3946a4341f49a42d5445c0cd42f82d28a11c"
+  ],
+  [
+   "outbox",
+   "1c64d7af27d6069cd2be5e79af433f6a80263c95996698aa63bacb96622fd91c",
+   "f3565eca4e3e89681cc012b998ca3fe196408f5b8fd029eb0f3fbd78a22437e4"
+  ],
+  [
+   "outbox",
+   "44267ae43897a4af2626d87aec570a6983cd2c0a729310748ebfc501004410bf",
+   "b76cbf686a6c2c1a7a3736156ccefb03e54086cd11ca84262c9fd3c81d9cf137"
+  ],
+  [
+   "outbox",
+   "9943b2b209c5cc97102494f5b01aa2d30ce3a1836754941851973ba212fb2201",
+   "46cbbcdc92c7e59fb28d17aa8c2b1b8030d97fb9a37e05e54bdd33923161c554"
+  ],
+  [
+   "outbox",
+   "dfd5167b6349338933432b6ddf7e502579d5e5a5c74cb103fe23b80871eaf624",
+   "5e542c4538467a27e208674c31f77c1d028a072d8279b4f67f5cffa968259542"
+  ],
+  [
+   "tasks",
+   "m",
+   "7eb205b2a14c553fa16cb14f884e737266f311e7375853e2e70f9a84436f4119"
+  ],
+  [
+   "tasks",
+   "n",
+   "b3a7417961569e8cc5264ff1af0a689cbdee4b2298884b5ebd2c15d5b8d8f7d3"
+  ],
+  [
+   "tasks",
+   "p",
+   "8d79247219cecd28417369341df3b7348efd0560300880bdf03901993c665ff2"
+  ],
+  [
+   "tasks",
+   "q",
+   "262c126b17fc197e14fce9b31c575c15f591a76727323f3b5840266cc6264fd1"
+  ],
+  [
+   "tasks",
+   "r",
+   "9da76129c63709b08be094da1fb45b5a4769e0ea472639fbe1044ca8a3280084"
+  ],
+  [
+   "tasks",
+   "s",
+   "e57eec9cce2dc0b248d52cc92f19f623cf958160f191f2832a52586da03d63b2"
+  ],
+  [
+   "tasks",
+   "u",
+   "ff7b9e792b29a61a0fb4fa2322a5016f5b88f00234dc39fd51233f5f35ad8cf2"
+  ],
+  [
+   "tasks",
+   "v",
+   "ba492f872bac657bb63d2c1524bfd606075f96e60b3f1baef61587f07c605912"
+  ],
+  [
+   "tasks",
+   "w",
+   "4bc02e34e64368c15635c17b519606b1079f6259fea828e76bd089e703d9161b"
+  ],
+  [
+   "tasks",
+   "x",
+   "2ec9d88d029f7c0f7ea5ff94abfa9b19a4203fbc175c5892de4b6e30d027e21f"
+  ],
+  [
+   "tasks",
+   "y",
+   "07fe276679eb22b4f8d9e721c2248764704e08bfd18da6f9a736eee84db21bf9"
+  ]
+ ],
+ "renewed": {
+  "deadline_remaining": 7170.0,
+  "domain": "00000000-0000-4000-8000-00000000e4e4",
+  "lease_seconds": 1170.0,
+  "monotonic": 1030.0,
+  "version": 1,
+  "wall": "2026-01-01T00:00:30+00:00"
+ },
+ "running": {
+  "value": [
+   "p"
+  ]
+ }
+}
