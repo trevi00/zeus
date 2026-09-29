@@ -2,8 +2,7 @@
  "family": "research.hook_effects",
  "description": "S4 moved-ahead hook effects of the review decision unit (lead decision Option A): M7 Harness.record_incident (receipt replay, refusals, recurrence threshold creating the hook with its outbox notification and event, re-requiring an active hook, the conductor task.assign path) and Harness.review (lead then conductor, rejection, duplicate/stale/invalid refusals), each inside a caller-owned transaction on MemoryStore with scripted clocks and ids",
  "reference_driver": "drivers/reference/s4_hook_effects.py",
- "target_driver": null,
- "target_status": "pending: HookLifecycle not yet moved",
+ "target_driver": "drivers/target/s4_hook_effects.py",
  "golden": "goldens/reference/research.hook_effects.json",
  "slice": "S4"
 }

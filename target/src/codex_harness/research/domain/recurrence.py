@@ -4,14 +4,18 @@ Layer: domain
 Context: research
 Owns: hook_apply (M7 `domain/model.py`, moved ahead in S4 unchanged: the host NativeHooks candidate validates
     through it; other contexts receive it injected, §2.4)
+    Incident (M7 `domain/model.py`, moved ahead in S4 unchanged: the incident owner operation needs it)
 Does not own: the hook lifecycle (proposal, review, canary, activation: research application, S8)
-Entry points: hook_apply
+Entry points: hook_apply, Incident
 Contracts: INV-RECURRENCE-001
 """
 
 from __future__ import annotations
 
+from dataclasses import dataclass
+
 from codex_harness.kernel.errors import require
+from codex_harness.kernel.ids import digest
 
 
 def hook_apply(spec: dict, argv: list[str], platform: str) -> list[str]:
@@ -32,3 +36,23 @@ def hook_apply(spec: dict, argv: list[str], platform: str) -> list[str]:
     if argv and platform == spec["platform"] and argv[0] == spec["match"]:
         return [spec["replacement"], *argv[1:]]
     return list(argv)
+
+
+@dataclass(frozen=True)
+class Incident:
+    occurrence_id: str
+    root_cause: str
+    scope: str
+    evidence_refs: tuple[str, ...]
+
+    def __post_init__(self) -> None:
+        require(all(isinstance(v, str) and v.strip() for v in
+                    (self.occurrence_id, self.root_cause, self.scope)), "Missing incident identity")
+        require(bool(self.evidence_refs) and all(isinstance(v, str) and v.strip()
+                                               for v in self.evidence_refs),
+                "Incident requires evidence")
+
+    @property
+    def fingerprint(self) -> str:
+        # @invariant INV-RECURRENCE-001: cause+scope, not fuzzy error text, defines a group.
+        return digest({"cause": self.root_cause, "scope": self.scope})
