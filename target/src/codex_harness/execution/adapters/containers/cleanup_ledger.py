@@ -26,7 +26,7 @@ import os
 import time
 from pathlib import Path
 
-from codex_harness.execution.adapters.containers.owned_container import OwnedContainer, docker_call
+from codex_harness.execution.adapters.containers import owned_container
 from codex_harness.execution.domain import container_spec as spec
 from codex_harness.kernel.errors import IsolationError
 
@@ -185,9 +185,9 @@ def reconcile(run_directory, docker: str = "docker", *, runner) -> dict:
     if cleanup_debt(record) == "client_cleanup_unconfirmed":
         return {"reconciled": False, "run_id": record["run_id"], "container": record.get("container"),
                 "reason": "client_cleanup_unconfirmed"}
-    probe = OwnedContainer({"limits": spec.LIMITS, "image": record.get("image")}, docker, record["run_id"],
+    probe = owned_container.OwnedContainer({"limits": spec.LIMITS, "image": record.get("image")}, docker, record["run_id"],
                            record["role"], runner=runner)
-    listed = docker_call(runner, docker, ["ps", "-a", "--no-trunc", "--filter", "name=^/" + probe.name + "$",
+    listed = owned_container.docker_call(runner, docker, ["ps", "-a", "--no-trunc", "--filter", "name=^/" + probe.name + "$",
                                           "--format", "{{.ID}}"], timeout=spec.LIMITS["docker_command_seconds"])
     if listed.returncode != 0 or listed.stdout.split():
         return {"reconciled": False, "run_id": record["run_id"], "container": record.get("container"),
