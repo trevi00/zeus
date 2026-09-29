@@ -52,7 +52,7 @@ def test_every_scenario_has_a_reference_golden_and_a_pending_target():
     scenarios = [load(p) for p in sorted((COMPARE / "scenarios").glob("*.json"))]
     assert {s["family"] for s in scenarios} == {"cli.parser", "entries.safe_matrix", "static.source",
                                                 "effects.decision_unit", "effects.context_packet",
-                                                "guards.unpatched_transport"}
+                                                "guards.unpatched_transport", "effects.decision_unit.pg"}
     for s in scenarios:
         assert (COMPARE / s["reference_driver"]).is_file()
         assert (COMPARE / s["golden"]).is_file()
@@ -74,6 +74,7 @@ def test_reference_goldens_hold_the_f3_and_f2_expectations():
     assert decision["control_effect_in_unit"]["violations"] == ["effect_inside_unit"]
     packets = load(COMPARE / "goldens/reference/effects.context_packet.json")["packets"]
     assert packets and all(p["manifest_hash_recomputes"] and p["sha256_matches_ref"] for p in packets)
+    assert decision["a_failure_before_decision_review_lead"]["durable_authority_rows"] == []
     transport = load(COMPARE / "goldens/reference/guards.unpatched_transport.json")
     assert transport.pop("markers_written") == []
     assert set(transport.values()) == {"ProviderSpawnRefused"}
@@ -95,3 +96,33 @@ def test_loaded_target_modules_come_from_the_target_tree():
 
     assert Path(codex_harness.__file__).resolve().is_relative_to(Path(__file__).resolve().parents[1] / "src")
     origin.assert_tree_origins(Path(__file__).resolve().parents[1] / "src")
+
+
+DISCRIMINATOR_FIELDS = ("verdict", "violations", "effect_protocol", "effects", "fences", "decision_status",
+                        "outbox_types", "durable_authority_writes", "durable_rows_changed")
+
+
+def test_postgresql_unit_matches_memory_and_reads_back_durable_rows():
+    """Codex S0 F3: the same bounded unit on a labelled disposable PostgreSQL (M7 PostgresStore)."""
+    memory = load(COMPARE / "goldens/reference/effects.decision_unit.json")
+    pg = load(COMPARE / "goldens/reference/effects.decision_unit.pg.json")
+    assert set(pg) == set(memory)
+    for case in ("success_review_lead", "success_review_conductor",
+                 "a_failure_before_decision_review_lead", "a_failure_before_decision_review_conductor",
+                 "b_stale_lease", "c_same_key_replay", "control_fence_ignored",
+                 "control_fabricated_completion", "control_effect_in_unit"):
+        assert {k: pg[case][k] for k in DISCRIMINATOR_FIELDS} == \
+            {k: memory[case][k] for k in DISCRIMINATOR_FIELDS}, case
+    assert pg["success_review_lead"]["durable_authority_rows"] == ["releases"]
+    assert ["decisions_pending", "succeeded"] in pg["success_review_lead"]["durable_rows_changed"]
+    for case in ("a_failure_before_decision_review_lead", "a_failure_before_decision_review_conductor"):
+        assert pg[case]["verdict"] == "atomic_rollback" and pg[case]["durable_authority_rows"] == []
+        assert ["decisions_pending", "succeeded"] not in pg[case]["durable_rows_changed"]
+    assert pg["b_stale_lease"]["fences"] == [False, False]
+    assert pg["b_stale_lease"]["durable_authority_rows"] == []
+    assert len(pg["c_same_key_replay"]["effects"]) == 1
+    # The nested probe waits on the advisory lock its own unit holds; the bounded (fail-fast) lock
+    # budget ends it with LockNotAvailable, the recorder flags the nested BEGIN, nothing commits.
+    split = pg["control_split_commit"]
+    assert split["violations"] == ["nested_begin"] and split["durable_authority_rows"] == []
+    assert {e.get("error") for e in split["trace"] if e["kind"] == "ROLLBACK"} == {"LockNotAvailable"}

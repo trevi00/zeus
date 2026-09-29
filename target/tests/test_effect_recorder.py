@@ -17,7 +17,7 @@ class ToyStore:
         self.data = {}
 
     @contextmanager
-    def transaction(self):
+    def transaction(self, fail_fast=False):  # same keyword as M7 MemoryStore/PostgresStore
         draft = deepcopy(self.data)
 
         class Tx:
@@ -154,3 +154,21 @@ def test_trace_holds_digests_not_bodies():
         tx.put("releases", "r", {"status": "candidate", "secret_shaped": "payload-bytes"})
     text = repr(store.recorder.trace())
     assert "payload-bytes" not in text and "digest" in text
+
+
+def test_nested_probe_is_opened_with_the_bounded_lock_budget():
+    seen = []
+
+    class BudgetStore(ToyStore):
+        @contextmanager
+        def transaction(self, fail_fast=False):
+            seen.append(fail_fast)
+            with super().transaction(fail_fast) as tx:
+                yield tx
+
+    store = rec.RecordingStore(BudgetStore())
+    with store.transaction():
+        with store.transaction():
+            pass
+    assert seen == [False, True]
+    assert [v["kind"] for v in store.recorder.violations] == ["nested_begin"]

@@ -1,7 +1,10 @@
 """Reference driver: the M7 decision/release/outbox atomic unit (REBUILD-DESIGN-v2 §2.9, F2).
 
-Scenario family `effects.decision_unit`. Runs M7 `Executor.decide_one` -> `_commit_decision` on a
-recorded `MemoryStore` with a fixture `_run` (no provider), a fake clock and deterministic ids.
+Scenario family `effects.decision_unit` (M7 `MemoryStore`) and, when `ZEUS_REBUILD_PG_DSN` names a
+labelled disposable PostgreSQL, `effects.decision_unit.pg` (M7 `PostgresStore`, one fresh schema per
+case, migrated by M7's own migrator; the actual durable `documents` rows are read back per case).
+Runs M7 `Executor.decide_one` -> `_commit_decision` with a fixture `_run` (no provider), a fake clock
+and deterministic ids.
 Discriminators (a)-(d) and the recorder's negative controls:
   a  failure after release propose/review, before decisions_pending/outbox -> atomic rollback
   b  stale lease -> fence fails, nothing of the unit commits
@@ -11,6 +14,7 @@ Discriminators (a)-(d) and the recorder's negative controls:
   completion, effect inside a unit -> each must be flagged by the recorder.
 """
 
+import os
 import sys
 import tempfile
 from pathlib import Path
@@ -29,7 +33,7 @@ import recorder as rec  # noqa: E402
 
 from codex_harness.adapters.artifacts import FileArtifacts  # noqa: E402
 from codex_harness.adapters.executor import Executor  # noqa: E402
-from codex_harness.adapters.store import MemoryStore  # noqa: E402
+from codex_harness.adapters.store import MemoryStore, PostgresStore  # noqa: E402
 from codex_harness.application import (  # noqa: E402,F401
     execution_recovery,
     execution_time,
@@ -43,6 +47,42 @@ CLOCK, IDS = determinism.FakeClock(), determinism.FakeIds()
 determinism.install(CLOCK, IDS, constants={
     "codex_harness.application.execution_time": {"DOMAIN": "00000000-0000-4000-8000-00000000d0d0"}})
 AUTHORITY = {"releases", "release_queue", "hooks", "improvement_loops", "incidents"}
+PG_DSN = os.environ.get("ZEUS_REBUILD_PG_DSN")
+SCENARIO = "effects.decision_unit.pg" if PG_DSN else "effects.decision_unit"
+
+
+class Backend:
+    """MemoryStore, or a fresh schema on the disposable PostgreSQL with its durable rows readable."""
+
+    def __init__(self, name: str):
+        self.schema = None
+        if not PG_DSN:
+            self.store = MemoryStore()
+            return
+        import psycopg
+        from psycopg.conninfo import make_conninfo
+
+        self.psycopg = psycopg
+        self.schema = "s0_" + name
+        with psycopg.connect(PG_DSN, autocommit=True) as conn:
+            conn.execute(f'DROP SCHEMA IF EXISTS "{self.schema}" CASCADE')
+            conn.execute(f'CREATE SCHEMA "{self.schema}"')
+        self.dsn = make_conninfo(PG_DSN, options=f"-c search_path={self.schema},public")
+        self.store = PostgresStore(self.dsn)
+        self.store.migrate()
+
+    def rows(self) -> list[tuple[str, str, str]]:
+        """(bucket, key, status) of every durable document row, read from the database itself."""
+        if self.schema is None:
+            return sorted((b, k, (v or {}).get("status") or "") for (b, k), v in self.store.data.items())
+        with self.psycopg.connect(self.dsn) as conn:
+            return sorted((b, k, s or "") for b, k, s in conn.execute(
+                "SELECT bucket, id, body->>'status' FROM documents").fetchall())
+
+    def drop(self) -> None:
+        if self.schema is not None:
+            with self.psycopg.connect(PG_DSN, autocommit=True) as conn:
+                conn.execute(f'DROP SCHEMA "{self.schema}" CASCADE')
 
 
 def completion(e):
@@ -64,8 +104,9 @@ def case(root: Path, name: str, phase: str, actor: str, *, failure: str = "none"
     clock = CLOCK
     tmp = root / name
     tmp.mkdir(parents=True)
-    masker = masks.Masker("effects.decision_unit")
-    store = rec.RecordingStore(MemoryStore(), rec.Recorder(masker.apply))
+    masker = masks.Masker(SCENARIO)
+    backend = Backend(name)
+    store = rec.RecordingStore(backend.store, rec.Recorder(masker.apply))
     recorder = store.recorder
     service = Harness(store, organization())
     git = SimpleNamespace(repository=tmp, inspect=lambda *a: {},
@@ -86,6 +127,7 @@ def case(root: Path, name: str, phase: str, actor: str, *, failure: str = "none"
         tx.put("decisions_pending", "decision", {"id": "decision", "actor": actor, "phase": phase,
                "input": data, "message": message, "status": "pending", "attempt": 0})
     setup_events = len(recorder.events)
+    rows_before = set(backend.rows())
     clock.advance(1)
 
     def run(*args, **kwargs):
@@ -143,7 +185,12 @@ def case(root: Path, name: str, phase: str, actor: str, *, failure: str = "none"
     with store.transaction() as tx:
         final = tx.get("decisions_pending", "decision")
         outbox_types = sorted(r["message"]["type"] for r in tx.scan("outbox"))
+    rows_after = set(backend.rows())
+    backend.drop()
+    changed = sorted({(b, st) for b, _, st in rows_after - rows_before})
     return {
+        "durable_rows_changed": [list(r) for r in changed],
+        "durable_authority_rows": sorted({b for b, _ in changed if b in AUTHORITY}),
         "verdict": recorder.classify(AUTHORITY, completion, setup_events),
         "violations": sorted({v["kind"] for v in recorder.violations}),
         "effect_protocol": sorted(set(recorder.effect_protocol(intent, completion, setup_events))),
@@ -180,7 +227,7 @@ def main() -> None:
     }
     with tempfile.TemporaryDirectory(prefix="zeus-s0-decision-") as raw:
         out = {name: case(Path(raw), name, **kw) for name, kw in cases.items()}
-    driver.finish("reference", "effects.decision_unit", out)
+    driver.finish("reference", SCENARIO, out)
 
 
 if __name__ == "__main__":

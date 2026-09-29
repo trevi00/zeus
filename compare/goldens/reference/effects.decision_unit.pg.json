@@ -1130,15 +1130,8 @@
  },
  "control_split_commit": {
   "decision_status": "retry",
-  "durable_authority_rows": [
-   "releases"
-  ],
-  "durable_authority_writes": [
-   [
-    "releases",
-    "candidate"
-   ]
-  ],
+  "durable_authority_rows": [],
+  "durable_authority_writes": [],
   "durable_rows_changed": [
    [
     "decisions_pending",
@@ -1159,10 +1152,6 @@
    [
     "outbox",
     ""
-   ],
-   [
-    "releases",
-    "candidate"
    ]
   ],
   "effect_protocol": [],
@@ -1233,19 +1222,14 @@
     "unit": "U4"
    },
    {
-    "bucket": "releases",
-    "kind": "write",
-    "status": "candidate",
-    "unit": "U4"
-   },
-   {
     "depth": 1,
-    "kind": "COMMIT",
+    "error": "LockNotAvailable",
+    "kind": "ROLLBACK",
     "unit": "U4"
    },
    {
     "depth": 0,
-    "error": "ContractError",
+    "error": "LockNotAvailable",
     "kind": "ROLLBACK",
     "unit": "U3"
    },
@@ -1306,13 +1290,12 @@
    "bad04941a9b821ddf7ccc16f426249c9a0b29b0a04269a009713aa69e0bfd019",
    "a2f24016e4203ff81a32c821a9b0e24ae021edad75a9d95d7f316ba0ff8b04f1",
    "b3e8e55abc1283e7dcfe794da74a17b687b9aeddef77b9779aa5c4dc2b7030e4",
-   "2e72cdb9e7e74a749cc2b93feb08a58284d8922fb967a265d4aca2e9e881b98a",
-   "3aa4b9cdc9962b8a90e0a817f2920df57c64ab34b56dfd4e2a9c631aac4925f5",
-   "8a401a68bbd99dbeb90b2167b5924ad29363d44d43f3a48eba022f4b6248f53e",
-   "f2743420bc8d1a2dc4d8f5b9d8255dfb58f33994fba604063b042d67ea8495ce",
-   "8b94ddce9186182bf7e2dec16fc7a013407a891c497542923f463db0b41221dc"
+   "f942a6023db38a23024b81644dc59fa877e86c819fe33f21734bff2252adf447",
+   "1194b7c6b77e6ca20e5250c652c3856ee089bc02fa6d958038a22c144fac61b3",
+   "f9e347d080989f258e6240be006ae3a799e33a3d3a69da9be5b12947b0a6f298",
+   "9778d41a0910132466370efc6360975bdde10444dc1a2c71baff2453d4e1ebd5"
   ],
-  "verdict": "partial_commit",
+  "verdict": "atomic_rollback",
   "violations": [
    "nested_begin"
   ]

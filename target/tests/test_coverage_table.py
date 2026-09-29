@@ -72,7 +72,8 @@ def test_unmapped_rows_are_named(table):
 def test_decision_unit_row_is_recorder_confirmed(table):
     row = next(r for r in table["rows"]
                if r["key"] == "atomic_unit:codex_harness.adapters.executor:Executor._commit_decision#1")
-    assert row["evidence"] == ["compare:effects.decision_unit"]
+    assert row["evidence"] == ["compare:effects.decision_unit", "compare:effects.decision_unit.pg"]
+    assert "disposable PostgreSQL" in row["trace"]
     assert {"coordination", "review"} <= set(row["bucket_owners"])
 
 

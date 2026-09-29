@@ -99,8 +99,9 @@ declare `OWNED_BUCKETS` in its `ports.py`; the single-writer check is in `import
 `coverage/ledger-coverage.json` lists each M7 `transaction()` block that spans more than one owner
 context as an `atomic_unit:` row (static depth 1). The decision/release/outbox unit
 (CURRENT `codex_harness.adapters.executor:Executor._commit_decision`) is recorder-confirmed on the
-reference in `compare/goldens/reference/effects.decision_unit.json`; disposable-PostgreSQL
-confirmation runs in the integration job of its slice.
+reference on `MemoryStore` (`compare/goldens/reference/effects.decision_unit.json`) and on a labelled
+disposable PostgreSQL through M7 `PostgresStore` (`effects.decision_unit.pg.json`), with the durable
+rows read back from the database.
 
 ## Entry shims (design §3.5)
 

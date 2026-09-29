@@ -201,7 +201,7 @@ BUCKET_OWNERS = {  # §2.7: one owner for each multi-writer bucket
     "tickets": "intake", "health": "observation",
 }
 FLOW_OWNERS = ["coordination", "coordination", "coordination", "delivery", "observation"]
-FLOW_EVIDENCE = [["effects.decision_unit"], [], [], [], []]
+FLOW_EVIDENCE = [["effects.decision_unit", "effects.decision_unit.pg"], [], [], [], []]
 UNTRACED_SLICE = {"kernel": "S1", "storage": "S1", "host_os": "S1", "routing": "S2", "context": "S2",
                   "knowledge": "S2", "credentials": "S3", "execution": "S3/S4", "coordination": "S5/S6",
                   "delivery": "S7", "review": "S8", "research": "S8", "intake": "S8", "evidence": "S8",
@@ -387,11 +387,12 @@ def build(ledger: dict, static: dict) -> dict:
                              [f"one Store.transaction() opened by the owning use case in codex_harness."
                               f"{module_ctx}; owner operations take tx (§2.9)"],
                              basis="design §2.9 rule 2",
-                             evidence=(["compare:effects.decision_unit"] if confirmed else
+                             evidence=(["compare:effects.decision_unit", "compare:effects.decision_unit.pg"]
+                                       if confirmed else
                                        [f"static:compare/goldens/reference/static.source.json#{u['key']}",
                                         "pending: recorder confirmation in the owning slice"]),
-                             trace=("recorder-confirmed on MemoryStore; disposable PostgreSQL pending"
-                                    if confirmed else "static depth 1; callee writes untraced"),
+                             trace=("recorder-confirmed on MemoryStore and on a disposable PostgreSQL "
+                                    "(M7 PostgresStore)" if confirmed else "static depth 1; callee writes untraced"),
                              bucket_owners=contexts, fences=u["fence_calls"],
                              tx_passing_calls=u["tx_passing_calls"]))
     rows += unit_rows

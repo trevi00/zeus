@@ -156,13 +156,21 @@ class RecordingTransaction:
 
 
 class RecordingStore:
-    def __init__(self, inner, recorder: Recorder | None = None):
+    """`bounded_nested=True` opens a nested BEGIN with `fail_fast=True`: on M7 PostgreSQL a nested
+    unit waits on the advisory lock its own outer unit holds, so the probe needs the short
+    (500 ms) lock budget instead of the normal one. The nested BEGIN is still a recorded violation."""
+
+    def __init__(self, inner, recorder: Recorder | None = None, bounded_nested: bool = True):
         self._inner = inner
         self.recorder = recorder or Recorder()
+        self.bounded_nested = bounded_nested
 
     @contextmanager
     def transaction(self, *args, **kwargs):
+        nested = self.recorder.depth > 0
         unit = self.recorder.begin()
+        if nested and self.bounded_nested:
+            kwargs["fail_fast"] = True
         try:
             with self._inner.transaction(*args, **kwargs) as tx:
                 yield RecordingTransaction(tx, self.recorder)
