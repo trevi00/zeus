@@ -1,0 +1,311 @@
+{
+ "blank_independent": {
+  "message": "Independent occurrence must identify a task",
+  "refused": "ContractError"
+ },
+ "conductor_assign": {
+  "value": {
+   "duplicate_occurrence": false,
+   "hook_created": true,
+   "hook_id": "hook-d0664ce0fc75eba13f0ecc69",
+   "occurrences": 2
+  }
+ },
+ "conductor_first": {
+  "value": {
+   "duplicate_occurrence": false,
+   "hook_created": false,
+   "hook_id": null,
+   "occurrences": 1
+  }
+ },
+ "extra_key": {
+  "message": "Invalid incident fields",
+  "refused": "ContractError"
+ },
+ "first": {
+  "value": {
+   "duplicate_occurrence": false,
+   "hook_created": false,
+   "hook_id": null,
+   "occurrences": 1
+  }
+ },
+ "fourth_rerequires_active": {
+  "value": {
+   "duplicate_occurrence": false,
+   "hook_created": true,
+   "hook_id": "hook-2834e7fe35cb2ccd79363006",
+   "occurrences": 4
+  }
+ },
+ "occurrence_reused_other_scope": {
+  "message": "Occurrence ID reused with different content",
+  "refused": "ContractError"
+ },
+ "outbox": [
+  [
+   "hook.required",
+   "lead:improvement",
+   "conductor",
+   "implement_hook"
+  ],
+  [
+   "hook.required",
+   "lead:improvement",
+   "conductor",
+   "implement_hook"
+  ],
+  [
+   "task.assign",
+   "conductor",
+   "lead:improvement",
+   "plan"
+  ]
+ ],
+ "records": [
+  [
+   "events",
+   "5eed0000-0000-4000-8000-000000000004",
+   "a18dcba1a4f0920c9fa2b93c9f9f956b9c4484b227d4bf93ed8187d5f1f10c8a"
+  ],
+  [
+   "events",
+   "5eed0000-0000-4000-8000-000000000008",
+   "a18dcba1a4f0920c9fa2b93c9f9f956b9c4484b227d4bf93ed8187d5f1f10c8a"
+  ],
+  [
+   "events",
+   "5eed0000-0000-4000-8000-00000000000d",
+   "f0041e29e726de64b3327bb09e20384545815cf8b36083af9061f36adffe4adb"
+  ],
+  [
+   "hooks",
+   "hook-2834e7fe35cb2ccd79363006",
+   "797fffcdefdf523b0dae1eb827c6f4b8e956d0ce456652e0f49851bf9087376a"
+  ],
+  [
+   "hooks",
+   "hook-d0664ce0fc75eba13f0ecc69",
+   "4fe69c1ce7d5b6534de36a2374cc267d50794096fc116e92edf2108da600ef9b"
+  ],
+  [
+   "hooks",
+   "hook-x",
+   "08fa75a725bab858a07cf0fb0dbd1964dc76856cae8ffe2cce0e82025f5374ff"
+  ],
+  [
+   "hooks",
+   "hook-y",
+   "7ad0c2bc292d167c0fdbfc585379164060a4ca555ba4acbc49ec2d6e6c251d28"
+  ],
+  [
+   "inbox",
+   "5eed0000-0000-4000-8000-000000000001",
+   "300503d5867c3d275c9480731d3b1db6f03819088a9db7fbb1aca42309770a25"
+  ],
+  [
+   "inbox",
+   "5eed0000-0000-4000-8000-000000000002",
+   "e15adddb1c606ea1f65fb1d3297fac2f6f5f1fdcf04c6a7a75cca0db8bdb069d"
+  ],
+  [
+   "inbox",
+   "5eed0000-0000-4000-8000-000000000005",
+   "0ba8e8537be4b19b0a8ca4fdfcc0a70498c1d828d51b451447aeed155ba45086"
+  ],
+  [
+   "inbox",
+   "5eed0000-0000-4000-8000-000000000006",
+   "e90afc7c05fb6d0e66a9eb8926b2ded4b19cce127fb1ac9a123f136c7c922103"
+  ],
+  [
+   "inbox",
+   "5eed0000-0000-4000-8000-000000000009",
+   "438e9089d4cd3ca845d2d9ce5ebaa29367d68461056163c75120df26387a0e66"
+  ],
+  [
+   "inbox",
+   "5eed0000-0000-4000-8000-00000000000a",
+   "ce5e44ca3acef994603f8b797d15555517b68abfdc6963d1d224940595babed8"
+  ],
+  [
+   "incidents",
+   "c1",
+   "1e15b3f193f1bbc54c0d39c5a44dfaaebcd4bf25960a8a2ffa4a43cb980ea78f"
+  ],
+  [
+   "incidents",
+   "c2",
+   "11a5f5a1ba1b8d976971e3e8ad87f228f9a5e19204ba429b56ee8d56f7c2852c"
+  ],
+  [
+   "incidents",
+   "o1",
+   "3af8c6e4705e90ef478e931e5d54504c49728f236c6be36e040989652c903a31"
+  ],
+  [
+   "incidents",
+   "o2",
+   "368bf212e9f459c0608e01c02b9060fde6a6e00b4d3a6e734d207fa75e1fddd3"
+  ],
+  [
+   "incidents",
+   "o3",
+   "514ca65d512132f10ca79d7dd5b7ac8e6f98bbf243ab0b45d96be6183d2d8fe6"
+  ],
+  [
+   "incidents",
+   "o4",
+   "34711e46d870bd85257ec51e2a78bb1b696f488ea6bb25a5510993ec7a4359e6"
+  ],
+  [
+   "outbox",
+   "5eed0000-0000-4000-8000-000000000003",
+   "0bc4d4fca77d20f7dd53ee85ca141c2bedbb32801e81731dd8fe49f26ff36e6f"
+  ],
+  [
+   "outbox",
+   "5eed0000-0000-4000-8000-000000000007",
+   "8d786dc104df17a3f0b4c80eebeb7d96fdeecdc508148d998034668668a83cba"
+  ],
+  [
+   "outbox",
+   "5eed0000-0000-4000-8000-00000000000c",
+   "f0d1f347c8ab0439e9f85c4206a769e2409e388d88e48e1497589f970703a64a"
+  ]
+ ],
+ "replay": {
+  "value": {
+   "duplicate_occurrence": false,
+   "hook_created": false,
+   "hook_id": null,
+   "occurrences": 1
+  }
+ },
+ "reused_id_other_content": {
+  "message": "Message ID reused with different content",
+  "refused": "ContractError"
+ },
+ "reused_id_other_occurrence": {
+  "message": "Message ID reused with different occurrence authority",
+  "refused": "ContractError"
+ },
+ "review_conductor": {
+  "value": {
+   "author": "worker:implementation",
+   "canary": null,
+   "id": "hook-x",
+   "reviews": [
+    {
+     "actor": "lead:improvement",
+     "evidence_ref": "ev-1",
+     "passed": true,
+     "revision": "rev-1",
+     "role": "lead",
+     "spec_hash": "d8954039f5400e6446be22f214ca42837da7f194dc6262234c659c7cdd6ff891"
+    },
+    {
+     "actor": "conductor",
+     "evidence_ref": "ev-2",
+     "passed": true,
+     "revision": "rev-1",
+     "role": "conductor",
+     "spec_hash": "d8954039f5400e6446be22f214ca42837da7f194dc6262234c659c7cdd6ff891"
+    }
+   ],
+   "revision": "rev-1",
+   "spec": {
+    "kind": "x"
+   },
+   "status": "reviewed",
+   "version": 2
+  }
+ },
+ "review_conductor_first": {
+  "message": "Lead review must precede conductor review",
+  "refused": "ContractError"
+ },
+ "review_lead": {
+  "value": {
+   "author": "worker:implementation",
+   "canary": null,
+   "id": "hook-x",
+   "reviews": [
+    {
+     "actor": "lead:improvement",
+     "evidence_ref": "ev-1",
+     "passed": true,
+     "revision": "rev-1",
+     "role": "lead",
+     "spec_hash": "d8954039f5400e6446be22f214ca42837da7f194dc6262234c659c7cdd6ff891"
+    }
+   ],
+   "revision": "rev-1",
+   "spec": {
+    "kind": "x"
+   },
+   "status": "candidate",
+   "version": 2
+  }
+ },
+ "review_lead_again": {
+  "message": "Duplicate review",
+  "refused": "ContractError"
+ },
+ "review_non_bool": {
+  "message": "Review verdict must be boolean",
+  "refused": "ContractError"
+ },
+ "review_rejected": {
+  "value": {
+   "author": "worker:implementation",
+   "canary": null,
+   "id": "hook-y",
+   "reviews": [
+    {
+     "actor": "lead:improvement",
+     "evidence_ref": "ev-3",
+     "passed": false,
+     "revision": "rev-1",
+     "role": "lead",
+     "spec_hash": "d8954039f5400e6446be22f214ca42837da7f194dc6262234c659c7cdd6ff891"
+    }
+   ],
+   "revision": "rev-1",
+   "spec": {
+    "kind": "x"
+   },
+   "status": "rejected",
+   "version": 2
+  }
+ },
+ "review_stale_revision": {
+  "message": "Stale review",
+  "refused": "ContractError"
+ },
+ "review_worker": {
+  "message": "Invalid reviewer/evidence",
+  "refused": "ContractError"
+ },
+ "review_wrong_lead": {
+  "message": "Only the author's lead may review",
+  "refused": "ContractError"
+ },
+ "second_creates_hook": {
+  "value": {
+   "duplicate_occurrence": false,
+   "hook_created": true,
+   "hook_id": "hook-2834e7fe35cb2ccd79363006",
+   "occurrences": 2
+  }
+ },
+ "third_not_recreated": {
+  "value": {
+   "duplicate_occurrence": false,
+   "hook_created": false,
+   "hook_id": "hook-2834e7fe35cb2ccd79363006",
+   "occurrences": 3
+  }
+ }
+}
