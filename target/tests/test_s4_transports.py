@@ -206,3 +206,47 @@ def test_the_isolated_worker_passes_the_hook_builder_to_the_codex_role_container
     worker.codex_runtime(profile="codex-role-ro", native_hooks=builder)
     assert seen["native_hooks"] is builder and seen["broker"] == ("broker", "/store")
     assert seen["host"] == "host" and seen["credentials"] == "boundary"
+
+
+# ---- the host hook configuration equals the SOURCE rows of the hooks.native_container golden --------------
+GOLDEN = Path(__file__).resolve().parents[2] / "compare" / "goldens" / "reference" / "hooks.native_container.json"
+sys.path.insert(0, str(GOLDEN.parents[2] / "drivers" / "common"))
+from s1_common import outcome, relative  # noqa: E402
+
+
+def test_host_hook_configuration_equals_the_reference_rows(tmp_path):
+    """The golden is reference-only as a family (its isolation-refusal rows are the declared §4 change);
+    its three host-configuration rows are compared here with the same inputs and the same root masks."""
+    import hashlib
+
+    golden = json.loads(GOLDEN.read_text(encoding="utf-8"))
+    script = "import sys, json\njson.load(sys.stdin)\nprint('{}')\n"
+    spec = {"kind": "native_hook", "event": "PreToolUse", "matcher": "shell", "script_path": "harness_hooks/h.py",
+            "script_sha256": hashlib.sha256(script.encode()).hexdigest()}
+    active_rows = [
+        {"id": "h1", "status": "active", "revision": "r" * 40, "spec": spec},
+        {"id": "h2", "status": "active", "revision": "r" * 40, "spec": {**spec, "event": "Stop", "matcher": "*"}},
+        {"id": "h3", "status": "proposed", "revision": "r" * 40, "spec": spec},
+        {"id": "h4", "status": "active", "revision": "r" * 40, "spec": {**spec, "kind": "prompt_rule"}},
+    ]
+    base = tmp_path.resolve()
+
+    class Artifacts:
+        root = base
+
+        def put(self, text, source):
+            ref = "sha256:" + hashlib.sha256(text.encode()).hexdigest()
+            (base / (ref[7:] + ".txt")).write_text(text, encoding="utf-8")
+            return {"ref": ref}
+
+    def configuration(rows, scripts):
+        show = lambda spec_text, strip=True: scripts[spec_text.split(":", 1)[1]]  # noqa: E731
+        return nh.HostHooks(SimpleNamespace(active_hooks=lambda: rows), show, Artifacts(), sys.executable).configuration()
+
+    roots = {"ROOT": str(base), "PYTHON": sys.executable}
+    assert relative(outcome(lambda: configuration(active_rows, {"harness_hooks/h.py": script})), roots) \
+        == golden["configuration"]
+    assert relative(outcome(lambda: configuration(active_rows[:1], {"harness_hooks/h.py": script + "#changed\n"})),
+                    roots) == golden["configuration_digest_mismatch"]
+    assert outcome(lambda: configuration(active_rows[2:], {"harness_hooks/h.py": script})) \
+        == golden["configuration_none_active"]

@@ -2,15 +2,16 @@
 
 Layer: adapters
 Context: execution
-Owns: `container_hooks` (the active native hooks as a per-run, read-only, digest-addressed script set and
+Owns: `HostHooks` (S4: the host App Server's hook configuration, M7 `NativeHooks.materialize/configuration`),
+    `container_hooks` (the active native hooks as a per-run, read-only, digest-addressed script set and
     the Codex hook configuration naming ONLY container paths), `ContainerHookSet`, `bound_state` (the
     trust state of the discovered entries of exactly those commands) and `verify_bound` (every bound
     entry is discovered, trusted and unchanged after binding, else an explicit refusal)
-Does not own: the hook lifecycle (proposal, review, canary, activation: service, S5/S8), the host hook
-    configuration and its canary (M7 `adapters/hooks.NativeHooks`, moving with RunTask in S4), the
-    decision to hand a hook set to a Codex run (RunTask, S4: it removes the M7
-    `codex_container_native_hooks_unsupported` refusal when it wires this)
-Entry points: container_hooks, ContainerHookSet, bound_state, verify_bound, HOOK_MOUNT, NATIVE_EVENTS,
+Does not own: the hook lifecycle (proposal, review, canary, activation: service, S5/S8; M7
+    `NativeHooks.candidate/canary` validate through the research-domain `hook_apply` and propose through the
+    lifecycle, so they move with it), the decision to hand a hook set to a Codex run
+    (execution.adapters.transports, S4: it replaced the M7 `codex_container_native_hooks_unsupported` refusal)
+Entry points: HostHooks, container_hooks, ContainerHookSet, bound_state, verify_bound, HOOK_MOUNT, NATIVE_EVENTS,
     HOOK_TIMEOUT_SECONDS
 Contracts: INV-RECURRENCE-001, INV-ROLE-CONTAINER-001
 
@@ -29,12 +30,14 @@ path and no host interpreter appears, and nothing here runs a hook. Timeout: the
 from __future__ import annotations
 
 import hashlib
+import os
 import shlex
+import subprocess
 from dataclasses import dataclass
 from pathlib import Path
 
 from codex_harness.execution.domain.container_spec import TRUSTED_PYTHON
-from codex_harness.kernel.errors import IsolationError
+from codex_harness.kernel.errors import IsolationError, require
 
 HOOK_MOUNT = "/zeus-hooks"
 HOOK_TIMEOUT_SECONDS = 30
@@ -121,3 +124,35 @@ def verify_bound(rows, hook_set: ContainerHookSet, state: dict) -> dict:
     if set(entries) != set(state):
         raise IsolationError("codex_native_hook_unbound", "unbound entries of this set were discovered")
     return statuses
+
+
+class HostHooks:
+    """The host App Server's native-hook configuration (M7 `adapters/hooks.NativeHooks.materialize` and
+    `.configuration`, moved unchanged; used only WITHOUT isolation, execution.adapters.transports).
+
+    `hooks.active_hooks()` is the hook lifecycle owner's read; `show(spec, strip=True)` is `git show` of
+    `revision:path` (M7 `git._git("show", ...)`); `artifacts` is the content-addressed store the script is
+    materialized into; `interpreter` is the host interpreter the command names (M7 `sys.executable`)."""
+
+    def __init__(self, hooks, show, artifacts, interpreter: str):
+        self.hooks, self.show, self.artifacts, self.interpreter = hooks, show, artifacts, interpreter
+
+    def materialize(self, hook: dict) -> Path:
+        spec = hook["spec"]
+        script = self.show(hook["revision"] + ":" + spec["script_path"], strip=False)
+        require(hashlib.sha256(script.encode()).hexdigest() == spec["script_sha256"], "Reviewed script changed")
+        receipt = self.artifacts.put(script, "git:" + hook["revision"] + ":" + spec["script_path"])
+        return self.artifacts.root / (receipt["ref"][7:] + ".txt")
+
+    def configuration(self) -> dict:
+        output = {}
+        for hook in self.hooks.active_hooks():
+            if hook["status"] != "active" or hook["spec"].get("kind") != "native_hook":
+                continue
+            script = self.materialize(hook)
+            argv = [self.interpreter, str(script)]
+            command = subprocess.list2cmdline(argv) if os.name == "nt" else shlex.join(argv)
+            spec = hook["spec"]
+            output.setdefault(spec["event"], []).append({"matcher": spec["matcher"],
+                                                       "hooks": [{"type": "command", "command": command, "timeout": 30}]})
+        return output

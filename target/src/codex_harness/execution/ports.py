@@ -18,7 +18,7 @@ from typing import Protocol
 
 from codex_harness.storage.ports import Transaction
 
-OWNED_BUCKETS = ("invocation_reservations", "worker_sessions")
+OWNED_BUCKETS = ("invocation_reservations", "worker_sessions", "hook_cases")
 
 
 class TaskLedger(Protocol):
