@@ -1,0 +1,222 @@
+{
+ "closed_is_superseded": true,
+ "records": [
+  [
+   "releases",
+   "1a3d8c65dd5d51dd626dfe8ef0304dfa54056194d80d90c5918ecbd6723b47bb",
+   "766a2f0b7abd822a80fce4e3f3fb969b19b2facdb6d7fba951a065d88eb47bb8"
+  ],
+  [
+   "releases",
+   "b11f00a48e723fcf153d94c50a590d8b47d63bd2e1964184636b400d9d063d87",
+   "d9d6e34e127f0291e2cfe01af80b3c7402095b501be4ed22b0b2fc250f711218"
+  ],
+  [
+   "releases",
+   "bb809d2c3ca44e6d6ffbfb1a49b93d4b67c38b98c6ac8fdd62e30bc482fff13e",
+   "07b8d9d062e94bc5d91109ec97df7e731f7967959cc21c09c5d79c8989a448eb"
+  ],
+  [
+   "ticket_revisions",
+   "tk1:2",
+   "8394092f799c883cbc02b6ab17331944fc43dc433e54c74241b62906971f1790"
+  ],
+  [
+   "tickets",
+   "tk1",
+   "5c4ffc0d62bd5f49bae93dc41053b00173af643cdae980cd6818b0e9b9c17895"
+  ],
+  [
+   "tickets",
+   "tk2",
+   "94b7affc99745cd808ba37074a218991f6a44fb50f92904f18a9f9d06b474879"
+  ]
+ ],
+ "releases": {
+  "conductor_accept": {
+   "value": {
+    "checks": {},
+    "created_at": "2026-01-01T00:00:05+00:00",
+    "id": "1a3d8c65dd5d51dd626dfe8ef0304dfa54056194d80d90c5918ecbd6723b47bb",
+    "policy_hash": "4219f540a601a59482f464c62fb326999a5f097259c21ca9865b8c64327f9e27",
+    "reviews": [
+     {
+      "accepted": true,
+      "actor": "lead:improvement",
+      "evidence": "e1",
+      "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+     },
+     {
+      "accepted": true,
+      "actor": "conductor",
+      "evidence": "e2",
+      "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+     }
+    ],
+    "status": "reviewed"
+   }
+  },
+  "conductor_before_lead": {
+   "message": "Lead review required first",
+   "refused": "ContractError"
+  },
+  "lead_accept": {
+   "value": {
+    "checks": {},
+    "created_at": "2026-01-01T00:00:05+00:00",
+    "id": "1a3d8c65dd5d51dd626dfe8ef0304dfa54056194d80d90c5918ecbd6723b47bb",
+    "policy_hash": "4219f540a601a59482f464c62fb326999a5f097259c21ca9865b8c64327f9e27",
+    "reviews": [
+     {
+      "accepted": true,
+      "actor": "lead:improvement",
+      "evidence": "e1",
+      "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+     }
+    ],
+    "status": "candidate"
+   }
+  },
+  "lead_duplicate_conflict": {
+   "message": "Conflicting duplicate review",
+   "refused": "ContractError"
+  },
+  "lead_duplicate_same": {
+   "value": {
+    "checks": {},
+    "created_at": "2026-01-01T00:00:05+00:00",
+    "id": "1a3d8c65dd5d51dd626dfe8ef0304dfa54056194d80d90c5918ecbd6723b47bb",
+    "policy_hash": "4219f540a601a59482f464c62fb326999a5f097259c21ca9865b8c64327f9e27",
+    "reviews": [
+     {
+      "accepted": true,
+      "actor": "lead:improvement",
+      "evidence": "e1",
+      "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+     }
+    ],
+    "status": "candidate"
+   }
+  },
+  "lead_reject": {
+   "value": {
+    "checks": {},
+    "created_at": "2026-01-01T00:00:05+00:00",
+    "id": "b11f00a48e723fcf153d94c50a590d8b47d63bd2e1964184636b400d9d063d87",
+    "policy_hash": "4219f540a601a59482f464c62fb326999a5f097259c21ca9865b8c64327f9e27",
+    "reviews": [
+     {
+      "accepted": false,
+      "actor": "lead:improvement",
+      "evidence": "e3",
+      "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+     }
+    ],
+    "status": "rejected"
+   }
+  },
+  "propose": {
+   "value": {
+    "checks": {},
+    "created_at": "2026-01-01T00:00:05+00:00",
+    "id": "1a3d8c65dd5d51dd626dfe8ef0304dfa54056194d80d90c5918ecbd6723b47bb",
+    "policy_hash": "4219f540a601a59482f464c62fb326999a5f097259c21ca9865b8c64327f9e27",
+    "reviews": [],
+    "status": "candidate"
+   }
+  },
+  "propose_again": {
+   "value": {
+    "checks": {},
+    "created_at": "2026-01-01T00:00:05+00:00",
+    "id": "1a3d8c65dd5d51dd626dfe8ef0304dfa54056194d80d90c5918ecbd6723b47bb",
+    "policy_hash": "4219f540a601a59482f464c62fb326999a5f097259c21ca9865b8c64327f9e27",
+    "reviews": [],
+    "status": "candidate"
+   }
+  },
+  "propose_in_unit": {
+   "reviews": [],
+   "status": "candidate"
+  },
+  "propose_incomplete": {
+   "message": "Candidate identity incomplete",
+   "refused": "ContractError"
+  },
+  "propose_no_checks": {
+   "message": "Incumbent checks required",
+   "refused": "ContractError"
+  },
+  "propose_non_worker_author": {
+   "message": "Actor lacks required role",
+   "refused": "ContractError"
+  },
+  "propose_ticket_superseded": {
+   "message": "Ticket changed; reassessment required",
+   "refused": "TicketSuperseded"
+  },
+  "review_after_reject": {
+   "message": "Release is not reviewable",
+   "refused": "ContractError"
+  },
+  "review_no_evidence": {
+   "message": "Review verdict and evidence required",
+   "refused": "ContractError"
+  },
+  "review_stale": {
+   "message": "Stale release review",
+   "refused": "ContractError"
+  },
+  "review_unauthorized": {
+   "message": "Unauthorized review",
+   "refused": "ContractError"
+  },
+  "review_unknown": {
+   "message": "Release not found",
+   "refused": "ContractError"
+  }
+ },
+ "ticket_binding": {
+  "changed": {
+   "message": "Ticket changed; reassessment required",
+   "refused": "TicketSuperseded"
+  },
+  "closed": {
+   "message": "Ticket closed; downstream work stopped",
+   "refused": "TicketClosed"
+  },
+  "conflicting": {
+   "message": "Conflicting ticket revisions",
+   "refused": "ContractError"
+  },
+  "invalid_shape": {
+   "message": "Invalid Zeus ticket binding",
+   "refused": "ContractError"
+  },
+  "lifecycle": {
+   "message": "Ticket lifecycle changed; old work cannot resume",
+   "refused": "TicketSuperseded"
+  },
+  "missing": {
+   "message": "Ticket missing",
+   "refused": "ContractError"
+  },
+  "nested_same": {
+   "value": {
+    "content_hash": "fd32f01954a82d8192431bf0c8d2fe22d8c10a9d62a1f4aad96228b065e6cc65",
+    "id": "tk1",
+    "revision": 2
+   }
+  },
+  "none": {
+   "value": null
+  },
+  "valid": {
+   "value": {
+    "content_hash": "fd32f01954a82d8192431bf0c8d2fe22d8c10a9d62a1f4aad96228b065e6cc65",
+    "id": "tk1",
+    "revision": 2
+   }
+  }
+ }
+}
