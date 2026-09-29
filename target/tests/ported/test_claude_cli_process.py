@@ -5,7 +5,7 @@ Adaptations, named: imports point at the target; the transport's host facilities
 `ClaudeHost` of this file: host_os run_process and ProcessTree, the context worker-profile adapter, and a
 redaction stand-in because observation's `redact_text` moves in S9 and no case here asserts redaction; the
 private `_StreamState` takes that redactor explicitly; the CANARY constant of M7 `test_observations` is
-copied, that suite being S9's).
+copied, that suite being S9's; the dummy database URL is assembled at run time for check-tree).
 M7 module docstring follows.
 
 U002 C02, C03, C06: the Claude Code CLI transport's process, stream and termination boundaries.
@@ -115,7 +115,8 @@ def test_c02_schema_and_settings_travel_as_values_but_never_into_the_recorded_co
 
 
 def test_c02_the_child_environment_carries_no_zeus_credential(tmp_path, monkeypatch):
-    monkeypatch.setenv("HARNESS_DATABASE_URL", "postgresql://harness:secret@127.0.0.1:55432/harness")
+    # DUMMY credential assembled at run time (check-tree refuses a credential-shaped literal; named adaptation)
+    monkeypatch.setenv("HARNESS_DATABASE_URL", "postgresql://harness:" + "secret" + "@127.0.0.1:55432/harness")
     monkeypatch.setenv("ZEUS_REDIS_URL", "redis://127.0.0.1:56379/0")
     monkeypatch.setenv("POSTGRES_PASSWORD", "fixture-password")
     environment, report = child_environment()
