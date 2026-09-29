@@ -1,0 +1,324 @@
+{
+ "call_budget": {
+  "counts_with_unreadable": {
+   "all_hosts": 4,
+   "note": "a slot that was reserved and never settled still counts",
+   "this_host": 4,
+   "unreadable": 1
+  },
+  "first": {
+   "status": "reserved"
+  },
+  "no_purpose": {
+   "message": "A reserved call slot names its purpose",
+   "refused": "ContractError"
+  },
+  "second": "reserved",
+  "settle": {
+   "outcome": "ok",
+   "status": "used"
+  },
+  "settle_unknown": {
+   "message": "Unknown call budget slot",
+   "refused": "ContractError"
+  },
+  "subscription_not_refused": "subscription",
+  "subscription_unreadable_refused": {
+   "message": "1 unreadable slot(s) in the call ledger at <BUDGET_ROOT>/budget; subscription accounting needs a readable ledger",
+   "refused": "ContractError"
+  },
+  "third_per_host_refused": {
+   "message": "2 real calls are already recorded for this host (ceiling 2); the ledger is at <BUDGET_ROOT>/budget",
+   "refused": "ContractError"
+  },
+  "total_below_per_host": {
+   "message": "The overall ceiling cannot be below the per-host one",
+   "refused": "ContractError"
+  },
+  "unknown_mode": {
+   "message": "Unknown call budget accounting mode",
+   "refused": "ContractError"
+  }
+ },
+ "invocation_ledger": {
+  "abandon": {
+   "attempt": 1,
+   "budget_seconds": 60,
+   "generation": 1,
+   "invocation": 1,
+   "outcome": null,
+   "owner": "q1",
+   "reason": "fixture",
+   "request": {},
+   "stage": null,
+   "status": "unsettled_unknown",
+   "usage": {
+    "last_tokens": null,
+    "source": "unknown",
+    "total_tokens": null
+   }
+  },
+  "abandon_again": {
+   "attempt": 1,
+   "budget_seconds": 60,
+   "generation": 1,
+   "invocation": 1,
+   "outcome": null,
+   "owner": "q1",
+   "reason": "fixture",
+   "request": {},
+   "stage": null,
+   "status": "unsettled_unknown",
+   "usage": {
+    "last_tokens": null,
+    "source": "unknown",
+    "total_tokens": null
+   }
+  },
+  "abandon_no_reason": {
+   "message": "Abandon reason required",
+   "refused": "ContractError"
+  },
+  "bad_budget": {
+   "message": "Reservation budget must be positive",
+   "refused": "ContractError"
+  },
+  "bad_lease": {
+   "message": "Reservation requires a typed execution lease",
+   "refused": "ContractError"
+  },
+  "reasons": [
+   [
+    "t1",
+    "settled",
+    null
+   ],
+   [
+    "t1",
+    "settled",
+    null
+   ],
+   [
+    "t1",
+    "unsettled_unknown",
+    "superseded_by_new_attempt"
+   ],
+   [
+    "t1",
+    "reserved",
+    null
+   ],
+   [
+    "t2",
+    "unsettled_unknown",
+    "execution_failed"
+   ],
+   [
+    "t3",
+    "reserved",
+    null
+   ]
+  ],
+  "reclaim": 1,
+  "reservation_key_is_tuple_digest": true,
+  "reserve": {
+   "attempt": 1,
+   "budget_seconds": 60,
+   "generation": 1,
+   "invocation": 1,
+   "outcome": null,
+   "owner": "o1",
+   "request": {
+    "model": "m"
+   },
+   "stage": "final",
+   "status": "reserved",
+   "usage": {
+    "last_tokens": null,
+    "source": "unknown",
+    "total_tokens": null
+   }
+  },
+  "reserve_new_attempt": {
+   "attempt": 2,
+   "budget_seconds": 60,
+   "generation": 2,
+   "invocation": 1,
+   "outcome": null,
+   "owner": "o2",
+   "request": {},
+   "stage": null,
+   "status": "reserved",
+   "usage": {
+    "last_tokens": null,
+    "source": "unknown",
+    "total_tokens": null
+   }
+  },
+  "reserve_same_attempt_open": {
+   "message": "This execution attempt already holds an open invocation reservation",
+   "refused": "ContractError"
+  },
+  "reserve_second_invocation": {
+   "attempt": 1,
+   "budget_seconds": 1,
+   "generation": 1,
+   "invocation": 2,
+   "outcome": null,
+   "owner": "o1",
+   "request": {},
+   "stage": null,
+   "status": "reserved",
+   "usage": {
+    "last_tokens": null,
+    "source": "unknown",
+    "total_tokens": null
+   }
+  },
+  "reserve_t2": {
+   "attempt": 1,
+   "budget_seconds": 60,
+   "generation": 1,
+   "invocation": 1,
+   "outcome": null,
+   "owner": "p1",
+   "request": {},
+   "stage": null,
+   "status": "reserved",
+   "usage": {
+    "last_tokens": null,
+    "source": "unknown",
+    "total_tokens": null
+   }
+  },
+  "reserve_t3_after_reclaim": {
+   "attempt": 1,
+   "budget_seconds": 60,
+   "generation": 1,
+   "invocation": 1,
+   "outcome": null,
+   "owner": "q1",
+   "request": {},
+   "stage": null,
+   "status": "reserved",
+   "usage": {
+    "last_tokens": null,
+    "source": "unknown",
+    "total_tokens": null
+   }
+  },
+  "reserve_t3_capacity": {
+   "message": "Invocation capacity is reserved by other executions",
+   "refused": "ContractError"
+  },
+  "settle": {
+   "attempt": 1,
+   "budget_seconds": 60,
+   "elapsed_seconds": 5.0,
+   "evidence_ref": "fixture:e",
+   "generation": 1,
+   "invocation": 1,
+   "outcome": "accepted",
+   "owner": "o1",
+   "request": {
+    "model": "m"
+   },
+   "stage": "final",
+   "status": "settled",
+   "usage": {
+    "last_tokens": 10,
+    "source": "thread/tokenUsage/updated",
+    "total_tokens": 10
+   },
+   "within_budget": true
+  },
+  "settle_bad_outcome": {
+   "message": "Unknown invocation outcome",
+   "refused": "ContractError"
+  },
+  "settle_conflicting": {
+   "message": "Conflicting settlement of one execution attempt",
+   "refused": "ContractError"
+  },
+  "settle_identical_again": {
+   "attempt": 1,
+   "budget_seconds": 60,
+   "elapsed_seconds": 5.0,
+   "evidence_ref": "fixture:e",
+   "generation": 1,
+   "invocation": 1,
+   "outcome": "accepted",
+   "owner": "o1",
+   "request": {
+    "model": "m"
+   },
+   "stage": "final",
+   "status": "settled",
+   "usage": {
+    "last_tokens": 10,
+    "source": "thread/tokenUsage/updated",
+    "total_tokens": 10
+   },
+   "within_budget": true
+  },
+  "settle_over_budget": {
+   "attempt": 1,
+   "budget_seconds": 1,
+   "elapsed_seconds": 5.0,
+   "evidence_ref": null,
+   "generation": 1,
+   "invocation": 2,
+   "outcome": "interrupted",
+   "owner": "o1",
+   "request": {},
+   "stage": null,
+   "status": "settled",
+   "usage": {
+    "last_tokens": null,
+    "source": "unknown",
+    "total_tokens": null
+   },
+   "within_budget": false
+  },
+  "settle_unknown_usage_with_count": {
+   "message": "Usage must name its source; unknown usage carries no count",
+   "refused": "ContractError"
+  },
+  "settle_unnamed_usage_source": {
+   "message": "Usage must name its source; unknown usage carries no count",
+   "refused": "ContractError"
+  },
+  "summary": {
+   "by_outcome": {
+    "accepted": 1,
+    "interrupted": 1
+   },
+   "by_status": {
+    "reserved": 1,
+    "settled": 2,
+    "unsettled_unknown": 3
+   },
+   "measured_total_tokens": 10,
+   "note": "unknown usage is excluded from the measured sum, never counted as zero",
+   "reservations": 6,
+   "usage_unknown": 5
+  },
+  "superseded_row": {
+   "attempt": 1,
+   "budget_seconds": 60,
+   "generation": 1,
+   "invocation": 3,
+   "outcome": null,
+   "owner": "o1",
+   "reason": "superseded_by_new_attempt",
+   "request": {},
+   "stage": null,
+   "status": "unsettled_unknown",
+   "usage": {
+    "last_tokens": null,
+    "source": "unknown",
+    "total_tokens": null
+   }
+  }
+ }
+}

@@ -1,0 +1,9 @@
+{
+ "family": "review.decisions",
+ "description": "S4 ReviewDecisions characterization: lead/conductor accept, reject -> rework, rework budget exhausted, stagnated tree, blocked / inspection_blocked never approve, a blocked verdict claiming acceptance is refused; fixture review verdicts, no provider",
+ "reference_driver": "drivers/reference/s4_review_decisions.py",
+ "target_driver": null,
+ "golden": "goldens/reference/review.decisions.json",
+ "slice": "S4",
+ "target_status": "pending: ReviewDecisions target not yet implemented"
+}

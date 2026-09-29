@@ -1,0 +1,9 @@
+{
+ "family": "execution.run_task",
+ "description": "S4 RunTask characterization: success, refusal before entry, provider failure, timeout, partial (handoff budget exhausted), lease lost / stale writer, context overflow; fixture transports for BOTH providers, fake clock, deterministic ids",
+ "reference_driver": "drivers/reference/s4_run_task.py",
+ "target_driver": null,
+ "golden": "goldens/reference/execution.run_task.json",
+ "slice": "S4",
+ "target_status": "pending: RunTask target not yet implemented"
+}

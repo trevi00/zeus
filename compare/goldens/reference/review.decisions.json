@@ -1,0 +1,229 @@
+{
+ "blocked": {
+  "decision": {
+   "attempt": 1,
+   "error": null,
+   "generation": 1,
+   "status": "blocked"
+  },
+  "improvement_loop": null,
+  "outbox": [
+   "execution.notice lead:improvement>conductor:observe_execution"
+  ],
+  "provider_calls": 1,
+  "release_queue": [],
+  "releases": [],
+  "returned_status": "blocked"
+ },
+ "blocked_but_accepted": {
+  "decision": {
+   "attempt": 1,
+   "error": "ContractError: Blocked review cannot approve",
+   "generation": 1,
+   "status": "retry"
+  },
+  "improvement_loop": null,
+  "outbox": [
+   "execution.notice lead:improvement>conductor:observe_execution"
+  ],
+  "provider_calls": 1,
+  "release_queue": [],
+  "releases": [],
+  "returned_status": "retry"
+ },
+ "conductor_accept": {
+  "decision": {
+   "attempt": 1,
+   "error": null,
+   "generation": 1,
+   "status": "succeeded"
+  },
+  "improvement_loop": null,
+  "outbox": [],
+  "provider_calls": 1,
+  "release_queue": [
+   "queued"
+  ],
+  "releases": [
+   {
+    "reviews": [
+     [
+      "conductor",
+      true
+     ],
+     [
+      "lead:improvement",
+      true
+     ]
+    ],
+    "status": "reviewed"
+   }
+  ],
+  "returned_status": "succeeded"
+ },
+ "conductor_reject_rework": {
+  "decision": {
+   "attempt": 1,
+   "error": null,
+   "generation": 1,
+   "status": "succeeded"
+  },
+  "improvement_loop": {
+   "rejected_trees": 1,
+   "reworks": 1,
+   "status": "reworking"
+  },
+  "outbox": [
+   "task.assign conductor>lead:improvement:plan"
+  ],
+  "provider_calls": 1,
+  "release_queue": [],
+  "releases": [
+   {
+    "reviews": [
+     [
+      "conductor",
+      false
+     ],
+     [
+      "lead:improvement",
+      true
+     ]
+    ],
+    "status": "rejected"
+   }
+  ],
+  "returned_status": "succeeded"
+ },
+ "inspection_blocked": {
+  "decision": {
+   "attempt": 1,
+   "error": null,
+   "generation": 1,
+   "status": "inspection_blocked"
+  },
+  "improvement_loop": null,
+  "outbox": [
+   "execution.notice lead:improvement>conductor:observe_execution"
+  ],
+  "provider_calls": 1,
+  "release_queue": [],
+  "releases": [],
+  "returned_status": "inspection_blocked"
+ },
+ "lead_accept": {
+  "decision": {
+   "attempt": 1,
+   "error": null,
+   "generation": 1,
+   "status": "succeeded"
+  },
+  "improvement_loop": null,
+  "outbox": [
+   "review.result lead:improvement>conductor:review"
+  ],
+  "provider_calls": 1,
+  "release_queue": [],
+  "releases": [
+   {
+    "reviews": [
+     [
+      "lead:improvement",
+      true
+     ]
+    ],
+    "status": "candidate"
+   }
+  ],
+  "returned_status": "succeeded"
+ },
+ "lead_reject_rework": {
+  "decision": {
+   "attempt": 1,
+   "error": null,
+   "generation": 1,
+   "status": "succeeded"
+  },
+  "improvement_loop": {
+   "rejected_trees": 1,
+   "reworks": 1,
+   "status": "reworking"
+  },
+  "outbox": [
+   "task.assign lead:improvement>worker:implementation:implement"
+  ],
+  "provider_calls": 1,
+  "release_queue": [],
+  "releases": [
+   {
+    "reviews": [
+     [
+      "lead:improvement",
+      false
+     ]
+    ],
+    "status": "rejected"
+   }
+  ],
+  "returned_status": "succeeded"
+ },
+ "policy": {
+  "max_reworks": 2
+ },
+ "reject_budget_exhausted": {
+  "decision": {
+   "attempt": 1,
+   "error": null,
+   "generation": 1,
+   "status": "succeeded"
+  },
+  "improvement_loop": {
+   "rejected_trees": 1,
+   "reworks": 2,
+   "status": "budget_exhausted"
+  },
+  "outbox": [],
+  "provider_calls": 1,
+  "release_queue": [],
+  "releases": [
+   {
+    "reviews": [
+     [
+      "lead:improvement",
+      false
+     ]
+    ],
+    "status": "rejected"
+   }
+  ],
+  "returned_status": "succeeded"
+ },
+ "reject_stagnated": {
+  "decision": {
+   "attempt": 1,
+   "error": null,
+   "generation": 1,
+   "status": "succeeded"
+  },
+  "improvement_loop": {
+   "rejected_trees": 1,
+   "reworks": 0,
+   "status": "stagnated"
+  },
+  "outbox": [],
+  "provider_calls": 1,
+  "release_queue": [],
+  "releases": [
+   {
+    "reviews": [
+     [
+      "lead:improvement",
+      false
+     ]
+    ],
+    "status": "rejected"
+   }
+  ],
+  "returned_status": "succeeded"
+ }
+}

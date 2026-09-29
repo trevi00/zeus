@@ -1,0 +1,343 @@
+{
+ "context_overflow": {
+  "buckets": {
+   "decisions_pending": 1,
+   "execution_failures": 1,
+   "execution_fences": 1,
+   "execution_notices": 1,
+   "outbox": 1,
+   "tasks": 1
+  },
+  "events": [],
+  "outbox": [
+   "execution.notice lead:improvement>conductor:observe_execution sent=False"
+  ],
+  "provider_calls": 0,
+  "reservations": [],
+  "returned": {
+   "same_row": true,
+   "status": "retry"
+  },
+  "task": {
+   "attempt": 1,
+   "error": "ContractError: Required contract exceeds budget; split task",
+   "error_class": "ContractError",
+   "generation": 1,
+   "lease_owner": "none",
+   "result_keys": null,
+   "status": "retry"
+  }
+ },
+ "lease_lost": {
+  "buckets": {
+   "breaker_events": 2,
+   "breakers": 1,
+   "events": 1,
+   "execution_fences": 1,
+   "execution_progress": 1,
+   "execution_rejections": 1,
+   "invocation_reservations": 1,
+   "observation_audit": 2,
+   "observation_terminations": 1,
+   "tasks": 1
+  },
+  "events": [
+   "execution.rejected"
+  ],
+  "outbox": [],
+  "provider_calls": 1,
+  "reservations": [
+   {
+    "attempt": 1,
+    "generation": 1,
+    "invocation": 1,
+    "outcome": "accepted",
+    "reason": null,
+    "status": "settled",
+    "usage_source": "unknown"
+   }
+  ],
+  "returned": {
+   "same_row": true,
+   "status": "stale"
+  },
+  "task": {
+   "attempt": 1,
+   "error": null,
+   "error_class": null,
+   "generation": 2,
+   "lease_owner": "other",
+   "result_keys": null,
+   "status": "running"
+  }
+ },
+ "partial": {
+  "buckets": {
+   "breaker_events": 8,
+   "breakers": 1,
+   "decisions_pending": 1,
+   "events": 1,
+   "execution_failures": 1,
+   "execution_fences": 1,
+   "execution_notices": 2,
+   "execution_progress": 1,
+   "invocation_reservations": 4,
+   "observation_audit": 9,
+   "observation_terminations": 1,
+   "outbox": 2,
+   "sessions": 1,
+   "tasks": 1
+  },
+  "events": [
+   "execution.reconciliation_required"
+  ],
+  "outbox": [
+   "execution.notice lead:improvement>conductor:observe_execution sent=False",
+   "execution.notice lead:improvement>conductor:observe_execution sent=False"
+  ],
+  "provider_calls": 4,
+  "reservations": [
+   {
+    "attempt": 1,
+    "generation": 1,
+    "invocation": 1,
+    "outcome": "interrupted",
+    "reason": null,
+    "status": "settled",
+    "usage_source": "unknown"
+   },
+   {
+    "attempt": 1,
+    "generation": 1,
+    "invocation": 2,
+    "outcome": "interrupted",
+    "reason": null,
+    "status": "settled",
+    "usage_source": "unknown"
+   },
+   {
+    "attempt": 1,
+    "generation": 1,
+    "invocation": 3,
+    "outcome": "interrupted",
+    "reason": null,
+    "status": "settled",
+    "usage_source": "unknown"
+   },
+   {
+    "attempt": 1,
+    "generation": 1,
+    "invocation": 4,
+    "outcome": "interrupted",
+    "reason": null,
+    "status": "settled",
+    "usage_source": "unknown"
+   }
+  ],
+  "returned": {
+   "same_row": true,
+   "status": "blocked"
+  },
+  "task": {
+   "attempt": 1,
+   "error": "reconciliation_required",
+   "error_class": "reconciliation_required",
+   "generation": 1,
+   "lease_owner": "none",
+   "result_keys": null,
+   "status": "blocked"
+  }
+ },
+ "provider_failure": {
+  "buckets": {
+   "breaker_events": 2,
+   "breakers": 1,
+   "decisions_pending": 1,
+   "execution_failures": 1,
+   "execution_fences": 1,
+   "execution_notices": 1,
+   "execution_progress": 1,
+   "invocation_reservations": 1,
+   "observation_audit": 2,
+   "observation_terminations": 1,
+   "outbox": 1,
+   "tasks": 1
+  },
+  "events": [],
+  "outbox": [
+   "execution.notice lead:improvement>conductor:observe_execution sent=False"
+  ],
+  "provider_calls": 1,
+  "reservations": [
+   {
+    "attempt": 1,
+    "generation": 1,
+    "invocation": 1,
+    "outcome": "provider_failure",
+    "reason": null,
+    "status": "settled",
+    "usage_source": "unknown"
+   }
+  ],
+  "returned": {
+   "same_row": true,
+   "status": "failed"
+  },
+  "task": {
+   "attempt": 1,
+   "error": "ExecutionFailure: codex-provider-usage-limit-exceeded",
+   "error_class": "ExecutionFailure",
+   "generation": 1,
+   "lease_owner": "none",
+   "result_keys": null,
+   "status": "failed"
+  }
+ },
+ "refusal_before_entry": {
+  "buckets": {
+   "breaker_events": 2,
+   "breakers": 1,
+   "decisions_pending": 1,
+   "execution_failures": 1,
+   "execution_fences": 1,
+   "execution_notices": 1,
+   "invocation_reservations": 1,
+   "observation_audit": 2,
+   "observation_terminations": 1,
+   "outbox": 1,
+   "tasks": 1
+  },
+  "events": [],
+  "outbox": [
+   "execution.notice lead:improvement>conductor:observe_execution sent=False"
+  ],
+  "provider_calls": 1,
+  "reservations": [
+   {
+    "attempt": 1,
+    "generation": 1,
+    "invocation": 1,
+    "outcome": null,
+    "reason": "exception:ContractError",
+    "status": "unsettled_unknown",
+    "usage_source": "unknown"
+   }
+  ],
+  "returned": {
+   "same_row": true,
+   "status": "retry"
+  },
+  "task": {
+   "attempt": 1,
+   "error": "ContractError: Codex App Server is unavailable",
+   "error_class": "ContractError",
+   "generation": 1,
+   "lease_owner": "none",
+   "result_keys": null,
+   "status": "retry"
+  }
+ },
+ "success": {
+  "buckets": {
+   "breaker_events": 2,
+   "breakers": 1,
+   "events": 1,
+   "execution_fences": 1,
+   "execution_progress": 1,
+   "invocation_reservations": 1,
+   "observation_audit": 2,
+   "observation_terminations": 1,
+   "outbox": 2,
+   "sessions": 1,
+   "tasks": 1
+  },
+  "events": [
+   "task.succeeded"
+  ],
+  "outbox": [
+   "task.assign lead:improvement>worker:implementation:implement sent=False",
+   "task.result lead:improvement>conductor:plan sent=False"
+  ],
+  "provider_calls": 1,
+  "reservations": [
+   {
+    "attempt": 1,
+    "generation": 1,
+    "invocation": 1,
+    "outcome": "accepted",
+    "reason": null,
+    "status": "settled",
+    "usage_source": "unknown"
+   }
+  ],
+  "returned": {
+   "same_row": true,
+   "status": "succeeded"
+  },
+  "task": {
+   "attempt": 1,
+   "error": null,
+   "error_class": null,
+   "generation": 1,
+   "lease_owner": "claimant",
+   "result_keys": [
+    "acceptance_criteria",
+    "allowed_paths",
+    "basis_revision",
+    "execution_ref",
+    "objective",
+    "origin"
+   ],
+   "status": "succeeded"
+  }
+ },
+ "timeout": {
+  "buckets": {
+   "breaker_events": 2,
+   "breakers": 1,
+   "decisions_pending": 1,
+   "events": 1,
+   "execution_failures": 1,
+   "execution_fences": 1,
+   "execution_notices": 2,
+   "execution_progress": 1,
+   "invocation_reservations": 1,
+   "observation_audit": 3,
+   "observation_terminations": 1,
+   "outbox": 2,
+   "tasks": 1
+  },
+  "events": [
+   "execution.reconciliation_required"
+  ],
+  "outbox": [
+   "execution.notice lead:improvement>conductor:observe_execution sent=False",
+   "execution.notice lead:improvement>conductor:observe_execution sent=False"
+  ],
+  "provider_calls": 1,
+  "reservations": [
+   {
+    "attempt": 1,
+    "generation": 1,
+    "invocation": 1,
+    "outcome": null,
+    "reason": "exception:ContractError",
+    "status": "unsettled_unknown",
+    "usage_source": "unknown"
+   }
+  ],
+  "returned": {
+   "same_row": true,
+   "status": "blocked"
+  },
+  "task": {
+   "attempt": 1,
+   "error": "reconciliation_required",
+   "error_class": "reconciliation_required",
+   "generation": 1,
+   "lease_owner": "none",
+   "result_keys": null,
+   "status": "blocked"
+  }
+ }
+}
