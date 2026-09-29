@@ -1,0 +1,9 @@
+{
+ "family": "coordination.execution_owners",
+ "description": "S4 moved-ahead coordination owner operations (lead decision Option A): durable execution fences (advance, regress, require_current/unused), the execution budget (positive integers, aware and deadline times, the pinned retry budget, block_execution) and execution notices (record, idempotence, quarantine, receive); MemoryStore, scripted clock",
+ "reference_driver": "drivers/reference/s4_owners.py",
+ "target_driver": null,
+ "golden": "goldens/reference/coordination.execution_owners.json",
+ "slice": "S4",
+ "target_status": "pending: the coordination owners are not yet moved"
+}

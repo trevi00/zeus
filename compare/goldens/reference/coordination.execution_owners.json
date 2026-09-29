@@ -1,0 +1,347 @@
+{
+ "budget": {
+  "aware": [
+   {
+    "value": "2026-01-01T00:00:05+00:00"
+   },
+   {
+    "message": "Timezone-aware execution time required",
+    "refused": "ContractError"
+   }
+  ],
+  "block": {
+   "value": null
+  },
+  "deadline": [
+   {
+    "value": null
+   },
+   {
+    "value": "2026-01-02T00:00:00+00:00"
+   },
+   {
+    "message": "Deadline must be a timezone-aware ISO timestamp",
+    "refused": "ContractError"
+   },
+   {
+    "message": "Deadline must be a timezone-aware ISO timestamp",
+    "refused": "ContractError"
+   },
+   {
+    "message": "Deadline must be a timezone-aware ISO timestamp",
+    "refused": "ContractError"
+   },
+   {
+    "message": "Deadline must be a timezone-aware ISO timestamp",
+    "refused": "ContractError"
+   }
+  ],
+  "legacy_row": {
+   "error": "UnverifiedLegacyRetryBudget",
+   "status": "blocked"
+  },
+  "positive": [
+   {
+    "value": 1
+   },
+   {
+    "message": "N must be a positive integer",
+    "refused": "ContractError"
+   },
+   {
+    "message": "N must be a positive integer",
+    "refused": "ContractError"
+   },
+   {
+    "message": "N must be a positive integer",
+    "refused": "ContractError"
+   }
+  ],
+  "retry_bad": {
+   "message": "Retry limit must be a positive integer",
+   "refused": "ContractError"
+  },
+  "retry_conflict": {
+   "value": null
+  },
+  "retry_first_default": {
+   "value": 3
+  },
+  "retry_legacy_blocks": {
+   "value": null
+  }
+ },
+ "fence": {
+  "advance_1": {
+   "value": null
+  },
+  "advance_2": {
+   "value": null
+  },
+  "advance_regress": {
+   "message": "Execution generation regressed behind its durable fence",
+   "refused": "ContractError"
+  },
+  "advance_zero": {
+   "message": "Fence generation must be a positive integer",
+   "refused": "ContractError"
+  },
+  "bucket": "execution_fences",
+  "current": {
+   "value": {
+    "at": "2026-01-01T00:00:05+00:00",
+    "bucket": "tasks",
+    "generation": 1,
+    "id": "tasks:t1",
+    "owner": "o1",
+    "row_id": "t1"
+   }
+  },
+  "key": "decisions_pending:d1",
+  "require_current_no_fence": {
+   "value": null
+  },
+  "require_current_ok": {
+   "value": null
+  },
+  "require_current_other_owner": {
+   "message": "Execution owner differs from the durable fence",
+   "refused": "ContractError"
+  },
+  "require_current_stale": {
+   "message": "Execution row is behind its durable fence",
+   "refused": "ContractError"
+  },
+  "unused": {
+   "value": null
+  },
+  "unused_after": {
+   "message": "Execution identity was used before; rows are never recreated",
+   "refused": "ContractError"
+  }
+ },
+ "notices": {
+  "decision_notice": {
+   "owner": "conductor",
+   "recipient": "conductor",
+   "sender": "lead:improvement"
+  },
+  "failed_states": [
+   "blocked",
+   "cancelled",
+   "expired",
+   "failed",
+   "inspection_blocked",
+   "retry",
+   "superseded"
+  ],
+  "first": {
+   "authority": "informational_only",
+   "id": "59fdd50ad5ebcb16a4ca9a1aeaa51c1bfcef926fb1833da926b45117494f31a5",
+   "observer": "workflow_controller",
+   "source_hash": "8a910782dcc3e9e082e34cc301743ef612036bbeb5e610c78ab649eb384b1f2d",
+   "transition": {
+    "attempt": 1,
+    "bucket": "tasks",
+    "generation": 1,
+    "reason_code": "execution_failed",
+    "recovery_sequence": 0,
+    "status": "failed",
+    "task_id": "task-4",
+    "transition_ref": "e72779b4df7d5ded8249c0a51897cae25ff9acd44df88e1c3df47e48233db829",
+    "version": 1
+   }
+  },
+  "idempotent": true,
+  "message": {
+   "message_id": "59fdd50ad5ebcb16a4ca9a1aeaa51c1bfcef926fb1833da926b45117494f31a5",
+   "type": "execution.notice",
+   "what": {
+    "action": "observe_execution",
+    "details": {
+     "attempt": 1,
+     "bucket": "tasks",
+     "generation": 1,
+     "notice_id": "59fdd50ad5ebcb16a4ca9a1aeaa51c1bfcef926fb1833da926b45117494f31a5",
+     "reason_code": "execution_failed",
+     "recovery_sequence": 0,
+     "status": "failed",
+     "task_id": "task-4",
+     "transition_ref": "e72779b4df7d5ded8249c0a51897cae25ff9acd44df88e1c3df47e48233db829",
+     "version": 1
+    }
+   },
+   "when": {
+    "after": [],
+    "created_at": "2026-01-01T00:00:05+00:00",
+    "deadline": null
+   },
+   "who": {
+    "owner": "lead:improvement",
+    "recipient": "lead:improvement",
+    "sender": "worker:implementation"
+   },
+   "why": {
+    "evidence_refs": [],
+    "objective": "Observe a persisted execution transition without granting workflow authority"
+   }
+  },
+  "reasons": [
+   "ClockDiscontinuity",
+   "InvalidExecutionClock",
+   "InvalidExecutionDeadline",
+   "InvalidExecutionLease",
+   "InvalidExecutionOrder",
+   "InvalidExecutionState",
+   "InvalidRetryBudget",
+   "RecoveryContextChanged",
+   "UnverifiedLegacyRetryBudget",
+   "budget_exhausted",
+   "deadline_exceeded",
+   "decision_blocked",
+   "dependency_failed",
+   "execution_failed",
+   "execution_recovered",
+   "inspection_blocked",
+   "operator_cancelled",
+   "reconciliation_required",
+   "research_required",
+   "ticket_binding_changed",
+   "ticket_superseded"
+  ],
+  "receive": {
+   "value": {
+    "authority": "informational_only",
+    "handled": true,
+    "notice_id": "59fdd50ad5ebcb16a4ca9a1aeaa51c1bfcef926fb1833da926b45117494f31a5"
+   }
+  },
+  "receive_again": {
+   "value": {
+    "authority": "informational_only",
+    "handled": true,
+    "notice_id": "59fdd50ad5ebcb16a4ca9a1aeaa51c1bfcef926fb1833da926b45117494f31a5"
+   }
+  },
+  "receive_unproven": {
+   "message": "Unproven execution notice",
+   "refused": "ContractError"
+  },
+  "succeeded_without_proof": "quarantined",
+  "unknown_reason_quarantined": {
+   "at": "2026-01-01T00:00:05+00:00",
+   "bucket": "tasks",
+   "error_type": "ContractError",
+   "id": "aeed884463b7c46e430ebf236d647b6e63c57a38a4592c9103d14825c7f2be7e",
+   "reason_code": "no_such_reason",
+   "status": "quarantined",
+   "transition_ref": null
+  }
+ },
+ "receive_foreign_wrong_type": {
+  "message": "Not an execution notice",
+  "refused": "ContractError"
+ },
+ "records": [
+  [
+   "events",
+   "52ccaf50492cd2a2ae7c080cdb70d564c2ee645f0d9bc0016098c25ef51fa6e7",
+   "fa1054862dde004d1b4f9b4ae6d114d1d993a38dc83ddecd521585ffbad3d9d0"
+  ],
+  [
+   "events",
+   "685ec342abe91d0549919538960d6aa45a35132fec10f7c66a1b13d6d528105e",
+   "6ff99916e1904586f9be509d5c549a2b1da20a3daa0151a9b8cbc1a85d7eedd3"
+  ],
+  [
+   "events",
+   "aae4f6d443651d68f9dc6456345391535cf1d6632b837c32b6d1b12550ba8c47",
+   "70f196a5ec34e8139a2e0d94ef6b99958c86130cb17fb75b99ed010042e1fd01"
+  ],
+  [
+   "events",
+   "aeed884463b7c46e430ebf236d647b6e63c57a38a4592c9103d14825c7f2be7e",
+   "348b8b498954be0cd5408ab9c7feb519d99701faffce46911d8d38ec6a0d1a81"
+  ],
+  [
+   "events",
+   "f65d79dcf5910cf7b91e42a1e928ccfe05f9b55b8fe19f37cabce3f909d228e7",
+   "de9e36c1c396751df4105469cb9c924e60229464b19d2bc547bd7ecbc350041a"
+  ],
+  [
+   "execution_fences",
+   "tasks:t1",
+   "7082c7fd78dd661c0347d3944cc85e31051b4ba629f15b94117e2ae1b60e65c0"
+  ],
+  [
+   "execution_notice_errors",
+   "aae4f6d443651d68f9dc6456345391535cf1d6632b837c32b6d1b12550ba8c47",
+   "6950dbf69d278f118887e75d694e55a585126b02f30846002ac989ffe60836e1"
+  ],
+  [
+   "execution_notice_errors",
+   "aeed884463b7c46e430ebf236d647b6e63c57a38a4592c9103d14825c7f2be7e",
+   "626b90b50c7f70d04d80a0073453fb3d98e0b4af0f8e7ef5afa105994d6cea66"
+  ],
+  [
+   "execution_notices",
+   "512e6cb00d57eeaa01da5e06d830c0a0c249a776f541868404fc851881b9a592",
+   "20ea254c0dca21b07d65d6fc206eab55245730c963510b8c554c3ab44eeca0d5"
+  ],
+  [
+   "execution_notices",
+   "59fdd50ad5ebcb16a4ca9a1aeaa51c1bfcef926fb1833da926b45117494f31a5",
+   "41b14588b7385c126b3f3b2fa1ac1d2e61f407de0217525f84e09b4aedb7cf47"
+  ],
+  [
+   "execution_notices",
+   "6436d5d4f6721fecfe5ddf5e3dce70e2ccccddefafcf87136131613844544db8",
+   "9368055ecdb1a5497ab40a36152d863006885e3ed16da1556a3452d0fac96612"
+  ],
+  [
+   "execution_notices",
+   "9297fc5a17ac99f7118a7159522e6020f8af93d7f67692a5cd1d3d1c590baaf6",
+   "daa5cf0a51e127fe5d2e2d2784d0a730a6a614edc2b33a3a77a89bf2a657a0f4"
+  ],
+  [
+   "outbox",
+   "512e6cb00d57eeaa01da5e06d830c0a0c249a776f541868404fc851881b9a592",
+   "ba21974d57092dbf5f954945fad21beab04e7bf23f9fa24569b5ca8f1b658f71"
+  ],
+  [
+   "outbox",
+   "59fdd50ad5ebcb16a4ca9a1aeaa51c1bfcef926fb1833da926b45117494f31a5",
+   "c2d1d56841492c31398ab794a448bc0bc3b8805af54a23bbdc0442da7a0706ff"
+  ],
+  [
+   "outbox",
+   "6436d5d4f6721fecfe5ddf5e3dce70e2ccccddefafcf87136131613844544db8",
+   "86707c893d72f21647d76f78502625ff97c1a350d30e4910dd73a0438816b06d"
+  ],
+  [
+   "outbox",
+   "9297fc5a17ac99f7118a7159522e6020f8af93d7f67692a5cd1d3d1c590baaf6",
+   "b0f341d85bd83de8bbe10c0069bdff04d2552cc61873d0e36d46c43be21d7dad"
+  ],
+  [
+   "tasks",
+   "task-1",
+   "64809ef849bb19369c165ca6efbfe79ac4e33913d05b2e20d218079350b65ac1"
+  ],
+  [
+   "tasks",
+   "task-2",
+   "8a687716b49f3f52d9d2a6d7ad1387822d6cbbc2e36091c72a58fcda759ad6b5"
+  ],
+  [
+   "tasks",
+   "task-3",
+   "05cd6eed6cb654393b5c9c71fbc67db75914b5a1f729659d1aefc0009abc4c40"
+  ],
+  [
+   "workflow_inbox",
+   "59fdd50ad5ebcb16a4ca9a1aeaa51c1bfcef926fb1833da926b45117494f31a5",
+   "808fb4a70a80d07e0e8f6c914e08a92297f755a11aadcf6912daeec73f97e54b"
+  ]
+ ]
+}
