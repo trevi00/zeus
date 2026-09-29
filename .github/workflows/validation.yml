@@ -124,6 +124,9 @@ jobs:
       # the target side runs in the target venv against the same fixture server (§5.3 S1).
       - run: uv sync --frozen --project target
       - run: python compare/run.py run --only storage.pg --only storage.redis --pg --redis
+      # The target suite with its integration tests (ported PostgreSQL/Redis cases) on the same
+      # kind of labelled disposable fixtures; the compose services above are never used by it (R-X).
+      - run: python compare/run.py target-integration
       - if: always()
         run: docker compose -p harness-ci down --volumes
         working-directory: ${{ runner.temp }}/zeus-source

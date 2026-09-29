@@ -8,6 +8,7 @@ Layer: harness (never shipped); standard library only. Usage from the worktree r
     python compare/run.py run --record        # reference-only: (re)write reference goldens
     python compare/run.py run --pg            # also the scenarios that need a disposable PostgreSQL
     python compare/run.py run --redis         # also the scenarios that need a disposable Redis
+    python compare/run.py target-integration  # target suite with its integration tests on fixtures
 
 The reference environment is built from the SOURCE archive wheel, never from the working tree;
 its package-file digest must equal `compare/baseline.json`. Each driver runs as a separate process
@@ -419,11 +420,30 @@ def run(record: bool, use_bwrap: bool, only: list[str], pg: bool = False,
     return report, ok
 
 
+def target_integration() -> dict:
+    """The target test suite with its integration tests enabled against a labelled disposable
+    PostgreSQL and Redis (§5.1 integration job; R-X: never the host's production ports)."""
+    if not TARGET_PYTHON.exists():
+        return {"error": "target venv missing: run `uv sync --frozen --project target`"}
+    SCRATCH.mkdir(parents=True, exist_ok=True)
+    with tempfile.TemporaryDirectory(prefix="zeus-s1-integration-", dir=SCRATCH) as raw:
+        work = Path(raw)
+        with DisposablePostgres(work) as database, DisposableRedis(work) as redis_fixture:
+            env = provider_guard.child_environment(work / "env", extra={
+                "HARNESS_INTEGRATION": "1", "ZEUS_TEST_DSN": database.dsn, "HARNESS_REDIS_URL": redis_fixture.url})
+            done = subprocess.run([str(TARGET_PYTHON), "-m", "pytest", "-q", "-p", "no:cacheprovider", "-rs",
+                                   "--basetemp", str(work / "pytest")], cwd=str(ROOT / "target"), env=env,
+                                  capture_output=True, text=True, timeout=1800)
+    tail = done.stdout.strip().splitlines()[-15:]
+    return {"exit_code": done.returncode, "summary": tail[-1] if tail else "", "tail": tail}
+
+
 def main(argv=None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     sub = parser.add_subparsers(dest="command", required=True)
     sub.add_parser("check-tree")
     sub.add_parser("prepare")
+    sub.add_parser("target-integration")
     run_cmd = sub.add_parser("run")
     run_cmd.add_argument("--record", action="store_true", help="write reference goldens")
     run_cmd.add_argument("--no-bwrap", action="store_true")
@@ -436,6 +456,9 @@ def main(argv=None) -> int:
     if args.command == "check-tree":
         report = check_tree()
         ok = report["ok"]
+    elif args.command == "target-integration":
+        report = target_integration()
+        ok = report.get("exit_code") == 0
     elif args.command == "prepare":
         report = prepare()
         # The wheel sha256 depends on the unpinned build backend; the RECORD rows are the identity.
