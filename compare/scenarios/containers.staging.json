@@ -1,0 +1,9 @@
+{
+ "family": "containers.staging",
+ "description": "S3 staging and hand-off: portable path rules and bounds, the pinned export (manifest, modes, progress ticks, cancellation before files, symlink/case refusals), the standalone Git, the output scan refusals, the import plan/apply (changed-after-validation refusal) and the immutable evidence hand-off (retain, refs, verified read-only materialization and its refusals); a fixture repository, no provider or container",
+ "reference_driver": "drivers/reference/s3_staging.py",
+ "target_driver": null,
+ "golden": "goldens/reference/containers.staging.json",
+ "slice": "S3",
+ "target_status": "pending: the target driver lands with the staging/hand-off move in the next commit"
+}

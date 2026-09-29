@@ -1,0 +1,433 @@
+{
+ "apply_changed_after_validation": {
+  "error": "IsolationError",
+  "message": "isolated worker: import_changed_after_validation: 'new.txt'",
+  "reason_code": "import_changed_after_validation"
+ },
+ "apply_import": {
+  "ok": {
+   "added": [
+    "new.txt"
+   ],
+   "after_sha256": "6edda0d4ca73bb8d34e2dc4e400a17cfdbb5304a1d55bb6e5907983f9e0fa1b6",
+   "deleted": [
+    "empty.txt"
+   ],
+   "modified": [
+    "pkg/module.py"
+   ]
+  }
+ },
+ "candidate_after": {
+  "README.md": {
+   "mode": "0o600",
+   "sha256": "e80b71cd14d3cbd65f4173abcbfcf01a545dbca32a72d575108b553a648cc96f"
+  },
+  "bin/run.sh": {
+   "mode": "0o600",
+   "sha256": "299001868fb8c02fd431c336c6d058f5558c5dff5b5af5e6fe04b870a6a9cbba"
+  },
+  "data/blob.bin": {
+   "mode": "0o600",
+   "sha256": "40aff2e9d2d8922e47afd4648e6967497158785fbd1da870e7110266bf944880"
+  },
+  "deep/a/b/c.txt": {
+   "mode": "0o600",
+   "sha256": "a3a5e715f0cc574a73c3f9bebb6bc24f32ffd5b67b387244c2c909da779a1478"
+  },
+  "new.txt": {
+   "mode": "0o600",
+   "sha256": "7aa7a5359173d05b63cfd682e3c38487f3cb4f7f1d60659fe59fab1505977d4c"
+  },
+  "pkg/module.py": {
+   "mode": "0o600",
+   "sha256": "3da6c4b355804b265ecef19dfe5945fe2790a8cc38dc9d0547fb1634c94cbbe7"
+  }
+ },
+ "check_bounds": {
+  "case_collision": {
+   "error": "IsolationError",
+   "message": "isolated worker: source_case_collision: 'a.py'",
+   "reason_code": "source_case_collision"
+  },
+  "dir_spelling": {
+   "error": "IsolationError",
+   "message": "isolated worker: source_case_collision: 'pkg'",
+   "reason_code": "source_case_collision"
+  },
+  "file_too_large": {
+   "error": "IsolationError",
+   "message": "isolated worker: source_file_too_large: 'big.bin'",
+   "reason_code": "source_file_too_large"
+  },
+  "file_vs_dir": {
+   "error": "IsolationError",
+   "message": "isolated worker: source_case_collision: 'pkg'",
+   "reason_code": "source_case_collision"
+  },
+  "ok": {
+   "ok": {
+    "bytes": 3,
+    "files": 2
+   }
+  },
+  "too_many": {
+   "error": "IsolationError",
+   "message": "isolated worker: source_too_many_files: 10001",
+   "reason_code": "source_too_many_files"
+  },
+  "unsafe": {
+   "error": "IsolationError",
+   "message": "isolated worker: source_path_unsafe: '../x'",
+   "reason_code": "source_path_unsafe"
+  }
+ },
+ "check_relative_path": {
+  "''": {
+   "error": "IsolationError",
+   "message": "isolated worker: source_path_unsafe: ''",
+   "reason_code": "source_path_unsafe"
+  },
+  "'./a'": {
+   "error": "IsolationError",
+   "message": "isolated worker: source_path_unsafe: './a'",
+   "reason_code": "source_path_unsafe"
+  },
+  "'.GIT'": {
+   "error": "IsolationError",
+   "message": "isolated worker: source_path_unsafe: '.GIT'",
+   "reason_code": "source_path_unsafe"
+  },
+  "'/abs'": {
+   "error": "IsolationError",
+   "message": "isolated worker: source_path_unsafe: '/abs'",
+   "reason_code": "source_path_unsafe"
+  },
+  "'COM10'": {
+   "ok": [
+    "COM10"
+   ]
+  },
+  "'LPT1'": {
+   "error": "IsolationError",
+   "message": "isolated worker: source_path_unsafe: 'LPT1'",
+   "reason_code": "source_path_unsafe"
+  },
+  "'a.py'": {
+   "ok": [
+    "a.py"
+   ]
+  },
+  "'a/../b'": {
+   "error": "IsolationError",
+   "message": "isolated worker: source_path_unsafe: 'a/../b'",
+   "reason_code": "source_path_unsafe"
+  },
+  "'a/.git/x'": {
+   "error": "IsolationError",
+   "message": "isolated worker: source_path_unsafe: 'a/.git/x'",
+   "reason_code": "source_path_unsafe"
+  },
+  "'a//b'": {
+   "error": "IsolationError",
+   "message": "isolated worker: source_path_unsafe: 'a//b'",
+   "reason_code": "source_path_unsafe"
+  },
+  "'a:b'": {
+   "error": "IsolationError",
+   "message": "isolated worker: source_path_unsafe: 'a:b'",
+   "reason_code": "source_path_unsafe"
+  },
+  "'a\\\\b'": {
+   "error": "IsolationError",
+   "message": "isolated worker: source_path_unsafe: 'a\\\\b'",
+   "reason_code": "source_path_unsafe"
+  },
+  "'a\\x00b'": {
+   "error": "IsolationError",
+   "message": "isolated worker: source_path_unsafe: 'a\\x00b'",
+   "reason_code": "source_path_unsafe"
+  },
+  "'aux.tar.gz'": {
+   "error": "IsolationError",
+   "message": "isolated worker: source_path_unsafe: 'aux.tar.gz'",
+   "reason_code": "source_path_unsafe"
+  },
+  "'con.txt'": {
+   "error": "IsolationError",
+   "message": "isolated worker: source_path_unsafe: 'con.txt'",
+   "reason_code": "source_path_unsafe"
+  },
+  "'nul'": {
+   "error": "IsolationError",
+   "message": "isolated worker: source_path_unsafe: 'nul'",
+   "reason_code": "source_path_unsafe"
+  },
+  "'ok.name.txt'": {
+   "ok": [
+    "ok.name.txt"
+   ]
+  },
+  "'pkg/b.py'": {
+   "ok": [
+    "pkg",
+    "b.py"
+   ]
+  },
+  "'tab\\tname'": {
+   "error": "IsolationError",
+   "message": "isolated worker: source_path_unsafe: 'tab\\tname'",
+   "reason_code": "source_path_unsafe"
+  },
+  "'trailing '": {
+   "error": "IsolationError",
+   "message": "isolated worker: source_path_unsafe: 'trailing '",
+   "reason_code": "source_path_unsafe"
+  },
+  "'trailing.'": {
+   "error": "IsolationError",
+   "message": "isolated worker: source_path_unsafe: 'trailing.'",
+   "reason_code": "source_path_unsafe"
+  },
+  "'é/ü.py'": {
+   "ok": [
+    "é",
+    "ü.py"
+   ]
+  },
+  "7": {
+   "error": "IsolationError",
+   "message": "isolated worker: source_path_unsafe: 7",
+   "reason_code": "source_path_unsafe"
+  }
+ },
+ "handoff_refs": [
+  "sha256:15f092dcca97d5e4aa2e226dd184843f8c96b5e96a04498e23893e398b0364c9",
+  "sha256:3b00c59991bdabea4ede7b5c37d05daa31a22a5ddf979491955679cc5c982fdc",
+  "sha256:6bc0da1f42f96fc37b8bd7ed20ba57606d2a0da5cda2b135c7854fbdc985b8a3",
+  "sha256:8fd6991b10e7cfa55aeebf04b82f7dbab149f1de84f6e5cf813a9450d6bb4196",
+  "sha256:c2703a7ddf6c74b39505339af20dd6dd4f0794720e038b78ba395600c72417d4",
+  "sha256:ed8efb00cecb06d31b01114313e03512361fa4bcf2060ad0d53c2d8b4c575183"
+ ],
+ "init_standalone_git": {
+  "ok": {
+   "hooks": "none",
+   "initialized": true,
+   "note": "host git is never run here again",
+   "remotes": 0
+  }
+ },
+ "list_revision": {
+  "ok": [
+   [
+    "100644",
+    0,
+    "empty.txt"
+   ],
+   [
+    "100644",
+    2,
+    "deep/a/b/c.txt"
+   ],
+   [
+    "100644",
+    8,
+    "README.md"
+   ],
+   [
+    "100644",
+    10,
+    "pkg/module.py"
+   ],
+   [
+    "100644",
+    256,
+    "data/blob.bin"
+   ],
+   [
+    "100755",
+    18,
+    "bin/run.sh"
+   ]
+  ]
+ },
+ "list_revision_unknown": {
+  "error": "IsolationError",
+  "message": "isolated worker: source_revision_unavailable",
+  "reason_code": "source_revision_unavailable"
+ },
+ "materialize": {
+  "ok": {
+   "source": "<BASE>/m1",
+   "summary": {
+    "bytes": 871,
+    "refs": 6,
+    "refs_sha256": "60e4441a6e801008d36c2b2947bcdfb09c95d878514023bc81193df47d0c546c"
+   },
+   "target": "<BASE>/artifacts"
+  }
+ },
+ "materialize_bad_ref": {
+  "error": "IsolationError",
+  "message": "isolated worker: handoff_ref_invalid: 'x'",
+  "reason_code": "handoff_ref_invalid"
+ },
+ "materialize_integrity": {
+  "error": "IsolationError",
+  "message": "isolated worker: handoff_integrity_failed: 2d711642b726b04401627ca9fbac32f5c8530fb1903cc4db02258717921a4881",
+  "reason_code": "handoff_integrity_failed"
+ },
+ "materialize_none": [
+  null,
+  null
+ ],
+ "materialize_relative_root": {
+  "error": "ContractError",
+  "message": "The hand-off root must be an absolute path"
+ },
+ "materialize_too_many": {
+  "error": "IsolationError",
+  "message": "isolated worker: handoff_too_large: 513 refs",
+  "reason_code": "handoff_too_large"
+ },
+ "materialized_modes": [
+  "0o444"
+ ],
+ "plan_import": {
+  "ok": {
+   "added": [
+    "new.txt"
+   ],
+   "after_sha256": "6edda0d4ca73bb8d34e2dc4e400a17cfdbb5304a1d55bb6e5907983f9e0fa1b6",
+   "deleted": [
+    "empty.txt"
+   ],
+   "hashes": {
+    "new.txt": "7aa7a5359173d05b63cfd682e3c38487f3cb4f7f1d60659fe59fab1505977d4c",
+    "pkg/module.py": "3da6c4b355804b265ecef19dfe5945fe2790a8cc38dc9d0547fb1634c94cbbe7"
+   },
+   "modified": [
+    "pkg/module.py"
+   ]
+  }
+ },
+ "retain": {
+  "bytes": 27,
+  "files": 3,
+  "manifest": "sha256:15f092dcca97d5e4aa2e226dd184843f8c96b5e96a04498e23893e398b0364c9"
+ },
+ "retain_link_refused": {
+  "manifest": null,
+  "refused": "output_link_refused"
+ },
+ "scan_refusals": {
+  "case_collision": {
+   "error": "IsolationError",
+   "message": "isolated worker: source_case_collision: 'README.md'",
+   "reason_code": "source_case_collision"
+  },
+  "fifo": {
+   "error": "IsolationError",
+   "message": "isolated worker: output_special_file_refused: 'pipe'",
+   "reason_code": "output_special_file_refused"
+  },
+  "hardlink": {
+   "error": "IsolationError",
+   "message": "isolated worker: output_hardlink_refused: 'twin.md'",
+   "reason_code": "output_hardlink_refused"
+  },
+  "nested_git_file": {
+   "error": "IsolationError",
+   "message": "isolated worker: source_path_unsafe: 'sub/.git'",
+   "reason_code": "source_path_unsafe"
+  },
+  "symlink": {
+   "error": "IsolationError",
+   "message": "isolated worker: output_link_refused: 'l'",
+   "reason_code": "output_link_refused"
+  },
+  "unsafe_name": {
+   "error": "IsolationError",
+   "message": "isolated worker: source_path_unsafe: 'con.txt'",
+   "reason_code": "source_path_unsafe"
+  }
+ },
+ "scan_tree": {
+  "ok": {
+   "README.md": "e80b71cd14d3cbd65f4173abcbfcf01a545dbca32a72d575108b553a648cc96f",
+   "bin/run.sh": "299001868fb8c02fd431c336c6d058f5558c5dff5b5af5e6fe04b870a6a9cbba",
+   "data/blob.bin": "40aff2e9d2d8922e47afd4648e6967497158785fbd1da870e7110266bf944880",
+   "deep/a/b/c.txt": "a3a5e715f0cc574a73c3f9bebb6bc24f32ffd5b67b387244c2c909da779a1478",
+   "new.txt": "7aa7a5359173d05b63cfd682e3c38487f3cb4f7f1d60659fe59fab1505977d4c",
+   "pkg/module.py": "3da6c4b355804b265ecef19dfe5945fe2790a8cc38dc9d0547fb1634c94cbbe7"
+  }
+ },
+ "stage_cancelled_before_files": {
+  "error": "LeaseEnded",
+  "message": "lease ended"
+ },
+ "stage_cancelled_left_destination": false,
+ "stage_case_collision": {
+  "error": "IsolationError",
+  "message": "isolated worker: source_case_collision: 'Sub'",
+  "reason_code": "source_case_collision"
+ },
+ "stage_existing_destination": {
+  "error": "ContractError",
+  "message": "Staging directory must be fresh"
+ },
+ "stage_source": {
+  "ok": {
+   "bytes": 294,
+   "files": 6,
+   "manifest": {
+    "README.md": "e80b71cd14d3cbd65f4173abcbfcf01a545dbca32a72d575108b553a648cc96f",
+    "bin/run.sh": "299001868fb8c02fd431c336c6d058f5558c5dff5b5af5e6fe04b870a6a9cbba",
+    "data/blob.bin": "40aff2e9d2d8922e47afd4648e6967497158785fbd1da870e7110266bf944880",
+    "deep/a/b/c.txt": "a3a5e715f0cc574a73c3f9bebb6bc24f32ffd5b67b387244c2c909da779a1478",
+    "empty.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "pkg/module.py": "e13df8c44af5dea1e412403910b99cc5a48f2ccbf68a66b3374d6ab9cef9fc65"
+   },
+   "manifest_sha256": "085de9745c9f621584be0021de0b6efff517e38876523fe8700cc90c63bb78dd",
+   "revision_matches": true
+  }
+ },
+ "stage_symlink_left_destination": false,
+ "stage_symlink_refused": {
+  "error": "IsolationError",
+  "message": "isolated worker: source_entry_unsupported: 120000 'link'",
+  "reason_code": "source_entry_unsupported"
+ },
+ "stage_ticks_at_least_two": true,
+ "staged_files": {
+  "README.md": {
+   "mode": "0o600",
+   "sha256": "e80b71cd14d3cbd65f4173abcbfcf01a545dbca32a72d575108b553a648cc96f"
+  },
+  "bin/run.sh": {
+   "mode": "0o755",
+   "sha256": "299001868fb8c02fd431c336c6d058f5558c5dff5b5af5e6fe04b870a6a9cbba"
+  },
+  "data/blob.bin": {
+   "mode": "0o600",
+   "sha256": "40aff2e9d2d8922e47afd4648e6967497158785fbd1da870e7110266bf944880"
+  },
+  "deep/a/b/c.txt": {
+   "mode": "0o600",
+   "sha256": "a3a5e715f0cc574a73c3f9bebb6bc24f32ffd5b67b387244c2c909da779a1478"
+  },
+  "empty.txt": {
+   "mode": "0o600",
+   "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "pkg/module.py": {
+   "mode": "0o600",
+   "sha256": "e13df8c44af5dea1e412403910b99cc5a48f2ccbf68a66b3374d6ab9cef9fc65"
+  }
+ },
+ "staged_git": {
+  "hooks_path": "",
+  "log": "staged candidate",
+  "remotes": ""
+ }
+}
