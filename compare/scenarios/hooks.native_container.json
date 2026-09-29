@@ -5,5 +5,5 @@
  "target_driver": null,
  "golden": "goldens/reference/hooks.native_container.json",
  "slice": "S3",
- "target_status": "pending: S3b is a declared §4 change (design v2 §5.4); the target compares against a separate declared-change expectation, never by rewriting this golden"
+ "target_status": "pending: S3b is a declared §4 change (design v2 §5.4), so the target is never compared by rewriting this golden; its declared-change checks are target/tests/test_s3b_native_hooks.py (fixtures) and the local owner check evidence/rebuild/s3/owner-check-codex-hooks.json (real pinned CLI handshake); removing the RunTask refusal is S4"
 }

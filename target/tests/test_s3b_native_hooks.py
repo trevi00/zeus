@@ -51,7 +51,7 @@ def entries():
     for event, groups in config.items():
         for g, group in enumerate(groups):
             for h, hook in enumerate(group["hooks"]):
-                key = "<session-flags>/config.toml:" + event.lower() + ":%d:%d" % (g, h)
+                key = "/<session-flags>/config.toml:" + event.lower() + ":%d:%d" % (g, h)
                 current = "sha256:" + hashlib.sha256(json.dumps([event, group["matcher"], hook], sort_keys=True).encode()).hexdigest()
                 if mode == "tamper_after_bind" and state:
                     current = "sha256:" + "0" * 64
@@ -59,8 +59,10 @@ def entries():
                 status = "trusted" if trusted == current else ("modified" if trusted else "untrusted")
                 if mode == "ignore_state":
                     status = "untrusted"
+                # The entry shape the real pinned binary reports (RESEARCH-S3 8.1 owner check): top-level
+                # `command`, `currentHash`, camelCase `trustStatus`, `timeoutSec`.
                 rows.append({"key": key, "currentHash": current, "trustStatus": status, "enabled": True,
-                             "handler": {"type": "command", "command": hook["command"]}, "timeoutSec": hook["timeout"]})
+                             "command": hook["command"], "handlerType": "command", "timeoutSec": hook["timeout"]})
     if mode == "drop":
         rows = []
     return rows
@@ -208,7 +210,7 @@ def test_hooks_are_discovered_in_their_own_container_then_bound_and_verified_in_
     run_entry = run["args"][run["args"].index("-c") + 1]
     assert '"state"={}' in discovery_entry and '"trusted_hash"="sha256:' in run_entry
     # The run's answer shows the bound key; the record shows the verification step.
-    assert json.loads(result["answer"]["summary"])["hooks"] == ["<session-flags>/config.toml:pretooluse:0:0"]
+    assert json.loads(result["answer"]["summary"])["hooks"] == ["/<session-flags>/config.toml:pretooluse:0:0"]
     states = {tuple(step["state"] for step in row["lifecycle"]) for row in records(tmp_path)}
     assert ("created", "start_requested", "running", "stop_confirmed", "evidence_retained", "removed") in states
     main = [row for row in records(tmp_path) if row.get("purpose") != "native_hook_discovery"][0]
