@@ -1,0 +1,116 @@
+{
+ "bad_deadline": {
+  "message": "Deadline must be a timezone-aware ISO timestamp",
+  "refused": "ContractError"
+ },
+ "conflict": {
+  "message": "Conflicting task identity",
+  "refused": "ContractError"
+ },
+ "fence_used": {
+  "message": "Execution identity was used before; rows are never recreated",
+  "refused": "ContractError"
+ },
+ "implement": {
+  "value": {
+   "agent": "worker:implementation",
+   "attempt": 0,
+   "created_at": "2026-01-01T00:00:03+00:00",
+   "error": null,
+   "generation": 0,
+   "id": "5eed0000-0000-4000-8000-000000000002",
+   "input_hash": "b5ae89ed7f1117a9b9be49e51f880b0881825de001be40981884416104d425f7",
+   "lease_owner": null,
+   "lease_until": null,
+   "result": null,
+   "status": "queued"
+  }
+ },
+ "missing_dependency": {
+  "message": "Dependencies must exist before submission",
+  "refused": "ContractError"
+ },
+ "not_assignment": {
+  "message": "Expected task assignment",
+  "refused": "ContractError"
+ },
+ "plan": {
+  "value": {
+   "agent": "lead:improvement",
+   "attempt": 0,
+   "created_at": "2026-01-01T00:00:00+00:00",
+   "error": null,
+   "generation": 0,
+   "id": "5eed0000-0000-4000-8000-000000000001",
+   "input_hash": "4945ef01d236d3175f1f46a50fc03fea8aab154bc6da0921beb3a6a6894df351",
+   "lease_owner": null,
+   "lease_until": null,
+   "result": null,
+   "status": "queued"
+  }
+ },
+ "records": [
+  [
+   "execution_fences",
+   "tasks:5eed0000-0000-4000-8000-000000000009",
+   "a921924797375b0548e3d23a54346d0a477ff441b8a9221fcc5b0e73ddaffcd1"
+  ],
+  [
+   "tasks",
+   "5eed0000-0000-4000-8000-000000000001",
+   "495e5cd1c339d4709fad22c55fb5baf5937ba5e09fb39eea6089e068a424f8ca"
+  ],
+  [
+   "tasks",
+   "5eed0000-0000-4000-8000-000000000002",
+   "45aa9226c9813339da366f34f4b07ff300aa3c24665893f10166e56b6414ddf6"
+  ],
+  [
+   "tasks",
+   "5eed0000-0000-4000-8000-000000000008",
+   "da08bb1459f4a584cd6ee7f732ff288dcb15085a75198d4c6144d1601ce4a05d"
+  ]
+ ],
+ "replay": {
+  "value": {
+   "agent": "lead:improvement",
+   "attempt": 0,
+   "created_at": "2026-01-01T00:00:00+00:00",
+   "error": null,
+   "generation": 0,
+   "id": "5eed0000-0000-4000-8000-000000000001",
+   "input_hash": "4945ef01d236d3175f1f46a50fc03fea8aab154bc6da0921beb3a6a6894df351",
+   "lease_owner": null,
+   "lease_until": null,
+   "result": null,
+   "status": "queued"
+  }
+ },
+ "research_plan": {
+  "message": "Research adoption deferred: approval required",
+  "refused": "ContractError"
+ },
+ "self_dependency": {
+  "message": "Task cannot depend on itself",
+  "refused": "ContractError"
+ },
+ "unauthorized": {
+  "message": "Assignment must follow a direct reporting edge",
+  "refused": "ContractError"
+ },
+ "with_dependency": {
+  "value": {
+   "agent": "lead:improvement",
+   "attempt": 0,
+   "created_at": "2026-01-01T00:00:03+00:00",
+   "error": null,
+   "generation": 0,
+   "id": "5eed0000-0000-4000-8000-000000000008",
+   "input_hash": "609817da93860ee7a7610f55f68f73a1763b1baae52a37719ae9b4feac2fe389",
+   "lease_owner": null,
+   "lease_until": null,
+   "result": null,
+   "status": "queued"
+  }
+ }
+}
