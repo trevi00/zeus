@@ -2,8 +2,7 @@
  "family": "review.releases_units",
  "description": "S4 moved-ahead owner operations (lead decision Option A): Releases.propose/review (candidate identity, incumbent checks, idempotent propose, ticket binding, stale/unauthorized/duplicate/conflicting reviews, lead-before-conductor, rejected is terminal, joining a caller's unit) and intake ticket_binding (none, valid, nested, conflicting, invalid, missing, closed, changed, lifecycle); MemoryStore",
  "reference_driver": "drivers/reference/s4_releases.py",
- "target_driver": null,
+ "target_driver": "drivers/target/s4_releases.py",
  "golden": "goldens/reference/review.releases_units.json",
- "slice": "S4",
- "target_status": "pending: Releases.propose/review and ticket_binding not yet moved"
+ "slice": "S4"
 }
