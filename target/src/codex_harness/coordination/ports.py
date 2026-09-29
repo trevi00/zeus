@@ -13,4 +13,4 @@ S4 (lead decision Option A) declares the buckets its moved-ahead owner operation
 from __future__ import annotations
 
 OWNED_BUCKETS = ("tasks", "decisions_pending", "outbox", "events", "execution_fences", "execution_notices",
-                 "execution_notice_errors", "execution_time_events", "workflow_inbox")
+                 "execution_notice_errors", "execution_time_events", "workflow_inbox", "execution_rejections")

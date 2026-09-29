@@ -20,7 +20,10 @@ from types import SimpleNamespace  # noqa: E402
 
 import determinism  # noqa: E402
 import s4_time  # noqa: E402
-from codex_harness.coordination.application import execution_rejections, execution_time  # noqa: E402
+from codex_harness.coordination.application import (  # noqa: E402
+    execution_rejections,
+    execution_time,
+)
 from codex_harness.routing.adapters.organization_source import packaged_organization  # noqa: E402
 from codex_harness.storage.adapters.memory_store import MemoryStore  # noqa: E402
 from s1_target import PortClock  # noqa: E402
