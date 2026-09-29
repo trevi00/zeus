@@ -2,8 +2,7 @@
  "family": "observation.termination_markers",
  "description": "S4 moved-ahead Observer write side (lead decision Option A): the durable unconfirmed-effect marker (termination_id, mark_unconfirmed, close_unconfirmed: idempotent mark, unknown closure refused, closed/absent markers not closed again) for tasks and decisions; MemoryStore, fixed clock and process identity",
  "reference_driver": "drivers/reference/s4_markers.py",
- "target_driver": null,
+ "target_driver": "drivers/target/s4_markers.py",
  "golden": "goldens/reference/observation.termination_markers.json",
- "slice": "S4",
- "target_status": "pending: the Observer marker operations are not yet moved"
+ "slice": "S4"
 }
