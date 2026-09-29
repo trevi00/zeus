@@ -185,6 +185,16 @@ def reconcile(run_directory, docker: str = "docker", *, runner) -> dict:
     if cleanup_debt(record) == "client_cleanup_unconfirmed":
         return {"reconciled": False, "run_id": record["run_id"], "container": record.get("container"),
                 "reason": "client_cleanup_unconfirmed"}
+    for dependent in record.get("dependents") or []:
+        # S3b (fix F1): a parent is never resolved before its dependent (hook discovery) run proves its own
+        # container and client gone; that record is reconciled first, by the same rule.
+        try:
+            state = json.loads(Path(dependent).read_text("utf-8")).get("state")
+        except (OSError, ValueError, AttributeError):
+            state = "unknown"
+        if state not in spec.RESOLVED:
+            return {"reconciled": False, "run_id": record["run_id"], "container": record.get("container"),
+                    "reason": "dependent_unresolved", "dependent": {"record": str(dependent), "state": state}}
     probe = owned_container.OwnedContainer({"limits": spec.LIMITS, "image": record.get("image")}, docker, record["run_id"],
                            record["role"], runner=runner)
     listed = owned_container.docker_call(runner, docker, ["ps", "-a", "--no-trunc", "--filter", "name=^/" + probe.name + "$",

@@ -774,9 +774,9 @@ class IsolatedCodexRuntime:
             hook_set, hook_state = prepared["hooks"], {}
             if hook_set is not None:
                 try:
-                    hook_state = self._bind_hooks(prepared, workspace, scrubber)
+                    hook_state = self._bind_hooks(prepared, workspace, scrubber, admission)
                 except BaseException as exc:
-                    if self.record["state"] == "prepared":
+                    if self.record["state"] in ("prepared", "hook_discovery_bound"):
                         # No run container was ever created: a refusal that never ran, resolved by name.
                         self._advance("refused", reason="hook_discovery_" + getattr(exc, "reason_code",
                                                                                    type(exc).__name__))
@@ -808,7 +808,8 @@ class IsolatedCodexRuntime:
                 except IsolationError:
                     pass
             self._settle_quietly(admission)
-            if self.record.get("state") != "hook_discovery_unconfirmed":
+            if admission.entry is None or admission.entry.get("state") != "issued":
+                # An unsettled copy (a dependent discovery container not proven gone) stays for reconcile.
                 self._discard(self.prepared)
             raise
         started = time.monotonic()
@@ -930,12 +931,17 @@ class IsolatedCodexRuntime:
         self._discard(prepared)
         return scrubber.scrub({**value, "isolation": isolation})
 
-    def _bind_hooks(self, prepared, workspace, scrubber) -> dict:
+    def _bind_hooks(self, prepared, workspace, scrubber, admission) -> dict:
         """S3b discover-then-bind, in its own owned container of the same profile, mounts and credential
         copy: the App Server with the hook set configured and no trust state lists the hooks (no turn, no
         model); the peer-reported hash of exactly this set's entries becomes the trust state the run's
         container starts with. The discovery container follows the one lifecycle rule; if its stop cannot
-        be confirmed the run's record is left unresolved, so its credential copy stays unsettled."""
+        be confirmed the run's record is left unresolved, so its credential copy stays unsettled.
+
+        Fix F1 (S3 round 1): before the discovery container can exist, its durable run record is bound as a
+        dependent of the issued credential copy (credentials ledger) and of the run's record (`dependents`):
+        settlement, the broker's reconcile and the parent's reconcile all refuse until the discovery record
+        proves its own container and client gone. A discovery container that is not removed refuses the run."""
         hook_set = prepared["hooks"]
         run_id = uuid4().hex
         directory = self.root / run_id
@@ -943,6 +949,11 @@ class IsolatedCodexRuntime:
         container = OwnedContainer(self.config, self.docker, run_id, "codex", runner=self.host.runner)
         record = new_record(directory, role="codex", workspace=workspace, config=self.config, container=container,
                             profile=self.role_profile, purpose="native_hook_discovery", parent=self.container.run_id)
+        # Durable before anything is created: the child's own record, then the two bindings (fix F1).
+        advance(record, "prepared", purpose="native_hook_discovery")
+        admission.bind_dependent(record["record"])
+        self.record["dependents"] = [record["record"]]
+        self._advance("hook_discovery_bound", discovery=record["record"])
         probe = AppServer(executable=CODEX_EXECUTABLE, context_window=self.context_window,
                           hooks=hook_set.configuration)
         args = container_args(self.config, name=container.name, run_id=run_id, role="codex", network=self.network,
@@ -998,7 +1009,10 @@ class IsolatedCodexRuntime:
             self._advance("hook_discovery_unconfirmed", discovery=str(directory / "run.json"))
             raise ContractError("Codex hook discovery container termination could not be confirmed; recovery record "
                                 + str(directory / "run.json"))
-        retire(container, record, {"hooks_bound": sorted(state)}, "hooks_bound")
+        removal = retire(container, record, {"hooks_bound": sorted(state)}, "hooks_bound")
+        if not removal.get("removed"):
+            raise ContractError("Codex hook discovery container could not be removed; the run's credential copy stays "
+                                "unsettled; recovery record " + str(directory / "run.json"))
         return state
 
     def _after_stop(self, admission, prepared) -> dict:
@@ -1015,11 +1029,9 @@ class IsolatedCodexRuntime:
         return admission.settle()
 
     def _settle_quietly(self, admission) -> None:
-        """A refusal before any container started: the untouched copy settles as unchanged. A hook
-        discovery container whose stop is unconfirmed keeps the copy unsettled (S3b)."""
+        """A refusal before any run container started: the untouched copy settles as unchanged. A copy with a
+        dependent hook-discovery container not proven gone is refused by the broker and stays issued (S3b)."""
         if admission.entry is None or admission.entry.get("state") != "issued":
-            return
-        if self.record is not None and self.record.get("state") == "hook_discovery_unconfirmed":
             return
         try:
             admission.settle()

@@ -14,6 +14,7 @@ from __future__ import annotations
 import json
 import os
 import shlex
+import subprocess
 import sys
 from pathlib import Path
 
@@ -32,7 +33,7 @@ from test_role_containers import (  # noqa: E402,F401  `candidate`, `store`, `co
 )
 
 from codex_harness.execution.adapters.providers import native_hooks as nh  # noqa: E402
-from codex_harness.kernel.errors import IsolationError  # noqa: E402
+from codex_harness.kernel.errors import ContractError, IsolationError  # noqa: E402
 
 HOOK_SERVER = r'''
 import hashlib, json, sys, tomllib
@@ -105,6 +106,17 @@ class HookDocker(FakeDocker):
         super().__init__(tmp_path, mode)
         self.hook_script = tmp_path / "hook_server.py"
         self.hook_script.write_text(HOOK_SERVER, encoding="utf-8")
+        self.hold_running = False  # injected fault: every container keeps showing running; kill has no effect
+
+    def __call__(self, docker, args, *, timeout, env=None):
+        if self.hold_running and args[0] == "kill":
+            self.calls.append({"args": list(args), "env": dict(env or {})})
+            return subprocess.CompletedProcess(args, 0, "", "")
+        if self.hold_running and args[0] == "inspect" and args[2] != iw.INSPECT_FORMAT and args[-1] in self.containers:
+            self.calls.append({"args": list(args), "env": dict(env or {})})
+            self.containers[args[-1]]["status"] = "running"
+            return subprocess.CompletedProcess(args, 0, "running 0 false\n", "")
+        return super().__call__(docker, args, timeout=timeout, env=env)
 
     def tree(self):
         fake = self
@@ -212,9 +224,15 @@ def test_hooks_are_discovered_in_their_own_container_then_bound_and_verified_in_
     # The run's answer shows the bound key; the record shows the verification step.
     assert json.loads(result["answer"]["summary"])["hooks"] == ["/<session-flags>/config.toml:pretooluse:0:0"]
     states = {tuple(step["state"] for step in row["lifecycle"]) for row in records(tmp_path)}
-    assert ("created", "start_requested", "running", "stop_confirmed", "evidence_retained", "removed") in states
+    assert ("prepared", "created", "start_requested", "running", "stop_confirmed", "evidence_retained",
+            "removed") in states
     main = [row for row in records(tmp_path) if row.get("purpose") != "native_hook_discovery"][0]
-    assert "hooks_verified" in [step["state"] for step in main["lifecycle"]] and main["state"] == "removed"
+    child = [row for row in records(tmp_path) if row.get("purpose") == "native_hook_discovery"][0]
+    steps = [step["state"] for step in main["lifecycle"]]
+    assert steps.index("hook_discovery_bound") < steps.index("created")  # bound before the run container exists
+    assert "hooks_verified" in steps and main["state"] == "removed" and main["dependents"] == [child["record"]]
+    [entry] = rc.CodexCredentialBroker(store).entries()
+    assert entry["dependents"] == [child["record"]] and entry["state"] == "unchanged"
     assert not fake.containers and all(row["state"] == "removed" for row in records(tmp_path))
     [entry] = rc.CodexCredentialBroker(store).entries()
     assert entry["state"] == "unchanged"
@@ -257,3 +275,69 @@ def test_bound_state_and_verification_are_exact(tmp_path):
     with pytest.raises(IsolationError, match="codex_native_hook_undiscovered"):
         nh.bound_state([{"hooks": [row, {**row, "key": "k2"}]}], hook_set)
     (tmp_path / "h").chmod(0o755)
+
+
+# ---- fix F1 (S3 round 1): the discovery container is a durable dependent of the issued copy ----------
+def test_f1_unconfirmed_discovery_blocks_parent_reconcile_and_other_workspace_admission_until_resolved(
+        config, tmp_path, store, candidate, fake):  # noqa: F811
+    config = {**config, "limits": {**config["limits"], "cleanup_seconds": 1}}
+    hooks = lambda destination: nh.container_hooks(active(), reader(), destination)  # noqa: E731
+    fake.hold_running = True  # the discovery container's stop can never be confirmed
+    with pytest.raises(ContractError, match="discovery container termination could not be confirmed"):
+        run_codex(config, tmp_path, store, candidate, fake, hooks=hooks)
+    [parent] = [row for row in records(tmp_path) if row.get("purpose") != "native_hook_discovery"]
+    [child] = [row for row in records(tmp_path) if row.get("purpose") == "native_hook_discovery"]
+    assert parent["state"] == "hook_discovery_unconfirmed" and child["state"] == "stop_unconfirmed"
+    assert parent["dependents"] == [child["record"]] and len(fake.created()) == 1  # no run container
+    [entry] = rc.CodexCredentialBroker(store).entries()
+    assert entry["state"] == "issued" and entry["dependents"] == [child["record"]]
+    assert (Path(entry["home"]) / "auth.json").is_file()  # the copy stays for the settlement that must wait
+    original = (store / "auth.json").read_bytes()
+    parent_dir, child_dir = Path(parent["record"]).parent, Path(child["record"]).parent
+    fake.hold_running = False
+
+    # (1) The parent's own container name is absent, yet its reconcile refuses while the child is unresolved.
+    refused = iw.reconcile(parent_dir)
+    assert refused["reconciled"] is False and refused["reason"] == "dependent_unresolved"
+    assert json.loads((parent_dir / "run.json").read_text())["state"] == "hook_discovery_unconfirmed"
+
+    # (2) Even a parent record that claims `removed` (the reviewed trigger) never lets the broker settle the
+    # shared copy or issue a new one, for a different workspace too.
+    saved = (parent_dir / "run.json").read_bytes()
+    claimed = json.loads(saved)
+    claimed["state"] = "removed"
+    (parent_dir / "run.json").write_text(json.dumps(claimed))
+    other = tmp_path / "other"
+    other.mkdir()
+    for args in (["init", "-q"], ["add", "-A"], ["commit", "-q", "--allow-empty", "-m", "o"]):
+        subprocess.run(["git", "-C", str(other), "-c", "user.name=t", "-c", "user.email=t@localhost", *args],
+                       check=True, capture_output=True)
+    created = len(fake.created())
+    with pytest.raises(IsolationError, match="codex_credential_prior_run_unsettled") as unsettled:
+        run_codex(config, tmp_path, store, other, fake)
+    assert "dependents" in str(unsettled.value) and len(fake.created()) == created
+    [still] = rc.CodexCredentialBroker(store).entries()
+    assert still["state"] == "issued" and (store / "auth.json").read_bytes() == original
+    assert (Path(still["home"]) / "auth.json").is_file()
+    (parent_dir / "run.json").write_bytes(saved)
+
+    # (3) Positive control: the child is proven gone (its exact container absent), then the parent; only
+    # then is the copy settled (unchanged) and a different workspace admitted with a fresh copy.
+    for identifier in list(fake.containers):
+        if fake.containers[identifier].get("name", "").endswith(child["run_id"]):
+            del fake.containers[identifier]
+    assert iw.reconcile(child_dir)["reconciled"] is True
+    assert iw.reconcile(parent_dir)["reconciled"] is True
+    result = run_codex(config, tmp_path, store, other, fake)
+    assert result["isolation"]["outcome"] == "reviewed"
+    first = [row for row in rc.CodexCredentialBroker(store).entries() if row["run_id"] == entry["run_id"]][0]
+    assert first["state"] == "unchanged" and not Path(first["home"]).exists()
+    assert (store / "auth.json").read_bytes() == original
+
+
+def test_f1_no_hook_recovery_is_unchanged(config, tmp_path, store, candidate, fake):  # noqa: F811
+    """No dependents are recorded without hooks: the M7 record and ledger shapes are unchanged."""
+    run_codex(config, tmp_path, store, candidate, fake)
+    [row] = records(tmp_path)
+    [entry] = rc.CodexCredentialBroker(store).entries()
+    assert "dependents" not in row and "dependents" not in entry and entry["state"] == "unchanged"

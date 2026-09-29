@@ -10,7 +10,8 @@ Owns: `read_credential_file` (a credential file as untrusted input), `CodexCrede
     created)
 Does not own: the container, its argv or run record (execution.adapters.containers); the output boundary
     (credentials.adapters.scrubber); the shape rules (credentials.domain.codex_credential)
-Entry points: CodexCredentialBroker, Admission, read_credential_file, discard_tree
+Entry points: CodexCredentialBroker, Admission (issue, bind_dependent, settle, release), read_credential_file,
+    discard_tree
 Contracts: INV-CODEX-CREDENTIAL-001
 
 Moved from SOURCE M7 `adapters/role_containers` (the broker half). Behaviour is the M7 behaviour,
@@ -219,13 +220,37 @@ class CodexCredentialBroker:
                 raise IsolationError("codex_credential_prior_run_unsettled",
                                      json.dumps({"run_id": entry["run_id"], "state": record.get("state"),
                                                  "record": entry["record"]}, sort_keys=True))
+            pending = self._unsettled_dependents(entry)
+            if pending:
+                # S3b (fix F1): a dependent container of the run (hook discovery) may still hold this copy.
+                raise IsolationError("codex_credential_prior_run_unsettled",
+                                     json.dumps({"run_id": entry["run_id"], "state": record.get("state"),
+                                                 "record": entry["record"], "dependents": pending}, sort_keys=True))
             settled.append(self.settle(entry))
             discard_tree(entry["home"])  # the settled copy's home: its task state never flows anywhere
         return settled
 
+    def _unsettled_dependents(self, entry: dict) -> list:
+        """The dependent run records bound to this copy (`Admission.bind_dependent`) that do not prove their
+        container gone; an unreadable or missing record is unknown, never settled."""
+        pending = []
+        for path in entry.get("dependents") or []:
+            try:
+                state = json.loads(Path(path).read_text("utf-8")).get("state")
+            except (OSError, ValueError, AttributeError):
+                state = "unknown"
+            if state not in SETTLED_RUN_STATES:
+                pending.append({"record": str(path), "state": state})
+        return pending
+
     def settle(self, entry: dict) -> dict:
         """Credential-only write-back of one stopped run's per-run copy. Unchanged: nothing is written.
-        Changed and valid: atomic replacement. Anything else: quarantine (raised as a refusal)."""
+        Changed and valid: atomic replacement. Anything else: quarantine (raised as a refusal). A copy with
+        an unsettled dependent container is not settled at all (a refusal; the entry stays issued)."""
+        pending = self._unsettled_dependents(entry)
+        if pending:
+            raise IsolationError("codex_credential_dependent_unsettled",
+                                 json.dumps({"run_id": entry["run_id"], "dependents": pending}, sort_keys=True))
         home = Path(entry["home"])
         try:
             data = read_credential_file(home / "auth.json")
@@ -298,6 +323,14 @@ class Admission:
         self.broker._write_entry(self.entry)
         return {"account_sha256": hashlib.sha256(self.shape["account_id"].encode("utf-8")).hexdigest(),
                 "issued": True}
+
+    def bind_dependent(self, record_path) -> None:
+        """Durably bind another container's run record to this issued copy BEFORE that container can exist
+        (S3b hook discovery shares the copy): settlement and reconcile then wait until that record proves
+        its container gone (fix F1)."""
+        require(self.entry is not None and self.entry.get("state") == "issued", "Nothing issued to bind a dependent to")
+        self.entry.setdefault("dependents", []).append(str(record_path))
+        self.broker._write_entry(self.entry)
 
     def settle(self) -> dict:
         require(self.entry is not None, "Nothing was issued")
