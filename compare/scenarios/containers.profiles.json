@@ -2,8 +2,7 @@
  "family": "containers.profiles",
  "description": "S3 containers: the four role-container profiles through their real transports up to the before-start refusal (exact docker create argv, docker client environment names, run record lifecycle, per-run home/ledger residue), container_args under both uid branches and comma refusals, forbidden_controls probes (incl. the RESEARCH-S3 F-R1 privileged/seccomp probes), isolation configuration parse and preflight refusals; a scripted docker client, no daemon",
  "reference_driver": "drivers/reference/s3_containers.py",
- "target_driver": null,
+ "target_driver": "drivers/target/s3_containers.py",
  "golden": "goldens/reference/containers.profiles.json",
- "slice": "S3",
- "target_status": "pending: the static half (constants, config parse, container_args, forbidden_controls, preflight) equals this golden in target/tests/test_s3_units.py; the four profile runs need the launcher (evidence/rebuild/s3/pending.json)"
+ "slice": "S3"
 }

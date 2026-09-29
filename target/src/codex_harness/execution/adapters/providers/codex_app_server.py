@@ -1,0 +1,364 @@
+"""The Codex App Server JSON-RPC stdio client (versioned protocol; no shell interpolation or shared thread).
+
+Layer: adapters
+Context: execution
+Owns: `AppServer` (initialize, native-hook trust binding, thread start/resume, one turn with events, usage,
+    rotation, inspection-blocked and usage-limit outcomes, bounded termination), `toml_literal`,
+    `host_environment` (the host App Server's allow-listed environment), `namespace_failure`,
+    `READ_ONLY_INSTRUCTIONS`, `resolve_codex` (the installed CLI; `codex exec` itself moves in S4)
+Does not own: the role container around it (execution.adapters.containers.launcher attaches this client
+    to `docker start --attach --interactive`), process creation (the injected host_os `ChildProcesses`
+    port), the output schema subset (execution.adapters.output_schema)
+Entry points: AppServer, toml_literal, host_environment, namespace_failure, resolve_codex,
+    READ_ONLY_INSTRUCTIONS, HOST_ENVIRONMENT
+Contracts: INV-ROLE-CONTAINER-001, INV-OUTPUT-001, INV-RECURRENCE-001
+
+Moved from SOURCE M7 `adapters/app_server` (and `resolve_codex` from M7 `adapters/codex`). The one
+change of shape: the host process is created through `processes` (the chokepoint port) instead of a
+direct `subprocess.Popen`, with the same arguments; an App Server with no `processes` and no attached
+process refuses to spawn. The hook trust binding is characterized by `hooks.native_container`
+(RESEARCH-S3 F-R2/F-R3: the peer-reported `currentHash` is bound whatever its trust status).
+"""
+
+from __future__ import annotations
+
+import json
+import math
+import os
+import queue
+import shutil
+import signal
+import subprocess
+import threading
+import time
+from collections import deque
+from pathlib import Path
+
+from codex_harness.execution.adapters.execution_output import completed_output
+from codex_harness.execution.adapters.output_schema import preflight
+from codex_harness.kernel.errors import ContractError, require
+from codex_harness.kernel.ids import canonical
+from codex_harness.kernel.policy import POLICY
+
+
+def resolve_codex() -> str | None:
+    executable = shutil.which("codex.cmd") or shutil.which("codex")
+    if executable and executable.lower().endswith(".cmd"):
+        package = Path(executable).parent / "node_modules/@openai/codex/node_modules/@openai"
+        candidates = sorted(package.glob("codex-win32-*/vendor/*/bin/codex.exe"))
+        if len(candidates) == 1:
+            return str(candidates[0])
+    return executable
+
+NAMESPACE_DENIAL = "bwrap: No permissions to create a new namespace"
+# Phase-neutral: the same clean-checkout rule for every read-only turn. Whether this is a candidate review
+# (review_context) or a pre-implementation role at base (role_context) is stated by the assignment itself;
+# this text asserts no candidate, worker or verifier (research-program-001 conductor delivery).
+READ_ONLY_INSTRUCTIONS = (
+    "This is a read-only assignment in a clean checkout at its pinned revision. Inspect it, and run tests "
+    "only when the assignment's review_context names the interpreter and checkout for them, but do not "
+    "create, modify or delete any file in this checkout, tracked or untracked: no frame files, logs, notes "
+    "or redirected test output; do not commit, push, merge or deploy. Collect any test output from stdout. "
+    "Record your answer (for a review, one concise review frame and verdict) in your response and tool "
+    "stdout, which Zeus preserves in its artifact store outside the checkout. Inspect only the assigned "
+    "input; the assignment states which phase this is and whether any candidate, worker or verifier "
+    "exists; full re-verification belongs to the named owner or CI.")
+
+
+def namespace_failure(event: object) -> bool:
+    """Inspect completed execution output only, never prompts or command arguments."""
+    if not isinstance(event, dict) or event.get("method") != "item/completed":
+        return False
+    params = event.get("params")
+    if (not isinstance(params, dict)
+            or not all(isinstance(params.get(k), str) and params[k]
+                       for k in ("threadId", "turnId"))):
+        return False
+    item = params.get("item")
+    return (isinstance(item, dict) and item.get("type") == "commandExecution"
+            and isinstance(item.get("id"), str) and bool(item["id"])
+            and item.get("status") == "failed"
+            and type(item.get("exitCode")) is int and item["exitCode"] != 0
+            and isinstance(item.get("aggregatedOutput"), str)
+            and NAMESPACE_DENIAL in item["aggregatedOutput"])
+
+
+# INV-ROLE-CONTAINER-001 (D2): a host App Server (used only where no role container is selected) gets an
+# explicit environment allow-list instead of the whole host environment, so no other provider's token,
+# store DSN, Redis or host-control secret reaches it by inheritance. Values are never logged.
+HOST_ENVIRONMENT = ("PATH", "HOME", "USER", "LOGNAME", "SHELL", "LANG", "LANGUAGE", "LC_ALL", "LC_CTYPE", "TERM",
+                    "TMPDIR", "TZ", "CODEX_HOME", "SSL_CERT_FILE", "SSL_CERT_DIR", "HTTP_PROXY", "HTTPS_PROXY",
+                    "NO_PROXY", "http_proxy", "https_proxy", "no_proxy", "XDG_CONFIG_HOME", "XDG_CACHE_HOME",
+                    "XDG_DATA_HOME", "XDG_STATE_HOME", "XDG_RUNTIME_DIR", "DBUS_SESSION_BUS_ADDRESS",
+                    "PYTHONIOENCODING", "PYTHONUTF8", "SYSTEMROOT", "SystemRoot", "WINDIR", "COMSPEC", "PATHEXT",
+                    "TEMP", "TMP", "USERPROFILE", "APPDATA", "LOCALAPPDATA", "PROGRAMDATA", "ProgramData",
+                    "HOMEDRIVE", "HOMEPATH")
+
+
+def host_environment(base=None) -> dict:
+    """The allow-listed environment of a host `codex app-server` process."""
+    source = os.environ if base is None else base
+    return {name: source[name] for name in HOST_ENVIRONMENT if name in source}
+
+
+def toml_literal(value):
+    if isinstance(value, dict):
+        return "{" + ",".join(json.dumps(k) + "=" + toml_literal(v) for k, v in value.items()) + "}"
+    if isinstance(value, list):
+        return "[" + ",".join(toml_literal(v) for v in value) + "]"
+    return json.dumps(value)
+
+
+class AppServer:
+    """Versioned Codex JSON-RPC stdio client; no shell interpolation or shared thread."""
+
+    def __init__(self, executable: str | None = None, hooks: dict | None = None,
+                 context_window: int | None = None, environment: dict | None = None, *, processes=None):
+        self.processes = processes
+        self.executable = executable or resolve_codex()
+        self.environment = environment
+        require(bool(self.executable), "Codex CLI unavailable")
+        self.process = None
+        self.sequence = 0
+        self.incoming = queue.Queue()
+        self.notifications = deque()
+        self.stderr = deque(maxlen=20)
+        self.hooks = hooks or {}
+        self.hook_state = {}
+        self.readers = []
+        self.context_window = context_window
+
+    def server_arguments(self) -> list:
+        """`app-server` and its options: the same list for the host process and a role container."""
+        argv = ["app-server"]
+        if self.context_window:
+            argv += ["-c", "model_context_window=" + str(self.context_window)]
+        if self.hooks:
+            argv += ["-c", "hooks=" + toml_literal({**self.hooks, "state": self.hook_state}), "--enable", "hooks"]
+        return argv
+
+    def _spawn(self, argv: list):
+        require(self.processes is not None, "No process creator was injected for a host App Server")
+        return self.processes.popen(argv, process_group=True, stdin=subprocess.PIPE,
+                                    stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                                    text=True, encoding="utf-8", errors="replace",
+                                    env=self.environment if self.environment is not None else host_environment())
+
+    def thread_cwd(self, cwd) -> str:
+        """The working directory named to the server; a role container names its own mount."""
+        return str(Path(cwd).resolve())
+
+    def __enter__(self):
+        self.process = self._spawn([self.executable, *self.server_arguments()])
+        self.readers = [threading.Thread(target=self._read, daemon=True), threading.Thread(target=self._errors, daemon=True)]
+        for reader in self.readers:
+            reader.start()
+        self.request("initialize", {"clientInfo": {"name": "codex_harness", "version": "0.1.0"},
+                                    "capabilities": {"experimentalApi": True}}, 20)
+        self.send({"method": "initialized"})
+        return self
+
+    def _read(self):
+        try:
+            for line in self.process.stdout:
+                try:
+                    self.incoming.put(json.loads(line))
+                except json.JSONDecodeError:
+                    continue
+        finally:
+            self.incoming.put(None)
+
+    def _errors(self):
+        for line in self.process.stderr:
+            self.stderr.append(line)
+
+    def send(self, value: dict):
+        self.process.stdin.write(canonical(value) + "\n")
+        self.process.stdin.flush()
+
+    def _receive(self, timeout: float, poll: bool = False):
+        try:
+            value = self.incoming.get(timeout=max(timeout, 0.01))
+        except queue.Empty as exc:
+            if poll:
+                return {}
+            raise ContractError("Codex App Server timed out") from exc
+        require(value is not None, "Codex App Server exited unexpectedly: " + "".join(self.stderr)[-2000:])
+        if "id" in value and "method" in value:
+            # This unattended protocol cannot answer interactive questions as user consent.
+            self.send({"id": value["id"], "error": {"code": -32601,
+                       "message": "Interactive requests are unsupported; use assignment constraints"}})
+        return value
+
+    def request(self, method: str, params: dict, timeout: float = 30):
+        require(type(timeout) in (int, float) and math.isfinite(timeout) and timeout > 0,
+                'Request timeout must be finite and positive')
+        deadline = time.monotonic() + timeout
+        if method == "turn/start" and "outputSchema" in params:
+            preflight(params["outputSchema"])
+        self.sequence += 1
+        request_id = self.sequence
+        self.send({"id": request_id, "method": method, "params": params})
+        while time.monotonic() < deadline:
+            value = self._receive(deadline - time.monotonic())
+            if value.get("id") == request_id and "method" not in value:
+                require(time.monotonic() < deadline, f"Codex {method} timed out")
+                require("error" not in value, f"Codex {method} error: {value.get('error')}")
+                return value.get("result", {})
+            self.notifications.append(value)
+        raise ContractError(f"Codex {method} timed out")
+
+    def run(self, prompt: str, cwd: str, schema: dict, timeout: int = 240,
+            thread_id: str | None = None, on_event=None, read_only: bool = False, on_tick=None,
+            model: str | None = None) -> dict:
+        require(type(timeout) in (int, float) and math.isfinite(timeout) and timeout > 0,
+                'Execution timeout must be finite and positive')
+        deadline = time.monotonic() + timeout
+        def request_budget():
+            remaining = deadline - time.monotonic()
+            require(remaining > 0, 'Codex execution budget exceeded before turn start')
+            return min(30, remaining)
+
+        require(model is None or (isinstance(model, str) and model.strip()),
+                "model must be a nonempty string")
+        # In a role container the sandbox is relaxed only inside it: the read-only checkout, the absent
+        # secrets and socket are the OS boundary there (INV-ROLE-CONTAINER-001, D2).
+        options = {"cwd": self.thread_cwd(cwd), "approvalPolicy": "never",
+                   "sandbox": "danger-full-access"}
+        if model is not None:
+            options["model"] = model
+        if read_only:
+            # review-contract-001: the same rule the executor enforces afterwards (a clean checkout at
+            # the candidate commit), stated up front for both thread/start and thread/resume.
+            options["developerInstructions"] = READ_ONLY_INSTRUCTIONS
+        if self.hooks and not self.hook_state:
+            discovered = self.request("hooks/list", {"cwds": [options["cwd"]]}, request_budget())
+            commands = {hook["command"] for groups in self.hooks.values()
+                        for group in groups for hook in group["hooks"]}
+            entries = [hook for row in discovered["data"] for hook in row["hooks"]
+                       if hook.get("handler", {}).get("command") in commands
+                       or hook.get("command") in commands]
+            require(len(entries) == sum(len(g["hooks"]) for groups in self.hooks.values() for g in groups),
+                    "Codex did not discover all verified hooks")
+            self.hook_state = {hook["key"]: {"enabled": True, "trusted_hash": hook["currentHash"]} for hook in entries}
+            self.__exit__()
+            self.incoming = queue.Queue()
+            self.notifications.clear()
+            self.__enter__()
+        if thread_id:
+            response = self.request("thread/resume", {"threadId": thread_id, **options}, request_budget())
+        else:
+            response = self.request("thread/start", options, request_budget())
+        thread_id = response["thread"]["id"]
+        turn_options = {"threadId": thread_id,
+                        "input": [{"type": "text", "text": prompt}], "outputSchema": schema}
+        if model is not None:
+            turn_options["model"] = model
+        turn = self.request("turn/start", turn_options, request_budget())
+        turn_id = turn["turn"]["id"]
+        events, answer_text, usage = [], "", None
+        inspection_failures = {}
+        rotate, interrupted = False, False
+        active_tools = set()
+
+        def blocked_result(error=None):
+            # INV-RELEASE-001: transport loss cannot erase observed inspection failure.
+            return {"answer": None, "model_answer_text": answer_text, "events": events,
+                    "thread_id": thread_id, "usage": usage, "rotate": False,
+                    "interrupted": False, "inspection_blocked": True,
+                    "inspection_failures": list(inspection_failures.values()),
+                    "termination_error": error, "requested_model": model}
+
+        while time.monotonic() < deadline:
+            if on_tick:
+                on_tick()
+            try:
+                event = (self.notifications.popleft() if self.notifications
+                         else self._receive(min(5, deadline - time.monotonic()), poll=True))
+            except (ContractError, OSError) as exc:
+                if inspection_failures:
+                    return blocked_result(str(exc))
+                raise
+            if not event:
+                continue
+            method, params = event.get("method", ""), event.get("params", {})
+            if params.get("threadId", thread_id) != thread_id:
+                continue
+            if params.get("turnId", turn_id) != turn_id:
+                continue
+            events.append(event)
+            if on_event:
+                on_event(event)
+            if method == "thread/tokenUsage/updated":
+                usage = params["tokenUsage"]
+                capacity = usage.get("modelContextWindow")
+                # Latest request occupancy is not the lifetime total across requests.
+                rotate = rotate or bool(capacity and usage["last"]["totalTokens"] >= capacity * POLICY.context_checkpoint_fraction)
+            item = params.get("item", {})
+            if method == "item/started" and item.get("type") in {"commandExecution", "fileChange", "mcpToolCall"}:
+                active_tools.add(item["id"])
+            if method == "item/completed":
+                active_tools.discard(item.get("id"))
+                if read_only and namespace_failure(event):
+                    # INV-RECURRENCE-001: redelivery of one command is not a new incident.
+                    inspection_failures.setdefault(item["id"], event)
+                if item.get("type") == "agentMessage":
+                    answer_text = item.get("text", "")
+            if method == "turn/completed":
+                if params["turn"].get("id") != turn_id:
+                    continue
+                status = params["turn"]["status"]
+                if inspection_failures:
+                    return blocked_result()
+                error = params["turn"].get("error")
+                # INV-RECURRENCE-001: only the provider's failed-turn field is authoritative.
+                if (status == "failed" and params.get("threadId") == thread_id
+                        and isinstance(error, dict)
+                        and error.get("codexErrorInfo") == "usageLimitExceeded"):
+                    return {"answer": None, "events": events, "thread_id": thread_id,
+                            "turn_id": turn_id, "usage": usage, "rotate": False,
+                            "interrupted": False, "model_answer_text": answer_text,
+                            "failure": {"cause": "codex-provider-usage-limit-exceeded",
+                                        "provider_error": error}}
+                require(status in {"completed", "interrupted"},
+                        f"Codex turn failed: {params['turn'].get('error')}")
+                if status == "completed":
+                    output = completed_output(answer_text, schema)
+                    if output.get('failure'):
+                        return {**output, 'events': events, 'thread_id': thread_id, 'turn_id': turn_id,
+                                'usage': usage, 'rotate': rotate, 'interrupted': False, 'requested_model': model}
+                    answer = output['answer']
+                else:
+                    answer = None
+                return {"answer": answer, "events": events, "thread_id": thread_id,
+                        "usage": usage, "rotate": rotate, "interrupted": status == "interrupted",
+                        "requested_model": model}
+            if rotate and not active_tools and not interrupted and not inspection_failures:
+                self.request("turn/interrupt", {"threadId": thread_id, "turnId": turn_id})
+                interrupted = True
+        if inspection_failures:
+            return blocked_result("Codex turn execution budget exceeded")
+        raise ContractError("Codex turn execution budget exceeded")
+
+    def __exit__(self, *_):
+        if not self.process:
+            return
+        if self.process.poll() is None:
+            if os.name == "nt":
+                self.processes.run(["taskkill", "/PID", str(self.process.pid), "/T", "/F"],
+                                   capture_output=True, timeout=20)
+            else:
+                os.killpg(self.process.pid, signal.SIGTERM)
+            try:
+                self.process.wait(timeout=20)
+            except subprocess.TimeoutExpired:
+                # INV-RESOURCE-001: reap a server that ignores graceful termination.
+                if os.name == "nt":
+                    self.process.kill()
+                else:
+                    os.killpg(self.process.pid, signal.SIGKILL)
+                self.process.wait(timeout=20)
+        for reader in self.readers:
+            reader.join(timeout=2)
+        for stream in (self.process.stdin, self.process.stdout, self.process.stderr):
+            stream.close()

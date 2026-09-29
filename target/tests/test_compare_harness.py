@@ -53,7 +53,7 @@ S0_FAMILIES = {"cli.parser", "entries.safe_matrix", "static.source", "effects.de
 S1_FAMILIES = {"kernel.values", "storage.memory", "storage.pg", "storage.redis", "host_os.git", "host_os.process"}
 S2_FAMILIES = {"routing.matrix", "context.composition", "context.worker_profile_entry", "knowledge.units"}
 S3_FAMILIES = {"containers.profiles", "containers.staging", "credentials.custody", "credentials.scrubber", "hooks.native_container"}
-S3_IMPLEMENTED = {"credentials.custody", "credentials.scrubber", "containers.staging"}
+S3_IMPLEMENTED = {"credentials.custody", "credentials.scrubber", "containers.staging", "containers.profiles"}
 IMPLEMENTED = {**{f: "S1" for f in S1_FAMILIES}, **{f: "S2" for f in S2_FAMILIES},
                **{f: "S3" for f in S3_IMPLEMENTED}}
 
