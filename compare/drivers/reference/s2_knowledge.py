@@ -36,7 +36,13 @@ from codex_harness.application.profile_flow import ProfileFlow  # noqa: E402
 from codex_harness.application.promotion import promote  # noqa: E402
 from codex_harness.application.seam_ledger import SeamLedger  # noqa: E402
 from codex_harness.application.snapshot_imports import SnapshotImports  # noqa: E402
-from codex_harness.domain import experience, profile_privacy, seam_view, seams, snapshot_integrity  # noqa: E402
+from codex_harness.domain import (  # noqa: E402
+    experience,
+    profile_privacy,
+    seam_view,
+    seams,
+    snapshot_integrity,
+)
 
 CLOCK, IDS = determinism.FakeClock(), determinism.FakeIds()
 determinism.install(CLOCK, IDS)

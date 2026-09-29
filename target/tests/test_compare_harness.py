@@ -51,7 +51,7 @@ def test_alpha_renaming_preserves_equality_relations():
 S0_FAMILIES = {"cli.parser", "entries.safe_matrix", "static.source", "effects.decision_unit",
                "effects.context_packet", "guards.unpatched_transport", "effects.decision_unit.pg"}
 S1_FAMILIES = {"kernel.values", "storage.memory", "storage.pg", "storage.redis", "host_os.git", "host_os.process"}
-S2_FAMILIES = {"routing.matrix", "context.composition", "context.worker_profile_entry"}
+S2_FAMILIES = {"routing.matrix", "context.composition", "context.worker_profile_entry", "knowledge.units"}
 IMPLEMENTED = {**{f: "S1" for f in S1_FAMILIES}, **{f: "S2" for f in S2_FAMILIES}}
 
 

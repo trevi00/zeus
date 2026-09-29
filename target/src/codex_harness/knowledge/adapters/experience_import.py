@@ -58,9 +58,9 @@ def read_lesson(path):
     return data
 
 
-def import_lessons(paths, source, basis, store, artifacts, path_prefix='', *, load_yaml):
+def import_lessons(paths, source, basis, store, artifacts, path_prefix='', *, load_yaml, clock=None):
     basis = validate_basis(basis)
-    claims = ExperienceClaims(store)
+    claims = ExperienceClaims(store, clock)
     report = []
     for file in lesson_files(paths):
         data = read_lesson(file)
