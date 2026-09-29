@@ -2,8 +2,7 @@
  "family": "research.adoption_gate",
  "description": "S4 moved-ahead research adoption gate (lead decision Option A: Workflow.submit and RunTask admit plan/implement through it): plain details, missing/duplicate approvals, the valid approval chain returned, refusals for a paused rollout, revoked approval, later rejection, changed receipt, incomplete reviews, changed provenance and stale binding, and inspect_approval's transitive reference reads",
  "reference_driver": "drivers/reference/s4_adoption_gate.py",
- "target_driver": null,
- "target_status": "pending: audit gate not yet moved",
+ "target_driver": "drivers/target/s4_adoption_gate.py",
  "golden": "goldens/reference/research.adoption_gate.json",
  "slice": "S4"
 }

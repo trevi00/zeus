@@ -68,7 +68,7 @@ S4_IMPLEMENTED = {"execution.ledger", "execution.units", "execution.output_contr
                   "coordination.workflow_lease", "hooks.candidate_canary", "coordination.decision_guards",
                   "coordination.decision_claims", "observation.termination_markers",
                   "observation.reconciliation_guard", "observation.event_write_side", "research.hook_effects", "review.decisions", "effects.decision_unit", "effects.decision_unit.pg",
-                  "coordination.breaker"}  # the S0 R-P control, both transports  # S4 in progress: RunTask/ReviewDecisions pending
+                  "coordination.breaker", "research.adoption_gate"}  # the S0 R-P control, both transports  # S4 in progress: RunTask/ReviewDecisions pending
 IMPLEMENTED = {**{f: "S1" for f in S1_FAMILIES}, **{f: "S2" for f in S2_FAMILIES},
                **{f: "S3" for f in S3_IMPLEMENTED}, **{f: "S4" for f in S4_IMPLEMENTED}}
 
