@@ -4,10 +4,12 @@ and the bounded process runner other contexts use instead of creating processes 
 Layer: ports
 Context: host_os
 Owns: the Protocols only; `host_os.adapters.git_workspace.GitWorkspace` implements the first three;
-    `ProcessRunner` is implemented by `host_os.adapters.process_groups.run_process` (the one spawn
-    chokepoint), injected by composition (S3: the container adapters' docker/git calls)
+    `ProcessRunner` is implemented by `host_os.adapters.process_groups.run_process` and
+    `ChildProcesses` by `host_os.adapters.process_groups.ChokepointProcesses` (the one spawn
+    chokepoint), both injected by composition (S3: the container adapters' docker/git calls, the
+    staging export and the attached transports)
 Does not own: who may publish or merge (review), release policy, what a caller runs
-Entry points: Workspaces, CandidateInspection, Publication, ProcessRunner
+Entry points: Workspaces, CandidateInspection, Publication, ProcessRunner, ChildProcesses
 Contracts: INV-RELEASE-001, INV-SESSION-001
 
 Shared infrastructure ports (`SP` in the §3.6 table). The five unrelated M7 `SourceControl` methods
@@ -39,3 +41,12 @@ class ProcessRunner(Protocol):
 
     def __call__(self, argv: list, cwd: str | None = None, timeout: int = 120,
                  input_text: str | None = None, env: dict | None = None): ...
+
+
+class ChildProcesses(Protocol):
+    """`subprocess.run`/`subprocess.Popen`-compatible creation through the one chokepoint: the same
+    arguments and results, with the no-console keywords applied (`process_group=True` also gives the
+    child its own process group for the caller's kill path)."""
+
+    def run(self, argv: list, *, process_group: bool = False, **kwargs): ...
+    def popen(self, argv: list, *, process_group: bool = False, **kwargs): ...

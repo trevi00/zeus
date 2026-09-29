@@ -7,7 +7,7 @@ kill and reap; the spawn-observer registry
 Does not own: which process should run (callers), the Windows console/kill primitives
 (host_os.adapters.windows.no_console), owned-tree receipts (host_os.adapters.process_tree)
 Entry points: popen, run, run_process, run_logged_process, observe_spawns, no_console_kwargs,
-python_channel_environment, ProcessCancelled
+python_channel_environment, ProcessCancelled, ChokepointProcesses (the host_os.ports.ChildProcesses port)
 Contracts: INV-ENCODING-001, INV-HOST-DELIVERY-VERIFY-001
 
 The spawn chokepoint (design §5.3 S1): `popen`/`run` are the only calls in the target tree that
@@ -73,6 +73,17 @@ def popen(argv, **kwargs) -> subprocess.Popen:
 def run(argv, **kwargs) -> subprocess.CompletedProcess:
     """`subprocess.run` through the chokepoint: the same arguments and the same result."""
     return subprocess.run(argv, **kwargs)
+
+
+class ChokepointProcesses:
+    """The `host_os.ports.ChildProcesses` implementation: `run`/`popen` above with `no_console_kwargs`
+    applied, for contexts that may not import this module (S3 container staging and transports)."""
+
+    def run(self, argv, *, process_group: bool = False, **kwargs) -> subprocess.CompletedProcess:
+        return run(argv, **no_console_kwargs(process_group=process_group), **kwargs)
+
+    def popen(self, argv, *, process_group: bool = False, **kwargs) -> subprocess.Popen:
+        return popen(argv, **no_console_kwargs(process_group=process_group), **kwargs)
 
 
 _SPAWN_OBSERVERS: list = []
