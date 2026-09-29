@@ -1,0 +1,33 @@
+"""Bounded guidance rendering with complete immutable cross-reference evidence.
+
+Layer: adapters
+Context: context
+Owns: the bounded advisory guidance item and its immutable cross-reference artifact
+Does not own: skill selection (skill_routing)
+Entry points: guidance_context
+Contracts: INV-CONTEXT-001, INV-SKILL-001
+Moved from SOURCE M7 `src/codex_harness/adapters/skill_guidance.py` (behaviour unchanged unless noted).
+"""
+from codex_harness.context.domain.packet import ContextItem
+from codex_harness.context.domain.skills.guidance import guidance
+from codex_harness.kernel.ids import canonical
+
+
+def guidance_context(artifacts, revision, objective, records, pipeline):
+    phases = [r.get('phase', '') for r in pipeline['recommendations']]
+    result = guidance(objective, records, phases)
+    stored = artifacts.put(canonical(result), 'project-skill-guidance')
+    handle = {'ref': stored['ref'], 'file': str(artifacts.root / (stored['ref'][7:] + '.txt'))}
+    references = result['cross_references']['resolved']
+    compact = {key: value for key, value in result.items() if key != 'cross_references'}
+    compact.update(details=handle, cross_references=references[:8],
+                   unresolved_count=len(result['cross_references']['unresolved']),
+                   external_references=len(references) - min(8, len(references)))
+    # INV-CONTEXT-001: large reference names must not turn advisory context unbounded.
+    while len(canonical(compact).encode('utf-8')) > 6000 and compact['cross_references']:
+        compact['cross_references'].pop()
+        compact['external_references'] += 1
+    item = ContextItem('project-guidance:' + stored['ref'], canonical(compact),
+                       stored['ref'], revision, 13)
+    return item, {**handle, 'resolved': len(references),
+                  'unresolved': compact['unresolved_count'], 'advisory_only': True}

@@ -1,0 +1,429 @@
+"""Which provider executes an assignment: a Git-managed policy plus host configuration.
+
+Layer: domain
+Context: routing
+Owns: the provider-policy schema, host-enablement parsing and the one provider selection (packaged policy + host settings)
+Does not own: reading host settings (composition), provider transports (execution)
+Entry points: read_only_profile, read_only_runtime_check, read_only_settings_check, Provider, ProviderPolicy, parse_policy, ProviderConfiguration, accounting_mode_setting
+Contracts: INV-CLAUDE-WORKER-001, INV-INVOCATION-001
+Moved from SOURCE M7 `src/codex_harness/domain/providers.py` (behaviour unchanged unless noted).
+
+Zeus keeps Codex as the default executor. A second provider runs only where the packaged policy
+permits that exact (role, action, workload, read_only) pairing *and* the host configuration
+enables it. The assignment message, the task details and any model output never take part in the
+decision (INV-CLAUDE-WORKER-001): they are data produced by or for the execution being decided.
+
+Two refusals matter more than the selection itself. A host configuration that names a pairing the
+packaged policy does not permit is refused as a whole, so a misconfiguration cannot quietly widen
+what a provider may run. And a permitted, enabled pairing whose required controls (an explicit
+model, a spend ceiling) are missing or malformed is refused before anything spawns, rather than
+run by the default provider: an operator who asked for one provider and silently received another
+would read the receipt as a measurement of the provider they asked for.
+"""
+from __future__ import annotations
+
+import re
+from dataclasses import dataclass, field
+
+from codex_harness.kernel.errors import ContractError, require
+from codex_harness.kernel.ids import digest
+from codex_harness.kernel.usage import FINITE, MODES, SUBSCRIPTION
+
+POLICY_VERSION = "provider-policy.v1"
+# Research program001 batch008: the dollar cap is a `claude_cli` invocation option (domain.invocation
+# SUPPORT), so the usage-accounting mode that decides whether it is forwarded is bound per transport
+# and read from one explicit host setting. Absent or `finite` is the unchanged legacy configuration;
+# `subscription` retains the dollar-cap control as validated metadata and never forwards it; any
+# other value refuses. The setting is never a provider allowance or a remaining-usage claim.
+ACCOUNTING_SETTINGS = {"claude_cli": "ZEUS_CLAUDE_ACCOUNTING_MODE"}
+DOLLAR_CAP_CONTROL = "max_budget_usd"
+MODEL_SOURCES = ("model_routing", "explicit_setting")
+# The transports a stream reader exists for. At M7 this was the key set of
+# `domain.provider_stream.STREAMS` (execution); routing may not import execution (§2.4), so the names
+# live here and execution's reader table must cover exactly these (checked in S3/S4).
+TRANSPORTS = ("app_server", "claude_cli")
+RESUME_STATES = ("supported", "unsupported")
+CONTROL_KINDS = ("number", "integer", "path")
+TOKEN = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@+-]{0,99}$")
+SETTING_NAME = re.compile(r"^[A-Z][A-Z0-9_]{0,63}$")
+PAIR = re.compile(r"^(?P<role>[a-z][a-z0-9_]*(?::[a-z0-9_]+)?)/(?P<action>[a-z][a-z0-9_]*)$")
+# INV-CLAUDE-WORKER-001 responsibility routing: the restricted profile a read-only execution runs
+# under. Grants name exact read-only tools (never a pattern such as `Read(*)`); denies must name
+# every mutating tool; the mode is exactly dontAsk and the CLI `--restricted` flag is required.
+READ_ONLY_TOOLS = ("Read", "Glob", "Grep")
+MUTATING_TOOLS = ("Bash", "Edit", "Write", "NotebookEdit")
+READ_ONLY_KEYS = ("tools", "allowed_tools", "disallowed_tools", "permission_mode", "restricted")
+READ_ONLY_MODE = "dontAsk"
+READ_ONLY_PROMPTS = "none"
+
+
+def _token(value) -> bool:
+    return type(value) is str and TOKEN.fullmatch(value) is not None
+
+
+def _names(value, label: str) -> list:
+    require(isinstance(value, list) and bool(value) and all(type(name) is str and name for name in value),
+            f"Read-only profile {label} must be a non-empty list of names")
+    return list(value)
+
+
+def read_only_profile(profile) -> dict:
+    """Validate a read-only overlay and return a copy; the one predicate the policy parse, the
+    selection and the transport preflight share. Present-but-null, empty or malformed is refused,
+    never read as absent."""
+    require(isinstance(profile, dict), "Read-only profile must be an object")
+    require(sorted(profile) == sorted(READ_ONLY_KEYS),
+            "Read-only profile must declare exactly " + ", ".join(READ_ONLY_KEYS))
+    tools = _names(profile["tools"], "tools")
+    allowed = _names(profile["allowed_tools"], "allowed_tools")
+    denied = _names(profile["disallowed_tools"], "disallowed_tools")
+    require(all(name in READ_ONLY_TOOLS for name in tools + allowed),
+            "Read-only profile may grant only " + ", ".join(READ_ONLY_TOOLS) + " by exact name")
+    require(all(name in tools for name in allowed), "Read-only profile allows a tool it does not expose")
+    require(all(name in denied for name in MUTATING_TOOLS),
+            "Read-only profile must deny " + ", ".join(MUTATING_TOOLS))
+    require(profile["permission_mode"] == READ_ONLY_MODE, "Read-only profile permission_mode must be " + READ_ONLY_MODE)
+    require(profile["restricted"] is True, "Read-only profile must be restricted")
+    return {"tools": tools, "allowed_tools": allowed, "disallowed_tools": denied,
+            "permission_mode": READ_ONLY_MODE, "restricted": True}
+
+
+def read_only_runtime_check(runtime) -> dict:
+    """The profile an EFFECTIVE runtime carries, validated by the same predicate; a marker or a
+    partial overlay is never trusted. Prompts must also be auto-denied."""
+    require(isinstance(runtime, dict), "Read-only runtime must be an object")
+    missing = [key for key in READ_ONLY_KEYS if key not in runtime]
+    require(not missing, "Read-only runtime lacks " + ", ".join(missing))
+    require(runtime.get("permission_prompts") == READ_ONLY_PROMPTS,
+            "Read-only runtime must auto-deny permission prompts")
+    return read_only_profile({key: runtime[key] for key in READ_ONLY_KEYS})
+
+
+def read_only_settings_check(settings, profile: dict) -> None:
+    """The final per-run settings of a read-only execution carry permissions only: the profile's
+    grants, its denies and its mode. Hooks, environment or any added grant refuses."""
+    require(isinstance(settings, dict) and list(settings) == ["permissions"],
+            "Read-only settings must carry permissions only")
+    permissions = settings["permissions"]
+    require(isinstance(permissions, dict) and sorted(permissions) == ["allow", "defaultMode", "deny"],
+            "Read-only settings permissions must be allow, deny and defaultMode")
+    allow, deny = permissions["allow"], permissions["deny"]
+    require(isinstance(allow, list) and all(name in profile["allowed_tools"] for name in allow),
+            "Read-only settings grant a tool outside the profile")
+    require(isinstance(deny, list) and all(name in deny for name in profile["disallowed_tools"]),
+            "Read-only settings drop a denied tool")
+    require(permissions["defaultMode"] == READ_ONLY_MODE, "Read-only settings mode must be " + READ_ONLY_MODE)
+
+
+@dataclass(frozen=True)
+class Provider:
+    name: str
+    identity: str
+    transport: str
+    model_source: str
+    session_resume: str
+    enable_setting: str | None
+    model_setting: str | None
+    model_pattern: str | None
+    controls: dict
+    runtime: dict
+    # Overlaid on `runtime` for read-only executions only; None when the provider declares none.
+    read_only_runtime: dict | None = None
+
+    def receipt(self) -> dict:
+        return {"provider": self.name, "identity": self.identity, "transport": self.transport,
+                "model_source": self.model_source, "session_resume": self.session_resume}
+
+
+@dataclass(frozen=True)
+class ProviderPolicy:
+    version: str
+    default_provider: str
+    providers: dict
+    assignments: tuple
+    policy_digest: str
+
+    def provider(self, name: str) -> Provider:
+        require(name in self.providers, "Unknown execution provider: " + str(name))
+        return self.providers[name]
+
+    def permits(self, provider: str, *, role: str, action, workload: str, read_only: bool) -> bool:
+        return any(rule for rule in self.assignments
+                   if rule["provider"] == provider and role in rule["roles"]
+                   and action is not None and action in rule["actions"]
+                   and workload in rule["workloads"] and bool(read_only) == rule["read_only"])
+
+    def permitted_pairs(self, provider: str) -> set:
+        return {(role, action) for rule in self.assignments if rule["provider"] == provider
+                for role in rule["roles"] for action in rule["actions"]}
+
+
+def parse_policy(document) -> ProviderPolicy:
+    """Validate the packaged execution policy; an unreadable or unexpected policy is never a default."""
+    require(isinstance(document, dict), "Provider policy must be an object")
+    require(document.get("version") == POLICY_VERSION, "Unsupported provider policy version")
+    raw = document.get("providers")
+    require(isinstance(raw, dict) and raw, "Provider policy must declare providers")
+    providers = {}
+    for name, body in sorted(raw.items()):
+        require(_token(name), "Provider name must be a short token")
+        require(isinstance(body, dict), f"Provider {name} entry must be an object")
+        for key in ("identity", "transport", "model_source"):
+            require(_token(body.get(key)), f"Provider {name} must declare {key}")
+        require(body["model_source"] in MODEL_SOURCES, f"Provider {name} has an unknown model source")
+        require(body["transport"] in TRANSPORTS,
+                f"Provider {name} names a transport nothing can read: " + body["transport"])
+        require(body.get("session_resume") in RESUME_STATES, f"Provider {name} must declare session_resume")
+        enable = body.get("enable_setting")
+        require(enable is None or (type(enable) is str and SETTING_NAME.fullmatch(enable)),
+                f"Provider {name} enable_setting must be an environment name or null")
+        model_setting = body.get("model_setting")
+        require(model_setting is None or (type(model_setting) is str and SETTING_NAME.fullmatch(model_setting)),
+                f"Provider {name} model_setting must be an environment name or null")
+        require((body["model_source"] == "explicit_setting") == bool(model_setting),
+                f"Provider {name} needs a model setting exactly when its model is explicit")
+        pattern = body.get("model_pattern")
+        if pattern is not None:
+            require(type(pattern) is str and bool(pattern), f"Provider {name} model_pattern must be text")
+            try:
+                re.compile(pattern)
+            except re.error as exc:
+                raise ContractError(f"Provider {name} model_pattern is not a regular expression") from exc
+        controls = body.get("controls", {})
+        require(isinstance(controls, dict), f"Provider {name} controls must be an object")
+        for control, spec in sorted(controls.items()):
+            require(_token(control) and isinstance(spec, dict), f"Provider {name} control {control} is malformed")
+            require(type(spec.get("setting")) is str and SETTING_NAME.fullmatch(spec["setting"]),
+                    f"Provider {name} control {control} needs a setting name")
+            require(spec.get("kind") in CONTROL_KINDS, f"Provider {name} control {control} needs a known kind")
+            require(type(spec.get("required")) is bool, f"Provider {name} control {control} needs required")
+        runtime = body.get("runtime", {})
+        require(isinstance(runtime, dict), f"Provider {name} runtime must be an object")
+        # A present key is validated whatever its value: null or {} is malformed, not absent.
+        overlay = read_only_profile(body["read_only_runtime"]) if "read_only_runtime" in body else None
+        providers[name] = Provider(name=name, identity=body["identity"], transport=body["transport"],
+                                   model_source=body["model_source"], session_resume=body["session_resume"],
+                                   enable_setting=enable, model_setting=model_setting, model_pattern=pattern,
+                                   controls=controls, runtime=runtime, read_only_runtime=overlay)
+    default = document.get("default_provider")
+    require(_token(default) and default in providers, "Provider policy must name a known default provider")
+    require(providers[default].enable_setting is None,
+            "The default provider is not enabled by host configuration")
+    rules = document.get("assignments", [])
+    require(isinstance(rules, list), "Provider assignments must be a list")
+    assignments = []
+    for rule in rules:
+        require(isinstance(rule, dict), "Provider assignment must be an object")
+        require(rule.get("provider") in providers, "Provider assignment names an unknown provider")
+        require(rule["provider"] != default, "The default provider needs no assignment rule")
+        for key in ("roles", "actions", "workloads"):
+            values = rule.get(key)
+            require(isinstance(values, list) and values and all(type(v) is str and v for v in values),
+                    f"Provider assignment {key} must be a non-empty list of names")
+        require(type(rule.get("read_only")) is bool, "Provider assignment must state read_only")
+        require(not (rule["read_only"] and providers[rule["provider"]].transport == "claude_cli"
+                     and providers[rule["provider"]].read_only_runtime is None),
+                "A read-only claude_cli assignment needs a valid read_only_runtime")
+        assignments.append({"provider": rule["provider"], "roles": list(rule["roles"]),
+                            "actions": list(rule["actions"]), "workloads": list(rule["workloads"]),
+                            "read_only": rule["read_only"]})
+    return ProviderPolicy(version=document["version"], default_provider=default, providers=providers,
+                          assignments=tuple(assignments), policy_digest=digest(document))
+
+
+@dataclass(frozen=True)
+class ProviderConfiguration:
+    """What the host enabled. Values that could be secret are never stored here: the controls this
+    holds are a model name, a spend ceiling, a timeout and an executable path, and the digest binds
+    exactly those, so a receipt can prove which configuration ran without reprinting it."""
+    enabled: dict = field(default_factory=dict)
+    config_digest: str = ""
+
+    def pairs(self, provider: str) -> tuple:
+        entry = self.enabled.get(provider)
+        return tuple(entry["pairs"]) if entry else ()
+
+
+def _number(text, spec, name):
+    try:
+        value = float(text) if spec["kind"] == "number" else int(text)
+    except (TypeError, ValueError) as exc:
+        raise ValueError(f"{name} must be a {spec['kind']}") from exc
+    require(value == value and value not in (float("inf"), float("-inf")), f"{name} must be finite")
+    if spec.get("minimum") is not None:
+        require(value >= spec["minimum"], f"{name} is below the policy minimum {spec['minimum']}")
+    if spec.get("maximum") is not None:
+        require(value <= spec["maximum"], f"{name} is above the policy maximum {spec['maximum']}")
+    return value
+
+
+def accounting_mode_setting(provider: Provider) -> str | None:
+    """The host setting naming this provider's usage-accounting mode, or None when its transport has
+    no dollar-cap option to withhold."""
+    return ACCOUNTING_SETTINGS.get(provider.transport)
+
+
+def read_accounting_mode(provider: Provider, settings: dict) -> str:
+    """finite unless the transport's setting explicitly says subscription; an unknown value refuses
+    the configuration as a whole, never guesses."""
+    name = accounting_mode_setting(provider)
+    raw = settings.get(name) if name is not None else None
+    if raw is None or not str(raw).strip():
+        return FINITE
+    mode = str(raw).strip()
+    require(mode in MODES, f"{name} must be one of {', '.join(MODES)}: it is not a provider allowance")
+    return mode
+
+
+def parse_configuration(policy: ProviderPolicy, settings: dict) -> ProviderConfiguration:
+    """Read host enablement for every non-default provider; refuse the configuration as a whole when
+    it names a pairing the packaged policy does not permit, or omits a required control."""
+    require(isinstance(settings, dict), "Settings must be a mapping")
+    enabled = {}
+    for name, provider in sorted(policy.providers.items()):
+        if provider.enable_setting is None:
+            continue
+        raw = settings.get(provider.enable_setting)
+        if raw is None or not str(raw).strip():
+            continue
+        mode = read_accounting_mode(provider, settings)
+        pairs = []
+        for token in str(raw).split(","):
+            token = token.strip()
+            if not token:
+                continue
+            match = PAIR.fullmatch(token)
+            require(match is not None,
+                    f"{provider.enable_setting} entries are '<role>/<action>': " + token)
+            pair = (match.group("role"), match.group("action"))
+            require(pair in policy.permitted_pairs(name),
+                    f"{provider.enable_setting} names a pairing the packaged policy does not permit: " + token)
+            pairs.append(pair)
+        require(pairs, f"{provider.enable_setting} is set but names no assignment")
+        model = settings.get(provider.model_setting) if provider.model_setting else None
+        if provider.model_source == "explicit_setting":
+            require(type(model) is str and bool(model.strip()),
+                    f"{provider.model_setting} must name the {name} model explicitly; it is never derived")
+            model = model.strip()
+            if provider.model_pattern:
+                require(re.fullmatch(provider.model_pattern, model) is not None,
+                        f"{provider.model_setting} is not a {name} model name: " + model)
+        controls = {}
+        for control, spec in sorted(provider.controls.items()):
+            value = settings.get(spec["setting"])
+            present = value is not None and str(value).strip() != ""
+            # Subscription accounting: the dollar cap is retained migration metadata. A present value
+            # is still validated by the same rules (never weakened), but it is not required and it
+            # never becomes a control, so nothing downstream can forward or claim a ceiling.
+            retained = mode == SUBSCRIPTION and control == DOLLAR_CAP_CONTROL
+            require(present or not spec["required"] or retained,
+                    f"{spec['setting']} is required before {name} may execute")
+            if not present:
+                continue
+            parsed = (str(value).strip() if spec["kind"] == "path"
+                      else _number(str(value).strip(), spec, spec["setting"]))
+            if not retained:
+                controls[control] = parsed
+        entry = {"pairs": tuple(pairs), "model": model, "controls": controls}
+        if mode == SUBSCRIPTION:
+            # Only the non-default mode is written, so every finite configuration keeps its exact
+            # legacy entry and config digest; a subscription configuration is a different digest.
+            entry["accounting_mode"] = SUBSCRIPTION
+        enabled[name] = entry
+    return ProviderConfiguration(enabled=enabled,
+                                 config_digest=digest({"policy": policy.policy_digest, "enabled": enabled}))
+
+
+@dataclass(frozen=True)
+class ExecutionAssignment:
+    """The decided execution: who runs it, under which policy, with which declared controls."""
+    provider: str
+    identity: str
+    transport: str
+    model_source: str
+    configured_model: str | None
+    session_resume: str
+    controls: dict
+    runtime: dict
+    policy_version: str
+    policy_digest: str
+    config_digest: str
+    selected_by: str
+    role: str
+    action: str | None
+    workload: str
+    read_only: bool
+    # The usage-accounting mode this execution runs under (usage_policy MODES). Under subscription
+    # `controls` carries no dollar cap and `runtime["accounting_mode"]` tells the transport so.
+    accounting_mode: str = FINITE
+    # Digest of the read-only profile overlaid on `runtime`; None for every other execution.
+    read_only_profile_digest: str | None = None
+
+    @property
+    def is_default(self) -> bool:
+        return self.selected_by == "packaged_default"
+
+    def receipt(self) -> dict:
+        """Everything a reviewer needs to know which policy chose this provider; no secret values.
+        `controls` lists exactly what is forwarded, so a receipt never claims a ceiling that was not
+        passed; `accounting_mode` names why one is absent. Only an overlaid read-only execution
+        names its profile, so every other receipt keeps its exact shape."""
+        receipt = {"provider": self.provider, "identity": self.identity, "transport": self.transport,
+                   "model_source": self.model_source, "session_resume": self.session_resume,
+                   "policy_version": self.policy_version, "policy_digest": self.policy_digest,
+                   "config_digest": self.config_digest, "selected_by": self.selected_by,
+                   "role": self.role, "action": self.action, "workload": self.workload,
+                   "read_only": self.read_only, "controls": dict(self.controls),
+                   "accounting_mode": self.accounting_mode}
+        if self.read_only_profile_digest is not None:
+            receipt["read_only_profile_applied"] = True
+            receipt["read_only_profile_digest"] = self.read_only_profile_digest
+        return receipt
+
+
+def select_execution(policy: ProviderPolicy, configuration: ProviderConfiguration, *, role: str,
+                     action, workload: str, read_only: bool) -> ExecutionAssignment:
+    """Decide the provider for one assignment, or refuse. Never falls back between providers."""
+    require(type(role) is str and bool(role), "Provider selection needs the executing role")
+    require(action is None or (type(action) is str and bool(action)), "Action must be a name or absent")
+    require(type(workload) is str and bool(workload), "Provider selection needs the workload")
+    require(type(read_only) is bool, "Provider selection needs the read_only flag")
+    matched = [name for name in sorted(configuration.enabled) if (role, action) in configuration.pairs(name)]
+    require(len(matched) <= 1, "Two providers are enabled for the same assignment: " + ", ".join(matched))
+    for name in matched:
+        provider = policy.provider(name)
+        # Enabled for this pairing: the packaged policy must permit this exact shape, including the
+        # workload and the read-only flag. A mismatch is refused here, before anything spawns.
+        require(policy.permits(name, role=role, action=action, workload=workload, read_only=read_only),
+                f"{name} is enabled for {role}/{action} but the packaged policy does not permit it as "
+                f"workload={workload} read_only={read_only}")
+        entry = configuration.enabled[name]
+        mode = entry.get("accounting_mode", FINITE)
+        runtime = dict(provider.runtime)
+        profile_digest = None
+        if read_only and provider.read_only_runtime is not None:
+            # A copy of the base with the validated profile on top; Provider.runtime is never
+            # touched and nothing from the host or a model output can replace these keys.
+            profile = read_only_profile(provider.read_only_runtime)
+            runtime.update(profile)
+            profile_digest = digest(profile)
+        if mode == SUBSCRIPTION:
+            # Bound into the selected runtime, which is the one dictionary every Claude transport
+            # (host or isolated request) already receives; finite runtimes stay byte-identical.
+            runtime["accounting_mode"] = SUBSCRIPTION
+        return ExecutionAssignment(
+            provider=name, identity=provider.identity, transport=provider.transport,
+            model_source=provider.model_source, configured_model=entry["model"],
+            session_resume=provider.session_resume, controls=dict(entry["controls"]),
+            runtime=runtime, policy_version=policy.version,
+            policy_digest=policy.policy_digest, config_digest=configuration.config_digest,
+            selected_by="host_configuration", role=role, action=action, workload=workload,
+            read_only=read_only, accounting_mode=mode, read_only_profile_digest=profile_digest)
+    default = policy.provider(policy.default_provider)
+    return ExecutionAssignment(
+        provider=default.name, identity=default.identity, transport=default.transport,
+        model_source=default.model_source, configured_model=None,
+        session_resume=default.session_resume, controls={}, runtime=dict(default.runtime),
+        policy_version=policy.version, policy_digest=policy.policy_digest,
+        config_digest=configuration.config_digest, selected_by="packaged_default", role=role,
+        action=action, workload=workload, read_only=read_only)

@@ -1,19 +1,24 @@
 [project]
 name = "zeus-harness"
 version = "0.3.0.dev0"
-description = "Zeus rebuild target distribution (REBUILD-DESIGN-v2 §3.1). S1: kernel, storage, host_os."
+description = "Zeus rebuild target distribution (REBUILD-DESIGN-v2 §3.1). S1: kernel, storage, host_os; S2: routing, context, knowledge."
 requires-python = ">=3.12"
-# S1 adapters (storage, host_os) need exactly the SOURCE runtime libraries of their M7 counterparts;
-# the lock pins the SOURCE uv.lock versions so validation messages and wire behaviour compare equal.
+# S1 adapters (storage, host_os) and S2 adapters (context YAML/pipeline, knowledge graph/embeddings)
+# need exactly the SOURCE runtime libraries of their M7 counterparts; the lock pins the SOURCE uv.lock
+# versions so validation messages, parse trees and wire behaviour compare equal.
 dependencies = [
+  "fastembed>=0.8.0",
   "filelock>=3.20,<4",
   "jsonschema[format]>=4.23,<5",
   "psycopg[binary]>=3.2,<4",
+  "PyYAML>=6,<7",
   "redis>=5.2,<7",
+  "tree-sitter>=0.24,<0.26",
+  "tree-sitter-python>=0.23,<0.26",
 ]
 
 [dependency-groups]
-dev = ["pytest>=8.3,<10", "ruff>=0.11,<1", "PyYAML>=6,<7"]
+dev = ["pytest>=8.3,<10", "ruff>=0.11,<1"]
 
 [build-system]
 requires = ["hatchling"]
