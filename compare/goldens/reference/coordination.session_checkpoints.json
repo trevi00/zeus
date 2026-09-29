@@ -1,0 +1,71 @@
+{
+ "first": {
+  "value": {
+   "agent_id": "lead:improvement",
+   "checkpoint": {
+    "graph_snapshot": "g",
+    "next_action": "a",
+    "source_revision": "r"
+   },
+   "generation": 1,
+   "session_id": "5eed0000-0000-4000-8000-000000000001"
+  }
+ },
+ "incomplete": {
+  "message": "Incomplete checkpoint",
+  "refused": "ContractError"
+ },
+ "records": [
+  [
+   "execution_fences",
+   "tasks:5eed0000-0000-4000-8000-000000000003",
+   "42e8f9f0f19fb822ca4284a51ff070ec834c7c3039b640a120de35d037ae7513"
+  ],
+  [
+   "sessions",
+   "lead:improvement",
+   "b125edc4fb533d6704410688f5e22ecbb774ce2389cd077b28553015e66accde"
+  ],
+  [
+   "tasks",
+   "5eed0000-0000-4000-8000-000000000003",
+   "f04bfa3b2efb10dc80274a6a2a3674244803234954ab32884ea086df0644bda1"
+  ]
+ ],
+ "second": {
+  "value": {
+   "agent_id": "lead:improvement",
+   "checkpoint": {
+    "graph_snapshot": "g",
+    "next_action": "a",
+    "source_revision": "r"
+   },
+   "generation": 2,
+   "session_id": "5eed0000-0000-4000-8000-000000000002"
+  }
+ },
+ "stale": {
+  "message": "Stale session writer",
+  "refused": "ContractError"
+ },
+ "stale_execution": {
+  "message": "Stale or expired task execution",
+  "refused": "ContractError"
+ },
+ "unknown_agent": {
+  "message": "Unknown actor",
+  "refused": "ContractError"
+ },
+ "with_execution": {
+  "value": {
+   "agent_id": "lead:improvement",
+   "checkpoint": {
+    "graph_snapshot": "g",
+    "next_action": "a",
+    "source_revision": "r"
+   },
+   "generation": 3,
+   "session_id": "5eed0000-0000-4000-8000-000000000004"
+  }
+ }
+}
