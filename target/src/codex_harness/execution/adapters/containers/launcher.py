@@ -1065,9 +1065,10 @@ class IsolatedWorker:
                                      project_delivery=project_delivery, profile=profile, handoff=handoff,
                                      host=self.host)
 
-    def codex_runtime(self, *, profile: str, context_window=None, handoff=None):
+    def codex_runtime(self, *, profile: str, context_window=None, handoff=None, native_hooks=None):
         """INV-ROLE-CONTAINER-001 / INV-CODEX-CREDENTIAL-001: the Codex App Server inside a
-        codex-role-ro or codex-impl-rw container, with this selection's credential broker."""
+        codex-role-ro or codex-impl-rw container, with this selection's credential broker. S4 wiring:
+        `native_hooks(destination)` (execution.adapters.transports) builds the run's bound hook set."""
         require(self.config.get("codex") is not None, "Codex role containers need ZEUS_CODEX_CREDENTIAL_STORE")
         require(self.broker_factory is not None and self.credentials is not None,
                 "Codex role containers need the credentials boundary")
@@ -1075,4 +1076,4 @@ class IsolatedWorker:
                                     broker=self.broker_factory(self.config["codex"]["credential_store"]),
                                     docker=self.docker, watch=(self.root / "replays",), context_window=context_window,
                                     handoff=handoff, state_root=self.root / "codex-state", host=self.host,
-                                    credentials=self.credentials)
+                                    credentials=self.credentials, native_hooks=native_hooks)
