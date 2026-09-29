@@ -471,23 +471,26 @@ def test_the_executor_pairs_only_a_container_profile_with_isolation(tmp_path, co
     with pytest.raises(ContractError, match="requires the host isolated worker"):
         executor_for(tmp_path, profile(), None)
     # The same fixed ids reach the worker transport and the reviewer, both in container terms.
-    assignment = SimpleNamespace(transport="claude_cli", runtime={}, controls={})
+    assignment = SimpleNamespace(provider="claude", transport="claude_cli", runtime={}, controls={})
     executor._open_runtime(assignment, "fable", str(workspace), action="implement")
     delivered = isolation.opened[0]["project_delivery"]
     assert [entry_["check_id"] for entry_ in delivered["commands"]] == ["unit", "lint"]
     assert delivered["workspace"] == iw.WORKSPACE
     told = executor._project_instructions(str(workspace))
     assert told["execution"]["image"] == IMAGE and told["checks"] == profile()["checks"]
-    # A read-only or non-implement opening still carries no delivery.
-    executor._open_runtime(assignment, "fable", str(workspace), action="review_lead")
-    assert isolation.opened[1]["project_delivery"] is None
+    # A read-only or non-implement opening still carries no delivery (INV-ROLE-CONTAINER-001: a
+    # read-only Claude review maps to claude-role-ro; a writable non-implement shape refuses).
+    executor._open_runtime(assignment, "fable", str(workspace), action="review_lead", read_only=True)
+    assert isolation.opened[1]["project_delivery"] is None and isolation.opened[1]["profile"] == "claude-role-ro"
+    with pytest.raises(ContractError, match="role_profile_refused"):
+        executor._open_runtime(assignment, "fable", str(workspace), action="review_lead")
 
 
 def test_an_unprofiled_isolated_run_is_exactly_the_legacy_one(tmp_path, config, workspace):
     isolation = FakeIsolation(config, tmp_path / "isolated")
     executor = executor_for(tmp_path, None, isolation)
     assert executor.container_profile is False and type(executor.evidence.inspector) is ie.DockerEvidenceInspector
-    executor._open_runtime(SimpleNamespace(transport="claude_cli", runtime={}, controls={}), "fable",
+    executor._open_runtime(SimpleNamespace(provider="claude", transport="claude_cli", runtime={}, controls={}), "fable",
                            str(workspace), action="implement")
     assert isolation.opened[0]["project_delivery"] is None
 

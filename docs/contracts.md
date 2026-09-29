@@ -1436,8 +1436,60 @@ absent, malformed or false is unknown and is never overwritten by another true. 
 positive join is `stop_unconfirmed` with its recovery reference, `retire` refuses it, and `reconcile`
 refuses recorded client debt as `client_cleanup_unconfirmed` even when the container is absent. The image's `/opt/zeus` interpreter is a
 copy, not a symlink, and the build runs the profile-selected `python -m pytest`/`ruff` under the
-actual profile-derived environment and the pinned Claude version check, without a model call. This is worker/verifier isolation for trusted repositories: it does not contain the
-lead, restrict worker egress or protect against a host administrator.
+actual profile-derived environment and the pinned Claude version check, without a model call. This is worker/verifier isolation for trusted repositories: on its own it does not contain the
+lead (INV-ROLE-CONTAINER-001 does), restrict worker egress or protect against a host administrator.
+
+- INV-ROLE-CONTAINER-001: With isolation selected, the host isolated-worker launcher is the one broker
+for every product model invocation of both providers. The existing routing result `(provider, action,
+read_only)` maps to exactly one fixed profile - `(claude, implement, rw)` -> `claude-impl-rw` (the
+existing worker, unchanged), `(codex, implement, rw)` -> `codex-impl-rw` (the same task-scoped
+staging/evidence policy), `(claude, *, ro)` -> `claude-role-ro`, `(codex, *, ro)` -> `codex-role-ro` -
+and any other shape, a disabled profile (Codex without `ZEUS_CODEX_CREDENTIAL_STORE`) or active native
+hooks in a Codex container refuse before any reservation, container or provider; there is never a
+host fallback. Profiles are code, not configuration: agents never choose a docker argv and role names
+grant nothing. Every profile reuses the create -> inspect -> record -> start ownership, `hold`/`retire`
+cleanup and `run.json` records, and the pre-start inspection checks each bind's exact target and mode
+plus the forbidden socket/home/host flags (docker socket or home bind source, host or container
+pid/ipc/uts/userns/network, added capabilities, devices, a root user, a missing no-new-privileges).
+Read-only profiles bind the clean review checkout read-only with only the run's own result directory
+writable (`/evidence` for Claude, `/result` for Codex); the executor's clean/HEAD checks still follow.
+The Codex App Server runs inside its profile container (`docker start --attach --interactive`, stdio
+JSON-RPC) with the protocol code reused unchanged; its sandbox is relaxed only inside the container,
+whose read-only checkout, absent secrets and absent socket are the boundary. Cancellation and
+deadlines stop the exact container through `hold`; an unresolved run refuses the next one, so a resume
+never duplicates a container. Any remaining host App Server gets an explicit environment allow-list
+(`app_server.HOST_ENVIRONMENT`), never the inherited host environment. D4: after a writer's container
+is confirmed stopped and its observations retained, the executor copies its `/evidence` and retained
+inner result into the content-addressed artifact store (a `zeus-evidence-handoff-v1` manifest); a role
+container mounts, read-only at the store's own path, a per-run digest-verified copy of exactly the
+artifacts its prompt and evidence name (hand-off manifests expanded), never the live store. The worker
+image pins codex-cli 0.156.1 by version and by the linux-x64 binary's sha256, checked at build time.
+
+- INV-CODEX-CREDENTIAL-001: The Codex product credential store (`ZEUS_CODEX_CREDENTIAL_STORE`, a 0700
+directory) holds exactly one 0600 `auth.json` of a dedicated file-store login; API keys refuse. Each
+Codex run gets a fresh per-run CODEX_HOME holding a 0600 copy and the broker-generated `config.toml`
+(`cli_auth_credentials_store = "file"`), digest-checked before start and bind-mounted read-only; every
+other CLI file is task state, discarded or retained only for the same task on the writable profile,
+never offered to another task, role or reviewer. An exclusive flock (sibling `<store>.lock`) covers the
+whole run including settlement; admission also requires no quarantine marker (`<store>.quarantine`) and
+a ledger (`<store>.ledger/`) with no issued copy whose run is not resolved (container proven gone) - a
+released lock alone never admits. After a confirmed stop (or, for a prior run, after reconcile) only
+`auth.json` may flow back: a single-link regular 0600 bounded file with the store's exact key structure,
+the same account identity and auth mode, while the store itself is unchanged since issue, replaced by
+temp file + fsync + rename + directory fsync. Unchanged means no write. Any anomaly, including a changed
+read-only configuration digest, quarantines the store: no write-back, no next admission, no retry, and
+never the operator's `~/.codex`. Measured for the pinned 0.156.1 with a dummy auth and no network: the
+file mode is honored (the keyring mode ignores the same file), the file-store writer rewrites
+`auth.json` in place (same inode, 0600, no temp or rename), logout unlinks it, and the App Server
+creates sqlite state, `installation_id`, `skills/`, `tmp/arg0` links and `log/` - so the home is a
+writable directory. A real token refresh was not exercised; it is verified by the first authorized run
+with a hold on any anomaly, and an interrupted in-place write is caught as an unparseable file.
+
+- INV-MONITOR-VIEWER-001: The monitor's viewer listener (8787, or the aibox unit's
+`ZEUS_AIBOX_WEB_PORT`) never serves the desk: `monitor web` refuses to start while
+`ZEUS_DESK_REVISION` is set, `serve` refuses a desk on the viewer port before binding, and without a
+desk every POST stays 405. A local-operator desk runs only as `monitor desk --port <other>` on its own
+loopback listener, which the view-only observer identity cannot forward to.
 
 # SDD preparation contracts
 
