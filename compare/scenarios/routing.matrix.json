@@ -1,0 +1,8 @@
+{
+ "family": "routing.matrix",
+ "description": "S2 routing: packaged organization authorize/validate matrix, provider-policy parse refusals, every packaged agent x action x workload x read-only x host enablement selection (receipts by digest, refusals), invalid host configurations, the role -> container profile mapping with and without the Codex store, the read-only overlay checks and model selection",
+ "reference_driver": "drivers/reference/s2_routing.py",
+ "target_driver": "drivers/target/s2_routing.py",
+ "golden": "goldens/reference/routing.matrix.json",
+ "slice": "S2"
+}

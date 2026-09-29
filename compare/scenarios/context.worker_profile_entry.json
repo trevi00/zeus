@@ -1,0 +1,8 @@
+{
+ "family": "context.worker_profile_entry",
+ "description": "S2 exact worker-profile metadata command from the checkout root (exit 0 JSON), --help and extra-argument refusals (exit 2), stale/overlong/wrong/missing variants (exit 1 with computed facts), and the packaged hook on synthetic events with relational process facts",
+ "reference_driver": "drivers/reference/s2_profile_entry.py",
+ "target_driver": "drivers/target/s2_profile_entry.py",
+ "golden": "goldens/reference/context.worker_profile_entry.json",
+ "slice": "S2"
+}

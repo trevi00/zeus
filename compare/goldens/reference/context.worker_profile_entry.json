@@ -1,0 +1,524 @@
+{
+ "hook": {
+  "allowed_bash": {
+   "argv": [
+    "python",
+    "-m",
+    "codex_harness.resources.worker_profile_hook",
+    "<args>"
+   ],
+   "exit": 0,
+   "json": [],
+   "receipts": [
+    {
+     "hook": "worker_profile_hook",
+     "hook_event_name": "PostToolUse",
+     "name_embeds_time_and_pid": true,
+     "note": "metadata only; no prompt, command, output or credential is recorded",
+     "pid_is_positive_int": true,
+     "profile_digest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+     "recorded_at_ns_is_int": true,
+     "session_id": "s2-session",
+     "stdin_bytes": 173,
+     "stdin_truncated": false,
+     "tool_name": "Bash"
+    }
+   ],
+   "stderr_bytes": 0,
+   "stdout_bytes": 0,
+   "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "denied_write_1": {
+   "argv": [
+    "python",
+    "-m",
+    "codex_harness.resources.worker_profile_hook",
+    "<args>"
+   ],
+   "exit": 0,
+   "json": [],
+   "receipts": [
+    {
+     "hook": "worker_profile_hook",
+     "hook_event_name": "PostToolUseFailure",
+     "name_embeds_time_and_pid": true,
+     "note": "metadata only; no prompt, command, output or credential is recorded",
+     "pid_is_positive_int": true,
+     "profile_digest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+     "recorded_at_ns_is_int": true,
+     "session_id": "s2-session",
+     "stdin_bytes": 205,
+     "stdin_truncated": false,
+     "tool_name": "Write",
+     "two_strike": {
+      "context_emitted": false,
+      "distinct_failures": 1,
+      "fingerprint": "de13000de6e55c0424565af960aaaf1dd1b9f5c7d49446ba22095539365ae70e",
+      "reason": null,
+      "research_required": false,
+      "status": "counted",
+      "threshold": 2
+     }
+    }
+   ],
+   "stderr_bytes": 0,
+   "stdout_bytes": 0,
+   "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "denied_write_2": {
+   "argv": [
+    "python",
+    "-m",
+    "codex_harness.resources.worker_profile_hook",
+    "<args>"
+   ],
+   "exit": 0,
+   "json": [
+    {
+     "hookSpecificOutput": {
+      "additionalContext": "Two-strike rule: 2 distinct Write failures in this session share one normalized symptom (fingerprint de13000de6e5). Stop repeating this approach; the shared symptom is a research candidate, not a confirmed cause. Read the failure evidence and the authoritative definition, producer, consumer and tests for the affected path; search the local references and primary documentation you are authorized to use. Record the source revision or date next to the claim it supports and keep observation, hypothesis and unknown apart. Run one bounded investigation with one discriminating check, then make one coherent fix inside the allowed paths and verify it with the affected tests. If the authority or the search is unavailable, report research_required with this evidence and hand off to the lead: do not claim success, do not explore unrelated code and do not start another investigation.",
+      "hookEventName": "PostToolUseFailure"
+     }
+    }
+   ],
+   "receipts": [
+    {
+     "hook": "worker_profile_hook",
+     "hook_event_name": "PostToolUseFailure",
+     "name_embeds_time_and_pid": true,
+     "note": "metadata only; no prompt, command, output or credential is recorded",
+     "pid_is_positive_int": true,
+     "profile_digest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+     "recorded_at_ns_is_int": true,
+     "session_id": "s2-session",
+     "stdin_bytes": 205,
+     "stdin_truncated": false,
+     "tool_name": "Write",
+     "two_strike": {
+      "context_emitted": true,
+      "distinct_failures": 2,
+      "fingerprint": "de13000de6e55c0424565af960aaaf1dd1b9f5c7d49446ba22095539365ae70e",
+      "reason": null,
+      "research_required": true,
+      "status": "counted",
+      "threshold": 2
+     }
+    }
+   ],
+   "stderr_bytes": 0,
+   "stdout_bytes": 972,
+   "stdout_sha256": "647a1174bc11a6b32483d6d5af739e1db2e6ffa4cb1dcf69d3a69eef443d2933"
+  },
+  "malformed_json": {
+   "argv": [
+    "python",
+    "-m",
+    "codex_harness.resources.worker_profile_hook",
+    "<args>"
+   ],
+   "exit": 0,
+   "json": [],
+   "receipts": [
+    {
+     "hook": "worker_profile_hook",
+     "hook_event_name": "unknown",
+     "name_embeds_time_and_pid": true,
+     "note": "metadata only; no prompt, command, output or credential is recorded",
+     "pid_is_positive_int": true,
+     "profile_digest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+     "recorded_at_ns_is_int": true,
+     "session_id": null,
+     "stdin_bytes": 9,
+     "stdin_truncated": false,
+     "tool_name": null
+    }
+   ],
+   "stderr_bytes": 0,
+   "stdout_bytes": 0,
+   "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "no_arguments": {
+   "argv": [
+    "python",
+    "-m",
+    "codex_harness.resources.worker_profile_hook"
+   ],
+   "exit": 1,
+   "json": [],
+   "stderr_bytes": 67,
+   "stdout_bytes": 0,
+   "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "session_start": {
+   "argv": [
+    "python",
+    "-m",
+    "codex_harness.resources.worker_profile_hook",
+    "<args>"
+   ],
+   "exit": 0,
+   "json": [],
+   "receipts": [
+    {
+     "hook": "worker_profile_hook",
+     "hook_event_name": "SessionStart",
+     "name_embeds_time_and_pid": true,
+     "note": "metadata only; no prompt, command, output or credential is recorded",
+     "pid_is_positive_int": true,
+     "profile_digest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+     "recorded_at_ns_is_int": true,
+     "session_id": "s2-session",
+     "stdin_bytes": 84,
+     "stdin_truncated": false,
+     "tool_name": null
+    }
+   ],
+   "stderr_bytes": 0,
+   "stdout_bytes": 0,
+   "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "state_files": [
+   "two-strike.sqlite3"
+  ]
+ },
+ "metadata": {
+  "extra_argument": {
+   "argv": [
+    "python",
+    "-m",
+    "codex_harness.adapters.worker_profile_metadata",
+    "<args>"
+   ],
+   "exit": 2,
+   "json": [
+    {
+     "error": {
+      "kind": "invalid_invocation"
+     },
+     "schema": "zeus.worker-profile-metadata/v1",
+     "status": "error",
+     "usage": "python -m codex_harness.adapters.worker_profile_metadata (no arguments)"
+    }
+   ],
+   "stderr_bytes": 0,
+   "stdout_bytes": 190,
+   "stdout_sha256": "04d5a0e2b8139d5ba955342d63b2188e0cfcc4426fdf0165647f9b28e8719870"
+  },
+  "help": {
+   "argv": [
+    "python",
+    "-m",
+    "codex_harness.adapters.worker_profile_metadata",
+    "<args>"
+   ],
+   "exit": 2,
+   "json": [
+    {
+     "error": {
+      "kind": "invalid_invocation"
+     },
+     "schema": "zeus.worker-profile-metadata/v1",
+     "status": "error",
+     "usage": "python -m codex_harness.adapters.worker_profile_metadata (no arguments)"
+    }
+   ],
+   "stderr_bytes": 0,
+   "stdout_bytes": 190,
+   "stdout_sha256": "04d5a0e2b8139d5ba955342d63b2188e0cfcc4426fdf0165647f9b28e8719870"
+  },
+  "hook_missing": {
+   "argv": [
+    "python",
+    "-m",
+    "codex_harness.adapters.worker_profile_metadata"
+   ],
+   "exit": 1,
+   "json": [
+    {
+     "authority": "metadata observation only; worker_profile.load_profile decides validity",
+     "character_limit": 15000,
+     "characters": 8688,
+     "digest_matches": true,
+     "document": "worker-profile-v1.md",
+     "document_sha256": "1db4d3e46bfc4409420b0658d2f1d52059c7fd4481c3666af692ac9db85f8896",
+     "hook": "worker_profile_hook.py",
+     "hook_digest_matches": false,
+     "hook_sha256": null,
+     "hook_status": "missing_file",
+     "manifest": "worker-profile-v1.json",
+     "profile": "worker-v1",
+     "schema": "zeus.worker-profile-metadata/v1",
+     "status": "mismatch",
+     "within_limit": true
+    }
+   ],
+   "stderr_bytes": 0,
+   "stdout_bytes": 549,
+   "stdout_sha256": "577814cd4b2b49669c8df5b1d3aa929367b464cc2e5e4b8e5171cd6b4ba1ff82"
+  },
+  "hook_not_declared": {
+   "argv": [
+    "python",
+    "-m",
+    "codex_harness.adapters.worker_profile_metadata"
+   ],
+   "exit": 0,
+   "json": [
+    {
+     "authority": "metadata observation only; worker_profile.load_profile decides validity",
+     "character_limit": 15000,
+     "characters": 8688,
+     "digest_matches": true,
+     "document": "worker-profile-v1.md",
+     "document_sha256": "1db4d3e46bfc4409420b0658d2f1d52059c7fd4481c3666af692ac9db85f8896",
+     "hook": null,
+     "hook_digest_matches": null,
+     "hook_sha256": null,
+     "hook_status": "not_declared",
+     "manifest": "worker-profile-v1.json",
+     "profile": "worker-v1",
+     "schema": "zeus.worker-profile-metadata/v1",
+     "status": "ok",
+     "within_limit": true
+    }
+   ],
+   "stderr_bytes": 0,
+   "stdout_bytes": 522,
+   "stdout_sha256": "4e8b5e8a92e0b1bbf6f6c5227914881239af870bc234d757862249dbc6bb9786"
+  },
+  "manifest_not_json": {
+   "argv": [
+    "python",
+    "-m",
+    "codex_harness.adapters.worker_profile_metadata"
+   ],
+   "exit": 1,
+   "json": [
+    {
+     "error": {
+      "file": "worker-profile-v1.json",
+      "kind": "invalid_json"
+     },
+     "schema": "zeus.worker-profile-metadata/v1",
+     "status": "error"
+    }
+   ],
+   "stderr_bytes": 0,
+   "stdout_bytes": 134,
+   "stdout_sha256": "37a027a5b979133894d71a2bdf0a133af7deb0d75409e91c7b507420a333fa06"
+  },
+  "no_arguments_from_checkout_root": {
+   "argv": [
+    "python",
+    "-m",
+    "codex_harness.adapters.worker_profile_metadata"
+   ],
+   "exit": 0,
+   "json": [
+    {
+     "authority": "metadata observation only; worker_profile.load_profile decides validity",
+     "character_limit": 15000,
+     "characters": 8688,
+     "digest_matches": true,
+     "document": "worker-profile-v1.md",
+     "document_sha256": "1db4d3e46bfc4409420b0658d2f1d52059c7fd4481c3666af692ac9db85f8896",
+     "hook": "worker_profile_hook.py",
+     "hook_digest_matches": true,
+     "hook_sha256": "fd6ecaf37282071107d4d38fa3cddc17a7197bfb20dd9cf5134e0142d5927b82",
+     "hook_status": "verified",
+     "manifest": "worker-profile-v1.json",
+     "profile": "worker-v1",
+     "schema": "zeus.worker-profile-metadata/v1",
+     "status": "ok",
+     "within_limit": true
+    }
+   ],
+   "stderr_bytes": 0,
+   "stdout_bytes": 600,
+   "stdout_sha256": "e90e1a02e756232023b49df17a67cc5fb53bcc012ed4193c2393532766219497"
+  },
+  "not_a_checkout": {
+   "argv": [
+    "python",
+    "-m",
+    "codex_harness.adapters.worker_profile_metadata"
+   ],
+   "exit": 1,
+   "json": [
+    {
+     "error": {
+      "file": "worker-profile-v1.json",
+      "kind": "missing_file"
+     },
+     "schema": "zeus.worker-profile-metadata/v1",
+     "status": "error"
+    }
+   ],
+   "stderr_bytes": 0,
+   "stdout_bytes": 134,
+   "stdout_sha256": "c763bf0a33606323185cb5586ce9b915f2ae1423744225a65335cad2a15f072f"
+  },
+  "overlong_document": {
+   "argv": [
+    "python",
+    "-m",
+    "codex_harness.adapters.worker_profile_metadata"
+   ],
+   "exit": 1,
+   "json": [
+    {
+     "authority": "metadata observation only; worker_profile.load_profile decides validity",
+     "character_limit": 15000,
+     "characters": 15001,
+     "digest_matches": false,
+     "document": "worker-profile-v1.md",
+     "document_sha256": "9de08c06b726943ac547bfcc03481abbc796a7476c3856c1ae290c468c68854a",
+     "hook": "worker_profile_hook.py",
+     "hook_digest_matches": true,
+     "hook_sha256": "fd6ecaf37282071107d4d38fa3cddc17a7197bfb20dd9cf5134e0142d5927b82",
+     "hook_status": "verified",
+     "manifest": "worker-profile-v1.json",
+     "profile": "worker-v1",
+     "schema": "zeus.worker-profile-metadata/v1",
+     "status": "mismatch",
+     "within_limit": false
+    }
+   ],
+   "stderr_bytes": 0,
+   "stdout_bytes": 609,
+   "stdout_sha256": "d0b4bd952148edfb406ca04264e2a5667fd6405275d48829782503ba5ddb1cc2"
+  },
+  "stale_document_digest": {
+   "argv": [
+    "python",
+    "-m",
+    "codex_harness.adapters.worker_profile_metadata"
+   ],
+   "exit": 1,
+   "json": [
+    {
+     "authority": "metadata observation only; worker_profile.load_profile decides validity",
+     "character_limit": 15000,
+     "characters": 8688,
+     "digest_matches": false,
+     "document": "worker-profile-v1.md",
+     "document_sha256": "1db4d3e46bfc4409420b0658d2f1d52059c7fd4481c3666af692ac9db85f8896",
+     "hook": "worker_profile_hook.py",
+     "hook_digest_matches": true,
+     "hook_sha256": "fd6ecaf37282071107d4d38fa3cddc17a7197bfb20dd9cf5134e0142d5927b82",
+     "hook_status": "verified",
+     "manifest": "worker-profile-v1.json",
+     "profile": "worker-v1",
+     "schema": "zeus.worker-profile-metadata/v1",
+     "status": "mismatch",
+     "within_limit": true
+    }
+   ],
+   "stderr_bytes": 0,
+   "stdout_bytes": 607,
+   "stdout_sha256": "0eec033a3e80d447587e78a55cd7d200b314339a2d301bc6efb0d2fff544645a"
+  },
+  "stale_hook_digest": {
+   "argv": [
+    "python",
+    "-m",
+    "codex_harness.adapters.worker_profile_metadata"
+   ],
+   "exit": 1,
+   "json": [
+    {
+     "authority": "metadata observation only; worker_profile.load_profile decides validity",
+     "character_limit": 15000,
+     "characters": 8688,
+     "digest_matches": true,
+     "document": "worker-profile-v1.md",
+     "document_sha256": "1db4d3e46bfc4409420b0658d2f1d52059c7fd4481c3666af692ac9db85f8896",
+     "hook": "worker_profile_hook.py",
+     "hook_digest_matches": false,
+     "hook_sha256": "fd6ecaf37282071107d4d38fa3cddc17a7197bfb20dd9cf5134e0142d5927b82",
+     "hook_status": "stale_digest",
+     "manifest": "worker-profile-v1.json",
+     "profile": "worker-v1",
+     "schema": "zeus.worker-profile-metadata/v1",
+     "status": "mismatch",
+     "within_limit": true
+    }
+   ],
+   "stderr_bytes": 0,
+   "stdout_bytes": 611,
+   "stdout_sha256": "a0f9eb10dc9fd2b8d9edf4866c2f9fa99c640ba94dfac9cfab30bd57986097d6"
+  },
+  "wrong_hook": {
+   "argv": [
+    "python",
+    "-m",
+    "codex_harness.adapters.worker_profile_metadata"
+   ],
+   "exit": 1,
+   "json": [
+    {
+     "authority": "metadata observation only; worker_profile.load_profile decides validity",
+     "character_limit": 15000,
+     "characters": 8688,
+     "digest_matches": true,
+     "document": "worker-profile-v1.md",
+     "document_sha256": "1db4d3e46bfc4409420b0658d2f1d52059c7fd4481c3666af692ac9db85f8896",
+     "hook": "worker_profile_hook.py",
+     "hook_digest_matches": false,
+     "hook_sha256": null,
+     "hook_status": "wrong_hook",
+     "manifest": "worker-profile-v1.json",
+     "profile": "worker-v1",
+     "schema": "zeus.worker-profile-metadata/v1",
+     "status": "mismatch",
+     "within_limit": true
+    }
+   ],
+   "stderr_bytes": 0,
+   "stdout_bytes": 547,
+   "stdout_sha256": "7341e31462e72b9e3affbf0ced52170a5c564e310f772b2252f8627f0e9b2adf"
+  },
+  "wrong_id": {
+   "argv": [
+    "python",
+    "-m",
+    "codex_harness.adapters.worker_profile_metadata"
+   ],
+   "exit": 1,
+   "json": [
+    {
+     "error": {
+      "file": "worker-profile-v1.json",
+      "kind": "wrong_id"
+     },
+     "schema": "zeus.worker-profile-metadata/v1",
+     "status": "error"
+    }
+   ],
+   "stderr_bytes": 0,
+   "stdout_bytes": 130,
+   "stdout_sha256": "96d7c9e98042c4ddbc36ba64eef7587ac8c5ee072c17487827178d196f00efc3"
+  },
+  "wrong_limit": {
+   "argv": [
+    "python",
+    "-m",
+    "codex_harness.adapters.worker_profile_metadata"
+   ],
+   "exit": 1,
+   "json": [
+    {
+     "error": {
+      "file": "worker-profile-v1.json",
+      "kind": "wrong_character_limit"
+     },
+     "schema": "zeus.worker-profile-metadata/v1",
+     "status": "error"
+    }
+   ],
+   "stderr_bytes": 0,
+   "stdout_bytes": 143,
+   "stdout_sha256": "36a30be9095440daba9f57981c6e5cd0c4d850e15dabfc0a4a3776531be8b195"
+  }
+ }
+}

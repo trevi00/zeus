@@ -1,0 +1,8 @@
+{
+ "family": "context.composition",
+ "description": "S2 context composition (section 2.7 F4): implementation, plan, decision and knowledge/recovery contexts at fixed inputs, plus the overflow refusal; rendered input, the retained context:<key> packet artifact bytes/ref/omissions/manifest hash, every artifact the composition stores, the skill-history rows bound to the packet ref, and the byte measurement",
+ "reference_driver": "drivers/reference/s2_composition.py",
+ "target_driver": "drivers/target/s2_composition.py",
+ "golden": "goldens/reference/context.composition.json",
+ "slice": "S2"
+}

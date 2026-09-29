@@ -1,0 +1,691 @@
+{
+ "decision": {
+  "artifact_puts": [
+   {
+    "ref": "sha256:63aa6e170b9c83fc0fcd77c8508a9a76fbc728ed3179a71f0081f3e7d8b3a98d",
+    "source": "task:decision-0001"
+   },
+   {
+    "ref": "sha256:fceb46b9a8197201ff4adffc27c7d6377cc74eeca6428848cdb4aa445868c251",
+    "source": "baldrix:b9586c59c062457a45018e41c2e753934b5ca6c9:stages.yaml"
+   },
+   {
+    "ref": "sha256:f3ca6be9452186f924548712639a3aa84a0393658fc8935d2fa2f90a76066c36",
+    "source": "git:81dd81b43ec446b1a562029a5a60bb18c2fe76f1:.harness/skills/_common/review-checklist.md"
+   },
+   {
+    "ref": "sha256:84e8b29967c26b6f4a8a4877f0d2e6541d0a1bc86b46254fb4fd92ccb3638455",
+    "source": "git:81dd81b43ec446b1a562029a5a60bb18c2fe76f1:.harness/skills/_common/testing/SKILL.md"
+   },
+   {
+    "ref": "sha256:46296aba340ae05fd7e185846f2ddfa7e87b20508c679298cf0d74e16e234515",
+    "source": "git:81dd81b43ec446b1a562029a5a60bb18c2fe76f1:.harness/skills/python/pytest/fixtures.md"
+   },
+   {
+    "ref": "sha256:434bc0b20a82216058769e2a53a75f00b41a381bb853b35df66bc1693a2aace6",
+    "source": "git:81dd81b43ec446b1a562029a5a60bb18c2fe76f1:.harness/skills/python/huge-retry.md"
+   },
+   {
+    "ref": "sha256:7262e17e776e5ca9aa19f2d912502356c7c690e6a00a9649948dc0ba4826fd8a",
+    "source": "git:81dd81b43ec446b1a562029a5a60bb18c2fe76f1:.harness/skills/python/logging.md"
+   },
+   {
+    "ref": "sha256:ceca7b98356558d7b9864820bb1ec55d5cef1457dc7b8cece12ac6de34f2b0c7",
+    "source": "git:81dd81b43ec446b1a562029a5a60bb18c2fe76f1:.harness/skills/python/retry-patterns.md"
+   },
+   {
+    "ref": "sha256:36146785db3d13a3fc70e880f6726ba63c29b42b15b01fe00da7fc5c88eac714",
+    "source": "git:81dd81b43ec446b1a562029a5a60bb18c2fe76f1:.harness/skills/shared/tools/SKILL.md"
+   },
+   {
+    "ref": "sha256:18d8c0b2a9756828de7a3cee77797731a2cccd52f46af21ef7ac81c1805d0b46",
+    "source": "project-skill-guidance"
+   },
+   {
+    "ref": "sha256:4c4b188205b608892acbdda202c1ccadb328fd667af0efd4b007e03e7c588c30",
+    "source": "project-skill-selection"
+   },
+   {
+    "ref": "sha256:02a49de6aab2d4ac560a8592e35d099ee1080c2c5d2749a998514e9450ddab7f",
+    "source": "skill-history-assessment"
+   },
+   {
+    "ref": "sha256:6180fd0d53f885e4c7b5129c80d118865c8c0ebc0b8d3c1aef81eb0676e95e8e",
+    "source": "context:decision-0001"
+   }
+  ],
+  "context_measurement": {
+   "policy": "legacy",
+   "rendered_bytes": 8416,
+   "reserved": 6000,
+   "unit": "utf8_bytes",
+   "usable": 22000,
+   "window": 28000
+  },
+  "delivered_prompts": [
+   {
+    "bytes": 8416,
+    "equals_packet_render": true,
+    "sha256": "9ce7cb20042fb527ab2a0be9bb6054a344e1dd84acc8a7bda6a340e0e3f8bc3c"
+   }
+  ],
+  "packets": [
+   {
+    "agent_id": "conductor",
+    "bytes": 8559,
+    "canonical_bytes": true,
+    "compiler_version": "1",
+    "estimated_tokens": 8416,
+    "estimated_tokens_is_rendered_utf8_bytes": true,
+    "evidence_ids": [
+     "project-skill:.harness/skills/_common/review-checklist.md",
+     "project-skill:.harness/skills/_common/testing/SKILL.md",
+     "project-skill:.harness/skills/python/huge-retry.md",
+     "project-skill:.harness/skills/python/retry-patterns.md",
+     "project-guidance:sha256:18d8c0b2a9756828de7a3cee77797731a2cccd52f46af21ef7ac81c1805d0b46",
+     "sha256:63aa6e170b9c83fc0fcd77c8508a9a76fbc728ed3179a71f0081f3e7d8b3a98d"
+    ],
+    "evidence_priorities_trust": [
+     "evidence-not-instructions"
+    ],
+    "fields": [
+     "agent_id",
+     "compiler_version",
+     "estimated_tokens",
+     "evidence",
+     "manifest_hash",
+     "omitted",
+     "required",
+     "snapshot",
+     "task_id"
+    ],
+    "manifest_hash": "5ab805fada574f780645aaa44b9916f608289b1be6b42b30aadadad2e67677f8",
+    "manifest_hash_recomputes": true,
+    "omitted": [],
+    "project_skills": {
+     "included": 4,
+     "omitted": 0,
+     "project_id": "3f1c2b7a-8d4e-4c1b-9a2f-6e5d4c3b2a19",
+     "selected": 4,
+     "status": "configured"
+    },
+    "ref": "sha256:6180fd0d53f885e4c7b5129c80d118865c8c0ebc0b8d3c1aef81eb0676e95e8e",
+    "ref_is_sha256_of_bytes": true,
+    "rendered_bytes": 8416,
+    "rendered_sha256": "9ce7cb20042fb527ab2a0be9bb6054a344e1dd84acc8a7bda6a340e0e3f8bc3c",
+    "required_digests": {
+     "acceptance_criteria": "1245bf42ee35c7ab173324fb5795a39ca30ef7cdec06b58b38cc2ba45ffdf6e1",
+     "artifact_reader": "c7ebd1aca621bbeb118e1b55377c1e05a90797f707eeb858e16e647dc345435e",
+     "external_context": "038cb951c3a21a918d2a9b517fd0c8bf12ae2db8b66cb88fa1d6056fc889f7c9",
+     "objective": "eb3e8f32b3642fc24f104780996c86161265ce3205823431cc08624563760179",
+     "policy": "75c407637d7ae39e779f9c47266de25998d55811a615f0cd857702701918a6f9",
+     "project_skills": "0119ffcb270306797a6201ba42ec741c0687dc8027ea35421239b4790348c833",
+     "recovery": "a12b13fb212269bd41ea5dac872c23df7cddef5b6ae8029475abd75488f3f57c",
+     "research_context": "58c1c3901aebe0c0f1ffad888f34310b3161008b2c81f44abd7b535735d56184",
+     "review_context": "1f0906b039d43ad237bbbfcbd98c815b1d8066bd644d00da59a25ddc44bf6a1a",
+     "role": "0380db97ec507816cb2435f11d56f1bfe151dea2ae25a75859e9b2f0417dda5b",
+     "task_contract": "d6f3648e8ceacf6e94c94b23651f97d88cf7edb42210dc5cabfa8a77dffde770",
+     "versions": "75c7262d62389af1e028c61554373424168e2813ccce7a0cefb6a76b9a7f9b82"
+    },
+    "required_keys": [
+     "acceptance_criteria",
+     "artifact_reader",
+     "external_context",
+     "objective",
+     "policy",
+     "project_skills",
+     "recovery",
+     "research_context",
+     "review_context",
+     "role",
+     "task_contract",
+     "versions"
+    ],
+    "sha256": "6180fd0d53f885e4c7b5129c80d118865c8c0ebc0b8d3c1aef81eb0676e95e8e",
+    "snapshot": "861dc1cfb3864ea6eab4ff59d5a7a48354c579a911d51032340a1ab5335cb9b1",
+    "source_label": "context:decision-0001",
+    "task_id": "decision-0001"
+   }
+  ],
+  "provider_calls": 1,
+  "skill_history_rows": [
+   {
+    "body_sha256": "48d673c68c7106fa319329a858627e53b2217a8642a41da907cbe338d558230c",
+    "bucket": "skill_history",
+    "context_ref_bound": true,
+    "key": "387c0313560b3de2ab714858bdac2e04e763428e570bacec9ff795533f813427"
+   },
+   {
+    "body_sha256": "2b082927b4211ec285fcd50c0ab914b5dcbe34c3537a5750509a1617afccc829",
+    "bucket": "skill_observations",
+    "context_ref_bound": true,
+    "key": "80b2d08f60d4a56013ab8cd0460d8fd2699b5b08a84b142f6bc39f56d4473c04"
+   }
+  ],
+  "status": "composed"
+ },
+ "implementation": {
+  "artifact_puts": [
+   {
+    "ref": "sha256:82e8f9eebb7ce23741050d6d348db9f0c8cea39a57c7d0fb278f48f84ce55bcb",
+    "source": "task:task-impl-0001"
+   },
+   {
+    "ref": "sha256:fceb46b9a8197201ff4adffc27c7d6377cc74eeca6428848cdb4aa445868c251",
+    "source": "baldrix:b9586c59c062457a45018e41c2e753934b5ca6c9:stages.yaml"
+   },
+   {
+    "ref": "sha256:f3ca6be9452186f924548712639a3aa84a0393658fc8935d2fa2f90a76066c36",
+    "source": "git:81dd81b43ec446b1a562029a5a60bb18c2fe76f1:.harness/skills/_common/review-checklist.md"
+   },
+   {
+    "ref": "sha256:84e8b29967c26b6f4a8a4877f0d2e6541d0a1bc86b46254fb4fd92ccb3638455",
+    "source": "git:81dd81b43ec446b1a562029a5a60bb18c2fe76f1:.harness/skills/_common/testing/SKILL.md"
+   },
+   {
+    "ref": "sha256:46296aba340ae05fd7e185846f2ddfa7e87b20508c679298cf0d74e16e234515",
+    "source": "git:81dd81b43ec446b1a562029a5a60bb18c2fe76f1:.harness/skills/python/pytest/fixtures.md"
+   },
+   {
+    "ref": "sha256:434bc0b20a82216058769e2a53a75f00b41a381bb853b35df66bc1693a2aace6",
+    "source": "git:81dd81b43ec446b1a562029a5a60bb18c2fe76f1:.harness/skills/python/huge-retry.md"
+   },
+   {
+    "ref": "sha256:7262e17e776e5ca9aa19f2d912502356c7c690e6a00a9649948dc0ba4826fd8a",
+    "source": "git:81dd81b43ec446b1a562029a5a60bb18c2fe76f1:.harness/skills/python/logging.md"
+   },
+   {
+    "ref": "sha256:ceca7b98356558d7b9864820bb1ec55d5cef1457dc7b8cece12ac6de34f2b0c7",
+    "source": "git:81dd81b43ec446b1a562029a5a60bb18c2fe76f1:.harness/skills/python/retry-patterns.md"
+   },
+   {
+    "ref": "sha256:36146785db3d13a3fc70e880f6726ba63c29b42b15b01fe00da7fc5c88eac714",
+    "source": "git:81dd81b43ec446b1a562029a5a60bb18c2fe76f1:.harness/skills/shared/tools/SKILL.md"
+   },
+   {
+    "ref": "sha256:f6e3bbb7b1bea6403dc172669e4bfb8eab66f06cd4b2a4298722d0fb17387e1d",
+    "source": "git:81dd81b43ec446b1a562029a5a60bb18c2fe76f1:src/app/retry.py:head"
+   },
+   {
+    "ref": "sha256:9d88e251b07521ea1fe22ff85dbd42e892299104a5612954638c4eb263f28b6a",
+    "source": "project-skill-guidance"
+   },
+   {
+    "ref": "sha256:1baffb68c1b295247aff40bee14dde5f20839a9b5ddb48ceab826dc0f134fd53",
+    "source": "project-skill-selection"
+   },
+   {
+    "ref": "sha256:f7be8aeb816c8ba07487747d4bdf70ea8b6d3873d3b211cdd0413d191c957f0b",
+    "source": "skill-history-assessment"
+   },
+   {
+    "ref": "sha256:d0f774b773d314eb35ad4b7d58cf2c1be7e43ac086bef7c09d00e10e70a52021",
+    "source": "context:task-impl-0001"
+   }
+  ],
+  "context_measurement": {
+   "policy": "legacy",
+   "rendered_bytes": 7007,
+   "reserved": 6000,
+   "unit": "utf8_bytes",
+   "usable": 22000,
+   "window": 28000
+  },
+  "delivered_prompts": [
+   {
+    "bytes": 7007,
+    "equals_packet_render": true,
+    "sha256": "75c350974bc5146a7d6673cf0184d54d1afe4c8ca299f907329655d5de8fea9b"
+   }
+  ],
+  "packets": [
+   {
+    "agent_id": "worker:implementation",
+    "bytes": 7335,
+    "canonical_bytes": true,
+    "compiler_version": "1",
+    "estimated_tokens": 7007,
+    "estimated_tokens_is_rendered_utf8_bytes": true,
+    "evidence_ids": [
+     "project-skill:.harness/skills/python/retry-patterns.md",
+     "project-skill:.harness/skills/_common/review-checklist.md",
+     "project-skill:.harness/skills/_common/testing/SKILL.md",
+     "project-skill:.harness/skills/python/huge-retry.md",
+     "project-guidance:sha256:9d88e251b07521ea1fe22ff85dbd42e892299104a5612954638c4eb263f28b6a"
+    ],
+    "evidence_priorities_trust": [
+     "evidence-not-instructions"
+    ],
+    "fields": [
+     "agent_id",
+     "compiler_version",
+     "estimated_tokens",
+     "evidence",
+     "manifest_hash",
+     "omitted",
+     "required",
+     "snapshot",
+     "task_id"
+    ],
+    "manifest_hash": "88a661af2208f716e2afc9af463237513244c10a46279b9d0865d386bb2cdafd",
+    "manifest_hash_recomputes": true,
+    "omitted": [
+     {
+      "id": "sha256:82e8f9eebb7ce23741050d6d348db9f0c8cea39a57c7d0fb278f48f84ce55bcb",
+      "reason": "budget",
+      "source_ref": "sha256:82e8f9eebb7ce23741050d6d348db9f0c8cea39a57c7d0fb278f48f84ce55bcb"
+     }
+    ],
+    "project_skills": {
+     "included": 4,
+     "omitted": 0,
+     "project_id": "3f1c2b7a-8d4e-4c1b-9a2f-6e5d4c3b2a19",
+     "selected": 4,
+     "status": "configured"
+    },
+    "ref": "sha256:d0f774b773d314eb35ad4b7d58cf2c1be7e43ac086bef7c09d00e10e70a52021",
+    "ref_is_sha256_of_bytes": true,
+    "rendered_bytes": 7007,
+    "rendered_sha256": "75c350974bc5146a7d6673cf0184d54d1afe4c8ca299f907329655d5de8fea9b",
+    "required_digests": {
+     "acceptance_criteria": "1245bf42ee35c7ab173324fb5795a39ca30ef7cdec06b58b38cc2ba45ffdf6e1",
+     "artifact_reader": "c7ebd1aca621bbeb118e1b55377c1e05a90797f707eeb858e16e647dc345435e",
+     "external_context": "7e89b5e7f329604cb10b8ad9380fc5db7ebca5a202e2a68499fd4cd3f28e09db",
+     "objective": "91982427c8144a9894a7ef2ad909d441b7e9e6073d3e999cf02c50cfe6e8df90",
+     "policy": "75c407637d7ae39e779f9c47266de25998d55811a615f0cd857702701918a6f9",
+     "project_skills": "e6e1fde77e81eabb831d8a533d3f6f98c266bd227bfddd30ac4d6b707b259e49",
+     "recovery": "a12b13fb212269bd41ea5dac872c23df7cddef5b6ae8029475abd75488f3f57c",
+     "research_context": "ef746753f1148d037b498c62b3ea5ca7c8b314882d60cbb943f8587a1c8c8a5a",
+     "role": "346be04205ddb7592d24ccb1e37f525b5ee8486d4caef2306b7f622ffdcbe6f2",
+     "task_contract": "bb5cb98607b8d23a1c8391989874fc22e2613f661e157bf107388f0979bfe464",
+     "versions": "75c7262d62389af1e028c61554373424168e2813ccce7a0cefb6a76b9a7f9b82"
+    },
+    "required_keys": [
+     "acceptance_criteria",
+     "artifact_reader",
+     "external_context",
+     "objective",
+     "policy",
+     "project_skills",
+     "recovery",
+     "research_context",
+     "role",
+     "task_contract",
+     "versions"
+    ],
+    "sha256": "d0f774b773d314eb35ad4b7d58cf2c1be7e43ac086bef7c09d00e10e70a52021",
+    "snapshot": "861dc1cfb3864ea6eab4ff59d5a7a48354c579a911d51032340a1ab5335cb9b1",
+    "source_label": "context:task-impl-0001",
+    "task_id": "task-impl-0001"
+   }
+  ],
+  "provider_calls": 1,
+  "skill_history_rows": [
+   {
+    "body_sha256": "4bbc0941f14396f5b1c0e4e238439027b9202ca872facd1993a74536cda9a713",
+    "bucket": "skill_history",
+    "context_ref_bound": true,
+    "key": "387c0313560b3de2ab714858bdac2e04e763428e570bacec9ff795533f813427"
+   },
+   {
+    "body_sha256": "83001d3d3828497f91965b79d818ed524e66d9929c507593f9127e0e8ebf9ed1",
+    "bucket": "skill_observations",
+    "context_ref_bound": true,
+    "key": "d0c06898d820c1fdcf7918bae7e04a3e9bf3b61191abbec351a54c05bdb4e1b4"
+   }
+  ],
+  "status": "composed"
+ },
+ "knowledge_missing_path": {
+  "artifact_puts": [
+   {
+    "ref": "sha256:b228c3209cbc978134ee71e4bf3fec89f70ea016d9534514206b829e48a8affc",
+    "source": "task:task-plain-0002"
+   }
+  ],
+  "context_measurement": null,
+  "delivered_prompts": [],
+  "packets": [],
+  "provider_calls": 0,
+  "refusal": {
+   "error": "GitCommandError",
+   "message": "Git operation failed (show, cwd=/tmp/zeus-rebuild-s2-context/plain): fatal: path 'nowhere.py' does not exist in '1f71b71b097a3117d661b9adec9c2aae441c0e9a'\n"
+  },
+  "skill_history_rows": [],
+  "status": "refused"
+ },
+ "overflow": {
+  "artifact_puts": [
+   {
+    "ref": "sha256:56e17c3b84bb13914fc0d68199d7cbdf1c1c192b7e751a38019cc2a9f9016614",
+    "source": "task:task-over-0001"
+   },
+   {
+    "ref": "sha256:fceb46b9a8197201ff4adffc27c7d6377cc74eeca6428848cdb4aa445868c251",
+    "source": "baldrix:b9586c59c062457a45018e41c2e753934b5ca6c9:stages.yaml"
+   },
+   {
+    "ref": "sha256:f3ca6be9452186f924548712639a3aa84a0393658fc8935d2fa2f90a76066c36",
+    "source": "git:81dd81b43ec446b1a562029a5a60bb18c2fe76f1:.harness/skills/_common/review-checklist.md"
+   },
+   {
+    "ref": "sha256:84e8b29967c26b6f4a8a4877f0d2e6541d0a1bc86b46254fb4fd92ccb3638455",
+    "source": "git:81dd81b43ec446b1a562029a5a60bb18c2fe76f1:.harness/skills/_common/testing/SKILL.md"
+   },
+   {
+    "ref": "sha256:46296aba340ae05fd7e185846f2ddfa7e87b20508c679298cf0d74e16e234515",
+    "source": "git:81dd81b43ec446b1a562029a5a60bb18c2fe76f1:.harness/skills/python/pytest/fixtures.md"
+   },
+   {
+    "ref": "sha256:434bc0b20a82216058769e2a53a75f00b41a381bb853b35df66bc1693a2aace6",
+    "source": "git:81dd81b43ec446b1a562029a5a60bb18c2fe76f1:.harness/skills/python/huge-retry.md"
+   },
+   {
+    "ref": "sha256:7262e17e776e5ca9aa19f2d912502356c7c690e6a00a9649948dc0ba4826fd8a",
+    "source": "git:81dd81b43ec446b1a562029a5a60bb18c2fe76f1:.harness/skills/python/logging.md"
+   },
+   {
+    "ref": "sha256:ceca7b98356558d7b9864820bb1ec55d5cef1457dc7b8cece12ac6de34f2b0c7",
+    "source": "git:81dd81b43ec446b1a562029a5a60bb18c2fe76f1:.harness/skills/python/retry-patterns.md"
+   },
+   {
+    "ref": "sha256:36146785db3d13a3fc70e880f6726ba63c29b42b15b01fe00da7fc5c88eac714",
+    "source": "git:81dd81b43ec446b1a562029a5a60bb18c2fe76f1:.harness/skills/shared/tools/SKILL.md"
+   },
+   {
+    "ref": "sha256:3e3af828b7bc71eb11d90ddd06e2c110f104e9fa8bdda4a3eeb21ef290bf22d8",
+    "source": "project-skill-guidance"
+   },
+   {
+    "ref": "sha256:57e17aa2812b9406f21be5d25a449dfc040613a67117c25ef8fc81bb8a717663",
+    "source": "project-skill-selection"
+   }
+  ],
+  "context_measurement": null,
+  "delivered_prompts": [],
+  "packets": [],
+  "provider_calls": 0,
+  "refusal": {
+   "error": "ContractError",
+   "message": "Required contract exceeds budget; split task"
+  },
+  "skill_history_rows": [],
+  "status": "refused"
+ },
+ "plain_recovery_knowledge": {
+  "artifact_puts": [
+   {
+    "ref": "sha256:b228c3209cbc978134ee71e4bf3fec89f70ea016d9534514206b829e48a8affc",
+    "source": "task:task-plain-0001"
+   },
+   {
+    "ref": "sha256:9a8641793bc3be47bb9fcf770b9f183ef20befc4b51f8408239c42da531fedfd",
+    "source": "recovery:task-plain-0001:checkpoint"
+   },
+   {
+    "ref": "sha256:31eb71c762527b3dc50ea439525d61eef8912804713790a14052b44e708a68e5",
+    "source": "recovery:task-plain-0001:progress"
+   },
+   {
+    "ref": "sha256:36598829c1d323df55208d76c67403fc4e15070946df7a43b224b730e355bffa",
+    "source": "context:task-plain-0001"
+   }
+  ],
+  "context_measurement": {
+   "policy": "legacy",
+   "rendered_bytes": 5097,
+   "reserved": 6000,
+   "unit": "utf8_bytes",
+   "usable": 22000,
+   "window": 28000
+  },
+  "delivered_prompts": [
+   {
+    "bytes": 5097,
+    "equals_packet_render": true,
+    "sha256": "750b15fa332b4c3fc7cb4697467e94689e043c6ddf8692d03cea0029ee5f5cb0"
+   }
+  ],
+  "packets": [
+   {
+    "agent_id": "lead:research",
+    "bytes": 5240,
+    "canonical_bytes": true,
+    "compiler_version": "1",
+    "estimated_tokens": 5097,
+    "estimated_tokens_is_rendered_utf8_bytes": true,
+    "evidence_ids": [
+     "sha256:31eb71c762527b3dc50ea439525d61eef8912804713790a14052b44e708a68e5",
+     "sha256:9a8641793bc3be47bb9fcf770b9f183ef20befc4b51f8408239c42da531fedfd",
+     "sha256:b228c3209cbc978134ee71e4bf3fec89f70ea016d9534514206b829e48a8affc",
+     "file:README",
+     "runtime:note-1"
+    ],
+    "evidence_priorities_trust": [
+     "evidence-not-instructions"
+    ],
+    "fields": [
+     "agent_id",
+     "compiler_version",
+     "estimated_tokens",
+     "evidence",
+     "manifest_hash",
+     "omitted",
+     "required",
+     "snapshot",
+     "task_id"
+    ],
+    "manifest_hash": "3f63c955ff262db9002330ae4a7e51d5b7233e593752560acf3280ac85028718",
+    "manifest_hash_recomputes": true,
+    "omitted": [],
+    "project_skills": {
+     "included": 0,
+     "omitted": 0,
+     "project_id": null,
+     "selected": 0,
+     "status": "not_configured"
+    },
+    "ref": "sha256:36598829c1d323df55208d76c67403fc4e15070946df7a43b224b730e355bffa",
+    "ref_is_sha256_of_bytes": true,
+    "rendered_bytes": 5097,
+    "rendered_sha256": "750b15fa332b4c3fc7cb4697467e94689e043c6ddf8692d03cea0029ee5f5cb0",
+    "required_digests": {
+     "acceptance_criteria": "1245bf42ee35c7ab173324fb5795a39ca30ef7cdec06b58b38cc2ba45ffdf6e1",
+     "artifact_reader": "c7ebd1aca621bbeb118e1b55377c1e05a90797f707eeb858e16e647dc345435e",
+     "external_context": "3fdf3dedfda73523036bb75bf2d04e2e72c89e048bdb9d2e1ab00dd186be9a5c",
+     "objective": "c74ee631bacfa1e0aa36cceb443acbbf4798f2263ed5786e878693a7c60fa836",
+     "policy": "75c407637d7ae39e779f9c47266de25998d55811a615f0cd857702701918a6f9",
+     "project_skills": "b45ccdbfc6e02a6973988986ff3e54e61049cad13b05c7a4cd585822390ae361",
+     "recovery": "c9c645a37c86a97870b0ad85fe467303968c0f9402cdd41c22e3911c7bf251e7",
+     "review_context": "63b3e7185e2ee5958399b263f3d59f2a7142dda73c4d29a631c88cea7d353a31",
+     "role": "22ca5af442b3823e0c1c25e1a91273f55afdd83eaec86d43b957358509d1cfac",
+     "task_contract": "b228c3209cbc978134ee71e4bf3fec89f70ea016d9534514206b829e48a8affc",
+     "versions": "108f2d3be271f2294a4070b875fb08434a7a5c16c948cb4ffcb2a887e176b46b"
+    },
+    "required_keys": [
+     "acceptance_criteria",
+     "artifact_reader",
+     "external_context",
+     "objective",
+     "policy",
+     "project_skills",
+     "recovery",
+     "review_context",
+     "role",
+     "task_contract",
+     "versions"
+    ],
+    "sha256": "36598829c1d323df55208d76c67403fc4e15070946df7a43b224b730e355bffa",
+    "snapshot": "21578068c31b85ef3b470bf518b3f6e64ebdfc08f1a4492de70225b615503d77",
+    "source_label": "context:task-plain-0001",
+    "task_id": "task-plain-0001"
+   }
+  ],
+  "provider_calls": 1,
+  "skill_history_rows": [],
+  "status": "composed"
+ },
+ "plan": {
+  "artifact_puts": [
+   {
+    "ref": "sha256:fb3d8b7253ceaf22d6bb4acb42052d53851e037fbf0ef0cb31260d5ed386fc37",
+    "source": "task:task-plan-0001"
+   },
+   {
+    "ref": "sha256:fceb46b9a8197201ff4adffc27c7d6377cc74eeca6428848cdb4aa445868c251",
+    "source": "baldrix:b9586c59c062457a45018e41c2e753934b5ca6c9:stages.yaml"
+   },
+   {
+    "ref": "sha256:f3ca6be9452186f924548712639a3aa84a0393658fc8935d2fa2f90a76066c36",
+    "source": "git:81dd81b43ec446b1a562029a5a60bb18c2fe76f1:.harness/skills/_common/review-checklist.md"
+   },
+   {
+    "ref": "sha256:84e8b29967c26b6f4a8a4877f0d2e6541d0a1bc86b46254fb4fd92ccb3638455",
+    "source": "git:81dd81b43ec446b1a562029a5a60bb18c2fe76f1:.harness/skills/_common/testing/SKILL.md"
+   },
+   {
+    "ref": "sha256:46296aba340ae05fd7e185846f2ddfa7e87b20508c679298cf0d74e16e234515",
+    "source": "git:81dd81b43ec446b1a562029a5a60bb18c2fe76f1:.harness/skills/python/pytest/fixtures.md"
+   },
+   {
+    "ref": "sha256:434bc0b20a82216058769e2a53a75f00b41a381bb853b35df66bc1693a2aace6",
+    "source": "git:81dd81b43ec446b1a562029a5a60bb18c2fe76f1:.harness/skills/python/huge-retry.md"
+   },
+   {
+    "ref": "sha256:7262e17e776e5ca9aa19f2d912502356c7c690e6a00a9649948dc0ba4826fd8a",
+    "source": "git:81dd81b43ec446b1a562029a5a60bb18c2fe76f1:.harness/skills/python/logging.md"
+   },
+   {
+    "ref": "sha256:ceca7b98356558d7b9864820bb1ec55d5cef1457dc7b8cece12ac6de34f2b0c7",
+    "source": "git:81dd81b43ec446b1a562029a5a60bb18c2fe76f1:.harness/skills/python/retry-patterns.md"
+   },
+   {
+    "ref": "sha256:36146785db3d13a3fc70e880f6726ba63c29b42b15b01fe00da7fc5c88eac714",
+    "source": "git:81dd81b43ec446b1a562029a5a60bb18c2fe76f1:.harness/skills/shared/tools/SKILL.md"
+   },
+   {
+    "ref": "sha256:f9d2dcc24a5f560d0d3fe936796be74ddaa4d74228fb6357a551636196a0d230",
+    "source": "project-skill-guidance"
+   },
+   {
+    "ref": "sha256:a25b479dd59e3357be35a132e55d4bcf8d0d7ad46017f1fda7cf3351ac11a1fd",
+    "source": "project-skill-selection"
+   },
+   {
+    "ref": "sha256:95e630da46e0a5dec5d3d422861797c60f910c6e21d9b81deed6ee3059086679",
+    "source": "skill-history-assessment"
+   },
+   {
+    "ref": "sha256:edf82c824c5422efd59aec9e936e4dd3452edfbddb70866e9524806a4fd4e6d3",
+    "source": "context:task-plan-0001"
+   }
+  ],
+  "context_measurement": {
+   "policy": "legacy",
+   "rendered_bytes": 7543,
+   "reserved": 6000,
+   "unit": "utf8_bytes",
+   "usable": 22000,
+   "window": 28000
+  },
+  "delivered_prompts": [
+   {
+    "bytes": 7543,
+    "equals_packet_render": true,
+    "sha256": "11d33ac64a6820ed465fc2785114cb5158b1dde0648088889ff83b261d46b488"
+   }
+  ],
+  "packets": [
+   {
+    "agent_id": "lead:improvement",
+    "bytes": 7686,
+    "canonical_bytes": true,
+    "compiler_version": "1",
+    "estimated_tokens": 7543,
+    "estimated_tokens_is_rendered_utf8_bytes": true,
+    "evidence_ids": [
+     "project-skill:.harness/skills/_common/review-checklist.md",
+     "project-skill:.harness/skills/_common/testing/SKILL.md",
+     "project-guidance:sha256:f9d2dcc24a5f560d0d3fe936796be74ddaa4d74228fb6357a551636196a0d230",
+     "sha256:fb3d8b7253ceaf22d6bb4acb42052d53851e037fbf0ef0cb31260d5ed386fc37"
+    ],
+    "evidence_priorities_trust": [
+     "evidence-not-instructions"
+    ],
+    "fields": [
+     "agent_id",
+     "compiler_version",
+     "estimated_tokens",
+     "evidence",
+     "manifest_hash",
+     "omitted",
+     "required",
+     "snapshot",
+     "task_id"
+    ],
+    "manifest_hash": "d7f6262d550e000aabf1b1add085fe86c7c5341077812b10c29897297da8daa6",
+    "manifest_hash_recomputes": true,
+    "omitted": [],
+    "project_skills": {
+     "included": 2,
+     "omitted": 0,
+     "project_id": "3f1c2b7a-8d4e-4c1b-9a2f-6e5d4c3b2a19",
+     "selected": 2,
+     "status": "configured"
+    },
+    "ref": "sha256:edf82c824c5422efd59aec9e936e4dd3452edfbddb70866e9524806a4fd4e6d3",
+    "ref_is_sha256_of_bytes": true,
+    "rendered_bytes": 7543,
+    "rendered_sha256": "11d33ac64a6820ed465fc2785114cb5158b1dde0648088889ff83b261d46b488",
+    "required_digests": {
+     "acceptance_criteria": "1245bf42ee35c7ab173324fb5795a39ca30ef7cdec06b58b38cc2ba45ffdf6e1",
+     "artifact_reader": "c7ebd1aca621bbeb118e1b55377c1e05a90797f707eeb858e16e647dc345435e",
+     "external_context": "1b66684c55c76acdf34edc111c57cc39a19b235838be63908e453aad90e91607",
+     "objective": "79e73c9b1d2c0a9da402b6e8f7446feb6294181680c861b9f9fb055d9250f800",
+     "policy": "75c407637d7ae39e779f9c47266de25998d55811a615f0cd857702701918a6f9",
+     "project_skills": "ee9fccec77b834857e66962fd821210d4ae042119fdc53ee2a05a3f21816a5b6",
+     "recovery": "a12b13fb212269bd41ea5dac872c23df7cddef5b6ae8029475abd75488f3f57c",
+     "research_context": "e555cf894c9f45cf31f29bc316d802406fda12330e77abef02570a5dfb91fdb6",
+     "review_context": "1f0906b039d43ad237bbbfcbd98c815b1d8066bd644d00da59a25ddc44bf6a1a",
+     "role": "81c7e8d481d38ac8f770da4d09df613a288bc5b741664a6b190ca39671a2ab75",
+     "task_contract": "bf325c8e55105dbe3025c9db66a792547af773b652622d7b21f9e68dfc03e266",
+     "versions": "75c7262d62389af1e028c61554373424168e2813ccce7a0cefb6a76b9a7f9b82"
+    },
+    "required_keys": [
+     "acceptance_criteria",
+     "artifact_reader",
+     "external_context",
+     "objective",
+     "policy",
+     "project_skills",
+     "recovery",
+     "research_context",
+     "review_context",
+     "role",
+     "task_contract",
+     "versions"
+    ],
+    "sha256": "edf82c824c5422efd59aec9e936e4dd3452edfbddb70866e9524806a4fd4e6d3",
+    "snapshot": "861dc1cfb3864ea6eab4ff59d5a7a48354c579a911d51032340a1ab5335cb9b1",
+    "source_label": "context:task-plan-0001",
+    "task_id": "task-plan-0001"
+   }
+  ],
+  "provider_calls": 1,
+  "skill_history_rows": [
+   {
+    "body_sha256": "25f189f7f85f8721ddc4ab55859584f0cb54b061dd4c22b4f633e8b9879dfefc",
+    "bucket": "skill_history",
+    "context_ref_bound": true,
+    "key": "387c0313560b3de2ab714858bdac2e04e763428e570bacec9ff795533f813427"
+   },
+   {
+    "body_sha256": "62318576a77b05bba6f92f2b4b4f0a728c68170de49c77b2ad120fe619d22c93",
+    "bucket": "skill_observations",
+    "context_ref_bound": true,
+    "key": "fc04c9947f49a31429555c2267e1f213ec53bda93b0fd6d27fbaa92510354e98"
+   }
+  ],
+  "status": "composed"
+ }
+}
