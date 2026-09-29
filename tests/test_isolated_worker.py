@@ -37,6 +37,10 @@ if mode == "garbage":
     sys.stdout.write("not json\n"); sys.stdout.flush(); sys.exit(0)
 if mode == "truncated":
     sys.exit(0)
+if mode == "readonly":
+    send("result", result={"answer": {"summary": request["protocol"] + ":" + str(request.get("read_only"))},
+                           "command": {"cli_version": "2.1.274 (fixture)"}, "thread_id": request["session_id"]})
+    sys.exit(0)
 with open(os.path.join(staging, "kept.txt"), "w") as handle: handle.write("edited\n")
 with open(os.path.join(staging, "new.txt"), "w") as handle: handle.write("added\n")
 os.remove(os.path.join(staging, "gone.txt"))
@@ -85,7 +89,8 @@ class FakeDocker:
             return done(json.dumps({"image": IMAGE, "user": "10001:10001", "network": container["network"], "read_only": True,
                                     "cap_drop": ["ALL"], "security_opt": ["no-new-privileges"], "memory": 1, "nano_cpus": 1,
                                     "pids_limit": 512, "privileged": False, "ports": {}, "labels": container["labels"],
-                                    "mounts": [{"Type": "bind", "Source": m["source"], "Destination": m["target"], "RW": True,
+                                    "mounts": [{"Type": "bind", "Source": m["source"], "Destination": m["target"],
+                                                "RW": m.get("readonly") != "true",
                                                 "Secret": "never kept"} for m in container["mounts"]]}))
         if args[0] == "inspect":
             if self.process is not None and self.process.poll() is not None and container["status"] == "running":
@@ -477,6 +482,64 @@ def test_entry_reuses_the_runtime_contract_and_tags_every_line():
     assert kinds[1]["event"] == {"type": "system", "cwd": "/workspace", "root": "/evidence"} and "events" not in kinds[2]["result"]
     refused = io.BytesIO()
     assert entry.serve(io.BytesIO(b"{}"), refused, FixtureRuntime) == 1 and lines(refused)[0]["kind"] == "refused"
+
+
+def test_entry_passes_the_read_only_flag_only_under_its_own_protocol():
+    """INV-ROLE-CONTAINER-001: claude-role-ro names READ_ONLY_PROTOCOL and read_only together."""
+    seen = []
+
+    class ReadOnlyRuntime(FixtureRuntime):
+        def run(self, prompt, cwd, schema, timeout, *, on_event, on_enter, session_id, read_only=False):
+            seen.append(read_only)
+            return super().run(prompt, cwd, schema, timeout, on_event=on_event, on_enter=on_enter,
+                               session_id=session_id)
+    base = {"prompt": "p", "schema": SCHEMA, "timeout": 5, "model": "fable", "session_id": "s",
+            "runtime": {"worker_profile": None}, "cwd": iw.WORKSPACE, "evidence_root": iw.EVIDENCE}
+    output = io.BytesIO()
+    request = {**base, "protocol": iw.READ_ONLY_PROTOCOL, "read_only": True}
+    assert entry.serve(io.BytesIO(json.dumps(request).encode()), output, ReadOnlyRuntime) == 0 and seen == [True]
+    for bad in ({**base, "protocol": iw.READ_ONLY_PROTOCOL}, {**base, "protocol": iw.PROTOCOL, "read_only": True},
+                {**base, "protocol": iw.READ_ONLY_PROTOCOL, "read_only": "yes"}):
+        refused = io.BytesIO()
+        assert entry.serve(io.BytesIO(json.dumps(bad).encode()), refused, ReadOnlyRuntime) == 1
+        assert lines(refused)[0]["kind"] == "refused"
+    assert seen == [True]
+    with pytest.raises(ContractError):
+        iw.request_protocol(True, False, read_only=True)
+
+
+def test_claude_role_ro_binds_the_review_checkout_read_only_and_imports_nothing(config, candidate, tmp_path, monkeypatch):
+    """INV-ROLE-CONTAINER-001: the read-only Claude role container (the former refusal at run())."""
+    fake = FakeDocker(tmp_path, mode="readonly")
+    monkeypatch.setattr(iw, "_docker", fake)
+    monkeypatch.setattr(iw, "ProcessTree", fake.tree())
+    opened = iw.IsolatedClaudeRuntime(config, tmp_path / "runs", model="fable", max_budget_usd=1.0,
+                                      environment={**os.environ, iw.TOKEN_NAME: TOKEN}, profile="claude-role-ro")
+    with pytest.raises(ContractError, match="runs only read-only turns"):
+        with opened:
+            opened.run("write", str(candidate), SCHEMA, 20)
+    assert not [c for c in fake.calls if c["args"][0] == "create"]
+    opened = iw.IsolatedClaudeRuntime(config, tmp_path / "runs", model="fable", max_budget_usd=1.0,
+                                      environment={**os.environ, iw.TOKEN_NAME: TOKEN}, profile="claude-role-ro")
+    before = git(candidate, "rev-parse", "HEAD")
+    with opened:
+        result = opened.run("review", str(candidate), SCHEMA, 20, read_only=True)
+    assert result["answer"] == {"summary": iw.READ_ONLY_PROTOCOL + ":True"}
+    modes = {m["Destination"]: (m["RW"], m["Source"]) for m in result["isolation"]["container"]["controls"]["mounts"]}
+    assert modes[iw.WORKSPACE] == (False, str(candidate.resolve())) and modes[iw.EVIDENCE][0] is True
+    assert set(modes) == {iw.WORKSPACE, iw.EVIDENCE} and result["isolation"]["profile"] == "claude-role-ro"
+    assert "import" not in result["isolation"] and result["isolation"]["outcome"] == "reviewed"
+    assert git(candidate, "rev-parse", "HEAD") == before and git(candidate, "status", "--porcelain") == ""
+    create = [c for c in fake.calls if c["args"][0] == "create"][0]
+    assert f"type=bind,source={candidate.resolve()},target={iw.WORKSPACE},readonly=true" in create["args"]
+    assert TOKEN not in json.dumps(create["args"]) and create["env"][iw.TOKEN_NAME] == TOKEN
+    assert [s["state"] for s in record(tmp_path)["lifecycle"]] == [
+        "prepared", "created", "start_requested", "running", "stop_confirmed", "evidence_retained", "removed"]
+    # The writable worker still refuses reviews, exactly as before.
+    with pytest.raises(ContractError, match="not assigned reviews"):
+        with iw.IsolatedClaudeRuntime(config, tmp_path / "runs", model="fable",
+                                      environment={**os.environ, iw.TOKEN_NAME: TOKEN}) as writer:
+            writer.run("review", str(candidate), SCHEMA, 20, read_only=True)
 
 
 def test_protocol_lines_that_are_overlong_unterminated_or_untagged_are_invalid():

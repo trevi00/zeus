@@ -51,6 +51,24 @@ def namespace_failure(event: object) -> bool:
             and NAMESPACE_DENIAL in item["aggregatedOutput"])
 
 
+# INV-ROLE-CONTAINER-001 (D2): a host App Server (used only where no role container is selected) gets an
+# explicit environment allow-list instead of the whole host environment, so no other provider's token,
+# store DSN, Redis or host-control secret reaches it by inheritance. Values are never logged.
+HOST_ENVIRONMENT = ("PATH", "HOME", "USER", "LOGNAME", "SHELL", "LANG", "LANGUAGE", "LC_ALL", "LC_CTYPE", "TERM",
+                    "TMPDIR", "TZ", "CODEX_HOME", "SSL_CERT_FILE", "SSL_CERT_DIR", "HTTP_PROXY", "HTTPS_PROXY",
+                    "NO_PROXY", "http_proxy", "https_proxy", "no_proxy", "XDG_CONFIG_HOME", "XDG_CACHE_HOME",
+                    "XDG_DATA_HOME", "XDG_STATE_HOME", "XDG_RUNTIME_DIR", "DBUS_SESSION_BUS_ADDRESS",
+                    "PYTHONIOENCODING", "PYTHONUTF8", "SYSTEMROOT", "SystemRoot", "WINDIR", "COMSPEC", "PATHEXT",
+                    "TEMP", "TMP", "USERPROFILE", "APPDATA", "LOCALAPPDATA", "PROGRAMDATA", "ProgramData",
+                    "HOMEDRIVE", "HOMEPATH")
+
+
+def host_environment(base=None) -> dict:
+    """The allow-listed environment of a host `codex app-server` process."""
+    source = os.environ if base is None else base
+    return {name: source[name] for name in HOST_ENVIRONMENT if name in source}
+
+
 def toml_literal(value):
     if isinstance(value, dict):
         return "{" + ",".join(json.dumps(k) + "=" + toml_literal(v) for k, v in value.items()) + "}"
@@ -63,8 +81,9 @@ class AppServer:
     """Versioned Codex JSON-RPC stdio client; no shell interpolation or shared thread."""
 
     def __init__(self, executable: str | None = None, hooks: dict | None = None,
-                 context_window: int | None = None):
+                 context_window: int | None = None, environment: dict | None = None):
         self.executable = executable or resolve_codex()
+        self.environment = environment
         require(bool(self.executable), "Codex CLI unavailable")
         self.process = None
         self.sequence = 0
@@ -76,16 +95,28 @@ class AppServer:
         self.readers = []
         self.context_window = context_window
 
-    def __enter__(self):
-        argv = [self.executable, "app-server"]
+    def server_arguments(self) -> list:
+        """`app-server` and its options: the same list for the host process and a role container."""
+        argv = ["app-server"]
         if self.context_window:
             argv += ["-c", "model_context_window=" + str(self.context_window)]
         if self.hooks:
             argv += ["-c", "hooks=" + toml_literal({**self.hooks, "state": self.hook_state}), "--enable", "hooks"]
-        self.process = subprocess.Popen(argv, stdin=subprocess.PIPE,
-                                        stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                                        text=True, encoding="utf-8", errors="replace",
-                                        **no_console_kwargs(process_group=True))
+        return argv
+
+    def _spawn(self, argv: list):
+        return subprocess.Popen(argv, stdin=subprocess.PIPE,
+                                stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                                text=True, encoding="utf-8", errors="replace",
+                                env=self.environment if self.environment is not None else host_environment(),
+                                **no_console_kwargs(process_group=True))
+
+    def thread_cwd(self, cwd) -> str:
+        """The working directory named to the server; a role container names its own mount."""
+        return str(Path(cwd).resolve())
+
+    def __enter__(self):
+        self.process = self._spawn([self.executable, *self.server_arguments()])
         self.readers = [threading.Thread(target=self._read, daemon=True), threading.Thread(target=self._errors, daemon=True)]
         for reader in self.readers:
             reader.start()
@@ -157,7 +188,9 @@ class AppServer:
 
         require(model is None or (isinstance(model, str) and model.strip()),
                 "model must be a nonempty string")
-        options = {"cwd": str(Path(cwd).resolve()), "approvalPolicy": "never",
+        # In a role container the sandbox is relaxed only inside it: the read-only checkout, the absent
+        # secrets and socket are the OS boundary there (INV-ROLE-CONTAINER-001, D2).
+        options = {"cwd": self.thread_cwd(cwd), "approvalPolicy": "never",
                    "sandbox": "danger-full-access"}
         if model is not None:
             options["model"] = model

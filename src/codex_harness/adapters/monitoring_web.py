@@ -148,5 +148,13 @@ def handler(snapshot_path, desk=None):
     return Handler
 
 
-def serve(snapshot_path, port=8787, desk=None):
+# INV-MONITOR-VIEWER-001 (D6): the viewer listener. The authorized observer identity can forward only to
+# this port, so no desk route or POST handler is ever served on it; a local-operator desk uses its own
+# separately bound listener that the observer cannot open.
+VIEWER_PORT = 8787
+
+
+def serve(snapshot_path, port=VIEWER_PORT, desk=None, *, viewer_port=VIEWER_PORT):
+    if desk is not None and port == viewer_port:
+        raise ValueError('The desk is never served on the viewer listener ' + str(viewer_port))
     ThreadingHTTPServer(('127.0.0.1', port), handler(snapshot_path, desk)).serve_forever()

@@ -56,7 +56,10 @@ SESSION_PROTOCOL = "zeus-isolated-worker-v1-task-session"
 SESSION_DELIVERY_PROTOCOL = "zeus-isolated-worker-v1-project-evidence-task-session"
 DELIVERY_PROTOCOLS = (DELIVERY_PROTOCOL, SESSION_DELIVERY_PROTOCOL)
 SESSION_PROTOCOLS = (SESSION_PROTOCOL, SESSION_DELIVERY_PROTOCOL)
-PROTOCOLS = (PROTOCOL, DELIVERY_PROTOCOL, SESSION_PROTOCOL, SESSION_DELIVERY_PROTOCOL)
+# INV-ROLE-CONTAINER-001: a read-only role request (claude-role-ro) names its own protocol, so an entry
+# that predates read-only roles refuses it instead of running a writable turn over a read-only mount.
+READ_ONLY_PROTOCOL = "zeus-isolated-worker-v1-read-only"
+PROTOCOLS = (PROTOCOL, DELIVERY_PROTOCOL, SESSION_PROTOCOL, SESSION_DELIVERY_PROTOCOL, READ_ONLY_PROTOCOL)
 ENTRY_MODULE = "codex_harness.adapters.isolated_worker_entry"
 TRUSTED_PYTHON = "/opt/zeus/bin/python"
 WORKSPACE, EVIDENCE = "/workspace", "/evidence"
@@ -79,8 +82,11 @@ RESOLVED = ("removed", "refused")
 PREPARATION_TICK_SECONDS = 1.0
 
 
-def request_protocol(delivery: bool, session: bool) -> str:
+def request_protocol(delivery: bool, session: bool, read_only: bool = False) -> str:
     """The request protocol names every optional section it carries, so an older entry refuses it."""
+    if read_only:
+        require(not delivery and not session, "A read-only role carries no project delivery or task session")
+        return READ_ONLY_PROTOCOL
     return {(False, False): PROTOCOL, (True, False): DELIVERY_PROTOCOL,
             (False, True): SESSION_PROTOCOL, (True, True): SESSION_DELIVERY_PROTOCOL}[(delivery, session)]
 
@@ -107,6 +113,17 @@ def load_isolation(host_settings) -> dict | None:
         raise IsolationError("isolation_config_invalid", "ZEUS_WORKER_IMAGE must be an immutable sha256:<64hex> image id")
     body = {"mode": MODE, "image": image, "limits": dict(LIMITS), "driver_sha256": DRIVER_HASH,
             "protocol": PROTOCOL, "network": {"worker": "bridge", "verifier": "none"}}
+    # INV-CODEX-CREDENTIAL-001: the Codex role profiles exist only with a configured credential store.
+    # Absent, a Codex selection under isolation refuses before spawn (never the host AppServer), and
+    # the identity of an unchanged Claude-only configuration is exactly what it was.
+    store = str(host_settings.get("ZEUS_CODEX_CREDENTIAL_STORE")
+                or host_settings.get("HARNESS_CODEX_CREDENTIAL_STORE") or "").strip()
+    store = store.rstrip("/") or store
+    if store:
+        if not os.path.isabs(store) or "," in store or store != os.path.normpath(store) or store == os.sep:
+            raise IsolationError("isolation_config_invalid",
+                                 "ZEUS_CODEX_CREDENTIAL_STORE must be a normalized absolute directory path")
+        body["codex"] = {"credential_store": store}
     return {**body, "digest": digest(body)}
 
 
@@ -148,13 +165,37 @@ def preflight(config: dict, docker: str = "docker", environment=None, *, token: 
             "token": {"name": TOKEN_NAME, "present": bool(source.get(TOKEN_NAME))} if token else None}
 
 
-def isolated_review_context(cwd, config: dict) -> dict:
-    """What the host lead is told in this mode: review the diff and preserved observations only."""
-    return {"cwd": str(Path(cwd).resolve()), "interpreter": None, "src": None, "isolation": summary(config),
-            "instruction": "Worker and verifier ran in isolated containers. Do not run candidate code, tests or "
-            "scripts on this host. Review the diff read-only together with the preserved evidence inspection; "
-            "all executable evidence is supplied by the isolated inspector. Do not create files in the checkout. "
-            "Record one concise frame and verdict in your response."}
+def worker_environment() -> dict:
+    """The fixed, value-free environment of every Claude profile container (the token goes by name)."""
+    return {"HOME": CONTAINER_HOME, "DISABLE_AUTOUPDATER": "1", "PYTHONDONTWRITEBYTECODE": "1",
+            "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1", "PYTHONIOENCODING": "utf-8",
+            "GIT_CONFIG_COUNT": "1", "GIT_CONFIG_KEY_0": "safe.directory", "GIT_CONFIG_VALUE_0": WORKSPACE}
+
+
+def read_only_mounts(checkout: str, result: str, handoff: dict | None = None) -> tuple:
+    """claude-role-ro binds (INV-ROLE-CONTAINER-001): the review checkout read-only, the run's own
+    result directory writable, the hand-off copy read-only. Returns (mounts, {target: writable})."""
+    mounts = [(checkout, WORKSPACE, True), (result, EVIDENCE)]
+    expected = {WORKSPACE: False, EVIDENCE: True}
+    if handoff is not None:
+        mounts.append((handoff["source"], handoff["target"], True))
+        expected[handoff["target"]] = False
+    return mounts, expected
+
+
+def isolated_review_context(cwd, config: dict, profile: str | None = None) -> dict:
+    """What the lead is told in this mode: review the diff and preserved observations only. In a role
+    container (INV-ROLE-CONTAINER-001) its checkout is the read-only workspace mount."""
+    context = {"cwd": str(Path(cwd).resolve()) if profile is None else WORKSPACE, "interpreter": None, "src": None,
+               "isolation": summary(config),
+               "instruction": "Worker and verifier ran in isolated containers. Do not run candidate code, tests or "
+               "scripts on this host. Review the diff read-only together with the preserved evidence inspection; "
+               "all executable evidence is supplied by the isolated inspector. Do not create files in the checkout. "
+               "Record one concise frame and verdict in your response."}
+    if profile is not None:
+        context["container"] = {"profile": profile, "checkout": WORKSPACE + " (read-only mount)",
+                                "artifacts": "read-only hand-off copy at the named artifact paths"}
+    return context
 
 
 # ---- safe paths and trees -----------------------------------------------------------------------
@@ -433,8 +474,13 @@ def container_args(config: dict, *, name: str, run_id: str, role: str, network: 
             "--pids-limit", str(limits["pids"]), "--init", "--interactive",
             "--tmpfs", f"/tmp:rw,nosuid,nodev,size={limits['tmp_mb']}m,mode=1777",
             "--tmpfs", f"{CONTAINER_HOME}:rw,nosuid,nodev,size={limits['home_mb']}m,mode=1777"]
-    for source, target in mounts:
-        argv += ["--mount", f"type=bind,source={source},target={target}"]
+    for mount in mounts:
+        # (source, target) is the writable bind of the existing profile; (source, target, True) is a
+        # read-only bind (INV-ROLE-CONTAINER-001). The --mount syntax is comma-separated, so a comma
+        # in either path refuses rather than composing another option.
+        source, target, readonly = mount[0], mount[1], len(mount) > 2 and mount[2] is True
+        require("," not in str(source) and "," not in str(target), "A bind path must not contain a comma")
+        argv += ["--mount", f"type=bind,source={source},target={target}" + (",readonly=true" if readonly else "")]
     for key, value in environment.items():
         argv += ["-e", key + "=" + value]
     for key in pass_names:
@@ -447,7 +493,35 @@ INSPECT_FORMAT = ('{"image":{{json .Image}},"user":{{json .Config.User}},"networ
                   '"security_opt":{{json .HostConfig.SecurityOpt}},"memory":{{json .HostConfig.Memory}},'
                   '"nano_cpus":{{json .HostConfig.NanoCpus}},"pids_limit":{{json .HostConfig.PidsLimit}},'
                   '"privileged":{{json .HostConfig.Privileged}},"ports":{{json .HostConfig.PortBindings}},'
-                  '"mounts":{{json .Mounts}},"labels":{{json .Config.Labels}}}')
+                  '"mounts":{{json .Mounts}},"labels":{{json .Config.Labels}},'
+                  '"pid_mode":{{json .HostConfig.PidMode}},"ipc_mode":{{json .HostConfig.IpcMode}},'
+                  '"uts_mode":{{json .HostConfig.UTSMode}},"userns_mode":{{json .HostConfig.UsernsMode}},'
+                  '"cap_add":{{json .HostConfig.CapAdd}},"devices":{{json .HostConfig.Devices}}}')
+# INV-ROLE-CONTAINER-001: bind sources no profile may ever observe, whatever it declared.
+FORBIDDEN_SOURCES = ("/var/run/docker.sock", "/run/docker.sock", "/")
+
+
+def forbidden_controls(observed: dict) -> list:
+    """Every forbidden socket/home/host flag the inspected container shows; [] when none. A field the
+    daemon does not report is its default, never a grant."""
+    found = []
+    for key in ("pid_mode", "ipc_mode", "uts_mode", "userns_mode", "network"):
+        value = str(observed.get(key) or "")
+        if value == "host" or value.startswith("container:"):
+            found.append(key + "=" + value)
+    if observed.get("cap_add"):
+        found.append("cap_add")
+    if observed.get("devices"):
+        found.append("devices")
+    user = str(observed.get("user") or "")
+    if user in ("", "0", "root") or user.startswith(("0:", "root:")):
+        found.append("user")
+    home = str(Path.home())
+    for mount in observed.get("mounts") or []:
+        source = str(mount.get("Source") or "")
+        if source in FORBIDDEN_SOURCES or source.endswith("docker.sock") or source.rstrip("/") == home.rstrip("/"):
+            found.append("mount:" + source)
+    return found
 
 
 class OwnedContainer:
@@ -489,11 +563,20 @@ class OwnedContainer:
                           for mount in body.get("mounts") or [] if isinstance(mount, dict)]
         return body
 
-    def verify(self, expected_targets: set, network: str) -> dict:
-        """Selected fields only, checked before start: the image and the mounts are what the host chose."""
+    def verify(self, expected_targets, network: str) -> dict:
+        """Selected fields only, checked before start: the image and the mounts are what the host chose.
+
+        `expected_targets` is a set (every bind writable: the existing worker/verifier shape) or a
+        {target: writable} mapping; the observed binds must be exactly those targets in exactly those
+        modes, and no forbidden socket/home/host flag may appear (INV-ROLE-CONTAINER-001)."""
         observed = self.inspect()
+        expected = ({target: True for target in expected_targets} if isinstance(expected_targets, (set, frozenset))
+                    else dict(expected_targets))
         bad = (observed is None or observed.get("image") != self.config["image"]
-               or {mount["Destination"] for mount in observed["mounts"] if mount["Type"] == "bind"} != expected_targets
+               or {mount["Destination"]: mount.get("RW") is True for mount in observed["mounts"]
+                   if mount["Type"] == "bind"} != expected
+               or forbidden_controls(observed)
+               or "no-new-privileges" not in [str(option) for option in observed.get("security_opt") or []]
                or any(mount["Type"] not in ("bind", "tmpfs") for mount in observed["mounts"])
                or observed.get("network") != network or observed.get("read_only") is not True
                or observed.get("privileged") is not False or observed.get("ports")
@@ -668,9 +751,15 @@ class IsolatedClaudeRuntime:
     def __init__(self, config: dict, root, *, model: str, runtime: dict | None = None,
                  max_budget_usd: float | None = None, settings_document: dict | None = None,
                  docker: str = "docker", environment: dict | None = None, watch: tuple = (),
-                 project_delivery: dict | None = None):
+                 project_delivery: dict | None = None, profile: str = "claude-impl-rw", handoff: dict | None = None):
         require(isinstance(config, dict) and config.get("mode") == MODE and IMAGE.fullmatch(str(config.get("image"))),
                 "Isolated runtime requires a validated isolation configuration")
+        # INV-ROLE-CONTAINER-001: the Claude profiles this runtime composes. The existing writable
+        # worker keeps its exact shape; the read-only role binds the review checkout read-only with only
+        # its own result directory writable. Anything else refuses before a container exists.
+        require(profile in ("claude-impl-rw", "claude-role-ro"), "Unsupported Claude container profile: " + str(profile))
+        require(project_delivery is None or profile == "claude-impl-rw", "A read-only role carries no project delivery")
+        self.role_profile, self.handoff = profile, handoff
         require(type(model) is str and bool(model.strip()), "Claude requires an explicit model name")
         self.config, self.root, self.docker = config, Path(root), docker
         self.watch = tuple(Path(other) for other in watch)  # sibling record roots: the verifier's replays
@@ -717,7 +806,12 @@ class IsolatedClaudeRuntime:
             session_id: str | None = None, task_session: dict | None = None) -> dict:
         require(type(timeout) in (int, float) and 0 < timeout < float("inf"), "Execution timeout must be finite and positive")
         require(type(prompt) is str and bool(prompt), "Claude execution requires a prompt")
-        require(not read_only, "The isolated worker is not assigned reviews")
+        # The profile was chosen from the routing result before this transport existed; a turn of the
+        # other shape refuses here, before anything is created (no writable review, no read-only worker).
+        require(read_only is (self.role_profile == "claude-role-ro"),
+                "The isolated worker is not assigned reviews" if read_only else
+                "A read-only Claude role container runs only read-only turns")
+        require(not read_only or task_session is None, "A review never opens or resumes a worker session")
         require(not self.used, "This transport object already ran; every attempt builds its own")
         require(model is None or model == self.model, "The requested model differs from the configured Claude model")
         if task_session is not None:
@@ -754,6 +848,12 @@ class IsolatedClaudeRuntime:
                                    timeout=120, **no_console_kwargs())
             if dirty.returncode != 0 or dirty.stdout.strip():
                 raise IsolationError("source_candidate_dirty")
+            if read_only:
+                return self._run_read_only(request_fields={"prompt": prompt, "schema": schema, "timeout": timeout,
+                                                           "session_id": session_id},
+                                           workspace=workspace, run_directory=run_directory, evidence=evidence,
+                                           revision=revision.stdout.strip(), secret=secret, on_event=on_event,
+                                           on_tick=on_tick, on_enter=on_enter, cancel=cancel)
             # The caller's existing per-call heartbeat covers preparation too: an execution whose
             # lease ended, was superseded or was cancelled while its source was being staged stops
             # here, before the container exists. The refusal is the caller's own and travels
@@ -798,9 +898,7 @@ class IsolatedClaudeRuntime:
                           **({} if session_request is None else
                              {"task_session": {"mode": session_request["mode"], "session_id": session_id}}))
             entry = [TRUSTED_PYTHON, "-I", "-m", ENTRY_MODULE]
-            environment = {"HOME": CONTAINER_HOME, "DISABLE_AUTOUPDATER": "1", "PYTHONDONTWRITEBYTECODE": "1",
-                           "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1", "PYTHONIOENCODING": "utf-8",
-                           "GIT_CONFIG_COUNT": "1", "GIT_CONFIG_KEY_0": "safe.directory", "GIT_CONFIG_VALUE_0": WORKSPACE}
+            environment = worker_environment()
             args = container_args(self.config, name=self.container.name, run_id=run_id, role="worker", network="bridge",
                                   mounts=[(str(staging.resolve()), WORKSPACE), (str(evidence.resolve()), EVIDENCE)],
                                   environment=environment, pass_names=(TOKEN_NAME,), entry=entry, workdir="/")
@@ -905,6 +1003,90 @@ class IsolatedClaudeRuntime:
         if failure is not None:
             # Entered and not importable: never a success, never a partial import, staging preserved.
             raise ContractError(str(failure) + "; staging preserved; recovery record " + str(self.record_path)) from failure
+        return _scrub({**inner, "isolation": isolation}, secret)
+
+    def _run_read_only(self, *, request_fields: dict, workspace: str, run_directory: Path, evidence: Path,
+                       revision: str, secret, on_event, on_tick, on_enter, cancel) -> dict:
+        """claude-role-ro (INV-ROLE-CONTAINER-001): the clean review checkout bound READ-ONLY at the
+        workspace, this run's own result directory as the only writable bind, the immutable evidence
+        hand-off (if any) read-only. Nothing is staged or imported; the executor's clean/HEAD checks
+        still follow. Ownership, stop, retention and removal are the one shared rule (`hold`/`retire`)."""
+        from codex_harness.adapters.role_containers import materialize_handoff
+
+        session_id = request_fields["session_id"]
+        try:
+            handoff = materialize_handoff(self.handoff, run_directory / "handoff")
+            self._advance("prepared", source={"revision": revision, "mode": "read_only_checkout"},
+                          profile=self.role_profile, handoff=None if handoff is None else handoff["summary"])
+            mounts, expected = read_only_mounts(workspace, str(evidence.resolve()), handoff)
+            entry = [TRUSTED_PYTHON, "-I", "-m", ENTRY_MODULE]
+            environment = worker_environment()
+            args = container_args(self.config, name=self.container.name, run_id=self.container.run_id, role="worker",
+                                  network="bridge", mounts=mounts, environment=environment, pass_names=(TOKEN_NAME,),
+                                  entry=entry, workdir="/")
+            require(secret is None or all(secret not in part for part in args), "A credential value reached an argv")
+            try:
+                container_id = self.container.create(args, docker_environment(self.environment_source, token=True))
+            except IsolationError:
+                self._advance("refused", reason="container_create_failed")
+                raise
+            self.record["container"] = container_id
+            try:
+                self._advance("created", container=container_id)
+                controls = self.container.verify(expected, "bridge")
+            except IsolationError as exc:
+                removal = self.container.remove()
+                self._advance("refused" if removal["removed"] else "created", reason=exc.reason_code)
+                raise
+        except IsolationError:
+            if self.record["state"] is None:
+                self._advance("refused", reason="before_container")
+            raise
+        request = {"protocol": READ_ONLY_PROTOCOL, "prompt": request_fields["prompt"], "schema": request_fields["schema"],
+                   "timeout": request_fields["timeout"], "model": self.model, "session_id": session_id,
+                   "runtime": self.runtime, "max_budget_usd": self.max_budget_usd,
+                   "settings_document": self.settings_document, "cwd": WORKSPACE, "evidence_root": EVIDENCE,
+                   "read_only": True}
+        started = time.monotonic()
+        timeout = request_fields["timeout"]
+
+        def converse():
+            if on_enter is not None:
+                on_enter()
+            return self._converse(request, timeout, on_event=on_event, on_tick=on_tick, cancel=cancel)
+        stream, stopped = hold(self.container, self.record, converse, client=self._end_client, detail=lambda value: {
+            "stream": {key: value[key] for key in ("reason", "violation", "lines")}})
+        if not stopped["confirmed"]:
+            raise ContractError("Isolated worker container termination could not be confirmed; the outcome is unknown; "
+                                "recovery record " + str(self.record_path))
+        inner = stream["result"]
+        receipts = (hook_receipts(evidence / session_id, profile_digest(self.profile)) if self.profile is not None else None)
+        isolation = {**summary(self.config), "profile": self.role_profile, "run_id": self.container.run_id,
+                     "container": {"id": self.container.id, "name": self.container.name, "controls": controls,
+                                   "stop": stopped},
+                     "source": {"revision": revision, "mode": "read_only_checkout"},
+                     "handoff": None if handoff is None else handoff["summary"],
+                     "preflight": self.preflight, "record": str(self.record_path),
+                     "credential": {"name": TOKEN_NAME, "transport": "docker client environment by name; never argv"},
+                     "cli_version": ((inner or {}).get("command") or {}).get("cli_version"),
+                     "harness": {"profile_digest": profile_digest(self.profile) if self.profile is not None else None,
+                                 "host_observed_hook_receipts": receipts},
+                     "stream": {key: stream[key] for key in ("reason", "violation", "lines", "stderr_tail")},
+                     "elapsed_seconds": time.monotonic() - started}
+        outcome = "reviewed" if inner is not None else "protocol_result_missing"
+        isolation["outcome"] = outcome
+        removal = retire(self.container, self.record,
+                         _scrub({"isolation": isolation, "inner_failure": (inner or {}).get("failure"),
+                                 "inner_terminal": (inner or {}).get("terminal")}, secret), outcome,
+                         files={"inner_result.json": _scrub(inner, secret)} if inner is not None else None)
+        isolation["cleanup"] = removal
+        if not removal["evidence_written"]:
+            raise ContractError("Isolated worker evidence could not be written; the stopped container is retained; "
+                                "recovery record " + str(self.record_path))
+        if inner is None:
+            # Entered and no result: never a success; the read-only checkout was never writable.
+            raise ContractError("isolated worker: protocol_result_missing: " + str(stream["violation"] or stream["reason"])
+                                + "; recovery record " + str(self.record_path))
         return _scrub({**inner, "isolation": isolation}, secret)
 
     def _converse(self, request: dict, timeout, *, on_event, on_tick, cancel) -> dict:
@@ -1014,11 +1196,25 @@ class IsolatedWorker:
         self.config, self.root, self.docker = config, Path(root), docker
 
     def runtime(self, *, model, runtime, max_budget_usd, settings_document,
-                project_delivery=None) -> IsolatedClaudeRuntime:
+                project_delivery=None, profile: str = "claude-impl-rw", handoff=None) -> IsolatedClaudeRuntime:
         return IsolatedClaudeRuntime(self.config, self.root / "runs", model=model, runtime=runtime,
                                      max_budget_usd=max_budget_usd, settings_document=settings_document,
                                      docker=self.docker, watch=(self.root / "replays",),
-                                     project_delivery=project_delivery)
+                                     project_delivery=project_delivery, profile=profile, handoff=handoff)
+
+    def codex_runtime(self, *, profile: str, context_window=None, handoff=None):
+        """INV-ROLE-CONTAINER-001 / INV-CODEX-CREDENTIAL-001: the Codex App Server inside a
+        codex-role-ro or codex-impl-rw container, with this selection's credential broker."""
+        from codex_harness.adapters.role_containers import (
+            CodexCredentialBroker,
+            IsolatedCodexRuntime,
+        )
+
+        require(self.config.get("codex") is not None, "Codex role containers need ZEUS_CODEX_CREDENTIAL_STORE")
+        return IsolatedCodexRuntime(self.config, self.root / "runs", profile=profile,
+                                    broker=CodexCredentialBroker(self.config["codex"]["credential_store"]),
+                                    docker=self.docker, watch=(self.root / "replays",), context_window=context_window,
+                                    handoff=handoff, state_root=self.root / "codex-state")
 
     def inspector(self, artifacts, evidence_profile=None):
         """The verifier backend for this selection: the legacy claim replay, or - with a host

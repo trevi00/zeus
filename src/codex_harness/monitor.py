@@ -131,22 +131,55 @@ def desk_service():
     return FrontDesk(build(), configured)
 
 
+def viewer_port(environ=None) -> int:
+    """The viewer listener's port: the aibox unit's ZEUS_AIBOX_WEB_PORT when set, else 8787."""
+    from codex_harness.adapters.monitoring_web import VIEWER_PORT
+
+    value = str((os.environ if environ is None else environ).get('ZEUS_AIBOX_WEB_PORT') or '')
+    return int(value) if value.isdigit() else VIEWER_PORT
+
+
+def listener_refusal(mode, port, desk_revision, viewer=None):
+    """INV-MONITOR-VIEWER-001 (D6), checked before any listener binds: the viewer web service refuses to
+    start while ZEUS_DESK_REVISION is set, and the local-operator desk runs only as its own mode on an
+    explicit port that is neither 8787 nor the configured viewer port. Returns the refusal text, or None."""
+    from codex_harness.adapters.monitoring_web import VIEWER_PORT
+
+    viewer = viewer_port() if viewer is None else viewer
+    if mode == 'web' and desk_revision:
+        return ('monitor web refuses to start with ZEUS_DESK_REVISION set: the viewer listener never serves the '
+                'desk; run the separately bound local-operator mode (monitor desk --port <other>) instead')
+    if mode == 'desk':
+        if not desk_revision:
+            return 'monitor desk needs ZEUS_DESK_REVISION'
+        if port is None or port in (VIEWER_PORT, viewer):
+            return 'monitor desk needs its own --port, never the viewer port ' + str(viewer)
+    return None
+
+
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('mode', choices=['collect', 'web'])
+    parser.add_argument('mode', choices=['collect', 'web', 'desk'])
     parser.add_argument('--once', action='store_true')
     parser.add_argument('--repository', type=Path)
-    parser.add_argument('--port', type=int, default=8787)
+    parser.add_argument('--port', type=int, default=None)
     args = parser.parse_args()
+    refusal = listener_refusal(args.mode, args.port, settings().get('ZEUS_DESK_REVISION'))
+    if refusal is not None:
+        raise SystemExit(refusal)
     if args.repository:
         select_repository(args.repository)
     root = repository_root()
     runtime = runtime_dir()
     runtime.mkdir(parents=True, exist_ok=True)
     snapshot = runtime / 'monitoring.json'
-    if args.mode == 'web':
-        from codex_harness.adapters.monitoring_web import serve
-        serve(snapshot, args.port, desk=desk_service())
+    if args.mode in ('web', 'desk'):
+        from codex_harness.adapters.monitoring_web import VIEWER_PORT, serve
+        if args.mode == 'web':
+            # The viewer listener: read-only, no desk, whatever the environment says (checked above).
+            serve(snapshot, VIEWER_PORT if args.port is None else args.port)
+        else:
+            serve(snapshot, args.port, desk=desk_service(), viewer_port=viewer_port())
         return
     run_collector(args, root, runtime, snapshot)
 

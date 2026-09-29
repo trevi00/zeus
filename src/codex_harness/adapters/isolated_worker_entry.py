@@ -18,6 +18,7 @@ from codex_harness.adapters.isolated_worker import (
     DELIVERY_PROTOCOLS,
     PROTOCOL,
     PROTOCOLS,
+    READ_ONLY_PROTOCOL,
     SESSION_PROTOCOLS,
 )
 from codex_harness.adapters.worker_sessions import EXPORT_DIRECTORY, RESTORE_DIRECTORY
@@ -73,6 +74,11 @@ def serve(stdin, stdout, runtime_factory=ClaudeCodeRuntime) -> int:
         delivery = request.get("project_delivery")
         if (request["protocol"] in DELIVERY_PROTOCOLS) != (delivery is not None):
             raise ValueError("request protocol and project delivery disagree")
+        # INV-ROLE-CONTAINER-001: a read-only role names its protocol and its flag, both or neither;
+        # the runtime then applies its own read-only checks over the read-only mounted checkout.
+        read_only = request.get("read_only") is True
+        if (request["protocol"] == READ_ONLY_PROTOCOL) != read_only or request.get("read_only") not in (None, True):
+            raise ValueError("request protocol and read-only flag disagree")
         home, session = task_session(request)
         runtime = {**(request.get("runtime") or {}), "profile_evidence_root": request["evidence_root"]}
         opened = runtime_factory(model=request["model"], runtime=runtime,
@@ -84,6 +90,7 @@ def serve(stdin, stdout, runtime_factory=ClaudeCodeRuntime) -> int:
             result = inner.run(request["prompt"], request["cwd"], request["schema"], request["timeout"],
                                on_event=lambda event: send("event", event=event),
                                on_enter=lambda: send("entered"), session_id=request["session_id"],
+                               **({"read_only": True} if read_only else {}),
                                **({} if session is None else {"task_session": session}))
     except Exception as exc:  # named to the host; the host decides what an unfinished run means
         send("refused", error_type=type(exc).__name__, message=str(exc)[:500])

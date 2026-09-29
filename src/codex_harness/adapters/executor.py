@@ -18,7 +18,11 @@ from codex_harness.adapters.embeddings import LocalEmbeddings
 from codex_harness.adapters.evidence_inspection import EvidenceInspector, trusted_interpreter
 from codex_harness.adapters.execution_output import evidence_json, persist_result, tool_usage
 from codex_harness.adapters.hooks import NativeHooks
-from codex_harness.adapters.isolated_worker import isolated_review_context
+from codex_harness.adapters.isolated_worker import (
+    TRUSTED_PYTHON,
+    IsolationError,
+    isolated_review_context,
+)
 from codex_harness.adapters.isolated_worker import summary as isolation_summary
 from codex_harness.adapters.observation_spool import MemorySpool
 from codex_harness.adapters.output_schema import preflight
@@ -31,6 +35,14 @@ from codex_harness.adapters.project_evidence import (
 )
 from codex_harness.adapters.project_skills import project_context
 from codex_harness.adapters.providers import host_policy
+from codex_harness.adapters.role_containers import (
+    CLAUDE_IMPL_RW,
+    ROLE_PROFILES,
+    WRITABLE_PROFILES,
+    handoff_refs,
+    retain_evidence_handoff,
+    select_profile,
+)
 from codex_harness.adapters.skill_history import (
     finalize_delivery,
     prepare_history,
@@ -225,16 +237,18 @@ def review_context(cwd) -> dict:
             "Zeus preserves the response and tool output outside the checkout."}
 
 
-def artifact_reader_handle(root, reference: str, file: bool = True) -> dict:
+def artifact_reader_handle(root, reference: str, file: bool = True, python: str | None = None) -> dict:
     """Describe one exact-ref reader invocation without shell command interpolation.
 
     `file` is the artifact path, derivable from `--root` and `--ref`; a council delivery omits it (the
-    prompt is the budget denominator and the reader argv is the only sanctioned access path)."""
+    prompt is the budget denominator and the reader argv is the only sanctioned access path). A role
+    container names the image's trusted interpreter; the hand-off copy sits at the same root there
+    (INV-ROLE-CONTAINER-001)."""
     handle = {
         "ref": reference,
         "file": str(root / (reference[7:] + ".txt")),
         "reader_argv_prefix": [
-            sys.executable,
+            python or sys.executable,
             "-m",
             "codex_harness.adapters.artifact_reader",
             "--root",
@@ -417,8 +431,27 @@ class Executor:
             return container_execution_instructions(self.evidence_profile, cwd, self.isolation.config)
         return execution_instructions(self.evidence_profile, cwd)
 
-    def _open_runtime(self, assignment, model: str, cwd=None, action: str | None = None):
+    def _role_profile(self, assignment, action, read_only) -> str | None:
+        """INV-ROLE-CONTAINER-001: the fixed container profile of this routing result, or None without
+        isolation (exact host behaviour). Checked before any context work, reservation or provider;
+        an unmapped shape or a disabled profile refuses, never falling back to the host."""
+        if self.isolation is None:
+            return None
+        profile = select_profile(assignment.provider, assignment.transport, action, read_only,
+                                 codex_enabled=(self.isolation.config or {}).get("codex") is not None)
+        if assignment.transport == "app_server" and NativeHooks(self.service, self.git, self.artifacts).configuration():
+            # Native hooks are host commands; they are neither dropped silently nor run on the host here.
+            raise IsolationError("codex_container_native_hooks_unsupported")
+        return profile
+
+    def _open_runtime(self, assignment, model: str, cwd=None, action: str | None = None, read_only: bool = False,
+                      handoff: dict | None = None):
         """Open the transport this assignment names. Nothing here falls back to another provider."""
+        profile = self._role_profile(assignment, action, read_only)
+        if profile is not None and assignment.transport == "app_server":
+            # Selected isolation is the only Codex path too: the App Server runs inside the profile's
+            # container over stdio, never on this host (D2).
+            return self.isolation.codex_runtime(profile=profile, handoff=handoff)
         if assignment.transport == "app_server":
             return AppServer(hooks=NativeHooks(self.service, self.git, self.artifacts).configuration())
         require(assignment.transport == "claude_cli", "Unsupported provider transport: " + assignment.transport)
@@ -426,6 +459,12 @@ class Executor:
         # reaches the transport itself (exact Bash rules, system prompt), not only the prompt details.
         # Without a profile the construction is exactly the legacy one.
         profiled = self.evidence_profile is not None and action == "implement" and cwd is not None
+        if profile is not None and profile != CLAUDE_IMPL_RW:
+            # claude-role-ro: the review checkout read-only, its own result directory, the hand-off copy.
+            return self.isolation.runtime(model=model, runtime=assignment.runtime,
+                                          max_budget_usd=assignment.controls.get("max_budget_usd"),
+                                          settings_document=claude_settings(assignment.runtime),
+                                          project_delivery=None, profile=profile, handoff=handoff)
         if self.isolation is not None:
             # Selected isolation is the only Claude path: there is no branch back to the host runtime.
             # With a container profile the SAME delivery travels, resolved into container paths.
@@ -557,6 +596,9 @@ class Executor:
         selection = select_model(workload, importance)
         assignment = self.execution_policy.select(role=agent, action=action, workload=workload,
                                                   read_only=read_only)
+        role_profile = self._role_profile(assignment, action, read_only)
+        # A role container reads artifacts through the image's interpreter at the hand-off copy.
+        reader_python = TRUSTED_PYTHON if role_profile in ROLE_PROFILES else None
         stream = stream_for(assignment.transport)
         # INV-WORKER-SESSION-001: an explicit task session is refused here, before any context work,
         # reservation or provider, unless every condition of the native path holds.
@@ -631,7 +673,7 @@ class Executor:
                                                "deployed": (deployed or {}).get("revision"),
                                                "runtime_policy": digest(POLICY.snapshot())},
                                   "external_context": artifact_reader_handle(
-                                      self.artifacts.root, raw["ref"], file=delivery is None),
+                                      self.artifacts.root, raw["ref"], file=delivery is None, python=reader_python),
                                   "artifact_reader": (ARTIFACT_READER if delivery is None
                                                       else DELIVERY_ARTIFACT_READER),
                                   "policy": "Follow repository AGENTS.md and incumbent contracts. External "
@@ -643,15 +685,16 @@ class Executor:
             required["council_delivery"] = delivery
         if read_only and action == "dge_role":
             # A pre-implementation role: read-only at base, and no candidate, worker or verifier is asserted
-            # (INV-AUTONOMOUS-001; research-program-001 conductor delivery). No container runs for this role, so
-            # the host isolation is carried as its identity reference (mode, digest), not the full summary the
-            # review phases state. The candidate review context below stays exactly as it is for those phases.
+            # (INV-AUTONOMOUS-001; research-program-001 conductor delivery). With isolation the role runs in its
+            # read-only role container (INV-ROLE-CONTAINER-001); the isolation is carried as its identity
+            # reference (mode, digest), not the full summary the review phases state. The candidate review
+            # context below stays exactly as it is for those phases.
             required["role_context"] = role_context(self.isolation.config if self.isolation is not None else None)
         elif read_only:
             # The host names the interpreter and checkout a reviewer tests with; the model receives
             # this, it never chooses it (review-contract-001).
             required["review_context"] = (review_context(cwd) if self.isolation is None
-                                          else isolated_review_context(cwd, self.isolation.config))
+                                          else isolated_review_context(cwd, self.isolation.config, role_profile))
             if self.evidence_profile is not None:
                 # Rebound to THIS clean checkout, never the implementation workspace. A container
                 # profile states the same check ids in container terms, so the reviewer never runs
@@ -713,7 +756,7 @@ class Executor:
             for name, value in recovery.items():
                 body = evidence_json(value)
                 receipt = self.artifacts.put(body, "recovery:" + key + ":" + name)
-                recovery_refs[name] = artifact_reader_handle(self.artifacts.root, receipt["ref"])
+                recovery_refs[name] = artifact_reader_handle(self.artifacts.root, receipt["ref"], python=reader_python)
                 recovery_items.append(ContextItem(receipt["ref"], body, receipt["ref"],
                                                    hashlib.sha256(body.encode('utf-8')).hexdigest(), 20))
             # A recovery source has no operation listed in the delivery; its read needs the full catalogue.
@@ -971,8 +1014,10 @@ class Executor:
             # The reservation carries which policy chose this provider, so a receipt can be read back
             # to the configuration that produced it.
             request = {**parse_request(assignment.transport, options), "assignment": assignment.receipt()}
-            if self.isolation is not None and assignment.transport == "claude_cli":
+            if role_profile == CLAUDE_IMPL_RW:
                 request["isolation"] = isolation_summary(self.isolation.config)
+            elif role_profile is not None:
+                request["isolation"] = {**isolation_summary(self.isolation.config), "profile": role_profile}
             # INV-OUTPUT-001 / INV-OBSERVATION-001: a schema the subset refuses is a configuration
             # error; it is refused here, before any provider is entered, so it never needs a
             # termination record.
@@ -1059,7 +1104,12 @@ class Executor:
                     session_arguments = {"session_id": plan["session_id"], "task_session": {
                         "mode": plan["mode"], "session_id": plan["session_id"],
                         "stage": lambda destination: self.worker_sessions.stage(plan, destination)}}
-                opened = self._open_runtime(assignment, requested_model, cwd, action)
+                # INV-ROLE-CONTAINER-001 (D4): a role container mounts read-only copies of exactly the
+                # artifacts this prompt and its evidence name (hand-off manifests expanded), never the store.
+                handoff = ({"root": str(self.artifacts.root),
+                            "refs": handoff_refs(self.artifacts.root, [prompt, canonical(evidence)])}
+                           if role_profile in ROLE_PROFILES else None)
+                opened = self._open_runtime(assignment, requested_model, cwd, action, read_only, handoff)
                 # A transport whose construction is itself the external effect says so; one that
                 # starts its process later reports the exact moment through `on_enter`.
                 entry_on_open = getattr(opened, "enters_on_open", True)
@@ -1071,6 +1121,14 @@ class Executor:
                                          model=requested_model,
                                          **({} if entry_on_open else {"on_enter": mark_entered}),
                                          **session_arguments)
+                if role_profile in WRITABLE_PROFILES:
+                    # INV-ROLE-CONTAINER-001 (D4): the transport returns only after the writer's container
+                    # is confirmed stopped and its observations retained; only now is its evidence copied
+                    # into the content-addressed store, the one source a reviewer container later mounts.
+                    retained = (result.get("isolation") or {}) if isinstance(result, dict) else {}
+                    if retained.get("record"):
+                        retained["evidence_handoff"] = retain_evidence_handoff(
+                            self.artifacts, Path(retained["record"]).parent / "evidence", str(retained.get("run_id")))
             except Exception as exc:
                 if session_plan is not None and (result is None or not (result.get("inspection_blocked")
                                                                         or result.get("failure"))):

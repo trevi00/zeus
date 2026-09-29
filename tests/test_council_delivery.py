@@ -249,8 +249,12 @@ def representative(tmp_path, monkeypatch):
     executor, artifacts, prompts = harness(root, monkeypatch, answer=CONDUCTOR_ANSWER)
     executor.git.root = root / "review" / "run003-conductor-task-9e2f1c7a"
     executor.git.root.mkdir(parents=True)
-    config = load_isolation({"ZEUS_WORKER_ISOLATION": "docker", "ZEUS_WORKER_IMAGE": "sha256:" + "c" * 64})
-    executor.isolation = SimpleNamespace(config=config)  # INJECTED: only `.config` is read on the dge_role path
+    config = load_isolation({"ZEUS_WORKER_ISOLATION": "docker", "ZEUS_WORKER_IMAGE": "sha256:" + "c" * 64,
+                             "ZEUS_CODEX_CREDENTIAL_STORE": str(tmp_path / "codex-product")})
+    # INJECTED: `.config` on the dge_role path, and (INV-ROLE-CONTAINER-001) the codex-role-ro transport,
+    # which is the same prompt-recording stub the harness installs for the host App Server.
+    import codex_harness.adapters.executor as executor_module
+    executor.isolation = SimpleNamespace(config=config, codex_runtime=lambda **kwargs: executor_module.AppServer())
     return executor, artifacts, prompts, config
 
 
