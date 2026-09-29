@@ -158,3 +158,20 @@ def test_s3_rows_are_accounted_for(table):
     assert apis and all(r["status"] == "implemented" for r in apis)
     for key in ("contract:INV-ROLE-CONTAINER-001", "contract:INV-CODEX-CREDENTIAL-001"):
         assert rows[key]["status"] == "designed" and "S4" in rows[key]["slice_progress"]
+
+
+S4_IMPLEMENTED = {"application/invocation_ledger.py", "domain/invocation.py", "adapters/call_budget.py",
+                  "domain/provider_stream.py", "domain/worker_sessions.py"}
+S4_REMAINING = {"adapters/executor.py", "adapters/claude_cli.py", "adapters/hooks.py", "adapters/worker_sessions.py",
+                "application/worker_sessions.py", "adapters/codex.py"}
+
+
+def test_s4_rows_moved_so_far_are_implemented_and_the_rest_stay_designed(table):
+    """S4 (in progress): only the modules with a target move and compare/target evidence are implemented."""
+    rows = {r["key"]: r for r in table["rows"]}
+    for name in S4_IMPLEMENTED:
+        row = rows["module:src/codex_harness/" + name]
+        assert row["status"] == "implemented" and "S4 implemented" in row["slice_progress"], name
+        assert any(e.startswith("compare:") for e in row["evidence"]), name
+    for name in S4_REMAINING:
+        assert rows["module:src/codex_harness/" + name]["status"] == "designed", name
