@@ -127,6 +127,9 @@ jobs:
       # The target suite with its integration tests (ported PostgreSQL/Redis cases) on the same
       # kind of labelled disposable fixtures; the compose services above are never used by it (R-X).
       - run: python compare/run.py target-integration
+      # S3 labelled Docker fixture suite: the target's composed container controls in real, network-less,
+      # owned-fixture containers of an admitted fixture image (§5.3 S3 slice exit), through the guard.
+      - run: python compare/run.py docker-fixture
       - if: always()
         run: docker compose -p harness-ci down --volumes
         working-directory: ${{ runner.temp }}/zeus-source

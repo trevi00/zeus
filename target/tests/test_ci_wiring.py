@@ -41,7 +41,8 @@ REBUILD_INTEGRATION_STEPS = [("python compare/run.py prepare", None),
                              ("python compare/run.py run --only effects.decision_unit.pg --pg", None),
                              ("uv sync --frozen --project target", None),
                              ("python compare/run.py run --only storage.pg --only storage.redis --pg --redis", None),
-                             ("python compare/run.py target-integration", None)]
+                             ("python compare/run.py target-integration", None),
+                             ("python compare/run.py docker-fixture", None)]
 
 
 def load():

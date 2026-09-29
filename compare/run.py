@@ -9,6 +9,7 @@ Layer: harness (never shipped); standard library only. Usage from the worktree r
     python compare/run.py run --pg            # also the scenarios that need a disposable PostgreSQL
     python compare/run.py run --redis         # also the scenarios that need a disposable Redis
     python compare/run.py target-integration  # target suite with its integration tests on fixtures
+    python compare/run.py docker-fixture      # S3 labelled, network-less Docker fixture suite (target)
 
 The reference environment is built from the SOURCE archive wheel, never from the working tree;
 its package-file digest must equal `compare/baseline.json`. Each driver runs as a separate process
@@ -438,12 +439,37 @@ def target_integration() -> dict:
     return {"exit_code": done.returncode, "summary": tail[-1] if tail else "", "tail": tail}
 
 
+def docker_fixture() -> dict:
+    """The S3 labelled Docker fixture suite (§5.3 S3 slice exit): the target's composed container controls
+    checked in real, network-less, owned-fixture containers of an admitted fixture image. The guard stays
+    default-deny except for exactly these forms; the fake `docker` of the child environment is removed so
+    the admitted calls reach the real client, while the fake provider CLIs stay first on PATH."""
+    if not TARGET_PYTHON.exists():
+        return {"error": "target venv missing: run `uv sync --frozen --project target`"}
+    SCRATCH.mkdir(parents=True, exist_ok=True)
+    with tempfile.TemporaryDirectory(prefix="zeus-s3-docker-", dir=SCRATCH) as raw:
+        work = Path(raw)
+        bind = work / "bind"
+        bind.mkdir()
+        env = provider_guard.child_environment(work / "env", extra={
+            "ZEUS_TEST_DOCKER": "1", "ZEUS_TEST_DOCKER_BIND_ROOT": str(bind)})
+        (work / "env" / "fakebin" / "docker").unlink()
+        done = subprocess.run([str(TARGET_PYTHON), "-m", "pytest", "-q", "-p", "no:cacheprovider", "-rs",
+                               "--basetemp", str(work / "pytest"), "tests/test_s3_docker_fixture.py"],
+                              cwd=str(ROOT / "target"), env=env, capture_output=True, text=True, timeout=900)
+    tail = done.stdout.strip().splitlines()[-15:]
+    summary = tail[-1] if tail else ""
+    ok = done.returncode == 0 and " passed" in summary and "skipped" not in summary
+    return {"exit_code": done.returncode if ok or done.returncode else 1, "summary": summary, "tail": tail}
+
+
 def main(argv=None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     sub = parser.add_subparsers(dest="command", required=True)
     sub.add_parser("check-tree")
     sub.add_parser("prepare")
     sub.add_parser("target-integration")
+    sub.add_parser("docker-fixture")
     run_cmd = sub.add_parser("run")
     run_cmd.add_argument("--record", action="store_true", help="write reference goldens")
     run_cmd.add_argument("--no-bwrap", action="store_true")
@@ -456,6 +482,9 @@ def main(argv=None) -> int:
     if args.command == "check-tree":
         report = check_tree()
         ok = report["ok"]
+    elif args.command == "docker-fixture":
+        report = docker_fixture()
+        ok = report.get("exit_code") == 0
     elif args.command == "target-integration":
         report = target_integration()
         ok = report.get("exit_code") == 0
