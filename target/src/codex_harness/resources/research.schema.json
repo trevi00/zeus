@@ -1,0 +1,683 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:codex-harness:research:v1",
+  "$defs": {
+    "SourceIdentity": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "repository": {
+          "type": "string"
+        },
+        "commit": {
+          "type": "string"
+        },
+        "tree": {
+          "type": "string"
+        },
+        "manifest_ref": {
+          "type": "string"
+        },
+        "version": {
+          "const": 1,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "repository",
+        "commit",
+        "tree",
+        "manifest_ref",
+        "version"
+      ]
+    },
+    "InventoryEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "type": "string"
+        },
+        "mode": {
+          "type": "string"
+        },
+        "object_id": {
+          "type": "string"
+        },
+        "size": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "artifact_ref": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "path",
+        "mode",
+        "object_id",
+        "size",
+        "artifact_ref"
+      ]
+    },
+    "PathDisposition": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "type": "string"
+        },
+        "disposition": {
+          "type": "string",
+          "enum": [
+            "unreviewed",
+            "semantic",
+            "generated",
+            "duplicate",
+            "binary",
+            "unavailable"
+          ]
+        },
+        "evidence_refs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "symbols": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "justification": {
+          "type": "string"
+        },
+        "links": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "method": {
+          "type": "string"
+        },
+        "receipt_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "path",
+        "disposition",
+        "evidence_refs",
+        "symbols",
+        "justification",
+        "links",
+        "method",
+        "receipt_ids"
+      ]
+    },
+    "SubsystemAnalysis": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "paths": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "contracts": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "entry_points": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "implementations": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "callers": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "configuration": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "storage_authority": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "failure_paths": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "tests": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "receipt_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "evidence_refs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "contradictions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "unresolved_dependencies": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "tests_not_run": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        }
+      },
+      "required": [
+        "name",
+        "paths",
+        "contracts",
+        "entry_points",
+        "implementations",
+        "callers",
+        "configuration",
+        "storage_authority",
+        "failure_paths",
+        "tests",
+        "receipt_ids",
+        "evidence_refs",
+        "contradictions",
+        "unresolved_dependencies",
+        "tests_not_run"
+      ]
+    },
+    "ExecutionReceipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "source": {
+          "$ref": "#/$defs/SourceIdentity"
+        },
+        "environment_revision": {
+          "type": "string"
+        },
+        "command": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "isolation": {
+          "type": "string"
+        },
+        "exit_status": {
+          "type": "integer"
+        },
+        "output_ref": {
+          "type": "string"
+        },
+        "runner_id": {
+          "type": "string"
+        },
+        "inspection_blocked": {
+          "type": "boolean"
+        },
+        "version": {
+          "const": 1,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "source",
+        "environment_revision",
+        "command",
+        "isolation",
+        "exit_status",
+        "output_ref",
+        "runner_id",
+        "inspection_blocked",
+        "version"
+      ]
+    },
+    "PartitionCheckpoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "audit_id": {
+          "type": "string"
+        },
+        "partition_id": {
+          "type": "string"
+        },
+        "generation": {
+          "type": "integer"
+        },
+        "paths": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "subsystems": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "evidence_refs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "remaining_paths": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "remaining_subsystems": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "open_questions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "cursor": {
+          "type": "string"
+        },
+        "version": {
+          "const": 1,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "audit_id",
+        "partition_id",
+        "generation",
+        "paths",
+        "subsystems",
+        "evidence_refs",
+        "remaining_paths",
+        "remaining_subsystems",
+        "open_questions",
+        "cursor",
+        "version"
+      ]
+    },
+    "AdaptationProposal": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "source": {
+          "$ref": "#/$defs/SourceIdentity"
+        },
+        "scope": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "source_symbols": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "behavior": {
+          "type": "string"
+        },
+        "failure_modes": {
+          "type": "string"
+        },
+        "harness_symbols": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "overlap": {
+          "type": "string"
+        },
+        "boundaries": {
+          "type": "string"
+        },
+        "ssot": {
+          "type": "string"
+        },
+        "six_w": {
+          "type": "string"
+        },
+        "graph_impact": {
+          "type": "string"
+        },
+        "attribution": {
+          "type": "string"
+        },
+        "license_constraints": {
+          "type": "string"
+        },
+        "dependency_constraints": {
+          "type": "string"
+        },
+        "decision": {
+          "type": "string"
+        },
+        "reason": {
+          "type": "string"
+        },
+        "author": {
+          "type": "string"
+        },
+        "version": {
+          "const": 1,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "source",
+        "scope",
+        "source_symbols",
+        "behavior",
+        "failure_modes",
+        "harness_symbols",
+        "overlap",
+        "boundaries",
+        "ssot",
+        "six_w",
+        "graph_impact",
+        "attribution",
+        "license_constraints",
+        "dependency_constraints",
+        "decision",
+        "reason",
+        "author",
+        "version"
+      ]
+    },
+    "IndependentReview": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "binding": {
+          "type": "string"
+        },
+        "actor": {
+          "type": "string"
+        },
+        "execution_id": {
+          "type": "string"
+        },
+        "accepted": {
+          "type": "boolean"
+        },
+        "license_assessment": {
+          "type": "string"
+        },
+        "dependency_assessment": {
+          "type": "string"
+        },
+        "sre_assessment": {
+          "type": "string"
+        },
+        "architecture_assessment": {
+          "type": "string"
+        },
+        "graph_assessment": {
+          "type": "string"
+        },
+        "version": {
+          "const": 1,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "binding",
+        "actor",
+        "execution_id",
+        "accepted",
+        "license_assessment",
+        "dependency_assessment",
+        "sre_assessment",
+        "architecture_assessment",
+        "graph_assessment",
+        "version"
+      ]
+    }
+  },
+  "oneOf": [
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "version": {
+          "const": 1,
+          "type": "integer"
+        },
+        "kind": {
+          "const": "SourceIdentity",
+          "type": "string"
+        },
+        "record": {
+          "$ref": "#/$defs/SourceIdentity"
+        }
+      },
+      "required": [
+        "version",
+        "kind",
+        "record"
+      ]
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "version": {
+          "const": 1,
+          "type": "integer"
+        },
+        "kind": {
+          "const": "InventoryEntry",
+          "type": "string"
+        },
+        "record": {
+          "$ref": "#/$defs/InventoryEntry"
+        }
+      },
+      "required": [
+        "version",
+        "kind",
+        "record"
+      ]
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "version": {
+          "const": 1,
+          "type": "integer"
+        },
+        "kind": {
+          "const": "PathDisposition",
+          "type": "string"
+        },
+        "record": {
+          "$ref": "#/$defs/PathDisposition"
+        }
+      },
+      "required": [
+        "version",
+        "kind",
+        "record"
+      ]
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "version": {
+          "const": 1,
+          "type": "integer"
+        },
+        "kind": {
+          "const": "SubsystemAnalysis",
+          "type": "string"
+        },
+        "record": {
+          "$ref": "#/$defs/SubsystemAnalysis"
+        }
+      },
+      "required": [
+        "version",
+        "kind",
+        "record"
+      ]
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "version": {
+          "const": 1,
+          "type": "integer"
+        },
+        "kind": {
+          "const": "ExecutionReceipt",
+          "type": "string"
+        },
+        "record": {
+          "$ref": "#/$defs/ExecutionReceipt"
+        }
+      },
+      "required": [
+        "version",
+        "kind",
+        "record"
+      ]
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "version": {
+          "const": 1,
+          "type": "integer"
+        },
+        "kind": {
+          "const": "PartitionCheckpoint",
+          "type": "string"
+        },
+        "record": {
+          "$ref": "#/$defs/PartitionCheckpoint"
+        }
+      },
+      "required": [
+        "version",
+        "kind",
+        "record"
+      ]
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "version": {
+          "const": 1,
+          "type": "integer"
+        },
+        "kind": {
+          "const": "AdaptationProposal",
+          "type": "string"
+        },
+        "record": {
+          "$ref": "#/$defs/AdaptationProposal"
+        }
+      },
+      "required": [
+        "version",
+        "kind",
+        "record"
+      ]
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "version": {
+          "const": 1,
+          "type": "integer"
+        },
+        "kind": {
+          "const": "IndependentReview",
+          "type": "string"
+        },
+        "record": {
+          "$ref": "#/$defs/IndependentReview"
+        }
+      },
+      "required": [
+        "version",
+        "kind",
+        "record"
+      ]
+    }
+  ]
+}

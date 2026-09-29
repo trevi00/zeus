@@ -1,0 +1,358 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:codex-harness:six-w:1",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "1.0"
+    },
+    "message_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "type": {
+      "enum": [
+        "task.assign",
+        "task.result",
+        "execution.notice",
+        "incident.report",
+        "hook.required",
+        "review.result"
+      ]
+    },
+    "correlation_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "causation_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "who": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "sender": {
+          "type": "string",
+          "minLength": 1
+        },
+        "recipient": {
+          "type": "string",
+          "minLength": 1
+        },
+        "owner": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "sender",
+        "recipient",
+        "owner"
+      ]
+    },
+    "what": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "action": {
+          "type": "string",
+          "minLength": 1
+        },
+        "details": {
+          "type": "object"
+        }
+      },
+      "required": [
+        "action",
+        "details"
+      ]
+    },
+    "why": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "objective": {
+          "type": "string",
+          "minLength": 1
+        },
+        "evidence_refs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "required": [
+        "objective",
+        "evidence_refs"
+      ]
+    },
+    "when": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "deadline": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "after": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "required": [
+        "created_at",
+        "deadline",
+        "after"
+      ]
+    },
+    "where": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "repository": {
+          "type": "string",
+          "minLength": 1
+        },
+        "revision": {
+          "type": "string",
+          "minLength": 1
+        },
+        "environment": {
+          "type": "string",
+          "minLength": 1
+        },
+        "allowed_paths": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "required": [
+        "repository",
+        "revision",
+        "environment",
+        "allowed_paths"
+      ]
+    },
+    "how": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "constraints": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "acceptance_criteria": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1
+        },
+        "context_ref": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "result_schema": {
+          "const": "six-w.v1"
+        }
+      },
+      "required": [
+        "constraints",
+        "acceptance_criteria",
+        "context_ref",
+        "result_schema"
+      ]
+    }
+  },
+  "required": [
+    "schema_version",
+    "message_id",
+    "type",
+    "correlation_id",
+    "causation_id",
+    "who",
+    "what",
+    "why",
+    "when",
+    "where",
+    "how"
+  ],
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "type": {
+            "const": "execution.notice"
+          }
+        },
+        "required": [
+          "type"
+        ]
+      },
+      "then": {
+        "properties": {
+          "what": {
+            "properties": {
+              "action": {
+                "const": "observe_execution"
+              },
+              "details": {
+                "type": "object",
+                "properties": {
+                  "notice_id": {
+                    "type": "string",
+                    "pattern": "^[0-9a-f]{64}$"
+                  },
+                  "version": {
+                    "const": 1
+                  },
+                  "bucket": {
+                    "enum": [
+                      "tasks",
+                      "decisions_pending"
+                    ]
+                  },
+                  "task_id": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "generation": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "attempt": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "recovery_sequence": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "status": {
+                    "enum": [
+                      "retry",
+                      "failed",
+                      "expired",
+                      "cancelled",
+                      "blocked",
+                      "superseded",
+                      "inspection_blocked",
+                      "succeeded"
+                    ]
+                  },
+                  "reason_code": {
+                    "enum": [
+                      "ClockDiscontinuity",
+                      "InvalidExecutionClock",
+                      "InvalidExecutionDeadline",
+                      "InvalidExecutionLease",
+                      "InvalidExecutionOrder",
+                      "InvalidExecutionState",
+                      "InvalidRetryBudget",
+                      "RecoveryContextChanged",
+                      "UnverifiedLegacyRetryBudget",
+                      "budget_exhausted",
+                      "deadline_exceeded",
+                      "decision_blocked",
+                      "dependency_failed",
+                      "execution_failed",
+                      "execution_recovered",
+                      "inspection_blocked",
+                      "operator_cancelled",
+                      "reconciliation_required",
+                      "research_required",
+                      "ticket_binding_changed",
+                      "ticket_superseded"
+                    ]
+                  },
+                  "transition_ref": {
+                    "type": "string",
+                    "pattern": "^[0-9a-f]{64}$"
+                  }
+                },
+                "required": [
+                  "notice_id",
+                  "version",
+                  "bucket",
+                  "task_id",
+                  "generation",
+                  "attempt",
+                  "recovery_sequence",
+                  "status",
+                  "reason_code",
+                  "transition_ref"
+                ],
+                "additionalProperties": false,
+                "allOf": [
+                  {
+                    "if": {
+                      "properties": {
+                        "status": {
+                          "const": "succeeded"
+                        }
+                      },
+                      "required": [
+                        "status"
+                      ]
+                    },
+                    "then": {
+                      "properties": {
+                        "reason_code": {
+                          "const": "research_required"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "if": {
+                      "properties": {
+                        "reason_code": {
+                          "const": "research_required"
+                        }
+                      },
+                      "required": [
+                        "reason_code"
+                      ]
+                    },
+                    "then": {
+                      "properties": {
+                        "status": {
+                          "const": "succeeded"
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

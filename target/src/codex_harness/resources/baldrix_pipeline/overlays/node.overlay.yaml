@@ -1,0 +1,26 @@
+# node.overlay.yaml — Node.js overlay (cucumber-js acceptance).
+# The neutral core (stages.core.yaml) + this overlay give greenfield_spec_emit the testgen framework
+# binding for the Node stack (kpg-sandbox / korea-fixtures style package.json projects). Unlike java,
+# there is no legacy stages-node.yaml golden reference (node is a new stack via the OCP overlay path).
+stack: node
+source_finder: find_node_sources
+testgen:
+  framework: cucumber-js
+  runner_cmd: npx cucumber-js
+  # stub-faker floor (debate-1782892965): assertion-presence lint on generated @Then step-def bodies.
+  stub_lint:
+    assertion_tokens: ["assert(", "assert.", "expect(", "strictEqual(", "deepEqual(", "notStrictEqual(", "throw new Error", "throw new AssertionError"]
+    delegate_call_shapes: [".assert", ".verify", ".expect", ".check", ".should"]
+    compiled: false
+applicable_stages:
+- requirements
+- prd
+- flowchart
+- convention
+- conceptual-design
+- er-diagram
+- api-design
+- scaffolding
+- implementation
+- verification
+- unit-test

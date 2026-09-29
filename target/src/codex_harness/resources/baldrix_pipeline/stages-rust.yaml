@@ -1,0 +1,244 @@
+# stages-rust.yaml — Rust(cargo) 전용 파이프라인
+# 기본 `stages.yaml`의 Java/Spring 하드코드(JaCoCo, gradlew, Mapper XML 등)를
+# Rust 생태계로 재작성. tech-stack.yaml에 `stack.language: rust`가 있으면
+# context-loader가 이 파일을 우선 로드한다.
+#
+# 응집도: 단계 정의는 stages.yaml과 동일하게 유지(id/name/dge)
+# 결합도: gate 조건만 Rust 도구(cargo build, cargo test, cargo clippy, cargo doc)로 교체
+# 확장성: 프로젝트별 `.claude/stages.yaml`로 다시 오버라이드 가능
+#
+# Reference: stages-flutter.yaml (Dart variant 패턴 일치 — Designer/Generator/Evaluator 3-phase)
+
+stages:
+  # ============================================================
+  #  Designer
+  # ============================================================
+
+  - id: requirements
+    name: 요구사항 명세 (사용자 스토리)
+    dge: designer
+    input: "사용자 요구사항 (대화/문서)"
+    output: requirements.md
+    artifact: "도메인별 사용자 스토리 + 인수 조건(AC)"
+    gate:
+      - "모든 도메인에 1개 이상의 스토리가 존재"
+      - "각 스토리에 AC(성공+에러 쌍)가 정의됨"
+    skills: [doc-writer]
+
+  - id: prd
+    name: PRD (상세 요구사항)
+    dge: designer
+    input: [requirements.md]
+    output: prd.md
+    artifact: "프로젝트 목표, 범위, 기능 명세, 비기능 요구사항, 용어 정의"
+    gate:
+      - "모든 스토리가 기능 명세로 상세화됨"
+      - "비기능 요구사항(성능, 메모리, unsafe 사용 정책)이 수치로 명시됨"
+    skills: [doc-writer]
+
+  - id: flowchart
+    name: 도메인 플로우차트
+    dge: designer
+    input: [prd.md]
+    output: flowchart.md
+    artifact: "도메인별 사용자 흐름, 상태 전이, 분기 조건"
+    gate:
+      - "핵심 기능의 플로우 존재"
+      - "분기 조건과 예외 흐름 명시"
+    skills: [flow-design]
+
+  - id: convention
+    name: 프로젝트 컨벤션
+    dge: designer
+    input: [prd.md]
+    output: convention.md
+    artifact: "워크스페이스 구조, crate 분할, 모듈 네이밍, 에러 타입 (thiserror/anyhow), Result 정책"
+    gate:
+      - "워크스페이스/crate 구조 테이블 존재 (workspace.members)"
+      - "에러 타입 정책 명시 (thiserror vs anyhow per crate)"
+      - "에러 코드 체계 정의됨 (enum variant + Display impl)"
+    skills: [convention]
+    reuse: true
+
+  # --- DB는 Rust 생태계의 diesel/sqlx/sea-orm 전용 단계 (optional — CLI/embedded 등 비-DB 프로젝트는 SKIP) ---
+  - id: conceptual-design
+    name: 개념적 DB 설계
+    dge: designer
+    input: [prd.md, flowchart.md]
+    output: conceptual-design.md
+    artifact: "엔티티 식별, 핵심 속성"
+    gate:
+      - "모든 도메인의 엔티티 식별"
+      - "엔티티별 핵심 속성 나열"
+    skills: [db-design]
+    optional: true
+
+  - id: er-diagram
+    name: E-R 다이어그램
+    dge: designer
+    input: [conceptual-design.md]
+    output: er-diagram.md
+    artifact: "엔티티 관계도, 카디널리티"
+    gate:
+      - "엔티티 간 관계 시각화"
+      - "M:N 해소 방안 명시"
+    skills: [db-design]
+    optional: true
+
+  - id: logical-design
+    name: 논리적 DB 설계
+    dge: designer
+    input: [er-diagram.md, convention.md]
+    output: logical-design.md
+    artifact: "diesel/sqlx schema 컬럼, 타입, 제약, 인덱스"
+    gate:
+      - "모든 엔티티가 diesel table! 매크로 OR sqlx::query_as 대상 struct로 변환"
+      - "PK/UK 제약 명시"
+    skills: [db-design]
+    optional: true
+
+  - id: ddl
+    name: 스키마 (물리적 설계)
+    dge: designer
+    input: [logical-design.md]
+    output: "migrations/*.sql"
+    artifact: "diesel/sqlx migrations + Rust struct ↔ table 매핑"
+    gate:
+      - "diesel migration run OR sqlx migrate run 성공"
+      - "schema 버전 증가"
+      - "logical-design과 1:1 대응"
+    optional: true
+
+  - id: api-spec
+    name: API/Trait 계약 명세
+    dge: designer
+    input: [prd.md, flowchart.md, convention.md]
+    output: api-spec.md
+    artifact: "public trait 정의, HTTP/gRPC 엔드포인트별 Request/Response struct, 에러 enum"
+    gate:
+      - "모든 스토리에 대응하는 trait/Endpoint 존재"
+      - "Request/Response struct가 convention 타입 체계와 정합"
+      - "에러 응답이 convention 에러 enum 체계 준수"
+    skills: [flow-design]
+
+  - id: module-design
+    name: crate/모듈 설계 (Workspace)
+    dge: designer
+    input: [api-spec.md, convention.md]
+    output: module-design.md
+    artifact: "workspace.members + 각 crate 의 publik API surface + 의존성 그래프"
+    gate:
+      - "각 crate 의 책임 1줄 명시"
+      - "crate 간 의존성 방향 acyclic"
+
+  # --- 11.5 목업-우선 리뷰 (throwaway clickable mock, ADVISORY / OPTIONAL) ---
+  # output= 의도적 생략 (load-bearing: _stage_done가 output 존재로만 완료판정 →
+  # tracked output 달면 mock 작성 시 휴먼 리뷰 없이 scaffolding auto-advance).
+  # optional: true → required-walk skip(미차단). 설계: debate-1782097208-3wiebq.
+  # canonical def = stages.core.yaml; 본 golden은 load_merged('rust') 재현 타깃.
+  - id: mock-review
+    name: 목업-우선 리뷰 (Throwaway clickable mock)
+    dge: designer
+    input: [prd.md, flowchart.md, api-spec.md]
+    artifact: "버릴(throwaway) 단일파일 그레이스케일 클릭형 mock + core-flow별 리뷰 체크리스트 — 수용된 피드백은 설계 문서로 환원되고 mock 은 졸업 후 삭제"
+    gate:
+      - "회의/요구자 리뷰 — flowchart 핵심 플로우마다 mock 에 인터랙션 1개 이상 wired (surface render != real action)"
+      - "수용된 피드백이 전부 설계 문서(requirements/flowchart/api-spec) 편집으로 환원됨"
+      - 'named stakeholder sign-off 기록 + 잔여(미결/연기) 항목 정량 명시 ("완벽" 금지)'
+    skills: [mock-prototype]
+    optional: true
+
+  - id: ci-setup
+    name: CI 세팅 (GitHub Actions)
+    dge: designer
+    input: [convention.md, module-design.md]
+    output: ".github/workflows/ci.yml"
+    artifact: "cargo build / cargo test / cargo clippy / cargo fmt --check / cargo audit"
+    gate:
+      - "ci.yml 존재 + cargo test 단계 포함"
+      - "rust stable + nightly 매트릭스 OR stable 단일 명시"
+
+  # ============================================================
+  #  Generator
+  # ============================================================
+
+  - id: scaffolding
+    name: 프로젝트 뼈대 (Rust)
+    dge: generator
+    input: [convention.md, module-design.md]
+    output: "Cargo.toml + src/lib.rs + workspace 구조"
+    artifact: "워크스페이스 Cargo.toml + 멤버 crate 의 Cargo.toml + 공통 error/Result alias"
+    gate:
+      - "cargo build 성공 (0 errors)"
+      - "워크스페이스 구조가 convention.md / module-design.md 와 일치"
+    skills: [scaffolding]
+    reuse: true
+
+  - id: implementation
+    name: 구현 (Rust)
+    dge: generator
+    input: [api-spec.md, flowchart.md, convention.md, "domain/*.md (있다면)"]
+    output: "도메인별 struct + impl + trait impl + handler"
+    artifact: "API 계약 + 플로우대로 동작하는 코드"
+    gate:
+      - "cargo clippy --all-targets -- -D warnings 통과"
+      - "cargo build --all 성공"
+      - "모든 trait/Endpoint 의 struct↔impl 체인 존재"
+    skills: [backend]
+    parallel: true
+
+  # ============================================================
+  #  Evaluator
+  # ============================================================
+
+  - id: wiring-verify
+    name: 와이어링 검증
+    dge: evaluator
+    input: [api-spec.md, "implementation 결과물"]
+    output: wiring-report.md
+    artifact: "crate 의존성 + trait 구현 매핑 검증"
+    gate:
+      - "cargo tree --duplicates 0건"
+      - "모든 trait → impl 매핑 존재"
+      - "cargo clippy 0 warnings (신규 코드 한정)"
+    skills: [verification]
+
+  - id: unit-test
+    name: Unit 테스트 (cargo test)
+    dge: evaluator
+    input: ["implementation 소스 코드"]
+    output: "tests/ + src/*/tests.rs"
+    artifact: "각 public fn / struct method 의 정상+에러 케이스"
+    gate:
+      - "cargo test 성공, 0 failures"
+      - "각 공개 메서드에 정상/예외 케이스 존재"
+      - "mock 사용 최소화 (real impl + test fixtures 우선)"
+    skills: [testing]
+
+  - id: integration-test
+    name: 통합 테스트 (tests/ 디렉토리)
+    dge: evaluator
+    input: [api-spec.md, "unit-test 통과된 코드"]
+    output: "tests/*.rs"
+    artifact: "crate 외부 진입점에서 본 시나리오 테스트"
+    gate:
+      - "핵심 플로우 happy path PASS"
+      - "에러 시나리오 (Result::Err) PASS"
+    skills: [testing]
+    optional: true
+
+  - id: doc-test
+    name: Doc 테스트 (cargo test --doc)
+    dge: evaluator
+    input: ["implementation 소스 코드"]
+    output: "src/*.rs //! + /// doc comments"
+    artifact: "public API doc + 실행 가능한 예제"
+    gate:
+      - "cargo doc --no-deps 성공 (broken intra-doc link 0건)"
+      - "cargo test --doc 0 failures"
+      - "public item 의 doc coverage 0% 위반 0건"
+    skills: [testing]
+    optional: true
+
+# Rust는 JaCoCo/Actuator/SpringDoc/Batch 해당 없음 (명시적 제외).
+# Coverage 도구는 cargo-llvm-cov / cargo-tarpaulin — optional doc-test stage 안에서 측정.

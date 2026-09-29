@@ -1,0 +1,149 @@
+{
+  "id": "worker-v1",
+  "version": "1",
+  "document": "worker-profile-v1.md",
+  "document_sha256": "1db4d3e46bfc4409420b0658d2f1d52059c7fd4481c3666af692ac9db85f8896",
+  "hook": "worker_profile_hook.py",
+  "hook_sha256": "fd6ecaf37282071107d4d38fa3cddc17a7197bfb20dd9cf5134e0142d5927b82",
+  "character_limit": 15000,
+  "hooks": [
+    "SessionStart",
+    "PostToolUse(Bash)",
+    "PostToolUseFailure(Bash|Edit|Glob|Grep|Read|Write)"
+  ],
+  "permissions": {
+    "allow": [
+      "Bash(python -m pytest:*)",
+      "Bash(python -m pytest)",
+      "Bash(python -m ruff:*)",
+      "Bash(python -m compileall:*)",
+      "Bash(git status:*)",
+      "Bash(git status)",
+      "Bash(git diff:*)",
+      "Bash(git diff)",
+      "Bash(git log:*)",
+      "Bash(python -m codex_harness.adapters.worker_profile_metadata)",
+      "Bash(python -m codex_harness.adapters.monitor_frontend_checks)"
+    ]
+  },
+  "sources": [
+    {
+      "source": "baldrix",
+      "path": "CLAUDE.md",
+      "commit": "7f2d97dab465aa1670267137354d0d44c51fb688",
+      "blob": "5c4d35dd306ea0f06bc53eb353df4e247f8ac041",
+      "pinned_sha256": "87f6572ecf367d46e233956a864167657976aae44d3abc38bf8b5a2d3e3f7d20",
+      "scope": "principles adapted; no upstream executable installed",
+      "disposition": "principles rewritten in the document; no upstream text copied, no upstream executable installed"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/_common/verification-before-completion.md",
+      "commit": "7f2d97dab465aa1670267137354d0d44c51fb688",
+      "blob": "efff7fa01d6c078f4cfd48d7840ebeafebd2ee09",
+      "pinned_sha256": "bd34addce510c1ab7c88ee45dc577d2531645d29d29d52567c4d447a14016da6",
+      "scope": "principles adapted; no upstream executable installed",
+      "disposition": "principles rewritten in the document; no upstream text copied, no upstream executable installed"
+    },
+    {
+      "source": "harness",
+      "path": "CLAUDE.md",
+      "commit": "70a7a49d84fbb991cdc5ab017d643b18f7740112",
+      "blob": "6e9d5ddb86c9a4d8db38398068f05049a7048057",
+      "pinned_sha256": "13fef9bb49e35f8b51b427e5e6d378de6cd3ff98a66f2bf70cde8e4fc352d5a1",
+      "scope": "principles adapted; no upstream executable installed",
+      "disposition": "principles rewritten in the document; no upstream text copied, no upstream executable installed"
+    },
+    {
+      "source": "guardian",
+      "path": "README.md",
+      "commit": "e7ced4a632a38726dca44e84fa0a00b8e1f0b6f4",
+      "blob": "a8c4881b7f9be1c74ff32bbb32724ce7836df592",
+      "pinned_sha256": "9286e27c95965839fd4c04e8ac22b66426cb412b23517e5cf8c3a7ec46ce4fa8",
+      "scope": "principles adapted; no upstream executable installed",
+      "disposition": "principles rewritten in the document; no upstream text copied, no upstream executable installed"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/_common/investigation-discipline.md",
+      "commit": "7f2d97dab465aa1670267137354d0d44c51fb688",
+      "blob": "18e96fe309f708637fe995aaacc00dff7a3dfd86",
+      "pinned_sha256": "c65582cce1480d72181b1d0fca8f25b7a7142a016900a738f52f35256ed6dcf7",
+      "scope": "investigation guidance adapted; upstream anecdotes are documentary claims, not Zeus measurements",
+      "disposition": "Selected principles rewritten for bounded worker investigation; no upstream executable, global settings, fixed path guards or automatic retry rules adopted"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/_common/code-quality.md",
+      "commit": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "blob": "0b0abaf2d89bdc597b32660b7dccd05c6c552b20",
+      "pinned_sha256": "0c23345fb447a53ad089ec73be685de50b99793084b5549de46c1e3cd5e0bfa9",
+      "scope": "Sibling discovery and existing-authority reuse principles, adapted with the user's SSOT/migration requirements; no upstream execution or behavioral effectiveness claim",
+      "disposition": "Principles rewritten for the existing worker-v1 profile; private incident claims, numeric thresholds, blanket abstraction rules and upstream automation are not adopted"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/_common/receiving-code-review.md",
+      "commit": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "blob": "bdba6cf2405b64015b556c84fb24218a350e06d6",
+      "pinned_sha256": "0cfbe5a026c2f2243be5ea9483ff01a4707b365c8f0a27312f1549758559452e",
+      "scope": "Selected evidence-first review feedback principles rewritten for existing worker-v1",
+      "disposition": "Adapt verification and reasoned disagreement; reject blanket stops, item-by-item loops, style bans and catchphrase; no upstream execution or behavior claim"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/_common/qa-boundary.md",
+      "commit": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "blob": "03d449e415d8ea5263cdc3685b8363e4421c4c7a",
+      "pinned_sha256": "7b75f38d2bc3ecbdcc5eb831451343252cf9df9f43a0fb72d7aec6f9dbd00a0e",
+      "scope": "Selected producer-consumer contract comparison principles rewritten for assigned integrations only; no upstream execution or behavior guarantee",
+      "disposition": "Adapt paired reads, authoritative shape/state/optional-field mapping and scoped evidence; reject global six-pattern gates, mandatory code generation, automatic loops and upstream incident claims"
+    },
+    {
+      "source": "baldrix",
+      "path": "skills/_common/handoff-clear-trigger.md",
+      "commit": "cbb5c3e6c9c4af6f86626474f4d7d62fd8e8a6d2",
+      "blob": "0388365162155a528aedc3b1270855028117bf85",
+      "pinned_sha256": "a19c8bfc8148b0a5247112398eef14f790f5752542c570406835c172a1a4ec58",
+      "scope": "Evidence-bound bounded continuation principles rewritten for existing worker-v1; no upstream execution or behavior guarantee",
+      "disposition": "Adapt goal, verified evidence, remaining work and scoped next action; reject forced clear, numeric thresholds, fallback task invention and prose authority"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/lib/repeat_error_tracker.py",
+      "commit": "7f2d97dab465aa1670267137354d0d44c51fb688",
+      "blob": "bb4c86a0db994cefd978c61efac9017f037dac98",
+      "pinned_sha256": "a4d9ee2045bbdc7970494fcf3e1ff01e3b60a5f49dc8c3d97abd50a4a5fa2657",
+      "scope": "Selected two-strike research-first policy and caller inspection; upstream tests not run",
+      "disposition": "Adapt session-level normalized symptom detection and bounded research handoff; replace shared temp JSON with session SQLite; no auto-dispatch, automatic writeback or verified-cause inference"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/lib/strike_dispatcher.py",
+      "commit": "7f2d97dab465aa1670267137354d0d44c51fb688",
+      "blob": "90185248b5d150745654cb695b72894552516b1b",
+      "pinned_sha256": "b49175c6a1635120e719812a68456453ee235007963460366fead5c92c707877",
+      "scope": "Selected two-strike research-first policy and caller inspection; upstream tests not run",
+      "disposition": "Adapt session-level normalized symptom detection and bounded research handoff; replace shared temp JSON with session SQLite; no auto-dispatch, automatic writeback or verified-cause inference"
+    },
+    {
+      "source": "baldrix",
+      "path": "scripts/cli/strike_research_consume.py",
+      "commit": "7f2d97dab465aa1670267137354d0d44c51fb688",
+      "blob": "a9870918406c9b79e371c9ea29976b107d3860ec",
+      "pinned_sha256": "4c27943aeb7db3251c6ba288971dbfde07c736ed87d992339687ef5cdfab314b",
+      "scope": "Selected two-strike research-first policy and caller inspection; upstream tests not run",
+      "disposition": "Adapt session-level normalized symptom detection and bounded research handoff; replace shared temp JSON with session SQLite; no auto-dispatch, automatic writeback or verified-cause inference"
+    },
+    {
+      "source": "hermes-agent",
+      "path": "agent/learn_prompt.py",
+      "commit": "59f9ff8dbc75b9c4f07ae10174df730f7882a505",
+      "blob": "db50f95aa3196fb19f265d0491ca93f63b4f2c84",
+      "pinned_sha256": "14529273cc4c1f371e9f2843cfd5a1ced9c3bba16acc6304d418b1f8a38f12c1",
+      "scope": "Prerequisite/verification and extend-the-existing-owner principles adapted with the local missing-history incident; upstream code read only, never executed or copied",
+      "disposition": "Principles rewritten as prompt guidance in the existing worker-v1 document; no machine preflight, upstream prompt text, skill mutation or validation engine adopted"
+    }
+  ],
+  "note": "Selected only by runtime.worker_profile; assignment messages and model output never choose it. The document is delivered, adherence is not judged by delivery."
+}

@@ -1,0 +1,192 @@
+# rust.overlay.yaml — rust overlay (diffed vs neutral core).
+# load_merged('rust') reproduces stages-rust.yaml (test_rust_golden_pin).
+stack: rust
+source_finder: find_rust_sources
+testgen:
+  framework: cucumber-rs
+  runner_cmd: cargo test
+applicable_stages:
+- requirements
+- prd
+- flowchart
+- convention
+- conceptual-design
+- er-diagram
+- logical-design
+- ddl
+- api-spec
+- module-design
+- mock-review
+- ci-setup
+- scaffolding
+- implementation
+- wiring-verify
+- unit-test
+- integration-test
+- doc-test
+stages:
+  requirements:
+    gate:
+    - 모든 도메인에 1개 이상의 스토리가 존재
+    - 각 스토리에 AC(성공+에러 쌍)가 정의됨
+    skills:
+    - doc-writer
+  prd:
+    gate:
+    - 모든 스토리가 기능 명세로 상세화됨
+    - 비기능 요구사항(성능, 메모리, unsafe 사용 정책)이 수치로 명시됨
+    skills:
+    - doc-writer
+  flowchart:
+    gate:
+    - 핵심 기능의 플로우 존재
+    - 분기 조건과 예외 흐름 명시
+    skills:
+    - flow-design
+  convention:
+    artifact: 워크스페이스 구조, crate 분할, 모듈 네이밍, 에러 타입 (thiserror/anyhow), Result 정책
+    gate:
+    - 워크스페이스/crate 구조 테이블 존재 (workspace.members)
+    - 에러 타입 정책 명시 (thiserror vs anyhow per crate)
+    - 에러 코드 체계 정의됨 (enum variant + Display impl)
+    skills:
+    - convention
+  conceptual-design:
+    artifact: 엔티티 식별, 핵심 속성
+    optional: true
+    gate:
+    - 모든 도메인의 엔티티 식별
+    - 엔티티별 핵심 속성 나열
+    skills:
+    - db-design
+  er-diagram:
+    artifact: 엔티티 관계도, 카디널리티
+    optional: true
+    gate:
+    - 엔티티 간 관계 시각화
+    - M:N 해소 방안 명시
+    skills:
+    - db-design
+  logical-design:
+    artifact: diesel/sqlx schema 컬럼, 타입, 제약, 인덱스
+    optional: true
+    gate:
+    - 모든 엔티티가 diesel table! 매크로 OR sqlx::query_as 대상 struct로 변환
+    - PK/UK 제약 명시
+    skills:
+    - db-design
+  ddl:
+    name: 스키마 (물리적 설계)
+    output: migrations/*.sql
+    artifact: diesel/sqlx migrations + Rust struct ↔ table 매핑
+    optional: true
+    gate:
+    - diesel migration run OR sqlx migrate run 성공
+    - schema 버전 증가
+    - logical-design과 1:1 대응
+  api-spec:
+    name: API/Trait 계약 명세
+    input:
+    - prd.md
+    - flowchart.md
+    - convention.md
+    artifact: public trait 정의, HTTP/gRPC 엔드포인트별 Request/Response struct, 에러 enum
+    gate:
+    - 모든 스토리에 대응하는 trait/Endpoint 존재
+    - Request/Response struct가 convention 타입 체계와 정합
+    - 에러 응답이 convention 에러 enum 체계 준수
+    skills:
+    - flow-design
+  module-design:
+    name: crate/모듈 설계 (Workspace)
+    dge: designer
+    input:
+    - api-spec.md
+    - convention.md
+    output: module-design.md
+    artifact: workspace.members + 각 crate 의 publik API surface + 의존성 그래프
+    gate:
+    - 각 crate 의 책임 1줄 명시
+    - crate 간 의존성 방향 acyclic
+  ci-setup:
+    dge: designer
+    input:
+    - convention.md
+    - module-design.md
+    artifact: cargo build / cargo test / cargo clippy / cargo fmt --check / cargo audit
+    gate:
+    - ci.yml 존재 + cargo test 단계 포함
+    - rust stable + nightly 매트릭스 OR stable 단일 명시
+  scaffolding:
+    name: 프로젝트 뼈대 (Rust)
+    input:
+    - convention.md
+    - module-design.md
+    output: Cargo.toml + src/lib.rs + workspace 구조
+    artifact: 워크스페이스 Cargo.toml + 멤버 crate 의 Cargo.toml + 공통 error/Result alias
+    gate:
+    - cargo build 성공 (0 errors)
+    - 워크스페이스 구조가 convention.md / module-design.md 와 일치
+    skills:
+    - scaffolding
+  implementation:
+    name: 구현 (Rust)
+    input:
+    - api-spec.md
+    - flowchart.md
+    - convention.md
+    - domain/*.md (있다면)
+    output: 도메인별 struct + impl + trait impl + handler
+    artifact: API 계약 + 플로우대로 동작하는 코드
+    gate:
+    - cargo clippy --all-targets -- -D warnings 통과
+    - cargo build --all 성공
+    - 모든 trait/Endpoint 의 struct↔impl 체인 존재
+    skills:
+    - backend
+  wiring-verify:
+    artifact: crate 의존성 + trait 구현 매핑 검증
+    gate:
+    - cargo tree --duplicates 0건
+    - 모든 trait → impl 매핑 존재
+    - cargo clippy 0 warnings (신규 코드 한정)
+    skills:
+    - verification
+  unit-test:
+    name: Unit 테스트 (cargo test)
+    output: tests/ + src/*/tests.rs
+    artifact: 각 public fn / struct method 의 정상+에러 케이스
+    gate:
+    - cargo test 성공, 0 failures
+    - 각 공개 메서드에 정상/예외 케이스 존재
+    - mock 사용 최소화 (real impl + test fixtures 우선)
+    skills:
+    - testing
+  integration-test:
+    name: 통합 테스트 (tests/ 디렉토리)
+    dge: evaluator
+    input:
+    - api-spec.md
+    - unit-test 통과된 코드
+    output: tests/*.rs
+    artifact: crate 외부 진입점에서 본 시나리오 테스트
+    optional: true
+    gate:
+    - 핵심 플로우 happy path PASS
+    - 에러 시나리오 (Result::Err) PASS
+    skills:
+    - testing
+  doc-test:
+    name: Doc 테스트 (cargo test --doc)
+    dge: evaluator
+    input:
+    - implementation 소스 코드
+    output: src/*.rs //! + /// doc comments
+    artifact: public API doc + 실행 가능한 예제
+    optional: true
+    gate:
+    - cargo doc --no-deps 성공 (broken intra-doc link 0건)
+    - cargo test --doc 0 failures
+    - public item 의 doc coverage 0% 위반 0건
+    skills:
+    - testing

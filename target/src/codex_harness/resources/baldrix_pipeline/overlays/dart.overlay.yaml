@@ -1,0 +1,27 @@
+# dart.overlay.yaml — pure-Dart overlay (gherkin package, NOT flutter_gherkin).
+# The neutral core + this overlay give greenfield_spec_emit the testgen framework binding for the Dart
+# stack — pure-domain BDD via the `gherkin` package's GherkinRunner (dart <runner>.dart), a clean fit for
+# the greenfield model (parallels java/node/rust). flutter_gherkin (UI integration-test) is a separate,
+# heavier target and is intentionally NOT this overlay.
+stack: dart
+source_finder: find_dart_sources
+testgen:
+  framework: gherkin-dart
+  runner_cmd: dart test/gherkin_runner.dart
+  # stub-faker floor: assertion-presence lint on generated @Then step closures.
+  stub_lint:
+    assertion_tokens: ["expectMatch(", "expect(", "assert(", "expectA("]
+    delegate_call_shapes: [".expect", ".verify", ".check", ".assert"]
+    compiled: false
+applicable_stages:
+- requirements
+- prd
+- flowchart
+- convention
+- conceptual-design
+- er-diagram
+- api-design
+- scaffolding
+- implementation
+- verification
+- unit-test

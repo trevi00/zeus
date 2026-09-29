@@ -1,9 +1,16 @@
 [project]
 name = "zeus-harness"
 version = "0.3.0.dev0"
-description = "Zeus rebuild target distribution (REBUILD-DESIGN-v2 §3.1). S0: guardrails only, no product implementation."
+description = "Zeus rebuild target distribution (REBUILD-DESIGN-v2 §3.1). S1: kernel, storage, host_os."
 requires-python = ">=3.12"
-dependencies = []
+# S1 adapters (storage, host_os) need exactly the SOURCE runtime libraries of their M7 counterparts;
+# the lock pins the SOURCE uv.lock versions so validation messages and wire behaviour compare equal.
+dependencies = [
+  "filelock>=3.20,<4",
+  "jsonschema[format]>=4.23,<5",
+  "psycopg[binary]>=3.2,<4",
+  "redis>=5.2,<7",
+]
 
 [dependency-groups]
 dev = ["pytest>=8.3,<10", "ruff>=0.11,<1", "PyYAML>=6,<7"]

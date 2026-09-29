@@ -1,0 +1,32 @@
+[
+  {
+    "files": 556,
+    "manifest_ref": "sha256:18cf0c27d54f21227142177466ddd49fb985707d648fc4a59f0d76370ab68575",
+    "repository": "https://github.com/trevi00/harness",
+    "revision": "93d56e4f4553c682c1008b63dba3830f4e2f046d"
+  },
+  {
+    "files": 11,
+    "manifest_ref": "sha256:d0ccfc9b562bae61cb9f808dc73437d42a949df0e7b95f407075098e6c6551fa",
+    "repository": "https://github.com/trevi00/harness-guardian",
+    "revision": "8d13d3b4b26dcac9eca2a9e414966a1247ebf39d"
+  },
+  {
+    "files": 1648,
+    "manifest_ref": "sha256:98671feace0a361dda330248686c0c6b7fd3a07c43d0fc426a2ff9f552ad605b",
+    "repository": "https://github.com/trevi00/baldrix",
+    "revision": "b9586c59c062457a45018e41c2e753934b5ca6c9"
+  },
+  {
+    "files": 120,
+    "manifest_ref": "sha256:9f6fd3682aa653a07622b39805a233acf60730596db2f6a81f48dd96874d7141",
+    "repository": "https://github.com/witt3rd/oh-my-hermes",
+    "revision": "2a98d38b43010a438b316fb48dbe68a3c8ee8fed"
+  },
+  {
+    "files": 1806,
+    "manifest_ref": "sha256:f0d0cca5ed0bd22bc50a269e665f77fdf0d94f98330efecb196a03648d4acc4d",
+    "repository": "https://github.com/Q00/ouroboros",
+    "revision": "1fc754e7b7599b3df057660bcc6af37241183766"
+  }
+]

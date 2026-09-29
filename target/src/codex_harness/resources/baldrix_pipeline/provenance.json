@@ -1,0 +1,58 @@
+{
+  "repository": "https://github.com/trevi00/baldrix.git",
+  "revision": "b9586c59c062457a45018e41c2e753934b5ca6c9",
+  "files": [
+    {
+      "source_path": "skills/_pipeline/overlays/dart.overlay.yaml",
+      "destination": "overlays/dart.overlay.yaml",
+      "sha256": "f6f40fa79dca659178403a56650331c25c7618132b3e15dd2cb500d4eff38a3f"
+    },
+    {
+      "source_path": "skills/_pipeline/overlays/flutter.overlay.yaml",
+      "destination": "overlays/flutter.overlay.yaml",
+      "sha256": "4e3f2929015f6ad8c6d172a09853384137b06e283d218e77298f3727d503d67b"
+    },
+    {
+      "source_path": "skills/_pipeline/overlays/java.overlay.yaml",
+      "destination": "overlays/java.overlay.yaml",
+      "sha256": "721ecb3b3cd1e32e6c02322d0b76517bea517eac38b0206a9469af75f58ce591"
+    },
+    {
+      "source_path": "skills/_pipeline/overlays/node.overlay.yaml",
+      "destination": "overlays/node.overlay.yaml",
+      "sha256": "a3573f89b4a73185f03006ade9d3b685aad05811d285a30efc696832a25e42d3"
+    },
+    {
+      "source_path": "skills/_pipeline/overlays/rust.overlay.yaml",
+      "destination": "overlays/rust.overlay.yaml",
+      "sha256": "307694a6c151d3ff5620a862892d37ce564a57814dca0717453da66130b3f5b9"
+    },
+    {
+      "source_path": "skills/_pipeline/stages-flutter.yaml",
+      "destination": "stages-flutter.yaml",
+      "sha256": "1fb62b159f05f46412c0ed4a2527359a52aae1f8a0f679f8e82e0d8c8da170c6"
+    },
+    {
+      "source_path": "skills/_pipeline/stages-rust.yaml",
+      "destination": "stages-rust.yaml",
+      "sha256": "c578fd7e640f7d6ea4b538767751324a927811e147d652f1b28396aaac38fd8a"
+    },
+    {
+      "source_path": "skills/_pipeline/stages-skill-lifecycle.yaml",
+      "destination": "stages-skill-lifecycle.yaml",
+      "sha256": "99f6a850c753649abacd7a844c61e8a95c5af76dbd78bdfcdc6a250872bc0bd7"
+    },
+    {
+      "source_path": "skills/_pipeline/stages.core.yaml",
+      "destination": "stages.core.yaml",
+      "sha256": "34f3f843e8f518e6331a80b0aa683f09509a4055ccbc4a0f9b9ceb4ddb026e2f"
+    },
+    {
+      "source_path": "skills/_pipeline/stages.yaml",
+      "destination": "stages.yaml",
+      "sha256": "fceb46b9a8197201ff4adffc27c7d6377cc74eeca6428848cdb4aa445868c251"
+    }
+  ],
+  "authorization": "User explicitly requested complete migration of their repository. No top-level LICENSE found at the pinned revision.",
+  "scope": "Unmodified pipeline YAML assets; commands are inert data, not executed."
+}

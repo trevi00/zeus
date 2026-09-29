@@ -1,0 +1,196 @@
+# java.overlay.yaml — Java/Spring overlay (golden reference).
+# load_merged('java') reproduces legacy stages.yaml (test_java_golden_pin).
+stack: java
+source_finder: find_java_sources
+testgen:
+  framework: cucumber-jvm
+  runner_cmd: gradlew test
+  # stub-faker floor (debate-1782892965): assertion-presence lint on generated @Then step-def bodies.
+  stub_lint:
+    assertion_tokens: ["assertEquals(", "assertThat(", "assertTrue(", "assertFalse(", "assertNotNull(", "assertNull(", "assertSame(", "assertArrayEquals(", "fail(", "throw new AssertionError", "assert "]
+    delegate_call_shapes: [".assert", ".verify", ".expect", ".check", ".should"]
+    compiled: true
+    test_phase_marker: "> Task :test"
+applicable_stages:
+- requirements
+- prd
+- flowchart
+- convention
+- conceptual-design
+- er-diagram
+- logical-design
+- ddl
+- class-diagram
+- api-spec
+- domain-module
+- mock-review
+- ci-setup
+- scaffolding
+- implementation
+- wiring-verify
+- e2e-test
+- blackbox-test
+- unit-test
+- reliability-test
+- monitoring
+- cd-setup
+- api-docs
+- batch
+stages:
+  requirements:
+    gate:
+    - 모든 도메인에 1개 이상의 스토리가 존재
+    - 각 스토리에 AC(성공+에러 쌍)가 정의됨
+    skills:
+    - doc-writer
+  prd:
+    gate:
+    - 모든 스토리가 기능 명세로 상세화됨
+    - 비기능 요구사항(성능, 보안)이 수치로 명시됨
+    - 도메인 용어 사전이 존재
+    skills:
+    - doc-writer
+  flowchart:
+    gate:
+    - PRD 핵심 기능에 대응하는 플로우가 존재
+    - 분기 조건과 예외 흐름이 명시됨
+    skills:
+    - flow-design
+  convention:
+    gate:
+    - 패키지 구조 테이블 존재
+    - DTO 네이밍 규칙 존재
+    - 공통 응답 래퍼 형식 정의됨
+    - 에러 코드 체계 정의됨
+    skills:
+    - convention
+  conceptual-design:
+    gate:
+    - 모든 도메인의 엔티티가 식별됨
+    - 엔티티별 핵심 속성이 나열됨
+    - 비즈니스 규칙(제약, 계산)이 명시됨
+    skills:
+    - db-design
+  er-diagram:
+    gate:
+    - 모든 엔티티 간 관계와 카디널리티가 시각화됨
+    - M:N 관계의 해소 방안(교차 테이블)이 명시됨
+    skills:
+    - db-design
+  logical-design:
+    gate:
+    - 모든 엔티티가 테이블로 변환됨
+    - PK/FK/UK 제약조건 명시됨
+    - 인덱스 대상 컬럼이 식별됨
+    - 정규화 수준(3NF 등)이 명시됨
+    skills:
+    - db-design
+  ddl:
+    gate:
+    - DDL이 대상 DB에서 실행 성공
+    - 모든 테이블이 logical-design과 1:1 대응
+    skills:
+    - database
+  class-diagram:
+    gate:
+    - 도메인별 Controller/Service/Mapper/DTO 클래스가 식별됨
+    - 계층 간 의존성 방향이 명시됨 (Controller→Service→Mapper)
+    - DTO 간 변환 관계가 명시됨
+    skills:
+    - backend
+  api-spec:
+    gate:
+    - 모든 사용자 스토리에 대응하는 엔드포인트 존재
+    - Request/Response 필드가 logical-design 컬럼과 정합
+    - 에러 응답이 convention 에러 코드 체계를 따름
+    - 각 엔드포인트에 요청/응답 JSON 예시가 포함됨
+    skills:
+    - flow-design
+  domain-module:
+    gate:
+    - 각 도메인의 책임과 경계가 정의됨
+    - 도메인 간 의존 방향이 명시됨 (순환 의존 없음)
+    - 공개 API(다른 도메인이 호출 가능)와 내부 API가 구분됨
+    skills:
+    - backend
+  ci-setup:
+    gate:
+    - PR 생성 시 자동으로 빌드+테스트 실행됨
+    - JaCoCo 커버리지 리포트 생성됨
+    - 커버리지 미달 시 빌드 실패 설정됨
+    skills:
+    - devops
+  scaffolding:
+    gate:
+    - compileJava 성공
+    - 패키지 구조가 convention.md와 일치
+    - Actuator 의존성 포함
+    skills:
+    - scaffolding
+    - backend
+  implementation:
+    gate:
+    - '백엔드: compileJava 성공'
+    - '프론트엔드: build 성공 (해당 시)'
+    - 모든 엔드포인트의 Controller→Service→Mapper 체인 존재
+    skills:
+    - backend
+    - mybatis
+    - redis
+    - auth-jwt-oauth
+  wiring-verify:
+    gate:
+    - /actuator/health 200 OK 확인
+    - 모든 Mapper XML namespace가 인터페이스와 매칭
+    - 모든 Service가 올바른 Mapper를 주입받음
+    skills:
+    - verification
+  e2e-test:
+    gate:
+    - 모든 AC에 대응하는 curl 테스트 PASS
+    - 에러 케이스(404, 409, 400) 응답 형식이 convention과 일치
+    skills:
+    - verification
+  blackbox-test:
+    gate:
+    - 핵심 플로우의 happy path가 브라우저에서 PASS
+    - 에러 플로우의 UI 피드백 확인됨
+    skills:
+    - verification
+  unit-test:
+    gate:
+    - gradlew test 성공, 0 failures
+    - JaCoCo 라인 커버리지 100%
+    - 각 Service 메서드에 정상/예외 케이스 존재
+    skills:
+    - testing
+  reliability-test:
+    gate:
+    - FixtureMonkey 프로퍼티 기반 테스트 PASS
+    - 엣지케이스(경계값, null, 빈 문자열, 대량 데이터) PASS
+    - Testcontainers 실제 DB 연동 테스트 PASS
+    skills:
+    - testing
+  monitoring:
+    gate:
+    - Actuator /health, /metrics 엔드포인트 접근 가능
+    - Prometheus가 메트릭 수집 중
+    - Grafana 대시보드에서 메트릭 시각화 확인
+    skills:
+    - devops
+  cd-setup:
+    gate:
+    - develop 브랜치 머지 시 자동 빌드+배포 실행됨
+    skills:
+    - devops
+  api-docs:
+    gate:
+    - http://localhost:PORT/swagger-ui 접근 가능
+    skills:
+    - backend
+  batch:
+    gate:
+    - 배치 Job 실행 성공
+    - 처리 결과가 DB에 정확히 반영됨
+    skills:
+    - backend

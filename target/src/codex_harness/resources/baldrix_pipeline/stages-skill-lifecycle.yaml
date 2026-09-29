@@ -1,0 +1,80 @@
+# stages-skill-lifecycle.yaml — Hermes-style Skill Lifecycle Pipeline (variant)
+#
+# Spec 출처: synthesis/HARNESS-APPLY.md H3 (Hermes 자율 진화 패턴 흡수)
+# Spec adaptation: 본 파일은 기존 stages.yaml (SDLC 23-stage)과 orthogonal한
+#   Hermes-style skill lifecycle 전용 파이프라인. 기존 stages.yaml schema를 침해하지 않기 위해
+#   variant naming 패턴 (stages-{name}.yaml)으로 분리.
+#
+# 활성화 조건: tech-stack.yaml에 `extensions: [_pipeline/skill-lifecycle]` 명시 시
+# 또는 ~/.claude/skills/external/ 디렉토리에 import된 외부 skill 존재 시 자동.
+#
+# 보존: 기존 stages.yaml (Java SDLC 23-stage) + stages-flutter.yaml (Flutter variant) 무손상.
+
+# ===== Hermes 흡수 결정 =====
+# 출처: synthesis/HERMES-DECISIONS.md §1 "Skill 자동 생성 + 자기-개선"
+# 결정: skill 후보 추출은 자동, 활성화는 운영자 명시 게이트 (invariant 보존)
+# 매핑: GenericAgent L3 Task Skills (synthesis/SYNTHESIS.md §3)
+
+stages:
+  # ============================================================
+  #  Skill Lifecycle (Hermes 흡수)
+  # ============================================================
+
+  # --- 1. Skill 후보 추출 (자동) ---
+  - id: skill-extract
+    name: "skill 후보 추출 (PostToolUse)"
+    dge: generator
+    phase: implement
+    input: "tool invocation trace (PostToolUse hook)"
+    output: "~/.claude/skill-candidates/<id>.{json,md}"
+    artifact: "agentskills.io v1 manifest 후보 + 추론 근거 문서"
+    auto: true
+    gate:
+      - "agentskills.io v1 schema 통과"
+      - "secret scanner 통과 (API key / token 0건)"
+      - "candidate id 유일성 보장"
+    requires_operator: false
+    skills: [skillify, self-improve]
+    blocked_until: "khanessTeam PR-7 D13 완료 (skill-candidate-extractor.js hook 적용 — Track 2 H1)"
+
+  # --- 2. Skill 검토 (운영자) ---
+  - id: skill-review
+    name: "skill 검토 (운영자)"
+    dge: evaluator
+    phase: review
+    input: ["~/.claude/skill-candidates/<id>.json", "~/.claude/skill-candidates/<id>.md"]
+    output: "검토 결과 (approve / reject / refine)"
+    artifact: "운영자 검토 의견 + mock parity 회귀 결과"
+    auto: false
+    requires_operator: true
+    next_command: "/kha-skill-show <id>"
+    gate:
+      - "mock parity 회귀 100% PASS"
+      - "운영자 명시 approve"
+      - "skill 분류 (단일 책임 / 응집도 / 결합도) 검토 통과"
+    skills: [skillify, self-improve, design-audit]
+
+  # --- 3. Skill 활성화 (게이트, 토큰 강제) ---
+  - id: skill-activate
+    name: "skill 활성화 (게이트)"
+    dge: generator
+    phase: deploy
+    input: ["검토 approve된 skill candidate"]
+    output: "~/.claude/skills/external/<vendor>/<skill>/ 또는 ~/.claude/skills/<tree>/<skill>.md"
+    artifact: "활성화된 skill (invocation 가능 상태)"
+    auto: false
+    requires_operator: true
+    confirm_token: "enable-skill"
+    next_command: "/kha-skill-activate <id> --confirm enable-skill"
+    gate:
+      - "confirm_token=enable-skill 일치"
+      - "운영자 명시 (placeholder reason 자동 거부)"
+      - "_registry.json entry 갱신 (activated: true)"
+      - "event_log에 category=skill.activated durable 기록 (부인방지)"
+    skills: [skillify, git-flow]
+
+# ===== Invariant (synthesis/HERMES-DECISIONS.md 흡수 결정) =====
+# - skill 활성화는 NEVER 자동 — `enable-skill` 토큰 강제
+# - placeholder reason (예: "test", "tmp") 자동 거부
+# - 모든 활성화 결정은 event_log durable artifact (category=skill.activated)
+# - runtime policy 변경 NEVER 자동 (yaml + 재빌드만)

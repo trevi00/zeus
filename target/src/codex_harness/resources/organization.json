@@ -1,0 +1,76 @@
+{
+  "agents": [
+    {
+      "id": "conductor",
+      "role": "conductor",
+      "parent": null,
+      "team": "control"
+    },
+    {
+      "id": "lead:frontdesk",
+      "role": "lead",
+      "parent": "conductor",
+      "team": "control"
+    },
+    {
+      "id": "lead:research",
+      "role": "lead",
+      "parent": "conductor",
+      "team": "research"
+    },
+    {
+      "id": "lead:improvement",
+      "role": "lead",
+      "parent": "conductor",
+      "team": "improvement"
+    },
+    {
+      "id": "lead:dba",
+      "role": "lead",
+      "parent": "conductor",
+      "team": "state"
+    },
+    {
+      "id": "lead:researcher",
+      "role": "lead",
+      "parent": "conductor",
+      "team": "design"
+    },
+    {
+      "id": "lead:proposer",
+      "role": "lead",
+      "parent": "conductor",
+      "team": "design"
+    },
+    {
+      "id": "lead:attacker",
+      "role": "lead",
+      "parent": "conductor",
+      "team": "design"
+    },
+    {
+      "id": "lead:arbiter",
+      "role": "lead",
+      "parent": "conductor",
+      "team": "design"
+    },
+    {
+      "id": "worker:github",
+      "role": "worker",
+      "parent": "lead:research",
+      "team": "research"
+    },
+    {
+      "id": "worker:geeknews",
+      "role": "worker",
+      "parent": "lead:research",
+      "team": "research"
+    },
+    {
+      "id": "worker:implementation",
+      "role": "worker",
+      "parent": "lead:improvement",
+      "team": "improvement"
+    }
+  ]
+}
