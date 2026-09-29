@@ -1,0 +1,1839 @@
+{
+ "alert_dedupe": {
+  "after_window": {
+   "value": {
+    "attributes": {
+     "error_type": "X",
+     "pending": 0,
+     "sink": "postgres"
+    },
+    "category": "operations",
+    "causation_id": null,
+    "correlation_id": null,
+    "event_id": "7a88dfb0c0c07962e793c9fd859d39cc4ed73ddcaaa947308af410521f4a0296",
+    "event_type": "operations.sink_unavailable",
+    "evidence_refs": [],
+    "execution": {
+     "attempt": null,
+     "bucket": null,
+     "generation": null,
+     "invocation_id": null,
+     "kind": "system",
+     "process_run_id": "00000000000000000000000000000001",
+     "provider": null,
+     "revision": null,
+     "role": "s4-event-write-side",
+     "session_id": null,
+     "task_id": null
+    },
+    "notification": {
+     "channel": "postgres:observation_alerts",
+     "status": "recorded"
+    },
+    "observed_at": "2026-01-01T00:00:00+00:00",
+    "occurred_at": null,
+    "outcome": "observed",
+    "payload_hash": "3173d34db4733144994753bbbaa656ffe648ebf851ef2b0133b5d8883419101d",
+    "reason_code": null,
+    "redaction": {
+     "applied": true,
+     "findings": 0,
+     "truncated": 0
+    },
+    "schema_version": "1.0",
+    "sequence": {
+     "basis": "unassigned",
+     "number": null,
+     "process_run_id": "00000000000000000000000000000001"
+    },
+    "severity": "warning",
+    "source": {
+     "component": "s4-event-write-side",
+     "host": "fixture-host",
+     "pid": 1
+    },
+    "suppressed_before": 1
+   }
+  },
+  "first": {
+   "value": {
+    "attributes": {
+     "error_type": "X",
+     "pending": 0,
+     "sink": "postgres"
+    },
+    "category": "operations",
+    "causation_id": null,
+    "correlation_id": null,
+    "event_id": "7a88dfb0c0c07962e793c9fd859d39cc4ed73ddcaaa947308af410521f4a0296",
+    "event_type": "operations.sink_unavailable",
+    "evidence_refs": [],
+    "execution": {
+     "attempt": null,
+     "bucket": null,
+     "generation": null,
+     "invocation_id": null,
+     "kind": "system",
+     "process_run_id": "00000000000000000000000000000001",
+     "provider": null,
+     "revision": null,
+     "role": "s4-event-write-side",
+     "session_id": null,
+     "task_id": null
+    },
+    "notification": {
+     "channel": "postgres:observation_alerts",
+     "status": "recorded"
+    },
+    "observed_at": "2026-01-01T00:00:00+00:00",
+    "occurred_at": null,
+    "outcome": "observed",
+    "payload_hash": "3173d34db4733144994753bbbaa656ffe648ebf851ef2b0133b5d8883419101d",
+    "reason_code": null,
+    "redaction": {
+     "applied": true,
+     "findings": 0,
+     "truncated": 0
+    },
+    "schema_version": "1.0",
+    "sequence": {
+     "basis": "unassigned",
+     "number": null,
+     "process_run_id": "00000000000000000000000000000001"
+    },
+    "severity": "warning",
+    "source": {
+     "component": "s4-event-write-side",
+     "host": "fixture-host",
+     "pid": 1
+    },
+    "suppressed_before": 0
+   }
+  },
+  "suppressed": {
+   "value": null
+  }
+ },
+ "audit": {
+  "no_identity": {
+   "message": "Audit events need an explicit identity",
+   "refused": "ContractError"
+  },
+  "quarantined": {
+   "value": {
+    "event_id": "e3f190bff982369032739cc0175454f84b9cbe0216af186c073387ba5faf32bc",
+    "quarantine_id": "4c939d00e9f7e8d0985db13ad92ad7034b99fa11c73d51151f6696d6930d7e03",
+    "status": "quarantined"
+   }
+  },
+  "redelivered": {
+   "value": {
+    "attributes": {
+     "reason": "x",
+     "reservation_id": "r1"
+    },
+    "authority": "informational_only",
+    "category": "development",
+    "causation_id": null,
+    "correlation_id": null,
+    "event_id": "e3f190bff982369032739cc0175454f84b9cbe0216af186c073387ba5faf32bc",
+    "event_type": "development.invocation_abandoned",
+    "evidence_refs": [],
+    "execution": {
+     "attempt": null,
+     "bucket": null,
+     "generation": null,
+     "invocation_id": null,
+     "kind": "system",
+     "process_run_id": "00000000000000000000000000000001",
+     "provider": null,
+     "revision": null,
+     "role": "s4-event-write-side",
+     "session_id": null,
+     "task_id": null
+    },
+    "observed_at": "2026-01-01T00:00:00+00:00",
+    "occurred_at": null,
+    "outcome": "observed",
+    "payload_hash": "231597141f2540bbf7b13720bb90dc9544eb50d344c86c0ee05b5813942ee5c6",
+    "reason_code": null,
+    "redaction": {
+     "applied": true,
+     "findings": 0,
+     "truncated": 0
+    },
+    "schema_version": "1.0",
+    "sequence": {
+     "basis": "spool_append",
+     "number": 5,
+     "process_run_id": "00000000000000000000000000000001"
+    },
+    "severity": "info",
+    "source": {
+     "component": "s4-event-write-side",
+     "host": "fixture-host",
+     "pid": 1
+    }
+   }
+  },
+  "stored": {
+   "value": {
+    "attributes": {
+     "reason": "x",
+     "reservation_id": "r1"
+    },
+    "category": "development",
+    "causation_id": null,
+    "correlation_id": null,
+    "event_id": "e3f190bff982369032739cc0175454f84b9cbe0216af186c073387ba5faf32bc",
+    "event_type": "development.invocation_abandoned",
+    "evidence_refs": [],
+    "execution": {
+     "attempt": null,
+     "bucket": null,
+     "generation": null,
+     "invocation_id": null,
+     "kind": "system",
+     "process_run_id": "00000000000000000000000000000001",
+     "provider": null,
+     "revision": null,
+     "role": "s4-event-write-side",
+     "session_id": null,
+     "task_id": null
+    },
+    "observed_at": "2026-01-01T00:00:00+00:00",
+    "occurred_at": null,
+    "outcome": "observed",
+    "reason_code": null,
+    "redaction": {
+     "applied": true,
+     "findings": 0,
+     "truncated": 0
+    },
+    "schema_version": "1.0",
+    "sequence": {
+     "basis": "spool_append",
+     "number": 5,
+     "process_run_id": "00000000000000000000000000000001"
+    },
+    "severity": "info",
+    "source": {
+     "component": "s4-event-write-side",
+     "host": "fixture-host",
+     "pid": 1
+    }
+   }
+  },
+  "system": {
+   "value": {
+    "attributes": {
+     "agent": null,
+     "idle_seconds": 1
+    },
+    "category": "general",
+    "causation_id": null,
+    "correlation_id": null,
+    "event_id": "0a3185fbe961d2fb27c97a28ffb69ae2fb424e142b1ceaf872242cf052364976",
+    "event_type": "general.process_idle_exit",
+    "evidence_refs": [],
+    "execution": {
+     "attempt": null,
+     "bucket": null,
+     "generation": null,
+     "invocation_id": null,
+     "kind": "system",
+     "process_run_id": "00000000000000000000000000000001",
+     "provider": null,
+     "revision": null,
+     "role": "s4-event-write-side",
+     "session_id": null,
+     "task_id": null
+    },
+    "observed_at": "2026-01-01T00:00:00+00:00",
+    "occurred_at": null,
+    "outcome": "observed",
+    "reason_code": null,
+    "redaction": {
+     "applied": true,
+     "findings": 0,
+     "truncated": 0
+    },
+    "schema_version": "1.0",
+    "sequence": {
+     "basis": "spool_append",
+     "number": 8,
+     "process_run_id": "00000000000000000000000000000001"
+    },
+    "severity": "info",
+    "source": {
+     "component": "s4-event-write-side",
+     "host": "fixture-host",
+     "pid": 1
+    }
+   }
+  }
+ },
+ "close": {
+  "value": null
+ },
+ "counters": {
+  "alerts_inherited": 1,
+  "alerts_pending": 3,
+  "alerts_recorded": 6,
+  "alerts_replayed": 3,
+  "alerts_suppressed": 1,
+  "audit_conflicts": 1,
+  "audit_redelivered": 1,
+  "audited": 3,
+  "dropped_spool_full": 1,
+  "emitted": 5,
+  "reconciliation_redelivered": 1,
+  "refused": 2,
+  "spool_failures": 1,
+  "termination_redelivered": 1,
+  "terminations": 2
+ },
+ "directory": {
+  "health": {
+   "00000000000000000000000000000001": {
+    "component": "s4-event-write-side",
+    "counters": {
+     "alerts_inherited": 1,
+     "alerts_pending": 3,
+     "alerts_recorded": 6,
+     "alerts_replayed": 3,
+     "alerts_suppressed": 1,
+     "audit_conflicts": 1,
+     "audit_redelivered": 1,
+     "audited": 3,
+     "dropped_spool_full": 1,
+     "emitted": 5,
+     "reconciliation_redelivered": 1,
+     "refused": 2,
+     "spool_failures": 1,
+     "termination_redelivered": 1,
+     "terminations": 2
+    },
+    "host": "fixture-host",
+    "inherited_pending_alerts": {},
+    "last_defect": "RuntimeError: message_sha256=25e481c781e235fe",
+    "pending_alerts": [
+     {
+      "event_type": "operations.sink_unavailable",
+      "observed_at": "2026-01-01T00:00:00+00:00"
+     }
+    ],
+    "pid": 1,
+    "process_run_id": "00000000000000000000000000000001",
+    "role": "s4-event-write-side",
+    "sequence_next": 13,
+    "sink": "unavailable",
+    "spool": {
+     "limit_bytes": 1048576,
+     "rotations": 0,
+     "unacknowledged_bytes": 19206
+    },
+    "updated_at": "2026-01-01T00:00:00+00:00"
+   }
+  },
+  "pending": {
+   "00000000000000000000000000000001": [
+    {
+     "attributes": {
+      "error_type": "RuntimeError",
+      "pending": 0,
+      "sink": "postgres"
+     },
+     "category": "operations",
+     "causation_id": null,
+     "correlation_id": null,
+     "event_id": "1c216c99f66f3ca5d8abb5aac9a80e0c5a16533526bb333c5c6d4632f49a31d2",
+     "event_type": "operations.sink_unavailable",
+     "evidence_refs": [],
+     "execution": {
+      "attempt": null,
+      "bucket": null,
+      "generation": null,
+      "invocation_id": null,
+      "kind": "system",
+      "process_run_id": "00000000000000000000000000000001",
+      "provider": null,
+      "revision": null,
+      "role": "s4-event-write-side",
+      "session_id": null,
+      "task_id": null
+     },
+     "notification": {
+      "channel": null,
+      "status": "pending"
+     },
+     "observed_at": "2026-01-01T00:00:00+00:00",
+     "occurred_at": null,
+     "outcome": "observed",
+     "payload_hash": "483f44d7e548ad635a7cc01b437f7968e505628721474030b4eeab465e6b4587",
+     "reason_code": null,
+     "redaction": {
+      "applied": true,
+      "findings": 0,
+      "truncated": 0
+     },
+     "schema_version": "1.0",
+     "sequence": {
+      "basis": "unassigned",
+      "number": null,
+      "process_run_id": "00000000000000000000000000000001"
+     },
+     "severity": "critical",
+     "source": {
+      "component": "s4-event-write-side",
+      "host": "fixture-host",
+      "pid": 1
+     },
+     "suppressed_before": 0
+    }
+   ],
+   "ffffffffffffffffffffffffffffffff": [
+    {
+     "event_id": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "event_type": "operations.sink_unavailable",
+     "notification": {
+      "channel": null,
+      "status": "pending"
+     },
+     "observed_at": "2026-01-01T00:00:00+00:00"
+    }
+   ]
+  },
+  "resolved": {
+   "b137f6353cfa551e69731072cd230c51ad5ffca1a106a75869c35fa65e59619a": {
+    "attempt": 1,
+    "boundary": "settlement",
+    "bucket": "tasks",
+    "error": "RuntimeError: message_sha256=791e38b9fddd69df",
+    "error_type": "RuntimeError",
+    "evidence_refs": [
+     "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    ],
+    "generation": 1,
+    "invocation_outcome": "unknown",
+    "note": "provider entered; outcome not durably recorded; do not re-execute before an operator reconciles",
+    "process_run_id": "00000000000000000000000000000001",
+    "record_id": "b137f6353cfa551e69731072cd230c51ad5ffca1a106a75869c35fa65e59619a",
+    "recorded_at": "2026-01-01T00:00:00+00:00",
+    "reservation_id": "r1",
+    "resolution": {
+     "at": "2026-01-01T00:00:00+00:00",
+     "authority": "operator_label_not_authenticated",
+     "operator": "op-1",
+     "reason": {
+      "redaction_findings": 0,
+      "sha256": "cc46d40ac357ebd3a8a55a1e707a773db5d6077b102e67663bebab8ad4f6131a",
+      "text": "checked",
+      "truncated": false
+     },
+     "resolution": "rerun"
+    },
+    "status": "resolved",
+    "stream_hash": null,
+    "task_id": "t1"
+   }
+  },
+  "terminations": {}
+ },
+ "emit": {
+  "bad_category": {
+   "value": null
+  },
+  "redaction": {
+   "value": {
+    "attributes": {
+     "message_id": "m1",
+     "message_type": "t",
+     "result_kind": "[REDACTED token]"
+    },
+    "category": "general",
+    "causation_id": null,
+    "correlation_id": null,
+    "event_id": "d0f5a5b431350efaa93fda659dc2f0bd6b6b16725c3828f49a1bd22b1d5ebf57",
+    "event_type": "general.message_accepted",
+    "evidence_refs": [],
+    "execution": {
+     "attempt": null,
+     "bucket": null,
+     "generation": null,
+     "invocation_id": null,
+     "kind": "system",
+     "process_run_id": "00000000000000000000000000000001",
+     "provider": null,
+     "revision": null,
+     "role": "s4-event-write-side",
+     "session_id": null,
+     "task_id": null
+    },
+    "observed_at": "2026-01-01T00:00:00+00:00",
+    "occurred_at": null,
+    "outcome": "observed",
+    "reason_code": null,
+    "redaction": {
+     "applied": true,
+     "findings": 1,
+     "truncated": 0
+    },
+    "schema_version": "1.0",
+    "sequence": {
+     "basis": "spool_append",
+     "number": 3,
+     "process_run_id": "00000000000000000000000000000001"
+    },
+    "severity": "info",
+    "source": {
+     "component": "s4-event-write-side",
+     "host": "fixture-host",
+     "pid": 1
+    }
+   }
+  },
+  "unknown_attribute": {
+   "value": null
+  },
+  "valid": {
+   "value": {
+    "attributes": {
+     "agent": null,
+     "idle_seconds": 5
+    },
+    "category": "general",
+    "causation_id": null,
+    "correlation_id": null,
+    "event_id": "c80572328574f317089d2654c915437489a66683facc3dd3eb12db7d533d0ae4",
+    "event_type": "general.process_idle_exit",
+    "evidence_refs": [],
+    "execution": {
+     "attempt": null,
+     "bucket": null,
+     "generation": null,
+     "invocation_id": null,
+     "kind": "system",
+     "process_run_id": "00000000000000000000000000000001",
+     "provider": null,
+     "revision": null,
+     "role": "s4-event-write-side",
+     "session_id": null,
+     "task_id": null
+    },
+    "observed_at": "2026-01-01T00:00:00+00:00",
+    "occurred_at": null,
+    "outcome": "observed",
+    "reason_code": null,
+    "redaction": {
+     "applied": true,
+     "findings": 0,
+     "truncated": 0
+    },
+    "schema_version": "1.0",
+    "sequence": {
+     "basis": "spool_append",
+     "number": 1,
+     "process_run_id": "00000000000000000000000000000001"
+    },
+    "severity": "info",
+    "source": {
+     "component": "s4-event-write-side",
+     "host": "fixture-host",
+     "pid": 1
+    }
+   }
+  }
+ },
+ "health": {
+  "value": {
+   "component": "s4-event-write-side",
+   "counters": {
+    "alerts_inherited": 1,
+    "alerts_pending": 3,
+    "alerts_recorded": 6,
+    "alerts_replayed": 3,
+    "alerts_suppressed": 1,
+    "audit_conflicts": 1,
+    "audit_redelivered": 1,
+    "audited": 3,
+    "dropped_spool_full": 1,
+    "emitted": 5,
+    "reconciliation_redelivered": 1,
+    "refused": 2,
+    "spool_failures": 1,
+    "termination_redelivered": 1,
+    "terminations": 2
+   },
+   "host": "fixture-host",
+   "inherited_pending_alerts": {},
+   "last_defect": "RuntimeError: message_sha256=25e481c781e235fe",
+   "pending_alerts": [
+    {
+     "event_type": "operations.sink_unavailable",
+     "observed_at": "2026-01-01T00:00:00+00:00"
+    }
+   ],
+   "pid": 1,
+   "process_run_id": "00000000000000000000000000000001",
+   "role": "s4-event-write-side",
+   "sequence_next": 13,
+   "sink": "unavailable",
+   "spool": {
+    "limit_bytes": 1048576,
+    "rotations": 0,
+    "unacknowledged_bytes": 19206
+   },
+   "updated_at": "2026-01-01T00:00:00+00:00"
+  }
+ },
+ "inheritance": {
+  "inherited_pending": {
+   "ffffffffffffffffffffffffffffffff": 1
+  },
+  "refresh": {
+   "value": 0
+  }
+ },
+ "pending_terminations": {
+  "all": {
+   "value": [
+    {
+     "attempt": 1,
+     "boundary": "settlement",
+     "bucket": "tasks",
+     "error": "RuntimeError: message_sha256=791e38b9fddd69df",
+     "error_type": "RuntimeError",
+     "evidence_refs": [
+      "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+     ],
+     "generation": 1,
+     "invocation_outcome": "unknown",
+     "note": "provider entered; outcome not durably recorded; do not re-execute before an operator reconciles",
+     "process_run_id": "00000000000000000000000000000001",
+     "record_id": "b137f6353cfa551e69731072cd230c51ad5ffca1a106a75869c35fa65e59619a",
+     "recorded_at": "2026-01-01T00:00:00+00:00",
+     "reservation_id": "r1",
+     "status": "pending_reconciliation",
+     "stream_hash": null,
+     "task_id": "t1"
+    }
+   ]
+  },
+  "store_down": {
+   "value": [
+    {
+     "attempt": 1,
+     "boundary": "settlement",
+     "bucket": "tasks",
+     "error": "RuntimeError: message_sha256=791e38b9fddd69df",
+     "error_type": "RuntimeError",
+     "evidence_refs": [
+      "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+     ],
+     "generation": 1,
+     "invocation_outcome": "unknown",
+     "note": "provider entered; outcome not durably recorded; do not re-execute before an operator reconciles",
+     "process_run_id": "00000000000000000000000000000001",
+     "record_id": "b137f6353cfa551e69731072cd230c51ad5ffca1a106a75869c35fa65e59619a",
+     "recorded_at": "2026-01-01T00:00:00+00:00",
+     "reservation_id": "r1",
+     "status": "pending_reconciliation",
+     "stream_hash": null,
+     "task_id": "t1"
+    }
+   ]
+  },
+  "store_down_strict": {
+   "message": "store down",
+   "refused": "RuntimeError"
+  }
+ },
+ "post_execution_record_failure": {
+  "boundary": "settlement",
+  "record_id": "rid-1",
+  "text": "settlement failed after provider entry (ValueError: message_sha256=8cc2b53d5faffa9e); termination record rid-1"
+ },
+ "record_termination": {
+  "first": {
+   "value": "b137f6353cfa551e69731072cd230c51ad5ffca1a106a75869c35fa65e59619a"
+  },
+  "redelivered": {
+   "value": "b137f6353cfa551e69731072cd230c51ad5ffca1a106a75869c35fa65e59619a"
+  }
+ },
+ "records": [
+  [
+   "observation_alerts",
+   "127811113010fcda7ab7c526b259ede4b86528191673186e1bc33f310a6bc0e0",
+   "6191e75ffff84ce347ee3904a7d1e28d470d30ff9f247c3a41a84788a604b7a3"
+  ],
+  [
+   "observation_alerts",
+   "1c216c99f66f3ca5d8abb5aac9a80e0c5a16533526bb333c5c6d4632f49a31d2",
+   "28fba4a9b7e4ffce112d5821d27f82bbda34add8ca0d794cf45be39047df17fd"
+  ],
+  [
+   "observation_alerts",
+   "4cef640f2b4796cc5f77e2ab3bc224ba3bd51121e3b904f7bc15d637b78d95c2",
+   "9cbceb9056e79e7114a91bff52b0f285b4fa95cae8b7804e22b9d35565bdbf14"
+  ],
+  [
+   "observation_alerts",
+   "7a88dfb0c0c07962e793c9fd859d39cc4ed73ddcaaa947308af410521f4a0296",
+   "bcbed15bf8e47d94e0bcbda474ab0a9476e49f002df1f56b6a13c823e99e5e41"
+  ],
+  [
+   "observation_alerts",
+   "80eac975fb364bffd2f8c8b52569224557de8c57ce462f8ca04b32371e9d6b61",
+   "e66206323b59403c12779d777b0aa2788a5ae387dc9b42184b4f9e9b3eb8b5ce"
+  ],
+  [
+   "observation_alerts",
+   "a3a3db9e22a21b005127320302608fc542f635a961df15925a4794bf6b27b109",
+   "b900ca4e6d54310ef6dc6e2d0c76aa8e135fda3d036982691bda134b7098b4fb"
+  ],
+  [
+   "observation_alerts",
+   "afb416eb105c31e8d33479a4e51e66f03c4b0c8f4d25aa04e43be6c5f587e8ad",
+   "6a3a793420f925e7caf501bfe782ae641cf1adf8be69dae0deaa44f57546df36"
+  ],
+  [
+   "observation_alerts",
+   "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+   "afc45213d68c45b97aca59a92816b7333efda1feaf51a5a01128252c3f8c36b7"
+  ],
+  [
+   "observation_audit",
+   "0a3185fbe961d2fb27c97a28ffb69ae2fb424e142b1ceaf872242cf052364976",
+   "dc32831f6408e8b44b2d49991bbf5369e78b85df121b5863c5d1c4d23e202efe"
+  ],
+  [
+   "observation_audit",
+   "3dbb3b55410fb689fbe2158339ace059292d981600e451a05ceca1c2f2b4e6cc",
+   "e403e87d261c52dac65b2a8ecff4b3b1f310d8532860ff740e1eafe6775d5143"
+  ],
+  [
+   "observation_audit",
+   "e3f190bff982369032739cc0175454f84b9cbe0216af186c073387ba5faf32bc",
+   "074da3df0a34b7070269dba3e37a3d1c31e306aee8ba2d02bf79667586c2641c"
+  ],
+  [
+   "observation_quarantine",
+   "4c939d00e9f7e8d0985db13ad92ad7034b99fa11c73d51151f6696d6930d7e03",
+   "464a287dcf604ccb9a87eb2fe7b718447d90381024ec4551589bfdfaab2c2ed5"
+  ],
+  [
+   "observation_terminations",
+   "b137f6353cfa551e69731072cd230c51ad5ffca1a106a75869c35fa65e59619a",
+   "39f8d9b872268b12ab098cabc843a1aac6c682af3b564f49db8686f42c684aa8"
+  ]
+ ],
+ "resolve_termination": {
+  "bad_operator": {
+   "message": "operator must be an opaque identifier (letters, digits, . _ : @ + -), at most 80 characters",
+   "refused": "ContractError"
+  },
+  "bad_resolution": {
+   "message": "Resolution is rerun or discard",
+   "refused": "ContractError"
+  },
+  "discard": {
+   "message": "Termination already resolved with a different decision",
+   "refused": "ContractError"
+  },
+  "pending_after": {
+   "value": []
+  },
+  "redelivered": {
+   "value": {
+    "attempt": 1,
+    "boundary": "settlement",
+    "bucket": "tasks",
+    "error": "RuntimeError: message_sha256=791e38b9fddd69df",
+    "error_type": "RuntimeError",
+    "evidence_refs": [
+     "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    ],
+    "generation": 1,
+    "invocation_outcome": "unknown",
+    "note": "provider entered; outcome not durably recorded; do not re-execute before an operator reconciles",
+    "process_run_id": "00000000000000000000000000000001",
+    "record_id": "b137f6353cfa551e69731072cd230c51ad5ffca1a106a75869c35fa65e59619a",
+    "recorded_at": "2026-01-01T00:00:00+00:00",
+    "reservation_id": "r1",
+    "resolution": {
+     "at": "2026-01-01T00:00:00+00:00",
+     "authority": "operator_label_not_authenticated",
+     "operator": "op-1",
+     "reason": {
+      "redaction_findings": 0,
+      "sha256": "cc46d40ac357ebd3a8a55a1e707a773db5d6077b102e67663bebab8ad4f6131a",
+      "text": "checked",
+      "truncated": false
+     },
+     "resolution": "rerun"
+    },
+    "status": "resolved",
+    "stream_hash": null,
+    "task_id": "t1"
+   }
+  },
+  "rerun": {
+   "value": {
+    "attempt": 1,
+    "boundary": "settlement",
+    "bucket": "tasks",
+    "error": "RuntimeError: message_sha256=791e38b9fddd69df",
+    "error_type": "RuntimeError",
+    "evidence_refs": [
+     "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    ],
+    "generation": 1,
+    "invocation_outcome": "unknown",
+    "note": "provider entered; outcome not durably recorded; do not re-execute before an operator reconciles",
+    "process_run_id": "00000000000000000000000000000001",
+    "record_id": "b137f6353cfa551e69731072cd230c51ad5ffca1a106a75869c35fa65e59619a",
+    "recorded_at": "2026-01-01T00:00:00+00:00",
+    "reservation_id": "r1",
+    "resolution": {
+     "at": "2026-01-01T00:00:00+00:00",
+     "authority": "operator_label_not_authenticated",
+     "operator": "op-1",
+     "reason": {
+      "redaction_findings": 0,
+      "sha256": "cc46d40ac357ebd3a8a55a1e707a773db5d6077b102e67663bebab8ad4f6131a",
+      "text": "checked",
+      "truncated": false
+     },
+     "resolution": "rerun"
+    },
+    "status": "resolved",
+    "stream_hash": null,
+    "task_id": "t1"
+   }
+  },
+  "unknown_id": {
+   "message": "Unknown or unreadable termination record",
+   "refused": "ContractError"
+  }
+ },
+ "sink": {
+  "down_alert": {
+   "value": {
+    "attributes": {
+     "dropped": 1,
+     "error_type": "X"
+    },
+    "category": "operations",
+    "causation_id": null,
+    "correlation_id": null,
+    "event_id": "80eac975fb364bffd2f8c8b52569224557de8c57ce462f8ca04b32371e9d6b61",
+    "event_type": "operations.spool_append_failed",
+    "evidence_refs": [],
+    "execution": {
+     "attempt": null,
+     "bucket": null,
+     "generation": null,
+     "invocation_id": null,
+     "kind": "system",
+     "process_run_id": "00000000000000000000000000000001",
+     "provider": null,
+     "revision": null,
+     "role": "s4-event-write-side",
+     "session_id": null,
+     "task_id": null
+    },
+    "notification": {
+     "channel": null,
+     "status": "pending"
+    },
+    "observed_at": "2026-01-01T00:00:00+00:00",
+    "occurred_at": null,
+    "outcome": "observed",
+    "payload_hash": "fab67c271ec017f84899a81c17d4867019883acf09367257598e3e5c06664fb5",
+    "reason_code": null,
+    "redaction": {
+     "applied": true,
+     "findings": 0,
+     "truncated": 0
+    },
+    "schema_version": "1.0",
+    "sequence": {
+     "basis": "unassigned",
+     "number": null,
+     "process_run_id": "00000000000000000000000000000001"
+    },
+    "severity": "warning",
+    "source": {
+     "component": "s4-event-write-side",
+     "host": "fixture-host",
+     "pid": 1
+    },
+    "suppressed_before": 0
+   }
+  },
+  "down_pending": 2,
+  "down_state": "unavailable",
+  "recovered_alert": {
+   "value": {
+    "attributes": {
+     "dropped": 2,
+     "error_type": "Y"
+    },
+    "category": "operations",
+    "causation_id": null,
+    "correlation_id": null,
+    "event_id": "4cef640f2b4796cc5f77e2ab3bc224ba3bd51121e3b904f7bc15d637b78d95c2",
+    "event_type": "operations.spool_append_failed",
+    "evidence_refs": [],
+    "execution": {
+     "attempt": null,
+     "bucket": null,
+     "generation": null,
+     "invocation_id": null,
+     "kind": "system",
+     "process_run_id": "00000000000000000000000000000001",
+     "provider": null,
+     "revision": null,
+     "role": "s4-event-write-side",
+     "session_id": null,
+     "task_id": null
+    },
+    "notification": {
+     "channel": "postgres:observation_alerts",
+     "status": "recorded"
+    },
+    "observed_at": "2026-01-01T00:00:00+00:00",
+    "occurred_at": null,
+    "outcome": "observed",
+    "payload_hash": "c46e579b3d1bd36b2cc8c359f7fe7f762a56cc0478fa77025c614cf2eb4da262",
+    "reason_code": null,
+    "redaction": {
+     "applied": true,
+     "findings": 0,
+     "truncated": 0
+    },
+    "schema_version": "1.0",
+    "sequence": {
+     "basis": "unassigned",
+     "number": null,
+     "process_run_id": "00000000000000000000000000000001"
+    },
+    "severity": "warning",
+    "source": {
+     "component": "s4-event-write-side",
+     "host": "fixture-host",
+     "pid": 1
+    },
+    "suppressed_before": 0
+   }
+  },
+  "recovered_pending": 0,
+  "recovered_state": "available"
+ },
+ "spool_failures": {
+  "spool_full": {
+   "value": null
+  },
+  "spool_oserror": {
+   "value": null
+  }
+ },
+ "spool_records": [
+  {
+   "attributes": {
+    "agent": null,
+    "idle_seconds": 5
+   },
+   "category": "general",
+   "causation_id": null,
+   "correlation_id": null,
+   "event_id": "c80572328574f317089d2654c915437489a66683facc3dd3eb12db7d533d0ae4",
+   "event_type": "general.process_idle_exit",
+   "evidence_refs": [],
+   "execution": {
+    "attempt": null,
+    "bucket": null,
+    "generation": null,
+    "invocation_id": null,
+    "kind": "system",
+    "process_run_id": "00000000000000000000000000000001",
+    "provider": null,
+    "revision": null,
+    "role": "s4-event-write-side",
+    "session_id": null,
+    "task_id": null
+   },
+   "observed_at": "2026-01-01T00:00:00+00:00",
+   "occurred_at": null,
+   "outcome": "observed",
+   "reason_code": null,
+   "redaction": {
+    "applied": true,
+    "findings": 0,
+    "truncated": 0
+   },
+   "schema_version": "1.0",
+   "sequence": {
+    "basis": "spool_append",
+    "number": 1,
+    "process_run_id": "00000000000000000000000000000001"
+   },
+   "severity": "info",
+   "source": {
+    "component": "s4-event-write-side",
+    "host": "fixture-host",
+    "pid": 1
+   }
+  },
+  {
+   "attributes": {
+    "defect": "ContractError: Attributes not allowed for general.process_idle_exit: nope",
+    "refused_event_type": "general.process_idle_exit"
+   },
+   "category": "operations",
+   "causation_id": null,
+   "correlation_id": null,
+   "event_id": "9575635072dd0f9b4def4a72c136abae640a938839012c8ac3e610ec0abba1c0",
+   "event_type": "operations.observation_refused",
+   "evidence_refs": [],
+   "execution": {
+    "attempt": null,
+    "bucket": null,
+    "generation": null,
+    "invocation_id": null,
+    "kind": "system",
+    "process_run_id": "00000000000000000000000000000001",
+    "provider": null,
+    "revision": null,
+    "role": "s4-event-write-side",
+    "session_id": null,
+    "task_id": null
+   },
+   "observed_at": "2026-01-01T00:00:00+00:00",
+   "occurred_at": null,
+   "outcome": "failed",
+   "reason_code": null,
+   "redaction": {
+    "applied": true,
+    "findings": 0,
+    "truncated": 0
+   },
+   "schema_version": "1.0",
+   "sequence": {
+    "basis": "spool_append",
+    "number": 2,
+    "process_run_id": "00000000000000000000000000000001"
+   },
+   "severity": "warning",
+   "source": {
+    "component": "s4-event-write-side",
+    "host": "fixture-host",
+    "pid": 1
+   }
+  },
+  {
+   "attributes": {
+    "message_id": "m1",
+    "message_type": "t",
+    "result_kind": "[REDACTED token]"
+   },
+   "category": "general",
+   "causation_id": null,
+   "correlation_id": null,
+   "event_id": "d0f5a5b431350efaa93fda659dc2f0bd6b6b16725c3828f49a1bd22b1d5ebf57",
+   "event_type": "general.message_accepted",
+   "evidence_refs": [],
+   "execution": {
+    "attempt": null,
+    "bucket": null,
+    "generation": null,
+    "invocation_id": null,
+    "kind": "system",
+    "process_run_id": "00000000000000000000000000000001",
+    "provider": null,
+    "revision": null,
+    "role": "s4-event-write-side",
+    "session_id": null,
+    "task_id": null
+   },
+   "observed_at": "2026-01-01T00:00:00+00:00",
+   "occurred_at": null,
+   "outcome": "observed",
+   "reason_code": null,
+   "redaction": {
+    "applied": true,
+    "findings": 1,
+    "truncated": 0
+   },
+   "schema_version": "1.0",
+   "sequence": {
+    "basis": "spool_append",
+    "number": 3,
+    "process_run_id": "00000000000000000000000000000001"
+   },
+   "severity": "info",
+   "source": {
+    "component": "s4-event-write-side",
+    "host": "fixture-host",
+    "pid": 1
+   }
+  },
+  {
+   "attributes": {
+    "defect": "ContractError: Unknown observation category",
+    "refused_event_type": "bogus.x"
+   },
+   "category": "operations",
+   "causation_id": null,
+   "correlation_id": null,
+   "event_id": "efefd62083c483b9af6ca6eb23434246879565a47f0f5bc908cbb3fc47f7ea52",
+   "event_type": "operations.observation_refused",
+   "evidence_refs": [],
+   "execution": {
+    "attempt": null,
+    "bucket": null,
+    "generation": null,
+    "invocation_id": null,
+    "kind": "system",
+    "process_run_id": "00000000000000000000000000000001",
+    "provider": null,
+    "revision": null,
+    "role": "s4-event-write-side",
+    "session_id": null,
+    "task_id": null
+   },
+   "observed_at": "2026-01-01T00:00:00+00:00",
+   "occurred_at": null,
+   "outcome": "failed",
+   "reason_code": null,
+   "redaction": {
+    "applied": true,
+    "findings": 0,
+    "truncated": 0
+   },
+   "schema_version": "1.0",
+   "sequence": {
+    "basis": "spool_append",
+    "number": 4,
+    "process_run_id": "00000000000000000000000000000001"
+   },
+   "severity": "warning",
+   "source": {
+    "component": "s4-event-write-side",
+    "host": "fixture-host",
+    "pid": 1
+   }
+  },
+  {
+   "attributes": {
+    "reason": "x",
+    "reservation_id": "r1"
+   },
+   "category": "development",
+   "causation_id": null,
+   "correlation_id": null,
+   "event_id": "e3f190bff982369032739cc0175454f84b9cbe0216af186c073387ba5faf32bc",
+   "event_type": "development.invocation_abandoned",
+   "evidence_refs": [],
+   "execution": {
+    "attempt": null,
+    "bucket": null,
+    "generation": null,
+    "invocation_id": null,
+    "kind": "system",
+    "process_run_id": "00000000000000000000000000000001",
+    "provider": null,
+    "revision": null,
+    "role": "s4-event-write-side",
+    "session_id": null,
+    "task_id": null
+   },
+   "observed_at": "2026-01-01T00:00:00+00:00",
+   "occurred_at": null,
+   "outcome": "observed",
+   "reason_code": null,
+   "redaction": {
+    "applied": true,
+    "findings": 0,
+    "truncated": 0
+   },
+   "schema_version": "1.0",
+   "sequence": {
+    "basis": "spool_append",
+    "number": 5,
+    "process_run_id": "00000000000000000000000000000001"
+   },
+   "severity": "info",
+   "source": {
+    "component": "s4-event-write-side",
+    "host": "fixture-host",
+    "pid": 1
+   }
+  },
+  {
+   "attributes": {
+    "reason": "x",
+    "reservation_id": "r1"
+   },
+   "category": "development",
+   "causation_id": null,
+   "correlation_id": null,
+   "event_id": "e3f190bff982369032739cc0175454f84b9cbe0216af186c073387ba5faf32bc",
+   "event_type": "development.invocation_abandoned",
+   "evidence_refs": [],
+   "execution": {
+    "attempt": null,
+    "bucket": null,
+    "generation": null,
+    "invocation_id": null,
+    "kind": "system",
+    "process_run_id": "00000000000000000000000000000001",
+    "provider": null,
+    "revision": null,
+    "role": "s4-event-write-side",
+    "session_id": null,
+    "task_id": null
+   },
+   "observed_at": "2026-01-01T00:00:00+00:00",
+   "occurred_at": null,
+   "outcome": "observed",
+   "reason_code": null,
+   "redaction": {
+    "applied": true,
+    "findings": 0,
+    "truncated": 0
+   },
+   "schema_version": "1.0",
+   "sequence": {
+    "basis": "spool_append",
+    "number": 6,
+    "process_run_id": "00000000000000000000000000000001"
+   },
+   "severity": "info",
+   "source": {
+    "component": "s4-event-write-side",
+    "host": "fixture-host",
+    "pid": 1
+   }
+  },
+  {
+   "attributes": {
+    "reason": "y",
+    "reservation_id": "r1"
+   },
+   "category": "development",
+   "causation_id": null,
+   "correlation_id": null,
+   "event_id": "e3f190bff982369032739cc0175454f84b9cbe0216af186c073387ba5faf32bc",
+   "event_type": "development.invocation_abandoned",
+   "evidence_refs": [],
+   "execution": {
+    "attempt": null,
+    "bucket": null,
+    "generation": null,
+    "invocation_id": null,
+    "kind": "system",
+    "process_run_id": "00000000000000000000000000000001",
+    "provider": null,
+    "revision": null,
+    "role": "s4-event-write-side",
+    "session_id": null,
+    "task_id": null
+   },
+   "observed_at": "2026-01-01T00:00:00+00:00",
+   "occurred_at": null,
+   "outcome": "observed",
+   "reason_code": null,
+   "redaction": {
+    "applied": true,
+    "findings": 0,
+    "truncated": 0
+   },
+   "schema_version": "1.0",
+   "sequence": {
+    "basis": "spool_append",
+    "number": 7,
+    "process_run_id": "00000000000000000000000000000001"
+   },
+   "severity": "info",
+   "source": {
+    "component": "s4-event-write-side",
+    "host": "fixture-host",
+    "pid": 1
+   }
+  },
+  {
+   "attributes": {
+    "conflicting_event_id": "e3f190bff982369032739cc0175454f84b9cbe0216af186c073387ba5faf32bc",
+    "expected_hash": "231597141f2540bbf7b13720bb90dc9544eb50d344c86c0ee05b5813942ee5c6",
+    "observed_hash": "0033bf5ef76389f21f75f092bcf1de6acb9326abca57613f5b597b06c69bdf6f",
+    "quarantine_id": "4c939d00e9f7e8d0985db13ad92ad7034b99fa11c73d51151f6696d6930d7e03"
+   },
+   "category": "operations",
+   "causation_id": null,
+   "correlation_id": null,
+   "event_id": "a3a3db9e22a21b005127320302608fc542f635a961df15925a4794bf6b27b109",
+   "event_type": "operations.observation_conflict",
+   "evidence_refs": [],
+   "execution": {
+    "attempt": null,
+    "bucket": null,
+    "generation": null,
+    "invocation_id": null,
+    "kind": "system",
+    "process_run_id": "00000000000000000000000000000001",
+    "provider": null,
+    "revision": null,
+    "role": "s4-event-write-side",
+    "session_id": null,
+    "task_id": null
+   },
+   "observed_at": "2026-01-01T00:00:00+00:00",
+   "occurred_at": null,
+   "outcome": "observed",
+   "reason_code": null,
+   "redaction": {
+    "applied": true,
+    "findings": 0,
+    "truncated": 0
+   },
+   "schema_version": "1.0",
+   "sequence": {
+    "basis": "unassigned",
+    "number": null,
+    "process_run_id": "00000000000000000000000000000001"
+   },
+   "severity": "error",
+   "source": {
+    "component": "s4-event-write-side",
+    "host": "fixture-host",
+    "pid": 1
+   }
+  },
+  {
+   "attributes": {
+    "agent": null,
+    "idle_seconds": 1
+   },
+   "category": "general",
+   "causation_id": null,
+   "correlation_id": null,
+   "event_id": "0a3185fbe961d2fb27c97a28ffb69ae2fb424e142b1ceaf872242cf052364976",
+   "event_type": "general.process_idle_exit",
+   "evidence_refs": [],
+   "execution": {
+    "attempt": null,
+    "bucket": null,
+    "generation": null,
+    "invocation_id": null,
+    "kind": "system",
+    "process_run_id": "00000000000000000000000000000001",
+    "provider": null,
+    "revision": null,
+    "role": "s4-event-write-side",
+    "session_id": null,
+    "task_id": null
+   },
+   "observed_at": "2026-01-01T00:00:00+00:00",
+   "occurred_at": null,
+   "outcome": "observed",
+   "reason_code": null,
+   "redaction": {
+    "applied": true,
+    "findings": 0,
+    "truncated": 0
+   },
+   "schema_version": "1.0",
+   "sequence": {
+    "basis": "spool_append",
+    "number": 8,
+    "process_run_id": "00000000000000000000000000000001"
+   },
+   "severity": "info",
+   "source": {
+    "component": "s4-event-write-side",
+    "host": "fixture-host",
+    "pid": 1
+   }
+  },
+  {
+   "attributes": {
+    "error_type": "X",
+    "pending": 0,
+    "sink": "postgres"
+   },
+   "category": "operations",
+   "causation_id": null,
+   "correlation_id": null,
+   "event_id": "7a88dfb0c0c07962e793c9fd859d39cc4ed73ddcaaa947308af410521f4a0296",
+   "event_type": "operations.sink_unavailable",
+   "evidence_refs": [],
+   "execution": {
+    "attempt": null,
+    "bucket": null,
+    "generation": null,
+    "invocation_id": null,
+    "kind": "system",
+    "process_run_id": "00000000000000000000000000000001",
+    "provider": null,
+    "revision": null,
+    "role": "s4-event-write-side",
+    "session_id": null,
+    "task_id": null
+   },
+   "observed_at": "2026-01-01T00:00:00+00:00",
+   "occurred_at": null,
+   "outcome": "observed",
+   "reason_code": null,
+   "redaction": {
+    "applied": true,
+    "findings": 0,
+    "truncated": 0
+   },
+   "schema_version": "1.0",
+   "sequence": {
+    "basis": "unassigned",
+    "number": null,
+    "process_run_id": "00000000000000000000000000000001"
+   },
+   "severity": "warning",
+   "source": {
+    "component": "s4-event-write-side",
+    "host": "fixture-host",
+    "pid": 1
+   }
+  },
+  {
+   "attributes": {
+    "error_type": "X",
+    "pending": 0,
+    "sink": "postgres"
+   },
+   "category": "operations",
+   "causation_id": null,
+   "correlation_id": null,
+   "event_id": "7a88dfb0c0c07962e793c9fd859d39cc4ed73ddcaaa947308af410521f4a0296",
+   "event_type": "operations.sink_unavailable",
+   "evidence_refs": [],
+   "execution": {
+    "attempt": null,
+    "bucket": null,
+    "generation": null,
+    "invocation_id": null,
+    "kind": "system",
+    "process_run_id": "00000000000000000000000000000001",
+    "provider": null,
+    "revision": null,
+    "role": "s4-event-write-side",
+    "session_id": null,
+    "task_id": null
+   },
+   "observed_at": "2026-01-01T00:00:00+00:00",
+   "occurred_at": null,
+   "outcome": "observed",
+   "reason_code": null,
+   "redaction": {
+    "applied": true,
+    "findings": 0,
+    "truncated": 0
+   },
+   "schema_version": "1.0",
+   "sequence": {
+    "basis": "unassigned",
+    "number": null,
+    "process_run_id": "00000000000000000000000000000001"
+   },
+   "severity": "warning",
+   "source": {
+    "component": "s4-event-write-side",
+    "host": "fixture-host",
+    "pid": 1
+   }
+  },
+  {
+   "attributes": {
+    "dropped": 1,
+    "error_type": "X"
+   },
+   "category": "operations",
+   "causation_id": null,
+   "correlation_id": null,
+   "event_id": "80eac975fb364bffd2f8c8b52569224557de8c57ce462f8ca04b32371e9d6b61",
+   "event_type": "operations.spool_append_failed",
+   "evidence_refs": [],
+   "execution": {
+    "attempt": null,
+    "bucket": null,
+    "generation": null,
+    "invocation_id": null,
+    "kind": "system",
+    "process_run_id": "00000000000000000000000000000001",
+    "provider": null,
+    "revision": null,
+    "role": "s4-event-write-side",
+    "session_id": null,
+    "task_id": null
+   },
+   "observed_at": "2026-01-01T00:00:00+00:00",
+   "occurred_at": null,
+   "outcome": "observed",
+   "reason_code": null,
+   "redaction": {
+    "applied": true,
+    "findings": 0,
+    "truncated": 0
+   },
+   "schema_version": "1.0",
+   "sequence": {
+    "basis": "unassigned",
+    "number": null,
+    "process_run_id": "00000000000000000000000000000001"
+   },
+   "severity": "warning",
+   "source": {
+    "component": "s4-event-write-side",
+    "host": "fixture-host",
+    "pid": 1
+   }
+  },
+  {
+   "attributes": {
+    "error_type": "RuntimeError",
+    "pending": 0,
+    "sink": "postgres"
+   },
+   "category": "operations",
+   "causation_id": null,
+   "correlation_id": null,
+   "event_id": "1c216c99f66f3ca5d8abb5aac9a80e0c5a16533526bb333c5c6d4632f49a31d2",
+   "event_type": "operations.sink_unavailable",
+   "evidence_refs": [],
+   "execution": {
+    "attempt": null,
+    "bucket": null,
+    "generation": null,
+    "invocation_id": null,
+    "kind": "system",
+    "process_run_id": "00000000000000000000000000000001",
+    "provider": null,
+    "revision": null,
+    "role": "s4-event-write-side",
+    "session_id": null,
+    "task_id": null
+   },
+   "observed_at": "2026-01-01T00:00:00+00:00",
+   "occurred_at": null,
+   "outcome": "observed",
+   "reason_code": null,
+   "redaction": {
+    "applied": true,
+    "findings": 0,
+    "truncated": 0
+   },
+   "schema_version": "1.0",
+   "sequence": {
+    "basis": "unassigned",
+    "number": null,
+    "process_run_id": "00000000000000000000000000000001"
+   },
+   "severity": "critical",
+   "source": {
+    "component": "s4-event-write-side",
+    "host": "fixture-host",
+    "pid": 1
+   }
+  },
+  {
+   "attributes": {
+    "dropped": 2,
+    "error_type": "Y"
+   },
+   "category": "operations",
+   "causation_id": null,
+   "correlation_id": null,
+   "event_id": "4cef640f2b4796cc5f77e2ab3bc224ba3bd51121e3b904f7bc15d637b78d95c2",
+   "event_type": "operations.spool_append_failed",
+   "evidence_refs": [],
+   "execution": {
+    "attempt": null,
+    "bucket": null,
+    "generation": null,
+    "invocation_id": null,
+    "kind": "system",
+    "process_run_id": "00000000000000000000000000000001",
+    "provider": null,
+    "revision": null,
+    "role": "s4-event-write-side",
+    "session_id": null,
+    "task_id": null
+   },
+   "observed_at": "2026-01-01T00:00:00+00:00",
+   "occurred_at": null,
+   "outcome": "observed",
+   "reason_code": null,
+   "redaction": {
+    "applied": true,
+    "findings": 0,
+    "truncated": 0
+   },
+   "schema_version": "1.0",
+   "sequence": {
+    "basis": "unassigned",
+    "number": null,
+    "process_run_id": "00000000000000000000000000000001"
+   },
+   "severity": "warning",
+   "source": {
+    "component": "s4-event-write-side",
+    "host": "fixture-host",
+    "pid": 1
+   }
+  },
+  {
+   "attributes": {
+    "replayed": 3,
+    "sink": "postgres"
+   },
+   "category": "operations",
+   "causation_id": null,
+   "correlation_id": null,
+   "event_id": "6e351de3c2569dc72aa34f5c6ed32b1567cf6d487f852470e0ab81132cfc3003",
+   "event_type": "operations.sink_recovered",
+   "evidence_refs": [],
+   "execution": {
+    "attempt": null,
+    "bucket": null,
+    "generation": null,
+    "invocation_id": null,
+    "kind": "system",
+    "process_run_id": "00000000000000000000000000000001",
+    "provider": null,
+    "revision": null,
+    "role": "s4-event-write-side",
+    "session_id": null,
+    "task_id": null
+   },
+   "observed_at": "2026-01-01T00:00:00+00:00",
+   "occurred_at": null,
+   "outcome": "observed",
+   "reason_code": null,
+   "redaction": {
+    "applied": true,
+    "findings": 0,
+    "truncated": 0
+   },
+   "schema_version": "1.0",
+   "sequence": {
+    "basis": "spool_append",
+    "number": 9,
+    "process_run_id": "00000000000000000000000000000001"
+   },
+   "severity": "warning",
+   "source": {
+    "component": "s4-event-write-side",
+    "host": "fixture-host",
+    "pid": 1
+   }
+  },
+  {
+   "attributes": {
+    "boundary": "settlement",
+    "error_type": "RuntimeError",
+    "invocation_outcome": "unknown",
+    "record_id": "b137f6353cfa551e69731072cd230c51ad5ffca1a106a75869c35fa65e59619a",
+    "reservation_id": "r1",
+    "stream_hash": "unknown"
+   },
+   "category": "development",
+   "causation_id": null,
+   "correlation_id": null,
+   "event_id": "edd4cb62ef8baa74f925f89cc952870149f16f8e8971cbd222efe3bfed067079",
+   "event_type": "development.termination_recorded",
+   "evidence_refs": [
+    "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+   ],
+   "execution": {
+    "attempt": 1,
+    "bucket": "tasks",
+    "generation": 1,
+    "invocation_id": "r1",
+    "kind": "execution",
+    "process_run_id": "00000000000000000000000000000001",
+    "provider": "codex-app-server",
+    "revision": null,
+    "role": "s4-event-write-side",
+    "session_id": null,
+    "task_id": "t1"
+   },
+   "observed_at": "2026-01-01T00:00:00+00:00",
+   "occurred_at": null,
+   "outcome": "unknown",
+   "reason_code": "outcome_not_recorded",
+   "redaction": {
+    "applied": true,
+    "findings": 0,
+    "truncated": 0
+   },
+   "schema_version": "1.0",
+   "sequence": {
+    "basis": "spool_append",
+    "number": 10,
+    "process_run_id": "00000000000000000000000000000001"
+   },
+   "severity": "critical",
+   "source": {
+    "component": "s4-event-write-side",
+    "host": "fixture-host",
+    "pid": 1
+   }
+  },
+  {
+   "attributes": {
+    "boundary": "settlement",
+    "error_type": "RuntimeError",
+    "invocation_outcome": "unknown",
+    "record_id": "b137f6353cfa551e69731072cd230c51ad5ffca1a106a75869c35fa65e59619a",
+    "reservation_id": "r1",
+    "stream_hash": "unknown"
+   },
+   "category": "development",
+   "causation_id": null,
+   "correlation_id": null,
+   "event_id": "e574a1d469b8ee51d9b6145876d907217bcaa613c72c434234b34345a8ef19dd",
+   "event_type": "development.termination_recorded",
+   "evidence_refs": [
+    "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+   ],
+   "execution": {
+    "attempt": 1,
+    "bucket": "tasks",
+    "generation": 1,
+    "invocation_id": "r1",
+    "kind": "execution",
+    "process_run_id": "00000000000000000000000000000001",
+    "provider": "codex-app-server",
+    "revision": null,
+    "role": "s4-event-write-side",
+    "session_id": null,
+    "task_id": "t1"
+   },
+   "observed_at": "2026-01-01T00:00:00+00:00",
+   "occurred_at": null,
+   "outcome": "unknown",
+   "reason_code": "outcome_not_recorded",
+   "redaction": {
+    "applied": true,
+    "findings": 0,
+    "truncated": 0
+   },
+   "schema_version": "1.0",
+   "sequence": {
+    "basis": "spool_append",
+    "number": 11,
+    "process_run_id": "00000000000000000000000000000001"
+   },
+   "severity": "critical",
+   "source": {
+    "component": "s4-event-write-side",
+    "host": "fixture-host",
+    "pid": 1
+   }
+  },
+  {
+   "attributes": {
+    "error_type": "RuntimeError",
+    "pending": 0,
+    "sink": "postgres"
+   },
+   "category": "operations",
+   "causation_id": null,
+   "correlation_id": null,
+   "event_id": "1c216c99f66f3ca5d8abb5aac9a80e0c5a16533526bb333c5c6d4632f49a31d2",
+   "event_type": "operations.sink_unavailable",
+   "evidence_refs": [],
+   "execution": {
+    "attempt": null,
+    "bucket": null,
+    "generation": null,
+    "invocation_id": null,
+    "kind": "system",
+    "process_run_id": "00000000000000000000000000000001",
+    "provider": null,
+    "revision": null,
+    "role": "s4-event-write-side",
+    "session_id": null,
+    "task_id": null
+   },
+   "observed_at": "2026-01-01T00:00:00+00:00",
+   "occurred_at": null,
+   "outcome": "observed",
+   "reason_code": null,
+   "redaction": {
+    "applied": true,
+    "findings": 0,
+    "truncated": 0
+   },
+   "schema_version": "1.0",
+   "sequence": {
+    "basis": "unassigned",
+    "number": null,
+    "process_run_id": "00000000000000000000000000000001"
+   },
+   "severity": "critical",
+   "source": {
+    "component": "s4-event-write-side",
+    "host": "fixture-host",
+    "pid": 1
+   }
+  },
+  {
+   "attributes": {
+    "operator": "op-1",
+    "record_id": "b137f6353cfa551e69731072cd230c51ad5ffca1a106a75869c35fa65e59619a",
+    "resolution": "rerun"
+   },
+   "category": "development",
+   "causation_id": null,
+   "correlation_id": null,
+   "event_id": "3dbb3b55410fb689fbe2158339ace059292d981600e451a05ceca1c2f2b4e6cc",
+   "event_type": "development.reconciliation_resolved",
+   "evidence_refs": [],
+   "execution": {
+    "attempt": 1,
+    "bucket": "tasks",
+    "generation": 1,
+    "invocation_id": null,
+    "kind": "execution",
+    "process_run_id": "00000000000000000000000000000001",
+    "provider": null,
+    "revision": null,
+    "role": "s4-event-write-side",
+    "session_id": null,
+    "task_id": "t1"
+   },
+   "observed_at": "2026-01-01T00:00:00+00:00",
+   "occurred_at": null,
+   "outcome": "observed",
+   "reason_code": null,
+   "redaction": {
+    "applied": true,
+    "findings": 0,
+    "truncated": 0
+   },
+   "schema_version": "1.0",
+   "sequence": {
+    "basis": "spool_append",
+    "number": 12,
+    "process_run_id": "00000000000000000000000000000001"
+   },
+   "severity": "info",
+   "source": {
+    "component": "s4-event-write-side",
+    "host": "fixture-host",
+    "pid": 1
+   }
+  }
+ ]
+}

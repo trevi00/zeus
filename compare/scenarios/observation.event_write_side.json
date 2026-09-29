@@ -1,0 +1,9 @@
+{
+ "family": "observation.event_write_side",
+ "description": "S4 moved-ahead Observer event write side (lead decision Option A): emit/audit/audit_system/alert (dedupe window, sink down and recovery), spool failures, record_termination, pending_terminations/resolve_termination, PostExecutionRecordFailure and build_event redaction, on MemoryStore, MemorySpool, MemoryDirectory, a fixed clock and process identity",
+ "reference_driver": "drivers/reference/s4_event_write_side.py",
+ "target_driver": null,
+ "target_status": "pending: the Observer event write side is not yet moved",
+ "golden": "goldens/reference/observation.event_write_side.json",
+ "slice": "S4"
+}
