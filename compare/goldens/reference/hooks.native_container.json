@@ -1,0 +1,502 @@
+{
+ "binding": {
+  "duplicate_discovery": {
+   "calls": [
+    "hooks/list"
+   ],
+   "hook_state": {},
+   "hooks_list_params": {
+    "cwds": [
+     "/workspace"
+    ]
+   },
+   "outcome": {
+    "error": "ContractError",
+    "message": "Codex did not discover all verified hooks"
+   },
+   "restarts": [],
+   "server_arguments": [
+    "app-server",
+    "-c",
+    "hooks={\"PreToolUse\"=[{\"matcher\"=\"shell\",\"hooks\"=[{\"type\"=\"command\",\"command\"=\"python3 /h/a.py\",\"timeout\"=30}]}],\"state\"={}}",
+    "--enable",
+    "hooks"
+   ]
+  },
+  "extra_foreign_ignored": {
+   "calls": [
+    "hooks/list",
+    "thread/start"
+   ],
+   "hook_state": {
+    "k1": {
+     "enabled": true,
+     "trusted_hash": "sha256:1111111111111111111111111111111111111111111111111111111111111111"
+    }
+   },
+   "hooks_list_params": {
+    "cwds": [
+     "/workspace"
+    ]
+   },
+   "outcome": {
+    "error": "Stop",
+    "message": "thread/start"
+   },
+   "restarts": [
+    "exit",
+    "enter"
+   ],
+   "server_arguments": [
+    "app-server",
+    "-c",
+    "hooks={\"PreToolUse\"=[{\"matcher\"=\"shell\",\"hooks\"=[{\"type\"=\"command\",\"command\"=\"python3 /h/a.py\",\"timeout\"=30}]}],\"state\"={\"k1\"={\"enabled\"=true,\"trusted_hash\"=\"sha256:1111111111111111111111111111111111111111111111111111111111111111\"}}}",
+    "--enable",
+    "hooks"
+   ]
+  },
+  "foreign_only": {
+   "calls": [
+    "hooks/list"
+   ],
+   "hook_state": {},
+   "hooks_list_params": {
+    "cwds": [
+     "/workspace"
+    ]
+   },
+   "outcome": {
+    "error": "ContractError",
+    "message": "Codex did not discover all verified hooks"
+   },
+   "restarts": [],
+   "server_arguments": [
+    "app-server",
+    "-c",
+    "hooks={\"PreToolUse\"=[{\"matcher\"=\"shell\",\"hooks\"=[{\"type\"=\"command\",\"command\"=\"python3 /h/a.py\",\"timeout\"=30}]}],\"state\"={}}",
+    "--enable",
+    "hooks"
+   ]
+  },
+  "missing": {
+   "calls": [
+    "hooks/list"
+   ],
+   "hook_state": {},
+   "hooks_list_params": {
+    "cwds": [
+     "/workspace"
+    ]
+   },
+   "outcome": {
+    "error": "ContractError",
+    "message": "Codex did not discover all verified hooks"
+   },
+   "restarts": [],
+   "server_arguments": [
+    "app-server",
+    "-c",
+    "hooks={\"PreToolUse\"=[{\"matcher\"=\"shell\",\"hooks\"=[{\"type\"=\"command\",\"command\"=\"python3 /h/a.py\",\"timeout\"=30}]}],\"state\"={}}",
+    "--enable",
+    "hooks"
+   ]
+  },
+  "modified_bound_to_current": {
+   "calls": [
+    "hooks/list",
+    "thread/start"
+   ],
+   "hook_state": {
+    "k1": {
+     "enabled": true,
+     "trusted_hash": "sha256:1111111111111111111111111111111111111111111111111111111111111111"
+    }
+   },
+   "hooks_list_params": {
+    "cwds": [
+     "/workspace"
+    ]
+   },
+   "outcome": {
+    "error": "Stop",
+    "message": "thread/start"
+   },
+   "restarts": [
+    "exit",
+    "enter"
+   ],
+   "server_arguments": [
+    "app-server",
+    "-c",
+    "hooks={\"PreToolUse\"=[{\"matcher\"=\"shell\",\"hooks\"=[{\"type\"=\"command\",\"command\"=\"python3 /h/a.py\",\"timeout\"=30}]}],\"state\"={\"k1\"={\"enabled\"=true,\"trusted_hash\"=\"sha256:1111111111111111111111111111111111111111111111111111111111111111\"}}}",
+    "--enable",
+    "hooks"
+   ]
+  },
+  "one_of_two": {
+   "calls": [
+    "hooks/list"
+   ],
+   "hook_state": {},
+   "hooks_list_params": {
+    "cwds": [
+     "/workspace"
+    ]
+   },
+   "outcome": {
+    "error": "ContractError",
+    "message": "Codex did not discover all verified hooks"
+   },
+   "restarts": [],
+   "server_arguments": [
+    "app-server",
+    "-c",
+    "hooks={\"PreToolUse\"=[{\"matcher\"=\"shell\",\"hooks\"=[{\"type\"=\"command\",\"command\"=\"python3 /h/a.py\",\"timeout\"=30}]}],\"Stop\"=[{\"matcher\"=\"*\",\"hooks\"=[{\"type\"=\"command\",\"command\"=\"python3 /h/b.py\",\"timeout\"=30}]}],\"state\"={}}",
+    "--enable",
+    "hooks"
+   ]
+  },
+  "top_level_command": {
+   "calls": [
+    "hooks/list",
+    "thread/start"
+   ],
+   "hook_state": {
+    "k2": {
+     "enabled": true,
+     "trusted_hash": "sha256:2222222222222222222222222222222222222222222222222222222222222222"
+    }
+   },
+   "hooks_list_params": {
+    "cwds": [
+     "/workspace"
+    ]
+   },
+   "outcome": {
+    "error": "Stop",
+    "message": "thread/start"
+   },
+   "restarts": [
+    "exit",
+    "enter"
+   ],
+   "server_arguments": [
+    "app-server",
+    "-c",
+    "hooks={\"PreToolUse\"=[{\"matcher\"=\"shell\",\"hooks\"=[{\"type\"=\"command\",\"command\"=\"python3 /h/a.py\",\"timeout\"=30}]}],\"state\"={\"k2\"={\"enabled\"=true,\"trusted_hash\"=\"sha256:2222222222222222222222222222222222222222222222222222222222222222\"}}}",
+    "--enable",
+    "hooks"
+   ]
+  },
+  "trusted": {
+   "calls": [
+    "hooks/list",
+    "thread/start"
+   ],
+   "hook_state": {
+    "k1": {
+     "enabled": true,
+     "trusted_hash": "sha256:1111111111111111111111111111111111111111111111111111111111111111"
+    }
+   },
+   "hooks_list_params": {
+    "cwds": [
+     "/workspace"
+    ]
+   },
+   "outcome": {
+    "error": "Stop",
+    "message": "thread/start"
+   },
+   "restarts": [
+    "exit",
+    "enter"
+   ],
+   "server_arguments": [
+    "app-server",
+    "-c",
+    "hooks={\"PreToolUse\"=[{\"matcher\"=\"shell\",\"hooks\"=[{\"type\"=\"command\",\"command\"=\"python3 /h/a.py\",\"timeout\"=30}]}],\"state\"={\"k1\"={\"enabled\"=true,\"trusted_hash\"=\"sha256:1111111111111111111111111111111111111111111111111111111111111111\"}}}",
+    "--enable",
+    "hooks"
+   ]
+  },
+  "two_of_two": {
+   "calls": [
+    "hooks/list",
+    "thread/start"
+   ],
+   "hook_state": {
+    "k1": {
+     "enabled": true,
+     "trusted_hash": "sha256:1111111111111111111111111111111111111111111111111111111111111111"
+    },
+    "k3": {
+     "enabled": true,
+     "trusted_hash": "sha256:3333333333333333333333333333333333333333333333333333333333333333"
+    }
+   },
+   "hooks_list_params": {
+    "cwds": [
+     "/workspace"
+    ]
+   },
+   "outcome": {
+    "error": "Stop",
+    "message": "thread/start"
+   },
+   "restarts": [
+    "exit",
+    "enter"
+   ],
+   "server_arguments": [
+    "app-server",
+    "-c",
+    "hooks={\"PreToolUse\"=[{\"matcher\"=\"shell\",\"hooks\"=[{\"type\"=\"command\",\"command\"=\"python3 /h/a.py\",\"timeout\"=30}]}],\"Stop\"=[{\"matcher\"=\"*\",\"hooks\"=[{\"type\"=\"command\",\"command\"=\"python3 /h/b.py\",\"timeout\"=30}]}],\"state\"={\"k1\"={\"enabled\"=true,\"trusted_hash\"=\"sha256:1111111111111111111111111111111111111111111111111111111111111111\"},\"k3\"={\"enabled\"=true,\"trusted_hash\"=\"sha256:3333333333333333333333333333333333333333333333333333333333333333\"}}}",
+    "--enable",
+    "hooks"
+   ]
+  },
+  "untrusted_bound": {
+   "calls": [
+    "hooks/list",
+    "thread/start"
+   ],
+   "hook_state": {
+    "k1": {
+     "enabled": true,
+     "trusted_hash": "sha256:1111111111111111111111111111111111111111111111111111111111111111"
+    }
+   },
+   "hooks_list_params": {
+    "cwds": [
+     "/workspace"
+    ]
+   },
+   "outcome": {
+    "error": "Stop",
+    "message": "thread/start"
+   },
+   "restarts": [
+    "exit",
+    "enter"
+   ],
+   "server_arguments": [
+    "app-server",
+    "-c",
+    "hooks={\"PreToolUse\"=[{\"matcher\"=\"shell\",\"hooks\"=[{\"type\"=\"command\",\"command\"=\"python3 /h/a.py\",\"timeout\"=30}]}],\"state\"={\"k1\"={\"enabled\"=true,\"trusted_hash\"=\"sha256:1111111111111111111111111111111111111111111111111111111111111111\"}}}",
+    "--enable",
+    "hooks"
+   ]
+  }
+ },
+ "binding_already_bound": {
+  "calls": [
+   "thread/start"
+  ],
+  "hook_state": {
+   "k1": {
+    "enabled": true,
+    "trusted_hash": "sha256:x"
+   }
+  },
+  "hooks_list_params": null,
+  "outcome": {
+   "error": "Stop",
+   "message": "thread/start"
+  },
+  "restarts": [],
+  "server_arguments": [
+   "app-server",
+   "-c",
+   "hooks={\"PreToolUse\"=[{\"matcher\"=\"shell\",\"hooks\"=[{\"type\"=\"command\",\"command\"=\"python3 /h/a.py\",\"timeout\"=30}]}],\"state\"={\"k1\"={\"enabled\"=true,\"trusted_hash\"=\"sha256:x\"}}}",
+   "--enable",
+   "hooks"
+  ]
+ },
+ "configuration": {
+  "ok": {
+   "PreToolUse": [
+    {
+     "hooks": [
+      {
+       "command": "<PYTHON> <ROOT>/ad6f17c131b3b9757a62634b3bc495f6a5c074728d766f9bfb7155a727aa59e1.txt",
+       "timeout": 30,
+       "type": "command"
+      }
+     ],
+     "matcher": "shell"
+    }
+   ],
+   "Stop": [
+    {
+     "hooks": [
+      {
+       "command": "<PYTHON> <ROOT>/ad6f17c131b3b9757a62634b3bc495f6a5c074728d766f9bfb7155a727aa59e1.txt",
+       "timeout": 30,
+       "type": "command"
+      }
+     ],
+     "matcher": "*"
+    }
+   ]
+  }
+ },
+ "configuration_digest_mismatch": {
+  "error": "ContractError",
+  "message": "Reviewed script changed"
+ },
+ "configuration_none_active": {
+  "ok": {}
+ },
+ "role_profile": {
+  "claude_only:claude/claude_cli:implement:rw:active_hook": {
+   "ok": "claude-impl-rw"
+  },
+  "claude_only:claude/claude_cli:implement:rw:no_hooks": {
+   "ok": "claude-impl-rw"
+  },
+  "claude_only:claude/claude_cli:review:ro:active_hook": {
+   "ok": "claude-role-ro"
+  },
+  "claude_only:claude/claude_cli:review:ro:no_hooks": {
+   "ok": "claude-role-ro"
+  },
+  "claude_only:codex/app_server:implement:rw:active_hook": {
+   "error": "IsolationError",
+   "message": "isolated worker: codex_profile_disabled: isolation is selected and no Codex credential store is configured; the host App Server is never the fallback",
+   "reason_code": "codex_profile_disabled"
+  },
+  "claude_only:codex/app_server:implement:rw:no_hooks": {
+   "error": "IsolationError",
+   "message": "isolated worker: codex_profile_disabled: isolation is selected and no Codex credential store is configured; the host App Server is never the fallback",
+   "reason_code": "codex_profile_disabled"
+  },
+  "claude_only:codex/app_server:review:ro:active_hook": {
+   "error": "IsolationError",
+   "message": "isolated worker: codex_profile_disabled: isolation is selected and no Codex credential store is configured; the host App Server is never the fallback",
+   "reason_code": "codex_profile_disabled"
+  },
+  "claude_only:codex/app_server:review:ro:no_hooks": {
+   "error": "IsolationError",
+   "message": "isolated worker: codex_profile_disabled: isolation is selected and no Codex credential store is configured; the host App Server is never the fallback",
+   "reason_code": "codex_profile_disabled"
+  },
+  "claude_only:codex/claude_cli:implement:rw:active_hook": {
+   "error": "IsolationError",
+   "message": "isolated worker: role_profile_refused: codex/claude_cli/implement/rw",
+   "reason_code": "role_profile_refused"
+  },
+  "claude_only:codex/claude_cli:implement:rw:no_hooks": {
+   "error": "IsolationError",
+   "message": "isolated worker: role_profile_refused: codex/claude_cli/implement/rw",
+   "reason_code": "role_profile_refused"
+  },
+  "claude_only:codex/claude_cli:review:ro:active_hook": {
+   "error": "IsolationError",
+   "message": "isolated worker: role_profile_refused: codex/claude_cli/review/ro",
+   "reason_code": "role_profile_refused"
+  },
+  "claude_only:codex/claude_cli:review:ro:no_hooks": {
+   "error": "IsolationError",
+   "message": "isolated worker: role_profile_refused: codex/claude_cli/review/ro",
+   "reason_code": "role_profile_refused"
+  },
+  "none:claude/claude_cli:implement:rw:active_hook": {
+   "ok": null
+  },
+  "none:claude/claude_cli:implement:rw:no_hooks": {
+   "ok": null
+  },
+  "none:claude/claude_cli:review:ro:active_hook": {
+   "ok": null
+  },
+  "none:claude/claude_cli:review:ro:no_hooks": {
+   "ok": null
+  },
+  "none:codex/app_server:implement:rw:active_hook": {
+   "ok": null
+  },
+  "none:codex/app_server:implement:rw:no_hooks": {
+   "ok": null
+  },
+  "none:codex/app_server:review:ro:active_hook": {
+   "ok": null
+  },
+  "none:codex/app_server:review:ro:no_hooks": {
+   "ok": null
+  },
+  "none:codex/claude_cli:implement:rw:active_hook": {
+   "ok": null
+  },
+  "none:codex/claude_cli:implement:rw:no_hooks": {
+   "ok": null
+  },
+  "none:codex/claude_cli:review:ro:active_hook": {
+   "ok": null
+  },
+  "none:codex/claude_cli:review:ro:no_hooks": {
+   "ok": null
+  },
+  "with_store:claude/claude_cli:implement:rw:active_hook": {
+   "ok": "claude-impl-rw"
+  },
+  "with_store:claude/claude_cli:implement:rw:no_hooks": {
+   "ok": "claude-impl-rw"
+  },
+  "with_store:claude/claude_cli:review:ro:active_hook": {
+   "ok": "claude-role-ro"
+  },
+  "with_store:claude/claude_cli:review:ro:no_hooks": {
+   "ok": "claude-role-ro"
+  },
+  "with_store:codex/app_server:implement:rw:active_hook": {
+   "error": "IsolationError",
+   "message": "isolated worker: codex_container_native_hooks_unsupported",
+   "reason_code": "codex_container_native_hooks_unsupported"
+  },
+  "with_store:codex/app_server:implement:rw:no_hooks": {
+   "ok": "codex-impl-rw"
+  },
+  "with_store:codex/app_server:review:ro:active_hook": {
+   "error": "IsolationError",
+   "message": "isolated worker: codex_container_native_hooks_unsupported",
+   "reason_code": "codex_container_native_hooks_unsupported"
+  },
+  "with_store:codex/app_server:review:ro:no_hooks": {
+   "ok": "codex-role-ro"
+  },
+  "with_store:codex/claude_cli:implement:rw:active_hook": {
+   "error": "IsolationError",
+   "message": "isolated worker: role_profile_refused: codex/claude_cli/implement/rw",
+   "reason_code": "role_profile_refused"
+  },
+  "with_store:codex/claude_cli:implement:rw:no_hooks": {
+   "error": "IsolationError",
+   "message": "isolated worker: role_profile_refused: codex/claude_cli/implement/rw",
+   "reason_code": "role_profile_refused"
+  },
+  "with_store:codex/claude_cli:review:ro:active_hook": {
+   "error": "IsolationError",
+   "message": "isolated worker: role_profile_refused: codex/claude_cli/review/ro",
+   "reason_code": "role_profile_refused"
+  },
+  "with_store:codex/claude_cli:review:ro:no_hooks": {
+   "error": "IsolationError",
+   "message": "isolated worker: role_profile_refused: codex/claude_cli/review/ro",
+   "reason_code": "role_profile_refused"
+  }
+ },
+ "server_arguments": {
+  "hooks_unbound": [
+   "app-server",
+   "-c",
+   "hooks={\"PreToolUse\"=[{\"matcher\"=\"shell\",\"hooks\"=[{\"type\"=\"command\",\"command\"=\"python3 /h/a.py\",\"timeout\"=30}]}],\"state\"={}}",
+   "--enable",
+   "hooks"
+  ],
+  "no_hooks": [
+   "app-server"
+  ]
+ },
+ "toml_literal": "{\"a\"=[1,\"x\\\"y\",{\"b\"=null,\"c\"=true}],\"d\"=1.5}"
+}

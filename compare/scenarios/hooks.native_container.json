@@ -1,0 +1,9 @@
+{
+ "family": "hooks.native_container",
+ "description": "S3b characterization BEFORE enablement: the isolation refusal codex_container_native_hooks_unsupported and its order against profile selection, the host hook configuration (command, fixed timeout, script digest refusal) and the App Server trust binding (bound entries, recorded trusted hash, count refusal, server arguments); scripted peers, no Codex or hook process",
+ "reference_driver": "drivers/reference/s3_hooks.py",
+ "target_driver": null,
+ "golden": "goldens/reference/hooks.native_container.json",
+ "slice": "S3",
+ "target_status": "pending: S3b is a declared §4 change (design v2 §5.4); the target compares against a separate declared-change expectation, never by rewriting this golden"
+}
