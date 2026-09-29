@@ -2,8 +2,7 @@
  "family": "execution.ledger",
  "description": "S4 invocation ledger (reserve/settle/abandon/reclaim, idempotent and conflicting settle, supersession, capacity, unknown usage never zero) and call budget (finite ceilings, subscription mode, unreadable slot, settle); MemoryStore and a disposable directory, no provider",
  "reference_driver": "drivers/reference/s4_ledger.py",
- "target_driver": null,
+ "target_driver": "drivers/target/s4_ledger.py",
  "golden": "goldens/reference/execution.ledger.json",
- "slice": "S4",
- "target_status": "pending: target invocation ledger and call budget not yet implemented"
+ "slice": "S4"
 }

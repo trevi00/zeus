@@ -1,0 +1,157 @@
+"""The ledger that limits real provider-call experiments, so the limit cannot be argued with.
+
+Layer: adapters
+Context: execution
+Owns: the per-host call-slot directory (`~/.zeus/claude-call-budget/slots`), its file lock, slot
+    reservation before any spawn, settlement and counts (M7 `adapters/call_budget.py`, moved)
+Does not own: the accounting-mode policy (kernel.usage), provider transports, who may run a call
+Entry points: CallBudget, host_identity, default_root, LEDGER_TIMEOUT, STATUSES
+Contracts: INV-CLAUDE-WORKER-001
+
+A ceiling counted from whatever the caller named, in whatever directory the caller chose, is not a
+ceiling: renaming the run or pointing it elsewhere starts the count at zero. This ledger takes both
+away. It lives at one fixed place per machine, it identifies the host from the machine's own facts
+rather than from a flag, and a slot is taken *before* a process can start, under a lock, so two
+runs cannot both see the last slot free.
+
+A slot that was reserved and never settled stays counted. An experiment that was interrupted may
+well have reached the provider, and the conservative reading is the only safe one: the budget is
+about what may already have been spent, not about what was tidily recorded.
+
+`label` and output paths stay what they are, names for people and places for artifacts. They have
+no authority here. The clock and the id source are injected (§5.2 R-D); behaviour is unchanged.
+"""
+from __future__ import annotations
+
+import json
+import os
+import platform
+from datetime import timezone
+from pathlib import Path
+
+from filelock import FileLock, Timeout
+
+from codex_harness.kernel.errors import ContractError, require
+from codex_harness.kernel.ids import SYSTEM_CLOCK, SYSTEM_IDS, canonical, digest
+from codex_harness.kernel.ports import Clock, IdSource
+from codex_harness.kernel.usage import FINITE, MODES
+
+LEDGER_TIMEOUT = 20.0
+STATUSES = ("reserved", "used")
+
+
+def host_identity() -> dict:
+    """The machine, from the machine. No value here comes from an argument the caller chose."""
+    facts = {"system": platform.system(), "machine": platform.machine(),
+             "node_digest": digest(platform.node())}
+    return {**facts, "id": digest(facts)}
+
+
+def default_root() -> Path:
+    """One place per machine, outside any repository, so a second checkout is the same budget."""
+    return Path.home() / ".zeus" / "claude-call-budget"
+
+
+class CallBudget:
+    """Slots for real provider calls on this host. The policy supplies the ceilings."""
+
+    def __init__(self, root: Path | None = None, *, clock: Clock = SYSTEM_CLOCK, ids: IdSource = SYSTEM_IDS):
+        self.root = Path(root) if root is not None else default_root()
+        self.host = host_identity()
+        self.clock, self.ids = clock, ids
+
+    # ---- reading ---------------------------------------------------------------------------------
+    def _slot_files(self) -> list[Path]:
+        directory = self.root / "slots"
+        return sorted(directory.glob("*.json")) if directory.is_dir() else []
+
+    def slots(self) -> list[dict]:
+        rows = []
+        for path in self._slot_files():
+            try:
+                row = json.loads(path.read_text(encoding="utf-8"))
+            except (OSError, ValueError) as exc:
+                # An unreadable slot is a slot that was taken; it is never read as free space.
+                rows.append({"id": path.stem, "host": None, "status": "reserved",
+                             "unreadable": type(exc).__name__})
+                continue
+            rows.append(row)
+        return rows
+
+    def counts(self) -> dict:
+        rows = self.slots()
+        mine = [row for row in rows if row.get("host") in (None, self.host["id"])]
+        return {"host": self.host["id"], "this_host": len(mine), "all_hosts": len(rows),
+                "unreadable": sum(1 for row in rows if row.get("unreadable")),
+                "note": "a slot that was reserved and never settled still counts"}
+
+    # ---- taking a slot ---------------------------------------------------------------------------
+    def reserve(self, *, per_host: int, total: int, purpose: str, provider: str, model: str,
+                mode: str = FINITE) -> dict:
+        """Take one slot before anything can spawn, or refuse. Raises ContractError when full.
+
+        `mode` is the explicit accounting mode (domain.usage_policy): `finite` (the default and the
+        unchanged legacy behavior) refuses at the ceilings; `subscription` still takes the machine
+        lock, needs a readable ledger and writes the slot before any provider entry, but the
+        lifetime counts never refuse it. The mode is recorded in the slot. Unknown modes refuse.
+        """
+        require(type(mode) is str and mode in MODES, "Unknown call budget accounting mode")
+        require(type(per_host) is int and per_host > 0, "The per-host ceiling must be a positive count")
+        require(type(total) is int and total >= per_host, "The overall ceiling cannot be below the per-host one")
+        require(type(purpose) is str and bool(purpose), "A reserved call slot names its purpose")
+        (self.root / "slots").mkdir(parents=True, exist_ok=True)
+        lock = FileLock(str(self.root / "budget.lock"), is_singleton=True)
+        try:
+            lock.acquire(timeout=LEDGER_TIMEOUT)
+        except (Timeout, OSError) as exc:
+            raise ContractError("The call budget ledger is busy; no slot was taken") from exc
+        try:
+            counts = self.counts()
+            if mode == FINITE:
+                if counts["this_host"] >= per_host:
+                    raise ContractError(
+                        f"{counts['this_host']} real calls are already recorded for this host "
+                        f"(ceiling {per_host}); the ledger is at {self.root}")
+                if counts["all_hosts"] >= total:
+                    raise ContractError(
+                        f"{counts['all_hosts']} real calls are already recorded across hosts "
+                        f"(ceiling {total}); the ledger is at {self.root}")
+            elif counts["unreadable"]:
+                # No ceiling is left to count a damaged slot against: the record itself is the
+                # control, so an unreadable ledger refuses before any provider entry.
+                raise ContractError(
+                    f"{counts['unreadable']} unreadable slot(s) in the call ledger at {self.root}; "
+                    "subscription accounting needs a readable ledger")
+            slot = {"id": self.ids.uuid4().hex, "host": self.host["id"], "host_facts": self.host,
+                    "status": "reserved", "purpose": purpose, "provider": provider, "model": model,
+                    "accounting_mode": mode,
+                    "per_host_ceiling": per_host, "total_ceiling": total,
+                    "counts_at_reservation": counts,
+                    "reserved_at": self.clock.now().astimezone(timezone.utc).isoformat(), "pid": os.getpid()}
+            path = self.root / "slots" / (slot["id"] + ".json")
+            descriptor = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+            with os.fdopen(descriptor, "w", encoding="utf-8", newline="\n") as stream:
+                stream.write(canonical(slot) + "\n")
+            return slot
+        finally:
+            lock.release()
+
+    def settle(self, slot_id: str, *, outcome: str, detail: dict | None = None) -> dict:
+        """Record what the reserved slot turned into. It was already counted either way."""
+        require(type(slot_id) is str and bool(slot_id), "Settling needs a slot id")
+        path = self.root / "slots" / (slot_id + ".json")
+        try:
+            slot = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, ValueError) as exc:
+            raise ContractError("Unknown call budget slot") from exc
+        slot.update(status="used", outcome=outcome,
+                    settled_at=self.clock.now().astimezone(timezone.utc).isoformat(), detail=detail or {})
+        temporary = path.with_suffix(".tmp")
+        temporary.write_text(canonical(slot) + "\n", encoding="utf-8", newline="\n")
+        os.replace(temporary, path)
+        return slot
+
+    def summary(self) -> dict:
+        return {"ledger": str(self.root), "host": self.host, **self.counts(),
+                "slots": [{k: row.get(k) for k in ("id", "status", "purpose", "outcome", "reserved_at", "accounting_mode")}
+                          for row in self.slots()]}
