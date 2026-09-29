@@ -99,12 +99,21 @@ jobs:
         with:
           python-version: '3.13'
       - run: python -m pip install uv==0.12.2
+      # The M7 integration commands run unchanged in the immutable SOURCE tree (as in the test job);
+      # `scripts/check.py --integration` includes the reference suite with its M7 workflow fixture.
+      - run: git worktree add --detach "$RUNNER_TEMP/zeus-source" e38aa722ff1e91dc01ec650689cfe3eebe1ff699
       - run: uv sync --frozen
+        working-directory: ${{ runner.temp }}/zeus-source
       - run: uv run harness setup
+        working-directory: ${{ runner.temp }}/zeus-source
       - run: docker compose version
+        working-directory: ${{ runner.temp }}/zeus-source
       - run: docker compose -p harness-ci up -d --wait postgres redis
+        working-directory: ${{ runner.temp }}/zeus-source
       - run: uv run python scripts/check.py --integration
+        working-directory: ${{ runner.temp }}/zeus-source
       - run: uv run pytest -q tests/test_verification.py tests/test_host_interruption.py
+        working-directory: ${{ runner.temp }}/zeus-source
         env:
           ZEUS_TEST_DOCKER: '1'
       # §2.9 decision/release/outbox discriminators on a labelled, network-less disposable
@@ -113,6 +122,7 @@ jobs:
       - run: python compare/run.py run --only effects.decision_unit.pg --pg
       - if: always()
         run: docker compose -p harness-ci down --volumes
+        working-directory: ${{ runner.temp }}/zeus-source
   gate:
     name: CI gate
     if: always()

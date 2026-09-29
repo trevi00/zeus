@@ -189,6 +189,22 @@ class DisposablePostgres:
         self.docker("rm", "-f", self.name)
 
 
+def differing_paths(expected, actual, path="$") -> list[str]:
+    """JSON paths where a result differs from its golden (no values: payloads are never printed)."""
+    if isinstance(expected, dict) and isinstance(actual, dict):
+        out = []
+        for key in sorted(set(expected) | set(actual), key=str):
+            if key not in expected or key not in actual:
+                out.append(f"{path}.{key} (missing on one side)")
+            else:
+                out += differing_paths(expected[key], actual[key], f"{path}.{key}")
+        return out
+    if isinstance(expected, list) and isinstance(actual, list) and len(expected) == len(actual):
+        return [p for i, (e, a) in enumerate(zip(expected, actual))
+                for p in differing_paths(e, a, f"{path}[{i}]")]
+    return [] if expected == actual else [path]
+
+
 def run(record: bool, use_bwrap: bool, only: list[str], pg: bool = False) -> tuple[dict, bool]:
     python = SCRATCH / "venv-ref" / "bin" / "python"
     if not python.exists():
@@ -229,6 +245,8 @@ def run(record: bool, use_bwrap: bool, only: list[str], pg: bool = False) -> tup
                                                   ensure_ascii=False) + "\n", encoding="utf-8")
             golden = json.loads(golden_path.read_text(encoding="utf-8")) if golden_path.exists() else None
             equal = golden == result["result"]
+            if not equal:
+                row["differing_paths"] = differing_paths(golden, result["result"])[:20]
             row.update(reference="equal" if equal else "DIFFERENT", origin_ok=origin_ok,
                        origin={k: origin.get(k) for k in ("modules_checked", "python", "package_files",
                                                            "package_files_digest")})

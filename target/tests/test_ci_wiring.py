@@ -1,8 +1,9 @@
 """CI wiring discriminator (Codex S0 F2; REBUILD-DESIGN-v2 §5.1, S0 exit checks 6 and 8).
 
 The candidate workflow must keep every M7 command of the `test` and `integration` jobs in order,
-run the unchanged reference tests in the immutable SOURCE tree (whose own workflow fixture stays
-M7, so `tests/test_ci_scope.py` keeps its original assertions), and gate the target checks,
+run the unchanged reference tests (the test-job suite and the integration job's `check.py
+--integration`, which includes it) in the immutable SOURCE tree, whose own workflow fixture stays
+M7 so `tests/test_ci_scope.py` keeps its original assertions, and gate the target checks,
 source-tree preservation and the reference comparison inside the jobs the CI gate requires.
 Removing any of them fails here.
 """
@@ -75,8 +76,12 @@ def wiring_problems(workflow) -> list[str]:
     if not subsequence(REBUILD_TEST_STEPS, test):
         problems.append("a rebuild gate (check-tree, target, comparison) is missing from the test job")
     integration = steps(jobs["integration"])
-    if not subsequence([(cmd, None) for cmd in M7_INTEGRATION], integration):
-        problems.append("an M7 integration-job command is missing or reordered")
+    if not subsequence([M7_INTEGRATION[0], SOURCE_STEPS[0][0]], [cmd for cmd, _ in integration]):
+        problems.append("the integration job does not create the SOURCE tree")
+    if not subsequence([(cmd, SOURCE_DIR) for cmd in M7_INTEGRATION[1:]], integration):
+        problems.append("an M7 integration command is missing, reordered or not run in the SOURCE tree")
+    if any(cmd in M7_INTEGRATION[1:] and directory != SOURCE_DIR for cmd, directory in integration):
+        problems.append("an M7 integration command runs in the candidate tree instead of SOURCE")
     if not subsequence(REBUILD_INTEGRATION_STEPS, integration):
         problems.append("the PostgreSQL decision-unit discriminators are not in the integration job")
     if jobs["integration"]["steps"][-1].get("if") != "always()":
@@ -105,9 +110,18 @@ def test_omitting_a_test_job_gate_fails(command, directory):
     assert wiring_problems(_drop(load(), "test", command, directory))
 
 
-@pytest.mark.parametrize("command,directory", REBUILD_INTEGRATION_STEPS)
-def test_omitting_the_postgresql_discriminators_fails(command, directory):
+@pytest.mark.parametrize("command,directory", REBUILD_INTEGRATION_STEPS
+                         + [(cmd, SOURCE_DIR) for cmd in M7_INTEGRATION[1:]])
+def test_omitting_an_integration_step_fails(command, directory):
     assert wiring_problems(_drop(load(), "integration", command, directory))
+
+
+def test_running_the_integration_suite_in_the_candidate_tree_fails():
+    workflow = load()
+    for step in workflow["jobs"]["integration"]["steps"]:
+        if step.get("run") == "uv run python scripts/check.py --integration":
+            del step["working-directory"]
+    assert wiring_problems(workflow)
 
 
 def test_running_the_reference_suite_in_the_candidate_tree_fails():

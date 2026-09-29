@@ -9,6 +9,8 @@ workspace root (injection, so no ref needs a mask). It captures, without printin
 - the bindings: the execution record's `context_ref`, the observation/checkpoint `context_ref`
   and `evidence_refs`, compared by equality with the stored refs;
 - whether the delivered prompt equals `ContextPacket.render()` of the stored packet (digest only).
+The interpreter path M7 embeds in the packet is injected as a fixed placeholder, so the refs do not
+depend on the host (a digest never covers a masked value).
 """
 
 import sys
@@ -72,6 +74,14 @@ class RecordingArtifacts(FileArtifacts):
 
 def main() -> None:
     root = fresh_root()
+    # Injection (R-D): M7 writes `sys.executable` (the artifact-reader argv) and its resolved path
+    # (the review interpreter) into the retained packet, so the ref would cover a host path. The
+    # driver names a fixed placeholder file instead; it is never executed in this scenario.
+    interpreter = root / "bin" / "python"
+    interpreter.parent.mkdir()
+    interpreter.write_text("#!/bin/sh\nexit 97\n", encoding="utf-8")
+    interpreter.chmod(0o755)
+    sys.executable = str(interpreter)
     service = Harness(MemoryStore(), organization())
     artifacts = RecordingArtifacts(str(root / "artifacts"))
     config = {"shortlist": {"source_url": URL},

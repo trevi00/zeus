@@ -51,7 +51,7 @@
  },
  "packets": [
   {
-   "bytes": 4118,
+   "bytes": 4056,
    "canonical_bytes": true,
    "compiler_version": "1",
    "delivered_prompt_equals_render": true,
@@ -70,16 +70,16 @@
     "snapshot",
     "task_id"
    ],
-   "manifest_hash": "0345a5f0c52f46fff213ee0ac3f4d4dc2aaa60891bed880cac2445998a6b72ea",
+   "manifest_hash": "aeea868c1366900072e7f297034404ca7a40bab28bc4c8bc6ee40e93bc6feca7",
    "manifest_hash_recomputes": true,
    "omitted_count": 0,
-   "ref": "sha256:86181abf41e0538575327f9eabb50790eb230437e59cd75b53a04bc478060112",
+   "ref": "sha256:3ebba078c9a21fbf51f4b20a28a2cc7d357c9017c752324f0984e24439590ab8",
    "sha256_matches_ref": true,
    "source_label_is_task_key": true,
    "source_label_prefix": "context:"
   },
   {
-   "bytes": 8265,
+   "bytes": 8203,
    "canonical_bytes": true,
    "compiler_version": "1",
    "delivered_prompt_equals_render": true,
@@ -98,10 +98,10 @@
     "snapshot",
     "task_id"
    ],
-   "manifest_hash": "66608c1d595232e035e41866545e75fc23b2d41ff4b1fb97c77fe1388c931e7c",
+   "manifest_hash": "dd3125e23c5daac5cafc6795839d724c90736006a91d7988d7f8e83b0f5ea109",
    "manifest_hash_recomputes": true,
    "omitted_count": 0,
-   "ref": "sha256:e68ce68f9ea8b811a25c50be7d219fea82bb457c555c635a40af2aea15201d4e",
+   "ref": "sha256:fd392800f3ddf856f774944c65b7e24b0163fd3c8d2a619c0d477cf1f16f6d1b",
    "sha256_matches_ref": true,
    "source_label_is_task_key": true,
    "source_label_prefix": "context:"
