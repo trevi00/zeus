@@ -2,8 +2,7 @@
  "family": "hooks.candidate_canary",
  "description": "S4 host NativeHooks candidate and canary: manifest/spec validation (hook_apply), script digest, case suites, the proposal and hook_cases row, the canary verdicts of a fixture stdlib hook (reproduction and normal cases) and stale fixtures; in-memory service/Git/artifacts, no provider",
  "reference_driver": "drivers/reference/s4_hooks.py",
- "target_driver": null,
+ "target_driver": "drivers/target/s4_hooks.py",
  "golden": "goldens/reference/hooks.candidate_canary.json",
- "slice": "S4",
- "target_status": "pending: candidate/canary not yet moved"
+ "slice": "S4"
 }

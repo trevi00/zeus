@@ -54,7 +54,7 @@ def test_row_fields_and_values(table):
 S1_OWNERS = {"kernel", "storage", "host_os"}
 S2_OWNERS = {"routing", "context", "knowledge"}
 S3_OWNERS = {"execution", "credentials"}  # S3: the container/credential rows only (execution is shared with S4)
-S4_EARLY_OWNERS = {"coordination", "intake"}  # S4 Option A: moved-ahead owner operations only
+S4_EARLY_OWNERS = {"coordination", "intake", "research"}  # S4 Option A: moved-ahead owner operations only
 IMPLEMENTED_OWNERS = S1_OWNERS | S2_OWNERS | S3_OWNERS | S4_EARLY_OWNERS  # slices implemented so far: S1, S2, S3
 
 
@@ -163,8 +163,8 @@ def test_s3_rows_are_accounted_for(table):
 
 S4_IMPLEMENTED = {"application/invocation_ledger.py", "domain/invocation.py", "adapters/call_budget.py",
                   "domain/provider_stream.py", "domain/worker_sessions.py", "application/worker_sessions.py",
-                  "adapters/codex.py", "adapters/claude_cli.py"}
-S4_REMAINING = {"adapters/executor.py", "adapters/hooks.py", "adapters/worker_sessions.py"}
+                  "adapters/codex.py", "adapters/claude_cli.py", "adapters/hooks.py"}
+S4_REMAINING = {"adapters/executor.py", "adapters/worker_sessions.py"}
 
 
 def test_s4_rows_moved_so_far_are_implemented_and_the_rest_stay_designed(table):
