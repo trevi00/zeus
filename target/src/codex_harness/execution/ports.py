@@ -3,9 +3,10 @@
 Layer: ports
 Context: execution
 Owns: OWNED_BUCKETS of the execution context; the consumer-owned Protocols RunTask depends on
+    (ProviderRuntime and the rest arrive with RunTask; ARCHITECTURE.md keeps them PROPOSED until then)
 Does not own: their implementations (coordination implements TaskLedger in S5, research/evidence
     implement ResearchAdmission in S8; composition wires them in S10)
-Entry points: OWNED_BUCKETS, TaskLedger, ResearchAdmission, ProviderRuntime
+Entry points: OWNED_BUCKETS, TaskLedger, ResearchAdmission
 Contracts: INV-INVOCATION-001, INV-WORKER-SESSION-001, INV-EXECUTION-IDENTITY-001
 
 Protocols are structural: an implementation never imports this module (§2.4).
@@ -38,14 +39,4 @@ class ResearchAdmission(Protocol):
     def admit(self, tx: Transaction, lease: dict, action: str) -> dict:
         """{"disposition": "admit" | "exempt" | "research" | "blocked", "reason": str}."""
         ...
-
-
-class ProviderRuntime(Protocol):
-    """One opened provider transport (Codex App Server or Claude Code CLI, host or container)."""
-
-    def __enter__(self) -> "ProviderRuntime": ...
-
-    def __exit__(self, *exc) -> bool | None: ...
-
-    def run(self, prompt: str, cwd: str, schema: dict, timeout: float, **kwargs) -> dict: ...
 

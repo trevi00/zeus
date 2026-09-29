@@ -35,7 +35,11 @@ import determinism  # noqa: E402
 from codex_harness.adapters.artifacts import FileArtifacts  # noqa: E402
 from codex_harness.adapters.executor import Executor  # noqa: E402
 from codex_harness.adapters.store import MemoryStore  # noqa: E402
-from codex_harness.application import execution_recovery, execution_time, workflow  # noqa: E402,F401
+from codex_harness.application import (  # noqa: E402,F401
+    execution_recovery,
+    execution_time,
+    workflow,
+)
 from codex_harness.application.service import Harness  # noqa: E402
 from codex_harness.bootstrap import organization  # noqa: E402
 from codex_harness.domain.model import envelope  # noqa: E402
