@@ -52,12 +52,15 @@ S0_FAMILIES = {"cli.parser", "entries.safe_matrix", "static.source", "effects.de
                "effects.context_packet", "guards.unpatched_transport", "effects.decision_unit.pg"}
 S1_FAMILIES = {"kernel.values", "storage.memory", "storage.pg", "storage.redis", "host_os.git", "host_os.process"}
 S2_FAMILIES = {"routing.matrix", "context.composition", "context.worker_profile_entry", "knowledge.units"}
-IMPLEMENTED = {**{f: "S1" for f in S1_FAMILIES}, **{f: "S2" for f in S2_FAMILIES}}
+S3_FAMILIES = {"containers.profiles", "credentials.custody", "credentials.scrubber", "hooks.native_container"}
+S3_IMPLEMENTED = {"credentials.custody", "credentials.scrubber"}
+IMPLEMENTED = {**{f: "S1" for f in S1_FAMILIES}, **{f: "S2" for f in S2_FAMILIES},
+               **{f: "S3" for f in S3_IMPLEMENTED}}
 
 
 def test_every_scenario_has_a_reference_golden_and_only_implemented_slices_have_a_target():
     scenarios = [load(p) for p in sorted((COMPARE / "scenarios").glob("*.json"))]
-    assert {s["family"] for s in scenarios} == S0_FAMILIES | S1_FAMILIES | S2_FAMILIES
+    assert {s["family"] for s in scenarios} == S0_FAMILIES | S1_FAMILIES | S2_FAMILIES | S3_FAMILIES
     for s in scenarios:
         assert (COMPARE / s["reference_driver"]).is_file()
         assert (COMPARE / s["golden"]).is_file()

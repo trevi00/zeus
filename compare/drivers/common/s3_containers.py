@@ -195,9 +195,9 @@ def _ledger(store: Path, roots: dict) -> list:
     return rows
 
 
-def run(api) -> dict:
+def run_static(api) -> dict:
+    """Constants, pure builders, configuration parse, forbidden-control probes and preflight."""
     out: dict = {}
-    base = Path(tempfile.mkdtemp(prefix="zeus-s3-containers-"))
     # -- the constants and pure builders ------------------------------------------------------------
     out["profiles"] = {name: {key: (list(value) if isinstance(value, tuple) else value)
                               for key, value in shape.items()} for name, shape in api.PROFILES.items()}
@@ -279,7 +279,18 @@ def run(api) -> dict:
     }
     out["forbidden_controls"] = {name: relative(api.forbidden_controls({**clean, **change}), {"HOME": home})
                                  for name, change in probes.items()}
-    # -- the four profiles through their real transport up to the refusal -----------------------------
+    out["preflight"] = _preflight(api, config)
+    return out
+
+
+def run(api) -> dict:
+    """The whole family: the static part plus the four profiles through their real transports."""
+    return {**run_static(api), "profile_runs": run_profiles(api)}
+
+
+def run_profiles(api) -> dict:
+    """The four profiles through their real transport up to the before-start refusal."""
+    base = Path(tempfile.mkdtemp(prefix="zeus-s3-profiles-"))
     runs = {}
     for profile in ("claude-impl-rw", "claude-role-ro", "codex-role-ro", "codex-impl-rw"):
         for mode in ("create_fails", "controls_bad"):
@@ -288,8 +299,11 @@ def run(api) -> dict:
     runs["codex-role-ro:inspect_privileged"] = _run_profile(api, "codex-role-ro", "inspect_privileged", base, 1000)
     # F-R1 probe: recorded as observed; a changed disposition is a declared §4 change, never silent.
     runs["codex-role-ro:inspect_unconfined"] = _run_profile(api, "codex-role-ro", "inspect_unconfined", base, 1000)
-    out["profile_runs"] = runs
-    # -- preflight: daemon / image / token refusals ---------------------------------------------------
+    return runs
+
+
+def _preflight(api, config) -> dict:
+    """Daemon / image / token refusals of the preflight, over the scripted client."""
     pre = {}
     for name, (answers, environment, token) in {
         "ok_token": ({"version": (0, "27.0.0\n"), "image": (0, IMAGE + "\n")}, {api.TOKEN_NAME: "x"}, True),
@@ -308,5 +322,4 @@ def run(api) -> dict:
         api.install_docker(fake)
         pre[name] = {"outcome": outcome(lambda environment=environment, token=token:
                                         api.preflight(config, environment, token)), "calls": calls}
-    out["preflight"] = pre
-    return out
+    return pre
