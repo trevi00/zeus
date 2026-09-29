@@ -2,8 +2,7 @@
  "family": "coordination.workflow_submit",
  "description": "S4 moved-ahead Workflow.submit (lead decision Option A): valid plan/implement assignments, replay, conflicting body, non-assignment, unauthorized edge, deadline and dependency refusals, a used execution fence and the adoption gate refusing a research proposal; MemoryStore, scripted clocks and ids",
  "reference_driver": "drivers/reference/s4_submit.py",
- "target_driver": null,
- "target_status": "pending: Workflow.submit not yet moved",
+ "target_driver": "drivers/target/s4_submit.py",
  "golden": "goldens/reference/coordination.workflow_submit.json",
  "slice": "S4"
 }

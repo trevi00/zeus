@@ -5,10 +5,12 @@ Context: coordination
 Owns: ClaimGuardRefused, check_expected, require_expected, CONTAINED_PROVIDER_CAUSES and the static
     `Workflow._attempt_outcome` / `Workflow._same_execution` (M7 `application/workflow.py`, moved ahead in S4
     unchanged: lead decision Option A; execution_time's deadline containment records the attempt outcome)
-    and the lease operations claim, _owned, contain_time, heartbeat, remaining_seconds, complete, fail_execution,
-    fail, _next and snapshot (S4, lead decision Option A: the owner operations RunTask/ReviewDecisions write)
-Does not own: submit, cancel, request_rebase, handle and context (S5: submit and handle park terminal
-    operations), intake's ticket binding and the research adoption gate (injected), the clocks (injected)
+    and the lease operations submit (park_terminal injected), claim, _owned, contain_time, heartbeat,
+    remaining_seconds, complete, fail_execution, fail, _next and snapshot (S4, lead decision Option A: the owner
+    operations RunTask/ReviewDecisions write)
+Does not own: cancel, request_rebase, handle and context (S5: handle parks terminal operations; S5 also
+    supplies operation_finalization.park), intake's ticket binding and the research adoption gate (injected),
+    the clocks (injected)
 Entry points: ClaimGuardRefused, check_expected, require_expected, CONTAINED_PROVIDER_CAUSES, Workflow
 Contracts: INV-LOCAL-CYCLE-001, INV-METRIC-001, INV-EXECUTION-IDENTITY-001
 """
@@ -29,6 +31,7 @@ from codex_harness.coordination.application.execution_budget import (
 )
 from codex_harness.coordination.application.execution_fence import advance as advance_fence
 from codex_harness.coordination.application.execution_fence import require_current as require_current_fence
+from codex_harness.coordination.application.execution_fence import require_unused as require_unused_fence
 from codex_harness.coordination.application.execution_notices import record as execution_notice
 from codex_harness.coordination.application.execution_time import (
     CLOCK_TOLERANCE_SECONDS,
@@ -92,11 +95,46 @@ class Workflow:
     Target (§2.4, §5.2 R-D): intake's `ticket_binding` (with its `TicketSuperseded` type) and the research
     adoption gate `adoption(tx, details)` are injected, as are the clock, the id source and the monotonic clock."""
 
-    def __init__(self, store, organization, *, ticket_binding, TicketSuperseded, adoption, clock=None, ids=None,
-                 monotonic=None):
+    def __init__(self, store, organization, *, ticket_binding, TicketSuperseded, adoption, park_terminal=None,
+                 clock=None, ids=None, monotonic=None):
         self.store, self.org = store, organization
         self.ticket_binding, self.TicketSuperseded, self.adoption = ticket_binding, TicketSuperseded, adoption
+        self.park_terminal = park_terminal
         self.clock, self.ids, self.monotonic = clock, ids, monotonic
+
+    def submit(self, message: dict) -> dict:
+        self.org.authorize(message)
+        require(message["type"] == "task.assign", "Expected task assignment")
+        deadline_time(message["when"]["deadline"])
+        task_id = message["message_id"]
+        with self.store.transaction() as tx:
+            self.ticket_binding(tx, message["what"]["details"])
+            if message["what"]["action"] in {"plan", "implement"}:
+                self.adoption(tx, message["what"]["details"])
+            old = tx.get("tasks", task_id)
+            if old:
+                require(old["input_hash"] == digest(message), "Conflicting task identity")
+            # INV-OPERATION-FINALIZATION-001, one ordering: the older immutable binding is validated
+            # first, then a message of a terminal operation is parked in this transaction whatever
+            # the old row's status (queued, retired, succeeded...); the old row is never rewritten.
+            # S5 supplies operation_finalization.park; never a silent skip
+            require(self.park_terminal is not None, "Terminal-operation parking is not wired")
+            parked = self.park_terminal(tx, message)
+            if parked is not None:
+                return parked
+            if old:
+                return old
+            require_unused_fence(tx, "tasks", task_id)
+            dependencies = message["when"]["after"]
+            require(task_id not in dependencies, "Task cannot depend on itself")
+            require(all(tx.get("tasks", dep) is not None for dep in dependencies),
+                    "Dependencies must exist before submission")
+            task = {"id": task_id, "message": message, "input_hash": digest(message),
+                    "agent": message["who"]["recipient"], "status": "queued", "attempt": 0,
+                    "generation": 0, "lease_until": None, "lease_owner": None,
+                    "result": None, "error": None, "created_at": utcnow(self.clock)}
+            tx.put("tasks", task_id, task)
+            return task
 
     _attempt_outcome = staticmethod(attempt_outcome)
 

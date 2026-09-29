@@ -18,6 +18,10 @@ from codex_harness.coordination.application.decisions import DecisionFailures, D
 from codex_harness.coordination.application.events import EventJournal
 from codex_harness.coordination.application.outbox import Outbox
 from codex_harness.coordination.application.workflow import Workflow
+from codex_harness.kernel.errors import ContractError
+from codex_harness.kernel.message import envelope
+from codex_harness.routing.adapters.organization_source import packaged_organization
+from codex_harness.storage.adapters.memory_store import MemoryStore
 
 
 class RecordingTx:
@@ -123,3 +127,14 @@ def test_owner_modules_never_open_a_transaction(module):
     import inspect
     source = inspect.getsource(importlib.import_module(f"codex_harness.coordination.application.{module}"))
     assert ".transaction(" not in source
+
+
+def test_submit_refuses_when_parking_is_unwired():
+    message = envelope("task.assign", "conductor", "lead:improvement", "plan", {"plan": {"objective": "x"}}, "c")
+    store = MemoryStore()
+    wf = Workflow(store, packaged_organization(), ticket_binding=lambda tx, details: None,
+                  TicketSuperseded=Exception, adoption=lambda tx, details: None)
+    with pytest.raises(ContractError, match="not wired"):
+        wf.submit(message)
+    with store.transaction() as tx:
+        assert tx.records() == []
