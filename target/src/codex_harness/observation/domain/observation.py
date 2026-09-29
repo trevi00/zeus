@@ -26,6 +26,17 @@ import re
 from datetime import datetime
 from uuid import uuid4
 
+# DESIGN-run-task D9: the invocation-outcome vocabulary is execution's; re-imported so these names stay here.
+from codex_harness.execution.domain.invocation_outcomes import (  # noqa: F401
+    FAILURE_OWNERS,
+    INVOCATION_OUTCOMES,
+    OUTPUT_REASONS,
+    PROVIDER_CAUSES,
+    STRUCTURAL_CHECKS,
+    SUBTYPE_REASONS,
+    TERMINAL_SUBTYPES,
+    invocation_outcome,
+)
 from codex_harness.kernel.analysis import (  # noqa: F401  (re-exported: this module still exposes them)
     ANALYSIS_CHECKPOINTED,
     ANALYSIS_CONTENT_REJECTED,
@@ -262,39 +273,6 @@ REGISTRY = {
                                             "disposition_id": _S, "stream_entry_id": _N},
 }
 
-# Runner classification (INV-INVOCATION-001) → observation outcome. Only `accepted` succeeds.
-INVOCATION_OUTCOMES = {"accepted": "succeeded", "empty_answer": "failed", "invalid_output": "failed",
-                       "tool_only": "failed", "provider_failure": "failed", "interrupted": "aborted",
-                       "inspection_blocked": "blocked"}
-
-# Closed code vocabularies for the boundary events above (operating-portfolio-001). Each lists the
-# values this harness itself produces: the structural output reasons and owners of
-# adapters.execution_output, the provider failure causes of the Codex and Claude adapters, the
-# provider result subtypes those adapters read, and the structural check states. `safe_code` maps
-# anything else, including a value a future provider version invents, to "unknown" rather than
-# letting a foreign string become a Zeus code.
-OUTPUT_REASONS = ("empty", "invalid_text", "invalid_json", "schema_mismatch", "schema_configuration")
-FAILURE_OWNERS = ("agent_output", "configuration", "provider")
-PROVIDER_CAUSES = ("codex-provider-usage-limit-exceeded", "claude-provider-budget-exhausted",
-                   "claude-provider-usage-limit-exceeded", "claude-provider-authentication-failed",
-                   "claude-provider-cancelled", "claude-provider-conflicting-terminal",
-                   "claude-provider-error-result", "claude-provider-exit-conflict",
-                   "claude-provider-max-turns", "claude-provider-missing-terminal",
-                   "claude-provider-model-mismatch", "claude-provider-read-only-violation",
-                   "claude-provider-session-conflicting",
-                   "claude-provider-session-mismatch", "claude-provider-session-unreported",
-                   "claude-provider-startup-failed", "claude-provider-stream-truncated",
-                   "claude-provider-timeout")
-TERMINAL_SUBTYPES = ("success", "error_during_execution", "error_max_turns",
-                     "error_max_structured_output_retries")
-STRUCTURAL_CHECKS = ("checked", "unchecked", "failed", "configuration_error")
-
-# A terminal subtype that names its own actionable failure also names the projected reason, so an
-# operator can tell it apart from every other provider failure without reading a raw stream. Only a
-# subtype this harness declares can reach this map, because `safe_code` runs first and a foreign or
-# future string is `unknown`; nothing about the output itself is inferred from the subtype, and a
-# structural output reason, when there is one, stays the reason.
-SUBTYPE_REASONS = {"error_max_structured_output_retries": "output_structured_retries_exhausted"}
 
 # Evidence inspection verdict → (outcome, reason_code, severity). Only a completed all_checked
 # inspection succeeds: no claims, an incomplete check, a failed inspection and any verdict this
@@ -543,9 +521,6 @@ def content_hash(event: dict) -> str:
     return digest({key: event.get(key) for key in CONTENT_FIELDS})
 
 
-def invocation_outcome(classification: str) -> str:
-    require(classification in INVOCATION_OUTCOMES, "Unknown invocation classification")
-    return INVOCATION_OUTCOMES[classification]
 
 
 def is_business_message(value) -> bool:
