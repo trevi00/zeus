@@ -12,14 +12,18 @@ transport tests). Import paths and the injected fake are rewritten through `m7_c
 names both adaptations); any other adaptation is named in place.
 
 Not ported here (owning slice; carried forward, listed in the S3 coverage evidence):
-- test_executor_runs_a_codex_review_in_codex_role_ro_with_container_reader_paths: S4 execution (RunTask)
-- test_executor_refuses_codex_under_isolation_without_a_store_before_any_transport: S4 execution (RunTask)
-- test_executor_refuses_active_native_hooks_in_a_codex_container: S4 execution (RunTask; the refusal itself is
-  the S3b characterization golden hooks.native_container)
-- test_executor_hands_off_writer_evidence_after_the_transport_returns: S4 execution (RunTask)
 - test_the_viewer_web_service_refuses_to_start_with_a_desk_revision: S10 entry (monitor)
 - test_serve_refuses_a_desk_on_the_viewer_port_before_binding: S9 observation (viewer)
 - test_monitor_web_main_refuses_before_any_listener_when_the_desk_is_configured: S10 entry (monitor)
+
+PORTING NOTES (S4 ported executor suites; the M7 assertions are unchanged):
+- The four executor cases are ported over `m7_executor.Executor`/`Service` (a TEST shim over RunTask; construction
+  only): `executor_with` builds it with the M7 fixtures `Unexpected`/`Recorded` and the injected isolation stand-in;
+  the patch targets `codex_harness.adapters.executor.{AppServer,ClaudeCodeRuntime}` are `m7_executor.*`.
+- test_executor_refuses_active_native_hooks_in_a_codex_container: SKIPPED, S3b declared change (design v2 §5.4):
+  with isolation the target runs the active native hooks INSIDE the codex container (golden hooks.native_container)
+  instead of M7's `codex_container_native_hooks_unsupported` refusal, and M7 `adapters/hooks.NativeHooks` (patched
+  by this test) is S8's. The body is kept unchanged.
 """
 import json
 import os
@@ -32,10 +36,13 @@ import time
 from pathlib import Path
 from types import SimpleNamespace
 
+import m7_executor
 import pytest
 from m7_containers import ContractError, install_fake, iw, rc
 
 from codex_harness.execution.adapters.containers import owned_container
+from codex_harness.storage.adapters.file_artifacts import FileArtifacts
+from codex_harness.storage.adapters.memory_store import MemoryStore
 
 IMAGE = "sha256:" + "a" * 64
 # Adaptation: DUMMY fixture credentials are assembled at run time so the tree carries no credential-shaped
@@ -849,6 +856,115 @@ def test_the_image_pins_both_clis_with_a_digest_check():
     assert 'sha256sum -c -' in text and "@anthropic-ai/claude-code@2.1.280" in text
     copies = [line for line in text.splitlines() if line.startswith(("COPY", "ADD"))]
     assert not [line for line in copies if "auth.json" in line or "/.codex" in line or ".credentials" in line]
+
+
+# ---- executor wiring: BOTH transports stubbed, the unexpected one raises ---------------------------
+class Unexpected:
+    def __init__(self, *args, **kwargs):
+        pytest.fail("an unstubbed host transport would be a real provider call")
+
+
+class Recorded:
+    enters_on_open = False
+
+    def __init__(self, sink, **kwargs):
+        self.sink, self.kwargs = sink, kwargs
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *args):
+        pass
+
+    def run(self, prompt, cwd, schema, timeout, **kwargs):
+        self.sink.append({"prompt": json.loads(prompt), "cwd": cwd, "kwargs": kwargs, "opened": self.kwargs})
+        kwargs["on_enter"]()
+        return {"answer": {"accepted": True}, "events": [], "thread_id": "t", "usage": None, "rotate": False,
+                "interrupted": False, "requested_model": kwargs.get("model"),
+                "isolation": {"profile": self.kwargs.get("profile"), "record": None}}
+
+
+def executor_with(tmp_path, monkeypatch, config, sink):
+    monkeypatch.setattr("m7_executor.AppServer", Unexpected)
+    monkeypatch.setattr("m7_executor.ClaudeCodeRuntime", Unexpected)
+    isolation = SimpleNamespace(config=config, inspector=lambda *a: None,
+                                codex_runtime=lambda **kwargs: Recorded(sink, **kwargs),
+                                runtime=lambda **kwargs: Recorded(sink, **kwargs))
+    checkout = tmp_path / "review"
+    checkout.mkdir(exist_ok=True)
+    git = SimpleNamespace(repository=tmp_path, root=checkout,
+                          _git=lambda *args, **kwargs: "" if args[:1] == ("status",) else "f" * 40)
+    executor = m7_executor.Executor(m7_executor.Service(MemoryStore()), git, FileArtifacts(str(tmp_path / "artifacts")),
+                        isolation=isolation)
+    return executor, checkout
+
+
+VERDICT_SCHEMA = {"type": "object", "properties": {"accepted": {"type": "boolean"}}, "required": ["accepted"]}
+
+
+def test_executor_runs_a_codex_review_in_codex_role_ro_with_container_reader_paths(tmp_path, monkeypatch, config):
+    sink = []
+    executor, checkout = executor_with(tmp_path, monkeypatch, config, sink)
+    manifest = executor.artifacts.put(json.dumps({"kind": rc.HANDOFF_KIND, "run_id": "w", "files": {}}), "m")["ref"]
+    evidence = {"candidate": {"revision": "a" * 40}, "isolation": {"evidence_handoff": {"manifest": manifest}}}
+    result = executor._run("lead:improvement", "review-1", "Evaluate review_lead", evidence, str(checkout),
+                           VERDICT_SCHEMA, True, workload="final_validation")
+    [call] = sink
+    assert call["opened"]["profile"] == rc.CODEX_ROLE_RO and result["accepted"] is True
+    receipt = json.loads(executor.artifacts._body(result["execution_ref"]))
+    external = call["prompt"]["required"]["external_context"]
+    assert external["reader_argv_prefix"][0] == iw.TRUSTED_PYTHON
+    handoff = call["opened"]["handoff"]
+    assert handoff["root"] == str(executor.artifacts.root)
+    assert external["ref"] in handoff["refs"] and manifest in handoff["refs"]
+    assert call["prompt"]["required"]["review_context"]["cwd"] == iw.WORKSPACE
+    assert receipt["invocation"]["request"]["isolation"]["profile"] == rc.CODEX_ROLE_RO
+
+
+def test_executor_refuses_codex_under_isolation_without_a_store_before_any_transport(tmp_path, monkeypatch):
+    sink = []
+    bare = iw.load_isolation({"ZEUS_WORKER_ISOLATION": "docker", "ZEUS_WORKER_IMAGE": IMAGE})
+    executor, checkout = executor_with(tmp_path, monkeypatch, bare, sink)
+    with pytest.raises(iw.IsolationError, match="codex_profile_disabled"):
+        executor._run("lead:improvement", "review-2", "Evaluate", {"x": 1}, str(checkout), VERDICT_SCHEMA, True,
+                      workload="final_validation")
+    assert sink == []
+
+
+def test_executor_refuses_active_native_hooks_in_a_codex_container(tmp_path, monkeypatch, config):
+    pytest.skip("S3b declared change (design v2 §5.4): the target runs active native hooks in the codex container instead of the M7 refusal; M7 adapters/hooks.NativeHooks is S8")
+    sink = []
+    executor, checkout = executor_with(tmp_path, monkeypatch, config, sink)
+    monkeypatch.setattr("codex_harness.adapters.executor.NativeHooks.configuration",
+                        lambda self: {"PreToolUse": [{"matcher": "*", "hooks": []}]})
+    with pytest.raises(iw.IsolationError, match="codex_container_native_hooks_unsupported"):
+        executor._run("lead:improvement", "review-3", "Evaluate", {"x": 1}, str(checkout), VERDICT_SCHEMA, True,
+                      workload="final_validation")
+    assert sink == []
+
+
+def test_executor_hands_off_writer_evidence_after_the_transport_returns(tmp_path, monkeypatch, config):
+    sink = []
+    executor, checkout = executor_with(tmp_path, monkeypatch, config, sink)
+    run = tmp_path / "isolated" / "runs" / "r1"
+    (run / "evidence").mkdir(parents=True)
+    (run / "evidence" / "receipt.json").write_text("{}", encoding="utf-8")
+
+    class Writer(Recorded):
+        def run(self, prompt, cwd, schema, timeout, **kwargs):
+            result = super().run(prompt, cwd, schema, timeout, **kwargs)
+            return {**result, "answer": {"summary": "done"},
+                    "isolation": {"profile": rc.CODEX_IMPL_RW, "record": str(run / "run.json"), "run_id": "r1"}}
+    executor.isolation.codex_runtime = lambda **kwargs: Writer(sink, **kwargs)
+    result = executor._run("worker:implementation", "impl-1", "Implement", {"plan": {"objective": "o"}},
+                           str(checkout), SCHEMA, False, workload="implementation", action="implement")
+    assert sink[0]["opened"]["profile"] == rc.CODEX_IMPL_RW
+    receipt = executor.artifacts._body(result["execution_ref"])
+    handed = json.loads(receipt)["isolation"]["evidence_handoff"]
+    assert handed["files"] == 1 and executor.artifacts._body(handed["manifest"])
+    # The reviewer that later names only this writer's receipt receives the manifest and its files.
+    refs = rc.handoff_refs(executor.artifacts.root, ["worker result " + result["execution_ref"]])
+    assert handed["manifest"] in refs and len(refs) == 3
 
 
 # ---- Docker-backed denial fixtures (disposable, labelled, never a provider) -----------------------

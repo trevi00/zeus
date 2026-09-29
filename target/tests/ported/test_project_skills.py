@@ -3,13 +3,23 @@
 Import paths rewritten to the target modules; any other adaptation is named in place.
 
 Not ported here (owning slice; carried forward, listed in the S2 coverage evidence):
-- test_actual_executor_context_contains_only_eligible_pinned_skills: S4 execution: needs RunTask (the M7 Executor)
-- test_real_skill_history_annotation_and_recovery_survive_other_task_observation: S4 execution: needs RunTask (the M7 Executor)
 - test_cli_legacy_import_preserves_extra_metadata_and_never_overwrites: S10 entry: the CLI main()/script moves to entry/composition
+
+PORTING NOTES (S4 ported executor suites; the M7 assertions are unchanged):
+- test_actual_executor_context_contains_only_eligible_pinned_skills: ported; `Executor`/`Harness` are
+  `m7_executor.Executor`/`Service` (a TEST shim over RunTask; construction only), the patch target is
+  `m7_executor.AppServer` (M7 `codex_harness.adapters.executor.AppServer`), `IMPLEMENTATION` comes from
+  `execution.domain.output_contracts`.
+- test_real_skill_history_annotation_and_recovery_survive_other_task_observation: SKIPPED, S10 entry: its final
+  step calls the skill-audit CLI `main([...], store=store)` (M7 `adapters/skill_audit.main`), which is not in the
+  target (`context.adapters.skill_audit` keeps only `render_text`). The body is kept unchanged.
 """
 
+import json
 from functools import partial as _partial
+from pathlib import Path
 
+import m7_executor
 import pytest
 from conftest import NATIVE_THRESHOLDS as _THRESHOLDS
 
@@ -17,9 +27,11 @@ from codex_harness.context.adapters import project_skills as _project_skills
 from codex_harness.context.adapters import skill_routing as _skill_routing
 from codex_harness.context.adapters.project_skills import initialize, parse_profile, project_context
 from codex_harness.context.domain.project_skills import eligible_paths, select_skill_paths
+from codex_harness.execution.domain.output_contracts import IMPLEMENTATION
 from codex_harness.host_os.adapters.git_workspace import GitWorkspace
 from codex_harness.kernel.errors import ContractError
 from codex_harness.storage.adapters.file_artifacts import FileArtifacts
+from codex_harness.storage.adapters.memory_store import MemoryStore
 
 # Adapted: the native threshold definition reaches context through context.ports.ThresholdPolicySource
 # (research implements it in S8); these suites supply the packaged definition.
@@ -153,6 +165,49 @@ def test_init_is_exclusive_and_git_pin_ignores_uncommitted_configuration(project
 
 
 
+def test_actual_executor_context_contains_only_eligible_pinned_skills(project, monkeypatch):
+    root, git, artifacts = project
+    big = root / '.harness/skills/python/fastapi/big.md'
+    big.write_text('LARGE_SKILL_BODY ' * 3000)
+    git._git('add', '.harness/skills/python/fastapi/big.md')
+    git._git('commit', '-qm', 'large skill fixture')
+    prompts = []
+    class Runtime:
+        def __init__(self, **kwargs): pass
+        def __enter__(self): return self
+        def __exit__(self, *args): pass
+        def run(self, prompt, *args, **kwargs):
+            assert len(prompt.encode('utf-8')) <= 22000
+            prompts.append(json.loads(prompt))
+            return {'answer': {'summary': 'fixture', 'tests': []}, 'thread_id': 'fixture',
+                    'usage': {}, 'rotate': False, 'interrupted': False, 'events': []}
+    monkeypatch.setattr('m7_executor.AppServer', Runtime)
+    executor = m7_executor.Executor(m7_executor.Service(MemoryStore()), git, artifacts)
+    executor._run('worker:implementation', 'task', 'Test context routing',
+                  {'large_evidence': 'x' * 25000}, str(root), IMPLEMENTATION)
+    text = json.dumps(prompts[0])
+    assert 'FASTAPI_ELIGIBLE' in text and 'COMMON_ONLY' in text
+    assert 'JAVA_MUST_NOT_LOAD' not in text
+    selection = prompts[0]['required']['project_skills']
+    assert (selection['selected'], selection['included'], selection['omitted']) == (3, 2, 1)
+    manifest = json.loads(Path(selection['file']).read_text(encoding='utf-8'))
+    large_record = next(r for r in manifest['skills'] if r['path'].endswith('/big.md'))
+    assert Path(large_record['file']).read_text().startswith('LARGE_SKILL_BODY')
+    (root / '.harness/tech-stack.yaml').write_text('stack: {language: java}')
+    git._git('add', '.harness/tech-stack.yaml')
+    git._git('commit', '-qm', 'switch stack')
+    executor._run('worker:implementation', 'task', 'Test context routing', {}, str(root), IMPLEMENTATION)
+    assert 'JAVA_MUST_NOT_LOAD' in json.dumps(prompts[1])
+    assert 'FASTAPI_ELIGIBLE' not in json.dumps(prompts[1])
+    assert prompts[1]['required']['recovery']['sources'] == {}
+    git._git('rm', '-r', '.harness')
+    git._git('commit', '-qm', 'remove project skill configuration')
+    executor._run('worker:implementation', 'task', 'Test context routing', {}, str(root), IMPLEMENTATION)
+    assert prompts[2]['required']['project_skills']['status'] == 'not_configured'
+    assert prompts[2]['required']['recovery']['sources'] == {}
+    assert 'JAVA_MUST_NOT_LOAD' not in json.dumps(prompts[2])
+
+
 def test_profile_symlink_in_git_is_rejected(project):
     root, git, artifacts = project
     blob = git._git('rev-parse', 'HEAD:.harness/tech-stack.yaml')
@@ -162,6 +217,81 @@ def test_profile_symlink_in_git_is_rejected(project):
         project_context(git, artifacts, str(root), git._git('rev-parse', 'HEAD'))
 
 
+
+
+def test_real_skill_history_annotation_and_recovery_survive_other_task_observation(project, monkeypatch, capsys):
+    pytest.skip("S10: entry: the skill-audit CLI main() (M7 adapters/skill_audit.main) moves to entry/composition; only render_text is in the target")
+    root, git, artifacts = project
+    (root / '.harness/stages.yaml').write_text('stages: []\n', encoding='utf-8')
+    (root / '.harness/skills/python/fastapi/routes.md').write_text(
+        '---\nkeywords: [alpha, beta, gamma]\n---\nFASTAPI_ELIGIBLE', encoding='utf-8')
+    git._git('add', '.')
+    git._git('commit', '-qm', 'history fixture')
+    prompts = []
+
+    class Runtime:
+        def __init__(self, **kwargs): pass
+        def __enter__(self): return self
+        def __exit__(self, *args): pass
+        def run(self, prompt, *args, **kwargs):
+            prompts.append(json.loads(prompt))
+            kwargs['on_event']({'method': 'item/completed', 'params': {
+                'item': {'id': 'completed-' + str(len(prompts)), 'type': 'commandExecution',
+                         'status': 'completed'}}})
+            return {'answer': {'summary': 'fixture', 'tests': []}, 'thread_id': 'fixture',
+                    'usage': {}, 'rotate': False, 'interrupted': False, 'events': []}
+
+    monkeypatch.setattr('m7_executor.AppServer', Runtime)
+    store = MemoryStore()
+    executor = m7_executor.Executor(m7_executor.Service(store), git, artifacts)
+    for index in range(3):
+        executor._run('worker:implementation', 'weak-' + str(index), 'alpha', {},
+                      str(root), IMPLEMENTATION)
+    executor._run('worker:implementation', 'main', 'alpha beta gamma', {},
+                  str(root), IMPLEMENTATION)
+    first = prompts[-1]
+    full = next(i for i in first['evidence'] if i['id'].endswith('/routes.md'))
+    assert 'historical_advisory' in full['body'] and 'FASTAPI_ELIGIBLE' in full['body']
+    old_history = first['required']['project_skills']['history']['ref']
+    with store.transaction() as tx:
+        original_progress = tx.get('execution_progress', 'main')
+        checkpoint = tx.get('sessions', 'worker:implementation')
+        # Verify compatibility with a checkpoint written by the previous draft.
+        checkpoint['checkpoint']['research_binding']['skill_history_ref'] = old_history
+        tx.put('sessions', 'worker:implementation', checkpoint)
+    executor._run('lead:improvement', 'other-task', 'alpha', {}, str(root), IMPLEMENTATION)
+    executor._run('worker:implementation', 'main', 'alpha beta gamma', {},
+                  str(root), IMPLEMENTATION)
+    resumed = prompts[-1]
+    assert resumed['required']['project_skills']['history']['ref'] != old_history
+    recovery = resumed['required']['recovery']['sources']
+    assert set(recovery) == {'checkpoint', 'progress'}
+    assert artifacts.document(recovery['progress']['ref']) == original_progress
+    assert artifacts.document(recovery['checkpoint']['ref']) == checkpoint
+    assert 'skill_history_ref' not in resumed['required']['research_context']
+    from codex_harness.adapters.skill_audit import main  # noqa: F401
+
+    project_id = resumed['required']['project_skills']['project_id']
+    assert main(['--project-id', project_id, '--json'], store=store) == 0
+    audit = json.loads(capsys.readouterr().out)
+    assert audit['invocations'] == 5  # three weak, one full, another task; retry is not a sample
+    assert audit['dim_weight'] == {'kw': 7}
+    assert audit['skills'][0]['path'].endswith('/routes.md')
+    from codex_harness.kernel.ids import digest
+
+    with store.transaction() as tx:
+        history = tx.get('skill_history', digest('uuid:' + project_id))
+    assert len(history['events']) == 5
+    assert all(event['top'][0]['body_chars'] == len('FASTAPI_ELIGIBLE')
+               for event in history['events'])
+    # FA-012: the actual executor observation records the delivered tier and rendered hash.
+    tiers = [event['top'][0]['tier'] for event in history['events']]
+    assert tiers.count('full') >= 1 and set(tiers) <= {'full', 'pointer'}
+    assert all(event['top'][0]['rendered_hash'] for event in history['events'] if event['top'][0]['tier'] == 'full')
+    assert audit['skills'][0]['delivery']['full'] == tiers.count('full')
+    executor._run('worker:implementation', 'main', 'changed objective', {},
+                  str(root), IMPLEMENTATION)
+    assert prompts[-1]['required']['recovery']['sources'] == {}
 
 
 def test_selected_skill_symlink_is_rejected(project):
