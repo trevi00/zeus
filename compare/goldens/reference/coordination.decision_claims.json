@@ -1,0 +1,238 @@
+{
+ "budget_exhausted": {
+  "claimed": null,
+  "records": [
+   [
+    "decisions_pending",
+    "d1",
+    "4e139f42d5bb5c594b506d75ec1dba1a7ae9b09f8c3303dd22f6e6becf8c6b20"
+   ],
+   [
+    "execution_notices",
+    "2e0458ec76254d1e249aeee6eeecd6860d471c292056c4144aa8c5cac1593de2",
+    "4f3c4a186998d0e263f1c0d81f5ee963f27a915f54c4c083e3e15e5064b40a77"
+   ],
+   [
+    "outbox",
+    "2e0458ec76254d1e249aeee6eeecd6860d471c292056c4144aa8c5cac1593de2",
+    "88691fdc1986b66a68c815d4c7e9b6ac55638d4236bc08b224e34cc75346b766"
+   ]
+  ]
+ },
+ "deadline_passed": {
+  "claimed": null,
+  "records": [
+   [
+    "decisions_pending",
+    "d1",
+    "f2e5860c56202a56fdf7c0fb9edc2bf652589ff1271bbab43eaeaf0a271d43e8"
+   ],
+   [
+    "execution_notices",
+    "b12936483498864e740ab91fb1603f0c3ea15bb9f661f59c03bf942a37e63de3",
+    "57ed591e088805fee94b77de4ed84f15e9b13843a4b407aab48d75d176ee98f7"
+   ],
+   [
+    "outbox",
+    "b12936483498864e740ab91fb1603f0c3ea15bb9f661f59c03bf942a37e63de3",
+    "a27830e2882e75c0825ba55c74bdb0af3b02ea7639c19dba32e9ae905ebabf50"
+   ]
+  ]
+ },
+ "expired_running_reclaimed": {
+  "claimed": {
+   "attempt": 2,
+   "error": null,
+   "execution_clock": {
+    "deadline_remaining": 1800.0,
+    "domain": "00000000-0000-4000-8000-00000000e6e6",
+    "lease_seconds": 1200.0,
+    "monotonic": 1001.0,
+    "version": 1,
+    "wall": "2026-01-01T00:00:01+00:00"
+   },
+   "execution_deadline": "2026-01-01T00:30:01+00:00",
+   "generation": 2,
+   "id": "d1",
+   "lease_owner": "5eed0000-0000-4000-8000-000000000002",
+   "lease_until": "2026-01-01T00:20:01+00:00",
+   "owner": "5eed0000-0000-4000-8000-000000000002",
+   "retry_budget": {
+    "bound_at": "x",
+    "max_attempts": 3,
+    "origin": "first_claim",
+    "version": 1
+   },
+   "status": "running"
+  },
+  "records": [
+   [
+    "decisions_pending",
+    "d1",
+    "239d6994a7246a6181ca1498d5b06716e0c71d4ab50345da0cc3e5845b316904"
+   ],
+   [
+    "events",
+    "365edbc77426760044a206ce087d007c608ab732e31b2e72d2a9f20b497f60d1",
+    "0ad4e86973e03ad376137b076aa77d3d1e4bfee572d821a81b67ba38c0bfad21"
+   ],
+   [
+    "execution_fences",
+    "decisions_pending:d1",
+    "82976e63121a16da0e9c385fdf632c82da422551fd1557571add5c30a79f7714"
+   ]
+  ]
+ },
+ "fence_regressed": {
+  "claimed": null,
+  "records": [
+   [
+    "decisions_pending",
+    "d1",
+    "3120d3da2780de2474065b8c5652f2b9fc14e4b717a05b60bb6655f5af84e9f1"
+   ],
+   [
+    "events",
+    "3d5c974da8f69267789c46f110959c1b38a9cc0636a5d210dfb640f89674e20c",
+    "35751b9ee8902d02bb67dac27a36e4f4b63d4ab45b39919b7222759feb2e9faf"
+   ],
+   [
+    "events",
+    "e80a787bd91b2c74ca47bc7f30f1e60c280d70546ae583b6a54948d4da9216d5",
+    "5f06772387ac1737f1c377c3e71c53693742ec30822a4ba77e8624916265a0e5"
+   ],
+   [
+    "execution_fences",
+    "decisions_pending:d1",
+    "4c8e3d28037d7c059ab9d3dbefc2f311e93491edecae5581d26293d496d8c466"
+   ],
+   [
+    "execution_notice_errors",
+    "e80a787bd91b2c74ca47bc7f30f1e60c280d70546ae583b6a54948d4da9216d5",
+    "ecc95b6da22d8888c284dee9ffc3c6a628e4aa9eb2adb0d6a57e5d1055405f99"
+   ]
+  ]
+ },
+ "fresh": {
+  "again": null,
+  "claimed": {
+   "attempt": 1,
+   "error": null,
+   "execution_clock": {
+    "deadline_remaining": 2700.0,
+    "domain": "00000000-0000-4000-8000-00000000e6e6",
+    "lease_seconds": 1200.0,
+    "monotonic": 1001.0,
+    "version": 1,
+    "wall": "2026-01-01T00:00:01+00:00"
+   },
+   "execution_deadline": "2026-01-01T00:45:01+00:00",
+   "generation": 1,
+   "id": "d1",
+   "lease_owner": "5eed0000-0000-4000-8000-000000000002",
+   "lease_until": "2026-01-01T00:20:01+00:00",
+   "owner": "5eed0000-0000-4000-8000-000000000002",
+   "retry_budget": {
+    "bound_at": "2026-01-01T00:00:01+00:00",
+    "max_attempts": 3,
+    "origin": "first_claim",
+    "version": 1
+   },
+   "status": "running"
+  },
+  "records": [
+   [
+    "decisions_pending",
+    "d1",
+    "b55ee8536c86204beac1fbd6006ece6b4029cb52501ae0ae1cdb886ce99e5b59"
+   ],
+   [
+    "execution_fences",
+    "decisions_pending:d1",
+    "0349f385a55cc3930c2062d0ef47ee2a785db783366e00aa7aaacb14abd78dfb"
+   ]
+  ]
+ },
+ "guard_mismatch": {
+  "message": "Expected execution correlation changed: d1",
+  "records": [
+   [
+    "decisions_pending",
+    "d1",
+    "59d204603d51a62b2241e33711fdfb003543fea64b6a76ff2a656f8a50a66092"
+   ]
+  ],
+  "refused": "ClaimGuardRefused"
+ },
+ "invalid_deadline": {
+  "claimed": null,
+  "records": [
+   [
+    "decisions_pending",
+    "d1",
+    "e103823c90d785463e024c461e96d10b8f04d83b2bfda10fa3364f7b6cf10baf"
+   ],
+   [
+    "events",
+    "160691f588b692ce564931268c72665e6dcced19e5f0359a1e0cc11513f256de",
+    "5723db574c71dc2cdee9fa9108742305329adc6704227df3ba24d1458b0b4d7c"
+   ],
+   [
+    "execution_notices",
+    "8d9990e88f8ec7c6929dba3c40d1d13f3ccca95859a1c03998aea06a6caccab8",
+    "3b4118703ac2b064bc0a9fa05a4af4918b455c1d6897b608a47ab2725e7452a9"
+   ],
+   [
+    "outbox",
+    "8d9990e88f8ec7c6929dba3c40d1d13f3ccca95859a1c03998aea06a6caccab8",
+    "eddea3ff7f8683dcbc7f7606d0c8793bbbf8091d616157906a5f43fa252bacb1"
+   ]
+  ]
+ },
+ "other_actor_only": {
+  "claimed": null,
+  "records": [
+   [
+    "decisions_pending",
+    "d1",
+    "b235eda16a4cb4c025107f64b9fa5ca97d25ea81934ff254d8904b430717e73d"
+   ]
+  ]
+ },
+ "recovery_context_changed": {
+  "claimed": null,
+  "records": [
+   [
+    "decisions_pending",
+    "d1",
+    "6f5a7fb105b41b5cc4316ed70fe8f4b47c54e011acf68750e6a1db921bbcc07b"
+   ],
+   [
+    "events",
+    "f38e3efd5d751b7430fd3f3a3cb7cfa1232fd6af59ecb297b77a9afe2c8f258f",
+    "17378c16d9587c857e438b49e130a3d0c3a9f3bf6008b88b71115a365ecabebf"
+   ],
+   [
+    "execution_notices",
+    "b0d90a1d27114cef293b36db28816fe00c9bc40fae2288bb1ba474fe96c2600a",
+    "fce77dac6468cc1703714f7dbe339c8ead1fca991c5f92d156c932122ee3dde1"
+   ],
+   [
+    "outbox",
+    "b0d90a1d27114cef293b36db28816fe00c9bc40fae2288bb1ba474fe96c2600a",
+    "2ed1c4b16e14884dd418d4f2118918b57d6b9b829444550946db553d019ca48a"
+   ]
+  ]
+ },
+ "ticket_superseded": {
+  "message": "Ticket missing",
+  "records": [
+   [
+    "decisions_pending",
+    "d1",
+    "dcdb616d88a2877dbab720e54fde5625b5369f610fd839b95a3e49b5e7ef65b0"
+   ]
+  ],
+  "refused": "ContractError"
+ }
+}

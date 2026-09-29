@@ -1,0 +1,9 @@
+{
+ "family": "coordination.decision_claims",
+ "description": "S4 moved-ahead decision claim (lead decision Option A): M7 decide_one's decisions_pending claim up to the provider boundary (fresh claim, busy actor, expired running reclaimed, recovery context changed, ticket superseded, invalid/passed deadline, retry budget exhausted, regressed fence, other actor, guard mismatch) with the store at the boundary; MemoryStore, scripted clocks and ids",
+ "reference_driver": "drivers/reference/s4_claims.py",
+ "target_driver": null,
+ "golden": "goldens/reference/coordination.decision_claims.json",
+ "slice": "S4",
+ "target_status": "pending: the coordination decision claim is not yet moved"
+}
