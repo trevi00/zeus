@@ -1,0 +1,114 @@
+{
+ "inspect_invalid_ref": {
+  "c_after_a_document": false,
+  "calls": 0,
+  "documents": [],
+  "inspect_before_document": true,
+  "inspect_once": true,
+  "inspects": [],
+  "result": {
+   "message": "Invalid declared artifact reference",
+   "refused": "ContractError"
+  }
+ },
+ "inspect_no_refs": {
+  "c_after_a_document": false,
+  "calls": 0,
+  "documents": [],
+  "inspect_before_document": true,
+  "inspect_once": true,
+  "inspects": [],
+  "result": {
+   "value": null
+  }
+ },
+ "inspect_valid": {
+  "c_after_a_document": true,
+  "calls": 6,
+  "documents": [
+   "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+   "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+   "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+  ],
+  "inspect_before_document": true,
+  "inspect_once": true,
+  "inspects": [
+   "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+   "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+   "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+  ],
+  "result": {
+   "value": null
+  }
+ },
+ "later_rejection": {
+  "message": "Research adoption deferred: rejected by a later review",
+  "refused": "ContractError"
+ },
+ "paused": {
+  "message": "Research adoption deferred: rollout paused",
+  "refused": "ContractError"
+ },
+ "plain": {
+  "artifacts_calls": [],
+  "inspect": {
+   "value": null
+  },
+  "require": {
+   "value": null
+  }
+ },
+ "proposal_no_approval": {
+  "message": "Research adoption deferred: approval required",
+  "refused": "ContractError"
+ },
+ "provenance_changed": {
+  "message": "Research adoption deferred: changed provenance",
+  "refused": "ContractError"
+ },
+ "receipt_changed": {
+  "message": "Research adoption deferred: changed independent inspection",
+  "refused": "ContractError"
+ },
+ "reviews_incomplete": {
+  "message": "Research adoption deferred: reviews incomplete",
+  "refused": "ContractError"
+ },
+ "revoked": {
+  "message": "Research adoption deferred: approval revoked",
+  "refused": "ContractError"
+ },
+ "stale_binding": {
+  "message": "Research adoption deferred: stale evidence, graph, revision or policy",
+  "refused": "ContractError"
+ },
+ "two_approvals": {
+  "message": "Research adoption deferred: approval required",
+  "refused": "ContractError"
+ },
+ "valid": {
+  "binding_equal": true,
+  "keys": [
+   "audit_id",
+   "binding",
+   "proposal",
+   "reviews"
+  ],
+  "result": {
+   "value": {
+    "audit_id": "a1",
+    "binding": "61d6087ef242e1d31a073e080ef8106c86bd329d8669a802316b7bc23f344f28",
+    "proposal": {
+     "source": {
+      "commit": "cccccccccccccccccccccccccccccccccccccccc",
+      "repository": "https://example.invalid/r"
+     }
+    },
+    "reviews": [
+     "29918b12f48f018f41c6b925c848fb776aedfc2315994163ba484e4538941e08",
+     "40153386b3f91fa3e3f3deada26dede8d3b50096571af83603526f1a359fa127"
+    ]
+   }
+  }
+ }
+}
