@@ -1,0 +1,9 @@
+{
+ "family": "storage.redis",
+ "description": "S1 storage on a labelled disposable Redis (one namespace per case): run-scoped namespaces, the credential-free transport incarnation identity, unbound and bound publish, TransportChanged refusals before any write, group delivery/ack, reclaim of an abandoned entry, dead-letter, compaction bounds, database index identity. Redis-chosen entry ids and the server run id are compared as relations only",
+ "reference_driver": "drivers/reference/s1_redis.py",
+ "target_driver": "drivers/target/s1_redis.py",
+ "requires": "disposable-redis",
+ "golden": "goldens/reference/storage.redis.json",
+ "slice": "S1"
+}

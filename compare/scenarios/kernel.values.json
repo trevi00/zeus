@@ -1,0 +1,8 @@
+{
+ "family": "kernel.values",
+ "description": "S1 kernel: canonical JSON and digest vectors, six-W envelope identity under the scripted clock/id source, six-W schema acceptance/refusal reasons, require/ContractError/ExecutionFailure, the usage-accounting policy and the RuntimePolicy snapshot",
+ "reference_driver": "drivers/reference/s1_kernel.py",
+ "target_driver": "drivers/target/s1_kernel.py",
+ "golden": "goldens/reference/kernel.values.json",
+ "slice": "S1"
+}

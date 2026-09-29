@@ -27,6 +27,11 @@ def start(side: str) -> None:
 
     if not provider_guard.installed():
         raise SystemExit("R-P: provider guard is not installed in this driver process")
+    if side == "target":
+        # R-O: refuse, at import time, any codex_harness/zeus module from outside the target tree.
+        import origin
+
+        origin.install_import_audit(Path(os.environ["ZEUS_REBUILD_TARGET_SRC"]))
 
 
 def finish(side: str, scenario: str, result: dict) -> None:

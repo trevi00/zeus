@@ -1,0 +1,134 @@
+{
+ "compact": {
+  "invalid_retain": [
+   {
+    "error": "ValueError",
+    "message": "retain must be a nonnegative integer"
+   },
+   {
+    "error": "ValueError",
+    "message": "retain must be a nonnegative integer"
+   }
+  ],
+  "length_after": 3,
+  "length_before": 6,
+  "pending_kept": true,
+  "trimmed_retain_1": 3
+ },
+ "compact_without_group": 0,
+ "database_changes_identity": {
+  "database": 1,
+  "storage": null
+ },
+ "dead_letters": [
+  {
+   "body_equal": true,
+   "entry_is_reclaimed": true,
+   "fields": [
+    "body",
+    "entry_id",
+    "reason",
+    "source"
+   ],
+   "reason": "fixture_reason",
+   "source": "s1-delivery:agent:worker:implementation"
+  }
+ ],
+ "decode_invalid": {
+  "error": "ContractError",
+  "message": "[]: 'schema_version' is a required property; []: 'message_id' is a required property; []: 'correlation_id' is a required property; []: 'causation_id' is a required property; []: 'who' is a required property"
+ },
+ "empty_receive": null,
+ "endpoint_is_socket_digest": true,
+ "first_delivery": {
+  "decoded_is_first": true,
+  "id": "entry-id"
+ },
+ "for_run": {
+  "namespace": "s1-scoped:run:b4c05df04575822cec8550e9491c58e1",
+  "other_run": true,
+  "route": {
+   "namespace": "s1-scoped:run:b4c05df04575822cec8550e9491c58e1",
+   "run_id": "run-7",
+   "scope": "run"
+  },
+  "same_run_same_streams": true
+ },
+ "identity": {
+  "database": 0,
+  "namespace": "s1-incarnation",
+  "schema": "urn:zeus:transport:redis-stream:1",
+  "storage": "5eed0000000040008000000000000001"
+ },
+ "identity_after_replacement": {
+  "database": 0,
+  "namespace": "s1-incarnation",
+  "schema": "urn:zeus:transport:redis-stream:1",
+  "storage": "replaced-token"
+ },
+ "identity_stable": true,
+ "keys_left": [],
+ "names": [
+  "s1-incarnation:agent:worker:implementation",
+  "s1-incarnation:transport-incarnation",
+  null
+ ],
+ "pending_after_dead_letter": 0,
+ "pending_before_dead_letter": 1,
+ "probe_after_create_equal": true,
+ "probe_before_create": {
+  "database": 0,
+  "namespace": "s1-incarnation",
+  "schema": "urn:zeus:transport:redis-stream:1",
+  "storage": null
+ },
+ "probe_server_present": true,
+ "publish_bound": "entry-id",
+ "publish_refusals": {
+  "invalid_message": {
+   "error": "ContractError",
+   "message": "[]: 'schema_version' is a required property; []: 'message_id' is a required property; []: 'correlation_id' is a required property; []: 'causation_id' is a required property; []: 'who' is a required property"
+  },
+  "missing_storage": {
+   "error": "TransportChanged",
+   "message": "transport_changed"
+  },
+  "namespace": {
+   "error": "TransportChanged",
+   "message": "transport_changed"
+  },
+  "not_a_dict": {
+   "error": "TransportChanged",
+   "message": "transport_changed"
+  },
+  "server": {
+   "error": "TransportChanged",
+   "message": "transport_server_changed"
+  },
+  "storage_replaced": {
+   "error": "TransportChanged",
+   "message": "transport_storage_changed"
+  }
+ },
+ "publish_unbound": "entry-id",
+ "reclaim_same_entry": true,
+ "run_namespace": [
+  {
+   "ok": "prefix:run:4e65d3fbe8ad6535681b021b30785b12"
+  },
+  {
+   "error": "ValueError",
+   "message": "run namespace needs a configured prefix and a run id"
+  },
+  {
+   "error": "ValueError",
+   "message": "run namespace needs a configured prefix and a run id"
+  },
+  {
+   "error": "ValueError",
+   "message": "run namespace needs a configured prefix and a run id"
+  }
+ ],
+ "stream_length_after_refusals": 2,
+ "transport_schema": "urn:zeus:transport:redis-stream:1"
+}

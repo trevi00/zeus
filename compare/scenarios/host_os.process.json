@@ -1,0 +1,8 @@
+{
+ "family": "host_os.process",
+ "description": "S1 host_os: spawn keyword policy (POSIX and the Windows creation flags by value), the Python stdio channel, run_process results/input/timeout, observed spawns and a refusing observer killing its child, logged children with timeout cleanup and stray descendants, ProcessTree boundary and two-part termination receipts, scratch removal with read-only leftovers and an outside symlink, and pure diagnostics (publication, narrow, service-entry argument and exit facts, journal scalars). OS pids and group ids are projected out",
+ "reference_driver": "drivers/reference/s1_process.py",
+ "target_driver": "drivers/target/s1_process.py",
+ "golden": "goldens/reference/host_os.process.json",
+ "slice": "S1"
+}

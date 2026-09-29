@@ -46,8 +46,8 @@ DOCKER_BIND_ROOT_ENV = "ZEUS_TEST_DOCKER_BIND_ROOT"
 FIXTURE_LABEL = "zeus.test.fixture=1"
 FIXTURE_NAME_PREFIX = "zeus-test-fixture-"
 FIXTURE_IMAGE = re.compile(r"^zeus-test-fixture/[a-z0-9][a-z0-9._-]*(:[A-Za-z0-9._-]+)?$")
-# Exact refs of disposable service images the repository itself uses (compose.yaml postgres).
-DEFAULT_FIXTURE_IMAGES = ("pgvector/pgvector:pg17",)
+# Exact refs of disposable service images the repository itself uses (compose.yaml postgres, redis).
+DEFAULT_FIXTURE_IMAGES = ("pgvector/pgvector:pg17", "redis:7.4-alpine")
 FAKE_EXIT = 97
 SHELLS = frozenset({"sh", "bash", "dash", "zsh", "ksh", "fish", "cmd", "powershell", "pwsh"})
 DOCKER_ALIASES = {("container", "run"): "run", ("container", "create"): "create",

@@ -1,0 +1,434 @@
+{
+ "canonical": [
+  "{\"a\":[1,2,{\"y\":\"é\",\"z\":null}],\"b\":1}",
+  "[]",
+  "\"text\"",
+  "1.5",
+  "{\"n\":-0.0,\"t\":true,\"한\":\"글\"}",
+  "{\"empty\":{},\"nested\":{\"k\":[{\"x\":1},{\"x\":2}]}}"
+ ],
+ "contract_error_is_value_error": true,
+ "digest": [
+  "c9dad5b6d97afe79dcd8dba9af250e59d0ed910ef37bbde620e1ccd002f16244",
+  "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+  "1e1d0f251d3a76fa2b1bfc81164078572623403887db02988b504b0492e9f076",
+  "9f29a130438b81170b92a42650f9a94291ecad60bd47af2a3886e75f7f728725",
+  "0f8c41a627abb020d733d84c5ebd9c61294985c71f1966c5fb4bdcbd9528fe7c",
+  "7856c9f1d4a89e17e8caedfe9ebe1803acf3e9c6c7a6d61e65e05046d57726db"
+ ],
+ "envelope_digests": [
+  "7d618d87937dec3fa81703c8bc9be310325cbc5a5de144b1946a1de128e81284",
+  "5bc237e2a4c32e0f49651d30fba4728d045a86d8bbe9894a4082ff9c79f2d66e"
+ ],
+ "envelopes": [
+  {
+   "causation_id": null,
+   "correlation_id": "correlation-1",
+   "how": {
+    "acceptance_criteria": [
+     "Preserve normal behavior"
+    ],
+    "constraints": [],
+    "context_ref": null,
+    "result_schema": "six-w.v1"
+   },
+   "message_id": "5eed0000-0000-4000-8000-000000000001",
+   "schema_version": "1.0",
+   "type": "task.assign",
+   "what": {
+    "action": "implement",
+    "details": {
+     "evidence_refs": [
+      "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+     ],
+     "n": 1
+    }
+   },
+   "when": {
+    "after": [],
+    "created_at": "2026-01-01T00:00:00+00:00",
+    "deadline": null
+   },
+   "where": {
+    "allowed_paths": [],
+    "environment": "local",
+    "repository": "codex-harness",
+    "revision": "bootstrap"
+   },
+   "who": {
+    "owner": "worker:implementation",
+    "recipient": "worker:implementation",
+    "sender": "lead:improvement"
+   },
+   "why": {
+    "evidence_refs": [
+     "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+    ],
+    "objective": "Improve harness reliability from verified evidence"
+   }
+  },
+  {
+   "causation_id": "5eed0000-0000-4000-8000-000000000001",
+   "correlation_id": "correlation-1",
+   "how": {
+    "acceptance_criteria": [
+     "Preserve normal behavior"
+    ],
+    "constraints": [],
+    "context_ref": null,
+    "result_schema": "six-w.v1"
+   },
+   "message_id": "5eed0000-0000-4000-8000-000000000002",
+   "schema_version": "1.0",
+   "type": "task.result",
+   "what": {
+    "action": "report",
+    "details": {}
+   },
+   "when": {
+    "after": [],
+    "created_at": "2026-01-01T00:00:01.500000+00:00",
+    "deadline": null
+   },
+   "where": {
+    "allowed_paths": [],
+    "environment": "local",
+    "repository": "codex-harness",
+    "revision": "bootstrap"
+   },
+   "who": {
+    "owner": "lead:improvement",
+    "recipient": "lead:improvement",
+    "sender": "worker:implementation"
+   },
+   "why": {
+    "evidence_refs": [],
+    "objective": "Improve harness reliability from verified evidence"
+   }
+  }
+ ],
+ "execution_failure": {
+  "cause": "runner_timeout",
+  "evidence": {
+   "seconds": 5
+  },
+  "is_runtime_error": true,
+  "text": "runner_timeout"
+ },
+ "message_ids_distinct": true,
+ "policy.snapshot": {
+  "artifact_retention_days": 7,
+  "claude_event_queue": 2000,
+  "claude_events_retained": 400,
+  "claude_line_bytes": 1048576,
+  "claude_stream_bytes": 8388608,
+  "context_checkpoint_fraction": 0.7,
+  "decision_seconds": 900,
+  "health_failure_threshold": 3,
+  "idle_seconds": 3600,
+  "max_active_executions": 2,
+  "max_attempts": 3,
+  "max_reworks": 2,
+  "observation_alert_window_seconds": 300,
+  "observation_collect_batch": 1000,
+  "observation_retention_seconds": 604800,
+  "observation_segment_bytes": 4194304,
+  "observation_spool_bytes": 33554432,
+  "recurrence_threshold": 2,
+  "release_check_seconds": 900,
+  "release_lease_seconds": 1200,
+  "release_max_attempts": 3,
+  "release_retry_seconds": 30,
+  "research_interval_hours": 6,
+  "source_cpus": 1,
+  "source_execution_seconds": 120,
+  "source_memory_mb": 512,
+  "source_output_bytes": 65536,
+  "source_pids": 128,
+  "source_read_bytes": 24000,
+  "source_read_lines": 120,
+  "source_request_seconds": 300,
+  "source_scratch_mb": 128,
+  "stream_retention_entries": 1000,
+  "task_lease_seconds": 600,
+  "task_seconds": 3600
+ },
+ "require": [
+  {
+   "ok": null
+  },
+  {
+   "error": "ContractError",
+   "message": "Declared contract reason"
+  }
+ ],
+ "usage.accounting_mode": [
+  {
+   "ok": "finite"
+  },
+  {
+   "ok": "finite"
+  },
+  {
+   "ok": "subscription"
+  },
+  {
+   "ok": "finite"
+  },
+  {
+   "ok": "finite"
+  },
+  {
+   "ok": "finite"
+  },
+  {
+   "ok": "finite"
+  },
+  {
+   "ok": "finite"
+  },
+  {
+   "error": "UsagePolicyError",
+   "message": "usage policy refused: invalid",
+   "reason_code": "invalid"
+  },
+  {
+   "error": "UsagePolicyError",
+   "message": "usage policy refused: invalid",
+   "reason_code": "invalid"
+  }
+ ],
+ "usage.constants": {
+  "FIELDS": [
+   "mode",
+   "per_host",
+   "total"
+  ],
+  "FINITE": "finite",
+  "MODES": [
+   "finite",
+   "subscription"
+  ],
+  "SUBSCRIPTION": "subscription"
+ },
+ "usage.error_is_contract_error": true,
+ "usage.exhausted": [
+  {
+   "ok": false
+  },
+  {
+   "ok": true
+  },
+  {
+   "ok": false
+  },
+  {
+   "ok": false
+  },
+  {
+   "ok": true
+  },
+  {
+   "ok": true
+  }
+ ],
+ "usage.headroom": [
+  [
+   {
+    "ok": {
+     "ok": true,
+     "remaining": 1,
+     "required": 1
+    }
+   },
+   {
+    "ok": {
+     "ok": false,
+     "remaining": 0,
+     "required": 1
+    }
+   },
+   {
+    "ok": {
+     "ok": true,
+     "remaining": 1,
+     "required": 1
+    }
+   },
+   {
+    "ok": {
+     "ok": true,
+     "remaining": 1,
+     "required": 1
+    }
+   },
+   {
+    "ok": {
+     "ok": false,
+     "remaining": null,
+     "required": 1
+    }
+   },
+   {
+    "ok": {
+     "ok": false,
+     "remaining": null,
+     "required": 1
+    }
+   }
+  ],
+  [
+   {
+    "ok": {
+     "ok": false,
+     "remaining": null,
+     "required": 1
+    }
+   },
+   {
+    "ok": {
+     "ok": false,
+     "remaining": null,
+     "required": 1
+    }
+   },
+   {
+    "ok": {
+     "ok": true,
+     "remaining": null,
+     "required": 1
+    }
+   },
+   {
+    "ok": {
+     "ok": false,
+     "remaining": null,
+     "required": 1
+    }
+   },
+   {
+    "ok": {
+     "ok": false,
+     "remaining": null,
+     "required": 1
+    }
+   },
+   {
+    "ok": {
+     "ok": false,
+     "remaining": null,
+     "required": 1
+    }
+   }
+  ]
+ ],
+ "usage.validate_budget": [
+  {
+   "ok": {
+    "per_host": 2,
+    "total": 5
+   }
+  },
+  {
+   "ok": {
+    "per_host": 2,
+    "total": 5
+   }
+  },
+  {
+   "ok": {
+    "mode": "subscription",
+    "per_host": 2,
+    "total": 5
+   }
+  },
+  {
+   "error": "UsagePolicyError",
+   "message": "usage policy refused: invalid",
+   "reason_code": "invalid"
+  },
+  {
+   "error": "UsagePolicyError",
+   "message": "usage policy refused: invalid",
+   "reason_code": "invalid"
+  },
+  {
+   "error": "UsagePolicyError",
+   "message": "usage policy refused: invalid",
+   "reason_code": "invalid"
+  },
+  {
+   "error": "UsagePolicyError",
+   "message": "usage policy refused: fields",
+   "reason_code": "fields"
+  },
+  {
+   "error": "UsagePolicyError",
+   "message": "usage policy refused: fields",
+   "reason_code": "fields"
+  },
+  {
+   "error": "UsagePolicyError",
+   "message": "usage policy refused: invalid",
+   "reason_code": "invalid"
+  },
+  {
+   "error": "UsagePolicyError",
+   "message": "usage policy refused: invalid",
+   "reason_code": "invalid"
+  }
+ ],
+ "usage.validate_grant": [
+  {
+   "ok": {
+    "per_host": 3,
+    "total": 5
+   }
+  },
+  {
+   "error": "UsagePolicyError",
+   "message": "usage policy refused: no_change",
+   "reason_code": "no_change"
+  },
+  {
+   "error": "UsagePolicyError",
+   "message": "usage policy refused: decrease",
+   "reason_code": "decrease"
+  },
+  {
+   "ok": {
+    "mode": "subscription",
+    "per_host": 2,
+    "total": 5
+   }
+  }
+ ],
+ "validate_message": {
+  "additional_property": {
+   "error": "ContractError",
+   "message": "[]: Additional properties are not allowed ('unexpected' was unexpected)"
+  },
+  "malformed_message_id": {
+   "ok": true
+  },
+  "missing_why": {
+   "error": "ContractError",
+   "message": "[]: 'why' is a required property"
+  },
+  "schema_version": {
+   "error": "ContractError",
+   "message": "['schema_version']: '1.0' was expected"
+  },
+  "unknown_type": {
+   "error": "ContractError",
+   "message": "['type']: 'task.unknown' is not one of ['task.assign', 'task.result', 'execution.notice', 'incident.report', 'hook.required', 'review.result']"
+  },
+  "valid": {
+   "ok": true
+  },
+  "what_not_object": {
+   "error": "ContractError",
+   "message": "['what']: 'text' is not of type 'object'"
+  }
+ }
+}

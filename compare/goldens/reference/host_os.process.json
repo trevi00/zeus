@@ -1,0 +1,320 @@
+{
+ "pure": {
+  "exit_facts": [
+   0,
+   0,
+   3,
+   1,
+   0,
+   1,
+   1
+  ],
+  "exit_reasons": [
+   "ok",
+   "ok",
+   "cli_exit",
+   "cli_exit_unknown"
+  ],
+  "narrow": [
+   "undetermined",
+   "service",
+   "publication",
+   "wsl_path",
+   "all_reachable",
+   "undetermined"
+  ],
+  "publication": [
+   "127.0.0.1:24001:5432",
+   "127.0.0.1::6379"
+  ],
+  "safe_scalar": [
+   true,
+   true,
+   true,
+   true,
+   false,
+   false,
+   false,
+   false
+  ],
+  "service_args": [
+   [
+    "j.jsonl",
+    [
+     "fleet",
+     "run"
+    ]
+   ],
+   [
+    "j.jsonl",
+    [
+     "x"
+    ]
+   ],
+   [
+    "j",
+    []
+   ],
+   null,
+   null,
+   null,
+   null,
+   null
+  ]
+ },
+ "scratch": {
+  "outside_kept": true,
+  "refused_root": {
+   "error": "FileNotFoundError",
+   "message": "[Errno 2] No such file or directory: '<ROOT>/missing'"
+  },
+  "remove": {
+   "blocking_refusals": [
+    {
+     "cause": "denied",
+     "errno": "EACCES",
+     "operation": "unlink",
+     "path": "sub/file.txt",
+     "read_only_attribute": false,
+     "winerror": null
+    },
+    {
+     "cause": "denied",
+     "errno": "EACCES",
+     "operation": "unlink",
+     "path": "sub/readonly.txt",
+     "read_only_attribute": false,
+     "winerror": null
+    }
+   ],
+   "cleared_read_only": [],
+   "escapes": [],
+   "links_removed": [
+    {
+     "kind": "symlink",
+     "note": "removed as a link; never followed",
+     "path": "link-out",
+     "removed": true,
+     "target": "<ROOT>/outside",
+     "target_inside_scratch": false
+    }
+   ],
+   "note": "a read-only file inside this root is cleared and removed; an open file is reported and left; nothing outside this root is touched",
+   "recleanable": false,
+   "refusals": [
+    {
+     "cause": "denied",
+     "errno": "EACCES",
+     "operation": "unlink",
+     "path": "sub/file.txt",
+     "read_only_attribute": false,
+     "winerror": null
+    },
+    {
+     "cause": "denied",
+     "errno": "EACCES",
+     "operation": "unlink",
+     "path": "sub/readonly.txt",
+     "read_only_attribute": false,
+     "winerror": null
+    },
+    {
+     "cause": "not_empty",
+     "errno": "ENOTEMPTY",
+     "operation": "rmdir",
+     "path": ".",
+     "winerror": null
+    },
+    {
+     "cause": "not_empty",
+     "errno": "ENOTEMPTY",
+     "operation": "rmdir",
+     "path": "sub",
+     "winerror": null
+    }
+   ],
+   "remaining": [
+    "sub",
+    "sub/file.txt",
+    "sub/readonly.txt"
+   ],
+   "remaining_count": 3,
+   "removed": false,
+   "root": "<ROOT>/scratch-root",
+   "timed_out": false
+  },
+  "root_gone": false,
+  "within": [
+   true,
+   false,
+   false
+  ]
+ },
+ "spawns": {
+  "logged_ok": {
+   "observation": {
+    "exit_code": 0,
+    "timed_out": false
+   },
+   "stderr": "err\n",
+   "stdout": "out\n"
+  },
+  "logged_stray_descendants": {
+   "cleanup": {
+    "descendants_gone": true,
+    "exit_code": null,
+    "method": "killpg",
+    "reaped": true,
+    "reason": "process group observed empty"
+   },
+   "exit_code": 0,
+   "stray_descendants": true,
+   "timed_out": false
+  },
+  "logged_timeout": {
+   "observation": {
+    "cleanup": {
+     "descendants_gone": true,
+     "exit_code": null,
+     "method": "killpg",
+     "reaped": true,
+     "reason": "process group observed empty"
+    },
+    "exit_code": null,
+    "timed_out": true,
+    "timeout_seconds": 2
+   },
+   "stdout": "started\n"
+  },
+  "no_console_kwargs": [
+   {},
+   {
+    "start_new_session": true
+   },
+   {
+    "creationflags": 134217728
+   },
+   {
+    "creationflags": 134218240
+   },
+   {
+    "creationflags": 134218244
+   },
+   {
+    "start_new_session": true
+   }
+  ],
+  "observed_spawns": 1,
+  "observer_refusal": {
+   "error": "RuntimeError",
+   "message": "record not written"
+  },
+  "observer_refusal_child_ran": false,
+  "python_channel_environment": {
+   "A": "1",
+   "PYTHONIOENCODING": "utf-8"
+  },
+  "run_process": {
+   "args_kept": true,
+   "returncode": 0,
+   "stderr": "err\n",
+   "stdout": "é ok\n",
+   "type": "CompletedProcess"
+  },
+  "run_process_input": [
+   3,
+   "INPUT É\n"
+  ],
+  "run_process_timeout": {
+   "error": "TimeoutExpired"
+  }
+ },
+ "trees": {
+  "already_exited_receipt": {
+   "boundary": {
+    "group": "<pid>",
+    "kind": "process_group",
+    "limit": "a descendant that calls setsid leaves this group and cannot be proven gone from here",
+    "owned_from_spawn": true
+   },
+   "confirmed": true,
+   "note": "a terminated parent is not a terminated tree; acceptance needs both",
+   "parent": {
+    "already_exited": true,
+    "confirmed": true,
+    "ended_on_its_own": true,
+    "escalated": false,
+    "exit_code": 0,
+    "pid": "<pid>",
+    "signalled": null
+   },
+   "reason": "already gone",
+   "tree": {
+    "confirmed": true,
+    "evidence": "signal zero to the group until no member answers",
+    "group": "<pid>",
+    "group_empty": true,
+    "method": "process_group"
+   }
+  },
+  "boundary": {
+   "group": "<pid>",
+   "kind": "process_group",
+   "limit": "a descendant that calls setsid leaves this group and cannot be proven gone from here",
+   "owned_from_spawn": true
+  },
+  "family_receipt": {
+   "boundary": {
+    "group": "<pid>",
+    "kind": "process_group",
+    "limit": "a descendant that calls setsid leaves this group and cannot be proven gone from here",
+    "owned_from_spawn": true
+   },
+   "confirmed": true,
+   "note": "a terminated parent is not a terminated tree; acceptance needs both",
+   "parent": {
+    "already_exited": false,
+    "confirmed": true,
+    "escalated": false,
+    "exit_code": -15,
+    "pid": "<pid>",
+    "signalled": true
+   },
+   "reason": "fixture stop with a grandchild",
+   "tree": {
+    "confirmed": true,
+    "evidence": "signal zero to the group until no member answers",
+    "group": "<pid>",
+    "group_empty": true,
+    "method": "process_group"
+   }
+  },
+  "receipt": {
+   "boundary": {
+    "group": "<pid>",
+    "kind": "process_group",
+    "limit": "a descendant that calls setsid leaves this group and cannot be proven gone from here",
+    "owned_from_spawn": true
+   },
+   "confirmed": true,
+   "note": "a terminated parent is not a terminated tree; acceptance needs both",
+   "parent": {
+    "already_exited": false,
+    "confirmed": true,
+    "escalated": false,
+    "exit_code": -15,
+    "pid": "<pid>",
+    "signalled": true
+   },
+   "reason": "fixture stop",
+   "tree": {
+    "confirmed": true,
+    "evidence": "signal zero to the group until no member answers",
+    "group": "<pid>",
+    "group_empty": true,
+    "method": "process_group"
+   }
+  },
+  "receipt_kept": true
+ }
+}

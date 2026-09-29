@@ -1,0 +1,8 @@
+{
+ "family": "host_os.git",
+ "description": "S1 host_os: Git workspaces and the fast-forward compare-and-swap on a local bare repository (the M7 `_remote_url` seam): push classification, canonical remotes, prepare/capture/inspect/review, merge_state, CAS merge, lost-response recognition, base moved refusal, unreachable remote as a transport failure, tamper refusals, local fast-forward merge, capture refusals and continuation workspaces. Fixed author/committer identity and dates",
+ "reference_driver": "drivers/reference/s1_git.py",
+ "target_driver": "drivers/target/s1_git.py",
+ "golden": "goldens/reference/host_os.git.json",
+ "slice": "S1"
+}

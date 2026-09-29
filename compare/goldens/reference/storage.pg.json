@@ -1,0 +1,699 @@
+{
+ "migrate": {
+  "columns": [
+   [
+    "documents",
+    "bucket",
+    "text",
+    "NO"
+   ],
+   [
+    "documents",
+    "id",
+    "text",
+    "NO"
+   ],
+   [
+    "documents",
+    "body",
+    "jsonb",
+    "NO"
+   ],
+   [
+    "knowledge_edges",
+    "source",
+    "text",
+    "NO"
+   ],
+   [
+    "knowledge_edges",
+    "target",
+    "text",
+    "NO"
+   ],
+   [
+    "knowledge_edges",
+    "kind",
+    "text",
+    "NO"
+   ],
+   [
+    "knowledge_nodes",
+    "id",
+    "text",
+    "NO"
+   ],
+   [
+    "knowledge_nodes",
+    "repository",
+    "text",
+    "NO"
+   ],
+   [
+    "knowledge_nodes",
+    "kind",
+    "text",
+    "NO"
+   ],
+   [
+    "knowledge_nodes",
+    "body",
+    "text",
+    "NO"
+   ],
+   [
+    "knowledge_nodes",
+    "source_ref",
+    "text",
+    "NO"
+   ],
+   [
+    "knowledge_nodes",
+    "revision",
+    "text",
+    "NO"
+   ],
+   [
+    "knowledge_nodes",
+    "properties",
+    "jsonb",
+    "NO"
+   ],
+   [
+    "knowledge_nodes",
+    "embedding",
+    "USER-DEFINED",
+    "YES"
+   ],
+   [
+    "schema_migrations",
+    "module",
+    "text",
+    "NO"
+   ],
+   [
+    "schema_migrations",
+    "version",
+    "text",
+    "NO"
+   ],
+   [
+    "schema_migrations",
+    "checksum",
+    "text",
+    "NO"
+   ],
+   [
+    "schema_migrations",
+    "name",
+    "text",
+    "NO"
+   ],
+   [
+    "schema_migrations",
+    "tool",
+    "text",
+    "NO"
+   ],
+   [
+    "schema_migrations",
+    "applied_at",
+    "text",
+    "NO"
+   ],
+   [
+    "schema_migrations",
+    "applied_by",
+    "text",
+    "NO"
+   ]
+  ],
+  "first": {
+   "already_applied": [],
+   "applied": [
+    {
+     "module": "core",
+     "version": "1"
+    }
+   ],
+   "config_hash": "149722c929f01c25034555583c6ef2dbafce98c62345f59cfe9dc262884723d1",
+   "history": [
+    {
+     "applied_at": "2026-01-01T00:00:00+00:00",
+     "checksum": "sha256:e7049cf9f78cc57b6a28cedb9bee42811e14bf5c3824bc485f7bbb9e632c1088",
+     "module": "core",
+     "name": "001.sql",
+     "tool": "zeus-sql-migrator@1",
+     "version": "1"
+    }
+   ],
+   "root": "<RESOURCES>",
+   "schema_verified": [
+    "documents",
+    "knowledge_edges",
+    "knowledge_nodes",
+    "schema_migrations"
+   ],
+   "tool": {
+    "filename_contract": "V?<n>(.<n>|_<n>)*(__<description>)?.sql",
+    "name": "zeus-sql-migrator",
+    "version": 1
+   }
+  },
+  "history": [
+   [
+    "core",
+    "1",
+    "sha256:e7049cf9f78cc57b6a28cedb9bee42811e14bf5c3824bc485f7bbb9e632c1088",
+    "001.sql",
+    "zeus-sql-migrator@1",
+    "2026-01-01T00:00:00+00:00",
+    "store.migrate"
+   ]
+  ],
+  "indexes": [
+   "CREATE UNIQUE INDEX documents_pkey ON <schema>.documents USING btree (bucket, id)",
+   "CREATE INDEX knowledge_body ON <schema>.knowledge_nodes USING gin (to_tsvector('simple'::regconfig, body))",
+   "CREATE UNIQUE INDEX knowledge_edges_pkey ON <schema>.knowledge_edges USING btree (source, target, kind)",
+   "CREATE UNIQUE INDEX knowledge_nodes_pkey ON <schema>.knowledge_nodes USING btree (id)",
+   "CREATE INDEX knowledge_repository ON <schema>.knowledge_nodes USING btree (repository)",
+   "CREATE UNIQUE INDEX schema_migrations_pkey ON <schema>.schema_migrations USING btree (module, version)"
+  ],
+  "precheck": {
+   "apply_allowed": true,
+   "config_hash": "149722c929f01c25034555583c6ef2dbafce98c62345f59cfe9dc262884723d1",
+   "content": {
+    "files": [
+     {
+      "bytes": 925,
+      "checksum": "sha256:e7049cf9f78cc57b6a28cedb9bee42811e14bf5c3824bc485f7bbb9e632c1088",
+      "module": "core",
+      "name": "001.sql",
+      "problem": null,
+      "version": "1"
+     }
+    ],
+    "status": "ok"
+   },
+   "denominator": {
+    "files_ignored": 19,
+    "files_refused": 0,
+    "files_supported": 1,
+    "locations_configured": 1,
+    "locations_found": 1,
+    "locations_required": 1
+   },
+   "filenames": {
+    "scopes": {
+     "core/postgres": {
+      "duplicates": {},
+      "versions": [
+       "1"
+      ]
+     }
+    },
+    "status": "ok"
+   },
+   "history": {
+    "applied": {
+     "core": [
+      "1"
+     ]
+    },
+    "foreign_modules": [],
+    "note": "history is per module; rows of modules outside this config are listed, never judged",
+    "pending": [],
+    "problems": [],
+    "status": "ok"
+   },
+   "locations": [
+    {
+     "error": null,
+     "files": [
+      {
+       "bytes": 925,
+       "checksum": "sha256:e7049cf9f78cc57b6a28cedb9bee42811e14bf5c3824bc485f7bbb9e632c1088",
+       "description": "",
+       "error": null,
+       "label": "1",
+       "name": "001.sql",
+       "version": [
+        1
+       ]
+      }
+     ],
+     "ignored": [
+      "__init__.py",
+      "audit-lifecycle.json",
+      "audit-progress-policy-v1.json",
+      "discovery-pressure-policy.json",
+      "evidence-policy.json",
+      "message.schema.json",
+      "migrations.json",
+      "monitor.html",
+      "observation.schema.json",
+      "operating-portfolio-v1.json",
+      "organization.json",
+      "providers.json",
+      "research-backlog.json",
+      "research.schema.json",
+      "sdd-review.html",
+      "threshold-policy.json",
+      "worker-profile-v1.json",
+      "worker-profile-v1.md",
+      "worker_profile_hook.py"
+     ],
+     "module": "core",
+     "path": ".",
+     "refused_names": [],
+     "required": true,
+     "state": "found",
+     "status": "ok",
+     "vendor": "postgres"
+    }
+   ],
+   "note": "MAX+1 guidance does not prevent collisions; a new version is reconciled against the history read under the lock at apply time",
+   "parity": {
+    "modules": {
+     "core": {
+      "status": "not_applicable",
+      "unobserved": [],
+      "vendors": [
+       "postgres"
+      ]
+     }
+    },
+    "status": "not_applicable"
+   },
+   "pending": [],
+   "results": {
+    "content": "ok",
+    "filenames": "ok",
+    "history": "ok",
+    "locations": "ok",
+    "parity": "not_applicable",
+    "schema": "ok"
+   },
+   "root": "<RESOURCES>",
+   "schema": {
+    "expected": [
+     "documents",
+     "knowledge_edges",
+     "knowledge_nodes",
+     "schema_migrations"
+    ],
+    "missing": [],
+    "observed": [
+     "documents",
+     "knowledge_edges",
+     "knowledge_nodes",
+     "schema_migrations"
+    ],
+    "status": "ok"
+   },
+   "target_vendor": "postgres",
+   "tool": {
+    "filename_contract": "V?<n>(.<n>|_<n>)*(__<description>)?.sql",
+    "name": "zeus-sql-migrator",
+    "version": 1
+   }
+  },
+  "second": {
+   "already_applied": [
+    {
+     "module": "core",
+     "version": "1"
+    }
+   ],
+   "applied": [],
+   "config_hash": "149722c929f01c25034555583c6ef2dbafce98c62345f59cfe9dc262884723d1",
+   "history": [
+    {
+     "applied_at": "2026-01-01T00:00:00+00:00",
+     "checksum": "sha256:e7049cf9f78cc57b6a28cedb9bee42811e14bf5c3824bc485f7bbb9e632c1088",
+     "module": "core",
+     "name": "001.sql",
+     "tool": "zeus-sql-migrator@1",
+     "version": "1"
+    }
+   ],
+   "root": "<RESOURCES>",
+   "schema_verified": [
+    "documents",
+    "knowledge_edges",
+    "knowledge_nodes",
+    "schema_migrations"
+   ],
+   "tool": {
+    "filename_contract": "V?<n>(.<n>|_<n>)*(__<description>)?.sql",
+    "name": "zeus-sql-migrator",
+    "version": 1
+   }
+  },
+  "tables": [
+   "documents",
+   "knowledge_edges",
+   "knowledge_nodes",
+   "schema_migrations"
+  ]
+ },
+ "recorder": {
+  "atomic_commit": {
+   "durable_rows": [
+    [
+     "decisions_pending",
+     "d",
+     "succeeded"
+    ],
+    [
+     "releases",
+     "r1",
+     "proposed"
+    ]
+   ],
+   "error": null,
+   "trace": [
+    {
+     "depth": 0,
+     "kind": "BEGIN",
+     "label": "",
+     "unit": "U1"
+    },
+    {
+     "kind": "fence",
+     "name": "lease",
+     "ok": true,
+     "unit": "U1"
+    },
+    {
+     "bucket": "releases",
+     "digest": "e5e3560b50007c722501fb5fd66f13c946f4e5ac10de1f484f0b6c0177df2273",
+     "key": "r1",
+     "kind": "write",
+     "status": "proposed",
+     "unit": "U1"
+    },
+    {
+     "bucket": "decisions_pending",
+     "digest": "f24874c0a20560e8a002a58d258bae2e4d0b92a9c69139de3adada7d3ef9b1d4",
+     "key": "d",
+     "kind": "write",
+     "status": "succeeded",
+     "unit": "U1"
+    },
+    {
+     "depth": 0,
+     "kind": "COMMIT",
+     "unit": "U1"
+    }
+   ],
+   "verdict": "atomic_commit",
+   "violations": []
+  },
+  "atomic_rollback": {
+   "durable_rows": [],
+   "error": "Injected",
+   "trace": [
+    {
+     "depth": 0,
+     "kind": "BEGIN",
+     "label": "",
+     "unit": "U1"
+    },
+    {
+     "bucket": "releases",
+     "digest": "e5e3560b50007c722501fb5fd66f13c946f4e5ac10de1f484f0b6c0177df2273",
+     "key": "r1",
+     "kind": "write",
+     "status": "proposed",
+     "unit": "U1"
+    },
+    {
+     "depth": 0,
+     "error": "Injected",
+     "kind": "ROLLBACK",
+     "unit": "U1"
+    }
+   ],
+   "verdict": "atomic_rollback",
+   "violations": []
+  },
+  "effect_inside_unit": {
+   "durable_rows": [
+    [
+     "decisions_pending",
+     "d",
+     "running"
+    ]
+   ],
+   "error": null,
+   "trace": [
+    {
+     "depth": 0,
+     "kind": "BEGIN",
+     "label": "",
+     "unit": "U1"
+    },
+    {
+     "bucket": "decisions_pending",
+     "digest": "409443a6ee5aa296dccd6c0d193e214568daa0053b66155fba8adca995b7823d",
+     "key": "d",
+     "kind": "write",
+     "status": "running",
+     "unit": "U1"
+    },
+    {
+     "depth": 1,
+     "kind": "effect",
+     "name": "provider_call"
+    },
+    {
+     "depth": 0,
+     "kind": "COMMIT",
+     "unit": "U1"
+    }
+   ],
+   "verdict": "atomic_rollback",
+   "violations": [
+    "effect_inside_unit"
+   ]
+  },
+  "nested_begin": {
+   "durable_rows": [],
+   "error": "LockNotAvailable",
+   "trace": [
+    {
+     "depth": 0,
+     "kind": "BEGIN",
+     "label": "",
+     "unit": "U1"
+    },
+    {
+     "bucket": "decisions_pending",
+     "digest": "409443a6ee5aa296dccd6c0d193e214568daa0053b66155fba8adca995b7823d",
+     "key": "d",
+     "kind": "write",
+     "status": "running",
+     "unit": "U1"
+    },
+    {
+     "depth": 1,
+     "kind": "BEGIN",
+     "label": "",
+     "unit": "U2"
+    },
+    {
+     "depth": 1,
+     "error": "LockNotAvailable",
+     "kind": "ROLLBACK",
+     "unit": "U2"
+    },
+    {
+     "depth": 0,
+     "error": "LockNotAvailable",
+     "kind": "ROLLBACK",
+     "unit": "U1"
+    }
+   ],
+   "verdict": "atomic_rollback",
+   "violations": [
+    "nested_begin"
+   ]
+  }
+ },
+ "transactions": {
+  "advisory_holders_after": 0,
+  "advisory_holders_during": 1,
+  "after_rollback_rows": [
+   [
+    "b",
+    "k1",
+    {
+     "nested": {
+      "한": [
+       1,
+       null
+      ]
+     },
+     "v": 1
+    }
+   ],
+   [
+    "b",
+    "k2",
+    {
+     "v": 2
+    }
+   ]
+  ],
+  "committed_rows": [
+   [
+    "b",
+    "k1",
+    {
+     "nested": {
+      "한": [
+       1,
+       null
+      ]
+     },
+     "v": 1
+    }
+   ],
+   [
+    "b",
+    "k2",
+    {
+     "v": 2
+    }
+   ]
+  ],
+  "concurrent_fail_fast": {
+   "error": "LockNotAvailable",
+   "message": "canceling statement due to lock timeout"
+  },
+  "entries": [
+   [
+    {
+     "body": {
+      "nested": {
+       "한": [
+        1,
+        null
+       ]
+      },
+      "v": 1
+     },
+     "id": "k1"
+    },
+    {
+     "body": {
+      "v": 2
+     },
+     "id": "k2"
+    }
+   ],
+   [
+    {
+     "body": {
+      "v": 2
+     },
+     "id": "k2"
+    }
+   ],
+   [
+    {
+     "body": {
+      "v": 2
+     },
+     "id": "k2"
+    }
+   ]
+  ],
+  "fail_fast_lock_timeout": "500ms",
+  "graph_edges": [
+   [
+    "n1",
+    "n2",
+    "imports"
+   ]
+  ],
+  "graph_nodes": [
+   [
+    "n1",
+    "r",
+    "module",
+    "{\"a\": 1}",
+    "s",
+    "v",
+    {
+     "p": 1
+    }
+   ],
+   [
+    "n2",
+    "r",
+    "module",
+    "{}",
+    "s",
+    "v",
+    {}
+   ]
+  ],
+  "lock_timeout": "10s",
+  "missing": null,
+  "read_own_write": {
+   "nested": {
+    "한": [
+     1,
+     null
+    ]
+   },
+   "v": 1
+  },
+  "records": [
+   {
+    "body": {
+     "nested": {
+      "한": [
+       1,
+       null
+      ]
+     },
+     "v": 1
+    },
+    "bucket": "b",
+    "id": "k1"
+   },
+   {
+    "body": {
+     "v": 2
+    },
+    "bucket": "b",
+    "id": "k2"
+   }
+  ],
+  "scan": [
+   {
+    "nested": {
+     "한": [
+      1,
+      null
+     ]
+    },
+    "v": 1
+   },
+   {
+    "v": 2
+   }
+  ],
+  "wait_order": [
+   "holder_locked",
+   "holder_commit",
+   "waiter_locked"
+  ],
+  "waiter_sees_holder_commit": {
+   "v": 1
+  }
+ }
+}

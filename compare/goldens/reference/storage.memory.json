@@ -1,0 +1,1056 @@
+{
+ "artifacts": {
+  "document": [
+   {
+    "ok": {
+     "a": [
+      1,
+      2,
+      {
+       "b": "c"
+      }
+     ],
+     "d": "text"
+    }
+   },
+   {
+    "error": "ContractError",
+    "message": "Evidence document must be an object"
+   },
+   {
+    "error": "JSONDecodeError",
+    "message": "Expecting value: line 1 column 1 (char 0)"
+   }
+  ],
+  "files": [
+   "0ed2031da276bda53c3d18faca9b176ddb4bf862d6bedacb6bf2ceceb77f9dd2.json",
+   "0ed2031da276bda53c3d18faca9b176ddb4bf862d6bedacb6bf2ceceb77f9dd2.txt",
+   "294a2968da550fd61f1fa15a9906d7bf698c9d9df4f62d544a8b7fac6b719405.json",
+   "294a2968da550fd61f1fa15a9906d7bf698c9d9df4f62d544a8b7fac6b719405.txt",
+   "3a316d6d3226f84c1e46e4447fa8d5fd800bff4a1bc6498152523cd4a602b69b.json",
+   "3a316d6d3226f84c1e46e4447fa8d5fd800bff4a1bc6498152523cd4a602b69b.txt"
+  ],
+  "inspect": [
+   {
+    "ok": {
+     "characters": 13,
+     "lines": 1,
+     "metadata": {
+      "at": "2026-01-01T00:00:00+00:00",
+      "bytes": 14,
+      "ref": "sha256:294a2968da550fd61f1fa15a9906d7bf698c9d9df4f62d544a8b7fac6b719405",
+      "source": "fixture:one"
+     },
+     "ref": "sha256:294a2968da550fd61f1fa15a9906d7bf698c9d9df4f62d544a8b7fac6b719405"
+    }
+   },
+   {
+    "ok": {
+     "characters": 38,
+     "lines": 1,
+     "metadata": {
+      "at": "2026-01-01T00:00:02+00:00",
+      "bytes": 38,
+      "ref": "sha256:0ed2031da276bda53c3d18faca9b176ddb4bf862d6bedacb6bf2ceceb77f9dd2",
+      "source": "fixture:doc"
+     },
+     "ref": "sha256:0ed2031da276bda53c3d18faca9b176ddb4bf862d6bedacb6bf2ceceb77f9dd2"
+    }
+   }
+  ],
+  "inspect_bad_metadata": {
+   "error": "ContractError",
+   "message": "Artifact metadata byte count mismatch"
+  },
+  "lock_file_beside_root": true,
+  "modified": [
+   {
+    "error": "ContractError",
+    "message": "Artifact modified"
+   },
+   {
+    "error": "ContractError",
+    "message": "Artifact integrity failure"
+   }
+  ],
+  "read": [
+   {
+    "ok": "hello é world"
+   },
+   {
+    "ok": "é w"
+   },
+   {
+    "ok": "hello é world"
+   },
+   {
+    "error": "ContractError",
+    "message": "Artifact read exceeds budget"
+   },
+   {
+    "error": "ContractError",
+    "message": "Artifact read exceeds budget"
+   },
+   {
+    "error": "ContractError",
+    "message": "Artifact read exceeds budget"
+   },
+   {
+    "error": "ContractError",
+    "message": "Invalid artifact reference"
+   },
+   {
+    "error": "ContractError",
+    "message": "Invalid artifact reference"
+   },
+   {
+    "error": "FileNotFoundError",
+    "message": "[Errno 2] No such file or directory: '<ROOT>/store/artifacts/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb.txt'"
+   }
+  ],
+  "receipts": [
+   {
+    "at": "2026-01-01T00:00:00+00:00",
+    "bytes": 14,
+    "ref": "sha256:294a2968da550fd61f1fa15a9906d7bf698c9d9df4f62d544a8b7fac6b719405",
+    "source": "fixture:one"
+   },
+   {
+    "at": "2026-01-01T00:00:02+00:00",
+    "bytes": 14,
+    "ref": "sha256:294a2968da550fd61f1fa15a9906d7bf698c9d9df4f62d544a8b7fac6b719405",
+    "source": "fixture:two"
+   },
+   {
+    "at": "2026-01-01T00:00:02+00:00",
+    "bytes": 38,
+    "ref": "sha256:0ed2031da276bda53c3d18faca9b176ddb4bf862d6bedacb6bf2ceceb77f9dd2",
+    "source": "fixture:doc"
+   },
+   {
+    "at": "2026-01-01T00:00:02+00:00",
+    "bytes": 6,
+    "ref": "sha256:3a316d6d3226f84c1e46e4447fa8d5fd800bff4a1bc6498152523cd4a602b69b",
+    "source": "fixture:array"
+   }
+  ],
+  "search": [
+   {
+    "ok": [
+     {
+      "line": 1,
+      "text": "hello é world"
+     }
+    ]
+   },
+   {
+    "error": "ContractError",
+    "message": "Invalid search budget"
+   },
+   {
+    "error": "ContractError",
+    "message": "Invalid search budget"
+   },
+   {
+    "ok": [
+     {
+      "line": 1,
+      "text": "{\"a\": [1, 2, {\"b\": \"c\"}], \"d\": \"text\"}"
+     }
+    ]
+   }
+  ],
+  "text": [
+   {
+    "ok": "hello é world"
+   },
+   {
+    "error": "ContractError",
+    "message": "Artifact exceeds text budget"
+   },
+   {
+    "error": "ContractError",
+    "message": "Invalid text budget"
+   },
+   {
+    "error": "ContractError",
+    "message": "Invalid text budget"
+   },
+   {
+    "error": "ContractError",
+    "message": "Invalid text budget"
+   }
+  ]
+ },
+ "maintenance": {
+  "apply": {
+   "applied": true,
+   "at": "2026-01-01T00:00:05+00:00",
+   "bytes": 16,
+   "files": 1,
+   "grace_days": 7,
+   "id": "latest",
+   "integrity": "missing_references",
+   "missing_reference_sample": [
+    "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+   ],
+   "missing_references": 1,
+   "retained_references": 3
+  },
+  "apply_again": {
+   "applied": true,
+   "at": "2026-01-01T00:00:10+00:00",
+   "bytes": 0,
+   "files": 0,
+   "grace_days": 7,
+   "id": "latest",
+   "integrity": "missing_references",
+   "missing_reference_sample": [
+    "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+   ],
+   "missing_references": 1,
+   "retained_references": 3
+  },
+  "days_refused": {
+   "error": "ContractError",
+   "message": "Artifact grace period must be at least one day"
+  },
+  "dry_run": {
+   "applied": false,
+   "at": "2026-01-01T00:00:00+00:00",
+   "bytes": 16,
+   "files": 1,
+   "grace_days": 7,
+   "id": "latest",
+   "integrity": "missing_references",
+   "missing_reference_sample": [
+    "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+   ],
+   "missing_references": 1,
+   "retained_references": 3
+  },
+  "events_after_second_apply": 1,
+  "expected_remaining": [
+   "sha256:bf7fd9716f5c485621a3fd16b5eb78105843afbc9526650ceb4b6e8a337eab6f",
+   "sha256:c0b6aab58fbdea9a1bcbfc2d7d132ab581fcdc6f1ebb9bf9874e665dd8a0c99b",
+   "sha256:c85c7d55ee373e9f7dcb546de98e27b8699718d1a405fc34356cf318f44f22d9"
+  ],
+  "files_after_dry_run": 4,
+  "refs": {
+   "child": "sha256:c85c7d55ee373e9f7dcb546de98e27b8699718d1a405fc34356cf318f44f22d9",
+   "parent": "sha256:c0b6aab58fbdea9a1bcbfc2d7d132ab581fcdc6f1ebb9bf9874e665dd8a0c99b",
+   "unreferenced_new": "sha256:bf7fd9716f5c485621a3fd16b5eb78105843afbc9526650ceb4b6e8a337eab6f",
+   "unreferenced_old": "sha256:a4843d56d479a54fe5dd20cc14b24676213afa28dcdb2ff2d7f48e572f3da967"
+  },
+  "remaining": [
+   "sha256:bf7fd9716f5c485621a3fd16b5eb78105843afbc9526650ceb4b6e8a337eab6f",
+   "sha256:c0b6aab58fbdea9a1bcbfc2d7d132ab581fcdc6f1ebb9bf9874e665dd8a0c99b",
+   "sha256:c85c7d55ee373e9f7dcb546de98e27b8699718d1a405fc34356cf318f44f22d9"
+  ],
+  "rows": [
+   {
+    "body": {
+     "at": "2026-01-01T00:00:05+00:00",
+     "reference": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+     "type": "artifact.reference_missing"
+    },
+    "bucket": "events",
+    "id": "42e905983bb7e5bcbe2be2becc159e4d92c49fd42831252e32a6b37f0d71d644"
+   },
+   {
+    "body": {
+     "also": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+     "ref": "sha256:c0b6aab58fbdea9a1bcbfc2d7d132ab581fcdc6f1ebb9bf9874e665dd8a0c99b"
+    },
+    "bucket": "evidence",
+    "id": "e1"
+   },
+   {
+    "body": {
+     "applied": true,
+     "at": "2026-01-01T00:00:05+00:00",
+     "bytes": 16,
+     "files": 1,
+     "grace_days": 7,
+     "id": "latest",
+     "integrity": "missing_references",
+     "missing_reference_sample": [
+      "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+     ],
+     "missing_references": 1,
+     "retained_references": 3
+    },
+    "bucket": "maintenance",
+    "id": "latest"
+   }
+  ]
+ },
+ "memory_store": {
+  "after_rollback": {
+   "k1": {
+    "list": [
+     1,
+     {
+      "x": "y"
+     }
+    ],
+    "v": 1
+   },
+   "k4": null
+  },
+  "entries": [
+   [
+    {
+     "body": {
+      "list": [
+       1,
+       {
+        "x": "y"
+       }
+      ],
+      "v": 1
+     },
+     "id": "k1"
+    },
+    {
+     "body": {
+      "v": 2
+     },
+     "id": "k2"
+    },
+    {
+     "body": {
+      "v": 3
+     },
+     "id": "k3"
+    }
+   ],
+   [
+    {
+     "body": {
+      "v": 2
+     },
+     "id": "k2"
+    },
+    {
+     "body": {
+      "v": 3
+     },
+     "id": "k3"
+    }
+   ],
+   [
+    {
+     "body": {
+      "v": 2
+     },
+     "id": "k2"
+    }
+   ],
+   []
+  ],
+  "get_returns_copy": true,
+  "graph_rows": [
+   [
+    {
+     "body": {
+      "a": 1
+     },
+     "id": "n1",
+     "kind": "module",
+     "properties": {},
+     "repository": "r",
+     "revision": "v",
+     "source_ref": "s"
+    }
+   ],
+   [
+    {
+     "kind": "imports",
+     "source": "n1",
+     "target": "n2"
+    }
+   ]
+  ],
+  "missing": null,
+  "nested_outcome": [
+   "outer"
+  ],
+  "put_copies_body": true,
+  "records": [
+   {
+    "body": {
+     "list": [
+      1,
+      {
+       "x": "y"
+      }
+     ],
+     "v": 1
+    },
+    "bucket": "b",
+    "id": "k1"
+   },
+   {
+    "body": {
+     "v": 2
+    },
+    "bucket": "b",
+    "id": "k2"
+   },
+   {
+    "body": {
+     "v": 3
+    },
+    "bucket": "b",
+    "id": "k3"
+   },
+   {
+    "body": {
+     "n": [
+      1
+     ]
+    },
+    "bucket": "c",
+    "id": "k"
+   }
+  ],
+  "scan_b": [
+   {
+    "list": [
+     1,
+     {
+      "x": "y"
+     }
+    ],
+    "v": 1
+   },
+   {
+    "v": 2
+   },
+   {
+    "v": 3
+   }
+  ],
+  "scan_empty": []
+ },
+ "reader": {
+  "bad_ref": {
+   "result": {
+    "code": 1,
+    "error": "SystemExit",
+    "message": "1"
+   },
+   "stderr": "{\"contract\":\"artifact-query.v1\",\"error\":\"Invalid artifact reference\"}",
+   "stdout_chars": 0,
+   "stdout_head": "",
+   "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "cursor_beyond": {
+   "result": {
+    "code": 1,
+    "error": "SystemExit",
+    "message": "1"
+   },
+   "stderr": "{\"contract\":\"artifact-query.v1\",\"error\":\"Cursor exceeds projected content\"}",
+   "stdout_chars": 0,
+   "stdout_head": "",
+   "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "cursor_negative": {
+   "result": {
+    "code": 1,
+    "error": "SystemExit",
+    "message": "1"
+   },
+   "stderr": "{\"contract\":\"artifact-query.v1\",\"error\":\"Cursor must be a non-negative integer\"}",
+   "stdout_chars": 0,
+   "stdout_head": "",
+   "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "index": {
+   "result": {
+    "ok": null
+   },
+   "stderr": "",
+   "stdout_chars": 646,
+   "stdout_head": "{\"content\":[{\"length\":3,\"pointer\":\"\",\"type\":\"object\"},{\"length\":2,\"pointer\":\"/alpha\",\"type\":\"object\"},{\"length\":3,\"pointer\":\"/alpha/beta\",\"type\":\"array\"},{\"pointer\":\"/alpha/beta/0\",\"type\":\"number\"},{\"pointer\":\"/alpha/beta/1\",\"type\":\"number\"},{\"pointer\":\"/alpha/beta/2\",\"type\":\"number\"},{\"length\":5,\"p",
+   "stdout_sha256": "444dd82f68dc56d0bf979e51e83facecae796da16d0e1b6db1df22ba47a938d5"
+  },
+  "index_cursor": {
+   "result": {
+    "ok": null
+   },
+   "stderr": "",
+   "stdout_chars": 504,
+   "stdout_head": "{\"content\":[{\"pointer\":\"/alpha/beta/0\",\"type\":\"number\"},{\"pointer\":\"/alpha/beta/1\",\"type\":\"number\"},{\"pointer\":\"/alpha/beta/2\",\"type\":\"number\"},{\"length\":5,\"pointer\":\"/alpha/t~0~1x\",\"type\":\"string\"},{\"length\":1500,\"pointer\":\"/long\",\"type\":\"string\"},{\"length\":42,\"pointer\":\"/text\",\"type\":\"string\"}],\"c",
+   "stdout_sha256": "55faf9962ef6587c1060622162cc0b74e55dade335dfff33886084becf7fb6af"
+  },
+  "index_small": {
+   "result": {
+    "ok": null
+   },
+   "stderr": "",
+   "stdout_chars": 489,
+   "stdout_head": "{\"content\":[{\"length\":3,\"pointer\":\"\",\"type\":\"object\"},{\"length\":2,\"pointer\":\"/alpha\",\"type\":\"object\"},{\"length\":3,\"pointer\":\"/alpha/beta\",\"type\":\"array\"},{\"pointer\":\"/alpha/beta/0\",\"type\":\"number\"},{\"pointer\":\"/alpha/beta/1\",\"type\":\"number\"},{\"pointer\":\"/alpha/beta/2\",\"type\":\"number\"}],\"content_enco",
+   "stdout_sha256": "85d65520140e08bce7424daface3045c9148ee9229fdea27c0302680706747c3"
+  },
+  "limit_high": {
+   "result": {
+    "code": 1,
+    "error": "SystemExit",
+    "message": "1"
+   },
+   "stderr": "{\"contract\":\"artifact-query.v1\",\"error\":\"Output limit must be 512..32000 characters\"}",
+   "stdout_chars": 0,
+   "stdout_head": "",
+   "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "limit_low": {
+   "result": {
+    "code": 1,
+    "error": "SystemExit",
+    "message": "1"
+   },
+   "stderr": "{\"contract\":\"artifact-query.v1\",\"error\":\"Output limit must be 512..32000 characters\"}",
+   "stdout_chars": 0,
+   "stdout_head": "",
+   "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "missing_root": {
+   "result": {
+    "code": 1,
+    "error": "SystemExit",
+    "message": "1"
+   },
+   "stderr": "{\"contract\":\"artifact-query.v1\",\"error\":\"Artifact root is unavailable\"}",
+   "stdout_chars": 0,
+   "stdout_head": "",
+   "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "page": {
+   "result": {
+    "ok": null
+   },
+   "stderr": "",
+   "stdout_chars": 700,
+   "stdout_head": "{\"content\":\"{\\\"alpha\\\": {\\\"beta\\\": [1, 2, 3], \\\"t~/x\\\": \\\"tilde\\\"}, \\\"long\\\": \\\"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+   "stdout_sha256": "9169b3a5f8d71debae51be88284da7de1b6d451b2e3242c35ba4e4cff8f35f2b"
+  },
+  "page_cursor": {
+   "result": {
+    "ok": null
+   },
+   "stderr": "",
+   "stdout_chars": 858,
+   "stdout_head": "{\"content\":\"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+   "stdout_sha256": "48f6684da3f56aa0b1ae772ba5cbe6270331d82302efc6021e805c299aafeacb"
+  },
+  "pointer": {
+   "result": {
+    "ok": null
+   },
+   "stderr": "",
+   "stdout_chars": 268,
+   "stdout_head": "{\"content\":\"[1,2,3]\",\"content_encoding\":\"json\",\"contract\":\"artifact-query.v1\",\"cursor\":0,\"mode\":\"pointer\",\"next_cursor\":null,\"pointer\":\"/alpha/beta\",\"ref\":\"sha256:8669f86925560486a32f6e5617b225be82159557df491e2b1d8a117d5ba73f71\",\"total_characters\":7,\"truncated\":false}",
+   "stdout_sha256": "628b11d14765ebcb16d95db24ddd55ee0c85063c10c3f92343cf2205dffd609c"
+  },
+  "pointer_bad": {
+   "result": {
+    "code": 1,
+    "error": "SystemExit",
+    "message": "1"
+   },
+   "stderr": "{\"contract\":\"artifact-query.v1\",\"error\":\"Invalid JSON pointer: expected empty string or leading slash\"}",
+   "stdout_chars": 0,
+   "stdout_head": "",
+   "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "pointer_escape": {
+   "result": {
+    "ok": null
+   },
+   "stderr": "",
+   "stdout_chars": 272,
+   "stdout_head": "{\"content\":\"\\\"tilde\\\"\",\"content_encoding\":\"json\",\"contract\":\"artifact-query.v1\",\"cursor\":0,\"mode\":\"pointer\",\"next_cursor\":null,\"pointer\":\"/alpha/t~0~1x\",\"ref\":\"sha256:8669f86925560486a32f6e5617b225be82159557df491e2b1d8a117d5ba73f71\",\"total_characters\":7,\"truncated\":false}",
+   "stdout_sha256": "958b1b303b7b02147bba3831bf33d5cef206efe7dda0cd8d42f6509f0948ac74"
+  },
+  "pointer_missing": {
+   "result": {
+    "code": 1,
+    "error": "SystemExit",
+    "message": "1"
+   },
+   "stderr": "{\"contract\":\"artifact-query.v1\",\"error\":\"JSON pointer does not exist\"}",
+   "stdout_chars": 0,
+   "stdout_head": "",
+   "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "query_constants": [
+   "artifact-query.v1",
+   8000,
+   32000,
+   512
+  ],
+  "query_direct": [
+   {
+    "ok": "{\"content\":\"abc\",\"content_encoding\":\"text\",\"contract\":\"artifact-query.v1\",\"cursor\":0,\"mode\":\"page\",\"next_cursor\":null,\"ref\":\"sha256:x\",\"total_characters\":3,\"truncated\":false}"
+   },
+   {
+    "ok": "{\"content\":[{\"end\":2,\"snippet\":\"aXbxc\",\"start\":1,\"window_end\":5,\"window_start\":0},{\"end\":4,\"snippet\":\"aXbxc\",\"start\":3,\"window_end\":5,\"window_start\":0}],\"content_encoding\":\"search-hits\",\"contract\":\"artifact-query.v1\",\"cursor\":0,\"mode\":\"search\",\"next_cursor\":null,\"query\":\"x\",\"ref\":\"sha256:x\",\"truncated\":false}"
+   },
+   {
+    "error": "ArtifactQueryError",
+    "message": "Artifact is not valid JSON"
+   },
+   {
+    "error": "ArtifactQueryError",
+    "message": "Artifact is not valid JSON"
+   },
+   {
+    "ok": "{\"content\":\"\\\"\\\\ud800\\\"\",\"content_encoding\":\"json\",\"contract\":\"artifact-query.v1\",\"cursor\":0,\"mode\":\"pointer\",\"next_cursor\":null,\"pointer\":\"/0\",\"ref\":\"sha256:x\",\"total_characters\":8,\"truncated\":false}"
+   },
+   {
+    "ok": null
+   },
+   {
+    "error": "ArtifactQueryError",
+    "message": "Cursor must be a non-negative integer"
+   }
+  ],
+  "search": {
+   "result": {
+    "ok": null
+   },
+   "stderr": "",
+   "stdout_chars": 1042,
+   "stdout_head": "{\"content\":[{\"end\":1575,\"snippet\":\"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\\",
+   "stdout_sha256": "377c3bf985ee4c2ffc30826cb7283278d34fb81fc78ab1cd05ba9bfd41bd4319"
+  }
+ },
+ "recorder_controls": {
+  "atomic_commit": {
+   "durable_rows": [
+    [
+     "decisions_pending",
+     "d",
+     "succeeded"
+    ],
+    [
+     "release_queue",
+     "q",
+     "queued"
+    ],
+    [
+     "releases",
+     "r1",
+     "proposed"
+    ]
+   ],
+   "effect_protocol": [],
+   "trace": [
+    {
+     "depth": 0,
+     "kind": "BEGIN",
+     "label": "",
+     "unit": "U1"
+    },
+    {
+     "bucket": "decisions_pending",
+     "digest": "409443a6ee5aa296dccd6c0d193e214568daa0053b66155fba8adca995b7823d",
+     "key": "d",
+     "kind": "write",
+     "status": "running",
+     "unit": "U1"
+    },
+    {
+     "depth": 0,
+     "kind": "COMMIT",
+     "unit": "U1"
+    },
+    {
+     "depth": 0,
+     "kind": "effect",
+     "name": "provider_call"
+    },
+    {
+     "depth": 0,
+     "kind": "BEGIN",
+     "label": "",
+     "unit": "U2"
+    },
+    {
+     "kind": "fence",
+     "name": "lease",
+     "ok": true,
+     "unit": "U2"
+    },
+    {
+     "bucket": "releases",
+     "digest": "e5e3560b50007c722501fb5fd66f13c946f4e5ac10de1f484f0b6c0177df2273",
+     "key": "r1",
+     "kind": "write",
+     "status": "proposed",
+     "unit": "U2"
+    },
+    {
+     "bucket": "release_queue",
+     "digest": "17ab365136af46de09c8ebe2551731c671e794435203d81a7a1b2bd112ab170c",
+     "key": "q",
+     "kind": "write",
+     "status": "queued",
+     "unit": "U2"
+    },
+    {
+     "bucket": "decisions_pending",
+     "digest": "f24874c0a20560e8a002a58d258bae2e4d0b92a9c69139de3adada7d3ef9b1d4",
+     "key": "d",
+     "kind": "write",
+     "status": "succeeded",
+     "unit": "U2"
+    },
+    {
+     "depth": 0,
+     "kind": "COMMIT",
+     "unit": "U2"
+    }
+   ],
+   "verdict": "atomic_commit",
+   "violations": []
+  },
+  "atomic_rollback": {
+   "durable_rows": [
+    [
+     "decisions_pending",
+     "d",
+     "running"
+    ]
+   ],
+   "effect_protocol": [],
+   "trace": [
+    {
+     "depth": 0,
+     "kind": "BEGIN",
+     "label": "",
+     "unit": "U1"
+    },
+    {
+     "bucket": "decisions_pending",
+     "digest": "409443a6ee5aa296dccd6c0d193e214568daa0053b66155fba8adca995b7823d",
+     "key": "d",
+     "kind": "write",
+     "status": "running",
+     "unit": "U1"
+    },
+    {
+     "depth": 0,
+     "kind": "COMMIT",
+     "unit": "U1"
+    },
+    {
+     "depth": 0,
+     "kind": "effect",
+     "name": "provider_call"
+    },
+    {
+     "depth": 0,
+     "kind": "BEGIN",
+     "label": "",
+     "unit": "U2"
+    },
+    {
+     "bucket": "releases",
+     "digest": "e5e3560b50007c722501fb5fd66f13c946f4e5ac10de1f484f0b6c0177df2273",
+     "key": "r1",
+     "kind": "write",
+     "status": "proposed",
+     "unit": "U2"
+    },
+    {
+     "depth": 0,
+     "error": "Injected",
+     "kind": "ROLLBACK",
+     "unit": "U2"
+    }
+   ],
+   "verdict": "atomic_rollback",
+   "violations": []
+  },
+  "effect_inside_unit": {
+   "durable_rows": [
+    [
+     "decisions_pending",
+     "d",
+     "running"
+    ]
+   ],
+   "effect_protocol": [
+    "effect_without_committed_intent"
+   ],
+   "trace": [
+    {
+     "depth": 0,
+     "kind": "BEGIN",
+     "label": "",
+     "unit": "U1"
+    },
+    {
+     "bucket": "decisions_pending",
+     "digest": "409443a6ee5aa296dccd6c0d193e214568daa0053b66155fba8adca995b7823d",
+     "key": "d",
+     "kind": "write",
+     "status": "running",
+     "unit": "U1"
+    },
+    {
+     "depth": 1,
+     "kind": "effect",
+     "name": "provider_call"
+    },
+    {
+     "depth": 0,
+     "kind": "COMMIT",
+     "unit": "U1"
+    }
+   ],
+   "verdict": "atomic_rollback",
+   "violations": [
+    "effect_inside_unit"
+   ]
+  },
+  "fabricated_completion": {
+   "durable_rows": [
+    [
+     "decisions_pending",
+     "d",
+     "succeeded"
+    ]
+   ],
+   "effect_protocol": [
+    "completion_without_effect"
+   ],
+   "trace": [
+    {
+     "depth": 0,
+     "kind": "BEGIN",
+     "label": "",
+     "unit": "U1"
+    },
+    {
+     "bucket": "decisions_pending",
+     "digest": "409443a6ee5aa296dccd6c0d193e214568daa0053b66155fba8adca995b7823d",
+     "key": "d",
+     "kind": "write",
+     "status": "running",
+     "unit": "U1"
+    },
+    {
+     "depth": 0,
+     "kind": "COMMIT",
+     "unit": "U1"
+    },
+    {
+     "depth": 0,
+     "kind": "BEGIN",
+     "label": "",
+     "unit": "U2"
+    },
+    {
+     "bucket": "decisions_pending",
+     "digest": "f24874c0a20560e8a002a58d258bae2e4d0b92a9c69139de3adada7d3ef9b1d4",
+     "key": "d",
+     "kind": "write",
+     "status": "succeeded",
+     "unit": "U2"
+    },
+    {
+     "depth": 0,
+     "kind": "COMMIT",
+     "unit": "U2"
+    }
+   ],
+   "verdict": "atomic_commit",
+   "violations": []
+  },
+  "nested_begin": {
+   "durable_rows": [
+    [
+     "decisions_pending",
+     "d",
+     "running"
+    ]
+   ],
+   "effect_protocol": [],
+   "trace": [
+    {
+     "depth": 0,
+     "kind": "BEGIN",
+     "label": "",
+     "unit": "U1"
+    },
+    {
+     "bucket": "decisions_pending",
+     "digest": "409443a6ee5aa296dccd6c0d193e214568daa0053b66155fba8adca995b7823d",
+     "key": "d",
+     "kind": "write",
+     "status": "running",
+     "unit": "U1"
+    },
+    {
+     "depth": 1,
+     "kind": "BEGIN",
+     "label": "",
+     "unit": "U2"
+    },
+    {
+     "bucket": "outbox",
+     "digest": "a839711b15b8e9862282ec0ed1034f134efb54b5d9969e66ea285babef923d4a",
+     "key": "m",
+     "kind": "write",
+     "status": "pending",
+     "unit": "U2"
+    },
+    {
+     "depth": 1,
+     "kind": "COMMIT",
+     "unit": "U2"
+    },
+    {
+     "depth": 0,
+     "kind": "COMMIT",
+     "unit": "U1"
+    }
+   ],
+   "verdict": "atomic_rollback",
+   "violations": [
+    "nested_begin"
+   ]
+  },
+  "partial_commit": {
+   "durable_rows": [
+    [
+     "decisions_pending",
+     "d",
+     "running"
+    ],
+    [
+     "releases",
+     "r1",
+     "proposed"
+    ]
+   ],
+   "effect_protocol": [],
+   "trace": [
+    {
+     "depth": 0,
+     "kind": "BEGIN",
+     "label": "",
+     "unit": "U1"
+    },
+    {
+     "bucket": "decisions_pending",
+     "digest": "409443a6ee5aa296dccd6c0d193e214568daa0053b66155fba8adca995b7823d",
+     "key": "d",
+     "kind": "write",
+     "status": "running",
+     "unit": "U1"
+    },
+    {
+     "depth": 0,
+     "kind": "COMMIT",
+     "unit": "U1"
+    },
+    {
+     "depth": 0,
+     "kind": "effect",
+     "name": "provider_call"
+    },
+    {
+     "depth": 0,
+     "kind": "BEGIN",
+     "label": "",
+     "unit": "U2"
+    },
+    {
+     "bucket": "releases",
+     "digest": "e5e3560b50007c722501fb5fd66f13c946f4e5ac10de1f484f0b6c0177df2273",
+     "key": "r1",
+     "kind": "write",
+     "status": "proposed",
+     "unit": "U2"
+    },
+    {
+     "depth": 0,
+     "kind": "COMMIT",
+     "unit": "U2"
+    },
+    {
+     "depth": 0,
+     "kind": "BEGIN",
+     "label": "",
+     "unit": "U3"
+    },
+    {
+     "bucket": "decisions_pending",
+     "digest": "f24874c0a20560e8a002a58d258bae2e4d0b92a9c69139de3adada7d3ef9b1d4",
+     "key": "d",
+     "kind": "write",
+     "status": "succeeded",
+     "unit": "U3"
+    },
+    {
+     "depth": 0,
+     "error": "Injected",
+     "kind": "ROLLBACK",
+     "unit": "U3"
+    }
+   ],
+   "verdict": "partial_commit",
+   "violations": []
+  },
+  "stale_fence": {
+   "durable_rows": [
+    [
+     "decisions_pending",
+     "d",
+     "succeeded"
+    ]
+   ],
+   "effect_protocol": [
+    "completion_without_effect"
+   ],
+   "trace": [
+    {
+     "depth": 0,
+     "kind": "BEGIN",
+     "label": "",
+     "unit": "U1"
+    },
+    {
+     "kind": "fence",
+     "name": "lease",
+     "ok": false,
+     "unit": "U1"
+    },
+    {
+     "bucket": "decisions_pending",
+     "digest": "f24874c0a20560e8a002a58d258bae2e4d0b92a9c69139de3adada7d3ef9b1d4",
+     "key": "d",
+     "kind": "write",
+     "status": "succeeded",
+     "unit": "U1"
+    },
+    {
+     "depth": 0,
+     "kind": "COMMIT",
+     "unit": "U1"
+    }
+   ],
+   "verdict": "atomic_commit",
+   "violations": [
+    "commit_after_failed_fence",
+    "write_after_failed_fence"
+   ]
+  }
+ }
+}

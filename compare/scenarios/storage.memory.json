@@ -1,0 +1,8 @@
+{
+ "family": "storage.memory",
+ "description": "S1 storage: MemoryStore transaction/copy/rollback/scan/entries/graph semantics, the S0 section 2.9 recorder controls against the store, FileArtifacts put/read/text/document/inspect/search bounds and integrity refusals, the bounded artifact reader and artifact_query projections, and ArtifactMaintenance collection (transitive retention, missing references, idempotent event)",
+ "reference_driver": "drivers/reference/s1_storage.py",
+ "target_driver": "drivers/target/s1_storage.py",
+ "golden": "goldens/reference/storage.memory.json",
+ "slice": "S1"
+}

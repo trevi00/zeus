@@ -7,12 +7,16 @@ Layer: harness (never shipped); standard library only. Usage from the worktree r
     python compare/run.py run                 # run every scenario; compare with committed goldens
     python compare/run.py run --record        # reference-only: (re)write reference goldens
     python compare/run.py run --pg            # also the scenarios that need a disposable PostgreSQL
+    python compare/run.py run --redis         # also the scenarios that need a disposable Redis
 
 The reference environment is built from the SOURCE archive wheel, never from the working tree;
 its package-file digest must equal `compare/baseline.json`. Each driver runs as a separate process
 of its own environment with the R-P child environment and, where bwrap is available, without
 network and with tmpfs over credential directories. The target side of every scenario stays
-`pending` until a target driver exists: nothing is reported green without a target run.
+`pending` until a target driver exists: nothing is reported green without a target run. A present
+target driver runs in the target venv (`target/.venv`, built from `target/uv.lock`) with the same
+inputs and the same disposable fixture server, and its result must equal the committed reference
+golden exactly (S1 onwards).
 Exit: 0 all reference results equal their goldens (and every present target equal too), 1 a
 difference or failure, 2 usage.
 """
@@ -20,6 +24,7 @@ difference or failure, 2 usage.
 from __future__ import annotations
 
 import argparse
+import contextlib
 import hashlib
 import json
 import os
@@ -40,6 +45,9 @@ import provider_guard  # noqa: E402
 # Every docker call of this runner passes the same default-deny guard as the tests (R-P, S0 F1).
 provider_guard.install()
 PG_IMAGE = "pgvector/pgvector:pg17"
+REDIS_IMAGE = "redis:7.4-alpine"
+TARGET_PYTHON = ROOT / "target" / ".venv" / "bin" / "python"
+TARGET_SRC = ROOT / "target" / "src"
 
 BASELINE = json.loads((COMPARE / "baseline.json").read_text(encoding="utf-8"))
 SOURCE_COMMIT = BASELINE["source"]["commit"]
@@ -133,11 +141,13 @@ def scenarios() -> list[dict]:
             for p in sorted((COMPARE / "scenarios").glob("*.json"))]
 
 
-def run_driver(python: Path, driver: Path, work: Path, extra_env: dict, use_bwrap: bool) -> dict:
+def run_driver(python: Path, driver: Path, work: Path, extra_env: dict, use_bwrap: bool,
+               binds: list[Path] | None = None) -> dict:
     env = provider_guard.child_environment(work / "env", extra=extra_env)
     argv = [str(python), "-B", str(driver)]
     if use_bwrap:
-        argv = provider_guard.bwrap_prefix([work]) + argv
+        # The run root stays writable for both sides: the fixture sockets live beside their cwd.
+        argv = provider_guard.bwrap_prefix(binds or [work]) + argv
     proc = subprocess.run(argv, cwd=str(work), env=env, capture_output=True, text=True, timeout=900)
     if proc.returncode != 0:
         tail = proc.stderr.strip().splitlines()[-5:]
@@ -187,7 +197,8 @@ class DisposablePostgres:
         found = self.docker("inspect", "--format", f'{{{{index .Config.Labels "{OWNER_KEY}"}}}}', self.name)
         if found.returncode == 0:
             return found.stdout.strip()
-        if "No such object" in found.stderr or "No such container" in found.stderr:
+        # Docker 29 spells it "no such object"; older engines "No such object"/"No such container".
+        if "no such object" in found.stderr.lower() or "no such container" in found.stderr.lower():
             return None
         raise FixtureCleanupError("disposable PostgreSQL ownership lookup failed")
 
@@ -200,7 +211,7 @@ class DisposablePostgres:
         if holder != self.owner_value:
             raise FixtureCleanupError("disposable PostgreSQL name is held by a container this instance did not start")
         removed = self.docker("rm", "-f", self.name)
-        if removed.returncode != 0 and "No such container" not in removed.stderr:
+        if removed.returncode != 0 and "no such container" not in removed.stderr.lower():
             raise FixtureCleanupError("disposable PostgreSQL removal failed")
         if self._holder() is not None:
             raise FixtureCleanupError("disposable PostgreSQL still present after removal")
@@ -262,6 +273,51 @@ class DisposablePostgres:
         return False
 
 
+class DisposableRedis(DisposablePostgres):
+    """A labelled, network-less Redis reachable only through a Unix socket under this run's scratch
+    root, with persistence off, removed on exit; the same owner-label lifecycle as the PostgreSQL
+    fixture (S0 SF-1). Each scenario case uses its own key namespace on it."""
+
+    def __init__(self, work: Path):
+        self.socket = work / "redis-socket"
+        self.socket.mkdir()
+        self.socket.chmod(0o777)
+        self.name = f"{provider_guard.FIXTURE_NAME_PREFIX}s1-redis-{os.getpid()}"
+        self.owner_value = f"{os.getpid()}-{time.monotonic_ns()}"
+        self.claimed = False
+        self.container_id = ""
+        self.env = {**os.environ, provider_guard.DOCKER_OPT_IN_ENV: "1",
+                    provider_guard.DOCKER_BIND_ROOT_ENV: str(work)}
+        self.url = f"unix://{self.socket}/redis.sock?db=0"
+
+    def _start(self) -> None:
+        try:
+            taken = self._holder() is not None
+        except FixtureCleanupError:
+            taken = True
+        if taken:
+            self.claimed = False
+            raise RuntimeError("disposable Redis name is taken or unverifiable; refusing to start")
+        self.claimed = True
+        uid, gid = os.getuid(), os.getgid()
+        started = self.docker(
+            "run", "-d", "--rm", "--network", "none", "--label", provider_guard.FIXTURE_LABEL,
+            "--label", "zeus.rebuild=s1", "--label", f"{OWNER_KEY}={self.owner_value}", "--name", self.name,
+            "--user", f"{uid}:{gid}", "--mount", f"type=bind,src={self.socket},dst=/run/zeus-redis",
+            REDIS_IMAGE, "redis-server", "--port", "0", "--unixsocket", "/run/zeus-redis/redis.sock",
+            "--unixsocketperm", "777", "--save", "", "--appendonly", "no", timeout=300)
+        if started.returncode != 0:
+            raise RuntimeError("disposable Redis did not start: " + started.stderr.strip()[-300:])
+        self.container_id = started.stdout.strip()
+        deadline = time.monotonic() + 60
+        while time.monotonic() < deadline:
+            logs = self.docker("logs", self.name)
+            if "Ready to accept connections" in logs.stdout + logs.stderr:
+                return
+            time.sleep(0.5)
+        raise RuntimeError("disposable Redis did not become ready")
+
+
 def differing_paths(expected, actual, path="$") -> list[str]:
     """JSON paths where a result differs from its golden (no values: payloads are never printed)."""
     if isinstance(expected, dict) and isinstance(actual, dict):
@@ -278,7 +334,17 @@ def differing_paths(expected, actual, path="$") -> list[str]:
     return [] if expected == actual else [path]
 
 
-def run(record: bool, use_bwrap: bool, only: list[str], pg: bool = False) -> tuple[dict, bool]:
+def run_target(driver_path: Path, work: Path, extra: dict, use_bwrap: bool) -> dict:
+    if not TARGET_PYTHON.exists():
+        return {"error": "target venv missing: run `uv sync --frozen --project target`"}
+    target_work = work / "target-side"
+    target_work.mkdir()
+    return run_driver(TARGET_PYTHON, driver_path, target_work,
+                      {**extra, "ZEUS_REBUILD_TARGET_SRC": str(TARGET_SRC)}, use_bwrap, binds=[work])
+
+
+def run(record: bool, use_bwrap: bool, only: list[str], pg: bool = False,
+        redis: bool = False) -> tuple[dict, bool]:
     python = SCRATCH / "venv-ref" / "bin" / "python"
     if not python.exists():
         sys.exit("reference venv missing: run `python compare/run.py prepare` first")
@@ -288,23 +354,31 @@ def run(record: bool, use_bwrap: bool, only: list[str], pg: bool = False) -> tup
         family = scenario["family"]
         if only and family not in only:
             continue
-        needs_pg = scenario.get("requires") == "disposable-postgresql"
-        if needs_pg and not pg:
-            report["scenarios"][family] = {"slice": scenario["slice"], "reference":
-                                           "not requested (needs --pg: a labelled disposable PostgreSQL)"}
+        requires = scenario.get("requires")
+        needs_pg, needs_redis = requires == "disposable-postgresql", requires == "disposable-redis"
+        if (needs_pg and not pg) or (needs_redis and not redis):
+            flag = "--pg: a labelled disposable PostgreSQL" if needs_pg else "--redis: a labelled disposable Redis"
+            report["scenarios"][family] = {"slice": scenario["slice"], "reference": f"not requested (needs {flag})"}
             continue
+        target = scenario.get("target_driver")
+        target_path = COMPARE / target if target else None
+        target_result = None
         with tempfile.TemporaryDirectory(prefix="zeus-s0-run-", dir=SCRATCH) as raw:
             work = Path(raw)
+            (work / "reference-side").mkdir()
             extra = {"ZEUS_REBUILD_SOURCE_ROOT": str(SCRATCH / "source")}
-            if needs_pg:
-                with DisposablePostgres(work) as database:
-                    extra["ZEUS_REBUILD_PG_DSN"] = database.dsn
-                    result = run_driver(python, COMPARE / scenario["reference_driver"], work, extra,
-                                        use_bwrap)
-            else:
-                result = run_driver(python, COMPARE / scenario["reference_driver"], work, extra,
-                                    use_bwrap)
+            fixture = DisposablePostgres(work) if needs_pg else DisposableRedis(work) if needs_redis else None
+            with fixture if fixture is not None else contextlib.nullcontext():
+                if needs_pg:
+                    extra["ZEUS_REBUILD_PG_DSN"] = fixture.dsn
+                if needs_redis:
+                    extra["ZEUS_REBUILD_REDIS_URL"] = fixture.url
+                result = run_driver(python, COMPARE / scenario["reference_driver"], work / "reference-side",
+                                    extra, use_bwrap, binds=[work])
+                if target_path is not None and target_path.exists():
+                    target_result = run_target(target_path, work, extra, use_bwrap)
         row = {"slice": scenario["slice"]}
+        golden_path = COMPARE / scenario["golden"]
         if "error" in result:
             row.update(reference="error", detail=result)
             ok = False
@@ -312,7 +386,6 @@ def run(record: bool, use_bwrap: bool, only: list[str], pg: bool = False) -> tup
             origin = result["origin"]
             origin_ok = (origin.get("package_files_digest") == expected["package_files_digest"]
                          and origin.get("package_files") == expected["package_files"])
-            golden_path = COMPARE / scenario["golden"]
             if record:
                 golden_path.write_text(json.dumps(result["result"], sort_keys=True, indent=1,
                                                   ensure_ascii=False) + "\n", encoding="utf-8")
@@ -324,12 +397,24 @@ def run(record: bool, use_bwrap: bool, only: list[str], pg: bool = False) -> tup
                        origin={k: origin.get(k) for k in ("modules_checked", "python", "package_files",
                                                            "package_files_digest")})
             ok = ok and equal and origin_ok
-        target = scenario.get("target_driver")
-        if target and (COMPARE / target).exists():
-            row["target"] = "not wired in S0"
+        if target_result is None:
+            row["target"] = f"pending: no target implementation before {scenario['slice']}"
+        elif "error" in target_result:
+            row.update(target="error", target_detail=target_result)
             ok = False
         else:
-            row["target"] = f"pending: no target implementation before {scenario['slice']}"
+            # The target is compared with the committed reference golden itself: expectations are
+            # never rewritten to match new code (R-C), and nothing but the closed masks applies.
+            golden = json.loads(golden_path.read_text(encoding="utf-8")) if golden_path.exists() else None
+            t_origin = target_result["origin"]
+            t_origin_ok = (t_origin.get("tree") == str(TARGET_SRC) and t_origin.get("modules_checked", 0) > 0
+                           and target_result.get("side") == "target")
+            equal = golden is not None and golden == target_result["result"]
+            if not equal:
+                row["target_differing_paths"] = differing_paths(golden, target_result["result"])[:20]
+            row.update(target="equal" if equal else "DIFFERENT", target_origin_ok=t_origin_ok,
+                       target_origin={k: t_origin.get(k) for k in ("modules_checked", "python")})
+            ok = ok and equal and t_origin_ok
         report["scenarios"][family] = row
     return report, ok
 
@@ -345,6 +430,8 @@ def main(argv=None) -> int:
     run_cmd.add_argument("--only", action="append", default=[])
     run_cmd.add_argument("--pg", action="store_true",
                          help="start a labelled disposable PostgreSQL for scenarios that need one")
+    run_cmd.add_argument("--redis", action="store_true",
+                         help="start a labelled disposable Redis for scenarios that need one")
     args = parser.parse_args(argv)
     if args.command == "check-tree":
         report = check_tree()
@@ -356,7 +443,7 @@ def main(argv=None) -> int:
     else:
         use_bwrap = provider_guard.bwrap_available() and not args.no_bwrap
         SCRATCH.mkdir(parents=True, exist_ok=True)
-        report, ok = run(args.record, use_bwrap, args.only, args.pg)
+        report, ok = run(args.record, use_bwrap, args.only, args.pg, args.redis)
     print(json.dumps({"command": args.command, "ok": ok, **report}, indent=1, sort_keys=True))
     return 0 if ok else 1
 

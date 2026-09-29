@@ -1,0 +1,253 @@
+{
+ "base_moved": {
+  "merge": {
+   "error": "MergeRefused",
+   "message": "merge refused: reviewed_base_moved",
+   "reason_code": "reviewed_base_moved"
+  },
+  "merge_state": "base_moved",
+  "remote_main_unchanged": true
+ },
+ "candidate": {
+  "author": "worker:implementation",
+  "base": "f74a43bfdd47a55ed83dffa6fabdb5a3379854ed",
+  "branch": "harness/task-one",
+  "diff_hash": "9b989366855d89576dbad5ee5b3e173c6009c1f5e5fe92452c3fe8ab60e078f1",
+  "path": "<ROOT>/cas/workspaces/task-one",
+  "repository": "github:owner/repo",
+  "revision": "7bbf6729e16e8cac585e052c2b32749752ac0226",
+  "task_id": "task-one",
+  "tree": "8ca3c35fa99bd9dccbb6066dc36a856609dccd74"
+ },
+ "canonical_remote": [
+  {
+   "ok": "github:owner/repo"
+  },
+  {
+   "ok": "github:owner/repo"
+  },
+  {
+   "ok": "github:owner/repo"
+  },
+  {
+   "ok": "github:owner/repo"
+  },
+  {
+   "ok": "github:owner/repo"
+  },
+  {
+   "ok": "github:owner/repo"
+  },
+  {
+   "error": "ContractError",
+   "message": "Unsupported remote target; use a GitHub owner/repo slug or URL"
+  },
+  {
+   "error": "ContractError",
+   "message": "Unsupported remote target; use a GitHub owner/repo slug or URL"
+  },
+  {
+   "error": "ContractError",
+   "message": "Unsupported remote target; use a GitHub owner/repo slug or URL"
+  },
+  {
+   "error": "ContractError",
+   "message": "Unsupported remote target; use a GitHub owner/repo slug or URL"
+  }
+ ],
+ "capture_credential_file": {
+  "error": "ContractError",
+  "message": "Credential file cannot enter a candidate"
+ },
+ "capture_no_change": {
+  "error": "ContractError",
+  "message": "Task produced no code change"
+ },
+ "classify_push": {
+  "empty": "unknown",
+  "fast_forward": "pushed",
+  "fetch_first": "base_moved",
+  "forced": "unknown",
+  "incorrect_old": "base_moved",
+  "malformed": "unknown",
+  "other_ref": "unknown",
+  "other_revision": "unknown",
+  "remote_failure": "unknown",
+  "remote_rejected_hook": "refused",
+  "stale_info": "base_moved",
+  "two_lines": "unknown",
+  "up_to_date": "pushed",
+  "with_header": "pushed"
+ },
+ "continue_workspace": [
+  {
+   "ok": {
+    "base": "f74a43bfdd47a55ed83dffa6fabdb5a3379854ed",
+    "branch": "harness/task-local",
+    "continued_from": "820069a01a8aa5c5691d21e2345abe5494274e80",
+    "origin_task_id": "task-local",
+    "path": "<ROOT>/local/workspaces/task-local",
+    "task_id": "task-next"
+   }
+  },
+  {
+   "error": "ContractError",
+   "message": "Continuation workspace moved from its candidate"
+  },
+  {
+   "error": "ContractError",
+   "message": "Invalid workspace ID"
+  }
+ ],
+ "inspect": {
+  "ok": {
+   "base": "f74a43bfdd47a55ed83dffa6fabdb5a3379854ed",
+   "diff": "diff --git a/change.txt b/change.txt\nnew file mode 100644\nindex 0000000..0c84d6a\n--- /dev/null\n+++ b/change.txt\n@@ -0,0 +1 @@\n+reviewed change\n\\ No newline at end of file",
+   "files": [
+    "change.txt"
+   ],
+   "revision": "7bbf6729e16e8cac585e052c2b32749752ac0226",
+   "tree": "8ca3c35fa99bd9dccbb6066dc36a856609dccd74"
+  }
+ },
+ "is_ancestor": [
+  true,
+  false
+ ],
+ "lane_main_after": "7bbf6729e16e8cac585e052c2b32749752ac0226",
+ "local_candidate": {
+  "author": "worker:implementation",
+  "base": "f74a43bfdd47a55ed83dffa6fabdb5a3379854ed",
+  "branch": "harness/task-local",
+  "diff_hash": "07b3a5208a2b207b39fc0e8e7cc52f0d2bb2fe03d6be0f5abb61497f53509193",
+  "path": "<ROOT>/local/workspaces/task-local",
+  "repository": "local:<ROOT>/local/lane/.git",
+  "revision": "820069a01a8aa5c5691d21e2345abe5494274e80",
+  "task_id": "task-local",
+  "tree": "eb81bb995fb41fbad1ecf49cfb15420f15be649d"
+ },
+ "local_merge": {
+  "ok": {
+   "merged": true,
+   "revision": "820069a01a8aa5c5691d21e2345abe5494274e80",
+   "target": "verified",
+   "transport": "local"
+  }
+ },
+ "local_merge_again": {
+  "error": "ContractError",
+  "message": "Main changed; rebase and review again"
+ },
+ "lost_response_recognized": {
+  "ok": {
+   "merged": true,
+   "merged_revision": "7bbf6729e16e8cac585e052c2b32749752ac0226",
+   "recovered": true,
+   "revision": "7bbf6729e16e8cac585e052c2b32749752ac0226",
+   "target": "verified",
+   "transport": "github"
+  }
+ },
+ "merge": {
+  "ok": {
+   "merged": true,
+   "merged_revision": "7bbf6729e16e8cac585e052c2b32749752ac0226",
+   "revision": "7bbf6729e16e8cac585e052c2b32749752ac0226",
+   "target": "verified",
+   "transport": "github"
+  }
+ },
+ "merge_recovered": {
+  "ok": {
+   "merged": true,
+   "merged_revision": "7bbf6729e16e8cac585e052c2b32749752ac0226",
+   "recovered": true,
+   "revision": "7bbf6729e16e8cac585e052c2b32749752ac0226",
+   "target": "verified",
+   "transport": "github"
+  }
+ },
+ "merge_state_merged": {
+  "main": "7bbf6729e16e8cac585e052c2b32749752ac0226",
+  "merged_revision": "7bbf6729e16e8cac585e052c2b32749752ac0226",
+  "recognized": "mainline",
+  "state": "merged"
+ },
+ "merge_state_unmerged": {
+  "main": "f74a43bfdd47a55ed83dffa6fabdb5a3379854ed",
+  "merged_revision": null,
+  "recognized": null,
+  "state": "unmerged"
+ },
+ "parent": "f74a43bfdd47a55ed83dffa6fabdb5a3379854ed",
+ "prepare_again": {
+  "ok": {
+   "base": "f74a43bfdd47a55ed83dffa6fabdb5a3379854ed",
+   "branch": "harness/task-one",
+   "path": "<ROOT>/cas/workspaces/task-one",
+   "task_id": "task-one"
+  }
+ },
+ "prepare_refusals": [
+  {
+   "error": "ContractError",
+   "message": "Invalid workspace ID"
+  },
+  {
+   "error": "ContractError",
+   "message": "Assignment base changed; use a new rebase task"
+  }
+ ],
+ "prepared": {
+  "base": "f74a43bfdd47a55ed83dffa6fabdb5a3379854ed",
+  "branch": "harness/task-one",
+  "path": "<ROOT>/cas/workspaces/task-one",
+  "task_id": "task-one"
+ },
+ "publish_without_remote": {
+  "error": "ContractError",
+  "message": "GitHub repository must be configured"
+ },
+ "qualify_merged": [
+  {
+   "ok": {
+    "merged_revision": "7bbf6729e16e8cac585e052c2b32749752ac0226",
+    "tree": "8ca3c35fa99bd9dccbb6066dc36a856609dccd74"
+   }
+  },
+  {
+   "error": "ContractError",
+   "message": "Merged revision required"
+  },
+  {
+   "error": "ContractError",
+   "message": "Merged tree differs from reviewed candidate"
+  }
+ ],
+ "remote_main_after": "7bbf6729e16e8cac585e052c2b32749752ac0226",
+ "remote_main_before": "f74a43bfdd47a55ed83dffa6fabdb5a3379854ed",
+ "require_target": [
+  "verified",
+  "legacy_unverified",
+  {
+   "error": "ContractError",
+   "message": "Candidate target repository changed since review"
+  }
+ ],
+ "review_workspace": "<ROOT>/cas/workspaces/review-review-one",
+ "tampered": [
+  {
+   "error": "ContractError",
+   "message": "Candidate tree changed"
+  },
+  {
+   "error": "ContractError",
+   "message": "Candidate patch changed"
+  }
+ ],
+ "target_identity": "github:owner/repo",
+ "unreachable_error_is_transport": true,
+ "unreachable_remote": {
+  "error": "GitCommandError"
+ }
+}

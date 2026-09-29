@@ -1,0 +1,9 @@
+{
+ "family": "storage.pg",
+ "description": "S1 storage on a labelled disposable PostgreSQL: migrate (DDL, schema_migrations history, precheck), transaction commit/rollback read back through a separate connection, advisory lock 734219 held for the unit, lock_timeout 10s / fail_fast 500ms, a fail-fast writer refused while the lock is held, a normal writer waiting for the holder, graph writes inside the documents transaction, and the section 2.9 recorder against the PostgreSQL store",
+ "reference_driver": "drivers/reference/s1_pg.py",
+ "target_driver": "drivers/target/s1_pg.py",
+ "requires": "disposable-postgresql",
+ "golden": "goldens/reference/storage.pg.json",
+ "slice": "S1"
+}
