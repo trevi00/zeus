@@ -145,16 +145,29 @@ def run_driver(python: Path, driver: Path, work: Path, extra_env: dict, use_bwra
     return json.loads(proc.stdout.strip().splitlines()[-1])
 
 
+class FixtureCleanupError(RuntimeError):
+    """The disposable PostgreSQL fixture could not be proven removed (S0 SF-1): residue is uncertain."""
+
+
 class DisposablePostgres:
     """A labelled, network-less PostgreSQL container reachable only through a Unix socket directory
     under this run's scratch root; its data lives on a tmpfs and the container is removed on exit.
-    No port is published and no password exists (trust on the private socket only)."""
+    No port is published and no password exists (trust on the private socket only).
+
+    Ownership (S0 SF-1): a per-instance owner label marks the container this object started. One
+    bounded cleanup path runs on startup failure (readiness timeout, log-read error, interrupted
+    start) and on normal or body-error exit. It removes only a container carrying this owner label,
+    never an unrelated container that merely shares the name, verifies absence afterwards, and raises
+    FixtureCleanupError when residue cannot be ruled out. A primary error is always preserved; a
+    cleanup failure during it is reported as a note, without payloads."""
 
     def __init__(self, work: Path):
         self.socket = work / "pg-socket"
         self.socket.mkdir()
         self.socket.chmod(0o777)
         self.name = f"{provider_guard.FIXTURE_NAME_PREFIX}s0-pg-{os.getpid()}"
+        self.owner = f"zeus.rebuild.owner={os.getpid()}-{time.monotonic_ns()}"
+        self.container_id = ""
         self.env = {**os.environ, provider_guard.DOCKER_OPT_IN_ENV: "1",
                     provider_guard.DOCKER_BIND_ROOT_ENV: str(work)}
         self.dsn = f"host={self.socket} port=5432 dbname=postgres user=postgres connect_timeout=5"
@@ -163,30 +176,73 @@ class DisposablePostgres:
         return subprocess.run(["docker", *args], env=self.env, capture_output=True, text=True,
                               timeout=timeout)
 
-    def __enter__(self):
+    def _owned_ids(self) -> list[str]:
+        """Container ids carrying THIS instance's owner label (running or not)."""
+        found = self.docker("ps", "-aq", "--no-trunc", "--filter", f"label={self.owner}")
+        if found.returncode != 0:
+            raise FixtureCleanupError("disposable PostgreSQL ownership lookup failed")
+        return [line.strip() for line in found.stdout.splitlines() if line.strip()]
+
+    def cleanup(self) -> None:
+        """Remove exactly the owned container(s) and prove absence; raise when that cannot be shown."""
+        ids = self._owned_ids()
+        if self.container_id and self.container_id not in ids:
+            ids.append(self.container_id)
+        for cid in ids:
+            removed = self.docker("rm", "-f", cid)
+            if removed.returncode != 0 and "No such container" not in removed.stderr:
+                raise FixtureCleanupError("disposable PostgreSQL removal failed")
+        if self._owned_ids():
+            raise FixtureCleanupError("disposable PostgreSQL still present after removal")
+
+    def _start(self) -> None:
+        clash = self.docker("ps", "-aq", "--filter", f"name=^/{self.name}$")
+        if clash.returncode != 0 or clash.stdout.strip():
+            # Never remove a container we did not start merely because the name collides.
+            raise RuntimeError("disposable PostgreSQL name is taken or unverifiable; refusing to start")
         # The server runs as this user, so the socket directory stays removable by the runner.
         uid, gid = os.getuid(), os.getgid()
         started = self.docker(
             "run", "-d", "--rm", "--network", "none", "--label", provider_guard.FIXTURE_LABEL,
-            "--label", "zeus.rebuild=s0", "--name", self.name, "--user", f"{uid}:{gid}",
+            "--label", "zeus.rebuild=s0", "--label", self.owner, "--name", self.name,
+            "--user", f"{uid}:{gid}",
             "--mount", f"type=bind,src={self.socket},dst=/var/run/postgresql",
             "--tmpfs", f"/var/lib/postgresql/data:uid={uid},gid={gid},mode=0700",
             "-e", "POSTGRES_HOST_AUTH_METHOD=trust", PG_IMAGE,
             timeout=300)
         if started.returncode != 0:
             raise RuntimeError("disposable PostgreSQL did not start: " + started.stderr.strip()[-300:])
+        self.container_id = started.stdout.strip()
         deadline = time.monotonic() + 120
         while time.monotonic() < deadline:
             logs = self.docker("logs", self.name)
             text = logs.stdout + logs.stderr
             done = text.find("PostgreSQL init process complete")
             if done >= 0 and "ready to accept connections" in text[done:]:
-                return self
+                return
             time.sleep(1)
         raise RuntimeError("disposable PostgreSQL did not become ready")
 
-    def __exit__(self, *exc):
-        self.docker("rm", "-f", self.name)
+    def __enter__(self):
+        try:
+            self._start()
+        except BaseException as primary:
+            # __exit__ does not run when __enter__ raises: clean up here, preserving the primary error.
+            try:
+                self.cleanup()
+            except FixtureCleanupError as uncertain:
+                primary.add_note(f"cleanup: {uncertain}")
+            raise
+        return self
+
+    def __exit__(self, exc_type, exc, tb):
+        try:
+            self.cleanup()
+        except FixtureCleanupError as uncertain:
+            if exc is None:
+                raise
+            exc.add_note(f"cleanup: {uncertain}")
+        return False
 
 
 def differing_paths(expected, actual, path="$") -> list[str]:
