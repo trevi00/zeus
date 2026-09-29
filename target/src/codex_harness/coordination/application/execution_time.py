@@ -10,7 +10,8 @@ Entry points: DOMAIN, CLOCK_TOLERANCE_SECONDS, ExecutionTimeError, deadline, act
     observe_domain, contain_with_notice, running
 Contracts: INV-EXECUTION-IDENTITY-001, INV-SESSION-001
 
-Target change of shape only (§5.2 R-D): `active`, `pin_clock` and `running` take optional `clock`/`monotonic`
+Target changes of shape only: the deadline containment records the attempt outcome through
+coordination.domain.attempts (no execution_time <-> workflow import cycle, §2.2); (§5.2 R-D) `active`, `pin_clock` and `running` take optional `clock`/`monotonic`
 injections that default to the host clocks; `DOMAIN` is this process's clock-domain identity as at M7.
 
 Shared durable deadlines and process-domain elapsed time, with containment.
@@ -21,6 +22,7 @@ from uuid import uuid4
 
 from codex_harness.coordination.application.execution_budget import aware_time, block_execution, deadline_time
 from codex_harness.coordination.application.execution_notices import record
+from codex_harness.coordination.domain.attempts import attempt_outcome
 from codex_harness.kernel.errors import ContractError, require
 from codex_harness.kernel.ids import digest
 
@@ -141,9 +143,8 @@ def contain_with_notice(tx, org, row, bucket, reason, now, observation=None):
                                                    'id': identity, 'at': now.isoformat(),
                                                    'authority': 'informational_only'})
     if reason == 'deadline_exceeded':
-        from codex_harness.coordination.application.workflow import Workflow
         if type(row.get('attempt')) is int and row['attempt'] > 0:
-            Workflow._attempt_outcome(row, 'expired', now.isoformat(), 'deadline exceeded')
+            attempt_outcome(row, 'expired', now.isoformat(), 'deadline exceeded')
         row.update(status='expired', error='deadline exceeded', completed_at=now.isoformat())
         tx.put(bucket, row['id'], row)
         record(tx, org, row, bucket, reason, now.isoformat())

@@ -41,6 +41,7 @@ from codex_harness.coordination.application.execution_time import (
     pin_clock,
     running,
 )
+from codex_harness.coordination.domain.attempts import attempt_outcome
 from codex_harness.kernel.errors import ContractError, ExecutionFailure, require
 from codex_harness.kernel.ids import SYSTEM_IDS, digest, utcnow
 from codex_harness.kernel.message import envelope
@@ -97,13 +98,7 @@ class Workflow:
         self.ticket_binding, self.TicketSuperseded, self.adoption = ticket_binding, TicketSuperseded, adoption
         self.clock, self.ids, self.monotonic = clock, ids, monotonic
 
-    @staticmethod
-    def _attempt_outcome(task, status, at, error=None):
-        # INV-METRIC-001: retain failures across retries; never invent legacy outcomes.
-        if task['attempt'] and not any(r['attempt'] == task['attempt']
-                                      for r in task.get('attempt_outcomes', [])):
-            task.setdefault('attempt_outcomes', []).append(
-                {'attempt': task['attempt'], 'status': status, 'at': at, 'error': error})
+    _attempt_outcome = staticmethod(attempt_outcome)
 
     def claim(self, agent: str, owner: str, lease_seconds: int = POLICY.task_lease_seconds,
               max_attempts: int | None = None, now: datetime | None = None,

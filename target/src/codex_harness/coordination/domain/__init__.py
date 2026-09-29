@@ -1,0 +1,1 @@
+"""Coordination domain values (pure)."""
