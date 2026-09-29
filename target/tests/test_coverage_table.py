@@ -54,7 +54,8 @@ def test_row_fields_and_values(table):
 S1_OWNERS = {"kernel", "storage", "host_os"}
 S2_OWNERS = {"routing", "context", "knowledge"}
 S3_OWNERS = {"execution", "credentials"}  # S3: the container/credential rows only (execution is shared with S4)
-IMPLEMENTED_OWNERS = S1_OWNERS | S2_OWNERS | S3_OWNERS  # slices implemented so far: S1, S2, S3
+S4_EARLY_OWNERS = {"coordination"}  # S4 Option A: moved-ahead owner operations only
+IMPLEMENTED_OWNERS = S1_OWNERS | S2_OWNERS | S3_OWNERS | S4_EARLY_OWNERS  # slices implemented so far: S1, S2, S3
 
 
 def test_only_implemented_slices_claim_implemented_and_nothing_is_verified_early(table):

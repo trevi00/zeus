@@ -1,0 +1,163 @@
+"""Informational execution notices: one per persisted failed/blocked transition, never workflow authority.
+
+Layer: application
+Context: coordination
+Owns: the `execution_notices`, `execution_notice_errors` and `workflow_inbox` buckets and the notice's
+    outbox/events rows (M7 `application/execution_notices.py`, moved ahead in S4 unchanged)
+Does not own: authorization (routing's Organization, passed in), the analysis marker projection
+    (kernel.analysis, the M7 observation-domain definition)
+Entry points: REASONS, FAILED_STATES, RESEARCH_REQUIRED, REPAIR_STATE, record, receive, receive_foreign
+Contracts: INV-EXECUTION-IDENTITY-001, INV-OBSERVATION-001
+
+Informational execution transitions, atomically retained beside the outbox.
+"""
+import math
+import re
+
+from codex_harness.kernel.analysis import ANALYSIS_REJECTED, analysis_facts
+from codex_harness.kernel.errors import ContractError, require
+from codex_harness.kernel.ids import digest
+from codex_harness.kernel.message import envelope
+
+REASONS = {'execution_failed', 'budget_exhausted', 'deadline_exceeded', 'dependency_failed',
+           'operator_cancelled', 'ticket_binding_changed', 'execution_recovered', 'InvalidExecutionDeadline',
+           'InvalidRetryBudget', 'UnverifiedLegacyRetryBudget', 'RecoveryContextChanged',
+           'inspection_blocked', 'decision_blocked', 'ticket_superseded', 'InvalidExecutionLease',
+           'InvalidExecutionClock', 'ClockDiscontinuity', 'InvalidExecutionOrder', 'InvalidExecutionState',
+           'reconciliation_required',  # INV-OBSERVATION-001: provider ran, outcome unrecorded, execution blocked
+           'research_required'}  # INV-AUDIT-REPAIR-001: both attempts of one repair family were content-refused
+FAILED_STATES = {'retry', 'failed', 'expired', 'cancelled', 'blocked', 'superseded', 'inspection_blocked'}
+# The ONE narrow extension for a SUCCEEDED execution (INV-AUDIT-REPAIR-001). It is not a relabelling:
+# the row keeps `succeeded`, and eligibility needs BOTH the execution's own recorded content
+# rejection AND an authoritative repair lineage that already reached `research_required`. No other
+# reason may be raised on a succeeded row, and this reason may be raised on no other status.
+RESEARCH_REQUIRED = 'research_required'
+REPAIR_STATE = 'research_required'
+
+
+def _repair_proved(row, proof) -> bool:
+    """Is this succeeded execution the second refused draft of a proven repair lineage?
+
+    The proof is the lineage's own settlement facts, and it is checked against the execution row it
+    names: the row's durable result must itself record the content rejection, and the lineage must
+    name THIS row as the successor it settled. A caller's assertion alone proves nothing here.
+    """
+    if not isinstance(proof, dict) or proof.get('state') != REPAIR_STATE:
+        return False
+    correction = proof.get('correction_id')
+    return (analysis_facts(row.get('result'))['analysis_outcome'] == ANALYSIS_REJECTED
+            and proof.get('successor_task_id') == row.get('id')
+            and type(correction) is str and bool(correction))
+
+
+def _build(org, row, bucket, reason_code, at, transition_ref, proof=None, evidence_refs=()):
+    require(bucket in {'tasks', 'decisions_pending'}, 'Invalid notice aggregate')
+    require(reason_code in REASONS, 'Unknown execution notice reason')
+    require(_repair_proved(row, proof) and reason_code == RESEARCH_REQUIRED
+            if row['status'] == 'succeeded'
+            else row['status'] in FAILED_STATES and reason_code != RESEARCH_REQUIRED,
+            'Invalid notice execution state')
+    require(all(type(ref) is str and bool(ref) for ref in evidence_refs), 'Invalid notice evidence')
+    actor = org.actor(row.get('agent', row.get('actor')))
+    recipient = actor.parent or actor.id
+    transition = {'version': 1, 'bucket': bucket, 'task_id': row['id'],
+                  'generation': row.get('generation', 0), 'attempt': row['attempt'],
+                  'recovery_sequence': row.get('recovery_sequence', 0), 'status': row['status'],
+                  'reason_code': reason_code}
+    transition['transition_ref'] = transition_ref or digest(transition)
+    require(all(type(transition[k]) is int and transition[k] >= 0 for k in
+                ('generation', 'attempt', 'recovery_sequence')), 'Invalid notice counters')
+    require(re.fullmatch('[0-9a-f]{64}', transition['transition_ref']) is not None, 'Invalid transition reference')
+    identity = digest(transition)
+    message = envelope('execution.notice', actor.id, recipient, 'observe_execution',
+                       {'notice_id': identity, **transition},
+                       row.get('message', {}).get('correlation_id', row['id']), row['id'])
+    message['message_id'] = identity
+    message['when']['created_at'] = at
+    message['why']['objective'] = 'Observe a persisted execution transition without granting workflow authority'
+    # Immutable references only; the retained drafts they name never travel in a notice.
+    message['why']['evidence_refs'] = list(evidence_refs)
+    org.authorize(message)
+    notice = {'id': identity, 'transition': transition, 'message': message, 'at': at,
+              'authority': 'informational_only', 'observer': 'workflow_controller', 'source_hash': digest(row)}
+    return notice
+
+
+def _quarantine_value(value):
+    """Preserve JSON data; explicitly label values the durable store cannot encode."""
+    if value is None or type(value) in (str, bool, int):
+        return value
+    if type(value) is float and math.isfinite(value):
+        return value
+    if isinstance(value, dict):
+        if all(isinstance(key, str) for key in value):
+            return {key: _quarantine_value(item) for key, item in value.items()}
+        return {'invalid_mapping': [[_quarantine_value(key), _quarantine_value(item)]
+                                    for key, item in value.items()]}
+    if isinstance(value, (list, tuple)):
+        return [_quarantine_value(item) for item in value]
+    return {'invalid_type': type(value).__name__}
+
+
+def record(tx, org, row, bucket, reason_code, at, transition_ref=None, *, proof=None,
+           evidence_refs=()):
+    try:
+        notice = _build(org, row, bucket, reason_code, at, transition_ref, proof, evidence_refs)
+    except (ContractError, KeyError, TypeError, ValueError, AttributeError) as exc:
+        # Bad source data must not roll back containment of this or earlier queue rows.
+        # Storage errors below still abort the entire transaction; no state-only success.
+        source = {'bucket': bucket, 'source': _quarantine_value(row),
+                  'reason_code': reason_code, 'transition_ref': _quarantine_value(transition_ref)}
+        semantic = {key: _quarantine_value(row.get(key)) for key in
+                    ('id', 'agent', 'actor', 'generation', 'attempt', 'recovery_sequence', 'status')}
+        identity = digest({'bucket': bucket, 'transition': semantic, 'reason_code': reason_code,
+                           'transition_ref': source['transition_ref']})
+        old = tx.get('execution_notice_errors', identity)
+        if old:
+            return old
+        error = {'id': identity, **source, 'status': 'quarantined', 'error_type': type(exc).__name__, 'at': at}
+        tx.put('execution_notice_errors', identity, error)
+        tx.put('events', identity, {'type': 'execution.notice_quarantined', 'notice_error_id': identity,
+                                   'task_id': _quarantine_value(row.get('id')), 'bucket': bucket, 'at': at})
+        return error
+    identity = notice['id']
+    existing = tx.get('execution_notices', identity)
+    if existing:
+        require(existing['transition'] == notice['transition'], 'Conflicting execution notice identity')
+        return existing
+    tx.put('execution_notices', identity, notice)
+    tx.put('outbox', identity, {'message': notice['message'], 'sent': False})
+    return notice
+
+
+def receive(tx, message):
+    identity = message['message_id']
+    old = tx.get('workflow_inbox', identity)
+    if old:
+        require(old['hash'] == digest(message), 'Conflicting execution notice delivery')
+        return old['result']
+    notice = tx.get('execution_notices', identity)
+    require(isinstance(notice, dict) and notice.get('id') == identity
+            and isinstance(notice.get('transition'), dict) and identity == digest(notice['transition'])
+            and notice.get('message') == message, 'Unproven execution notice')
+    result = {'handled': True, 'notice_id': identity, 'authority': 'informational_only'}
+    tx.put('workflow_inbox', identity, {'hash': digest(message), 'result': result})
+    return result
+
+
+def receive_foreign(store, message):
+    """Prove and durably consume a notice that reached a consumer's stream under ANOTHER correlation.
+
+    The outbox and the execution store are shared, so a persisted notice of an older execution can
+    land on the stream a current run is draining (Implementation014, INV-OPERATION-FINALIZATION-001).
+    The consumer has already checked the recipient and authorized the route; this is the same proof
+    as `receive` (stored transition digest, exact message bytes, idempotent inbox binding) in its own
+    transaction, committed before the caller ACKs. The terminal-operation parking shortcut is never
+    consulted: only the stored transition proves a notice. A ContractError (unproven, conflicting)
+    or a store failure propagates with nothing written, so the message stays pending. The receipt is
+    `informational_only`: it queues no task or decision, grants no provider entry, is no task result
+    and changes no current run or cycle state.
+    """
+    require(isinstance(message, dict) and message.get('type') == 'execution.notice', 'Not an execution notice')
+    with store.transaction() as tx:
+        return receive(tx, message)
