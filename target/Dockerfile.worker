@@ -78,9 +78,9 @@ USER 10001:10001
 WORKDIR /
 # Again as the unprivileged runtime user, through PATH, exactly as the inner runtime resolves it.
 RUN claude --version | grep -F "2.1.280" && codex --version | grep -Fx "codex-cli ${CODEX_CLI_VERSION}"
-# The worker profile's interpreter selection (context.adapters.worker_profile, moved in S2), then pytest and
-# ruff under exactly that interpreter. The M7 check also derived the environment through the Claude CLI
-# transport's `child_environment`, which moves with S4; until then that derivation step is pending
-# (evidence/rebuild/s3/pending.json). No credential, no network and no model call is involved.
-RUN /opt/zeus/bin/python -I -c "import subprocess; from pathlib import Path; from codex_harness.context.adapters.worker_profile import verified_interpreter; interpreter = verified_interpreter(); assert interpreter.parent == Path('/opt/zeus/bin'), interpreter; [subprocess.run([str(interpreter), '-m', tool, '--version'], cwd='/workspace', check=True) for tool in ('pytest', 'ruff')]"
+# The worker profile's interpreter selection (context.adapters.worker_profile, moved in S2), the environment it
+# derives from the Claude CLI transport's allow-listed child environment (execution.adapters.providers.claude_cli,
+# moved in S4), `python` found through that PATH, then the profile-selected pytest and ruff under exactly that
+# environment: the M7 check, restored. No credential, no network and no model call is involved.
+RUN /opt/zeus/bin/python -I -c "import shutil, subprocess; from pathlib import Path; from codex_harness.execution.adapters.providers.claude_cli import child_environment; from codex_harness.context.adapters.worker_profile import profile_environment, verified_interpreter; interpreter = verified_interpreter(); assert interpreter.parent == Path('/opt/zeus/bin'), interpreter; env = profile_environment(child_environment()[0], '/workspace', interpreter)[0]; python = shutil.which('python', path=env['PATH']); assert python is not None and Path(python).resolve().parent == Path('/opt/zeus/bin'), python; [subprocess.run([python, '-m', tool, '--version'], env=env, cwd='/workspace', check=True) for tool in ('pytest', 'ruff')]"
 ENTRYPOINT ["/opt/zeus/bin/python", "-I", "-m", "codex_harness.adapters.isolated_worker_entry"]
