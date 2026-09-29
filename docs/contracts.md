@@ -1478,7 +1478,13 @@ released lock alone never admits. After a confirmed stop (or, for a prior run, a
 the same account identity and auth mode, while the store itself is unchanged since issue, replaced by
 temp file + fsync + rename + directory fsync. Unchanged means no write. Any anomaly, including a changed
 read-only configuration digest, quarantines the store: no write-back, no next admission, no retry, and
-never the operator's `~/.codex`. Measured for the pinned 0.156.1 with a dummy auth and no network: the
+never the operator's `~/.codex`. Output boundary: before a Codex event reaches the executor, and in a
+failure text, the retained `codex_result.json` and the returned value, every string credential leaf of
+the per-run `auth.json` (as issued, and re-read before each forward so a refresh is covered) and any
+JWT-shaped string are replaced by fixed markers; a streamed fragment that may still complete a value is
+withheld until decided. An unreadable or malformed per-run file refuses the output
+(`codex_output_secret_set_unavailable`, reported as the settlement hold when one follows) instead of
+persisting it. Measured for the pinned 0.156.1 with a dummy auth and no network: the
 file mode is honored (the keyring mode ignores the same file), the file-store writer rewrites
 `auth.json` in place (same inode, 0600, no temp or rename), logout unlinks it, and the App Server
 creates sqlite state, `installation_id`, `skills/`, `tmp/arg0` links and `log/` - so the home is a

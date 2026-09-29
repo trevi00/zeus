@@ -24,6 +24,12 @@ exact shape, the same account identity, the store itself unchanged since issue) 
 replaced. Any anomaly quarantines the store: no write-back, no next admission, no retry and never the
 operator's `~/.codex`.
 
+Output boundary. Both Codex profiles can read their own credential, so a tool or answer may echo it.
+Before anything leaves this layer (each progress event, a failure text, the retained `codex_result.json`
+and the returned value) every credential leaf of the per-run `auth.json`, as issued and as refreshed
+during the run, and any JWT-shaped string is replaced by a fixed marker. A secret set that cannot be
+established (the per-run file unreadable or malformed) refuses the run's output instead of keeping it.
+
 Pinned-CLI mechanism (I1 step 1, codex-cli 0.156.1, dummy auth, network none): with
 `cli_auth_credentials_store = "file"` the CLI reads `$CODEX_HOME/auth.json` (keyring mode ignores the
 same file); its file-store writer rewrites `auth.json` IN PLACE (open/modify/close_write, same inode,
@@ -510,6 +516,172 @@ class Admission:
             self.descriptor = None
 
 
+# ---- the Codex output boundary ------------------------------------------------------------------
+REDACTED = "[REDACTED:codex-credential]"
+REDACTED_JWT = "[REDACTED:jwt-shaped]"
+# Defense in depth only: a JWT-shaped string (base64url header `{"...`, payload, signature).
+JWT_SHAPE = re.compile(r"eyJ[A-Za-z0-9_-]{5,}\.[A-Za-z0-9_-]{5,}\.[A-Za-z0-9_-]*")
+# A stream tail that may still grow into a JWT-shaped string with the next fragment (never starting
+# inside a longer base64url/dotted run, so a completed JWT is not re-held from its payload).
+JWT_TAIL = re.compile(r"(?<![A-Za-z0-9_.-])(?:e|ey|eyJ[A-Za-z0-9_-]*(?:\.[A-Za-z0-9_-]*){0,2})\Z")
+# The auth.json leaves that are not credential material; every other string leaf is.
+NOT_CREDENTIAL = ("auth_mode", "last_refresh")
+MIN_SECRET_CHARS = 8  # a shorter leaf is no provider credential and would only corrupt ordinary text
+SECRET_READ_ATTEMPTS, SECRET_READ_PAUSE = 5, 0.02  # rides over one in-place rewrite by the CLI
+
+
+class OutputUnsanitizable(IsolationError):
+    """The secret set of a run could not be established: nothing more is forwarded, returned or kept."""
+
+    def __init__(self, detail: str):
+        super().__init__("codex_output_secret_set_unavailable", detail)
+
+
+def credential_values(data: bytes) -> set:
+    """Every string-valued credential leaf (tokens, keys, identity) of a Codex auth.json, in memory only.
+    A refusal names the check, never the content, and chains nothing that holds the bytes."""
+    body = None
+    try:
+        body = json.loads(data.decode("utf-8"))
+    except (UnicodeDecodeError, ValueError):
+        pass
+    if not isinstance(body, dict):
+        raise IsolationError("credential_unparseable")
+    values, stack = set(), [body]
+    while stack:
+        node = stack.pop()
+        for key, value in (node.items() if isinstance(node, dict) else enumerate(node)):
+            if isinstance(value, (dict, list)):
+                stack.append(value)
+            elif isinstance(value, str) and key not in NOT_CREDENTIAL and len(value) >= MIN_SECRET_CHARS:
+                values.add(value)
+    return values
+
+
+class CredentialScrubber:
+    """INV-CODEX-CREDENTIAL-001 output boundary of one Codex run: every event before the executor sees
+    it, every failure text, the retained result and the returned value.
+
+    The secret set is every credential leaf of the per-run auth.json as issued, kept current by
+    re-reading that file before each forward (a refresh adds its new values; nothing is ever dropped).
+    Values stay in memory and are replaced by fixed markers. A streamed `delta` fragment that may still
+    grow into a credential or a JWT-shaped string is withheld until the next fragment of the same
+    stream decides it, so no split value is forwarded piecewise; a stream that ends on such a tail
+    keeps it withheld (the completed item carries the full scrubbed text)."""
+
+    def __init__(self, issued: bytes, path):
+        self.path, self.secrets, self._variants, self._pattern = Path(path), set(), [], None
+        self._digest, self._pending = None, {}
+        try:
+            self._learn(issued)
+        except IsolationError as exc:
+            raise OutputUnsanitizable(exc.reason_code) from None
+
+    def _learn(self, data: bytes) -> None:
+        values = credential_values(data)
+        self._digest = hashlib.sha256(data).hexdigest()
+        if values <= self.secrets:
+            return
+        self.secrets |= values
+        # The raw value and its JSON-escaped form, longest first so no shorter value splits a longer one.
+        self._variants = sorted({form for value in self.secrets
+                                 for form in (value, json.dumps(value, ensure_ascii=False)[1:-1])}, key=len, reverse=True)
+        self._pattern = re.compile("|".join(re.escape(form) for form in self._variants))
+
+    def refresh(self) -> None:
+        """The current per-run auth.json joins the secret set; unreadable or malformed refuses."""
+        reason = None
+        for attempt in range(SECRET_READ_ATTEMPTS):
+            if attempt:
+                time.sleep(SECRET_READ_PAUSE)
+            try:
+                data = read_credential_file(self.path)
+                if hashlib.sha256(data).hexdigest() != self._digest:
+                    self._learn(data)
+                return
+            except (IsolationError, OSError) as exc:
+                reason = getattr(exc, "reason_code", type(exc).__name__)
+        raise OutputUnsanitizable(reason)
+
+    def text(self, value: str) -> str:
+        if self._pattern is not None:
+            value = self._pattern.sub(REDACTED, value)
+        return JWT_SHAPE.sub(REDACTED_JWT, value)
+
+    def scrub(self, value):
+        """Stateless: every string, dictionary key included, of a JSON-shaped value."""
+        if isinstance(value, str):
+            return self.text(value)
+        if isinstance(value, dict):
+            return {self.scrub(key): self.scrub(item) for key, item in value.items()}
+        if isinstance(value, (list, tuple)):
+            return type(value)(self.scrub(item) for item in value)
+        return value
+
+    def event(self, event):
+        """One event as the executor may see it, after the secret set is brought current."""
+        self.refresh()
+        params = event.get("params") if isinstance(event, dict) else None
+        stream = (str(event.get("method")) if isinstance(event, dict) else "",
+                  *(str(params.get(name)) for name in ("itemId", "summaryIndex", "contentIndex")
+                    if isinstance(params, dict)))
+        return self._walk(event, stream)
+
+    def _walk(self, value, stream):
+        if isinstance(value, dict):
+            return {self.scrub(key): self._fragment(stream + (key,), item) if key == "delta" and isinstance(item, str)
+                    else self._walk(item, stream + (str(key),)) for key, item in value.items()}
+        if isinstance(value, (list, tuple)):
+            return type(value)(self._walk(item, stream) for item in value)
+        return self.scrub(value)
+
+    def _fragment(self, stream, text: str) -> str:
+        buffer = self._pending.pop(stream, "") + text
+        held = self._undecided_tail(buffer)
+        if held:
+            self._pending[stream] = buffer[len(buffer) - held:]
+            buffer = buffer[:len(buffer) - held]
+        return self.text(buffer)
+
+    def _undecided_tail(self, buffer: str) -> int:
+        longest = 0
+        for form in self._variants:
+            index = buffer.find(form[0], max(0, len(buffer) - len(form)))
+            while index != -1 and len(buffer) - index > longest:
+                if form.startswith(buffer[index:]):
+                    longest = len(buffer) - index
+                    break
+                index = buffer.find(form[0], index + 1)
+        tail = JWT_TAIL.search(buffer, max(0, len(buffer) - MAX_AUTH_BYTES))
+        return max(longest, len(buffer) - tail.start() if tail else 0)
+
+    def failure(self, exc: Exception) -> Exception:
+        """The same failure with credential material replaced (the original when nothing matched); an
+        unestablished secret set replaces the whole failure with the fixed refusal."""
+        try:
+            self.refresh()
+        except OutputUnsanitizable as refused:
+            return refused
+        text = str(exc)
+        clean = self.text(text)
+        if clean == text:
+            return exc
+        kind = type(exc) if type(exc) in (ContractError, RuntimeError, ValueError, OSError) else ContractError
+        replaced = kind(clean)
+        if hasattr(exc, "capture_cleanup"):
+            replaced.capture_cleanup = exc.capture_cleanup
+        return replaced
+
+    def result(self, value: dict, forwarded: dict) -> dict:
+        """The transport value: the returned events are exactly the forwarded (scrubbed) ones."""
+        self.refresh()
+        clean = self.scrub({key: item for key, item in value.items() if key != "events"})
+        if isinstance(value.get("events"), list):
+            clean["events"] = [forwarded[id(event)] if id(event) in forwarded else self.scrub(event)
+                               for event in value["events"]]
+        return clean
+
+
 # ---- the Codex App Server inside a role container -----------------------------------------------
 def codex_environment() -> dict:
     """The fixed, value-free environment of every Codex profile container: no provider token of any
@@ -681,6 +853,7 @@ class IsolatedCodexRuntime:
         self.prepared = None
         try:
             prepared = self._prepare(admission, workspace, run_directory, read_only, state_key, on_tick)
+            scrubber = CredentialScrubber(admission.data, prepared["home"] / "auth.json")
             self._advance("prepared", profile=self.role_profile, config_sha256=CODEX_CONFIG_SHA256,
                           source={key: prepared["source"][key] for key in ("revision",)},
                           handoff=None if prepared["handoff"] is None else prepared["handoff"]["summary"],
@@ -713,6 +886,13 @@ class IsolatedCodexRuntime:
             self._discard(self.prepared)
             raise
         started = time.monotonic()
+        forwarded = {}
+
+        def forward(event):
+            # INV-CODEX-CREDENTIAL-001: nothing leaves this layer before the output boundary saw it.
+            clean = forwarded[id(event)] = scrubber.event(event)
+            if on_event is not None:
+                on_event(clean)
 
         def converse():
             if on_enter is not None:
@@ -723,20 +903,34 @@ class IsolatedCodexRuntime:
             self._advance("running", client_pid=self.tree.process.pid)
             server = AttachedAppServer(self.tree.process, iw.WORKSPACE)
             with server:
-                return server.run(prompt, workspace, schema, timeout, thread_id=thread_id, on_event=on_event,
-                                  read_only=read_only, on_tick=on_tick, model=model)
+                replaced = None
+                try:
+                    value = server.run(prompt, workspace, schema, timeout, thread_id=thread_id, on_event=forward,
+                                       read_only=read_only, on_tick=on_tick, model=model)
+                except OutputUnsanitizable:
+                    raise
+                except Exception as exc:
+                    replaced = scrubber.failure(exc)
+                    if replaced is exc:
+                        raise
+                if replaced is not None:
+                    raise replaced  # outside the handler: the original text is never chained or displayed
+                return scrubber.result(value, forwarded)
         try:
             value, stopped = iw.hold(self.container, self.record, converse, client=self._end_client, detail=lambda v: {
                 "turn": {"interrupted": v.get("interrupted"), "failure": (v.get("failure") or {}).get("cause")}})
-        except BaseException:
+        except BaseException as exc:
             # However the turn ended, the credential copy is settled only when the stop was confirmed;
             # an unconfirmed stop keeps the copy and its ledger entry for the next admission's reconcile.
             if iw.cleanup_debt(self.record) is None:
                 try:
                     self._after_stop(admission, prepared)
                     self._discard(prepared)
-                except IsolationError:
-                    pass  # quarantined: the marker holds every next admission; the home stays as evidence
+                except IsolationError as held:
+                    # Quarantined: the marker holds every next admission; the home stays as evidence. An
+                    # unreadable per-run credential is that same hold, so the hold is what is reported.
+                    if isinstance(exc, OutputUnsanitizable):
+                        raise held from exc
             raise
         if not stopped["confirmed"]:
             raise ContractError("Codex role container termination could not be confirmed; the outcome is unknown and "
@@ -778,9 +972,9 @@ class IsolatedCodexRuntime:
             except IsolationError as exc:
                 isolation["result_files"] = {"refused": exc.reason_code}
         isolation["outcome"] = ("reviewed" if read_only else "imported") if failure is None else failure.reason_code
-        retained = {key: value.get(key) for key in ("answer", "thread_id", "usage", "interrupted", "failure",
-                                                     "inspection_blocked", "requested_model")}
-        removal = iw.retire(self.container, self.record, {"isolation": isolation}, isolation["outcome"],
+        retained = scrubber.scrub({key: value.get(key) for key in ("answer", "thread_id", "usage", "interrupted", "failure",
+                                                                   "inspection_blocked", "requested_model")})
+        removal = iw.retire(self.container, self.record, scrubber.scrub({"isolation": isolation}), isolation["outcome"],
                             files={"codex_result.json": retained},
                             removed={"staging_retained": failure is not None})
         isolation["cleanup"] = removal
@@ -802,7 +996,7 @@ class IsolatedCodexRuntime:
         else:
             isolation["task_state"] = "discarded"
         self._discard(prepared)
-        return {**value, "isolation": isolation}
+        return scrubber.scrub({**value, "isolation": isolation})
 
     def _after_stop(self, admission, prepared) -> dict:
         """After a confirmed stop and before removal: the read-only configuration must be byte-for-byte

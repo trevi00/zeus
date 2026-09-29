@@ -28,8 +28,12 @@ CLAUDE_TOKEN = "sk-ant-oat01-FIXTURE-DUMMY-NOT-A-TOKEN"
 SCHEMA = {"type": "object", "properties": {"summary": {"type": "string"}}, "required": ["summary"]}
 ROOT = Path(__file__).resolve().parents[1]
 
+JWT = "eyJhbGciOiJub25lIn0.eyJzdWIiOiJEVU1NWSJ9.c2lnLURVTU1Z"  # {"alg":"none"}.{"sub":"DUMMY"}.DUMMY
+ISSUED = ("rt-DUMMY-NOT-A-TOKEN", "at-DUMMY-NOT-A-TOKEN", "idt-DUMMY", "acct-dummy-0001")
+
 APP_SERVER = r'''
 import json, os, sys, time
+JWT = "eyJhbGciOiJub25lIn0.eyJzdWIiOiJEVU1NWSJ9.c2lnLURVTU1Z"
 mode, home, workspace, config = sys.argv[1:5]
 def send(message):
     sys.stdout.write(json.dumps(message) + "\n"); sys.stdout.flush()
@@ -71,6 +75,32 @@ for line in sys.stdin:
             with open(config, "a") as handle: handle.write("sandbox_mode = \"danger-full-access\"\n")
         if mode == "workspace":
             with open(os.path.join(workspace, "kept.txt"), "w") as handle: handle.write("edited by codex\n")
+        if mode == "unreadable":
+            os.chmod(os.path.join(home, "auth.json"), 0)
+        if mode.startswith("echo"):
+            # A tool/agent echoing its own (DUMMY) credential, e.g. during authentication troubleshooting.
+            if mode == "echo_refresh":
+                rewrite_auth(lambda body: body["tokens"].update(access_token="at-ROTATED-DUMMY-VALUE"))
+            with open(os.path.join(home, "auth.json")) as handle:
+                tokens = json.load(handle)["tokens"]
+            leak = tokens["access_token"] if mode == "echo_refresh" else tokens["refresh_token"]
+            if mode == "echo_error":
+                send({"method": "turn/completed", "params": {"threadId": "thread-1", "turn": {
+                    "id": "turn-1", "status": "failed", "error": {"message": "diagnostic: " + leak}}}})
+                continue
+            if mode == "echo_stream":
+                for part in ("prefix ", leak[:5], leak[5:12], leak[12:] + " suffix"):
+                    send({"method": "item/agentMessage/delta", "params": {"threadId": "thread-1", "turnId": "turn-1",
+                          "itemId": "a0", "delta": part}})
+            send({"method": "item/completed", "params": {"threadId": "thread-1", "turnId": "turn-1", "item": {
+                "type": "commandExecution", "id": "c1", "status": "completed", "command": "cat /codex-home/auth.json",
+                "aggregatedOutput": "ordinary output 42\n" + json.dumps({"tokens": tokens}) + "\n" + JWT}}})
+            answer = json.dumps({"summary": "ordinary answer; echoed " + leak + " and " + JWT})
+            send({"method": "item/completed", "params": {"threadId": "thread-1", "turnId": "turn-1",
+                  "item": {"type": "agentMessage", "id": "a1", "text": answer}}})
+            send({"method": "turn/completed", "params": {"threadId": "thread-1",
+                  "turn": {"id": "turn-1", "status": "completed"}}})
+            continue
         if mode == "sleep":
             time.sleep(120)
         if mode == "fail_auth":
@@ -617,6 +647,102 @@ def test_no_token_reaches_an_argv_record_ledger_or_retained_result(config, tmp_p
     for path in [*(tmp_path / "runs").rglob("*.json"), *rc.CodexCredentialBroker(store).ledger.glob("*.json")]:
         observed += path.read_text("utf-8")
     assert not [secret for secret in secrets if secret in observed]
+
+
+# ---- F1: the Codex output boundary (DUMMY credentials; FakeDocker and the fake App Server child) ----
+def retained_results(tmp_path) -> list:
+    return [path.read_text("utf-8") for path in (tmp_path / "runs").rglob("codex_result.json")]
+
+
+def test_an_echoed_credential_is_redacted_before_the_callback_the_return_and_the_retained_result(
+        config, tmp_path, store, candidate, fake):
+    events = []
+    result = run_codex(config, tmp_path, store, candidate, fake, mode="echo", on_event=events.append)
+    [kept] = retained_results(tmp_path)
+    for channel in (json.dumps(events), json.dumps(result), kept):
+        assert not [value for value in (*ISSUED, JWT) if value in channel]
+    [command] = [event for event in events if event["params"].get("item", {}).get("type") == "commandExecution"]
+    output = command["params"]["item"]["aggregatedOutput"]
+    # Every credential leaf and the JWT-shaped string become fixed markers; ordinary text is untouched.
+    assert output.startswith("ordinary output 42\n") and output.count(rc.REDACTED) == 4
+    assert output.endswith("\n" + rc.REDACTED_JWT)
+    assert result["answer"]["summary"] == f"ordinary answer; echoed {rc.REDACTED} and {rc.REDACTED_JWT}"
+    assert json.loads(kept)["answer"] == result["answer"]
+    assert result["events"] == events  # the returned events are exactly the forwarded ones
+
+
+def test_a_credential_in_a_terminal_error_is_redacted_and_never_chained(config, tmp_path, store, candidate, fake):
+    with pytest.raises(ContractError, match="Codex turn failed") as caught:
+        run_codex(config, tmp_path, store, candidate, fake, mode="echo_error")
+    assert rc.REDACTED in str(caught.value) and "rt-DUMMY-NOT-A-TOKEN" not in str(caught.value)
+    assert caught.value.__cause__ is None and caught.value.__context__ is None
+    [entry] = ledger(store)
+    assert entry["state"] == "unchanged" and iw.run_records(tmp_path / "runs")[-1]["state"] == "removed"
+
+
+def test_a_credential_refreshed_during_the_run_is_redacted_when_emitted_afterwards(
+        config, tmp_path, store, candidate, fake):
+    events = []
+    result = run_codex(config, tmp_path, store, candidate, fake, mode="echo_refresh", on_event=events.append)
+    channels = json.dumps(events) + json.dumps(result) + "".join(retained_results(tmp_path))
+    assert "at-ROTATED-DUMMY-VALUE" not in channels and rc.REDACTED in channels
+    assert result["isolation"]["credential"]["settlement"] == "written_back"
+
+
+def test_a_credential_split_across_streamed_fragments_is_never_forwarded_piecewise(
+        config, tmp_path, store, candidate, fake):
+    events = []
+    result = run_codex(config, tmp_path, store, candidate, fake, mode="echo_stream", on_event=events.append)
+    deltas = [event["params"]["delta"] for event in events if event["method"] == "item/agentMessage/delta"]
+    assert deltas == ["prefix ", "", "", rc.REDACTED + " suffix"]
+    assert [event for event in result["events"] if event["method"] == "item/agentMessage/delta"] == \
+        [event for event in events if event["method"] == "item/agentMessage/delta"]
+
+
+def test_ordinary_output_passes_the_boundary_unchanged(config, tmp_path, store, candidate, fake):
+    events = []
+    result = run_codex(config, tmp_path, store, candidate, fake, on_event=events.append)
+    [message] = [event for event in events if event["method"] == "item/completed"]
+    assert json.loads(message["params"]["item"]["text"]) == result["answer"]
+    assert answer_of(result)["cwd"] == iw.WORKSPACE and result["events"] == events
+    assert "REDACTED" not in json.dumps(events) + json.dumps(result) + "".join(retained_results(tmp_path))
+
+
+def test_the_scrubber_redacts_jwt_shapes_keeps_ordinary_text_and_refuses_an_unreadable_set(tmp_path):
+    path = tmp_path / "auth.json"
+    issued = json.dumps(dummy_auth()).encode("utf-8")
+    path.write_bytes(issued)
+    path.chmod(0o600)
+    scrubber = rc.CredentialScrubber(issued, path)
+    ordinary = {"text": "ordinary e", "count": 1, "rows": ["eyJ is not a token", "a.b.c", "2026-09-29T00:00:00Z"]}
+    assert scrubber.scrub(ordinary) == ordinary
+    assert scrubber.text("token " + JWT + " end") == "token " + rc.REDACTED_JWT + " end"
+
+    def delta(text):
+        return scrubber.event({"method": "item/agentMessage/delta", "params": {"itemId": "m", "delta": text}})
+    assert [delta(text)["params"]["delta"] for text in ("hello ", "world")] == ["hello ", "world"]
+    assert [delta(text)["params"]["delta"] for text in (" " + JWT[:10], JWT[10:25], JWT[25:] + ".")] == \
+        [" ", "", rc.REDACTED_JWT + "."]
+    path.write_text("{not json")
+    with pytest.raises(rc.OutputUnsanitizable, match="codex_output_secret_set_unavailable: credential_unparseable") as caught:
+        delta("x")
+    assert "not json" not in str(caught.value)
+
+
+@pytest.mark.parametrize("mode,hold", [("garbage", "refreshed_credential_unparseable"),
+                                       ("unreadable", "per_run_credential_file_mode")])
+def test_an_unreadable_or_malformed_per_run_credential_refuses_without_persisting_output(
+        mode, hold, config, tmp_path, store, candidate, fake):
+    events = []
+    original = (store / "auth.json").read_bytes()
+    with pytest.raises(iw.IsolationError, match="codex_credential_quarantined: " + hold) as caught:
+        run_codex(config, tmp_path, store, candidate, fake, mode=mode, on_event=events.append)
+    assert isinstance(caught.value.__cause__, rc.OutputUnsanitizable)
+    assert caught.value.__cause__.reason_code == "codex_output_secret_set_unavailable"
+    # Nothing was forwarded, returned or retained; the store is held untouched.
+    assert events == [] and retained_results(tmp_path) == []
+    assert rc.CodexCredentialBroker(store).quarantined()["reason"] == hold
+    assert (store / "auth.json").read_bytes() == original
 
 
 def test_claude_profiles_never_mount_or_name_the_codex_credential(tmp_path, store):
