@@ -15,13 +15,23 @@ Three layers, each with a negative control in `target/tests/test_provider_guard.
 (c) `bwrap_prefix()` runs a local process without network and with tmpfs over the credential
     directories. CI has no provider credentials.
 
-The Docker opt-in (`ZEUS_TEST_DOCKER=1`) authorizes only `docker` itself, and only fixture images
-with `--network none` for `run`/`create`. It never authorizes `claude` or `codex`.
+The Docker opt-in (`ZEUS_TEST_DOCKER=1`) never authorizes `claude` or `codex`, and it authorizes
+`docker` only through `docker_policy`, which is default-deny: global options are refused, alias
+forms (`container run`, `image build`, ...) are normalized and pass the same check, and only these
+complete forms are admitted:
+- `run`/`create`: every option is on the allow list, exactly one network option equal to `none`, the
+  owned-fixture label, an owned `--name`, binds only under the declared fixture bind root, and the
+  actual image operand is an allowed fixture image (never a prefix match on arbitrary tokens);
+- `build`: fixture tags only, `--network none`, the fixture label;
+- lifecycle `rm`/`stop`/`kill`/`inspect`/`logs`/`wait`: every operand is an owned fixture name;
+- `rmi`/`image inspect`: fixture images only; `version`/`info`.
+Everything else (`exec`, `cp`, `pull`, `compose`, `network`, `volume`, `system`, ...) is refused.
 """
 
 from __future__ import annotations
 
 import os
+import re
 import shlex
 import shutil
 import stat
@@ -31,13 +41,31 @@ from pathlib import Path
 PROVIDERS = frozenset({"claude", "codex", "docker"})
 FIXTURE_DIR_ENV = "ZEUS_TEST_PROVIDER_FIXTURES"
 DOCKER_OPT_IN_ENV = "ZEUS_TEST_DOCKER"
-DOCKER_IMAGES_ENV = "ZEUS_TEST_DOCKER_FIXTURE_IMAGES"
-DEFAULT_FIXTURE_IMAGE_PREFIX = "zeus-test-fixture"
+DOCKER_IMAGES_ENV = "ZEUS_TEST_DOCKER_FIXTURE_IMAGES"  # extra EXACT image refs, comma-separated
+DOCKER_BIND_ROOT_ENV = "ZEUS_TEST_DOCKER_BIND_ROOT"
+FIXTURE_LABEL = "zeus.test.fixture=1"
+FIXTURE_NAME_PREFIX = "zeus-test-fixture-"
+FIXTURE_IMAGE = re.compile(r"^zeus-test-fixture/[a-z0-9][a-z0-9._-]*(:[A-Za-z0-9._-]+)?$")
+# Exact refs of disposable service images the repository itself uses (compose.yaml postgres).
+DEFAULT_FIXTURE_IMAGES = ("pgvector/pgvector:pg17",)
 FAKE_EXIT = 97
 SHELLS = frozenset({"sh", "bash", "dash", "zsh", "ksh", "fish", "cmd", "powershell", "pwsh"})
-# Docker subcommands that never start a workload; everything else needs the run/create policy.
-DOCKER_INSPECTION = frozenset({"version", "info", "ps", "inspect", "logs", "wait", "stop", "kill",
-                               "rm", "images", "image", "container", "volume", "network"})
+DOCKER_ALIASES = {("container", "run"): "run", ("container", "create"): "create",
+                  ("container", "rm"): "rm", ("container", "stop"): "stop",
+                  ("container", "kill"): "kill", ("container", "inspect"): "inspect",
+                  ("container", "logs"): "logs", ("container", "wait"): "wait",
+                  ("image", "build"): "build", ("image", "inspect"): "image-inspect",
+                  ("image", "rm"): "rmi"}
+DOCKER_TOP = frozenset({"run", "create", "build", "rm", "stop", "kill", "inspect", "logs", "wait",
+                        "rmi", "image-inspect", "version", "info"})
+RUN_VALUE_OPTIONS = frozenset({"--name", "--label", "-l", "--network", "--net", "--user", "-u",
+                               "--workdir", "-w", "--env", "-e", "--memory", "-m", "--cpus",
+                               "--pids-limit", "--entrypoint", "--tmpfs", "--mount", "--security-opt",
+                               "--cap-drop", "--stop-timeout"})
+RUN_FLAGS = frozenset({"--rm", "-i", "--interactive", "--read-only", "--init", "-d", "--detach"})
+LIFECYCLE_OPTIONS = {"rm": ({"-f", "--force"}, set()), "stop": (set(), {"-t", "--time"}),
+                     "kill": (set(), {"-s", "--signal"}), "inspect": (set(), {"-f", "--format"}),
+                     "logs": (set(), {"--tail"}), "wait": (set(), set())}
 SECRET_NAME_PARTS = ("TOKEN", "API_KEY", "APIKEY", "SECRET", "PASSWORD", "PASSWD", "CREDENTIAL",
                      "AUTH", "PRIVATE_KEY", "SESSION_KEY", "COOKIE")
 SECRET_NAME_PREFIXES = ("ANTHROPIC_", "OPENAI_", "CLAUDE_CODE_", "CODEX_", "GH_", "GITHUB_",
@@ -72,26 +100,127 @@ def _resolve(name: str, env) -> Path | None:
     return Path(found).resolve() if found else None
 
 
-def _docker_allowed(argv: list[str], env) -> bool:
+class DockerRefused(ValueError):
+    pass
+
+
+def _fixture_images(env) -> set[str]:
+    extra = (env or {}).get(DOCKER_IMAGES_ENV) or os.environ.get(DOCKER_IMAGES_ENV) or ""
+    return set(DEFAULT_FIXTURE_IMAGES) | {i for i in extra.split(",") if i}
+
+
+def _fixture_image(ref: str, env) -> bool:
+    return bool(FIXTURE_IMAGE.match(ref)) or ref in _fixture_images(env)
+
+
+def _options(args: list[str], values: set[str], flags: set[str]) -> tuple[list[tuple[str, str]], list[str]]:
+    """Split leading options from operands; an unknown option is refused (default-deny)."""
+    opts, i = [], 0
+    while i < len(args) and args[i].startswith("-") and args[i] != "-":
+        name, eq, value = args[i].partition("=")
+        if name in flags and not eq:
+            opts.append((name, ""))
+            i += 1
+        elif name in values:
+            if not eq:
+                if i + 1 >= len(args):
+                    raise DockerRefused(f"option {name} lacks a value")
+                value, i = args[i + 1], i + 1
+            opts.append((name, value))
+            i += 1
+        else:
+            raise DockerRefused(f"option {args[i]!r} is not on the allow list")
+    return opts, args[i:]
+
+
+def _owned(name: str) -> bool:
+    return name.startswith(FIXTURE_NAME_PREFIX) and len(name) > len(FIXTURE_NAME_PREFIX)
+
+
+def _check_run(args: list[str], env) -> None:
+    opts, operands = _options(args, RUN_VALUE_OPTIONS, RUN_FLAGS)
+    networks = [v for k, v in opts if k in {"--network", "--net"}]
+    if networks != ["none"]:
+        raise DockerRefused("run/create needs exactly one network option equal to none")
+    if FIXTURE_LABEL not in [v for k, v in opts if k in {"--label", "-l"}]:
+        raise DockerRefused(f"run/create needs the owned-fixture label {FIXTURE_LABEL}")
+    names = [v for k, v in opts if k == "--name"]
+    if len(names) != 1 or not _owned(names[0]):
+        raise DockerRefused(f"run/create needs one --name starting with {FIXTURE_NAME_PREFIX}")
+    for k, v in opts:
+        if k == "--security-opt" and v not in {"no-new-privileges", "no-new-privileges:true"}:
+            raise DockerRefused(f"security option {v!r} is not allowed")
+        if k == "--mount":
+            fields = dict(part.partition("=")[::2] for part in v.split(","))
+            kind = fields.get("type")
+            if kind == "tmpfs":
+                continue
+            root = (env or {}).get(DOCKER_BIND_ROOT_ENV) or os.environ.get(DOCKER_BIND_ROOT_ENV)
+            source = fields.get("source") or fields.get("src")
+            if kind != "bind" or not root or not source or not Path(source).resolve().is_relative_to(
+                    Path(root).resolve()):
+                raise DockerRefused("only tmpfs mounts and binds under the fixture bind root")
+    if not operands:
+        raise DockerRefused("run/create names no image")
+    if not _fixture_image(operands[0], env):
+        raise DockerRefused(f"image operand {operands[0]!r} is not a fixture image")
+
+
+def _check_build(args: list[str], env) -> None:
+    opts, operands = _options(args, {"-t", "--tag", "--label", "--network", "-f", "--file"},
+                              {"--no-cache", "-q", "--quiet"})
+    tags = [v for k, v in opts if k in {"-t", "--tag"}]
+    if not tags or not all(FIXTURE_IMAGE.match(t) for t in tags):
+        raise DockerRefused("build tags must all be zeus-test-fixture/ images")
+    if [v for k, v in opts if k == "--network"] != ["none"]:
+        raise DockerRefused("build needs --network none")
+    if FIXTURE_LABEL not in [v for k, v in opts if k == "--label"]:
+        raise DockerRefused(f"build needs the owned-fixture label {FIXTURE_LABEL}")
+    if len(operands) != 1:
+        raise DockerRefused("build needs exactly one context operand")
+
+
+def docker_policy(argv: list[str], env=None) -> str:
+    """Return the normalized admitted subcommand, or raise DockerRefused (default-deny)."""
     if ((env or {}).get(DOCKER_OPT_IN_ENV) or os.environ.get(DOCKER_OPT_IN_ENV)) != "1":
+        raise DockerRefused(f"{DOCKER_OPT_IN_ENV}=1 is not set")
+    args = [os.fsdecode(a) for a in argv[1:]]
+    if not args or args[0].startswith("-"):
+        raise DockerRefused("global docker options and bare docker are refused")
+    command, rest = args[0], args[1:]
+    if (command, rest[0] if rest else None) in DOCKER_ALIASES:
+        command, rest = DOCKER_ALIASES[command, rest[0]], rest[1:]
+    if command not in DOCKER_TOP:
+        raise DockerRefused(f"docker {command} is not a supported fixture form")
+    if command in {"run", "create"}:
+        _check_run(rest, env)
+    elif command == "build":
+        _check_build(rest, env)
+    elif command in LIFECYCLE_OPTIONS:
+        flags, values = LIFECYCLE_OPTIONS[command]
+        _, operands = _options(rest, values, flags)
+        if not operands or not all(_owned(o) for o in operands):
+            raise DockerRefused(f"docker {command} may name owned fixture containers only")
+    elif command in {"rmi", "image-inspect"}:
+        _, operands = _options(rest, {"-f", "--format"} if command == "image-inspect" else set(),
+                               {"-f", "--force"} if command == "rmi" else set())
+        allowed = (lambda o: bool(FIXTURE_IMAGE.match(o))) if command == "rmi" \
+            else (lambda o: _fixture_image(o, env))
+        if not operands or not all(allowed(o) for o in operands):
+            raise DockerRefused(f"docker {command} may name fixture images only")
+    else:  # version, info
+        _, operands = _options(rest, {"-f", "--format"}, set())
+        if operands:
+            raise DockerRefused(f"docker {command} takes no operand")
+    return command
+
+
+def _docker_allowed(argv: list[str], env) -> bool:
+    try:
+        docker_policy(argv, env)
+    except DockerRefused:
         return False
-    rest = [a for a in argv[1:]]
-    command = next((a for a in rest if not a.startswith("-")), None)
-    if command in DOCKER_INSPECTION:
-        return True
-    if command not in {"run", "create", "build"}:
-        return False
-    prefixes = tuple(p for p in ((env or {}).get(DOCKER_IMAGES_ENV)
-                                 or os.environ.get(DOCKER_IMAGES_ENV)
-                                 or DEFAULT_FIXTURE_IMAGE_PREFIX).split(",") if p)
-    if command == "build":
-        tags = [rest[i + 1] for i, a in enumerate(rest[:-1]) if a in {"-t", "--tag"}]
-        tags += [a.split("=", 1)[1] for a in rest if a.startswith("--tag=")]
-        return bool(tags) and all(t.startswith(prefixes) for t in tags)
-    network_none = any(a in {"--network=none", "--net=none"} for a in rest) or any(
-        a in {"--network", "--net"} and rest[i + 1] == "none" for i, a in enumerate(rest[:-1]))
-    images = [a for a in rest if a.startswith(prefixes)]
-    return network_none and bool(images)
+    return True
 
 
 def _candidates(executable, argv) -> list[str]:

@@ -68,17 +68,83 @@ def test_configured_fixture_binary_is_the_only_admitted_provider(tmp_path, monke
         subprocess.run([str(elsewhere)], capture_output=True, timeout=5)
 
 
-def test_docker_opt_in_admits_only_fixture_images_without_network(monkeypatch):
+FIXTURE_RUN = ["--rm", "--network", "none", "--label", "zeus.test.fixture=1",
+               "--name", "zeus-test-fixture-worker", "zeus-test-fixture/worker:1", "true"]
+
+
+def refused(argv) -> bool:
+    try:
+        provider_guard.check_spawn(None, argv)
+    except provider_guard.ProviderSpawnRefused:
+        return True
+    return False
+
+
+def test_docker_is_refused_without_the_opt_in(monkeypatch):
+    monkeypatch.delenv(provider_guard.DOCKER_OPT_IN_ENV, raising=False)
+    assert refused(["docker", "run", *FIXTURE_RUN]) and refused(["docker", "version"])
+
+
+@pytest.mark.parametrize("argv", [
+    # Codex S0 F1 discriminators: the alias launch and a fixture-looking name on a real image.
+    ["docker", "container", "run", "ubuntu", "true"],
+    ["docker", "run", "--network=none", "--name", "zeus-test-fixture-decoy", "ubuntu", "true"],
+    ["docker", "run", "--network=none", "--label", "zeus.test.fixture=1", "--name",
+     "zeus-test-fixture-decoy", "ubuntu", "true"],
+    ["docker", "run", "--network", "none", "--label", "zeus.test.fixture=1", "--name",
+     "zeus-test-fixture-x", "zeus-test-fixture-decoy/x", "true"],
+    ["docker", "container", "run", "--network", "bridge", "--label", "zeus.test.fixture=1", "--name",
+     "zeus-test-fixture-x", "zeus-test-fixture/worker:1"],
+    ["docker", "run", "--network", "none", "--network", "host", "--label", "zeus.test.fixture=1",
+     "--name", "zeus-test-fixture-x", "zeus-test-fixture/worker:1"],
+    ["docker", "run", "--privileged", *FIXTURE_RUN],
+    ["docker", "run", "-v", "/:/host", *FIXTURE_RUN],
+    ["docker", "run", "--mount", "type=bind,src=/srv,dst=/x", *FIXTURE_RUN],
+    ["docker", "-H", "tcp://127.0.0.1:2375", "run", *FIXTURE_RUN],
+    ["docker", "--context", "remote", "container", "run", *FIXTURE_RUN],
+    ["docker", "exec", "zeus-test-fixture-worker", "codex"],
+    ["docker", "compose", "up"], ["docker", "pull", "ubuntu"], ["docker", "cp", "a", "b"],
+    ["docker", "network", "rm", "bridge"], ["docker", "volume", "prune", "-f"],
+    ["docker", "container", "prune", "-f"], ["docker", "image", "prune", "-a"],
+    ["docker", "system", "prune"], ["docker", "rm", "-f", "zeus-prod-postgres"],
+    ["docker", "container", "stop", "harness-ci-postgres-1"], ["docker", "rmi", "ubuntu"],
+    ["docker", "image", "rm", "pgvector/pgvector:pg17"], ["docker", "kill", "0123abcd"],
+    ["docker", "build", "-t", "ubuntu:evil", "--network", "none", "--label", "zeus.test.fixture=1", "."],
+    ["docker", "build", "-t", "zeus-test-fixture/w:1", "--label", "zeus.test.fixture=1", "."],
+    ["docker"], ["codex", "exec", "x"], ["claude", "-p", "x"],
+])
+def test_docker_opt_in_is_default_deny(monkeypatch, argv):
     monkeypatch.setenv(provider_guard.DOCKER_OPT_IN_ENV, "1")
-    provider_guard.check_spawn(None, ["docker", "run", "--rm", "--network", "none",
-                                      "zeus-test-fixture/worker:1"])
-    provider_guard.check_spawn(None, ["docker", "inspect", "x"])
-    for argv in (["docker", "run", "--network", "bridge", "zeus-test-fixture/worker:1"],
-                 ["docker", "run", "--network", "none", "ubuntu:24.04", "codex"],
-                 ["docker", "exec", "zeus-test-fixture", "codex"],
-                 ["codex", "exec", "x"], ["claude", "-p", "x"]):
-        with pytest.raises(provider_guard.ProviderSpawnRefused):
-            provider_guard.check_spawn(None, argv)
+    assert refused(argv), argv
+
+
+@pytest.mark.parametrize("argv", [
+    ["docker", "run", *FIXTURE_RUN],
+    ["docker", "container", "run", *FIXTURE_RUN],          # the alias is normalized, same check
+    ["docker", "create", *FIXTURE_RUN[1:]],
+    ["docker", "rm", "-f", "zeus-test-fixture-worker"],
+    ["docker", "container", "stop", "-t", "5", "zeus-test-fixture-worker"],
+    ["docker", "logs", "--tail", "20", "zeus-test-fixture-worker"],
+    ["docker", "build", "-t", "zeus-test-fixture/worker:1", "--network", "none", "--label",
+     "zeus.test.fixture=1", "fixture-context"],
+    ["docker", "image", "inspect", "pgvector/pgvector:pg17"],
+    ["docker", "version", "--format", "{{.Server.Version}}"],
+])
+def test_docker_opt_in_admits_owned_fixture_forms(monkeypatch, argv):
+    monkeypatch.setenv(provider_guard.DOCKER_OPT_IN_ENV, "1")
+    provider_guard.check_spawn(None, argv)
+
+
+def test_fixture_binds_are_limited_to_the_declared_root(monkeypatch, tmp_path):
+    monkeypatch.setenv(provider_guard.DOCKER_OPT_IN_ENV, "1")
+    bind = ["--mount", f"type=bind,src={tmp_path / 'socket'},dst=/var/run/postgresql"]
+    argv = ["docker", "run", *bind, "--network", "none", "--label", "zeus.test.fixture=1",
+            "--name", "zeus-test-fixture-pg", "pgvector/pgvector:pg17"]
+    assert refused(argv)
+    monkeypatch.setenv(provider_guard.DOCKER_BIND_ROOT_ENV, str(tmp_path))
+    provider_guard.check_spawn(None, argv)
+    outside = ["docker", "run", "--mount", "type=bind,src=/home,dst=/h", *argv[3:]]
+    assert refused(outside)
 
 
 def test_docker_marker_does_not_admit_a_real_provider_spawn(monkeypatch):
