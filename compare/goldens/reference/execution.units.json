@@ -1,0 +1,2596 @@
+{
+ "provider_stream": {
+  "claude": {
+   "events": [
+    {
+     "completed_item": {
+      "value": {
+       "id": "0f0e0d0c-0b0a-4908-8706-050403020100",
+       "status": null,
+       "type": "session_started"
+      }
+     },
+     "event_id": {
+      "value": "claude/system:0f0e0d0c-0b0a-4908-8706-050403020100:None"
+     },
+     "is_progress": {
+      "value": true
+     },
+     "item_status": {
+      "value": null
+     },
+     "item_type": {
+      "value": "session_started"
+     },
+     "label": {
+      "value": "claude/system"
+     },
+     "occurrence": {
+      "value": null
+     },
+     "shape": {
+      "value": null
+     }
+    },
+    {
+     "completed_item": {
+      "value": {
+       "id": "tu1",
+       "status": "completed",
+       "type": "tool_completed"
+      }
+     },
+     "event_id": {
+      "value": "claude/user:tu1:completed"
+     },
+     "is_progress": {
+      "value": true
+     },
+     "item_status": {
+      "value": "completed"
+     },
+     "item_type": {
+      "value": "tool_completed"
+     },
+     "label": {
+      "value": "claude/user"
+     },
+     "occurrence": {
+      "value": null
+     },
+     "shape": {
+      "value": null
+     }
+    },
+    {
+     "completed_item": {
+      "value": {
+       "id": "tu2",
+       "status": "started",
+       "type": "tool_started"
+      }
+     },
+     "event_id": {
+      "value": "claude/assistant:tu2:started"
+     },
+     "is_progress": {
+      "value": false
+     },
+     "item_status": {
+      "value": "started"
+     },
+     "item_type": {
+      "value": "tool_started"
+     },
+     "label": {
+      "value": "claude/assistant"
+     },
+     "occurrence": {
+      "value": null
+     },
+     "shape": {
+      "value": null
+     }
+    },
+    {
+     "completed_item": {
+      "value": {
+       "id": "d1",
+       "status": null,
+       "type": "permission_denied"
+      }
+     },
+     "event_id": {
+      "value": "claude/system:d1:None"
+     },
+     "is_progress": {
+      "value": true
+     },
+     "item_status": {
+      "value": null
+     },
+     "item_type": {
+      "value": "permission_denied"
+     },
+     "label": {
+      "value": "claude/system"
+     },
+     "occurrence": {
+      "value": null
+     },
+     "shape": {
+      "value": null
+     }
+    },
+    {
+     "completed_item": {
+      "value": {
+       "id": "0f0e0d0c-0b0a-4908-8706-050403020100",
+       "status": "success",
+       "type": "result"
+      }
+     },
+     "event_id": {
+      "value": "claude/result:0f0e0d0c-0b0a-4908-8706-050403020100:success"
+     },
+     "is_progress": {
+      "value": true
+     },
+     "item_status": {
+      "value": "success"
+     },
+     "item_type": {
+      "value": "result"
+     },
+     "label": {
+      "value": "claude/result"
+     },
+     "occurrence": {
+      "value": null
+     },
+     "shape": {
+      "value": null
+     }
+    },
+    {
+     "completed_item": {
+      "value": {
+       "id": "a1",
+       "status": null,
+       "type": "assistant"
+      }
+     },
+     "event_id": {
+      "value": "claude/assistant:a1:None"
+     },
+     "is_progress": {
+      "value": false
+     },
+     "item_status": {
+      "value": null
+     },
+     "item_type": {
+      "value": "assistant"
+     },
+     "label": {
+      "value": "claude/assistant"
+     },
+     "occurrence": {
+      "value": null
+     },
+     "shape": {
+      "value": null
+     }
+    },
+    {
+     "shape": {
+      "value": "event is not a claude-code-cli event"
+     }
+    },
+    {
+     "shape": {
+      "value": "normalized type is not text"
+     }
+    },
+    {
+     "shape": {
+      "value": "event is not an object"
+     }
+    }
+   ],
+   "tool_items": {
+    "value": 1
+   }
+  },
+  "codex": {
+   "events": [
+    {
+     "completed_item": {
+      "value": {
+       "id": "i1",
+       "status": "completed",
+       "type": "commandExecution"
+      }
+     },
+     "event_id": {
+      "value": "item/completed:i1:completed"
+     },
+     "is_progress": {
+      "value": true
+     },
+     "item_status": {
+      "value": "completed"
+     },
+     "item_type": {
+      "value": "commandExecution"
+     },
+     "label": {
+      "value": "item/completed"
+     },
+     "occurrence": {
+      "value": null
+     },
+     "shape": {
+      "value": null
+     }
+    },
+    {
+     "completed_item": {
+      "value": {
+       "id": "i2",
+       "status": null,
+       "type": "agentMessage"
+      }
+     },
+     "event_id": {
+      "value": "item/completed:i2:None"
+     },
+     "is_progress": {
+      "value": true
+     },
+     "item_status": {
+      "value": null
+     },
+     "item_type": {
+      "value": "agentMessage"
+     },
+     "label": {
+      "value": "item/completed"
+     },
+     "occurrence": {
+      "value": null
+     },
+     "shape": {
+      "value": null
+     }
+    },
+    {
+     "completed_item": {
+      "value": null
+     },
+     "event_id": {
+      "value": "thread/tokenUsage/updated:sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+     },
+     "is_progress": {
+      "value": true
+     },
+     "item_status": {
+      "value": null
+     },
+     "item_type": {
+      "value": null
+     },
+     "label": {
+      "value": "thread/tokenUsage/updated"
+     },
+     "occurrence": {
+      "value": null
+     },
+     "shape": {
+      "value": null
+     }
+    },
+    {
+     "completed_item": {
+      "value": null
+     },
+     "event_id": {
+      "value": "turn/completed:sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+     },
+     "is_progress": {
+      "value": false
+     },
+     "item_status": {
+      "value": null
+     },
+     "item_type": {
+      "value": null
+     },
+     "label": {
+      "value": "turn/completed"
+     },
+     "occurrence": {
+      "value": null
+     },
+     "shape": {
+      "value": null
+     }
+    },
+    {
+     "shape": {
+      "value": "method is not text"
+     }
+    },
+    {
+     "shape": {
+      "value": "params is not an object"
+     }
+    },
+    {
+     "shape": {
+      "value": "item is not an object"
+     }
+    },
+    {
+     "shape": {
+      "value": "method is not text"
+     }
+    },
+    {
+     "shape": {
+      "value": "event is not an object"
+     }
+    },
+    {
+     "shape": {
+      "value": "event is not an object"
+     }
+    }
+   ],
+   "tool_items": {
+    "message": "'str' object has no attribute 'get'",
+    "reason": null,
+    "refused": "AttributeError"
+   }
+  },
+  "constants": {
+   "claude_progress": [
+    "session_started",
+    "tool_completed",
+    "permission_denied",
+    "result"
+   ],
+   "codex_progress": [
+    "item/completed",
+    "thread/tokenUsage/updated"
+   ],
+   "tool_item_types": [
+    "commandExecution",
+    "fileChange",
+    "mcpToolCall"
+   ]
+  },
+  "epoch_millis": [
+   {
+    "value": "2026-01-01T00:00:00+00:00"
+   },
+   {
+    "value": null
+   },
+   {
+    "value": null
+   },
+   {
+    "value": null
+   },
+   {
+    "value": null
+   },
+   {
+    "value": null
+   }
+  ],
+  "stream_for": {
+   "app_server": {
+    "identity": "codex-app-server",
+    "transport": "app_server"
+   },
+   "claude_cli": {
+    "identity": "claude-code-cli",
+    "transport": "claude_cli"
+   },
+   "other": {
+    "message": "'No event reader for transport other'",
+    "reason": null,
+    "refused": "KeyError"
+   }
+  }
+ },
+ "worker_sessions": {
+  "accepted_binding": [
+   {
+    "message": "worker session: session_not_accepted: checkpointed",
+    "reason": "session_not_accepted",
+    "refused": "WorkerSessionRefused"
+   },
+   {
+    "message": "worker session: promotion_binding_missing: review",
+    "reason": "promotion_binding_missing",
+    "refused": "WorkerSessionRefused"
+   },
+   {
+    "message": "worker session: promotion_binding_missing: archive",
+    "reason": "promotion_binding_missing",
+    "refused": "WorkerSessionRefused"
+   }
+  ],
+  "allowed_path": [
+   true,
+   true,
+   false,
+   false,
+   false,
+   false,
+   false,
+   false,
+   false,
+   false
+  ],
+  "blocked": [
+   "archive_corrupt",
+   "archive_missing",
+   "incompatible",
+   "unresolved"
+  ],
+  "candidate": [
+   {
+    "value": {
+     "base": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "tree": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    }
+   },
+   {
+    "message": "worker session: candidate_malformed: revision",
+    "reason": "candidate_malformed",
+    "refused": "WorkerSessionRefused"
+   },
+   {
+    "message": "worker session: candidate_malformed",
+    "reason": "candidate_malformed",
+    "refused": "WorkerSessionRefused"
+   }
+  ],
+  "compare": [
+   {
+    "value": {
+     "decision": "match",
+     "foreign": [],
+     "incompatible": [],
+     "next_action": "native resume permitted"
+    }
+   },
+   {
+    "value": {
+     "decision": "foreign",
+     "foreign": [
+      "workspace"
+     ],
+     "incompatible": [],
+     "next_action": "refuse: another task's session"
+    }
+   },
+   {
+    "value": {
+     "decision": "incompatible",
+     "foreign": [],
+     "incompatible": [
+      "model",
+      "runtime_digest"
+     ],
+     "next_action": "explicit fresh evidence handoff required; native resume refused"
+    }
+   },
+   {
+    "value": {
+     "decision": "foreign",
+     "foreign": [
+      "task_id"
+     ],
+     "incompatible": [
+      "model"
+     ],
+     "next_action": "refuse: another task's session"
+    }
+   }
+  ],
+  "identity": [
+   {
+    "value": {
+     "config_digest": "c",
+     "model": "m",
+     "policy_digest": "p",
+     "provider": "claude",
+     "repository": "repo",
+     "runtime_digest": "sha256:x",
+     "runtime_image": "img",
+     "task_id": "task-1",
+     "workspace": "ws-1"
+    }
+   },
+   {
+    "message": "worker session: identity_malformed: exactly task_id, repository, workspace, provider, model, runtime_image, runtime_digest, policy_digest, config_digest",
+    "reason": "identity_malformed",
+    "refused": "WorkerSessionRefused"
+   },
+   {
+    "message": "worker session: identity_malformed: model",
+    "reason": "identity_malformed",
+    "refused": "WorkerSessionRefused"
+   },
+   {
+    "message": "worker session: identity_malformed: model",
+    "reason": "identity_malformed",
+    "refused": "WorkerSessionRefused"
+   },
+   {
+    "message": "worker session: identity_malformed: exactly task_id, repository, workspace, provider, model, runtime_image, runtime_digest, policy_digest, config_digest",
+    "reason": "identity_malformed",
+    "refused": "WorkerSessionRefused"
+   }
+  ],
+  "manifest": [
+   {
+    "value": {
+     "files": [
+      {
+       "bytes": 10,
+       "path": "projects/-workspace/0f0e0d0c-0b0a-4908-8706-050403020100.jsonl",
+       "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      }
+     ],
+     "project": "-workspace",
+     "schema": "zeus.worker-session-archive.v1",
+     "session_id": "0f0e0d0c-0b0a-4908-8706-050403020100"
+    }
+   },
+   {
+    "value": {
+     "files": [
+      {
+       "bytes": 10,
+       "path": "projects/-workspace/0f0e0d0c-0b0a-4908-8706-050403020100.jsonl",
+       "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      }
+     ],
+     "project": "-workspace",
+     "schema": "zeus.worker-session-archive.v1",
+     "session_id": "0f0e0d0c-0b0a-4908-8706-050403020100"
+    }
+   },
+   {
+    "message": "worker session: archive_foreign_session",
+    "reason": "archive_foreign_session",
+    "refused": "WorkerSessionRefused"
+   },
+   {
+    "message": "worker session: archive_malformed: schema",
+    "reason": "archive_malformed",
+    "refused": "WorkerSessionRefused"
+   },
+   {
+    "message": "worker session: archive_bounds: file count",
+    "reason": "archive_bounds",
+    "refused": "WorkerSessionRefused"
+   },
+   {
+    "message": "worker session: archive_path_refused: PROJECTS/-WORKSPACE/0F0E0D0C-0B0A-4908-8706-050403020100.JSONL",
+    "reason": "archive_path_refused",
+    "refused": "WorkerSessionRefused"
+   },
+   {
+    "message": "worker session: archive_transcript_missing",
+    "reason": "archive_transcript_missing",
+    "refused": "WorkerSessionRefused"
+   },
+   {
+    "message": "worker session: archive_bounds: file bytes",
+    "reason": "archive_bounds",
+    "refused": "WorkerSessionRefused"
+   },
+   {
+    "message": "worker session: archive_malformed: sha256",
+    "reason": "archive_malformed",
+    "refused": "WorkerSessionRefused"
+   },
+   {
+    "message": "worker session: archive_malformed: project",
+    "reason": "archive_malformed",
+    "refused": "WorkerSessionRefused"
+   }
+  ],
+  "modes": [
+   "fresh",
+   "native_resume"
+  ],
+  "owner": [
+   {
+    "value": {
+     "attempt": 1,
+     "execution": "e",
+     "generation": 1
+    }
+   },
+   {
+    "message": "worker session: owner_malformed: execution",
+    "reason": "owner_malformed",
+    "refused": "WorkerSessionRefused"
+   },
+   {
+    "message": "worker session: owner_malformed: generation/attempt",
+    "reason": "owner_malformed",
+    "refused": "WorkerSessionRefused"
+   },
+   {
+    "message": "worker session: owner_malformed",
+    "reason": "owner_malformed",
+    "refused": "WorkerSessionRefused"
+   },
+   {
+    "message": "worker session: owner_malformed",
+    "reason": "owner_malformed",
+    "refused": "WorkerSessionRefused"
+   }
+  ],
+  "project_key": [
+   {
+    "value": "-workspace"
+   },
+   {
+    "value": "C--work-x"
+   },
+   {
+    "message": "worker session: workspace_malformed",
+    "reason": "workspace_malformed",
+    "refused": "WorkerSessionRefused"
+   },
+   {
+    "message": "worker session: workspace_malformed",
+    "reason": "workspace_malformed",
+    "refused": "WorkerSessionRefused"
+   }
+  ],
+  "promotion_receipt": {
+   "value": {
+    "archive": {
+     "manifest_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "transcript_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "candidate": {
+     "base": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "tree": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    },
+    "evidence": [
+     "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+    ],
+    "review": {
+     "decision_id": "d2",
+     "execution_ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "schema": "zeus.worker-session-promotion.v1",
+    "session_id": "0f0e0d0c-0b0a-4908-8706-050403020100",
+    "task_id": "task-1"
+   }
+  },
+  "resumable": [
+   "checkpointed",
+   "correction_ready"
+  ],
+  "review_outcome": [
+   {
+    "value": {
+     "accepted": true,
+     "candidate": {
+      "base": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "tree": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+     },
+     "decision_id": "d1",
+     "execution_ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "outcome": "lead_accepted",
+     "phase": "review_lead"
+    }
+   },
+   {
+    "value": {
+     "accepted": true,
+     "candidate": {
+      "base": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "tree": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+     },
+     "decision_id": "d1",
+     "execution_ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "outcome": "accepted",
+     "phase": "review_conductor"
+    }
+   },
+   {
+    "value": {
+     "accepted": false,
+     "candidate": {
+      "base": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "tree": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+     },
+     "decision_id": "d1",
+     "execution_ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "outcome": "rejected",
+     "phase": "review_lead"
+    }
+   },
+   {
+    "message": "worker session: review_not_independent: diagnose",
+    "reason": "review_not_independent",
+    "refused": "WorkerSessionRefused"
+   },
+   {
+    "message": "worker session: review_not_succeeded: failed",
+    "reason": "review_not_succeeded",
+    "refused": "WorkerSessionRefused"
+   },
+   {
+    "message": "worker session: review_candidate_mismatch",
+    "reason": "review_candidate_mismatch",
+    "refused": "WorkerSessionRefused"
+   },
+   {
+    "message": "worker session: review_malformed: accepted",
+    "reason": "review_malformed",
+    "refused": "WorkerSessionRefused"
+   },
+   {
+    "message": "worker session: review_malformed: execution_ref",
+    "reason": "review_malformed",
+    "refused": "WorkerSessionRefused"
+   },
+   {
+    "message": "worker session: review_missing",
+    "reason": "review_missing",
+    "refused": "WorkerSessionRefused"
+   }
+  ],
+  "schema": [
+   "zeus.worker-session.v1",
+   "zeus.worker-session-archive.v1",
+   "zeus.worker-session-promotion.v1"
+  ],
+  "states": [
+   "active",
+   "checkpointed",
+   "awaiting_review",
+   "correction_ready",
+   "accepted",
+   "archival_pending",
+   "closed",
+   "archive_missing",
+   "archive_corrupt",
+   "incompatible",
+   "unresolved"
+  ],
+  "status_view": {
+   "accepted|free|clean": {
+    "archive": {
+     "manifest_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "transcript_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "blocked": false,
+    "candidates": 0,
+    "checkpoints": 1,
+    "cleanup": null,
+    "identity_sha256": "d89fcf150e5552927dc53c281acb5eee85f428a6fa1603a6e8205da057982020",
+    "next_action": "promote evidence with a bound promotion receipt",
+    "next_owner": "evidence_promotion",
+    "owner": null,
+    "promotion": null,
+    "reason": null,
+    "reviews": [
+     {
+      "decision_id": "d",
+      "outcome": "rejected",
+      "phase": "review_lead"
+     }
+    ],
+    "session_id": "0f0e0d0c-0b0a-4908-8706-050403020100",
+    "state": "accepted",
+    "task_id": "task-1",
+    "version": 3
+   },
+   "accepted|free|failed": {
+    "archive": {
+     "manifest_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "transcript_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "blocked": true,
+    "candidates": 0,
+    "checkpoints": 1,
+    "cleanup": {
+     "state": "failed"
+    },
+    "identity_sha256": "d89fcf150e5552927dc53c281acb5eee85f428a6fa1603a6e8205da057982020",
+    "next_action": "promote evidence with a bound promotion receipt",
+    "next_owner": "operator",
+    "owner": null,
+    "promotion": null,
+    "reason": null,
+    "reviews": [
+     {
+      "decision_id": "d",
+      "outcome": "rejected",
+      "phase": "review_lead"
+     }
+    ],
+    "session_id": "0f0e0d0c-0b0a-4908-8706-050403020100",
+    "state": "accepted",
+    "task_id": "task-1",
+    "version": 3
+   },
+   "accepted|owned|clean": {
+    "archive": {
+     "manifest_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "transcript_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "blocked": false,
+    "candidates": 0,
+    "checkpoints": 1,
+    "cleanup": null,
+    "identity_sha256": "d89fcf150e5552927dc53c281acb5eee85f428a6fa1603a6e8205da057982020",
+    "next_action": "owned by a running execution",
+    "next_owner": "execution",
+    "owner": {
+     "attempt": 1,
+     "execution": "e",
+     "generation": 1
+    },
+    "promotion": null,
+    "reason": null,
+    "reviews": [
+     {
+      "decision_id": "d",
+      "outcome": "rejected",
+      "phase": "review_lead"
+     }
+    ],
+    "session_id": "0f0e0d0c-0b0a-4908-8706-050403020100",
+    "state": "accepted",
+    "task_id": "task-1",
+    "version": 3
+   },
+   "accepted|owned|failed": {
+    "archive": {
+     "manifest_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "transcript_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "blocked": true,
+    "candidates": 0,
+    "checkpoints": 1,
+    "cleanup": {
+     "state": "failed"
+    },
+    "identity_sha256": "d89fcf150e5552927dc53c281acb5eee85f428a6fa1603a6e8205da057982020",
+    "next_action": "owned by a running execution",
+    "next_owner": "execution",
+    "owner": {
+     "attempt": 1,
+     "execution": "e",
+     "generation": 1
+    },
+    "promotion": null,
+    "reason": null,
+    "reviews": [
+     {
+      "decision_id": "d",
+      "outcome": "rejected",
+      "phase": "review_lead"
+     }
+    ],
+    "session_id": "0f0e0d0c-0b0a-4908-8706-050403020100",
+    "state": "accepted",
+    "task_id": "task-1",
+    "version": 3
+   },
+   "active|free|clean": {
+    "archive": {
+     "manifest_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "transcript_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "blocked": false,
+    "candidates": 0,
+    "checkpoints": 1,
+    "cleanup": null,
+    "identity_sha256": "d89fcf150e5552927dc53c281acb5eee85f428a6fa1603a6e8205da057982020",
+    "next_action": "no turn adopted yet; the next begin opens a fresh turn",
+    "next_owner": "conductor",
+    "owner": null,
+    "promotion": null,
+    "reason": null,
+    "reviews": [
+     {
+      "decision_id": "d",
+      "outcome": "rejected",
+      "phase": "review_lead"
+     }
+    ],
+    "session_id": "0f0e0d0c-0b0a-4908-8706-050403020100",
+    "state": "active",
+    "task_id": "task-1",
+    "version": 3
+   },
+   "active|free|failed": {
+    "archive": {
+     "manifest_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "transcript_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "blocked": true,
+    "candidates": 0,
+    "checkpoints": 1,
+    "cleanup": {
+     "state": "failed"
+    },
+    "identity_sha256": "d89fcf150e5552927dc53c281acb5eee85f428a6fa1603a6e8205da057982020",
+    "next_action": "no turn adopted yet; the next begin opens a fresh turn",
+    "next_owner": "operator",
+    "owner": null,
+    "promotion": null,
+    "reason": null,
+    "reviews": [
+     {
+      "decision_id": "d",
+      "outcome": "rejected",
+      "phase": "review_lead"
+     }
+    ],
+    "session_id": "0f0e0d0c-0b0a-4908-8706-050403020100",
+    "state": "active",
+    "task_id": "task-1",
+    "version": 3
+   },
+   "active|owned|clean": {
+    "archive": {
+     "manifest_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "transcript_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "blocked": false,
+    "candidates": 0,
+    "checkpoints": 1,
+    "cleanup": null,
+    "identity_sha256": "d89fcf150e5552927dc53c281acb5eee85f428a6fa1603a6e8205da057982020",
+    "next_action": "owned by a running execution",
+    "next_owner": "execution",
+    "owner": {
+     "attempt": 1,
+     "execution": "e",
+     "generation": 1
+    },
+    "promotion": null,
+    "reason": null,
+    "reviews": [
+     {
+      "decision_id": "d",
+      "outcome": "rejected",
+      "phase": "review_lead"
+     }
+    ],
+    "session_id": "0f0e0d0c-0b0a-4908-8706-050403020100",
+    "state": "active",
+    "task_id": "task-1",
+    "version": 3
+   },
+   "active|owned|failed": {
+    "archive": {
+     "manifest_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "transcript_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "blocked": true,
+    "candidates": 0,
+    "checkpoints": 1,
+    "cleanup": {
+     "state": "failed"
+    },
+    "identity_sha256": "d89fcf150e5552927dc53c281acb5eee85f428a6fa1603a6e8205da057982020",
+    "next_action": "owned by a running execution",
+    "next_owner": "execution",
+    "owner": {
+     "attempt": 1,
+     "execution": "e",
+     "generation": 1
+    },
+    "promotion": null,
+    "reason": null,
+    "reviews": [
+     {
+      "decision_id": "d",
+      "outcome": "rejected",
+      "phase": "review_lead"
+     }
+    ],
+    "session_id": "0f0e0d0c-0b0a-4908-8706-050403020100",
+    "state": "active",
+    "task_id": "task-1",
+    "version": 3
+   },
+   "archival_pending|free|clean": {
+    "archive": {
+     "manifest_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "transcript_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "blocked": false,
+    "candidates": 0,
+    "checkpoints": 1,
+    "cleanup": null,
+    "identity_sha256": "d89fcf150e5552927dc53c281acb5eee85f428a6fa1603a6e8205da057982020",
+    "next_action": "confirm closure and cleanup",
+    "next_owner": "session_owner",
+    "owner": null,
+    "promotion": null,
+    "reason": null,
+    "reviews": [
+     {
+      "decision_id": "d",
+      "outcome": "rejected",
+      "phase": "review_lead"
+     }
+    ],
+    "session_id": "0f0e0d0c-0b0a-4908-8706-050403020100",
+    "state": "archival_pending",
+    "task_id": "task-1",
+    "version": 3
+   },
+   "archival_pending|free|failed": {
+    "archive": {
+     "manifest_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "transcript_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "blocked": true,
+    "candidates": 0,
+    "checkpoints": 1,
+    "cleanup": {
+     "state": "failed"
+    },
+    "identity_sha256": "d89fcf150e5552927dc53c281acb5eee85f428a6fa1603a6e8205da057982020",
+    "next_action": "operator: repair scratch cleanup, then close again; the archive is retained",
+    "next_owner": "operator",
+    "owner": null,
+    "promotion": null,
+    "reason": null,
+    "reviews": [
+     {
+      "decision_id": "d",
+      "outcome": "rejected",
+      "phase": "review_lead"
+     }
+    ],
+    "session_id": "0f0e0d0c-0b0a-4908-8706-050403020100",
+    "state": "archival_pending",
+    "task_id": "task-1",
+    "version": 3
+   },
+   "archival_pending|owned|clean": {
+    "archive": {
+     "manifest_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "transcript_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "blocked": false,
+    "candidates": 0,
+    "checkpoints": 1,
+    "cleanup": null,
+    "identity_sha256": "d89fcf150e5552927dc53c281acb5eee85f428a6fa1603a6e8205da057982020",
+    "next_action": "owned by a running execution",
+    "next_owner": "execution",
+    "owner": {
+     "attempt": 1,
+     "execution": "e",
+     "generation": 1
+    },
+    "promotion": null,
+    "reason": null,
+    "reviews": [
+     {
+      "decision_id": "d",
+      "outcome": "rejected",
+      "phase": "review_lead"
+     }
+    ],
+    "session_id": "0f0e0d0c-0b0a-4908-8706-050403020100",
+    "state": "archival_pending",
+    "task_id": "task-1",
+    "version": 3
+   },
+   "archival_pending|owned|failed": {
+    "archive": {
+     "manifest_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "transcript_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "blocked": true,
+    "candidates": 0,
+    "checkpoints": 1,
+    "cleanup": {
+     "state": "failed"
+    },
+    "identity_sha256": "d89fcf150e5552927dc53c281acb5eee85f428a6fa1603a6e8205da057982020",
+    "next_action": "owned by a running execution",
+    "next_owner": "execution",
+    "owner": {
+     "attempt": 1,
+     "execution": "e",
+     "generation": 1
+    },
+    "promotion": null,
+    "reason": null,
+    "reviews": [
+     {
+      "decision_id": "d",
+      "outcome": "rejected",
+      "phase": "review_lead"
+     }
+    ],
+    "session_id": "0f0e0d0c-0b0a-4908-8706-050403020100",
+    "state": "archival_pending",
+    "task_id": "task-1",
+    "version": 3
+   },
+   "archive_corrupt|free|clean": {
+    "archive": {
+     "manifest_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "transcript_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "blocked": true,
+    "candidates": 0,
+    "checkpoints": 1,
+    "cleanup": null,
+    "identity_sha256": "d89fcf150e5552927dc53c281acb5eee85f428a6fa1603a6e8205da057982020",
+    "next_action": "owner: investigate corrupt archive; fresh evidence handoff",
+    "next_owner": "operator",
+    "owner": null,
+    "promotion": null,
+    "reason": null,
+    "reviews": [
+     {
+      "decision_id": "d",
+      "outcome": "rejected",
+      "phase": "review_lead"
+     }
+    ],
+    "session_id": "0f0e0d0c-0b0a-4908-8706-050403020100",
+    "state": "archive_corrupt",
+    "task_id": "task-1",
+    "version": 3
+   },
+   "archive_corrupt|free|failed": {
+    "archive": {
+     "manifest_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "transcript_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "blocked": true,
+    "candidates": 0,
+    "checkpoints": 1,
+    "cleanup": {
+     "state": "failed"
+    },
+    "identity_sha256": "d89fcf150e5552927dc53c281acb5eee85f428a6fa1603a6e8205da057982020",
+    "next_action": "owner: investigate corrupt archive; fresh evidence handoff",
+    "next_owner": "operator",
+    "owner": null,
+    "promotion": null,
+    "reason": null,
+    "reviews": [
+     {
+      "decision_id": "d",
+      "outcome": "rejected",
+      "phase": "review_lead"
+     }
+    ],
+    "session_id": "0f0e0d0c-0b0a-4908-8706-050403020100",
+    "state": "archive_corrupt",
+    "task_id": "task-1",
+    "version": 3
+   },
+   "archive_corrupt|owned|clean": {
+    "archive": {
+     "manifest_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "transcript_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "blocked": true,
+    "candidates": 0,
+    "checkpoints": 1,
+    "cleanup": null,
+    "identity_sha256": "d89fcf150e5552927dc53c281acb5eee85f428a6fa1603a6e8205da057982020",
+    "next_action": "owned by a running execution",
+    "next_owner": "execution",
+    "owner": {
+     "attempt": 1,
+     "execution": "e",
+     "generation": 1
+    },
+    "promotion": null,
+    "reason": null,
+    "reviews": [
+     {
+      "decision_id": "d",
+      "outcome": "rejected",
+      "phase": "review_lead"
+     }
+    ],
+    "session_id": "0f0e0d0c-0b0a-4908-8706-050403020100",
+    "state": "archive_corrupt",
+    "task_id": "task-1",
+    "version": 3
+   },
+   "archive_corrupt|owned|failed": {
+    "archive": {
+     "manifest_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "transcript_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "blocked": true,
+    "candidates": 0,
+    "checkpoints": 1,
+    "cleanup": {
+     "state": "failed"
+    },
+    "identity_sha256": "d89fcf150e5552927dc53c281acb5eee85f428a6fa1603a6e8205da057982020",
+    "next_action": "owned by a running execution",
+    "next_owner": "execution",
+    "owner": {
+     "attempt": 1,
+     "execution": "e",
+     "generation": 1
+    },
+    "promotion": null,
+    "reason": null,
+    "reviews": [
+     {
+      "decision_id": "d",
+      "outcome": "rejected",
+      "phase": "review_lead"
+     }
+    ],
+    "session_id": "0f0e0d0c-0b0a-4908-8706-050403020100",
+    "state": "archive_corrupt",
+    "task_id": "task-1",
+    "version": 3
+   },
+   "archive_missing|free|clean": {
+    "archive": {
+     "manifest_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "transcript_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "blocked": true,
+    "candidates": 0,
+    "checkpoints": 1,
+    "cleanup": null,
+    "identity_sha256": "d89fcf150e5552927dc53c281acb5eee85f428a6fa1603a6e8205da057982020",
+    "next_action": "owner: restore the archive or hand off fresh evidence",
+    "next_owner": "operator",
+    "owner": null,
+    "promotion": null,
+    "reason": null,
+    "reviews": [
+     {
+      "decision_id": "d",
+      "outcome": "rejected",
+      "phase": "review_lead"
+     }
+    ],
+    "session_id": "0f0e0d0c-0b0a-4908-8706-050403020100",
+    "state": "archive_missing",
+    "task_id": "task-1",
+    "version": 3
+   },
+   "archive_missing|free|failed": {
+    "archive": {
+     "manifest_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "transcript_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "blocked": true,
+    "candidates": 0,
+    "checkpoints": 1,
+    "cleanup": {
+     "state": "failed"
+    },
+    "identity_sha256": "d89fcf150e5552927dc53c281acb5eee85f428a6fa1603a6e8205da057982020",
+    "next_action": "owner: restore the archive or hand off fresh evidence",
+    "next_owner": "operator",
+    "owner": null,
+    "promotion": null,
+    "reason": null,
+    "reviews": [
+     {
+      "decision_id": "d",
+      "outcome": "rejected",
+      "phase": "review_lead"
+     }
+    ],
+    "session_id": "0f0e0d0c-0b0a-4908-8706-050403020100",
+    "state": "archive_missing",
+    "task_id": "task-1",
+    "version": 3
+   },
+   "archive_missing|owned|clean": {
+    "archive": {
+     "manifest_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "transcript_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "blocked": true,
+    "candidates": 0,
+    "checkpoints": 1,
+    "cleanup": null,
+    "identity_sha256": "d89fcf150e5552927dc53c281acb5eee85f428a6fa1603a6e8205da057982020",
+    "next_action": "owned by a running execution",
+    "next_owner": "execution",
+    "owner": {
+     "attempt": 1,
+     "execution": "e",
+     "generation": 1
+    },
+    "promotion": null,
+    "reason": null,
+    "reviews": [
+     {
+      "decision_id": "d",
+      "outcome": "rejected",
+      "phase": "review_lead"
+     }
+    ],
+    "session_id": "0f0e0d0c-0b0a-4908-8706-050403020100",
+    "state": "archive_missing",
+    "task_id": "task-1",
+    "version": 3
+   },
+   "archive_missing|owned|failed": {
+    "archive": {
+     "manifest_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "transcript_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "blocked": true,
+    "candidates": 0,
+    "checkpoints": 1,
+    "cleanup": {
+     "state": "failed"
+    },
+    "identity_sha256": "d89fcf150e5552927dc53c281acb5eee85f428a6fa1603a6e8205da057982020",
+    "next_action": "owned by a running execution",
+    "next_owner": "execution",
+    "owner": {
+     "attempt": 1,
+     "execution": "e",
+     "generation": 1
+    },
+    "promotion": null,
+    "reason": null,
+    "reviews": [
+     {
+      "decision_id": "d",
+      "outcome": "rejected",
+      "phase": "review_lead"
+     }
+    ],
+    "session_id": "0f0e0d0c-0b0a-4908-8706-050403020100",
+    "state": "archive_missing",
+    "task_id": "task-1",
+    "version": 3
+   },
+   "awaiting_review|free|clean": {
+    "archive": {
+     "manifest_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "transcript_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "blocked": false,
+    "candidates": 0,
+    "checkpoints": 1,
+    "cleanup": null,
+    "identity_sha256": "d89fcf150e5552927dc53c281acb5eee85f428a6fa1603a6e8205da057982020",
+    "next_action": "wait for the independent review decision (no model calls)",
+    "next_owner": "independent_review",
+    "owner": null,
+    "promotion": null,
+    "reason": null,
+    "reviews": [
+     {
+      "decision_id": "d",
+      "outcome": "rejected",
+      "phase": "review_lead"
+     }
+    ],
+    "session_id": "0f0e0d0c-0b0a-4908-8706-050403020100",
+    "state": "awaiting_review",
+    "task_id": "task-1",
+    "version": 3
+   },
+   "awaiting_review|free|failed": {
+    "archive": {
+     "manifest_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "transcript_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "blocked": true,
+    "candidates": 0,
+    "checkpoints": 1,
+    "cleanup": {
+     "state": "failed"
+    },
+    "identity_sha256": "d89fcf150e5552927dc53c281acb5eee85f428a6fa1603a6e8205da057982020",
+    "next_action": "wait for the independent review decision (no model calls)",
+    "next_owner": "operator",
+    "owner": null,
+    "promotion": null,
+    "reason": null,
+    "reviews": [
+     {
+      "decision_id": "d",
+      "outcome": "rejected",
+      "phase": "review_lead"
+     }
+    ],
+    "session_id": "0f0e0d0c-0b0a-4908-8706-050403020100",
+    "state": "awaiting_review",
+    "task_id": "task-1",
+    "version": 3
+   },
+   "awaiting_review|owned|clean": {
+    "archive": {
+     "manifest_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "transcript_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "blocked": false,
+    "candidates": 0,
+    "checkpoints": 1,
+    "cleanup": null,
+    "identity_sha256": "d89fcf150e5552927dc53c281acb5eee85f428a6fa1603a6e8205da057982020",
+    "next_action": "owned by a running execution",
+    "next_owner": "execution",
+    "owner": {
+     "attempt": 1,
+     "execution": "e",
+     "generation": 1
+    },
+    "promotion": null,
+    "reason": null,
+    "reviews": [
+     {
+      "decision_id": "d",
+      "outcome": "rejected",
+      "phase": "review_lead"
+     }
+    ],
+    "session_id": "0f0e0d0c-0b0a-4908-8706-050403020100",
+    "state": "awaiting_review",
+    "task_id": "task-1",
+    "version": 3
+   },
+   "awaiting_review|owned|failed": {
+    "archive": {
+     "manifest_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "transcript_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "blocked": true,
+    "candidates": 0,
+    "checkpoints": 1,
+    "cleanup": {
+     "state": "failed"
+    },
+    "identity_sha256": "d89fcf150e5552927dc53c281acb5eee85f428a6fa1603a6e8205da057982020",
+    "next_action": "owned by a running execution",
+    "next_owner": "execution",
+    "owner": {
+     "attempt": 1,
+     "execution": "e",
+     "generation": 1
+    },
+    "promotion": null,
+    "reason": null,
+    "reviews": [
+     {
+      "decision_id": "d",
+      "outcome": "rejected",
+      "phase": "review_lead"
+     }
+    ],
+    "session_id": "0f0e0d0c-0b0a-4908-8706-050403020100",
+    "state": "awaiting_review",
+    "task_id": "task-1",
+    "version": 3
+   },
+   "checkpointed|free|clean": {
+    "archive": {
+     "manifest_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "transcript_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "blocked": false,
+    "candidates": 0,
+    "checkpoints": 1,
+    "cleanup": null,
+    "identity_sha256": "d89fcf150e5552927dc53c281acb5eee85f428a6fa1603a6e8205da057982020",
+    "next_action": "submit candidate or continue by native resume",
+    "next_owner": "conductor",
+    "owner": null,
+    "promotion": null,
+    "reason": null,
+    "reviews": [
+     {
+      "decision_id": "d",
+      "outcome": "rejected",
+      "phase": "review_lead"
+     }
+    ],
+    "session_id": "0f0e0d0c-0b0a-4908-8706-050403020100",
+    "state": "checkpointed",
+    "task_id": "task-1",
+    "version": 3
+   },
+   "checkpointed|free|failed": {
+    "archive": {
+     "manifest_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "transcript_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "blocked": true,
+    "candidates": 0,
+    "checkpoints": 1,
+    "cleanup": {
+     "state": "failed"
+    },
+    "identity_sha256": "d89fcf150e5552927dc53c281acb5eee85f428a6fa1603a6e8205da057982020",
+    "next_action": "submit candidate or continue by native resume",
+    "next_owner": "operator",
+    "owner": null,
+    "promotion": null,
+    "reason": null,
+    "reviews": [
+     {
+      "decision_id": "d",
+      "outcome": "rejected",
+      "phase": "review_lead"
+     }
+    ],
+    "session_id": "0f0e0d0c-0b0a-4908-8706-050403020100",
+    "state": "checkpointed",
+    "task_id": "task-1",
+    "version": 3
+   },
+   "checkpointed|owned|clean": {
+    "archive": {
+     "manifest_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "transcript_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "blocked": false,
+    "candidates": 0,
+    "checkpoints": 1,
+    "cleanup": null,
+    "identity_sha256": "d89fcf150e5552927dc53c281acb5eee85f428a6fa1603a6e8205da057982020",
+    "next_action": "owned by a running execution",
+    "next_owner": "execution",
+    "owner": {
+     "attempt": 1,
+     "execution": "e",
+     "generation": 1
+    },
+    "promotion": null,
+    "reason": null,
+    "reviews": [
+     {
+      "decision_id": "d",
+      "outcome": "rejected",
+      "phase": "review_lead"
+     }
+    ],
+    "session_id": "0f0e0d0c-0b0a-4908-8706-050403020100",
+    "state": "checkpointed",
+    "task_id": "task-1",
+    "version": 3
+   },
+   "checkpointed|owned|failed": {
+    "archive": {
+     "manifest_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "transcript_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "blocked": true,
+    "candidates": 0,
+    "checkpoints": 1,
+    "cleanup": {
+     "state": "failed"
+    },
+    "identity_sha256": "d89fcf150e5552927dc53c281acb5eee85f428a6fa1603a6e8205da057982020",
+    "next_action": "owned by a running execution",
+    "next_owner": "execution",
+    "owner": {
+     "attempt": 1,
+     "execution": "e",
+     "generation": 1
+    },
+    "promotion": null,
+    "reason": null,
+    "reviews": [
+     {
+      "decision_id": "d",
+      "outcome": "rejected",
+      "phase": "review_lead"
+     }
+    ],
+    "session_id": "0f0e0d0c-0b0a-4908-8706-050403020100",
+    "state": "checkpointed",
+    "task_id": "task-1",
+    "version": 3
+   },
+   "closed|free|clean": {
+    "archive": {
+     "manifest_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "transcript_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "blocked": false,
+    "candidates": 0,
+    "checkpoints": 1,
+    "cleanup": null,
+    "identity_sha256": "d89fcf150e5552927dc53c281acb5eee85f428a6fa1603a6e8205da057982020",
+    "next_action": "none",
+    "next_owner": "none",
+    "owner": null,
+    "promotion": null,
+    "reason": null,
+    "reviews": [
+     {
+      "decision_id": "d",
+      "outcome": "rejected",
+      "phase": "review_lead"
+     }
+    ],
+    "session_id": "0f0e0d0c-0b0a-4908-8706-050403020100",
+    "state": "closed",
+    "task_id": "task-1",
+    "version": 3
+   },
+   "closed|free|failed": {
+    "archive": {
+     "manifest_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "transcript_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "blocked": true,
+    "candidates": 0,
+    "checkpoints": 1,
+    "cleanup": {
+     "state": "failed"
+    },
+    "identity_sha256": "d89fcf150e5552927dc53c281acb5eee85f428a6fa1603a6e8205da057982020",
+    "next_action": "none",
+    "next_owner": "operator",
+    "owner": null,
+    "promotion": null,
+    "reason": null,
+    "reviews": [
+     {
+      "decision_id": "d",
+      "outcome": "rejected",
+      "phase": "review_lead"
+     }
+    ],
+    "session_id": "0f0e0d0c-0b0a-4908-8706-050403020100",
+    "state": "closed",
+    "task_id": "task-1",
+    "version": 3
+   },
+   "closed|owned|clean": {
+    "archive": {
+     "manifest_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "transcript_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "blocked": false,
+    "candidates": 0,
+    "checkpoints": 1,
+    "cleanup": null,
+    "identity_sha256": "d89fcf150e5552927dc53c281acb5eee85f428a6fa1603a6e8205da057982020",
+    "next_action": "owned by a running execution",
+    "next_owner": "execution",
+    "owner": {
+     "attempt": 1,
+     "execution": "e",
+     "generation": 1
+    },
+    "promotion": null,
+    "reason": null,
+    "reviews": [
+     {
+      "decision_id": "d",
+      "outcome": "rejected",
+      "phase": "review_lead"
+     }
+    ],
+    "session_id": "0f0e0d0c-0b0a-4908-8706-050403020100",
+    "state": "closed",
+    "task_id": "task-1",
+    "version": 3
+   },
+   "closed|owned|failed": {
+    "archive": {
+     "manifest_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "transcript_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "blocked": true,
+    "candidates": 0,
+    "checkpoints": 1,
+    "cleanup": {
+     "state": "failed"
+    },
+    "identity_sha256": "d89fcf150e5552927dc53c281acb5eee85f428a6fa1603a6e8205da057982020",
+    "next_action": "owned by a running execution",
+    "next_owner": "execution",
+    "owner": {
+     "attempt": 1,
+     "execution": "e",
+     "generation": 1
+    },
+    "promotion": null,
+    "reason": null,
+    "reviews": [
+     {
+      "decision_id": "d",
+      "outcome": "rejected",
+      "phase": "review_lead"
+     }
+    ],
+    "session_id": "0f0e0d0c-0b0a-4908-8706-050403020100",
+    "state": "closed",
+    "task_id": "task-1",
+    "version": 3
+   },
+   "correction_ready|free|clean": {
+    "archive": {
+     "manifest_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "transcript_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "blocked": false,
+    "candidates": 0,
+    "checkpoints": 1,
+    "cleanup": null,
+    "identity_sha256": "d89fcf150e5552927dc53c281acb5eee85f428a6fa1603a6e8205da057982020",
+    "next_action": "conductor may admit a correction turn by native resume",
+    "next_owner": "conductor",
+    "owner": null,
+    "promotion": null,
+    "reason": null,
+    "reviews": [
+     {
+      "decision_id": "d",
+      "outcome": "rejected",
+      "phase": "review_lead"
+     }
+    ],
+    "session_id": "0f0e0d0c-0b0a-4908-8706-050403020100",
+    "state": "correction_ready",
+    "task_id": "task-1",
+    "version": 3
+   },
+   "correction_ready|free|failed": {
+    "archive": {
+     "manifest_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "transcript_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "blocked": true,
+    "candidates": 0,
+    "checkpoints": 1,
+    "cleanup": {
+     "state": "failed"
+    },
+    "identity_sha256": "d89fcf150e5552927dc53c281acb5eee85f428a6fa1603a6e8205da057982020",
+    "next_action": "conductor may admit a correction turn by native resume",
+    "next_owner": "operator",
+    "owner": null,
+    "promotion": null,
+    "reason": null,
+    "reviews": [
+     {
+      "decision_id": "d",
+      "outcome": "rejected",
+      "phase": "review_lead"
+     }
+    ],
+    "session_id": "0f0e0d0c-0b0a-4908-8706-050403020100",
+    "state": "correction_ready",
+    "task_id": "task-1",
+    "version": 3
+   },
+   "correction_ready|owned|clean": {
+    "archive": {
+     "manifest_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "transcript_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "blocked": false,
+    "candidates": 0,
+    "checkpoints": 1,
+    "cleanup": null,
+    "identity_sha256": "d89fcf150e5552927dc53c281acb5eee85f428a6fa1603a6e8205da057982020",
+    "next_action": "owned by a running execution",
+    "next_owner": "execution",
+    "owner": {
+     "attempt": 1,
+     "execution": "e",
+     "generation": 1
+    },
+    "promotion": null,
+    "reason": null,
+    "reviews": [
+     {
+      "decision_id": "d",
+      "outcome": "rejected",
+      "phase": "review_lead"
+     }
+    ],
+    "session_id": "0f0e0d0c-0b0a-4908-8706-050403020100",
+    "state": "correction_ready",
+    "task_id": "task-1",
+    "version": 3
+   },
+   "correction_ready|owned|failed": {
+    "archive": {
+     "manifest_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "transcript_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "blocked": true,
+    "candidates": 0,
+    "checkpoints": 1,
+    "cleanup": {
+     "state": "failed"
+    },
+    "identity_sha256": "d89fcf150e5552927dc53c281acb5eee85f428a6fa1603a6e8205da057982020",
+    "next_action": "owned by a running execution",
+    "next_owner": "execution",
+    "owner": {
+     "attempt": 1,
+     "execution": "e",
+     "generation": 1
+    },
+    "promotion": null,
+    "reason": null,
+    "reviews": [
+     {
+      "decision_id": "d",
+      "outcome": "rejected",
+      "phase": "review_lead"
+     }
+    ],
+    "session_id": "0f0e0d0c-0b0a-4908-8706-050403020100",
+    "state": "correction_ready",
+    "task_id": "task-1",
+    "version": 3
+   },
+   "incompatible|free|clean": {
+    "archive": {
+     "manifest_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "transcript_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "blocked": true,
+    "candidates": 0,
+    "checkpoints": 1,
+    "cleanup": null,
+    "identity_sha256": "d89fcf150e5552927dc53c281acb5eee85f428a6fa1603a6e8205da057982020",
+    "next_action": "explicit fresh evidence handoff required",
+    "next_owner": "operator",
+    "owner": null,
+    "promotion": null,
+    "reason": null,
+    "reviews": [
+     {
+      "decision_id": "d",
+      "outcome": "rejected",
+      "phase": "review_lead"
+     }
+    ],
+    "session_id": "0f0e0d0c-0b0a-4908-8706-050403020100",
+    "state": "incompatible",
+    "task_id": "task-1",
+    "version": 3
+   },
+   "incompatible|free|failed": {
+    "archive": {
+     "manifest_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "transcript_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "blocked": true,
+    "candidates": 0,
+    "checkpoints": 1,
+    "cleanup": {
+     "state": "failed"
+    },
+    "identity_sha256": "d89fcf150e5552927dc53c281acb5eee85f428a6fa1603a6e8205da057982020",
+    "next_action": "explicit fresh evidence handoff required",
+    "next_owner": "operator",
+    "owner": null,
+    "promotion": null,
+    "reason": null,
+    "reviews": [
+     {
+      "decision_id": "d",
+      "outcome": "rejected",
+      "phase": "review_lead"
+     }
+    ],
+    "session_id": "0f0e0d0c-0b0a-4908-8706-050403020100",
+    "state": "incompatible",
+    "task_id": "task-1",
+    "version": 3
+   },
+   "incompatible|owned|clean": {
+    "archive": {
+     "manifest_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "transcript_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "blocked": true,
+    "candidates": 0,
+    "checkpoints": 1,
+    "cleanup": null,
+    "identity_sha256": "d89fcf150e5552927dc53c281acb5eee85f428a6fa1603a6e8205da057982020",
+    "next_action": "owned by a running execution",
+    "next_owner": "execution",
+    "owner": {
+     "attempt": 1,
+     "execution": "e",
+     "generation": 1
+    },
+    "promotion": null,
+    "reason": null,
+    "reviews": [
+     {
+      "decision_id": "d",
+      "outcome": "rejected",
+      "phase": "review_lead"
+     }
+    ],
+    "session_id": "0f0e0d0c-0b0a-4908-8706-050403020100",
+    "state": "incompatible",
+    "task_id": "task-1",
+    "version": 3
+   },
+   "incompatible|owned|failed": {
+    "archive": {
+     "manifest_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "transcript_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "blocked": true,
+    "candidates": 0,
+    "checkpoints": 1,
+    "cleanup": {
+     "state": "failed"
+    },
+    "identity_sha256": "d89fcf150e5552927dc53c281acb5eee85f428a6fa1603a6e8205da057982020",
+    "next_action": "owned by a running execution",
+    "next_owner": "execution",
+    "owner": {
+     "attempt": 1,
+     "execution": "e",
+     "generation": 1
+    },
+    "promotion": null,
+    "reason": null,
+    "reviews": [
+     {
+      "decision_id": "d",
+      "outcome": "rejected",
+      "phase": "review_lead"
+     }
+    ],
+    "session_id": "0f0e0d0c-0b0a-4908-8706-050403020100",
+    "state": "incompatible",
+    "task_id": "task-1",
+    "version": 3
+   },
+   "mystery|free|clean": {
+    "archive": {
+     "manifest_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "transcript_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "blocked": false,
+    "candidates": 0,
+    "checkpoints": 1,
+    "cleanup": null,
+    "identity_sha256": "d89fcf150e5552927dc53c281acb5eee85f428a6fa1603a6e8205da057982020",
+    "next_action": "operator: unknown state; inspect the row",
+    "next_owner": "operator",
+    "owner": null,
+    "promotion": null,
+    "reason": null,
+    "reviews": [
+     {
+      "decision_id": "d",
+      "outcome": "rejected",
+      "phase": "review_lead"
+     }
+    ],
+    "session_id": "0f0e0d0c-0b0a-4908-8706-050403020100",
+    "state": "mystery",
+    "task_id": "task-1",
+    "version": 3
+   },
+   "mystery|free|failed": {
+    "archive": {
+     "manifest_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "transcript_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "blocked": true,
+    "candidates": 0,
+    "checkpoints": 1,
+    "cleanup": {
+     "state": "failed"
+    },
+    "identity_sha256": "d89fcf150e5552927dc53c281acb5eee85f428a6fa1603a6e8205da057982020",
+    "next_action": "operator: unknown state; inspect the row",
+    "next_owner": "operator",
+    "owner": null,
+    "promotion": null,
+    "reason": null,
+    "reviews": [
+     {
+      "decision_id": "d",
+      "outcome": "rejected",
+      "phase": "review_lead"
+     }
+    ],
+    "session_id": "0f0e0d0c-0b0a-4908-8706-050403020100",
+    "state": "mystery",
+    "task_id": "task-1",
+    "version": 3
+   },
+   "mystery|owned|clean": {
+    "archive": {
+     "manifest_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "transcript_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "blocked": false,
+    "candidates": 0,
+    "checkpoints": 1,
+    "cleanup": null,
+    "identity_sha256": "d89fcf150e5552927dc53c281acb5eee85f428a6fa1603a6e8205da057982020",
+    "next_action": "owned by a running execution",
+    "next_owner": "execution",
+    "owner": {
+     "attempt": 1,
+     "execution": "e",
+     "generation": 1
+    },
+    "promotion": null,
+    "reason": null,
+    "reviews": [
+     {
+      "decision_id": "d",
+      "outcome": "rejected",
+      "phase": "review_lead"
+     }
+    ],
+    "session_id": "0f0e0d0c-0b0a-4908-8706-050403020100",
+    "state": "mystery",
+    "task_id": "task-1",
+    "version": 3
+   },
+   "mystery|owned|failed": {
+    "archive": {
+     "manifest_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "transcript_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "blocked": true,
+    "candidates": 0,
+    "checkpoints": 1,
+    "cleanup": {
+     "state": "failed"
+    },
+    "identity_sha256": "d89fcf150e5552927dc53c281acb5eee85f428a6fa1603a6e8205da057982020",
+    "next_action": "owned by a running execution",
+    "next_owner": "execution",
+    "owner": {
+     "attempt": 1,
+     "execution": "e",
+     "generation": 1
+    },
+    "promotion": null,
+    "reason": null,
+    "reviews": [
+     {
+      "decision_id": "d",
+      "outcome": "rejected",
+      "phase": "review_lead"
+     }
+    ],
+    "session_id": "0f0e0d0c-0b0a-4908-8706-050403020100",
+    "state": "mystery",
+    "task_id": "task-1",
+    "version": 3
+   },
+   "unresolved|free|clean": {
+    "archive": {
+     "manifest_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "transcript_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "blocked": true,
+    "candidates": 0,
+    "checkpoints": 1,
+    "cleanup": null,
+    "identity_sha256": "d89fcf150e5552927dc53c281acb5eee85f428a6fa1603a6e8205da057982020",
+    "next_action": "owner: reconcile from retained verified session bytes",
+    "next_owner": "operator",
+    "owner": null,
+    "promotion": null,
+    "reason": null,
+    "reviews": [
+     {
+      "decision_id": "d",
+      "outcome": "rejected",
+      "phase": "review_lead"
+     }
+    ],
+    "session_id": "0f0e0d0c-0b0a-4908-8706-050403020100",
+    "state": "unresolved",
+    "task_id": "task-1",
+    "version": 3
+   },
+   "unresolved|free|failed": {
+    "archive": {
+     "manifest_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "transcript_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "blocked": true,
+    "candidates": 0,
+    "checkpoints": 1,
+    "cleanup": {
+     "state": "failed"
+    },
+    "identity_sha256": "d89fcf150e5552927dc53c281acb5eee85f428a6fa1603a6e8205da057982020",
+    "next_action": "owner: reconcile from retained verified session bytes",
+    "next_owner": "operator",
+    "owner": null,
+    "promotion": null,
+    "reason": null,
+    "reviews": [
+     {
+      "decision_id": "d",
+      "outcome": "rejected",
+      "phase": "review_lead"
+     }
+    ],
+    "session_id": "0f0e0d0c-0b0a-4908-8706-050403020100",
+    "state": "unresolved",
+    "task_id": "task-1",
+    "version": 3
+   },
+   "unresolved|owned|clean": {
+    "archive": {
+     "manifest_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "transcript_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "blocked": true,
+    "candidates": 0,
+    "checkpoints": 1,
+    "cleanup": null,
+    "identity_sha256": "d89fcf150e5552927dc53c281acb5eee85f428a6fa1603a6e8205da057982020",
+    "next_action": "owned by a running execution",
+    "next_owner": "execution",
+    "owner": {
+     "attempt": 1,
+     "execution": "e",
+     "generation": 1
+    },
+    "promotion": null,
+    "reason": null,
+    "reviews": [
+     {
+      "decision_id": "d",
+      "outcome": "rejected",
+      "phase": "review_lead"
+     }
+    ],
+    "session_id": "0f0e0d0c-0b0a-4908-8706-050403020100",
+    "state": "unresolved",
+    "task_id": "task-1",
+    "version": 3
+   },
+   "unresolved|owned|failed": {
+    "archive": {
+     "manifest_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "transcript_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "blocked": true,
+    "candidates": 0,
+    "checkpoints": 1,
+    "cleanup": {
+     "state": "failed"
+    },
+    "identity_sha256": "d89fcf150e5552927dc53c281acb5eee85f428a6fa1603a6e8205da057982020",
+    "next_action": "owned by a running execution",
+    "next_owner": "execution",
+    "owner": {
+     "attempt": 1,
+     "execution": "e",
+     "generation": 1
+    },
+    "promotion": null,
+    "reason": null,
+    "reviews": [
+     {
+      "decision_id": "d",
+      "outcome": "rejected",
+      "phase": "review_lead"
+     }
+    ],
+    "session_id": "0f0e0d0c-0b0a-4908-8706-050403020100",
+    "state": "unresolved",
+    "task_id": "task-1",
+    "version": 3
+   }
+  },
+  "transcript_path": [
+   {
+    "value": "projects/-workspace/0f0e0d0c-0b0a-4908-8706-050403020100.jsonl"
+   },
+   {
+    "message": "worker session: session_id_malformed",
+    "reason": "session_id_malformed",
+    "refused": "WorkerSessionRefused"
+   },
+   {
+    "message": "worker session: session_id_malformed",
+    "reason": "session_id_malformed",
+    "refused": "WorkerSessionRefused"
+   }
+  ],
+  "transition_refusal": {
+   "message": "worker session: invalid_transition: closed -> active",
+   "reason": "invalid_transition",
+   "refused": "WorkerSessionRefused"
+  },
+  "transitions": {
+   "None": {
+    "accepted": false,
+    "active": true,
+    "archival_pending": false,
+    "archive_corrupt": false,
+    "archive_missing": false,
+    "awaiting_review": false,
+    "checkpointed": false,
+    "closed": false,
+    "correction_ready": false,
+    "incompatible": false,
+    "unresolved": false
+   },
+   "accepted": {
+    "accepted": false,
+    "active": false,
+    "archival_pending": true,
+    "archive_corrupt": false,
+    "archive_missing": false,
+    "awaiting_review": false,
+    "checkpointed": false,
+    "closed": false,
+    "correction_ready": false,
+    "incompatible": false,
+    "unresolved": false
+   },
+   "active": {
+    "accepted": false,
+    "active": false,
+    "archival_pending": false,
+    "archive_corrupt": false,
+    "archive_missing": false,
+    "awaiting_review": false,
+    "checkpointed": true,
+    "closed": false,
+    "correction_ready": false,
+    "incompatible": false,
+    "unresolved": true
+   },
+   "archival_pending": {
+    "accepted": false,
+    "active": false,
+    "archival_pending": false,
+    "archive_corrupt": false,
+    "archive_missing": false,
+    "awaiting_review": false,
+    "checkpointed": false,
+    "closed": true,
+    "correction_ready": false,
+    "incompatible": false,
+    "unresolved": false
+   },
+   "archive_corrupt": {
+    "accepted": false,
+    "active": false,
+    "archival_pending": false,
+    "archive_corrupt": false,
+    "archive_missing": false,
+    "awaiting_review": false,
+    "checkpointed": false,
+    "closed": false,
+    "correction_ready": false,
+    "incompatible": false,
+    "unresolved": false
+   },
+   "archive_missing": {
+    "accepted": false,
+    "active": false,
+    "archival_pending": false,
+    "archive_corrupt": false,
+    "archive_missing": false,
+    "awaiting_review": false,
+    "checkpointed": false,
+    "closed": false,
+    "correction_ready": false,
+    "incompatible": false,
+    "unresolved": false
+   },
+   "awaiting_review": {
+    "accepted": true,
+    "active": false,
+    "archival_pending": false,
+    "archive_corrupt": false,
+    "archive_missing": false,
+    "awaiting_review": false,
+    "checkpointed": false,
+    "closed": false,
+    "correction_ready": true,
+    "incompatible": false,
+    "unresolved": false
+   },
+   "checkpointed": {
+    "accepted": false,
+    "active": true,
+    "archival_pending": false,
+    "archive_corrupt": true,
+    "archive_missing": true,
+    "awaiting_review": true,
+    "checkpointed": false,
+    "closed": false,
+    "correction_ready": false,
+    "incompatible": true,
+    "unresolved": false
+   },
+   "closed": {
+    "accepted": false,
+    "active": false,
+    "archival_pending": false,
+    "archive_corrupt": false,
+    "archive_missing": false,
+    "awaiting_review": false,
+    "checkpointed": false,
+    "closed": false,
+    "correction_ready": false,
+    "incompatible": false,
+    "unresolved": false
+   },
+   "correction_ready": {
+    "accepted": false,
+    "active": true,
+    "archival_pending": false,
+    "archive_corrupt": true,
+    "archive_missing": true,
+    "awaiting_review": false,
+    "checkpointed": false,
+    "closed": false,
+    "correction_ready": false,
+    "incompatible": true,
+    "unresolved": false
+   },
+   "incompatible": {
+    "accepted": false,
+    "active": false,
+    "archival_pending": false,
+    "archive_corrupt": false,
+    "archive_missing": false,
+    "awaiting_review": false,
+    "checkpointed": false,
+    "closed": false,
+    "correction_ready": false,
+    "incompatible": false,
+    "unresolved": false
+   },
+   "unresolved": {
+    "accepted": false,
+    "active": false,
+    "archival_pending": false,
+    "archive_corrupt": false,
+    "archive_missing": false,
+    "awaiting_review": false,
+    "checkpointed": true,
+    "closed": false,
+    "correction_ready": false,
+    "incompatible": false,
+    "unresolved": false
+   }
+  },
+  "usage_delta": [
+   {
+    "value": {
+     "baseline": null,
+     "basis": "fresh_session_totals",
+     "delta": {
+      "input_tokens": 3
+     },
+     "mode": "fresh",
+     "raw": {
+      "input_tokens": 3,
+      "output_tokens": -1,
+      "x": 1
+     },
+     "session_id": "0f0e0d0c-0b0a-4908-8706-050403020100"
+    }
+   },
+   {
+    "value": {
+     "baseline": {
+      "raw": {
+       "input_tokens": 5,
+       "output_tokens": 2
+      },
+      "session_id": "0f0e0d0c-0b0a-4908-8706-050403020100"
+     },
+     "basis": "cumulative_minus_session_baseline",
+     "delta": {
+      "input_tokens": 4,
+      "output_tokens": 2
+     },
+     "mode": "native_resume",
+     "raw": {
+      "input_tokens": 9,
+      "output_tokens": 4
+     },
+     "session_id": "0f0e0d0c-0b0a-4908-8706-050403020100"
+    }
+   },
+   {
+    "value": {
+     "baseline": null,
+     "basis": "unknown_no_matching_baseline",
+     "delta": null,
+     "mode": "native_resume",
+     "raw": {
+      "input_tokens": 9
+     },
+     "session_id": "0f0e0d0c-0b0a-4908-8706-050403020100"
+    }
+   },
+   {
+    "value": {
+     "baseline": {
+      "raw": {
+       "input_tokens": 5,
+       "output_tokens": 2
+      },
+      "session_id": "other"
+     },
+     "basis": "unknown_no_matching_baseline",
+     "delta": null,
+     "mode": "native_resume",
+     "raw": {
+      "input_tokens": 9
+     },
+     "session_id": "0f0e0d0c-0b0a-4908-8706-050403020100"
+    }
+   },
+   {
+    "value": {
+     "baseline": {
+      "raw": {
+       "input_tokens": 5,
+       "output_tokens": 2
+      },
+      "session_id": "0f0e0d0c-0b0a-4908-8706-050403020100"
+     },
+     "basis": "unknown_baseline_not_monotonic",
+     "delta": null,
+     "mode": "native_resume",
+     "raw": {
+      "input_tokens": 1
+     },
+     "session_id": "0f0e0d0c-0b0a-4908-8706-050403020100"
+    }
+   },
+   {
+    "value": {
+     "baseline": null,
+     "basis": "unknown",
+     "delta": null,
+     "mode": "fresh",
+     "raw": null,
+     "session_id": "0f0e0d0c-0b0a-4908-8706-050403020100"
+    }
+   }
+  ],
+  "validate_promotion": [
+   {
+    "value": {
+     "archive": {
+      "manifest_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "transcript_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+     },
+     "candidate": {
+      "base": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "tree": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+     },
+     "evidence": [
+      "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+     ],
+     "review": {
+      "decision_id": "d2",
+      "execution_ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+     },
+     "schema": "zeus.worker-session-promotion.v1",
+     "session_id": "0f0e0d0c-0b0a-4908-8706-050403020100",
+     "task_id": "task-1"
+    }
+   },
+   {
+    "message": "worker session: promotion_receipt_malformed: evidence",
+    "reason": "promotion_receipt_malformed",
+    "refused": "WorkerSessionRefused"
+   },
+   {
+    "message": "worker session: promotion_receipt_malformed: schema",
+    "reason": "promotion_receipt_malformed",
+    "refused": "WorkerSessionRefused"
+   },
+   {
+    "message": "worker session: promotion_receipt_malformed: fields",
+    "reason": "promotion_receipt_malformed",
+    "refused": "WorkerSessionRefused"
+   },
+   {
+    "message": "worker session: promotion_receipt_unrelated",
+    "reason": "promotion_receipt_unrelated",
+    "refused": "WorkerSessionRefused"
+   }
+  ]
+ }
+}
