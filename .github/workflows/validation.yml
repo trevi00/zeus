@@ -116,13 +116,14 @@ jobs:
         working-directory: ${{ runner.temp }}/zeus-source
         env:
           ZEUS_TEST_DOCKER: '1'
+      # The target venv first: since S4 (ReviewDecisions) the decision unit below has a target side too.
+      - run: uv sync --frozen --project target
       # §2.9 decision/release/outbox discriminators on a labelled, network-less disposable
-      # PostgreSQL started by the runner through the default-deny Docker guard (S0 F3).
+      # PostgreSQL started by the runner through the default-deny Docker guard (S0 F3); reference AND target.
       - run: python compare/run.py prepare
       - run: python compare/run.py run --only effects.decision_unit.pg --pg
       # S1 storage differentials on labelled, network-less disposable PostgreSQL and Redis fixtures:
       # the target side runs in the target venv against the same fixture server (§5.3 S1).
-      - run: uv sync --frozen --project target
       - run: python compare/run.py run --only storage.pg --only storage.redis --pg --redis
       # The target suite with its integration tests (ported PostgreSQL/Redis cases) on the same
       # kind of labelled disposable fixtures; the compose services above are never used by it (R-X).
