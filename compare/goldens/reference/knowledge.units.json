@@ -1,0 +1,2082 @@
+{
+ "part_sha256": {
+  "code_graph": "3ae0a995fa404db778277be1ee2523626d77b5fa36276bd5f4cb0e43a34811b7",
+  "experience": "9e9ba771e1a96760e6e2815793bd28f33e62b72e9abdf943cc32840ececd7193",
+  "privacy": "023167e3d787aacb78e6e92e02d9095be68b45fbef8eef76e205453ccab25e28",
+  "promotion": "65fad7fdaddcd5b293b1a99b0ec33ad3d9d9c5bfe33113d729ce5579df16533d",
+  "seams": "cb5eaae322ed03f60481c5ce2559467cae3ea1dc2b532d5d7748e83737a6599e",
+  "snapshots": "65588c75d83e23e47b75aaa5fb272b4c90b2721fa11f7b226bcee24a0b45d570"
+ },
+ "parts": {
+  "code_graph": {
+   "embeddings_empty": {
+    "ok": []
+   },
+   "graph": {
+    "ok": {
+     "edges": 7,
+     "keys": [
+      "edges",
+      "nodes",
+      "repository",
+      "snapshot"
+     ],
+     "node_ids": [
+      "file:67e8f3b46ca28285:src/pkg/__init__.py",
+      "file:67e8f3b46ca28285:src/pkg/core.py",
+      "file:67e8f3b46ca28285:src/pkg/util.py",
+      "module:67e8f3b46ca28285:os",
+      "symbol:67e8f3b46ca28285:src/pkg/core.py:Store",
+      "symbol:67e8f3b46ca28285:src/pkg/core.py:Store.get",
+      "symbol:67e8f3b46ca28285:src/pkg/core.py:run",
+      "symbol:67e8f3b46ca28285:src/pkg/util.py:clean"
+     ],
+     "nodes": 8,
+     "sha256": "12b95d0b2e2c03905d6503df579db71e64951d75a5cd757845ab4d7a31ee2cda"
+    }
+   },
+   "missing_root": {
+    "error": "ContractError",
+    "message": "Repository not found"
+   },
+   "parse_error": {
+    "error": "ContractError",
+    "message": "Parse failed: src/pkg/bad.py"
+   }
+  },
+  "experience": {
+   "basis_bad": {
+    "error": "ContractError",
+    "message": "Pinned basis requires a full commit revision"
+   },
+   "classify": {
+    "ok": {
+     "counters": [
+      "ledger:PASS x1"
+     ],
+     "identities": [],
+     "sources": [
+      "repair-notes:h"
+     ],
+     "unclassified": [
+      "x"
+     ]
+    }
+   },
+   "duplicate": {
+    "error": "ContractError",
+    "message": "Duplicate or non-string YAML key"
+   },
+   "imports": {
+    "again": {
+     "ok": {
+      "basis": {
+       "kind": "pinned",
+       "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3"
+      },
+      "claims": [
+       {
+        "body_ref": "sha256:ea6b282c2805ac37b3ce89151731095ce958841e0f463e2ef8c3db5d76c45c56",
+        "changed": false,
+        "counters": 2,
+        "id": "cecb81ee1b53f8c30358d9e37d0d75747d030183c11a219297694ba826b60205",
+        "independent_occurrences": 0,
+        "path": "knowledge/lessons/repair.md",
+        "sha256": "43a65d40a0b4800309df1c085119eccc96b0612b721cb6f9535b8437794eb5b0",
+        "status": "upstream_occurrences_unverified",
+        "unclassified": 0,
+        "upstream_occurrences": 308,
+        "upstream_trust": "confirmed"
+       }
+      ],
+      "source": "harness",
+      "totals": {
+       "files": 1,
+       "independent_occurrences_sum": 0,
+       "recomputed": 0,
+       "unverified": 1,
+       "upstream_occurrences_sum": 308
+      }
+     }
+    },
+    "changed": {
+     "ok": {
+      "basis": {
+       "kind": "pinned",
+       "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3"
+      },
+      "claims": [
+       {
+        "body_ref": "sha256:26a044fbbbe89841fbe678f5f21d2a0fa704c550995a344e1e96f541071882de",
+        "changed": true,
+        "counters": 2,
+        "id": "81bb92a466ce6e7e32acfa016a5e75ee16dd08404afa5bfacbe65b7b523ad7d5",
+        "independent_occurrences": 0,
+        "path": "knowledge/lessons/repair.md",
+        "sha256": "886a941b3f5c608d8b64f344694570955867ec06e744392eb78ec0dbfcb97dc3",
+        "status": "upstream_occurrences_unverified",
+        "unclassified": 0,
+        "upstream_occurrences": 309,
+        "upstream_trust": "confirmed"
+       }
+      ],
+      "source": "harness",
+      "totals": {
+       "files": 1,
+       "independent_occurrences_sum": 0,
+       "recomputed": 0,
+       "unverified": 1,
+       "upstream_occurrences_sum": 309
+      }
+     }
+    },
+    "first": {
+     "ok": {
+      "basis": {
+       "kind": "pinned",
+       "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3"
+      },
+      "claims": [
+       {
+        "body_ref": "sha256:ea6b282c2805ac37b3ce89151731095ce958841e0f463e2ef8c3db5d76c45c56",
+        "changed": true,
+        "counters": 2,
+        "id": "cecb81ee1b53f8c30358d9e37d0d75747d030183c11a219297694ba826b60205",
+        "independent_occurrences": 0,
+        "path": "knowledge/lessons/repair.md",
+        "sha256": "43a65d40a0b4800309df1c085119eccc96b0612b721cb6f9535b8437794eb5b0",
+        "status": "upstream_occurrences_unverified",
+        "unclassified": 0,
+        "upstream_occurrences": 308,
+        "upstream_trust": "confirmed"
+       }
+      ],
+      "source": "harness",
+      "totals": {
+       "files": 1,
+       "independent_occurrences_sum": 0,
+       "recomputed": 0,
+       "unverified": 1,
+       "upstream_occurrences_sum": 308
+      }
+     }
+    },
+    "summary": {
+     "ok": {
+      "claims": 2,
+      "independent_occurrences_sum": 0,
+      "recomputed": 0,
+      "unverified": 2,
+      "upstream_occurrences_sum": 617
+     }
+    },
+    "versions": {
+     "ok": [
+      {
+       "acquisitions": [
+        {
+         "kind": "pinned",
+         "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3"
+        }
+       ],
+       "authority": "advisory; not recurrence, trust or qualification evidence",
+       "body_ref": "sha256:ea6b282c2805ac37b3ce89151731095ce958841e0f463e2ef8c3db5d76c45c56",
+       "body_sha256": "c1696d33f25eff1c105aef2f5516720726d01bf4d10e1613cd777a266c5f6812",
+       "frontmatter_sha256": "2effa7a830918f161a43c7345630ee09c98f0bf2ccdcf47f81d1bd37ffafe2c8",
+       "id": "cecb81ee1b53f8c30358d9e37d0d75747d030183c11a219297694ba826b60205",
+       "independent_occurrences": {
+        "count": 0,
+        "counters": [
+         "ledger:PASS x1",
+         "ledger:PASS x2"
+        ],
+        "identities": [],
+        "sources": [
+         "repair-notes:harness"
+        ],
+        "unclassified": []
+       },
+       "recorded_at": "2026-01-01T00:00:00+00:00",
+       "sequence": 1,
+       "source": {
+        "bytes": 327,
+        "kind": "pinned",
+        "name": "harness",
+        "path": "knowledge/lessons/repair.md",
+        "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+        "sha256": "43a65d40a0b4800309df1c085119eccc96b0612b721cb6f9535b8437794eb5b0"
+       },
+       "status": "upstream_occurrences_unverified",
+       "upstream": {
+        "created_by": "agent:curator",
+        "created_ts": "1788396067.7754688",
+        "evidence": [
+         "ledger:PASS x1",
+         "ledger:PASS x2",
+         "repair-notes:harness"
+        ],
+        "id": "lesson:knowledge/lessons/repair.md",
+        "kind": "lesson",
+        "lifecycle": "active",
+        "occurrences": "308",
+        "origin": "promoted",
+        "pinned": "false",
+        "source_families": [
+         "repair::encoding"
+        ],
+        "trust": "confirmed"
+       },
+       "upstream_occurrences": 308,
+       "version": 1
+      },
+      {
+       "acquisitions": [
+        {
+         "kind": "pinned",
+         "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3"
+        }
+       ],
+       "authority": "advisory; not recurrence, trust or qualification evidence",
+       "body_ref": "sha256:26a044fbbbe89841fbe678f5f21d2a0fa704c550995a344e1e96f541071882de",
+       "body_sha256": "c1696d33f25eff1c105aef2f5516720726d01bf4d10e1613cd777a266c5f6812",
+       "frontmatter_sha256": "f1bff9d2a42c7e1e44e16a7624a5a38a7bccd1c954233824c279a1b21790bf70",
+       "id": "81bb92a466ce6e7e32acfa016a5e75ee16dd08404afa5bfacbe65b7b523ad7d5",
+       "independent_occurrences": {
+        "count": 0,
+        "counters": [
+         "ledger:PASS x1",
+         "ledger:PASS x2"
+        ],
+        "identities": [],
+        "sources": [
+         "repair-notes:harness"
+        ],
+        "unclassified": []
+       },
+       "recorded_at": "2026-01-01T00:00:00+00:00",
+       "sequence": 2,
+       "source": {
+        "bytes": 327,
+        "kind": "pinned",
+        "name": "harness",
+        "path": "knowledge/lessons/repair.md",
+        "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+        "sha256": "886a941b3f5c608d8b64f344694570955867ec06e744392eb78ec0dbfcb97dc3"
+       },
+       "status": "upstream_occurrences_unverified",
+       "upstream": {
+        "created_by": "agent:curator",
+        "created_ts": "1788396067.7754688",
+        "evidence": [
+         "ledger:PASS x1",
+         "ledger:PASS x2",
+         "repair-notes:harness"
+        ],
+        "id": "lesson:knowledge/lessons/repair.md",
+        "kind": "lesson",
+        "lifecycle": "active",
+        "occurrences": "309",
+        "origin": "promoted",
+        "pinned": "false",
+        "source_families": [
+         "repair::encoding"
+        ],
+        "trust": "confirmed"
+       },
+       "upstream_occurrences": 309,
+       "version": 1
+      }
+     ]
+    }
+   },
+   "not_mapping": {
+    "error": "ContractError",
+    "message": "Lesson frontmatter must be a mapping"
+   },
+   "not_utf8": {
+    "error": "ContractError",
+    "message": "Lesson bytes are not UTF-8"
+   },
+   "parse": {
+    "ok": {
+     "authority": "advisory; not recurrence, trust or qualification evidence",
+     "body_sha256": "c1696d33f25eff1c105aef2f5516720726d01bf4d10e1613cd777a266c5f6812",
+     "frontmatter_sha256": "2effa7a830918f161a43c7345630ee09c98f0bf2ccdcf47f81d1bd37ffafe2c8",
+     "id": "cecb81ee1b53f8c30358d9e37d0d75747d030183c11a219297694ba826b60205",
+     "independent_occurrences": {
+      "count": 0,
+      "counters": [
+       "ledger:PASS x1",
+       "ledger:PASS x2"
+      ],
+      "identities": [],
+      "sources": [
+       "repair-notes:harness"
+      ],
+      "unclassified": []
+     },
+     "source": {
+      "bytes": 327,
+      "kind": "pinned",
+      "name": "harness",
+      "path": "knowledge/lessons/repair.md",
+      "revision": "a3f8b3be9a0a389329de6e16a6c7db81782041a3",
+      "sha256": "43a65d40a0b4800309df1c085119eccc96b0612b721cb6f9535b8437794eb5b0"
+     },
+     "status": "upstream_occurrences_unverified",
+     "upstream": {
+      "created_by": "agent:curator",
+      "created_ts": "1788396067.7754688",
+      "evidence": [
+       "ledger:PASS x1",
+       "ledger:PASS x2",
+       "repair-notes:harness"
+      ],
+      "id": "lesson:knowledge/lessons/repair.md",
+      "kind": "lesson",
+      "lifecycle": "active",
+      "occurrences": "308",
+      "origin": "promoted",
+      "pinned": "false",
+      "source_families": [
+       "repair::encoding"
+      ],
+      "trust": "confirmed"
+     },
+     "upstream_occurrences": 308,
+     "version": 1
+    }
+   },
+   "tag": {
+    "error": "ContractError",
+    "message": "Unsupported YAML tag"
+   }
+  },
+  "privacy": {
+   "consent": {
+    "at": "2026-09-10T00:00:00+00:00",
+    "choice": "grant",
+    "collect": true,
+    "note": "a preference inferred later is never authorization; the current explicit instruction wins",
+    "policy_hash": "cac7879da5f180dd6d5e2e9ae7ca3851dd1658fba45f89db837ca28aaa3f3ca0",
+    "projects": [
+     "/home/sentinel-user/work/shop"
+    ],
+    "user": "u1"
+   },
+   "consent_other_policy": {
+    "error": "ContractError",
+    "message": "Consent is bound to another policy version"
+   },
+   "external_claim": {
+    "error": "ContractError",
+    "message": "Notice is wider than the policy: notice claims no external transfer but the model transport is external"
+   },
+   "flow": {
+    "consent": {
+     "ok": {
+      "at": "2026-09-10T00:00:01+00:00",
+      "choice": "grant",
+      "collect": true,
+      "id": "fd99ca4bac0c3e648f19c98b340c122a46bbbde40378ad538a4ebe223b6b6dd6",
+      "note": "a preference inferred later is never authorization; the current explicit instruction wins",
+      "policy": {
+       "fields": {
+        "content": "the preference signal itself",
+        "kind": "restrict to user messages",
+        "project_path": "grouping by project, hashed before model input"
+       },
+       "model": {
+        "name": "local-preference-model",
+        "transport": "local"
+       },
+       "notice": {
+        "claims": [
+         "automatic_exclusion",
+         "no_external_transfer",
+         "raw_not_retained"
+        ],
+        "text": "Messages from the projects you pick are read locally; secrets and paths are excluded automatically; raw text is not kept."
+       },
+       "policy_hash": "cac7879da5f180dd6d5e2e9ae7ca3851dd1658fba45f89db837ca28aaa3f3ca0",
+       "purpose": "derive working-style preferences for prompt guidance",
+       "read_scope": {
+        "kinds": [
+         "user_message"
+        ],
+        "max_chars": 300,
+        "max_records": 50,
+        "projects": [
+         "/home/sentinel-user/work/shop"
+        ]
+       },
+       "retention": {
+        "permanent": "profile_only",
+        "temporary": "run"
+       },
+       "version": 1
+      },
+      "policy_hash": "cac7879da5f180dd6d5e2e9ae7ca3851dd1658fba45f89db837ca28aaa3f3ca0",
+      "projects": [
+       "/home/sentinel-user/work/shop"
+      ],
+      "recorded_at": "2026-01-01T00:00:00+00:00",
+      "user": "u1"
+     }
+    },
+    "finish": {
+     "ok": {
+      "deleted": true,
+      "owner": "w1",
+      "run_id": "run-1"
+     }
+    },
+    "finish_other": {
+     "error": "ContractError",
+     "message": "Run run-1 is owned by another worker; not deleted"
+    },
+    "no_consent": {
+     "error": "ContractError",
+     "message": "No consent recorded for this user and policy version"
+    },
+    "ready": {
+     "ok": {
+      "authority": "not a user acceptance, not a model qualification, not deployment",
+      "binding": {
+       "environment": "linux",
+       "source_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      },
+      "bundle": {
+       "bytes": 282,
+       "lease_until": "2999-01-01T00:00:00+00:00",
+       "owner": "w1",
+       "path": "<WORK>/scratch/run-1/bundle.json",
+       "run_id": "run-1"
+      },
+      "consent_id": "fd99ca4bac0c3e648f19c98b340c122a46bbbde40378ad538a4ebe223b6b6dd6",
+      "counts": {
+       "blocked": 1,
+       "not_consented": 1,
+       "parse_error": 1,
+       "ready": 1
+      },
+      "findings": {
+       "token": 1
+      },
+      "id": "run-1",
+      "model": {
+       "name": "local-preference-model",
+       "transport": "local"
+      },
+      "note": "the model input is the bundle file; this row holds statuses, counts and kinds, no record text",
+      "owner": "w1",
+      "policy_hash": "cac7879da5f180dd6d5e2e9ae7ca3851dd1658fba45f89db837ca28aaa3f3ca0",
+      "recorded_at": "2026-01-01T00:00:00+00:00",
+      "records_offered": 4,
+      "records_skipped_by_cap": 0,
+      "results": [
+       {
+        "checked_fields": [
+         "content",
+         "project_path",
+         "kind"
+        ],
+        "dropped_fields": [],
+        "findings": {},
+        "status": "ready",
+        "truncated": false,
+        "unchecked_fields": []
+       },
+       {
+        "checked_fields": [
+         "content",
+         "project_path",
+         "kind"
+        ],
+        "dropped_fields": [],
+        "error": "record carries token",
+        "findings": {
+         "token": 1
+        },
+        "status": "blocked",
+        "unchecked_fields": []
+       },
+       {
+        "checked_fields": [
+         "project_path"
+        ],
+        "error": "project not covered by the consent",
+        "findings": {},
+        "status": "not_consented",
+        "unchecked_fields": []
+       },
+       {
+        "checked_fields": [],
+        "error": "record is not an object",
+        "findings": {},
+        "status": "parse_error",
+        "unchecked_fields": [
+         "content",
+         "project_path",
+         "kind",
+         "session_id",
+         "observed_at"
+        ]
+       }
+      ],
+      "status": "ready",
+      "user": "u1"
+     }
+    },
+    "render": {
+     "ok": {
+      "dimensions": {
+       "x": {
+        "fields": {
+         "evidence": {
+          "findings": {},
+          "status": "checked"
+         }
+        },
+        "status": "checked"
+       }
+      },
+      "findings": {},
+      "note": "none detected is said only about checked fields; an unchecked field is named, never safe",
+      "renderable": true,
+      "run_id": "run-1",
+      "unchecked": [],
+      "verdict": "none_detected_in_checked_fields"
+     }
+    }
+   },
+   "minimize": {
+    "assistant": {
+     "ok": {
+      "checked_fields": [
+       "kind"
+      ],
+      "error": "kind not in read scope",
+      "findings": {},
+      "status": "out_of_scope",
+      "unchecked_fields": []
+     }
+    },
+    "blocked": {
+     "ok": {
+      "checked_fields": [
+       "content",
+       "project_path",
+       "kind"
+      ],
+      "dropped_fields": [],
+      "error": "record carries credential",
+      "findings": {
+       "credential": 1
+      },
+      "status": "blocked",
+      "unchecked_fields": []
+     }
+    },
+    "other_project": {
+     "ok": {
+      "checked_fields": [
+       "project_path"
+      ],
+      "error": "project not covered by the consent",
+      "findings": {},
+      "status": "not_consented",
+      "unchecked_fields": []
+     }
+    },
+    "ready": {
+     "ok": {
+      "checked_fields": [
+       "content",
+       "project_path",
+       "kind"
+      ],
+      "dropped_fields": [],
+      "findings": {},
+      "input": {
+       "content": "I prefer short diffs",
+       "kind": "user_message",
+       "project_ref": "project:4e2c5a20edfd518a"
+      },
+      "status": "ready",
+      "truncated": false,
+      "unchecked_fields": []
+     }
+    }
+   },
+   "policy": {
+    "ok": {
+     "fields": {
+      "content": "the preference signal itself",
+      "kind": "restrict to user messages",
+      "project_path": "grouping by project, hashed before model input"
+     },
+     "model": {
+      "name": "local-preference-model",
+      "transport": "local"
+     },
+     "notice": {
+      "claims": [
+       "automatic_exclusion",
+       "no_external_transfer",
+       "raw_not_retained"
+      ],
+      "text": "Messages from the projects you pick are read locally; secrets and paths are excluded automatically; raw text is not kept."
+     },
+     "policy_hash": "cac7879da5f180dd6d5e2e9ae7ca3851dd1658fba45f89db837ca28aaa3f3ca0",
+     "purpose": "derive working-style preferences for prompt guidance",
+     "read_scope": {
+      "kinds": [
+       "user_message"
+      ],
+      "max_chars": 300,
+      "max_records": 50,
+      "projects": [
+       "/home/sentinel-user/work/shop"
+      ]
+     },
+     "retention": {
+      "permanent": "profile_only",
+      "temporary": "run"
+     },
+     "version": 1
+    }
+   },
+   "render_extra": {
+    "error": "ContractError",
+    "message": "Unsupported profile fields: raw_dump"
+   },
+   "render_findings": {
+    "ok": {
+     "dimensions": {
+      "x": {
+       "fields": {
+        "evidence": {
+         "findings": {},
+         "status": "checked"
+        },
+        "summary": {
+         "findings": {
+          "user_path": 1
+         },
+         "status": "checked"
+        }
+       },
+       "status": "checked"
+      }
+     },
+     "findings": {
+      "user_path": 1
+     },
+     "note": "none detected is said only about checked fields; an unchecked field is named, never safe",
+     "unchecked": [],
+     "verdict": "findings"
+    }
+   },
+   "scan": {
+    "ok": [
+     {
+      "kind": "token",
+      "length": 27,
+      "start": 31
+     },
+     {
+      "kind": "email",
+      "length": 14,
+      "start": 5
+     },
+     {
+      "kind": "user_path",
+      "length": 19,
+      "start": 62
+     }
+    ]
+   }
+  },
+  "promotion": {
+   "cached": {
+    "ok": {
+     "authority": "verified execution/review provenance with explicit scope; not truth of prose, not merged code",
+     "cached": true,
+     "edges": 1,
+     "evidence": {
+      "decision_id": "d1"
+     },
+     "graph_sha256": "f7529013e4d77c04eaeba6da8bdf6b3a7619cc6db1a1610a9ee91d0b0e3137e2",
+     "id": "run-1",
+     "nodes": [
+      "verified:run-1:n1"
+     ],
+     "promoted_at": "2026-01-01T00:00:00+00:00",
+     "repository": "verified:run-1",
+     "schema": "urn:zeus:promotion-receipt:1"
+    }
+   },
+   "conflict": {
+    "error": "PromotionRefused",
+    "message": "promotion refused: promotion_conflict",
+    "reason_code": "promotion_conflict"
+   },
+   "first": {
+    "ok": {
+     "authority": "verified execution/review provenance with explicit scope; not truth of prose, not merged code",
+     "cached": false,
+     "edges": 1,
+     "evidence": {
+      "decision_id": "d1"
+     },
+     "graph_sha256": "f7529013e4d77c04eaeba6da8bdf6b3a7619cc6db1a1610a9ee91d0b0e3137e2",
+     "id": "run-1",
+     "nodes": [
+      "verified:run-1:n1"
+     ],
+     "promoted_at": "2026-01-01T00:00:00+00:00",
+     "repository": "verified:run-1",
+     "schema": "urn:zeus:promotion-receipt:1"
+    }
+   },
+   "namespace": {
+    "error": "PromotionRefused",
+    "message": "promotion refused: promotion_namespace_mismatch",
+    "reason_code": "promotion_namespace_mismatch"
+   },
+   "rollback": {
+    "nodes": 1,
+    "receipt": null
+   }
+  },
+  "seams": {
+   "compare": {
+    "blocked_low": {
+     "ok": {
+      "authority": "advisory",
+      "blocking_eligible": false,
+      "compared_keys": [
+       "name",
+       "type"
+      ],
+      "consumer": "1be08b52d30d72db4536c8f6d2637aa99bc8fed6ba3014a245e10ddebd3cf73f",
+      "copy": {
+       "consumer_blob": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+       "note": "same_blob is file byte identity; verdict OK is equality on the checked scopes only",
+       "producer_blob": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+       "same_blob": true
+      },
+      "denominators": {
+       "consumer": {
+        "symbols_found": 3,
+        "unresolved": 0
+       },
+       "producer": {
+        "symbols_found": 3,
+        "unresolved": 2
+       }
+      },
+      "direction": "producer_to_consumer",
+      "policy_hash": "d5a0e1185ea761ff07791d83443bf300b474f769b729c918b761ac15605542cf",
+      "policy_version": 1,
+      "producer": "c5bbe434fe6f28fb1484b4e630f2b53a3f5305aae357beb6051b48ca3145d145",
+      "reason": "producer fidelity is LOW, policy requires HIGH",
+      "scope_coverage": {
+       "checked": [
+        "member_names"
+       ],
+       "complete": true,
+       "note": "OK speaks only for checked scopes; an unverified scope is not agreement",
+       "required": [
+        "member_names"
+       ],
+       "unverified": []
+      },
+      "verdict": "BLOCKED"
+     }
+    },
+    "c2p": {
+     "ok": {
+      "authority": "advisory",
+      "blocking_eligible": false,
+      "changed": [],
+      "compared_keys": [
+       "name",
+       "type"
+      ],
+      "consumer": "1be08b52d30d72db4536c8f6d2637aa99bc8fed6ba3014a245e10ddebd3cf73f",
+      "consumer_only": [
+       "REFUNDED"
+      ],
+      "copy": {
+       "consumer_blob": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+       "note": "same_blob is file byte identity; verdict OK is equality on the checked scopes only",
+       "producer_blob": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+       "same_blob": true
+      },
+      "denominators": {
+       "consumer": {
+        "symbols_found": 3,
+        "unresolved": 0
+       },
+       "producer": {
+        "symbols_found": 3,
+        "unresolved": 0
+       }
+      },
+      "direction": "consumer_to_producer",
+      "equivalent_on_checked_scopes": false,
+      "note": "name/type/tag agreement is textual; it is not compiler, serialization or product compatibility",
+      "policy_hash": "adf7af82c45245914905c6769fa7e2298f9f01fff0d29c8809e35e2894c44a55",
+      "policy_version": 1,
+      "producer": "c5bbe434fe6f28fb1484b4e630f2b53a3f5305aae357beb6051b48ca3145d145",
+      "producer_only": [
+       "PAID_LATE"
+      ],
+      "scope_coverage": {
+       "checked": [
+        "member_names"
+       ],
+       "complete": true,
+       "note": "OK speaks only for checked scopes; an unverified scope is not agreement",
+       "required": [
+        "member_names"
+       ],
+       "unverified": []
+      },
+      "transform": {
+       "collisions": {},
+       "declared": "identity",
+       "declared_effective_mismatch": false,
+       "effective": "identity",
+       "empty_targets": [],
+       "mapping": {
+        "PAID": "PAID",
+        "PAID_LATE": "PAID_LATE",
+        "PENDING": "PENDING"
+       }
+      },
+      "verdict": "DRIFT"
+     }
+    },
+    "collapsed": {
+     "ok": {
+      "authority": "advisory",
+      "blocking_eligible": false,
+      "compared_keys": [
+       "name",
+       "type"
+      ],
+      "consumer": "1be08b52d30d72db4536c8f6d2637aa99bc8fed6ba3014a245e10ddebd3cf73f",
+      "copy": {
+       "consumer_blob": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+       "note": "same_blob is file byte identity; verdict OK is equality on the checked scopes only",
+       "producer_blob": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+       "same_blob": true
+      },
+      "direction": "producer_to_consumer",
+      "policy_hash": "d5a0e1185ea761ff07791d83443bf300b474f769b729c918b761ac15605542cf",
+      "policy_version": 1,
+      "producer": "c5bbe434fe6f28fb1484b4e630f2b53a3f5305aae357beb6051b48ca3145d145",
+      "reason": "transform maps distinct producer values onto one target",
+      "scope_coverage": {
+       "checked": [
+        "member_names"
+       ],
+       "complete": true,
+       "note": "OK speaks only for checked scopes; an unverified scope is not agreement",
+       "required": [
+        "member_names"
+       ],
+       "unverified": []
+      },
+      "transform": {
+       "collisions": {
+        "PAID": [
+         "PAID",
+         "PAID_LATE"
+        ]
+       },
+       "declared": "value_map",
+       "declared_effective_mismatch": false,
+       "effective": "mapping",
+       "empty_targets": [],
+       "mapping": {
+        "PAID": "PAID",
+        "PAID_LATE": "PAID",
+        "PENDING": "PENDING"
+       }
+      },
+      "verdict": "NEEDS_TRANSFORM"
+     }
+    },
+    "p2c": {
+     "ok": {
+      "authority": "advisory",
+      "blocking_eligible": false,
+      "changed": [],
+      "compared_keys": [
+       "name",
+       "type"
+      ],
+      "consumer": "1be08b52d30d72db4536c8f6d2637aa99bc8fed6ba3014a245e10ddebd3cf73f",
+      "consumer_only": [
+       "REFUNDED"
+      ],
+      "copy": {
+       "consumer_blob": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+       "note": "same_blob is file byte identity; verdict OK is equality on the checked scopes only",
+       "producer_blob": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+       "same_blob": true
+      },
+      "denominators": {
+       "consumer": {
+        "symbols_found": 3,
+        "unresolved": 0
+       },
+       "producer": {
+        "symbols_found": 3,
+        "unresolved": 0
+       }
+      },
+      "direction": "producer_to_consumer",
+      "equivalent_on_checked_scopes": false,
+      "note": "name/type/tag agreement is textual; it is not compiler, serialization or product compatibility",
+      "policy_hash": "d5a0e1185ea761ff07791d83443bf300b474f769b729c918b761ac15605542cf",
+      "policy_version": 1,
+      "producer": "c5bbe434fe6f28fb1484b4e630f2b53a3f5305aae357beb6051b48ca3145d145",
+      "producer_only": [
+       "PAID_LATE"
+      ],
+      "scope_coverage": {
+       "checked": [
+        "member_names"
+       ],
+       "complete": true,
+       "note": "OK speaks only for checked scopes; an unverified scope is not agreement",
+       "required": [
+        "member_names"
+       ],
+       "unverified": []
+      },
+      "transform": {
+       "collisions": {},
+       "declared": "identity",
+       "declared_effective_mismatch": false,
+       "effective": "identity",
+       "empty_targets": [],
+       "mapping": {
+        "PAID": "PAID",
+        "PAID_LATE": "PAID_LATE",
+        "PENDING": "PENDING"
+       }
+      },
+      "verdict": "DRIFT"
+     }
+    },
+    "renamed_both": {
+     "ok": {
+      "authority": "advisory",
+      "blocking_eligible": false,
+      "changed": [],
+      "compared_keys": [
+       "name",
+       "type"
+      ],
+      "consumer": "1be08b52d30d72db4536c8f6d2637aa99bc8fed6ba3014a245e10ddebd3cf73f",
+      "consumer_only": [],
+      "copy": {
+       "consumer_blob": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+       "note": "same_blob is file byte identity; verdict OK is equality on the checked scopes only",
+       "producer_blob": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+       "same_blob": true
+      },
+      "denominators": {
+       "consumer": {
+        "symbols_found": 3,
+        "unresolved": 0
+       },
+       "producer": {
+        "symbols_found": 3,
+        "unresolved": 0
+       }
+      },
+      "direction": "both",
+      "equivalent_on_checked_scopes": true,
+      "note": "name/type/tag agreement is textual; it is not compiler, serialization or product compatibility",
+      "policy_hash": "1c2409a35f371978ab1993892e749930a8c6269b6a169f18bdc8aceeb0bc5635",
+      "policy_version": 1,
+      "producer": "c5bbe434fe6f28fb1484b4e630f2b53a3f5305aae357beb6051b48ca3145d145",
+      "producer_only": [],
+      "scope_coverage": {
+       "checked": [
+        "member_names"
+       ],
+       "complete": true,
+       "note": "OK speaks only for checked scopes; an unverified scope is not agreement",
+       "required": [
+        "member_names"
+       ],
+       "unverified": []
+      },
+      "transform": {
+       "collisions": {},
+       "declared": "value_map",
+       "declared_effective_mismatch": false,
+       "effective": "mapping",
+       "empty_targets": [],
+       "mapping": {
+        "PAID": "PAID",
+        "PAID_LATE": "REFUNDED",
+        "PENDING": "PENDING"
+       }
+      },
+      "verdict": "OK"
+     }
+    }
+   },
+   "discover": {
+    "ok": {
+     "cap": 1,
+     "files": [
+      "shop/orders/broken.py"
+     ],
+     "found": 2,
+     "omitted": 1,
+     "stack": "python",
+     "supported": true
+    }
+   },
+   "extract": {
+    "broken": {
+     "ok": [
+      {
+       "covered_scopes": [],
+       "denominator": {
+        "symbols_found": 0,
+        "unresolved": 0
+       },
+       "fidelity": "UNKNOWN",
+       "identity": {
+        "id": "35b2b81b0a8e6e256e9a25f7e73cad0be0f11c027178730c13759a2150e392ce",
+        "name": "unparseable",
+        "package": "shop.orders",
+        "stack": "python"
+       },
+       "kind": "enum",
+       "members": [],
+       "reason": "invalid syntax (<unknown>, line 1)",
+       "source": {
+        "blob_sha": "sha256:b53c3242f2e689cf82d23e20bc6a2493026caaad4d72397431670b7a114ce7d2",
+        "bytes": 19,
+        "parser": "python-ast-3.12",
+        "path": "shop/orders/broken.py",
+        "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+       },
+       "state": "unsupported_syntax"
+      }
+     ]
+    },
+    "java": {
+     "ok": [
+      {
+       "covered_scopes": [],
+       "denominator": {
+        "symbols_found": 0,
+        "unresolved": 0
+       },
+       "fidelity": "UNKNOWN",
+       "identity": {
+        "id": "53ff60bc5913b5c13f8089db0e8d8aed7c1099a4f0ab9b03159eb5e99d393934",
+        "name": "unsupported",
+        "package": "shop.orders",
+        "stack": "java"
+       },
+       "kind": "enum",
+       "members": [],
+       "reason": "no extractor is registered for java; this is not a HIGH observation",
+       "source": {
+        "blob_sha": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+        "bytes": 0,
+        "parser": "none",
+        "path": "shop/orders/Status.java",
+        "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+       },
+       "state": "unsupported_stack"
+      }
+     ]
+    },
+    "missing": {
+     "ok": [
+      {
+       "covered_scopes": [],
+       "denominator": {
+        "symbols_found": 0,
+        "unresolved": 0
+       },
+       "fidelity": "UNKNOWN",
+       "identity": {
+        "id": "e0277c291faaac9b6449b1c2ebac6bc38ada63bd36a451962f6cd6f800600971",
+        "name": "missing",
+        "package": "shop.orders",
+        "stack": "python"
+       },
+       "kind": "enum",
+       "members": [],
+       "reason": "<WORK>/seams/shop/orders/nope.py",
+       "source": {
+        "blob_sha": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+        "bytes": 0,
+        "parser": "none",
+        "path": "shop/orders/nope.py",
+        "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+       },
+       "state": "missing_source"
+      }
+     ]
+    },
+    "no_revision": {
+     "error": "ContractError",
+     "message": "Extraction requires the source revision it was read at"
+    },
+    "status": {
+     "ok": [
+      {
+       "covered_scopes": [
+        "member_names",
+        "member_types",
+        "member_tags"
+       ],
+       "denominator": {
+        "symbols_found": 3,
+        "unresolved": 0
+       },
+       "fidelity": "HIGH",
+       "identity": {
+        "id": "c5bbe434fe6f28fb1484b4e630f2b53a3f5305aae357beb6051b48ca3145d145",
+        "name": "Status",
+        "package": "shop.orders",
+        "stack": "python"
+       },
+       "kind": "enum",
+       "members": [
+        {
+         "name": "PENDING",
+         "span": {
+          "end": 95,
+          "end_line": 7,
+          "line": 7,
+          "start": 84,
+          "text": "PENDING = 1"
+         },
+         "tag": 1,
+         "type": "int"
+        },
+        {
+         "name": "PAID",
+         "span": {
+          "end": 108,
+          "end_line": 8,
+          "line": 8,
+          "start": 100,
+          "text": "PAID = 2"
+         },
+         "tag": 2,
+         "type": "int"
+        },
+        {
+         "name": "A",
+         "span": {
+          "end": 128,
+          "end_line": 9,
+          "line": 9,
+          "start": 123,
+          "text": "A = 3"
+         },
+         "tag": 3,
+         "type": "int"
+        }
+       ],
+       "source": {
+        "base_resolution": "by name only; imports not followed",
+        "blob_sha": "sha256:6ee74495be9b36d508c6b6f06ea770b06e79d5f696d6e5e142e4a3296057d20c",
+        "bytes": 294,
+        "parser": "python-ast-3.12",
+        "path": "shop/orders/status.py",
+        "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "span": {
+         "end": 145,
+         "end_line": 10,
+         "line": 6,
+         "start": 60,
+         "text": "class Status(Enum):\n    PENDING = 1\n    PAID = 2  # inline\n    A = 3\n    _ignored = 9"
+        },
+        "unsupported_syntax": []
+       }
+      },
+      {
+       "covered_scopes": [
+        "member_names",
+        "member_types",
+        "member_tags"
+       ],
+       "denominator": {
+        "symbols_found": 2,
+        "unresolved": 1
+       },
+       "fidelity": "LOW",
+       "identity": {
+        "id": "5ade895b66e6d0e8aab86030c17983bc73f38a9288505a8bb5a209e52d76656c",
+        "name": "Priority",
+        "package": "shop.orders",
+        "stack": "python"
+       },
+       "kind": "enum",
+       "members": [
+        {
+         "name": "HIGH",
+         "span": {
+          "end": 204,
+          "end_line": 14,
+          "line": 14,
+          "start": 195,
+          "text": "HIGH = 10"
+         },
+         "tag": 10,
+         "type": "int"
+        }
+       ],
+       "source": {
+        "base_resolution": "by name only; imports not followed",
+        "blob_sha": "sha256:6ee74495be9b36d508c6b6f06ea770b06e79d5f696d6e5e142e4a3296057d20c",
+        "bytes": 294,
+        "parser": "python-ast-3.12",
+        "path": "shop/orders/status.py",
+        "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "span": {
+         "end": 204,
+         "end_line": 14,
+         "line": 12,
+         "start": 147,
+         "text": "class Priority(IntEnum):\n    LOW = helper()\n    HIGH = 10"
+        },
+        "unsupported_syntax": []
+       }
+      },
+      {
+       "covered_scopes": [
+        "member_names",
+        "member_types",
+        "member_tags"
+       ],
+       "denominator": {
+        "symbols_found": 6,
+        "unresolved": 4
+       },
+       "fidelity": "LOW",
+       "identity": {
+        "id": "114d7a7a0f184f931358a0d7238c972fe00de4a5fb89919a2265711653511db3",
+        "name": "Annotated",
+        "package": "shop.orders",
+        "stack": "python"
+       },
+       "kind": "enum",
+       "members": [
+        {
+         "name": "A",
+         "span": {
+          "end": 237,
+          "end_line": 16,
+          "line": 16,
+          "start": 232,
+          "text": "A = 1"
+         },
+         "tag": 1,
+         "type": "int"
+        },
+        {
+         "name": "B",
+         "span": {
+          "end": 252,
+          "end_line": 17,
+          "line": 17,
+          "start": 242,
+          "text": "B: int = 2"
+         },
+         "tag": 2,
+         "type": "int"
+        }
+       ],
+       "source": {
+        "base_resolution": "by name only; imports not followed",
+        "blob_sha": "sha256:6ee74495be9b36d508c6b6f06ea770b06e79d5f696d6e5e142e4a3296057d20c",
+        "bytes": 294,
+        "parser": "python-ast-3.12",
+        "path": "shop/orders/status.py",
+        "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "span": {
+         "end": 293,
+         "end_line": 20,
+         "line": 15,
+         "start": 205,
+         "text": "class Annotated(Enum):\n    A = 1\n    B: int = 2\n    C: int\n    D = E = 3\n    F, G = 4, 5"
+        },
+        "unsupported_syntax": [
+         {
+          "line": 19,
+          "names": [
+           "D",
+           "E"
+          ],
+          "syntax": "Assign/multi-target"
+         },
+         {
+          "line": 20,
+          "names": [
+           "F",
+           "G"
+          ],
+          "syntax": "Assign/multi-target"
+         }
+        ]
+       }
+      }
+     ]
+    }
+   },
+   "gate_policy": {
+    "ok": {
+     "ok": {
+      "fail_on": [
+       "DRIFT"
+      ],
+      "policy_hash": "9255a18569231184690c114b3ba252e930e4518c3a456664e82d63dd88a6492a",
+      "required_seams": [
+       "missing-seam"
+      ],
+      "version": 1
+     }
+    },
+    "typo": {
+     "error": "ContractError",
+     "message": "fail_on names outside the vocabulary ['DRIFT', 'NEEDS_TRANSFORM', 'BLOCKED']: DRFT"
+    }
+   },
+   "identity": {
+    "bad_token": {
+     "error": "ContractError",
+     "message": "Contract package must be an identifier token"
+    },
+    "duplicate_member": {
+     "error": "ContractError",
+     "message": "Duplicate seam member names"
+    },
+    "high_with_unresolved": {
+     "error": "ContractError",
+     "message": "HIGH fidelity cannot coexist with unresolved members"
+    },
+    "policy": {
+     "ok": {
+      "compare": [
+       "name",
+       "type"
+      ],
+      "direction": "producer_to_consumer",
+      "policy_hash": "d5a0e1185ea761ff07791d83443bf300b474f769b729c918b761ac15605542cf",
+      "require_fidelity": "HIGH",
+      "required_scopes": [
+       "member_names"
+      ],
+      "version": 1
+     }
+    },
+    "policy_low": {
+     "error": "ContractError",
+     "message": "Only HIGH fidelity may be compared; lower fidelity is BLOCKED"
+    },
+    "qualified": {
+     "ok": {
+      "id": "c5bbe434fe6f28fb1484b4e630f2b53a3f5305aae357beb6051b48ca3145d145",
+      "name": "Status",
+      "package": "shop.orders",
+      "stack": "python"
+     }
+    }
+   },
+   "ledger": {
+    "approve": {
+     "ok_sha256": "f052858ca5bc4d0366288d533e2253fe7ddea34baac5ca6f449846d3136d5490"
+    },
+    "approve_worker": {
+     "error": "ContractError",
+     "message": "Only a reviewer approves blocking use of a seam comparison"
+    },
+    "comparison": {
+     "ok_sha256": "5ca35df10d8cf2cb63ef98dd7d8461e6a936aa6ae2f7af317fd2533349d56f57"
+    },
+    "consumer": {
+     "ok_sha256": "139ee7ac523877b5704e566fe44b6ea3585f30eac9f3b5dea67742777e252834"
+    },
+    "import": {
+     "ok_sha256": "75ef47e4b01b2b7688930596df3071636b5cdaed346a2159ea74d638598667ea"
+    },
+    "producer": {
+     "ok_sha256": "9cf8e5c30d3ef88fc59d3789067929bd88d1344aa0f112a39a1a15d43015be0f"
+    },
+    "producer_again": {
+     "ok_sha256": "9cf8e5c30d3ef88fc59d3789067929bd88d1344aa0f112a39a1a15d43015be0f"
+    },
+    "view": {
+     "ok_sha256": "5f3ceffac5e8745f0c4ad788ed8ba2d25980958b95fa06168145bb4ef789748a"
+    },
+    "wrong_binding": {
+     "error": "ContractError",
+     "message": "Observation binding must name the source revision it was read at"
+    }
+   },
+   "transforms": {
+    "empty_affix": {
+     "error": "ContractError",
+     "message": "affix requires at least one non-empty affix option"
+    },
+    "noop": {
+     "ok": {
+      "collisions": {},
+      "declared": "value_map",
+      "declared_effective_mismatch": true,
+      "effective": "identity",
+      "empty_targets": [],
+      "mapping": {
+       "CANCELLED": "CANCELLED",
+       "PAID": "PAID",
+       "PAID_LATE": "PAID_LATE",
+       "PENDING": "PENDING"
+      }
+     }
+    },
+    "not_dict": {
+     "error": "ContractError",
+     "message": "Transform must declare kind identity, value_map or affix"
+    },
+    "partial_map": {
+     "ok": {
+      "collisions": {
+       "PAID": [
+        "PAID",
+        "PAID_LATE"
+       ]
+      },
+      "declared": "value_map",
+      "declared_effective_mismatch": false,
+      "effective": "mapping",
+      "empty_targets": [],
+      "mapping": {
+       "CANCELLED": "CANCELLED",
+       "PAID": "PAID",
+       "PAID_LATE": "PAID",
+       "PENDING": "PENDING"
+      }
+     }
+    },
+    "strip": {
+     "ok": {
+      "collisions": {
+       "LATE": [
+        "PAID_LATE",
+        "LATE"
+       ]
+      },
+      "declared": "affix",
+      "declared_effective_mismatch": false,
+      "effective": "mapping",
+      "empty_targets": [],
+      "mapping": {
+       "LATE": "LATE",
+       "PAID_LATE": "LATE"
+      }
+     }
+    },
+    "unknown_option": {
+     "error": "ContractError",
+     "message": "Unknown transform option(s): strip_prefx"
+    }
+   }
+  },
+  "snapshots": {
+   "broken": {
+    "ok": {
+     "dangling_references": [],
+     "denominator": {
+      "dangling_references": 0,
+      "extra_files": [],
+      "files_corrupt": 1,
+      "files_empty": 0,
+      "files_missing": 0,
+      "files_present": 3,
+      "files_required": 3,
+      "files_unreadable": 0,
+      "files_valid": 2,
+      "lines_corrupt": 1,
+      "lines_total": 5,
+      "records_valid": 4,
+      "torn_tails": 0
+     },
+     "files": {
+      "experience/lessons.jsonl": {
+       "bytes": 89,
+       "corrupt": 1,
+       "errors": [
+        "line 3: JSONDecodeError"
+       ],
+       "ids": [
+        "l1",
+        "l2"
+       ],
+       "lines": 3,
+       "name": "experience/lessons.jsonl",
+       "records": 2,
+       "state": "corrupt"
+      },
+      "experience/retractions.jsonl": {
+       "bytes": 52,
+       "corrupt": 0,
+       "errors": [],
+       "ids": [
+        "r1"
+       ],
+       "lines": 1,
+       "name": "experience/retractions.jsonl",
+       "records": 1,
+       "state": "valid"
+      },
+      "graduation.json": {
+       "bytes": 35,
+       "corrupt": 0,
+       "errors": [],
+       "ids": [
+        "grad"
+       ],
+       "lines": 1,
+       "name": "graduation.json",
+       "records": 1,
+       "state": "valid"
+      }
+     },
+     "manifest_hash": "fd86fe8418909c289e53a49157cca0a8e77eee42847dfb5a114ed04e51f3dd63",
+     "mode": "confirmed",
+     "note": "empty means a required file legitimately holds no records; missing, unreadable and corrupt are not empty",
+     "snapshot_hash": "1131776b06d0d1ff2714a9e4b4613bfd7521da18a3a7700e443c399f84a8b177",
+     "status": "invalid"
+    }
+   },
+   "dangling": {
+    "ok": {
+     "dangling_references": [
+      {
+       "field": "retracts",
+       "file": "experience/retractions.jsonl",
+       "line": 1,
+       "problem": "no such id",
+       "target": "experience/lessons.jsonl",
+       "value": "nope"
+      }
+     ],
+     "denominator": {
+      "dangling_references": 1,
+      "extra_files": [],
+      "files_corrupt": 0,
+      "files_empty": 0,
+      "files_missing": 0,
+      "files_present": 3,
+      "files_required": 3,
+      "files_unreadable": 0,
+      "files_valid": 3,
+      "lines_corrupt": 0,
+      "lines_total": 4,
+      "records_valid": 4,
+      "torn_tails": 0
+     },
+     "files": {
+      "experience/lessons.jsonl": {
+       "bytes": 68,
+       "corrupt": 0,
+       "errors": [],
+       "ids": [
+        "l1",
+        "l2"
+       ],
+       "lines": 2,
+       "name": "experience/lessons.jsonl",
+       "records": 2,
+       "state": "valid"
+      },
+      "experience/retractions.jsonl": {
+       "bytes": 54,
+       "corrupt": 0,
+       "errors": [],
+       "ids": [
+        "r1"
+       ],
+       "lines": 1,
+       "name": "experience/retractions.jsonl",
+       "records": 1,
+       "state": "valid"
+      },
+      "graduation.json": {
+       "bytes": 35,
+       "corrupt": 0,
+       "errors": [],
+       "ids": [
+        "grad"
+       ],
+       "lines": 1,
+       "name": "graduation.json",
+       "records": 1,
+       "state": "valid"
+      }
+     },
+     "manifest_hash": "fd86fe8418909c289e53a49157cca0a8e77eee42847dfb5a114ed04e51f3dd63",
+     "mode": "confirmed",
+     "note": "empty means a required file legitimately holds no records; missing, unreadable and corrupt are not empty",
+     "snapshot_hash": "0322a26b7178a3d0d2abf2b6a6c9c055c018d7c8eb306847dcb857f83cf0b65e",
+     "status": "invalid"
+    }
+   },
+   "import_again": {
+    "ok": {
+     "authority": "verified bytes bound to revisions; not adoption, promotion or model qualification",
+     "binding": {
+      "environment": "linux",
+      "source_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "tool_revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+     },
+     "files": {
+      "experience/lessons.jsonl": "sha256:27ede5c3612e2744d12d35df8950a057fe628ad99b3c94882c6489ba265ea9e7",
+      "experience/retractions.jsonl": "sha256:73bb69715d92f304c73d61a4789cf1c7c9bf74d3e09ca2f9d6cd01775d4b0744",
+      "graduation.json": "sha256:b36d4320c7bcaed7771623e060b114992d8892ca537e375085fd13c5b827f01c"
+     },
+     "id": "a75edd33aeef86ef308f6f894e183be7fe5c663525df206a410e6a3577785ebc",
+     "importable": true,
+     "imported_at": "2026-01-01T00:00:00+00:00",
+     "manifest_hash": "fd86fe8418909c289e53a49157cca0a8e77eee42847dfb5a114ed04e51f3dd63",
+     "mode": "confirmed",
+     "report": {
+      "dangling_references": [],
+      "denominator": {
+       "dangling_references": 0,
+       "extra_files": [],
+       "files_corrupt": 0,
+       "files_empty": 0,
+       "files_missing": 0,
+       "files_present": 3,
+       "files_required": 3,
+       "files_unreadable": 0,
+       "files_valid": 3,
+       "lines_corrupt": 0,
+       "lines_total": 4,
+       "records_valid": 4,
+       "torn_tails": 0
+      },
+      "files": {
+       "experience/lessons.jsonl": {
+        "bytes": 68,
+        "corrupt": 0,
+        "errors": [],
+        "ids": [
+         "l1",
+         "l2"
+        ],
+        "lines": 2,
+        "name": "experience/lessons.jsonl",
+        "records": 2,
+        "state": "valid"
+       },
+       "experience/retractions.jsonl": {
+        "bytes": 52,
+        "corrupt": 0,
+        "errors": [],
+        "ids": [
+         "r1"
+        ],
+        "lines": 1,
+        "name": "experience/retractions.jsonl",
+        "records": 1,
+        "state": "valid"
+       },
+       "graduation.json": {
+        "bytes": 35,
+        "corrupt": 0,
+        "errors": [],
+        "ids": [
+         "grad"
+        ],
+        "lines": 1,
+        "name": "graduation.json",
+        "records": 1,
+        "state": "valid"
+       }
+      },
+      "manifest_hash": "fd86fe8418909c289e53a49157cca0a8e77eee42847dfb5a114ed04e51f3dd63",
+      "mode": "confirmed",
+      "note": "empty means a required file legitimately holds no records; missing, unreadable and corrupt are not empty",
+      "snapshot_hash": "dd5410ee14b6c783b3f07ac6e9295f4d5cb81df4abfbad1a5c583881c6729f1b",
+      "status": "valid"
+     },
+     "snapshot_hash": "dd5410ee14b6c783b3f07ac6e9295f4d5cb81df4abfbad1a5c583881c6729f1b",
+     "status": "valid"
+    }
+   },
+   "import_bad_binding": {
+    "error": "ContractError",
+    "message": "Import binding requires source_revision, tool_revision, environment"
+   },
+   "import_broken": {
+    "ok": {
+     "authority": "verified bytes bound to revisions; not adoption, promotion or model qualification",
+     "binding": {
+      "environment": "linux",
+      "source_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "tool_revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+     },
+     "files": {
+      "experience/lessons.jsonl": "sha256:268471483a791338c04b2dd9d925e87a0ac4bd5080a4307eb2b60159d452112a",
+      "experience/retractions.jsonl": "sha256:73bb69715d92f304c73d61a4789cf1c7c9bf74d3e09ca2f9d6cd01775d4b0744",
+      "graduation.json": "sha256:b36d4320c7bcaed7771623e060b114992d8892ca537e375085fd13c5b827f01c"
+     },
+     "id": "cb83631036d5e175a4abaf3af16601688fca4787a04fe8db1196e4e24d29859d",
+     "importable": false,
+     "imported_at": "2026-01-01T00:00:00+00:00",
+     "manifest_hash": "fd86fe8418909c289e53a49157cca0a8e77eee42847dfb5a114ed04e51f3dd63",
+     "mode": "confirmed",
+     "report": {
+      "dangling_references": [],
+      "denominator": {
+       "dangling_references": 0,
+       "extra_files": [],
+       "files_corrupt": 1,
+       "files_empty": 0,
+       "files_missing": 0,
+       "files_present": 3,
+       "files_required": 3,
+       "files_unreadable": 0,
+       "files_valid": 2,
+       "lines_corrupt": 1,
+       "lines_total": 5,
+       "records_valid": 4,
+       "torn_tails": 0
+      },
+      "files": {
+       "experience/lessons.jsonl": {
+        "bytes": 89,
+        "corrupt": 1,
+        "errors": [
+         "line 3: JSONDecodeError"
+        ],
+        "ids": [
+         "l1",
+         "l2"
+        ],
+        "lines": 3,
+        "name": "experience/lessons.jsonl",
+        "records": 2,
+        "state": "corrupt"
+       },
+       "experience/retractions.jsonl": {
+        "bytes": 52,
+        "corrupt": 0,
+        "errors": [],
+        "ids": [
+         "r1"
+        ],
+        "lines": 1,
+        "name": "experience/retractions.jsonl",
+        "records": 1,
+        "state": "valid"
+       },
+       "graduation.json": {
+        "bytes": 35,
+        "corrupt": 0,
+        "errors": [],
+        "ids": [
+         "grad"
+        ],
+        "lines": 1,
+        "name": "graduation.json",
+        "records": 1,
+        "state": "valid"
+       }
+      },
+      "manifest_hash": "fd86fe8418909c289e53a49157cca0a8e77eee42847dfb5a114ed04e51f3dd63",
+      "mode": "confirmed",
+      "note": "empty means a required file legitimately holds no records; missing, unreadable and corrupt are not empty",
+      "snapshot_hash": "1131776b06d0d1ff2714a9e4b4613bfd7521da18a3a7700e443c399f84a8b177",
+      "status": "invalid"
+     },
+     "snapshot_hash": "1131776b06d0d1ff2714a9e4b4613bfd7521da18a3a7700e443c399f84a8b177",
+     "status": "invalid"
+    }
+   },
+   "import_valid": {
+    "ok": {
+     "authority": "verified bytes bound to revisions; not adoption, promotion or model qualification",
+     "binding": {
+      "environment": "linux",
+      "source_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "tool_revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+     },
+     "files": {
+      "experience/lessons.jsonl": "sha256:27ede5c3612e2744d12d35df8950a057fe628ad99b3c94882c6489ba265ea9e7",
+      "experience/retractions.jsonl": "sha256:73bb69715d92f304c73d61a4789cf1c7c9bf74d3e09ca2f9d6cd01775d4b0744",
+      "graduation.json": "sha256:b36d4320c7bcaed7771623e060b114992d8892ca537e375085fd13c5b827f01c"
+     },
+     "id": "a75edd33aeef86ef308f6f894e183be7fe5c663525df206a410e6a3577785ebc",
+     "importable": true,
+     "imported_at": "2026-01-01T00:00:00+00:00",
+     "manifest_hash": "fd86fe8418909c289e53a49157cca0a8e77eee42847dfb5a114ed04e51f3dd63",
+     "mode": "confirmed",
+     "report": {
+      "dangling_references": [],
+      "denominator": {
+       "dangling_references": 0,
+       "extra_files": [],
+       "files_corrupt": 0,
+       "files_empty": 0,
+       "files_missing": 0,
+       "files_present": 3,
+       "files_required": 3,
+       "files_unreadable": 0,
+       "files_valid": 3,
+       "lines_corrupt": 0,
+       "lines_total": 4,
+       "records_valid": 4,
+       "torn_tails": 0
+      },
+      "files": {
+       "experience/lessons.jsonl": {
+        "bytes": 68,
+        "corrupt": 0,
+        "errors": [],
+        "ids": [
+         "l1",
+         "l2"
+        ],
+        "lines": 2,
+        "name": "experience/lessons.jsonl",
+        "records": 2,
+        "state": "valid"
+       },
+       "experience/retractions.jsonl": {
+        "bytes": 52,
+        "corrupt": 0,
+        "errors": [],
+        "ids": [
+         "r1"
+        ],
+        "lines": 1,
+        "name": "experience/retractions.jsonl",
+        "records": 1,
+        "state": "valid"
+       },
+       "graduation.json": {
+        "bytes": 35,
+        "corrupt": 0,
+        "errors": [],
+        "ids": [
+         "grad"
+        ],
+        "lines": 1,
+        "name": "graduation.json",
+        "records": 1,
+        "state": "valid"
+       }
+      },
+      "manifest_hash": "fd86fe8418909c289e53a49157cca0a8e77eee42847dfb5a114ed04e51f3dd63",
+      "mode": "confirmed",
+      "note": "empty means a required file legitimately holds no records; missing, unreadable and corrupt are not empty",
+      "snapshot_hash": "dd5410ee14b6c783b3f07ac6e9295f4d5cb81df4abfbad1a5c583881c6729f1b",
+      "status": "valid"
+     },
+     "snapshot_hash": "dd5410ee14b6c783b3f07ac6e9295f4d5cb81df4abfbad1a5c583881c6729f1b",
+     "status": "valid"
+    }
+   },
+   "lenient": {
+    "error": "ContractError",
+    "message": "Unknown verification mode"
+   },
+   "manifest": {
+    "ok": {
+     "manifest_hash": "fd86fe8418909c289e53a49157cca0a8e77eee42847dfb5a114ed04e51f3dd63",
+     "required": {
+      "experience/lessons.jsonl": {
+       "allow_empty": false,
+       "kind": "jsonl",
+       "references": {},
+       "required_fields": [
+        "schema_version",
+        "id"
+       ],
+       "schema_version": 2
+      },
+      "experience/retractions.jsonl": {
+       "allow_empty": true,
+       "kind": "jsonl",
+       "references": {
+        "retracts": "experience/lessons.jsonl"
+       },
+       "required_fields": [
+        "schema_version",
+        "id",
+        "retracts"
+       ],
+       "schema_version": 2
+      },
+      "graduation.json": {
+       "allow_empty": false,
+       "kind": "json",
+       "references": {},
+       "required_fields": [
+        "schema_version",
+        "id"
+       ],
+       "schema_version": 1
+      }
+     },
+     "version": 1
+    }
+   },
+   "manifest_escape": {
+    "error": "ContractError",
+    "message": "Manifest file name must be a relative path"
+   },
+   "missing": {
+    "ok": {
+     "dangling_references": [],
+     "denominator": {
+      "dangling_references": 0,
+      "extra_files": [],
+      "files_corrupt": 0,
+      "files_empty": 0,
+      "files_missing": 1,
+      "files_present": 2,
+      "files_required": 3,
+      "files_unreadable": 0,
+      "files_valid": 2,
+      "lines_corrupt": 0,
+      "lines_total": 3,
+      "records_valid": 3,
+      "torn_tails": 0
+     },
+     "files": {
+      "experience/lessons.jsonl": {
+       "bytes": 68,
+       "corrupt": 0,
+       "errors": [],
+       "ids": [
+        "l1",
+        "l2"
+       ],
+       "lines": 2,
+       "name": "experience/lessons.jsonl",
+       "records": 2,
+       "state": "valid"
+      },
+      "experience/retractions.jsonl": {
+       "bytes": 52,
+       "corrupt": 0,
+       "errors": [],
+       "ids": [
+        "r1"
+       ],
+       "lines": 1,
+       "name": "experience/retractions.jsonl",
+       "records": 1,
+       "state": "valid"
+      },
+      "graduation.json": {
+       "corrupt": 0,
+       "errors": [
+        "file absent"
+       ],
+       "ids": [],
+       "lines": 0,
+       "name": "graduation.json",
+       "records": 0,
+       "state": "missing"
+      }
+     },
+     "manifest_hash": "fd86fe8418909c289e53a49157cca0a8e77eee42847dfb5a114ed04e51f3dd63",
+     "mode": "confirmed",
+     "note": "empty means a required file legitimately holds no records; missing, unreadable and corrupt are not empty",
+     "snapshot_hash": "d0c667f2b60fd12946ffdefba0ec768af93b00ebff62e23ffc029bc71bcb9d4e",
+     "status": "invalid"
+    }
+   },
+   "valid": {
+    "ok": {
+     "dangling_references": [],
+     "denominator": {
+      "dangling_references": 0,
+      "extra_files": [],
+      "files_corrupt": 0,
+      "files_empty": 0,
+      "files_missing": 0,
+      "files_present": 3,
+      "files_required": 3,
+      "files_unreadable": 0,
+      "files_valid": 3,
+      "lines_corrupt": 0,
+      "lines_total": 4,
+      "records_valid": 4,
+      "torn_tails": 0
+     },
+     "files": {
+      "experience/lessons.jsonl": {
+       "bytes": 68,
+       "corrupt": 0,
+       "errors": [],
+       "ids": [
+        "l1",
+        "l2"
+       ],
+       "lines": 2,
+       "name": "experience/lessons.jsonl",
+       "records": 2,
+       "state": "valid"
+      },
+      "experience/retractions.jsonl": {
+       "bytes": 52,
+       "corrupt": 0,
+       "errors": [],
+       "ids": [
+        "r1"
+       ],
+       "lines": 1,
+       "name": "experience/retractions.jsonl",
+       "records": 1,
+       "state": "valid"
+      },
+      "graduation.json": {
+       "bytes": 35,
+       "corrupt": 0,
+       "errors": [],
+       "ids": [
+        "grad"
+       ],
+       "lines": 1,
+       "name": "graduation.json",
+       "records": 1,
+       "state": "valid"
+      }
+     },
+     "manifest_hash": "fd86fe8418909c289e53a49157cca0a8e77eee42847dfb5a114ed04e51f3dd63",
+     "mode": "confirmed",
+     "note": "empty means a required file legitimately holds no records; missing, unreadable and corrupt are not empty",
+     "snapshot_hash": "dd5410ee14b6c783b3f07ac6e9295f4d5cb81df4abfbad1a5c583881c6729f1b",
+     "status": "valid"
+    }
+   }
+  }
+ }
+}

@@ -1,0 +1,8 @@
+{
+ "family": "knowledge.units",
+ "description": "S2 knowledge: seam transforms/identity/comparison, Python seam extraction and discovery, the seam ledger (observation dedupe, comparison, reviewer-only blocking approval, JSONL import with corrupt lines, view), lesson parsing and import idempotence, snapshot verification and import, profile privacy policy/consent/minimize/render and the consented profile flow, verified-graph promotion (idempotent, conflict, namespace, rollback) and the tree-sitter code graph",
+ "reference_driver": "drivers/reference/s2_knowledge.py",
+ "target_driver": "drivers/target/s2_knowledge.py",
+ "golden": "goldens/reference/knowledge.units.json",
+ "slice": "S2"
+}
