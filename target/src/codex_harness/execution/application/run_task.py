@@ -77,7 +77,7 @@ class RunTask:
     """The task-execution use case. Constructor-injected owners and ports only; no per-run state on the object."""
 
     def __init__(self, store, organization, git, artifacts, *, ledger, admission, invocations, sessions, records,
-                 observer, composer, transports, results, execution_policy, review_context, ticket_binding,
+                 observer, composer, transports, results, execution_policy, review_context, host_python, ticket_binding,
                  inspect_approval, ReconciliationRequired, PostExecutionRecordFailure, policy_refusals=(),
                  worker_sessions=None, isolation=None, evidence_profile=None, knowledge=None, research=None,
                  audit_execution=None, roles=None, council=None, feedback=None, evidence_gate=None,
@@ -90,6 +90,9 @@ class RunTask:
         self.ledger, self.admission, self.invocations, self.sessions = ledger, admission, invocations, sessions
         self.records, self.observer, self.composer, self.transports = records, observer, composer, transports
         self.results, self.execution_policy, self.review_context = results, execution_policy, review_context
+        # The host interpreter a reader/reviewer argv names outside a role container (M7 `sys.executable`): a
+        # host fact the composition supplies (context.domain.composition.artifact_reader_handle).
+        self.host_python = host_python
         self.ticket_binding, self.inspect_approval = ticket_binding, inspect_approval
         self.ReconciliationRequired, self.PostExecutionRecordFailure = ReconciliationRequired, PostExecutionRecordFailure
         # A tuple of the research discovery-policy refusal types (S8); an empty tuple matches nothing.
@@ -361,7 +364,7 @@ class RunTask:
             return self.composer.compose(CompositionRequest(
                 agent=agent, key=key, objective=objective, evidence=evidence, cwd=cwd,
                 snapshot=self.ledger.snapshot(), runtime_policy_digest=digest(POLICY.snapshot()),
-                reader_python=reader_python, provider=assignment.provider,
+                reader_python=reader_python or self.host_python, provider=assignment.provider,  # M7: python or sys.executable
                 default_provider=self.execution_policy.policy.default_provider, read_only=read_only,
                 action=action, stage=stage, deployed_revision=(deployed or {}).get("revision"),
                 checkpoint=checkpoint, progress=progress, review_context=review, role_context=role,

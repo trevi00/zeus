@@ -37,6 +37,9 @@ class TaskLedger(Protocol):
         """Seconds left before the execution deadline; refuses a lost, superseded or expired lease."""
         ...
 
+    def fail(self, task: dict, error: str, retryable: bool = True, **options) -> dict: ...
+    def reconcile(self, lease: dict, error, rejection_error=None): ...
+
 
 class ResearchAdmission(Protocol):
     """RF-RT (addendum A1 v2), S4 part: RunTask consults this before a design/implementation
