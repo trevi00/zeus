@@ -1,0 +1,404 @@
+{
+ "claim": {
+  "value": {
+   "attempt": 1,
+   "attempt_outcomes": null,
+   "error": null,
+   "execution_clock": {
+    "deadline_remaining": null,
+    "domain": "00000000-0000-4000-8000-00000000e5e5",
+    "lease_seconds": 600.0,
+    "monotonic": 1001.0,
+    "version": 1,
+    "wall": "2026-01-01T00:00:01+00:00"
+   },
+   "failure_receipt": null,
+   "generation": 1,
+   "id": "t1",
+   "lease_owner": "owner-a",
+   "lease_until": "2026-01-01T00:10:01+00:00",
+   "retry_budget": {
+    "bound_at": "2026-01-01T00:00:01+00:00",
+    "max_attempts": 3,
+    "origin": "first_claim",
+    "version": 1
+   },
+   "status": "running"
+  }
+ },
+ "claim_bad_owner": {
+  "message": "Execution owner required",
+  "refused": "ContractError"
+ },
+ "claim_busy_agent": {
+  "value": null
+ },
+ "claim_guard_missing": {
+  "message": "Expected execution missing: nope",
+  "refused": "ClaimGuardRefused"
+ },
+ "claim_invalid_order": {
+  "value": null
+ },
+ "claim_second": {
+  "value": {
+   "attempt": 1,
+   "attempt_outcomes": null,
+   "error": null,
+   "execution_clock": {
+    "deadline_remaining": null,
+    "domain": "00000000-0000-4000-8000-00000000e5e5",
+    "lease_seconds": 600.0,
+    "monotonic": 1011.0,
+    "version": 1,
+    "wall": "2026-01-01T00:00:11+00:00"
+   },
+   "failure_receipt": null,
+   "generation": 1,
+   "id": "t2",
+   "lease_owner": "owner-c",
+   "lease_until": "2026-01-01T00:10:11+00:00",
+   "retry_budget": {
+    "bound_at": "2026-01-01T00:00:11+00:00",
+    "max_attempts": 3,
+    "origin": "first_claim",
+    "version": 1
+   },
+   "status": "running"
+  }
+ },
+ "complete": {
+  "value": {
+   "attempt": 1,
+   "attempt_outcomes": [
+    {
+     "at": "2026-01-01T00:00:11+00:00",
+     "attempt": 1,
+     "error": null,
+     "status": "succeeded"
+    }
+   ],
+   "error": null,
+   "execution_clock": {
+    "deadline_remaining": null,
+    "domain": "00000000-0000-4000-8000-00000000e5e5",
+    "lease_seconds": 600.0,
+    "monotonic": 1006.0,
+    "version": 1,
+    "wall": "2026-01-01T00:00:06+00:00"
+   },
+   "failure_receipt": null,
+   "generation": 1,
+   "id": "t1",
+   "lease_owner": "owner-a",
+   "lease_until": "2026-01-01T00:10:06+00:00",
+   "retry_budget": {
+    "bound_at": "2026-01-01T00:00:01+00:00",
+    "max_attempts": 3,
+    "origin": "first_claim",
+    "version": 1
+   },
+   "status": "succeeded"
+  }
+ },
+ "complete_again_stale": {
+  "message": "Stale or expired task execution",
+  "refused": "ContractError"
+ },
+ "fail_bad_evidence": {
+  "message": "Failure evidence must be finite JSON",
+  "refused": "ContractError"
+ },
+ "fail_contained": {
+  "value": {
+   "attempt": 2,
+   "attempt_outcomes": [
+    {
+     "at": "2026-01-01T00:00:13+00:00",
+     "attempt": 1,
+     "error": "boom",
+     "status": "failed"
+    },
+    {
+     "at": "2026-01-01T00:00:15+00:00",
+     "attempt": 2,
+     "error": "ExecutionFailure: codex-provider-usage-limit-exceeded",
+     "failure": {
+      "cause": "codex-provider-usage-limit-exceeded"
+     },
+     "status": "failed"
+    }
+   ],
+   "error": "ExecutionFailure: codex-provider-usage-limit-exceeded",
+   "execution_clock": {
+    "deadline_remaining": null,
+    "domain": "00000000-0000-4000-8000-00000000e5e5",
+    "lease_seconds": 600.0,
+    "monotonic": 1015.0,
+    "version": 1,
+    "wall": "2026-01-01T00:00:15+00:00"
+   },
+   "failure_receipt": "cb51fbce11205ff5952aa9d40fe36ee219e371fba37168013dacf0544b695605",
+   "generation": 2,
+   "id": "t2",
+   "lease_owner": null,
+   "lease_until": null,
+   "retry_budget": {
+    "bound_at": "2026-01-01T00:00:11+00:00",
+    "max_attempts": 3,
+    "origin": "first_claim",
+    "version": 1
+   },
+   "status": "failed"
+  }
+ },
+ "fail_replay": {
+  "value": {
+   "attempt": 1,
+   "attempt_outcomes": [
+    {
+     "at": "2026-01-01T00:00:13+00:00",
+     "attempt": 1,
+     "error": "boom",
+     "status": "failed"
+    }
+   ],
+   "error": "boom",
+   "execution_clock": {
+    "deadline_remaining": null,
+    "domain": "00000000-0000-4000-8000-00000000e5e5",
+    "lease_seconds": 600.0,
+    "monotonic": 1011.0,
+    "version": 1,
+    "wall": "2026-01-01T00:00:11+00:00"
+   },
+   "failure_receipt": "c120dc956637da8fd68bc801983efa98ab4300f76ef949bf4593496895ca5470",
+   "generation": 1,
+   "id": "t2",
+   "lease_owner": null,
+   "lease_until": null,
+   "retry_budget": {
+    "bound_at": "2026-01-01T00:00:11+00:00",
+    "max_attempts": 3,
+    "origin": "first_claim",
+    "version": 1
+   },
+   "status": "retry"
+  }
+ },
+ "fail_retry": {
+  "value": {
+   "attempt": 1,
+   "attempt_outcomes": [
+    {
+     "at": "2026-01-01T00:00:13+00:00",
+     "attempt": 1,
+     "error": "boom",
+     "status": "failed"
+    }
+   ],
+   "error": "boom",
+   "execution_clock": {
+    "deadline_remaining": null,
+    "domain": "00000000-0000-4000-8000-00000000e5e5",
+    "lease_seconds": 600.0,
+    "monotonic": 1011.0,
+    "version": 1,
+    "wall": "2026-01-01T00:00:11+00:00"
+   },
+   "failure_receipt": "c120dc956637da8fd68bc801983efa98ab4300f76ef949bf4593496895ca5470",
+   "generation": 1,
+   "id": "t2",
+   "lease_owner": null,
+   "lease_until": null,
+   "retry_budget": {
+    "bound_at": "2026-01-01T00:00:11+00:00",
+    "max_attempts": 3,
+    "origin": "first_claim",
+    "version": 1
+   },
+   "status": "retry"
+  }
+ },
+ "heartbeat": {
+  "value": {
+   "attempt": 1,
+   "attempt_outcomes": null,
+   "error": null,
+   "execution_clock": {
+    "deadline_remaining": null,
+    "domain": "00000000-0000-4000-8000-00000000e5e5",
+    "lease_seconds": 600.0,
+    "monotonic": 1006.0,
+    "version": 1,
+    "wall": "2026-01-01T00:00:06+00:00"
+   },
+   "failure_receipt": null,
+   "generation": 1,
+   "id": "t1",
+   "lease_owner": "owner-a",
+   "lease_until": "2026-01-01T00:10:06+00:00",
+   "retry_budget": {
+    "bound_at": "2026-01-01T00:00:01+00:00",
+    "max_attempts": 3,
+    "origin": "first_claim",
+    "version": 1
+   },
+   "status": "running"
+  }
+ },
+ "owned": {
+  "value": {
+   "attempt": 1,
+   "attempt_outcomes": null,
+   "error": null,
+   "execution_clock": {
+    "deadline_remaining": null,
+    "domain": "00000000-0000-4000-8000-00000000e5e5",
+    "lease_seconds": 600.0,
+    "monotonic": 1006.0,
+    "version": 1,
+    "wall": "2026-01-01T00:00:06+00:00"
+   },
+   "failure_receipt": null,
+   "generation": 1,
+   "id": "t1",
+   "lease_owner": "owner-a",
+   "lease_until": "2026-01-01T00:10:06+00:00",
+   "retry_budget": {
+    "bound_at": "2026-01-01T00:00:01+00:00",
+    "max_attempts": 3,
+    "origin": "first_claim",
+    "version": 1
+   },
+   "status": "running"
+  }
+ },
+ "reclaim": {
+  "value": {
+   "attempt": 2,
+   "attempt_outcomes": [
+    {
+     "at": "2026-01-01T00:00:13+00:00",
+     "attempt": 1,
+     "error": "boom",
+     "status": "failed"
+    }
+   ],
+   "error": "boom",
+   "execution_clock": {
+    "deadline_remaining": null,
+    "domain": "00000000-0000-4000-8000-00000000e5e5",
+    "lease_seconds": 600.0,
+    "monotonic": 1015.0,
+    "version": 1,
+    "wall": "2026-01-01T00:00:15+00:00"
+   },
+   "failure_receipt": "c120dc956637da8fd68bc801983efa98ab4300f76ef949bf4593496895ca5470",
+   "generation": 2,
+   "id": "t2",
+   "lease_owner": "owner-d",
+   "lease_until": "2026-01-01T00:10:15+00:00",
+   "retry_budget": {
+    "bound_at": "2026-01-01T00:00:11+00:00",
+    "max_attempts": 3,
+    "origin": "first_claim",
+    "version": 1
+   },
+   "status": "running"
+  }
+ },
+ "records": [
+  [
+   "events",
+   "1e439f30cf61de86eb769125eb1cb8d43914e9c6c4552023f546595df287587a",
+   "0c55930cbf7ed5b95e5fffd419aa1eead176901a66ff26065de031c16d6649c8"
+  ],
+  [
+   "events",
+   "5eed0000-0000-4000-8000-000000000004",
+   "8b541c7d757a8091b4e0aaf417776a37a23101ea3b6ac71c1828a194da8aec62"
+  ],
+  [
+   "execution_failures",
+   "c120dc956637da8fd68bc801983efa98ab4300f76ef949bf4593496895ca5470",
+   "35072fa0be37cad088746dfa3ef4156532542fb79c11fe4a128014289b3faf52"
+  ],
+  [
+   "execution_failures",
+   "cb51fbce11205ff5952aa9d40fe36ee219e371fba37168013dacf0544b695605",
+   "f9204aae77f0cdbf33a268aef42a558821d311fe37d77cee0a506e810fead060"
+  ],
+  [
+   "execution_fences",
+   "tasks:t1",
+   "024f121b0a07ce375211c238ab4f0970d4fb4c7b5fa36a295564d90f43ad6746"
+  ],
+  [
+   "execution_fences",
+   "tasks:t2",
+   "b92246ce985b30975ef86f3c3c8b1f14044e44d97102e0b31ffcf3c661961e02"
+  ],
+  [
+   "execution_notices",
+   "081a8251ed7f1ef345fb70e8344b1da8c85811f7b9aae304c4710e856d7256f5",
+   "b133569f3da74965c25489031e04c143fb1729daf4c95b72ed6d7bbee70e5f71"
+  ],
+  [
+   "execution_notices",
+   "9a9dc340ae2b66353b155286bb11f3569367fc660e0b61ecda43eed76e273909",
+   "3ec119387b578ab1ba2daaa4eddd666034322cc3896db4f7e640f7ac897b0048"
+  ],
+  [
+   "execution_notices",
+   "f907c76e83e23eccd344f386619b6b775702e1733403095be493c03845d3c68a",
+   "9789a42f27f19da8c3b902cd7fc72c1d78f9788e77b52e1809abce5b35d5d66b"
+  ],
+  [
+   "outbox",
+   "081a8251ed7f1ef345fb70e8344b1da8c85811f7b9aae304c4710e856d7256f5",
+   "c3ac23b20e9b048b58d8f6a9e694c7d3bfe722ea81402b65fbe965cd917a5eaa"
+  ],
+  [
+   "outbox",
+   "5eed0000-0000-4000-8000-000000000003",
+   "27c1eced9b1e823728f2e953809dcd671dc254c9dcfdaf3b84fddf9bc096fc2e"
+  ],
+  [
+   "outbox",
+   "9a9dc340ae2b66353b155286bb11f3569367fc660e0b61ecda43eed76e273909",
+   "a9a6a8f4e34a9420c5a43f0e50af5748b7fd6e4b1cede2ea9fec2e359b79d2e6"
+  ],
+  [
+   "outbox",
+   "f907c76e83e23eccd344f386619b6b775702e1733403095be493c03845d3c68a",
+   "5987cfb76ce1bc1da7a312cf33c48f89f3758aedc837553aec132cca21d3a5f8"
+  ],
+  [
+   "tasks",
+   "t1",
+   "248db2759a40563d44d1beef6ec35d45954e058dc08d6252ba1c51e2d01b2c7c"
+  ],
+  [
+   "tasks",
+   "t2",
+   "45bcfe0060b0b1be5a4b50203d608977105f28a8400cb39ffbad1e89bc71a035"
+  ],
+  [
+   "tasks",
+   "t3",
+   "e3c7c77af1d398b4df521fcd84721245d44d9544d3a75b00d39aa35756230dfd"
+  ]
+ ],
+ "remaining": {
+  "value": 600
+ },
+ "stale_holder_heartbeat": {
+  "message": "Stale or expired task execution",
+  "refused": "ContractError"
+ },
+ "stale_holder_owned": {
+  "message": "Stale or expired task execution",
+  "refused": "ContractError"
+ }
+}

@@ -1,0 +1,9 @@
+{
+ "family": "coordination.workflow_lease",
+ "description": "S4 moved-ahead workflow owner operations (lead decision Option A): claim (retry budget, fence, lease, clock pin; busy agent, bad owner, guard, invalid order), _owned, heartbeat, remaining_seconds, complete (report, events), fail (retry, idempotent replay, contained provider cause, invalid evidence) and the stale holder after a re-claim; MemoryStore, scripted clocks and ids",
+ "reference_driver": "drivers/reference/s4_workflow.py",
+ "target_driver": null,
+ "golden": "goldens/reference/coordination.workflow_lease.json",
+ "slice": "S4",
+ "target_status": "pending: the workflow lease operations are not yet moved"
+}
