@@ -395,6 +395,230 @@ def apply_s1(rows: list[dict]) -> None:
                              "target:tests/test_s1_storage_units.py::test_a_failing_journal_rolls_the_whole_collection_back"]
 
 
+
+# --- S2 (routing, context, knowledge) --------------------------------------------------------------
+S2_TESTS = {
+    "routing": ["compare:routing.matrix", "target:tests/test_s2_units.py", "target:tests/ported/test_model_routing.py"],
+    "context": ["compare:context.composition", "compare:context.worker_profile_entry", "target:tests/test_s2_units.py"],
+    "knowledge": ["compare:knowledge.units", "target:tests/test_s2_units.py"],
+}
+ARCH = "target:tests/test_architecture.py::test_target_tree_has_no_violation_and_no_exception"
+# M7 module key -> (target files holding its public names, ported suites run against the target).
+S2_TARGET_FILES = {
+    "domain/providers": (["routing/domain/providers.py"], []),
+    "adapters/providers": (["routing/adapters/provider_policy.py"], []),
+    "domain/model_routing": (["routing/domain/model_selection.py"], ["test_model_routing.py"]),
+    "adapters/native_routing_replay": (["context/adapters/native_routing_replay.py"], ["test_native_routing_replay.py"]),
+    "adapters/worker_profile": (["context/adapters/worker_profile.py"], ["test_worker_profile.py"]),
+    "adapters/worker_profile_metadata": (["context/adapters/worker_profile_metadata.py",
+                                          "adapters/worker_profile_metadata.py"], ["test_worker_profile_metadata.py"]),
+    "resources/worker_profile_hook": (["resources/worker_profile_hook.py"], ["test_worker_profile.py"]),
+    "adapters/project_skills": (["context/adapters/project_skills.py", "context/adapters/yaml_source.py"],
+                                ["test_project_skills.py"]),
+    "domain/project_skills": (["context/domain/project_skills.py"], ["test_project_skills.py"]),
+    "adapters/skill_routing": (["context/adapters/skill_routing.py"], ["test_skill_routing.py"]),
+    "adapters/skill_guidance": (["context/adapters/skill_guidance.py"], ["test_skill_guidance.py"]),
+    "domain/skill_guidance": (["context/domain/skills/guidance.py"], ["test_skill_guidance.py"]),
+    "adapters/skill_history": (["context/adapters/skill_history.py"], ["test_skill_history.py"]),
+    "application/skill_history": (["context/application/skill_history.py"], ["test_skill_history.py"]),
+    "domain/skill_history": (["context/domain/skills/history.py"], ["test_skill_history.py"]),
+    "adapters/skill_import": (["context/adapters/skill_import.py"], ["test_skill_import.py"]),
+    "application/skill_import": (["context/application/skill_import.py"], ["test_skill_import.py"]),
+    "domain/skill_import": (["context/domain/skills/import_.py"], ["test_skill_import.py"]),
+    "adapters/skill_audit": (["context/adapters/skill_audit.py"], ["test_skill_audit.py"]),
+    "domain/skill_audit": (["context/domain/skills/audit.py"], ["test_skill_audit.py"]),
+    "domain/skill_ranking": (["context/domain/skills/ranking.py"], ["test_skill_routing.py"]),
+    "domain/skill_admission": (["context/domain/skills/admission.py"], ["test_native_routing_replay.py"]),
+    "adapters/project_detection": (["context/adapters/project_detection.py"], ["test_project_detection.py"]),
+    "adapters/project_pipeline": (["context/adapters/project_pipeline.py"], ["test_pipeline.py"]),
+    "domain/pipeline": (["context/domain/pipeline.py"], ["test_pipeline.py"]),
+    "adapters/profile_scratch": (["context/adapters/profile_scratch.py"], ["test_profile_privacy.py"]),
+    "application/rlm": (["context/application/rlm.py"], []),
+    "adapters/knowledge": (["knowledge/adapters/postgres_knowledge.py"], []),
+    "adapters/embeddings": (["knowledge/adapters/embeddings.py"], []),
+    "adapters/seam_extraction": (["knowledge/adapters/seam_extraction.py"], ["test_seam_contracts.py"]),
+    "domain/seams": (["knowledge/domain/seams.py"], ["test_seam_contracts.py", "test_seam_scope.py"]),
+    "domain/seam_view": (["knowledge/domain/seam_view.py"], ["test_seam_view.py"]),
+    "application/seam_ledger": (["knowledge/application/seam_ledger.py"], ["test_seam_contracts.py", "test_seam_view.py"]),
+    "adapters/experience": (["knowledge/adapters/experience_import.py"], ["test_experience.py"]),
+    "application/experience": (["knowledge/application/experience.py"], ["test_experience.py"]),
+    "domain/experience": (["knowledge/domain/experience.py"], ["test_experience.py"]),
+    "application/promotion": (["knowledge/application/promotion.py", "knowledge/domain/promotion.py"], []),
+    "application/snapshot_imports": (["knowledge/application/snapshot_imports.py"], ["test_snapshot_integrity.py"]),
+    "domain/snapshot_integrity": (["knowledge/domain/snapshot_integrity.py"], ["test_snapshot_integrity.py"]),
+    "application/profile_flow": (["knowledge/application/profile_flow.py"], ["test_profile_privacy.py"]),
+    "domain/profile_privacy": (["knowledge/domain/profile_privacy.py"], ["test_profile_privacy.py"]),
+}
+# Declared mapping correction (S2): the module consumes context's skill admission/ranking and skill
+# frontmatter, which routing may not import (§2.4 DAG: routing -> kernel only); its contract moves with it.
+S2_OWNER_CORRECTIONS = {"adapters/native_routing_replay": "context"}
+S2_CONTRACT_OWNER_CORRECTIONS = {"INV-NATIVE-REPLAY-001": "context"}
+# S2 rows whose remainder belongs to a later slice (the row stays `designed` with slice_progress).
+S2_PARTIAL = {
+    "adapters/skill_import": "S2 implemented context.adapters.skill_import:import_file (injected store/artifacts); "
+                             "main() (argparse, PostgresStore(database_url()), FileArtifacts) -> entry/composition (S10)",
+    "adapters/skill_audit": "S2 implemented context.adapters.skill_audit:render_text; main() -> entry/composition (S10)",
+    "adapters/experience": "S2 implemented knowledge.adapters.experience_import (parse_lesson/import_lessons/"
+                           "preview_lessons with the injected YAML loader); main() -> entry/composition (S10)",
+}
+# Public names that S2 implemented outside their M7 module's owner, with their target symbol.
+S2_MOVED = {
+    ("domain/model", "Agent"): ("routing", "codex_harness.routing.domain.organization:Agent"),
+    ("domain/model", "Organization"): ("routing", "codex_harness.routing.domain.organization:Organization"),
+    ("domain/model", "conductor_self_arbitration"): (
+        "routing", "codex_harness.routing.domain.organization:conductor_self_arbitration"),
+    ("domain/model", "ContextItem"): ("context", "codex_harness.context.domain.packet:ContextItem"),
+    ("domain/model", "ContextPacket"): ("context", "codex_harness.context.domain.packet:ContextPacket"),
+    ("domain/model", "compile_context"): ("context", "codex_harness.context.domain.packet:compile_context"),
+    ("adapters/role_containers", "select_profile"): ("routing", "codex_harness.routing.domain.profiles:select_profile"),
+    ("adapters/executor", "review_context"): ("context", "codex_harness.context.adapters.review_context:review_context"),
+    ("adapters/executor", "artifact_reader_handle"): (
+        "context", "codex_harness.context.domain.composition:artifact_reader_handle"),
+    ("adapters/execution_output", "evidence_json"): ("context", "codex_harness.context.domain.composition:evidence_json"),
+    ("domain/threshold_replay", "finite_number"): ("kernel", "codex_harness.kernel.numbers:finite_number"),
+    ("bootstrap", "organization"): ("routing", "codex_harness.routing.adapters.organization_source:packaged_organization"),
+    ("ports", "Knowledge"): ("knowledge", "codex_harness.knowledge.ports:CodeIndex+KnowledgeQuery"),
+}
+# Cross-slice module rows S2 touched: their remainder stays with the named owner slice.
+S2_CROSS_PROGRESS = {
+    "domain/model": "S2 implemented routing.domain.organization (Organization, Agent, conductor_self_arbitration) and "
+                    "context.domain.packet (ContextItem, ContextPacket, compile_context); session_action -> "
+                    "coordination (S5), Incident/hook_apply -> research (S8)",
+    "adapters/executor": "S2 implemented the legacy (non-council) context composition of Executor._run as "
+                         "context.application.compose.ContextComposer (+ context.domain.composition, "
+                         "context.adapters.review_context): rendered input, retained context:<key> packet, "
+                         "skill-history binding (compare:context.composition). Remaining: the execution record/"
+                         "checkpoint/observation bindings of context_ref and the turn loop (S4, compare:"
+                         "effects.context_packet), council delivery and correction-feedback composition (S8)",
+    "adapters/role_containers": "S2 implemented routing.domain.profiles:select_profile (+IsolationError); "
+                                "the rest -> execution/credentials (S3)",
+    "adapters/execution_output": "S2 implemented context.domain.composition:evidence_json; the rest -> execution (S4)",
+    "domain/threshold_replay": "S2 implemented kernel.numbers:finite_number (shared by context and research); "
+                               "the rest -> research (S8)",
+    "bootstrap": "S2 implemented routing.adapters.organization_source:packaged_organization; the composition "
+                 "roots -> S10",
+    "domain/autonomous": "S2 implemented knowledge.domain.promotion:PROMOTED_NAMESPACE (read by research); "
+                         "the rest -> research (S8)",
+    "adapters/runtime_thresholds": "context consumes it through context.ports.ThresholdPolicySource (S2); the "
+                                   "implementation moves with research (S8); S2 tests use a packaged-definition stand-in",
+}
+S2_CONTRACTS = {
+    "INV-MODEL-001": ["compare:routing.matrix", "target:tests/ported/test_model_routing.py"],
+    "INV-NATIVE-REPLAY-001": ["target:tests/ported/test_native_routing_replay.py"],
+    "INV-CONTEXT-001": ["compare:context.composition", "target:tests/test_s2_units.py"],
+    "INV-PIPELINE-001": ["target:tests/ported/test_pipeline.py", "compare:context.composition"],
+    "INV-PROJECT-001": ["target:tests/ported/test_project_skills.py", "target:tests/ported/test_project_detection.py"],
+    "INV-SKILL-001": ["target:tests/ported/test_skill_routing.py", "target:tests/ported/test_skill_guidance.py",
+                      "compare:context.composition"],
+    "INV-SKILL-HISTORY-001": ["target:tests/ported/test_skill_history.py", "target:tests/ported/test_skill_audit.py",
+                              "compare:context.composition"],
+    "INV-SKILL-IMPORT-001": ["target:tests/ported/test_skill_import.py"],
+    "INV-WORKER-PROFILE-001": ["compare:context.worker_profile_entry", "target:tests/ported/test_worker_profile.py",
+                               "target:tests/ported/test_worker_profile_metadata.py"],
+    "INV-EXPERIENCE-001": ["compare:knowledge.units", "target:tests/ported/test_experience.py"],
+    "INV-GRAPH-001": ["compare:knowledge.units#code_graph"],
+    "INV-PROFILE-001": ["compare:knowledge.units", "target:tests/ported/test_profile_privacy.py"],
+    "INV-SEAM-001": ["compare:knowledge.units", "target:tests/ported/test_seam_contracts.py"],
+    "INV-SEAM-SCOPE-001": ["target:tests/ported/test_seam_scope.py"],
+    "INV-SEAM-VIEW-001": ["compare:knowledge.units", "target:tests/ported/test_seam_view.py"],
+    "INV-SNAPSHOT-001": ["compare:knowledge.units", "target:tests/ported/test_snapshot_integrity.py"],
+}
+S2_RESOURCES = {"baldrix_pipeline/provenance.json": "compare:context.composition",
+                "baldrix_pipeline/stages.core.yaml": "compare:context.composition",
+                "baldrix_pipeline/stages.yaml": "target:tests/ported/test_pipeline.py",
+                "organization.json": "compare:routing.matrix", "providers.json": "compare:routing.matrix",
+                "worker-profile-v1.json": "compare:context.worker_profile_entry",
+                "worker-profile-v1.md": "compare:context.worker_profile_entry"}
+S2_OWNERS = {"routing", "context", "knowledge"}
+S2_BUCKET_TEST = "target:tests/test_s2_units.py::test_context_and_knowledge_declare_their_owned_buckets"
+S2_UNITS = {
+    "atomic_unit:codex_harness.application.skill_history:SkillHistory.record#1": (
+        "codex_harness.context.application.skill_history:SkillHistory.record (one Store.transaction(); the "
+        "caller's lease guard runs inside it)",
+        ["target:tests/ported/test_skill_history.py", "compare:context.composition"]),
+    "atomic_unit:codex_harness.application.profile_flow:ProfileFlow.prepare_model_input#1": (
+        "codex_harness.knowledge.application.profile_flow:ProfileFlow.prepare_model_input (one Store.transaction())",
+        ["target:tests/ported/test_profile_privacy.py", "compare:knowledge.units"]),
+}
+S2_ENTRIES = {"codex_harness.adapters.worker_profile_metadata": "compare:context.worker_profile_entry",
+              "codex_harness.resources.worker_profile_hook": "compare:context.worker_profile_entry#hook"}
+
+
+def apply_s2(rows: list[dict]) -> None:
+    """Move the S2 rows (routing/context/knowledge) to `implemented` with evidence; partial rows keep
+    `designed` with `slice_progress` naming the owning slice of the remainder."""
+    for r in rows:
+        kind, key = r["kind"], r["key"]
+        if kind == "module":
+            mkey = module_key(key[len("module:"):]) or ""
+            if mkey in S2_CROSS_PROGRESS:
+                r["slice_progress"] = ((r["slice_progress"] + "; ") if r.get("slice_progress") else "") + \
+                    S2_CROSS_PROGRESS[mkey]
+            if mkey not in S2_TARGET_FILES:
+                continue
+            if mkey in S2_OWNER_CORRECTIONS:
+                r["target_owner"] = S2_OWNER_CORRECTIONS[mkey]
+                r["mapping_correction"] = "S2: routing -> context (§2.4: it consumes context skill admission)"
+            files, ported = S2_TARGET_FILES[mkey]
+            r["target_symbol"] = ["codex_harness." + f[:-3].replace("/", ".") for f in files]
+            r["symbol_basis"] = "target (S2)"
+            tests = S2_TESTS[r["target_owner"]] + [f"target:tests/ported/{n}" for n in ported] + [ARCH]
+            if mkey in S2_PARTIAL:
+                r["slice_progress"] = S2_PARTIAL[mkey]
+                r["evidence"] = tests
+            else:
+                r["status"], r["evidence"] = "implemented", tests
+        elif kind == "public_api":
+            path, _, name = key[len("api:"):].partition("::")
+            mkey = module_key(path) or ""
+            if (mkey, name) in S2_MOVED:
+                owner, symbol = S2_MOVED[(mkey, name)]
+                r["target_owner"], r["target_symbol"], r["symbol_basis"] = owner, [symbol], "target (S2)"
+                r["status"], r["evidence"] = "implemented", S2_TESTS.get(owner, S2_TESTS["context"])
+                continue
+            if mkey not in S2_TARGET_FILES:
+                continue
+            if mkey in S2_OWNER_CORRECTIONS:
+                r["target_owner"] = S2_OWNER_CORRECTIONS[mkey]
+            files, ported = S2_TARGET_FILES[mkey]
+            found = _target_names(files).get(name)
+            if found is not None:
+                r["target_symbol"], r["status"], r["symbol_basis"] = [f"{found}:{name}"], "implemented", "target (S2)"
+                r["evidence"] = S2_TESTS[r["target_owner"]] + [f"target:tests/ported/{n}" for n in ported]
+            else:
+                r["target_symbol"] = [f"codex_harness.entry.cli ({name}; S10)"]
+                r["slice_progress"] = "not in the S2 target module: CLI entry work of S10"
+        elif kind == "contract" and key[len("contract:"):] in S2_CONTRACTS:
+            ident = key[len("contract:"):]
+            if ident in S2_CONTRACT_OWNER_CORRECTIONS:
+                r["target_owner"] = S2_CONTRACT_OWNER_CORRECTIONS[ident]
+                r["target_symbol"] = [f"docs/contracts.md#{ident} enforced in codex_harness.{r['target_owner']}"]
+                r["mapping_correction"] = "S2: owner follows the module (adapters/native_routing_replay -> context)"
+            r["status"] = "implemented"
+            r["evidence"] = S2_CONTRACTS[ident] + [e for e in r["evidence"] if not e.startswith("pending:")]
+        elif kind == "resource" and key.split("resources/", 1)[-1] in S2_RESOURCES:
+            r["status"] = "implemented"
+            r["evidence"] = ["target:tests/test_s1_storage_units.py::test_packaged_resources_are_the_source_bytes",
+                             S2_RESOURCES[key.split("resources/", 1)[-1]]]
+        elif kind == "bucket" and r["target_owner"] in {"context", "knowledge"}:
+            r["status"] = "implemented"
+            r["evidence"] = [f"codex_harness.{r['target_owner']}.ports.OWNED_BUCKETS", S2_BUCKET_TEST]
+        elif kind == "capability" and key in {"capability:role_provider_routing", "capability:bounded_context_knowledge"}:
+            r["status"] = "implemented"
+            r["evidence"] = ["docs/context/ARCHITECTURE.md#capabilities"] + S2_TESTS[r["target_owner"]]
+        elif kind == "atomic_unit" and key in S2_UNITS:
+            symbol, evidence = S2_UNITS[key]
+            r["status"], r["target_symbol"], r["evidence"] = "implemented", [symbol], evidence
+            r["trace"] = "static depth 1; unit tested by the ported suites (memory and disposable PostgreSQL)"
+        elif kind == "module_entry" and key in {"module_entry:codex_harness.adapters.skill_import",
+                                                 "module_entry:codex_harness.adapters.skill_audit",
+                                                 "module_entry:codex_harness.adapters.experience"}:
+            r["slice_progress"] = "S2 implemented the injected-store functions; the -m entry form (main) -> S10"
+        elif kind == "module_entry" and key[len("module_entry:"):] in S2_ENTRIES:
+            r["status"] = "implemented"
+            r["evidence"] = [S2_ENTRIES[key[len("module_entry:"):]], "target:tests/test_s2_units.py"]
+
+
 def sha256_file(path: Path) -> str:
     digest = hashlib.sha256()
     with path.open("rb") as stream:
@@ -584,6 +808,7 @@ def build(ledger: dict, static: dict) -> dict:
                              tx_passing_calls=u["tx_passing_calls"]))
     rows += unit_rows
     apply_s1(rows)
+    apply_s2(rows)
     counts = {}
     for r in rows:
         counts[r["kind"]] = counts.get(r["kind"], 0) + 1

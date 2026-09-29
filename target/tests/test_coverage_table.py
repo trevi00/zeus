@@ -51,7 +51,9 @@ def test_row_fields_and_values(table):
             assert r["status"] == "unmapped" and not r["target_symbol"], r["key"]
 
 
-IMPLEMENTED_OWNERS = {"kernel", "storage", "host_os"}  # slices implemented so far: S1
+S1_OWNERS = {"kernel", "storage", "host_os"}
+S2_OWNERS = {"routing", "context", "knowledge"}
+IMPLEMENTED_OWNERS = S1_OWNERS | S2_OWNERS  # slices implemented so far: S1, S2
 
 
 def test_only_implemented_slices_claim_implemented_and_nothing_is_verified_early(table):
@@ -78,7 +80,7 @@ def test_implemented_rows_name_modules_that_exist_in_the_target(table):
 
 
 def test_s1_module_rows_are_all_accounted_for(table):
-    rows = [r for r in table["rows"] if r["kind"] == "module" and r["target_owner"] in IMPLEMENTED_OWNERS]
+    rows = [r for r in table["rows"] if r["kind"] == "module" and r["target_owner"] in S1_OWNERS]
     assert len(rows) == 27
     partial = {r["key"] for r in rows if r["status"] == "designed"}
     assert partial == {"module:src/codex_harness/domain/model.py", "module:src/codex_harness/adapters/contracts.py",
@@ -117,3 +119,19 @@ def test_table_regenerates_from_the_pinned_ledger():
     done = subprocess.run([sys.executable, str(ROOT / "coverage" / "generate.py"), "--ledger",
                            os.environ["ZEUS_REBUILD_LEDGER"], "--check"], capture_output=True, text=True)
     assert done.returncode == 0, done.stdout + done.stderr
+
+
+def test_s2_module_rows_are_all_accounted_for(table):
+    rows = [r for r in table["rows"] if r["kind"] == "module" and r["target_owner"] in S2_OWNERS]
+    assert len(rows) == 41
+    partial = {r["key"] for r in rows if r["status"] == "designed"}
+    assert partial == {"module:src/codex_harness/adapters/skill_import.py", "module:src/codex_harness/adapters/skill_audit.py",
+                       "module:src/codex_harness/adapters/experience.py"}
+    assert all("S10" in r["slice_progress"] for r in rows if r["key"] in partial)
+    replay = next(r for r in rows if r["key"].endswith("native_routing_replay.py"))
+    assert replay["target_owner"] == "context" and replay["mapping_correction"]
+    for key in ("module:src/codex_harness/adapters/executor.py", "module:src/codex_harness/domain/model.py"):
+        row = next(r for r in table["rows"] if r["key"] == key)
+        assert "S2 implemented" in row["slice_progress"] and row["status"] == "designed"
+    s2_contracts = [r for r in table["rows"] if r["kind"] == "contract" and r["target_owner"] in S2_OWNERS]
+    assert len(s2_contracts) == 16 and all(r["status"] == "implemented" for r in s2_contracts)

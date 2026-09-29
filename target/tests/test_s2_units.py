@@ -54,3 +54,13 @@ def test_profile_mapping_refuses_before_spawn_without_host_fallback():
     with pytest.raises(IsolationError) as shape:
         select_profile("codex", "app_server", "review", False, codex_enabled=True)
     assert shape.value.reason_code == "role_profile_refused"
+
+
+def test_context_and_knowledge_declare_their_owned_buckets():
+    from codex_harness.context import ports as context_ports
+    from codex_harness.knowledge import ports as knowledge_ports
+
+    assert set(context_ports.OWNED_BUCKETS) == {"skill_history", "skill_observations", "legacy_skill_imports"}
+    assert set(knowledge_ports.OWNED_BUCKETS) == {
+        "experience_claims", "profile_consents", "profile_runs", "promotions", "seam_comparisons",
+        "seam_ledger_imports", "seam_observations", "seam_views", "snapshot_imports"}
