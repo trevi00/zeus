@@ -1,0 +1,63 @@
+{
+ "release_review_policy": [
+  {
+   "value": {
+    "checks": [
+     "tests",
+     "cli_start",
+     "cli_file_task"
+    ],
+    "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+   }
+  },
+  {
+   "value": {
+    "checks": [
+     "tests",
+     "cli_start",
+     "cli_file_task",
+     "hook_reproduction",
+     "hook_normal_case"
+    ],
+    "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+   }
+  },
+  {
+   "message": "'base'",
+   "refused": "KeyError"
+  }
+ ],
+ "validate": {
+  "budget_ref_without_receipt": {
+   "message": "Decision recovery receipt missing",
+   "refused": "ContractError"
+  },
+  "generation_changed": {
+   "message": "Decision recovery generation changed",
+   "refused": "ContractError"
+  },
+  "no_receipt": {
+   "value": null
+  },
+  "receipt_mismatched": {
+   "message": "Decision recovery receipt missing or mismatched",
+   "refused": "ContractError"
+  },
+  "receipt_missing": {
+   "message": "Decision recovery receipt missing or mismatched",
+   "refused": "ContractError"
+  },
+  "receipt_not_text": {
+   "message": "Invalid decision recovery receipt reference",
+   "refused": "ContractError"
+  },
+  "sequence_changed": {
+   "message": "Decision recovery generation changed",
+   "refused": "ContractError"
+  },
+  "sequence_without_receipt": {
+   "message": "Decision recovery receipt missing",
+   "refused": "ContractError"
+  }
+ }
+}
