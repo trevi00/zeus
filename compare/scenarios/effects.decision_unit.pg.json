@@ -3,8 +3,7 @@
  "description": "§2.9 decision/release/outbox unit on a labelled disposable PostgreSQL (M7 PostgresStore, advisory lock, lock_timeout): discriminators (a)-(d), recorder controls, durable rows read back (F2, Codex S0 F3)",
  "reference_driver": "drivers/reference/decision_unit.py",
  "requires": "disposable-postgresql",
- "target_driver": null,
+ "target_driver": "drivers/target/decision_unit.py",
  "golden": "goldens/reference/effects.decision_unit.pg.json",
- "slice": "S4",
- "target_status": "pending: the target side is not implemented in S0; no target row is reported green"
+ "slice": "S4"
 }
