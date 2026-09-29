@@ -21,8 +21,8 @@ import determinism  # noqa: E402
 import s4_claims  # noqa: E402
 from codex_harness.coordination.application import execution_time  # noqa: E402
 from codex_harness.coordination.application.decision_claims import claim_decision  # noqa: E402
-from codex_harness.coordination.application.execution_recovery import (
-    ExecutionRecovery,  # noqa: E402
+from codex_harness.coordination.application.execution_recovery import (  # noqa: E402
+    ExecutionRecovery,
 )
 from codex_harness.intake.application import tickets  # noqa: E402
 from codex_harness.kernel.message import envelope  # noqa: E402
