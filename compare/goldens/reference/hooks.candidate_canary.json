@@ -1,0 +1,148 @@
+{
+ "canary": {
+  "normal_case": {
+   "evidence": [
+    {
+     "exit_code": 0,
+     "input": {
+      "tool": "ls"
+     },
+     "output": {
+      "decision": "allow"
+     }
+    }
+   ],
+   "passed": true
+  },
+  "reproduction": {
+   "evidence": [
+    {
+     "exit_code": 2,
+     "input": {
+      "tool": "rm"
+     },
+     "output": {
+      "decision": "block"
+     }
+    }
+   ],
+   "passed": true
+  }
+ },
+ "canary_mismatch": {
+  "normal_case": true,
+  "reproduction": false
+ },
+ "canary_stale_fixtures": {
+  "message": "Stale hook fixtures",
+  "refused": "ContractError"
+ },
+ "candidate": {
+  "value": {
+   "event": "PreToolUse",
+   "kind": "native_hook",
+   "matcher": "shell",
+   "script_path": "harness_hooks/h.py",
+   "script_sha256": "f03b02a47b4e0d61b502f0c6510e9d44dcf81a58c4d243e1b61286f2c83135ff"
+  }
+ },
+ "candidate_absolute_script": {
+  "message": "Hook script must be repository relative",
+  "refused": "ContractError"
+ },
+ "candidate_case_empty": {
+  "message": "Empty hook case suite",
+  "refused": "ContractError"
+ },
+ "candidate_case_malformed": {
+  "message": "Invalid hook test case",
+  "refused": "ContractError"
+ },
+ "candidate_cases_missing": {
+  "message": "Hook requires recurrence and negative cases",
+  "refused": "ContractError"
+ },
+ "candidate_hash_mismatch": {
+  "message": "Hook script hash mismatch",
+  "refused": "ContractError"
+ },
+ "candidate_not_native": {
+  "message": "Self-improvement hook must include an executable native hook",
+  "refused": "ContractError"
+ },
+ "hook_apply": [
+  {
+   "value": [
+    "x"
+   ]
+  },
+  {
+   "message": "Unsupported hook event",
+   "refused": "ContractError"
+  },
+  {
+   "message": "Hook script must be repository relative",
+   "refused": "ContractError"
+  },
+  {
+   "message": "Hook script content hash required",
+   "refused": "ContractError"
+  },
+  {
+   "value": [
+    "y"
+   ]
+  },
+  {
+   "value": [
+    "x"
+   ]
+  },
+  {
+   "message": "Unsupported hook kind",
+   "refused": "ContractError"
+  }
+ ],
+ "hook_cases": {
+  "cases": {
+   "normal_case": [
+    {
+     "exit_code": 0,
+     "input": {
+      "tool": "ls"
+     },
+     "output": {
+      "decision": "allow"
+     }
+    }
+   ],
+   "reproduction": [
+    {
+     "exit_code": 2,
+     "input": {
+      "tool": "rm"
+     },
+     "output": {
+      "decision": "block"
+     }
+    }
+   ]
+  },
+  "id": "h1",
+  "revision": "rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr"
+ },
+ "proposed": [
+  [
+   "h1",
+   "worker:implementation",
+   {
+    "event": "PreToolUse",
+    "kind": "native_hook",
+    "matcher": "shell",
+    "script_path": "harness_hooks/h.py",
+    "script_sha256": "f03b02a47b4e0d61b502f0c6510e9d44dcf81a58c4d243e1b61286f2c83135ff"
+   },
+   "rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr"
+  ]
+ ]
+}
