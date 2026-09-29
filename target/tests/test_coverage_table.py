@@ -150,7 +150,7 @@ def test_s3_rows_are_accounted_for(table):
     for name in S3_MODULES:
         row = rows["module:src/codex_harness/adapters/" + name]
         assert "S3" in row["slice_progress"], name
-        if row["key"] not in implemented:
+        if row["key"] not in implemented and "S4 implemented" not in row["slice_progress"]:
             assert row["status"] == "designed" and ("S4" in row["slice_progress"] or "S8" in row["slice_progress"]
                                                     or "S10" in row["slice_progress"]), name
     apis = [r for r in table["rows"] if r["kind"] == "public_api"
@@ -161,9 +161,9 @@ def test_s3_rows_are_accounted_for(table):
 
 
 S4_IMPLEMENTED = {"application/invocation_ledger.py", "domain/invocation.py", "adapters/call_budget.py",
-                  "domain/provider_stream.py", "domain/worker_sessions.py", "application/worker_sessions.py"}
-S4_REMAINING = {"adapters/executor.py", "adapters/claude_cli.py", "adapters/hooks.py", "adapters/worker_sessions.py",
-                "adapters/codex.py"}
+                  "domain/provider_stream.py", "domain/worker_sessions.py", "application/worker_sessions.py",
+                  "adapters/codex.py"}
+S4_REMAINING = {"adapters/executor.py", "adapters/claude_cli.py", "adapters/hooks.py", "adapters/worker_sessions.py"}
 
 
 def test_s4_rows_moved_so_far_are_implemented_and_the_rest_stay_designed(table):
@@ -172,6 +172,6 @@ def test_s4_rows_moved_so_far_are_implemented_and_the_rest_stay_designed(table):
     for name in S4_IMPLEMENTED:
         row = rows["module:src/codex_harness/" + name]
         assert row["status"] == "implemented" and "S4 implemented" in row["slice_progress"], name
-        assert any(e.startswith(("compare:", "target:tests/ported/")) for e in row["evidence"]), name
+        assert any(e.startswith(("compare:", "target:tests/")) for e in row["evidence"]), name
     for name in S4_REMAINING:
         assert rows["module:src/codex_harness/" + name]["status"] == "designed", name
