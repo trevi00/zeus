@@ -1,0 +1,213 @@
+{
+ "activity_basis": [
+  [
+   0,
+   0
+  ],
+  [
+   2,
+   5
+  ],
+  null,
+  null
+ ],
+ "cadence": [
+  0.5,
+  5.0,
+  20.0
+ ],
+ "instruction": {
+  "plain": {
+   "chars": 860,
+   "sha256": "6687745e83fae7873a83518d5c69da6bf990eae6ac89034f6c375b9d32b03582"
+  },
+  "profiled": {
+   "chars": 1040,
+   "sha256": "ae88aa9641794a965b21a5260dd05702d62112951b5291da0fe4f76d684c4940"
+  }
+ },
+ "invocation_options": [
+  {
+   "model": "m",
+   "output_schema": {
+    "type": "object"
+   },
+   "read_only": true,
+   "timeout": 30
+  },
+  {
+   "max_budget_usd": 1.5,
+   "model": "m",
+   "output_schema": {
+    "type": "object"
+   },
+   "permission_mode": "acceptEdits",
+   "read_only": false,
+   "timeout": 30
+  },
+  {
+   "model": "m",
+   "output_schema": {
+    "type": "object"
+   },
+   "permission_mode": null,
+   "read_only": false,
+   "timeout": 30
+  }
+ ],
+ "object_schema": {
+  "additionalProperties": false,
+  "properties": {
+   "a": {
+    "type": "string"
+   },
+   "b": {
+    "type": "boolean"
+   }
+  },
+  "required": [
+   "a",
+   "b"
+  ],
+  "type": "object"
+ },
+ "reader": {
+  "delivery": "ced33d17f996286aed118445fc2301eb6dc6a52ac1755d7cefbc464a31380650",
+  "generic": "c7ebd1aca621bbeb118e1b55377c1e05a90797f707eeb858e16e647dc345435e",
+  "generic_operations": [
+   "index",
+   "page",
+   "pointer",
+   "search"
+  ]
+ },
+ "schemas": {
+  "DIAGNOSIS": {
+   "additionalProperties": false,
+   "digest": "016f51e5342d713ba13c8972bbaa2b04952c52b9b6613f489896d7478062e6ef",
+   "required": [
+    "confirmed",
+    "root_cause",
+    "scope",
+    "reason"
+   ]
+  },
+  "GITHUB_RESEARCH": {
+   "additionalProperties": false,
+   "digest": "b9dec58181147a0972ddea2b21b367d399f2527fde8d918e7f705004bf22948e",
+   "required": [
+    "title",
+    "objective",
+    "source_url",
+    "evidence",
+    "acceptance_criteria",
+    "source_revision"
+   ]
+  },
+  "IMPLEMENTATION": {
+   "additionalProperties": false,
+   "digest": "6301121985b1421034393064e7e2cb03d7056256f8230648ac59d12b587d878a",
+   "required": [
+    "summary",
+    "tests"
+   ]
+  },
+  "PLAN": {
+   "additionalProperties": false,
+   "digest": "99e7e40af6a01625d971091bae08eacbf527d604b74ca46bcc475c11382f7014",
+   "required": [
+    "objective",
+    "acceptance_criteria",
+    "allowed_paths"
+   ]
+  },
+  "RESEARCH": {
+   "additionalProperties": false,
+   "digest": "2e7f0e8023de2334671c71c083914ad8fca13f17ce65300742e9cf923229459d",
+   "required": [
+    "title",
+    "objective",
+    "source_url",
+    "evidence",
+    "acceptance_criteria"
+   ]
+  },
+  "SHORTLIST": {
+   "additionalProperties": false,
+   "digest": "c01dc9d4d62067e825bb5dc58766081260aef31f215fd22dec8515ebda408e51",
+   "required": [
+    "source_url"
+   ]
+  },
+  "VERDICT": {
+   "additionalProperties": false,
+   "digest": "0a92fa525b1857be8b6a7d335d75788e3777e3fd613795f5674dcde02dd90897",
+   "required": [
+    "accepted",
+    "reason",
+    "blocked",
+    "risks",
+    "sre_assessment",
+    "arc42_assessment"
+   ]
+  }
+ },
+ "severity": {
+  "accepted": "info",
+  "empty_answer": "warning",
+  "inspection_blocked": "warning",
+  "interrupted": "warning",
+  "invalid_output": "error",
+  "provider_failure": "error",
+  "tool_only": "warning"
+ },
+ "sync_activity": [
+  {
+   "activity_dropped": 0,
+   "activity_progress_sequence": 3,
+   "activity_recent": [],
+   "activity_sequence": 0,
+   "sequence": 3
+  },
+  {
+   "activity_dropped": 0,
+   "activity_progress_sequence": 3,
+   "activity_recent": [
+    "r1",
+    "r2"
+   ],
+   "activity_sequence": 1,
+   "sequence": 3
+  },
+  {
+   "activity_dropped": 0,
+   "activity_progress_sequence": 3,
+   "activity_recent": [
+    "r2"
+   ],
+   "activity_sequence": 1,
+   "sequence": 3
+  },
+  {
+   "activity_dropped": 0,
+   "activity_progress_sequence": null,
+   "activity_recent": [
+    "r1",
+    "r1",
+    "r1",
+    "r1",
+    "r1",
+    "r7"
+   ],
+   "activity_sequence": 7,
+   "sequence": 3
+  },
+  {
+   "activity_dropped": 0,
+   "activity_progress_sequence": 3,
+   "activity_recent": [],
+   "activity_sequence": 0,
+   "sequence": 3
+  }
+ ]
+}
