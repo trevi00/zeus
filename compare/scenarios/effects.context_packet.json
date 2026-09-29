@@ -4,6 +4,6 @@
  "reference_driver": "drivers/reference/context_packet.py",
  "target_driver": null,
  "golden": "goldens/reference/effects.context_packet.json",
- "slice": "S2",
- "target_status": "pending: the target side is not implemented in S0; no target row is reported green"
+ "slice": "S4",
+ "target_status": "pending: the end-to-end consumer bindings of M7 execute_one (execution record context_ref, sessions checkpoint, development.checkpoint_recorded evidence_refs) need RunTask (S4); the S2 part (packet bytes/ref/omissions/manifest hash, skill-history binding) is compared by context.composition"
 }
