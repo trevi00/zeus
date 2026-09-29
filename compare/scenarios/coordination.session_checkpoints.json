@@ -2,8 +2,7 @@
  "family": "coordination.session_checkpoints",
  "description": "S4 moved-ahead Harness.checkpoint (lead decision Option A): unknown agent and incomplete state refused, first and second checkpoints, a stale writer refused, and a checkpoint fenced on a claimed execution (accepted, then refused once the row is re-claimed); MemoryStore, scripted clocks and ids",
  "reference_driver": "drivers/reference/s4_sessions.py",
- "target_driver": null,
- "target_status": "pending: SessionCheckpoints not yet moved",
+ "target_driver": "drivers/target/s4_sessions.py",
  "golden": "goldens/reference/coordination.session_checkpoints.json",
  "slice": "S4"
 }

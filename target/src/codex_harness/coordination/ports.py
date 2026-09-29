@@ -15,4 +15,4 @@ from __future__ import annotations
 OWNED_BUCKETS = ("tasks", "decisions_pending", "outbox", "events", "execution_fences", "execution_notices",
                  "execution_notice_errors", "execution_time_events", "workflow_inbox", "execution_rejections",
                  "execution_failures",
-                 "breakers", "breaker_events", "breaker_notices", "breaker_policies")
+                 "breakers", "breaker_events", "breaker_notices", "breaker_policies", "sessions")
