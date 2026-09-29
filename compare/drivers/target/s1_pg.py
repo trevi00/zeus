@@ -18,11 +18,10 @@ from types import SimpleNamespace  # noqa: E402
 import determinism  # noqa: E402
 import psycopg  # noqa: E402
 import s1_pg  # noqa: E402
-from s1_target import PortClock  # noqa: E402
-
 from codex_harness.kernel.errors import ContractError  # noqa: E402
 from codex_harness.storage.adapters.migrator import Migrator  # noqa: E402
 from codex_harness.storage.adapters.postgres_store import PostgresStore  # noqa: E402
+from s1_target import PortClock  # noqa: E402
 
 CLOCK, IDS = determinism.FakeClock(), determinism.FakeIds()
 CLOCK_PORT = PortClock(CLOCK)

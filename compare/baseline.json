@@ -28,7 +28,7 @@
   "project": "target/pyproject.toml",
   "lock": "target/uv.lock",
   "package": "codex_harness",
-  "status": "S0 skeleton only: no product implementation"
+  "status": "S1 implemented (kernel, storage, host_os); later contexts pending their slices"
  },
  "environments": {
   "python": "3.12",
@@ -63,11 +63,13 @@
    "docs/context/ARCHITECTURE.md",
    "docs/context/README.md",
    "docs/design.md",
-   ".github/workflows/validation.yml"
+   ".github/workflows/validation.yml",
+   "AGENTS.md"
   ],
   "additions_only": {
    "docs/context/README.md": 3,
-   "docs/design.md": 3
+   "docs/design.md": 3,
+   "AGENTS.md": 14
   },
   "reference": "every other tracked path stays byte-identical to SOURCE (python compare/run.py check-tree)"
  }

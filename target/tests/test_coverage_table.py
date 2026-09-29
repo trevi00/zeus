@@ -2,7 +2,9 @@
 
 Always checked: the pinned ledger identity, the per-kind counts, the key-set digest, the allowed
 status/intent values, an owner/symbol/evidence on every mapped row, explicit untraced flags and
-bucket candidates, and that S0 claims nothing beyond `designed`. With `ZEUS_REBUILD_LEDGER` naming
+bucket candidates, and that only the rows of an implemented slice (S1: kernel, storage, host_os) claim
+`implemented`, each with target evidence and a resolvable target module; nothing is `verified` before
+Codex accepts the slice. With `ZEUS_REBUILD_LEDGER` naming
 the pinned ledger file, the table is regenerated and must be byte-identical (key set included).
 """
 
@@ -43,15 +45,47 @@ def test_row_fields_and_values(table):
     for r in table["rows"]:
         assert r["status"] in table["statuses"]
         assert r["intent"] == "preserve" or r["intent"].startswith(("change:§4 ", "retire:U")), r["key"]
-        if r["status"] == "designed":
+        if r["status"] in {"designed", "implemented"}:
             assert r["target_owner"] and r["target_symbol"] and r["evidence"], r["key"]
         else:
             assert r["status"] == "unmapped" and not r["target_symbol"], r["key"]
 
 
-def test_s0_claims_nothing_beyond_designed(table):
-    assert {r["status"] for r in table["rows"]} <= {"designed", "unmapped"}
+IMPLEMENTED_OWNERS = {"kernel", "storage", "host_os"}  # slices implemented so far: S1
+
+
+def test_only_implemented_slices_claim_implemented_and_nothing_is_verified_early(table):
+    assert {r["status"] for r in table["rows"]} <= {"designed", "unmapped", "implemented"}
     assert table["adapters"] == []
+    implemented = [r for r in table["rows"] if r["status"] == "implemented"]
+    assert implemented and all(r["target_owner"] in IMPLEMENTED_OWNERS for r in implemented)
+    for r in implemented:
+        assert any(e.startswith(("target:", "compare:", "codex_harness.")) for e in r["evidence"]), r["key"]
+        assert not any(e.startswith("pending:") for e in r["evidence"]), r["key"]
+
+
+def test_implemented_rows_name_modules_that_exist_in_the_target(table):
+    src = ROOT / "target" / "src"
+    for r in table["rows"]:
+        if r["status"] != "implemented" or r["kind"] not in {"module", "public_api"}:
+            continue
+        for symbol in r["target_symbol"]:
+            module = symbol.split(" ")[0].split(":")[0]
+            if not module.startswith("codex_harness."):
+                continue
+            base = src.joinpath(*module.split("."))
+            assert base.with_suffix(".py").is_file() or (base / "__init__.py").is_file(), (r["key"], symbol)
+
+
+def test_s1_module_rows_are_all_accounted_for(table):
+    rows = [r for r in table["rows"] if r["kind"] == "module" and r["target_owner"] in IMPLEMENTED_OWNERS]
+    assert len(rows) == 27
+    partial = {r["key"] for r in rows if r["status"] == "designed"}
+    assert partial == {"module:src/codex_harness/domain/model.py", "module:src/codex_harness/adapters/contracts.py",
+                       "module:src/codex_harness/adapters/__init__.py",
+                       "module:src/codex_harness/application/__init__.py",
+                       "module:src/codex_harness/domain/__init__.py"}
+    assert all(r.get("slice_progress") for r in rows if r["key"].endswith(("model.py", "contracts.py")))
 
 
 def test_untraced_rows_stay_explicit(table):

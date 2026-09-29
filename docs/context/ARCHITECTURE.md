@@ -69,13 +69,28 @@ list is empty; the reference is not checked because it never changes.
 | independent_review_promotion | CURRENT | `codex_harness.application.releases:Releases`, `codex_harness.application.release_queue:ReleaseQueue` | `codex_harness.ports` | `codex_harness.adapters.executor:Executor` | INV-RELEASE-001, INV-SESSION-001 | `tests/test_decision_atomicity.py::test_decision_effects_require_current_lease_and_atomic_completion`, `compare/goldens/reference/effects.decision_unit.json` |
 | independent_review_promotion | PROPOSED | `codex_harness.review.application.decisions:ReviewDecisions`, `codex_harness.review.application.release_queue:ReleaseQueue` | `codex_harness.review.ports:CandidateVerifier` | `codex_harness.review.adapters.release_verifier` | INV-RELEASE-001, INV-SESSION-001 | pending (S4/S8) |
 | storage_artifacts | CURRENT | `codex_harness.adapters.store:PostgresStore`, `codex_harness.adapters.store:MemoryStore` | `codex_harness.ports` | `codex_harness.adapters.bus:RedisBus`, `codex_harness.adapters.artifacts:FileArtifacts` | INV-ARTIFACT-001, INV-MIGRATION-001 | `tests/test_bus.py` |
-| storage_artifacts | PROPOSED | `codex_harness.storage.application.artifact_query` | `codex_harness.storage.ports:Store` | `codex_harness.storage.adapters.postgres_store:PostgresStore` | INV-ARTIFACT-001, INV-MIGRATION-001 | pending (S1) |
+| storage_artifacts | TARGET | `codex_harness.storage.application.artifact_query`, `codex_harness.storage.application.migration_receipts:MigrationReceipts`, `codex_harness.storage.domain.migrations:evaluate` | `codex_harness.storage.ports:Store`, `codex_harness.storage.ports:ArtifactStore`, `codex_harness.storage.ports:MessageBus`, `codex_harness.storage.ports:EventJournal` | `codex_harness.storage.adapters.postgres_store:PostgresStore`, `codex_harness.storage.adapters.memory_store:MemoryStore`, `codex_harness.storage.adapters.redis_bus:RedisBus`, `codex_harness.storage.adapters.file_artifacts:FileArtifacts`, `codex_harness.storage.adapters.maintenance:ArtifactMaintenance`, `codex_harness.storage.adapters.migrator:Migrator` | INV-ARTIFACT-001, INV-MIGRATION-001, INV-MESSAGE-001 | `target/tests/test_s1_storage_units.py`, `compare/goldens/reference/storage.memory.json`, `compare/goldens/reference/storage.pg.json`, `compare/goldens/reference/storage.redis.json` |
+| storage_artifacts | PROPOSED | `codex_harness.observation.adapters.observation_schema:validate_observation` | `codex_harness.observation.ports:PostgresFacts` | `codex_harness.composition.settings` | INV-OBSERVATION-001 | pending (S9: the observation-schema half of M7 adapters/contracts.py; S10: the Redis namespace setting and the EventJournal wiring) |
 | deployment_recovery | CURRENT | `codex_harness.application.host_delivery:HostDelivery`, `codex_harness.application.host_migration` | `codex_harness.ports` | `codex_harness.adapters.host_delivery`, `codex_harness.adapters.managed_runtime` | INV-HOST-DELIVERY-001, INV-RECOVERY-001 | `tests/test_host_delivery.py` |
 | deployment_recovery | PROPOSED | `codex_harness.delivery.application.host_delivery.controller:DeliveryController` | `codex_harness.delivery.ports:HostTarget` | `codex_harness.delivery.adapters.systemd_target` | INV-HOST-DELIVERY-001, INV-RECOVERY-001 | pending (S7) |
 | monitoring_operator_security | CURRENT | `codex_harness.adapters.monitoring:ReadOnlyStore` | `codex_harness.ports` | `codex_harness.adapters.monitoring_web:handler`, `codex_harness.monitor` | INV-MONITOR-VIEWER-001, INV-OBSERVATION-001 | `tests/test_monitoring.py` |
 | monitoring_operator_security | PROPOSED | `codex_harness.observation.application.monitoring:SnapshotProjection` | `codex_harness.observation.ports:PostgresFacts` | `codex_harness.observation.adapters.viewer_http:ViewerHandler` | INV-MONITOR-VIEWER-001, INV-OBSERVATION-001 | pending (S9) |
 | cli_composition | CURRENT | `codex_harness.application.workflow:Workflow`, `codex_harness.application.operation:Operation`, `codex_harness.application.fleet:Fleet` | `codex_harness.ports` | `codex_harness.cli`, `codex_harness.bootstrap`, `codex_harness.supervisor` | INV-MESSAGE-001, INV-OPERATION-001, INV-FLEET-001 | `tests/test_workflow.py`, `tests/test_operation.py`, `tests/test_fleet.py`, `compare/goldens/reference/cli.parser.json` |
 | cli_composition | PROPOSED | `codex_harness.coordination.application.workflow.messages:MessageHandler` | `codex_harness.coordination.ports:TaskRunner` | `codex_harness.entry.cli`, `codex_harness.composition.fleet` | INV-MESSAGE-001, INV-OPERATION-001, INV-FLEET-001 | pending (S5/S10) |
+
+Kernel and host_os (shared, S1; not one of the ten ledger capabilities): TARGET
+`codex_harness.kernel.ids:canonical`, `codex_harness.kernel.ids:digest`, `codex_harness.kernel.errors:ContractError`,
+`codex_harness.kernel.message:envelope`, `codex_harness.kernel.policy:RuntimePolicy`,
+`codex_harness.kernel.usage:headroom`, `codex_harness.kernel.ports:Clock`, `codex_harness.kernel.ports:IdSource`;
+`codex_harness.host_os.ports:Workspaces`, `codex_harness.host_os.ports:CandidateInspection`,
+`codex_harness.host_os.ports:Publication`, `codex_harness.host_os.adapters.git_workspace:GitWorkspace`,
+`codex_harness.host_os.adapters.process_groups:popen` (the one spawn chokepoint),
+`codex_harness.host_os.adapters.process_tree:ProcessTree`, `codex_harness.host_os.adapters.scratch:Scratch`,
+`codex_harness.host_os.adapters.background_service:run_owned`, `codex_harness.host_os.adapters.service_entry:main`,
+`codex_harness.host_os.adapters.windows.job_objects` and `codex_harness.host_os.adapters.windows.no_console`
+(W-B, §5.5). Contracts INV-ENCODING-001, INV-SERVICE-DIAGNOSTICS-001, INV-RELEASE-001, INV-RESOURCE-001.
+Tests: `target/tests/test_s1_kernel.py`, `target/tests/test_spawn_chokepoint.py`, the ported M7 suites under
+`target/tests/ported/`, and the `kernel.values`, `host_os.git` and `host_os.process` differential goldens.
 
 Continuation and owner actions (coordination, S6): CURRENT `codex_harness.application.continuation:Continuation`,
 `codex_harness.application.owner_actions:OwnerActions`; PROPOSED
@@ -92,7 +107,10 @@ review `releases`, `release_queue`; research `hooks`, `schedule`, `research_back
 `threshold_review_requests`; delivery `images`; intake `tickets`, `ticket_*`; observation `health`.
 Every other bucket candidate's owner is listed per row in `coverage/ledger-coverage.json`; the 169
 static buckets are candidates, not a claim that dynamic accesses cannot exist. Each context will
-declare `OWNED_BUCKETS` in its `ports.py`; the single-writer check is in `import_rules.py`.
+declare `OWNED_BUCKETS` in its `ports.py`; the single-writer check is in `import_rules.py`. Declared so
+far (S1): storage `maintenance`, `migration_runs`, `knowledge_nodes`, `knowledge_edges`; artifact
+collection appends missing-reference `events` through `codex_harness.storage.ports:EventJournal`,
+coordination's owner operation (implemented in S5).
 
 ## Atomic units (design §2.9)
 

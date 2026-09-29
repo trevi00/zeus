@@ -14,7 +14,6 @@ driver.start("target")
 from types import SimpleNamespace  # noqa: E402
 
 import s1_git  # noqa: E402
-
 from codex_harness.host_os.adapters import git_workspace  # noqa: E402
 from codex_harness.kernel.errors import ContractError  # noqa: E402
 

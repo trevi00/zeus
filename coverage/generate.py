@@ -10,7 +10,9 @@ the accepted design mapping (`scratch/rebuild-design/map.py`, reproduced literal
 two declared v2 corrections: `platform` is named `host_os`, and `adapters/contracts.py` moves to
 `storage.adapters.message_schema` + `observation.adapters.observation_schema`). Target symbols are
 PROPOSED: the §3.1 tree where it names one, else `codex_harness.<context>.<layer>.<module>`. S0
-assigns `designed` or `unmapped` only; no row is `implemented`/`verified` before its slice.
+assigned `designed` or `unmapped` only. A slice moves exactly its own rows to `implemented` (target
+code and target tests exist; `SLICE_ROWS` below, with evidence links); `verified` additionally needs
+Codex's slice acceptance and is never set by this generator before it is recorded.
 Untraced rows keep their ledger trace status. Bucket rows stay candidates. Atomic-unit rows are an
 explicit extension keyed by M7 symbol (`compare/goldens/reference/static.source.json`).
 """
@@ -109,6 +111,17 @@ SYMBOLS = {
     "adapters/artifacts": ["codex_harness.storage.adapters.file_artifacts"],
     "adapters/migrations": ["codex_harness.storage.adapters.migrator"],
     "adapters/git": ["codex_harness.host_os.adapters.git_workspace"],
+    "adapters/commands": ["codex_harness.host_os.adapters.process_groups",
+                          "codex_harness.host_os.adapters.windows.no_console"],
+    "adapters/process_tree": ["codex_harness.host_os.adapters.process_tree",
+                              "codex_harness.host_os.adapters.windows.job_objects"],
+    "__init__": ["codex_harness (target package root)"],
+    "resources/__init__": ["codex_harness.resources (unchanged bytes)"],
+    "adapters/__init__": ["codex_harness.adapters (the §3.5 entry-shim package, S10)"],
+    "application/__init__": ["none: empty M7 layer marker; the target's per-context layer packages replace it "
+                             "(disposition at S11 promotion)"],
+    "domain/__init__": ["none: empty M7 layer marker; the target's per-context layer packages replace it "
+                        "(disposition at S11 promotion)"],
     "adapters/app_server": ["codex_harness.execution.adapters.providers.codex_app_server"],
     "adapters/claude_cli": ["codex_harness.execution.adapters.providers.claude_cli"],
     "adapters/codex": ["codex_harness.execution.adapters.providers.codex_exec"],
@@ -206,6 +219,180 @@ UNTRACED_SLICE = {"kernel": "S1", "storage": "S1", "host_os": "S1", "routing": "
                   "knowledge": "S2", "credentials": "S3", "execution": "S3/S4", "coordination": "S5/S6",
                   "delivery": "S7", "review": "S8", "research": "S8", "intake": "S8", "evidence": "S8",
                   "observation": "S9", "composition": "S10", "entry": "S10"}
+
+
+# --- slice progress (§1.5): rows a slice has implemented, with their evidence --------------------
+TARGET_SRC = ROOT / "target" / "src"
+S1_TESTS = {
+    "kernel": ["target:tests/test_s1_kernel.py", "compare:kernel.values"],
+    "storage": ["target:tests/test_s1_storage_units.py", "compare:storage.memory", "compare:storage.pg",
+                "compare:storage.redis"],
+    "host_os": ["target:tests/test_spawn_chokepoint.py", "compare:host_os.git", "compare:host_os.process"],
+}
+S1_MODULE_TESTS = {  # M7 module key -> ported suites that now run against the target
+    "adapters/git": ["test_git.py", "test_git_merge_cas.py", "test_git_workspace.py"],
+    "adapters/commands": ["test_python_channel.py", "test_windows_launchers.py", "test_git_workspace.py"],
+    "adapters/process_tree": ["test_background_service.py"],
+    "adapters/background_service": ["test_background_service.py"],
+    "adapters/service_entry": ["test_service_entry.py"],
+    "adapters/scratch": ["test_scratch_cleanup.py"],
+    "adapters/published_ports": ["test_published_ports.py", "test_published_ports_cross_host.py"],
+    "adapters/port_diagnosis": ["test_port_diagnosis.py"],
+    "adapters/bus": ["test_bus.py"],
+    "application/artifact_query": ["test_artifact_query.py"],
+    "adapters/artifact_reader": ["test_artifact_query.py"],
+    "adapters/migrations": ["test_migration_precheck.py"],
+    "domain/migrations": ["test_migration_precheck.py"],
+    "application/migration_receipts": ["test_migration_precheck.py"],
+    "adapters/artifacts": ["test_migration_precheck.py"],
+    "adapters/store": ["test_migration_precheck.py"],
+}
+# M7 module key -> the target module files that hold its public names (S1).
+S1_TARGET_FILES = {
+    "domain/model": ["kernel/ids.py", "kernel/errors.py", "kernel/message.py"],
+    "domain/policy": ["kernel/policy.py"], "domain/usage_policy": ["kernel/usage.py"],
+    "ports": ["kernel/ports.py", "storage/ports.py", "host_os/ports.py"],
+    "adapters/store": ["storage/adapters/postgres_store.py", "storage/adapters/memory_store.py"],
+    "adapters/bus": ["storage/adapters/redis_bus.py"], "adapters/artifacts": ["storage/adapters/file_artifacts.py"],
+    "adapters/artifact_reader": ["storage/adapters/artifact_reader.py"],
+    "application/artifact_query": ["storage/application/artifact_query.py"],
+    "adapters/maintenance": ["storage/adapters/maintenance.py"], "adapters/migrations": ["storage/adapters/migrator.py"],
+    "domain/migrations": ["storage/domain/migrations.py"],
+    "application/migration_receipts": ["storage/application/migration_receipts.py"],
+    "adapters/contracts": ["storage/adapters/message_schema.py"],
+    "adapters/process_tree": ["host_os/adapters/process_tree.py"],
+    "adapters/commands": ["host_os/adapters/process_groups.py", "host_os/adapters/windows/no_console.py"],
+    "adapters/background_service": ["host_os/adapters/background_service.py"],
+    "adapters/service_entry": ["host_os/adapters/service_entry.py"], "adapters/scratch": ["host_os/adapters/scratch.py"],
+    "adapters/published_ports": ["host_os/adapters/published_ports.py"],
+    "adapters/port_diagnosis": ["host_os/adapters/port_diagnosis.py"], "adapters/git": ["host_os/adapters/git_workspace.py"],
+}
+# Whole module rows S1 implements (every target symbol of the row exists). Partial rows stay
+# `designed` with `slice_progress` naming what S1 did and which slice owns the rest.
+S1_MODULES = {k for k in S1_TARGET_FILES if k not in {"domain/model", "adapters/contracts"}} | {
+    "__init__", "resources/__init__"}
+S1_PARTIAL = {
+    "domain/model": "S1 implemented kernel.ids/errors/message (canonical, digest, utcnow, ContractError, "
+                    "ExecutionFailure, require, envelope); Organization/Agent -> routing (S2), ContextPacket/"
+                    "ContextItem/compile_context -> context (S2), session_action -> coordination (S5), "
+                    "Incident/hook_apply -> research (S8)",
+    "adapters/contracts": "S1 implemented storage.adapters.message_schema:validate_message; "
+                          "validate_observation -> observation.adapters.observation_schema (S9)",
+}
+# Public names of S1 modules that move to another context's slice (§1.2/§2.5), with their target.
+MOVED_NAMES = {
+    ("domain/model", "Agent"): ("routing", "codex_harness.routing.domain.organization:Agent"),
+    ("domain/model", "Organization"): ("routing", "codex_harness.routing.domain.organization:Organization"),
+    ("domain/model", "conductor_self_arbitration"): (
+        "routing", "codex_harness.routing.domain.organization:conductor_self_arbitration"),
+    ("domain/model", "ContextItem"): ("context", "codex_harness.context.domain.packet:ContextItem"),
+    ("domain/model", "ContextPacket"): ("context", "codex_harness.context.domain.packet:ContextPacket"),
+    ("domain/model", "compile_context"): ("context", "codex_harness.context.domain.composition:compile_context"),
+    ("domain/model", "session_action"): ("coordination", "codex_harness.coordination.application.sessions:session_action"),
+    ("domain/model", "Incident"): ("research", "codex_harness.research.domain.recurrence:Incident"),
+    ("domain/model", "hook_apply"): ("research", "codex_harness.research.domain.recurrence:hook_apply"),
+    ("ports", "SpoolFull"): ("observation", "codex_harness.observation.ports:SpoolFull"),
+    ("ports", "ObservationSpool"): ("observation", "codex_harness.observation.ports:ObservationSpool"),
+    ("ports", "ObservationDirectory"): (
+        "observation", "codex_harness.observation.ports:SpoolReader+HealthRecords+TerminationRecords"),
+    ("ports", "Runtime"): ("execution", "codex_harness.execution.ports:ProviderRuntime"),
+    ("ports", "Knowledge"): ("knowledge", "codex_harness.knowledge.ports:CodeIndex+KnowledgeQuery"),
+    ("ports", "SourceVerifier"): ("research", "codex_harness.research.ports:SourceVerifier"),
+    ("adapters/contracts", "validate_observation"): (
+        "observation", "codex_harness.observation.adapters.observation_schema:validate_observation"),
+}
+# Renamed/split public names inside S1 (§2.5 SourceControl split; AuditArtifacts = ArtifactStore+ArtifactReader).
+S1_RENAMED = {
+    ("ports", "SourceControl"): ["codex_harness.host_os.ports:Workspaces", "codex_harness.host_os.ports:CandidateInspection",
+                                 "codex_harness.host_os.ports:Publication"],
+    ("ports", "AuditArtifacts"): ["codex_harness.storage.ports:ArtifactStore", "codex_harness.storage.ports:ArtifactReader"],
+}
+S1_RESOURCES = {"001.sql", "migrations.json", "message.schema.json"}
+S1_CONTRACTS = {"INV-ENCODING-001": ["target:tests/ported/test_python_channel.py", "compare:host_os.process"],
+                "INV-ARTIFACT-001": ["target:tests/ported/test_artifact_query.py", "compare:storage.memory"],
+                "INV-MIGRATION-001": ["target:tests/ported/test_migration_precheck.py", "compare:storage.pg"],
+                "INV-RESOURCE-001": ["target:tests/test_s1_storage_units.py", "compare:storage.memory",
+                                     "compare:kernel.values"],
+                "INV-SERVICE-DIAGNOSTICS-001": ["target:tests/ported/test_service_entry.py",
+                                                "target:tests/ported/test_port_diagnosis.py", "compare:host_os.process"]}
+S1_BUCKETS = {"maintenance", "migration_runs", "knowledge_nodes", "knowledge_edges"}
+
+
+def _target_names(files: list[str]) -> dict[str, str]:
+    """Top-level public names defined in the given target files -> dotted module path."""
+    import ast
+    out = {}
+    for rel in files:
+        path = TARGET_SRC / "codex_harness" / rel
+        if not path.is_file():
+            continue
+        module = "codex_harness." + rel[:-3].replace("/", ".")
+        for node in ast.parse(path.read_text(encoding="utf-8")).body:
+            names = []
+            if isinstance(node, (ast.FunctionDef, ast.ClassDef, ast.AsyncFunctionDef)):
+                names = [node.name]
+            elif isinstance(node, ast.Assign):
+                names = [t.id for t in node.targets if isinstance(t, ast.Name)]
+            for name in names:
+                out.setdefault(name, module)
+    return out
+
+
+def apply_s1(rows: list[dict]) -> None:
+    """Move the S1 rows (kernel/storage/host_os) to `implemented` with evidence; nothing else."""
+    for r in rows:
+        kind, key = r["kind"], r["key"]
+        if kind == "module":
+            mkey = module_key(key[len("module:"):]) or ""
+            if r["target_owner"] not in S1_TESTS:
+                continue
+            ported = [f"target:tests/ported/{name}" for name in S1_MODULE_TESTS.get(mkey, [])]
+            if mkey in S1_MODULES:
+                r["status"] = "implemented"
+                r["evidence"] = S1_TESTS[r["target_owner"]] + ported + [
+                    "target:tests/test_architecture.py::test_target_tree_has_no_violation_and_no_exception"]
+            elif mkey in S1_PARTIAL:
+                r["slice_progress"] = S1_PARTIAL[mkey]
+                r["evidence"] = S1_TESTS[r["target_owner"]] + r["evidence"]
+        elif kind == "public_api":
+            path, _, name = key[len("api:"):].partition("::")
+            mkey = module_key(path) or ""
+            if (mkey, name) in MOVED_NAMES:
+                owner, symbol = MOVED_NAMES[(mkey, name)]
+                r["target_owner"], r["target_symbol"], r["symbol_basis"] = owner, [symbol], "design §1.2/§2.5"
+                continue
+            if (mkey, name) in S1_RENAMED:
+                r["target_symbol"], r["symbol_basis"] = S1_RENAMED[(mkey, name)], "design §2.5"
+                r["status"], r["evidence"] = "implemented", S1_TESTS[r["target_owner"]]
+                continue
+            if mkey not in S1_TARGET_FILES:
+                continue
+            found = _target_names(S1_TARGET_FILES[mkey]).get(name)
+            if found is not None:
+                r["target_symbol"], r["status"] = [f"{found}:{name}"], "implemented"
+                r["evidence"] = S1_TESTS[r["target_owner"]] + [
+                    f"target:tests/ported/{n}" for n in S1_MODULE_TESTS.get(mkey, [])]
+        elif kind == "contract" and key[len("contract:"):] in S1_CONTRACTS:
+            r["status"] = "implemented"
+            r["evidence"] = S1_CONTRACTS[key[len("contract:"):]] + [e for e in r["evidence"]
+                                                                   if not e.startswith("pending:")]
+        elif kind == "resource" and key.rsplit("/", 1)[-1] in S1_RESOURCES:
+            r["status"] = "implemented"
+            r["evidence"] = ["target:tests/test_s1_storage_units.py::test_packaged_resources_are_the_source_bytes",
+                             "compare:storage.pg" if not key.endswith("message.schema.json") else "compare:kernel.values"]
+        elif kind == "bucket" and key[len("bucket:"):] in S1_BUCKETS:
+            r["status"] = "implemented"
+            r["evidence"] = ["codex_harness.storage.ports.OWNED_BUCKETS",
+                             "target:tests/test_s1_storage_units.py::test_storage_declares_its_owned_buckets_and_not_events"]
+        elif kind == "capability" and key == "capability:storage_artifacts":
+            r["status"] = "implemented"
+            r["evidence"] = ["docs/context/ARCHITECTURE.md#capabilities"] + S1_TESTS["storage"]
+        elif kind == "atomic_unit" and key == "atomic_unit:codex_harness.adapters.maintenance:ArtifactMaintenance.collect#1":
+            r["status"] = "implemented"
+            r["target_symbol"] = ["codex_harness.storage.adapters.maintenance:ArtifactMaintenance.collect (one "
+                                  "Store.transaction(); events through storage.ports:EventJournal.append(tx, ...))"]
+            r["evidence"] = ["compare:storage.memory#maintenance",
+                             "target:tests/test_s1_storage_units.py::test_a_failing_journal_rolls_the_whole_collection_back"]
 
 
 def sha256_file(path: Path) -> str:
@@ -396,6 +583,7 @@ def build(ledger: dict, static: dict) -> dict:
                              bucket_owners=contexts, fences=u["fence_calls"],
                              tx_passing_calls=u["tx_passing_calls"]))
     rows += unit_rows
+    apply_s1(rows)
     counts = {}
     for r in rows:
         counts[r["kind"]] = counts.get(r["kind"], 0) + 1

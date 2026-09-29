@@ -19,14 +19,13 @@ from types import SimpleNamespace  # noqa: E402
 
 import determinism  # noqa: E402
 import s1_storage  # noqa: E402
-from s1_target import FixtureEventJournal, PortClock  # noqa: E402
-
 from codex_harness.kernel.errors import ContractError  # noqa: E402
 from codex_harness.storage.adapters import artifact_reader  # noqa: E402
 from codex_harness.storage.adapters.file_artifacts import FileArtifacts  # noqa: E402
 from codex_harness.storage.adapters.maintenance import ArtifactMaintenance  # noqa: E402
 from codex_harness.storage.adapters.memory_store import MemoryStore  # noqa: E402
 from codex_harness.storage.application import artifact_query  # noqa: E402
+from s1_target import FixtureEventJournal, PortClock  # noqa: E402
 
 CLOCK, IDS = determinism.FakeClock(), determinism.FakeIds()
 CLOCK_PORT = PortClock(CLOCK)

@@ -16,7 +16,6 @@ driver.start("target")
 from types import SimpleNamespace  # noqa: E402
 
 import s1_process  # noqa: E402
-
 from codex_harness.host_os.adapters import (  # noqa: E402
     background_service,
     port_diagnosis,

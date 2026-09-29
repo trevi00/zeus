@@ -48,15 +48,30 @@ def test_alpha_renaming_preserves_equality_relations():
     assert out == [{"run_id": "<A:1>"}, {"run_id": "<A:2>"}, {"run_id": "<A:1>", "status": "ok"}]
 
 
-def test_every_scenario_has_a_reference_golden_and_a_pending_target():
+S0_FAMILIES = {"cli.parser", "entries.safe_matrix", "static.source", "effects.decision_unit",
+               "effects.context_packet", "guards.unpatched_transport", "effects.decision_unit.pg"}
+S1_FAMILIES = {"kernel.values", "storage.memory", "storage.pg", "storage.redis", "host_os.git", "host_os.process"}
+
+
+def test_every_scenario_has_a_reference_golden_and_only_implemented_slices_have_a_target():
     scenarios = [load(p) for p in sorted((COMPARE / "scenarios").glob("*.json"))]
-    assert {s["family"] for s in scenarios} == {"cli.parser", "entries.safe_matrix", "static.source",
-                                                "effects.decision_unit", "effects.context_packet",
-                                                "guards.unpatched_transport", "effects.decision_unit.pg"}
+    assert {s["family"] for s in scenarios} == S0_FAMILIES | S1_FAMILIES
     for s in scenarios:
         assert (COMPARE / s["reference_driver"]).is_file()
         assert (COMPARE / s["golden"]).is_file()
-        assert s["target_driver"] is None and s["target_status"].startswith("pending")
+        if s["family"] in S1_FAMILIES:
+            assert s["slice"] == "S1" and (COMPARE / s["target_driver"]).is_file()
+            assert "target_status" not in s
+            driver = (COMPARE / s["target_driver"]).read_text(encoding="utf-8")
+            assert 'driver.start("target")' in driver and "determinism.install" not in driver
+        else:
+            assert s["target_driver"] is None and s["target_status"].startswith("pending")
+
+
+def test_s1_scenario_bodies_never_import_the_product():
+    for path in (COMPARE / "drivers" / "common").glob("*.py"):
+        text = path.read_text(encoding="utf-8")
+        assert "import codex_harness" not in text and "from codex_harness" not in text, path.name
 
 
 def test_reference_goldens_hold_the_f3_and_f2_expectations():

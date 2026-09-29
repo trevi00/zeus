@@ -43,6 +43,19 @@ nothing, selects no role and grants no authority over the contracts in `docs/con
   research-required notice is not proof that research ran or that knowledge was verified.
   Only the existing independent review/promotion path can accept the resulting change.
 
+## Codex review cap (three rounds per work item)
+
+- Source: the user's explicit instruction of 2026-09-29 (11:32:28Z), not a model-imposed rule.
+- Codex independent review is capped at three rounds per declared work item: the initial review
+  plus at most two re-reviews. A work item is one concrete deliverable with a fixed acceptance
+  matrix, declared before its first review; count completed and in-flight rounds before dispatching.
+- Round 1 covers the whole finite matrix; rounds 2 and 3 inspect only the fixes and their affected
+  interactions. Self-check the consolidated corrections before spending a round.
+- No evasion: renaming, splitting findings, successor PRs, another agent or session, or calling the
+  same judgment an audit or confirmation all count against the same item.
+- A material required finding still open after round 3 leaves the item unresolved and not accepted;
+  a fourth review needs an explicit user exception. CI, tests and deterministic checks are not rounds.
+
 ## Review checkout recording
 
 - An independent review runs in a clean checkout at the candidate commit. Do not create, modify or

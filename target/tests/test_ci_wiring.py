@@ -38,7 +38,9 @@ REBUILD_TEST_STEPS = [("python compare/run.py check-tree", None),
                       ("python compare/run.py prepare", None),
                       ("python compare/run.py run", None)]
 REBUILD_INTEGRATION_STEPS = [("python compare/run.py prepare", None),
-                             ("python compare/run.py run --only effects.decision_unit.pg --pg", None)]
+                             ("python compare/run.py run --only effects.decision_unit.pg --pg", None),
+                             ("uv sync --frozen --project target", None),
+                             ("python compare/run.py run --only storage.pg --only storage.redis --pg --redis", None)]
 
 
 def load():

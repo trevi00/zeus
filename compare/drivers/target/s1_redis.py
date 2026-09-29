@@ -20,13 +20,12 @@ from types import SimpleNamespace  # noqa: E402
 
 import determinism  # noqa: E402
 import s1_redis  # noqa: E402
-from s1_target import PortClock, PortIds  # noqa: E402
-
 from codex_harness.kernel.errors import ContractError  # noqa: E402
 from codex_harness.kernel.ids import digest  # noqa: E402
 from codex_harness.kernel.message import envelope  # noqa: E402
 from codex_harness.storage.adapters import redis_bus  # noqa: E402
 from codex_harness.storage.ports import MessageDeliveryError, TransportChanged  # noqa: E402
+from s1_target import PortClock, PortIds  # noqa: E402
 
 CLOCK, IDS = determinism.FakeClock(), determinism.FakeIds()
 CLOCK_PORT, IDS_PORT = PortClock(CLOCK), PortIds(IDS)
