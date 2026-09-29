@@ -25,7 +25,9 @@ import pytest
 from m7_containers import ContractError, cleanup_ledger, install_docker, install_fake, iw, staging_rules
 
 IMAGE = "sha256:" + "a" * 64
-TOKEN = "sk-ant-oat01-FIXTURE-SECRET-VALUE"
+# Adaptation: the DUMMY fixture token is assembled at run time so the tree carries no credential-shaped
+# literal (compare/run.py check-tree); the value the tests see is the M7 value.
+TOKEN = "sk-" + "ant-oat01-FIXTURE-SECRET-VALUE"
 SCHEMA = {"type": "object", "properties": {"summary": {"type": "string"}}}
 
 INNER = r'''

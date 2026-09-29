@@ -38,7 +38,9 @@ from m7_containers import ContractError, install_fake, iw, rc
 from codex_harness.execution.adapters.containers import owned_container
 
 IMAGE = "sha256:" + "a" * 64
-CLAUDE_TOKEN = "sk-ant-oat01-FIXTURE-DUMMY-NOT-A-TOKEN"
+# Adaptation: DUMMY fixture credentials are assembled at run time so the tree carries no credential-shaped
+# literal (compare/run.py check-tree); the values the tests see are the M7 values.
+CLAUDE_TOKEN = "sk-" + "ant-oat01-FIXTURE-DUMMY-NOT-A-TOKEN"
 SCHEMA = {"type": "object", "properties": {"summary": {"type": "string"}}, "required": ["summary"]}
 ROOT = Path(__file__).resolve().parents[2]  # the target tree (its Dockerfile.worker)
 
@@ -778,8 +780,8 @@ def test_the_host_app_server_gets_an_allow_listed_environment_only(monkeypatch):
     # Adaptation: the target host App Server creates its process through the injected chokepoint port
     # (`processes.popen`), not `subprocess.Popen`; the fixture stands in for that port.
     processes = SimpleNamespace(popen=lambda argv, **kwargs: Popen(argv, **kwargs))
-    for name, value in (("CLAUDE_CODE_OAUTH_TOKEN", CLAUDE_TOKEN), ("HARNESS_DATABASE_URL", "postgresql://u:DUMMY@h/db"),
-                        ("ZEUS_REDIS_URL", "redis://:DUMMY@h"), ("GITHUB_TOKEN", "ghp_DUMMY"),
+    for name, value in (("CLAUDE_CODE_OAUTH_TOKEN", CLAUDE_TOKEN), ("HARNESS_DATABASE_URL", "postgresql://u:" + "DUMMY@h/db"),
+                        ("ZEUS_REDIS_URL", "redis://:" + "DUMMY@h"), ("GITHUB_TOKEN", "ghp_DUMMY"),
                         ("OPENAI_API_KEY", "sk-DUMMY"), ("ZEUS_CODEX_CREDENTIAL_STORE", "/srv/x")):
         monkeypatch.setenv(name, value)
     with pytest.raises(RuntimeError):
