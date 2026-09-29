@@ -19,7 +19,10 @@ driver.start("target")
 import tempfile  # noqa: E402
 
 from codex_harness.context.adapters import worker_profile  # noqa: E402
-from codex_harness.execution.adapters.providers.claude_cli import ClaudeCodeRuntime, ClaudeHost  # noqa: E402
+from codex_harness.execution.adapters.providers.claude_cli import (  # noqa: E402
+    ClaudeCodeRuntime,
+    ClaudeHost,
+)
 from codex_harness.execution.adapters.providers.codex_app_server import AppServer  # noqa: E402
 from codex_harness.host_os.adapters import process_groups  # noqa: E402
 from codex_harness.host_os.adapters.process_tree import ProcessTree, TreeOwnershipLeak  # noqa: E402
