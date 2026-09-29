@@ -2,8 +2,7 @@
  "family": "coordination.decision_guards",
  "description": "S4 moved-ahead decision guards (lead decision Option A): ExecutionRecovery.validate_decision on the paths that return or refuse before the related-evidence digest (no receipt, sequence/budget without receipt, malformed/missing/mismatched receipt, generation or sequence changed) and release_review_policy; MemoryStore",
  "reference_driver": "drivers/reference/s4_recovery.py",
- "target_driver": null,
+ "target_driver": "drivers/target/s4_recovery.py",
  "golden": "goldens/reference/coordination.decision_guards.json",
- "slice": "S4",
- "target_status": "pending: not yet moved"
+ "slice": "S4"
 }
