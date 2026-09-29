@@ -10,4 +10,4 @@ Contracts: INV-RELEASE-001
 
 from __future__ import annotations
 
-OWNED_BUCKETS = ("releases", "release_queue")
+OWNED_BUCKETS = ("releases", "release_queue", "improvement_loops")  # improvement_loops: named correction (S4)
