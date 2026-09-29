@@ -1,0 +1,175 @@
+{
+ "close": {
+  "value": {
+   "attempt": 1,
+   "boundary": "reserved",
+   "bucket": "tasks",
+   "closed_at": "2026-01-01T00:00:00+00:00",
+   "closure": "accepted",
+   "error": null,
+   "error_type": null,
+   "evidence_refs": [],
+   "generation": 2,
+   "invocation_outcome": "unknown",
+   "note": "reserved; effects unconfirmed until the outcome is durably accepted",
+   "process_run_id": "00000000000000000000000000000001",
+   "record_id": "78c3a2ff2daf432f650f9c70e009da43b89c2b7e3bdb1bcb8a4e150d8cd25ae4",
+   "recorded_at": "2026-01-01T00:00:00+00:00",
+   "reservation_id": "r1",
+   "status": "closed",
+   "stream_hash": null,
+   "task_id": "t1"
+  }
+ },
+ "close_again": {
+  "value": {
+   "attempt": 1,
+   "boundary": "reserved",
+   "bucket": "tasks",
+   "closed_at": "2026-01-01T00:00:00+00:00",
+   "closure": "accepted",
+   "error": null,
+   "error_type": null,
+   "evidence_refs": [],
+   "generation": 2,
+   "invocation_outcome": "unknown",
+   "note": "reserved; effects unconfirmed until the outcome is durably accepted",
+   "process_run_id": "00000000000000000000000000000001",
+   "record_id": "78c3a2ff2daf432f650f9c70e009da43b89c2b7e3bdb1bcb8a4e150d8cd25ae4",
+   "recorded_at": "2026-01-01T00:00:00+00:00",
+   "reservation_id": "r1",
+   "status": "closed",
+   "stream_hash": null,
+   "task_id": "t1"
+  }
+ },
+ "close_decision_not_entered": {
+  "value": {
+   "attempt": 1,
+   "boundary": "reserved",
+   "bucket": "decisions_pending",
+   "closed_at": "2026-01-01T00:00:00+00:00",
+   "closure": "not_entered",
+   "error": null,
+   "error_type": null,
+   "evidence_refs": [],
+   "generation": 1,
+   "invocation_outcome": "unknown",
+   "note": "reserved; effects unconfirmed until the outcome is durably accepted",
+   "process_run_id": "00000000000000000000000000000001",
+   "record_id": "a11fdf1a89d5a636cdafaefc0f1f9ac155169c96b0d5e5fbd7958a4e5cc3d56a",
+   "recorded_at": "2026-01-01T00:00:00+00:00",
+   "reservation_id": "r4",
+   "status": "closed",
+   "stream_hash": null,
+   "task_id": "d1"
+  }
+ },
+ "close_unknown": {
+  "message": "Unknown closure",
+  "refused": "ContractError"
+ },
+ "close_without_marker": {
+  "value": null
+ },
+ "counters": {
+  "unconfirmed_closed": 2,
+  "unconfirmed_marked": 3
+ },
+ "mark": {
+  "value": {
+   "attempt": 1,
+   "boundary": "reserved",
+   "bucket": "tasks",
+   "error": null,
+   "error_type": null,
+   "evidence_refs": [],
+   "generation": 2,
+   "invocation_outcome": "unknown",
+   "note": "reserved; effects unconfirmed until the outcome is durably accepted",
+   "process_run_id": "00000000000000000000000000000001",
+   "record_id": "78c3a2ff2daf432f650f9c70e009da43b89c2b7e3bdb1bcb8a4e150d8cd25ae4",
+   "recorded_at": "2026-01-01T00:00:00+00:00",
+   "reservation_id": "r1",
+   "status": "unconfirmed",
+   "stream_hash": null,
+   "task_id": "t1"
+  }
+ },
+ "mark_after_close": {
+  "value": {
+   "attempt": 1,
+   "boundary": "reserved",
+   "bucket": "tasks",
+   "error": null,
+   "error_type": null,
+   "evidence_refs": [],
+   "generation": 2,
+   "invocation_outcome": "unknown",
+   "note": "reserved; effects unconfirmed until the outcome is durably accepted",
+   "process_run_id": "00000000000000000000000000000001",
+   "record_id": "78c3a2ff2daf432f650f9c70e009da43b89c2b7e3bdb1bcb8a4e150d8cd25ae4",
+   "recorded_at": "2026-01-01T00:00:00+00:00",
+   "reservation_id": "r3",
+   "status": "unconfirmed",
+   "stream_hash": null,
+   "task_id": "t1"
+  }
+ },
+ "mark_again": {
+  "value": {
+   "attempt": 1,
+   "boundary": "reserved",
+   "bucket": "tasks",
+   "error": null,
+   "error_type": null,
+   "evidence_refs": [],
+   "generation": 2,
+   "invocation_outcome": "unknown",
+   "note": "reserved; effects unconfirmed until the outcome is durably accepted",
+   "process_run_id": "00000000000000000000000000000001",
+   "record_id": "78c3a2ff2daf432f650f9c70e009da43b89c2b7e3bdb1bcb8a4e150d8cd25ae4",
+   "recorded_at": "2026-01-01T00:00:00+00:00",
+   "reservation_id": "r1",
+   "status": "unconfirmed",
+   "stream_hash": null,
+   "task_id": "t1"
+  }
+ },
+ "mark_decision": {
+  "value": {
+   "attempt": 1,
+   "boundary": "reserved",
+   "bucket": "decisions_pending",
+   "error": null,
+   "error_type": null,
+   "evidence_refs": [],
+   "generation": 1,
+   "invocation_outcome": "unknown",
+   "note": "reserved; effects unconfirmed until the outcome is durably accepted",
+   "process_run_id": "00000000000000000000000000000001",
+   "record_id": "a11fdf1a89d5a636cdafaefc0f1f9ac155169c96b0d5e5fbd7958a4e5cc3d56a",
+   "recorded_at": "2026-01-01T00:00:00+00:00",
+   "reservation_id": "r4",
+   "status": "unconfirmed",
+   "stream_hash": null,
+   "task_id": "d1"
+  }
+ },
+ "records": [
+  [
+   "observation_terminations",
+   "78c3a2ff2daf432f650f9c70e009da43b89c2b7e3bdb1bcb8a4e150d8cd25ae4",
+   "fde6f09e2329b9e9c14b4701018e97e0d7c64d725a896be89dae6f5442b188c6"
+  ],
+  [
+   "observation_terminations",
+   "a11fdf1a89d5a636cdafaefc0f1f9ac155169c96b0d5e5fbd7958a4e5cc3d56a",
+   "0d9efee4735766f5806cca5e49261ed7e6c66a0a9b04e2a99068b35aa7f6322c"
+  ]
+ ],
+ "termination_id": [
+  "78c3a2ff2daf432f650f9c70e009da43b89c2b7e3bdb1bcb8a4e150d8cd25ae4",
+  "a11fdf1a89d5a636cdafaefc0f1f9ac155169c96b0d5e5fbd7958a4e5cc3d56a"
+ ]
+}

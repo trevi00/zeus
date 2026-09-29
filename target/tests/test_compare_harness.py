@@ -58,7 +58,7 @@ S4_FAMILIES = {"execution.run_task", "review.decisions", "execution.ledger", "ex
                "execution.output_contracts", "execution.lease_progress", "coordination.execution_owners",
                "review.releases_units", "coordination.execution_time", "coordination.workflow_lease",
                "hooks.candidate_canary", "coordination.decision_guards",
-               "coordination.decision_claims"}
+               "coordination.decision_claims", "observation.termination_markers"}
 S4_IMPLEMENTED = {"execution.ledger", "execution.units", "execution.output_contracts",
                   "execution.lease_progress", "guards.unpatched_transport",
                   "coordination.execution_owners", "review.releases_units", "coordination.execution_time",
