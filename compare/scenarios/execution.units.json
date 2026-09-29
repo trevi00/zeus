@@ -2,7 +2,7 @@
  "family": "execution.units",
  "description": "S4 pure units: provider stream readers (Codex notifications, normalized Claude events: shape, progress, occurrence, identity, labels, tool items) and the worker-session policy (transition matrix, identity/owner/candidate validation, archive paths and manifests, usage deltas, review outcome, promotion binding, status projection)",
  "reference_driver": "drivers/reference/s4_units.py",
- "target_driver": null,
+ "target_driver": "drivers/target/s4_units.py",
  "golden": "goldens/reference/execution.units.json",
  "slice": "S4"
 }
