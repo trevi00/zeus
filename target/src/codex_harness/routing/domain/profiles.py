@@ -2,30 +2,23 @@
 
 Layer: domain
 Context: routing
-Owns: the four profile names and `select_profile` (pure); IsolationError, the typed refusal
+Owns: the four profile names and `select_profile` (pure); re-exports IsolationError (defined in kernel.errors)
 Does not own: the container argv, mounts or credentials of a profile (execution/credentials, S3)
 Entry points: select_profile, IsolationError, CLAUDE_IMPL_RW, CLAUDE_ROLE_RO, CODEX_ROLE_RO, CODEX_IMPL_RW
 Contracts: INV-ROLE-CONTAINER-001
 
 Moved from SOURCE M7 `adapters/role_containers.select_profile` (§1.2 routing row). IsolationError keeps
-its M7 name, message form and `reason_code`; execution (downstream in §2.4) raises the same type for
-its own isolation refusals, so a refusal before spawn reads identically whichever layer refused.
+its M7 name, message form and `reason_code`; it is defined once in `kernel.errors` (S3) and re-exported
+here, so routing, credentials and execution raise the same type and a refusal before spawn reads
+identically whichever layer refused.
 """
 
 from __future__ import annotations
 
-from codex_harness.kernel.errors import ContractError
+from codex_harness.kernel.errors import IsolationError
 
 CLAUDE_IMPL_RW, CLAUDE_ROLE_RO = "claude-impl-rw", "claude-role-ro"
 CODEX_ROLE_RO, CODEX_IMPL_RW = "codex-role-ro", "codex-impl-rw"
-
-
-class IsolationError(ContractError):
-    """A refusal or failure of the isolated path; the code is printable, the detail never a secret."""
-
-    def __init__(self, reason_code: str, detail: str = ""):
-        super().__init__("isolated worker: " + reason_code + (": " + detail if detail else ""))
-        self.reason_code = reason_code
 
 
 def select_profile(provider, transport, action, read_only, *, codex_enabled: bool) -> str:
