@@ -69,6 +69,7 @@ def _state(api, broker, store: Path, roots) -> dict:
 
 
 def run_custody(api) -> dict:
+    os.umask(0o077)  # the recorded file modes are under this fixed umask, never the host default
     base = Path(tempfile.mkdtemp(prefix="zeus-s3-custody-")).resolve()
     roots = {"BASE": str(base)}
     out: dict = {"read_store": {}, "settle": {}, "admission": {}}
@@ -233,6 +234,7 @@ class Custom(Exception):
 
 
 def run_scrubber(api) -> dict:
+    os.umask(0o077)
     base = Path(tempfile.mkdtemp(prefix="zeus-s3-scrub-")).resolve()
     out: dict = {}
     issued = auth()

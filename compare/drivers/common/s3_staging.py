@@ -68,6 +68,7 @@ def _files(root: Path) -> dict:
 
 
 def run(api) -> dict:
+    os.umask(0o077)  # the recorded file modes are under this fixed umask, never the host default
     base = Path(tempfile.mkdtemp(prefix="zeus-s3-staging-")).resolve()
     roots = {"BASE": str(base)}
     out: dict = {}

@@ -34,6 +34,9 @@ from s1_common import outcome, relative, sha
 IMAGE = "sha256:" + "ab" * 32
 CONTAINER = "c0" * 32
 TOKEN_VALUE = "fixture-claude-token-0123456789"
+# Every file mode reported here is the process umask's when the implementation does not set one; the
+# goldens are recorded under this fixed umask so a host/CI default (0022 vs 0077) cannot change them.
+FIXED_UMASK = 0o077
 
 
 class FakeDocker:
@@ -285,11 +288,13 @@ def run_static(api) -> dict:
 
 def run(api) -> dict:
     """The whole family: the static part plus the four profiles through their real transports."""
+    os.umask(FIXED_UMASK)
     return {**run_static(api), "profile_runs": run_profiles(api)}
 
 
 def run_profiles(api) -> dict:
     """The four profiles through their real transport up to the before-start refusal."""
+    os.umask(FIXED_UMASK)
     base = Path(tempfile.mkdtemp(prefix="zeus-s3-profiles-"))
     runs = {}
     for profile in ("claude-impl-rw", "claude-role-ro", "codex-role-ro", "codex-impl-rw"):
