@@ -3,7 +3,8 @@
 Layer: application
 Context: context
 Owns: ContextComposer (select, order and budget the delivered parts; report omissions; retain the
-`context:<key>` packet artifact; bind it to skill history), CompositionRequest, ComposedContext
+`context:<key>` packet artifact; bind it to skill history), ComposedContext (CompositionRequest, the request
+value, is context.domain.composition's since S4 so RunTask can build it; re-imported here)
 Does not own: the task lease, snapshot and recovery records (coordination; passed in the request),
 review/role context facts of the isolation profile (execution; passed in), provider invocation
 (execution), council delivery and correction feedback (research, S8: not composed here)
@@ -29,6 +30,7 @@ from codex_harness.context.domain.composition import (
     LEGACY_RESERVED,
     LEGACY_WINDOW,
     RECOVERY_INSTRUCTION,
+    CompositionRequest,
     artifact_reader_handle,
     evidence_json,
     recovery_bound,
@@ -37,35 +39,6 @@ from codex_harness.context.domain.composition import (
 from codex_harness.context.domain.packet import ContextItem, ContextPacket, compile_context
 from codex_harness.kernel.errors import require
 from codex_harness.kernel.ids import canonical, digest
-
-
-@dataclass(frozen=True)
-class CompositionRequest:
-    """Everything one composition reads that another context owns, as values (never objects)."""
-    agent: str
-    key: str
-    objective: str
-    evidence: dict
-    cwd: str
-    snapshot: str
-    runtime_policy_digest: str
-    reader_python: str
-    provider: str
-    default_provider: str
-    read_only: bool = False
-    action: str | None = None
-    stage: str | None = None
-    deployed_revision: str | None = None
-    checkpoint: dict | None = None
-    progress: dict | None = None
-    review_context: dict | None = None
-    role_context: dict | None = None
-    project_evidence: dict | None = None
-    # S4 turn loop (DESIGN-run-task D7), additive; both default to turn 1's S2 behaviour. From the second
-    # handoff turn M7 recovers from that run's own state ({"checkpoint": state, "completed": [...]}), not from
-    # the stored rows, and keeps the basis revision it read once before the loop.
-    recovery: dict | None = None
-    basis_revision: str | None = None
 
 
 @dataclass

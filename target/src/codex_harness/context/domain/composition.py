@@ -5,7 +5,8 @@ Context: context
 Owns: the task-contract projection, the artifact-reader handle and its operation catalogue, the fixed
 delivery policy text, the recovery-binding predicate and the evidence JSON form of recovery bodies
 Does not own: packet compilation (context.domain.packet), where recovery records live (coordination)
-Entry points: task_contract, artifact_reader_handle, ARTIFACT_READER, DELIVERY_POLICY, recovery_bound,
+Entry points: CompositionRequest (the composition request value, moved here from the application in S4 so
+    RunTask (execution) can build it), task_contract, artifact_reader_handle, ARTIFACT_READER, DELIVERY_POLICY, recovery_bound,
 evidence_json, LEGACY_WINDOW, LEGACY_RESERVED
 Contracts: INV-CONTEXT-001, INV-SESSION-001, INV-ARTIFACT-001
 
@@ -16,6 +17,7 @@ literal that reaches the rendered prompt or the retained packet is byte-identica
 
 from __future__ import annotations
 
+from dataclasses import dataclass
 from pathlib import Path
 
 from codex_harness.kernel.ids import canonical
@@ -96,3 +98,32 @@ def recovery_bound(value: dict, *, binding: dict, context_bound: bool, provider:
     previous_workspace = value.get("worktree")
     return (previous_provider == provider and (previous_workspace is None or previous_workspace == worktree)
             and matches)
+
+
+@dataclass(frozen=True)
+class CompositionRequest:
+    """Everything one composition reads that another context owns, as values (never objects)."""
+    agent: str
+    key: str
+    objective: str
+    evidence: dict
+    cwd: str
+    snapshot: str
+    runtime_policy_digest: str
+    reader_python: str
+    provider: str
+    default_provider: str
+    read_only: bool = False
+    action: str | None = None
+    stage: str | None = None
+    deployed_revision: str | None = None
+    checkpoint: dict | None = None
+    progress: dict | None = None
+    review_context: dict | None = None
+    role_context: dict | None = None
+    project_evidence: dict | None = None
+    # S4 turn loop (DESIGN-run-task D7), additive; both default to turn 1's S2 behaviour. From the second
+    # handoff turn M7 recovers from that run's own state ({"checkpoint": state, "completed": [...]}), not from
+    # the stored rows, and keeps the basis revision it read once before the loop.
+    recovery: dict | None = None
+    basis_revision: str | None = None
