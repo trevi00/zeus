@@ -61,6 +61,11 @@ class CompositionRequest:
     review_context: dict | None = None
     role_context: dict | None = None
     project_evidence: dict | None = None
+    # S4 turn loop (DESIGN-run-task D7), additive; both default to turn 1's S2 behaviour. From the second
+    # handoff turn M7 recovers from that run's own state ({"checkpoint": state, "completed": [...]}), not from
+    # the stored rows, and keeps the basis revision it read once before the loop.
+    recovery: dict | None = None
+    basis_revision: str | None = None
 
 
 @dataclass
@@ -89,7 +94,7 @@ class ContextComposer:
         budget; stores the task evidence, skill, guidance and recovery artifacts it references."""
         r = request
         raw = self.artifacts.put(canonical(r.evidence), "task:" + r.key)
-        basis_revision = self.repository.revision(r.cwd)
+        basis_revision = r.basis_revision if r.basis_revision is not None else self.repository.revision(r.cwd)
         contract_fields = task_contract(r.evidence)
         window, reserved = LEGACY_WINDOW, LEGACY_RESERVED
         items = [ContextItem(raw["ref"], canonical(r.evidence), raw["ref"], digest(r.evidence), 10)]
@@ -140,11 +145,14 @@ class ContextComposer:
             return recovery_bound(value, binding=binding, context_bound=context_bound, provider=r.provider,
                                   default_provider=r.default_provider, worktree=r.cwd)
 
-        recovery = {}
-        if r.checkpoint and r.checkpoint["checkpoint"].get("task_id") == r.key and bound(r.checkpoint["checkpoint"]):
-            recovery["checkpoint"] = r.checkpoint
-        if r.progress and bound(r.progress):
-            recovery["progress"] = r.progress
+        if r.recovery is not None:
+            recovery = dict(r.recovery)  # turn >= 2: M7's in-run recovery sources, in their order (D7)
+        else:
+            recovery = {}
+            if r.checkpoint and r.checkpoint["checkpoint"].get("task_id") == r.key and bound(r.checkpoint["checkpoint"]):
+                recovery["checkpoint"] = r.checkpoint
+            if r.progress and bound(r.progress):
+                recovery["progress"] = r.progress
         # @invariant INV-CONTEXT-001: every actual prompt, including recovery, passes the same compiler.
         # History stays available by immutable handle.
         recovery_refs, recovery_items = {}, []
