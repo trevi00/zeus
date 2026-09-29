@@ -2,8 +2,7 @@
  "family": "coordination.execution_time",
  "description": "S4 moved-ahead coordination owner operations (lead decision Option A): execution deadlines, clock pins and their comparison, liveness, domain observation, time containment (block and deadline paths), the running set, and the rejection of fenced-out executors; MemoryStore, scripted wall and monotonic clocks, injected clock domain",
  "reference_driver": "drivers/reference/s4_time.py",
- "target_driver": null,
+ "target_driver": "drivers/target/s4_time.py",
  "golden": "goldens/reference/coordination.execution_time.json",
- "slice": "S4",
- "target_status": "pending: execution_time/execution_rejections not yet moved"
+ "slice": "S4"
 }
