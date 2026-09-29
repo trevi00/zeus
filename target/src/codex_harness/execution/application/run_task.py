@@ -13,7 +13,7 @@ Does not own: the lease rules and coordination writes (coordination, through Tas
     and result persistence (execution.adapters, injected); the S8 collaborators (council delivery, correction
     feedback, evidence inspection, project evidence, role/front-desk execution, research sources, audit
     execution, native hook candidates) refuse when absent; the S5 continuation lanes likewise
-Entry points: RunTask.execute_one
+Entry points: RunTask.execute_one, ResearchRequired
 Contracts: INV-INVOCATION-001, INV-SESSION-001, INV-OBSERVATION-001, INV-CONTEXT-001, INV-WORKER-SESSION-001,
     INV-CLAUDE-WORKER-001, INV-RELEASE-001, INV-RECURRENCE-001, INV-EVIDENCE-001
 
@@ -73,6 +73,14 @@ from codex_harness.kernel.policy import POLICY
 from codex_harness.routing.domain.model_selection import select_model
 
 
+class ResearchRequired(ContractError):
+    """RF-RT: the research-first admission did not admit this design/implementation dispatch (no provider ran)."""
+
+    def __init__(self, disposition: str, reason: str):
+        super().__init__(f"Research-first admission: {disposition} ({reason})")
+        self.disposition, self.reason = disposition, reason
+
+
 class RunTask:
     """The task-execution use case. Constructor-injected owners and ports only; no per-run state on the object."""
 
@@ -81,7 +89,8 @@ class RunTask:
                  inspect_approval, ReconciliationRequired, PostExecutionRecordFailure, policy_refusals=(),
                  worker_sessions=None, isolation=None, evidence_profile=None, knowledge=None, research=None,
                  audit_execution=None, roles=None, council=None, feedback=None, evidence_gate=None,
-                 project_evidence=None, hook_candidates=None, continuations=None, clock=None, ids=None,
+                 project_evidence=None, hook_candidates=None, continuations=None, research_admission=None,
+                 clock=None, ids=None,
                  monotonic=None):
         # `ledger` satisfies execution.ports TaskLedger + TaskLifecycle (coordination TaskOwnership); `observer`
         # satisfies ObservationEvents + ObservationMarkers (one Observer); `results` carries the execution adapters
@@ -101,6 +110,9 @@ class RunTask:
         self.knowledge, self.research, self.audit_execution = knowledge, research, audit_execution
         self.roles, self.council, self.feedback, self.evidence_gate = roles, council, feedback, evidence_gate
         self.project_evidence, self.hook_candidates, self.continuations = project_evidence, hook_candidates, continuations
+        # RF-RT (addendum A1 v2), S4 part: consulted before a plan/implement dispatch when supplied. S8 owns the
+        # package store, S5 persists the disposition, and S10 composition must wire it (PLANNED; test double only).
+        self.research_admission = research_admission
         self.clock, self.ids = clock, ids or SYSTEM_IDS
         self.monotonic = monotonic or __import__("time").monotonic
 
@@ -153,6 +165,12 @@ class RunTask:
             if action in {"plan", "implement"}:
                 with self.store.transaction() as tx:
                     self.inspect_approval(tx, details, self.artifacts)
+                if self.research_admission is not None:
+                    # RF-RT: research first before a design/implementation dispatch; S5 persists the disposition.
+                    with self.store.transaction() as tx:
+                        admitted = self.research_admission.admit(tx, task, action)
+                    if admitted.get("disposition") not in {"admit", "exempt"}:
+                        raise ResearchRequired(str(admitted.get("disposition")), str(admitted.get("reason")))
             def heartbeat():
                 current = self.ledger.heartbeat(task)
                 self.observer.emit("operations.lease_renewed", "observed", severity="debug",
