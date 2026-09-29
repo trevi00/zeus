@@ -1,0 +1,9 @@
+{
+ "family": "execution.lease_progress",
+ "description": "S4 LeaseProgress: the per-call ownership/deadline check and renewal cadence after the provider (boundary stages re-read fresh, replay_wait polls throttled, renewal on its own cadence, the refusal kept and re-raised); scripted workflow and monotonic clock",
+ "reference_driver": "drivers/reference/s4_lease.py",
+ "target_driver": null,
+ "golden": "goldens/reference/execution.lease_progress.json",
+ "slice": "S4",
+ "target_status": "pending: execution.application.lease_progress not yet implemented"
+}

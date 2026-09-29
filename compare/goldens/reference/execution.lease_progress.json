@@ -1,0 +1,493 @@
+{
+ "class": {
+  "check": 5.0,
+  "poll_stages": [
+   "replay_wait"
+  ],
+  "renew": 20.0
+ },
+ "custom_cadence": {
+  "check_seconds": 0.0,
+  "checks": 9,
+  "own_heartbeats": [],
+  "refusal": null,
+  "renew_seconds": 1.0,
+  "renewals": 7,
+  "trace": [
+   {
+    "at": 0.0,
+    "calls": [
+     [
+      "remaining_seconds",
+      "task-1",
+      600
+     ],
+     [
+      "heartbeat",
+      "task-1",
+      []
+     ]
+    ],
+    "outcome": "ok",
+    "stage": "replay_wait"
+   },
+   {
+    "at": 1.0,
+    "calls": [
+     [
+      "remaining_seconds",
+      "task-1",
+      600
+     ],
+     [
+      "heartbeat",
+      "task-1",
+      []
+     ]
+    ],
+    "outcome": "ok",
+    "stage": "replay_wait"
+   },
+   {
+    "at": 4.9,
+    "calls": [
+     [
+      "remaining_seconds",
+      "task-1",
+      600
+     ],
+     [
+      "heartbeat",
+      "task-1",
+      []
+     ]
+    ],
+    "outcome": "ok",
+    "stage": "replay_wait"
+   },
+   {
+    "at": 5.0,
+    "calls": [
+     [
+      "remaining_seconds",
+      "task-1",
+      600
+     ]
+    ],
+    "outcome": "ok",
+    "stage": "replay_wait"
+   },
+   {
+    "at": 6.0,
+    "calls": [
+     [
+      "remaining_seconds",
+      "task-1",
+      600
+     ],
+     [
+      "heartbeat",
+      "task-1",
+      []
+     ]
+    ],
+    "outcome": "ok",
+    "stage": "inspection"
+   },
+   {
+    "at": 19.9,
+    "calls": [
+     [
+      "remaining_seconds",
+      "task-1",
+      600
+     ],
+     [
+      "heartbeat",
+      "task-1",
+      []
+     ]
+    ],
+    "outcome": "ok",
+    "stage": "replay_wait"
+   },
+   {
+    "at": 20.0,
+    "calls": [
+     [
+      "remaining_seconds",
+      "task-1",
+      600
+     ]
+    ],
+    "outcome": "ok",
+    "stage": "replay_wait"
+   },
+   {
+    "at": 21.0,
+    "calls": [
+     [
+      "remaining_seconds",
+      "task-1",
+      600
+     ],
+     [
+      "heartbeat",
+      "task-1",
+      []
+     ]
+    ],
+    "outcome": "ok",
+    "stage": null
+   },
+   {
+    "at": 45.0,
+    "calls": [
+     [
+      "remaining_seconds",
+      "task-1",
+      600
+     ],
+     [
+      "heartbeat",
+      "task-1",
+      []
+     ]
+    ],
+    "outcome": "ok",
+    "stage": "publish"
+   }
+  ]
+ },
+ "default_cadence": {
+  "check_seconds": 5.0,
+  "checks": 6,
+  "own_heartbeats": [],
+  "refusal": null,
+  "renew_seconds": 20.0,
+  "renewals": 3,
+  "trace": [
+   {
+    "at": 0.0,
+    "calls": [
+     [
+      "remaining_seconds",
+      "task-1",
+      600
+     ],
+     [
+      "heartbeat",
+      "task-1",
+      []
+     ]
+    ],
+    "outcome": "ok",
+    "stage": "replay_wait"
+   },
+   {
+    "at": 1.0,
+    "calls": [],
+    "outcome": "ok",
+    "stage": "replay_wait"
+   },
+   {
+    "at": 4.9,
+    "calls": [],
+    "outcome": "ok",
+    "stage": "replay_wait"
+   },
+   {
+    "at": 5.0,
+    "calls": [
+     [
+      "remaining_seconds",
+      "task-1",
+      600
+     ]
+    ],
+    "outcome": "ok",
+    "stage": "replay_wait"
+   },
+   {
+    "at": 6.0,
+    "calls": [
+     [
+      "remaining_seconds",
+      "task-1",
+      600
+     ]
+    ],
+    "outcome": "ok",
+    "stage": "inspection"
+   },
+   {
+    "at": 19.9,
+    "calls": [
+     [
+      "remaining_seconds",
+      "task-1",
+      600
+     ]
+    ],
+    "outcome": "ok",
+    "stage": "replay_wait"
+   },
+   {
+    "at": 20.0,
+    "calls": [
+     [
+      "heartbeat",
+      "task-1",
+      []
+     ]
+    ],
+    "outcome": "ok",
+    "stage": "replay_wait"
+   },
+   {
+    "at": 21.0,
+    "calls": [
+     [
+      "remaining_seconds",
+      "task-1",
+      600
+     ]
+    ],
+    "outcome": "ok",
+    "stage": null
+   },
+   {
+    "at": 45.0,
+    "calls": [
+     [
+      "remaining_seconds",
+      "task-1",
+      600
+     ],
+     [
+      "heartbeat",
+      "task-1",
+      []
+     ]
+    ],
+    "outcome": "ok",
+    "stage": "publish"
+   }
+  ]
+ },
+ "own_heartbeat": {
+  "check_seconds": 5.0,
+  "checks": 6,
+  "own_heartbeats": [
+   0.0,
+   20.0,
+   45.0
+  ],
+  "refusal": null,
+  "renew_seconds": 20.0,
+  "renewals": 3,
+  "trace": [
+   {
+    "at": 0.0,
+    "calls": [
+     [
+      "remaining_seconds",
+      "task-1",
+      600
+     ]
+    ],
+    "outcome": "ok",
+    "stage": "replay_wait"
+   },
+   {
+    "at": 1.0,
+    "calls": [],
+    "outcome": "ok",
+    "stage": "replay_wait"
+   },
+   {
+    "at": 4.9,
+    "calls": [],
+    "outcome": "ok",
+    "stage": "replay_wait"
+   },
+   {
+    "at": 5.0,
+    "calls": [
+     [
+      "remaining_seconds",
+      "task-1",
+      600
+     ]
+    ],
+    "outcome": "ok",
+    "stage": "replay_wait"
+   },
+   {
+    "at": 6.0,
+    "calls": [
+     [
+      "remaining_seconds",
+      "task-1",
+      600
+     ]
+    ],
+    "outcome": "ok",
+    "stage": "inspection"
+   },
+   {
+    "at": 19.9,
+    "calls": [
+     [
+      "remaining_seconds",
+      "task-1",
+      600
+     ]
+    ],
+    "outcome": "ok",
+    "stage": "replay_wait"
+   },
+   {
+    "at": 20.0,
+    "calls": [],
+    "outcome": "ok",
+    "stage": "replay_wait"
+   },
+   {
+    "at": 21.0,
+    "calls": [
+     [
+      "remaining_seconds",
+      "task-1",
+      600
+     ]
+    ],
+    "outcome": "ok",
+    "stage": null
+   },
+   {
+    "at": 45.0,
+    "calls": [
+     [
+      "remaining_seconds",
+      "task-1",
+      600
+     ]
+    ],
+    "outcome": "ok",
+    "stage": "publish"
+   }
+  ]
+ },
+ "refused_mid_wait": {
+  "check_seconds": 5.0,
+  "checks": 1,
+  "own_heartbeats": [],
+  "refusal": "Refused",
+  "renew_seconds": 20.0,
+  "renewals": 1,
+  "trace": [
+   {
+    "at": 0.0,
+    "calls": [
+     [
+      "remaining_seconds",
+      "task-1",
+      600
+     ],
+     [
+      "heartbeat",
+      "task-1",
+      []
+     ]
+    ],
+    "outcome": "ok",
+    "stage": "replay_wait"
+   },
+   {
+    "at": 1.0,
+    "calls": [],
+    "outcome": "ok",
+    "stage": "replay_wait"
+   },
+   {
+    "at": 4.9,
+    "calls": [],
+    "outcome": "ok",
+    "stage": "replay_wait"
+   },
+   {
+    "at": 5.0,
+    "calls": [
+     [
+      "remaining_seconds",
+      "task-1",
+      600
+     ]
+    ],
+    "outcome": "refused:Refused",
+    "stage": "replay_wait"
+   },
+   {
+    "at": 6.0,
+    "calls": [
+     [
+      "remaining_seconds",
+      "task-1",
+      600
+     ]
+    ],
+    "outcome": "refused:Refused",
+    "stage": "inspection"
+   },
+   {
+    "at": 19.9,
+    "calls": [
+     [
+      "remaining_seconds",
+      "task-1",
+      600
+     ]
+    ],
+    "outcome": "refused:Refused",
+    "stage": "replay_wait"
+   },
+   {
+    "at": 20.0,
+    "calls": [
+     [
+      "remaining_seconds",
+      "task-1",
+      600
+     ]
+    ],
+    "outcome": "refused:Refused",
+    "stage": "replay_wait"
+   },
+   {
+    "at": 21.0,
+    "calls": [
+     [
+      "remaining_seconds",
+      "task-1",
+      600
+     ]
+    ],
+    "outcome": "refused:Refused",
+    "stage": null
+   },
+   {
+    "at": 45.0,
+    "calls": [
+     [
+      "remaining_seconds",
+      "task-1",
+      600
+     ]
+    ],
+    "outcome": "refused:Refused",
+    "stage": "publish"
+   }
+  ]
+ }
+}
