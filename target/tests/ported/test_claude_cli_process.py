@@ -1,0 +1,577 @@
+"""Ported from SOURCE M7 `tests/test_claude_cli_process.py` (with its fixture child
+`tests/claude_protocol_child.py`, copied unchanged beside it) against the target Claude transport.
+
+Adaptations, named: imports point at the target; the transport's host facilities are injected (the
+`ClaudeHost` of this file: host_os run_process and ProcessTree, the context worker-profile adapter, and a
+redaction stand-in because observation's `redact_text` moves in S9 and no case here asserts redaction; the
+private `_StreamState` takes that redactor explicitly; the CANARY constant of M7 `test_observations` is
+copied, that suite being S9's).
+M7 module docstring follows.
+
+U002 C02, C03, C06: the Claude Code CLI transport's process, stream and termination boundaries.
+
+Every run here drives `tests/claude_protocol_child.py`, a fault injector that speaks the CLI's
+stream shape. It proves how the adapter behaves against a hostile or broken child; it proves
+nothing about a model, and the adapter records the fixture launcher with every run so a receipt
+made this way can never be read as a provider measurement (C10 is the real call).
+"""
+import hashlib
+import json
+import os
+import sys
+import time
+from pathlib import Path
+
+import pytest
+
+from codex_harness.context.adapters import worker_profile
+from codex_harness.execution.adapters.providers import claude_cli
+from codex_harness.execution.adapters.providers.claude_cli import child_environment, claude_settings
+from codex_harness.execution.domain.invocation import classify_result, parse_request, usage_record
+from codex_harness.host_os.adapters import process_groups
+from codex_harness.host_os.adapters.process_tree import ProcessTree, TreeOwnershipLeak
+from codex_harness.kernel.errors import ContractError
+
+CANARY = "CANARY-7e1d9c3b5a2f4e6d8c0b1a2f3e4d5c6b"  # M7 tests/test_observations.CANARY (that suite is S9's)
+
+
+def _no_redaction_stand_in(text):
+    """Observation's `redact_text` moves in S9; no case of this file asserts a redaction (named adaptation)."""
+    return text, 0
+
+
+HOST = claude_cli.ClaudeHost(runner=process_groups.run_process, trees=ProcessTree, tree_leak=TreeOwnershipLeak,
+                             worker_profiles=worker_profile, redact=_no_redaction_stand_in)
+
+
+def ClaudeCodeRuntime(**kwargs):  # noqa: N802 - the M7 constructor form, adapted: the host is injected
+    return claude_cli.ClaudeCodeRuntime(**kwargs, host=HOST)
+
+CHILD = Path(__file__).resolve().parent / "claude_protocol_child.py"
+RUNTIME = {"output_format": "stream-json", "input_format": "text", "verbose": True,
+           "permission_mode": "acceptEdits", "permission_prompts": "none", "setting_sources": "",
+           "strict_mcp_config": True, "tools": ["Bash", "Read", "Edit"],
+           "allowed_tools": ["Read", "Edit", "Bash(python -m pytest *)"],
+           "disallowed_tools": ["Task", "WebFetch"]}
+SCHEMA = {"type": "object", "additionalProperties": False,
+          "properties": {"summary": {"type": "string"}, "tests": {"type": "array", "items": {"type": "string"}}},
+          "required": ["summary", "tests"]}
+
+
+def transport(scenario: str, **kwargs) -> ClaudeCodeRuntime:
+    return ClaudeCodeRuntime(model="claude-stub-" + scenario, runtime=RUNTIME, executable=str(CHILD),
+                             launcher=[sys.executable], max_budget_usd=1.0,
+                             settings_document=claude_settings(RUNTIME), **kwargs)
+
+
+def execute(scenario, workspace, prompt="지시문: fixture prompt", timeout=90, **kwargs):
+    limits = kwargs.pop("limits", None)
+    events, ticks = [], []
+    runtime = transport(scenario, **({"limits": limits} if limits else {}), **kwargs)
+    with runtime as opened:
+        result = opened.run(prompt, str(workspace), SCHEMA, timeout=timeout, on_event=events.append,
+                            on_tick=lambda: ticks.append(1))
+    return result, events, ticks, runtime
+
+
+def observation(workspace):
+    return json.loads((Path(workspace) / "stub-observation.json").read_text("utf-8"))
+
+
+# ---- C02: the prompt reaches the child over stdin, through a path with spaces and Hangul ---------
+
+def test_c02_prompt_is_delivered_over_stdin_and_never_appears_in_a_command(tmp_path):
+    workspace = tmp_path / "작업 공간 with spaces"
+    workspace.mkdir()
+    prompt = "지시문: 한글과 공백이 섞인 프롬프트\n" + "본문 라인 " * 200
+    result, events, ticks, runtime = execute("normal", workspace, prompt=prompt)
+    seen = observation(workspace)
+    assert seen["stdin"]["sha256"] == hashlib.sha256(prompt.encode("utf-8")).hexdigest()
+    assert seen["stdin"]["bytes"] == len(prompt.encode("utf-8"))
+    # The child echoes the digest of what it read back through its structured output.
+    assert result["answer"]["summary"] == seen["stdin"]["sha256"]
+    assert seen["cwd"] == str(workspace.resolve()), "the workspace path survived spaces and Hangul"
+    for element in seen["argv"]:
+        assert prompt not in element and "지시문" not in element
+    for element in result["command"]["argv"]:
+        assert prompt not in str(element)
+    assert result["command"]["prompt_transport"] == "stdin"
+    assert result["stream"]["stdin"]["state"] == "written"
+    assert result["stream"]["bytes"]["stderr"] > 0, "stderr was drained alongside stdout"
+    assert ticks, "the tick ran while the child was alive"
+    assert result["process"]["confirmed"] and result["process"]["exit_code"] == 0
+
+
+def test_c02_schema_and_settings_travel_as_values_but_never_into_the_recorded_command(tmp_path):
+    result, _, _, _ = execute("normal", tmp_path)
+    seen = observation(tmp_path)
+    assert json.loads(seen["schema"]) == SCHEMA, "the child received the schema itself"
+    assert json.loads(seen["settings"])["permissions"]["allow"] == RUNTIME["allowed_tools"]
+    recorded = " ".join(str(part) for part in result["command"]["argv"])
+    assert "additionalProperties" not in recorded and "Bash(python -m pytest *)" not in recorded
+    assert result["command"]["schema_sha256"] and result["command"]["settings_sha256"]
+    assert result["command"]["launcher"] == [sys.executable]
+    assert "not a provider measurement" in result["command"]["measurement"]
+
+
+def test_c02_the_child_environment_carries_no_zeus_credential(tmp_path, monkeypatch):
+    monkeypatch.setenv("HARNESS_DATABASE_URL", "postgresql://harness:secret@127.0.0.1:55432/harness")
+    monkeypatch.setenv("ZEUS_REDIS_URL", "redis://127.0.0.1:56379/0")
+    monkeypatch.setenv("POSTGRES_PASSWORD", "fixture-password")
+    environment, report = child_environment()
+    assert not [name for name in environment if name.startswith(("ZEUS_", "HARNESS_", "POSTGRES_"))]
+    assert {"HARNESS_DATABASE_URL", "ZEUS_REDIS_URL", "POSTGRES_PASSWORD"} <= set(report["withheld_zeus_names"])
+    assert all("secret" not in str(value) for value in report.values() if not isinstance(value, list))
+    result, _, _, _ = execute("normal", tmp_path)
+    seen = observation(tmp_path)
+    assert not [name for name in seen["environment_names"] if name.startswith(("ZEUS_", "HARNESS_", "POSTGRES_"))]
+    assert "PATH" in seen["environment_names"], "the child still has what it needs to start"
+    assert result["command"]["environment"]["withheld_zeus_names"]
+
+
+# ---- C03: what the run produced, named from what was observed ------------------------------------
+
+@pytest.mark.parametrize("scenario,outcome,cause", [
+    ("normal", "accepted", None),
+    ("empty", "empty_answer", None),
+    ("toolonly", "tool_only", None),
+    ("malformed", "accepted", None),
+    ("redelivered", "accepted", None),
+    ("noterminal", "provider_failure", "claude-provider-missing-terminal"),
+    ("conflict", "provider_failure", "claude-provider-conflicting-terminal"),
+    ("badschema", "invalid_output", "claude-output-schema-mismatch"),
+    ("error", "provider_failure", "claude-provider-error-result"),
+    ("budget", "provider_failure", "claude-provider-budget-exhausted"),
+    ("maxturns", "provider_failure", "claude-provider-max-turns"),
+    ("ratelimit", "provider_failure", "claude-provider-usage-limit-exceeded"),
+    ("unauthorized", "provider_failure", "claude-provider-authentication-failed"),
+])
+def test_c03_each_observed_ending_gets_its_own_name(tmp_path, scenario, outcome, cause):
+    result, events, _, _ = execute(scenario, tmp_path)
+    assert classify_result(result) == outcome
+    assert (result.get("failure") or {}).get("cause") == cause
+    assert result["provider"] == "claude-code-cli" and result["transport"] == "claude_cli"
+    # The raw provider line is kept beside the normalized one and never renamed into another protocol.
+    for event in events:
+        assert event["provider"] == "claude-code-cli"
+        assert "method" not in event and "params" not in event
+    assert result["interrupted"] is False and result["rotate"] is False
+
+
+def test_c03_a_clean_exit_with_no_output_is_not_an_answer(tmp_path):
+    result, _, _, _ = execute("empty", tmp_path)
+    assert result["process"]["exit_code"] == 0 and result["terminal"]["subtype"] == "success"
+    assert result["answer"] is None and classify_result(result) != "accepted"
+    assert result["structural"]["checks"]["text"] == "failed"
+
+
+def test_c03_tool_activity_without_an_answer_is_tool_only_and_observed_by_the_runner(tmp_path):
+    result, _, _, _ = execute("toolonly", tmp_path)
+    assert classify_result(result) == "tool_only" and result["answer"] is None
+    assert result["tool_items"] == 1
+    assert result["tool_usage_observed"]["completed"] == ["toolu_fixture_1"]
+    assert result["tool_usage_observed"]["started"] == ["toolu_fixture_1"]
+
+
+def test_c03_malformed_lines_are_counted_and_never_stop_a_valid_terminal(tmp_path):
+    result, events, _, _ = execute("malformed", tmp_path)
+    assert result["stream"]["malformed_lines"] == 3
+    assert classify_result(result) == "accepted"
+    defects = [event["defect"] for event in events if event["type"] == "malformed"]
+    assert len(defects) == 3 and all(defects)
+
+
+def test_c03_an_identical_repeat_is_a_redelivery_and_a_different_one_is_a_conflict(tmp_path):
+    same, _, _, _ = execute("redelivered", tmp_path)
+    assert same["terminal"]["redelivered"] == 1 and same["terminal"]["conflicting"] is False
+    different, _, _, _ = execute("conflict", tmp_path)
+    assert different["terminal"]["conflicting"] is True
+    assert different["failure"]["cause"] == "claude-provider-conflicting-terminal"
+
+
+def test_c03_the_schema_is_checked_here_not_taken_on_the_providers_word(tmp_path):
+    result, _, _, _ = execute("badschema", tmp_path)
+    assert result["answer"] is None
+    assert result["failure"]["cause"] == "claude-output-schema-mismatch"
+    assert result["failure"]["owner"] == "agent_output"
+    assert result["structural"]["checks"]["schema"] == "failed"
+    assert result["answer_source"] == "structured_output"
+
+
+def test_c03_a_refused_permission_is_recorded_and_is_not_an_answer(tmp_path):
+    result, events, _, _ = execute("denied", tmp_path)
+    assert [event["type"] for event in events if event["type"] == "permission_denied"] == ["permission_denied"]
+    assert result["stream"]["permission_denials"] == [{"id": "denial-1", "status": "denied"}]
+    assert classify_result(result) != "accepted"
+
+
+# ---- C04 at the transport: usage is read once, from the terminal message -------------------------
+
+def test_c04_usage_comes_only_from_the_terminal_message_and_names_its_parts(tmp_path):
+    result, _, _, _ = execute("redelivered", tmp_path)
+    record = usage_record({**result, "requested_model": result["requested_model"]}, "claude_cli")
+    assert record["source"] == "claude/result.usage"
+    assert record["parts"] == {"input_tokens": 120, "output_tokens": 30,
+                               "cache_creation_input_tokens": 5, "cache_read_input_tokens": 7}
+    # 120 + 30 + 5 + 7 counted once, although two identical result messages arrived.
+    assert record["total_tokens"] == 162 and record["basis"] == "result_total_including_cache"
+    assert record["confirmed_model"] == "claude-stub-redelivered"
+    assert record["requested_model"] == "claude-stub-redelivered"
+    assert record["reported_cost_usd"] == 0.0123 and record["cost_source"] == "provider_estimate"
+    assert "never a billed amount" in record["cost_note"]
+
+
+# ---- C06: bounded endings, with the tree actually gone -------------------------------------------
+
+def test_c06_a_silent_child_ends_at_the_deadline_with_its_tree_confirmed_gone(tmp_path):
+    started = time.monotonic()
+    result, _, ticks, runtime = execute("silent", tmp_path, timeout=4)
+    assert 3 <= time.monotonic() - started < 40
+    assert result["failure"]["cause"] == "claude-provider-timeout"
+    assert result["process"]["confirmed"] and result["process"]["stop_reason"] == "deadline"
+    assert runtime.process.poll() is not None
+    assert len(ticks) > 1, "the tick kept running while nothing arrived"
+
+
+def test_c06_a_child_that_never_reads_stdin_does_not_deadlock_the_runner(tmp_path):
+    result, _, _, runtime = execute("nostdin", tmp_path, prompt="x" * 200000, timeout=4)
+    assert result["failure"]["cause"] == "claude-provider-timeout"
+    assert result["process"]["confirmed"] and runtime.process.poll() is not None
+    assert result["stream"]["stdin"]["state"] in {"pending", "written", "failed", "written_close_failed"}
+
+
+def test_c06_a_flooding_child_is_bounded_and_says_so(tmp_path):
+    result, events, _, _ = execute("flood", tmp_path, limits={"stream_bytes": 200_000, "retained_events": 20})
+    assert result["stream"]["truncated"] is True
+    assert result["failure"]["cause"] == "claude-provider-stream-truncated"
+    # Past the limit nothing more is kept, so the retained events stay few, while the byte counter
+    # shows the reader went on to the end of the pipe rather than leaving the child blocked on it.
+    assert len(events) <= 20
+    assert result["stream"]["bytes_total"] > 3_000_000 and result["process"]["exit_code"] == 0
+
+
+def test_c06_an_oversized_line_is_skipped_and_recorded_without_losing_the_run(tmp_path):
+    result, events, _, _ = execute("longline", tmp_path, limits={"line_bytes": 100_000})
+    assert result["stream"]["counts"]["oversized_line"] == 1
+    assert any(event["raw_type"] == "oversized" for event in events)
+    assert classify_result(result) == "accepted", "the terminal result after the oversized line still counted"
+
+
+def test_c06_a_lost_lease_stops_the_tree_before_the_failure_is_raised(tmp_path):
+    calls = {"count": 0}
+
+    def tick():
+        calls["count"] += 1
+        if calls["count"] > 3:
+            raise ContractError("Execution lease lost")
+
+    runtime = transport("silent")
+    with runtime as opened:
+        with pytest.raises(ContractError, match="lease lost"):
+            opened.run("prompt", str(tmp_path), SCHEMA, timeout=60, on_tick=tick)
+    assert runtime.process.poll() is not None
+    assert runtime._termination["confirmed"] is True
+
+
+def test_c06_cancelling_ends_the_run_without_waiting_for_the_deadline(tmp_path):
+    checks = {"count": 0}
+
+    def cancel():
+        checks["count"] += 1
+        return checks["count"] > 3
+
+    runtime = transport("silent")
+    started = time.monotonic()
+    with runtime as opened:
+        result = opened.run("prompt", str(tmp_path), SCHEMA, timeout=300, cancel=cancel)
+    assert time.monotonic() - started < 60
+    assert result["failure"]["cause"] == "claude-provider-cancelled"
+    assert result["process"]["confirmed"] and runtime.process.poll() is not None
+
+
+def test_c06_the_descendants_of_the_child_are_killed_with_it(tmp_path):
+    result, _, _, runtime = execute("tree", tmp_path, timeout=5)
+    assert result["process"]["confirmed"], "the parent and the tree were both proven gone"
+    assert result["process"]["parent"]["confirmed"] and result["process"]["exit_code"] is not None
+    tree = result["process"]["tree"]
+    assert tree["confirmed"] is True
+    if os.name == "nt":
+        assert tree["method"] == "job_object" and tree["active_processes"] == 0
+    else:
+        assert tree["method"] == "process_group" and tree["group_empty"] is True
+    marker = Path(observation(tmp_path)["grandchild_marker"])
+    assert marker.exists(), "the grandchild was alive and writing before the kill"
+    time.sleep(1.5)
+    settled = marker.read_bytes()
+    time.sleep(1.5)
+    assert marker.read_bytes() == settled, "the grandchild stopped writing when its parent tree died"
+
+
+def test_c06_an_unconfirmed_termination_is_unknown_and_raises_rather_than_returning(tmp_path, monkeypatch):
+    runtime = transport("silent")
+    with runtime as opened:
+        monkeypatch.setattr(opened, "_terminate",
+                            lambda reason: {"reason": reason, "method": "fixture", "confirmed": False,
+                                            "exit_code": None, "escalated": True, "group_empty": False,
+                                            "signal_result": None})
+        with pytest.raises(ContractError, match="termination could not be confirmed"):
+            opened.run("prompt", str(tmp_path), SCHEMA, timeout=3)
+    assert runtime.process.poll() is not None or runtime.process.kill() is None
+
+
+# ---- the transport's declared support matrix is enforced before anything starts -------------------
+
+def test_the_request_matrix_refuses_what_this_transport_cannot_prove(tmp_path):
+    accepted = parse_request("claude_cli", {"model": "claude-fable-5-1", "timeout": 30,
+                                            "output_schema": SCHEMA, "read_only": False,
+                                            "max_budget_usd": 1.0, "permission_mode": "acceptEdits"})
+    assert accepted["options"]["max_budget_usd"] == 1.0
+    # read_only is checked here now (restricted profile before spawn, observed tool uses during the
+    # run), so even a writable request lists it among the effects verified here.
+    assert accepted["unconfirmed"] == []
+    assert set(accepted["unsupported"]) == {"session_resume", "system", "temperature",
+                                            "max_output_tokens", "response_format"}
+    # A spend ceiling is passed to the provider and enforced by it; this harness does not verify
+    # that it stopped anything, and the request says which side each effect belongs to.
+    assert set(accepted["declared"]) == {"max_budget_usd", "permission_mode"}
+    assert accepted["effect_verified_here"] == ["model", "output_schema", "read_only", "timeout"]
+    assert accepted["effect_left_to_provider"] == ["max_budget_usd", "permission_mode"]
+    codex = parse_request("app_server", {"model": "gpt-6-astra", "timeout": 30})
+    assert codex["declared"] == [] and codex["effect_left_to_provider"] == []
+    assert parse_request("claude_cli", {"model": "claude-fable-5-1", "read_only": True})["options"]["read_only"]
+    with pytest.raises(ContractError, match="not supported by claude_cli"):
+        parse_request("claude_cli", {"model": "claude-fable-5-1", "session_resume": True})
+    # The writable runtime is not a read-only profile: refused before any process exists.
+    writable = transport("normal")
+    with pytest.raises(ContractError, match="Read-only runtime"):
+        writable.run("p", str(tmp_path), SCHEMA, timeout=10, read_only=True)
+    assert writable.process is None and not (tmp_path / "stub-runs.log").exists()
+    with pytest.raises(ContractError, match="differs from the configured"):
+        transport("normal").run("p", str(tmp_path), SCHEMA, timeout=10, model="claude-other")
+
+
+def test_an_installed_cli_without_a_required_option_is_refused_before_entry(tmp_path, monkeypatch):
+    runtime = transport("normal")
+    monkeypatch.setattr(runtime, "_read_capabilities", lambda: ("--print", "--model"))
+    with pytest.raises(ContractError, match="lacks required options"):
+        runtime.__enter__()
+    assert runtime.process is None, "nothing was started"
+
+
+def test_a_missing_cli_is_a_refusal_that_never_starts_anything():
+    runtime = ClaudeCodeRuntime(model="claude-fable-5-1", executable=None, max_budget_usd=1.0)
+    runtime.executable = None
+    with pytest.raises(ContractError, match="not installed"):
+        runtime.__enter__()
+    assert runtime.process is None
+
+
+# ---- self-review: what is recorded when the provider tells us nothing, and when we lose output ----
+
+def test_a_missing_startup_report_is_not_a_report_of_nothing(tmp_path):
+    """An absent `system/init` says nothing about what loaded, which is not the same as an empty list."""
+    reported, _, _, _ = execute("normal", tmp_path)
+    silent, _, _, _ = execute("noinit", tmp_path)
+    assert reported["effective_configuration"]["reported"] is True
+    assert reported["effective_configuration"]["mcp_servers"] == []
+    assert silent["effective_configuration"]["reported"] is False
+    assert "mcp_servers" not in silent["effective_configuration"]
+    assert classify_result(silent) == "accepted", "a missing startup report is not a bad answer"
+
+
+def test_output_that_was_read_but_never_examined_is_lost_output(tmp_path):
+    """The queue is the third way to lose provider output, beside a byte limit and a dead reader.
+
+    The readers must never wait on a full queue, because a child blocked on its own pipe is worse
+    than a dropped line; so a consumer slower than the provider loses lines, and that loss is the
+    failure rather than a quietly shorter record."""
+    runtime = transport("flood", limits={"queue_events": 2, "retained_events": 5})
+    with runtime as opened:
+        result = opened.run("bounded queue fixture", str(tmp_path), SCHEMA, timeout=30,
+                            on_event=lambda event: time.sleep(0.02))
+    assert result["stream"]["counts"].get("queue_full", 0) > 0
+    assert classify_result(result) == "provider_failure"
+    assert "never examined" in result["failure"]["lost_output"]
+    assert result["process"]["confirmed"], "the child was not left blocked on its pipe"
+
+
+def test_each_way_of_losing_output_is_named(tmp_path):
+    """The rule itself, without needing three different hostile children to reach it."""
+    from codex_harness.execution.adapters.providers.claude_cli import _lost_output, _StreamState
+    limits = {"line_bytes": 10, "stream_bytes": 10, "queue_events": 1, "retained_events": 1}
+    assert _lost_output(_StreamState(limits, _no_redaction_stand_in)) is None
+    truncated = _StreamState(limits, _no_redaction_stand_in)
+    truncated.truncated = True
+    assert "output limit" in _lost_output(truncated)
+    overflowed = _StreamState(limits, _no_redaction_stand_in)
+    overflowed.count("queue_full")
+    assert "never examined" in _lost_output(overflowed)
+    broken = _StreamState(limits, _no_redaction_stand_in)
+    broken.reader_errors.append({"stream": "stdout", "error": "OSError"})
+    assert "stdout reader failed" in _lost_output(broken)
+    # A dead stderr reader loses diagnostics, not the record of what the provider did.
+    noisy = _StreamState(limits, _no_redaction_stand_in)
+    noisy.reader_errors.append({"stream": "stderr", "error": "OSError"})
+    assert _lost_output(noisy) is None
+
+
+def test_the_stronger_containment_control_is_available_and_off(tmp_path):
+    """`--restricted` is wired and declared, and stays off until a real call has verified it."""
+    from codex_harness.routing.adapters.provider_policy import packaged_policy
+
+    packaged = packaged_policy().provider("claude").runtime
+    assert packaged["restricted"] is False and packaged["restricted_note"]
+    assert any("skills, custom commands" in row for row in packaged["uncontrolled_inheritance"])
+    off = transport("normal")
+    assert "--restricted" not in off._planned_flags()
+    on = ClaudeCodeRuntime(model="claude-stub-normal", runtime={**RUNTIME, "restricted": True},
+                           executable=str(CHILD), launcher=[sys.executable], max_budget_usd=1.0,
+                           settings_document=claude_settings(RUNTIME))
+    assert "--restricted" in on._planned_flags()
+    with on as opened:
+        argv, manifest = opened._command(schema=SCHEMA, session_id="00000000-0000-4000-8000-000000000002")
+    assert "--restricted" in argv and "--restricted" in manifest
+
+
+# ---- INV-CLAUDE-WORKER-001 responsibility routing: a proven read-only execution -----------------
+
+def packaged_overlay() -> dict:
+    from codex_harness.routing.adapters.provider_policy import packaged_policy
+
+    return packaged_policy().provider("claude").read_only_runtime
+
+
+def read_only_transport(scenario: str, runtime: dict | None = None, **kwargs) -> ClaudeCodeRuntime:
+    """The fixture runtime with the packaged read-only overlay on top, as select_execution builds it."""
+    runtime = runtime if runtime is not None else {**RUNTIME, **packaged_overlay()}
+    kwargs.setdefault("settings_document", claude_settings(runtime))
+    return ClaudeCodeRuntime(model="claude-stub-" + scenario, runtime=runtime, executable=str(CHILD),
+                             launcher=[sys.executable], max_budget_usd=1.0, **kwargs)
+
+
+def read_only_execute(scenario, workspace, timeout=60, **kwargs):
+    events = []
+    runtime = read_only_transport(scenario, **kwargs)
+    with runtime as opened:
+        result = opened.run("read-only fixture prompt", str(workspace), SCHEMA, timeout=timeout,
+                            on_event=events.append, read_only=True)
+    return result, events, runtime
+
+
+def _overlaid(**changes):
+    return {**RUNTIME, **packaged_overlay(), **changes}
+
+
+@pytest.mark.parametrize("case", [
+    "unrestricted", "accept_edits", "bash_exposed", "bash_allowed", "edit_not_denied", "pattern_grant",
+    "prompts_not_denied", "restricted_missing", "settings_with_hooks", "settings_grant_bash",
+    "settings_absent", "settings_mode", "project_delivery", "task_session", "worker_profile"])
+def test_read_only_rejects_unrestricted_or_conflicting_effective_settings_before_spawn(tmp_path, case):
+    runtime, kwargs, run_kwargs = _overlaid(), {}, {}
+    if case == "unrestricted":
+        runtime = _overlaid(restricted=False)
+    elif case == "accept_edits":
+        runtime = _overlaid(permission_mode="acceptEdits")
+    elif case == "bash_exposed":
+        runtime = _overlaid(tools=["Read", "Glob", "Grep", "Bash"])
+    elif case == "bash_allowed":
+        runtime = _overlaid(allowed_tools=["Read", "Bash(git status *)"])
+    elif case == "edit_not_denied":
+        runtime = _overlaid(disallowed_tools=["Bash", "Write", "NotebookEdit"])
+    elif case == "pattern_grant":
+        runtime = _overlaid(allowed_tools=["Read(*)"])
+    elif case == "prompts_not_denied":
+        runtime = {key: value for key, value in _overlaid().items() if key != "permission_prompts"}
+    elif case == "restricted_missing":
+        runtime = {key: value for key, value in _overlaid().items() if key != "restricted"}
+    elif case == "settings_with_hooks":
+        kwargs["settings_document"] = {**claude_settings(runtime), "hooks": {"SessionStart": []}}
+    elif case == "settings_grant_bash":
+        settings = claude_settings(runtime)
+        settings["permissions"]["allow"] = [*settings["permissions"]["allow"], "Bash(python -m pytest *)"]
+        kwargs["settings_document"] = settings
+    elif case == "settings_absent":
+        kwargs["settings_document"] = None
+    elif case == "settings_mode":
+        settings = claude_settings(runtime)
+        settings["permissions"]["defaultMode"] = "bypassPermissions"
+        kwargs["settings_document"] = settings
+    elif case == "project_delivery":
+        kwargs["project_delivery"] = {"permissions_allow": ["Bash(python -m pytest -q)"],
+                                      "document": "project checks", "workspace": str(tmp_path.resolve())}
+    elif case == "task_session":
+        run_kwargs["task_session"] = {"mode": "fresh"}
+    runtime_object = read_only_transport("ro-clean-all", runtime=runtime, **kwargs)
+    if case == "worker_profile":
+        runtime_object.profile = {"document": "a profile may add Bash grants and hooks"}
+    # The three carriers refuse on the read-only guard itself, not on a later check that would also
+    # refuse them (a task session without an owned home, for example).
+    carrier = case in ("worker_profile", "project_delivery", "task_session")
+    with runtime_object as opened:
+        with pytest.raises(ContractError, match="read-only claude_cli run carries no" if carrier else None):
+            opened.run("p", str(tmp_path), SCHEMA, timeout=30, read_only=True, **run_kwargs)
+    assert runtime_object.process is None, "refused before any process started"
+    assert not (tmp_path / "stub-runs.log").exists()
+
+
+def test_read_only_allowed_tools_complete_with_restricted_argv(tmp_path):
+    result, events, runtime = read_only_execute("ro-clean-all", tmp_path)
+    assert classify_result(result) == "accepted" and "failure" not in result
+    argv = observation(tmp_path)["argv"]
+    assert "--restricted" in argv
+    assert argv[argv.index("--permission-mode") + 1] == "dontAsk"
+    assert argv[argv.index("--permission-prompts") + 1] == "none"
+    assert argv[argv.index("--tools") + 1] == "Read,Glob,Grep"
+    assert "--append-system-prompt" not in argv, "no worker or project profile was delivered"
+    settings = json.loads(observation(tmp_path)["settings"])
+    assert settings == {"permissions": {"allow": ["Read", "Glob", "Grep"],
+                                        "deny": ["Bash", "Edit", "Write", "NotebookEdit", "Task",
+                                                 "WebFetch", "WebSearch", "mcp__*"],
+                                        "defaultMode": "dontAsk"}}
+    applied = result["command"]["read_only_profile"]
+    assert applied["applied"] is True and applied["allowed_tools"] == ["Glob", "Grep", "Read"]
+    assert applied["answer_channel_tools"] == ["StructuredOutput"]
+    assert applied["profile_sha256"]
+    # The real CLI returns the --json-schema answer through its synthetic StructuredOutput tool (the
+    # fixture emits that exact sequence); it is accepted as the answer channel, never granted in argv.
+    assert result["tool_usage_observed"]["started"] == ["toolu_ro_0", "toolu_ro_1", "toolu_ro_2",
+                                                        "toolu_structured_output"]
+    assert "StructuredOutput" not in argv[argv.index("--tools") + 1]
+    assert "StructuredOutput" not in json.dumps(settings)
+    assert result["answer_source"] == "structured_output"
+    # A writable run records no read-only profile: its command receipt keeps its shape.
+    writable, _, _, _ = execute("normal", tmp_path)
+    assert "read_only_profile" not in writable["command"]
+
+
+@pytest.mark.parametrize("scenario,limits,profile", [
+    *[("ro-before-" + key, None, None) for key in
+      ("bash", "edit", "write", "notebookedit", "task", "mcp", "unknown", "pattern", "noname", "noid",
+       "lookalike")],
+    ("ro-after-bash", None, None),
+    ("ro-late-bash", {"retained_events": 5}, None),
+    ("ro-hang-edit", None, None),
+    # A subset profile: Glob is a read-only tool, but not one this profile allows.
+    ("ro-clean-all", None, {"tools": ["Read", "Glob", "Grep"], "allowed_tools": ["Read"]}),
+])
+def test_read_only_tool_violation_survives_success_terminal_and_event_retention(tmp_path, scenario,
+                                                                                limits, profile):
+
+    runtime = _overlaid(**(profile or {}))
+    started = time.monotonic()
+    result, events, opened = read_only_execute(scenario, tmp_path, runtime=runtime,
+                                               **({"limits": limits} if limits else {}))
+    assert time.monotonic() - started < 45, "stopped by the violation, not by the deadline"
+    failure = result["failure"]
+    assert failure["cause"] == "claude-provider-read-only-violation"
+    assert failure["reason_code"] == "read_only_violation"
+    assert classify_result(result) == "provider_failure"
+    assert result["answer"] is None and result.get("answer_source") is None
+    assert result["process"]["confirmed"] and result["process"]["stop_reason"] == "read_only_violation"
+    assert opened.process.poll() is not None
+    assert CANARY not in json.dumps(failure), "no tool payload is echoed into the diagnostic"
+    assert "mcp__fixture__write" not in json.dumps(failure) and "Frobnicate" not in json.dumps(failure)
+    if scenario == "ro-after-bash":
+        assert result["terminal"]["present"] and result["terminal"]["subtype"] == "success"
+    if limits:
+        assert result["stream"]["dropped_retained_events"] > 0, "the violation was past the retention limit"

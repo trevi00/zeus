@@ -162,8 +162,8 @@ def test_s3_rows_are_accounted_for(table):
 
 S4_IMPLEMENTED = {"application/invocation_ledger.py", "domain/invocation.py", "adapters/call_budget.py",
                   "domain/provider_stream.py", "domain/worker_sessions.py", "application/worker_sessions.py",
-                  "adapters/codex.py"}
-S4_REMAINING = {"adapters/executor.py", "adapters/claude_cli.py", "adapters/hooks.py", "adapters/worker_sessions.py"}
+                  "adapters/codex.py", "adapters/claude_cli.py"}
+S4_REMAINING = {"adapters/executor.py", "adapters/hooks.py", "adapters/worker_sessions.py"}
 
 
 def test_s4_rows_moved_so_far_are_implemented_and_the_rest_stay_designed(table):

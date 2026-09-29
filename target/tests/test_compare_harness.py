@@ -57,7 +57,7 @@ S3_IMPLEMENTED = {"credentials.custody", "credentials.scrubber", "containers.sta
 S4_FAMILIES = {"execution.run_task", "review.decisions", "execution.ledger", "execution.units",
                "execution.output_contracts", "execution.lease_progress"}
 S4_IMPLEMENTED = {"execution.ledger", "execution.units", "execution.output_contracts",
-                  "execution.lease_progress"}  # S4 in progress: RunTask/ReviewDecisions pending
+                  "execution.lease_progress", "guards.unpatched_transport"}  # the S0 R-P control, both transports  # S4 in progress: RunTask/ReviewDecisions pending
 IMPLEMENTED = {**{f: "S1" for f in S1_FAMILIES}, **{f: "S2" for f in S2_FAMILIES},
                **{f: "S3" for f in S3_IMPLEMENTED}, **{f: "S4" for f in S4_IMPLEMENTED}}
 
