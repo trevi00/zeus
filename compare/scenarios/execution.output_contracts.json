@@ -2,8 +2,7 @@
  "family": "execution.output_contracts",
  "description": "S4 output schema and request contracts of the executor: role output schemas (closed objects), output severity, the implementation instruction (both paths), artifact-reader contracts, invocation options per transport, activity ring counters",
  "reference_driver": "drivers/reference/s4_contracts.py",
- "target_driver": null,
+ "target_driver": "drivers/target/s4_contracts.py",
  "golden": "goldens/reference/execution.output_contracts.json",
- "slice": "S4",
- "target_status": "pending: execution.domain.output_contracts not yet implemented"
+ "slice": "S4"
 }
