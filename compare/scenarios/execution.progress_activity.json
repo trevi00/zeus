@@ -1,0 +1,9 @@
+{
+ "family": "execution.progress_activity",
+ "description": "S4 progress-activity projection (named coverage correction observation->execution, DESIGN-run-task D1): activity_label, claude_result_status, build_receipt/validate_receipt refusals by fixed code, and the fixed last-event/completed-type/completed-status labels",
+ "reference_driver": "drivers/reference/s4_progress_activity.py",
+ "target_driver": null,
+ "target_status": "pending: progress activity not yet moved",
+ "golden": "goldens/reference/execution.progress_activity.json",
+ "slice": "S4"
+}

@@ -61,7 +61,8 @@ S4_FAMILIES = {"execution.run_task", "review.decisions", "execution.ledger", "ex
                "coordination.decision_claims", "observation.termination_markers",
                "observation.reconciliation_guard",
                "observation.event_write_side", "research.hook_effects", "coordination.breaker",
-               "research.adoption_gate", "coordination.workflow_submit", "coordination.session_checkpoints"}
+               "research.adoption_gate", "coordination.workflow_submit", "coordination.session_checkpoints",
+               "execution.progress_activity"}
 S4_IMPLEMENTED = {"execution.ledger", "execution.units", "execution.output_contracts",
                   "execution.lease_progress", "guards.unpatched_transport",
                   "coordination.execution_owners", "review.releases_units", "coordination.execution_time",

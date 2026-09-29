@@ -1,0 +1,2191 @@
+{
+ "build": {
+  "bad_activity_sequence": [
+   {
+    "code": "activity_sequence",
+    "message": "activity receipt invalid: activity_sequence",
+    "refused": "ActivityInvalid"
+   },
+   {
+    "code": "activity_sequence",
+    "message": "activity receipt invalid: activity_sequence",
+    "refused": "ActivityInvalid"
+   },
+   {
+    "code": "activity_sequence",
+    "message": "activity receipt invalid: activity_sequence",
+    "refused": "ActivityInvalid"
+   },
+   {
+    "code": "activity_sequence",
+    "message": "activity receipt invalid: activity_sequence",
+    "refused": "ActivityInvalid"
+   },
+   {
+    "code": "activity_sequence",
+    "message": "activity receipt invalid: activity_sequence",
+    "refused": "ActivityInvalid"
+   },
+   {
+    "code": "activity_sequence",
+    "message": "activity receipt invalid: activity_sequence",
+    "refused": "ActivityInvalid"
+   }
+  ],
+  "bad_collected_at": [
+   {
+    "code": "collected_at",
+    "message": "activity receipt invalid: collected_at",
+    "refused": "ActivityInvalid"
+   },
+   {
+    "code": "collected_at",
+    "message": "activity receipt invalid: collected_at",
+    "refused": "ActivityInvalid"
+   },
+   {
+    "code": "collected_at",
+    "message": "activity receipt invalid: collected_at",
+    "refused": "ActivityInvalid"
+   },
+   {
+    "code": "collected_at",
+    "message": "activity receipt invalid: collected_at",
+    "refused": "ActivityInvalid"
+   },
+   {
+    "code": "collected_at",
+    "message": "activity receipt invalid: collected_at",
+    "refused": "ActivityInvalid"
+   }
+  ],
+  "bad_counters": [
+   {
+    "code": "generation",
+    "message": "activity receipt invalid: generation",
+    "refused": "ActivityInvalid"
+   },
+   {
+    "code": "generation",
+    "message": "activity receipt invalid: generation",
+    "refused": "ActivityInvalid"
+   },
+   {
+    "code": "generation",
+    "message": "activity receipt invalid: generation",
+    "refused": "ActivityInvalid"
+   },
+   {
+    "code": "generation",
+    "message": "activity receipt invalid: generation",
+    "refused": "ActivityInvalid"
+   },
+   {
+    "code": "attempt",
+    "message": "activity receipt invalid: attempt",
+    "refused": "ActivityInvalid"
+   },
+   {
+    "code": "attempt",
+    "message": "activity receipt invalid: attempt",
+    "refused": "ActivityInvalid"
+   },
+   {
+    "code": "attempt",
+    "message": "activity receipt invalid: attempt",
+    "refused": "ActivityInvalid"
+   },
+   {
+    "code": "attempt",
+    "message": "activity receipt invalid: attempt",
+    "refused": "ActivityInvalid"
+   }
+  ],
+  "bad_execution": [
+   {
+    "code": "execution",
+    "message": "activity receipt invalid: execution",
+    "refused": "ActivityInvalid"
+   },
+   {
+    "code": "execution",
+    "message": "activity receipt invalid: execution",
+    "refused": "ActivityInvalid"
+   },
+   {
+    "code": "execution",
+    "message": "activity receipt invalid: execution",
+    "refused": "ActivityInvalid"
+   }
+  ],
+  "bad_progress_sequence": [
+   {
+    "code": "progress_sequence",
+    "message": "activity receipt invalid: progress_sequence",
+    "refused": "ActivityInvalid"
+   },
+   {
+    "code": "progress_sequence",
+    "message": "activity receipt invalid: progress_sequence",
+    "refused": "ActivityInvalid"
+   },
+   {
+    "code": "progress_sequence",
+    "message": "activity receipt invalid: progress_sequence",
+    "refused": "ActivityInvalid"
+   },
+   {
+    "code": "progress_sequence",
+    "message": "activity receipt invalid: progress_sequence",
+    "refused": "ActivityInvalid"
+   },
+   {
+    "code": "progress_sequence",
+    "message": "activity receipt invalid: progress_sequence",
+    "refused": "ActivityInvalid"
+   }
+  ],
+  "bad_raw_ref": [
+   {
+    "code": "raw_ref",
+    "message": "activity receipt invalid: raw_ref",
+    "refused": "ActivityInvalid"
+   },
+   {
+    "code": "raw_ref",
+    "message": "activity receipt invalid: raw_ref",
+    "refused": "ActivityInvalid"
+   },
+   {
+    "code": "raw_ref",
+    "message": "activity receipt invalid: raw_ref",
+    "refused": "ActivityInvalid"
+   },
+   {
+    "code": "raw_ref",
+    "message": "activity receipt invalid: raw_ref",
+    "refused": "ActivityInvalid"
+   },
+   {
+    "code": "raw_ref",
+    "message": "activity receipt invalid: raw_ref",
+    "refused": "ActivityInvalid"
+   },
+   {
+    "code": "raw_ref",
+    "message": "activity receipt invalid: raw_ref",
+    "refused": "ActivityInvalid"
+   },
+   {
+    "code": "raw_ref",
+    "message": "activity receipt invalid: raw_ref",
+    "refused": "ActivityInvalid"
+   }
+  ],
+  "bad_transport": {
+   "code": "not_activity",
+   "message": "activity receipt invalid: not_activity",
+   "refused": "ActivityInvalid"
+  },
+  "claude_ignores_occurred": {
+   "value": {
+    "activity_sequence": 1,
+    "attempt": 1,
+    "collected_at": "2026-01-01T00:00:00+00:00",
+    "event_label": "result",
+    "execution": "exec-1",
+    "generation": 1,
+    "item_type": null,
+    "occurred_at": null,
+    "progress_sequence": 5,
+    "raw_ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "schema": "urn:zeus:progress-activity:1",
+    "status": "success",
+    "tool_name": null,
+    "transport": "claude_cli"
+   }
+  },
+  "claude_permission_denied": {
+   "value": {
+    "activity_sequence": 1,
+    "attempt": 1,
+    "collected_at": "2026-01-01T00:00:00+00:00",
+    "event_label": "permission_denied",
+    "execution": "exec-1",
+    "generation": 1,
+    "item_type": null,
+    "occurred_at": null,
+    "progress_sequence": 4,
+    "raw_ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "schema": "urn:zeus:progress-activity:1",
+    "status": "denied",
+    "tool_name": null,
+    "transport": "claude_cli"
+   }
+  },
+  "claude_result": [
+   {
+    "value": {
+     "activity_sequence": 1,
+     "attempt": 1,
+     "collected_at": "2026-01-01T00:00:00+00:00",
+     "event_label": "result",
+     "execution": "exec-1",
+     "generation": 1,
+     "item_type": null,
+     "occurred_at": null,
+     "progress_sequence": 5,
+     "raw_ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "schema": "urn:zeus:progress-activity:1",
+     "status": "success",
+     "tool_name": null,
+     "transport": "claude_cli"
+    }
+   },
+   {
+    "value": {
+     "activity_sequence": 1,
+     "attempt": 1,
+     "collected_at": "2026-01-01T00:00:00+00:00",
+     "event_label": "result",
+     "execution": "exec-1",
+     "generation": 1,
+     "item_type": null,
+     "occurred_at": null,
+     "progress_sequence": 5,
+     "raw_ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "schema": "urn:zeus:progress-activity:1",
+     "status": "error",
+     "tool_name": null,
+     "transport": "claude_cli"
+    }
+   },
+   {
+    "value": {
+     "activity_sequence": 1,
+     "attempt": 1,
+     "collected_at": "2026-01-01T00:00:00+00:00",
+     "event_label": "result",
+     "execution": "exec-1",
+     "generation": 1,
+     "item_type": null,
+     "occurred_at": null,
+     "progress_sequence": 5,
+     "raw_ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "schema": "urn:zeus:progress-activity:1",
+     "status": "error",
+     "tool_name": null,
+     "transport": "claude_cli"
+    }
+   },
+   {
+    "value": {
+     "activity_sequence": 1,
+     "attempt": 1,
+     "collected_at": "2026-01-01T00:00:00+00:00",
+     "event_label": "result",
+     "execution": "exec-1",
+     "generation": 1,
+     "item_type": null,
+     "occurred_at": null,
+     "progress_sequence": 5,
+     "raw_ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "schema": "urn:zeus:progress-activity:1",
+     "status": "unknown",
+     "tool_name": null,
+     "transport": "claude_cli"
+    }
+   },
+   {
+    "value": {
+     "activity_sequence": 1,
+     "attempt": 1,
+     "collected_at": "2026-01-01T00:00:00+00:00",
+     "event_label": "result",
+     "execution": "exec-1",
+     "generation": 1,
+     "item_type": null,
+     "occurred_at": null,
+     "progress_sequence": 5,
+     "raw_ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "schema": "urn:zeus:progress-activity:1",
+     "status": "unknown",
+     "tool_name": null,
+     "transport": "claude_cli"
+    }
+   }
+  ],
+  "claude_session_started": {
+   "value": {
+    "activity_sequence": 1,
+    "attempt": 1,
+    "collected_at": "2026-01-01T00:00:00+00:00",
+    "event_label": "session_started",
+    "execution": "exec-1",
+    "generation": 1,
+    "item_type": null,
+    "occurred_at": null,
+    "progress_sequence": 2,
+    "raw_ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "schema": "urn:zeus:progress-activity:1",
+    "status": "started",
+    "tool_name": null,
+    "transport": "claude_cli"
+   }
+  },
+  "claude_tool_builtin": {
+   "value": {
+    "activity_sequence": 1,
+    "attempt": 1,
+    "collected_at": "2026-01-01T00:00:00+00:00",
+    "event_label": "tool_started",
+    "execution": "exec-1",
+    "generation": 1,
+    "item_type": null,
+    "occurred_at": null,
+    "progress_sequence": null,
+    "raw_ref": null,
+    "schema": "urn:zeus:progress-activity:1",
+    "status": "started",
+    "tool_name": "Bash",
+    "transport": "claude_cli"
+   }
+  },
+  "claude_tool_completed": [
+   {
+    "value": {
+     "activity_sequence": 3,
+     "attempt": 1,
+     "collected_at": "2026-01-01T00:00:00+00:00",
+     "event_label": "tool_completed",
+     "execution": "exec-1",
+     "generation": 1,
+     "item_type": null,
+     "occurred_at": null,
+     "progress_sequence": 3,
+     "raw_ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "schema": "urn:zeus:progress-activity:1",
+     "status": "completed",
+     "tool_name": null,
+     "transport": "claude_cli"
+    }
+   },
+   {
+    "value": {
+     "activity_sequence": 3,
+     "attempt": 1,
+     "collected_at": "2026-01-01T00:00:00+00:00",
+     "event_label": "tool_completed",
+     "execution": "exec-1",
+     "generation": 1,
+     "item_type": null,
+     "occurred_at": null,
+     "progress_sequence": 3,
+     "raw_ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "schema": "urn:zeus:progress-activity:1",
+     "status": "failed",
+     "tool_name": null,
+     "transport": "claude_cli"
+    }
+   },
+   {
+    "value": {
+     "activity_sequence": 3,
+     "attempt": 1,
+     "collected_at": "2026-01-01T00:00:00+00:00",
+     "event_label": "tool_completed",
+     "execution": "exec-1",
+     "generation": 1,
+     "item_type": null,
+     "occurred_at": null,
+     "progress_sequence": 3,
+     "raw_ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "schema": "urn:zeus:progress-activity:1",
+     "status": "unknown",
+     "tool_name": null,
+     "transport": "claude_cli"
+    }
+   },
+   {
+    "value": {
+     "activity_sequence": 3,
+     "attempt": 1,
+     "collected_at": "2026-01-01T00:00:00+00:00",
+     "event_label": "tool_completed",
+     "execution": "exec-1",
+     "generation": 1,
+     "item_type": null,
+     "occurred_at": null,
+     "progress_sequence": 3,
+     "raw_ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "schema": "urn:zeus:progress-activity:1",
+     "status": "unknown",
+     "tool_name": null,
+     "transport": "claude_cli"
+    }
+   }
+  ],
+  "claude_tool_custom": {
+   "value": {
+    "activity_sequence": 1,
+    "attempt": 1,
+    "collected_at": "2026-01-01T00:00:00+00:00",
+    "event_label": "tool_started",
+    "execution": "exec-1",
+    "generation": 1,
+    "item_type": null,
+    "occurred_at": null,
+    "progress_sequence": null,
+    "raw_ref": null,
+    "schema": "urn:zeus:progress-activity:1",
+    "status": "started",
+    "tool_name": null,
+    "transport": "claude_cli"
+   }
+  },
+  "claude_tool_nonstring": {
+   "value": {
+    "activity_sequence": 1,
+    "attempt": 1,
+    "collected_at": "2026-01-01T00:00:00+00:00",
+    "event_label": "tool_started",
+    "execution": "exec-1",
+    "generation": 1,
+    "item_type": null,
+    "occurred_at": null,
+    "progress_sequence": null,
+    "raw_ref": null,
+    "schema": "urn:zeus:progress-activity:1",
+    "status": "started",
+    "tool_name": null,
+    "transport": "claude_cli"
+   }
+  },
+  "codex_item_missing": [
+   {
+    "value": {
+     "activity_sequence": 1,
+     "attempt": 1,
+     "collected_at": "2026-01-01T00:00:00+00:00",
+     "event_label": "item_completed",
+     "execution": "exec-1",
+     "generation": 1,
+     "item_type": "unknown",
+     "occurred_at": null,
+     "progress_sequence": 6,
+     "raw_ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "schema": "urn:zeus:progress-activity:1",
+     "status": null,
+     "tool_name": null,
+     "transport": "app_server"
+    }
+   },
+   {
+    "value": {
+     "activity_sequence": 1,
+     "attempt": 1,
+     "collected_at": "2026-01-01T00:00:00+00:00",
+     "event_label": "item_completed",
+     "execution": "exec-1",
+     "generation": 1,
+     "item_type": "unknown",
+     "occurred_at": null,
+     "progress_sequence": 6,
+     "raw_ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "schema": "urn:zeus:progress-activity:1",
+     "status": null,
+     "tool_name": null,
+     "transport": "app_server"
+    }
+   },
+   {
+    "value": {
+     "activity_sequence": 1,
+     "attempt": 1,
+     "collected_at": "2026-01-01T00:00:00+00:00",
+     "event_label": "item_completed",
+     "execution": "exec-1",
+     "generation": 1,
+     "item_type": "unknown",
+     "occurred_at": null,
+     "progress_sequence": 6,
+     "raw_ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "schema": "urn:zeus:progress-activity:1",
+     "status": null,
+     "tool_name": null,
+     "transport": "app_server"
+    }
+   }
+  ],
+  "codex_item_types": [
+   {
+    "value": {
+     "activity_sequence": 1,
+     "attempt": 1,
+     "collected_at": "2026-01-01T00:00:00+00:00",
+     "event_label": "item_completed",
+     "execution": "exec-1",
+     "generation": 1,
+     "item_type": "agentMessage",
+     "occurred_at": "2026-01-01T00:00:00+00:00",
+     "progress_sequence": 6,
+     "raw_ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "schema": "urn:zeus:progress-activity:1",
+     "status": "completed",
+     "tool_name": null,
+     "transport": "app_server"
+    }
+   },
+   {
+    "value": {
+     "activity_sequence": 1,
+     "attempt": 1,
+     "collected_at": "2026-01-01T00:00:00+00:00",
+     "event_label": "item_completed",
+     "execution": "exec-1",
+     "generation": 1,
+     "item_type": "commandExecution",
+     "occurred_at": "2026-01-01T00:00:00+00:00",
+     "progress_sequence": 6,
+     "raw_ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "schema": "urn:zeus:progress-activity:1",
+     "status": "completed",
+     "tool_name": null,
+     "transport": "app_server"
+    }
+   },
+   {
+    "value": {
+     "activity_sequence": 1,
+     "attempt": 1,
+     "collected_at": "2026-01-01T00:00:00+00:00",
+     "event_label": "item_completed",
+     "execution": "exec-1",
+     "generation": 1,
+     "item_type": "fileChange",
+     "occurred_at": "2026-01-01T00:00:00+00:00",
+     "progress_sequence": 6,
+     "raw_ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "schema": "urn:zeus:progress-activity:1",
+     "status": "completed",
+     "tool_name": null,
+     "transport": "app_server"
+    }
+   },
+   {
+    "value": {
+     "activity_sequence": 1,
+     "attempt": 1,
+     "collected_at": "2026-01-01T00:00:00+00:00",
+     "event_label": "item_completed",
+     "execution": "exec-1",
+     "generation": 1,
+     "item_type": "mcpToolCall",
+     "occurred_at": "2026-01-01T00:00:00+00:00",
+     "progress_sequence": 6,
+     "raw_ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "schema": "urn:zeus:progress-activity:1",
+     "status": "completed",
+     "tool_name": null,
+     "transport": "app_server"
+    }
+   },
+   {
+    "value": {
+     "activity_sequence": 1,
+     "attempt": 1,
+     "collected_at": "2026-01-01T00:00:00+00:00",
+     "event_label": "item_completed",
+     "execution": "exec-1",
+     "generation": 1,
+     "item_type": "reasoning",
+     "occurred_at": "2026-01-01T00:00:00+00:00",
+     "progress_sequence": 6,
+     "raw_ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "schema": "urn:zeus:progress-activity:1",
+     "status": "completed",
+     "tool_name": null,
+     "transport": "app_server"
+    }
+   },
+   {
+    "value": {
+     "activity_sequence": 1,
+     "attempt": 1,
+     "collected_at": "2026-01-01T00:00:00+00:00",
+     "event_label": "item_completed",
+     "execution": "exec-1",
+     "generation": 1,
+     "item_type": "unknown",
+     "occurred_at": "2026-01-01T00:00:00+00:00",
+     "progress_sequence": 6,
+     "raw_ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "schema": "urn:zeus:progress-activity:1",
+     "status": "completed",
+     "tool_name": null,
+     "transport": "app_server"
+    }
+   },
+   {
+    "value": {
+     "activity_sequence": 1,
+     "attempt": 1,
+     "collected_at": "2026-01-01T00:00:00+00:00",
+     "event_label": "item_completed",
+     "execution": "exec-1",
+     "generation": 1,
+     "item_type": "unknown",
+     "occurred_at": "2026-01-01T00:00:00+00:00",
+     "progress_sequence": 6,
+     "raw_ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "schema": "urn:zeus:progress-activity:1",
+     "status": "completed",
+     "tool_name": null,
+     "transport": "app_server"
+    }
+   },
+   {
+    "value": {
+     "activity_sequence": 1,
+     "attempt": 1,
+     "collected_at": "2026-01-01T00:00:00+00:00",
+     "event_label": "item_completed",
+     "execution": "exec-1",
+     "generation": 1,
+     "item_type": "unknown",
+     "occurred_at": "2026-01-01T00:00:00+00:00",
+     "progress_sequence": 6,
+     "raw_ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "schema": "urn:zeus:progress-activity:1",
+     "status": "completed",
+     "tool_name": null,
+     "transport": "app_server"
+    }
+   }
+  ],
+  "codex_occurrence": [
+   {
+    "value": {
+     "activity_sequence": 1,
+     "attempt": 1,
+     "collected_at": "2026-01-01T00:00:00+00:00",
+     "event_label": "item_completed",
+     "execution": "exec-1",
+     "generation": 1,
+     "item_type": "reasoning",
+     "occurred_at": "2026-01-01T00:00:00+00:00",
+     "progress_sequence": 6,
+     "raw_ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "schema": "urn:zeus:progress-activity:1",
+     "status": "completed",
+     "tool_name": null,
+     "transport": "app_server"
+    }
+   },
+   {
+    "value": {
+     "activity_sequence": 1,
+     "attempt": 1,
+     "collected_at": "2026-01-01T00:00:00+00:00",
+     "event_label": "item_completed",
+     "execution": "exec-1",
+     "generation": 1,
+     "item_type": "reasoning",
+     "occurred_at": null,
+     "progress_sequence": 6,
+     "raw_ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "schema": "urn:zeus:progress-activity:1",
+     "status": "completed",
+     "tool_name": null,
+     "transport": "app_server"
+    }
+   },
+   {
+    "value": {
+     "activity_sequence": 1,
+     "attempt": 1,
+     "collected_at": "2026-01-01T00:00:00+00:00",
+     "event_label": "item_completed",
+     "execution": "exec-1",
+     "generation": 1,
+     "item_type": "reasoning",
+     "occurred_at": null,
+     "progress_sequence": 6,
+     "raw_ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "schema": "urn:zeus:progress-activity:1",
+     "status": "completed",
+     "tool_name": null,
+     "transport": "app_server"
+    }
+   }
+  ],
+  "codex_statuses": [
+   {
+    "value": {
+     "activity_sequence": 1,
+     "attempt": 1,
+     "collected_at": "2026-01-01T00:00:00+00:00",
+     "event_label": "item_completed",
+     "execution": "exec-1",
+     "generation": 1,
+     "item_type": "commandExecution",
+     "occurred_at": null,
+     "progress_sequence": 6,
+     "raw_ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "schema": "urn:zeus:progress-activity:1",
+     "status": "completed",
+     "tool_name": null,
+     "transport": "app_server"
+    }
+   },
+   {
+    "value": {
+     "activity_sequence": 1,
+     "attempt": 1,
+     "collected_at": "2026-01-01T00:00:00+00:00",
+     "event_label": "item_completed",
+     "execution": "exec-1",
+     "generation": 1,
+     "item_type": "commandExecution",
+     "occurred_at": null,
+     "progress_sequence": 6,
+     "raw_ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "schema": "urn:zeus:progress-activity:1",
+     "status": "failed",
+     "tool_name": null,
+     "transport": "app_server"
+    }
+   },
+   {
+    "value": {
+     "activity_sequence": 1,
+     "attempt": 1,
+     "collected_at": "2026-01-01T00:00:00+00:00",
+     "event_label": "item_completed",
+     "execution": "exec-1",
+     "generation": 1,
+     "item_type": "commandExecution",
+     "occurred_at": null,
+     "progress_sequence": 6,
+     "raw_ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "schema": "urn:zeus:progress-activity:1",
+     "status": "unknown",
+     "tool_name": null,
+     "transport": "app_server"
+    }
+   },
+   {
+    "value": {
+     "activity_sequence": 1,
+     "attempt": 1,
+     "collected_at": "2026-01-01T00:00:00+00:00",
+     "event_label": "item_completed",
+     "execution": "exec-1",
+     "generation": 1,
+     "item_type": "commandExecution",
+     "occurred_at": null,
+     "progress_sequence": 6,
+     "raw_ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "schema": "urn:zeus:progress-activity:1",
+     "status": null,
+     "tool_name": null,
+     "transport": "app_server"
+    }
+   },
+   {
+    "value": {
+     "activity_sequence": 1,
+     "attempt": 1,
+     "collected_at": "2026-01-01T00:00:00+00:00",
+     "event_label": "item_completed",
+     "execution": "exec-1",
+     "generation": 1,
+     "item_type": "commandExecution",
+     "occurred_at": null,
+     "progress_sequence": 6,
+     "raw_ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "schema": "urn:zeus:progress-activity:1",
+     "status": "unknown",
+     "tool_name": null,
+     "transport": "app_server"
+    }
+   }
+  ],
+  "not_activity": [
+   {
+    "code": "not_activity",
+    "message": "activity receipt invalid: not_activity",
+    "refused": "ActivityInvalid"
+   },
+   {
+    "code": "not_activity",
+    "message": "activity receipt invalid: not_activity",
+    "refused": "ActivityInvalid"
+   },
+   {
+    "code": "not_activity",
+    "message": "activity receipt invalid: not_activity",
+    "refused": "ActivityInvalid"
+   },
+   {
+    "code": "not_activity",
+    "message": "activity receipt invalid: not_activity",
+    "refused": "ActivityInvalid"
+   },
+   {
+    "code": "not_activity",
+    "message": "activity receipt invalid: not_activity",
+    "refused": "ActivityInvalid"
+   }
+  ],
+  "nullable_counters": {
+   "value": {
+    "activity_sequence": 1,
+    "attempt": null,
+    "collected_at": "2026-01-01T00:00:00+00:00",
+    "event_label": "tool_started",
+    "execution": "exec-1",
+    "generation": null,
+    "item_type": null,
+    "occurred_at": null,
+    "progress_sequence": null,
+    "raw_ref": null,
+    "schema": "urn:zeus:progress-activity:1",
+    "status": "started",
+    "tool_name": "Bash",
+    "transport": "claude_cli"
+   }
+  },
+  "offset_collected_at": {
+   "value": {
+    "activity_sequence": 1,
+    "attempt": 1,
+    "collected_at": "2026-01-01T00:00:00+00:00",
+    "event_label": "tool_started",
+    "execution": "exec-1",
+    "generation": 1,
+    "item_type": null,
+    "occurred_at": null,
+    "progress_sequence": null,
+    "raw_ref": null,
+    "schema": "urn:zeus:progress-activity:1",
+    "status": "started",
+    "tool_name": "Bash",
+    "transport": "claude_cli"
+   }
+  },
+  "start_with_raw": [
+   {
+    "code": "start_raw",
+    "message": "activity receipt invalid: start_raw",
+    "refused": "ActivityInvalid"
+   },
+   {
+    "code": "start_raw",
+    "message": "activity receipt invalid: start_raw",
+    "refused": "ActivityInvalid"
+   }
+  ],
+  "too_large": {
+   "code": "too_large",
+   "message": "activity receipt invalid: too_large",
+   "refused": "ActivityInvalid"
+  },
+  "zero_counters": {
+   "value": {
+    "activity_sequence": 1,
+    "attempt": 0,
+    "collected_at": "2026-01-01T00:00:00+00:00",
+    "event_label": "tool_started",
+    "execution": "exec-1",
+    "generation": 0,
+    "item_type": null,
+    "occurred_at": null,
+    "progress_sequence": null,
+    "raw_ref": null,
+    "schema": "urn:zeus:progress-activity:1",
+    "status": "started",
+    "tool_name": "Bash",
+    "transport": "claude_cli"
+   }
+  }
+ },
+ "constants": {
+  "body_bytes": 65536,
+  "builtin_tools": [
+   "Bash",
+   "Edit",
+   "Glob",
+   "Grep",
+   "NotebookEdit",
+   "Read",
+   "StructuredOutput",
+   "Task",
+   "WebFetch",
+   "WebSearch",
+   "Write"
+  ],
+  "ring": 6,
+  "schema": "urn:zeus:progress-activity:1"
+ },
+ "fixed_completed_status": [
+  {
+   "value": "completed"
+  },
+  {
+   "value": "denied"
+  },
+  {
+   "value": "emitted"
+  },
+  {
+   "value": "error"
+  },
+  {
+   "value": "failed"
+  },
+  {
+   "value": "started"
+  },
+  {
+   "value": "success"
+  },
+  {
+   "value": "unknown"
+  },
+  {
+   "value": "error"
+  },
+  {
+   "value": "error"
+  },
+  {
+   "value": "error"
+  },
+  {
+   "value": "unknown"
+  },
+  {
+   "value": "unknown"
+  },
+  {
+   "value": "unknown"
+  },
+  {
+   "value": null
+  },
+  {
+   "value": "unknown"
+  },
+  {
+   "value": "unknown"
+  },
+  {
+   "value": "unknown"
+  }
+ ],
+ "fixed_completed_type": [
+  {
+   "value": "agentMessage"
+  },
+  {
+   "value": "commandExecution"
+  },
+  {
+   "value": "fileChange"
+  },
+  {
+   "value": "mcpToolCall"
+  },
+  {
+   "value": "message"
+  },
+  {
+   "value": "permission_denied"
+  },
+  {
+   "value": "reasoning"
+  },
+  {
+   "value": "result"
+  },
+  {
+   "value": "session_started"
+  },
+  {
+   "value": "tool_completed"
+  },
+  {
+   "value": "tool_started"
+  },
+  {
+   "value": "unknown"
+  },
+  {
+   "value": "unknown"
+  },
+  {
+   "value": "unknown"
+  },
+  {
+   "value": null
+  },
+  {
+   "value": "unknown"
+  },
+  {
+   "value": "unknown"
+  },
+  {
+   "value": "unknown"
+  }
+ ],
+ "fixed_last_event": [
+  {
+   "value": "item/completed"
+  },
+  {
+   "value": "thread/tokenUsage/updated"
+  },
+  {
+   "value": "claude/system/init"
+  },
+  {
+   "value": "claude/system/permission_denied"
+  },
+  {
+   "value": "claude/system"
+  },
+  {
+   "value": "claude/user"
+  },
+  {
+   "value": "claude/assistant"
+  },
+  {
+   "value": "claude/result"
+  },
+  {
+   "value": "claude/malformed"
+  },
+  {
+   "value": "claude/system"
+  },
+  {
+   "value": "claude/user"
+  },
+  {
+   "value": "claude/assistant"
+  },
+  {
+   "value": "claude/result"
+  },
+  {
+   "value": "claude/malformed"
+  },
+  {
+   "value": "unknown"
+  },
+  {
+   "value": "unknown"
+  },
+  {
+   "value": "unknown"
+  },
+  {
+   "value": "unknown"
+  },
+  {
+   "value": "unknown"
+  },
+  {
+   "value": "unknown"
+  },
+  {
+   "value": null
+  },
+  {
+   "value": "unknown"
+  },
+  {
+   "value": "unknown"
+  },
+  {
+   "value": "unknown"
+  },
+  {
+   "value": "unknown"
+  }
+ ],
+ "label_claude": [
+  {
+   "value": "session_started"
+  },
+  {
+   "value": "tool_started"
+  },
+  {
+   "value": "tool_completed"
+  },
+  {
+   "value": "permission_denied"
+  },
+  {
+   "value": "result"
+  },
+  {
+   "value": null
+  },
+  {
+   "value": null
+  },
+  {
+   "value": null
+  }
+ ],
+ "label_codex": [
+  {
+   "value": "item_completed"
+  },
+  {
+   "value": null
+  },
+  {
+   "value": null
+  },
+  {
+   "value": null
+  }
+ ],
+ "label_odd": [
+  {
+   "value": null
+  },
+  {
+   "value": null
+  },
+  {
+   "value": null
+  },
+  {
+   "value": null
+  },
+  {
+   "value": null
+  },
+  {
+   "value": null
+  },
+  {
+   "value": null
+  },
+  {
+   "value": null
+  },
+  {
+   "value": null
+  },
+  {
+   "value": null
+  }
+ ],
+ "label_transport": [
+  {
+   "value": null
+  },
+  {
+   "value": null
+  },
+  {
+   "value": null
+  }
+ ],
+ "result_status": [
+  {
+   "value": "success"
+  },
+  {
+   "value": "success"
+  },
+  {
+   "value": "error"
+  },
+  {
+   "value": "error"
+  },
+  {
+   "value": "error"
+  },
+  {
+   "value": "error"
+  },
+  {
+   "value": "error"
+  },
+  {
+   "value": "unknown"
+  },
+  {
+   "value": "unknown"
+  },
+  {
+   "value": "unknown"
+  },
+  {
+   "value": "unknown"
+  },
+  {
+   "value": "unknown"
+  }
+ ],
+ "valid_count": 37,
+ "validate_invalid": {
+  "activity_zero": {
+   "code": "activity_sequence",
+   "message": "activity receipt invalid: activity_sequence",
+   "refused": "ActivityInvalid"
+  },
+  "attempt_bad": {
+   "code": "attempt",
+   "message": "activity receipt invalid: attempt",
+   "refused": "ActivityInvalid"
+  },
+  "bad_label": {
+   "code": "event_label",
+   "message": "activity receipt invalid: event_label",
+   "refused": "ActivityInvalid"
+  },
+  "bad_status": {
+   "code": "status",
+   "message": "activity receipt invalid: status",
+   "refused": "ActivityInvalid"
+  },
+  "bad_transport": {
+   "code": "transport",
+   "message": "activity receipt invalid: transport",
+   "refused": "ActivityInvalid"
+  },
+  "claude_item_type": {
+   "code": "item_type",
+   "message": "activity receipt invalid: item_type",
+   "refused": "ActivityInvalid"
+  },
+  "codex_item_type_bad": {
+   "code": "item_type",
+   "message": "activity receipt invalid: item_type",
+   "refused": "ActivityInvalid"
+  },
+  "codex_item_type_list": {
+   "code": "item_type",
+   "message": "activity receipt invalid: item_type",
+   "refused": "ActivityInvalid"
+  },
+  "codex_item_type_none": {
+   "code": "item_type",
+   "message": "activity receipt invalid: item_type",
+   "refused": "ActivityInvalid"
+  },
+  "codex_status_bad": {
+   "code": "status",
+   "message": "activity receipt invalid: status",
+   "refused": "ActivityInvalid"
+  },
+  "codex_status_none": {
+   "value": {
+    "activity_sequence": 1,
+    "attempt": 1,
+    "collected_at": "2026-01-01T00:00:00+00:00",
+    "event_label": "item_completed",
+    "execution": "exec-1",
+    "generation": 1,
+    "item_type": "fileChange",
+    "occurred_at": "2026-01-01T00:00:00+00:00",
+    "progress_sequence": 6,
+    "raw_ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "schema": "urn:zeus:progress-activity:1",
+    "status": null,
+    "tool_name": null,
+    "transport": "app_server"
+   }
+  },
+  "collected_naive": {
+   "code": "collected_at",
+   "message": "activity receipt invalid: collected_at",
+   "refused": "ActivityInvalid"
+  },
+  "collected_non_str": {
+   "code": "collected_at",
+   "message": "activity receipt invalid: collected_at",
+   "refused": "ActivityInvalid"
+  },
+  "collected_offset": {
+   "code": "collected_at",
+   "message": "activity receipt invalid: collected_at",
+   "refused": "ActivityInvalid"
+  },
+  "execution_empty": {
+   "code": "execution",
+   "message": "activity receipt invalid: execution",
+   "refused": "ActivityInvalid"
+  },
+  "extra_key": {
+   "code": "keys",
+   "message": "activity receipt invalid: keys",
+   "refused": "ActivityInvalid"
+  },
+  "generation_bad": {
+   "code": "generation",
+   "message": "activity receipt invalid: generation",
+   "refused": "ActivityInvalid"
+  },
+  "label_list": {
+   "code": "event_label",
+   "message": "activity receipt invalid: event_label",
+   "refused": "ActivityInvalid"
+  },
+  "missing_key": {
+   "code": "keys",
+   "message": "activity receipt invalid: keys",
+   "refused": "ActivityInvalid"
+  },
+  "not_dict": [
+   {
+    "value": {
+     "activity_sequence": 1,
+     "attempt": 1,
+     "collected_at": "2026-01-01T00:00:00+00:00",
+     "event_label": "tool_started",
+     "execution": "exec-1",
+     "generation": 1,
+     "item_type": null,
+     "occurred_at": null,
+     "progress_sequence": null,
+     "raw_ref": null,
+     "schema": "urn:zeus:progress-activity:1",
+     "status": "started",
+     "tool_name": "Bash",
+     "transport": "claude_cli"
+    }
+   },
+   {
+    "code": "keys",
+    "message": "activity receipt invalid: keys",
+    "refused": "ActivityInvalid"
+   },
+   {
+    "code": "keys",
+    "message": "activity receipt invalid: keys",
+    "refused": "ActivityInvalid"
+   }
+  ],
+  "occurred_claude": {
+   "code": "occurred_at",
+   "message": "activity receipt invalid: occurred_at",
+   "refused": "ActivityInvalid"
+  },
+  "occurred_codex_naive": {
+   "code": "occurred_at",
+   "message": "activity receipt invalid: occurred_at",
+   "refused": "ActivityInvalid"
+  },
+  "occurred_codex_non_str": {
+   "code": "occurred_at",
+   "message": "activity receipt invalid: occurred_at",
+   "refused": "ActivityInvalid"
+  },
+  "occurred_codex_offset": {
+   "code": "occurred_at",
+   "message": "activity receipt invalid: occurred_at",
+   "refused": "ActivityInvalid"
+  },
+  "occurred_codex_ok": {
+   "value": {
+    "activity_sequence": 1,
+    "attempt": 1,
+    "collected_at": "2026-01-01T00:00:00+00:00",
+    "event_label": "item_completed",
+    "execution": "exec-1",
+    "generation": 1,
+    "item_type": "fileChange",
+    "occurred_at": "2026-01-01T00:00:00+00:00",
+    "progress_sequence": 6,
+    "raw_ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "schema": "urn:zeus:progress-activity:1",
+    "status": "completed",
+    "tool_name": null,
+    "transport": "app_server"
+   }
+  },
+  "result_bad_progress": {
+   "code": "progress_sequence",
+   "message": "activity receipt invalid: progress_sequence",
+   "refused": "ActivityInvalid"
+  },
+  "result_no_raw": {
+   "code": "raw_ref",
+   "message": "activity receipt invalid: raw_ref",
+   "refused": "ActivityInvalid"
+  },
+  "start_with_progress": {
+   "code": "start_raw",
+   "message": "activity receipt invalid: start_raw",
+   "refused": "ActivityInvalid"
+  },
+  "start_with_raw": {
+   "code": "start_raw",
+   "message": "activity receipt invalid: start_raw",
+   "refused": "ActivityInvalid"
+  },
+  "status_for_other_label": {
+   "code": "status",
+   "message": "activity receipt invalid: status",
+   "refused": "ActivityInvalid"
+  },
+  "status_list": {
+   "code": "status",
+   "message": "activity receipt invalid: status",
+   "refused": "ActivityInvalid"
+  },
+  "status_none_claude": {
+   "code": "status",
+   "message": "activity receipt invalid: status",
+   "refused": "ActivityInvalid"
+  },
+  "too_large": {
+   "code": "too_large",
+   "message": "activity receipt invalid: too_large",
+   "refused": "ActivityInvalid"
+  },
+  "tool_custom": {
+   "code": "tool_name",
+   "message": "activity receipt invalid: tool_name",
+   "refused": "ActivityInvalid"
+  },
+  "tool_list": {
+   "code": "tool_name",
+   "message": "activity receipt invalid: tool_name",
+   "refused": "ActivityInvalid"
+  },
+  "tool_on_result": {
+   "code": "tool_name",
+   "message": "activity receipt invalid: tool_name",
+   "refused": "ActivityInvalid"
+  },
+  "transport_list": {
+   "code": "transport",
+   "message": "activity receipt invalid: transport",
+   "refused": "ActivityInvalid"
+  },
+  "wrong_schema": {
+   "code": "schema",
+   "message": "activity receipt invalid: schema",
+   "refused": "ActivityInvalid"
+  }
+ },
+ "validate_valid": [
+  {
+   "value": {
+    "activity_sequence": 1,
+    "attempt": 1,
+    "collected_at": "2026-01-01T00:00:00+00:00",
+    "event_label": "tool_started",
+    "execution": "exec-1",
+    "generation": 1,
+    "item_type": null,
+    "occurred_at": null,
+    "progress_sequence": null,
+    "raw_ref": null,
+    "schema": "urn:zeus:progress-activity:1",
+    "status": "started",
+    "tool_name": "Bash",
+    "transport": "claude_cli"
+   }
+  },
+  {
+   "value": {
+    "activity_sequence": 1,
+    "attempt": 1,
+    "collected_at": "2026-01-01T00:00:00+00:00",
+    "event_label": "tool_started",
+    "execution": "exec-1",
+    "generation": 1,
+    "item_type": null,
+    "occurred_at": null,
+    "progress_sequence": null,
+    "raw_ref": null,
+    "schema": "urn:zeus:progress-activity:1",
+    "status": "started",
+    "tool_name": null,
+    "transport": "claude_cli"
+   }
+  },
+  {
+   "value": {
+    "activity_sequence": 1,
+    "attempt": 1,
+    "collected_at": "2026-01-01T00:00:00+00:00",
+    "event_label": "tool_started",
+    "execution": "exec-1",
+    "generation": 1,
+    "item_type": null,
+    "occurred_at": null,
+    "progress_sequence": null,
+    "raw_ref": null,
+    "schema": "urn:zeus:progress-activity:1",
+    "status": "started",
+    "tool_name": null,
+    "transport": "claude_cli"
+   }
+  },
+  {
+   "value": {
+    "activity_sequence": 1,
+    "attempt": 1,
+    "collected_at": "2026-01-01T00:00:00+00:00",
+    "event_label": "session_started",
+    "execution": "exec-1",
+    "generation": 1,
+    "item_type": null,
+    "occurred_at": null,
+    "progress_sequence": 2,
+    "raw_ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "schema": "urn:zeus:progress-activity:1",
+    "status": "started",
+    "tool_name": null,
+    "transport": "claude_cli"
+   }
+  },
+  {
+   "value": {
+    "activity_sequence": 3,
+    "attempt": 1,
+    "collected_at": "2026-01-01T00:00:00+00:00",
+    "event_label": "tool_completed",
+    "execution": "exec-1",
+    "generation": 1,
+    "item_type": null,
+    "occurred_at": null,
+    "progress_sequence": 3,
+    "raw_ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "schema": "urn:zeus:progress-activity:1",
+    "status": "completed",
+    "tool_name": null,
+    "transport": "claude_cli"
+   }
+  },
+  {
+   "value": {
+    "activity_sequence": 3,
+    "attempt": 1,
+    "collected_at": "2026-01-01T00:00:00+00:00",
+    "event_label": "tool_completed",
+    "execution": "exec-1",
+    "generation": 1,
+    "item_type": null,
+    "occurred_at": null,
+    "progress_sequence": 3,
+    "raw_ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "schema": "urn:zeus:progress-activity:1",
+    "status": "failed",
+    "tool_name": null,
+    "transport": "claude_cli"
+   }
+  },
+  {
+   "value": {
+    "activity_sequence": 3,
+    "attempt": 1,
+    "collected_at": "2026-01-01T00:00:00+00:00",
+    "event_label": "tool_completed",
+    "execution": "exec-1",
+    "generation": 1,
+    "item_type": null,
+    "occurred_at": null,
+    "progress_sequence": 3,
+    "raw_ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "schema": "urn:zeus:progress-activity:1",
+    "status": "unknown",
+    "tool_name": null,
+    "transport": "claude_cli"
+   }
+  },
+  {
+   "value": {
+    "activity_sequence": 3,
+    "attempt": 1,
+    "collected_at": "2026-01-01T00:00:00+00:00",
+    "event_label": "tool_completed",
+    "execution": "exec-1",
+    "generation": 1,
+    "item_type": null,
+    "occurred_at": null,
+    "progress_sequence": 3,
+    "raw_ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "schema": "urn:zeus:progress-activity:1",
+    "status": "unknown",
+    "tool_name": null,
+    "transport": "claude_cli"
+   }
+  },
+  {
+   "value": {
+    "activity_sequence": 1,
+    "attempt": 1,
+    "collected_at": "2026-01-01T00:00:00+00:00",
+    "event_label": "permission_denied",
+    "execution": "exec-1",
+    "generation": 1,
+    "item_type": null,
+    "occurred_at": null,
+    "progress_sequence": 4,
+    "raw_ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "schema": "urn:zeus:progress-activity:1",
+    "status": "denied",
+    "tool_name": null,
+    "transport": "claude_cli"
+   }
+  },
+  {
+   "value": {
+    "activity_sequence": 1,
+    "attempt": 1,
+    "collected_at": "2026-01-01T00:00:00+00:00",
+    "event_label": "result",
+    "execution": "exec-1",
+    "generation": 1,
+    "item_type": null,
+    "occurred_at": null,
+    "progress_sequence": 5,
+    "raw_ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "schema": "urn:zeus:progress-activity:1",
+    "status": "success",
+    "tool_name": null,
+    "transport": "claude_cli"
+   }
+  },
+  {
+   "value": {
+    "activity_sequence": 1,
+    "attempt": 1,
+    "collected_at": "2026-01-01T00:00:00+00:00",
+    "event_label": "result",
+    "execution": "exec-1",
+    "generation": 1,
+    "item_type": null,
+    "occurred_at": null,
+    "progress_sequence": 5,
+    "raw_ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "schema": "urn:zeus:progress-activity:1",
+    "status": "error",
+    "tool_name": null,
+    "transport": "claude_cli"
+   }
+  },
+  {
+   "value": {
+    "activity_sequence": 1,
+    "attempt": 1,
+    "collected_at": "2026-01-01T00:00:00+00:00",
+    "event_label": "result",
+    "execution": "exec-1",
+    "generation": 1,
+    "item_type": null,
+    "occurred_at": null,
+    "progress_sequence": 5,
+    "raw_ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "schema": "urn:zeus:progress-activity:1",
+    "status": "error",
+    "tool_name": null,
+    "transport": "claude_cli"
+   }
+  },
+  {
+   "value": {
+    "activity_sequence": 1,
+    "attempt": 1,
+    "collected_at": "2026-01-01T00:00:00+00:00",
+    "event_label": "result",
+    "execution": "exec-1",
+    "generation": 1,
+    "item_type": null,
+    "occurred_at": null,
+    "progress_sequence": 5,
+    "raw_ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "schema": "urn:zeus:progress-activity:1",
+    "status": "unknown",
+    "tool_name": null,
+    "transport": "claude_cli"
+   }
+  },
+  {
+   "value": {
+    "activity_sequence": 1,
+    "attempt": 1,
+    "collected_at": "2026-01-01T00:00:00+00:00",
+    "event_label": "result",
+    "execution": "exec-1",
+    "generation": 1,
+    "item_type": null,
+    "occurred_at": null,
+    "progress_sequence": 5,
+    "raw_ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "schema": "urn:zeus:progress-activity:1",
+    "status": "unknown",
+    "tool_name": null,
+    "transport": "claude_cli"
+   }
+  },
+  {
+   "value": {
+    "activity_sequence": 1,
+    "attempt": 1,
+    "collected_at": "2026-01-01T00:00:00+00:00",
+    "event_label": "result",
+    "execution": "exec-1",
+    "generation": 1,
+    "item_type": null,
+    "occurred_at": null,
+    "progress_sequence": 5,
+    "raw_ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "schema": "urn:zeus:progress-activity:1",
+    "status": "success",
+    "tool_name": null,
+    "transport": "claude_cli"
+   }
+  },
+  {
+   "value": {
+    "activity_sequence": 1,
+    "attempt": 1,
+    "collected_at": "2026-01-01T00:00:00+00:00",
+    "event_label": "item_completed",
+    "execution": "exec-1",
+    "generation": 1,
+    "item_type": "agentMessage",
+    "occurred_at": "2026-01-01T00:00:00+00:00",
+    "progress_sequence": 6,
+    "raw_ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "schema": "urn:zeus:progress-activity:1",
+    "status": "completed",
+    "tool_name": null,
+    "transport": "app_server"
+   }
+  },
+  {
+   "value": {
+    "activity_sequence": 1,
+    "attempt": 1,
+    "collected_at": "2026-01-01T00:00:00+00:00",
+    "event_label": "item_completed",
+    "execution": "exec-1",
+    "generation": 1,
+    "item_type": "commandExecution",
+    "occurred_at": "2026-01-01T00:00:00+00:00",
+    "progress_sequence": 6,
+    "raw_ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "schema": "urn:zeus:progress-activity:1",
+    "status": "completed",
+    "tool_name": null,
+    "transport": "app_server"
+   }
+  },
+  {
+   "value": {
+    "activity_sequence": 1,
+    "attempt": 1,
+    "collected_at": "2026-01-01T00:00:00+00:00",
+    "event_label": "item_completed",
+    "execution": "exec-1",
+    "generation": 1,
+    "item_type": "fileChange",
+    "occurred_at": "2026-01-01T00:00:00+00:00",
+    "progress_sequence": 6,
+    "raw_ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "schema": "urn:zeus:progress-activity:1",
+    "status": "completed",
+    "tool_name": null,
+    "transport": "app_server"
+   }
+  },
+  {
+   "value": {
+    "activity_sequence": 1,
+    "attempt": 1,
+    "collected_at": "2026-01-01T00:00:00+00:00",
+    "event_label": "item_completed",
+    "execution": "exec-1",
+    "generation": 1,
+    "item_type": "mcpToolCall",
+    "occurred_at": "2026-01-01T00:00:00+00:00",
+    "progress_sequence": 6,
+    "raw_ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "schema": "urn:zeus:progress-activity:1",
+    "status": "completed",
+    "tool_name": null,
+    "transport": "app_server"
+   }
+  },
+  {
+   "value": {
+    "activity_sequence": 1,
+    "attempt": 1,
+    "collected_at": "2026-01-01T00:00:00+00:00",
+    "event_label": "item_completed",
+    "execution": "exec-1",
+    "generation": 1,
+    "item_type": "reasoning",
+    "occurred_at": "2026-01-01T00:00:00+00:00",
+    "progress_sequence": 6,
+    "raw_ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "schema": "urn:zeus:progress-activity:1",
+    "status": "completed",
+    "tool_name": null,
+    "transport": "app_server"
+   }
+  },
+  {
+   "value": {
+    "activity_sequence": 1,
+    "attempt": 1,
+    "collected_at": "2026-01-01T00:00:00+00:00",
+    "event_label": "item_completed",
+    "execution": "exec-1",
+    "generation": 1,
+    "item_type": "unknown",
+    "occurred_at": "2026-01-01T00:00:00+00:00",
+    "progress_sequence": 6,
+    "raw_ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "schema": "urn:zeus:progress-activity:1",
+    "status": "completed",
+    "tool_name": null,
+    "transport": "app_server"
+   }
+  },
+  {
+   "value": {
+    "activity_sequence": 1,
+    "attempt": 1,
+    "collected_at": "2026-01-01T00:00:00+00:00",
+    "event_label": "item_completed",
+    "execution": "exec-1",
+    "generation": 1,
+    "item_type": "unknown",
+    "occurred_at": "2026-01-01T00:00:00+00:00",
+    "progress_sequence": 6,
+    "raw_ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "schema": "urn:zeus:progress-activity:1",
+    "status": "completed",
+    "tool_name": null,
+    "transport": "app_server"
+   }
+  },
+  {
+   "value": {
+    "activity_sequence": 1,
+    "attempt": 1,
+    "collected_at": "2026-01-01T00:00:00+00:00",
+    "event_label": "item_completed",
+    "execution": "exec-1",
+    "generation": 1,
+    "item_type": "unknown",
+    "occurred_at": "2026-01-01T00:00:00+00:00",
+    "progress_sequence": 6,
+    "raw_ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "schema": "urn:zeus:progress-activity:1",
+    "status": "completed",
+    "tool_name": null,
+    "transport": "app_server"
+   }
+  },
+  {
+   "value": {
+    "activity_sequence": 1,
+    "attempt": 1,
+    "collected_at": "2026-01-01T00:00:00+00:00",
+    "event_label": "item_completed",
+    "execution": "exec-1",
+    "generation": 1,
+    "item_type": "commandExecution",
+    "occurred_at": null,
+    "progress_sequence": 6,
+    "raw_ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "schema": "urn:zeus:progress-activity:1",
+    "status": "completed",
+    "tool_name": null,
+    "transport": "app_server"
+   }
+  },
+  {
+   "value": {
+    "activity_sequence": 1,
+    "attempt": 1,
+    "collected_at": "2026-01-01T00:00:00+00:00",
+    "event_label": "item_completed",
+    "execution": "exec-1",
+    "generation": 1,
+    "item_type": "commandExecution",
+    "occurred_at": null,
+    "progress_sequence": 6,
+    "raw_ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "schema": "urn:zeus:progress-activity:1",
+    "status": "failed",
+    "tool_name": null,
+    "transport": "app_server"
+   }
+  },
+  {
+   "value": {
+    "activity_sequence": 1,
+    "attempt": 1,
+    "collected_at": "2026-01-01T00:00:00+00:00",
+    "event_label": "item_completed",
+    "execution": "exec-1",
+    "generation": 1,
+    "item_type": "commandExecution",
+    "occurred_at": null,
+    "progress_sequence": 6,
+    "raw_ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "schema": "urn:zeus:progress-activity:1",
+    "status": "unknown",
+    "tool_name": null,
+    "transport": "app_server"
+   }
+  },
+  {
+   "value": {
+    "activity_sequence": 1,
+    "attempt": 1,
+    "collected_at": "2026-01-01T00:00:00+00:00",
+    "event_label": "item_completed",
+    "execution": "exec-1",
+    "generation": 1,
+    "item_type": "commandExecution",
+    "occurred_at": null,
+    "progress_sequence": 6,
+    "raw_ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "schema": "urn:zeus:progress-activity:1",
+    "status": null,
+    "tool_name": null,
+    "transport": "app_server"
+   }
+  },
+  {
+   "value": {
+    "activity_sequence": 1,
+    "attempt": 1,
+    "collected_at": "2026-01-01T00:00:00+00:00",
+    "event_label": "item_completed",
+    "execution": "exec-1",
+    "generation": 1,
+    "item_type": "commandExecution",
+    "occurred_at": null,
+    "progress_sequence": 6,
+    "raw_ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "schema": "urn:zeus:progress-activity:1",
+    "status": "unknown",
+    "tool_name": null,
+    "transport": "app_server"
+   }
+  },
+  {
+   "value": {
+    "activity_sequence": 1,
+    "attempt": 1,
+    "collected_at": "2026-01-01T00:00:00+00:00",
+    "event_label": "item_completed",
+    "execution": "exec-1",
+    "generation": 1,
+    "item_type": "unknown",
+    "occurred_at": null,
+    "progress_sequence": 6,
+    "raw_ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "schema": "urn:zeus:progress-activity:1",
+    "status": null,
+    "tool_name": null,
+    "transport": "app_server"
+   }
+  },
+  {
+   "value": {
+    "activity_sequence": 1,
+    "attempt": 1,
+    "collected_at": "2026-01-01T00:00:00+00:00",
+    "event_label": "item_completed",
+    "execution": "exec-1",
+    "generation": 1,
+    "item_type": "unknown",
+    "occurred_at": null,
+    "progress_sequence": 6,
+    "raw_ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "schema": "urn:zeus:progress-activity:1",
+    "status": null,
+    "tool_name": null,
+    "transport": "app_server"
+   }
+  },
+  {
+   "value": {
+    "activity_sequence": 1,
+    "attempt": 1,
+    "collected_at": "2026-01-01T00:00:00+00:00",
+    "event_label": "item_completed",
+    "execution": "exec-1",
+    "generation": 1,
+    "item_type": "unknown",
+    "occurred_at": null,
+    "progress_sequence": 6,
+    "raw_ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "schema": "urn:zeus:progress-activity:1",
+    "status": null,
+    "tool_name": null,
+    "transport": "app_server"
+   }
+  },
+  {
+   "value": {
+    "activity_sequence": 1,
+    "attempt": 1,
+    "collected_at": "2026-01-01T00:00:00+00:00",
+    "event_label": "item_completed",
+    "execution": "exec-1",
+    "generation": 1,
+    "item_type": "reasoning",
+    "occurred_at": "2026-01-01T00:00:00+00:00",
+    "progress_sequence": 6,
+    "raw_ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "schema": "urn:zeus:progress-activity:1",
+    "status": "completed",
+    "tool_name": null,
+    "transport": "app_server"
+   }
+  },
+  {
+   "value": {
+    "activity_sequence": 1,
+    "attempt": 1,
+    "collected_at": "2026-01-01T00:00:00+00:00",
+    "event_label": "item_completed",
+    "execution": "exec-1",
+    "generation": 1,
+    "item_type": "reasoning",
+    "occurred_at": null,
+    "progress_sequence": 6,
+    "raw_ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "schema": "urn:zeus:progress-activity:1",
+    "status": "completed",
+    "tool_name": null,
+    "transport": "app_server"
+   }
+  },
+  {
+   "value": {
+    "activity_sequence": 1,
+    "attempt": 1,
+    "collected_at": "2026-01-01T00:00:00+00:00",
+    "event_label": "item_completed",
+    "execution": "exec-1",
+    "generation": 1,
+    "item_type": "reasoning",
+    "occurred_at": null,
+    "progress_sequence": 6,
+    "raw_ref": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "schema": "urn:zeus:progress-activity:1",
+    "status": "completed",
+    "tool_name": null,
+    "transport": "app_server"
+   }
+  },
+  {
+   "value": {
+    "activity_sequence": 1,
+    "attempt": null,
+    "collected_at": "2026-01-01T00:00:00+00:00",
+    "event_label": "tool_started",
+    "execution": "exec-1",
+    "generation": null,
+    "item_type": null,
+    "occurred_at": null,
+    "progress_sequence": null,
+    "raw_ref": null,
+    "schema": "urn:zeus:progress-activity:1",
+    "status": "started",
+    "tool_name": "Bash",
+    "transport": "claude_cli"
+   }
+  },
+  {
+   "value": {
+    "activity_sequence": 1,
+    "attempt": 0,
+    "collected_at": "2026-01-01T00:00:00+00:00",
+    "event_label": "tool_started",
+    "execution": "exec-1",
+    "generation": 0,
+    "item_type": null,
+    "occurred_at": null,
+    "progress_sequence": null,
+    "raw_ref": null,
+    "schema": "urn:zeus:progress-activity:1",
+    "status": "started",
+    "tool_name": "Bash",
+    "transport": "claude_cli"
+   }
+  },
+  {
+   "value": {
+    "activity_sequence": 1,
+    "attempt": 1,
+    "collected_at": "2026-01-01T00:00:00+00:00",
+    "event_label": "tool_started",
+    "execution": "exec-1",
+    "generation": 1,
+    "item_type": null,
+    "occurred_at": null,
+    "progress_sequence": null,
+    "raw_ref": null,
+    "schema": "urn:zeus:progress-activity:1",
+    "status": "started",
+    "tool_name": "Bash",
+    "transport": "claude_cli"
+   }
+  }
+ ],
+ "vocabularies": {
+  "claude_bases": [
+   "claude/system",
+   "claude/user",
+   "claude/assistant",
+   "claude/result",
+   "claude/malformed"
+  ],
+  "completed_statuses": [
+   "completed",
+   "denied",
+   "emitted",
+   "error",
+   "failed",
+   "started",
+   "success",
+   "unknown"
+  ],
+  "completed_types": [
+   "agentMessage",
+   "commandExecution",
+   "fileChange",
+   "mcpToolCall",
+   "message",
+   "permission_denied",
+   "reasoning",
+   "result",
+   "session_started",
+   "tool_completed",
+   "tool_started"
+  ],
+  "last_event_exact": [
+   "claude/system/init",
+   "claude/system/permission_denied",
+   "item/completed",
+   "thread/tokenUsage/updated"
+  ]
+ }
+}
