@@ -126,3 +126,151 @@ def test_the_composed_controls_hold_in_a_real_container(tmp_path, layout):
     assert [str(cap).upper() for cap in observed["cap_drop"]] == ["ALL"] and not observed["cap_add"]
     assert "no-new-privileges" in observed["security_opt"] and observed["pids_limit"] == spec.LIMITS["pids"]
     assert observed["labels"][spec.LABEL] and observed["labels"]["zeus.test.fixture"] == "1"
+
+
+# ---- fix F2 (S3 round 1): the S3b command and mount path, behaviourally, in labelled fixture containers ----
+# FIXTURE PROOF ONLY: the image is a labelled fixture (target/tests/fixtures/s3_hook_peer), its `codex` is a
+# provider-free peer that runs trusted hooks as the pinned CLI does. This is not a real Codex run, not the
+# worker image and not a real-provider verification (that remains later, authorized verification).
+PEER_IMAGE = "zeus-test-fixture/s3-hook-peer:1"
+PEER_CONTEXT = Path(__file__).resolve().parent / "fixtures" / "s3_hook_peer"
+SUCCESS_HOOK = r'''import json, os, socket, sys
+event = json.load(sys.stdin)
+marker = {"in_container": os.path.exists("/.dockerenv"), "hostname": socket.gethostname(), "cwd": os.getcwd(),
+          "interpreter": sys.executable, "script": __file__, "event": event.get("hook_event_name"), "uid": os.getuid()}
+open("/result/hook-ran.json", "w").write(json.dumps(marker))
+print(json.dumps({"ok": True}))
+'''
+SLOW_HOOK = r'''import json, sys, time
+json.load(sys.stdin)
+open("/result/hook-started.json", "w").write("{}")
+time.sleep(600)
+open("/result/hook-finished.json", "w").write("{}")
+'''
+SCHEMA = {"type": "object", "properties": {"summary": {"type": "string"}}, "required": ["summary"]}
+
+
+@pytest.fixture(scope="module")
+def peer_image():
+    built = subprocess.run(["docker", "build", "--network", "none", "--label", FIXTURE_LABEL, "-t", PEER_IMAGE,
+                            str(PEER_CONTEXT)], capture_output=True, text=True, timeout=600)
+    assert built.returncode == 0, built.stderr[-3000:]
+    return PEER_IMAGE
+
+
+def _s3b_run(script, *, hook_timeout, budget, monkeypatch):
+    from codex_harness.credentials.adapters.codex_custody import CodexCredentialBroker
+    from codex_harness.credentials.domain import codex_credential as cc
+    from codex_harness.execution.adapters.containers.launcher import AttachedAppServer
+    from codex_harness.execution.adapters.providers import native_hooks as nh
+    from codex_harness.execution.adapters.providers.codex_app_server import AppServer
+
+    monkeypatch.setattr(nh, "HOOK_TIMEOUT_SECONDS", hook_timeout)  # bounded fixture; production keeps 30 s
+    work = Path(BIND_ROOT).resolve() / ("s3b-" + uuid.uuid4().hex[:12])
+    workspace, result, home = work / "checkout", work / "result", work / "codex-home"
+    workspace.mkdir(parents=True)
+    (workspace / "README.md").write_text("fixture\n", encoding="utf-8")
+    result.mkdir()
+    result.chmod(0o777)
+    store = work / "secrets" / "codex-store"
+    store.mkdir(parents=True, mode=0o700)
+    auth = {"auth_mode": "chatgpt", "OPENAI_API_KEY": None, "tokens": {
+        "id_token": "idt-DUMMY-FIXTURE", "access_token": "at-DUMMY-FIXTURE", "refresh_token": "rt-DUMMY-FIXTURE",
+        "account_id": "acct-dummy-fixture"}}
+    (store / "auth.json").write_text(json.dumps(auth), encoding="utf-8")
+    (store / "auth.json").chmod(0o600)
+    original = (store / "auth.json").read_bytes()
+    broker = CodexCredentialBroker(store)
+    admission = broker.admit(wait_seconds=0)
+    record = work / "run.json"
+    admission.issue(uuid.uuid4().hex, record, home)
+    config_file = work / "codex-config.toml"
+    config_file.write_text(cc.CODEX_CONFIG, encoding="utf-8")
+    config_file.chmod(0o444)
+    digest = __import__("hashlib").sha256(script.encode()).hexdigest()
+    hook_set = nh.container_hooks([{"id": "hook-1", "status": "active", "revision": "r" * 40, "spec": {
+        "kind": "native_hook", "event": "PreToolUse", "matcher": "shell", "script_path": "harness_hooks/h.py",
+        "script_sha256": digest}}], lambda revision, path: script, work / "hooks")
+    mounts = [(str(workspace), spec.WORKSPACE, True), (str(result), spec.RESULT), (str(home), cc.CODEX_HOME),
+              (str(config_file), cc.CODEX_HOME + "/config.toml", True), (hook_set.source, nh.HOOK_MOUNT, True)]
+    config = {**oc.load_host_isolation({"ZEUS_WORKER_ISOLATION": "docker", "ZEUS_WORKER_IMAGE": "sha256:" + "0" * 64}),
+              "image": PEER_IMAGE}
+    names, observed = [], {}
+
+    def start(state):
+        probe = AppServer(executable=cc.CODEX_EXECUTABLE, hooks=hook_set.configuration)
+        probe.hook_state = state
+        run_id = uuid.uuid4().hex
+        name = "zeus-test-fixture-s3b-" + run_id[:16]
+        argv = spec.container_args(config, name=name, run_id=run_id, role="codex", network="none", mounts=mounts,
+                                   environment=spec.codex_environment(), pass_names=(),
+                                   entry=[cc.CODEX_EXECUTABLE, *probe.server_arguments()], workdir=spec.WORKSPACE,
+                                   user=oc.host_user())
+        names.append(name)
+        process = subprocess.Popen(["docker", "run", "--label", FIXTURE_LABEL, *argv[1:]], stdin=subprocess.PIPE,
+                                   stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        server = AttachedAppServer(process, spec.WORKSPACE)
+        server.hooks, server.hook_state = hook_set.configuration, dict(state)
+        return name, process, server
+
+    try:
+        name, process, server = start({})
+        with server:
+            state = nh.bound_state(server.request("hooks/list", {"cwds": [spec.WORKSPACE]}, 60)["data"], hook_set)
+        process.wait(timeout=60)
+        name, process, server = start(state)
+        observed["hostname"] = None
+        with server:
+            rows = server.request("hooks/list", {"cwds": [spec.WORKSPACE]}, 60)["data"]
+            observed["statuses"] = nh.verify_bound(rows, hook_set, state)
+            shown = subprocess.run(["docker", "inspect", "--format", "{{.Config.Hostname}}", name],
+                                   capture_output=True, text=True, timeout=60)
+            observed["hostname"] = shown.stdout.strip()
+            events = []
+            try:
+                observed["value"] = server.run("fixture turn", spec.WORKSPACE, SCHEMA, budget, read_only=True,
+                                               on_event=events.append)
+            except Exception as exc:  # noqa: BLE001 - the refusal is the observation
+                observed["failure"] = str(exc)
+            observed["hook_events"] = [event["params"] for event in events if event.get("method") == "hook/completed"]
+    finally:
+        for name in names:
+            subprocess.run(["docker", "rm", "-f", name], capture_output=True, text=True, timeout=60)
+        observed["gone"] = all(subprocess.run(["docker", "inspect", "--format", "{{.Id}}", name], capture_output=True,
+                                              text=True, timeout=60).returncode != 0 for name in names)
+        record.write_text(json.dumps({"state": "removed"}), encoding="utf-8")
+        observed["settlement"] = admission.settle()["state"]
+        admission.release()
+        observed["store_unchanged"] = (store / "auth.json").read_bytes() == original
+        (work / "hooks").chmod(0o755)
+    observed["result_files"] = sorted(path.name for path in result.iterdir())
+    marker = result / "hook-ran.json"
+    observed["marker"] = json.loads(marker.read_text()) if marker.exists() else None
+    observed["hook_path"] = hook_set.configuration["PreToolUse"][0]["hooks"][0]["command"]
+    return observed
+
+
+def test_f2_a_bound_hook_runs_inside_the_container_from_the_read_only_digest_path(peer_image, monkeypatch):
+    seen = _s3b_run(SUCCESS_HOOK, hook_timeout=20, budget=60, monkeypatch=monkeypatch)
+    assert "failure" not in seen and json.loads(seen["value"]["answer"]["summary"])["hooks"][0]["status"] == "completed"
+    assert [event["run"]["status"] for event in seen["hook_events"]] == ["completed"]
+    assert set(seen["statuses"].values()) == {"trusted"}
+    marker = seen["marker"]
+    # Container-only: the hook ran in the container (its /.dockerenv, its hostname), under the image's
+    # trusted interpreter, from the read-only digest-addressed mount, in the session cwd, as the non-root uid.
+    assert marker["in_container"] is True and marker["hostname"] == seen["hostname"]
+    assert marker["interpreter"] == spec.TRUSTED_PYTHON and marker["script"].startswith("/zeus-hooks/")
+    assert seen["hook_path"].split()[-1] == marker["script"] and marker["cwd"] == spec.WORKSPACE
+    assert marker["event"] == "PreToolUse" and str(marker["uid"]) == oc.host_user().split(":")[0]
+    # No host invocation: the host has no such interpreter path and no marker was written on the host.
+    assert not Path(marker["script"]).exists() and not Path("/result/hook-ran.json").exists()
+    assert seen["gone"] and seen["settlement"] == "unchanged" and seen["store_unchanged"]
+
+
+def test_f2_a_timed_out_hook_never_completes_the_turn_and_the_copy_settles_unchanged(peer_image, monkeypatch):
+    seen = _s3b_run(SLOW_HOOK, hook_timeout=2, budget=60, monkeypatch=monkeypatch)
+    assert "value" not in seen and "Codex turn failed" in seen["failure"] and "timedOut" in seen["failure"]
+    assert [event["run"]["status"] for event in seen["hook_events"]] == ["timedOut"]
+    # The hook started inside the container and was killed at its timeout: it never finished.
+    assert seen["result_files"] == ["hook-started.json"]
+    assert seen["gone"] and seen["settlement"] == "unchanged" and seen["store_unchanged"]
