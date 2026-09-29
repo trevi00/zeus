@@ -1,9 +1,8 @@
 {
  "family": "effects.context_packet",
- "description": "\u00a72.7 retained context packet artifacts and ref bindings (F4)",
+ "description": "§2.7 retained context packet artifacts and ref bindings (F4)",
  "reference_driver": "drivers/reference/context_packet.py",
- "target_driver": null,
+ "target_driver": "drivers/target/context_packet.py",
  "golden": "goldens/reference/effects.context_packet.json",
- "slice": "S4",
- "target_status": "pending: the end-to-end consumer bindings of M7 execute_one (execution record context_ref, sessions checkpoint, development.checkpoint_recorded evidence_refs) need RunTask (S4); the S2 part (packet bytes/ref/omissions/manifest hash, skill-history binding) is compared by context.composition"
+ "slice": "S4"
 }

@@ -27,47 +27,14 @@ driver.start("target")
 from types import SimpleNamespace  # noqa: E402
 
 import determinism  # noqa: E402
-from codex_harness.context.adapters.composition_sources import (  # noqa: E402,E501
-    GitRepository,
-    ProjectSkills,
-    SkillHistoryRecorder,
-)
-from codex_harness.context.adapters.review_context import review_context  # noqa: E402
-from codex_harness.context.application.compose import ContextComposer  # noqa: E402
 from codex_harness.coordination.application import execution_fence, execution_time  # noqa: E402
-from codex_harness.coordination.application.breaker import Breaker  # noqa: E402
-from codex_harness.coordination.application.execution_records import ExecutionRecords  # noqa: E402
-from codex_harness.coordination.application.invocation_admission import (  # noqa: E402
-    InvocationBreaker,
-)
-from codex_harness.coordination.application.sessions import SessionCheckpoints  # noqa: E402
-from codex_harness.coordination.application.task_ownership import TaskOwnership  # noqa: E402
-from codex_harness.coordination.application.workflow import Workflow  # noqa: E402
-from codex_harness.execution.adapters import execution_output, output_schema  # noqa: E402
-from codex_harness.execution.adapters.containers import handoff  # noqa: E402
-from codex_harness.execution.adapters.transports import Transports  # noqa: E402
-from codex_harness.execution.application.invocation_ledger import InvocationLedger  # noqa: E402
-from codex_harness.execution.application.run_task import RunTask  # noqa: E402
-from codex_harness.intake.application import tickets  # noqa: E402
 from codex_harness.kernel.errors import ContractError  # noqa: E402
-from codex_harness.kernel.ids import utcnow  # noqa: E402
 from codex_harness.kernel.message import envelope  # noqa: E402
-from codex_harness.observation.adapters.observation_spool import MemorySpool  # noqa: E402
-from codex_harness.observation.application.observations import (  # noqa: E402
-    MemoryDirectory,
-    Observer,
-    PostExecutionRecordFailure,
-    ReconciliationRequired,
-)
-from codex_harness.research.application.audit_gate import (  # noqa: E402
-    inspect_approval,
-    require_adoption,
-)
 from codex_harness.routing.adapters.organization_source import packaged_organization  # noqa: E402
-from codex_harness.routing.adapters.provider_policy import host_policy  # noqa: E402
 from codex_harness.storage.adapters.file_artifacts import FileArtifacts  # noqa: E402
 from codex_harness.storage.adapters.memory_store import MemoryStore  # noqa: E402
 from s1_target import PortClock, PortIds  # noqa: E402
+from s4_run_task_composition import run_task_for  # noqa: E402
 
 ROOT = Path("/tmp/zeus-rebuild-s4-run-task")
 MARKER = ".zeus-rebuild-s4-disposable"
@@ -92,16 +59,7 @@ def fresh_root() -> Path:
     return ROOT
 
 
-class ClaudeRefused:
-    """The unexpected transport: constructing it is a driver failure, never a provider call."""
 
-    def __init__(self, *args, **kwargs):
-        raise AssertionError("ClaudeCodeRuntime reached in the S4 run-task fixture")
-
-
-def no_operations(tx, message):
-    """This scenario creates no operations, so M7 park returns None for every message here (S5 moves park)."""
-    return None
 
 
 def schema_answer(schema: dict) -> dict:
@@ -175,29 +133,8 @@ def run_case(case: str) -> dict:
             return {**base, "answer": schema_answer(schema)}
 
     git = SimpleNamespace(repository=root, _git=lambda *a, **kw: "harness")
-    # M7 Executor.__init__ draws the observer's process run id first (MemorySpool(new_process_run_id())).
-    observer = Observer(store, MemorySpool(PIDS.uuid4().hex), component="executor", directory=MemoryDirectory(),
-                        clock=lambda: utcnow(PORT), monotonic=CLOCK.monotonic)
-    workflow = Workflow(store, ORG, ticket_binding=tickets.ticket_binding, TicketSuperseded=tickets.TicketSuperseded,
-                        adoption=require_adoption, park_terminal=no_operations, clock=PORT, ids=PIDS,
-                        monotonic=CLOCK.monotonic)
-    ledger = TaskOwnership(workflow, store=store, clock=PORT, ids=PIDS, monotonic=CLOCK.monotonic)
-    composer = ContextComposer(artifacts, artifacts.root, GitRepository(git), ProjectSkills(git, artifacts, None),
-                               SkillHistoryRecorder(store, artifacts, git, PORT), None)
-    results = SimpleNamespace(persist=execution_output.persist_result, tool_usage=execution_output.tool_usage,
-                              preflight=output_schema.preflight, handoff_refs=handoff.handoff_refs,
-                              retain_evidence_handoff=handoff.retain_evidence_handoff)
-    run_task = RunTask(
-        store, ORG, git, artifacts, ledger=ledger,
-        admission=InvocationBreaker(Breaker(store, clock=PORT)), invocations=InvocationLedger(store, clock=PORT),
-        sessions=SessionCheckpoints(store, ORG, workflow=workflow, ids=PIDS), records=ExecutionRecords(ORG),
-        observer=observer, composer=composer,
-        transports=Transports(host_app_server=FixtureTransport, host_hooks=lambda: {}, claude_runtime=ClaudeRefused),
-        results=results, execution_policy=host_policy({}),
-        review_context=lambda cwd: review_context(cwd, interpreter.resolve()), host_python=str(interpreter),
-        ticket_binding=tickets.ticket_binding, inspect_approval=inspect_approval,
-        ReconciliationRequired=ReconciliationRequired, PostExecutionRecordFailure=PostExecutionRecordFailure,
-        clock=PORT, ids=PIDS, monotonic=CLOCK.monotonic)
+    run_task, workflow = run_task_for(store, ORG, artifacts, git, interpreter, FixtureTransport, clock=PORT, ids=PIDS,
+                                      monotonic=CLOCK.monotonic)
     objective = ("x" * 40000) if case == "context_overflow" else PLAN["objective"]
     details = {"plan": {**PLAN, "objective": objective}}
     workflow.submit(envelope("task.assign", "conductor", "lead:improvement", "plan", details, "fixture",
