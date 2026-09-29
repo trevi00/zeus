@@ -1,0 +1,125 @@
+{
+ "counters": {
+  "unconfirmed_closed": 1,
+  "unconfirmed_marked": 3
+ },
+ "directory_ops": {
+  "pending_after": {
+   "value": []
+  },
+  "pending_all": {
+   "value": [
+    {
+     "attempt": 1,
+     "generation": 1,
+     "record_id": "rid-x",
+     "task_id": "t5"
+    }
+   ]
+  },
+  "pending_t5": {
+   "value": [
+    {
+     "attempt": 1,
+     "generation": 1,
+     "record_id": "rid-x",
+     "task_id": "t5"
+    }
+   ]
+  },
+  "record": {
+   "value": null
+  },
+  "record_again": {
+   "message": "rid-x",
+   "refused": "FileExistsError"
+  },
+  "resolve": {
+   "value": {
+    "attempt": 1,
+    "generation": 1,
+    "record_id": "rid-x",
+    "resolution": {
+     "resolution": "rerun"
+    },
+    "status": "resolved",
+    "task_id": "t5"
+   }
+  },
+  "resolve_again": {
+   "value": {
+    "attempt": 1,
+    "generation": 1,
+    "record_id": "rid-x",
+    "resolution": {
+     "resolution": "rerun"
+    },
+    "status": "resolved",
+    "task_id": "t5"
+   }
+  },
+  "resolve_unknown": {
+   "message": "Unknown termination record",
+   "refused": "ContractError"
+  }
+ },
+ "directory_other_attempt": {
+  "message": "task t5 has 1 termination record(s) pending reconciliation",
+  "refused": "ReconciliationRequired"
+ },
+ "directory_unreadable_same_attempt": {
+  "message": "task t6 has 1 termination record(s) pending reconciliation",
+  "refused": "ReconciliationRequired"
+ },
+ "earlier_closed": {
+  "value": null
+ },
+ "earlier_pending_reconciliation": {
+  "detail": [
+   "ReconciliationRequired",
+   "t1",
+   [
+    "78c3a2ff2daf432f650f9c70e009da43b89c2b7e3bdb1bcb8a4e150d8cd25ae4"
+   ]
+  ],
+  "message": "task t1 has 1 termination record(s) pending reconciliation",
+  "refused": "ReconciliationRequired"
+ },
+ "earlier_unconfirmed": {
+  "detail": [
+   "ReconciliationRequired",
+   "t1",
+   [
+    "78c3a2ff2daf432f650f9c70e009da43b89c2b7e3bdb1bcb8a4e150d8cd25ae4"
+   ]
+  ],
+  "message": "task t1 has 1 termination record(s) pending reconciliation",
+  "refused": "ReconciliationRequired"
+ },
+ "no_rows": {
+  "value": null
+ },
+ "other_bucket": {
+  "value": null
+ },
+ "own_attempt_marker": {
+  "value": null
+ },
+ "records": [
+  [
+   "observation_terminations",
+   "02531c4f986edb3e00fa72ee8a8bb24a1e0e75280fe06192cc8aa8abeb2195eb",
+   "d6a4514ca3ea60b8f611083ef2420afa0aa4978a18f5167dbf043c4ca6db7eb7"
+  ],
+  [
+   "observation_terminations",
+   "78c3a2ff2daf432f650f9c70e009da43b89c2b7e3bdb1bcb8a4e150d8cd25ae4",
+   "69f6d02ecffc19a2eb4a1faea362f1a904ee128a34f9946a2b9312088a1513a9"
+  ],
+  [
+   "observation_terminations",
+   "b72213e7516d108ab721ca973aeba7e419942e64c2d14fa20c6820f854845ea1",
+   "41901e372340a37ad7fe9f0cb36c30719d139144d3c5ba13f1c2a270055eb04a"
+  ]
+ ]
+}

@@ -1,0 +1,9 @@
+{
+ "family": "observation.reconciliation_guard",
+ "description": "S4 moved-ahead Observer reconciliation guard (lead decision Option A): guard_reservation blocks a reservation while an earlier attempt's unconfirmed/pending_reconciliation marker or a directory (MemoryDirectory) termination row exists, ignores own-attempt, closed and other-bucket markers; MemoryStore, fixed clock and process identity",
+ "reference_driver": "drivers/reference/s4_reconciliation_guard.py",
+ "target_driver": null,
+ "target_status": "pending: the Observer reconciliation guard is not yet moved",
+ "golden": "goldens/reference/observation.reconciliation_guard.json",
+ "slice": "S4"
+}
