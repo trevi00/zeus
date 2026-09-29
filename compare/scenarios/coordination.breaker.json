@@ -2,8 +2,7 @@
  "family": "coordination.breaker",
  "description": "S4 moved-ahead Breaker (lead decision Option A: RunTask's invocation admission): breaker_key refusals, admit/report through failure threshold, cooldown, probe, stale generation, probe success/failure/unknown/expiry, inspect, corrupt state with one repair notice, unreadable store, update_policy and result_of/result_of_exception, on MemoryStore and a scripted clock",
  "reference_driver": "drivers/reference/s4_breaker.py",
- "target_driver": null,
- "target_status": "pending: Breaker not yet moved",
+ "target_driver": "drivers/target/s4_breaker.py",
  "golden": "goldens/reference/coordination.breaker.json",
  "slice": "S4"
 }
