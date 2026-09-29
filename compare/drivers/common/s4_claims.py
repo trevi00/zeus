@@ -34,15 +34,17 @@ def records(store):
 
 
 def decision(api, did, actor="lead:improvement", **extra):
-    message = api.envelope("task.assign", "worker:implementation", actor, "diagnose", {}, "corr-" + did)
-    return {"id": did, "actor": actor, "phase": "diagnose", "input": {"n": did}, "message": message,
-            "status": "pending", "attempt": 0, **extra}
+    """The row without its message: `case` adds the envelope after the scripted clock and ids are reset."""
+    return {"id": did, "actor": actor, "phase": "diagnose", "input": {"n": did}, "status": "pending", "attempt": 0,
+            **extra}
 
 
 def case(api, rows, fences=(), expected=None, twice=False):
     store = api.fresh()
     with store.transaction() as tx:
         for row in rows:
+            row = {**row, "message": api.envelope("task.assign", "worker:implementation", row["actor"], "diagnose", {},
+                                                  "corr-" + row["id"])}
             tx.put("decisions_pending", row["id"], row)
         for key, generation in fences:
             tx.put("execution_fences", "decisions_pending:" + key, {"id": "decisions_pending:" + key,

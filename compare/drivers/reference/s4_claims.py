@@ -51,9 +51,9 @@ def claim(store, agent, expected=None):
         seen["lease"] = kwargs["lease"]
         raise Boundary()
 
-    IDS.reset()  # the owner id is the first id drawn by this claim, as on the target
     executor = Executor(Harness(store, ORG), SimpleNamespace(repository=ROOT), FileArtifacts(str(ROOT / "artifacts")))
     executor._run = run
+    IDS.reset()  # the owner id is the first id decide_one draws, as the target caller passes it
     try:
         executor.decide_one(agent, expected)
     except Boundary:
