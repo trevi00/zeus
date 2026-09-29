@@ -138,3 +138,50 @@ def test_submit_refuses_when_parking_is_unwired():
         wf.submit(message)
     with store.transaction() as tx:
         assert tx.records() == []
+
+
+# ---- RunTask facades (DESIGN-run-task D8) -------------------------------------------------------------------
+
+def test_task_ownership_delegates_to_the_moved_workflow_unchanged():
+    from codex_harness.coordination.application.task_ownership import TaskOwnership
+    calls = []
+    workflow = SimpleNamespace(
+        _owned=lambda tx, lease: calls.append(("owned", tx, lease)) or {"id": "t"},
+        heartbeat=lambda lease, seconds: calls.append(("heartbeat", lease, seconds)) or {"lease_until": "x"},
+        remaining_seconds=lambda lease, maximum: calls.append(("remaining", maximum)) or 5.0,
+        claim=lambda agent, owner, **o: calls.append(("claim", agent, owner, o)) or {"id": "t"},
+        complete=lambda task, result, commands, accept=None: calls.append(("complete", commands, accept)) or {},
+        fail_execution=lambda task, error, *, transaction=None: calls.append(("fail", transaction)) or {},
+        contain_time=lambda task, error: calls.append(("contain",)),
+        snapshot=lambda: "snap")
+    own, tx = TaskOwnership(workflow), RecordingTx()
+    assert own.owned(tx, {"id": "t"}) == {"id": "t"}
+    assert own.heartbeat({"id": "t"}) == {"lease_until": "x"}
+    assert own.remaining_seconds({"id": "t"}, 600) == 5.0
+    own.claim("lead:improvement", "o1", expected={"id": "t"})
+    own.complete({"id": "t"}, {}, [], accept="a")
+    own.fail_execution({"id": "t"}, RuntimeError("x"), transaction=tx)
+    own.contain_time({"id": "t"}, RuntimeError("x"))
+    assert own.snapshot() == "snap"
+    assert [c[0] for c in calls] == ["owned", "heartbeat", "remaining", "claim", "complete", "fail", "contain"]
+    assert calls[1][2] > 0 and calls[3][3] == {"expected": {"id": "t"}} and calls[5][1] is tx
+
+
+def test_invocation_breaker_delegates_to_the_moved_breaker_and_functions():
+    from codex_harness.coordination.application.breaker import breaker_key, result_of, result_of_exception
+    from codex_harness.coordination.application.invocation_admission import InvocationBreaker
+    seen = []
+    breaker = SimpleNamespace(admit=lambda key, lease, now: seen.append(("admit", key, now)) or {"k": key},
+                              report=lambda token, result, now: seen.append(("report", result, now)) or {"a": 1})
+    admission = InvocationBreaker(breaker)
+    assert admission.admit("breaker:codex:x", {"id": "t"}) == {"k": "breaker:codex:x"}
+    assert admission.report({"k": 1}, "success") == {"a": 1}
+    assert admission.key("codex", "improvement") == breaker_key("codex", "improvement")
+    assert admission.verdict({"answer": {"x": 1}}) == result_of({"answer": {"x": 1}}) == "success"
+    error = ContractErrorLike("Codex turn execution budget exceeded")
+    assert admission.verdict_of_exception(error) == result_of_exception(error)
+    assert seen == [("admit", "breaker:codex:x", None), ("report", "success", None)]
+
+
+class ContractErrorLike(Exception):
+    pass
