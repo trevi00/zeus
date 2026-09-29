@@ -1,0 +1,396 @@
+{
+ "admit_bad_key": {
+  "message": "Breaker key required",
+  "refused": "ContractError"
+ },
+ "admit_bad_lease": {
+  "message": "Admission requires a typed execution lease",
+  "refused": "ContractError"
+ },
+ "admit_open": {
+  "message": "Breaker refuses admission for breaker:dd71a156c84ccf1647686daa5dd5f51211580683d7d31f7e8e364bd21544f709: open until 2026-01-01T00:02:35+00:00",
+  "refused": "ContractError"
+ },
+ "admit_probe_in_flight": {
+  "message": "Breaker refuses admission for breaker:dd71a156c84ccf1647686daa5dd5f51211580683d7d31f7e8e364bd21544f709: probe in flight",
+  "refused": "ContractError"
+ },
+ "corrupt_admit": [
+  {
+   "message": "Breaker state requires repair: Breaker record lacks required fields",
+   "refused": "ContractError"
+  },
+  {
+   "message": "Breaker state requires repair: Breaker record lacks required fields",
+   "refused": "ContractError"
+  }
+ ],
+ "corrupt_inspect": {
+  "value": {
+   "admits": false,
+   "key": "breaker:5033ad5a8ce4a96ad7fdce1f9ce164692833a7111719f571ff0e87fa998b98f0",
+   "reason": "Breaker record lacks required fields",
+   "state": "corrupt"
+  }
+ },
+ "event_count": 25,
+ "first_admit": {
+  "admitted_at": "2026-01-01T00:00:00+00:00",
+  "attempt": 1,
+  "generation": 0,
+  "key": "breaker:dd71a156c84ccf1647686daa5dd5f51211580683d7d31f7e8e364bd21544f709",
+  "owner": "o1",
+  "policy_hash": "44acda71ae157f9f553124204b952487a410b3193a3b91f87287897b6da724ac",
+  "policy_revision": "unversioned",
+  "probe": false,
+  "task_generation": 1,
+  "task_id": "t1"
+ },
+ "first_failure": {
+  "value": {
+   "applied": true,
+   "generation": 0,
+   "state": "closed"
+  }
+ },
+ "inspect": {
+  "value": {
+   "admits": true,
+   "authority": "admission only; never acceptance, graduation or deployment",
+   "decision": "reclaim",
+   "failures_in_window": 0,
+   "generation": 8,
+   "key": "breaker:dd71a156c84ccf1647686daa5dd5f51211580683d7d31f7e8e364bd21544f709",
+   "policy_revision": "unversioned",
+   "reason": "probe reservation expired",
+   "reservation": {
+    "attempt": 1,
+    "breaker_generation": 8,
+    "expires_at": "2026-01-01T00:16:46+00:00",
+    "generation": 1,
+    "owner": "o12",
+    "task_id": "t12"
+   },
+   "state": "half_open"
+  }
+ },
+ "inspect_missing": {
+  "value": {
+   "admits": true,
+   "key": "breaker:codex:missing",
+   "note": "a breaker with no record is new; it admits but proves nothing",
+   "state": "missing"
+  }
+ },
+ "keys": [
+  {
+   "value": "breaker:dd71a156c84ccf1647686daa5dd5f51211580683d7d31f7e8e364bd21544f709"
+  },
+  {
+   "message": "Breaker provider must be a lowercase token",
+   "refused": "ContractError"
+  }
+ ],
+ "probe": {
+  "admitted_at": "2026-01-01T00:03:20+00:00",
+  "attempt": 1,
+  "generation": 2,
+  "key": "breaker:dd71a156c84ccf1647686daa5dd5f51211580683d7d31f7e8e364bd21544f709",
+  "owner": "o5",
+  "policy_hash": "44acda71ae157f9f553124204b952487a410b3193a3b91f87287897b6da724ac",
+  "policy_revision": "unversioned",
+  "probe": true,
+  "task_generation": 1,
+  "task_id": "t5"
+ },
+ "probe_again": {
+  "admitted_at": "2026-01-01T00:11:46+00:00",
+  "attempt": 1,
+  "generation": 8,
+  "key": "breaker:dd71a156c84ccf1647686daa5dd5f51211580683d7d31f7e8e364bd21544f709",
+  "owner": "o12",
+  "policy_hash": "44acda71ae157f9f553124204b952487a410b3193a3b91f87287897b6da724ac",
+  "policy_revision": "unversioned",
+  "probe": true,
+  "task_generation": 1,
+  "task_id": "t12"
+ },
+ "probe_expired": {
+  "value": {
+   "applied": false,
+   "generation": 8,
+   "reason": "probe_expired",
+   "state": "half_open"
+  }
+ },
+ "probe_failure_opens": {
+  "value": {
+   "applied": true,
+   "generation": 6,
+   "state": "open"
+  }
+ },
+ "probe_success_closes": {
+  "value": {
+   "applied": true,
+   "generation": 3,
+   "state": "closed"
+  }
+ },
+ "probe_unknown_releases": {
+  "value": {
+   "applied": true,
+   "generation": 7,
+   "state": "half_open"
+  }
+ },
+ "records": [
+  [
+   "breaker_events",
+   "0c56fa6801d227742a1a58bbd8f8c864ab69bb3e01216faaedac2ff4d91cde8a",
+   "87eee60061d4751692973899c652e5d2dd6452fe17072f11744459448ea6e3fb"
+  ],
+  [
+   "breaker_events",
+   "18f3383e7f761457673b7ed64dc2b5f9a9a09b4eb23808b8ec59c0de2d63ebeb",
+   "abd3a5b58aa5831d77c45b04896714eb5cc2a7712e3b36e8121f001865da071b"
+  ],
+  [
+   "breaker_events",
+   "1b6317af4a93669a85f70ecdc000735f10c1de9d2b64378c4c0a584bd6432120",
+   "14e4f173d676a5f9c1cf9a3fa0bdd3fe23534adc045ddcddcfd438d45d6c06bd"
+  ],
+  [
+   "breaker_events",
+   "20e6f013e4d3bb7d2c7ba251aacfe78bc4c4b89276436becc3214b7b766673ca",
+   "f2a3eaf7c722b9a1095d6668b72957645d2a5ef26a32ca57cba08c84023714a0"
+  ],
+  [
+   "breaker_events",
+   "272bd004d2bb40007ed9afd02799d24f67dc18b9cde3b428e8abc23271cec025",
+   "83fe0f5af26d48ba16a643a66ddcf95f1822c64e5135aa3e6484c33baf4af825"
+  ],
+  [
+   "breaker_events",
+   "282353f5ce87904d17d1b2058d8bf90aeee21b192e1ff683a83cf2c0026e856d",
+   "ad58d3b530b20b3751c49833f1e35fe8a6009e42cb859be9dec597852a117074"
+  ],
+  [
+   "breaker_events",
+   "2afb089e80260d091b9dda2bf51ad4612e85adcb997c0bc955ee2d56fd3a3ebf",
+   "02f9a7a6680f82e0211503a01aec7df76ed9c7c405cae49bf1468ed970157c0f"
+  ],
+  [
+   "breaker_events",
+   "331e60dbdb8c025e099b0d1cb7d88d04da68cb3368c5dd4908a919cdb2fa8fea",
+   "5dca7b1414cad2d2665306a2ba38e5f65b8de3d8b36cf18d26f374d74c599d66"
+  ],
+  [
+   "breaker_events",
+   "37b22f7ee04498064ca9f655404e7b222e535fbab1ca2d42c0278896c506e9a0",
+   "76fe1e9d40b0f1978f2b14b7718fd87e80a02d17880b638e3fe86a3f46031382"
+  ],
+  [
+   "breaker_events",
+   "397832e9717b911ea26575a0cb1198b350914c477bcb3a73f80a7bbe5b2c3c04",
+   "4820c03609f3128ae79190e58ca4618bb116d436e41f6a71f3f9a867fb7eb954"
+  ],
+  [
+   "breaker_events",
+   "3bb91ab15f8ac9e1a8cd0dd52f122ea4e8d3b16d9ce99b1262b1f41cf6f47930",
+   "0ff8c0fe2509baa771bed2927b875509245ed6b6268407af7c58aa918e67f575"
+  ],
+  [
+   "breaker_events",
+   "4e6e7f30e7982a0be74af571c323a2877cadf32d49c9bc0bcafd00777e4487cb",
+   "fd2364a1a1cce1893ddcc90838e644aea6472ddc22609a5c6cdafefad17678d8"
+  ],
+  [
+   "breaker_events",
+   "50096c14f4637a45f45db96cafae7779b89fa4d0f3afeeb5b4715e065d1d3166",
+   "2a78bed1013566d561055053ab26b11cef5ee16ab468a1a04ce20d8afdce9350"
+  ],
+  [
+   "breaker_events",
+   "56ee43aa3db118c6d205704c46e60e9b141c12cda9664cf9ee7d46bc175687ef",
+   "b01f4a7b2c0d25e5c012e9df23c954acc7bbf639bd1c7755964d798fe76b94e4"
+  ],
+  [
+   "breaker_events",
+   "6d90d282616dedb054a4ba6b837f6cfce566839aaea6cf8e9452e6b3739b5ffa",
+   "f7e44b41b858c8c86ee5c291f87235846c5be770161795fd9bd5841bbff67170"
+  ],
+  [
+   "breaker_events",
+   "7b0931b76c8ec19edccb850b8aaa2efd728ea5262a1ce9a8d442ea2833a991cc",
+   "c1b916277b63f0441703332b3ededf178e87867281c4e456f337b652d073a164"
+  ],
+  [
+   "breaker_events",
+   "8a9ff39ee59a1f43ed4d61b00dbd61b6c278a5126fadbc0ac80d8ba20ca819b5",
+   "e6f7163426a1b64e248f2b8e09168b8c331f65827482e125175a33a4675674a3"
+  ],
+  [
+   "breaker_events",
+   "94f0d418d21edc03b5f799d9b70ae92976077b8da9e03eec281043dd9180e258",
+   "1be6cba0d16fb199cc2e4a62e50e376846b2b963e3decd2b6e4a4a2bbbe3ac6d"
+  ],
+  [
+   "breaker_events",
+   "9b8d5af1c1e76114a71d0d2e9c0a7728dfe57262bf9498c12f28f9413a28f486",
+   "1b10f43c1152eea26c040929a95e66550e56a739f1f00f4d7eaf6928e18d8703"
+  ],
+  [
+   "breaker_events",
+   "9ca8bf18898c8761b17498a93216b7aeb88725a763ade7f5b5caed930fa787cb",
+   "4c01712bc6fe2e44f6f2732d5bebbfe4efaea9cad22fba1a3738a8ead73a46a1"
+  ],
+  [
+   "breaker_events",
+   "bf4c427ae9dacbe9db91659fc5a69a24e38d04c0c630b0e7a490c9102bb34bfb",
+   "a5f232ce10a46735dbbb238e530fcd6077c6ef4f5d075a2d1724706ea4e753d0"
+  ],
+  [
+   "breaker_events",
+   "c68cfde13d462b83a189024e97d745e1c043912a837f9e075047998a0025d994",
+   "bdef4ee916d7d0d1930f7eea9ef73549da2d726c5f978e171215b06deb41729b"
+  ],
+  [
+   "breaker_events",
+   "c9799a2f9ce9a51a671ed8b1a8e75a699c96fd80979b4b6cfda60613e7258118",
+   "7293a25f9bea721446867d099d9b1975163d99087e2734357b2d10a76742c46b"
+  ],
+  [
+   "breaker_events",
+   "ce4d8b80c0ccac6023b4bc9b47d6d7c6e36fa6063ae8be1b5edaeb836dc639ec",
+   "fba2fa5dcdd8daf366515040ab03b7b56f72d4b8b507594264d41b2e517d848c"
+  ],
+  [
+   "breaker_events",
+   "fae64675fc70bbb43872a772312eb4843cfbc00dee4b0553c389359d0d1fe660",
+   "e0233ac2a4943eb96ce80fa2b577e6099b95e66fde9110fe00d57d6b8f60ab72"
+  ],
+  [
+   "breaker_notices",
+   "7166ebfe01ba7ea76f0ff641af4c38a09c2ba7867c46cffd53a3281973fde9c2",
+   "5a575c878a67ec3c05acff40155a34358a4890a9c3d3f89ac9bd121498d0cab7"
+  ],
+  [
+   "breaker_policies",
+   "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+   "ce1cf537a80cace5757521acd65824036f06d8a35c8922fa26b406b4c80564ff"
+  ],
+  [
+   "breakers",
+   "breaker:5033ad5a8ce4a96ad7fdce1f9ce164692833a7111719f571ff0e87fa998b98f0",
+   "ee268a71b05de985c2d7b596eede7bb289ad999b071882bc65e653b9c52e58a6"
+  ],
+  [
+   "breakers",
+   "breaker:dd71a156c84ccf1647686daa5dd5f51211580683d7d31f7e8e364bd21544f709",
+   "989bea4066fddfd4c6622fd04cf0e82298620ceb0e165f96af1d98f4d943be88"
+  ]
+ ],
+ "reopen_failures": [
+  {
+   "value": {
+    "applied": true,
+    "generation": 3,
+    "state": "closed"
+   }
+  },
+  {
+   "value": {
+    "applied": true,
+    "generation": 3,
+    "state": "closed"
+   }
+  },
+  {
+   "value": {
+    "applied": true,
+    "generation": 4,
+    "state": "open"
+   }
+  }
+ ],
+ "report_stale_generation": {
+  "value": {
+   "applied": false,
+   "generation": 2,
+   "reason": "stale_generation",
+   "state": "half_open"
+  }
+ },
+ "result_of": [
+  {
+   "value": "unknown"
+  },
+  {
+   "value": "failure"
+  },
+  {
+   "value": "unknown"
+  },
+  {
+   "value": "unknown"
+  },
+  {
+   "value": "unknown"
+  },
+  {
+   "value": "unknown"
+  },
+  {
+   "value": "success"
+  }
+ ],
+ "result_of_exception": [
+  {
+   "value": "failure"
+  },
+  {
+   "value": "unknown"
+  },
+  {
+   "value": "unknown"
+  }
+ ],
+ "second_failure": {
+  "value": {
+   "applied": true,
+   "generation": 0,
+   "state": "closed"
+  }
+ },
+ "third_failure_opens": {
+  "value": {
+   "applied": true,
+   "generation": 1,
+   "state": "open"
+  }
+ },
+ "unreadable_inspect": {
+  "value": {
+   "admits": false,
+   "key": "breaker:dd71a156c84ccf1647686daa5dd5f51211580683d7d31f7e8e364bd21544f709",
+   "reason": "RuntimeError",
+   "state": "unreadable"
+  }
+ },
+ "update_policy": {
+  "message": "Policy revision must be a Git commit hash or \"unversioned\"",
+  "refused": "ContractError"
+ },
+ "update_policy_applied": {
+  "value": {
+   "applied": true,
+   "policy_hash": "8716998062ad14c7a85743b2288128b58f17c159a40024dc23304adaebd92378",
+   "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  }
+ },
+ "update_policy_refused": {
+  "message": "Breaker policy must carry exactly ['cooldown_seconds', 'failure_threshold', 'max_history', 'probe_ttl_seconds', 'revision', 'version', 'window_seconds']",
+  "refused": "ContractError"
+ }
+}

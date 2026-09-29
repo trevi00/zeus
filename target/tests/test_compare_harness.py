@@ -60,7 +60,7 @@ S4_FAMILIES = {"execution.run_task", "review.decisions", "execution.ledger", "ex
                "hooks.candidate_canary", "coordination.decision_guards",
                "coordination.decision_claims", "observation.termination_markers",
                "observation.reconciliation_guard",
-               "observation.event_write_side", "research.hook_effects"}
+               "observation.event_write_side", "research.hook_effects", "coordination.breaker"}
 S4_IMPLEMENTED = {"execution.ledger", "execution.units", "execution.output_contracts",
                   "execution.lease_progress", "guards.unpatched_transport",
                   "coordination.execution_owners", "review.releases_units", "coordination.execution_time",
