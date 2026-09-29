@@ -53,7 +53,8 @@ def test_row_fields_and_values(table):
 
 S1_OWNERS = {"kernel", "storage", "host_os"}
 S2_OWNERS = {"routing", "context", "knowledge"}
-IMPLEMENTED_OWNERS = S1_OWNERS | S2_OWNERS  # slices implemented so far: S1, S2
+S3_OWNERS = {"execution", "credentials"}  # S3: the container/credential rows only (execution is shared with S4)
+IMPLEMENTED_OWNERS = S1_OWNERS | S2_OWNERS | S3_OWNERS  # slices implemented so far: S1, S2, S3
 
 
 def test_only_implemented_slices_claim_implemented_and_nothing_is_verified_early(table):
@@ -135,3 +136,25 @@ def test_s2_module_rows_are_all_accounted_for(table):
         assert "S2 implemented" in row["slice_progress"] and row["status"] == "designed"
     s2_contracts = [r for r in table["rows"] if r["kind"] == "contract" and r["target_owner"] in S2_OWNERS]
     assert len(s2_contracts) == 16 and all(r["status"] == "implemented" for r in s2_contracts)
+
+
+S3_MODULES = {"isolated_worker.py", "role_containers.py", "app_server.py", "output_schema.py", "execution_output.py",
+              "codex.py", "hooks.py"}
+
+
+def test_s3_rows_are_accounted_for(table):
+    rows = {r["key"]: r for r in table["rows"]}
+    implemented = {"module:src/codex_harness/adapters/" + name for name in
+                   ("role_containers.py", "output_schema.py", "execution_output.py")}
+    assert all(rows[key]["status"] == "implemented" for key in implemented)
+    for name in S3_MODULES:
+        row = rows["module:src/codex_harness/adapters/" + name]
+        assert "S3" in row["slice_progress"], name
+        if row["key"] not in implemented:
+            assert row["status"] == "designed" and ("S4" in row["slice_progress"] or "S8" in row["slice_progress"]
+                                                    or "S10" in row["slice_progress"]), name
+    apis = [r for r in table["rows"] if r["kind"] == "public_api"
+            and r["key"].split("::")[0].rsplit("/", 1)[-1] in {"isolated_worker.py", "role_containers.py", "app_server.py"}]
+    assert apis and all(r["status"] == "implemented" for r in apis)
+    for key in ("contract:INV-ROLE-CONTAINER-001", "contract:INV-CODEX-CREDENTIAL-001"):
+        assert rows[key]["status"] == "designed" and "S4" in rows[key]["slice_progress"]

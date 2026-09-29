@@ -11,7 +11,7 @@ Does not own: the argv or the control rule (execution.domain.container_spec), th
     (execution.adapters.containers.cleanup_ledger), process creation (host_os: the `ProcessRunner`
     port is injected; nothing here creates a process)
 Entry points: OwnedContainer, docker_environment, docker_call, preflight, host_user, operator_home,
-    load_host_isolation, DRIVER_HASH
+    load_host_isolation, isolated_review_context, DRIVER_HASH
 Contracts: INV-ROLE-CONTAINER-001
 
 Moved from SOURCE M7 `adapters/isolated_worker` (`_docker`, `docker_environment`, `preflight`,
@@ -51,6 +51,21 @@ def host_user() -> str:
 
 def operator_home() -> str:
     return str(Path.home())
+
+
+def isolated_review_context(cwd, config: dict, profile: str | None = None) -> dict:
+    """What the lead is told in this mode: review the diff and preserved observations only. In a role
+    container (INV-ROLE-CONTAINER-001) its checkout is the read-only workspace mount."""
+    context = {"cwd": str(Path(cwd).resolve()) if profile is None else spec.WORKSPACE, "interpreter": None, "src": None,
+               "isolation": spec.summary(config),
+               "instruction": "Worker and verifier ran in isolated containers. Do not run candidate code, tests or "
+               "scripts on this host. Review the diff read-only together with the preserved evidence inspection; "
+               "all executable evidence is supplied by the isolated inspector. Do not create files in the checkout. "
+               "Record one concise frame and verdict in your response."}
+    if profile is not None:
+        context["container"] = {"profile": profile, "checkout": spec.WORKSPACE + " (read-only mount)",
+                                "artifacts": "read-only hand-off copy at the named artifact paths"}
+    return context
 
 
 def docker_environment(base=None, *, token: bool = False) -> dict:
