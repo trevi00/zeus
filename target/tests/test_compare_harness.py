@@ -51,16 +51,18 @@ def test_alpha_renaming_preserves_equality_relations():
 S0_FAMILIES = {"cli.parser", "entries.safe_matrix", "static.source", "effects.decision_unit",
                "effects.context_packet", "guards.unpatched_transport", "effects.decision_unit.pg"}
 S1_FAMILIES = {"kernel.values", "storage.memory", "storage.pg", "storage.redis", "host_os.git", "host_os.process"}
+S2_FAMILIES = {"routing.matrix", "context.composition", "context.worker_profile_entry"}
+IMPLEMENTED = {**{f: "S1" for f in S1_FAMILIES}, **{f: "S2" for f in S2_FAMILIES}}
 
 
 def test_every_scenario_has_a_reference_golden_and_only_implemented_slices_have_a_target():
     scenarios = [load(p) for p in sorted((COMPARE / "scenarios").glob("*.json"))]
-    assert {s["family"] for s in scenarios} == S0_FAMILIES | S1_FAMILIES
+    assert {s["family"] for s in scenarios} == S0_FAMILIES | S1_FAMILIES | S2_FAMILIES
     for s in scenarios:
         assert (COMPARE / s["reference_driver"]).is_file()
         assert (COMPARE / s["golden"]).is_file()
-        if s["family"] in S1_FAMILIES:
-            assert s["slice"] == "S1" and (COMPARE / s["target_driver"]).is_file()
+        if s["family"] in IMPLEMENTED:
+            assert s["slice"] == IMPLEMENTED[s["family"]] and (COMPARE / s["target_driver"]).is_file()
             assert "target_status" not in s
             driver = (COMPARE / s["target_driver"]).read_text(encoding="utf-8")
             assert 'driver.start("target")' in driver and "determinism.install" not in driver

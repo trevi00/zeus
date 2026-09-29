@@ -111,6 +111,8 @@ def project_context(git, artifacts, cwd, revision, objective=None, *, thresholds
     if objective is not None:
         from codex_harness.context.adapters.skill_routing import route_skills
 
+        require(thresholds is not None, 'Skill routing needs the native threshold policy source')
+
         items, routing = route_skills(git, artifacts, cwd, revision, objective, items, records,
                                       threshold_policy=thresholds.effective_policy())
         from codex_harness.context.adapters.skill_guidance import guidance_context
