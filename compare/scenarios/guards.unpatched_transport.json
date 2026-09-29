@@ -1,0 +1,9 @@
+{
+ "family": "guards.unpatched_transport",
+ "description": "R-P control: unpatched M7 Codex AppServer and ClaudeCodeRuntime are refused before exec in a guarded driver process",
+ "reference_driver": "drivers/reference/unpatched_transport.py",
+ "target_driver": null,
+ "golden": "goldens/reference/guards.unpatched_transport.json",
+ "slice": "S3",
+ "target_status": "pending: the target side is not implemented in S0; no target row is reported green"
+}

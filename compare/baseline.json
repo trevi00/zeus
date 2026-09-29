@@ -1,0 +1,74 @@
+{
+ "schema": "zeus:rebuild-comparison-baseline:1",
+ "note": "REBUILD-DESIGN-v2 §5.1. SOURCE is the immutable comparison oracle; it does not change when main moves. DEPLOYMENT is a separate, later-refreshed rollback baseline. A new comparison baseline is added only by a recorded decision in approved_rebaselines.",
+ "source": {
+  "name": "M7",
+  "commit": "e38aa722ff1e91dc01ec650689cfe3eebe1ff699",
+  "tree": "5a3622304ab4b20902ad541a363d36526b829ca9",
+  "archive": "git archive e38aa722ff1e91dc01ec650689cfe3eebe1ff699",
+  "reference_wheel": {
+   "filename": "zeus_harness-0.2.0-py3-none-any.whl",
+   "sha256": "df393398fb25dd948da39c38c49c6b542511d3df073dc7ddce682310dc3112e1",
+   "wheel_record_sha256": "ba80537ef2f2e1b5251d1207bd879a195f1926c7601fb91d03387153330c2f8f",
+   "package_files": 275,
+   "package_files_digest": "f511e83403fc2f6653db00318007de51dd4acc1d368e3329b8502270b64233b7",
+   "package_files_digest_method": "sha256 over sorted '<path>,sha256=<b64>' RECORD rows of codex_harness/ and zeus/",
+   "build": "uv build --wheel in the extracted archive; build backend hatchling 1.32.4 (the SOURCE build requirement 'hatchling' is unpinned, so the wheel sha256 is reported and the package-file digest is the enforced identity)",
+   "record_note": "The installed RECORD gains installer rows (INSTALLER, REQUESTED, direct_url.json, uv_cache.json), so drivers enforce the package-file digest, not the installed RECORD bytes."
+  }
+ },
+ "deployment": {
+  "status": "pending",
+  "collected_at": null,
+  "note": "Per-process DEPLOYMENT/rollback baseline (OA, managed Fleet runtime incl. its payload, HostDelivery controller, scheduled observers, monitor). Collected fresh at cutover preparation (§6 R0); not a prerequisite of S0 and never substituted by SOURCE."
+ },
+ "approved_rebaselines": [],
+ "target": {
+  "tree": "target/",
+  "project": "target/pyproject.toml",
+  "lock": "target/uv.lock",
+  "package": "codex_harness",
+  "status": "S0 skeleton only: no product implementation"
+ },
+ "environments": {
+  "python": "3.12",
+  "reference_venv": "$ZEUS_REBUILD_SCRATCH/venv-ref (local: /home/trevi/workspaces/zeus/scratch/zeus-rebuild-001/venv-ref), built from the SOURCE archive wheel and the SOURCE uv.lock runtime dependencies (uv export --frozen --no-dev)",
+  "target_venv": "target/.venv from target/uv.lock (uv sync --frozen --project target)",
+  "separation": "separate processes and interpreters; neither environment has a path to the other; R-O origin assertions in every driver and in the target conftest",
+  "isolation": "R-P: audit hook (parent and child interpreters via compare/guard/sitecustomize.py), fail-loud fake claude/codex/docker first on PATH, empty HOME/CODEX_HOME/CLAUDE_CONFIG_DIR, credential-named variables removed by name, bwrap --unshare-net with tmpfs over credential directories where available",
+  "production": "no production endpoint, DSN, token or credential file is copied into the worktree or either environment"
+ },
+ "inputs": {
+  "design": {
+   "path": "artifacts/aibox-migration-001/REBUILD-DESIGN-v2.md",
+   "sha256": "492ccab0eae8c7faaf8b4bbb37dcbf3a89d7f03e7ef8bd0ba9fc391478ac2303"
+  },
+  "ledger": {
+   "path": "artifacts/aibox-migration-001/FLEET-REBUILD-LEDGER.json",
+   "sha256": "38a84d48e4ede80839850fa087e87d526d885fdd32aa452193cb0ad307c048ee"
+  },
+  "design_review": {
+   "path": "artifacts/aibox-migration-001/FLEET-REBUILD-DESIGN2-REVIEW.md",
+   "verdict": "ACCEPT"
+  }
+ },
+ "layout": {
+  "worktree": "/home/trevi/workspaces/zeus/worktrees/zeus-rebuild-001",
+  "branch": "rebuild/zeus-rebuild-001",
+  "implementation_owner": "one Claude implementer (no duplicate owner; no other rebuild/rewrite worktree or branch existed at creation)",
+  "allowed_changed_paths": [
+   "target/",
+   "compare/",
+   "coverage/",
+   "docs/context/ARCHITECTURE.md",
+   "docs/context/README.md",
+   "docs/design.md",
+   ".github/workflows/validation.yml"
+  ],
+  "additions_only": {
+   "docs/context/README.md": 3,
+   "docs/design.md": 3
+  },
+  "reference": "every other tracked path stays byte-identical to SOURCE (python compare/run.py check-tree)"
+ }
+}

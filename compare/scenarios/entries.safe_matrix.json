@@ -1,0 +1,9 @@
+{
+ "family": "entries.safe_matrix",
+ "description": "\u00a75.2a safe per-entry characterization (F3)",
+ "reference_driver": "drivers/reference/entries.py",
+ "target_driver": null,
+ "golden": "goldens/reference/entries.safe_matrix.json",
+ "slice": "S10",
+ "target_status": "pending: the target side is not implemented in S0; no target row is reported green"
+}

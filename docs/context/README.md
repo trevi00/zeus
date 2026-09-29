@@ -15,6 +15,7 @@ delivered to a provider.
   rule, predictable sections, and the metadata a packaged document needs.
 - [DELIVERY.md](DELIVERY.md) — what the running system actually loads, what a human or a task must
   hand over deliberately, and what is reference-only.
+- [ARCHITECTURE.md](ARCHITECTURE.md) — the rebuild's reference-only feature and ownership map.
 
 ## Layers
 

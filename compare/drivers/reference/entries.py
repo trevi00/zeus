@@ -1,0 +1,160 @@
+"""Reference driver: the safe per-entry characterization matrix (REBUILD-DESIGN-v2 §5.2a, F3).
+
+Scenario family `entries.safe_matrix`. Every row runs as a child of the reference venv with a bounded
+timeout, the R-P child environment (fake providers first on PATH, empty homes, no credential-named
+variables, the audit hook via sitecustomize) and, when the runner uses bwrap, no network. The
+recorded reference result is the golden whatever it is: a refused or unsupported `--help` is a
+preserved expected result. Nothing in an entry is changed to make it characterizable.
+
+Never done here (the "never" column): running a CLI handler, `--once`, a live monitor
+`collect`/`web`, a valid isolated-worker request through `-m`, `container_main.main()`, any
+subcommand of the delivery/migration modules, `service_entry`/`monitor_frontend_checks` `main()`,
+`zeus_aibox_service` `render`/`launch`/`journal`, and any `aibox_data` transfer.
+"""
+
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "harness"))
+
+import driver  # noqa: E402
+
+driver.start("reference")
+
+import hashlib  # noqa: E402
+import json  # noqa: E402
+import os  # noqa: E402
+import subprocess  # noqa: E402
+import tempfile  # noqa: E402
+
+import masks  # noqa: E402
+import provider_guard  # noqa: E402
+
+SOURCE = Path(os.environ["ZEUS_REBUILD_SOURCE_ROOT"]).resolve()
+BIN = Path(sys.executable).parent
+PY = str(Path(sys.executable))
+TIMEOUT = 60
+IMPORT_ONLY = "import importlib, sys; importlib.import_module(sys.argv[1]); print('imported')"
+
+
+def sha(data: bytes) -> str:
+    return hashlib.sha256(data).hexdigest()
+
+
+class Runner:
+    def __init__(self, work: Path):
+        self.work = work
+        self.env = provider_guard.child_environment(work / "child")
+        self.masker = masks.Masker("entries.safe_matrix", roots={
+            "SOURCE": str(SOURCE), "VENV": str(Path(sys.prefix).resolve()), "WORK": str(work),
+            "PREFIX": sys.prefix})
+
+    def text(self, raw: bytes) -> str:
+        return self.masker.apply(raw.decode("utf-8", "replace"))
+
+    def run(self, argv, *, stdin=b"", cwd=None, keep_stdout=True, parse_json=False):
+        proc = subprocess.run(argv, input=stdin, capture_output=True, timeout=TIMEOUT,
+                              cwd=str(cwd or self.work), env=self.env)
+        row = {"argv": [self.masker.apply(a) for a in
+                        ([Path(argv[0]).name] if argv[0].startswith(str(BIN)) or argv[0] == PY
+                         else argv[:1]) + list(argv[1:])],
+               "exit": proc.returncode,
+               "stdout_sha256": sha(self.text(proc.stdout).encode()),
+               "stdout_bytes": len(proc.stdout),
+               "stderr_sha256": sha(self.text(proc.stderr).encode()),
+               "stderr_last_line": self.text(proc.stderr).strip().splitlines()[-1:]}
+        if keep_stdout:
+            row["stdout"] = self.text(proc.stdout)
+        if parse_json:
+            lines = [json.loads(line) for line in proc.stdout.decode().splitlines() if line.strip()]
+            row["json"] = self.masker.apply(lines)
+        return row
+
+
+def hook_rows(r: Runner) -> dict:
+    module = [PY, "-m", "codex_harness.resources.worker_profile_hook"]
+    out = {"no_arguments": r.run(module)}
+    events = {
+        "allowed_bash": {"hook_event_name": "PostToolUse", "session_id": "s0-session",
+                         "tool_name": "Bash", "tool_use_id": "tu-1",
+                         "tool_input": {"command": "ls"}, "tool_response": {"stdout": "x"}},
+        "denied_write_1": {"hook_event_name": "PostToolUseFailure", "session_id": "s0-session",
+                           "tool_name": "Write", "tool_use_id": "tu-2",
+                           "tool_input": {"file_path": "/denied/a.txt"},
+                           "error": "Permission denied: /denied/a.txt"},
+        "denied_write_2": {"hook_event_name": "PostToolUseFailure", "session_id": "s0-session",
+                           "tool_name": "Write", "tool_use_id": "tu-3",
+                           "tool_input": {"file_path": "/denied/b.txt"},
+                           "error": "Permission denied: /denied/b.txt"},
+        "malformed_json": None,
+    }
+    directory = r.work / "hook-receipts"
+    for name, event in events.items():
+        before = set(directory.glob("*.json")) if directory.exists() else set()
+        stdin = b"{not json" if event is None else json.dumps(event).encode()
+        row = r.run([*module, "--directory", str(directory), "--profile-digest", "d" * 64],
+                    stdin=stdin)
+        new = sorted(set(directory.glob("*.json")) - before)
+        receipts = []
+        for path in new:
+            body = json.loads(path.read_text(encoding="utf-8"))
+            receipts.append({"receipt_name": path.name, **body})
+        row["receipts"] = r.masker.apply(receipts)
+        out[name] = row
+    out["session_state_files"] = sorted(p.name for p in directory.iterdir()
+                                        if not p.name.endswith(".json"))
+    return out
+
+
+def main() -> None:
+    with tempfile.TemporaryDirectory(prefix="zeus-s0-entries-") as raw:
+        work = Path(raw)
+        r = Runner(work)
+        rows = {}
+        rows["console.zeus --help"] = r.run([str(BIN / "zeus"), "--help"])
+        rows["console.zeus --version"] = r.run([str(BIN / "zeus"), "--version"])
+        rows["console.harness --help"] = r.run([str(BIN / "harness"), "--help"])
+        rows["module.zeus ticket --help"] = r.run([PY, "-m", "zeus", "ticket", "--help"])
+        rows["console.zeus-supervisor --help"] = r.run([str(BIN / "zeus-supervisor"), "--help"])
+        rows["console.harness-supervisor --help"] = r.run([str(BIN / "harness-supervisor"), "--help"])
+        rows["console.zeus-monitor --help"] = r.run([str(BIN / "zeus-monitor"), "--help"])
+        rows["module.codex_harness.monitor --help"] = r.run([PY, "-m", "codex_harness.monitor", "--help"])
+        meta = [PY, "-m", "codex_harness.adapters.worker_profile_metadata"]
+        rows["metadata.no_arguments_from_checkout_root"] = r.run(meta, cwd=SOURCE, parse_json=True)
+        rows["metadata.--help"] = r.run([*meta, "--help"], cwd=SOURCE)
+        rows["metadata.extra_argument"] = r.run([*meta, "extra"], cwd=SOURCE)
+        entry = [PY, "-m", "codex_harness.adapters.isolated_worker_entry"]
+        rows["isolated_worker_entry.empty_stdin"] = r.run(entry, parse_json=True)
+        rows["isolated_worker_entry.malformed_stdin"] = r.run(entry, stdin=b"{", parse_json=True)
+        rows["isolated_worker_entry.wrong_protocol"] = r.run(
+            entry, stdin=b'{"protocol": "not-a-protocol"}', parse_json=True)
+        rows["worker_profile_hook"] = hook_rows(r)
+        for module in ("codex_harness.container_main", "codex_harness.adapters.isolated_worker",
+                       "codex_harness.adapters.isolated_worker_entry",
+                       "codex_harness.adapters.service_entry",
+                       "codex_harness.adapters.monitor_frontend_checks"):
+            rows["import_only." + module] = r.run([PY, "-c", IMPORT_ONLY, module])
+        artifacts = work / "fixture-artifacts"
+        artifacts.mkdir()
+        body = json.dumps({"fixture": True, "items": [1, 2, 3]}, sort_keys=True).encode()
+        (artifacts / (sha(body) + ".txt")).write_bytes(body)
+        reader = [PY, "-m", "codex_harness.adapters.artifact_reader"]
+        rows["artifact_reader --help"] = r.run([*reader, "--help"])
+        rows["artifact_reader.index_fixture"] = r.run(
+            [*reader, "--root", str(artifacts), "--ref", "sha256:" + sha(body), "index"],
+            parse_json=True)
+        for module in ("continuation_process", "managed_runtime", "host_delivery", "host_migration",
+                       "migrations", "observed_assets", "experience"):
+            rows[f"module.adapters.{module} --help"] = r.run(
+                [PY, "-m", "codex_harness.adapters." + module, "--help"])
+        rows["deploy.zeus_aibox_service --help"] = r.run(
+            [PY, str(SOURCE / "deploy/aibox/zeus_aibox_service.py"), "--help"], cwd=SOURCE)
+        rows["scripts.aibox_data --help"] = r.run([PY, str(SOURCE / "scripts/aibox_data"), "--help"],
+                                                  cwd=SOURCE)
+        result = {"rows": rows, "timeout_seconds": TIMEOUT,
+                  "render_policy": "zeus_aibox_service render not run: purity not established in S0"}
+    driver.finish("reference", "entries.safe_matrix", result)
+
+
+if __name__ == "__main__":
+    main()

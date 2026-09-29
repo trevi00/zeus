@@ -1,0 +1,9 @@
+{
+ "family": "effects.context_packet",
+ "description": "\u00a72.7 retained context packet artifacts and ref bindings (F4)",
+ "reference_driver": "drivers/reference/context_packet.py",
+ "target_driver": null,
+ "golden": "goldens/reference/effects.context_packet.json",
+ "slice": "S2",
+ "target_status": "pending: the target side is not implemented in S0; no target row is reported green"
+}

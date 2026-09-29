@@ -1,0 +1,9 @@
+{
+ "family": "effects.decision_unit",
+ "description": "\u00a72.9 decision/release/outbox unit: discriminators (a)-(d) and recorder controls (F2)",
+ "reference_driver": "drivers/reference/decision_unit.py",
+ "target_driver": null,
+ "golden": "goldens/reference/effects.decision_unit.json",
+ "slice": "S4",
+ "target_status": "pending: the target side is not implemented in S0; no target row is reported green"
+}

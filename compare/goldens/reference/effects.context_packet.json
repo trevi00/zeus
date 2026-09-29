@@ -1,0 +1,126 @@
+{
+ "artifact_sources": [
+  "context",
+  "execution",
+  "fixture",
+  "runtime-activity",
+  "runtime-event",
+  "task"
+ ],
+ "execution_record_bindings": {
+  "execution_ref": {
+   "context_ref_is_stored_packet": true,
+   "record_fields": [
+    "answer",
+    "breaker",
+    "context_measurement",
+    "context_ref",
+    "elapsed_seconds",
+    "events",
+    "execution_assignment",
+    "interrupted",
+    "invocation",
+    "model_selection",
+    "research_binding",
+    "rotate",
+    "thread_id",
+    "tool_usage",
+    "usage"
+   ]
+  },
+  "shortlist_execution_ref": {
+   "context_ref_is_stored_packet": true,
+   "record_fields": [
+    "answer",
+    "breaker",
+    "context_measurement",
+    "context_ref",
+    "elapsed_seconds",
+    "events",
+    "execution_assignment",
+    "interrupted",
+    "invocation",
+    "model_selection",
+    "research_binding",
+    "rotate",
+    "thread_id",
+    "tool_usage",
+    "usage"
+   ]
+  }
+ },
+ "packets": [
+  {
+   "bytes": 4118,
+   "canonical_bytes": true,
+   "compiler_version": "1",
+   "delivered_prompt_equals_render": true,
+   "estimated_tokens_is_rendered_utf8_bytes": true,
+   "evidence_ids": [
+    "sha256:dc5e7c25780b3d339019820fc09b7f8b4d7d260e1e88941a631a0e943f332788"
+   ],
+   "fields": [
+    "agent_id",
+    "compiler_version",
+    "estimated_tokens",
+    "evidence",
+    "manifest_hash",
+    "omitted",
+    "required",
+    "snapshot",
+    "task_id"
+   ],
+   "manifest_hash": "0345a5f0c52f46fff213ee0ac3f4d4dc2aaa60891bed880cac2445998a6b72ea",
+   "manifest_hash_recomputes": true,
+   "omitted_count": 0,
+   "ref": "sha256:86181abf41e0538575327f9eabb50790eb230437e59cd75b53a04bc478060112",
+   "sha256_matches_ref": true,
+   "source_label_is_task_key": true,
+   "source_label_prefix": "context:"
+  },
+  {
+   "bytes": 8265,
+   "canonical_bytes": true,
+   "compiler_version": "1",
+   "delivered_prompt_equals_render": true,
+   "estimated_tokens_is_rendered_utf8_bytes": true,
+   "evidence_ids": [
+    "sha256:363eabf5c283eaacd19dc6c235bbbe23c54b3bab5616cf24147dcf3a4c92d2ce"
+   ],
+   "fields": [
+    "agent_id",
+    "compiler_version",
+    "estimated_tokens",
+    "evidence",
+    "manifest_hash",
+    "omitted",
+    "required",
+    "snapshot",
+    "task_id"
+   ],
+   "manifest_hash": "66608c1d595232e035e41866545e75fc23b2d41ff4b1fb97c77fe1388c931e7c",
+   "manifest_hash_recomputes": true,
+   "omitted_count": 0,
+   "ref": "sha256:e68ce68f9ea8b811a25c50be7d219fea82bb457c555c635a40af2aea15201d4e",
+   "sha256_matches_ref": true,
+   "source_label_is_task_key": true,
+   "source_label_prefix": "context:"
+  }
+ ],
+ "provider_transport_calls": 2,
+ "status": "succeeded",
+ "store_rows_binding_context_refs": [
+  {
+   "bucket": "execution_progress",
+   "refs": [
+    1
+   ]
+  },
+  {
+   "bucket": "sessions",
+   "refs": [
+    1
+   ]
+  }
+ ]
+}

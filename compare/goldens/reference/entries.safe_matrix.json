@@ -1,0 +1,661 @@
+{
+ "render_policy": "zeus_aibox_service render not run: purity not established in S0",
+ "rows": {
+  "artifact_reader --help": {
+   "argv": [
+    "python",
+    "-m",
+    "codex_harness.adapters.artifact_reader",
+    "--help"
+   ],
+   "exit": 0,
+   "stderr_last_line": [],
+   "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "stdout": "usage: artifact_reader.py [-h] --root ROOT --ref REF {index,page,pointer,search} ...\n\nBounded immutable artifact reader\n\npositional arguments:\n  {index,page,pointer,search}\n\noptions:\n  -h, --help            show this help message and exit\n  --root ROOT           exact artifact store root\n  --ref REF             exact sha256:<digest> reference\n",
+   "stdout_bytes": 345,
+   "stdout_sha256": "acf86c64c398ad8e949154af6cd881a224a976232f9db03cf9c5f955405396c9"
+  },
+  "artifact_reader.index_fixture": {
+   "argv": [
+    "python",
+    "-m",
+    "codex_harness.adapters.artifact_reader",
+    "--root",
+    "<WORK>/fixture-artifacts",
+    "--ref",
+    "sha256:20a98f6bc005d698a9ea31332ca29cd12e6851ad24a9c8e8b5529da9ecbb3307",
+    "index"
+   ],
+   "exit": 0,
+   "json": [
+    {
+     "content": [
+      {
+       "length": 2,
+       "pointer": "",
+       "type": "object"
+      },
+      {
+       "pointer": "/fixture",
+       "type": "boolean"
+      },
+      {
+       "length": 3,
+       "pointer": "/items",
+       "type": "array"
+      },
+      {
+       "pointer": "/items/0",
+       "type": "number"
+      },
+      {
+       "pointer": "/items/1",
+       "type": "number"
+      },
+      {
+       "pointer": "/items/2",
+       "type": "number"
+      }
+     ],
+     "content_encoding": "json-index",
+     "contract": "artifact-query.v1",
+     "cursor": 0,
+     "mode": "index",
+     "next_cursor": null,
+     "ref": "sha256:20a98f6bc005d698a9ea31332ca29cd12e6851ad24a9c8e8b5529da9ecbb3307",
+     "truncated": false
+    }
+   ],
+   "stderr_last_line": [],
+   "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "stdout": "{\"content\":[{\"length\":2,\"pointer\":\"\",\"type\":\"object\"},{\"pointer\":\"/fixture\",\"type\":\"boolean\"},{\"length\":3,\"pointer\":\"/items\",\"type\":\"array\"},{\"pointer\":\"/items/0\",\"type\":\"number\"},{\"pointer\":\"/items/1\",\"type\":\"number\"},{\"pointer\":\"/items/2\",\"type\":\"number\"}],\"content_encoding\":\"json-index\",\"contract\":\"artifact-query.v1\",\"cursor\":0,\"mode\":\"index\",\"next_cursor\":null,\"ref\":\"sha256:20a98f6bc005d698a9ea31332ca29cd12e6851ad24a9c8e8b5529da9ecbb3307\",\"truncated\":false}",
+   "stdout_bytes": 465,
+   "stdout_sha256": "6f9645987d4b336cfce70b1e0085b74dad6497aa2481aef81431dab5de978c7e"
+  },
+  "console.harness --help": {
+   "argv": [
+    "harness",
+    "--help"
+   ],
+   "exit": 0,
+   "stderr_last_line": [],
+   "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "stdout": "usage: zeus [-h] [--repository REPOSITORY] [--version]\n            {sdd,paths,setup,init-db,execution-recovery,seed-research-backlog,doctor,status,release-abandon,release-retry,cleanup,organization,validate,demo,incident,flush,send,run-command,serve,research,improve,execute-one,cancel,rebase,artifact,index,query,embed,project-graph,rlm,context,inspect,observe,rollback-hook,canary,cycle,operate,audit-service,audit-repair,dge,fleet,host-delivery,worker-session,continuation,owner-actions,desk,autonomous,research-program,decision-feedback,ticket,goal}\n            ...\n\nZeus: evidence, independent review, and recoverable operations\n\npositional arguments:\n  {sdd,paths,setup,init-db,execution-recovery,seed-research-backlog,doctor,status,release-abandon,release-retry,cleanup,organization,validate,demo,incident,flush,send,run-command,serve,research,improve,execute-one,cancel,rebase,artifact,index,query,embed,project-graph,rlm,context,inspect,observe,rollback-hook,canary,cycle,operate,audit-service,audit-repair,dge,fleet,host-delivery,worker-session,continuation,owner-actions,desk,autonomous,research-program,decision-feedback,ticket,goal}\n    sdd                 Strict specs, observation proposals and eight-stage preparation reports\n    paths               Resolved local paths and persistent namespace; no service access\n    setup               Create local configuration without overwriting credentials\n    execution-recovery  Explicit trusted local operator recovery; no human attestation\n    observe             Observation logs: collect the spool, report status, reconcile\n    cycle               Bounded persistent execution loop over one correlation; no conductor\n    operate             One bounded operation: worker, evidence gate, lead review; no conductor\n    audit-service       Run ONE selected source audit through the existing scheduler, Workflow and\n                        executor; no release activation\n    audit-repair        Opt-in, inspect and report the ONE bounded corrective successor of a\n                        rejected source audit analysis\n    dge                 Research-bound design control: register packet, submit debate event,\n                        status\n    fleet               Bounded multi-lane admission of operation manifests; no conductor\n    host-delivery       Durable delivery of a reviewed release to a host target; opt-in, reuses\n                        Releases approval and the ReleaseQueue fence\n    worker-session      Durable Claude task sessions: read-only status, explicit close\n    continuation        Opt-in conductor continuation over finite operations\n    owner-actions       Server-owned research acceptance, delivery-plan and canary handoffs (opt-\n                        in; approves nothing itself)\n    desk                Local front-door conversation runner; no conductor, no retries\n    autonomous          Research, immutable packet, independent debate, Operation v2, atomic\n                        promotion\n    research-program    Finite discovery program: local + live feeds -> dedup -> <=1 council per\n                        tick; operator-authorized bounds\n    decision-feedback   Join recorded conductor decisions with actual run outcomes and report\n                        unverified recurring-work candidates; read-only, no model\n    ticket              Versioned review topics and explicit GitHub issue sync\n    goal                Goal manifest progress: read-only report and same-definition compare\n\noptions:\n  -h, --help            show this help message and exit\n  --repository REPOSITORY\n                        Harness checkout (independent of current directory)\n  --version             show program's version number and exit\n",
+   "stdout_bytes": 3720,
+   "stdout_sha256": "3ca40df1fc737b8baec18e1cf7203b9624e7fa6026e10e36cbf2e85ce90d9223"
+  },
+  "console.harness-supervisor --help": {
+   "argv": [
+    "harness-supervisor",
+    "--help"
+   ],
+   "exit": 0,
+   "stderr_last_line": [],
+   "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "stdout": "usage: harness-supervisor [-h] [--once] [--research] [--releases] [--repository REPOSITORY]\n\noptions:\n  -h, --help            show this help message and exit\n  --once\n  --research\n  --releases\n  --repository REPOSITORY\n",
+   "stdout_bytes": 219,
+   "stdout_sha256": "e441ebcdcfd536020fad4915d97471d17cf12c7328e28832d460f18d059d96e1"
+  },
+  "console.zeus --help": {
+   "argv": [
+    "zeus",
+    "--help"
+   ],
+   "exit": 0,
+   "stderr_last_line": [],
+   "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "stdout": "usage: zeus [-h] [--repository REPOSITORY] [--version]\n            {sdd,paths,setup,init-db,execution-recovery,seed-research-backlog,doctor,status,release-abandon,release-retry,cleanup,organization,validate,demo,incident,flush,send,run-command,serve,research,improve,execute-one,cancel,rebase,artifact,index,query,embed,project-graph,rlm,context,inspect,observe,rollback-hook,canary,cycle,operate,audit-service,audit-repair,dge,fleet,host-delivery,worker-session,continuation,owner-actions,desk,autonomous,research-program,decision-feedback,ticket,goal}\n            ...\n\nZeus: evidence, independent review, and recoverable operations\n\npositional arguments:\n  {sdd,paths,setup,init-db,execution-recovery,seed-research-backlog,doctor,status,release-abandon,release-retry,cleanup,organization,validate,demo,incident,flush,send,run-command,serve,research,improve,execute-one,cancel,rebase,artifact,index,query,embed,project-graph,rlm,context,inspect,observe,rollback-hook,canary,cycle,operate,audit-service,audit-repair,dge,fleet,host-delivery,worker-session,continuation,owner-actions,desk,autonomous,research-program,decision-feedback,ticket,goal}\n    sdd                 Strict specs, observation proposals and eight-stage preparation reports\n    paths               Resolved local paths and persistent namespace; no service access\n    setup               Create local configuration without overwriting credentials\n    execution-recovery  Explicit trusted local operator recovery; no human attestation\n    observe             Observation logs: collect the spool, report status, reconcile\n    cycle               Bounded persistent execution loop over one correlation; no conductor\n    operate             One bounded operation: worker, evidence gate, lead review; no conductor\n    audit-service       Run ONE selected source audit through the existing scheduler, Workflow and\n                        executor; no release activation\n    audit-repair        Opt-in, inspect and report the ONE bounded corrective successor of a\n                        rejected source audit analysis\n    dge                 Research-bound design control: register packet, submit debate event,\n                        status\n    fleet               Bounded multi-lane admission of operation manifests; no conductor\n    host-delivery       Durable delivery of a reviewed release to a host target; opt-in, reuses\n                        Releases approval and the ReleaseQueue fence\n    worker-session      Durable Claude task sessions: read-only status, explicit close\n    continuation        Opt-in conductor continuation over finite operations\n    owner-actions       Server-owned research acceptance, delivery-plan and canary handoffs (opt-\n                        in; approves nothing itself)\n    desk                Local front-door conversation runner; no conductor, no retries\n    autonomous          Research, immutable packet, independent debate, Operation v2, atomic\n                        promotion\n    research-program    Finite discovery program: local + live feeds -> dedup -> <=1 council per\n                        tick; operator-authorized bounds\n    decision-feedback   Join recorded conductor decisions with actual run outcomes and report\n                        unverified recurring-work candidates; read-only, no model\n    ticket              Versioned review topics and explicit GitHub issue sync\n    goal                Goal manifest progress: read-only report and same-definition compare\n\noptions:\n  -h, --help            show this help message and exit\n  --repository REPOSITORY\n                        Harness checkout (independent of current directory)\n  --version             show program's version number and exit\n",
+   "stdout_bytes": 3720,
+   "stdout_sha256": "3ca40df1fc737b8baec18e1cf7203b9624e7fa6026e10e36cbf2e85ce90d9223"
+  },
+  "console.zeus --version": {
+   "argv": [
+    "zeus",
+    "--version"
+   ],
+   "exit": 0,
+   "stderr_last_line": [],
+   "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "stdout": "Zeus 0.2.0\n",
+   "stdout_bytes": 11,
+   "stdout_sha256": "4bf09004182b61bda64f8b9a9cc4256da804a0511bdbb153f0c65bcb54e5c2fb"
+  },
+  "console.zeus-monitor --help": {
+   "argv": [
+    "zeus-monitor",
+    "--help"
+   ],
+   "exit": 0,
+   "stderr_last_line": [],
+   "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "stdout": "usage: zeus-monitor [-h] [--once] [--repository REPOSITORY] [--port PORT] {collect,web,desk}\n\npositional arguments:\n  {collect,web,desk}\n\noptions:\n  -h, --help            show this help message and exit\n  --once\n  --repository REPOSITORY\n  --port PORT\n",
+   "stdout_bytes": 252,
+   "stdout_sha256": "a1828aa8bd66a1dbdfe159adbdc05bd17911c16264bb3609bf62757f8de9e6a4"
+  },
+  "console.zeus-supervisor --help": {
+   "argv": [
+    "zeus-supervisor",
+    "--help"
+   ],
+   "exit": 0,
+   "stderr_last_line": [],
+   "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "stdout": "usage: zeus-supervisor [-h] [--once] [--research] [--releases] [--repository REPOSITORY]\n\noptions:\n  -h, --help            show this help message and exit\n  --once\n  --research\n  --releases\n  --repository REPOSITORY\n",
+   "stdout_bytes": 216,
+   "stdout_sha256": "d28d27bfec2a0b12317351795a8a39ebc8ac6ac550000b11c00db707bb7af6de"
+  },
+  "deploy.zeus_aibox_service --help": {
+   "argv": [
+    "python",
+    "<SOURCE>/deploy/aibox/zeus_aibox_service.py",
+    "--help"
+   ],
+   "exit": 0,
+   "stderr_last_line": [],
+   "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "stdout": "usage: zeus_aibox_service.py [-h] {render,verify,launch,journal,inspect,network,host-id} ...\n\nLinux service templates and lifecycle inspection for the Zeus aibox host.\n\npositional arguments:\n  {render,verify,launch,journal,inspect,network,host-id}\n    render              Render unit templates into a staging directory\n    verify              Static checks of rendered units; optional systemd-analyze\n    launch              ExecStart: fail-closed checks, then exec the release\n    journal             Append a start/exit lifecycle journal line\n    inspect             Read-only lifecycle inspection\n    network             Compare current addresses with a baseline\n    host-id             The host identity an activation receipt must name\n\noptions:\n  -h, --help            show this help message and exit\n",
+   "stdout_bytes": 806,
+   "stdout_sha256": "661559fedac25ac8971f69fbb780d12aefcd04f2df1097c73a5771068929a707"
+  },
+  "import_only.codex_harness.adapters.isolated_worker": {
+   "argv": [
+    "python",
+    "-c",
+    "import importlib, sys; importlib.import_module(sys.argv[1]); print('imported')",
+    "codex_harness.adapters.isolated_worker"
+   ],
+   "exit": 0,
+   "stderr_last_line": [],
+   "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "stdout": "imported\n",
+   "stdout_bytes": 9,
+   "stdout_sha256": "db4ad2be31430992bcc7d620722087520d152617c22424e66cb46b25b85a5723"
+  },
+  "import_only.codex_harness.adapters.isolated_worker_entry": {
+   "argv": [
+    "python",
+    "-c",
+    "import importlib, sys; importlib.import_module(sys.argv[1]); print('imported')",
+    "codex_harness.adapters.isolated_worker_entry"
+   ],
+   "exit": 0,
+   "stderr_last_line": [],
+   "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "stdout": "imported\n",
+   "stdout_bytes": 9,
+   "stdout_sha256": "db4ad2be31430992bcc7d620722087520d152617c22424e66cb46b25b85a5723"
+  },
+  "import_only.codex_harness.adapters.monitor_frontend_checks": {
+   "argv": [
+    "python",
+    "-c",
+    "import importlib, sys; importlib.import_module(sys.argv[1]); print('imported')",
+    "codex_harness.adapters.monitor_frontend_checks"
+   ],
+   "exit": 0,
+   "stderr_last_line": [],
+   "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "stdout": "imported\n",
+   "stdout_bytes": 9,
+   "stdout_sha256": "db4ad2be31430992bcc7d620722087520d152617c22424e66cb46b25b85a5723"
+  },
+  "import_only.codex_harness.adapters.service_entry": {
+   "argv": [
+    "python",
+    "-c",
+    "import importlib, sys; importlib.import_module(sys.argv[1]); print('imported')",
+    "codex_harness.adapters.service_entry"
+   ],
+   "exit": 0,
+   "stderr_last_line": [],
+   "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "stdout": "imported\n",
+   "stdout_bytes": 9,
+   "stdout_sha256": "db4ad2be31430992bcc7d620722087520d152617c22424e66cb46b25b85a5723"
+  },
+  "import_only.codex_harness.container_main": {
+   "argv": [
+    "python",
+    "-c",
+    "import importlib, sys; importlib.import_module(sys.argv[1]); print('imported')",
+    "codex_harness.container_main"
+   ],
+   "exit": 0,
+   "stderr_last_line": [],
+   "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "stdout": "imported\n",
+   "stdout_bytes": 9,
+   "stdout_sha256": "db4ad2be31430992bcc7d620722087520d152617c22424e66cb46b25b85a5723"
+  },
+  "isolated_worker_entry.empty_stdin": {
+   "argv": [
+    "python",
+    "-m",
+    "codex_harness.adapters.isolated_worker_entry"
+   ],
+   "exit": 1,
+   "json": [
+    {
+     "error_type": "JSONDecodeError",
+     "kind": "refused",
+     "message": "Expecting value: line 1 column 1 (char 0)",
+     "protocol": "zeus-isolated-worker-v1"
+    }
+   ],
+   "stderr_last_line": [],
+   "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "stdout": "{\"protocol\":\"zeus-isolated-worker-v1\",\"kind\":\"refused\",\"error_type\":\"JSONDecodeError\",\"message\":\"Expecting value: line 1 column 1 (char 0)\"}\n",
+   "stdout_bytes": 141,
+   "stdout_sha256": "1f0f027f5c183d8ef12b84e23003240c19f31825e64e49b7207bcedeb11192f1"
+  },
+  "isolated_worker_entry.malformed_stdin": {
+   "argv": [
+    "python",
+    "-m",
+    "codex_harness.adapters.isolated_worker_entry"
+   ],
+   "exit": 1,
+   "json": [
+    {
+     "error_type": "JSONDecodeError",
+     "kind": "refused",
+     "message": "Expecting property name enclosed in double quotes: line 1 column 2 (char 1)",
+     "protocol": "zeus-isolated-worker-v1"
+    }
+   ],
+   "stderr_last_line": [],
+   "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "stdout": "{\"protocol\":\"zeus-isolated-worker-v1\",\"kind\":\"refused\",\"error_type\":\"JSONDecodeError\",\"message\":\"Expecting property name enclosed in double quotes: line 1 column 2 (char 1)\"}\n",
+   "stdout_bytes": 175,
+   "stdout_sha256": "e9142ccd6e97be3090127e5938d92254b3e4d73d04f0fb37e0b7db20d9953394"
+  },
+  "isolated_worker_entry.wrong_protocol": {
+   "argv": [
+    "python",
+    "-m",
+    "codex_harness.adapters.isolated_worker_entry"
+   ],
+   "exit": 1,
+   "json": [
+    {
+     "error_type": "ValueError",
+     "kind": "refused",
+     "message": "request is not zeus-isolated-worker-v1",
+     "protocol": "zeus-isolated-worker-v1"
+    }
+   ],
+   "stderr_last_line": [],
+   "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "stdout": "{\"protocol\":\"zeus-isolated-worker-v1\",\"kind\":\"refused\",\"error_type\":\"ValueError\",\"message\":\"request is not zeus-isolated-worker-v1\"}\n",
+   "stdout_bytes": 133,
+   "stdout_sha256": "fbc2ffddd89f3d87dff173f76cda4763b39f53087c8b580a62316ba4dcff40d5"
+  },
+  "metadata.--help": {
+   "argv": [
+    "python",
+    "-m",
+    "codex_harness.adapters.worker_profile_metadata",
+    "--help"
+   ],
+   "exit": 2,
+   "stderr_last_line": [],
+   "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "stdout": "{\"error\": {\"kind\": \"invalid_invocation\"}, \"schema\": \"zeus.worker-profile-metadata/v1\", \"status\": \"error\", \"usage\": \"python -m codex_harness.adapters.worker_profile_metadata (no arguments)\"}\n",
+   "stdout_bytes": 190,
+   "stdout_sha256": "04d5a0e2b8139d5ba955342d63b2188e0cfcc4426fdf0165647f9b28e8719870"
+  },
+  "metadata.extra_argument": {
+   "argv": [
+    "python",
+    "-m",
+    "codex_harness.adapters.worker_profile_metadata",
+    "extra"
+   ],
+   "exit": 2,
+   "stderr_last_line": [],
+   "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "stdout": "{\"error\": {\"kind\": \"invalid_invocation\"}, \"schema\": \"zeus.worker-profile-metadata/v1\", \"status\": \"error\", \"usage\": \"python -m codex_harness.adapters.worker_profile_metadata (no arguments)\"}\n",
+   "stdout_bytes": 190,
+   "stdout_sha256": "04d5a0e2b8139d5ba955342d63b2188e0cfcc4426fdf0165647f9b28e8719870"
+  },
+  "metadata.no_arguments_from_checkout_root": {
+   "argv": [
+    "python",
+    "-m",
+    "codex_harness.adapters.worker_profile_metadata"
+   ],
+   "exit": 0,
+   "json": [
+    {
+     "authority": "metadata observation only; worker_profile.load_profile decides validity",
+     "character_limit": 15000,
+     "characters": 8688,
+     "digest_matches": true,
+     "document": "worker-profile-v1.md",
+     "document_sha256": "1db4d3e46bfc4409420b0658d2f1d52059c7fd4481c3666af692ac9db85f8896",
+     "hook": "worker_profile_hook.py",
+     "hook_digest_matches": true,
+     "hook_sha256": "fd6ecaf37282071107d4d38fa3cddc17a7197bfb20dd9cf5134e0142d5927b82",
+     "hook_status": "verified",
+     "manifest": "worker-profile-v1.json",
+     "profile": "worker-v1",
+     "schema": "zeus.worker-profile-metadata/v1",
+     "status": "ok",
+     "within_limit": true
+    }
+   ],
+   "stderr_last_line": [],
+   "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "stdout": "{\"authority\": \"metadata observation only; worker_profile.load_profile decides validity\", \"character_limit\": 15000, \"characters\": 8688, \"digest_matches\": true, \"document\": \"worker-profile-v1.md\", \"document_sha256\": \"1db4d3e46bfc4409420b0658d2f1d52059c7fd4481c3666af692ac9db85f8896\", \"hook\": \"worker_profile_hook.py\", \"hook_digest_matches\": true, \"hook_sha256\": \"fd6ecaf37282071107d4d38fa3cddc17a7197bfb20dd9cf5134e0142d5927b82\", \"hook_status\": \"verified\", \"manifest\": \"worker-profile-v1.json\", \"profile\": \"worker-v1\", \"schema\": \"zeus.worker-profile-metadata/v1\", \"status\": \"ok\", \"within_limit\": true}\n",
+   "stdout_bytes": 600,
+   "stdout_sha256": "e90e1a02e756232023b49df17a67cc5fb53bcc012ed4193c2393532766219497"
+  },
+  "module.adapters.continuation_process --help": {
+   "argv": [
+    "python",
+    "-m",
+    "codex_harness.adapters.continuation_process",
+    "--help"
+   ],
+   "exit": 0,
+   "stderr_last_line": [],
+   "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "stdout": "usage: continuation-conductor-guardian [-h] --launch LAUNCH --seconds SECONDS ...\n\npositional arguments:\n  command\n\noptions:\n  -h, --help         show this help message and exit\n  --launch LAUNCH\n  --seconds SECONDS\n",
+   "stdout_bytes": 216,
+   "stdout_sha256": "e6c33579f00df2a033a28d3932b6b7d5d97d498368abc61ead50448ed0bef36f"
+  },
+  "module.adapters.experience --help": {
+   "argv": [
+    "python",
+    "-m",
+    "codex_harness.adapters.experience",
+    "--help"
+   ],
+   "exit": 0,
+   "stderr_last_line": [],
+   "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "stdout": "usage: experience.py [-h] [--source SOURCE] --basis {pinned,observed} [--revision REVISION]\n                     [--path-prefix PATH_PREFIX] [--artifacts ARTIFACTS] [--dry-run]\n                     paths [paths ...]\n\nImport explicitly selected upstream lesson files; never scan user homes automatically. uv run\npython -m codex_harness.adapters.experience DIR_OR_FILES... --basis observed --dry-run\n\npositional arguments:\n  paths                 Lesson .md files or directories (non-recursive)\n\noptions:\n  -h, --help            show this help message and exit\n  --source SOURCE       Upstream source name\n  --basis {pinned,observed}\n  --revision REVISION   Full commit SHA; required for pinned, forbidden for observed\n  --path-prefix PATH_PREFIX\n                        Upstream-relative directory recorded before file names\n  --artifacts ARTIFACTS\n  --dry-run             Parse and classify only; no database or artifact writes\n",
+   "stdout_bytes": 928,
+   "stdout_sha256": "e1813f436587713e38f1406b117e8de5f9993bb861d310170f7974ca40076155"
+  },
+  "module.adapters.host_delivery --help": {
+   "argv": [
+    "python",
+    "-m",
+    "codex_harness.adapters.host_delivery",
+    "--help"
+   ],
+   "exit": 0,
+   "stderr_last_line": [],
+   "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "stdout": "usage: codex_harness.adapters.host_delivery [-h] {service} ...\n\npositional arguments:\n  {service}\n\noptions:\n  -h, --help  show this help message and exit\n",
+   "stdout_bytes": 154,
+   "stdout_sha256": "c08afb8bff13819b9694285bd91f31682c36d3ea07b0088d6d1c21fc9228571d"
+  },
+  "module.adapters.host_migration --help": {
+   "argv": [
+    "python",
+    "-m",
+    "codex_harness.adapters.host_migration",
+    "--help"
+   ],
+   "exit": 0,
+   "stderr_last_line": [],
+   "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "stdout": "usage: python -m codex_harness.adapters.host_migration [-h]\n                                                       {validate,plan,advance,checkpoint,intend-activation,activation-successor,status,rollback-plan,activation-write,activation-switch,observe-limited-active,fence-write,artifact-inventory,artifact-stage,artifact-verify,pg-export,pg-inventory,pg-compare-schema,pg-coverage,pg-dump-db,pg-catalog,pg-compare-catalog,pg-restore-db,redis-inventory,redis-copy,compare-redis,pel-owners,gate,prepare-layout}\n                                                       ...\n\nHost migration coordinator boundary (INV-HOST-MIGRATION-001). Connection strings come from named\nenvironment variables only; offline checks delegate to scripts/aibox_data.\n\npositional arguments:\n  {validate,plan,advance,checkpoint,intend-activation,activation-successor,status,rollback-plan,activation-write,activation-switch,observe-limited-active,fence-write,artifact-inventory,artifact-stage,artifact-verify,pg-export,pg-inventory,pg-compare-schema,pg-coverage,pg-dump-db,pg-catalog,pg-compare-catalog,pg-restore-db,redis-inventory,redis-copy,compare-redis,pel-owners,gate,prepare-layout}\n    activation-switch   Receipt first, then `current`, under the coordinator transaction\n    observe-limited-active\n                        Read-only managed limited_active observation: prints {observation,\n                        evidence, transition_draft}; with --expect, {observation, comparison}\n                        only; writes, starts and submits nothing\n    pg-dump-db          Whole-database custom archive (D3)\n    pg-catalog          Whole-database catalog with every table's row digest\n    pg-restore-db       Restore into a NEW dedicated DB, verify, rename atomically\n\noptions:\n  -h, --help            show this help message and exit\n",
+   "stdout_bytes": 1813,
+   "stdout_sha256": "87df6ba3be40c232f41780a3ba907546619542982b5b41cf71abe13f93661fe7"
+  },
+  "module.adapters.managed_runtime --help": {
+   "argv": [
+    "python",
+    "-m",
+    "codex_harness.adapters.managed_runtime",
+    "--help"
+   ],
+   "exit": 0,
+   "stderr_last_line": [],
+   "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "stdout": "usage: codex_harness.adapters.managed_runtime [-h] {launch,entry,supervise} ...\n\npositional arguments:\n  {launch,entry,supervise}\n\noptions:\n  -h, --help            show this help message and exit\n",
+   "stdout_bytes": 196,
+   "stdout_sha256": "75b7acc09a202e254119e2b98f7b6f2bf8c30af2368e4eee0dbb1640b2046f7c"
+  },
+  "module.adapters.migrations --help": {
+   "argv": [
+    "python",
+    "-m",
+    "codex_harness.adapters.migrations",
+    "--help"
+   ],
+   "exit": 0,
+   "stderr_last_line": [],
+   "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "stdout": "usage: codex_harness.adapters.migrations [-h] --config CONFIG --root ROOT [--dsn-env DSN_ENV]\n                                         [--applied-by APPLIED_BY]\n                                         {precheck,apply}\n\npositional arguments:\n  {precheck,apply}\n\noptions:\n  -h, --help            show this help message and exit\n  --config CONFIG       JSON file with version, target_vendor, locations, expected_tables\n  --root ROOT\n  --dsn-env DSN_ENV\n  --applied-by APPLIED_BY\n",
+   "stdout_bytes": 477,
+   "stdout_sha256": "5d5620101e1b594c4c785233dc39c8dfaa8d2b508b53cc017d39cc4fb0bbf25c"
+  },
+  "module.adapters.observed_assets --help": {
+   "argv": [
+    "python",
+    "-m",
+    "codex_harness.adapters.observed_assets",
+    "--help"
+   ],
+   "exit": 0,
+   "stderr_last_line": [],
+   "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "stdout": "usage: observed_assets.py [-h] [--artifacts ARTIFACTS] [--dry-run] audit_id manifest\n\nRegister explicitly listed non-Git assets in an audit's observed-asset ledger. uv run python -m\ncodex_harness.adapters.observed_assets AUDIT_ID manifest.json [--dry-run] The manifest is a JSON\nlist of {path, basis, state, sha256, size, evidence_refs}; `path` is the raw relative path and is\nstored base64-encoded like Git inventory entries (INV-RESEARCH-001).\n\npositional arguments:\n  audit_id\n  manifest\n\noptions:\n  -h, --help            show this help message and exit\n  --artifacts ARTIFACTS\n  --dry-run             Validate the manifest only; no database write\n",
+   "stdout_bytes": 651,
+   "stdout_sha256": "ab7dcac0cea22c3d833399e0fcb10d009fb10363ad2b9b28f0236dd892c75a8d"
+  },
+  "module.codex_harness.monitor --help": {
+   "argv": [
+    "python",
+    "-m",
+    "codex_harness.monitor",
+    "--help"
+   ],
+   "exit": 0,
+   "stderr_last_line": [],
+   "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "stdout": "usage: monitor.py [-h] [--once] [--repository REPOSITORY] [--port PORT] {collect,web,desk}\n\npositional arguments:\n  {collect,web,desk}\n\noptions:\n  -h, --help            show this help message and exit\n  --once\n  --repository REPOSITORY\n  --port PORT\n",
+   "stdout_bytes": 250,
+   "stdout_sha256": "ec812e4e817404010640735e4e6e89dcf2f68e0ac74376e04f3756cdab2f4ea8"
+  },
+  "module.zeus ticket --help": {
+   "argv": [
+    "python",
+    "-m",
+    "zeus",
+    "ticket",
+    "--help"
+   ],
+   "exit": 0,
+   "stderr_last_line": [],
+   "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "stdout": "usage: zeus ticket [-h]\n                   {list,create,show,export,update,review,dispatch,sync,pull,evidence,prepare-close,close,reopen,review-close}\n                   ...\n\npositional arguments:\n  {list,create,show,export,update,review,dispatch,sync,pull,evidence,prepare-close,close,reopen,review-close}\n\noptions:\n  -h, --help            show this help message and exit\n",
+   "stdout_bytes": 373,
+   "stdout_sha256": "a67bb2f1fbc89849e7d91e38471e4b5cdf8ee5b391cb8c9657011b91ee21ca2a"
+  },
+  "scripts.aibox_data --help": {
+   "argv": [
+    "python",
+    "<SOURCE>/scripts/aibox_data",
+    "--help"
+   ],
+   "exit": 0,
+   "stderr_last_line": [],
+   "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "stdout": "usage: aibox_data [-h]\n                  {inventory,verify-manifest,verify-artifacts,scan-paths,stage,verify-staged,pg-inventory,compare-pg,compare-redis,pel-owners,plan-bindings,gate}\n                  ...\n\nCommand line for the offline data-transfer tooling. Every command prints one JSON document. Exit\n0: the check passed / the report is complete. Exit 1: refused, mismatched or needs a decision.\nExit 2: usage error. Nothing here contacts PostgreSQL/Redis or changes admission or ledger state.\n\npositional arguments:\n  {inventory,verify-manifest,verify-artifacts,scan-paths,stage,verify-staged,pg-inventory,compare-pg,compare-redis,pel-owners,plan-bindings,gate}\n    inventory           scan roots into a sealed file manifest\n    scan-paths          report Windows absolute paths (no rewrite)\n    pg-inventory        build a PG inventory from documents JSONL exports\n\noptions:\n  -h, --help            show this help message and exit\n",
+   "stdout_bytes": 937,
+   "stdout_sha256": "b9ccb3fbb63bec79b066e7099525ba95c2a328b584ead61f6698552ed2a061e2"
+  },
+  "worker_profile_hook": {
+   "allowed_bash": {
+    "argv": [
+     "python",
+     "-m",
+     "codex_harness.resources.worker_profile_hook",
+     "--directory",
+     "<WORK>/hook-receipts",
+     "--profile-digest",
+     "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+    ],
+    "exit": 0,
+    "receipts": [
+     {
+      "hook": "worker_profile_hook",
+      "hook_event_name": "PostToolUse",
+      "note": "metadata only; no prompt, command, output or credential is recorded",
+      "pid": "<M3>",
+      "profile_digest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "receipt_name": "<M4>",
+      "recorded_at_ns": "<M2>",
+      "session_id": "s0-session",
+      "stdin_bytes": 173,
+      "stdin_truncated": false,
+      "tool_name": "Bash"
+     }
+    ],
+    "stderr_last_line": [],
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout": "",
+    "stdout_bytes": 0,
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+   },
+   "denied_write_1": {
+    "argv": [
+     "python",
+     "-m",
+     "codex_harness.resources.worker_profile_hook",
+     "--directory",
+     "<WORK>/hook-receipts",
+     "--profile-digest",
+     "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+    ],
+    "exit": 0,
+    "receipts": [
+     {
+      "hook": "worker_profile_hook",
+      "hook_event_name": "PostToolUseFailure",
+      "note": "metadata only; no prompt, command, output or credential is recorded",
+      "pid": "<M3>",
+      "profile_digest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "receipt_name": "<M4>",
+      "recorded_at_ns": "<M2>",
+      "session_id": "s0-session",
+      "stdin_bytes": 205,
+      "stdin_truncated": false,
+      "tool_name": "Write",
+      "two_strike": {
+       "context_emitted": false,
+       "distinct_failures": 1,
+       "fingerprint": "46e73a9f585ec02d1b111e6df2ddec64b67809a00c8cf71da9ba033ed64d8de4",
+       "reason": null,
+       "research_required": false,
+       "status": "counted",
+       "threshold": 2
+      }
+     }
+    ],
+    "stderr_last_line": [],
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout": "",
+    "stdout_bytes": 0,
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+   },
+   "denied_write_2": {
+    "argv": [
+     "python",
+     "-m",
+     "codex_harness.resources.worker_profile_hook",
+     "--directory",
+     "<WORK>/hook-receipts",
+     "--profile-digest",
+     "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+    ],
+    "exit": 0,
+    "receipts": [
+     {
+      "hook": "worker_profile_hook",
+      "hook_event_name": "PostToolUseFailure",
+      "note": "metadata only; no prompt, command, output or credential is recorded",
+      "pid": "<M3>",
+      "profile_digest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "receipt_name": "<M4>",
+      "recorded_at_ns": "<M2>",
+      "session_id": "s0-session",
+      "stdin_bytes": 205,
+      "stdin_truncated": false,
+      "tool_name": "Write",
+      "two_strike": {
+       "context_emitted": true,
+       "distinct_failures": 2,
+       "fingerprint": "46e73a9f585ec02d1b111e6df2ddec64b67809a00c8cf71da9ba033ed64d8de4",
+       "reason": null,
+       "research_required": true,
+       "status": "counted",
+       "threshold": 2
+      }
+     }
+    ],
+    "stderr_last_line": [],
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout": "{\"hookSpecificOutput\": {\"hookEventName\": \"PostToolUseFailure\", \"additionalContext\": \"Two-strike rule: 2 distinct Write failures in this session share one normalized symptom (fingerprint 46e73a9f585e). Stop repeating this approach; the shared symptom is a research candidate, not a confirmed cause. Read the failure evidence and the authoritative definition, producer, consumer and tests for the affected path; search the local references and primary documentation you are authorized to use. Record the source revision or date next to the claim it supports and keep observation, hypothesis and unknown apart. Run one bounded investigation with one discriminating check, then make one coherent fix inside the allowed paths and verify it with the affected tests. If the authority or the search is unavailable, report research_required with this evidence and hand off to the lead: do not claim success, do not explore unrelated code and do not start another investigation.\"}}\n",
+    "stdout_bytes": 972,
+    "stdout_sha256": "d41f360c804e337d2a621e93779ccfaeed47ced93db3997e6e898a005f92261b"
+   },
+   "malformed_json": {
+    "argv": [
+     "python",
+     "-m",
+     "codex_harness.resources.worker_profile_hook",
+     "--directory",
+     "<WORK>/hook-receipts",
+     "--profile-digest",
+     "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+    ],
+    "exit": 0,
+    "receipts": [
+     {
+      "hook": "worker_profile_hook",
+      "hook_event_name": "unknown",
+      "note": "metadata only; no prompt, command, output or credential is recorded",
+      "pid": "<M3>",
+      "profile_digest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "receipt_name": "<M4>",
+      "recorded_at_ns": "<M2>",
+      "session_id": null,
+      "stdin_bytes": 9,
+      "stdin_truncated": false,
+      "tool_name": null
+     }
+    ],
+    "stderr_last_line": [],
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout": "",
+    "stdout_bytes": 0,
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+   },
+   "no_arguments": {
+    "argv": [
+     "python",
+     "-m",
+     "codex_harness.resources.worker_profile_hook"
+    ],
+    "exit": 1,
+    "stderr_last_line": [
+     "worker_profile_hook: --directory and --profile-digest are required"
+    ],
+    "stderr_sha256": "f9dcb063e5bdc70ffdf3cb3dd04d957611fb4f76b8cc287c4f941301b9ff8430",
+    "stdout": "",
+    "stdout_bytes": 0,
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+   },
+   "session_state_files": [
+    "two-strike.sqlite3"
+   ]
+  }
+ },
+ "timeout_seconds": 60
+}

@@ -1,0 +1,4 @@
+{
+ "verdict": "forbidden",
+ "rule_contains": "import cycle"
+}

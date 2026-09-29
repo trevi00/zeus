@@ -1,0 +1,4231 @@
+{
+ "node_count": 152,
+ "nodes": [
+  {
+   "arguments": [],
+   "command": "zeus sdd",
+   "help_bytes": 457,
+   "help_exit": 0,
+   "help_sha256": "393bc08048c8665124a5463fa37033cd9b676f3acb8e90e25d997e5f4b8048b1",
+   "root": true,
+   "usage": "usage: zeus sdd [-h]"
+  },
+  {
+   "arguments": [],
+   "command": "zeus sdd device-check",
+   "help_bytes": 90,
+   "help_exit": 0,
+   "help_sha256": "9232f91a22c2c094e39e10e9812f41ad1a2ae99a19ed1f52ead8c1209b43d483",
+   "root": false,
+   "usage": "usage: zeus sdd device-check [-h]"
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "file",
+     "nargs": null,
+     "options": [],
+     "required": true
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "git_revision",
+     "nargs": null,
+     "options": [
+      "--git-revision"
+     ],
+     "required": false
+    }
+   ],
+   "command": "zeus sdd inspect",
+   "help_bytes": 190,
+   "help_exit": 0,
+   "help_sha256": "56419aad2fa40722df4f98da9157be7fde727ddca06c9c9cf57bee458b14bb7a",
+   "root": false,
+   "usage": "usage: zeus sdd inspect [-h] [--git-revision GIT_REVISION] file"
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "file",
+     "nargs": null,
+     "options": [],
+     "required": true
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "git_revision",
+     "nargs": null,
+     "options": [
+      "--git-revision"
+     ],
+     "required": false
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "output",
+     "nargs": null,
+     "options": [
+      "--output"
+     ],
+     "required": true
+    }
+   ],
+   "command": "zeus sdd view",
+   "help_bytes": 221,
+   "help_exit": 0,
+   "help_sha256": "bba269540df1d52a13dda8526ed677a5db380ebdff22fddfa323b507ee6139c9",
+   "root": false,
+   "usage": "usage: zeus sdd view [-h] [--git-revision GIT_REVISION] --output OUTPUT file"
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "file",
+     "nargs": null,
+     "options": [],
+     "required": true
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "git_revision",
+     "nargs": null,
+     "options": [
+      "--git-revision"
+     ],
+     "required": false
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "output",
+     "nargs": null,
+     "options": [
+      "--output"
+     ],
+     "required": true
+    }
+   ],
+   "command": "zeus sdd export-replay",
+   "help_bytes": 230,
+   "help_exit": 0,
+   "help_sha256": "b5d87642cf4313f4565bebfaaf3fd132586da3f5ee2ca147a6c4c43b5d0c9bdb",
+   "root": false,
+   "usage": "usage: zeus sdd export-replay [-h] [--git-revision GIT_REVISION] --output OUTPUT file"
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "file",
+     "nargs": null,
+     "options": [],
+     "required": true
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "git_revision",
+     "nargs": null,
+     "options": [
+      "--git-revision"
+     ],
+     "required": false
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "ticket",
+     "nargs": null,
+     "options": [
+      "--ticket"
+     ],
+     "required": true
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "ticket_revision",
+     "nargs": null,
+     "options": [
+      "--ticket-revision"
+     ],
+     "required": true
+    }
+   ],
+   "command": "zeus sdd register",
+   "help_bytes": 345,
+   "help_exit": 0,
+   "help_sha256": "472a6b0591d438eb7d0a76b60438f03109384ac87319199617e902c9de9e3b19",
+   "root": false,
+   "usage": "usage: zeus sdd register [-h] [--git-revision GIT_REVISION] --ticket TICKET --ticket-revision"
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "iteration_id",
+     "nargs": null,
+     "options": [],
+     "required": true
+    }
+   ],
+   "command": "zeus sdd status",
+   "help_bytes": 137,
+   "help_exit": 0,
+   "help_sha256": "9fc50049dd58e4b3e1844755256d3d746e46a83a651935f6afd8669bdcd0892b",
+   "root": false,
+   "usage": "usage: zeus sdd status [-h] iteration_id"
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "iteration_id",
+     "nargs": null,
+     "options": [],
+     "required": true
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "output",
+     "nargs": null,
+     "options": [
+      "--output"
+     ],
+     "required": true
+    }
+   ],
+   "command": "zeus sdd view-iteration",
+   "help_bytes": 182,
+   "help_exit": 0,
+   "help_sha256": "8a5562e823e630b363526cc17a080055417f9debe96fcae60dcd49a07a6ce5c6",
+   "root": false,
+   "usage": "usage: zeus sdd view-iteration [-h] --output OUTPUT iteration_id"
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "iteration_id",
+     "nargs": null,
+     "options": [],
+     "required": true
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "environment",
+     "nargs": null,
+     "options": [
+      "--environment"
+     ],
+     "required": true
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "events",
+     "nargs": null,
+     "options": [
+      "--events"
+     ],
+     "required": true
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "source",
+     "nargs": null,
+     "options": [
+      "--source"
+     ],
+     "required": true
+    }
+   ],
+   "command": "zeus sdd import-log",
+   "help_bytes": 298,
+   "help_exit": 0,
+   "help_sha256": "b9dfd0afbba174bf310c0ce75bacb0f98a111d6695bdbb79cfceeff70c4ab01d",
+   "root": false,
+   "usage": "usage: zeus sdd import-log [-h] --environment ENVIRONMENT --events EVENTS --source SOURCE"
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "iteration_id",
+     "nargs": null,
+     "options": [],
+     "required": true
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "observation",
+     "nargs": null,
+     "options": [
+      "--observation"
+     ],
+     "required": true
+    }
+   ],
+   "command": "zeus sdd propose",
+   "help_bytes": 200,
+   "help_exit": 0,
+   "help_sha256": "d09bb4830b3b88b9332bd66757f3784a87969091021e186085031eedd82d05f8",
+   "root": false,
+   "usage": "usage: zeus sdd propose [-h] --observation OBSERVATION iteration_id"
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "iteration_id",
+     "nargs": null,
+     "options": [],
+     "required": true
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "sequence",
+     "nargs": null,
+     "options": [
+      "--sequence"
+     ],
+     "required": true
+    }
+   ],
+   "command": "zeus sdd advance",
+   "help_bytes": 187,
+   "help_exit": 0,
+   "help_sha256": "d07d1e4e3f994f687e6d1a011bdca531750757ce62f75a5f64fbd92ba9acf385",
+   "root": false,
+   "usage": "usage: zeus sdd advance [-h] --sequence SEQUENCE iteration_id"
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "iteration_id",
+     "nargs": null,
+     "options": [],
+     "required": true
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "file",
+     "nargs": null,
+     "options": [
+      "--file"
+     ],
+     "required": true
+    }
+   ],
+   "command": "zeus sdd transfer-record",
+   "help_bytes": 172,
+   "help_exit": 0,
+   "help_sha256": "b089b465424ea0234c830a14f43bb113e141526d4cca99ce55399a0754e4012d",
+   "root": false,
+   "usage": "usage: zeus sdd transfer-record [-h] --file FILE iteration_id"
+  },
+  {
+   "arguments": [],
+   "command": "zeus paths",
+   "help_bytes": 79,
+   "help_exit": 0,
+   "help_sha256": "bb4f8a8dfa650df414bf7a186573dd1a68a9c8791e000a60155e02b3430c37d2",
+   "root": true,
+   "usage": "usage: zeus paths [-h]"
+  },
+  {
+   "arguments": [],
+   "command": "zeus setup",
+   "help_bytes": 79,
+   "help_exit": 0,
+   "help_sha256": "4d9ba6fac75a14178ee4b77201e4934526b202f7ddcc4c11619d9e8b76886275",
+   "root": true,
+   "usage": "usage: zeus setup [-h]"
+  },
+  {
+   "arguments": [],
+   "command": "zeus init-db",
+   "help_bytes": 81,
+   "help_exit": 0,
+   "help_sha256": "846efeaee9aa954f0af063245319378251591c64cc202a9b169e4b8bedbbce55",
+   "root": true,
+   "usage": "usage: zeus init-db [-h]"
+  },
+  {
+   "arguments": [],
+   "command": "zeus execution-recovery",
+   "help_bytes": 158,
+   "help_exit": 0,
+   "help_sha256": "0b4c4356892140dd5b0e8b9f5b2c0bd06921ded08b0d3dc5a02e1c0b9b5d0913",
+   "root": true,
+   "usage": "usage: zeus execution-recovery [-h] {prepare,apply} ..."
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "task_id",
+     "nargs": null,
+     "options": [],
+     "required": true
+    },
+    {
+     "action": "_StoreAction",
+     "choices": [
+      "decisions_pending",
+      "tasks"
+     ],
+     "default": "tasks",
+     "dest": "bucket",
+     "nargs": null,
+     "options": [
+      "--bucket"
+     ],
+     "required": false
+    },
+    {
+     "action": "_StoreAction",
+     "choices": [
+      "migrate",
+      "repair",
+      "resume"
+     ],
+     "default": null,
+     "dest": "operation",
+     "nargs": null,
+     "options": [
+      "--operation"
+     ],
+     "required": true
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "max_attempts",
+     "nargs": null,
+     "options": [
+      "--max-attempts"
+     ],
+     "required": true
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "deadline",
+     "nargs": null,
+     "options": [
+      "--deadline"
+     ],
+     "required": false
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "reason",
+     "nargs": null,
+     "options": [
+      "--reason"
+     ],
+     "required": true
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "operator",
+     "nargs": null,
+     "options": [
+      "--operator"
+     ],
+     "required": true
+    },
+    {
+     "action": "_AppendAction",
+     "choices": null,
+     "default": null,
+     "dest": "evidence",
+     "nargs": null,
+     "options": [
+      "--evidence"
+     ],
+     "required": true
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "output",
+     "nargs": null,
+     "options": [
+      "--output"
+     ],
+     "required": true
+    }
+   ],
+   "command": "zeus execution-recovery prepare",
+   "help_bytes": 925,
+   "help_exit": 0,
+   "help_sha256": "d9bd94bd63b4ee9c1e315ad6abf1acd6b545bf052d4190cfadedfdbaf124070b",
+   "root": false,
+   "usage": "usage: zeus execution-recovery prepare [-h] [--bucket {tasks,decisions_pending}] --operation"
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "packet",
+     "nargs": null,
+     "options": [
+      "--packet"
+     ],
+     "required": true
+    }
+   ],
+   "command": "zeus execution-recovery apply",
+   "help_bytes": 137,
+   "help_exit": 0,
+   "help_sha256": "6a4e104740fcf76322d913a187fd41468638fdc481339defc3608937e65cda57",
+   "root": false,
+   "usage": "usage: zeus execution-recovery apply [-h] --packet PACKET"
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "artifacts",
+     "nargs": null,
+     "options": [
+      "--artifacts"
+     ],
+     "required": true
+    }
+   ],
+   "command": "zeus seed-research-backlog",
+   "help_bytes": 151,
+   "help_exit": 0,
+   "help_sha256": "18b4cc003727b769a73789b6e365958ca8808ee249e41a3b0564f2b255f76e2f",
+   "root": true,
+   "usage": "usage: zeus seed-research-backlog [-h] --artifacts ARTIFACTS"
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreTrueAction",
+     "choices": null,
+     "default": false,
+     "dest": "offline",
+     "nargs": 0,
+     "options": [
+      "--offline"
+     ],
+     "required": false
+    }
+   ],
+   "command": "zeus doctor",
+   "help_bytes": 144,
+   "help_exit": 0,
+   "help_sha256": "3639f690175fdeae41f83738d0959ce46e7760d5d200f86b8b33d946ac9078ae",
+   "root": true,
+   "usage": "usage: zeus doctor [-h] [--offline]"
+  },
+  {
+   "arguments": [],
+   "command": "zeus status",
+   "help_bytes": 80,
+   "help_exit": 0,
+   "help_sha256": "a6059d19b4334c87309071f19ecaa12aaef7edb660baa22a7a9e1291d56df4d7",
+   "root": true,
+   "usage": "usage: zeus status [-h]"
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "release_id",
+     "nargs": null,
+     "options": [],
+     "required": true
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "reason",
+     "nargs": null,
+     "options": [
+      "--reason"
+     ],
+     "required": true
+    }
+   ],
+   "command": "zeus release-abandon",
+   "help_bytes": 175,
+   "help_exit": 0,
+   "help_sha256": "320740586c7f9b4c1ed3365c298eb69226a37d4cbb4e610d63911d51fa550d9b",
+   "root": true,
+   "usage": "usage: zeus release-abandon [-h] --reason REASON release_id"
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "release_id",
+     "nargs": null,
+     "options": [],
+     "required": true
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "reason",
+     "nargs": null,
+     "options": [
+      "--reason"
+     ],
+     "required": true
+    }
+   ],
+   "command": "zeus release-retry",
+   "help_bytes": 173,
+   "help_exit": 0,
+   "help_sha256": "f44d97ca24481476f19029f7f1cece6567bba0cd0fc6eecc42e7ae5b41d5ca57",
+   "root": true,
+   "usage": "usage: zeus release-retry [-h] --reason REASON release_id"
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreTrueAction",
+     "choices": null,
+     "default": false,
+     "dest": "apply",
+     "nargs": 0,
+     "options": [
+      "--apply"
+     ],
+     "required": false
+    }
+   ],
+   "command": "zeus cleanup",
+   "help_bytes": 101,
+   "help_exit": 0,
+   "help_sha256": "1b0d88aa6082b29a291701c9fe2059fa4eac66269c8e5706651efd3ab3b210cc",
+   "root": true,
+   "usage": "usage: zeus cleanup [-h] [--apply]"
+  },
+  {
+   "arguments": [],
+   "command": "zeus organization",
+   "help_bytes": 86,
+   "help_exit": 0,
+   "help_sha256": "ea6c3ca002173397e79dce7e092768ab2921c9e56899f667a6f7e4307fd8a43c",
+   "root": true,
+   "usage": "usage: zeus organization [-h]"
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "file",
+     "nargs": null,
+     "options": [],
+     "required": true
+    }
+   ],
+   "command": "zeus validate",
+   "help_bytes": 117,
+   "help_exit": 0,
+   "help_sha256": "b79ef2666f5be0b72594cba7f7768108ef4f48340a60ba80948e0349afd2c970",
+   "root": true,
+   "usage": "usage: zeus validate [-h] file"
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": "bootstrap/windows/codex",
+     "dest": "scope",
+     "nargs": null,
+     "options": [
+      "--scope"
+     ],
+     "required": false
+    }
+   ],
+   "command": "zeus demo",
+   "help_bytes": 113,
+   "help_exit": 0,
+   "help_sha256": "7b2a27044b7abccf0c1f80a8cf74670e1e784dd643690fc271f4876b1a25d3a2",
+   "root": true,
+   "usage": "usage: zeus demo [-h] [--scope SCOPE]"
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "file",
+     "nargs": null,
+     "options": [],
+     "required": true
+    }
+   ],
+   "command": "zeus incident",
+   "help_bytes": 117,
+   "help_exit": 0,
+   "help_sha256": "163857700bb4939cfeee00f14911d305ae62cab92aa67092e7a30b3783735e85",
+   "root": true,
+   "usage": "usage: zeus incident [-h] file"
+  },
+  {
+   "arguments": [],
+   "command": "zeus flush",
+   "help_bytes": 79,
+   "help_exit": 0,
+   "help_sha256": "a75134c3d5207f908af8d5b46adeea83b87d2683cf66fb646823396a8da170a6",
+   "root": true,
+   "usage": "usage: zeus flush [-h]"
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "file",
+     "nargs": null,
+     "options": [],
+     "required": true
+    }
+   ],
+   "command": "zeus send",
+   "help_bytes": 113,
+   "help_exit": 0,
+   "help_sha256": "2d8bf8fa1fb601c2fcc73aa3d986c501aa76c15af10606a7d397bfd038205822",
+   "root": true,
+   "usage": "usage: zeus send [-h] file"
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": 120,
+     "dest": "timeout",
+     "nargs": null,
+     "options": [
+      "--timeout"
+     ],
+     "required": false
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "argv",
+     "nargs": "...",
+     "options": [],
+     "required": false
+    }
+   ],
+   "command": "zeus run-command",
+   "help_bytes": 166,
+   "help_exit": 0,
+   "help_sha256": "f4c6adc5077cec71f58cf317f96c1daff1beee6bc5487fdb6fd929e53e6bb70c",
+   "root": true,
+   "usage": "usage: zeus run-command [-h] [--timeout TIMEOUT] ..."
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "agent",
+     "nargs": null,
+     "options": [
+      "--agent"
+     ],
+     "required": true
+    },
+    {
+     "action": "_StoreTrueAction",
+     "choices": null,
+     "default": false,
+     "dest": "once",
+     "nargs": 0,
+     "options": [
+      "--once"
+     ],
+     "required": false
+    },
+    {
+     "action": "_StoreTrueAction",
+     "choices": null,
+     "default": false,
+     "dest": "execute",
+     "nargs": 0,
+     "options": [
+      "--execute"
+     ],
+     "required": false
+    }
+   ],
+   "command": "zeus serve",
+   "help_bytes": 154,
+   "help_exit": 0,
+   "help_sha256": "fe4de98d312079eb5116d06214d513ebf8f3f7a174f0d987f80b50ab9de848bb",
+   "root": true,
+   "usage": "usage: zeus serve [-h] --agent AGENT [--once] [--execute]"
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": [
+      "geeknews",
+      "github"
+     ],
+     "default": null,
+     "dest": "source",
+     "nargs": null,
+     "options": [],
+     "required": true
+    },
+    {
+     "action": "_StoreAction",
+     "choices": [
+      "existing_work_result",
+      "incident",
+      "proactive",
+      "task_required",
+      "user_request"
+     ],
+     "default": null,
+     "dest": "intent",
+     "nargs": null,
+     "options": [
+      "--intent"
+     ],
+     "required": true
+    }
+   ],
+   "command": "zeus research",
+   "help_bytes": 353,
+   "help_exit": 0,
+   "help_sha256": "6fc544270aaf3fffe3b667e37d1dce62ff87b274b45afc918a2471c5f96fdc88",
+   "root": true,
+   "usage": "usage: zeus research [-h] --intent"
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "objective",
+     "nargs": null,
+     "options": [],
+     "required": true
+    },
+    {
+     "action": "_AppendAction",
+     "choices": null,
+     "default": null,
+     "dest": "acceptance",
+     "nargs": null,
+     "options": [
+      "--acceptance"
+     ],
+     "required": true
+    },
+    {
+     "action": "_StoreAction",
+     "choices": [
+      "important",
+      "simple"
+     ],
+     "default": null,
+     "dest": "importance",
+     "nargs": null,
+     "options": [
+      "--importance"
+     ],
+     "required": false
+    }
+   ],
+   "command": "zeus improve",
+   "help_bytes": 254,
+   "help_exit": 0,
+   "help_sha256": "6012c522dfccdef224b41bfc2bc6142ffea2cddc835df69864ffb28dd27e9db6",
+   "root": true,
+   "usage": "usage: zeus improve [-h] --acceptance ACCEPTANCE [--importance {simple,important}] objective"
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "agent",
+     "nargs": null,
+     "options": [
+      "--agent"
+     ],
+     "required": true
+    }
+   ],
+   "command": "zeus execute-one",
+   "help_bytes": 118,
+   "help_exit": 0,
+   "help_sha256": "6bdbec7963b31f5f969aff9d60f7a18d18f9ae772fe27ac131f99ca37e163b2d",
+   "root": true,
+   "usage": "usage: zeus execute-one [-h] --agent AGENT"
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "task_id",
+     "nargs": null,
+     "options": [],
+     "required": true
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "reason",
+     "nargs": null,
+     "options": [
+      "--reason"
+     ],
+     "required": true
+    }
+   ],
+   "command": "zeus cancel",
+   "help_bytes": 160,
+   "help_exit": 0,
+   "help_sha256": "21448d852fe669553690b7520d9f23bbe206fef5114eef417647b1618601eb3c",
+   "root": true,
+   "usage": "usage: zeus cancel [-h] --reason REASON task_id"
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "task_id",
+     "nargs": null,
+     "options": [],
+     "required": true
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": "HEAD",
+     "dest": "onto",
+     "nargs": null,
+     "options": [
+      "--onto"
+     ],
+     "required": false
+    }
+   ],
+   "command": "zeus rebase",
+   "help_bytes": 150,
+   "help_exit": 0,
+   "help_sha256": "782c1a5730b060e9f537ad5f0c1cd08731a8ed4e920a89c36da2c65600d2a3e9",
+   "root": true,
+   "usage": "usage: zeus rebase [-h] [--onto ONTO] task_id"
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "reference",
+     "nargs": null,
+     "options": [],
+     "required": true
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": 0,
+     "dest": "start",
+     "nargs": null,
+     "options": [
+      "--start"
+     ],
+     "required": false
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": 8000,
+     "dest": "length",
+     "nargs": null,
+     "options": [
+      "--length"
+     ],
+     "required": false
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "search",
+     "nargs": null,
+     "options": [
+      "--search"
+     ],
+     "required": false
+    }
+   ],
+   "command": "zeus artifact",
+   "help_bytes": 236,
+   "help_exit": 0,
+   "help_sha256": "4756cb041752cb3d849a14510c98d5ca4ee37cd5c5f7e59e52d239f17102b51c",
+   "root": true,
+   "usage": "usage: zeus artifact [-h] [--start START] [--length LENGTH] [--search SEARCH] reference"
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": ".",
+     "dest": "root",
+     "nargs": "?",
+     "options": [],
+     "required": false
+    }
+   ],
+   "command": "zeus index",
+   "help_bytes": 116,
+   "help_exit": 0,
+   "help_sha256": "bfc889b19ca379bd514c440a9a201585b74c11e3326f11ad622ffb2c07eb5345",
+   "root": true,
+   "usage": "usage: zeus index [-h] [root]"
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "text",
+     "nargs": null,
+     "options": [],
+     "required": true
+    },
+    {
+     "action": "_StoreTrueAction",
+     "choices": null,
+     "default": false,
+     "dest": "semantic",
+     "nargs": 0,
+     "options": [
+      "--semantic"
+     ],
+     "required": false
+    }
+   ],
+   "command": "zeus query",
+   "help_bytes": 140,
+   "help_exit": 0,
+   "help_sha256": "3d8311b155317f7a54cfe8c5d94ac2af9c38a5443160ad2a5aa93aedf899c1df",
+   "root": true,
+   "usage": "usage: zeus query [-h] [--semantic] text"
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": 200,
+     "dest": "limit",
+     "nargs": null,
+     "options": [
+      "--limit"
+     ],
+     "required": false
+    }
+   ],
+   "command": "zeus embed",
+   "help_bytes": 114,
+   "help_exit": 0,
+   "help_sha256": "afacd897cbb3196a1d075b7ab4b1252a6fed7cdba2f2aaa3b10f5f07af8605dc",
+   "root": true,
+   "usage": "usage: zeus embed [-h] [--limit LIMIT]"
+  },
+  {
+   "arguments": [],
+   "command": "zeus project-graph",
+   "help_bytes": 87,
+   "help_exit": 0,
+   "help_sha256": "7c1d7066148f44770f76a1a8c96a093e69e4a4a990875e12655891356a714076",
+   "root": true,
+   "usage": "usage: zeus project-graph [-h]"
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "reference",
+     "nargs": null,
+     "options": [],
+     "required": true
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "question",
+     "nargs": null,
+     "options": [],
+     "required": true
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": 8,
+     "dest": "max_calls",
+     "nargs": null,
+     "options": [
+      "--max-calls"
+     ],
+     "required": false
+    }
+   ],
+   "command": "zeus rlm",
+   "help_bytes": 200,
+   "help_exit": 0,
+   "help_sha256": "810f698e49f81d0dce5ea504ce2bf8698305376b5b9d86c7dfa6fef30c1f013f",
+   "root": true,
+   "usage": "usage: zeus rlm [-h] [--max-calls MAX_CALLS] reference question"
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "query",
+     "nargs": null,
+     "options": [],
+     "required": true
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": "worker:implementation",
+     "dest": "agent",
+     "nargs": null,
+     "options": [
+      "--agent"
+     ],
+     "required": false
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": 12000,
+     "dest": "budget",
+     "nargs": null,
+     "options": [
+      "--budget"
+     ],
+     "required": false
+    }
+   ],
+   "command": "zeus context",
+   "help_bytes": 191,
+   "help_exit": 0,
+   "help_sha256": "44a16a6803d2805d67979c8bb26dc7433c843daf75e6e0bfcdca7b018f857e8a",
+   "root": true,
+   "usage": "usage: zeus context [-h] [--agent AGENT] [--budget BUDGET] query"
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": [
+      "audit_service",
+      "decisions_pending",
+      "deliveries",
+      "deployment",
+      "events",
+      "execution_failures",
+      "execution_notice_errors",
+      "execution_notices",
+      "execution_recoveries",
+      "execution_rejections",
+      "execution_time_events",
+      "hooks",
+      "incidents",
+      "invocation_reservations",
+      "observation_alerts",
+      "observation_audit",
+      "observation_collections",
+      "observation_quarantine",
+      "observation_terminations",
+      "observations",
+      "outbox",
+      "outbox_attempts",
+      "outbox_delivery",
+      "outbox_quarantine",
+      "release_queue",
+      "releases",
+      "sessions",
+      "tasks"
+     ],
+     "default": null,
+     "dest": "bucket",
+     "nargs": null,
+     "options": [],
+     "required": true
+    }
+   ],
+   "command": "zeus inspect",
+   "help_bytes": 1026,
+   "help_exit": 0,
+   "help_sha256": "ff8fa6863a8ae6a8d8cd3b8c413acbac29e0efacd39f39cfa22a0ba83fef4449",
+   "root": true,
+   "usage": "usage: zeus inspect [-h]"
+  },
+  {
+   "arguments": [],
+   "command": "zeus observe",
+   "help_bytes": 426,
+   "help_exit": 0,
+   "help_sha256": "834fa85e4073b04620c757be140b532dce608522279bacb1e5e64097c361e2b5",
+   "root": true,
+   "usage": "usage: zeus observe [-h] {collect,status,reconcile} ..."
+  },
+  {
+   "arguments": [],
+   "command": "zeus observe collect",
+   "help_bytes": 89,
+   "help_exit": 0,
+   "help_sha256": "fc870bd647daa29c6d8011584f9ed27d85a09b08d337f9653db7309e6ffe0c68",
+   "root": false,
+   "usage": "usage: zeus observe collect [-h]"
+  },
+  {
+   "arguments": [],
+   "command": "zeus observe status",
+   "help_bytes": 88,
+   "help_exit": 0,
+   "help_sha256": "629b3075f2ad8682dc44a44c2222ca74304061b1df4c8397a74a0613a955ca5b",
+   "root": false,
+   "usage": "usage: zeus observe status [-h]"
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "record_id",
+     "nargs": null,
+     "options": [],
+     "required": true
+    },
+    {
+     "action": "_StoreAction",
+     "choices": [
+      "discard",
+      "rerun"
+     ],
+     "default": null,
+     "dest": "resolution",
+     "nargs": null,
+     "options": [
+      "--resolution"
+     ],
+     "required": true
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "operator",
+     "nargs": null,
+     "options": [
+      "--operator"
+     ],
+     "required": true
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "reason",
+     "nargs": null,
+     "options": [
+      "--reason"
+     ],
+     "required": true
+    }
+   ],
+   "command": "zeus observe reconcile",
+   "help_bytes": 384,
+   "help_exit": 0,
+   "help_sha256": "b3e941c1a16401397be8ee3850f17f338a59990f28c36830adcaa408375ec716",
+   "root": false,
+   "usage": "usage: zeus observe reconcile [-h] --resolution {rerun,discard} --operator OPERATOR --reason"
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "hook_id",
+     "nargs": null,
+     "options": [],
+     "required": true
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "reason",
+     "nargs": null,
+     "options": [
+      "--reason"
+     ],
+     "required": true
+    }
+   ],
+   "command": "zeus rollback-hook",
+   "help_bytes": 167,
+   "help_exit": 0,
+   "help_sha256": "b91ca5cd1a801681e0f2ce01618520acbf043516ccff554575d0e273e504b423",
+   "root": true,
+   "usage": "usage: zeus rollback-hook [-h] --reason REASON hook_id"
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreTrueAction",
+     "choices": null,
+     "default": false,
+     "dest": "live",
+     "nargs": 0,
+     "options": [
+      "--live"
+     ],
+     "required": false
+    }
+   ],
+   "command": "zeus canary",
+   "help_bytes": 155,
+   "help_exit": 0,
+   "help_sha256": "14667b96e506357c6000cf116ea7ee016009cd0888d15a4350c63d9bd0918c46",
+   "root": true,
+   "usage": "usage: zeus canary [-h] [--live]"
+  },
+  {
+   "arguments": [],
+   "command": "zeus cycle",
+   "help_bytes": 174,
+   "help_exit": 0,
+   "help_sha256": "db3f6e5ca32cd38bed8b98ee777250cc727fe8edb4691d4a033e94849b7959dd",
+   "root": true,
+   "usage": "usage: zeus cycle [-h] {start,status,handoff,step} ..."
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "cycle_id",
+     "nargs": null,
+     "options": [],
+     "required": true
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "correlation",
+     "nargs": null,
+     "options": [
+      "--correlation"
+     ],
+     "required": true
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "max_executions",
+     "nargs": null,
+     "options": [
+      "--max-executions"
+     ],
+     "required": true
+    }
+   ],
+   "command": "zeus cycle start",
+   "help_bytes": 346,
+   "help_exit": 0,
+   "help_sha256": "c25e14bc3b7584024d5cf58a96dd9e060fcc2d932b61082a6218017038b8d5c8",
+   "root": false,
+   "usage": "usage: zeus cycle start [-h] --correlation CORRELATION --max-executions MAX_EXECUTIONS cycle_id"
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "cycle_id",
+     "nargs": null,
+     "options": [],
+     "required": true
+    }
+   ],
+   "command": "zeus cycle status",
+   "help_bytes": 129,
+   "help_exit": 0,
+   "help_sha256": "c0531b977d19f2726aeb1ce81d09b32d6d06093b101b4dd9d4f240747762366d",
+   "root": false,
+   "usage": "usage: zeus cycle status [-h] cycle_id"
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "cycle_id",
+     "nargs": null,
+     "options": [],
+     "required": true
+    }
+   ],
+   "command": "zeus cycle handoff",
+   "help_bytes": 130,
+   "help_exit": 0,
+   "help_sha256": "50a8002cb15a69be52fac5453dc661ad405ac4567390c3740999195cf736900f",
+   "root": false,
+   "usage": "usage: zeus cycle handoff [-h] cycle_id"
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "cycle_id",
+     "nargs": null,
+     "options": [],
+     "required": true
+    }
+   ],
+   "command": "zeus cycle step",
+   "help_bytes": 127,
+   "help_exit": 0,
+   "help_sha256": "1e096f8a81fd83c23ce0e29ce9fd21f722a99734ecf235ebe99be5ac9139196b",
+   "root": false,
+   "usage": "usage: zeus cycle step [-h] cycle_id"
+  },
+  {
+   "arguments": [],
+   "command": "zeus operate",
+   "help_bytes": 265,
+   "help_exit": 0,
+   "help_sha256": "13a97229897ef3f651a038672064564fc070475b995e60407715b4f047ea9afd",
+   "root": true,
+   "usage": "usage: zeus operate [-h] {run,status} ..."
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "file",
+     "nargs": null,
+     "options": [
+      "--file"
+     ],
+     "required": true
+    }
+   ],
+   "command": "zeus operate run",
+   "help_bytes": 160,
+   "help_exit": 0,
+   "help_sha256": "5eff09e77cdb71cda8b62a975e002b30015a77f0c8502b128519d418c76df796",
+   "root": false,
+   "usage": "usage: zeus operate run [-h] --file FILE"
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "operation_id",
+     "nargs": null,
+     "options": [],
+     "required": true
+    }
+   ],
+   "command": "zeus operate status",
+   "help_bytes": 141,
+   "help_exit": 0,
+   "help_sha256": "9bd1fb0fede7e2467e0c832c0fa3dc6c01332d291ac804510fe6d03fece624ad",
+   "root": false,
+   "usage": "usage: zeus operate status [-h] operation_id"
+  },
+  {
+   "arguments": [],
+   "command": "zeus audit-service",
+   "help_bytes": 348,
+   "help_exit": 0,
+   "help_sha256": "b3bf303e32e0558f8c3429dfa1d8e629427cc8717c13b6de4f7409ef80bfb910",
+   "root": true,
+   "usage": "usage: zeus audit-service [-h] {run,status} ..."
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "audit_id",
+     "nargs": null,
+     "options": [
+      "--audit-id"
+     ],
+     "required": true
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "max_tasks",
+     "nargs": null,
+     "options": [
+      "--max-tasks"
+     ],
+     "required": false
+    },
+    {
+     "action": "_StoreTrueAction",
+     "choices": null,
+     "default": false,
+     "dest": "once",
+     "nargs": 0,
+     "options": [
+      "--once"
+     ],
+     "required": false
+    }
+   ],
+   "command": "zeus audit-service run",
+   "help_bytes": 532,
+   "help_exit": 0,
+   "help_sha256": "ad5f9e9502d67cac7f7cb91b44ec7466974b8028634e94c6bc490f7f99b4d63e",
+   "root": false,
+   "usage": "usage: zeus audit-service run [-h] --audit-id AUDIT_ID [--max-tasks MAX_TASKS] [--once]"
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "audit_id",
+     "nargs": null,
+     "options": [
+      "--audit-id"
+     ],
+     "required": true
+    }
+   ],
+   "command": "zeus audit-service status",
+   "help_bytes": 145,
+   "help_exit": 0,
+   "help_sha256": "d935eb3c33c0b9050ba7e6c0186877f2d0c80bc88d9430d64983ad56f56c8683",
+   "root": false,
+   "usage": "usage: zeus audit-service status [-h] --audit-id AUDIT_ID"
+  },
+  {
+   "arguments": [],
+   "command": "zeus audit-repair",
+   "help_bytes": 719,
+   "help_exit": 0,
+   "help_sha256": "bac628cfac6e2f5675d138c89b6ed4c26d1cc39872f2f80778eb54d7d9f647f5",
+   "root": true,
+   "usage": "usage: zeus audit-repair [-h] {enable,disable,inspect,status} ..."
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "audit_id",
+     "nargs": null,
+     "options": [
+      "--audit-id"
+     ],
+     "required": true
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "task_id",
+     "nargs": null,
+     "options": [
+      "--task-id"
+     ],
+     "required": true
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "operator",
+     "nargs": null,
+     "options": [
+      "--operator"
+     ],
+     "required": true
+    }
+   ],
+   "command": "zeus audit-repair enable",
+   "help_bytes": 333,
+   "help_exit": 0,
+   "help_sha256": "4bb08e67ae5f510569844a5f4a4430632656b07690d8915f8b649525b13344f4",
+   "root": false,
+   "usage": "usage: zeus audit-repair enable [-h] --audit-id AUDIT_ID --task-id TASK_ID --operator OPERATOR"
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "audit_id",
+     "nargs": null,
+     "options": [
+      "--audit-id"
+     ],
+     "required": true
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "operator",
+     "nargs": null,
+     "options": [
+      "--operator"
+     ],
+     "required": true
+    }
+   ],
+   "command": "zeus audit-repair disable",
+   "help_bytes": 187,
+   "help_exit": 0,
+   "help_sha256": "3dad8a43ac674b33eac7d5cc07e766277a819d2779393397a0c78f4417abcb8e",
+   "root": false,
+   "usage": "usage: zeus audit-repair disable [-h] --audit-id AUDIT_ID --operator OPERATOR"
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "audit_id",
+     "nargs": null,
+     "options": [
+      "--audit-id"
+     ],
+     "required": true
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "task_id",
+     "nargs": null,
+     "options": [
+      "--task-id"
+     ],
+     "required": false
+    }
+   ],
+   "command": "zeus audit-repair inspect",
+   "help_bytes": 185,
+   "help_exit": 0,
+   "help_sha256": "6ac6a4f976c57e536b2a4c7ad79e2d8be5af99fc05e369d1022ade05a0c087f6",
+   "root": false,
+   "usage": "usage: zeus audit-repair inspect [-h] --audit-id AUDIT_ID [--task-id TASK_ID]"
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "audit_id",
+     "nargs": null,
+     "options": [
+      "--audit-id"
+     ],
+     "required": true
+    }
+   ],
+   "command": "zeus audit-repair status",
+   "help_bytes": 144,
+   "help_exit": 0,
+   "help_sha256": "a1768ce21fd85b459cb42e3f32fe5754522b74df11710dfa7c869551383dd187",
+   "root": false,
+   "usage": "usage: zeus audit-repair status [-h] --audit-id AUDIT_ID"
+  },
+  {
+   "arguments": [],
+   "command": "zeus dge",
+   "help_bytes": 456,
+   "help_exit": 0,
+   "help_sha256": "a8efcb63538456f65407d0faf59296d290a9a611df6d084be1c5de87d3c59a4d",
+   "root": true,
+   "usage": "usage: zeus dge [-h] {register,submit,status} ..."
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "file",
+     "nargs": null,
+     "options": [
+      "--file"
+     ],
+     "required": true
+    }
+   ],
+   "command": "zeus dge register",
+   "help_bytes": 113,
+   "help_exit": 0,
+   "help_sha256": "7757e8a604beec365c8a357a4f734c943101875c94e1a6ea4e7bb550db4d4681",
+   "root": false,
+   "usage": "usage: zeus dge register [-h] --file FILE"
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "session_id",
+     "nargs": null,
+     "options": [],
+     "required": true
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "file",
+     "nargs": null,
+     "options": [
+      "--file"
+     ],
+     "required": true
+    }
+   ],
+   "command": "zeus dge submit",
+   "help_bytes": 158,
+   "help_exit": 0,
+   "help_sha256": "edaa1ea2a0f39694a777adf0b72cb37b8e4642fd6b86e0166344660eafd0dddd",
+   "root": false,
+   "usage": "usage: zeus dge submit [-h] --file FILE session_id"
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "session_id",
+     "nargs": null,
+     "options": [],
+     "required": true
+    }
+   ],
+   "command": "zeus dge status",
+   "help_bytes": 131,
+   "help_exit": 0,
+   "help_sha256": "3340a8ef3b6fde091d864baef35fc187ac5a5a51a2f128e6d795af744ab6fabd",
+   "root": false,
+   "usage": "usage: zeus dge status [-h] session_id"
+  },
+  {
+   "arguments": [],
+   "command": "zeus fleet",
+   "help_bytes": 1752,
+   "help_exit": 0,
+   "help_sha256": "81a059a7fa0c69e318cfe6bf25ad48801eb14d59967cf3de354eceed7f5294b2",
+   "root": true,
+   "usage": "usage: zeus fleet [-h]"
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "file",
+     "nargs": null,
+     "options": [
+      "--file"
+     ],
+     "required": true
+    }
+   ],
+   "command": "zeus fleet register",
+   "help_bytes": 115,
+   "help_exit": 0,
+   "help_sha256": "99c0e64bf0aa6fd90d6a5deb89f32679da727badb2b27bbd371b093a5c1f03c9",
+   "root": false,
+   "usage": "usage: zeus fleet register [-h] --file FILE"
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "lane",
+     "nargs": null,
+     "options": [
+      "--lane"
+     ],
+     "required": true
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "file",
+     "nargs": null,
+     "options": [
+      "--file"
+     ],
+     "required": true
+    },
+    {
+     "action": "_AppendAction",
+     "choices": null,
+     "default": [],
+     "dest": "after",
+     "nargs": null,
+     "options": [
+      "--after"
+     ],
+     "required": false
+    }
+   ],
+   "command": "zeus fleet enqueue",
+   "help_bytes": 249,
+   "help_exit": 0,
+   "help_sha256": "f762ea0dd96d85a76b5ae65ce66f53b96683c438f23c7c1df897addef070956b",
+   "root": false,
+   "usage": "usage: zeus fleet enqueue [-h] --lane LANE --file FILE [--after AFTER]"
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreTrueAction",
+     "choices": null,
+     "default": false,
+     "dest": "once",
+     "nargs": 0,
+     "options": [
+      "--once"
+     ],
+     "required": false
+    }
+   ],
+   "command": "zeus fleet run",
+   "help_bytes": 137,
+   "help_exit": 0,
+   "help_sha256": "502db91da40dc4a11df6c03dd5a2fe31a39cba18e32716823b0d2ff2b3b03443",
+   "root": false,
+   "usage": "usage: zeus fleet run [-h] [--once]"
+  },
+  {
+   "arguments": [],
+   "command": "zeus fleet pause",
+   "help_bytes": 85,
+   "help_exit": 0,
+   "help_sha256": "064d8dd6d120bcfa2203edd7247bbe38725b4fa303ca3e9a3974e1d2e17b89c2",
+   "root": false,
+   "usage": "usage: zeus fleet pause [-h]"
+  },
+  {
+   "arguments": [],
+   "command": "zeus fleet resume",
+   "help_bytes": 86,
+   "help_exit": 0,
+   "help_sha256": "c80c4a4bb9e61c8e1cd37efc701a3311f3edf99699b05dc73d48a750b30b4c57",
+   "root": false,
+   "usage": "usage: zeus fleet resume [-h]"
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "per_host",
+     "nargs": null,
+     "options": [
+      "--per-host"
+     ],
+     "required": true
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "total",
+     "nargs": null,
+     "options": [
+      "--total"
+     ],
+     "required": true
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "expected_total",
+     "nargs": null,
+     "options": [
+      "--expected-total"
+     ],
+     "required": true
+    },
+    {
+     "action": "_StoreAction",
+     "choices": [
+      "finite",
+      "subscription"
+     ],
+     "default": null,
+     "dest": "mode",
+     "nargs": null,
+     "options": [
+      "--mode"
+     ],
+     "required": false
+    }
+   ],
+   "command": "zeus fleet authorize-budget",
+   "help_bytes": 670,
+   "help_exit": 0,
+   "help_sha256": "a6cd4e6cc10015f6c4bbfa1eaf6abc335e8f38d0ea31743e08aa71ae47032213",
+   "root": false,
+   "usage": "usage: zeus fleet authorize-budget [-h] --per-host PER_HOST --total TOTAL --expected-total"
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "job",
+     "nargs": null,
+     "options": [
+      "--job"
+     ],
+     "required": true
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "file",
+     "nargs": null,
+     "options": [
+      "--file"
+     ],
+     "required": true
+    }
+   ],
+   "command": "zeus fleet record-delivery",
+   "help_bytes": 208,
+   "help_exit": 0,
+   "help_sha256": "feebd34212b420ae8dfcb1c4f3bb7d1f532f6ac837393f307063185e81baa467",
+   "root": false,
+   "usage": "usage: zeus fleet record-delivery [-h] --job JOB --file FILE"
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "file",
+     "nargs": null,
+     "options": [
+      "--file"
+     ],
+     "required": true
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": "docker",
+     "dest": "docker",
+     "nargs": null,
+     "options": [
+      "--docker"
+     ],
+     "required": false
+    }
+   ],
+   "command": "zeus fleet reconcile-interrupted",
+   "help_bytes": 262,
+   "help_exit": 0,
+   "help_sha256": "f04701fb34fdfe3acec176832c11fa958b7f85d8c1d36e45806782cb25abf838",
+   "root": false,
+   "usage": "usage: zeus fleet reconcile-interrupted [-h] --file FILE [--docker DOCKER]"
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "file",
+     "nargs": null,
+     "options": [
+      "--file"
+     ],
+     "required": true
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "journal",
+     "nargs": null,
+     "options": [
+      "--journal"
+     ],
+     "required": true
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": "docker",
+     "dest": "docker",
+     "nargs": null,
+     "options": [
+      "--docker"
+     ],
+     "required": false
+    }
+   ],
+   "command": "zeus fleet relocate",
+   "help_bytes": 371,
+   "help_exit": 0,
+   "help_sha256": "38b1b725aa186453c0f4b35ba2b2cc9753b5db1236091807cd708645422cfc3b",
+   "root": false,
+   "usage": "usage: zeus fleet relocate [-h] --file FILE --journal JOURNAL [--docker DOCKER]"
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "file",
+     "nargs": null,
+     "options": [
+      "--file"
+     ],
+     "required": true
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "journal",
+     "nargs": null,
+     "options": [
+      "--journal"
+     ],
+     "required": true
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": "docker",
+     "dest": "docker",
+     "nargs": null,
+     "options": [
+      "--docker"
+     ],
+     "required": false
+    }
+   ],
+   "command": "zeus fleet migrate-host",
+   "help_bytes": 404,
+   "help_exit": 0,
+   "help_sha256": "1248eacc98de2ac8a8f514724d6ed6404be163d24e77022abd21c1db9b1a901f",
+   "root": false,
+   "usage": "usage: zeus fleet migrate-host [-h] --file FILE --journal JOURNAL [--docker DOCKER]"
+  },
+  {
+   "arguments": [],
+   "command": "zeus fleet status",
+   "help_bytes": 86,
+   "help_exit": 0,
+   "help_sha256": "f33859fb21809a537a50e0337c5fcc92ab0993923d0c20f68b67ec37a7fe5c42",
+   "root": false,
+   "usage": "usage: zeus fleet status [-h]"
+  },
+  {
+   "arguments": [],
+   "command": "zeus fleet backlog",
+   "help_bytes": 387,
+   "help_exit": 0,
+   "help_sha256": "2dcbd412334ab08e8fdead9e5636c096b73f303bc2b5076fdfbe06f5066be91c",
+   "root": false,
+   "usage": "usage: zeus fleet backlog [-h] {register,tick,status} ..."
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "lane",
+     "nargs": null,
+     "options": [
+      "--lane"
+     ],
+     "required": true
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "revision",
+     "nargs": null,
+     "options": [
+      "--revision"
+     ],
+     "required": true
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "path",
+     "nargs": null,
+     "options": [
+      "--path"
+     ],
+     "required": true
+    }
+   ],
+   "command": "zeus fleet backlog register",
+   "help_bytes": 319,
+   "help_exit": 0,
+   "help_sha256": "d935c8da2e4f23228491d27c6a9b39a303252dc9a83b5661e11f633839266462",
+   "root": false,
+   "usage": "usage: zeus fleet backlog register [-h] --lane LANE --revision REVISION --path PATH"
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "plan",
+     "nargs": null,
+     "options": [
+      "--plan"
+     ],
+     "required": true
+    }
+   ],
+   "command": "zeus fleet backlog tick",
+   "help_bytes": 139,
+   "help_exit": 0,
+   "help_sha256": "c8c516bceffddf3eb80763a58f5b30473db95bdddba948a7924afa5005bb5759",
+   "root": false,
+   "usage": "usage: zeus fleet backlog tick [-h] --plan PLAN"
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "plan",
+     "nargs": null,
+     "options": [
+      "--plan"
+     ],
+     "required": false
+    }
+   ],
+   "command": "zeus fleet backlog status",
+   "help_bytes": 173,
+   "help_exit": 0,
+   "help_sha256": "bd2c9e184c4e016b651b8e6851bb7dce8e4d36f1fa215a822dc7d9fc7f439e6f",
+   "root": false,
+   "usage": "usage: zeus fleet backlog status [-h] [--plan PLAN]"
+  },
+  {
+   "arguments": [],
+   "command": "zeus host-delivery",
+   "help_bytes": 1043,
+   "help_exit": 0,
+   "help_sha256": "53533e2fef579ebf8707579124c9b7a063831a6fc6d2182a3d24321b7de7a997",
+   "root": true,
+   "usage": "usage: zeus host-delivery [-h] {register-targets,register,tick,run,status,withdraw,resume} ..."
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "file",
+     "nargs": null,
+     "options": [
+      "--file"
+     ],
+     "required": true
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "lane",
+     "nargs": null,
+     "options": [
+      "--lane"
+     ],
+     "required": false
+    }
+   ],
+   "command": "zeus host-delivery register-targets",
+   "help_bytes": 356,
+   "help_exit": 0,
+   "help_sha256": "860b4433df340cc484350ec14d966350afa0daa7058279caac97b4ab3dcc097e",
+   "root": false,
+   "usage": "usage: zeus host-delivery register-targets [-h] --file FILE [--lane LANE]"
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "revision",
+     "nargs": null,
+     "options": [
+      "--revision"
+     ],
+     "required": true
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "path",
+     "nargs": null,
+     "options": [
+      "--path"
+     ],
+     "required": true
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "lane",
+     "nargs": null,
+     "options": [
+      "--lane"
+     ],
+     "required": false
+    }
+   ],
+   "command": "zeus host-delivery register",
+   "help_bytes": 496,
+   "help_exit": 0,
+   "help_sha256": "7b519aa7eea32350e4f07d26ce542e6235186c91b425958cc4421f8d48cf756d",
+   "root": false,
+   "usage": "usage: zeus host-delivery register [-h] --revision REVISION --path PATH [--lane LANE]"
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "plan",
+     "nargs": null,
+     "options": [
+      "--plan"
+     ],
+     "required": false
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "lane",
+     "nargs": null,
+     "options": [
+      "--lane"
+     ],
+     "required": false
+    }
+   ],
+   "command": "zeus host-delivery tick",
+   "help_bytes": 391,
+   "help_exit": 0,
+   "help_sha256": "e55ece79d76c7eeb5b3292fa35f805aa3ca70a2678a5d6f2621fbe777a096050",
+   "root": false,
+   "usage": "usage: zeus host-delivery tick [-h] [--plan PLAN] [--lane LANE]"
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreTrueAction",
+     "choices": null,
+     "default": false,
+     "dest": "once",
+     "nargs": 0,
+     "options": [
+      "--once"
+     ],
+     "required": false
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": 15,
+     "dest": "interval",
+     "nargs": null,
+     "options": [
+      "--interval"
+     ],
+     "required": false
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": 0,
+     "dest": "max_ticks",
+     "nargs": null,
+     "options": [
+      "--max-ticks"
+     ],
+     "required": false
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "lane",
+     "nargs": null,
+     "options": [
+      "--lane"
+     ],
+     "required": false
+    }
+   ],
+   "command": "zeus host-delivery run",
+   "help_bytes": 625,
+   "help_exit": 0,
+   "help_sha256": "1168a66e54916b2277d34fda6aa7484ed8a953e6385b183ce8aa57f59f5a7911",
+   "root": false,
+   "usage": "usage: zeus host-delivery run [-h] [--once] [--interval INTERVAL] [--max-ticks MAX_TICKS]"
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "plan",
+     "nargs": null,
+     "options": [
+      "--plan"
+     ],
+     "required": false
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "lane",
+     "nargs": null,
+     "options": [
+      "--lane"
+     ],
+     "required": false
+    }
+   ],
+   "command": "zeus host-delivery status",
+   "help_bytes": 387,
+   "help_exit": 0,
+   "help_sha256": "9b59f73e13e8bf1610b2f71ebc5eb295472b3347b89c4c256e20bbabf864ce91",
+   "root": false,
+   "usage": "usage: zeus host-delivery status [-h] [--plan PLAN] [--lane LANE]"
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "plan",
+     "nargs": null,
+     "options": [
+      "--plan"
+     ],
+     "required": true
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "plan_sha256",
+     "nargs": null,
+     "options": [
+      "--plan-sha256"
+     ],
+     "required": true
+    },
+    {
+     "action": "_StoreAction",
+     "choices": [
+      "descriptor_predecessor_moved",
+      "merged_tree_mismatch",
+      "reviewed_base_moved"
+     ],
+     "default": null,
+     "dest": "reason",
+     "nargs": null,
+     "options": [
+      "--reason"
+     ],
+     "required": true
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "evidence",
+     "nargs": null,
+     "options": [
+      "--evidence"
+     ],
+     "required": true
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "lane",
+     "nargs": null,
+     "options": [
+      "--lane"
+     ],
+     "required": false
+    }
+   ],
+   "command": "zeus host-delivery withdraw",
+   "help_bytes": 862,
+   "help_exit": 0,
+   "help_sha256": "6d3f6cc13ae95ba27d4402b0b9e20fd18a05f59de432ee84df431f35eed66e2a",
+   "root": false,
+   "usage": "usage: zeus host-delivery withdraw [-h] --plan PLAN --plan-sha256 PLAN_SHA256 --reason"
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "plan",
+     "nargs": null,
+     "options": [
+      "--plan"
+     ],
+     "required": true
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "plan_sha256",
+     "nargs": null,
+     "options": [
+      "--plan-sha256"
+     ],
+     "required": true
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "evidence",
+     "nargs": null,
+     "options": [
+      "--evidence"
+     ],
+     "required": true
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "document",
+     "nargs": null,
+     "options": [
+      "--document"
+     ],
+     "required": false
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "lane",
+     "nargs": null,
+     "options": [
+      "--lane"
+     ],
+     "required": false
+    }
+   ],
+   "command": "zeus host-delivery resume",
+   "help_bytes": 1000,
+   "help_exit": 0,
+   "help_sha256": "a8f21f7bbadba8e97c4130881b994ea4a029e5cb130ea91d3d8b6bfafa4a3780",
+   "root": false,
+   "usage": "usage: zeus host-delivery resume [-h] --plan PLAN --plan-sha256 PLAN_SHA256 --evidence EVIDENCE"
+  },
+  {
+   "arguments": [],
+   "command": "zeus worker-session",
+   "help_bytes": 392,
+   "help_exit": 0,
+   "help_sha256": "b4fa66276bdd3c0b186989db01ca0f84f0c024becb64d9bd3e84439cc7841347",
+   "root": true,
+   "usage": "usage: zeus worker-session [-h] {status,close} ..."
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "task_id",
+     "nargs": null,
+     "options": [
+      "--task-id"
+     ],
+     "required": false
+    }
+   ],
+   "command": "zeus worker-session status",
+   "help_bytes": 142,
+   "help_exit": 0,
+   "help_sha256": "b7adc06faac4fa36990bbfb90bd756edff42eac9c424e445882dfceed5f8515b",
+   "root": false,
+   "usage": "usage: zeus worker-session status [-h] [--task-id TASK_ID]"
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "task_id",
+     "nargs": null,
+     "options": [
+      "--task-id"
+     ],
+     "required": true
+    }
+   ],
+   "command": "zeus worker-session close",
+   "help_bytes": 139,
+   "help_exit": 0,
+   "help_sha256": "3eceae012c730d77d49ac7bb55507993d3cef631a01c76df75f23eb455405c02",
+   "root": false,
+   "usage": "usage: zeus worker-session close [-h] --task-id TASK_ID"
+  },
+  {
+   "arguments": [],
+   "command": "zeus continuation",
+   "help_bytes": 1971,
+   "help_exit": 0,
+   "help_sha256": "39fb66cbb1c3ac422e0a2f14a20b5268e94b63778fc6ea1acc916c787f037d35",
+   "root": true,
+   "usage": "usage: zeus continuation [-h]"
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "lane",
+     "nargs": null,
+     "options": [
+      "--lane"
+     ],
+     "required": true
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "revision",
+     "nargs": null,
+     "options": [
+      "--revision"
+     ],
+     "required": true
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "path",
+     "nargs": null,
+     "options": [
+      "--path"
+     ],
+     "required": true
+    }
+   ],
+   "command": "zeus continuation register",
+   "help_bytes": 324,
+   "help_exit": 0,
+   "help_sha256": "c31cdcc8557a27921ddbfcd107a6ef72585e4f3b10e81097b7b2fad198c754a1",
+   "root": false,
+   "usage": "usage: zeus continuation register [-h] --lane LANE --revision REVISION --path PATH"
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "policy",
+     "nargs": null,
+     "options": [
+      "--policy"
+     ],
+     "required": true
+    }
+   ],
+   "command": "zeus continuation tick",
+   "help_bytes": 130,
+   "help_exit": 0,
+   "help_sha256": "5625b0dcc31bdc9dd79cc1e4140791a334ae057f1cc06e61f6922750a8692e9c",
+   "root": false,
+   "usage": "usage: zeus continuation tick [-h] --policy POLICY"
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "policy",
+     "nargs": null,
+     "options": [
+      "--policy"
+     ],
+     "required": false
+    }
+   ],
+   "command": "zeus continuation status",
+   "help_bytes": 134,
+   "help_exit": 0,
+   "help_sha256": "7055f47be4e55a94cbb23b8709eb6bea128b7cdb7b90fd747727d7a9e0277f9a",
+   "root": false,
+   "usage": "usage: zeus continuation status [-h] [--policy POLICY]"
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "lane",
+     "nargs": null,
+     "options": [
+      "--lane"
+     ],
+     "required": true
+    }
+   ],
+   "command": "zeus continuation identity",
+   "help_bytes": 122,
+   "help_exit": 0,
+   "help_sha256": "9d9c49c9d479c676716ce91968b98e19e71074e084a6471b74be74562abf6dbc",
+   "root": false,
+   "usage": "usage: zeus continuation identity [-h] --lane LANE"
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "file",
+     "nargs": null,
+     "options": [
+      "--file"
+     ],
+     "required": true
+    }
+   ],
+   "command": "zeus continuation conduct",
+   "help_bytes": 159,
+   "help_exit": 0,
+   "help_sha256": "e0f285e3944eee9155796211cf94f15dd99331328d784c40c400edbcf25f425d",
+   "root": false,
+   "usage": "usage: zeus continuation conduct [-h] --file FILE"
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "file",
+     "nargs": null,
+     "options": [
+      "--file"
+     ],
+     "required": true
+    }
+   ],
+   "command": "zeus continuation research-accept",
+   "help_bytes": 155,
+   "help_exit": 0,
+   "help_sha256": "4b26925fb9b9969b904e44a27606c8fdf4b4791522728dac50d14383635b09c0",
+   "root": false,
+   "usage": "usage: zeus continuation research-accept [-h] --file FILE"
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "file",
+     "nargs": null,
+     "options": [
+      "--file"
+     ],
+     "required": true
+    }
+   ],
+   "command": "zeus continuation research-supplement",
+   "help_bytes": 162,
+   "help_exit": 0,
+   "help_sha256": "030d1bb835dd6e6ef079d710a0787688506ba69983fad72ab6509452d1821fdf",
+   "root": false,
+   "usage": "usage: zeus continuation research-supplement [-h] --file FILE"
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "intent",
+     "nargs": null,
+     "options": [
+      "--intent"
+     ],
+     "required": true
+    }
+   ],
+   "command": "zeus continuation ownership-reconcile",
+   "help_bytes": 185,
+   "help_exit": 0,
+   "help_sha256": "cb26193bd2063fe1091009985577fb8a46e173d45d6720d23848f58b242b75e8",
+   "root": false,
+   "usage": "usage: zeus continuation ownership-reconcile [-h] --intent INTENT"
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "file",
+     "nargs": null,
+     "options": [
+      "--file"
+     ],
+     "required": true
+    }
+   ],
+   "command": "zeus continuation capacity-grant",
+   "help_bytes": 152,
+   "help_exit": 0,
+   "help_sha256": "22c2fa7ae062023bd435aa4085b279968175687bc57e540f9af297b718310d29",
+   "root": false,
+   "usage": "usage: zeus continuation capacity-grant [-h] --file FILE"
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "file",
+     "nargs": null,
+     "options": [
+      "--file"
+     ],
+     "required": true
+    }
+   ],
+   "command": "zeus continuation delivery-requalify",
+   "help_bytes": 166,
+   "help_exit": 0,
+   "help_sha256": "a01ec6a43666886b1794feeeff5b7fcc67bb2a59d38a0f2ebe90220ebbb346a9",
+   "root": false,
+   "usage": "usage: zeus continuation delivery-requalify [-h] --file FILE"
+  },
+  {
+   "arguments": [],
+   "command": "zeus owner-actions",
+   "help_bytes": 1052,
+   "help_exit": 0,
+   "help_sha256": "759d3b9cb5ca37c5ecadd20056bc4991fcd069945007671981c55e01241cd913",
+   "root": true,
+   "usage": "usage: zeus owner-actions [-h] {register,tick,run,status,migrate,canary-recover,assess} ..."
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "lane",
+     "nargs": null,
+     "options": [
+      "--lane"
+     ],
+     "required": true
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "revision",
+     "nargs": null,
+     "options": [
+      "--revision"
+     ],
+     "required": true
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "path",
+     "nargs": null,
+     "options": [
+      "--path"
+     ],
+     "required": true
+    }
+   ],
+   "command": "zeus owner-actions register",
+   "help_bytes": 199,
+   "help_exit": 0,
+   "help_sha256": "1f9e0a91b939f200e21f7e6818e375f062fe77b2a14ee3b8e7979b4fec33cac0",
+   "root": false,
+   "usage": "usage: zeus owner-actions register [-h] --lane LANE --revision REVISION --path PATH"
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "policy",
+     "nargs": null,
+     "options": [
+      "--policy"
+     ],
+     "required": true
+    }
+   ],
+   "command": "zeus owner-actions tick",
+   "help_bytes": 131,
+   "help_exit": 0,
+   "help_sha256": "a7dc9091d279235a16ed85992ee70a4da897deda3989d8ceddb3a03597996d8c",
+   "root": false,
+   "usage": "usage: zeus owner-actions tick [-h] --policy POLICY"
+  },
+  {
+   "arguments": [
+    {
+     "action": "_AppendAction",
+     "choices": null,
+     "default": null,
+     "dest": "policy",
+     "nargs": null,
+     "options": [
+      "--policy"
+     ],
+     "required": true
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": 15,
+     "dest": "interval",
+     "nargs": null,
+     "options": [
+      "--interval"
+     ],
+     "required": false
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": 0,
+     "dest": "max_ticks",
+     "nargs": null,
+     "options": [
+      "--max-ticks"
+     ],
+     "required": false
+    }
+   ],
+   "command": "zeus owner-actions run",
+   "help_bytes": 333,
+   "help_exit": 0,
+   "help_sha256": "272a11eeb169d027bea09c842d2d0c0e75cbf40b26f8ed99aa9ea05c736addcd",
+   "root": false,
+   "usage": "usage: zeus owner-actions run [-h] --policy POLICY [--interval INTERVAL] [--max-ticks MAX_TICKS]"
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "policy",
+     "nargs": null,
+     "options": [
+      "--policy"
+     ],
+     "required": false
+    }
+   ],
+   "command": "zeus owner-actions status",
+   "help_bytes": 135,
+   "help_exit": 0,
+   "help_sha256": "68e57d07a329cc1ade04f82c1d53767d3292c7a0102908f93672c3b6bcd457d4",
+   "root": false,
+   "usage": "usage: zeus owner-actions status [-h] [--policy POLICY]"
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "document",
+     "nargs": null,
+     "options": [
+      "--document"
+     ],
+     "required": true
+    }
+   ],
+   "command": "zeus owner-actions migrate",
+   "help_bytes": 184,
+   "help_exit": 0,
+   "help_sha256": "66b78a3de626452c5fc221a207b58ca624d11f4f9532a4eef8e6cf23112d0315",
+   "root": false,
+   "usage": "usage: zeus owner-actions migrate [-h] --document DOCUMENT"
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "document",
+     "nargs": null,
+     "options": [
+      "--document"
+     ],
+     "required": true
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "evidence",
+     "nargs": null,
+     "options": [
+      "--evidence"
+     ],
+     "required": true
+    }
+   ],
+   "command": "zeus owner-actions canary-recover",
+   "help_bytes": 278,
+   "help_exit": 0,
+   "help_sha256": "67fe20cc7ec949395e27366b163aabcffe895b600d92cd502065b4248592a35e",
+   "root": false,
+   "usage": "usage: zeus owner-actions canary-recover [-h] --document DOCUMENT --evidence EVIDENCE"
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "decision",
+     "nargs": null,
+     "options": [
+      "--decision"
+     ],
+     "required": true
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "correlation",
+     "nargs": null,
+     "options": [
+      "--correlation"
+     ],
+     "required": true
+    }
+   ],
+   "command": "zeus owner-actions assess",
+   "help_bytes": 200,
+   "help_exit": 0,
+   "help_sha256": "28857ae4b12849c66a6dcae46e064f418c1467a598e5e59401a3775fdfb2557d",
+   "root": false,
+   "usage": "usage: zeus owner-actions assess [-h] --decision DECISION --correlation CORRELATION"
+  },
+  {
+   "arguments": [],
+   "command": "zeus desk",
+   "help_bytes": 264,
+   "help_exit": 0,
+   "help_sha256": "2fd048819bf53e581338ad8af49cc3d525e74c1c5cade35c45d8a841f2106aca",
+   "root": true,
+   "usage": "usage: zeus desk [-h] {run,status} ..."
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "revision",
+     "nargs": null,
+     "options": [
+      "--revision"
+     ],
+     "required": true
+    },
+    {
+     "action": "_StoreTrueAction",
+     "choices": null,
+     "default": false,
+     "dest": "once",
+     "nargs": 0,
+     "options": [
+      "--once"
+     ],
+     "required": false
+    }
+   ],
+   "command": "zeus desk run",
+   "help_bytes": 259,
+   "help_exit": 0,
+   "help_sha256": "e788d159b9663d7a0318f1393e8f80fc65197334d7b6ca7bc5be7dd5c9ed25cc",
+   "root": false,
+   "usage": "usage: zeus desk run [-h] --revision REVISION [--once]"
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "revision",
+     "nargs": null,
+     "options": [
+      "--revision"
+     ],
+     "required": true
+    }
+   ],
+   "command": "zeus desk status",
+   "help_bytes": 176,
+   "help_exit": 0,
+   "help_sha256": "5a5e9e73d4eb169b0b01b7a9cfb48efb17e4d74468d7651871d6a214c8ae1de7",
+   "root": false,
+   "usage": "usage: zeus desk status [-h] --revision REVISION"
+  },
+  {
+   "arguments": [],
+   "command": "zeus autonomous",
+   "help_bytes": 375,
+   "help_exit": 0,
+   "help_sha256": "e94b88e5f00b3b6b8433124969ab123be702f2bdd7767251e3d2232fd905d60e",
+   "root": true,
+   "usage": "usage: zeus autonomous [-h] {run,status} ..."
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "file",
+     "nargs": null,
+     "options": [
+      "--file"
+     ],
+     "required": true
+    }
+   ],
+   "command": "zeus autonomous run",
+   "help_bytes": 115,
+   "help_exit": 0,
+   "help_sha256": "5f1eeb5e21d7ae95e0d6e31ac9eb7ea0fdc7c9928ac1da2c2d681f02c0a1f8c3",
+   "root": false,
+   "usage": "usage: zeus autonomous run [-h] --file FILE"
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "run_id",
+     "nargs": null,
+     "options": [],
+     "required": true
+    }
+   ],
+   "command": "zeus autonomous status",
+   "help_bytes": 130,
+   "help_exit": 0,
+   "help_sha256": "c83082b6b9bcb3d1533b75833f04381157333238d5295433f8228ea50231ed82",
+   "root": false,
+   "usage": "usage: zeus autonomous status [-h] run_id"
+  },
+  {
+   "arguments": [],
+   "command": "zeus research-program",
+   "help_bytes": 1211,
+   "help_exit": 0,
+   "help_sha256": "499a652cf64a00d2c6fbdcef6d759ce6effddcfd76d82600367b849b65eaffc4",
+   "root": true,
+   "usage": "usage: zeus research-program [-h] {register,run,status,pause,resume,recover} ..."
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "file",
+     "nargs": null,
+     "options": [
+      "--file"
+     ],
+     "required": true
+    }
+   ],
+   "command": "zeus research-program register",
+   "help_bytes": 126,
+   "help_exit": 0,
+   "help_sha256": "5af89c9b8b662d9137a9bb02535ad0bb46afbe60133ce24c6a60dfae500ac198",
+   "root": false,
+   "usage": "usage: zeus research-program register [-h] --file FILE"
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "program_id",
+     "nargs": null,
+     "options": [],
+     "required": true
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "ticks",
+     "nargs": null,
+     "options": [
+      "--ticks"
+     ],
+     "required": true
+    },
+    {
+     "action": "_StoreAction",
+     "choices": [
+      "existing_work_result",
+      "incident",
+      "proactive",
+      "task_required",
+      "user_request"
+     ],
+     "default": null,
+     "dest": "intent",
+     "nargs": null,
+     "options": [
+      "--intent"
+     ],
+     "required": true
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "cycle_owner",
+     "nargs": null,
+     "options": [
+      "--cycle-owner"
+     ],
+     "required": false
+    }
+   ],
+   "command": "zeus research-program run",
+   "help_bytes": 964,
+   "help_exit": 0,
+   "help_sha256": "cb6a5dd80a35ed1514f78619196ea59a01fda2c379b57972cd493de99f00b0d2",
+   "root": false,
+   "usage": "usage: zeus research-program run [-h] --ticks TICKS --intent"
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "program_id",
+     "nargs": null,
+     "options": [],
+     "required": true
+    }
+   ],
+   "command": "zeus research-program status",
+   "help_bytes": 144,
+   "help_exit": 0,
+   "help_sha256": "71d4fa08caf6344706a41d3f214e212ec1174af8e1403ddefdd43dcb6a4bc97a",
+   "root": false,
+   "usage": "usage: zeus research-program status [-h] program_id"
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "program_id",
+     "nargs": null,
+     "options": [],
+     "required": true
+    }
+   ],
+   "command": "zeus research-program pause",
+   "help_bytes": 143,
+   "help_exit": 0,
+   "help_sha256": "bda39a2a07b9c4d7742d64884ee626f7483fe3caf2b28e95ebab49acd49c9eef",
+   "root": false,
+   "usage": "usage: zeus research-program pause [-h] program_id"
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "program_id",
+     "nargs": null,
+     "options": [],
+     "required": true
+    }
+   ],
+   "command": "zeus research-program resume",
+   "help_bytes": 144,
+   "help_exit": 0,
+   "help_sha256": "ccd8c8d4ada43e6f57ed4596bd40f4053f528b28ec5b511e47318746ae5eb11e",
+   "root": false,
+   "usage": "usage: zeus research-program resume [-h] program_id"
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "file",
+     "nargs": null,
+     "options": [
+      "--file"
+     ],
+     "required": true
+    }
+   ],
+   "command": "zeus research-program recover",
+   "help_bytes": 125,
+   "help_exit": 0,
+   "help_sha256": "e889a69a7094f8166ba1019c72f7a719b7bf4b446a04989b0e9084eb253bdf06",
+   "root": false,
+   "usage": "usage: zeus research-program recover [-h] --file FILE"
+  },
+  {
+   "arguments": [],
+   "command": "zeus decision-feedback",
+   "help_bytes": 445,
+   "help_exit": 0,
+   "help_sha256": "df13b94023ea232b7cbf275b0c3a981755a5552128ee550f11e992cc841020c2",
+   "root": true,
+   "usage": "usage: zeus decision-feedback [-h] {collect,status,report} ..."
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "registry",
+     "nargs": null,
+     "options": [
+      "--registry"
+     ],
+     "required": true
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "revision",
+     "nargs": null,
+     "options": [
+      "--revision"
+     ],
+     "required": true
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": 100,
+     "dest": "limit",
+     "nargs": null,
+     "options": [
+      "--limit"
+     ],
+     "required": false
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "after",
+     "nargs": null,
+     "options": [
+      "--after"
+     ],
+     "required": false
+    }
+   ],
+   "command": "zeus decision-feedback collect",
+   "help_bytes": 563,
+   "help_exit": 0,
+   "help_sha256": "a7dbaeccb01c5ebd23d2c2fbbda2e3a973aaea6c9973b5e29be4541aa95dc78e",
+   "root": false,
+   "usage": "usage: zeus decision-feedback collect [-h] --registry REGISTRY --revision REVISION [--limit LIMIT]"
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": 100,
+     "dest": "limit",
+     "nargs": null,
+     "options": [
+      "--limit"
+     ],
+     "required": false
+    }
+   ],
+   "command": "zeus decision-feedback status",
+   "help_bytes": 133,
+   "help_exit": 0,
+   "help_sha256": "084de3a3ef27914b4bca047a3bbcd9299f51f19b19abbf964e84cb20070aa6b5",
+   "root": false,
+   "usage": "usage: zeus decision-feedback status [-h] [--limit LIMIT]"
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": 100,
+     "dest": "limit",
+     "nargs": null,
+     "options": [
+      "--limit"
+     ],
+     "required": false
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "after",
+     "nargs": null,
+     "options": [
+      "--after"
+     ],
+     "required": false
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "collection",
+     "nargs": null,
+     "options": [
+      "--collection"
+     ],
+     "required": false
+    }
+   ],
+   "command": "zeus decision-feedback report",
+   "help_bytes": 401,
+   "help_exit": 0,
+   "help_sha256": "eb09e925e75adc239a408e3dc6a3605bef7e974f9e0d1e50a06eee11b8eebfa6",
+   "root": false,
+   "usage": "usage: zeus decision-feedback report [-h] [--limit LIMIT] [--after AFTER]"
+  },
+  {
+   "arguments": [],
+   "command": "zeus ticket",
+   "help_bytes": 373,
+   "help_exit": 0,
+   "help_sha256": "a67bb2f1fbc89849e7d91e38471e4b5cdf8ee5b391cb8c9657011b91ee21ca2a",
+   "root": true,
+   "usage": "usage: zeus ticket [-h]"
+  },
+  {
+   "arguments": [],
+   "command": "zeus ticket list",
+   "help_bytes": 85,
+   "help_exit": 0,
+   "help_sha256": "5be50c409b965db17e00122d9f1a85c245e0ac704a71500cb8281d8b8fbf63c8",
+   "root": false,
+   "usage": "usage: zeus ticket list [-h]"
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "file",
+     "nargs": null,
+     "options": [
+      "--file"
+     ],
+     "required": true
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": "operator",
+     "dest": "author",
+     "nargs": null,
+     "options": [
+      "--author"
+     ],
+     "required": false
+    }
+   ],
+   "command": "zeus ticket create",
+   "help_bytes": 154,
+   "help_exit": 0,
+   "help_sha256": "94a48dc682eb459d73939ba5a350eeb07986ec0a5ee7097b8eedecda51382c5a",
+   "root": false,
+   "usage": "usage: zeus ticket create [-h] --file FILE [--author AUTHOR]"
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "ticket_id",
+     "nargs": null,
+     "options": [],
+     "required": true
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "revision",
+     "nargs": null,
+     "options": [
+      "--revision"
+     ],
+     "required": false
+    }
+   ],
+   "command": "zeus ticket show",
+   "help_bytes": 183,
+   "help_exit": 0,
+   "help_sha256": "5002ca4116b6c03b2118dfab23d137eaeb840c49aa64dc5a3832f3433b7ed7cf",
+   "root": false,
+   "usage": "usage: zeus ticket show [-h] [--revision REVISION] ticket_id"
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "ticket_id",
+     "nargs": null,
+     "options": [],
+     "required": true
+    }
+   ],
+   "command": "zeus ticket export",
+   "help_bytes": 132,
+   "help_exit": 0,
+   "help_sha256": "b9ffbbbbb0ea06a5e13fb713f534b0d34973772758fbcda2f4d491ff4ded7a1c",
+   "root": false,
+   "usage": "usage: zeus ticket export [-h] ticket_id"
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "ticket_id",
+     "nargs": null,
+     "options": [],
+     "required": true
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "revision",
+     "nargs": null,
+     "options": [
+      "--revision"
+     ],
+     "required": true
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "file",
+     "nargs": null,
+     "options": [
+      "--file"
+     ],
+     "required": true
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "reason",
+     "nargs": null,
+     "options": [
+      "--reason"
+     ],
+     "required": true
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": "operator",
+     "dest": "author",
+     "nargs": null,
+     "options": [
+      "--author"
+     ],
+     "required": false
+    }
+   ],
+   "command": "zeus ticket update",
+   "help_bytes": 305,
+   "help_exit": 0,
+   "help_sha256": "cb72d50889abef12b698972491334ae49afca93fe20ff2828bda24f5a229b488",
+   "root": false,
+   "usage": "usage: zeus ticket update [-h] --revision REVISION --file FILE --reason REASON [--author AUTHOR]"
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "ticket_id",
+     "nargs": null,
+     "options": [],
+     "required": true
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "revision",
+     "nargs": null,
+     "options": [
+      "--revision"
+     ],
+     "required": true
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "reviewer",
+     "nargs": null,
+     "options": [
+      "--reviewer"
+     ],
+     "required": true
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "provider",
+     "nargs": null,
+     "options": [
+      "--provider"
+     ],
+     "required": true
+    },
+    {
+     "action": "_StoreAction",
+     "choices": [
+      "changes_requested",
+      "question",
+      "support"
+     ],
+     "default": null,
+     "dest": "verdict",
+     "nargs": null,
+     "options": [
+      "--verdict"
+     ],
+     "required": true
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "summary",
+     "nargs": null,
+     "options": [
+      "--summary"
+     ],
+     "required": true
+    },
+    {
+     "action": "_AppendAction",
+     "choices": null,
+     "default": null,
+     "dest": "evidence",
+     "nargs": null,
+     "options": [
+      "--evidence"
+     ],
+     "required": true
+    }
+   ],
+   "command": "zeus ticket review",
+   "help_bytes": 522,
+   "help_exit": 0,
+   "help_sha256": "9bab78239523eaeec0106af062414878a285344a076295d399a2d213591f2178",
+   "root": false,
+   "usage": "usage: zeus ticket review [-h] --revision REVISION --reviewer REVIEWER --provider PROVIDER"
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "ticket_id",
+     "nargs": null,
+     "options": [],
+     "required": true
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "revision",
+     "nargs": null,
+     "options": [
+      "--revision"
+     ],
+     "required": true
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "goal_manifest",
+     "nargs": null,
+     "options": [
+      "--goal-manifest"
+     ],
+     "required": false
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "criterion",
+     "nargs": null,
+     "options": [
+      "--criterion"
+     ],
+     "required": false
+    }
+   ],
+   "command": "zeus ticket dispatch",
+   "help_bytes": 503,
+   "help_exit": 0,
+   "help_sha256": "f8b0c92df01ec37e48890f466f458076d56e74019af22498c338ca655abb8b80",
+   "root": false,
+   "usage": "usage: zeus ticket dispatch [-h] --revision REVISION [--goal-manifest GOAL_MANIFEST]"
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "ticket_id",
+     "nargs": null,
+     "options": [],
+     "required": true
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "repo",
+     "nargs": null,
+     "options": [
+      "--repo"
+     ],
+     "required": true
+    },
+    {
+     "action": "_StoreTrueAction",
+     "choices": null,
+     "default": false,
+     "dest": "preview",
+     "nargs": 0,
+     "options": [
+      "--preview"
+     ],
+     "required": false
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "reconcile_observation",
+     "nargs": null,
+     "options": [
+      "--reconcile-observation"
+     ],
+     "required": false
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "revision",
+     "nargs": null,
+     "options": [
+      "--revision"
+     ],
+     "required": false
+    }
+   ],
+   "command": "zeus ticket sync",
+   "help_bytes": 608,
+   "help_exit": 0,
+   "help_sha256": "f7309d3e45843a913df4757b56bc4d9bbea7f80c50a9aec62386970750891493",
+   "root": false,
+   "usage": "usage: zeus ticket sync [-h] --repo REPO [--preview]"
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "ticket_id",
+     "nargs": null,
+     "options": [],
+     "required": true
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "repo",
+     "nargs": null,
+     "options": [
+      "--repo"
+     ],
+     "required": true
+    }
+   ],
+   "command": "zeus ticket pull",
+   "help_bytes": 182,
+   "help_exit": 0,
+   "help_sha256": "f4bfdc5734c330497e209ffa31918dda5d62eab99f82851577bb46bb3b58d4e4",
+   "root": false,
+   "usage": "usage: zeus ticket pull [-h] --repo REPO ticket_id"
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "ticket_id",
+     "nargs": null,
+     "options": [],
+     "required": true
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "file",
+     "nargs": null,
+     "options": [
+      "--file"
+     ],
+     "required": true
+    }
+   ],
+   "command": "zeus ticket evidence",
+   "help_bytes": 161,
+   "help_exit": 0,
+   "help_sha256": "b25ddac0d954eccdb98ec0cb822913981ca87e44182a1ed54d5e2090d46d8ddb",
+   "root": false,
+   "usage": "usage: zeus ticket evidence [-h] --file FILE ticket_id"
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "ticket_id",
+     "nargs": null,
+     "options": [],
+     "required": true
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "file",
+     "nargs": null,
+     "options": [
+      "--file"
+     ],
+     "required": true
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "output",
+     "nargs": null,
+     "options": [
+      "--output"
+     ],
+     "required": true
+    }
+   ],
+   "command": "zeus ticket prepare-close",
+   "help_bytes": 252,
+   "help_exit": 0,
+   "help_sha256": "28ae74ca6dd3547ab6c88e09666626d0b970c47e88c241fd8259c3219f35c7d7",
+   "root": false,
+   "usage": "usage: zeus ticket prepare-close [-h] --file FILE --output OUTPUT ticket_id"
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "ticket_id",
+     "nargs": null,
+     "options": [],
+     "required": true
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "packet",
+     "nargs": null,
+     "options": [
+      "--packet"
+     ],
+     "required": true
+    },
+    {
+     "action": "_AppendAction",
+     "choices": null,
+     "default": null,
+     "dest": "signature",
+     "nargs": null,
+     "options": [
+      "--signature"
+     ],
+     "required": true
+    }
+   ],
+   "command": "zeus ticket close",
+   "help_bytes": 289,
+   "help_exit": 0,
+   "help_sha256": "bcd6e00693a282365c5ac808c4babed9e1cada248dc6288cbc72831928e8fded",
+   "root": false,
+   "usage": "usage: zeus ticket close [-h] --packet PACKET --signature SIGNATURE ticket_id"
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "ticket_id",
+     "nargs": null,
+     "options": [],
+     "required": true
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "revision",
+     "nargs": null,
+     "options": [
+      "--revision"
+     ],
+     "required": true
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "sequence",
+     "nargs": null,
+     "options": [
+      "--sequence"
+     ],
+     "required": true
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "reason",
+     "nargs": null,
+     "options": [
+      "--reason"
+     ],
+     "required": true
+    },
+    {
+     "action": "_StoreAction",
+     "choices": [
+      "closed",
+      "dispatched",
+      "open"
+     ],
+     "default": "closed",
+     "dest": "expected_state",
+     "nargs": null,
+     "options": [
+      "--expected-state"
+     ],
+     "required": false
+    }
+   ],
+   "command": "zeus ticket reopen",
+   "help_bytes": 489,
+   "help_exit": 0,
+   "help_sha256": "803638f338ce3a827e5b44e4516a6067a70057d1ec92f8b8628dd65f2f613d58",
+   "root": false,
+   "usage": "usage: zeus ticket reopen [-h] --revision REVISION --sequence SEQUENCE --reason REASON"
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "ticket_id",
+     "nargs": null,
+     "options": [],
+     "required": true
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "packet",
+     "nargs": null,
+     "options": [
+      "--packet"
+     ],
+     "required": true
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "output",
+     "nargs": null,
+     "options": [
+      "--output"
+     ],
+     "required": true
+    }
+   ],
+   "command": "zeus ticket review-close",
+   "help_bytes": 257,
+   "help_exit": 0,
+   "help_sha256": "1fc5d627b002beba01cfef5f0158887cd62548c216aade69139ce022c2ba2ff7",
+   "root": false,
+   "usage": "usage: zeus ticket review-close [-h] --packet PACKET --output OUTPUT ticket_id"
+  },
+  {
+   "arguments": [],
+   "command": "zeus goal",
+   "help_bytes": 308,
+   "help_exit": 0,
+   "help_sha256": "c11dfa7037dc1412776efe15ea2dc5a6a5c5b03a36b85998593bff6d0ee7fb66",
+   "root": true,
+   "usage": "usage: zeus goal [-h] {report,compare} ..."
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "manifest",
+     "nargs": null,
+     "options": [],
+     "required": true
+    }
+   ],
+   "command": "zeus goal report",
+   "help_bytes": 128,
+   "help_exit": 0,
+   "help_sha256": "38029e01e9d6bae5feadff4e8d29eb37b52d662a1fa0c4bfec30562f97b370a2",
+   "root": false,
+   "usage": "usage: zeus goal report [-h] manifest"
+  },
+  {
+   "arguments": [
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "before",
+     "nargs": null,
+     "options": [],
+     "required": true
+    },
+    {
+     "action": "_StoreAction",
+     "choices": null,
+     "default": null,
+     "dest": "after",
+     "nargs": null,
+     "options": [],
+     "required": true
+    }
+   ],
+   "command": "zeus goal compare",
+   "help_bytes": 139,
+   "help_exit": 0,
+   "help_sha256": "e0dbd4aa2832cb1d06da51dcc97b94ccfcf463621871623c8d75ba266c116b52",
+   "root": false,
+   "usage": "usage: zeus goal compare [-h] before after"
+  }
+ ],
+ "root_count": 51,
+ "top": {
+  "arguments": [
+   {
+    "action": "_StoreAction",
+    "choices": null,
+    "default": null,
+    "dest": "repository",
+    "nargs": null,
+    "options": [
+     "--repository"
+    ],
+    "required": false
+   },
+   {
+    "action": "_VersionAction",
+    "choices": null,
+    "default": "==SUPPRESS==",
+    "dest": "version",
+    "nargs": 0,
+    "options": [
+     "--version"
+    ],
+    "required": false
+   }
+  ],
+  "command": "zeus",
+  "help_bytes": 3720,
+  "help_exit": 0,
+  "help_sha256": "3ca40df1fc737b8baec18e1cf7203b9624e7fa6026e10e36cbf2e85ce90d9223",
+  "usage": "usage: zeus [-h] [--repository REPOSITORY] [--version]"
+ }
+}

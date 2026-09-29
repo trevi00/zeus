@@ -2,6 +2,7 @@
 
 작성일: 2026-09-07
 상태: 구현 저장소의 설계 정본. 사용자 합의 사항과 구현 제안을 구분한다. 현재 구현·검증 범위는 status.md를 따른다.
+재구성 기능·소유 지도(참조 전용): [context/ARCHITECTURE.md](context/ARCHITECTURE.md).
 
 ## 종합 기준안
 

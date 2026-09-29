@@ -1,0 +1,135 @@
+"""R-P negative controls: no real provider is reachable from target tests (S0 exit check 6).
+
+Each layer has a control: (a) the in-process audit hook, extended to child Python interpreters by
+`compare/guard/sitecustomize.py`; (b) the fail-loud fake executables and empty homes for any child;
+(c) bwrap without network, checked only when the session runs under it.
+"""
+
+import os
+import subprocess
+import sys
+from pathlib import Path
+
+import provider_guard
+import pytest
+
+
+def fixture_binary(directory: Path, name: str, marker: Path) -> Path:
+    directory.mkdir(parents=True, exist_ok=True)
+    path = directory / name
+    path.write_text(f"#!/bin/sh\necho fixture-{name}\ntouch '{marker}'\n", encoding="utf-8")
+    path.chmod(0o755)
+    return path
+
+
+def test_guard_is_installed_in_the_session():
+    assert provider_guard.installed()
+
+
+@pytest.mark.parametrize("argv", [["codex", "--version"], ["claude", "-p", "x"], ["docker", "ps"]])
+def test_bare_provider_name_is_refused_in_process(argv):
+    with pytest.raises(provider_guard.ProviderSpawnRefused):
+        subprocess.run(argv, capture_output=True, timeout=5)
+
+
+def test_absolute_path_provider_is_refused_before_exec(tmp_path):
+    marker = tmp_path / "ran"
+    binary = fixture_binary(tmp_path / "bin", "claude", marker)
+    with pytest.raises(provider_guard.ProviderSpawnRefused):
+        subprocess.run([str(binary)], capture_output=True, timeout=5)
+    assert not marker.exists()
+
+
+@pytest.mark.parametrize("command", ["docker ps", "echo hi && codex exec x", "/opt/x/claude -p y"])
+def test_shell_strings_naming_a_provider_are_refused(command):
+    with pytest.raises(provider_guard.ProviderSpawnRefused):
+        subprocess.run(command, shell=True, capture_output=True, timeout=5)
+
+
+def test_os_level_spawns_are_refused(tmp_path):
+    marker = tmp_path / "ran"
+    binary = fixture_binary(tmp_path / "bin", "codex", marker)
+    with pytest.raises(provider_guard.ProviderSpawnRefused):
+        os.posix_spawn(str(binary), [str(binary)], dict(os.environ))
+    with pytest.raises(provider_guard.ProviderSpawnRefused):
+        os.system(f"{binary} --version")
+    assert not marker.exists()
+
+
+def test_configured_fixture_binary_is_the_only_admitted_provider(tmp_path, monkeypatch):
+    marker = tmp_path / "ran"
+    fixtures = tmp_path / "fixtures"
+    binary = fixture_binary(fixtures, "codex", marker)
+    monkeypatch.setenv(provider_guard.FIXTURE_DIR_ENV, str(fixtures))
+    done = subprocess.run([str(binary)], capture_output=True, text=True, timeout=5)
+    assert done.stdout.strip() == "fixture-codex" and marker.exists()
+    elsewhere = fixture_binary(tmp_path / "other", "codex", tmp_path / "other-ran")
+    with pytest.raises(provider_guard.ProviderSpawnRefused):
+        subprocess.run([str(elsewhere)], capture_output=True, timeout=5)
+
+
+def test_docker_opt_in_admits_only_fixture_images_without_network(monkeypatch):
+    monkeypatch.setenv(provider_guard.DOCKER_OPT_IN_ENV, "1")
+    provider_guard.check_spawn(None, ["docker", "run", "--rm", "--network", "none",
+                                      "zeus-test-fixture/worker:1"])
+    provider_guard.check_spawn(None, ["docker", "inspect", "x"])
+    for argv in (["docker", "run", "--network", "bridge", "zeus-test-fixture/worker:1"],
+                 ["docker", "run", "--network", "none", "ubuntu:24.04", "codex"],
+                 ["docker", "exec", "zeus-test-fixture", "codex"],
+                 ["codex", "exec", "x"], ["claude", "-p", "x"]):
+        with pytest.raises(provider_guard.ProviderSpawnRefused):
+            provider_guard.check_spawn(None, argv)
+
+
+def test_docker_marker_does_not_admit_a_real_provider_spawn(monkeypatch):
+    monkeypatch.setenv(provider_guard.DOCKER_OPT_IN_ENV, "1")
+    with pytest.raises(provider_guard.ProviderSpawnRefused):
+        subprocess.run(["codex", "--version"], capture_output=True, timeout=5)
+
+
+def test_child_interpreter_refuses_bare_and_absolute_provider_spawns(tmp_path, child_env):
+    marker = tmp_path / "ran"
+    binary = fixture_binary(tmp_path / "bin", "codex", marker)
+    program = ("import subprocess, sys\n"
+               "for argv in (['codex', '--version'], [sys.argv[1]]):\n"
+               "    try:\n"
+               "        subprocess.run(argv, capture_output=True, timeout=5)\n"
+               "        print('SPAWNED', argv[0])\n"
+               "    except PermissionError as exc:\n"
+               "        print('REFUSED', type(exc).__name__)\n")
+    done = subprocess.run([sys.executable, "-c", program, str(binary)], env=child_env,
+                          capture_output=True, text=True, timeout=30)
+    assert done.stdout.split("\n")[:2] == ["REFUSED ProviderSpawnRefused"] * 2, done.stderr
+    assert not marker.exists()
+
+
+def test_non_python_child_resolves_only_the_fail_loud_fake(tmp_path, child_env):
+    script = tmp_path / "call.sh"
+    script.write_text("codex --version\nclaude -p hi\n", encoding="utf-8")
+    done = subprocess.run(["sh", str(script)], env=child_env, capture_output=True, text=True,
+                          timeout=30)
+    assert done.returncode == provider_guard.FAKE_EXIT
+    assert "fail-loud fake 'claude'" in done.stderr or "fail-loud fake 'codex'" in done.stderr
+
+
+def test_child_environment_has_empty_homes_and_no_credential_names(tmp_path, monkeypatch):
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "fixture-value-not-a-credential")
+    monkeypatch.setenv("CLAUDE_CODE_OAUTH_TOKEN", "fixture-value-not-a-credential")
+    monkeypatch.setenv("GITHUB_TOKEN", "fixture-value-not-a-credential")
+    env = provider_guard.child_environment(tmp_path / "child")
+    assert not {"ANTHROPIC_API_KEY", "CLAUDE_CODE_OAUTH_TOKEN", "GITHUB_TOKEN"} & set(env)
+    for name in ("HOME", "CODEX_HOME", "CLAUDE_CONFIG_DIR", "XDG_CONFIG_HOME"):
+        assert Path(env[name]).is_dir() and not any(Path(env[name]).iterdir())
+    assert env["PATH"].split(os.pathsep)[0].endswith("fakebin")
+
+
+@pytest.mark.skipif(os.environ.get("ZEUS_TEST_BWRAP") != "1",
+                    reason="layer (c) is the local bwrap layer; this session is not under bwrap")
+def test_bwrap_layer_has_no_network_and_empty_credential_dirs():
+    interfaces = [line.split(":")[0].strip() for line in
+                  Path("/proc/net/dev").read_text().splitlines()[2:]]
+    assert interfaces == ["lo"]
+    for raw in provider_guard.CREDENTIAL_DIRS:
+        path = Path(os.path.expanduser(raw))
+        if path.is_dir():
+            assert not any(path.iterdir()), raw

@@ -1,0 +1,43 @@
+{
+  "version": 1,
+  "closed": true,
+  "note": "Closed list (REBUILD-DESIGN-v2 §5.2 R-D). Adding an entry needs Codex review. Owners, generations, attempts, leases, statuses, authorization results, digests and refs are never masked.",
+  "masks": [
+    {
+      "id": "M1",
+      "kind": "host_path",
+      "field": "*",
+      "scenarios": [
+        "entries.safe_matrix"
+      ],
+      "reason": "per-run temporary directories, the reference venv and the SOURCE archive root are rewritten to symbolic roots"
+    },
+    {
+      "id": "M2",
+      "kind": "nondeterministic_os",
+      "field": "recorded_at_ns",
+      "scenarios": [
+        "entries.safe_matrix"
+      ],
+      "reason": "worker_profile_hook receipt wall-clock nanoseconds (time.time_ns) inside a -m child process"
+    },
+    {
+      "id": "M3",
+      "kind": "nondeterministic_os",
+      "field": "pid",
+      "scenarios": [
+        "entries.safe_matrix"
+      ],
+      "reason": "worker_profile_hook receipt OS pid of the -m child process"
+    },
+    {
+      "id": "M4",
+      "kind": "nondeterministic_os",
+      "field": "receipt_name",
+      "scenarios": [
+        "entries.safe_matrix"
+      ],
+      "reason": "worker_profile_hook receipt file name embeds time_ns, pid and a uuid4 prefix of the -m child process"
+    }
+  ]
+}

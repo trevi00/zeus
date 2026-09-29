@@ -1,0 +1,1371 @@
+{
+ "a_failure_before_decision_review_conductor": {
+  "decision_status": "retry",
+  "durable_authority_writes": [],
+  "effect_protocol": [],
+  "effects": [
+   {
+    "depth": 0,
+    "name": "provider_call"
+   }
+  ],
+  "fences": [
+   true,
+   true,
+   true
+  ],
+  "outbox_types": [
+   "execution.notice"
+  ],
+  "trace": [
+   {
+    "depth": 0,
+    "kind": "BEGIN",
+    "label": "",
+    "unit": "U4"
+   },
+   {
+    "bucket": "decisions_pending",
+    "kind": "write",
+    "status": "pending",
+    "unit": "U4"
+   },
+   {
+    "bucket": "execution_fences",
+    "kind": "write",
+    "status": null,
+    "unit": "U4"
+   },
+   {
+    "bucket": "decisions_pending",
+    "kind": "write",
+    "status": "running",
+    "unit": "U4"
+   },
+   {
+    "depth": 0,
+    "kind": "COMMIT",
+    "unit": "U4"
+   },
+   {
+    "depth": 0,
+    "kind": "effect",
+    "name": "provider_call"
+   },
+   {
+    "depth": 0,
+    "kind": "BEGIN",
+    "label": "",
+    "unit": "U5"
+   },
+   {
+    "kind": "fence",
+    "name": "lease",
+    "ok": true,
+    "unit": "U5"
+   },
+   {
+    "bucket": "releases",
+    "kind": "write",
+    "status": "reviewed",
+    "unit": "U5"
+   },
+   {
+    "bucket": "release_queue",
+    "kind": "write",
+    "status": "queued",
+    "unit": "U5"
+   },
+   {
+    "kind": "fence",
+    "name": "lease",
+    "ok": true,
+    "unit": "U5"
+   },
+   {
+    "bucket": "decisions_pending",
+    "kind": "write",
+    "status": "succeeded",
+    "unit": "U5"
+   },
+   {
+    "depth": 0,
+    "error": "Injected",
+    "kind": "ROLLBACK",
+    "unit": "U5"
+   },
+   {
+    "depth": 0,
+    "kind": "BEGIN",
+    "label": "",
+    "unit": "U6"
+   },
+   {
+    "depth": 0,
+    "kind": "COMMIT",
+    "unit": "U6"
+   },
+   {
+    "depth": 0,
+    "kind": "BEGIN",
+    "label": "",
+    "unit": "U7"
+   },
+   {
+    "kind": "fence",
+    "name": "lease",
+    "ok": true,
+    "unit": "U7"
+   },
+   {
+    "bucket": "decisions_pending",
+    "kind": "write",
+    "status": "retry",
+    "unit": "U7"
+   },
+   {
+    "bucket": "execution_failures",
+    "kind": "write",
+    "status": "retry",
+    "unit": "U7"
+   },
+   {
+    "bucket": "execution_notices",
+    "kind": "write",
+    "status": null,
+    "unit": "U7"
+   },
+   {
+    "bucket": "outbox",
+    "kind": "write",
+    "status": null,
+    "unit": "U7"
+   },
+   {
+    "depth": 0,
+    "kind": "COMMIT",
+    "unit": "U7"
+   }
+  ],
+  "trace_digests": [
+   "198da4893216d0fe07091812069c10e8a431fac939c562dc469d12148bc44ee4",
+   "a2f24016e4203ff81a32c821a9b0e24ae021edad75a9d95d7f316ba0ff8b04f1",
+   "6cf324cc8bc96a946d5eb3fd3eedb23bca36d1a8358bca6d6b108830323d457e",
+   "2abc2bbfdca1abd697234c35be1a51bc350c58a3c7226e45c26d0035ec52b157",
+   "803aea91d175bc0a7e9618a114b9de329243ca4c255dd3bb9d7f33ab675223d6",
+   "6e8bee8a4f6d468941ba4034b904c5b68eb543fafb492af0f5fb0c2819d9abca",
+   "be84b4dbe7992bb95854b34320fefe16d95a52a515f624b7786c681ede6f81b5",
+   "db673405922393dd487f855ea9f2bed3989ca16913631e7f112438e1735edea2",
+   "220a58fadbd47e5aeaac8e72dfbfdebe6053a61407ff923a71fbbaa68e6b06a1",
+   "991df6e3112bb63b01b684d15932c6bb920a0a997f013861f95b1efc0aee175d"
+  ],
+  "verdict": "atomic_rollback",
+  "violations": []
+ },
+ "a_failure_before_decision_review_lead": {
+  "decision_status": "retry",
+  "durable_authority_writes": [],
+  "effect_protocol": [],
+  "effects": [
+   {
+    "depth": 0,
+    "name": "provider_call"
+   }
+  ],
+  "fences": [
+   true,
+   true,
+   true
+  ],
+  "outbox_types": [
+   "execution.notice"
+  ],
+  "trace": [
+   {
+    "depth": 0,
+    "kind": "BEGIN",
+    "label": "",
+    "unit": "U2"
+   },
+   {
+    "bucket": "decisions_pending",
+    "kind": "write",
+    "status": "pending",
+    "unit": "U2"
+   },
+   {
+    "bucket": "execution_fences",
+    "kind": "write",
+    "status": null,
+    "unit": "U2"
+   },
+   {
+    "bucket": "decisions_pending",
+    "kind": "write",
+    "status": "running",
+    "unit": "U2"
+   },
+   {
+    "depth": 0,
+    "kind": "COMMIT",
+    "unit": "U2"
+   },
+   {
+    "depth": 0,
+    "kind": "effect",
+    "name": "provider_call"
+   },
+   {
+    "depth": 0,
+    "kind": "BEGIN",
+    "label": "",
+    "unit": "U3"
+   },
+   {
+    "kind": "fence",
+    "name": "lease",
+    "ok": true,
+    "unit": "U3"
+   },
+   {
+    "bucket": "releases",
+    "kind": "write",
+    "status": "candidate",
+    "unit": "U3"
+   },
+   {
+    "bucket": "releases",
+    "kind": "write",
+    "status": "candidate",
+    "unit": "U3"
+   },
+   {
+    "kind": "fence",
+    "name": "lease",
+    "ok": true,
+    "unit": "U3"
+   },
+   {
+    "bucket": "decisions_pending",
+    "kind": "write",
+    "status": "succeeded",
+    "unit": "U3"
+   },
+   {
+    "depth": 0,
+    "error": "Injected",
+    "kind": "ROLLBACK",
+    "unit": "U3"
+   },
+   {
+    "depth": 0,
+    "kind": "BEGIN",
+    "label": "",
+    "unit": "U4"
+   },
+   {
+    "depth": 0,
+    "kind": "COMMIT",
+    "unit": "U4"
+   },
+   {
+    "depth": 0,
+    "kind": "BEGIN",
+    "label": "",
+    "unit": "U5"
+   },
+   {
+    "kind": "fence",
+    "name": "lease",
+    "ok": true,
+    "unit": "U5"
+   },
+   {
+    "bucket": "decisions_pending",
+    "kind": "write",
+    "status": "retry",
+    "unit": "U5"
+   },
+   {
+    "bucket": "execution_failures",
+    "kind": "write",
+    "status": "retry",
+    "unit": "U5"
+   },
+   {
+    "bucket": "execution_notices",
+    "kind": "write",
+    "status": null,
+    "unit": "U5"
+   },
+   {
+    "bucket": "outbox",
+    "kind": "write",
+    "status": null,
+    "unit": "U5"
+   },
+   {
+    "depth": 0,
+    "kind": "COMMIT",
+    "unit": "U5"
+   }
+  ],
+  "trace_digests": [
+   "bad04941a9b821ddf7ccc16f426249c9a0b29b0a04269a009713aa69e0bfd019",
+   "a2f24016e4203ff81a32c821a9b0e24ae021edad75a9d95d7f316ba0ff8b04f1",
+   "b3e8e55abc1283e7dcfe794da74a17b687b9aeddef77b9779aa5c4dc2b7030e4",
+   "2e72cdb9e7e74a749cc2b93feb08a58284d8922fb967a265d4aca2e9e881b98a",
+   "165ba4b1d08ca2c0de8e0768e7a7a12810585e00ca4b340ee087f84781a22f48",
+   "c71bb768346abc210e1926757063d175e226c3fde65fb71c2b42f5afc767b33f",
+   "4828a2550384dcca9e78cb5cfcb136143dcc27a53155e52b2436ad50c8722f9f",
+   "db673405922393dd487f855ea9f2bed3989ca16913631e7f112438e1735edea2",
+   "075d2acc82f0113233a7f430b7087cb161aa135a3f32dc69723c82c10e659840",
+   "c67c8e80575380c96a7f87536fe03f90c84e633fc70c0768448fc7b0ccc231b7"
+  ],
+  "verdict": "atomic_rollback",
+  "violations": []
+ },
+ "b_stale_lease": {
+  "decision_status": "running",
+  "durable_authority_writes": [],
+  "effect_protocol": [],
+  "effects": [
+   {
+    "depth": 0,
+    "name": "provider_call"
+   }
+  ],
+  "fences": [
+   false,
+   false
+  ],
+  "outbox_types": [],
+  "trace": [
+   {
+    "depth": 0,
+    "kind": "BEGIN",
+    "label": "",
+    "unit": "U2"
+   },
+   {
+    "bucket": "decisions_pending",
+    "kind": "write",
+    "status": "pending",
+    "unit": "U2"
+   },
+   {
+    "bucket": "execution_fences",
+    "kind": "write",
+    "status": null,
+    "unit": "U2"
+   },
+   {
+    "bucket": "decisions_pending",
+    "kind": "write",
+    "status": "running",
+    "unit": "U2"
+   },
+   {
+    "depth": 0,
+    "kind": "COMMIT",
+    "unit": "U2"
+   },
+   {
+    "depth": 0,
+    "kind": "effect",
+    "name": "provider_call"
+   },
+   {
+    "depth": 0,
+    "kind": "BEGIN",
+    "label": "",
+    "unit": "U3"
+   },
+   {
+    "bucket": "decisions_pending",
+    "kind": "write",
+    "status": "running",
+    "unit": "U3"
+   },
+   {
+    "depth": 0,
+    "kind": "COMMIT",
+    "unit": "U3"
+   },
+   {
+    "depth": 0,
+    "kind": "BEGIN",
+    "label": "",
+    "unit": "U4"
+   },
+   {
+    "kind": "fence",
+    "name": "lease",
+    "ok": false,
+    "unit": "U4"
+   },
+   {
+    "depth": 0,
+    "error": "ContractError",
+    "kind": "ROLLBACK",
+    "unit": "U4"
+   },
+   {
+    "depth": 0,
+    "kind": "BEGIN",
+    "label": "",
+    "unit": "U5"
+   },
+   {
+    "depth": 0,
+    "kind": "COMMIT",
+    "unit": "U5"
+   },
+   {
+    "depth": 0,
+    "kind": "BEGIN",
+    "label": "",
+    "unit": "U6"
+   },
+   {
+    "kind": "fence",
+    "name": "lease",
+    "ok": false,
+    "unit": "U6"
+   },
+   {
+    "depth": 0,
+    "error": "ContractError",
+    "kind": "ROLLBACK",
+    "unit": "U6"
+   },
+   {
+    "depth": 0,
+    "kind": "BEGIN",
+    "label": "",
+    "unit": "U7"
+   },
+   {
+    "bucket": "execution_rejections",
+    "kind": "write",
+    "status": null,
+    "unit": "U7"
+   },
+   {
+    "bucket": "events",
+    "kind": "write",
+    "status": null,
+    "unit": "U7"
+   },
+   {
+    "depth": 0,
+    "kind": "COMMIT",
+    "unit": "U7"
+   }
+  ],
+  "trace_digests": [
+   "bad04941a9b821ddf7ccc16f426249c9a0b29b0a04269a009713aa69e0bfd019",
+   "a2f24016e4203ff81a32c821a9b0e24ae021edad75a9d95d7f316ba0ff8b04f1",
+   "b3e8e55abc1283e7dcfe794da74a17b687b9aeddef77b9779aa5c4dc2b7030e4",
+   "092846adef15bb8daf56823fc1dc3adab8addc116709a9e69eb96ed38938252d",
+   "516fa5c82a5e41bfba211e309e0e3e4b302f66e9cb9b1c2b2faff1190d8ebc90",
+   "0058a7981c57ee237b910ffe2fec83681f3943c559a6fbe0b518050cdf67bfa0"
+  ],
+  "verdict": "atomic_rollback",
+  "violations": []
+ },
+ "c_same_key_replay": {
+  "decision_status": "succeeded",
+  "durable_authority_writes": [
+   [
+    "releases",
+    "candidate"
+   ]
+  ],
+  "effect_protocol": [],
+  "effects": [
+   {
+    "depth": 0,
+    "name": "provider_call"
+   }
+  ],
+  "fences": [
+   true,
+   true
+  ],
+  "outbox_types": [
+   "review.result"
+  ],
+  "trace": [
+   {
+    "depth": 0,
+    "kind": "BEGIN",
+    "label": "",
+    "unit": "U2"
+   },
+   {
+    "bucket": "decisions_pending",
+    "kind": "write",
+    "status": "pending",
+    "unit": "U2"
+   },
+   {
+    "bucket": "execution_fences",
+    "kind": "write",
+    "status": null,
+    "unit": "U2"
+   },
+   {
+    "bucket": "decisions_pending",
+    "kind": "write",
+    "status": "running",
+    "unit": "U2"
+   },
+   {
+    "depth": 0,
+    "kind": "COMMIT",
+    "unit": "U2"
+   },
+   {
+    "depth": 0,
+    "kind": "effect",
+    "name": "provider_call"
+   },
+   {
+    "depth": 0,
+    "kind": "BEGIN",
+    "label": "",
+    "unit": "U3"
+   },
+   {
+    "kind": "fence",
+    "name": "lease",
+    "ok": true,
+    "unit": "U3"
+   },
+   {
+    "bucket": "releases",
+    "kind": "write",
+    "status": "candidate",
+    "unit": "U3"
+   },
+   {
+    "bucket": "releases",
+    "kind": "write",
+    "status": "candidate",
+    "unit": "U3"
+   },
+   {
+    "kind": "fence",
+    "name": "lease",
+    "ok": true,
+    "unit": "U3"
+   },
+   {
+    "bucket": "decisions_pending",
+    "kind": "write",
+    "status": "succeeded",
+    "unit": "U3"
+   },
+   {
+    "bucket": "outbox",
+    "kind": "write",
+    "status": null,
+    "unit": "U3"
+   },
+   {
+    "depth": 0,
+    "kind": "COMMIT",
+    "unit": "U3"
+   },
+   {
+    "depth": 0,
+    "kind": "BEGIN",
+    "label": "",
+    "unit": "U4"
+   },
+   {
+    "depth": 0,
+    "kind": "COMMIT",
+    "unit": "U4"
+   }
+  ],
+  "trace_digests": [
+   "bad04941a9b821ddf7ccc16f426249c9a0b29b0a04269a009713aa69e0bfd019",
+   "a2f24016e4203ff81a32c821a9b0e24ae021edad75a9d95d7f316ba0ff8b04f1",
+   "b3e8e55abc1283e7dcfe794da74a17b687b9aeddef77b9779aa5c4dc2b7030e4",
+   "2e72cdb9e7e74a749cc2b93feb08a58284d8922fb967a265d4aca2e9e881b98a",
+   "165ba4b1d08ca2c0de8e0768e7a7a12810585e00ca4b340ee087f84781a22f48",
+   "c71bb768346abc210e1926757063d175e226c3fde65fb71c2b42f5afc767b33f",
+   "2cdaec435c491399ef0bef6aebc997584e400509eb67de5a6dce569c03f94e38"
+  ],
+  "verdict": "atomic_commit",
+  "violations": []
+ },
+ "control_effect_in_unit": {
+  "decision_status": "succeeded",
+  "durable_authority_writes": [
+   [
+    "releases",
+    "candidate"
+   ]
+  ],
+  "effect_protocol": [],
+  "effects": [
+   {
+    "depth": 1,
+    "name": "provider_call"
+   }
+  ],
+  "fences": [
+   true,
+   true
+  ],
+  "outbox_types": [
+   "review.result"
+  ],
+  "trace": [
+   {
+    "depth": 0,
+    "kind": "BEGIN",
+    "label": "",
+    "unit": "U2"
+   },
+   {
+    "bucket": "decisions_pending",
+    "kind": "write",
+    "status": "pending",
+    "unit": "U2"
+   },
+   {
+    "bucket": "execution_fences",
+    "kind": "write",
+    "status": null,
+    "unit": "U2"
+   },
+   {
+    "bucket": "decisions_pending",
+    "kind": "write",
+    "status": "running",
+    "unit": "U2"
+   },
+   {
+    "depth": 0,
+    "kind": "COMMIT",
+    "unit": "U2"
+   },
+   {
+    "depth": 0,
+    "kind": "BEGIN",
+    "label": "",
+    "unit": "U3"
+   },
+   {
+    "depth": 1,
+    "kind": "effect",
+    "name": "provider_call"
+   },
+   {
+    "depth": 0,
+    "kind": "COMMIT",
+    "unit": "U3"
+   },
+   {
+    "depth": 0,
+    "kind": "BEGIN",
+    "label": "",
+    "unit": "U4"
+   },
+   {
+    "kind": "fence",
+    "name": "lease",
+    "ok": true,
+    "unit": "U4"
+   },
+   {
+    "bucket": "releases",
+    "kind": "write",
+    "status": "candidate",
+    "unit": "U4"
+   },
+   {
+    "bucket": "releases",
+    "kind": "write",
+    "status": "candidate",
+    "unit": "U4"
+   },
+   {
+    "kind": "fence",
+    "name": "lease",
+    "ok": true,
+    "unit": "U4"
+   },
+   {
+    "bucket": "decisions_pending",
+    "kind": "write",
+    "status": "succeeded",
+    "unit": "U4"
+   },
+   {
+    "bucket": "outbox",
+    "kind": "write",
+    "status": null,
+    "unit": "U4"
+   },
+   {
+    "depth": 0,
+    "kind": "COMMIT",
+    "unit": "U4"
+   }
+  ],
+  "trace_digests": [
+   "bad04941a9b821ddf7ccc16f426249c9a0b29b0a04269a009713aa69e0bfd019",
+   "a2f24016e4203ff81a32c821a9b0e24ae021edad75a9d95d7f316ba0ff8b04f1",
+   "b3e8e55abc1283e7dcfe794da74a17b687b9aeddef77b9779aa5c4dc2b7030e4",
+   "2e72cdb9e7e74a749cc2b93feb08a58284d8922fb967a265d4aca2e9e881b98a",
+   "165ba4b1d08ca2c0de8e0768e7a7a12810585e00ca4b340ee087f84781a22f48",
+   "c71bb768346abc210e1926757063d175e226c3fde65fb71c2b42f5afc767b33f",
+   "2cdaec435c491399ef0bef6aebc997584e400509eb67de5a6dce569c03f94e38"
+  ],
+  "verdict": "atomic_commit",
+  "violations": [
+   "effect_inside_unit"
+  ]
+ },
+ "control_fabricated_completion": {
+  "decision_status": "succeeded",
+  "durable_authority_writes": [
+   [
+    "releases",
+    "candidate"
+   ]
+  ],
+  "effect_protocol": [
+   "completion_without_effect"
+  ],
+  "effects": [],
+  "fences": [
+   true,
+   true
+  ],
+  "outbox_types": [
+   "review.result"
+  ],
+  "trace": [
+   {
+    "depth": 0,
+    "kind": "BEGIN",
+    "label": "",
+    "unit": "U2"
+   },
+   {
+    "bucket": "decisions_pending",
+    "kind": "write",
+    "status": "pending",
+    "unit": "U2"
+   },
+   {
+    "bucket": "execution_fences",
+    "kind": "write",
+    "status": null,
+    "unit": "U2"
+   },
+   {
+    "bucket": "decisions_pending",
+    "kind": "write",
+    "status": "running",
+    "unit": "U2"
+   },
+   {
+    "depth": 0,
+    "kind": "COMMIT",
+    "unit": "U2"
+   },
+   {
+    "depth": 0,
+    "kind": "BEGIN",
+    "label": "",
+    "unit": "U3"
+   },
+   {
+    "kind": "fence",
+    "name": "lease",
+    "ok": true,
+    "unit": "U3"
+   },
+   {
+    "bucket": "releases",
+    "kind": "write",
+    "status": "candidate",
+    "unit": "U3"
+   },
+   {
+    "bucket": "releases",
+    "kind": "write",
+    "status": "candidate",
+    "unit": "U3"
+   },
+   {
+    "kind": "fence",
+    "name": "lease",
+    "ok": true,
+    "unit": "U3"
+   },
+   {
+    "bucket": "decisions_pending",
+    "kind": "write",
+    "status": "succeeded",
+    "unit": "U3"
+   },
+   {
+    "bucket": "outbox",
+    "kind": "write",
+    "status": null,
+    "unit": "U3"
+   },
+   {
+    "depth": 0,
+    "kind": "COMMIT",
+    "unit": "U3"
+   }
+  ],
+  "trace_digests": [
+   "bad04941a9b821ddf7ccc16f426249c9a0b29b0a04269a009713aa69e0bfd019",
+   "a2f24016e4203ff81a32c821a9b0e24ae021edad75a9d95d7f316ba0ff8b04f1",
+   "b3e8e55abc1283e7dcfe794da74a17b687b9aeddef77b9779aa5c4dc2b7030e4",
+   "2e72cdb9e7e74a749cc2b93feb08a58284d8922fb967a265d4aca2e9e881b98a",
+   "165ba4b1d08ca2c0de8e0768e7a7a12810585e00ca4b340ee087f84781a22f48",
+   "c71bb768346abc210e1926757063d175e226c3fde65fb71c2b42f5afc767b33f",
+   "2cdaec435c491399ef0bef6aebc997584e400509eb67de5a6dce569c03f94e38"
+  ],
+  "verdict": "atomic_commit",
+  "violations": []
+ },
+ "control_fence_ignored": {
+  "decision_status": "succeeded",
+  "durable_authority_writes": [
+   [
+    "releases",
+    "candidate"
+   ]
+  ],
+  "effect_protocol": [],
+  "effects": [
+   {
+    "depth": 0,
+    "name": "provider_call"
+   }
+  ],
+  "fences": [
+   false,
+   false
+  ],
+  "outbox_types": [
+   "review.result"
+  ],
+  "trace": [
+   {
+    "depth": 0,
+    "kind": "BEGIN",
+    "label": "",
+    "unit": "U2"
+   },
+   {
+    "bucket": "decisions_pending",
+    "kind": "write",
+    "status": "pending",
+    "unit": "U2"
+   },
+   {
+    "bucket": "execution_fences",
+    "kind": "write",
+    "status": null,
+    "unit": "U2"
+   },
+   {
+    "bucket": "decisions_pending",
+    "kind": "write",
+    "status": "running",
+    "unit": "U2"
+   },
+   {
+    "depth": 0,
+    "kind": "COMMIT",
+    "unit": "U2"
+   },
+   {
+    "depth": 0,
+    "kind": "effect",
+    "name": "provider_call"
+   },
+   {
+    "depth": 0,
+    "kind": "BEGIN",
+    "label": "",
+    "unit": "U3"
+   },
+   {
+    "bucket": "decisions_pending",
+    "kind": "write",
+    "status": "running",
+    "unit": "U3"
+   },
+   {
+    "depth": 0,
+    "kind": "COMMIT",
+    "unit": "U3"
+   },
+   {
+    "depth": 0,
+    "kind": "BEGIN",
+    "label": "",
+    "unit": "U4"
+   },
+   {
+    "kind": "fence",
+    "name": "lease",
+    "ok": false,
+    "unit": "U4"
+   },
+   {
+    "bucket": "releases",
+    "kind": "write",
+    "status": "candidate",
+    "unit": "U4"
+   },
+   {
+    "bucket": "releases",
+    "kind": "write",
+    "status": "candidate",
+    "unit": "U4"
+   },
+   {
+    "kind": "fence",
+    "name": "lease",
+    "ok": false,
+    "unit": "U4"
+   },
+   {
+    "bucket": "decisions_pending",
+    "kind": "write",
+    "status": "succeeded",
+    "unit": "U4"
+   },
+   {
+    "bucket": "outbox",
+    "kind": "write",
+    "status": null,
+    "unit": "U4"
+   },
+   {
+    "depth": 0,
+    "kind": "COMMIT",
+    "unit": "U4"
+   }
+  ],
+  "trace_digests": [
+   "bad04941a9b821ddf7ccc16f426249c9a0b29b0a04269a009713aa69e0bfd019",
+   "a2f24016e4203ff81a32c821a9b0e24ae021edad75a9d95d7f316ba0ff8b04f1",
+   "b3e8e55abc1283e7dcfe794da74a17b687b9aeddef77b9779aa5c4dc2b7030e4",
+   "092846adef15bb8daf56823fc1dc3adab8addc116709a9e69eb96ed38938252d",
+   "2e72cdb9e7e74a749cc2b93feb08a58284d8922fb967a265d4aca2e9e881b98a",
+   "165ba4b1d08ca2c0de8e0768e7a7a12810585e00ca4b340ee087f84781a22f48",
+   "a1416787eb149cf313c3cb35a1c549580ba463e240d11740c8651b05cace2646",
+   "2cdaec435c491399ef0bef6aebc997584e400509eb67de5a6dce569c03f94e38"
+  ],
+  "verdict": "atomic_commit",
+  "violations": [
+   "commit_after_failed_fence",
+   "write_after_failed_fence"
+  ]
+ },
+ "control_split_commit": {
+  "decision_status": "retry",
+  "durable_authority_writes": [
+   [
+    "releases",
+    "candidate"
+   ]
+  ],
+  "effect_protocol": [],
+  "effects": [
+   {
+    "depth": 0,
+    "name": "provider_call"
+   }
+  ],
+  "fences": [
+   true,
+   true
+  ],
+  "outbox_types": [
+   "execution.notice"
+  ],
+  "trace": [
+   {
+    "depth": 0,
+    "kind": "BEGIN",
+    "label": "",
+    "unit": "U2"
+   },
+   {
+    "bucket": "decisions_pending",
+    "kind": "write",
+    "status": "pending",
+    "unit": "U2"
+   },
+   {
+    "bucket": "execution_fences",
+    "kind": "write",
+    "status": null,
+    "unit": "U2"
+   },
+   {
+    "bucket": "decisions_pending",
+    "kind": "write",
+    "status": "running",
+    "unit": "U2"
+   },
+   {
+    "depth": 0,
+    "kind": "COMMIT",
+    "unit": "U2"
+   },
+   {
+    "depth": 0,
+    "kind": "effect",
+    "name": "provider_call"
+   },
+   {
+    "depth": 0,
+    "kind": "BEGIN",
+    "label": "",
+    "unit": "U3"
+   },
+   {
+    "kind": "fence",
+    "name": "lease",
+    "ok": true,
+    "unit": "U3"
+   },
+   {
+    "depth": 1,
+    "kind": "BEGIN",
+    "label": "",
+    "unit": "U4"
+   },
+   {
+    "bucket": "releases",
+    "kind": "write",
+    "status": "candidate",
+    "unit": "U4"
+   },
+   {
+    "depth": 1,
+    "kind": "COMMIT",
+    "unit": "U4"
+   },
+   {
+    "depth": 0,
+    "error": "ContractError",
+    "kind": "ROLLBACK",
+    "unit": "U3"
+   },
+   {
+    "depth": 0,
+    "kind": "BEGIN",
+    "label": "",
+    "unit": "U5"
+   },
+   {
+    "depth": 0,
+    "kind": "COMMIT",
+    "unit": "U5"
+   },
+   {
+    "depth": 0,
+    "kind": "BEGIN",
+    "label": "",
+    "unit": "U6"
+   },
+   {
+    "kind": "fence",
+    "name": "lease",
+    "ok": true,
+    "unit": "U6"
+   },
+   {
+    "bucket": "decisions_pending",
+    "kind": "write",
+    "status": "retry",
+    "unit": "U6"
+   },
+   {
+    "bucket": "execution_failures",
+    "kind": "write",
+    "status": "retry",
+    "unit": "U6"
+   },
+   {
+    "bucket": "execution_notices",
+    "kind": "write",
+    "status": null,
+    "unit": "U6"
+   },
+   {
+    "bucket": "outbox",
+    "kind": "write",
+    "status": null,
+    "unit": "U6"
+   },
+   {
+    "depth": 0,
+    "kind": "COMMIT",
+    "unit": "U6"
+   }
+  ],
+  "trace_digests": [
+   "bad04941a9b821ddf7ccc16f426249c9a0b29b0a04269a009713aa69e0bfd019",
+   "a2f24016e4203ff81a32c821a9b0e24ae021edad75a9d95d7f316ba0ff8b04f1",
+   "b3e8e55abc1283e7dcfe794da74a17b687b9aeddef77b9779aa5c4dc2b7030e4",
+   "2e72cdb9e7e74a749cc2b93feb08a58284d8922fb967a265d4aca2e9e881b98a",
+   "3aa4b9cdc9962b8a90e0a817f2920df57c64ab34b56dfd4e2a9c631aac4925f5",
+   "8a401a68bbd99dbeb90b2167b5924ad29363d44d43f3a48eba022f4b6248f53e",
+   "f2743420bc8d1a2dc4d8f5b9d8255dfb58f33994fba604063b042d67ea8495ce",
+   "8b94ddce9186182bf7e2dec16fc7a013407a891c497542923f463db0b41221dc"
+  ],
+  "verdict": "partial_commit",
+  "violations": [
+   "nested_begin"
+  ]
+ },
+ "success_review_conductor": {
+  "decision_status": "succeeded",
+  "durable_authority_writes": [
+   [
+    "release_queue",
+    "queued"
+   ],
+   [
+    "releases",
+    "reviewed"
+   ]
+  ],
+  "effect_protocol": [],
+  "effects": [
+   {
+    "depth": 0,
+    "name": "provider_call"
+   }
+  ],
+  "fences": [
+   true,
+   true
+  ],
+  "outbox_types": [],
+  "trace": [
+   {
+    "depth": 0,
+    "kind": "BEGIN",
+    "label": "",
+    "unit": "U4"
+   },
+   {
+    "bucket": "decisions_pending",
+    "kind": "write",
+    "status": "pending",
+    "unit": "U4"
+   },
+   {
+    "bucket": "execution_fences",
+    "kind": "write",
+    "status": null,
+    "unit": "U4"
+   },
+   {
+    "bucket": "decisions_pending",
+    "kind": "write",
+    "status": "running",
+    "unit": "U4"
+   },
+   {
+    "depth": 0,
+    "kind": "COMMIT",
+    "unit": "U4"
+   },
+   {
+    "depth": 0,
+    "kind": "effect",
+    "name": "provider_call"
+   },
+   {
+    "depth": 0,
+    "kind": "BEGIN",
+    "label": "",
+    "unit": "U5"
+   },
+   {
+    "kind": "fence",
+    "name": "lease",
+    "ok": true,
+    "unit": "U5"
+   },
+   {
+    "bucket": "releases",
+    "kind": "write",
+    "status": "reviewed",
+    "unit": "U5"
+   },
+   {
+    "bucket": "release_queue",
+    "kind": "write",
+    "status": "queued",
+    "unit": "U5"
+   },
+   {
+    "kind": "fence",
+    "name": "lease",
+    "ok": true,
+    "unit": "U5"
+   },
+   {
+    "bucket": "decisions_pending",
+    "kind": "write",
+    "status": "succeeded",
+    "unit": "U5"
+   },
+   {
+    "depth": 0,
+    "kind": "COMMIT",
+    "unit": "U5"
+   }
+  ],
+  "trace_digests": [
+   "198da4893216d0fe07091812069c10e8a431fac939c562dc469d12148bc44ee4",
+   "a2f24016e4203ff81a32c821a9b0e24ae021edad75a9d95d7f316ba0ff8b04f1",
+   "6cf324cc8bc96a946d5eb3fd3eedb23bca36d1a8358bca6d6b108830323d457e",
+   "2abc2bbfdca1abd697234c35be1a51bc350c58a3c7226e45c26d0035ec52b157",
+   "803aea91d175bc0a7e9618a114b9de329243ca4c255dd3bb9d7f33ab675223d6",
+   "6e8bee8a4f6d468941ba4034b904c5b68eb543fafb492af0f5fb0c2819d9abca"
+  ],
+  "verdict": "atomic_commit",
+  "violations": []
+ },
+ "success_review_lead": {
+  "decision_status": "succeeded",
+  "durable_authority_writes": [
+   [
+    "releases",
+    "candidate"
+   ]
+  ],
+  "effect_protocol": [],
+  "effects": [
+   {
+    "depth": 0,
+    "name": "provider_call"
+   }
+  ],
+  "fences": [
+   true,
+   true
+  ],
+  "outbox_types": [
+   "review.result"
+  ],
+  "trace": [
+   {
+    "depth": 0,
+    "kind": "BEGIN",
+    "label": "",
+    "unit": "U2"
+   },
+   {
+    "bucket": "decisions_pending",
+    "kind": "write",
+    "status": "pending",
+    "unit": "U2"
+   },
+   {
+    "bucket": "execution_fences",
+    "kind": "write",
+    "status": null,
+    "unit": "U2"
+   },
+   {
+    "bucket": "decisions_pending",
+    "kind": "write",
+    "status": "running",
+    "unit": "U2"
+   },
+   {
+    "depth": 0,
+    "kind": "COMMIT",
+    "unit": "U2"
+   },
+   {
+    "depth": 0,
+    "kind": "effect",
+    "name": "provider_call"
+   },
+   {
+    "depth": 0,
+    "kind": "BEGIN",
+    "label": "",
+    "unit": "U3"
+   },
+   {
+    "kind": "fence",
+    "name": "lease",
+    "ok": true,
+    "unit": "U3"
+   },
+   {
+    "bucket": "releases",
+    "kind": "write",
+    "status": "candidate",
+    "unit": "U3"
+   },
+   {
+    "bucket": "releases",
+    "kind": "write",
+    "status": "candidate",
+    "unit": "U3"
+   },
+   {
+    "kind": "fence",
+    "name": "lease",
+    "ok": true,
+    "unit": "U3"
+   },
+   {
+    "bucket": "decisions_pending",
+    "kind": "write",
+    "status": "succeeded",
+    "unit": "U3"
+   },
+   {
+    "bucket": "outbox",
+    "kind": "write",
+    "status": null,
+    "unit": "U3"
+   },
+   {
+    "depth": 0,
+    "kind": "COMMIT",
+    "unit": "U3"
+   }
+  ],
+  "trace_digests": [
+   "bad04941a9b821ddf7ccc16f426249c9a0b29b0a04269a009713aa69e0bfd019",
+   "a2f24016e4203ff81a32c821a9b0e24ae021edad75a9d95d7f316ba0ff8b04f1",
+   "b3e8e55abc1283e7dcfe794da74a17b687b9aeddef77b9779aa5c4dc2b7030e4",
+   "2e72cdb9e7e74a749cc2b93feb08a58284d8922fb967a265d4aca2e9e881b98a",
+   "165ba4b1d08ca2c0de8e0768e7a7a12810585e00ca4b340ee087f84781a22f48",
+   "c71bb768346abc210e1926757063d175e226c3fde65fb71c2b42f5afc767b33f",
+   "2cdaec435c491399ef0bef6aebc997584e400509eb67de5a6dce569c03f94e38"
+  ],
+  "verdict": "atomic_commit",
+  "violations": []
+ }
+}
