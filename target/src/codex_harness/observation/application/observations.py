@@ -1,26 +1,52 @@
-"""The Observer's durable unconfirmed-effect marker (INV-OBSERVATION-001), moved ahead in S4.
+"""The Observer write path (INV-OBSERVATION-001), moved ahead in S4 unchanged.
 
 Layer: application
 Context: observation
-Owns: the bucket names, and Observer.__init__/termination_id/mark_unconfirmed/close_unconfirmed (M7
-    `application/observations.py`, moved ahead in S4 unchanged: lead decision Option A, the marker the RunTask
-    reservation writes and every S4 terminal write closes); ReconciliationRequired, MemoryDirectory and
-    Observer._other_attempt/guard_reservation, moved ahead in S4 unchanged (the guard the RunTask reservation
-    transaction runs, INV-OBSERVATION-001)
-Does not own: emit/audit/alert/record_termination/health, pending_terminations/resolve_termination and
-    PostExecutionRecordFailure (these need `_sink`/`audit`, which come with build_event) and the rest of M7
-    `observations.py` (S4 continues with record_termination/audit/emit and build_event; S9 the rest); the
-    constructor keeps M7's signature, and the alert inheritance it ran (`_inherit_pending_alerts`) arrives with
-    the alerts (S9)
-Entry points: Observer, Observer.termination_id, Observer.mark_unconfirmed, Observer.close_unconfirmed,
-    Observer.guard_reservation, ReconciliationRequired, MemoryDirectory, BUCKETS, TERMINATION_BUCKET
+Owns: the bucket names, and the whole Observer class with its helpers (M7 `application/observations.py`, moved
+    ahead in S4 unchanged: lead decision Option A, the Observer write path RunTask/ReviewDecisions need):
+    __init__/termination_id/mark_unconfirmed/close_unconfirmed, the reconciliation guard, system/for_lease/
+    correlation, emit/_append/_refused, audit/audit_system, alert/health and their sink bookkeeping,
+    record_termination/pending_terminations/resolve_termination and close; ReconciliationRequired,
+    PostExecutionRecordFailure, MemoryDirectory, MAX_REASON_CHARS and the text helpers (_error_text, _label,
+    _free_text, _record_id_ok)
+Does not own: Collector, orphan_report and status_report (S9), and FileSpool/SpoolDirectory (S9)
+Entry points: Observer, Observer.emit, Observer.audit, Observer.alert, Observer.record_termination,
+    Observer.pending_terminations, Observer.resolve_termination, Observer.termination_id,
+    Observer.mark_unconfirmed, Observer.close_unconfirmed, Observer.guard_reservation, ReconciliationRequired,
+    PostExecutionRecordFailure, MemoryDirectory, BUCKETS, TERMINATION_BUCKET
 Contracts: INV-OBSERVATION-001
-"""
 
+Observer, collector and reports for the three-category log contract (INV-OBSERVATION-001).
+
+Two write paths, deliberately different in what they may do:
+
+* `Observer.audit(tx, ...)` records a mandatory transition inside the caller's PostgreSQL
+  transaction as an append-only `observation_audit` row. It raises on a refused event, so the
+  business transition (an invocation reservation, a settlement, an outbox publish) does not
+  commit without its audit record. Same id with the same content is a redelivery; same id with
+  different content is isolated in `observation_quarantine` with an alert, never overwritten.
+* `Observer.emit(...)` records a diagnostic event to the bounded durable spool and never raises:
+  a full or failing spool is counted, written to the protected local health record, and alerted
+  (rate limited), instead of being dropped silently or allowed to block the execution path.
+
+The sequence number is bound to the spool append: it advances only when the record is durable,
+and a process restart starts a new process_run_id namespace. `Collector` moves spool records
+into PostgreSQL, deduplicates by event id and content hash, quarantines corrupt lines and
+conflicts, leaves a truncated tail unconsumed, acknowledges an offset only after the sink
+transaction committed, and reclaims segments that are fully acknowledged and no longer written.
+
+Post-execution termination evidence (`record_termination`) is the local minimal record that
+survives a PostgreSQL failure after the provider already ran; the executor refuses to start a
+provider for a task that has one pending. Reconciliation commits the operator's decision and its
+audit to PostgreSQL first and only then finalizes the local file, so a failed or lost commit
+never removes the last blocking record. Pending alerts are persisted locally and replayed after
+the next successful sink transaction, including after a process restart.
+"""
 from __future__ import annotations
 
 import os
 import platform
+import sys
 import threading
 import time
 from collections import Counter
@@ -28,6 +54,16 @@ from collections import Counter
 from codex_harness.kernel.errors import ContractError, require
 from codex_harness.kernel.ids import digest, utcnow
 from codex_harness.kernel.policy import POLICY
+from codex_harness.observation.domain.observation import (
+    REFERENCE,
+    build_event,
+    content_hash,
+    execution_identity,
+    lease_identity,
+    opaque_identifier,
+    redact_text,
+)
+from codex_harness.observation.ports import SpoolFull
 
 AUDIT_BUCKET = "observation_audit"
 EVENT_BUCKET = "observations"
@@ -38,6 +74,7 @@ TERMINATION_BUCKET = "observation_terminations"
 BUCKETS = (AUDIT_BUCKET, EVENT_BUCKET, QUARANTINE_BUCKET, ALERT_BUCKET, COLLECTION_BUCKET, TERMINATION_BUCKET)
 PENDING_ALERT_LIMIT = 100
 RESOLUTIONS = ("rerun", "discard")
+MAX_REASON_CHARS = 300
 
 
 class ReconciliationRequired(RuntimeError):
@@ -46,6 +83,21 @@ class ReconciliationRequired(RuntimeError):
     def __init__(self, task_id: str, records: list[dict]):
         super().__init__(f"task {task_id} has {len(records)} termination record(s) pending reconciliation")
         self.task_id, self.records = task_id, records
+
+
+class PostExecutionRecordFailure(RuntimeError):
+    """The provider was entered; a later step failed before its outcome was durably recorded.
+
+    Termination evidence was written locally. The attempt fails without claiming completion
+    and the task stays refused until an operator reconciles the record.
+    """
+
+    def __init__(self, record_id: str, cause: BaseException, boundary: str):
+        # The cause object stays attached for callers; its text never enters the message, because
+        # the message becomes the task failure record, the CLI output and the diagnosis request.
+        super().__init__(f"{boundary} failed after provider entry ({_error_text(cause)}); "
+                         f"termination record {record_id}")
+        self.record_id, self.cause, self.boundary = record_id, cause, boundary
 
 
 class MemoryDirectory:
@@ -131,6 +183,32 @@ class MemoryDirectory:
         return 0
 
 
+def _error_text(error: BaseException) -> str:
+    """Name the error without repeating its message: a foreign message may carry a secret.
+
+    Contract errors are Zeus's own wording (attribute names, never values) and are kept, redacted.
+    Every other message is replaced by its digest so an operator can match it against a private
+    log without the observation surfaces ever carrying the text.
+    """
+    if isinstance(error, ContractError):
+        text, _ = redact_text(type(error).__name__ + ": " + str(error))
+        return text[:300]
+    return type(error).__name__ + ": message_sha256=" + digest(str(error))[:16]
+
+
+def _label(value, name: str, limit: int = 80) -> str:
+    """Operator-supplied labels are opaque identifiers, refused when free text or credential-shaped."""
+    return opaque_identifier(value, name, limit)
+
+
+def _free_text(value, name: str, limit: int = MAX_REASON_CHARS) -> dict:
+    """Operator free text is redacted and bounded before it is stored or returned anywhere."""
+    require(type(value) is str and bool(value.strip()), f"{name} required")
+    text, findings = redact_text(value)
+    truncated = len(text) > limit
+    return {"text": text[:limit], "sha256": digest(value), "redaction_findings": findings, "truncated": truncated}
+
+
 class Observer:
     def __init__(self, store, spool, *, component: str, directory, role: str | None = None,
                  host: str | None = None, pid: int | None = None, org=None,
@@ -152,7 +230,315 @@ class Observer:
         self.inherited_pending: dict[str, list[dict]] = {}
         self.last_defect: str | None = None
         self.sink_state = "unknown"
+        self._inherit_pending_alerts()
 
+    # ---- identity helpers -------------------------------------------------------------------
+    def system(self, *, revision=None, role=None) -> dict:
+        return execution_identity("system", process_run_id=self.process_run_id,
+                                  role=role if role is not None else self.role, revision=revision)
+
+    def for_lease(self, lease: dict, *, provider=None, invocation_id=None, session_id=None, revision=None,
+                  role=None) -> dict:
+        actor = role or lease.get("agent") or lease.get("actor") or self.role
+        return lease_identity(lease, process_run_id=self.process_run_id, role=actor, provider=provider,
+                              session_id=session_id, invocation_id=invocation_id, revision=revision)
+
+    @staticmethod
+    def correlation(lease: dict | None) -> str | None:
+        message = (lease or {}).get("message")
+        value = message.get("correlation_id") if isinstance(message, dict) else None
+        return value if type(value) is str and REFERENCE.fullmatch(value) else None
+
+    # ---- diagnostic path (never raises) -------------------------------------------------------
+    def emit(self, event_type: str, outcome: str, *, execution=None, correlation_id=None, causation_id=None,
+             occurred_at=None, reason_code=None, evidence_refs=(), attributes=None, severity="info",
+             identity=None) -> dict | None:
+        with self._lock:
+            sequence = {"process_run_id": self.process_run_id, "number": self._next, "basis": "spool_append"}
+            try:
+                event = build_event(event_type=event_type, outcome=outcome, execution=execution or self.system(),
+                                    sequence=sequence, observed_at=self.clock(), source=self.source,
+                                    occurred_at=occurred_at, correlation_id=correlation_id,
+                                    causation_id=causation_id, reason_code=reason_code,
+                                    evidence_refs=evidence_refs, attributes=attributes, severity=severity,
+                                    identity=identity)
+            except ContractError as exc:
+                self._refused(event_type, exc)
+                return None
+            if not self._append("event", event):
+                return None
+            self._next += 1
+            self.counters["emitted"] += 1
+            return event
+
+    def _append(self, kind: str, event: dict) -> bool:
+        try:
+            self.spool.append(kind, event)
+            return True
+        except SpoolFull as exc:
+            self.counters["dropped_spool_full"] += 1
+            self.last_defect = _error_text(exc)
+            self._health()
+            self.alert("spool_saturated", self.process_run_id, severity="error", spool=False,
+                       attributes={"bytes": int(self.spool.size()) if hasattr(self.spool, "size") else 0,
+                                   "limit_bytes": int(getattr(self.spool, "max_bytes", 0)),
+                                   "dropped": int(self.counters["dropped_spool_full"])})
+        except OSError as exc:
+            self.counters["spool_failures"] += 1
+            self.last_defect = _error_text(exc)
+            self._health()
+            self.alert("spool_append_failed", type(exc).__name__, severity="error", spool=False,
+                       attributes={"error_type": type(exc).__name__, "dropped": int(self.counters["spool_failures"])})
+        except ContractError as exc:
+            # The spool refused the write for this run (closed by its writer, or the run lock is
+            # held by another live writer): the run's files are not this object's to touch any
+            # more, so nothing is written, the drop is counted, and emit keeps its no-raise contract.
+            self.counters["dropped_run_refused"] += 1
+            self.last_defect = _error_text(exc)
+        return False
+
+    def _refused(self, event_type, exc):
+        self.counters["refused"] += 1
+        self.last_defect = _error_text(exc)
+        self._health()
+        # The refusal itself is evidence; it carries the defect wording, never the refused payload.
+        with self._lock:
+            sequence = {"process_run_id": self.process_run_id, "number": self._next, "basis": "spool_append"}
+            try:
+                event = build_event(event_type="operations.observation_refused", outcome="failed",
+                                    execution=self.system(), sequence=sequence, observed_at=self.clock(),
+                                    source=self.source, severity="warning",
+                                    attributes={"refused_event_type": str(event_type)[:200],
+                                                "defect": self.last_defect})
+            except ContractError:
+                return
+            if self._append("event", event):
+                self._next += 1
+
+    # ---- mandatory path (raises) ----------------------------------------------------------------
+    def audit(self, tx, event_type: str, outcome: str, *, identity, execution=None, correlation_id=None,
+              causation_id=None, occurred_at=None, reason_code=None, evidence_refs=(), attributes=None,
+              severity="info") -> dict:
+        """Append-only audit row in the caller's transaction; refused events raise before commit."""
+        require(isinstance(identity, (list, tuple)) and bool(identity), "Audit events need an explicit identity")
+        with self._lock:
+            sequence = {"process_run_id": self.process_run_id, "number": self._next, "basis": "spool_append"}
+            event = build_event(event_type=event_type, outcome=outcome, execution=execution or self.system(),
+                                sequence=sequence, observed_at=self.clock(), source=self.source,
+                                occurred_at=occurred_at, correlation_id=correlation_id, causation_id=causation_id,
+                                reason_code=reason_code, evidence_refs=evidence_refs, attributes=attributes,
+                                severity=severity, identity=identity)
+            if self._append("audit", event):
+                self._next += 1
+            else:
+                # The audit still commits with the transaction; only its local order is unassigned.
+                event["sequence"] = {"process_run_id": self.process_run_id, "number": None, "basis": "unassigned"}
+                self.counters["sequence_unassigned"] += 1
+        digest_value = content_hash(event)
+        existing = tx.get(AUDIT_BUCKET, event["event_id"])
+        if existing is None:
+            tx.put(AUDIT_BUCKET, event["event_id"], {**event, "payload_hash": digest_value,
+                                                     "authority": "informational_only"})
+            self.counters["audited"] += 1
+            return event
+        if existing.get("payload_hash") == digest_value:
+            self.counters["audit_redelivered"] += 1
+            return existing
+        quarantine_id = digest(["observation_conflict", event["event_id"], digest_value])
+        if tx.get(QUARANTINE_BUCKET, quarantine_id) is None:
+            tx.put(QUARANTINE_BUCKET, quarantine_id, {"id": quarantine_id, "event_id": event["event_id"],
+                   "reason": "conflicting_content", "expected_hash": existing.get("payload_hash"),
+                   "observed_hash": digest_value, "source": event, "at": self.clock()})
+        self.counters["audit_conflicts"] += 1
+        self.alert("observation_conflict", event["event_id"], severity="error", tx=tx,
+                   attributes={"conflicting_event_id": event["event_id"], "expected_hash": existing.get("payload_hash"),
+                               "observed_hash": digest_value, "quarantine_id": quarantine_id})
+        return {"status": "quarantined", "quarantine_id": quarantine_id, "event_id": event["event_id"]}
+
+    def audit_system(self, tx, event_type: str, outcome: str, *, identity, attributes=None, correlation_id=None,
+                     causation_id=None, severity="info", reason_code=None, evidence_refs=()) -> dict:
+        return self.audit(tx, event_type, outcome, identity=identity, execution=self.system(), attributes=attributes,
+                          correlation_id=correlation_id, causation_id=causation_id, severity=severity,
+                          reason_code=reason_code, evidence_refs=evidence_refs)
+
+    # ---- alerts and health ------------------------------------------------------------------------
+    def alert(self, kind: str, key: str, *, attributes: dict, severity: str = "warning", tx=None,
+              spool: bool = True) -> dict | None:
+        """One alert per (kind, key) per window; repeats are counted as suppressed, not sent."""
+        now = self.monotonic()
+        with self._lock:
+            last, suppressed = self._alerts.get((kind, key), (None, 0))
+            if last is not None and now - last < self.alert_window_seconds:
+                self._alerts[(kind, key)] = (last, suppressed + 1)
+                self.counters["alerts_suppressed"] += 1
+                return None
+            self._alerts[(kind, key)] = (now, 0)
+            at = self.clock()
+            try:
+                event = build_event(event_type="operations." + kind, outcome="observed", execution=self.system(),
+                                    sequence={"process_run_id": self.process_run_id, "number": None,
+                                              "basis": "unassigned"},
+                                    observed_at=at, source=self.source, severity=severity, attributes=attributes,
+                                    identity=["alert", kind, key, at])
+            except ContractError as exc:
+                self._refused("operations." + kind, exc)
+                return None
+        record = {**event, "payload_hash": content_hash(event), "suppressed_before": suppressed,
+                  "notification": {"status": "pending", "channel": None}}
+        if spool:
+            self._append("event", event)
+        if self._record_alert(record, tx):
+            record["notification"] = {"status": "recorded", "channel": "postgres:" + ALERT_BUCKET}
+            self.counters["alerts_recorded"] += 1
+        else:
+            self.counters["alerts_pending"] += 1
+            if len(self.pending_alerts) < PENDING_ALERT_LIMIT:
+                self.pending_alerts.append(record)
+                self._persist_pending()
+            else:
+                self.counters["alerts_pending_dropped"] += 1
+        self._health()
+        return record
+
+    def _record_alert(self, record, tx=None) -> bool:
+        # The stored row says how it got there; the caller's copy is updated only after success.
+        stored = {**record, "notification": {"status": "recorded", "channel": "postgres:" + ALERT_BUCKET}}
+        try:
+            if tx is not None:
+                tx.put(ALERT_BUCKET, record["event_id"], stored)
+                return True
+            if self.store is None:
+                return False
+            with self.store.transaction() as sink:
+                sink.put(ALERT_BUCKET, record["event_id"], stored)
+                flushed = self._flush_pending(sink)
+            self._flushed(flushed)
+            self._sink("available")
+            return True
+        except Exception as exc:  # the sink is down: this is the case the local record exists for
+            self.last_defect = _error_text(exc)
+            self._sink("unavailable", exc)
+            return False
+
+    def _flush_pending(self, tx) -> list:
+        """Write every pending alert into the caller's transaction; nothing is forgotten before commit."""
+        flushed = []
+        for origin, records in [(self.process_run_id, self.pending_alerts),
+                                *self.inherited_pending.items()]:
+            for record in records:
+                tx.put(ALERT_BUCKET, record["event_id"], {**record, "notification": {
+                    "status": "recorded_after_recovery", "channel": "postgres:" + ALERT_BUCKET,
+                    "replayed_by": self.process_run_id}})
+                flushed.append((origin, record["event_id"]))
+        return flushed
+
+    def _flushed(self, flushed) -> int:
+        """Called after the transaction that carried `_flush_pending` committed.
+
+        Only the committed (origin, event_id) pairs are acknowledged: our own list drops exactly
+        those ids (an alert added meanwhile stays pending), and a foreign origin's debt is
+        acknowledged in our own ack file, never by rewriting the origin's file, which the origin
+        may still be appending to.
+        """
+        if not flushed:
+            return 0
+        own = {event_id for origin, event_id in flushed if origin == self.process_run_id}
+        self.pending_alerts = [row for row in self.pending_alerts if row["event_id"] not in own]
+        self.counters["alerts_replayed"] += len(flushed)
+        self._persist_pending()
+        foreign: dict[str, set] = {}
+        for origin, event_id in flushed:
+            if origin != self.process_run_id:
+                foreign.setdefault(origin, set()).add(event_id)
+        for origin, ids in foreign.items():
+            try:
+                self.directory.acknowledge_pending_alerts(origin, sorted(ids), self.process_run_id)
+            except Exception as exc:
+                # The commit stands but the durable acknowledgement did not: keep the debt so the
+                # next successful transaction replays (idempotently) and acknowledges it again.
+                self.counters["pending_ack_failures"] += 1
+                self.last_defect = _error_text(exc)
+                continue
+            remaining = [row for row in self.inherited_pending.get(origin, []) if row["event_id"] not in ids]
+            if remaining:
+                self.inherited_pending[origin] = remaining
+            else:
+                self.inherited_pending.pop(origin, None)
+        return len(flushed)
+
+    def _persist_pending(self) -> None:
+        try:
+            self.directory.write_pending_alerts(self.process_run_id, self.pending_alerts)
+        except Exception as exc:
+            self.counters["pending_persist_failures"] += 1
+            self.last_defect = _error_text(exc)
+
+    def _inherit_pending_alerts(self) -> None:
+        """Take a snapshot of other origins' unacknowledged debt; origins may be alive and keep adding.
+
+        Whatever they add after this snapshot stays in their own files and is picked up by the
+        next reader; nothing here deletes or rewrites another origin's file.
+        """
+        try:
+            found = self.directory.read_pending_alerts()
+        except Exception:
+            found = {}
+        self.inherited_pending = {run: rows for run, rows in found.items() if run != self.process_run_id and rows}
+        if self.inherited_pending:
+            self.counters["alerts_inherited"] += sum(len(rows) for rows in self.inherited_pending.values())
+
+    def refresh_inherited_alerts(self) -> int:
+        """Pick up debt other origins added after the last snapshot (called by the collector)."""
+        try:
+            found = self.directory.read_pending_alerts()
+        except Exception:
+            return 0
+        added = 0
+        for run, rows in found.items():
+            if run == self.process_run_id:
+                continue
+            known = {row["event_id"] for row in self.inherited_pending.get(run, [])}
+            fresh = [row for row in rows if row.get("event_id") not in known]
+            if fresh:
+                self.inherited_pending[run] = self.inherited_pending.get(run, []) + fresh
+                added += len(fresh)
+        if added:
+            self.counters["alerts_inherited"] += added
+        return added
+
+    def _sink(self, state: str, error: BaseException | None = None) -> None:
+        previous, self.sink_state = self.sink_state, state
+        if state == "unavailable" and previous != "unavailable":
+            self.alert("sink_unavailable", "postgres", severity="critical",
+                       attributes={"sink": "postgres", "error_type": type(error).__name__ if error else "unknown",
+                                   "pending": len(self.pending_alerts)})
+        elif state == "available" and previous == "unavailable":
+            self.emit("operations.sink_recovered", "observed", severity="warning",
+                      attributes={"sink": "postgres", "replayed": int(self.counters["alerts_replayed"])})
+
+    def health(self) -> dict:
+        return {"process_run_id": self.process_run_id, "component": self.component, "role": self.role,
+                "host": self.source["host"], "pid": self.source["pid"], "updated_at": self.clock(),
+                "sequence_next": self._next, "counters": dict(self.counters), "sink": self.sink_state,
+                "spool": {"unacknowledged_bytes": int(self.spool.size()) if hasattr(self.spool, "size") else None,
+                          "limit_bytes": int(getattr(self.spool, "max_bytes", 0)),
+                          "rotations": int(getattr(self.spool, "rotations", 0))},
+                "pending_alerts": [{"event_type": row["event_type"], "observed_at": row["observed_at"]}
+                                   for row in self.pending_alerts],
+                "inherited_pending_alerts": {run: len(rows) for run, rows in self.inherited_pending.items()},
+                "last_defect": self.last_defect}
+
+    def _health(self) -> None:
+        try:
+            self.directory.write_health(self.process_run_id, self.health())
+        except Exception as exc:  # last resort: a redacted line on stderr, never an exception upward
+            self.counters["health_write_failures"] += 1
+            try:
+                sys.stderr.write("observation health write failed: " + _error_text(exc) + "\n")
+            except Exception:
+                pass
+
+    # ---- post-execution termination evidence ---------------------------------------------------
     @staticmethod
     def termination_id(lease: dict) -> str:
         return digest(["termination", lease.get("_bucket", "tasks"), lease["id"], lease.get("generation"),
@@ -192,6 +578,49 @@ class Observer:
         self.counters["unconfirmed_closed"] += 1
         return closed
 
+    def record_termination(self, lease: dict, *, reservation_id, classification: str, stream_hash: str | None,
+                           error: BaseException, boundary: str = "settlement", evidence_refs=()) -> str:
+        """Redacted minimal evidence that the provider was entered; local file and sink, each best effort.
+
+        The durable block itself is the unconfirmed marker written at reservation; this record
+        adds the boundary and evidence. A failing file write is counted and does not stop the sink
+        write; a failing sink write leaves the file; neither failure weakens the block.
+        """
+        record_id = self.termination_id(lease)
+        record = {"record_id": record_id, "status": "pending_reconciliation", "task_id": lease["id"],
+                  "bucket": lease.get("_bucket", "tasks"), "generation": lease.get("generation"),
+                  "attempt": lease.get("attempt"), "reservation_id": reservation_id,
+                  "invocation_outcome": classification, "stream_hash": stream_hash, "boundary": boundary,
+                  "error_type": type(error).__name__, "error": _error_text(error),
+                  "evidence_refs": [ref for ref in evidence_refs if type(ref) is str and REFERENCE.fullmatch(ref)],
+                  "process_run_id": self.process_run_id, "recorded_at": self.clock(),
+                  "note": "provider entered; outcome not durably recorded; do not re-execute before an operator reconciles"}
+        try:
+            self.directory.record_termination(record_id, record)
+        except FileExistsError:
+            self.counters["termination_redelivered"] += 1
+        except Exception as exc:
+            self.counters["termination_file_failures"] += 1
+            self.last_defect = _error_text(exc)
+        self.counters["terminations"] += 1
+        self.emit("development.termination_recorded", "unknown", severity="critical",
+                  execution=self.for_lease(lease, provider="codex-app-server", invocation_id=reservation_id),
+                  correlation_id=self.correlation(lease), reason_code="outcome_not_recorded",
+                  evidence_refs=record["evidence_refs"],
+                  attributes={"reservation_id": reservation_id, "invocation_outcome": classification,
+                              "stream_hash": stream_hash or "unknown", "error_type": type(error).__name__,
+                              "record_id": record_id, "boundary": boundary})
+        try:
+            with self.store.transaction() as tx:
+                existing = tx.get(TERMINATION_BUCKET, record_id)
+                if existing is None or existing.get("status") in {"unconfirmed", "closed"}:
+                    tx.put(TERMINATION_BUCKET, record_id, record)
+        except Exception as exc:
+            self.last_defect = _error_text(exc)
+            self._sink("unavailable", exc)
+        self._health()
+        return record_id
+
     @staticmethod
     def _other_attempt(row: dict, lease: dict) -> bool:
         return (row.get("generation"), row.get("attempt")) != (lease.get("generation"), lease.get("attempt"))
@@ -211,3 +640,79 @@ class Observer:
                      if row.get("unreadable") or self._other_attempt(row, lease)]
         if blocking:
             raise ReconciliationRequired(lease["id"], blocking)
+
+    def pending_terminations(self, task_id: str, strict: bool = False) -> list[dict]:
+        """Local pending records plus the sink's; a record the sink already resolved is finalized locally.
+
+        With `strict`, a failed sink read raises instead of returning the local rows only: a
+        caller deciding whether an execution may proceed must not read a partial answer as "none".
+        """
+        local = {row.get("record_id", str(index)): row
+                 for index, row in enumerate(self.directory.pending_terminations(task_id))}
+        rows = dict(local)
+        try:
+            with self.store.transaction() as tx:
+                sink_rows = {row["record_id"]: row for row in tx.scan(TERMINATION_BUCKET)
+                             if type(row.get("record_id")) is str}
+        except Exception as exc:
+            self.last_defect = _error_text(exc)
+            self._sink("unavailable", exc)
+            if strict:
+                raise
+            return [rows[key] for key in sorted(rows)]  # the sink cannot clear a local block
+        for record_id, row in sink_rows.items():
+            if row.get("task_id") != task_id:
+                continue
+            if row.get("status") in {"pending_reconciliation", "unconfirmed"}:
+                rows.setdefault(record_id, row)
+            elif row.get("status") == "resolved" and record_id in local and not local[record_id].get("unreadable"):
+                try:  # the commit happened; only the local finalize was lost
+                    self.directory.resolve_termination(record_id, row.get("resolution") or {})
+                    self.counters["terminations_finalized_late"] += 1
+                    rows.pop(record_id, None)
+                except Exception as exc:
+                    self.last_defect = _error_text(exc)
+        return [rows[key] for key in sorted(rows)]
+
+    def resolve_termination(self, record_id: str, *, resolution: str, operator: str, reason: str) -> dict:
+        """Sink decision and audit first; the local blocking file is finalized only after they committed.
+
+        Redelivering the same decision is idempotent; a different decision for an already resolved
+        record is refused. `rerun` and `discard` only lift the observation block: neither re-queues
+        the task (that is the existing execution-recovery path) nor grants workflow authority.
+        """
+        require(resolution in RESOLUTIONS, "Resolution is rerun or discard")
+        require(_record_id_ok(record_id), "Invalid termination record id")
+        operator = _label(operator, "operator")
+        decision = {"resolution": resolution, "operator": operator, "reason": _free_text(reason, "reason"),
+                    "authority": "operator_label_not_authenticated"}
+        local = next((row for row in self.directory.pending_terminations() if row.get("record_id") == record_id), None)
+        with self.store.transaction() as tx:
+            row = tx.get(TERMINATION_BUCKET, record_id) or local
+            require(isinstance(row, dict) and not row.get("unreadable"), "Unknown or unreadable termination record")
+            if row.get("status") == "resolved":
+                previous = {k: v for k, v in (row.get("resolution") or {}).items() if k != "at"}
+                require(previous == decision, "Termination already resolved with a different decision")
+                stored = row
+                self.counters["reconciliation_redelivered"] += 1
+            else:
+                stored = {**row, "status": "resolved", "resolution": {**decision, "at": self.clock()}}
+                tx.put(TERMINATION_BUCKET, record_id, stored)
+                self.audit(tx, "development.reconciliation_resolved", "observed", identity=["reconciliation", record_id],
+                           execution=self.for_lease({"id": row["task_id"], "_bucket": row.get("bucket", "tasks"),
+                                                     "generation": row.get("generation"),
+                                                     "attempt": row.get("attempt")}, role=self.role or "operator"),
+                           attributes={"record_id": record_id, "resolution": resolution, "operator": operator})
+        # The sink committed. Finalizing locally may still fail or be interrupted; a rerun of the same
+        # command finds the resolved row above and finishes here without touching the sink again.
+        if local is not None:
+            self.directory.resolve_termination(record_id, stored["resolution"])
+        return stored
+
+    def close(self) -> None:
+        self._health()
+        self.spool.close()
+
+
+def _record_id_ok(value) -> bool:
+    return type(value) is str and REFERENCE.fullmatch(value) is not None and len(value) <= 200
