@@ -6,7 +6,7 @@ Owns: OWNED_BUCKETS of the execution context; the consumer-owned Protocols RunTa
     (ProviderRuntime and the rest arrive with RunTask; ARCHITECTURE.md keeps them PROPOSED until then)
 Does not own: their implementations (coordination implements TaskLedger in S5, research/evidence
     implement ResearchAdmission in S8; composition wires them in S10)
-Entry points: OWNED_BUCKETS, TaskLedger, ResearchAdmission, TaskLifecycle, InvocationAdmission, SessionCheckpoint,
+Entry points: OWNED_BUCKETS, TaskLedger, ResearchAdmission, TaskLifecycle, InvocationAdmission, SessionCheckpoint, ExecutionRecords,
     ObservationEvents, ObservationMarkers, and the optional S8 ports (CorrectionFeedback, CouncilDelivery, EvidenceGate,
     RoleExecution, AuditExecution, ResearchSources, HookCandidates)
 Contracts: INV-INVOCATION-001, INV-WORKER-SESSION-001, INV-EXECUTION-IDENTITY-001
@@ -93,6 +93,15 @@ class ObservationMarkers(Protocol):
     def pending_terminations(self, task_id: str, strict: bool = False) -> list[dict]: ...
     def record_termination(self, lease: dict, **fields) -> str: ...
     def termination_id(self, lease: dict) -> str: ...
+
+
+class ExecutionRecords(Protocol):
+    """coordination: the notice, event, terminal-row and diagnosis-request writes of RunTask's failure paths."""
+
+    def notice(self, tx, row: dict, bucket: str, code: str, at: str, identity: str | None = None): ...
+    def append_event(self, tx, identity: str, body: dict) -> None: ...
+    def record_row(self, tx, bucket: str, row: dict) -> None: ...
+    def request_diagnosis(self, tx, task: dict, agent: str, error, current: dict, parent: str, receipt) -> None: ...
 
 
 # S8-owned collaborators RunTask reaches on some actions. Each is optional in RunTask; an action that needs an

@@ -185,3 +185,33 @@ def test_invocation_breaker_delegates_to_the_moved_breaker_and_functions():
 
 class ContractErrorLike(Exception):
     pass
+
+
+def test_execution_records_request_diagnosis_is_the_m7_body_and_idempotent(monkeypatch):
+    from codex_harness.coordination.application import execution_records
+    from codex_harness.coordination.application.execution_records import ExecutionRecords
+    from codex_harness.kernel.ids import digest
+    notices = []
+    monkeypatch.setattr(execution_records.execution_notices, "record",
+                        lambda tx, org, row, bucket, code, at, ref=None: notices.append((bucket, code, ref)))
+    tx = RecordingTx({("incidents", "i1"): None})
+    tx.scan = lambda bucket: [{"root_cause": "rc", "scope": "s"}] if bucket == "incidents" else []
+    records, receipts = ExecutionRecords(object()), []
+    task = {"id": "t1", "attempt": 2, "message": {"m": 1}}
+    records.request_diagnosis(tx, task, "worker:implementation", RuntimeError("boom"), {},
+                              "lead:improvement", lambda: receipts.append(1) or "sha256:" + "a" * 64)
+    oid = digest({"task": "t1", "attempt": 2})
+    assert tx.puts == [("decisions_pending", oid, {
+        "id": oid, "actor": "lead:improvement", "phase": "diagnose", "message": {"m": 1},
+        "input": {"error": "boom", "occurrence_id": oid, "source_task_id": "t1",
+                  "source_actor": "worker:implementation", "evidence_ref": "sha256:" + "a" * 64,
+                  "known_causes": [{"root_cause": "rc", "scope": "s"}]},
+        "status": "pending", "attempt": 0})]
+    records.request_diagnosis(tx, task, "worker:implementation", RuntimeError("boom"), {}, "lead:improvement",
+                              lambda: receipts.append(2) or "x")
+    assert receipts == [1] and len(tx.puts) == 1  # an existing request is kept; no second receipt
+    records.record_row(tx, "tasks", {"id": "t1", "status": "blocked"})
+    records.append_event(tx, "e1", {"type": "x"})
+    records.notice(tx, {"id": "t1"}, "tasks", "reconciliation_required", "at", "e1")
+    assert tx.puts[1:] == [("tasks", "t1", {"id": "t1", "status": "blocked"}), ("events", "e1", {"type": "x"})]
+    assert notices == [("tasks", "reconciliation_required", "e1")]
