@@ -32,7 +32,10 @@ from codex_harness.context.adapters.composition_sources import (  # noqa: E402
     SkillHistoryRecorder,
 )
 from codex_harness.context.adapters.review_context import review_context  # noqa: E402
-from codex_harness.context.application.compose import CompositionRequest, ContextComposer  # noqa: E402
+from codex_harness.context.application.compose import (  # noqa: E402
+    CompositionRequest,
+    ContextComposer,
+)
 from codex_harness.host_os.adapters.git_workspace import GitWorkspace  # noqa: E402
 from codex_harness.kernel.ids import digest  # noqa: E402
 from codex_harness.kernel.policy import POLICY  # noqa: E402
