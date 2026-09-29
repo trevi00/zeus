@@ -145,6 +145,9 @@ def run_driver(python: Path, driver: Path, work: Path, extra_env: dict, use_bwra
     return json.loads(proc.stdout.strip().splitlines()[-1])
 
 
+OWNER_KEY = "zeus.rebuild.owner"
+
+
 class FixtureCleanupError(RuntimeError):
     """The disposable PostgreSQL fixture could not be proven removed (S0 SF-1): residue is uncertain."""
 
@@ -166,7 +169,8 @@ class DisposablePostgres:
         self.socket.mkdir()
         self.socket.chmod(0o777)
         self.name = f"{provider_guard.FIXTURE_NAME_PREFIX}s0-pg-{os.getpid()}"
-        self.owner = f"zeus.rebuild.owner={os.getpid()}-{time.monotonic_ns()}"
+        self.owner_value = f"{os.getpid()}-{time.monotonic_ns()}"
+        self.claimed = False
         self.container_id = ""
         self.env = {**os.environ, provider_guard.DOCKER_OPT_IN_ENV: "1",
                     provider_guard.DOCKER_BIND_ROOT_ENV: str(work)}
@@ -176,35 +180,46 @@ class DisposablePostgres:
         return subprocess.run(["docker", *args], env=self.env, capture_output=True, text=True,
                               timeout=timeout)
 
-    def _owned_ids(self) -> list[str]:
-        """Container ids carrying THIS instance's owner label (running or not)."""
-        found = self.docker("ps", "-aq", "--no-trunc", "--filter", f"label={self.owner}")
-        if found.returncode != 0:
-            raise FixtureCleanupError("disposable PostgreSQL ownership lookup failed")
-        return [line.strip() for line in found.stdout.splitlines() if line.strip()]
+    def _holder(self) -> str | None:
+        """The owner-label value of the container holding self.name, "" if it has none, None if absent.
+
+        Uses only guard-admitted forms: `inspect --format` on the owned fixture name (no `ps`, no ids)."""
+        found = self.docker("inspect", "--format", f'{{{{index .Config.Labels "{OWNER_KEY}"}}}}', self.name)
+        if found.returncode == 0:
+            return found.stdout.strip()
+        if "No such object" in found.stderr or "No such container" in found.stderr:
+            return None
+        raise FixtureCleanupError("disposable PostgreSQL ownership lookup failed")
 
     def cleanup(self) -> None:
-        """Remove exactly the owned container(s) and prove absence; raise when that cannot be shown."""
-        ids = self._owned_ids()
-        if self.container_id and self.container_id not in ids:
-            ids.append(self.container_id)
-        for cid in ids:
-            removed = self.docker("rm", "-f", cid)
-            if removed.returncode != 0 and "No such container" not in removed.stderr:
-                raise FixtureCleanupError("disposable PostgreSQL removal failed")
-        if self._owned_ids():
+        """Remove exactly the container this instance started and prove absence; raise when that
+        cannot be shown. A same-name container with another owner is never removed."""
+        holder = self._holder()
+        if holder is None:
+            return
+        if holder != self.owner_value:
+            raise FixtureCleanupError("disposable PostgreSQL name is held by a container this instance did not start")
+        removed = self.docker("rm", "-f", self.name)
+        if removed.returncode != 0 and "No such container" not in removed.stderr:
+            raise FixtureCleanupError("disposable PostgreSQL removal failed")
+        if self._holder() is not None:
             raise FixtureCleanupError("disposable PostgreSQL still present after removal")
 
     def _start(self) -> None:
-        clash = self.docker("ps", "-aq", "--filter", f"name=^/{self.name}$")
-        if clash.returncode != 0 or clash.stdout.strip():
+        try:
+            taken = self._holder() is not None
+        except FixtureCleanupError:
+            taken = True
+        if taken:
             # Never remove a container we did not start merely because the name collides.
+            self.claimed = False
             raise RuntimeError("disposable PostgreSQL name is taken or unverifiable; refusing to start")
+        self.claimed = True
         # The server runs as this user, so the socket directory stays removable by the runner.
         uid, gid = os.getuid(), os.getgid()
         started = self.docker(
             "run", "-d", "--rm", "--network", "none", "--label", provider_guard.FIXTURE_LABEL,
-            "--label", "zeus.rebuild=s0", "--label", self.owner, "--name", self.name,
+            "--label", "zeus.rebuild=s0", "--label", f"{OWNER_KEY}={self.owner_value}", "--name", self.name,
             "--user", f"{uid}:{gid}",
             "--mount", f"type=bind,src={self.socket},dst=/var/run/postgresql",
             "--tmpfs", f"/var/lib/postgresql/data:uid={uid},gid={gid},mode=0700",
@@ -228,6 +243,8 @@ class DisposablePostgres:
             self._start()
         except BaseException as primary:
             # __exit__ does not run when __enter__ raises: clean up here, preserving the primary error.
+            if not self.claimed:
+                raise
             try:
                 self.cleanup()
             except FixtureCleanupError as uncertain:
