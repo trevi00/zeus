@@ -346,7 +346,13 @@ def child_environment(root: Path, *, base: dict | None = None, extra: dict | Non
 
 
 def bwrap_available() -> bool:
-    return shutil.which("bwrap") is not None and sys.platform.startswith("linux")
+    """bwrap is installed AND can create the sandbox here (hosted runners may restrict userns)."""
+    if shutil.which("bwrap") is None or not sys.platform.startswith("linux"):
+        return False
+    import subprocess
+
+    probe = subprocess.run(bwrap_prefix([]) + ["true"], capture_output=True, timeout=30)
+    return probe.returncode == 0
 
 
 def bwrap_prefix(writable: list[Path]) -> list[str]:

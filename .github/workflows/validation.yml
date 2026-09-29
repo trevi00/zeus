@@ -5,7 +5,8 @@ name: Linux validation
 on:
   pull_request:
   push:
-    branches: [main]
+    # The rebuild branch runs the full gate on push: its S0 evidence is exact-candidate CI (§5.1).
+    branches: [main, 'rebuild/**']
   workflow_dispatch:
 
 permissions:
@@ -62,12 +63,30 @@ jobs:
       - run: python -m pip install uv==0.12.2
       - run: uv sync --frozen
       - run: uv run ruff check .
+      # The unchanged reference tests run against the immutable SOURCE tree (REBUILD-DESIGN-v2
+      # §5.1), where their own workflow fixture is still the M7 file; check-tree below proves every
+      # reference path of this candidate is byte-identical to that tree.
+      - run: git worktree add --detach "$RUNNER_TEMP/zeus-source" e38aa722ff1e91dc01ec650689cfe3eebe1ff699
+      - run: uv sync --frozen
+        working-directory: ${{ runner.temp }}/zeus-source
       - run: uv run pytest -q
+        working-directory: ${{ runner.temp }}/zeus-source
       - run: uv build
       - run: uv run harness-supervisor --help
       - run: uv run zeus --version
       - run: uv run python -m zeus ticket --help
       - run: uv run zeus-monitor --help
+      # Rebuild gates: source-tree preservation, the target tree, the reference comparison.
+      - run: python compare/run.py check-tree
+      - run: uv sync --frozen --project target
+      - run: uv run --project target ruff check target
+      - run: uv run pytest -q
+        working-directory: target
+      - run: uv build --project target
+      - if: matrix.python == '3.12'
+        run: python compare/run.py prepare
+      - if: matrix.python == '3.12'
+        run: python compare/run.py run
   integration:
     needs: changes
     if: needs.changes.outputs.mode == 'full'
@@ -88,6 +107,10 @@ jobs:
       - run: uv run pytest -q tests/test_verification.py tests/test_host_interruption.py
         env:
           ZEUS_TEST_DOCKER: '1'
+      # §2.9 decision/release/outbox discriminators on a labelled, network-less disposable
+      # PostgreSQL started by the runner through the default-deny Docker guard (S0 F3).
+      - run: python compare/run.py prepare
+      - run: python compare/run.py run --only effects.decision_unit.pg --pg
       - if: always()
         run: docker compose -p harness-ci down --volumes
   gate:
