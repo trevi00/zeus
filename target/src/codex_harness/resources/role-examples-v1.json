@@ -1,0 +1,301 @@
+{
+ "schema": "urn:zeus:role-examples:1",
+ "version": 1,
+ "delivery": "reference_only_until_S10",
+ "roles": {
+  "conductor": {
+   "basis": "SOURCE adapters/executor.py decide_one/_commit_decision (review_conductor, proposal), adapters/autonomous_roles.py execute_role + domain/council.py COUNCIL_AGENTS (dge_role), application/workflow.py _next (hook.required), application/threshold_reviews.py _queue (threshold_review)",
+   "examples": [
+    {
+     "kind": "normal",
+     "input": "A lead's accepted release review arrives for candidate revision R",
+     "action": "review_conductor",
+     "result": "Records the conductor review against the release; an accepted review queues the release for deployment"
+    },
+    {
+     "kind": "normal",
+     "input": "An accepted research assessment arrives as a proposal to decide",
+     "action": "proposal",
+     "result": "Accepts or declines the proposal; an accepted proposal is handed to lead:improvement as a plan assignment at the approved basis revision"
+    },
+    {
+     "kind": "normal",
+     "input": "A council run reaches the arbitration step with the packet and both leads' proposals",
+     "action": "dge_role",
+     "result": "Judges read-only in a clean checkout at base, names every finding once and returns a verdict and disposition"
+    },
+    {
+     "kind": "variation",
+     "input": "The conductor rejects a candidate on review",
+     "action": "review_conductor",
+     "result": "Records the rejection; bounded rework returns a plan assignment to lead:improvement, and stops once the rework budget is spent or the same tree repeats"
+    }
+   ]
+  },
+  "lead:frontdesk": {
+   "basis": "SOURCE adapters/executor.py execute_one (frontdesk) and adapters/frontdesk.py execute_frontdesk; resources/providers.json assignment for frontdesk",
+   "examples": [
+    {
+     "kind": "normal",
+     "input": "An operator asks what the running system is doing now",
+     "action": "frontdesk",
+     "result": "Answers in one read-only turn from the checkout and the sanitized monitoring capture, separating observed facts from unknowns"
+    },
+    {
+     "kind": "normal",
+     "input": "An operator asks whether a change can be released",
+     "action": "frontdesk",
+     "result": "Answers from repository records; states that the answer is unverified conversation context, not an approval"
+    },
+    {
+     "kind": "variation",
+     "input": "An operator submits a request-intent message proposing new work",
+     "action": "frontdesk",
+     "result": "Records the proposed objective and the criteria an owner-fixed specification would need; dispatches no implementation and approves nothing"
+    }
+   ]
+  },
+  "lead:research": {
+   "basis": "SOURCE application/scheduling.py schedule_research/schedule_audits (sender of research and audit_* assignments), application/research.py _queue_review (audit_review sender), adapters/autonomous_roles.py execute_role + domain/council.py (dge_role research_lead)",
+   "examples": [
+    {
+     "kind": "normal",
+     "input": "The research interval elapses for the github and geeknews sources",
+     "action": "research",
+     "result": "Assigns one proactive research task per source to its worker, once per interval slot"
+    },
+    {
+     "kind": "normal",
+     "input": "A discovery awaits a mapping of its repository at a pinned commit",
+     "action": "audit_discovery",
+     "result": "Assigns the audit discovery step to worker:github; unfinished scope is carried by the next generation"
+    },
+    {
+     "kind": "normal",
+     "input": "A council run needs the research proposal from the packet and the frozen database report",
+     "action": "dge_role",
+     "result": "Proposes the design read-only in a clean checkout at base, citing only packet claim ids"
+    },
+    {
+     "kind": "variation",
+     "input": "A repository must be acquired at a pinned revision before it can be audited",
+     "action": "audit_acquire",
+     "result": "Assigns acquisition of the exact commit to worker:github, then partition and proposal steps in later assignments"
+    }
+   ]
+  },
+  "lead:improvement": {
+   "basis": "SOURCE adapters/executor.py execute_one (plan) and decide_one (review_lead, threshold_review), adapters/autonomous_roles.py execute_role + domain/council.py (dge_role improvement lead), resources/providers.json (plan)",
+   "examples": [
+    {
+     "kind": "normal",
+     "input": "The conductor assigns an improvement plan objective",
+     "action": "plan",
+     "result": "Returns a bounded plan with acceptance criteria, allowed paths, risk and rollback; assigns implementation to worker:implementation"
+    },
+    {
+     "kind": "normal",
+     "input": "A worker returns a candidate revision with test claims",
+     "action": "review_lead",
+     "result": "Reviews the candidate against an independent diff in a read-only checkout; an accepted review is handed to the conductor"
+    },
+    {
+     "kind": "normal",
+     "input": "A council run needs a constructive alternative to the research proposal",
+     "action": "dge_role",
+     "result": "Returns an alternative (reuse, improve, migrate or new) with findings, read-only at base"
+    },
+    {
+     "kind": "variation",
+     "input": "The lead rejects a candidate on review",
+     "action": "review_lead",
+     "result": "Records the rejection and sends a rework implement assignment carrying the previous candidate and every finding, within the rework budget"
+    }
+   ]
+  },
+  "lead:dba": {
+   "basis": "SOURCE domain/council.py (COUNCIL_AGENTS dba -> lead:dba, DBA_OUTPUT, RESPONSIBILITY) and adapters/autonomous_roles.py execute_role (dge_role)",
+   "examples": [
+    {
+     "kind": "normal",
+     "input": "A council run hands over the frozen read-only database snapshot and the research packet",
+     "action": "dge_role",
+     "result": "Interprets the snapshot against the packet and returns a report naming the snapshot digest, the claim ids used and the unknowns"
+    },
+    {
+     "kind": "normal",
+     "input": "The snapshot shows selected task and operation rows with whitelisted status fields",
+     "action": "dge_role",
+     "result": "Reports what those statuses indicate as an interpretation, never as a new Git-supported fact"
+    },
+    {
+     "kind": "variation",
+     "input": "A requested key is missing from the snapshot",
+     "action": "dge_role",
+     "result": "Reports it as absent only at that snapshot and scope, records it among the unknowns, and does not infer beyond it"
+    }
+   ]
+  },
+  "lead:researcher": {
+   "basis": "SOURCE domain/autonomous.py ROLE_AGENTS (researcher -> lead:researcher) and adapters/autonomous_roles.py OBJECTIVES/execute_role (dge_role)",
+   "examples": [
+    {
+     "kind": "normal",
+     "input": "A plan objective and a pinned base revision start an autonomous run",
+     "action": "dge_role",
+     "result": "Searches the named scope for definitions, callers and tests read-only and returns sources with hashes, claims, questions and an ssot decision"
+    },
+    {
+     "kind": "normal",
+     "input": "The scope names a symbol that cannot be found at base",
+     "action": "dge_role",
+     "result": "Records the symbol as unknown rather than absent and never invents a citation"
+    },
+    {
+     "kind": "variation",
+     "input": "A consequential product choice cannot be settled from the sources",
+     "action": "dge_role",
+     "result": "Sets needs_user with the question and stops the debate for a user decision"
+    }
+   ]
+  },
+  "lead:proposer": {
+   "basis": "SOURCE domain/autonomous.py ROLE_AGENTS (proposer -> lead:proposer) and adapters/autonomous_roles.py OBJECTIVES/execute_role (dge_role)",
+   "examples": [
+    {
+     "kind": "normal",
+     "input": "A frozen research packet and a fixed plan are delivered",
+     "action": "dge_role",
+     "result": "Proposes the design for the fixed plan, citing packet claims only, without changing the plan"
+    },
+    {
+     "kind": "normal",
+     "input": "The packet holds a claim supporting one design option",
+     "action": "dge_role",
+     "result": "Cites that claim id in the proposal so each design statement traces to evidence"
+    },
+    {
+     "kind": "variation",
+     "input": "The packet marks a question as blocking unknown",
+     "action": "dge_role",
+     "result": "Proposes only what the packet supports and leaves the blocking unknown open instead of settling it"
+    }
+   ]
+  },
+  "lead:attacker": {
+   "basis": "SOURCE domain/autonomous.py ROLE_AGENTS (attacker -> lead:attacker) and adapters/autonomous_roles.py OBJECTIVES/execute_role (dge_role)",
+   "examples": [
+    {
+     "kind": "normal",
+     "input": "A proposal and its packet are delivered for adversarial review",
+     "action": "dge_role",
+     "result": "Returns findings; only material blockers are critical, each with a trigger, cited claims, the fixed criterion, impact and mitigation"
+    },
+    {
+     "kind": "normal",
+     "input": "A weakness is real but not material to any fixed criterion",
+     "action": "dge_role",
+     "result": "Records it as a minor finding with trigger, impact and mitigation left null"
+    },
+    {
+     "kind": "variation",
+     "input": "No reachable blocker exists against the fixed criteria",
+     "action": "dge_role",
+     "result": "Returns only minor findings, so the arbiter can accept without blockers"
+    }
+   ]
+  },
+  "lead:arbiter": {
+   "basis": "SOURCE domain/autonomous.py ROLE_AGENTS (arbiter -> lead:arbiter) and adapters/autonomous_roles.py OBJECTIVES/execute_role (dge_role)",
+   "examples": [
+    {
+     "kind": "normal",
+     "input": "The proposal and the attacker's findings are delivered",
+     "action": "dge_role",
+     "result": "Judges materiality independently and names every finding exactly once with a verdict and disposition"
+    },
+    {
+     "kind": "normal",
+     "input": "A critical finding lacks a cited basis in the packet",
+     "action": "dge_role",
+     "result": "Refutes the unsupported critical allegation with cited reasoning"
+    },
+    {
+     "kind": "variation",
+     "input": "A critical finding is supported and unmitigated",
+     "action": "dge_role",
+     "result": "Does not defer it and does not accept; returns the verdict that leads to rework or needs_research"
+    }
+   ]
+  },
+  "worker:github": {
+   "basis": "SOURCE adapters/executor.py execute_one (research github branch, audit_* dispatch), application/scheduling.py (github assignments)",
+   "examples": [
+    {
+     "kind": "normal",
+     "input": "A scheduled research assignment names the github source with a proactive intent",
+     "action": "research",
+     "result": "Collects entries, shortlists one repository, fetches its pinned revision and records a discovery-only candidate"
+    },
+    {
+     "kind": "normal",
+     "input": "An audit_discovery assignment names a recorded research discovery",
+     "action": "audit_discovery",
+     "result": "Runs the discovery step through the audit executor and returns its result"
+    },
+    {
+     "kind": "variation",
+     "input": "A backlog item names a repository and a commit to acquire",
+     "action": "audit_acquire",
+     "result": "Acquires that exact commit through the audit executor; later audit_partition and audit_propose assignments continue from it"
+    }
+   ]
+  },
+  "worker:geeknews": {
+   "basis": "SOURCE adapters/executor.py execute_one (research non-github branch), application/scheduling.py schedule_research (worker:<source> assignments)",
+   "examples": [
+    {
+     "kind": "normal",
+     "input": "A scheduled research assignment names the geeknews source with a proactive intent",
+     "action": "research",
+     "result": "Collects feed entries and records one discovery-only candidate; primary-source mapping and audit remain required"
+    },
+    {
+     "kind": "normal",
+     "input": "The candidate is returned to the executor",
+     "action": "research",
+     "result": "The result cites a fetched item, carries the source artifact and is marked discovery_only and not adoption eligible"
+    },
+    {
+     "kind": "variation",
+     "input": "A research assignment states no intent",
+     "action": "research",
+     "result": "Refused before any fetch; the task must state its intent, and a proactive fetch is gated by discovery pressure"
+    }
+   ]
+  },
+  "worker:implementation": {
+   "basis": "SOURCE adapters/executor.py execute_one (implement) and decide_one/_commit_decision (rework assignment), resources/providers.json (implement)",
+   "examples": [
+    {
+     "kind": "normal",
+     "input": "An approved plan assigns bounded changes with acceptance criteria and allowed paths",
+     "action": "implement",
+     "result": "Implements in a prepared workspace at the base revision and returns a candidate with test claims"
+    },
+    {
+     "kind": "normal",
+     "input": "The candidate is captured",
+     "action": "implement",
+     "result": "The workspace is captured as a revision, tree and base; the test claims are inspected there, never trusted as authority"
+    },
+    {
+     "kind": "variation",
+     "input": "A rework assignment carries the previous candidate and review findings",
+     "action": "implement",
+     "result": "Reimplements within allowed paths and returns a new candidate; findings are addressed, not reargued"
+    }
+   ]
+  }
+ }
+}
