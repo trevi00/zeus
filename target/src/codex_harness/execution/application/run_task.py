@@ -117,6 +117,23 @@ class RunTask:
         self.monotonic = monotonic or __import__("time").monotonic
 
     # ---- declared S5/S8 boundaries: an absent port refuses, never a silent skip (DESIGN-run-task §8) ----------
+    def _require_wired(self, action: str, details) -> None:
+        """S4 round-1 F1: an action whose required collaborator is absent refuses BEFORE any provider, Git,
+        workspace or research-fetch effect (CE-9), instead of after them. Only presence is checked here; the
+        evidence inspection and the hook candidate still run after the result exists, as in M7."""
+        details = details if isinstance(details, dict) else {}
+        plan = details.get("plan") if isinstance(details.get("plan"), dict) else {}
+        origin = plan.get("origin") if isinstance(plan.get("origin"), dict) else {}
+        if self.evidence_profile is not None:
+            self._project_evidence()  # a host evidence profile needs its port for every provider action
+        if action == "implement":
+            self._evidence_gate()  # M7 inspects every implementation's claims after the provider returns
+            if origin.get("hook"):
+                self._hook_candidates()
+        candidate = details.get("candidate") if isinstance(details.get("candidate"), dict) else {}
+        if action == "rebase" and candidate.get("hook_id"):
+            self._hook_candidates()
+
     def _continuation(self, details) -> dict | None:
         """The trusted continuation binding of this assignment, or None for the legacy path (M7 `_continuation`).
         The lane-store validation is S5's; without its port an attached binding refuses."""
@@ -160,6 +177,7 @@ class RunTask:
             message = task["message"]
             commands = []
             action, details = message["what"]["action"], message["what"]["details"]
+            self._require_wired(action, details)
             with self.store.transaction() as tx:
                 bound_ticket = self.ticket_binding(tx, details)
             if action in {"plan", "implement"}:
