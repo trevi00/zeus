@@ -1,0 +1,5536 @@
+{
+ "canonical": {
+  "argv": {
+   "interpreter_is_this_one": true,
+   "result": {
+    "canonical_exit": 0,
+    "receipt": {
+     "check": "pel-owners",
+     "exit_code": 0,
+     "ok": true,
+     "result_sha256": "84d7d175f757415beb11da12aca9cde85b4fb08becf954688d5072950680fdbc",
+     "schema": "urn:zeus:host-migration-evidence:1",
+     "subject": null
+    },
+    "result": {
+     "valid": true
+    }
+   },
+   "seen": [
+    {
+     "argv": [
+      "<python>",
+      "<root>/checkout/scripts/aibox_data",
+      "pel-owners",
+      "--inventory",
+      "C:\\x\\i.json",
+      "--owners",
+      "o.json"
+     ],
+     "kwargs": {
+      "capture_output": true,
+      "timeout": 3600
+     }
+    }
+   ]
+  },
+  "module_import": {
+   "has_pg_schema": true,
+   "missing_module": "ModuleNotFoundError",
+   "module": "aibox_data.contracts",
+   "on_path_before": false,
+   "path_entries": 1,
+   "same_module_twice": true,
+   "scripts_first": true
+  },
+  "tool_absent": {
+   "absent": {
+    "raised": {
+     "field": "scripts/aibox_data",
+     "message": "canonical_tool_unavailable: scripts/aibox_data",
+     "reason_code": "canonical_tool_unavailable",
+     "type": "MigrationRefused"
+    }
+   },
+   "directory_without_main": {
+    "raised": {
+     "field": "scripts/aibox_data",
+     "message": "canonical_tool_unavailable: scripts/aibox_data",
+     "reason_code": "canonical_tool_unavailable",
+     "type": "MigrationRefused"
+    }
+   },
+   "run_canonical_refuses_before_running": {
+    "raised": {
+     "field": "scripts/aibox_data",
+     "message": "canonical_tool_unavailable: scripts/aibox_data",
+     "reason_code": "canonical_tool_unavailable",
+     "type": "MigrationRefused"
+    }
+   }
+  },
+  "tool_resolution": {
+   "is_a_path": true,
+   "is_scripts_aibox_data_of_the_checkout": true,
+   "main_present": true,
+   "tool": "<root>/checkout/scripts/aibox_data"
+  },
+  "wrapper_exit_rule": {
+   "case_error": "MigrationRefused",
+   "message": "evidence_check_unknown: evidence.check"
+  }
+ },
+ "carried": {
+  "test_a_closed_runtime_control_only_drains_and_its_reopening_admits_the_requalification": "drives the real FleetRunner over a Fleet world, not the host migration adapter: the S5/S6 fleet/continuation families",
+  "test_cli_validate_reports_digest_and_never_echoes_a_secret": "CLI validate through main(argv) and the parser: S10 CLI",
+  "test_controller_wires_the_configured_control_dir_into_the_systemd_start": "host_delivery.controller wiring reads the host settings SSOT and a HostDelivery world: delivery.host_targets/canaries owner",
+  "test_controller_without_a_valid_control_dir_refuses_the_systemd_start_by_name[x3]": "host_delivery.controller wiring (settings(), ZEUS_AIBOX_ROOT environment): delivery.host_targets/canaries owner",
+  "test_pg_compare_cli_mismatch_exits_nonzero": "CLI pg-compare-schema through main(argv): S10 CLI (the per-schema comparison itself is the `compare` group)",
+  "test_postgres_a_waiter_past_the_10s_lock_timeout_is_refused_and_writes_nothing": "PostgreSQL: the owner-recorded delivery.restore(.pg) family",
+  "test_postgres_record_waits_for_a_switch_holding_the_coordinator_lock": "PostgreSQL (HARNESS_INTEGRATION, isolated_pgstore): the owner-recorded delivery.restore(.pg) family; docker is denied here",
+  "test_postgres_two_successors_of_one_head_race_to_exactly_one_record": "PostgreSQL: the owner-recorded delivery.restore(.pg) family",
+  "test_redis_copy_is_verified_by_the_canonical_comparison": "needs two disposable Redis servers (ZEUS_MIGRATION_TEST_REDIS_SOURCE/TARGET): owner family",
+  "test_rollback_without_any_intent_is_r0_with_its_own_gate": "store only, no file: covered by delivery.host_migrations (rollback_without_intent)",
+  "test_s6_the_control_less_bootstrap_on_a_db_paused_fleet_moves_state_but_starts_nothing": "drives FleetRunner and Continuation (test_continuation world), not the host migration adapter: the S5/S6 families",
+  "test_source_dump_argv_keeps_the_container_path_and_parses_crlf_output_identically": "PG dump argv over a docker double: owner family delivery.restore(.pg)",
+  "test_source_pg_catalog_reads_one_snapshot_with_pg_catalog_search_path": "PG catalog over a psycopg connection double: owner family delivery.restore(.pg)",
+  "test_source_pg_export_is_one_read_only_snapshot_scoped_to_the_schema_with_lf_bytes": "PG export over a psycopg connection double: owner family delivery.restore(.pg)",
+  "test_stage_refuses_preexisting_destination_ancestor_symlink_and_writes_nothing_outside": "CLI artifact-stage through main(argv): S10 CLI",
+  "test_unreadable_nested_directory_is_a_failed_inventory_not_an_empty_one": "CLI artifact-inventory through main(argv) over the real tool and a chmod-0 directory: S10 CLI",
+  "test_verify_mismatch_exits_nonzero_and_match_exits_zero": "CLI artifact-inventory/stage/verify through main(argv): S10 CLI",
+  "test_whole_database_dump_runs_in_the_container_without_a_dsn_and_refuses_an_empty_archive": "PG dump over a docker double: owner family delivery.restore(.pg)",
+  "tests/test_host_migration_pg_rehearsal.py": "PG dump/restore rehearsal against a disposable PostgreSQL: owner family delivery.restore(.pg)"
+ },
+ "compare": {
+  "catalog_comparison_mapping": {
+   "catalog_digest": {
+    "deterministic": true,
+    "ignores_the_database_name": true,
+    "sees_a_row_count": true,
+    "sha256_hex": true,
+    "value": "61fbcd9c8835c15787c0761d3040e5df3b5a3e2778eb17edaafcb7233fe770ef"
+   },
+   "extension_type_renamed": {
+    "returned": {
+     "diff_count": 1,
+     "diffs": [
+      {
+       "schema": "zeus_aibox_harness",
+       "section": "relations"
+      }
+     ],
+     "match": false,
+     "rows": 8,
+     "schemas": 4,
+     "tables": 4
+    }
+   },
+   "extension_version": {
+    "returned": {
+     "diff_count": 1,
+     "diffs": [
+      {
+       "schema": null,
+       "section": "extensions"
+      }
+     ],
+     "match": false,
+     "rows": 8,
+     "schemas": 4,
+     "tables": 4
+    }
+   },
+   "missing_on_target": {
+    "returned": {
+     "diff_count": 1,
+     "diffs": [
+      {
+       "schema": "zeus_team_profile_001",
+       "section": "missing_on_target"
+      }
+     ],
+     "match": false,
+     "rows": 6,
+     "schemas": 4,
+     "tables": 3
+    }
+   },
+   "renamed": {
+    "returned": {
+     "diff_count": 0,
+     "diffs": [],
+     "match": true,
+     "rows": 8,
+     "schemas": 4,
+     "tables": 4
+    }
+   },
+   "rows_changed": {
+    "returned": {
+     "diff_count": 1,
+     "diffs": [
+      {
+       "schema": "zeus_aibox_harness",
+       "section": "relations"
+      }
+     ],
+     "match": false,
+     "rows": 7,
+     "schemas": 4,
+     "tables": 4
+    }
+   }
+  },
+  "per_schema_comparison": {
+   "coverage_complete": {
+    "receipt": {
+     "check": "pg-coverage",
+     "exit_code": 0,
+     "ok": true,
+     "result_sha256": "85e8941d4869f334217a1fdb4940f2d5ed68baeb46e5e75864bfb4c8d8439efa",
+     "schema": "urn:zeus:host-migration-evidence:1",
+     "subject": null
+    },
+    "result": {
+     "covered": 2,
+     "duplicated": [],
+     "extra": [],
+     "failed": [],
+     "missing": [],
+     "ok": true,
+     "schemas": 2
+    }
+   },
+   "coverage_duplicated": {
+    "receipt": {
+     "check": "pg-coverage",
+     "exit_code": 1,
+     "ok": false,
+     "result_sha256": "ac0cd94b97859e61eb038b4412bc4eb2e23989867c5d5dfd9d3f6da67c3da7ae",
+     "schema": "urn:zeus:host-migration-evidence:1",
+     "subject": null
+    },
+    "result": {
+     "covered": 2,
+     "duplicated": [
+      "schema=public"
+     ],
+     "extra": [],
+     "failed": [],
+     "missing": [],
+     "ok": false,
+     "schemas": 2
+    }
+   },
+   "coverage_failing": {
+    "receipt": {
+     "check": "pg-coverage",
+     "exit_code": 1,
+     "ok": false,
+     "result_sha256": "5f5769e78450be84205f3b6a6a0c1e1bb6063c15edcf5548f2587db616af7688",
+     "schema": "urn:zeus:host-migration-evidence:1",
+     "subject": null
+    },
+    "result": {
+     "covered": 2,
+     "duplicated": [],
+     "extra": [],
+     "failed": [
+      "schema=public"
+     ],
+     "missing": [],
+     "ok": false,
+     "schemas": 2
+    }
+   },
+   "coverage_missing": {
+    "receipt": {
+     "check": "pg-coverage",
+     "exit_code": 1,
+     "ok": false,
+     "result_sha256": "0b8742c5fc45bf330d4878da85b165ec65802513550ffc69388502e6c2077a7b",
+     "schema": "urn:zeus:host-migration-evidence:1",
+     "subject": null
+    },
+    "result": {
+     "covered": 1,
+     "duplicated": [],
+     "extra": [],
+     "failed": [],
+     "missing": [
+      "schema=zeus_fleet_harness"
+     ],
+     "ok": false,
+     "schemas": 2
+    }
+   },
+   "delta_on_a_history_bucket": {
+    "raised": {
+     "field": "delta.changes",
+     "message": "delta_bucket_not_allowed: delta.changes",
+     "reason_code": "delta_bucket_not_allowed",
+     "type": "MigrationRefused"
+    }
+   },
+   "delta_on_a_non_public_schema": {
+    "raised": {
+     "field": "source_schema",
+     "message": "delta_not_allowed: source_schema",
+     "reason_code": "delta_not_allowed",
+     "type": "MigrationRefused"
+    }
+   },
+   "lane": {
+    "canonical_exit": 0,
+    "receipt": {
+     "check": "compare-pg",
+     "exit_code": 0,
+     "ok": true,
+     "result_sha256": "5f76a47e8fbc0c175475cd6b40129cca465b16d5c0767ecc470bbd42442cd586",
+     "schema": "urn:zeus:host-migration-evidence:1",
+     "subject": "schema=zeus_fleet_harness"
+    },
+    "result": {
+     "match": true,
+     "problems": [],
+     "row_problem_count": 0,
+     "rows": []
+    }
+   },
+   "public": {
+    "canonical_exit": 0,
+    "receipt": {
+     "check": "compare-pg",
+     "exit_code": 0,
+     "ok": true,
+     "result_sha256": "5f76a47e8fbc0c175475cd6b40129cca465b16d5c0767ecc470bbd42442cd586",
+     "schema": "urn:zeus:host-migration-evidence:1",
+     "subject": "schema=public"
+    },
+    "result": {
+     "match": true,
+     "problems": [],
+     "row_problem_count": 0,
+     "rows": []
+    }
+   },
+   "schema_missing_in_the_source": {
+    "raised": {
+     "field": "source_schema",
+     "message": "schema_unmapped: source_schema",
+     "reason_code": "schema_unmapped",
+     "type": "MigrationRefused"
+    }
+   },
+   "schema_missing_in_the_source_inventory": {
+    "raised": {
+     "field": "inventory.zeus_fleet_harness",
+     "message": "schema_missing: inventory.zeus_fleet_harness",
+     "reason_code": "schema_missing",
+     "type": "MigrationRefused"
+    }
+   },
+   "undeclared_delta": {
+    "canonical_exit": 1,
+    "receipt": {
+     "check": "compare-pg",
+     "exit_code": 1,
+     "ok": false,
+     "result_sha256": "f7264c3bc71ca6fa2552867d4c4c93fae85f8611688c3d06d5b76084574287e5",
+     "schema": "urn:zeus:host-migration-evidence:1",
+     "subject": "schema=public"
+    },
+    "result": {
+     "match": false,
+     "problems": [],
+     "row_problem_count": 1,
+     "rows": [
+      {
+       "bucket": "fleet_registry",
+       "id": "fleet",
+       "problem": "changed",
+       "schema": "public"
+      }
+     ]
+    }
+   }
+  },
+  "rename_plan": {
+   "not_total": {
+    "raised": {
+     "field": "schema_map.zeus_team_profile_001",
+     "message": "rename_map_not_total: schema_map.zeus_team_profile_001",
+     "reason_code": "rename_map_not_total",
+     "type": "MigrationRefused"
+    }
+   },
+   "plan": {
+    "returned": {
+     "extension_home": "public",
+     "parking": "zeus_migration_extensions",
+     "renames": [
+      [
+       "public",
+       "zeus_aibox_control"
+      ],
+      [
+       "zeus_fleet_harness",
+       "zeus_aibox_harness"
+      ],
+      [
+       "zeus_fleet_interface",
+       "zeus_aibox_interface"
+      ]
+     ],
+     "reverse": false
+    }
+   },
+   "public_as_a_target": {
+    "raised": {
+     "field": "schema_map.zeus_team_profile_001",
+     "message": "public_schema: schema_map.zeus_team_profile_001",
+     "reason_code": "public_schema",
+     "type": "MigrationRefused"
+    }
+   },
+   "public_remapped": {
+    "raised": {
+     "field": "schema_map.public",
+     "message": "source_public_mapping: schema_map.public",
+     "reason_code": "source_public_mapping",
+     "type": "MigrationRefused"
+    }
+   },
+   "reverse_map": {
+    "zeus_aibox_control": "public",
+    "zeus_aibox_harness": "zeus_fleet_harness",
+    "zeus_aibox_interface": "zeus_fleet_interface",
+    "zeus_team_profile_001": "zeus_team_profile_001"
+   },
+   "reverse_plan": {
+    "returned": {
+     "extension_home": "public",
+     "parking": "zeus_migration_extensions",
+     "renames": [
+      [
+       "zeus_aibox_control",
+       "public"
+      ],
+      [
+       "zeus_aibox_harness",
+       "zeus_fleet_harness"
+      ],
+      [
+       "zeus_aibox_interface",
+       "zeus_fleet_interface"
+      ]
+     ],
+     "reverse": true
+    }
+   },
+   "reverse_without_the_flag": {
+    "raised": {
+     "field": "schema_map.zeus_aibox_control",
+     "message": "public_schema: schema_map.zeus_aibox_control",
+     "reason_code": "public_schema",
+     "type": "MigrationRefused"
+    }
+   },
+   "target_occupied": {
+    "raised": {
+     "field": "schema_map",
+     "message": "rename_target_occupied: schema_map",
+     "reason_code": "rename_target_occupied",
+     "type": "MigrationRefused"
+    }
+   }
+  }
+ },
+ "files": {
+  "atomic_write": {
+   "after_failed_replace": {
+    "entries": {
+     "x.json": {
+      "json": {
+       "k": 2
+      },
+      "sha256": "2479ccef6668227283fd79ca90f450821e117a46c8d9044777c5205f316f33f2"
+     }
+    },
+    "seen": [
+     {
+      "source": ".x.json.<random>",
+      "source_is_link": false
+     }
+    ]
+   },
+   "after_interrupt": {
+    "x.json": {
+     "json": {
+      "k": 2
+     },
+     "sha256": "2479ccef6668227283fd79ca90f450821e117a46c8d9044777c5205f316f33f2"
+    }
+   },
+   "digest_is_bytes_digest": true,
+   "entries": {
+    "x.json": {
+     "json": {
+      "k": 1
+     },
+     "sha256": "94358b6308fdf886092bfd1f85dd64b57dc6b0c7632e1430a5316c64d8881921"
+    }
+   },
+   "events": [
+    "os.fsync:file",
+    "fsync:dir",
+    "os.fsync:dir"
+   ],
+   "failed_replace": {
+    "raised": {
+     "message": "LABELLED injected failure",
+     "type": "OSError"
+    }
+   },
+   "interrupted": "KeyboardInterrupt",
+   "nothing_written_through_the_link": {},
+   "rewrite": {
+    "entries": {
+     "x.json": {
+      "json": {
+       "k": 2
+      },
+      "sha256": "2479ccef6668227283fd79ca90f450821e117a46c8d9044777c5205f316f33f2"
+     }
+    },
+    "inode_changed": true
+   },
+   "unavailable": {
+    "absent": {
+     "raised": {
+      "field": "control_dir",
+      "message": "control_dir_unavailable: control_dir",
+      "reason_code": "control_dir_unavailable",
+      "type": "MigrationRefused"
+     }
+    },
+    "file": {
+     "raised": {
+      "field": "control_dir",
+      "message": "control_dir_unavailable: control_dir",
+      "reason_code": "control_dir_unavailable",
+      "type": "MigrationRefused"
+     }
+    },
+    "linked": {
+     "raised": {
+      "field": "control_dir",
+      "message": "control_dir_unavailable: control_dir",
+      "reason_code": "control_dir_unavailable",
+      "type": "MigrationRefused"
+     }
+    }
+   }
+  },
+  "classify_activation_files": {
+   "matrix": {
+    "absent/absent": {
+     "classification": "activation_files_inconsistent",
+     "current": null,
+     "effective_id": "1213d29d0208a467a50964762b07fbdcd3205b74823bab0f31a6a8cd48a53076",
+     "effective_revision": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "predecessor_revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "receipt_sha256": null
+    },
+    "absent/effective": {
+     "classification": "activation_files_inconsistent",
+     "current": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "effective_id": "1213d29d0208a467a50964762b07fbdcd3205b74823bab0f31a6a8cd48a53076",
+     "effective_revision": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "predecessor_revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "receipt_sha256": null
+    },
+    "absent/foreign": {
+     "classification": "activation_files_inconsistent",
+     "current": "7777777777777777777777777777777777777777",
+     "effective_id": "1213d29d0208a467a50964762b07fbdcd3205b74823bab0f31a6a8cd48a53076",
+     "effective_revision": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "predecessor_revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "receipt_sha256": null
+    },
+    "absent/predecessor": {
+     "classification": "activation_files_inconsistent",
+     "current": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "effective_id": "1213d29d0208a467a50964762b07fbdcd3205b74823bab0f31a6a8cd48a53076",
+     "effective_revision": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "predecessor_revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "receipt_sha256": null
+    },
+    "effective/absent": {
+     "classification": "activation_files_inconsistent",
+     "current": null,
+     "effective_id": "1213d29d0208a467a50964762b07fbdcd3205b74823bab0f31a6a8cd48a53076",
+     "effective_revision": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "predecessor_revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "receipt_sha256": "324fed01a489e07b994849a38e09cde36470c4ecbfb5c49e8cb561ffb1404f56"
+    },
+    "effective/effective": {
+     "classification": "switched",
+     "current": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "effective_id": "1213d29d0208a467a50964762b07fbdcd3205b74823bab0f31a6a8cd48a53076",
+     "effective_revision": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "predecessor_revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "receipt_sha256": "324fed01a489e07b994849a38e09cde36470c4ecbfb5c49e8cb561ffb1404f56"
+    },
+    "effective/foreign": {
+     "classification": "activation_files_inconsistent",
+     "current": "7777777777777777777777777777777777777777",
+     "effective_id": "1213d29d0208a467a50964762b07fbdcd3205b74823bab0f31a6a8cd48a53076",
+     "effective_revision": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "predecessor_revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "receipt_sha256": "324fed01a489e07b994849a38e09cde36470c4ecbfb5c49e8cb561ffb1404f56"
+    },
+    "effective/predecessor": {
+     "classification": "receipt_written",
+     "current": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "effective_id": "1213d29d0208a467a50964762b07fbdcd3205b74823bab0f31a6a8cd48a53076",
+     "effective_revision": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "predecessor_revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "receipt_sha256": "324fed01a489e07b994849a38e09cde36470c4ecbfb5c49e8cb561ffb1404f56"
+    },
+    "foreign/absent": {
+     "classification": "activation_files_inconsistent",
+     "current": null,
+     "effective_id": "1213d29d0208a467a50964762b07fbdcd3205b74823bab0f31a6a8cd48a53076",
+     "effective_revision": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "predecessor_revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "receipt_sha256": "936353965b4ba9180e3acb781d81aa634390ac95fd2874a9cbc4c4846b49fbd4"
+    },
+    "foreign/effective": {
+     "classification": "activation_files_inconsistent",
+     "current": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "effective_id": "1213d29d0208a467a50964762b07fbdcd3205b74823bab0f31a6a8cd48a53076",
+     "effective_revision": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "predecessor_revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "receipt_sha256": "936353965b4ba9180e3acb781d81aa634390ac95fd2874a9cbc4c4846b49fbd4"
+    },
+    "foreign/foreign": {
+     "classification": "activation_files_inconsistent",
+     "current": "7777777777777777777777777777777777777777",
+     "effective_id": "1213d29d0208a467a50964762b07fbdcd3205b74823bab0f31a6a8cd48a53076",
+     "effective_revision": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "predecessor_revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "receipt_sha256": "936353965b4ba9180e3acb781d81aa634390ac95fd2874a9cbc4c4846b49fbd4"
+    },
+    "foreign/predecessor": {
+     "classification": "activation_files_inconsistent",
+     "current": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "effective_id": "1213d29d0208a467a50964762b07fbdcd3205b74823bab0f31a6a8cd48a53076",
+     "effective_revision": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "predecessor_revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "receipt_sha256": "936353965b4ba9180e3acb781d81aa634390ac95fd2874a9cbc4c4846b49fbd4"
+    },
+    "predecessor/absent": {
+     "classification": "activation_files_inconsistent",
+     "current": null,
+     "effective_id": "1213d29d0208a467a50964762b07fbdcd3205b74823bab0f31a6a8cd48a53076",
+     "effective_revision": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "predecessor_revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "receipt_sha256": "8d46e448e57a74705472f2beb9595753c708374e2d4e577cbb0424b64d3ebdd9"
+    },
+    "predecessor/effective": {
+     "classification": "activation_files_inconsistent",
+     "current": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "effective_id": "1213d29d0208a467a50964762b07fbdcd3205b74823bab0f31a6a8cd48a53076",
+     "effective_revision": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "predecessor_revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "receipt_sha256": "8d46e448e57a74705472f2beb9595753c708374e2d4e577cbb0424b64d3ebdd9"
+    },
+    "predecessor/foreign": {
+     "classification": "activation_files_inconsistent",
+     "current": "7777777777777777777777777777777777777777",
+     "effective_id": "1213d29d0208a467a50964762b07fbdcd3205b74823bab0f31a6a8cd48a53076",
+     "effective_revision": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "predecessor_revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "receipt_sha256": "8d46e448e57a74705472f2beb9595753c708374e2d4e577cbb0424b64d3ebdd9"
+    },
+    "predecessor/predecessor": {
+     "classification": "recorded_not_switched",
+     "current": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "effective_id": "1213d29d0208a467a50964762b07fbdcd3205b74823bab0f31a6a8cd48a53076",
+     "effective_revision": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "predecessor_revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "receipt_sha256": "8d46e448e57a74705472f2beb9595753c708374e2d4e577cbb0424b64d3ebdd9"
+    }
+   },
+   "plan": {
+    "effective_revision": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+    "intent_plan_kind": "intent",
+    "intent_plan_predecessor": null,
+    "kind": "successor",
+    "predecessor_revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+   },
+   "unreadable_receipt": {
+    "classification": "activation_files_inconsistent",
+    "current": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "effective_id": "1213d29d0208a467a50964762b07fbdcd3205b74823bab0f31a6a8cd48a53076",
+    "effective_revision": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+    "predecessor_revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "receipt_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+   },
+   "without_predecessor": {
+    "absent": {
+     "classification": "activation_files_inconsistent",
+     "current": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "effective_id": "f16ac7d1cbe2eedab671120c5d066a2449295821956953a553839775fbad24d1",
+     "effective_revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "predecessor_revision": null,
+     "receipt_sha256": null
+    },
+    "effective": {
+     "classification": "switched",
+     "current": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "effective_id": "f16ac7d1cbe2eedab671120c5d066a2449295821956953a553839775fbad24d1",
+     "effective_revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "predecessor_revision": null,
+     "receipt_sha256": "8d46e448e57a74705472f2beb9595753c708374e2d4e577cbb0424b64d3ebdd9"
+    },
+    "predecessor": {
+     "classification": "switched",
+     "current": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "effective_id": "f16ac7d1cbe2eedab671120c5d066a2449295821956953a553839775fbad24d1",
+     "effective_revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "predecessor_revision": null,
+     "receipt_sha256": "8d46e448e57a74705472f2beb9595753c708374e2d4e577cbb0424b64d3ebdd9"
+    }
+   }
+  },
+  "current_revision": {
+   "absent": {
+    "returned": null
+   },
+   "absolute_elsewhere": {
+    "returned": "foreign"
+   },
+   "absolute_inside": {
+    "returned": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+   },
+   "absolute_nested": {
+    "returned": "foreign"
+   },
+   "dangling_revision": {
+    "returned": "7777777777777777777777777777777777777777"
+   },
+   "directory": {
+    "returned": "foreign"
+   },
+   "dot_relative_revision": {
+    "returned": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+   },
+   "nested_relative": {
+    "returned": "foreign"
+   },
+   "parent_relative": {
+    "returned": "foreign"
+   },
+   "regular_file": {
+    "returned": "foreign"
+   },
+   "relative_revision": {
+    "returned": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+   },
+   "short_name": {
+    "returned": "foreign"
+   },
+   "string_path": {
+    "returned": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+   },
+   "uppercase_name": {
+    "returned": "foreign"
+   }
+  },
+  "document_bytes": {
+   "bytes": "{\n \"a\": true,\n \"b\": [\n  1,\n  {\n   \"c\": \"\\u00e9\",\n   \"d\": null\n  }\n ]\n}\n",
+   "empty": "{}\n",
+   "ends_with_newline": true,
+   "sha256": "56b3abb44c0b299b62d622f2b1686d54d838c88ab3423b1d554d554fa410e760"
+  },
+  "fence_refuses_every_launcher_role": {
+   "control": {
+    "host-fence.json": {
+     "json": {
+      "at": "<time>",
+      "migration_id": "aibox-migration-001",
+      "reason": "rollback-r0"
+     },
+     "sha256": "68f0caac585881e84a2d3839a4e9e2eafe3a442efbdef071dbce1f4e07b01ea9"
+    }
+   },
+   "fence": {
+    "sha256": "68f0caac585881e84a2d3839a4e9e2eafe3a442efbdef071dbce1f4e07b01ea9",
+    "written": "<root>/runtime/control/host-fence.json"
+   },
+   "roles": {
+    "fleet": "host_fenced",
+    "monitor-collect": "host_fenced",
+    "monitor-web": "host_fenced"
+   }
+  },
+  "launcher_accepts_exactly_the_coordinator_receipt": {
+   "other_revision": {
+    "refused": "activation_receipt_revision_mismatch"
+   },
+   "same_revision": {
+    "accepted": {
+     "intent_id_matches": true,
+     "state": "restored_paused"
+    }
+   }
+  },
+  "release_ready": {
+   "a_symlink_entry_is_never_writable": {
+    "returned": null
+   },
+   "directory_missing": {
+    "raised": {
+     "field": "release",
+     "message": "release_not_ready: release",
+     "reason_code": "release_not_ready",
+     "type": "MigrationRefused"
+    }
+   },
+   "package_marker_missing": {
+    "raised": {
+     "field": "src/codex_harness",
+     "message": "release_not_ready: src/codex_harness",
+     "reason_code": "release_not_ready",
+     "type": "MigrationRefused"
+    }
+   },
+   "ready": {
+    "returned": null
+   },
+   "release_is_a_file": {
+    "raised": {
+     "field": "release",
+     "message": "release_not_ready: release",
+     "reason_code": "release_not_ready",
+     "type": "MigrationRefused"
+    }
+   },
+   "release_is_a_symlink": {
+    "raised": {
+     "field": "release",
+     "message": "release_not_ready: release",
+     "reason_code": "release_not_ready",
+     "type": "MigrationRefused"
+    }
+   },
+   "revision_not_hex": {
+    "raised": {
+     "field": "release",
+     "message": "release_not_ready: release",
+     "reason_code": "release_not_ready",
+     "type": "MigrationRefused"
+    }
+   },
+   "revision_uppercase": {
+    "raised": {
+     "field": "release",
+     "message": "release_not_ready: release",
+     "reason_code": "release_not_ready",
+     "type": "MigrationRefused"
+    }
+   },
+   "runtime_json_missing": {
+    "raised": {
+     "field": "runtime.json",
+     "message": "release_not_ready: runtime.json",
+     "reason_code": "release_not_ready",
+     "type": "MigrationRefused"
+    }
+   },
+   "runtime_json_not_an_object": {
+    "raised": {
+     "field": "runtime.json.revision",
+     "message": "release_not_ready: runtime.json.revision",
+     "reason_code": "release_not_ready",
+     "type": "MigrationRefused"
+    }
+   },
+   "runtime_json_not_json": {
+    "raised": {
+     "field": "runtime.json",
+     "message": "release_not_ready: runtime.json",
+     "reason_code": "release_not_ready",
+     "type": "MigrationRefused"
+    }
+   },
+   "runtime_json_other_revision": {
+    "raised": {
+     "field": "runtime.json.revision",
+     "message": "release_not_ready: runtime.json.revision",
+     "reason_code": "release_not_ready",
+     "type": "MigrationRefused"
+    }
+   },
+   "runtime_json_without_revision": {
+    "raised": {
+     "field": "runtime.json.revision",
+     "message": "release_not_ready: runtime.json.revision",
+     "reason_code": "release_not_ready",
+     "type": "MigrationRefused"
+    }
+   },
+   "venv_python_missing": {
+    "raised": {
+     "field": ".venv/bin/python",
+     "message": "release_not_ready: .venv/bin/python",
+     "reason_code": "release_not_ready",
+     "type": "MigrationRefused"
+    }
+   },
+   "venv_python_not_executable": {
+    "raised": {
+     "field": ".venv/bin/python",
+     "message": "release_not_ready: .venv/bin/python",
+     "reason_code": "release_not_ready",
+     "type": "MigrationRefused"
+    }
+   },
+   "writable_directory": {
+    "raised": {
+     "field": "writable",
+     "message": "release_not_ready: writable",
+     "reason_code": "release_not_ready",
+     "type": "MigrationRefused"
+    }
+   },
+   "writable_file": {
+    "raised": {
+     "field": "writable",
+     "message": "release_not_ready: writable",
+     "reason_code": "release_not_ready",
+     "type": "MigrationRefused"
+    }
+   },
+   "writable_inside_venv_is_allowed": {
+    "returned": null
+   },
+   "writable_release_root": {
+    "raised": {
+     "field": "writable",
+     "message": "release_not_ready: writable",
+     "reason_code": "release_not_ready",
+     "type": "MigrationRefused"
+    }
+   }
+  },
+  "t3_successor_receipt": {
+   "added_fields": [
+    "activation_kind",
+    "supersedes"
+   ],
+   "launch_on_the_intent": {
+    "plan": {
+     "argv_tail": [
+      "-m",
+      "zeus",
+      "fleet",
+      "run"
+     ],
+     "migration_id": "aibox-migration-001",
+     "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    }
+   },
+   "launch_on_the_successor": {
+    "plan": {
+     "argv_tail": [
+      "-m",
+      "zeus",
+      "fleet",
+      "run"
+     ],
+     "migration_id": "aibox-migration-001",
+     "revision": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+    }
+   },
+   "other_fields_unchanged": true,
+   "removed_fields": [],
+   "supersedes_and_kind": [
+    true,
+    "successor"
+   ],
+   "switch_revision": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+   "view": {
+    "control": {
+     "host-activation.json": {
+      "json": {
+       "activation_kind": "successor",
+       "host_id": "machine-id-sha256:c2860307d791f8c906d07dff32e4db814e37106010fd655ae217a4dbba8c3063",
+       "intent_id": "10db6eba95252d4ee1e86b29587e73901518a8f6f1503559c7007398ab113d07",
+       "manifest_sha256": "1241249ce90d205d58820b38d7db8d9e222adf213033c577ca875526838270db",
+       "migration_id": "aibox-migration-001",
+       "release_revision": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+       "schema": "urn:zeus:aibox-host-activation:1",
+       "state": "restored_paused",
+       "supersedes": "4b4e789a3425258a6806ea569bdaffef8e7133f14ea43424e8440c0d24641a9d"
+      },
+      "sha256": "56cacbba96ecd83e59826365f9bd46b55f1080727166f1802ddbbc2a11b96061"
+     }
+    },
+    "current": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+    "releases": {
+     "7777777777777777777777777777777777777777": {
+      "dir": "0o555"
+     },
+     "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb": {
+      "dir": "0o555"
+     },
+     "current": {
+      "link": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+     },
+     "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee": {
+      "dir": "0o555"
+     }
+    },
+    "systemctl_argv": []
+   }
+  },
+  "write_activation_edges": {
+   "activation_after_fence_refusal": "i-1",
+   "behind_a_fence": {
+    "raised": {
+     "field": "host-fence.json",
+     "message": "host_fenced: host-fence.json",
+     "reason_code": "host_fenced",
+     "type": "MigrationRefused"
+    }
+   },
+   "control_after_invalid": {},
+   "control_after_write": {
+    "host-activation.json": {
+     "json": {
+      "intent_id": "i-1",
+      "schema": "urn:zeus:aibox-host-activation:1",
+      "state": "restored_paused"
+     },
+     "sha256": "c6d301e28cd2fa2c180fc0f40f85e4e178d5dcfe83b67de22ac965532da761f0"
+    }
+   },
+   "invalid": {
+    "empty_intent_id": {
+     "raised": {
+      "field": "document",
+      "message": "activation_receipt_invalid: document",
+      "reason_code": "activation_receipt_invalid",
+      "type": "MigrationRefused"
+     }
+    },
+    "no_intent_id": {
+     "raised": {
+      "field": "document",
+      "message": "activation_receipt_invalid: document",
+      "reason_code": "activation_receipt_invalid",
+      "type": "MigrationRefused"
+     }
+    },
+    "not_a_dict": {
+     "raised": {
+      "field": "document",
+      "message": "activation_receipt_invalid: document",
+      "reason_code": "activation_receipt_invalid",
+      "type": "MigrationRefused"
+     }
+    },
+    "wrong_schema": {
+     "raised": {
+      "field": "document",
+      "message": "activation_receipt_invalid: document",
+      "reason_code": "activation_receipt_invalid",
+      "type": "MigrationRefused"
+     }
+    }
+   },
+   "without_state_key": {
+    "raised": {
+     "message": "'state'",
+     "type": "KeyError"
+    }
+   },
+   "without_state_key_file": {
+    "host-activation.json": {
+     "json": {
+      "intent_id": "i-3",
+      "schema": "urn:zeus:aibox-host-activation:1"
+     },
+     "sha256": "897b36a23a4a9796501cef4ffdcf5bdc95e5e463febbff1edaf6f9cd760b677a"
+    }
+   },
+   "written": {
+    "returned": {
+     "intent_id": "i-1",
+     "sha256": "c6d301e28cd2fa2c180fc0f40f85e4e178d5dcfe83b67de22ac965532da761f0",
+     "state": "restored_paused",
+     "written": "<root>/control/host-activation.json"
+    }
+   }
+  },
+  "write_fence_edges": {
+   "absent_directory": {
+    "raised": {
+     "field": "control_dir",
+     "message": "control_dir_unavailable: control_dir",
+     "reason_code": "control_dir_unavailable",
+     "type": "MigrationRefused"
+    }
+   },
+   "again": {
+    "sha256": "92962db2e5b37dfc4e1f09d0677f06089cdc4526b1e94c35784c0ed4a336002d",
+    "written": "<root>/control/host-fence.json"
+   },
+   "entries": {
+    "host-fence.json": {
+     "json": {
+      "at": "<time>",
+      "migration_id": "aibox-migration-001",
+      "reason": "rollback-r0"
+     },
+     "sha256": "68f0caac585881e84a2d3839a4e9e2eafe3a442efbdef071dbce1f4e07b01ea9"
+    }
+   },
+   "entries_again": {
+    "host-fence.json": {
+     "json": {
+      "at": "<time>",
+      "migration_id": "aibox-migration-001",
+      "reason": "rollback-r1"
+     },
+     "sha256": "92962db2e5b37dfc4e1f09d0677f06089cdc4526b1e94c35784c0ed4a336002d"
+    }
+   },
+   "first": {
+    "sha256": "68f0caac585881e84a2d3839a4e9e2eafe3a442efbdef071dbce1f4e07b01ea9",
+    "written": "<root>/control/host-fence.json"
+   }
+  },
+  "writer_start_receipt_gap": {
+   "accepted_equals_document": true,
+   "accepted_state_and_intent": [
+    "restored_paused",
+    true
+   ],
+   "control": {
+    "host-activation.json": {
+     "json": {
+      "host_id": "machine-id-sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "intent_id": "f16ac7d1cbe2eedab671120c5d066a2449295821956953a553839775fbad24d1",
+      "manifest_sha256": "1241249ce90d205d58820b38d7db8d9e222adf213033c577ca875526838270db",
+      "migration_id": "aibox-migration-001",
+      "release_revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "schema": "urn:zeus:aibox-host-activation:1",
+      "state": "restored_paused"
+     },
+     "sha256": "8d46e448e57a74705472f2beb9595753c708374e2d4e577cbb0424b64d3ebdd9"
+    },
+    "host-fence.json": {
+     "json": {
+      "at": "<time>",
+      "migration_id": "aibox-migration-001",
+      "reason": "rollback-r1"
+     },
+     "sha256": "92962db2e5b37dfc4e1f09d0677f06089cdc4526b1e94c35784c0ed4a336002d"
+    }
+   },
+   "control_after_invalid": {},
+   "document_while_rolling_back": {
+    "raised": {
+     "field": "state",
+     "message": "activation_state: state",
+     "reason_code": "activation_state",
+     "type": "MigrationRefused"
+    }
+   },
+   "document_without_intent": {
+    "raised": {
+     "field": "activation_intent",
+     "message": "activation_intent_missing: activation_intent",
+     "reason_code": "activation_intent_missing",
+     "type": "MigrationRefused"
+    }
+   },
+   "failure": {
+    "returned": {
+     "cached": false,
+     "state": "rollback_required",
+     "transitions": 8
+    }
+   },
+   "fence": {
+    "sha256": "92962db2e5b37dfc4e1f09d0677f06089cdc4526b1e94c35784c0ed4a336002d",
+    "written": "<root>/runtime/control/host-fence.json"
+   },
+   "forward_checkpoint": {
+    "raised": {
+     "field": "step",
+     "message": "step_not_allowed: step",
+     "reason_code": "step_not_allowed",
+     "type": "MigrationRefused"
+    }
+   },
+   "invalid_receipt": {
+    "raised": {
+     "field": "document",
+     "message": "activation_receipt_invalid: document",
+     "reason_code": "activation_receipt_invalid",
+     "type": "MigrationRefused"
+    }
+   },
+   "mode_without_intent": "R0",
+   "r0_gate": {
+    "raised": {
+     "field": "evidence.rollback_gate",
+     "message": "rollback_gate_mode: evidence.rollback_gate",
+     "reason_code": "rollback_gate_mode",
+     "type": "MigrationRefused"
+    }
+   },
+   "r1_without_steps": {
+    "raised": {
+     "field": "reverse_pg_restore",
+     "message": "reverse_step_missing: reverse_pg_restore",
+     "reason_code": "reverse_step_missing",
+     "type": "MigrationRefused"
+    }
+   },
+   "rollback_after_crash": {
+    "forbids_source_restart": true,
+    "mode": "R1"
+   },
+   "rolled_back": "rolled_back",
+   "sha_is_file_digest": true,
+   "state_after_crash": "restored_paused",
+   "write_behind_fence": {
+    "raised": {
+     "field": "host-fence.json",
+     "message": "host_fenced: host-fence.json",
+     "reason_code": "host_fenced",
+     "type": "MigrationRefused"
+    }
+   },
+   "written": {
+    "intent_id": "f16ac7d1cbe2eedab671120c5d066a2449295821956953a553839775fbad24d1",
+    "sha256": "8d46e448e57a74705472f2beb9595753c708374e2d4e577cbb0424b64d3ebdd9",
+    "state": "restored_paused",
+    "written": "<root>/runtime/control/host-activation.json"
+   }
+  }
+ },
+ "interleave": {
+  "portable_port_serialization": {
+   "both_returned": [
+    true,
+    true
+   ],
+   "first_entered": true,
+   "last_plan_is_the_old_head_and_count": [
+    true,
+    3
+   ],
+   "older_head_again": {
+    "raised": {
+     "field": "expected_id",
+     "message": "activation_head_moved: expected_id",
+     "reason_code": "activation_head_moved",
+     "type": "MigrationRefused"
+    }
+   },
+   "plan_effective_ids_are_head": [
+    true,
+    true
+   ],
+   "plans_while_blocked": 0,
+   "record": {
+    "recorded": true
+   },
+   "record_blocked": true,
+   "second_blocked": true,
+   "successors_while_blocked": 1,
+   "third": {
+    "returned": {
+     "effective_id": "1213d29d0208a467a50964762b07fbdcd3205b74823bab0f31a6a8cd48a53076",
+     "revision": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+    }
+   },
+   "third_entered": true
+  },
+  "record_before_the_first_switch": {
+   "first_head": {
+    "raised": {
+     "field": "expected_id",
+     "message": "activation_head_moved: expected_id",
+     "reason_code": "activation_head_moved",
+     "type": "MigrationRefused"
+    }
+   },
+   "second_head": {
+    "raised": {
+     "field": "control_dir",
+     "message": "activation_files_inconsistent: control_dir",
+     "reason_code": "activation_files_inconsistent",
+     "type": "MigrationRefused"
+    }
+   },
+   "tree_unchanged": true,
+   "view": {
+    "control": {
+     "fleet-owner.json": {
+      "json": {
+       "owner": "managed-fleet",
+       "schema": "urn:zeus:aibox-fleet-owner:1",
+       "unit": "zeus-aibox-managed-fleet.service"
+      },
+      "sha256": "5baeb88cc94e689a8eb390a8ed9936348e9283ccafa1cc836a52f62e9c093958"
+     },
+     "host-activation.json": {
+      "json": {
+       "host_id": "machine-id-sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+       "intent_id": "f16ac7d1cbe2eedab671120c5d066a2449295821956953a553839775fbad24d1",
+       "manifest_sha256": "1241249ce90d205d58820b38d7db8d9e222adf213033c577ca875526838270db",
+       "migration_id": "aibox-migration-001",
+       "release_revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+       "schema": "urn:zeus:aibox-host-activation:1",
+       "state": "restored_paused"
+      },
+      "sha256": "8d46e448e57a74705472f2beb9595753c708374e2d4e577cbb0424b64d3ebdd9"
+     }
+    },
+    "current": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "releases": {
+     "7777777777777777777777777777777777777777": {
+      "dir": "0o555"
+     },
+     "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb": {
+      "dir": "0o555"
+     },
+     "current": {
+      "link": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+     },
+     "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee": {
+      "dir": "0o555"
+     }
+    },
+    "systemctl_argv": []
+   }
+  },
+  "record_switch": {
+   "current": "7777777777777777777777777777777777777777",
+   "head_revision_while_blocked": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+   "newer_switch": {
+    "returned": {
+     "cached": false,
+     "classification": "switched",
+     "classification_before": "recorded_not_switched",
+     "current": "7777777777777777777777777777777777777777",
+     "effective_id": "0002980a84c4a1e2d839d565f8295317482776c65e944149776f9bb7a7f8497b",
+     "effective_revision": "7777777777777777777777777777777777777777",
+     "predecessor_revision": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "receipt_sha256": "332d7eef278a7c29e956ffcb664d802cadc982d1dd380e093547a8af78f9740b",
+     "receipt_written": true,
+     "revision": "7777777777777777777777777777777777777777"
+    }
+   },
+   "receipt_intent_is_newer": true,
+   "record": {
+    "returned": {
+     "cached": false,
+     "predecessor_id": "1213d29d0208a467a50964762b07fbdcd3205b74823bab0f31a6a8cd48a53076",
+     "recorded": true,
+     "successor_id": "0002980a84c4a1e2d839d565f8295317482776c65e944149776f9bb7a7f8497b"
+    }
+   },
+   "record_blocked": true,
+   "stale_switch": {
+    "raised": {
+     "field": "expected_id",
+     "message": "activation_head_moved: expected_id",
+     "reason_code": "activation_head_moved",
+     "type": "MigrationRefused"
+    }
+   },
+   "stale_switch_after": {
+    "raised": {
+     "field": "expected_id",
+     "message": "activation_head_moved: expected_id",
+     "reason_code": "activation_head_moved",
+     "type": "MigrationRefused"
+    }
+   },
+   "stale_switch_tree_unchanged": true,
+   "switch": {
+    "returned": {
+     "cached": false,
+     "classification": "switched",
+     "classification_before": "recorded_not_switched",
+     "current": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "effective_id": "1213d29d0208a467a50964762b07fbdcd3205b74823bab0f31a6a8cd48a53076",
+     "effective_revision": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "predecessor_revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "receipt_sha256": "324fed01a489e07b994849a38e09cde36470c4ecbfb5c49e8cb561ffb1404f56",
+     "receipt_written": true,
+     "revision": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+    }
+   },
+   "switch_entered": true,
+   "view": {
+    "control": {
+     "fleet-owner.json": {
+      "json": {
+       "owner": "managed-fleet",
+       "schema": "urn:zeus:aibox-fleet-owner:1",
+       "unit": "zeus-aibox-managed-fleet.service"
+      },
+      "sha256": "5baeb88cc94e689a8eb390a8ed9936348e9283ccafa1cc836a52f62e9c093958"
+     },
+     "host-activation.json": {
+      "json": {
+       "activation_kind": "successor",
+       "host_id": "machine-id-sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+       "intent_id": "0002980a84c4a1e2d839d565f8295317482776c65e944149776f9bb7a7f8497b",
+       "manifest_sha256": "1241249ce90d205d58820b38d7db8d9e222adf213033c577ca875526838270db",
+       "migration_id": "aibox-migration-001",
+       "release_revision": "7777777777777777777777777777777777777777",
+       "schema": "urn:zeus:aibox-host-activation:1",
+       "state": "restored_paused",
+       "supersedes": "1213d29d0208a467a50964762b07fbdcd3205b74823bab0f31a6a8cd48a53076"
+      },
+      "sha256": "332d7eef278a7c29e956ffcb664d802cadc982d1dd380e093547a8af78f9740b"
+     }
+    },
+    "current": "7777777777777777777777777777777777777777",
+    "releases": {
+     "7777777777777777777777777777777777777777": {
+      "dir": "0o555"
+     },
+     "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb": {
+      "dir": "0o555"
+     },
+     "current": {
+      "link": "7777777777777777777777777777777777777777"
+     },
+     "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee": {
+      "dir": "0o555"
+     }
+    },
+    "systemctl_argv": [
+     [
+      "systemctl",
+      "show",
+      "zeus-aibox-fleet.service",
+      "-p",
+      "ActiveState",
+      "-p",
+      "MainPID"
+     ],
+     [
+      "systemctl",
+      "show",
+      "zeus-aibox-managed-fleet.service",
+      "-p",
+      "ActiveState",
+      "-p",
+      "MainPID"
+     ],
+     [
+      "systemctl",
+      "show",
+      "zeus-aibox-host-delivery.service",
+      "-p",
+      "ActiveState",
+      "-p",
+      "MainPID"
+     ],
+     [
+      "systemctl",
+      "show",
+      "zeus-aibox-fleet.service",
+      "-p",
+      "ActiveState",
+      "-p",
+      "MainPID"
+     ],
+     [
+      "systemctl",
+      "show",
+      "zeus-aibox-managed-fleet.service",
+      "-p",
+      "ActiveState",
+      "-p",
+      "MainPID"
+     ],
+     [
+      "systemctl",
+      "show",
+      "zeus-aibox-host-delivery.service",
+      "-p",
+      "ActiveState",
+      "-p",
+      "MainPID"
+     ]
+    ]
+   }
+  },
+  "switch_switch": {
+   "current_replacements": 1,
+   "events_while_blocked": [],
+   "first": {
+    "returned": {
+     "cached": false,
+     "classification": "switched",
+     "classification_before": "recorded_not_switched",
+     "current": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "effective_id": "1213d29d0208a467a50964762b07fbdcd3205b74823bab0f31a6a8cd48a53076",
+     "effective_revision": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "predecessor_revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "receipt_sha256": "324fed01a489e07b994849a38e09cde36470c4ecbfb5c49e8cb561ffb1404f56",
+     "receipt_written": true,
+     "revision": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+    }
+   },
+   "first_entered": true,
+   "receipt_writes": 1,
+   "second": {
+    "returned": {
+     "cached": true,
+     "classification": "switched",
+     "classification_before": "switched",
+     "current": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "effective_id": "1213d29d0208a467a50964762b07fbdcd3205b74823bab0f31a6a8cd48a53076",
+     "effective_revision": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "predecessor_revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "receipt_sha256": "324fed01a489e07b994849a38e09cde36470c4ecbfb5c49e8cb561ffb1404f56",
+     "receipt_written": false
+    }
+   },
+   "second_blocked": true,
+   "view": {
+    "control": {
+     "fleet-owner.json": {
+      "json": {
+       "owner": "managed-fleet",
+       "schema": "urn:zeus:aibox-fleet-owner:1",
+       "unit": "zeus-aibox-managed-fleet.service"
+      },
+      "sha256": "5baeb88cc94e689a8eb390a8ed9936348e9283ccafa1cc836a52f62e9c093958"
+     },
+     "host-activation.json": {
+      "json": {
+       "activation_kind": "successor",
+       "host_id": "machine-id-sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+       "intent_id": "1213d29d0208a467a50964762b07fbdcd3205b74823bab0f31a6a8cd48a53076",
+       "manifest_sha256": "1241249ce90d205d58820b38d7db8d9e222adf213033c577ca875526838270db",
+       "migration_id": "aibox-migration-001",
+       "release_revision": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+       "schema": "urn:zeus:aibox-host-activation:1",
+       "state": "restored_paused",
+       "supersedes": "f16ac7d1cbe2eedab671120c5d066a2449295821956953a553839775fbad24d1"
+      },
+      "sha256": "324fed01a489e07b994849a38e09cde36470c4ecbfb5c49e8cb561ffb1404f56"
+     }
+    },
+    "current": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+    "releases": {
+     "7777777777777777777777777777777777777777": {
+      "dir": "0o555"
+     },
+     "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb": {
+      "dir": "0o555"
+     },
+     "current": {
+      "link": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+     },
+     "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee": {
+      "dir": "0o555"
+     }
+    },
+    "systemctl_argv": [
+     [
+      "systemctl",
+      "show",
+      "zeus-aibox-fleet.service",
+      "-p",
+      "ActiveState",
+      "-p",
+      "MainPID"
+     ],
+     [
+      "systemctl",
+      "show",
+      "zeus-aibox-managed-fleet.service",
+      "-p",
+      "ActiveState",
+      "-p",
+      "MainPID"
+     ],
+     [
+      "systemctl",
+      "show",
+      "zeus-aibox-host-delivery.service",
+      "-p",
+      "ActiveState",
+      "-p",
+      "MainPID"
+     ]
+    ]
+   }
+  }
+ },
+ "layout": {
+  "dry_run_and_idempotent": {
+   "again": [
+    "present"
+   ],
+   "applied": {
+    "applied": true,
+    "directories": [
+     {
+      "path": "repo",
+      "state": "created"
+     },
+     {
+      "path": "worktrees",
+      "state": "created"
+     },
+     {
+      "path": "releases",
+      "state": "created"
+     },
+     {
+      "path": "runtime/control",
+      "state": "created"
+     },
+     {
+      "path": "runtime/lanes",
+      "state": "created"
+     },
+     {
+      "path": "artifacts",
+      "state": "created"
+     },
+     {
+      "path": "backups",
+      "state": "created"
+     },
+     {
+      "path": "tmp",
+      "state": "created"
+     }
+    ],
+    "root": "<root>/srv-zeus"
+   },
+   "dry": {
+    "applied": false,
+    "directories": [
+     {
+      "path": "repo",
+      "state": "would_create"
+     },
+     {
+      "path": "worktrees",
+      "state": "would_create"
+     },
+     {
+      "path": "releases",
+      "state": "would_create"
+     },
+     {
+      "path": "runtime/control",
+      "state": "would_create"
+     },
+     {
+      "path": "runtime/lanes",
+      "state": "would_create"
+     },
+     {
+      "path": "artifacts",
+      "state": "would_create"
+     },
+     {
+      "path": "backups",
+      "state": "would_create"
+     },
+     {
+      "path": "tmp",
+      "state": "would_create"
+     }
+    ],
+    "root": "<root>/srv-zeus"
+   },
+   "order_is_the_layout": true,
+   "root_exists_after_dry_run": false,
+   "states": [
+    "would_create"
+   ],
+   "tree": [
+    "artifacts",
+    "backups",
+    "releases",
+    "repo",
+    "runtime",
+    "runtime/control",
+    "runtime/lanes",
+    "tmp",
+    "worktrees"
+   ]
+  },
+  "edges": {
+   "conflict_in_a_dry_run": {
+    "raised": {
+     "field": "worktrees",
+     "message": "layout_conflict: worktrees",
+     "reason_code": "layout_conflict",
+     "type": "MigrationRefused"
+    }
+   },
+   "conflicting_file": {
+    "raised": {
+     "field": "worktrees",
+     "message": "layout_conflict: worktrees",
+     "reason_code": "layout_conflict",
+     "type": "MigrationRefused"
+    }
+   },
+   "created_before_the_file_parent": [
+    "releases",
+    "repo",
+    "runtime",
+    "worktrees"
+   ],
+   "created_before_the_symlink": [
+    "elsewhere",
+    "releases",
+    "repo",
+    "worktrees"
+   ],
+   "layout": [
+    "repo",
+    "worktrees",
+    "releases",
+    "runtime/control",
+    "runtime/lanes",
+    "artifacts",
+    "backups",
+    "tmp"
+   ],
+   "nothing_created_before_the_conflict": [
+    "repo",
+    "worktrees"
+   ],
+   "parent_is_a_file": {
+    "raised": {
+     "message": "[Errno 20] Not a directory: '<root>/nested/runtime/control'",
+     "type": "NotADirectoryError"
+    }
+   },
+   "partial_applied": {
+    "applied": true,
+    "directories": [
+     {
+      "path": "repo",
+      "state": "present"
+     },
+     {
+      "path": "worktrees",
+      "state": "created"
+     },
+     {
+      "path": "releases",
+      "state": "created"
+     },
+     {
+      "path": "runtime/control",
+      "state": "present"
+     },
+     {
+      "path": "runtime/lanes",
+      "state": "created"
+     },
+     {
+      "path": "artifacts",
+      "state": "created"
+     },
+     {
+      "path": "backups",
+      "state": "created"
+     },
+     {
+      "path": "tmp",
+      "state": "created"
+     }
+    ],
+    "root": "<root>/partial"
+   },
+   "partial_dry": {
+    "applied": false,
+    "directories": [
+     {
+      "path": "repo",
+      "state": "present"
+     },
+     {
+      "path": "worktrees",
+      "state": "would_create"
+     },
+     {
+      "path": "releases",
+      "state": "would_create"
+     },
+     {
+      "path": "runtime/control",
+      "state": "present"
+     },
+     {
+      "path": "runtime/lanes",
+      "state": "would_create"
+     },
+     {
+      "path": "artifacts",
+      "state": "would_create"
+     },
+     {
+      "path": "backups",
+      "state": "would_create"
+     },
+     {
+      "path": "tmp",
+      "state": "would_create"
+     }
+    ],
+    "root": "<root>/partial"
+   },
+   "relative_root": {
+    "raised": {
+     "field": "root",
+     "message": "layout_invalid: root",
+     "reason_code": "layout_invalid",
+     "type": "MigrationRefused"
+    }
+   },
+   "relative_root_apply": {
+    "raised": {
+     "field": "root",
+     "message": "layout_invalid: root",
+     "reason_code": "layout_invalid",
+     "type": "MigrationRefused"
+    }
+   },
+   "symlinked_entry": {
+    "raised": {
+     "field": "releases",
+     "message": "layout_conflict: releases",
+     "reason_code": "layout_conflict",
+     "type": "MigrationRefused"
+    }
+   }
+  }
+ },
+ "recovery": {
+  "idle_host_and_unreadable_process_table": {
+   "idle": {
+    "returned": []
+   },
+   "no_proc_root": {
+    "returned": [
+     "process_table_unreadable"
+    ]
+   },
+   "switch_units": [
+    "zeus-aibox-fleet.service",
+    "zeus-aibox-managed-fleet.service",
+    "zeus-aibox-host-delivery.service"
+   ],
+   "systemctl_argv_and_timeout": [
+    [
+     [
+      "systemctl",
+      "show",
+      "zeus-aibox-fleet.service",
+      "-p",
+      "ActiveState",
+      "-p",
+      "MainPID"
+     ],
+     20
+    ],
+    [
+     [
+      "systemctl",
+      "show",
+      "zeus-aibox-managed-fleet.service",
+      "-p",
+      "ActiveState",
+      "-p",
+      "MainPID"
+     ],
+     20
+    ],
+    [
+     [
+      "systemctl",
+      "show",
+      "zeus-aibox-host-delivery.service",
+      "-p",
+      "ActiveState",
+      "-p",
+      "MainPID"
+     ],
+     20
+    ]
+   ],
+   "systemctl_unavailable": {
+    "returned": [
+     "unit_state_unknown:zeus-aibox-fleet.service",
+     "unit_state_unknown:zeus-aibox-managed-fleet.service",
+     "unit_state_unknown:zeus-aibox-host-delivery.service"
+    ]
+   }
+  },
+  "owner_marker": {
+   "a_directory": {
+    "returned": [
+     "owner_marker_invalid"
+    ]
+   },
+   "list": {
+    "returned": [
+     "owner_marker_invalid"
+    ]
+   },
+   "not_json": {
+    "returned": [
+     "owner_marker_invalid"
+    ]
+   },
+   "valid": {
+    "returned": []
+   },
+   "wrong_owner": {
+    "returned": [
+     "owner_marker_invalid"
+    ]
+   },
+   "wrong_schema": {
+    "returned": [
+     "owner_marker_invalid"
+    ]
+   }
+  },
+  "precondition_bootstrap_active": {
+   "check": {
+    "returned": {
+     "check": true,
+     "classification": "recorded_not_switched",
+     "current": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "effective_id": "1213d29d0208a467a50964762b07fbdcd3205b74823bab0f31a6a8cd48a53076",
+     "effective_revision": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "host_fenced": false,
+     "preconditions": [
+      "unit_active:zeus-aibox-fleet.service"
+     ],
+     "predecessor_revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "receipt_sha256": "8d46e448e57a74705472f2beb9595753c708374e2d4e577cbb0424b64d3ebdd9"
+    }
+   },
+   "expected_violation": "unit_active:zeus-aibox-fleet.service",
+   "refused": {
+    "raised": {
+     "field": "unit_active:zeus-aibox-fleet.service",
+     "message": "recovery_precondition: unit_active:zeus-aibox-fleet.service",
+     "reason_code": "recovery_precondition",
+     "type": "MigrationRefused"
+    }
+   },
+   "systemctl_argv": [
+    [
+     "systemctl",
+     "show",
+     "zeus-aibox-fleet.service",
+     "-p",
+     "ActiveState",
+     "-p",
+     "MainPID"
+    ],
+    [
+     "systemctl",
+     "show",
+     "zeus-aibox-managed-fleet.service",
+     "-p",
+     "ActiveState",
+     "-p",
+     "MainPID"
+    ],
+    [
+     "systemctl",
+     "show",
+     "zeus-aibox-host-delivery.service",
+     "-p",
+     "ActiveState",
+     "-p",
+     "MainPID"
+    ],
+    [
+     "systemctl",
+     "show",
+     "zeus-aibox-fleet.service",
+     "-p",
+     "ActiveState",
+     "-p",
+     "MainPID"
+    ],
+    [
+     "systemctl",
+     "show",
+     "zeus-aibox-managed-fleet.service",
+     "-p",
+     "ActiveState",
+     "-p",
+     "MainPID"
+    ],
+    [
+     "systemctl",
+     "show",
+     "zeus-aibox-host-delivery.service",
+     "-p",
+     "ActiveState",
+     "-p",
+     "MainPID"
+    ]
+   ],
+   "tree_unchanged": true
+  },
+  "precondition_controller_active": {
+   "check": {
+    "returned": {
+     "check": true,
+     "classification": "recorded_not_switched",
+     "current": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "effective_id": "1213d29d0208a467a50964762b07fbdcd3205b74823bab0f31a6a8cd48a53076",
+     "effective_revision": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "host_fenced": false,
+     "preconditions": [
+      "unit_active:zeus-aibox-host-delivery.service"
+     ],
+     "predecessor_revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "receipt_sha256": "8d46e448e57a74705472f2beb9595753c708374e2d4e577cbb0424b64d3ebdd9"
+    }
+   },
+   "expected_violation": "unit_active:zeus-aibox-host-delivery.service",
+   "refused": {
+    "raised": {
+     "field": "unit_active:zeus-aibox-host-delivery.service",
+     "message": "recovery_precondition: unit_active:zeus-aibox-host-delivery.service",
+     "reason_code": "recovery_precondition",
+     "type": "MigrationRefused"
+    }
+   },
+   "systemctl_argv": [
+    [
+     "systemctl",
+     "show",
+     "zeus-aibox-fleet.service",
+     "-p",
+     "ActiveState",
+     "-p",
+     "MainPID"
+    ],
+    [
+     "systemctl",
+     "show",
+     "zeus-aibox-managed-fleet.service",
+     "-p",
+     "ActiveState",
+     "-p",
+     "MainPID"
+    ],
+    [
+     "systemctl",
+     "show",
+     "zeus-aibox-host-delivery.service",
+     "-p",
+     "ActiveState",
+     "-p",
+     "MainPID"
+    ],
+    [
+     "systemctl",
+     "show",
+     "zeus-aibox-fleet.service",
+     "-p",
+     "ActiveState",
+     "-p",
+     "MainPID"
+    ],
+    [
+     "systemctl",
+     "show",
+     "zeus-aibox-managed-fleet.service",
+     "-p",
+     "ActiveState",
+     "-p",
+     "MainPID"
+    ],
+    [
+     "systemctl",
+     "show",
+     "zeus-aibox-host-delivery.service",
+     "-p",
+     "ActiveState",
+     "-p",
+     "MainPID"
+    ]
+   ],
+   "tree_unchanged": true
+  },
+  "precondition_controller_state": {
+   "check": {
+    "returned": {
+     "check": true,
+     "classification": "recorded_not_switched",
+     "current": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "effective_id": "1213d29d0208a467a50964762b07fbdcd3205b74823bab0f31a6a8cd48a53076",
+     "effective_revision": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "host_fenced": false,
+     "preconditions": [
+      "managed_launch_present:controller-state.json"
+     ],
+     "predecessor_revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "receipt_sha256": "8d46e448e57a74705472f2beb9595753c708374e2d4e577cbb0424b64d3ebdd9"
+    }
+   },
+   "expected_violation": "managed_launch_present:controller-state.json",
+   "refused": {
+    "raised": {
+     "field": "managed_launch_present:controller-state.json",
+     "message": "recovery_precondition: managed_launch_present:controller-state.json",
+     "reason_code": "recovery_precondition",
+     "type": "MigrationRefused"
+    }
+   },
+   "systemctl_argv": [
+    [
+     "systemctl",
+     "show",
+     "zeus-aibox-fleet.service",
+     "-p",
+     "ActiveState",
+     "-p",
+     "MainPID"
+    ],
+    [
+     "systemctl",
+     "show",
+     "zeus-aibox-managed-fleet.service",
+     "-p",
+     "ActiveState",
+     "-p",
+     "MainPID"
+    ],
+    [
+     "systemctl",
+     "show",
+     "zeus-aibox-host-delivery.service",
+     "-p",
+     "ActiveState",
+     "-p",
+     "MainPID"
+    ],
+    [
+     "systemctl",
+     "show",
+     "zeus-aibox-fleet.service",
+     "-p",
+     "ActiveState",
+     "-p",
+     "MainPID"
+    ],
+    [
+     "systemctl",
+     "show",
+     "zeus-aibox-managed-fleet.service",
+     "-p",
+     "ActiveState",
+     "-p",
+     "MainPID"
+    ],
+    [
+     "systemctl",
+     "show",
+     "zeus-aibox-host-delivery.service",
+     "-p",
+     "ActiveState",
+     "-p",
+     "MainPID"
+    ]
+   ],
+   "tree_unchanged": true
+  },
+  "precondition_controller_unknown": {
+   "check": {
+    "returned": {
+     "check": true,
+     "classification": "recorded_not_switched",
+     "current": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "effective_id": "1213d29d0208a467a50964762b07fbdcd3205b74823bab0f31a6a8cd48a53076",
+     "effective_revision": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "host_fenced": false,
+     "preconditions": [
+      "unit_state_unknown:zeus-aibox-host-delivery.service"
+     ],
+     "predecessor_revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "receipt_sha256": "8d46e448e57a74705472f2beb9595753c708374e2d4e577cbb0424b64d3ebdd9"
+    }
+   },
+   "expected_violation": "unit_state_unknown:zeus-aibox-host-delivery.service",
+   "refused": {
+    "raised": {
+     "field": "unit_state_unknown:zeus-aibox-host-delivery.service",
+     "message": "recovery_precondition: unit_state_unknown:zeus-aibox-host-delivery.service",
+     "reason_code": "recovery_precondition",
+     "type": "MigrationRefused"
+    }
+   },
+   "systemctl_argv": [
+    [
+     "systemctl",
+     "show",
+     "zeus-aibox-fleet.service",
+     "-p",
+     "ActiveState",
+     "-p",
+     "MainPID"
+    ],
+    [
+     "systemctl",
+     "show",
+     "zeus-aibox-managed-fleet.service",
+     "-p",
+     "ActiveState",
+     "-p",
+     "MainPID"
+    ],
+    [
+     "systemctl",
+     "show",
+     "zeus-aibox-host-delivery.service",
+     "-p",
+     "ActiveState",
+     "-p",
+     "MainPID"
+    ],
+    [
+     "systemctl",
+     "show",
+     "zeus-aibox-fleet.service",
+     "-p",
+     "ActiveState",
+     "-p",
+     "MainPID"
+    ],
+    [
+     "systemctl",
+     "show",
+     "zeus-aibox-managed-fleet.service",
+     "-p",
+     "ActiveState",
+     "-p",
+     "MainPID"
+    ],
+    [
+     "systemctl",
+     "show",
+     "zeus-aibox-host-delivery.service",
+     "-p",
+     "ActiveState",
+     "-p",
+     "MainPID"
+    ]
+   ],
+   "tree_unchanged": true
+  },
+  "precondition_descriptor": {
+   "check": {
+    "returned": {
+     "check": true,
+     "classification": "recorded_not_switched",
+     "current": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "effective_id": "1213d29d0208a467a50964762b07fbdcd3205b74823bab0f31a6a8cd48a53076",
+     "effective_revision": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "host_fenced": false,
+     "preconditions": [
+      "managed_launch_present:descriptor.json"
+     ],
+     "predecessor_revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "receipt_sha256": "8d46e448e57a74705472f2beb9595753c708374e2d4e577cbb0424b64d3ebdd9"
+    }
+   },
+   "expected_violation": "managed_launch_present:descriptor.json",
+   "refused": {
+    "raised": {
+     "field": "managed_launch_present:descriptor.json",
+     "message": "recovery_precondition: managed_launch_present:descriptor.json",
+     "reason_code": "recovery_precondition",
+     "type": "MigrationRefused"
+    }
+   },
+   "systemctl_argv": [
+    [
+     "systemctl",
+     "show",
+     "zeus-aibox-fleet.service",
+     "-p",
+     "ActiveState",
+     "-p",
+     "MainPID"
+    ],
+    [
+     "systemctl",
+     "show",
+     "zeus-aibox-managed-fleet.service",
+     "-p",
+     "ActiveState",
+     "-p",
+     "MainPID"
+    ],
+    [
+     "systemctl",
+     "show",
+     "zeus-aibox-host-delivery.service",
+     "-p",
+     "ActiveState",
+     "-p",
+     "MainPID"
+    ],
+    [
+     "systemctl",
+     "show",
+     "zeus-aibox-fleet.service",
+     "-p",
+     "ActiveState",
+     "-p",
+     "MainPID"
+    ],
+    [
+     "systemctl",
+     "show",
+     "zeus-aibox-managed-fleet.service",
+     "-p",
+     "ActiveState",
+     "-p",
+     "MainPID"
+    ],
+    [
+     "systemctl",
+     "show",
+     "zeus-aibox-host-delivery.service",
+     "-p",
+     "ActiveState",
+     "-p",
+     "MainPID"
+    ]
+   ],
+   "tree_unchanged": true
+  },
+  "precondition_launch_request": {
+   "check": {
+    "returned": {
+     "check": true,
+     "classification": "recorded_not_switched",
+     "current": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "effective_id": "1213d29d0208a467a50964762b07fbdcd3205b74823bab0f31a6a8cd48a53076",
+     "effective_revision": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "host_fenced": false,
+     "preconditions": [
+      "managed_launch_present:managed-launch.json"
+     ],
+     "predecessor_revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "receipt_sha256": "8d46e448e57a74705472f2beb9595753c708374e2d4e577cbb0424b64d3ebdd9"
+    }
+   },
+   "expected_violation": "managed_launch_present:managed-launch.json",
+   "refused": {
+    "raised": {
+     "field": "managed_launch_present:managed-launch.json",
+     "message": "recovery_precondition: managed_launch_present:managed-launch.json",
+     "reason_code": "recovery_precondition",
+     "type": "MigrationRefused"
+    }
+   },
+   "systemctl_argv": [
+    [
+     "systemctl",
+     "show",
+     "zeus-aibox-fleet.service",
+     "-p",
+     "ActiveState",
+     "-p",
+     "MainPID"
+    ],
+    [
+     "systemctl",
+     "show",
+     "zeus-aibox-managed-fleet.service",
+     "-p",
+     "ActiveState",
+     "-p",
+     "MainPID"
+    ],
+    [
+     "systemctl",
+     "show",
+     "zeus-aibox-host-delivery.service",
+     "-p",
+     "ActiveState",
+     "-p",
+     "MainPID"
+    ],
+    [
+     "systemctl",
+     "show",
+     "zeus-aibox-fleet.service",
+     "-p",
+     "ActiveState",
+     "-p",
+     "MainPID"
+    ],
+    [
+     "systemctl",
+     "show",
+     "zeus-aibox-managed-fleet.service",
+     "-p",
+     "ActiveState",
+     "-p",
+     "MainPID"
+    ],
+    [
+     "systemctl",
+     "show",
+     "zeus-aibox-host-delivery.service",
+     "-p",
+     "ActiveState",
+     "-p",
+     "MainPID"
+    ]
+   ],
+   "tree_unchanged": true
+  },
+  "precondition_launch_role": {
+   "check": {
+    "returned": {
+     "check": true,
+     "classification": "recorded_not_switched",
+     "current": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "effective_id": "1213d29d0208a467a50964762b07fbdcd3205b74823bab0f31a6a8cd48a53076",
+     "effective_revision": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "host_fenced": false,
+     "preconditions": [
+      "runner_process:4244"
+     ],
+     "predecessor_revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "receipt_sha256": "8d46e448e57a74705472f2beb9595753c708374e2d4e577cbb0424b64d3ebdd9"
+    }
+   },
+   "expected_violation": "runner_process:4244",
+   "refused": {
+    "raised": {
+     "field": "runner_process:4244",
+     "message": "recovery_precondition: runner_process:4244",
+     "reason_code": "recovery_precondition",
+     "type": "MigrationRefused"
+    }
+   },
+   "systemctl_argv": [
+    [
+     "systemctl",
+     "show",
+     "zeus-aibox-fleet.service",
+     "-p",
+     "ActiveState",
+     "-p",
+     "MainPID"
+    ],
+    [
+     "systemctl",
+     "show",
+     "zeus-aibox-managed-fleet.service",
+     "-p",
+     "ActiveState",
+     "-p",
+     "MainPID"
+    ],
+    [
+     "systemctl",
+     "show",
+     "zeus-aibox-host-delivery.service",
+     "-p",
+     "ActiveState",
+     "-p",
+     "MainPID"
+    ],
+    [
+     "systemctl",
+     "show",
+     "zeus-aibox-fleet.service",
+     "-p",
+     "ActiveState",
+     "-p",
+     "MainPID"
+    ],
+    [
+     "systemctl",
+     "show",
+     "zeus-aibox-managed-fleet.service",
+     "-p",
+     "ActiveState",
+     "-p",
+     "MainPID"
+    ],
+    [
+     "systemctl",
+     "show",
+     "zeus-aibox-host-delivery.service",
+     "-p",
+     "ActiveState",
+     "-p",
+     "MainPID"
+    ]
+   ],
+   "tree_unchanged": true
+  },
+  "precondition_managed_mainpid": {
+   "check": {
+    "returned": {
+     "check": true,
+     "classification": "recorded_not_switched",
+     "current": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "effective_id": "1213d29d0208a467a50964762b07fbdcd3205b74823bab0f31a6a8cd48a53076",
+     "effective_revision": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "host_fenced": false,
+     "preconditions": [
+      "unit_active:zeus-aibox-managed-fleet.service"
+     ],
+     "predecessor_revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "receipt_sha256": "8d46e448e57a74705472f2beb9595753c708374e2d4e577cbb0424b64d3ebdd9"
+    }
+   },
+   "expected_violation": "unit_active:zeus-aibox-managed-fleet.service",
+   "refused": {
+    "raised": {
+     "field": "unit_active:zeus-aibox-managed-fleet.service",
+     "message": "recovery_precondition: unit_active:zeus-aibox-managed-fleet.service",
+     "reason_code": "recovery_precondition",
+     "type": "MigrationRefused"
+    }
+   },
+   "systemctl_argv": [
+    [
+     "systemctl",
+     "show",
+     "zeus-aibox-fleet.service",
+     "-p",
+     "ActiveState",
+     "-p",
+     "MainPID"
+    ],
+    [
+     "systemctl",
+     "show",
+     "zeus-aibox-managed-fleet.service",
+     "-p",
+     "ActiveState",
+     "-p",
+     "MainPID"
+    ],
+    [
+     "systemctl",
+     "show",
+     "zeus-aibox-host-delivery.service",
+     "-p",
+     "ActiveState",
+     "-p",
+     "MainPID"
+    ],
+    [
+     "systemctl",
+     "show",
+     "zeus-aibox-fleet.service",
+     "-p",
+     "ActiveState",
+     "-p",
+     "MainPID"
+    ],
+    [
+     "systemctl",
+     "show",
+     "zeus-aibox-managed-fleet.service",
+     "-p",
+     "ActiveState",
+     "-p",
+     "MainPID"
+    ],
+    [
+     "systemctl",
+     "show",
+     "zeus-aibox-host-delivery.service",
+     "-p",
+     "ActiveState",
+     "-p",
+     "MainPID"
+    ]
+   ],
+   "tree_unchanged": true
+  },
+  "precondition_owner_invalid": {
+   "check": {
+    "returned": {
+     "check": true,
+     "classification": "recorded_not_switched",
+     "current": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "effective_id": "1213d29d0208a467a50964762b07fbdcd3205b74823bab0f31a6a8cd48a53076",
+     "effective_revision": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "host_fenced": false,
+     "preconditions": [
+      "owner_marker_invalid"
+     ],
+     "predecessor_revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "receipt_sha256": "8d46e448e57a74705472f2beb9595753c708374e2d4e577cbb0424b64d3ebdd9"
+    }
+   },
+   "expected_violation": "owner_marker_invalid",
+   "refused": {
+    "raised": {
+     "field": "owner_marker_invalid",
+     "message": "recovery_precondition: owner_marker_invalid",
+     "reason_code": "recovery_precondition",
+     "type": "MigrationRefused"
+    }
+   },
+   "systemctl_argv": [
+    [
+     "systemctl",
+     "show",
+     "zeus-aibox-fleet.service",
+     "-p",
+     "ActiveState",
+     "-p",
+     "MainPID"
+    ],
+    [
+     "systemctl",
+     "show",
+     "zeus-aibox-managed-fleet.service",
+     "-p",
+     "ActiveState",
+     "-p",
+     "MainPID"
+    ],
+    [
+     "systemctl",
+     "show",
+     "zeus-aibox-host-delivery.service",
+     "-p",
+     "ActiveState",
+     "-p",
+     "MainPID"
+    ],
+    [
+     "systemctl",
+     "show",
+     "zeus-aibox-fleet.service",
+     "-p",
+     "ActiveState",
+     "-p",
+     "MainPID"
+    ],
+    [
+     "systemctl",
+     "show",
+     "zeus-aibox-managed-fleet.service",
+     "-p",
+     "ActiveState",
+     "-p",
+     "MainPID"
+    ],
+    [
+     "systemctl",
+     "show",
+     "zeus-aibox-host-delivery.service",
+     "-p",
+     "ActiveState",
+     "-p",
+     "MainPID"
+    ]
+   ],
+   "tree_unchanged": true
+  },
+  "precondition_owner_missing": {
+   "check": {
+    "returned": {
+     "check": true,
+     "classification": "recorded_not_switched",
+     "current": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "effective_id": "1213d29d0208a467a50964762b07fbdcd3205b74823bab0f31a6a8cd48a53076",
+     "effective_revision": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "host_fenced": false,
+     "preconditions": [
+      "owner_marker_missing"
+     ],
+     "predecessor_revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "receipt_sha256": "8d46e448e57a74705472f2beb9595753c708374e2d4e577cbb0424b64d3ebdd9"
+    }
+   },
+   "expected_violation": "owner_marker_missing",
+   "refused": {
+    "raised": {
+     "field": "owner_marker_missing",
+     "message": "recovery_precondition: owner_marker_missing",
+     "reason_code": "recovery_precondition",
+     "type": "MigrationRefused"
+    }
+   },
+   "systemctl_argv": [
+    [
+     "systemctl",
+     "show",
+     "zeus-aibox-fleet.service",
+     "-p",
+     "ActiveState",
+     "-p",
+     "MainPID"
+    ],
+    [
+     "systemctl",
+     "show",
+     "zeus-aibox-managed-fleet.service",
+     "-p",
+     "ActiveState",
+     "-p",
+     "MainPID"
+    ],
+    [
+     "systemctl",
+     "show",
+     "zeus-aibox-host-delivery.service",
+     "-p",
+     "ActiveState",
+     "-p",
+     "MainPID"
+    ],
+    [
+     "systemctl",
+     "show",
+     "zeus-aibox-fleet.service",
+     "-p",
+     "ActiveState",
+     "-p",
+     "MainPID"
+    ],
+    [
+     "systemctl",
+     "show",
+     "zeus-aibox-managed-fleet.service",
+     "-p",
+     "ActiveState",
+     "-p",
+     "MainPID"
+    ],
+    [
+     "systemctl",
+     "show",
+     "zeus-aibox-host-delivery.service",
+     "-p",
+     "ActiveState",
+     "-p",
+     "MainPID"
+    ]
+   ],
+   "tree_unchanged": true
+  },
+  "precondition_runner": {
+   "check": {
+    "returned": {
+     "check": true,
+     "classification": "recorded_not_switched",
+     "current": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "effective_id": "1213d29d0208a467a50964762b07fbdcd3205b74823bab0f31a6a8cd48a53076",
+     "effective_revision": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "host_fenced": false,
+     "preconditions": [
+      "runner_process:4242"
+     ],
+     "predecessor_revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "receipt_sha256": "8d46e448e57a74705472f2beb9595753c708374e2d4e577cbb0424b64d3ebdd9"
+    }
+   },
+   "expected_violation": "runner_process:4242",
+   "refused": {
+    "raised": {
+     "field": "runner_process:4242",
+     "message": "recovery_precondition: runner_process:4242",
+     "reason_code": "recovery_precondition",
+     "type": "MigrationRefused"
+    }
+   },
+   "systemctl_argv": [
+    [
+     "systemctl",
+     "show",
+     "zeus-aibox-fleet.service",
+     "-p",
+     "ActiveState",
+     "-p",
+     "MainPID"
+    ],
+    [
+     "systemctl",
+     "show",
+     "zeus-aibox-managed-fleet.service",
+     "-p",
+     "ActiveState",
+     "-p",
+     "MainPID"
+    ],
+    [
+     "systemctl",
+     "show",
+     "zeus-aibox-host-delivery.service",
+     "-p",
+     "ActiveState",
+     "-p",
+     "MainPID"
+    ],
+    [
+     "systemctl",
+     "show",
+     "zeus-aibox-fleet.service",
+     "-p",
+     "ActiveState",
+     "-p",
+     "MainPID"
+    ],
+    [
+     "systemctl",
+     "show",
+     "zeus-aibox-managed-fleet.service",
+     "-p",
+     "ActiveState",
+     "-p",
+     "MainPID"
+    ],
+    [
+     "systemctl",
+     "show",
+     "zeus-aibox-host-delivery.service",
+     "-p",
+     "ActiveState",
+     "-p",
+     "MainPID"
+    ]
+   ],
+   "tree_unchanged": true
+  },
+  "precondition_supervise": {
+   "check": {
+    "returned": {
+     "check": true,
+     "classification": "recorded_not_switched",
+     "current": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "effective_id": "1213d29d0208a467a50964762b07fbdcd3205b74823bab0f31a6a8cd48a53076",
+     "effective_revision": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "host_fenced": false,
+     "preconditions": [
+      "runner_process:4243"
+     ],
+     "predecessor_revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "receipt_sha256": "8d46e448e57a74705472f2beb9595753c708374e2d4e577cbb0424b64d3ebdd9"
+    }
+   },
+   "expected_violation": "runner_process:4243",
+   "refused": {
+    "raised": {
+     "field": "runner_process:4243",
+     "message": "recovery_precondition: runner_process:4243",
+     "reason_code": "recovery_precondition",
+     "type": "MigrationRefused"
+    }
+   },
+   "systemctl_argv": [
+    [
+     "systemctl",
+     "show",
+     "zeus-aibox-fleet.service",
+     "-p",
+     "ActiveState",
+     "-p",
+     "MainPID"
+    ],
+    [
+     "systemctl",
+     "show",
+     "zeus-aibox-managed-fleet.service",
+     "-p",
+     "ActiveState",
+     "-p",
+     "MainPID"
+    ],
+    [
+     "systemctl",
+     "show",
+     "zeus-aibox-host-delivery.service",
+     "-p",
+     "ActiveState",
+     "-p",
+     "MainPID"
+    ],
+    [
+     "systemctl",
+     "show",
+     "zeus-aibox-fleet.service",
+     "-p",
+     "ActiveState",
+     "-p",
+     "MainPID"
+    ],
+    [
+     "systemctl",
+     "show",
+     "zeus-aibox-managed-fleet.service",
+     "-p",
+     "ActiveState",
+     "-p",
+     "MainPID"
+    ],
+    [
+     "systemctl",
+     "show",
+     "zeus-aibox-host-delivery.service",
+     "-p",
+     "ActiveState",
+     "-p",
+     "MainPID"
+    ]
+   ],
+   "tree_unchanged": true
+  },
+  "runner_argv": {
+   "empty": false,
+   "fleet_run_absolute_harness": true,
+   "fleet_run_absolute_zeus": true,
+   "fleet_run_of_another_program": false,
+   "fleet_run_of_harness": true,
+   "fleet_run_of_zeus": true,
+   "fleet_run_without_a_program_word_before": false,
+   "fleet_status": false,
+   "managed_runtime_dash_m_last": false,
+   "managed_runtime_module": true,
+   "managed_runtime_without_dash_m": false,
+   "service_launch_dry_run": false,
+   "service_launch_fleet_role": true,
+   "service_launch_managed_fleet": true,
+   "service_launch_mixed_roles": true,
+   "service_launch_monitor_role": false,
+   "service_launch_role_equals": true,
+   "service_launch_without_role": false,
+   "service_render": false,
+   "shell_naming_the_words_in_one_word": false,
+   "single_word": false
+  },
+  "runner_processes": {
+   "absent_root": {
+    "raised": {
+     "message": "[Errno 2] No such file or directory: '<root>/noproc'",
+     "type": "FileNotFoundError"
+    }
+   },
+   "found": {
+    "returned": [
+     100,
+     55,
+     9
+    ]
+   },
+   "own_pid_reported": false,
+   "root_is_a_file": {
+    "raised": {
+     "message": "[Errno 20] Not a directory: '<root>/proc/meminfo'",
+     "type": "NotADirectoryError"
+    }
+   }
+  },
+  "unit_states": {
+   "active_pid0": {
+    "returned": [
+     "unit_active:zeus-aibox-fleet.service",
+     "unit_active:zeus-aibox-managed-fleet.service",
+     "unit_active:zeus-aibox-host-delivery.service"
+    ]
+   },
+   "empty_stdout": {
+    "returned": [
+     "unit_state_unknown:zeus-aibox-fleet.service",
+     "unit_state_unknown:zeus-aibox-managed-fleet.service",
+     "unit_state_unknown:zeus-aibox-host-delivery.service"
+    ]
+   },
+   "everything_wrong_in_order": {
+    "returned": [
+     "owner_marker_missing",
+     "unit_active:zeus-aibox-fleet.service",
+     "unit_active:zeus-aibox-managed-fleet.service",
+     "unit_active:zeus-aibox-host-delivery.service",
+     "managed_state_unreadable",
+     "process_table_unreadable"
+    ]
+   },
+   "failed_pid0": {
+    "returned": []
+   },
+   "failed_pid_nonzero": {
+    "returned": [
+     "unit_active:zeus-aibox-fleet.service",
+     "unit_active:zeus-aibox-managed-fleet.service",
+     "unit_active:zeus-aibox-host-delivery.service"
+    ]
+   },
+   "inactive_pid0": {
+    "returned": []
+   },
+   "no_active_state": {
+    "returned": [
+     "unit_state_unknown:zeus-aibox-fleet.service",
+     "unit_state_unknown:zeus-aibox-managed-fleet.service",
+     "unit_state_unknown:zeus-aibox-host-delivery.service"
+    ]
+   },
+   "no_main_pid": {
+    "returned": [
+     "unit_state_unknown:zeus-aibox-fleet.service",
+     "unit_state_unknown:zeus-aibox-managed-fleet.service",
+     "unit_state_unknown:zeus-aibox-host-delivery.service"
+    ]
+   },
+   "none_stdout": {
+    "returned": [
+     "unit_state_unknown:zeus-aibox-fleet.service",
+     "unit_state_unknown:zeus-aibox-managed-fleet.service",
+     "unit_state_unknown:zeus-aibox-host-delivery.service"
+    ]
+   },
+   "pid_00_is_not_0": {
+    "returned": [
+     "unit_active:zeus-aibox-fleet.service",
+     "unit_active:zeus-aibox-managed-fleet.service",
+     "unit_active:zeus-aibox-host-delivery.service"
+    ]
+   },
+   "reloading": {
+    "returned": [
+     "unit_active:zeus-aibox-fleet.service",
+     "unit_active:zeus-aibox-managed-fleet.service",
+     "unit_active:zeus-aibox-host-delivery.service"
+    ]
+   },
+   "returncode_nonzero": {
+    "returned": [
+     "unit_state_unknown:zeus-aibox-fleet.service",
+     "unit_state_unknown:zeus-aibox-managed-fleet.service",
+     "unit_state_unknown:zeus-aibox-host-delivery.service"
+    ]
+   },
+   "unknown_state_word": {
+    "returned": [
+     "unit_active:zeus-aibox-fleet.service",
+     "unit_active:zeus-aibox-managed-fleet.service",
+     "unit_active:zeus-aibox-host-delivery.service"
+    ]
+   }
+  }
+ },
+ "switch": {
+  "a1_receipt_then_current_fsynced": {
+   "check": {
+    "returned": {
+     "check": true,
+     "classification": "recorded_not_switched",
+     "current": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "effective_id": "1213d29d0208a467a50964762b07fbdcd3205b74823bab0f31a6a8cd48a53076",
+     "effective_revision": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "host_fenced": false,
+     "preconditions": [],
+     "predecessor_revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "receipt_sha256": "8d46e448e57a74705472f2beb9595753c708374e2d4e577cbb0424b64d3ebdd9"
+    }
+   },
+   "events": [
+    "receipt",
+    "os.fsync:file",
+    "fsync:control",
+    "os.fsync:dir",
+    "current",
+    "fsync:releases",
+    "os.fsync:dir"
+   ],
+   "m7_calls": [
+    "receipt",
+    "fsync:control",
+    "current",
+    "fsync:releases"
+   ],
+   "no_temporary_link": true,
+   "receipt_is_the_document_bytes": true,
+   "receipt_supersedes_the_intent": true,
+   "switch": {
+    "returned": {
+     "cached": false,
+     "classification": "switched",
+     "classification_before": "recorded_not_switched",
+     "current": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "effective_id": "1213d29d0208a467a50964762b07fbdcd3205b74823bab0f31a6a8cd48a53076",
+     "effective_revision": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "predecessor_revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "receipt_sha256": "324fed01a489e07b994849a38e09cde36470c4ecbfb5c49e8cb561ffb1404f56",
+     "receipt_written": true,
+     "revision": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+    }
+   },
+   "view": {
+    "control": {
+     "fleet-owner.json": {
+      "json": {
+       "owner": "managed-fleet",
+       "schema": "urn:zeus:aibox-fleet-owner:1",
+       "unit": "zeus-aibox-managed-fleet.service"
+      },
+      "sha256": "5baeb88cc94e689a8eb390a8ed9936348e9283ccafa1cc836a52f62e9c093958"
+     },
+     "host-activation.json": {
+      "json": {
+       "activation_kind": "successor",
+       "host_id": "machine-id-sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+       "intent_id": "1213d29d0208a467a50964762b07fbdcd3205b74823bab0f31a6a8cd48a53076",
+       "manifest_sha256": "1241249ce90d205d58820b38d7db8d9e222adf213033c577ca875526838270db",
+       "migration_id": "aibox-migration-001",
+       "release_revision": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+       "schema": "urn:zeus:aibox-host-activation:1",
+       "state": "restored_paused",
+       "supersedes": "f16ac7d1cbe2eedab671120c5d066a2449295821956953a553839775fbad24d1"
+      },
+      "sha256": "324fed01a489e07b994849a38e09cde36470c4ecbfb5c49e8cb561ffb1404f56"
+     }
+    },
+    "current": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+    "releases": {
+     "7777777777777777777777777777777777777777": {
+      "dir": "0o555"
+     },
+     "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb": {
+      "dir": "0o555"
+     },
+     "current": {
+      "link": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+     },
+     "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee": {
+      "dir": "0o555"
+     }
+    },
+    "systemctl_argv": [
+     [
+      "systemctl",
+      "show",
+      "zeus-aibox-fleet.service",
+      "-p",
+      "ActiveState",
+      "-p",
+      "MainPID"
+     ],
+     [
+      "systemctl",
+      "show",
+      "zeus-aibox-managed-fleet.service",
+      "-p",
+      "ActiveState",
+      "-p",
+      "MainPID"
+     ],
+     [
+      "systemctl",
+      "show",
+      "zeus-aibox-host-delivery.service",
+      "-p",
+      "ActiveState",
+      "-p",
+      "MainPID"
+     ],
+     [
+      "systemctl",
+      "show",
+      "zeus-aibox-fleet.service",
+      "-p",
+      "ActiveState",
+      "-p",
+      "MainPID"
+     ],
+     [
+      "systemctl",
+      "show",
+      "zeus-aibox-managed-fleet.service",
+      "-p",
+      "ActiveState",
+      "-p",
+      "MainPID"
+     ],
+     [
+      "systemctl",
+      "show",
+      "zeus-aibox-host-delivery.service",
+      "-p",
+      "ActiveState",
+      "-p",
+      "MainPID"
+     ]
+    ]
+   }
+  },
+  "a2_crash_after_the_receipt": {
+   "check": {
+    "returned": {
+     "check": true,
+     "classification": "receipt_written",
+     "current": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "effective_id": "10db6eba95252d4ee1e86b29587e73901518a8f6f1503559c7007398ab113d07",
+     "effective_revision": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "host_fenced": false,
+     "preconditions": [],
+     "predecessor_revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "receipt_sha256": "56cacbba96ecd83e59826365f9bd46b55f1080727166f1802ddbbc2a11b96061"
+    }
+   },
+   "completion": {
+    "returned": {
+     "cached": false,
+     "classification": "switched",
+     "classification_before": "receipt_written",
+     "current": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "effective_id": "10db6eba95252d4ee1e86b29587e73901518a8f6f1503559c7007398ab113d07",
+     "effective_revision": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "predecessor_revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "receipt_sha256": "56cacbba96ecd83e59826365f9bd46b55f1080727166f1802ddbbc2a11b96061",
+     "receipt_written": false,
+     "revision": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+    }
+   },
+   "crash": {
+    "raised": {
+     "message": "LABELLED injected failure",
+     "type": "OSError"
+    }
+   },
+   "events": [
+    "current",
+    "fsync:releases",
+    "os.fsync:dir"
+   ],
+   "launcher_fleet_after": {
+    "refused": "fleet_owner_managed"
+   },
+   "launcher_owner_actions": {
+    "refused": "activation_receipt_revision_mismatch"
+   },
+   "m7_calls": [
+    "current",
+    "fsync:releases"
+   ],
+   "own_temporary_removed": true,
+   "receipt_inode_unchanged": true,
+   "view": {
+    "control": {
+     "fleet-owner.json": {
+      "json": {
+       "owner": "managed-fleet",
+       "schema": "urn:zeus:aibox-fleet-owner:1",
+       "unit": "zeus-aibox-managed-fleet.service"
+      },
+      "sha256": "5baeb88cc94e689a8eb390a8ed9936348e9283ccafa1cc836a52f62e9c093958"
+     },
+     "host-activation.json": {
+      "json": {
+       "activation_kind": "successor",
+       "host_id": "machine-id-sha256:c2860307d791f8c906d07dff32e4db814e37106010fd655ae217a4dbba8c3063",
+       "intent_id": "10db6eba95252d4ee1e86b29587e73901518a8f6f1503559c7007398ab113d07",
+       "manifest_sha256": "1241249ce90d205d58820b38d7db8d9e222adf213033c577ca875526838270db",
+       "migration_id": "aibox-migration-001",
+       "release_revision": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+       "schema": "urn:zeus:aibox-host-activation:1",
+       "state": "restored_paused",
+       "supersedes": "4b4e789a3425258a6806ea569bdaffef8e7133f14ea43424e8440c0d24641a9d"
+      },
+      "sha256": "56cacbba96ecd83e59826365f9bd46b55f1080727166f1802ddbbc2a11b96061"
+     }
+    },
+    "current": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+    "releases": {
+     "7777777777777777777777777777777777777777": {
+      "dir": "0o555"
+     },
+     "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb": {
+      "dir": "0o555"
+     },
+     "current": {
+      "link": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+     },
+     "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee": {
+      "dir": "0o555"
+     }
+    },
+    "systemctl_argv": [
+     [
+      "systemctl",
+      "show",
+      "zeus-aibox-fleet.service",
+      "-p",
+      "ActiveState",
+      "-p",
+      "MainPID"
+     ],
+     [
+      "systemctl",
+      "show",
+      "zeus-aibox-managed-fleet.service",
+      "-p",
+      "ActiveState",
+      "-p",
+      "MainPID"
+     ],
+     [
+      "systemctl",
+      "show",
+      "zeus-aibox-host-delivery.service",
+      "-p",
+      "ActiveState",
+      "-p",
+      "MainPID"
+     ],
+     [
+      "systemctl",
+      "show",
+      "zeus-aibox-fleet.service",
+      "-p",
+      "ActiveState",
+      "-p",
+      "MainPID"
+     ],
+     [
+      "systemctl",
+      "show",
+      "zeus-aibox-managed-fleet.service",
+      "-p",
+      "ActiveState",
+      "-p",
+      "MainPID"
+     ],
+     [
+      "systemctl",
+      "show",
+      "zeus-aibox-host-delivery.service",
+      "-p",
+      "ActiveState",
+      "-p",
+      "MainPID"
+     ],
+     [
+      "systemctl",
+      "show",
+      "zeus-aibox-fleet.service",
+      "-p",
+      "ActiveState",
+      "-p",
+      "MainPID"
+     ],
+     [
+      "systemctl",
+      "show",
+      "zeus-aibox-managed-fleet.service",
+      "-p",
+      "ActiveState",
+      "-p",
+      "MainPID"
+     ],
+     [
+      "systemctl",
+      "show",
+      "zeus-aibox-host-delivery.service",
+      "-p",
+      "ActiveState",
+      "-p",
+      "MainPID"
+     ]
+    ]
+   },
+   "view_after_crash": {
+    "control": {
+     "fleet-owner.json": {
+      "json": {
+       "owner": "managed-fleet",
+       "schema": "urn:zeus:aibox-fleet-owner:1",
+       "unit": "zeus-aibox-managed-fleet.service"
+      },
+      "sha256": "5baeb88cc94e689a8eb390a8ed9936348e9283ccafa1cc836a52f62e9c093958"
+     },
+     "host-activation.json": {
+      "json": {
+       "activation_kind": "successor",
+       "host_id": "machine-id-sha256:c2860307d791f8c906d07dff32e4db814e37106010fd655ae217a4dbba8c3063",
+       "intent_id": "10db6eba95252d4ee1e86b29587e73901518a8f6f1503559c7007398ab113d07",
+       "manifest_sha256": "1241249ce90d205d58820b38d7db8d9e222adf213033c577ca875526838270db",
+       "migration_id": "aibox-migration-001",
+       "release_revision": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+       "schema": "urn:zeus:aibox-host-activation:1",
+       "state": "restored_paused",
+       "supersedes": "4b4e789a3425258a6806ea569bdaffef8e7133f14ea43424e8440c0d24641a9d"
+      },
+      "sha256": "56cacbba96ecd83e59826365f9bd46b55f1080727166f1802ddbbc2a11b96061"
+     }
+    },
+    "current": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "releases": {
+     "7777777777777777777777777777777777777777": {
+      "dir": "0o555"
+     },
+     "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb": {
+      "dir": "0o555"
+     },
+     "current": {
+      "link": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+     },
+     "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee": {
+      "dir": "0o555"
+     }
+    },
+    "systemctl_argv": [
+     [
+      "systemctl",
+      "show",
+      "zeus-aibox-fleet.service",
+      "-p",
+      "ActiveState",
+      "-p",
+      "MainPID"
+     ],
+     [
+      "systemctl",
+      "show",
+      "zeus-aibox-managed-fleet.service",
+      "-p",
+      "ActiveState",
+      "-p",
+      "MainPID"
+     ],
+     [
+      "systemctl",
+      "show",
+      "zeus-aibox-host-delivery.service",
+      "-p",
+      "ActiveState",
+      "-p",
+      "MainPID"
+     ],
+     [
+      "systemctl",
+      "show",
+      "zeus-aibox-fleet.service",
+      "-p",
+      "ActiveState",
+      "-p",
+      "MainPID"
+     ],
+     [
+      "systemctl",
+      "show",
+      "zeus-aibox-managed-fleet.service",
+      "-p",
+      "ActiveState",
+      "-p",
+      "MainPID"
+     ],
+     [
+      "systemctl",
+      "show",
+      "zeus-aibox-host-delivery.service",
+      "-p",
+      "ActiveState",
+      "-p",
+      "MainPID"
+     ],
+     [
+      "systemctl",
+      "show",
+      "zeus-aibox-fleet.service",
+      "-p",
+      "ActiveState",
+      "-p",
+      "MainPID"
+     ],
+     [
+      "systemctl",
+      "show",
+      "zeus-aibox-managed-fleet.service",
+      "-p",
+      "ActiveState",
+      "-p",
+      "MainPID"
+     ],
+     [
+      "systemctl",
+      "show",
+      "zeus-aibox-host-delivery.service",
+      "-p",
+      "ActiveState",
+      "-p",
+      "MainPID"
+     ]
+    ]
+   }
+  },
+  "a3_rerun_when_switched_is_cached": {
+   "events": [],
+   "link_untouched": true,
+   "preconditions_observed": [],
+   "receipt_untouched": true,
+   "result": {
+    "returned": {
+     "cached": true,
+     "classification": "switched",
+     "classification_before": "switched",
+     "current": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "effective_id": "1213d29d0208a467a50964762b07fbdcd3205b74823bab0f31a6a8cd48a53076",
+     "effective_revision": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "predecessor_revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "receipt_sha256": "324fed01a489e07b994849a38e09cde36470c4ecbfb5c49e8cb561ffb1404f56",
+     "receipt_written": false
+    }
+   },
+   "view": {
+    "control": {
+     "fleet-owner.json": {
+      "json": {
+       "owner": "managed-fleet",
+       "schema": "urn:zeus:aibox-fleet-owner:1",
+       "unit": "zeus-aibox-managed-fleet.service"
+      },
+      "sha256": "5baeb88cc94e689a8eb390a8ed9936348e9283ccafa1cc836a52f62e9c093958"
+     },
+     "host-activation.json": {
+      "json": {
+       "activation_kind": "successor",
+       "host_id": "machine-id-sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+       "intent_id": "1213d29d0208a467a50964762b07fbdcd3205b74823bab0f31a6a8cd48a53076",
+       "manifest_sha256": "1241249ce90d205d58820b38d7db8d9e222adf213033c577ca875526838270db",
+       "migration_id": "aibox-migration-001",
+       "release_revision": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+       "schema": "urn:zeus:aibox-host-activation:1",
+       "state": "restored_paused",
+       "supersedes": "f16ac7d1cbe2eedab671120c5d066a2449295821956953a553839775fbad24d1"
+      },
+      "sha256": "324fed01a489e07b994849a38e09cde36470c4ecbfb5c49e8cb561ffb1404f56"
+     }
+    },
+    "current": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+    "releases": {
+     "7777777777777777777777777777777777777777": {
+      "dir": "0o555"
+     },
+     "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb": {
+      "dir": "0o555"
+     },
+     "current": {
+      "link": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+     },
+     "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee": {
+      "dir": "0o555"
+     }
+    },
+    "systemctl_argv": [
+     [
+      "systemctl",
+      "show",
+      "zeus-aibox-fleet.service",
+      "-p",
+      "ActiveState",
+      "-p",
+      "MainPID"
+     ],
+     [
+      "systemctl",
+      "show",
+      "zeus-aibox-managed-fleet.service",
+      "-p",
+      "ActiveState",
+      "-p",
+      "MainPID"
+     ],
+     [
+      "systemctl",
+      "show",
+      "zeus-aibox-host-delivery.service",
+      "-p",
+      "ActiveState",
+      "-p",
+      "MainPID"
+     ]
+    ]
+   }
+  },
+  "a4_inconsistent_absolute_elsewhere": {
+   "check": {
+    "returned": {
+     "check": true,
+     "classification": "activation_files_inconsistent",
+     "current": "foreign",
+     "effective_id": "1213d29d0208a467a50964762b07fbdcd3205b74823bab0f31a6a8cd48a53076",
+     "effective_revision": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "host_fenced": false,
+     "preconditions": [],
+     "predecessor_revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "receipt_sha256": "8d46e448e57a74705472f2beb9595753c708374e2d4e577cbb0424b64d3ebdd9"
+    }
+   },
+   "refused": {
+    "raised": {
+     "field": "control_dir",
+     "message": "activation_files_inconsistent: control_dir",
+     "reason_code": "activation_files_inconsistent",
+     "type": "MigrationRefused"
+    }
+   },
+   "tree_unchanged": true,
+   "view": {
+    "control": {
+     "fleet-owner.json": {
+      "json": {
+       "owner": "managed-fleet",
+       "schema": "urn:zeus:aibox-fleet-owner:1",
+       "unit": "zeus-aibox-managed-fleet.service"
+      },
+      "sha256": "5baeb88cc94e689a8eb390a8ed9936348e9283ccafa1cc836a52f62e9c093958"
+     },
+     "host-activation.json": {
+      "json": {
+       "host_id": "machine-id-sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+       "intent_id": "f16ac7d1cbe2eedab671120c5d066a2449295821956953a553839775fbad24d1",
+       "manifest_sha256": "1241249ce90d205d58820b38d7db8d9e222adf213033c577ca875526838270db",
+       "migration_id": "aibox-migration-001",
+       "release_revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+       "schema": "urn:zeus:aibox-host-activation:1",
+       "state": "restored_paused"
+      },
+      "sha256": "8d46e448e57a74705472f2beb9595753c708374e2d4e577cbb0424b64d3ebdd9"
+     }
+    },
+    "current": "<root>/elsewhere/eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+    "releases": {
+     "7777777777777777777777777777777777777777": {
+      "dir": "0o555"
+     },
+     "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb": {
+      "dir": "0o555"
+     },
+     "current": {
+      "link": "<root>/elsewhere/eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+     },
+     "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee": {
+      "dir": "0o555"
+     }
+    },
+    "systemctl_argv": [
+     [
+      "systemctl",
+      "show",
+      "zeus-aibox-fleet.service",
+      "-p",
+      "ActiveState",
+      "-p",
+      "MainPID"
+     ],
+     [
+      "systemctl",
+      "show",
+      "zeus-aibox-managed-fleet.service",
+      "-p",
+      "ActiveState",
+      "-p",
+      "MainPID"
+     ],
+     [
+      "systemctl",
+      "show",
+      "zeus-aibox-host-delivery.service",
+      "-p",
+      "ActiveState",
+      "-p",
+      "MainPID"
+     ]
+    ]
+   }
+  },
+  "a4_inconsistent_foreign_current": {
+   "check": {
+    "returned": {
+     "check": true,
+     "classification": "activation_files_inconsistent",
+     "current": "7777777777777777777777777777777777777777",
+     "effective_id": "1213d29d0208a467a50964762b07fbdcd3205b74823bab0f31a6a8cd48a53076",
+     "effective_revision": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "host_fenced": false,
+     "preconditions": [],
+     "predecessor_revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "receipt_sha256": "8d46e448e57a74705472f2beb9595753c708374e2d4e577cbb0424b64d3ebdd9"
+    }
+   },
+   "refused": {
+    "raised": {
+     "field": "control_dir",
+     "message": "activation_files_inconsistent: control_dir",
+     "reason_code": "activation_files_inconsistent",
+     "type": "MigrationRefused"
+    }
+   },
+   "tree_unchanged": true,
+   "view": {
+    "control": {
+     "fleet-owner.json": {
+      "json": {
+       "owner": "managed-fleet",
+       "schema": "urn:zeus:aibox-fleet-owner:1",
+       "unit": "zeus-aibox-managed-fleet.service"
+      },
+      "sha256": "5baeb88cc94e689a8eb390a8ed9936348e9283ccafa1cc836a52f62e9c093958"
+     },
+     "host-activation.json": {
+      "json": {
+       "host_id": "machine-id-sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+       "intent_id": "f16ac7d1cbe2eedab671120c5d066a2449295821956953a553839775fbad24d1",
+       "manifest_sha256": "1241249ce90d205d58820b38d7db8d9e222adf213033c577ca875526838270db",
+       "migration_id": "aibox-migration-001",
+       "release_revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+       "schema": "urn:zeus:aibox-host-activation:1",
+       "state": "restored_paused"
+      },
+      "sha256": "8d46e448e57a74705472f2beb9595753c708374e2d4e577cbb0424b64d3ebdd9"
+     }
+    },
+    "current": "7777777777777777777777777777777777777777",
+    "releases": {
+     "7777777777777777777777777777777777777777": {
+      "dir": "0o555"
+     },
+     "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb": {
+      "dir": "0o555"
+     },
+     "current": {
+      "link": "7777777777777777777777777777777777777777"
+     },
+     "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee": {
+      "dir": "0o555"
+     }
+    },
+    "systemctl_argv": [
+     [
+      "systemctl",
+      "show",
+      "zeus-aibox-fleet.service",
+      "-p",
+      "ActiveState",
+      "-p",
+      "MainPID"
+     ],
+     [
+      "systemctl",
+      "show",
+      "zeus-aibox-managed-fleet.service",
+      "-p",
+      "ActiveState",
+      "-p",
+      "MainPID"
+     ],
+     [
+      "systemctl",
+      "show",
+      "zeus-aibox-host-delivery.service",
+      "-p",
+      "ActiveState",
+      "-p",
+      "MainPID"
+     ]
+    ]
+   }
+  },
+  "a4_inconsistent_foreign_receipt": {
+   "check": {
+    "returned": {
+     "check": true,
+     "classification": "activation_files_inconsistent",
+     "current": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "effective_id": "1213d29d0208a467a50964762b07fbdcd3205b74823bab0f31a6a8cd48a53076",
+     "effective_revision": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "host_fenced": false,
+     "preconditions": [],
+     "predecessor_revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "receipt_sha256": "102f392d2481acce4c1cc77013686c5d958f7577ddffe519a7d07bdbf57fce6e"
+    }
+   },
+   "refused": {
+    "raised": {
+     "field": "control_dir",
+     "message": "activation_files_inconsistent: control_dir",
+     "reason_code": "activation_files_inconsistent",
+     "type": "MigrationRefused"
+    }
+   },
+   "tree_unchanged": true,
+   "view": {
+    "control": {
+     "fleet-owner.json": {
+      "json": {
+       "owner": "managed-fleet",
+       "schema": "urn:zeus:aibox-fleet-owner:1",
+       "unit": "zeus-aibox-managed-fleet.service"
+      },
+      "sha256": "5baeb88cc94e689a8eb390a8ed9936348e9283ccafa1cc836a52f62e9c093958"
+     },
+     "host-activation.json": {
+      "json": {
+       "schema": "hand-written"
+      },
+      "sha256": "102f392d2481acce4c1cc77013686c5d958f7577ddffe519a7d07bdbf57fce6e"
+     }
+    },
+    "current": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "releases": {
+     "7777777777777777777777777777777777777777": {
+      "dir": "0o555"
+     },
+     "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb": {
+      "dir": "0o555"
+     },
+     "current": {
+      "link": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+     },
+     "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee": {
+      "dir": "0o555"
+     }
+    },
+    "systemctl_argv": [
+     [
+      "systemctl",
+      "show",
+      "zeus-aibox-fleet.service",
+      "-p",
+      "ActiveState",
+      "-p",
+      "MainPID"
+     ],
+     [
+      "systemctl",
+      "show",
+      "zeus-aibox-managed-fleet.service",
+      "-p",
+      "ActiveState",
+      "-p",
+      "MainPID"
+     ],
+     [
+      "systemctl",
+      "show",
+      "zeus-aibox-host-delivery.service",
+      "-p",
+      "ActiveState",
+      "-p",
+      "MainPID"
+     ]
+    ]
+   }
+  },
+  "a4_inconsistent_missing_current": {
+   "check": {
+    "returned": {
+     "check": true,
+     "classification": "activation_files_inconsistent",
+     "current": null,
+     "effective_id": "1213d29d0208a467a50964762b07fbdcd3205b74823bab0f31a6a8cd48a53076",
+     "effective_revision": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "host_fenced": false,
+     "preconditions": [],
+     "predecessor_revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "receipt_sha256": "8d46e448e57a74705472f2beb9595753c708374e2d4e577cbb0424b64d3ebdd9"
+    }
+   },
+   "refused": {
+    "raised": {
+     "field": "control_dir",
+     "message": "activation_files_inconsistent: control_dir",
+     "reason_code": "activation_files_inconsistent",
+     "type": "MigrationRefused"
+    }
+   },
+   "tree_unchanged": true,
+   "view": {
+    "control": {
+     "fleet-owner.json": {
+      "json": {
+       "owner": "managed-fleet",
+       "schema": "urn:zeus:aibox-fleet-owner:1",
+       "unit": "zeus-aibox-managed-fleet.service"
+      },
+      "sha256": "5baeb88cc94e689a8eb390a8ed9936348e9283ccafa1cc836a52f62e9c093958"
+     },
+     "host-activation.json": {
+      "json": {
+       "host_id": "machine-id-sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+       "intent_id": "f16ac7d1cbe2eedab671120c5d066a2449295821956953a553839775fbad24d1",
+       "manifest_sha256": "1241249ce90d205d58820b38d7db8d9e222adf213033c577ca875526838270db",
+       "migration_id": "aibox-migration-001",
+       "release_revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+       "schema": "urn:zeus:aibox-host-activation:1",
+       "state": "restored_paused"
+      },
+      "sha256": "8d46e448e57a74705472f2beb9595753c708374e2d4e577cbb0424b64d3ebdd9"
+     }
+    },
+    "current": null,
+    "releases": {
+     "7777777777777777777777777777777777777777": {
+      "dir": "0o555"
+     },
+     "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb": {
+      "dir": "0o555"
+     },
+     "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee": {
+      "dir": "0o555"
+     }
+    },
+    "systemctl_argv": [
+     [
+      "systemctl",
+      "show",
+      "zeus-aibox-fleet.service",
+      "-p",
+      "ActiveState",
+      "-p",
+      "MainPID"
+     ],
+     [
+      "systemctl",
+      "show",
+      "zeus-aibox-managed-fleet.service",
+      "-p",
+      "ActiveState",
+      "-p",
+      "MainPID"
+     ],
+     [
+      "systemctl",
+      "show",
+      "zeus-aibox-host-delivery.service",
+      "-p",
+      "ActiveState",
+      "-p",
+      "MainPID"
+     ]
+    ]
+   }
+  },
+  "a4_inconsistent_missing_receipt": {
+   "check": {
+    "returned": {
+     "check": true,
+     "classification": "activation_files_inconsistent",
+     "current": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "effective_id": "1213d29d0208a467a50964762b07fbdcd3205b74823bab0f31a6a8cd48a53076",
+     "effective_revision": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "host_fenced": false,
+     "preconditions": [],
+     "predecessor_revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "receipt_sha256": null
+    }
+   },
+   "refused": {
+    "raised": {
+     "field": "control_dir",
+     "message": "activation_files_inconsistent: control_dir",
+     "reason_code": "activation_files_inconsistent",
+     "type": "MigrationRefused"
+    }
+   },
+   "tree_unchanged": true,
+   "view": {
+    "control": {
+     "fleet-owner.json": {
+      "json": {
+       "owner": "managed-fleet",
+       "schema": "urn:zeus:aibox-fleet-owner:1",
+       "unit": "zeus-aibox-managed-fleet.service"
+      },
+      "sha256": "5baeb88cc94e689a8eb390a8ed9936348e9283ccafa1cc836a52f62e9c093958"
+     }
+    },
+    "current": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "releases": {
+     "7777777777777777777777777777777777777777": {
+      "dir": "0o555"
+     },
+     "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb": {
+      "dir": "0o555"
+     },
+     "current": {
+      "link": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+     },
+     "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee": {
+      "dir": "0o555"
+     }
+    },
+    "systemctl_argv": [
+     [
+      "systemctl",
+      "show",
+      "zeus-aibox-fleet.service",
+      "-p",
+      "ActiveState",
+      "-p",
+      "MainPID"
+     ],
+     [
+      "systemctl",
+      "show",
+      "zeus-aibox-managed-fleet.service",
+      "-p",
+      "ActiveState",
+      "-p",
+      "MainPID"
+     ],
+     [
+      "systemctl",
+      "show",
+      "zeus-aibox-host-delivery.service",
+      "-p",
+      "ActiveState",
+      "-p",
+      "MainPID"
+     ]
+    ]
+   }
+  },
+  "a5_refused_fence": {
+   "refused": {
+    "raised": {
+     "field": "host-fence.json",
+     "message": "host_fenced: host-fence.json",
+     "reason_code": "host_fenced",
+     "type": "MigrationRefused"
+    }
+   },
+   "tree_unchanged": true,
+   "view": {
+    "control": {
+     "fleet-owner.json": {
+      "json": {
+       "owner": "managed-fleet",
+       "schema": "urn:zeus:aibox-fleet-owner:1",
+       "unit": "zeus-aibox-managed-fleet.service"
+      },
+      "sha256": "5baeb88cc94e689a8eb390a8ed9936348e9283ccafa1cc836a52f62e9c093958"
+     },
+     "host-activation.json": {
+      "json": {
+       "host_id": "machine-id-sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+       "intent_id": "f16ac7d1cbe2eedab671120c5d066a2449295821956953a553839775fbad24d1",
+       "manifest_sha256": "1241249ce90d205d58820b38d7db8d9e222adf213033c577ca875526838270db",
+       "migration_id": "aibox-migration-001",
+       "release_revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+       "schema": "urn:zeus:aibox-host-activation:1",
+       "state": "restored_paused"
+      },
+      "sha256": "8d46e448e57a74705472f2beb9595753c708374e2d4e577cbb0424b64d3ebdd9"
+     },
+     "host-fence.json": {
+      "json": {
+       "at": "<time>",
+       "migration_id": "aibox-migration-001",
+       "reason": "fixture-fence"
+      },
+      "sha256": "7dba62c515875d4ef18f49f81039332e1cee78a2ac08d5e585f1275958daaa86"
+     }
+    },
+    "current": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "releases": {
+     "7777777777777777777777777777777777777777": {
+      "dir": "0o555"
+     },
+     "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb": {
+      "dir": "0o555"
+     },
+     "current": {
+      "link": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+     },
+     "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee": {
+      "dir": "0o555"
+     }
+    },
+    "systemctl_argv": []
+   }
+  },
+  "a5_refused_missing": {
+   "refused": {
+    "raised": {
+     "field": "release",
+     "message": "release_not_ready: release",
+     "reason_code": "release_not_ready",
+     "type": "MigrationRefused"
+    }
+   },
+   "tree_unchanged": true,
+   "view": {
+    "control": {
+     "fleet-owner.json": {
+      "json": {
+       "owner": "managed-fleet",
+       "schema": "urn:zeus:aibox-fleet-owner:1",
+       "unit": "zeus-aibox-managed-fleet.service"
+      },
+      "sha256": "5baeb88cc94e689a8eb390a8ed9936348e9283ccafa1cc836a52f62e9c093958"
+     },
+     "host-activation.json": {
+      "json": {
+       "host_id": "machine-id-sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+       "intent_id": "f16ac7d1cbe2eedab671120c5d066a2449295821956953a553839775fbad24d1",
+       "manifest_sha256": "1241249ce90d205d58820b38d7db8d9e222adf213033c577ca875526838270db",
+       "migration_id": "aibox-migration-001",
+       "release_revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+       "schema": "urn:zeus:aibox-host-activation:1",
+       "state": "restored_paused"
+      },
+      "sha256": "8d46e448e57a74705472f2beb9595753c708374e2d4e577cbb0424b64d3ebdd9"
+     }
+    },
+    "current": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "releases": {
+     "7777777777777777777777777777777777777777": {
+      "dir": "0o555"
+     },
+     "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb": {
+      "dir": "0o555"
+     },
+     "current": {
+      "link": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+     }
+    },
+    "systemctl_argv": []
+   }
+  },
+  "a5_refused_package": {
+   "refused": {
+    "raised": {
+     "field": "src/codex_harness",
+     "message": "release_not_ready: src/codex_harness",
+     "reason_code": "release_not_ready",
+     "type": "MigrationRefused"
+    }
+   },
+   "tree_unchanged": true,
+   "view": {
+    "control": {
+     "fleet-owner.json": {
+      "json": {
+       "owner": "managed-fleet",
+       "schema": "urn:zeus:aibox-fleet-owner:1",
+       "unit": "zeus-aibox-managed-fleet.service"
+      },
+      "sha256": "5baeb88cc94e689a8eb390a8ed9936348e9283ccafa1cc836a52f62e9c093958"
+     },
+     "host-activation.json": {
+      "json": {
+       "host_id": "machine-id-sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+       "intent_id": "f16ac7d1cbe2eedab671120c5d066a2449295821956953a553839775fbad24d1",
+       "manifest_sha256": "1241249ce90d205d58820b38d7db8d9e222adf213033c577ca875526838270db",
+       "migration_id": "aibox-migration-001",
+       "release_revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+       "schema": "urn:zeus:aibox-host-activation:1",
+       "state": "restored_paused"
+      },
+      "sha256": "8d46e448e57a74705472f2beb9595753c708374e2d4e577cbb0424b64d3ebdd9"
+     }
+    },
+    "current": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "releases": {
+     "7777777777777777777777777777777777777777": {
+      "dir": "0o555"
+     },
+     "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb": {
+      "dir": "0o555"
+     },
+     "current": {
+      "link": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+     },
+     "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee": {
+      "dir": "0o555"
+     }
+    },
+    "systemctl_argv": []
+   }
+  },
+  "a5_refused_runtime": {
+   "refused": {
+    "raised": {
+     "field": "runtime.json.revision",
+     "message": "release_not_ready: runtime.json.revision",
+     "reason_code": "release_not_ready",
+     "type": "MigrationRefused"
+    }
+   },
+   "tree_unchanged": true,
+   "view": {
+    "control": {
+     "fleet-owner.json": {
+      "json": {
+       "owner": "managed-fleet",
+       "schema": "urn:zeus:aibox-fleet-owner:1",
+       "unit": "zeus-aibox-managed-fleet.service"
+      },
+      "sha256": "5baeb88cc94e689a8eb390a8ed9936348e9283ccafa1cc836a52f62e9c093958"
+     },
+     "host-activation.json": {
+      "json": {
+       "host_id": "machine-id-sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+       "intent_id": "f16ac7d1cbe2eedab671120c5d066a2449295821956953a553839775fbad24d1",
+       "manifest_sha256": "1241249ce90d205d58820b38d7db8d9e222adf213033c577ca875526838270db",
+       "migration_id": "aibox-migration-001",
+       "release_revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+       "schema": "urn:zeus:aibox-host-activation:1",
+       "state": "restored_paused"
+      },
+      "sha256": "8d46e448e57a74705472f2beb9595753c708374e2d4e577cbb0424b64d3ebdd9"
+     }
+    },
+    "current": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "releases": {
+     "7777777777777777777777777777777777777777": {
+      "dir": "0o555"
+     },
+     "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb": {
+      "dir": "0o555"
+     },
+     "current": {
+      "link": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+     },
+     "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee": {
+      "dir": "0o555"
+     }
+    },
+    "systemctl_argv": []
+   }
+  },
+  "a5_refused_venv": {
+   "refused": {
+    "raised": {
+     "field": ".venv/bin/python",
+     "message": "release_not_ready: .venv/bin/python",
+     "reason_code": "release_not_ready",
+     "type": "MigrationRefused"
+    }
+   },
+   "tree_unchanged": true,
+   "view": {
+    "control": {
+     "fleet-owner.json": {
+      "json": {
+       "owner": "managed-fleet",
+       "schema": "urn:zeus:aibox-fleet-owner:1",
+       "unit": "zeus-aibox-managed-fleet.service"
+      },
+      "sha256": "5baeb88cc94e689a8eb390a8ed9936348e9283ccafa1cc836a52f62e9c093958"
+     },
+     "host-activation.json": {
+      "json": {
+       "host_id": "machine-id-sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+       "intent_id": "f16ac7d1cbe2eedab671120c5d066a2449295821956953a553839775fbad24d1",
+       "manifest_sha256": "1241249ce90d205d58820b38d7db8d9e222adf213033c577ca875526838270db",
+       "migration_id": "aibox-migration-001",
+       "release_revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+       "schema": "urn:zeus:aibox-host-activation:1",
+       "state": "restored_paused"
+      },
+      "sha256": "8d46e448e57a74705472f2beb9595753c708374e2d4e577cbb0424b64d3ebdd9"
+     }
+    },
+    "current": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "releases": {
+     "7777777777777777777777777777777777777777": {
+      "dir": "0o555"
+     },
+     "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb": {
+      "dir": "0o555"
+     },
+     "current": {
+      "link": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+     },
+     "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee": {
+      "dir": "0o555"
+     }
+    },
+    "systemctl_argv": []
+   }
+  },
+  "a5_refused_writable": {
+   "refused": {
+    "raised": {
+     "field": ".venv/bin/python",
+     "message": "release_not_ready: .venv/bin/python",
+     "reason_code": "release_not_ready",
+     "type": "MigrationRefused"
+    }
+   },
+   "tree_unchanged": true,
+   "view": {
+    "control": {
+     "fleet-owner.json": {
+      "json": {
+       "owner": "managed-fleet",
+       "schema": "urn:zeus:aibox-fleet-owner:1",
+       "unit": "zeus-aibox-managed-fleet.service"
+      },
+      "sha256": "5baeb88cc94e689a8eb390a8ed9936348e9283ccafa1cc836a52f62e9c093958"
+     },
+     "host-activation.json": {
+      "json": {
+       "host_id": "machine-id-sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+       "intent_id": "f16ac7d1cbe2eedab671120c5d066a2449295821956953a553839775fbad24d1",
+       "manifest_sha256": "1241249ce90d205d58820b38d7db8d9e222adf213033c577ca875526838270db",
+       "migration_id": "aibox-migration-001",
+       "release_revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+       "schema": "urn:zeus:aibox-host-activation:1",
+       "state": "restored_paused"
+      },
+      "sha256": "8d46e448e57a74705472f2beb9595753c708374e2d4e577cbb0424b64d3ebdd9"
+     }
+    },
+    "current": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "releases": {
+     "7777777777777777777777777777777777777777": {
+      "dir": "0o555"
+     },
+     "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb": {
+      "dir": "0o555"
+     },
+     "current": {
+      "link": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+     },
+     "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee": {
+      "dir": "0o755"
+     }
+    },
+    "systemctl_argv": []
+   }
+  },
+  "a6_failed_replace_removes_only_its_own_link": {
+   "failed": {
+    "raised": {
+     "message": "LABELLED injected failure",
+     "type": "OSError"
+    }
+   },
+   "foreign_leftover_target": "0000000000000000000000000000000000000000",
+   "leftovers": [
+    ".current.foreignleftover"
+   ],
+   "temporary_was_a_link_named_current_dot": [
+    [
+     true,
+     true,
+     true
+    ]
+   ],
+   "view": {
+    "control": {
+     "fleet-owner.json": {
+      "json": {
+       "owner": "managed-fleet",
+       "schema": "urn:zeus:aibox-fleet-owner:1",
+       "unit": "zeus-aibox-managed-fleet.service"
+      },
+      "sha256": "5baeb88cc94e689a8eb390a8ed9936348e9283ccafa1cc836a52f62e9c093958"
+     },
+     "host-activation.json": {
+      "json": {
+       "activation_kind": "successor",
+       "host_id": "machine-id-sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+       "intent_id": "1213d29d0208a467a50964762b07fbdcd3205b74823bab0f31a6a8cd48a53076",
+       "manifest_sha256": "1241249ce90d205d58820b38d7db8d9e222adf213033c577ca875526838270db",
+       "migration_id": "aibox-migration-001",
+       "release_revision": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+       "schema": "urn:zeus:aibox-host-activation:1",
+       "state": "restored_paused",
+       "supersedes": "f16ac7d1cbe2eedab671120c5d066a2449295821956953a553839775fbad24d1"
+      },
+      "sha256": "324fed01a489e07b994849a38e09cde36470c4ecbfb5c49e8cb561ffb1404f56"
+     }
+    },
+    "current": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "releases": {
+     ".current.foreignleftover": {
+      "link": "0000000000000000000000000000000000000000"
+     },
+     "7777777777777777777777777777777777777777": {
+      "dir": "0o555"
+     },
+     "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb": {
+      "dir": "0o555"
+     },
+     "current": {
+      "link": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+     },
+     "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee": {
+      "dir": "0o555"
+     }
+    },
+    "systemctl_argv": [
+     [
+      "systemctl",
+      "show",
+      "zeus-aibox-fleet.service",
+      "-p",
+      "ActiveState",
+      "-p",
+      "MainPID"
+     ],
+     [
+      "systemctl",
+      "show",
+      "zeus-aibox-managed-fleet.service",
+      "-p",
+      "ActiveState",
+      "-p",
+      "MainPID"
+     ],
+     [
+      "systemctl",
+      "show",
+      "zeus-aibox-host-delivery.service",
+      "-p",
+      "ActiveState",
+      "-p",
+      "MainPID"
+     ]
+    ]
+   }
+  },
+  "a7_stale_reader_refused_by_the_launcher": {
+   "check": {
+    "returned": {
+     "check": true,
+     "classification": "activation_files_inconsistent",
+     "current": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "effective_id": "10db6eba95252d4ee1e86b29587e73901518a8f6f1503559c7007398ab113d07",
+     "effective_revision": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "host_fenced": false,
+     "preconditions": [],
+     "predecessor_revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "receipt_sha256": "3f695508ce8e05400cb2f1d4caa86812da7eb22b332a38fee2f671f99a5c4300"
+    }
+   },
+   "launcher": {
+    "fleet": {
+     "refused": "activation_receipt_revision_mismatch"
+    },
+    "managed-fleet": {
+     "refused": "activation_receipt_revision_mismatch"
+    },
+    "owner-actions": {
+     "refused": "activation_receipt_revision_mismatch"
+    }
+   },
+   "view": {
+    "control": {
+     "fleet-owner.json": {
+      "json": {
+       "owner": "managed-fleet",
+       "schema": "urn:zeus:aibox-fleet-owner:1",
+       "unit": "zeus-aibox-managed-fleet.service"
+      },
+      "sha256": "5baeb88cc94e689a8eb390a8ed9936348e9283ccafa1cc836a52f62e9c093958"
+     },
+     "host-activation.json": {
+      "json": {
+       "host_id": "machine-id-sha256:c2860307d791f8c906d07dff32e4db814e37106010fd655ae217a4dbba8c3063",
+       "intent_id": "4b4e789a3425258a6806ea569bdaffef8e7133f14ea43424e8440c0d24641a9d",
+       "manifest_sha256": "1241249ce90d205d58820b38d7db8d9e222adf213033c577ca875526838270db",
+       "migration_id": "aibox-migration-001",
+       "release_revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+       "schema": "urn:zeus:aibox-host-activation:1",
+       "state": "restored_paused"
+      },
+      "sha256": "3f695508ce8e05400cb2f1d4caa86812da7eb22b332a38fee2f671f99a5c4300"
+     }
+    },
+    "current": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+    "releases": {
+     "7777777777777777777777777777777777777777": {
+      "dir": "0o555"
+     },
+     "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb": {
+      "dir": "0o555"
+     },
+     "current": {
+      "link": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+     },
+     "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee": {
+      "dir": "0o555"
+     }
+    },
+    "systemctl_argv": [
+     [
+      "systemctl",
+      "show",
+      "zeus-aibox-fleet.service",
+      "-p",
+      "ActiveState",
+      "-p",
+      "MainPID"
+     ],
+     [
+      "systemctl",
+      "show",
+      "zeus-aibox-managed-fleet.service",
+      "-p",
+      "ActiveState",
+      "-p",
+      "MainPID"
+     ],
+     [
+      "systemctl",
+      "show",
+      "zeus-aibox-host-delivery.service",
+      "-p",
+      "ActiveState",
+      "-p",
+      "MainPID"
+     ],
+     [
+      "systemctl",
+      "show",
+      "zeus-aibox-fleet.service",
+      "-p",
+      "ActiveState",
+      "-p",
+      "MainPID"
+     ],
+     [
+      "systemctl",
+      "show",
+      "zeus-aibox-managed-fleet.service",
+      "-p",
+      "ActiveState",
+      "-p",
+      "MainPID"
+     ],
+     [
+      "systemctl",
+      "show",
+      "zeus-aibox-host-delivery.service",
+      "-p",
+      "ActiveState",
+      "-p",
+      "MainPID"
+     ]
+    ]
+   }
+  },
+  "cli_successor_and_switch": {
+   "check": {
+    "exit": 0,
+    "json": {
+     "check": true,
+     "classification": "recorded_not_switched",
+     "current": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "effective_id": "1213d29d0208a467a50964762b07fbdcd3205b74823bab0f31a6a8cd48a53076",
+     "effective_revision": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "host_fenced": false,
+     "preconditions": [],
+     "predecessor_revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "receipt_sha256": "8d46e448e57a74705472f2beb9595753c708374e2d4e577cbb0424b64d3ebdd9"
+    }
+   },
+   "check_inconsistent": {
+    "exit": 1,
+    "json": {
+     "check": true,
+     "classification": "activation_files_inconsistent",
+     "current": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "effective_id": "1213d29d0208a467a50964762b07fbdcd3205b74823bab0f31a6a8cd48a53076",
+     "effective_revision": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "host_fenced": false,
+     "preconditions": [],
+     "predecessor_revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "receipt_sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356"
+    }
+   },
+   "record": {
+    "exit": 0,
+    "json": {
+     "cached": false,
+     "predecessor_id": "f16ac7d1cbe2eedab671120c5d066a2449295821956953a553839775fbad24d1",
+     "recorded": true,
+     "successor_id": "1213d29d0208a467a50964762b07fbdcd3205b74823bab0f31a6a8cd48a53076"
+    }
+   },
+   "replay": {
+    "exit": 0,
+    "json": {
+     "cached": true,
+     "predecessor_id": "f16ac7d1cbe2eedab671120c5d066a2449295821956953a553839775fbad24d1",
+     "recorded": false,
+     "successor_id": "1213d29d0208a467a50964762b07fbdcd3205b74823bab0f31a6a8cd48a53076"
+    }
+   },
+   "switch": {
+    "exit": 0,
+    "json": {
+     "cached": false,
+     "classification": "switched",
+     "classification_before": "recorded_not_switched",
+     "current": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "effective_id": "1213d29d0208a467a50964762b07fbdcd3205b74823bab0f31a6a8cd48a53076",
+     "effective_revision": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "predecessor_revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "receipt_sha256": "324fed01a489e07b994849a38e09cde36470c4ecbfb5c49e8cb561ffb1404f56",
+     "receipt_written": true,
+     "revision": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+    }
+   },
+   "switch_without_expected_id": {
+    "exit": 1,
+    "json": {
+     "field": "expected_id",
+     "refused": "expected_id_required"
+    }
+   },
+   "view": {
+    "control": {
+     "fleet-owner.json": {
+      "json": {
+       "owner": "managed-fleet",
+       "schema": "urn:zeus:aibox-fleet-owner:1",
+       "unit": "zeus-aibox-managed-fleet.service"
+      },
+      "sha256": "5baeb88cc94e689a8eb390a8ed9936348e9283ccafa1cc836a52f62e9c093958"
+     },
+     "host-activation.json": {
+      "json": {},
+      "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356"
+     }
+    },
+    "current": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+    "releases": {
+     "7777777777777777777777777777777777777777": {
+      "dir": "0o555"
+     },
+     "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb": {
+      "dir": "0o555"
+     },
+     "current": {
+      "link": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+     },
+     "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee": {
+      "dir": "0o555"
+     }
+    },
+    "systemctl_argv": []
+   }
+  },
+  "launcher_process": {
+   "crash": {
+    "raised": {
+     "message": "LABELLED injected failure",
+     "type": "OSError"
+    }
+   },
+   "intent_fleet": {
+    "event": {
+     "event": "launch_refused",
+     "reason": "fleet_owner_managed",
+     "role": "fleet"
+    },
+    "exit": 78
+   },
+   "intent_owner_actions": {
+    "event": {
+     "event": "launch_refused",
+     "reason": "owner_actions_policy_unset",
+     "role": "owner-actions"
+    },
+    "exit": 78
+   },
+   "mixed_pair": {
+    "fleet": {
+     "event": {
+      "event": "launch_refused",
+      "reason": "activation_receipt_revision_mismatch",
+      "role": "fleet"
+     },
+     "exit": 78
+    },
+    "managed-fleet": {
+     "event": {
+      "event": "launch_refused",
+      "reason": "activation_receipt_revision_mismatch",
+      "role": "managed-fleet"
+     },
+     "exit": 78
+    },
+    "owner-actions": {
+     "event": {
+      "event": "launch_refused",
+      "reason": "activation_receipt_revision_mismatch",
+      "role": "owner-actions"
+     },
+     "exit": 78
+    }
+   },
+   "switched_fleet_owner_kept": {
+    "event": {
+     "event": "launch_refused",
+     "reason": "fleet_owner_managed",
+     "role": "fleet"
+    },
+    "exit": 78
+   },
+   "switched_fleet_owner_retired": {
+    "event": {
+     "event": "launch",
+     "migration_id": "aibox-migration-001",
+     "revision": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "role": "fleet"
+    },
+    "exit": 0
+   },
+   "switched_managed_fleet": {
+    "event": {
+     "event": "launch_refused",
+     "reason": "fleet_owner_not_managed",
+     "role": "managed-fleet"
+    },
+    "exit": 78
+   }
+  },
+  "non_posix_refusal": {
+   "cli": {
+    "check": {
+     "exit": 1,
+     "json": {
+      "field": "platform",
+      "refused": "successor_switch_posix_only"
+     }
+    },
+    "expected_id": {
+     "exit": 1,
+     "json": {
+      "field": "platform",
+      "refused": "successor_switch_posix_only"
+     }
+    }
+   },
+   "coordinator_opened": [],
+   "direct": {
+    "check": {
+     "raised": {
+      "field": "platform",
+      "message": "successor_switch_posix_only: platform",
+      "reason_code": "successor_switch_posix_only",
+      "type": "MigrationRefused"
+     }
+    },
+    "effect": {
+     "raised": {
+      "field": "platform",
+      "message": "successor_switch_posix_only: platform",
+      "reason_code": "successor_switch_posix_only",
+      "type": "MigrationRefused"
+     }
+    }
+   },
+   "events": [],
+   "files_unchanged": true,
+   "no_temporary_link": true,
+   "preconditions_observed": [],
+   "rows_unchanged": true
+  },
+  "ph4_11_limited_active_writes_no_current": {
+   "current": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+   "files_unchanged": true,
+   "historic_replay_cached": true,
+   "new_successor": {
+    "raised": {
+     "field": "state",
+     "message": "activation_state: state",
+     "reason_code": "activation_state",
+     "type": "MigrationRefused"
+    }
+   },
+   "view": {
+    "control": {
+     "fleet-owner.json": {
+      "json": {
+       "owner": "managed-fleet",
+       "schema": "urn:zeus:aibox-fleet-owner:1",
+       "unit": "zeus-aibox-managed-fleet.service"
+      },
+      "sha256": "5baeb88cc94e689a8eb390a8ed9936348e9283ccafa1cc836a52f62e9c093958"
+     },
+     "host-activation.json": {
+      "json": {
+       "activation_kind": "successor",
+       "host_id": "machine-id-sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+       "intent_id": "1213d29d0208a467a50964762b07fbdcd3205b74823bab0f31a6a8cd48a53076",
+       "manifest_sha256": "1241249ce90d205d58820b38d7db8d9e222adf213033c577ca875526838270db",
+       "migration_id": "aibox-migration-001",
+       "release_revision": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+       "schema": "urn:zeus:aibox-host-activation:1",
+       "state": "restored_paused",
+       "supersedes": "f16ac7d1cbe2eedab671120c5d066a2449295821956953a553839775fbad24d1"
+      },
+      "sha256": "324fed01a489e07b994849a38e09cde36470c4ecbfb5c49e8cb561ffb1404f56"
+     }
+    },
+    "current": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+    "releases": {
+     "7777777777777777777777777777777777777777": {
+      "dir": "0o555"
+     },
+     "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb": {
+      "dir": "0o555"
+     },
+     "current": {
+      "link": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+     },
+     "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee": {
+      "dir": "0o555"
+     }
+    },
+    "systemctl_argv": [
+     [
+      "systemctl",
+      "show",
+      "zeus-aibox-fleet.service",
+      "-p",
+      "ActiveState",
+      "-p",
+      "MainPID"
+     ],
+     [
+      "systemctl",
+      "show",
+      "zeus-aibox-managed-fleet.service",
+      "-p",
+      "ActiveState",
+      "-p",
+      "MainPID"
+     ],
+     [
+      "systemctl",
+      "show",
+      "zeus-aibox-host-delivery.service",
+      "-p",
+      "ActiveState",
+      "-p",
+      "MainPID"
+     ]
+    ]
+   }
+  }
+ },
+ "systemd": {
+  "controls_only_the_registered_unit": {
+   "another_unit": {
+    "raised": {
+     "field": "service",
+     "message": "host delivery refused: target_unit_not_allowed (service)",
+     "reason_code": "target_unit_not_allowed",
+     "type": "DeliveryRefused"
+    }
+   },
+   "launch": {
+    "returned": {
+     "launch": {
+      "descriptor_sha256": "f969dc48d638428f1777a7aac6dae3245a9572b284c142390f9290c33c73d3a6",
+      "intent_id": "f16ac7d1cbe2eedab671120c5d066a2449295821956953a553839775fbad24d1",
+      "invocation_id": "abc123",
+      "service": "zeus-aibox-fleet",
+      "started_at": "<time>"
+     },
+     "service": "zeus-aibox-fleet",
+     "started": true
+    }
+   },
+   "launch_without_receipt": {
+    "raised": {
+     "field": "control_dir",
+     "message": "host delivery refused: activation_receipt_required (control_dir)",
+     "reason_code": "activation_receipt_required",
+     "type": "DeliveryRefused"
+    }
+   },
+   "only_show_start_stop": true,
+   "running": {
+    "returned": true
+   },
+   "state_dir": {
+    "controller-state.json": {
+     "json": {
+      "descriptor_sha256": "f969dc48d638428f1777a7aac6dae3245a9572b284c142390f9290c33c73d3a6",
+      "intent_id": "f16ac7d1cbe2eedab671120c5d066a2449295821956953a553839775fbad24d1",
+      "invocation_id": "abc123",
+      "service": "zeus-aibox-fleet",
+      "started_at": "<time>"
+     },
+     "sha256": "a4aacfd694d0348364bf5f99adaddeffda593790f6d773a15a76ca937f002bb1"
+    }
+   },
+   "stop": {
+    "returned": {
+     "exit_code": 0,
+     "invocation_id": "abc123",
+     "stopped": true
+    }
+   },
+   "systemctl_argv": [
+    [
+     [
+      "systemctl",
+      "show",
+      "zeus-aibox-fleet.service",
+      "-p",
+      "ActiveState",
+      "-p",
+      "MainPID",
+      "-p",
+      "InvocationID"
+     ],
+     60
+    ],
+    [
+     [
+      "systemctl",
+      "show",
+      "zeus-aibox-fleet.service",
+      "-p",
+      "ActiveState",
+      "-p",
+      "MainPID",
+      "-p",
+      "InvocationID"
+     ],
+     60
+    ],
+    [
+     [
+      "systemctl",
+      "stop",
+      "zeus-aibox-fleet.service"
+     ],
+     60
+    ],
+    [
+     [
+      "systemctl",
+      "show",
+      "zeus-aibox-fleet.service",
+      "-p",
+      "ActiveState",
+      "-p",
+      "MainPID",
+      "-p",
+      "InvocationID"
+     ],
+     60
+    ],
+    [
+     [
+      "systemctl",
+      "show",
+      "zeus-aibox-fleet.service",
+      "-p",
+      "ActiveState",
+      "-p",
+      "MainPID",
+      "-p",
+      "InvocationID"
+     ],
+     60
+    ],
+    [
+     [
+      "systemctl",
+      "start",
+      "zeus-aibox-fleet.service"
+     ],
+     60
+    ],
+    [
+     [
+      "systemctl",
+      "show",
+      "zeus-aibox-fleet.service",
+      "-p",
+      "ActiveState",
+      "-p",
+      "MainPID",
+      "-p",
+      "InvocationID"
+     ],
+     60
+    ]
+   ],
+   "unknown_state": {
+    "raised": {
+     "message": "systemd unit state unavailable",
+     "type": "RuntimeError"
+    }
+   }
+  },
+  "launch_refusals": {
+   "configured_reason": {
+    "argv": [],
+    "result": {
+     "raised": {
+      "field": "control_dir",
+      "message": "host delivery refused: control_dir_invalid (control_dir)",
+      "reason_code": "control_dir_invalid",
+      "type": "DeliveryRefused"
+     }
+    }
+   },
+   "fenced": {
+    "argv": [],
+    "result": {
+     "raised": {
+      "field": "control_dir",
+      "message": "host delivery refused: host_fenced (control_dir)",
+      "reason_code": "host_fenced",
+      "type": "DeliveryRefused"
+     }
+    }
+   },
+   "invalid_schema": {
+    "argv": [],
+    "result": {
+     "raised": {
+      "field": "control_dir",
+      "message": "host delivery refused: activation_receipt_invalid (control_dir)",
+      "reason_code": "activation_receipt_invalid",
+      "type": "DeliveryRefused"
+     }
+    }
+   },
+   "no_intent_id": {
+    "argv": [],
+    "result": {
+     "raised": {
+      "field": "control_dir",
+      "message": "host delivery refused: activation_receipt_invalid (control_dir)",
+      "reason_code": "activation_receipt_invalid",
+      "type": "DeliveryRefused"
+     }
+    }
+   },
+   "no_receipt": {
+    "argv": [],
+    "result": {
+     "raised": {
+      "field": "control_dir",
+      "message": "host delivery refused: activation_receipt_required (control_dir)",
+      "reason_code": "activation_receipt_required",
+      "type": "DeliveryRefused"
+     }
+    }
+   },
+   "start_fails": {
+    "argv": [
+     [
+      "systemctl",
+      "start",
+      "zeus-aibox-fleet.service"
+     ]
+    ],
+    "result": {
+     "raised": {
+      "message": "systemd unit could not be started",
+      "type": "RuntimeError"
+     }
+    }
+   },
+   "state_after_failed_start": {},
+   "unconfigured": {
+    "argv": [],
+    "result": {
+     "raised": {
+      "field": "control_dir",
+      "message": "host delivery refused: control_dir_unconfigured (control_dir)",
+      "reason_code": "control_dir_unconfigured",
+      "type": "DeliveryRefused"
+     }
+    }
+   }
+  },
+  "running_states": {
+   "<empty>": {
+    "argv": [
+     [
+      [
+       "systemctl",
+       "show",
+       "zeus-aibox-fleet.service",
+       "-p",
+       "ActiveState",
+       "-p",
+       "MainPID",
+       "-p",
+       "InvocationID"
+      ],
+      60
+     ]
+    ],
+    "result": {
+     "raised": {
+      "message": "systemd unit state unavailable",
+      "type": "RuntimeError"
+     }
+    }
+   },
+   "activating": {
+    "argv": [
+     [
+      [
+       "systemctl",
+       "show",
+       "zeus-aibox-fleet.service",
+       "-p",
+       "ActiveState",
+       "-p",
+       "MainPID",
+       "-p",
+       "InvocationID"
+      ],
+      60
+     ]
+    ],
+    "result": {
+     "returned": true
+    }
+   },
+   "active": {
+    "argv": [
+     [
+      [
+       "systemctl",
+       "show",
+       "zeus-aibox-fleet.service",
+       "-p",
+       "ActiveState",
+       "-p",
+       "MainPID",
+       "-p",
+       "InvocationID"
+      ],
+      60
+     ]
+    ],
+    "result": {
+     "returned": true
+    }
+   },
+   "custom_timeout": [
+    [
+     [
+      "systemctl",
+      "show",
+      "zeus-aibox-fleet.service",
+      "-p",
+      "ActiveState",
+      "-p",
+      "MainPID",
+      "-p",
+      "InvocationID"
+     ],
+     7
+    ]
+   ],
+   "deactivating": {
+    "argv": [
+     [
+      [
+       "systemctl",
+       "show",
+       "zeus-aibox-fleet.service",
+       "-p",
+       "ActiveState",
+       "-p",
+       "MainPID",
+       "-p",
+       "InvocationID"
+      ],
+      60
+     ]
+    ],
+    "result": {
+     "returned": true
+    }
+   },
+   "failed": {
+    "argv": [
+     [
+      [
+       "systemctl",
+       "show",
+       "zeus-aibox-fleet.service",
+       "-p",
+       "ActiveState",
+       "-p",
+       "MainPID",
+       "-p",
+       "InvocationID"
+      ],
+      60
+     ]
+    ],
+    "result": {
+     "returned": false
+    }
+   },
+   "inactive": {
+    "argv": [
+     [
+      [
+       "systemctl",
+       "show",
+       "zeus-aibox-fleet.service",
+       "-p",
+       "ActiveState",
+       "-p",
+       "MainPID",
+       "-p",
+       "InvocationID"
+      ],
+      60
+     ]
+    ],
+    "result": {
+     "returned": false
+    }
+   },
+   "maintenance": {
+    "argv": [
+     [
+      [
+       "systemctl",
+       "show",
+       "zeus-aibox-fleet.service",
+       "-p",
+       "ActiveState",
+       "-p",
+       "MainPID",
+       "-p",
+       "InvocationID"
+      ],
+      60
+     ]
+    ],
+    "result": {
+     "raised": {
+      "message": "systemd unit state unavailable",
+      "type": "RuntimeError"
+     }
+    }
+   },
+   "reloading": {
+    "argv": [
+     [
+      [
+       "systemctl",
+       "show",
+       "zeus-aibox-fleet.service",
+       "-p",
+       "ActiveState",
+       "-p",
+       "MainPID",
+       "-p",
+       "InvocationID"
+      ],
+      60
+     ]
+    ],
+    "result": {
+     "returned": true
+    }
+   },
+   "show_fails": {
+    "raised": {
+     "message": "systemd unit state unavailable",
+     "type": "RuntimeError"
+    }
+   }
+  },
+  "stop": {
+   "failed_unit": {
+    "argv": [
+     [
+      "systemctl",
+      "show",
+      "zeus-aibox-fleet.service",
+      "-p",
+      "ActiveState",
+      "-p",
+      "MainPID",
+      "-p",
+      "InvocationID"
+     ],
+     [
+      "systemctl",
+      "stop",
+      "zeus-aibox-fleet.service"
+     ],
+     [
+      "systemctl",
+      "show",
+      "zeus-aibox-fleet.service",
+      "-p",
+      "ActiveState",
+      "-p",
+      "MainPID",
+      "-p",
+      "InvocationID"
+     ],
+     [
+      "systemctl",
+      "show",
+      "zeus-aibox-fleet.service",
+      "-p",
+      "ActiveState",
+      "-p",
+      "MainPID",
+      "-p",
+      "InvocationID"
+     ]
+    ],
+    "result": {
+     "returned": {
+      "exit_code": 0,
+      "invocation_id": "abc123",
+      "stopped": true
+     }
+    }
+   },
+   "stop_exit_code": {
+    "argv": [
+     [
+      "systemctl",
+      "show",
+      "zeus-aibox-fleet.service",
+      "-p",
+      "ActiveState",
+      "-p",
+      "MainPID",
+      "-p",
+      "InvocationID"
+     ],
+     [
+      "systemctl",
+      "stop",
+      "zeus-aibox-fleet.service"
+     ],
+     [
+      "systemctl",
+      "show",
+      "zeus-aibox-fleet.service",
+      "-p",
+      "ActiveState",
+      "-p",
+      "MainPID",
+      "-p",
+      "InvocationID"
+     ],
+     [
+      "systemctl",
+      "show",
+      "zeus-aibox-fleet.service",
+      "-p",
+      "ActiveState",
+      "-p",
+      "MainPID",
+      "-p",
+      "InvocationID"
+     ]
+    ],
+    "result": {
+     "returned": {
+      "exit_code": 5,
+      "invocation_id": "abc123",
+      "stopped": true
+     }
+    }
+   },
+   "stopped": {
+    "argv": [
+     [
+      "systemctl",
+      "show",
+      "zeus-aibox-fleet.service",
+      "-p",
+      "ActiveState",
+      "-p",
+      "MainPID",
+      "-p",
+      "InvocationID"
+     ],
+     [
+      "systemctl",
+      "stop",
+      "zeus-aibox-fleet.service"
+     ],
+     [
+      "systemctl",
+      "show",
+      "zeus-aibox-fleet.service",
+      "-p",
+      "ActiveState",
+      "-p",
+      "MainPID",
+      "-p",
+      "InvocationID"
+     ],
+     [
+      "systemctl",
+      "show",
+      "zeus-aibox-fleet.service",
+      "-p",
+      "ActiveState",
+      "-p",
+      "MainPID",
+      "-p",
+      "InvocationID"
+     ]
+    ],
+    "result": {
+     "returned": {
+      "exit_code": 0,
+      "invocation_id": "abc123",
+      "stopped": true
+     }
+    }
+   }
+  },
+  "unit_allow_list": {
+   "": {
+    "raised": {
+     "field": "service",
+     "message": "host delivery refused: target_unit_not_allowed (service)",
+     "reason_code": "target_unit_not_allowed",
+     "type": "DeliveryRefused"
+    }
+   },
+   "sshd": {
+    "raised": {
+     "field": "service",
+     "message": "host delivery refused: target_unit_not_allowed (service)",
+     "reason_code": "target_unit_not_allowed",
+     "type": "DeliveryRefused"
+    }
+   },
+   "x zeus-aibox-fleet": {
+    "raised": {
+     "field": "service",
+     "message": "host delivery refused: target_unit_not_allowed (service)",
+     "reason_code": "target_unit_not_allowed",
+     "type": "DeliveryRefused"
+    }
+   },
+   "zeus-aibox-": {
+    "raised": {
+     "field": "service",
+     "message": "host delivery refused: target_unit_not_allowed (service)",
+     "reason_code": "target_unit_not_allowed",
+     "type": "DeliveryRefused"
+    }
+   },
+   "zeus-aibox-1x": {
+    "raised": {
+     "field": "service",
+     "message": "host delivery refused: target_unit_not_allowed (service)",
+     "reason_code": "target_unit_not_allowed",
+     "type": "DeliveryRefused"
+    }
+   },
+   "zeus-aibox-Fleet": {
+    "raised": {
+     "field": "service",
+     "message": "host delivery refused: target_unit_not_allowed (service)",
+     "reason_code": "target_unit_not_allowed",
+     "type": "DeliveryRefused"
+    }
+   },
+   "zeus-aibox-a": {
+    "returned": "zeus-aibox-a.service"
+   },
+   "zeus-aibox-a_b": {
+    "raised": {
+     "field": "service",
+     "message": "host delivery refused: target_unit_not_allowed (service)",
+     "reason_code": "target_unit_not_allowed",
+     "type": "DeliveryRefused"
+    }
+   },
+   "zeus-aibox-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa": {
+    "returned": "zeus-aibox-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.service"
+   },
+   "zeus-aibox-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa": {
+    "raised": {
+     "field": "service",
+     "message": "host delivery refused: target_unit_not_allowed (service)",
+     "reason_code": "target_unit_not_allowed",
+     "type": "DeliveryRefused"
+    }
+   },
+   "zeus-aibox-fleet": {
+    "returned": "zeus-aibox-fleet.service"
+   },
+   "zeus-aibox-fleet\n": {
+    "raised": {
+     "field": "service",
+     "message": "host delivery refused: target_unit_not_allowed (service)",
+     "reason_code": "target_unit_not_allowed",
+     "type": "DeliveryRefused"
+    }
+   },
+   "zeus-aibox-host-delivery": {
+    "returned": "zeus-aibox-host-delivery.service"
+   },
+   "zeus-aibox-managed-fleet": {
+    "returned": "zeus-aibox-managed-fleet.service"
+   },
+   "zeus-aibox-x.service": {
+    "raised": {
+     "field": "service",
+     "message": "host delivery refused: target_unit_not_allowed (service)",
+     "reason_code": "target_unit_not_allowed",
+     "type": "DeliveryRefused"
+    }
+   }
+  }
+ }
+}
