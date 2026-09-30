@@ -1,0 +1,9 @@
+{
+ "family": "effects.delivery_units.pg",
+ "description": "§2.9 delivery units on a labelled disposable PostgreSQL (each side's PostgresStore, one fresh migrated schema per case, durable rows read back): HostDelivery._commit_verification, _record(effect, write) at publish/merge/switch, _promote, the owned stage write _enter -> _write, _consume's descriptor records and _record_release's superseded branch (review's releases row in the caller's unit); (a) injected failure at the unit's last write -> atomic rollback, (b) stale writer commits nothing, (c) replay adds no authority write, (d) the external effects entered at depth 0",
+ "reference_driver": "drivers/reference/s7_units.py",
+ "requires": "disposable-postgresql",
+ "target_driver": "drivers/target/s7_units.py",
+ "golden": "goldens/reference/effects.delivery_units.pg.json",
+ "slice": "S7"
+}

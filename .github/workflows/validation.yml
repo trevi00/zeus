@@ -124,6 +124,7 @@ jobs:
       - run: python compare/run.py run --only effects.decision_unit.pg --pg
       - run: python compare/run.py run --only effects.admission_unit.pg --pg
       - run: python compare/run.py run --only effects.continuation_units.pg --pg
+      - run: python compare/run.py run --only effects.delivery_units.pg --pg
       # S1 storage differentials on labelled, network-less disposable PostgreSQL and Redis fixtures:
       # the target side runs in the target venv against the same fixture server (§5.3 S1).
       - run: python compare/run.py run --only storage.pg --only storage.redis --pg --redis

@@ -1,0 +1,5546 @@
+{
+ "ambiguous_effects": {
+  "consume_descriptor.b_lease_moved_at_consumed": {
+   "controller": "stale",
+   "effect": "consumed",
+   "outcome": "conflict"
+  },
+  "consume_descriptor.b_lease_moved_at_startup_observed": {
+   "controller": "stale",
+   "effect": "startup_observed",
+   "outcome": "conflict"
+  },
+  "promote.b_lease_moved": {
+   "controller": "stale",
+   "effect": "release_promotion",
+   "outcome": "conflict"
+  },
+  "record_merge.b_lease_moved": {
+   "controller": "stale",
+   "effect": "merged",
+   "outcome": "conflict"
+  },
+  "record_publish.b_lease_moved": {
+   "controller": "stale",
+   "effect": "published",
+   "outcome": "conflict"
+  },
+  "record_superseded.b_intent_moved": {
+   "controller": "stale",
+   "effect": "verification",
+   "outcome": "conflict"
+  },
+  "record_superseded.b_lease_moved": {
+   "controller": "stale",
+   "effect": "verification",
+   "outcome": "conflict"
+  },
+  "record_switch.b_lease_moved": {
+   "controller": "stale",
+   "effect": "descriptor_switched",
+   "outcome": "conflict"
+  },
+  "verification_attempt.b_intent_moved": {
+   "controller": "stale",
+   "effect": "verification",
+   "outcome": "conflict"
+  },
+  "verification_attempt.b_lease_moved": {
+   "controller": "stale",
+   "effect": "verification",
+   "outcome": "conflict"
+  },
+  "verification_verdict.b_intent_moved": {
+   "controller": "stale",
+   "effect": "verification",
+   "outcome": "conflict"
+  },
+  "verification_verdict.b_lease_moved": {
+   "controller": "stale",
+   "effect": "verification",
+   "outcome": "conflict"
+  }
+ },
+ "consume_descriptor": {
+  "a_failure_at_consumed": {
+   "attempts": [],
+   "committed_before_effect": [
+    [
+     "host.receipt",
+     [
+      [
+       "deployment_locks",
+       ""
+      ],
+      [
+       "execution_fences",
+       ""
+      ],
+      [
+       "release_queue",
+       "running"
+      ]
+     ]
+    ],
+    [
+     "canary.startup",
+     [
+      [
+       "deployment_locks",
+       ""
+      ],
+      [
+       "execution_fences",
+       ""
+      ],
+      [
+       "host_delivery_descriptors",
+       ""
+      ],
+      [
+       "release_queue",
+       "running"
+      ]
+     ]
+    ]
+   ],
+   "descriptor": {
+    "consumed": false,
+    "startup_observed": true
+   },
+   "discarded_writes": [],
+   "durable_units": 4,
+   "durable_writes": [
+    [
+     "deployment_locks",
+     ""
+    ],
+    [
+     "execution_fences",
+     ""
+    ],
+    [
+     "host_delivery_descriptors",
+     ""
+    ],
+    [
+     "host_delivery_intents",
+     ""
+    ],
+    [
+     "release_queue",
+     "retry"
+    ],
+    [
+     "release_queue",
+     "running"
+    ]
+   ],
+   "effects": [
+    [
+     "host.receipt",
+     0
+    ],
+    [
+     "canary.startup",
+     0
+    ]
+   ],
+   "intent": {
+    "attempts": 0,
+    "outcome": "unavailable",
+    "reason_code": "stage_unavailable",
+    "stage": "awaiting_consumption"
+   },
+   "outcome": {
+    "active": null,
+    "ambiguous_effect": null,
+    "at": "2026-09-22T00:00:07+00:00",
+    "attempts": 0,
+    "blocked": {},
+    "canary": null,
+    "descriptor_sha256": "2fa7907356ed9356d5129640ab8644cf8546485c5631a3351fd156cd0a16f2e1",
+    "error_type": "Injected",
+    "head": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "instance_id": null,
+    "merged_revision": "9999999999999999999999999999999999999999",
+    "next_action": "await_startup_receipt",
+    "ok": true,
+    "outcome": "unavailable",
+    "plan_id": "delivery-plan-1",
+    "pr_number": 181,
+    "previous_descriptor_sha256": null,
+    "reason_code": "stage_unavailable",
+    "release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+    "rollback": null,
+    "stage": "awaiting_consumption",
+    "target_id": "canary-service"
+   },
+   "pointer": null,
+   "queue": "retry",
+   "release": "verified",
+   "rows_after": 8,
+   "rows_before": 8,
+   "rows_changed": [
+    [
+     "execution_fences",
+     "release_queue:e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     ""
+    ],
+    [
+     "host_delivery_descriptors",
+     "canary-service",
+     ""
+    ],
+    [
+     "host_delivery_intents",
+     "delivery-plan-1",
+     ""
+    ],
+    [
+     "release_queue",
+     "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "retry"
+    ]
+   ],
+   "units": {
+    "COMMIT": 8,
+    "ROLLBACK": 1
+   },
+   "violations": []
+  },
+  "a_failure_at_startup_observed": {
+   "attempts": [],
+   "committed_before_effect": [
+    [
+     "host.receipt",
+     [
+      [
+       "deployment_locks",
+       ""
+      ],
+      [
+       "execution_fences",
+       ""
+      ],
+      [
+       "release_queue",
+       "running"
+      ]
+     ]
+    ]
+   ],
+   "descriptor": {
+    "consumed": false,
+    "startup_observed": false
+   },
+   "discarded_writes": [],
+   "durable_units": 3,
+   "durable_writes": [
+    [
+     "deployment_locks",
+     ""
+    ],
+    [
+     "execution_fences",
+     ""
+    ],
+    [
+     "host_delivery_intents",
+     ""
+    ],
+    [
+     "release_queue",
+     "retry"
+    ],
+    [
+     "release_queue",
+     "running"
+    ]
+   ],
+   "effects": [
+    [
+     "host.receipt",
+     0
+    ]
+   ],
+   "intent": {
+    "attempts": 0,
+    "outcome": "unavailable",
+    "reason_code": "stage_unavailable",
+    "stage": "awaiting_consumption"
+   },
+   "outcome": {
+    "active": null,
+    "ambiguous_effect": null,
+    "at": "2026-09-22T00:00:07+00:00",
+    "attempts": 0,
+    "blocked": {},
+    "canary": null,
+    "descriptor_sha256": "2fa7907356ed9356d5129640ab8644cf8546485c5631a3351fd156cd0a16f2e1",
+    "error_type": "Injected",
+    "head": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "instance_id": null,
+    "merged_revision": "9999999999999999999999999999999999999999",
+    "next_action": "await_startup_receipt",
+    "ok": true,
+    "outcome": "unavailable",
+    "plan_id": "delivery-plan-1",
+    "pr_number": 181,
+    "previous_descriptor_sha256": null,
+    "reason_code": "stage_unavailable",
+    "release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+    "rollback": null,
+    "stage": "awaiting_consumption",
+    "target_id": "canary-service"
+   },
+   "pointer": null,
+   "queue": "retry",
+   "release": "verified",
+   "rows_after": 8,
+   "rows_before": 8,
+   "rows_changed": [
+    [
+     "execution_fences",
+     "release_queue:e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     ""
+    ],
+    [
+     "host_delivery_intents",
+     "delivery-plan-1",
+     ""
+    ],
+    [
+     "release_queue",
+     "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "retry"
+    ]
+   ],
+   "units": {
+    "COMMIT": 7,
+    "ROLLBACK": 1
+   },
+   "violations": []
+  },
+  "b_lease_moved_at_consumed": {
+   "after_move": {
+    "durable_writes": [],
+    "writes": 0
+   },
+   "attempts": [],
+   "committed_before_effect": [
+    [
+     "host.receipt",
+     [
+      [
+       "deployment_locks",
+       ""
+      ],
+      [
+       "execution_fences",
+       ""
+      ],
+      [
+       "release_queue",
+       "running"
+      ]
+     ]
+    ],
+    [
+     "canary.startup",
+     [
+      [
+       "deployment_locks",
+       ""
+      ],
+      [
+       "execution_fences",
+       ""
+      ],
+      [
+       "host_delivery_descriptors",
+       ""
+      ],
+      [
+       "release_queue",
+       "running"
+      ]
+     ]
+    ]
+   ],
+   "descriptor": {
+    "consumed": false,
+    "startup_observed": true
+   },
+   "discarded_writes": [],
+   "durable_units": 2,
+   "durable_writes": [
+    [
+     "deployment_locks",
+     ""
+    ],
+    [
+     "execution_fences",
+     ""
+    ],
+    [
+     "host_delivery_descriptors",
+     ""
+    ],
+    [
+     "release_queue",
+     "running"
+    ]
+   ],
+   "effects": [
+    [
+     "host.receipt",
+     0
+    ],
+    [
+     "canary.startup",
+     0
+    ]
+   ],
+   "intent": {
+    "attempts": 0,
+    "outcome": "progressed",
+    "reason_code": null,
+    "stage": "awaiting_consumption"
+   },
+   "outcome": {
+    "active": null,
+    "ambiguous_effect": "consumed",
+    "at": "2026-09-22T00:00:07+00:00",
+    "attempts": 0,
+    "blocked": {},
+    "canary": null,
+    "controller": "stale",
+    "descriptor_sha256": "2fa7907356ed9356d5129640ab8644cf8546485c5631a3351fd156cd0a16f2e1",
+    "error_type": "ContractError",
+    "head": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "instance_id": null,
+    "merged_revision": "9999999999999999999999999999999999999999",
+    "next_action": "await_startup_receipt",
+    "ok": true,
+    "outcome": "conflict",
+    "plan_id": "delivery-plan-1",
+    "pr_number": 181,
+    "previous_descriptor_sha256": null,
+    "reason_code": "controller_stale_after_effect",
+    "release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+    "rollback": null,
+    "stage": "awaiting_consumption",
+    "target_id": "canary-service"
+   },
+   "pointer": null,
+   "queue": "running",
+   "release": "verified",
+   "rows_after": 8,
+   "rows_before": 8,
+   "rows_changed": [
+    [
+     "deployment_locks",
+     "controller",
+     ""
+    ],
+    [
+     "execution_fences",
+     "release_queue:e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     ""
+    ],
+    [
+     "host_delivery_descriptors",
+     "canary-service",
+     ""
+    ],
+    [
+     "release_queue",
+     "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "running"
+    ]
+   ],
+   "units": {
+    "COMMIT": 6,
+    "ROLLBACK": 2
+   },
+   "violations": []
+  },
+  "b_lease_moved_at_startup_observed": {
+   "after_move": {
+    "durable_writes": [],
+    "writes": 0
+   },
+   "attempts": [],
+   "committed_before_effect": [
+    [
+     "host.receipt",
+     [
+      [
+       "deployment_locks",
+       ""
+      ],
+      [
+       "execution_fences",
+       ""
+      ],
+      [
+       "release_queue",
+       "running"
+      ]
+     ]
+    ]
+   ],
+   "descriptor": {
+    "consumed": false,
+    "startup_observed": false
+   },
+   "discarded_writes": [],
+   "durable_units": 1,
+   "durable_writes": [
+    [
+     "deployment_locks",
+     ""
+    ],
+    [
+     "execution_fences",
+     ""
+    ],
+    [
+     "release_queue",
+     "running"
+    ]
+   ],
+   "effects": [
+    [
+     "host.receipt",
+     0
+    ]
+   ],
+   "intent": {
+    "attempts": 0,
+    "outcome": "progressed",
+    "reason_code": null,
+    "stage": "awaiting_consumption"
+   },
+   "outcome": {
+    "active": null,
+    "ambiguous_effect": "startup_observed",
+    "at": "2026-09-22T00:00:07+00:00",
+    "attempts": 0,
+    "blocked": {},
+    "canary": null,
+    "controller": "stale",
+    "descriptor_sha256": "2fa7907356ed9356d5129640ab8644cf8546485c5631a3351fd156cd0a16f2e1",
+    "error_type": "ContractError",
+    "head": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "instance_id": null,
+    "merged_revision": "9999999999999999999999999999999999999999",
+    "next_action": "await_startup_receipt",
+    "ok": true,
+    "outcome": "conflict",
+    "plan_id": "delivery-plan-1",
+    "pr_number": 181,
+    "previous_descriptor_sha256": null,
+    "reason_code": "controller_stale_after_effect",
+    "release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+    "rollback": null,
+    "stage": "awaiting_consumption",
+    "target_id": "canary-service"
+   },
+   "pointer": null,
+   "queue": "running",
+   "release": "verified",
+   "rows_after": 8,
+   "rows_before": 8,
+   "rows_changed": [
+    [
+     "deployment_locks",
+     "controller",
+     ""
+    ],
+    [
+     "execution_fences",
+     "release_queue:e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     ""
+    ],
+    [
+     "release_queue",
+     "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "running"
+    ]
+   ],
+   "units": {
+    "COMMIT": 5,
+    "ROLLBACK": 2
+   },
+   "violations": []
+  },
+  "c_replay_after_failure": {
+   "attempts": [],
+   "committed_before_effect": [
+    [
+     "host.receipt",
+     [
+      [
+       "deployment_locks",
+       ""
+      ],
+      [
+       "execution_fences",
+       ""
+      ],
+      [
+       "release_queue",
+       "running"
+      ]
+     ]
+    ],
+    [
+     "canary.startup",
+     [
+      [
+       "deployment_locks",
+       ""
+      ],
+      [
+       "execution_fences",
+       ""
+      ],
+      [
+       "host_delivery_descriptors",
+       ""
+      ],
+      [
+       "release_queue",
+       "running"
+      ]
+     ]
+    ]
+   ],
+   "descriptor": {
+    "consumed": true,
+    "startup_observed": true
+   },
+   "discarded_writes": [],
+   "durable_units": 6,
+   "durable_writes": [
+    [
+     "deployment",
+     ""
+    ],
+    [
+     "deployment_locks",
+     ""
+    ],
+    [
+     "events",
+     ""
+    ],
+    [
+     "execution_fences",
+     ""
+    ],
+    [
+     "host_delivery_descriptors",
+     ""
+    ],
+    [
+     "host_delivery_intents",
+     ""
+    ],
+    [
+     "release_queue",
+     "active"
+    ],
+    [
+     "release_queue",
+     "running"
+    ],
+    [
+     "releases",
+     "active"
+    ]
+   ],
+   "effects": [
+    [
+     "host.receipt",
+     0
+    ],
+    [
+     "canary.startup",
+     0
+    ]
+   ],
+   "first_tick": {
+    "active": null,
+    "ambiguous_effect": null,
+    "at": "2026-09-22T00:00:07+00:00",
+    "attempts": 0,
+    "blocked": {},
+    "canary": null,
+    "descriptor_sha256": "2fa7907356ed9356d5129640ab8644cf8546485c5631a3351fd156cd0a16f2e1",
+    "error_type": "Injected",
+    "head": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "instance_id": null,
+    "merged_revision": "9999999999999999999999999999999999999999",
+    "next_action": "await_startup_receipt",
+    "ok": true,
+    "outcome": "unavailable",
+    "plan_id": "delivery-plan-1",
+    "pr_number": 181,
+    "previous_descriptor_sha256": null,
+    "reason_code": "stage_unavailable",
+    "release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+    "rollback": null,
+    "stage": "awaiting_consumption",
+    "target_id": "canary-service"
+   },
+   "intent": {
+    "attempts": 0,
+    "outcome": "active",
+    "reason_code": null,
+    "stage": "active"
+   },
+   "outcome": {
+    "active": {
+     "at": "2026-09-22T00:02:08+00:00",
+     "previous": null,
+     "release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "ambiguous_effect": null,
+    "at": "2026-09-22T00:02:08+00:00",
+    "attempts": 0,
+    "blocked": {},
+    "canary": {
+     "check_id": "startup_identity",
+     "evidence": "6ccbd822533ec2f3f62fd9c5b12bebde",
+     "passed": true,
+     "reason_code": null
+    },
+    "descriptor_sha256": "2fa7907356ed9356d5129640ab8644cf8546485c5631a3351fd156cd0a16f2e1",
+    "error_type": null,
+    "head": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "instance_id": "6ccbd822533ec2f3f62fd9c5b12bebde",
+    "merged_revision": "9999999999999999999999999999999999999999",
+    "next_action": "observe_active_runtime",
+    "ok": true,
+    "outcome": "active",
+    "plan_id": "delivery-plan-1",
+    "pr_number": 181,
+    "previous_descriptor_sha256": null,
+    "reason_code": null,
+    "release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+    "rollback": null,
+    "stage": "active",
+    "target_id": "canary-service"
+   },
+   "pointer": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+   "queue": "active",
+   "release": "active",
+   "rows_after": 10,
+   "rows_before": 8,
+   "rows_changed": [
+    [
+     "deployment",
+     "active",
+     ""
+    ],
+    [
+     "events",
+     "5eed0000-0000-4000-8000-00000000000a",
+     ""
+    ],
+    [
+     "execution_fences",
+     "release_queue:e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     ""
+    ],
+    [
+     "host_delivery_descriptors",
+     "canary-service",
+     ""
+    ],
+    [
+     "host_delivery_intents",
+     "delivery-plan-1",
+     ""
+    ],
+    [
+     "release_queue",
+     "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "active"
+    ],
+    [
+     "releases",
+     "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "active"
+    ]
+   ],
+   "units": {
+    "COMMIT": 10
+   },
+   "violations": []
+  },
+  "success": {
+   "attempts": [],
+   "committed_before_effect": [
+    [
+     "host.receipt",
+     [
+      [
+       "deployment_locks",
+       ""
+      ],
+      [
+       "execution_fences",
+       ""
+      ],
+      [
+       "release_queue",
+       "running"
+      ]
+     ]
+    ],
+    [
+     "canary.startup",
+     [
+      [
+       "deployment_locks",
+       ""
+      ],
+      [
+       "execution_fences",
+       ""
+      ],
+      [
+       "host_delivery_descriptors",
+       ""
+      ],
+      [
+       "release_queue",
+       "running"
+      ]
+     ]
+    ]
+   ],
+   "descriptor": {
+    "consumed": true,
+    "startup_observed": true
+   },
+   "discarded_writes": [],
+   "durable_units": 6,
+   "durable_writes": [
+    [
+     "deployment",
+     ""
+    ],
+    [
+     "deployment_locks",
+     ""
+    ],
+    [
+     "events",
+     ""
+    ],
+    [
+     "execution_fences",
+     ""
+    ],
+    [
+     "host_delivery_descriptors",
+     ""
+    ],
+    [
+     "host_delivery_intents",
+     ""
+    ],
+    [
+     "release_queue",
+     "active"
+    ],
+    [
+     "release_queue",
+     "running"
+    ],
+    [
+     "releases",
+     "active"
+    ]
+   ],
+   "effects": [
+    [
+     "host.receipt",
+     0
+    ],
+    [
+     "canary.startup",
+     0
+    ]
+   ],
+   "intent": {
+    "attempts": 0,
+    "outcome": "active",
+    "reason_code": null,
+    "stage": "active"
+   },
+   "outcome": {
+    "active": {
+     "at": "2026-09-22T00:00:07+00:00",
+     "previous": null,
+     "release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "ambiguous_effect": null,
+    "at": "2026-09-22T00:00:07+00:00",
+    "attempts": 0,
+    "blocked": {},
+    "canary": {
+     "check_id": "startup_identity",
+     "evidence": "6ccbd822533ec2f3f62fd9c5b12bebde",
+     "passed": true,
+     "reason_code": null
+    },
+    "descriptor_sha256": "2fa7907356ed9356d5129640ab8644cf8546485c5631a3351fd156cd0a16f2e1",
+    "error_type": null,
+    "head": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "instance_id": "6ccbd822533ec2f3f62fd9c5b12bebde",
+    "merged_revision": "9999999999999999999999999999999999999999",
+    "next_action": "observe_active_runtime",
+    "ok": true,
+    "outcome": "active",
+    "plan_id": "delivery-plan-1",
+    "pr_number": 181,
+    "previous_descriptor_sha256": null,
+    "reason_code": null,
+    "release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+    "rollback": null,
+    "stage": "active",
+    "target_id": "canary-service"
+   },
+   "pointer": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+   "queue": "active",
+   "release": "active",
+   "rows_after": 10,
+   "rows_before": 8,
+   "rows_changed": [
+    [
+     "deployment",
+     "active",
+     ""
+    ],
+    [
+     "events",
+     "5eed0000-0000-4000-8000-000000000009",
+     ""
+    ],
+    [
+     "execution_fences",
+     "release_queue:e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     ""
+    ],
+    [
+     "host_delivery_descriptors",
+     "canary-service",
+     ""
+    ],
+    [
+     "host_delivery_intents",
+     "delivery-plan-1",
+     ""
+    ],
+    [
+     "release_queue",
+     "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "active"
+    ],
+    [
+     "releases",
+     "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "active"
+    ]
+   ],
+   "units": {
+    "COMMIT": 10
+   },
+   "violations": []
+  }
+ },
+ "promote": {
+  "a_failure_at_last_write": {
+   "attempts": [],
+   "committed_before_effect": [
+    [
+     "canary.startup",
+     [
+      [
+       "deployment_locks",
+       ""
+      ],
+      [
+       "execution_fences",
+       ""
+      ],
+      [
+       "host_delivery_descriptors",
+       ""
+      ],
+      [
+       "release_queue",
+       "running"
+      ]
+     ]
+    ]
+   ],
+   "descriptor": {
+    "consumed": true,
+    "startup_observed": true
+   },
+   "discarded_writes": [
+    [
+     "deployment",
+     ""
+    ],
+    [
+     "releases",
+     "active"
+    ]
+   ],
+   "durable_units": 5,
+   "durable_writes": [
+    [
+     "deployment_locks",
+     ""
+    ],
+    [
+     "execution_fences",
+     ""
+    ],
+    [
+     "host_delivery_descriptors",
+     ""
+    ],
+    [
+     "host_delivery_intents",
+     ""
+    ],
+    [
+     "release_queue",
+     "retry"
+    ],
+    [
+     "release_queue",
+     "running"
+    ]
+   ],
+   "effects": [
+    [
+     "canary.startup",
+     0
+    ]
+   ],
+   "intent": {
+    "attempts": 0,
+    "outcome": "unavailable",
+    "reason_code": "stage_unavailable",
+    "stage": "awaiting_consumption"
+   },
+   "outcome": {
+    "active": null,
+    "ambiguous_effect": null,
+    "at": "2026-09-22T00:00:07+00:00",
+    "attempts": 0,
+    "blocked": {},
+    "canary": null,
+    "descriptor_sha256": "2fa7907356ed9356d5129640ab8644cf8546485c5631a3351fd156cd0a16f2e1",
+    "error_type": "Injected",
+    "head": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "instance_id": null,
+    "merged_revision": "9999999999999999999999999999999999999999",
+    "next_action": "await_startup_receipt",
+    "ok": true,
+    "outcome": "unavailable",
+    "plan_id": "delivery-plan-1",
+    "pr_number": 181,
+    "previous_descriptor_sha256": null,
+    "reason_code": "stage_unavailable",
+    "release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+    "rollback": null,
+    "stage": "awaiting_consumption",
+    "target_id": "canary-service"
+   },
+   "pointer": null,
+   "queue": "retry",
+   "release": "verified",
+   "rows_after": 8,
+   "rows_before": 8,
+   "rows_changed": [
+    [
+     "execution_fences",
+     "release_queue:e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     ""
+    ],
+    [
+     "host_delivery_descriptors",
+     "canary-service",
+     ""
+    ],
+    [
+     "host_delivery_intents",
+     "delivery-plan-1",
+     ""
+    ],
+    [
+     "release_queue",
+     "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "retry"
+    ]
+   ],
+   "units": {
+    "COMMIT": 9,
+    "ROLLBACK": 1
+   },
+   "violations": []
+  },
+  "b_lease_moved": {
+   "after_move": {
+    "durable_writes": [],
+    "writes": 0
+   },
+   "attempts": [],
+   "committed_before_effect": [
+    [
+     "canary.startup",
+     [
+      [
+       "deployment_locks",
+       ""
+      ],
+      [
+       "execution_fences",
+       ""
+      ],
+      [
+       "host_delivery_descriptors",
+       ""
+      ],
+      [
+       "release_queue",
+       "running"
+      ]
+     ]
+    ]
+   ],
+   "descriptor": {
+    "consumed": true,
+    "startup_observed": true
+   },
+   "discarded_writes": [],
+   "durable_units": 3,
+   "durable_writes": [
+    [
+     "deployment_locks",
+     ""
+    ],
+    [
+     "execution_fences",
+     ""
+    ],
+    [
+     "host_delivery_descriptors",
+     ""
+    ],
+    [
+     "release_queue",
+     "running"
+    ]
+   ],
+   "effects": [
+    [
+     "canary.startup",
+     0
+    ]
+   ],
+   "intent": {
+    "attempts": 0,
+    "outcome": "progressed",
+    "reason_code": null,
+    "stage": "awaiting_consumption"
+   },
+   "outcome": {
+    "active": null,
+    "ambiguous_effect": "release_promotion",
+    "at": "2026-09-22T00:00:07+00:00",
+    "attempts": 0,
+    "blocked": {},
+    "canary": null,
+    "controller": "stale",
+    "descriptor_sha256": "2fa7907356ed9356d5129640ab8644cf8546485c5631a3351fd156cd0a16f2e1",
+    "error_type": "ContractError",
+    "head": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "instance_id": null,
+    "merged_revision": "9999999999999999999999999999999999999999",
+    "next_action": "await_startup_receipt",
+    "ok": true,
+    "outcome": "conflict",
+    "plan_id": "delivery-plan-1",
+    "pr_number": 181,
+    "previous_descriptor_sha256": null,
+    "reason_code": "controller_stale_after_effect",
+    "release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+    "rollback": null,
+    "stage": "awaiting_consumption",
+    "target_id": "canary-service"
+   },
+   "pointer": null,
+   "queue": "running",
+   "release": "verified",
+   "rows_after": 8,
+   "rows_before": 8,
+   "rows_changed": [
+    [
+     "deployment_locks",
+     "controller",
+     ""
+    ],
+    [
+     "execution_fences",
+     "release_queue:e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     ""
+    ],
+    [
+     "host_delivery_descriptors",
+     "canary-service",
+     ""
+    ],
+    [
+     "release_queue",
+     "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "running"
+    ]
+   ],
+   "units": {
+    "COMMIT": 7,
+    "ROLLBACK": 2
+   },
+   "violations": []
+  },
+  "b_pointer_moved": {
+   "after_move": {
+    "durable_writes": [
+     [
+      "deployment_locks",
+      ""
+     ],
+     [
+      "host_delivery_intents",
+      ""
+     ],
+     [
+      "release_queue",
+      "blocked"
+     ]
+    ],
+    "writes": 3
+   },
+   "attempts": [],
+   "committed_before_effect": [
+    [
+     "canary.startup",
+     [
+      [
+       "deployment_locks",
+       ""
+      ],
+      [
+       "execution_fences",
+       ""
+      ],
+      [
+       "host_delivery_descriptors",
+       ""
+      ],
+      [
+       "release_queue",
+       "running"
+      ]
+     ]
+    ]
+   ],
+   "descriptor": {
+    "consumed": true,
+    "startup_observed": true
+   },
+   "discarded_writes": [],
+   "durable_units": 5,
+   "durable_writes": [
+    [
+     "deployment_locks",
+     ""
+    ],
+    [
+     "execution_fences",
+     ""
+    ],
+    [
+     "host_delivery_descriptors",
+     ""
+    ],
+    [
+     "host_delivery_intents",
+     ""
+    ],
+    [
+     "release_queue",
+     "blocked"
+    ],
+    [
+     "release_queue",
+     "running"
+    ]
+   ],
+   "effects": [
+    [
+     "canary.startup",
+     0
+    ]
+   ],
+   "intent": {
+    "attempts": 1,
+    "outcome": "blocked",
+    "reason_code": "release_promotion_refused",
+    "stage": "blocked"
+   },
+   "outcome": {
+    "active": null,
+    "ambiguous_effect": null,
+    "at": "2026-09-22T00:00:07+00:00",
+    "attempts": 1,
+    "blocked": {},
+    "canary": null,
+    "descriptor_sha256": "2fa7907356ed9356d5129640ab8644cf8546485c5631a3351fd156cd0a16f2e1",
+    "error_type": "ContractError",
+    "head": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "instance_id": null,
+    "merged_revision": "9999999999999999999999999999999999999999",
+    "next_action": "owner_review",
+    "ok": true,
+    "outcome": "blocked",
+    "plan_id": "delivery-plan-1",
+    "pr_number": 181,
+    "previous_descriptor_sha256": null,
+    "reason_code": "release_promotion_refused",
+    "release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+    "rollback": null,
+    "stage": "blocked",
+    "target_id": "canary-service"
+   },
+   "pointer": "release-other",
+   "queue": "blocked",
+   "release": "verified",
+   "rows_after": 9,
+   "rows_before": 8,
+   "rows_changed": [
+    [
+     "deployment",
+     "active",
+     ""
+    ],
+    [
+     "execution_fences",
+     "release_queue:e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     ""
+    ],
+    [
+     "host_delivery_descriptors",
+     "canary-service",
+     ""
+    ],
+    [
+     "host_delivery_intents",
+     "delivery-plan-1",
+     ""
+    ],
+    [
+     "release_queue",
+     "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "blocked"
+    ]
+   ],
+   "units": {
+    "COMMIT": 9,
+    "ROLLBACK": 1
+   },
+   "violations": []
+  },
+  "c_replay_after_stage_write_failure": {
+   "attempts": [],
+   "committed_before_effect": [
+    [
+     "canary.startup",
+     [
+      [
+       "deployment_locks",
+       ""
+      ],
+      [
+       "execution_fences",
+       ""
+      ],
+      [
+       "host_delivery_descriptors",
+       ""
+      ],
+      [
+       "release_queue",
+       "running"
+      ]
+     ]
+    ]
+   ],
+   "descriptor": {
+    "consumed": true,
+    "startup_observed": true
+   },
+   "discarded_writes": [],
+   "durable_units": 5,
+   "durable_writes": [
+    [
+     "deployment_locks",
+     ""
+    ],
+    [
+     "execution_fences",
+     ""
+    ],
+    [
+     "host_delivery_descriptors",
+     ""
+    ],
+    [
+     "host_delivery_intents",
+     ""
+    ],
+    [
+     "release_queue",
+     "active"
+    ],
+    [
+     "release_queue",
+     "running"
+    ]
+   ],
+   "effects": [
+    [
+     "canary.startup",
+     0
+    ]
+   ],
+   "first_tick": {
+    "active": null,
+    "ambiguous_effect": null,
+    "at": "2026-09-22T00:00:07+00:00",
+    "attempts": 0,
+    "blocked": {},
+    "canary": null,
+    "descriptor_sha256": "2fa7907356ed9356d5129640ab8644cf8546485c5631a3351fd156cd0a16f2e1",
+    "error_type": "Injected",
+    "head": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "instance_id": null,
+    "merged_revision": "9999999999999999999999999999999999999999",
+    "next_action": "await_startup_receipt",
+    "ok": true,
+    "outcome": "unavailable",
+    "plan_id": "delivery-plan-1",
+    "pr_number": 181,
+    "previous_descriptor_sha256": null,
+    "reason_code": "stage_unavailable",
+    "release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+    "rollback": null,
+    "stage": "awaiting_consumption",
+    "target_id": "canary-service"
+   },
+   "intent": {
+    "attempts": 0,
+    "outcome": "active",
+    "reason_code": null,
+    "stage": "active"
+   },
+   "outcome": {
+    "active": {
+     "at": "2026-09-22T00:00:07+00:00",
+     "previous": null,
+     "release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "ambiguous_effect": null,
+    "at": "2026-09-22T00:02:08+00:00",
+    "attempts": 0,
+    "blocked": {},
+    "canary": {
+     "check_id": "startup_identity",
+     "evidence": "6ccbd822533ec2f3f62fd9c5b12bebde",
+     "passed": true,
+     "reason_code": null
+    },
+    "descriptor_sha256": "2fa7907356ed9356d5129640ab8644cf8546485c5631a3351fd156cd0a16f2e1",
+    "error_type": null,
+    "head": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "instance_id": "6ccbd822533ec2f3f62fd9c5b12bebde",
+    "merged_revision": "9999999999999999999999999999999999999999",
+    "next_action": "observe_active_runtime",
+    "ok": true,
+    "outcome": "active",
+    "plan_id": "delivery-plan-1",
+    "pr_number": 181,
+    "previous_descriptor_sha256": null,
+    "reason_code": null,
+    "release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+    "rollback": null,
+    "stage": "active",
+    "target_id": "canary-service"
+   },
+   "pointer": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+   "queue": "active",
+   "release": "active",
+   "rows_after": 10,
+   "rows_before": 10,
+   "rows_changed": [
+    [
+     "execution_fences",
+     "release_queue:e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     ""
+    ],
+    [
+     "host_delivery_descriptors",
+     "canary-service",
+     ""
+    ],
+    [
+     "host_delivery_intents",
+     "delivery-plan-1",
+     ""
+    ],
+    [
+     "release_queue",
+     "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "active"
+    ]
+   ],
+   "units": {
+    "COMMIT": 10
+   },
+   "violations": []
+  },
+  "success": {
+   "attempts": [],
+   "committed_before_effect": [
+    [
+     "canary.startup",
+     [
+      [
+       "deployment_locks",
+       ""
+      ],
+      [
+       "execution_fences",
+       ""
+      ],
+      [
+       "host_delivery_descriptors",
+       ""
+      ],
+      [
+       "release_queue",
+       "running"
+      ]
+     ]
+    ]
+   ],
+   "descriptor": {
+    "consumed": true,
+    "startup_observed": true
+   },
+   "discarded_writes": [],
+   "durable_units": 6,
+   "durable_writes": [
+    [
+     "deployment",
+     ""
+    ],
+    [
+     "deployment_locks",
+     ""
+    ],
+    [
+     "events",
+     ""
+    ],
+    [
+     "execution_fences",
+     ""
+    ],
+    [
+     "host_delivery_descriptors",
+     ""
+    ],
+    [
+     "host_delivery_intents",
+     ""
+    ],
+    [
+     "release_queue",
+     "active"
+    ],
+    [
+     "release_queue",
+     "running"
+    ],
+    [
+     "releases",
+     "active"
+    ]
+   ],
+   "effects": [
+    [
+     "canary.startup",
+     0
+    ]
+   ],
+   "intent": {
+    "attempts": 0,
+    "outcome": "active",
+    "reason_code": null,
+    "stage": "active"
+   },
+   "outcome": {
+    "active": {
+     "at": "2026-09-22T00:00:07+00:00",
+     "previous": null,
+     "release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "ambiguous_effect": null,
+    "at": "2026-09-22T00:00:07+00:00",
+    "attempts": 0,
+    "blocked": {},
+    "canary": {
+     "check_id": "startup_identity",
+     "evidence": "6ccbd822533ec2f3f62fd9c5b12bebde",
+     "passed": true,
+     "reason_code": null
+    },
+    "descriptor_sha256": "2fa7907356ed9356d5129640ab8644cf8546485c5631a3351fd156cd0a16f2e1",
+    "error_type": null,
+    "head": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "instance_id": "6ccbd822533ec2f3f62fd9c5b12bebde",
+    "merged_revision": "9999999999999999999999999999999999999999",
+    "next_action": "observe_active_runtime",
+    "ok": true,
+    "outcome": "active",
+    "plan_id": "delivery-plan-1",
+    "pr_number": 181,
+    "previous_descriptor_sha256": null,
+    "reason_code": null,
+    "release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+    "rollback": null,
+    "stage": "active",
+    "target_id": "canary-service"
+   },
+   "pointer": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+   "queue": "active",
+   "release": "active",
+   "rows_after": 10,
+   "rows_before": 8,
+   "rows_changed": [
+    [
+     "deployment",
+     "active",
+     ""
+    ],
+    [
+     "events",
+     "5eed0000-0000-4000-8000-000000000009",
+     ""
+    ],
+    [
+     "execution_fences",
+     "release_queue:e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     ""
+    ],
+    [
+     "host_delivery_descriptors",
+     "canary-service",
+     ""
+    ],
+    [
+     "host_delivery_intents",
+     "delivery-plan-1",
+     ""
+    ],
+    [
+     "release_queue",
+     "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "active"
+    ],
+    [
+     "releases",
+     "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "active"
+    ]
+   ],
+   "units": {
+    "COMMIT": 10
+   },
+   "violations": []
+  }
+ },
+ "record_merge": {
+  "a_failure_at_stage_write": {
+   "attempts": [],
+   "committed_before_effect": [
+    [
+     "github.merge",
+     [
+      [
+       "deployment_locks",
+       ""
+      ],
+      [
+       "execution_fences",
+       ""
+      ],
+      [
+       "release_queue",
+       "running"
+      ]
+     ]
+    ]
+   ],
+   "descriptor": {
+    "consumed": null,
+    "startup_observed": null
+   },
+   "discarded_writes": [],
+   "durable_units": 3,
+   "durable_writes": [
+    [
+     "deployment_locks",
+     ""
+    ],
+    [
+     "execution_fences",
+     ""
+    ],
+    [
+     "host_delivery_intents",
+     ""
+    ],
+    [
+     "release_queue",
+     "retry"
+    ],
+    [
+     "release_queue",
+     "running"
+    ]
+   ],
+   "effects": [
+    [
+     "github.merge",
+     0
+    ]
+   ],
+   "intent": {
+    "attempts": 0,
+    "outcome": "unavailable",
+    "reason_code": "stage_unavailable",
+    "stage": "merge_intended"
+   },
+   "merges": 1,
+   "outcome": {
+    "active": null,
+    "ambiguous_effect": null,
+    "at": "2026-09-22T00:00:03+00:00",
+    "attempts": 0,
+    "blocked": {},
+    "canary": null,
+    "descriptor_sha256": null,
+    "error_type": "Injected",
+    "head": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "instance_id": null,
+    "merged_revision": null,
+    "next_action": "await_dependency",
+    "ok": true,
+    "outcome": "unavailable",
+    "plan_id": "delivery-plan-1",
+    "pr_number": 181,
+    "previous_descriptor_sha256": null,
+    "reason_code": "stage_unavailable",
+    "release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+    "rollback": null,
+    "stage": "merge_intended",
+    "target_id": "canary-service"
+   },
+   "pointer": null,
+   "queue": "retry",
+   "release": "verified",
+   "rows_after": 7,
+   "rows_before": 7,
+   "rows_changed": [
+    [
+     "execution_fences",
+     "release_queue:e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     ""
+    ],
+    [
+     "host_delivery_intents",
+     "delivery-plan-1",
+     ""
+    ],
+    [
+     "release_queue",
+     "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "retry"
+    ]
+   ],
+   "units": {
+    "COMMIT": 9,
+    "ROLLBACK": 1
+   },
+   "violations": []
+  },
+  "b_lease_moved": {
+   "after_move": {
+    "durable_writes": [],
+    "writes": 0
+   },
+   "attempts": [],
+   "committed_before_effect": [
+    [
+     "github.merge",
+     [
+      [
+       "deployment_locks",
+       ""
+      ],
+      [
+       "execution_fences",
+       ""
+      ],
+      [
+       "release_queue",
+       "running"
+      ]
+     ]
+    ]
+   ],
+   "descriptor": {
+    "consumed": null,
+    "startup_observed": null
+   },
+   "discarded_writes": [],
+   "durable_units": 1,
+   "durable_writes": [
+    [
+     "deployment_locks",
+     ""
+    ],
+    [
+     "execution_fences",
+     ""
+    ],
+    [
+     "release_queue",
+     "running"
+    ]
+   ],
+   "effects": [
+    [
+     "github.merge",
+     0
+    ]
+   ],
+   "intent": {
+    "attempts": 0,
+    "outcome": "progressed",
+    "reason_code": null,
+    "stage": "merge_intended"
+   },
+   "merges": 1,
+   "outcome": {
+    "active": null,
+    "ambiguous_effect": "merged",
+    "at": "2026-09-22T00:00:03+00:00",
+    "attempts": 0,
+    "blocked": {},
+    "canary": null,
+    "controller": "stale",
+    "descriptor_sha256": null,
+    "error_type": "ContractError",
+    "head": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "instance_id": null,
+    "merged_revision": null,
+    "next_action": "tick",
+    "ok": true,
+    "outcome": "conflict",
+    "plan_id": "delivery-plan-1",
+    "pr_number": 181,
+    "previous_descriptor_sha256": null,
+    "reason_code": "controller_stale_after_effect",
+    "release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+    "rollback": null,
+    "stage": "merge_intended",
+    "target_id": "canary-service"
+   },
+   "pointer": null,
+   "queue": "running",
+   "release": "verified",
+   "rows_after": 7,
+   "rows_before": 7,
+   "rows_changed": [
+    [
+     "deployment_locks",
+     "controller",
+     ""
+    ],
+    [
+     "execution_fences",
+     "release_queue:e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     ""
+    ],
+    [
+     "release_queue",
+     "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "running"
+    ]
+   ],
+   "units": {
+    "COMMIT": 7,
+    "ROLLBACK": 2
+   },
+   "violations": []
+  },
+  "c_replay_after_failure": {
+   "attempts": [],
+   "committed_before_effect": [],
+   "descriptor": {
+    "consumed": null,
+    "startup_observed": null
+   },
+   "discarded_writes": [],
+   "durable_units": 3,
+   "durable_writes": [
+    [
+     "deployment_locks",
+     ""
+    ],
+    [
+     "execution_fences",
+     ""
+    ],
+    [
+     "host_delivery_intents",
+     ""
+    ],
+    [
+     "release_queue",
+     "queued"
+    ],
+    [
+     "release_queue",
+     "running"
+    ]
+   ],
+   "effects": [],
+   "first_tick": {
+    "active": null,
+    "ambiguous_effect": null,
+    "at": "2026-09-22T00:00:03+00:00",
+    "attempts": 0,
+    "blocked": {},
+    "canary": null,
+    "descriptor_sha256": null,
+    "error_type": "Injected",
+    "head": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "instance_id": null,
+    "merged_revision": null,
+    "next_action": "await_dependency",
+    "ok": true,
+    "outcome": "unavailable",
+    "plan_id": "delivery-plan-1",
+    "pr_number": 181,
+    "previous_descriptor_sha256": null,
+    "reason_code": "stage_unavailable",
+    "release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+    "rollback": null,
+    "stage": "merge_intended",
+    "target_id": "canary-service"
+   },
+   "intent": {
+    "attempts": 0,
+    "outcome": "progressed",
+    "reason_code": null,
+    "stage": "merged"
+   },
+   "merges": 1,
+   "outcome": {
+    "active": null,
+    "ambiguous_effect": null,
+    "at": "2026-09-22T00:02:04+00:00",
+    "attempts": 0,
+    "blocked": {},
+    "canary": null,
+    "descriptor_sha256": null,
+    "error_type": null,
+    "head": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "instance_id": null,
+    "merged_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "next_action": "tick",
+    "ok": true,
+    "outcome": "progressed",
+    "plan_id": "delivery-plan-1",
+    "pr_number": 181,
+    "previous_descriptor_sha256": null,
+    "reason_code": null,
+    "release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+    "rollback": null,
+    "stage": "merged",
+    "target_id": "canary-service"
+   },
+   "pointer": null,
+   "queue": "queued",
+   "release": "verified",
+   "rows_after": 7,
+   "rows_before": 7,
+   "rows_changed": [
+    [
+     "execution_fences",
+     "release_queue:e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     ""
+    ],
+    [
+     "host_delivery_intents",
+     "delivery-plan-1",
+     ""
+    ],
+    [
+     "release_queue",
+     "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "queued"
+    ]
+   ],
+   "units": {
+    "COMMIT": 7
+   },
+   "violations": []
+  },
+  "success": {
+   "attempts": [],
+   "committed_before_effect": [
+    [
+     "github.merge",
+     [
+      [
+       "deployment_locks",
+       ""
+      ],
+      [
+       "execution_fences",
+       ""
+      ],
+      [
+       "release_queue",
+       "running"
+      ]
+     ]
+    ]
+   ],
+   "descriptor": {
+    "consumed": null,
+    "startup_observed": null
+   },
+   "discarded_writes": [],
+   "durable_units": 3,
+   "durable_writes": [
+    [
+     "deployment_locks",
+     ""
+    ],
+    [
+     "execution_fences",
+     ""
+    ],
+    [
+     "host_delivery_intents",
+     ""
+    ],
+    [
+     "release_queue",
+     "queued"
+    ],
+    [
+     "release_queue",
+     "running"
+    ]
+   ],
+   "effects": [
+    [
+     "github.merge",
+     0
+    ]
+   ],
+   "intent": {
+    "attempts": 0,
+    "outcome": "progressed",
+    "reason_code": null,
+    "stage": "merged"
+   },
+   "merges": 1,
+   "outcome": {
+    "active": null,
+    "ambiguous_effect": null,
+    "at": "2026-09-22T00:00:03+00:00",
+    "attempts": 0,
+    "blocked": {},
+    "canary": null,
+    "descriptor_sha256": null,
+    "error_type": null,
+    "head": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "instance_id": null,
+    "merged_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "next_action": "tick",
+    "ok": true,
+    "outcome": "progressed",
+    "plan_id": "delivery-plan-1",
+    "pr_number": 181,
+    "previous_descriptor_sha256": null,
+    "reason_code": null,
+    "release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+    "rollback": null,
+    "stage": "merged",
+    "target_id": "canary-service"
+   },
+   "pointer": null,
+   "queue": "queued",
+   "release": "verified",
+   "rows_after": 7,
+   "rows_before": 7,
+   "rows_changed": [
+    [
+     "execution_fences",
+     "release_queue:e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     ""
+    ],
+    [
+     "host_delivery_intents",
+     "delivery-plan-1",
+     ""
+    ],
+    [
+     "release_queue",
+     "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "queued"
+    ]
+   ],
+   "units": {
+    "COMMIT": 9
+   },
+   "violations": []
+  }
+ },
+ "record_publish": {
+  "a_failure_at_stage_write": {
+   "attempts": [],
+   "committed_before_effect": [
+    [
+     "github.publish",
+     [
+      [
+       "deployment_locks",
+       ""
+      ],
+      [
+       "execution_fences",
+       ""
+      ],
+      [
+       "release_queue",
+       "running"
+      ]
+     ]
+    ]
+   ],
+   "descriptor": {
+    "consumed": null,
+    "startup_observed": null
+   },
+   "discarded_writes": [],
+   "durable_units": 3,
+   "durable_writes": [
+    [
+     "deployment_locks",
+     ""
+    ],
+    [
+     "execution_fences",
+     ""
+    ],
+    [
+     "host_delivery_intents",
+     ""
+    ],
+    [
+     "release_queue",
+     "retry"
+    ],
+    [
+     "release_queue",
+     "running"
+    ]
+   ],
+   "effects": [
+    [
+     "github.publish",
+     0
+    ]
+   ],
+   "intent": {
+    "attempts": 0,
+    "outcome": "unavailable",
+    "reason_code": "stage_unavailable",
+    "stage": "publishing"
+   },
+   "outcome": {
+    "active": null,
+    "ambiguous_effect": null,
+    "at": "2026-09-22T00:00:01+00:00",
+    "attempts": 0,
+    "blocked": {},
+    "canary": null,
+    "descriptor_sha256": null,
+    "error_type": "Injected",
+    "head": null,
+    "instance_id": null,
+    "merged_revision": null,
+    "next_action": "await_dependency",
+    "ok": true,
+    "outcome": "unavailable",
+    "plan_id": "delivery-plan-1",
+    "pr_number": null,
+    "previous_descriptor_sha256": null,
+    "reason_code": "stage_unavailable",
+    "release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+    "rollback": null,
+    "stage": "publishing",
+    "target_id": "canary-service"
+   },
+   "pointer": null,
+   "publishes": 1,
+   "queue": "retry",
+   "release": "verified",
+   "rows_after": 7,
+   "rows_before": 7,
+   "rows_changed": [
+    [
+     "execution_fences",
+     "release_queue:e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     ""
+    ],
+    [
+     "host_delivery_intents",
+     "delivery-plan-1",
+     ""
+    ],
+    [
+     "release_queue",
+     "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "retry"
+    ]
+   ],
+   "units": {
+    "COMMIT": 8,
+    "ROLLBACK": 1
+   },
+   "violations": []
+  },
+  "b_lease_moved": {
+   "after_move": {
+    "durable_writes": [],
+    "writes": 0
+   },
+   "attempts": [],
+   "committed_before_effect": [
+    [
+     "github.publish",
+     [
+      [
+       "deployment_locks",
+       ""
+      ],
+      [
+       "execution_fences",
+       ""
+      ],
+      [
+       "release_queue",
+       "running"
+      ]
+     ]
+    ]
+   ],
+   "descriptor": {
+    "consumed": null,
+    "startup_observed": null
+   },
+   "discarded_writes": [],
+   "durable_units": 1,
+   "durable_writes": [
+    [
+     "deployment_locks",
+     ""
+    ],
+    [
+     "execution_fences",
+     ""
+    ],
+    [
+     "release_queue",
+     "running"
+    ]
+   ],
+   "effects": [
+    [
+     "github.publish",
+     0
+    ]
+   ],
+   "intent": {
+    "attempts": 0,
+    "outcome": "progressed",
+    "reason_code": null,
+    "stage": "publishing"
+   },
+   "outcome": {
+    "active": null,
+    "ambiguous_effect": "published",
+    "at": "2026-09-22T00:00:01+00:00",
+    "attempts": 0,
+    "blocked": {},
+    "canary": null,
+    "controller": "stale",
+    "descriptor_sha256": null,
+    "error_type": "ContractError",
+    "head": null,
+    "instance_id": null,
+    "merged_revision": null,
+    "next_action": "tick",
+    "ok": true,
+    "outcome": "conflict",
+    "plan_id": "delivery-plan-1",
+    "pr_number": null,
+    "previous_descriptor_sha256": null,
+    "reason_code": "controller_stale_after_effect",
+    "release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+    "rollback": null,
+    "stage": "publishing",
+    "target_id": "canary-service"
+   },
+   "pointer": null,
+   "publishes": 1,
+   "queue": "running",
+   "release": "verified",
+   "rows_after": 7,
+   "rows_before": 7,
+   "rows_changed": [
+    [
+     "deployment_locks",
+     "controller",
+     ""
+    ],
+    [
+     "execution_fences",
+     "release_queue:e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     ""
+    ],
+    [
+     "release_queue",
+     "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "running"
+    ]
+   ],
+   "units": {
+    "COMMIT": 6,
+    "ROLLBACK": 2
+   },
+   "violations": []
+  },
+  "c_replay_after_failure": {
+   "attempts": [],
+   "committed_before_effect": [],
+   "descriptor": {
+    "consumed": null,
+    "startup_observed": null
+   },
+   "discarded_writes": [],
+   "durable_units": 3,
+   "durable_writes": [
+    [
+     "deployment_locks",
+     ""
+    ],
+    [
+     "execution_fences",
+     ""
+    ],
+    [
+     "host_delivery_intents",
+     ""
+    ],
+    [
+     "release_queue",
+     "queued"
+    ],
+    [
+     "release_queue",
+     "running"
+    ]
+   ],
+   "effects": [],
+   "first_tick": {
+    "active": null,
+    "ambiguous_effect": null,
+    "at": "2026-09-22T00:00:01+00:00",
+    "attempts": 0,
+    "blocked": {},
+    "canary": null,
+    "descriptor_sha256": null,
+    "error_type": "Injected",
+    "head": null,
+    "instance_id": null,
+    "merged_revision": null,
+    "next_action": "await_dependency",
+    "ok": true,
+    "outcome": "unavailable",
+    "plan_id": "delivery-plan-1",
+    "pr_number": null,
+    "previous_descriptor_sha256": null,
+    "reason_code": "stage_unavailable",
+    "release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+    "rollback": null,
+    "stage": "publishing",
+    "target_id": "canary-service"
+   },
+   "intent": {
+    "attempts": 0,
+    "outcome": "progressed",
+    "reason_code": null,
+    "stage": "awaiting_ci"
+   },
+   "outcome": {
+    "active": null,
+    "ambiguous_effect": null,
+    "at": "2026-09-22T00:02:02+00:00",
+    "attempts": 0,
+    "blocked": {},
+    "canary": null,
+    "descriptor_sha256": null,
+    "error_type": null,
+    "head": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "instance_id": null,
+    "merged_revision": null,
+    "next_action": "await_required_checks",
+    "ok": true,
+    "outcome": "progressed",
+    "plan_id": "delivery-plan-1",
+    "pr_number": 181,
+    "previous_descriptor_sha256": null,
+    "reason_code": null,
+    "release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+    "rollback": null,
+    "stage": "awaiting_ci",
+    "target_id": "canary-service"
+   },
+   "pointer": null,
+   "publishes": 1,
+   "queue": "queued",
+   "release": "verified",
+   "rows_after": 7,
+   "rows_before": 7,
+   "rows_changed": [
+    [
+     "execution_fences",
+     "release_queue:e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     ""
+    ],
+    [
+     "host_delivery_intents",
+     "delivery-plan-1",
+     ""
+    ],
+    [
+     "release_queue",
+     "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "queued"
+    ]
+   ],
+   "units": {
+    "COMMIT": 7
+   },
+   "violations": []
+  },
+  "success": {
+   "attempts": [],
+   "committed_before_effect": [
+    [
+     "github.publish",
+     [
+      [
+       "deployment_locks",
+       ""
+      ],
+      [
+       "execution_fences",
+       ""
+      ],
+      [
+       "release_queue",
+       "running"
+      ]
+     ]
+    ]
+   ],
+   "descriptor": {
+    "consumed": null,
+    "startup_observed": null
+   },
+   "discarded_writes": [],
+   "durable_units": 3,
+   "durable_writes": [
+    [
+     "deployment_locks",
+     ""
+    ],
+    [
+     "execution_fences",
+     ""
+    ],
+    [
+     "host_delivery_intents",
+     ""
+    ],
+    [
+     "release_queue",
+     "queued"
+    ],
+    [
+     "release_queue",
+     "running"
+    ]
+   ],
+   "effects": [
+    [
+     "github.publish",
+     0
+    ]
+   ],
+   "intent": {
+    "attempts": 0,
+    "outcome": "progressed",
+    "reason_code": null,
+    "stage": "awaiting_ci"
+   },
+   "outcome": {
+    "active": null,
+    "ambiguous_effect": null,
+    "at": "2026-09-22T00:00:01+00:00",
+    "attempts": 0,
+    "blocked": {},
+    "canary": null,
+    "descriptor_sha256": null,
+    "error_type": null,
+    "head": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "instance_id": null,
+    "merged_revision": null,
+    "next_action": "await_required_checks",
+    "ok": true,
+    "outcome": "progressed",
+    "plan_id": "delivery-plan-1",
+    "pr_number": 181,
+    "previous_descriptor_sha256": null,
+    "reason_code": null,
+    "release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+    "rollback": null,
+    "stage": "awaiting_ci",
+    "target_id": "canary-service"
+   },
+   "pointer": null,
+   "publishes": 1,
+   "queue": "queued",
+   "release": "verified",
+   "rows_after": 7,
+   "rows_before": 7,
+   "rows_changed": [
+    [
+     "execution_fences",
+     "release_queue:e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     ""
+    ],
+    [
+     "host_delivery_intents",
+     "delivery-plan-1",
+     ""
+    ],
+    [
+     "release_queue",
+     "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "queued"
+    ]
+   ],
+   "units": {
+    "COMMIT": 8
+   },
+   "violations": []
+  }
+ },
+ "record_superseded": {
+  "a_failure_at_last_write": {
+   "attempts": [
+    [
+     "prepared",
+     false
+    ]
+   ],
+   "committed_before_effect": [
+    [
+     "verifier.evaluate",
+     [
+      [
+       "deployment_locks",
+       ""
+      ],
+      [
+       "execution_fences",
+       ""
+      ],
+      [
+       "host_delivery_intents",
+       ""
+      ],
+      [
+       "release_queue",
+       "running"
+      ]
+     ]
+    ]
+   ],
+   "descriptor": {
+    "consumed": null,
+    "startup_observed": null
+   },
+   "discarded_writes": [
+    [
+     "releases",
+     "superseded_by_ticket_revision"
+    ]
+   ],
+   "durable_units": 4,
+   "durable_writes": [
+    [
+     "deployment_locks",
+     ""
+    ],
+    [
+     "execution_fences",
+     ""
+    ],
+    [
+     "host_delivery_intents",
+     ""
+    ],
+    [
+     "release_queue",
+     "retry"
+    ],
+    [
+     "release_queue",
+     "running"
+    ]
+   ],
+   "effects": [
+    [
+     "verifier.evaluate",
+     0
+    ]
+   ],
+   "intent": {
+    "attempts": 0,
+    "outcome": "unavailable",
+    "reason_code": "verification_unavailable",
+    "stage": "verifying"
+   },
+   "outcome": {
+    "active": null,
+    "ambiguous_effect": null,
+    "at": "2026-09-22T00:00:01+00:00",
+    "attempts": 0,
+    "blocked": {},
+    "canary": null,
+    "descriptor_sha256": null,
+    "error_type": "Injected",
+    "head": null,
+    "instance_id": null,
+    "merged_revision": null,
+    "next_action": "await_incumbent_verification",
+    "ok": true,
+    "outcome": "unavailable",
+    "plan_id": "delivery-plan-1",
+    "pr_number": null,
+    "previous_descriptor_sha256": null,
+    "reason_code": "verification_unavailable",
+    "release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+    "rollback": null,
+    "stage": "verifying",
+    "target_id": "canary-service"
+   },
+   "pointer": null,
+   "queue": "retry",
+   "release": "reviewed",
+   "rows_after": 7,
+   "rows_before": 7,
+   "rows_changed": [
+    [
+     "execution_fences",
+     "release_queue:e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     ""
+    ],
+    [
+     "host_delivery_intents",
+     "delivery-plan-1",
+     ""
+    ],
+    [
+     "release_queue",
+     "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "retry"
+    ]
+   ],
+   "units": {
+    "COMMIT": 10,
+    "ROLLBACK": 1
+   },
+   "violations": []
+  },
+  "b_intent_moved": {
+   "after_move": {
+    "durable_writes": [
+     [
+      "deployment_locks",
+      ""
+     ],
+     [
+      "release_queue",
+      "queued"
+     ]
+    ],
+    "writes": 2
+   },
+   "attempts": [
+    [
+     "prepared",
+     false
+    ]
+   ],
+   "committed_before_effect": [
+    [
+     "verifier.evaluate",
+     [
+      [
+       "deployment_locks",
+       ""
+      ],
+      [
+       "execution_fences",
+       ""
+      ],
+      [
+       "host_delivery_intents",
+       ""
+      ],
+      [
+       "release_queue",
+       "running"
+      ]
+     ]
+    ]
+   ],
+   "descriptor": {
+    "consumed": null,
+    "startup_observed": null
+   },
+   "discarded_writes": [],
+   "durable_units": 3,
+   "durable_writes": [
+    [
+     "deployment_locks",
+     ""
+    ],
+    [
+     "execution_fences",
+     ""
+    ],
+    [
+     "host_delivery_intents",
+     ""
+    ],
+    [
+     "release_queue",
+     "queued"
+    ],
+    [
+     "release_queue",
+     "running"
+    ]
+   ],
+   "effects": [
+    [
+     "verifier.evaluate",
+     0
+    ]
+   ],
+   "intent": {
+    "attempts": 0,
+    "outcome": "progressed",
+    "reason_code": null,
+    "stage": "verifying"
+   },
+   "outcome": {
+    "active": null,
+    "ambiguous_effect": "verification",
+    "at": "2026-09-22T00:00:01+00:00",
+    "attempts": 0,
+    "blocked": {},
+    "canary": null,
+    "controller": "stale",
+    "descriptor_sha256": null,
+    "error_type": "DeliveryRefused",
+    "head": null,
+    "instance_id": null,
+    "merged_revision": null,
+    "next_action": "await_incumbent_verification",
+    "ok": true,
+    "outcome": "conflict",
+    "plan_id": "delivery-plan-1",
+    "pr_number": null,
+    "previous_descriptor_sha256": null,
+    "reason_code": "controller_stale_after_effect",
+    "release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+    "rollback": null,
+    "stage": "verifying",
+    "target_id": "canary-service"
+   },
+   "pointer": null,
+   "queue": "queued",
+   "release": "reviewed",
+   "rows_after": 7,
+   "rows_before": 7,
+   "rows_changed": [
+    [
+     "execution_fences",
+     "release_queue:e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     ""
+    ],
+    [
+     "host_delivery_intents",
+     "delivery-plan-1",
+     ""
+    ],
+    [
+     "release_queue",
+     "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "queued"
+    ]
+   ],
+   "units": {
+    "COMMIT": 9,
+    "ROLLBACK": 1
+   },
+   "violations": []
+  },
+  "b_lease_moved": {
+   "after_move": {
+    "durable_writes": [],
+    "writes": 0
+   },
+   "attempts": [
+    [
+     "prepared",
+     false
+    ]
+   ],
+   "committed_before_effect": [
+    [
+     "verifier.evaluate",
+     [
+      [
+       "deployment_locks",
+       ""
+      ],
+      [
+       "execution_fences",
+       ""
+      ],
+      [
+       "host_delivery_intents",
+       ""
+      ],
+      [
+       "release_queue",
+       "running"
+      ]
+     ]
+    ]
+   ],
+   "descriptor": {
+    "consumed": null,
+    "startup_observed": null
+   },
+   "discarded_writes": [],
+   "durable_units": 2,
+   "durable_writes": [
+    [
+     "deployment_locks",
+     ""
+    ],
+    [
+     "execution_fences",
+     ""
+    ],
+    [
+     "host_delivery_intents",
+     ""
+    ],
+    [
+     "release_queue",
+     "running"
+    ]
+   ],
+   "effects": [
+    [
+     "verifier.evaluate",
+     0
+    ]
+   ],
+   "intent": {
+    "attempts": 0,
+    "outcome": "progressed",
+    "reason_code": null,
+    "stage": "verifying"
+   },
+   "outcome": {
+    "active": null,
+    "ambiguous_effect": "verification",
+    "at": "2026-09-22T00:00:01+00:00",
+    "attempts": 0,
+    "blocked": {},
+    "canary": null,
+    "controller": "stale",
+    "descriptor_sha256": null,
+    "error_type": "ContractError",
+    "head": null,
+    "instance_id": null,
+    "merged_revision": null,
+    "next_action": "await_incumbent_verification",
+    "ok": true,
+    "outcome": "conflict",
+    "plan_id": "delivery-plan-1",
+    "pr_number": null,
+    "previous_descriptor_sha256": null,
+    "reason_code": "controller_stale_after_effect",
+    "release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+    "rollback": null,
+    "stage": "verifying",
+    "target_id": "canary-service"
+   },
+   "pointer": null,
+   "queue": "running",
+   "release": "reviewed",
+   "rows_after": 7,
+   "rows_before": 7,
+   "rows_changed": [
+    [
+     "deployment_locks",
+     "controller",
+     ""
+    ],
+    [
+     "execution_fences",
+     "release_queue:e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     ""
+    ],
+    [
+     "host_delivery_intents",
+     "delivery-plan-1",
+     ""
+    ],
+    [
+     "release_queue",
+     "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "running"
+    ]
+   ],
+   "units": {
+    "COMMIT": 8,
+    "ROLLBACK": 2
+   },
+   "violations": []
+  },
+  "b_release_moved": {
+   "after_move": {
+    "durable_writes": [
+     [
+      "deployment_locks",
+      ""
+     ],
+     [
+      "host_delivery_intents",
+      ""
+     ],
+     [
+      "release_queue",
+      "blocked"
+     ]
+    ],
+    "writes": 3
+   },
+   "attempts": [
+    [
+     "evaluated",
+     true
+    ]
+   ],
+   "committed_before_effect": [
+    [
+     "verifier.evaluate",
+     [
+      [
+       "deployment_locks",
+       ""
+      ],
+      [
+       "execution_fences",
+       ""
+      ],
+      [
+       "host_delivery_intents",
+       ""
+      ],
+      [
+       "release_queue",
+       "running"
+      ]
+     ]
+    ]
+   ],
+   "descriptor": {
+    "consumed": null,
+    "startup_observed": null
+   },
+   "discarded_writes": [],
+   "durable_units": 4,
+   "durable_writes": [
+    [
+     "deployment_locks",
+     ""
+    ],
+    [
+     "execution_fences",
+     ""
+    ],
+    [
+     "host_delivery_intents",
+     ""
+    ],
+    [
+     "release_queue",
+     "blocked"
+    ],
+    [
+     "release_queue",
+     "running"
+    ]
+   ],
+   "effects": [
+    [
+     "verifier.evaluate",
+     0
+    ]
+   ],
+   "intent": {
+    "attempts": 1,
+    "outcome": "refused",
+    "reason_code": "release_not_reviewed",
+    "stage": "blocked"
+   },
+   "outcome": {
+    "active": null,
+    "ambiguous_effect": null,
+    "at": "2026-09-22T00:00:01+00:00",
+    "attempts": 1,
+    "blocked": {},
+    "canary": null,
+    "descriptor_sha256": null,
+    "error_type": "DeliveryRefused",
+    "head": null,
+    "instance_id": null,
+    "merged_revision": null,
+    "next_action": "owner_review",
+    "ok": true,
+    "outcome": "refused",
+    "plan_id": "delivery-plan-1",
+    "pr_number": null,
+    "previous_descriptor_sha256": null,
+    "reason_code": "release_not_reviewed",
+    "release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+    "rollback": null,
+    "stage": "blocked",
+    "target_id": "canary-service"
+   },
+   "pointer": null,
+   "queue": "blocked",
+   "release": "verified",
+   "rows_after": 7,
+   "rows_before": 7,
+   "rows_changed": [
+    [
+     "execution_fences",
+     "release_queue:e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     ""
+    ],
+    [
+     "host_delivery_intents",
+     "delivery-plan-1",
+     ""
+    ],
+    [
+     "release_queue",
+     "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "blocked"
+    ],
+    [
+     "releases",
+     "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "verified"
+    ]
+   ],
+   "units": {
+    "COMMIT": 10,
+    "ROLLBACK": 1
+   },
+   "violations": []
+  },
+  "c_replay": {
+   "attempts": [
+    [
+     "evaluated",
+     true
+    ]
+   ],
+   "committed_before_effect": [],
+   "descriptor": {
+    "consumed": null,
+    "startup_observed": null
+   },
+   "discarded_writes": [],
+   "durable_units": 0,
+   "durable_writes": [],
+   "effects": [],
+   "first_tick": {
+    "active": null,
+    "ambiguous_effect": null,
+    "at": "2026-09-22T00:00:01+00:00",
+    "attempts": 1,
+    "blocked": {},
+    "canary": null,
+    "descriptor_sha256": null,
+    "error_type": null,
+    "head": null,
+    "instance_id": null,
+    "merged_revision": null,
+    "next_action": "owner_review",
+    "ok": true,
+    "outcome": "blocked",
+    "plan_id": "delivery-plan-1",
+    "pr_number": null,
+    "previous_descriptor_sha256": null,
+    "reason_code": "release_superseded_by_ticket_revision",
+    "release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+    "rollback": null,
+    "stage": "blocked",
+    "target_id": "canary-service"
+   },
+   "intent": {
+    "attempts": 1,
+    "outcome": "blocked",
+    "reason_code": "release_superseded_by_ticket_revision",
+    "stage": "blocked"
+   },
+   "outcome": {
+    "active": null,
+    "ambiguous_effect": null,
+    "at": "2026-09-22T00:00:02+00:00",
+    "attempts": 0,
+    "blocked": {
+     "delivery-plan-1": "blocked"
+    },
+    "canary": null,
+    "descriptor_sha256": null,
+    "error_type": null,
+    "head": null,
+    "instance_id": null,
+    "merged_revision": null,
+    "next_action": "tick",
+    "ok": true,
+    "outcome": "idle",
+    "plan_id": null,
+    "pr_number": null,
+    "previous_descriptor_sha256": null,
+    "reason_code": null,
+    "release_id": null,
+    "rollback": null,
+    "stage": null,
+    "target_id": null
+   },
+   "pointer": null,
+   "queue": "blocked",
+   "release": "superseded_by_ticket_revision",
+   "rows_after": 7,
+   "rows_before": 7,
+   "rows_changed": [],
+   "units": {
+    "COMMIT": 1
+   },
+   "violations": []
+  },
+  "success": {
+   "attempts": [
+    [
+     "evaluated",
+     true
+    ]
+   ],
+   "committed_before_effect": [
+    [
+     "verifier.evaluate",
+     [
+      [
+       "deployment_locks",
+       ""
+      ],
+      [
+       "execution_fences",
+       ""
+      ],
+      [
+       "host_delivery_intents",
+       ""
+      ],
+      [
+       "release_queue",
+       "running"
+      ]
+     ]
+    ]
+   ],
+   "descriptor": {
+    "consumed": null,
+    "startup_observed": null
+   },
+   "discarded_writes": [],
+   "durable_units": 4,
+   "durable_writes": [
+    [
+     "deployment_locks",
+     ""
+    ],
+    [
+     "execution_fences",
+     ""
+    ],
+    [
+     "host_delivery_intents",
+     ""
+    ],
+    [
+     "release_queue",
+     "blocked"
+    ],
+    [
+     "release_queue",
+     "running"
+    ],
+    [
+     "releases",
+     "superseded_by_ticket_revision"
+    ]
+   ],
+   "effects": [
+    [
+     "verifier.evaluate",
+     0
+    ]
+   ],
+   "intent": {
+    "attempts": 1,
+    "outcome": "blocked",
+    "reason_code": "release_superseded_by_ticket_revision",
+    "stage": "blocked"
+   },
+   "outcome": {
+    "active": null,
+    "ambiguous_effect": null,
+    "at": "2026-09-22T00:00:01+00:00",
+    "attempts": 1,
+    "blocked": {},
+    "canary": null,
+    "descriptor_sha256": null,
+    "error_type": null,
+    "head": null,
+    "instance_id": null,
+    "merged_revision": null,
+    "next_action": "owner_review",
+    "ok": true,
+    "outcome": "blocked",
+    "plan_id": "delivery-plan-1",
+    "pr_number": null,
+    "previous_descriptor_sha256": null,
+    "reason_code": "release_superseded_by_ticket_revision",
+    "release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+    "rollback": null,
+    "stage": "blocked",
+    "target_id": "canary-service"
+   },
+   "pointer": null,
+   "queue": "blocked",
+   "release": "superseded_by_ticket_revision",
+   "rows_after": 7,
+   "rows_before": 7,
+   "rows_changed": [
+    [
+     "execution_fences",
+     "release_queue:e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     ""
+    ],
+    [
+     "host_delivery_intents",
+     "delivery-plan-1",
+     ""
+    ],
+    [
+     "release_queue",
+     "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "blocked"
+    ],
+    [
+     "releases",
+     "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "superseded_by_ticket_revision"
+    ]
+   ],
+   "units": {
+    "COMMIT": 10
+   },
+   "violations": []
+  }
+ },
+ "record_switch": {
+  "a_failure_at_descriptor_record": {
+   "attempts": [],
+   "calls": [
+    "identity",
+    "receipt",
+    "drain",
+    "current",
+    "switch",
+    "receipt",
+    "start",
+    "receipt",
+    "stop"
+   ],
+   "committed_before_effect": [
+    [
+     "host.switch",
+     [
+      [
+       "deployment_locks",
+       ""
+      ],
+      [
+       "execution_fences",
+       ""
+      ],
+      [
+       "release_queue",
+       "running"
+      ]
+     ]
+    ],
+    [
+     "host.start",
+     [
+      [
+       "deployment_locks",
+       ""
+      ],
+      [
+       "execution_fences",
+       ""
+      ],
+      [
+       "release_queue",
+       "running"
+      ]
+     ]
+    ]
+   ],
+   "descriptor": {
+    "consumed": null,
+    "startup_observed": null
+   },
+   "discarded_writes": [],
+   "durable_units": 3,
+   "durable_writes": [
+    [
+     "deployment_locks",
+     ""
+    ],
+    [
+     "execution_fences",
+     ""
+    ],
+    [
+     "host_delivery_intents",
+     ""
+    ],
+    [
+     "release_queue",
+     "retry"
+    ],
+    [
+     "release_queue",
+     "running"
+    ]
+   ],
+   "effects": [
+    [
+     "host.switch",
+     0
+    ],
+    [
+     "host.start",
+     0
+    ]
+   ],
+   "intent": {
+    "attempts": 0,
+    "outcome": "unavailable",
+    "reason_code": "stage_unavailable",
+    "stage": "switching"
+   },
+   "outcome": {
+    "active": null,
+    "ambiguous_effect": null,
+    "at": "2026-09-22T00:00:06+00:00",
+    "attempts": 0,
+    "blocked": {},
+    "canary": null,
+    "descriptor_sha256": "2fa7907356ed9356d5129640ab8644cf8546485c5631a3351fd156cd0a16f2e1",
+    "error_type": "Injected",
+    "head": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "instance_id": null,
+    "merged_revision": "9999999999999999999999999999999999999999",
+    "next_action": "await_dependency",
+    "ok": true,
+    "outcome": "unavailable",
+    "plan_id": "delivery-plan-1",
+    "pr_number": 181,
+    "previous_descriptor_sha256": null,
+    "reason_code": "stage_unavailable",
+    "release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+    "rollback": null,
+    "stage": "switching",
+    "target_id": "canary-service"
+   },
+   "pointer": null,
+   "queue": "retry",
+   "release": "verified",
+   "rows_after": 7,
+   "rows_before": 7,
+   "rows_changed": [
+    [
+     "execution_fences",
+     "release_queue:e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     ""
+    ],
+    [
+     "host_delivery_intents",
+     "delivery-plan-1",
+     ""
+    ],
+    [
+     "release_queue",
+     "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "retry"
+    ]
+   ],
+   "units": {
+    "COMMIT": 12,
+    "ROLLBACK": 1
+   },
+   "violations": []
+  },
+  "a_failure_at_stage_write": {
+   "attempts": [],
+   "calls": [
+    "identity",
+    "receipt",
+    "drain",
+    "current",
+    "switch",
+    "receipt",
+    "start",
+    "receipt",
+    "stop"
+   ],
+   "committed_before_effect": [
+    [
+     "host.switch",
+     [
+      [
+       "deployment_locks",
+       ""
+      ],
+      [
+       "execution_fences",
+       ""
+      ],
+      [
+       "release_queue",
+       "running"
+      ]
+     ]
+    ],
+    [
+     "host.start",
+     [
+      [
+       "deployment_locks",
+       ""
+      ],
+      [
+       "execution_fences",
+       ""
+      ],
+      [
+       "release_queue",
+       "running"
+      ]
+     ]
+    ]
+   ],
+   "descriptor": {
+    "consumed": false,
+    "startup_observed": false
+   },
+   "discarded_writes": [],
+   "durable_units": 4,
+   "durable_writes": [
+    [
+     "deployment_locks",
+     ""
+    ],
+    [
+     "execution_fences",
+     ""
+    ],
+    [
+     "host_delivery_descriptors",
+     ""
+    ],
+    [
+     "host_delivery_intents",
+     ""
+    ],
+    [
+     "release_queue",
+     "retry"
+    ],
+    [
+     "release_queue",
+     "running"
+    ]
+   ],
+   "effects": [
+    [
+     "host.switch",
+     0
+    ],
+    [
+     "host.start",
+     0
+    ]
+   ],
+   "intent": {
+    "attempts": 0,
+    "outcome": "unavailable",
+    "reason_code": "stage_unavailable",
+    "stage": "switching"
+   },
+   "outcome": {
+    "active": null,
+    "ambiguous_effect": null,
+    "at": "2026-09-22T00:00:06+00:00",
+    "attempts": 0,
+    "blocked": {},
+    "canary": null,
+    "descriptor_sha256": "2fa7907356ed9356d5129640ab8644cf8546485c5631a3351fd156cd0a16f2e1",
+    "error_type": "Injected",
+    "head": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "instance_id": null,
+    "merged_revision": "9999999999999999999999999999999999999999",
+    "next_action": "await_dependency",
+    "ok": true,
+    "outcome": "unavailable",
+    "plan_id": "delivery-plan-1",
+    "pr_number": 181,
+    "previous_descriptor_sha256": null,
+    "reason_code": "stage_unavailable",
+    "release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+    "rollback": null,
+    "stage": "switching",
+    "target_id": "canary-service"
+   },
+   "pointer": null,
+   "queue": "retry",
+   "release": "verified",
+   "rows_after": 8,
+   "rows_before": 7,
+   "rows_changed": [
+    [
+     "execution_fences",
+     "release_queue:e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     ""
+    ],
+    [
+     "host_delivery_descriptors",
+     "canary-service",
+     ""
+    ],
+    [
+     "host_delivery_intents",
+     "delivery-plan-1",
+     ""
+    ],
+    [
+     "release_queue",
+     "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "retry"
+    ]
+   ],
+   "units": {
+    "COMMIT": 13,
+    "ROLLBACK": 1
+   },
+   "violations": []
+  },
+  "b_lease_moved": {
+   "after_move": {
+    "durable_writes": [],
+    "writes": 0
+   },
+   "attempts": [],
+   "calls": [
+    "identity",
+    "receipt",
+    "drain",
+    "current",
+    "switch",
+    "receipt",
+    "start",
+    "receipt",
+    "stop"
+   ],
+   "committed_before_effect": [
+    [
+     "host.switch",
+     [
+      [
+       "deployment_locks",
+       ""
+      ],
+      [
+       "execution_fences",
+       ""
+      ],
+      [
+       "release_queue",
+       "running"
+      ]
+     ]
+    ],
+    [
+     "host.start",
+     [
+      [
+       "deployment_locks",
+       ""
+      ],
+      [
+       "execution_fences",
+       ""
+      ],
+      [
+       "release_queue",
+       "running"
+      ]
+     ]
+    ]
+   ],
+   "descriptor": {
+    "consumed": null,
+    "startup_observed": null
+   },
+   "discarded_writes": [],
+   "durable_units": 1,
+   "durable_writes": [
+    [
+     "deployment_locks",
+     ""
+    ],
+    [
+     "execution_fences",
+     ""
+    ],
+    [
+     "release_queue",
+     "running"
+    ]
+   ],
+   "effects": [
+    [
+     "host.switch",
+     0
+    ],
+    [
+     "host.start",
+     0
+    ]
+   ],
+   "intent": {
+    "attempts": 0,
+    "outcome": "progressed",
+    "reason_code": null,
+    "stage": "switching"
+   },
+   "outcome": {
+    "active": null,
+    "ambiguous_effect": "descriptor_switched",
+    "at": "2026-09-22T00:00:06+00:00",
+    "attempts": 0,
+    "blocked": {},
+    "canary": null,
+    "controller": "stale",
+    "descriptor_sha256": "2fa7907356ed9356d5129640ab8644cf8546485c5631a3351fd156cd0a16f2e1",
+    "error_type": "ContractError",
+    "head": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "instance_id": null,
+    "merged_revision": "9999999999999999999999999999999999999999",
+    "next_action": "tick",
+    "ok": true,
+    "outcome": "conflict",
+    "plan_id": "delivery-plan-1",
+    "pr_number": 181,
+    "previous_descriptor_sha256": null,
+    "reason_code": "controller_stale_after_effect",
+    "release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+    "rollback": null,
+    "stage": "switching",
+    "target_id": "canary-service"
+   },
+   "pointer": null,
+   "queue": "running",
+   "release": "verified",
+   "rows_after": 7,
+   "rows_before": 7,
+   "rows_changed": [
+    [
+     "deployment_locks",
+     "controller",
+     ""
+    ],
+    [
+     "execution_fences",
+     "release_queue:e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     ""
+    ],
+    [
+     "release_queue",
+     "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "running"
+    ]
+   ],
+   "units": {
+    "COMMIT": 10,
+    "ROLLBACK": 2
+   },
+   "violations": []
+  },
+  "c_replay_after_failure": {
+   "attempts": [],
+   "calls": [
+    "identity",
+    "receipt",
+    "drain",
+    "current",
+    "switch",
+    "receipt",
+    "start",
+    "receipt",
+    "stop",
+    "current",
+    "receipt"
+   ],
+   "committed_before_effect": [],
+   "descriptor": {
+    "consumed": false,
+    "startup_observed": false
+   },
+   "discarded_writes": [],
+   "durable_units": 4,
+   "durable_writes": [
+    [
+     "deployment_locks",
+     ""
+    ],
+    [
+     "execution_fences",
+     ""
+    ],
+    [
+     "host_delivery_descriptors",
+     ""
+    ],
+    [
+     "host_delivery_intents",
+     ""
+    ],
+    [
+     "release_queue",
+     "queued"
+    ],
+    [
+     "release_queue",
+     "running"
+    ]
+   ],
+   "effects": [],
+   "first_tick": {
+    "active": null,
+    "ambiguous_effect": null,
+    "at": "2026-09-22T00:00:06+00:00",
+    "attempts": 0,
+    "blocked": {},
+    "canary": null,
+    "descriptor_sha256": "2fa7907356ed9356d5129640ab8644cf8546485c5631a3351fd156cd0a16f2e1",
+    "error_type": "Injected",
+    "head": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "instance_id": null,
+    "merged_revision": "9999999999999999999999999999999999999999",
+    "next_action": "await_dependency",
+    "ok": true,
+    "outcome": "unavailable",
+    "plan_id": "delivery-plan-1",
+    "pr_number": 181,
+    "previous_descriptor_sha256": null,
+    "reason_code": "stage_unavailable",
+    "release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+    "rollback": null,
+    "stage": "switching",
+    "target_id": "canary-service"
+   },
+   "intent": {
+    "attempts": 0,
+    "outcome": "progressed",
+    "reason_code": null,
+    "stage": "awaiting_consumption"
+   },
+   "outcome": {
+    "active": null,
+    "ambiguous_effect": null,
+    "at": "2026-09-22T00:02:07+00:00",
+    "attempts": 0,
+    "blocked": {},
+    "canary": null,
+    "descriptor_sha256": "2fa7907356ed9356d5129640ab8644cf8546485c5631a3351fd156cd0a16f2e1",
+    "error_type": null,
+    "head": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "instance_id": null,
+    "merged_revision": "9999999999999999999999999999999999999999",
+    "next_action": "await_startup_receipt",
+    "ok": true,
+    "outcome": "progressed",
+    "plan_id": "delivery-plan-1",
+    "pr_number": 181,
+    "previous_descriptor_sha256": null,
+    "reason_code": null,
+    "release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+    "rollback": null,
+    "stage": "awaiting_consumption",
+    "target_id": "canary-service"
+   },
+   "pointer": null,
+   "queue": "queued",
+   "release": "verified",
+   "rows_after": 8,
+   "rows_before": 8,
+   "rows_changed": [
+    [
+     "execution_fences",
+     "release_queue:e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     ""
+    ],
+    [
+     "host_delivery_descriptors",
+     "canary-service",
+     ""
+    ],
+    [
+     "host_delivery_intents",
+     "delivery-plan-1",
+     ""
+    ],
+    [
+     "release_queue",
+     "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "queued"
+    ]
+   ],
+   "units": {
+    "COMMIT": 8
+   },
+   "violations": []
+  },
+  "success": {
+   "attempts": [],
+   "calls": [
+    "identity",
+    "receipt",
+    "drain",
+    "current",
+    "switch",
+    "receipt",
+    "start",
+    "receipt",
+    "stop"
+   ],
+   "committed_before_effect": [
+    [
+     "host.switch",
+     [
+      [
+       "deployment_locks",
+       ""
+      ],
+      [
+       "execution_fences",
+       ""
+      ],
+      [
+       "release_queue",
+       "running"
+      ]
+     ]
+    ],
+    [
+     "host.start",
+     [
+      [
+       "deployment_locks",
+       ""
+      ],
+      [
+       "execution_fences",
+       ""
+      ],
+      [
+       "release_queue",
+       "running"
+      ]
+     ]
+    ]
+   ],
+   "descriptor": {
+    "consumed": false,
+    "startup_observed": false
+   },
+   "discarded_writes": [],
+   "durable_units": 4,
+   "durable_writes": [
+    [
+     "deployment_locks",
+     ""
+    ],
+    [
+     "execution_fences",
+     ""
+    ],
+    [
+     "host_delivery_descriptors",
+     ""
+    ],
+    [
+     "host_delivery_intents",
+     ""
+    ],
+    [
+     "release_queue",
+     "queued"
+    ],
+    [
+     "release_queue",
+     "running"
+    ]
+   ],
+   "effects": [
+    [
+     "host.switch",
+     0
+    ],
+    [
+     "host.start",
+     0
+    ]
+   ],
+   "intent": {
+    "attempts": 0,
+    "outcome": "progressed",
+    "reason_code": null,
+    "stage": "awaiting_consumption"
+   },
+   "outcome": {
+    "active": null,
+    "ambiguous_effect": null,
+    "at": "2026-09-22T00:00:06+00:00",
+    "attempts": 0,
+    "blocked": {},
+    "canary": null,
+    "descriptor_sha256": "2fa7907356ed9356d5129640ab8644cf8546485c5631a3351fd156cd0a16f2e1",
+    "error_type": null,
+    "head": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "instance_id": null,
+    "merged_revision": "9999999999999999999999999999999999999999",
+    "next_action": "await_startup_receipt",
+    "ok": true,
+    "outcome": "progressed",
+    "plan_id": "delivery-plan-1",
+    "pr_number": 181,
+    "previous_descriptor_sha256": null,
+    "reason_code": null,
+    "release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+    "rollback": null,
+    "stage": "awaiting_consumption",
+    "target_id": "canary-service"
+   },
+   "pointer": null,
+   "queue": "queued",
+   "release": "verified",
+   "rows_after": 8,
+   "rows_before": 7,
+   "rows_changed": [
+    [
+     "execution_fences",
+     "release_queue:e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     ""
+    ],
+    [
+     "host_delivery_descriptors",
+     "canary-service",
+     ""
+    ],
+    [
+     "host_delivery_intents",
+     "delivery-plan-1",
+     ""
+    ],
+    [
+     "release_queue",
+     "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "queued"
+    ]
+   ],
+   "units": {
+    "COMMIT": 13
+   },
+   "violations": []
+  }
+ },
+ "stage_write": {
+  "a_failure_at_stage_write": {
+   "attempts": [],
+   "committed_before_effect": [],
+   "descriptor": {
+    "consumed": null,
+    "startup_observed": null
+   },
+   "discarded_writes": [],
+   "durable_units": 5,
+   "durable_writes": [
+    [
+     "deployment_locks",
+     ""
+    ],
+    [
+     "execution_fences",
+     ""
+    ],
+    [
+     "host_delivery_intents",
+     ""
+    ],
+    [
+     "release_queue",
+     "queued"
+    ],
+    [
+     "release_queue",
+     "retry"
+    ],
+    [
+     "release_queue",
+     "running"
+    ]
+   ],
+   "effects": [],
+   "intent": {
+    "attempts": 0,
+    "outcome": "unavailable",
+    "reason_code": "stage_unavailable",
+    "stage": "registered"
+   },
+   "outcome": {
+    "active": null,
+    "ambiguous_effect": null,
+    "at": "2026-09-22T00:00:00+00:00",
+    "attempts": 0,
+    "blocked": {},
+    "canary": null,
+    "descriptor_sha256": null,
+    "error_type": "Injected",
+    "head": null,
+    "instance_id": null,
+    "merged_revision": null,
+    "next_action": "await_dependency",
+    "ok": true,
+    "outcome": "unavailable",
+    "plan_id": "delivery-plan-1",
+    "pr_number": null,
+    "previous_descriptor_sha256": null,
+    "reason_code": "stage_unavailable",
+    "release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+    "rollback": null,
+    "stage": "registered",
+    "target_id": "canary-service"
+   },
+   "pointer": null,
+   "queue": "retry",
+   "release": "verified",
+   "rows_after": 7,
+   "rows_before": 3,
+   "rows_changed": [
+    [
+     "deployment_locks",
+     "controller",
+     ""
+    ],
+    [
+     "execution_fences",
+     "release_queue:e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     ""
+    ],
+    [
+     "host_delivery_intents",
+     "delivery-plan-1",
+     ""
+    ],
+    [
+     "release_queue",
+     "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "retry"
+    ]
+   ],
+   "units": {
+    "COMMIT": 7,
+    "ROLLBACK": 1
+   },
+   "violations": []
+  },
+  "b_lease_moved": {
+   "after_move": {
+    "durable_writes": [],
+    "writes": 0
+   },
+   "attempts": [],
+   "committed_before_effect": [],
+   "descriptor": {
+    "consumed": null,
+    "startup_observed": null
+   },
+   "discarded_writes": [],
+   "durable_units": 3,
+   "durable_writes": [
+    [
+     "deployment_locks",
+     ""
+    ],
+    [
+     "execution_fences",
+     ""
+    ],
+    [
+     "host_delivery_intents",
+     ""
+    ],
+    [
+     "release_queue",
+     "queued"
+    ],
+    [
+     "release_queue",
+     "running"
+    ]
+   ],
+   "effects": [],
+   "intent": {
+    "attempts": 0,
+    "outcome": null,
+    "reason_code": null,
+    "stage": "registered"
+   },
+   "outcome": {
+    "active": null,
+    "ambiguous_effect": null,
+    "at": "2026-09-22T00:00:00+00:00",
+    "attempts": 0,
+    "blocked": {},
+    "canary": null,
+    "controller": "stale",
+    "descriptor_sha256": null,
+    "error_type": "ContractError",
+    "head": null,
+    "instance_id": null,
+    "merged_revision": null,
+    "next_action": "tick",
+    "ok": true,
+    "outcome": "refused",
+    "plan_id": "delivery-plan-1",
+    "pr_number": null,
+    "previous_descriptor_sha256": null,
+    "reason_code": "controller_stale",
+    "release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+    "rollback": null,
+    "stage": "registered",
+    "target_id": "canary-service"
+   },
+   "pointer": null,
+   "queue": "running",
+   "release": "verified",
+   "rows_after": 7,
+   "rows_before": 3,
+   "rows_changed": [
+    [
+     "deployment_locks",
+     "controller",
+     ""
+    ],
+    [
+     "execution_fences",
+     "release_queue:e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     ""
+    ],
+    [
+     "host_delivery_intents",
+     "delivery-plan-1",
+     ""
+    ],
+    [
+     "release_queue",
+     "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "running"
+    ]
+   ],
+   "units": {
+    "COMMIT": 5,
+    "ROLLBACK": 3
+   },
+   "violations": []
+  },
+  "c_replay_after_failure": {
+   "attempts": [],
+   "committed_before_effect": [],
+   "descriptor": {
+    "consumed": null,
+    "startup_observed": null
+   },
+   "discarded_writes": [],
+   "durable_units": 3,
+   "durable_writes": [
+    [
+     "deployment_locks",
+     ""
+    ],
+    [
+     "execution_fences",
+     ""
+    ],
+    [
+     "host_delivery_intents",
+     ""
+    ],
+    [
+     "release_queue",
+     "queued"
+    ],
+    [
+     "release_queue",
+     "running"
+    ]
+   ],
+   "effects": [],
+   "first_tick": {
+    "active": null,
+    "ambiguous_effect": null,
+    "at": "2026-09-22T00:00:00+00:00",
+    "attempts": 0,
+    "blocked": {},
+    "canary": null,
+    "descriptor_sha256": null,
+    "error_type": "Injected",
+    "head": null,
+    "instance_id": null,
+    "merged_revision": null,
+    "next_action": "await_dependency",
+    "ok": true,
+    "outcome": "unavailable",
+    "plan_id": "delivery-plan-1",
+    "pr_number": null,
+    "previous_descriptor_sha256": null,
+    "reason_code": "stage_unavailable",
+    "release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+    "rollback": null,
+    "stage": "registered",
+    "target_id": "canary-service"
+   },
+   "intent": {
+    "attempts": 0,
+    "outcome": "progressed",
+    "reason_code": null,
+    "stage": "publishing"
+   },
+   "outcome": {
+    "active": null,
+    "ambiguous_effect": null,
+    "at": "2026-09-22T00:02:01+00:00",
+    "attempts": 0,
+    "blocked": {},
+    "canary": null,
+    "descriptor_sha256": null,
+    "error_type": null,
+    "head": null,
+    "instance_id": null,
+    "merged_revision": null,
+    "next_action": "tick",
+    "ok": true,
+    "outcome": "progressed",
+    "plan_id": "delivery-plan-1",
+    "pr_number": null,
+    "previous_descriptor_sha256": null,
+    "reason_code": null,
+    "release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+    "rollback": null,
+    "stage": "publishing",
+    "target_id": "canary-service"
+   },
+   "pointer": null,
+   "queue": "queued",
+   "release": "verified",
+   "rows_after": 7,
+   "rows_before": 7,
+   "rows_changed": [
+    [
+     "execution_fences",
+     "release_queue:e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     ""
+    ],
+    [
+     "host_delivery_intents",
+     "delivery-plan-1",
+     ""
+    ],
+    [
+     "release_queue",
+     "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "queued"
+    ]
+   ],
+   "units": {
+    "COMMIT": 7
+   },
+   "violations": []
+  },
+  "success": {
+   "attempts": [],
+   "committed_before_effect": [],
+   "descriptor": {
+    "consumed": null,
+    "startup_observed": null
+   },
+   "discarded_writes": [],
+   "durable_units": 5,
+   "durable_writes": [
+    [
+     "deployment_locks",
+     ""
+    ],
+    [
+     "execution_fences",
+     ""
+    ],
+    [
+     "host_delivery_intents",
+     ""
+    ],
+    [
+     "release_queue",
+     "queued"
+    ],
+    [
+     "release_queue",
+     "running"
+    ]
+   ],
+   "effects": [],
+   "intent": {
+    "attempts": 0,
+    "outcome": "progressed",
+    "reason_code": null,
+    "stage": "publishing"
+   },
+   "outcome": {
+    "active": null,
+    "ambiguous_effect": null,
+    "at": "2026-09-22T00:00:00+00:00",
+    "attempts": 0,
+    "blocked": {},
+    "canary": null,
+    "descriptor_sha256": null,
+    "error_type": null,
+    "head": null,
+    "instance_id": null,
+    "merged_revision": null,
+    "next_action": "tick",
+    "ok": true,
+    "outcome": "progressed",
+    "plan_id": "delivery-plan-1",
+    "pr_number": null,
+    "previous_descriptor_sha256": null,
+    "reason_code": null,
+    "release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+    "rollback": null,
+    "stage": "publishing",
+    "target_id": "canary-service"
+   },
+   "pointer": null,
+   "queue": "queued",
+   "release": "verified",
+   "rows_after": 7,
+   "rows_before": 3,
+   "rows_changed": [
+    [
+     "deployment_locks",
+     "controller",
+     ""
+    ],
+    [
+     "execution_fences",
+     "release_queue:e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     ""
+    ],
+    [
+     "host_delivery_intents",
+     "delivery-plan-1",
+     ""
+    ],
+    [
+     "release_queue",
+     "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "queued"
+    ]
+   ],
+   "units": {
+    "COMMIT": 7
+   },
+   "violations": []
+  }
+ },
+ "verification_attempt": {
+  "a_failure_at_intent": {
+   "attempts": [],
+   "committed_before_effect": [],
+   "descriptor": {
+    "consumed": null,
+    "startup_observed": null
+   },
+   "discarded_writes": [],
+   "durable_units": 3,
+   "durable_writes": [
+    [
+     "deployment_locks",
+     ""
+    ],
+    [
+     "execution_fences",
+     ""
+    ],
+    [
+     "host_delivery_intents",
+     ""
+    ],
+    [
+     "release_queue",
+     "retry"
+    ],
+    [
+     "release_queue",
+     "running"
+    ]
+   ],
+   "effects": [],
+   "intent": {
+    "attempts": 0,
+    "outcome": "unavailable",
+    "reason_code": "verification_unavailable",
+    "stage": "verifying"
+   },
+   "outcome": {
+    "active": null,
+    "ambiguous_effect": null,
+    "at": "2026-09-22T00:00:01+00:00",
+    "attempts": 0,
+    "blocked": {},
+    "canary": null,
+    "descriptor_sha256": null,
+    "error_type": "Injected",
+    "head": null,
+    "instance_id": null,
+    "merged_revision": null,
+    "next_action": "await_incumbent_verification",
+    "ok": true,
+    "outcome": "unavailable",
+    "plan_id": "delivery-plan-1",
+    "pr_number": null,
+    "previous_descriptor_sha256": null,
+    "reason_code": "verification_unavailable",
+    "release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+    "rollback": null,
+    "stage": "verifying",
+    "target_id": "canary-service"
+   },
+   "pointer": null,
+   "queue": "retry",
+   "release": "reviewed",
+   "rows_after": 7,
+   "rows_before": 7,
+   "rows_changed": [
+    [
+     "execution_fences",
+     "release_queue:e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     ""
+    ],
+    [
+     "host_delivery_intents",
+     "delivery-plan-1",
+     ""
+    ],
+    [
+     "release_queue",
+     "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "retry"
+    ]
+   ],
+   "units": {
+    "COMMIT": 9,
+    "ROLLBACK": 1
+   },
+   "violations": []
+  },
+  "b_intent_moved": {
+   "after_move": {
+    "durable_writes": [
+     [
+      "deployment_locks",
+      ""
+     ],
+     [
+      "release_queue",
+      "queued"
+     ]
+    ],
+    "writes": 2
+   },
+   "attempts": [],
+   "committed_before_effect": [],
+   "descriptor": {
+    "consumed": null,
+    "startup_observed": null
+   },
+   "discarded_writes": [],
+   "durable_units": 2,
+   "durable_writes": [
+    [
+     "deployment_locks",
+     ""
+    ],
+    [
+     "execution_fences",
+     ""
+    ],
+    [
+     "release_queue",
+     "queued"
+    ],
+    [
+     "release_queue",
+     "running"
+    ]
+   ],
+   "effects": [],
+   "intent": {
+    "attempts": 0,
+    "outcome": "progressed",
+    "reason_code": null,
+    "stage": "verifying"
+   },
+   "outcome": {
+    "active": null,
+    "ambiguous_effect": "verification",
+    "at": "2026-09-22T00:00:01+00:00",
+    "attempts": 0,
+    "blocked": {},
+    "canary": null,
+    "controller": "stale",
+    "descriptor_sha256": null,
+    "error_type": "DeliveryRefused",
+    "head": null,
+    "instance_id": null,
+    "merged_revision": null,
+    "next_action": "await_incumbent_verification",
+    "ok": true,
+    "outcome": "conflict",
+    "plan_id": "delivery-plan-1",
+    "pr_number": null,
+    "previous_descriptor_sha256": null,
+    "reason_code": "controller_stale_after_effect",
+    "release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+    "rollback": null,
+    "stage": "verifying",
+    "target_id": "canary-service"
+   },
+   "pointer": null,
+   "queue": "queued",
+   "release": "reviewed",
+   "rows_after": 7,
+   "rows_before": 7,
+   "rows_changed": [
+    [
+     "execution_fences",
+     "release_queue:e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     ""
+    ],
+    [
+     "host_delivery_intents",
+     "delivery-plan-1",
+     ""
+    ],
+    [
+     "release_queue",
+     "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "queued"
+    ]
+   ],
+   "units": {
+    "COMMIT": 8,
+    "ROLLBACK": 1
+   },
+   "violations": []
+  },
+  "b_lease_moved": {
+   "after_move": {
+    "durable_writes": [],
+    "writes": 0
+   },
+   "attempts": [],
+   "committed_before_effect": [],
+   "descriptor": {
+    "consumed": null,
+    "startup_observed": null
+   },
+   "discarded_writes": [],
+   "durable_units": 1,
+   "durable_writes": [
+    [
+     "deployment_locks",
+     ""
+    ],
+    [
+     "execution_fences",
+     ""
+    ],
+    [
+     "release_queue",
+     "running"
+    ]
+   ],
+   "effects": [],
+   "intent": {
+    "attempts": 0,
+    "outcome": "progressed",
+    "reason_code": null,
+    "stage": "verifying"
+   },
+   "outcome": {
+    "active": null,
+    "ambiguous_effect": "verification",
+    "at": "2026-09-22T00:00:01+00:00",
+    "attempts": 0,
+    "blocked": {},
+    "canary": null,
+    "controller": "stale",
+    "descriptor_sha256": null,
+    "error_type": "ContractError",
+    "head": null,
+    "instance_id": null,
+    "merged_revision": null,
+    "next_action": "await_incumbent_verification",
+    "ok": true,
+    "outcome": "conflict",
+    "plan_id": "delivery-plan-1",
+    "pr_number": null,
+    "previous_descriptor_sha256": null,
+    "reason_code": "controller_stale_after_effect",
+    "release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+    "rollback": null,
+    "stage": "verifying",
+    "target_id": "canary-service"
+   },
+   "pointer": null,
+   "queue": "running",
+   "release": "reviewed",
+   "rows_after": 7,
+   "rows_before": 7,
+   "rows_changed": [
+    [
+     "deployment_locks",
+     "controller",
+     ""
+    ],
+    [
+     "execution_fences",
+     "release_queue:e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     ""
+    ],
+    [
+     "release_queue",
+     "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "running"
+    ]
+   ],
+   "units": {
+    "COMMIT": 7,
+    "ROLLBACK": 2
+   },
+   "violations": []
+  },
+  "success": {
+   "attempts": [
+    [
+     "evaluated",
+     true
+    ]
+   ],
+   "committed_before_effect": [
+    [
+     "verifier.evaluate",
+     [
+      [
+       "deployment_locks",
+       ""
+      ],
+      [
+       "execution_fences",
+       ""
+      ],
+      [
+       "host_delivery_intents",
+       ""
+      ],
+      [
+       "release_queue",
+       "running"
+      ]
+     ]
+    ]
+   ],
+   "descriptor": {
+    "consumed": null,
+    "startup_observed": null
+   },
+   "discarded_writes": [],
+   "durable_units": 5,
+   "durable_writes": [
+    [
+     "deployment_locks",
+     ""
+    ],
+    [
+     "execution_fences",
+     ""
+    ],
+    [
+     "host_delivery_intents",
+     ""
+    ],
+    [
+     "release_queue",
+     "queued"
+    ],
+    [
+     "release_queue",
+     "running"
+    ],
+    [
+     "releases",
+     "verified"
+    ]
+   ],
+   "effects": [
+    [
+     "verifier.evaluate",
+     0
+    ]
+   ],
+   "intent": {
+    "attempts": 0,
+    "outcome": "progressed",
+    "reason_code": null,
+    "stage": "publishing"
+   },
+   "outcome": {
+    "active": null,
+    "ambiguous_effect": null,
+    "at": "2026-09-22T00:00:01+00:00",
+    "attempts": 0,
+    "blocked": {},
+    "canary": null,
+    "descriptor_sha256": null,
+    "error_type": null,
+    "head": null,
+    "instance_id": null,
+    "merged_revision": null,
+    "next_action": "tick",
+    "ok": true,
+    "outcome": "progressed",
+    "plan_id": "delivery-plan-1",
+    "pr_number": null,
+    "previous_descriptor_sha256": null,
+    "reason_code": null,
+    "release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+    "rollback": null,
+    "stage": "publishing",
+    "target_id": "canary-service"
+   },
+   "pointer": null,
+   "queue": "queued",
+   "release": "verified",
+   "rows_after": 7,
+   "rows_before": 7,
+   "rows_changed": [
+    [
+     "execution_fences",
+     "release_queue:e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     ""
+    ],
+    [
+     "host_delivery_intents",
+     "delivery-plan-1",
+     ""
+    ],
+    [
+     "release_queue",
+     "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "queued"
+    ],
+    [
+     "releases",
+     "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "verified"
+    ]
+   ],
+   "units": {
+    "COMMIT": 11
+   },
+   "violations": []
+  }
+ },
+ "verification_verdict": {
+  "a_failure_at_intent": {
+   "attempts": [
+    [
+     "prepared",
+     false
+    ]
+   ],
+   "committed_before_effect": [
+    [
+     "verifier.evaluate",
+     [
+      [
+       "deployment_locks",
+       ""
+      ],
+      [
+       "execution_fences",
+       ""
+      ],
+      [
+       "host_delivery_intents",
+       ""
+      ],
+      [
+       "release_queue",
+       "running"
+      ]
+     ]
+    ]
+   ],
+   "descriptor": {
+    "consumed": null,
+    "startup_observed": null
+   },
+   "discarded_writes": [
+    [
+     "releases",
+     "verified"
+    ]
+   ],
+   "durable_units": 5,
+   "durable_writes": [
+    [
+     "deployment_locks",
+     ""
+    ],
+    [
+     "execution_fences",
+     ""
+    ],
+    [
+     "host_delivery_intents",
+     ""
+    ],
+    [
+     "release_queue",
+     "retry"
+    ],
+    [
+     "release_queue",
+     "running"
+    ]
+   ],
+   "effects": [
+    [
+     "verifier.evaluate",
+     0
+    ]
+   ],
+   "intent": {
+    "attempts": 0,
+    "outcome": "unavailable",
+    "reason_code": "verification_unavailable",
+    "stage": "verifying"
+   },
+   "outcome": {
+    "active": null,
+    "ambiguous_effect": null,
+    "at": "2026-09-22T00:00:01+00:00",
+    "attempts": 0,
+    "blocked": {},
+    "canary": null,
+    "descriptor_sha256": null,
+    "error_type": "Injected",
+    "head": null,
+    "instance_id": null,
+    "merged_revision": null,
+    "next_action": "await_incumbent_verification",
+    "ok": true,
+    "outcome": "unavailable",
+    "plan_id": "delivery-plan-1",
+    "pr_number": null,
+    "previous_descriptor_sha256": null,
+    "reason_code": "verification_unavailable",
+    "release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+    "rollback": null,
+    "stage": "verifying",
+    "target_id": "canary-service"
+   },
+   "pointer": null,
+   "queue": "retry",
+   "release": "reviewed",
+   "rows_after": 7,
+   "rows_before": 7,
+   "rows_changed": [
+    [
+     "execution_fences",
+     "release_queue:e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     ""
+    ],
+    [
+     "host_delivery_intents",
+     "delivery-plan-1",
+     ""
+    ],
+    [
+     "release_queue",
+     "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "retry"
+    ]
+   ],
+   "units": {
+    "COMMIT": 11,
+    "ROLLBACK": 1
+   },
+   "violations": []
+  },
+  "b_intent_moved": {
+   "after_move": {
+    "durable_writes": [
+     [
+      "deployment_locks",
+      ""
+     ],
+     [
+      "release_queue",
+      "queued"
+     ]
+    ],
+    "writes": 2
+   },
+   "attempts": [
+    [
+     "prepared",
+     false
+    ]
+   ],
+   "committed_before_effect": [
+    [
+     "verifier.evaluate",
+     [
+      [
+       "deployment_locks",
+       ""
+      ],
+      [
+       "execution_fences",
+       ""
+      ],
+      [
+       "host_delivery_intents",
+       ""
+      ],
+      [
+       "release_queue",
+       "running"
+      ]
+     ]
+    ]
+   ],
+   "descriptor": {
+    "consumed": null,
+    "startup_observed": null
+   },
+   "discarded_writes": [],
+   "durable_units": 4,
+   "durable_writes": [
+    [
+     "deployment_locks",
+     ""
+    ],
+    [
+     "execution_fences",
+     ""
+    ],
+    [
+     "host_delivery_intents",
+     ""
+    ],
+    [
+     "release_queue",
+     "queued"
+    ],
+    [
+     "release_queue",
+     "running"
+    ]
+   ],
+   "effects": [
+    [
+     "verifier.evaluate",
+     0
+    ]
+   ],
+   "intent": {
+    "attempts": 0,
+    "outcome": "progressed",
+    "reason_code": null,
+    "stage": "verifying"
+   },
+   "outcome": {
+    "active": null,
+    "ambiguous_effect": "verification",
+    "at": "2026-09-22T00:00:01+00:00",
+    "attempts": 0,
+    "blocked": {},
+    "canary": null,
+    "controller": "stale",
+    "descriptor_sha256": null,
+    "error_type": "DeliveryRefused",
+    "head": null,
+    "instance_id": null,
+    "merged_revision": null,
+    "next_action": "await_incumbent_verification",
+    "ok": true,
+    "outcome": "conflict",
+    "plan_id": "delivery-plan-1",
+    "pr_number": null,
+    "previous_descriptor_sha256": null,
+    "reason_code": "controller_stale_after_effect",
+    "release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+    "rollback": null,
+    "stage": "verifying",
+    "target_id": "canary-service"
+   },
+   "pointer": null,
+   "queue": "queued",
+   "release": "reviewed",
+   "rows_after": 7,
+   "rows_before": 7,
+   "rows_changed": [
+    [
+     "execution_fences",
+     "release_queue:e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     ""
+    ],
+    [
+     "host_delivery_intents",
+     "delivery-plan-1",
+     ""
+    ],
+    [
+     "release_queue",
+     "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "queued"
+    ]
+   ],
+   "units": {
+    "COMMIT": 10,
+    "ROLLBACK": 1
+   },
+   "violations": []
+  },
+  "b_lease_moved": {
+   "after_move": {
+    "durable_writes": [],
+    "writes": 0
+   },
+   "attempts": [
+    [
+     "prepared",
+     false
+    ]
+   ],
+   "committed_before_effect": [
+    [
+     "verifier.evaluate",
+     [
+      [
+       "deployment_locks",
+       ""
+      ],
+      [
+       "execution_fences",
+       ""
+      ],
+      [
+       "host_delivery_intents",
+       ""
+      ],
+      [
+       "release_queue",
+       "running"
+      ]
+     ]
+    ]
+   ],
+   "descriptor": {
+    "consumed": null,
+    "startup_observed": null
+   },
+   "discarded_writes": [],
+   "durable_units": 3,
+   "durable_writes": [
+    [
+     "deployment_locks",
+     ""
+    ],
+    [
+     "execution_fences",
+     ""
+    ],
+    [
+     "host_delivery_intents",
+     ""
+    ],
+    [
+     "release_queue",
+     "running"
+    ]
+   ],
+   "effects": [
+    [
+     "verifier.evaluate",
+     0
+    ]
+   ],
+   "intent": {
+    "attempts": 0,
+    "outcome": "progressed",
+    "reason_code": null,
+    "stage": "verifying"
+   },
+   "outcome": {
+    "active": null,
+    "ambiguous_effect": "verification",
+    "at": "2026-09-22T00:00:01+00:00",
+    "attempts": 0,
+    "blocked": {},
+    "canary": null,
+    "controller": "stale",
+    "descriptor_sha256": null,
+    "error_type": "ContractError",
+    "head": null,
+    "instance_id": null,
+    "merged_revision": null,
+    "next_action": "await_incumbent_verification",
+    "ok": true,
+    "outcome": "conflict",
+    "plan_id": "delivery-plan-1",
+    "pr_number": null,
+    "previous_descriptor_sha256": null,
+    "reason_code": "controller_stale_after_effect",
+    "release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+    "rollback": null,
+    "stage": "verifying",
+    "target_id": "canary-service"
+   },
+   "pointer": null,
+   "queue": "running",
+   "release": "reviewed",
+   "rows_after": 7,
+   "rows_before": 7,
+   "rows_changed": [
+    [
+     "deployment_locks",
+     "controller",
+     ""
+    ],
+    [
+     "execution_fences",
+     "release_queue:e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     ""
+    ],
+    [
+     "host_delivery_intents",
+     "delivery-plan-1",
+     ""
+    ],
+    [
+     "release_queue",
+     "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "running"
+    ]
+   ],
+   "units": {
+    "COMMIT": 9,
+    "ROLLBACK": 2
+   },
+   "violations": []
+  },
+  "c_replay_cleanup_unconfirmed": {
+   "attempts": [
+    [
+     "evaluated",
+     true
+    ]
+   ],
+   "committed_before_effect": [],
+   "descriptor": {
+    "consumed": null,
+    "startup_observed": null
+   },
+   "discarded_writes": [],
+   "durable_units": 3,
+   "durable_writes": [
+    [
+     "deployment_locks",
+     ""
+    ],
+    [
+     "execution_fences",
+     ""
+    ],
+    [
+     "host_delivery_intents",
+     ""
+    ],
+    [
+     "release_queue",
+     "queued"
+    ],
+    [
+     "release_queue",
+     "running"
+    ]
+   ],
+   "effects": [],
+   "first_tick": {
+    "active": null,
+    "ambiguous_effect": null,
+    "at": "2026-09-22T00:00:01+00:00",
+    "attempts": 0,
+    "blocked": {},
+    "canary": null,
+    "descriptor_sha256": null,
+    "error_type": null,
+    "head": null,
+    "instance_id": null,
+    "merged_revision": null,
+    "next_action": "await_incumbent_verification",
+    "ok": true,
+    "outcome": "pending",
+    "plan_id": "delivery-plan-1",
+    "pr_number": null,
+    "previous_descriptor_sha256": null,
+    "reason_code": "verification_cleanup_unconfirmed",
+    "release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+    "rollback": null,
+    "stage": "verifying",
+    "target_id": "canary-service"
+   },
+   "intent": {
+    "attempts": 0,
+    "outcome": "pending",
+    "reason_code": "verification_cleanup_unconfirmed",
+    "stage": "verifying"
+   },
+   "outcome": {
+    "active": null,
+    "ambiguous_effect": null,
+    "at": "2026-09-22T00:00:02+00:00",
+    "attempts": 0,
+    "blocked": {},
+    "canary": null,
+    "descriptor_sha256": null,
+    "error_type": null,
+    "head": null,
+    "instance_id": null,
+    "merged_revision": null,
+    "next_action": "await_incumbent_verification",
+    "ok": true,
+    "outcome": "pending",
+    "plan_id": "delivery-plan-1",
+    "pr_number": null,
+    "previous_descriptor_sha256": null,
+    "reason_code": "verification_cleanup_unconfirmed",
+    "release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+    "rollback": null,
+    "stage": "verifying",
+    "target_id": "canary-service"
+   },
+   "pointer": null,
+   "queue": "queued",
+   "release": "verified",
+   "rows_after": 7,
+   "rows_before": 7,
+   "rows_changed": [
+    [
+     "execution_fences",
+     "release_queue:e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     ""
+    ],
+    [
+     "host_delivery_intents",
+     "delivery-plan-1",
+     ""
+    ],
+    [
+     "release_queue",
+     "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "queued"
+    ]
+   ],
+   "units": {
+    "COMMIT": 7
+   },
+   "violations": []
+  },
+  "success": {
+   "attempts": [
+    [
+     "evaluated",
+     true
+    ]
+   ],
+   "committed_before_effect": [
+    [
+     "verifier.evaluate",
+     [
+      [
+       "deployment_locks",
+       ""
+      ],
+      [
+       "execution_fences",
+       ""
+      ],
+      [
+       "host_delivery_intents",
+       ""
+      ],
+      [
+       "release_queue",
+       "running"
+      ]
+     ]
+    ]
+   ],
+   "descriptor": {
+    "consumed": null,
+    "startup_observed": null
+   },
+   "discarded_writes": [],
+   "durable_units": 5,
+   "durable_writes": [
+    [
+     "deployment_locks",
+     ""
+    ],
+    [
+     "execution_fences",
+     ""
+    ],
+    [
+     "host_delivery_intents",
+     ""
+    ],
+    [
+     "release_queue",
+     "queued"
+    ],
+    [
+     "release_queue",
+     "running"
+    ],
+    [
+     "releases",
+     "verified"
+    ]
+   ],
+   "effects": [
+    [
+     "verifier.evaluate",
+     0
+    ]
+   ],
+   "intent": {
+    "attempts": 0,
+    "outcome": "progressed",
+    "reason_code": null,
+    "stage": "publishing"
+   },
+   "outcome": {
+    "active": null,
+    "ambiguous_effect": null,
+    "at": "2026-09-22T00:00:01+00:00",
+    "attempts": 0,
+    "blocked": {},
+    "canary": null,
+    "descriptor_sha256": null,
+    "error_type": null,
+    "head": null,
+    "instance_id": null,
+    "merged_revision": null,
+    "next_action": "tick",
+    "ok": true,
+    "outcome": "progressed",
+    "plan_id": "delivery-plan-1",
+    "pr_number": null,
+    "previous_descriptor_sha256": null,
+    "reason_code": null,
+    "release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+    "rollback": null,
+    "stage": "publishing",
+    "target_id": "canary-service"
+   },
+   "pointer": null,
+   "queue": "queued",
+   "release": "verified",
+   "rows_after": 7,
+   "rows_before": 7,
+   "rows_changed": [
+    [
+     "execution_fences",
+     "release_queue:e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     ""
+    ],
+    [
+     "host_delivery_intents",
+     "delivery-plan-1",
+     ""
+    ],
+    [
+     "release_queue",
+     "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "queued"
+    ],
+    [
+     "releases",
+     "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "verified"
+    ]
+   ],
+   "units": {
+    "COMMIT": 11
+   },
+   "violations": []
+  }
+ }
+}
