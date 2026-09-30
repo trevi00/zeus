@@ -16,3 +16,12 @@ def test_v2_operation_manifest_names_are_one_object(name):
     home = importlib.import_module("codex_harness.intake.domain.operation_manifest")
     old = importlib.import_module("codex_harness.coordination.domain.operation")
     assert getattr(old, name) is getattr(home, name)
+
+V1_NAMES = ("ContinuationRefused", "refuse", "EVIDENCE_REPAIR", "CORRECTION", "SUCCESSOR_ROUTES")
+
+
+@pytest.mark.parametrize("name", V1_NAMES)
+def test_v1_research_hold_names_are_one_object(name):
+    home = importlib.import_module("codex_harness.research.domain.research_hold")
+    old = importlib.import_module("codex_harness.coordination.domain.continuation")
+    assert getattr(old, name) is getattr(home, name)

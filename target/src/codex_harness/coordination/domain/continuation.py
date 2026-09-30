@@ -15,7 +15,13 @@ from __future__ import annotations
 
 import re
 
-from codex_harness.kernel.errors import ContractError
+from codex_harness.research.domain.research_hold import (  # noqa: F401
+    CORRECTION,
+    EVIDENCE_REPAIR,
+    SUCCESSOR_ROUTES,
+    ContinuationRefused,
+    refuse,
+)
 
 BINDING_SCHEMA = "urn:zeus:continuation-binding:1"
 
@@ -23,29 +29,13 @@ TOKEN = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,99}$")
 SHA256 = re.compile(r"^[0-9a-f]{64}$")
 REVISION = re.compile(r"^[0-9a-f]{40}$")
 
-EVIDENCE_REPAIR = "evidence_repair"
-CORRECTION = "correction"
 # The owner-authorized re-derivation of an accepted change on a NEWER main after its delivery was
 # withdrawn as stale (`Continuation.requalify_delivery`). It admits a fresh Fleet operation like a
 # successor route, but it is deliberately NOT a successor route: it answers no failure, so it never
 # counts against `max_corrections`, the two-strike research trigger or a capacity grant.
 REQUALIFICATION = "requalification"
-SUCCESSOR_ROUTES = frozenset({EVIDENCE_REPAIR, CORRECTION})
 # Routes whose intent admits a new Fleet operation with its own lane binding (publish -> admit).
 ADMITTING_ROUTES = SUCCESSOR_ROUTES | {REQUALIFICATION}
-
-
-class ContinuationRefused(ContractError):
-    """A refusal with a fixed reason code and the named owner who must act next."""
-
-    def __init__(self, reason_code: str, owner: str = "operator", field: str | None = None):
-        super().__init__("continuation refused: " + reason_code + (" (" + field + ")" if field else ""))
-        self.reason_code, self.owner, self.field = reason_code, owner, field
-
-
-def refuse(condition, reason_code: str, owner: str = "operator", field: str | None = None) -> None:
-    if not condition:
-        raise ContinuationRefused(reason_code, owner, field)
 
 
 def validate_binding(document) -> dict:
