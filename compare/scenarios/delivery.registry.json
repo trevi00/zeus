@@ -2,8 +2,7 @@
  "family": "delivery.registry",
  "description": "S7 delivery registry and selection surface of M7 HostDelivery, characterized before the V8 split: register_targets (valid, identical replay, changed entry, managed kind, every validate_targets refusal), register (plan and pin grammar, cached replay, in-flight refusal, unregistered target, first activation unbound, reserved by a migration, precedence), approval/plan/status projections (approved, awaiting review, refused, migration rows, an active delivery with no bodies), and the selection a tick makes before any stage acts (disabled, idle, missing ports, store outage, claimed rows, serialization, every _unclaimed reason, the blocked map incl. scan_bounded); MemoryStore, LABELLED shared delivery doubles (s7_delivery)",
  "reference_driver": "drivers/reference/s7_registry.py",
- "target_driver": null,
+ "target_driver": "drivers/target/s7_registry.py",
  "golden": "goldens/reference/delivery.registry.json",
- "slice": "S7",
- "target_status": "pending: S7 HostDelivery split (DESIGN-s7 V8)"
+ "slice": "S7"
 }
