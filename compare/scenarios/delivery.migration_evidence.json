@@ -1,0 +1,9 @@
+{
+ "family": "delivery.migration_evidence",
+ "description": "S7 M7 managed limited_active evidence producer, characterized before its move (INV-HOST-MIGRATION-001): a genuine launch and managed consumption (three bound receipts and the transition draft), every refusal the M7 tests name (canary, consumption, process chain, launch provenance, activation file, expected id, unreadable source, unavailable store, identity change during the capture, a source gone at the recheck, an invalid request), the read-only guarantee on success and failure, recomputation from the archive, the HostReader primitives (absolute filtered minimal-environment commands, bounded runs with a byte cap and a deadline over REAL fixture children, a FIFO or link in place of a file, opening without following or blocking, the monotonic comparison after a suspend, a reused pid keeping only an argv digest), the PH4-13 pre-submit comparison and post-check, and the F1 typed allowlisted output, over LABELLED store, /proc, runner and clock doubles and the in-process CLI with hook-supplied doubles",
+ "reference_driver": "drivers/reference/s7_migration_evidence.py",
+ "target_driver": null,
+ "golden": "goldens/reference/delivery.migration_evidence.json",
+ "slice": "S7",
+ "target_status": "pending: S7 migration evidence move (V6)"
+}
