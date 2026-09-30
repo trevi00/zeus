@@ -2,8 +2,7 @@
  "family": "coordination.guarded_launch",
  "description": "S6 guarded child launch (DESIGN-s6 §6; Codex S6 condition: byte-equal guarded argv): the exact guardian argv, cwd and environment of the conductor, assessor and research launchers (default and explicit bounds); the one-shot spawn marker and launch files written before the spawn; guard over real fixture children (exit, nonzero, timeout, stop, fenced, identity missing, not created); every observe outcome (lock held, fence, claimed without proof, unresolved, foreign/unconfirmed/valid proof); the research provider probe",
  "reference_driver": "drivers/reference/s6_guarded.py",
- "target_driver": null,
- "target_status": "pending: S6 GuardedChildLauncher",
+ "target_driver": "drivers/target/s6_guarded.py",
  "golden": "goldens/reference/coordination.guarded_launch.json",
  "slice": "S6"
 }
