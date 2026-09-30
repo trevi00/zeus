@@ -1,0 +1,8 @@
+{
+ "family": "coordination.owner_actions_migration",
+ "description": "S7 M7 OwnerActions migration request lifecycle characterized from SOURCE over the REAL HostDelivery of a lane store (never FakeLane): request_migration (one migration per source, the identical replay, every other document refused, every document not naming the exact control records refused writing nothing), the ordered handoff stage/plan/request/held registration/binding/ack, a lost response or restart at every step resuming to one lineage, an outage waiting in place, a lane refusal at every step, the target reservation for every other plan, the superseded-source edge _migrated_delivery follows, the readiness tuple re-observed in the finalizing step (every unavailable or replaced evidence, the restored tuple, the lost finalize response replayed without readiness, the observed ready record and status), and the _complete unit golden (the exact rows the completing transaction writes for an AWAITING_OWNER and a PAUSED source through the REAL Continuation and Fleet, and the refusal inside it when the source moved); MemoryStore, the LABELLED shared delivery doubles (s7_delivery), and the labelled fault proxy of the real lane, target files, publisher and conductor of this family",
+ "reference_driver": "drivers/reference/s7_owner_actions_migration.py",
+ "target_driver": "drivers/target/s7_owner_actions_migration.py",
+ "golden": "goldens/reference/coordination.owner_actions_migration.json",
+ "slice": "S7"
+}
