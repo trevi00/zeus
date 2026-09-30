@@ -54,6 +54,7 @@ import json
 import os
 import re
 import signal
+import stat
 import subprocess
 import sys
 import time
@@ -666,7 +667,7 @@ class HostTargetBase:
         raise NotImplementedError
 
     # --- the one protected service lifecycle -----------------------------------------------------
-    def start(self, target: dict, descriptor: dict, *, authorize=None, replaces=None) -> dict:
+    def start(self, target: dict, descriptor: dict, *, authorize=None, replaces=None, restarts=None) -> dict:
         """Reconcile, classify, stop, retire, launch and publish the new state, in one guard.
 
         Two facts are checked, in this order and both before any effect. The descriptor on the
@@ -682,6 +683,10 @@ class HostTargetBase:
         permission to end one. Ownership is proven again after the bounded stop, which can outlive
         a lease, and never after a mutation it would have to undo.
         """
+        # INV-HOST-DELIVERY-MAINTENANCE-001: only a typed restart authority takes the maintenance path;
+        # without one (the default) everything below is the unchanged legacy lifecycle.
+        if restarts is not None:
+            return self._restart_generation(target, descriptor, authorize, restarts)
         with self.guard(target, authorize):
             context = self._prepare(target, descriptor)
             self._reconcile(target, descriptor)
@@ -736,6 +741,125 @@ class HostTargetBase:
 
     def _launch(self, target: dict, descriptor: dict, context) -> dict:
         raise NotImplementedError
+
+    # --- active-generation maintenance (INV-HOST-DELIVERY-MAINTENANCE-001) -----------------------
+    def _restart_generation(self, target: dict, descriptor: dict, authorize, restarts) -> dict:
+        """Replace ONLY the recorded incumbent generation of the exact active descriptor, in one guard.
+
+        `restarts` is the coordinator's durable request (committed BEFORE this call): the maintenance
+        id, the retiring instance, its unit invocation and launch digest, and when it was requested.
+        Inside the target guard the instance that is actually there is classified against it by the
+        pure domain policy (`classify_restart`), which selects exactly one path or refuses:
+
+        * `replace` - the live instance IS the retiring incumbent, idle: the incumbent lifecycle
+          (activation gate, graceful stop, ownership recheck, gate, target-file identity, retire,
+          one `systemctl start`). No signal and no `systemctl restart`.
+        * `launch` - the incumbent was already proven stopped (a replay after a lost stop response):
+          gate, target-file identity, retire, one start.
+        * `recognized` - the one launch bound to THIS request already happened: nothing is started.
+
+        A foreign, unproved, drifted or unobservable instance refuses BEFORE any effect. Once the
+        stop succeeded, a lost fence, a refused second gate or a changed target file is an
+        interrupted lifecycle (`LifecycleInterrupted`), never a refusal; so is a stop that raised
+        instead of answering, and a start whose outcome is unknown after the incumbent's files were
+        retired. A stop that answered "not stopped" (busy or unknown work) refuses with its own code
+        and leaves the incumbent running behind its pause, as in legacy. Nothing here launches twice.
+        """
+        if getattr(self, "kind", None) != KIND_MANAGED_SYSTEMD:
+            # Only the systemd-supervised managed target has a recorded unit invocation to bind to.
+            raise DeliveryRefused("maintenance_not_active", "target_id")
+        # Imported here, not at module level, so this adapter imports before the policy exists (plan §0.8).
+        from codex_harness.domain.host_delivery import classify_restart
+
+        with self.guard(target, authorize):
+            context = self._prepare(target, descriptor)
+            self._reconcile(target, descriptor)
+            try:
+                observation = self.generation_observation(target)
+            except DeliveryRefused:
+                raise
+            except Exception as exc:
+                raise DeliveryRefused("maintenance_invocation_mismatch", "observation") from exc
+            decision = classify_restart(descriptor, observation, restarts)
+            path = decision["path"]
+            if path is None:
+                raise DeliveryRefused(decision["reason_code"], decision["field"])
+            if path == "recognized":
+                return {"started": False, "recovered": True, "path": "recognized",
+                        "launch": self.launch_record(target), "pid": None}
+            stopped_here = False
+            if path == "replace":
+                self._activation_gate(target, descriptor)
+                try:
+                    stopped = self.stop(target)
+                except Exception as exc:
+                    # The graceful stop may already have paused or asked the incumbent to exit.
+                    raise LifecycleInterrupted("service_stop_unconfirmed", exc) from exc
+                if not stopped["stopped"]:
+                    # Busy or unknown work keeps the incumbent running with its pause, as in legacy.
+                    raise DeliveryRefused(stopped.get("reason_code") or "previous_instance_unconfirmed",
+                                          "target_id")
+                stopped_here = True
+                self._still_owned(authorize, "service_stopped")
+            try:
+                self._activation_gate(target, descriptor)
+                # Byte identity of the owner target snapshot, repeated right before anything is retired:
+                # a differing file refuses; it is never rewritten or touched (S2M-18).
+                if not self._target_file_matches(target):
+                    raise DeliveryRefused("maintenance_stale", "target_file")
+            except DeliveryRefused as exc:
+                if stopped_here:
+                    raise LifecycleInterrupted("service_stopped", exc) from exc
+                raise
+            try:
+                self._retire(target)
+                # S2R F1: the persisted launch request carries THIS maintenance request's own `requested_at`,
+                # written before the one start, so a replay after an unconfirmed start recognizes its own
+                # attempt (and never launches again) through the existing launch-request protocol.
+                started = self._launch(target, descriptor, {**context, "requested_at": restarts["requested_at"]})
+            except Exception as exc:
+                # The incumbent's files are retired (and, on `replace`, it was stopped): the start's
+                # outcome is unknown and is reconciled by a same-request replay, never redone blindly.
+                raise LifecycleInterrupted("service_stopped" if stopped_here else "service_start_unconfirmed",
+                                           exc) from exc
+            return {**started, "recovered": False, "path": path}
+
+    def generation_observation(self, target: dict) -> dict:
+        """The read-only managed generation facts of INV-HOST-DELIVERY-MAINTENANCE-001; only the
+        systemd-supervised managed target has them."""
+        raise DeliveryRefused("maintenance_not_active", "target_id")
+
+    def _target_file_matches(self, target: dict) -> bool:
+        """Whether the owner target snapshot on the target is byte-identical to the registry entry.
+        Target kinds without one have nothing to compare; the managed kinds override this."""
+        return True
+
+    # --- the owner's canary files of one plan, read only ------------------------------------------
+    def _owner_file(self, target: dict, name) -> dict | None:
+        """One plan-scoped owner canary file: None when nothing is there, `{"unreadable": True}` when
+        an entry exists that is not a bounded regular JSON object (a link included). Never written."""
+        path = self.path(target, name)
+        if not os.path.lexists(path):
+            return None
+        if path.is_symlink() or not path.is_file():
+            return {"unreadable": True}
+        document = _read_json(path)
+        return document if isinstance(document, dict) else {"unreadable": True}
+
+    def owner_canary(self, target: dict, plan_id) -> dict | None:
+        """The owner's canary receipt of exactly this plan (INV-HOST-DELIVERY-MAINTENANCE-001 bind)."""
+        return self._owner_file(target, self._canary_name(canary_receipt_file, plan_id))
+
+    def owner_canary_request(self, target: dict, plan_id) -> dict | None:
+        """The owner's canary request of exactly this plan, read the same way."""
+        return self._owner_file(target, self._canary_name(canary_request_file, plan_id))
+
+    @staticmethod
+    def _canary_name(name_of, plan_id) -> str:
+        try:
+            return name_of(plan_id)
+        except ValueError as exc:
+            raise DeliveryRefused("maintenance_invalid", "plan_id") from exc
 
 
 def _reaped(pid) -> bool:
@@ -1089,6 +1213,8 @@ def serve(state_dir: str, max_seconds: int = SERVICE_MAX_SECONDS) -> int:
 
 
 # ----- CLI -----------------------------------------------------------------------------------------
+# The operator phases of INV-HOST-DELIVERY-MAINTENANCE-001, spelled as the domain spells them.
+MAINTAIN_PHASES = ("restart",)  # arm/bind: the named remainder of PR-3 (ALL-PRIMARY-20260930)
 LANE_HELP = ("One registered Fleet lane whose store, repository and runtime own this delivery; "
              "omitted keeps the control store. The Fleet activation gate stays the control store's")
 
@@ -1133,17 +1259,46 @@ def add_parser(commands) -> None:
                              "urn:zeus:host-delivery-consumption-retry:1, -generation-restart:1 or "
                              "-consumption-rearm:1, by its kind); "
                              "--evidence must be sha256 of its canonical JSON")
-    for command in (targets, register, tick, run_command, status, withdraw, resume):
+    maintain = sub.add_parser(
+        "maintain", help="Owner: one phase of the active-generation maintenance of one ACTIVE, consumed "
+                         "managed_fleet_systemd delivery (INV-HOST-DELIVERY-MAINTENANCE-001); read-only with "
+                         "--check; takes no token, credential or command arguments")
+    maintain.add_argument("--phase", required=True, choices=MAINTAIN_PHASES,
+                          help="restart (replace the recorded incumbent under the controller hold and record the "
+                               "new generation, not re-qualified); arm and bind are not in this release")
+    maintain.add_argument("--document", required=True,
+                          help="The typed maintenance document (urn:zeus:host-delivery-active-generation:1); "
+                               "the same document is replayed for every phase")
+    maintain.add_argument("--evidence", required=True,
+                          help="sha256:<64 hex> of the document's canonical JSON")
+    maintain.add_argument("--check", action="store_true",
+                          help="Report applicability, fixed reasons and exact identities only: no lease, "
+                               "admission, artifact, file or store write, and no host or provider effect")
+    for command in (targets, register, tick, run_command, status, withdraw, resume, maintain):
         command.add_argument("--lane", default=None, help=LANE_HELP)
 
 
+# A refusal field is printed only when it is a fixed identifier of a maintenance refusal: never a value.
+REFUSAL_FIELD = re.compile(r"^[a-z][a-z0-9_.]{0,63}$")
+# The typed `maintain` result keys (INV-HOST-DELIVERY-MAINTENANCE-001); the CLI prints nothing else.
+MAINTENANCE_RESULT_KEYS = ("schema", "maintenance_id", "phase", "check", "applicable", "state", "cached",
+                           "pending", "reason_code", "field", "identities", "deadline", "evidence", "authority")
+
+
 def refusal(exc: Exception) -> dict:
-    """What the CLI prints for a failure: a code and a type, never raw text, a path or a value."""
+    """What the CLI prints for a failure: a code and a type, never raw text, a path or a value.
+
+    A maintenance refusal (INV-HOST-DELIVERY-MAINTENANCE-001) also names its allowlisted field."""
     code = getattr(exc, "reason_code", None)
     if code is None and isinstance(exc, ContractError):
         code = "contract_refused"
-    return {"status": "refused", "reason_code": code or "error", "error_type": type(exc).__name__,
-            "exit_code": 1}
+    printed = {"status": "refused", "reason_code": code or "error", "error_type": type(exc).__name__,
+               "exit_code": 1}
+    field = getattr(exc, "field", None)
+    if type(code) is str and code.startswith("maintenance_") and type(field) is str \
+            and REFUSAL_FIELD.fullmatch(field):
+        printed["field"] = field
+    return printed
 
 
 def release_verifier(service, store, git):
@@ -1308,6 +1463,18 @@ def execute(service, args) -> dict:
                                   enabled=configured_enabled(_settings())).status(args.plan)
         return {**projection, **routed,
                 "exit_code": 0 if projection.get("registered") or args.plan is None else 1}
+    if command == "maintain":
+        # INV-HOST-DELIVERY-MAINTENANCE-001: routed BEFORE the observer, Git and the ordinary controller, so
+        # no phase (and no `--check`) builds a tick observer, a workspace, an executor or a verifier.
+        document = _read_document(Path(args.document))
+        if not isinstance(document, dict):
+            raise DeliveryRefused("maintenance_invalid", "document")
+        check = bool(args.check)
+        delivery = maintenance_controller(service, store=store, check=check)
+        result = delivery.maintain(document, args.evidence, args.phase, check=check)
+        printed = {key: result[key] for key in MAINTENANCE_RESULT_KEYS if key in result}
+        ok = bool(printed.get("applicable", True)) and not printed.get("pending")
+        return {**printed, **routed, "exit_code": 0 if ok else 1}
     observer = _observer(service) if route is None else _lane_observer(route)
     try:
         git = _git(service) if route is None else lane_git(route["lane"], _settings())
@@ -1343,6 +1510,60 @@ def execute(service, args) -> dict:
     finally:
         if observer is not None:
             observer.close()
+
+
+def _read_document(path: Path):
+    """The operator's maintenance document: one bounded regular JSON file, or None.
+
+    Opened without blocking and checked to be a regular file by `fstat`, so a FIFO or a device named
+    as the document is refused instead of waiting forever; malformed, oversized or unreadable is None."""
+    try:
+        descriptor = os.open(path, os.O_RDONLY | os.O_NONBLOCK | getattr(os, "O_CLOEXEC", 0))
+    except OSError:
+        return None
+    try:
+        if not stat.S_ISREG(os.fstat(descriptor).st_mode):
+            return None
+        with os.fdopen(descriptor, "rb", closefd=False) as stream:
+            data = stream.read(MAX_STATE_BYTES + 1)
+    except OSError:
+        return None
+    finally:
+        os.close(descriptor)
+    if len(data) > MAX_STATE_BYTES:
+        return None
+    try:
+        return json.loads(data.decode("utf-8"))
+    except ValueError:
+        return None
+
+
+def maintenance_controller(service, *, store, check: bool) -> HostDelivery:
+    """The coordinator of INV-HOST-DELIVERY-MAINTENANCE-001 with exactly its ports.
+
+    `store` holds this delivery's records (the control store, or the `--lane` store). The Fleet readiness,
+    the owner-action rows and the authority and artifact ports are the CONTROL runtime's, as for the
+    activation gate. No tick observer, Git workspace, verifier or GitHub port is built, and `--check` builds
+    no artifact store: it can create nothing. Nothing here prints a DSN or accepts a token; every import is
+    lazy. This release carries the restart phase only (ALL-PRIMARY-20260930; arm/bind are PR-3's remainder).
+    """
+    from codex_harness.adapters.configuration import runtime_dir
+    from codex_harness.adapters.maintenance_evidence import (
+        LazyArtifacts,
+        control_action_reader,
+        trusted_authority_reader,
+    )
+    from codex_harness.application.fleet import Fleet
+
+    host = _settings()
+    fleet = Fleet(service.store)
+    root = runtime_dir() / "artifacts"
+    return HostDelivery(store, service.org,
+                        hosts=host_ports(fleet=fleet, systemd_control=systemd_control_dir(host)),
+                        canaries=canary_checks(store), observer=None, enabled=configured_enabled(host),
+                        authorities=trusted_authority_reader(root),
+                        artifacts=None if check else LazyArtifacts(root),
+                        canary_records=control_action_reader(service.store), maintenance_fleet=fleet)
 
 
 def _settings() -> dict:
@@ -1421,13 +1642,14 @@ def main(argv=None) -> int:
     return serve(args.state_dir, args.max_seconds)
 
 
-__all__ = ["DESCRIPTOR_FILE", "ENABLED_SETTING", "MAX_PLAN_BYTES",
+__all__ = ["DESCRIPTOR_FILE", "ENABLED_SETTING", "MAINTAIN_PHASES", "MAINTENANCE_RESULT_KEYS", "MAX_PLAN_BYTES",
            "RECEIPT_FILE", "RUNTIME_FILE", "STATE_FILE", "WORK_FILE", "GitHubDelivery",
            "HostTargetBase", "ProcessHostTarget", "ScheduledTaskHostTarget", "add_parser",
            "canary_checks", "canary_receipt_file", "canary_request_file", "checkout_revision",
            "collect_monitor_canary", "configured_enabled",
            "committed_profile_digest", "controller", "effective_profile_digest", "first_activation_facts", "effective_worker_image", "execute", "release_verifier",
-           "host_ports", "lane_git", "load_plan", "loaded_runtime", "main", "normalize_checks",
+           "host_ports", "lane_git", "load_plan", "loaded_runtime", "main", "maintenance_controller",
+           "normalize_checks",
            "owner_qualified_canary", "refusal", "resolve_lane", "run_loop", "runtime_revision", "serve",
            "startup_identity_canary", "startup_receipt"]
 

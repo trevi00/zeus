@@ -3909,6 +3909,241 @@ no current descriptor to be unchanged from.
     - The binding is unchanged (never re-bound). The same job must still be queued and never dispatched, and the
       Fleet paused. `margin_seconds` must be below the window and at least that much of the window must remain.
     - While it is owed, owner discovery holds `canary_recovery_owed` and never creates a second canary for the plan.
+
+## INV-HOST-DELIVERY-MAINTENANCE-001
+
+**This release (ALL-PRIMARY-20260930): the `restart` phase only.** The normative operation below keeps all three
+phases. This release implements `restart`, the ReleaseQueue maintenance hold, the target hold and guards, the
+status projection and the read-only Fleet `maintenance_readiness` (registered, owner-paused with no activation
+hold, no reserving job, no held unit; no maintenance permit can exist, so `open_permits` is always empty).
+`arm`, `bind`, the Fleet one-job maintenance admission (`fleet_maintenance_admissions`, the executor) and the
+pinned credential-observation port are PR-3's named remainder: the CLI accepts `--phase restart` only, and the use
+case refuses `arm`/`bind` with `maintenance_phase(phase)` before anything. A restarted generation therefore stays
+open (`started`, not re-qualified) and keeps holding its target; the Fleet stays owner-paused until the remainder
+is reviewed and run. The operator binds the new generation's PRIMARY selection booleans to the recorded
+invocation, instance and process identities outside the product record.
+
+Active-generation maintenance is an explicit, evidence-bound owner operation on an ACTIVE, consumed
+`managed_fleet_systemd` delivery. It changes only the executing generation of the exact active descriptor.
+It neither publishes/promotes a release nor changes the descriptor revision, tree, image, profile,
+predecessor, deployment pointer or historical recoveries. Ordinary active deliveries remain terminal to
+automatic HostDelivery selection.
+
+The operation binds a trusted authority reference, an independent approver, the exact
+plan/release/pin/descriptor, the current intent version and the retiring host generation. Its durable
+request is committed before a host effect. An unrecorded generation, a foreign descriptor, a competing
+reservation, unknown work or debt, a missing approval or a stale fence refuses. A replay with the identical
+document and evidence reconciles only its own effects; a changed document under the same request identity
+conflicts. No timeout or response loss authorizes a second launch.
+
+`restart`, `arm` and `bind` are separate operator phases. `restart` uses the guarded graceful lifecycle to
+replace only the recorded incumbent and records the new startup without claiming delivery consumption.
+`arm` requires the observed PRIMARY selection and creates a fresh instance-bound owner-canary obligation.
+`bind` records consumption only after the actual new-instance canary is accepted. During an open
+maintenance generation, automatic delivery effects, rollback and competing delivery registration/selection
+on that target are held. No implicit canary success, old-instance receipt relabel or inherited canary
+acceptance is permitted.
+
+Fleet remains owner-paused throughout. Only a typed, one-use admission for this generation's exact
+owner-created canary job may bypass that pause, while all other admission, capacity, dependency, conflict,
+ledger and isolation checks remain. The ordinary dispatcher never receives general resume authority. An
+unadmitted expired maintenance job is terminally refused through the Fleet application; an admitted or
+unknown job retains its reservation and is reconciled, never retried. General Fleet admission stays closed
+until maintenance and its debt are settled.
+
+Failed or unconfirmed maintenance is held without rollback or automatic supersession. v1 admits one
+maintenance generation per delivery; another attempt requires a separately reviewed extension/decision, not
+a hardcoded attempt allowance. The prior successful generation and its evidence remain immutable history. A
+failed maintenance does not turn the old historical consumption into a current consumption claim.
+
+Read-only `--check` performs no lease acquisition, admission, artifact put or state write and reports
+observed applicability only. Execution repeats all relevant checks under its fences. Secret values,
+credential digests, environment dumps and raw rejected documents never enter documents, status or evidence;
+safe credential-selection booleans name PRIMARY and bind to process identity.
+
+**Document** (`urn:zeus:host-delivery-active-generation:1`, kind `active_generation_restart`,
+`domain.host_delivery.validate_active_generation`): exactly `schema, kind, plan_id, plan_sha256,
+pin_sha256, target_id, release_id, descriptor_sha256, from, retiring, reason, canary_window_seconds,
+authority, approved_by`. `from` is exactly `{stage: active, updated_at}` (an aware ISO time of at most 64
+characters); `retiring` is exactly `{instance_id (32 hex), invocation_id (32 hex, the systemd
+InvocationID), launch_sha256 (64 hex, the canonical digest of the retiring controller-state)}`, lower case;
+`reason` is exactly `unit_environment_changed`; `canary_window_seconds` is an integer (never a bool)
+1..3600; `authority` is `sha256:<64 hex>` of the exact recorded user directive bytes (not a credential
+digest); `approved_by` is an actor id. There is no free-text reason, token, command, environment or
+`supersedes` field: any extra or missing key is `maintenance_invalid(document)`, and every other defect is
+`maintenance_invalid(<key>)`. `--evidence` must equal `"sha256:" + digest(document)` (the canonical JSON
+convention). The maintenance id is `active_generation_1:` + that digest.
+
+**Inputs of every phase** (in order, each a refusal before any write): the evidence grammar and binding;
+the authority resolved read-only through the trusted content-addressed store (`runtime_dir()/artifacts`),
+its bytes 1..262144 long and hashing to the reference (`maintenance_authority_unverified(authority)`; the
+bytes are never stored or printed; digest syntax alone is not authority); ONE lane read transaction pinning
+the plan, intent, descriptor row, target, release, pointer, queue row, all intents, all migrations and the
+controller lock (`plan_unregistered`, `maintenance_stale(store)`); the approver an existing `conductor` who
+is not the candidate's author (`maintenance_authority_unverified(approved_by)`); and the recorded
+generation: another id with the same retiring generation is `maintenance_conflict(document)`, any other
+`maintenance_already_used(document)`, and a `failed` one settles its control permit idempotently and
+refuses `maintenance_failed(state)`.
+
+**Generation record**: `intent.generations` (written ONLY by the first authorized request; a legacy row never
+gains the key) holds one entry in v1: `id, document, evidence_ref, state, requested_at, updated_at,
+retiring (+ the observed supervisor/entry pids and start ticks, launch-request and control-group digests,
+and the source selection: EnvironmentFiles digest and drop-in count), prior, launched, credential_evidence,
+arm, canary, failure, observations`. `prior` holds typed copies of the ACTIVE binding fields, the intent
+digest (without `generations`), the descriptor row binding and its digest, the validated startup receipt,
+the old owner canary receipt and completed action (never changed), the retiring launch facts, the release
+and queue digests and pointer, and the content-addressed evidence refs of those bounded validated originals
+(`artifacts.put`, only after every read-only check and never under `--check`). `observations` and
+`credential_evidence` are append-only; no prior historical fact is overwritten. States: `requested ->
+launched -> started -> armed -> bound`, and `failed` from any open state (a closed table; anything else is
+`maintenance_phase(state)`). Uncertainty is a named reason with the last proved state retained, never an
+automatic failure or redo. `recoveries`, first-activation records and `verification` are never modified.
+
+**The ReleaseQueue maintenance hold**: `hold_maintenance`, `owned_maintenance`, `heartbeat_maintenance` and
+`release_maintenance` take the SAME `deployment_locks:controller` exclusion every controller takes, under
+their own execution-fence scope `host_delivery_maintenance` (row: the maintenance id). A hold is refused
+(nothing written, `maintenance_controller_busy`) while any lease is live; it advances the fence under a new
+owner and runs its `within(tx, claim)` in the same transaction, so the durable request and the hold commit
+or roll back together. No release queue row, attempt, generation or release status is borrowed; `claim` and
+`retry` keep refusing while it is held. Every phase write re-checks owner, fence and unexpired lease in its
+own transaction (`maintenance_stale(controller)` when lost). The adapter's authorizer renews the lease at
+the guard's entry and after the graceful stop. Release happens in `finally` and only while still the exact
+owner, so a successor's lease is never cleared. No controller lease is held across the canary execution or
+wait. The LOGICAL target hold is the generation itself and persists between phases.
+
+**restart** (`HostDelivery.maintain_restart`). First request, all before any effect: the target is
+`managed_fleet_systemd` and the plan names `fleet_worker_operation`; the plan, pin, release and target
+equal the document; the intent is ACTIVE with `outcome: active` and a passed canary, `from` equals the
+intent's version and the descriptor digest equals the intent's; the descriptor row is consumed, not rolled
+back, of this plan and names the retiring instance as instance and observed instance; the release is
+`active` and approved; the pointer names it; its queue row is `active`; no other plan competes for the
+target (post-merge open, an unsettled bound descriptor, a merged verification, a held successor or an open
+maintenance - an untouched blocked plan does not compete) and no migration reserves it; no controller lease
+is live; the Fleet is registered and owner-paused with no activation hold, no reserving job, no held unit
+and no other open permit; the adapter's read-only generation observation classifies the host as the
+running recorded incumbent (`domain.host_delivery.classify_restart`: the retiring controller-state, the
+unit's InvocationID, the consumed receipt of the retiring instance, a supervisor that is the unit's main
+pid, an entry that is its child in its control group and started before its receipt, idle work,
+`NeedDaemonReload=no`, the byte-identical managed target file and a process euid owning the state
+directory); and the old owner canary receipt and COMPLETED action exist for the retiring instance. Then the
+requested generation is written in the hold's transaction (CAS of every pinned row; no other intent field,
+`updated_at` included, changes), and the ONE guarded `start(restarts={maintenance_id, instance_id,
+invocation_id, launch_sha256, requested_at})` runs: classify again under the target guard, then activation
+gate, graceful stop, ownership recheck, gate, target file recheck, retire and ONE launch. No signal and no
+`systemctl restart`. The launch is recorded `launched`, and the new generation's own startup receipt
+(descriptor-consumed, not the retiring instance, under the recorded invocation and launch with its process
+identity proven) records `started`. The current binding fields stay unchanged; status exposes the
+maintenance open and not qualified. A replay of `requested` re-runs the checks under a fresh hold and lets
+the adapter select `replace`, `launch` (after a proved stop) or `recognized` (a changed controller-state of
+this descriptor under a NEW invocation, started after the request, whose persisted launch request lies in
+[requested_at, started_at] and which the unit runs); an arbitrary changed launch, a reboot or an
+unrecorded N1 replacement generation is never adopted. `launched` waits for the receipt again and never
+starts; `started`, `armed` and `bound` answer `cached`. A refusal after the durable request appends a
+truthful observation while the hold is owned; an ownership loss after the stop is
+`maintenance_reconciliation_required(effect)`.
+
+**arm** (`maintain_arm`): only a `started` or `armed` generation (`maintenance_phase(state)` otherwise).
+Expiry first: once an arm deadline exists and has passed, the generation expires (below). The live identity
+must be exactly the started generation (a definite difference FAILS the generation with
+`maintenance_invocation_mismatch`; an unknown or a pending reload refuses with nothing written). The pinned
+credential observation helper's record must bind to the observed supervisor and entry (pid and start
+ticks) and invocation, show a token selected PRIMARY and not SECONDARY for both, strict booleans only, and
+the source selection must equal the retiring and launched selection (`maintenance_primary_unverified`; no
+bare assertion, no SECONDARY fallback, nothing written). The first arm fixes the ONE deadline (now + the
+window; beyond the accepted qualification deadline it is `maintenance_invalid(canary_window_seconds)`),
+builds the Fleet one-job permit (`urn:zeus:fleet-maintenance-permit:1`: maintenance id, evidence ref, plan,
+plan sha256, target, descriptor sha256, the NEW instance, `action_id(delivery_canary, binding)`, its
+`canary_job_id` and the deadline) and then, in order: T1a the lane request under the hold (the state stays
+`started` and nothing but `generations` changes, so owner-actions discovers nothing), C1 the idempotent
+control grant, T1b one owned lane transaction with the control acknowledgement, `armed` and the armed
+transform: intent `awaiting_consumption` from `active`, outcome pending, reason
+`maintenance_canary_pending`, no current instance or canary, the new candidate instance and launch, the
+arm deadline as stage deadline; descriptor row `consumed: false`, no instance, the new observed instance and
+revision, and the retiring consumption appended to its bounded history with the maintenance id. Release,
+queue and pointer are untouched. A lost grant or acknowledgement reconciles on replay with the same permit
+and deadline. The dispatch attempt then needs the unchanged owner action (REQUESTED, exactly this binding
+and job) and its QUEUED job (pending with no write while owner-actions has not queued it; a reserving job is
+`maintenance_reconciliation_required(job)`), re-proves identity and PRIMARY evidence immediately before,
+pins the generation proof from the lane, RELEASES the hold and calls the one-job executor. A replayed arm
+never respawns: an admitted or closed permit is `maintenance_already_used(admission)`, a dispatching or
+unknown job `maintenance_reconciliation_required(job)`.
+
+**bind** (`maintain_bind`): only `armed` (a `bound` replay is `cached` and finishes a lost control
+settlement). Expiry first; the live identity exactly the started generation (a difference fails it). The
+permit must be admitted (or closed as settled) and the job accepted: granted, queued or dispatching is
+pending, unknown is `maintenance_reconciliation_required(job)`, rejected/failed/exhausted FAILS the
+generation (`maintenance_failed`). The owner action must be COMPLETED (requested is pending, rejected fails
+it). Then the shared domain binding (`host_migration_evidence.require_canary`, unchanged) is evaluated over
+a PROSPECTIVE in-memory consumed view: the incumbent `fleet_worker_operation` check, the genuine new-instance
+receipt with `passed is True`, the exact instance, descriptor and plan, the completed action's own recorded
+evidence, a receipt taken after this startup under the existing clock-skew rule and a matching request
+(`maintenance_canary_unbound(<fixed diagnostic>)`; an unreadable receipt or request refuses). Nothing is
+stored as passed before it holds. One lane transaction under the hold then rechecks the generation, the
+deadline and every source hash (the intent and row against the arm pins, the release, pointer and queue
+against `prior`) and writes the intent ACTIVE with the new instance and canary, the row `consumed: true`
+with the new instance, and `bound`. No promotion, queue or pointer write. The control permit is then
+closed `maintenance_settled` and acknowledged in the lane; a failure leaves `bound` with
+`maintenance_reconciliation_required` pending and a bind replay retries it. General Fleet resume stays
+refused meanwhile.
+
+**Failure and expiry**: a failure closes the control side first (a granted or missing permit
+`maintenance_cancelled`, failing a still-queued canary with no spawn; admitted settled work
+`maintenance_settled`; admitted reserving work is left for a later settle), then one lane write marks the
+generation `failed` with its fixed code and time and the intent BLOCKED under that code (its deadline, row,
+release, queue and pointer unchanged). Expiry of the ONE arm deadline closes an unadmitted permit
+`maintenance_expired` BEFORE the lane failure; an admitted job that still reserves is never expired, only
+reconciled (`maintenance_reconciliation_required(job)`, no write); admitted settled work fails the
+generation, then closes the permit. There is no rollback, no reset of a deadline, no supersession, no
+second generation and no fallback. A failed generation stays open and keeps holding its target.
+
+**Target hold and guards**: while a generation is open or failed, `_select` blocks every plan of its
+target (`maintenance_target_busy`, the maintained one included); `_act` refuses BUSY before the gate and
+the queue, so a refused gate or a missing queue row can never mutate the held intent; `_advance` and
+`_prepare_switch` answer BUSY with no write; `register` (after the identical cached replay), migration
+staging and the first-activation and retry recoveries refuse `maintenance_target_busy`; the predecessor
+rule reports another open maintenance as `in_flight`. Unrelated targets keep moving. Legacy behaviour is
+unchanged when no intent carries `generations`.
+
+**DEPLOYMENT PRECONDITION**: the PR-3 HostDelivery controller must be deployed before any maintenance. A
+mixed old controller running beside it is unsupported: an old controller accepts a competing plan on a held
+target (tests prove it on the started shape) and, on the armed shape of the remainder, mutates the intent on a
+refused gate or a missing queue row. No runtime probe of another controller's code exists (it would need tick
+writes).
+
+**CLI**: `zeus host-delivery maintain --lane <id> --phase restart --document FILE --evidence sha256:...
+[--check]` (`arm|bind` in the remainder), as the service user with the normal accepted in-process secret loader; no sudo, no
+DSN in output, no token argument. With `--check` every refusal is RETURNED (`applicable: false`), nothing
+is held, put, written, granted, admitted, executed or started, and no provider is probed; it is not a
+reservation. The result (`urn:zeus:host-delivery-maintenance:1`) is a typed allowlist: maintenance id,
+phase, check, applicable, state, cached, pending, reason code, an allowlisted field, identities (plan,
+release, target, descriptor, retiring and new instance and invocation, action and job), the deadline and
+safe evidence refs. Exit code 0 only when applicable and not pending.
+
+**Refusal codes** (the 21 fixed codes; existing codes such as `plan_unregistered` and
+`host_port_unavailable(<port>)` are retained): `maintenance_invalid`, `maintenance_authority_unverified`,
+`maintenance_conflict`, `maintenance_not_active`, `maintenance_already_used`, `maintenance_phase`,
+`maintenance_target_busy`, `maintenance_controller_busy`, `maintenance_stale`, `maintenance_pause_required`,
+`maintenance_debt_unsettled`, `maintenance_invocation_mismatch`, `maintenance_reload_pending`,
+`maintenance_launch_unconfirmed`, `maintenance_primary_unverified`, `maintenance_canary_pending`,
+`maintenance_canary_unbound`, `maintenance_expired`, `maintenance_failed`, `maintenance_admission_refused`,
+`maintenance_reconciliation_required`. A field diagnostic names an allowlisted field only. Validation
+before the durable request refuses without any lifecycle write; after the durable request or an effect, a
+refusal preserves a truthful phase/failure observation (the blanket "every refusal writes nothing" of the
+design is amended).
+
+OUT of scope: N1 adoption, reboot recovery, general cancellation, retry or credential failover, budget or
+provider/model changes, a new delivery/release/pointer, general active-terminal relaxation, an autonomous
+maintenance scheduler, arbitrary Fleet paused admission, migration successor/current switching, H1 deadline
+or retry changes and W5 criterion changes. The live same-descriptor PRIMARY canary is execution acceptance,
+never a synthetic suite success.
+
+Tests: tests/test_host_delivery_maintenance_domain.py, tests/test_host_delivery_maintenance.py,
+tests/test_host_delivery_maintenance_guards.py, tests/test_release_queue_maintenance.py,
+tests/test_fleet_maintenance_readiness.py, tests/test_host_delivery_maintenance_adapter.py,
+tests/test_maintenance_evidence.py, tests/test_host_delivery_maintenance_cli.py and
+tests/test_host_delivery_maintenance_e2e.py (helper: tests/host_delivery_maintenance_fixtures.py). The
+PostgreSQL-gated tests skip without `HARNESS_INTEGRATION=1`; a skip is not evidence. Hosts and systemd are
+labelled fakes there; the Fleet is the real one over an in-memory control store.
 ## INV-HOST-DELIVERY-MIGRATION-001
 
 The lane half of an evaluator migration, keyed by the old plan in `host_delivery_migrations`
