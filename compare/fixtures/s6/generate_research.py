@@ -97,7 +97,30 @@ def budget_refused_flow(tmp: Path) -> dict:
                     "research_intent": family["research"]["id"]}}
 
 
-FLOWS = {"held": held_flow, "accepted003": accepted003_flow, "budget_refused": budget_refused_flow}
+def research_paused_flow(tmp: Path) -> dict:
+    """The C3 starting state of tests/test_owner_actions_recovery.py::held_chain WITHOUT its delivery chain: one
+    family held for research (two evidence-gate strikes), its attempts bound by the Portfolio owner and reconciled,
+    and the policy's research program registered PAUSED with an investigation source scoped to the family's reason
+    (`released`). The research launch itself is the owner-actions tick's, not recorded here."""
+    from types import SimpleNamespace
+
+    import test_continuation_research as tcr
+    import test_owner_actions_recovery as tor
+    from test_research_program import build
+    from test_research_program_fixtures import FakeCouncil
+
+    world = tcr.World(tmp)
+    world.register()
+    root, successor, research = tcr.two_strikes(world, "op-b2", "docs/a.md")
+    env = build(tmp / "research", store=world.control, council=FakeCouncil(world.control, status="accepted"))
+    attempts, investigation = tor.released(SimpleNamespace(world=world, env=env), research)
+    return {"flow": "tests/test_owner_actions_recovery.py::held_chain (research part: two_strikes + released)",
+            "world": world, "ids": {"root": root, "successor": successor, "research_intent": research["id"],
+                                    "investigation": investigation, "program": tor.PROGRAM, "attempts": attempts}}
+
+
+FLOWS = {"held": held_flow, "accepted003": accepted003_flow, "budget_refused": budget_refused_flow,
+         "research_paused": research_paused_flow}
 
 
 def artifacts(root: Path) -> dict:

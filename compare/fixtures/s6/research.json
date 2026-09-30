@@ -13200,6 +13200,2261 @@
     "profile": "worker-v1",
     "session_archive_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
    }
+  },
+  "research_paused": {
+   "control": [
+    {
+     "body": {
+      "attempt": 1,
+      "authorization": {
+       "acceptance_criteria": [
+        "ok"
+       ],
+       "allowed_paths": [
+        "docs/a.md"
+       ],
+       "goal": {
+        "criterion": "crit",
+        "path": "docs/GOAL.md",
+        "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+       },
+       "lane": "a",
+       "model": "claude-fixture-model",
+       "pin_sha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+       "policy_sha256": "15b835e8fa575dfe0770c88a5f8b14e02443ce6c98b67aceee2e949fe9c7f0a3",
+       "repository": "6890bdf5e15cfc1b2f95aab0bb1962cfb5a69dd190dcedfafbc8ad30fa600ce7",
+       "runtime": {
+        "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "profile": "worker-v1",
+        "session_archive_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+       },
+       "source": {
+        "job": "op-b2",
+        "manifest_sha256": "e4f679eadaf4150e729a467453fb174cf0e12da36915dbd2354fc4743d5817aa",
+        "status": "failed"
+       }
+      },
+      "binding": {
+       "family": "op-b2",
+       "intent_id": "baa333877773d8e91163d9efb7804547237f124a158126b01266e7fe92b49bf3",
+       "operation_id": "cont-baa333877773d8e91163d9ef",
+       "policy_sha256": "15b835e8fa575dfe0770c88a5f8b14e02443ce6c98b67aceee2e949fe9c7f0a3",
+       "predecessor": {
+        "candidate_revision": "cccccccccccccccccccccccccccccccccccccccc",
+        "decision_id": null,
+        "inspection_id": "insp-5a03f113-70f6-5c63-84cf-5e507b5305aa",
+        "job_id": "op-b2",
+        "review_execution_ref": null,
+        "task_id": "5a03f113-70f6-5c63-84cf-5e507b5305aa"
+       },
+       "route": "evidence_repair",
+       "schema": "urn:zeus:continuation-binding:1",
+       "session": null,
+       "workspace": {
+        "base": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "head": "cccccccccccccccccccccccccccccccccccccccc",
+        "origin_task_id": "5a03f113-70f6-5c63-84cf-5e507b5305aa"
+       }
+      },
+      "created_at": "2026-01-01T00:00:00.452000+00:00",
+      "evidence_refs": [],
+      "evidence_sha256": "db2bd68c9079718635d623706f8225997a7bee64def7436798197ec251c18475",
+      "family": "op-b2",
+      "generation": 1,
+      "history": [
+       {
+        "at": "2026-01-01T00:00:00.452000+00:00",
+        "reason_code": "evidence_gate_refused",
+        "state": "intended"
+       },
+       {
+        "at": "2026-01-01T00:00:00.454000+00:00",
+        "error_type": null,
+        "previous": "intended",
+        "reason_code": "evidence_gate_refused",
+        "state": "published"
+       },
+       {
+        "at": "2026-01-01T00:00:00.458000+00:00",
+        "error_type": null,
+        "previous": "published",
+        "reason_code": "evidence_gate_refused",
+        "state": "admitted"
+       },
+       {
+        "at": "2026-01-01T00:00:00.483000+00:00",
+        "error_type": null,
+        "previous": "admitted",
+        "reason_code": "successor_failed",
+        "state": "returned"
+       },
+       {
+        "at": "2026-01-01T00:00:00.485000+00:00",
+        "error_type": null,
+        "previous": "returned",
+        "reason_code": "successor_failed",
+        "state": "completed"
+       }
+      ],
+      "id": "baa333877773d8e91163d9efb7804547237f124a158126b01266e7fe92b49bf3",
+      "job_updated_at": "2026-01-01T00:00:00.451000+00:00",
+      "lane": "a",
+      "manifest": {
+       "base_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "budget": {
+        "per_host": 4,
+        "total": 8
+       },
+       "claude": {
+        "max_budget_usd": 1.0,
+        "model": "claude-fixture-model",
+        "timeout_seconds": 120
+       },
+       "goal": {
+        "criterion": "crit",
+        "path": "docs/GOAL.md",
+        "rationale": "fixture goal",
+        "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+       },
+       "id": "cont-baa333877773d8e91163d9ef",
+       "plan": {
+        "acceptance_criteria": [
+         "ok"
+        ],
+        "allowed_paths": [
+         "docs/a.md"
+        ],
+        "objective": "Evidence repair of the preserved candidate (continuation). Re-run and report the declared checks exactly; change code only where a check proves it necessary.\nContinuation references: candidate_revision=cccccccccccccccccccccccccccccccccccccccc, candidate_tree=7777777777777777777777777777777777777777, inspection=insp-5a03f113-70f6-5c63-84cf-5e507b5305aa, predecessor_job=op-b2\n\nImplement CANARY-continuation-objective-never-projected"
+       },
+       "schema": "urn:zeus:operation:1"
+      },
+      "next_owner": "fleet",
+      "origin_job": "op-b2",
+      "ownership": {
+       "criterion_id": null,
+       "project_id": null,
+       "state": "origin_unbound"
+      },
+      "policy_id": "policy-1",
+      "policy_sha256": "15b835e8fa575dfe0770c88a5f8b14e02443ce6c98b67aceee2e949fe9c7f0a3",
+      "predecessor_intent": null,
+      "reason_code": "successor_failed",
+      "route": "evidence_repair",
+      "session_mode": "fresh_evidence_handoff",
+      "state": "completed",
+      "successor_job": "cont-baa333877773d8e91163d9ef",
+      "updated_at": "2026-01-01T00:00:00.485000+00:00",
+      "version": 5
+     },
+     "bucket": "continuation_intents",
+     "id": "baa333877773d8e91163d9efb7804547237f124a158126b01266e7fe92b49bf3"
+    },
+    {
+     "body": {
+      "attempt": 1,
+      "authorization": {
+       "acceptance_criteria": [
+        "ok"
+       ],
+       "allowed_paths": [
+        "docs/a.md"
+       ],
+       "goal": {
+        "criterion": "crit",
+        "path": "docs/GOAL.md",
+        "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+       },
+       "lane": "a",
+       "model": "claude-fixture-model",
+       "pin_sha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+       "policy_sha256": "15b835e8fa575dfe0770c88a5f8b14e02443ce6c98b67aceee2e949fe9c7f0a3",
+       "repository": "6890bdf5e15cfc1b2f95aab0bb1962cfb5a69dd190dcedfafbc8ad30fa600ce7",
+       "runtime": {
+        "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "profile": "worker-v1",
+        "session_archive_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+       },
+       "source": {
+        "job": "cont-baa333877773d8e91163d9ef",
+        "manifest_sha256": "84c44b931e22c32bec9d0b03ea3769cb6094a526ba543ff157836b8964eda637",
+        "status": "failed"
+       }
+      },
+      "created_at": "2026-01-01T00:00:00.487000+00:00",
+      "evidence_refs": [],
+      "evidence_sha256": "e695cc0ce1e493a7a83ee2211c60333647b719033b414f6a108ce8527f3eeda9",
+      "family": "op-b2",
+      "family_jobs": [
+       "cont-baa333877773d8e91163d9ef",
+       "op-b2"
+      ],
+      "generation": 1,
+      "history": [
+       {
+        "at": "2026-01-01T00:00:00.487000+00:00",
+        "reason_code": "two_distinct_failures",
+        "state": "research_required"
+       }
+      ],
+      "id": "d3206503939bedb8a6d6d41fd0cd63950629a94043b1979f85d6c27a6a2451c0",
+      "job_updated_at": "2026-01-01T00:00:00.482000+00:00",
+      "lane": "a",
+      "next_owner": "portfolio_research",
+      "origin_job": "cont-baa333877773d8e91163d9ef",
+      "policy_id": "policy-1",
+      "policy_sha256": "15b835e8fa575dfe0770c88a5f8b14e02443ce6c98b67aceee2e949fe9c7f0a3",
+      "predecessor_intent": "baa333877773d8e91163d9efb7804547237f124a158126b01266e7fe92b49bf3",
+      "reason_code": "two_distinct_failures",
+      "route": "research",
+      "session_mode": null,
+      "state": "research_required",
+      "successor_job": null,
+      "updated_at": "2026-01-01T00:00:00.487000+00:00",
+      "version": 1
+     },
+     "bucket": "continuation_intents",
+     "id": "d3206503939bedb8a6d6d41fd0cd63950629a94043b1979f85d6c27a6a2451c0"
+    },
+    {
+     "body": {
+      "id": "policy-1",
+      "pin": {
+       "lane": "a",
+       "path": "ops/continuation.json",
+       "revision": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+       "sha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+      },
+      "policy": {
+       "acceptance_criteria": [
+        "ok"
+       ],
+       "allowed_paths": [
+        "docs/a.md",
+        "docs/b.md",
+        "docs/c.md"
+       ],
+       "delivery_target": "fleet-host",
+       "enabled": true,
+       "goals": [
+        {
+         "criterion": "crit",
+         "path": "docs/GOAL.md",
+         "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        }
+       ],
+       "id": "policy-1",
+       "lanes": [
+        "a"
+       ],
+       "max_corrections": 3,
+       "qualified": {
+        "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "model": "claude-fixture-model",
+        "profile": "worker-v1"
+       },
+       "repository": "6890bdf5e15cfc1b2f95aab0bb1962cfb5a69dd190dcedfafbc8ad30fa600ce7",
+       "schema": "urn:zeus:continuation-policy:1",
+       "session_archive_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+      },
+      "policy_sha256": "15b835e8fa575dfe0770c88a5f8b14e02443ce6c98b67aceee2e949fe9c7f0a3",
+      "registered_at": "2026-01-01T00:00:00.427000+00:00"
+     },
+     "bucket": "continuation_policies",
+     "id": "policy-1"
+    },
+    {
+     "body": {
+      "attempts": {
+       "cont-baa333877773d8e91163d9ef": 2
+      },
+      "policy_id": "policy-1",
+      "sequence": 2
+     },
+     "bucket": "continuation_progress",
+     "id": "policy-1"
+    },
+    {
+     "body": {
+      "budget": {
+       "per_host": 4,
+       "total": 8
+      },
+      "paused": false,
+      "updated_at": "2026-01-01T00:00:00.426000+00:00"
+     },
+     "bucket": "fleet_control",
+     "id": "admission"
+    },
+    {
+     "body": {
+      "calls": {
+       "reserved": 1,
+       "settled": 1
+      },
+      "created_at": "2026-01-01T00:00:00.456000+00:00",
+      "dependencies": [],
+      "dispatched_at": "2026-01-01T00:00:00.460000+00:00",
+      "error_type": null,
+      "exit_code": 1,
+      "finished_at": "2026-01-01T00:00:00.482000+00:00",
+      "goal": {
+       "base_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "criterion": "crit",
+       "path": "docs/GOAL.md",
+       "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+      },
+      "id": "cont-baa333877773d8e91163d9ef",
+      "lane": "a",
+      "manifest": {
+       "base_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "budget": {
+        "per_host": 4,
+        "total": 8
+       },
+       "claude": {
+        "max_budget_usd": 1.0,
+        "model": "claude-fixture-model",
+        "timeout_seconds": 120
+       },
+       "goal": {
+        "criterion": "crit",
+        "path": "docs/GOAL.md",
+        "rationale": "fixture goal",
+        "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+       },
+       "id": "cont-baa333877773d8e91163d9ef",
+       "plan": {
+        "acceptance_criteria": [
+         "ok"
+        ],
+        "allowed_paths": [
+         "docs/a.md"
+        ],
+        "objective": "Evidence repair of the preserved candidate (continuation). Re-run and report the declared checks exactly; change code only where a check proves it necessary.\nContinuation references: candidate_revision=cccccccccccccccccccccccccccccccccccccccc, candidate_tree=7777777777777777777777777777777777777777, inspection=insp-5a03f113-70f6-5c63-84cf-5e507b5305aa, predecessor_job=op-b2\n\nImplement CANARY-continuation-objective-never-projected"
+       },
+       "schema": "urn:zeus:operation:1"
+      },
+      "manifest_sha256": "84c44b931e22c32bec9d0b03ea3769cb6094a526ba543ff157836b8964eda637",
+      "operation_id": "cont-baa333877773d8e91163d9ef",
+      "owner_handoff": {
+       "authority": "owner_handoff; visibility only, never a retry, acceptance or release",
+       "id": "2f6c170a357fc5da7e9646d49ab5a318f94d347f3981c7a57ce1340728d36655",
+       "inspection_bound": true,
+       "inspection_id": "insp-ea764e19-7779-5cbd-999d-2c9963692591",
+       "inspection_known": true,
+       "inspection_reason_code": null,
+       "next_action": "inspect_evidence_contract",
+       "operation_id": "cont-baa333877773d8e91163d9ef",
+       "owner": "lead:improvement",
+       "passed": 1,
+       "reason_code": "evidence_gate_refused",
+       "remaining": 1,
+       "schema": "urn:zeus:operation-evidence-handoff:1",
+       "status": "pending_owner"
+      },
+      "owner_token": "5eed0000000040008000000000000045",
+      "reason_code": "evidence_gate_refused",
+      "receipt": {
+       "operation_status": null,
+       "owner_handoff": {
+        "authority": "owner_handoff; visibility only, never a retry, acceptance or release",
+        "id": "2f6c170a357fc5da7e9646d49ab5a318f94d347f3981c7a57ce1340728d36655",
+        "inspection_bound": true,
+        "inspection_id": "insp-ea764e19-7779-5cbd-999d-2c9963692591",
+        "inspection_known": true,
+        "inspection_reason_code": null,
+        "next_action": "inspect_evidence_contract",
+        "operation_id": "cont-baa333877773d8e91163d9ef",
+        "owner": "lead:improvement",
+        "passed": 1,
+        "reason_code": "evidence_gate_refused",
+        "remaining": 1,
+        "schema": "urn:zeus:operation-evidence-handoff:1",
+        "status": "pending_owner"
+       }
+      },
+      "repository": "6890bdf5e15cfc1b2f95aab0bb1962cfb5a69dd190dcedfafbc8ad30fa600ce7",
+      "status": "failed",
+      "team": "alpha",
+      "updated_at": "2026-01-01T00:00:00.482000+00:00"
+     },
+     "bucket": "fleet_jobs",
+     "id": "cont-baa333877773d8e91163d9ef"
+    },
+    {
+     "body": {
+      "calls": {
+       "reserved": 1,
+       "settled": 1
+      },
+      "created_at": "2026-01-01T00:00:00.428000+00:00",
+      "dependencies": [],
+      "dispatched_at": "2026-01-01T00:00:00.429000+00:00",
+      "error_type": null,
+      "exit_code": 1,
+      "finished_at": "2026-01-01T00:00:00.451000+00:00",
+      "goal": {
+       "base_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "criterion": "crit",
+       "path": "docs/GOAL.md",
+       "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+      },
+      "id": "op-b2",
+      "lane": "a",
+      "manifest": {
+       "base_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "budget": {
+        "per_host": 4,
+        "total": 8
+       },
+       "claude": {
+        "max_budget_usd": 1.0,
+        "model": "claude-fixture-model",
+        "timeout_seconds": 120
+       },
+       "goal": {
+        "criterion": "crit",
+        "path": "docs/GOAL.md",
+        "rationale": "fixture goal",
+        "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+       },
+       "id": "op-b2",
+       "plan": {
+        "acceptance_criteria": [
+         "ok"
+        ],
+        "allowed_paths": [
+         "docs/a.md"
+        ],
+        "objective": "Implement CANARY-continuation-objective-never-projected"
+       },
+       "schema": "urn:zeus:operation:1"
+      },
+      "manifest_sha256": "e4f679eadaf4150e729a467453fb174cf0e12da36915dbd2354fc4743d5817aa",
+      "operation_id": "op-b2",
+      "owner_handoff": {
+       "authority": "owner_handoff; visibility only, never a retry, acceptance or release",
+       "id": "485053b5591f2fcb2be363f7f239ec7b0527dbc0bc53c5b8a03f99c4889004cf",
+       "inspection_bound": true,
+       "inspection_id": "insp-5a03f113-70f6-5c63-84cf-5e507b5305aa",
+       "inspection_known": true,
+       "inspection_reason_code": null,
+       "next_action": "inspect_evidence_contract",
+       "operation_id": "op-b2",
+       "owner": "lead:improvement",
+       "passed": 1,
+       "reason_code": "evidence_gate_refused",
+       "remaining": 1,
+       "schema": "urn:zeus:operation-evidence-handoff:1",
+       "status": "pending_owner"
+      },
+      "owner_token": "5eed0000000040008000000000000040",
+      "reason_code": "evidence_gate_refused",
+      "receipt": {
+       "operation_status": null,
+       "owner_handoff": {
+        "authority": "owner_handoff; visibility only, never a retry, acceptance or release",
+        "id": "485053b5591f2fcb2be363f7f239ec7b0527dbc0bc53c5b8a03f99c4889004cf",
+        "inspection_bound": true,
+        "inspection_id": "insp-5a03f113-70f6-5c63-84cf-5e507b5305aa",
+        "inspection_known": true,
+        "inspection_reason_code": null,
+        "next_action": "inspect_evidence_contract",
+        "operation_id": "op-b2",
+        "owner": "lead:improvement",
+        "passed": 1,
+        "reason_code": "evidence_gate_refused",
+        "remaining": 1,
+        "schema": "urn:zeus:operation-evidence-handoff:1",
+        "status": "pending_owner"
+       }
+      },
+      "repository": "6890bdf5e15cfc1b2f95aab0bb1962cfb5a69dd190dcedfafbc8ad30fa600ce7",
+      "status": "failed",
+      "team": "alpha",
+      "updated_at": "2026-01-01T00:00:00.451000+00:00"
+     },
+     "bucket": "fleet_jobs",
+     "id": "op-b2"
+    },
+    {
+     "body": {
+      "config": {
+       "budget": {
+        "per_host": 4,
+        "total": 8
+       },
+       "id": "fleet-1",
+       "lanes": [
+        {
+         "id": "a",
+         "redis_namespace": "fleet-a",
+         "repository": "/tmp/zeus-rebuild-s6-fixture/repo-a",
+         "runtime": "/tmp/zeus-rebuild-s6-fixture/rt-a",
+         "schema": "lane_a",
+         "team": "alpha"
+        },
+        {
+         "id": "b",
+         "redis_namespace": "fleet-b",
+         "repository": "/tmp/zeus-rebuild-s6-fixture/repo-b",
+         "runtime": "/tmp/zeus-rebuild-s6-fixture/rt-b",
+         "schema": "lane_b",
+         "team": "beta"
+        }
+       ],
+       "max_parallel": 2,
+       "schema": "urn:zeus:fleet:1"
+      },
+      "config_sha256": "bffd6985bbf1c1a06c7510183d33e8b0c705b2a422623cc67e81ca331538396a",
+      "id": "fleet-1",
+      "registered_at": "2026-01-01T00:00:00.425000+00:00",
+      "schema": "urn:zeus:fleet:1"
+     },
+     "bucket": "fleet_registry",
+     "id": "fleet-1"
+    },
+    {
+     "body": {
+      "created_at": "2026-01-01T00:00:00.489000+00:00",
+      "criterion_id": "c1",
+      "id": "cont-baa333877773d8e91163d9ef",
+      "job_id": "cont-baa333877773d8e91163d9ef",
+      "project_id": "ops",
+      "recorded_by": "owner"
+     },
+     "bucket": "portfolio_bindings",
+     "id": "cont-baa333877773d8e91163d9ef"
+    },
+    {
+     "body": {
+      "created_at": "2026-01-01T00:00:00.490000+00:00",
+      "criterion_id": "c1",
+      "id": "op-b2",
+      "job_id": "op-b2",
+      "project_id": "ops",
+      "recorded_by": "owner"
+     },
+     "bucket": "portfolio_bindings",
+     "id": "op-b2"
+    },
+    {
+     "body": {
+      "count": 2,
+      "created_at": "2026-01-01T00:00:00.491000+00:00",
+      "decided_at": null,
+      "evidence_refs": [],
+      "family_status": "failed",
+      "id": "aab8c6d6d16bbfa008306c149b180badc63918ee202f2b74479ad210824e0be8",
+      "job_ids": [
+       "cont-baa333877773d8e91163d9ef",
+       "op-b2"
+      ],
+      "reason_code": "evidence_gate_refused",
+      "state": "research_required",
+      "updated_at": "2026-01-01T00:00:00.491000+00:00"
+     },
+     "bucket": "portfolio_investigations",
+     "id": "aab8c6d6d16bbfa008306c149b180badc63918ee202f2b74479ad210824e0be8"
+    },
+    {
+     "body": {
+      "active_cycle": null,
+      "adoptions": 0,
+      "blocked_reason": null,
+      "config": {
+       "base_revision": "5d629a822f348e8be0db097bb4b9da61c9306006",
+       "budget": {
+        "per_host": 10,
+        "total": 20
+       },
+       "deadline": "2029-06-01T00:00:00+00:00",
+       "id": "rp-b2",
+       "interval_seconds": 3600,
+       "investigation_source": {
+        "project_ids": [
+         "ops"
+        ],
+        "reason_codes": [
+         "evidence_gate_refused"
+        ],
+        "topic": "storage"
+       },
+       "local_candidates": [
+        {
+         "id": "local-note",
+         "path": "docs/research/note.md",
+         "rationale": "sterk residual CANARY-must-never-be-emitted",
+         "sha256": "cda54324adeef54a5d6fe6bdc9d9adc4f140af1e092d1217a4b3f6a2f1ef435f",
+         "topic": "storage"
+        }
+       ],
+       "max_adoptions": 1,
+       "max_cycles": 2,
+       "schema": "urn:zeus:research-program:1",
+       "template": {
+        "base_revision": "5d629a822f348e8be0db097bb4b9da61c9306006",
+        "budget": {
+         "per_host": 10,
+         "total": 20
+        },
+        "claude": {
+         "max_budget_usd": 1,
+         "model": "claude-fixture-model",
+         "timeout_seconds": 120
+        },
+        "current_state": {
+         "max_age_seconds": 600,
+         "records": [
+          {
+           "bucket": "tasks",
+           "id": "t-1"
+          }
+         ]
+        },
+        "deadline": "2030-01-01T00:00:00+00:00",
+        "goal": {
+         "criterion": "c",
+         "path": "docs/GOAL.md",
+         "rationale": "r",
+         "sha256": "c06d51c08e94f5f3130f44647916b744e739e26846633f92d6da4ef6fb1641e7"
+        },
+        "id": "council-template",
+        "plan": {
+         "acceptance_criteria": [
+          "focused tests pass"
+         ],
+         "allowed_paths": [
+          "docs/RUNBOOK.md"
+         ],
+         "objective": "improve the research report CANARY-must-never-be-emitted"
+        },
+        "research": {
+         "questions": [
+          "What is the SSOT?"
+         ],
+         "search_scope": [
+          "docs"
+         ],
+         "topic": "research report"
+        },
+        "schema": "urn:zeus:autonomous:2"
+       },
+       "topics": [
+        {
+         "id": "storage",
+         "keywords": [
+          "advisory lock",
+          "postgres"
+         ]
+        }
+       ]
+      },
+      "config_sha256": "937e335bde6cc4548beb556714b1464dd9915bd51557a3d8478ca574feda3058",
+      "cycles": 0,
+      "id": "rp-b2",
+      "last_tick_at": null,
+      "next_cycle": 1,
+      "registered_at": "2028-01-01T00:00:00+00:00",
+      "repository": "4551bab81b2d42b331adbf2e179166ee742620a7b339b380863747de96766b15",
+      "schema": "urn:zeus:research-program:1",
+      "state": "paused",
+      "stop_reason": null,
+      "updated_at": "2028-01-01T00:00:00+00:00",
+      "verified_local": []
+     },
+     "bucket": "research_programs",
+     "id": "rp-b2"
+    }
+   ],
+   "evidence": {},
+   "flow": "tests/test_owner_actions_recovery.py::held_chain (research part: two_strikes + released)",
+   "ids": {
+    "attempts": [
+     "cont-baa333877773d8e91163d9ef",
+     "op-b2"
+    ],
+    "investigation": "aab8c6d6d16bbfa008306c149b180badc63918ee202f2b74479ad210824e0be8",
+    "program": "rp-b2",
+    "research_intent": "d3206503939bedb8a6d6d41fd0cd63950629a94043b1979f85d6c27a6a2451c0",
+    "root": "op-b2",
+    "successor": "cont-baa333877773d8e91163d9ef"
+   },
+   "lane": [
+    {
+     "body": {
+      "family": "op-b2",
+      "intent_id": "baa333877773d8e91163d9efb7804547237f124a158126b01266e7fe92b49bf3",
+      "operation_id": "cont-baa333877773d8e91163d9ef",
+      "policy_sha256": "15b835e8fa575dfe0770c88a5f8b14e02443ce6c98b67aceee2e949fe9c7f0a3",
+      "predecessor": {
+       "candidate_revision": "cccccccccccccccccccccccccccccccccccccccc",
+       "decision_id": null,
+       "inspection_id": "insp-5a03f113-70f6-5c63-84cf-5e507b5305aa",
+       "job_id": "op-b2",
+       "review_execution_ref": null,
+       "task_id": "5a03f113-70f6-5c63-84cf-5e507b5305aa"
+      },
+      "route": "evidence_repair",
+      "schema": "urn:zeus:continuation-binding:1",
+      "session": null,
+      "workspace": {
+       "base": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "head": "cccccccccccccccccccccccccccccccccccccccc",
+       "origin_task_id": "5a03f113-70f6-5c63-84cf-5e507b5305aa"
+      }
+     },
+     "bucket": "continuation_bindings",
+     "id": "cont-baa333877773d8e91163d9ef"
+    },
+    {
+     "body": {
+      "family": "op-b2",
+      "intent_id": null,
+      "operation_id": "op-b2",
+      "policy_sha256": "15b835e8fa575dfe0770c88a5f8b14e02443ce6c98b67aceee2e949fe9c7f0a3",
+      "predecessor": null,
+      "route": null,
+      "schema": "urn:zeus:continuation-binding:1",
+      "session": {
+       "repository": "6890bdf5e15cfc1b2f95aab0bb1962cfb5a69dd190dcedfafbc8ad30fa600ce7",
+       "task_id": "op-b2"
+      },
+      "workspace": null
+     },
+     "bucket": "continuation_bindings",
+     "id": "op-b2"
+    },
+    {
+     "body": {
+      "actor": "lead:improvement",
+      "attempt": 0,
+      "generation": 1,
+      "id": "5eed0000-0000-4000-8000-000000000043",
+      "input": {
+       "candidate": {
+        "base": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "diff_hash": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "path": "D:/secret/CANARY-must-never-be-emitted",
+        "revision": "cccccccccccccccccccccccccccccccccccccccc",
+        "tree": "7777777777777777777777777777777777777777"
+       },
+       "evidence_inspection": {
+        "inspection_id": "insp-5a03f113-70f6-5c63-84cf-5e507b5305aa",
+        "verdict": "all_checked"
+       },
+       "execution_ref": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+       "summary": "CANARY-must-never-be-emitted"
+      },
+      "lease_owner": null,
+      "lease_until": null,
+      "message": {
+       "causation_id": null,
+       "correlation_id": "operation:op-b2",
+       "how": {
+        "acceptance_criteria": [
+         "Preserve normal behavior"
+        ],
+        "constraints": [],
+        "context_ref": null,
+        "result_schema": "six-w.v1"
+       },
+       "message_id": "5eed0000-0000-4000-8000-000000000043",
+       "schema_version": "1.0",
+       "type": "task.result",
+       "what": {
+        "action": "implement",
+        "details": {
+         "result": {
+          "candidate": {
+           "base": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+           "diff_hash": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+           "path": "D:/secret/CANARY-must-never-be-emitted",
+           "revision": "cccccccccccccccccccccccccccccccccccccccc",
+           "tree": "7777777777777777777777777777777777777777"
+          },
+          "evidence_inspection": {
+           "inspection_id": "insp-5a03f113-70f6-5c63-84cf-5e507b5305aa",
+           "verdict": "all_checked"
+          },
+          "execution_ref": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+          "summary": "CANARY-must-never-be-emitted"
+         },
+         "task_id": "5a03f113-70f6-5c63-84cf-5e507b5305aa"
+        }
+       },
+       "when": {
+        "after": [],
+        "created_at": "2026-01-01T00:00:00.440000+00:00",
+        "deadline": null
+       },
+       "where": {
+        "allowed_paths": [],
+        "environment": "local",
+        "repository": "codex-harness",
+        "revision": "bootstrap"
+       },
+       "who": {
+        "owner": "lead:improvement",
+        "recipient": "lead:improvement",
+        "sender": "worker:implementation"
+       },
+       "why": {
+        "evidence_refs": [],
+        "objective": "Improve harness reliability from verified evidence"
+       }
+      },
+      "phase": "review_lead",
+      "retirement": {
+       "at": "2026-01-01T00:00:00.449000+00:00",
+       "before": {
+        "attempt": 0,
+        "generation": 0,
+        "sha256": "023744e6c876c4a667ddc147385ddcd2c12168a45cfee0957c054970e36d5559",
+        "status": "pending"
+       },
+       "disposition_id": "4d8b86beca10a02e4bf1b5d14b4ca190d65356e2c189c4a0fc569fa2cede3638",
+       "operation_id": "op-b2",
+       "reason_code": "operation_terminal"
+      },
+      "status": "cancelled"
+     },
+     "bucket": "decisions_pending",
+     "id": "5eed0000-0000-4000-8000-000000000043"
+    },
+    {
+     "body": {
+      "actor": "lead:improvement",
+      "attempt": 0,
+      "generation": 1,
+      "id": "5eed0000-0000-4000-8000-000000000048",
+      "input": {
+       "candidate": {
+        "base": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "diff_hash": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "path": "D:/secret/CANARY-must-never-be-emitted",
+        "revision": "cccccccccccccccccccccccccccccccccccccccc",
+        "tree": "7777777777777777777777777777777777777777"
+       },
+       "evidence_inspection": {
+        "inspection_id": "insp-ea764e19-7779-5cbd-999d-2c9963692591",
+        "verdict": "all_checked"
+       },
+       "execution_ref": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+       "summary": "CANARY-must-never-be-emitted"
+      },
+      "lease_owner": null,
+      "lease_until": null,
+      "message": {
+       "causation_id": null,
+       "correlation_id": "operation:cont-baa333877773d8e91163d9ef",
+       "how": {
+        "acceptance_criteria": [
+         "Preserve normal behavior"
+        ],
+        "constraints": [],
+        "context_ref": null,
+        "result_schema": "six-w.v1"
+       },
+       "message_id": "5eed0000-0000-4000-8000-000000000048",
+       "schema_version": "1.0",
+       "type": "task.result",
+       "what": {
+        "action": "implement",
+        "details": {
+         "result": {
+          "candidate": {
+           "base": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+           "diff_hash": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+           "path": "D:/secret/CANARY-must-never-be-emitted",
+           "revision": "cccccccccccccccccccccccccccccccccccccccc",
+           "tree": "7777777777777777777777777777777777777777"
+          },
+          "evidence_inspection": {
+           "inspection_id": "insp-ea764e19-7779-5cbd-999d-2c9963692591",
+           "verdict": "all_checked"
+          },
+          "execution_ref": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+          "summary": "CANARY-must-never-be-emitted"
+         },
+         "task_id": "ea764e19-7779-5cbd-999d-2c9963692591"
+        }
+       },
+       "when": {
+        "after": [],
+        "created_at": "2026-01-01T00:00:00.471000+00:00",
+        "deadline": null
+       },
+       "where": {
+        "allowed_paths": [],
+        "environment": "local",
+        "repository": "codex-harness",
+        "revision": "bootstrap"
+       },
+       "who": {
+        "owner": "lead:improvement",
+        "recipient": "lead:improvement",
+        "sender": "worker:implementation"
+       },
+       "why": {
+        "evidence_refs": [],
+        "objective": "Improve harness reliability from verified evidence"
+       }
+      },
+      "phase": "review_lead",
+      "retirement": {
+       "at": "2026-01-01T00:00:00.480000+00:00",
+       "before": {
+        "attempt": 0,
+        "generation": 0,
+        "sha256": "7fa5b92fdd67f9d60d25bcdd16dcf732aa5b2cbf81dc34fc93d7f4b56a2dc7c1",
+        "status": "pending"
+       },
+       "disposition_id": "62a17a307b753561c869f27bb14fe43f970cd9df29c27cc0d062bc9c6ca166b8",
+       "operation_id": "cont-baa333877773d8e91163d9ef",
+       "reason_code": "operation_terminal"
+      },
+      "status": "cancelled"
+     },
+     "bucket": "decisions_pending",
+     "id": "5eed0000-0000-4000-8000-000000000048"
+    },
+    {
+     "body": {
+      "binding": {
+       "attempt": 1,
+       "generation": 1,
+       "source_revision": "cccccccccccccccccccccccccccccccccccccccc",
+       "task_id": "5a03f113-70f6-5c63-84cf-5e507b5305aa"
+      },
+      "denominator": {
+       "checked": 0,
+       "claims": 2,
+       "not_checked": 1
+      },
+      "findings": [
+       {
+        "cause": null,
+        "claim": {
+         "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "CANARY-must-never-be-emitted"
+         ],
+         "check_id": "unit",
+         "kind": "project_check",
+         "status": "executed"
+        },
+        "state": "checked"
+       },
+       {
+        "cause": "required check has no observation CANARY-must-never-be-emitted",
+        "claim": {
+         "check_id": "lint",
+         "kind": "project_check",
+         "status": "missing"
+        },
+        "state": "not_checked"
+       }
+      ],
+      "id": "insp-5a03f113-70f6-5c63-84cf-5e507b5305aa",
+      "policy_hash": "ph",
+      "verdict": "incomplete"
+     },
+     "bucket": "evidence_inspections",
+     "id": "insp-5a03f113-70f6-5c63-84cf-5e507b5305aa"
+    },
+    {
+     "body": {
+      "binding": {
+       "attempt": 1,
+       "generation": 1,
+       "source_revision": "cccccccccccccccccccccccccccccccccccccccc",
+       "task_id": "ea764e19-7779-5cbd-999d-2c9963692591"
+      },
+      "denominator": {
+       "checked": 0,
+       "claims": 2,
+       "not_checked": 1
+      },
+      "findings": [
+       {
+        "cause": null,
+        "claim": {
+         "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "CANARY-must-never-be-emitted"
+         ],
+         "check_id": "unit",
+         "kind": "project_check",
+         "status": "executed"
+        },
+        "state": "checked"
+       },
+       {
+        "cause": "required check has no observation CANARY-must-never-be-emitted",
+        "claim": {
+         "check_id": "lint",
+         "kind": "project_check",
+         "status": "missing"
+        },
+        "state": "not_checked"
+       }
+      ],
+      "id": "insp-ea764e19-7779-5cbd-999d-2c9963692591",
+      "policy_hash": "ph",
+      "verdict": "incomplete"
+     },
+     "bucket": "evidence_inspections",
+     "id": "insp-ea764e19-7779-5cbd-999d-2c9963692591"
+    },
+    {
+     "body": {
+      "at": "2026-01-01T00:00:00.450000+00:00",
+      "bucket": "decisions_pending",
+      "generation": 1,
+      "id": "decisions_pending:5eed0000-0000-4000-8000-000000000043",
+      "owner": null,
+      "row_id": "5eed0000-0000-4000-8000-000000000043"
+     },
+     "bucket": "execution_fences",
+     "id": "decisions_pending:5eed0000-0000-4000-8000-000000000043"
+    },
+    {
+     "body": {
+      "at": "2026-01-01T00:00:00.481000+00:00",
+      "bucket": "decisions_pending",
+      "generation": 1,
+      "id": "decisions_pending:5eed0000-0000-4000-8000-000000000048",
+      "owner": null,
+      "row_id": "5eed0000-0000-4000-8000-000000000048"
+     },
+     "bucket": "execution_fences",
+     "id": "decisions_pending:5eed0000-0000-4000-8000-000000000048"
+    },
+    {
+     "body": {
+      "correlation_id": "operation:cont-baa333877773d8e91163d9ef",
+      "created_at": "2026-01-01T00:00:00.464000+00:00",
+      "executions": 2,
+      "id": "operation:cont-baa333877773d8e91163d9ef",
+      "in_flight": null,
+      "last_execution": {
+       "agent": "lead:improvement",
+       "at": "2026-01-01T00:00:00.478000+00:00",
+       "error": "EvidenceGateRefused",
+       "id": "5eed0000-0000-4000-8000-000000000048",
+       "kind": "decision",
+       "status": "exception"
+      },
+      "max_executions": 2,
+      "status": "stopped",
+      "stopped_reason": "exception:EvidenceGateRefused",
+      "updated_at": "2026-01-01T00:00:00.479000+00:00"
+     },
+     "bucket": "local_cycles",
+     "id": "operation:cont-baa333877773d8e91163d9ef"
+    },
+    {
+     "body": {
+      "correlation_id": "operation:op-b2",
+      "created_at": "2026-01-01T00:00:00.433000+00:00",
+      "executions": 2,
+      "id": "operation:op-b2",
+      "in_flight": null,
+      "last_execution": {
+       "agent": "lead:improvement",
+       "at": "2026-01-01T00:00:00.447000+00:00",
+       "error": "EvidenceGateRefused",
+       "id": "5eed0000-0000-4000-8000-000000000043",
+       "kind": "decision",
+       "status": "exception"
+      },
+      "max_executions": 2,
+      "status": "stopped",
+      "stopped_reason": "exception:EvidenceGateRefused",
+      "updated_at": "2026-01-01T00:00:00.448000+00:00"
+     },
+     "bucket": "local_cycles",
+     "id": "operation:op-b2"
+    },
+    {
+     "body": {
+      "at": "2026-01-01T00:00:00.449000+00:00",
+      "authority": "retirement_evidence; not an execution or outcome",
+      "before": {
+       "attempt": 0,
+       "generation": 0,
+       "sha256": "023744e6c876c4a667ddc147385ddcd2c12168a45cfee0957c054970e36d5559",
+       "status": "pending"
+      },
+      "bucket": "decisions_pending",
+      "id": "4d8b86beca10a02e4bf1b5d14b4ca190d65356e2c189c4a0fc569fa2cede3638",
+      "operation_id": "op-b2",
+      "operation_status": "failed",
+      "reason_code": "operation_terminal",
+      "row_id": "5eed0000-0000-4000-8000-000000000043"
+     },
+     "bucket": "operation_dispositions",
+     "id": "4d8b86beca10a02e4bf1b5d14b4ca190d65356e2c189c4a0fc569fa2cede3638"
+    },
+    {
+     "body": {
+      "at": "2026-01-01T00:00:00.480000+00:00",
+      "authority": "retirement_evidence; not an execution or outcome",
+      "before": {
+       "attempt": 0,
+       "generation": 0,
+       "sha256": "7fa5b92fdd67f9d60d25bcdd16dcf732aa5b2cbf81dc34fc93d7f4b56a2dc7c1",
+       "status": "pending"
+      },
+      "bucket": "decisions_pending",
+      "id": "62a17a307b753561c869f27bb14fe43f970cd9df29c27cc0d062bc9c6ca166b8",
+      "operation_id": "cont-baa333877773d8e91163d9ef",
+      "operation_status": "failed",
+      "reason_code": "operation_terminal",
+      "row_id": "5eed0000-0000-4000-8000-000000000048"
+     },
+     "bucket": "operation_dispositions",
+     "id": "62a17a307b753561c869f27bb14fe43f970cd9df29c27cc0d062bc9c6ca166b8"
+    },
+    {
+     "body": {
+      "accounting_mode": "finite",
+      "assignment_message_id": "ea764e19-7779-5cbd-999d-2c9963692591",
+      "calls": {
+       "reserved": 1,
+       "settled": 1,
+       "slots": [
+        {
+         "agent": "worker:implementation",
+         "id": "slot-1",
+         "kind": "task",
+         "outcome": "succeeded",
+         "provider": "claude",
+         "settle_error": null,
+         "settled": true
+        }
+       ]
+      },
+      "claimed_at": "2026-01-01T00:00:00.462000+00:00",
+      "collection": {
+       "corrupt": 0,
+       "files": 1,
+       "inserted": 3,
+       "records": 3,
+       "refused": null,
+       "sink_failures": 0
+      },
+      "continuation": {
+       "family": "op-b2",
+       "intent_id": "baa333877773d8e91163d9efb7804547237f124a158126b01266e7fe92b49bf3",
+       "operation_id": "cont-baa333877773d8e91163d9ef",
+       "policy_sha256": "15b835e8fa575dfe0770c88a5f8b14e02443ce6c98b67aceee2e949fe9c7f0a3",
+       "predecessor": {
+        "candidate_revision": "cccccccccccccccccccccccccccccccccccccccc",
+        "decision_id": null,
+        "inspection_id": "insp-5a03f113-70f6-5c63-84cf-5e507b5305aa",
+        "job_id": "op-b2",
+        "review_execution_ref": null,
+        "task_id": "5a03f113-70f6-5c63-84cf-5e507b5305aa"
+       },
+       "route": "evidence_repair",
+       "schema": "urn:zeus:continuation-binding:1",
+       "session": null,
+       "workspace": {
+        "base": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "head": "cccccccccccccccccccccccccccccccccccccccc",
+        "origin_task_id": "5a03f113-70f6-5c63-84cf-5e507b5305aa"
+       }
+      },
+      "correlation_id": "operation:cont-baa333877773d8e91163d9ef",
+      "cycle": {
+       "authority": "observation_only",
+       "automatic_resume": false,
+       "cycle": {
+        "correlation_id": "operation:cont-baa333877773d8e91163d9ef",
+        "created_at": "2026-01-01T00:00:00.464000+00:00",
+        "executions": 2,
+        "id": "operation:cont-baa333877773d8e91163d9ef",
+        "in_flight": null,
+        "last_execution": {
+         "agent": "lead:improvement",
+         "at": "2026-01-01T00:00:00.478000+00:00",
+         "claimed": null,
+         "id": "5eed0000-0000-4000-8000-000000000048",
+         "kind": "decision",
+         "result_id": null,
+         "status": "exception"
+        },
+        "max_executions": 2,
+        "status": "stopped",
+        "stopped_reason": "exception",
+        "stopped_reason_sha256": "c48f62635d94888f7edaa312c291e6eb6025dfd23a19a63c30a7d425d259b21b",
+        "updated_at": "2026-01-01T00:00:00.479000+00:00"
+       },
+       "remaining_executions": 0,
+       "schema": "urn:zeus:cycle-handoff:1",
+       "target_record": {
+        "attempt": 0,
+        "availability": "found",
+        "generation": null,
+        "id": "5eed0000-0000-4000-8000-000000000048",
+        "kind": "decision",
+        "phase": "review_lead",
+        "result": {
+         "accepted": null,
+         "candidate": null,
+         "evidence_verdict": null,
+         "execution_ref": null
+        },
+        "status": "pending"
+       }
+      },
+      "cycle_id": "operation:cont-baa333877773d8e91163d9ef",
+      "deadline": null,
+      "decision_id": null,
+      "design": null,
+      "evidence": {
+       "candidate": null,
+       "execution_ref": null,
+       "inspection_id": null,
+       "review_execution_ref": null
+      },
+      "finalization": {
+       "already_terminal": 1,
+       "at": "2026-01-01T00:00:00.480000+00:00",
+       "authority": "cleanup_summary; not the operation outcome",
+       "disposition_ids": [
+        "62a17a307b753561c869f27bb14fe43f970cd9df29c27cc0d062bc9c6ca166b8"
+       ],
+       "observed_after_collection": true,
+       "operation_id": "cont-baa333877773d8e91163d9ef",
+       "reason_code": "operation_terminal",
+       "retired": {
+        "decisions_pending": [
+         "5eed0000-0000-4000-8000-000000000048"
+        ],
+        "tasks": []
+       },
+       "schema": "urn:zeus:operation-finalization:1",
+       "unresolved": []
+      },
+      "finished_at": "2026-01-01T00:00:00.480000+00:00",
+      "goal": {
+       "base_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "bytes": 3,
+       "criterion": "crit",
+       "path": "docs/GOAL.md",
+       "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+      },
+      "id": "cont-baa333877773d8e91163d9ef",
+      "identity": {
+       "provider": {
+        "config_digest": "y",
+        "policy_digest": "x"
+       },
+       "repository": "r",
+       "runtime": "d",
+       "runtime_policy": "p"
+      },
+      "lead_accepted": false,
+      "manifest_sha256": "84c44b931e22c32bec9d0b03ea3769cb6094a526ba543ff157836b8964eda637",
+      "max_executions": 2,
+      "owner_handoff": {
+       "at": "2026-01-01T00:00:00.480000+00:00",
+       "attempt": 1,
+       "authority": "owner_handoff; grants no retry, acceptance, model call, merge or deployment",
+       "candidate": {
+        "base": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "diff_hash": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "revision": "cccccccccccccccccccccccccccccccccccccccc",
+        "tree": "7777777777777777777777777777777777777777"
+       },
+       "correlation_id": "operation:cont-baa333877773d8e91163d9ef",
+       "generation": 1,
+       "id": "2f6c170a357fc5da7e9646d49ab5a318f94d347f3981c7a57ce1340728d36655",
+       "inspection": {
+        "bound": true,
+        "claim_status_counts": {
+         "executed": 1,
+         "missing": 1
+        },
+        "denominator": {
+         "checked": 0,
+         "claims": 2,
+         "not_checked": 1
+        },
+        "id": "insp-ea764e19-7779-5cbd-999d-2c9963692591",
+        "known": true,
+        "passed": [
+         {
+          "check_id": "unit",
+          "reported": "executed",
+          "state": "checked"
+         }
+        ],
+        "policy_hash": "ph",
+        "reason_code": null,
+        "remaining": [
+         {
+          "check_id": "lint",
+          "reported": "missing",
+          "state": "not_checked"
+         }
+        ],
+        "truncated": false,
+        "verdict": "incomplete"
+       },
+       "manifest_sha256": "84c44b931e22c32bec9d0b03ea3769cb6094a526ba543ff157836b8964eda637",
+       "next_action": "inspect_evidence_contract",
+       "operation_id": "cont-baa333877773d8e91163d9ef",
+       "owner": "lead:improvement",
+       "reason_code": "evidence_gate_refused",
+       "refs": {
+        "execution_ref": null,
+        "review_execution_ref": null
+       },
+       "retry": "none; this handoff schedules no follow-up and relaunches nothing",
+       "schema": "urn:zeus:operation-evidence-handoff:1",
+       "source_revision": "cccccccccccccccccccccccccccccccccccccccc",
+       "status": "pending_owner",
+       "task_id": "ea764e19-7779-5cbd-999d-2c9963692591"
+      },
+      "reason_code": "evidence_gate_refused",
+      "status": "failed",
+      "steps": [
+       {
+        "action": "executed",
+        "reason": "active"
+       },
+       {
+        "action": "executed",
+        "reason": "exception:EvidenceGateRefused"
+       }
+      ],
+      "task_id": null,
+      "updated_at": "2026-01-01T00:00:00.480000+00:00"
+     },
+     "bucket": "operations",
+     "id": "cont-baa333877773d8e91163d9ef"
+    },
+    {
+     "body": {
+      "accounting_mode": "finite",
+      "assignment_message_id": "5a03f113-70f6-5c63-84cf-5e507b5305aa",
+      "calls": {
+       "reserved": 1,
+       "settled": 1,
+       "slots": [
+        {
+         "agent": "worker:implementation",
+         "id": "slot-1",
+         "kind": "task",
+         "outcome": "succeeded",
+         "provider": "claude",
+         "settle_error": null,
+         "settled": true
+        }
+       ]
+      },
+      "claimed_at": "2026-01-01T00:00:00.431000+00:00",
+      "collection": {
+       "corrupt": 0,
+       "files": 1,
+       "inserted": 3,
+       "records": 3,
+       "refused": null,
+       "sink_failures": 0
+      },
+      "continuation": {
+       "family": "op-b2",
+       "intent_id": null,
+       "operation_id": "op-b2",
+       "policy_sha256": "15b835e8fa575dfe0770c88a5f8b14e02443ce6c98b67aceee2e949fe9c7f0a3",
+       "predecessor": null,
+       "route": null,
+       "schema": "urn:zeus:continuation-binding:1",
+       "session": {
+        "repository": "6890bdf5e15cfc1b2f95aab0bb1962cfb5a69dd190dcedfafbc8ad30fa600ce7",
+        "task_id": "op-b2"
+       },
+       "workspace": null
+      },
+      "correlation_id": "operation:op-b2",
+      "cycle": {
+       "authority": "observation_only",
+       "automatic_resume": false,
+       "cycle": {
+        "correlation_id": "operation:op-b2",
+        "created_at": "2026-01-01T00:00:00.433000+00:00",
+        "executions": 2,
+        "id": "operation:op-b2",
+        "in_flight": null,
+        "last_execution": {
+         "agent": "lead:improvement",
+         "at": "2026-01-01T00:00:00.447000+00:00",
+         "claimed": null,
+         "id": "5eed0000-0000-4000-8000-000000000043",
+         "kind": "decision",
+         "result_id": null,
+         "status": "exception"
+        },
+        "max_executions": 2,
+        "status": "stopped",
+        "stopped_reason": "exception",
+        "stopped_reason_sha256": "c48f62635d94888f7edaa312c291e6eb6025dfd23a19a63c30a7d425d259b21b",
+        "updated_at": "2026-01-01T00:00:00.448000+00:00"
+       },
+       "remaining_executions": 0,
+       "schema": "urn:zeus:cycle-handoff:1",
+       "target_record": {
+        "attempt": 0,
+        "availability": "found",
+        "generation": null,
+        "id": "5eed0000-0000-4000-8000-000000000043",
+        "kind": "decision",
+        "phase": "review_lead",
+        "result": {
+         "accepted": null,
+         "candidate": null,
+         "evidence_verdict": null,
+         "execution_ref": null
+        },
+        "status": "pending"
+       }
+      },
+      "cycle_id": "operation:op-b2",
+      "deadline": null,
+      "decision_id": null,
+      "design": null,
+      "evidence": {
+       "candidate": null,
+       "execution_ref": null,
+       "inspection_id": null,
+       "review_execution_ref": null
+      },
+      "finalization": {
+       "already_terminal": 1,
+       "at": "2026-01-01T00:00:00.449000+00:00",
+       "authority": "cleanup_summary; not the operation outcome",
+       "disposition_ids": [
+        "4d8b86beca10a02e4bf1b5d14b4ca190d65356e2c189c4a0fc569fa2cede3638"
+       ],
+       "observed_after_collection": true,
+       "operation_id": "op-b2",
+       "reason_code": "operation_terminal",
+       "retired": {
+        "decisions_pending": [
+         "5eed0000-0000-4000-8000-000000000043"
+        ],
+        "tasks": []
+       },
+       "schema": "urn:zeus:operation-finalization:1",
+       "unresolved": []
+      },
+      "finished_at": "2026-01-01T00:00:00.449000+00:00",
+      "goal": {
+       "base_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "bytes": 3,
+       "criterion": "crit",
+       "path": "docs/GOAL.md",
+       "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+      },
+      "id": "op-b2",
+      "identity": {
+       "provider": {
+        "config_digest": "y",
+        "policy_digest": "x"
+       },
+       "repository": "r",
+       "runtime": "d",
+       "runtime_policy": "p"
+      },
+      "lead_accepted": false,
+      "manifest_sha256": "e4f679eadaf4150e729a467453fb174cf0e12da36915dbd2354fc4743d5817aa",
+      "max_executions": 2,
+      "owner_handoff": {
+       "at": "2026-01-01T00:00:00.449000+00:00",
+       "attempt": 1,
+       "authority": "owner_handoff; grants no retry, acceptance, model call, merge or deployment",
+       "candidate": {
+        "base": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "diff_hash": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "revision": "cccccccccccccccccccccccccccccccccccccccc",
+        "tree": "7777777777777777777777777777777777777777"
+       },
+       "correlation_id": "operation:op-b2",
+       "generation": 1,
+       "id": "485053b5591f2fcb2be363f7f239ec7b0527dbc0bc53c5b8a03f99c4889004cf",
+       "inspection": {
+        "bound": true,
+        "claim_status_counts": {
+         "executed": 1,
+         "missing": 1
+        },
+        "denominator": {
+         "checked": 0,
+         "claims": 2,
+         "not_checked": 1
+        },
+        "id": "insp-5a03f113-70f6-5c63-84cf-5e507b5305aa",
+        "known": true,
+        "passed": [
+         {
+          "check_id": "unit",
+          "reported": "executed",
+          "state": "checked"
+         }
+        ],
+        "policy_hash": "ph",
+        "reason_code": null,
+        "remaining": [
+         {
+          "check_id": "lint",
+          "reported": "missing",
+          "state": "not_checked"
+         }
+        ],
+        "truncated": false,
+        "verdict": "incomplete"
+       },
+       "manifest_sha256": "e4f679eadaf4150e729a467453fb174cf0e12da36915dbd2354fc4743d5817aa",
+       "next_action": "inspect_evidence_contract",
+       "operation_id": "op-b2",
+       "owner": "lead:improvement",
+       "reason_code": "evidence_gate_refused",
+       "refs": {
+        "execution_ref": null,
+        "review_execution_ref": null
+       },
+       "retry": "none; this handoff schedules no follow-up and relaunches nothing",
+       "schema": "urn:zeus:operation-evidence-handoff:1",
+       "source_revision": "cccccccccccccccccccccccccccccccccccccccc",
+       "status": "pending_owner",
+       "task_id": "5a03f113-70f6-5c63-84cf-5e507b5305aa"
+      },
+      "reason_code": "evidence_gate_refused",
+      "status": "failed",
+      "steps": [
+       {
+        "action": "executed",
+        "reason": "active"
+       },
+       {
+        "action": "executed",
+        "reason": "exception:EvidenceGateRefused"
+       }
+      ],
+      "task_id": null,
+      "updated_at": "2026-01-01T00:00:00.449000+00:00"
+     },
+     "bucket": "operations",
+     "id": "op-b2"
+    },
+    {
+     "body": {
+      "message": {
+       "causation_id": null,
+       "correlation_id": "operation:op-b2",
+       "how": {
+        "acceptance_criteria": [
+         "ok"
+        ],
+        "constraints": [],
+        "context_ref": null,
+        "result_schema": "six-w.v1"
+       },
+       "message_id": "5a03f113-70f6-5c63-84cf-5e507b5305aa",
+       "schema_version": "1.0",
+       "type": "task.assign",
+       "what": {
+        "action": "implement",
+        "details": {
+         "continuation": {
+          "family": "op-b2",
+          "intent_id": null,
+          "operation_id": "op-b2",
+          "policy_sha256": "15b835e8fa575dfe0770c88a5f8b14e02443ce6c98b67aceee2e949fe9c7f0a3",
+          "predecessor": null,
+          "route": null,
+          "schema": "urn:zeus:continuation-binding:1",
+          "session": {
+           "repository": "6890bdf5e15cfc1b2f95aab0bb1962cfb5a69dd190dcedfafbc8ad30fa600ce7",
+           "task_id": "op-b2"
+          },
+          "workspace": null
+         },
+         "operation": {
+          "base_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "goal": {
+           "criterion": "crit",
+           "path": "docs/GOAL.md",
+           "rationale": "fixture goal",
+           "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+          },
+          "id": "op-b2",
+          "manifest_sha256": "e4f679eadaf4150e729a467453fb174cf0e12da36915dbd2354fc4743d5817aa"
+         },
+         "plan": {
+          "acceptance_criteria": [
+           "ok"
+          ],
+          "allowed_paths": [
+           "docs/a.md"
+          ],
+          "objective": "Implement CANARY-continuation-objective-never-projected"
+         }
+        }
+       },
+       "when": {
+        "after": [],
+        "created_at": "2026-01-01T00:00:00.430000+00:00",
+        "deadline": null
+       },
+       "where": {
+        "allowed_paths": [
+         "docs/a.md"
+        ],
+        "environment": "local",
+        "repository": "codex-harness",
+        "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+       },
+       "who": {
+        "owner": "worker:implementation",
+        "recipient": "worker:implementation",
+        "sender": "lead:improvement"
+       },
+       "why": {
+        "evidence_refs": [],
+        "objective": "Implement CANARY-continuation-objective-never-projected"
+       }
+      },
+      "sent": true
+     },
+     "bucket": "outbox",
+     "id": "5a03f113-70f6-5c63-84cf-5e507b5305aa"
+    },
+    {
+     "body": {
+      "message": {
+       "causation_id": null,
+       "correlation_id": "operation:op-b2",
+       "how": {
+        "acceptance_criteria": [
+         "Preserve normal behavior"
+        ],
+        "constraints": [],
+        "context_ref": null,
+        "result_schema": "six-w.v1"
+       },
+       "message_id": "5eed0000-0000-4000-8000-000000000043",
+       "schema_version": "1.0",
+       "type": "task.result",
+       "what": {
+        "action": "implement",
+        "details": {
+         "result": {
+          "candidate": {
+           "base": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+           "diff_hash": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+           "path": "D:/secret/CANARY-must-never-be-emitted",
+           "revision": "cccccccccccccccccccccccccccccccccccccccc",
+           "tree": "7777777777777777777777777777777777777777"
+          },
+          "evidence_inspection": {
+           "inspection_id": "insp-5a03f113-70f6-5c63-84cf-5e507b5305aa",
+           "verdict": "all_checked"
+          },
+          "execution_ref": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+          "summary": "CANARY-must-never-be-emitted"
+         },
+         "task_id": "5a03f113-70f6-5c63-84cf-5e507b5305aa"
+        }
+       },
+       "when": {
+        "after": [],
+        "created_at": "2026-01-01T00:00:00.440000+00:00",
+        "deadline": null
+       },
+       "where": {
+        "allowed_paths": [],
+        "environment": "local",
+        "repository": "codex-harness",
+        "revision": "bootstrap"
+       },
+       "who": {
+        "owner": "lead:improvement",
+        "recipient": "lead:improvement",
+        "sender": "worker:implementation"
+       },
+       "why": {
+        "evidence_refs": [],
+        "objective": "Improve harness reliability from verified evidence"
+       }
+      },
+      "sent": true
+     },
+     "bucket": "outbox",
+     "id": "5eed0000-0000-4000-8000-000000000043"
+    },
+    {
+     "body": {
+      "message": {
+       "causation_id": null,
+       "correlation_id": "operation:cont-baa333877773d8e91163d9ef",
+       "how": {
+        "acceptance_criteria": [
+         "Preserve normal behavior"
+        ],
+        "constraints": [],
+        "context_ref": null,
+        "result_schema": "six-w.v1"
+       },
+       "message_id": "5eed0000-0000-4000-8000-000000000048",
+       "schema_version": "1.0",
+       "type": "task.result",
+       "what": {
+        "action": "implement",
+        "details": {
+         "result": {
+          "candidate": {
+           "base": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+           "diff_hash": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+           "path": "D:/secret/CANARY-must-never-be-emitted",
+           "revision": "cccccccccccccccccccccccccccccccccccccccc",
+           "tree": "7777777777777777777777777777777777777777"
+          },
+          "evidence_inspection": {
+           "inspection_id": "insp-ea764e19-7779-5cbd-999d-2c9963692591",
+           "verdict": "all_checked"
+          },
+          "execution_ref": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+          "summary": "CANARY-must-never-be-emitted"
+         },
+         "task_id": "ea764e19-7779-5cbd-999d-2c9963692591"
+        }
+       },
+       "when": {
+        "after": [],
+        "created_at": "2026-01-01T00:00:00.471000+00:00",
+        "deadline": null
+       },
+       "where": {
+        "allowed_paths": [],
+        "environment": "local",
+        "repository": "codex-harness",
+        "revision": "bootstrap"
+       },
+       "who": {
+        "owner": "lead:improvement",
+        "recipient": "lead:improvement",
+        "sender": "worker:implementation"
+       },
+       "why": {
+        "evidence_refs": [],
+        "objective": "Improve harness reliability from verified evidence"
+       }
+      },
+      "sent": true
+     },
+     "bucket": "outbox",
+     "id": "5eed0000-0000-4000-8000-000000000048"
+    },
+    {
+     "body": {
+      "message": {
+       "causation_id": null,
+       "correlation_id": "operation:cont-baa333877773d8e91163d9ef",
+       "how": {
+        "acceptance_criteria": [
+         "ok"
+        ],
+        "constraints": [],
+        "context_ref": null,
+        "result_schema": "six-w.v1"
+       },
+       "message_id": "ea764e19-7779-5cbd-999d-2c9963692591",
+       "schema_version": "1.0",
+       "type": "task.assign",
+       "what": {
+        "action": "implement",
+        "details": {
+         "continuation": {
+          "family": "op-b2",
+          "intent_id": "baa333877773d8e91163d9efb7804547237f124a158126b01266e7fe92b49bf3",
+          "operation_id": "cont-baa333877773d8e91163d9ef",
+          "policy_sha256": "15b835e8fa575dfe0770c88a5f8b14e02443ce6c98b67aceee2e949fe9c7f0a3",
+          "predecessor": {
+           "candidate_revision": "cccccccccccccccccccccccccccccccccccccccc",
+           "decision_id": null,
+           "inspection_id": "insp-5a03f113-70f6-5c63-84cf-5e507b5305aa",
+           "job_id": "op-b2",
+           "review_execution_ref": null,
+           "task_id": "5a03f113-70f6-5c63-84cf-5e507b5305aa"
+          },
+          "route": "evidence_repair",
+          "schema": "urn:zeus:continuation-binding:1",
+          "session": null,
+          "workspace": {
+           "base": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+           "head": "cccccccccccccccccccccccccccccccccccccccc",
+           "origin_task_id": "5a03f113-70f6-5c63-84cf-5e507b5305aa"
+          }
+         },
+         "operation": {
+          "base_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "goal": {
+           "criterion": "crit",
+           "path": "docs/GOAL.md",
+           "rationale": "fixture goal",
+           "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+          },
+          "id": "cont-baa333877773d8e91163d9ef",
+          "manifest_sha256": "84c44b931e22c32bec9d0b03ea3769cb6094a526ba543ff157836b8964eda637"
+         },
+         "plan": {
+          "acceptance_criteria": [
+           "ok"
+          ],
+          "allowed_paths": [
+           "docs/a.md"
+          ],
+          "objective": "Evidence repair of the preserved candidate (continuation). Re-run and report the declared checks exactly; change code only where a check proves it necessary.\nContinuation references: candidate_revision=cccccccccccccccccccccccccccccccccccccccc, candidate_tree=7777777777777777777777777777777777777777, inspection=insp-5a03f113-70f6-5c63-84cf-5e507b5305aa, predecessor_job=op-b2\n\nImplement CANARY-continuation-objective-never-projected"
+         }
+        }
+       },
+       "when": {
+        "after": [],
+        "created_at": "2026-01-01T00:00:00.461000+00:00",
+        "deadline": null
+       },
+       "where": {
+        "allowed_paths": [
+         "docs/a.md"
+        ],
+        "environment": "local",
+        "repository": "codex-harness",
+        "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+       },
+       "who": {
+        "owner": "worker:implementation",
+        "recipient": "worker:implementation",
+        "sender": "lead:improvement"
+       },
+       "why": {
+        "evidence_refs": [],
+        "objective": "Evidence repair of the preserved candidate (continuation). Re-run and report the declared checks exactly; change code only where a check proves it necessary.\nContinuation references: candidate_revision=cccccccccccccccccccccccccccccccccccccccc, candidate_tree=7777777777777777777777777777777777777777, inspection=insp-5a03f113-70f6-5c63-84cf-5e507b5305aa, predecessor_job=op-b2\n\nImplement CANARY-continuation-objective-never-projected"
+       }
+      },
+      "sent": true
+     },
+     "bucket": "outbox",
+     "id": "ea764e19-7779-5cbd-999d-2c9963692591"
+    },
+    {
+     "body": {
+      "entry_id": "1-0",
+      "finished_at": "2026-01-01T00:00:00.436000+00:00",
+      "id": "5eed0000-0000-4000-8000-000000000042",
+      "message_hash": "805bb0f218586a65fd94a9afe4119c38d71593f25406f59aa2ea9be6bc0ba4ca",
+      "number": 1,
+      "outbox_id": "5a03f113-70f6-5c63-84cf-5e507b5305aa",
+      "started_at": "2026-01-01T00:00:00.435000+00:00",
+      "status": "delivered"
+     },
+     "bucket": "outbox_attempts",
+     "id": "5eed0000-0000-4000-8000-000000000042"
+    },
+    {
+     "body": {
+      "entry_id": "2-0",
+      "finished_at": "2026-01-01T00:00:00.442000+00:00",
+      "id": "5eed0000-0000-4000-8000-000000000044",
+      "message_hash": "5a5ce90c6a527e13cd3ec89db61bac3cafd15c8a660bb740e36fe2392893c0df",
+      "number": 1,
+      "outbox_id": "5eed0000-0000-4000-8000-000000000043",
+      "started_at": "2026-01-01T00:00:00.441000+00:00",
+      "status": "delivered"
+     },
+     "bucket": "outbox_attempts",
+     "id": "5eed0000-0000-4000-8000-000000000044"
+    },
+    {
+     "body": {
+      "entry_id": "1-0",
+      "finished_at": "2026-01-01T00:00:00.467000+00:00",
+      "id": "5eed0000-0000-4000-8000-000000000047",
+      "message_hash": "395e614bbb15164358c74e5ca445a7fd0dbf7e4277e1235186e940ffe9fa323a",
+      "number": 1,
+      "outbox_id": "ea764e19-7779-5cbd-999d-2c9963692591",
+      "started_at": "2026-01-01T00:00:00.466000+00:00",
+      "status": "delivered"
+     },
+     "bucket": "outbox_attempts",
+     "id": "5eed0000-0000-4000-8000-000000000047"
+    },
+    {
+     "body": {
+      "entry_id": "2-0",
+      "finished_at": "2026-01-01T00:00:00.473000+00:00",
+      "id": "5eed0000-0000-4000-8000-000000000049",
+      "message_hash": "a8480cf18e5dbf8d41f1271801b815c90f3e6d3297ee7162f88bbf252d09ec22",
+      "number": 1,
+      "outbox_id": "5eed0000-0000-4000-8000-000000000048",
+      "started_at": "2026-01-01T00:00:00.472000+00:00",
+      "status": "delivered"
+     },
+     "bucket": "outbox_attempts",
+     "id": "5eed0000-0000-4000-8000-000000000049"
+    },
+    {
+     "body": {
+      "attempts": 1,
+      "bound_message_hash": "805bb0f218586a65fd94a9afe4119c38d71593f25406f59aa2ea9be6bc0ba4ca",
+      "delivered_entry_id": "1-0",
+      "id": "5a03f113-70f6-5c63-84cf-5e507b5305aa",
+      "last_attempt_id": "5eed0000-0000-4000-8000-000000000042",
+      "source_hash": "e461c242526878ae6f9fe900c492d9baca97718009e504c5951bd180e85de9c5",
+      "status": "delivered",
+      "updated_at": "2026-01-01T00:00:00.435000+00:00"
+     },
+     "bucket": "outbox_delivery",
+     "id": "5a03f113-70f6-5c63-84cf-5e507b5305aa"
+    },
+    {
+     "body": {
+      "attempts": 1,
+      "bound_message_hash": "5a5ce90c6a527e13cd3ec89db61bac3cafd15c8a660bb740e36fe2392893c0df",
+      "delivered_entry_id": "2-0",
+      "id": "5eed0000-0000-4000-8000-000000000043",
+      "last_attempt_id": "5eed0000-0000-4000-8000-000000000044",
+      "source_hash": "d0c9dce26f2505ce08ed94e165b84f40191dae3b6967f3914a903a11f5cca871",
+      "status": "delivered",
+      "updated_at": "2026-01-01T00:00:00.441000+00:00"
+     },
+     "bucket": "outbox_delivery",
+     "id": "5eed0000-0000-4000-8000-000000000043"
+    },
+    {
+     "body": {
+      "attempts": 1,
+      "bound_message_hash": "a8480cf18e5dbf8d41f1271801b815c90f3e6d3297ee7162f88bbf252d09ec22",
+      "delivered_entry_id": "2-0",
+      "id": "5eed0000-0000-4000-8000-000000000048",
+      "last_attempt_id": "5eed0000-0000-4000-8000-000000000049",
+      "source_hash": "36a1077c329fa471c9d9aeef4e6e230e1a4d630f11f7d1f74a95f3ec7e65a248",
+      "status": "delivered",
+      "updated_at": "2026-01-01T00:00:00.472000+00:00"
+     },
+     "bucket": "outbox_delivery",
+     "id": "5eed0000-0000-4000-8000-000000000048"
+    },
+    {
+     "body": {
+      "attempts": 1,
+      "bound_message_hash": "395e614bbb15164358c74e5ca445a7fd0dbf7e4277e1235186e940ffe9fa323a",
+      "delivered_entry_id": "1-0",
+      "id": "ea764e19-7779-5cbd-999d-2c9963692591",
+      "last_attempt_id": "5eed0000-0000-4000-8000-000000000047",
+      "source_hash": "503994f792567c8945d7fbc67c0669c75515d209069b3375125856f100217866",
+      "status": "delivered",
+      "updated_at": "2026-01-01T00:00:00.466000+00:00"
+     },
+     "bucket": "outbox_delivery",
+     "id": "ea764e19-7779-5cbd-999d-2c9963692591"
+    },
+    {
+     "body": {
+      "agent": "worker:implementation",
+      "attempt": 1,
+      "created_at": "2026-01-01T00:00:00.437000+00:00",
+      "error": null,
+      "generation": 1,
+      "id": "5a03f113-70f6-5c63-84cf-5e507b5305aa",
+      "input_hash": "805bb0f218586a65fd94a9afe4119c38d71593f25406f59aa2ea9be6bc0ba4ca",
+      "lease_owner": "fixture",
+      "lease_until": null,
+      "message": {
+       "causation_id": null,
+       "correlation_id": "operation:op-b2",
+       "how": {
+        "acceptance_criteria": [
+         "ok"
+        ],
+        "constraints": [],
+        "context_ref": null,
+        "result_schema": "six-w.v1"
+       },
+       "message_id": "5a03f113-70f6-5c63-84cf-5e507b5305aa",
+       "schema_version": "1.0",
+       "type": "task.assign",
+       "what": {
+        "action": "implement",
+        "details": {
+         "continuation": {
+          "family": "op-b2",
+          "intent_id": null,
+          "operation_id": "op-b2",
+          "policy_sha256": "15b835e8fa575dfe0770c88a5f8b14e02443ce6c98b67aceee2e949fe9c7f0a3",
+          "predecessor": null,
+          "route": null,
+          "schema": "urn:zeus:continuation-binding:1",
+          "session": {
+           "repository": "6890bdf5e15cfc1b2f95aab0bb1962cfb5a69dd190dcedfafbc8ad30fa600ce7",
+           "task_id": "op-b2"
+          },
+          "workspace": null
+         },
+         "operation": {
+          "base_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "goal": {
+           "criterion": "crit",
+           "path": "docs/GOAL.md",
+           "rationale": "fixture goal",
+           "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+          },
+          "id": "op-b2",
+          "manifest_sha256": "e4f679eadaf4150e729a467453fb174cf0e12da36915dbd2354fc4743d5817aa"
+         },
+         "plan": {
+          "acceptance_criteria": [
+           "ok"
+          ],
+          "allowed_paths": [
+           "docs/a.md"
+          ],
+          "objective": "Implement CANARY-continuation-objective-never-projected"
+         }
+        }
+       },
+       "when": {
+        "after": [],
+        "created_at": "2026-01-01T00:00:00.430000+00:00",
+        "deadline": null
+       },
+       "where": {
+        "allowed_paths": [
+         "docs/a.md"
+        ],
+        "environment": "local",
+        "repository": "codex-harness",
+        "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+       },
+       "who": {
+        "owner": "worker:implementation",
+        "recipient": "worker:implementation",
+        "sender": "lead:improvement"
+       },
+       "why": {
+        "evidence_refs": [],
+        "objective": "Implement CANARY-continuation-objective-never-projected"
+       }
+      },
+      "result": {
+       "candidate": {
+        "base": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "diff_hash": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "path": "D:/secret/CANARY-must-never-be-emitted",
+        "revision": "cccccccccccccccccccccccccccccccccccccccc",
+        "tree": "7777777777777777777777777777777777777777"
+       },
+       "evidence_inspection": {
+        "inspection_id": "insp-5a03f113-70f6-5c63-84cf-5e507b5305aa",
+        "verdict": "all_checked"
+       },
+       "execution_ref": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+       "summary": "CANARY-must-never-be-emitted"
+      },
+      "status": "succeeded"
+     },
+     "bucket": "tasks",
+     "id": "5a03f113-70f6-5c63-84cf-5e507b5305aa"
+    },
+    {
+     "body": {
+      "agent": "worker:implementation",
+      "attempt": 1,
+      "created_at": "2026-01-01T00:00:00.468000+00:00",
+      "error": null,
+      "generation": 1,
+      "id": "ea764e19-7779-5cbd-999d-2c9963692591",
+      "input_hash": "395e614bbb15164358c74e5ca445a7fd0dbf7e4277e1235186e940ffe9fa323a",
+      "lease_owner": "fixture",
+      "lease_until": null,
+      "message": {
+       "causation_id": null,
+       "correlation_id": "operation:cont-baa333877773d8e91163d9ef",
+       "how": {
+        "acceptance_criteria": [
+         "ok"
+        ],
+        "constraints": [],
+        "context_ref": null,
+        "result_schema": "six-w.v1"
+       },
+       "message_id": "ea764e19-7779-5cbd-999d-2c9963692591",
+       "schema_version": "1.0",
+       "type": "task.assign",
+       "what": {
+        "action": "implement",
+        "details": {
+         "continuation": {
+          "family": "op-b2",
+          "intent_id": "baa333877773d8e91163d9efb7804547237f124a158126b01266e7fe92b49bf3",
+          "operation_id": "cont-baa333877773d8e91163d9ef",
+          "policy_sha256": "15b835e8fa575dfe0770c88a5f8b14e02443ce6c98b67aceee2e949fe9c7f0a3",
+          "predecessor": {
+           "candidate_revision": "cccccccccccccccccccccccccccccccccccccccc",
+           "decision_id": null,
+           "inspection_id": "insp-5a03f113-70f6-5c63-84cf-5e507b5305aa",
+           "job_id": "op-b2",
+           "review_execution_ref": null,
+           "task_id": "5a03f113-70f6-5c63-84cf-5e507b5305aa"
+          },
+          "route": "evidence_repair",
+          "schema": "urn:zeus:continuation-binding:1",
+          "session": null,
+          "workspace": {
+           "base": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+           "head": "cccccccccccccccccccccccccccccccccccccccc",
+           "origin_task_id": "5a03f113-70f6-5c63-84cf-5e507b5305aa"
+          }
+         },
+         "operation": {
+          "base_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "goal": {
+           "criterion": "crit",
+           "path": "docs/GOAL.md",
+           "rationale": "fixture goal",
+           "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+          },
+          "id": "cont-baa333877773d8e91163d9ef",
+          "manifest_sha256": "84c44b931e22c32bec9d0b03ea3769cb6094a526ba543ff157836b8964eda637"
+         },
+         "plan": {
+          "acceptance_criteria": [
+           "ok"
+          ],
+          "allowed_paths": [
+           "docs/a.md"
+          ],
+          "objective": "Evidence repair of the preserved candidate (continuation). Re-run and report the declared checks exactly; change code only where a check proves it necessary.\nContinuation references: candidate_revision=cccccccccccccccccccccccccccccccccccccccc, candidate_tree=7777777777777777777777777777777777777777, inspection=insp-5a03f113-70f6-5c63-84cf-5e507b5305aa, predecessor_job=op-b2\n\nImplement CANARY-continuation-objective-never-projected"
+         }
+        }
+       },
+       "when": {
+        "after": [],
+        "created_at": "2026-01-01T00:00:00.461000+00:00",
+        "deadline": null
+       },
+       "where": {
+        "allowed_paths": [
+         "docs/a.md"
+        ],
+        "environment": "local",
+        "repository": "codex-harness",
+        "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+       },
+       "who": {
+        "owner": "worker:implementation",
+        "recipient": "worker:implementation",
+        "sender": "lead:improvement"
+       },
+       "why": {
+        "evidence_refs": [],
+        "objective": "Evidence repair of the preserved candidate (continuation). Re-run and report the declared checks exactly; change code only where a check proves it necessary.\nContinuation references: candidate_revision=cccccccccccccccccccccccccccccccccccccccc, candidate_tree=7777777777777777777777777777777777777777, inspection=insp-5a03f113-70f6-5c63-84cf-5e507b5305aa, predecessor_job=op-b2\n\nImplement CANARY-continuation-objective-never-projected"
+       }
+      },
+      "result": {
+       "candidate": {
+        "base": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "diff_hash": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "path": "D:/secret/CANARY-must-never-be-emitted",
+        "revision": "cccccccccccccccccccccccccccccccccccccccc",
+        "tree": "7777777777777777777777777777777777777777"
+       },
+       "evidence_inspection": {
+        "inspection_id": "insp-ea764e19-7779-5cbd-999d-2c9963692591",
+        "verdict": "all_checked"
+       },
+       "execution_ref": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+       "summary": "CANARY-must-never-be-emitted"
+      },
+      "status": "succeeded"
+     },
+     "bucket": "tasks",
+     "id": "ea764e19-7779-5cbd-999d-2c9963692591"
+    },
+    {
+     "body": {
+      "hash": "5a5ce90c6a527e13cd3ec89db61bac3cafd15c8a660bb740e36fe2392893c0df",
+      "result": {
+       "handled": true,
+       "next_message": null
+      }
+     },
+     "bucket": "workflow_inbox",
+     "id": "5eed0000-0000-4000-8000-000000000043"
+    },
+    {
+     "body": {
+      "hash": "a8480cf18e5dbf8d41f1271801b815c90f3e6d3297ee7162f88bbf252d09ec22",
+      "result": {
+       "handled": true,
+       "next_message": null
+      }
+     },
+     "bucket": "workflow_inbox",
+     "id": "5eed0000-0000-4000-8000-000000000048"
+    }
+   ],
+   "pin": {
+    "lane": "a",
+    "path": "ops/continuation.json",
+    "revision": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+    "sha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+   },
+   "policy_document": {
+    "acceptance_criteria": [
+     "ok"
+    ],
+    "allowed_paths": [
+     "docs/a.md",
+     "docs/b.md",
+     "docs/c.md"
+    ],
+    "delivery_target": "fleet-host",
+    "enabled": true,
+    "goals": [
+     {
+      "criterion": "crit",
+      "path": "docs/GOAL.md",
+      "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+     }
+    ],
+    "id": "policy-1",
+    "lanes": [
+     "a"
+    ],
+    "max_corrections": 3,
+    "qualified": {
+     "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "model": "claude-fixture-model",
+     "profile": "worker-v1"
+    },
+    "repository": "6890bdf5e15cfc1b2f95aab0bb1962cfb5a69dd190dcedfafbc8ad30fa600ce7",
+    "schema": "urn:zeus:continuation-policy:1",
+    "session_archive_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+   },
+   "runtime": {
+    "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "profile": "worker-v1",
+    "session_archive_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+   }
   }
  },
  "generator": "compare/fixtures/s6/generate_research.py",
