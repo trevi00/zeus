@@ -4,10 +4,16 @@ from datetime import datetime, timedelta, timezone
 from uuid import uuid4
 
 from codex_harness.application.execution_fence import advance as advance_fence
+from codex_harness.application.execution_fence import current as current_fence
 from codex_harness.application.execution_fence import require_current as require_current_fence
 from codex_harness.application.tickets import ticket_binding
 from codex_harness.domain.model import ContractError, require
 from codex_harness.domain.policy import POLICY
+
+# INV-HOST-DELIVERY-MAINTENANCE-001: the execution-fence scope of an active-generation maintenance hold.
+# The hold takes the SAME `deployment_locks:controller` exclusion every controller on this host takes; only
+# its fence row (scope, maintenance id) is its own, so no release row, attempt or generation is borrowed.
+MAINTENANCE_SCOPE = "host_delivery_maintenance"
 
 
 class ReleaseQueue:
@@ -170,3 +176,77 @@ class ReleaseQueue:
             tx.put("release_queue", row["id"], row)
             tx.put("deployment_locks", "controller", {"owner": None, "lease_until": None})
             return row
+
+    # ----- the active-generation maintenance hold (INV-HOST-DELIVERY-MAINTENANCE-001) -------------------
+    def hold_maintenance(self, maintenance_id: str, *, now=None, within=None) -> dict | None:
+        """Take the single controller lease for ONE maintenance phase, in ONE transaction.
+
+        The `deployment_locks:controller` lease must be free (absent or expired), otherwise nothing is
+        written, `within` does not run and the answer is None. The maintenance fence (scope
+        `MAINTENANCE_SCOPE`, row `maintenance_id`) advances to its next generation under a new owner,
+        the lock names this maintenance and that owner, and `within(tx, claim)` runs BEFORE the commit:
+        its exception rolls the lease, the fence and its own writes back together and propagates. No
+        release queue row, attempt, generation or release status is ever touched here, and `claim`/
+        `retry` keep refusing for as long as the lease is held."""
+        require(isinstance(maintenance_id, str) and maintenance_id, "Maintenance id required")
+        now = now or datetime.now(timezone.utc)
+        with self.store.transaction() as tx:
+            lock = tx.get("deployment_locks", "controller") or {}
+            if lock.get("lease_until") and datetime.fromisoformat(lock["lease_until"]) > now:
+                return None
+            fence = current_fence(tx, MAINTENANCE_SCOPE, maintenance_id)
+            previous = 0 if fence is None else fence.get("generation")
+            require(type(previous) is int and previous >= 0, "Maintenance fence is corrupted")
+            owner, generation = str(uuid4()), previous + 1
+            advance_fence(tx, MAINTENANCE_SCOPE, maintenance_id, generation, owner)
+            lease_until = (now + timedelta(seconds=POLICY.release_lease_seconds)).isoformat()
+            tx.put("deployment_locks", "controller", {"maintenance_id": maintenance_id, "owner": owner,
+                                                      "lease_until": lease_until})
+            claim = {"id": maintenance_id, "scope": MAINTENANCE_SCOPE, "owner": owner, "generation": generation,
+                     "lease_until": lease_until}
+            if within is not None:
+                within(tx, dict(claim))
+            return claim
+
+    def owned_maintenance(self, tx, claim, now=None) -> dict:
+        """Re-check a maintenance hold INSIDE the caller's transaction: the lock still names this
+        maintenance and owner with an unexpired lease, and the durable fence is exactly this claim's
+        generation and owner. Anything else is `Stale maintenance controller`; nothing is changed."""
+        now = now or datetime.now(timezone.utc)
+        lock = tx.get("deployment_locks", "controller") or {}
+        try:
+            fresh = datetime.fromisoformat(lock["lease_until"]) > now
+        except (KeyError, TypeError, ValueError):
+            fresh = False
+        require(isinstance(claim, dict) and lock.get("owner") == claim.get("owner") is not None
+                and lock.get("maintenance_id") == claim.get("id") and fresh, "Stale maintenance controller")
+        require(current_fence(tx, MAINTENANCE_SCOPE, claim["id"]) is not None, "Stale maintenance controller")
+        try:
+            require_current_fence(tx, MAINTENANCE_SCOPE, claim["id"], claim.get("generation"), claim["owner"])
+        except ContractError:
+            raise ContractError("Stale maintenance controller") from None
+        return lock
+
+    def heartbeat_maintenance(self, claim, now=None) -> dict:
+        """Extend an owned maintenance lease in its own transaction; a stale hold raises and extends nothing."""
+        now = now or datetime.now(timezone.utc)
+        with self.store.transaction() as tx:
+            self.owned_maintenance(tx, claim, now)
+            lease_until = (now + timedelta(seconds=POLICY.release_lease_seconds)).isoformat()
+            tx.put("deployment_locks", "controller", {"maintenance_id": claim["id"], "owner": claim["owner"],
+                                                      "lease_until": lease_until})
+        return {**claim, "lease_until": lease_until}
+
+    def release_maintenance(self, claim, now=None) -> bool:
+        """Clear the lease ONLY while it is still exactly this hold's (owner and maintenance id); True when
+        cleared. A successor's lease is never cleared and a mismatch never raises."""
+        with self.store.transaction() as tx:
+            lock = tx.get("deployment_locks", "controller") or {}
+            if not (isinstance(claim, dict) and claim.get("owner") is not None
+                    and lock.get("owner") == claim.get("owner") and lock.get("maintenance_id") == claim.get("id")):
+                return False
+            tx.put("deployment_locks", "controller", {"owner": None, "lease_until": None})
+            return True
+
+
+__all__ = ["MAINTENANCE_SCOPE", "ReleaseQueue"]

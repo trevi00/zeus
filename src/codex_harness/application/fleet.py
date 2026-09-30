@@ -37,6 +37,7 @@ from codex_harness.domain.fleet import (
     effective_config,
     held_units,
     lane_of,
+    maintenance_readiness,
     new_job,
     new_unit,
     projection,
@@ -445,6 +446,17 @@ class Fleet:
         """Units still consuming capacity: reserved, running or with unproven cleanup."""
         with self.store.transaction() as tx:
             return held_units(tx.scan(BUCKET_UNITS))
+
+    def maintenance_readiness(self) -> dict:
+        """INV-HOST-DELIVERY-MAINTENANCE-001: the owner pause, activation hold, reserving jobs and held units an
+        active-generation restart requires, read in ONE transaction; an unregistered Fleet reports
+        `registered: False`. Reads only; admits, reserves and writes nothing."""
+        with self.store.transaction() as tx:
+            registry = self._registry(tx)
+            control = self._control(tx)
+            jobs = tx.scan(BUCKET_JOBS)
+            units = held_units(tx.scan(BUCKET_UNITS))
+        return maintenance_readiness(registry, control, jobs, units, ACTIVATION_HOLD)
 
     def finalize(self, job_id: str, owner_token: str, outcome: dict) -> dict:
         """Only the dispatching owner records the terminal fact. `unknown` stays reserving."""
