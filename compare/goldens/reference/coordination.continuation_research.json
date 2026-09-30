@@ -1,0 +1,5193 @@
+{
+ "capacity": {
+  "no_grant": {
+   "state": {
+    "conductor_calls": [],
+    "control": "5c4aa9cd4601b0002dc7e15405eddfd43e98fff23e3594001241f25eddc3ddb6",
+    "lane": "53c2bef5e3d283c3c9a5ed077b72f67a3747459ec256afb328fae3569a6bb1a6"
+   },
+   "status": {
+    "capacity": {
+     "families": [],
+     "grants": []
+    },
+    "held_families": {
+     "op-x": "correction_budget_exhausted",
+     "op-z": "two_distinct_failures"
+    },
+    "row": {
+     "capacity_grant": null,
+     "next_action": "correction budget exhausted; only an explicit owner capacity grant for this exact intent (zeus continuation capacity-grant) admits one repair; the budget itself never grows",
+     "receipt": null,
+     "refusal": null,
+     "research_receipt": null,
+     "state": "refused",
+     "supplement": null
+    }
+   },
+   "tick": {
+    "value": {
+     "actions": [],
+     "outcome": "idle",
+     "owned_elsewhere": {
+      "count": 0,
+      "jobs": []
+     },
+     "policy_id": "policy-1",
+     "reason_code": null,
+     "schema": "urn:zeus:continuation-tick:1",
+     "skipped": []
+    }
+   },
+   "tick_restarted": {
+    "value": {
+     "actions": [],
+     "outcome": "idle",
+     "owned_elsewhere": {
+      "count": 0,
+      "jobs": []
+     },
+     "policy_id": "policy-1",
+     "reason_code": null,
+     "schema": "urn:zeus:continuation-tick:1",
+     "skipped": []
+    }
+   },
+   "unchanged": true
+  },
+  "one_grant": {
+   "after_grant": {
+    "grants": [
+     [
+      "94300bc683830b7dece22cbd13a5ce5ad0c82aff10e62c1ad907ad2fb2dda160",
+      "8d4190d5d21bc24840703ae2594864e12a09ca3d6500db16682afbdd3e62184e"
+     ]
+    ],
+    "intents": [
+     {
+      "capacity_grant": null,
+      "family": "op-x",
+      "history": [
+       [
+        "intended",
+        "lead_rejected"
+       ],
+       [
+        "published",
+        "lead_rejected"
+       ],
+       [
+        "admitted",
+        "lead_rejected"
+       ],
+       [
+        "returned",
+        "successor_rejected"
+       ],
+       [
+        "completed",
+        "successor_rejected"
+       ]
+      ],
+      "hold": null,
+      "id": "2200d305e8d909a3944ec7f378c65563594fce219362d1020edd4a46959ca2ca",
+      "origin_job": "op-x",
+      "ownership": "origin_unbound",
+      "reason_code": "successor_rejected",
+      "research_coverage": null,
+      "research_receipt": null,
+      "route": "correction",
+      "state": "completed",
+      "successor_job": "cont-2200d305e8d909a3944ec7f3",
+      "version": 5
+     },
+     {
+      "capacity_grant": null,
+      "family": "op-x",
+      "history": [
+       [
+        "research_required",
+        "two_distinct_failures"
+       ],
+       [
+        "completed",
+        "research_receipt_accepted"
+       ]
+      ],
+      "hold": null,
+      "id": "8dab0e2cfc1ae230b44af15bceb845c2ac66f1e9846fed9ac99da9b14ca08f2c",
+      "origin_job": "cont-2200d305e8d909a3944ec7f3",
+      "ownership": null,
+      "reason_code": "research_receipt_accepted",
+      "research_coverage": "original_capture",
+      "research_receipt": "f85e60545cc07227ea5a5b9e59117e70f49c4359290c01078a30435d330a5c4b",
+      "route": "research",
+      "state": "completed",
+      "successor_job": null,
+      "version": 2
+     },
+     {
+      "capacity_grant": null,
+      "family": "op-x",
+      "history": [
+       [
+        "intended",
+        "lead_rejected"
+       ],
+       [
+        "published",
+        "lead_rejected"
+       ],
+       [
+        "admitted",
+        "lead_rejected"
+       ],
+       [
+        "returned",
+        "successor_failed"
+       ],
+       [
+        "completed",
+        "successor_failed"
+       ]
+      ],
+      "hold": null,
+      "id": "09b8a3d87ac3686f219a9fc2136d7d78d88dcc2f7f29dc0b65d2d06ddcb1a2a3",
+      "origin_job": "cont-2200d305e8d909a3944ec7f3",
+      "ownership": "inherited",
+      "reason_code": "successor_failed",
+      "research_coverage": null,
+      "research_receipt": null,
+      "route": "correction",
+      "state": "completed",
+      "successor_job": "cont-09b8a3d87ac3686f219a9fc2",
+      "version": 5
+     },
+     {
+      "capacity_grant": null,
+      "family": "op-x",
+      "history": [
+       [
+        "research_required",
+        "two_distinct_failures"
+       ],
+       [
+        "completed",
+        "research_receipt_accepted"
+       ]
+      ],
+      "hold": null,
+      "id": "658b57ed249f1a7f29a821e78683f634496672ce2acd761587a08a2e9346c6f5",
+      "origin_job": "cont-09b8a3d87ac3686f219a9fc2",
+      "ownership": null,
+      "reason_code": "research_receipt_accepted",
+      "research_coverage": "mixed_family",
+      "research_receipt": "4f0cb90faeb1a5959e670b34e3803ab5ddfdff9f7c36c92fd191b8ed00b8ae68",
+      "route": "research",
+      "state": "completed",
+      "successor_job": null,
+      "version": 2
+     },
+     {
+      "capacity_grant": null,
+      "family": "op-z",
+      "history": [
+       [
+        "intended",
+        "evidence_gate_refused"
+       ],
+       [
+        "published",
+        "evidence_gate_refused"
+       ],
+       [
+        "admitted",
+        "evidence_gate_refused"
+       ],
+       [
+        "returned",
+        "successor_failed"
+       ],
+       [
+        "completed",
+        "successor_failed"
+       ]
+      ],
+      "hold": null,
+      "id": "e385359b47c285b1051eb99f530248b4b45b9e3d708037689088fd9c02d08bbc",
+      "origin_job": "op-z",
+      "ownership": "origin_unbound",
+      "reason_code": "successor_failed",
+      "research_coverage": null,
+      "research_receipt": null,
+      "route": "evidence_repair",
+      "state": "completed",
+      "successor_job": "cont-e385359b47c285b1051eb99f",
+      "version": 5
+     },
+     {
+      "capacity_grant": null,
+      "family": "op-z",
+      "history": [
+       [
+        "research_required",
+        "two_distinct_failures"
+       ]
+      ],
+      "hold": null,
+      "id": "7274bab69cd3522d24454f2f4f760489115c575c2d76d7476e683cd9f7e35f79",
+      "origin_job": "cont-e385359b47c285b1051eb99f",
+      "ownership": null,
+      "reason_code": "two_distinct_failures",
+      "research_coverage": null,
+      "research_receipt": null,
+      "route": "research",
+      "state": "research_required",
+      "successor_job": null,
+      "version": 1
+     },
+     {
+      "capacity_grant": "8d4190d5d21bc24840703ae2594864e12a09ca3d6500db16682afbdd3e62184e",
+      "family": "op-x",
+      "history": [
+       [
+        "refused",
+        "correction_budget_exhausted"
+       ],
+       [
+        "intended",
+        "capacity_grant_authorized"
+       ]
+      ],
+      "hold": null,
+      "id": "94300bc683830b7dece22cbd13a5ce5ad0c82aff10e62c1ad907ad2fb2dda160",
+      "origin_job": "cont-09b8a3d87ac3686f219a9fc2",
+      "ownership": null,
+      "reason_code": "capacity_grant_authorized",
+      "research_coverage": null,
+      "research_receipt": null,
+      "route": "evidence_repair",
+      "state": "intended",
+      "successor_job": "cont-94300bc683830b7dece22cbd",
+      "version": 2
+     }
+    ],
+    "jobs": {
+     "cont-09b8a3d87ac3686f219a9fc2": [
+      "failed",
+      "evidence_gate_refused"
+     ],
+     "cont-2200d305e8d909a3944ec7f3": [
+      "rejected",
+      "lead_rejected"
+     ],
+     "cont-e385359b47c285b1051eb99f": [
+      "failed",
+      "evidence_gate_refused"
+     ],
+     "op-x": [
+      "rejected",
+      "lead_rejected"
+     ],
+     "op-z": [
+      "failed",
+      "evidence_gate_refused"
+     ]
+    },
+    "receipts": [
+     [
+      "658b57ed249f1a7f29a821e78683f634496672ce2acd761587a08a2e9346c6f5",
+      "4f0cb90faeb1a5959e670b34e3803ab5ddfdff9f7c36c92fd191b8ed00b8ae68",
+      "mixed_family"
+     ],
+     [
+      "8dab0e2cfc1ae230b44af15bceb845c2ac66f1e9846fed9ac99da9b14ca08f2c",
+      "f85e60545cc07227ea5a5b9e59117e70f49c4359290c01078a30435d330a5c4b",
+      "original_capture"
+     ]
+    ],
+    "supplements": []
+   },
+   "after_tick": {
+    "grants": [
+     [
+      "94300bc683830b7dece22cbd13a5ce5ad0c82aff10e62c1ad907ad2fb2dda160",
+      "8d4190d5d21bc24840703ae2594864e12a09ca3d6500db16682afbdd3e62184e"
+     ]
+    ],
+    "intents": [
+     {
+      "capacity_grant": null,
+      "family": "op-x",
+      "history": [
+       [
+        "intended",
+        "lead_rejected"
+       ],
+       [
+        "published",
+        "lead_rejected"
+       ],
+       [
+        "admitted",
+        "lead_rejected"
+       ],
+       [
+        "returned",
+        "successor_rejected"
+       ],
+       [
+        "completed",
+        "successor_rejected"
+       ]
+      ],
+      "hold": null,
+      "id": "2200d305e8d909a3944ec7f378c65563594fce219362d1020edd4a46959ca2ca",
+      "origin_job": "op-x",
+      "ownership": "origin_unbound",
+      "reason_code": "successor_rejected",
+      "research_coverage": null,
+      "research_receipt": null,
+      "route": "correction",
+      "state": "completed",
+      "successor_job": "cont-2200d305e8d909a3944ec7f3",
+      "version": 5
+     },
+     {
+      "capacity_grant": null,
+      "family": "op-x",
+      "history": [
+       [
+        "research_required",
+        "two_distinct_failures"
+       ],
+       [
+        "completed",
+        "research_receipt_accepted"
+       ]
+      ],
+      "hold": null,
+      "id": "8dab0e2cfc1ae230b44af15bceb845c2ac66f1e9846fed9ac99da9b14ca08f2c",
+      "origin_job": "cont-2200d305e8d909a3944ec7f3",
+      "ownership": null,
+      "reason_code": "research_receipt_accepted",
+      "research_coverage": "original_capture",
+      "research_receipt": "f85e60545cc07227ea5a5b9e59117e70f49c4359290c01078a30435d330a5c4b",
+      "route": "research",
+      "state": "completed",
+      "successor_job": null,
+      "version": 2
+     },
+     {
+      "capacity_grant": null,
+      "family": "op-x",
+      "history": [
+       [
+        "intended",
+        "lead_rejected"
+       ],
+       [
+        "published",
+        "lead_rejected"
+       ],
+       [
+        "admitted",
+        "lead_rejected"
+       ],
+       [
+        "returned",
+        "successor_failed"
+       ],
+       [
+        "completed",
+        "successor_failed"
+       ]
+      ],
+      "hold": null,
+      "id": "09b8a3d87ac3686f219a9fc2136d7d78d88dcc2f7f29dc0b65d2d06ddcb1a2a3",
+      "origin_job": "cont-2200d305e8d909a3944ec7f3",
+      "ownership": "inherited",
+      "reason_code": "successor_failed",
+      "research_coverage": null,
+      "research_receipt": null,
+      "route": "correction",
+      "state": "completed",
+      "successor_job": "cont-09b8a3d87ac3686f219a9fc2",
+      "version": 5
+     },
+     {
+      "capacity_grant": null,
+      "family": "op-x",
+      "history": [
+       [
+        "research_required",
+        "two_distinct_failures"
+       ],
+       [
+        "completed",
+        "research_receipt_accepted"
+       ]
+      ],
+      "hold": null,
+      "id": "658b57ed249f1a7f29a821e78683f634496672ce2acd761587a08a2e9346c6f5",
+      "origin_job": "cont-09b8a3d87ac3686f219a9fc2",
+      "ownership": null,
+      "reason_code": "research_receipt_accepted",
+      "research_coverage": "mixed_family",
+      "research_receipt": "4f0cb90faeb1a5959e670b34e3803ab5ddfdff9f7c36c92fd191b8ed00b8ae68",
+      "route": "research",
+      "state": "completed",
+      "successor_job": null,
+      "version": 2
+     },
+     {
+      "capacity_grant": null,
+      "family": "op-z",
+      "history": [
+       [
+        "intended",
+        "evidence_gate_refused"
+       ],
+       [
+        "published",
+        "evidence_gate_refused"
+       ],
+       [
+        "admitted",
+        "evidence_gate_refused"
+       ],
+       [
+        "returned",
+        "successor_failed"
+       ],
+       [
+        "completed",
+        "successor_failed"
+       ]
+      ],
+      "hold": null,
+      "id": "e385359b47c285b1051eb99f530248b4b45b9e3d708037689088fd9c02d08bbc",
+      "origin_job": "op-z",
+      "ownership": "origin_unbound",
+      "reason_code": "successor_failed",
+      "research_coverage": null,
+      "research_receipt": null,
+      "route": "evidence_repair",
+      "state": "completed",
+      "successor_job": "cont-e385359b47c285b1051eb99f",
+      "version": 5
+     },
+     {
+      "capacity_grant": null,
+      "family": "op-z",
+      "history": [
+       [
+        "research_required",
+        "two_distinct_failures"
+       ]
+      ],
+      "hold": null,
+      "id": "7274bab69cd3522d24454f2f4f760489115c575c2d76d7476e683cd9f7e35f79",
+      "origin_job": "cont-e385359b47c285b1051eb99f",
+      "ownership": null,
+      "reason_code": "two_distinct_failures",
+      "research_coverage": null,
+      "research_receipt": null,
+      "route": "research",
+      "state": "research_required",
+      "successor_job": null,
+      "version": 1
+     },
+     {
+      "capacity_grant": "8d4190d5d21bc24840703ae2594864e12a09ca3d6500db16682afbdd3e62184e",
+      "family": "op-x",
+      "history": [
+       [
+        "refused",
+        "correction_budget_exhausted"
+       ],
+       [
+        "intended",
+        "capacity_grant_authorized"
+       ],
+       [
+        "published",
+        "capacity_grant_authorized"
+       ],
+       [
+        "admitted",
+        "capacity_grant_authorized"
+       ]
+      ],
+      "hold": null,
+      "id": "94300bc683830b7dece22cbd13a5ce5ad0c82aff10e62c1ad907ad2fb2dda160",
+      "origin_job": "cont-09b8a3d87ac3686f219a9fc2",
+      "ownership": "inherited",
+      "reason_code": "capacity_grant_authorized",
+      "research_coverage": null,
+      "research_receipt": null,
+      "route": "evidence_repair",
+      "state": "admitted",
+      "successor_job": "cont-94300bc683830b7dece22cbd",
+      "version": 4
+     }
+    ],
+    "jobs": {
+     "cont-09b8a3d87ac3686f219a9fc2": [
+      "failed",
+      "evidence_gate_refused"
+     ],
+     "cont-2200d305e8d909a3944ec7f3": [
+      "rejected",
+      "lead_rejected"
+     ],
+     "cont-94300bc683830b7dece22cbd": [
+      "queued",
+      null
+     ],
+     "cont-e385359b47c285b1051eb99f": [
+      "failed",
+      "evidence_gate_refused"
+     ],
+     "op-x": [
+      "rejected",
+      "lead_rejected"
+     ],
+     "op-z": [
+      "failed",
+      "evidence_gate_refused"
+     ]
+    },
+    "receipts": [
+     [
+      "658b57ed249f1a7f29a821e78683f634496672ce2acd761587a08a2e9346c6f5",
+      "4f0cb90faeb1a5959e670b34e3803ab5ddfdff9f7c36c92fd191b8ed00b8ae68",
+      "mixed_family"
+     ],
+     [
+      "8dab0e2cfc1ae230b44af15bceb845c2ac66f1e9846fed9ac99da9b14ca08f2c",
+      "f85e60545cc07227ea5a5b9e59117e70f49c4359290c01078a30435d330a5c4b",
+      "original_capture"
+     ]
+    ],
+    "supplements": []
+   },
+   "binding": {
+    "head": "cccccccccccccccccccccccccccccccccccccccc",
+    "inspection": "insp-4fb2dc87-136b-5f9f-aee9-f52e16516b79",
+    "session": null
+   },
+   "conflict": {
+    "message": "continuation refused: capacity_grant_conflict (intent_id)",
+    "reason_code": "capacity_grant_conflict",
+    "records_unchanged": true,
+    "refused": "ContinuationRefused"
+   },
+   "final_grants": [
+    "94300bc683830b7dece22cbd13a5ce5ad0c82aff10e62c1ad907ad2fb2dda160"
+   ],
+   "granted": {
+    "records_unchanged": false,
+    "value": {
+     "authority": "owner one-use evidence-repair capacity for one exact refused intent: not a code acceptance, a budget-ledger change, a model authority, a deployment or an incident closure",
+     "cached": false,
+     "candidate": {
+      "revision": "cccccccccccccccccccccccccccccccccccccccc",
+      "tree": "7777777777777777777777777777777777777777"
+     },
+     "consumed": true,
+     "explicit_capacity": 1,
+     "family": "op-x",
+     "grant_sha256": "8d4190d5d21bc24840703ae2594864e12a09ca3d6500db16682afbdd3e62184e",
+     "granted": true,
+     "intent_id": "94300bc683830b7dece22cbd13a5ce5ad0c82aff10e62c1ad907ad2fb2dda160",
+     "original_cap": 2,
+     "original_count": 2,
+     "policy_id": "policy-1",
+     "rationale_ref": "sha256:37f97e3953ae97719cb63dccf093aaeafe2f25ee6ab6266750e76f46f8e615f4",
+     "recorded_at": "2026-09-30T00:00:00.000001+00:00",
+     "refusal": {
+      "created_at": "2026-01-01T00:00:00.423000+00:00",
+      "evidence_sha256": "a73993b60defa3875b6d610e43d8478ef776b4857a3377e75dee126fad17196a",
+      "history": [
+       {
+        "at": "2026-01-01T00:00:00.423000+00:00",
+        "reason_code": "correction_budget_exhausted",
+        "state": "refused"
+       }
+      ],
+      "next_owner": "operator",
+      "reason_code": "correction_budget_exhausted",
+      "state": "refused",
+      "updated_at": "2026-01-01T00:00:00.423000+00:00",
+      "version": 1
+     },
+     "remaining": 0,
+     "research_receipt_sha256": "4f0cb90faeb1a5959e670b34e3803ab5ddfdff9f7c36c92fd191b8ed00b8ae68",
+     "source": {
+      "attempt": 1,
+      "evidence_sha256": "a73993b60defa3875b6d610e43d8478ef776b4857a3377e75dee126fad17196a",
+      "generation": 1,
+      "inspection": "insp-4fb2dc87-136b-5f9f-aee9-f52e16516b79",
+      "job": "cont-09b8a3d87ac3686f219a9fc2"
+     },
+     "state": "intended",
+     "successor_job": "cont-94300bc683830b7dece22cbd"
+    }
+   },
+   "history_counts_gates_kept": {
+    "other_intents_unchanged": true,
+    "other_jobs_unchanged": true,
+    "policy_cap": 2,
+    "receipts_unchanged": true,
+    "research_rows_unchanged": true
+   },
+   "no_second_successor": true,
+   "replay_restarted": {
+    "records_unchanged": true,
+    "value": {
+     "authority": "owner one-use evidence-repair capacity for one exact refused intent: not a code acceptance, a budget-ledger change, a model authority, a deployment or an incident closure",
+     "cached": true,
+     "candidate": {
+      "revision": "cccccccccccccccccccccccccccccccccccccccc",
+      "tree": "7777777777777777777777777777777777777777"
+     },
+     "consumed": true,
+     "explicit_capacity": 1,
+     "family": "op-x",
+     "grant_sha256": "8d4190d5d21bc24840703ae2594864e12a09ca3d6500db16682afbdd3e62184e",
+     "granted": true,
+     "intent_id": "94300bc683830b7dece22cbd13a5ce5ad0c82aff10e62c1ad907ad2fb2dda160",
+     "original_cap": 2,
+     "original_count": 2,
+     "policy_id": "policy-1",
+     "rationale_ref": "sha256:37f97e3953ae97719cb63dccf093aaeafe2f25ee6ab6266750e76f46f8e615f4",
+     "recorded_at": "2026-09-30T00:00:00.000001+00:00",
+     "refusal": {
+      "created_at": "2026-01-01T00:00:00.423000+00:00",
+      "evidence_sha256": "a73993b60defa3875b6d610e43d8478ef776b4857a3377e75dee126fad17196a",
+      "history": [
+       {
+        "at": "2026-01-01T00:00:00.423000+00:00",
+        "reason_code": "correction_budget_exhausted",
+        "state": "refused"
+       }
+      ],
+      "next_owner": "operator",
+      "reason_code": "correction_budget_exhausted",
+      "state": "refused",
+      "updated_at": "2026-01-01T00:00:00.423000+00:00",
+      "version": 1
+     },
+     "remaining": 0,
+     "research_receipt_sha256": "4f0cb90faeb1a5959e670b34e3803ab5ddfdff9f7c36c92fd191b8ed00b8ae68",
+     "source": {
+      "attempt": 1,
+      "evidence_sha256": "a73993b60defa3875b6d610e43d8478ef776b4857a3377e75dee126fad17196a",
+      "generation": 1,
+      "inspection": "insp-4fb2dc87-136b-5f9f-aee9-f52e16516b79",
+      "job": "cont-09b8a3d87ac3686f219a9fc2"
+     },
+     "state": "admitted",
+     "successor_job": "cont-94300bc683830b7dece22cbd"
+    }
+   },
+   "reserved_not_effected": {
+    "binding": null,
+    "jobs_unchanged": true
+   },
+   "start": {
+    "grants": [],
+    "intents": [
+     {
+      "capacity_grant": null,
+      "family": "op-x",
+      "history": [
+       [
+        "intended",
+        "lead_rejected"
+       ],
+       [
+        "published",
+        "lead_rejected"
+       ],
+       [
+        "admitted",
+        "lead_rejected"
+       ],
+       [
+        "returned",
+        "successor_rejected"
+       ],
+       [
+        "completed",
+        "successor_rejected"
+       ]
+      ],
+      "hold": null,
+      "id": "2200d305e8d909a3944ec7f378c65563594fce219362d1020edd4a46959ca2ca",
+      "origin_job": "op-x",
+      "ownership": "origin_unbound",
+      "reason_code": "successor_rejected",
+      "research_coverage": null,
+      "research_receipt": null,
+      "route": "correction",
+      "state": "completed",
+      "successor_job": "cont-2200d305e8d909a3944ec7f3",
+      "version": 5
+     },
+     {
+      "capacity_grant": null,
+      "family": "op-x",
+      "history": [
+       [
+        "research_required",
+        "two_distinct_failures"
+       ],
+       [
+        "completed",
+        "research_receipt_accepted"
+       ]
+      ],
+      "hold": null,
+      "id": "8dab0e2cfc1ae230b44af15bceb845c2ac66f1e9846fed9ac99da9b14ca08f2c",
+      "origin_job": "cont-2200d305e8d909a3944ec7f3",
+      "ownership": null,
+      "reason_code": "research_receipt_accepted",
+      "research_coverage": "original_capture",
+      "research_receipt": "f85e60545cc07227ea5a5b9e59117e70f49c4359290c01078a30435d330a5c4b",
+      "route": "research",
+      "state": "completed",
+      "successor_job": null,
+      "version": 2
+     },
+     {
+      "capacity_grant": null,
+      "family": "op-x",
+      "history": [
+       [
+        "intended",
+        "lead_rejected"
+       ],
+       [
+        "published",
+        "lead_rejected"
+       ],
+       [
+        "admitted",
+        "lead_rejected"
+       ],
+       [
+        "returned",
+        "successor_failed"
+       ],
+       [
+        "completed",
+        "successor_failed"
+       ]
+      ],
+      "hold": null,
+      "id": "09b8a3d87ac3686f219a9fc2136d7d78d88dcc2f7f29dc0b65d2d06ddcb1a2a3",
+      "origin_job": "cont-2200d305e8d909a3944ec7f3",
+      "ownership": "inherited",
+      "reason_code": "successor_failed",
+      "research_coverage": null,
+      "research_receipt": null,
+      "route": "correction",
+      "state": "completed",
+      "successor_job": "cont-09b8a3d87ac3686f219a9fc2",
+      "version": 5
+     },
+     {
+      "capacity_grant": null,
+      "family": "op-x",
+      "history": [
+       [
+        "research_required",
+        "two_distinct_failures"
+       ],
+       [
+        "completed",
+        "research_receipt_accepted"
+       ]
+      ],
+      "hold": null,
+      "id": "658b57ed249f1a7f29a821e78683f634496672ce2acd761587a08a2e9346c6f5",
+      "origin_job": "cont-09b8a3d87ac3686f219a9fc2",
+      "ownership": null,
+      "reason_code": "research_receipt_accepted",
+      "research_coverage": "mixed_family",
+      "research_receipt": "4f0cb90faeb1a5959e670b34e3803ab5ddfdff9f7c36c92fd191b8ed00b8ae68",
+      "route": "research",
+      "state": "completed",
+      "successor_job": null,
+      "version": 2
+     },
+     {
+      "capacity_grant": null,
+      "family": "op-z",
+      "history": [
+       [
+        "intended",
+        "evidence_gate_refused"
+       ],
+       [
+        "published",
+        "evidence_gate_refused"
+       ],
+       [
+        "admitted",
+        "evidence_gate_refused"
+       ],
+       [
+        "returned",
+        "successor_failed"
+       ],
+       [
+        "completed",
+        "successor_failed"
+       ]
+      ],
+      "hold": null,
+      "id": "e385359b47c285b1051eb99f530248b4b45b9e3d708037689088fd9c02d08bbc",
+      "origin_job": "op-z",
+      "ownership": "origin_unbound",
+      "reason_code": "successor_failed",
+      "research_coverage": null,
+      "research_receipt": null,
+      "route": "evidence_repair",
+      "state": "completed",
+      "successor_job": "cont-e385359b47c285b1051eb99f",
+      "version": 5
+     },
+     {
+      "capacity_grant": null,
+      "family": "op-z",
+      "history": [
+       [
+        "research_required",
+        "two_distinct_failures"
+       ]
+      ],
+      "hold": null,
+      "id": "7274bab69cd3522d24454f2f4f760489115c575c2d76d7476e683cd9f7e35f79",
+      "origin_job": "cont-e385359b47c285b1051eb99f",
+      "ownership": null,
+      "reason_code": "two_distinct_failures",
+      "research_coverage": null,
+      "research_receipt": null,
+      "route": "research",
+      "state": "research_required",
+      "successor_job": null,
+      "version": 1
+     },
+     {
+      "capacity_grant": null,
+      "family": "op-x",
+      "history": [
+       [
+        "refused",
+        "correction_budget_exhausted"
+       ]
+      ],
+      "hold": null,
+      "id": "94300bc683830b7dece22cbd13a5ce5ad0c82aff10e62c1ad907ad2fb2dda160",
+      "origin_job": "cont-09b8a3d87ac3686f219a9fc2",
+      "ownership": null,
+      "reason_code": "correction_budget_exhausted",
+      "research_coverage": null,
+      "research_receipt": null,
+      "route": "evidence_repair",
+      "state": "refused",
+      "successor_job": null,
+      "version": 1
+     }
+    ],
+    "jobs": {
+     "cont-09b8a3d87ac3686f219a9fc2": [
+      "failed",
+      "evidence_gate_refused"
+     ],
+     "cont-2200d305e8d909a3944ec7f3": [
+      "rejected",
+      "lead_rejected"
+     ],
+     "cont-e385359b47c285b1051eb99f": [
+      "failed",
+      "evidence_gate_refused"
+     ],
+     "op-x": [
+      "rejected",
+      "lead_rejected"
+     ],
+     "op-z": [
+      "failed",
+      "evidence_gate_refused"
+     ]
+    },
+    "receipts": [
+     [
+      "658b57ed249f1a7f29a821e78683f634496672ce2acd761587a08a2e9346c6f5",
+      "4f0cb90faeb1a5959e670b34e3803ab5ddfdff9f7c36c92fd191b8ed00b8ae68",
+      "mixed_family"
+     ],
+     [
+      "8dab0e2cfc1ae230b44af15bceb845c2ac66f1e9846fed9ac99da9b14ca08f2c",
+      "f85e60545cc07227ea5a5b9e59117e70f49c4359290c01078a30435d330a5c4b",
+      "original_capture"
+     ]
+    ],
+    "supplements": []
+   },
+   "state": {
+    "conductor_calls": [],
+    "control": "1b282fb3cf3d7353707863ffd82f51d41e867b64a3605ebd3eab02e12b12b95a",
+    "lane": "cdc2c65c701dd7415fcc71b53af445a7f4d27112edf6e752f984bac762711b6a"
+   },
+   "status": {
+    "capacity": {
+     "families": [
+      {
+       "counted": 3,
+       "explicit_capacity": 1,
+       "family": "op-x",
+       "grants": [
+        "8d4190d5d21bc24840703ae2594864e12a09ca3d6500db16682afbdd3e62184e"
+       ],
+       "original_cap": 2,
+       "policy_id": "policy-1",
+       "remaining": 0
+      }
+     ],
+     "grants": [
+      {
+       "authority": "owner one-use evidence-repair capacity for one exact refused intent: not a code acceptance, a budget-ledger change, a model authority, a deployment or an incident closure",
+       "candidate": {
+        "revision": "cccccccccccccccccccccccccccccccccccccccc",
+        "tree": "7777777777777777777777777777777777777777"
+       },
+       "consumed": true,
+       "explicit_capacity": 1,
+       "family": "op-x",
+       "grant_sha256": "8d4190d5d21bc24840703ae2594864e12a09ca3d6500db16682afbdd3e62184e",
+       "intent_id": "94300bc683830b7dece22cbd13a5ce5ad0c82aff10e62c1ad907ad2fb2dda160",
+       "original_cap": 2,
+       "original_count": 2,
+       "policy_id": "policy-1",
+       "rationale_ref": "sha256:37f97e3953ae97719cb63dccf093aaeafe2f25ee6ab6266750e76f46f8e615f4",
+       "recorded_at": "2026-09-30T00:00:00.000001+00:00",
+       "refusal": {
+        "created_at": "2026-01-01T00:00:00.423000+00:00",
+        "evidence_sha256": "a73993b60defa3875b6d610e43d8478ef776b4857a3377e75dee126fad17196a",
+        "history": [
+         {
+          "at": "2026-01-01T00:00:00.423000+00:00",
+          "reason_code": "correction_budget_exhausted",
+          "state": "refused"
+         }
+        ],
+        "next_owner": "operator",
+        "reason_code": "correction_budget_exhausted",
+        "state": "refused",
+        "updated_at": "2026-01-01T00:00:00.423000+00:00",
+        "version": 1
+       },
+       "remaining": 0,
+       "research_receipt_sha256": "4f0cb90faeb1a5959e670b34e3803ab5ddfdff9f7c36c92fd191b8ed00b8ae68",
+       "source": {
+        "attempt": 1,
+        "evidence_sha256": "a73993b60defa3875b6d610e43d8478ef776b4857a3377e75dee126fad17196a",
+        "generation": 1,
+        "inspection": "insp-4fb2dc87-136b-5f9f-aee9-f52e16516b79",
+        "job": "cont-09b8a3d87ac3686f219a9fc2"
+       },
+       "state": "admitted",
+       "successor_job": "cont-94300bc683830b7dece22cbd"
+      }
+     ]
+    },
+    "held_families": {
+     "op-z": "two_distinct_failures"
+    },
+    "row": {
+     "capacity_grant": "8d4190d5d21bc24840703ae2594864e12a09ca3d6500db16682afbdd3e62184e",
+     "next_action": "wait for the successor operation's terminal outcome",
+     "receipt": null,
+     "refusal": {
+      "next_owner": "operator",
+      "reason_code": "correction_budget_exhausted",
+      "state": "refused",
+      "updated_at": "2026-01-01T00:00:00.423000+00:00",
+      "version": 1
+     },
+     "research_receipt": null,
+     "state": "admitted",
+     "supplement": null
+    }
+   },
+   "successor": "cont-94300bc683830b7dece22cbd",
+   "successor_job": {
+    "allowed_paths_inherited": true,
+    "evidence_repair": true
+   },
+   "tick": {
+    "value": {
+     "actions": [
+      {
+       "effect": "admitted",
+       "route": "evidence_repair",
+       "subject": "94300bc683830b7dece22cbd13a5ce5ad0c82aff10e62c1ad907ad2fb2dda160",
+       "successor_job": "cont-94300bc683830b7dece22cbd"
+      }
+     ],
+     "outcome": "progressed",
+     "owned_elsewhere": {
+      "count": 0,
+      "jobs": []
+     },
+     "policy_id": "policy-1",
+     "reason_code": null,
+     "schema": "urn:zeus:continuation-tick:1",
+     "skipped": []
+    }
+   },
+   "tick_restarted": {
+    "value": {
+     "actions": [],
+     "outcome": "idle",
+     "owned_elsewhere": {
+      "count": 0,
+      "jobs": []
+     },
+     "policy_id": "policy-1",
+     "reason_code": null,
+     "schema": "urn:zeus:continuation-tick:1",
+     "skipped": []
+    }
+   }
+  },
+  "refusals": {
+   "active_family_job": {
+    "binding": null,
+    "grant": {
+     "message": "continuation refused: capacity_family_active (family)",
+     "reason_code": "capacity_family_active",
+     "records_unchanged": true,
+     "refused": "ContinuationRefused"
+    },
+    "grants": 0,
+    "intents_and_jobs_unchanged": true
+   },
+   "changed_attempt": {
+    "binding": null,
+    "grant": {
+     "message": "continuation refused: capacity_source_mismatch (source)",
+     "reason_code": "capacity_source_mismatch",
+     "records_unchanged": true,
+     "refused": "ContinuationRefused"
+    },
+    "grants": 0,
+    "intents_and_jobs_unchanged": true
+   },
+   "changed_evidence": {
+    "binding": null,
+    "grant": {
+     "message": "continuation refused: capacity_source_mismatch (source)",
+     "reason_code": "capacity_source_mismatch",
+     "records_unchanged": true,
+     "refused": "ContinuationRefused"
+    },
+    "grants": 0,
+    "intents_and_jobs_unchanged": true
+   },
+   "changed_image": {
+    "binding": null,
+    "grant": {
+     "message": "continuation refused: image_changed (image)",
+     "reason_code": "image_changed",
+     "records_unchanged": true,
+     "refused": "ContinuationRefused"
+    },
+    "grants": 0,
+    "intents_and_jobs_unchanged": true
+   },
+   "changed_inspection": {
+    "binding": null,
+    "grant": {
+     "message": "continuation refused: capacity_inspection_changed (source.inspection)",
+     "reason_code": "capacity_inspection_changed",
+     "records_unchanged": true,
+     "refused": "ContinuationRefused"
+    },
+    "grants": 0,
+    "intents_and_jobs_unchanged": true
+   },
+   "changed_ownership": {
+    "binding": null,
+    "grant": {
+     "message": "continuation refused: research_mixed_ownership_mismatch (descendants[].job)",
+     "reason_code": "research_mixed_ownership_mismatch",
+     "records_unchanged": true,
+     "refused": "ContinuationRefused"
+    },
+    "grants": 0,
+    "intents_and_jobs_unchanged": true
+   },
+   "changed_pin": {
+    "binding": null,
+    "grant": {
+     "message": "continuation refused: capacity_policy_foreign (policy)",
+     "reason_code": "capacity_policy_foreign",
+     "records_unchanged": true,
+     "refused": "ContinuationRefused"
+    },
+    "grants": 0,
+    "intents_and_jobs_unchanged": true
+   },
+   "changed_source_row": {
+    "binding": null,
+    "grant": {
+     "message": "continuation refused: capacity_source_changed (source.job)",
+     "reason_code": "capacity_source_changed",
+     "records_unchanged": true,
+     "refused": "ContinuationRefused"
+    },
+    "grants": 0,
+    "intents_and_jobs_unchanged": true
+   },
+   "foreign_candidate": {
+    "binding": null,
+    "grant": {
+     "message": "continuation refused: capacity_candidate_changed (candidate)",
+     "reason_code": "capacity_candidate_changed",
+     "records_unchanged": true,
+     "refused": "ContinuationRefused"
+    },
+    "grants": 0,
+    "intents_and_jobs_unchanged": true
+   },
+   "foreign_family": {
+    "binding": null,
+    "grant": {
+     "message": "continuation refused: capacity_family_mismatch (family)",
+     "reason_code": "capacity_family_mismatch",
+     "records_unchanged": true,
+     "refused": "ContinuationRefused"
+    },
+    "grants": 0,
+    "intents_and_jobs_unchanged": true
+   },
+   "foreign_policy_sha": {
+    "binding": null,
+    "grant": {
+     "message": "continuation refused: capacity_policy_foreign (policy)",
+     "reason_code": "capacity_policy_foreign",
+     "records_unchanged": true,
+     "refused": "ContinuationRefused"
+    },
+    "grants": 0,
+    "intents_and_jobs_unchanged": true
+   },
+   "foreign_tree": {
+    "binding": null,
+    "grant": {
+     "message": "continuation refused: capacity_candidate_changed (candidate)",
+     "reason_code": "capacity_candidate_changed",
+     "records_unchanged": true,
+     "refused": "ContinuationRefused"
+    },
+    "grants": 0,
+    "intents_and_jobs_unchanged": true
+   },
+   "invalid_field": {
+    "binding": null,
+    "grant": {
+     "message": "continuation refused: capacity_grant_invalid (root)",
+     "reason_code": "capacity_grant_invalid",
+     "records_unchanged": true,
+     "refused": "ContinuationRefused"
+    },
+    "grants": 0,
+    "intents_and_jobs_unchanged": true
+   },
+   "lost_rationale": {
+    "binding": null,
+    "grant": {
+     "message": "continuation refused: capacity_rationale_unreadable (rationale_ref)",
+     "reason_code": "capacity_rationale_unreadable",
+     "records_unchanged": true,
+     "refused": "ContinuationRefused"
+    },
+    "grants": 0,
+    "intents_and_jobs_unchanged": true
+   },
+   "missing_rationale": {
+    "binding": null,
+    "grant": {
+     "message": "continuation refused: capacity_rationale_unreadable (rationale_ref)",
+     "reason_code": "capacity_rationale_unreadable",
+     "records_unchanged": true,
+     "refused": "ContinuationRefused"
+    },
+    "grants": 0,
+    "intents_and_jobs_unchanged": true
+   },
+   "research_intent": {
+    "binding": null,
+    "grant": {
+     "message": "continuation refused: capacity_refusal_mismatch (intent_id)",
+     "reason_code": "capacity_refusal_mismatch",
+     "records_unchanged": true,
+     "refused": "ContinuationRefused"
+    },
+    "grants": 0,
+    "intents_and_jobs_unchanged": true
+   },
+   "stale_receipt": {
+    "binding": null,
+    "grant": {
+     "message": "continuation refused: capacity_research_mismatch (research_receipt_sha256)",
+     "reason_code": "capacity_research_mismatch",
+     "records_unchanged": true,
+     "refused": "ContinuationRefused"
+    },
+    "grants": 0,
+    "intents_and_jobs_unchanged": true
+   },
+   "tampered_receipt": {
+    "binding": null,
+    "grant": {
+     "message": "continuation refused: research_coverage_changed (supplement)",
+     "reason_code": "research_coverage_changed",
+     "records_unchanged": true,
+     "refused": "ContinuationRefused"
+    },
+    "grants": 0,
+    "intents_and_jobs_unchanged": true
+   },
+   "unknown_execution": {
+    "binding": null,
+    "grant": {
+     "message": "continuation refused: capacity_source_changed (source)",
+     "reason_code": "capacity_source_changed",
+     "records_unchanged": true,
+     "refused": "ContinuationRefused"
+    },
+    "grants": 0,
+    "intents_and_jobs_unchanged": true
+   },
+   "unknown_family_job": {
+    "binding": null,
+    "grant": {
+     "message": "continuation refused: capacity_family_active (family)",
+     "reason_code": "capacity_family_active",
+     "records_unchanged": true,
+     "refused": "ContinuationRefused"
+    },
+    "grants": 0,
+    "intents_and_jobs_unchanged": true
+   },
+   "unknown_intent": {
+    "binding": null,
+    "grant": {
+     "message": "continuation refused: capacity_intent_unknown (intent_id)",
+     "reason_code": "capacity_intent_unknown",
+     "records_unchanged": true,
+     "refused": "ContinuationRefused"
+    },
+    "grants": 0,
+    "intents_and_jobs_unchanged": true
+   },
+   "unregistered_policy": {
+    "binding": null,
+    "grant": {
+     "message": "continuation refused: capacity_policy_foreign (policy)",
+     "reason_code": "capacity_policy_foreign",
+     "records_unchanged": true,
+     "refused": "ContinuationRefused"
+    },
+    "grants": 0,
+    "intents_and_jobs_unchanged": true
+   },
+   "unresolved_research": {
+    "binding": null,
+    "grant": {
+     "message": "continuation refused: capacity_family_active (family)",
+     "reason_code": "capacity_family_active",
+     "records_unchanged": true,
+     "refused": "ContinuationRefused"
+    },
+    "grants": 0,
+    "intents_and_jobs_unchanged": true
+   },
+   "unverified_pin": {
+    "binding": null,
+    "grant": {
+     "message": "continuation refused: capacity_policy_unverified (pin)",
+     "reason_code": "capacity_policy_unverified",
+     "records_unchanged": true,
+     "refused": "ContinuationRefused"
+    },
+    "grants": 0,
+    "intents_and_jobs_unchanged": true
+   },
+   "withdrawn_review": {
+    "binding": null,
+    "grant": {
+     "message": "continuation refused: research_mixed_acceptance_unproven (acceptance)",
+     "reason_code": "research_mixed_acceptance_unproven",
+     "records_unchanged": true,
+     "refused": "ContinuationRefused"
+    },
+    "grants": 0,
+    "intents_and_jobs_unchanged": true
+   },
+   "wrong_intent": {
+    "binding": null,
+    "grant": {
+     "message": "continuation refused: capacity_refusal_mismatch (intent_id)",
+     "reason_code": "capacity_refusal_mismatch",
+     "records_unchanged": true,
+     "refused": "ContinuationRefused"
+    },
+    "grants": 0,
+    "intents_and_jobs_unchanged": true
+   },
+   "wrong_refusal": {
+    "binding": null,
+    "grant": {
+     "message": "continuation refused: capacity_refusal_unsupported (refusal)",
+     "reason_code": "capacity_refusal_unsupported",
+     "records_unchanged": true,
+     "refused": "ContinuationRefused"
+    },
+    "grants": 0,
+    "intents_and_jobs_unchanged": true
+   },
+   "wrong_route": {
+    "binding": null,
+    "grant": {
+     "message": "continuation refused: capacity_route_unsupported (route)",
+     "reason_code": "capacity_route_unsupported",
+     "records_unchanged": true,
+     "refused": "ContinuationRefused"
+    },
+    "grants": 0,
+    "intents_and_jobs_unchanged": true
+   }
+  },
+  "stale_authority": {
+   "grant_tampered": {
+    "held": {
+     "binding": null,
+     "hold": "capacity_grant_corrupt",
+     "jobs_unchanged": true,
+     "state": "intended",
+     "tick": {
+      "value": {
+       "actions": [],
+       "outcome": "blocked",
+       "owned_elsewhere": {
+        "count": 0,
+        "jobs": []
+       },
+       "policy_id": "policy-1",
+       "reason_code": null,
+       "schema": "urn:zeus:continuation-tick:1",
+       "skipped": [
+        {
+         "next_owner": "operator",
+         "reason_code": "capacity_grant_corrupt",
+         "subject": "94300bc683830b7dece22cbd13a5ce5ad0c82aff10e62c1ad907ad2fb2dda160"
+        }
+       ]
+      }
+     }
+    },
+    "hold": null,
+    "jobs_added": 1,
+    "restored_tick": {
+     "value": {
+      "actions": [
+       {
+        "effect": "admitted",
+        "route": "evidence_repair",
+        "subject": "94300bc683830b7dece22cbd13a5ce5ad0c82aff10e62c1ad907ad2fb2dda160",
+        "successor_job": "cont-94300bc683830b7dece22cbd"
+       }
+      ],
+      "outcome": "progressed",
+      "owned_elsewhere": {
+       "count": 0,
+       "jobs": []
+      },
+      "policy_id": "policy-1",
+      "reason_code": null,
+      "schema": "urn:zeus:continuation-tick:1",
+      "skipped": []
+     }
+    },
+    "state": "admitted"
+   },
+   "rationale_gone": {
+    "held": {
+     "binding": null,
+     "hold": "capacity_rationale_unreadable",
+     "jobs_unchanged": true,
+     "state": "intended",
+     "tick": {
+      "value": {
+       "actions": [],
+       "outcome": "blocked",
+       "owned_elsewhere": {
+        "count": 0,
+        "jobs": []
+       },
+       "policy_id": "policy-1",
+       "reason_code": null,
+       "schema": "urn:zeus:continuation-tick:1",
+       "skipped": [
+        {
+         "next_owner": "operator",
+         "reason_code": "capacity_rationale_unreadable",
+         "subject": "94300bc683830b7dece22cbd13a5ce5ad0c82aff10e62c1ad907ad2fb2dda160"
+        }
+       ]
+      }
+     }
+    },
+    "hold": null,
+    "jobs_added": 1,
+    "restored_tick": {
+     "value": {
+      "actions": [
+       {
+        "effect": "admitted",
+        "route": "evidence_repair",
+        "subject": "94300bc683830b7dece22cbd13a5ce5ad0c82aff10e62c1ad907ad2fb2dda160",
+        "successor_job": "cont-94300bc683830b7dece22cbd"
+       }
+      ],
+      "outcome": "progressed",
+      "owned_elsewhere": {
+       "count": 0,
+       "jobs": []
+      },
+      "policy_id": "policy-1",
+      "reason_code": null,
+      "schema": "urn:zeus:continuation-tick:1",
+      "skipped": []
+     }
+    },
+    "state": "admitted"
+   },
+   "source_moved": {
+    "held": {
+     "binding": null,
+     "hold": "capacity_source_changed",
+     "jobs_unchanged": true,
+     "state": "intended",
+     "tick": {
+      "value": {
+       "actions": [],
+       "outcome": "blocked",
+       "owned_elsewhere": {
+        "count": 0,
+        "jobs": []
+       },
+       "policy_id": "policy-1",
+       "reason_code": null,
+       "schema": "urn:zeus:continuation-tick:1",
+       "skipped": [
+        {
+         "next_owner": "operator",
+         "reason_code": "capacity_source_changed",
+         "subject": "94300bc683830b7dece22cbd13a5ce5ad0c82aff10e62c1ad907ad2fb2dda160"
+        }
+       ]
+      }
+     }
+    },
+    "hold": null,
+    "jobs_added": 1,
+    "restored_tick": {
+     "value": {
+      "actions": [
+       {
+        "effect": "admitted",
+        "route": "evidence_repair",
+        "subject": "94300bc683830b7dece22cbd13a5ce5ad0c82aff10e62c1ad907ad2fb2dda160",
+        "successor_job": "cont-94300bc683830b7dece22cbd"
+       }
+      ],
+      "outcome": "progressed",
+      "owned_elsewhere": {
+       "count": 0,
+       "jobs": []
+      },
+      "policy_id": "policy-1",
+      "reason_code": null,
+      "schema": "urn:zeus:continuation-tick:1",
+      "skipped": []
+     }
+    },
+    "state": "admitted"
+   }
+  }
+ },
+ "receipt": {
+  "evidence_at_acceptance": {
+   "absent_verifier": {
+    "accept": {
+     "message": "continuation refused: research_evidence_unverified (evidence_refs)",
+     "reason_code": "research_evidence_unverified",
+     "records_unchanged": true,
+     "refused": "ContinuationRefused"
+    },
+    "accepted": {
+     "value": {
+      "accepted": true,
+      "accepted_at": "2026-09-30T00:00:00.000001+00:00",
+      "authority": "owner scoped research completion for one continuation intent: not an operation acceptance, a repair verdict, an incident resolution or a promotion",
+      "cached": false,
+      "coverage": "original_capture",
+      "covered_jobs": [
+       "cont-fd0b826945c91e690d6743b5",
+       "op-x"
+      ],
+      "dispatch": {
+       "manifest_sha256": "fa799daad91dd195641d53e983adfa2dcfad145325512c18fd7c1258635d066e",
+       "program": "rp-001",
+       "run_id": "rp-001.c001",
+       "snapshot_sha256": "94208fc76260f7a8dc7dc7609f20aa8446945ab5531c0e884469dbdc4196ae1b"
+      },
+      "evidence_refs": [
+       "sha256:4c0f0177946609f29882b5324ba1f997cf08f49efaa2010c06caed5a14b01f45"
+      ],
+      "family": "op-x",
+      "inspections": [
+       "insp-03efc5b6-ba6c-5e20-af65-0988eaf986e5",
+       "insp-6c2a3953-f1e8-57cc-abd7-a85a4057ee02"
+      ],
+      "intent_id": "ac3c27de407b5e03681190284f357fef39d3843a387f2d8225bdf98038eafd99",
+      "investigation": "aab8c6d6d16bbfa008306c149b180badc63918ee202f2b74479ad210824e0be8",
+      "policy_id": "policy-1",
+      "receipt_sha256": "f925bc2a5c6a4217ad58a1ab9081cb7f96da4dc6668548819126c5212ea06096",
+      "supplement_sha256": null
+     }
+    },
+    "receipts": 0,
+    "research": {
+     "jobs": 2,
+     "state": "research_required"
+    },
+    "tick_unverified": {
+     "value": {
+      "actions": [],
+      "outcome": "blocked",
+      "owned_elsewhere": {
+       "count": 0,
+       "jobs": []
+      },
+      "policy_id": "policy-1",
+      "reason_code": null,
+      "schema": "urn:zeus:continuation-tick:1",
+      "skipped": [
+       {
+        "next_owner": "operator",
+        "reason_code": "research_evidence_unverified",
+        "subject": "ac3c27de407b5e03681190284f357fef39d3843a387f2d8225bdf98038eafd99"
+       }
+      ]
+     }
+    }
+   },
+   "blocked": {
+    "accept": {
+     "message": "continuation refused: research_evidence_unreadable (evidence_refs)",
+     "reason_code": "research_evidence_unreadable",
+     "records_unchanged": true,
+     "refused": "ContinuationRefused"
+    },
+    "research": {
+     "jobs": 2,
+     "state": "research_required"
+    },
+    "tick": {
+     "value": {
+      "actions": [],
+      "outcome": "idle",
+      "owned_elsewhere": {
+       "count": 0,
+       "jobs": []
+      },
+      "policy_id": "policy-1",
+      "reason_code": null,
+      "schema": "urn:zeus:continuation-tick:1",
+      "skipped": []
+     }
+    }
+   },
+   "never_stored": {
+    "accept": {
+     "message": "continuation refused: research_evidence_unreadable (evidence_refs)",
+     "reason_code": "research_evidence_unreadable",
+     "records_unchanged": true,
+     "refused": "ContinuationRefused"
+    },
+    "research": {
+     "jobs": 2,
+     "state": "research_required"
+    },
+    "tick": {
+     "value": {
+      "actions": [],
+      "outcome": "idle",
+      "owned_elsewhere": {
+       "count": 0,
+       "jobs": []
+      },
+      "policy_id": "policy-1",
+      "reason_code": null,
+      "schema": "urn:zeus:continuation-tick:1",
+      "skipped": []
+     }
+    }
+   },
+   "one_missing": {
+    "accept": {
+     "message": "continuation refused: research_evidence_unreadable (evidence_refs)",
+     "reason_code": "research_evidence_unreadable",
+     "records_unchanged": true,
+     "refused": "ContinuationRefused"
+    },
+    "research": {
+     "jobs": 2,
+     "state": "research_required"
+    },
+    "tick": {
+     "value": {
+      "actions": [],
+      "outcome": "idle",
+      "owned_elsewhere": {
+       "count": 0,
+       "jobs": []
+      },
+      "policy_id": "policy-1",
+      "reason_code": null,
+      "schema": "urn:zeus:continuation-tick:1",
+      "skipped": []
+     }
+    }
+   },
+   "tampered": {
+    "accept": {
+     "message": "continuation refused: research_evidence_unreadable (evidence_refs)",
+     "reason_code": "research_evidence_unreadable",
+     "records_unchanged": true,
+     "refused": "ContinuationRefused"
+    },
+    "research": {
+     "jobs": 2,
+     "state": "research_required"
+    },
+    "tick": {
+     "value": {
+      "actions": [],
+      "outcome": "idle",
+      "owned_elsewhere": {
+       "count": 0,
+       "jobs": []
+      },
+      "policy_id": "policy-1",
+      "reason_code": null,
+      "schema": "urn:zeus:continuation-tick:1",
+      "skipped": []
+     }
+    }
+   }
+  },
+  "evidence_lost": {
+   "blocked": {
+    "final": {
+     "grants": [],
+     "intents": [
+      {
+       "capacity_grant": null,
+       "family": "op-x",
+       "history": [
+        [
+         "intended",
+         "evidence_gate_refused"
+        ],
+        [
+         "published",
+         "evidence_gate_refused"
+        ],
+        [
+         "admitted",
+         "evidence_gate_refused"
+        ],
+        [
+         "returned",
+         "successor_failed"
+        ],
+        [
+         "completed",
+         "successor_failed"
+        ]
+       ],
+       "hold": null,
+       "id": "fd0b826945c91e690d6743b5ec30ef478c772c3d0d1943df93c70aa2aa0b2da6",
+       "origin_job": "op-x",
+       "ownership": "origin_unbound",
+       "reason_code": "successor_failed",
+       "research_coverage": null,
+       "research_receipt": null,
+       "route": "evidence_repair",
+       "state": "completed",
+       "successor_job": "cont-fd0b826945c91e690d6743b5",
+       "version": 5
+      },
+      {
+       "capacity_grant": null,
+       "family": "op-x",
+       "history": [
+        [
+         "research_required",
+         "two_distinct_failures"
+        ],
+        [
+         "completed",
+         "research_receipt_accepted"
+        ]
+       ],
+       "hold": null,
+       "id": "ac3c27de407b5e03681190284f357fef39d3843a387f2d8225bdf98038eafd99",
+       "origin_job": "cont-fd0b826945c91e690d6743b5",
+       "ownership": null,
+       "reason_code": "research_receipt_accepted",
+       "research_coverage": "original_capture",
+       "research_receipt": "f925bc2a5c6a4217ad58a1ab9081cb7f96da4dc6668548819126c5212ea06096",
+       "route": "research",
+       "state": "completed",
+       "successor_job": null,
+       "version": 2
+      },
+      {
+       "capacity_grant": null,
+       "family": "op-x",
+       "history": [
+        [
+         "intended",
+         "evidence_gate_refused"
+        ],
+        [
+         "published",
+         "evidence_gate_refused"
+        ],
+        [
+         "admitted",
+         "evidence_gate_refused"
+        ]
+       ],
+       "hold": null,
+       "id": "4e7c27499684e0a48d5abea17886c35c1382e01caa7563036d040f21efb51960",
+       "origin_job": "cont-fd0b826945c91e690d6743b5",
+       "ownership": "inherited",
+       "reason_code": "evidence_gate_refused",
+       "research_coverage": null,
+       "research_receipt": null,
+       "route": "evidence_repair",
+       "state": "admitted",
+       "successor_job": "cont-4e7c27499684e0a48d5abea1",
+       "version": 3
+      }
+     ],
+     "jobs": {
+      "cont-4e7c27499684e0a48d5abea1": [
+       "queued",
+       null
+      ],
+      "cont-fd0b826945c91e690d6743b5": [
+       "failed",
+       "evidence_gate_refused"
+      ],
+      "op-x": [
+       "failed",
+       "evidence_gate_refused"
+      ]
+     },
+     "receipts": [
+      [
+       "ac3c27de407b5e03681190284f357fef39d3843a387f2d8225bdf98038eafd99",
+       "f925bc2a5c6a4217ad58a1ab9081cb7f96da4dc6668548819126c5212ea06096",
+       "original_capture"
+      ]
+     ],
+     "supplements": []
+    },
+    "lost": {
+     "receipts_unchanged": true,
+     "research": {
+      "jobs": 2,
+      "state": "research_required"
+     },
+     "tick": {
+      "value": {
+       "actions": [],
+       "outcome": "blocked",
+       "owned_elsewhere": {
+        "count": 0,
+        "jobs": []
+       },
+       "policy_id": "policy-1",
+       "reason_code": null,
+       "schema": "urn:zeus:continuation-tick:1",
+       "skipped": [
+        {
+         "next_owner": "portfolio_research",
+         "reason_code": "research_evidence_unreadable",
+         "subject": "ac3c27de407b5e03681190284f357fef39d3843a387f2d8225bdf98038eafd99"
+        }
+       ]
+      }
+     }
+    },
+    "next_tick": {
+     "value": {
+      "actions": [],
+      "outcome": "idle",
+      "owned_elsewhere": {
+       "count": 0,
+       "jobs": []
+      },
+      "policy_id": "policy-1",
+      "reason_code": null,
+      "schema": "urn:zeus:continuation-tick:1",
+      "skipped": []
+     }
+    },
+    "receipts_unchanged": true,
+    "restored_tick": {
+     "value": {
+      "actions": [
+       {
+        "effect": "research_resolved",
+        "route": "research",
+        "subject": "ac3c27de407b5e03681190284f357fef39d3843a387f2d8225bdf98038eafd99"
+       },
+       {
+        "effect": "admitted",
+        "route": "evidence_repair",
+        "subject": "4e7c27499684e0a48d5abea17886c35c1382e01caa7563036d040f21efb51960",
+        "successor_job": "cont-4e7c27499684e0a48d5abea1"
+       }
+      ],
+      "outcome": "progressed",
+      "owned_elsewhere": {
+       "count": 0,
+       "jobs": []
+      },
+      "policy_id": "policy-1",
+      "reason_code": null,
+      "schema": "urn:zeus:continuation-tick:1",
+      "skipped": []
+     }
+    }
+   },
+   "removed": {
+    "final": {
+     "grants": [],
+     "intents": [
+      {
+       "capacity_grant": null,
+       "family": "op-x",
+       "history": [
+        [
+         "intended",
+         "evidence_gate_refused"
+        ],
+        [
+         "published",
+         "evidence_gate_refused"
+        ],
+        [
+         "admitted",
+         "evidence_gate_refused"
+        ],
+        [
+         "returned",
+         "successor_failed"
+        ],
+        [
+         "completed",
+         "successor_failed"
+        ]
+       ],
+       "hold": null,
+       "id": "fd0b826945c91e690d6743b5ec30ef478c772c3d0d1943df93c70aa2aa0b2da6",
+       "origin_job": "op-x",
+       "ownership": "origin_unbound",
+       "reason_code": "successor_failed",
+       "research_coverage": null,
+       "research_receipt": null,
+       "route": "evidence_repair",
+       "state": "completed",
+       "successor_job": "cont-fd0b826945c91e690d6743b5",
+       "version": 5
+      },
+      {
+       "capacity_grant": null,
+       "family": "op-x",
+       "history": [
+        [
+         "research_required",
+         "two_distinct_failures"
+        ],
+        [
+         "completed",
+         "research_receipt_accepted"
+        ]
+       ],
+       "hold": null,
+       "id": "ac3c27de407b5e03681190284f357fef39d3843a387f2d8225bdf98038eafd99",
+       "origin_job": "cont-fd0b826945c91e690d6743b5",
+       "ownership": null,
+       "reason_code": "research_receipt_accepted",
+       "research_coverage": "original_capture",
+       "research_receipt": "f925bc2a5c6a4217ad58a1ab9081cb7f96da4dc6668548819126c5212ea06096",
+       "route": "research",
+       "state": "completed",
+       "successor_job": null,
+       "version": 2
+      },
+      {
+       "capacity_grant": null,
+       "family": "op-x",
+       "history": [
+        [
+         "intended",
+         "evidence_gate_refused"
+        ],
+        [
+         "published",
+         "evidence_gate_refused"
+        ],
+        [
+         "admitted",
+         "evidence_gate_refused"
+        ]
+       ],
+       "hold": null,
+       "id": "4e7c27499684e0a48d5abea17886c35c1382e01caa7563036d040f21efb51960",
+       "origin_job": "cont-fd0b826945c91e690d6743b5",
+       "ownership": "inherited",
+       "reason_code": "evidence_gate_refused",
+       "research_coverage": null,
+       "research_receipt": null,
+       "route": "evidence_repair",
+       "state": "admitted",
+       "successor_job": "cont-4e7c27499684e0a48d5abea1",
+       "version": 3
+      }
+     ],
+     "jobs": {
+      "cont-4e7c27499684e0a48d5abea1": [
+       "queued",
+       null
+      ],
+      "cont-fd0b826945c91e690d6743b5": [
+       "failed",
+       "evidence_gate_refused"
+      ],
+      "op-x": [
+       "failed",
+       "evidence_gate_refused"
+      ]
+     },
+     "receipts": [
+      [
+       "ac3c27de407b5e03681190284f357fef39d3843a387f2d8225bdf98038eafd99",
+       "f925bc2a5c6a4217ad58a1ab9081cb7f96da4dc6668548819126c5212ea06096",
+       "original_capture"
+      ]
+     ],
+     "supplements": []
+    },
+    "lost": {
+     "receipts_unchanged": true,
+     "research": {
+      "jobs": 2,
+      "state": "research_required"
+     },
+     "tick": {
+      "value": {
+       "actions": [],
+       "outcome": "blocked",
+       "owned_elsewhere": {
+        "count": 0,
+        "jobs": []
+       },
+       "policy_id": "policy-1",
+       "reason_code": null,
+       "schema": "urn:zeus:continuation-tick:1",
+       "skipped": [
+        {
+         "next_owner": "portfolio_research",
+         "reason_code": "research_evidence_unreadable",
+         "subject": "ac3c27de407b5e03681190284f357fef39d3843a387f2d8225bdf98038eafd99"
+        }
+       ]
+      }
+     }
+    },
+    "next_tick": {
+     "value": {
+      "actions": [],
+      "outcome": "idle",
+      "owned_elsewhere": {
+       "count": 0,
+       "jobs": []
+      },
+      "policy_id": "policy-1",
+      "reason_code": null,
+      "schema": "urn:zeus:continuation-tick:1",
+      "skipped": []
+     }
+    },
+    "receipts_unchanged": true,
+    "restored_tick": {
+     "value": {
+      "actions": [
+       {
+        "effect": "research_resolved",
+        "route": "research",
+        "subject": "ac3c27de407b5e03681190284f357fef39d3843a387f2d8225bdf98038eafd99"
+       },
+       {
+        "effect": "admitted",
+        "route": "evidence_repair",
+        "subject": "4e7c27499684e0a48d5abea17886c35c1382e01caa7563036d040f21efb51960",
+        "successor_job": "cont-4e7c27499684e0a48d5abea1"
+       }
+      ],
+      "outcome": "progressed",
+      "owned_elsewhere": {
+       "count": 0,
+       "jobs": []
+      },
+      "policy_id": "policy-1",
+      "reason_code": null,
+      "schema": "urn:zeus:continuation-tick:1",
+      "skipped": []
+     }
+    }
+   },
+   "tampered": {
+    "final": {
+     "grants": [],
+     "intents": [
+      {
+       "capacity_grant": null,
+       "family": "op-x",
+       "history": [
+        [
+         "intended",
+         "evidence_gate_refused"
+        ],
+        [
+         "published",
+         "evidence_gate_refused"
+        ],
+        [
+         "admitted",
+         "evidence_gate_refused"
+        ],
+        [
+         "returned",
+         "successor_failed"
+        ],
+        [
+         "completed",
+         "successor_failed"
+        ]
+       ],
+       "hold": null,
+       "id": "fd0b826945c91e690d6743b5ec30ef478c772c3d0d1943df93c70aa2aa0b2da6",
+       "origin_job": "op-x",
+       "ownership": "origin_unbound",
+       "reason_code": "successor_failed",
+       "research_coverage": null,
+       "research_receipt": null,
+       "route": "evidence_repair",
+       "state": "completed",
+       "successor_job": "cont-fd0b826945c91e690d6743b5",
+       "version": 5
+      },
+      {
+       "capacity_grant": null,
+       "family": "op-x",
+       "history": [
+        [
+         "research_required",
+         "two_distinct_failures"
+        ],
+        [
+         "completed",
+         "research_receipt_accepted"
+        ]
+       ],
+       "hold": null,
+       "id": "ac3c27de407b5e03681190284f357fef39d3843a387f2d8225bdf98038eafd99",
+       "origin_job": "cont-fd0b826945c91e690d6743b5",
+       "ownership": null,
+       "reason_code": "research_receipt_accepted",
+       "research_coverage": "original_capture",
+       "research_receipt": "f925bc2a5c6a4217ad58a1ab9081cb7f96da4dc6668548819126c5212ea06096",
+       "route": "research",
+       "state": "completed",
+       "successor_job": null,
+       "version": 2
+      },
+      {
+       "capacity_grant": null,
+       "family": "op-x",
+       "history": [
+        [
+         "intended",
+         "evidence_gate_refused"
+        ],
+        [
+         "published",
+         "evidence_gate_refused"
+        ],
+        [
+         "admitted",
+         "evidence_gate_refused"
+        ]
+       ],
+       "hold": null,
+       "id": "4e7c27499684e0a48d5abea17886c35c1382e01caa7563036d040f21efb51960",
+       "origin_job": "cont-fd0b826945c91e690d6743b5",
+       "ownership": "inherited",
+       "reason_code": "evidence_gate_refused",
+       "research_coverage": null,
+       "research_receipt": null,
+       "route": "evidence_repair",
+       "state": "admitted",
+       "successor_job": "cont-4e7c27499684e0a48d5abea1",
+       "version": 3
+      }
+     ],
+     "jobs": {
+      "cont-4e7c27499684e0a48d5abea1": [
+       "queued",
+       null
+      ],
+      "cont-fd0b826945c91e690d6743b5": [
+       "failed",
+       "evidence_gate_refused"
+      ],
+      "op-x": [
+       "failed",
+       "evidence_gate_refused"
+      ]
+     },
+     "receipts": [
+      [
+       "ac3c27de407b5e03681190284f357fef39d3843a387f2d8225bdf98038eafd99",
+       "f925bc2a5c6a4217ad58a1ab9081cb7f96da4dc6668548819126c5212ea06096",
+       "original_capture"
+      ]
+     ],
+     "supplements": []
+    },
+    "lost": {
+     "receipts_unchanged": true,
+     "research": {
+      "jobs": 2,
+      "state": "research_required"
+     },
+     "tick": {
+      "value": {
+       "actions": [],
+       "outcome": "blocked",
+       "owned_elsewhere": {
+        "count": 0,
+        "jobs": []
+       },
+       "policy_id": "policy-1",
+       "reason_code": null,
+       "schema": "urn:zeus:continuation-tick:1",
+       "skipped": [
+        {
+         "next_owner": "portfolio_research",
+         "reason_code": "research_evidence_unreadable",
+         "subject": "ac3c27de407b5e03681190284f357fef39d3843a387f2d8225bdf98038eafd99"
+        }
+       ]
+      }
+     }
+    },
+    "next_tick": {
+     "value": {
+      "actions": [],
+      "outcome": "idle",
+      "owned_elsewhere": {
+       "count": 0,
+       "jobs": []
+      },
+      "policy_id": "policy-1",
+      "reason_code": null,
+      "schema": "urn:zeus:continuation-tick:1",
+      "skipped": []
+     }
+    },
+    "receipts_unchanged": true,
+    "restored_tick": {
+     "value": {
+      "actions": [
+       {
+        "effect": "research_resolved",
+        "route": "research",
+        "subject": "ac3c27de407b5e03681190284f357fef39d3843a387f2d8225bdf98038eafd99"
+       },
+       {
+        "effect": "admitted",
+        "route": "evidence_repair",
+        "subject": "4e7c27499684e0a48d5abea17886c35c1382e01caa7563036d040f21efb51960",
+        "successor_job": "cont-4e7c27499684e0a48d5abea1"
+       }
+      ],
+      "outcome": "progressed",
+      "owned_elsewhere": {
+       "count": 0,
+       "jobs": []
+      },
+      "policy_id": "policy-1",
+      "reason_code": null,
+      "schema": "urn:zeus:continuation-tick:1",
+      "skipped": []
+     }
+    }
+   }
+  },
+  "exact": {
+   "accepted": {
+    "records_unchanged": false,
+    "value": {
+     "accepted": true,
+     "accepted_at": "2026-09-30T00:00:00.000001+00:00",
+     "authority": "owner scoped research completion for one continuation intent: not an operation acceptance, a repair verdict, an incident resolution or a promotion",
+     "cached": false,
+     "coverage": "original_capture",
+     "covered_jobs": [
+      "cont-fd0b826945c91e690d6743b5",
+      "op-x"
+     ],
+     "dispatch": {
+      "manifest_sha256": "fa799daad91dd195641d53e983adfa2dcfad145325512c18fd7c1258635d066e",
+      "program": "rp-001",
+      "run_id": "rp-001.c001",
+      "snapshot_sha256": "94208fc76260f7a8dc7dc7609f20aa8446945ab5531c0e884469dbdc4196ae1b"
+     },
+     "evidence_refs": [
+      "sha256:4c0f0177946609f29882b5324ba1f997cf08f49efaa2010c06caed5a14b01f45"
+     ],
+     "family": "op-x",
+     "inspections": [
+      "insp-03efc5b6-ba6c-5e20-af65-0988eaf986e5",
+      "insp-6c2a3953-f1e8-57cc-abd7-a85a4057ee02"
+     ],
+     "intent_id": "ac3c27de407b5e03681190284f357fef39d3843a387f2d8225bdf98038eafd99",
+     "investigation": "aab8c6d6d16bbfa008306c149b180badc63918ee202f2b74479ad210824e0be8",
+     "policy_id": "policy-1",
+     "receipt_sha256": "f925bc2a5c6a4217ad58a1ab9081cb7f96da4dc6668548819126c5212ea06096",
+     "supplement_sha256": null
+    }
+   },
+   "after_accept": {
+    "grants": [],
+    "intents": [
+     {
+      "capacity_grant": null,
+      "family": "op-x",
+      "history": [
+       [
+        "intended",
+        "evidence_gate_refused"
+       ],
+       [
+        "published",
+        "evidence_gate_refused"
+       ],
+       [
+        "admitted",
+        "evidence_gate_refused"
+       ],
+       [
+        "returned",
+        "successor_failed"
+       ],
+       [
+        "completed",
+        "successor_failed"
+       ]
+      ],
+      "hold": null,
+      "id": "fd0b826945c91e690d6743b5ec30ef478c772c3d0d1943df93c70aa2aa0b2da6",
+      "origin_job": "op-x",
+      "ownership": "origin_unbound",
+      "reason_code": "successor_failed",
+      "research_coverage": null,
+      "research_receipt": null,
+      "route": "evidence_repair",
+      "state": "completed",
+      "successor_job": "cont-fd0b826945c91e690d6743b5",
+      "version": 5
+     },
+     {
+      "capacity_grant": null,
+      "family": "op-x",
+      "history": [
+       [
+        "research_required",
+        "two_distinct_failures"
+       ]
+      ],
+      "hold": null,
+      "id": "ac3c27de407b5e03681190284f357fef39d3843a387f2d8225bdf98038eafd99",
+      "origin_job": "cont-fd0b826945c91e690d6743b5",
+      "ownership": null,
+      "reason_code": "two_distinct_failures",
+      "research_coverage": null,
+      "research_receipt": null,
+      "route": "research",
+      "state": "research_required",
+      "successor_job": null,
+      "version": 1
+     }
+    ],
+    "jobs": {
+     "cont-fd0b826945c91e690d6743b5": [
+      "failed",
+      "evidence_gate_refused"
+     ],
+     "op-x": [
+      "failed",
+      "evidence_gate_refused"
+     ]
+    },
+    "receipts": [
+     [
+      "ac3c27de407b5e03681190284f357fef39d3843a387f2d8225bdf98038eafd99",
+      "f925bc2a5c6a4217ad58a1ab9081cb7f96da4dc6668548819126c5212ea06096",
+      "original_capture"
+     ]
+    ],
+    "supplements": []
+   },
+   "after_tick": {
+    "grants": [],
+    "intents": [
+     {
+      "capacity_grant": null,
+      "family": "op-x",
+      "history": [
+       [
+        "intended",
+        "evidence_gate_refused"
+       ],
+       [
+        "published",
+        "evidence_gate_refused"
+       ],
+       [
+        "admitted",
+        "evidence_gate_refused"
+       ],
+       [
+        "returned",
+        "successor_failed"
+       ],
+       [
+        "completed",
+        "successor_failed"
+       ]
+      ],
+      "hold": null,
+      "id": "fd0b826945c91e690d6743b5ec30ef478c772c3d0d1943df93c70aa2aa0b2da6",
+      "origin_job": "op-x",
+      "ownership": "origin_unbound",
+      "reason_code": "successor_failed",
+      "research_coverage": null,
+      "research_receipt": null,
+      "route": "evidence_repair",
+      "state": "completed",
+      "successor_job": "cont-fd0b826945c91e690d6743b5",
+      "version": 5
+     },
+     {
+      "capacity_grant": null,
+      "family": "op-x",
+      "history": [
+       [
+        "research_required",
+        "two_distinct_failures"
+       ],
+       [
+        "completed",
+        "research_receipt_accepted"
+       ]
+      ],
+      "hold": null,
+      "id": "ac3c27de407b5e03681190284f357fef39d3843a387f2d8225bdf98038eafd99",
+      "origin_job": "cont-fd0b826945c91e690d6743b5",
+      "ownership": null,
+      "reason_code": "research_receipt_accepted",
+      "research_coverage": "original_capture",
+      "research_receipt": "f925bc2a5c6a4217ad58a1ab9081cb7f96da4dc6668548819126c5212ea06096",
+      "route": "research",
+      "state": "completed",
+      "successor_job": null,
+      "version": 2
+     },
+     {
+      "capacity_grant": null,
+      "family": "op-x",
+      "history": [
+       [
+        "intended",
+        "evidence_gate_refused"
+       ],
+       [
+        "published",
+        "evidence_gate_refused"
+       ],
+       [
+        "admitted",
+        "evidence_gate_refused"
+       ]
+      ],
+      "hold": null,
+      "id": "4e7c27499684e0a48d5abea17886c35c1382e01caa7563036d040f21efb51960",
+      "origin_job": "cont-fd0b826945c91e690d6743b5",
+      "ownership": "inherited",
+      "reason_code": "evidence_gate_refused",
+      "research_coverage": null,
+      "research_receipt": null,
+      "route": "evidence_repair",
+      "state": "admitted",
+      "successor_job": "cont-4e7c27499684e0a48d5abea1",
+      "version": 3
+     }
+    ],
+    "jobs": {
+     "cont-4e7c27499684e0a48d5abea1": [
+      "queued",
+      null
+     ],
+     "cont-fd0b826945c91e690d6743b5": [
+      "failed",
+      "evidence_gate_refused"
+     ],
+     "op-x": [
+      "failed",
+      "evidence_gate_refused"
+     ]
+    },
+    "receipts": [
+     [
+      "ac3c27de407b5e03681190284f357fef39d3843a387f2d8225bdf98038eafd99",
+      "f925bc2a5c6a4217ad58a1ab9081cb7f96da4dc6668548819126c5212ea06096",
+      "original_capture"
+     ]
+    ],
+    "supplements": []
+   },
+   "attempt_jobs": [
+    "cont-fd0b826945c91e690d6743b5",
+    "op-x"
+   ],
+   "conflict": {
+    "message": "continuation refused: research_receipt_conflict (intent_id)",
+    "reason_code": "research_receipt_conflict",
+    "records_unchanged": true,
+    "refused": "ContinuationRefused"
+   },
+   "failure_verdicts_unchanged": true,
+   "final": {
+    "grants": [],
+    "intents": [
+     {
+      "capacity_grant": null,
+      "family": "op-x",
+      "history": [
+       [
+        "intended",
+        "evidence_gate_refused"
+       ],
+       [
+        "published",
+        "evidence_gate_refused"
+       ],
+       [
+        "admitted",
+        "evidence_gate_refused"
+       ],
+       [
+        "returned",
+        "successor_failed"
+       ],
+       [
+        "completed",
+        "successor_failed"
+       ]
+      ],
+      "hold": null,
+      "id": "fd0b826945c91e690d6743b5ec30ef478c772c3d0d1943df93c70aa2aa0b2da6",
+      "origin_job": "op-x",
+      "ownership": "origin_unbound",
+      "reason_code": "successor_failed",
+      "research_coverage": null,
+      "research_receipt": null,
+      "route": "evidence_repair",
+      "state": "completed",
+      "successor_job": "cont-fd0b826945c91e690d6743b5",
+      "version": 5
+     },
+     {
+      "capacity_grant": null,
+      "family": "op-x",
+      "history": [
+       [
+        "research_required",
+        "two_distinct_failures"
+       ],
+       [
+        "completed",
+        "research_receipt_accepted"
+       ]
+      ],
+      "hold": null,
+      "id": "ac3c27de407b5e03681190284f357fef39d3843a387f2d8225bdf98038eafd99",
+      "origin_job": "cont-fd0b826945c91e690d6743b5",
+      "ownership": null,
+      "reason_code": "research_receipt_accepted",
+      "research_coverage": "original_capture",
+      "research_receipt": "f925bc2a5c6a4217ad58a1ab9081cb7f96da4dc6668548819126c5212ea06096",
+      "route": "research",
+      "state": "completed",
+      "successor_job": null,
+      "version": 2
+     },
+     {
+      "capacity_grant": null,
+      "family": "op-x",
+      "history": [
+       [
+        "intended",
+        "evidence_gate_refused"
+       ],
+       [
+        "published",
+        "evidence_gate_refused"
+       ],
+       [
+        "admitted",
+        "evidence_gate_refused"
+       ]
+      ],
+      "hold": null,
+      "id": "4e7c27499684e0a48d5abea17886c35c1382e01caa7563036d040f21efb51960",
+      "origin_job": "cont-fd0b826945c91e690d6743b5",
+      "ownership": "inherited",
+      "reason_code": "evidence_gate_refused",
+      "research_coverage": null,
+      "research_receipt": null,
+      "route": "evidence_repair",
+      "state": "admitted",
+      "successor_job": "cont-4e7c27499684e0a48d5abea1",
+      "version": 3
+     }
+    ],
+    "jobs": {
+     "cont-4e7c27499684e0a48d5abea1": [
+      "queued",
+      null
+     ],
+     "cont-fd0b826945c91e690d6743b5": [
+      "failed",
+      "evidence_gate_refused"
+     ],
+     "op-x": [
+      "failed",
+      "evidence_gate_refused"
+     ]
+    },
+    "receipts": [
+     [
+      "ac3c27de407b5e03681190284f357fef39d3843a387f2d8225bdf98038eafd99",
+      "f925bc2a5c6a4217ad58a1ab9081cb7f96da4dc6668548819126c5212ea06096",
+      "original_capture"
+     ]
+    ],
+    "supplements": []
+   },
+   "held_families": {
+    "op-x": "two_distinct_failures"
+   },
+   "old_repair_unchanged": true,
+   "one_successor": true,
+   "replay": {
+    "records_unchanged": true,
+    "value": {
+     "accepted": true,
+     "accepted_at": "2026-09-30T00:00:00.000001+00:00",
+     "authority": "owner scoped research completion for one continuation intent: not an operation acceptance, a repair verdict, an incident resolution or a promotion",
+     "cached": true,
+     "coverage": "original_capture",
+     "covered_jobs": [
+      "cont-fd0b826945c91e690d6743b5",
+      "op-x"
+     ],
+     "dispatch": {
+      "manifest_sha256": "fa799daad91dd195641d53e983adfa2dcfad145325512c18fd7c1258635d066e",
+      "program": "rp-001",
+      "run_id": "rp-001.c001",
+      "snapshot_sha256": "94208fc76260f7a8dc7dc7609f20aa8446945ab5531c0e884469dbdc4196ae1b"
+     },
+     "evidence_refs": [
+      "sha256:4c0f0177946609f29882b5324ba1f997cf08f49efaa2010c06caed5a14b01f45"
+     ],
+     "family": "op-x",
+     "inspections": [
+      "insp-03efc5b6-ba6c-5e20-af65-0988eaf986e5",
+      "insp-6c2a3953-f1e8-57cc-abd7-a85a4057ee02"
+     ],
+     "intent_id": "ac3c27de407b5e03681190284f357fef39d3843a387f2d8225bdf98038eafd99",
+     "investigation": "aab8c6d6d16bbfa008306c149b180badc63918ee202f2b74479ad210824e0be8",
+     "policy_id": "policy-1",
+     "receipt_sha256": "f925bc2a5c6a4217ad58a1ab9081cb7f96da4dc6668548819126c5212ea06096",
+     "supplement_sha256": null
+    }
+   },
+   "research_rows_unchanged": true,
+   "start": {
+    "grants": [],
+    "intents": [
+     {
+      "capacity_grant": null,
+      "family": "op-x",
+      "history": [
+       [
+        "intended",
+        "evidence_gate_refused"
+       ],
+       [
+        "published",
+        "evidence_gate_refused"
+       ],
+       [
+        "admitted",
+        "evidence_gate_refused"
+       ],
+       [
+        "returned",
+        "successor_failed"
+       ],
+       [
+        "completed",
+        "successor_failed"
+       ]
+      ],
+      "hold": null,
+      "id": "fd0b826945c91e690d6743b5ec30ef478c772c3d0d1943df93c70aa2aa0b2da6",
+      "origin_job": "op-x",
+      "ownership": "origin_unbound",
+      "reason_code": "successor_failed",
+      "research_coverage": null,
+      "research_receipt": null,
+      "route": "evidence_repair",
+      "state": "completed",
+      "successor_job": "cont-fd0b826945c91e690d6743b5",
+      "version": 5
+     },
+     {
+      "capacity_grant": null,
+      "family": "op-x",
+      "history": [
+       [
+        "research_required",
+        "two_distinct_failures"
+       ]
+      ],
+      "hold": null,
+      "id": "ac3c27de407b5e03681190284f357fef39d3843a387f2d8225bdf98038eafd99",
+      "origin_job": "cont-fd0b826945c91e690d6743b5",
+      "ownership": null,
+      "reason_code": "two_distinct_failures",
+      "research_coverage": null,
+      "research_receipt": null,
+      "route": "research",
+      "state": "research_required",
+      "successor_job": null,
+      "version": 1
+     }
+    ],
+    "jobs": {
+     "cont-fd0b826945c91e690d6743b5": [
+      "failed",
+      "evidence_gate_refused"
+     ],
+     "op-x": [
+      "failed",
+      "evidence_gate_refused"
+     ]
+    },
+    "receipts": [],
+    "supplements": []
+   },
+   "state": {
+    "conductor_calls": [],
+    "control": "3ff4fb9b21d4236dbc863939e4dee011e7a5e71b1eeaf8e542407708187937f2",
+    "lane": "f691c1be0d5a7884ab3d1b14a2e230066b6b5034cee6233422310ab4cea59f1c"
+   },
+   "status": {
+    "capacity": {
+     "families": [],
+     "grants": []
+    },
+    "held_families": {},
+    "row": {
+     "capacity_grant": null,
+     "next_action": "none",
+     "receipt": {
+      "accepted_at": "2026-09-30T00:00:00.000001+00:00",
+      "authority": "owner scoped research completion for one continuation intent: not an operation acceptance, a repair verdict, an incident resolution or a promotion",
+      "coverage": "original_capture",
+      "covered_jobs": [
+       "cont-fd0b826945c91e690d6743b5",
+       "op-x"
+      ],
+      "dispatch": {
+       "manifest_sha256": "fa799daad91dd195641d53e983adfa2dcfad145325512c18fd7c1258635d066e",
+       "program": "rp-001",
+       "run_id": "rp-001.c001",
+       "snapshot_sha256": "94208fc76260f7a8dc7dc7609f20aa8446945ab5531c0e884469dbdc4196ae1b"
+      },
+      "evidence_refs": [
+       "sha256:4c0f0177946609f29882b5324ba1f997cf08f49efaa2010c06caed5a14b01f45"
+      ],
+      "family": "op-x",
+      "inspections": [
+       "insp-03efc5b6-ba6c-5e20-af65-0988eaf986e5",
+       "insp-6c2a3953-f1e8-57cc-abd7-a85a4057ee02"
+      ],
+      "intent_id": "ac3c27de407b5e03681190284f357fef39d3843a387f2d8225bdf98038eafd99",
+      "investigation": "aab8c6d6d16bbfa008306c149b180badc63918ee202f2b74479ad210824e0be8",
+      "policy_id": "policy-1",
+      "receipt_sha256": "f925bc2a5c6a4217ad58a1ab9081cb7f96da4dc6668548819126c5212ea06096",
+      "supplement_sha256": null
+     },
+     "refusal": null,
+     "research_receipt": "f925bc2a5c6a4217ad58a1ab9081cb7f96da4dc6668548819126c5212ea06096",
+     "state": "completed",
+     "supplement": null
+    }
+   },
+   "tick": {
+    "value": {
+     "actions": [
+      {
+       "effect": "research_resolved",
+       "route": "research",
+       "subject": "ac3c27de407b5e03681190284f357fef39d3843a387f2d8225bdf98038eafd99"
+      },
+      {
+       "effect": "admitted",
+       "route": "evidence_repair",
+       "subject": "4e7c27499684e0a48d5abea17886c35c1382e01caa7563036d040f21efb51960",
+       "successor_job": "cont-4e7c27499684e0a48d5abea1"
+      }
+     ],
+     "outcome": "progressed",
+     "owned_elsewhere": {
+      "count": 0,
+      "jobs": []
+     },
+     "policy_id": "policy-1",
+     "reason_code": null,
+     "schema": "urn:zeus:continuation-tick:1",
+     "skipped": []
+    }
+   },
+   "tick_again": {
+    "value": {
+     "actions": [],
+     "outcome": "idle",
+     "owned_elsewhere": {
+      "count": 0,
+      "jobs": []
+     },
+     "policy_id": "policy-1",
+     "reason_code": null,
+     "schema": "urn:zeus:continuation-tick:1",
+     "skipped": []
+    }
+   },
+   "tick_before": {
+    "value": {
+     "actions": [],
+     "outcome": "idle",
+     "owned_elsewhere": {
+      "count": 0,
+      "jobs": []
+     },
+     "policy_id": "policy-1",
+     "reason_code": null,
+     "schema": "urn:zeus:continuation-tick:1",
+     "skipped": []
+    }
+   },
+   "tick_restarted": {
+    "value": {
+     "actions": [],
+     "outcome": "idle",
+     "owned_elsewhere": {
+      "count": 0,
+      "jobs": []
+     },
+     "policy_id": "policy-1",
+     "reason_code": null,
+     "schema": "urn:zeus:continuation-tick:1",
+     "skipped": []
+    }
+   }
+  },
+  "lane_after_acceptance": {
+   "changed": {
+    "value": {
+     "actions": [],
+     "outcome": "blocked",
+     "owned_elsewhere": {
+      "count": 0,
+      "jobs": []
+     },
+     "policy_id": "policy-1",
+     "reason_code": null,
+     "schema": "urn:zeus:continuation-tick:1",
+     "skipped": [
+      {
+       "next_owner": "operator",
+       "reason_code": "research_attempt_changed",
+       "subject": "ac3c27de407b5e03681190284f357fef39d3843a387f2d8225bdf98038eafd99"
+      }
+     ]
+    }
+   },
+   "changed_research": {
+    "jobs": 2,
+    "state": "research_required"
+   },
+   "unreadable": {
+    "value": {
+     "actions": [],
+     "outcome": "blocked",
+     "owned_elsewhere": {
+      "count": 0,
+      "jobs": []
+     },
+     "policy_id": "policy-1",
+     "reason_code": null,
+     "schema": "urn:zeus:continuation-tick:1",
+     "skipped": [
+      {
+       "error_type": "ConnectionError",
+       "reason_code": "unavailable",
+       "subject": "ac3c27de407b5e03681190284f357fef39d3843a387f2d8225bdf98038eafd99"
+      }
+     ]
+    }
+   },
+   "unreadable_research": {
+    "jobs": 2,
+    "state": "research_required"
+   }
+  },
+  "refusals": {
+   "changed_attempt": {
+    "accept": {
+     "message": "continuation refused: research_attempts_changed (attempts)",
+     "reason_code": "research_attempts_changed",
+     "records_unchanged": true,
+     "refused": "ContinuationRefused"
+    },
+    "receipts": 0,
+    "research": {
+     "jobs": 2,
+     "state": "research_required"
+    },
+    "tick": {
+     "value": {
+      "actions": [],
+      "outcome": "idle",
+      "owned_elsewhere": {
+       "count": 0,
+       "jobs": []
+      },
+      "policy_id": "policy-1",
+      "reason_code": null,
+      "schema": "urn:zeus:continuation-tick:1",
+      "skipped": []
+     }
+    }
+   },
+   "drop_one": {
+    "accept": {
+     "message": "continuation refused: research_coverage_partial (attempts)",
+     "reason_code": "research_coverage_partial",
+     "records_unchanged": true,
+     "refused": "ContinuationRefused"
+    },
+    "receipts": 0,
+    "research": {
+     "jobs": 2,
+     "state": "research_required"
+    },
+    "tick": {
+     "value": {
+      "actions": [],
+      "outcome": "idle",
+      "owned_elsewhere": {
+       "count": 0,
+       "jobs": []
+      },
+      "policy_id": "policy-1",
+      "reason_code": null,
+      "schema": "urn:zeus:continuation-tick:1",
+      "skipped": []
+     }
+    }
+   },
+   "foreign_policy": {
+    "accept": {
+     "message": "continuation refused: research_policy_foreign (policy)",
+     "reason_code": "research_policy_foreign",
+     "records_unchanged": true,
+     "refused": "ContinuationRefused"
+    },
+    "receipts": 0,
+    "research": {
+     "jobs": 2,
+     "state": "research_required"
+    },
+    "tick": {
+     "value": {
+      "actions": [],
+      "outcome": "idle",
+      "owned_elsewhere": {
+       "count": 0,
+       "jobs": []
+      },
+      "policy_id": "policy-1",
+      "reason_code": null,
+      "schema": "urn:zeus:continuation-tick:1",
+      "skipped": []
+     }
+    }
+   },
+   "foreign_sha": {
+    "accept": {
+     "message": "continuation refused: research_policy_foreign (policy)",
+     "reason_code": "research_policy_foreign",
+     "records_unchanged": true,
+     "refused": "ContinuationRefused"
+    },
+    "receipts": 0,
+    "research": {
+     "jobs": 2,
+     "state": "research_required"
+    },
+    "tick": {
+     "value": {
+      "actions": [],
+      "outcome": "idle",
+      "owned_elsewhere": {
+       "count": 0,
+       "jobs": []
+      },
+      "policy_id": "policy-1",
+      "reason_code": null,
+      "schema": "urn:zeus:continuation-tick:1",
+      "skipped": []
+     }
+    }
+   },
+   "mutable_evidence": {
+    "accept": {
+     "message": "continuation refused: research_receipt_invalid (evidence_refs)",
+     "reason_code": "research_receipt_invalid",
+     "records_unchanged": true,
+     "refused": "ContinuationRefused"
+    },
+    "receipts": 0,
+    "research": {
+     "jobs": 2,
+     "state": "research_required"
+    },
+    "tick": {
+     "value": {
+      "actions": [],
+      "outcome": "idle",
+      "owned_elsewhere": {
+       "count": 0,
+       "jobs": []
+      },
+      "policy_id": "policy-1",
+      "reason_code": null,
+      "schema": "urn:zeus:continuation-tick:1",
+      "skipped": []
+     }
+    }
+   },
+   "no_evidence": {
+    "accept": {
+     "message": "continuation refused: research_receipt_invalid (evidence_refs)",
+     "reason_code": "research_receipt_invalid",
+     "records_unchanged": true,
+     "refused": "ContinuationRefused"
+    },
+    "receipts": 0,
+    "research": {
+     "jobs": 2,
+     "state": "research_required"
+    },
+    "tick": {
+     "value": {
+      "actions": [],
+      "outcome": "idle",
+      "owned_elsewhere": {
+       "count": 0,
+       "jobs": []
+      },
+      "policy_id": "policy-1",
+      "reason_code": null,
+      "schema": "urn:zeus:continuation-tick:1",
+      "skipped": []
+     }
+    }
+   },
+   "other_family": {
+    "accept": {
+     "message": "continuation refused: research_family_mismatch (family)",
+     "reason_code": "research_family_mismatch",
+     "records_unchanged": true,
+     "refused": "ContinuationRefused"
+    },
+    "receipts": 0,
+    "research": {
+     "jobs": 2,
+     "state": "research_required"
+    },
+    "tick": {
+     "value": {
+      "actions": [],
+      "outcome": "idle",
+      "owned_elsewhere": {
+       "count": 0,
+       "jobs": []
+      },
+      "policy_id": "policy-1",
+      "reason_code": null,
+      "schema": "urn:zeus:continuation-tick:1",
+      "skipped": []
+     }
+    }
+   },
+   "other_run": {
+    "accept": {
+     "message": "continuation refused: research_dispatch_mismatch (dispatch)",
+     "reason_code": "research_dispatch_mismatch",
+     "records_unchanged": true,
+     "refused": "ContinuationRefused"
+    },
+    "receipts": 0,
+    "research": {
+     "jobs": 2,
+     "state": "research_required"
+    },
+    "tick": {
+     "value": {
+      "actions": [],
+      "outcome": "idle",
+      "owned_elsewhere": {
+       "count": 0,
+       "jobs": []
+      },
+      "policy_id": "policy-1",
+      "reason_code": null,
+      "schema": "urn:zeus:continuation-tick:1",
+      "skipped": []
+     }
+    }
+   },
+   "unknown_intent": {
+    "accept": {
+     "message": "continuation refused: research_intent_unknown (intent_id)",
+     "reason_code": "research_intent_unknown",
+     "records_unchanged": true,
+     "refused": "ContinuationRefused"
+    },
+    "receipts": 0,
+    "research": {
+     "jobs": 2,
+     "state": "research_required"
+    },
+    "tick": {
+     "value": {
+      "actions": [],
+      "outcome": "idle",
+      "owned_elsewhere": {
+       "count": 0,
+       "jobs": []
+      },
+      "policy_id": "policy-1",
+      "reason_code": null,
+      "schema": "urn:zeus:continuation-tick:1",
+      "skipped": []
+     }
+    }
+   },
+   "unknown_investigation": {
+    "accept": {
+     "message": "continuation refused: research_investigation_unknown (investigation)",
+     "reason_code": "research_investigation_unknown",
+     "records_unchanged": true,
+     "refused": "ContinuationRefused"
+    },
+    "receipts": 0,
+    "research": {
+     "jobs": 2,
+     "state": "research_required"
+    },
+    "tick": {
+     "value": {
+      "actions": [],
+      "outcome": "idle",
+      "owned_elsewhere": {
+       "count": 0,
+       "jobs": []
+      },
+      "policy_id": "policy-1",
+      "reason_code": null,
+      "schema": "urn:zeus:continuation-tick:1",
+      "skipped": []
+     }
+    }
+   },
+   "wrong_inspection": {
+    "accept": {
+     "message": "continuation refused: research_inspection_mismatch (attempts[].inspection)",
+     "reason_code": "research_inspection_mismatch",
+     "records_unchanged": true,
+     "refused": "ContinuationRefused"
+    },
+    "receipts": 0,
+    "research": {
+     "jobs": 2,
+     "state": "research_required"
+    },
+    "tick": {
+     "value": {
+      "actions": [],
+      "outcome": "idle",
+      "owned_elsewhere": {
+       "count": 0,
+       "jobs": []
+      },
+      "policy_id": "policy-1",
+      "reason_code": null,
+      "schema": "urn:zeus:continuation-tick:1",
+      "skipped": []
+     }
+    }
+   },
+   "wrong_intent": {
+    "accept": {
+     "message": "continuation refused: research_intent_wrong (intent_id)",
+     "reason_code": "research_intent_wrong",
+     "records_unchanged": true,
+     "refused": "ContinuationRefused"
+    },
+    "receipts": 0,
+    "research": {
+     "jobs": 2,
+     "state": "research_required"
+    },
+    "tick": {
+     "value": {
+      "actions": [],
+      "outcome": "idle",
+      "owned_elsewhere": {
+       "count": 0,
+       "jobs": []
+      },
+      "policy_id": "policy-1",
+      "reason_code": null,
+      "schema": "urn:zeus:continuation-tick:1",
+      "skipped": []
+     }
+    }
+   }
+  },
+  "restarted": {
+   "completions": 1,
+   "default": {
+    "value": {
+     "actions": [],
+     "outcome": "idle",
+     "owned_elsewhere": {
+      "count": 0,
+      "jobs": []
+     },
+     "policy_id": "policy-1",
+     "reason_code": null,
+     "schema": "urn:zeus:continuation-tick:1",
+     "skipped": []
+    }
+   },
+   "final": {
+    "grants": [],
+    "intents": [
+     {
+      "capacity_grant": null,
+      "family": "op-x",
+      "history": [
+       [
+        "intended",
+        "evidence_gate_refused"
+       ],
+       [
+        "published",
+        "evidence_gate_refused"
+       ],
+       [
+        "admitted",
+        "evidence_gate_refused"
+       ],
+       [
+        "returned",
+        "successor_failed"
+       ],
+       [
+        "completed",
+        "successor_failed"
+       ]
+      ],
+      "hold": null,
+      "id": "fd0b826945c91e690d6743b5ec30ef478c772c3d0d1943df93c70aa2aa0b2da6",
+      "origin_job": "op-x",
+      "ownership": "origin_unbound",
+      "reason_code": "successor_failed",
+      "research_coverage": null,
+      "research_receipt": null,
+      "route": "evidence_repair",
+      "state": "completed",
+      "successor_job": "cont-fd0b826945c91e690d6743b5",
+      "version": 5
+     },
+     {
+      "capacity_grant": null,
+      "family": "op-x",
+      "history": [
+       [
+        "research_required",
+        "two_distinct_failures"
+       ],
+       [
+        "completed",
+        "research_receipt_accepted"
+       ]
+      ],
+      "hold": null,
+      "id": "ac3c27de407b5e03681190284f357fef39d3843a387f2d8225bdf98038eafd99",
+      "origin_job": "cont-fd0b826945c91e690d6743b5",
+      "ownership": null,
+      "reason_code": "research_receipt_accepted",
+      "research_coverage": "original_capture",
+      "research_receipt": "f925bc2a5c6a4217ad58a1ab9081cb7f96da4dc6668548819126c5212ea06096",
+      "route": "research",
+      "state": "completed",
+      "successor_job": null,
+      "version": 2
+     },
+     {
+      "capacity_grant": null,
+      "family": "op-x",
+      "history": [
+       [
+        "intended",
+        "evidence_gate_refused"
+       ],
+       [
+        "published",
+        "evidence_gate_refused"
+       ],
+       [
+        "admitted",
+        "evidence_gate_refused"
+       ]
+      ],
+      "hold": null,
+      "id": "4e7c27499684e0a48d5abea17886c35c1382e01caa7563036d040f21efb51960",
+      "origin_job": "cont-fd0b826945c91e690d6743b5",
+      "ownership": "inherited",
+      "reason_code": "evidence_gate_refused",
+      "research_coverage": null,
+      "research_receipt": null,
+      "route": "evidence_repair",
+      "state": "admitted",
+      "successor_job": "cont-4e7c27499684e0a48d5abea1",
+      "version": 3
+     }
+    ],
+    "jobs": {
+     "cont-4e7c27499684e0a48d5abea1": [
+      "queued",
+      null
+     ],
+     "cont-fd0b826945c91e690d6743b5": [
+      "failed",
+      "evidence_gate_refused"
+     ],
+     "op-x": [
+      "failed",
+      "evidence_gate_refused"
+     ]
+    },
+    "receipts": [
+     [
+      "ac3c27de407b5e03681190284f357fef39d3843a387f2d8225bdf98038eafd99",
+      "f925bc2a5c6a4217ad58a1ab9081cb7f96da4dc6668548819126c5212ea06096",
+      "original_capture"
+     ]
+    ],
+    "supplements": []
+   },
+   "first": {
+    "value": {
+     "actions": [
+      {
+       "effect": "research_resolved",
+       "route": "research",
+       "subject": "ac3c27de407b5e03681190284f357fef39d3843a387f2d8225bdf98038eafd99"
+      },
+      {
+       "effect": "admitted",
+       "route": "evidence_repair",
+       "subject": "4e7c27499684e0a48d5abea17886c35c1382e01caa7563036d040f21efb51960",
+       "successor_job": "cont-4e7c27499684e0a48d5abea1"
+      }
+     ],
+     "outcome": "progressed",
+     "owned_elsewhere": {
+      "count": 0,
+      "jobs": []
+     },
+     "policy_id": "policy-1",
+     "reason_code": null,
+     "schema": "urn:zeus:continuation-tick:1",
+     "skipped": []
+    }
+   },
+   "repairs": 1,
+   "second": {
+    "value": {
+     "actions": [],
+     "outcome": "idle",
+     "owned_elsewhere": {
+      "count": 0,
+      "jobs": []
+     },
+     "policy_id": "policy-1",
+     "reason_code": null,
+     "schema": "urn:zeus:continuation-tick:1",
+     "skipped": []
+    }
+   }
+  }
+ },
+ "supplement": {
+  "rechecked": {
+   "attestation_lost": {
+    "final": {
+     "grants": [],
+     "intents": [
+      {
+       "capacity_grant": null,
+       "family": "op-x",
+       "history": [
+        [
+         "intended",
+         "evidence_gate_refused"
+        ],
+        [
+         "published",
+         "evidence_gate_refused"
+        ],
+        [
+         "admitted",
+         "evidence_gate_refused"
+        ],
+        [
+         "returned",
+         "successor_failed"
+        ],
+        [
+         "completed",
+         "successor_failed"
+        ]
+       ],
+       "hold": null,
+       "id": "fd0b826945c91e690d6743b5ec30ef478c772c3d0d1943df93c70aa2aa0b2da6",
+       "origin_job": "op-x",
+       "ownership": "origin_unbound",
+       "reason_code": "successor_failed",
+       "research_coverage": null,
+       "research_receipt": null,
+       "route": "evidence_repair",
+       "state": "completed",
+       "successor_job": "cont-fd0b826945c91e690d6743b5",
+       "version": 5
+      },
+      {
+       "capacity_grant": null,
+       "family": "op-x",
+       "history": [
+        [
+         "research_required",
+         "two_distinct_failures"
+        ],
+        [
+         "completed",
+         "research_receipt_accepted"
+        ]
+       ],
+       "hold": null,
+       "id": "ac3c27de407b5e03681190284f357fef39d3843a387f2d8225bdf98038eafd99",
+       "origin_job": "cont-fd0b826945c91e690d6743b5",
+       "ownership": null,
+       "reason_code": "research_receipt_accepted",
+       "research_coverage": "owner_supplement",
+       "research_receipt": "f291ff9a4b1c325abc7b4e242418ded47223c158f9eedd29543e550a6707258d",
+       "route": "research",
+       "state": "completed",
+       "successor_job": null,
+       "version": 2
+      },
+      {
+       "capacity_grant": null,
+       "family": "op-z",
+       "history": [
+        [
+         "intended",
+         "evidence_gate_refused"
+        ],
+        [
+         "published",
+         "evidence_gate_refused"
+        ],
+        [
+         "admitted",
+         "evidence_gate_refused"
+        ],
+        [
+         "returned",
+         "successor_failed"
+        ],
+        [
+         "completed",
+         "successor_failed"
+        ]
+       ],
+       "hold": null,
+       "id": "e385359b47c285b1051eb99f530248b4b45b9e3d708037689088fd9c02d08bbc",
+       "origin_job": "op-z",
+       "ownership": "origin_unbound",
+       "reason_code": "successor_failed",
+       "research_coverage": null,
+       "research_receipt": null,
+       "route": "evidence_repair",
+       "state": "completed",
+       "successor_job": "cont-e385359b47c285b1051eb99f",
+       "version": 5
+      },
+      {
+       "capacity_grant": null,
+       "family": "op-z",
+       "history": [
+        [
+         "research_required",
+         "two_distinct_failures"
+        ]
+       ],
+       "hold": null,
+       "id": "7274bab69cd3522d24454f2f4f760489115c575c2d76d7476e683cd9f7e35f79",
+       "origin_job": "cont-e385359b47c285b1051eb99f",
+       "ownership": null,
+       "reason_code": "two_distinct_failures",
+       "research_coverage": null,
+       "research_receipt": null,
+       "route": "research",
+       "state": "research_required",
+       "successor_job": null,
+       "version": 1
+      },
+      {
+       "capacity_grant": null,
+       "family": "op-x",
+       "history": [
+        [
+         "intended",
+         "evidence_gate_refused"
+        ],
+        [
+         "published",
+         "evidence_gate_refused"
+        ],
+        [
+         "admitted",
+         "evidence_gate_refused"
+        ]
+       ],
+       "hold": null,
+       "id": "4e7c27499684e0a48d5abea17886c35c1382e01caa7563036d040f21efb51960",
+       "origin_job": "cont-fd0b826945c91e690d6743b5",
+       "ownership": "inherited",
+       "reason_code": "evidence_gate_refused",
+       "research_coverage": null,
+       "research_receipt": null,
+       "route": "evidence_repair",
+       "state": "admitted",
+       "successor_job": "cont-4e7c27499684e0a48d5abea1",
+       "version": 3
+      }
+     ],
+     "jobs": {
+      "cont-4e7c27499684e0a48d5abea1": [
+       "queued",
+       null
+      ],
+      "cont-e385359b47c285b1051eb99f": [
+       "failed",
+       "evidence_gate_refused"
+      ],
+      "cont-fd0b826945c91e690d6743b5": [
+       "failed",
+       "evidence_gate_refused"
+      ],
+      "op-x": [
+       "failed",
+       "evidence_gate_refused"
+      ],
+      "op-z": [
+       "failed",
+       "evidence_gate_refused"
+      ]
+     },
+     "receipts": [
+      [
+       "ac3c27de407b5e03681190284f357fef39d3843a387f2d8225bdf98038eafd99",
+       "f291ff9a4b1c325abc7b4e242418ded47223c158f9eedd29543e550a6707258d",
+       "owner_supplement"
+      ]
+     ],
+     "supplements": [
+      [
+       "ac3c27de407b5e03681190284f357fef39d3843a387f2d8225bdf98038eafd99",
+       "6560b139c7167b496450b9d1d4c8b0dae51c447c40748248e320408f525b5088"
+      ]
+     ]
+    },
+    "held": {
+     "receipts_unchanged": true,
+     "research": {
+      "jobs": 4,
+      "state": "research_required"
+     },
+     "tick": {
+      "value": {
+       "actions": [],
+       "outcome": "blocked",
+       "owned_elsewhere": {
+        "count": 0,
+        "jobs": []
+       },
+       "policy_id": "policy-1",
+       "reason_code": null,
+       "schema": "urn:zeus:continuation-tick:1",
+       "skipped": [
+        {
+         "next_owner": "portfolio_research",
+         "reason_code": "research_evidence_unreadable",
+         "subject": "ac3c27de407b5e03681190284f357fef39d3843a387f2d8225bdf98038eafd99"
+        }
+       ]
+      }
+     }
+    },
+    "restored_tick": {
+     "value": {
+      "actions": [
+       {
+        "effect": "research_resolved",
+        "route": "research",
+        "subject": "ac3c27de407b5e03681190284f357fef39d3843a387f2d8225bdf98038eafd99"
+       },
+       {
+        "effect": "admitted",
+        "route": "evidence_repair",
+        "subject": "4e7c27499684e0a48d5abea17886c35c1382e01caa7563036d040f21efb51960",
+        "successor_job": "cont-4e7c27499684e0a48d5abea1"
+       }
+      ],
+      "outcome": "progressed",
+      "owned_elsewhere": {
+       "count": 0,
+       "jobs": []
+      },
+      "policy_id": "policy-1",
+      "reason_code": null,
+      "schema": "urn:zeus:continuation-tick:1",
+      "skipped": []
+     }
+    }
+   },
+   "ownership_changed": {
+    "final": {
+     "grants": [],
+     "intents": [
+      {
+       "capacity_grant": null,
+       "family": "op-x",
+       "history": [
+        [
+         "intended",
+         "evidence_gate_refused"
+        ],
+        [
+         "published",
+         "evidence_gate_refused"
+        ],
+        [
+         "admitted",
+         "evidence_gate_refused"
+        ],
+        [
+         "returned",
+         "successor_failed"
+        ],
+        [
+         "completed",
+         "successor_failed"
+        ]
+       ],
+       "hold": null,
+       "id": "fd0b826945c91e690d6743b5ec30ef478c772c3d0d1943df93c70aa2aa0b2da6",
+       "origin_job": "op-x",
+       "ownership": "origin_unbound",
+       "reason_code": "successor_failed",
+       "research_coverage": null,
+       "research_receipt": null,
+       "route": "evidence_repair",
+       "state": "completed",
+       "successor_job": "cont-fd0b826945c91e690d6743b5",
+       "version": 5
+      },
+      {
+       "capacity_grant": null,
+       "family": "op-x",
+       "history": [
+        [
+         "research_required",
+         "two_distinct_failures"
+        ],
+        [
+         "completed",
+         "research_receipt_accepted"
+        ]
+       ],
+       "hold": null,
+       "id": "ac3c27de407b5e03681190284f357fef39d3843a387f2d8225bdf98038eafd99",
+       "origin_job": "cont-fd0b826945c91e690d6743b5",
+       "ownership": null,
+       "reason_code": "research_receipt_accepted",
+       "research_coverage": "owner_supplement",
+       "research_receipt": "f291ff9a4b1c325abc7b4e242418ded47223c158f9eedd29543e550a6707258d",
+       "route": "research",
+       "state": "completed",
+       "successor_job": null,
+       "version": 2
+      },
+      {
+       "capacity_grant": null,
+       "family": "op-z",
+       "history": [
+        [
+         "intended",
+         "evidence_gate_refused"
+        ],
+        [
+         "published",
+         "evidence_gate_refused"
+        ],
+        [
+         "admitted",
+         "evidence_gate_refused"
+        ],
+        [
+         "returned",
+         "successor_failed"
+        ],
+        [
+         "completed",
+         "successor_failed"
+        ]
+       ],
+       "hold": null,
+       "id": "e385359b47c285b1051eb99f530248b4b45b9e3d708037689088fd9c02d08bbc",
+       "origin_job": "op-z",
+       "ownership": "origin_unbound",
+       "reason_code": "successor_failed",
+       "research_coverage": null,
+       "research_receipt": null,
+       "route": "evidence_repair",
+       "state": "completed",
+       "successor_job": "cont-e385359b47c285b1051eb99f",
+       "version": 5
+      },
+      {
+       "capacity_grant": null,
+       "family": "op-z",
+       "history": [
+        [
+         "research_required",
+         "two_distinct_failures"
+        ]
+       ],
+       "hold": null,
+       "id": "7274bab69cd3522d24454f2f4f760489115c575c2d76d7476e683cd9f7e35f79",
+       "origin_job": "cont-e385359b47c285b1051eb99f",
+       "ownership": null,
+       "reason_code": "two_distinct_failures",
+       "research_coverage": null,
+       "research_receipt": null,
+       "route": "research",
+       "state": "research_required",
+       "successor_job": null,
+       "version": 1
+      },
+      {
+       "capacity_grant": null,
+       "family": "op-x",
+       "history": [
+        [
+         "intended",
+         "evidence_gate_refused"
+        ],
+        [
+         "published",
+         "evidence_gate_refused"
+        ],
+        [
+         "admitted",
+         "evidence_gate_refused"
+        ]
+       ],
+       "hold": null,
+       "id": "4e7c27499684e0a48d5abea17886c35c1382e01caa7563036d040f21efb51960",
+       "origin_job": "cont-fd0b826945c91e690d6743b5",
+       "ownership": "inherited",
+       "reason_code": "evidence_gate_refused",
+       "research_coverage": null,
+       "research_receipt": null,
+       "route": "evidence_repair",
+       "state": "admitted",
+       "successor_job": "cont-4e7c27499684e0a48d5abea1",
+       "version": 3
+      }
+     ],
+     "jobs": {
+      "cont-4e7c27499684e0a48d5abea1": [
+       "queued",
+       null
+      ],
+      "cont-e385359b47c285b1051eb99f": [
+       "failed",
+       "evidence_gate_refused"
+      ],
+      "cont-fd0b826945c91e690d6743b5": [
+       "failed",
+       "evidence_gate_refused"
+      ],
+      "op-x": [
+       "failed",
+       "evidence_gate_refused"
+      ],
+      "op-z": [
+       "failed",
+       "evidence_gate_refused"
+      ]
+     },
+     "receipts": [
+      [
+       "ac3c27de407b5e03681190284f357fef39d3843a387f2d8225bdf98038eafd99",
+       "f291ff9a4b1c325abc7b4e242418ded47223c158f9eedd29543e550a6707258d",
+       "owner_supplement"
+      ]
+     ],
+     "supplements": [
+      [
+       "ac3c27de407b5e03681190284f357fef39d3843a387f2d8225bdf98038eafd99",
+       "6560b139c7167b496450b9d1d4c8b0dae51c447c40748248e320408f525b5088"
+      ]
+     ]
+    },
+    "held": {
+     "receipts_unchanged": true,
+     "research": {
+      "jobs": 4,
+      "state": "research_required"
+     },
+     "tick": {
+      "value": {
+       "actions": [],
+       "outcome": "blocked",
+       "owned_elsewhere": {
+        "count": 0,
+        "jobs": []
+       },
+       "policy_id": "policy-1",
+       "reason_code": null,
+       "schema": "urn:zeus:continuation-tick:1",
+       "skipped": [
+        {
+         "next_owner": "portfolio_research",
+         "reason_code": "research_supplement_ownership_mismatch",
+         "subject": "ac3c27de407b5e03681190284f357fef39d3843a387f2d8225bdf98038eafd99"
+        }
+       ]
+      }
+     }
+    },
+    "restored_tick": {
+     "value": {
+      "actions": [
+       {
+        "effect": "research_resolved",
+        "route": "research",
+        "subject": "ac3c27de407b5e03681190284f357fef39d3843a387f2d8225bdf98038eafd99"
+       },
+       {
+        "effect": "admitted",
+        "route": "evidence_repair",
+        "subject": "4e7c27499684e0a48d5abea17886c35c1382e01caa7563036d040f21efb51960",
+        "successor_job": "cont-4e7c27499684e0a48d5abea1"
+       }
+      ],
+      "outcome": "progressed",
+      "owned_elsewhere": {
+       "count": 0,
+       "jobs": []
+      },
+      "policy_id": "policy-1",
+      "reason_code": null,
+      "schema": "urn:zeus:continuation-tick:1",
+      "skipped": []
+     }
+    }
+   },
+   "review_withdrawn": {
+    "final": {
+     "grants": [],
+     "intents": [
+      {
+       "capacity_grant": null,
+       "family": "op-x",
+       "history": [
+        [
+         "intended",
+         "evidence_gate_refused"
+        ],
+        [
+         "published",
+         "evidence_gate_refused"
+        ],
+        [
+         "admitted",
+         "evidence_gate_refused"
+        ],
+        [
+         "returned",
+         "successor_failed"
+        ],
+        [
+         "completed",
+         "successor_failed"
+        ]
+       ],
+       "hold": null,
+       "id": "fd0b826945c91e690d6743b5ec30ef478c772c3d0d1943df93c70aa2aa0b2da6",
+       "origin_job": "op-x",
+       "ownership": "origin_unbound",
+       "reason_code": "successor_failed",
+       "research_coverage": null,
+       "research_receipt": null,
+       "route": "evidence_repair",
+       "state": "completed",
+       "successor_job": "cont-fd0b826945c91e690d6743b5",
+       "version": 5
+      },
+      {
+       "capacity_grant": null,
+       "family": "op-x",
+       "history": [
+        [
+         "research_required",
+         "two_distinct_failures"
+        ],
+        [
+         "completed",
+         "research_receipt_accepted"
+        ]
+       ],
+       "hold": null,
+       "id": "ac3c27de407b5e03681190284f357fef39d3843a387f2d8225bdf98038eafd99",
+       "origin_job": "cont-fd0b826945c91e690d6743b5",
+       "ownership": null,
+       "reason_code": "research_receipt_accepted",
+       "research_coverage": "owner_supplement",
+       "research_receipt": "f291ff9a4b1c325abc7b4e242418ded47223c158f9eedd29543e550a6707258d",
+       "route": "research",
+       "state": "completed",
+       "successor_job": null,
+       "version": 2
+      },
+      {
+       "capacity_grant": null,
+       "family": "op-z",
+       "history": [
+        [
+         "intended",
+         "evidence_gate_refused"
+        ],
+        [
+         "published",
+         "evidence_gate_refused"
+        ],
+        [
+         "admitted",
+         "evidence_gate_refused"
+        ],
+        [
+         "returned",
+         "successor_failed"
+        ],
+        [
+         "completed",
+         "successor_failed"
+        ]
+       ],
+       "hold": null,
+       "id": "e385359b47c285b1051eb99f530248b4b45b9e3d708037689088fd9c02d08bbc",
+       "origin_job": "op-z",
+       "ownership": "origin_unbound",
+       "reason_code": "successor_failed",
+       "research_coverage": null,
+       "research_receipt": null,
+       "route": "evidence_repair",
+       "state": "completed",
+       "successor_job": "cont-e385359b47c285b1051eb99f",
+       "version": 5
+      },
+      {
+       "capacity_grant": null,
+       "family": "op-z",
+       "history": [
+        [
+         "research_required",
+         "two_distinct_failures"
+        ]
+       ],
+       "hold": null,
+       "id": "7274bab69cd3522d24454f2f4f760489115c575c2d76d7476e683cd9f7e35f79",
+       "origin_job": "cont-e385359b47c285b1051eb99f",
+       "ownership": null,
+       "reason_code": "two_distinct_failures",
+       "research_coverage": null,
+       "research_receipt": null,
+       "route": "research",
+       "state": "research_required",
+       "successor_job": null,
+       "version": 1
+      },
+      {
+       "capacity_grant": null,
+       "family": "op-x",
+       "history": [
+        [
+         "intended",
+         "evidence_gate_refused"
+        ],
+        [
+         "published",
+         "evidence_gate_refused"
+        ],
+        [
+         "admitted",
+         "evidence_gate_refused"
+        ]
+       ],
+       "hold": null,
+       "id": "4e7c27499684e0a48d5abea17886c35c1382e01caa7563036d040f21efb51960",
+       "origin_job": "cont-fd0b826945c91e690d6743b5",
+       "ownership": "inherited",
+       "reason_code": "evidence_gate_refused",
+       "research_coverage": null,
+       "research_receipt": null,
+       "route": "evidence_repair",
+       "state": "admitted",
+       "successor_job": "cont-4e7c27499684e0a48d5abea1",
+       "version": 3
+      }
+     ],
+     "jobs": {
+      "cont-4e7c27499684e0a48d5abea1": [
+       "queued",
+       null
+      ],
+      "cont-e385359b47c285b1051eb99f": [
+       "failed",
+       "evidence_gate_refused"
+      ],
+      "cont-fd0b826945c91e690d6743b5": [
+       "failed",
+       "evidence_gate_refused"
+      ],
+      "op-x": [
+       "failed",
+       "evidence_gate_refused"
+      ],
+      "op-z": [
+       "failed",
+       "evidence_gate_refused"
+      ]
+     },
+     "receipts": [
+      [
+       "ac3c27de407b5e03681190284f357fef39d3843a387f2d8225bdf98038eafd99",
+       "f291ff9a4b1c325abc7b4e242418ded47223c158f9eedd29543e550a6707258d",
+       "owner_supplement"
+      ]
+     ],
+     "supplements": [
+      [
+       "ac3c27de407b5e03681190284f357fef39d3843a387f2d8225bdf98038eafd99",
+       "6560b139c7167b496450b9d1d4c8b0dae51c447c40748248e320408f525b5088"
+      ]
+     ]
+    },
+    "held": {
+     "receipts_unchanged": true,
+     "research": {
+      "jobs": 4,
+      "state": "research_required"
+     },
+     "tick": {
+      "value": {
+       "actions": [],
+       "outcome": "blocked",
+       "owned_elsewhere": {
+        "count": 0,
+        "jobs": []
+       },
+       "policy_id": "policy-1",
+       "reason_code": null,
+       "schema": "urn:zeus:continuation-tick:1",
+       "skipped": [
+        {
+         "next_owner": "portfolio_research",
+         "reason_code": "research_supplement_acceptance_unproven",
+         "subject": "ac3c27de407b5e03681190284f357fef39d3843a387f2d8225bdf98038eafd99"
+        }
+       ]
+      }
+     }
+    },
+    "restored_tick": {
+     "value": {
+      "actions": [
+       {
+        "effect": "research_resolved",
+        "route": "research",
+        "subject": "ac3c27de407b5e03681190284f357fef39d3843a387f2d8225bdf98038eafd99"
+       },
+       {
+        "effect": "admitted",
+        "route": "evidence_repair",
+        "subject": "4e7c27499684e0a48d5abea17886c35c1382e01caa7563036d040f21efb51960",
+        "successor_job": "cont-4e7c27499684e0a48d5abea1"
+       }
+      ],
+      "outcome": "progressed",
+      "owned_elsewhere": {
+       "count": 0,
+       "jobs": []
+      },
+      "policy_id": "policy-1",
+      "reason_code": null,
+      "schema": "urn:zeus:continuation-tick:1",
+      "skipped": []
+     }
+    }
+   },
+   "supplement_tampered": {
+    "final": {
+     "grants": [],
+     "intents": [
+      {
+       "capacity_grant": null,
+       "family": "op-x",
+       "history": [
+        [
+         "intended",
+         "evidence_gate_refused"
+        ],
+        [
+         "published",
+         "evidence_gate_refused"
+        ],
+        [
+         "admitted",
+         "evidence_gate_refused"
+        ],
+        [
+         "returned",
+         "successor_failed"
+        ],
+        [
+         "completed",
+         "successor_failed"
+        ]
+       ],
+       "hold": null,
+       "id": "fd0b826945c91e690d6743b5ec30ef478c772c3d0d1943df93c70aa2aa0b2da6",
+       "origin_job": "op-x",
+       "ownership": "origin_unbound",
+       "reason_code": "successor_failed",
+       "research_coverage": null,
+       "research_receipt": null,
+       "route": "evidence_repair",
+       "state": "completed",
+       "successor_job": "cont-fd0b826945c91e690d6743b5",
+       "version": 5
+      },
+      {
+       "capacity_grant": null,
+       "family": "op-x",
+       "history": [
+        [
+         "research_required",
+         "two_distinct_failures"
+        ],
+        [
+         "completed",
+         "research_receipt_accepted"
+        ]
+       ],
+       "hold": null,
+       "id": "ac3c27de407b5e03681190284f357fef39d3843a387f2d8225bdf98038eafd99",
+       "origin_job": "cont-fd0b826945c91e690d6743b5",
+       "ownership": null,
+       "reason_code": "research_receipt_accepted",
+       "research_coverage": "owner_supplement",
+       "research_receipt": "f291ff9a4b1c325abc7b4e242418ded47223c158f9eedd29543e550a6707258d",
+       "route": "research",
+       "state": "completed",
+       "successor_job": null,
+       "version": 2
+      },
+      {
+       "capacity_grant": null,
+       "family": "op-z",
+       "history": [
+        [
+         "intended",
+         "evidence_gate_refused"
+        ],
+        [
+         "published",
+         "evidence_gate_refused"
+        ],
+        [
+         "admitted",
+         "evidence_gate_refused"
+        ],
+        [
+         "returned",
+         "successor_failed"
+        ],
+        [
+         "completed",
+         "successor_failed"
+        ]
+       ],
+       "hold": null,
+       "id": "e385359b47c285b1051eb99f530248b4b45b9e3d708037689088fd9c02d08bbc",
+       "origin_job": "op-z",
+       "ownership": "origin_unbound",
+       "reason_code": "successor_failed",
+       "research_coverage": null,
+       "research_receipt": null,
+       "route": "evidence_repair",
+       "state": "completed",
+       "successor_job": "cont-e385359b47c285b1051eb99f",
+       "version": 5
+      },
+      {
+       "capacity_grant": null,
+       "family": "op-z",
+       "history": [
+        [
+         "research_required",
+         "two_distinct_failures"
+        ]
+       ],
+       "hold": null,
+       "id": "7274bab69cd3522d24454f2f4f760489115c575c2d76d7476e683cd9f7e35f79",
+       "origin_job": "cont-e385359b47c285b1051eb99f",
+       "ownership": null,
+       "reason_code": "two_distinct_failures",
+       "research_coverage": null,
+       "research_receipt": null,
+       "route": "research",
+       "state": "research_required",
+       "successor_job": null,
+       "version": 1
+      },
+      {
+       "capacity_grant": null,
+       "family": "op-x",
+       "history": [
+        [
+         "intended",
+         "evidence_gate_refused"
+        ],
+        [
+         "published",
+         "evidence_gate_refused"
+        ],
+        [
+         "admitted",
+         "evidence_gate_refused"
+        ]
+       ],
+       "hold": null,
+       "id": "4e7c27499684e0a48d5abea17886c35c1382e01caa7563036d040f21efb51960",
+       "origin_job": "cont-fd0b826945c91e690d6743b5",
+       "ownership": "inherited",
+       "reason_code": "evidence_gate_refused",
+       "research_coverage": null,
+       "research_receipt": null,
+       "route": "evidence_repair",
+       "state": "admitted",
+       "successor_job": "cont-4e7c27499684e0a48d5abea1",
+       "version": 3
+      }
+     ],
+     "jobs": {
+      "cont-4e7c27499684e0a48d5abea1": [
+       "queued",
+       null
+      ],
+      "cont-e385359b47c285b1051eb99f": [
+       "failed",
+       "evidence_gate_refused"
+      ],
+      "cont-fd0b826945c91e690d6743b5": [
+       "failed",
+       "evidence_gate_refused"
+      ],
+      "op-x": [
+       "failed",
+       "evidence_gate_refused"
+      ],
+      "op-z": [
+       "failed",
+       "evidence_gate_refused"
+      ]
+     },
+     "receipts": [
+      [
+       "ac3c27de407b5e03681190284f357fef39d3843a387f2d8225bdf98038eafd99",
+       "f291ff9a4b1c325abc7b4e242418ded47223c158f9eedd29543e550a6707258d",
+       "owner_supplement"
+      ]
+     ],
+     "supplements": [
+      [
+       "ac3c27de407b5e03681190284f357fef39d3843a387f2d8225bdf98038eafd99",
+       "6560b139c7167b496450b9d1d4c8b0dae51c447c40748248e320408f525b5088"
+      ]
+     ]
+    },
+    "held": {
+     "receipts_unchanged": true,
+     "research": {
+      "jobs": 4,
+      "state": "research_required"
+     },
+     "tick": {
+      "value": {
+       "actions": [],
+       "outcome": "blocked",
+       "owned_elsewhere": {
+        "count": 0,
+        "jobs": []
+       },
+       "policy_id": "policy-1",
+       "reason_code": null,
+       "schema": "urn:zeus:continuation-tick:1",
+       "skipped": [
+        {
+         "next_owner": "portfolio_research",
+         "reason_code": "research_supplement_corrupt",
+         "subject": "ac3c27de407b5e03681190284f357fef39d3843a387f2d8225bdf98038eafd99"
+        }
+       ]
+      }
+     }
+    },
+    "restored_tick": {
+     "value": {
+      "actions": [
+       {
+        "effect": "research_resolved",
+        "route": "research",
+        "subject": "ac3c27de407b5e03681190284f357fef39d3843a387f2d8225bdf98038eafd99"
+       },
+       {
+        "effect": "admitted",
+        "route": "evidence_repair",
+        "subject": "4e7c27499684e0a48d5abea17886c35c1382e01caa7563036d040f21efb51960",
+        "successor_job": "cont-4e7c27499684e0a48d5abea1"
+       }
+      ],
+      "outcome": "progressed",
+      "owned_elsewhere": {
+       "count": 0,
+       "jobs": []
+      },
+      "policy_id": "policy-1",
+      "reason_code": null,
+      "schema": "urn:zeus:continuation-tick:1",
+      "skipped": []
+     }
+    }
+   }
+  },
+  "refusals": {
+   "arbitrary_job": {
+    "receipt": {
+     "message": "continuation refused: research_scope_unverified (dispatch)",
+     "reason_code": "research_scope_unverified",
+     "records_unchanged": true,
+     "refused": "ContinuationRefused"
+    },
+    "supplement": {
+     "message": "continuation refused: research_supplement_scope_mismatch (descendants)",
+     "reason_code": "research_supplement_scope_mismatch",
+     "records_unchanged": true,
+     "refused": "ContinuationRefused"
+    },
+    "supplements": 0
+   },
+   "captured_too_much": {
+    "receipt": {
+     "message": "continuation refused: research_scope_unverified (dispatch)",
+     "reason_code": "research_scope_unverified",
+     "records_unchanged": true,
+     "refused": "ContinuationRefused"
+    },
+    "supplement": {
+     "message": "continuation refused: research_supplement_capture_mismatch (captured)",
+     "reason_code": "research_supplement_capture_mismatch",
+     "records_unchanged": true,
+     "refused": "ContinuationRefused"
+    },
+    "supplements": 0
+   },
+   "foreign_parent": {
+    "receipt": {
+     "message": "continuation refused: research_scope_unverified (dispatch)",
+     "reason_code": "research_scope_unverified",
+     "records_unchanged": true,
+     "refused": "ContinuationRefused"
+    },
+    "supplement": {
+     "message": "continuation refused: research_supplement_lineage_broken (descendants[].parent_job)",
+     "reason_code": "research_supplement_lineage_broken",
+     "records_unchanged": true,
+     "refused": "ContinuationRefused"
+    },
+    "supplements": 0
+   },
+   "incomplete": {
+    "receipt": {
+     "message": "continuation refused: research_scope_unverified (dispatch)",
+     "reason_code": "research_scope_unverified",
+     "records_unchanged": true,
+     "refused": "ContinuationRefused"
+    },
+    "supplement": {
+     "message": "continuation refused: research_coverage_partial (attempts)",
+     "reason_code": "research_coverage_partial",
+     "records_unchanged": true,
+     "refused": "ContinuationRefused"
+    },
+    "supplements": 0
+   },
+   "missing_attestation": {
+    "receipt": {
+     "message": "continuation refused: research_scope_unverified (dispatch)",
+     "reason_code": "research_scope_unverified",
+     "records_unchanged": true,
+     "refused": "ContinuationRefused"
+    },
+    "supplement": {
+     "message": "continuation refused: research_evidence_unreadable (evidence_refs)",
+     "reason_code": "research_evidence_unreadable",
+     "records_unchanged": true,
+     "refused": "ContinuationRefused"
+    },
+    "supplements": 0
+   },
+   "no_descendants": {
+    "receipt": {
+     "message": "continuation refused: research_scope_unverified (dispatch)",
+     "reason_code": "research_scope_unverified",
+     "records_unchanged": true,
+     "refused": "ContinuationRefused"
+    },
+    "supplement": {
+     "message": "continuation refused: research_supplement_invalid (descendants)",
+     "reason_code": "research_supplement_invalid",
+     "records_unchanged": true,
+     "refused": "ContinuationRefused"
+    },
+    "supplements": 0
+   },
+   "other_candidate": {
+    "receipt": {
+     "message": "continuation refused: research_scope_unverified (dispatch)",
+     "reason_code": "research_scope_unverified",
+     "records_unchanged": true,
+     "refused": "ContinuationRefused"
+    },
+    "supplement": {
+     "message": "continuation refused: research_supplement_acceptance_unproven (acceptance)",
+     "reason_code": "research_supplement_acceptance_unproven",
+     "records_unchanged": true,
+     "refused": "ContinuationRefused"
+    },
+    "supplements": 0
+   },
+   "stale_sample": {
+    "receipt": {
+     "message": "continuation refused: research_scope_unverified (dispatch)",
+     "reason_code": "research_scope_unverified",
+     "records_unchanged": true,
+     "refused": "ContinuationRefused"
+    },
+    "supplement": {
+     "message": "continuation refused: research_dispatch_mismatch (dispatch)",
+     "reason_code": "research_dispatch_mismatch",
+     "records_unchanged": true,
+     "refused": "ContinuationRefused"
+    },
+    "supplements": 0
+   },
+   "unaccepted_review": {
+    "supplement": {
+     "message": "continuation refused: research_supplement_acceptance_unproven (acceptance)",
+     "reason_code": "research_supplement_acceptance_unproven",
+     "records_unchanged": true,
+     "refused": "ContinuationRefused"
+    },
+    "supplements": 0
+   },
+   "via_research_intent": {
+    "receipt": {
+     "message": "continuation refused: research_scope_unverified (dispatch)",
+     "reason_code": "research_scope_unverified",
+     "records_unchanged": true,
+     "refused": "ContinuationRefused"
+    },
+    "supplement": {
+     "message": "continuation refused: research_supplement_lineage_broken (descendants[].intent_id)",
+     "reason_code": "research_supplement_lineage_broken",
+     "records_unchanged": true,
+     "refused": "ContinuationRefused"
+    },
+    "supplements": 0
+   }
+  },
+  "release": {
+   "accepted": {
+    "records_unchanged": false,
+    "value": {
+     "accepted": true,
+     "accepted_at": "2026-09-30T00:00:00.000004+00:00",
+     "authority": "owner scoped research completion for one continuation intent: not an operation acceptance, a repair verdict, an incident resolution or a promotion",
+     "cached": false,
+     "coverage": "owner_supplement",
+     "covered_jobs": [
+      "cont-fd0b826945c91e690d6743b5",
+      "op-x"
+     ],
+     "dispatch": {
+      "manifest_sha256": "cf6f3498e68896f2390c9a66bcc02fa408817f45bff67d5fa83e52e53e50bfb2",
+      "program": "rp-001",
+      "run_id": "rp-001.c001",
+      "snapshot_sha256": "c2a65721a72c18eb6341c419c331b486b7a2c0a32556cbbcaabeba4db775e178"
+     },
+     "evidence_refs": [
+      "sha256:4c0f0177946609f29882b5324ba1f997cf08f49efaa2010c06caed5a14b01f45"
+     ],
+     "family": "op-x",
+     "inspections": [
+      "insp-03efc5b6-ba6c-5e20-af65-0988eaf986e5",
+      "insp-6c2a3953-f1e8-57cc-abd7-a85a4057ee02"
+     ],
+     "intent_id": "ac3c27de407b5e03681190284f357fef39d3843a387f2d8225bdf98038eafd99",
+     "investigation": "aab8c6d6d16bbfa008306c149b180badc63918ee202f2b74479ad210824e0be8",
+     "policy_id": "policy-1",
+     "receipt_sha256": "f291ff9a4b1c325abc7b4e242418ded47223c158f9eedd29543e550a6707258d",
+     "supplement_sha256": "6560b139c7167b496450b9d1d4c8b0dae51c447c40748248e320408f525b5088"
+    }
+   },
+   "after_tick": {
+    "grants": [],
+    "intents": [
+     {
+      "capacity_grant": null,
+      "family": "op-x",
+      "history": [
+       [
+        "intended",
+        "evidence_gate_refused"
+       ],
+       [
+        "published",
+        "evidence_gate_refused"
+       ],
+       [
+        "admitted",
+        "evidence_gate_refused"
+       ],
+       [
+        "returned",
+        "successor_failed"
+       ],
+       [
+        "completed",
+        "successor_failed"
+       ]
+      ],
+      "hold": null,
+      "id": "fd0b826945c91e690d6743b5ec30ef478c772c3d0d1943df93c70aa2aa0b2da6",
+      "origin_job": "op-x",
+      "ownership": "origin_unbound",
+      "reason_code": "successor_failed",
+      "research_coverage": null,
+      "research_receipt": null,
+      "route": "evidence_repair",
+      "state": "completed",
+      "successor_job": "cont-fd0b826945c91e690d6743b5",
+      "version": 5
+     },
+     {
+      "capacity_grant": null,
+      "family": "op-x",
+      "history": [
+       [
+        "research_required",
+        "two_distinct_failures"
+       ],
+       [
+        "completed",
+        "research_receipt_accepted"
+       ]
+      ],
+      "hold": null,
+      "id": "ac3c27de407b5e03681190284f357fef39d3843a387f2d8225bdf98038eafd99",
+      "origin_job": "cont-fd0b826945c91e690d6743b5",
+      "ownership": null,
+      "reason_code": "research_receipt_accepted",
+      "research_coverage": "owner_supplement",
+      "research_receipt": "f291ff9a4b1c325abc7b4e242418ded47223c158f9eedd29543e550a6707258d",
+      "route": "research",
+      "state": "completed",
+      "successor_job": null,
+      "version": 2
+     },
+     {
+      "capacity_grant": null,
+      "family": "op-z",
+      "history": [
+       [
+        "intended",
+        "evidence_gate_refused"
+       ],
+       [
+        "published",
+        "evidence_gate_refused"
+       ],
+       [
+        "admitted",
+        "evidence_gate_refused"
+       ],
+       [
+        "returned",
+        "successor_failed"
+       ],
+       [
+        "completed",
+        "successor_failed"
+       ]
+      ],
+      "hold": null,
+      "id": "e385359b47c285b1051eb99f530248b4b45b9e3d708037689088fd9c02d08bbc",
+      "origin_job": "op-z",
+      "ownership": "origin_unbound",
+      "reason_code": "successor_failed",
+      "research_coverage": null,
+      "research_receipt": null,
+      "route": "evidence_repair",
+      "state": "completed",
+      "successor_job": "cont-e385359b47c285b1051eb99f",
+      "version": 5
+     },
+     {
+      "capacity_grant": null,
+      "family": "op-z",
+      "history": [
+       [
+        "research_required",
+        "two_distinct_failures"
+       ]
+      ],
+      "hold": null,
+      "id": "7274bab69cd3522d24454f2f4f760489115c575c2d76d7476e683cd9f7e35f79",
+      "origin_job": "cont-e385359b47c285b1051eb99f",
+      "ownership": null,
+      "reason_code": "two_distinct_failures",
+      "research_coverage": null,
+      "research_receipt": null,
+      "route": "research",
+      "state": "research_required",
+      "successor_job": null,
+      "version": 1
+     },
+     {
+      "capacity_grant": null,
+      "family": "op-x",
+      "history": [
+       [
+        "intended",
+        "evidence_gate_refused"
+       ],
+       [
+        "published",
+        "evidence_gate_refused"
+       ],
+       [
+        "admitted",
+        "evidence_gate_refused"
+       ]
+      ],
+      "hold": null,
+      "id": "4e7c27499684e0a48d5abea17886c35c1382e01caa7563036d040f21efb51960",
+      "origin_job": "cont-fd0b826945c91e690d6743b5",
+      "ownership": "inherited",
+      "reason_code": "evidence_gate_refused",
+      "research_coverage": null,
+      "research_receipt": null,
+      "route": "evidence_repair",
+      "state": "admitted",
+      "successor_job": "cont-4e7c27499684e0a48d5abea1",
+      "version": 3
+     }
+    ],
+    "jobs": {
+     "cont-4e7c27499684e0a48d5abea1": [
+      "queued",
+      null
+     ],
+     "cont-e385359b47c285b1051eb99f": [
+      "failed",
+      "evidence_gate_refused"
+     ],
+     "cont-fd0b826945c91e690d6743b5": [
+      "failed",
+      "evidence_gate_refused"
+     ],
+     "op-x": [
+      "failed",
+      "evidence_gate_refused"
+     ],
+     "op-z": [
+      "failed",
+      "evidence_gate_refused"
+     ]
+    },
+    "receipts": [
+     [
+      "ac3c27de407b5e03681190284f357fef39d3843a387f2d8225bdf98038eafd99",
+      "f291ff9a4b1c325abc7b4e242418ded47223c158f9eedd29543e550a6707258d",
+      "owner_supplement"
+     ]
+    ],
+    "supplements": [
+     [
+      "ac3c27de407b5e03681190284f357fef39d3843a387f2d8225bdf98038eafd99",
+      "6560b139c7167b496450b9d1d4c8b0dae51c447c40748248e320408f525b5088"
+     ]
+    ]
+   },
+   "baseline": {
+    "message": "continuation refused: research_scope_unverified (dispatch)",
+    "reason_code": "research_scope_unverified",
+    "records_unchanged": true,
+    "refused": "ContinuationRefused"
+   },
+   "binding_added": [
+    "cont-fd0b826945c91e690d6743b5"
+   ],
+   "failure_verdicts_unchanged": true,
+   "one_successor": true,
+   "other_research_supplements": [
+    null
+   ],
+   "ownership_alone": {
+    "message": "continuation refused: research_scope_unverified (dispatch)",
+    "reason_code": "research_scope_unverified",
+    "records_unchanged": true,
+    "refused": "ContinuationRefused"
+   },
+   "receipt_attempts": [
+    "cont-fd0b826945c91e690d6743b5",
+    "op-x"
+   ],
+   "reconcile_replay": {
+    "records_unchanged": true,
+    "value": {
+     "authority": "present ownership through continuation lineage; not historical capture membership",
+     "cached": true,
+     "criterion_id": "c1",
+     "intent_id": "fd0b826945c91e690d6743b5ec30ef478c772c3d0d1943df93c70aa2aa0b2da6",
+     "origin_job": "op-x",
+     "project_id": "ops",
+     "reconciled": true,
+     "successor_job": "cont-fd0b826945c91e690d6743b5"
+    }
+   },
+   "reconciled": {
+    "records_unchanged": false,
+    "value": {
+     "authority": "present ownership through continuation lineage; not historical capture membership",
+     "cached": false,
+     "criterion_id": "c1",
+     "intent_id": "fd0b826945c91e690d6743b5ec30ef478c772c3d0d1943df93c70aa2aa0b2da6",
+     "origin_job": "op-x",
+     "project_id": "ops",
+     "reconciled": true,
+     "successor_job": "cont-fd0b826945c91e690d6743b5"
+    }
+   },
+   "research_rows_unchanged": true,
+   "start": {
+    "grants": [],
+    "intents": [
+     {
+      "capacity_grant": null,
+      "family": "op-x",
+      "history": [
+       [
+        "intended",
+        "evidence_gate_refused"
+       ],
+       [
+        "published",
+        "evidence_gate_refused"
+       ],
+       [
+        "admitted",
+        "evidence_gate_refused"
+       ],
+       [
+        "returned",
+        "successor_failed"
+       ],
+       [
+        "completed",
+        "successor_failed"
+       ]
+      ],
+      "hold": null,
+      "id": "fd0b826945c91e690d6743b5ec30ef478c772c3d0d1943df93c70aa2aa0b2da6",
+      "origin_job": "op-x",
+      "ownership": "origin_unbound",
+      "reason_code": "successor_failed",
+      "research_coverage": null,
+      "research_receipt": null,
+      "route": "evidence_repair",
+      "state": "completed",
+      "successor_job": "cont-fd0b826945c91e690d6743b5",
+      "version": 5
+     },
+     {
+      "capacity_grant": null,
+      "family": "op-x",
+      "history": [
+       [
+        "research_required",
+        "two_distinct_failures"
+       ]
+      ],
+      "hold": null,
+      "id": "ac3c27de407b5e03681190284f357fef39d3843a387f2d8225bdf98038eafd99",
+      "origin_job": "cont-fd0b826945c91e690d6743b5",
+      "ownership": null,
+      "reason_code": "two_distinct_failures",
+      "research_coverage": null,
+      "research_receipt": null,
+      "route": "research",
+      "state": "research_required",
+      "successor_job": null,
+      "version": 1
+     },
+     {
+      "capacity_grant": null,
+      "family": "op-z",
+      "history": [
+       [
+        "intended",
+        "evidence_gate_refused"
+       ],
+       [
+        "published",
+        "evidence_gate_refused"
+       ],
+       [
+        "admitted",
+        "evidence_gate_refused"
+       ],
+       [
+        "returned",
+        "successor_failed"
+       ],
+       [
+        "completed",
+        "successor_failed"
+       ]
+      ],
+      "hold": null,
+      "id": "e385359b47c285b1051eb99f530248b4b45b9e3d708037689088fd9c02d08bbc",
+      "origin_job": "op-z",
+      "ownership": "origin_unbound",
+      "reason_code": "successor_failed",
+      "research_coverage": null,
+      "research_receipt": null,
+      "route": "evidence_repair",
+      "state": "completed",
+      "successor_job": "cont-e385359b47c285b1051eb99f",
+      "version": 5
+     },
+     {
+      "capacity_grant": null,
+      "family": "op-z",
+      "history": [
+       [
+        "research_required",
+        "two_distinct_failures"
+       ]
+      ],
+      "hold": null,
+      "id": "7274bab69cd3522d24454f2f4f760489115c575c2d76d7476e683cd9f7e35f79",
+      "origin_job": "cont-e385359b47c285b1051eb99f",
+      "ownership": null,
+      "reason_code": "two_distinct_failures",
+      "research_coverage": null,
+      "research_receipt": null,
+      "route": "research",
+      "state": "research_required",
+      "successor_job": null,
+      "version": 1
+     }
+    ],
+    "jobs": {
+     "cont-e385359b47c285b1051eb99f": [
+      "failed",
+      "evidence_gate_refused"
+     ],
+     "cont-fd0b826945c91e690d6743b5": [
+      "failed",
+      "evidence_gate_refused"
+     ],
+     "op-x": [
+      "failed",
+      "evidence_gate_refused"
+     ],
+     "op-z": [
+      "failed",
+      "evidence_gate_refused"
+     ]
+    },
+    "receipts": [],
+    "supplements": []
+   },
+   "state": {
+    "conductor_calls": [],
+    "control": "3b2ac05e6cbee5b46fdd304db75a24bf07e236f9a5dcc68c838b1b99b9f79f58",
+    "lane": "108d801908475c42dd43548f7baa7197e51daa9a118c4c94de9a68c197c4d1f0"
+   },
+   "status": {
+    "capacity": {
+     "families": [],
+     "grants": []
+    },
+    "held_families": {
+     "op-z": "two_distinct_failures"
+    },
+    "row": {
+     "capacity_grant": null,
+     "next_action": "none",
+     "receipt": {
+      "accepted_at": "2026-09-30T00:00:00.000004+00:00",
+      "authority": "owner scoped research completion for one continuation intent: not an operation acceptance, a repair verdict, an incident resolution or a promotion",
+      "coverage": "owner_supplement",
+      "covered_jobs": [
+       "cont-fd0b826945c91e690d6743b5",
+       "op-x"
+      ],
+      "dispatch": {
+       "manifest_sha256": "cf6f3498e68896f2390c9a66bcc02fa408817f45bff67d5fa83e52e53e50bfb2",
+       "program": "rp-001",
+       "run_id": "rp-001.c001",
+       "snapshot_sha256": "c2a65721a72c18eb6341c419c331b486b7a2c0a32556cbbcaabeba4db775e178"
+      },
+      "evidence_refs": [
+       "sha256:4c0f0177946609f29882b5324ba1f997cf08f49efaa2010c06caed5a14b01f45"
+      ],
+      "family": "op-x",
+      "inspections": [
+       "insp-03efc5b6-ba6c-5e20-af65-0988eaf986e5",
+       "insp-6c2a3953-f1e8-57cc-abd7-a85a4057ee02"
+      ],
+      "intent_id": "ac3c27de407b5e03681190284f357fef39d3843a387f2d8225bdf98038eafd99",
+      "investigation": "aab8c6d6d16bbfa008306c149b180badc63918ee202f2b74479ad210824e0be8",
+      "policy_id": "policy-1",
+      "receipt_sha256": "f291ff9a4b1c325abc7b4e242418ded47223c158f9eedd29543e550a6707258d",
+      "supplement_sha256": "6560b139c7167b496450b9d1d4c8b0dae51c447c40748248e320408f525b5088"
+     },
+     "refusal": null,
+     "research_receipt": "f291ff9a4b1c325abc7b4e242418ded47223c158f9eedd29543e550a6707258d",
+     "state": "completed",
+     "supplement": {
+      "acceptance": {
+       "candidate_revision": "9999999999999999999999999999999999999999",
+       "decision_id": "review-003",
+       "graph_sha256": "7777777777777777777777777777777777777777777777777777777777777777"
+      },
+      "attestation_ref": "sha256:7a1c20ef3a98eb5677b02fe0a69329419e8b7a57f9d615fbffe91de1a60b34a8",
+      "authority": "owner scope supplement: current continuation lineage membership plus the owner's explicit semantic coverage judgment; not the original capture, a model verdict, an algorithmic proof, a receipt or a repair verdict",
+      "captured": [
+       "op-x"
+      ],
+      "coverage": "owner_supplement",
+      "descendants": [
+       {
+        "intent_id": "fd0b826945c91e690d6743b5ec30ef478c772c3d0d1943df93c70aa2aa0b2da6",
+        "job": "cont-fd0b826945c91e690d6743b5",
+        "parent_job": "op-x"
+       }
+      ],
+      "dispatch": {
+       "id": "aab8c6d6d16bbfa008306c149b180badc63918ee202f2b74479ad210824e0be8",
+       "job_ids_sha256": "3f24c187a6aac637d83533dbd9efdc147cc753b6d6a662bf05a4646c6535d3b3",
+       "manifest_sha256": "cf6f3498e68896f2390c9a66bcc02fa408817f45bff67d5fa83e52e53e50bfb2",
+       "program": "rp-001",
+       "run_id": "rp-001.c001",
+       "snapshot_sha256": "c2a65721a72c18eb6341c419c331b486b7a2c0a32556cbbcaabeba4db775e178"
+      },
+      "intent_id": "ac3c27de407b5e03681190284f357fef39d3843a387f2d8225bdf98038eafd99",
+      "recorded_at": "2026-09-30T00:00:00.000003+00:00",
+      "report_ref": "sha256:4c0f0177946609f29882b5324ba1f997cf08f49efaa2010c06caed5a14b01f45",
+      "supplement_sha256": "6560b139c7167b496450b9d1d4c8b0dae51c447c40748248e320408f525b5088"
+     }
+    }
+   },
+   "supplement": {
+    "records_unchanged": false,
+    "value": {
+     "acceptance": {
+      "candidate_revision": "9999999999999999999999999999999999999999",
+      "decision_id": "review-003",
+      "graph_sha256": "7777777777777777777777777777777777777777777777777777777777777777"
+     },
+     "attestation_ref": "sha256:7a1c20ef3a98eb5677b02fe0a69329419e8b7a57f9d615fbffe91de1a60b34a8",
+     "authority": "owner scope supplement: current continuation lineage membership plus the owner's explicit semantic coverage judgment; not the original capture, a model verdict, an algorithmic proof, a receipt or a repair verdict",
+     "cached": false,
+     "captured": [
+      "op-x"
+     ],
+     "coverage": "owner_supplement",
+     "descendants": [
+      {
+       "intent_id": "fd0b826945c91e690d6743b5ec30ef478c772c3d0d1943df93c70aa2aa0b2da6",
+       "job": "cont-fd0b826945c91e690d6743b5",
+       "parent_job": "op-x"
+      }
+     ],
+     "dispatch": {
+      "id": "aab8c6d6d16bbfa008306c149b180badc63918ee202f2b74479ad210824e0be8",
+      "job_ids_sha256": "3f24c187a6aac637d83533dbd9efdc147cc753b6d6a662bf05a4646c6535d3b3",
+      "manifest_sha256": "cf6f3498e68896f2390c9a66bcc02fa408817f45bff67d5fa83e52e53e50bfb2",
+      "program": "rp-001",
+      "run_id": "rp-001.c001",
+      "snapshot_sha256": "c2a65721a72c18eb6341c419c331b486b7a2c0a32556cbbcaabeba4db775e178"
+     },
+     "intent_id": "ac3c27de407b5e03681190284f357fef39d3843a387f2d8225bdf98038eafd99",
+     "recorded_at": "2026-09-30T00:00:00.000003+00:00",
+     "report_ref": "sha256:4c0f0177946609f29882b5324ba1f997cf08f49efaa2010c06caed5a14b01f45",
+     "supplement_sha256": "6560b139c7167b496450b9d1d4c8b0dae51c447c40748248e320408f525b5088",
+     "supplemented": true
+    }
+   },
+   "supplement_conflict": {
+    "message": "continuation refused: research_supplement_conflict (intent_id)",
+    "reason_code": "research_supplement_conflict",
+    "records_unchanged": true,
+    "refused": "ContinuationRefused"
+   },
+   "supplement_replay": {
+    "records_unchanged": true,
+    "value": {
+     "acceptance": {
+      "candidate_revision": "9999999999999999999999999999999999999999",
+      "decision_id": "review-003",
+      "graph_sha256": "7777777777777777777777777777777777777777777777777777777777777777"
+     },
+     "attestation_ref": "sha256:7a1c20ef3a98eb5677b02fe0a69329419e8b7a57f9d615fbffe91de1a60b34a8",
+     "authority": "owner scope supplement: current continuation lineage membership plus the owner's explicit semantic coverage judgment; not the original capture, a model verdict, an algorithmic proof, a receipt or a repair verdict",
+     "cached": true,
+     "captured": [
+      "op-x"
+     ],
+     "coverage": "owner_supplement",
+     "descendants": [
+      {
+       "intent_id": "fd0b826945c91e690d6743b5ec30ef478c772c3d0d1943df93c70aa2aa0b2da6",
+       "job": "cont-fd0b826945c91e690d6743b5",
+       "parent_job": "op-x"
+      }
+     ],
+     "dispatch": {
+      "id": "aab8c6d6d16bbfa008306c149b180badc63918ee202f2b74479ad210824e0be8",
+      "job_ids_sha256": "3f24c187a6aac637d83533dbd9efdc147cc753b6d6a662bf05a4646c6535d3b3",
+      "manifest_sha256": "cf6f3498e68896f2390c9a66bcc02fa408817f45bff67d5fa83e52e53e50bfb2",
+      "program": "rp-001",
+      "run_id": "rp-001.c001",
+      "snapshot_sha256": "c2a65721a72c18eb6341c419c331b486b7a2c0a32556cbbcaabeba4db775e178"
+     },
+     "intent_id": "ac3c27de407b5e03681190284f357fef39d3843a387f2d8225bdf98038eafd99",
+     "recorded_at": "2026-09-30T00:00:00.000003+00:00",
+     "report_ref": "sha256:4c0f0177946609f29882b5324ba1f997cf08f49efaa2010c06caed5a14b01f45",
+     "supplement_sha256": "6560b139c7167b496450b9d1d4c8b0dae51c447c40748248e320408f525b5088",
+     "supplemented": true
+    }
+   },
+   "supplement_state": {
+    "jobs": 4,
+    "state": "research_required"
+   },
+   "tick": {
+    "value": {
+     "actions": [
+      {
+       "effect": "research_resolved",
+       "route": "research",
+       "subject": "ac3c27de407b5e03681190284f357fef39d3843a387f2d8225bdf98038eafd99"
+      },
+      {
+       "effect": "admitted",
+       "route": "evidence_repair",
+       "subject": "4e7c27499684e0a48d5abea17886c35c1382e01caa7563036d040f21efb51960",
+       "successor_job": "cont-4e7c27499684e0a48d5abea1"
+      }
+     ],
+     "outcome": "progressed",
+     "owned_elsewhere": {
+      "count": 0,
+      "jobs": []
+     },
+     "policy_id": "policy-1",
+     "reason_code": null,
+     "schema": "urn:zeus:continuation-tick:1",
+     "skipped": []
+    }
+   },
+   "tick_after_supplement": {
+    "value": {
+     "actions": [],
+     "outcome": "idle",
+     "owned_elsewhere": {
+      "count": 0,
+      "jobs": []
+     },
+     "policy_id": "policy-1",
+     "reason_code": null,
+     "schema": "urn:zeus:continuation-tick:1",
+     "skipped": []
+    }
+   },
+   "tick_restarted": {
+    "value": {
+     "actions": [],
+     "outcome": "idle",
+     "owned_elsewhere": {
+      "count": 0,
+      "jobs": []
+     },
+     "policy_id": "policy-1",
+     "reason_code": null,
+     "schema": "urn:zeus:continuation-tick:1",
+     "skipped": []
+    }
+   },
+   "unowned_supplement": {
+    "message": "continuation refused: research_supplement_ownership_mismatch (descendants[].job)",
+    "reason_code": "research_supplement_ownership_mismatch",
+    "records_unchanged": true,
+    "refused": "ContinuationRefused"
+   }
+  }
+ },
+ "unreachable": {
+  "portfolio_researched_disposition": "the coarse Portfolio disposition is written by the Portfolio (a later slice); the recorded rows carry none",
+  "repair_fails_again_after_grant": "needs the lane executor (Operation) to run the granted repair; the recorded flows carry lane rows only"
+ }
+}

@@ -1,0 +1,9 @@
+{
+ "family": "coordination.continuation_research",
+ "description": "S6 Continuation owner research paths over the recorded, labelled research-held rows of compare/fixtures/s6/research.json (DESIGN-s6 §7; TRACE-s6 §2): research receipts (the exact receipt accepted, the tick's research_resolved and one evidence-repair successor, cached replay and research_receipt_conflict, every transform of the M7 refusal matrix storing nothing, an absent verifier, evidence not held at acceptance, evidence lost after acceptance keeping the hold until it verifies again, a restarted controller and a second one consuming the stored receipt once, an unreadable or changed lane after acceptance); the owner scope supplement (the baseline receipt research_scope_unverified, explicit ownership reconciliation, labelled promotion rows, supplement recorded/cached/conflict, the receipt with coverage owner_supplement completing the research intent, every forged supplement refused, a supplement or its proofs changed after acceptance keeping the hold); the owner capacity grant (no grant changes nothing and status names the owner action, one exact grant reserves one successor the next tick admits, every refusal of the M7 matrix with no effect, cached replay and conflict, stale grant authority holding before the next new effect)",
+ "reference_driver": "drivers/reference/s6_research.py",
+ "target_driver": null,
+ "target_status": "pending: S6 Continuation split",
+ "golden": "goldens/reference/coordination.continuation_research.json",
+ "slice": "S6"
+}
