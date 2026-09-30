@@ -1,0 +1,9 @@
+{
+ "family": "effects.continuation_units",
+ "description": "§2.9 continuation and owner-action units on MemoryStore (DESIGN-s6 §3, §7): Continuation._publish, _dispatch, _settle, _commit_requalification, accept_research, grant_capacity and OwnerActions._begin_assessment; (a) injected failure at the unit's last write -> nothing of the unit remains, (b) stale writer (intent or action version moved by another controller between the reads and the unit, or a Fleet unit already settled) -> nothing commits, (c) same-key replay -> no authority write, (d) fleet.enqueue, conductor.start and assessments.start entered at transaction depth 0",
+ "reference_driver": "drivers/reference/s6_units.py",
+ "target_driver": null,
+ "target_status": "pending: S6 Continuation/OwnerActions split",
+ "golden": "goldens/reference/effects.continuation_units.json",
+ "slice": "S6"
+}
