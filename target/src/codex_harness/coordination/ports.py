@@ -18,4 +18,7 @@ OWNED_BUCKETS = ("tasks", "decisions_pending", "outbox", "events", "execution_fe
                  "breakers", "breaker_events", "breaker_notices", "breaker_policies", "sessions",
                  # S5 Fleet split (DESIGN-s5 §F): the four Fleet objects are this context's writers.
                  "fleet_registry", "fleet_control", "fleet_jobs", "fleet_budget_grants", "fleet_delivery",
-                 "fleet_units", "fleet_recovery_receipts", "fleet_relocations", "fleet_host_migrations")
+                 "fleet_units", "fleet_recovery_receipts", "fleet_relocations", "fleet_host_migrations",
+                 # S5 MessageHandler and operation finalization (DESIGN-s5 §M); the ledger owner is coordination.
+                 "rebase_requests", "research_topics", "research_discoveries", "operation_dispositions",
+                 "operation_message_dispositions")

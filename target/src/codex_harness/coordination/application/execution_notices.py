@@ -50,7 +50,7 @@ def _repair_proved(row, proof) -> bool:
             and type(correction) is str and bool(correction))
 
 
-def _build(org, row, bucket, reason_code, at, transition_ref, proof=None, evidence_refs=()):
+def _build(org, row, bucket, reason_code, at, transition_ref, proof=None, evidence_refs=(), ids=None):
     require(bucket in {'tasks', 'decisions_pending'}, 'Invalid notice aggregate')
     require(reason_code in REASONS, 'Unknown execution notice reason')
     require(_repair_proved(row, proof) and reason_code == RESEARCH_REQUIRED
@@ -71,7 +71,9 @@ def _build(org, row, bucket, reason_code, at, transition_ref, proof=None, eviden
     identity = digest(transition)
     message = envelope('execution.notice', actor.id, recipient, 'observe_execution',
                        {'notice_id': identity, **transition},
-                       row.get('message', {}).get('correlation_id', row['id']), row['id'])
+                       row.get('message', {}).get('correlation_id', row['id']), row['id'], ids=ids)
+    # The drawn uuid is replaced by the notice identity; the id source is injectable (S5, DESIGN-s5 §M) so a
+    # caller's id stream advances exactly as M7's patched source did. No production-observable change.
     message['message_id'] = identity
     message['when']['created_at'] = at
     message['why']['objective'] = 'Observe a persisted execution transition without granting workflow authority'
@@ -100,9 +102,9 @@ def _quarantine_value(value):
 
 
 def record(tx, org, row, bucket, reason_code, at, transition_ref=None, *, proof=None,
-           evidence_refs=()):
+           evidence_refs=(), ids=None):
     try:
-        notice = _build(org, row, bucket, reason_code, at, transition_ref, proof, evidence_refs)
+        notice = _build(org, row, bucket, reason_code, at, transition_ref, proof, evidence_refs, ids)
     except (ContractError, KeyError, TypeError, ValueError, AttributeError) as exc:
         # Bad source data must not roll back containment of this or earlier queue rows.
         # Storage errors below still abort the entire transaction; no state-only success.
