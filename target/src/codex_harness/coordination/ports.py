@@ -23,4 +23,6 @@ OWNED_BUCKETS = ("tasks", "decisions_pending", "outbox", "events", "execution_fe
                  "rebase_requests", "research_topics", "research_discoveries", "operation_dispositions",
                  "operation_message_dispositions",
                  # S5 outbox relay (DESIGN-s5 §O)
-                 "outbox_attempts", "outbox_control", "outbox_delivery", "outbox_quarantine", "outbox_routes")
+                 "outbox_attempts", "outbox_control", "outbox_delivery", "outbox_quarantine", "outbox_routes",
+                 # S5 LocalCycle (DESIGN-s5 §L).
+                 "local_cycles")
