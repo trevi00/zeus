@@ -1,0 +1,469 @@
+{
+ "exhausted": {
+  "value": {
+   "admitted": [],
+   "backlog": {
+    "error_type": null,
+    "outcome": null,
+    "reason_code": null,
+    "state": "disabled"
+   },
+   "blocked": {
+    "op-6": "budget_exhausted"
+   },
+   "finalize_failures": [],
+   "finalized": [],
+   "reconciliation": {
+    "error_type": null,
+    "state": "disabled"
+   },
+   "reconciliation_required": [
+    "op-3",
+    "op-5"
+   ],
+   "stopped": false
+  }
+ },
+ "exhausted_jobs": {
+  "op-1": [
+   "accepted",
+   "lead_accepted"
+  ],
+  "op-2": [
+   "rejected",
+   "lead_rejected"
+  ],
+  "op-3": [
+   "unknown",
+   "receipt_missing"
+  ],
+  "op-4": [
+   "failed",
+   "isolation_required"
+  ],
+  "op-5": [
+   "unknown",
+   "spawn_uncertain"
+  ],
+  "op-6": [
+   "queued",
+   "budget_exhausted"
+  ]
+ },
+ "logs": [
+  [
+   "zeus.fleet.runner",
+   "WARNING",
+   "portfolio reconciliation unavailable; fleet admission continues"
+  ],
+  [
+   "zeus.fleet.runner",
+   "WARNING",
+   "approved backlog unavailable; fleet admission continues"
+  ],
+  [
+   "zeus.fleet.runner",
+   "INFO",
+   "portfolio reconciliation recovered"
+  ],
+  [
+   "zeus.fleet.runner",
+   "INFO",
+   "approved backlog recovered"
+  ],
+  [
+   "zeus.fleet.runner",
+   "WARNING",
+   "approved backlog refused; fleet admission continues reason=plan_unregistered"
+  ],
+  [
+   "zeus.fleet.runner",
+   "WARNING",
+   "approved backlog unavailable; fleet admission continues"
+  ]
+ ],
+ "pass": {
+  "value": {
+   "admitted": [
+    "op-1",
+    "op-2",
+    "op-3",
+    "op-4",
+    "op-5"
+   ],
+   "backlog": {
+    "error_type": null,
+    "outcome": null,
+    "reason_code": null,
+    "state": "disabled"
+   },
+   "blocked": {},
+   "finalize_failures": [],
+   "finalized": [
+    {
+     "id": "op-1",
+     "reason_code": "lead_accepted",
+     "status": "accepted"
+    },
+    {
+     "id": "op-2",
+     "reason_code": "lead_rejected",
+     "status": "rejected"
+    },
+    {
+     "id": "op-4",
+     "reason_code": "isolation_required",
+     "status": "failed"
+    },
+    {
+     "id": "op-5",
+     "reason_code": "spawn_uncertain",
+     "status": "unknown"
+    },
+    {
+     "id": "op-3",
+     "reason_code": "receipt_missing",
+     "status": "unknown"
+    }
+   ],
+   "reconciliation": {
+    "error_type": null,
+    "state": "disabled"
+   },
+   "reconciliation_required": [
+    "op-3",
+    "op-5"
+   ],
+   "stopped": false
+  }
+ },
+ "pass_jobs": {
+  "op-1": [
+   "accepted",
+   "lead_accepted"
+  ],
+  "op-2": [
+   "rejected",
+   "lead_rejected"
+  ],
+  "op-3": [
+   "unknown",
+   "receipt_missing"
+  ],
+  "op-4": [
+   "failed",
+   "isolation_required"
+  ],
+  "op-5": [
+   "unknown",
+   "spawn_uncertain"
+  ]
+ },
+ "pass_launcher": {
+  "launched": [
+   "op-1",
+   "op-2",
+   "op-3"
+  ],
+  "peak": 2,
+  "sleeps": []
+ },
+ "paused": {
+  "value": {
+   "admitted": [
+    "op-1"
+   ],
+   "backlog": {
+    "error_type": null,
+    "outcome": null,
+    "reason_code": null,
+    "state": "disabled"
+   },
+   "blocked": {},
+   "finalize_failures": [],
+   "finalized": [
+    {
+     "id": "op-1",
+     "reason_code": "lead_accepted",
+     "status": "accepted"
+    }
+   ],
+   "heartbeat": {
+    "error_type": null,
+    "state": "ok"
+   },
+   "reconciliation": {
+    "error_type": null,
+    "state": "disabled"
+   },
+   "reconciliation_required": [
+    "op-0"
+   ],
+   "stopped": true
+  }
+ },
+ "paused_beats": [
+  {
+   "active": 1,
+   "admission": "open",
+   "unresolved": 1
+  },
+  {
+   "active": 1,
+   "admission": "paused",
+   "unresolved": 1
+  },
+  {
+   "active": 0,
+   "admission": "paused",
+   "unresolved": 1
+  },
+  {
+   "active": 0,
+   "admission": "paused",
+   "unresolved": 1
+  },
+  {
+   "active": 0,
+   "admission": "stopping",
+   "unresolved": 1
+  }
+ ],
+ "paused_jobs": {
+  "op-0": [
+   "dispatching",
+   null
+  ],
+  "op-1": [
+   "accepted",
+   "lead_accepted"
+  ],
+  "op-2": [
+   "queued",
+   null
+  ]
+ },
+ "plain": {
+  "value": {
+   "admitted": [
+    "op-1"
+   ],
+   "backlog": {
+    "error_type": null,
+    "outcome": null,
+    "reason_code": null,
+    "state": "disabled"
+   },
+   "blocked": {},
+   "finalize_failures": [],
+   "finalized": [
+    {
+     "id": "op-1",
+     "reason_code": "lead_accepted",
+     "status": "accepted"
+    }
+   ],
+   "reconciliation": {
+    "error_type": null,
+    "state": "disabled"
+   },
+   "reconciliation_required": [],
+   "stopped": false
+  }
+ },
+ "restart": {
+  "value": {
+   "admitted": [],
+   "backlog": {
+    "error_type": null,
+    "outcome": null,
+    "reason_code": null,
+    "state": "disabled"
+   },
+   "blocked": {},
+   "finalize_failures": [],
+   "finalized": [],
+   "reconciliation": {
+    "error_type": null,
+    "state": "disabled"
+   },
+   "reconciliation_required": [
+    "op-3",
+    "op-5"
+   ],
+   "stopped": false
+  }
+ },
+ "restart_launched": [],
+ "stop_forwarded": {
+  "calls": [
+   "request_stop"
+  ],
+  "stop_request": {
+   "asked": [
+    "launch-1"
+   ],
+   "error_type": null,
+   "failed": [
+    {
+     "error_type": "OSError",
+     "launch": "launch-2"
+    }
+   ],
+   "state": "failed"
+  }
+ },
+ "stopped": {
+  "value": {
+   "admitted": [],
+   "backlog": {
+    "error_type": null,
+    "outcome": null,
+    "reason_code": null,
+    "state": "disabled"
+   },
+   "blocked": {},
+   "finalize_failures": [],
+   "finalized": [],
+   "reconciliation": {
+    "error_type": null,
+    "state": "disabled"
+   },
+   "reconciliation_required": [
+    "op-3",
+    "op-5"
+   ],
+   "stopped": true
+  }
+ },
+ "ticks": [
+  {
+   "value": {
+    "admitted": [],
+    "backlog": {
+     "error_type": "OSError",
+     "outcome": "unavailable",
+     "reason_code": "store_unavailable",
+     "state": "unavailable"
+    },
+    "blocked": {},
+    "finalize_failures": [],
+    "finalized": [],
+    "reconciliation": {
+     "error_type": "RuntimeError",
+     "state": "unavailable"
+    },
+    "reconciliation_required": [],
+    "stopped": false
+   }
+  },
+  {
+   "value": {
+    "admitted": [],
+    "backlog": {
+     "error_type": "OSError",
+     "outcome": "unavailable",
+     "reason_code": "store_unavailable",
+     "state": "unavailable"
+    },
+    "blocked": {},
+    "finalize_failures": [],
+    "finalized": [],
+    "reconciliation": {
+     "error_type": "RuntimeError",
+     "state": "unavailable"
+    },
+    "reconciliation_required": [],
+    "stopped": false
+   }
+  },
+  {
+   "value": {
+    "admitted": [],
+    "backlog": {
+     "error_type": null,
+     "outcome": "idle",
+     "reason_code": null,
+     "state": "ok"
+    },
+    "blocked": {},
+    "finalize_failures": [],
+    "finalized": [],
+    "reconciliation": {
+     "error_type": null,
+     "state": "ok"
+    },
+    "reconciliation_required": [],
+    "stopped": false
+   }
+  },
+  {
+   "value": {
+    "admitted": [],
+    "backlog": {
+     "error_type": "unknown",
+     "outcome": "refused",
+     "reason_code": "plan_unregistered",
+     "state": "refused"
+    },
+    "blocked": {},
+    "finalize_failures": [],
+    "finalized": [],
+    "reconciliation": {
+     "error_type": null,
+     "state": "ok"
+    },
+    "reconciliation_required": [],
+    "stopped": false
+   }
+  },
+  {
+   "value": {
+    "admitted": [],
+    "backlog": {
+     "error_type": "ValueError",
+     "outcome": null,
+     "reason_code": null,
+     "state": "unavailable"
+    },
+    "blocked": {},
+    "finalize_failures": [],
+    "finalized": [],
+    "reconciliation": {
+     "error_type": null,
+     "state": "ok"
+    },
+    "reconciliation_required": [],
+    "stopped": false
+   }
+  }
+ ],
+ "unreadable": {
+  "value": {
+   "admitted": [],
+   "backlog": {
+    "error_type": null,
+    "outcome": null,
+    "reason_code": null,
+    "state": "disabled"
+   },
+   "blocked": {},
+   "control": {
+    "error_type": "OSError",
+    "state": "unavailable"
+   },
+   "finalize_failures": [],
+   "finalized": [],
+   "heartbeat": {
+    "error_type": "OSError",
+    "state": "unavailable"
+   },
+   "reconciliation": {
+    "error_type": null,
+    "state": "disabled"
+   },
+   "reconciliation_required": [],
+   "stopped": false
+  }
+ }
+}

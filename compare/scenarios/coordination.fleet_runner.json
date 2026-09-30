@@ -1,0 +1,9 @@
+{
+ "family": "coordination.fleet_runner",
+ "description": "S5 FleetRunner over a fixture launcher (RESEARCH-S5 D7; M7 runner tests): overlap, drain once, refused/interrupted launches, unknown kept, no relaunch after restart, stopped runner, exhausted budget; a paused control while the owned child finishes with heartbeats; unreadable control and unwritable heartbeat; reconcile/backlog tick states with transition-only logs; stop forwarded to the continuation before any store access",
+ "reference_driver": "drivers/reference/s5_runner.py",
+ "target_driver": null,
+ "golden": "goldens/reference/coordination.fleet_runner.json",
+ "slice": "S5",
+ "target_status": "pending: FleetRunner is not yet moved"
+}
