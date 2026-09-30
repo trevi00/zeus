@@ -1,0 +1,2329 @@
+{
+ "cases_per_group": {
+  "drain": 10,
+  "github": 32,
+  "guard": 3,
+  "observe_identity": 14,
+  "service_child": 17,
+  "start": 13,
+  "stop_reaping": 11,
+  "switch": 9
+ },
+ "drain": {
+  "a_stale_authorize_pauses_nothing": {
+   "drain": {
+    "raised": {
+     "message": "injected: stale release controller",
+     "type": "ContractError"
+    }
+   },
+   "fence_calls": 1,
+   "lock_released": true,
+   "no_pause_file": true
+  },
+  "no_running_service_ignores_its_work_report": {
+   "drain": {
+    "returned": {
+     "active": 0,
+     "drained": true,
+     "running": false,
+     "unconfirmed": 0
+    }
+   }
+  },
+  "no_running_service_is_drained": {
+   "drain": {
+    "returned": {
+     "active": 0,
+     "drained": true,
+     "running": false,
+     "unconfirmed": 0
+    }
+   },
+   "files": {
+    "pause.json": {
+     "at": "<time>",
+     "paused": true
+    }
+   }
+  },
+  "real_child_reports_no_active_work": {
+   "drain": {
+    "returned": {
+     "active": 0,
+     "drained": true,
+     "running": true,
+     "unconfirmed": 0
+    }
+   },
+   "pause_file": {
+    "at": "<time>",
+    "paused": true
+   },
+   "work_file": {
+    "active": 0,
+    "at": "<time>",
+    "unconfirmed": 0
+   }
+  },
+  "running_idle_with_unconfirmed_work": {
+   "drain": {
+    "returned": {
+     "active": 0,
+     "drained": true,
+     "running": true,
+     "unconfirmed": 3
+    }
+   }
+  },
+  "running_with_a_malformed_work_report": {
+   "drain": {
+    "returned": {
+     "active": null,
+     "drained": false,
+     "running": true,
+     "unconfirmed": 1
+    }
+   }
+  },
+  "running_with_active_work": {
+   "drain": {
+    "returned": {
+     "active": 2,
+     "drained": false,
+     "running": true,
+     "unconfirmed": 1
+    }
+   }
+  },
+  "running_with_active_zero": {
+   "drain": {
+    "returned": {
+     "active": 0,
+     "drained": true,
+     "running": true,
+     "unconfirmed": 0
+    }
+   },
+   "files": {
+    "controller-state.json": {
+     "descriptor_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+     "pid": "<pid>",
+     "started_at": "<time>"
+    },
+    "pause.json": {
+     "at": "<time>",
+     "paused": true
+    },
+    "work.json": {
+     "active": 0,
+     "at": "<time>",
+     "unconfirmed": 0
+    }
+   }
+  },
+  "running_with_an_empty_work_report": {
+   "drain": {
+    "returned": {
+     "active": null,
+     "drained": false,
+     "running": true,
+     "unconfirmed": 0
+    }
+   }
+  },
+  "running_without_a_work_report": {
+   "drain": {
+    "returned": {
+     "active": null,
+     "drained": false,
+     "running": true,
+     "unconfirmed": 1
+    }
+   },
+   "files": {
+    "controller-state.json": {
+     "descriptor_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+     "pid": "<pid>",
+     "started_at": "<time>"
+    },
+    "pause.json": {
+     "at": "<time>",
+     "paused": true
+    }
+   }
+  }
+ },
+ "github": {
+  "constructor_defaults": {
+   "explicit_timeout": 5,
+   "timeout": 60
+  },
+  "merge_definitely_refused": {
+   "result": {
+    "raised": {
+     "message": "merge refused: main_moved",
+     "reason_code": "main_moved",
+     "type": "MergeRefused"
+    }
+   },
+   "workspace_calls": [
+    {
+     "args": [
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+     ],
+     "call": "merge",
+     "kwargs": []
+    }
+   ]
+  },
+  "merge_not_merged": {
+   "result": {
+    "returned": {
+     "merged": false,
+     "merged_revision": null
+    }
+   },
+   "workspace_calls": [
+    {
+     "args": [
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+     ],
+     "call": "merge",
+     "kwargs": []
+    }
+   ]
+  },
+  "merge_state_error": {
+   "result": {
+    "raised": {
+     "message": "injected",
+     "type": "OSError"
+    }
+   },
+   "workspace_calls": [
+    {
+     "args": [
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      null
+     ],
+     "call": "merge_state",
+     "kwargs": []
+    }
+   ]
+  },
+  "merge_state_with_an_observation": {
+   "result": {
+    "returned": {
+     "main": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "merged_revision": null,
+     "state": "unmerged"
+    }
+   },
+   "workspace_calls": [
+    {
+     "args": [
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      {
+       "head": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "state": "MERGED"
+      }
+     ],
+     "call": "merge_state",
+     "kwargs": []
+    }
+   ]
+  },
+  "merge_state_without_an_observation": {
+   "result": {
+    "returned": {
+     "main": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "merged_revision": null,
+     "state": "unmerged"
+    }
+   },
+   "workspace_calls": [
+    {
+     "args": [
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      null
+     ],
+     "call": "merge_state",
+     "kwargs": []
+    }
+   ]
+  },
+  "merge_unknown_outcome": {
+   "result": {
+    "raised": {
+     "message": "injected: lost push response",
+     "type": "OSError"
+    }
+   },
+   "workspace_calls": [
+    {
+     "args": [
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+     ],
+     "call": "merge",
+     "kwargs": []
+    }
+   ]
+  },
+  "merge_with_an_empty_answer": {
+   "result": {
+    "returned": {
+     "merged": false,
+     "merged_revision": null
+    }
+   },
+   "workspace_calls": [
+    {
+     "args": [
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+     ],
+     "call": "merge",
+     "kwargs": []
+    }
+   ]
+  },
+  "merge_with_an_observation": {
+   "result": {
+    "returned": {
+     "merged": true,
+     "merged_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    }
+   },
+   "workspace_calls": [
+    {
+     "args": [
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+     ],
+     "call": "merge",
+     "kwargs": [
+      "observed"
+     ]
+    }
+   ]
+  },
+  "merge_without_an_observation": {
+   "result": {
+    "returned": {
+     "merged": true,
+     "merged_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    }
+   },
+   "workspace_calls": [
+    {
+     "args": [
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+     ],
+     "call": "merge",
+     "kwargs": []
+    }
+   ]
+  },
+  "observe_a_custom_timeout": {
+   "result": {
+    "returned": null
+   },
+   "runner_calls": [
+    {
+     "argv": [
+      "gh",
+      "pr",
+      "list",
+      "--repo",
+      "github:zeus-owner/zeus-harness",
+      "--head",
+      "harness/delivery-1",
+      "--state",
+      "all",
+      "--json",
+      "number,url,headRefOid,state,mergeCommit,statusCheckRollup"
+     ],
+     "timeout": 7
+    }
+   ]
+  },
+  "observe_a_listing_that_is_an_object": {
+   "result": {
+    "returned": null
+   },
+   "runner_calls": [
+    {
+     "argv": [
+      "gh",
+      "pr",
+      "list",
+      "--repo",
+      "github:zeus-owner/zeus-harness",
+      "--head",
+      "harness/delivery-1",
+      "--state",
+      "all",
+      "--json",
+      "number,url,headRefOid,state,mergeCommit,statusCheckRollup"
+     ],
+     "timeout": 60
+    }
+   ]
+  },
+  "observe_a_malformed_answer": {
+   "result": {
+    "raised": {
+     "message": "GitHub pull request listing unreadable",
+     "type": "RuntimeError"
+    }
+   },
+   "runner_calls": [
+    {
+     "argv": [
+      "gh",
+      "pr",
+      "list",
+      "--repo",
+      "github:zeus-owner/zeus-harness",
+      "--head",
+      "harness/delivery-1",
+      "--state",
+      "all",
+      "--json",
+      "number,url,headRefOid,state,mergeCommit,statusCheckRollup"
+     ],
+     "timeout": 60
+    }
+   ]
+  },
+  "observe_a_nonzero_exit": {
+   "result": {
+    "raised": {
+     "message": "GitHub pull request listing unavailable",
+     "type": "RuntimeError"
+    }
+   },
+   "runner_calls": [
+    {
+     "argv": [
+      "gh",
+      "pr",
+      "list",
+      "--repo",
+      "github:zeus-owner/zeus-harness",
+      "--head",
+      "harness/delivery-1",
+      "--state",
+      "all",
+      "--json",
+      "number,url,headRefOid,state,mergeCommit,statusCheckRollup"
+     ],
+     "timeout": 60
+    }
+   ]
+  },
+  "observe_a_runner_error": {
+   "result": {
+    "raised": {
+     "message": "injected: gh is unavailable",
+     "type": "OSError"
+    }
+   },
+   "runner_calls": [
+    {
+     "argv": [
+      "gh",
+      "pr",
+      "list",
+      "--repo",
+      "github:zeus-owner/zeus-harness",
+      "--head",
+      "harness/delivery-1",
+      "--state",
+      "all",
+      "--json",
+      "number,url,headRefOid,state,mergeCommit,statusCheckRollup"
+     ],
+     "timeout": 60
+    }
+   ]
+  },
+  "observe_closed_rows_are_ignored": {
+   "result": {
+    "returned": null
+   },
+   "runner_calls": [
+    {
+     "argv": [
+      "gh",
+      "pr",
+      "list",
+      "--repo",
+      "github:zeus-owner/zeus-harness",
+      "--head",
+      "harness/delivery-1",
+      "--state",
+      "all",
+      "--json",
+      "number,url,headRefOid,state,mergeCommit,statusCheckRollup"
+     ],
+     "timeout": 60
+    }
+   ]
+  },
+  "observe_empty_output": {
+   "result": {
+    "returned": null
+   },
+   "runner_calls": [
+    {
+     "argv": [
+      "gh",
+      "pr",
+      "list",
+      "--repo",
+      "github:zeus-owner/zeus-harness",
+      "--head",
+      "harness/delivery-1",
+      "--state",
+      "all",
+      "--json",
+      "number,url,headRefOid,state,mergeCommit,statusCheckRollup"
+     ],
+     "timeout": 60
+    }
+   ]
+  },
+  "observe_merge_commit_that_is_not_an_object": {
+   "result": {
+    "returned": {
+     "checks": [],
+     "head": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "merged_revision": null,
+     "number": 181,
+     "state": "MERGED",
+     "url": "https://example.invalid/pull/181"
+    }
+   },
+   "runner_calls": [
+    {
+     "argv": [
+      "gh",
+      "pr",
+      "list",
+      "--repo",
+      "github:zeus-owner/zeus-harness",
+      "--head",
+      "harness/delivery-1",
+      "--state",
+      "all",
+      "--json",
+      "number,url,headRefOid,state,mergeCommit,statusCheckRollup"
+     ],
+     "timeout": 60
+    }
+   ]
+  },
+  "observe_merged_with_its_merge_commit": {
+   "result": {
+    "returned": {
+     "checks": [],
+     "head": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "merged_revision": "9999999999999999999999999999999999999999",
+     "number": 181,
+     "state": "MERGED",
+     "url": "https://example.invalid/pull/181"
+    }
+   },
+   "runner_calls": [
+    {
+     "argv": [
+      "gh",
+      "pr",
+      "list",
+      "--repo",
+      "github:zeus-owner/zeus-harness",
+      "--head",
+      "harness/delivery-1",
+      "--state",
+      "all",
+      "--json",
+      "number,url,headRefOid,state,mergeCommit,statusCheckRollup"
+     ],
+     "timeout": 60
+    }
+   ]
+  },
+  "observe_no_pull_request": {
+   "result": {
+    "returned": null
+   },
+   "runner_calls": [
+    {
+     "argv": [
+      "gh",
+      "pr",
+      "list",
+      "--repo",
+      "github:zeus-owner/zeus-harness",
+      "--head",
+      "harness/delivery-1",
+      "--state",
+      "all",
+      "--json",
+      "number,url,headRefOid,state,mergeCommit,statusCheckRollup"
+     ],
+     "timeout": 60
+    }
+   ]
+  },
+  "observe_no_repository_configured": {
+   "result": {
+    "raised": {
+     "message": "GitHub repository must be configured",
+     "type": "ContractError"
+    }
+   },
+   "runner_calls": []
+  },
+  "observe_none_output": {
+   "result": {
+    "returned": null
+   },
+   "runner_calls": [
+    {
+     "argv": [
+      "gh",
+      "pr",
+      "list",
+      "--repo",
+      "github:zeus-owner/zeus-harness",
+      "--head",
+      "harness/delivery-1",
+      "--state",
+      "all",
+      "--json",
+      "number,url,headRefOid,state,mergeCommit,statusCheckRollup"
+     ],
+     "timeout": 60
+    }
+   ]
+  },
+  "observe_open_with_its_checks": {
+   "result": {
+    "returned": {
+     "checks": [
+      {
+       "name": "ci / success",
+       "state": "success"
+      },
+      {
+       "name": "ci / running",
+       "state": "pending"
+      },
+      {
+       "name": "ci / queued",
+       "state": "pending"
+      },
+      {
+       "name": "ci / failed",
+       "state": "failure"
+      },
+      {
+       "name": "ci / skipped",
+       "state": "failure"
+      },
+      {
+       "name": "ci / cancelled",
+       "state": "failure"
+      },
+      {
+       "name": "legacy / ok",
+       "state": "success"
+      },
+      {
+       "name": "legacy / pending",
+       "state": "pending"
+      },
+      {
+       "name": "legacy / expected",
+       "state": "pending"
+      },
+      {
+       "name": "legacy / error",
+       "state": "failure"
+      }
+     ],
+     "head": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "merged_revision": null,
+     "number": 181,
+     "state": "OPEN",
+     "url": "https://example.invalid/pull/181"
+    }
+   },
+   "runner_calls": [
+    {
+     "argv": [
+      "gh",
+      "pr",
+      "list",
+      "--repo",
+      "github:zeus-owner/zeus-harness",
+      "--head",
+      "harness/delivery-1",
+      "--state",
+      "all",
+      "--json",
+      "number,url,headRefOid,state,mergeCommit,statusCheckRollup"
+     ],
+     "timeout": 60
+    }
+   ]
+  },
+  "observe_the_first_row_when_no_head_matches": {
+   "result": {
+    "returned": {
+     "checks": [],
+     "head": "dddddddddddddddddddddddddddddddddddddddd",
+     "merged_revision": null,
+     "number": 1,
+     "state": "OPEN",
+     "url": "https://example.invalid/pull/181"
+    }
+   },
+   "runner_calls": [
+    {
+     "argv": [
+      "gh",
+      "pr",
+      "list",
+      "--repo",
+      "github:zeus-owner/zeus-harness",
+      "--head",
+      "harness/delivery-1",
+      "--state",
+      "all",
+      "--json",
+      "number,url,headRefOid,state,mergeCommit,statusCheckRollup"
+     ],
+     "timeout": 60
+    }
+   ]
+  },
+  "observe_the_row_of_the_exact_head_wins": {
+   "result": {
+    "returned": {
+     "checks": [],
+     "head": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "merged_revision": null,
+     "number": 2,
+     "state": "OPEN",
+     "url": "https://example.invalid/pull/181"
+    }
+   },
+   "runner_calls": [
+    {
+     "argv": [
+      "gh",
+      "pr",
+      "list",
+      "--repo",
+      "github:zeus-owner/zeus-harness",
+      "--head",
+      "harness/delivery-1",
+      "--state",
+      "all",
+      "--json",
+      "number,url,headRefOid,state,mergeCommit,statusCheckRollup"
+     ],
+     "timeout": 60
+    }
+   ]
+  },
+  "publish_refused_by_the_workspace": {
+   "result": {
+    "raised": {
+     "message": "injected: target",
+     "type": "ContractError"
+    }
+   },
+   "workspace_calls": [
+    {
+     "args": [
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "Host delivery aaaaaaaaaaaa",
+      "Host delivery of a reviewed release candidate.\n\nrevision: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\ntree: cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc\n"
+     ],
+     "call": "publish",
+     "kwargs": []
+    }
+   ]
+  },
+  "publish_through_the_workspace": {
+   "result": {
+    "returned": {
+     "checks": [],
+     "head": "ffffffffffffffffffffffffffffffffffffffff",
+     "number": 181,
+     "state": "OPEN",
+     "url": "https://example.invalid/pull/181"
+    }
+   },
+   "workspace_calls": [
+    {
+     "args": [
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "Host delivery aaaaaaaaaaaa",
+      "Host delivery of a reviewed release candidate.\n\nrevision: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\ntree: cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc\n"
+     ],
+     "call": "publish",
+     "kwargs": []
+    }
+   ]
+  },
+  "publish_transport_error": {
+   "result": {
+    "raised": {
+     "message": "injected: lost response",
+     "type": "OSError"
+    }
+   },
+   "workspace_calls": [
+    {
+     "args": [
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "Host delivery aaaaaaaaaaaa",
+      "Host delivery of a reviewed release candidate.\n\nrevision: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\ntree: cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc\n"
+     ],
+     "call": "publish",
+     "kwargs": []
+    }
+   ]
+  },
+  "publish_with_an_empty_answer": {
+   "result": {
+    "returned": {
+     "checks": [],
+     "head": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "number": null,
+     "state": "OPEN",
+     "url": null
+    }
+   },
+   "workspace_calls": [
+    {
+     "args": [
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "Host delivery aaaaaaaaaaaa",
+      "Host delivery of a reviewed release candidate.\n\nrevision: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\ntree: cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc\n"
+     ],
+     "call": "publish",
+     "kwargs": []
+    }
+   ]
+  },
+  "publish_without_a_head": {
+   "result": {
+    "returned": {
+     "checks": [],
+     "head": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "number": 7,
+     "state": "OPEN",
+     "url": "u"
+    }
+   },
+   "workspace_calls": [
+    {
+     "args": [
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "Host delivery aaaaaaaaaaaa",
+      "Host delivery of a reviewed release candidate.\n\nrevision: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\ntree: cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc\n"
+     ],
+     "call": "publish",
+     "kwargs": []
+    }
+   ]
+  },
+  "qualify_through_the_workspace": {
+   "result": {
+    "returned": {
+     "merged_revision": "9999999999999999999999999999999999999999",
+     "tree": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+    }
+   },
+   "workspace_calls": [
+    {
+     "args": [
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "9999999999999999999999999999999999999999"
+     ],
+     "call": "qualify_merged",
+     "kwargs": []
+    }
+   ]
+  },
+  "qualify_tree_differs": {
+   "result": {
+    "raised": {
+     "message": "Merged tree differs from reviewed candidate",
+     "type": "ContractError"
+    }
+   },
+   "workspace_calls": [
+    {
+     "args": [
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "9999999999999999999999999999999999999999"
+     ],
+     "call": "qualify_merged",
+     "kwargs": []
+    }
+   ]
+  }
+ },
+ "guard": {
+  "contender_refused_and_another_target_free": {
+   "after_release": {
+    "descriptor.json": {
+     "predecessor": null,
+     "profile_digest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "revision": "1111111111111111111111111111111111111111",
+     "root": "/fixture/root",
+     "schema": "urn:zeus:host-descriptor:1",
+     "target_id": "guard-held",
+     "worker_image": "zeus-worker@sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+    }
+   },
+   "another_target": {
+    "returned": {
+     "descriptor_sha256": "<digest:elsewhere>",
+     "written": true
+    }
+   },
+   "contender": {
+    "raised": {
+     "field": "target_id",
+     "message": "host delivery refused: target_lock_held (target_id)",
+     "reason_code": "target_lock_held",
+     "type": "DeliveryRefused"
+    }
+   },
+   "during_hold": {
+    "files_held_target": {
+     "switch.lock": "<dir>"
+    },
+    "files_other_target": {
+     "descriptor.json": {
+      "predecessor": null,
+      "profile_digest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+      "revision": "1111111111111111111111111111111111111111",
+      "root": "/fixture/root",
+      "schema": "urn:zeus:host-descriptor:1",
+      "target_id": "guard-other",
+      "worker_image": "zeus-worker@sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+     }
+    }
+   },
+   "holder": {
+    "returned": {
+     "descriptor_sha256": "<digest:held>",
+     "written": true
+    }
+   }
+  },
+  "two_operations_serialize": {
+   "current_is_second": true,
+   "events": [
+    "holder:enter",
+    "lock_present_while_held:True",
+    "holder:exit",
+    "follower:enter"
+   ],
+   "files": {
+    "descriptor.json": {
+     "predecessor": "<digest:serial-first>",
+     "profile_digest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "revision": "2222222222222222222222222222222222222222",
+     "root": "/fixture/root",
+     "schema": "urn:zeus:host-descriptor:1",
+     "target_id": "guard-serial",
+     "worker_image": "zeus-worker@sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+    }
+   },
+   "results": {
+    "follower": {
+     "returned": {
+      "descriptor_sha256": "<digest:serial-second>",
+      "written": true
+     }
+    },
+    "holder": {
+     "returned": {
+      "descriptor_sha256": "<digest:serial-first>",
+      "written": true
+     }
+    }
+   }
+  },
+  "unavailable_authority_before_any_effect": {
+   "child_alive": true,
+   "descriptor_unchanged": true,
+   "drain": {
+    "raised": {
+     "message": "injected: the fence cannot be read",
+     "type": "ConnectionError"
+    }
+   },
+   "files_unchanged": true,
+   "no_stop_no_pause_no_lock": true,
+   "receipt_instance_unchanged": true,
+   "start": {
+    "raised": {
+     "message": "injected: the fence cannot be read",
+     "type": "ConnectionError"
+    }
+   },
+   "switch": {
+    "raised": {
+     "message": "injected: the fence cannot be read",
+     "type": "ConnectionError"
+    }
+   }
+  }
+ },
+ "live_children": 0,
+ "observe_identity": {
+  "an_oversized_receipt_is_unreadable": {
+   "observe": {
+    "returned": {
+     "launch": null,
+     "launch_present": false,
+     "receipt": null,
+     "receipt_present": true,
+     "running": false
+    }
+   }
+  },
+  "identity_before_a_replacement": {
+   "identity": {
+    "returned": {
+     "descriptor_sha256": "<digest:identity-1>",
+     "instance_id": "<instance>",
+     "launch": {
+      "descriptor_sha256": "<digest:identity-1>",
+      "pid": "<pid>",
+      "started_at": "<time>"
+     },
+     "receipt": "valid",
+     "running": true
+    }
+   },
+   "observe_receipt_equals_planted": true
+  },
+  "identity_of_a_dead_instance": {
+   "identity": {
+    "returned": {
+     "descriptor_sha256": "<digest:identity-3>",
+     "instance_id": "<instance>",
+     "launch": {
+      "descriptor_sha256": "<digest:identity-3>",
+      "pid": "<pid>",
+      "started_at": "<time>"
+     },
+     "receipt": "valid",
+     "running": false
+    }
+   }
+  },
+  "identity_with_a_receipt_and_no_descriptor": {
+   "identity": {
+    "returned": {
+     "descriptor_sha256": null,
+     "instance_id": "<instance>",
+     "launch": {
+      "descriptor_sha256": "<digest:identity-2>",
+      "pid": "<pid>",
+      "started_at": "<time>"
+     },
+     "receipt": "valid",
+     "running": true
+    }
+   }
+  },
+  "launch_present_and_running": {
+   "launch_record": {
+    "returned": {
+     "descriptor_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+     "pid": "<pid>",
+     "started_at": "<time>"
+    }
+   },
+   "observe": {
+    "returned": {
+     "launch": {
+      "descriptor_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+      "pid": "<pid>",
+      "started_at": "<time>"
+     },
+     "launch_present": true,
+     "receipt": null,
+     "receipt_present": false,
+     "running": true
+    }
+   }
+  },
+  "launch_present_but_not_running": {
+   "observe": {
+    "returned": {
+     "launch": {
+      "descriptor_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+      "pid": "<pid>",
+      "started_at": "<time>"
+     },
+     "launch_present": true,
+     "receipt": null,
+     "receipt_present": false,
+     "running": false
+    }
+   }
+  },
+  "launch_present_but_unreadable": {
+   "observe": {
+    "returned": {
+     "launch": null,
+     "launch_present": true,
+     "receipt": null,
+     "receipt_present": false,
+     "running": false
+    }
+   }
+  },
+  "liveness_that_cannot_be_read_is_none": {
+   "observe": {
+    "raised": {
+     "message": "injected: liveness cannot be read",
+     "type": "OSError"
+    }
+   }
+  },
+  "nothing_on_the_target": {
+   "identity": {
+    "returned": {
+     "descriptor_sha256": null,
+     "instance_id": null,
+     "launch": null,
+     "receipt": "absent",
+     "running": false
+    }
+   },
+   "launch_record": null,
+   "observe": {
+    "returned": {
+     "launch": null,
+     "launch_present": false,
+     "receipt": null,
+     "receipt_present": false,
+     "running": false
+    }
+   },
+   "receipt": null
+  },
+  "receipt_missing_its_fields_is_unreadable": {
+   "identity": {
+    "returned": {
+     "descriptor_sha256": null,
+     "instance_id": null,
+     "launch": null,
+     "receipt": "unreadable",
+     "running": false
+    }
+   }
+  },
+  "receipt_of_the_wrong_shape_is_unreadable": {
+   "identity": {
+    "returned": {
+     "descriptor_sha256": null,
+     "instance_id": null,
+     "launch": null,
+     "receipt": "unreadable",
+     "running": false
+    }
+   }
+  },
+  "receipt_present_but_unreadable_is_unknown_not_absent": {
+   "identity": {
+    "returned": {
+     "descriptor_sha256": null,
+     "instance_id": null,
+     "launch": null,
+     "receipt": "unreadable",
+     "running": false
+    }
+   },
+   "observe": {
+    "returned": {
+     "launch": null,
+     "launch_present": false,
+     "receipt": null,
+     "receipt_present": true,
+     "running": false
+    }
+   }
+  },
+  "the_shared_base_reads_an_unreadable_liveness_as_none": {
+   "observe": {
+    "returned": {
+     "launch": null,
+     "launch_present": false,
+     "receipt": null,
+     "receipt_present": false,
+     "running": null
+    }
+   }
+  },
+  "the_shared_base_without_a_liveness_reads_none": {
+   "observe": {
+    "returned": {
+     "launch": null,
+     "launch_present": false,
+     "receipt": null,
+     "receipt_present": false,
+     "running": null
+    }
+   },
+   "path": {
+    "returned": "<root>/states/042-observe-base/x.json"
+   },
+   "start": {
+    "raised": {
+     "field": "target_id",
+     "message": "host delivery refused: descriptor_foreign (target_id)",
+     "reason_code": "descriptor_foreign",
+     "type": "DeliveryRefused"
+    }
+   },
+   "state_dir": {
+    "returned": "<root>/states/042-observe-base"
+   },
+   "stop": {
+    "raised": {
+     "message": "",
+     "type": "NotImplementedError"
+    }
+   }
+  }
+ },
+ "service_child": {
+  "child_bounded_idle_exits_zero": {
+   "exit": 0,
+   "files": {
+    "descriptor.json": {
+     "predecessor": null,
+     "profile_digest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "revision": "1111111111111111111111111111111111111111",
+     "root": "<root>/runtime",
+     "schema": "urn:zeus:host-descriptor:1",
+     "target_id": "serve-template",
+     "worker_image": "zeus-worker@sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+    },
+    "startup-receipt.json": {
+     "descriptor_sha256": "<digest:serve-good>",
+     "instance_id": "<instance>",
+     "module_root": "<package>",
+     "pid": "<pid>",
+     "profile_digest": "cc7150678052ad3d4636a930a7fef34f5a991cfe85b633ada5dc49b830b93bda",
+     "revision": "",
+     "runtime_root": "<package-root>",
+     "schema": "urn:zeus:host-startup-receipt:1",
+     "started_at": "<time>",
+     "target_id": "serve-template",
+     "worker_image": "<absent>"
+    },
+    "work.json": {
+     "active": 0,
+     "at": "<time>",
+     "unconfirmed": 0
+    }
+   }
+  },
+  "child_malformed_descriptor": {
+   "exit": 2,
+   "files": {
+    "descriptor.json": {
+     "text": "not json"
+    }
+   }
+  },
+  "child_missing_descriptor": {
+   "exit": 2,
+   "files": {}
+  },
+  "child_valid_descriptor_exits_on_the_stop_file": {
+   "consumption_verdict": {
+    "consumed": false,
+    "instance_id": null,
+    "reason_code": "receipt_invalid"
+   },
+   "exit": 0,
+   "files": {
+    "descriptor.json": {
+     "predecessor": null,
+     "profile_digest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "revision": "1111111111111111111111111111111111111111",
+     "root": "<root>/runtime",
+     "schema": "urn:zeus:host-descriptor:1",
+     "target_id": "serve-template",
+     "worker_image": "zeus-worker@sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+    },
+    "startup-receipt.json": {
+     "descriptor_sha256": "<digest:serve-good>",
+     "instance_id": "<instance>",
+     "module_root": "<package>",
+     "pid": "<pid>",
+     "profile_digest": "cc7150678052ad3d4636a930a7fef34f5a991cfe85b633ada5dc49b830b93bda",
+     "revision": "",
+     "runtime_root": "<package-root>",
+     "schema": "urn:zeus:host-startup-receipt:1",
+     "started_at": "<time>",
+     "target_id": "serve-template",
+     "worker_image": "<absent>"
+    },
+    "stop.json": {
+     "stop": true
+    },
+    "work.json": {
+     "active": 0,
+     "at": "<time>",
+     "unconfirmed": 0
+    }
+   },
+   "receipt": {
+    "descriptor_sha256": "<digest:serve-good>",
+    "instance_id": "<instance>",
+    "module_root": "<package>",
+    "pid": "<pid>",
+    "profile_digest": "cc7150678052ad3d4636a930a7fef34f5a991cfe85b633ada5dc49b830b93bda",
+    "revision": "",
+    "runtime_root": "<package-root>",
+    "schema": "urn:zeus:host-startup-receipt:1",
+    "started_at": "<time>",
+    "target_id": "serve-template",
+    "worker_image": "<absent>"
+   },
+   "receipt_is_this_sides_package": true,
+   "receipt_pid_is_not_this_process": true,
+   "work_file": {
+    "active": 0,
+    "at": "<time>",
+    "unconfirmed": 0
+   }
+  },
+  "child_without_arguments": {
+   "exit": 2
+  },
+  "main_service_max_seconds_one": {
+   "exit": 0,
+   "files": {
+    "descriptor.json": {
+     "predecessor": null,
+     "profile_digest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "revision": "1111111111111111111111111111111111111111",
+     "root": "<root>/runtime",
+     "schema": "urn:zeus:host-descriptor:1",
+     "target_id": "serve-template",
+     "worker_image": "zeus-worker@sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+    },
+    "startup-receipt.json": {
+     "descriptor_sha256": "<digest:serve-good>",
+     "instance_id": "<instance>",
+     "module_root": "<package>",
+     "pid": "<pid>",
+     "profile_digest": "cc7150678052ad3d4636a930a7fef34f5a991cfe85b633ada5dc49b830b93bda",
+     "revision": "",
+     "runtime_root": "<package-root>",
+     "schema": "urn:zeus:host-startup-receipt:1",
+     "started_at": "<time>",
+     "target_id": "serve-template",
+     "worker_image": "<absent>"
+    },
+    "work.json": {
+     "active": 0,
+     "at": "<time>",
+     "unconfirmed": 0
+    }
+   },
+   "no_stop_file": true
+  },
+  "main_service_over_a_missing_descriptor": {
+   "exit": 2,
+   "files": {}
+  },
+  "main_with_a_non_integer_seconds": {
+   "exit": 2
+  },
+  "main_with_an_unknown_command": {
+   "exit": 2
+  },
+  "main_without_a_command": {
+   "exit": 2
+  },
+  "main_without_a_state_dir": {
+   "exit": 2
+  },
+  "serve_invalid_field": {
+   "exit": 2,
+   "files": {
+    "descriptor.json": {
+     "predecessor": null,
+     "profile_digest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "revision": "nothex",
+     "root": "<root>/runtime",
+     "schema": "urn:zeus:host-descriptor:1",
+     "target_id": "serve-template",
+     "worker_image": "zeus-worker@sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+    }
+   }
+  },
+  "serve_malformed_descriptor": {
+   "exit": 2,
+   "files": {
+    "descriptor.json": {
+     "text": "not json"
+    }
+   }
+  },
+  "serve_missing_descriptor": {
+   "exit": 2,
+   "files": {}
+  },
+  "serve_valid_descriptor_exits_on_the_stop_file": {
+   "consumption_verdict": {
+    "consumed": false,
+    "instance_id": null,
+    "reason_code": "receipt_invalid"
+   },
+   "exit": 0,
+   "files": {
+    "descriptor.json": {
+     "predecessor": null,
+     "profile_digest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "revision": "1111111111111111111111111111111111111111",
+     "root": "<root>/runtime",
+     "schema": "urn:zeus:host-descriptor:1",
+     "target_id": "serve-template",
+     "worker_image": "zeus-worker@sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+    },
+    "startup-receipt.json": {
+     "descriptor_sha256": "<digest:serve-good>",
+     "instance_id": "<instance>",
+     "module_root": "<package>",
+     "pid": "<pid>",
+     "profile_digest": "cc7150678052ad3d4636a930a7fef34f5a991cfe85b633ada5dc49b830b93bda",
+     "revision": "",
+     "runtime_root": "<package-root>",
+     "schema": "urn:zeus:host-startup-receipt:1",
+     "started_at": "<time>",
+     "target_id": "serve-template",
+     "worker_image": "<absent>"
+    },
+    "stop.json": {
+     "stop": true
+    },
+    "work.json": {
+     "active": 0,
+     "at": "<time>",
+     "unconfirmed": 0
+    }
+   },
+   "receipt": {
+    "descriptor_sha256": "<digest:serve-good>",
+    "instance_id": "<instance>",
+    "module_root": "<package>",
+    "pid": "<pid>",
+    "profile_digest": "cc7150678052ad3d4636a930a7fef34f5a991cfe85b633ada5dc49b830b93bda",
+    "revision": "",
+    "runtime_root": "<package-root>",
+    "schema": "urn:zeus:host-startup-receipt:1",
+    "started_at": "<time>",
+    "target_id": "serve-template",
+    "worker_image": "<absent>"
+   },
+   "receipt_describes_the_descriptor": true,
+   "receipt_pid_is_this_process": true,
+   "work_file": {
+    "active": 0,
+    "at": "<time>",
+    "unconfirmed": 0
+   }
+  },
+  "serve_wrong_schema": {
+   "exit": 2,
+   "files": {
+    "descriptor.json": {
+     "schema": "urn:other:1"
+    }
+   }
+  },
+  "startup_receipt": {
+   "instance_is_32_hex": true,
+   "keys": [
+    "descriptor_sha256",
+    "instance_id",
+    "module_root",
+    "pid",
+    "profile_digest",
+    "revision",
+    "runtime_root",
+    "schema",
+    "started_at",
+    "target_id",
+    "worker_image"
+   ],
+   "pid_is_this_process": true,
+   "receipt": {
+    "descriptor_sha256": "<digest:serve-good>",
+    "instance_id": "<instance>",
+    "module_root": "<package>",
+    "pid": "<pid>",
+    "profile_digest": "cc7150678052ad3d4636a930a7fef34f5a991cfe85b633ada5dc49b830b93bda",
+    "revision": "",
+    "runtime_root": "<package-root>",
+    "schema": "urn:zeus:host-startup-receipt:1",
+    "started_at": "<time>",
+    "target_id": "serve-template",
+    "worker_image": "<absent>"
+   }
+  }
+ },
+ "start": {
+  "clean_start_real_child": {
+   "child": {
+    "argv": [
+     "<python>",
+     "-m",
+     "codex_harness.adapters.host_delivery",
+     "service",
+     "--state-dir",
+     "<root>/states/008-start-clean",
+     "--max-seconds",
+     "20"
+    ],
+    "cwd": "<root>/runtime",
+    "harness_repository": "<root>/runtime",
+    "own_session": true,
+    "pythonpath_first": "<root>/runtime/src",
+    "pythonpath_has_inherited_entries": true,
+    "stdio": [
+     "/dev/null",
+     "/dev/null",
+     "/dev/null"
+    ],
+    "zeus_repository": "<root>/runtime"
+   },
+   "child_alive": true,
+   "child_alive_after_stop": false,
+   "consumption_verdict": {
+    "consumed": false,
+    "instance_id": null,
+    "reason_code": "receipt_invalid"
+   },
+   "launch_pid_is_child": true,
+   "launch_record": {
+    "descriptor_sha256": "<digest:clean-1>",
+    "pid": "<pid>",
+    "started_at": "<time>"
+   },
+   "listing_after": {
+    "controller-state.json": {
+     "descriptor_sha256": "<digest:clean-1>",
+     "pid": "<pid>",
+     "started_at": "<time>"
+    },
+    "descriptor.json": {
+     "predecessor": null,
+     "profile_digest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "revision": "1111111111111111111111111111111111111111",
+     "root": "<root>/runtime",
+     "schema": "urn:zeus:host-descriptor:1",
+     "target_id": "start-clean",
+     "worker_image": "zeus-worker@sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+    },
+    "startup-receipt.json": {
+     "descriptor_sha256": "<digest:clean-1>",
+     "instance_id": "<instance>",
+     "module_root": "<package>",
+     "pid": "<pid>",
+     "profile_digest": "cc7150678052ad3d4636a930a7fef34f5a991cfe85b633ada5dc49b830b93bda",
+     "revision": "",
+     "runtime_root": "<package-root>",
+     "schema": "urn:zeus:host-startup-receipt:1",
+     "started_at": "<time>",
+     "target_id": "start-clean",
+     "worker_image": "<absent>"
+    },
+    "work.json": {
+     "active": 0,
+     "at": "<time>",
+     "unconfirmed": 0
+    }
+   },
+   "listing_after_stop": {
+    "controller-state.json": {
+     "descriptor_sha256": "<digest:clean-1>",
+     "pid": "<pid>",
+     "started_at": "<time>"
+    },
+    "descriptor.json": {
+     "predecessor": null,
+     "profile_digest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "revision": "1111111111111111111111111111111111111111",
+     "root": "<root>/runtime",
+     "schema": "urn:zeus:host-descriptor:1",
+     "target_id": "start-clean",
+     "worker_image": "zeus-worker@sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+    },
+    "startup-receipt.json": {
+     "descriptor_sha256": "<digest:clean-1>",
+     "instance_id": "<instance>",
+     "module_root": "<package>",
+     "pid": "<pid>",
+     "profile_digest": "cc7150678052ad3d4636a930a7fef34f5a991cfe85b633ada5dc49b830b93bda",
+     "revision": "",
+     "runtime_root": "<package-root>",
+     "schema": "urn:zeus:host-startup-receipt:1",
+     "started_at": "<time>",
+     "target_id": "start-clean",
+     "worker_image": "<absent>"
+    },
+    "stop.json": {
+     "at": "<time>",
+     "stop": true
+    },
+    "work.json": {
+     "active": 0,
+     "at": "<time>",
+     "unconfirmed": 0
+    }
+   },
+   "listing_before": {
+    "descriptor.json": {
+     "predecessor": null,
+     "profile_digest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "revision": "1111111111111111111111111111111111111111",
+     "root": "<root>/runtime",
+     "schema": "urn:zeus:host-descriptor:1",
+     "target_id": "start-clean",
+     "worker_image": "zeus-worker@sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+    }
+   },
+   "observe": {
+    "launch": {
+     "descriptor_sha256": "<digest:clean-1>",
+     "pid": "<pid>",
+     "started_at": "<time>"
+    },
+    "launch_present": true,
+    "receipt": {
+     "descriptor_sha256": "<digest:clean-1>",
+     "instance_id": "<instance>",
+     "module_root": "<package>",
+     "pid": "<pid>",
+     "profile_digest": "cc7150678052ad3d4636a930a7fef34f5a991cfe85b633ada5dc49b830b93bda",
+     "revision": "",
+     "runtime_root": "<package-root>",
+     "schema": "urn:zeus:host-startup-receipt:1",
+     "started_at": "<time>",
+     "target_id": "start-clean",
+     "worker_image": "<absent>"
+    },
+    "receipt_present": true,
+    "running": true
+   },
+   "receipt": {
+    "descriptor_sha256": "<digest:clean-1>",
+    "instance_id": "<instance>",
+    "module_root": "<package>",
+    "pid": "<pid>",
+    "profile_digest": "cc7150678052ad3d4636a930a7fef34f5a991cfe85b633ada5dc49b830b93bda",
+    "revision": "",
+    "runtime_root": "<package-root>",
+    "schema": "urn:zeus:host-startup-receipt:1",
+    "started_at": "<time>",
+    "target_id": "start-clean",
+    "worker_image": "<absent>"
+   },
+   "receipt_is_this_sides_package": true,
+   "start": {
+    "returned": {
+     "launch": {
+      "descriptor_sha256": "<digest:clean-1>",
+      "pid": "<pid>",
+      "started_at": "<time>"
+     },
+     "pid": "<pid>",
+     "started": true
+    }
+   },
+   "stop": {
+    "returned": {
+     "pid": "<pid>",
+     "stopped": true,
+     "was_running": true
+    }
+   }
+  },
+  "dead_foreign_launch_absence_unknown": {
+   "no_stop_file": true,
+   "start": {
+    "raised": {
+     "field": "target_id",
+     "message": "host delivery refused: instance_absence_unknown (target_id)",
+     "reason_code": "instance_absence_unknown",
+     "type": "DeliveryRefused"
+    }
+   }
+  },
+  "descriptor_foreign": {
+   "after_theirs": {
+    "raised": {
+     "field": "target_id",
+     "message": "host delivery refused: descriptor_foreign (target_id)",
+     "reason_code": "descriptor_foreign",
+     "type": "DeliveryRefused"
+    }
+   },
+   "child_alive": true,
+   "files": {
+    "controller-state.json": {
+     "descriptor_sha256": "<digest:foreign-theirs>",
+     "pid": "<pid>",
+     "started_at": "<time>"
+    },
+    "descriptor.json": {
+     "predecessor": null,
+     "profile_digest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "revision": "2222222222222222222222222222222222222222",
+     "root": "<root>/runtime",
+     "schema": "urn:zeus:host-descriptor:1",
+     "target_id": "start-foreign",
+     "worker_image": "zeus-worker@sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+    },
+    "startup-receipt.json": {
+     "descriptor_sha256": "<digest:foreign-theirs>",
+     "instance_id": "<instance>",
+     "module_root": "<root>/runtime/src/codex_harness",
+     "pid": "<pid>",
+     "profile_digest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "revision": "2222222222222222222222222222222222222222",
+     "runtime_root": "<root>/runtime",
+     "schema": "urn:zeus:host-startup-receipt:1",
+     "started_at": "<time>",
+     "target_id": "start-foreign",
+     "worker_image": "zeus-worker@sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+    }
+   },
+   "no_descriptor": {
+    "raised": {
+     "field": "target_id",
+     "message": "host delivery refused: descriptor_foreign (target_id)",
+     "reason_code": "descriptor_foreign",
+     "type": "DeliveryRefused"
+    }
+   },
+   "no_stop_file": true
+  },
+  "fence_lost_during_the_bounded_stop": {
+   "kept": {
+    "fence_calls": 2,
+    "launch_kept": true,
+    "lock_released": true,
+    "no_new_launch": true,
+    "previous_alive": false,
+    "receipt_kept": true,
+    "stop_file": {
+     "at": "<time>",
+     "stop": true
+    }
+   },
+   "listing": {
+    "controller-state.json": {
+     "descriptor_sha256": "<digest:lost-2>",
+     "pid": "<pid>",
+     "started_at": "<time>"
+    },
+    "descriptor.json": {
+     "predecessor": "<digest:lost-1>",
+     "profile_digest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "revision": "2222222222222222222222222222222222222222",
+     "root": "<root>/runtime",
+     "schema": "urn:zeus:host-descriptor:1",
+     "target_id": "start-fence-lost",
+     "worker_image": "zeus-worker@sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+    },
+    "startup-receipt.json": {
+     "descriptor_sha256": "<digest:lost-2>",
+     "instance_id": "<instance>",
+     "module_root": "<package>",
+     "pid": "<pid>",
+     "profile_digest": "cc7150678052ad3d4636a930a7fef34f5a991cfe85b633ada5dc49b830b93bda",
+     "revision": "",
+     "runtime_root": "<package-root>",
+     "schema": "urn:zeus:host-startup-receipt:1",
+     "started_at": "<time>",
+     "target_id": "start-fence-lost",
+     "worker_image": "<absent>"
+    },
+    "work.json": {
+     "active": 0,
+     "at": "<time>",
+     "unconfirmed": 0
+    }
+   },
+   "new_receipt_describes_d2": true,
+   "start": {
+    "raised": {
+     "cause": "ContractError",
+     "effect": "service_stopped",
+     "message": "service_stopped",
+     "type": "LifecycleInterrupted"
+    }
+   },
+   "successor_resumes": {
+    "returned": {
+     "launch": {
+      "descriptor_sha256": "<digest:lost-2>",
+      "pid": "<pid>",
+      "started_at": "<time>"
+     },
+     "pid": "<pid>",
+     "started": true
+    }
+   }
+  },
+  "live_instance_not_authorized_refused_before_stop": {
+   "another_descriptors_authority": {
+    "raised": {
+     "field": "target_id",
+     "message": "host delivery refused: instance_contradictory (target_id)",
+     "reason_code": "instance_contradictory",
+     "type": "DeliveryRefused"
+    }
+   },
+   "another_instance_authority": {
+    "raised": {
+     "field": "target_id",
+     "message": "host delivery refused: instance_not_authorized (target_id)",
+     "reason_code": "instance_not_authorized",
+     "type": "DeliveryRefused"
+    }
+   },
+   "child_alive": true,
+   "files_unchanged": true,
+   "malformed_authority": {
+    "raised": {
+     "field": "replaces.descriptor_sha256",
+     "message": "host delivery refused: replacement_invalid (replaces.descriptor_sha256)",
+     "reason_code": "replacement_invalid",
+     "type": "DeliveryRefused"
+    }
+   },
+   "no_authority": {
+    "raised": {
+     "field": "target_id",
+     "message": "host delivery refused: instance_not_authorized (target_id)",
+     "reason_code": "instance_not_authorized",
+     "type": "DeliveryRefused"
+    }
+   },
+   "no_stop_file": true
+  },
+  "real_child_recognition": {
+   "consumption_reason": "receipt_invalid",
+   "receipt_revision": "",
+   "unreachable": "a real child's receipt names the resolved package and an empty revision (the root has no .git), which M7 reads as receipt_invalid; recognition and replacement are recorded over a LABELLED sleeper and a hand-written receipt below"
+  },
+  "recognizes_the_live_matching_instance": {
+   "again": {
+    "returned": {
+     "instance_id": "<instance>",
+     "launch": {
+      "descriptor_sha256": "<digest:recognize-1>",
+      "pid": "<pid>",
+      "started_at": "<time>"
+     },
+     "recovered": true,
+     "started": false
+    }
+   },
+   "child_alive": true,
+   "consumption_reason": null,
+   "files_unchanged": true,
+   "launch_is_the_planted_record": true,
+   "no_stop_file": true,
+   "start": {
+    "returned": {
+     "instance_id": "<instance>",
+     "launch": {
+      "descriptor_sha256": "<digest:recognize-1>",
+      "pid": "<pid>",
+      "started_at": "<time>"
+     },
+     "recovered": true,
+     "started": false
+    }
+   }
+  },
+  "replaces_the_authorized_predecessor": {
+   "launch_record": {
+    "descriptor_sha256": "<digest:replace-2>",
+    "pid": "<pid>",
+    "started_at": "<time>"
+   },
+   "listing": {
+    "controller-state.json": {
+     "descriptor_sha256": "<digest:replace-2>",
+     "pid": "<pid>",
+     "started_at": "<time>"
+    },
+    "descriptor.json": {
+     "predecessor": "<digest:replace-1>",
+     "profile_digest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "revision": "2222222222222222222222222222222222222222",
+     "root": "<root>/runtime",
+     "schema": "urn:zeus:host-descriptor:1",
+     "target_id": "start-replace",
+     "worker_image": "zeus-worker@sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+    },
+    "startup-receipt.json": {
+     "descriptor_sha256": "<digest:replace-2>",
+     "instance_id": "<instance>",
+     "module_root": "<package>",
+     "pid": "<pid>",
+     "profile_digest": "cc7150678052ad3d4636a930a7fef34f5a991cfe85b633ada5dc49b830b93bda",
+     "revision": "",
+     "runtime_root": "<package-root>",
+     "schema": "urn:zeus:host-startup-receipt:1",
+     "started_at": "<time>",
+     "target_id": "start-replace",
+     "worker_image": "<absent>"
+    },
+    "work.json": {
+     "active": 0,
+     "at": "<time>",
+     "unconfirmed": 0
+    }
+   },
+   "new_child_alive": true,
+   "new_instance_differs": true,
+   "new_receipt_describes_d2": true,
+   "previous_alive": false,
+   "start": {
+    "returned": {
+     "launch": {
+      "descriptor_sha256": "<digest:replace-2>",
+      "pid": "<pid>",
+      "started_at": "<time>"
+     },
+     "pid": "<pid>",
+     "started": true
+    }
+   }
+  },
+  "restart_over_real_child_is_unreadable": {
+   "child_alive": true,
+   "files_before_switch": {
+    "controller-state.json": {
+     "descriptor_sha256": "<digest:start-restart-1>",
+     "pid": "<pid>",
+     "started_at": "<time>"
+    },
+    "descriptor.json": {
+     "predecessor": null,
+     "profile_digest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "revision": "1111111111111111111111111111111111111111",
+     "root": "<root>/runtime",
+     "schema": "urn:zeus:host-descriptor:1",
+     "target_id": "start-restart",
+     "worker_image": "zeus-worker@sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+    },
+    "startup-receipt.json": {
+     "descriptor_sha256": "<digest:start-restart-1>",
+     "instance_id": "<instance>",
+     "module_root": "<package>",
+     "pid": "<pid>",
+     "profile_digest": "cc7150678052ad3d4636a930a7fef34f5a991cfe85b633ada5dc49b830b93bda",
+     "revision": "",
+     "runtime_root": "<package-root>",
+     "schema": "urn:zeus:host-startup-receipt:1",
+     "started_at": "<time>",
+     "target_id": "start-restart",
+     "worker_image": "<absent>"
+    },
+    "work.json": {
+     "active": 0,
+     "at": "<time>",
+     "unconfirmed": 0
+    }
+   },
+   "launch_unchanged": true,
+   "lock_released": true,
+   "no_stop_file": true,
+   "receipt_instance_unchanged": true,
+   "replace_with_authority": {
+    "raised": {
+     "field": "target_id",
+     "message": "host delivery refused: instance_receipt_unreadable (target_id)",
+     "reason_code": "instance_receipt_unreadable",
+     "type": "DeliveryRefused"
+    }
+   },
+   "restart_same": {
+    "raised": {
+     "field": "target_id",
+     "message": "host delivery refused: instance_receipt_unreadable (target_id)",
+     "reason_code": "instance_receipt_unreadable",
+     "type": "DeliveryRefused"
+    }
+   }
+  },
+  "resumes_a_known_dead_instance": {
+   "listing": {
+    "controller-state.json": {
+     "descriptor_sha256": "<digest:resume-1>",
+     "pid": "<pid>",
+     "started_at": "<time>"
+    },
+    "descriptor.json": {
+     "predecessor": null,
+     "profile_digest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "revision": "1111111111111111111111111111111111111111",
+     "root": "<root>/runtime",
+     "schema": "urn:zeus:host-descriptor:1",
+     "target_id": "start-resume-dead",
+     "worker_image": "zeus-worker@sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+    },
+    "startup-receipt.json": {
+     "descriptor_sha256": "<digest:resume-1>",
+     "instance_id": "<instance>",
+     "module_root": "<package>",
+     "pid": "<pid>",
+     "profile_digest": "cc7150678052ad3d4636a930a7fef34f5a991cfe85b633ada5dc49b830b93bda",
+     "revision": "",
+     "runtime_root": "<package-root>",
+     "schema": "urn:zeus:host-startup-receipt:1",
+     "started_at": "<time>",
+     "target_id": "start-resume-dead",
+     "worker_image": "<absent>"
+    },
+    "work.json": {
+     "active": 0,
+     "at": "<time>",
+     "unconfirmed": 0
+    }
+   },
+   "new_instance_differs": true,
+   "start": {
+    "returned": {
+     "launch": {
+      "descriptor_sha256": "<digest:resume-1>",
+      "pid": "<pid>",
+      "started_at": "<time>"
+     },
+     "pid": "<pid>",
+     "started": true
+    }
+   }
+  },
+  "runtime_root_unavailable": {
+   "files": {
+    "descriptor.json": {
+     "predecessor": null,
+     "profile_digest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "revision": "1111111111111111111111111111111111111111",
+     "root": "<root>/bare-root",
+     "schema": "urn:zeus:host-descriptor:1",
+     "target_id": "start-bare",
+     "worker_image": "zeus-worker@sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+    }
+   },
+   "start": {
+    "raised": {
+     "field": "root",
+     "message": "host delivery refused: runtime_root_unavailable (root)",
+     "reason_code": "runtime_root_unavailable",
+     "type": "DeliveryRefused"
+    }
+   }
+  },
+  "stale_controller_real_child": {
+   "child_alive": true,
+   "fence_calls": 1,
+   "files_unchanged": true,
+   "lock_released": true,
+   "no_stop_file": true,
+   "start": {
+    "raised": {
+     "message": "injected: stale release controller",
+     "type": "ContractError"
+    }
+   }
+  },
+  "unidentified_live_instance_refused": {
+   "child_alive": true,
+   "no_stop_file": true,
+   "start": {
+    "raised": {
+     "field": "target_id",
+     "message": "host delivery refused: instance_unidentified (target_id)",
+     "reason_code": "instance_unidentified",
+     "type": "DeliveryRefused"
+    }
+   }
+  }
+ },
+ "stop_reaping": {
+  "a_pid_that_is_not_a_child": {
+   "alive": true,
+   "alive_self": true,
+   "reaped": false,
+   "reaped_self": false
+  },
+  "a_running_child_is_alive_and_not_reaped": {
+   "alive": true,
+   "reaped": false,
+   "still_running": true
+  },
+  "alive_of_a_collected_pid": {
+   "alive": false
+  },
+  "alive_of_values_that_are_not_pids": {
+   "'7'": false,
+   "-5": false,
+   "0": false,
+   "3.0": false,
+   "None": false,
+   "True": false
+  },
+  "alive_reaps_an_exited_child": {
+   "alive": false,
+   "alive_again": false,
+   "gone_after": true,
+   "reaped_again": false,
+   "state_before": "Z"
+  },
+  "reaped_collects_an_exited_child": {
+   "alive_after": false,
+   "gone_after": true,
+   "reaped": true,
+   "reaped_again": false,
+   "state_before": "Z"
+  },
+  "stop_real_child": {
+   "gone": true,
+   "not_a_zombie": true,
+   "pid_is_the_launched_child": true,
+   "receipt_kept": true,
+   "stop_file": {
+    "at": "<time>",
+    "stop": true
+   },
+   "stopped": true
+  },
+  "stop_running_sleeper": {
+   "gone": true,
+   "not_a_zombie": true,
+   "running_after": false,
+   "stop": {
+    "returned": {
+     "pid": "<pid>",
+     "stopped": true,
+     "was_running": true
+    }
+   },
+   "stop_file": {
+    "at": "<time>",
+    "stop": true
+   },
+   "term_seen": {
+    "signal": "TERM",
+    "stop_file_present": true
+   }
+  },
+  "stop_with_a_dead_recorded_pid": {
+   "files": {
+    "controller-state.json": {
+     "descriptor_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+     "pid": "<pid>",
+     "started_at": "<time>"
+    },
+    "stop.json": {
+     "at": "<time>",
+     "stop": true
+    }
+   },
+   "stop": {
+    "returned": {
+     "pid": "<pid>",
+     "stopped": true,
+     "was_running": false
+    }
+   }
+  },
+  "stop_with_a_non_integer_recorded_pid": {
+   "stop": {
+    "returned": {
+     "pid": "12",
+     "stopped": true,
+     "was_running": false
+    }
+   }
+  },
+  "stop_with_no_recorded_pid": {
+   "files": {
+    "stop.json": {
+     "at": "<time>",
+     "stop": true
+    }
+   },
+   "stop": {
+    "returned": {
+     "pid": null,
+     "stopped": true,
+     "was_running": false
+    }
+   }
+  }
+ },
+ "switch": {
+  "exact_predecessor_written": {
+   "current_is_second": true,
+   "files": {
+    "descriptor.json": {
+     "predecessor": "<digest:first>",
+     "profile_digest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "revision": "2222222222222222222222222222222222222222",
+     "root": "/fixture/root",
+     "schema": "urn:zeus:host-descriptor:1",
+     "target_id": "switch-first",
+     "worker_image": "zeus-worker@sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+    }
+   },
+   "switch": {
+    "returned": {
+     "descriptor_sha256": "<digest:second>",
+     "written": true
+    }
+   }
+  },
+  "fence_asked_before_the_comparison": {
+   "fence_calls": 1,
+   "switch": {
+    "raised": {
+     "field": "expected_descriptor",
+     "message": "host delivery refused: descriptor_changed (expected_descriptor)",
+     "reason_code": "descriptor_changed",
+     "type": "DeliveryRefused"
+    }
+   }
+  },
+  "first_over_no_predecessor": {
+   "current_is_first": true,
+   "files": {
+    "descriptor.json": {
+     "predecessor": null,
+     "profile_digest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "revision": "1111111111111111111111111111111111111111",
+     "root": "/fixture/root",
+     "schema": "urn:zeus:host-descriptor:1",
+     "target_id": "switch-first",
+     "worker_image": "zeus-worker@sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+    }
+   },
+   "switch": {
+    "returned": {
+     "descriptor_sha256": "<digest:first>",
+     "written": true
+    }
+   }
+  },
+  "invalid_current_is_none": {
+   "current": null
+  },
+  "none_expected_over_existing": {
+   "switch": {
+    "raised": {
+     "field": "expected_descriptor",
+     "message": "host delivery refused: descriptor_changed (expected_descriptor)",
+     "reason_code": "descriptor_changed",
+     "type": "DeliveryRefused"
+    }
+   },
+   "unchanged": true
+  },
+  "refusing_fence_over_existing": {
+   "fence_calls": 1,
+   "lock_released": true,
+   "switch": {
+    "raised": {
+     "message": "injected: stale release controller",
+     "type": "ContractError"
+    }
+   },
+   "unchanged_second": true
+  },
+  "refusing_fence_over_no_predecessor": {
+   "fence_calls": 1,
+   "files": {},
+   "lock_released": true,
+   "switch": {
+    "raised": {
+     "message": "injected: stale release controller",
+     "type": "ContractError"
+    }
+   }
+  },
+  "unreadable_current_is_none": {
+   "current_malformed": null,
+   "files": {
+    "descriptor.json": {
+     "predecessor": null,
+     "profile_digest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "revision": "1111111111111111111111111111111111111111",
+     "root": "/fixture/root",
+     "schema": "urn:zeus:host-descriptor:1",
+     "target_id": "switch-first",
+     "worker_image": "zeus-worker@sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+    },
+    "other.json": {}
+   },
+   "switch_expected_none": {
+    "returned": {
+     "descriptor_sha256": "<digest:first>",
+     "written": true
+    }
+   }
+  },
+  "wrong_predecessor": {
+   "files": {
+    "descriptor.json": {
+     "predecessor": "<digest:first>",
+     "profile_digest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "revision": "2222222222222222222222222222222222222222",
+     "root": "/fixture/root",
+     "schema": "urn:zeus:host-descriptor:1",
+     "target_id": "switch-first",
+     "worker_image": "zeus-worker@sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+    }
+   },
+   "lock_released": true,
+   "switch": {
+    "raised": {
+     "field": "expected_descriptor",
+     "message": "host delivery refused: descriptor_changed (expected_descriptor)",
+     "reason_code": "descriptor_changed",
+     "type": "DeliveryRefused"
+    }
+   },
+   "unchanged": true
+  }
+ }
+}
