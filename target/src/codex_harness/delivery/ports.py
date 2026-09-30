@@ -2,7 +2,7 @@
 
 Layer: ports
 Context: delivery
-Owns: OWNED_BUCKETS of the delivery context; the consumer-declared Protocols HostDelivery's objects call on review's
+Owns: OWNED_BUCKETS of the delivery context (the host delivery and host migration buckets); the consumer-declared Protocols HostDelivery's objects call on review's
     release owner. Each has at most 6 methods; the implementations (review's Releases and ReleaseQueue) are
     structural and never import this module; composition wires them
 Does not own: the release rows (review), the host targets, GitHub and canary adapters (S7 adapter step)
@@ -15,7 +15,8 @@ from __future__ import annotations
 from typing import Protocol
 
 OWNED_BUCKETS = ("host_delivery_targets", "host_delivery_plans", "host_delivery_intents",
-                 "host_delivery_descriptors", "host_delivery_migrations", "images")
+                 "host_delivery_descriptors", "host_delivery_migrations", "images", "host_migrations",
+                 "host_migration_transitions", "host_migration_checkpoints")
 
 
 class ReleaseAuthority(Protocol):
