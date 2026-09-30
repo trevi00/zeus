@@ -12,6 +12,8 @@ S4 (lead decision Option A) declares the buckets its moved-ahead owner operation
 
 from __future__ import annotations
 
+from typing import Protocol
+
 OWNED_BUCKETS = ("tasks", "decisions_pending", "outbox", "events", "execution_fences", "execution_notices",
                  "execution_notice_errors", "execution_time_events", "workflow_inbox", "execution_rejections",
                  "execution_failures",
@@ -24,5 +26,25 @@ OWNED_BUCKETS = ("tasks", "decisions_pending", "outbox", "events", "execution_fe
                  "operation_message_dispositions",
                  # S5 outbox relay (DESIGN-s5 §O)
                  "outbox_attempts", "outbox_control", "outbox_delivery", "outbox_quarantine", "outbox_routes",
-                 # S5 LocalCycle (DESIGN-s5 §L).
-                 "local_cycles")
+                 # S5 LocalCycle and Operation (DESIGN-s5 §L, §Op).
+                 "local_cycles", "operations")
+
+
+class TaskRunner(Protocol):
+    """The executor entry points a LocalCycle/Operation drives (DESIGN-s5 §P): execution.RunTask + review.ReviewDecisions."""
+
+    def execute_one(self, agent: str, expected: dict | None = None) -> dict | None: ...
+
+    def decide_one(self, agent: str, expected: dict | None = None) -> dict | None: ...
+
+
+class DesignGate(Protocol):
+    """Research's design gate (INV-DGE-001; implemented in S8): joins the claim unit, raises DgeRefused."""
+
+    def check(self, tx, design: dict, *, repository, base_revision: str, plan: dict, now: str) -> dict: ...
+
+
+class EvidenceRecords(Protocol):
+    """Evidence's read of one all_checked inspection bound to an execution (INV-EVIDENCE-001)."""
+
+    def require_all_checked(self, tx, inspection_id: str, *, policy_hash=None, binding=None) -> dict: ...
