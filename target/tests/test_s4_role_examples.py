@@ -14,7 +14,7 @@ from codex_harness.kernel.errors import ContractError
 
 AGENTS = [a["id"] for a in json.loads(
     files("codex_harness.resources").joinpath("organization.json").read_text())["agents"]]
-RAW = json.loads(files("codex_harness.resources").joinpath("role-examples-v1.json").read_text())
+RAW = json.loads(files("codex_harness.context").joinpath("role-examples-v1.json").read_text())
 SRC = Path(__file__).resolve().parents[1] / "src"
 
 

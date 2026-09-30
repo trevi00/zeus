@@ -79,17 +79,9 @@ def test_message_schema_holds_only_the_six_w_half():
     assert not hasattr(message_schema, "validate_observation"), "observation schema belongs to S9"
 
 
-# Target-only packaged resources, each a declared addition with its reason; every SOURCE resource stays byte-equal.
-TARGET_ONLY_RESOURCES = {
-    "role-examples-v1.json": "S4 CE-4 canonical role examples (DESIGN-run-task D10; reference-only until S10)",
-}
-
-
 def test_packaged_resources_are_the_source_bytes():
     def tree(root):
         return {p.relative_to(root).as_posix(): hashlib.sha256(p.read_bytes()).hexdigest()
                 for p in sorted(root.rglob("*")) if p.is_file() and "__pycache__" not in p.parts}
 
-    target, source = tree(TARGET_RESOURCES), tree(SOURCE_RESOURCES)
-    assert {k: v for k, v in target.items() if k not in TARGET_ONLY_RESOURCES} == source
-    assert set(TARGET_ONLY_RESOURCES) <= set(target) and not set(TARGET_ONLY_RESOURCES) & set(source)
+    assert tree(TARGET_RESOURCES) == tree(SOURCE_RESOURCES)
