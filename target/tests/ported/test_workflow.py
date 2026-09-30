@@ -106,7 +106,7 @@ def reviewed_release(service, revision="a"):
     return release
 
 
-@pytest.mark.skip(reason="review slice: Releases.verify/promote/rollback are not in the target yet (only propose/review are)")
+@pytest.mark.skip(reason="S8: Releases.verify/promote/rollback (release verification, promotion, canary) are not in the target yet; S4 moved only propose/review")
 def test_release_requires_current_policy_complete_checks_and_fenced_promotion():
     service = Releases(MemoryStore(), organization())
     release = reviewed_release(service)
@@ -126,7 +126,7 @@ def test_release_requires_current_policy_complete_checks_and_fenced_promotion():
     assert service.rollback(second["id"], "regression")["release_id"] == release["id"]
 
 
-@pytest.mark.skip(reason="review slice: Releases.verify/promote/rollback are not in the target yet (only propose/review are)")
+@pytest.mark.skip(reason="S8: Releases.verify/promote/rollback (release verification, promotion, canary) are not in the target yet; S4 moved only propose/review")
 def test_failed_canary_never_promotes():
     service = Releases(MemoryStore(), organization())
     release = reviewed_release(service)
