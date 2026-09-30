@@ -1,0 +1,3415 @@
+{
+ "plans": {
+  "grammar": {
+   "canonical": {
+    "canary_check_id": "startup_identity",
+    "ci_timeout_seconds": 300,
+    "consumption_timeout_seconds": 120,
+    "expected_descriptor": null,
+    "plan_id": "delivery-plan-1",
+    "policy_hash": "c03cad6543f67af359e7cc31e3eb39459ac95cc665736dffc2041dfc2d5aa0a2",
+    "release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+    "repository": "github:zeus-owner/zeus-harness",
+    "required_checks": [
+     "ci / required"
+    ],
+    "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "schema": "urn:zeus:host-delivery:1",
+    "target_descriptor": {
+     "profile_digest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "revision": "8888888888888888888888888888888888888888",
+     "worker_image": "zeus-worker@sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+    },
+    "target_id": "canary-service",
+    "tree": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+   },
+   "descriptor_shapes": {
+    "bad_image": {
+     "field": "target_descriptor.worker_image",
+     "message": "host delivery refused: descriptor_invalid (target_descriptor.worker_image)",
+     "reason_code": "descriptor_invalid",
+     "refused": "DeliveryRefused",
+     "store": "05d56830eb401db3e26497af9f7ee2e3d13f886f37401788aa1006d03efd3592",
+     "wrote": false
+    },
+    "bad_profile_digest": {
+     "field": "target_descriptor.profile_digest",
+     "message": "host delivery refused: descriptor_invalid (target_descriptor.profile_digest)",
+     "reason_code": "descriptor_invalid",
+     "refused": "DeliveryRefused",
+     "store": "05d56830eb401db3e26497af9f7ee2e3d13f886f37401788aa1006d03efd3592",
+     "wrote": false
+    },
+    "bad_revision": {
+     "field": "target_descriptor.revision",
+     "message": "host delivery refused: descriptor_invalid (target_descriptor.revision)",
+     "reason_code": "descriptor_invalid",
+     "refused": "DeliveryRefused",
+     "store": "05d56830eb401db3e26497af9f7ee2e3d13f886f37401788aa1006d03efd3592",
+     "wrote": false
+    },
+    "missing_profile_digest": {
+     "field": "target_descriptor",
+     "message": "host delivery refused: plan_fields (target_descriptor)",
+     "reason_code": "plan_fields",
+     "refused": "DeliveryRefused",
+     "store": "05d56830eb401db3e26497af9f7ee2e3d13f886f37401788aa1006d03efd3592",
+     "wrote": false
+    },
+    "not_a_mapping": {
+     "field": "target_descriptor",
+     "message": "host delivery refused: plan_invalid (target_descriptor)",
+     "reason_code": "plan_invalid",
+     "refused": "DeliveryRefused",
+     "store": "05d56830eb401db3e26497af9f7ee2e3d13f886f37401788aa1006d03efd3592",
+     "wrote": false
+    }
+   },
+   "extra_field": {
+    "field": "root",
+    "message": "host delivery refused: plan_fields (root)",
+    "reason_code": "plan_fields",
+    "refused": "DeliveryRefused",
+    "store": "05d56830eb401db3e26497af9f7ee2e3d13f886f37401788aa1006d03efd3592",
+    "wrote": false
+   },
+   "mutations": [
+    {
+     "field": "plan_id",
+     "leaks_canary_text": false,
+     "leaks_value": false,
+     "message": "host delivery refused: plan_invalid (plan_id)",
+     "reason_code": "plan_invalid",
+     "refused": "DeliveryRefused",
+     "store": "05d56830eb401db3e26497af9f7ee2e3d13f886f37401788aa1006d03efd3592",
+     "value": "'not a token'",
+     "wrote": false
+    },
+    {
+     "field": "release_id",
+     "leaks_canary_text": false,
+     "leaks_value": false,
+     "message": "host delivery refused: plan_invalid (release_id)",
+     "reason_code": "plan_invalid",
+     "refused": "DeliveryRefused",
+     "store": "05d56830eb401db3e26497af9f7ee2e3d13f886f37401788aa1006d03efd3592",
+     "value": "'not a token'",
+     "wrote": false
+    },
+    {
+     "field": "target_id",
+     "leaks_canary_text": false,
+     "leaks_value": false,
+     "message": "host delivery refused: plan_invalid (target_id)",
+     "reason_code": "plan_invalid",
+     "refused": "DeliveryRefused",
+     "store": "05d56830eb401db3e26497af9f7ee2e3d13f886f37401788aa1006d03efd3592",
+     "value": "'../other'",
+     "wrote": false
+    },
+    {
+     "field": "revision",
+     "leaks_canary_text": false,
+     "leaks_value": false,
+     "message": "host delivery refused: plan_invalid (revision)",
+     "reason_code": "plan_invalid",
+     "refused": "DeliveryRefused",
+     "store": "05d56830eb401db3e26497af9f7ee2e3d13f886f37401788aa1006d03efd3592",
+     "value": "'zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz'",
+     "wrote": false
+    },
+    {
+     "field": "tree",
+     "leaks_canary_text": false,
+     "leaks_value": false,
+     "message": "host delivery refused: plan_invalid (tree)",
+     "reason_code": "plan_invalid",
+     "refused": "DeliveryRefused",
+     "store": "05d56830eb401db3e26497af9f7ee2e3d13f886f37401788aa1006d03efd3592",
+     "value": "'ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+     "wrote": false
+    },
+    {
+     "field": "tree",
+     "leaks_canary_text": false,
+     "leaks_value": false,
+     "message": "host delivery refused: plan_invalid (tree)",
+     "reason_code": "plan_invalid",
+     "refused": "DeliveryRefused",
+     "store": "05d56830eb401db3e26497af9f7ee2e3d13f886f37401788aa1006d03efd3592",
+     "value": "'ccccccccccccccccccccccccccccccccccccccc'",
+     "wrote": false
+    },
+    {
+     "field": "tree",
+     "leaks_canary_text": false,
+     "leaks_value": false,
+     "message": "host delivery refused: plan_invalid (tree)",
+     "reason_code": "plan_invalid",
+     "refused": "DeliveryRefused",
+     "store": "05d56830eb401db3e26497af9f7ee2e3d13f886f37401788aa1006d03efd3592",
+     "value": "'ccccccccccccccccccccccccccccccccccccccccc'",
+     "wrote": false
+    },
+    {
+     "field": "tree",
+     "leaks_canary_text": false,
+     "leaks_value": false,
+     "message": "host delivery refused: plan_invalid (tree)",
+     "reason_code": "plan_invalid",
+     "refused": "DeliveryRefused",
+     "store": "05d56830eb401db3e26497af9f7ee2e3d13f886f37401788aa1006d03efd3592",
+     "value": "'ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+     "wrote": false
+    },
+    {
+     "field": "tree",
+     "leaks_canary_text": false,
+     "leaks_value": false,
+     "message": "host delivery refused: plan_invalid (tree)",
+     "reason_code": "plan_invalid",
+     "refused": "DeliveryRefused",
+     "store": "05d56830eb401db3e26497af9f7ee2e3d13f886f37401788aa1006d03efd3592",
+     "value": "'CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC'",
+     "wrote": false
+    },
+    {
+     "field": "tree",
+     "leaks_canary_text": false,
+     "leaks_value": false,
+     "message": "host delivery refused: plan_invalid (tree)",
+     "reason_code": "plan_invalid",
+     "refused": "DeliveryRefused",
+     "store": "05d56830eb401db3e26497af9f7ee2e3d13f886f37401788aa1006d03efd3592",
+     "value": "'gggggggggggggggggggggggggggggggggggggggg'",
+     "wrote": false
+    },
+    {
+     "field": "tree",
+     "leaks_canary_text": false,
+     "leaks_value": false,
+     "message": "host delivery refused: plan_invalid (tree)",
+     "reason_code": "plan_invalid",
+     "refused": "DeliveryRefused",
+     "store": "05d56830eb401db3e26497af9f7ee2e3d13f886f37401788aa1006d03efd3592",
+     "value": "' cccccccccccccccccccccccccccccccccccccccc'",
+     "wrote": false
+    },
+    {
+     "field": "tree",
+     "leaks_canary_text": false,
+     "leaks_value": false,
+     "message": "host delivery refused: plan_invalid (tree)",
+     "reason_code": "plan_invalid",
+     "refused": "DeliveryRefused",
+     "store": "05d56830eb401db3e26497af9f7ee2e3d13f886f37401788aa1006d03efd3592",
+     "value": "40",
+     "wrote": false
+    },
+    {
+     "field": "policy_hash",
+     "leaks_canary_text": false,
+     "leaks_value": false,
+     "message": "host delivery refused: plan_invalid (policy_hash)",
+     "reason_code": "plan_invalid",
+     "refused": "DeliveryRefused",
+     "store": "05d56830eb401db3e26497af9f7ee2e3d13f886f37401788aa1006d03efd3592",
+     "value": "'1111111111111111111111111111111111111111'",
+     "wrote": false
+    },
+    {
+     "field": "policy_hash",
+     "leaks_canary_text": false,
+     "leaks_value": false,
+     "message": "host delivery refused: plan_invalid (policy_hash)",
+     "reason_code": "plan_invalid",
+     "refused": "DeliveryRefused",
+     "store": "05d56830eb401db3e26497af9f7ee2e3d13f886f37401788aa1006d03efd3592",
+     "value": "1",
+     "wrote": false
+    },
+    {
+     "field": "expected_descriptor",
+     "leaks_canary_text": false,
+     "leaks_value": false,
+     "message": "host delivery refused: plan_invalid (expected_descriptor)",
+     "reason_code": "plan_invalid",
+     "refused": "DeliveryRefused",
+     "store": "05d56830eb401db3e26497af9f7ee2e3d13f886f37401788aa1006d03efd3592",
+     "value": "'eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee'",
+     "wrote": false
+    },
+    {
+     "field": "expected_descriptor",
+     "leaks_canary_text": false,
+     "leaks_value": false,
+     "message": "host delivery refused: plan_invalid (expected_descriptor)",
+     "reason_code": "plan_invalid",
+     "refused": "DeliveryRefused",
+     "store": "05d56830eb401db3e26497af9f7ee2e3d13f886f37401788aa1006d03efd3592",
+     "value": "'short'",
+     "wrote": false
+    },
+    {
+     "field": "repository",
+     "leaks_canary_text": false,
+     "leaks_value": false,
+     "message": "host delivery refused: plan_invalid (repository)",
+     "reason_code": "plan_invalid",
+     "refused": "DeliveryRefused",
+     "store": "05d56830eb401db3e26497af9f7ee2e3d13f886f37401788aa1006d03efd3592",
+     "value": "'https://github.com/o/r'",
+     "wrote": false
+    },
+    {
+     "field": "required_checks",
+     "leaks_canary_text": false,
+     "leaks_value": false,
+     "message": "host delivery refused: plan_invalid (required_checks)",
+     "reason_code": "plan_invalid",
+     "refused": "DeliveryRefused",
+     "store": "05d56830eb401db3e26497af9f7ee2e3d13f886f37401788aa1006d03efd3592",
+     "value": "[]",
+     "wrote": false
+    },
+    {
+     "field": "required_checks",
+     "leaks_canary_text": false,
+     "leaks_value": false,
+     "message": "host delivery refused: plan_duplicate (required_checks)",
+     "reason_code": "plan_duplicate",
+     "refused": "DeliveryRefused",
+     "store": "05d56830eb401db3e26497af9f7ee2e3d13f886f37401788aa1006d03efd3592",
+     "value": "['ci / required', 'ci / required']",
+     "wrote": false
+    },
+    {
+     "field": "required_checks",
+     "leaks_canary_text": false,
+     "leaks_value": false,
+     "message": "host delivery refused: plan_invalid (required_checks)",
+     "reason_code": "plan_invalid",
+     "refused": "DeliveryRefused",
+     "store": "05d56830eb401db3e26497af9f7ee2e3d13f886f37401788aa1006d03efd3592",
+     "value": "['xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+     "wrote": false
+    },
+    {
+     "field": "canary_check_id",
+     "leaks_canary_text": false,
+     "leaks_value": false,
+     "message": "host delivery refused: plan_invalid (canary_check_id)",
+     "reason_code": "plan_invalid",
+     "refused": "DeliveryRefused",
+     "store": "05d56830eb401db3e26497af9f7ee2e3d13f886f37401788aa1006d03efd3592",
+     "value": "'rm -rf /'",
+     "wrote": false
+    },
+    {
+     "field": "ci_timeout_seconds",
+     "leaks_canary_text": false,
+     "leaks_value": false,
+     "message": "host delivery refused: plan_invalid (ci_timeout_seconds)",
+     "reason_code": "plan_invalid",
+     "refused": "DeliveryRefused",
+     "store": "05d56830eb401db3e26497af9f7ee2e3d13f886f37401788aa1006d03efd3592",
+     "value": "1",
+     "wrote": false
+    },
+    {
+     "field": "ci_timeout_seconds",
+     "leaks_canary_text": false,
+     "leaks_value": false,
+     "message": "host delivery refused: plan_invalid (ci_timeout_seconds)",
+     "reason_code": "plan_invalid",
+     "refused": "DeliveryRefused",
+     "store": "05d56830eb401db3e26497af9f7ee2e3d13f886f37401788aa1006d03efd3592",
+     "value": "True",
+     "wrote": false
+    },
+    {
+     "field": "consumption_timeout_seconds",
+     "leaks_canary_text": false,
+     "leaks_value": false,
+     "message": "host delivery refused: plan_invalid (consumption_timeout_seconds)",
+     "reason_code": "plan_invalid",
+     "refused": "DeliveryRefused",
+     "store": "05d56830eb401db3e26497af9f7ee2e3d13f886f37401788aa1006d03efd3592",
+     "value": "1000000000",
+     "wrote": false
+    },
+    {
+     "field": null,
+     "leaks_canary_text": false,
+     "leaks_value": false,
+     "message": "host delivery refused: plan_schema",
+     "reason_code": "plan_schema",
+     "refused": "DeliveryRefused",
+     "store": "05d56830eb401db3e26497af9f7ee2e3d13f886f37401788aa1006d03efd3592",
+     "value": "'urn:zeus:other:1'",
+     "wrote": false
+    }
+   ],
+   "not_a_document": {
+    "field": null,
+    "message": "host delivery refused: plan_schema",
+    "reason_code": "plan_schema",
+    "refused": "DeliveryRefused",
+    "store": "05d56830eb401db3e26497af9f7ee2e3d13f886f37401788aa1006d03efd3592",
+    "wrote": false
+   },
+   "pins": {
+    "absolute": {
+     "field": "pin.path",
+     "message": "host delivery refused: pin_invalid (pin.path)",
+     "reason_code": "pin_invalid",
+     "refused": "DeliveryRefused",
+     "store": "05d56830eb401db3e26497af9f7ee2e3d13f886f37401788aa1006d03efd3592",
+     "wrote": false
+    },
+    "bad_revision": {
+     "field": "pin.revision",
+     "message": "host delivery refused: pin_invalid (pin.revision)",
+     "reason_code": "pin_invalid",
+     "refused": "DeliveryRefused",
+     "store": "05d56830eb401db3e26497af9f7ee2e3d13f886f37401788aa1006d03efd3592",
+     "wrote": false
+    },
+    "bad_sha": {
+     "field": "pin.sha256",
+     "message": "host delivery refused: pin_invalid (pin.sha256)",
+     "reason_code": "pin_invalid",
+     "refused": "DeliveryRefused",
+     "store": "05d56830eb401db3e26497af9f7ee2e3d13f886f37401788aa1006d03efd3592",
+     "wrote": false
+    },
+    "extra_field": {
+     "field": "pin",
+     "message": "host delivery refused: plan_fields (pin)",
+     "reason_code": "plan_fields",
+     "refused": "DeliveryRefused",
+     "store": "05d56830eb401db3e26497af9f7ee2e3d13f886f37401788aa1006d03efd3592",
+     "wrote": false
+    },
+    "missing_field": {
+     "field": "pin",
+     "message": "host delivery refused: plan_fields (pin)",
+     "reason_code": "plan_fields",
+     "refused": "DeliveryRefused",
+     "store": "05d56830eb401db3e26497af9f7ee2e3d13f886f37401788aa1006d03efd3592",
+     "wrote": false
+    },
+    "not_a_mapping": {
+     "field": "pin",
+     "message": "host delivery refused: plan_invalid (pin)",
+     "reason_code": "plan_invalid",
+     "refused": "DeliveryRefused",
+     "store": "05d56830eb401db3e26497af9f7ee2e3d13f886f37401788aa1006d03efd3592",
+     "wrote": false
+    },
+    "traversal": {
+     "field": "pin.path",
+     "message": "host delivery refused: pin_invalid (pin.path)",
+     "reason_code": "pin_invalid",
+     "refused": "DeliveryRefused",
+     "store": "05d56830eb401db3e26497af9f7ee2e3d13f886f37401788aa1006d03efd3592",
+     "wrote": false
+    }
+   },
+   "plans_after": [
+    "plan-sha1"
+   ],
+   "tree_sha1_accepted": {
+    "store": "ebb2cb51ebb296314c793aedd9354c06c12e49c42a20f163cf55273ab2fd0a16",
+    "value": {
+     "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+     "cached": false,
+     "pin": {
+      "path": "docs/zeus/operations/delivery.json",
+      "revision": "ffffffffffffffffffffffffffffffffffffffff",
+      "sha256": "2805511ad68d05be4344328b719c06904a5828fb89fc0ec6c6d8fb3ff0b2ea4b"
+     },
+     "plan_id": "plan-sha1",
+     "plan_sha256": "40aeb844d6338fdc0221b8a935eedb1b44d1c59cfaefdf6f1731d054ad3d5e78",
+     "registered": true,
+     "release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "target_id": "canary-service"
+    },
+    "wrote": true
+   }
+  },
+  "refusal_branches": {
+   "first_activation_unbound_image": {
+    "field": "target_descriptor",
+    "message": "host delivery refused: first_activation_unbound (target_descriptor)",
+    "reason_code": "first_activation_unbound",
+    "refused": "DeliveryRefused",
+    "store": "1ba71a9a902efa097454a8f2998be2de013d6a82db8b08b021b89a72ff322753",
+    "wrote": false
+   },
+   "first_activation_unbound_profile": {
+    "field": "target_descriptor",
+    "message": "host delivery refused: first_activation_unbound (target_descriptor)",
+    "reason_code": "first_activation_unbound",
+    "refused": "DeliveryRefused",
+    "store": "1ba71a9a902efa097454a8f2998be2de013d6a82db8b08b021b89a72ff322753",
+    "wrote": false
+   },
+   "identical_stored_plan_replays_though_reserved": {
+    "store": "cefd85bbfdd61ee1191e5b6982da3b01f87455a9d7616932340fff7b66784f8f",
+    "value": {
+     "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+     "cached": true,
+     "pin": {
+      "path": "docs/zeus/operations/delivery.json",
+      "revision": "ffffffffffffffffffffffffffffffffffffffff",
+      "sha256": "2805511ad68d05be4344328b719c06904a5828fb89fc0ec6c6d8fb3ff0b2ea4b"
+     },
+     "plan_id": "delivery-plan-1",
+     "plan_sha256": "47fadc76c32c39609ea82c621fa4dbe3280dc1ce7373b4f535e2c6eb399d3be0",
+     "registered": true,
+     "release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "target_id": "canary-service"
+    },
+    "wrote": false
+   },
+   "in_flight_refusal_before_reservation": {
+    "field": "plan_id",
+    "message": "host delivery refused: delivery_in_flight (plan_id)",
+    "reason_code": "delivery_in_flight",
+    "refused": "DeliveryRefused",
+    "store": "d8bdebdb34fed35d2760459b3d9f3d4efca36f39823ab6ee6f6c8663ea9d02ee",
+    "wrote": false
+   },
+   "migration_active_reserves_nothing": {
+    "store": "8c2293b345fc700b0e6ef027a2750a435ee42b50568a2795a137d1fb9f930878",
+    "value": {
+     "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+     "cached": false,
+     "pin": {
+      "path": "docs/zeus/operations/delivery.json",
+      "revision": "ffffffffffffffffffffffffffffffffffffffff",
+      "sha256": "2805511ad68d05be4344328b719c06904a5828fb89fc0ec6c6d8fb3ff0b2ea4b"
+     },
+     "plan_id": "delivery-plan-1",
+     "plan_sha256": "47fadc76c32c39609ea82c621fa4dbe3280dc1ce7373b4f535e2c6eb399d3be0",
+     "registered": true,
+     "release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "target_id": "canary-service"
+    },
+    "wrote": true
+   },
+   "reservation_on_another_target": {
+    "store": "bbaa61e9750045aded918e49bb2198eda845b255d91827cf3fe64276c1e8107d",
+    "value": {
+     "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+     "cached": false,
+     "pin": {
+      "path": "docs/zeus/operations/delivery.json",
+      "revision": "ffffffffffffffffffffffffffffffffffffffff",
+      "sha256": "2805511ad68d05be4344328b719c06904a5828fb89fc0ec6c6d8fb3ff0b2ea4b"
+     },
+     "plan_id": "plan-two",
+     "plan_sha256": "6f2e464edf556b27923d7342754db486ad4fefa355b1aa46bf53109079662ef9",
+     "registered": true,
+     "release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "target_id": "canary-service"
+    },
+    "wrote": true
+   },
+   "reserved_before_unbound": {
+    "field": "target_descriptor",
+    "message": "host delivery refused: first_activation_unbound (target_descriptor)",
+    "reason_code": "first_activation_unbound",
+    "refused": "DeliveryRefused",
+    "store": "0596cffd5ea8b6392c22885b3414022aad363bf2fb37355c4e72eb98cd34b282",
+    "wrote": false
+   },
+   "reserved_registered_own_plan_via_register": {
+    "field": "target_id",
+    "message": "host delivery refused: target_reserved_by_migration (target_id)",
+    "reason_code": "target_reserved_by_migration",
+    "refused": "DeliveryRefused",
+    "store": "5fd40664144d446ab74f8e1221dd8ca3d2f7753086c4ceb983db5855a82b0156",
+    "wrote": false
+   },
+   "reserved_staged": {
+    "field": "target_id",
+    "message": "host delivery refused: target_reserved_by_migration (target_id)",
+    "reason_code": "target_reserved_by_migration",
+    "refused": "DeliveryRefused",
+    "store": "0596cffd5ea8b6392c22885b3414022aad363bf2fb37355c4e72eb98cd34b282",
+    "wrote": false
+   },
+   "unbound_history_other_pin": {
+    "field": "target_descriptor",
+    "message": "host delivery refused: first_activation_unbound (target_descriptor)",
+    "reason_code": "first_activation_unbound",
+    "refused": "DeliveryRefused",
+    "store": "5894731b7db398ec6eb36347b33da54810813214a6ce19f0191d08260dea1307",
+    "wrote": false
+   },
+   "unbound_history_replays_cached": {
+    "store": "5894731b7db398ec6eb36347b33da54810813214a6ce19f0191d08260dea1307",
+    "value": {
+     "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+     "cached": true,
+     "pin": {
+      "path": "docs/zeus/operations/delivery.json",
+      "revision": "ffffffffffffffffffffffffffffffffffffffff",
+      "sha256": "2805511ad68d05be4344328b719c06904a5828fb89fc0ec6c6d8fb3ff0b2ea4b"
+     },
+     "plan_id": "plan-history",
+     "plan_sha256": "98eb64cf298828a4770eb40c560e94c257853f8ef9a8836060a58fab91462158",
+     "registered": true,
+     "release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "target_id": "canary-service"
+    },
+    "wrote": false
+   },
+   "unchanged_with_expected_predecessor": {
+    "store": "b0881f8817846455547acb63ed4feea5b693eaf18982e73c0857b8051110eee1",
+    "value": {
+     "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+     "cached": false,
+     "pin": {
+      "path": "docs/zeus/operations/delivery.json",
+      "revision": "ffffffffffffffffffffffffffffffffffffffff",
+      "sha256": "2805511ad68d05be4344328b719c06904a5828fb89fc0ec6c6d8fb3ff0b2ea4b"
+     },
+     "plan_id": "plan-upgrade",
+     "plan_sha256": "557e8001caa66aacf526b230765f96591fcd90a0f06138d21f7d8cdbe331787e",
+     "registered": true,
+     "release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "target_id": "canary-service"
+    },
+    "wrote": true
+   },
+   "unregistered_target": {
+    "field": "target_id",
+    "message": "host delivery refused: target_unregistered (target_id)",
+    "reason_code": "target_unregistered",
+    "refused": "DeliveryRefused",
+    "store": "1ba71a9a902efa097454a8f2998be2de013d6a82db8b08b021b89a72ff322753",
+    "wrote": false
+   },
+   "unregistered_target_before_unbound": {
+    "field": "target_id",
+    "message": "host delivery refused: target_unregistered (target_id)",
+    "reason_code": "target_unregistered",
+    "refused": "DeliveryRefused",
+    "store": "1ba71a9a902efa097454a8f2998be2de013d6a82db8b08b021b89a72ff322753",
+    "wrote": false
+   }
+  },
+  "registration": {
+   "awaiting_review_tick": {
+    "outcome": "pending",
+    "plan_id": "delivery-plan-1",
+    "reason_code": "release_reviews_incomplete",
+    "stage": "awaiting_review"
+   },
+   "cached_replay": {
+    "again": {
+     "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+     "cached": true,
+     "pin": {
+      "path": "docs/zeus/operations/delivery.json",
+      "revision": "ffffffffffffffffffffffffffffffffffffffff",
+      "sha256": "2805511ad68d05be4344328b719c06904a5828fb89fc0ec6c6d8fb3ff0b2ea4b"
+     },
+     "plan_id": "delivery-plan-1",
+     "plan_sha256": "47fadc76c32c39609ea82c621fa4dbe3280dc1ce7373b4f535e2c6eb399d3be0",
+     "registered": true,
+     "release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "target_id": "canary-service"
+    },
+    "first": {
+     "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+     "cached": false,
+     "pin": {
+      "path": "docs/zeus/operations/delivery.json",
+      "revision": "ffffffffffffffffffffffffffffffffffffffff",
+      "sha256": "2805511ad68d05be4344328b719c06904a5828fb89fc0ec6c6d8fb3ff0b2ea4b"
+     },
+     "plan_id": "delivery-plan-1",
+     "plan_sha256": "47fadc76c32c39609ea82c621fa4dbe3280dc1ce7373b4f535e2c6eb399d3be0",
+     "registered": true,
+     "release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "target_id": "canary-service"
+    },
+    "plans_kept": true
+   },
+   "conflicting_plan_no_intent": {
+    "plan_row": {
+     "id": "delivery-plan-1",
+     "pin": {
+      "path": "docs/zeus/operations/delivery.json",
+      "revision": "ffffffffffffffffffffffffffffffffffffffff",
+      "sha256": "2805511ad68d05be4344328b719c06904a5828fb89fc0ec6c6d8fb3ff0b2ea4b"
+     },
+     "plan": {
+      "canary_check_id": "startup_identity",
+      "ci_timeout_seconds": 600,
+      "consumption_timeout_seconds": 120,
+      "expected_descriptor": null,
+      "plan_id": "delivery-plan-1",
+      "policy_hash": "c03cad6543f67af359e7cc31e3eb39459ac95cc665736dffc2041dfc2d5aa0a2",
+      "release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+      "repository": "github:zeus-owner/zeus-harness",
+      "required_checks": [
+       "ci / required"
+      ],
+      "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "schema": "urn:zeus:host-delivery:1",
+      "target_descriptor": {
+       "profile_digest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+       "revision": "8888888888888888888888888888888888888888",
+       "worker_image": "zeus-worker@sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+      },
+      "target_id": "canary-service",
+      "tree": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+     },
+     "plan_id": "delivery-plan-1",
+     "plan_sha256": "a5204402ca7e4fd15605de89ba2599b3da318856fbd0cfb03d79b2b1dcd507b7",
+     "registered_at": "2026-09-22T00:01:00+00:00",
+     "target_id": "canary-service",
+     "updated_at": "2026-09-22T00:01:05+00:00"
+    },
+    "store": "5496484c7c9967114481390bc1ed040221184d4aaebc48dbfb1f70c1cfe4ee64",
+    "value": {
+     "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+     "cached": false,
+     "pin": {
+      "path": "docs/zeus/operations/delivery.json",
+      "revision": "ffffffffffffffffffffffffffffffffffffffff",
+      "sha256": "2805511ad68d05be4344328b719c06904a5828fb89fc0ec6c6d8fb3ff0b2ea4b"
+     },
+     "plan_id": "delivery-plan-1",
+     "plan_sha256": "a5204402ca7e4fd15605de89ba2599b3da318856fbd0cfb03d79b2b1dcd507b7",
+     "registered": true,
+     "release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "target_id": "canary-service"
+    },
+    "wrote": true
+   },
+   "edit_at_awaiting_review": {
+    "field": "plan_id",
+    "message": "host delivery refused: delivery_in_flight (plan_id)",
+    "reason_code": "delivery_in_flight",
+    "refused": "DeliveryRefused",
+    "store": "9b25cac82604b7bda0ee5d1d0b4542c067f8cd6aad38c558675b7a3c92491677",
+    "wrote": false
+   },
+   "edit_in_flight": {
+    "field": "plan_id",
+    "message": "host delivery refused: delivery_in_flight (plan_id)",
+    "plan_row_unchanged": true,
+    "reason_code": "delivery_in_flight",
+    "refused": "DeliveryRefused",
+    "store": "630a21785f0bc62b0a005f63c58344a5546131e3f6d3ef6d36f124a52d51bf4b",
+    "wrote": false
+   },
+   "edit_while_registered": {
+    "plan_row": {
+     "id": "delivery-plan-1",
+     "pin": {
+      "path": "docs/zeus/operations/delivery.json",
+      "revision": "ffffffffffffffffffffffffffffffffffffffff",
+      "sha256": "2805511ad68d05be4344328b719c06904a5828fb89fc0ec6c6d8fb3ff0b2ea4b"
+     },
+     "plan": {
+      "canary_check_id": "startup_identity",
+      "ci_timeout_seconds": 300,
+      "consumption_timeout_seconds": 120,
+      "expected_descriptor": null,
+      "plan_id": "delivery-plan-1",
+      "policy_hash": "c03cad6543f67af359e7cc31e3eb39459ac95cc665736dffc2041dfc2d5aa0a2",
+      "release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+      "repository": "github:zeus-owner/zeus-harness",
+      "required_checks": [
+       "ci / required"
+      ],
+      "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "schema": "urn:zeus:host-delivery:1",
+      "target_descriptor": {
+       "profile_digest": "0000000000000000000000000000000000000000000000000000000000000000",
+       "revision": "8888888888888888888888888888888888888888",
+       "worker_image": "zeus-worker@sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+      },
+      "target_id": "canary-service",
+      "tree": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+     },
+     "plan_id": "delivery-plan-1",
+     "plan_sha256": "fef805cb58b23ee68ff48cdc8a9358100f54665f468c9ef8bc6567c5d309f191",
+     "registered_at": "2026-09-22T00:00:30+00:00",
+     "target_id": "canary-service",
+     "updated_at": "2026-09-22T00:01:00+00:00"
+    },
+    "registered_at_kept": true,
+    "store": "2d26d83f61afbe128ca6bf8b65122a40e57e270d55c560e8770e26a4669d8a97",
+    "value": {
+     "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+     "cached": false,
+     "pin": {
+      "path": "docs/zeus/operations/delivery.json",
+      "revision": "ffffffffffffffffffffffffffffffffffffffff",
+      "sha256": "2805511ad68d05be4344328b719c06904a5828fb89fc0ec6c6d8fb3ff0b2ea4b"
+     },
+     "plan_id": "delivery-plan-1",
+     "plan_sha256": "fef805cb58b23ee68ff48cdc8a9358100f54665f468c9ef8bc6567c5d309f191",
+     "registered": true,
+     "release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "target_id": "canary-service"
+    },
+    "wrote": true
+   },
+   "identical_other_pin_in_flight": {
+    "field": "plan_id",
+    "message": "host delivery refused: delivery_in_flight (plan_id)",
+    "reason_code": "delivery_in_flight",
+    "refused": "DeliveryRefused",
+    "store": "630a21785f0bc62b0a005f63c58344a5546131e3f6d3ef6d36f124a52d51bf4b",
+    "wrote": false
+   },
+   "other_pin_no_intent": {
+    "pin": {
+     "path": "docs/zeus/operations/delivery.json",
+     "revision": "2222222222222222222222222222222222222222",
+     "sha256": "2805511ad68d05be4344328b719c06904a5828fb89fc0ec6c6d8fb3ff0b2ea4b"
+    },
+    "store": "de14b8742772ecf3b5f23623ee0c048452b24f8eefa069b6ed56e78cb94b19d9",
+    "value": {
+     "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+     "cached": false,
+     "pin": {
+      "path": "docs/zeus/operations/delivery.json",
+      "revision": "2222222222222222222222222222222222222222",
+      "sha256": "2805511ad68d05be4344328b719c06904a5828fb89fc0ec6c6d8fb3ff0b2ea4b"
+     },
+     "plan_id": "delivery-plan-1",
+     "plan_sha256": "a5204402ca7e4fd15605de89ba2599b3da318856fbd0cfb03d79b2b1dcd507b7",
+     "registered": true,
+     "release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "target_id": "canary-service"
+    },
+    "wrote": true
+   },
+   "precedence_in_flight_before_unbound": {
+    "field": "plan_id",
+    "message": "host delivery refused: delivery_in_flight (plan_id)",
+    "reason_code": "delivery_in_flight",
+    "refused": "DeliveryRefused",
+    "store": "630a21785f0bc62b0a005f63c58344a5546131e3f6d3ef6d36f124a52d51bf4b",
+    "wrote": false
+   },
+   "ticked_into_flight": {
+    "outcome": "progressed",
+    "plan_id": "delivery-plan-1",
+    "reason_code": null,
+    "stage": "publishing"
+   }
+  },
+  "review_gate": {
+   "another_candidate_or_evaluator": {
+    "policy_hash": {
+     "intent_stage": "blocked",
+     "observations": 0,
+     "publishes": 0,
+     "queue_rows": [],
+     "tick": {
+      "active": null,
+      "ambiguous_effect": null,
+      "at": "2026-09-22T00:01:05+00:00",
+      "attempts": 1,
+      "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+      "blocked": {},
+      "canary": null,
+      "descriptor_sha256": null,
+      "error_type": null,
+      "head": null,
+      "instance_id": null,
+      "merged_revision": null,
+      "next_action": "owner_review",
+      "outcome": "refused",
+      "plan_id": "delivery-plan-1",
+      "pr_number": null,
+      "previous_descriptor_sha256": null,
+      "reason_code": "release_policy_mismatch",
+      "release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+      "rollback": null,
+      "schema": "urn:zeus:host-delivery-tick:1",
+      "stage": "blocked",
+      "target_id": "canary-service"
+     }
+    },
+    "repository": {
+     "intent_stage": "blocked",
+     "observations": 0,
+     "publishes": 0,
+     "queue_rows": [],
+     "tick": {
+      "active": null,
+      "ambiguous_effect": null,
+      "at": "2026-09-22T00:01:05+00:00",
+      "attempts": 1,
+      "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+      "blocked": {},
+      "canary": null,
+      "descriptor_sha256": null,
+      "error_type": null,
+      "head": null,
+      "instance_id": null,
+      "merged_revision": null,
+      "next_action": "owner_review",
+      "outcome": "refused",
+      "plan_id": "delivery-plan-1",
+      "pr_number": null,
+      "previous_descriptor_sha256": null,
+      "reason_code": "release_repository_mismatch",
+      "release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+      "rollback": null,
+      "schema": "urn:zeus:host-delivery-tick:1",
+      "stage": "blocked",
+      "target_id": "canary-service"
+     }
+    },
+    "revision": {
+     "intent_stage": "blocked",
+     "observations": 0,
+     "publishes": 0,
+     "queue_rows": [],
+     "tick": {
+      "active": null,
+      "ambiguous_effect": null,
+      "at": "2026-09-22T00:01:05+00:00",
+      "attempts": 1,
+      "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+      "blocked": {},
+      "canary": null,
+      "descriptor_sha256": null,
+      "error_type": null,
+      "head": null,
+      "instance_id": null,
+      "merged_revision": null,
+      "next_action": "owner_review",
+      "outcome": "refused",
+      "plan_id": "delivery-plan-1",
+      "pr_number": null,
+      "previous_descriptor_sha256": null,
+      "reason_code": "release_revision_mismatch",
+      "release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+      "rollback": null,
+      "schema": "urn:zeus:host-delivery-tick:1",
+      "stage": "blocked",
+      "target_id": "canary-service"
+     }
+    },
+    "tree": {
+     "intent_stage": "blocked",
+     "observations": 0,
+     "publishes": 0,
+     "queue_rows": [],
+     "tick": {
+      "active": null,
+      "ambiguous_effect": null,
+      "at": "2026-09-22T00:01:05+00:00",
+      "attempts": 1,
+      "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+      "blocked": {},
+      "canary": null,
+      "descriptor_sha256": null,
+      "error_type": null,
+      "head": null,
+      "instance_id": null,
+      "merged_revision": null,
+      "next_action": "owner_review",
+      "outcome": "refused",
+      "plan_id": "delivery-plan-1",
+      "pr_number": null,
+      "previous_descriptor_sha256": null,
+      "reason_code": "release_tree_mismatch",
+      "release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+      "rollback": null,
+      "schema": "urn:zeus:host-delivery-tick:1",
+      "stage": "blocked",
+      "target_id": "canary-service"
+     }
+    }
+   },
+   "conductor_review_opens": {
+    "after": {
+     "outcome": "progressed",
+     "plan_id": "delivery-plan-1",
+     "reason_code": null,
+     "stage": "publishing"
+    },
+    "before": {
+     "outcome": "pending",
+     "plan_id": "delivery-plan-1",
+     "reason_code": "release_reviews_incomplete",
+     "stage": "awaiting_review"
+    }
+   },
+   "conductor_without_lead": {
+    "outcome": "pending",
+    "plan_id": "delivery-plan-1",
+    "reason_code": "release_reviews_incomplete",
+    "stage": "awaiting_review"
+   },
+   "registration_before_review": {
+    "controller_lock": null,
+    "host_calls": [],
+    "merges": 0,
+    "publishes": 0,
+    "queue_rows": [],
+    "status_stage": "awaiting_review",
+    "tick": {
+     "active": null,
+     "ambiguous_effect": null,
+     "at": "2026-09-22T00:01:05+00:00",
+     "attempts": 0,
+     "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+     "blocked": {},
+     "canary": null,
+     "descriptor_sha256": null,
+     "error_type": null,
+     "head": null,
+     "instance_id": null,
+     "merged_revision": null,
+     "next_action": "await_independent_review",
+     "outcome": "pending",
+     "plan_id": "delivery-plan-1",
+     "pr_number": null,
+     "previous_descriptor_sha256": null,
+     "reason_code": "release_reviews_incomplete",
+     "release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "rollback": null,
+     "schema": "urn:zeus:host-delivery-tick:1",
+     "stage": "awaiting_review",
+     "target_id": "canary-service"
+    }
+   },
+   "rejected_lead_review": {
+    "status": "rejected",
+    "tick": {
+     "outcome": "refused",
+     "plan_id": "delivery-plan-1",
+     "reason_code": "release_rejected",
+     "stage": "blocked"
+    }
+   },
+   "reviewed_unverified_without_verifier": [
+    {
+     "outcome": "progressed",
+     "plan_id": "delivery-plan-1",
+     "reason_code": null,
+     "stage": "verifying"
+    },
+    {
+     "outcome": "unavailable",
+     "plan_id": "delivery-plan-1",
+     "reason_code": "verifier_unavailable",
+     "stage": "verifying"
+    },
+    "verifier_unavailable"
+   ],
+   "reviews_with_a_candidate_status": {
+    "approval": {
+     "reason_code": "release_not_reviewed",
+     "state": "awaiting_review",
+     "status": "candidate"
+    },
+    "tick": {
+     "outcome": "pending",
+     "plan_id": "delivery-plan-1",
+     "reason_code": "release_not_reviewed",
+     "stage": "awaiting_review"
+    }
+   }
+  }
+ },
+ "projections": {
+  "active_projection": {
+   "consumed": true,
+   "descriptor_matches_intent": true,
+   "missing": {
+    "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+    "deliveries": [],
+    "enabled": true,
+    "next_action": "register_plan",
+    "outcome": "plan_unregistered",
+    "plan_id": "no-such-plan",
+    "registered": false,
+    "schema": "urn:zeus:host-delivery-status:1",
+    "targets": [
+     "canary-service"
+    ]
+   },
+   "no_canary_text": true,
+   "no_runtime_root": true,
+   "no_service_name": true,
+   "no_state_root": true,
+   "projection": {
+    "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+    "counts": {
+     "active": 1
+    },
+    "deliveries": [
+     {
+      "active_descriptor_sha256": "2fa7907356ed9356d5129640ab8644cf8546485c5631a3351fd156cd0a16f2e1",
+      "active_revision": "8888888888888888888888888888888888888888",
+      "after_verification": null,
+      "attempts": 0,
+      "canary": {
+       "check_id": "startup_identity",
+       "evidence": "6ccbd822533ec2f3f62fd9c5b12bebde",
+       "passed": true,
+       "reason_code": null
+      },
+      "canary_check_id": "startup_identity",
+      "consumed": true,
+      "error_type": null,
+      "head": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "instance_id": "6ccbd822533ec2f3f62fd9c5b12bebde",
+      "intended_descriptor_sha256": "2fa7907356ed9356d5129640ab8644cf8546485c5631a3351fd156cd0a16f2e1",
+      "merged_revision": "9999999999999999999999999999999999999999",
+      "next_action": "observe_active_runtime",
+      "outcome": "active",
+      "pin": {
+       "path": "docs/zeus/operations/delivery.json",
+       "revision": "ffffffffffffffffffffffffffffffffffffffff",
+       "sha256": "2805511ad68d05be4344328b719c06904a5828fb89fc0ec6c6d8fb3ff0b2ea4b"
+      },
+      "plan_id": "delivery-plan-1",
+      "plan_sha256": "47fadc76c32c39609ea82c621fa4dbe3280dc1ce7373b4f535e2c6eb399d3be0",
+      "pr_number": 181,
+      "reason_code": null,
+      "recoveries": [],
+      "recovery": null,
+      "release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+      "required_checks": 1,
+      "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "rollback": null,
+      "runtime": null,
+      "stage": "active",
+      "stage_deadline": null,
+      "startup_observed": true,
+      "target_id": "canary-service",
+      "updated_at": "2026-09-22T00:01:12+00:00",
+      "verification": null,
+      "withdrawal": null,
+      "work": null
+     }
+    ],
+    "enabled": true,
+    "migrations": [],
+    "registered": true,
+    "schema": "urn:zeus:host-delivery-status:1",
+    "targets": [
+     {
+      "consumed": true,
+      "descriptor_sha256": "2fa7907356ed9356d5129640ab8644cf8546485c5631a3351fd156cd0a16f2e1",
+      "history": 0,
+      "instance_id": "6ccbd822533ec2f3f62fd9c5b12bebde",
+      "observed_instance_id": "6ccbd822533ec2f3f62fd9c5b12bebde",
+      "observed_revision": "8888888888888888888888888888888888888888",
+      "plan_id": "delivery-plan-1",
+      "predecessor": null,
+      "profile_digest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+      "release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+      "revision": "8888888888888888888888888888888888888888",
+      "rolled_back": false,
+      "startup_observed": true,
+      "target_id": "canary-service",
+      "updated_at": "2026-09-22T00:01:12+00:00",
+      "worker_image": "zeus-worker@sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+     }
+    ]
+   },
+   "reached": "active"
+  },
+  "approval": {
+   "approved_reviewed_only": {
+    "reason_code": null,
+    "state": "approved",
+    "status": "reviewed"
+   },
+   "approved_verified": {
+    "reason_code": null,
+    "state": "approved",
+    "status": "verified"
+   },
+   "awaiting_review": {
+    "reason_code": "release_reviews_incomplete",
+    "state": "awaiting_review",
+    "status": "candidate"
+   },
+   "awaiting_review_no_lead": {
+    "reason_code": "release_reviews_incomplete",
+    "state": "awaiting_review",
+    "status": "candidate"
+   },
+   "invalid_document": {
+    "field": "root",
+    "message": "host delivery refused: plan_fields (root)",
+    "reason_code": "plan_fields",
+    "refused": "DeliveryRefused"
+   },
+   "refused_policy": {
+    "reason_code": "release_policy_mismatch",
+    "state": "refused",
+    "status": "verified"
+   },
+   "refused_release_missing": {
+    "reason_code": "release_missing",
+    "state": "refused",
+    "status": null
+   },
+   "refused_repository": {
+    "reason_code": "release_repository_mismatch",
+    "state": "refused",
+    "status": "verified"
+   },
+   "refused_revision": {
+    "reason_code": "release_revision_mismatch",
+    "state": "refused",
+    "status": "verified"
+   },
+   "refused_tree": {
+    "reason_code": "release_tree_mismatch",
+    "state": "refused",
+    "status": "verified"
+   },
+   "written_nothing": true
+  },
+  "plan_row": {
+   "registered": {
+    "id": "delivery-plan-1",
+    "pin": {
+     "path": "docs/zeus/operations/delivery.json",
+     "revision": "ffffffffffffffffffffffffffffffffffffffff",
+     "sha256": "2805511ad68d05be4344328b719c06904a5828fb89fc0ec6c6d8fb3ff0b2ea4b"
+    },
+    "plan": {
+     "canary_check_id": "startup_identity",
+     "ci_timeout_seconds": 300,
+     "consumption_timeout_seconds": 120,
+     "expected_descriptor": null,
+     "plan_id": "delivery-plan-1",
+     "policy_hash": "c03cad6543f67af359e7cc31e3eb39459ac95cc665736dffc2041dfc2d5aa0a2",
+     "release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "repository": "github:zeus-owner/zeus-harness",
+     "required_checks": [
+      "ci / required"
+     ],
+     "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "schema": "urn:zeus:host-delivery:1",
+     "target_descriptor": {
+      "profile_digest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+      "revision": "8888888888888888888888888888888888888888",
+      "worker_image": "zeus-worker@sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+     },
+     "target_id": "canary-service",
+     "tree": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+    },
+    "plan_id": "delivery-plan-1",
+    "plan_sha256": "47fadc76c32c39609ea82c621fa4dbe3280dc1ce7373b4f535e2c6eb399d3be0",
+    "registered_at": "2026-09-22T00:01:05+00:00",
+    "target_id": "canary-service",
+    "updated_at": "2026-09-22T00:01:05+00:00"
+   },
+   "unregistered": null
+  },
+  "status_empty_store": {
+   "all": {
+    "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+    "counts": {},
+    "deliveries": [],
+    "enabled": false,
+    "registered": false,
+    "schema": "urn:zeus:host-delivery-status:1",
+    "targets": []
+   },
+   "one": {
+    "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+    "deliveries": [],
+    "enabled": false,
+    "next_action": "register_plan",
+    "outcome": "plan_unregistered",
+    "plan_id": "nope",
+    "registered": false,
+    "schema": "urn:zeus:host-delivery-status:1",
+    "targets": []
+   }
+  },
+  "status_every_plan": {
+   "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+   "counts": {
+    "registered": 2
+   },
+   "deliveries": [
+    {
+     "active_descriptor_sha256": null,
+     "active_revision": null,
+     "after_verification": null,
+     "attempts": 0,
+     "canary": null,
+     "canary_check_id": "startup_identity",
+     "consumed": false,
+     "error_type": null,
+     "head": null,
+     "instance_id": null,
+     "intended_descriptor_sha256": null,
+     "merged_revision": null,
+     "next_action": "tick",
+     "outcome": null,
+     "pin": {
+      "path": "docs/zeus/operations/delivery.json",
+      "revision": "ffffffffffffffffffffffffffffffffffffffff",
+      "sha256": "2805511ad68d05be4344328b719c06904a5828fb89fc0ec6c6d8fb3ff0b2ea4b"
+     },
+     "plan_id": "delivery-plan-1",
+     "plan_sha256": "47fadc76c32c39609ea82c621fa4dbe3280dc1ce7373b4f535e2c6eb399d3be0",
+     "pr_number": null,
+     "reason_code": null,
+     "recoveries": [],
+     "recovery": null,
+     "release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "required_checks": 1,
+     "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "rollback": null,
+     "runtime": null,
+     "stage": "registered",
+     "stage_deadline": null,
+     "startup_observed": false,
+     "target_id": "canary-service",
+     "updated_at": "2026-09-22T00:01:05+00:00",
+     "verification": null,
+     "withdrawal": null,
+     "work": null
+    },
+    {
+     "active_descriptor_sha256": null,
+     "active_revision": null,
+     "after_verification": null,
+     "attempts": 0,
+     "canary": null,
+     "canary_check_id": "startup_identity",
+     "consumed": false,
+     "error_type": null,
+     "head": null,
+     "instance_id": null,
+     "intended_descriptor_sha256": null,
+     "merged_revision": null,
+     "next_action": "tick",
+     "outcome": null,
+     "pin": {
+      "path": "docs/zeus/operations/delivery-plan-2.json",
+      "revision": "ffffffffffffffffffffffffffffffffffffffff",
+      "sha256": "2805511ad68d05be4344328b719c06904a5828fb89fc0ec6c6d8fb3ff0b2ea4b"
+     },
+     "plan_id": "delivery-plan-2",
+     "plan_sha256": "8c484dcec80940c271c42f7318a44fe6fd6f100bb2d7edbfb253442fd2744434",
+     "pr_number": null,
+     "reason_code": null,
+     "recoveries": [],
+     "recovery": null,
+     "release_id": "d12869f503da47e742a0c5323eecf337a9fe11453ddd7f81127b00b38649d672",
+     "required_checks": 1,
+     "revision": "5555555555555555555555555555555555555555",
+     "rollback": null,
+     "runtime": null,
+     "stage": "registered",
+     "stage_deadline": null,
+     "startup_observed": false,
+     "target_id": "second-service",
+     "updated_at": "2026-09-22T00:01:05+00:00",
+     "verification": null,
+     "withdrawal": null,
+     "work": null
+    }
+   ],
+   "enabled": true,
+   "migrations": [],
+   "registered": true,
+   "schema": "urn:zeus:host-delivery-status:1",
+   "targets": []
+  },
+  "status_migration_only_all": {
+   "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+   "counts": {},
+   "deliveries": [],
+   "enabled": false,
+   "migrations": [
+    {
+     "at": "2026-09-22T00:00:00+00:00",
+     "held": null,
+     "kind": "evaluator_migration",
+     "migration_id": "migration-1",
+     "old_plan_id": "delivery-plan-old",
+     "plan_id": null,
+     "state": "staged",
+     "successor_release_id": "release-successor",
+     "target_id": "canary-service"
+    }
+   ],
+   "registered": false,
+   "schema": "urn:zeus:host-delivery-status:1",
+   "targets": []
+  },
+  "status_migration_only_unregistered": {
+   "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+   "deliveries": [],
+   "enabled": false,
+   "migrations": [],
+   "next_action": "register_plan",
+   "outcome": "plan_unregistered",
+   "plan_id": "nope",
+   "registered": false,
+   "schema": "urn:zeus:host-delivery-status:1",
+   "targets": []
+  },
+  "status_registered_untouched": {
+   "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+   "counts": {
+    "registered": 1
+   },
+   "deliveries": [
+    {
+     "active_descriptor_sha256": null,
+     "active_revision": null,
+     "after_verification": null,
+     "attempts": 0,
+     "canary": null,
+     "canary_check_id": "startup_identity",
+     "consumed": false,
+     "error_type": null,
+     "head": null,
+     "instance_id": null,
+     "intended_descriptor_sha256": null,
+     "merged_revision": null,
+     "next_action": "tick",
+     "outcome": null,
+     "pin": {
+      "path": "docs/zeus/operations/delivery.json",
+      "revision": "ffffffffffffffffffffffffffffffffffffffff",
+      "sha256": "2805511ad68d05be4344328b719c06904a5828fb89fc0ec6c6d8fb3ff0b2ea4b"
+     },
+     "plan_id": "delivery-plan-1",
+     "plan_sha256": "47fadc76c32c39609ea82c621fa4dbe3280dc1ce7373b4f535e2c6eb399d3be0",
+     "pr_number": null,
+     "reason_code": null,
+     "recoveries": [],
+     "recovery": null,
+     "release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "required_checks": 1,
+     "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "rollback": null,
+     "runtime": null,
+     "stage": "registered",
+     "stage_deadline": null,
+     "startup_observed": false,
+     "target_id": "canary-service",
+     "updated_at": "2026-09-22T00:01:05+00:00",
+     "verification": null,
+     "withdrawal": null,
+     "work": null
+    }
+   ],
+   "enabled": true,
+   "migrations": [],
+   "registered": true,
+   "schema": "urn:zeus:host-delivery-status:1",
+   "targets": []
+  },
+  "status_unregistered_id": {
+   "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+   "deliveries": [],
+   "enabled": true,
+   "next_action": "register_plan",
+   "outcome": "plan_unregistered",
+   "plan_id": "nope",
+   "registered": false,
+   "schema": "urn:zeus:host-delivery-status:1",
+   "targets": []
+  },
+  "status_with_migration_all": {
+   "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+   "counts": {
+    "registered": 2
+   },
+   "deliveries": [
+    {
+     "active_descriptor_sha256": null,
+     "active_revision": null,
+     "after_verification": null,
+     "attempts": 0,
+     "canary": null,
+     "canary_check_id": "startup_identity",
+     "consumed": false,
+     "error_type": null,
+     "head": null,
+     "instance_id": null,
+     "intended_descriptor_sha256": null,
+     "merged_revision": null,
+     "next_action": "tick",
+     "outcome": null,
+     "pin": {
+      "path": "docs/zeus/operations/delivery.json",
+      "revision": "ffffffffffffffffffffffffffffffffffffffff",
+      "sha256": "2805511ad68d05be4344328b719c06904a5828fb89fc0ec6c6d8fb3ff0b2ea4b"
+     },
+     "plan_id": "delivery-plan-1",
+     "plan_sha256": "47fadc76c32c39609ea82c621fa4dbe3280dc1ce7373b4f535e2c6eb399d3be0",
+     "pr_number": null,
+     "reason_code": null,
+     "recoveries": [],
+     "recovery": null,
+     "release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "required_checks": 1,
+     "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "rollback": null,
+     "runtime": null,
+     "stage": "registered",
+     "stage_deadline": null,
+     "startup_observed": false,
+     "target_id": "canary-service",
+     "updated_at": "2026-09-22T00:01:05+00:00",
+     "verification": null,
+     "withdrawal": null,
+     "work": null
+    },
+    {
+     "active_descriptor_sha256": null,
+     "active_revision": null,
+     "after_verification": null,
+     "attempts": 0,
+     "canary": null,
+     "canary_check_id": "startup_identity",
+     "consumed": false,
+     "error_type": null,
+     "head": null,
+     "instance_id": null,
+     "intended_descriptor_sha256": null,
+     "merged_revision": null,
+     "next_action": "tick",
+     "outcome": null,
+     "pin": {
+      "path": "docs/zeus/operations/delivery-plan-2.json",
+      "revision": "ffffffffffffffffffffffffffffffffffffffff",
+      "sha256": "2805511ad68d05be4344328b719c06904a5828fb89fc0ec6c6d8fb3ff0b2ea4b"
+     },
+     "plan_id": "delivery-plan-2",
+     "plan_sha256": "8c484dcec80940c271c42f7318a44fe6fd6f100bb2d7edbfb253442fd2744434",
+     "pr_number": null,
+     "reason_code": null,
+     "recoveries": [],
+     "recovery": null,
+     "release_id": "d12869f503da47e742a0c5323eecf337a9fe11453ddd7f81127b00b38649d672",
+     "required_checks": 1,
+     "revision": "5555555555555555555555555555555555555555",
+     "rollback": null,
+     "runtime": null,
+     "stage": "registered",
+     "stage_deadline": null,
+     "startup_observed": false,
+     "target_id": "second-service",
+     "updated_at": "2026-09-22T00:01:05+00:00",
+     "verification": null,
+     "withdrawal": null,
+     "work": null
+    }
+   ],
+   "enabled": true,
+   "migrations": [
+    {
+     "at": "2026-09-22T00:00:00+00:00",
+     "held": "migration_unacknowledged",
+     "kind": "evaluator_migration",
+     "migration_id": "migration-1",
+     "old_plan_id": "delivery-plan-old",
+     "plan_id": "delivery-plan-2",
+     "state": "staged",
+     "successor_release_id": "release-successor",
+     "target_id": "canary-service"
+    }
+   ],
+   "registered": true,
+   "schema": "urn:zeus:host-delivery-status:1",
+   "targets": []
+  },
+  "status_with_migration_matching_plan": {
+   "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+   "counts": {
+    "registered": 1
+   },
+   "deliveries": [
+    {
+     "active_descriptor_sha256": null,
+     "active_revision": null,
+     "after_verification": null,
+     "attempts": 0,
+     "canary": null,
+     "canary_check_id": "startup_identity",
+     "consumed": false,
+     "error_type": null,
+     "head": null,
+     "instance_id": null,
+     "intended_descriptor_sha256": null,
+     "merged_revision": null,
+     "next_action": "tick",
+     "outcome": null,
+     "pin": {
+      "path": "docs/zeus/operations/delivery-plan-2.json",
+      "revision": "ffffffffffffffffffffffffffffffffffffffff",
+      "sha256": "2805511ad68d05be4344328b719c06904a5828fb89fc0ec6c6d8fb3ff0b2ea4b"
+     },
+     "plan_id": "delivery-plan-2",
+     "plan_sha256": "8c484dcec80940c271c42f7318a44fe6fd6f100bb2d7edbfb253442fd2744434",
+     "pr_number": null,
+     "reason_code": null,
+     "recoveries": [],
+     "recovery": null,
+     "release_id": "d12869f503da47e742a0c5323eecf337a9fe11453ddd7f81127b00b38649d672",
+     "required_checks": 1,
+     "revision": "5555555555555555555555555555555555555555",
+     "rollback": null,
+     "runtime": null,
+     "stage": "registered",
+     "stage_deadline": null,
+     "startup_observed": false,
+     "target_id": "second-service",
+     "updated_at": "2026-09-22T00:01:05+00:00",
+     "verification": null,
+     "withdrawal": null,
+     "work": null
+    }
+   ],
+   "enabled": true,
+   "migrations": [
+    {
+     "at": "2026-09-22T00:00:00+00:00",
+     "held": "migration_unacknowledged",
+     "kind": "evaluator_migration",
+     "migration_id": "migration-1",
+     "old_plan_id": "delivery-plan-old",
+     "plan_id": "delivery-plan-2",
+     "state": "staged",
+     "successor_release_id": "release-successor",
+     "target_id": "canary-service"
+    }
+   ],
+   "registered": true,
+   "schema": "urn:zeus:host-delivery-status:1",
+   "targets": []
+  },
+  "status_with_migration_old_id": {
+   "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+   "deliveries": [],
+   "enabled": true,
+   "migrations": [
+    {
+     "at": "2026-09-22T00:00:00+00:00",
+     "held": "migration_unacknowledged",
+     "kind": "evaluator_migration",
+     "migration_id": "migration-1",
+     "old_plan_id": "delivery-plan-old",
+     "plan_id": "delivery-plan-2",
+     "state": "staged",
+     "successor_release_id": "release-successor",
+     "target_id": "canary-service"
+    }
+   ],
+   "next_action": "register_plan",
+   "outcome": "plan_unregistered",
+   "plan_id": "delivery-plan-old",
+   "registered": false,
+   "schema": "urn:zeus:host-delivery-status:1",
+   "targets": []
+  },
+  "status_with_migration_other_plan": {
+   "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+   "counts": {
+    "registered": 1
+   },
+   "deliveries": [
+    {
+     "active_descriptor_sha256": null,
+     "active_revision": null,
+     "after_verification": null,
+     "attempts": 0,
+     "canary": null,
+     "canary_check_id": "startup_identity",
+     "consumed": false,
+     "error_type": null,
+     "head": null,
+     "instance_id": null,
+     "intended_descriptor_sha256": null,
+     "merged_revision": null,
+     "next_action": "tick",
+     "outcome": null,
+     "pin": {
+      "path": "docs/zeus/operations/delivery.json",
+      "revision": "ffffffffffffffffffffffffffffffffffffffff",
+      "sha256": "2805511ad68d05be4344328b719c06904a5828fb89fc0ec6c6d8fb3ff0b2ea4b"
+     },
+     "plan_id": "delivery-plan-1",
+     "plan_sha256": "47fadc76c32c39609ea82c621fa4dbe3280dc1ce7373b4f535e2c6eb399d3be0",
+     "pr_number": null,
+     "reason_code": null,
+     "recoveries": [],
+     "recovery": null,
+     "release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "required_checks": 1,
+     "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "rollback": null,
+     "runtime": null,
+     "stage": "registered",
+     "stage_deadline": null,
+     "startup_observed": false,
+     "target_id": "canary-service",
+     "updated_at": "2026-09-22T00:01:05+00:00",
+     "verification": null,
+     "withdrawal": null,
+     "work": null
+    }
+   ],
+   "enabled": true,
+   "migrations": [],
+   "registered": true,
+   "schema": "urn:zeus:host-delivery-status:1",
+   "targets": []
+  }
+ },
+ "selection": {
+  "blocked_map": {
+   "held_intent_in_act": {
+    "unreachable": "_select never chooses a held intent, so the defensive held branch of _act cannot be reached through tick"
+   },
+   "named_stopped_plan_is_idle": {
+    "tick": {
+     "active": null,
+     "ambiguous_effect": null,
+     "at": "2026-09-22T00:05:05+00:00",
+     "attempts": 0,
+     "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+     "blocked": {
+      "plan-one": "blocked"
+     },
+     "canary": null,
+     "descriptor_sha256": null,
+     "error_type": null,
+     "head": null,
+     "instance_id": null,
+     "merged_revision": null,
+     "next_action": "tick",
+     "outcome": "idle",
+     "plan_id": null,
+     "pr_number": null,
+     "previous_descriptor_sha256": null,
+     "reason_code": null,
+     "release_id": null,
+     "rollback": null,
+     "schema": "urn:zeus:host-delivery-tick:1",
+     "stage": null,
+     "target_id": null
+    }
+   },
+   "nothing_actionable_is_idle": {
+    "tick": {
+     "active": null,
+     "ambiguous_effect": null,
+     "at": "2026-09-22T00:05:05+00:00",
+     "attempts": 0,
+     "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+     "blocked": {
+      "plan-one": "blocked"
+     },
+     "canary": null,
+     "descriptor_sha256": null,
+     "error_type": null,
+     "head": null,
+     "instance_id": null,
+     "merged_revision": null,
+     "next_action": "tick",
+     "outcome": "idle",
+     "plan_id": null,
+     "pr_number": null,
+     "previous_descriptor_sha256": null,
+     "reason_code": null,
+     "release_id": null,
+     "rollback": null,
+     "schema": "urn:zeus:host-delivery-tick:1",
+     "stage": null,
+     "target_id": null
+    }
+   },
+   "passed_over": {
+    "blocked": {
+     "plan-a-active": "active",
+     "plan-b-blocked": "blocked",
+     "plan-c-rolled": "rolled_back",
+     "plan-d-failed": "failed",
+     "plan-e-withdrawn": "withdrawn",
+     "plan-f-held": "migration_unacknowledged",
+     "plan-g-reserved": "target_reserved_by_migration",
+     "plan-h-inflight": "controller_serialized",
+     "plan-i-waiting": "target_busy"
+    },
+    "tick": {
+     "active": null,
+     "ambiguous_effect": null,
+     "at": "2026-09-22T00:05:05+00:00",
+     "attempts": 0,
+     "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+     "blocked": {
+      "plan-a-active": "active",
+      "plan-b-blocked": "blocked",
+      "plan-c-rolled": "rolled_back",
+      "plan-d-failed": "failed",
+      "plan-e-withdrawn": "withdrawn",
+      "plan-f-held": "migration_unacknowledged",
+      "plan-g-reserved": "target_reserved_by_migration",
+      "plan-h-inflight": "controller_serialized",
+      "plan-i-waiting": "target_busy"
+     },
+     "canary": null,
+     "descriptor_sha256": null,
+     "error_type": null,
+     "head": null,
+     "instance_id": null,
+     "merged_revision": null,
+     "next_action": "tick",
+     "outcome": "progressed",
+     "plan_id": "delivery-plan-1",
+     "pr_number": null,
+     "previous_descriptor_sha256": null,
+     "reason_code": null,
+     "release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "rollback": null,
+     "schema": "urn:zeus:host-delivery-tick:1",
+     "stage": "publishing",
+     "target_id": "canary-service"
+    }
+   },
+   "refused_release_is_not_a_wait": {
+    "outcome": "refused",
+    "plan_id": "delivery-plan-1",
+    "reason_code": "release_revision_mismatch",
+    "stage": "blocked"
+   },
+   "reserved_for_this_plans_own_migration": {
+    "blocked": {},
+    "tick": {
+     "outcome": "progressed",
+     "plan_id": "plan-own",
+     "reason_code": null,
+     "stage": "publishing"
+    }
+   },
+   "rolling_back_is_never_a_wait": {
+    "outcome": "controller_busy",
+    "plan_id": "delivery-plan-1",
+    "reason_code": "release_queue_blocked",
+    "stage": "rolling_back"
+   },
+   "scan_bounded": {
+    "blocked_by_reason": {
+     "active": 64,
+     "scan_bounded": 1
+    },
+    "first": "active",
+    "last": "scan_bounded",
+    "tick": {
+     "outcome": "idle",
+     "plan_id": null,
+     "reason_code": null,
+     "stage": null
+    }
+   }
+  },
+  "claims_and_serialization": {
+   "busy_target_does_not_starve_another_target": {
+    "blocked": {
+     "delivery-plan-3": "controller_serialized"
+    },
+    "next": {
+     "outcome": "pending",
+     "plan_id": "delivery-plan-1",
+     "reason_code": "receipt_missing",
+     "stage": "awaiting_consumption"
+    },
+    "tick": {
+     "outcome": "pending",
+     "plan_id": "delivery-plan-1",
+     "reason_code": "receipt_missing",
+     "stage": "awaiting_consumption"
+    }
+   },
+   "claims_only_registered_rows": {
+    "foreign_row": {
+     "attempt": 0,
+     "status": "queued"
+    },
+    "release_is_plans": true,
+    "tick": {
+     "outcome": "progressed",
+     "plan_id": "delivery-plan-1",
+     "reason_code": null,
+     "stage": "publishing"
+    }
+   },
+   "named_plan_on_a_busy_target": {
+    "blocked": {
+     "delivery-plan-2": "target_busy"
+    },
+    "tick": {
+     "outcome": "idle",
+     "plan_id": null,
+     "reason_code": null,
+     "stage": null
+    }
+   },
+   "two_actionable_plans": {
+    "blocked": {
+     "delivery-plan-2": "controller_serialized"
+    },
+    "named": {
+     "blocked": {},
+     "tick": {
+      "outcome": "progressed",
+      "plan_id": "delivery-plan-2",
+      "reason_code": null,
+      "stage": "publishing"
+     }
+    },
+    "tick": {
+     "outcome": "progressed",
+     "plan_id": "delivery-plan-1",
+     "reason_code": null,
+     "stage": "publishing"
+    }
+   },
+   "two_plans_one_target": {
+    "blocked": {
+     "delivery-plan-2": "target_busy"
+    },
+    "second_stage": "registered",
+    "tick": {
+     "outcome": "pending",
+     "plan_id": "delivery-plan-1",
+     "reason_code": "receipt_missing",
+     "stage": "awaiting_consumption"
+    }
+   }
+  },
+  "disabled_idle": {
+   "disabled": {
+    "intent": null,
+    "observations": 0,
+    "queue_rows": [],
+    "state": {
+     "deployment": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "deployment_locks": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "execution_fences": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "host_delivery_descriptors": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "host_delivery_intents": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "host_delivery_migrations": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "host_delivery_plans": "b688ab7e041b49180e8a18d4e85c57d2acd175cdc66546afa57c6a222aa97a51",
+     "host_delivery_targets": "b8af2fe10bb0eee633c608c4c6e04627d3825cc1e428a1b1dbfe5d11fed72c20",
+     "images": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "release_queue": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "releases": "fabe384b5d40a5f3549c388248a08dfdb936e2a4e6a4dac1b9e0c7411116cd76"
+    },
+    "tick": {
+     "active": null,
+     "ambiguous_effect": null,
+     "at": "2026-09-22T00:01:13+00:00",
+     "attempts": 0,
+     "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+     "blocked": {},
+     "canary": null,
+     "descriptor_sha256": null,
+     "error_type": null,
+     "head": null,
+     "instance_id": null,
+     "merged_revision": null,
+     "next_action": "tick",
+     "outcome": "disabled",
+     "plan_id": "delivery-plan-1",
+     "pr_number": null,
+     "previous_descriptor_sha256": null,
+     "reason_code": "delivery_disabled",
+     "release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "rollback": null,
+     "schema": "urn:zeus:host-delivery-tick:1",
+     "stage": "registered",
+     "target_id": "canary-service"
+    }
+   },
+   "disabled_again_writes_nothing": {
+    "store": "5c963921dffbc717a1496e6fc5d1d4ad2b7c81bf381ec9e3cab07a53ca58013f",
+    "value": {
+     "active": null,
+     "ambiguous_effect": null,
+     "at": "2026-09-22T00:01:13+00:00",
+     "attempts": 0,
+     "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+     "blocked": {},
+     "canary": null,
+     "descriptor_sha256": null,
+     "error_type": null,
+     "head": null,
+     "instance_id": null,
+     "merged_revision": null,
+     "next_action": "tick",
+     "outcome": "disabled",
+     "plan_id": "delivery-plan-1",
+     "pr_number": null,
+     "previous_descriptor_sha256": null,
+     "reason_code": "delivery_disabled",
+     "release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "rollback": null,
+     "schema": "urn:zeus:host-delivery-tick:1",
+     "stage": "registered",
+     "target_id": "canary-service"
+    },
+    "wrote": false
+   },
+   "disabled_awaiting_review": {
+    "intent": null,
+    "store": "2fc584580d6cc04b2ffbc2a7bb66c37d00bf894b0aafba9e40a9410c2de3c918",
+    "value": {
+     "active": null,
+     "ambiguous_effect": null,
+     "at": "2026-09-22T00:01:13+00:00",
+     "attempts": 0,
+     "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+     "blocked": {},
+     "canary": null,
+     "descriptor_sha256": null,
+     "error_type": null,
+     "head": null,
+     "instance_id": null,
+     "merged_revision": null,
+     "next_action": "tick",
+     "outcome": "disabled",
+     "plan_id": "delivery-plan-1",
+     "pr_number": null,
+     "previous_descriptor_sha256": null,
+     "reason_code": "delivery_disabled",
+     "release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "rollback": null,
+     "schema": "urn:zeus:host-delivery-tick:1",
+     "stage": "registered",
+     "target_id": "canary-service"
+    },
+    "wrote": false
+   },
+   "disabled_named_plan": {
+    "store": "5c963921dffbc717a1496e6fc5d1d4ad2b7c81bf381ec9e3cab07a53ca58013f",
+    "value": {
+     "active": null,
+     "ambiguous_effect": null,
+     "at": "2026-09-22T00:01:13+00:00",
+     "attempts": 0,
+     "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+     "blocked": {},
+     "canary": null,
+     "descriptor_sha256": null,
+     "error_type": null,
+     "head": null,
+     "instance_id": null,
+     "merged_revision": null,
+     "next_action": "tick",
+     "outcome": "disabled",
+     "plan_id": "delivery-plan-1",
+     "pr_number": null,
+     "previous_descriptor_sha256": null,
+     "reason_code": "delivery_disabled",
+     "release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "rollback": null,
+     "schema": "urn:zeus:host-delivery-tick:1",
+     "stage": "registered",
+     "target_id": "canary-service"
+    },
+    "wrote": false
+   },
+   "disabled_unregistered_plan": {
+    "store": "5c963921dffbc717a1496e6fc5d1d4ad2b7c81bf381ec9e3cab07a53ca58013f",
+    "value": {
+     "active": null,
+     "ambiguous_effect": null,
+     "at": "2026-09-22T00:01:13+00:00",
+     "attempts": 0,
+     "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+     "blocked": {},
+     "canary": null,
+     "descriptor_sha256": null,
+     "error_type": null,
+     "head": null,
+     "instance_id": null,
+     "merged_revision": null,
+     "next_action": "tick",
+     "outcome": "plan_unregistered",
+     "plan_id": null,
+     "pr_number": null,
+     "previous_descriptor_sha256": null,
+     "reason_code": null,
+     "release_id": null,
+     "rollback": null,
+     "schema": "urn:zeus:host-delivery-tick:1",
+     "stage": null,
+     "target_id": null
+    },
+    "wrote": false
+   },
+   "enabled_no_plans": {
+    "store": "5d56033564a416cddea189f37683209d3b503658c6dfb9a885699db7ea600ffb",
+    "value": {
+     "active": null,
+     "ambiguous_effect": null,
+     "at": "2026-09-22T00:01:13+00:00",
+     "attempts": 0,
+     "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+     "blocked": {},
+     "canary": null,
+     "descriptor_sha256": null,
+     "error_type": null,
+     "head": null,
+     "instance_id": null,
+     "merged_revision": null,
+     "next_action": "tick",
+     "outcome": "idle",
+     "plan_id": null,
+     "pr_number": null,
+     "previous_descriptor_sha256": null,
+     "reason_code": null,
+     "release_id": null,
+     "rollback": null,
+     "schema": "urn:zeus:host-delivery-tick:1",
+     "stage": null,
+     "target_id": null
+    },
+    "wrote": false
+   },
+   "enabled_unregistered_plan": {
+    "store": "5d56033564a416cddea189f37683209d3b503658c6dfb9a885699db7ea600ffb",
+    "value": {
+     "active": null,
+     "ambiguous_effect": null,
+     "at": "2026-09-22T00:01:13+00:00",
+     "attempts": 0,
+     "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+     "blocked": {},
+     "canary": null,
+     "descriptor_sha256": null,
+     "error_type": null,
+     "head": null,
+     "instance_id": null,
+     "merged_revision": null,
+     "next_action": "tick",
+     "outcome": "plan_unregistered",
+     "plan_id": null,
+     "pr_number": null,
+     "previous_descriptor_sha256": null,
+     "reason_code": null,
+     "release_id": null,
+     "rollback": null,
+     "schema": "urn:zeus:host-delivery-tick:1",
+     "stage": null,
+     "target_id": null
+    },
+    "wrote": false
+   }
+  },
+  "drive_to_active": {
+   "active_pointer": {
+    "at": "2026-09-22T00:01:30+00:00",
+    "previous": null,
+    "release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+    "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+   },
+   "descriptor": {
+    "consumed": true,
+    "descriptor": {
+     "predecessor": null,
+     "profile_digest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "revision": "8888888888888888888888888888888888888888",
+     "root": "/opt/zeus-fixture/runtime",
+     "schema": "urn:zeus:host-descriptor:1",
+     "target_id": "canary-service",
+     "worker_image": "zeus-worker@sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+    },
+    "descriptor_sha256": "2fa7907356ed9356d5129640ab8644cf8546485c5631a3351fd156cd0a16f2e1",
+    "history": [],
+    "id": "canary-service",
+    "instance_id": "6ccbd822533ec2f3f62fd9c5b12bebde",
+    "observed_instance_id": "6ccbd822533ec2f3f62fd9c5b12bebde",
+    "observed_revision": "8888888888888888888888888888888888888888",
+    "observed_runtime_root": "/opt/zeus-fixture/runtime",
+    "plan_id": "delivery-plan-1",
+    "release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+    "rolled_back": false,
+    "startup_observed": true,
+    "target_id": "canary-service",
+    "updated_at": "2026-09-22T00:01:30+00:00"
+   },
+   "final": {
+    "active": {
+     "at": "2026-09-22T00:01:30+00:00",
+     "previous": null,
+     "release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "ambiguous_effect": null,
+    "at": "2026-09-22T00:01:30+00:00",
+    "attempts": 0,
+    "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+    "blocked": {},
+    "canary": {
+     "check_id": "startup_identity",
+     "evidence": "6ccbd822533ec2f3f62fd9c5b12bebde",
+     "passed": true,
+     "reason_code": null
+    },
+    "descriptor_sha256": "2fa7907356ed9356d5129640ab8644cf8546485c5631a3351fd156cd0a16f2e1",
+    "error_type": null,
+    "head": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "instance_id": "6ccbd822533ec2f3f62fd9c5b12bebde",
+    "merged_revision": "9999999999999999999999999999999999999999",
+    "next_action": "observe_active_runtime",
+    "outcome": "active",
+    "plan_id": "delivery-plan-1",
+    "pr_number": 181,
+    "previous_descriptor_sha256": null,
+    "reason_code": null,
+    "release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+    "rollback": null,
+    "schema": "urn:zeus:host-delivery-tick:1",
+    "stage": "active",
+    "target_id": "canary-service"
+   },
+   "github": {
+    "merges": 1,
+    "publishes": 1,
+    "qualifications": 1
+   },
+   "host_calls": [
+    "current",
+    "drain",
+    "identity",
+    "receipt",
+    "start",
+    "stop",
+    "switch"
+   ],
+   "host_instance_running": true,
+   "idle": {
+    "active": null,
+    "ambiguous_effect": null,
+    "at": "2026-09-22T00:01:31+00:00",
+    "attempts": 0,
+    "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+    "blocked": {
+     "delivery-plan-1": "active"
+    },
+    "canary": null,
+    "descriptor_sha256": null,
+    "error_type": null,
+    "head": null,
+    "instance_id": null,
+    "merged_revision": null,
+    "next_action": "tick",
+    "outcome": "idle",
+    "plan_id": null,
+    "pr_number": null,
+    "previous_descriptor_sha256": null,
+    "reason_code": null,
+    "release_id": null,
+    "rollback": null,
+    "schema": "urn:zeus:host-delivery-tick:1",
+    "stage": null,
+    "target_id": null
+   },
+   "idle_wrote_nothing": true,
+   "release_status": "active",
+   "status_stage": "active",
+   "ticks": [
+    {
+     "outcome": "progressed",
+     "plan_id": "delivery-plan-1",
+     "reason_code": null,
+     "stage": "publishing"
+    },
+    {
+     "outcome": "progressed",
+     "plan_id": "delivery-plan-1",
+     "reason_code": null,
+     "stage": "awaiting_ci"
+    },
+    {
+     "outcome": "progressed",
+     "plan_id": "delivery-plan-1",
+     "reason_code": null,
+     "stage": "merge_intended"
+    },
+    {
+     "outcome": "progressed",
+     "plan_id": "delivery-plan-1",
+     "reason_code": null,
+     "stage": "merged"
+    },
+    {
+     "outcome": "progressed",
+     "plan_id": "delivery-plan-1",
+     "reason_code": null,
+     "stage": "drain_intended"
+    },
+    {
+     "outcome": "progressed",
+     "plan_id": "delivery-plan-1",
+     "reason_code": null,
+     "stage": "switching"
+    },
+    {
+     "outcome": "progressed",
+     "plan_id": "delivery-plan-1",
+     "reason_code": null,
+     "stage": "awaiting_consumption"
+    },
+    {
+     "outcome": "active",
+     "plan_id": "delivery-plan-1",
+     "reason_code": null,
+     "stage": "active"
+    }
+   ],
+   "visited": [
+    "publishing",
+    "awaiting_ci",
+    "merge_intended",
+    "merged",
+    "drain_intended",
+    "switching",
+    "awaiting_consumption",
+    "active"
+   ]
+  },
+  "missing_ports": {
+   "github_missing": {
+    "intent": {
+     "attempts": 1,
+     "canary": null,
+     "candidate_instance_id": null,
+     "candidate_launch": null,
+     "created_at": "2026-09-22T00:01:18+00:00",
+     "descriptor": null,
+     "descriptor_sha256": null,
+     "error_type": "DeliveryRefused",
+     "evidence": [],
+     "expected_active": null,
+     "expected_active_set": false,
+     "head": null,
+     "id": "delivery-plan-1",
+     "instance_id": null,
+     "merged_revision": null,
+     "outcome": "refused",
+     "plan_id": "delivery-plan-1",
+     "plan_sha256": "47fadc76c32c39609ea82c621fa4dbe3280dc1ce7373b4f535e2c6eb399d3be0",
+     "pr_number": null,
+     "pr_url": null,
+     "previous_descriptor": null,
+     "previous_descriptor_sha256": null,
+     "previous_instance_id": null,
+     "previous_launch": null,
+     "previous_stage": "publishing",
+     "reason_code": "github_port_unavailable",
+     "release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "rollback": null,
+     "stage": "blocked",
+     "stage_deadline": null,
+     "stage_entered_at": "2026-09-22T00:01:18+00:00",
+     "target_id": "canary-service",
+     "updated_at": "2026-09-22T00:01:18+00:00"
+    },
+    "tick": [
+     {
+      "outcome": "progressed",
+      "plan_id": "delivery-plan-1",
+      "reason_code": null,
+      "stage": "publishing"
+     },
+     {
+      "outcome": "refused",
+      "plan_id": "delivery-plan-1",
+      "reason_code": "github_port_unavailable",
+      "stage": "blocked"
+     }
+    ]
+   },
+   "host_and_canary_missing": {
+    "blocked": {
+     "active": null,
+     "ambiguous_effect": null,
+     "at": "2026-09-22T00:01:18+00:00",
+     "attempts": 1,
+     "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+     "blocked": {},
+     "canary": null,
+     "descriptor_sha256": "2fa7907356ed9356d5129640ab8644cf8546485c5631a3351fd156cd0a16f2e1",
+     "error_type": "DeliveryRefused",
+     "head": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "instance_id": null,
+     "merged_revision": "9999999999999999999999999999999999999999",
+     "next_action": "owner_review",
+     "outcome": "refused",
+     "plan_id": "delivery-plan-1",
+     "pr_number": 181,
+     "previous_descriptor_sha256": null,
+     "reason_code": "host_port_unavailable",
+     "release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "rollback": null,
+     "schema": "urn:zeus:host-delivery-tick:1",
+     "stage": "blocked",
+     "target_id": "canary-service"
+    },
+    "descriptor": null,
+    "last": {
+     "outcome": "progressed",
+     "plan_id": "delivery-plan-1",
+     "reason_code": null,
+     "stage": "drain_intended"
+    },
+    "visited": [
+     "publishing",
+     "awaiting_ci",
+     "merge_intended",
+     "merged",
+     "drain_intended"
+    ]
+   },
+   "host_port_for_another_kind": {
+    "blocked": {
+     "outcome": "refused",
+     "plan_id": "delivery-plan-1",
+     "reason_code": "host_port_unavailable",
+     "stage": "blocked"
+    },
+    "last": {
+     "outcome": "progressed",
+     "plan_id": "delivery-plan-1",
+     "reason_code": null,
+     "stage": "drain_intended"
+    }
+   }
+  },
+  "review_and_backoff": {
+   "awaiting_review_does_not_starve": {
+    "blocked": {
+     "delivery-plan-1": "release_reviews_incomplete"
+    },
+    "next": {
+     "outcome": "progressed",
+     "plan_id": "delivery-plan-2",
+     "reason_code": null,
+     "stage": "awaiting_ci"
+    },
+    "plan1_queue_row": null,
+    "plan1_stage": "registered",
+    "publishes": 1,
+    "tick": {
+     "outcome": "progressed",
+     "plan_id": "delivery-plan-2",
+     "reason_code": null,
+     "stage": "publishing"
+    }
+   },
+   "backoff": {
+    "blocked": {
+     "delivery-plan-1": "release_retry_not_due"
+    },
+    "tick": {
+     "outcome": "progressed",
+     "plan_id": "delivery-plan-2",
+     "reason_code": null,
+     "stage": "publishing"
+    }
+   },
+   "exhausted": {
+    "blocked": {
+     "delivery-plan-1": "release_attempts_exhausted"
+    },
+    "tick": {
+     "outcome": "progressed",
+     "plan_id": "delivery-plan-2",
+     "reason_code": null,
+     "stage": "merge_intended"
+    }
+   },
+   "owner_stop": {
+    "blocked": {
+     "delivery-plan-1": "release_queue_blocked"
+    },
+    "tick": {
+     "outcome": "progressed",
+     "plan_id": "delivery-plan-2",
+     "reason_code": null,
+     "stage": "awaiting_ci"
+    }
+   }
+  },
+  "store_outage": {
+   "outage": {
+    "active": null,
+    "ambiguous_effect": null,
+    "at": "2026-09-22T00:01:23+00:00",
+    "attempts": 0,
+    "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+    "blocked": {},
+    "canary": null,
+    "descriptor_sha256": null,
+    "error_type": "ConnectionError",
+    "head": null,
+    "instance_id": null,
+    "merged_revision": null,
+    "next_action": "await_dependency",
+    "outcome": "unavailable",
+    "plan_id": null,
+    "pr_number": null,
+    "previous_descriptor_sha256": null,
+    "reason_code": "store_unavailable",
+    "release_id": null,
+    "rollback": null,
+    "schema": "urn:zeus:host-delivery-tick:1",
+    "stage": null,
+    "target_id": null
+   },
+   "outage_named_plan": {
+    "outcome": "unavailable",
+    "plan_id": null,
+    "reason_code": "store_unavailable",
+    "stage": null
+   },
+   "state_after_outage_unchanged_stage": "publishing",
+   "status_after": "publishing"
+  },
+  "unclaimed": {
+   "controller_lease_held_by_another_release": {
+    "after_lease_expiry": {
+     "outcome": "controller_busy",
+     "plan_id": "delivery-plan-1",
+     "reason_code": "controller_lease_held",
+     "stage": "registered"
+    },
+    "github_calls": [
+     0,
+     0
+    ],
+    "lock": {
+     "lease_until": "2026-09-22T00:21:45+00:00",
+     "owner": "5eed0000-0000-4000-8000-000000000044",
+     "release_id": "f148ecec5d9987dd10786f90db6f73df0419656b102f9c26dace8218d207210d"
+    },
+    "other_generation": 1,
+    "own_row": {
+     "at": "2026-09-22T00:01:45+00:00",
+     "attempt": 0,
+     "id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "reason": "host delivery plan delivery-plan-1",
+     "status": "queued"
+    },
+    "queued_row_after_tick": {
+     "at": "2026-09-22T00:01:45+00:00",
+     "attempt": 0,
+     "id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "reason": "host delivery plan delivery-plan-1",
+     "status": "queued"
+    },
+    "tick": {
+     "active": null,
+     "ambiguous_effect": null,
+     "at": "2026-09-22T00:01:45+00:00",
+     "attempts": 0,
+     "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+     "blocked": {},
+     "canary": null,
+     "descriptor_sha256": null,
+     "error_type": null,
+     "head": null,
+     "instance_id": null,
+     "merged_revision": null,
+     "next_action": "tick",
+     "outcome": "controller_busy",
+     "plan_id": "delivery-plan-1",
+     "pr_number": null,
+     "previous_descriptor_sha256": null,
+     "reason_code": "controller_lease_held",
+     "release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "rollback": null,
+     "schema": "urn:zeus:host-delivery-tick:1",
+     "stage": "registered",
+     "target_id": "canary-service"
+    }
+   },
+   "fence_ahead_of_the_row": {
+    "row": {
+     "at": "2026-09-22T00:00:00+00:00",
+     "attempt": 0,
+     "generation": 5,
+     "id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "reason": "Execution generation regressed behind its durable fence",
+     "status": "failed"
+    },
+    "tick": {
+     "active": null,
+     "ambiguous_effect": null,
+     "at": "2026-09-22T00:05:05+00:00",
+     "attempts": 0,
+     "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+     "blocked": {},
+     "canary": null,
+     "descriptor_sha256": null,
+     "error_type": null,
+     "head": null,
+     "instance_id": null,
+     "merged_revision": null,
+     "next_action": "tick",
+     "outcome": "controller_busy",
+     "plan_id": "delivery-plan-1",
+     "pr_number": null,
+     "previous_descriptor_sha256": null,
+     "reason_code": "release_queue_failed",
+     "release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "rollback": null,
+     "schema": "urn:zeus:host-delivery-tick:1",
+     "stage": "registered",
+     "target_id": "canary-service"
+    }
+   },
+   "own_row_lease_expired_is_claimed": {
+    "github_calls": [
+     0,
+     0
+    ],
+    "row": {
+     "at": "2026-09-22T00:00:00+00:00",
+     "attempt": 0,
+     "attempts": [
+      {
+       "at": "2026-09-22T00:01:45+00:00",
+       "attempt": 2,
+       "deferred": true,
+       "result": {
+        "stage": "publishing",
+        "status": "progressed"
+       }
+      }
+     ],
+     "generation": 2,
+     "id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "lease_until": null,
+     "owner": null,
+     "reason": "fixture",
+     "result": {
+      "stage": "publishing",
+      "status": "progressed"
+     },
+     "retry_at": "2026-09-22T00:01:45+00:00",
+     "status": "queued"
+    },
+    "tick": {
+     "active": null,
+     "ambiguous_effect": null,
+     "at": "2026-09-22T00:01:45+00:00",
+     "attempts": 0,
+     "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+     "blocked": {},
+     "canary": null,
+     "descriptor_sha256": null,
+     "error_type": null,
+     "head": null,
+     "instance_id": null,
+     "merged_revision": null,
+     "next_action": "tick",
+     "outcome": "progressed",
+     "plan_id": "delivery-plan-1",
+     "pr_number": null,
+     "previous_descriptor_sha256": null,
+     "reason_code": null,
+     "release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "rollback": null,
+     "schema": "urn:zeus:host-delivery-tick:1",
+     "stage": "publishing",
+     "target_id": "canary-service"
+    },
+    "wrote_queue_or_lock": true
+   },
+   "own_row_lease_held": {
+    "github_calls": [
+     0,
+     0
+    ],
+    "row": {
+     "at": "2026-09-22T00:00:00+00:00",
+     "attempt": 1,
+     "generation": 1,
+     "id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "lease_until": "2026-09-22T01:01:45+00:00",
+     "owner": "fixture-other-controller",
+     "reason": "fixture",
+     "status": "running"
+    },
+    "tick": {
+     "active": null,
+     "ambiguous_effect": null,
+     "at": "2026-09-22T00:01:45+00:00",
+     "attempts": 0,
+     "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+     "blocked": {},
+     "canary": null,
+     "descriptor_sha256": null,
+     "error_type": null,
+     "head": null,
+     "instance_id": null,
+     "merged_revision": null,
+     "next_action": "tick",
+     "outcome": "controller_busy",
+     "plan_id": "delivery-plan-1",
+     "pr_number": null,
+     "previous_descriptor_sha256": null,
+     "reason_code": "controller_lease_held",
+     "release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "rollback": null,
+     "schema": "urn:zeus:host-delivery-tick:1",
+     "stage": "registered",
+     "target_id": "canary-service"
+    },
+    "wrote_queue_or_lock": false
+   },
+   "own_row_running_without_the_lock_is_claimed": {
+    "github_calls": [
+     0,
+     0
+    ],
+    "row": {
+     "at": "2026-09-22T00:00:00+00:00",
+     "attempt": 0,
+     "attempts": [
+      {
+       "at": "2026-09-22T00:01:45+00:00",
+       "attempt": 2,
+       "deferred": true,
+       "result": {
+        "stage": "publishing",
+        "status": "progressed"
+       }
+      }
+     ],
+     "generation": 2,
+     "id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "lease_until": null,
+     "owner": null,
+     "reason": "fixture",
+     "result": {
+      "stage": "publishing",
+      "status": "progressed"
+     },
+     "retry_at": "2026-09-22T00:01:45+00:00",
+     "status": "queued"
+    },
+    "tick": {
+     "active": null,
+     "ambiguous_effect": null,
+     "at": "2026-09-22T00:01:45+00:00",
+     "attempts": 0,
+     "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+     "blocked": {},
+     "canary": null,
+     "descriptor_sha256": null,
+     "error_type": null,
+     "head": null,
+     "instance_id": null,
+     "merged_revision": null,
+     "next_action": "tick",
+     "outcome": "progressed",
+     "plan_id": "delivery-plan-1",
+     "pr_number": null,
+     "previous_descriptor_sha256": null,
+     "reason_code": null,
+     "release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "rollback": null,
+     "schema": "urn:zeus:host-delivery-tick:1",
+     "stage": "publishing",
+     "target_id": "canary-service"
+    },
+    "wrote_queue_or_lock": true
+   },
+   "release_attempts_exhausted": {
+    "row": {
+     "at": "2026-09-22T00:00:00+00:00",
+     "attempt": 3,
+     "id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "reason": "fixture",
+     "status": "queued"
+    },
+    "tick": {
+     "active": null,
+     "ambiguous_effect": null,
+     "at": "2026-09-22T00:01:45+00:00",
+     "attempts": 0,
+     "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+     "blocked": {},
+     "canary": null,
+     "descriptor_sha256": null,
+     "error_type": null,
+     "head": null,
+     "instance_id": null,
+     "merged_revision": null,
+     "next_action": "tick",
+     "outcome": "controller_busy",
+     "plan_id": "delivery-plan-1",
+     "pr_number": null,
+     "previous_descriptor_sha256": null,
+     "reason_code": "release_attempts_exhausted",
+     "release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "rollback": null,
+     "schema": "urn:zeus:host-delivery-tick:1",
+     "stage": "registered",
+     "target_id": "canary-service"
+    }
+   },
+   "release_attempts_exhausted_alone": {
+    "github_calls": [
+     0,
+     0
+    ],
+    "row": {
+     "at": "2026-09-22T00:00:00+00:00",
+     "attempt": 3,
+     "id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "reason": "release attempt budget exhausted",
+     "status": "failed"
+    },
+    "tick": {
+     "active": null,
+     "ambiguous_effect": null,
+     "at": "2026-09-22T00:01:45+00:00",
+     "attempts": 0,
+     "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+     "blocked": {},
+     "canary": null,
+     "descriptor_sha256": null,
+     "error_type": null,
+     "head": null,
+     "instance_id": null,
+     "merged_revision": null,
+     "next_action": "tick",
+     "outcome": "controller_busy",
+     "plan_id": "delivery-plan-1",
+     "pr_number": null,
+     "previous_descriptor_sha256": null,
+     "reason_code": "release_queue_failed",
+     "release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "rollback": null,
+     "schema": "urn:zeus:host-delivery-tick:1",
+     "stage": "registered",
+     "target_id": "canary-service"
+    },
+    "wrote_queue_or_lock": true
+   },
+   "release_queue_active": {
+    "github_calls": [
+     0,
+     0
+    ],
+    "row": {
+     "at": "2026-09-22T00:00:00+00:00",
+     "attempt": 1,
+     "id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "reason": "fixture",
+     "status": "active"
+    },
+    "tick": {
+     "active": null,
+     "ambiguous_effect": null,
+     "at": "2026-09-22T00:01:45+00:00",
+     "attempts": 0,
+     "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+     "blocked": {},
+     "canary": null,
+     "descriptor_sha256": null,
+     "error_type": null,
+     "head": null,
+     "instance_id": null,
+     "merged_revision": null,
+     "next_action": "tick",
+     "outcome": "controller_busy",
+     "plan_id": "delivery-plan-1",
+     "pr_number": null,
+     "previous_descriptor_sha256": null,
+     "reason_code": "release_queue_active",
+     "release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "rollback": null,
+     "schema": "urn:zeus:host-delivery-tick:1",
+     "stage": "registered",
+     "target_id": "canary-service"
+    },
+    "wrote_queue_or_lock": false
+   },
+   "release_queue_blocked": {
+    "github_calls": [
+     0,
+     0
+    ],
+    "row": {
+     "at": "2026-09-22T00:00:00+00:00",
+     "attempt": 1,
+     "id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "reason": "fixture",
+     "status": "blocked"
+    },
+    "tick": {
+     "active": null,
+     "ambiguous_effect": null,
+     "at": "2026-09-22T00:01:45+00:00",
+     "attempts": 0,
+     "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+     "blocked": {},
+     "canary": null,
+     "descriptor_sha256": null,
+     "error_type": null,
+     "head": null,
+     "instance_id": null,
+     "merged_revision": null,
+     "next_action": "tick",
+     "outcome": "controller_busy",
+     "plan_id": "delivery-plan-1",
+     "pr_number": null,
+     "previous_descriptor_sha256": null,
+     "reason_code": "release_queue_blocked",
+     "release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "rollback": null,
+     "schema": "urn:zeus:host-delivery-tick:1",
+     "stage": "registered",
+     "target_id": "canary-service"
+    },
+    "wrote_queue_or_lock": false
+   },
+   "release_queue_cancelled": {
+    "github_calls": [
+     0,
+     0
+    ],
+    "row": {
+     "at": "2026-09-22T00:00:00+00:00",
+     "attempt": 1,
+     "id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "reason": "fixture",
+     "status": "cancelled"
+    },
+    "tick": {
+     "active": null,
+     "ambiguous_effect": null,
+     "at": "2026-09-22T00:01:45+00:00",
+     "attempts": 0,
+     "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+     "blocked": {},
+     "canary": null,
+     "descriptor_sha256": null,
+     "error_type": null,
+     "head": null,
+     "instance_id": null,
+     "merged_revision": null,
+     "next_action": "tick",
+     "outcome": "controller_busy",
+     "plan_id": "delivery-plan-1",
+     "pr_number": null,
+     "previous_descriptor_sha256": null,
+     "reason_code": "release_queue_cancelled",
+     "release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "rollback": null,
+     "schema": "urn:zeus:host-delivery-tick:1",
+     "stage": "registered",
+     "target_id": "canary-service"
+    },
+    "wrote_queue_or_lock": false
+   },
+   "release_queue_done": {
+    "github_calls": [
+     0,
+     0
+    ],
+    "row": {
+     "at": "2026-09-22T00:00:00+00:00",
+     "attempt": 1,
+     "id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "reason": "fixture",
+     "status": "done"
+    },
+    "tick": {
+     "active": null,
+     "ambiguous_effect": null,
+     "at": "2026-09-22T00:01:45+00:00",
+     "attempts": 0,
+     "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+     "blocked": {},
+     "canary": null,
+     "descriptor_sha256": null,
+     "error_type": null,
+     "head": null,
+     "instance_id": null,
+     "merged_revision": null,
+     "next_action": "tick",
+     "outcome": "controller_busy",
+     "plan_id": "delivery-plan-1",
+     "pr_number": null,
+     "previous_descriptor_sha256": null,
+     "reason_code": "release_queue_done",
+     "release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "rollback": null,
+     "schema": "urn:zeus:host-delivery-tick:1",
+     "stage": "registered",
+     "target_id": "canary-service"
+    },
+    "wrote_queue_or_lock": false
+   },
+   "release_queue_failed": {
+    "github_calls": [
+     0,
+     0
+    ],
+    "row": {
+     "at": "2026-09-22T00:00:00+00:00",
+     "attempt": 1,
+     "id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "reason": "fixture",
+     "status": "failed"
+    },
+    "tick": {
+     "active": null,
+     "ambiguous_effect": null,
+     "at": "2026-09-22T00:01:45+00:00",
+     "attempts": 0,
+     "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+     "blocked": {},
+     "canary": null,
+     "descriptor_sha256": null,
+     "error_type": null,
+     "head": null,
+     "instance_id": null,
+     "merged_revision": null,
+     "next_action": "tick",
+     "outcome": "controller_busy",
+     "plan_id": "delivery-plan-1",
+     "pr_number": null,
+     "previous_descriptor_sha256": null,
+     "reason_code": "release_queue_failed",
+     "release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "rollback": null,
+     "schema": "urn:zeus:host-delivery-tick:1",
+     "stage": "registered",
+     "target_id": "canary-service"
+    },
+    "wrote_queue_or_lock": false
+   },
+   "release_queue_rolled_back": {
+    "github_calls": [
+     0,
+     0
+    ],
+    "row": {
+     "at": "2026-09-22T00:00:00+00:00",
+     "attempt": 1,
+     "id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "reason": "fixture",
+     "status": "rolled_back"
+    },
+    "tick": {
+     "active": null,
+     "ambiguous_effect": null,
+     "at": "2026-09-22T00:01:45+00:00",
+     "attempts": 0,
+     "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+     "blocked": {},
+     "canary": null,
+     "descriptor_sha256": null,
+     "error_type": null,
+     "head": null,
+     "instance_id": null,
+     "merged_revision": null,
+     "next_action": "tick",
+     "outcome": "controller_busy",
+     "plan_id": "delivery-plan-1",
+     "pr_number": null,
+     "previous_descriptor_sha256": null,
+     "reason_code": "release_queue_rolled_back",
+     "release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "rollback": null,
+     "schema": "urn:zeus:host-delivery-tick:1",
+     "stage": "registered",
+     "target_id": "canary-service"
+    },
+    "wrote_queue_or_lock": false
+   },
+   "release_retry_not_due": {
+    "github_calls": [
+     0,
+     0
+    ],
+    "row": {
+     "at": "2026-09-22T00:00:00+00:00",
+     "attempt": 1,
+     "id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "reason": "fixture",
+     "retry_at": "2026-09-22T01:01:45+00:00",
+     "status": "retry"
+    },
+    "tick": {
+     "active": null,
+     "ambiguous_effect": null,
+     "at": "2026-09-22T00:01:45+00:00",
+     "attempts": 0,
+     "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+     "blocked": {},
+     "canary": null,
+     "descriptor_sha256": null,
+     "error_type": null,
+     "head": null,
+     "instance_id": null,
+     "merged_revision": null,
+     "next_action": "tick",
+     "outcome": "controller_busy",
+     "plan_id": "delivery-plan-1",
+     "pr_number": null,
+     "previous_descriptor_sha256": null,
+     "reason_code": "release_retry_not_due",
+     "release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "rollback": null,
+     "schema": "urn:zeus:host-delivery-tick:1",
+     "stage": "registered",
+     "target_id": "canary-service"
+    },
+    "wrote_queue_or_lock": false
+   },
+   "retry_due_is_claimable": {
+    "github_calls": [
+     0,
+     0
+    ],
+    "row": {
+     "at": "2026-09-22T00:00:00+00:00",
+     "attempt": 0,
+     "attempts": [
+      {
+       "at": "2026-09-22T00:01:45+00:00",
+       "attempt": 2,
+       "deferred": true,
+       "result": {
+        "stage": "publishing",
+        "status": "progressed"
+       }
+      }
+     ],
+     "generation": 1,
+     "id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "lease_until": null,
+     "owner": null,
+     "reason": "fixture",
+     "result": {
+      "stage": "publishing",
+      "status": "progressed"
+     },
+     "retry_at": "2026-09-22T00:01:45+00:00",
+     "status": "queued"
+    },
+    "tick": {
+     "active": null,
+     "ambiguous_effect": null,
+     "at": "2026-09-22T00:01:45+00:00",
+     "attempts": 0,
+     "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+     "blocked": {},
+     "canary": null,
+     "descriptor_sha256": null,
+     "error_type": null,
+     "head": null,
+     "instance_id": null,
+     "merged_revision": null,
+     "next_action": "tick",
+     "outcome": "progressed",
+     "plan_id": "delivery-plan-1",
+     "pr_number": null,
+     "previous_descriptor_sha256": null,
+     "reason_code": null,
+     "release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "rollback": null,
+     "schema": "urn:zeus:host-delivery-tick:1",
+     "stage": "publishing",
+     "target_id": "canary-service"
+    },
+    "wrote_queue_or_lock": true
+   }
+  }
+ },
+ "targets": {
+  "changed_entry": {
+   "rows": [
+    {
+     "id": "canary-service",
+     "kind": "process",
+     "registered_at": "2026-09-22T00:00:00+00:00",
+     "root": "/opt/zeus-fixture/runtime",
+     "service": "zeus-canary-service-2",
+     "state_dir": "/var/lib/zeus-fixture/state-canary-service",
+     "target_id": "canary-service",
+     "updated_at": "2026-09-22T00:00:20+00:00"
+    }
+   ],
+   "store": "712f0341460b906b66066a3ccbb521503a768c40b5a0ee8f3991ef6c895163ba",
+   "value": {
+    "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+    "registered": true,
+    "targets": [
+     "canary-service"
+    ]
+   },
+   "wrote": true
+  },
+  "identical_again": {
+   "rows": [
+    {
+     "id": "canary-service",
+     "kind": "process",
+     "registered_at": "2026-09-22T00:00:00+00:00",
+     "root": "/opt/zeus-fixture/runtime",
+     "service": "zeus-canary-service",
+     "state_dir": "/var/lib/zeus-fixture/state-canary-service",
+     "target_id": "canary-service",
+     "updated_at": "2026-09-22T00:00:10+00:00"
+    }
+   ],
+   "store": "11c8f4ccf9bbaef366b7367b353280121d6de96c1115a3d7771c91ad34e8d96e",
+   "value": {
+    "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+    "registered": true,
+    "targets": [
+     "canary-service"
+    ]
+   },
+   "wrote": true
+  },
+  "plan_names_unregistered_target": {
+   "field": "target_id",
+   "message": "host delivery refused: target_unregistered (target_id)",
+   "plans": [],
+   "reason_code": "target_unregistered",
+   "refused": "DeliveryRefused",
+   "store": "508e7f2304f6932510790a10925112ec0b6c2e78b43676f1de7c83b1bd57ca54",
+   "wrote": false
+  },
+  "process_and_managed": {
+   "rows": [
+    "canary-service:process",
+    "managed-host:managed_fleet"
+   ],
+   "store": "c479f4860cb1465e3a6d66095385780796800afd77b27426f479cf85de6bf503",
+   "value": {
+    "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+    "registered": true,
+    "targets": [
+     "canary-service",
+     "managed-host"
+    ]
+   },
+   "wrote": true
+  },
+  "refusals": {
+   "bad_service": {
+    "field": "targets[0].service",
+    "message": "host delivery refused: target_invalid (targets[0].service)",
+    "reason_code": "target_invalid",
+    "refused": "DeliveryRefused",
+    "store": "c479f4860cb1465e3a6d66095385780796800afd77b27426f479cf85de6bf503",
+    "wrote": false
+   },
+   "bad_target_id": {
+    "field": "targets[0].target_id",
+    "message": "host delivery refused: target_invalid (targets[0].target_id)",
+    "reason_code": "target_invalid",
+    "refused": "DeliveryRefused",
+    "store": "c479f4860cb1465e3a6d66095385780796800afd77b27426f479cf85de6bf503",
+    "wrote": false
+   },
+   "blank_root": {
+    "field": "targets[0].root",
+    "message": "host delivery refused: target_invalid (targets[0].root)",
+    "reason_code": "target_invalid",
+    "refused": "DeliveryRefused",
+    "store": "c479f4860cb1465e3a6d66095385780796800afd77b27426f479cf85de6bf503",
+    "wrote": false
+   },
+   "duplicate_ids": {
+    "field": "targets[].target_id",
+    "message": "host delivery refused: registry_duplicate (targets[].target_id)",
+    "reason_code": "registry_duplicate",
+    "refused": "DeliveryRefused",
+    "store": "c479f4860cb1465e3a6d66095385780796800afd77b27426f479cf85de6bf503",
+    "wrote": false
+   },
+   "extra_root_field": {
+    "field": "root",
+    "message": "host delivery refused: plan_fields (root)",
+    "reason_code": "plan_fields",
+    "refused": "DeliveryRefused",
+    "store": "c479f4860cb1465e3a6d66095385780796800afd77b27426f479cf85de6bf503",
+    "wrote": false
+   },
+   "extra_target_field": {
+    "field": "targets[0]",
+    "message": "host delivery refused: plan_fields (targets[0])",
+    "reason_code": "plan_fields",
+    "refused": "DeliveryRefused",
+    "store": "c479f4860cb1465e3a6d66095385780796800afd77b27426f479cf85de6bf503",
+    "wrote": false
+   },
+   "kind_docker": {
+    "field": "targets[0].kind",
+    "message": "host delivery refused: target_invalid (targets[0].kind)",
+    "reason_code": "target_invalid",
+    "refused": "DeliveryRefused",
+    "store": "c479f4860cb1465e3a6d66095385780796800afd77b27426f479cf85de6bf503",
+    "wrote": false
+   },
+   "long_state_dir": {
+    "field": "targets[0].state_dir",
+    "message": "host delivery refused: target_invalid (targets[0].state_dir)",
+    "reason_code": "target_invalid",
+    "refused": "DeliveryRefused",
+    "store": "c479f4860cb1465e3a6d66095385780796800afd77b27426f479cf85de6bf503",
+    "wrote": false
+   },
+   "managed_bad_lock": {
+    "field": "targets[0].environment_lock",
+    "message": "host delivery refused: target_invalid (targets[0].environment_lock)",
+    "reason_code": "target_invalid",
+    "refused": "DeliveryRefused",
+    "store": "c479f4860cb1465e3a6d66095385780796800afd77b27426f479cf85de6bf503",
+    "wrote": false
+   },
+   "managed_missing_lock": {
+    "field": "targets[0]",
+    "message": "host delivery refused: plan_fields (targets[0])",
+    "reason_code": "plan_fields",
+    "refused": "DeliveryRefused",
+    "store": "c479f4860cb1465e3a6d66095385780796800afd77b27426f479cf85de6bf503",
+    "wrote": false
+   },
+   "managed_overlap": {
+    "field": "targets[0].root",
+    "message": "host delivery refused: target_overlap (targets[0].root)",
+    "reason_code": "target_overlap",
+    "refused": "DeliveryRefused",
+    "store": "c479f4860cb1465e3a6d66095385780796800afd77b27426f479cf85de6bf503",
+    "wrote": false
+   },
+   "managed_relative_root": {
+    "field": "targets[0].root",
+    "message": "host delivery refused: target_invalid (targets[0].root)",
+    "reason_code": "target_invalid",
+    "refused": "DeliveryRefused",
+    "store": "c479f4860cb1465e3a6d66095385780796800afd77b27426f479cf85de6bf503",
+    "wrote": false
+   },
+   "managed_systemd_foreign_unit": {
+    "field": "targets[0].service",
+    "message": "host delivery refused: target_unit_not_allowed (targets[0].service)",
+    "reason_code": "target_unit_not_allowed",
+    "refused": "DeliveryRefused",
+    "store": "c479f4860cb1465e3a6d66095385780796800afd77b27426f479cf85de6bf503",
+    "wrote": false
+   },
+   "missing_target_field": {
+    "field": "targets[0]",
+    "message": "host delivery refused: plan_fields (targets[0])",
+    "reason_code": "plan_fields",
+    "refused": "DeliveryRefused",
+    "store": "c479f4860cb1465e3a6d66095385780796800afd77b27426f479cf85de6bf503",
+    "wrote": false
+   },
+   "missing_targets": {
+    "field": "root",
+    "message": "host delivery refused: plan_fields (root)",
+    "reason_code": "plan_fields",
+    "refused": "DeliveryRefused",
+    "store": "c479f4860cb1465e3a6d66095385780796800afd77b27426f479cf85de6bf503",
+    "wrote": false
+   },
+   "no_targets": {
+    "field": "targets",
+    "message": "host delivery refused: registry_invalid (targets)",
+    "reason_code": "registry_invalid",
+    "refused": "DeliveryRefused",
+    "store": "c479f4860cb1465e3a6d66095385780796800afd77b27426f479cf85de6bf503",
+    "wrote": false
+   },
+   "not_a_document": {
+    "field": null,
+    "message": "host delivery refused: registry_schema",
+    "reason_code": "registry_schema",
+    "refused": "DeliveryRefused",
+    "store": "c479f4860cb1465e3a6d66095385780796800afd77b27426f479cf85de6bf503",
+    "wrote": false
+   },
+   "schema": {
+    "field": null,
+    "message": "host delivery refused: registry_schema",
+    "reason_code": "registry_schema",
+    "refused": "DeliveryRefused",
+    "store": "c479f4860cb1465e3a6d66095385780796800afd77b27426f479cf85de6bf503",
+    "wrote": false
+   },
+   "target_not_a_mapping": {
+    "field": "targets[0]",
+    "message": "host delivery refused: plan_invalid (targets[0])",
+    "reason_code": "plan_invalid",
+    "refused": "DeliveryRefused",
+    "store": "c479f4860cb1465e3a6d66095385780796800afd77b27426f479cf85de6bf503",
+    "wrote": false
+   },
+   "too_many_targets": {
+    "field": "targets",
+    "message": "host delivery refused: registry_invalid (targets)",
+    "reason_code": "registry_invalid",
+    "refused": "DeliveryRefused",
+    "store": "c479f4860cb1465e3a6d66095385780796800afd77b27426f479cf85de6bf503",
+    "wrote": false
+   }
+  },
+  "valid": {
+   "rows": [
+    {
+     "id": "canary-service",
+     "kind": "process",
+     "registered_at": "2026-09-22T00:00:00+00:00",
+     "root": "/opt/zeus-fixture/runtime",
+     "service": "zeus-canary-service",
+     "state_dir": "/var/lib/zeus-fixture/state-canary-service",
+     "target_id": "canary-service",
+     "updated_at": "2026-09-22T00:00:00+00:00"
+    }
+   ],
+   "store": "bfd02ad5ff4d2d9a7fa838082ede11310b28f101aecef5444dd175b0a78539bf",
+   "value": {
+    "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+    "registered": true,
+    "targets": [
+     "canary-service"
+    ]
+   },
+   "wrote": true
+  }
+ }
+}
