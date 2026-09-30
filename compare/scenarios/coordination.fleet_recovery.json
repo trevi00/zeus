@@ -2,8 +2,7 @@
  "family": "coordination.fleet_recovery",
  "description": "S5 Fleet owner recovery of one interrupted job (RESEARCH-S5 D7, TRACE C1): strict evidence refusals; missing observation, not paused, configuration/owner/lane/operation mismatch in order; proof refusals (schema, task not cancelled, live lease, running container, container unbound, open invocation, unbound/open slot, proof changed between reads); failed/interrupted_unknown with a receipt; identical replay without observing; conflicting evidence; recovery view; the freed lane admits the next job. Hand-built evidence/proof documents (the S7 proof collector is not in this family)",
  "reference_driver": "drivers/reference/s5_fleet_recovery.py",
- "target_driver": null,
+ "target_driver": "drivers/target/s5_fleet_recovery.py",
  "golden": "goldens/reference/coordination.fleet_recovery.json",
- "slice": "S5",
- "target_status": "pending: Fleet recovery is not yet moved"
+ "slice": "S5"
 }

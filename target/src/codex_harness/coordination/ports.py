@@ -15,4 +15,7 @@ from __future__ import annotations
 OWNED_BUCKETS = ("tasks", "decisions_pending", "outbox", "events", "execution_fences", "execution_notices",
                  "execution_notice_errors", "execution_time_events", "workflow_inbox", "execution_rejections",
                  "execution_failures",
-                 "breakers", "breaker_events", "breaker_notices", "breaker_policies", "sessions")
+                 "breakers", "breaker_events", "breaker_notices", "breaker_policies", "sessions",
+                 # S5 Fleet split (DESIGN-s5 §F): the four Fleet objects are this context's writers.
+                 "fleet_registry", "fleet_control", "fleet_jobs", "fleet_budget_grants", "fleet_delivery",
+                 "fleet_units", "fleet_recovery_receipts", "fleet_relocations", "fleet_host_migrations")

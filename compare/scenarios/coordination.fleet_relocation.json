@@ -2,8 +2,7 @@
  "family": "coordination.fleet_relocation",
  "description": "S5 Fleet relocate/relocations/migrate_host (RESEARCH-S5 D7, TRACE C1): request refusals, missing observation, not paused, not idle, CAS digest and fleet mismatch, source mismatch and target in use, every proof refusal incl. a proof changed between the reads, the committed move with its receipt and new digest, identical replay without observing, conflicting request, the relocations view, alias resolution keeping a frozen job's path conflict after the move; host migration request refusals, incomplete lanes, source-binding mismatch, identity and schema proof refusals, the committed migration, cached replay and conflict. Hand-built request/proof documents (the S7 collectors are not in this family)",
  "reference_driver": "drivers/reference/s5_relocation.py",
- "target_driver": null,
+ "target_driver": "drivers/target/s5_relocation.py",
  "golden": "goldens/reference/coordination.fleet_relocation.json",
- "slice": "S5",
- "target_status": "pending: Fleet relocation is not yet moved"
+ "slice": "S5"
 }

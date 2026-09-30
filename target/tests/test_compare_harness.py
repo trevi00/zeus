@@ -77,8 +77,11 @@ S5_FAMILIES = {"coordination.workflow_handle", "coordination.outbox_relay", "coo
                "coordination.operation", "coordination.fleet", "coordination.fleet_recovery",
                "coordination.fleet_runner", "coordination.execution_recovery", "coordination.fleet_relocation",
                "effects.admission_unit", "effects.admission_unit.pg"}
+S5_IMPLEMENTED = {"coordination.fleet", "coordination.fleet_recovery", "coordination.fleet_runner",
+                  "coordination.fleet_relocation"}
 IMPLEMENTED = {**{f: "S1" for f in S1_FAMILIES}, **{f: "S2" for f in S2_FAMILIES},
-               **{f: "S3" for f in S3_IMPLEMENTED}, **{f: "S4" for f in S4_IMPLEMENTED}}
+               **{f: "S3" for f in S3_IMPLEMENTED}, **{f: "S4" for f in S4_IMPLEMENTED},
+               **{f: "S5" for f in S5_IMPLEMENTED}}
 
 
 def test_every_scenario_has_a_reference_golden_and_only_implemented_slices_have_a_target():
