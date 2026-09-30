@@ -55,7 +55,8 @@ S1_OWNERS = {"kernel", "storage", "host_os"}
 S2_OWNERS = {"routing", "context", "knowledge"}
 S3_OWNERS = {"execution", "credentials"}  # S3: the container/credential rows only (execution is shared with S4)
 S4_EARLY_OWNERS = {"coordination", "intake", "research"}  # S4 Option A: moved-ahead owner operations only
-IMPLEMENTED_OWNERS = S1_OWNERS | S2_OWNERS | S3_OWNERS | S4_EARLY_OWNERS  # slices implemented so far: S1, S2, S3
+S6_EARLY_OWNERS = {"delivery"}  # S6: the delivery domain moved ahead (DESIGN-s6 §2; S7 owns the rest)
+IMPLEMENTED_OWNERS = S1_OWNERS | S2_OWNERS | S3_OWNERS | S4_EARLY_OWNERS | S6_EARLY_OWNERS
 
 
 def test_only_implemented_slices_claim_implemented_and_nothing_is_verified_early(table):
