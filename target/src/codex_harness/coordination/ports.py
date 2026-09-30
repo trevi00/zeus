@@ -21,4 +21,6 @@ OWNED_BUCKETS = ("tasks", "decisions_pending", "outbox", "events", "execution_fe
                  "fleet_units", "fleet_recovery_receipts", "fleet_relocations", "fleet_host_migrations",
                  # S5 MessageHandler and operation finalization (DESIGN-s5 §M); the ledger owner is coordination.
                  "rebase_requests", "research_topics", "research_discoveries", "operation_dispositions",
-                 "operation_message_dispositions")
+                 "operation_message_dispositions",
+                 # S5 outbox relay (DESIGN-s5 §O)
+                 "outbox_attempts", "outbox_control", "outbox_delivery", "outbox_quarantine", "outbox_routes")

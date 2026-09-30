@@ -78,7 +78,8 @@ S5_FAMILIES = {"coordination.workflow_handle", "coordination.outbox_relay", "coo
                "coordination.fleet_runner", "coordination.execution_recovery", "coordination.fleet_relocation",
                "effects.admission_unit", "effects.admission_unit.pg"}
 S5_IMPLEMENTED = {"coordination.fleet", "coordination.fleet_recovery", "coordination.fleet_runner",
-                  "coordination.fleet_relocation", "coordination.workflow_handle"}
+                  "coordination.fleet_relocation", "coordination.workflow_handle",
+                  "coordination.outbox_relay"}
 IMPLEMENTED = {**{f: "S1" for f in S1_FAMILIES}, **{f: "S2" for f in S2_FAMILIES},
                **{f: "S3" for f in S3_IMPLEMENTED}, **{f: "S4" for f in S4_IMPLEMENTED},
                **{f: "S5" for f in S5_IMPLEMENTED}}

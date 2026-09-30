@@ -2,8 +2,7 @@
  "family": "coordination.outbox_relay",
  "description": "S5 transactional outbox relay (RESEARCH-S5 D2, check (b)): global batch with cursor and health, poison quarantine once, legacy sent, delivered skip, delivery/transport-changed retries and an unexpected error re-raised after commit, changed content under an attempted identity, scoped batches (unfinished/remaining/complete), route pins (held/refused/published/unavailable/conflict), transport bindings, argument refusals; fixture bus validating with the side's own schema",
  "reference_driver": "drivers/reference/s5_relay.py",
- "target_driver": null,
+ "target_driver": "drivers/target/s5_relay.py",
  "golden": "goldens/reference/coordination.outbox_relay.json",
- "slice": "S5",
- "target_status": "pending: the S5 relay is not yet moved"
+ "slice": "S5"
 }
