@@ -36,6 +36,7 @@ import argparse
 import hashlib
 import json
 import os
+import re
 import subprocess
 import sys
 import time
@@ -47,6 +48,7 @@ import codex_harness
 from codex_harness.adapters.commands import no_console_kwargs, run_process
 from codex_harness.adapters.host_delivery import (
     DESCRIPTOR_FILE,
+    MAX_STATE_BYTES,
     PAUSE_FILE,
     RECEIPT_FILE,
     STATE_FILE,
@@ -74,6 +76,7 @@ from codex_harness.domain.host_delivery import (
     validate_descriptor,
     validate_targets,
 )
+from codex_harness.domain.host_migration_evidence import SKEW_USEC, usec_of
 from codex_harness.domain.managed_runtime import (
     HEARTBEAT_FILE,
     HEARTBEAT_MAX_AGE,
@@ -83,6 +86,7 @@ from codex_harness.domain.managed_runtime import (
     MATERIALIZED_PATHS,
     SEAL_FILES,
     STAGE_PREFIX,
+    WORK_BUSY,
     WORK_IDLE,
     WORK_UNKNOWN,
     WORKLOAD_FIXTURE,
@@ -101,6 +105,7 @@ from codex_harness.domain.managed_runtime import (
     validate_manifest,
     work_verdict,
 )
+from codex_harness.domain.model import digest
 
 MODULE = "codex_harness.adapters.managed_runtime"
 # The owner registry entry of the target, written by the controller under the target guard for the
@@ -352,9 +357,39 @@ class ManagedFleetTarget(ProcessHostTarget):
             raise DeliveryRefused("runtime_image_mismatch", "worker_image")
         return {"root": Path(descriptor["root"]), "environment": environment, "manifest": manifest}
 
+    # --- the owner target snapshot the launcher and `supervise` re-validate -----------------------
+    @staticmethod
+    def _owner_target_bytes(target: dict) -> bytes:
+        """The exact bytes `_write_json` gives the owner registry entry of this target."""
+        return json.dumps(owner_target(target), sort_keys=True).encode("utf-8")
+
+    def _owner_target_on_disk(self, target: dict) -> bytes | None:
+        """The bytes of the snapshot as a regular file (never through a link), or None."""
+        path = self.path(target, TARGET_FILE)
+        try:
+            if path.is_symlink() or not path.is_file() or path.stat().st_size > MAX_STATE_BYTES:
+                return None
+            return path.read_bytes()
+        except OSError:
+            return None
+
+    def _target_file_matches(self, target: dict) -> bool:
+        """INV-HOST-DELIVERY-MAINTENANCE-001: the snapshot on the target is byte-identical to the entry."""
+        return self._owner_target_on_disk(target) == self._owner_target_bytes(target)
+
+    def _write_owner_target(self, target: dict) -> None:
+        """Publish the owner target snapshot for the launcher, without touching an identical one.
+
+        A byte-identical snapshot is left exactly as it is - no rewrite, no new inode, no touched mtime -
+        because its provenance is observed later (INV-HOST-DELIVERY-MAINTENANCE-001, S2M-18). An absent or
+        differing one is replaced atomically as before. No mtime is ever edited or backdated here."""
+        if self._target_file_matches(target):
+            return
+        _write_json(self.path(target, TARGET_FILE), owner_target(target))
+
     def _launch(self, target: dict, descriptor: dict, context: dict) -> dict:
         """Exactly one trusted launcher, and the launch record that identifies it, under the guard."""
-        _write_json(self.path(target, TARGET_FILE), owner_target(target))
+        self._write_owner_target(target)
         argv = [target["python"], "-m", MODULE, "launch", "--state-dir", str(self.state_dir(target)),
                 "--descriptor-sha256", descriptor_digest(descriptor), "--workload", self.workload]
         process = subprocess.Popen(argv, stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL,
@@ -518,9 +553,12 @@ class SystemdManagedFleetTarget(ManagedFleetTarget):
 
     kind = KIND_MANAGED_SYSTEMD
 
-    def __init__(self, *, runner=run_process, timeout: int = 60, **kwargs):
+    def __init__(self, *, runner=run_process, timeout: int = 60, process_reader=None, **kwargs):
         super().__init__(**kwargs)
         self.runner, self.timeout = runner, timeout
+        # `process_reader(pid)` answers in the `HostReader.process` shape (INV-HOST-MIGRATION-001's accepted
+        # `/proc` reader); the default is built on first use, so constructing this target reads nothing.
+        self.process_reader = process_reader
 
     @staticmethod
     def unit(target: dict) -> str:
@@ -550,7 +588,7 @@ class SystemdManagedFleetTarget(ManagedFleetTarget):
 
     def _launch(self, target: dict, descriptor: dict, context: dict) -> dict:
         """The launch request, then ONE `systemctl start` of the owner-fixed unit, under the guard."""
-        _write_json(self.path(target, TARGET_FILE), owner_target(target))
+        self._write_owner_target(target)
         request = validate_launch_request({
             "schema": LAUNCH_REQUEST_SCHEMA, "target_id": target["target_id"],
             "descriptor_sha256": descriptor_digest(descriptor),
@@ -568,6 +606,215 @@ class SystemdManagedFleetTarget(ManagedFleetTarget):
                   "manifest_sha256": request["manifest_sha256"]}
         _write_json(self.path(target, STATE_FILE), record)
         return {"started": True, "pid": record["pid"], "launch": record}
+
+    # --- the managed generation observation (INV-HOST-DELIVERY-MAINTENANCE-001) ----------------------
+    def generation_observation(self, target: dict) -> dict:
+        """What this target's executing generation IS right now, as bounded safe facts. Read only.
+
+        No lock is taken and nothing is written or created: the files are read bounded, the unit with ONE
+        additional `systemctl show` of fixed properties, the two processes through the accepted `/proc`
+        reader. A fact that cannot be observed is None (or `unknown`), never a guess, and this never
+        raises for one. Paths, the raw control group, environment file names and argv never leave here:
+        they are hashed, counted or compared in memory. The coordinator's pure policy
+        (`classify_restart`, `new_generation_refusal`) decides what the facts permit.
+        """
+        receipt_document = self.receipt(target)
+        receipt = receipt_document if isinstance(receipt_document, dict) else None
+        launch_document = self.launch_record(target)
+        launch = launch_document if isinstance(launch_document, dict) else None
+        try:
+            request = validate_launch_request(_read_json(self.path(target, LAUNCH_REQUEST_FILE)))
+        except DeliveryRefused:
+            request = None
+        try:
+            running = self._liveness(target, receipt)
+        except Exception:
+            running = None
+        receipt_present = os.path.lexists(self.path(target, RECEIPT_FILE))
+        unit, control_group, unit_read = self._unit_observation(target)
+        supervisor, entry = self._process_observation(unit, control_group, unit_read, receipt, receipt_present)
+        return {"schema": GENERATION_OBSERVATION_SCHEMA, "observed_at": _utcnow(),
+                "running": running if running is None else bool(running),
+                "receipt": receipt, "receipt_present": receipt_present,
+                "launch": launch, "launch_present": os.path.lexists(self.path(target, STATE_FILE)),
+                "launch_sha256": None if launch is None else digest(launch),
+                "launch_request_sha256": None if request is None else digest(request),
+                "launch_request_requested_at": None if request is None else _aware_text(request["requested_at"]),
+                "target_file_matches": self._target_file_matches(target),
+                "control_user_matches": _control_user_matches(target),
+                "unit": unit, "supervisor": supervisor, "entry": entry, "work": self._work_observation(target)}
+
+    def _unit_observation(self, target: dict) -> tuple:
+        """`(facts, raw control group, read)`: the raw group is for in-memory comparison only. A failed
+        read leaves every fact None and `read` False."""
+        facts = dict.fromkeys(("active_state", "invocation_id", "main_pid", "exec_main_pid",
+                               "need_daemon_reload", "control_group_sha256", "environment_files_sha256",
+                               "drop_in_count"))
+        try:
+            argv = ["systemctl", "show", self.unit(target)]
+            for name in GENERATION_UNIT_PROPERTIES:
+                argv += ["-p", name]
+            result = self.runner(argv, timeout=self.timeout)
+            text = result.stdout.decode("utf-8") if isinstance(result.stdout, bytes) else result.stdout
+        except Exception:
+            return facts, None, False
+        if result.returncode or not isinstance(text, str) or len(text) > MAX_UNIT_SHOW_CHARS:
+            return facts, None, False
+        values: dict = {}
+        for line in text.splitlines():
+            key, separator, value = line.partition("=")
+            if separator and key in GENERATION_UNIT_PROPERTIES:
+                values.setdefault(key, []).append(value)
+        single = {key: rows[0] for key, rows in values.items() if len(rows) == 1}
+        state = single.get("ActiveState")
+        invocation = single.get("InvocationID")
+        group = single.get("ControlGroup")
+        group = group if isinstance(group, str) and group.startswith("/") else None
+        reload = single.get("NeedDaemonReload")
+        facts.update({
+            "active_state": state if isinstance(state, str) and UNIT_STATE.fullmatch(state) else None,
+            "invocation_id": invocation if isinstance(invocation, str) and INVOCATION.fullmatch(invocation) else None,
+            "main_pid": _positive_pid(single.get("MainPID")),
+            "exec_main_pid": _positive_pid(single.get("ExecMainPID")),
+            "need_daemon_reload": {"yes": True, "no": False}.get(reload) if isinstance(reload, str) else None,
+            "control_group_sha256": None if group is None else _sha256_text(group),
+            # Several `EnvironmentFiles=` lines are one ordered list; only its digest is kept.
+            "environment_files_sha256": _sha256_text("\n".join(values.get("EnvironmentFiles", []))),
+            "drop_in_count": (len(single["DropInPaths"].split()) if "DropInPaths" in single
+                              else 0 if "DropInPaths" not in values else None)})
+        return facts, group, True
+
+    def _read_process(self, pid: int) -> dict:
+        if self.process_reader is None:
+            # Lazy: the accepted reader's module imports this one, so it cannot be imported at load time.
+            from codex_harness.adapters.host_migration_evidence import (
+                HostReader,
+                boottime_offset_usec,
+            )
+
+            reader = HostReader()
+            self.process_reader = lambda value: reader.process(value, boottime_offset_usec())
+        return self.process_reader(pid)
+
+    def _process(self, pid) -> dict | None:
+        """One process identity in the `HostReader.process` shape, or None when it cannot be read."""
+        if pid is None:
+            return None
+        try:
+            answer = self._read_process(pid)
+        except Exception:
+            return {"pid": pid, "state": "unknown"}
+        return answer if isinstance(answer, dict) else {"pid": pid, "state": "unknown"}
+
+    def _process_observation(self, unit: dict, control_group, unit_read: bool, receipt,
+                             receipt_present: bool) -> tuple:
+        """The supervisor (the unit's main process) and the entry (the pid its own receipt names). No pid
+        to read is `absent` only when its source was read and names none: a unit without a main process,
+        or no receipt file at all."""
+        main_pid = unit["main_pid"]
+        supervisor_process = self._process(main_pid)
+        supervisor = {"pid": main_pid, "state": _process_state(supervisor_process, known=unit_read),
+                      "start_ticks": _start_ticks(supervisor_process),
+                      "is_main_pid": (None if main_pid is None or unit["exec_main_pid"] is None
+                                      else main_pid == unit["exec_main_pid"])}
+        raw_pid = receipt.get("pid") if receipt is not None else None
+        entry_pid = raw_pid if type(raw_pid) is int and raw_pid > 0 else None
+        entry_process = self._process(entry_pid)
+        present = entry_process is not None and entry_process.get("state") == "present"
+        ppid, cgroup = (entry_process.get("ppid"), entry_process.get("cgroup")) if present else (None, None)
+        entry = {"pid": entry_pid, "state": _process_state(entry_process, known=not receipt_present),
+                 "start_ticks": _start_ticks(entry_process),
+                 "parent_is_supervisor": (None if type(ppid) is not int or main_pid is None
+                                          else ppid == main_pid),
+                 "in_unit_cgroup": (None if not isinstance(cgroup, str) or control_group is None
+                                    else cgroup == control_group),
+                 "started_before_receipt": _started_before(entry_process if present else None, receipt)}
+        return supervisor, entry
+
+    def _work_observation(self, target: dict) -> dict:
+        """The instance's own heartbeat verdict, projected to its four safe facts."""
+        try:
+            verdict = self.work(target, require_paused=False)
+        except Exception:
+            verdict = {}
+        state = verdict.get("state")
+        code = verdict.get("reason_code")
+        return {"state": state if state in (WORK_IDLE, WORK_BUSY, WORK_UNKNOWN) else WORK_UNKNOWN,
+                "reason_code": code if isinstance(code, str) and REASON_CODE.fullmatch(code) else None,
+                "active": verdict.get("active") if type(verdict.get("active")) is int else None,
+                "unresolved": verdict.get("unresolved") if type(verdict.get("unresolved")) is int else None}
+
+
+# The observation of INV-HOST-DELIVERY-MAINTENANCE-001 (the literal the domain validator checks), and the one
+# additional `systemctl show` it reads. `EnvironmentFiles` may span several lines.
+GENERATION_OBSERVATION_SCHEMA = "urn:zeus:managed-generation-observation:1"
+GENERATION_UNIT_PROPERTIES = ("ActiveState", "MainPID", "ExecMainPID", "InvocationID", "NeedDaemonReload",
+                              "ControlGroup", "EnvironmentFiles", "DropInPaths")
+MAX_UNIT_SHOW_CHARS = 256 * 1024
+UNIT_STATE = re.compile(r"^[a-z][a-z-]{0,31}$")
+INVOCATION = re.compile(r"^[0-9a-f]{32}$")
+REASON_CODE = re.compile(r"^[a-z][a-z0-9_]{0,63}$")
+PROCESS_STATES = ("present", "absent", "replaced", "unknown")
+
+
+def _aware_text(value) -> str | None:
+    """An aware ISO timestamp of at most 64 characters as written, or None (an unreadable fact)."""
+    if type(value) is not str or not 0 < len(value) <= 64:
+        return None
+    try:
+        moment = datetime.fromisoformat(value)
+    except ValueError:
+        return None
+    return value if moment.tzinfo is not None else None
+
+
+def _sha256_text(value: str) -> str:
+    return hashlib.sha256(value.encode("utf-8")).hexdigest()
+
+
+def _positive_pid(value) -> int | None:
+    """`MainPID`/`ExecMainPID` as a pid; `0` (no process) and anything unparseable are None."""
+    if not (isinstance(value, str) and value.isascii() and value.isdigit()):
+        return None
+    number = int(value)
+    return number if 0 < number < 2 ** 31 else None
+
+
+def _process_state(process, *, known: bool) -> str:
+    """No pid to read is `absent` when its source proved there is none (`known`), else `unknown`;
+    otherwise the reader's own state."""
+    if process is None:
+        return "absent" if known else "unknown"
+    state = process.get("state")
+    return state if state in PROCESS_STATES else "unknown"
+
+
+def _start_ticks(process) -> int | None:
+    if process is None or process.get("state") != "present":
+        return None
+    ticks = process.get("start_ticks")
+    return ticks if type(ticks) is int else None
+
+
+def _started_before(process, receipt) -> bool | None:
+    """Whether this process started no later than the receipt it is named by (within the clock skew):
+    a reused pid - a process that started after the receipt was written - answers False."""
+    started = usec_of(receipt.get("started_at")) if receipt is not None else None
+    start_usec = process.get("start_usec") if process is not None else None
+    if started is None or type(start_usec) is not int:
+        return None
+    # `start_usec` is CLOCK_MONOTONIC; its wall time is now minus the monotonic time elapsed since.
+    wall_now_usec = time.time_ns() // 1000
+    monotonic_now_usec = time.monotonic_ns() // 1000
+    return wall_now_usec - (monotonic_now_usec - start_usec) <= started + SKEW_USEC
+
+
+def _control_user_matches(target: dict) -> bool | None:
+    """The polkit/start capability proxy (DN-6): this process's euid owns the target state directory."""
+    try:
+        return os.geteuid() == os.stat(target["state_dir"]).st_uid
+    except (AttributeError, KeyError, OSError, TypeError):
+        return None
 
 
 def fleet_gate(target_id: str, descriptor_sha256: str) -> dict:
@@ -813,7 +1060,7 @@ def main(argv=None) -> int:
     return entry(args.state_dir, args.workload)
 
 
-__all__ = ["FIXTURE_JOBS_FILE", "LAUNCHER_JOURNAL", "LAUNCH_REQUEST_FILE", "LAUNCH_REQUEST_SCHEMA", "MODULE",
+__all__ = ["FIXTURE_JOBS_FILE", "GENERATION_OBSERVATION_SCHEMA", "GENERATION_UNIT_PROPERTIES", "LAUNCHER_JOURNAL", "LAUNCH_REQUEST_FILE", "LAUNCH_REQUEST_SCHEMA", "MODULE",
            "SUPERVISOR_JOURNAL", "TARGET_FILE", "FixtureLauncher", "ManagedFleetTarget", "Materializer",
            "RuntimeControl", "SystemdManagedFleetTarget", "entry", "fixture_config", "fleet_gate", "gate_refusal",
            "launch", "launcher_environment", "main", "owner_target", "run_fixture", "run_fleet",
