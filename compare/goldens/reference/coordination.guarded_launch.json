@@ -1,0 +1,1212 @@
+{
+ "guardian": {
+  "claimed_before": {
+   "claim": "fenced",
+   "cleanup": null,
+   "debt": {},
+   "exit": 3,
+   "files": {
+    "claim": {
+     "sha256": "d0ba5c8411f1fc8caf4edd4d7b81bcf49790669d4ded2de9e45eb82e61a429ce"
+    },
+    "launch.json": {
+     "keys": [
+      "launch",
+      "schema",
+      "seconds",
+      "token"
+     ],
+     "sha256": "d092f7cddfc3175d44393b051b87afba2bcbafc328a9185ce6f28a7284331622"
+    },
+    "lock": {
+     "present": true
+    },
+    "operation.json": {
+     "keys": [
+      "id",
+      "note",
+      "schema"
+     ],
+     "sha256": "f97b70b041ff5546602a4a83e36b4a158b3b172b27999402d27ec1ed167410a1"
+    },
+    "spawn": {
+     "sha256": "c1472135b14c77c8bef98e73f70208325fa0dcf1e6bd668ae9b31a9cea295fe7"
+    }
+   },
+   "observe": {
+    "exit_code": null,
+    "owned": false,
+    "proof": {
+     "claim": "fenced",
+     "kind": "fenced",
+     "launch": "000000000000000000000000000000000000000000000000000000000000000f"
+    },
+    "state": "absent"
+   },
+   "unresolved": null
+  },
+  "exit_0": {
+   "claim": "child",
+   "cleanup": {
+    "attempts": 1,
+    "confirmed": true,
+    "exit_code": 0,
+    "kind": "cleanup",
+    "launch": "000000000000000000000000000000000000000000000000000000000000000b",
+    "parent": {
+     "confirmed": true,
+     "exit_code": 0,
+     "method": null
+    },
+    "schema": "urn:zeus:conductor-guardian:1",
+    "spawned": true,
+    "stopped": false,
+    "timed_out": false,
+    "token": "tok-g",
+    "tree": {
+     "confirmed": true,
+     "exit_code": null,
+     "method": "process_group"
+    }
+   },
+   "debt": {
+    "deadline_seconds": 30.0,
+    "launch": "000000000000000000000000000000000000000000000000000000000000000b",
+    "schema": "urn:zeus:conductor-guardian:1",
+    "state": "running",
+    "token": "tok-g"
+   },
+   "exit": 0,
+   "files": {
+    "claim": {
+     "sha256": "ddc9e669194254cef019a29d3619a2c16592e5d52e1a81e98b01bd52319149a3"
+    },
+    "cleanup.json": {
+     "keys": [
+      "attempts",
+      "confirmed",
+      "exit_code",
+      "kind",
+      "launch",
+      "parent",
+      "schema",
+      "spawned",
+      "stopped",
+      "timed_out",
+      "token",
+      "tree"
+     ],
+     "sha256": "9f08c4a241865496ee6da4e7d0f4bbff71be0da1eb23f862810f9e32073b73e7"
+    },
+    "conduct.log": {
+     "present": true
+    },
+    "debt.json": {
+     "keys": [
+      "boundary",
+      "deadline_seconds",
+      "guardian_pid",
+      "launch",
+      "pid",
+      "schema",
+      "state",
+      "token"
+     ]
+    },
+    "launch.json": {
+     "keys": [
+      "launch",
+      "schema",
+      "seconds",
+      "token"
+     ],
+     "sha256": "744a7e36715ae26c75e1353317d5896b29708e0dc1a772bafea7d3482b18bf4a"
+    },
+    "lock": {
+     "present": true
+    },
+    "operation.json": {
+     "keys": [
+      "id",
+      "note",
+      "schema"
+     ],
+     "sha256": "f97b70b041ff5546602a4a83e36b4a158b3b172b27999402d27ec1ed167410a1"
+    },
+    "spawn": {
+     "sha256": "c1472135b14c77c8bef98e73f70208325fa0dcf1e6bd668ae9b31a9cea295fe7"
+    }
+   },
+   "observe": {
+    "cleanup_confirmed": true,
+    "exit_code": 0,
+    "owned": false,
+    "proof": {
+     "attempts": 1,
+     "confirmed": true,
+     "exit_code": 0,
+     "kind": "cleanup",
+     "launch": "000000000000000000000000000000000000000000000000000000000000000b",
+     "parent": {
+      "confirmed": true,
+      "exit_code": 0,
+      "method": null
+     },
+     "schema": "urn:zeus:conductor-guardian:1",
+     "spawned": true,
+     "stopped": false,
+     "timed_out": false,
+     "token": "tok-g",
+     "tree": {
+      "confirmed": true,
+      "exit_code": null,
+      "method": "process_group"
+     }
+    },
+    "state": "exited"
+   },
+   "unresolved": null
+  },
+  "exit_3": {
+   "claim": "child",
+   "cleanup": {
+    "attempts": 1,
+    "confirmed": true,
+    "exit_code": 3,
+    "kind": "cleanup",
+    "launch": "000000000000000000000000000000000000000000000000000000000000000c",
+    "parent": {
+     "confirmed": true,
+     "exit_code": 3,
+     "method": null
+    },
+    "schema": "urn:zeus:conductor-guardian:1",
+    "spawned": true,
+    "stopped": false,
+    "timed_out": false,
+    "token": "tok-g",
+    "tree": {
+     "confirmed": true,
+     "exit_code": null,
+     "method": "process_group"
+    }
+   },
+   "debt": {
+    "deadline_seconds": 30.0,
+    "launch": "000000000000000000000000000000000000000000000000000000000000000c",
+    "schema": "urn:zeus:conductor-guardian:1",
+    "state": "running",
+    "token": "tok-g"
+   },
+   "exit": 3,
+   "files": {
+    "claim": {
+     "sha256": "ddc9e669194254cef019a29d3619a2c16592e5d52e1a81e98b01bd52319149a3"
+    },
+    "cleanup.json": {
+     "keys": [
+      "attempts",
+      "confirmed",
+      "exit_code",
+      "kind",
+      "launch",
+      "parent",
+      "schema",
+      "spawned",
+      "stopped",
+      "timed_out",
+      "token",
+      "tree"
+     ],
+     "sha256": "5db6619057243c80d98e6ad5336afd633c934c88f9e82319332a3110b5c44148"
+    },
+    "conduct.log": {
+     "present": true
+    },
+    "debt.json": {
+     "keys": [
+      "boundary",
+      "deadline_seconds",
+      "guardian_pid",
+      "launch",
+      "pid",
+      "schema",
+      "state",
+      "token"
+     ]
+    },
+    "launch.json": {
+     "keys": [
+      "launch",
+      "schema",
+      "seconds",
+      "token"
+     ],
+     "sha256": "b5aabe0ce28da5ec6d9e99e6988a6ca4696d7e1b46e820e799f65676d5bc5a1b"
+    },
+    "lock": {
+     "present": true
+    },
+    "operation.json": {
+     "keys": [
+      "id",
+      "note",
+      "schema"
+     ],
+     "sha256": "f97b70b041ff5546602a4a83e36b4a158b3b172b27999402d27ec1ed167410a1"
+    },
+    "spawn": {
+     "sha256": "c1472135b14c77c8bef98e73f70208325fa0dcf1e6bd668ae9b31a9cea295fe7"
+    }
+   },
+   "observe": {
+    "cleanup_confirmed": true,
+    "exit_code": 3,
+    "owned": false,
+    "proof": {
+     "attempts": 1,
+     "confirmed": true,
+     "exit_code": 3,
+     "kind": "cleanup",
+     "launch": "000000000000000000000000000000000000000000000000000000000000000c",
+     "parent": {
+      "confirmed": true,
+      "exit_code": 3,
+      "method": null
+     },
+     "schema": "urn:zeus:conductor-guardian:1",
+     "spawned": true,
+     "stopped": false,
+     "timed_out": false,
+     "token": "tok-g",
+     "tree": {
+      "confirmed": true,
+      "exit_code": null,
+      "method": "process_group"
+     }
+    },
+    "state": "exited"
+   },
+   "unresolved": null
+  },
+  "identity_missing": {
+   "claim": null,
+   "cleanup": null,
+   "debt": {},
+   "exit": 4,
+   "files": {
+    "lock": {
+     "present": true
+    },
+    "operation.json": {
+     "keys": [
+      "id",
+      "note",
+      "schema"
+     ],
+     "sha256": "f97b70b041ff5546602a4a83e36b4a158b3b172b27999402d27ec1ed167410a1"
+    },
+    "spawn": {
+     "sha256": "c1472135b14c77c8bef98e73f70208325fa0dcf1e6bd668ae9b31a9cea295fe7"
+    }
+   },
+   "observe": {
+    "exit_code": null,
+    "owned": false,
+    "proof": {
+     "claim": "fenced",
+     "kind": "fenced",
+     "launch": "0000000000000000000000000000000000000000000000000000000000000010"
+    },
+    "state": "absent"
+   },
+   "unresolved": null
+  },
+  "not_created": {
+   "claim": "child",
+   "cleanup": {
+    "confirmed": true,
+    "error_type": "FileNotFoundError",
+    "exit_code": null,
+    "kind": "cleanup",
+    "launch": "0000000000000000000000000000000000000000000000000000000000000011",
+    "parent": {
+     "confirmed": true,
+     "exit_code": null,
+     "method": "not_created"
+    },
+    "schema": "urn:zeus:conductor-guardian:1",
+    "spawned": false,
+    "stopped": false,
+    "timed_out": false,
+    "token": "tok-g",
+    "tree": {
+     "confirmed": true,
+     "exit_code": null,
+     "method": "not_created"
+    }
+   },
+   "debt": {
+    "deadline_seconds": 30.0,
+    "launch": "0000000000000000000000000000000000000000000000000000000000000011",
+    "schema": "urn:zeus:conductor-guardian:1",
+    "state": "starting",
+    "token": "tok-g"
+   },
+   "exit": 0,
+   "files": {
+    "claim": {
+     "sha256": "ddc9e669194254cef019a29d3619a2c16592e5d52e1a81e98b01bd52319149a3"
+    },
+    "cleanup.json": {
+     "keys": [
+      "confirmed",
+      "error_type",
+      "exit_code",
+      "kind",
+      "launch",
+      "parent",
+      "schema",
+      "spawned",
+      "stopped",
+      "timed_out",
+      "token",
+      "tree"
+     ],
+     "sha256": "c8c24f8c49df0fc320b80e72d1bf85d5e2ae559669696fe8ef063ca1563a85ae"
+    },
+    "conduct.log": {
+     "present": true
+    },
+    "debt.json": {
+     "keys": [
+      "boundary",
+      "deadline_seconds",
+      "guardian_pid",
+      "launch",
+      "pid",
+      "schema",
+      "state",
+      "token"
+     ]
+    },
+    "launch.json": {
+     "keys": [
+      "launch",
+      "schema",
+      "seconds",
+      "token"
+     ],
+     "sha256": "c93c5a3e292d5bee5e97e32beec22314470055a3c93b90ce5480f7fc7c0db741"
+    },
+    "lock": {
+     "present": true
+    },
+    "operation.json": {
+     "keys": [
+      "id",
+      "note",
+      "schema"
+     ],
+     "sha256": "f97b70b041ff5546602a4a83e36b4a158b3b172b27999402d27ec1ed167410a1"
+    },
+    "spawn": {
+     "sha256": "c1472135b14c77c8bef98e73f70208325fa0dcf1e6bd668ae9b31a9cea295fe7"
+    }
+   },
+   "observe": {
+    "cleanup_confirmed": true,
+    "exit_code": null,
+    "owned": false,
+    "proof": {
+     "confirmed": true,
+     "error_type": "FileNotFoundError",
+     "exit_code": null,
+     "kind": "cleanup",
+     "launch": "0000000000000000000000000000000000000000000000000000000000000011",
+     "parent": {
+      "confirmed": true,
+      "exit_code": null,
+      "method": "not_created"
+     },
+     "schema": "urn:zeus:conductor-guardian:1",
+     "spawned": false,
+     "stopped": false,
+     "timed_out": false,
+     "token": "tok-g",
+     "tree": {
+      "confirmed": true,
+      "exit_code": null,
+      "method": "not_created"
+     }
+    },
+    "state": "exited"
+   },
+   "unresolved": null
+  },
+  "stopped": {
+   "claim": "child",
+   "cleanup": {
+    "attempts": 1,
+    "confirmed": true,
+    "exit_code": -15,
+    "kind": "cleanup",
+    "launch": "000000000000000000000000000000000000000000000000000000000000000e",
+    "parent": {
+     "confirmed": true,
+     "exit_code": -15,
+     "method": null
+    },
+    "schema": "urn:zeus:conductor-guardian:1",
+    "spawned": true,
+    "stopped": true,
+    "timed_out": false,
+    "token": "tok-g",
+    "tree": {
+     "confirmed": true,
+     "exit_code": null,
+     "method": "process_group"
+    }
+   },
+   "debt": {
+    "deadline_seconds": 30.0,
+    "launch": "000000000000000000000000000000000000000000000000000000000000000e",
+    "schema": "urn:zeus:conductor-guardian:1",
+    "state": "running",
+    "token": "tok-g"
+   },
+   "exit": 1,
+   "files": {
+    "claim": {
+     "sha256": "ddc9e669194254cef019a29d3619a2c16592e5d52e1a81e98b01bd52319149a3"
+    },
+    "cleanup.json": {
+     "keys": [
+      "attempts",
+      "confirmed",
+      "exit_code",
+      "kind",
+      "launch",
+      "parent",
+      "schema",
+      "spawned",
+      "stopped",
+      "timed_out",
+      "token",
+      "tree"
+     ],
+     "sha256": "3ce0b12d67f77ca7454d6d187d84968bc768cd93fdf7160bc4bfbab026364962"
+    },
+    "conduct.log": {
+     "present": true
+    },
+    "debt.json": {
+     "keys": [
+      "boundary",
+      "deadline_seconds",
+      "guardian_pid",
+      "launch",
+      "pid",
+      "schema",
+      "state",
+      "token"
+     ]
+    },
+    "launch.json": {
+     "keys": [
+      "launch",
+      "schema",
+      "seconds",
+      "token"
+     ],
+     "sha256": "3cee972d848fe4a434a2eeabc8158c14cd5e72b46b2a275f0121a18aca27a1d3"
+    },
+    "lock": {
+     "present": true
+    },
+    "operation.json": {
+     "keys": [
+      "id",
+      "note",
+      "schema"
+     ],
+     "sha256": "f97b70b041ff5546602a4a83e36b4a158b3b172b27999402d27ec1ed167410a1"
+    },
+    "spawn": {
+     "sha256": "c1472135b14c77c8bef98e73f70208325fa0dcf1e6bd668ae9b31a9cea295fe7"
+    },
+    "stop": {
+     "sha256": "6c45cb72a36e63d522aa54ed8adbd7a29a989474f2f77e0458af8800564ef3cb"
+    }
+   },
+   "observe": {
+    "cleanup_confirmed": true,
+    "exit_code": -15,
+    "owned": false,
+    "proof": {
+     "attempts": 1,
+     "confirmed": true,
+     "exit_code": -15,
+     "kind": "cleanup",
+     "launch": "000000000000000000000000000000000000000000000000000000000000000e",
+     "parent": {
+      "confirmed": true,
+      "exit_code": -15,
+      "method": null
+     },
+     "schema": "urn:zeus:conductor-guardian:1",
+     "spawned": true,
+     "stopped": true,
+     "timed_out": false,
+     "token": "tok-g",
+     "tree": {
+      "confirmed": true,
+      "exit_code": null,
+      "method": "process_group"
+     }
+    },
+    "state": "exited"
+   },
+   "unresolved": null
+  },
+  "timeout": {
+   "claim": "child",
+   "cleanup": {
+    "attempts": 1,
+    "confirmed": true,
+    "exit_code": -15,
+    "kind": "cleanup",
+    "launch": "000000000000000000000000000000000000000000000000000000000000000d",
+    "parent": {
+     "confirmed": true,
+     "exit_code": -15,
+     "method": null
+    },
+    "schema": "urn:zeus:conductor-guardian:1",
+    "spawned": true,
+    "stopped": false,
+    "timed_out": true,
+    "token": "tok-g",
+    "tree": {
+     "confirmed": true,
+     "exit_code": null,
+     "method": "process_group"
+    }
+   },
+   "debt": {
+    "deadline_seconds": 0.5,
+    "launch": "000000000000000000000000000000000000000000000000000000000000000d",
+    "schema": "urn:zeus:conductor-guardian:1",
+    "state": "running",
+    "token": "tok-g"
+   },
+   "exit": 1,
+   "files": {
+    "claim": {
+     "sha256": "ddc9e669194254cef019a29d3619a2c16592e5d52e1a81e98b01bd52319149a3"
+    },
+    "cleanup.json": {
+     "keys": [
+      "attempts",
+      "confirmed",
+      "exit_code",
+      "kind",
+      "launch",
+      "parent",
+      "schema",
+      "spawned",
+      "stopped",
+      "timed_out",
+      "token",
+      "tree"
+     ],
+     "sha256": "717ac11e27aa6335ba0f4184d632105337fbb2413dba1c90a12883cac67cb8a0"
+    },
+    "conduct.log": {
+     "present": true
+    },
+    "debt.json": {
+     "keys": [
+      "boundary",
+      "deadline_seconds",
+      "guardian_pid",
+      "launch",
+      "pid",
+      "schema",
+      "state",
+      "token"
+     ]
+    },
+    "launch.json": {
+     "keys": [
+      "launch",
+      "schema",
+      "seconds",
+      "token"
+     ],
+     "sha256": "7e3debe1d13a5b0b92fbc63cb190948e68a99f29c183ba0c24cb6d0b6c85e96d"
+    },
+    "lock": {
+     "present": true
+    },
+    "operation.json": {
+     "keys": [
+      "id",
+      "note",
+      "schema"
+     ],
+     "sha256": "f97b70b041ff5546602a4a83e36b4a158b3b172b27999402d27ec1ed167410a1"
+    },
+    "spawn": {
+     "sha256": "c1472135b14c77c8bef98e73f70208325fa0dcf1e6bd668ae9b31a9cea295fe7"
+    }
+   },
+   "observe": {
+    "cleanup_confirmed": true,
+    "exit_code": -15,
+    "owned": false,
+    "proof": {
+     "attempts": 1,
+     "confirmed": true,
+     "exit_code": -15,
+     "kind": "cleanup",
+     "launch": "000000000000000000000000000000000000000000000000000000000000000d",
+     "parent": {
+      "confirmed": true,
+      "exit_code": -15,
+      "method": null
+     },
+     "schema": "urn:zeus:conductor-guardian:1",
+     "spawned": true,
+     "stopped": false,
+     "timed_out": true,
+     "token": "tok-g",
+     "tree": {
+      "confirmed": true,
+      "exit_code": null,
+      "method": "process_group"
+     }
+    },
+    "state": "timeout"
+   },
+   "unresolved": null
+  }
+ },
+ "launchers": {
+  "assessment_default": {
+   "again": {
+    "cached": true
+   },
+   "files": {
+    "launch.json": {
+     "keys": [
+      "launch",
+      "schema",
+      "seconds",
+      "token"
+     ],
+     "sha256": "33edb7b3a8e580b3ef70fab5de3a2c6adc255435b58876e7c6f857e382057b68"
+    },
+    "spawn": {
+     "sha256": "b5018e8686999e6985703965fc8e8384e4622c8d3561ccaa24652167d60ab37b"
+    }
+   },
+   "launch_json": {
+    "launch": "0000000000000000000000000000000000000000000000000000000000000005",
+    "schema": "urn:zeus:conductor-guardian:1",
+    "seconds": 1020,
+    "token": "dec-1"
+   },
+   "spawn": {
+    "argv": [
+     "<python>",
+     "-m",
+     "codex_harness.adapters.continuation_process",
+     "--launch",
+     "<root>/owner-actions/continuation/launches/0000000000000000000000000000000000000000000000000000000000000005",
+     "--seconds",
+     "1020.0",
+     "--",
+     "<python>",
+     "-m",
+     "codex_harness.cli",
+     "owner-actions",
+     "assess",
+     "--decision",
+     "dec-1",
+     "--correlation",
+     "corr-1"
+    ],
+    "cwd": null,
+    "env_keys": null,
+    "env_named": {}
+   },
+   "start": {
+    "cached": false,
+    "pid": 4242
+   }
+  },
+  "assessment_explicit": {
+   "argv": [
+    "<python>",
+    "-m",
+    "codex_harness.adapters.continuation_process",
+    "--launch",
+    "<root>/owner-actions/continuation/launches/0000000000000000000000000000000000000000000000000000000000000006",
+    "--seconds",
+    "7.0",
+    "--",
+    "<python>",
+    "-m",
+    "codex_harness.cli",
+    "owner-actions",
+    "assess",
+    "--decision",
+    "dec-2",
+    "--correlation",
+    "corr-2"
+   ],
+   "cwd": null,
+   "env_keys": [
+    "PATH",
+    "ZEUS_FIXTURE"
+   ],
+   "env_named": {
+    "PATH": "/usr/bin",
+    "ZEUS_FIXTURE": "1"
+   }
+  },
+  "assessment_poll_alive": {
+   "owned": true,
+   "state": "running"
+  },
+  "assessment_poll_ended": {
+   "exit_code": null,
+   "owned": false,
+   "proof": {
+    "claim": "fenced",
+    "kind": "fenced",
+    "launch": "0000000000000000000000000000000000000000000000000000000000000005"
+   },
+   "state": "absent"
+  },
+  "assessment_restarted": {
+   "cached": true
+  },
+  "conductor_active": [
+   "0000000000000000000000000000000000000000000000000000000000000003"
+  ],
+  "conductor_active_after": [],
+  "conductor_default": {
+   "again": {
+    "cached": true,
+    "pid": 4242
+   },
+   "files": {
+    "launch.json": {
+     "keys": [
+      "launch",
+      "schema",
+      "seconds",
+      "token"
+     ],
+     "sha256": "2b5b44f560defcd7bae3ef5fc09300b6b3bd27b33dc94aa61a1a8f7a1c3cec4c"
+    },
+    "operation.json": {
+     "keys": [
+      "id",
+      "note",
+      "schema"
+     ],
+     "sha256": "f97b70b041ff5546602a4a83e36b4a158b3b172b27999402d27ec1ed167410a1"
+    },
+    "spawn": {
+     "sha256": "c1472135b14c77c8bef98e73f70208325fa0dcf1e6bd668ae9b31a9cea295fe7"
+    }
+   },
+   "first": {
+    "breakaway": null,
+    "cached": false,
+    "pid": 4242
+   },
+   "launch_json": {
+    "launch": "0000000000000000000000000000000000000000000000000000000000000001",
+    "schema": "urn:zeus:conductor-guardian:1",
+    "seconds": 1020,
+    "token": "tok-1"
+   },
+   "operation_json": "{\"id\":\"op-1\",\"note\":\"LABELLED fixture manifest\",\"schema\":\"urn:zeus:operation:1\"}\n",
+   "spawn": {
+    "argv": [
+     "<python>",
+     "-m",
+     "codex_harness.adapters.continuation_process",
+     "--launch",
+     "<root>/rt-a/continuation/launches/0000000000000000000000000000000000000000000000000000000000000001",
+     "--seconds",
+     "1020.0",
+     "--",
+     "<python>",
+     "-m",
+     "codex_harness.cli",
+     "--repository",
+     "<root>/repo-a",
+     "continuation",
+     "conduct",
+     "--file",
+     "<root>/rt-a/continuation/launches/0000000000000000000000000000000000000000000000000000000000000001/operation.json"
+    ],
+    "cwd": "<root>/repo-a",
+    "env_keys": [
+     "PATH",
+     "ZEUS_FIXTURE",
+     "ZEUS_REPOSITORY"
+    ],
+    "env_named": {
+     "PATH": "/usr/bin:/bin",
+     "ZEUS_FIXTURE": "1",
+     "ZEUS_REPOSITORY": "<root>/repo-a"
+    }
+   }
+  },
+  "conductor_explicit": {
+   "argv": [
+    "<python>",
+    "-m",
+    "codex_harness.adapters.continuation_process",
+    "--launch",
+    "<root>/rt-a/continuation/launches/0000000000000000000000000000000000000000000000000000000000000003",
+    "--seconds",
+    "12.5",
+    "--",
+    "<python>",
+    "-m",
+    "codex_harness.cli",
+    "--repository",
+    "<root>/repo-a",
+    "continuation",
+    "conduct",
+    "--file",
+    "<root>/rt-a/continuation/launches/0000000000000000000000000000000000000000000000000000000000000003/operation.json"
+   ],
+   "cwd": "<root>/repo-a",
+   "env_keys": [
+    "PATH",
+    "ZEUS_FIXTURE",
+    "ZEUS_REPOSITORY"
+   ],
+   "env_named": {
+    "PATH": "/usr/bin:/bin",
+    "ZEUS_FIXTURE": "1",
+    "ZEUS_REPOSITORY": "<root>/repo-a"
+   }
+  },
+  "conductor_no_token": {
+   "message": "a launch starts only under its reserved unit token",
+   "refused": "ValueError"
+  },
+  "conductor_no_token_files": {},
+  "conductor_poll_alive": {
+   "exit_code": null,
+   "owned": true,
+   "state": "running"
+  },
+  "conductor_poll_ended": {
+   "exit_code": null,
+   "owned": false,
+   "proof": {
+    "claim": "fenced",
+    "kind": "fenced",
+    "launch": "0000000000000000000000000000000000000000000000000000000000000003"
+   },
+   "state": "absent"
+  },
+  "conductor_request_stop": {
+   "asked": [],
+   "failed": []
+  },
+  "conductor_restarted": {
+   "spawns": 1,
+   "start": {
+    "cached": true,
+    "pid": null
+   }
+  },
+  "conductor_unknown_lane": {
+   "cleanup_confirmed": false,
+   "error_type": "FleetRefused",
+   "exit_code": null,
+   "owned": false,
+   "state": "unknown"
+  },
+  "research_again": {
+   "cached": true
+  },
+  "research_default": {
+   "env_inherits_process": true,
+   "files": {
+    "launch.json": {
+     "keys": [
+      "launch",
+      "schema",
+      "seconds",
+      "token"
+     ],
+     "sha256": "10a2cd37b6f75ca56aca0c6b47ef07e0a3ab7a3af52cb1db5c7bad44e74670fd"
+    },
+    "spawn": {
+     "sha256": "b5018e8686999e6985703965fc8e8384e4622c8d3561ccaa24652167d60ab37b"
+    }
+   },
+   "spawn": {
+    "argv": [
+     "<python>",
+     "-m",
+     "codex_harness.adapters.continuation_process",
+     "--launch",
+     "<root>/owner-actions/continuation/launches/0000000000000000000000000000000000000000000000000000000000000007",
+     "--seconds",
+     "3720.0",
+     "--",
+     "<python>",
+     "-m",
+     "codex_harness.cli",
+     "research-program",
+     "run",
+     "rp-b2",
+     "--ticks",
+     "1",
+     "--cycle-owner",
+     "0000000000000000000000000000000000000000000000000000000000000007",
+     "--intent",
+     "incident"
+    ],
+    "cwd": "<root>/repo-a",
+    "env_keys": null,
+    "env_named": {
+     "HARNESS_REPOSITORY": "<root>/repo-a",
+     "ZEUS_REPOSITORY": "<root>/repo-a"
+    }
+   },
+   "start": {
+    "cached": false,
+    "pid": 4242
+   }
+  }
+ },
+ "observe": {
+  "bad_launch_id": {
+   "message": "launch id must be 64 lowercase hex",
+   "refused": "ValueError"
+  },
+  "claimed_no_proof": {
+   "cleanup_confirmed": false,
+   "exit_code": null,
+   "owned": false,
+   "reason_code": "guardian_ended_without_proof",
+   "state": "unknown"
+  },
+  "claimed_unresolved": {
+   "cleanup_confirmed": false,
+   "exit_code": null,
+   "owned": false,
+   "reason_code": "cleanup_unresolved",
+   "state": "unknown"
+  },
+  "foreign_token_proof": {
+   "cleanup_confirmed": false,
+   "exit_code": null,
+   "owned": false,
+   "reason_code": "guardian_ended_without_proof",
+   "state": "unknown"
+  },
+  "lock_held": {
+   "exit_code": null,
+   "owned": false,
+   "state": "running"
+  },
+  "lock_held_files": {
+   "launch.json": {
+    "keys": [
+     "launch",
+     "schema",
+     "seconds",
+     "token"
+    ],
+    "sha256": "594bf19e5c546fa492980781e3ac9a6411c41caceb86e4e99348c14f2f7f41b2"
+   },
+   "lock": {
+    "present": true
+   },
+   "operation.json": {
+    "keys": [
+     "id",
+     "note",
+     "schema"
+    ],
+    "sha256": "f97b70b041ff5546602a4a83e36b4a158b3b172b27999402d27ec1ed167410a1"
+   },
+   "spawn": {
+    "sha256": "c1472135b14c77c8bef98e73f70208325fa0dcf1e6bd668ae9b31a9cea295fe7"
+   }
+  },
+  "no_claim": {
+   "exit_code": null,
+   "owned": false,
+   "proof": {
+    "claim": "fenced",
+    "kind": "fenced",
+    "launch": "0000000000000000000000000000000000000000000000000000000000000016"
+   },
+   "state": "absent"
+  },
+  "no_claim_again": {
+   "exit_code": null,
+   "owned": false,
+   "proof": {
+    "claim": "fenced",
+    "kind": "fenced",
+    "launch": "0000000000000000000000000000000000000000000000000000000000000016"
+   },
+   "state": "absent"
+  },
+  "no_claim_files": {
+   "claim": {
+    "sha256": "d0ba5c8411f1fc8caf4edd4d7b81bcf49790669d4ded2de9e45eb82e61a429ce"
+   },
+   "launch.json": {
+    "keys": [
+     "launch",
+     "schema",
+     "seconds",
+     "token"
+    ],
+    "sha256": "467086f486e43aa65a0201069dce58f8ddbb060913d352a249aef419a555e09c"
+   },
+   "lock": {
+    "present": true
+   },
+   "operation.json": {
+    "keys": [
+     "id",
+     "note",
+     "schema"
+    ],
+    "sha256": "f97b70b041ff5546602a4a83e36b4a158b3b172b27999402d27ec1ed167410a1"
+   },
+   "spawn": {
+    "sha256": "c1472135b14c77c8bef98e73f70208325fa0dcf1e6bd668ae9b31a9cea295fe7"
+   }
+  },
+  "tree_unconfirmed_proof": {
+   "cleanup_confirmed": false,
+   "exit_code": null,
+   "owned": false,
+   "reason_code": "guardian_ended_without_proof",
+   "state": "unknown"
+  },
+  "valid_proof": {
+   "cleanup_confirmed": true,
+   "exit_code": 0,
+   "owned": false,
+   "proof": {
+    "confirmed": true,
+    "exit_code": 0,
+    "kind": "cleanup",
+    "launch": "0000000000000000000000000000000000000000000000000000000000000018",
+    "parent": {
+     "confirmed": true,
+     "exit_code": 0,
+     "method": null
+    },
+    "schema": "urn:zeus:conductor-guardian:1",
+    "spawned": true,
+    "stopped": false,
+    "timed_out": false,
+    "token": "tok-real",
+    "tree": {
+     "confirmed": true,
+     "exit_code": null,
+     "method": "process_group"
+    }
+   },
+   "state": "exited"
+  }
+ },
+ "probes": {
+  "codex_unresolved": {
+   "calls": [],
+   "probe": {
+    "codex": null,
+    "node": "<root>/bin/node",
+    "ok": false,
+    "reason_code": "codex_unresolved"
+   }
+  },
+  "codex_version_failed": {
+   "calls": [
+    [
+     "<root>/bin/codex",
+     "--version"
+    ]
+   ],
+   "probe": {
+    "codex": "<root>/bin/codex",
+    "node": "<root>/bin/node",
+    "ok": false,
+    "reason_code": "codex_version_failed"
+   }
+  },
+  "node_unavailable": {
+   "calls": [
+    [
+     "<root>/bin/codex",
+     "--version"
+    ],
+    [
+     "<root>/bin/node",
+     "--version"
+    ]
+   ],
+   "probe": {
+    "codex": "<root>/bin/codex",
+    "error_type": "OSError",
+    "node": "<root>/bin/node",
+    "ok": false,
+    "reason_code": "node_unavailable"
+   }
+  },
+  "node_unresolved": {
+   "calls": [
+    [
+     "<root>/bin/codex",
+     "--version"
+    ]
+   ],
+   "probe": {
+    "codex": "<root>/bin/codex",
+    "node": null,
+    "ok": false,
+    "reason_code": "node_unresolved"
+   }
+  },
+  "ok": {
+   "calls": [
+    [
+     "<root>/bin/codex",
+     "--version"
+    ],
+    [
+     "<root>/bin/node",
+     "--version"
+    ]
+   ],
+   "probe": {
+    "codex": "<root>/bin/codex",
+    "node": "<root>/bin/node",
+    "ok": true,
+    "reason_code": null
+   }
+  }
+ }
+}
