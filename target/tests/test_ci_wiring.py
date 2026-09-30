@@ -40,6 +40,7 @@ REBUILD_TEST_STEPS = [("python compare/run.py check-tree", None),
 REBUILD_INTEGRATION_STEPS = [("uv sync --frozen --project target", None),  # before the decision unit (S4 target)
                              ("python compare/run.py prepare", None),
                              ("python compare/run.py run --only effects.decision_unit.pg --pg", None),
+                             ("python compare/run.py run --only effects.admission_unit.pg --pg", None),
                              ("python compare/run.py run --only storage.pg --only storage.redis --pg --redis", None),
                              ("python compare/run.py target-integration", None),
                              ("python compare/run.py docker-fixture", None)]
