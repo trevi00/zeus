@@ -7,12 +7,15 @@ collaborator refuses before any effect, never a silent skip).
 - A LocalCycle incident report without research's incident port refuses, and the entry is not ACKed.
 - An Operation without evidence records refuses before its claim writes anything, and a designed manifest without
   the design gate refuses inside the claim unit, so nothing is written.
+- Decision recovery without research's audit binding or threshold-review recovery refuses at the point of need.
 """
 
 from __future__ import annotations
 
 import pytest
 
+from codex_harness.coordination.application.decision_recovery import context
+from codex_harness.coordination.application.execution_recovery import ExecutionRecovery
 from codex_harness.coordination.application.local_cycle import LocalCycle
 from codex_harness.coordination.application.messages import MessageHandler
 from codex_harness.coordination.application.operation import Operation
@@ -22,6 +25,7 @@ from codex_harness.coordination.domain.operation import validate_manifest
 from codex_harness.evidence.application.inspections import EvidenceRecords
 from codex_harness.intake.application import tickets
 from codex_harness.kernel.errors import ContractError
+from codex_harness.kernel.ids import digest
 from codex_harness.kernel.message import envelope
 from codex_harness.research.application.audit_gate import require_adoption
 from codex_harness.routing.adapters.organization_source import packaged_organization
@@ -129,3 +133,18 @@ def test_a_designed_manifest_without_the_design_gate_refuses_inside_the_claim_un
     with pytest.raises(ContractError, match="Design gate is not wired"):
         op.claim(designed, IDENTITY, GOAL)
     assert records(store) == []
+
+
+def test_decision_recovery_without_the_research_ports_refuses_at_the_point_of_need():
+    store = MemoryStore()
+    audit_row = {"id": "d-1", "phase": "audit_review", "actor": "lead:research",
+                 "input": {"audit_id": "a-1", "proposal": {"author": "worker:github"}}}
+    with store.transaction() as tx:
+        with pytest.raises(ContractError, match="Audit binding is not wired"):
+            context(tx, audit_row, ORG, None)
+        tx.put("threshold_review_requests", "r-1", {"id": "r-1", "status": "awaiting_lead", "row_id": "x",
+                                                     "binding": "b"})
+        threshold_row = {"id": digest(["r-1", "lead:improvement"]), "phase": "threshold_review",
+                         "actor": "lead:improvement", "input": {"request_id": "r-1"}}
+        with pytest.raises(ContractError, match="Threshold review recovery is not wired"):
+            ExecutionRecovery(store, ORG, None)._related_checked(tx, "decisions_pending", threshold_row)

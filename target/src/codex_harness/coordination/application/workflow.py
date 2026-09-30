@@ -156,7 +156,7 @@ class Workflow:
             raise ContractError("Lease duration out of timestamp range") from exc
         with self.store.transaction() as tx:
             check_expected(tx, "tasks", expected)
-            live = running(tx, self.org, requested_now, clock=self.clock, monotonic=self.monotonic)
+            live = running(tx, self.org, requested_now, clock=self.clock, monotonic=self.monotonic, ids=self.ids)
             if len(live) >= POLICY.max_active_executions or any(row.get("agent", row.get("actor")) == agent for row in live):
                 return None
             candidates = []
@@ -167,7 +167,7 @@ class Workflow:
                     created = deadline_time(row.get('created_at'))
                     require(created is not None, 'Creation time required')
                 except ContractError:
-                    block_execution(tx, row, 'tasks', 'InvalidExecutionOrder', aware_time(requested_now, self.clock), self.org)
+                    block_execution(tx, row, 'tasks', 'InvalidExecutionOrder', aware_time(requested_now, self.clock), self.org, ids=self.ids)
                     continue
                 candidates.append((created, row['id'], row))
             for _, _, task in sorted(candidates, key=lambda item: item[:2]):
@@ -179,14 +179,14 @@ class Workflow:
                         if active(task, 'tasks', now, monotonic=self.monotonic):
                             continue
                     except ExecutionTimeError as exc:
-                        contain_with_notice(tx, self.org, task, 'tasks', exc.reason, now, exc.observation)
+                        contain_with_notice(tx, self.org, task, 'tasks', exc.reason, now, exc.observation, ids=self.ids)
                         continue
                 try:
                     self.ticket_binding(tx, task["message"]["what"]["details"])
                 except ContractError as exc:
                     task.update(status="blocked", error=str(exc))
                     tx.put("tasks", task["id"], task)
-                    execution_notice(tx, self.org, task, 'tasks', 'ticket_binding_changed', now.isoformat())
+                    execution_notice(tx, self.org, task, 'tasks', 'ticket_binding_changed', now.isoformat(), ids=self.ids)
                     continue
                 if task["message"]["what"]["action"] in {"plan", "implement"}:
                     try:
@@ -198,7 +198,7 @@ class Workflow:
                 try:
                     deadline = deadline_time(task.get("execution_deadline", task["message"]["when"]["deadline"]))
                 except ContractError:
-                    block_execution(tx, task, "tasks", "InvalidExecutionDeadline", now, self.org)
+                    block_execution(tx, task, "tasks", "InvalidExecutionDeadline", now, self.org, ids=self.ids)
                     continue
                 dependencies = [tx.get("tasks", dep) for dep in task["message"]["when"]["after"]]
                 terminal_dependency = any(d["status"] in {"failed", "cancelled", "expired"}
@@ -211,27 +211,27 @@ class Workflow:
                     continue
                 else:
                     try:
-                        limit = retry_limit(tx, task, "tasks", max_attempts, now, self.org)
+                        limit = retry_limit(tx, task, "tasks", max_attempts, now, self.org, ids=self.ids)
                     except ContractError:
-                        block_execution(tx, task, "tasks", "InvalidRetryBudget", now, self.org)
+                        block_execution(tx, task, "tasks", "InvalidRetryBudget", now, self.org, ids=self.ids)
                         continue
                     if limit is None:
                         continue
                     if task["attempt"] >= limit:
                         task.update(status="failed", error="attempt budget exhausted")
                         tx.put("tasks", task["id"], task)
-                        execution_notice(tx, self.org, task, 'tasks', 'budget_exhausted', now.isoformat())
+                        execution_notice(tx, self.org, task, 'tasks', 'budget_exhausted', now.isoformat(), ids=self.ids)
                         continue
                     now = aware_time(requested_now, self.clock)
                     if deadline is not None and deadline <= now:
-                        contain_with_notice(tx, self.org, task, 'tasks', 'deadline_exceeded', now)
+                        contain_with_notice(tx, self.org, task, 'tasks', 'deadline_exceeded', now, ids=self.ids)
                         continue
                     lease_until = (now + timedelta(seconds=lease_seconds)).isoformat()
                     require_expected(task, expected)  # before the fence, the lease and any provider entry
                     try:
                         advance_fence(tx, "tasks", task["id"], task["generation"] + 1, owner, clock=self.clock)
                     except ContractError:
-                        block_execution(tx, task, "tasks", "ExecutionGenerationRegressed", now, self.org)
+                        block_execution(tx, task, "tasks", "ExecutionGenerationRegressed", now, self.org, ids=self.ids)
                         continue
                     task.update(status="running", attempt=task["attempt"] + 1,
                                 generation=task["generation"] + 1, lease_owner=owner,
@@ -243,7 +243,8 @@ class Workflow:
                     return task
                 tx.put("tasks", task["id"], task)
                 execution_notice(tx, self.org, task, 'tasks',
-                                 'deadline_exceeded' if task['status'] == 'expired' else 'dependency_failed', now.isoformat())
+                                 'deadline_exceeded' if task['status'] == 'expired' else 'dependency_failed', now.isoformat(),
+                                 ids=self.ids)
         return None
 
     @staticmethod
@@ -288,7 +289,7 @@ class Workflow:
                 active(row, bucket, now, monotonic=self.monotonic)
             except ExecutionTimeError as current_error:
                 return contain_with_notice(tx, self.org, row, bucket, current_error.reason, now,
-                                           current_error.observation)
+                                           current_error.observation, ids=self.ids)
             return None
 
     @contextmanager
@@ -345,7 +346,7 @@ class Workflow:
                 self._attempt_outcome(current, "superseded", utcnow(self.clock))
                 current.update(status="superseded", result=result, error=str(exc), completed_at=utcnow(self.clock))
                 tx.put("tasks", task["id"], current)
-                execution_notice(tx, self.org, current, 'tasks', 'ticket_superseded', utcnow(self.clock))
+                execution_notice(tx, self.org, current, 'tasks', 'ticket_superseded', utcnow(self.clock), ids=self.ids)
                 if accept is not None:
                     accept(tx, current)
                 return current
@@ -416,7 +417,8 @@ class Workflow:
             tx.put(bucket, task["id"], current)
             tx.put("execution_failures", identity, {"id": identity, "request": request,
                    "status": current["status"], "at": utcnow(self.clock)})
-            execution_notice(tx, self.org, current, bucket, 'execution_failed', utcnow(self.clock), identity)
+            execution_notice(tx, self.org, current, bucket, 'execution_failed', utcnow(self.clock), identity,
+                             ids=self.ids)
             return current
 
     @staticmethod

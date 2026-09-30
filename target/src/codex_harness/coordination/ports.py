@@ -27,7 +27,9 @@ OWNED_BUCKETS = ("tasks", "decisions_pending", "outbox", "events", "execution_fe
                  # S5 outbox relay (DESIGN-s5 §O)
                  "outbox_attempts", "outbox_control", "outbox_delivery", "outbox_quarantine", "outbox_routes",
                  # S5 LocalCycle and Operation (DESIGN-s5 §L, §Op).
-                 "local_cycles", "operations")
+                 "local_cycles", "operations",
+                 # S5 execution recovery remainder (receipts of prepare/apply).
+                 "execution_recoveries")
 
 
 class TaskRunner(Protocol):
@@ -48,3 +50,11 @@ class EvidenceRecords(Protocol):
     """Evidence's read of one all_checked inspection bound to an execution (INV-EVIDENCE-001)."""
 
     def require_all_checked(self, tx, inspection_id: str, *, policy_hash=None, binding=None) -> dict: ...
+
+
+class ThresholdReviewRecovery(Protocol):
+    """Research's threshold-review side of a decision recovery (implemented in S8; it owns threshold_review_requests)."""
+
+    def row(self, tx, row_id: str) -> dict: ...
+
+    def restore(self, tx, request: dict) -> None: ...

@@ -131,7 +131,7 @@ def observe_domain(tx, row, bucket, now):
         tx.put('events', identity, {**event, 'at': now.isoformat()})
 
 
-def contain_with_notice(tx, org, row, bucket, reason, now, observation=None):
+def contain_with_notice(tx, org, row, bucket, reason, now, observation=None, *, ids=None):
     event = {'bucket': bucket, 'task_id': row['id'], 'generation': row.get('generation', 0), 'attempt': row.get('attempt'),
              'recovery_sequence': row.get('recovery_sequence', 0), 'reason': reason}
     identity = digest(event)
@@ -147,18 +147,18 @@ def contain_with_notice(tx, org, row, bucket, reason, now, observation=None):
             attempt_outcome(row, 'expired', now.isoformat(), 'deadline exceeded')
         row.update(status='expired', error='deadline exceeded', completed_at=now.isoformat())
         tx.put(bucket, row['id'], row)
-        record(tx, org, row, bucket, reason, now.isoformat())
+        record(tx, org, row, bucket, reason, now.isoformat(), ids=ids)
     else:
-        block_execution(tx, row, bucket, reason, now, org)
+        block_execution(tx, row, bucket, reason, now, org, ids=ids)
     return row
 
 
-def running(tx, org, now=None, *, clock=None, monotonic=None):
+def running(tx, org, now=None, *, clock=None, monotonic=None, ids=None):
     live = []
     for bucket in ('tasks', 'decisions_pending'):
         for row in tx.scan(bucket):
             if not isinstance(row.get('status'), str) or not row['status']:
-                contain_with_notice(tx, org, row, bucket, 'InvalidExecutionState', aware_time(now, clock))
+                contain_with_notice(tx, org, row, bucket, 'InvalidExecutionState', aware_time(now, clock), ids=ids)
                 continue
             if row['status'] != 'running':
                 continue
@@ -168,5 +168,5 @@ def running(tx, org, now=None, *, clock=None, monotonic=None):
                     live.append(row)
                 observe_domain(tx, row, bucket, observed_now)
             except ExecutionTimeError as exc:
-                contain_with_notice(tx, org, row, bucket, exc.reason, observed_now, exc.observation)
+                contain_with_notice(tx, org, row, bucket, exc.reason, observed_now, exc.observation, ids=ids)
     return live
