@@ -1,0 +1,8 @@
+{
+ "family": "delivery.migration",
+ "description": "S7 lane half of an M7 release migration, characterized before the V8 split: the evaluator migration lane (stage, register and finalize with the hold and the acknowledgement, cached replays and conflicts, every source shape and forged identity refused, the live controller lease, the reserved and the busy target, the crash between the steps, every unresolvable or disagreeing evaluator pin, another lineage in the acknowledgement, the status projection of each phase), the environment reverification lane (stage/register/finalize, the refusals, the running controller code through the trusted port, the release service's own controller refusals, a moved source, a kind-less request) and require_controller_code; memory SerialStore, LABELLED shared delivery doubles (s7_delivery) and the ONE labelled crafted halted intent of M7's own test",
+ "reference_driver": "drivers/reference/s7_migration.py",
+ "target_driver": "drivers/target/s7_migration.py",
+ "golden": "goldens/reference/delivery.migration.json",
+ "slice": "S7"
+}

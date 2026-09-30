@@ -1,0 +1,3849 @@
+{
+ "controller_code": {
+  "another_code": {
+   "buckets": {
+    "deployment": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "deployment_locks": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "execution_fences": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "host_delivery_descriptors": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "host_delivery_intents": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "host_delivery_migrations": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "host_delivery_plans": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "host_delivery_targets": "406f419aba5db2778e0ac551cb5694a1c5c38efa067343386d108978536331b5",
+    "images": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "release_queue": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "releases": "531e02046f9de399445e6050e1a16d4de2185323480a7dfbeb402299d1425f1e"
+   },
+   "field": "controller_revision",
+   "message": "host delivery refused: migration_controller_code_mismatch (controller_revision)",
+   "reason_code": "migration_controller_code_mismatch",
+   "refused": "DeliveryRefused",
+   "store": "b449330e9e40b286ce3141c64bd322b0b57d3bf7b87c8dac2ea70aaeee6ea70d",
+   "wrote": false
+  },
+  "malformed_revision": {
+   "buckets": {
+    "deployment": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "deployment_locks": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "execution_fences": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "host_delivery_descriptors": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "host_delivery_intents": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "host_delivery_migrations": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "host_delivery_plans": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "host_delivery_targets": "406f419aba5db2778e0ac551cb5694a1c5c38efa067343386d108978536331b5",
+    "images": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "release_queue": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "releases": "531e02046f9de399445e6050e1a16d4de2185323480a7dfbeb402299d1425f1e"
+   },
+   "field": "controller_revision",
+   "message": "host delivery refused: migration_controller_code_unavailable (controller_revision)",
+   "reason_code": "migration_controller_code_unavailable",
+   "refused": "DeliveryRefused",
+   "store": "b449330e9e40b286ce3141c64bd322b0b57d3bf7b87c8dac2ea70aaeee6ea70d",
+   "wrote": false
+  },
+  "matching_code": {
+   "buckets": {
+    "deployment": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "deployment_locks": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "execution_fences": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "host_delivery_descriptors": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "host_delivery_intents": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "host_delivery_migrations": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "host_delivery_plans": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "host_delivery_targets": "406f419aba5db2778e0ac551cb5694a1c5c38efa067343386d108978536331b5",
+    "images": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "release_queue": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "releases": "531e02046f9de399445e6050e1a16d4de2185323480a7dfbeb402299d1425f1e"
+   },
+   "store": "b449330e9e40b286ce3141c64bd322b0b57d3bf7b87c8dac2ea70aaeee6ea70d",
+   "value": "7777777777777777777777777777777777777777",
+   "wrote": false
+  },
+  "port_missing": {
+   "buckets": {
+    "deployment": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "deployment_locks": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "execution_fences": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "host_delivery_descriptors": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "host_delivery_intents": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "host_delivery_migrations": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "host_delivery_plans": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "host_delivery_targets": "406f419aba5db2778e0ac551cb5694a1c5c38efa067343386d108978536331b5",
+    "images": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "release_queue": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "releases": "531e02046f9de399445e6050e1a16d4de2185323480a7dfbeb402299d1425f1e"
+   },
+   "field": "controller_revision",
+   "message": "host delivery refused: migration_controller_code_unavailable (controller_revision)",
+   "reason_code": "migration_controller_code_unavailable",
+   "refused": "DeliveryRefused",
+   "store": "b449330e9e40b286ce3141c64bd322b0b57d3bf7b87c8dac2ea70aaeee6ea70d",
+   "wrote": false
+  },
+  "port_raises": {
+   "buckets": {
+    "deployment": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "deployment_locks": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "execution_fences": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "host_delivery_descriptors": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "host_delivery_intents": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "host_delivery_migrations": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "host_delivery_plans": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "host_delivery_targets": "406f419aba5db2778e0ac551cb5694a1c5c38efa067343386d108978536331b5",
+    "images": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "release_queue": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "releases": "531e02046f9de399445e6050e1a16d4de2185323480a7dfbeb402299d1425f1e"
+   },
+   "field": "controller_revision",
+   "message": "host delivery refused: migration_controller_code_unavailable (controller_revision)",
+   "reason_code": "migration_controller_code_unavailable",
+   "refused": "DeliveryRefused",
+   "store": "b449330e9e40b286ce3141c64bd322b0b57d3bf7b87c8dac2ea70aaeee6ea70d",
+   "wrote": false
+  },
+  "returns_none": {
+   "buckets": {
+    "deployment": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "deployment_locks": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "execution_fences": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "host_delivery_descriptors": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "host_delivery_intents": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "host_delivery_migrations": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "host_delivery_plans": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "host_delivery_targets": "406f419aba5db2778e0ac551cb5694a1c5c38efa067343386d108978536331b5",
+    "images": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "release_queue": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "releases": "531e02046f9de399445e6050e1a16d4de2185323480a7dfbeb402299d1425f1e"
+   },
+   "field": "controller_revision",
+   "message": "host delivery refused: migration_controller_code_unavailable (controller_revision)",
+   "reason_code": "migration_controller_code_unavailable",
+   "refused": "DeliveryRefused",
+   "store": "b449330e9e40b286ce3141c64bd322b0b57d3bf7b87c8dac2ea70aaeee6ea70d",
+   "wrote": false
+  }
+ },
+ "coverage": {
+  "refusals_observed": {
+   "environment_reverification_controller_mismatch": 1,
+   "environment_reverification_controller_unavailable": 2,
+   "migration_ack_invalid": 15,
+   "migration_ack_mismatch": 6,
+   "migration_attempt_debt": 1,
+   "migration_candidate_mismatch": 2,
+   "migration_conflict": 4,
+   "migration_controller_code_mismatch": 4,
+   "migration_controller_code_unavailable": 8,
+   "migration_controller_running": 2,
+   "migration_host_touched": 1,
+   "migration_not_applicable": 3,
+   "migration_not_registered": 1,
+   "migration_pin_mismatch": 7,
+   "migration_pin_unavailable": 4,
+   "migration_plan_mismatch": 2,
+   "migration_release_refused": 1,
+   "migration_request_invalid": 8,
+   "migration_target_busy": 1,
+   "migration_unknown": 1,
+   "target_reserved_by_migration": 2,
+   "withdraw_migration_held": 1
+  },
+  "unreachable": {
+   "concurrent_stage / concurrent_owner_of_target": "PostgreSQL and thread-barrier tests: the units family carries PG",
+   "reservation_in": "M7's private `HostDelivery._reservation_in` is not a public surface: the reservation is observed through register's target_reserved_by_migration refusal and the migration record's state"
+  }
+ },
+ "environment_lane": {
+  "controller_code_ports": {
+   "missing": {
+    "buckets": {
+     "deployment": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "deployment_locks": "8774dbffbbd2f98c3d2c45d0030ded80cf33c08c092417df5053fe9aa9295826",
+     "execution_fences": "86f993286c24a99786199919f02f0d5a2a0ae27bcc7e56f45d3d5ebe774f1364",
+     "host_delivery_descriptors": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "host_delivery_intents": "2895121fef5472f567b5d1cff7b8a95768962abb78944f0555117327547a0d8e",
+     "host_delivery_migrations": "4a350b6d1a03b3af63177d233fa755971fec1dbcf5032101ec269ccaed5864ae",
+     "host_delivery_plans": "5ede689ab0423b648fe011748582e505fdca0f69e472babaeaa70d8ef9fdb638",
+     "host_delivery_targets": "406f419aba5db2778e0ac551cb5694a1c5c38efa067343386d108978536331b5",
+     "images": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "release_queue": "cc67bd98803003e3d948296318aa0e1bfd019233ee9766886b517a522638ab2a",
+     "releases": "8012879ba1c27a8b95f003f1301ecf340eb199d5ed6b68c1e9ea0a5ec27e416a"
+    },
+    "controller_resolved": "7777777777777777777777777777777777777777",
+    "label": "controller_code_missing",
+    "old_intent_not_withdrawn": true,
+    "steps": [
+     {
+      "field": "controller_revision",
+      "message": "host delivery refused: migration_controller_code_unavailable (controller_revision)",
+      "reason_code": "migration_controller_code_unavailable",
+      "refused": "DeliveryRefused",
+      "step": "stage_refused",
+      "store": "01a9ae81ec38284538e75ce833f7aa94854242dd613cd0a4cc27a40142e2cfd8",
+      "wrote": false
+     },
+     {
+      "step": "stage_with_the_approved_code",
+      "store": "e997d94f255a786b8ccaff613c2da3d49c27f339177c2245ba28c90dd20ab55e",
+      "value": {
+       "acknowledged": false,
+       "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+       "cached": false,
+       "kind": "environment_reverification",
+       "migration": true,
+       "migration_id": "2d013ad725898d3ed9e6b456cd4f95691cd888f0d2ae4a2b64c9211e2567da68",
+       "old_plan_id": "delivery-plan-migrated",
+       "plan_id": null,
+       "plan_sha256": null,
+       "request_sha256": "e2e2212c760d61d34d1c64d5819b581ba9c26e0ed2f80b8aa82296f5fe68f012",
+       "source_release_id": "54ee5723993ca67410ec05995a41fa80745b32130e5b8707eeb9248769a1c996",
+       "state": "staged",
+       "successor_release_id": "9f8a4edb9c4fd65ecf95f82faa23c80e71392458bb9150f6f8cdbb311532da10",
+       "target_id": "canary-service"
+      },
+      "wrote": true
+     }
+    ],
+    "steps_that_wrote": [
+     "stage_with_the_approved_code"
+    ],
+    "successor_unused": true
+   },
+   "not_a_revision": {
+    "buckets": {
+     "deployment": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "deployment_locks": "8774dbffbbd2f98c3d2c45d0030ded80cf33c08c092417df5053fe9aa9295826",
+     "execution_fences": "81de628f8980c05f83d0b4287fcd40178309ad2e8c7aa50d02a97f2a99505a34",
+     "host_delivery_descriptors": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "host_delivery_intents": "2895121fef5472f567b5d1cff7b8a95768962abb78944f0555117327547a0d8e",
+     "host_delivery_migrations": "4a350b6d1a03b3af63177d233fa755971fec1dbcf5032101ec269ccaed5864ae",
+     "host_delivery_plans": "5ede689ab0423b648fe011748582e505fdca0f69e472babaeaa70d8ef9fdb638",
+     "host_delivery_targets": "406f419aba5db2778e0ac551cb5694a1c5c38efa067343386d108978536331b5",
+     "images": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "release_queue": "cc67bd98803003e3d948296318aa0e1bfd019233ee9766886b517a522638ab2a",
+     "releases": "8012879ba1c27a8b95f003f1301ecf340eb199d5ed6b68c1e9ea0a5ec27e416a"
+    },
+    "controller_resolved": "7777777777777777777777777777777777777777",
+    "label": "controller_code_not_a_revision",
+    "old_intent_not_withdrawn": true,
+    "steps": [
+     {
+      "field": "controller_revision",
+      "message": "host delivery refused: migration_controller_code_unavailable (controller_revision)",
+      "reason_code": "migration_controller_code_unavailable",
+      "refused": "DeliveryRefused",
+      "step": "stage_refused",
+      "store": "52d154ee41966d077e0f0b6705fd3010caa03b872e62ebd99500316ec6b1398c",
+      "wrote": false
+     },
+     {
+      "step": "stage_with_the_approved_code",
+      "store": "94d2c65f288c0d65a9d2f827af0ad172f544212a649716aa8a953acab1869f3e",
+      "value": {
+       "acknowledged": false,
+       "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+       "cached": false,
+       "kind": "environment_reverification",
+       "migration": true,
+       "migration_id": "2d013ad725898d3ed9e6b456cd4f95691cd888f0d2ae4a2b64c9211e2567da68",
+       "old_plan_id": "delivery-plan-migrated",
+       "plan_id": null,
+       "plan_sha256": null,
+       "request_sha256": "e2e2212c760d61d34d1c64d5819b581ba9c26e0ed2f80b8aa82296f5fe68f012",
+       "source_release_id": "54ee5723993ca67410ec05995a41fa80745b32130e5b8707eeb9248769a1c996",
+       "state": "staged",
+       "successor_release_id": "9f8a4edb9c4fd65ecf95f82faa23c80e71392458bb9150f6f8cdbb311532da10",
+       "target_id": "canary-service"
+      },
+      "wrote": true
+     }
+    ],
+    "steps_that_wrote": [
+     "stage_with_the_approved_code"
+    ],
+    "successor_unused": true
+   },
+   "other_code": {
+    "buckets": {
+     "deployment": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "deployment_locks": "8774dbffbbd2f98c3d2c45d0030ded80cf33c08c092417df5053fe9aa9295826",
+     "execution_fences": "ea6ab37b9d3aece0b712c376fa65c700c5953a9d140e060a26f42939c598de3c",
+     "host_delivery_descriptors": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "host_delivery_intents": "2895121fef5472f567b5d1cff7b8a95768962abb78944f0555117327547a0d8e",
+     "host_delivery_migrations": "4a350b6d1a03b3af63177d233fa755971fec1dbcf5032101ec269ccaed5864ae",
+     "host_delivery_plans": "5ede689ab0423b648fe011748582e505fdca0f69e472babaeaa70d8ef9fdb638",
+     "host_delivery_targets": "406f419aba5db2778e0ac551cb5694a1c5c38efa067343386d108978536331b5",
+     "images": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "release_queue": "cc67bd98803003e3d948296318aa0e1bfd019233ee9766886b517a522638ab2a",
+     "releases": "8012879ba1c27a8b95f003f1301ecf340eb199d5ed6b68c1e9ea0a5ec27e416a"
+    },
+    "controller_resolved": "7777777777777777777777777777777777777777",
+    "label": "controller_code_other_code",
+    "old_intent_not_withdrawn": true,
+    "steps": [
+     {
+      "field": "controller_revision",
+      "message": "host delivery refused: migration_controller_code_mismatch (controller_revision)",
+      "reason_code": "migration_controller_code_mismatch",
+      "refused": "DeliveryRefused",
+      "step": "stage_refused",
+      "store": "b47970da093a23bb25cc669e5e8cb293a48483c7177716fa0b3506818fc162fd",
+      "wrote": false
+     },
+     {
+      "step": "stage_with_the_approved_code",
+      "store": "08e60edceb621fd29c14a932ddd280276324cd02a124b642b573c19aa8298eff",
+      "value": {
+       "acknowledged": false,
+       "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+       "cached": false,
+       "kind": "environment_reverification",
+       "migration": true,
+       "migration_id": "2d013ad725898d3ed9e6b456cd4f95691cd888f0d2ae4a2b64c9211e2567da68",
+       "old_plan_id": "delivery-plan-migrated",
+       "plan_id": null,
+       "plan_sha256": null,
+       "request_sha256": "e2e2212c760d61d34d1c64d5819b581ba9c26e0ed2f80b8aa82296f5fe68f012",
+       "source_release_id": "54ee5723993ca67410ec05995a41fa80745b32130e5b8707eeb9248769a1c996",
+       "state": "staged",
+       "successor_release_id": "9f8a4edb9c4fd65ecf95f82faa23c80e71392458bb9150f6f8cdbb311532da10",
+       "target_id": "canary-service"
+      },
+      "wrote": true
+     }
+    ],
+    "steps_that_wrote": [
+     "stage_with_the_approved_code"
+    ],
+    "successor_unused": true
+   },
+   "raises": {
+    "buckets": {
+     "deployment": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "deployment_locks": "8774dbffbbd2f98c3d2c45d0030ded80cf33c08c092417df5053fe9aa9295826",
+     "execution_fences": "b179586aedb3506c12362ac4c28000dc732c18247f2f033db9216b750f921435",
+     "host_delivery_descriptors": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "host_delivery_intents": "2895121fef5472f567b5d1cff7b8a95768962abb78944f0555117327547a0d8e",
+     "host_delivery_migrations": "4a350b6d1a03b3af63177d233fa755971fec1dbcf5032101ec269ccaed5864ae",
+     "host_delivery_plans": "5ede689ab0423b648fe011748582e505fdca0f69e472babaeaa70d8ef9fdb638",
+     "host_delivery_targets": "406f419aba5db2778e0ac551cb5694a1c5c38efa067343386d108978536331b5",
+     "images": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "release_queue": "cc67bd98803003e3d948296318aa0e1bfd019233ee9766886b517a522638ab2a",
+     "releases": "8012879ba1c27a8b95f003f1301ecf340eb199d5ed6b68c1e9ea0a5ec27e416a"
+    },
+    "controller_resolved": "7777777777777777777777777777777777777777",
+    "label": "controller_code_raises",
+    "old_intent_not_withdrawn": true,
+    "steps": [
+     {
+      "field": "controller_revision",
+      "message": "host delivery refused: migration_controller_code_unavailable (controller_revision)",
+      "reason_code": "migration_controller_code_unavailable",
+      "refused": "DeliveryRefused",
+      "step": "stage_refused",
+      "store": "d853ed05f1a868c953ace8eb614b2b01eea006dc0cb890071850dd41bd6b25ad",
+      "wrote": false
+     },
+     {
+      "step": "stage_with_the_approved_code",
+      "store": "b157f47bc25bfd4cfc3d13fcaf613f9295414ac2dd94f754607d2510919310b3",
+      "value": {
+       "acknowledged": false,
+       "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+       "cached": false,
+       "kind": "environment_reverification",
+       "migration": true,
+       "migration_id": "2d013ad725898d3ed9e6b456cd4f95691cd888f0d2ae4a2b64c9211e2567da68",
+       "old_plan_id": "delivery-plan-migrated",
+       "plan_id": null,
+       "plan_sha256": null,
+       "request_sha256": "e2e2212c760d61d34d1c64d5819b581ba9c26e0ed2f80b8aa82296f5fe68f012",
+       "source_release_id": "54ee5723993ca67410ec05995a41fa80745b32130e5b8707eeb9248769a1c996",
+       "state": "staged",
+       "successor_release_id": "9f8a4edb9c4fd65ecf95f82faa23c80e71392458bb9150f6f8cdbb311532da10",
+       "target_id": "canary-service"
+      },
+      "wrote": true
+     }
+    ],
+    "steps_that_wrote": [
+     "stage_with_the_approved_code"
+    ],
+    "successor_unused": true
+   },
+   "returns_none": {
+    "buckets": {
+     "deployment": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "deployment_locks": "8774dbffbbd2f98c3d2c45d0030ded80cf33c08c092417df5053fe9aa9295826",
+     "execution_fences": "fe558ae569978ab73f86a48a18d74c69c4e37e0b57d4437ece187d0607faef1f",
+     "host_delivery_descriptors": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "host_delivery_intents": "2895121fef5472f567b5d1cff7b8a95768962abb78944f0555117327547a0d8e",
+     "host_delivery_migrations": "4a350b6d1a03b3af63177d233fa755971fec1dbcf5032101ec269ccaed5864ae",
+     "host_delivery_plans": "5ede689ab0423b648fe011748582e505fdca0f69e472babaeaa70d8ef9fdb638",
+     "host_delivery_targets": "406f419aba5db2778e0ac551cb5694a1c5c38efa067343386d108978536331b5",
+     "images": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "release_queue": "cc67bd98803003e3d948296318aa0e1bfd019233ee9766886b517a522638ab2a",
+     "releases": "8012879ba1c27a8b95f003f1301ecf340eb199d5ed6b68c1e9ea0a5ec27e416a"
+    },
+    "controller_resolved": "7777777777777777777777777777777777777777",
+    "label": "controller_code_returns_none",
+    "old_intent_not_withdrawn": true,
+    "steps": [
+     {
+      "field": "controller_revision",
+      "message": "host delivery refused: migration_controller_code_unavailable (controller_revision)",
+      "reason_code": "migration_controller_code_unavailable",
+      "refused": "DeliveryRefused",
+      "step": "stage_refused",
+      "store": "dbc4d51bb68254df5e83e8042bcb2afb739dd3a3a0611def4b85677d704e649c",
+      "wrote": false
+     },
+     {
+      "step": "stage_with_the_approved_code",
+      "store": "b4e0fdb742b0ca2126f2594014115e2b280688a5391684d24935a7023851abc8",
+      "value": {
+       "acknowledged": false,
+       "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+       "cached": false,
+       "kind": "environment_reverification",
+       "migration": true,
+       "migration_id": "2d013ad725898d3ed9e6b456cd4f95691cd888f0d2ae4a2b64c9211e2567da68",
+       "old_plan_id": "delivery-plan-migrated",
+       "plan_id": null,
+       "plan_sha256": null,
+       "request_sha256": "e2e2212c760d61d34d1c64d5819b581ba9c26e0ed2f80b8aa82296f5fe68f012",
+       "source_release_id": "54ee5723993ca67410ec05995a41fa80745b32130e5b8707eeb9248769a1c996",
+       "state": "staged",
+       "successor_release_id": "9f8a4edb9c4fd65ecf95f82faa23c80e71392458bb9150f6f8cdbb311532da10",
+       "target_id": "canary-service"
+      },
+      "wrote": true
+     }
+    ],
+    "steps_that_wrote": [
+     "stage_with_the_approved_code"
+    ],
+    "successor_unused": true
+   }
+  },
+  "environment_kind": {
+   "after_stage": {
+    "controller_revision": "7777777777777777777777777777777777777777",
+    "old_intent": {
+     "after_verification": "merged",
+     "attempts": 1,
+     "descriptor_sha256": null,
+     "error_type": null,
+     "head": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "held": null,
+     "main_effect": "merged",
+     "merged_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "migration": {
+      "migration_id": "3bd5fa8659632fbfbea280f07413c04fcbe8f402b5ce8102f8a643a34ca10c68",
+      "predecessor_plan_id": "delivery-plan-1",
+      "source_release_id": "8fcff742a3650f9b762933d9ca3c35bcf8b321464cc01ea670f2db1cbaf2637c"
+     },
+     "outcome": "withdrawn",
+     "pr_number": 7,
+     "previous_stage": "blocked",
+     "reason_code": "release_rejected_superseded",
+     "stage": "withdrawn",
+     "supersession": {
+      "migration_id": "2d013ad725898d3ed9e6b456cd4f95691cd888f0d2ae4a2b64c9211e2567da68",
+      "original_halt": {
+       "attempts": 1,
+       "error_type": null,
+       "outcome": "blocked",
+       "previous_stage": "verifying",
+       "reason_code": "release_rejected",
+       "stage": "blocked",
+       "updated_at": "2026-09-22T00:00:00+00:00"
+      },
+      "successor_release_id": "9f8a4edb9c4fd65ecf95f82faa23c80e71392458bb9150f6f8cdbb311532da10"
+     },
+     "verification": {
+      "attempts": [
+       {
+        "attempt_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "cleanup": {
+         "state": "confirmed"
+        }
+       }
+      ]
+     }
+    },
+    "old_migration_carried": true,
+    "record": {
+     "ack": null,
+     "at": "2026-09-22T00:00:00+00:00",
+     "id": "delivery-plan-migrated",
+     "kind": "environment_reverification",
+     "migration_id": "2d013ad725898d3ed9e6b456cd4f95691cd888f0d2ae4a2b64c9211e2567da68",
+     "plan_id": null,
+     "plan_sha256": null,
+     "request": {
+      "actor": "conductor",
+      "approval": {
+       "approved_by": "conductor",
+       "controller_revision": "7777777777777777777777777777777777777777",
+       "fix_evidence": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+       "intent_id": "control-intent-1",
+       "kind": "environment_reverification",
+       "lane": "h1-file-canary",
+       "old_plan_id": "delivery-plan-migrated",
+       "old_plan_sha256": "678c3cc71cee27abd08351228f6dfe764f75f4a38b393fedb6e6c1981dfbfda0",
+       "policy_id": "control-policy-1",
+       "source_policy_hash": "d8af934d6c23a4d5d51c363137c34b9607d2598e4e9d3b55e579ae864b3f465d",
+       "source_release_id": "54ee5723993ca67410ec05995a41fa80745b32130e5b8707eeb9248769a1c996",
+       "target_id": "canary-service"
+      },
+      "candidate_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "kind": "environment_reverification",
+      "migration_id": "2d013ad725898d3ed9e6b456cd4f95691cd888f0d2ae4a2b64c9211e2567da68",
+      "old_plan_id": "delivery-plan-migrated",
+      "old_plan_sha256": "678c3cc71cee27abd08351228f6dfe764f75f4a38b393fedb6e6c1981dfbfda0",
+      "source_policy_hash": "d8af934d6c23a4d5d51c363137c34b9607d2598e4e9d3b55e579ae864b3f465d",
+      "source_release_id": "54ee5723993ca67410ec05995a41fa80745b32130e5b8707eeb9248769a1c996",
+      "target_id": "canary-service"
+     },
+     "request_sha256": "e2e2212c760d61d34d1c64d5819b581ba9c26e0ed2f80b8aa82296f5fe68f012",
+     "source_release_id": "54ee5723993ca67410ec05995a41fa80745b32130e5b8707eeb9248769a1c996",
+     "state": "staged",
+     "successor_release_id": "9f8a4edb9c4fd65ecf95f82faa23c80e71392458bb9150f6f8cdbb311532da10",
+     "target_id": "canary-service"
+    },
+    "resolver_calls": [
+     [
+      "1111111111111111111111111111111111111111",
+      "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+     ]
+    ],
+    "resolver_re_derived_the_sources_own_pin": true,
+    "source_release_unchanged": true,
+    "successor": {
+     "checks": {},
+     "environment_reverification": {
+      "actor": "conductor",
+      "approved_by": "conductor",
+      "at": "2026-09-22T00:00:00+00:00",
+      "controller_resolved": "7777777777777777777777777777777777777777",
+      "controller_revision": "7777777777777777777777777777777777777777",
+      "fix_evidence": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "intent_id": "control-intent-1",
+      "kind": "environment_reverification",
+      "lane": "h1-file-canary",
+      "old_plan_id": "delivery-plan-migrated",
+      "old_plan_sha256": "678c3cc71cee27abd08351228f6dfe764f75f4a38b393fedb6e6c1981dfbfda0",
+      "policy_id": "control-policy-1",
+      "source_checks_digest": "dfc6d51008c24d9c11a8b390b8c56d0950cec94e11f696886c2b5d38d114cd37",
+      "source_digest": "a7444df428f0eaf4a0eccb22378b5170b9dff55c2934427e153a6ec965c2b8a1",
+      "source_policy_hash": "d8af934d6c23a4d5d51c363137c34b9607d2598e4e9d3b55e579ae864b3f465d",
+      "source_release_id": "54ee5723993ca67410ec05995a41fa80745b32130e5b8707eeb9248769a1c996",
+      "target_id": "canary-service"
+     },
+     "evaluator_migration": {
+      "actor": "conductor",
+      "approved_by": "conductor",
+      "at": "2026-09-22T00:00:00+00:00",
+      "base": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "evaluator_revision": "1111111111111111111111111111111111111111",
+      "evaluator_tree": "2222222222222222222222222222222222222222",
+      "evidence": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
+      "patch_sha256": "3333333333333333333333333333333333333333333333333333333333333333",
+      "paths": [
+       "tests/test_fixture.py"
+      ],
+      "source_checks_digest": "5e24b855a9ac5a5077cca91f5708cf68ffe1bcbebf1d9041baea908017eb1a8e",
+      "source_digest": "c90c6997c0ce7483d7f1947ba9e0e701acf9c2d39d20dbaf87990aa587fcc7a4",
+      "source_policy_hash": "1ff9eec7f03e248b94da0de8eacfccd3171893db704aed3fb88914540a97986b",
+      "source_release_id": "8fcff742a3650f9b762933d9ca3c35bcf8b321464cc01ea670f2db1cbaf2637c"
+     },
+     "keys": [
+      "candidate",
+      "checks",
+      "created_at",
+      "environment_reverification",
+      "evaluator_migration",
+      "id",
+      "inherited_reviews",
+      "policy",
+      "policy_hash",
+      "reverify_of",
+      "reviews",
+      "status"
+     ],
+     "policy": {
+      "checks": [
+       "tests",
+       "cli_start",
+       "cli_file_task"
+      ],
+      "evaluator": "fixture-incumbent-policy",
+      "revision": "1111111111111111111111111111111111111111"
+     },
+     "policy_hash": "d8af934d6c23a4d5d51c363137c34b9607d2598e4e9d3b55e579ae864b3f465d",
+     "reverify_of": "54ee5723993ca67410ec05995a41fa80745b32130e5b8707eeb9248769a1c996",
+     "status": "reviewed"
+    },
+    "successor_id_is_the_environment_successor_id": true,
+    "successor_keeps_policy_and_evaluator": [
+     true,
+     true,
+     true
+    ],
+    "successor_queue_row": null
+   },
+   "buckets": {
+    "deployment": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "deployment_locks": "8774dbffbbd2f98c3d2c45d0030ded80cf33c08c092417df5053fe9aa9295826",
+    "execution_fences": "320de11bb2efab1e778d6be264b12e4643f85e7890b147d7a09e4aaade863e40",
+    "host_delivery_descriptors": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "host_delivery_intents": "084baf8008665f9a19b0a74d086e8f067f08c6180aa915be03c392f0e97a2d3e",
+    "host_delivery_migrations": "aff15e9faba03400c4420e68fd2656bbaf3f8885d7dcae8167e1cb5a127972db",
+    "host_delivery_plans": "44e9ad4af9764f934b38ddf60dd760f589f4802600c2edc16aacc9ff12721ca9",
+    "host_delivery_targets": "406f419aba5db2778e0ac551cb5694a1c5c38efa067343386d108978536331b5",
+    "images": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "release_queue": "66622fcf5d0bb5719f4636d2310da53031bce1d1e70870039342a90c76c37fa2",
+    "releases": "8012879ba1c27a8b95f003f1301ecf340eb199d5ed6b68c1e9ea0a5ec27e416a"
+   },
+   "held_intent": {
+    "after_verification": "merged",
+    "attempts": 0,
+    "descriptor_sha256": null,
+    "error_type": null,
+    "head": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "held": "migration_unacknowledged",
+    "merged_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "migration": {
+     "migration_id": "2d013ad725898d3ed9e6b456cd4f95691cd888f0d2ae4a2b64c9211e2567da68",
+     "predecessor_plan_id": "delivery-plan-migrated",
+     "source_release_id": "54ee5723993ca67410ec05995a41fa80745b32130e5b8707eeb9248769a1c996"
+    },
+    "outcome": "progressed",
+    "pr_number": 7,
+    "previous_stage": "registered",
+    "reason_code": null,
+    "stage": "verifying"
+   },
+   "label": "environment_kind",
+   "queue_after_finalize": {
+    "attempt": 0,
+    "has_owner": false,
+    "status": "queued"
+   },
+   "replays_wrote_nothing": true,
+   "status_kinds": {
+    "environment": "environment_reverification",
+    "first": "evaluator_migration"
+   },
+   "steps": [
+    {
+     "step": "stage",
+     "store": "8bd1b3a74aa2673012bb92ea31b70da1fd2ad2f8a8176284552607d8b9333d64",
+     "value": {
+      "acknowledged": false,
+      "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+      "cached": false,
+      "kind": "environment_reverification",
+      "migration": true,
+      "migration_id": "2d013ad725898d3ed9e6b456cd4f95691cd888f0d2ae4a2b64c9211e2567da68",
+      "old_plan_id": "delivery-plan-migrated",
+      "plan_id": null,
+      "plan_sha256": null,
+      "request_sha256": "e2e2212c760d61d34d1c64d5819b581ba9c26e0ed2f80b8aa82296f5fe68f012",
+      "source_release_id": "54ee5723993ca67410ec05995a41fa80745b32130e5b8707eeb9248769a1c996",
+      "state": "staged",
+      "successor_release_id": "9f8a4edb9c4fd65ecf95f82faa23c80e71392458bb9150f6f8cdbb311532da10",
+      "target_id": "canary-service"
+     },
+     "wrote": true
+    },
+    {
+     "step": "stage_replay",
+     "store": "8bd1b3a74aa2673012bb92ea31b70da1fd2ad2f8a8176284552607d8b9333d64",
+     "value": {
+      "acknowledged": false,
+      "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+      "cached": true,
+      "kind": "environment_reverification",
+      "migration": true,
+      "migration_id": "2d013ad725898d3ed9e6b456cd4f95691cd888f0d2ae4a2b64c9211e2567da68",
+      "old_plan_id": "delivery-plan-migrated",
+      "plan_id": null,
+      "plan_sha256": null,
+      "request_sha256": "e2e2212c760d61d34d1c64d5819b581ba9c26e0ed2f80b8aa82296f5fe68f012",
+      "source_release_id": "54ee5723993ca67410ec05995a41fa80745b32130e5b8707eeb9248769a1c996",
+      "state": "staged",
+      "successor_release_id": "9f8a4edb9c4fd65ecf95f82faa23c80e71392458bb9150f6f8cdbb311532da10",
+      "target_id": "canary-service"
+     },
+     "wrote": false
+    },
+    {
+     "step": "stage_replay_after_restart",
+     "store": "8bd1b3a74aa2673012bb92ea31b70da1fd2ad2f8a8176284552607d8b9333d64",
+     "value": {
+      "acknowledged": false,
+      "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+      "cached": true,
+      "kind": "environment_reverification",
+      "migration": true,
+      "migration_id": "2d013ad725898d3ed9e6b456cd4f95691cd888f0d2ae4a2b64c9211e2567da68",
+      "old_plan_id": "delivery-plan-migrated",
+      "plan_id": null,
+      "plan_sha256": null,
+      "request_sha256": "e2e2212c760d61d34d1c64d5819b581ba9c26e0ed2f80b8aa82296f5fe68f012",
+      "source_release_id": "54ee5723993ca67410ec05995a41fa80745b32130e5b8707eeb9248769a1c996",
+      "state": "staged",
+      "successor_release_id": "9f8a4edb9c4fd65ecf95f82faa23c80e71392458bb9150f6f8cdbb311532da10",
+      "target_id": "canary-service"
+     },
+     "wrote": false
+    },
+    {
+     "field": "request",
+     "message": "host delivery refused: migration_conflict (request)",
+     "reason_code": "migration_conflict",
+     "refused": "DeliveryRefused",
+     "step": "stage_conflict",
+     "store": "8bd1b3a74aa2673012bb92ea31b70da1fd2ad2f8a8176284552607d8b9333d64",
+     "wrote": false
+    },
+    {
+     "step": "register",
+     "store": "0a6816b956af68221b45780c64d747501f42f3237860df0b288ee2f446f47750",
+     "value": {
+      "acknowledged": false,
+      "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+      "cached": false,
+      "kind": "environment_reverification",
+      "migration": true,
+      "migration_id": "2d013ad725898d3ed9e6b456cd4f95691cd888f0d2ae4a2b64c9211e2567da68",
+      "old_plan_id": "delivery-plan-migrated",
+      "plan_id": "delivery-plan-environment",
+      "plan_sha256": "798fb829629e3febefd0e88df07cf87247911a98f8b433b6a441e5f6e653b119",
+      "request_sha256": "e2e2212c760d61d34d1c64d5819b581ba9c26e0ed2f80b8aa82296f5fe68f012",
+      "source_release_id": "54ee5723993ca67410ec05995a41fa80745b32130e5b8707eeb9248769a1c996",
+      "state": "registered",
+      "successor_release_id": "9f8a4edb9c4fd65ecf95f82faa23c80e71392458bb9150f6f8cdbb311532da10",
+      "target_id": "canary-service"
+     },
+     "wrote": true
+    },
+    {
+     "step": "register_replay",
+     "store": "0a6816b956af68221b45780c64d747501f42f3237860df0b288ee2f446f47750",
+     "value": {
+      "acknowledged": false,
+      "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+      "cached": true,
+      "kind": "environment_reverification",
+      "migration": true,
+      "migration_id": "2d013ad725898d3ed9e6b456cd4f95691cd888f0d2ae4a2b64c9211e2567da68",
+      "old_plan_id": "delivery-plan-migrated",
+      "plan_id": "delivery-plan-environment",
+      "plan_sha256": "798fb829629e3febefd0e88df07cf87247911a98f8b433b6a441e5f6e653b119",
+      "request_sha256": "e2e2212c760d61d34d1c64d5819b581ba9c26e0ed2f80b8aa82296f5fe68f012",
+      "source_release_id": "54ee5723993ca67410ec05995a41fa80745b32130e5b8707eeb9248769a1c996",
+      "state": "registered",
+      "successor_release_id": "9f8a4edb9c4fd65ecf95f82faa23c80e71392458bb9150f6f8cdbb311532da10",
+      "target_id": "canary-service"
+     },
+     "wrote": false
+    },
+    {
+     "step": "finalize_after_restart",
+     "store": "e8078f84809bf226fc73ded9765640a0aac49bb6ec96cbcd34fcd69c687f2338",
+     "value": {
+      "acknowledged": true,
+      "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+      "cached": false,
+      "kind": "environment_reverification",
+      "migration": true,
+      "migration_id": "2d013ad725898d3ed9e6b456cd4f95691cd888f0d2ae4a2b64c9211e2567da68",
+      "old_plan_id": "delivery-plan-migrated",
+      "plan_id": "delivery-plan-environment",
+      "plan_sha256": "798fb829629e3febefd0e88df07cf87247911a98f8b433b6a441e5f6e653b119",
+      "request_sha256": "e2e2212c760d61d34d1c64d5819b581ba9c26e0ed2f80b8aa82296f5fe68f012",
+      "source_release_id": "54ee5723993ca67410ec05995a41fa80745b32130e5b8707eeb9248769a1c996",
+      "state": "active",
+      "successor_release_id": "9f8a4edb9c4fd65ecf95f82faa23c80e71392458bb9150f6f8cdbb311532da10",
+      "target_id": "canary-service"
+     },
+     "wrote": true
+    },
+    {
+     "step": "finalize_replay",
+     "store": "e8078f84809bf226fc73ded9765640a0aac49bb6ec96cbcd34fcd69c687f2338",
+     "value": {
+      "acknowledged": true,
+      "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+      "cached": true,
+      "kind": "environment_reverification",
+      "migration": true,
+      "migration_id": "2d013ad725898d3ed9e6b456cd4f95691cd888f0d2ae4a2b64c9211e2567da68",
+      "old_plan_id": "delivery-plan-migrated",
+      "plan_id": "delivery-plan-environment",
+      "plan_sha256": "798fb829629e3febefd0e88df07cf87247911a98f8b433b6a441e5f6e653b119",
+      "request_sha256": "e2e2212c760d61d34d1c64d5819b581ba9c26e0ed2f80b8aa82296f5fe68f012",
+      "source_release_id": "54ee5723993ca67410ec05995a41fa80745b32130e5b8707eeb9248769a1c996",
+      "state": "active",
+      "successor_release_id": "9f8a4edb9c4fd65ecf95f82faa23c80e71392458bb9150f6f8cdbb311532da10",
+      "target_id": "canary-service"
+     },
+     "wrote": false
+    }
+   ],
+   "steps_that_wrote": [
+    "stage",
+    "register",
+    "finalize_after_restart"
+   ]
+  },
+  "environment_refusals": {
+   "buckets": {
+    "deployment": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "deployment_locks": "8774dbffbbd2f98c3d2c45d0030ded80cf33c08c092417df5053fe9aa9295826",
+    "execution_fences": "89cc57f968abcfce33beb0366fde1a1a55d363e4609850413f1de26d613927f4",
+    "host_delivery_descriptors": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "host_delivery_intents": "aab7aed781323532118f5197691e109b7eab282cf8606eb726d950e5ac02aa48",
+    "host_delivery_migrations": "f7a14f98a8b9188463728673c91584366453d8c5f2aaaa82e0f698f1ad0913b2",
+    "host_delivery_plans": "5ede689ab0423b648fe011748582e505fdca0f69e472babaeaa70d8ef9fdb638",
+    "host_delivery_targets": "406f419aba5db2778e0ac551cb5694a1c5c38efa067343386d108978536331b5",
+    "images": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "release_queue": "cc67bd98803003e3d948296318aa0e1bfd019233ee9766886b517a522638ab2a",
+    "releases": "d5e3b671a49828e26ef21c9cd78214a340dd276a141a349d3fd7818a6d1b1e67"
+   },
+   "label": "environment_refusals",
+   "steps": [
+    {
+     "field": "approval",
+     "message": "host delivery refused: migration_request_invalid (approval)",
+     "reason_code": "migration_request_invalid",
+     "refused": "DeliveryRefused",
+     "step": "approval_names_another_old_plan_id",
+     "store": "cdaeda9d7decda85f71cd074694d00a797ea182bc3f978343940a5ffd34ef161",
+     "wrote": false
+    },
+    {
+     "field": "approval",
+     "message": "host delivery refused: migration_request_invalid (approval)",
+     "reason_code": "migration_request_invalid",
+     "refused": "DeliveryRefused",
+     "step": "approval_names_another_target_id",
+     "store": "cdaeda9d7decda85f71cd074694d00a797ea182bc3f978343940a5ffd34ef161",
+     "wrote": false
+    },
+    {
+     "field": "approval",
+     "message": "host delivery refused: migration_request_invalid (approval)",
+     "reason_code": "migration_request_invalid",
+     "refused": "DeliveryRefused",
+     "step": "approval_names_another_source_policy_hash",
+     "store": "cdaeda9d7decda85f71cd074694d00a797ea182bc3f978343940a5ffd34ef161",
+     "wrote": false
+    },
+    {
+     "field": "approval",
+     "message": "host delivery refused: migration_request_invalid (approval)",
+     "reason_code": "migration_request_invalid",
+     "refused": "DeliveryRefused",
+     "step": "approval_names_another_kind",
+     "store": "cdaeda9d7decda85f71cd074694d00a797ea182bc3f978343940a5ffd34ef161",
+     "wrote": false
+    },
+    {
+     "field": "kind",
+     "message": "host delivery refused: migration_request_invalid (kind)",
+     "reason_code": "migration_request_invalid",
+     "refused": "DeliveryRefused",
+     "step": "request_kind_other",
+     "store": "cdaeda9d7decda85f71cd074694d00a797ea182bc3f978343940a5ffd34ef161",
+     "wrote": false
+    },
+    {
+     "field": "kind",
+     "message": "host delivery refused: migration_request_invalid (kind)",
+     "reason_code": "migration_request_invalid",
+     "refused": "DeliveryRefused",
+     "step": "request_kind_list",
+     "store": "cdaeda9d7decda85f71cd074694d00a797ea182bc3f978343940a5ffd34ef161",
+     "wrote": false
+    },
+    {
+     "field": "kind",
+     "message": "host delivery refused: migration_request_invalid (kind)",
+     "reason_code": "migration_request_invalid",
+     "refused": "DeliveryRefused",
+     "step": "request_kind_None",
+     "store": "cdaeda9d7decda85f71cd074694d00a797ea182bc3f978343940a5ffd34ef161",
+     "wrote": false
+    },
+    {
+     "field": "approval",
+     "message": "host delivery refused: migration_pin_mismatch (approval)",
+     "reason_code": "migration_pin_mismatch",
+     "refused": "DeliveryRefused",
+     "step": "pin_moved",
+     "store": "cdaeda9d7decda85f71cd074694d00a797ea182bc3f978343940a5ffd34ef161",
+     "wrote": false
+    },
+    {
+     "field": "evaluator_revision",
+     "message": "host delivery refused: migration_pin_unavailable (evaluator_revision)",
+     "reason_code": "migration_pin_unavailable",
+     "refused": "DeliveryRefused",
+     "step": "pin_unavailable",
+     "store": "cdaeda9d7decda85f71cd074694d00a797ea182bc3f978343940a5ffd34ef161",
+     "wrote": false
+    },
+    {
+     "field": "controller_revision",
+     "message": "host delivery refused: migration_controller_code_mismatch (controller_revision)",
+     "reason_code": "migration_controller_code_mismatch",
+     "refused": "DeliveryRefused",
+     "step": "malformed_controller_revision",
+     "store": "cdaeda9d7decda85f71cd074694d00a797ea182bc3f978343940a5ffd34ef161",
+     "wrote": false
+    }
+   ],
+   "steps_that_wrote": []
+  },
+  "kindless_request": {
+   "buckets": {
+    "deployment": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "deployment_locks": "8774dbffbbd2f98c3d2c45d0030ded80cf33c08c092417df5053fe9aa9295826",
+    "execution_fences": "88e2f4344519c0bb46a03f0abb1982f0daa4143c0ff68054bacedfaeef1b318f",
+    "host_delivery_descriptors": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "host_delivery_intents": "15dbd29864219bb549c417e3ee1812d2c98bbf67980e521da8b669672b3bd217",
+    "host_delivery_migrations": "aa8a1cd4450008e0b866494d84a6070371b8b75d27b4f83d3e6de89926f33bf6",
+    "host_delivery_plans": "0b48564b6ff7cf58e1ae0ebf73d6427fd794013751aab66380897a1b64a0ab3f",
+    "host_delivery_targets": "406f419aba5db2778e0ac551cb5694a1c5c38efa067343386d108978536331b5",
+    "images": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "release_queue": "368e333ae6638ab9f8d3dab46236314c75c8eba28590b47f34f9ace59574cdcc",
+    "releases": "60168faff3f5e4133f1c3a4fc93bd73e27121733b7953721847a9186848db454"
+   },
+   "label": "kindless_request",
+   "record_kind": "evaluator_migration",
+   "request_has_no_kind": true,
+   "staged_kind": "evaluator_migration",
+   "steps": [
+    {
+     "step": "stage",
+     "store": "baa9b01bee57e290be31d2469704776542b7ab2a22ac153813ae6f45bf1898df",
+     "value": {
+      "acknowledged": false,
+      "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+      "cached": false,
+      "kind": "evaluator_migration",
+      "migration": true,
+      "migration_id": "002db1e7002b471680e483695815561d0f6521e19e44844d49df6663a1ded403",
+      "old_plan_id": "delivery-plan-1",
+      "plan_id": null,
+      "plan_sha256": null,
+      "request_sha256": "3c8222ace180cc4a7324ce1cc4797f51e28a0eb72908d972008a3b700d03e85a",
+      "source_release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+      "state": "staged",
+      "successor_release_id": "982a6b5ad6bb930fef03443278a68c2923c44b24966e8c72722451820a042945",
+      "target_id": "canary-service"
+     },
+     "wrote": true
+    }
+   ]
+  },
+  "release_service_controller": {
+   "buckets": {
+    "deployment": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "deployment_locks": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "execution_fences": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "host_delivery_descriptors": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "host_delivery_intents": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "host_delivery_migrations": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "host_delivery_plans": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "host_delivery_targets": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "images": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "release_queue": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "releases": "f16fae7719cf449e18fc4e82c0be8ece4be77ed1bee8a361fd6cd2db634a75bb"
+   },
+   "label": "release_service_controller",
+   "source_status": "rejected",
+   "steps": [
+    {
+     "message": "environment_reverification_controller_unavailable: the running controller code is unknown",
+     "reason_code": "environment_reverification_controller_unavailable",
+     "refused": "EnvironmentReverificationRefused",
+     "step": "controller_unresolved",
+     "store": "ea13a75804e32f688bf7842e594e10df1749a6255b1f9d1d61e24ed728952135",
+     "wrote": false
+    },
+    {
+     "message": "environment_reverification_controller_mismatch: the running controller code is not the approved revision",
+     "reason_code": "environment_reverification_controller_mismatch",
+     "refused": "EnvironmentReverificationRefused",
+     "step": "controller_other",
+     "store": "ea13a75804e32f688bf7842e594e10df1749a6255b1f9d1d61e24ed728952135",
+     "wrote": false
+    },
+    {
+     "message": "environment_reverification_controller_unavailable: the running controller code is unknown",
+     "reason_code": "environment_reverification_controller_unavailable",
+     "refused": "EnvironmentReverificationRefused",
+     "step": "controller_uppercase",
+     "store": "ea13a75804e32f688bf7842e594e10df1749a6255b1f9d1d61e24ed728952135",
+     "wrote": false
+    },
+    {
+     "controller_resolved": "7777777777777777777777777777777777777777",
+     "refused": null,
+     "step": "approved_controller"
+    }
+   ],
+   "steps_that_wrote": []
+  },
+  "reviewer_zero_controller": {
+   "buckets": {
+    "deployment": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "deployment_locks": "8774dbffbbd2f98c3d2c45d0030ded80cf33c08c092417df5053fe9aa9295826",
+    "execution_fences": "f13cb29a87565dfd860ce506afae576c37ae89e5ba4a969583e8a221c7553534",
+    "host_delivery_descriptors": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "host_delivery_intents": "2895121fef5472f567b5d1cff7b8a95768962abb78944f0555117327547a0d8e",
+    "host_delivery_migrations": "4a350b6d1a03b3af63177d233fa755971fec1dbcf5032101ec269ccaed5864ae",
+    "host_delivery_plans": "5ede689ab0423b648fe011748582e505fdca0f69e472babaeaa70d8ef9fdb638",
+    "host_delivery_targets": "406f419aba5db2778e0ac551cb5694a1c5c38efa067343386d108978536331b5",
+    "images": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "release_queue": "cc67bd98803003e3d948296318aa0e1bfd019233ee9766886b517a522638ab2a",
+    "releases": "8012879ba1c27a8b95f003f1301ecf340eb199d5ed6b68c1e9ea0a5ec27e416a"
+   },
+   "label": "reviewer_zero_controller",
+   "steps": [
+    {
+     "field": "controller_revision",
+     "message": "host delivery refused: migration_controller_code_mismatch (controller_revision)",
+     "reason_code": "migration_controller_code_mismatch",
+     "refused": "DeliveryRefused",
+     "step": "zero_controller_approval",
+     "store": "129946d89f145d328672b3778a948641fb95b8840ed024d5a4a666ec1053e81d",
+     "wrote": false
+    },
+    {
+     "step": "stage_the_approved",
+     "store": "c0734551c4cbc53422117a40679f9f3b2b5b4503164a14890bb414d5484bba4f",
+     "value": {
+      "acknowledged": false,
+      "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+      "cached": false,
+      "kind": "environment_reverification",
+      "migration": true,
+      "migration_id": "2d013ad725898d3ed9e6b456cd4f95691cd888f0d2ae4a2b64c9211e2567da68",
+      "old_plan_id": "delivery-plan-migrated",
+      "plan_id": null,
+      "plan_sha256": null,
+      "request_sha256": "e2e2212c760d61d34d1c64d5819b581ba9c26e0ed2f80b8aa82296f5fe68f012",
+      "source_release_id": "54ee5723993ca67410ec05995a41fa80745b32130e5b8707eeb9248769a1c996",
+      "state": "staged",
+      "successor_release_id": "9f8a4edb9c4fd65ecf95f82faa23c80e71392458bb9150f6f8cdbb311532da10",
+      "target_id": "canary-service"
+     },
+     "wrote": true
+    }
+   ],
+   "steps_that_wrote": [
+    "stage_the_approved"
+   ],
+   "successor_is_the_environment_successor": true
+  },
+  "source_moved": {
+   "buckets": {
+    "deployment": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "deployment_locks": "8774dbffbbd2f98c3d2c45d0030ded80cf33c08c092417df5053fe9aa9295826",
+    "execution_fences": "1079782ce322d5873f2baadd578c0deadd909e615fe9e4f940227e6ee16fe60d",
+    "host_delivery_descriptors": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "host_delivery_intents": "c4857f464ba6334f4e7ce01de100d4dcd9d10fe90f5998a3f460c41d577a6f6d",
+    "host_delivery_migrations": "f7a14f98a8b9188463728673c91584366453d8c5f2aaaa82e0f698f1ad0913b2",
+    "host_delivery_plans": "5ede689ab0423b648fe011748582e505fdca0f69e472babaeaa70d8ef9fdb638",
+    "host_delivery_targets": "406f419aba5db2778e0ac551cb5694a1c5c38efa067343386d108978536331b5",
+    "images": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "release_queue": "cc67bd98803003e3d948296318aa0e1bfd019233ee9766886b517a522638ab2a",
+    "releases": "d5e3b671a49828e26ef21c9cd78214a340dd276a141a349d3fd7818a6d1b1e67"
+   },
+   "label": "source_moved",
+   "steps": [
+    {
+     "field": "old_plan_id",
+     "message": "host delivery refused: migration_not_applicable (old_plan_id)",
+     "reason_code": "migration_not_applicable",
+     "refused": "DeliveryRefused",
+     "step": "stage_refused",
+     "store": "b47c8e38c4cd499cf3dc087d7fc685b67c3f1d45324ae076c694f9ce309d7c97",
+     "wrote": false
+    }
+   ],
+   "steps_that_wrote": []
+  }
+ },
+ "evaluator_lane": {
+  "ack_lineage": {
+   "migration_id": {
+    "buckets": {
+     "deployment": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "deployment_locks": "8774dbffbbd2f98c3d2c45d0030ded80cf33c08c092417df5053fe9aa9295826",
+     "execution_fences": "daeb9988ce17d957786cdea75dc018af8160d5f15fb991c545884867c7cf2f3b",
+     "host_delivery_descriptors": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "host_delivery_intents": "27479db9fe4c1d2e6bf9d0f4ea456236f84b5a9bd6e18ffdf831813b617f7c16",
+     "host_delivery_migrations": "2f9a4235ee5ee74eeb57aa605614448f7b70779a3a2e2dbad28f2d0a12a22031",
+     "host_delivery_plans": "7628ff7292f180411ac3e3a447e943d329c31f238c51886a55de400b758d7320",
+     "host_delivery_targets": "406f419aba5db2778e0ac551cb5694a1c5c38efa067343386d108978536331b5",
+     "images": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "release_queue": "fc6e630881ff9f72ae586feddfcdac4a8d199a879e13db2a79dfa0ab791ab89e",
+     "releases": "60168faff3f5e4133f1c3a4fc93bd73e27121733b7953721847a9186848db454"
+    },
+    "final_state": "active",
+    "label": "ack_lineage_migration_id",
+    "steps": [
+     {
+      "step": "stage",
+      "store": "092115c0bd297dd1fd7c66a80e76a776c901fc97b121a838fcafb0e78c020014",
+      "value": {
+       "acknowledged": false,
+       "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+       "cached": false,
+       "kind": "evaluator_migration",
+       "migration": true,
+       "migration_id": "002db1e7002b471680e483695815561d0f6521e19e44844d49df6663a1ded403",
+       "old_plan_id": "delivery-plan-1",
+       "plan_id": null,
+       "plan_sha256": null,
+       "request_sha256": "3c8222ace180cc4a7324ce1cc4797f51e28a0eb72908d972008a3b700d03e85a",
+       "source_release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+       "state": "staged",
+       "successor_release_id": "982a6b5ad6bb930fef03443278a68c2923c44b24966e8c72722451820a042945",
+       "target_id": "canary-service"
+      },
+      "wrote": true
+     },
+     {
+      "step": "register",
+      "store": "4850d92ffb75054ba68313f6067871f49494cf36a494267d931b5a915a514f03",
+      "value": {
+       "acknowledged": false,
+       "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+       "cached": false,
+       "kind": "evaluator_migration",
+       "migration": true,
+       "migration_id": "002db1e7002b471680e483695815561d0f6521e19e44844d49df6663a1ded403",
+       "old_plan_id": "delivery-plan-1",
+       "plan_id": "delivery-plan-migrated",
+       "plan_sha256": "574f0807789e36bd47cede40c24c6e6333e203a2cecabbefdccc0d66bd8e907f",
+       "request_sha256": "3c8222ace180cc4a7324ce1cc4797f51e28a0eb72908d972008a3b700d03e85a",
+       "source_release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+       "state": "registered",
+       "successor_release_id": "982a6b5ad6bb930fef03443278a68c2923c44b24966e8c72722451820a042945",
+       "target_id": "canary-service"
+      },
+      "wrote": true
+     },
+     {
+      "field": "lineage_sha256",
+      "message": "host delivery refused: migration_ack_mismatch (lineage_sha256)",
+      "reason_code": "migration_ack_mismatch",
+      "refused": "DeliveryRefused",
+      "step": "wrong_lineage",
+      "store": "4850d92ffb75054ba68313f6067871f49494cf36a494267d931b5a915a514f03",
+      "wrote": false
+     },
+     {
+      "field": "canary_request_id",
+      "message": "host delivery refused: migration_ack_invalid (canary_request_id)",
+      "reason_code": "migration_ack_invalid",
+      "refused": "DeliveryRefused",
+      "step": "invalid_canary_request_id_not_a_digest",
+      "store": "4850d92ffb75054ba68313f6067871f49494cf36a494267d931b5a915a514f03",
+      "wrote": false
+     },
+     {
+      "field": "canary_request_id",
+      "message": "host delivery refused: migration_ack_invalid (canary_request_id)",
+      "reason_code": "migration_ack_invalid",
+      "refused": "DeliveryRefused",
+      "step": "invalid_canary_request_id_not_hex",
+      "store": "4850d92ffb75054ba68313f6067871f49494cf36a494267d931b5a915a514f03",
+      "wrote": false
+     },
+     {
+      "field": "ack",
+      "message": "host delivery refused: migration_ack_invalid (ack)",
+      "reason_code": "migration_ack_invalid",
+      "refused": "DeliveryRefused",
+      "step": "invalid_blank_control_action",
+      "store": "4850d92ffb75054ba68313f6067871f49494cf36a494267d931b5a915a514f03",
+      "wrote": false
+     },
+     {
+      "step": "finalize",
+      "store": "ebe0adb47fb76840b72155ff898ebdbd46dbdf2ba1eb9ec79da7b084ead16948",
+      "value": {
+       "acknowledged": true,
+       "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+       "cached": false,
+       "kind": "evaluator_migration",
+       "migration": true,
+       "migration_id": "002db1e7002b471680e483695815561d0f6521e19e44844d49df6663a1ded403",
+       "old_plan_id": "delivery-plan-1",
+       "plan_id": "delivery-plan-migrated",
+       "plan_sha256": "574f0807789e36bd47cede40c24c6e6333e203a2cecabbefdccc0d66bd8e907f",
+       "request_sha256": "3c8222ace180cc4a7324ce1cc4797f51e28a0eb72908d972008a3b700d03e85a",
+       "source_release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+       "state": "active",
+       "successor_release_id": "982a6b5ad6bb930fef03443278a68c2923c44b24966e8c72722451820a042945",
+       "target_id": "canary-service"
+      },
+      "wrote": true
+     },
+     {
+      "step": "replay_without_a_queue",
+      "store": "ebe0adb47fb76840b72155ff898ebdbd46dbdf2ba1eb9ec79da7b084ead16948",
+      "value": {
+       "acknowledged": true,
+       "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+       "cached": true,
+       "kind": "evaluator_migration",
+       "migration": true,
+       "migration_id": "002db1e7002b471680e483695815561d0f6521e19e44844d49df6663a1ded403",
+       "old_plan_id": "delivery-plan-1",
+       "plan_id": "delivery-plan-migrated",
+       "plan_sha256": "574f0807789e36bd47cede40c24c6e6333e203a2cecabbefdccc0d66bd8e907f",
+       "request_sha256": "3c8222ace180cc4a7324ce1cc4797f51e28a0eb72908d972008a3b700d03e85a",
+       "source_release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+       "state": "active",
+       "successor_release_id": "982a6b5ad6bb930fef03443278a68c2923c44b24966e8c72722451820a042945",
+       "target_id": "canary-service"
+      },
+      "wrote": false
+     }
+    ],
+    "steps_that_wrote": [
+     "stage",
+     "register",
+     "finalize"
+    ]
+   },
+   "old_plan_id": {
+    "buckets": {
+     "deployment": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "deployment_locks": "8774dbffbbd2f98c3d2c45d0030ded80cf33c08c092417df5053fe9aa9295826",
+     "execution_fences": "7e65449bddef364901688f84b9d344853e09aea0bb896623669925ac56eb993f",
+     "host_delivery_descriptors": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "host_delivery_intents": "27479db9fe4c1d2e6bf9d0f4ea456236f84b5a9bd6e18ffdf831813b617f7c16",
+     "host_delivery_migrations": "2f9a4235ee5ee74eeb57aa605614448f7b70779a3a2e2dbad28f2d0a12a22031",
+     "host_delivery_plans": "7628ff7292f180411ac3e3a447e943d329c31f238c51886a55de400b758d7320",
+     "host_delivery_targets": "406f419aba5db2778e0ac551cb5694a1c5c38efa067343386d108978536331b5",
+     "images": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "release_queue": "fc6e630881ff9f72ae586feddfcdac4a8d199a879e13db2a79dfa0ab791ab89e",
+     "releases": "60168faff3f5e4133f1c3a4fc93bd73e27121733b7953721847a9186848db454"
+    },
+    "final_state": "active",
+    "label": "ack_lineage_old_plan_id",
+    "steps": [
+     {
+      "step": "stage",
+      "store": "f6d9c1a0ba256df0a4eb47487b01df87e0376e5ed5eaa4e5cdf174264aeaa09c",
+      "value": {
+       "acknowledged": false,
+       "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+       "cached": false,
+       "kind": "evaluator_migration",
+       "migration": true,
+       "migration_id": "002db1e7002b471680e483695815561d0f6521e19e44844d49df6663a1ded403",
+       "old_plan_id": "delivery-plan-1",
+       "plan_id": null,
+       "plan_sha256": null,
+       "request_sha256": "3c8222ace180cc4a7324ce1cc4797f51e28a0eb72908d972008a3b700d03e85a",
+       "source_release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+       "state": "staged",
+       "successor_release_id": "982a6b5ad6bb930fef03443278a68c2923c44b24966e8c72722451820a042945",
+       "target_id": "canary-service"
+      },
+      "wrote": true
+     },
+     {
+      "step": "register",
+      "store": "0ff03dfb106260eab6b855a8435cc0f3505e9b462f24b1f1c7bcabb802837c1c",
+      "value": {
+       "acknowledged": false,
+       "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+       "cached": false,
+       "kind": "evaluator_migration",
+       "migration": true,
+       "migration_id": "002db1e7002b471680e483695815561d0f6521e19e44844d49df6663a1ded403",
+       "old_plan_id": "delivery-plan-1",
+       "plan_id": "delivery-plan-migrated",
+       "plan_sha256": "574f0807789e36bd47cede40c24c6e6333e203a2cecabbefdccc0d66bd8e907f",
+       "request_sha256": "3c8222ace180cc4a7324ce1cc4797f51e28a0eb72908d972008a3b700d03e85a",
+       "source_release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+       "state": "registered",
+       "successor_release_id": "982a6b5ad6bb930fef03443278a68c2923c44b24966e8c72722451820a042945",
+       "target_id": "canary-service"
+      },
+      "wrote": true
+     },
+     {
+      "field": "lineage_sha256",
+      "message": "host delivery refused: migration_ack_mismatch (lineage_sha256)",
+      "reason_code": "migration_ack_mismatch",
+      "refused": "DeliveryRefused",
+      "step": "wrong_lineage",
+      "store": "0ff03dfb106260eab6b855a8435cc0f3505e9b462f24b1f1c7bcabb802837c1c",
+      "wrote": false
+     },
+     {
+      "field": "canary_request_id",
+      "message": "host delivery refused: migration_ack_invalid (canary_request_id)",
+      "reason_code": "migration_ack_invalid",
+      "refused": "DeliveryRefused",
+      "step": "invalid_canary_request_id_not_a_digest",
+      "store": "0ff03dfb106260eab6b855a8435cc0f3505e9b462f24b1f1c7bcabb802837c1c",
+      "wrote": false
+     },
+     {
+      "field": "canary_request_id",
+      "message": "host delivery refused: migration_ack_invalid (canary_request_id)",
+      "reason_code": "migration_ack_invalid",
+      "refused": "DeliveryRefused",
+      "step": "invalid_canary_request_id_not_hex",
+      "store": "0ff03dfb106260eab6b855a8435cc0f3505e9b462f24b1f1c7bcabb802837c1c",
+      "wrote": false
+     },
+     {
+      "field": "ack",
+      "message": "host delivery refused: migration_ack_invalid (ack)",
+      "reason_code": "migration_ack_invalid",
+      "refused": "DeliveryRefused",
+      "step": "invalid_blank_control_action",
+      "store": "0ff03dfb106260eab6b855a8435cc0f3505e9b462f24b1f1c7bcabb802837c1c",
+      "wrote": false
+     },
+     {
+      "step": "finalize",
+      "store": "7b63a27185d8700c494e815bef784a339364737ae04928849d0258daf8e7fb34",
+      "value": {
+       "acknowledged": true,
+       "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+       "cached": false,
+       "kind": "evaluator_migration",
+       "migration": true,
+       "migration_id": "002db1e7002b471680e483695815561d0f6521e19e44844d49df6663a1ded403",
+       "old_plan_id": "delivery-plan-1",
+       "plan_id": "delivery-plan-migrated",
+       "plan_sha256": "574f0807789e36bd47cede40c24c6e6333e203a2cecabbefdccc0d66bd8e907f",
+       "request_sha256": "3c8222ace180cc4a7324ce1cc4797f51e28a0eb72908d972008a3b700d03e85a",
+       "source_release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+       "state": "active",
+       "successor_release_id": "982a6b5ad6bb930fef03443278a68c2923c44b24966e8c72722451820a042945",
+       "target_id": "canary-service"
+      },
+      "wrote": true
+     },
+     {
+      "step": "replay_without_a_queue",
+      "store": "7b63a27185d8700c494e815bef784a339364737ae04928849d0258daf8e7fb34",
+      "value": {
+       "acknowledged": true,
+       "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+       "cached": true,
+       "kind": "evaluator_migration",
+       "migration": true,
+       "migration_id": "002db1e7002b471680e483695815561d0f6521e19e44844d49df6663a1ded403",
+       "old_plan_id": "delivery-plan-1",
+       "plan_id": "delivery-plan-migrated",
+       "plan_sha256": "574f0807789e36bd47cede40c24c6e6333e203a2cecabbefdccc0d66bd8e907f",
+       "request_sha256": "3c8222ace180cc4a7324ce1cc4797f51e28a0eb72908d972008a3b700d03e85a",
+       "source_release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+       "state": "active",
+       "successor_release_id": "982a6b5ad6bb930fef03443278a68c2923c44b24966e8c72722451820a042945",
+       "target_id": "canary-service"
+      },
+      "wrote": false
+     }
+    ],
+    "steps_that_wrote": [
+     "stage",
+     "register",
+     "finalize"
+    ]
+   },
+   "plan_id": {
+    "buckets": {
+     "deployment": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "deployment_locks": "8774dbffbbd2f98c3d2c45d0030ded80cf33c08c092417df5053fe9aa9295826",
+     "execution_fences": "56a9e45e8c816185ab416dc1f4fc8dcbcfcf8d27fcb27f42d921d4d370d13292",
+     "host_delivery_descriptors": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "host_delivery_intents": "27479db9fe4c1d2e6bf9d0f4ea456236f84b5a9bd6e18ffdf831813b617f7c16",
+     "host_delivery_migrations": "2f9a4235ee5ee74eeb57aa605614448f7b70779a3a2e2dbad28f2d0a12a22031",
+     "host_delivery_plans": "7628ff7292f180411ac3e3a447e943d329c31f238c51886a55de400b758d7320",
+     "host_delivery_targets": "406f419aba5db2778e0ac551cb5694a1c5c38efa067343386d108978536331b5",
+     "images": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "release_queue": "fc6e630881ff9f72ae586feddfcdac4a8d199a879e13db2a79dfa0ab791ab89e",
+     "releases": "60168faff3f5e4133f1c3a4fc93bd73e27121733b7953721847a9186848db454"
+    },
+    "final_state": "active",
+    "label": "ack_lineage_plan_id",
+    "steps": [
+     {
+      "step": "stage",
+      "store": "46daf11b24796ea46b760be10fba6b2855da383574b7a2795a6fb3a5b358b77a",
+      "value": {
+       "acknowledged": false,
+       "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+       "cached": false,
+       "kind": "evaluator_migration",
+       "migration": true,
+       "migration_id": "002db1e7002b471680e483695815561d0f6521e19e44844d49df6663a1ded403",
+       "old_plan_id": "delivery-plan-1",
+       "plan_id": null,
+       "plan_sha256": null,
+       "request_sha256": "3c8222ace180cc4a7324ce1cc4797f51e28a0eb72908d972008a3b700d03e85a",
+       "source_release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+       "state": "staged",
+       "successor_release_id": "982a6b5ad6bb930fef03443278a68c2923c44b24966e8c72722451820a042945",
+       "target_id": "canary-service"
+      },
+      "wrote": true
+     },
+     {
+      "step": "register",
+      "store": "cea1945ecd40db9d541ee7cb078b09d9a1d32e219564524d11820725a95cb222",
+      "value": {
+       "acknowledged": false,
+       "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+       "cached": false,
+       "kind": "evaluator_migration",
+       "migration": true,
+       "migration_id": "002db1e7002b471680e483695815561d0f6521e19e44844d49df6663a1ded403",
+       "old_plan_id": "delivery-plan-1",
+       "plan_id": "delivery-plan-migrated",
+       "plan_sha256": "574f0807789e36bd47cede40c24c6e6333e203a2cecabbefdccc0d66bd8e907f",
+       "request_sha256": "3c8222ace180cc4a7324ce1cc4797f51e28a0eb72908d972008a3b700d03e85a",
+       "source_release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+       "state": "registered",
+       "successor_release_id": "982a6b5ad6bb930fef03443278a68c2923c44b24966e8c72722451820a042945",
+       "target_id": "canary-service"
+      },
+      "wrote": true
+     },
+     {
+      "field": "lineage_sha256",
+      "message": "host delivery refused: migration_ack_mismatch (lineage_sha256)",
+      "reason_code": "migration_ack_mismatch",
+      "refused": "DeliveryRefused",
+      "step": "wrong_lineage",
+      "store": "cea1945ecd40db9d541ee7cb078b09d9a1d32e219564524d11820725a95cb222",
+      "wrote": false
+     },
+     {
+      "field": "canary_request_id",
+      "message": "host delivery refused: migration_ack_invalid (canary_request_id)",
+      "reason_code": "migration_ack_invalid",
+      "refused": "DeliveryRefused",
+      "step": "invalid_canary_request_id_not_a_digest",
+      "store": "cea1945ecd40db9d541ee7cb078b09d9a1d32e219564524d11820725a95cb222",
+      "wrote": false
+     },
+     {
+      "field": "canary_request_id",
+      "message": "host delivery refused: migration_ack_invalid (canary_request_id)",
+      "reason_code": "migration_ack_invalid",
+      "refused": "DeliveryRefused",
+      "step": "invalid_canary_request_id_not_hex",
+      "store": "cea1945ecd40db9d541ee7cb078b09d9a1d32e219564524d11820725a95cb222",
+      "wrote": false
+     },
+     {
+      "field": "ack",
+      "message": "host delivery refused: migration_ack_invalid (ack)",
+      "reason_code": "migration_ack_invalid",
+      "refused": "DeliveryRefused",
+      "step": "invalid_blank_control_action",
+      "store": "cea1945ecd40db9d541ee7cb078b09d9a1d32e219564524d11820725a95cb222",
+      "wrote": false
+     },
+     {
+      "step": "finalize",
+      "store": "94c013bb70b7f11978de2fe1e0c00cf461b54b7f9a591c877bd1218d9c2c139f",
+      "value": {
+       "acknowledged": true,
+       "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+       "cached": false,
+       "kind": "evaluator_migration",
+       "migration": true,
+       "migration_id": "002db1e7002b471680e483695815561d0f6521e19e44844d49df6663a1ded403",
+       "old_plan_id": "delivery-plan-1",
+       "plan_id": "delivery-plan-migrated",
+       "plan_sha256": "574f0807789e36bd47cede40c24c6e6333e203a2cecabbefdccc0d66bd8e907f",
+       "request_sha256": "3c8222ace180cc4a7324ce1cc4797f51e28a0eb72908d972008a3b700d03e85a",
+       "source_release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+       "state": "active",
+       "successor_release_id": "982a6b5ad6bb930fef03443278a68c2923c44b24966e8c72722451820a042945",
+       "target_id": "canary-service"
+      },
+      "wrote": true
+     },
+     {
+      "step": "replay_without_a_queue",
+      "store": "94c013bb70b7f11978de2fe1e0c00cf461b54b7f9a591c877bd1218d9c2c139f",
+      "value": {
+       "acknowledged": true,
+       "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+       "cached": true,
+       "kind": "evaluator_migration",
+       "migration": true,
+       "migration_id": "002db1e7002b471680e483695815561d0f6521e19e44844d49df6663a1ded403",
+       "old_plan_id": "delivery-plan-1",
+       "plan_id": "delivery-plan-migrated",
+       "plan_sha256": "574f0807789e36bd47cede40c24c6e6333e203a2cecabbefdccc0d66bd8e907f",
+       "request_sha256": "3c8222ace180cc4a7324ce1cc4797f51e28a0eb72908d972008a3b700d03e85a",
+       "source_release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+       "state": "active",
+       "successor_release_id": "982a6b5ad6bb930fef03443278a68c2923c44b24966e8c72722451820a042945",
+       "target_id": "canary-service"
+      },
+      "wrote": false
+     }
+    ],
+    "steps_that_wrote": [
+     "stage",
+     "register",
+     "finalize"
+    ]
+   },
+   "source_release_id": {
+    "buckets": {
+     "deployment": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "deployment_locks": "8774dbffbbd2f98c3d2c45d0030ded80cf33c08c092417df5053fe9aa9295826",
+     "execution_fences": "4ed409d47eb832d5865056f37169c627f8cca937285f7fb6e39729cbaa764e34",
+     "host_delivery_descriptors": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "host_delivery_intents": "27479db9fe4c1d2e6bf9d0f4ea456236f84b5a9bd6e18ffdf831813b617f7c16",
+     "host_delivery_migrations": "2f9a4235ee5ee74eeb57aa605614448f7b70779a3a2e2dbad28f2d0a12a22031",
+     "host_delivery_plans": "7628ff7292f180411ac3e3a447e943d329c31f238c51886a55de400b758d7320",
+     "host_delivery_targets": "406f419aba5db2778e0ac551cb5694a1c5c38efa067343386d108978536331b5",
+     "images": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "release_queue": "fc6e630881ff9f72ae586feddfcdac4a8d199a879e13db2a79dfa0ab791ab89e",
+     "releases": "60168faff3f5e4133f1c3a4fc93bd73e27121733b7953721847a9186848db454"
+    },
+    "final_state": "active",
+    "label": "ack_lineage_source_release_id",
+    "steps": [
+     {
+      "step": "stage",
+      "store": "270ff5b7c5382257cd53d9bb78cdfbaef3cc6c74ee38793f97733b129a099bd3",
+      "value": {
+       "acknowledged": false,
+       "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+       "cached": false,
+       "kind": "evaluator_migration",
+       "migration": true,
+       "migration_id": "002db1e7002b471680e483695815561d0f6521e19e44844d49df6663a1ded403",
+       "old_plan_id": "delivery-plan-1",
+       "plan_id": null,
+       "plan_sha256": null,
+       "request_sha256": "3c8222ace180cc4a7324ce1cc4797f51e28a0eb72908d972008a3b700d03e85a",
+       "source_release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+       "state": "staged",
+       "successor_release_id": "982a6b5ad6bb930fef03443278a68c2923c44b24966e8c72722451820a042945",
+       "target_id": "canary-service"
+      },
+      "wrote": true
+     },
+     {
+      "step": "register",
+      "store": "acfa21d0d3e4cebf5047fdf1c3795f6c6644fc5bb05c7339a6da0d94a09cff78",
+      "value": {
+       "acknowledged": false,
+       "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+       "cached": false,
+       "kind": "evaluator_migration",
+       "migration": true,
+       "migration_id": "002db1e7002b471680e483695815561d0f6521e19e44844d49df6663a1ded403",
+       "old_plan_id": "delivery-plan-1",
+       "plan_id": "delivery-plan-migrated",
+       "plan_sha256": "574f0807789e36bd47cede40c24c6e6333e203a2cecabbefdccc0d66bd8e907f",
+       "request_sha256": "3c8222ace180cc4a7324ce1cc4797f51e28a0eb72908d972008a3b700d03e85a",
+       "source_release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+       "state": "registered",
+       "successor_release_id": "982a6b5ad6bb930fef03443278a68c2923c44b24966e8c72722451820a042945",
+       "target_id": "canary-service"
+      },
+      "wrote": true
+     },
+     {
+      "field": "lineage_sha256",
+      "message": "host delivery refused: migration_ack_mismatch (lineage_sha256)",
+      "reason_code": "migration_ack_mismatch",
+      "refused": "DeliveryRefused",
+      "step": "wrong_lineage",
+      "store": "acfa21d0d3e4cebf5047fdf1c3795f6c6644fc5bb05c7339a6da0d94a09cff78",
+      "wrote": false
+     },
+     {
+      "field": "canary_request_id",
+      "message": "host delivery refused: migration_ack_invalid (canary_request_id)",
+      "reason_code": "migration_ack_invalid",
+      "refused": "DeliveryRefused",
+      "step": "invalid_canary_request_id_not_a_digest",
+      "store": "acfa21d0d3e4cebf5047fdf1c3795f6c6644fc5bb05c7339a6da0d94a09cff78",
+      "wrote": false
+     },
+     {
+      "field": "canary_request_id",
+      "message": "host delivery refused: migration_ack_invalid (canary_request_id)",
+      "reason_code": "migration_ack_invalid",
+      "refused": "DeliveryRefused",
+      "step": "invalid_canary_request_id_not_hex",
+      "store": "acfa21d0d3e4cebf5047fdf1c3795f6c6644fc5bb05c7339a6da0d94a09cff78",
+      "wrote": false
+     },
+     {
+      "field": "ack",
+      "message": "host delivery refused: migration_ack_invalid (ack)",
+      "reason_code": "migration_ack_invalid",
+      "refused": "DeliveryRefused",
+      "step": "invalid_blank_control_action",
+      "store": "acfa21d0d3e4cebf5047fdf1c3795f6c6644fc5bb05c7339a6da0d94a09cff78",
+      "wrote": false
+     },
+     {
+      "step": "finalize",
+      "store": "23360d09389a96c85b486dd0e8db7b955f39530857b55ecfb8dcf53a9bf1ed06",
+      "value": {
+       "acknowledged": true,
+       "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+       "cached": false,
+       "kind": "evaluator_migration",
+       "migration": true,
+       "migration_id": "002db1e7002b471680e483695815561d0f6521e19e44844d49df6663a1ded403",
+       "old_plan_id": "delivery-plan-1",
+       "plan_id": "delivery-plan-migrated",
+       "plan_sha256": "574f0807789e36bd47cede40c24c6e6333e203a2cecabbefdccc0d66bd8e907f",
+       "request_sha256": "3c8222ace180cc4a7324ce1cc4797f51e28a0eb72908d972008a3b700d03e85a",
+       "source_release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+       "state": "active",
+       "successor_release_id": "982a6b5ad6bb930fef03443278a68c2923c44b24966e8c72722451820a042945",
+       "target_id": "canary-service"
+      },
+      "wrote": true
+     },
+     {
+      "step": "replay_without_a_queue",
+      "store": "23360d09389a96c85b486dd0e8db7b955f39530857b55ecfb8dcf53a9bf1ed06",
+      "value": {
+       "acknowledged": true,
+       "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+       "cached": true,
+       "kind": "evaluator_migration",
+       "migration": true,
+       "migration_id": "002db1e7002b471680e483695815561d0f6521e19e44844d49df6663a1ded403",
+       "old_plan_id": "delivery-plan-1",
+       "plan_id": "delivery-plan-migrated",
+       "plan_sha256": "574f0807789e36bd47cede40c24c6e6333e203a2cecabbefdccc0d66bd8e907f",
+       "request_sha256": "3c8222ace180cc4a7324ce1cc4797f51e28a0eb72908d972008a3b700d03e85a",
+       "source_release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+       "state": "active",
+       "successor_release_id": "982a6b5ad6bb930fef03443278a68c2923c44b24966e8c72722451820a042945",
+       "target_id": "canary-service"
+      },
+      "wrote": false
+     }
+    ],
+    "steps_that_wrote": [
+     "stage",
+     "register",
+     "finalize"
+    ]
+   },
+   "successor_release_id": {
+    "buckets": {
+     "deployment": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "deployment_locks": "8774dbffbbd2f98c3d2c45d0030ded80cf33c08c092417df5053fe9aa9295826",
+     "execution_fences": "6802cd5fd7c1fe8274c3122aa3ad3eb79f9c2bac60f759ad45c6d9cdd393a265",
+     "host_delivery_descriptors": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "host_delivery_intents": "27479db9fe4c1d2e6bf9d0f4ea456236f84b5a9bd6e18ffdf831813b617f7c16",
+     "host_delivery_migrations": "2f9a4235ee5ee74eeb57aa605614448f7b70779a3a2e2dbad28f2d0a12a22031",
+     "host_delivery_plans": "7628ff7292f180411ac3e3a447e943d329c31f238c51886a55de400b758d7320",
+     "host_delivery_targets": "406f419aba5db2778e0ac551cb5694a1c5c38efa067343386d108978536331b5",
+     "images": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "release_queue": "fc6e630881ff9f72ae586feddfcdac4a8d199a879e13db2a79dfa0ab791ab89e",
+     "releases": "60168faff3f5e4133f1c3a4fc93bd73e27121733b7953721847a9186848db454"
+    },
+    "final_state": "active",
+    "label": "ack_lineage_successor_release_id",
+    "steps": [
+     {
+      "step": "stage",
+      "store": "e128783c805c011d59cf2ce6bc0b0ccf187d48e1b918de17e1897bae80eac05c",
+      "value": {
+       "acknowledged": false,
+       "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+       "cached": false,
+       "kind": "evaluator_migration",
+       "migration": true,
+       "migration_id": "002db1e7002b471680e483695815561d0f6521e19e44844d49df6663a1ded403",
+       "old_plan_id": "delivery-plan-1",
+       "plan_id": null,
+       "plan_sha256": null,
+       "request_sha256": "3c8222ace180cc4a7324ce1cc4797f51e28a0eb72908d972008a3b700d03e85a",
+       "source_release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+       "state": "staged",
+       "successor_release_id": "982a6b5ad6bb930fef03443278a68c2923c44b24966e8c72722451820a042945",
+       "target_id": "canary-service"
+      },
+      "wrote": true
+     },
+     {
+      "step": "register",
+      "store": "4cfd8809913865d791f6d84a091129d8d83c94f32c279d273ee1601ad89a77d5",
+      "value": {
+       "acknowledged": false,
+       "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+       "cached": false,
+       "kind": "evaluator_migration",
+       "migration": true,
+       "migration_id": "002db1e7002b471680e483695815561d0f6521e19e44844d49df6663a1ded403",
+       "old_plan_id": "delivery-plan-1",
+       "plan_id": "delivery-plan-migrated",
+       "plan_sha256": "574f0807789e36bd47cede40c24c6e6333e203a2cecabbefdccc0d66bd8e907f",
+       "request_sha256": "3c8222ace180cc4a7324ce1cc4797f51e28a0eb72908d972008a3b700d03e85a",
+       "source_release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+       "state": "registered",
+       "successor_release_id": "982a6b5ad6bb930fef03443278a68c2923c44b24966e8c72722451820a042945",
+       "target_id": "canary-service"
+      },
+      "wrote": true
+     },
+     {
+      "field": "lineage_sha256",
+      "message": "host delivery refused: migration_ack_mismatch (lineage_sha256)",
+      "reason_code": "migration_ack_mismatch",
+      "refused": "DeliveryRefused",
+      "step": "wrong_lineage",
+      "store": "4cfd8809913865d791f6d84a091129d8d83c94f32c279d273ee1601ad89a77d5",
+      "wrote": false
+     },
+     {
+      "field": "canary_request_id",
+      "message": "host delivery refused: migration_ack_invalid (canary_request_id)",
+      "reason_code": "migration_ack_invalid",
+      "refused": "DeliveryRefused",
+      "step": "invalid_canary_request_id_not_a_digest",
+      "store": "4cfd8809913865d791f6d84a091129d8d83c94f32c279d273ee1601ad89a77d5",
+      "wrote": false
+     },
+     {
+      "field": "canary_request_id",
+      "message": "host delivery refused: migration_ack_invalid (canary_request_id)",
+      "reason_code": "migration_ack_invalid",
+      "refused": "DeliveryRefused",
+      "step": "invalid_canary_request_id_not_hex",
+      "store": "4cfd8809913865d791f6d84a091129d8d83c94f32c279d273ee1601ad89a77d5",
+      "wrote": false
+     },
+     {
+      "field": "ack",
+      "message": "host delivery refused: migration_ack_invalid (ack)",
+      "reason_code": "migration_ack_invalid",
+      "refused": "DeliveryRefused",
+      "step": "invalid_blank_control_action",
+      "store": "4cfd8809913865d791f6d84a091129d8d83c94f32c279d273ee1601ad89a77d5",
+      "wrote": false
+     },
+     {
+      "step": "finalize",
+      "store": "a1613778981de39784f294ca9facad6840f27a9bd23c5a628c37a893a0e58d08",
+      "value": {
+       "acknowledged": true,
+       "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+       "cached": false,
+       "kind": "evaluator_migration",
+       "migration": true,
+       "migration_id": "002db1e7002b471680e483695815561d0f6521e19e44844d49df6663a1ded403",
+       "old_plan_id": "delivery-plan-1",
+       "plan_id": "delivery-plan-migrated",
+       "plan_sha256": "574f0807789e36bd47cede40c24c6e6333e203a2cecabbefdccc0d66bd8e907f",
+       "request_sha256": "3c8222ace180cc4a7324ce1cc4797f51e28a0eb72908d972008a3b700d03e85a",
+       "source_release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+       "state": "active",
+       "successor_release_id": "982a6b5ad6bb930fef03443278a68c2923c44b24966e8c72722451820a042945",
+       "target_id": "canary-service"
+      },
+      "wrote": true
+     },
+     {
+      "step": "replay_without_a_queue",
+      "store": "a1613778981de39784f294ca9facad6840f27a9bd23c5a628c37a893a0e58d08",
+      "value": {
+       "acknowledged": true,
+       "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+       "cached": true,
+       "kind": "evaluator_migration",
+       "migration": true,
+       "migration_id": "002db1e7002b471680e483695815561d0f6521e19e44844d49df6663a1ded403",
+       "old_plan_id": "delivery-plan-1",
+       "plan_id": "delivery-plan-migrated",
+       "plan_sha256": "574f0807789e36bd47cede40c24c6e6333e203a2cecabbefdccc0d66bd8e907f",
+       "request_sha256": "3c8222ace180cc4a7324ce1cc4797f51e28a0eb72908d972008a3b700d03e85a",
+       "source_release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+       "state": "active",
+       "successor_release_id": "982a6b5ad6bb930fef03443278a68c2923c44b24966e8c72722451820a042945",
+       "target_id": "canary-service"
+      },
+      "wrote": false
+     }
+    ],
+    "steps_that_wrote": [
+     "stage",
+     "register",
+     "finalize"
+    ]
+   }
+  },
+  "controller_running": {
+   "buckets": {
+    "deployment": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "deployment_locks": "8788d6ba5181f305f68631d0f99eb8eeadc34df7d1a35fe853bc6b17097fa2f8",
+    "execution_fences": "87bd1b977120efc98378076dfe9d891c7b6060c535027b781e632b1e35d05ee4",
+    "host_delivery_descriptors": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "host_delivery_intents": "c4f20a6d26c8d036b412de328f71fa1505946cffc623182e8200b7555573352d",
+    "host_delivery_migrations": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "host_delivery_plans": "0b48564b6ff7cf58e1ae0ebf73d6427fd794013751aab66380897a1b64a0ab3f",
+    "host_delivery_targets": "406f419aba5db2778e0ac551cb5694a1c5c38efa067343386d108978536331b5",
+    "images": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "release_queue": "368e333ae6638ab9f8d3dab46236314c75c8eba28590b47f34f9ace59574cdcc",
+    "releases": "a8ea3a4b454aa2e08e62c72de8c58ef18930144afe1e8ac238e85b2f98b5dc2e"
+   },
+   "label": "controller_running",
+   "steps": [
+    {
+     "field": "release_id",
+     "message": "host delivery refused: migration_controller_running (release_id)",
+     "reason_code": "migration_controller_running",
+     "refused": "DeliveryRefused",
+     "step": "running_queue_row",
+     "store": "b5bcf7688030b3ba8c2acd2fa74504e43c68204dd24811b3f330d18100f887d0",
+     "wrote": false
+    },
+    {
+     "field": "release_id",
+     "message": "host delivery refused: migration_controller_running (release_id)",
+     "reason_code": "migration_controller_running",
+     "refused": "DeliveryRefused",
+     "step": "live_controller_lease",
+     "store": "02709cb5715641e1afcd261701136c5f0f793fced1fae697f59530880a0f49b0",
+     "wrote": false
+    }
+   ],
+   "steps_that_wrote": []
+  },
+  "crash_between_steps": {
+   "buckets": {
+    "deployment": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "deployment_locks": "8774dbffbbd2f98c3d2c45d0030ded80cf33c08c092417df5053fe9aa9295826",
+    "execution_fences": "246ddca18fdc3a62dcd7d547bb8fe85841d382ed9f8c6a78c0b46e7b81e669cc",
+    "host_delivery_descriptors": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "host_delivery_intents": "44a900858379a3ad18bcef4f4ea83f2e6db6bfef5d6e462f6ab4fd62079f5e4d",
+    "host_delivery_migrations": "2019edfeecc7edf7a2259b00e238e98652e2c1160d686df6a1322b9f332e6d1b",
+    "host_delivery_plans": "7628ff7292f180411ac3e3a447e943d329c31f238c51886a55de400b758d7320",
+    "host_delivery_targets": "406f419aba5db2778e0ac551cb5694a1c5c38efa067343386d108978536331b5",
+    "images": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "release_queue": "368e333ae6638ab9f8d3dab46236314c75c8eba28590b47f34f9ace59574cdcc",
+    "releases": "72fe79f094222518b75954c01d6b667b1bd186aee9022212555c608663ecb45d"
+   },
+   "held": [
+    null,
+    "migration_unacknowledged"
+   ],
+   "label": "crash_between_steps",
+   "record_state_after_register": "registered",
+   "record_state_after_stage": "staged",
+   "steps": [
+    {
+     "step": "stage",
+     "store": "eee3cdb0244930b8f3281094051c35fec6e1d1e3a26fa34c5aebe4acaa03c1c7",
+     "value": {
+      "acknowledged": false,
+      "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+      "cached": false,
+      "kind": "evaluator_migration",
+      "migration": true,
+      "migration_id": "002db1e7002b471680e483695815561d0f6521e19e44844d49df6663a1ded403",
+      "old_plan_id": "delivery-plan-1",
+      "plan_id": null,
+      "plan_sha256": null,
+      "request_sha256": "3c8222ace180cc4a7324ce1cc4797f51e28a0eb72908d972008a3b700d03e85a",
+      "source_release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+      "state": "staged",
+      "successor_release_id": "982a6b5ad6bb930fef03443278a68c2923c44b24966e8c72722451820a042945",
+      "target_id": "canary-service"
+     },
+     "wrote": true
+    },
+    {
+     "field": "target_id",
+     "message": "host delivery refused: target_reserved_by_migration (target_id)",
+     "reason_code": "target_reserved_by_migration",
+     "refused": "DeliveryRefused",
+     "step": "competitor_sees_the_reservation",
+     "store": "d5300d7b1212f81fa641daebdf50d0cbb6d310d5467682e0921988d9174ee214",
+     "wrote": false
+    },
+    {
+     "field": "plan_id",
+     "message": "host delivery refused: migration_plan_mismatch (plan_id)",
+     "reason_code": "migration_plan_mismatch",
+     "refused": "DeliveryRefused",
+     "step": "register_another_plan",
+     "store": "d5300d7b1212f81fa641daebdf50d0cbb6d310d5467682e0921988d9174ee214",
+     "wrote": false
+    },
+    {
+     "field": "migration_id",
+     "message": "host delivery refused: migration_not_registered (migration_id)",
+     "reason_code": "migration_not_registered",
+     "refused": "DeliveryRefused",
+     "step": "finalize_before_register",
+     "store": "d5300d7b1212f81fa641daebdf50d0cbb6d310d5467682e0921988d9174ee214",
+     "wrote": false
+    },
+    {
+     "step": "register_the_successor",
+     "store": "68ae8b914421fcd085fc6353e0ac0d4e141f75c40154dadec993636e0cca1812",
+     "value": {
+      "acknowledged": false,
+      "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+      "cached": false,
+      "kind": "evaluator_migration",
+      "migration": true,
+      "migration_id": "002db1e7002b471680e483695815561d0f6521e19e44844d49df6663a1ded403",
+      "old_plan_id": "delivery-plan-1",
+      "plan_id": "delivery-plan-migrated",
+      "plan_sha256": "574f0807789e36bd47cede40c24c6e6333e203a2cecabbefdccc0d66bd8e907f",
+      "request_sha256": "3c8222ace180cc4a7324ce1cc4797f51e28a0eb72908d972008a3b700d03e85a",
+      "source_release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+      "state": "registered",
+      "successor_release_id": "982a6b5ad6bb930fef03443278a68c2923c44b24966e8c72722451820a042945",
+      "target_id": "canary-service"
+     },
+     "wrote": true
+    },
+    {
+     "step": "tick_third_controller",
+     "store": "68ae8b914421fcd085fc6353e0ac0d4e141f75c40154dadec993636e0cca1812",
+     "tick": {
+      "active": null,
+      "ambiguous_effect": null,
+      "at": "2026-09-22T00:00:00+00:00",
+      "attempts": 0,
+      "blocked": {
+       "delivery-plan-1": "withdrawn",
+       "delivery-plan-migrated": "migration_unacknowledged"
+      },
+      "canary": null,
+      "descriptor_sha256": null,
+      "error_type": null,
+      "head": null,
+      "instance_id": null,
+      "merged_revision": null,
+      "next_action": "tick",
+      "outcome": "idle",
+      "plan_id": null,
+      "pr_number": null,
+      "previous_descriptor_sha256": null,
+      "reason_code": null,
+      "release_id": null,
+      "rollback": null,
+      "stage": null,
+      "target_id": null
+     }
+    }
+   ],
+   "steps_that_wrote": [
+    "stage",
+    "register_the_successor"
+   ],
+   "successor_queue_row": null,
+   "tick_after_stage": {
+    "active": null,
+    "ambiguous_effect": null,
+    "at": "2026-09-22T00:00:00+00:00",
+    "attempts": 0,
+    "blocked": {
+     "delivery-plan-1": "withdrawn"
+    },
+    "canary": null,
+    "descriptor_sha256": null,
+    "error_type": null,
+    "head": null,
+    "instance_id": null,
+    "merged_revision": null,
+    "next_action": "tick",
+    "outcome": "idle",
+    "plan_id": null,
+    "pr_number": null,
+    "previous_descriptor_sha256": null,
+    "reason_code": null,
+    "release_id": null,
+    "rollback": null,
+    "stage": null,
+    "target_id": null
+   }
+  },
+  "lane_flow": {
+   "after_finalize": {
+    "held_intent": {
+     "after_verification": "merged",
+     "attempts": 0,
+     "descriptor_sha256": null,
+     "error_type": null,
+     "head": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "held": null,
+     "merged_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "migration": {
+      "migration_id": "002db1e7002b471680e483695815561d0f6521e19e44844d49df6663a1ded403",
+      "predecessor_plan_id": "delivery-plan-1",
+      "source_release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655"
+     },
+     "outcome": "progressed",
+     "pr_number": 7,
+     "previous_stage": "registered",
+     "reason_code": null,
+     "stage": "verifying"
+    },
+    "queue_row": {
+     "attempt": 0,
+     "has_owner": false,
+     "status": "queued"
+    }
+   },
+   "after_register": {
+    "held_intent": {
+     "after_verification": "merged",
+     "attempts": 0,
+     "descriptor_sha256": null,
+     "error_type": null,
+     "head": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "held": "migration_unacknowledged",
+     "merged_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "migration": {
+      "migration_id": "002db1e7002b471680e483695815561d0f6521e19e44844d49df6663a1ded403",
+      "predecessor_plan_id": "delivery-plan-1",
+      "source_release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655"
+     },
+     "outcome": "progressed",
+     "pr_number": 7,
+     "previous_stage": "registered",
+     "reason_code": null,
+     "stage": "verifying"
+    },
+    "merged_revision_carried": true
+   },
+   "after_stage": {
+    "old_intent": {
+     "after_verification": "merged",
+     "attempts": 1,
+     "descriptor_sha256": null,
+     "error_type": null,
+     "head": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "main_effect": "merged",
+     "merged_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "outcome": "withdrawn",
+     "pr_number": 7,
+     "previous_stage": "blocked",
+     "reason_code": "release_rejected_superseded",
+     "stage": "withdrawn",
+     "supersession": {
+      "migration_id": "002db1e7002b471680e483695815561d0f6521e19e44844d49df6663a1ded403",
+      "original_halt": {
+       "attempts": 1,
+       "error_type": null,
+       "outcome": "blocked",
+       "previous_stage": "verifying",
+       "reason_code": "release_rejected",
+       "stage": "blocked",
+       "updated_at": "2026-09-22T00:00:00+00:00"
+      },
+      "successor_release_id": "982a6b5ad6bb930fef03443278a68c2923c44b24966e8c72722451820a042945"
+     },
+     "verification": {
+      "attempts": [
+       {
+        "attempt_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "cleanup": {
+         "state": "confirmed"
+        }
+       }
+      ]
+     }
+    },
+    "old_verification_kept": true,
+    "only_the_written_keys_changed": true,
+    "original_halt": true,
+    "record": {
+     "ack": null,
+     "at": "2026-09-22T00:00:00+00:00",
+     "id": "delivery-plan-1",
+     "kind": "evaluator_migration",
+     "migration_id": "002db1e7002b471680e483695815561d0f6521e19e44844d49df6663a1ded403",
+     "plan_id": null,
+     "plan_sha256": null,
+     "request": {
+      "actor": "conductor",
+      "approval": {
+       "approved_by": "conductor",
+       "base": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+       "evaluator_revision": "1111111111111111111111111111111111111111",
+       "evaluator_tree": "2222222222222222222222222222222222222222",
+       "evidence": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
+       "patch_sha256": "3333333333333333333333333333333333333333333333333333333333333333",
+       "paths": [
+        "tests/test_fixture.py"
+       ],
+       "source_release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655"
+      },
+      "candidate_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "migration_id": "002db1e7002b471680e483695815561d0f6521e19e44844d49df6663a1ded403",
+      "old_plan_id": "delivery-plan-1",
+      "old_plan_sha256": "47fadc76c32c39609ea82c621fa4dbe3280dc1ce7373b4f535e2c6eb399d3be0",
+      "source_policy_hash": "c03cad6543f67af359e7cc31e3eb39459ac95cc665736dffc2041dfc2d5aa0a2",
+      "source_release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+      "target_id": "canary-service"
+     },
+     "request_sha256": "3c8222ace180cc4a7324ce1cc4797f51e28a0eb72908d972008a3b700d03e85a",
+     "source_release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "state": "staged",
+     "successor_release_id": "982a6b5ad6bb930fef03443278a68c2923c44b24966e8c72722451820a042945",
+     "target_id": "canary-service"
+    },
+    "record_keys": [
+     "ack",
+     "at",
+     "id",
+     "kind",
+     "migration_id",
+     "plan_id",
+     "plan_sha256",
+     "request",
+     "request_sha256",
+     "source_release_id",
+     "state",
+     "successor_release_id",
+     "target_id"
+    ],
+    "source_release_unchanged": true,
+    "successor": {
+     "checks": {},
+     "evaluator_migration": {
+      "actor": "conductor",
+      "approved_by": "conductor",
+      "at": "2026-09-22T00:00:00+00:00",
+      "base": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "evaluator_revision": "1111111111111111111111111111111111111111",
+      "evaluator_tree": "2222222222222222222222222222222222222222",
+      "evidence": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
+      "patch_sha256": "3333333333333333333333333333333333333333333333333333333333333333",
+      "paths": [
+       "tests/test_fixture.py"
+      ],
+      "source_checks_digest": "a899c7cb9e0ccc4b6dd5d0b0b79e436ac9760b5a87d7dea45a6910dbeaaa1199",
+      "source_digest": "733ae4ba2a6f1822fd1f6ba4994a3f837ccc43e97a1628fb0924621fc7b5d32f",
+      "source_policy_hash": "c03cad6543f67af359e7cc31e3eb39459ac95cc665736dffc2041dfc2d5aa0a2",
+      "source_release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655"
+     },
+     "keys": [
+      "candidate",
+      "checks",
+      "created_at",
+      "evaluator_migration",
+      "id",
+      "inherited_reviews",
+      "policy",
+      "policy_hash",
+      "reverify_of",
+      "reviews",
+      "status"
+     ],
+     "policy": {
+      "checks": [
+       "tests"
+      ],
+      "evaluator": "fixture-incumbent-policy",
+      "revision": "1111111111111111111111111111111111111111"
+     },
+     "policy_hash": "4ede7061f54a4a83a9ae900161579ccaa4212bf7a6290cc43a61af4523fcac5f",
+     "reverify_of": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "status": "reviewed"
+    },
+    "successor_queue_row": null
+   },
+   "buckets": {
+    "deployment": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "deployment_locks": "8774dbffbbd2f98c3d2c45d0030ded80cf33c08c092417df5053fe9aa9295826",
+    "execution_fences": "331c1d66cf49ecd3dd726ac419a52d4752f32852c7faea583441c5975c92cf32",
+    "host_delivery_descriptors": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "host_delivery_intents": "31bf34976c0e1db54ecd308400356f5c3faa858bcbce772fb9a3ba011e404223",
+    "host_delivery_migrations": "a4f303f506598880ff6076426695742feef45d61cf444c84f9eb0755e1fd3537",
+    "host_delivery_plans": "7628ff7292f180411ac3e3a447e943d329c31f238c51886a55de400b758d7320",
+    "host_delivery_targets": "406f419aba5db2778e0ac551cb5694a1c5c38efa067343386d108978536331b5",
+    "images": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "release_queue": "8a1977c0b7f025e87cd81468dd5e6bbfc6a19976c9be0cddf299ed3263d423b9",
+    "releases": "60168faff3f5e4133f1c3a4fc93bd73e27121733b7953721847a9186848db454"
+   },
+   "label": "lane_flow",
+   "queue_after_restart": null,
+   "record": {
+    "ack": {
+     "canary_request_id": "not_requested",
+     "control_action_id": "action-1",
+     "lineage_sha256": "12f2ddddccb4da230a95d9bd19174488e7508f40700d0d5cf5b81fc7c23f901f",
+     "plan_id": "delivery-plan-migrated",
+     "plan_sha256": "574f0807789e36bd47cede40c24c6e6333e203a2cecabbefdccc0d66bd8e907f",
+     "request_sha256": "3c8222ace180cc4a7324ce1cc4797f51e28a0eb72908d972008a3b700d03e85a"
+    },
+    "at": "2026-09-22T00:00:00+00:00",
+    "id": "delivery-plan-1",
+    "kind": "evaluator_migration",
+    "migration_id": "002db1e7002b471680e483695815561d0f6521e19e44844d49df6663a1ded403",
+    "plan_id": "delivery-plan-migrated",
+    "plan_sha256": "574f0807789e36bd47cede40c24c6e6333e203a2cecabbefdccc0d66bd8e907f",
+    "request": {
+     "actor": "conductor",
+     "approval": {
+      "approved_by": "conductor",
+      "base": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "evaluator_revision": "1111111111111111111111111111111111111111",
+      "evaluator_tree": "2222222222222222222222222222222222222222",
+      "evidence": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
+      "patch_sha256": "3333333333333333333333333333333333333333333333333333333333333333",
+      "paths": [
+       "tests/test_fixture.py"
+      ],
+      "source_release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655"
+     },
+     "candidate_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "migration_id": "002db1e7002b471680e483695815561d0f6521e19e44844d49df6663a1ded403",
+     "old_plan_id": "delivery-plan-1",
+     "old_plan_sha256": "47fadc76c32c39609ea82c621fa4dbe3280dc1ce7373b4f535e2c6eb399d3be0",
+     "source_policy_hash": "c03cad6543f67af359e7cc31e3eb39459ac95cc665736dffc2041dfc2d5aa0a2",
+     "source_release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+     "target_id": "canary-service"
+    },
+    "request_sha256": "3c8222ace180cc4a7324ce1cc4797f51e28a0eb72908d972008a3b700d03e85a",
+    "source_release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+    "state": "active",
+    "successor_release_id": "982a6b5ad6bb930fef03443278a68c2923c44b24966e8c72722451820a042945",
+    "target_id": "canary-service"
+   },
+   "status_plans": [
+    "delivery-plan-1",
+    "delivery-plan-migrated"
+   ],
+   "steps": [
+    {
+     "step": "stage",
+     "store": "c09e9aa3300dba5b926392479a0a4a2af0c2b828489b580dc7b1ba1439a22930",
+     "value": {
+      "acknowledged": false,
+      "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+      "cached": false,
+      "kind": "evaluator_migration",
+      "migration": true,
+      "migration_id": "002db1e7002b471680e483695815561d0f6521e19e44844d49df6663a1ded403",
+      "old_plan_id": "delivery-plan-1",
+      "plan_id": null,
+      "plan_sha256": null,
+      "request_sha256": "3c8222ace180cc4a7324ce1cc4797f51e28a0eb72908d972008a3b700d03e85a",
+      "source_release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+      "state": "staged",
+      "successor_release_id": "982a6b5ad6bb930fef03443278a68c2923c44b24966e8c72722451820a042945",
+      "target_id": "canary-service"
+     },
+     "wrote": true
+    },
+    {
+     "step": "tick_after_stage",
+     "store": "c09e9aa3300dba5b926392479a0a4a2af0c2b828489b580dc7b1ba1439a22930",
+     "tick": {
+      "active": null,
+      "ambiguous_effect": null,
+      "at": "2026-09-22T00:00:00+00:00",
+      "attempts": 0,
+      "blocked": {
+       "delivery-plan-1": "withdrawn"
+      },
+      "canary": null,
+      "descriptor_sha256": null,
+      "error_type": null,
+      "head": null,
+      "instance_id": null,
+      "merged_revision": null,
+      "next_action": "tick",
+      "outcome": "idle",
+      "plan_id": null,
+      "pr_number": null,
+      "previous_descriptor_sha256": null,
+      "reason_code": null,
+      "release_id": null,
+      "rollback": null,
+      "stage": null,
+      "target_id": null
+     }
+    },
+    {
+     "step": "register",
+     "store": "6c023fce201652251afd868281a3ff3f20b5098226c94efa49abd370e888a070",
+     "value": {
+      "acknowledged": false,
+      "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+      "cached": false,
+      "kind": "evaluator_migration",
+      "migration": true,
+      "migration_id": "002db1e7002b471680e483695815561d0f6521e19e44844d49df6663a1ded403",
+      "old_plan_id": "delivery-plan-1",
+      "plan_id": "delivery-plan-migrated",
+      "plan_sha256": "574f0807789e36bd47cede40c24c6e6333e203a2cecabbefdccc0d66bd8e907f",
+      "request_sha256": "3c8222ace180cc4a7324ce1cc4797f51e28a0eb72908d972008a3b700d03e85a",
+      "source_release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+      "state": "registered",
+      "successor_release_id": "982a6b5ad6bb930fef03443278a68c2923c44b24966e8c72722451820a042945",
+      "target_id": "canary-service"
+     },
+     "wrote": true
+    },
+    {
+     "step": "tick_held",
+     "store": "6c023fce201652251afd868281a3ff3f20b5098226c94efa49abd370e888a070",
+     "tick": {
+      "active": null,
+      "ambiguous_effect": null,
+      "at": "2026-09-22T00:00:00+00:00",
+      "attempts": 0,
+      "blocked": {
+       "delivery-plan-1": "withdrawn",
+       "delivery-plan-migrated": "migration_unacknowledged"
+      },
+      "canary": null,
+      "descriptor_sha256": null,
+      "error_type": null,
+      "head": null,
+      "instance_id": null,
+      "merged_revision": null,
+      "next_action": "tick",
+      "outcome": "idle",
+      "plan_id": null,
+      "pr_number": null,
+      "previous_descriptor_sha256": null,
+      "reason_code": null,
+      "release_id": null,
+      "rollback": null,
+      "stage": null,
+      "target_id": null
+     }
+    },
+    {
+     "field": "stage",
+     "message": "host delivery refused: withdraw_migration_held (stage)",
+     "reason_code": "withdraw_migration_held",
+     "refused": "DeliveryRefused",
+     "step": "withdraw_the_held_successor",
+     "store": "6c023fce201652251afd868281a3ff3f20b5098226c94efa49abd370e888a070",
+     "wrote": false
+    },
+    {
+     "step": "restarted_tick_holds",
+     "store": "6c023fce201652251afd868281a3ff3f20b5098226c94efa49abd370e888a070",
+     "tick": {
+      "active": null,
+      "ambiguous_effect": null,
+      "at": "2026-09-22T00:00:00+00:00",
+      "attempts": 0,
+      "blocked": {
+       "delivery-plan-1": "withdrawn",
+       "delivery-plan-migrated": "migration_unacknowledged"
+      },
+      "canary": null,
+      "descriptor_sha256": null,
+      "error_type": null,
+      "head": null,
+      "instance_id": null,
+      "merged_revision": null,
+      "next_action": "tick",
+      "outcome": "idle",
+      "plan_id": null,
+      "pr_number": null,
+      "previous_descriptor_sha256": null,
+      "reason_code": null,
+      "release_id": null,
+      "rollback": null,
+      "stage": null,
+      "target_id": null
+     }
+    },
+    {
+     "step": "finalize",
+     "store": "fd34a97f7398d0318ed8deafac20585e84cc2f09457e64cbf1684ba01cbc1eeb",
+     "value": {
+      "acknowledged": true,
+      "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+      "cached": false,
+      "kind": "evaluator_migration",
+      "migration": true,
+      "migration_id": "002db1e7002b471680e483695815561d0f6521e19e44844d49df6663a1ded403",
+      "old_plan_id": "delivery-plan-1",
+      "plan_id": "delivery-plan-migrated",
+      "plan_sha256": "574f0807789e36bd47cede40c24c6e6333e203a2cecabbefdccc0d66bd8e907f",
+      "request_sha256": "3c8222ace180cc4a7324ce1cc4797f51e28a0eb72908d972008a3b700d03e85a",
+      "source_release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+      "state": "active",
+      "successor_release_id": "982a6b5ad6bb930fef03443278a68c2923c44b24966e8c72722451820a042945",
+      "target_id": "canary-service"
+     },
+     "wrote": true
+    },
+    {
+     "step": "restarted_tick_runs_the_successor",
+     "store": "d64937c493965e538c0f2415f7c5a48fa65b8fcfa7e41a06dbd4f262c40479eb",
+     "tick": {
+      "active": null,
+      "ambiguous_effect": null,
+      "at": "2026-09-22T00:00:00+00:00",
+      "attempts": 0,
+      "blocked": {
+       "delivery-plan-1": "withdrawn"
+      },
+      "canary": null,
+      "descriptor_sha256": null,
+      "error_type": "DeliveryRefused",
+      "head": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "instance_id": null,
+      "merged_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "next_action": "await_incumbent_verification",
+      "outcome": "unavailable",
+      "plan_id": "delivery-plan-migrated",
+      "pr_number": 7,
+      "previous_descriptor_sha256": null,
+      "reason_code": "verifier_unavailable",
+      "release_id": "982a6b5ad6bb930fef03443278a68c2923c44b24966e8c72722451820a042945",
+      "rollback": null,
+      "stage": "verifying",
+      "target_id": "canary-service"
+     }
+    }
+   ],
+   "steps_that_wrote": [
+    "stage",
+    "register",
+    "finalize"
+   ]
+  },
+  "pin_faults": {
+   "grandchild": {
+    "buckets": {
+     "deployment": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "deployment_locks": "8774dbffbbd2f98c3d2c45d0030ded80cf33c08c092417df5053fe9aa9295826",
+     "execution_fences": "b8ef208e3e576172744424713ce22eb0ee8fe1b8de5a2a5fa6810a44a7a53382",
+     "host_delivery_descriptors": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "host_delivery_intents": "15dbd29864219bb549c417e3ee1812d2c98bbf67980e521da8b669672b3bd217",
+     "host_delivery_migrations": "aa8a1cd4450008e0b866494d84a6070371b8b75d27b4f83d3e6de89926f33bf6",
+     "host_delivery_plans": "0b48564b6ff7cf58e1ae0ebf73d6427fd794013751aab66380897a1b64a0ab3f",
+     "host_delivery_targets": "406f419aba5db2778e0ac551cb5694a1c5c38efa067343386d108978536331b5",
+     "images": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "release_queue": "368e333ae6638ab9f8d3dab46236314c75c8eba28590b47f34f9ace59574cdcc",
+     "releases": "60168faff3f5e4133f1c3a4fc93bd73e27121733b7953721847a9186848db454"
+    },
+    "expected_pin": {
+     "base": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "evaluator_revision": "1111111111111111111111111111111111111111",
+     "evaluator_tree": "2222222222222222222222222222222222222222",
+     "parent": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "patch_sha256": "3333333333333333333333333333333333333333333333333333333333333333",
+     "paths": [
+      "tests/test_fixture.py"
+     ]
+    },
+    "label": "pin_grandchild",
+    "last_pin_call": [
+     "1111111111111111111111111111111111111111",
+     "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    ],
+    "last_pin_call_is_E_and_the_approved_base": true,
+    "old_intent_unchanged": true,
+    "steps": [
+     {
+      "field": "approval",
+      "message": "host delivery refused: migration_pin_mismatch (approval)",
+      "reason_code": "migration_pin_mismatch",
+      "refused": "DeliveryRefused",
+      "step": "stage_refused",
+      "store": "56433900a4e2082ab53a053f8d1f6a7f44c43251bd295201e3b67fa833b47287",
+      "wrote": false
+     },
+     {
+      "step": "stage_with_the_right_pin",
+      "store": "ef381d59a85d332b2f660d9f01af56fbc18128864cdc5aa6dd81f92f93463fab",
+      "value": {
+       "acknowledged": false,
+       "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+       "cached": false,
+       "kind": "evaluator_migration",
+       "migration": true,
+       "migration_id": "002db1e7002b471680e483695815561d0f6521e19e44844d49df6663a1ded403",
+       "old_plan_id": "delivery-plan-1",
+       "plan_id": null,
+       "plan_sha256": null,
+       "request_sha256": "3c8222ace180cc4a7324ce1cc4797f51e28a0eb72908d972008a3b700d03e85a",
+       "source_release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+       "state": "staged",
+       "successor_release_id": "982a6b5ad6bb930fef03443278a68c2923c44b24966e8c72722451820a042945",
+       "target_id": "canary-service"
+      },
+      "wrote": true
+     }
+    ],
+    "steps_that_wrote": [
+     "stage_with_the_right_pin"
+    ]
+   },
+   "no_port": {
+    "buckets": {
+     "deployment": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "deployment_locks": "8774dbffbbd2f98c3d2c45d0030ded80cf33c08c092417df5053fe9aa9295826",
+     "execution_fences": "0736c247576d88deb99b8d2bfef19cf6377922da4aad8bf0a1063892408f9e6d",
+     "host_delivery_descriptors": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "host_delivery_intents": "15dbd29864219bb549c417e3ee1812d2c98bbf67980e521da8b669672b3bd217",
+     "host_delivery_migrations": "aa8a1cd4450008e0b866494d84a6070371b8b75d27b4f83d3e6de89926f33bf6",
+     "host_delivery_plans": "0b48564b6ff7cf58e1ae0ebf73d6427fd794013751aab66380897a1b64a0ab3f",
+     "host_delivery_targets": "406f419aba5db2778e0ac551cb5694a1c5c38efa067343386d108978536331b5",
+     "images": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "release_queue": "368e333ae6638ab9f8d3dab46236314c75c8eba28590b47f34f9ace59574cdcc",
+     "releases": "60168faff3f5e4133f1c3a4fc93bd73e27121733b7953721847a9186848db454"
+    },
+    "expected_pin": {
+     "base": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "evaluator_revision": "1111111111111111111111111111111111111111",
+     "evaluator_tree": "2222222222222222222222222222222222222222",
+     "parent": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "patch_sha256": "3333333333333333333333333333333333333333333333333333333333333333",
+     "paths": [
+      "tests/test_fixture.py"
+     ]
+    },
+    "label": "pin_no_port",
+    "last_pin_call": [
+     "1111111111111111111111111111111111111111",
+     "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    ],
+    "last_pin_call_is_E_and_the_approved_base": true,
+    "old_intent_unchanged": true,
+    "steps": [
+     {
+      "field": "evaluator_revision",
+      "message": "host delivery refused: migration_pin_unavailable (evaluator_revision)",
+      "reason_code": "migration_pin_unavailable",
+      "refused": "DeliveryRefused",
+      "step": "stage_refused",
+      "store": "04e470aedee0927b2cac1909b19f49bb8b89b5967fcba6fad4d905c5d7cf8df1",
+      "wrote": false
+     },
+     {
+      "step": "stage_with_the_right_pin",
+      "store": "8375160ec231068914d4d47925d5f5ce8be9d032d6a14c3c0c95c1ce5a2a2a94",
+      "value": {
+       "acknowledged": false,
+       "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+       "cached": false,
+       "kind": "evaluator_migration",
+       "migration": true,
+       "migration_id": "002db1e7002b471680e483695815561d0f6521e19e44844d49df6663a1ded403",
+       "old_plan_id": "delivery-plan-1",
+       "plan_id": null,
+       "plan_sha256": null,
+       "request_sha256": "3c8222ace180cc4a7324ce1cc4797f51e28a0eb72908d972008a3b700d03e85a",
+       "source_release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+       "state": "staged",
+       "successor_release_id": "982a6b5ad6bb930fef03443278a68c2923c44b24966e8c72722451820a042945",
+       "target_id": "canary-service"
+      },
+      "wrote": true
+     }
+    ],
+    "steps_that_wrote": [
+     "stage_with_the_right_pin"
+    ]
+   },
+   "not_a_dict": {
+    "buckets": {
+     "deployment": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "deployment_locks": "8774dbffbbd2f98c3d2c45d0030ded80cf33c08c092417df5053fe9aa9295826",
+     "execution_fences": "75bdffab9b9e1fb41198c3db253a3ec0f7ede82d1bdf03026ebdd4821d910f06",
+     "host_delivery_descriptors": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "host_delivery_intents": "15dbd29864219bb549c417e3ee1812d2c98bbf67980e521da8b669672b3bd217",
+     "host_delivery_migrations": "aa8a1cd4450008e0b866494d84a6070371b8b75d27b4f83d3e6de89926f33bf6",
+     "host_delivery_plans": "0b48564b6ff7cf58e1ae0ebf73d6427fd794013751aab66380897a1b64a0ab3f",
+     "host_delivery_targets": "406f419aba5db2778e0ac551cb5694a1c5c38efa067343386d108978536331b5",
+     "images": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "release_queue": "368e333ae6638ab9f8d3dab46236314c75c8eba28590b47f34f9ace59574cdcc",
+     "releases": "60168faff3f5e4133f1c3a4fc93bd73e27121733b7953721847a9186848db454"
+    },
+    "expected_pin": {
+     "base": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "evaluator_revision": "1111111111111111111111111111111111111111",
+     "evaluator_tree": "2222222222222222222222222222222222222222",
+     "parent": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "patch_sha256": "3333333333333333333333333333333333333333333333333333333333333333",
+     "paths": [
+      "tests/test_fixture.py"
+     ]
+    },
+    "label": "pin_not_a_dict",
+    "last_pin_call": [
+     "1111111111111111111111111111111111111111",
+     "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    ],
+    "last_pin_call_is_E_and_the_approved_base": true,
+    "old_intent_unchanged": true,
+    "steps": [
+     {
+      "field": "approval",
+      "message": "host delivery refused: migration_pin_mismatch (approval)",
+      "reason_code": "migration_pin_mismatch",
+      "refused": "DeliveryRefused",
+      "step": "stage_refused",
+      "store": "548d210f6d495e096dc9193000145ffb81b4445094332b80217ad8890b8ec5c1",
+      "wrote": false
+     },
+     {
+      "step": "stage_with_the_right_pin",
+      "store": "bec64f08e767dc662dc4ce856c3bf219fff15ee814aafcc46a3a23b6ce4100e9",
+      "value": {
+       "acknowledged": false,
+       "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+       "cached": false,
+       "kind": "evaluator_migration",
+       "migration": true,
+       "migration_id": "002db1e7002b471680e483695815561d0f6521e19e44844d49df6663a1ded403",
+       "old_plan_id": "delivery-plan-1",
+       "plan_id": null,
+       "plan_sha256": null,
+       "request_sha256": "3c8222ace180cc4a7324ce1cc4797f51e28a0eb72908d972008a3b700d03e85a",
+       "source_release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+       "state": "staged",
+       "successor_release_id": "982a6b5ad6bb930fef03443278a68c2923c44b24966e8c72722451820a042945",
+       "target_id": "canary-service"
+      },
+      "wrote": true
+     }
+    ],
+    "steps_that_wrote": [
+     "stage_with_the_right_pin"
+    ]
+   },
+   "patch": {
+    "buckets": {
+     "deployment": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "deployment_locks": "8774dbffbbd2f98c3d2c45d0030ded80cf33c08c092417df5053fe9aa9295826",
+     "execution_fences": "20a5866dd39fcde154ce9716eb3e2a993bfe17bdac43bffc35f66de08fb3e88c",
+     "host_delivery_descriptors": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "host_delivery_intents": "15dbd29864219bb549c417e3ee1812d2c98bbf67980e521da8b669672b3bd217",
+     "host_delivery_migrations": "aa8a1cd4450008e0b866494d84a6070371b8b75d27b4f83d3e6de89926f33bf6",
+     "host_delivery_plans": "0b48564b6ff7cf58e1ae0ebf73d6427fd794013751aab66380897a1b64a0ab3f",
+     "host_delivery_targets": "406f419aba5db2778e0ac551cb5694a1c5c38efa067343386d108978536331b5",
+     "images": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "release_queue": "368e333ae6638ab9f8d3dab46236314c75c8eba28590b47f34f9ace59574cdcc",
+     "releases": "60168faff3f5e4133f1c3a4fc93bd73e27121733b7953721847a9186848db454"
+    },
+    "expected_pin": {
+     "base": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "evaluator_revision": "1111111111111111111111111111111111111111",
+     "evaluator_tree": "2222222222222222222222222222222222222222",
+     "parent": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "patch_sha256": "3333333333333333333333333333333333333333333333333333333333333333",
+     "paths": [
+      "tests/test_fixture.py"
+     ]
+    },
+    "label": "pin_patch",
+    "last_pin_call": [
+     "1111111111111111111111111111111111111111",
+     "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    ],
+    "last_pin_call_is_E_and_the_approved_base": true,
+    "old_intent_unchanged": true,
+    "steps": [
+     {
+      "field": "approval",
+      "message": "host delivery refused: migration_pin_mismatch (approval)",
+      "reason_code": "migration_pin_mismatch",
+      "refused": "DeliveryRefused",
+      "step": "stage_refused",
+      "store": "0197b1e7c802a7f353b3007778507619c0d7f7825e50553a0424a11357151a26",
+      "wrote": false
+     },
+     {
+      "step": "stage_with_the_right_pin",
+      "store": "a5dbcbb48dd3f3323a37b15a7b437a57151d7ee7f6b67b28d7356b46413131ad",
+      "value": {
+       "acknowledged": false,
+       "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+       "cached": false,
+       "kind": "evaluator_migration",
+       "migration": true,
+       "migration_id": "002db1e7002b471680e483695815561d0f6521e19e44844d49df6663a1ded403",
+       "old_plan_id": "delivery-plan-1",
+       "plan_id": null,
+       "plan_sha256": null,
+       "request_sha256": "3c8222ace180cc4a7324ce1cc4797f51e28a0eb72908d972008a3b700d03e85a",
+       "source_release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+       "state": "staged",
+       "successor_release_id": "982a6b5ad6bb930fef03443278a68c2923c44b24966e8c72722451820a042945",
+       "target_id": "canary-service"
+      },
+      "wrote": true
+     }
+    ],
+    "steps_that_wrote": [
+     "stage_with_the_right_pin"
+    ]
+   },
+   "paths": {
+    "buckets": {
+     "deployment": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "deployment_locks": "8774dbffbbd2f98c3d2c45d0030ded80cf33c08c092417df5053fe9aa9295826",
+     "execution_fences": "b324d716bd1975961a03a04e56e2419664c0953f45e9b9272ebec661bb649c41",
+     "host_delivery_descriptors": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "host_delivery_intents": "15dbd29864219bb549c417e3ee1812d2c98bbf67980e521da8b669672b3bd217",
+     "host_delivery_migrations": "aa8a1cd4450008e0b866494d84a6070371b8b75d27b4f83d3e6de89926f33bf6",
+     "host_delivery_plans": "0b48564b6ff7cf58e1ae0ebf73d6427fd794013751aab66380897a1b64a0ab3f",
+     "host_delivery_targets": "406f419aba5db2778e0ac551cb5694a1c5c38efa067343386d108978536331b5",
+     "images": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "release_queue": "368e333ae6638ab9f8d3dab46236314c75c8eba28590b47f34f9ace59574cdcc",
+     "releases": "60168faff3f5e4133f1c3a4fc93bd73e27121733b7953721847a9186848db454"
+    },
+    "expected_pin": {
+     "base": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "evaluator_revision": "1111111111111111111111111111111111111111",
+     "evaluator_tree": "2222222222222222222222222222222222222222",
+     "parent": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "patch_sha256": "3333333333333333333333333333333333333333333333333333333333333333",
+     "paths": [
+      "tests/test_fixture.py"
+     ]
+    },
+    "label": "pin_paths",
+    "last_pin_call": [
+     "1111111111111111111111111111111111111111",
+     "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    ],
+    "last_pin_call_is_E_and_the_approved_base": true,
+    "old_intent_unchanged": true,
+    "steps": [
+     {
+      "field": "approval",
+      "message": "host delivery refused: migration_pin_mismatch (approval)",
+      "reason_code": "migration_pin_mismatch",
+      "refused": "DeliveryRefused",
+      "step": "stage_refused",
+      "store": "6625608d38ea78ea6293c3cac26b36f3985a08ddd4604bedf2ba7da3c20136b3",
+      "wrote": false
+     },
+     {
+      "step": "stage_with_the_right_pin",
+      "store": "6a8adfdae0582429c4396488d5ee00074dd45dd25a65696d1b421b3e2435e80a",
+      "value": {
+       "acknowledged": false,
+       "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+       "cached": false,
+       "kind": "evaluator_migration",
+       "migration": true,
+       "migration_id": "002db1e7002b471680e483695815561d0f6521e19e44844d49df6663a1ded403",
+       "old_plan_id": "delivery-plan-1",
+       "plan_id": null,
+       "plan_sha256": null,
+       "request_sha256": "3c8222ace180cc4a7324ce1cc4797f51e28a0eb72908d972008a3b700d03e85a",
+       "source_release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+       "state": "staged",
+       "successor_release_id": "982a6b5ad6bb930fef03443278a68c2923c44b24966e8c72722451820a042945",
+       "target_id": "canary-service"
+      },
+      "wrote": true
+     }
+    ],
+    "steps_that_wrote": [
+     "stage_with_the_right_pin"
+    ]
+   },
+   "tree": {
+    "buckets": {
+     "deployment": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "deployment_locks": "8774dbffbbd2f98c3d2c45d0030ded80cf33c08c092417df5053fe9aa9295826",
+     "execution_fences": "30212ed403b1253d011d916cae42ebd6b6465b5e1a38925ce23baa7aecb807ba",
+     "host_delivery_descriptors": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "host_delivery_intents": "15dbd29864219bb549c417e3ee1812d2c98bbf67980e521da8b669672b3bd217",
+     "host_delivery_migrations": "aa8a1cd4450008e0b866494d84a6070371b8b75d27b4f83d3e6de89926f33bf6",
+     "host_delivery_plans": "0b48564b6ff7cf58e1ae0ebf73d6427fd794013751aab66380897a1b64a0ab3f",
+     "host_delivery_targets": "406f419aba5db2778e0ac551cb5694a1c5c38efa067343386d108978536331b5",
+     "images": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "release_queue": "368e333ae6638ab9f8d3dab46236314c75c8eba28590b47f34f9ace59574cdcc",
+     "releases": "60168faff3f5e4133f1c3a4fc93bd73e27121733b7953721847a9186848db454"
+    },
+    "expected_pin": {
+     "base": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "evaluator_revision": "1111111111111111111111111111111111111111",
+     "evaluator_tree": "2222222222222222222222222222222222222222",
+     "parent": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "patch_sha256": "3333333333333333333333333333333333333333333333333333333333333333",
+     "paths": [
+      "tests/test_fixture.py"
+     ]
+    },
+    "label": "pin_tree",
+    "last_pin_call": [
+     "1111111111111111111111111111111111111111",
+     "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    ],
+    "last_pin_call_is_E_and_the_approved_base": true,
+    "old_intent_unchanged": true,
+    "steps": [
+     {
+      "field": "approval",
+      "message": "host delivery refused: migration_pin_mismatch (approval)",
+      "reason_code": "migration_pin_mismatch",
+      "refused": "DeliveryRefused",
+      "step": "stage_refused",
+      "store": "bdcc8bbbe5dccc548c59c5c455d086612c196995604c86406426fe7baa5a3738",
+      "wrote": false
+     },
+     {
+      "step": "stage_with_the_right_pin",
+      "store": "138b55f726d56c9c7d5433de7208cb0708d29c2dd96189ffe9b04648ef79a9dd",
+      "value": {
+       "acknowledged": false,
+       "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+       "cached": false,
+       "kind": "evaluator_migration",
+       "migration": true,
+       "migration_id": "002db1e7002b471680e483695815561d0f6521e19e44844d49df6663a1ded403",
+       "old_plan_id": "delivery-plan-1",
+       "plan_id": null,
+       "plan_sha256": null,
+       "request_sha256": "3c8222ace180cc4a7324ce1cc4797f51e28a0eb72908d972008a3b700d03e85a",
+       "source_release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+       "state": "staged",
+       "successor_release_id": "982a6b5ad6bb930fef03443278a68c2923c44b24966e8c72722451820a042945",
+       "target_id": "canary-service"
+      },
+      "wrote": true
+     }
+    ],
+    "steps_that_wrote": [
+     "stage_with_the_right_pin"
+    ]
+   },
+   "unavailable": {
+    "buckets": {
+     "deployment": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "deployment_locks": "8774dbffbbd2f98c3d2c45d0030ded80cf33c08c092417df5053fe9aa9295826",
+     "execution_fences": "0f4722acd51f7a9915d129df44e36617f6645bde3bb802414279ba99f173058a",
+     "host_delivery_descriptors": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "host_delivery_intents": "15dbd29864219bb549c417e3ee1812d2c98bbf67980e521da8b669672b3bd217",
+     "host_delivery_migrations": "aa8a1cd4450008e0b866494d84a6070371b8b75d27b4f83d3e6de89926f33bf6",
+     "host_delivery_plans": "0b48564b6ff7cf58e1ae0ebf73d6427fd794013751aab66380897a1b64a0ab3f",
+     "host_delivery_targets": "406f419aba5db2778e0ac551cb5694a1c5c38efa067343386d108978536331b5",
+     "images": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "release_queue": "368e333ae6638ab9f8d3dab46236314c75c8eba28590b47f34f9ace59574cdcc",
+     "releases": "60168faff3f5e4133f1c3a4fc93bd73e27121733b7953721847a9186848db454"
+    },
+    "expected_pin": {
+     "base": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "evaluator_revision": "1111111111111111111111111111111111111111",
+     "evaluator_tree": "2222222222222222222222222222222222222222",
+     "parent": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "patch_sha256": "3333333333333333333333333333333333333333333333333333333333333333",
+     "paths": [
+      "tests/test_fixture.py"
+     ]
+    },
+    "label": "pin_unavailable",
+    "last_pin_call": [
+     "1111111111111111111111111111111111111111",
+     "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    ],
+    "last_pin_call_is_E_and_the_approved_base": true,
+    "old_intent_unchanged": true,
+    "steps": [
+     {
+      "field": "evaluator_revision",
+      "message": "host delivery refused: migration_pin_unavailable (evaluator_revision)",
+      "reason_code": "migration_pin_unavailable",
+      "refused": "DeliveryRefused",
+      "step": "stage_refused",
+      "store": "fa292853f9b16a591e743ad732a8251990204c60f1f6f449c7d49718ee46cd23",
+      "wrote": false
+     },
+     {
+      "step": "stage_with_the_right_pin",
+      "store": "78e6d63a33034a3632690e0bc3266d08a76228361204fdeefb35dd17584fab86",
+      "value": {
+       "acknowledged": false,
+       "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+       "cached": false,
+       "kind": "evaluator_migration",
+       "migration": true,
+       "migration_id": "002db1e7002b471680e483695815561d0f6521e19e44844d49df6663a1ded403",
+       "old_plan_id": "delivery-plan-1",
+       "plan_id": null,
+       "plan_sha256": null,
+       "request_sha256": "3c8222ace180cc4a7324ce1cc4797f51e28a0eb72908d972008a3b700d03e85a",
+       "source_release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+       "state": "staged",
+       "successor_release_id": "982a6b5ad6bb930fef03443278a68c2923c44b24966e8c72722451820a042945",
+       "target_id": "canary-service"
+      },
+      "wrote": true
+     }
+    ],
+    "steps_that_wrote": [
+     "stage_with_the_right_pin"
+    ]
+   },
+   "unknown": {
+    "buckets": {
+     "deployment": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "deployment_locks": "8774dbffbbd2f98c3d2c45d0030ded80cf33c08c092417df5053fe9aa9295826",
+     "execution_fences": "cf0d17558fa78cc2932132b46347436b05e859013e33d5e84910fb2c37fe39e1",
+     "host_delivery_descriptors": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "host_delivery_intents": "15dbd29864219bb549c417e3ee1812d2c98bbf67980e521da8b669672b3bd217",
+     "host_delivery_migrations": "aa8a1cd4450008e0b866494d84a6070371b8b75d27b4f83d3e6de89926f33bf6",
+     "host_delivery_plans": "0b48564b6ff7cf58e1ae0ebf73d6427fd794013751aab66380897a1b64a0ab3f",
+     "host_delivery_targets": "406f419aba5db2778e0ac551cb5694a1c5c38efa067343386d108978536331b5",
+     "images": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "release_queue": "368e333ae6638ab9f8d3dab46236314c75c8eba28590b47f34f9ace59574cdcc",
+     "releases": "60168faff3f5e4133f1c3a4fc93bd73e27121733b7953721847a9186848db454"
+    },
+    "expected_pin": {
+     "base": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "evaluator_revision": "1111111111111111111111111111111111111111",
+     "evaluator_tree": "2222222222222222222222222222222222222222",
+     "parent": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+     "patch_sha256": "3333333333333333333333333333333333333333333333333333333333333333",
+     "paths": [
+      "tests/test_fixture.py"
+     ]
+    },
+    "label": "pin_unknown",
+    "last_pin_call": [
+     "1111111111111111111111111111111111111111",
+     "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    ],
+    "last_pin_call_is_E_and_the_approved_base": true,
+    "old_intent_unchanged": true,
+    "steps": [
+     {
+      "field": "evaluator_revision",
+      "message": "host delivery refused: migration_pin_unavailable (evaluator_revision)",
+      "reason_code": "migration_pin_unavailable",
+      "refused": "DeliveryRefused",
+      "step": "stage_refused",
+      "store": "5258a7cbd1bdfe4cb731c6bf906e03019720b0b158bad2c18bb6c19d567b5889",
+      "wrote": false
+     },
+     {
+      "step": "stage_with_the_right_pin",
+      "store": "c35e67f1c8cac29f18d13d571ebea8e4312194a8124dcfdaed163ad597fca0e4",
+      "value": {
+       "acknowledged": false,
+       "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+       "cached": false,
+       "kind": "evaluator_migration",
+       "migration": true,
+       "migration_id": "002db1e7002b471680e483695815561d0f6521e19e44844d49df6663a1ded403",
+       "old_plan_id": "delivery-plan-1",
+       "plan_id": null,
+       "plan_sha256": null,
+       "request_sha256": "3c8222ace180cc4a7324ce1cc4797f51e28a0eb72908d972008a3b700d03e85a",
+       "source_release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+       "state": "staged",
+       "successor_release_id": "982a6b5ad6bb930fef03443278a68c2923c44b24966e8c72722451820a042945",
+       "target_id": "canary-service"
+      },
+      "wrote": true
+     }
+    ],
+    "steps_that_wrote": [
+     "stage_with_the_right_pin"
+    ]
+   }
+  },
+  "replays_and_conflicts": {
+   "buckets": {
+    "deployment": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "deployment_locks": "8774dbffbbd2f98c3d2c45d0030ded80cf33c08c092417df5053fe9aa9295826",
+    "execution_fences": "800ee180f02aa1cad837c79e769533c3c68118d38cbcb9a31e73a57f77723bb0",
+    "host_delivery_descriptors": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "host_delivery_intents": "27479db9fe4c1d2e6bf9d0f4ea456236f84b5a9bd6e18ffdf831813b617f7c16",
+    "host_delivery_migrations": "a4f303f506598880ff6076426695742feef45d61cf444c84f9eb0755e1fd3537",
+    "host_delivery_plans": "7628ff7292f180411ac3e3a447e943d329c31f238c51886a55de400b758d7320",
+    "host_delivery_targets": "406f419aba5db2778e0ac551cb5694a1c5c38efa067343386d108978536331b5",
+    "images": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "release_queue": "fc6e630881ff9f72ae586feddfcdac4a8d199a879e13db2a79dfa0ab791ab89e",
+    "releases": "60168faff3f5e4133f1c3a4fc93bd73e27121733b7953721847a9186848db454"
+   },
+   "label": "replays_and_conflicts",
+   "steps": [
+    {
+     "step": "stage",
+     "store": "ed08cc64abf6eda90e0029f4468c3baf0cd2fdd6d8c837b06047ba1f07af95f4",
+     "value": {
+      "acknowledged": false,
+      "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+      "cached": false,
+      "kind": "evaluator_migration",
+      "migration": true,
+      "migration_id": "002db1e7002b471680e483695815561d0f6521e19e44844d49df6663a1ded403",
+      "old_plan_id": "delivery-plan-1",
+      "plan_id": null,
+      "plan_sha256": null,
+      "request_sha256": "3c8222ace180cc4a7324ce1cc4797f51e28a0eb72908d972008a3b700d03e85a",
+      "source_release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+      "state": "staged",
+      "successor_release_id": "982a6b5ad6bb930fef03443278a68c2923c44b24966e8c72722451820a042945",
+      "target_id": "canary-service"
+     },
+     "wrote": true
+    },
+    {
+     "step": "stage_replay",
+     "store": "ed08cc64abf6eda90e0029f4468c3baf0cd2fdd6d8c837b06047ba1f07af95f4",
+     "value": {
+      "acknowledged": false,
+      "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+      "cached": true,
+      "kind": "evaluator_migration",
+      "migration": true,
+      "migration_id": "002db1e7002b471680e483695815561d0f6521e19e44844d49df6663a1ded403",
+      "old_plan_id": "delivery-plan-1",
+      "plan_id": null,
+      "plan_sha256": null,
+      "request_sha256": "3c8222ace180cc4a7324ce1cc4797f51e28a0eb72908d972008a3b700d03e85a",
+      "source_release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+      "state": "staged",
+      "successor_release_id": "982a6b5ad6bb930fef03443278a68c2923c44b24966e8c72722451820a042945",
+      "target_id": "canary-service"
+     },
+     "wrote": false
+    },
+    {
+     "field": "request",
+     "message": "host delivery refused: migration_conflict (request)",
+     "reason_code": "migration_conflict",
+     "refused": "DeliveryRefused",
+     "step": "stage_conflict",
+     "store": "ed08cc64abf6eda90e0029f4468c3baf0cd2fdd6d8c837b06047ba1f07af95f4",
+     "wrote": false
+    },
+    {
+     "step": "register",
+     "store": "8c43088cff1702eb046c102907d6acaa16c22a9619783140ca8fb642513ff1ec",
+     "value": {
+      "acknowledged": false,
+      "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+      "cached": false,
+      "kind": "evaluator_migration",
+      "migration": true,
+      "migration_id": "002db1e7002b471680e483695815561d0f6521e19e44844d49df6663a1ded403",
+      "old_plan_id": "delivery-plan-1",
+      "plan_id": "delivery-plan-migrated",
+      "plan_sha256": "574f0807789e36bd47cede40c24c6e6333e203a2cecabbefdccc0d66bd8e907f",
+      "request_sha256": "3c8222ace180cc4a7324ce1cc4797f51e28a0eb72908d972008a3b700d03e85a",
+      "source_release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+      "state": "registered",
+      "successor_release_id": "982a6b5ad6bb930fef03443278a68c2923c44b24966e8c72722451820a042945",
+      "target_id": "canary-service"
+     },
+     "wrote": true
+    },
+    {
+     "step": "register_replay",
+     "store": "8c43088cff1702eb046c102907d6acaa16c22a9619783140ca8fb642513ff1ec",
+     "value": {
+      "acknowledged": false,
+      "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+      "cached": true,
+      "kind": "evaluator_migration",
+      "migration": true,
+      "migration_id": "002db1e7002b471680e483695815561d0f6521e19e44844d49df6663a1ded403",
+      "old_plan_id": "delivery-plan-1",
+      "plan_id": "delivery-plan-migrated",
+      "plan_sha256": "574f0807789e36bd47cede40c24c6e6333e203a2cecabbefdccc0d66bd8e907f",
+      "request_sha256": "3c8222ace180cc4a7324ce1cc4797f51e28a0eb72908d972008a3b700d03e85a",
+      "source_release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+      "state": "registered",
+      "successor_release_id": "982a6b5ad6bb930fef03443278a68c2923c44b24966e8c72722451820a042945",
+      "target_id": "canary-service"
+     },
+     "wrote": false
+    },
+    {
+     "field": "plan_id",
+     "message": "host delivery refused: migration_conflict (plan_id)",
+     "reason_code": "migration_conflict",
+     "refused": "DeliveryRefused",
+     "step": "register_conflict",
+     "store": "8c43088cff1702eb046c102907d6acaa16c22a9619783140ca8fb642513ff1ec",
+     "wrote": false
+    },
+    {
+     "field": "ack",
+     "message": "host delivery refused: migration_ack_mismatch (ack)",
+     "reason_code": "migration_ack_mismatch",
+     "refused": "DeliveryRefused",
+     "step": "finalize_ack_mismatch",
+     "store": "8c43088cff1702eb046c102907d6acaa16c22a9619783140ca8fb642513ff1ec",
+     "wrote": false
+    },
+    {
+     "step": "finalize",
+     "store": "c59b2376aa62f9940e7ee6cd844533d05b5eefb83779fb189eb615dea9201aa6",
+     "value": {
+      "acknowledged": true,
+      "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+      "cached": false,
+      "kind": "evaluator_migration",
+      "migration": true,
+      "migration_id": "002db1e7002b471680e483695815561d0f6521e19e44844d49df6663a1ded403",
+      "old_plan_id": "delivery-plan-1",
+      "plan_id": "delivery-plan-migrated",
+      "plan_sha256": "574f0807789e36bd47cede40c24c6e6333e203a2cecabbefdccc0d66bd8e907f",
+      "request_sha256": "3c8222ace180cc4a7324ce1cc4797f51e28a0eb72908d972008a3b700d03e85a",
+      "source_release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+      "state": "active",
+      "successor_release_id": "982a6b5ad6bb930fef03443278a68c2923c44b24966e8c72722451820a042945",
+      "target_id": "canary-service"
+     },
+     "wrote": true
+    },
+    {
+     "step": "finalize_replay",
+     "store": "c59b2376aa62f9940e7ee6cd844533d05b5eefb83779fb189eb615dea9201aa6",
+     "value": {
+      "acknowledged": true,
+      "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+      "cached": true,
+      "kind": "evaluator_migration",
+      "migration": true,
+      "migration_id": "002db1e7002b471680e483695815561d0f6521e19e44844d49df6663a1ded403",
+      "old_plan_id": "delivery-plan-1",
+      "plan_id": "delivery-plan-migrated",
+      "plan_sha256": "574f0807789e36bd47cede40c24c6e6333e203a2cecabbefdccc0d66bd8e907f",
+      "request_sha256": "3c8222ace180cc4a7324ce1cc4797f51e28a0eb72908d972008a3b700d03e85a",
+      "source_release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+      "state": "active",
+      "successor_release_id": "982a6b5ad6bb930fef03443278a68c2923c44b24966e8c72722451820a042945",
+      "target_id": "canary-service"
+     },
+     "wrote": false
+    },
+    {
+     "field": "ack",
+     "message": "host delivery refused: migration_conflict (ack)",
+     "reason_code": "migration_conflict",
+     "refused": "DeliveryRefused",
+     "step": "finalize_conflict",
+     "store": "c59b2376aa62f9940e7ee6cd844533d05b5eefb83779fb189eb615dea9201aa6",
+     "wrote": false
+    },
+    {
+     "field": "migration_id",
+     "message": "host delivery refused: migration_unknown (migration_id)",
+     "reason_code": "migration_unknown",
+     "refused": "DeliveryRefused",
+     "step": "finalize_unknown",
+     "store": "c59b2376aa62f9940e7ee6cd844533d05b5eefb83779fb189eb615dea9201aa6",
+     "wrote": false
+    }
+   ],
+   "steps_that_wrote": [
+    "stage",
+    "register",
+    "finalize"
+   ]
+  },
+  "reserved_target": {
+   "after_active": "release_reviews_incomplete",
+   "buckets": {
+    "deployment": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "deployment_locks": "8774dbffbbd2f98c3d2c45d0030ded80cf33c08c092417df5053fe9aa9295826",
+    "execution_fences": "69360a8b4a79b184e78d9c76a336abab2521941069671cc60344f2b110a7659f",
+    "host_delivery_descriptors": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "host_delivery_intents": "cc7370ba6da0ad29b76c9532dadd4226f452514e829511bd8eba914139647111",
+    "host_delivery_migrations": "a4f303f506598880ff6076426695742feef45d61cf444c84f9eb0755e1fd3537",
+    "host_delivery_plans": "79b7756f338667f8217739ab3c4a5022e6a12ed862908f898f6310ca7586600e",
+    "host_delivery_targets": "6024edb84f5e89562ad066caa20178de042152dd88be442f898eb07411c6cf14",
+    "images": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "release_queue": "8a1977c0b7f025e87cd81468dd5e6bbfc6a19976c9be0cddf299ed3263d423b9",
+    "releases": "72fe79f094222518b75954c01d6b667b1bd186aee9022212555c608663ecb45d"
+   },
+   "held_reserves": "target_reserved_by_migration",
+   "label": "reserved_target",
+   "reasons": {
+    "h2": "target_reserved_by_migration",
+    "other": null
+   },
+   "steps": [
+    {
+     "step": "stage",
+     "store": "822d84595218cecd5ded566cee957180e0795cd8f642c382388e013fad823e2e",
+     "value": {
+      "acknowledged": false,
+      "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+      "cached": false,
+      "kind": "evaluator_migration",
+      "migration": true,
+      "migration_id": "002db1e7002b471680e483695815561d0f6521e19e44844d49df6663a1ded403",
+      "old_plan_id": "delivery-plan-1",
+      "plan_id": null,
+      "plan_sha256": null,
+      "request_sha256": "3c8222ace180cc4a7324ce1cc4797f51e28a0eb72908d972008a3b700d03e85a",
+      "source_release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+      "state": "staged",
+      "successor_release_id": "982a6b5ad6bb930fef03443278a68c2923c44b24966e8c72722451820a042945",
+      "target_id": "canary-service"
+     },
+     "wrote": true
+    },
+    {
+     "field": "target_id",
+     "message": "host delivery refused: target_reserved_by_migration (target_id)",
+     "reason_code": "target_reserved_by_migration",
+     "refused": "DeliveryRefused",
+     "step": "register_on_the_reserved_target",
+     "store": "95690316bc873bfd5a07dd08505582b35545f3a3575697274a2626bcc159b38e",
+     "wrote": false
+    },
+    {
+     "step": "register_on_another_target",
+     "store": "14a1c3d391467d80bba149339b26b943e1269e474b8eca5d89788f2212d3bd60",
+     "value": {
+      "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+      "cached": false,
+      "pin": {
+       "path": "docs/zeus/operations/delivery.json",
+       "revision": "ffffffffffffffffffffffffffffffffffffffff",
+       "sha256": "2805511ad68d05be4344328b719c06904a5828fb89fc0ec6c6d8fb3ff0b2ea4b"
+      },
+      "plan_id": "delivery-plan-other",
+      "plan_sha256": "3206f6d027c247053409fc20cee6f99bf8a338182e5928a90670336ce40600da",
+      "registered": true,
+      "release_id": "e1dc0107070a46542b3c14cc6e33403b405fda5db92fa5f9d8b1fe3e36c2e6b1",
+      "target_id": "other-service"
+     },
+     "wrote": true
+    },
+    {
+     "step": "tick_selection",
+     "store": "9406e246047c7105c8cf47ba7d45ffe43e881155f3b602f1b059c554a204e536",
+     "tick": {
+      "active": null,
+      "ambiguous_effect": null,
+      "at": "2026-09-22T00:00:00+00:00",
+      "attempts": 0,
+      "blocked": {
+       "delivery-plan-1": "withdrawn",
+       "delivery-plan-h2": "target_reserved_by_migration"
+      },
+      "canary": null,
+      "descriptor_sha256": null,
+      "error_type": null,
+      "head": null,
+      "instance_id": null,
+      "merged_revision": null,
+      "next_action": "await_independent_review",
+      "outcome": "pending",
+      "plan_id": "delivery-plan-other",
+      "pr_number": null,
+      "previous_descriptor_sha256": null,
+      "reason_code": "release_reviews_incomplete",
+      "release_id": "e1dc0107070a46542b3c14cc6e33403b405fda5db92fa5f9d8b1fe3e36c2e6b1",
+      "rollback": null,
+      "stage": "awaiting_review",
+      "target_id": "other-service"
+     }
+    },
+    {
+     "step": "register_successor",
+     "store": "d24fe58e57386003d5f7b65dab7de3c7eddc1127a016edb58a963495669d714b",
+     "value": {
+      "acknowledged": false,
+      "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+      "cached": false,
+      "kind": "evaluator_migration",
+      "migration": true,
+      "migration_id": "002db1e7002b471680e483695815561d0f6521e19e44844d49df6663a1ded403",
+      "old_plan_id": "delivery-plan-1",
+      "plan_id": "delivery-plan-migrated",
+      "plan_sha256": "574f0807789e36bd47cede40c24c6e6333e203a2cecabbefdccc0d66bd8e907f",
+      "request_sha256": "3c8222ace180cc4a7324ce1cc4797f51e28a0eb72908d972008a3b700d03e85a",
+      "source_release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+      "state": "registered",
+      "successor_release_id": "982a6b5ad6bb930fef03443278a68c2923c44b24966e8c72722451820a042945",
+      "target_id": "canary-service"
+     },
+     "wrote": true
+    },
+    {
+     "step": "tick_registered_but_held",
+     "store": "0b08b24122c61046e90f8fc2790784d86817d9fae9ad3d47679005f0b36df545",
+     "tick": {
+      "active": null,
+      "ambiguous_effect": null,
+      "at": "2026-09-22T00:00:00+00:00",
+      "attempts": 0,
+      "blocked": {
+       "delivery-plan-1": "withdrawn",
+       "delivery-plan-h2": "target_reserved_by_migration",
+       "delivery-plan-migrated": "migration_unacknowledged"
+      },
+      "canary": null,
+      "descriptor_sha256": null,
+      "error_type": null,
+      "head": null,
+      "instance_id": null,
+      "merged_revision": null,
+      "next_action": "await_independent_review",
+      "outcome": "pending",
+      "plan_id": "delivery-plan-other",
+      "pr_number": null,
+      "previous_descriptor_sha256": null,
+      "reason_code": "release_reviews_incomplete",
+      "release_id": "e1dc0107070a46542b3c14cc6e33403b405fda5db92fa5f9d8b1fe3e36c2e6b1",
+      "rollback": null,
+      "stage": "awaiting_review",
+      "target_id": "other-service"
+     }
+    },
+    {
+     "step": "finalize",
+     "store": "a8d7e08dcd8dcbff053da13be99a15e68f4bc92879240f531d080738bd87d59c",
+     "value": {
+      "acknowledged": true,
+      "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+      "cached": false,
+      "kind": "evaluator_migration",
+      "migration": true,
+      "migration_id": "002db1e7002b471680e483695815561d0f6521e19e44844d49df6663a1ded403",
+      "old_plan_id": "delivery-plan-1",
+      "plan_id": "delivery-plan-migrated",
+      "plan_sha256": "574f0807789e36bd47cede40c24c6e6333e203a2cecabbefdccc0d66bd8e907f",
+      "request_sha256": "3c8222ace180cc4a7324ce1cc4797f51e28a0eb72908d972008a3b700d03e85a",
+      "source_release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+      "state": "active",
+      "successor_release_id": "982a6b5ad6bb930fef03443278a68c2923c44b24966e8c72722451820a042945",
+      "target_id": "canary-service"
+     },
+     "wrote": true
+    },
+    {
+     "step": "tick_after_finalize",
+     "store": "d8dd63818f2a5cf4b55f5d9dbc1256b5621ab2d27501fa8801bff13f73df4fe6",
+     "tick": {
+      "active": null,
+      "ambiguous_effect": null,
+      "at": "2026-09-22T00:00:00+00:00",
+      "attempts": 0,
+      "blocked": {
+       "delivery-plan-1": "withdrawn",
+       "delivery-plan-h2": "release_reviews_incomplete",
+       "delivery-plan-other": "controller_serialized"
+      },
+      "canary": null,
+      "descriptor_sha256": null,
+      "error_type": "DeliveryRefused",
+      "head": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "instance_id": null,
+      "merged_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "next_action": "await_incumbent_verification",
+      "outcome": "unavailable",
+      "plan_id": "delivery-plan-migrated",
+      "pr_number": 7,
+      "previous_descriptor_sha256": null,
+      "reason_code": "verifier_unavailable",
+      "release_id": "982a6b5ad6bb930fef03443278a68c2923c44b24966e8c72722451820a042945",
+      "rollback": null,
+      "stage": "verifying",
+      "target_id": "canary-service"
+     }
+    }
+   ],
+   "steps_that_wrote": [
+    "stage",
+    "register_on_another_target",
+    "register_successor",
+    "finalize"
+   ]
+  },
+  "source_shapes": {
+   "attempt_debt": {
+    "buckets": {
+     "deployment": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "deployment_locks": "8774dbffbbd2f98c3d2c45d0030ded80cf33c08c092417df5053fe9aa9295826",
+     "execution_fences": "c992a382bc7790d52ebbe1017e6ba9f240368a96b2ef04d2fca64cdf75c7c7bd",
+     "host_delivery_descriptors": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "host_delivery_intents": "e15773f20d72aff3c374a283dbc856bb6aac1d085f8f5551d56d8b1c43b18ba6",
+     "host_delivery_migrations": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "host_delivery_plans": "0b48564b6ff7cf58e1ae0ebf73d6427fd794013751aab66380897a1b64a0ab3f",
+     "host_delivery_targets": "406f419aba5db2778e0ac551cb5694a1c5c38efa067343386d108978536331b5",
+     "images": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "release_queue": "368e333ae6638ab9f8d3dab46236314c75c8eba28590b47f34f9ace59574cdcc",
+     "releases": "a8ea3a4b454aa2e08e62c72de8c58ef18930144afe1e8ac238e85b2f98b5dc2e"
+    },
+    "label": "source_shape_attempt_debt",
+    "steps": [
+     {
+      "field": "old_plan_id",
+      "message": "host delivery refused: migration_attempt_debt (old_plan_id)",
+      "reason_code": "migration_attempt_debt",
+      "refused": "DeliveryRefused",
+      "step": "stage",
+      "store": "5c9e90913eefb75e45a8e28a7dd22cdea71a8cf8783473cc92a7ec68bdea3d30",
+      "wrote": false
+     }
+    ],
+    "steps_that_wrote": []
+   },
+   "host_touched": {
+    "buckets": {
+     "deployment": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "deployment_locks": "8774dbffbbd2f98c3d2c45d0030ded80cf33c08c092417df5053fe9aa9295826",
+     "execution_fences": "fa51b118b07025cea30f6d702a9ab7e6869a6ae980a1e63de491ce3428704420",
+     "host_delivery_descriptors": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "host_delivery_intents": "978356b3394c729cef43fa2716651f8400813c0a45b0db5efee79a342879b50f",
+     "host_delivery_migrations": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "host_delivery_plans": "0b48564b6ff7cf58e1ae0ebf73d6427fd794013751aab66380897a1b64a0ab3f",
+     "host_delivery_targets": "406f419aba5db2778e0ac551cb5694a1c5c38efa067343386d108978536331b5",
+     "images": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "release_queue": "368e333ae6638ab9f8d3dab46236314c75c8eba28590b47f34f9ace59574cdcc",
+     "releases": "a8ea3a4b454aa2e08e62c72de8c58ef18930144afe1e8ac238e85b2f98b5dc2e"
+    },
+    "label": "source_shape_host_touched",
+    "steps": [
+     {
+      "field": "old_plan_id",
+      "message": "host delivery refused: migration_host_touched (old_plan_id)",
+      "reason_code": "migration_host_touched",
+      "refused": "DeliveryRefused",
+      "step": "stage",
+      "store": "59e8e25df5011c892c387aae51b5f6c508d32304bedc9745a0bc336e7dc217db",
+      "wrote": false
+     }
+    ],
+    "steps_that_wrote": []
+   },
+   "merged_revision_missing": {
+    "buckets": {
+     "deployment": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "deployment_locks": "8774dbffbbd2f98c3d2c45d0030ded80cf33c08c092417df5053fe9aa9295826",
+     "execution_fences": "5643d6a76d4d2fe81b2e48362a42160502ed95fb8c15701bbbb233fb8cec7c1a",
+     "host_delivery_descriptors": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "host_delivery_intents": "a0caf4ce4eb11f75e5ba09b8bd1f08487da9f0c85eed0b647ca19c3c90a343ff",
+     "host_delivery_migrations": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "host_delivery_plans": "0b48564b6ff7cf58e1ae0ebf73d6427fd794013751aab66380897a1b64a0ab3f",
+     "host_delivery_targets": "406f419aba5db2778e0ac551cb5694a1c5c38efa067343386d108978536331b5",
+     "images": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "release_queue": "368e333ae6638ab9f8d3dab46236314c75c8eba28590b47f34f9ace59574cdcc",
+     "releases": "a8ea3a4b454aa2e08e62c72de8c58ef18930144afe1e8ac238e85b2f98b5dc2e"
+    },
+    "label": "source_shape_merged_revision_missing",
+    "steps": [
+     {
+      "field": "old_plan_id",
+      "message": "host delivery refused: migration_candidate_mismatch (old_plan_id)",
+      "reason_code": "migration_candidate_mismatch",
+      "refused": "DeliveryRefused",
+      "step": "stage",
+      "store": "fe772c340cc6af0ed2e20ab4733b6885a0e2a16610ef68bc1ef91933f24445b6",
+      "wrote": false
+     }
+    ],
+    "steps_that_wrote": []
+   },
+   "release_not_verified": {
+    "buckets": {
+     "deployment": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "deployment_locks": "8774dbffbbd2f98c3d2c45d0030ded80cf33c08c092417df5053fe9aa9295826",
+     "execution_fences": "8b3796b1a3aaa11a1d218449eb0f557509674eaf00a529e46127ed941208e066",
+     "host_delivery_descriptors": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "host_delivery_intents": "47e54119bba69675688c3a5213dd7084cbe71d8c5d0ccc1fa9ae0735a227829a",
+     "host_delivery_migrations": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "host_delivery_plans": "0b48564b6ff7cf58e1ae0ebf73d6427fd794013751aab66380897a1b64a0ab3f",
+     "host_delivery_targets": "406f419aba5db2778e0ac551cb5694a1c5c38efa067343386d108978536331b5",
+     "images": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "release_queue": "368e333ae6638ab9f8d3dab46236314c75c8eba28590b47f34f9ace59574cdcc",
+     "releases": "a8ea3a4b454aa2e08e62c72de8c58ef18930144afe1e8ac238e85b2f98b5dc2e"
+    },
+    "label": "source_shape_release_not_verified",
+    "steps": [
+     {
+      "field": "old_plan_id",
+      "message": "host delivery refused: migration_not_applicable (old_plan_id)",
+      "reason_code": "migration_not_applicable",
+      "refused": "DeliveryRefused",
+      "step": "stage",
+      "store": "95054bf413142febf97a633f01c8ea7cd89863b7bce3b990cc4996596a1f1c94",
+      "wrote": false
+     }
+    ],
+    "steps_that_wrote": []
+   },
+   "stage_verifying": {
+    "buckets": {
+     "deployment": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "deployment_locks": "8774dbffbbd2f98c3d2c45d0030ded80cf33c08c092417df5053fe9aa9295826",
+     "execution_fences": "1a13bcd61bf00d1a7575b4e88487a007563070adbd87543b5ba8cc3b3308f82b",
+     "host_delivery_descriptors": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "host_delivery_intents": "baccc18d2ec1d8f1f0bc77d2f7c5472cfdc3dba6c3b9c1b76916e3aba9163cbd",
+     "host_delivery_migrations": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "host_delivery_plans": "0b48564b6ff7cf58e1ae0ebf73d6427fd794013751aab66380897a1b64a0ab3f",
+     "host_delivery_targets": "406f419aba5db2778e0ac551cb5694a1c5c38efa067343386d108978536331b5",
+     "images": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "release_queue": "368e333ae6638ab9f8d3dab46236314c75c8eba28590b47f34f9ace59574cdcc",
+     "releases": "a8ea3a4b454aa2e08e62c72de8c58ef18930144afe1e8ac238e85b2f98b5dc2e"
+    },
+    "label": "source_shape_stage_verifying",
+    "steps": [
+     {
+      "field": "old_plan_id",
+      "message": "host delivery refused: migration_not_applicable (old_plan_id)",
+      "reason_code": "migration_not_applicable",
+      "refused": "DeliveryRefused",
+      "step": "stage",
+      "store": "00449d94d87e41aa0ff16e53e6a55eb8b2fb359ed3187569dd0c4eee5ac1671e",
+      "wrote": false
+     }
+    ],
+    "steps_that_wrote": []
+   }
+  },
+  "staged_replay_without_resolver": {
+   "buckets": {
+    "deployment": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "deployment_locks": "8774dbffbbd2f98c3d2c45d0030ded80cf33c08c092417df5053fe9aa9295826",
+    "execution_fences": "984a331b892cb38f915e13cf7dda371cc468a1393299cb5f6e522ec99d4ad5fe",
+    "host_delivery_descriptors": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "host_delivery_intents": "15dbd29864219bb549c417e3ee1812d2c98bbf67980e521da8b669672b3bd217",
+    "host_delivery_migrations": "aa8a1cd4450008e0b866494d84a6070371b8b75d27b4f83d3e6de89926f33bf6",
+    "host_delivery_plans": "0b48564b6ff7cf58e1ae0ebf73d6427fd794013751aab66380897a1b64a0ab3f",
+    "host_delivery_targets": "406f419aba5db2778e0ac551cb5694a1c5c38efa067343386d108978536331b5",
+    "images": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "release_queue": "368e333ae6638ab9f8d3dab46236314c75c8eba28590b47f34f9ace59574cdcc",
+    "releases": "60168faff3f5e4133f1c3a4fc93bd73e27121733b7953721847a9186848db454"
+   },
+   "label": "staged_replay_without_resolver",
+   "replay_is_the_staged_view_cached": true,
+   "steps": [
+    {
+     "step": "stage",
+     "store": "46688c0197e1d595c0351cdabb5152ee8ee97e3890f25e0a8bb99d86f102d437",
+     "value": {
+      "acknowledged": false,
+      "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+      "cached": false,
+      "kind": "evaluator_migration",
+      "migration": true,
+      "migration_id": "002db1e7002b471680e483695815561d0f6521e19e44844d49df6663a1ded403",
+      "old_plan_id": "delivery-plan-1",
+      "plan_id": null,
+      "plan_sha256": null,
+      "request_sha256": "3c8222ace180cc4a7324ce1cc4797f51e28a0eb72908d972008a3b700d03e85a",
+      "source_release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+      "state": "staged",
+      "successor_release_id": "982a6b5ad6bb930fef03443278a68c2923c44b24966e8c72722451820a042945",
+      "target_id": "canary-service"
+     },
+     "wrote": true
+    },
+    {
+     "step": "replay_with_no_resolver",
+     "store": "46688c0197e1d595c0351cdabb5152ee8ee97e3890f25e0a8bb99d86f102d437",
+     "value": {
+      "acknowledged": false,
+      "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+      "cached": true,
+      "kind": "evaluator_migration",
+      "migration": true,
+      "migration_id": "002db1e7002b471680e483695815561d0f6521e19e44844d49df6663a1ded403",
+      "old_plan_id": "delivery-plan-1",
+      "plan_id": null,
+      "plan_sha256": null,
+      "request_sha256": "3c8222ace180cc4a7324ce1cc4797f51e28a0eb72908d972008a3b700d03e85a",
+      "source_release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+      "state": "staged",
+      "successor_release_id": "982a6b5ad6bb930fef03443278a68c2923c44b24966e8c72722451820a042945",
+      "target_id": "canary-service"
+     },
+     "wrote": false
+    }
+   ],
+   "steps_that_wrote": [
+    "stage"
+   ]
+  },
+  "stale_and_forged": {
+   "buckets": {
+    "deployment": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "deployment_locks": "8774dbffbbd2f98c3d2c45d0030ded80cf33c08c092417df5053fe9aa9295826",
+    "execution_fences": "46d4bb65d2ce4cfe83c9023e7557070d9f902d6ca03908eb1788b0ff761a299b",
+    "host_delivery_descriptors": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "host_delivery_intents": "c4f20a6d26c8d036b412de328f71fa1505946cffc623182e8200b7555573352d",
+    "host_delivery_migrations": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "host_delivery_plans": "0b48564b6ff7cf58e1ae0ebf73d6427fd794013751aab66380897a1b64a0ab3f",
+    "host_delivery_targets": "406f419aba5db2778e0ac551cb5694a1c5c38efa067343386d108978536331b5",
+    "images": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "release_queue": "368e333ae6638ab9f8d3dab46236314c75c8eba28590b47f34f9ace59574cdcc",
+    "releases": "a8ea3a4b454aa2e08e62c72de8c58ef18930144afe1e8ac238e85b2f98b5dc2e"
+   },
+   "label": "stale_and_forged",
+   "steps": [
+    {
+     "field": "old_plan_sha256",
+     "message": "host delivery refused: migration_plan_mismatch (old_plan_sha256)",
+     "reason_code": "migration_plan_mismatch",
+     "refused": "DeliveryRefused",
+     "step": "stale_plan_digest",
+     "store": "13c194bd9115899acaf72eb0431b48ce2928b689dad25b119655c08e6c61d395",
+     "wrote": false
+    },
+    {
+     "field": "old_plan_id",
+     "message": "host delivery refused: migration_candidate_mismatch (old_plan_id)",
+     "reason_code": "migration_candidate_mismatch",
+     "refused": "DeliveryRefused",
+     "step": "wrong_candidate",
+     "store": "13c194bd9115899acaf72eb0431b48ce2928b689dad25b119655c08e6c61d395",
+     "wrote": false
+    },
+    {
+     "field": "migration_id",
+     "message": "host delivery refused: migration_request_invalid (migration_id)",
+     "reason_code": "migration_request_invalid",
+     "refused": "DeliveryRefused",
+     "step": "forged_migration_id",
+     "store": "13c194bd9115899acaf72eb0431b48ce2928b689dad25b119655c08e6c61d395",
+     "wrote": false
+    },
+    {
+     "field": "approval",
+     "message": "host delivery refused: migration_pin_mismatch (approval)",
+     "reason_code": "migration_pin_mismatch",
+     "refused": "DeliveryRefused",
+     "step": "approved_paths_disagree_with_the_pin",
+     "store": "13c194bd9115899acaf72eb0431b48ce2928b689dad25b119655c08e6c61d395",
+     "wrote": false
+    },
+    {
+     "field": "source_release_id",
+     "message": "host delivery refused: migration_release_refused (source_release_id)",
+     "reason_code": "migration_release_refused",
+     "refused": "DeliveryRefused",
+     "step": "code_touching_evaluator",
+     "store": "13c194bd9115899acaf72eb0431b48ce2928b689dad25b119655c08e6c61d395",
+     "wrote": false
+    }
+   ],
+   "steps_that_wrote": []
+  },
+  "status_projection": {
+   "buckets": {
+    "deployment": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "deployment_locks": "8774dbffbbd2f98c3d2c45d0030ded80cf33c08c092417df5053fe9aa9295826",
+    "execution_fences": "11173556b7e219a32bf9234ecaa71a05ab64080fdffa378f628755373de1ccab",
+    "host_delivery_descriptors": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "host_delivery_intents": "27479db9fe4c1d2e6bf9d0f4ea456236f84b5a9bd6e18ffdf831813b617f7c16",
+    "host_delivery_migrations": "a4f303f506598880ff6076426695742feef45d61cf444c84f9eb0755e1fd3537",
+    "host_delivery_plans": "7628ff7292f180411ac3e3a447e943d329c31f238c51886a55de400b758d7320",
+    "host_delivery_targets": "406f419aba5db2778e0ac551cb5694a1c5c38efa067343386d108978536331b5",
+    "images": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "release_queue": "fc6e630881ff9f72ae586feddfcdac4a8d199a879e13db2a79dfa0ab791ab89e",
+    "releases": "60168faff3f5e4133f1c3a4fc93bd73e27121733b7953721847a9186848db454"
+   },
+   "label": "status_projection",
+   "status_active": [
+    {
+     "at": "2026-09-22T00:00:00+00:00",
+     "held": null,
+     "kind": "evaluator_migration",
+     "migration_id": "002db1e7002b471680e483695815561d0f6521e19e44844d49df6663a1ded403",
+     "old_plan_id": "delivery-plan-1",
+     "plan_id": "delivery-plan-migrated",
+     "state": "active",
+     "successor_release_id": "982a6b5ad6bb930fef03443278a68c2923c44b24966e8c72722451820a042945",
+     "target_id": "canary-service"
+    }
+   ],
+   "status_before": [],
+   "status_envelope_keys": [
+    "authority",
+    "counts",
+    "deliveries",
+    "enabled",
+    "migrations",
+    "registered",
+    "schema",
+    "targets"
+   ],
+   "status_is_read_only": true,
+   "status_registered_by_old_plan": true,
+   "status_registered_by_successor": [
+    {
+     "at": "2026-09-22T00:00:00+00:00",
+     "held": "migration_unacknowledged",
+     "kind": "evaluator_migration",
+     "migration_id": "002db1e7002b471680e483695815561d0f6521e19e44844d49df6663a1ded403",
+     "old_plan_id": "delivery-plan-1",
+     "plan_id": "delivery-plan-migrated",
+     "state": "registered",
+     "successor_release_id": "982a6b5ad6bb930fef03443278a68c2923c44b24966e8c72722451820a042945",
+     "target_id": "canary-service"
+    }
+   ],
+   "status_staged": [
+    {
+     "at": "2026-09-22T00:00:00+00:00",
+     "held": null,
+     "kind": "evaluator_migration",
+     "migration_id": "002db1e7002b471680e483695815561d0f6521e19e44844d49df6663a1ded403",
+     "old_plan_id": "delivery-plan-1",
+     "plan_id": null,
+     "state": "staged",
+     "successor_release_id": "982a6b5ad6bb930fef03443278a68c2923c44b24966e8c72722451820a042945",
+     "target_id": "canary-service"
+    }
+   ],
+   "status_unknown_plan": [],
+   "steps": [
+    {
+     "step": "stage",
+     "store": "836225a50142496d8cd4f4f59283945362d9c18e05a837d2fdb2e9a39436e465",
+     "value": {
+      "acknowledged": false,
+      "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+      "cached": false,
+      "kind": "evaluator_migration",
+      "migration": true,
+      "migration_id": "002db1e7002b471680e483695815561d0f6521e19e44844d49df6663a1ded403",
+      "old_plan_id": "delivery-plan-1",
+      "plan_id": null,
+      "plan_sha256": null,
+      "request_sha256": "3c8222ace180cc4a7324ce1cc4797f51e28a0eb72908d972008a3b700d03e85a",
+      "source_release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+      "state": "staged",
+      "successor_release_id": "982a6b5ad6bb930fef03443278a68c2923c44b24966e8c72722451820a042945",
+      "target_id": "canary-service"
+     },
+     "wrote": true
+    },
+    {
+     "step": "register",
+     "store": "493f0112d7ea3024cf5e90ae55c31f8fc6a6acebb1b8a0f004a9ca54f33bee9f",
+     "value": {
+      "acknowledged": false,
+      "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+      "cached": false,
+      "kind": "evaluator_migration",
+      "migration": true,
+      "migration_id": "002db1e7002b471680e483695815561d0f6521e19e44844d49df6663a1ded403",
+      "old_plan_id": "delivery-plan-1",
+      "plan_id": "delivery-plan-migrated",
+      "plan_sha256": "574f0807789e36bd47cede40c24c6e6333e203a2cecabbefdccc0d66bd8e907f",
+      "request_sha256": "3c8222ace180cc4a7324ce1cc4797f51e28a0eb72908d972008a3b700d03e85a",
+      "source_release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+      "state": "registered",
+      "successor_release_id": "982a6b5ad6bb930fef03443278a68c2923c44b24966e8c72722451820a042945",
+      "target_id": "canary-service"
+     },
+     "wrote": true
+    },
+    {
+     "step": "finalize",
+     "store": "1207d9ebc1304048d3a0d13a350dd6a82a6d42b67e30228a236eeeaad663a5a1",
+     "value": {
+      "acknowledged": true,
+      "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+      "cached": false,
+      "kind": "evaluator_migration",
+      "migration": true,
+      "migration_id": "002db1e7002b471680e483695815561d0f6521e19e44844d49df6663a1ded403",
+      "old_plan_id": "delivery-plan-1",
+      "plan_id": "delivery-plan-migrated",
+      "plan_sha256": "574f0807789e36bd47cede40c24c6e6333e203a2cecabbefdccc0d66bd8e907f",
+      "request_sha256": "3c8222ace180cc4a7324ce1cc4797f51e28a0eb72908d972008a3b700d03e85a",
+      "source_release_id": "e81284413529d21a77cb4608da27b0b4ee5b5844e7b50b2582cac075c5db8655",
+      "state": "active",
+      "successor_release_id": "982a6b5ad6bb930fef03443278a68c2923c44b24966e8c72722451820a042945",
+      "target_id": "canary-service"
+     },
+     "wrote": true
+    }
+   ],
+   "steps_that_wrote": [
+    "stage",
+    "register",
+    "finalize"
+   ]
+  },
+  "target_busy": {
+   "buckets": {
+    "deployment": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "deployment_locks": "8774dbffbbd2f98c3d2c45d0030ded80cf33c08c092417df5053fe9aa9295826",
+    "execution_fences": "244f7e249c5ae227fab960c7d64a73f61c2990f9f718c5efb8e29e299712cccf",
+    "host_delivery_descriptors": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "host_delivery_intents": "c4f20a6d26c8d036b412de328f71fa1505946cffc623182e8200b7555573352d",
+    "host_delivery_migrations": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "host_delivery_plans": "95b37f8538efceba62d3600d2ba2f4c868c73a5acce8905f4dadac0211e3a067",
+    "host_delivery_targets": "406f419aba5db2778e0ac551cb5694a1c5c38efa067343386d108978536331b5",
+    "images": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "release_queue": "368e333ae6638ab9f8d3dab46236314c75c8eba28590b47f34f9ace59574cdcc",
+    "releases": "0c9fc5df5062df78b1b7c558162b02eef07c9720e92a916189ff8fa7a8614bd8"
+   },
+   "label": "target_busy",
+   "steps": [
+    {
+     "step": "register_the_competitor",
+     "store": "31baf1aa38a3da8b07f13d5bf4162a0758c4fab36bd206abb0863bd795571bea",
+     "value": {
+      "authority": "host_delivery; approval remains the existing Releases lead+conductor record and the ReleaseQueue fence. A delivery receipt proves publication, observed CI, merge, an atomically switched descriptor and a consumed startup identity - never a review verdict, a semantic acceptance or a qualified live host",
+      "cached": false,
+      "pin": {
+       "path": "docs/zeus/operations/delivery.json",
+       "revision": "ffffffffffffffffffffffffffffffffffffffff",
+       "sha256": "2805511ad68d05be4344328b719c06904a5828fb89fc0ec6c6d8fb3ff0b2ea4b"
+      },
+      "plan_id": "delivery-plan-h2",
+      "plan_sha256": "42a761c4262704acd86b32cda6d9872bf39fee986495bb26794d1e470faf8b87",
+      "registered": true,
+      "release_id": "e1dc0107070a46542b3c14cc6e33403b405fda5db92fa5f9d8b1fe3e36c2e6b1",
+      "target_id": "canary-service"
+     },
+     "wrote": true
+    },
+    {
+     "field": "target_id",
+     "message": "host delivery refused: migration_target_busy (target_id)",
+     "reason_code": "migration_target_busy",
+     "refused": "DeliveryRefused",
+     "step": "stage",
+     "store": "31baf1aa38a3da8b07f13d5bf4162a0758c4fab36bd206abb0863bd795571bea",
+     "wrote": false
+    }
+   ],
+   "steps_that_wrote": [
+    "register_the_competitor"
+   ]
+  }
+ }
+}
