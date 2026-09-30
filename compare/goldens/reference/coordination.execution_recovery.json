@@ -1,0 +1,343 @@
+{
+ "changed_snapshot": {
+  "message": "Recovery snapshot changed",
+  "refused": "ContractError"
+ },
+ "expired_claim": {
+  "keys": [
+   "agent",
+   "attempt",
+   "attempt_outcomes",
+   "created_at",
+   "error",
+   "execution_clock",
+   "execution_deadline",
+   "failure",
+   "failure_receipt",
+   "generation",
+   "id",
+   "input_hash",
+   "lease_owner",
+   "lease_until",
+   "message",
+   "recovery_receipt",
+   "recovery_sequence",
+   "result",
+   "retry_budget",
+   "status"
+  ],
+  "value": "c25aea95008bcf0e8ab54256152f25d94aea7f4c3ad0b2fa92579a32c4b7b170"
+ },
+ "expired_packet": {
+  "message": "Recovery packet expired or not yet valid",
+  "refused": "ContractError"
+ },
+ "expired_resume": {
+  "keys": [
+   "execution",
+   "receipt_id",
+   "replayed"
+  ],
+  "value": "7d90fc5a95a5f3df52a925edf6c195a5b973a016aab1329d056379c607479e23"
+ },
+ "expired_without_deadline": {
+  "message": "Existing deadline cannot be removed",
+  "refused": "ContractError"
+ },
+ "invalid_attempts_bool": {
+  "message": "Recovery total attempt limit must be a positive integer",
+  "refused": "ContractError"
+ },
+ "invalid_attempts_bool_read_only": true,
+ "invalid_attempts_one": {
+  "message": "Recovery ceiling must exceed attempts already spent",
+  "refused": "ContractError"
+ },
+ "invalid_attempts_one_read_only": true,
+ "invalid_naive_deadline": {
+  "message": "Deadline must be a timezone-aware ISO timestamp",
+  "refused": "ContractError"
+ },
+ "invalid_naive_deadline_read_only": true,
+ "invalid_no_operator": {
+  "message": "Operator audit label required",
+  "refused": "ContractError"
+ },
+ "invalid_no_operator_read_only": true,
+ "invalid_no_reason": {
+  "message": "Recovery reason required",
+  "refused": "ContractError"
+ },
+ "invalid_no_reason_read_only": true,
+ "invalid_past_deadline": {
+  "message": "Recovery deadline must be future",
+  "refused": "ContractError"
+ },
+ "invalid_past_deadline_read_only": true,
+ "legacy_claim": {
+  "keys": null,
+  "value": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b"
+ },
+ "migrate": {
+  "keys": [
+   "execution",
+   "receipt_id",
+   "replayed"
+  ],
+  "value": "6952bf572260a529dcd9dc68f084f48387d84c01b9cf5b347de190e782a83c55"
+ },
+ "migrate_records": [
+  [
+   "events",
+   "1fa25902f3655d75a60e3f4487dcc95ab513f2dd40994f813f38e792b7120839",
+   "12db09c73ff3d2dcf60db5f3605c6a25220630a12610276b703f8fac91ce8876"
+  ],
+  [
+   "events",
+   "a9fe0c935748db90ab66d031af0ec5ff95add3216e5acb85921ceb75f124b49b",
+   "76a2b63aa3b1ed3bf15a35d309351c7edeefd1aae56f1c4e7ced9bc1d2dfb63f"
+  ],
+  [
+   "execution_fences",
+   "tasks:5eed0000-0000-4000-8000-000000000005",
+   "cdcb022453fa6bf9bf0cef4f05502778bee0c3c91bf8d18a983c471222ab5a0b"
+  ],
+  [
+   "execution_notices",
+   "1ff4f7bd504c83b019594028e6e712cc1ec1f529ab87f9d465ccf642f88d8bda",
+   "b15105806dc9dd81402b1c723247daada6b460774c52f25d0e0adaec17d1a0e3"
+  ],
+  [
+   "execution_notices",
+   "26649c2c60ab6ca64c6caa19e7c02ad9922c244f55817e7f38f3eed97b420fa8",
+   "5481601113e6852de13a120caf9d081e440fab4f3eecb791808fb99f0f478066"
+  ],
+  [
+   "execution_recoveries",
+   "a9fe0c935748db90ab66d031af0ec5ff95add3216e5acb85921ceb75f124b49b",
+   "85d6fce6a104d2516e578dd16ed38bad5ba3ed2ced6680bf1a5423cfaa00e648"
+  ],
+  [
+   "outbox",
+   "1ff4f7bd504c83b019594028e6e712cc1ec1f529ab87f9d465ccf642f88d8bda",
+   "41301322972f7b0ac6922b0814239535bf9100e22cba0672fac892dbec9d9630"
+  ],
+  [
+   "outbox",
+   "26649c2c60ab6ca64c6caa19e7c02ad9922c244f55817e7f38f3eed97b420fa8",
+   "ffe94f1bbd953cba27d9e78088dd442f6ec44ac5f8aeb56cdff9225e00fa9ba6"
+  ],
+  [
+   "tasks",
+   "5eed0000-0000-4000-8000-000000000005",
+   "c0d6c1bcb59b1b2c51c9cb768273428ac85780a979394bd7abfaf2417f0c23a0"
+  ]
+ ],
+ "missing_evidence": {
+  "message": "Recovery evidence unavailable",
+  "refused": "ContractError"
+ },
+ "next_claim": {
+  "keys": [
+   "agent",
+   "attempt",
+   "attempt_outcomes",
+   "created_at",
+   "error",
+   "execution_clock",
+   "execution_deadline",
+   "failure",
+   "failure_receipt",
+   "generation",
+   "id",
+   "input_hash",
+   "lease_owner",
+   "lease_until",
+   "message",
+   "project_context",
+   "recovery_receipt",
+   "recovery_sequence",
+   "result",
+   "retrospective",
+   "retry_budget",
+   "status"
+  ],
+  "value": "ed424b097892c1c7895f7dd05546e63966c13e2ef697e0bc3c1e488d1611af88"
+ },
+ "old_lease_stale": {
+  "message": "Stale failure retry after execution changed",
+  "refused": "ContractError"
+ },
+ "packet_stale": {
+  "message": "Stale recovery retry after execution changed",
+  "refused": "ContractError"
+ },
+ "repair": {
+  "keys": [
+   "execution",
+   "receipt_id",
+   "replayed"
+  ],
+  "value": "118aef53eeee8d9791a5f5471942f01b0382c5ee70d7736807ef79dd5494fe83"
+ },
+ "repair_records": [
+  [
+   "events",
+   "37f1a974888ccbbb9b59930822803e95da540aebf15d6e73d1e53bff183cf4f4",
+   "ef23ab1e52e68138bc5c3431dc77a663553c80c031df75810690c56b2ce18a8c"
+  ],
+  [
+   "execution_failures",
+   "7c61dc3c66720cf2d2486a244c445aab42f1b55a1c198a3329124a5f5eedc6ef",
+   "43596bdd80f3ca4a4022afe4c0d0268b54cf1a3601b5c26172e33c0765dc2871"
+  ],
+  [
+   "execution_fences",
+   "tasks:5eed0000-0000-4000-8000-000000000034",
+   "e90830e1c022be5f1c3875a2185cc71e51d6da1538db209e378bdbc3027b2251"
+  ],
+  [
+   "execution_notices",
+   "1183059d0b1a64b19fadc89725ddd358a9a9e1ac7cf27928114b046c2c61e278",
+   "3bc120b3b539e5dc98157d101bbba9b467c4c0d6e55243d15f7a900db001e6a5"
+  ],
+  [
+   "execution_notices",
+   "4d81e0f35fad315cf0bb7330c0775e7026bcc52843bf2ddb4fdbed23519d997d",
+   "68e84ba115bd18583018c4e6c926193ae9cdac90accdc074eea600d20b803c58"
+  ],
+  [
+   "execution_notices",
+   "f41ee9d6fcfc8d82c94fcf0ee0a9da3ca83b27abfb6886319eeb9741ec9a33b2",
+   "3a9b47e1039c37b2558ad5842a1d37e20d3b7915ef9480886c4989f261408401"
+  ],
+  [
+   "execution_recoveries",
+   "37f1a974888ccbbb9b59930822803e95da540aebf15d6e73d1e53bff183cf4f4",
+   "0f0eede330fa25ac24cb3ff8d60576e67e0438b1b386a62b71b59a1afc2319bd"
+  ],
+  [
+   "outbox",
+   "1183059d0b1a64b19fadc89725ddd358a9a9e1ac7cf27928114b046c2c61e278",
+   "751fcb488574004fe2d0c43e2e8f8a67e82d1dda312653ea791bafdf6800004a"
+  ],
+  [
+   "outbox",
+   "4d81e0f35fad315cf0bb7330c0775e7026bcc52843bf2ddb4fdbed23519d997d",
+   "66546e821988f9ca0dd2b8c533d086184e2e26ac79f84ccb5b507d4eae51c1c4"
+  ],
+  [
+   "outbox",
+   "f41ee9d6fcfc8d82c94fcf0ee0a9da3ca83b27abfb6886319eeb9741ec9a33b2",
+   "e420c7781ba6b09ca839fee6e18980c27df837d41c13383c2abc07fed89fa66a"
+  ],
+  [
+   "tasks",
+   "5eed0000-0000-4000-8000-000000000034",
+   "2a5c864323d92c28f6aea707eafd2e794ae87f50d99cded4c8132b39ded404b2"
+  ]
+ ],
+ "resume": {
+  "keys": [
+   "execution",
+   "receipt_id",
+   "replayed"
+  ],
+  "value": "71b5e9581cf8faf583704ab01ad013aa45b41135ab2a46b5e01ea9c36d6973bd"
+ },
+ "resume_packet": "5bef4a7281d94c0ccd0048c4ffd5feb5e7d658e279df0c6ae369ebce821cf1e2",
+ "resume_records": [
+  [
+   "events",
+   "5bef4a7281d94c0ccd0048c4ffd5feb5e7d658e279df0c6ae369ebce821cf1e2",
+   "9a951bfe4659c42fcd980303fcb73611dceacc43865bdd71828a84f4e3bbfce0"
+  ],
+  [
+   "execution_failures",
+   "9134adecd0e0ceb3fc82b8874e11275310f0119d08f49b4dd4a0792591e44cbe",
+   "6b19fcc80766cdd8bd985b615dfdeae3f8e9aa8a20352f92f9db0861c16f0e6f"
+  ],
+  [
+   "execution_fences",
+   "tasks:5eed0000-0000-4000-8000-000000000001",
+   "084dba2a712dcc0d586bef4c0d50fc4718f9c296570627016bf7e5cd9b8639e5"
+  ],
+  [
+   "execution_notices",
+   "0defd6415852bd6fd4fa3833d99c99e1705116f33e42252cd2e78206298fe644",
+   "93784f731e8bdb109e79bbef93ebfe69746537c46ab628c074a403d7893ffebd"
+  ],
+  [
+   "execution_notices",
+   "1907220210e5fd26ebbc9eecebc5bad2936d5e34de6927b761f78018900ac4bd",
+   "99f16b8ac44222e107c51879cb03cccd14475a3747b70deb57ed381d5a672d90"
+  ],
+  [
+   "execution_notices",
+   "9433887a0d0792ea5b749e3746b0cfffd8de9d12ced18c390eeed2cf3bbd9df8",
+   "3df7bee85a51861ebb5670f59ccd5635241f12d72ef2d22686b17cc260250fd0"
+  ],
+  [
+   "execution_recoveries",
+   "5bef4a7281d94c0ccd0048c4ffd5feb5e7d658e279df0c6ae369ebce821cf1e2",
+   "8f2baaaaa698b3c74846d828b72a417d0641f9a711ca13cb7bcabd4e28f0c653"
+  ],
+  [
+   "outbox",
+   "0defd6415852bd6fd4fa3833d99c99e1705116f33e42252cd2e78206298fe644",
+   "7355ba207198757c493655d6ebfb5554b35fd803956e04b28ff28d26e424413e"
+  ],
+  [
+   "outbox",
+   "1907220210e5fd26ebbc9eecebc5bad2936d5e34de6927b761f78018900ac4bd",
+   "cf13a3dab65d11772e721b7f87ada23450656b9b0bccffa4d8475fd7f586f140"
+  ],
+  [
+   "outbox",
+   "9433887a0d0792ea5b749e3746b0cfffd8de9d12ced18c390eeed2cf3bbd9df8",
+   "bb43d34187b2ffbc44df89384431629b057a0b96b937754712f3146c2454e243"
+  ],
+  [
+   "tasks",
+   "5eed0000-0000-4000-8000-000000000001",
+   "ed424b097892c1c7895f7dd05546e63966c13e2ef697e0bc3c1e488d1611af88"
+  ]
+ ],
+ "resume_replay": {
+  "keys": [
+   "execution",
+   "receipt_id",
+   "replayed"
+  ],
+  "value": "100f0585448466a4638d20589af87a6d73da6c8409c8120a89966a735555c8ae"
+ },
+ "resume_replay_unchanged": true,
+ "unhandled_phase": {
+  "message": "No recovery coupling handler for this decision phase",
+  "refused": "ContractError"
+ },
+ "unrelated_blocked": {
+  "message": "Only budget or deadline exhaustion can resume",
+  "refused": "ContractError"
+ },
+ "unrelated_cancelled": {
+  "message": "Only budget or deadline exhaustion can resume",
+  "refused": "ContractError"
+ },
+ "unrelated_queued": {
+  "message": "Only budget or deadline exhaustion can resume",
+  "refused": "ContractError"
+ },
+ "unrelated_running": {
+  "message": "Only budget or deadline exhaustion can resume",
+  "refused": "ContractError"
+ },
+ "unrelated_succeeded": {
+  "message": "Only budget or deadline exhaustion can resume",
+  "refused": "ContractError"
+ },
+ "wrong_role": {
+  "message": "Actor lacks required role",
+  "refused": "ContractError"
+ }
+}

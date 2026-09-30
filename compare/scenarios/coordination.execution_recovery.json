@@ -1,0 +1,9 @@
+{
+ "family": "coordination.execution_recovery",
+ "description": "S5 ExecutionRecovery prepare/apply (M7 test sequences): resume of an exhausted task with history preserved, idempotent replay, stale old lease and packet after the next claim; explicit legacy migration; unrelated states and invalid proposals refused read-only; expired packet and changed snapshot; an expired task keeps its message and takes the new deadline; wrong role and missing evidence; repair keeps the corrupt source; an unhandled decision phase refused",
+ "reference_driver": "drivers/reference/s5_recovery.py",
+ "target_driver": null,
+ "golden": "goldens/reference/coordination.execution_recovery.json",
+ "slice": "S5",
+ "target_status": "pending: ExecutionRecovery prepare/apply is not yet moved"
+}
