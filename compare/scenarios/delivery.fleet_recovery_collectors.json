@@ -1,0 +1,9 @@
+{
+ "family": "delivery.fleet_recovery_collectors",
+ "description": "S7 M7 fleet recovery host collectors (adapters/fleet_recovery.py), characterized before their move (INV-FLEET-001, the S5 carry G4): collect_recovery_proof (the operation row, the cancelled task at its advanced generation with no live lease, the recorded worktree and the one retained isolation run, the Docker state, the closed reservation and the ledger/operation-bound call slot; unknown usage preserved; every refusal by reason code and field), LaneReader over a LABELLED connect double, docker_state over LABELLED fake docker executables, the call-slot binding, the service-journal runner state and retained-run listing, the checkout identity/independence/writability/queued-binding reads over deterministic pinned git fixtures, verify_copy_manifest and its physical ownership chain (links refused at any declared component on both sides, root aliases, case-distinct siblings, unresolved names, digest and length), collect_relocation_proof, _schema_provisioned and collect_host_migration_proof over a LABELLED verify double; real docker, PostgreSQL, the machine ledger and a Windows reparse point are unreachable and named",
+ "reference_driver": "drivers/reference/s7_fleet_recovery_collectors.py",
+ "target_driver": null,
+ "golden": "goldens/reference/delivery.fleet_recovery_collectors.json",
+ "slice": "S7",
+ "target_status": "pending: S7 fleet recovery collectors move (V6)"
+}
