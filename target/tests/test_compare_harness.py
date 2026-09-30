@@ -94,7 +94,8 @@ S6_IMPLEMENTED = {"coordination.guarded_launch", "coordination.continuation_tick
 S7_FAMILIES = {"review.releases_queue", "delivery.registry", "delivery.stages", "delivery.owner_commands",
                "delivery.migration", "delivery.host_migrations", "coordination.owner_actions_delivery",
                "coordination.owner_actions_canary", "coordination.owner_actions_migration",
-               "effects.delivery_units", "effects.delivery_units.pg", "delivery.host_targets"}
+               "effects.delivery_units", "effects.delivery_units.pg", "delivery.host_targets",
+               "delivery.managed_runtime"}
 S7_IMPLEMENTED = {"review.releases_queue", "delivery.registry", "delivery.stages",
                   "delivery.owner_commands", "delivery.migration", "delivery.host_migrations",
                   "coordination.owner_actions_delivery", "coordination.owner_actions_canary",

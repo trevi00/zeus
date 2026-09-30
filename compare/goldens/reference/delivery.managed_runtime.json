@@ -1,0 +1,1983 @@
+{
+ "cases_per_group": {
+  "drain_stop": 4,
+  "gate": 3,
+  "launch": 5,
+  "refuse": 6,
+  "rollback": 5,
+  "scan": 2,
+  "seal": 4
+ },
+ "drain_stop": {
+  "active_work": {
+   "alive_while_busy": {
+    "child": true,
+    "launcher": true
+   },
+   "busy": {
+    "active": 1,
+    "paused": false,
+    "reason_code": "work_active",
+    "state": "busy",
+    "unresolved": 0
+   },
+   "drain": {
+    "active": 1,
+    "drained": false,
+    "running": true,
+    "unconfirmed": 0,
+    "work": {
+     "active": 1,
+     "paused": false,
+     "reason_code": "work_active",
+     "state": "busy",
+     "unresolved": 0
+    }
+   },
+   "drain_after_release": {
+    "active": 0,
+    "drained": true,
+    "running": true,
+    "unconfirmed": 0,
+    "work": {
+     "active": 0,
+     "paused": true,
+     "reason_code": null,
+     "state": "idle",
+     "unresolved": 0
+    }
+   },
+   "idle_after_release": {
+    "active": 0,
+    "paused": true,
+    "reason_code": null,
+    "state": "idle",
+    "unresolved": 0
+   },
+   "replacement": {
+    "receipt_unchanged": true,
+    "result": {
+     "raised": {
+      "field": "target_id",
+      "message": "host delivery refused: instance_work_busy (target_id)",
+      "reason_code": "instance_work_busy",
+      "type": "DeliveryRefused"
+     }
+    },
+    "running": true
+   },
+   "stop": {
+    "result": {
+     "pid": "<pid>",
+     "reason_code": "instance_work_busy",
+     "stopped": false,
+     "was_running": true,
+     "work": {
+      "active": 1,
+      "paused": true,
+      "reason_code": "work_active",
+      "state": "busy",
+      "unresolved": 0
+     }
+    },
+    "running": true,
+    "stop_file": false
+   },
+   "stop_after_release": {
+    "alive": {
+     "child": false,
+     "launcher": false
+    },
+    "result": {
+     "pid": "<pid>",
+     "reason_code": null,
+     "stopped": true,
+     "was_running": true
+    }
+   }
+  },
+  "heartbeat_verdict": {
+   "busy": {
+    "active": {
+     "active": 2,
+     "paused": true,
+     "reason_code": "work_active",
+     "state": "busy",
+     "unresolved": 0
+    },
+    "pause_unacknowledged": {
+     "active": 0,
+     "paused": false,
+     "reason_code": "pause_unacknowledged",
+     "state": "busy",
+     "unresolved": 0
+    },
+    "unresolved": {
+     "active": 0,
+     "paused": true,
+     "reason_code": "work_unresolved",
+     "state": "busy",
+     "unresolved": 1
+    }
+   },
+   "idle": {
+    "open_without_pause_required": {
+     "active": 0,
+     "paused": false,
+     "reason_code": null,
+     "state": "idle",
+     "unresolved": 0
+    },
+    "paused": {
+     "active": 0,
+     "paused": true,
+     "reason_code": null,
+     "state": "idle",
+     "unresolved": 0
+    }
+   },
+   "unknown": {
+    "extra_field": {
+     "active": null,
+     "paused": null,
+     "reason_code": "heartbeat_unreadable",
+     "state": "unknown",
+     "unresolved": null
+    },
+    "future": {
+     "active": null,
+     "paused": null,
+     "reason_code": "heartbeat_future",
+     "state": "unknown",
+     "unresolved": null
+    },
+    "missing": {
+     "active": null,
+     "paused": null,
+     "reason_code": "heartbeat_missing",
+     "state": "unknown",
+     "unresolved": null
+    },
+    "negative_count": {
+     "active": null,
+     "paused": null,
+     "reason_code": "heartbeat_unreadable",
+     "state": "unknown",
+     "unresolved": null
+    },
+    "no_receipt": {
+     "active": null,
+     "paused": null,
+     "reason_code": "heartbeat_receipt_absent",
+     "state": "unknown",
+     "unresolved": null
+    },
+    "not_a_time": {
+     "active": null,
+     "paused": null,
+     "reason_code": "heartbeat_unreadable",
+     "state": "unknown",
+     "unresolved": null
+    },
+    "other_descriptor": {
+     "active": null,
+     "paused": null,
+     "reason_code": "heartbeat_mismatched",
+     "state": "unknown",
+     "unresolved": null
+    },
+    "other_instance": {
+     "active": null,
+     "paused": null,
+     "reason_code": "heartbeat_mismatched",
+     "state": "unknown",
+     "unresolved": null
+    },
+    "other_pid": {
+     "active": null,
+     "paused": null,
+     "reason_code": "heartbeat_mismatched",
+     "state": "unknown",
+     "unresolved": null
+    },
+    "receipt_unreadable": {
+     "active": null,
+     "paused": null,
+     "reason_code": "heartbeat_receipt_unreadable",
+     "state": "unknown",
+     "unresolved": null
+    },
+    "stale": {
+     "active": null,
+     "paused": null,
+     "reason_code": "heartbeat_stale",
+     "state": "unknown",
+     "unresolved": null
+    },
+    "unreadable": {
+     "active": null,
+     "paused": null,
+     "reason_code": "heartbeat_unreadable",
+     "state": "unknown",
+     "unresolved": null
+    }
+   }
+  },
+  "not_running": {
+   "drain": {
+    "active": 0,
+    "drained": true,
+    "running": false,
+    "unconfirmed": 0,
+    "work": null
+   },
+   "running": false,
+   "state_dir": {
+    "descriptor.json": {
+     "predecessor": null,
+     "profile_digest": "cc7150678052ad3d4636a930a7fef34f5a991cfe85b633ada5dc49b830b93bda",
+     "revision": "30b594da7b07ad3ac42369dc5d14f4ecdff6d817",
+     "root": "<root>/drain_stop-not_running/managed/runtimes/30b594da7b07ad3ac42369dc5d14f4ecdff6d817",
+     "schema": "urn:zeus:host-descriptor:1",
+     "target_id": "managed-fleet",
+     "worker_image": "<absent>"
+    },
+    "pause.json": {
+     "at": "<time>",
+     "descriptor_sha256": "<digest:idle.A>",
+     "paused": true
+    }
+   },
+   "stop": {
+    "pid": null,
+    "stopped": true,
+    "was_running": false
+   }
+  },
+  "unavailable_heartbeat": {
+   "receipt_lost": {
+    "drain": 1,
+    "running": true,
+    "work": {
+     "active": null,
+     "paused": null,
+     "reason_code": "heartbeat_receipt_absent",
+     "state": "unknown",
+     "unresolved": null
+    }
+   },
+   "receipt_restored": true,
+   "strict_drain": {
+    "drained": false,
+    "reason_is_stale_or_future": true,
+    "unconfirmed": 1
+   },
+   "strict_stop": {
+    "reason_code": "instance_work_unknown",
+    "stopped": false,
+    "work_state": "unknown"
+   }
+  }
+ },
+ "gate": {
+  "first_start_reads": {
+   "buckets": {
+    "fleet_jobs": {
+     "control": {
+      "activation_hold": {
+       "at": "<time>",
+       "descriptor_sha256": "<digest:first.A>",
+       "target_id": "managed-fleet"
+      },
+      "budget": {
+       "per_host": 4,
+       "total": 8
+      },
+      "paused": true,
+      "updated_at": "<time>"
+     },
+     "hold_is_this_descriptor": true,
+     "launch_record": false,
+     "paused_before": false,
+     "reservation": {
+      "raised": {
+       "message": "fleet refused: paused",
+       "reason_code": "paused",
+       "type": "FleetRefused"
+      }
+     },
+     "result": {
+      "raised": {
+       "field": "fleet",
+       "message": "host delivery refused: fleet_debt_unknown (fleet)",
+       "reason_code": "fleet_debt_unknown",
+       "type": "DeliveryRefused"
+      }
+     },
+     "running": false
+    },
+    "fleet_units": {
+     "control": {
+      "activation_hold": {
+       "at": "<time>",
+       "descriptor_sha256": "<digest:first.A>",
+       "target_id": "managed-fleet"
+      },
+      "budget": {
+       "per_host": 4,
+       "total": 8
+      },
+      "paused": true,
+      "updated_at": "<time>"
+     },
+     "hold_is_this_descriptor": true,
+     "launch_record": false,
+     "paused_before": false,
+     "reservation": {
+      "raised": {
+       "message": "fleet refused: paused",
+       "reason_code": "paused",
+       "type": "FleetRefused"
+      }
+     },
+     "result": {
+      "raised": {
+       "field": "fleet",
+       "message": "host delivery refused: fleet_debt_unknown (fleet)",
+       "reason_code": "fleet_debt_unknown",
+       "type": "DeliveryRefused"
+      }
+     },
+     "running": false
+    }
+   },
+   "lost_acknowledgement": {
+    "hold_is_this_descriptor": true,
+    "launch_record": false,
+    "result": {
+     "raised": {
+      "field": "fleet",
+      "message": "host delivery refused: fleet_pause_unknown (fleet)",
+      "reason_code": "fleet_pause_unknown",
+      "type": "DeliveryRefused"
+     }
+    },
+    "running": false
+   },
+   "pause_write_fails": {
+    "launch_record": false,
+    "paused": false,
+    "result": {
+     "raised": {
+      "field": "fleet",
+      "message": "host delivery refused: fleet_pause_unknown (fleet)",
+      "reason_code": "fleet_pause_unknown",
+      "type": "DeliveryRefused"
+     }
+    }
+   },
+   "state_dir": {
+    "descriptor.json": {
+     "predecessor": null,
+     "profile_digest": "cc7150678052ad3d4636a930a7fef34f5a991cfe85b633ada5dc49b830b93bda",
+     "revision": "30b594da7b07ad3ac42369dc5d14f4ecdff6d817",
+     "root": "<root>/gate-first_start_reads/managed/runtimes/30b594da7b07ad3ac42369dc5d14f4ecdff6d817",
+     "schema": "urn:zeus:host-descriptor:1",
+     "target_id": "managed-fleet",
+     "worker_image": "<absent>"
+    }
+   }
+  },
+  "gate_answers": {
+   "gate_refusal": {
+    "control_changed": "fleet_control_changed",
+    "debt_unknown": "fleet_debt_unknown",
+    "empty": "fleet_debt_held",
+    "not_paused": "fleet_debt_held",
+    "not_settled": "fleet_debt_held",
+    "settled_and_paused": null,
+    "settled_is_unknown": "fleet_debt_held"
+   },
+   "launch_request": {
+    "bad_digest": {
+     "raised": {
+      "field": "request",
+      "message": "host delivery refused: launch_request_invalid (request)",
+      "reason_code": "launch_request_invalid",
+      "type": "DeliveryRefused"
+     }
+    },
+    "digest_not_str": {
+     "raised": {
+      "field": "request",
+      "message": "host delivery refused: launch_request_invalid (request)",
+      "reason_code": "launch_request_invalid",
+      "type": "DeliveryRefused"
+     }
+    },
+    "extra_field": {
+     "raised": {
+      "field": "request",
+      "message": "host delivery refused: launch_request_invalid (request)",
+      "reason_code": "launch_request_invalid",
+      "type": "DeliveryRefused"
+     }
+    },
+    "missing_field": {
+     "raised": {
+      "field": "request",
+      "message": "host delivery refused: launch_request_invalid (request)",
+      "reason_code": "launch_request_invalid",
+      "type": "DeliveryRefused"
+     }
+    },
+    "not_a_dict": {
+     "raised": {
+      "field": "request",
+      "message": "host delivery refused: launch_request_invalid (request)",
+      "reason_code": "launch_request_invalid",
+      "type": "DeliveryRefused"
+     }
+    },
+    "other_schema": {
+     "raised": {
+      "field": "request",
+      "message": "host delivery refused: launch_request_invalid (request)",
+      "reason_code": "launch_request_invalid",
+      "type": "DeliveryRefused"
+     }
+    },
+    "target_not_str": {
+     "raised": {
+      "field": "request",
+      "message": "host delivery refused: launch_request_invalid (request)",
+      "reason_code": "launch_request_invalid",
+      "type": "DeliveryRefused"
+     }
+    },
+    "unknown_workload": {
+     "raised": {
+      "field": "request",
+      "message": "host delivery refused: launch_request_invalid (request)",
+      "reason_code": "launch_request_invalid",
+      "type": "DeliveryRefused"
+     }
+    },
+    "valid": {
+     "returned": {
+      "descriptor_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "manifest_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "requested_at": "<time>",
+      "schema": "urn:zeus:managed-launch-request:1",
+      "target_id": "managed-fleet",
+      "workload": "fixture"
+     }
+    }
+   },
+   "through_start": {
+    "control_changed": {
+     "launch_record": false,
+     "result": {
+      "raised": {
+       "field": "fleet",
+       "message": "host delivery refused: fleet_control_changed (fleet)",
+       "reason_code": "fleet_control_changed",
+       "type": "DeliveryRefused"
+      }
+     }
+    },
+    "debt_unknown": {
+     "launch_record": false,
+     "result": {
+      "raised": {
+       "field": "fleet",
+       "message": "host delivery refused: fleet_debt_unknown (fleet)",
+       "reason_code": "fleet_debt_unknown",
+       "type": "DeliveryRefused"
+      }
+     }
+    },
+    "empty": {
+     "launch_record": false,
+     "result": {
+      "raised": {
+       "field": "fleet",
+       "message": "host delivery refused: fleet_debt_held (fleet)",
+       "reason_code": "fleet_debt_held",
+       "type": "DeliveryRefused"
+      }
+     }
+    },
+    "not_paused": {
+     "launch_record": false,
+     "result": {
+      "raised": {
+       "field": "fleet",
+       "message": "host delivery refused: fleet_debt_held (fleet)",
+       "reason_code": "fleet_debt_held",
+       "type": "DeliveryRefused"
+      }
+     }
+    },
+    "not_settled": {
+     "launch_record": false,
+     "result": {
+      "raised": {
+       "field": "fleet",
+       "message": "host delivery refused: fleet_debt_held (fleet)",
+       "reason_code": "fleet_debt_held",
+       "type": "DeliveryRefused"
+      }
+     }
+    },
+    "raises": {
+     "launch_record": false,
+     "result": {
+      "raised": {
+       "field": "fleet",
+       "message": "host delivery refused: fleet_pause_unknown (fleet)",
+       "reason_code": "fleet_pause_unknown",
+       "type": "DeliveryRefused"
+      }
+     }
+    },
+    "settled_is_unknown": {
+     "launch_record": false,
+     "result": {
+      "raised": {
+       "field": "fleet",
+       "message": "host delivery refused: fleet_debt_held (fleet)",
+       "reason_code": "fleet_debt_held",
+       "type": "DeliveryRefused"
+      }
+     }
+    }
+   }
+  },
+  "no_authority": {
+   "coordinator_wiring": {
+    "unreachable": "controller() needs the HostDelivery coordinator and the organization bootstrap: the stages family"
+   },
+   "default_port_fleet": null,
+   "launch_record": false,
+   "running": false,
+   "start": {
+    "raised": {
+     "field": "fleet",
+     "message": "host delivery refused: fleet_authority_unconfigured (fleet)",
+     "reason_code": "fleet_authority_unconfigured",
+     "type": "DeliveryRefused"
+    }
+   },
+   "unknown_workload": {
+    "raised": {
+     "message": "unknown managed workload",
+     "type": "ValueError"
+    }
+   }
+  }
+ },
+ "launch": {
+  "clean_start_restart_repeat": {
+   "alive_after_start": {
+    "child": true,
+    "launcher": true
+   },
+   "child": {
+    "argv": [
+     "<python>",
+     "-m",
+     "codex_harness.adapters.managed_runtime",
+     "entry",
+     "--state-dir",
+     "<root>/launch-clean_start_restart_repeat/state-managed-fleet",
+     "--workload",
+     "fixture"
+    ],
+    "cwd": "<root>/launch-clean_start_restart_repeat/managed/runtimes/30b594da7b07ad3ac42369dc5d14f4ecdff6d817",
+    "environment": {
+     "HARNESS_REPOSITORY": "<root>/source",
+     "PYTHONDONTWRITEBYTECODE": "1",
+     "PYTHONNOUSERSITE": "1",
+     "PYTHONPATH": "<root>/launch-clean_start_restart_repeat/managed/runtimes/30b594da7b07ad3ac42369dc5d14f4ecdff6d817/src",
+     "ZEUS_REPOSITORY": "<root>/source"
+    },
+    "own_group": true,
+    "stdio": [
+     "/dev/null",
+     "/dev/null",
+     "/dev/null"
+    ]
+   },
+   "consumed": {
+    "consumed": true,
+    "reason_code": null
+   },
+   "journal_after_stop": {
+    "events": [
+     "starting",
+     "startup",
+     "child_exited",
+     "cleanup",
+     "shutdown"
+    ],
+    "final_exit_code": 0
+   },
+   "launcher": {
+    "argv": [
+     "<python>",
+     "-m",
+     "codex_harness.adapters.managed_runtime",
+     "launch",
+     "--state-dir",
+     "<root>/launch-clean_start_restart_repeat/state-managed-fleet",
+     "--descriptor-sha256",
+     "<digest:clean.A>",
+     "--workload",
+     "fixture"
+    ],
+    "cwd": "<root>/launch-clean_start_restart_repeat/state-managed-fleet",
+    "environment": {
+     "HARNESS_REPOSITORY": null,
+     "PYTHONDONTWRITEBYTECODE": "1",
+     "PYTHONNOUSERSITE": null,
+     "PYTHONPATH": "<package-root>",
+     "ZEUS_REPOSITORY": null
+    },
+    "own_group": true,
+    "stdio": [
+     "/dev/null",
+     "/dev/null",
+     "/dev/null"
+    ]
+   },
+   "processes": {
+    "entry": 1,
+    "launch": 1,
+    "mentioning_the_state_dir": 2
+   },
+   "receipt": {
+    "module_root_within": true,
+    "record": {
+     "descriptor_sha256": "<digest:clean.A>",
+     "instance_id": "<instance>",
+     "module_root": "<root>/launch-clean_start_restart_repeat/managed/runtimes/30b594da7b07ad3ac42369dc5d14f4ecdff6d817/src/codex_harness",
+     "pid": "<pid>",
+     "profile_digest": "cc7150678052ad3d4636a930a7fef34f5a991cfe85b633ada5dc49b830b93bda",
+     "revision": "30b594da7b07ad3ac42369dc5d14f4ecdff6d817",
+     "runtime_root": "<root>/launch-clean_start_restart_repeat/managed/runtimes/30b594da7b07ad3ac42369dc5d14f4ecdff6d817",
+     "schema": "urn:zeus:host-startup-receipt:1",
+     "started_at": "<time>",
+     "target_id": "managed-fleet",
+     "worker_image": "<absent>"
+    },
+    "revision_is_a": true,
+    "runtime_root_is_sealed": true
+   },
+   "repeated_start": {
+    "launch_unchanged": true,
+    "result": {
+     "returned": {
+      "instance_id": "<instance>",
+      "launch": {
+       "descriptor_sha256": "<digest:clean.A>",
+       "manifest_sha256": "378c6014d0a9cd4135e9de75fa2daae9aa2b4c6e60a55d6d4cda0a6fc7894604",
+       "pid": "<pid>",
+       "started_at": "<time>"
+      },
+      "recovered": true,
+      "started": false
+     }
+    }
+   },
+   "restart": {
+    "alive": {
+     "child": true,
+     "launcher": true
+    },
+    "consumed": true,
+    "launch": {
+     "descriptor_sha256": "<digest:clean.A>",
+     "manifest_sha256": "378c6014d0a9cd4135e9de75fa2daae9aa2b4c6e60a55d6d4cda0a6fc7894604",
+     "pid": "<pid>",
+     "started_at": "<time>"
+    },
+    "new_instance": true,
+    "new_launcher": true,
+    "revision_is_a": true,
+    "started": true
+   },
+   "runtime_dirs": {
+    "runtimes": {
+     "30b594da7b07ad3ac42369dc5d14f4ecdff6d817": {
+      "files": 276,
+      "modes": {
+       "0o444": 276
+      },
+      "sha256": "a755731bc7969a3a864517ae35b5095719540fd9f32a44341de47793d583d610",
+      "top": [
+       "runtime-files.json",
+       "runtime.json",
+       "src",
+       "uv.lock"
+      ]
+     }
+    }
+   },
+   "state_dir_running": {
+    "controller-state.json": {
+     "descriptor_sha256": "<digest:clean.A>",
+     "manifest_sha256": "378c6014d0a9cd4135e9de75fa2daae9aa2b4c6e60a55d6d4cda0a6fc7894604",
+     "pid": "<pid>",
+     "started_at": "<time>"
+    },
+    "descriptor.json": {
+     "predecessor": null,
+     "profile_digest": "cc7150678052ad3d4636a930a7fef34f5a991cfe85b633ada5dc49b830b93bda",
+     "revision": "30b594da7b07ad3ac42369dc5d14f4ecdff6d817",
+     "root": "<root>/launch-clean_start_restart_repeat/managed/runtimes/30b594da7b07ad3ac42369dc5d14f4ecdff6d817",
+     "schema": "urn:zeus:host-descriptor:1",
+     "target_id": "managed-fleet",
+     "worker_image": "<absent>"
+    },
+    "fixture": [],
+    "heartbeat.json": {
+     "active": 0,
+     "admission": "open",
+     "at": "<time>",
+     "descriptor_sha256": "<digest:clean.A>",
+     "instance_id": "<instance>",
+     "pid": "<pid>",
+     "schema": "urn:zeus:managed-heartbeat:1",
+     "unresolved": 0
+    },
+    "launcher-journal.jsonl": {
+     "events": [
+      "starting",
+      "startup"
+     ],
+     "final_exit_code": null
+    },
+    "managed-target.json": {
+     "environment_lock": "87637a2b861493da664b9ca92aa62d958d13861ca02f87432edd9798c5c9ee36",
+     "kind": "managed_fleet",
+     "python": "<python>",
+     "root": "<root>/launch-clean_start_restart_repeat/managed",
+     "service": "zeus-fleet",
+     "source": "<root>/source",
+     "state_dir": "<root>/launch-clean_start_restart_repeat/state-managed-fleet",
+     "target_id": "managed-fleet"
+    },
+    "startup-receipt.json": {
+     "descriptor_sha256": "<digest:clean.A>",
+     "instance_id": "<instance>",
+     "module_root": "<root>/launch-clean_start_restart_repeat/managed/runtimes/30b594da7b07ad3ac42369dc5d14f4ecdff6d817/src/codex_harness",
+     "pid": "<pid>",
+     "profile_digest": "cc7150678052ad3d4636a930a7fef34f5a991cfe85b633ada5dc49b830b93bda",
+     "revision": "30b594da7b07ad3ac42369dc5d14f4ecdff6d817",
+     "runtime_root": "<root>/launch-clean_start_restart_repeat/managed/runtimes/30b594da7b07ad3ac42369dc5d14f4ecdff6d817",
+     "schema": "urn:zeus:host-startup-receipt:1",
+     "started_at": "<time>",
+     "target_id": "managed-fleet",
+     "worker_image": "<absent>"
+    }
+   },
+   "stop": {
+    "alive": {
+     "child": false,
+     "launcher": false
+    },
+    "result": {
+     "pid": "<pid>",
+     "reason_code": null,
+     "stopped": true,
+     "was_running": true
+    }
+   },
+   "target_file": {
+    "environment_lock": "87637a2b861493da664b9ca92aa62d958d13861ca02f87432edd9798c5c9ee36",
+    "kind": "managed_fleet",
+    "python": "<python>",
+    "root": "<root>/launch-clean_start_restart_repeat/managed",
+    "service": "zeus-fleet",
+    "source": "<root>/source",
+    "state_dir": "<root>/launch-clean_start_restart_repeat/state-managed-fleet",
+    "target_id": "managed-fleet"
+   }
+  },
+  "entry_and_launch_refusals": {
+   "entry_no_descriptor": 2,
+   "entry_unknown_workload": 2,
+   "exit_refused": 2,
+   "launch": {
+    "digest_mismatch": 2,
+    "environment_unqualified": 2,
+    "no_files": 2,
+    "runtime_unsealed": 2,
+    "state_dir_not_the_targets": 2,
+    "unknown_workload": 2
+   },
+   "run_fleet": {
+    "unreachable": "run_fleet builds the host bootstrap over the real PostgreSQL store and Redis; no real store exists in the compare environment"
+   },
+   "state_dir_files": [
+    "descriptor.json",
+    "managed-target.json"
+   ]
+  },
+  "killed_launcher": {
+   "after_kill": {
+    "alive": {
+     "child": true,
+     "launcher": false
+    },
+    "running": true
+   },
+   "drain_running": {
+    "running": true
+   },
+   "drain_settled": true,
+   "paused_idle": {
+    "active": 0,
+    "paused": true,
+    "reason_code": null,
+    "state": "idle",
+    "unresolved": 0
+   },
+   "stop": {
+    "child_alive": false,
+    "result": {
+     "pid": "<pid>",
+     "reason_code": null,
+     "stopped": true,
+     "was_running": true
+    }
+   }
+  },
+  "runtime_control_and_fixture": {
+   "fixture_config": {
+    "budget": {
+     "per_host": 4,
+     "total": 8
+    },
+    "id": "managed-fixture",
+    "lanes": [
+     {
+      "id": "fixture",
+      "redis_namespace": "managed-fixture",
+      "repository": "/labelled-root/repository",
+      "runtime": "/labelled-root/runtime",
+      "schema": "lane_fixture",
+      "team": "fixture"
+     }
+    ],
+    "max_parallel": 1,
+    "schema": "urn:zeus:fleet:1"
+   },
+   "fixture_launcher": {
+    "budget_exhausted": false,
+    "finished_after_release": 1,
+    "finished_before_release": 0,
+    "handle_keys": [
+     "job_id",
+     "process"
+    ],
+    "killed_outcome": {
+     "exit_code": -9,
+     "reason_code": "fixture_workload",
+     "status": "failed"
+    },
+    "listing": [
+     "release-job-w"
+    ],
+    "outcome": {
+     "exit_code": 0,
+     "reason_code": "fixture_workload",
+     "status": "accepted"
+    }
+   },
+   "fixture_manifest": {
+    "id": "job-m",
+    "keys": [
+     "base_revision",
+     "budget",
+     "claude",
+     "goal",
+     "id",
+     "plan",
+     "schema"
+    ],
+    "sha256": "6c5a474caa57cd65bc861ae1b5698c8c2414a9a370c63d099d4ff5a75ceee2a1"
+   },
+   "heartbeat": {
+    "active": 2,
+    "admission": "paused",
+    "at": "<time>",
+    "descriptor_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+    "instance_id": "<instance>",
+    "pid": "<pid>",
+    "schema": "urn:zeus:managed-heartbeat:1",
+    "unresolved": 1
+   },
+   "heartbeat_verdict": {
+    "active": 2,
+    "paused": true,
+    "reason_code": "work_active",
+    "state": "busy",
+    "unresolved": 1
+   },
+   "open": {
+    "activation_is_the_receipts": true,
+    "admission_open": true,
+    "stop_requested": false
+   },
+   "paused_unreadable": false,
+   "run_fixture": {
+    "files": [
+     "fixture",
+     "fixture-jobs.json",
+     "heartbeat.json",
+     "pause.json",
+     "stop.json"
+    ],
+    "fixture_dir": [],
+    "heartbeat_after": {
+     "active": 0,
+     "admission": "stopping",
+     "at": "<time>",
+     "descriptor_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+     "instance_id": "<instance>",
+     "pid": "<pid>",
+     "schema": "urn:zeus:managed-heartbeat:1",
+     "unresolved": 0
+    },
+    "summary": {
+     "activation_hold": {
+      "error_type": null,
+      "state": "none"
+     },
+     "admitted": [],
+     "backlog": {
+      "error_type": null,
+      "outcome": null,
+      "reason_code": null,
+      "state": "disabled"
+     },
+     "blocked": {},
+     "finalize_failures": [],
+     "finalized": [],
+     "heartbeat": {
+      "error_type": null,
+      "state": "ok"
+     },
+     "reconciliation": {
+      "error_type": null,
+      "state": "disabled"
+     },
+     "reconciliation_required": [],
+     "stopped": true
+    }
+   },
+   "stop_requested": true
+  },
+  "two_owners": {
+   "alive": {
+    "child": true,
+    "launcher": true
+   },
+   "consumed": true,
+   "entry_runtimes": 1,
+   "launch": {
+    "descriptor_sha256": "<digest:owners.A>",
+    "manifest_sha256": "378c6014d0a9cd4135e9de75fa2daae9aa2b4c6e60a55d6d4cda0a6fc7894604",
+    "pid": "<pid>",
+    "started_at": "<time>"
+   },
+   "loser_outcome_allowed": true,
+   "loser_outcome_is_one_of": [
+    "instance_unidentified",
+    "recovered",
+    "target_lock_held"
+   ],
+   "started": [
+    false,
+    true
+   ],
+   "winner_is_the_launch_record": true
+  }
+ },
+ "live_children": 0,
+ "refuse": {
+  "bad_runtime": {
+   "alive": {
+    "child": true,
+    "launcher": true
+   },
+   "cases": {
+    "foreign_path": {
+     "launch_unchanged": true,
+     "receipt_unchanged": true,
+     "result": {
+      "raised": {
+       "field": "root",
+       "message": "host delivery refused: runtime_path_foreign (root)",
+       "reason_code": "runtime_path_foreign",
+       "type": "DeliveryRefused"
+      }
+     },
+     "running": true,
+     "stop_requested": false
+    },
+    "image_mismatch": {
+     "launch_unchanged": true,
+     "receipt_unchanged": true,
+     "result": {
+      "raised": {
+       "field": "worker_image",
+       "message": "host delivery refused: runtime_image_mismatch (worker_image)",
+       "reason_code": "runtime_image_mismatch",
+       "type": "DeliveryRefused"
+      }
+     },
+     "running": true,
+     "stop_requested": false
+    },
+    "tampered_runtime": {
+     "launch_unchanged": true,
+     "receipt_unchanged": true,
+     "result": {
+      "raised": {
+       "field": "files",
+       "message": "host delivery refused: runtime_content_mismatch (files)",
+       "reason_code": "runtime_content_mismatch",
+       "type": "DeliveryRefused"
+      }
+     },
+     "running": true,
+     "stop_requested": false
+    },
+    "unsealed_revision": {
+     "launch_unchanged": true,
+     "receipt_unchanged": true,
+     "result": {
+      "raised": {
+       "field": "root",
+       "message": "host delivery refused: runtime_unsealed (root)",
+       "reason_code": "runtime_unsealed",
+       "type": "DeliveryRefused"
+      }
+     },
+     "running": true,
+     "stop_requested": false
+    }
+   }
+  },
+  "changed_or_foreign": {
+   "foreign": {
+    "raised": {
+     "message": "host delivery refused: manifest_schema",
+     "reason_code": "manifest_schema",
+     "type": "DeliveryRefused"
+    }
+   },
+   "foreign_listing": [
+    "owner-file.txt"
+   ],
+   "materialize": {
+    "raised": {
+     "field": "files",
+     "message": "host delivery refused: runtime_content_mismatch (files)",
+     "reason_code": "runtime_content_mismatch",
+     "type": "DeliveryRefused"
+    }
+   },
+   "nothing_overwritten": true,
+   "verify": {
+    "raised": {
+     "field": "files",
+     "message": "host delivery refused: runtime_content_mismatch (files)",
+     "reason_code": "runtime_content_mismatch",
+     "type": "DeliveryRefused"
+    }
+   }
+  },
+  "runtime_path": {
+   "foreign": {
+    "another_root": {
+     "raised": {
+      "field": "root",
+      "message": "host delivery refused: runtime_path_foreign (root)",
+      "reason_code": "runtime_path_foreign",
+      "type": "DeliveryRefused"
+     }
+    },
+    "managed_root": {
+     "raised": {
+      "field": "root",
+      "message": "host delivery refused: runtime_path_foreign (root)",
+      "reason_code": "runtime_path_foreign",
+      "type": "DeliveryRefused"
+     }
+    },
+    "other_revision": {
+     "raised": {
+      "field": "root",
+      "message": "host delivery refused: runtime_path_foreign (root)",
+      "reason_code": "runtime_path_foreign",
+      "type": "DeliveryRefused"
+     }
+    },
+    "source_checkout": {
+     "raised": {
+      "field": "root",
+      "message": "host delivery refused: runtime_path_foreign (root)",
+      "reason_code": "runtime_path_foreign",
+      "type": "DeliveryRefused"
+     }
+    },
+    "stage_directory": {
+     "raised": {
+      "field": "root",
+      "message": "host delivery refused: runtime_path_foreign (root)",
+      "reason_code": "runtime_path_foreign",
+      "type": "DeliveryRefused"
+     }
+    }
+   },
+   "good": true,
+   "other_target": {
+    "raised": {
+     "field": "target_id",
+     "message": "host delivery refused: runtime_target_mismatch (target_id)",
+     "reason_code": "runtime_target_mismatch",
+     "type": "DeliveryRefused"
+    }
+   }
+  },
+  "target_registry": {
+   "host_ports_managed": {
+    "fleet": null,
+    "is_managed_target": true
+   },
+   "legacy_unchanged": true,
+   "legacy_with_source": {
+    "raised": {
+     "field": "targets[0]",
+     "message": "host delivery refused: plan_fields (targets[0])",
+     "reason_code": "plan_fields",
+     "type": "DeliveryRefused"
+    }
+   },
+   "managed": {
+    "environment_lock": true,
+    "kind": "managed_fleet",
+    "owner_fields": {
+     "environment_lock": "87637a2b861493da664b9ca92aa62d958d13861ca02f87432edd9798c5c9ee36",
+     "kind": "managed_fleet",
+     "python": "<python>",
+     "root": "<root>/refuse-target_registry/managed",
+     "service": "zeus-fleet",
+     "source": "<root>/source",
+     "state_dir": "<root>/refuse-target_registry/state-managed-fleet",
+     "target_id": "managed-fleet"
+    }
+   },
+   "refusals": {
+    "bad_lock": {
+     "names_no_root": true,
+     "raised": {
+      "field": "targets[0].environment_lock",
+      "message": "host delivery refused: target_invalid (targets[0].environment_lock)",
+      "reason_code": "target_invalid",
+      "type": "DeliveryRefused"
+     }
+    },
+    "bare_python": {
+     "names_no_root": true,
+     "raised": {
+      "field": "targets[0].python",
+      "message": "host delivery refused: target_invalid (targets[0].python)",
+      "reason_code": "target_invalid",
+      "type": "DeliveryRefused"
+     }
+    },
+    "root_in_source": {
+     "names_no_root": true,
+     "raised": {
+      "field": "targets[0].root",
+      "message": "host delivery refused: target_overlap (targets[0].root)",
+      "reason_code": "target_overlap",
+      "type": "DeliveryRefused"
+     }
+    },
+    "source_is_state": {
+     "names_no_root": true,
+     "raised": {
+      "field": "targets[0].state_dir",
+      "message": "host delivery refused: target_overlap (targets[0].state_dir)",
+      "reason_code": "target_overlap",
+      "type": "DeliveryRefused"
+     }
+    },
+    "state_in_root": {
+     "names_no_root": true,
+     "raised": {
+      "field": "targets[0].root",
+      "message": "host delivery refused: target_overlap (targets[0].root)",
+      "reason_code": "target_overlap",
+      "type": "DeliveryRefused"
+     }
+    }
+   }
+  },
+  "tracked_symlink_and_fence": {
+   "fence": {
+    "raised": {
+     "field": "authorize",
+     "message": "host delivery refused: owner_fence_lost (authorize)",
+     "reason_code": "owner_fence_lost",
+     "type": "DeliveryRefused"
+    }
+   },
+   "fence_wrote_nothing": true,
+   "nothing_written": true,
+   "tracked_symlink": {
+    "raised": {
+     "field": "files",
+     "message": "host delivery refused: runtime_entry_unsupported (files)",
+     "reason_code": "runtime_entry_unsupported",
+     "type": "DeliveryRefused"
+    }
+   }
+  },
+  "unresolved_or_unqualified": {
+   "nothing_written": true,
+   "state_dir_created": false,
+   "unqualified": {
+    "raised": {
+     "field": "uv.lock",
+     "message": "managed runtime environment unqualified (uv.lock)",
+     "reason_code": "environment_unqualified",
+     "type": "EnvironmentUnqualified"
+    }
+   },
+   "unqualified_through_target": {
+    "raised": {
+     "field": "uv.lock",
+     "message": "managed runtime environment unqualified (uv.lock)",
+     "reason_code": "environment_unqualified",
+     "type": "EnvironmentUnqualified"
+    }
+   },
+   "unresolved": {
+    "raised": {
+     "field": "revision",
+     "message": "host delivery refused: runtime_revision_unresolved (revision)",
+     "reason_code": "runtime_revision_unresolved",
+     "type": "DeliveryRefused"
+    }
+   }
+  }
+ },
+ "revisions": {
+  "a": "30b594da7b07ad3ac42369dc5d14f4ecdff6d817",
+  "b": "b480f63b1e1a5d9da5906a10702152a3ca5cdc09",
+  "identical_on_rebuild": true
+ },
+ "rollback": {
+  "first_gate_unknown": {
+   "admission_open_before": true,
+   "fault_fired": true,
+   "jobs": {
+    "job-gap": "queued"
+   },
+   "other_owner": {
+    "admission": null,
+    "reservation": {
+     "raised": {
+      "message": "fleet refused: paused",
+      "reason_code": "paused",
+      "type": "FleetRefused"
+     }
+    }
+   },
+   "read_fails": {
+    "alive": {
+     "child": true,
+     "launcher": true
+    },
+    "hold_is_the_predecessor": true,
+    "launch_unchanged": true,
+    "paused": true,
+    "receipt_unchanged": true,
+    "result": {
+     "raised": {
+      "field": "fleet",
+      "message": "host delivery refused: fleet_debt_unknown (fleet)",
+      "reason_code": "fleet_debt_unknown",
+      "type": "DeliveryRefused"
+     }
+    },
+    "stop_requested": false
+   },
+   "recovered": {
+    "consumed": true,
+    "launch_is_the_predecessors": true,
+    "new_instance": true,
+    "revision_is_a": true,
+    "running": true,
+    "started": true
+   }
+  },
+  "forward_activation": {
+   "alive": {
+    "child": true,
+    "launcher": true
+   },
+   "authority_control": {
+    "activation_hold": {
+     "at": "<time>",
+     "descriptor_sha256": "<digest:forward.B>",
+     "target_id": "managed-fleet"
+    },
+    "budget": {
+     "per_host": 4,
+     "total": 8
+    },
+    "paused": true,
+    "updated_at": "<time>"
+   },
+   "descriptor_predecessor_is_a": true,
+   "first": {
+    "revision_is_a": true,
+    "runtime_root_is_a": true
+   },
+   "predecessor_gone": true,
+   "predecessor_runtime_retained": {
+    "returned": {
+     "content_sha256": "02b6da8821001fd6ba27ac53e5fdfd6d04a5c9385042db4a126d6b57248367dc",
+     "environment_lock": "87637a2b861493da664b9ca92aa62d958d13861ca02f87432edd9798c5c9ee36",
+     "files": 274,
+     "revision": "30b594da7b07ad3ac42369dc5d14f4ecdff6d817",
+     "schema": "urn:zeus:managed-runtime:1",
+     "tree": "ecae4fa776d2e0988730d13be76fd3986975107d"
+    }
+   },
+   "runtime_dirs": {
+    "runtimes": {
+     "30b594da7b07ad3ac42369dc5d14f4ecdff6d817": {
+      "files": 276,
+      "modes": {
+       "0o444": 276
+      },
+      "sha256": "a755731bc7969a3a864517ae35b5095719540fd9f32a44341de47793d583d610",
+      "top": [
+       "runtime-files.json",
+       "runtime.json",
+       "src",
+       "uv.lock"
+      ]
+     },
+     "b480f63b1e1a5d9da5906a10702152a3ca5cdc09": {
+      "files": 276,
+      "modes": {
+       "0o444": 276
+      },
+      "sha256": "0fbe66f053ae8468f1876e50d88827ae3c27899c8f58cb883c8565b1d07f73e6",
+      "top": [
+       "runtime-files.json",
+       "runtime.json",
+       "src",
+       "uv.lock"
+      ]
+     }
+    }
+   },
+   "second": {
+    "consumed": true,
+    "marker_in_running_code": true,
+    "module_within_b": true,
+    "new_instance": true,
+    "revision_is_b": true,
+    "runtime_root_is_b": true
+   },
+   "started": {
+    "launch": {
+     "descriptor_sha256": "<digest:forward.B>",
+     "manifest_sha256": "fa584852fd2b0c20fd47562c917d331d481a567fbd02fc61a26dc799b9657fcc",
+     "pid": "<pid>",
+     "started_at": "<time>"
+    },
+    "started": true
+   }
+  },
+  "held_or_unknown_debt": {
+   "candidate_ended": {
+    "alive": {
+     "child": false,
+     "launcher": false
+    },
+    "running": false
+   },
+   "candidate_still_running": true,
+   "held_after_controller_exit": {
+    "alive": {
+     "child": false,
+     "launcher": false
+    },
+    "hold_is_the_predecessor": true,
+    "launch_unchanged": true,
+    "paused": true,
+    "receipt_unchanged": true,
+    "result": {
+     "raised": {
+      "field": "fleet",
+      "message": "host delivery refused: fleet_debt_held (fleet)",
+      "reason_code": "fleet_debt_held",
+      "type": "DeliveryRefused"
+     }
+    },
+    "stop_requested": false
+   },
+   "held_again": {
+    "alive": {
+     "child": false,
+     "launcher": false
+    },
+    "hold_is_the_predecessor": true,
+    "launch_unchanged": true,
+    "paused": true,
+    "receipt_unchanged": true,
+    "result": {
+     "raised": {
+      "field": "fleet",
+      "message": "host delivery refused: fleet_debt_held (fleet)",
+      "reason_code": "fleet_debt_held",
+      "type": "DeliveryRefused"
+     }
+    },
+    "stop_requested": false
+   },
+   "held_units_are_the_unit": true,
+   "held_while_candidate_runs": {
+    "alive": {
+     "child": true,
+     "launcher": true
+    },
+    "hold_is_the_predecessor": true,
+    "launch_unchanged": true,
+    "paused": true,
+    "receipt_unchanged": true,
+    "result": {
+     "raised": {
+      "field": "fleet",
+      "message": "host delivery refused: fleet_debt_held (fleet)",
+      "reason_code": "fleet_debt_held",
+      "type": "DeliveryRefused"
+     }
+    },
+    "stop_requested": false
+   },
+   "pause_survived": true,
+   "state_dir": {
+    "controller-state.json": {
+     "descriptor_sha256": "<digest:held.B>",
+     "manifest_sha256": "fa584852fd2b0c20fd47562c917d331d481a567fbd02fc61a26dc799b9657fcc",
+     "pid": "<pid>",
+     "started_at": "<time>"
+    },
+    "descriptor.json": {
+     "predecessor": null,
+     "profile_digest": "cc7150678052ad3d4636a930a7fef34f5a991cfe85b633ada5dc49b830b93bda",
+     "revision": "30b594da7b07ad3ac42369dc5d14f4ecdff6d817",
+     "root": "<root>/rollback-held_or_unknown_debt/managed/runtimes/30b594da7b07ad3ac42369dc5d14f4ecdff6d817",
+     "schema": "urn:zeus:host-descriptor:1",
+     "target_id": "managed-fleet",
+     "worker_image": "<absent>"
+    },
+    "fixture": [],
+    "heartbeat.json": {
+     "active": 0,
+     "admission": "open",
+     "at": "<time>",
+     "descriptor_sha256": "<digest:held.B>",
+     "instance_id": "<instance>",
+     "pid": "<pid>",
+     "schema": "urn:zeus:managed-heartbeat:1",
+     "unresolved": 0
+    },
+    "launcher-journal.jsonl": {
+     "events": [
+      "starting",
+      "startup",
+      "child_exited",
+      "cleanup",
+      "shutdown",
+      "starting",
+      "startup",
+      "cleanup",
+      "shutdown"
+     ],
+     "final_exit_code": 143
+    },
+    "managed-target.json": {
+     "environment_lock": "87637a2b861493da664b9ca92aa62d958d13861ca02f87432edd9798c5c9ee36",
+     "kind": "managed_fleet",
+     "python": "<python>",
+     "root": "<root>/rollback-held_or_unknown_debt/managed",
+     "service": "zeus-fleet",
+     "source": "<root>/source",
+     "state_dir": "<root>/rollback-held_or_unknown_debt/state-managed-fleet",
+     "target_id": "managed-fleet"
+    },
+    "startup-receipt.json": {
+     "descriptor_sha256": "<digest:held.B>",
+     "instance_id": "<instance>",
+     "module_root": "<root>/rollback-held_or_unknown_debt/managed/runtimes/b480f63b1e1a5d9da5906a10702152a3ca5cdc09/src/codex_harness",
+     "pid": "<pid>",
+     "profile_digest": "cc7150678052ad3d4636a930a7fef34f5a991cfe85b633ada5dc49b830b93bda",
+     "revision": "b480f63b1e1a5d9da5906a10702152a3ca5cdc09",
+     "runtime_root": "<root>/rollback-held_or_unknown_debt/managed/runtimes/b480f63b1e1a5d9da5906a10702152a3ca5cdc09",
+     "schema": "urn:zeus:host-startup-receipt:1",
+     "started_at": "<time>",
+     "target_id": "managed-fleet",
+     "worker_image": "<absent>"
+    }
+   },
+   "unreachable_authority": {
+    "alive": {
+     "child": false,
+     "launcher": false
+    },
+    "hold_is_the_predecessor": true,
+    "launch_unchanged": true,
+    "paused": true,
+    "receipt_unchanged": true,
+    "result": {
+     "raised": {
+      "field": "fleet",
+      "message": "host delivery refused: fleet_pause_unknown (fleet)",
+      "reason_code": "fleet_pause_unknown",
+      "type": "DeliveryRefused"
+     }
+    },
+    "stop_requested": false
+   }
+  },
+  "predecessor_restored": {
+   "alive": {
+    "child": true,
+    "launcher": true
+   },
+   "candidate_runtime_retained": {
+    "returned": {
+     "content_sha256": "fb83223aa8af844158429062918929699ef6476bc539b6a1d8c4e846394ac7c3",
+     "environment_lock": "87637a2b861493da664b9ca92aa62d958d13861ca02f87432edd9798c5c9ee36",
+     "files": 274,
+     "revision": "b480f63b1e1a5d9da5906a10702152a3ca5cdc09",
+     "schema": "urn:zeus:managed-runtime:1",
+     "tree": "fb6af0c562672469c98c91db4007a912923147a5"
+    }
+   },
+   "restored": {
+    "candidate_gone": true,
+    "consumed": true,
+    "descriptor_is_the_predecessor": true,
+    "new_instance": true,
+    "old_code": true,
+    "revision_is_a": true,
+    "running": true,
+    "runtime_root_is_a": true,
+    "started": true
+   },
+   "runtime_dirs": {
+    "runtimes": {
+     "30b594da7b07ad3ac42369dc5d14f4ecdff6d817": {
+      "files": 276,
+      "modes": {
+       "0o444": 276
+      },
+      "sha256": "a755731bc7969a3a864517ae35b5095719540fd9f32a44341de47793d583d610",
+      "top": [
+       "runtime-files.json",
+       "runtime.json",
+       "src",
+       "uv.lock"
+      ]
+     },
+     "b480f63b1e1a5d9da5906a10702152a3ca5cdc09": {
+      "files": 276,
+      "modes": {
+       "0o444": 276
+      },
+      "sha256": "0fbe66f053ae8468f1876e50d88827ae3c27899c8f58cb883c8565b1d07f73e6",
+      "top": [
+       "runtime-files.json",
+       "runtime.json",
+       "src",
+       "uv.lock"
+      ]
+     }
+    }
+   }
+  },
+  "settled_rollback": {
+   "alive": {
+    "child": true,
+    "launcher": true
+   },
+   "control_after": {
+    "hold_is_the_predecessor": true,
+    "paused": true
+   },
+   "gap": {
+    "admission": null,
+    "reservation": {
+     "raised": {
+      "message": "fleet refused: paused",
+      "reason_code": "paused",
+      "type": "FleetRefused"
+     }
+    }
+   },
+   "held": {
+    "alive": {
+     "child": true,
+     "launcher": true
+    },
+    "hold_is_the_predecessor": true,
+    "launch_unchanged": true,
+    "paused": true,
+    "receipt_unchanged": true,
+    "result": {
+     "raised": {
+      "field": "fleet",
+      "message": "host delivery refused: fleet_debt_held (fleet)",
+      "reason_code": "fleet_debt_held",
+      "type": "DeliveryRefused"
+     }
+    },
+    "stop_requested": false
+   },
+   "held_units": [],
+   "jobs": {
+    "job-gap": "queued"
+   },
+   "replayed_start": {
+    "launch_unchanged": true,
+    "result": {
+     "returned": {
+      "instance_id": "<instance>",
+      "launch": {
+       "descriptor_sha256": "<digest:settled.A>",
+       "manifest_sha256": "378c6014d0a9cd4135e9de75fa2daae9aa2b4c6e60a55d6d4cda0a6fc7894604",
+       "pid": "<pid>",
+       "started_at": "<time>"
+      },
+      "recovered": true,
+      "started": false
+     }
+    }
+   },
+   "restored": {
+    "consumed": true,
+    "launch": {
+     "descriptor_sha256": "<digest:settled.A>",
+     "manifest_sha256": "378c6014d0a9cd4135e9de75fa2daae9aa2b4c6e60a55d6d4cda0a6fc7894604",
+     "pid": "<pid>",
+     "started_at": "<time>"
+    },
+    "launch_is_the_predecessors": true,
+    "new_instance": true,
+    "new_launcher": true,
+    "revision_is_a": true,
+    "running": true,
+    "started": true
+   }
+  }
+ },
+ "scan": {
+  "physical_bytes": {
+   "lf_and_crlf_differ": true,
+   "matches_git_no_filters": true,
+   "normalizing_filter_gives_the_lf_id": true,
+   "scan": [
+    [
+     "src/crlf.py",
+     "8d73ae86b846775821b90f8e5e4521833927e423"
+    ],
+    [
+     "src/lf.py",
+     "2c1854573a40224de599dd57077637eb5f882072"
+    ]
+   ],
+   "scan_has_the_normalized_id": false,
+   "seal_files_excluded": true
+  },
+  "symlink": {
+   "after_unlink": [
+    [
+     "src/a.py",
+     "7d4290a117a4ddcc11daae7ea675841033830c8f"
+    ]
+   ],
+   "directory_symlink": null,
+   "file_symlink": null,
+   "not_a_plain_file": null,
+   "plain": [
+    [
+     "src/a.py",
+     "7d4290a117a4ddcc11daae7ea675841033830c8f"
+    ]
+   ]
+  }
+ },
+ "seal": {
+  "interrupted_seal": {
+   "after_interruption": {
+    "runtimes": {
+     ".stage-30b594da7b07ad3ac42369dc5d14f4ecdff6d817-00000001": {
+      "files": 276,
+      "modes": {
+       "0o444": 276
+      },
+      "sha256": "a755731bc7969a3a864517ae35b5095719540fd9f32a44341de47793d583d610",
+      "top": [
+       "runtime-files.json",
+       "runtime.json",
+       "src",
+       "uv.lock"
+      ]
+     }
+    },
+    "sealed_directory_exists": false
+   },
+   "after_retry": {
+    "runtimes": {
+     ".stage-30b594da7b07ad3ac42369dc5d14f4ecdff6d817-00000001": {
+      "files": 276,
+      "modes": {
+       "0o444": 276
+      },
+      "sha256": "a755731bc7969a3a864517ae35b5095719540fd9f32a44341de47793d583d610",
+      "top": [
+       "runtime-files.json",
+       "runtime.json",
+       "src",
+       "uv.lock"
+      ]
+     },
+     "30b594da7b07ad3ac42369dc5d14f4ecdff6d817": {
+      "files": 276,
+      "modes": {
+       "0o444": 276
+      },
+      "sha256": "a755731bc7969a3a864517ae35b5095719540fd9f32a44341de47793d583d610",
+      "top": [
+       "runtime-files.json",
+       "runtime.json",
+       "src",
+       "uv.lock"
+      ]
+     }
+    }
+   },
+   "interrupted": {
+    "raised": {
+     "message": "labelled injected interruption between stage and seal",
+     "type": "OSError"
+    }
+   },
+   "retry": {
+    "returned": {
+     "files": 274,
+     "manifest_sha256": "378c6014d0a9cd4135e9de75fa2daae9aa2b4c6e60a55d6d4cda0a6fc7894604",
+     "recovered": false,
+     "revision": "30b594da7b07ad3ac42369dc5d14f4ecdff6d817",
+     "sealed": true
+    }
+   },
+   "verify_sealed": {
+    "returned": {
+     "content_sha256": "02b6da8821001fd6ba27ac53e5fdfd6d04a5c9385042db4a126d6b57248367dc",
+     "environment_lock": "87637a2b861493da664b9ca92aa62d958d13861ca02f87432edd9798c5c9ee36",
+     "files": 274,
+     "revision": "30b594da7b07ad3ac42369dc5d14f4ecdff6d817",
+     "schema": "urn:zeus:managed-runtime:1",
+     "tree": "ecae4fa776d2e0988730d13be76fd3986975107d"
+    }
+   },
+   "verify_unsealed": {
+    "raised": {
+     "field": "root",
+     "message": "host delivery refused: runtime_unsealed (root)",
+     "reason_code": "runtime_unsealed",
+     "type": "DeliveryRefused"
+    }
+   }
+  },
+  "linked_worktree": {
+   "revisions": {
+    "a": "30b594da7b07ad3ac42369dc5d14f4ecdff6d817",
+    "b": "b480f63b1e1a5d9da5906a10702152a3ca5cdc09"
+   },
+   "sealed": {
+    "returned": {
+     "files": 274,
+     "manifest_sha256": "fa584852fd2b0c20fd47562c917d331d481a567fbd02fc61a26dc799b9657fcc",
+     "recovered": false,
+     "revision": "b480f63b1e1a5d9da5906a10702152a3ca5cdc09",
+     "sealed": true
+    }
+   },
+   "source_checkout_revision_is_b": true,
+   "worktree_checkout_revision_is_a": true
+  },
+  "lost_response": {
+   "after_first": {
+    "runtimes": {
+     "30b594da7b07ad3ac42369dc5d14f4ecdff6d817": {
+      "files": 276,
+      "modes": {
+       "0o444": 276
+      },
+      "sha256": "a755731bc7969a3a864517ae35b5095719540fd9f32a44341de47793d583d610",
+      "top": [
+       "runtime-files.json",
+       "runtime.json",
+       "src",
+       "uv.lock"
+      ]
+     }
+    }
+   },
+   "after_second": {
+    "runtimes": {
+     "30b594da7b07ad3ac42369dc5d14f4ecdff6d817": {
+      "files": 276,
+      "modes": {
+       "0o444": 276
+      },
+      "sha256": "a755731bc7969a3a864517ae35b5095719540fd9f32a44341de47793d583d610",
+      "top": [
+       "runtime-files.json",
+       "runtime.json",
+       "src",
+       "uv.lock"
+      ]
+     }
+    }
+   },
+   "first": {
+    "raised": {
+     "message": "labelled injected lost materialize response",
+     "type": "RuntimeError"
+    }
+   },
+   "paths_in_result": false,
+   "second": {
+    "returned": {
+     "files": 274,
+     "manifest_sha256": "378c6014d0a9cd4135e9de75fa2daae9aa2b4c6e60a55d6d4cda0a6fc7894604",
+     "recovered": true,
+     "revision": "30b594da7b07ad3ac42369dc5d14f4ecdff6d817",
+     "sealed": true
+    }
+   },
+   "verify": {
+    "returned": {
+     "content_sha256": "02b6da8821001fd6ba27ac53e5fdfd6d04a5c9385042db4a126d6b57248367dc",
+     "environment_lock": "87637a2b861493da664b9ca92aa62d958d13861ca02f87432edd9798c5c9ee36",
+     "files": 274,
+     "revision": "30b594da7b07ad3ac42369dc5d14f4ecdff6d817",
+     "schema": "urn:zeus:managed-runtime:1",
+     "tree": "ecae4fa776d2e0988730d13be76fd3986975107d"
+    }
+   }
+  },
+  "seal_once_and_revalidate": {
+   "listing": {
+    "files": 274,
+    "has_readme": false,
+    "has_uv_lock": true,
+    "only_src_and_lock": true
+   },
+   "managed_root": {
+    "runtimes": {
+     "30b594da7b07ad3ac42369dc5d14f4ecdff6d817": {
+      "files": 276,
+      "modes": {
+       "0o444": 276
+      },
+      "sha256": "a755731bc7969a3a864517ae35b5095719540fd9f32a44341de47793d583d610",
+      "top": [
+       "runtime-files.json",
+       "runtime.json",
+       "src",
+       "uv.lock"
+      ]
+     },
+     "b480f63b1e1a5d9da5906a10702152a3ca5cdc09": {
+      "files": 276,
+      "modes": {
+       "0o444": 276
+      },
+      "sha256": "0fbe66f053ae8468f1876e50d88827ae3c27899c8f58cb883c8565b1d07f73e6",
+      "top": [
+       "runtime-files.json",
+       "runtime.json",
+       "src",
+       "uv.lock"
+      ]
+     }
+    }
+   },
+   "manifest": {
+    "content_sha256": "02b6da8821001fd6ba27ac53e5fdfd6d04a5c9385042db4a126d6b57248367dc",
+    "environment_lock": "87637a2b861493da664b9ca92aa62d958d13861ca02f87432edd9798c5c9ee36",
+    "files": 274,
+    "revision": "30b594da7b07ad3ac42369dc5d14f4ecdff6d817",
+    "schema": "urn:zeus:managed-runtime:1",
+    "tree": "ecae4fa776d2e0988730d13be76fd3986975107d"
+   },
+   "modes": {
+    "manifest": "0o444",
+    "module": "0o444"
+   },
+   "revalidated": {
+    "manifest_unchanged": true,
+    "result": {
+     "files": 274,
+     "manifest_sha256": "378c6014d0a9cd4135e9de75fa2daae9aa2b4c6e60a55d6d4cda0a6fc7894604",
+     "recovered": true,
+     "revision": "30b594da7b07ad3ac42369dc5d14f4ecdff6d817",
+     "sealed": true
+    },
+    "same_manifest_digest": true
+   },
+   "runtime_revision": "30b594da7b07ad3ac42369dc5d14f4ecdff6d817",
+   "sealed": {
+    "files": 274,
+    "manifest_sha256": "378c6014d0a9cd4135e9de75fa2daae9aa2b4c6e60a55d6d4cda0a6fc7894604",
+    "recovered": false,
+    "revision": "30b594da7b07ad3ac42369dc5d14f4ecdff6d817",
+    "sealed": true
+   },
+   "second_revision": {
+    "different_manifest": true,
+    "first_still_verifies": "30b594da7b07ad3ac42369dc5d14f4ecdff6d817",
+    "marker_in_a": false,
+    "marker_in_b": true,
+    "result": {
+     "files": 274,
+     "manifest_sha256": "fa584852fd2b0c20fd47562c917d331d481a567fbd02fc61a26dc799b9657fcc",
+     "recovered": false,
+     "revision": "b480f63b1e1a5d9da5906a10702152a3ca5cdc09",
+     "sealed": true
+    }
+   },
+   "source_unchanged": true,
+   "tree_is_the_git_tree": true
+  }
+ }
+}

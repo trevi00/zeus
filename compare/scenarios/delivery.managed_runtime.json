@@ -1,0 +1,9 @@
+{
+ "family": "delivery.managed_runtime",
+ "description": "S7 M7 managed Fleet host target, characterized before its move (INV-HOST-DELIVERY-001, HOST-RUNTIME.md): the Materializer sealing one reviewed revision into its immutable runtime directory (seal once, lost-response revalidation, an interrupted seal and its evidence, a linked worktree), its refusals (a changed or foreign directory, an unresolved revision, an unqualified environment, a tracked symlink, a lost fence, the registry and runtime-path grammar, a bad runtime before the running instance is touched), ManagedFleetTarget start/restart/repeated start and two owners at once over REAL sealed-runtime children running the labelled fixture workload, drain and stop against active, owned, unknown and absent work and heartbeat, the activation gate over a labelled in-memory Fleet authority (failed reads, an unconfigured authority, every gate answer, the launch-request grammar), forward activation and rollback over settled, held and unknown debt, the entry points (entry, launch, RuntimeControl, FixtureLauncher, run_fixture) and the scan's physical-byte identity; the fixture source repository is a pinned-identity git copy of SOURCE, so the sealed runtimes are identical inputs on both sides",
+ "reference_driver": "drivers/reference/s7_managed_runtime.py",
+ "target_driver": null,
+ "golden": "goldens/reference/delivery.managed_runtime.json",
+ "slice": "S7",
+ "target_status": "pending: S7 managed runtime move (V6)"
+}
