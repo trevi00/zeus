@@ -1,0 +1,9 @@
+{
+ "family": "coordination.local_cycle",
+ "description": "S5 LocalCycle (RESEARCH-S5 D3/D4, check (c)): start idempotence/conflict; implement -> report handled, published, ACKed -> lead decision -> awaiting_operator; handoff view; dead letters (undecodable, misrouted), a foreign unparkable message left un-ACKed, an own notice ACKed then stop; in-flight residue, budget_exhausted, claim guard, executor exception, publication_incomplete, foreign queue, no executor; fixture stream bus, executor and observer shared by both sides",
+ "reference_driver": "drivers/reference/s5_cycle.py",
+ "target_driver": null,
+ "golden": "goldens/reference/coordination.local_cycle.json",
+ "slice": "S5",
+ "target_status": "pending: LocalCycle is not yet moved"
+}

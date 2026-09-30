@@ -1,0 +1,349 @@
+{
+ "budget_1": {
+  "action": "executed",
+  "digest": "e7ac26c637959ad37556da1f57be0ef0cd757f4c9015c25fd182617a99aabd72",
+  "executions": 1,
+  "reason": "active",
+  "status": "active",
+  "stopped_reason": null
+ },
+ "budget_2": {
+  "action": "stopped",
+  "digest": "eb8974712a1dd7cdd8c4852d09c4a4a1eda7f34e67d0445a21f0ab5e789b8905",
+  "executions": 1,
+  "reason": "budget_exhausted",
+  "status": "stopped",
+  "stopped_reason": "budget_exhausted"
+ },
+ "claim_guard": {
+  "action": "refused",
+  "digest": "ffd089b66014a0d5e07fe633a4d0cfeae896c130a1b1d7878494b9fe8903fc88",
+  "executions": 1,
+  "reason": "claim_guard_refused",
+  "status": "stopped",
+  "stopped_reason": "claim_guard_refused"
+ },
+ "executor_exception": {
+  "action": "executed",
+  "digest": "9a712af8b448cef41918178edd99b236c57ce6cbd6de9474e10d5c4ae2b92552",
+  "executions": 1,
+  "reason": "exception:RuntimeError",
+  "status": "stopped",
+  "stopped_reason": "exception:RuntimeError"
+ },
+ "foreign_calls": [
+  [
+   "emit",
+   "general.message_rejected",
+   "blocked",
+   "JSONDecodeError"
+  ],
+  [
+   "emit",
+   "general.message_received",
+   "observed",
+   null
+  ],
+  [
+   "emit",
+   "general.message_rejected",
+   "blocked",
+   "ContractError"
+  ],
+  [
+   "emit",
+   "general.message_received",
+   "observed",
+   null
+  ],
+  [
+   "emit",
+   "general.message_rejected",
+   "blocked",
+   "foreign_correlation"
+  ]
+ ],
+ "foreign_log": [
+  [
+   "publish",
+   "worker:implementation",
+   "garbage",
+   "1-0"
+  ],
+  [
+   "publish",
+   "worker:implementation",
+   "misrouted",
+   "2-0"
+  ],
+  [
+   "publish",
+   "worker:implementation",
+   "foreign",
+   "3-0"
+  ],
+  [
+   "receive",
+   "worker:implementation",
+   "1-0"
+  ],
+  [
+   "dead_letter",
+   "worker:implementation",
+   "1-0",
+   "Expecting property name enclosed in double quotes: line 1 column 2 (char 1)"
+  ],
+  [
+   "receive",
+   "worker:implementation",
+   "2-0"
+  ],
+  [
+   "dead_letter",
+   "worker:implementation",
+   "2-0",
+   "Message routed to wrong agent"
+  ],
+  [
+   "receive",
+   "worker:implementation",
+   "3-0"
+  ]
+ ],
+ "foreign_queue": {
+  "action": "stopped",
+  "digest": "63edc6d456a116e521141c549b8843414e561a0987b91ced3ebfc84e0de67f7e",
+  "executions": 0,
+  "reason": "foreign_queue:5eed0000-0000-4000-8000-000000000016",
+  "status": "stopped",
+  "stopped_reason": "foreign_queue:5eed0000-0000-4000-8000-000000000016"
+ },
+ "foreign_step": {
+  "action": "messages",
+  "digest": "25db922a1bd075a231b77bfb431b0903b2640193e54151f2f7af01fc31783803",
+  "executions": 0,
+  "reason": "foreign_correlation",
+  "status": "stopped",
+  "stopped_reason": "foreign_correlation"
+ },
+ "handoff": {
+  "value": "b9dfcdd27396a0b771051a492316e80c3c144b78423a9460cc795dd1a02f4e16"
+ },
+ "happy_1": {
+  "action": "executed",
+  "digest": "d1838408430a2c68691bea0f3de2b4762ed9b9fd7d6d5036bc0f84f4829f7495",
+  "executions": 1,
+  "reason": "active",
+  "status": "active",
+  "stopped_reason": null
+ },
+ "happy_2": {
+  "action": "executed",
+  "digest": "a3f752dc94d8f681811c47566ee3c8e0174a2a14854051a5c1241aebe0c73a0c",
+  "executions": 2,
+  "reason": "awaiting_operator",
+  "status": "awaiting_operator",
+  "stopped_reason": null
+ },
+ "happy_3": {
+  "action": "none",
+  "digest": "6169db18863b87a0e1f1e5e80ef4b546372a63e373050aa503eb971254c4439b",
+  "executions": 2,
+  "reason": "awaiting_operator",
+  "status": "awaiting_operator",
+  "stopped_reason": null
+ },
+ "happy_calls": [
+  [
+   "audit",
+   "general.message_published",
+   "succeeded",
+   null
+  ],
+  [
+   "emit",
+   "general.message_received",
+   "observed",
+   null
+  ],
+  [
+   "emit",
+   "general.message_accepted",
+   "succeeded",
+   null
+  ],
+  [
+   "emit",
+   "general.message_acknowledged",
+   "observed",
+   null
+  ]
+ ],
+ "happy_log": [
+  [
+   "execute_one",
+   "worker:implementation",
+   [
+    "queued"
+   ]
+  ],
+  [
+   "publish",
+   "lead:improvement",
+   "5eed0000-0000-4000-8000-000000000002",
+   "1-0"
+  ],
+  [
+   "receive",
+   "lead:improvement",
+   "1-0"
+  ],
+  [
+   "ack",
+   "lead:improvement",
+   "1-0"
+  ],
+  [
+   "decide_one",
+   "lead:improvement",
+   [
+    "pending"
+   ]
+  ]
+ ],
+ "happy_records": [
+  [
+   "decisions_pending",
+   "5eed0000-0000-4000-8000-000000000002",
+   "e76a29b9b586e3749c817d7a725a737b4e4e8e64b68fa2414abee60b7fd1e6ff"
+  ],
+  [
+   "events",
+   "5eed0000-0000-4000-8000-000000000003",
+   "a7cc60596ad820575d1e97024e40945ba498b929d51e439ea926345ef518ab9d"
+  ],
+  [
+   "execution_fences",
+   "tasks:5eed0000-0000-4000-8000-000000000001",
+   "365e8aab3b6c39aa3949e99780fa66cd74352d850249ac63f2a93bd6972f7614"
+  ],
+  [
+   "local_cycles",
+   "cycle-a",
+   "25b3042aec4b76047c761acc6e3683ed33fa7b21abbd69ee181fb0c77187c1e7"
+  ],
+  [
+   "outbox",
+   "5eed0000-0000-4000-8000-000000000002",
+   "fd807a3782ee8cdc87ebe861068ff9eae9e13fd2019309d3b4b5efa314685e28"
+  ],
+  [
+   "outbox_attempts",
+   "5eed0000-0000-4000-8000-000000000004",
+   "56b5009d8d35436bf4c33489f05c4ba974b8b1d41253179ba212eab0d925d019"
+  ],
+  [
+   "outbox_delivery",
+   "5eed0000-0000-4000-8000-000000000002",
+   "b537bc383025bd607f1791338fea1a862fe5b47881dfe1cb890ce90ba8c53ea2"
+  ],
+  [
+   "tasks",
+   "5eed0000-0000-4000-8000-000000000001",
+   "56b1a0b95351a61b7d8abb46b9923fa51554d86c84727a212a8ed2c04c2edcb4"
+  ],
+  [
+   "workflow_inbox",
+   "5eed0000-0000-4000-8000-000000000002",
+   "e8045ab46715d55a41390d8c1c8f41c9598b463fd6e44de6f36248eca7a85309"
+  ]
+ ],
+ "last_records": [
+  [
+   "local_cycles",
+   "cycle-z",
+   "1522fc106bb967c1595f2239809fbca028945fdd4a3c63ebd33409d30f3ecaa7"
+  ],
+  [
+   "tasks",
+   "5eed0000-0000-4000-8000-000000000017",
+   "28143e86a9c1a33278505a7e3d76f1c19db87802afb1492fd030b6dc3b5ac0e3"
+  ]
+ ],
+ "no_executor": {
+  "message": "Executor required for a cycle step",
+  "refused": "ContractError"
+ },
+ "notice_log": [
+  [
+   "publish",
+   "lead:improvement",
+   "1ee1d7956c6bfc76206e06c6c4d5dcf8900bf99e1a70e81e3bfb192500679f63",
+   "1-0"
+  ],
+  [
+   "receive",
+   "lead:improvement",
+   "1-0"
+  ],
+  [
+   "ack",
+   "lead:improvement",
+   "1-0"
+  ]
+ ],
+ "notice_step": {
+  "action": "messages",
+  "digest": "806714c5cd014df1366e5bfe3de80c6b58d9114903036c27566a26459f8b03f2",
+  "executions": 0,
+  "reason": "execution_notice:operator_cancelled",
+  "status": "stopped",
+  "stopped_reason": "execution_notice:operator_cancelled"
+ },
+ "publication_calls": [
+  [
+   "audit",
+   "general.message_delivery_retry",
+   "failed",
+   "MessageDeliveryError"
+  ]
+ ],
+ "publication_incomplete": {
+  "action": "executed",
+  "digest": "d30b5381ccfd8b14a8fe4794540c65a21700dbd49c3593d32dfda142ed274294",
+  "executions": 1,
+  "reason": "publication_incomplete",
+  "status": "stopped",
+  "stopped_reason": "publication_incomplete"
+ },
+ "residue": {
+  "action": "refused",
+  "digest": "56b4a83aeec78e7415a8957c33a8382a59a446bb32349b9e45ce2216297272ee",
+  "executions": 0,
+  "reason": "in_flight_residue",
+  "status": "active",
+  "stopped_reason": null
+ },
+ "start": {
+  "value": "b122e72a34f1fa0805a559e437d2db9d5916884bbcd844af77b34c07f27999cc"
+ },
+ "start_again": {
+  "value": "b122e72a34f1fa0805a559e437d2db9d5916884bbcd844af77b34c07f27999cc"
+ },
+ "start_bad_budget": {
+  "message": "max_executions must be a positive integer",
+  "refused": "ContractError"
+ },
+ "start_bad_id": {
+  "message": "Cycle id required",
+  "refused": "ContractError"
+ },
+ "start_conflict": {
+  "message": "Conflicting cycle policy",
+  "refused": "ContractError"
+ },
+ "unknown_cycle": {
+  "message": "Unknown cycle",
+  "refused": "ContractError"
+ }
+}
