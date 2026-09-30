@@ -567,6 +567,7 @@
      }
     }
    },
+   "raw_digests": "activation_file=True,canary_receipt.receipt=True,canary_receipt.request=True,canary_record=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": null,
    "sources_not_recorded": "",
    "subjects_unknown": false,
@@ -1167,6 +1168,7 @@
    "observed": "2026-09-28T11:30:00.001000+00:00 .. 2026-09-28T11:30:00.012000+00:00",
    "ok": true,
    "projections_changed": {},
+   "raw_digests": "activation_file=True,canary_receipt.receipt=True,canary_receipt.request=True,canary_record=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": null,
    "relations": {
     "activation_document_sha256": true,
@@ -1362,6 +1364,7 @@
       }
      }
     },
+    "raw_digests": "activation_file=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
     "reason_code": "activation_consumption_refused",
     "sources_not_recorded": "entry,canary_receipt,canary_record",
     "subjects_unknown": true,
@@ -1386,6 +1389,7 @@
     "observed": "2026-09-28T11:30:00.001000+00:00 .. 2026-09-28T11:30:00.012000+00:00",
     "ok": true,
     "projections_changed": {},
+    "raw_digests": "activation_file=True,canary_receipt.receipt=True,canary_receipt.request=True,canary_record=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
     "reason_code": null,
     "sources_not_recorded": "",
     "subjects_unknown": false,
@@ -1598,6 +1602,7 @@
      "transitions": 3
     }
    },
+   "raw_digests": "activation_file=True,canary_receipt.receipt=True,canary_receipt.request=True,canary_record=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": null,
    "relations": {
     "comparison": true,
@@ -1701,6 +1706,7 @@
      "transitions": 3
     }
    },
+   "raw_digests": "activation_file=True,canary_receipt.receipt=True,canary_receipt.request=True,canary_record=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": null,
    "relations": {
     "comparison": true,
@@ -1799,6 +1805,7 @@
     "startup": null,
     "supervisor": null
    },
+   "raw_digests": "activation_file=True,migration.config_sha256=True",
    "reason_code": "activation_document_mismatch",
    "sources_not_recorded": "launch,supervisor,entry,descriptor,startup,delivery,canary_receipt,canary_record",
    "subjects_unknown": true,
@@ -1893,6 +1900,7 @@
     "startup": null,
     "supervisor": null
    },
+   "raw_digests": "activation_file=True,migration.config_sha256=True",
    "reason_code": "activation_document_mismatch",
    "sources_not_recorded": "launch,supervisor,entry,descriptor,startup,delivery,canary_receipt,canary_record",
    "subjects_unknown": true,
@@ -1987,6 +1995,7 @@
     "startup": null,
     "supervisor": null
    },
+   "raw_digests": "activation_file=True,migration.config_sha256=True",
    "reason_code": "activation_document_mismatch",
    "sources_not_recorded": "launch,supervisor,entry,descriptor,startup,delivery,canary_receipt,canary_record",
    "subjects_unknown": true,
@@ -2083,6 +2092,7 @@
     "startup": null,
     "supervisor": null
    },
+   "raw_digests": "activation_file=True,migration.config_sha256=True",
    "reason_code": "activation_document_mismatch",
    "sources_not_recorded": "launch,supervisor,entry,descriptor,startup,delivery,canary_receipt,canary_record",
    "subjects_unknown": true,
@@ -2176,6 +2186,7 @@
      }
     }
    },
+   "raw_digests": "activation_file=True,canary_receipt.receipt=True,canary_receipt.request=True,canary_record=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": "activation_canary_unbound",
    "sources_not_recorded": "",
    "subjects_unknown": false,
@@ -2269,6 +2280,7 @@
      }
     }
    },
+   "raw_digests": "activation_file=True,canary_receipt.receipt=True,canary_receipt.request=True,canary_record=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": "activation_canary_unbound",
    "sources_not_recorded": "",
    "subjects_unknown": false,
@@ -2360,6 +2372,7 @@
      }
     }
    },
+   "raw_digests": "activation_file=True,canary_receipt.receipt=True,canary_receipt.request=True,canary_record=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": "activation_canary_unbound",
    "sources_not_recorded": "",
    "subjects_unknown": false,
@@ -2453,6 +2466,7 @@
      }
     }
    },
+   "raw_digests": "activation_file=True,canary_receipt.receipt=True,canary_receipt.request=True,canary_record=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": "activation_canary_unbound",
    "sources_not_recorded": "",
    "subjects_unknown": false,
@@ -2544,6 +2558,7 @@
      }
     }
    },
+   "raw_digests": "activation_file=True,canary_receipt.receipt=True,canary_receipt.request=True,canary_record=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": "activation_canary_unbound",
    "sources_not_recorded": "",
    "subjects_unknown": false,
@@ -2696,6 +2711,7 @@
      }
     }
    },
+   "raw_digests": "activation_file=True,canary_receipt.receipt=True,canary_receipt.request=True,canary_record=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": null,
    "sources_not_recorded": "",
    "subjects_unknown": false,
@@ -2789,6 +2805,7 @@
      }
     }
    },
+   "raw_digests": "activation_file=True,canary_receipt.receipt=True,canary_receipt.request=True,canary_record=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": "activation_canary_unbound",
    "sources_not_recorded": "",
    "subjects_unknown": false,
@@ -2978,6 +2995,7 @@
      }
     }
    },
+   "raw_digests": "activation_file=True,canary_receipt.receipt=True,canary_receipt.request=True,canary_record=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": "activation_canary_unbound",
    "sources_not_recorded": "",
    "subjects_unknown": false,
@@ -3178,6 +3196,7 @@
      }
     }
    },
+   "raw_digests": "activation_file=True,canary_receipt.receipt=True,canary_receipt.request=True,canary_record=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": null,
    "sources_not_recorded": "",
    "subjects_unknown": false,
@@ -3381,6 +3400,7 @@
      }
     }
    },
+   "raw_digests": "activation_file=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": "activation_consumption_refused",
    "sources_not_recorded": "entry,canary_receipt,canary_record",
    "subjects_unknown": true,
@@ -3561,6 +3581,7 @@
      }
     }
    },
+   "raw_digests": "activation_file=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": "activation_consumption_refused",
    "sources_not_recorded": "entry,canary_receipt,canary_record",
    "subjects_unknown": true,
@@ -3727,6 +3748,7 @@
      "validated": null
     }
    },
+   "raw_digests": "activation_file=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": "activation_process_unbound",
    "sources_not_recorded": "canary_receipt,canary_record",
    "subjects_unknown": false,
@@ -3830,6 +3852,7 @@
      }
     }
    },
+   "raw_digests": "activation_file=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": "activation_consumption_refused",
    "sources_not_recorded": "entry,canary_receipt,canary_record",
    "subjects_unknown": true,
@@ -3933,6 +3956,7 @@
      }
     }
    },
+   "raw_digests": "activation_file=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": "activation_consumption_refused",
    "sources_not_recorded": "entry,canary_receipt,canary_record",
    "subjects_unknown": true,
@@ -4038,6 +4062,7 @@
      }
     }
    },
+   "raw_digests": "activation_file=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": "activation_consumption_refused",
    "sources_not_recorded": "entry,canary_receipt,canary_record",
    "subjects_unknown": true,
@@ -4106,6 +4131,7 @@
      "validated": null
     }
    },
+   "raw_digests": "activation_file=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": "activation_process_unbound",
    "sources_not_recorded": "canary_receipt,canary_record",
    "subjects_unknown": false,
@@ -4242,6 +4268,7 @@
      "transitions": 3
     }
    },
+   "raw_digests": "activation_file=True,canary_receipt.receipt=True,canary_receipt.request=True,canary_record=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": null,
    "sources_not_recorded": "",
    "subjects_unknown": false,
@@ -4380,6 +4407,7 @@
      "transitions": 3
     }
    },
+   "raw_digests": "activation_file=True,canary_receipt.receipt=True,canary_receipt.request=True,canary_record=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": null,
    "sources_not_recorded": "",
    "subjects_unknown": false,
@@ -4469,6 +4497,7 @@
     },
     "startup": null
    },
+   "raw_digests": "activation_file=True,migration.config_sha256=True",
    "reason_code": "activation_launch_unbound",
    "sources_not_recorded": "entry,descriptor,startup,delivery,canary_receipt,canary_record",
    "subjects_unknown": true,
@@ -4560,6 +4589,7 @@
     },
     "startup": null
    },
+   "raw_digests": "activation_file=True,migration.config_sha256=True",
    "reason_code": "activation_launch_unbound",
    "sources_not_recorded": "entry,descriptor,startup,delivery,canary_receipt,canary_record",
    "subjects_unknown": true,
@@ -4671,6 +4701,7 @@
     "startup": null,
     "supervisor": null
    },
+   "raw_digests": "migration.config_sha256=True",
    "reason_code": "activation_document_mismatch",
    "sources_not_recorded": "activation_file,launch,supervisor,entry,descriptor,startup,delivery,canary_receipt,canary_record",
    "subjects_unknown": true,
@@ -4709,6 +4740,7 @@
    "observed": "2026-09-28T11:30:00.001000+00:00 .. 2026-09-28T11:30:00.012000+00:00",
    "ok": true,
    "projections_changed": {},
+   "raw_digests": "activation_file=True,canary_receipt.receipt=True,canary_receipt.request=True,canary_record=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": null,
    "sources_not_recorded": "",
    "subjects_unknown": false,
@@ -4827,6 +4859,7 @@
      "version": 3
     }
    },
+   "raw_digests": "activation_file=True,canary_receipt.receipt=True,canary_receipt.request=True,canary_record=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": "activation_canary_unbound",
    "sources_not_recorded": "",
    "subjects_unknown": false,
@@ -4945,6 +4978,7 @@
      "version": 3
     }
    },
+   "raw_digests": "activation_file=True,canary_receipt.receipt=True,canary_receipt.request=True,canary_record=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": "activation_canary_unbound",
    "sources_not_recorded": "",
    "subjects_unknown": false,
@@ -5074,6 +5108,7 @@
      "version": 3
     }
    },
+   "raw_digests": "activation_file=True,canary_receipt.receipt=True,canary_receipt.request=True,canary_record=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": null,
    "sources_not_recorded": "",
    "subjects_unknown": false,
@@ -5177,6 +5212,7 @@
      }
     }
    },
+   "raw_digests": "activation_file=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": "activation_consumption_refused",
    "sources_not_recorded": "entry,canary_receipt,canary_record",
    "subjects_unknown": true,
@@ -5280,6 +5316,7 @@
      }
     }
    },
+   "raw_digests": "activation_file=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": "activation_consumption_refused",
    "sources_not_recorded": "entry,canary_receipt,canary_record",
    "subjects_unknown": true,
@@ -5383,6 +5420,7 @@
      }
     }
    },
+   "raw_digests": "activation_file=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": "activation_consumption_refused",
    "sources_not_recorded": "entry,canary_receipt,canary_record",
    "subjects_unknown": true,
@@ -5486,6 +5524,7 @@
      }
     }
    },
+   "raw_digests": "activation_file=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": "activation_consumption_refused",
    "sources_not_recorded": "entry,canary_receipt,canary_record",
    "subjects_unknown": true,
@@ -5591,6 +5630,7 @@
      }
     }
    },
+   "raw_digests": "activation_file=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": "activation_consumption_refused",
    "sources_not_recorded": "entry,canary_receipt,canary_record",
    "subjects_unknown": true,
@@ -5732,6 +5772,7 @@
      }
     }
    },
+   "raw_digests": "activation_file=True,canary_receipt.receipt=True,canary_receipt.request=True,canary_record=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": null,
    "sources_not_recorded": "",
    "subjects_unknown": false,
@@ -5843,6 +5884,7 @@
      }
     }
    },
+   "raw_digests": "activation_file=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": "activation_process_unbound",
    "sources_not_recorded": "canary_receipt,canary_record",
    "subjects_unknown": false,
@@ -5943,6 +5985,7 @@
      "validated": null
     }
    },
+   "raw_digests": "activation_file=True,migration.config_sha256=True",
    "reason_code": "activation_process_unbound",
    "sources_not_recorded": "launch,entry,descriptor,startup,delivery,canary_receipt,canary_record",
    "subjects_unknown": true,
@@ -6122,6 +6165,7 @@
      }
     }
    },
+   "raw_digests": "activation_file=True,canary_receipt.receipt=True,canary_receipt.request=True,canary_record=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": null,
    "relations": {
     "marker_absent": true,
@@ -6269,6 +6313,7 @@
      }
     }
    },
+   "raw_digests": "activation_file=True,canary_receipt.receipt=True,canary_receipt.request=True,canary_record=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": null,
    "relations": {
     "marker_absent": true,
@@ -6352,6 +6397,7 @@
      "transitions": 3
     }
    },
+   "raw_digests": "activation_file=True,canary_receipt.receipt=True,canary_receipt.request=True,canary_record=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": null,
    "relations": {
     "marker_absent": true,
@@ -6428,6 +6474,7 @@
      "version": 3
     }
    },
+   "raw_digests": "activation_file=True,canary_receipt.receipt=True,canary_receipt.request=True,canary_record=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": null,
    "relations": {
     "marker_absent": true,
@@ -6516,6 +6563,7 @@
      }
     }
    },
+   "raw_digests": "activation_file=True,canary_receipt.receipt=True,canary_receipt.request=True,canary_record=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": null,
    "relations": {
     "marker_absent": true,
@@ -6551,6 +6599,7 @@
    "observed": "2026-09-28T11:30:00.001000+00:00 .. 2026-09-28T11:30:00.012000+00:00",
    "ok": false,
    "projections_changed": {},
+   "raw_digests": "activation_file=True,canary_receipt.receipt=True,canary_receipt.request=True,canary_record=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": "activation_observation_changed",
    "recomputes": true,
    "sources_not_recorded": "",
@@ -6582,6 +6631,7 @@
    "observed": "2026-09-28T11:30:00.001000+00:00 .. 2026-09-28T11:30:00.012000+00:00",
    "ok": false,
    "projections_changed": {},
+   "raw_digests": "activation_file=True,canary_receipt.receipt=True,canary_receipt.request=True,canary_record=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": "activation_observation_changed",
    "recomputes": true,
    "sources_not_recorded": "",
@@ -6613,6 +6663,7 @@
    "observed": "2026-09-28T11:30:00.001000+00:00 .. 2026-09-28T11:30:00.012000+00:00",
    "ok": false,
    "projections_changed": {},
+   "raw_digests": "activation_file=True,canary_receipt.receipt=True,canary_receipt.request=True,canary_record=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": "activation_observation_changed",
    "recomputes": true,
    "sources_not_recorded": "",
@@ -6644,6 +6695,7 @@
    "observed": "2026-09-28T11:30:00.001000+00:00 .. 2026-09-28T11:30:00.012000+00:00",
    "ok": false,
    "projections_changed": {},
+   "raw_digests": "activation_file=True,canary_receipt.receipt=True,canary_receipt.request=True,canary_record=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": "activation_observation_changed",
    "recomputes": true,
    "sources_not_recorded": "",
@@ -6675,6 +6727,7 @@
    "observed": "2026-09-28T11:30:00.001000+00:00 .. 2026-09-28T11:30:00.012000+00:00",
    "ok": false,
    "projections_changed": {},
+   "raw_digests": "activation_file=True,canary_receipt.receipt=True,canary_receipt.request=True,canary_record=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": "activation_observation_changed",
    "recomputes": true,
    "sources_not_recorded": "",
@@ -6706,6 +6759,7 @@
    "observed": "2026-09-28T11:30:00.001000+00:00 .. 2026-09-28T11:30:00.012000+00:00",
    "ok": false,
    "projections_changed": {},
+   "raw_digests": "activation_file=True,canary_receipt.receipt=True,canary_receipt.request=True,canary_record=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": "activation_observation_changed",
    "recomputes": true,
    "sources_not_recorded": "",
@@ -6785,6 +6839,7 @@
       }
      }
     },
+    "raw_digests": "activation_file=True,canary_receipt.receipt=True,canary_receipt.request=True,canary_record=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
     "reason_code": "activation_canary_unbound",
     "receipt": {
      "accepted": false,
@@ -6886,6 +6941,7 @@
       }
      }
     },
+    "raw_digests": "activation_file=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
     "reason_code": "activation_consumption_refused",
     "sources_not_recorded": "entry,canary_receipt,canary_record",
     "startup": {
@@ -7104,6 +7160,7 @@
     "entry": null,
     "startup": null
    },
+   "raw_digests": "activation_file=True,delivery=True,migration.config_sha256=True",
    "reason_code": "activation_observation_unavailable",
    "sources_not_recorded": "entry,descriptor,startup,canary_receipt,canary_record",
    "subjects_unknown": true,
@@ -7156,6 +7213,7 @@
     "entry": null,
     "startup": null
    },
+   "raw_digests": "activation_file=True,delivery=True,migration.config_sha256=True",
    "reason_code": "activation_observation_unavailable",
    "sources_not_recorded": "entry,descriptor,startup,canary_receipt,canary_record",
    "subjects_unknown": true,
@@ -7315,6 +7373,7 @@
       }
      }
     },
+    "raw_digests": "activation_file=True,canary_receipt.receipt=True,canary_receipt.request=True,canary_record=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
     "reason_code": null,
     "sources_not_recorded": "",
     "subjects_unknown": false,
@@ -7389,6 +7448,7 @@
       "validated": null
      }
     },
+    "raw_digests": "activation_file=True,migration.config_sha256=True",
     "reason_code": "activation_process_unbound",
     "sources_not_recorded": "launch,entry,descriptor,startup,delivery,canary_receipt,canary_record",
     "subjects_unknown": true,
@@ -7983,6 +8043,7 @@
     "startup": null,
     "supervisor": null
    },
+   "raw_digests": "migration.config_sha256=True",
    "reason_code": "activation_document_mismatch",
    "relations": {
     "code_and_detail": true,
@@ -8136,6 +8197,7 @@
      "transitions": 3
     }
    },
+   "raw_digests": "activation_file=True,canary_receipt.receipt=True,canary_receipt.request=True,canary_record=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": null,
    "relations": {
     "code_and_detail": true,
@@ -8268,6 +8330,7 @@
      "transitions": 3
     }
    },
+   "raw_digests": "activation_file=True,canary_receipt.receipt=True,canary_receipt.request=True,canary_record=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": null,
    "relations": {
     "code_and_detail": true,
@@ -8373,6 +8436,7 @@
      "transitions": 3
     }
    },
+   "raw_digests": "activation_file=True,canary_receipt.receipt=True,canary_receipt.request=True,canary_record=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": null,
    "relations": {
     "code_and_detail": true,
@@ -8500,6 +8564,7 @@
      "transitions": 3
     }
    },
+   "raw_digests": "activation_file=True,canary_receipt.receipt=True,canary_receipt.request=True,canary_record=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": null,
    "relations": {
     "code_and_detail": true,
@@ -8630,6 +8695,7 @@
     "startup": null,
     "supervisor": null
    },
+   "raw_digests": "activation_file=True,migration.config_sha256=True",
    "reason_code": "activation_document_mismatch",
    "relations": {
     "code_and_detail": true,
@@ -8683,6 +8749,7 @@
     "startup": null,
     "supervisor": null
    },
+   "raw_digests": "migration.config_sha256=True",
    "reason_code": "activation_document_mismatch",
    "relations": {
     "code_and_detail": true,
@@ -8788,6 +8855,7 @@
      "transitions": 3
     }
    },
+   "raw_digests": "activation_file=True,canary_receipt.receipt=True,canary_receipt.request=True,canary_record=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": null,
    "relations": {
     "code_and_detail": true,
@@ -8893,6 +8961,7 @@
      "transitions": 3
     }
    },
+   "raw_digests": "activation_file=True,canary_receipt.receipt=True,canary_receipt.request=True,canary_record=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": null,
    "relations": {
     "activation_unchanged": true,
@@ -9030,6 +9099,7 @@
     "startup": null,
     "supervisor": null
    },
+   "raw_digests": "migration.config_sha256=True",
    "reason_code": "activation_document_mismatch",
    "relations": {
     "code_and_detail": true,
@@ -9129,6 +9199,7 @@
      }
     }
    },
+   "raw_digests": "activation_file=True,canary_receipt.receipt=True,canary_receipt.request=True,canary_record=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": null,
    "relations": {
     "code_and_detail": true,
@@ -9207,6 +9278,7 @@
      "version": 4
     }
    },
+   "raw_digests": "activation_file=True,canary_receipt.receipt=True,canary_receipt.request=True,canary_record=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": null,
    "relations": {
     "code_and_detail": true,
@@ -9297,6 +9369,7 @@
      "transitions": 2
     }
    },
+   "raw_digests": "activation_file=True,canary_receipt.receipt=True,canary_receipt.request=True,canary_record=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": null,
    "relations": {
     "code_and_detail": true,
@@ -9383,6 +9456,7 @@
      "transitions": 3
     }
    },
+   "raw_digests": "activation_file=True,canary_receipt.receipt=True,canary_receipt.request=True,canary_record=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": null,
    "relations": {
     "code_and_detail": true,
@@ -9532,6 +9606,7 @@
      }
     }
    },
+   "raw_digests": "activation_file=True,canary_receipt.receipt=True,canary_receipt.request=True,canary_record=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": null,
    "relations": {
     "code_and_detail": true,
@@ -9605,6 +9680,7 @@
      }
     }
    },
+   "raw_digests": "activation_file=True,canary_receipt.receipt=True,canary_receipt.request=True,canary_record=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": null,
    "relations": {
     "code_and_detail": true,
@@ -9693,6 +9769,7 @@
      }
     }
    },
+   "raw_digests": "activation_file=True,migration.config_sha256=True",
    "reason_code": "activation_launch_unbound",
    "relations": {
     "code_and_detail": true,
@@ -9744,6 +9821,7 @@
    "observed": "2026-09-28T11:30:00.001000+00:00 .. 2026-09-28T11:30:00.012000+00:00",
    "ok": true,
    "projections_changed": {},
+   "raw_digests": "activation_file=True,canary_receipt.receipt=True,canary_receipt.request=True,canary_record=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": null,
    "relations": {
     "code_and_detail": true,
@@ -9758,6 +9836,20 @@
    "valid_observation": true,
    "write_attempts": []
   }
+ },
+ "raw_digest_covers": {
+  "activation_file": "sha256 of the exact bytes of host-activation.json (as read by HostReader.file)",
+  "canary_receipt.receipt": "sha256 of the exact bytes of the plan-scoped owner-canary-receipt file",
+  "canary_receipt.request": "sha256 of the exact bytes of the plan-scoped owner-canary-request file",
+  "canary_record": "digest (canonical JSON) of record_view(the owner-action record row); recomputed here from the same row before the run",
+  "delivery": "digest (canonical JSON) of delivery_view(target, plan, intent, descriptor row, intents), the view derived from the store rows; recomputed here from the same rows before the run",
+  "descriptor": "sha256 of the exact bytes of the managed state directory's descriptor.json",
+  "entry": "digest of the process-projection facts object (identity, parent, cgroup, argv digest) the producer builds, not file bytes; not recomputed",
+  "launch": "digest of the launch-record object the producer builds from the journal (not the journal bytes); not recomputed",
+  "migration.config_sha256": "sha256 of the exact bytes of the host configuration file (not a raw_sha256 key)",
+  "startup": "sha256 of the exact bytes of the startup-receipt.json",
+  "supervisor": "digest of the process-projection facts object (identity, parent, cgroup, argv digest, unit, launches) the producer builds, not file bytes; not recomputed",
+  "supervisor_journal": "no projection carries a raw digest of supervisor-journal.jsonl: only digest(launches) of the parsed lines enters the identity tuple (not archived)"
  },
  "read_only": {
   "cli_ports_are_read_only_snapshots": {
@@ -9981,6 +10073,7 @@
     },
     "canary_record": null
    },
+   "raw_digests": "activation_file=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "read_only": {
     "filesystem_and_stores_unchanged": true,
     "minimal_environment_only": true,
@@ -10083,6 +10176,7 @@
      }
     }
    },
+   "raw_digests": "activation_file=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "read_only": {
     "filesystem_and_stores_unchanged": true,
     "minimal_environment_only": true,
@@ -10176,6 +10270,7 @@
     "startup": null,
     "supervisor": null
    },
+   "raw_digests": "activation_file=True,migration.config_sha256=True",
    "read_only": {
     "filesystem_and_stores_unchanged": true,
     "minimal_environment_only": true,
@@ -10241,6 +10336,7 @@
     "launch": null,
     "startup": null
    },
+   "raw_digests": "activation_file=True,migration.config_sha256=True",
    "read_only": {
     "filesystem_and_stores_unchanged": true,
     "minimal_environment_only": true,
@@ -10340,6 +10436,7 @@
      "validated": null
     }
    },
+   "raw_digests": "activation_file=True,migration.config_sha256=True",
    "read_only": {
     "filesystem_and_stores_unchanged": true,
     "minimal_environment_only": true,
@@ -10377,6 +10474,7 @@
    "observed": "2026-09-28T11:30:00.001000+00:00 .. 2026-09-28T11:30:00.012000+00:00",
    "ok": true,
    "projections_changed": {},
+   "raw_digests": "activation_file=True,canary_receipt.receipt=True,canary_receipt.request=True,canary_record=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "read_only": {
     "filesystem_and_stores_unchanged": true,
     "minimal_environment_only": true,
@@ -10562,6 +10660,7 @@
      }
     }
    },
+   "raw_digests": "activation_file=True,canary_receipt.receipt=True,canary_receipt.request=True,canary_record=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": "activation_canary_unbound",
    "sources_not_recorded": "",
    "subjects_unknown": false,
@@ -10643,6 +10742,7 @@
      }
     }
    },
+   "raw_digests": "activation_file=True,canary_receipt.receipt=True,canary_receipt.request=True,canary_record=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": "activation_canary_unbound",
    "sources_not_recorded": "",
    "subjects_unknown": false,
@@ -10681,6 +10781,7 @@
     },
     "canary_record": null
    },
+   "raw_digests": "activation_file=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": "activation_canary_unbound",
    "sources_not_recorded": "canary_record",
    "subjects_unknown": false,
@@ -10762,6 +10863,7 @@
      }
     }
    },
+   "raw_digests": "activation_file=True,canary_receipt.receipt=True,canary_receipt.request=True,canary_record=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": "activation_canary_unbound",
    "sources_not_recorded": "",
    "subjects_unknown": false,
@@ -10843,6 +10945,7 @@
      }
     }
    },
+   "raw_digests": "activation_file=True,canary_receipt.receipt=True,canary_receipt.request=True,canary_record=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": "activation_canary_unbound",
    "sources_not_recorded": "",
    "subjects_unknown": false,
@@ -10924,6 +11027,7 @@
      }
     }
    },
+   "raw_digests": "activation_file=True,canary_receipt.receipt=True,canary_receipt.request=True,canary_record=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": "activation_canary_unbound",
    "sources_not_recorded": "",
    "subjects_unknown": false,
@@ -10962,6 +11066,7 @@
     },
     "canary_record": null
    },
+   "raw_digests": "activation_file=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": "activation_canary_unbound",
    "sources_not_recorded": "canary_record",
    "subjects_unknown": false,
@@ -11070,6 +11175,7 @@
      "version": 3
     }
    },
+   "raw_digests": "activation_file=True,canary_receipt.receipt=True,canary_receipt.request=True,canary_record=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": "activation_canary_unbound",
    "sources_not_recorded": "",
    "subjects_unknown": false,
@@ -11127,6 +11233,7 @@
     },
     "canary_record": null
    },
+   "raw_digests": "activation_file=True,canary_receipt.request=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": "activation_canary_unbound",
    "sources_not_recorded": "canary_record",
    "subjects_unknown": false,
@@ -11208,6 +11315,7 @@
      }
     }
    },
+   "raw_digests": "activation_file=True,canary_receipt.receipt=True,canary_receipt.request=True,canary_record=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": "activation_canary_unbound",
    "sources_not_recorded": "",
    "subjects_unknown": false,
@@ -11289,6 +11397,7 @@
      }
     }
    },
+   "raw_digests": "activation_file=True,canary_receipt.receipt=True,canary_receipt.request=True,canary_record=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": "activation_canary_unbound",
    "sources_not_recorded": "",
    "subjects_unknown": false,
@@ -11370,6 +11479,7 @@
      }
     }
    },
+   "raw_digests": "activation_file=True,canary_receipt.receipt=True,canary_receipt.request=True,canary_record=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": "activation_canary_unbound",
    "sources_not_recorded": "",
    "subjects_unknown": false,
@@ -11451,6 +11561,7 @@
      }
     }
    },
+   "raw_digests": "activation_file=True,canary_receipt.receipt=True,canary_receipt.request=True,canary_record=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": "activation_canary_unbound",
    "sources_not_recorded": "",
    "subjects_unknown": false,
@@ -11533,6 +11644,7 @@
     },
     "canary_record": null
    },
+   "raw_digests": "activation_file=True,canary_receipt.receipt=True,canary_receipt.request=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": "activation_canary_unbound",
    "sources_not_recorded": "canary_record",
    "subjects_unknown": false,
@@ -11641,6 +11753,7 @@
      "version": 3
     }
    },
+   "raw_digests": "activation_file=True,canary_receipt.receipt=True,canary_receipt.request=True,canary_record=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": "activation_canary_unbound",
    "sources_not_recorded": "",
    "subjects_unknown": false,
@@ -11749,6 +11862,7 @@
      "version": 3
     }
    },
+   "raw_digests": "activation_file=True,canary_receipt.receipt=True,canary_receipt.request=True,canary_record=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": "activation_canary_unbound",
    "sources_not_recorded": "",
    "subjects_unknown": false,
@@ -11857,6 +11971,7 @@
      "version": 3
     }
    },
+   "raw_digests": "activation_file=True,canary_receipt.receipt=True,canary_receipt.request=True,canary_record=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": "activation_canary_unbound",
    "sources_not_recorded": "",
    "subjects_unknown": false,
@@ -11938,6 +12053,7 @@
      }
     }
    },
+   "raw_digests": "activation_file=True,canary_receipt.receipt=True,canary_receipt.request=True,canary_record=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": "activation_canary_unbound",
    "sources_not_recorded": "",
    "subjects_unknown": false,
@@ -12021,6 +12137,7 @@
      }
     }
    },
+   "raw_digests": "activation_file=True,canary_receipt.receipt=True,canary_receipt.request=True,canary_record=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": "activation_canary_unbound",
    "sources_not_recorded": "",
    "subjects_unknown": false,
@@ -12054,6 +12171,7 @@
    "observed": "2026-09-28T11:30:00.001000+00:00 .. 2026-09-28T11:30:00.012000+00:00",
    "ok": false,
    "projections_changed": {},
+   "raw_digests": "activation_file=True,canary_receipt.receipt=True,canary_receipt.request=True,canary_record=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": "activation_observation_changed",
    "sources_not_recorded": "",
    "subjects_unknown": false,
@@ -12087,6 +12205,7 @@
    "observed": "2026-09-28T11:30:00.001000+00:00 .. 2026-09-28T11:30:00.012000+00:00",
    "ok": false,
    "projections_changed": {},
+   "raw_digests": "activation_file=True,canary_receipt.receipt=True,canary_receipt.request=True,canary_record=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": "activation_observation_changed",
    "sources_not_recorded": "",
    "subjects_unknown": false,
@@ -12120,6 +12239,7 @@
    "observed": "2026-09-28T11:30:00.001000+00:00 .. 2026-09-28T11:30:00.012000+00:00",
    "ok": false,
    "projections_changed": {},
+   "raw_digests": "activation_file=True,canary_receipt.receipt=True,canary_receipt.request=True,canary_record=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": "activation_observation_changed",
    "sources_not_recorded": "",
    "subjects_unknown": false,
@@ -12153,6 +12273,7 @@
    "observed": "2026-09-28T11:30:00.001000+00:00 .. 2026-09-28T11:30:00.012000+00:00",
    "ok": false,
    "projections_changed": {},
+   "raw_digests": "activation_file=True,canary_receipt.receipt=True,canary_receipt.request=True,canary_record=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": "activation_observation_changed",
    "sources_not_recorded": "",
    "subjects_unknown": false,
@@ -12186,6 +12307,7 @@
    "observed": "2026-09-28T11:30:00.001000+00:00 .. 2026-09-28T11:30:00.012000+00:00",
    "ok": false,
    "projections_changed": {},
+   "raw_digests": "activation_file=True,canary_receipt.receipt=True,canary_receipt.request=True,canary_record=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": "activation_observation_changed",
    "sources_not_recorded": "",
    "subjects_unknown": false,
@@ -12219,6 +12341,7 @@
    "observed": "2026-09-28T11:30:00.001000+00:00 .. 2026-09-28T11:30:00.012000+00:00",
    "ok": false,
    "projections_changed": {},
+   "raw_digests": "activation_file=True,canary_receipt.receipt=True,canary_receipt.request=True,canary_record=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": "activation_observation_changed",
    "sources_not_recorded": "",
    "subjects_unknown": false,
@@ -12252,6 +12375,7 @@
    "observed": "2026-09-28T11:30:00.001000+00:00 .. 2026-09-28T11:30:00.012000+00:00",
    "ok": false,
    "projections_changed": {},
+   "raw_digests": "activation_file=True,canary_receipt.receipt=True,canary_receipt.request=True,canary_record=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": "activation_observation_changed",
    "sources_not_recorded": "",
    "subjects_unknown": false,
@@ -12285,6 +12409,7 @@
    "observed": "2026-09-28T11:30:00.001000+00:00 .. 2026-09-28T11:30:00.012000+00:00",
    "ok": false,
    "projections_changed": {},
+   "raw_digests": "activation_file=True,canary_receipt.receipt=True,canary_receipt.request=True,canary_record=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": "activation_observation_changed",
    "sources_not_recorded": "",
    "subjects_unknown": false,
@@ -12318,6 +12443,7 @@
    "observed": "2026-09-28T11:30:00.001000+00:00 .. 2026-09-28T11:30:00.012000+00:00",
    "ok": false,
    "projections_changed": {},
+   "raw_digests": "activation_file=True,canary_receipt.receipt=True,canary_receipt.request=True,canary_record=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": "activation_observation_changed",
    "sources_not_recorded": "",
    "subjects_unknown": false,
@@ -12351,6 +12477,7 @@
    "observed": "2026-09-28T11:30:00.001000+00:00 .. 2026-09-28T11:30:00.012000+00:00",
    "ok": false,
    "projections_changed": {},
+   "raw_digests": "activation_file=True,canary_receipt.receipt=True,canary_receipt.request=True,canary_record=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": "activation_observation_changed",
    "sources_not_recorded": "",
    "subjects_unknown": false,
@@ -12384,6 +12511,7 @@
    "observed": "2026-09-28T11:30:00.001000+00:00 .. 2026-09-28T11:30:00.012000+00:00",
    "ok": false,
    "projections_changed": {},
+   "raw_digests": "activation_file=True,canary_receipt.receipt=True,canary_receipt.request=True,canary_record=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": "activation_observation_changed",
    "sources_not_recorded": "",
    "subjects_unknown": false,
@@ -12417,6 +12545,7 @@
    "observed": "2026-09-28T11:30:00.001000+00:00 .. 2026-09-28T11:30:00.012000+00:00",
    "ok": false,
    "projections_changed": {},
+   "raw_digests": "activation_file=True,canary_receipt.receipt=True,canary_receipt.request=True,canary_record=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": "activation_observation_changed",
    "sources_not_recorded": "",
    "subjects_unknown": false,
@@ -12648,6 +12777,7 @@
      }
     }
    },
+   "raw_digests": "activation_file=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": "activation_consumption_refused",
    "sources_not_recorded": "entry,canary_receipt,canary_record",
    "subjects_unknown": true,
@@ -12841,6 +12971,7 @@
      }
     }
    },
+   "raw_digests": "activation_file=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": "activation_consumption_refused",
    "sources_not_recorded": "entry,canary_receipt,canary_record",
    "subjects_unknown": true,
@@ -13032,6 +13163,7 @@
      }
     }
    },
+   "raw_digests": "activation_file=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": "activation_consumption_refused",
    "sources_not_recorded": "entry,canary_receipt,canary_record",
    "subjects_unknown": true,
@@ -13223,6 +13355,7 @@
      }
     }
    },
+   "raw_digests": "activation_file=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": "activation_consumption_refused",
    "sources_not_recorded": "entry,canary_receipt,canary_record",
    "subjects_unknown": true,
@@ -13316,6 +13449,7 @@
      }
     }
    },
+   "raw_digests": "activation_file=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": "activation_consumption_refused",
    "sources_not_recorded": "entry,canary_receipt,canary_record",
    "subjects_unknown": true,
@@ -13409,6 +13543,7 @@
      }
     }
    },
+   "raw_digests": "activation_file=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": "activation_consumption_refused",
    "sources_not_recorded": "entry,canary_receipt,canary_record",
    "subjects_unknown": true,
@@ -13502,6 +13637,7 @@
      }
     }
    },
+   "raw_digests": "activation_file=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": "activation_consumption_refused",
    "sources_not_recorded": "entry,canary_receipt,canary_record",
    "subjects_unknown": true,
@@ -13665,6 +13801,7 @@
     },
     "entry": null
    },
+   "raw_digests": "activation_file=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": "activation_consumption_refused",
    "sources_not_recorded": "entry,canary_receipt,canary_record",
    "subjects_unknown": true,
@@ -13758,6 +13895,7 @@
      }
     }
    },
+   "raw_digests": "activation_file=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": "activation_consumption_refused",
    "sources_not_recorded": "entry,canary_receipt,canary_record",
    "subjects_unknown": true,
@@ -13851,6 +13989,7 @@
      }
     }
    },
+   "raw_digests": "activation_file=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": "activation_consumption_refused",
    "sources_not_recorded": "entry,canary_receipt,canary_record",
    "subjects_unknown": true,
@@ -13944,6 +14083,7 @@
      }
     }
    },
+   "raw_digests": "activation_file=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": "activation_consumption_refused",
    "sources_not_recorded": "entry,canary_receipt,canary_record",
    "subjects_unknown": true,
@@ -14135,6 +14275,7 @@
      }
     }
    },
+   "raw_digests": "activation_file=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": "activation_consumption_refused",
    "sources_not_recorded": "entry,canary_receipt,canary_record",
    "subjects_unknown": true,
@@ -14228,6 +14369,7 @@
      }
     }
    },
+   "raw_digests": "activation_file=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": "activation_consumption_refused",
    "sources_not_recorded": "entry,canary_receipt,canary_record",
    "subjects_unknown": true,
@@ -14321,6 +14463,7 @@
      }
     }
    },
+   "raw_digests": "activation_file=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": "activation_consumption_refused",
    "sources_not_recorded": "entry,canary_receipt,canary_record",
    "subjects_unknown": true,
@@ -14386,6 +14529,7 @@
     },
     "entry": null
    },
+   "raw_digests": "activation_file=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": "activation_consumption_refused",
    "sources_not_recorded": "entry,canary_receipt,canary_record",
    "subjects_unknown": true,
@@ -14479,6 +14623,7 @@
      }
     }
    },
+   "raw_digests": "activation_file=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": "activation_consumption_refused",
    "sources_not_recorded": "entry,canary_receipt,canary_record",
    "subjects_unknown": true,
@@ -14670,6 +14815,7 @@
      }
     }
    },
+   "raw_digests": "activation_file=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": "activation_consumption_refused",
    "sources_not_recorded": "entry,canary_receipt,canary_record",
    "subjects_unknown": true,
@@ -14771,6 +14917,7 @@
     "startup": null,
     "supervisor": null
    },
+   "raw_digests": "migration.config_sha256=True",
    "reason_code": "activation_document_mismatch",
    "sources_not_recorded": "activation_file,launch,supervisor,entry,descriptor,startup,delivery,canary_receipt,canary_record",
    "subjects_unknown": true,
@@ -14855,6 +15002,7 @@
     "startup": null,
     "supervisor": null
    },
+   "raw_digests": "activation_file=True,migration.config_sha256=True",
    "reason_code": "activation_document_mismatch",
    "sources_not_recorded": "launch,supervisor,entry,descriptor,startup,delivery,canary_receipt,canary_record",
    "subjects_unknown": true,
@@ -14939,6 +15087,7 @@
     "startup": null,
     "supervisor": null
    },
+   "raw_digests": "activation_file=True,migration.config_sha256=True",
    "reason_code": "activation_document_mismatch",
    "sources_not_recorded": "launch,supervisor,entry,descriptor,startup,delivery,canary_receipt,canary_record",
    "subjects_unknown": true,
@@ -15023,6 +15172,7 @@
     "startup": null,
     "supervisor": null
    },
+   "raw_digests": "activation_file=True,migration.config_sha256=True",
    "reason_code": "activation_document_mismatch",
    "sources_not_recorded": "launch,supervisor,entry,descriptor,startup,delivery,canary_receipt,canary_record",
    "subjects_unknown": true,
@@ -15107,6 +15257,7 @@
     "startup": null,
     "supervisor": null
    },
+   "raw_digests": "activation_file=True,migration.config_sha256=True",
    "reason_code": "activation_document_mismatch",
    "sources_not_recorded": "launch,supervisor,entry,descriptor,startup,delivery,canary_receipt,canary_record",
    "subjects_unknown": true,
@@ -15192,6 +15343,7 @@
     "startup": null,
     "supervisor": null
    },
+   "raw_digests": "activation_file=True,migration.config_sha256=True",
    "reason_code": "activation_document_mismatch",
    "sources_not_recorded": "launch,supervisor,entry,descriptor,startup,delivery,canary_receipt,canary_record",
    "subjects_unknown": true,
@@ -15276,6 +15428,7 @@
     "startup": null,
     "supervisor": null
    },
+   "raw_digests": "activation_file=True,migration.config_sha256=True",
    "reason_code": "activation_document_mismatch",
    "sources_not_recorded": "launch,supervisor,entry,descriptor,startup,delivery,canary_receipt,canary_record",
    "subjects_unknown": true,
@@ -15360,6 +15513,7 @@
     "startup": null,
     "supervisor": null
    },
+   "raw_digests": "activation_file=True,migration.config_sha256=True",
    "reason_code": "activation_document_mismatch",
    "sources_not_recorded": "launch,supervisor,entry,descriptor,startup,delivery,canary_receipt,canary_record",
    "subjects_unknown": true,
@@ -15422,6 +15576,7 @@
     "startup": null,
     "supervisor": null
    },
+   "raw_digests": "migration.config_sha256=True",
    "reason_code": "activation_document_mismatch",
    "sources_not_recorded": "activation_file,launch,supervisor,entry,descriptor,startup,delivery,canary_receipt,canary_record",
    "subjects_unknown": true,
@@ -15507,6 +15662,7 @@
       }
      }
     },
+    "raw_digests": "activation_file=True,canary_receipt.receipt=True,canary_receipt.request=True,canary_record=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
     "reason_code": "activation_canary_unbound",
     "sources_not_recorded": "",
     "subjects_unknown": false,
@@ -15669,6 +15825,7 @@
     "launch": null,
     "startup": null
    },
+   "raw_digests": "activation_file=True,migration.config_sha256=True",
    "reason_code": "activation_launch_unbound",
    "sources_not_recorded": "launch,entry,descriptor,startup,delivery,canary_receipt,canary_record",
    "subjects_unknown": true,
@@ -15759,6 +15916,7 @@
      "validated": null
     }
    },
+   "raw_digests": "activation_file=True,migration.config_sha256=True",
    "reason_code": "activation_process_unbound",
    "sources_not_recorded": "launch,entry,descriptor,startup,delivery,canary_receipt,canary_record",
    "subjects_unknown": true,
@@ -15817,6 +15975,7 @@
      "validated": null
     }
    },
+   "raw_digests": "activation_file=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": "activation_process_unbound",
    "sources_not_recorded": "canary_receipt,canary_record",
    "subjects_unknown": false,
@@ -15875,6 +16034,7 @@
      "validated": null
     }
    },
+   "raw_digests": "activation_file=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": "activation_process_unbound",
    "sources_not_recorded": "canary_receipt,canary_record",
    "subjects_unknown": false,
@@ -15933,6 +16093,7 @@
      "validated": null
     }
    },
+   "raw_digests": "activation_file=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": "activation_process_unbound",
    "sources_not_recorded": "canary_receipt,canary_record",
    "subjects_unknown": false,
@@ -16012,6 +16173,7 @@
     },
     "startup": null
    },
+   "raw_digests": "activation_file=True,migration.config_sha256=True",
    "reason_code": "activation_launch_unbound",
    "sources_not_recorded": "entry,descriptor,startup,delivery,canary_receipt,canary_record",
    "subjects_unknown": true,
@@ -16068,6 +16230,7 @@
     "launch": null,
     "startup": null
    },
+   "raw_digests": "activation_file=True,migration.config_sha256=True",
    "reason_code": "activation_launch_unbound",
    "sources_not_recorded": "launch,entry,descriptor,startup,delivery,canary_receipt,canary_record",
    "subjects_unknown": true,
@@ -16158,6 +16321,7 @@
      "validated": null
     }
    },
+   "raw_digests": "activation_file=True,migration.config_sha256=True",
    "reason_code": "activation_process_unbound",
    "sources_not_recorded": "launch,entry,descriptor,startup,delivery,canary_receipt,canary_record",
    "subjects_unknown": true,
@@ -16214,6 +16378,7 @@
     "launch": null,
     "startup": null
    },
+   "raw_digests": "activation_file=True,migration.config_sha256=True",
    "reason_code": "activation_launch_unbound",
    "sources_not_recorded": "launch,entry,descriptor,startup,delivery,canary_receipt,canary_record",
    "subjects_unknown": true,
@@ -16307,6 +16472,7 @@
      }
     }
    },
+   "raw_digests": "activation_file=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": "activation_consumption_refused",
    "sources_not_recorded": "entry,canary_receipt,canary_record",
    "subjects_unknown": true,
@@ -16365,6 +16531,7 @@
      "validated": null
     }
    },
+   "raw_digests": "activation_file=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": "activation_process_unbound",
    "sources_not_recorded": "canary_receipt,canary_record",
    "subjects_unknown": false,
@@ -16418,6 +16585,7 @@
      "validated": null
     }
    },
+   "raw_digests": "activation_file=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": "activation_process_unbound",
    "sources_not_recorded": "canary_receipt,canary_record",
    "subjects_unknown": false,
@@ -16503,6 +16671,7 @@
      "validated": null
     }
    },
+   "raw_digests": "activation_file=True,migration.config_sha256=True",
    "reason_code": "activation_process_unbound",
    "sources_not_recorded": "launch,entry,descriptor,startup,delivery,canary_receipt,canary_record",
    "subjects_unknown": true,
@@ -16599,6 +16768,7 @@
      }
     }
    },
+   "raw_digests": "activation_file=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": "activation_process_unbound",
    "sources_not_recorded": "canary_receipt,canary_record",
    "subjects_unknown": false,
@@ -16688,6 +16858,7 @@
      }
     }
    },
+   "raw_digests": "activation_file=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": "activation_process_unbound",
    "sources_not_recorded": "canary_receipt,canary_record",
    "subjects_unknown": false,
@@ -16778,6 +16949,7 @@
      "validated": null
     }
    },
+   "raw_digests": "activation_file=True,migration.config_sha256=True",
    "reason_code": "activation_process_unbound",
    "sources_not_recorded": "launch,entry,descriptor,startup,delivery,canary_receipt,canary_record",
    "subjects_unknown": true,
@@ -16868,6 +17040,7 @@
      "validated": null
     }
    },
+   "raw_digests": "activation_file=True,migration.config_sha256=True",
    "reason_code": "activation_process_unbound",
    "sources_not_recorded": "launch,entry,descriptor,startup,delivery,canary_receipt,canary_record",
    "subjects_unknown": true,
@@ -16958,6 +17131,7 @@
      "validated": null
     }
    },
+   "raw_digests": "activation_file=True,migration.config_sha256=True",
    "reason_code": "activation_process_unbound",
    "sources_not_recorded": "launch,entry,descriptor,startup,delivery,canary_receipt,canary_record",
    "subjects_unknown": true,
@@ -17059,6 +17233,7 @@
      }
     }
    },
+   "raw_digests": "activation_file=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": "activation_process_unbound",
    "sources_not_recorded": "canary_receipt,canary_record",
    "subjects_unknown": false,
@@ -17115,6 +17290,7 @@
     "launch": null,
     "startup": null
    },
+   "raw_digests": "activation_file=True,migration.config_sha256=True",
    "reason_code": "activation_launch_unbound",
    "sources_not_recorded": "launch,entry,descriptor,startup,delivery,canary_receipt,canary_record",
    "subjects_unknown": true,
@@ -17205,6 +17381,7 @@
      "validated": null
     }
    },
+   "raw_digests": "activation_file=True,migration.config_sha256=True",
    "reason_code": "activation_process_unbound",
    "sources_not_recorded": "launch,entry,descriptor,startup,delivery,canary_receipt,canary_record",
    "subjects_unknown": true,
@@ -17261,6 +17438,7 @@
     "launch": null,
     "startup": null
    },
+   "raw_digests": "activation_file=True,migration.config_sha256=True",
    "reason_code": "activation_launch_unbound",
    "sources_not_recorded": "launch,entry,descriptor,startup,delivery,canary_receipt,canary_record",
    "subjects_unknown": true,
@@ -17317,6 +17495,7 @@
     "launch": null,
     "startup": null
    },
+   "raw_digests": "activation_file=True,migration.config_sha256=True",
    "reason_code": "activation_launch_unbound",
    "sources_not_recorded": "launch,entry,descriptor,startup,delivery,canary_receipt,canary_record",
    "subjects_unknown": true,
@@ -17396,6 +17575,7 @@
     },
     "startup": null
    },
+   "raw_digests": "activation_file=True,migration.config_sha256=True",
    "reason_code": "activation_launch_unbound",
    "sources_not_recorded": "entry,descriptor,startup,delivery,canary_receipt,canary_record",
    "subjects_unknown": true,
@@ -17475,6 +17655,7 @@
     },
     "startup": null
    },
+   "raw_digests": "activation_file=True,migration.config_sha256=True",
    "reason_code": "activation_launch_unbound",
    "sources_not_recorded": "entry,descriptor,startup,delivery,canary_receipt,canary_record",
    "subjects_unknown": true,
@@ -17554,6 +17735,7 @@
     },
     "startup": null
    },
+   "raw_digests": "activation_file=True,migration.config_sha256=True",
    "reason_code": "activation_launch_unbound",
    "sources_not_recorded": "entry,descriptor,startup,delivery,canary_receipt,canary_record",
    "subjects_unknown": true,
@@ -17795,6 +17977,7 @@
     "startup": null,
     "supervisor": null
    },
+   "raw_digests": "migration.config_sha256=True",
    "reason_code": "activation_observation_unavailable",
    "sources_not_recorded": "activation_file,launch,supervisor,entry,descriptor,startup,delivery,canary_receipt,canary_record",
    "subjects_unknown": true,
@@ -17856,6 +18039,7 @@
     "startup": null,
     "supervisor": null
    },
+   "raw_digests": "migration.config_sha256=True",
    "reason_code": "activation_observation_unavailable",
    "sources_not_recorded": "activation_file,launch,supervisor,entry,descriptor,startup,delivery,canary_receipt,canary_record",
    "subjects_unknown": true,
@@ -17917,6 +18101,7 @@
     "startup": null,
     "supervisor": null
    },
+   "raw_digests": "activation_file=True,migration.config_sha256=True",
    "reason_code": "activation_observation_unavailable",
    "sources_not_recorded": "launch,supervisor,entry,descriptor,startup,delivery,canary_receipt,canary_record",
    "subjects_unknown": true,
@@ -18018,6 +18203,7 @@
     "startup": null,
     "supervisor": null
    },
+   "raw_digests": "migration.config_sha256=True",
    "reason_code": "activation_observation_unavailable",
    "sources_not_recorded": "activation_file,launch,supervisor,entry,descriptor,startup,delivery,canary_receipt,canary_record",
    "subjects_unknown": true,
@@ -18073,6 +18259,7 @@
     "entry": null,
     "startup": null
    },
+   "raw_digests": "activation_file=True,migration.config_sha256=True",
    "reason_code": "activation_observation_unavailable",
    "sources_not_recorded": "entry,descriptor,startup,delivery,canary_receipt,canary_record",
    "subjects_unknown": true,
@@ -18125,6 +18312,7 @@
     "entry": null,
     "startup": null
    },
+   "raw_digests": "activation_file=True,delivery=True,migration.config_sha256=True",
    "reason_code": "activation_observation_unavailable",
    "sources_not_recorded": "entry,descriptor,startup,canary_receipt,canary_record",
    "subjects_unknown": true,
@@ -18181,6 +18369,7 @@
     "launch": null,
     "startup": null
    },
+   "raw_digests": "activation_file=True,migration.config_sha256=True",
    "reason_code": "activation_observation_unavailable",
    "sources_not_recorded": "launch,entry,descriptor,startup,delivery,canary_receipt,canary_record",
    "subjects_unknown": true,
@@ -18237,6 +18426,7 @@
     "launch": null,
     "startup": null
    },
+   "raw_digests": "activation_file=True,migration.config_sha256=True",
    "reason_code": "activation_observation_unavailable",
    "sources_not_recorded": "launch,entry,descriptor,startup,delivery,canary_receipt,canary_record",
    "subjects_unknown": true,
@@ -18293,6 +18483,7 @@
     "launch": null,
     "startup": null
    },
+   "raw_digests": "activation_file=True,migration.config_sha256=True",
    "reason_code": "activation_observation_unavailable",
    "sources_not_recorded": "launch,entry,descriptor,startup,delivery,canary_receipt,canary_record",
    "subjects_unknown": true,
@@ -18349,6 +18540,7 @@
     "launch": null,
     "startup": null
    },
+   "raw_digests": "activation_file=True,migration.config_sha256=True",
    "reason_code": "activation_observation_unavailable",
    "sources_not_recorded": "launch,entry,descriptor,startup,delivery,canary_receipt,canary_record",
    "subjects_unknown": true,
@@ -18405,6 +18597,7 @@
     "launch": null,
     "startup": null
    },
+   "raw_digests": "activation_file=True,migration.config_sha256=True",
    "reason_code": "activation_observation_unavailable",
    "sources_not_recorded": "launch,entry,descriptor,startup,delivery,canary_receipt,canary_record",
    "subjects_unknown": true,
@@ -18461,6 +18654,7 @@
     "launch": null,
     "startup": null
    },
+   "raw_digests": "activation_file=True,migration.config_sha256=True",
    "reason_code": "activation_observation_unavailable",
    "sources_not_recorded": "launch,entry,descriptor,startup,delivery,canary_receipt,canary_record",
    "subjects_unknown": true,
@@ -18517,6 +18711,7 @@
     "launch": null,
     "startup": null
    },
+   "raw_digests": "activation_file=True,migration.config_sha256=True",
    "reason_code": "activation_observation_unavailable",
    "sources_not_recorded": "launch,entry,descriptor,startup,delivery,canary_receipt,canary_record",
    "subjects_unknown": true,
@@ -18569,6 +18764,7 @@
     "entry": null,
     "startup": null
    },
+   "raw_digests": "activation_file=True,delivery=True,migration.config_sha256=True",
    "reason_code": "activation_observation_unavailable",
    "sources_not_recorded": "entry,descriptor,startup,canary_receipt,canary_record",
    "subjects_unknown": true,
@@ -18625,6 +18821,7 @@
     "startup": null,
     "supervisor": null
    },
+   "raw_digests": "activation_file=True,migration.config_sha256=True",
    "reason_code": "activation_observation_unavailable",
    "sources_not_recorded": "launch,supervisor,entry,descriptor,startup,delivery,canary_receipt,canary_record",
    "subjects_unknown": true,
@@ -18684,6 +18881,7 @@
     "startup": null,
     "supervisor": null
    },
+   "raw_digests": "activation_file=True,migration.config_sha256=True",
    "reason_code": "activation_observation_unavailable",
    "sources_not_recorded": "launch,supervisor,entry,descriptor,startup,delivery,canary_receipt,canary_record",
    "subjects_unknown": true,
@@ -18746,6 +18944,7 @@
     "startup": null,
     "supervisor": null
    },
+   "raw_digests": "activation_file=True,migration.config_sha256=True",
    "reason_code": "activation_observation_unavailable",
    "sources_not_recorded": "launch,supervisor,entry,descriptor,startup,delivery,canary_receipt,canary_record",
    "subjects_unknown": true,
@@ -18773,6 +18972,7 @@
     "observed": "2026-09-28T11:30:00.001000+00:00 .. 2026-09-28T11:30:00.012000+00:00",
     "ok": false,
     "projections_changed": {},
+    "raw_digests": "activation_file=True,canary_receipt.receipt=True,canary_receipt.request=True,canary_record=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
     "reason_code": "activation_observation_changed",
     "sources_not_recorded": "",
     "subjects_unknown": false,
@@ -18801,6 +19001,7 @@
     "observed": "2026-09-28T11:30:00.001000+00:00 .. 2026-09-28T11:30:00.012000+00:00",
     "ok": false,
     "projections_changed": {},
+    "raw_digests": "activation_file=True,canary_receipt.receipt=True,canary_receipt.request=True,canary_record=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
     "reason_code": "activation_observation_unavailable",
     "sources_not_recorded": "",
     "subjects_unknown": false,
@@ -18834,6 +19035,7 @@
    "observed": "2026-09-28T11:30:00.001000+00:00 .. 2026-09-28T11:30:00.012000+00:00",
    "ok": false,
    "projections_changed": {},
+   "raw_digests": "activation_file=True,canary_receipt.receipt=True,canary_receipt.request=True,canary_record=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": "activation_observation_changed",
    "sources_not_recorded": "",
    "subjects_unknown": false,
@@ -18866,6 +19068,7 @@
    "observed": "2026-09-28T11:30:00.001000+00:00 .. 2026-09-28T11:30:00.012000+00:00",
    "ok": false,
    "projections_changed": {},
+   "raw_digests": "activation_file=True,canary_receipt.receipt=True,canary_receipt.request=True,canary_record=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": "activation_observation_changed",
    "sources_not_recorded": "",
    "subjects_unknown": false,
@@ -18898,6 +19101,7 @@
    "observed": "2026-09-28T11:30:00.001000+00:00 .. 2026-09-28T11:30:00.012000+00:00",
    "ok": false,
    "projections_changed": {},
+   "raw_digests": "activation_file=True,canary_receipt.receipt=True,canary_receipt.request=True,canary_record=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": "activation_observation_changed",
    "sources_not_recorded": "",
    "subjects_unknown": false,
@@ -18930,6 +19134,7 @@
    "observed": "2026-09-28T11:30:00.001000+00:00 .. 2026-09-28T11:30:00.012000+00:00",
    "ok": false,
    "projections_changed": {},
+   "raw_digests": "activation_file=True,canary_receipt.receipt=True,canary_receipt.request=True,canary_record=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": "activation_observation_changed",
    "sources_not_recorded": "",
    "subjects_unknown": false,
@@ -18962,6 +19167,7 @@
    "observed": "2026-09-28T11:30:00.001000+00:00 .. 2026-09-28T11:30:00.012000+00:00",
    "ok": false,
    "projections_changed": {},
+   "raw_digests": "activation_file=True,canary_receipt.receipt=True,canary_receipt.request=True,canary_record=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": "activation_observation_changed",
    "sources_not_recorded": "",
    "subjects_unknown": false,
@@ -18994,6 +19200,7 @@
    "observed": "2026-09-28T11:30:00.001000+00:00 .. 2026-09-28T11:30:00.012000+00:00",
    "ok": false,
    "projections_changed": {},
+   "raw_digests": "activation_file=True,canary_receipt.receipt=True,canary_receipt.request=True,canary_record=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": "activation_observation_changed",
    "sources_not_recorded": "",
    "subjects_unknown": false,
@@ -19026,6 +19233,7 @@
    "observed": "2026-09-28T11:30:00.001000+00:00 .. 2026-09-28T11:30:00.012000+00:00",
    "ok": false,
    "projections_changed": {},
+   "raw_digests": "activation_file=True,canary_receipt.receipt=True,canary_receipt.request=True,canary_record=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": "activation_observation_changed",
    "sources_not_recorded": "",
    "subjects_unknown": false,
@@ -19058,6 +19266,7 @@
    "observed": "2026-09-28T11:30:00.001000+00:00 .. 2026-09-28T11:30:00.012000+00:00",
    "ok": false,
    "projections_changed": {},
+   "raw_digests": "activation_file=True,canary_receipt.receipt=True,canary_receipt.request=True,canary_record=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": "activation_observation_changed",
    "sources_not_recorded": "",
    "subjects_unknown": false,
@@ -19090,6 +19299,7 @@
    "observed": "2026-09-28T11:30:00.001000+00:00 .. 2026-09-28T11:30:00.012000+00:00",
    "ok": false,
    "projections_changed": {},
+   "raw_digests": "activation_file=True,canary_receipt.receipt=True,canary_receipt.request=True,canary_record=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": "activation_observation_changed",
    "sources_not_recorded": "",
    "subjects_unknown": false,
@@ -19122,6 +19332,7 @@
    "observed": "2026-09-28T11:30:00.001000+00:00 .. 2026-09-28T11:30:00.012000+00:00",
    "ok": false,
    "projections_changed": {},
+   "raw_digests": "activation_file=True,canary_receipt.receipt=True,canary_receipt.request=True,canary_record=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": "activation_observation_changed",
    "sources_not_recorded": "",
    "subjects_unknown": false,
@@ -19154,6 +19365,7 @@
    "observed": "2026-09-28T11:30:00.001000+00:00 .. 2026-09-28T11:30:00.012000+00:00",
    "ok": false,
    "projections_changed": {},
+   "raw_digests": "activation_file=True,canary_receipt.receipt=True,canary_receipt.request=True,canary_record=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": "activation_observation_changed",
    "sources_not_recorded": "",
    "subjects_unknown": false,
@@ -19186,6 +19398,7 @@
    "observed": "2026-09-28T11:30:00.001000+00:00 .. 2026-09-28T11:30:00.012000+00:00",
    "ok": false,
    "projections_changed": {},
+   "raw_digests": "activation_file=True,canary_receipt.receipt=True,canary_receipt.request=True,canary_record=True,delivery=True,descriptor=True,migration.config_sha256=True,startup=True",
    "reason_code": "activation_observation_changed",
    "sources_not_recorded": "",
    "subjects_unknown": false,

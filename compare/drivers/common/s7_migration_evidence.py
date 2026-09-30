@@ -79,6 +79,11 @@ digest that recomputes).
   no other real measurement is recorded: the real monotonic readings only move `bounded_run`'s deadline, the real pid
   of this process appears only in the fixture `/proc/self/stat`, and the real children's pids and output are
   reduced to booleans and the `Unreadable` reason.
+A projection's `raw_sha256` is labelled, not masked blind: every summarized case records `raw_digests`, the booleans
+"this raw digest equals the sha256 of the exact bytes the fixture wrote" (file-backed sources and the host
+configuration) or "equals the digest of the view the producer hashes, recomputed from the same store rows" (delivery,
+canary record), both taken before the run. `raw_digest_covers` states what each source hashes; the launch and process
+sources hash an object the producer builds and are not recomputed.
 The M7 fixture constants (revisions, instance ids, pids, tick counts, cursors, timestamps) stay literal, and nothing
 else is masked. No secret-shaped test value is ever written to the result: each is assembled at run time and the
 run fails when one reaches the result (M7 test 1032 asserts the same of the output).
@@ -445,6 +450,7 @@ class World:
         self._delivery()
         self._host()
         self.archive = self.good = None
+        self.snapshots = {}
         self._baseline()
 
     # --- builders -------------------------------------------------------------------------------
@@ -644,10 +650,44 @@ class World:
                               facts=api.HostFacts(proc=self.proc, cgroup_root=self.proc / "no-cgroup"), clk_tck=100,
                               boottime_offset=lambda: self.offset_usec, output_limit=self.output_limit)
 
+    def snapshot(self) -> dict:
+        """What the capture is about to read, as the fixture wrote it: the sha256 of the exact bytes of every
+        file-backed source, and the digests of the delivery and canary-record views the producer hashes (taken
+        through the same stores, before the run, so a mutation during the recheck cannot disturb them)."""
+        api = self.api
+
+        def sha(path):
+            if path.is_symlink() or not path.is_file():
+                return None
+            return hashlib.sha256(path.read_bytes()).hexdigest()
+
+        snap = {"activation_file": sha(self.control / "host-activation.json"),
+                "descriptor": sha(self.state / "descriptor.json"), "startup": sha(self.state / "startup-receipt.json"),
+                "canary_receipt.receipt": sha(self.state / RECEIPT_NAME),
+                "canary_receipt.request": sha(self.state / REQUEST_NAME), "migration.config_sha256": sha(self.config)}
+        try:
+            with self.delivery.transaction() as tx:
+                rows = (tx.get(api.BUCKET_TARGETS, TARGET), tx.get(api.BUCKET_PLANS, PLAN),
+                        tx.get(api.BUCKET_INTENTS, PLAN), tx.get(api.BUCKET_DESCRIPTORS, TARGET),
+                        tx.scan(api.BUCKET_INTENTS))
+            snap["delivery"] = api.digest(api.policy.delivery_view(*rows, target_id=TARGET, plan_id=PLAN))
+        except Exception:  # a row the case removed: the projection is absent too
+            snap["delivery"] = None
+        try:
+            with self.control_store.transaction() as tx:
+                snap["canary_record"] = api.digest(api.policy.record_view(tx.get("owner_actions", self.action_id)))
+        except Exception:
+            snap["canary_record"] = None
+        return snap
+
     def observe(self, *, expect=None, post_transition=False, ports=None, **overrides) -> dict:
         ports = ports or self.ports()
+        snap = self.snapshot()
         with self.guard.active():
-            return self.api.observe(self.request(**overrides), ports, expect=expect, post_transition=post_transition)
+            result = self.api.observe(self.request(**overrides), ports, expect=expect,
+                                      post_transition=post_transition)
+        self.snapshots[id(result)] = (result, snap)
+        return result
 
     def cli_argv(self, *extra) -> list:
         return ["observe-limited-active", "--migration-id", MID, "--expected-id", self.effective_id,
@@ -803,6 +843,9 @@ class World:
                 view["failed_receipts_bound"] = all(
                     item["exit_code"] == 1 and item["ok"] is False and item["result_sha256"] == result["result_sha256"]
                     for item in result["evidence"].values())
+        pair = self.snapshots.get(id(result))
+        if pair is not None and pair[0] is result:
+            view["raw_digests"] = self.raw_checks(result, pair[1])
         if "comparison" in result:
             view["comparison"] = result["comparison"]
         if full:
@@ -817,6 +860,28 @@ class World:
         for relative in guard.opens:
             opens.setdefault(relative, "open")
         return [relative + " " + how for relative, how in sorted(opens.items())]
+
+    @staticmethod
+    def raw_checks(result: dict, snap: dict) -> str:
+        """For each source present, whether its `raw_sha256` equals the digest of what the fixture wrote: the exact
+        file bytes (file-backed sources and the host configuration) or the view the producer hashes (delivery and
+        canary record). The process and launch sources hash an object the producer builds (see `RAW_DIGEST_COVERS`)
+        and are not recomputed."""
+        projections, found = result["projections"], []
+        for name in ("activation_file", "descriptor", "startup"):
+            if projections.get(name) is not None:
+                found.append((name, projections[name]["raw_sha256"] == snap[name]))
+        receipts = projections.get("canary_receipt") or {}
+        for name in ("receipt", "request"):
+            if receipts.get(name) is not None:
+                found.append(("canary_receipt." + name, receipts[name]["raw_sha256"] == snap["canary_receipt." + name]))
+        if projections.get("migration") is not None:
+            found.append(("migration.config_sha256", projections["migration"]["config_sha256"]
+                          == snap["migration.config_sha256"]))
+        for name in ("delivery", "canary_record"):
+            if projections.get(name) is not None:
+                found.append((name, projections[name]["raw_sha256"] == snap[name]))
+        return ",".join(name + "=" + str(held) for name, held in sorted(found))
 
     def wrap(self, record: dict) -> dict:
         """The record of one case with what the host saw: the commands, the files read and the write attempts.
@@ -2118,6 +2183,27 @@ def group_f1(lab: Lab) -> dict:
     return out
 
 
+# What each projection's `raw_sha256` covers, read from SOURCE (`domain.host_migration_evidence._PROJECTIONS`).
+RAW_DIGEST_COVERS = {
+    "activation_file": "sha256 of the exact bytes of host-activation.json (as read by HostReader.file)",
+    "descriptor": "sha256 of the exact bytes of the managed state directory's descriptor.json",
+    "startup": "sha256 of the exact bytes of the startup-receipt.json",
+    "canary_receipt.receipt": "sha256 of the exact bytes of the plan-scoped owner-canary-receipt file",
+    "canary_receipt.request": "sha256 of the exact bytes of the plan-scoped owner-canary-request file",
+    "migration.config_sha256": "sha256 of the exact bytes of the host configuration file (not a raw_sha256 key)",
+    "delivery": "digest (canonical JSON) of delivery_view(target, plan, intent, descriptor row, intents), the "
+                "view derived from the store rows; recomputed here from the same rows before the run",
+    "canary_record": "digest (canonical JSON) of record_view(the owner-action record row); recomputed here "
+                     "from the same row before the run",
+    "launch": "digest of the launch-record object the producer builds from the journal (not the journal bytes); "
+              "not recomputed",
+    "supervisor": "digest of the process-projection facts object (identity, parent, cgroup, argv digest, unit, "
+                  "launches) the producer builds, not file bytes; not recomputed",
+    "entry": "digest of the process-projection facts object (identity, parent, cgroup, argv digest) the producer "
+             "builds, not file bytes; not recomputed",
+    "supervisor_journal": "no projection carries a raw digest of supervisor-journal.jsonl: only digest(launches) of "
+                          "the parsed lines enters the identity tuple (not archived)"}
+
 GROUPS = (("capture", group_capture), ("refuse", group_refuse), ("read_only", group_read_only),
           ("archive", group_archive), ("host_reader", group_host_reader), ("ph4_13", group_ph4_13),
           ("f1", group_f1))
@@ -2133,6 +2219,7 @@ def run(api) -> dict:
             counts[name] = len(result[name])
         result["mirrored_tests"] = {test: sorted(keys) for test, keys in sorted(lab.mirrors.items())}
         assert len(result["mirrored_tests"]) == M7_TESTS, sorted(result["mirrored_tests"])
+    result["raw_digest_covers"] = RAW_DIGEST_COVERS
     result["carried"] = {}
     result["unreachable"] = {
         "real_systemd": "the real `systemctl show` and `journalctl` answers need a live unit and journal; the runner "
