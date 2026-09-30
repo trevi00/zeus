@@ -1,0 +1,565 @@
+{
+ "admit_a_failure_at_jobs": {
+  "durable_units": 0,
+  "durable_writes": [],
+  "effects": [],
+  "outcome": {
+   "message": "injected failure at fleet_jobs",
+   "refused": "Injected"
+  },
+  "rows": [
+   [
+    "fleet_control",
+    "admission",
+    ""
+   ],
+   [
+    "fleet_jobs",
+    "op-1",
+    "queued"
+   ],
+   [
+    "fleet_jobs",
+    "op-2",
+    "queued"
+   ],
+   [
+    "fleet_registry",
+    "fleet-1",
+    ""
+   ]
+  ],
+  "units": [
+   "ROLLBACK"
+  ],
+  "violations": []
+ },
+ "admit_c_again": {
+  "durable_units": 0,
+  "durable_writes": [],
+  "effects": [],
+  "outcome": {
+   "ok": true
+  },
+  "rows": [
+   [
+    "fleet_control",
+    "admission",
+    ""
+   ],
+   [
+    "fleet_jobs",
+    "op-1",
+    "dispatching"
+   ],
+   [
+    "fleet_jobs",
+    "op-2",
+    "queued"
+   ],
+   [
+    "fleet_registry",
+    "fleet-1",
+    ""
+   ]
+  ],
+  "units": [
+   "COMMIT"
+  ],
+  "violations": []
+ },
+ "admit_success": {
+  "durable_units": 1,
+  "durable_writes": [
+   [
+    "fleet_jobs",
+    "dispatching"
+   ],
+   [
+    "fleet_jobs",
+    "queued"
+   ]
+  ],
+  "effects": [],
+  "outcome": {
+   "ok": true
+  },
+  "rows": [
+   [
+    "fleet_control",
+    "admission",
+    ""
+   ],
+   [
+    "fleet_jobs",
+    "op-1",
+    "dispatching"
+   ],
+   [
+    "fleet_jobs",
+    "op-2",
+    "queued"
+   ],
+   [
+    "fleet_registry",
+    "fleet-1",
+    ""
+   ]
+  ],
+  "units": [
+   "COMMIT"
+  ],
+  "violations": []
+ },
+ "claim_a_failure_at_outbox": {
+  "durable_units": 0,
+  "durable_writes": [],
+  "effects": [],
+  "outcome": {
+   "message": "injected failure at outbox",
+   "refused": "Injected"
+  },
+  "rows": [],
+  "units": [
+   "COMMIT",
+   "ROLLBACK"
+  ],
+  "violations": []
+ },
+ "claim_c_replay": {
+  "durable_units": 0,
+  "durable_writes": [],
+  "effects": [],
+  "outcome": {
+   "ok": true
+  },
+  "rows": [
+   [
+    "local_cycles",
+    "operation:op-1",
+    "active"
+   ],
+   [
+    "operations",
+    "op-1",
+    "accepted"
+   ],
+   [
+    "outbox",
+    "b7c43a3b-df0c-56c2-8b7d-ce30f4c468ad",
+    ""
+   ]
+  ],
+  "units": [
+   "COMMIT",
+   "COMMIT"
+  ],
+  "violations": []
+ },
+ "claim_success": {
+  "durable_units": 1,
+  "durable_writes": [
+   [
+    "local_cycles",
+    "active"
+   ],
+   [
+    "operations",
+    "running"
+   ],
+   [
+    "outbox",
+    ""
+   ]
+  ],
+  "effects": [],
+  "outcome": {
+   "ok": true
+  },
+  "rows": [
+   [
+    "local_cycles",
+    "operation:op-1",
+    "active"
+   ],
+   [
+    "operations",
+    "op-1",
+    "running"
+   ],
+   [
+    "outbox",
+    "b7c43a3b-df0c-56c2-8b7d-ce30f4c468ad",
+    ""
+   ]
+  ],
+  "units": [
+   "COMMIT",
+   "COMMIT"
+  ],
+  "violations": []
+ },
+ "complete_a_failure_in_accept": {
+  "durable_units": 0,
+  "durable_writes": [],
+  "effects": [],
+  "outcome": {
+   "message": "injected failure in the acceptance write",
+   "refused": "Injected"
+  },
+  "rows": [
+   [
+    "execution_fences",
+    "tasks:5eed0000-0000-4000-8000-000000000001",
+    ""
+   ],
+   [
+    "tasks",
+    "5eed0000-0000-4000-8000-000000000001",
+    "running"
+   ]
+  ],
+  "units": [
+   "ROLLBACK"
+  ],
+  "violations": []
+ },
+ "complete_b_stale_fence": {
+  "durable_units": 0,
+  "durable_writes": [],
+  "effects": [],
+  "outcome": {
+   "message": "Stale or expired task execution",
+   "refused": "ContractError"
+  },
+  "rows": [
+   [
+    "execution_fences",
+    "tasks:5eed0000-0000-4000-8000-000000000001",
+    ""
+   ],
+   [
+    "tasks",
+    "5eed0000-0000-4000-8000-000000000001",
+    "running"
+   ]
+  ],
+  "units": [
+   "ROLLBACK"
+  ],
+  "violations": []
+ },
+ "complete_success": {
+  "durable_units": 1,
+  "durable_writes": [
+   [
+    "events",
+    ""
+   ],
+   [
+    "outbox",
+    ""
+   ],
+   [
+    "tasks",
+    "succeeded"
+   ]
+  ],
+  "effects": [],
+  "outcome": {
+   "ok": true
+  },
+  "rows": [
+   [
+    "events",
+    "5eed0000-0000-4000-8000-000000000003",
+    ""
+   ],
+   [
+    "execution_fences",
+    "tasks:5eed0000-0000-4000-8000-000000000001",
+    ""
+   ],
+   [
+    "outbox",
+    "5eed0000-0000-4000-8000-000000000002",
+    ""
+   ],
+   [
+    "tasks",
+    "5eed0000-0000-4000-8000-000000000001",
+    "succeeded"
+   ]
+  ],
+  "units": [
+   "COMMIT"
+  ],
+  "violations": []
+ },
+ "d_depths": {
+  "durable_units": 6,
+  "durable_writes": [
+   [
+    "events",
+    ""
+   ],
+   [
+    "execution_fences",
+    ""
+   ],
+   [
+    "local_cycles",
+    "active"
+   ],
+   [
+    "outbox",
+    ""
+   ],
+   [
+    "outbox_attempts",
+    "delivered"
+   ],
+   [
+    "outbox_attempts",
+    "started"
+   ],
+   [
+    "outbox_delivery",
+    "delivered"
+   ],
+   [
+    "outbox_delivery",
+    "publishing"
+   ],
+   [
+    "tasks",
+    "queued"
+   ],
+   [
+    "tasks",
+    "running"
+   ],
+   [
+    "tasks",
+    "succeeded"
+   ]
+  ],
+  "effects": [
+   [
+    "executor.execute_one",
+    0
+   ],
+   [
+    "bus.publish",
+    1
+   ]
+  ],
+  "outcome": {
+   "ok": true
+  },
+  "rows": [
+   [
+    "events",
+    "5eed0000-0000-4000-8000-000000000003",
+    ""
+   ],
+   [
+    "execution_fences",
+    "tasks:5eed0000-0000-4000-8000-000000000001",
+    ""
+   ],
+   [
+    "local_cycles",
+    "cycle-d",
+    "active"
+   ],
+   [
+    "outbox",
+    "5eed0000-0000-4000-8000-000000000002",
+    ""
+   ],
+   [
+    "outbox_attempts",
+    "5eed0000-0000-4000-8000-000000000004",
+    "delivered"
+   ],
+   [
+    "outbox_delivery",
+    "5eed0000-0000-4000-8000-000000000002",
+    "delivered"
+   ],
+   [
+    "tasks",
+    "5eed0000-0000-4000-8000-000000000001",
+    "succeeded"
+   ]
+  ],
+  "units": [
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT",
+   "COMMIT"
+  ],
+  "violations": [
+   "effect_inside_unit"
+  ]
+ },
+ "finalize_b_stale_token": {
+  "durable_units": 0,
+  "durable_writes": [],
+  "effects": [],
+  "outcome": {
+   "message": "fleet refused: owner_mismatch",
+   "refused": "FleetRefused"
+  },
+  "rows": [
+   [
+    "fleet_control",
+    "admission",
+    ""
+   ],
+   [
+    "fleet_jobs",
+    "op-1",
+    "dispatching"
+   ],
+   [
+    "fleet_registry",
+    "fleet-1",
+    ""
+   ]
+  ],
+  "units": [
+   "ROLLBACK"
+  ],
+  "violations": []
+ },
+ "finalize_success": {
+  "durable_units": 1,
+  "durable_writes": [
+   [
+    "fleet_jobs",
+    "accepted"
+   ]
+  ],
+  "effects": [],
+  "outcome": {
+   "ok": true
+  },
+  "rows": [
+   [
+    "fleet_control",
+    "admission",
+    ""
+   ],
+   [
+    "fleet_jobs",
+    "op-1",
+    "accepted"
+   ],
+   [
+    "fleet_registry",
+    "fleet-1",
+    ""
+   ]
+  ],
+  "units": [
+   "COMMIT"
+  ],
+  "violations": []
+ },
+ "handle_a_failure_at_inbox": {
+  "durable_units": 0,
+  "durable_writes": [],
+  "effects": [],
+  "outcome": {
+   "message": "injected failure at workflow_inbox",
+   "refused": "Injected"
+  },
+  "rows": [
+   [
+    "hooks",
+    "hook-1",
+    "required"
+   ]
+  ],
+  "units": [
+   "ROLLBACK"
+  ],
+  "violations": []
+ },
+ "handle_c_replay": {
+  "durable_units": 0,
+  "durable_writes": [],
+  "effects": [],
+  "outcome": {
+   "ok": true
+  },
+  "rows": [
+   [
+    "hooks",
+    "hook-1",
+    "required"
+   ],
+   [
+    "outbox",
+    "5eed0000-0000-4000-8000-000000000002",
+    ""
+   ],
+   [
+    "workflow_inbox",
+    "5eed0000-0000-4000-8000-000000000001",
+    ""
+   ]
+  ],
+  "units": [
+   "COMMIT"
+  ],
+  "violations": []
+ },
+ "handle_success": {
+  "durable_units": 1,
+  "durable_writes": [
+   [
+    "outbox",
+    ""
+   ],
+   [
+    "workflow_inbox",
+    ""
+   ]
+  ],
+  "effects": [],
+  "outcome": {
+   "ok": true
+  },
+  "rows": [
+   [
+    "hooks",
+    "hook-1",
+    "required"
+   ],
+   [
+    "outbox",
+    "5eed0000-0000-4000-8000-000000000002",
+    ""
+   ],
+   [
+    "workflow_inbox",
+    "5eed0000-0000-4000-8000-000000000001",
+    ""
+   ]
+  ],
+  "units": [
+   "COMMIT"
+  ],
+  "violations": []
+ }
+}
