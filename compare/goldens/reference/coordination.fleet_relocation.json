@@ -1,0 +1,595 @@
+{
+ "alias_admit_1": {
+  "value": {
+   "blocked": {
+    "op-new": "path_conflict"
+   },
+   "budget_exhausted": false,
+   "job": {
+    "calls": {
+     "reserved": null,
+     "settled": null
+    },
+    "created_at": "2026-09-22T00:00:00.000003+00:00",
+    "dependencies": [],
+    "dispatched_at": "2026-09-22T00:00:00.000008+00:00",
+    "error_type": null,
+    "exit_code": null,
+    "finished_at": null,
+    "goal": {
+     "base_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "criterion": "c",
+     "path": "docs/GOAL.md",
+     "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    },
+    "id": "op-old",
+    "lane": "a",
+    "manifest": {
+     "base_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "budget": {
+      "per_host": 4,
+      "total": 8
+     },
+     "claude": {
+      "max_budget_usd": 1.0,
+      "model": "claude-fixture-model",
+      "timeout_seconds": 120
+     },
+     "goal": {
+      "criterion": "crit op-old",
+      "path": "docs/GOAL.md",
+      "rationale": "r",
+      "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+     },
+     "id": "op-old",
+     "plan": {
+      "acceptance_criteria": [
+       "ok"
+      ],
+      "allowed_paths": [
+       "docs/guide"
+      ],
+      "objective": "o"
+     },
+     "schema": "urn:zeus:operation:1"
+    },
+    "manifest_sha256": "8ca60ad7fb4c14bf48fe0bde4382bb55ed69462bc27706944ac05897ae1285f3",
+    "operation_id": "op-old",
+    "owner_token": "00000000000000000000000000000001",
+    "reason_code": null,
+    "receipt": null,
+    "repository": "9e377ee5cd2188635c894e5b4a0f92a33c298ee9d0f50f303dc57cd60f91e7df",
+    "status": "dispatching",
+    "team": "a",
+    "updated_at": "2026-09-22T00:00:00.000008+00:00"
+   },
+   "paused": false
+  }
+ },
+ "alias_admit_2": {
+  "value": {
+   "blocked": {
+    "op-new": "path_conflict"
+   },
+   "budget_exhausted": false,
+   "job": null,
+   "paused": false
+  }
+ },
+ "conflict": {
+  "message": "fleet refused: relocation_conflict",
+  "reason_code": "relocation_conflict",
+  "refused": "FleetRefused"
+ },
+ "digest_mismatch": {
+  "message": "fleet refused: config_expected_mismatch (expected_config_sha256)",
+  "reason_code": "config_expected_mismatch",
+  "refused": "FleetRefused"
+ },
+ "fleet_mismatch": {
+  "message": "fleet refused: fleet_mismatch (fleet)",
+  "reason_code": "fleet_mismatch",
+  "refused": "FleetRefused"
+ },
+ "migrated": {
+  "value": {
+   "cached": false,
+   "config": {
+    "accounting_mode": "finite",
+    "budget": {
+     "per_host": 4,
+     "total": 8
+    },
+    "id": "fleet-1",
+    "lanes": [
+     {
+      "id": "a",
+      "team": "a"
+     },
+     {
+      "id": "b",
+      "team": "b"
+     }
+    ],
+    "max_parallel": 2,
+    "schema": "urn:zeus:fleet:1"
+   },
+   "config_sha256": "fceb5ffe9d304902d5c86544f09c9f0115495833ada47d1c023b18523f3f36d7",
+   "migrated": true,
+   "receipt": {
+    "authority": "owner_host_migration; lane repository, runtime and schema bindings only; lane/team identity, Redis namespaces, history and provider authority unchanged",
+    "config_sha256": "fceb5ffe9d304902d5c86544f09c9f0115495833ada47d1c023b18523f3f36d7",
+    "fleet": "fleet-1",
+    "id": "3bef53a3b16ac38930f5641fa0b90466e6a7e7f8a6ec2027afcad127c3ca50df",
+    "lanes": [
+     {
+      "id": "a",
+      "schema": "moved_a"
+     },
+     {
+      "id": "b",
+      "schema": "moved_b"
+     }
+    ],
+    "migration_id": "move-1",
+    "operator": "owner",
+    "prior_config_sha256": "2ca414330a3575287d9a75b36904cee274af319c6e5d54723479dad70457ab31",
+    "recorded_at": "2026-09-22T00:00:00.000004+00:00",
+    "schema": "urn:zeus:fleet-host-migration-receipt:1"
+   }
+  }
+ },
+ "migration_conflict": {
+  "message": "fleet refused: host_migration_conflict",
+  "reason_code": "host_migration_conflict",
+  "refused": "FleetRefused"
+ },
+ "migration_duplicate": {
+  "message": "fleet refused: host_migration_duplicate (lanes[].lane)",
+  "reason_code": "host_migration_duplicate",
+  "refused": "FleetRefused"
+ },
+ "migration_identity": {
+  "message": "fleet refused: repository_identity_mismatch (lanes[].a.repository)",
+  "reason_code": "repository_identity_mismatch",
+  "refused": "FleetRefused"
+ },
+ "migration_incomplete": {
+  "message": "fleet refused: host_migration_lanes_incomplete (lanes)",
+  "reason_code": "host_migration_lanes_incomplete",
+  "refused": "FleetRefused"
+ },
+ "migration_not_paused": {
+  "message": "fleet refused: fleet_not_paused",
+  "reason_code": "fleet_not_paused",
+  "refused": "FleetRefused"
+ },
+ "migration_records": [
+  [
+   "fleet_control",
+   "admission",
+   "62b9ea0ed359e9fddc0ced2432a2111115adacfe471ed184600b2d6a2210fca5"
+  ],
+  [
+   "fleet_host_migrations",
+   "3bef53a3b16ac38930f5641fa0b90466e6a7e7f8a6ec2027afcad127c3ca50df",
+   "2a2b800c4b38908afb4afd598083a9212ac91860c95536afecdb43b219a76f63"
+  ],
+  [
+   "fleet_registry",
+   "fleet-1",
+   "1e304aef75b373a62c4d7d11072304d4574dedbeb7c1e494fbb576a7360b9951"
+  ]
+ ],
+ "migration_replay": {
+  "value": {
+   "cached": true,
+   "config_sha256": "fceb5ffe9d304902d5c86544f09c9f0115495833ada47d1c023b18523f3f36d7",
+   "migrated": true,
+   "receipt": {
+    "authority": "owner_host_migration; lane repository, runtime and schema bindings only; lane/team identity, Redis namespaces, history and provider authority unchanged",
+    "config_sha256": "fceb5ffe9d304902d5c86544f09c9f0115495833ada47d1c023b18523f3f36d7",
+    "fleet": "fleet-1",
+    "id": "3bef53a3b16ac38930f5641fa0b90466e6a7e7f8a6ec2027afcad127c3ca50df",
+    "lanes": [
+     {
+      "id": "a",
+      "schema": "moved_a"
+     },
+     {
+      "id": "b",
+      "schema": "moved_b"
+     }
+    ],
+    "migration_id": "move-1",
+    "operator": "owner",
+    "prior_config_sha256": "2ca414330a3575287d9a75b36904cee274af319c6e5d54723479dad70457ab31",
+    "recorded_at": "2026-09-22T00:00:00.000004+00:00",
+    "schema": "urn:zeus:fleet-host-migration-receipt:1"
+   }
+  }
+ },
+ "migration_schema": {
+  "message": "fleet refused: host_migration_schema",
+  "reason_code": "host_migration_schema",
+  "refused": "FleetRefused"
+ },
+ "migration_schema_ident": {
+  "message": "fleet refused: host_migration_invalid (lanes[0].schema)",
+  "reason_code": "host_migration_invalid",
+  "refused": "FleetRefused"
+ },
+ "migration_source_mismatch": {
+  "message": "fleet refused: source_binding_mismatch (lanes[].a.schema)",
+  "reason_code": "source_binding_mismatch",
+  "refused": "FleetRefused"
+ },
+ "migration_unprovisioned": {
+  "message": "fleet refused: target_schema_unprovisioned (lanes[].b.schema)",
+  "reason_code": "target_schema_unprovisioned",
+  "refused": "FleetRefused"
+ },
+ "no_observation": {
+  "message": "Fleet relocation needs an observation",
+  "reason_code": null,
+  "refused": "ContractError"
+ },
+ "not_idle": {
+  "message": "fleet refused: fleet_not_idle",
+  "reason_code": "fleet_not_idle",
+  "refused": "FleetRefused"
+ },
+ "not_paused": {
+  "message": "fleet refused: fleet_not_paused",
+  "reason_code": "fleet_not_paused",
+  "refused": "FleetRefused"
+ },
+ "observed": [
+  "observe",
+  "reread"
+ ],
+ "proof_active_run": {
+  "message": "fleet refused: lane_run_active (lanes[].a)",
+  "reason_code": "lane_run_active",
+  "refused": "FleetRefused"
+ },
+ "proof_base_missing": {
+  "message": "fleet refused: queued_base_missing (lanes[].a)",
+  "reason_code": "queued_base_missing",
+  "refused": "FleetRefused"
+ },
+ "proof_bindings": {
+  "message": "fleet refused: queued_binding_incomplete (lanes[].a)",
+  "reason_code": "queued_binding_incomplete",
+  "refused": "FleetRefused"
+ },
+ "proof_changed": {
+  "message": "fleet refused: proof_changed",
+  "reason_code": "proof_changed",
+  "refused": "FleetRefused"
+ },
+ "proof_copy": {
+  "message": "fleet refused: copy_unverified (copy_manifest)",
+  "reason_code": "copy_unverified",
+  "refused": "FleetRefused"
+ },
+ "proof_copy_names_only": {
+  "message": "fleet refused: copy_unverified (copy_manifest)",
+  "reason_code": "copy_unverified",
+  "refused": "FleetRefused"
+ },
+ "proof_identity": {
+  "message": "fleet refused: repository_identity_mismatch (lanes[].a.repository)",
+  "reason_code": "repository_identity_mismatch",
+  "refused": "FleetRefused"
+ },
+ "proof_not_independent": {
+  "message": "fleet refused: target_not_independent (lanes[].a.repository)",
+  "reason_code": "target_not_independent",
+  "refused": "FleetRefused"
+ },
+ "proof_runner": {
+  "message": "fleet refused: runner_not_stopped (runner.state)",
+  "reason_code": "runner_not_stopped",
+  "refused": "FleetRefused"
+ },
+ "proof_runtime": {
+  "message": "fleet refused: runtime_unwritable (lanes[].a.runtime)",
+  "reason_code": "runtime_unwritable",
+  "refused": "FleetRefused"
+ },
+ "proof_schema": {
+  "message": "fleet refused: proof_schema",
+  "reason_code": "proof_schema",
+  "refused": "FleetRefused"
+ },
+ "records": [
+  [
+   "fleet_control",
+   "admission",
+   "9c6ba20440e48d46118cbfe4acd964224f1e9cdf83ab701833d67096155e20f4"
+  ],
+  [
+   "fleet_jobs",
+   "op-q",
+   "2b01cc3d365b7252688d830cc77ca864251cd16b9b53f5bf9fb12598d65f5a3c"
+  ],
+  [
+   "fleet_registry",
+   "fleet-1",
+   "ad1cc72a70971c0da1c1ea3dbd8d34c66d3ec6a508e85cfa099e4e80ebf9ddd1"
+  ],
+  [
+   "fleet_relocations",
+   "8e035f91b8ceb4885620a1071303e0e17b61e63698af196cd29a10975703c243",
+   "81cd06c64a91942c40a625185f08dee7cc67129789b76416918851dc7ff79e31"
+  ]
+ ],
+ "records_before": [
+  [
+   "fleet_control",
+   "admission",
+   "9c6ba20440e48d46118cbfe4acd964224f1e9cdf83ab701833d67096155e20f4"
+  ],
+  [
+   "fleet_jobs",
+   "op-q",
+   "2b01cc3d365b7252688d830cc77ca864251cd16b9b53f5bf9fb12598d65f5a3c"
+  ],
+  [
+   "fleet_registry",
+   "fleet-1",
+   "0a07d21fdcb1a6374f84ef7bd21aec7718200fbe6cf14799b0bcaed69e525808"
+  ]
+ ],
+ "relocated": {
+  "value": {
+   "cached": false,
+   "config": {
+    "accounting_mode": "finite",
+    "budget": {
+     "per_host": 4,
+     "total": 8
+    },
+    "id": "fleet-1",
+    "lanes": [
+     {
+      "id": "a",
+      "team": "a"
+     },
+     {
+      "id": "b",
+      "team": "b"
+     }
+    ],
+    "max_parallel": 2,
+    "schema": "urn:zeus:fleet:1"
+   },
+   "config_sha256": "509a7e62afed57ff0a16c7d38ae027fc498f2e45b740a818aa9fff74874e2a10",
+   "receipt": {
+    "authority": "owner_relocation; lane repository and runtime paths only; history, goal identity and provider authority unchanged",
+    "config_sha256": "509a7e62afed57ff0a16c7d38ae027fc498f2e45b740a818aa9fff74874e2a10",
+    "copy_manifest_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+    "fleet": "fleet-1",
+    "id": "8e035f91b8ceb4885620a1071303e0e17b61e63698af196cd29a10975703c243",
+    "lanes": [
+     {
+      "id": "a",
+      "repository": true,
+      "runtime": true
+     }
+    ],
+    "operator": "owner",
+    "prior_config_sha256": "2ca414330a3575287d9a75b36904cee274af319c6e5d54723479dad70457ab31",
+    "recorded_at": "2026-09-22T00:00:00.000005+00:00",
+    "schema": "urn:zeus:fleet-relocation-receipt:1"
+   },
+   "relocated": true
+  }
+ },
+ "relocations": {
+  "value": [
+   {
+    "authority": "owner_relocation; lane repository and runtime paths only; history, goal identity and provider authority unchanged",
+    "config_sha256": "509a7e62afed57ff0a16c7d38ae027fc498f2e45b740a818aa9fff74874e2a10",
+    "copy_manifest_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+    "fleet": "fleet-1",
+    "id": "8e035f91b8ceb4885620a1071303e0e17b61e63698af196cd29a10975703c243",
+    "lanes": [
+     {
+      "id": "a",
+      "repository": true,
+      "runtime": true
+     }
+    ],
+    "operator": "owner",
+    "prior_config_sha256": "2ca414330a3575287d9a75b36904cee274af319c6e5d54723479dad70457ab31",
+    "recorded_at": "2026-09-22T00:00:00.000005+00:00",
+    "schema": "urn:zeus:fleet-relocation-receipt:1"
+   }
+  ]
+ },
+ "replay": {
+  "value": {
+   "cached": true,
+   "config": {
+    "accounting_mode": "finite",
+    "budget": {
+     "per_host": 4,
+     "total": 8
+    },
+    "id": "fleet-1",
+    "lanes": [
+     {
+      "id": "a",
+      "team": "a"
+     },
+     {
+      "id": "b",
+      "team": "b"
+     }
+    ],
+    "max_parallel": 2,
+    "schema": "urn:zeus:fleet:1"
+   },
+   "config_sha256": "509a7e62afed57ff0a16c7d38ae027fc498f2e45b740a818aa9fff74874e2a10",
+   "receipt": {
+    "authority": "owner_relocation; lane repository and runtime paths only; history, goal identity and provider authority unchanged",
+    "config_sha256": "509a7e62afed57ff0a16c7d38ae027fc498f2e45b740a818aa9fff74874e2a10",
+    "copy_manifest_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+    "fleet": "fleet-1",
+    "id": "8e035f91b8ceb4885620a1071303e0e17b61e63698af196cd29a10975703c243",
+    "lanes": [
+     {
+      "id": "a",
+      "repository": true,
+      "runtime": true
+     }
+    ],
+    "operator": "owner",
+    "prior_config_sha256": "2ca414330a3575287d9a75b36904cee274af319c6e5d54723479dad70457ab31",
+    "recorded_at": "2026-09-22T00:00:00.000005+00:00",
+    "schema": "urn:zeus:fleet-relocation-receipt:1"
+   },
+   "relocated": true
+  }
+ },
+ "request_empty": {
+  "message": "fleet refused: relocation_empty (moves[0])",
+  "reason_code": "relocation_empty",
+  "refused": "FleetRefused"
+ },
+ "request_entries": {
+  "message": "fleet refused: relocation_invalid (copy_manifest.entries)",
+  "reason_code": "relocation_invalid",
+  "refused": "FleetRefused"
+ },
+ "request_extra": {
+  "message": "fleet refused: relocation_invalid_fields (root)",
+  "reason_code": "relocation_invalid_fields",
+  "refused": "FleetRefused"
+ },
+ "request_relative_to": {
+  "message": "fleet refused: relocation_invalid (moves[0].repository.to)",
+  "reason_code": "relocation_invalid",
+  "refused": "FleetRefused"
+ },
+ "request_schema": {
+  "message": "fleet refused: relocation_schema",
+  "reason_code": "relocation_schema",
+  "refused": "FleetRefused"
+ },
+ "request_unchanged": {
+  "message": "fleet refused: relocation_unchanged (moves[0].repository)",
+  "reason_code": "relocation_unchanged",
+  "refused": "FleetRefused"
+ },
+ "shared_relocated": {
+  "value": {
+   "cached": false,
+   "config": {
+    "accounting_mode": "finite",
+    "budget": {
+     "per_host": 4,
+     "total": 8
+    },
+    "id": "fleet-1",
+    "lanes": [
+     {
+      "id": "a",
+      "team": "a"
+     },
+     {
+      "id": "b",
+      "team": "b"
+     }
+    ],
+    "max_parallel": 2,
+    "schema": "urn:zeus:fleet:1"
+   },
+   "config_sha256": "18cbc655c6bfbac8c6a183782c4c25d65413b30c57f5e03efb30d55062d51d0e",
+   "receipt": {
+    "authority": "owner_relocation; lane repository and runtime paths only; history, goal identity and provider authority unchanged",
+    "config_sha256": "18cbc655c6bfbac8c6a183782c4c25d65413b30c57f5e03efb30d55062d51d0e",
+    "copy_manifest_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+    "fleet": "fleet-1",
+    "id": "2ebe6c2c0109fd4f378dc636911d2e556c41b6c48dadffcace4c6decd4ad81ec",
+    "lanes": [
+     {
+      "id": "a",
+      "repository": true,
+      "runtime": false
+     },
+     {
+      "id": "b",
+      "repository": true,
+      "runtime": false
+     }
+    ],
+    "operator": "owner",
+    "prior_config_sha256": "bba8e50ddfe1a0ab3e1c600b9f105f92929548dc4e71123839ddfa20217f58fc",
+    "recorded_at": "2026-09-22T00:00:00.000005+00:00",
+    "schema": "urn:zeus:fleet-relocation-receipt:1"
+   },
+   "relocated": true
+  }
+ },
+ "source_mismatch": {
+  "message": "fleet refused: source_path_mismatch (moves[0].repository.from)",
+  "reason_code": "source_path_mismatch",
+  "refused": "FleetRefused"
+ },
+ "status": {
+  "value": {
+   "accounting_mode": "finite",
+   "budget": {
+    "per_host": 4,
+    "total": 8
+   },
+   "id": "fleet-1",
+   "jobs": [
+    {
+     "calls": {
+      "reserved": null,
+      "settled": null
+     },
+     "created_at": "2026-09-22T00:00:00.000003+00:00",
+     "dependencies": [],
+     "goal": {
+      "criterion": "c",
+      "path": "docs/GOAL.md"
+     },
+     "id": "op-q",
+     "lane": "a",
+     "operation_id": "op-q",
+     "reason_code": null,
+     "status": "queued",
+     "team": "a",
+     "updated_at": "2026-09-22T00:00:00.000003+00:00"
+    }
+   ],
+   "lanes": [
+    {
+     "active_job": null,
+     "id": "a",
+     "team": "a"
+    },
+    {
+     "active_job": null,
+     "id": "b",
+     "team": "b"
+    }
+   ],
+   "max_parallel": 2,
+   "paused": true,
+   "registered": true,
+   "schema": "urn:zeus:fleet-status:1",
+   "truncated": false
+  }
+ },
+ "target_in_use": {
+  "message": "fleet refused: target_path_in_use (moves[0].repository.to)",
+  "reason_code": "target_path_in_use",
+  "refused": "FleetRefused"
+ }
+}
