@@ -1,0 +1,9 @@
+{
+ "family": "delivery.release_runner",
+ "description": "S7 M7 adapters/deployment.py, characterized before its move (INV-CHECK-001, INV-RELEASE-FILE-CANARY-001, INV-RELEASE-EVALUATOR-MIGRATION-001, INV-RELEASE-ENVIRONMENT-REVERIFY-001, INV-HOST-DELIVERY-VERIFY-001): ReleaseRunner over a LABELLED process double (every argv: uv sync, docker build/run/image inspect/rm/info/compose ps/inspect/exec), the stages and their short-circuit, the drift and rebase refusals, the rejection and promotion writes, abandon (the V5 review owner operations), the file canary (argv, handoff, postconditions, receipt without token or raw contents, cleanup), the check binding over a real git fixture, monitor and its probe projection, and the evaluator pin and controller code refusals",
+ "reference_driver": "drivers/reference/s7_release_runner.py",
+ "target_driver": null,
+ "golden": "goldens/reference/delivery.release_runner.json",
+ "slice": "S7",
+ "target_status": "pending: S7 release runner move (V6)"
+}
