@@ -29,7 +29,9 @@ OWNED_BUCKETS = ("tasks", "decisions_pending", "outbox", "events", "execution_fe
                  # S5 LocalCycle and Operation (DESIGN-s5 §L, §Op).
                  "local_cycles", "operations",
                  # S5 execution recovery remainder (receipts of prepare/apply).
-                 "execution_recoveries")
+                 "execution_recoveries",
+                 # RF-RT S5 part: the persisted research-admission disposition (declared addition).
+                 "research_admissions")
 
 
 class TaskRunner(Protocol):
