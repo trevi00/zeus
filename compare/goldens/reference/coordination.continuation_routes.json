@@ -1,0 +1,6746 @@
+{
+ "authorize_drift": {
+  "cleared": {
+   "value": {
+    "actions": [
+     {
+      "effect": "admitted",
+      "route": "correction",
+      "subject": "42b0f6119a702500d085eb0cf5aa410008ec63c99b54056c36e31e6796862949",
+      "successor_job": "cont-42b0f6119a702500d085eb0c"
+     }
+    ],
+    "outcome": "progressed",
+    "owned_elsewhere": {
+     "count": 0,
+     "jobs": []
+    },
+    "policy_id": "policy-1",
+    "reason_code": null,
+    "schema": "urn:zeus:continuation-tick:1",
+    "skipped": []
+   }
+  },
+  "held": {
+   "value": {
+    "actions": [],
+    "outcome": "blocked",
+    "owned_elsewhere": {
+     "count": 0,
+     "jobs": []
+    },
+    "policy_id": "policy-1",
+    "reason_code": null,
+    "schema": "urn:zeus:continuation-tick:1",
+    "skipped": [
+     {
+      "next_owner": "operator",
+      "reason_code": "image_changed",
+      "subject": "42b0f6119a702500d085eb0cf5aa410008ec63c99b54056c36e31e6796862949"
+     }
+    ]
+   }
+  },
+  "held_again": {
+   "receipts": [
+    {
+     "value": {
+      "actions": [],
+      "outcome": "blocked",
+      "owned_elsewhere": {
+       "count": 0,
+       "jobs": []
+      },
+      "policy_id": "policy-1",
+      "reason_code": null,
+      "schema": "urn:zeus:continuation-tick:1",
+      "skipped": [
+       {
+        "next_owner": "operator",
+        "reason_code": "image_changed",
+        "subject": "42b0f6119a702500d085eb0cf5aa410008ec63c99b54056c36e31e6796862949"
+       }
+      ]
+     }
+    }
+   ],
+   "records_unchanged": true
+  },
+  "held_snap": {
+   "bindings": [],
+   "intents": [
+    {
+     "decision": null,
+     "delivery_binding": null,
+     "delivery_plan": null,
+     "family": "op-1",
+     "history": [
+      [
+       "intended",
+       "lead_rejected"
+      ]
+     ],
+     "hold": {
+      "field": "image",
+      "next_owner": "operator",
+      "reason_code": "image_changed"
+     },
+     "id": "42b0f6119a702500d085eb0cf5aa410008ec63c99b54056c36e31e6796862949",
+     "launch": null,
+     "next_owner": "operator",
+     "origin_job": "op-1",
+     "ownership": null,
+     "predecessor_intent": null,
+     "reason_code": "lead_rejected",
+     "route": "correction",
+     "session_mode": "fresh_evidence_handoff",
+     "state": "intended",
+     "successor_job": "cont-42b0f6119a702500d085eb0c",
+     "version": 2
+    }
+   ],
+   "jobs": [
+    [
+     "op-1",
+     "rejected",
+     "a"
+    ]
+   ],
+   "state": {
+    "conductor": {
+     "calls": [],
+     "running": []
+    },
+    "control": [
+     [
+      "continuation_intents",
+      "42b0f6119a702500d085eb0cf5aa410008ec63c99b54056c36e31e6796862949",
+      "119226f7fffc1298490133a6b1f3432b82260bab3a9ae8e52bfdf301a063d140"
+     ],
+     [
+      "continuation_policies",
+      "policy-1",
+      "8cfb30ef2891de1412f87255419afb3f748e141ea3b18a292d8e78f615da6152"
+     ],
+     [
+      "continuation_progress",
+      "policy-1",
+      "508dc08d89763c16fee9a136d881ce1768e1f0f2bc6d4f721e7acadbdfbc8796"
+     ],
+     [
+      "fleet_control",
+      "admission",
+      "eb67ed2fb1e0fc49b3cd382387dff5fd991cc3e69025e02e911735a57313933c"
+     ],
+     [
+      "fleet_jobs",
+      "op-1",
+      "1b25d569db14fa0b6413876be21f5042622c2d1cc40daabf56eb8c1fa2075882"
+     ],
+     [
+      "fleet_registry",
+      "fleet-1",
+      "bd6513980dc5cf8fd28101e53442a7c9bb46db2737b28b4846793e479c8b6065"
+     ]
+    ],
+    "lane": [
+     [
+      "decisions_pending",
+      "dec-op-1",
+      "90beb3c95de1fa4b1b7ea8e5d8584e63b5b020bcfbc1d48d7717efd6c75fa5d2"
+     ],
+     [
+      "operations",
+      "op-1",
+      "8826e04953c8e3372fe48762f64de8d72671237e4a8f77ba8ef8c63edb8fea14"
+     ],
+     [
+      "tasks",
+      "task-op-1",
+      "afff1a405ab6fb0d366bac298a6f95bb58d3fd06257a1d8f29ff5dedd1840d69"
+     ]
+    ],
+    "reads": [
+     "op-1"
+    ]
+   },
+   "units": []
+  },
+  "intended": {
+   "bindings": [],
+   "intents": [
+    {
+     "decision": null,
+     "delivery_binding": null,
+     "delivery_plan": null,
+     "family": "op-1",
+     "history": [
+      [
+       "intended",
+       "lead_rejected"
+      ]
+     ],
+     "hold": null,
+     "id": "42b0f6119a702500d085eb0cf5aa410008ec63c99b54056c36e31e6796862949",
+     "launch": null,
+     "next_owner": "fleet",
+     "origin_job": "op-1",
+     "ownership": null,
+     "predecessor_intent": null,
+     "reason_code": "lead_rejected",
+     "route": "correction",
+     "session_mode": "fresh_evidence_handoff",
+     "state": "intended",
+     "successor_job": "cont-42b0f6119a702500d085eb0c",
+     "version": 1
+    }
+   ],
+   "jobs": [
+    [
+     "op-1",
+     "rejected",
+     "a"
+    ]
+   ],
+   "state": {
+    "conductor": {
+     "calls": [],
+     "running": []
+    },
+    "control": [
+     [
+      "continuation_intents",
+      "42b0f6119a702500d085eb0cf5aa410008ec63c99b54056c36e31e6796862949",
+      "0613692314e27572b97fa6577e0405295bf9cddf3c9b67fdc685b6c349947f56"
+     ],
+     [
+      "continuation_policies",
+      "policy-1",
+      "8cfb30ef2891de1412f87255419afb3f748e141ea3b18a292d8e78f615da6152"
+     ],
+     [
+      "continuation_progress",
+      "policy-1",
+      "508dc08d89763c16fee9a136d881ce1768e1f0f2bc6d4f721e7acadbdfbc8796"
+     ],
+     [
+      "fleet_control",
+      "admission",
+      "eb67ed2fb1e0fc49b3cd382387dff5fd991cc3e69025e02e911735a57313933c"
+     ],
+     [
+      "fleet_jobs",
+      "op-1",
+      "1b25d569db14fa0b6413876be21f5042622c2d1cc40daabf56eb8c1fa2075882"
+     ],
+     [
+      "fleet_registry",
+      "fleet-1",
+      "bd6513980dc5cf8fd28101e53442a7c9bb46db2737b28b4846793e479c8b6065"
+     ]
+    ],
+    "lane": [
+     [
+      "decisions_pending",
+      "dec-op-1",
+      "90beb3c95de1fa4b1b7ea8e5d8584e63b5b020bcfbc1d48d7717efd6c75fa5d2"
+     ],
+     [
+      "operations",
+      "op-1",
+      "8826e04953c8e3372fe48762f64de8d72671237e4a8f77ba8ef8c63edb8fea14"
+     ],
+     [
+      "tasks",
+      "task-op-1",
+      "afff1a405ab6fb0d366bac298a6f95bb58d3fd06257a1d8f29ff5dedd1840d69"
+     ]
+    ],
+    "reads": [
+     "op-1"
+    ]
+   },
+   "units": []
+  },
+  "outage": {
+   "value": {
+    "actions": [],
+    "outcome": "blocked",
+    "owned_elsewhere": {
+     "count": 0,
+     "jobs": []
+    },
+    "policy_id": "policy-1",
+    "reason_code": null,
+    "schema": "urn:zeus:continuation-tick:1",
+    "skipped": [
+     {
+      "error_type": "ConnectionError",
+      "reason_code": "unavailable",
+      "subject": "op-1"
+     }
+    ]
+   }
+  },
+  "snap": {
+   "bindings": [
+    {
+     "family": "op-1",
+     "intent_id": "42b0f6119a702500d085eb0cf5aa410008ec63c99b54056c36e31e6796862949",
+     "operation_id": "cont-42b0f6119a702500d085eb0c",
+     "predecessor": {
+      "candidate_revision": "cccccccccccccccccccccccccccccccccccccccc",
+      "decision_id": "dec-op-1",
+      "inspection_id": null,
+      "job_id": "op-1",
+      "review_execution_ref": "sha256:8888888888888888888888888888888888888888888888888888888888888888",
+      "task_id": "task-op-1"
+     },
+     "route": "correction",
+     "session": null,
+     "workspace": {
+      "base": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "head": "cccccccccccccccccccccccccccccccccccccccc",
+      "origin_task_id": "task-op-1"
+     }
+    }
+   ],
+   "intents": [
+    {
+     "decision": null,
+     "delivery_binding": null,
+     "delivery_plan": null,
+     "family": "op-1",
+     "history": [
+      [
+       "intended",
+       "lead_rejected"
+      ],
+      [
+       "published",
+       "lead_rejected"
+      ],
+      [
+       "admitted",
+       "lead_rejected"
+      ]
+     ],
+     "hold": null,
+     "id": "42b0f6119a702500d085eb0cf5aa410008ec63c99b54056c36e31e6796862949",
+     "launch": null,
+     "next_owner": "fleet",
+     "origin_job": "op-1",
+     "ownership": {
+      "criterion_id": null,
+      "project_id": null,
+      "state": "origin_unbound"
+     },
+     "predecessor_intent": null,
+     "reason_code": "lead_rejected",
+     "route": "correction",
+     "session_mode": "fresh_evidence_handoff",
+     "state": "admitted",
+     "successor_job": "cont-42b0f6119a702500d085eb0c",
+     "version": 5
+    }
+   ],
+   "jobs": [
+    [
+     "cont-42b0f6119a702500d085eb0c",
+     "queued",
+     "a"
+    ],
+    [
+     "op-1",
+     "rejected",
+     "a"
+    ]
+   ],
+   "state": {
+    "conductor": {
+     "calls": [],
+     "running": []
+    },
+    "control": [
+     [
+      "continuation_intents",
+      "42b0f6119a702500d085eb0cf5aa410008ec63c99b54056c36e31e6796862949",
+      "38442ea4e4a1ae20cb81d434ec1e8e4252a285c0fe5772742110e1553894e7b9"
+     ],
+     [
+      "continuation_policies",
+      "policy-1",
+      "8cfb30ef2891de1412f87255419afb3f748e141ea3b18a292d8e78f615da6152"
+     ],
+     [
+      "continuation_progress",
+      "policy-1",
+      "508dc08d89763c16fee9a136d881ce1768e1f0f2bc6d4f721e7acadbdfbc8796"
+     ],
+     [
+      "fleet_control",
+      "admission",
+      "eb67ed2fb1e0fc49b3cd382387dff5fd991cc3e69025e02e911735a57313933c"
+     ],
+     [
+      "fleet_jobs",
+      "cont-42b0f6119a702500d085eb0c",
+      "fd322f5aa6c73a0d56d7205a0bdce75c1e45172163479deb6a805d446a362cf0"
+     ],
+     [
+      "fleet_jobs",
+      "op-1",
+      "1b25d569db14fa0b6413876be21f5042622c2d1cc40daabf56eb8c1fa2075882"
+     ],
+     [
+      "fleet_registry",
+      "fleet-1",
+      "bd6513980dc5cf8fd28101e53442a7c9bb46db2737b28b4846793e479c8b6065"
+     ]
+    ],
+    "lane": [
+     [
+      "continuation_bindings",
+      "cont-42b0f6119a702500d085eb0c",
+      "6fc2b50c04758a079925849d4f95b788931ee28ae30a49a8fddbbbf2f7f6284e"
+     ],
+     [
+      "decisions_pending",
+      "dec-op-1",
+      "90beb3c95de1fa4b1b7ea8e5d8584e63b5b020bcfbc1d48d7717efd6c75fa5d2"
+     ],
+     [
+      "operations",
+      "op-1",
+      "8826e04953c8e3372fe48762f64de8d72671237e4a8f77ba8ef8c63edb8fea14"
+     ],
+     [
+      "tasks",
+      "task-op-1",
+      "afff1a405ab6fb0d366bac298a6f95bb58d3fd06257a1d8f29ff5dedd1840d69"
+     ]
+    ],
+    "reads": [
+     "op-1"
+    ]
+   },
+   "units": []
+  }
+ },
+ "conductor": {
+  "conductor_none": {
+   "again": {
+    "receipts": [
+     {
+      "value": {
+       "actions": [],
+       "outcome": "idle",
+       "owned_elsewhere": {
+        "count": 0,
+        "jobs": []
+       },
+       "policy_id": "policy-1",
+       "reason_code": null,
+       "schema": "urn:zeus:continuation-tick:1",
+       "skipped": []
+      }
+     },
+     {
+      "value": {
+       "actions": [],
+       "outcome": "idle",
+       "owned_elsewhere": {
+        "count": 0,
+        "jobs": []
+       },
+       "policy_id": "policy-1",
+       "reason_code": null,
+       "schema": "urn:zeus:continuation-tick:1",
+       "skipped": []
+      }
+     }
+    ],
+    "records_unchanged": true
+   },
+   "first": {
+    "value": {
+     "actions": [
+      {
+       "effect": "awaiting_owner",
+       "route": "conductor_review",
+       "subject": "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66"
+      }
+     ],
+     "outcome": "progressed",
+     "owned_elsewhere": {
+      "count": 0,
+      "jobs": []
+     },
+     "policy_id": "policy-1",
+     "reason_code": null,
+     "schema": "urn:zeus:continuation-tick:1",
+     "skipped": []
+    }
+   },
+   "snap": {
+    "bindings": [],
+    "intents": [
+     {
+      "decision": null,
+      "delivery_binding": null,
+      "delivery_plan": null,
+      "family": "op-a",
+      "history": [
+       [
+        "intended",
+        "lead_accepted"
+       ],
+       [
+        "awaiting_owner",
+        "conductor_port_unconfigured"
+       ]
+      ],
+      "hold": null,
+      "id": "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66",
+      "launch": null,
+      "next_owner": "conductor",
+      "origin_job": "op-a",
+      "ownership": null,
+      "predecessor_intent": null,
+      "reason_code": "conductor_port_unconfigured",
+      "route": "conductor_review",
+      "session_mode": null,
+      "state": "awaiting_owner",
+      "successor_job": null,
+      "version": 2
+     }
+    ],
+    "jobs": [
+     [
+      "op-a",
+      "accepted",
+      "a"
+     ]
+    ],
+    "state": {
+     "conductor": {
+      "calls": [],
+      "running": []
+     },
+     "control": [
+      [
+       "continuation_intents",
+       "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66",
+       "b277e4aecd023331c9dc90c05eaa04895bd0f301de6805b197224deb1a964247"
+      ],
+      [
+       "continuation_policies",
+       "policy-1",
+       "8cfb30ef2891de1412f87255419afb3f748e141ea3b18a292d8e78f615da6152"
+      ],
+      [
+       "continuation_progress",
+       "policy-1",
+       "6d20be5c3c1f08f4a9e262621a3193b2db535ee19ffddccd6a83db10cb9d0f1b"
+      ],
+      [
+       "fleet_control",
+       "admission",
+       "eb67ed2fb1e0fc49b3cd382387dff5fd991cc3e69025e02e911735a57313933c"
+      ],
+      [
+       "fleet_jobs",
+       "op-a",
+       "b2b62462ab68fa6a39632b4633cc1d0bca6889741cbc0ec0e88448de908d1684"
+      ],
+      [
+       "fleet_registry",
+       "fleet-1",
+       "bd6513980dc5cf8fd28101e53442a7c9bb46db2737b28b4846793e479c8b6065"
+      ]
+     ],
+     "lane": [
+      [
+       "decisions_pending",
+       "dec-op-a",
+       "4997412b134c0aa279f5ae8e7846423ff12c58deb06a4047eeafb1b9e4cd3dc7"
+      ],
+      [
+       "operations",
+       "op-a",
+       "d3ccf9badf9694935c42b360ba3a3b155a03484310548af063c1b0a1e43c8665"
+      ],
+      [
+       "tasks",
+       "task-op-a",
+       "151c9860df297912c091cee0eb68bd32a33658b539810bb0e1f9215ff91df301"
+      ]
+     ],
+     "reads": [
+      "op-a"
+     ]
+    },
+    "units": []
+   }
+  },
+  "dispatch_running_exited": {
+   "after": {
+    "receipts": [
+     {
+      "value": {
+       "actions": [],
+       "outcome": "idle",
+       "owned_elsewhere": {
+        "count": 0,
+        "jobs": []
+       },
+       "policy_id": "policy-1",
+       "reason_code": null,
+       "schema": "urn:zeus:continuation-tick:1",
+       "skipped": []
+      }
+     }
+    ],
+    "records_unchanged": true
+   },
+   "dispatched": {
+    "value": {
+     "actions": [
+      {
+       "effect": "conductor_started",
+       "route": "conductor_review",
+       "subject": "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66"
+      }
+     ],
+     "outcome": "progressed",
+     "owned_elsewhere": {
+      "count": 0,
+      "jobs": []
+     },
+     "policy_id": "policy-1",
+     "reason_code": null,
+     "schema": "urn:zeus:continuation-tick:1",
+     "skipped": []
+    }
+   },
+   "exited": {
+    "value": {
+     "actions": [
+      {
+       "effect": "conductor_decided",
+       "route": "conductor_review",
+       "subject": "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66"
+      },
+      {
+       "effect": "awaiting_owner",
+       "route": "host_delivery",
+       "subject": "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648"
+      }
+     ],
+     "outcome": "progressed",
+     "owned_elsewhere": {
+      "count": 0,
+      "jobs": []
+     },
+     "policy_id": "policy-1",
+     "reason_code": null,
+     "schema": "urn:zeus:continuation-tick:1",
+     "skipped": []
+    }
+   },
+   "running": {
+    "value": {
+     "actions": [],
+     "outcome": "idle",
+     "owned_elsewhere": {
+      "count": 0,
+      "jobs": []
+     },
+     "policy_id": "policy-1",
+     "reason_code": null,
+     "schema": "urn:zeus:continuation-tick:1",
+     "skipped": []
+    }
+   },
+   "snap": {
+    "bindings": [],
+    "intents": [
+     {
+      "decision": {
+       "accepted": true,
+       "execution_ref": "sha256:9999999999999999999999999999999999999999999999999999999999999999",
+       "id": "cond-op-a",
+       "status": "succeeded"
+      },
+      "delivery_binding": null,
+      "delivery_plan": null,
+      "family": "op-a",
+      "history": [
+       [
+        "intended",
+        "lead_accepted"
+       ],
+       [
+        "dispatched",
+        "lead_accepted"
+       ],
+       [
+        "returned",
+        "lead_accepted"
+       ],
+       [
+        "completed",
+        "lead_accepted"
+       ]
+      ],
+      "hold": null,
+      "id": "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66",
+      "launch": {
+       "error_type": null,
+       "exit_code": 0,
+       "id": "f56c77bbf993bc7aee527847f925d76997b2283a67f3d66db2ad394421d3b0ef",
+       "sequence": 1,
+       "state": "exited"
+      },
+      "next_owner": "conductor",
+      "origin_job": "op-a",
+      "ownership": null,
+      "predecessor_intent": null,
+      "reason_code": "lead_accepted",
+      "route": "conductor_review",
+      "session_mode": null,
+      "state": "completed",
+      "successor_job": null,
+      "version": 5
+     },
+     {
+      "decision": null,
+      "delivery_binding": {
+       "release_id": "rel-op-a",
+       "revision": "cccccccccccccccccccccccccccccccccccccccc",
+       "target_id": "fleet-host"
+      },
+      "delivery_plan": null,
+      "family": "op-a",
+      "history": [
+       [
+        "awaiting_owner",
+        "conductor_accepted"
+       ]
+      ],
+      "hold": null,
+      "id": "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648",
+      "launch": null,
+      "next_owner": "host_delivery",
+      "origin_job": "op-a",
+      "ownership": null,
+      "predecessor_intent": null,
+      "reason_code": "conductor_accepted",
+      "route": "host_delivery",
+      "session_mode": null,
+      "state": "awaiting_owner",
+      "successor_job": null,
+      "version": 1
+     }
+    ],
+    "jobs": [
+     [
+      "op-a",
+      "accepted",
+      "a"
+     ]
+    ],
+    "state": {
+     "conductor": {
+      "calls": [
+       "op-a"
+      ],
+      "running": []
+     },
+     "control": [
+      [
+       "continuation_intents",
+       "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648",
+       "e0ac1077a3ff605ab765fbe70abe23347eb4335b742cf8367a8193df1e24b0f8"
+      ],
+      [
+       "continuation_intents",
+       "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66",
+       "ff815e1e8f7ee7154e4beabdf0a3cf1aaa659893d13833dfd7de03efbe9f2c37"
+      ],
+      [
+       "continuation_policies",
+       "policy-1",
+       "8cfb30ef2891de1412f87255419afb3f748e141ea3b18a292d8e78f615da6152"
+      ],
+      [
+       "continuation_progress",
+       "policy-1",
+       "4d2d8831a65ec745efb57233d729a9abcdea7627fb7a581f61b65ca0a4680618"
+      ],
+      [
+       "fleet_control",
+       "admission",
+       "eb67ed2fb1e0fc49b3cd382387dff5fd991cc3e69025e02e911735a57313933c"
+      ],
+      [
+       "fleet_jobs",
+       "op-a",
+       "b2b62462ab68fa6a39632b4633cc1d0bca6889741cbc0ec0e88448de908d1684"
+      ],
+      [
+       "fleet_registry",
+       "fleet-1",
+       "bd6513980dc5cf8fd28101e53442a7c9bb46db2737b28b4846793e479c8b6065"
+      ],
+      [
+       "fleet_units",
+       "f56c77bbf993bc7aee527847f925d76997b2283a67f3d66db2ad394421d3b0ef",
+       "51c1075df1f2255436bf26ea5a7f09486704f298c29515c0c983cdc7017c946a"
+      ]
+     ],
+     "lane": [
+      [
+       "decisions_pending",
+       "cond-op-a",
+       "9de0bd66007ea463d90fd29088a77810bd6f31f4bbbcb752702a6012b25adb4b"
+      ],
+      [
+       "decisions_pending",
+       "dec-op-a",
+       "4997412b134c0aa279f5ae8e7846423ff12c58deb06a4047eeafb1b9e4cd3dc7"
+      ],
+      [
+       "operations",
+       "op-a",
+       "d3ccf9badf9694935c42b360ba3a3b155a03484310548af063c1b0a1e43c8665"
+      ],
+      [
+       "releases",
+       "rel-op-a",
+       "9c36785a9d7107530f9c5b869391161028c06a60f0bab3082b61d7c74f1eadaa"
+      ],
+      [
+       "tasks",
+       "task-op-a",
+       "151c9860df297912c091cee0eb68bd32a33658b539810bb0e1f9215ff91df301"
+      ]
+     ],
+     "reads": [
+      "op-a",
+      "op-a",
+      "op-a",
+      "op-a"
+     ]
+    },
+    "units": [
+     {
+      "id": "f56c77bbf993bc7aee527847f925d76997b2283a67f3d66db2ad394421d3b0ef",
+      "kind": "conductor",
+      "lane": "a",
+      "next_action": "none",
+      "released_at": "2026-09-30T00:00:00.000012+00:00",
+      "reserved_at": "2026-09-30T00:00:00.000008+00:00",
+      "settlement": {
+       "exit_code": 0,
+       "kind": "cleanup",
+       "proof_sha256": "1f61d69870f8feda1e9774f4415bda9d6b75531b0513019bab08ac10e7c29610",
+       "timed_out": false
+      },
+      "state": "released",
+      "subject": "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66"
+     }
+    ]
+   }
+  },
+  "exited_with_running_row": {
+   "again": {
+    "receipts": [
+     {
+      "value": {
+       "actions": [],
+       "outcome": "idle",
+       "owned_elsewhere": {
+        "count": 0,
+        "jobs": []
+       },
+       "policy_id": "policy-1",
+       "reason_code": null,
+       "schema": "urn:zeus:continuation-tick:1",
+       "skipped": []
+      }
+     }
+    ],
+    "records_unchanged": true
+   },
+   "dispatched": {
+    "value": {
+     "actions": [
+      {
+       "effect": "conductor_started",
+       "route": "conductor_review",
+       "subject": "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66"
+      }
+     ],
+     "outcome": "progressed",
+     "owned_elsewhere": {
+      "count": 0,
+      "jobs": []
+     },
+     "policy_id": "policy-1",
+     "reason_code": null,
+     "schema": "urn:zeus:continuation-tick:1",
+     "skipped": []
+    }
+   },
+   "exit": {
+    "value": {
+     "actions": [
+      {
+       "effect": "recovery_required",
+       "route": "conductor_review",
+       "subject": "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66"
+      }
+     ],
+     "outcome": "progressed",
+     "owned_elsewhere": {
+      "count": 0,
+      "jobs": []
+     },
+     "policy_id": "policy-1",
+     "reason_code": null,
+     "schema": "urn:zeus:continuation-tick:1",
+     "skipped": []
+    }
+   },
+   "snap": {
+    "bindings": [],
+    "intents": [
+     {
+      "decision": null,
+      "delivery_binding": null,
+      "delivery_plan": null,
+      "family": "op-a",
+      "history": [
+       [
+        "intended",
+        "lead_accepted"
+       ],
+       [
+        "dispatched",
+        "lead_accepted"
+       ],
+       [
+        "recovery_required",
+        "conductor_running"
+       ]
+      ],
+      "hold": null,
+      "id": "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66",
+      "launch": {
+       "error_type": null,
+       "exit_code": 0,
+       "id": "f56c77bbf993bc7aee527847f925d76997b2283a67f3d66db2ad394421d3b0ef",
+       "sequence": 1,
+       "state": "exited"
+      },
+      "next_owner": "execution_recovery",
+      "origin_job": "op-a",
+      "ownership": null,
+      "predecessor_intent": null,
+      "reason_code": "conductor_running",
+      "route": "conductor_review",
+      "session_mode": null,
+      "state": "recovery_required",
+      "successor_job": null,
+      "version": 4
+     }
+    ],
+    "jobs": [
+     [
+      "op-a",
+      "accepted",
+      "a"
+     ]
+    ],
+    "state": {
+     "conductor": {
+      "calls": [
+       "op-a"
+      ],
+      "running": []
+     },
+     "control": [
+      [
+       "continuation_intents",
+       "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66",
+       "599b9304515b4827f6691b2c1c9e4dcf3054a78bad3b3320084ed0b1caaf7c99"
+      ],
+      [
+       "continuation_policies",
+       "policy-1",
+       "8cfb30ef2891de1412f87255419afb3f748e141ea3b18a292d8e78f615da6152"
+      ],
+      [
+       "continuation_progress",
+       "policy-1",
+       "6d20be5c3c1f08f4a9e262621a3193b2db535ee19ffddccd6a83db10cb9d0f1b"
+      ],
+      [
+       "fleet_control",
+       "admission",
+       "eb67ed2fb1e0fc49b3cd382387dff5fd991cc3e69025e02e911735a57313933c"
+      ],
+      [
+       "fleet_jobs",
+       "op-a",
+       "b2b62462ab68fa6a39632b4633cc1d0bca6889741cbc0ec0e88448de908d1684"
+      ],
+      [
+       "fleet_registry",
+       "fleet-1",
+       "bd6513980dc5cf8fd28101e53442a7c9bb46db2737b28b4846793e479c8b6065"
+      ],
+      [
+       "fleet_units",
+       "f56c77bbf993bc7aee527847f925d76997b2283a67f3d66db2ad394421d3b0ef",
+       "51c1075df1f2255436bf26ea5a7f09486704f298c29515c0c983cdc7017c946a"
+      ]
+     ],
+     "lane": [
+      [
+       "decisions_pending",
+       "cond-x",
+       "af6e392040438a0bc03cc541923967891bc7611e7cd5880f5de571deb5e4ebf2"
+      ],
+      [
+       "decisions_pending",
+       "dec-op-a",
+       "4997412b134c0aa279f5ae8e7846423ff12c58deb06a4047eeafb1b9e4cd3dc7"
+      ],
+      [
+       "operations",
+       "op-a",
+       "d3ccf9badf9694935c42b360ba3a3b155a03484310548af063c1b0a1e43c8665"
+      ],
+      [
+       "tasks",
+       "task-op-a",
+       "151c9860df297912c091cee0eb68bd32a33658b539810bb0e1f9215ff91df301"
+      ]
+     ],
+     "reads": [
+      "op-a",
+      "op-a"
+     ]
+    },
+    "units": [
+     {
+      "id": "f56c77bbf993bc7aee527847f925d76997b2283a67f3d66db2ad394421d3b0ef",
+      "kind": "conductor",
+      "lane": "a",
+      "next_action": "none",
+      "released_at": "2026-09-30T00:00:00.000012+00:00",
+      "reserved_at": "2026-09-30T00:00:00.000008+00:00",
+      "settlement": {
+       "exit_code": 0,
+       "kind": "cleanup",
+       "proof_sha256": "1f61d69870f8feda1e9774f4415bda9d6b75531b0513019bab08ac10e7c29610",
+       "timed_out": false
+      },
+      "state": "released",
+      "subject": "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66"
+     }
+    ]
+   }
+  },
+  "restart_new_conductor": {
+   "after_fence": {
+    "bindings": [],
+    "intents": [
+     {
+      "decision": null,
+      "delivery_binding": null,
+      "delivery_plan": null,
+      "family": "op-a",
+      "history": [
+       [
+        "intended",
+        "lead_accepted"
+       ],
+       [
+        "dispatched",
+        "lead_accepted"
+       ],
+       [
+        "awaiting_owner",
+        "conductor_not_launched"
+       ]
+      ],
+      "hold": null,
+      "id": "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66",
+      "launch": {
+       "error_type": null,
+       "exit_code": null,
+       "id": "f56c77bbf993bc7aee527847f925d76997b2283a67f3d66db2ad394421d3b0ef",
+       "sequence": 1,
+       "state": "absent"
+      },
+      "next_owner": "conductor",
+      "origin_job": "op-a",
+      "ownership": null,
+      "predecessor_intent": null,
+      "reason_code": "conductor_not_launched",
+      "route": "conductor_review",
+      "session_mode": null,
+      "state": "awaiting_owner",
+      "successor_job": null,
+      "version": 4
+     }
+    ],
+    "jobs": [
+     [
+      "op-a",
+      "accepted",
+      "a"
+     ]
+    ],
+    "state": {
+     "conductor": {
+      "calls": [],
+      "running": []
+     },
+     "control": [
+      [
+       "continuation_intents",
+       "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66",
+       "c50e2a2731b02b4f48a4204b786f6591fc964d2692199912166855bd000b1b09"
+      ],
+      [
+       "continuation_policies",
+       "policy-1",
+       "8cfb30ef2891de1412f87255419afb3f748e141ea3b18a292d8e78f615da6152"
+      ],
+      [
+       "continuation_progress",
+       "policy-1",
+       "6d20be5c3c1f08f4a9e262621a3193b2db535ee19ffddccd6a83db10cb9d0f1b"
+      ],
+      [
+       "fleet_control",
+       "admission",
+       "eb67ed2fb1e0fc49b3cd382387dff5fd991cc3e69025e02e911735a57313933c"
+      ],
+      [
+       "fleet_jobs",
+       "op-a",
+       "b2b62462ab68fa6a39632b4633cc1d0bca6889741cbc0ec0e88448de908d1684"
+      ],
+      [
+       "fleet_registry",
+       "fleet-1",
+       "bd6513980dc5cf8fd28101e53442a7c9bb46db2737b28b4846793e479c8b6065"
+      ],
+      [
+       "fleet_units",
+       "f56c77bbf993bc7aee527847f925d76997b2283a67f3d66db2ad394421d3b0ef",
+       "40fc21fcec6d5911575de671a3a303052d71b23d948aac6ac38a90000d440f24"
+      ]
+     ],
+     "lane": [
+      [
+       "decisions_pending",
+       "dec-op-a",
+       "4997412b134c0aa279f5ae8e7846423ff12c58deb06a4047eeafb1b9e4cd3dc7"
+      ],
+      [
+       "operations",
+       "op-a",
+       "d3ccf9badf9694935c42b360ba3a3b155a03484310548af063c1b0a1e43c8665"
+      ],
+      [
+       "tasks",
+       "task-op-a",
+       "151c9860df297912c091cee0eb68bd32a33658b539810bb0e1f9215ff91df301"
+      ]
+     ],
+     "reads": [
+      "op-a"
+     ]
+    },
+    "units": [
+     {
+      "id": "f56c77bbf993bc7aee527847f925d76997b2283a67f3d66db2ad394421d3b0ef",
+      "kind": "conductor",
+      "lane": "a",
+      "next_action": "none",
+      "released_at": "2026-09-30T00:00:00.000012+00:00",
+      "reserved_at": "2026-09-30T00:00:00.000008+00:00",
+      "settlement": {
+       "exit_code": null,
+       "kind": "fenced",
+       "proof_sha256": "aa7fc0df95825fd7a8898f41a7765135f81597737e9113e42ecfc874be71fce1",
+       "timed_out": false
+      },
+      "state": "released",
+      "subject": "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66"
+     }
+    ]
+   },
+   "dispatched": {
+    "value": {
+     "actions": [
+      {
+       "effect": "conductor_started",
+       "route": "conductor_review",
+       "subject": "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66"
+      }
+     ],
+     "outcome": "progressed",
+     "owned_elsewhere": {
+      "count": 0,
+      "jobs": []
+     },
+     "policy_id": "policy-1",
+     "reason_code": null,
+     "schema": "urn:zeus:continuation-tick:1",
+     "skipped": []
+    }
+   },
+   "fenced": {
+    "value": {
+     "actions": [
+      {
+       "effect": "awaiting_owner",
+       "route": "conductor_review",
+       "subject": "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66"
+      }
+     ],
+     "outcome": "progressed",
+     "owned_elsewhere": {
+      "count": 0,
+      "jobs": []
+     },
+     "policy_id": "policy-1",
+     "reason_code": null,
+     "schema": "urn:zeus:continuation-tick:1",
+     "skipped": []
+    }
+   },
+   "redispatch": {
+    "value": {
+     "actions": [
+      {
+       "effect": "conductor_started",
+       "route": "conductor_review",
+       "subject": "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66"
+      }
+     ],
+     "outcome": "progressed",
+     "owned_elsewhere": {
+      "count": 0,
+      "jobs": []
+     },
+     "policy_id": "policy-1",
+     "reason_code": null,
+     "schema": "urn:zeus:continuation-tick:1",
+     "skipped": []
+    }
+   },
+   "snap": {
+    "bindings": [],
+    "intents": [
+     {
+      "decision": null,
+      "delivery_binding": null,
+      "delivery_plan": null,
+      "family": "op-a",
+      "history": [
+       [
+        "intended",
+        "lead_accepted"
+       ],
+       [
+        "dispatched",
+        "lead_accepted"
+       ],
+       [
+        "awaiting_owner",
+        "conductor_not_launched"
+       ],
+       [
+        "intended",
+        "conductor_not_launched"
+       ],
+       [
+        "dispatched",
+        "conductor_not_launched"
+       ]
+      ],
+      "hold": null,
+      "id": "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66",
+      "launch": {
+       "error_type": null,
+       "exit_code": null,
+       "id": "e2ef498053e80ce831bd21843ad7330f16baa73218d3ea571ee55c5ca85863aa",
+       "sequence": 2,
+       "state": "started"
+      },
+      "next_owner": "conductor",
+      "origin_job": "op-a",
+      "ownership": null,
+      "predecessor_intent": null,
+      "reason_code": "conductor_not_launched",
+      "route": "conductor_review",
+      "session_mode": null,
+      "state": "dispatched",
+      "successor_job": null,
+      "version": 7
+     }
+    ],
+    "jobs": [
+     [
+      "op-a",
+      "accepted",
+      "a"
+     ]
+    ],
+    "state": {
+     "conductor": {
+      "calls": [
+       "op-a"
+      ],
+      "running": [
+       "e2ef498053e80ce831bd21843ad7330f16baa73218d3ea571ee55c5ca85863aa"
+      ]
+     },
+     "control": [
+      [
+       "continuation_intents",
+       "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66",
+       "01c74b1c2328178ad2c7d4da1e6ca8b664db45d6a509f2c5fc38040418558094"
+      ],
+      [
+       "continuation_policies",
+       "policy-1",
+       "8cfb30ef2891de1412f87255419afb3f748e141ea3b18a292d8e78f615da6152"
+      ],
+      [
+       "continuation_progress",
+       "policy-1",
+       "6d20be5c3c1f08f4a9e262621a3193b2db535ee19ffddccd6a83db10cb9d0f1b"
+      ],
+      [
+       "fleet_control",
+       "admission",
+       "eb67ed2fb1e0fc49b3cd382387dff5fd991cc3e69025e02e911735a57313933c"
+      ],
+      [
+       "fleet_jobs",
+       "op-a",
+       "b2b62462ab68fa6a39632b4633cc1d0bca6889741cbc0ec0e88448de908d1684"
+      ],
+      [
+       "fleet_registry",
+       "fleet-1",
+       "bd6513980dc5cf8fd28101e53442a7c9bb46db2737b28b4846793e479c8b6065"
+      ],
+      [
+       "fleet_units",
+       "e2ef498053e80ce831bd21843ad7330f16baa73218d3ea571ee55c5ca85863aa",
+       "bbeab47c53200dc4e245722f99dea4a2c942fd7c4583dffed8f2a3a82b98045b"
+      ],
+      [
+       "fleet_units",
+       "f56c77bbf993bc7aee527847f925d76997b2283a67f3d66db2ad394421d3b0ef",
+       "40fc21fcec6d5911575de671a3a303052d71b23d948aac6ac38a90000d440f24"
+      ]
+     ],
+     "lane": [
+      [
+       "decisions_pending",
+       "dec-op-a",
+       "4997412b134c0aa279f5ae8e7846423ff12c58deb06a4047eeafb1b9e4cd3dc7"
+      ],
+      [
+       "operations",
+       "op-a",
+       "d3ccf9badf9694935c42b360ba3a3b155a03484310548af063c1b0a1e43c8665"
+      ],
+      [
+       "tasks",
+       "task-op-a",
+       "151c9860df297912c091cee0eb68bd32a33658b539810bb0e1f9215ff91df301"
+      ]
+     ],
+     "reads": [
+      "op-a",
+      "op-a"
+     ]
+    },
+    "units": [
+     {
+      "id": "e2ef498053e80ce831bd21843ad7330f16baa73218d3ea571ee55c5ca85863aa",
+      "kind": "conductor",
+      "lane": "a",
+      "next_action": "settle only on a confirmed parent-and-tree cleanup receipt or a never-entered fence; unknown cleanup keeps the slot until its named owner resolves it",
+      "released_at": null,
+      "reserved_at": "2026-09-30T00:00:00.000014+00:00",
+      "settlement": null,
+      "state": "reserved",
+      "subject": "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66"
+     },
+     {
+      "id": "f56c77bbf993bc7aee527847f925d76997b2283a67f3d66db2ad394421d3b0ef",
+      "kind": "conductor",
+      "lane": "a",
+      "next_action": "none",
+      "released_at": "2026-09-30T00:00:00.000012+00:00",
+      "reserved_at": "2026-09-30T00:00:00.000008+00:00",
+      "settlement": {
+       "exit_code": null,
+       "kind": "fenced",
+       "proof_sha256": "aa7fc0df95825fd7a8898f41a7765135f81597737e9113e42ecfc874be71fce1",
+       "timed_out": false
+      },
+      "state": "released",
+      "subject": "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66"
+     }
+    ]
+   }
+  },
+  "running_not_owned": {
+   "again": {
+    "receipts": [
+     {
+      "value": {
+       "actions": [],
+       "outcome": "blocked",
+       "owned_elsewhere": {
+        "count": 0,
+        "jobs": []
+       },
+       "policy_id": "policy-1",
+       "reason_code": null,
+       "schema": "urn:zeus:continuation-tick:1",
+       "skipped": [
+        {
+         "next_owner": "conductor",
+         "reason_code": "conductor_owner_unknown",
+         "subject": "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66"
+        }
+       ]
+      }
+     }
+    ],
+    "records_unchanged": true
+   },
+   "dispatched": {
+    "value": {
+     "actions": [
+      {
+       "effect": "conductor_started",
+       "route": "conductor_review",
+       "subject": "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66"
+      }
+     ],
+     "outcome": "progressed",
+     "owned_elsewhere": {
+      "count": 0,
+      "jobs": []
+     },
+     "policy_id": "policy-1",
+     "reason_code": null,
+     "schema": "urn:zeus:continuation-tick:1",
+     "skipped": []
+    }
+   },
+   "first": {
+    "value": {
+     "actions": [],
+     "outcome": "blocked",
+     "owned_elsewhere": {
+      "count": 0,
+      "jobs": []
+     },
+     "policy_id": "policy-1",
+     "reason_code": null,
+     "schema": "urn:zeus:continuation-tick:1",
+     "skipped": [
+      {
+       "next_owner": "conductor",
+       "reason_code": "conductor_owner_unknown",
+       "subject": "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66"
+      }
+     ]
+    }
+   },
+   "snap": {
+    "bindings": [],
+    "intents": [
+     {
+      "decision": null,
+      "delivery_binding": null,
+      "delivery_plan": null,
+      "family": "op-a",
+      "history": [
+       [
+        "intended",
+        "lead_accepted"
+       ],
+       [
+        "dispatched",
+        "lead_accepted"
+       ]
+      ],
+      "hold": null,
+      "id": "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66",
+      "launch": {
+       "error_type": null,
+       "exit_code": null,
+       "id": "f56c77bbf993bc7aee527847f925d76997b2283a67f3d66db2ad394421d3b0ef",
+       "sequence": 1,
+       "state": "started"
+      },
+      "next_owner": "conductor",
+      "origin_job": "op-a",
+      "ownership": null,
+      "predecessor_intent": null,
+      "reason_code": "lead_accepted",
+      "route": "conductor_review",
+      "session_mode": null,
+      "state": "dispatched",
+      "successor_job": null,
+      "version": 3
+     }
+    ],
+    "jobs": [
+     [
+      "op-a",
+      "accepted",
+      "a"
+     ]
+    ],
+    "state": {
+     "conductor": {
+      "calls": [
+       "op-a"
+      ],
+      "running": [
+       "f56c77bbf993bc7aee527847f925d76997b2283a67f3d66db2ad394421d3b0ef"
+      ]
+     },
+     "control": [
+      [
+       "continuation_intents",
+       "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66",
+       "f53b179f31f41c40690271be8cd801973baefa666d7516104f5e27bc2694cd2a"
+      ],
+      [
+       "continuation_policies",
+       "policy-1",
+       "8cfb30ef2891de1412f87255419afb3f748e141ea3b18a292d8e78f615da6152"
+      ],
+      [
+       "continuation_progress",
+       "policy-1",
+       "6d20be5c3c1f08f4a9e262621a3193b2db535ee19ffddccd6a83db10cb9d0f1b"
+      ],
+      [
+       "fleet_control",
+       "admission",
+       "eb67ed2fb1e0fc49b3cd382387dff5fd991cc3e69025e02e911735a57313933c"
+      ],
+      [
+       "fleet_jobs",
+       "op-a",
+       "b2b62462ab68fa6a39632b4633cc1d0bca6889741cbc0ec0e88448de908d1684"
+      ],
+      [
+       "fleet_registry",
+       "fleet-1",
+       "bd6513980dc5cf8fd28101e53442a7c9bb46db2737b28b4846793e479c8b6065"
+      ],
+      [
+       "fleet_units",
+       "f56c77bbf993bc7aee527847f925d76997b2283a67f3d66db2ad394421d3b0ef",
+       "f006e885a8eeaf7d5f8df73706b6482b0f12f9343ce8721dad1881d4d18ae7e0"
+      ]
+     ],
+     "lane": [
+      [
+       "decisions_pending",
+       "dec-op-a",
+       "4997412b134c0aa279f5ae8e7846423ff12c58deb06a4047eeafb1b9e4cd3dc7"
+      ],
+      [
+       "operations",
+       "op-a",
+       "d3ccf9badf9694935c42b360ba3a3b155a03484310548af063c1b0a1e43c8665"
+      ],
+      [
+       "tasks",
+       "task-op-a",
+       "151c9860df297912c091cee0eb68bd32a33658b539810bb0e1f9215ff91df301"
+      ]
+     ],
+     "reads": [
+      "op-a"
+     ]
+    },
+    "units": [
+     {
+      "id": "f56c77bbf993bc7aee527847f925d76997b2283a67f3d66db2ad394421d3b0ef",
+      "kind": "conductor",
+      "lane": "a",
+      "next_action": "settle only on a confirmed parent-and-tree cleanup receipt or a never-entered fence; unknown cleanup keeps the slot until its named owner resolves it",
+      "released_at": null,
+      "reserved_at": "2026-09-30T00:00:00.000008+00:00",
+      "settlement": null,
+      "state": "reserved",
+      "subject": "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66"
+     }
+    ]
+   },
+   "unresolved": {
+    "value": [
+     "f56c77bbf993bc7aee527847f925d76997b2283a67f3d66db2ad394421d3b0ef"
+    ]
+   }
+  },
+  "start_failed_no_child": {
+   "absent": {
+    "value": {
+     "actions": [
+      {
+       "effect": "awaiting_owner",
+       "route": "conductor_review",
+       "subject": "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66"
+      }
+     ],
+     "outcome": "progressed",
+     "owned_elsewhere": {
+      "count": 0,
+      "jobs": []
+     },
+     "policy_id": "policy-1",
+     "reason_code": null,
+     "schema": "urn:zeus:continuation-tick:1",
+     "skipped": []
+    }
+   },
+   "mid": {
+    "bindings": [],
+    "intents": [
+     {
+      "decision": null,
+      "delivery_binding": null,
+      "delivery_plan": null,
+      "family": "op-a",
+      "history": [
+       [
+        "intended",
+        "lead_accepted"
+       ],
+       [
+        "dispatched",
+        "lead_accepted"
+       ]
+      ],
+      "hold": null,
+      "id": "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66",
+      "launch": {
+       "error_type": "ConnectionError",
+       "exit_code": null,
+       "id": "f56c77bbf993bc7aee527847f925d76997b2283a67f3d66db2ad394421d3b0ef",
+       "sequence": 1,
+       "state": "start_unconfirmed"
+      },
+      "next_owner": "conductor",
+      "origin_job": "op-a",
+      "ownership": null,
+      "predecessor_intent": null,
+      "reason_code": "lead_accepted",
+      "route": "conductor_review",
+      "session_mode": null,
+      "state": "dispatched",
+      "successor_job": null,
+      "version": 3
+     }
+    ],
+    "jobs": [
+     [
+      "op-a",
+      "accepted",
+      "a"
+     ]
+    ],
+    "state": {
+     "conductor": {
+      "calls": [],
+      "running": []
+     },
+     "control": [
+      [
+       "continuation_intents",
+       "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66",
+       "138d3e397292925e4e36b639b096dbfb87627de206a2c72d552a0e236d16d203"
+      ],
+      [
+       "continuation_policies",
+       "policy-1",
+       "8cfb30ef2891de1412f87255419afb3f748e141ea3b18a292d8e78f615da6152"
+      ],
+      [
+       "continuation_progress",
+       "policy-1",
+       "6d20be5c3c1f08f4a9e262621a3193b2db535ee19ffddccd6a83db10cb9d0f1b"
+      ],
+      [
+       "fleet_control",
+       "admission",
+       "eb67ed2fb1e0fc49b3cd382387dff5fd991cc3e69025e02e911735a57313933c"
+      ],
+      [
+       "fleet_jobs",
+       "op-a",
+       "b2b62462ab68fa6a39632b4633cc1d0bca6889741cbc0ec0e88448de908d1684"
+      ],
+      [
+       "fleet_registry",
+       "fleet-1",
+       "bd6513980dc5cf8fd28101e53442a7c9bb46db2737b28b4846793e479c8b6065"
+      ],
+      [
+       "fleet_units",
+       "f56c77bbf993bc7aee527847f925d76997b2283a67f3d66db2ad394421d3b0ef",
+       "f006e885a8eeaf7d5f8df73706b6482b0f12f9343ce8721dad1881d4d18ae7e0"
+      ]
+     ],
+     "lane": [
+      [
+       "decisions_pending",
+       "dec-op-a",
+       "4997412b134c0aa279f5ae8e7846423ff12c58deb06a4047eeafb1b9e4cd3dc7"
+      ],
+      [
+       "operations",
+       "op-a",
+       "d3ccf9badf9694935c42b360ba3a3b155a03484310548af063c1b0a1e43c8665"
+      ],
+      [
+       "tasks",
+       "task-op-a",
+       "151c9860df297912c091cee0eb68bd32a33658b539810bb0e1f9215ff91df301"
+      ]
+     ],
+     "reads": [
+      "op-a"
+     ]
+    },
+    "units": [
+     {
+      "id": "f56c77bbf993bc7aee527847f925d76997b2283a67f3d66db2ad394421d3b0ef",
+      "kind": "conductor",
+      "lane": "a",
+      "next_action": "settle only on a confirmed parent-and-tree cleanup receipt or a never-entered fence; unknown cleanup keeps the slot until its named owner resolves it",
+      "released_at": null,
+      "reserved_at": "2026-09-30T00:00:00.000008+00:00",
+      "settlement": null,
+      "state": "reserved",
+      "subject": "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66"
+     }
+    ]
+   },
+   "redispatch": {
+    "value": {
+     "actions": [
+      {
+       "effect": "conductor_started",
+       "route": "conductor_review",
+       "subject": "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66"
+      }
+     ],
+     "outcome": "progressed",
+     "owned_elsewhere": {
+      "count": 0,
+      "jobs": []
+     },
+     "policy_id": "policy-1",
+     "reason_code": null,
+     "schema": "urn:zeus:continuation-tick:1",
+     "skipped": []
+    }
+   },
+   "snap": {
+    "bindings": [],
+    "intents": [
+     {
+      "decision": null,
+      "delivery_binding": null,
+      "delivery_plan": null,
+      "family": "op-a",
+      "history": [
+       [
+        "intended",
+        "lead_accepted"
+       ],
+       [
+        "dispatched",
+        "lead_accepted"
+       ],
+       [
+        "awaiting_owner",
+        "conductor_not_launched"
+       ],
+       [
+        "intended",
+        "conductor_not_launched"
+       ],
+       [
+        "dispatched",
+        "conductor_not_launched"
+       ]
+      ],
+      "hold": null,
+      "id": "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66",
+      "launch": {
+       "error_type": null,
+       "exit_code": null,
+       "id": "e2ef498053e80ce831bd21843ad7330f16baa73218d3ea571ee55c5ca85863aa",
+       "sequence": 2,
+       "state": "started"
+      },
+      "next_owner": "conductor",
+      "origin_job": "op-a",
+      "ownership": null,
+      "predecessor_intent": null,
+      "reason_code": "conductor_not_launched",
+      "route": "conductor_review",
+      "session_mode": null,
+      "state": "dispatched",
+      "successor_job": null,
+      "version": 7
+     }
+    ],
+    "jobs": [
+     [
+      "op-a",
+      "accepted",
+      "a"
+     ]
+    ],
+    "state": {
+     "conductor": {
+      "calls": [
+       "op-a"
+      ],
+      "running": [
+       "e2ef498053e80ce831bd21843ad7330f16baa73218d3ea571ee55c5ca85863aa"
+      ]
+     },
+     "control": [
+      [
+       "continuation_intents",
+       "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66",
+       "01c74b1c2328178ad2c7d4da1e6ca8b664db45d6a509f2c5fc38040418558094"
+      ],
+      [
+       "continuation_policies",
+       "policy-1",
+       "8cfb30ef2891de1412f87255419afb3f748e141ea3b18a292d8e78f615da6152"
+      ],
+      [
+       "continuation_progress",
+       "policy-1",
+       "6d20be5c3c1f08f4a9e262621a3193b2db535ee19ffddccd6a83db10cb9d0f1b"
+      ],
+      [
+       "fleet_control",
+       "admission",
+       "eb67ed2fb1e0fc49b3cd382387dff5fd991cc3e69025e02e911735a57313933c"
+      ],
+      [
+       "fleet_jobs",
+       "op-a",
+       "b2b62462ab68fa6a39632b4633cc1d0bca6889741cbc0ec0e88448de908d1684"
+      ],
+      [
+       "fleet_registry",
+       "fleet-1",
+       "bd6513980dc5cf8fd28101e53442a7c9bb46db2737b28b4846793e479c8b6065"
+      ],
+      [
+       "fleet_units",
+       "e2ef498053e80ce831bd21843ad7330f16baa73218d3ea571ee55c5ca85863aa",
+       "bbeab47c53200dc4e245722f99dea4a2c942fd7c4583dffed8f2a3a82b98045b"
+      ],
+      [
+       "fleet_units",
+       "f56c77bbf993bc7aee527847f925d76997b2283a67f3d66db2ad394421d3b0ef",
+       "40fc21fcec6d5911575de671a3a303052d71b23d948aac6ac38a90000d440f24"
+      ]
+     ],
+     "lane": [
+      [
+       "decisions_pending",
+       "dec-op-a",
+       "4997412b134c0aa279f5ae8e7846423ff12c58deb06a4047eeafb1b9e4cd3dc7"
+      ],
+      [
+       "operations",
+       "op-a",
+       "d3ccf9badf9694935c42b360ba3a3b155a03484310548af063c1b0a1e43c8665"
+      ],
+      [
+       "tasks",
+       "task-op-a",
+       "151c9860df297912c091cee0eb68bd32a33658b539810bb0e1f9215ff91df301"
+      ]
+     ],
+     "reads": [
+      "op-a",
+      "op-a"
+     ]
+    },
+    "units": [
+     {
+      "id": "e2ef498053e80ce831bd21843ad7330f16baa73218d3ea571ee55c5ca85863aa",
+      "kind": "conductor",
+      "lane": "a",
+      "next_action": "settle only on a confirmed parent-and-tree cleanup receipt or a never-entered fence; unknown cleanup keeps the slot until its named owner resolves it",
+      "released_at": null,
+      "reserved_at": "2026-09-30T00:00:00.000014+00:00",
+      "settlement": null,
+      "state": "reserved",
+      "subject": "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66"
+     },
+     {
+      "id": "f56c77bbf993bc7aee527847f925d76997b2283a67f3d66db2ad394421d3b0ef",
+      "kind": "conductor",
+      "lane": "a",
+      "next_action": "none",
+      "released_at": "2026-09-30T00:00:00.000012+00:00",
+      "reserved_at": "2026-09-30T00:00:00.000008+00:00",
+      "settlement": {
+       "exit_code": null,
+       "kind": "fenced",
+       "proof_sha256": "aa7fc0df95825fd7a8898f41a7765135f81597737e9113e42ecfc874be71fce1",
+       "timed_out": false
+      },
+      "state": "released",
+      "subject": "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66"
+     }
+    ]
+   },
+   "unconfirmed": {
+    "value": {
+     "actions": [
+      {
+       "effect": "launch_unconfirmed",
+       "error_type": "ConnectionError",
+       "route": "conductor_review",
+       "subject": "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66"
+      }
+     ],
+     "outcome": "progressed",
+     "owned_elsewhere": {
+      "count": 0,
+      "jobs": []
+     },
+     "policy_id": "policy-1",
+     "reason_code": null,
+     "schema": "urn:zeus:continuation-tick:1",
+     "skipped": []
+    }
+   }
+  },
+  "start_lost_child_decided": {
+   "after": {
+    "receipts": [
+     {
+      "value": {
+       "actions": [
+        {
+         "effect": "conductor_decided",
+         "route": "conductor_review",
+         "subject": "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66"
+        },
+        {
+         "effect": "awaiting_owner",
+         "route": "host_delivery",
+         "subject": "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648"
+        }
+       ],
+       "outcome": "progressed",
+       "owned_elsewhere": {
+        "count": 0,
+        "jobs": []
+       },
+       "policy_id": "policy-1",
+       "reason_code": null,
+       "schema": "urn:zeus:continuation-tick:1",
+       "skipped": []
+      }
+     },
+     {
+      "value": {
+       "actions": [],
+       "outcome": "idle",
+       "owned_elsewhere": {
+        "count": 0,
+        "jobs": []
+       },
+       "policy_id": "policy-1",
+       "reason_code": null,
+       "schema": "urn:zeus:continuation-tick:1",
+       "skipped": []
+      }
+     }
+    ],
+    "records_unchanged": false
+   },
+   "mid": {
+    "bindings": [],
+    "intents": [
+     {
+      "decision": null,
+      "delivery_binding": null,
+      "delivery_plan": null,
+      "family": "op-a",
+      "history": [
+       [
+        "intended",
+        "lead_accepted"
+       ],
+       [
+        "dispatched",
+        "lead_accepted"
+       ]
+      ],
+      "hold": null,
+      "id": "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66",
+      "launch": {
+       "error_type": "TimeoutError",
+       "exit_code": null,
+       "id": "f56c77bbf993bc7aee527847f925d76997b2283a67f3d66db2ad394421d3b0ef",
+       "sequence": 1,
+       "state": "start_unconfirmed"
+      },
+      "next_owner": "conductor",
+      "origin_job": "op-a",
+      "ownership": null,
+      "predecessor_intent": null,
+      "reason_code": "lead_accepted",
+      "route": "conductor_review",
+      "session_mode": null,
+      "state": "dispatched",
+      "successor_job": null,
+      "version": 3
+     }
+    ],
+    "jobs": [
+     [
+      "op-a",
+      "accepted",
+      "a"
+     ]
+    ],
+    "state": {
+     "conductor": {
+      "calls": [
+       "op-a"
+      ],
+      "running": []
+     },
+     "control": [
+      [
+       "continuation_intents",
+       "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66",
+       "66523d3ff0edc84ba82aba781d75e290c50d02cb64e713c8e2ef51f743f179fb"
+      ],
+      [
+       "continuation_policies",
+       "policy-1",
+       "8cfb30ef2891de1412f87255419afb3f748e141ea3b18a292d8e78f615da6152"
+      ],
+      [
+       "continuation_progress",
+       "policy-1",
+       "6d20be5c3c1f08f4a9e262621a3193b2db535ee19ffddccd6a83db10cb9d0f1b"
+      ],
+      [
+       "fleet_control",
+       "admission",
+       "eb67ed2fb1e0fc49b3cd382387dff5fd991cc3e69025e02e911735a57313933c"
+      ],
+      [
+       "fleet_jobs",
+       "op-a",
+       "b2b62462ab68fa6a39632b4633cc1d0bca6889741cbc0ec0e88448de908d1684"
+      ],
+      [
+       "fleet_registry",
+       "fleet-1",
+       "bd6513980dc5cf8fd28101e53442a7c9bb46db2737b28b4846793e479c8b6065"
+      ],
+      [
+       "fleet_units",
+       "f56c77bbf993bc7aee527847f925d76997b2283a67f3d66db2ad394421d3b0ef",
+       "f006e885a8eeaf7d5f8df73706b6482b0f12f9343ce8721dad1881d4d18ae7e0"
+      ]
+     ],
+     "lane": [
+      [
+       "decisions_pending",
+       "cond-op-a",
+       "9de0bd66007ea463d90fd29088a77810bd6f31f4bbbcb752702a6012b25adb4b"
+      ],
+      [
+       "decisions_pending",
+       "dec-op-a",
+       "4997412b134c0aa279f5ae8e7846423ff12c58deb06a4047eeafb1b9e4cd3dc7"
+      ],
+      [
+       "operations",
+       "op-a",
+       "d3ccf9badf9694935c42b360ba3a3b155a03484310548af063c1b0a1e43c8665"
+      ],
+      [
+       "releases",
+       "rel-op-a",
+       "9c36785a9d7107530f9c5b869391161028c06a60f0bab3082b61d7c74f1eadaa"
+      ],
+      [
+       "tasks",
+       "task-op-a",
+       "151c9860df297912c091cee0eb68bd32a33658b539810bb0e1f9215ff91df301"
+      ]
+     ],
+     "reads": [
+      "op-a"
+     ]
+    },
+    "units": [
+     {
+      "id": "f56c77bbf993bc7aee527847f925d76997b2283a67f3d66db2ad394421d3b0ef",
+      "kind": "conductor",
+      "lane": "a",
+      "next_action": "settle only on a confirmed parent-and-tree cleanup receipt or a never-entered fence; unknown cleanup keeps the slot until its named owner resolves it",
+      "released_at": null,
+      "reserved_at": "2026-09-30T00:00:00.000008+00:00",
+      "settlement": null,
+      "state": "reserved",
+      "subject": "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66"
+     }
+    ]
+   },
+   "snap": {
+    "bindings": [],
+    "intents": [
+     {
+      "decision": {
+       "accepted": true,
+       "execution_ref": "sha256:9999999999999999999999999999999999999999999999999999999999999999",
+       "id": "cond-op-a",
+       "status": "succeeded"
+      },
+      "delivery_binding": null,
+      "delivery_plan": null,
+      "family": "op-a",
+      "history": [
+       [
+        "intended",
+        "lead_accepted"
+       ],
+       [
+        "dispatched",
+        "lead_accepted"
+       ],
+       [
+        "returned",
+        "lead_accepted"
+       ],
+       [
+        "completed",
+        "lead_accepted"
+       ]
+      ],
+      "hold": null,
+      "id": "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66",
+      "launch": {
+       "error_type": "TimeoutError",
+       "exit_code": 0,
+       "id": "f56c77bbf993bc7aee527847f925d76997b2283a67f3d66db2ad394421d3b0ef",
+       "sequence": 1,
+       "state": "exited"
+      },
+      "next_owner": "conductor",
+      "origin_job": "op-a",
+      "ownership": null,
+      "predecessor_intent": null,
+      "reason_code": "lead_accepted",
+      "route": "conductor_review",
+      "session_mode": null,
+      "state": "completed",
+      "successor_job": null,
+      "version": 5
+     },
+     {
+      "decision": null,
+      "delivery_binding": {
+       "release_id": "rel-op-a",
+       "revision": "cccccccccccccccccccccccccccccccccccccccc",
+       "target_id": "fleet-host"
+      },
+      "delivery_plan": null,
+      "family": "op-a",
+      "history": [
+       [
+        "awaiting_owner",
+        "conductor_accepted"
+       ]
+      ],
+      "hold": null,
+      "id": "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648",
+      "launch": null,
+      "next_owner": "host_delivery",
+      "origin_job": "op-a",
+      "ownership": null,
+      "predecessor_intent": null,
+      "reason_code": "conductor_accepted",
+      "route": "host_delivery",
+      "session_mode": null,
+      "state": "awaiting_owner",
+      "successor_job": null,
+      "version": 1
+     }
+    ],
+    "jobs": [
+     [
+      "op-a",
+      "accepted",
+      "a"
+     ]
+    ],
+    "state": {
+     "conductor": {
+      "calls": [
+       "op-a"
+      ],
+      "running": []
+     },
+     "control": [
+      [
+       "continuation_intents",
+       "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648",
+       "e0ac1077a3ff605ab765fbe70abe23347eb4335b742cf8367a8193df1e24b0f8"
+      ],
+      [
+       "continuation_intents",
+       "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66",
+       "5d7a4d790b1e2a9becb84a77046a9119a3dff168d717ac844785fea2b6fb357b"
+      ],
+      [
+       "continuation_policies",
+       "policy-1",
+       "8cfb30ef2891de1412f87255419afb3f748e141ea3b18a292d8e78f615da6152"
+      ],
+      [
+       "continuation_progress",
+       "policy-1",
+       "4d2d8831a65ec745efb57233d729a9abcdea7627fb7a581f61b65ca0a4680618"
+      ],
+      [
+       "fleet_control",
+       "admission",
+       "eb67ed2fb1e0fc49b3cd382387dff5fd991cc3e69025e02e911735a57313933c"
+      ],
+      [
+       "fleet_jobs",
+       "op-a",
+       "b2b62462ab68fa6a39632b4633cc1d0bca6889741cbc0ec0e88448de908d1684"
+      ],
+      [
+       "fleet_registry",
+       "fleet-1",
+       "bd6513980dc5cf8fd28101e53442a7c9bb46db2737b28b4846793e479c8b6065"
+      ],
+      [
+       "fleet_units",
+       "f56c77bbf993bc7aee527847f925d76997b2283a67f3d66db2ad394421d3b0ef",
+       "51c1075df1f2255436bf26ea5a7f09486704f298c29515c0c983cdc7017c946a"
+      ]
+     ],
+     "lane": [
+      [
+       "decisions_pending",
+       "cond-op-a",
+       "9de0bd66007ea463d90fd29088a77810bd6f31f4bbbcb752702a6012b25adb4b"
+      ],
+      [
+       "decisions_pending",
+       "dec-op-a",
+       "4997412b134c0aa279f5ae8e7846423ff12c58deb06a4047eeafb1b9e4cd3dc7"
+      ],
+      [
+       "operations",
+       "op-a",
+       "d3ccf9badf9694935c42b360ba3a3b155a03484310548af063c1b0a1e43c8665"
+      ],
+      [
+       "releases",
+       "rel-op-a",
+       "9c36785a9d7107530f9c5b869391161028c06a60f0bab3082b61d7c74f1eadaa"
+      ],
+      [
+       "tasks",
+       "task-op-a",
+       "151c9860df297912c091cee0eb68bd32a33658b539810bb0e1f9215ff91df301"
+      ]
+     ],
+     "reads": [
+      "op-a",
+      "op-a",
+      "op-a",
+      "op-a"
+     ]
+    },
+    "units": [
+     {
+      "id": "f56c77bbf993bc7aee527847f925d76997b2283a67f3d66db2ad394421d3b0ef",
+      "kind": "conductor",
+      "lane": "a",
+      "next_action": "none",
+      "released_at": "2026-09-30T00:00:00.000012+00:00",
+      "reserved_at": "2026-09-30T00:00:00.000008+00:00",
+      "settlement": {
+       "exit_code": 0,
+       "kind": "cleanup",
+       "proof_sha256": "1f61d69870f8feda1e9774f4415bda9d6b75531b0513019bab08ac10e7c29610",
+       "timed_out": false
+      },
+      "state": "released",
+      "subject": "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66"
+     }
+    ]
+   },
+   "unconfirmed": {
+    "value": {
+     "actions": [
+      {
+       "effect": "launch_unconfirmed",
+       "error_type": "TimeoutError",
+       "route": "conductor_review",
+       "subject": "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66"
+      }
+     ],
+     "outcome": "progressed",
+     "owned_elsewhere": {
+      "count": 0,
+      "jobs": []
+     },
+     "policy_id": "policy-1",
+     "reason_code": null,
+     "schema": "urn:zeus:continuation-tick:1",
+     "skipped": []
+    }
+   }
+  },
+  "timeout_with_proof": {
+   "again": {
+    "receipts": [
+     {
+      "value": {
+       "actions": [],
+       "outcome": "idle",
+       "owned_elsewhere": {
+        "count": 0,
+        "jobs": []
+       },
+       "policy_id": "policy-1",
+       "reason_code": null,
+       "schema": "urn:zeus:continuation-tick:1",
+       "skipped": []
+      }
+     }
+    ],
+    "records_unchanged": true
+   },
+   "dispatched": {
+    "value": {
+     "actions": [
+      {
+       "effect": "conductor_started",
+       "route": "conductor_review",
+       "subject": "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66"
+      }
+     ],
+     "outcome": "progressed",
+     "owned_elsewhere": {
+      "count": 0,
+      "jobs": []
+     },
+     "policy_id": "policy-1",
+     "reason_code": null,
+     "schema": "urn:zeus:continuation-tick:1",
+     "skipped": []
+    }
+   },
+   "snap": {
+    "bindings": [],
+    "intents": [
+     {
+      "decision": null,
+      "delivery_binding": null,
+      "delivery_plan": null,
+      "family": "op-a",
+      "history": [
+       [
+        "intended",
+        "lead_accepted"
+       ],
+       [
+        "dispatched",
+        "lead_accepted"
+       ],
+       [
+        "recovery_required",
+        "conductor_timeout"
+       ]
+      ],
+      "hold": null,
+      "id": "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66",
+      "launch": {
+       "error_type": null,
+       "exit_code": null,
+       "id": "f56c77bbf993bc7aee527847f925d76997b2283a67f3d66db2ad394421d3b0ef",
+       "sequence": 1,
+       "state": "timeout"
+      },
+      "next_owner": "execution_recovery",
+      "origin_job": "op-a",
+      "ownership": null,
+      "predecessor_intent": null,
+      "reason_code": "conductor_timeout",
+      "route": "conductor_review",
+      "session_mode": null,
+      "state": "recovery_required",
+      "successor_job": null,
+      "version": 4
+     }
+    ],
+    "jobs": [
+     [
+      "op-a",
+      "accepted",
+      "a"
+     ]
+    ],
+    "state": {
+     "conductor": {
+      "calls": [
+       "op-a"
+      ],
+      "running": []
+     },
+     "control": [
+      [
+       "continuation_intents",
+       "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66",
+       "272974765f9c72f41f8f5440f3d804e5397784066c2e3f5fda19893ff8861bce"
+      ],
+      [
+       "continuation_policies",
+       "policy-1",
+       "8cfb30ef2891de1412f87255419afb3f748e141ea3b18a292d8e78f615da6152"
+      ],
+      [
+       "continuation_progress",
+       "policy-1",
+       "6d20be5c3c1f08f4a9e262621a3193b2db535ee19ffddccd6a83db10cb9d0f1b"
+      ],
+      [
+       "fleet_control",
+       "admission",
+       "eb67ed2fb1e0fc49b3cd382387dff5fd991cc3e69025e02e911735a57313933c"
+      ],
+      [
+       "fleet_jobs",
+       "op-a",
+       "b2b62462ab68fa6a39632b4633cc1d0bca6889741cbc0ec0e88448de908d1684"
+      ],
+      [
+       "fleet_registry",
+       "fleet-1",
+       "bd6513980dc5cf8fd28101e53442a7c9bb46db2737b28b4846793e479c8b6065"
+      ],
+      [
+       "fleet_units",
+       "f56c77bbf993bc7aee527847f925d76997b2283a67f3d66db2ad394421d3b0ef",
+       "e0aab5f453371ac04b35acc653bf74ca0aaaff8af52ad2ab81858c4a6f767417"
+      ]
+     ],
+     "lane": [
+      [
+       "decisions_pending",
+       "cond-x",
+       "af6e392040438a0bc03cc541923967891bc7611e7cd5880f5de571deb5e4ebf2"
+      ],
+      [
+       "decisions_pending",
+       "dec-op-a",
+       "4997412b134c0aa279f5ae8e7846423ff12c58deb06a4047eeafb1b9e4cd3dc7"
+      ],
+      [
+       "operations",
+       "op-a",
+       "d3ccf9badf9694935c42b360ba3a3b155a03484310548af063c1b0a1e43c8665"
+      ],
+      [
+       "tasks",
+       "task-op-a",
+       "151c9860df297912c091cee0eb68bd32a33658b539810bb0e1f9215ff91df301"
+      ]
+     ],
+     "reads": [
+      "op-a",
+      "op-a"
+     ]
+    },
+    "units": [
+     {
+      "id": "f56c77bbf993bc7aee527847f925d76997b2283a67f3d66db2ad394421d3b0ef",
+      "kind": "conductor",
+      "lane": "a",
+      "next_action": "none",
+      "released_at": "2026-09-30T00:00:00.000012+00:00",
+      "reserved_at": "2026-09-30T00:00:00.000008+00:00",
+      "settlement": {
+       "exit_code": null,
+       "kind": "cleanup",
+       "proof_sha256": "e5aee7e596beceb8fb6030e85d1ae07ff4be56865e2b3a7cf8a9b70ff2eb8c6a",
+       "timed_out": true
+      },
+      "state": "released",
+      "subject": "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66"
+     }
+    ]
+   },
+   "timeout": {
+    "value": {
+     "actions": [
+      {
+       "effect": "recovery_required",
+       "route": "conductor_review",
+       "subject": "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66"
+      }
+     ],
+     "outcome": "progressed",
+     "owned_elsewhere": {
+      "count": 0,
+      "jobs": []
+     },
+     "policy_id": "policy-1",
+     "reason_code": null,
+     "schema": "urn:zeus:continuation-tick:1",
+     "skipped": []
+    }
+   }
+  },
+  "unclaimed_exhausted": {
+   "launches": 3,
+   "snap": {
+    "bindings": [],
+    "intents": [
+     {
+      "decision": null,
+      "delivery_binding": null,
+      "delivery_plan": null,
+      "family": "op-a",
+      "history": [
+       [
+        "intended",
+        "lead_accepted"
+       ],
+       [
+        "dispatched",
+        "lead_accepted"
+       ],
+       [
+        "awaiting_owner",
+        "conductor_not_claimed"
+       ],
+       [
+        "intended",
+        "conductor_not_claimed"
+       ],
+       [
+        "dispatched",
+        "conductor_not_claimed"
+       ],
+       [
+        "awaiting_owner",
+        "conductor_not_claimed"
+       ],
+       [
+        "intended",
+        "conductor_not_claimed"
+       ],
+       [
+        "dispatched",
+        "conductor_not_claimed"
+       ],
+       [
+        "awaiting_owner",
+        "conductor_not_claimed"
+       ],
+       [
+        "refused",
+        "conductor_launch_exhausted"
+       ]
+      ],
+      "hold": null,
+      "id": "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66",
+      "launch": {
+       "error_type": null,
+       "exit_code": 0,
+       "id": "cec6e08c8f096a308f1c32b671d088b288953fe7b403b8b8076b51409ecb9f63",
+       "sequence": 3,
+       "state": "exited"
+      },
+      "next_owner": "conductor",
+      "origin_job": "op-a",
+      "ownership": null,
+      "predecessor_intent": null,
+      "reason_code": "conductor_launch_exhausted",
+      "route": "conductor_review",
+      "session_mode": null,
+      "state": "refused",
+      "successor_job": null,
+      "version": 13
+     }
+    ],
+    "jobs": [
+     [
+      "op-a",
+      "accepted",
+      "a"
+     ]
+    ],
+    "state": {
+     "conductor": {
+      "calls": [
+       "op-a",
+       "op-a",
+       "op-a"
+      ],
+      "running": []
+     },
+     "control": [
+      [
+       "continuation_intents",
+       "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66",
+       "d8f71498702f501c2e6c9a14d87073725c9355116ef0503dc2ebbbdc3207b591"
+      ],
+      [
+       "continuation_policies",
+       "policy-1",
+       "8cfb30ef2891de1412f87255419afb3f748e141ea3b18a292d8e78f615da6152"
+      ],
+      [
+       "continuation_progress",
+       "policy-1",
+       "6d20be5c3c1f08f4a9e262621a3193b2db535ee19ffddccd6a83db10cb9d0f1b"
+      ],
+      [
+       "fleet_control",
+       "admission",
+       "eb67ed2fb1e0fc49b3cd382387dff5fd991cc3e69025e02e911735a57313933c"
+      ],
+      [
+       "fleet_jobs",
+       "op-a",
+       "b2b62462ab68fa6a39632b4633cc1d0bca6889741cbc0ec0e88448de908d1684"
+      ],
+      [
+       "fleet_registry",
+       "fleet-1",
+       "bd6513980dc5cf8fd28101e53442a7c9bb46db2737b28b4846793e479c8b6065"
+      ],
+      [
+       "fleet_units",
+       "cec6e08c8f096a308f1c32b671d088b288953fe7b403b8b8076b51409ecb9f63",
+       "6a35af366e031866747ac945e6cde1dc761d5799faeb3f5762ba23ceeb3bb3c6"
+      ],
+      [
+       "fleet_units",
+       "e2ef498053e80ce831bd21843ad7330f16baa73218d3ea571ee55c5ca85863aa",
+       "0e214b3913fe92d5556d03ebf382e0073063089de9cbb6977654c0321a70a318"
+      ],
+      [
+       "fleet_units",
+       "f56c77bbf993bc7aee527847f925d76997b2283a67f3d66db2ad394421d3b0ef",
+       "51c1075df1f2255436bf26ea5a7f09486704f298c29515c0c983cdc7017c946a"
+      ]
+     ],
+     "lane": [
+      [
+       "decisions_pending",
+       "dec-op-a",
+       "4997412b134c0aa279f5ae8e7846423ff12c58deb06a4047eeafb1b9e4cd3dc7"
+      ],
+      [
+       "operations",
+       "op-a",
+       "d3ccf9badf9694935c42b360ba3a3b155a03484310548af063c1b0a1e43c8665"
+      ],
+      [
+       "tasks",
+       "task-op-a",
+       "151c9860df297912c091cee0eb68bd32a33658b539810bb0e1f9215ff91df301"
+      ]
+     ],
+     "reads": [
+      "op-a",
+      "op-a",
+      "op-a",
+      "op-a",
+      "op-a",
+      "op-a",
+      "op-a"
+     ]
+    },
+    "units": [
+     {
+      "id": "f56c77bbf993bc7aee527847f925d76997b2283a67f3d66db2ad394421d3b0ef",
+      "kind": "conductor",
+      "lane": "a",
+      "next_action": "none",
+      "released_at": "2026-09-30T00:00:00.000012+00:00",
+      "reserved_at": "2026-09-30T00:00:00.000008+00:00",
+      "settlement": {
+       "exit_code": 0,
+       "kind": "cleanup",
+       "proof_sha256": "1f61d69870f8feda1e9774f4415bda9d6b75531b0513019bab08ac10e7c29610",
+       "timed_out": false
+      },
+      "state": "released",
+      "subject": "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66"
+     },
+     {
+      "id": "e2ef498053e80ce831bd21843ad7330f16baa73218d3ea571ee55c5ca85863aa",
+      "kind": "conductor",
+      "lane": "a",
+      "next_action": "none",
+      "released_at": "2026-09-30T00:00:00.000018+00:00",
+      "reserved_at": "2026-09-30T00:00:00.000014+00:00",
+      "settlement": {
+       "exit_code": 0,
+       "kind": "cleanup",
+       "proof_sha256": "4f213dee0c5ebb6ba7fe0032f37680a44be18c4727afa572c28fdae62aec1d22",
+       "timed_out": false
+      },
+      "state": "released",
+      "subject": "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66"
+     },
+     {
+      "id": "cec6e08c8f096a308f1c32b671d088b288953fe7b403b8b8076b51409ecb9f63",
+      "kind": "conductor",
+      "lane": "a",
+      "next_action": "none",
+      "released_at": "2026-09-30T00:00:00.000024+00:00",
+      "reserved_at": "2026-09-30T00:00:00.000020+00:00",
+      "settlement": {
+       "exit_code": 0,
+       "kind": "cleanup",
+       "proof_sha256": "4fc085865261f86ce8101f4cf638a9438b56a2dd58ffc6f0af7d34fcd399450a",
+       "timed_out": false
+      },
+      "state": "released",
+      "subject": "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66"
+     }
+    ]
+   },
+   "steps": [
+    {
+     "value": {
+      "actions": [
+       {
+        "effect": "conductor_started",
+        "route": "conductor_review",
+        "subject": "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66"
+       }
+      ],
+      "outcome": "progressed",
+      "owned_elsewhere": {
+       "count": 0,
+       "jobs": []
+      },
+      "policy_id": "policy-1",
+      "reason_code": null,
+      "schema": "urn:zeus:continuation-tick:1",
+      "skipped": []
+     }
+    },
+    {
+     "value": {
+      "actions": [
+       {
+        "effect": "awaiting_owner",
+        "route": "conductor_review",
+        "subject": "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66"
+       }
+      ],
+      "outcome": "progressed",
+      "owned_elsewhere": {
+       "count": 0,
+       "jobs": []
+      },
+      "policy_id": "policy-1",
+      "reason_code": null,
+      "schema": "urn:zeus:continuation-tick:1",
+      "skipped": []
+     }
+    },
+    {
+     "value": {
+      "actions": [
+       {
+        "effect": "conductor_started",
+        "route": "conductor_review",
+        "subject": "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66"
+       }
+      ],
+      "outcome": "progressed",
+      "owned_elsewhere": {
+       "count": 0,
+       "jobs": []
+      },
+      "policy_id": "policy-1",
+      "reason_code": null,
+      "schema": "urn:zeus:continuation-tick:1",
+      "skipped": []
+     }
+    },
+    {
+     "value": {
+      "actions": [
+       {
+        "effect": "awaiting_owner",
+        "route": "conductor_review",
+        "subject": "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66"
+       }
+      ],
+      "outcome": "progressed",
+      "owned_elsewhere": {
+       "count": 0,
+       "jobs": []
+      },
+      "policy_id": "policy-1",
+      "reason_code": null,
+      "schema": "urn:zeus:continuation-tick:1",
+      "skipped": []
+     }
+    },
+    {
+     "value": {
+      "actions": [
+       {
+        "effect": "conductor_started",
+        "route": "conductor_review",
+        "subject": "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66"
+       }
+      ],
+      "outcome": "progressed",
+      "owned_elsewhere": {
+       "count": 0,
+       "jobs": []
+      },
+      "policy_id": "policy-1",
+      "reason_code": null,
+      "schema": "urn:zeus:continuation-tick:1",
+      "skipped": []
+     }
+    },
+    {
+     "value": {
+      "actions": [
+       {
+        "effect": "awaiting_owner",
+        "route": "conductor_review",
+        "subject": "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66"
+       }
+      ],
+      "outcome": "progressed",
+      "owned_elsewhere": {
+       "count": 0,
+       "jobs": []
+      },
+      "policy_id": "policy-1",
+      "reason_code": null,
+      "schema": "urn:zeus:continuation-tick:1",
+      "skipped": []
+     }
+    },
+    {
+     "value": {
+      "actions": [
+       {
+        "effect": "refused",
+        "route": "conductor_review",
+        "subject": "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66"
+       }
+      ],
+      "outcome": "progressed",
+      "owned_elsewhere": {
+       "count": 0,
+       "jobs": []
+      },
+      "policy_id": "policy-1",
+      "reason_code": null,
+      "schema": "urn:zeus:continuation-tick:1",
+      "skipped": []
+     }
+    },
+    {
+     "value": {
+      "actions": [],
+      "outcome": "idle",
+      "owned_elsewhere": {
+       "count": 0,
+       "jobs": []
+      },
+      "policy_id": "policy-1",
+      "reason_code": null,
+      "schema": "urn:zeus:continuation-tick:1",
+      "skipped": []
+     }
+    },
+    {
+     "value": {
+      "actions": [],
+      "outcome": "idle",
+      "owned_elsewhere": {
+       "count": 0,
+       "jobs": []
+      },
+      "policy_id": "policy-1",
+      "reason_code": null,
+      "schema": "urn:zeus:continuation-tick:1",
+      "skipped": []
+     }
+    },
+    {
+     "value": {
+      "actions": [],
+      "outcome": "idle",
+      "owned_elsewhere": {
+       "count": 0,
+       "jobs": []
+      },
+      "policy_id": "policy-1",
+      "reason_code": null,
+      "schema": "urn:zeus:continuation-tick:1",
+      "skipped": []
+     }
+    }
+   ]
+  }
+ },
+ "delivery": {
+  "active": {
+   "again": {
+    "receipts": [
+     {
+      "value": {
+       "actions": [],
+       "outcome": "idle",
+       "owned_elsewhere": {
+        "count": 0,
+        "jobs": []
+       },
+       "policy_id": "policy-1",
+       "reason_code": null,
+       "schema": "urn:zeus:continuation-tick:1",
+       "skipped": []
+      }
+     },
+     {
+      "value": {
+       "actions": [],
+       "outcome": "idle",
+       "owned_elsewhere": {
+        "count": 0,
+        "jobs": []
+       },
+       "policy_id": "policy-1",
+       "reason_code": null,
+       "schema": "urn:zeus:continuation-tick:1",
+       "skipped": []
+      }
+     }
+    ],
+    "records_unchanged": true
+   },
+   "snap": {
+    "bindings": [],
+    "intents": [
+     {
+      "decision": {
+       "accepted": true,
+       "execution_ref": "sha256:9999999999999999999999999999999999999999999999999999999999999999",
+       "id": "cond-op-a",
+       "status": "succeeded"
+      },
+      "delivery_binding": null,
+      "delivery_plan": null,
+      "family": "op-a",
+      "history": [
+       [
+        "intended",
+        "lead_accepted"
+       ],
+       [
+        "dispatched",
+        "lead_accepted"
+       ],
+       [
+        "returned",
+        "lead_accepted"
+       ],
+       [
+        "completed",
+        "lead_accepted"
+       ]
+      ],
+      "hold": null,
+      "id": "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66",
+      "launch": {
+       "error_type": null,
+       "exit_code": 0,
+       "id": "f56c77bbf993bc7aee527847f925d76997b2283a67f3d66db2ad394421d3b0ef",
+       "sequence": 1,
+       "state": "exited"
+      },
+      "next_owner": "conductor",
+      "origin_job": "op-a",
+      "ownership": null,
+      "predecessor_intent": null,
+      "reason_code": "lead_accepted",
+      "route": "conductor_review",
+      "session_mode": null,
+      "state": "completed",
+      "successor_job": null,
+      "version": 5
+     },
+     {
+      "decision": null,
+      "delivery_binding": {
+       "release_id": "rel-op-a",
+       "revision": "cccccccccccccccccccccccccccccccccccccccc",
+       "target_id": "fleet-host"
+      },
+      "delivery_plan": {
+       "plan_id": "plan-1",
+       "plan_sha256": "5555555555555555555555555555555555555555555555555555555555555555",
+       "stage": "active"
+      },
+      "family": "op-a",
+      "history": [
+       [
+        "awaiting_owner",
+        "conductor_accepted"
+       ],
+       [
+        "completed",
+        "delivery_active"
+       ]
+      ],
+      "hold": null,
+      "id": "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648",
+      "launch": null,
+      "next_owner": "host_delivery",
+      "origin_job": "op-a",
+      "ownership": null,
+      "predecessor_intent": null,
+      "reason_code": "delivery_active",
+      "route": "host_delivery",
+      "session_mode": null,
+      "state": "completed",
+      "successor_job": null,
+      "version": 2
+     },
+     {
+      "decision": null,
+      "delivery_binding": null,
+      "delivery_plan": null,
+      "family": "op-a",
+      "history": [
+       [
+        "awaiting_owner",
+        "item_completed"
+       ]
+      ],
+      "hold": null,
+      "id": "efccd8118ebf39431c45722d040c7354824627ee318b5aa856b717663a472523",
+      "launch": null,
+      "next_owner": "fleet_backlog",
+      "origin_job": "op-a",
+      "ownership": null,
+      "predecessor_intent": "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648",
+      "reason_code": "item_completed",
+      "route": "next_item",
+      "session_mode": null,
+      "state": "awaiting_owner",
+      "successor_job": null,
+      "version": 1
+     }
+    ],
+    "jobs": [
+     [
+      "op-a",
+      "accepted",
+      "a"
+     ]
+    ],
+    "state": {
+     "conductor": {
+      "calls": [
+       "op-a"
+      ],
+      "running": []
+     },
+     "control": [
+      [
+       "continuation_intents",
+       "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648",
+       "9e86d99dac1414367d12408814fdbc9dfd943ecd93810cf1259f86bf038ba920"
+      ],
+      [
+       "continuation_intents",
+       "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66",
+       "ff815e1e8f7ee7154e4beabdf0a3cf1aaa659893d13833dfd7de03efbe9f2c37"
+      ],
+      [
+       "continuation_intents",
+       "efccd8118ebf39431c45722d040c7354824627ee318b5aa856b717663a472523",
+       "8e83cada1ec47ffc10a34a11f6c5de4f1fa756c8cbd2b1147a878ceb736ff1f1"
+      ],
+      [
+       "continuation_policies",
+       "policy-1",
+       "8cfb30ef2891de1412f87255419afb3f748e141ea3b18a292d8e78f615da6152"
+      ],
+      [
+       "continuation_progress",
+       "policy-1",
+       "4d2d8831a65ec745efb57233d729a9abcdea7627fb7a581f61b65ca0a4680618"
+      ],
+      [
+       "fleet_control",
+       "admission",
+       "eb67ed2fb1e0fc49b3cd382387dff5fd991cc3e69025e02e911735a57313933c"
+      ],
+      [
+       "fleet_jobs",
+       "op-a",
+       "b2b62462ab68fa6a39632b4633cc1d0bca6889741cbc0ec0e88448de908d1684"
+      ],
+      [
+       "fleet_registry",
+       "fleet-1",
+       "bd6513980dc5cf8fd28101e53442a7c9bb46db2737b28b4846793e479c8b6065"
+      ],
+      [
+       "fleet_units",
+       "f56c77bbf993bc7aee527847f925d76997b2283a67f3d66db2ad394421d3b0ef",
+       "51c1075df1f2255436bf26ea5a7f09486704f298c29515c0c983cdc7017c946a"
+      ]
+     ],
+     "lane": [
+      [
+       "decisions_pending",
+       "cond-op-a",
+       "9de0bd66007ea463d90fd29088a77810bd6f31f4bbbcb752702a6012b25adb4b"
+      ],
+      [
+       "decisions_pending",
+       "dec-op-a",
+       "4997412b134c0aa279f5ae8e7846423ff12c58deb06a4047eeafb1b9e4cd3dc7"
+      ],
+      [
+       "host_delivery_intents",
+       "plan-1",
+       "d98ec2dba1ffe69e4f0e29de801302edc52d9ddb47b861613d2092a423bcf2a5"
+      ],
+      [
+       "operations",
+       "op-a",
+       "d3ccf9badf9694935c42b360ba3a3b155a03484310548af063c1b0a1e43c8665"
+      ],
+      [
+       "releases",
+       "rel-op-a",
+       "9c36785a9d7107530f9c5b869391161028c06a60f0bab3082b61d7c74f1eadaa"
+      ],
+      [
+       "tasks",
+       "task-op-a",
+       "151c9860df297912c091cee0eb68bd32a33658b539810bb0e1f9215ff91df301"
+      ]
+     ],
+     "reads": [
+      "op-a",
+      "op-a",
+      "op-a",
+      "op-a"
+     ]
+    },
+    "units": [
+     {
+      "id": "f56c77bbf993bc7aee527847f925d76997b2283a67f3d66db2ad394421d3b0ef",
+      "kind": "conductor",
+      "lane": "a",
+      "next_action": "none",
+      "released_at": "2026-09-30T00:00:00.000012+00:00",
+      "reserved_at": "2026-09-30T00:00:00.000008+00:00",
+      "settlement": {
+       "exit_code": 0,
+       "kind": "cleanup",
+       "proof_sha256": "1f61d69870f8feda1e9774f4415bda9d6b75531b0513019bab08ac10e7c29610",
+       "timed_out": false
+      },
+      "state": "released",
+      "subject": "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66"
+     }
+    ]
+   },
+   "tick": {
+    "value": {
+     "actions": [
+      {
+       "effect": "delivered",
+       "next": "efccd8118ebf39431c45722d040c7354824627ee318b5aa856b717663a472523",
+       "route": "host_delivery",
+       "subject": "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648"
+      }
+     ],
+     "outcome": "progressed",
+     "owned_elsewhere": {
+      "count": 0,
+      "jobs": []
+     },
+     "policy_id": "policy-1",
+     "reason_code": null,
+     "schema": "urn:zeus:continuation-tick:1",
+     "skipped": []
+    }
+   }
+  },
+  "ambiguous": {
+   "again": {
+    "receipts": [
+     {
+      "value": {
+       "actions": [],
+       "outcome": "blocked",
+       "owned_elsewhere": {
+        "count": 0,
+        "jobs": []
+       },
+       "policy_id": "policy-1",
+       "reason_code": null,
+       "schema": "urn:zeus:continuation-tick:1",
+       "skipped": [
+        {
+         "next_owner": "host_delivery",
+         "reason_code": "delivery_ambiguous",
+         "subject": "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648"
+        }
+       ]
+      }
+     }
+    ],
+    "records_unchanged": true
+   },
+   "snap": {
+    "bindings": [],
+    "intents": [
+     {
+      "decision": {
+       "accepted": true,
+       "execution_ref": "sha256:9999999999999999999999999999999999999999999999999999999999999999",
+       "id": "cond-op-a",
+       "status": "succeeded"
+      },
+      "delivery_binding": null,
+      "delivery_plan": null,
+      "family": "op-a",
+      "history": [
+       [
+        "intended",
+        "lead_accepted"
+       ],
+       [
+        "dispatched",
+        "lead_accepted"
+       ],
+       [
+        "returned",
+        "lead_accepted"
+       ],
+       [
+        "completed",
+        "lead_accepted"
+       ]
+      ],
+      "hold": null,
+      "id": "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66",
+      "launch": {
+       "error_type": null,
+       "exit_code": 0,
+       "id": "f56c77bbf993bc7aee527847f925d76997b2283a67f3d66db2ad394421d3b0ef",
+       "sequence": 1,
+       "state": "exited"
+      },
+      "next_owner": "conductor",
+      "origin_job": "op-a",
+      "ownership": null,
+      "predecessor_intent": null,
+      "reason_code": "lead_accepted",
+      "route": "conductor_review",
+      "session_mode": null,
+      "state": "completed",
+      "successor_job": null,
+      "version": 5
+     },
+     {
+      "decision": null,
+      "delivery_binding": {
+       "release_id": "rel-op-a",
+       "revision": "cccccccccccccccccccccccccccccccccccccccc",
+       "target_id": "fleet-host"
+      },
+      "delivery_plan": null,
+      "family": "op-a",
+      "history": [
+       [
+        "awaiting_owner",
+        "conductor_accepted"
+       ]
+      ],
+      "hold": null,
+      "id": "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648",
+      "launch": null,
+      "next_owner": "host_delivery",
+      "origin_job": "op-a",
+      "ownership": null,
+      "predecessor_intent": null,
+      "reason_code": "conductor_accepted",
+      "route": "host_delivery",
+      "session_mode": null,
+      "state": "awaiting_owner",
+      "successor_job": null,
+      "version": 1
+     }
+    ],
+    "jobs": [
+     [
+      "op-a",
+      "accepted",
+      "a"
+     ]
+    ],
+    "state": {
+     "conductor": {
+      "calls": [
+       "op-a"
+      ],
+      "running": []
+     },
+     "control": [
+      [
+       "continuation_intents",
+       "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648",
+       "e0ac1077a3ff605ab765fbe70abe23347eb4335b742cf8367a8193df1e24b0f8"
+      ],
+      [
+       "continuation_intents",
+       "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66",
+       "ff815e1e8f7ee7154e4beabdf0a3cf1aaa659893d13833dfd7de03efbe9f2c37"
+      ],
+      [
+       "continuation_policies",
+       "policy-1",
+       "8cfb30ef2891de1412f87255419afb3f748e141ea3b18a292d8e78f615da6152"
+      ],
+      [
+       "continuation_progress",
+       "policy-1",
+       "4d2d8831a65ec745efb57233d729a9abcdea7627fb7a581f61b65ca0a4680618"
+      ],
+      [
+       "fleet_control",
+       "admission",
+       "eb67ed2fb1e0fc49b3cd382387dff5fd991cc3e69025e02e911735a57313933c"
+      ],
+      [
+       "fleet_jobs",
+       "op-a",
+       "b2b62462ab68fa6a39632b4633cc1d0bca6889741cbc0ec0e88448de908d1684"
+      ],
+      [
+       "fleet_registry",
+       "fleet-1",
+       "bd6513980dc5cf8fd28101e53442a7c9bb46db2737b28b4846793e479c8b6065"
+      ],
+      [
+       "fleet_units",
+       "f56c77bbf993bc7aee527847f925d76997b2283a67f3d66db2ad394421d3b0ef",
+       "51c1075df1f2255436bf26ea5a7f09486704f298c29515c0c983cdc7017c946a"
+      ]
+     ],
+     "lane": [
+      [
+       "decisions_pending",
+       "cond-op-a",
+       "9de0bd66007ea463d90fd29088a77810bd6f31f4bbbcb752702a6012b25adb4b"
+      ],
+      [
+       "decisions_pending",
+       "dec-op-a",
+       "4997412b134c0aa279f5ae8e7846423ff12c58deb06a4047eeafb1b9e4cd3dc7"
+      ],
+      [
+       "host_delivery_intents",
+       "plan-1",
+       "d98ec2dba1ffe69e4f0e29de801302edc52d9ddb47b861613d2092a423bcf2a5"
+      ],
+      [
+       "host_delivery_intents",
+       "plan-2",
+       "90ffd6672672619357af041413f7d993d0ab1a7f419efb46307dbc61a28708f2"
+      ],
+      [
+       "operations",
+       "op-a",
+       "d3ccf9badf9694935c42b360ba3a3b155a03484310548af063c1b0a1e43c8665"
+      ],
+      [
+       "releases",
+       "rel-op-a",
+       "9c36785a9d7107530f9c5b869391161028c06a60f0bab3082b61d7c74f1eadaa"
+      ],
+      [
+       "tasks",
+       "task-op-a",
+       "151c9860df297912c091cee0eb68bd32a33658b539810bb0e1f9215ff91df301"
+      ]
+     ],
+     "reads": [
+      "op-a",
+      "op-a",
+      "op-a",
+      "op-a",
+      "op-a"
+     ]
+    },
+    "units": [
+     {
+      "id": "f56c77bbf993bc7aee527847f925d76997b2283a67f3d66db2ad394421d3b0ef",
+      "kind": "conductor",
+      "lane": "a",
+      "next_action": "none",
+      "released_at": "2026-09-30T00:00:00.000012+00:00",
+      "reserved_at": "2026-09-30T00:00:00.000008+00:00",
+      "settlement": {
+       "exit_code": 0,
+       "kind": "cleanup",
+       "proof_sha256": "1f61d69870f8feda1e9774f4415bda9d6b75531b0513019bab08ac10e7c29610",
+       "timed_out": false
+      },
+      "state": "released",
+      "subject": "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66"
+     }
+    ]
+   },
+   "tick": {
+    "value": {
+     "actions": [],
+     "outcome": "blocked",
+     "owned_elsewhere": {
+      "count": 0,
+      "jobs": []
+     },
+     "policy_id": "policy-1",
+     "reason_code": null,
+     "schema": "urn:zeus:continuation-tick:1",
+     "skipped": [
+      {
+       "next_owner": "host_delivery",
+       "reason_code": "delivery_ambiguous",
+       "subject": "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648"
+      }
+     ]
+    }
+   }
+  },
+  "awaiting": {
+   "second": {
+    "value": {
+     "actions": [
+      {
+       "effect": "awaiting_owner",
+       "route": "host_delivery",
+       "subject": "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648"
+      }
+     ],
+     "outcome": "progressed",
+     "owned_elsewhere": {
+      "count": 0,
+      "jobs": []
+     },
+     "policy_id": "policy-1",
+     "reason_code": null,
+     "schema": "urn:zeus:continuation-tick:1",
+     "skipped": []
+    }
+   },
+   "snap": {
+    "bindings": [],
+    "intents": [
+     {
+      "decision": {
+       "accepted": true,
+       "execution_ref": "sha256:9999999999999999999999999999999999999999999999999999999999999999",
+       "id": "cond-op-a",
+       "status": "succeeded"
+      },
+      "delivery_binding": null,
+      "delivery_plan": null,
+      "family": "op-a",
+      "history": [
+       [
+        "intended",
+        "lead_accepted"
+       ],
+       [
+        "dispatched",
+        "lead_accepted"
+       ],
+       [
+        "returned",
+        "lead_accepted"
+       ],
+       [
+        "completed",
+        "lead_accepted"
+       ]
+      ],
+      "hold": null,
+      "id": "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66",
+      "launch": {
+       "error_type": null,
+       "exit_code": 0,
+       "id": "f56c77bbf993bc7aee527847f925d76997b2283a67f3d66db2ad394421d3b0ef",
+       "sequence": 1,
+       "state": "exited"
+      },
+      "next_owner": "conductor",
+      "origin_job": "op-a",
+      "ownership": null,
+      "predecessor_intent": null,
+      "reason_code": "lead_accepted",
+      "route": "conductor_review",
+      "session_mode": null,
+      "state": "completed",
+      "successor_job": null,
+      "version": 5
+     },
+     {
+      "decision": null,
+      "delivery_binding": {
+       "release_id": "rel-op-a",
+       "revision": "cccccccccccccccccccccccccccccccccccccccc",
+       "target_id": "fleet-host"
+      },
+      "delivery_plan": null,
+      "family": "op-a",
+      "history": [
+       [
+        "awaiting_owner",
+        "conductor_accepted"
+       ]
+      ],
+      "hold": null,
+      "id": "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648",
+      "launch": null,
+      "next_owner": "host_delivery",
+      "origin_job": "op-a",
+      "ownership": null,
+      "predecessor_intent": null,
+      "reason_code": "conductor_accepted",
+      "route": "host_delivery",
+      "session_mode": null,
+      "state": "awaiting_owner",
+      "successor_job": null,
+      "version": 1
+     }
+    ],
+    "jobs": [
+     [
+      "op-a",
+      "accepted",
+      "a"
+     ]
+    ],
+    "state": {
+     "conductor": {
+      "calls": [
+       "op-a"
+      ],
+      "running": []
+     },
+     "control": [
+      [
+       "continuation_intents",
+       "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648",
+       "e0ac1077a3ff605ab765fbe70abe23347eb4335b742cf8367a8193df1e24b0f8"
+      ],
+      [
+       "continuation_intents",
+       "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66",
+       "ff815e1e8f7ee7154e4beabdf0a3cf1aaa659893d13833dfd7de03efbe9f2c37"
+      ],
+      [
+       "continuation_policies",
+       "policy-1",
+       "8cfb30ef2891de1412f87255419afb3f748e141ea3b18a292d8e78f615da6152"
+      ],
+      [
+       "continuation_progress",
+       "policy-1",
+       "4d2d8831a65ec745efb57233d729a9abcdea7627fb7a581f61b65ca0a4680618"
+      ],
+      [
+       "fleet_control",
+       "admission",
+       "eb67ed2fb1e0fc49b3cd382387dff5fd991cc3e69025e02e911735a57313933c"
+      ],
+      [
+       "fleet_jobs",
+       "op-a",
+       "b2b62462ab68fa6a39632b4633cc1d0bca6889741cbc0ec0e88448de908d1684"
+      ],
+      [
+       "fleet_registry",
+       "fleet-1",
+       "bd6513980dc5cf8fd28101e53442a7c9bb46db2737b28b4846793e479c8b6065"
+      ],
+      [
+       "fleet_units",
+       "f56c77bbf993bc7aee527847f925d76997b2283a67f3d66db2ad394421d3b0ef",
+       "51c1075df1f2255436bf26ea5a7f09486704f298c29515c0c983cdc7017c946a"
+      ]
+     ],
+     "lane": [
+      [
+       "decisions_pending",
+       "cond-op-a",
+       "9de0bd66007ea463d90fd29088a77810bd6f31f4bbbcb752702a6012b25adb4b"
+      ],
+      [
+       "decisions_pending",
+       "dec-op-a",
+       "4997412b134c0aa279f5ae8e7846423ff12c58deb06a4047eeafb1b9e4cd3dc7"
+      ],
+      [
+       "operations",
+       "op-a",
+       "d3ccf9badf9694935c42b360ba3a3b155a03484310548af063c1b0a1e43c8665"
+      ],
+      [
+       "releases",
+       "rel-op-a",
+       "9c36785a9d7107530f9c5b869391161028c06a60f0bab3082b61d7c74f1eadaa"
+      ],
+      [
+       "tasks",
+       "task-op-a",
+       "151c9860df297912c091cee0eb68bd32a33658b539810bb0e1f9215ff91df301"
+      ]
+     ],
+     "reads": [
+      "op-a",
+      "op-a",
+      "op-a",
+      "op-a"
+     ]
+    },
+    "units": [
+     {
+      "id": "f56c77bbf993bc7aee527847f925d76997b2283a67f3d66db2ad394421d3b0ef",
+      "kind": "conductor",
+      "lane": "a",
+      "next_action": "none",
+      "released_at": "2026-09-30T00:00:00.000012+00:00",
+      "reserved_at": "2026-09-30T00:00:00.000008+00:00",
+      "settlement": {
+       "exit_code": 0,
+       "kind": "cleanup",
+       "proof_sha256": "1f61d69870f8feda1e9774f4415bda9d6b75531b0513019bab08ac10e7c29610",
+       "timed_out": false
+      },
+      "state": "released",
+      "subject": "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66"
+     }
+    ]
+   },
+   "wait": {
+    "receipts": [
+     {
+      "value": {
+       "actions": [],
+       "outcome": "idle",
+       "owned_elsewhere": {
+        "count": 0,
+        "jobs": []
+       },
+       "policy_id": "policy-1",
+       "reason_code": null,
+       "schema": "urn:zeus:continuation-tick:1",
+       "skipped": []
+      }
+     }
+    ],
+    "records_unchanged": true
+   }
+  },
+  "foreign_only": {
+   "again": {
+    "receipts": [
+     {
+      "value": {
+       "actions": [],
+       "outcome": "idle",
+       "owned_elsewhere": {
+        "count": 0,
+        "jobs": []
+       },
+       "policy_id": "policy-1",
+       "reason_code": null,
+       "schema": "urn:zeus:continuation-tick:1",
+       "skipped": []
+      }
+     }
+    ],
+    "records_unchanged": true
+   },
+   "snap": {
+    "bindings": [],
+    "intents": [
+     {
+      "decision": {
+       "accepted": true,
+       "execution_ref": "sha256:9999999999999999999999999999999999999999999999999999999999999999",
+       "id": "cond-op-a",
+       "status": "succeeded"
+      },
+      "delivery_binding": null,
+      "delivery_plan": null,
+      "family": "op-a",
+      "history": [
+       [
+        "intended",
+        "lead_accepted"
+       ],
+       [
+        "dispatched",
+        "lead_accepted"
+       ],
+       [
+        "returned",
+        "lead_accepted"
+       ],
+       [
+        "completed",
+        "lead_accepted"
+       ]
+      ],
+      "hold": null,
+      "id": "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66",
+      "launch": {
+       "error_type": null,
+       "exit_code": 0,
+       "id": "f56c77bbf993bc7aee527847f925d76997b2283a67f3d66db2ad394421d3b0ef",
+       "sequence": 1,
+       "state": "exited"
+      },
+      "next_owner": "conductor",
+      "origin_job": "op-a",
+      "ownership": null,
+      "predecessor_intent": null,
+      "reason_code": "lead_accepted",
+      "route": "conductor_review",
+      "session_mode": null,
+      "state": "completed",
+      "successor_job": null,
+      "version": 5
+     },
+     {
+      "decision": null,
+      "delivery_binding": {
+       "release_id": "rel-op-a",
+       "revision": "cccccccccccccccccccccccccccccccccccccccc",
+       "target_id": "fleet-host"
+      },
+      "delivery_plan": null,
+      "family": "op-a",
+      "history": [
+       [
+        "awaiting_owner",
+        "conductor_accepted"
+       ]
+      ],
+      "hold": null,
+      "id": "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648",
+      "launch": null,
+      "next_owner": "host_delivery",
+      "origin_job": "op-a",
+      "ownership": null,
+      "predecessor_intent": null,
+      "reason_code": "conductor_accepted",
+      "route": "host_delivery",
+      "session_mode": null,
+      "state": "awaiting_owner",
+      "successor_job": null,
+      "version": 1
+     }
+    ],
+    "jobs": [
+     [
+      "op-a",
+      "accepted",
+      "a"
+     ]
+    ],
+    "state": {
+     "conductor": {
+      "calls": [
+       "op-a"
+      ],
+      "running": []
+     },
+     "control": [
+      [
+       "continuation_intents",
+       "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648",
+       "e0ac1077a3ff605ab765fbe70abe23347eb4335b742cf8367a8193df1e24b0f8"
+      ],
+      [
+       "continuation_intents",
+       "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66",
+       "ff815e1e8f7ee7154e4beabdf0a3cf1aaa659893d13833dfd7de03efbe9f2c37"
+      ],
+      [
+       "continuation_policies",
+       "policy-1",
+       "8cfb30ef2891de1412f87255419afb3f748e141ea3b18a292d8e78f615da6152"
+      ],
+      [
+       "continuation_progress",
+       "policy-1",
+       "4d2d8831a65ec745efb57233d729a9abcdea7627fb7a581f61b65ca0a4680618"
+      ],
+      [
+       "fleet_control",
+       "admission",
+       "eb67ed2fb1e0fc49b3cd382387dff5fd991cc3e69025e02e911735a57313933c"
+      ],
+      [
+       "fleet_jobs",
+       "op-a",
+       "b2b62462ab68fa6a39632b4633cc1d0bca6889741cbc0ec0e88448de908d1684"
+      ],
+      [
+       "fleet_registry",
+       "fleet-1",
+       "bd6513980dc5cf8fd28101e53442a7c9bb46db2737b28b4846793e479c8b6065"
+      ],
+      [
+       "fleet_units",
+       "f56c77bbf993bc7aee527847f925d76997b2283a67f3d66db2ad394421d3b0ef",
+       "51c1075df1f2255436bf26ea5a7f09486704f298c29515c0c983cdc7017c946a"
+      ]
+     ],
+     "lane": [
+      [
+       "decisions_pending",
+       "cond-op-a",
+       "9de0bd66007ea463d90fd29088a77810bd6f31f4bbbcb752702a6012b25adb4b"
+      ],
+      [
+       "decisions_pending",
+       "dec-op-a",
+       "4997412b134c0aa279f5ae8e7846423ff12c58deb06a4047eeafb1b9e4cd3dc7"
+      ],
+      [
+       "host_delivery_intents",
+       "plan-other",
+       "aa7e7172c204ed9d24f95c5b712315ec745e2fd1fc0f7a0c11933bb60b4eea49"
+      ],
+      [
+       "operations",
+       "op-a",
+       "d3ccf9badf9694935c42b360ba3a3b155a03484310548af063c1b0a1e43c8665"
+      ],
+      [
+       "releases",
+       "rel-op-a",
+       "9c36785a9d7107530f9c5b869391161028c06a60f0bab3082b61d7c74f1eadaa"
+      ],
+      [
+       "tasks",
+       "task-op-a",
+       "151c9860df297912c091cee0eb68bd32a33658b539810bb0e1f9215ff91df301"
+      ]
+     ],
+     "reads": [
+      "op-a",
+      "op-a",
+      "op-a",
+      "op-a",
+      "op-a"
+     ]
+    },
+    "units": [
+     {
+      "id": "f56c77bbf993bc7aee527847f925d76997b2283a67f3d66db2ad394421d3b0ef",
+      "kind": "conductor",
+      "lane": "a",
+      "next_action": "none",
+      "released_at": "2026-09-30T00:00:00.000012+00:00",
+      "reserved_at": "2026-09-30T00:00:00.000008+00:00",
+      "settlement": {
+       "exit_code": 0,
+       "kind": "cleanup",
+       "proof_sha256": "1f61d69870f8feda1e9774f4415bda9d6b75531b0513019bab08ac10e7c29610",
+       "timed_out": false
+      },
+      "state": "released",
+      "subject": "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66"
+     }
+    ]
+   },
+   "tick": {
+    "value": {
+     "actions": [],
+     "outcome": "idle",
+     "owned_elsewhere": {
+      "count": 0,
+      "jobs": []
+     },
+     "policy_id": "policy-1",
+     "reason_code": null,
+     "schema": "urn:zeus:continuation-tick:1",
+     "skipped": []
+    }
+   }
+  },
+  "rolled_back": {
+   "again": {
+    "receipts": [
+     {
+      "value": {
+       "actions": [],
+       "outcome": "idle",
+       "owned_elsewhere": {
+        "count": 0,
+        "jobs": []
+       },
+       "policy_id": "policy-1",
+       "reason_code": null,
+       "schema": "urn:zeus:continuation-tick:1",
+       "skipped": []
+      }
+     }
+    ],
+    "records_unchanged": true
+   },
+   "snap": {
+    "bindings": [],
+    "intents": [
+     {
+      "decision": {
+       "accepted": true,
+       "execution_ref": "sha256:9999999999999999999999999999999999999999999999999999999999999999",
+       "id": "cond-op-a",
+       "status": "succeeded"
+      },
+      "delivery_binding": null,
+      "delivery_plan": null,
+      "family": "op-a",
+      "history": [
+       [
+        "intended",
+        "lead_accepted"
+       ],
+       [
+        "dispatched",
+        "lead_accepted"
+       ],
+       [
+        "returned",
+        "lead_accepted"
+       ],
+       [
+        "completed",
+        "lead_accepted"
+       ]
+      ],
+      "hold": null,
+      "id": "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66",
+      "launch": {
+       "error_type": null,
+       "exit_code": 0,
+       "id": "f56c77bbf993bc7aee527847f925d76997b2283a67f3d66db2ad394421d3b0ef",
+       "sequence": 1,
+       "state": "exited"
+      },
+      "next_owner": "conductor",
+      "origin_job": "op-a",
+      "ownership": null,
+      "predecessor_intent": null,
+      "reason_code": "lead_accepted",
+      "route": "conductor_review",
+      "session_mode": null,
+      "state": "completed",
+      "successor_job": null,
+      "version": 5
+     },
+     {
+      "decision": null,
+      "delivery_binding": {
+       "release_id": "rel-op-a",
+       "revision": "cccccccccccccccccccccccccccccccccccccccc",
+       "target_id": "fleet-host"
+      },
+      "delivery_plan": {
+       "plan_id": "plan-1",
+       "plan_sha256": "5555555555555555555555555555555555555555555555555555555555555555",
+       "stage": "rolled_back"
+      },
+      "family": "op-a",
+      "history": [
+       [
+        "awaiting_owner",
+        "conductor_accepted"
+       ],
+       [
+        "paused",
+        "delivery_rolled_back"
+       ]
+      ],
+      "hold": null,
+      "id": "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648",
+      "launch": null,
+      "next_owner": "host_delivery",
+      "origin_job": "op-a",
+      "ownership": null,
+      "predecessor_intent": null,
+      "reason_code": "delivery_rolled_back",
+      "route": "host_delivery",
+      "session_mode": null,
+      "state": "paused",
+      "successor_job": null,
+      "version": 2
+     }
+    ],
+    "jobs": [
+     [
+      "op-a",
+      "accepted",
+      "a"
+     ]
+    ],
+    "state": {
+     "conductor": {
+      "calls": [
+       "op-a"
+      ],
+      "running": []
+     },
+     "control": [
+      [
+       "continuation_intents",
+       "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648",
+       "7a565e0dfef2a6374793818bbeccc63c0dcd78319d569e727fbdd902216d2d90"
+      ],
+      [
+       "continuation_intents",
+       "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66",
+       "ff815e1e8f7ee7154e4beabdf0a3cf1aaa659893d13833dfd7de03efbe9f2c37"
+      ],
+      [
+       "continuation_policies",
+       "policy-1",
+       "8cfb30ef2891de1412f87255419afb3f748e141ea3b18a292d8e78f615da6152"
+      ],
+      [
+       "continuation_progress",
+       "policy-1",
+       "4d2d8831a65ec745efb57233d729a9abcdea7627fb7a581f61b65ca0a4680618"
+      ],
+      [
+       "fleet_control",
+       "admission",
+       "eb67ed2fb1e0fc49b3cd382387dff5fd991cc3e69025e02e911735a57313933c"
+      ],
+      [
+       "fleet_jobs",
+       "op-a",
+       "b2b62462ab68fa6a39632b4633cc1d0bca6889741cbc0ec0e88448de908d1684"
+      ],
+      [
+       "fleet_registry",
+       "fleet-1",
+       "bd6513980dc5cf8fd28101e53442a7c9bb46db2737b28b4846793e479c8b6065"
+      ],
+      [
+       "fleet_units",
+       "f56c77bbf993bc7aee527847f925d76997b2283a67f3d66db2ad394421d3b0ef",
+       "51c1075df1f2255436bf26ea5a7f09486704f298c29515c0c983cdc7017c946a"
+      ]
+     ],
+     "lane": [
+      [
+       "decisions_pending",
+       "cond-op-a",
+       "9de0bd66007ea463d90fd29088a77810bd6f31f4bbbcb752702a6012b25adb4b"
+      ],
+      [
+       "decisions_pending",
+       "dec-op-a",
+       "4997412b134c0aa279f5ae8e7846423ff12c58deb06a4047eeafb1b9e4cd3dc7"
+      ],
+      [
+       "host_delivery_intents",
+       "plan-1",
+       "c00d12e8f89e49990ff7d1622fb0222a2b2d604750d6ca515e60824c43fd0156"
+      ],
+      [
+       "operations",
+       "op-a",
+       "d3ccf9badf9694935c42b360ba3a3b155a03484310548af063c1b0a1e43c8665"
+      ],
+      [
+       "releases",
+       "rel-op-a",
+       "9c36785a9d7107530f9c5b869391161028c06a60f0bab3082b61d7c74f1eadaa"
+      ],
+      [
+       "tasks",
+       "task-op-a",
+       "151c9860df297912c091cee0eb68bd32a33658b539810bb0e1f9215ff91df301"
+      ]
+     ],
+     "reads": [
+      "op-a",
+      "op-a",
+      "op-a",
+      "op-a"
+     ]
+    },
+    "units": [
+     {
+      "id": "f56c77bbf993bc7aee527847f925d76997b2283a67f3d66db2ad394421d3b0ef",
+      "kind": "conductor",
+      "lane": "a",
+      "next_action": "none",
+      "released_at": "2026-09-30T00:00:00.000012+00:00",
+      "reserved_at": "2026-09-30T00:00:00.000008+00:00",
+      "settlement": {
+       "exit_code": 0,
+       "kind": "cleanup",
+       "proof_sha256": "1f61d69870f8feda1e9774f4415bda9d6b75531b0513019bab08ac10e7c29610",
+       "timed_out": false
+      },
+      "state": "released",
+      "subject": "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66"
+     }
+    ]
+   },
+   "tick": {
+    "value": {
+     "actions": [
+      {
+       "effect": "paused",
+       "route": "host_delivery",
+       "subject": "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648"
+      }
+     ],
+     "outcome": "progressed",
+     "owned_elsewhere": {
+      "count": 0,
+      "jobs": []
+     },
+     "policy_id": "policy-1",
+     "reason_code": null,
+     "schema": "urn:zeus:continuation-tick:1",
+     "skipped": []
+    }
+   }
+  },
+  "withdrawn": {
+   "again": {
+    "receipts": [
+     {
+      "value": {
+       "actions": [],
+       "outcome": "blocked",
+       "owned_elsewhere": {
+        "count": 0,
+        "jobs": []
+       },
+       "policy_id": "policy-1",
+       "reason_code": null,
+       "schema": "urn:zeus:continuation-tick:1",
+       "skipped": [
+        {
+         "next_owner": "operator",
+         "reason_code": "delivery_withdrawn",
+         "subject": "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648"
+        }
+       ]
+      }
+     }
+    ],
+    "records_unchanged": true
+   },
+   "snap": {
+    "bindings": [],
+    "intents": [
+     {
+      "decision": {
+       "accepted": true,
+       "execution_ref": "sha256:9999999999999999999999999999999999999999999999999999999999999999",
+       "id": "cond-op-a",
+       "status": "succeeded"
+      },
+      "delivery_binding": null,
+      "delivery_plan": null,
+      "family": "op-a",
+      "history": [
+       [
+        "intended",
+        "lead_accepted"
+       ],
+       [
+        "dispatched",
+        "lead_accepted"
+       ],
+       [
+        "returned",
+        "lead_accepted"
+       ],
+       [
+        "completed",
+        "lead_accepted"
+       ]
+      ],
+      "hold": null,
+      "id": "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66",
+      "launch": {
+       "error_type": null,
+       "exit_code": 0,
+       "id": "f56c77bbf993bc7aee527847f925d76997b2283a67f3d66db2ad394421d3b0ef",
+       "sequence": 1,
+       "state": "exited"
+      },
+      "next_owner": "conductor",
+      "origin_job": "op-a",
+      "ownership": null,
+      "predecessor_intent": null,
+      "reason_code": "lead_accepted",
+      "route": "conductor_review",
+      "session_mode": null,
+      "state": "completed",
+      "successor_job": null,
+      "version": 5
+     },
+     {
+      "decision": null,
+      "delivery_binding": {
+       "release_id": "rel-op-a",
+       "revision": "cccccccccccccccccccccccccccccccccccccccc",
+       "target_id": "fleet-host"
+      },
+      "delivery_plan": null,
+      "family": "op-a",
+      "history": [
+       [
+        "awaiting_owner",
+        "conductor_accepted"
+       ]
+      ],
+      "hold": null,
+      "id": "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648",
+      "launch": null,
+      "next_owner": "host_delivery",
+      "origin_job": "op-a",
+      "ownership": null,
+      "predecessor_intent": null,
+      "reason_code": "conductor_accepted",
+      "route": "host_delivery",
+      "session_mode": null,
+      "state": "awaiting_owner",
+      "successor_job": null,
+      "version": 1
+     }
+    ],
+    "jobs": [
+     [
+      "op-a",
+      "accepted",
+      "a"
+     ]
+    ],
+    "state": {
+     "conductor": {
+      "calls": [
+       "op-a"
+      ],
+      "running": []
+     },
+     "control": [
+      [
+       "continuation_intents",
+       "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648",
+       "e0ac1077a3ff605ab765fbe70abe23347eb4335b742cf8367a8193df1e24b0f8"
+      ],
+      [
+       "continuation_intents",
+       "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66",
+       "ff815e1e8f7ee7154e4beabdf0a3cf1aaa659893d13833dfd7de03efbe9f2c37"
+      ],
+      [
+       "continuation_policies",
+       "policy-1",
+       "8cfb30ef2891de1412f87255419afb3f748e141ea3b18a292d8e78f615da6152"
+      ],
+      [
+       "continuation_progress",
+       "policy-1",
+       "4d2d8831a65ec745efb57233d729a9abcdea7627fb7a581f61b65ca0a4680618"
+      ],
+      [
+       "fleet_control",
+       "admission",
+       "eb67ed2fb1e0fc49b3cd382387dff5fd991cc3e69025e02e911735a57313933c"
+      ],
+      [
+       "fleet_jobs",
+       "op-a",
+       "b2b62462ab68fa6a39632b4633cc1d0bca6889741cbc0ec0e88448de908d1684"
+      ],
+      [
+       "fleet_registry",
+       "fleet-1",
+       "bd6513980dc5cf8fd28101e53442a7c9bb46db2737b28b4846793e479c8b6065"
+      ],
+      [
+       "fleet_units",
+       "f56c77bbf993bc7aee527847f925d76997b2283a67f3d66db2ad394421d3b0ef",
+       "51c1075df1f2255436bf26ea5a7f09486704f298c29515c0c983cdc7017c946a"
+      ]
+     ],
+     "lane": [
+      [
+       "decisions_pending",
+       "cond-op-a",
+       "9de0bd66007ea463d90fd29088a77810bd6f31f4bbbcb752702a6012b25adb4b"
+      ],
+      [
+       "decisions_pending",
+       "dec-op-a",
+       "4997412b134c0aa279f5ae8e7846423ff12c58deb06a4047eeafb1b9e4cd3dc7"
+      ],
+      [
+       "host_delivery_intents",
+       "plan-1",
+       "23e00bfdc61b5f9b962b4b0f371c2dcee63375c4bca17c8148f76676ee055c67"
+      ],
+      [
+       "operations",
+       "op-a",
+       "d3ccf9badf9694935c42b360ba3a3b155a03484310548af063c1b0a1e43c8665"
+      ],
+      [
+       "releases",
+       "rel-op-a",
+       "9c36785a9d7107530f9c5b869391161028c06a60f0bab3082b61d7c74f1eadaa"
+      ],
+      [
+       "tasks",
+       "task-op-a",
+       "151c9860df297912c091cee0eb68bd32a33658b539810bb0e1f9215ff91df301"
+      ]
+     ],
+     "reads": [
+      "op-a",
+      "op-a",
+      "op-a",
+      "op-a",
+      "op-a"
+     ]
+    },
+    "units": [
+     {
+      "id": "f56c77bbf993bc7aee527847f925d76997b2283a67f3d66db2ad394421d3b0ef",
+      "kind": "conductor",
+      "lane": "a",
+      "next_action": "none",
+      "released_at": "2026-09-30T00:00:00.000012+00:00",
+      "reserved_at": "2026-09-30T00:00:00.000008+00:00",
+      "settlement": {
+       "exit_code": 0,
+       "kind": "cleanup",
+       "proof_sha256": "1f61d69870f8feda1e9774f4415bda9d6b75531b0513019bab08ac10e7c29610",
+       "timed_out": false
+      },
+      "state": "released",
+      "subject": "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66"
+     }
+    ]
+   },
+   "tick": {
+    "value": {
+     "actions": [],
+     "outcome": "blocked",
+     "owned_elsewhere": {
+      "count": 0,
+      "jobs": []
+     },
+     "policy_id": "policy-1",
+     "reason_code": null,
+     "schema": "urn:zeus:continuation-tick:1",
+     "skipped": [
+      {
+       "next_owner": "operator",
+       "reason_code": "delivery_withdrawn",
+       "subject": "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648"
+      }
+     ]
+    }
+   }
+  }
+ },
+ "recovery": {
+  "exception_reason": {
+   "again": {
+    "receipts": [
+     {
+      "value": {
+       "actions": [],
+       "outcome": "idle",
+       "owned_elsewhere": {
+        "count": 0,
+        "jobs": []
+       },
+       "policy_id": "policy-1",
+       "reason_code": null,
+       "schema": "urn:zeus:continuation-tick:1",
+       "skipped": []
+      }
+     }
+    ],
+    "records_unchanged": true
+   },
+   "snap": {
+    "bindings": [],
+    "intents": [
+     {
+      "decision": null,
+      "delivery_binding": null,
+      "delivery_plan": null,
+      "family": "op-exception",
+      "history": [
+       [
+        "recovery_required",
+        "unknown_effects"
+       ]
+      ],
+      "hold": null,
+      "id": "31c04131af64f8e9990b0ae29ee2f358a2f50eaada9623d4ed8ed4a7b24b7559",
+      "launch": null,
+      "next_owner": "execution_recovery",
+      "origin_job": "op-exception",
+      "ownership": null,
+      "predecessor_intent": null,
+      "reason_code": "unknown_effects",
+      "route": "recovery",
+      "session_mode": null,
+      "state": "recovery_required",
+      "successor_job": null,
+      "version": 1
+     }
+    ],
+    "jobs": [
+     [
+      "op-exception",
+      "failed",
+      "a"
+     ]
+    ],
+    "state": {
+     "conductor": {
+      "calls": [],
+      "running": []
+     },
+     "control": [
+      [
+       "continuation_intents",
+       "31c04131af64f8e9990b0ae29ee2f358a2f50eaada9623d4ed8ed4a7b24b7559",
+       "8edbadbe51bcaa27f10bf72c6dc0ba0260804895202524a51ce09a16f56179d6"
+      ],
+      [
+       "continuation_policies",
+       "policy-1",
+       "8cfb30ef2891de1412f87255419afb3f748e141ea3b18a292d8e78f615da6152"
+      ],
+      [
+       "continuation_progress",
+       "policy-1",
+       "e66e59910701d2ba3004bfa9c5f6c27c8537ca64dd3ec71360ced672802127ca"
+      ],
+      [
+       "fleet_control",
+       "admission",
+       "eb67ed2fb1e0fc49b3cd382387dff5fd991cc3e69025e02e911735a57313933c"
+      ],
+      [
+       "fleet_jobs",
+       "op-exception",
+       "45d4628c78fc81800e466be9f81229761555f4d47292c70671adbac990c3f70f"
+      ],
+      [
+       "fleet_registry",
+       "fleet-1",
+       "bd6513980dc5cf8fd28101e53442a7c9bb46db2737b28b4846793e479c8b6065"
+      ]
+     ],
+     "lane": [
+      [
+       "decisions_pending",
+       "dec-op-exception",
+       "bba1f45dffeda3b56aaaa25ca189838b7ede93a5879f5acf33d3af11210ec91c"
+      ],
+      [
+       "operations",
+       "op-exception",
+       "3e6ea8d70d21c1994ff195a3c95d9b6191cbbf49bb3facb610f4d32bada35e67"
+      ],
+      [
+       "tasks",
+       "task-op-exception",
+       "9e0e183869593aca524690b4ae7330158ccad26011974c823f4d323c2e2042a8"
+      ]
+     ],
+     "reads": [
+      "op-exception"
+     ]
+    },
+    "units": []
+   },
+   "tick": {
+    "value": {
+     "actions": [
+      {
+       "effect": "recovery_required",
+       "route": "recovery",
+       "subject": "31c04131af64f8e9990b0ae29ee2f358a2f50eaada9623d4ed8ed4a7b24b7559"
+      }
+     ],
+     "outcome": "progressed",
+     "owned_elsewhere": {
+      "count": 0,
+      "jobs": []
+     },
+     "policy_id": "policy-1",
+     "reason_code": null,
+     "schema": "urn:zeus:continuation-tick:1",
+     "skipped": []
+    }
+   }
+  },
+  "job_unknown": {
+   "again": {
+    "receipts": [
+     {
+      "value": {
+       "actions": [],
+       "outcome": "idle",
+       "owned_elsewhere": {
+        "count": 0,
+        "jobs": []
+       },
+       "policy_id": "policy-1",
+       "reason_code": null,
+       "schema": "urn:zeus:continuation-tick:1",
+       "skipped": []
+      }
+     }
+    ],
+    "records_unchanged": true
+   },
+   "snap": {
+    "bindings": [],
+    "intents": [
+     {
+      "decision": null,
+      "delivery_binding": null,
+      "delivery_plan": null,
+      "family": "op-unknown",
+      "history": [
+       [
+        "recovery_required",
+        "unknown_effects"
+       ]
+      ],
+      "hold": null,
+      "id": "2f2209b53e7adfb7a99173c3ed141bc38ee421e9da28c296d41f871d660bc967",
+      "launch": null,
+      "next_owner": "execution_recovery",
+      "origin_job": "op-unknown",
+      "ownership": null,
+      "predecessor_intent": null,
+      "reason_code": "unknown_effects",
+      "route": "recovery",
+      "session_mode": null,
+      "state": "recovery_required",
+      "successor_job": null,
+      "version": 1
+     }
+    ],
+    "jobs": [
+     [
+      "op-unknown",
+      "unknown",
+      "a"
+     ]
+    ],
+    "state": {
+     "conductor": {
+      "calls": [],
+      "running": []
+     },
+     "control": [
+      [
+       "continuation_intents",
+       "2f2209b53e7adfb7a99173c3ed141bc38ee421e9da28c296d41f871d660bc967",
+       "cdf9dfb2d5fb8a80f37904a6e7505605a87859a09207f57b9918117eaaa7cec9"
+      ],
+      [
+       "continuation_policies",
+       "policy-1",
+       "8cfb30ef2891de1412f87255419afb3f748e141ea3b18a292d8e78f615da6152"
+      ],
+      [
+       "continuation_progress",
+       "policy-1",
+       "ff35a12e4be1c7abd53b183e1870e5b1022cec5397c47e259b68c449302b775b"
+      ],
+      [
+       "fleet_control",
+       "admission",
+       "eb67ed2fb1e0fc49b3cd382387dff5fd991cc3e69025e02e911735a57313933c"
+      ],
+      [
+       "fleet_jobs",
+       "op-unknown",
+       "a35b37e7af573177efee03054a5ab399a810c0d69ad8eabb3e66d154997ad689"
+      ],
+      [
+       "fleet_registry",
+       "fleet-1",
+       "bd6513980dc5cf8fd28101e53442a7c9bb46db2737b28b4846793e479c8b6065"
+      ]
+     ],
+     "lane": [
+      [
+       "decisions_pending",
+       "dec-op-unknown",
+       "3e3985f839590c0a3d31a73451063c157752169f97723e8cb599f42814545450"
+      ],
+      [
+       "operations",
+       "op-unknown",
+       "36c78a4a17dfd1c080f72cfb3393577450168c80b74620b827af88832567ab0a"
+      ],
+      [
+       "tasks",
+       "task-op-unknown",
+       "d827d54e60f95b5dba4aa31b5a4e55c0ba72f7a52965c309610342fdb8012caf"
+      ]
+     ],
+     "reads": [
+      "op-unknown"
+     ]
+    },
+    "units": []
+   },
+   "tick": {
+    "value": {
+     "actions": [
+      {
+       "effect": "recovery_required",
+       "route": "recovery",
+       "subject": "2f2209b53e7adfb7a99173c3ed141bc38ee421e9da28c296d41f871d660bc967"
+      }
+     ],
+     "outcome": "progressed",
+     "owned_elsewhere": {
+      "count": 0,
+      "jobs": []
+     },
+     "policy_id": "policy-1",
+     "reason_code": null,
+     "schema": "urn:zeus:continuation-tick:1",
+     "skipped": []
+    }
+   }
+  },
+  "pending_marker": {
+   "again": {
+    "receipts": [
+     {
+      "value": {
+       "actions": [],
+       "outcome": "idle",
+       "owned_elsewhere": {
+        "count": 0,
+        "jobs": []
+       },
+       "policy_id": "policy-1",
+       "reason_code": null,
+       "schema": "urn:zeus:continuation-tick:1",
+       "skipped": []
+      }
+     }
+    ],
+    "records_unchanged": true
+   },
+   "snap": {
+    "bindings": [],
+    "intents": [
+     {
+      "decision": null,
+      "delivery_binding": null,
+      "delivery_plan": null,
+      "family": "op-marker",
+      "history": [
+       [
+        "recovery_required",
+        "unknown_effects"
+       ]
+      ],
+      "hold": null,
+      "id": "09b0185bc3ae570d70c2d2ccc1740253cf490d3c75914bbdd963032d92870452",
+      "launch": null,
+      "next_owner": "execution_recovery",
+      "origin_job": "op-marker",
+      "ownership": null,
+      "predecessor_intent": null,
+      "reason_code": "unknown_effects",
+      "route": "recovery",
+      "session_mode": null,
+      "state": "recovery_required",
+      "successor_job": null,
+      "version": 1
+     }
+    ],
+    "jobs": [
+     [
+      "op-marker",
+      "rejected",
+      "a"
+     ]
+    ],
+    "state": {
+     "conductor": {
+      "calls": [],
+      "running": []
+     },
+     "control": [
+      [
+       "continuation_intents",
+       "09b0185bc3ae570d70c2d2ccc1740253cf490d3c75914bbdd963032d92870452",
+       "57942e4b9a622033213d356c40f3fae840fca14400b52b8365376447ecdc0782"
+      ],
+      [
+       "continuation_policies",
+       "policy-1",
+       "8cfb30ef2891de1412f87255419afb3f748e141ea3b18a292d8e78f615da6152"
+      ],
+      [
+       "continuation_progress",
+       "policy-1",
+       "a5b47a6f8fef7a7a68cdb9cb76d3d16ac81daa03d6b5ca534b208b7c03da8b15"
+      ],
+      [
+       "fleet_control",
+       "admission",
+       "eb67ed2fb1e0fc49b3cd382387dff5fd991cc3e69025e02e911735a57313933c"
+      ],
+      [
+       "fleet_jobs",
+       "op-marker",
+       "4de016455c4b0b88ea426878745e38663ccc894a06f41df3cc7fe07c12cde179"
+      ],
+      [
+       "fleet_registry",
+       "fleet-1",
+       "bd6513980dc5cf8fd28101e53442a7c9bb46db2737b28b4846793e479c8b6065"
+      ]
+     ],
+     "lane": [
+      [
+       "decisions_pending",
+       "dec-op-marker",
+       "0f77533e02c1504f120c846d864e753305b5b5e2ba0d570178ca2ef9474cb9fc"
+      ],
+      [
+       "observation_terminations",
+       "rec-1",
+       "e834a5aa4e6dd44a18eda2d0a4bb26eb9ca2fd06cc953dd05c337d2f0b6bbef3"
+      ],
+      [
+       "operations",
+       "op-marker",
+       "087974667700e2da1d6338c6c9ea04f08f11bc549a931a329d65d831a0a920aa"
+      ],
+      [
+       "tasks",
+       "task-op-marker",
+       "eaa03c6f6ee22b87ce5cdd01afb4658e05b01463ea5d507cc929982c52dab096"
+      ]
+     ],
+     "reads": [
+      "op-marker"
+     ]
+    },
+    "units": []
+   },
+   "tick": {
+    "value": {
+     "actions": [
+      {
+       "effect": "recovery_required",
+       "route": "recovery",
+       "subject": "09b0185bc3ae570d70c2d2ccc1740253cf490d3c75914bbdd963032d92870452"
+      }
+     ],
+     "outcome": "progressed",
+     "owned_elsewhere": {
+      "count": 0,
+      "jobs": []
+     },
+     "policy_id": "policy-1",
+     "reason_code": null,
+     "schema": "urn:zeus:continuation-tick:1",
+     "skipped": []
+    }
+   }
+  }
+ },
+ "refusals": {
+  "handoff_incomplete": {
+   "again": {
+    "receipts": [
+     {
+      "value": {
+       "actions": [],
+       "outcome": "idle",
+       "owned_elsewhere": {
+        "count": 0,
+        "jobs": []
+       },
+       "policy_id": "policy-1",
+       "reason_code": null,
+       "schema": "urn:zeus:continuation-tick:1",
+       "skipped": []
+      }
+     }
+    ],
+    "records_unchanged": true
+   },
+   "snap": {
+    "bindings": [],
+    "intents": [
+     {
+      "decision": null,
+      "delivery_binding": null,
+      "delivery_plan": null,
+      "family": "op-handoff",
+      "history": [
+       [
+        "refused",
+        "handoff_incomplete"
+       ]
+      ],
+      "hold": null,
+      "id": "099d0e147bd461938d25de8e44f83ec61327c1e74b162b2d12c10337148bda7a",
+      "launch": null,
+      "next_owner": "lead:improvement",
+      "origin_job": "op-handoff",
+      "ownership": null,
+      "predecessor_intent": null,
+      "reason_code": "handoff_incomplete",
+      "route": "refusal",
+      "session_mode": null,
+      "state": "refused",
+      "successor_job": null,
+      "version": 1
+     }
+    ],
+    "jobs": [
+     [
+      "op-handoff",
+      "failed",
+      "a"
+     ]
+    ],
+    "state": {
+     "conductor": {
+      "calls": [],
+      "running": []
+     },
+     "control": [
+      [
+       "continuation_intents",
+       "099d0e147bd461938d25de8e44f83ec61327c1e74b162b2d12c10337148bda7a",
+       "e4935d2fdf550c2c8477b5b5528d43f6f7551f460664391cbb02b9e8730388b4"
+      ],
+      [
+       "continuation_policies",
+       "policy-1",
+       "8cfb30ef2891de1412f87255419afb3f748e141ea3b18a292d8e78f615da6152"
+      ],
+      [
+       "continuation_progress",
+       "policy-1",
+       "788742bffc47aaabd94adaa4d8be0c948ba298a1436d768f0b56e1f80755c12f"
+      ],
+      [
+       "fleet_control",
+       "admission",
+       "eb67ed2fb1e0fc49b3cd382387dff5fd991cc3e69025e02e911735a57313933c"
+      ],
+      [
+       "fleet_jobs",
+       "op-handoff",
+       "b9932b720546de675f1150f60832e762770a58d76371ad1bc6dc8341074e76fe"
+      ],
+      [
+       "fleet_registry",
+       "fleet-1",
+       "bd6513980dc5cf8fd28101e53442a7c9bb46db2737b28b4846793e479c8b6065"
+      ]
+     ],
+     "lane": [
+      [
+       "decisions_pending",
+       "dec-op-handoff",
+       "c950aad48477d9e72445c739b61aa1c696f4fd1c5dee6eada2ede83e93571598"
+      ],
+      [
+       "operations",
+       "op-handoff",
+       "3124aeb2261d3d23ce2fe56a67c8fb9290dc9e8ab8d30431321d38f7f46ef4f1"
+      ],
+      [
+       "tasks",
+       "task-op-handoff",
+       "520e706420f19191204276b7a885db83edcec63ab2ba81a0a31887fa4cc55caa"
+      ]
+     ],
+     "reads": [
+      "op-handoff"
+     ]
+    },
+    "units": []
+   },
+   "tick": {
+    "value": {
+     "actions": [
+      {
+       "effect": "refused",
+       "route": "refusal",
+       "subject": "099d0e147bd461938d25de8e44f83ec61327c1e74b162b2d12c10337148bda7a"
+      }
+     ],
+     "outcome": "progressed",
+     "owned_elsewhere": {
+      "count": 0,
+      "jobs": []
+     },
+     "policy_id": "policy-1",
+     "reason_code": null,
+     "schema": "urn:zeus:continuation-tick:1",
+     "skipped": []
+    }
+   }
+  },
+  "lane_evidence_missing": {
+   "again": {
+    "receipts": [
+     {
+      "value": {
+       "actions": [],
+       "outcome": "idle",
+       "owned_elsewhere": {
+        "count": 0,
+        "jobs": []
+       },
+       "policy_id": "policy-1",
+       "reason_code": null,
+       "schema": "urn:zeus:continuation-tick:1",
+       "skipped": []
+      }
+     }
+    ],
+    "records_unchanged": true
+   },
+   "snap": {
+    "bindings": [],
+    "intents": [
+     {
+      "decision": null,
+      "delivery_binding": null,
+      "delivery_plan": null,
+      "family": "op-missing",
+      "history": [
+       [
+        "refused",
+        "lane_evidence_missing"
+       ]
+      ],
+      "hold": null,
+      "id": "5fe9daaebf3817e964279ba84519bf174126b51d886bbecce36723f98d5f9ca4",
+      "launch": null,
+      "next_owner": "operator",
+      "origin_job": "op-missing",
+      "ownership": null,
+      "predecessor_intent": null,
+      "reason_code": "lane_evidence_missing",
+      "route": "refusal",
+      "session_mode": null,
+      "state": "refused",
+      "successor_job": null,
+      "version": 1
+     }
+    ],
+    "jobs": [
+     [
+      "op-missing",
+      "rejected",
+      "a"
+     ]
+    ],
+    "state": {
+     "conductor": {
+      "calls": [],
+      "running": []
+     },
+     "control": [
+      [
+       "continuation_intents",
+       "5fe9daaebf3817e964279ba84519bf174126b51d886bbecce36723f98d5f9ca4",
+       "1725442dd54f49d0f80a12a0a800b643249c2f9bd8718650e8c5166e27c2de29"
+      ],
+      [
+       "continuation_policies",
+       "policy-1",
+       "8cfb30ef2891de1412f87255419afb3f748e141ea3b18a292d8e78f615da6152"
+      ],
+      [
+       "continuation_progress",
+       "policy-1",
+       "0b6ec833e7a4a6f329126355071a10350a3181dd3775fe33c29551a3f5fea174"
+      ],
+      [
+       "fleet_control",
+       "admission",
+       "eb67ed2fb1e0fc49b3cd382387dff5fd991cc3e69025e02e911735a57313933c"
+      ],
+      [
+       "fleet_jobs",
+       "op-missing",
+       "87d0016b081655805855d2d5dc168fe8626b200151a08bb9c28eb6e934c08c88"
+      ],
+      [
+       "fleet_registry",
+       "fleet-1",
+       "bd6513980dc5cf8fd28101e53442a7c9bb46db2737b28b4846793e479c8b6065"
+      ]
+     ],
+     "lane": [],
+     "reads": [
+      "op-missing"
+     ]
+    },
+    "units": []
+   },
+   "tick": {
+    "value": {
+     "actions": [
+      {
+       "effect": "refused",
+       "route": "refusal",
+       "subject": "5fe9daaebf3817e964279ba84519bf174126b51d886bbecce36723f98d5f9ca4"
+      }
+     ],
+     "outcome": "progressed",
+     "owned_elsewhere": {
+      "count": 0,
+      "jobs": []
+     },
+     "policy_id": "policy-1",
+     "reason_code": null,
+     "schema": "urn:zeus:continuation-tick:1",
+     "skipped": []
+    }
+   }
+  },
+  "review_unproven": {
+   "again": {
+    "receipts": [
+     {
+      "value": {
+       "actions": [],
+       "outcome": "idle",
+       "owned_elsewhere": {
+        "count": 0,
+        "jobs": []
+       },
+       "policy_id": "policy-1",
+       "reason_code": null,
+       "schema": "urn:zeus:continuation-tick:1",
+       "skipped": []
+      }
+     }
+    ],
+    "records_unchanged": true
+   },
+   "snap": {
+    "bindings": [],
+    "intents": [
+     {
+      "decision": null,
+      "delivery_binding": null,
+      "delivery_plan": null,
+      "family": "op-unproven",
+      "history": [
+       [
+        "refused",
+        "review_unproven"
+       ]
+      ],
+      "hold": null,
+      "id": "987d9898638d50cbb426dad9c8460ab4064f78360a25d93fafc1847f19f3c1c3",
+      "launch": null,
+      "next_owner": "lead:improvement",
+      "origin_job": "op-unproven",
+      "ownership": null,
+      "predecessor_intent": null,
+      "reason_code": "review_unproven",
+      "route": "refusal",
+      "session_mode": null,
+      "state": "refused",
+      "successor_job": null,
+      "version": 1
+     }
+    ],
+    "jobs": [
+     [
+      "op-unproven",
+      "rejected",
+      "a"
+     ]
+    ],
+    "state": {
+     "conductor": {
+      "calls": [],
+      "running": []
+     },
+     "control": [
+      [
+       "continuation_intents",
+       "987d9898638d50cbb426dad9c8460ab4064f78360a25d93fafc1847f19f3c1c3",
+       "031c22945b91233f8940292c2df26dc32f2725c00d70ce49d093f9a9b089ad49"
+      ],
+      [
+       "continuation_policies",
+       "policy-1",
+       "8cfb30ef2891de1412f87255419afb3f748e141ea3b18a292d8e78f615da6152"
+      ],
+      [
+       "continuation_progress",
+       "policy-1",
+       "f9b85764b0b0bc1901d347e29672ca5a547aef1b8b4efd88857f49be026f464a"
+      ],
+      [
+       "fleet_control",
+       "admission",
+       "eb67ed2fb1e0fc49b3cd382387dff5fd991cc3e69025e02e911735a57313933c"
+      ],
+      [
+       "fleet_jobs",
+       "op-unproven",
+       "e19aa7e56772dfc27ef10e85fb61ad418db7b6537fbf6a61ca232dafeaad9084"
+      ],
+      [
+       "fleet_registry",
+       "fleet-1",
+       "bd6513980dc5cf8fd28101e53442a7c9bb46db2737b28b4846793e479c8b6065"
+      ]
+     ],
+     "lane": [
+      [
+       "decisions_pending",
+       "dec-op-unproven",
+       "b3401d6d378c4be78d7e3514f519e76a7c2757939b5fa249cecd80f50a635c6b"
+      ],
+      [
+       "operations",
+       "op-unproven",
+       "e2009eac6c4062c6c1d4da8b402822584fff42228bcb274c10e33607e3e85373"
+      ],
+      [
+       "tasks",
+       "task-op-unproven",
+       "e36afc05e6991dab0a2459f630f81be914c9618871a4f11dd89791d87c702c0b"
+      ]
+     ],
+     "reads": [
+      "op-unproven"
+     ]
+    },
+    "units": []
+   },
+   "tick": {
+    "value": {
+     "actions": [
+      {
+       "effect": "refused",
+       "route": "refusal",
+       "subject": "987d9898638d50cbb426dad9c8460ab4064f78360a25d93fafc1847f19f3c1c3"
+      }
+     ],
+     "outcome": "progressed",
+     "owned_elsewhere": {
+      "count": 0,
+      "jobs": []
+     },
+     "policy_id": "policy-1",
+     "reason_code": null,
+     "schema": "urn:zeus:continuation-tick:1",
+     "skipped": []
+    }
+   }
+  },
+  "scope_image_changed": {
+   "again": {
+    "receipts": [
+     {
+      "value": {
+       "actions": [],
+       "outcome": "idle",
+       "owned_elsewhere": {
+        "count": 0,
+        "jobs": []
+       },
+       "policy_id": "policy-1",
+       "reason_code": null,
+       "schema": "urn:zeus:continuation-tick:1",
+       "skipped": []
+      }
+     }
+    ],
+    "records_unchanged": true
+   },
+   "snap": {
+    "bindings": [],
+    "intents": [
+     {
+      "decision": null,
+      "delivery_binding": null,
+      "delivery_plan": null,
+      "family": "op-scope",
+      "history": [
+       [
+        "refused",
+        "image_changed"
+       ]
+      ],
+      "hold": null,
+      "id": "ba2c64abd361bf1252d70a39782bffadea90bae774ed041841c5102e83eaed8d",
+      "launch": null,
+      "next_owner": "operator",
+      "origin_job": "op-scope",
+      "ownership": null,
+      "predecessor_intent": null,
+      "reason_code": "image_changed",
+      "route": "correction",
+      "session_mode": null,
+      "state": "refused",
+      "successor_job": null,
+      "version": 1
+     }
+    ],
+    "jobs": [
+     [
+      "op-scope",
+      "rejected",
+      "a"
+     ]
+    ],
+    "state": {
+     "conductor": {
+      "calls": [],
+      "running": []
+     },
+     "control": [
+      [
+       "continuation_intents",
+       "ba2c64abd361bf1252d70a39782bffadea90bae774ed041841c5102e83eaed8d",
+       "fb64aec653251ff669713589291e8b7c2bdad4ce84d1b4e425a9cdc33e5e367c"
+      ],
+      [
+       "continuation_policies",
+       "policy-1",
+       "8cfb30ef2891de1412f87255419afb3f748e141ea3b18a292d8e78f615da6152"
+      ],
+      [
+       "continuation_progress",
+       "policy-1",
+       "7bdf64c4bcb254aae4357a2cc7c650a3d274f71aea7c943d47c78fc35f0e6785"
+      ],
+      [
+       "fleet_control",
+       "admission",
+       "eb67ed2fb1e0fc49b3cd382387dff5fd991cc3e69025e02e911735a57313933c"
+      ],
+      [
+       "fleet_jobs",
+       "op-scope",
+       "769e3d3d7e69aeddc0ee498f0576160de1f216b2fa833731e788cdee774e0910"
+      ],
+      [
+       "fleet_registry",
+       "fleet-1",
+       "bd6513980dc5cf8fd28101e53442a7c9bb46db2737b28b4846793e479c8b6065"
+      ]
+     ],
+     "lane": [
+      [
+       "decisions_pending",
+       "dec-op-scope",
+       "521c4e977317ce1017fdd428ef1b3a1c93ea76bce4ca4418309f1f660ac0b37f"
+      ],
+      [
+       "operations",
+       "op-scope",
+       "c9431c81edacbb895ab5d1bf4479b6a06923df1cd1ded98012733d2611191749"
+      ],
+      [
+       "tasks",
+       "task-op-scope",
+       "27bf0a747fff501970d33002bf3a435bd9ee18d4010f7ec40e1b0df9f2a78a15"
+      ]
+     ],
+     "reads": [
+      "op-scope"
+     ]
+    },
+    "units": []
+   },
+   "tick": {
+    "value": {
+     "actions": [
+      {
+       "effect": "refused",
+       "route": "correction",
+       "subject": "ba2c64abd361bf1252d70a39782bffadea90bae774ed041841c5102e83eaed8d"
+      }
+     ],
+     "outcome": "progressed",
+     "owned_elsewhere": {
+      "count": 0,
+      "jobs": []
+     },
+     "policy_id": "policy-1",
+     "reason_code": null,
+     "schema": "urn:zeus:continuation-tick:1",
+     "skipped": []
+    }
+   }
+  }
+ },
+ "successor": {
+  "correction": {
+   "after_first": {
+    "bindings": [
+     {
+      "family": "op-1",
+      "intent_id": "42b0f6119a702500d085eb0cf5aa410008ec63c99b54056c36e31e6796862949",
+      "operation_id": "cont-42b0f6119a702500d085eb0c",
+      "predecessor": {
+       "candidate_revision": "cccccccccccccccccccccccccccccccccccccccc",
+       "decision_id": "dec-op-1",
+       "inspection_id": null,
+       "job_id": "op-1",
+       "review_execution_ref": "sha256:8888888888888888888888888888888888888888888888888888888888888888",
+       "task_id": "task-op-1"
+      },
+      "route": "correction",
+      "session": null,
+      "workspace": {
+       "base": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "head": "cccccccccccccccccccccccccccccccccccccccc",
+       "origin_task_id": "task-op-1"
+      }
+     }
+    ],
+    "intents": [
+     {
+      "decision": null,
+      "delivery_binding": null,
+      "delivery_plan": null,
+      "family": "op-1",
+      "history": [
+       [
+        "intended",
+        "lead_rejected"
+       ],
+       [
+        "published",
+        "lead_rejected"
+       ],
+       [
+        "admitted",
+        "lead_rejected"
+       ]
+      ],
+      "hold": null,
+      "id": "42b0f6119a702500d085eb0cf5aa410008ec63c99b54056c36e31e6796862949",
+      "launch": null,
+      "next_owner": "fleet",
+      "origin_job": "op-1",
+      "ownership": {
+       "criterion_id": null,
+       "project_id": null,
+       "state": "origin_unbound"
+      },
+      "predecessor_intent": null,
+      "reason_code": "lead_rejected",
+      "route": "correction",
+      "session_mode": "fresh_evidence_handoff",
+      "state": "admitted",
+      "successor_job": "cont-42b0f6119a702500d085eb0c",
+      "version": 3
+     }
+    ],
+    "jobs": [
+     [
+      "cont-42b0f6119a702500d085eb0c",
+      "queued",
+      "a"
+     ],
+     [
+      "op-1",
+      "rejected",
+      "a"
+     ]
+    ],
+    "state": {
+     "conductor": {
+      "calls": [],
+      "running": []
+     },
+     "control": [
+      [
+       "continuation_intents",
+       "42b0f6119a702500d085eb0cf5aa410008ec63c99b54056c36e31e6796862949",
+       "37d47ae9aae0e6161fb0b9362ee06a4acb714d215039bb14f2b10a2d720b2d57"
+      ],
+      [
+       "continuation_policies",
+       "policy-1",
+       "8cfb30ef2891de1412f87255419afb3f748e141ea3b18a292d8e78f615da6152"
+      ],
+      [
+       "continuation_progress",
+       "policy-1",
+       "508dc08d89763c16fee9a136d881ce1768e1f0f2bc6d4f721e7acadbdfbc8796"
+      ],
+      [
+       "fleet_control",
+       "admission",
+       "eb67ed2fb1e0fc49b3cd382387dff5fd991cc3e69025e02e911735a57313933c"
+      ],
+      [
+       "fleet_jobs",
+       "cont-42b0f6119a702500d085eb0c",
+       "a69ae9d19a245a2d1c8b6245c738ce013484faac4dc764b3dfa3138c39156302"
+      ],
+      [
+       "fleet_jobs",
+       "op-1",
+       "1b25d569db14fa0b6413876be21f5042622c2d1cc40daabf56eb8c1fa2075882"
+      ],
+      [
+       "fleet_registry",
+       "fleet-1",
+       "bd6513980dc5cf8fd28101e53442a7c9bb46db2737b28b4846793e479c8b6065"
+      ]
+     ],
+     "lane": [
+      [
+       "continuation_bindings",
+       "cont-42b0f6119a702500d085eb0c",
+       "6fc2b50c04758a079925849d4f95b788931ee28ae30a49a8fddbbbf2f7f6284e"
+      ],
+      [
+       "decisions_pending",
+       "dec-op-1",
+       "90beb3c95de1fa4b1b7ea8e5d8584e63b5b020bcfbc1d48d7717efd6c75fa5d2"
+      ],
+      [
+       "operations",
+       "op-1",
+       "8826e04953c8e3372fe48762f64de8d72671237e4a8f77ba8ef8c63edb8fea14"
+      ],
+      [
+       "tasks",
+       "task-op-1",
+       "afff1a405ab6fb0d366bac298a6f95bb58d3fd06257a1d8f29ff5dedd1840d69"
+      ]
+     ],
+     "reads": [
+      "op-1"
+     ]
+    },
+    "units": []
+   },
+   "again": {
+    "receipts": [
+     {
+      "value": {
+       "actions": [],
+       "outcome": "idle",
+       "owned_elsewhere": {
+        "count": 0,
+        "jobs": []
+       },
+       "policy_id": "policy-1",
+       "reason_code": null,
+       "schema": "urn:zeus:continuation-tick:1",
+       "skipped": []
+      }
+     },
+     {
+      "value": {
+       "actions": [],
+       "outcome": "idle",
+       "owned_elsewhere": {
+        "count": 0,
+        "jobs": []
+       },
+       "policy_id": "policy-1",
+       "reason_code": null,
+       "schema": "urn:zeus:continuation-tick:1",
+       "skipped": []
+      }
+     }
+    ],
+    "records_unchanged": true
+   },
+   "first": {
+    "value": {
+     "actions": [
+      {
+       "effect": "admitted",
+       "route": "correction",
+       "subject": "42b0f6119a702500d085eb0cf5aa410008ec63c99b54056c36e31e6796862949",
+       "successor_job": "cont-42b0f6119a702500d085eb0c"
+      }
+     ],
+     "outcome": "progressed",
+     "owned_elsewhere": {
+      "count": 0,
+      "jobs": []
+     },
+     "policy_id": "policy-1",
+     "reason_code": null,
+     "schema": "urn:zeus:continuation-tick:1",
+     "skipped": []
+    }
+   },
+   "snap": {
+    "bindings": [
+     {
+      "family": "op-1",
+      "intent_id": "42b0f6119a702500d085eb0cf5aa410008ec63c99b54056c36e31e6796862949",
+      "operation_id": "cont-42b0f6119a702500d085eb0c",
+      "predecessor": {
+       "candidate_revision": "cccccccccccccccccccccccccccccccccccccccc",
+       "decision_id": "dec-op-1",
+       "inspection_id": null,
+       "job_id": "op-1",
+       "review_execution_ref": "sha256:8888888888888888888888888888888888888888888888888888888888888888",
+       "task_id": "task-op-1"
+      },
+      "route": "correction",
+      "session": null,
+      "workspace": {
+       "base": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "head": "cccccccccccccccccccccccccccccccccccccccc",
+       "origin_task_id": "task-op-1"
+      }
+     }
+    ],
+    "intents": [
+     {
+      "decision": null,
+      "delivery_binding": null,
+      "delivery_plan": null,
+      "family": "op-1",
+      "history": [
+       [
+        "intended",
+        "lead_rejected"
+       ],
+       [
+        "published",
+        "lead_rejected"
+       ],
+       [
+        "admitted",
+        "lead_rejected"
+       ]
+      ],
+      "hold": null,
+      "id": "42b0f6119a702500d085eb0cf5aa410008ec63c99b54056c36e31e6796862949",
+      "launch": null,
+      "next_owner": "fleet",
+      "origin_job": "op-1",
+      "ownership": {
+       "criterion_id": null,
+       "project_id": null,
+       "state": "origin_unbound"
+      },
+      "predecessor_intent": null,
+      "reason_code": "lead_rejected",
+      "route": "correction",
+      "session_mode": "fresh_evidence_handoff",
+      "state": "admitted",
+      "successor_job": "cont-42b0f6119a702500d085eb0c",
+      "version": 3
+     }
+    ],
+    "jobs": [
+     [
+      "cont-42b0f6119a702500d085eb0c",
+      "queued",
+      "a"
+     ],
+     [
+      "op-1",
+      "rejected",
+      "a"
+     ]
+    ],
+    "state": {
+     "conductor": {
+      "calls": [],
+      "running": []
+     },
+     "control": [
+      [
+       "continuation_intents",
+       "42b0f6119a702500d085eb0cf5aa410008ec63c99b54056c36e31e6796862949",
+       "37d47ae9aae0e6161fb0b9362ee06a4acb714d215039bb14f2b10a2d720b2d57"
+      ],
+      [
+       "continuation_policies",
+       "policy-1",
+       "8cfb30ef2891de1412f87255419afb3f748e141ea3b18a292d8e78f615da6152"
+      ],
+      [
+       "continuation_progress",
+       "policy-1",
+       "508dc08d89763c16fee9a136d881ce1768e1f0f2bc6d4f721e7acadbdfbc8796"
+      ],
+      [
+       "fleet_control",
+       "admission",
+       "eb67ed2fb1e0fc49b3cd382387dff5fd991cc3e69025e02e911735a57313933c"
+      ],
+      [
+       "fleet_jobs",
+       "cont-42b0f6119a702500d085eb0c",
+       "a69ae9d19a245a2d1c8b6245c738ce013484faac4dc764b3dfa3138c39156302"
+      ],
+      [
+       "fleet_jobs",
+       "op-1",
+       "1b25d569db14fa0b6413876be21f5042622c2d1cc40daabf56eb8c1fa2075882"
+      ],
+      [
+       "fleet_registry",
+       "fleet-1",
+       "bd6513980dc5cf8fd28101e53442a7c9bb46db2737b28b4846793e479c8b6065"
+      ]
+     ],
+     "lane": [
+      [
+       "continuation_bindings",
+       "cont-42b0f6119a702500d085eb0c",
+       "6fc2b50c04758a079925849d4f95b788931ee28ae30a49a8fddbbbf2f7f6284e"
+      ],
+      [
+       "decisions_pending",
+       "dec-op-1",
+       "90beb3c95de1fa4b1b7ea8e5d8584e63b5b020bcfbc1d48d7717efd6c75fa5d2"
+      ],
+      [
+       "operations",
+       "op-1",
+       "8826e04953c8e3372fe48762f64de8d72671237e4a8f77ba8ef8c63edb8fea14"
+      ],
+      [
+       "tasks",
+       "task-op-1",
+       "afff1a405ab6fb0d366bac298a6f95bb58d3fd06257a1d8f29ff5dedd1840d69"
+      ]
+     ],
+     "reads": [
+      "op-1"
+     ]
+    },
+    "units": []
+   }
+  },
+  "correction_budget_exhausted": {
+   "again": {
+    "receipts": [
+     {
+      "value": {
+       "actions": [],
+       "outcome": "idle",
+       "owned_elsewhere": {
+        "count": 0,
+        "jobs": []
+       },
+       "policy_id": "policy-1",
+       "reason_code": null,
+       "schema": "urn:zeus:continuation-tick:1",
+       "skipped": []
+      }
+     }
+    ],
+    "records_unchanged": true
+   },
+   "budget": {
+    "value": {
+     "actions": [
+      {
+       "effect": "successor_returned",
+       "route": "correction",
+       "subject": "88c50ba9199dabe251322659eafcac320d53e135058263aa8b17fdd0bb3d8a71"
+      },
+      {
+       "effect": "refused",
+       "route": "correction",
+       "subject": "ce2c69d7d69f218dbc4dc91ea6f8637c23ae59107afbd8b27d7b911c5fb7971e"
+      }
+     ],
+     "outcome": "progressed",
+     "owned_elsewhere": {
+      "count": 0,
+      "jobs": []
+     },
+     "policy_id": "policy-1",
+     "reason_code": null,
+     "schema": "urn:zeus:continuation-tick:1",
+     "skipped": []
+    }
+   },
+   "first": {
+    "value": {
+     "actions": [
+      {
+       "effect": "admitted",
+       "route": "correction",
+       "subject": "88c50ba9199dabe251322659eafcac320d53e135058263aa8b17fdd0bb3d8a71",
+       "successor_job": "cont-88c50ba9199dabe251322659"
+      }
+     ],
+     "outcome": "progressed",
+     "owned_elsewhere": {
+      "count": 0,
+      "jobs": []
+     },
+     "policy_id": "policy-1",
+     "reason_code": null,
+     "schema": "urn:zeus:continuation-tick:1",
+     "skipped": []
+    }
+   },
+   "snap": {
+    "bindings": [
+     {
+      "family": "op-b",
+      "intent_id": "88c50ba9199dabe251322659eafcac320d53e135058263aa8b17fdd0bb3d8a71",
+      "operation_id": "cont-88c50ba9199dabe251322659",
+      "predecessor": {
+       "candidate_revision": "cccccccccccccccccccccccccccccccccccccccc",
+       "decision_id": "dec-op-b",
+       "inspection_id": null,
+       "job_id": "op-b",
+       "review_execution_ref": "sha256:8888888888888888888888888888888888888888888888888888888888888888",
+       "task_id": "task-op-b"
+      },
+      "route": "correction",
+      "session": null,
+      "workspace": {
+       "base": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "head": "cccccccccccccccccccccccccccccccccccccccc",
+       "origin_task_id": "task-op-b"
+      }
+     }
+    ],
+    "intents": [
+     {
+      "decision": null,
+      "delivery_binding": null,
+      "delivery_plan": null,
+      "family": "op-b",
+      "history": [
+       [
+        "intended",
+        "lead_rejected"
+       ],
+       [
+        "published",
+        "lead_rejected"
+       ],
+       [
+        "admitted",
+        "lead_rejected"
+       ],
+       [
+        "returned",
+        "successor_rejected"
+       ],
+       [
+        "completed",
+        "successor_rejected"
+       ]
+      ],
+      "hold": null,
+      "id": "88c50ba9199dabe251322659eafcac320d53e135058263aa8b17fdd0bb3d8a71",
+      "launch": null,
+      "next_owner": "fleet",
+      "origin_job": "op-b",
+      "ownership": {
+       "criterion_id": null,
+       "project_id": null,
+       "state": "origin_unbound"
+      },
+      "predecessor_intent": null,
+      "reason_code": "successor_rejected",
+      "route": "correction",
+      "session_mode": "fresh_evidence_handoff",
+      "state": "completed",
+      "successor_job": "cont-88c50ba9199dabe251322659",
+      "version": 5
+     },
+     {
+      "decision": null,
+      "delivery_binding": null,
+      "delivery_plan": null,
+      "family": "op-b",
+      "history": [
+       [
+        "completed",
+        null
+       ]
+      ],
+      "hold": null,
+      "id": "research-seeded",
+      "launch": null,
+      "next_owner": null,
+      "origin_job": "cont-88c50ba9199dabe251322659",
+      "ownership": null,
+      "predecessor_intent": null,
+      "reason_code": "research_receipt_accepted",
+      "route": "research",
+      "session_mode": null,
+      "state": "completed",
+      "successor_job": null,
+      "version": 1
+     },
+     {
+      "decision": null,
+      "delivery_binding": null,
+      "delivery_plan": null,
+      "family": "op-b",
+      "history": [
+       [
+        "refused",
+        "correction_budget_exhausted"
+       ]
+      ],
+      "hold": null,
+      "id": "ce2c69d7d69f218dbc4dc91ea6f8637c23ae59107afbd8b27d7b911c5fb7971e",
+      "launch": null,
+      "next_owner": "operator",
+      "origin_job": "cont-88c50ba9199dabe251322659",
+      "ownership": null,
+      "predecessor_intent": "88c50ba9199dabe251322659eafcac320d53e135058263aa8b17fdd0bb3d8a71",
+      "reason_code": "correction_budget_exhausted",
+      "route": "correction",
+      "session_mode": null,
+      "state": "refused",
+      "successor_job": null,
+      "version": 1
+     }
+    ],
+    "jobs": [
+     [
+      "cont-88c50ba9199dabe251322659",
+      "rejected",
+      "a"
+     ],
+     [
+      "op-b",
+      "rejected",
+      "a"
+     ]
+    ],
+    "state": {
+     "conductor": {
+      "calls": [],
+      "running": []
+     },
+     "control": [
+      [
+       "continuation_intents",
+       "88c50ba9199dabe251322659eafcac320d53e135058263aa8b17fdd0bb3d8a71",
+       "630dee6558dc0d1018547fdc7f525f160ae9b9e891995f0733afd84af8d8a5d8"
+      ],
+      [
+       "continuation_intents",
+       "ce2c69d7d69f218dbc4dc91ea6f8637c23ae59107afbd8b27d7b911c5fb7971e",
+       "abd4b8d4d5916b5be14423050884bd0ce21cdfbdf197f35596263d2c7114c061"
+      ],
+      [
+       "continuation_intents",
+       "research-seeded",
+       "d18c06b18082e0d041e2cd56958acdfe260ed8827cd4043ac896f42620e69bf5"
+      ],
+      [
+       "continuation_policies",
+       "policy-1",
+       "652dcb5127cf9ac18de77afac48cb1ee88fbb82d792372c5a6efc7109e6407ac"
+      ],
+      [
+       "continuation_progress",
+       "policy-1",
+       "c1d4ced61002416e16a4a5e7ac7d1291e3670756acd1fff9a041e4c79798149e"
+      ],
+      [
+       "fleet_control",
+       "admission",
+       "eb67ed2fb1e0fc49b3cd382387dff5fd991cc3e69025e02e911735a57313933c"
+      ],
+      [
+       "fleet_jobs",
+       "cont-88c50ba9199dabe251322659",
+       "b605b227a3b07405e19c260ebaae4be1ddebedb9c9a509cf05606ae89b1f6a1c"
+      ],
+      [
+       "fleet_jobs",
+       "op-b",
+       "ab484ff97ea7b781992613dff5a9205139491b6d2e2ef8af36cd09b7391fb8be"
+      ],
+      [
+       "fleet_registry",
+       "fleet-1",
+       "bd6513980dc5cf8fd28101e53442a7c9bb46db2737b28b4846793e479c8b6065"
+      ]
+     ],
+     "lane": [
+      [
+       "continuation_bindings",
+       "cont-88c50ba9199dabe251322659",
+       "d268822a8edec1a49b2d5cf216612827f8c2fc6e4eaa4e804fddb31771fb48e9"
+      ],
+      [
+       "decisions_pending",
+       "dec-cont-88c50ba9199dabe251322659",
+       "868cc75c0175465fa42d29f57588f24827eec00a0f05e9c5ef8f533223acc3d1"
+      ],
+      [
+       "decisions_pending",
+       "dec-op-b",
+       "5f09aafbbd29358bf8559ba4481a34d4f3acdeb80e446227ced84287ec5a45be"
+      ],
+      [
+       "operations",
+       "cont-88c50ba9199dabe251322659",
+       "332f530a37dbbb6403055a47011b18bc82927b15903fd990fa4cbbb2bd1e66f7"
+      ],
+      [
+       "operations",
+       "op-b",
+       "989d9bc58e81140978afc9e59602d467259568029b1291d619812eea3243d772"
+      ],
+      [
+       "tasks",
+       "task-cont-88c50ba9199dabe251322659",
+       "3ee2dd9d7a60cc860b531c301039b7a477dad4374605dc79254a8af58861dee7"
+      ],
+      [
+       "tasks",
+       "task-op-b",
+       "589130f0ccb1d3fdd3b143e62924346b69108c854705f1059e95889821b339f4"
+      ]
+     ],
+     "reads": [
+      "op-b",
+      "cont-88c50ba9199dabe251322659"
+     ]
+    },
+    "units": []
+   }
+  },
+  "evidence_repair": {
+   "again": {
+    "receipts": [
+     {
+      "value": {
+       "actions": [],
+       "outcome": "idle",
+       "owned_elsewhere": {
+        "count": 0,
+        "jobs": []
+       },
+       "policy_id": "policy-1",
+       "reason_code": null,
+       "schema": "urn:zeus:continuation-tick:1",
+       "skipped": []
+      }
+     }
+    ],
+    "records_unchanged": true
+   },
+   "first": {
+    "value": {
+     "actions": [
+      {
+       "effect": "admitted",
+       "route": "evidence_repair",
+       "subject": "e1c7db8943674b3817f6a8c12d1ec30c4a6b15210396afd11d226fe3483d3d4b",
+       "successor_job": "cont-e1c7db8943674b3817f6a8c1"
+      }
+     ],
+     "outcome": "progressed",
+     "owned_elsewhere": {
+      "count": 0,
+      "jobs": []
+     },
+     "policy_id": "policy-1",
+     "reason_code": null,
+     "schema": "urn:zeus:continuation-tick:1",
+     "skipped": []
+    }
+   },
+   "snap": {
+    "bindings": [
+     {
+      "family": "op-repair",
+      "intent_id": "e1c7db8943674b3817f6a8c12d1ec30c4a6b15210396afd11d226fe3483d3d4b",
+      "operation_id": "cont-e1c7db8943674b3817f6a8c1",
+      "predecessor": {
+       "candidate_revision": "cccccccccccccccccccccccccccccccccccccccc",
+       "decision_id": null,
+       "inspection_id": "insp-op-repair",
+       "job_id": "op-repair",
+       "review_execution_ref": null,
+       "task_id": "task-op-repair"
+      },
+      "route": "evidence_repair",
+      "session": null,
+      "workspace": {
+       "base": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "head": "cccccccccccccccccccccccccccccccccccccccc",
+       "origin_task_id": "task-op-repair"
+      }
+     }
+    ],
+    "intents": [
+     {
+      "decision": null,
+      "delivery_binding": null,
+      "delivery_plan": null,
+      "family": "op-repair",
+      "history": [
+       [
+        "intended",
+        "evidence_gate_refused"
+       ],
+       [
+        "published",
+        "evidence_gate_refused"
+       ],
+       [
+        "admitted",
+        "evidence_gate_refused"
+       ]
+      ],
+      "hold": null,
+      "id": "e1c7db8943674b3817f6a8c12d1ec30c4a6b15210396afd11d226fe3483d3d4b",
+      "launch": null,
+      "next_owner": "fleet",
+      "origin_job": "op-repair",
+      "ownership": {
+       "criterion_id": null,
+       "project_id": null,
+       "state": "origin_unbound"
+      },
+      "predecessor_intent": null,
+      "reason_code": "evidence_gate_refused",
+      "route": "evidence_repair",
+      "session_mode": "fresh_evidence_handoff",
+      "state": "admitted",
+      "successor_job": "cont-e1c7db8943674b3817f6a8c1",
+      "version": 3
+     }
+    ],
+    "jobs": [
+     [
+      "cont-e1c7db8943674b3817f6a8c1",
+      "queued",
+      "a"
+     ],
+     [
+      "op-repair",
+      "failed",
+      "a"
+     ]
+    ],
+    "state": {
+     "conductor": {
+      "calls": [],
+      "running": []
+     },
+     "control": [
+      [
+       "continuation_intents",
+       "e1c7db8943674b3817f6a8c12d1ec30c4a6b15210396afd11d226fe3483d3d4b",
+       "3b09a4100988e8debbc3b5ebf171837d9d722eb5d544445caef58cc0fd380594"
+      ],
+      [
+       "continuation_policies",
+       "policy-1",
+       "8cfb30ef2891de1412f87255419afb3f748e141ea3b18a292d8e78f615da6152"
+      ],
+      [
+       "continuation_progress",
+       "policy-1",
+       "2c2c2158b2701135955dcb548c29286156836ee9342903fe12121efab2ac234a"
+      ],
+      [
+       "fleet_control",
+       "admission",
+       "eb67ed2fb1e0fc49b3cd382387dff5fd991cc3e69025e02e911735a57313933c"
+      ],
+      [
+       "fleet_jobs",
+       "cont-e1c7db8943674b3817f6a8c1",
+       "52c05df0ff05c7881ad36e6100b83e4602be070a954d12ba80c68d340178f919"
+      ],
+      [
+       "fleet_jobs",
+       "op-repair",
+       "33be5a118f4cf3b7af59fb2b06c3be1424401c3def7e39468f973dac3f9b13ee"
+      ],
+      [
+       "fleet_registry",
+       "fleet-1",
+       "bd6513980dc5cf8fd28101e53442a7c9bb46db2737b28b4846793e479c8b6065"
+      ]
+     ],
+     "lane": [
+      [
+       "continuation_bindings",
+       "cont-e1c7db8943674b3817f6a8c1",
+       "5195b0b930d4b39d9ead9a9defd9b73b52d610480030cd9acbc7dcedb881eb3d"
+      ],
+      [
+       "decisions_pending",
+       "dec-op-repair",
+       "9c677876a8c6ef8a35cf1c1517a19c353e3a55515dd92f086eafdb2882820c62"
+      ],
+      [
+       "operations",
+       "op-repair",
+       "fa3539ba882bdd5c3ca1293f399fc6ee3afe9bf29e42fcc5c52170882f45593d"
+      ],
+      [
+       "tasks",
+       "task-op-repair",
+       "e3ad86c9a71403473d0f0b40fe039a274bfecac7eea1d27147d810d6c570948f"
+      ]
+     ],
+     "reads": [
+      "op-repair"
+     ]
+    },
+    "units": []
+   }
+  },
+  "research": {
+   "again": {
+    "receipts": [
+     {
+      "value": {
+       "actions": [],
+       "outcome": "idle",
+       "owned_elsewhere": {
+        "count": 0,
+        "jobs": []
+       },
+       "policy_id": "policy-1",
+       "reason_code": null,
+       "schema": "urn:zeus:continuation-tick:1",
+       "skipped": []
+      }
+     },
+     {
+      "value": {
+       "actions": [],
+       "outcome": "idle",
+       "owned_elsewhere": {
+        "count": 0,
+        "jobs": []
+       },
+       "policy_id": "policy-1",
+       "reason_code": null,
+       "schema": "urn:zeus:continuation-tick:1",
+       "skipped": []
+      }
+     }
+    ],
+    "records_unchanged": true
+   },
+   "first": {
+    "value": {
+     "actions": [
+      {
+       "effect": "admitted",
+       "route": "correction",
+       "subject": "226a9e76e34fbb54c6f4c2fef45d6f84f60dd2d5d62de2870cd1becb9c6f6be2",
+       "successor_job": "cont-226a9e76e34fbb54c6f4c2fe"
+      }
+     ],
+     "outcome": "progressed",
+     "owned_elsewhere": {
+      "count": 0,
+      "jobs": []
+     },
+     "policy_id": "policy-1",
+     "reason_code": null,
+     "schema": "urn:zeus:continuation-tick:1",
+     "skipped": []
+    }
+   },
+   "held": {
+    "op-x": "two_distinct_failures"
+   },
+   "second": {
+    "value": {
+     "actions": [
+      {
+       "effect": "successor_returned",
+       "route": "correction",
+       "subject": "226a9e76e34fbb54c6f4c2fef45d6f84f60dd2d5d62de2870cd1becb9c6f6be2"
+      },
+      {
+       "effect": "admitted",
+       "route": "correction",
+       "subject": "555085e5cfdf54daac78b44fdb0ddde03aa238b1c47eae967d97a854e7ad5585",
+       "successor_job": "cont-555085e5cfdf54daac78b44f"
+      },
+      {
+       "effect": "research_required",
+       "route": "research",
+       "subject": "1e6d95ae0dc765f9b0e23005369af23d9ba22fb6abdeb8c48478ff7e4ab0021b"
+      }
+     ],
+     "outcome": "progressed",
+     "owned_elsewhere": {
+      "count": 0,
+      "jobs": []
+     },
+     "policy_id": "policy-1",
+     "reason_code": null,
+     "schema": "urn:zeus:continuation-tick:1",
+     "skipped": []
+    }
+   },
+   "snap": {
+    "bindings": [
+     {
+      "family": "op-x",
+      "intent_id": "226a9e76e34fbb54c6f4c2fef45d6f84f60dd2d5d62de2870cd1becb9c6f6be2",
+      "operation_id": "cont-226a9e76e34fbb54c6f4c2fe",
+      "predecessor": {
+       "candidate_revision": "cccccccccccccccccccccccccccccccccccccccc",
+       "decision_id": "dec-op-x",
+       "inspection_id": null,
+       "job_id": "op-x",
+       "review_execution_ref": "sha256:8888888888888888888888888888888888888888888888888888888888888888",
+       "task_id": "task-op-x"
+      },
+      "route": "correction",
+      "session": null,
+      "workspace": {
+       "base": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "head": "cccccccccccccccccccccccccccccccccccccccc",
+       "origin_task_id": "task-op-x"
+      }
+     },
+     {
+      "family": "op-y",
+      "intent_id": "555085e5cfdf54daac78b44fdb0ddde03aa238b1c47eae967d97a854e7ad5585",
+      "operation_id": "cont-555085e5cfdf54daac78b44f",
+      "predecessor": {
+       "candidate_revision": "cccccccccccccccccccccccccccccccccccccccc",
+       "decision_id": "dec-op-y",
+       "inspection_id": null,
+       "job_id": "op-y",
+       "review_execution_ref": "sha256:8888888888888888888888888888888888888888888888888888888888888888",
+       "task_id": "task-op-y"
+      },
+      "route": "correction",
+      "session": null,
+      "workspace": {
+       "base": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "head": "cccccccccccccccccccccccccccccccccccccccc",
+       "origin_task_id": "task-op-y"
+      }
+     }
+    ],
+    "intents": [
+     {
+      "decision": null,
+      "delivery_binding": null,
+      "delivery_plan": null,
+      "family": "op-x",
+      "history": [
+       [
+        "intended",
+        "lead_rejected"
+       ],
+       [
+        "published",
+        "lead_rejected"
+       ],
+       [
+        "admitted",
+        "lead_rejected"
+       ],
+       [
+        "returned",
+        "successor_rejected"
+       ],
+       [
+        "completed",
+        "successor_rejected"
+       ]
+      ],
+      "hold": null,
+      "id": "226a9e76e34fbb54c6f4c2fef45d6f84f60dd2d5d62de2870cd1becb9c6f6be2",
+      "launch": null,
+      "next_owner": "fleet",
+      "origin_job": "op-x",
+      "ownership": {
+       "criterion_id": null,
+       "project_id": null,
+       "state": "origin_unbound"
+      },
+      "predecessor_intent": null,
+      "reason_code": "successor_rejected",
+      "route": "correction",
+      "session_mode": "fresh_evidence_handoff",
+      "state": "completed",
+      "successor_job": "cont-226a9e76e34fbb54c6f4c2fe",
+      "version": 5
+     },
+     {
+      "decision": null,
+      "delivery_binding": null,
+      "delivery_plan": null,
+      "family": "op-y",
+      "history": [
+       [
+        "intended",
+        "lead_rejected"
+       ],
+       [
+        "published",
+        "lead_rejected"
+       ],
+       [
+        "admitted",
+        "lead_rejected"
+       ]
+      ],
+      "hold": null,
+      "id": "555085e5cfdf54daac78b44fdb0ddde03aa238b1c47eae967d97a854e7ad5585",
+      "launch": null,
+      "next_owner": "fleet",
+      "origin_job": "op-y",
+      "ownership": {
+       "criterion_id": null,
+       "project_id": null,
+       "state": "origin_unbound"
+      },
+      "predecessor_intent": null,
+      "reason_code": "lead_rejected",
+      "route": "correction",
+      "session_mode": "fresh_evidence_handoff",
+      "state": "admitted",
+      "successor_job": "cont-555085e5cfdf54daac78b44f",
+      "version": 3
+     },
+     {
+      "decision": null,
+      "delivery_binding": null,
+      "delivery_plan": null,
+      "family": "op-x",
+      "history": [
+       [
+        "research_required",
+        "two_distinct_failures"
+       ]
+      ],
+      "hold": null,
+      "id": "1e6d95ae0dc765f9b0e23005369af23d9ba22fb6abdeb8c48478ff7e4ab0021b",
+      "launch": null,
+      "next_owner": "portfolio_research",
+      "origin_job": "cont-226a9e76e34fbb54c6f4c2fe",
+      "ownership": null,
+      "predecessor_intent": "226a9e76e34fbb54c6f4c2fef45d6f84f60dd2d5d62de2870cd1becb9c6f6be2",
+      "reason_code": "two_distinct_failures",
+      "route": "research",
+      "session_mode": null,
+      "state": "research_required",
+      "successor_job": null,
+      "version": 1
+     }
+    ],
+    "jobs": [
+     [
+      "cont-226a9e76e34fbb54c6f4c2fe",
+      "rejected",
+      "a"
+     ],
+     [
+      "cont-555085e5cfdf54daac78b44f",
+      "queued",
+      "a"
+     ],
+     [
+      "op-x",
+      "rejected",
+      "a"
+     ],
+     [
+      "op-y",
+      "rejected",
+      "a"
+     ]
+    ],
+    "state": {
+     "conductor": {
+      "calls": [],
+      "running": []
+     },
+     "control": [
+      [
+       "continuation_intents",
+       "1e6d95ae0dc765f9b0e23005369af23d9ba22fb6abdeb8c48478ff7e4ab0021b",
+       "8e4421cec9b5ec3fee42ed321e9a1fac42085a5dbf4e0de1b59672958886f123"
+      ],
+      [
+       "continuation_intents",
+       "226a9e76e34fbb54c6f4c2fef45d6f84f60dd2d5d62de2870cd1becb9c6f6be2",
+       "78c436d84e59b4a6690de308de78fa335d9b4d8f7cfa7099230eb2e2852dea1f"
+      ],
+      [
+       "continuation_intents",
+       "555085e5cfdf54daac78b44fdb0ddde03aa238b1c47eae967d97a854e7ad5585",
+       "cce01df8bd1b9fec942bc6a3bc99e16772174f100f2019bd0553a71f9085db01"
+      ],
+      [
+       "continuation_policies",
+       "policy-1",
+       "8cfb30ef2891de1412f87255419afb3f748e141ea3b18a292d8e78f615da6152"
+      ],
+      [
+       "continuation_progress",
+       "policy-1",
+       "53dadb7df267d7e9d1be4730265f37ad2df2d03858084ddb9292af91de064239"
+      ],
+      [
+       "fleet_control",
+       "admission",
+       "eb67ed2fb1e0fc49b3cd382387dff5fd991cc3e69025e02e911735a57313933c"
+      ],
+      [
+       "fleet_jobs",
+       "cont-226a9e76e34fbb54c6f4c2fe",
+       "77ab7acace971e32ec3df66c3751c15abe4fc471fe9e70b1076d20a829e0a657"
+      ],
+      [
+       "fleet_jobs",
+       "cont-555085e5cfdf54daac78b44f",
+       "afced2c5f34e3f2114ecd0aa8e5fe4ebc1c37aac3a099485aabb2f8947c50453"
+      ],
+      [
+       "fleet_jobs",
+       "op-x",
+       "eddd45a61693b554808d9b6ecc42fe9486f9145a909877fda56954474c7f98d0"
+      ],
+      [
+       "fleet_jobs",
+       "op-y",
+       "545c3ab5342b84bffe0f14f9cb24806b9a5796f6af85fc44a4174dc0362a367c"
+      ],
+      [
+       "fleet_registry",
+       "fleet-1",
+       "bd6513980dc5cf8fd28101e53442a7c9bb46db2737b28b4846793e479c8b6065"
+      ]
+     ],
+     "lane": [
+      [
+       "continuation_bindings",
+       "cont-226a9e76e34fbb54c6f4c2fe",
+       "68f55d2806bff4568a0c65809f1c263fbc7b613d8b8c5d634cbf836393772efb"
+      ],
+      [
+       "continuation_bindings",
+       "cont-555085e5cfdf54daac78b44f",
+       "98b35329587ce25a94b95edf1e7abf1d1eaddf6d6cb25055107eced85b6928c5"
+      ],
+      [
+       "decisions_pending",
+       "dec-cont-226a9e76e34fbb54c6f4c2fe",
+       "664ed1c1e28dab3ecabf04d4f62c370d9f11980f9e66b96a84844ff74ff250a3"
+      ],
+      [
+       "decisions_pending",
+       "dec-op-x",
+       "3a95cef4ebf52449e618b16a3f91dd1dad1ad9248b22405c288052c6c1552985"
+      ],
+      [
+       "decisions_pending",
+       "dec-op-y",
+       "44e94a7990a56ed4cfc3cc17790fb78a4114c86e17061dd4bf7d5c85729e7f8c"
+      ],
+      [
+       "operations",
+       "cont-226a9e76e34fbb54c6f4c2fe",
+       "f7195eefe5c1c009b7a60adfb80ca55e9dd2c5cf7db5dbce975acf9fb38db070"
+      ],
+      [
+       "operations",
+       "op-x",
+       "7b8130ab08dba3d4146017fd84af45d741a293e74240ab0eb62023d8d9fafb24"
+      ],
+      [
+       "operations",
+       "op-y",
+       "6d2b8fec3f804c0f9f821174a295598abb5e063e8207bb2c6ab1aeb486f00b2b"
+      ],
+      [
+       "tasks",
+       "task-cont-226a9e76e34fbb54c6f4c2fe",
+       "89538a0a4efe10fc0855fd7269f52432fafc9f7a358eedacf94168c8d31586ae"
+      ],
+      [
+       "tasks",
+       "task-op-x",
+       "200ef52470e1ff4339bd4d4f74f31e6ceddf4b8cdb397980aa36a91424828dea"
+      ],
+      [
+       "tasks",
+       "task-op-y",
+       "2671f4f6b5f6ad99be334b695596e54eaea602f9ecdff2487137b13cc71997c1"
+      ]
+     ],
+     "reads": [
+      "op-x",
+      "op-y",
+      "cont-226a9e76e34fbb54c6f4c2fe"
+     ]
+    },
+    "units": []
+   }
+  },
+  "successor_manifest_refused": {
+   "again": {
+    "receipts": [
+     {
+      "value": {
+       "actions": [],
+       "outcome": "idle",
+       "owned_elsewhere": {
+        "count": 0,
+        "jobs": []
+       },
+       "policy_id": "policy-1",
+       "reason_code": null,
+       "schema": "urn:zeus:continuation-tick:1",
+       "skipped": []
+      }
+     }
+    ],
+    "records_unchanged": true
+   },
+   "first": {
+    "value": {
+     "actions": [
+      {
+       "effect": "refused",
+       "route": "correction",
+       "subject": "6f616d60f393faf6c738ef38cd08115fd1de0f403d353bcc18fb59fd967d6a41"
+      }
+     ],
+     "outcome": "progressed",
+     "owned_elsewhere": {
+      "count": 0,
+      "jobs": []
+     },
+     "policy_id": "policy-1",
+     "reason_code": null,
+     "schema": "urn:zeus:continuation-tick:1",
+     "skipped": []
+    }
+   },
+   "snap": {
+    "bindings": [],
+    "intents": [
+     {
+      "decision": null,
+      "delivery_binding": null,
+      "delivery_plan": null,
+      "family": "op-refused",
+      "history": [
+       [
+        "refused",
+        "successor_manifest_refused"
+       ]
+      ],
+      "hold": null,
+      "id": "6f616d60f393faf6c738ef38cd08115fd1de0f403d353bcc18fb59fd967d6a41",
+      "launch": null,
+      "next_owner": "operator",
+      "origin_job": "op-refused",
+      "ownership": null,
+      "predecessor_intent": null,
+      "reason_code": "successor_manifest_refused",
+      "route": "correction",
+      "session_mode": null,
+      "state": "refused",
+      "successor_job": null,
+      "version": 1
+     }
+    ],
+    "jobs": [
+     [
+      "op-refused",
+      "rejected",
+      "a"
+     ]
+    ],
+    "state": {
+     "conductor": {
+      "calls": [],
+      "running": []
+     },
+     "control": [
+      [
+       "continuation_intents",
+       "6f616d60f393faf6c738ef38cd08115fd1de0f403d353bcc18fb59fd967d6a41",
+       "dc994cc7c6866677b1a8a912be4c6ccbf2d1c2d73d3f95e523a5743070df307b"
+      ],
+      [
+       "continuation_policies",
+       "policy-1",
+       "8cfb30ef2891de1412f87255419afb3f748e141ea3b18a292d8e78f615da6152"
+      ],
+      [
+       "continuation_progress",
+       "policy-1",
+       "dd48c3849b0d81e980b9b884edab6da1ff02e13be6d55710eb462225339bad3b"
+      ],
+      [
+       "fleet_control",
+       "admission",
+       "eb67ed2fb1e0fc49b3cd382387dff5fd991cc3e69025e02e911735a57313933c"
+      ],
+      [
+       "fleet_jobs",
+       "op-refused",
+       "38b9aaf53705cba4cb4d811abed2b323c40e3d69a0cdc81806ad590d5e7c1de2"
+      ],
+      [
+       "fleet_registry",
+       "fleet-1",
+       "bd6513980dc5cf8fd28101e53442a7c9bb46db2737b28b4846793e479c8b6065"
+      ]
+     ],
+     "lane": [
+      [
+       "decisions_pending",
+       "dec-op-refused",
+       "8a6d2c2e1f9337e7e5cc74d2625b42d1f9aedc8f670a7e4171c7dbc4c17cb3ef"
+      ],
+      [
+       "operations",
+       "op-refused",
+       "7e0ca10f7d930ce067a418cbf63d459b2c091029c60ba45a3c30690c416f3d5b"
+      ],
+      [
+       "tasks",
+       "task-op-refused",
+       "87c63b4600851fb8fa3877e3bfa8c535bae8961db3a5250bedd3d5bf7962fa22"
+      ]
+     ],
+     "reads": [
+      "op-refused"
+     ]
+    },
+    "units": []
+   }
+  }
+ }
+}
