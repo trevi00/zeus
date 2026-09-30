@@ -2,9 +2,11 @@
 
 Layer: application
 Context: coordination
-Owns: bucket continuation_intents (sole writer)
+Owns: bucket continuation_intents. Its writers are this object, including the owner migration resume
+    through `replace` (S7 carry), plus the joint units that grants and requalification commit themselves
+    (S6-accepted, M7 bodies)
 Does not own: what moves an intent (the other continuation objects)
-Entry points: IntentStore
+Entry points: IntentStore (claim, create, move, apply, replace, note)
 Contracts: INV-CONTINUATION-001
 
 Split from M7 `application/continuation.py` (SOURCE e38aa722) by the named S6 split (DESIGN-s6 §3,
@@ -106,6 +108,20 @@ class IntentStore:
              "error_type": fields.get("error_type"), "at": now}]
         tx.put(BUCKET_INTENTS, intent["id"], current)
         return previous, current
+
+    @staticmethod
+    def replace(tx, current: dict, row: dict) -> dict:
+        """The compare-and-swap write of a row the caller computed from `current` inside the SAME open
+        transaction (the owner migration resume, `migration_resume`). Unlike `apply` it reads no clock
+        and rebuilds nothing, so the caller's unit writes exactly the row it computed; no event is
+        emitted (M7 emits none at this write). A moved row or a row that is not `current`'s next version
+        raises `IntentChanged` and writes nothing."""
+        stored = tx.get(BUCKET_INTENTS, current["id"])
+        if (stored is None or stored.get("version") != current.get("version") or row.get("id") != current["id"]
+                or row.get("version") != current["version"] + 1):
+            raise IntentChanged(current["id"])
+        tx.put(BUCKET_INTENTS, row["id"], row)
+        return row
 
     def note(self, intent: dict, *, emit: bool = False, **fields) -> dict:
         """The same compare-and-swap for a field of an unchanged state: launch evidence or a hold."""

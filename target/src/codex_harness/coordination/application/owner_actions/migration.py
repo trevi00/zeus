@@ -2,8 +2,9 @@
 
 Layer: application
 Context: coordination
-Owns: buckets owner_action_migrations, continuation_effective_bindings, and the
-    resumed continuation intent (same context; IntentStore routing waits for the S7 golden)
+Owns: buckets owner_action_migrations, continuation_effective_bindings; the resumed continuation intent
+    row is computed here (`migration_resume`) and written through `IntentStore.replace` inside the same
+    completing transaction (S7 carry, golden coordination.owner_actions_migration)
 Does not own: the lane stage/registration/finalization (the lane's HostDelivery, S7)
 Entry points: MigrationRequestFamily
 Contracts: INV-OWNER-ACTIONS-MIGRATION-001, INV-RELEASE-ENVIRONMENT-REVERIFY-001
@@ -14,6 +15,7 @@ A/evidence/rebuild/s6/owner-actions-split/split_owner_actions.py); the bodies ar
 
 from __future__ import annotations
 
+from codex_harness.coordination.application.continuation.intents import IntentStore
 from codex_harness.coordination.application.owner_actions.state import (
     BUCKET_ACTIONS,
     BUCKET_MIGRATIONS,
@@ -424,7 +426,8 @@ class MigrationRequestFamily:
             resumed = migration_resume(intent, row["source_intent"],
                                        {"migration_action_id": row["action_id"], **lineage}, now)
             if resumed is not None:
-                tx.put(CONTINUATION_INTENTS, resumed["id"], resumed)
+                # INV-CONTINUATION-001: through IntentStore, inside this same transaction (the atomic unit is unchanged).
+                IntentStore.replace(tx, intent, resumed)
 
         return self.effect(self._migration_move(
             row, COMPLETED, "migration_finalized", extra=resume, ack=ack, lineage=lineage, finalized=finalized,
