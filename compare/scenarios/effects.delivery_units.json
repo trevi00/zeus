@@ -1,0 +1,8 @@
+{
+ "family": "effects.delivery_units",
+ "description": "§2.9 delivery units on MemoryStore (DESIGN-s7 §2, §3 step 5; TRACE-s7 §5.2, §5.5): HostDelivery._commit_verification (the attempt record and the verdict), _record(effect, write) at the publish, merge and switch sites, _promote, the owned stage write _enter -> _write, _consume's descriptor records and _record_release's superseded branch (review's releases row in the caller's unit); (a) injected failure at the unit's last write -> nothing of the unit remains, (b) stale writer (claim lease, intent, release or active pointer moved between the reads and the unit) -> nothing commits and the ambiguous-effect sites report controller_stale_after_effect, (c) same-key replay -> no authority write and no second effect, (d) github.publish, github.merge, host.switch, host.start, verifier.evaluate, the canary and host.receipt entered at transaction depth 0; LABELLED shared delivery doubles (s7_delivery)",
+ "reference_driver": "drivers/reference/s7_units.py",
+ "target_driver": "drivers/target/s7_units.py",
+ "golden": "goldens/reference/effects.delivery_units.json",
+ "slice": "S7"
+}
