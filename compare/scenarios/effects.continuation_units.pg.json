@@ -1,0 +1,9 @@
+{
+ "family": "effects.continuation_units.pg",
+ "description": "§2.9 continuation and owner-action units on a labelled disposable PostgreSQL (each side's PostgresStore, one fresh migrated schema per case, durable rows read back): Continuation._publish/_dispatch/_settle/_commit_requalification/accept_research/grant_capacity and OwnerActions._begin_assessment; (a) injected failure at the unit's last write -> atomic rollback, (b) stale writer commits nothing, (c) replay adds no authority write, (d) the external effect entered at depth 0",
+ "reference_driver": "drivers/reference/s6_units.py",
+ "requires": "disposable-postgresql",
+ "target_driver": "drivers/target/s6_units.py",
+ "golden": "goldens/reference/effects.continuation_units.pg.json",
+ "slice": "S6"
+}

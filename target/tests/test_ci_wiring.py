@@ -41,6 +41,7 @@ REBUILD_INTEGRATION_STEPS = [("uv sync --frozen --project target", None),  # bef
                              ("python compare/run.py prepare", None),
                              ("python compare/run.py run --only effects.decision_unit.pg --pg", None),
                              ("python compare/run.py run --only effects.admission_unit.pg --pg", None),
+                             ("python compare/run.py run --only effects.continuation_units.pg --pg", None),
                              ("python compare/run.py run --only storage.pg --only storage.redis --pg --redis", None),
                              ("python compare/run.py target-integration", None),
                              ("python compare/run.py docker-fixture", None)]

@@ -1,0 +1,1756 @@
+{
+ "accept_research": {
+  "a_failure_at_receipt_row": {
+   "committed_before_effect": [],
+   "discarded_writes": [],
+   "durable_units": 0,
+   "durable_writes": [],
+   "effects": [],
+   "outcome": {
+    "cached": null,
+    "message": "injected failure at continuation_research_receipts",
+    "reason_code": null,
+    "refused": "Injected"
+   },
+   "receipts": [],
+   "research_intent": "research_required",
+   "rows_after": 20,
+   "rows_before": 20,
+   "rows_changed": [],
+   "units": {
+    "COMMIT": 3,
+    "ROLLBACK": 1
+   },
+   "violations": []
+  },
+  "b_intent_moved": {
+   "committed_before_effect": [],
+   "discarded_writes": [],
+   "durable_units": 1,
+   "durable_writes": [
+    [
+     "continuation_intents",
+     ""
+    ]
+   ],
+   "effects": [],
+   "outcome": {
+    "cached": null,
+    "message": "continuation refused: research_intent_changed (intent_id)",
+    "reason_code": "research_intent_changed",
+    "refused": "ContinuationRefused"
+   },
+   "receipts": [],
+   "research_intent": "research_required",
+   "rows_after": 20,
+   "rows_before": 20,
+   "rows_changed": [
+    [
+     "continuation_intents",
+     "ac3c27de407b5e03681190284f357fef39d3843a387f2d8225bdf98038eafd99",
+     ""
+    ]
+   ],
+   "units": {
+    "COMMIT": 5,
+    "ROLLBACK": 1
+   },
+   "violations": []
+  },
+  "c_replay": {
+   "committed_before_effect": [],
+   "discarded_writes": [],
+   "durable_units": 0,
+   "durable_writes": [],
+   "effects": [],
+   "outcome": {
+    "cached": true,
+    "ok": true
+   },
+   "receipts": [
+    "ac3c27de407b5e03681190284f357fef39d3843a387f2d8225bdf98038eafd99"
+   ],
+   "research_intent": "research_required",
+   "rows_after": 21,
+   "rows_before": 21,
+   "rows_changed": [],
+   "units": {
+    "COMMIT": 3
+   },
+   "violations": []
+  },
+  "success": {
+   "committed_before_effect": [],
+   "discarded_writes": [],
+   "durable_units": 1,
+   "durable_writes": [
+    [
+     "continuation_research_receipts",
+     ""
+    ]
+   ],
+   "effects": [],
+   "outcome": {
+    "cached": false,
+    "ok": true
+   },
+   "receipts": [
+    "ac3c27de407b5e03681190284f357fef39d3843a387f2d8225bdf98038eafd99"
+   ],
+   "research_intent": "research_required",
+   "rows_after": 21,
+   "rows_before": 20,
+   "rows_changed": [
+    [
+     "continuation_research_receipts",
+     "ac3c27de407b5e03681190284f357fef39d3843a387f2d8225bdf98038eafd99",
+     ""
+    ]
+   ],
+   "units": {
+    "COMMIT": 4
+   },
+   "violations": []
+  }
+ },
+ "begin_assessment": {
+  "a_failure_at_action_move": {
+   "actions": [
+    {
+     "id": "aa7b8c7a7b2a562d985cd71639238181bbb7dee639eebd47e7f3d1dc7d952bea",
+     "kind": "research_receipt",
+     "policy_id": "owners-1",
+     "state": "intended",
+     "subject": {
+      "intent_id": "ac3c27de407b5e03681190284f357fef39d3843a387f2d8225bdf98038eafd99",
+      "lane": "a"
+     },
+     "version": 1
+    }
+   ],
+   "committed_before_effect": [],
+   "decisions": [],
+   "discarded_writes": [
+    [
+     "decisions_pending",
+     "pending"
+    ]
+   ],
+   "durable_units": 1,
+   "durable_writes": [
+    [
+     "owner_actions",
+     ""
+    ]
+   ],
+   "effects": [],
+   "outcome": {
+    "ok": true,
+    "value": {
+     "actions": [],
+     "authority": "owner_actions: server-owned handoff to the existing research-acceptance, host-delivery and canary owners; it approves nothing itself, and a model verdict, a report or a timer is never an acceptance",
+     "created": [
+      "aa7b8c7a7b2a562d985cd71639238181bbb7dee639eebd47e7f3d1dc7d952bea"
+     ],
+     "open": 1,
+     "outcome": "progressed",
+     "policy_id": "owners-1",
+     "reason_code": null,
+     "schema": "urn:zeus:owner-actions-tick:1",
+     "waits": {
+      "aa7b8c7a7b2a562d985cd71639238181bbb7dee639eebd47e7f3d1dc7d952bea": "Injected"
+     }
+    }
+   },
+   "rows_after": 22,
+   "rows_before": 21,
+   "rows_changed": [
+    [
+     "owner_actions",
+     "aa7b8c7a7b2a562d985cd71639238181bbb7dee639eebd47e7f3d1dc7d952bea",
+     ""
+    ]
+   ],
+   "starts": [],
+   "units": {
+    "COMMIT": 14,
+    "ROLLBACK": 1
+   },
+   "violations": []
+  },
+  "b_action_moved": {
+   "actions": [
+    {
+     "id": "aa7b8c7a7b2a562d985cd71639238181bbb7dee639eebd47e7f3d1dc7d952bea",
+     "kind": "research_receipt",
+     "policy_id": "owners-1",
+     "state": "intended",
+     "subject": {
+      "intent_id": "ac3c27de407b5e03681190284f357fef39d3843a387f2d8225bdf98038eafd99",
+      "lane": "a"
+     },
+     "version": 2
+    }
+   ],
+   "committed_before_effect": [],
+   "decisions": [],
+   "discarded_writes": [],
+   "durable_units": 2,
+   "durable_writes": [
+    [
+     "owner_actions",
+     ""
+    ]
+   ],
+   "effects": [],
+   "outcome": {
+    "ok": true,
+    "value": {
+     "actions": [],
+     "authority": "owner_actions: server-owned handoff to the existing research-acceptance, host-delivery and canary owners; it approves nothing itself, and a model verdict, a report or a timer is never an acceptance",
+     "created": [
+      "aa7b8c7a7b2a562d985cd71639238181bbb7dee639eebd47e7f3d1dc7d952bea"
+     ],
+     "open": 1,
+     "outcome": "progressed",
+     "policy_id": "owners-1",
+     "reason_code": null,
+     "schema": "urn:zeus:owner-actions-tick:1",
+     "waits": {}
+    }
+   },
+   "rows_after": 22,
+   "rows_before": 21,
+   "rows_changed": [
+    [
+     "owner_actions",
+     "aa7b8c7a7b2a562d985cd71639238181bbb7dee639eebd47e7f3d1dc7d952bea",
+     ""
+    ]
+   ],
+   "starts": [],
+   "units": {
+    "COMMIT": 16,
+    "ROLLBACK": 1
+   },
+   "violations": []
+  },
+  "c_again_after_success": {
+   "actions": [
+    {
+     "decided": {
+      "decision_id": "421dc67dba22b4803b83af6e8edb0784b9b68557caee7bcb7ad60b9d30e92aa2",
+      "execution_ref": "sha256:a2670d0e0c259360d1a9ee9180fef9281b5da17f0a38dfc08fb2553499bddc8d",
+      "reason_code": "assessment_accepted",
+      "verdict": "accepted"
+     },
+     "decision_id": "421dc67dba22b4803b83af6e8edb0784b9b68557caee7bcb7ad60b9d30e92aa2",
+     "execution_ref": "sha256:a2670d0e0c259360d1a9ee9180fef9281b5da17f0a38dfc08fb2553499bddc8d",
+     "id": "aa7b8c7a7b2a562d985cd71639238181bbb7dee639eebd47e7f3d1dc7d952bea",
+     "kind": "research_receipt",
+     "launch_id": "38e0c158c482a36b9f91d5b738ce63c2cec7da62bb70360da39b4ce17b218ffc",
+     "launches": 1,
+     "policy_id": "owners-1",
+     "reason_code": "assessment_accepted",
+     "state": "assessed",
+     "subject": {
+      "intent_id": "ac3c27de407b5e03681190284f357fef39d3843a387f2d8225bdf98038eafd99",
+      "lane": "a"
+     },
+     "verdict": "accepted",
+     "version": 3
+    }
+   ],
+   "committed_before_effect": [],
+   "decisions": [
+    [
+     "421dc67dba22b4803b83af6e8edb0784b9b68557caee7bcb7ad60b9d30e92aa2",
+     "succeeded"
+    ]
+   ],
+   "discarded_writes": [],
+   "durable_units": 1,
+   "durable_writes": [
+    [
+     "owner_actions",
+     ""
+    ]
+   ],
+   "effects": [],
+   "outcome": {
+    "ok": true,
+    "value": {
+     "actions": [
+      {
+       "action": "aa7b8c7a7b2a562d985cd71639238181bbb7dee639eebd47e7f3d1dc7d952bea",
+       "kind": "research_receipt",
+       "reason_code": "assessment_accepted",
+       "state": "assessed"
+      }
+     ],
+     "authority": "owner_actions: server-owned handoff to the existing research-acceptance, host-delivery and canary owners; it approves nothing itself, and a model verdict, a report or a timer is never an acceptance",
+     "created": [],
+     "open": 1,
+     "outcome": "progressed",
+     "policy_id": "owners-1",
+     "reason_code": null,
+     "schema": "urn:zeus:owner-actions-tick:1",
+     "waits": {}
+    }
+   },
+   "rows_after": 23,
+   "rows_before": 23,
+   "rows_changed": [
+    [
+     "owner_actions",
+     "aa7b8c7a7b2a562d985cd71639238181bbb7dee639eebd47e7f3d1dc7d952bea",
+     ""
+    ]
+   ],
+   "starts": [
+    [
+     "38e0c158c482a36b9f91d5b738ce63c2cec7da62bb70360da39b4ce17b218ffc",
+     "421dc67dba22b4803b83af6e8edb0784b9b68557caee7bcb7ad60b9d30e92aa2"
+    ]
+   ],
+   "units": {
+    "COMMIT": 9
+   },
+   "violations": []
+  },
+  "c_replay_after_failure": {
+   "actions": [
+    {
+     "decision_id": "421dc67dba22b4803b83af6e8edb0784b9b68557caee7bcb7ad60b9d30e92aa2",
+     "id": "aa7b8c7a7b2a562d985cd71639238181bbb7dee639eebd47e7f3d1dc7d952bea",
+     "kind": "research_receipt",
+     "launch_id": "38e0c158c482a36b9f91d5b738ce63c2cec7da62bb70360da39b4ce17b218ffc",
+     "launches": 1,
+     "policy_id": "owners-1",
+     "reason_code": "assessment_scheduled",
+     "state": "assessing",
+     "subject": {
+      "intent_id": "ac3c27de407b5e03681190284f357fef39d3843a387f2d8225bdf98038eafd99",
+      "lane": "a"
+     },
+     "version": 2
+    }
+   ],
+   "committed_before_effect": [
+    [
+     "assessments.start",
+     [
+      [
+       "decisions_pending",
+       "pending"
+      ],
+      [
+       "owner_actions",
+       ""
+      ]
+     ]
+    ]
+   ],
+   "decisions": [
+    [
+     "421dc67dba22b4803b83af6e8edb0784b9b68557caee7bcb7ad60b9d30e92aa2",
+     "succeeded"
+    ]
+   ],
+   "discarded_writes": [],
+   "durable_units": 2,
+   "durable_writes": [
+    [
+     "decisions_pending",
+     "pending"
+    ],
+    [
+     "decisions_pending",
+     "succeeded"
+    ],
+    [
+     "owner_actions",
+     ""
+    ]
+   ],
+   "effects": [
+    [
+     "assessments.start",
+     0
+    ]
+   ],
+   "outcome": {
+    "ok": true,
+    "value": {
+     "actions": [
+      {
+       "action": "aa7b8c7a7b2a562d985cd71639238181bbb7dee639eebd47e7f3d1dc7d952bea",
+       "kind": "research_receipt",
+       "reason_code": "assessment_scheduled",
+       "state": "assessing"
+      }
+     ],
+     "authority": "owner_actions: server-owned handoff to the existing research-acceptance, host-delivery and canary owners; it approves nothing itself, and a model verdict, a report or a timer is never an acceptance",
+     "created": [],
+     "open": 1,
+     "outcome": "progressed",
+     "policy_id": "owners-1",
+     "reason_code": null,
+     "schema": "urn:zeus:owner-actions-tick:1",
+     "waits": {}
+    }
+   },
+   "rows_after": 23,
+   "rows_before": 22,
+   "rows_changed": [
+    [
+     "decisions_pending",
+     "421dc67dba22b4803b83af6e8edb0784b9b68557caee7bcb7ad60b9d30e92aa2",
+     "succeeded"
+    ],
+    [
+     "owner_actions",
+     "aa7b8c7a7b2a562d985cd71639238181bbb7dee639eebd47e7f3d1dc7d952bea",
+     ""
+    ]
+   ],
+   "starts": [
+    [
+     "38e0c158c482a36b9f91d5b738ce63c2cec7da62bb70360da39b4ce17b218ffc",
+     "421dc67dba22b4803b83af6e8edb0784b9b68557caee7bcb7ad60b9d30e92aa2"
+    ]
+   ],
+   "units": {
+    "COMMIT": 13
+   },
+   "violations": []
+  },
+  "success": {
+   "actions": [
+    {
+     "decision_id": "421dc67dba22b4803b83af6e8edb0784b9b68557caee7bcb7ad60b9d30e92aa2",
+     "id": "aa7b8c7a7b2a562d985cd71639238181bbb7dee639eebd47e7f3d1dc7d952bea",
+     "kind": "research_receipt",
+     "launch_id": "38e0c158c482a36b9f91d5b738ce63c2cec7da62bb70360da39b4ce17b218ffc",
+     "launches": 1,
+     "policy_id": "owners-1",
+     "reason_code": "assessment_scheduled",
+     "state": "assessing",
+     "subject": {
+      "intent_id": "ac3c27de407b5e03681190284f357fef39d3843a387f2d8225bdf98038eafd99",
+      "lane": "a"
+     },
+     "version": 2
+    }
+   ],
+   "committed_before_effect": [
+    [
+     "assessments.start",
+     [
+      [
+       "decisions_pending",
+       "pending"
+      ],
+      [
+       "owner_actions",
+       ""
+      ]
+     ]
+    ]
+   ],
+   "decisions": [
+    [
+     "421dc67dba22b4803b83af6e8edb0784b9b68557caee7bcb7ad60b9d30e92aa2",
+     "succeeded"
+    ]
+   ],
+   "discarded_writes": [],
+   "durable_units": 3,
+   "durable_writes": [
+    [
+     "decisions_pending",
+     "pending"
+    ],
+    [
+     "decisions_pending",
+     "succeeded"
+    ],
+    [
+     "owner_actions",
+     ""
+    ]
+   ],
+   "effects": [
+    [
+     "assessments.start",
+     0
+    ]
+   ],
+   "outcome": {
+    "ok": true,
+    "value": {
+     "actions": [
+      {
+       "action": "aa7b8c7a7b2a562d985cd71639238181bbb7dee639eebd47e7f3d1dc7d952bea",
+       "kind": "research_receipt",
+       "reason_code": "assessment_scheduled",
+       "state": "assessing"
+      }
+     ],
+     "authority": "owner_actions: server-owned handoff to the existing research-acceptance, host-delivery and canary owners; it approves nothing itself, and a model verdict, a report or a timer is never an acceptance",
+     "created": [
+      "aa7b8c7a7b2a562d985cd71639238181bbb7dee639eebd47e7f3d1dc7d952bea"
+     ],
+     "open": 1,
+     "outcome": "progressed",
+     "policy_id": "owners-1",
+     "reason_code": null,
+     "schema": "urn:zeus:owner-actions-tick:1",
+     "waits": {}
+    }
+   },
+   "rows_after": 23,
+   "rows_before": 21,
+   "rows_changed": [
+    [
+     "decisions_pending",
+     "421dc67dba22b4803b83af6e8edb0784b9b68557caee7bcb7ad60b9d30e92aa2",
+     "succeeded"
+    ],
+    [
+     "owner_actions",
+     "aa7b8c7a7b2a562d985cd71639238181bbb7dee639eebd47e7f3d1dc7d952bea",
+     ""
+    ]
+   ],
+   "starts": [
+    [
+     "38e0c158c482a36b9f91d5b738ce63c2cec7da62bb70360da39b4ce17b218ffc",
+     "421dc67dba22b4803b83af6e8edb0784b9b68557caee7bcb7ad60b9d30e92aa2"
+    ]
+   ],
+   "units": {
+    "COMMIT": 16
+   },
+   "violations": []
+  }
+ },
+ "dispatch": {
+  "a_failure_at_unit_reservation": {
+   "committed_before_effect": [],
+   "conductor_calls": [],
+   "discarded_writes": [
+    [
+     "continuation_intents",
+     ""
+    ]
+   ],
+   "durable_units": 2,
+   "durable_writes": [
+    [
+     "continuation_intents",
+     ""
+    ],
+    [
+     "continuation_progress",
+     ""
+    ]
+   ],
+   "effects": [],
+   "fleet_units": [],
+   "intents": [
+    [
+     "conductor_review",
+     "intended",
+     1,
+     "lead_accepted"
+    ]
+   ],
+   "outcome": {
+    "actions": [],
+    "ok": true,
+    "outcome": "blocked",
+    "skipped": [
+     {
+      "error_type": "Injected",
+      "reason_code": "unavailable",
+      "subject": "op-a"
+     }
+    ]
+   },
+   "rows_after": 6,
+   "rows_before": 4,
+   "rows_changed": [
+    [
+     "continuation_intents",
+     "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66",
+     ""
+    ],
+    [
+     "continuation_progress",
+     "policy-1",
+     ""
+    ]
+   ],
+   "units": {
+    "COMMIT": 7,
+    "ROLLBACK": 1
+   },
+   "violations": []
+  },
+  "b_intent_moved": {
+   "committed_before_effect": [],
+   "conductor_calls": [],
+   "discarded_writes": [],
+   "durable_units": 3,
+   "durable_writes": [
+    [
+     "continuation_intents",
+     ""
+    ],
+    [
+     "continuation_progress",
+     ""
+    ]
+   ],
+   "effects": [],
+   "fleet_units": [],
+   "intents": [
+    [
+     "conductor_review",
+     "intended",
+     2,
+     "lead_accepted"
+    ]
+   ],
+   "outcome": {
+    "actions": [],
+    "ok": true,
+    "outcome": "blocked",
+    "skipped": [
+     {
+      "reason_code": "intent_changed",
+      "subject": "op-a"
+     }
+    ]
+   },
+   "rows_after": 6,
+   "rows_before": 4,
+   "rows_changed": [
+    [
+     "continuation_intents",
+     "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66",
+     ""
+    ],
+    [
+     "continuation_progress",
+     "policy-1",
+     ""
+    ]
+   ],
+   "units": {
+    "COMMIT": 9,
+    "ROLLBACK": 1
+   },
+   "violations": []
+  },
+  "c_reserve_replay": {
+   "committed_before_effect": [],
+   "conductor_calls": [
+    "op-a"
+   ],
+   "discarded_writes": [],
+   "durable_units": 0,
+   "durable_writes": [],
+   "effects": [],
+   "first_tick": {
+    "actions": [
+     {
+      "effect": "conductor_started",
+      "route": "conductor_review",
+      "subject": "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66"
+     }
+    ],
+    "ok": true,
+    "outcome": "progressed",
+    "skipped": []
+   },
+   "fleet_units": [
+    [
+     "conductor",
+     "reserved"
+    ]
+   ],
+   "intents": [
+    [
+     "conductor_review",
+     "dispatched",
+     3,
+     "lead_accepted"
+    ]
+   ],
+   "outcome": {
+    "ok": true,
+    "value": {
+     "cached": true
+    }
+   },
+   "rows_after": 7,
+   "rows_before": 7,
+   "rows_changed": [],
+   "units": {
+    "COMMIT": 1
+   },
+   "violations": []
+  },
+  "success": {
+   "committed_before_effect": [
+    [
+     "conductor.start",
+     [
+      [
+       "continuation_intents",
+       ""
+      ],
+      [
+       "continuation_progress",
+       ""
+      ],
+      [
+       "fleet_units",
+       ""
+      ]
+     ]
+    ]
+   ],
+   "conductor_calls": [
+    "op-a"
+   ],
+   "discarded_writes": [],
+   "durable_units": 4,
+   "durable_writes": [
+    [
+     "continuation_intents",
+     ""
+    ],
+    [
+     "continuation_progress",
+     ""
+    ],
+    [
+     "fleet_units",
+     ""
+    ]
+   ],
+   "effects": [
+    [
+     "conductor.start",
+     0
+    ]
+   ],
+   "fleet_units": [
+    [
+     "conductor",
+     "reserved"
+    ]
+   ],
+   "intents": [
+    [
+     "conductor_review",
+     "dispatched",
+     3,
+     "lead_accepted"
+    ]
+   ],
+   "outcome": {
+    "actions": [
+     {
+      "effect": "conductor_started",
+      "route": "conductor_review",
+      "subject": "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66"
+     }
+    ],
+    "ok": true,
+    "outcome": "progressed",
+    "skipped": []
+   },
+   "rows_after": 7,
+   "rows_before": 4,
+   "rows_changed": [
+    [
+     "continuation_intents",
+     "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66",
+     ""
+    ],
+    [
+     "continuation_progress",
+     "policy-1",
+     ""
+    ],
+    [
+     "fleet_units",
+     "f56c77bbf993bc7aee527847f925d76997b2283a67f3d66db2ad394421d3b0ef",
+     ""
+    ]
+   ],
+   "units": {
+    "COMMIT": 9
+   },
+   "violations": []
+  }
+ },
+ "grant_capacity": {
+  "a_failure_at_intent": {
+   "committed_before_effect": [],
+   "discarded_writes": [
+    [
+     "continuation_capacity_grants",
+     ""
+    ]
+   ],
+   "durable_units": 0,
+   "durable_writes": [],
+   "effects": [],
+   "grants": [],
+   "outcome": {
+    "cached": null,
+    "message": "injected failure at continuation_intents",
+    "reason_code": null,
+    "refused": "Injected"
+   },
+   "refused_intent": "refused",
+   "rows_after": 46,
+   "rows_before": 46,
+   "rows_changed": [],
+   "units": {
+    "COMMIT": 7,
+    "ROLLBACK": 1
+   },
+   "violations": []
+  },
+  "b_intent_moved": {
+   "committed_before_effect": [],
+   "discarded_writes": [],
+   "durable_units": 1,
+   "durable_writes": [
+    [
+     "continuation_intents",
+     ""
+    ]
+   ],
+   "effects": [],
+   "grants": [],
+   "outcome": {
+    "cached": null,
+    "message": "continuation refused: capacity_intent_changed (intent_id)",
+    "reason_code": "capacity_intent_changed",
+    "refused": "ContinuationRefused"
+   },
+   "refused_intent": "refused",
+   "rows_after": 46,
+   "rows_before": 46,
+   "rows_changed": [
+    [
+     "continuation_intents",
+     "94300bc683830b7dece22cbd13a5ce5ad0c82aff10e62c1ad907ad2fb2dda160",
+     ""
+    ]
+   ],
+   "units": {
+    "COMMIT": 9,
+    "ROLLBACK": 1
+   },
+   "violations": []
+  },
+  "c_replay": {
+   "committed_before_effect": [],
+   "discarded_writes": [],
+   "durable_units": 0,
+   "durable_writes": [],
+   "effects": [],
+   "grants": [
+    "94300bc683830b7dece22cbd13a5ce5ad0c82aff10e62c1ad907ad2fb2dda160"
+   ],
+   "outcome": {
+    "cached": true,
+    "ok": true
+   },
+   "refused_intent": "intended",
+   "rows_after": 47,
+   "rows_before": 47,
+   "rows_changed": [],
+   "units": {
+    "COMMIT": 3
+   },
+   "violations": []
+  },
+  "success": {
+   "committed_before_effect": [],
+   "discarded_writes": [],
+   "durable_units": 1,
+   "durable_writes": [
+    [
+     "continuation_capacity_grants",
+     ""
+    ],
+    [
+     "continuation_intents",
+     ""
+    ]
+   ],
+   "effects": [],
+   "grants": [
+    "94300bc683830b7dece22cbd13a5ce5ad0c82aff10e62c1ad907ad2fb2dda160"
+   ],
+   "outcome": {
+    "cached": false,
+    "ok": true
+   },
+   "refused_intent": "intended",
+   "rows_after": 47,
+   "rows_before": 46,
+   "rows_changed": [
+    [
+     "continuation_capacity_grants",
+     "94300bc683830b7dece22cbd13a5ce5ad0c82aff10e62c1ad907ad2fb2dda160",
+     ""
+    ],
+    [
+     "continuation_intents",
+     "94300bc683830b7dece22cbd13a5ce5ad0c82aff10e62c1ad907ad2fb2dda160",
+     ""
+    ]
+   ],
+   "units": {
+    "COMMIT": 8
+   },
+   "violations": []
+  }
+ },
+ "publish": {
+  "a_failure_at_admitted": {
+   "committed_before_effect": [
+    [
+     "fleet.enqueue",
+     [
+      [
+       "continuation_intents",
+       ""
+      ],
+      [
+       "continuation_progress",
+       ""
+      ]
+     ]
+    ]
+   ],
+   "discarded_writes": [],
+   "durable_units": 4,
+   "durable_writes": [
+    [
+     "continuation_intents",
+     ""
+    ],
+    [
+     "continuation_progress",
+     ""
+    ],
+    [
+     "fleet_jobs",
+     "queued"
+    ]
+   ],
+   "effects": [
+    [
+     "fleet.enqueue",
+     0
+    ]
+   ],
+   "intents": [
+    [
+     "correction",
+     "published",
+     2,
+     "lead_rejected"
+    ]
+   ],
+   "outcome": {
+    "actions": [],
+    "ok": true,
+    "outcome": "blocked",
+    "skipped": [
+     {
+      "error_type": "Injected",
+      "reason_code": "unavailable",
+      "subject": "op-a"
+     }
+    ]
+   },
+   "rows_after": 7,
+   "rows_before": 4,
+   "rows_changed": [
+    [
+     "continuation_intents",
+     "da7c59ff137e9c8ccab7f54105dbaf3ea61323de4bb52a04cabd7d38673d2799",
+     ""
+    ],
+    [
+     "continuation_progress",
+     "policy-1",
+     ""
+    ],
+    [
+     "fleet_jobs",
+     "cont-da7c59ff137e9c8ccab7f541",
+     "queued"
+    ]
+   ],
+   "units": {
+    "COMMIT": 11,
+    "ROLLBACK": 1
+   },
+   "violations": []
+  },
+  "b_intent_moved": {
+   "committed_before_effect": [
+    [
+     "fleet.enqueue",
+     [
+      [
+       "continuation_intents",
+       ""
+      ],
+      [
+       "continuation_progress",
+       ""
+      ]
+     ]
+    ]
+   ],
+   "discarded_writes": [],
+   "durable_units": 5,
+   "durable_writes": [
+    [
+     "continuation_intents",
+     ""
+    ],
+    [
+     "continuation_progress",
+     ""
+    ],
+    [
+     "fleet_jobs",
+     "queued"
+    ]
+   ],
+   "effects": [
+    [
+     "fleet.enqueue",
+     0
+    ]
+   ],
+   "intents": [
+    [
+     "correction",
+     "published",
+     3,
+     "lead_rejected"
+    ]
+   ],
+   "outcome": {
+    "actions": [],
+    "ok": true,
+    "outcome": "blocked",
+    "skipped": [
+     {
+      "reason_code": "intent_changed",
+      "subject": "op-a"
+     }
+    ]
+   },
+   "rows_after": 7,
+   "rows_before": 4,
+   "rows_changed": [
+    [
+     "continuation_intents",
+     "da7c59ff137e9c8ccab7f54105dbaf3ea61323de4bb52a04cabd7d38673d2799",
+     ""
+    ],
+    [
+     "continuation_progress",
+     "policy-1",
+     ""
+    ],
+    [
+     "fleet_jobs",
+     "cont-da7c59ff137e9c8ccab7f541",
+     "queued"
+    ]
+   ],
+   "units": {
+    "COMMIT": 13,
+    "ROLLBACK": 1
+   },
+   "violations": []
+  },
+  "c_again_after_success": {
+   "committed_before_effect": [],
+   "discarded_writes": [],
+   "durable_units": 0,
+   "durable_writes": [],
+   "effects": [],
+   "intents": [
+    [
+     "correction",
+     "admitted",
+     3,
+     "lead_rejected"
+    ]
+   ],
+   "outcome": {
+    "actions": [],
+    "ok": true,
+    "outcome": "idle",
+    "skipped": []
+   },
+   "rows_after": 7,
+   "rows_before": 7,
+   "rows_changed": [],
+   "units": {
+    "COMMIT": 4
+   },
+   "violations": []
+  },
+  "c_replay_after_failure": {
+   "committed_before_effect": [
+    [
+     "fleet.enqueue",
+     []
+    ]
+   ],
+   "discarded_writes": [],
+   "durable_units": 1,
+   "durable_writes": [
+    [
+     "continuation_intents",
+     ""
+    ]
+   ],
+   "effects": [
+    [
+     "fleet.enqueue",
+     0
+    ]
+   ],
+   "intents": [
+    [
+     "correction",
+     "admitted",
+     3,
+     "lead_rejected"
+    ]
+   ],
+   "outcome": {
+    "actions": [
+     {
+      "effect": "admitted",
+      "route": "correction",
+      "subject": "da7c59ff137e9c8ccab7f54105dbaf3ea61323de4bb52a04cabd7d38673d2799",
+      "successor_job": "cont-da7c59ff137e9c8ccab7f541"
+     }
+    ],
+    "ok": true,
+    "outcome": "progressed",
+    "skipped": []
+   },
+   "rows_after": 7,
+   "rows_before": 7,
+   "rows_changed": [
+    [
+     "continuation_intents",
+     "da7c59ff137e9c8ccab7f54105dbaf3ea61323de4bb52a04cabd7d38673d2799",
+     ""
+    ]
+   ],
+   "units": {
+    "COMMIT": 7
+   },
+   "violations": []
+  },
+  "success": {
+   "committed_before_effect": [
+    [
+     "fleet.enqueue",
+     [
+      [
+       "continuation_intents",
+       ""
+      ],
+      [
+       "continuation_progress",
+       ""
+      ]
+     ]
+    ]
+   ],
+   "discarded_writes": [],
+   "durable_units": 5,
+   "durable_writes": [
+    [
+     "continuation_intents",
+     ""
+    ],
+    [
+     "continuation_progress",
+     ""
+    ],
+    [
+     "fleet_jobs",
+     "queued"
+    ]
+   ],
+   "effects": [
+    [
+     "fleet.enqueue",
+     0
+    ]
+   ],
+   "intents": [
+    [
+     "correction",
+     "admitted",
+     3,
+     "lead_rejected"
+    ]
+   ],
+   "outcome": {
+    "actions": [
+     {
+      "effect": "admitted",
+      "route": "correction",
+      "subject": "da7c59ff137e9c8ccab7f54105dbaf3ea61323de4bb52a04cabd7d38673d2799",
+      "successor_job": "cont-da7c59ff137e9c8ccab7f541"
+     }
+    ],
+    "ok": true,
+    "outcome": "progressed",
+    "skipped": []
+   },
+   "rows_after": 7,
+   "rows_before": 4,
+   "rows_changed": [
+    [
+     "continuation_intents",
+     "da7c59ff137e9c8ccab7f54105dbaf3ea61323de4bb52a04cabd7d38673d2799",
+     ""
+    ],
+    [
+     "continuation_progress",
+     "policy-1",
+     ""
+    ],
+    [
+     "fleet_jobs",
+     "cont-da7c59ff137e9c8ccab7f541",
+     "queued"
+    ]
+   ],
+   "units": {
+    "COMMIT": 12
+   },
+   "violations": []
+  }
+ },
+ "requalification": {
+  "a_failure_at_new_intent": {
+   "committed_before_effect": [],
+   "discarded_writes": [
+    [
+     "continuation_intents",
+     ""
+    ],
+    [
+     "continuation_requalifications",
+     ""
+    ]
+   ],
+   "durable_units": 0,
+   "durable_writes": [],
+   "effects": [],
+   "intents": [
+    [
+     "conductor_review",
+     "completed",
+     5,
+     "lead_accepted"
+    ],
+    [
+     "host_delivery",
+     "awaiting_owner",
+     1,
+     "conductor_accepted"
+    ]
+   ],
+   "outcome": {
+    "cached": null,
+    "message": "injected failure at continuation_intents",
+    "reason_code": null,
+    "refused": "Injected"
+   },
+   "requalifications": [],
+   "rows_after": 8,
+   "rows_before": 8,
+   "rows_changed": [],
+   "units": {
+    "COMMIT": 4,
+    "ROLLBACK": 1
+   },
+   "violations": []
+  },
+  "b_intent_moved": {
+   "committed_before_effect": [],
+   "discarded_writes": [],
+   "durable_units": 1,
+   "durable_writes": [
+    [
+     "continuation_intents",
+     ""
+    ]
+   ],
+   "effects": [],
+   "intents": [
+    [
+     "conductor_review",
+     "completed",
+     5,
+     "lead_accepted"
+    ],
+    [
+     "host_delivery",
+     "awaiting_owner",
+     2,
+     "conductor_accepted"
+    ]
+   ],
+   "outcome": {
+    "cached": null,
+    "message": "continuation refused: requalification_intent_changed (intent_id)",
+    "reason_code": "requalification_intent_changed",
+    "refused": "ContinuationRefused"
+   },
+   "requalifications": [],
+   "rows_after": 8,
+   "rows_before": 8,
+   "rows_changed": [
+    [
+     "continuation_intents",
+     "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648",
+     ""
+    ]
+   ],
+   "units": {
+    "COMMIT": 6,
+    "ROLLBACK": 1
+   },
+   "violations": []
+  },
+  "c_replay": {
+   "committed_before_effect": [],
+   "discarded_writes": [],
+   "durable_units": 0,
+   "durable_writes": [],
+   "effects": [],
+   "intents": [
+    [
+     "conductor_review",
+     "completed",
+     5,
+     "lead_accepted"
+    ],
+    [
+     "host_delivery",
+     "superseded",
+     2,
+     "delivery_requalification_authorized"
+    ],
+    [
+     "requalification",
+     "intended",
+     1,
+     "delivery_requalification_authorized"
+    ]
+   ],
+   "outcome": {
+    "cached": true,
+    "ok": true
+   },
+   "requalifications": [
+    "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648"
+   ],
+   "rows_after": 10,
+   "rows_before": 10,
+   "rows_changed": [],
+   "units": {
+    "COMMIT": 3
+   },
+   "violations": []
+  },
+  "success": {
+   "committed_before_effect": [],
+   "discarded_writes": [],
+   "durable_units": 1,
+   "durable_writes": [
+    [
+     "continuation_intents",
+     ""
+    ],
+    [
+     "continuation_requalifications",
+     ""
+    ]
+   ],
+   "effects": [],
+   "intents": [
+    [
+     "conductor_review",
+     "completed",
+     5,
+     "lead_accepted"
+    ],
+    [
+     "host_delivery",
+     "superseded",
+     2,
+     "delivery_requalification_authorized"
+    ],
+    [
+     "requalification",
+     "intended",
+     1,
+     "delivery_requalification_authorized"
+    ]
+   ],
+   "outcome": {
+    "cached": false,
+    "ok": true
+   },
+   "requalifications": [
+    "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648"
+   ],
+   "rows_after": 10,
+   "rows_before": 8,
+   "rows_changed": [
+    [
+     "continuation_intents",
+     "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648",
+     ""
+    ],
+    [
+     "continuation_intents",
+     "b932ab5f1f0df524fc7cddce8ea3b1ea2935a7e421fc08c1dbb3876692d7cd02",
+     ""
+    ],
+    [
+     "continuation_requalifications",
+     "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648",
+     ""
+    ]
+   ],
+   "units": {
+    "COMMIT": 5
+   },
+   "violations": []
+  }
+ },
+ "settle": {
+  "a_failure_at_unit_release": {
+   "committed_before_effect": [],
+   "discarded_writes": [
+    [
+     "continuation_intents",
+     ""
+    ]
+   ],
+   "durable_units": 0,
+   "durable_writes": [],
+   "effects": [],
+   "fleet_units": [
+    [
+     "conductor",
+     "reserved"
+    ]
+   ],
+   "intents": [
+    [
+     "conductor_review",
+     "dispatched",
+     3,
+     "lead_accepted"
+    ]
+   ],
+   "outcome": {
+    "actions": [],
+    "ok": true,
+    "outcome": "blocked",
+    "skipped": [
+     {
+      "error_type": "Injected",
+      "reason_code": "unavailable",
+      "subject": "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66"
+     }
+    ]
+   },
+   "rows_after": 7,
+   "rows_before": 7,
+   "rows_changed": [],
+   "units": {
+    "COMMIT": 5,
+    "ROLLBACK": 1
+   },
+   "violations": []
+  },
+  "b_intent_moved": {
+   "committed_before_effect": [],
+   "discarded_writes": [],
+   "durable_units": 1,
+   "durable_writes": [
+    [
+     "continuation_intents",
+     ""
+    ]
+   ],
+   "effects": [],
+   "fleet_units": [
+    [
+     "conductor",
+     "reserved"
+    ]
+   ],
+   "intents": [
+    [
+     "conductor_review",
+     "dispatched",
+     4,
+     "lead_accepted"
+    ]
+   ],
+   "outcome": {
+    "actions": [],
+    "ok": true,
+    "outcome": "blocked",
+    "skipped": [
+     {
+      "reason_code": "intent_changed",
+      "subject": "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66"
+     }
+    ]
+   },
+   "rows_after": 7,
+   "rows_before": 7,
+   "rows_changed": [
+    [
+     "continuation_intents",
+     "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66",
+     ""
+    ]
+   ],
+   "units": {
+    "COMMIT": 7,
+    "ROLLBACK": 1
+   },
+   "violations": []
+  },
+  "b_unit_already_settled": {
+   "committed_before_effect": [],
+   "discarded_writes": [],
+   "durable_units": 1,
+   "durable_writes": [
+    [
+     "fleet_units",
+     ""
+    ]
+   ],
+   "effects": [],
+   "fleet_units": [
+    [
+     "conductor",
+     "released"
+    ]
+   ],
+   "intents": [
+    [
+     "conductor_review",
+     "dispatched",
+     3,
+     "lead_accepted"
+    ]
+   ],
+   "outcome": {
+    "actions": [],
+    "ok": true,
+    "outcome": "blocked",
+    "skipped": [
+     {
+      "reason_code": "intent_changed",
+      "subject": "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66"
+     }
+    ]
+   },
+   "rows_after": 7,
+   "rows_before": 7,
+   "rows_changed": [
+    [
+     "fleet_units",
+     "f56c77bbf993bc7aee527847f925d76997b2283a67f3d66db2ad394421d3b0ef",
+     ""
+    ]
+   ],
+   "units": {
+    "COMMIT": 7
+   },
+   "violations": []
+  },
+  "c_settle_replay": {
+   "committed_before_effect": [],
+   "discarded_writes": [],
+   "durable_units": 0,
+   "durable_writes": [],
+   "effects": [],
+   "first_tick": {
+    "actions": [
+     {
+      "effect": "conductor_decided",
+      "route": "conductor_review",
+      "subject": "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66"
+     },
+     {
+      "effect": "awaiting_owner",
+      "route": "host_delivery",
+      "subject": "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648"
+     }
+    ],
+    "ok": true,
+    "outcome": "progressed",
+    "skipped": []
+   },
+   "fleet_units": [
+    [
+     "conductor",
+     "released"
+    ]
+   ],
+   "intents": [
+    [
+     "conductor_review",
+     "completed",
+     5,
+     "lead_accepted"
+    ],
+    [
+     "host_delivery",
+     "awaiting_owner",
+     1,
+     "conductor_accepted"
+    ]
+   ],
+   "outcome": {
+    "ok": true,
+    "value": {
+     "cached": true
+    }
+   },
+   "rows_after": 8,
+   "rows_before": 8,
+   "rows_changed": [],
+   "units": {
+    "COMMIT": 1
+   },
+   "violations": []
+  },
+  "success": {
+   "committed_before_effect": [],
+   "discarded_writes": [],
+   "durable_units": 4,
+   "durable_writes": [
+    [
+     "continuation_intents",
+     ""
+    ],
+    [
+     "continuation_progress",
+     ""
+    ],
+    [
+     "fleet_units",
+     ""
+    ]
+   ],
+   "effects": [],
+   "fleet_units": [
+    [
+     "conductor",
+     "released"
+    ]
+   ],
+   "intents": [
+    [
+     "conductor_review",
+     "completed",
+     5,
+     "lead_accepted"
+    ],
+    [
+     "host_delivery",
+     "awaiting_owner",
+     1,
+     "conductor_accepted"
+    ]
+   ],
+   "outcome": {
+    "actions": [
+     {
+      "effect": "conductor_decided",
+      "route": "conductor_review",
+      "subject": "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66"
+     },
+     {
+      "effect": "awaiting_owner",
+      "route": "host_delivery",
+      "subject": "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648"
+     }
+    ],
+    "ok": true,
+    "outcome": "progressed",
+    "skipped": []
+   },
+   "rows_after": 8,
+   "rows_before": 7,
+   "rows_changed": [
+    [
+     "continuation_intents",
+     "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648",
+     ""
+    ],
+    [
+     "continuation_intents",
+     "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66",
+     ""
+    ],
+    [
+     "continuation_progress",
+     "policy-1",
+     ""
+    ],
+    [
+     "fleet_units",
+     "f56c77bbf993bc7aee527847f925d76997b2283a67f3d66db2ad394421d3b0ef",
+     ""
+    ]
+   ],
+   "units": {
+    "COMMIT": 9
+   },
+   "violations": []
+  }
+ }
+}
