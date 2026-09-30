@@ -72,6 +72,11 @@ S4_IMPLEMENTED = {"execution.ledger", "execution.units", "execution.output_contr
                   "coordination.breaker", "research.adoption_gate",
                   "coordination.workflow_submit", "coordination.session_checkpoints",
                   "execution.progress_activity", "execution.run_task", "effects.context_packet"}  # the S0 R-P control, both transports  # S4 in progress: RunTask/ReviewDecisions pending
+# S5 characterization first (RESEARCH-S5, TRACE-coordination §4.1): reference goldens, targets pending.
+S5_FAMILIES = {"coordination.workflow_handle", "coordination.outbox_relay", "coordination.local_cycle",
+               "coordination.operation", "coordination.fleet", "coordination.fleet_recovery",
+               "coordination.fleet_runner", "coordination.execution_recovery", "coordination.fleet_relocation",
+               "effects.admission_unit", "effects.admission_unit.pg"}
 IMPLEMENTED = {**{f: "S1" for f in S1_FAMILIES}, **{f: "S2" for f in S2_FAMILIES},
                **{f: "S3" for f in S3_IMPLEMENTED}, **{f: "S4" for f in S4_IMPLEMENTED}}
 
@@ -79,7 +84,7 @@ IMPLEMENTED = {**{f: "S1" for f in S1_FAMILIES}, **{f: "S2" for f in S2_FAMILIES
 def test_every_scenario_has_a_reference_golden_and_only_implemented_slices_have_a_target():
     scenarios = [load(p) for p in sorted((COMPARE / "scenarios").glob("*.json"))]
     assert {s["family"] for s in scenarios} == (S0_FAMILIES | S1_FAMILIES | S2_FAMILIES | S3_FAMILIES
-                                                | S4_FAMILIES)
+                                                | S4_FAMILIES | S5_FAMILIES)
     for s in scenarios:
         assert (COMPARE / s["reference_driver"]).is_file()
         assert (COMPARE / s["golden"]).is_file()
