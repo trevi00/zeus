@@ -3,7 +3,8 @@
 Layer: ports
 Context: coordination
 Owns: OWNED_BUCKETS of the coordination context
-Does not own: the Protocols coordination declares for other contexts (TaskRunner, LaneLauncher, ...: S5/S6)
+Does not own: the implementations of the Protocols it declares (TaskRunner, PortfolioLineage, ...: other contexts and
+    the coordination adapters)
 Entry points: OWNED_BUCKETS
 Contracts: INV-EXECUTION-IDENTITY-001
 
@@ -31,7 +32,11 @@ OWNED_BUCKETS = ("tasks", "decisions_pending", "outbox", "events", "execution_fe
                  # S5 execution recovery remainder (receipts of prepare/apply).
                  "execution_recoveries",
                  # RF-RT S5 part: the persisted research-admission disposition (declared addition).
-                 "research_admissions")
+                 "research_admissions",
+                 # S6 Continuation split (DESIGN-s6 §3 and §9); `continuation_bindings` is the lane store's.
+                 "continuation_policies", "continuation_intents", "continuation_progress", "continuation_bindings",
+                 "continuation_research_receipts", "continuation_research_supplements",
+                 "continuation_capacity_grants", "continuation_requalifications")
 
 
 class TaskRunner(Protocol):
@@ -60,3 +65,24 @@ class ThresholdReviewRecovery(Protocol):
     def row(self, tx, row_id: str) -> dict: ...
 
     def restore(self, tx, request: dict) -> None: ...
+
+
+class PortfolioLineage(Protocol):
+    """Intake's lineage owner operation (S6 moved ahead: intake.application.portfolio_lineage): a successor inherits
+    exactly its origin's project binding inside the CALLER's transaction (DESIGN-s6 §5)."""
+
+    def inherit(self, tx, job_id: str, origin_job_id: str, lineage: dict, now: str) -> dict | None: ...
+
+
+class ConductorLauncher(Protocol):
+    """The guarded conductor launch (coordination.adapters.conductor_launch.ConductorProcesses, DESIGN-s6 §6)."""
+
+    def start(self, lane_id: str, job: dict, launch: str, token: str) -> dict: ...
+
+    def poll(self, lane_id: str, launch: str) -> dict: ...
+
+
+class ResearchEvidence(Protocol):
+    """The trusted research evidence reader: `verify(ref)` checks one content-addressed reference's actual bytes."""
+
+    def verify(self, reference) -> None: ...

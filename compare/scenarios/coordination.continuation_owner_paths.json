@@ -2,8 +2,7 @@
  "family": "coordination.continuation_owner_paths",
  "description": "S6 Continuation owner-triggered paths over labelled lane rows (DESIGN-s6 §7; TRACE-s6 §3 and §4): delivery requalification after a withdrawn HostDelivery plan (named wait that writes nothing; supersession and the requalification intent on the new main with lineage, admitted by the next tick; cached replay and requalification_conflict; plan not withdrawn; family open; intent moved during verification; every named refusal; the goal migration block accepted/refused/malformed/replayed; tampered stored records and vanished review bytes stop the next effect); the migrated-delivery chain LaneEvidence.read follows over labelled host_delivery_migrations and releases rows (one hop, two hops, branch, cycle, beyond MAX_MIGRATION_HOPS, non-active record, candidate mismatch); the pure migration_source/migration_resume rules; explicit ownership reconciliation (reconciled once and cached, origin unbound, intent invalid, lineage unproven, binding conflict). Research receipts, supplements and capacity grants are a later family",
  "reference_driver": "drivers/reference/s6_owner_paths.py",
- "target_driver": null,
- "target_status": "pending: S6 Continuation split",
+ "target_driver": "drivers/target/s6_owner_paths.py",
  "golden": "goldens/reference/coordination.continuation_owner_paths.json",
  "slice": "S6"
 }

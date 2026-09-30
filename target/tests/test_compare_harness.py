@@ -87,7 +87,9 @@ S6_FAMILIES = {"coordination.continuation_tick", "coordination.continuation_rout
                "coordination.continuation_owner_paths", "coordination.continuation_research",
                "coordination.owner_actions_research", "coordination.guarded_launch",
                "effects.continuation_units"}
-S6_IMPLEMENTED = {"coordination.guarded_launch"}
+S6_IMPLEMENTED = {"coordination.guarded_launch", "coordination.continuation_tick",
+                  "coordination.continuation_routes", "coordination.continuation_owner_paths",
+                  "coordination.continuation_research"}
 IMPLEMENTED = {**{f: "S1" for f in S1_FAMILIES}, **{f: "S2" for f in S2_FAMILIES},
                **{f: "S3" for f in S3_IMPLEMENTED}, **{f: "S4" for f in S4_IMPLEMENTED},
                **{f: "S5" for f in S5_IMPLEMENTED}, **{f: "S6" for f in S6_IMPLEMENTED}}

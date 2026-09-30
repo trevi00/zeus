@@ -2,8 +2,7 @@
  "family": "coordination.continuation_routes",
  "description": "S6 Continuation per-route effects over labelled lane rows (DESIGN-s6 §7; TRACE-s6 §8): refusals (lane_evidence_missing, review_unproven, handoff_incomplete, image_changed); recovery (job unknown, pending termination marker, exception reason: never retried, no successor); successor (correction published->admitted with idempotent second tick, evidence repair from a complete owner handoff, successor_manifest_refused, correction_budget_exhausted, two-strike research for that family only); conductor (dispatch/running/exited with proof, restart with a new conductor: fence then conductor_not_launched, running not owned, timeout with proof, exited with a running row, lost or failed start reconciled under the same identity, no conductor port, unclaimed row redispatched up to MAX_LAUNCHES); delivery bound to the policy target and exact release (absent, active + next item, rolled_back pause, withdrawn refusal, foreign only, ambiguous); authorize drift (hold written once, cleared when the image is restored)",
  "reference_driver": "drivers/reference/s6_routes.py",
- "target_driver": null,
- "target_status": "pending: S6 Continuation split",
+ "target_driver": "drivers/target/s6_routes.py",
  "golden": "goldens/reference/coordination.continuation_routes.json",
  "slice": "S6"
 }
