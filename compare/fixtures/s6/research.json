@@ -1,0 +1,2573 @@
+{
+ "flows": {
+  "held": {
+   "control": [
+    {
+     "body": {
+      "id": "rp-001.c001",
+      "manifest_sha256": "fa799daad91dd195641d53e983adfa2dcfad145325512c18fd7c1258635d066e",
+      "reason_code": "fixture_accepted",
+      "stage": "promotion",
+      "status": "accepted"
+     },
+     "bucket": "autonomous_runs",
+     "id": "rp-001.c001"
+    },
+    {
+     "body": {
+      "attempt": 1,
+      "authorization": {
+       "acceptance_criteria": [
+        "ok"
+       ],
+       "allowed_paths": [
+        "docs/a.md"
+       ],
+       "goal": {
+        "criterion": "crit",
+        "path": "docs/GOAL.md",
+        "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+       },
+       "lane": "a",
+       "model": "claude-fixture-model",
+       "pin_sha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+       "policy_sha256": "15b835e8fa575dfe0770c88a5f8b14e02443ce6c98b67aceee2e949fe9c7f0a3",
+       "repository": "6890bdf5e15cfc1b2f95aab0bb1962cfb5a69dd190dcedfafbc8ad30fa600ce7",
+       "runtime": {
+        "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "profile": "worker-v1",
+        "session_archive_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+       },
+       "source": {
+        "job": "cont-fd0b826945c91e690d6743b5",
+        "manifest_sha256": "0f5f6ff6a21919d95984c84fb3caae06f77878e46f18be2ab88b23f39dd23d13",
+        "status": "failed"
+       }
+      },
+      "created_at": "2026-01-01T00:00:00+00:00",
+      "evidence_refs": [],
+      "evidence_sha256": "60e697e5991f23d852054a273476a801f8b8047780ba22eb16f2498af887f74b",
+      "family": "op-x",
+      "family_jobs": [
+       "cont-fd0b826945c91e690d6743b5",
+       "op-x"
+      ],
+      "generation": 1,
+      "history": [
+       {
+        "at": "2026-01-01T00:00:00+00:00",
+        "reason_code": "two_distinct_failures",
+        "state": "research_required"
+       }
+      ],
+      "id": "ac3c27de407b5e03681190284f357fef39d3843a387f2d8225bdf98038eafd99",
+      "job_updated_at": "2026-01-01T00:00:00+00:00",
+      "lane": "a",
+      "next_owner": "portfolio_research",
+      "origin_job": "cont-fd0b826945c91e690d6743b5",
+      "policy_id": "policy-1",
+      "policy_sha256": "15b835e8fa575dfe0770c88a5f8b14e02443ce6c98b67aceee2e949fe9c7f0a3",
+      "predecessor_intent": "fd0b826945c91e690d6743b5ec30ef478c772c3d0d1943df93c70aa2aa0b2da6",
+      "reason_code": "two_distinct_failures",
+      "route": "research",
+      "session_mode": null,
+      "state": "research_required",
+      "successor_job": null,
+      "updated_at": "2026-01-01T00:00:00+00:00",
+      "version": 1
+     },
+     "bucket": "continuation_intents",
+     "id": "ac3c27de407b5e03681190284f357fef39d3843a387f2d8225bdf98038eafd99"
+    },
+    {
+     "body": {
+      "attempt": 1,
+      "authorization": {
+       "acceptance_criteria": [
+        "ok"
+       ],
+       "allowed_paths": [
+        "docs/a.md"
+       ],
+       "goal": {
+        "criterion": "crit",
+        "path": "docs/GOAL.md",
+        "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+       },
+       "lane": "a",
+       "model": "claude-fixture-model",
+       "pin_sha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+       "policy_sha256": "15b835e8fa575dfe0770c88a5f8b14e02443ce6c98b67aceee2e949fe9c7f0a3",
+       "repository": "6890bdf5e15cfc1b2f95aab0bb1962cfb5a69dd190dcedfafbc8ad30fa600ce7",
+       "runtime": {
+        "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "profile": "worker-v1",
+        "session_archive_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+       },
+       "source": {
+        "job": "op-x",
+        "manifest_sha256": "27971c5040ecf33fb58281adb718b95a9c0b139425606c9b0d5bc5077b562ab9",
+        "status": "failed"
+       }
+      },
+      "binding": {
+       "family": "op-x",
+       "intent_id": "fd0b826945c91e690d6743b5ec30ef478c772c3d0d1943df93c70aa2aa0b2da6",
+       "operation_id": "cont-fd0b826945c91e690d6743b5",
+       "policy_sha256": "15b835e8fa575dfe0770c88a5f8b14e02443ce6c98b67aceee2e949fe9c7f0a3",
+       "predecessor": {
+        "candidate_revision": "cccccccccccccccccccccccccccccccccccccccc",
+        "decision_id": null,
+        "inspection_id": "insp-6c2a3953-f1e8-57cc-abd7-a85a4057ee02",
+        "job_id": "op-x",
+        "review_execution_ref": null,
+        "task_id": "6c2a3953-f1e8-57cc-abd7-a85a4057ee02"
+       },
+       "route": "evidence_repair",
+       "schema": "urn:zeus:continuation-binding:1",
+       "session": null,
+       "workspace": {
+        "base": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "head": "cccccccccccccccccccccccccccccccccccccccc",
+        "origin_task_id": "6c2a3953-f1e8-57cc-abd7-a85a4057ee02"
+       }
+      },
+      "created_at": "2026-01-01T00:00:00+00:00",
+      "evidence_refs": [],
+      "evidence_sha256": "cced55105b2b831debd9f7b8c4ba6355d5cda780f6d2501956ae4f310d0ec22e",
+      "family": "op-x",
+      "generation": 1,
+      "history": [
+       {
+        "at": "2026-01-01T00:00:00+00:00",
+        "reason_code": "evidence_gate_refused",
+        "state": "intended"
+       },
+       {
+        "at": "2026-01-01T00:00:00+00:00",
+        "error_type": null,
+        "previous": "intended",
+        "reason_code": "evidence_gate_refused",
+        "state": "published"
+       },
+       {
+        "at": "2026-01-01T00:00:00+00:00",
+        "error_type": null,
+        "previous": "published",
+        "reason_code": "evidence_gate_refused",
+        "state": "admitted"
+       },
+       {
+        "at": "2026-01-01T00:00:00+00:00",
+        "error_type": null,
+        "previous": "admitted",
+        "reason_code": "successor_failed",
+        "state": "returned"
+       },
+       {
+        "at": "2026-01-01T00:00:00+00:00",
+        "error_type": null,
+        "previous": "returned",
+        "reason_code": "successor_failed",
+        "state": "completed"
+       }
+      ],
+      "id": "fd0b826945c91e690d6743b5ec30ef478c772c3d0d1943df93c70aa2aa0b2da6",
+      "job_updated_at": "2026-01-01T00:00:00+00:00",
+      "lane": "a",
+      "manifest": {
+       "base_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "budget": {
+        "per_host": 4,
+        "total": 8
+       },
+       "claude": {
+        "max_budget_usd": 1.0,
+        "model": "claude-fixture-model",
+        "timeout_seconds": 120
+       },
+       "goal": {
+        "criterion": "crit",
+        "path": "docs/GOAL.md",
+        "rationale": "fixture goal",
+        "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+       },
+       "id": "cont-fd0b826945c91e690d6743b5",
+       "plan": {
+        "acceptance_criteria": [
+         "ok"
+        ],
+        "allowed_paths": [
+         "docs/a.md"
+        ],
+        "objective": "Evidence repair of the preserved candidate (continuation). Re-run and report the declared checks exactly; change code only where a check proves it necessary.\nContinuation references: candidate_revision=cccccccccccccccccccccccccccccccccccccccc, candidate_tree=7777777777777777777777777777777777777777, inspection=insp-6c2a3953-f1e8-57cc-abd7-a85a4057ee02, predecessor_job=op-x\n\nImplement CANARY-continuation-objective-never-projected"
+       },
+       "schema": "urn:zeus:operation:1"
+      },
+      "next_owner": "fleet",
+      "origin_job": "op-x",
+      "ownership": {
+       "criterion_id": null,
+       "project_id": null,
+       "state": "origin_unbound"
+      },
+      "policy_id": "policy-1",
+      "policy_sha256": "15b835e8fa575dfe0770c88a5f8b14e02443ce6c98b67aceee2e949fe9c7f0a3",
+      "predecessor_intent": null,
+      "reason_code": "successor_failed",
+      "route": "evidence_repair",
+      "session_mode": "fresh_evidence_handoff",
+      "state": "completed",
+      "successor_job": "cont-fd0b826945c91e690d6743b5",
+      "updated_at": "2026-01-01T00:00:00+00:00",
+      "version": 5
+     },
+     "bucket": "continuation_intents",
+     "id": "fd0b826945c91e690d6743b5ec30ef478c772c3d0d1943df93c70aa2aa0b2da6"
+    },
+    {
+     "body": {
+      "id": "policy-1",
+      "pin": {
+       "lane": "a",
+       "path": "ops/continuation.json",
+       "revision": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+       "sha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+      },
+      "policy": {
+       "acceptance_criteria": [
+        "ok"
+       ],
+       "allowed_paths": [
+        "docs/a.md",
+        "docs/b.md",
+        "docs/c.md"
+       ],
+       "delivery_target": "fleet-host",
+       "enabled": true,
+       "goals": [
+        {
+         "criterion": "crit",
+         "path": "docs/GOAL.md",
+         "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        }
+       ],
+       "id": "policy-1",
+       "lanes": [
+        "a"
+       ],
+       "max_corrections": 3,
+       "qualified": {
+        "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "model": "claude-fixture-model",
+        "profile": "worker-v1"
+       },
+       "repository": "6890bdf5e15cfc1b2f95aab0bb1962cfb5a69dd190dcedfafbc8ad30fa600ce7",
+       "schema": "urn:zeus:continuation-policy:1",
+       "session_archive_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+      },
+      "policy_sha256": "15b835e8fa575dfe0770c88a5f8b14e02443ce6c98b67aceee2e949fe9c7f0a3",
+      "registered_at": "2026-01-01T00:00:00+00:00"
+     },
+     "bucket": "continuation_policies",
+     "id": "policy-1"
+    },
+    {
+     "body": {
+      "attempts": {
+       "cont-fd0b826945c91e690d6743b5": 2
+      },
+      "policy_id": "policy-1",
+      "sequence": 2
+     },
+     "bucket": "continuation_progress",
+     "id": "policy-1"
+    },
+    {
+     "body": {
+      "budget": {
+       "per_host": 4,
+       "total": 8
+      },
+      "paused": false,
+      "updated_at": "2026-01-01T00:00:00+00:00"
+     },
+     "bucket": "fleet_control",
+     "id": "admission"
+    },
+    {
+     "body": {
+      "calls": {
+       "reserved": 1,
+       "settled": 1
+      },
+      "created_at": "2026-01-01T00:00:00+00:00",
+      "dependencies": [],
+      "dispatched_at": "2026-01-01T00:00:00+00:00",
+      "error_type": null,
+      "exit_code": 1,
+      "finished_at": "2026-01-01T00:00:00+00:00",
+      "goal": {
+       "base_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "criterion": "crit",
+       "path": "docs/GOAL.md",
+       "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+      },
+      "id": "cont-fd0b826945c91e690d6743b5",
+      "lane": "a",
+      "manifest": {
+       "base_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "budget": {
+        "per_host": 4,
+        "total": 8
+       },
+       "claude": {
+        "max_budget_usd": 1.0,
+        "model": "claude-fixture-model",
+        "timeout_seconds": 120
+       },
+       "goal": {
+        "criterion": "crit",
+        "path": "docs/GOAL.md",
+        "rationale": "fixture goal",
+        "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+       },
+       "id": "cont-fd0b826945c91e690d6743b5",
+       "plan": {
+        "acceptance_criteria": [
+         "ok"
+        ],
+        "allowed_paths": [
+         "docs/a.md"
+        ],
+        "objective": "Evidence repair of the preserved candidate (continuation). Re-run and report the declared checks exactly; change code only where a check proves it necessary.\nContinuation references: candidate_revision=cccccccccccccccccccccccccccccccccccccccc, candidate_tree=7777777777777777777777777777777777777777, inspection=insp-6c2a3953-f1e8-57cc-abd7-a85a4057ee02, predecessor_job=op-x\n\nImplement CANARY-continuation-objective-never-projected"
+       },
+       "schema": "urn:zeus:operation:1"
+      },
+      "manifest_sha256": "0f5f6ff6a21919d95984c84fb3caae06f77878e46f18be2ab88b23f39dd23d13",
+      "operation_id": "cont-fd0b826945c91e690d6743b5",
+      "owner_handoff": {
+       "authority": "owner_handoff; visibility only, never a retry, acceptance or release",
+       "id": "7275085316ae1af232af3d6de41761efeff6dafd2a98dbb9bbdc1a8ceab5a605",
+       "inspection_bound": true,
+       "inspection_id": "insp-03efc5b6-ba6c-5e20-af65-0988eaf986e5",
+       "inspection_known": true,
+       "inspection_reason_code": null,
+       "next_action": "inspect_evidence_contract",
+       "operation_id": "cont-fd0b826945c91e690d6743b5",
+       "owner": "lead:improvement",
+       "passed": 1,
+       "reason_code": "evidence_gate_refused",
+       "remaining": 1,
+       "schema": "urn:zeus:operation-evidence-handoff:1",
+       "status": "pending_owner"
+      },
+      "owner_token": "5eed0000000040008000000000000007",
+      "reason_code": "evidence_gate_refused",
+      "receipt": {
+       "operation_status": null,
+       "owner_handoff": {
+        "authority": "owner_handoff; visibility only, never a retry, acceptance or release",
+        "id": "7275085316ae1af232af3d6de41761efeff6dafd2a98dbb9bbdc1a8ceab5a605",
+        "inspection_bound": true,
+        "inspection_id": "insp-03efc5b6-ba6c-5e20-af65-0988eaf986e5",
+        "inspection_known": true,
+        "inspection_reason_code": null,
+        "next_action": "inspect_evidence_contract",
+        "operation_id": "cont-fd0b826945c91e690d6743b5",
+        "owner": "lead:improvement",
+        "passed": 1,
+        "reason_code": "evidence_gate_refused",
+        "remaining": 1,
+        "schema": "urn:zeus:operation-evidence-handoff:1",
+        "status": "pending_owner"
+       }
+      },
+      "repository": "6890bdf5e15cfc1b2f95aab0bb1962cfb5a69dd190dcedfafbc8ad30fa600ce7",
+      "status": "failed",
+      "team": "alpha",
+      "updated_at": "2026-01-01T00:00:00+00:00"
+     },
+     "bucket": "fleet_jobs",
+     "id": "cont-fd0b826945c91e690d6743b5"
+    },
+    {
+     "body": {
+      "calls": {
+       "reserved": 1,
+       "settled": 1
+      },
+      "created_at": "2026-01-01T00:00:00+00:00",
+      "dependencies": [],
+      "dispatched_at": "2026-01-01T00:00:00+00:00",
+      "error_type": null,
+      "exit_code": 1,
+      "finished_at": "2026-01-01T00:00:00+00:00",
+      "goal": {
+       "base_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "criterion": "crit",
+       "path": "docs/GOAL.md",
+       "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+      },
+      "id": "op-x",
+      "lane": "a",
+      "manifest": {
+       "base_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "budget": {
+        "per_host": 4,
+        "total": 8
+       },
+       "claude": {
+        "max_budget_usd": 1.0,
+        "model": "claude-fixture-model",
+        "timeout_seconds": 120
+       },
+       "goal": {
+        "criterion": "crit",
+        "path": "docs/GOAL.md",
+        "rationale": "fixture goal",
+        "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+       },
+       "id": "op-x",
+       "plan": {
+        "acceptance_criteria": [
+         "ok"
+        ],
+        "allowed_paths": [
+         "docs/a.md"
+        ],
+        "objective": "Implement CANARY-continuation-objective-never-projected"
+       },
+       "schema": "urn:zeus:operation:1"
+      },
+      "manifest_sha256": "27971c5040ecf33fb58281adb718b95a9c0b139425606c9b0d5bc5077b562ab9",
+      "operation_id": "op-x",
+      "owner_handoff": {
+       "authority": "owner_handoff; visibility only, never a retry, acceptance or release",
+       "id": "702ef23ef119a74dedbd688e685e0d9e6a360438939f1bd704b01cbfac73f57f",
+       "inspection_bound": true,
+       "inspection_id": "insp-6c2a3953-f1e8-57cc-abd7-a85a4057ee02",
+       "inspection_known": true,
+       "inspection_reason_code": null,
+       "next_action": "inspect_evidence_contract",
+       "operation_id": "op-x",
+       "owner": "lead:improvement",
+       "passed": 1,
+       "reason_code": "evidence_gate_refused",
+       "remaining": 1,
+       "schema": "urn:zeus:operation-evidence-handoff:1",
+       "status": "pending_owner"
+      },
+      "owner_token": "5eed0000000040008000000000000002",
+      "reason_code": "evidence_gate_refused",
+      "receipt": {
+       "operation_status": null,
+       "owner_handoff": {
+        "authority": "owner_handoff; visibility only, never a retry, acceptance or release",
+        "id": "702ef23ef119a74dedbd688e685e0d9e6a360438939f1bd704b01cbfac73f57f",
+        "inspection_bound": true,
+        "inspection_id": "insp-6c2a3953-f1e8-57cc-abd7-a85a4057ee02",
+        "inspection_known": true,
+        "inspection_reason_code": null,
+        "next_action": "inspect_evidence_contract",
+        "operation_id": "op-x",
+        "owner": "lead:improvement",
+        "passed": 1,
+        "reason_code": "evidence_gate_refused",
+        "remaining": 1,
+        "schema": "urn:zeus:operation-evidence-handoff:1",
+        "status": "pending_owner"
+       }
+      },
+      "repository": "6890bdf5e15cfc1b2f95aab0bb1962cfb5a69dd190dcedfafbc8ad30fa600ce7",
+      "status": "failed",
+      "team": "alpha",
+      "updated_at": "2026-01-01T00:00:00+00:00"
+     },
+     "bucket": "fleet_jobs",
+     "id": "op-x"
+    },
+    {
+     "body": {
+      "config": {
+       "budget": {
+        "per_host": 4,
+        "total": 8
+       },
+       "id": "fleet-1",
+       "lanes": [
+        {
+         "id": "a",
+         "redis_namespace": "fleet-a",
+         "repository": "/tmp/zeus-rebuild-s6-fixture/repo-a",
+         "runtime": "/tmp/zeus-rebuild-s6-fixture/rt-a",
+         "schema": "lane_a",
+         "team": "alpha"
+        },
+        {
+         "id": "b",
+         "redis_namespace": "fleet-b",
+         "repository": "/tmp/zeus-rebuild-s6-fixture/repo-b",
+         "runtime": "/tmp/zeus-rebuild-s6-fixture/rt-b",
+         "schema": "lane_b",
+         "team": "beta"
+        }
+       ],
+       "max_parallel": 2,
+       "schema": "urn:zeus:fleet:1"
+      },
+      "config_sha256": "bffd6985bbf1c1a06c7510183d33e8b0c705b2a422623cc67e81ca331538396a",
+      "id": "fleet-1",
+      "registered_at": "2026-01-01T00:00:00+00:00",
+      "schema": "urn:zeus:fleet:1"
+     },
+     "bucket": "fleet_registry",
+     "id": "fleet-1"
+    },
+    {
+     "body": {
+      "created_at": "2026-01-01T00:00:00+00:00",
+      "criterion_id": "c1",
+      "id": "cont-fd0b826945c91e690d6743b5",
+      "job_id": "cont-fd0b826945c91e690d6743b5",
+      "project_id": "ops",
+      "recorded_by": "owner"
+     },
+     "bucket": "portfolio_bindings",
+     "id": "cont-fd0b826945c91e690d6743b5"
+    },
+    {
+     "body": {
+      "created_at": "2026-01-01T00:00:00+00:00",
+      "criterion_id": "c1",
+      "id": "op-x",
+      "job_id": "op-x",
+      "project_id": "ops",
+      "recorded_by": "owner"
+     },
+     "bucket": "portfolio_bindings",
+     "id": "op-x"
+    },
+    {
+     "body": {
+      "count": 2,
+      "created_at": "2026-01-01T00:00:00+00:00",
+      "decided_at": null,
+      "evidence_refs": [],
+      "family_status": "failed",
+      "id": "aab8c6d6d16bbfa008306c149b180badc63918ee202f2b74479ad210824e0be8",
+      "job_ids": [
+       "cont-fd0b826945c91e690d6743b5",
+       "op-x"
+      ],
+      "reason_code": "evidence_gate_refused",
+      "state": "research_required",
+      "updated_at": "2026-01-01T00:00:00+00:00"
+     },
+     "bucket": "portfolio_investigations",
+     "id": "aab8c6d6d16bbfa008306c149b180badc63918ee202f2b74479ad210824e0be8"
+    },
+    {
+     "body": {
+      "authority": "research dispatch claim and council outcome only; it is not an owner disposition, not an incident resolution and not a promotion",
+      "candidate": "inv-aab8c6d6d16bbfa008306c14",
+      "claimed_at": "2028-01-01T00:00:00+00:00",
+      "cycle": "rp-001:001",
+      "cycle_number": 1,
+      "failure": null,
+      "family_status": "failed",
+      "finished_at": "2028-01-01T00:00:00+00:00",
+      "id": "aab8c6d6d16bbfa008306c149b180badc63918ee202f2b74479ad210824e0be8",
+      "investigation": "aab8c6d6d16bbfa008306c149b180badc63918ee202f2b74479ad210824e0be8",
+      "job_ids": [
+       "cont-fd0b826945c91e690d6743b5",
+       "op-x"
+      ],
+      "job_ids_sha256": "7d8ccfc6cabc951ddbb0aca8d0def4f55a40794d03010fc7c0dec3f00bd1778b",
+      "job_ids_total": 2,
+      "kind": "failure_family",
+      "manifest_ref": "sha256:fa799daad91dd195641d53e983adfa2dcfad145325512c18fd7c1258635d066e",
+      "manifest_sha256": "fa799daad91dd195641d53e983adfa2dcfad145325512c18fd7c1258635d066e",
+      "program": "rp-001",
+      "reason_code": "evidence_gate_refused",
+      "reported_result": "accepted",
+      "result": "accepted",
+      "result_reason": "fixture_accepted",
+      "row_status": "accepted",
+      "run_id": "rp-001.c001",
+      "schema": "urn:zeus:research-investigation-dispatch:1",
+      "scope": null,
+      "snapshot_sha256": "94208fc76260f7a8dc7dc7609f20aa8446945ab5531c0e884469dbdc4196ae1b",
+      "started_at": "2028-01-01T00:00:00+00:00",
+      "state": "resolved",
+      "updated_at": "2028-01-01T00:00:00+00:00"
+     },
+     "bucket": "research_investigation_dispatches",
+     "id": "aab8c6d6d16bbfa008306c149b180badc63918ee202f2b74479ad210824e0be8"
+    },
+    {
+     "body": {
+      "_key": "rp-001:c-5e5542e1567e70b690b5b452",
+      "claimed_cycle": null,
+      "content_sha256": "11d4ed28c5dbbbe43b975a48161b8e61b306082f6b19f91c3caa46217693a3da",
+      "created_at": "2028-01-01T00:00:00+00:00",
+      "first_cycle": 1,
+      "id": "c-5e5542e1567e70b690b5b452",
+      "key": "url:https://news.hada.io/topic?id=1",
+      "last_cycle": 1,
+      "path": null,
+      "program": "rp-001",
+      "reason": "keyword:advisory lock in title",
+      "result": null,
+      "seen": 1,
+      "sha256": null,
+      "source": "geeknews",
+      "status": "eligible",
+      "summary": "<p>x</p>",
+      "title": "Advisory lock patterns",
+      "topic": "storage",
+      "updated_at": "2028-01-01T00:00:00+00:00",
+      "url": "https://news.hada.io/topic?id=1"
+     },
+     "bucket": "research_program_candidates",
+     "id": "rp-001:c-5e5542e1567e70b690b5b452"
+    },
+    {
+     "body": {
+      "_key": "rp-001:c-9da1c6652203010bb4a438b8",
+      "claimed_cycle": null,
+      "content_sha256": "b27dbdc7543398e88af1bbb888b9d192c0d5219ddd8a8e79b0c6cc595dba2173",
+      "created_at": "2028-01-01T00:00:00+00:00",
+      "first_cycle": 1,
+      "id": "c-9da1c6652203010bb4a438b8",
+      "key": "url:https://github.com/acme/pgtool",
+      "last_cycle": 1,
+      "path": null,
+      "program": "rp-001",
+      "reason": "keyword:postgres in summary",
+      "result": null,
+      "seen": 1,
+      "sha256": null,
+      "source": "github",
+      "status": "eligible",
+      "summary": "Postgres tooling",
+      "title": "acme/pgtool",
+      "topic": "storage",
+      "updated_at": "2028-01-01T00:00:00+00:00",
+      "url": "https://github.com/acme/pgtool"
+     },
+     "bucket": "research_program_candidates",
+     "id": "rp-001:c-9da1c6652203010bb4a438b8"
+    },
+    {
+     "body": {
+      "_key": "rp-001:c-d40269ee9834278a419cdc5d",
+      "claimed_cycle": null,
+      "content_sha256": "38d04231dea01ff9405c94e8ad1da619322ef9b3b0aca0b8a98276ca30613671",
+      "created_at": "2028-01-01T00:00:00+00:00",
+      "first_cycle": 1,
+      "id": "c-d40269ee9834278a419cdc5d",
+      "key": "url:https://github.com/acme/unrelated",
+      "last_cycle": 1,
+      "path": null,
+      "program": "rp-001",
+      "reason": "no_keyword_match",
+      "result": null,
+      "seen": 1,
+      "sha256": null,
+      "source": "github",
+      "status": "ignored",
+      "summary": "a game engine",
+      "title": "acme/unrelated",
+      "topic": null,
+      "updated_at": "2028-01-01T00:00:00+00:00",
+      "url": "https://github.com/acme/unrelated"
+     },
+     "bucket": "research_program_candidates",
+     "id": "rp-001:c-d40269ee9834278a419cdc5d"
+    },
+    {
+     "body": {
+      "_key": "rp-001:inv-aab8c6d6d16bbfa008306c14",
+      "claimed_cycle": 1,
+      "content_sha256": "7d8ccfc6cabc951ddbb0aca8d0def4f55a40794d03010fc7c0dec3f00bd1778b",
+      "created_at": "2028-01-01T00:00:00+00:00",
+      "first_cycle": 1,
+      "id": "inv-aab8c6d6d16bbfa008306c14",
+      "investigation": "aab8c6d6d16bbfa008306c149b180badc63918ee202f2b74479ad210824e0be8",
+      "key": "investigation:aab8c6d6d16bbfa008306c149b180badc63918ee202f2b74479ad210824e0be8",
+      "last_cycle": 1,
+      "path": null,
+      "program": "rp-001",
+      "reason": "portfolio_investigation_eligible",
+      "result": "accepted",
+      "seen": 1,
+      "sha256": null,
+      "snapshot": {
+       "cycle": 1,
+       "family_status": "failed",
+       "investigation": "aab8c6d6d16bbfa008306c149b180badc63918ee202f2b74479ad210824e0be8",
+       "job_ids": [
+        "cont-fd0b826945c91e690d6743b5",
+        "op-x"
+       ],
+       "job_ids_sha256": "7d8ccfc6cabc951ddbb0aca8d0def4f55a40794d03010fc7c0dec3f00bd1778b",
+       "job_ids_total": 2,
+       "job_ids_truncated": false,
+       "observed_at": "2028-01-01T00:00:00+00:00",
+       "program": "rp-001",
+       "projects": [
+        "ops"
+       ],
+       "reason_code": "evidence_gate_refused",
+       "schema": "urn:zeus:research-investigation-snapshot:1",
+       "topic": "storage",
+       "trust": "unverified failure-family symptom recorded by the operating portfolio; identical symptoms are a hypothesis, never a cause, an incident resolution or an approved repair"
+      },
+      "source": "investigation",
+      "status": "claimed",
+      "summary": null,
+      "title": null,
+      "topic": "storage",
+      "updated_at": "2028-01-01T00:00:00+00:00",
+      "url": null
+     },
+     "bucket": "research_program_candidates",
+     "id": "rp-001:inv-aab8c6d6d16bbfa008306c14"
+    },
+    {
+     "body": {
+      "_key": "rp-001:local-note",
+      "claimed_cycle": null,
+      "content_sha256": "cda54324adeef54a5d6fe6bdc9d9adc4f140af1e092d1217a4b3f6a2f1ef435f",
+      "created_at": "2028-01-01T00:00:00+00:00",
+      "first_cycle": 1,
+      "id": "local-note",
+      "key": "local:docs/research/note.md",
+      "last_cycle": 1,
+      "path": "docs/research/note.md",
+      "program": "rp-001",
+      "reason": "owner_authorized_local_candidate",
+      "result": null,
+      "seen": 1,
+      "sha256": "cda54324adeef54a5d6fe6bdc9d9adc4f140af1e092d1217a4b3f6a2f1ef435f",
+      "source": "local",
+      "status": "eligible",
+      "summary": "sterk residual CANARY-must-never-be-emitted",
+      "title": "docs/research/note.md",
+      "topic": "storage",
+      "updated_at": "2028-01-01T00:00:00+00:00",
+      "url": null
+     },
+     "bucket": "research_program_candidates",
+     "id": "rp-001:local-note"
+    },
+    {
+     "body": {
+      "audit_progress": null,
+      "budget": {
+       "all_hosts": 0,
+       "headroom": {
+        "ok": true,
+        "remaining": 10,
+        "required": 7
+       },
+       "per_host": 10,
+       "this_host": 0,
+       "total": 20,
+       "unreadable": 0
+      },
+      "capture": {
+       "artifact": "sha256:6af71062c7aaa91c16a3bc58718b139d5d957d7c0050a5196e4ffaed858af7c0",
+       "blob": "164427c5358d28b47469bb19a23de6b389168aad",
+       "bytes": 2094,
+       "candidate": "inv-aab8c6d6d16bbfa008306c14",
+       "path": "docs/zeus/research-captures/rp-001/001.json",
+       "ref": "refs/zeus/research/rp-001/001",
+       "revision": "61fe4ebdf6e1cf42aeff0315bfd664b9d547ba4d",
+       "sha256": "6af71062c7aaa91c16a3bc58718b139d5d957d7c0050a5196e4ffaed858af7c0",
+       "tree": "7e26426abd63e0972f0f923b2f319918a1f74eab"
+      },
+      "council": {
+       "finished_at": "2028-01-01T00:00:00+00:00",
+       "manifest_ref": "sha256:fa799daad91dd195641d53e983adfa2dcfad145325512c18fd7c1258635d066e",
+       "manifest_sha256": "fa799daad91dd195641d53e983adfa2dcfad145325512c18fd7c1258635d066e",
+       "reason_code": "fixture_accepted",
+       "row_status": "accepted",
+       "run_id": "rp-001.c001",
+       "started_at": "2028-01-01T00:00:00+00:00",
+       "status": "accepted"
+      },
+      "counts": {
+       "discovered": 4,
+       "duplicate": 0,
+       "eligible": 3,
+       "ignored": 1,
+       "new": 4,
+       "selected": 1
+      },
+      "failure": null,
+      "finished_at": "2028-01-01T00:00:00+00:00",
+      "id": "rp-001:001",
+      "investigations": {
+       "claimed": "aab8c6d6d16bbfa008306c149b180badc63918ee202f2b74479ad210824e0be8",
+       "counts": {
+        "claimed": 0,
+        "eligible": 1,
+        "insufficient_jobs": 0,
+        "malformed": 0,
+        "reason_code": 0,
+        "scanned": 1,
+        "state": 0
+       },
+       "ineligible": 0,
+       "new": 1,
+       "reported_result": "accepted",
+       "result": "accepted"
+      },
+      "number": 1,
+      "owner": "5eed000000004000800000000000000c",
+      "program": "rp-001",
+      "remaining": {
+       "adoptions": 0,
+       "cycles": 1
+      },
+      "result": "accepted",
+      "selection": {
+       "candidate": "inv-aab8c6d6d16bbfa008306c14",
+       "reason": "first_eligible_in_stable_order",
+       "source": "investigation"
+      },
+      "sources": {
+       "geeknews": {
+        "artifact": "sha256:e7e70c356063f8fc68a39aa82bfafcda325bb169b3e219b7ff6fef2b91d01a9e",
+        "code": null,
+        "fetched_at": "2028-01-01T00:00:00+00:00",
+        "items": 1,
+        "status": "ok"
+       },
+       "github": {
+        "artifact": "sha256:681da1fb9684eb4a27011cdedf552da1b3b816c7c6c07076e61309550813794c",
+        "code": null,
+        "fetched_at": "2028-01-01T00:00:00+00:00",
+        "items": 2,
+        "status": "ok"
+       },
+       "local": {
+        "artifact": null,
+        "code": null,
+        "fetched_at": null,
+        "items": 1,
+        "status": "ok"
+       }
+      },
+      "started_at": "2028-01-01T00:00:00+00:00",
+      "status": "completed",
+      "stop_reason": null,
+      "updated_at": "2028-01-01T00:00:00+00:00"
+     },
+     "bucket": "research_program_cycles",
+     "id": "rp-001:001"
+    },
+    {
+     "body": {
+      "active_cycle": null,
+      "adoptions": 1,
+      "blocked_reason": null,
+      "config": {
+       "base_revision": "5d629a822f348e8be0db097bb4b9da61c9306006",
+       "budget": {
+        "per_host": 10,
+        "total": 20
+       },
+       "deadline": "2029-06-01T00:00:00+00:00",
+       "id": "rp-001",
+       "interval_seconds": 3600,
+       "investigation_source": {
+        "project_ids": [
+         "ops"
+        ],
+        "reason_codes": [
+         "evidence_gate_refused"
+        ],
+        "topic": "storage"
+       },
+       "local_candidates": [
+        {
+         "id": "local-note",
+         "path": "docs/research/note.md",
+         "rationale": "sterk residual CANARY-must-never-be-emitted",
+         "sha256": "cda54324adeef54a5d6fe6bdc9d9adc4f140af1e092d1217a4b3f6a2f1ef435f",
+         "topic": "storage"
+        }
+       ],
+       "max_adoptions": 1,
+       "max_cycles": 2,
+       "schema": "urn:zeus:research-program:1",
+       "template": {
+        "base_revision": "5d629a822f348e8be0db097bb4b9da61c9306006",
+        "budget": {
+         "per_host": 10,
+         "total": 20
+        },
+        "claude": {
+         "max_budget_usd": 1,
+         "model": "claude-fixture-model",
+         "timeout_seconds": 120
+        },
+        "current_state": {
+         "max_age_seconds": 600,
+         "records": [
+          {
+           "bucket": "tasks",
+           "id": "t-1"
+          }
+         ]
+        },
+        "deadline": "2030-01-01T00:00:00+00:00",
+        "goal": {
+         "criterion": "c",
+         "path": "docs/GOAL.md",
+         "rationale": "r",
+         "sha256": "c06d51c08e94f5f3130f44647916b744e739e26846633f92d6da4ef6fb1641e7"
+        },
+        "id": "council-template",
+        "plan": {
+         "acceptance_criteria": [
+          "focused tests pass"
+         ],
+         "allowed_paths": [
+          "docs/RUNBOOK.md"
+         ],
+         "objective": "improve the research report CANARY-must-never-be-emitted"
+        },
+        "research": {
+         "questions": [
+          "What is the SSOT?"
+         ],
+         "search_scope": [
+          "docs"
+         ],
+         "topic": "research report"
+        },
+        "schema": "urn:zeus:autonomous:2"
+       },
+       "topics": [
+        {
+         "id": "storage",
+         "keywords": [
+          "advisory lock",
+          "postgres"
+         ]
+        }
+       ]
+      },
+      "config_sha256": "8a8b2427086cd2fbf267af7d67a3e3651d8422dea30396a4cf445bed8f387083",
+      "cycles": 1,
+      "id": "rp-001",
+      "last_tick_at": "2028-01-01T00:00:00+00:00",
+      "next_cycle": 2,
+      "registered_at": "2028-01-01T00:00:00+00:00",
+      "repository": "4551bab81b2d42b331adbf2e179166ee742620a7b339b380863747de96766b15",
+      "schema": "urn:zeus:research-program:1",
+      "state": "active",
+      "stop_reason": null,
+      "updated_at": "2028-01-01T00:00:00+00:00",
+      "verified_local": []
+     },
+     "bucket": "research_programs",
+     "id": "rp-001"
+    }
+   ],
+   "evidence": {
+    "sha256:4c0f0177946609f29882b5324ba1f997cf08f49efaa2010c06caed5a14b01f45": "LABELLED fixture research report for the evidence_gate_refused family\n"
+   },
+   "flow": "tests/test_continuation_research.py::held",
+   "ids": {
+    "investigation": "aab8c6d6d16bbfa008306c149b180badc63918ee202f2b74479ad210824e0be8",
+    "research_intent": "ac3c27de407b5e03681190284f357fef39d3843a387f2d8225bdf98038eafd99",
+    "root": "op-x",
+    "successor": "cont-fd0b826945c91e690d6743b5"
+   },
+   "lane": [
+    {
+     "body": {
+      "family": "op-x",
+      "intent_id": "fd0b826945c91e690d6743b5ec30ef478c772c3d0d1943df93c70aa2aa0b2da6",
+      "operation_id": "cont-fd0b826945c91e690d6743b5",
+      "policy_sha256": "15b835e8fa575dfe0770c88a5f8b14e02443ce6c98b67aceee2e949fe9c7f0a3",
+      "predecessor": {
+       "candidate_revision": "cccccccccccccccccccccccccccccccccccccccc",
+       "decision_id": null,
+       "inspection_id": "insp-6c2a3953-f1e8-57cc-abd7-a85a4057ee02",
+       "job_id": "op-x",
+       "review_execution_ref": null,
+       "task_id": "6c2a3953-f1e8-57cc-abd7-a85a4057ee02"
+      },
+      "route": "evidence_repair",
+      "schema": "urn:zeus:continuation-binding:1",
+      "session": null,
+      "workspace": {
+       "base": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "head": "cccccccccccccccccccccccccccccccccccccccc",
+       "origin_task_id": "6c2a3953-f1e8-57cc-abd7-a85a4057ee02"
+      }
+     },
+     "bucket": "continuation_bindings",
+     "id": "cont-fd0b826945c91e690d6743b5"
+    },
+    {
+     "body": {
+      "family": "op-x",
+      "intent_id": null,
+      "operation_id": "op-x",
+      "policy_sha256": "15b835e8fa575dfe0770c88a5f8b14e02443ce6c98b67aceee2e949fe9c7f0a3",
+      "predecessor": null,
+      "route": null,
+      "schema": "urn:zeus:continuation-binding:1",
+      "session": {
+       "repository": "6890bdf5e15cfc1b2f95aab0bb1962cfb5a69dd190dcedfafbc8ad30fa600ce7",
+       "task_id": "op-x"
+      },
+      "workspace": null
+     },
+     "bucket": "continuation_bindings",
+     "id": "op-x"
+    },
+    {
+     "body": {
+      "actor": "lead:improvement",
+      "attempt": 0,
+      "generation": 1,
+      "id": "5eed0000-0000-4000-8000-000000000005",
+      "input": {
+       "candidate": {
+        "base": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "diff_hash": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "path": "D:/secret/CANARY-must-never-be-emitted",
+        "revision": "cccccccccccccccccccccccccccccccccccccccc",
+        "tree": "7777777777777777777777777777777777777777"
+       },
+       "evidence_inspection": {
+        "inspection_id": "insp-6c2a3953-f1e8-57cc-abd7-a85a4057ee02",
+        "verdict": "all_checked"
+       },
+       "execution_ref": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+       "summary": "CANARY-must-never-be-emitted"
+      },
+      "lease_owner": null,
+      "lease_until": null,
+      "message": {
+       "causation_id": null,
+       "correlation_id": "operation:op-x",
+       "how": {
+        "acceptance_criteria": [
+         "Preserve normal behavior"
+        ],
+        "constraints": [],
+        "context_ref": null,
+        "result_schema": "six-w.v1"
+       },
+       "message_id": "5eed0000-0000-4000-8000-000000000005",
+       "schema_version": "1.0",
+       "type": "task.result",
+       "what": {
+        "action": "implement",
+        "details": {
+         "result": {
+          "candidate": {
+           "base": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+           "diff_hash": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+           "path": "D:/secret/CANARY-must-never-be-emitted",
+           "revision": "cccccccccccccccccccccccccccccccccccccccc",
+           "tree": "7777777777777777777777777777777777777777"
+          },
+          "evidence_inspection": {
+           "inspection_id": "insp-6c2a3953-f1e8-57cc-abd7-a85a4057ee02",
+           "verdict": "all_checked"
+          },
+          "execution_ref": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+          "summary": "CANARY-must-never-be-emitted"
+         },
+         "task_id": "6c2a3953-f1e8-57cc-abd7-a85a4057ee02"
+        }
+       },
+       "when": {
+        "after": [],
+        "created_at": "2026-01-01T00:00:00+00:00",
+        "deadline": null
+       },
+       "where": {
+        "allowed_paths": [],
+        "environment": "local",
+        "repository": "codex-harness",
+        "revision": "bootstrap"
+       },
+       "who": {
+        "owner": "lead:improvement",
+        "recipient": "lead:improvement",
+        "sender": "worker:implementation"
+       },
+       "why": {
+        "evidence_refs": [],
+        "objective": "Improve harness reliability from verified evidence"
+       }
+      },
+      "phase": "review_lead",
+      "retirement": {
+       "at": "2026-01-01T00:00:00+00:00",
+       "before": {
+        "attempt": 0,
+        "generation": 0,
+        "sha256": "f5b5519a96666fa5646b0ea958b486b52a6c38026089303b5fbc7e995856cd70",
+        "status": "pending"
+       },
+       "disposition_id": "b9a9afdc90121e253d3f13c5e3ede92be4966512ccbebcbdfa896195e542852f",
+       "operation_id": "op-x",
+       "reason_code": "operation_terminal"
+      },
+      "status": "cancelled"
+     },
+     "bucket": "decisions_pending",
+     "id": "5eed0000-0000-4000-8000-000000000005"
+    },
+    {
+     "body": {
+      "actor": "lead:improvement",
+      "attempt": 0,
+      "generation": 1,
+      "id": "5eed0000-0000-4000-8000-00000000000a",
+      "input": {
+       "candidate": {
+        "base": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "diff_hash": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "path": "D:/secret/CANARY-must-never-be-emitted",
+        "revision": "cccccccccccccccccccccccccccccccccccccccc",
+        "tree": "7777777777777777777777777777777777777777"
+       },
+       "evidence_inspection": {
+        "inspection_id": "insp-03efc5b6-ba6c-5e20-af65-0988eaf986e5",
+        "verdict": "all_checked"
+       },
+       "execution_ref": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+       "summary": "CANARY-must-never-be-emitted"
+      },
+      "lease_owner": null,
+      "lease_until": null,
+      "message": {
+       "causation_id": null,
+       "correlation_id": "operation:cont-fd0b826945c91e690d6743b5",
+       "how": {
+        "acceptance_criteria": [
+         "Preserve normal behavior"
+        ],
+        "constraints": [],
+        "context_ref": null,
+        "result_schema": "six-w.v1"
+       },
+       "message_id": "5eed0000-0000-4000-8000-00000000000a",
+       "schema_version": "1.0",
+       "type": "task.result",
+       "what": {
+        "action": "implement",
+        "details": {
+         "result": {
+          "candidate": {
+           "base": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+           "diff_hash": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+           "path": "D:/secret/CANARY-must-never-be-emitted",
+           "revision": "cccccccccccccccccccccccccccccccccccccccc",
+           "tree": "7777777777777777777777777777777777777777"
+          },
+          "evidence_inspection": {
+           "inspection_id": "insp-03efc5b6-ba6c-5e20-af65-0988eaf986e5",
+           "verdict": "all_checked"
+          },
+          "execution_ref": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+          "summary": "CANARY-must-never-be-emitted"
+         },
+         "task_id": "03efc5b6-ba6c-5e20-af65-0988eaf986e5"
+        }
+       },
+       "when": {
+        "after": [],
+        "created_at": "2026-01-01T00:00:00+00:00",
+        "deadline": null
+       },
+       "where": {
+        "allowed_paths": [],
+        "environment": "local",
+        "repository": "codex-harness",
+        "revision": "bootstrap"
+       },
+       "who": {
+        "owner": "lead:improvement",
+        "recipient": "lead:improvement",
+        "sender": "worker:implementation"
+       },
+       "why": {
+        "evidence_refs": [],
+        "objective": "Improve harness reliability from verified evidence"
+       }
+      },
+      "phase": "review_lead",
+      "retirement": {
+       "at": "2026-01-01T00:00:00+00:00",
+       "before": {
+        "attempt": 0,
+        "generation": 0,
+        "sha256": "1681dfe3267cdde2fcc8ed31193625a6a55123a826e9269b816d4ba0f96f7f6c",
+        "status": "pending"
+       },
+       "disposition_id": "b81f5f4fac135c2fae537d89f9975706a16882884e30d8a8d409e3c4a9b9903b",
+       "operation_id": "cont-fd0b826945c91e690d6743b5",
+       "reason_code": "operation_terminal"
+      },
+      "status": "cancelled"
+     },
+     "bucket": "decisions_pending",
+     "id": "5eed0000-0000-4000-8000-00000000000a"
+    },
+    {
+     "body": {
+      "binding": {
+       "attempt": 1,
+       "generation": 1,
+       "source_revision": "cccccccccccccccccccccccccccccccccccccccc",
+       "task_id": "03efc5b6-ba6c-5e20-af65-0988eaf986e5"
+      },
+      "denominator": {
+       "checked": 0,
+       "claims": 2,
+       "not_checked": 1
+      },
+      "findings": [
+       {
+        "cause": null,
+        "claim": {
+         "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "CANARY-must-never-be-emitted"
+         ],
+         "check_id": "unit",
+         "kind": "project_check",
+         "status": "executed"
+        },
+        "state": "checked"
+       },
+       {
+        "cause": "required check has no observation CANARY-must-never-be-emitted",
+        "claim": {
+         "check_id": "lint",
+         "kind": "project_check",
+         "status": "missing"
+        },
+        "state": "not_checked"
+       }
+      ],
+      "id": "insp-03efc5b6-ba6c-5e20-af65-0988eaf986e5",
+      "policy_hash": "ph",
+      "verdict": "incomplete"
+     },
+     "bucket": "evidence_inspections",
+     "id": "insp-03efc5b6-ba6c-5e20-af65-0988eaf986e5"
+    },
+    {
+     "body": {
+      "binding": {
+       "attempt": 1,
+       "generation": 1,
+       "source_revision": "cccccccccccccccccccccccccccccccccccccccc",
+       "task_id": "6c2a3953-f1e8-57cc-abd7-a85a4057ee02"
+      },
+      "denominator": {
+       "checked": 0,
+       "claims": 2,
+       "not_checked": 1
+      },
+      "findings": [
+       {
+        "cause": null,
+        "claim": {
+         "argv": [
+          "python",
+          "-m",
+          "pytest",
+          "CANARY-must-never-be-emitted"
+         ],
+         "check_id": "unit",
+         "kind": "project_check",
+         "status": "executed"
+        },
+        "state": "checked"
+       },
+       {
+        "cause": "required check has no observation CANARY-must-never-be-emitted",
+        "claim": {
+         "check_id": "lint",
+         "kind": "project_check",
+         "status": "missing"
+        },
+        "state": "not_checked"
+       }
+      ],
+      "id": "insp-6c2a3953-f1e8-57cc-abd7-a85a4057ee02",
+      "policy_hash": "ph",
+      "verdict": "incomplete"
+     },
+     "bucket": "evidence_inspections",
+     "id": "insp-6c2a3953-f1e8-57cc-abd7-a85a4057ee02"
+    },
+    {
+     "body": {
+      "at": "2026-01-01T00:00:00+00:00",
+      "bucket": "decisions_pending",
+      "generation": 1,
+      "id": "decisions_pending:5eed0000-0000-4000-8000-000000000005",
+      "owner": null,
+      "row_id": "5eed0000-0000-4000-8000-000000000005"
+     },
+     "bucket": "execution_fences",
+     "id": "decisions_pending:5eed0000-0000-4000-8000-000000000005"
+    },
+    {
+     "body": {
+      "at": "2026-01-01T00:00:00+00:00",
+      "bucket": "decisions_pending",
+      "generation": 1,
+      "id": "decisions_pending:5eed0000-0000-4000-8000-00000000000a",
+      "owner": null,
+      "row_id": "5eed0000-0000-4000-8000-00000000000a"
+     },
+     "bucket": "execution_fences",
+     "id": "decisions_pending:5eed0000-0000-4000-8000-00000000000a"
+    },
+    {
+     "body": {
+      "correlation_id": "operation:cont-fd0b826945c91e690d6743b5",
+      "created_at": "2026-01-01T00:00:00+00:00",
+      "executions": 2,
+      "id": "operation:cont-fd0b826945c91e690d6743b5",
+      "in_flight": null,
+      "last_execution": {
+       "agent": "lead:improvement",
+       "at": "2026-01-01T00:00:00+00:00",
+       "error": "EvidenceGateRefused",
+       "id": "5eed0000-0000-4000-8000-00000000000a",
+       "kind": "decision",
+       "status": "exception"
+      },
+      "max_executions": 2,
+      "status": "stopped",
+      "stopped_reason": "exception:EvidenceGateRefused",
+      "updated_at": "2026-01-01T00:00:00+00:00"
+     },
+     "bucket": "local_cycles",
+     "id": "operation:cont-fd0b826945c91e690d6743b5"
+    },
+    {
+     "body": {
+      "correlation_id": "operation:op-x",
+      "created_at": "2026-01-01T00:00:00+00:00",
+      "executions": 2,
+      "id": "operation:op-x",
+      "in_flight": null,
+      "last_execution": {
+       "agent": "lead:improvement",
+       "at": "2026-01-01T00:00:00+00:00",
+       "error": "EvidenceGateRefused",
+       "id": "5eed0000-0000-4000-8000-000000000005",
+       "kind": "decision",
+       "status": "exception"
+      },
+      "max_executions": 2,
+      "status": "stopped",
+      "stopped_reason": "exception:EvidenceGateRefused",
+      "updated_at": "2026-01-01T00:00:00+00:00"
+     },
+     "bucket": "local_cycles",
+     "id": "operation:op-x"
+    },
+    {
+     "body": {
+      "at": "2026-01-01T00:00:00+00:00",
+      "authority": "retirement_evidence; not an execution or outcome",
+      "before": {
+       "attempt": 0,
+       "generation": 0,
+       "sha256": "1681dfe3267cdde2fcc8ed31193625a6a55123a826e9269b816d4ba0f96f7f6c",
+       "status": "pending"
+      },
+      "bucket": "decisions_pending",
+      "id": "b81f5f4fac135c2fae537d89f9975706a16882884e30d8a8d409e3c4a9b9903b",
+      "operation_id": "cont-fd0b826945c91e690d6743b5",
+      "operation_status": "failed",
+      "reason_code": "operation_terminal",
+      "row_id": "5eed0000-0000-4000-8000-00000000000a"
+     },
+     "bucket": "operation_dispositions",
+     "id": "b81f5f4fac135c2fae537d89f9975706a16882884e30d8a8d409e3c4a9b9903b"
+    },
+    {
+     "body": {
+      "at": "2026-01-01T00:00:00+00:00",
+      "authority": "retirement_evidence; not an execution or outcome",
+      "before": {
+       "attempt": 0,
+       "generation": 0,
+       "sha256": "f5b5519a96666fa5646b0ea958b486b52a6c38026089303b5fbc7e995856cd70",
+       "status": "pending"
+      },
+      "bucket": "decisions_pending",
+      "id": "b9a9afdc90121e253d3f13c5e3ede92be4966512ccbebcbdfa896195e542852f",
+      "operation_id": "op-x",
+      "operation_status": "failed",
+      "reason_code": "operation_terminal",
+      "row_id": "5eed0000-0000-4000-8000-000000000005"
+     },
+     "bucket": "operation_dispositions",
+     "id": "b9a9afdc90121e253d3f13c5e3ede92be4966512ccbebcbdfa896195e542852f"
+    },
+    {
+     "body": {
+      "accounting_mode": "finite",
+      "assignment_message_id": "03efc5b6-ba6c-5e20-af65-0988eaf986e5",
+      "calls": {
+       "reserved": 1,
+       "settled": 1,
+       "slots": [
+        {
+         "agent": "worker:implementation",
+         "id": "slot-1",
+         "kind": "task",
+         "outcome": "succeeded",
+         "provider": "claude",
+         "settle_error": null,
+         "settled": true
+        }
+       ]
+      },
+      "claimed_at": "2026-01-01T00:00:00+00:00",
+      "collection": {
+       "corrupt": 0,
+       "files": 1,
+       "inserted": 3,
+       "records": 3,
+       "refused": null,
+       "sink_failures": 0
+      },
+      "continuation": {
+       "family": "op-x",
+       "intent_id": "fd0b826945c91e690d6743b5ec30ef478c772c3d0d1943df93c70aa2aa0b2da6",
+       "operation_id": "cont-fd0b826945c91e690d6743b5",
+       "policy_sha256": "15b835e8fa575dfe0770c88a5f8b14e02443ce6c98b67aceee2e949fe9c7f0a3",
+       "predecessor": {
+        "candidate_revision": "cccccccccccccccccccccccccccccccccccccccc",
+        "decision_id": null,
+        "inspection_id": "insp-6c2a3953-f1e8-57cc-abd7-a85a4057ee02",
+        "job_id": "op-x",
+        "review_execution_ref": null,
+        "task_id": "6c2a3953-f1e8-57cc-abd7-a85a4057ee02"
+       },
+       "route": "evidence_repair",
+       "schema": "urn:zeus:continuation-binding:1",
+       "session": null,
+       "workspace": {
+        "base": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "head": "cccccccccccccccccccccccccccccccccccccccc",
+        "origin_task_id": "6c2a3953-f1e8-57cc-abd7-a85a4057ee02"
+       }
+      },
+      "correlation_id": "operation:cont-fd0b826945c91e690d6743b5",
+      "cycle": {
+       "authority": "observation_only",
+       "automatic_resume": false,
+       "cycle": {
+        "correlation_id": "operation:cont-fd0b826945c91e690d6743b5",
+        "created_at": "2026-01-01T00:00:00+00:00",
+        "executions": 2,
+        "id": "operation:cont-fd0b826945c91e690d6743b5",
+        "in_flight": null,
+        "last_execution": {
+         "agent": "lead:improvement",
+         "at": "2026-01-01T00:00:00+00:00",
+         "claimed": null,
+         "id": "5eed0000-0000-4000-8000-00000000000a",
+         "kind": "decision",
+         "result_id": null,
+         "status": "exception"
+        },
+        "max_executions": 2,
+        "status": "stopped",
+        "stopped_reason": "exception",
+        "stopped_reason_sha256": "c48f62635d94888f7edaa312c291e6eb6025dfd23a19a63c30a7d425d259b21b",
+        "updated_at": "2026-01-01T00:00:00+00:00"
+       },
+       "remaining_executions": 0,
+       "schema": "urn:zeus:cycle-handoff:1",
+       "target_record": {
+        "attempt": 0,
+        "availability": "found",
+        "generation": null,
+        "id": "5eed0000-0000-4000-8000-00000000000a",
+        "kind": "decision",
+        "phase": "review_lead",
+        "result": {
+         "accepted": null,
+         "candidate": null,
+         "evidence_verdict": null,
+         "execution_ref": null
+        },
+        "status": "pending"
+       }
+      },
+      "cycle_id": "operation:cont-fd0b826945c91e690d6743b5",
+      "deadline": null,
+      "decision_id": null,
+      "design": null,
+      "evidence": {
+       "candidate": null,
+       "execution_ref": null,
+       "inspection_id": null,
+       "review_execution_ref": null
+      },
+      "finalization": {
+       "already_terminal": 1,
+       "at": "2026-01-01T00:00:00+00:00",
+       "authority": "cleanup_summary; not the operation outcome",
+       "disposition_ids": [
+        "b81f5f4fac135c2fae537d89f9975706a16882884e30d8a8d409e3c4a9b9903b"
+       ],
+       "observed_after_collection": true,
+       "operation_id": "cont-fd0b826945c91e690d6743b5",
+       "reason_code": "operation_terminal",
+       "retired": {
+        "decisions_pending": [
+         "5eed0000-0000-4000-8000-00000000000a"
+        ],
+        "tasks": []
+       },
+       "schema": "urn:zeus:operation-finalization:1",
+       "unresolved": []
+      },
+      "finished_at": "2026-01-01T00:00:00+00:00",
+      "goal": {
+       "base_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "bytes": 3,
+       "criterion": "crit",
+       "path": "docs/GOAL.md",
+       "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+      },
+      "id": "cont-fd0b826945c91e690d6743b5",
+      "identity": {
+       "provider": {
+        "config_digest": "y",
+        "policy_digest": "x"
+       },
+       "repository": "r",
+       "runtime": "d",
+       "runtime_policy": "p"
+      },
+      "lead_accepted": false,
+      "manifest_sha256": "0f5f6ff6a21919d95984c84fb3caae06f77878e46f18be2ab88b23f39dd23d13",
+      "max_executions": 2,
+      "owner_handoff": {
+       "at": "2026-01-01T00:00:00+00:00",
+       "attempt": 1,
+       "authority": "owner_handoff; grants no retry, acceptance, model call, merge or deployment",
+       "candidate": {
+        "base": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "diff_hash": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "revision": "cccccccccccccccccccccccccccccccccccccccc",
+        "tree": "7777777777777777777777777777777777777777"
+       },
+       "correlation_id": "operation:cont-fd0b826945c91e690d6743b5",
+       "generation": 1,
+       "id": "7275085316ae1af232af3d6de41761efeff6dafd2a98dbb9bbdc1a8ceab5a605",
+       "inspection": {
+        "bound": true,
+        "claim_status_counts": {
+         "executed": 1,
+         "missing": 1
+        },
+        "denominator": {
+         "checked": 0,
+         "claims": 2,
+         "not_checked": 1
+        },
+        "id": "insp-03efc5b6-ba6c-5e20-af65-0988eaf986e5",
+        "known": true,
+        "passed": [
+         {
+          "check_id": "unit",
+          "reported": "executed",
+          "state": "checked"
+         }
+        ],
+        "policy_hash": "ph",
+        "reason_code": null,
+        "remaining": [
+         {
+          "check_id": "lint",
+          "reported": "missing",
+          "state": "not_checked"
+         }
+        ],
+        "truncated": false,
+        "verdict": "incomplete"
+       },
+       "manifest_sha256": "0f5f6ff6a21919d95984c84fb3caae06f77878e46f18be2ab88b23f39dd23d13",
+       "next_action": "inspect_evidence_contract",
+       "operation_id": "cont-fd0b826945c91e690d6743b5",
+       "owner": "lead:improvement",
+       "reason_code": "evidence_gate_refused",
+       "refs": {
+        "execution_ref": null,
+        "review_execution_ref": null
+       },
+       "retry": "none; this handoff schedules no follow-up and relaunches nothing",
+       "schema": "urn:zeus:operation-evidence-handoff:1",
+       "source_revision": "cccccccccccccccccccccccccccccccccccccccc",
+       "status": "pending_owner",
+       "task_id": "03efc5b6-ba6c-5e20-af65-0988eaf986e5"
+      },
+      "reason_code": "evidence_gate_refused",
+      "status": "failed",
+      "steps": [
+       {
+        "action": "executed",
+        "reason": "active"
+       },
+       {
+        "action": "executed",
+        "reason": "exception:EvidenceGateRefused"
+       }
+      ],
+      "task_id": null,
+      "updated_at": "2026-01-01T00:00:00+00:00"
+     },
+     "bucket": "operations",
+     "id": "cont-fd0b826945c91e690d6743b5"
+    },
+    {
+     "body": {
+      "accounting_mode": "finite",
+      "assignment_message_id": "6c2a3953-f1e8-57cc-abd7-a85a4057ee02",
+      "calls": {
+       "reserved": 1,
+       "settled": 1,
+       "slots": [
+        {
+         "agent": "worker:implementation",
+         "id": "slot-1",
+         "kind": "task",
+         "outcome": "succeeded",
+         "provider": "claude",
+         "settle_error": null,
+         "settled": true
+        }
+       ]
+      },
+      "claimed_at": "2026-01-01T00:00:00+00:00",
+      "collection": {
+       "corrupt": 0,
+       "files": 1,
+       "inserted": 3,
+       "records": 3,
+       "refused": null,
+       "sink_failures": 0
+      },
+      "continuation": {
+       "family": "op-x",
+       "intent_id": null,
+       "operation_id": "op-x",
+       "policy_sha256": "15b835e8fa575dfe0770c88a5f8b14e02443ce6c98b67aceee2e949fe9c7f0a3",
+       "predecessor": null,
+       "route": null,
+       "schema": "urn:zeus:continuation-binding:1",
+       "session": {
+        "repository": "6890bdf5e15cfc1b2f95aab0bb1962cfb5a69dd190dcedfafbc8ad30fa600ce7",
+        "task_id": "op-x"
+       },
+       "workspace": null
+      },
+      "correlation_id": "operation:op-x",
+      "cycle": {
+       "authority": "observation_only",
+       "automatic_resume": false,
+       "cycle": {
+        "correlation_id": "operation:op-x",
+        "created_at": "2026-01-01T00:00:00+00:00",
+        "executions": 2,
+        "id": "operation:op-x",
+        "in_flight": null,
+        "last_execution": {
+         "agent": "lead:improvement",
+         "at": "2026-01-01T00:00:00+00:00",
+         "claimed": null,
+         "id": "5eed0000-0000-4000-8000-000000000005",
+         "kind": "decision",
+         "result_id": null,
+         "status": "exception"
+        },
+        "max_executions": 2,
+        "status": "stopped",
+        "stopped_reason": "exception",
+        "stopped_reason_sha256": "c48f62635d94888f7edaa312c291e6eb6025dfd23a19a63c30a7d425d259b21b",
+        "updated_at": "2026-01-01T00:00:00+00:00"
+       },
+       "remaining_executions": 0,
+       "schema": "urn:zeus:cycle-handoff:1",
+       "target_record": {
+        "attempt": 0,
+        "availability": "found",
+        "generation": null,
+        "id": "5eed0000-0000-4000-8000-000000000005",
+        "kind": "decision",
+        "phase": "review_lead",
+        "result": {
+         "accepted": null,
+         "candidate": null,
+         "evidence_verdict": null,
+         "execution_ref": null
+        },
+        "status": "pending"
+       }
+      },
+      "cycle_id": "operation:op-x",
+      "deadline": null,
+      "decision_id": null,
+      "design": null,
+      "evidence": {
+       "candidate": null,
+       "execution_ref": null,
+       "inspection_id": null,
+       "review_execution_ref": null
+      },
+      "finalization": {
+       "already_terminal": 1,
+       "at": "2026-01-01T00:00:00+00:00",
+       "authority": "cleanup_summary; not the operation outcome",
+       "disposition_ids": [
+        "b9a9afdc90121e253d3f13c5e3ede92be4966512ccbebcbdfa896195e542852f"
+       ],
+       "observed_after_collection": true,
+       "operation_id": "op-x",
+       "reason_code": "operation_terminal",
+       "retired": {
+        "decisions_pending": [
+         "5eed0000-0000-4000-8000-000000000005"
+        ],
+        "tasks": []
+       },
+       "schema": "urn:zeus:operation-finalization:1",
+       "unresolved": []
+      },
+      "finished_at": "2026-01-01T00:00:00+00:00",
+      "goal": {
+       "base_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "bytes": 3,
+       "criterion": "crit",
+       "path": "docs/GOAL.md",
+       "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+      },
+      "id": "op-x",
+      "identity": {
+       "provider": {
+        "config_digest": "y",
+        "policy_digest": "x"
+       },
+       "repository": "r",
+       "runtime": "d",
+       "runtime_policy": "p"
+      },
+      "lead_accepted": false,
+      "manifest_sha256": "27971c5040ecf33fb58281adb718b95a9c0b139425606c9b0d5bc5077b562ab9",
+      "max_executions": 2,
+      "owner_handoff": {
+       "at": "2026-01-01T00:00:00+00:00",
+       "attempt": 1,
+       "authority": "owner_handoff; grants no retry, acceptance, model call, merge or deployment",
+       "candidate": {
+        "base": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "diff_hash": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "revision": "cccccccccccccccccccccccccccccccccccccccc",
+        "tree": "7777777777777777777777777777777777777777"
+       },
+       "correlation_id": "operation:op-x",
+       "generation": 1,
+       "id": "702ef23ef119a74dedbd688e685e0d9e6a360438939f1bd704b01cbfac73f57f",
+       "inspection": {
+        "bound": true,
+        "claim_status_counts": {
+         "executed": 1,
+         "missing": 1
+        },
+        "denominator": {
+         "checked": 0,
+         "claims": 2,
+         "not_checked": 1
+        },
+        "id": "insp-6c2a3953-f1e8-57cc-abd7-a85a4057ee02",
+        "known": true,
+        "passed": [
+         {
+          "check_id": "unit",
+          "reported": "executed",
+          "state": "checked"
+         }
+        ],
+        "policy_hash": "ph",
+        "reason_code": null,
+        "remaining": [
+         {
+          "check_id": "lint",
+          "reported": "missing",
+          "state": "not_checked"
+         }
+        ],
+        "truncated": false,
+        "verdict": "incomplete"
+       },
+       "manifest_sha256": "27971c5040ecf33fb58281adb718b95a9c0b139425606c9b0d5bc5077b562ab9",
+       "next_action": "inspect_evidence_contract",
+       "operation_id": "op-x",
+       "owner": "lead:improvement",
+       "reason_code": "evidence_gate_refused",
+       "refs": {
+        "execution_ref": null,
+        "review_execution_ref": null
+       },
+       "retry": "none; this handoff schedules no follow-up and relaunches nothing",
+       "schema": "urn:zeus:operation-evidence-handoff:1",
+       "source_revision": "cccccccccccccccccccccccccccccccccccccccc",
+       "status": "pending_owner",
+       "task_id": "6c2a3953-f1e8-57cc-abd7-a85a4057ee02"
+      },
+      "reason_code": "evidence_gate_refused",
+      "status": "failed",
+      "steps": [
+       {
+        "action": "executed",
+        "reason": "active"
+       },
+       {
+        "action": "executed",
+        "reason": "exception:EvidenceGateRefused"
+       }
+      ],
+      "task_id": null,
+      "updated_at": "2026-01-01T00:00:00+00:00"
+     },
+     "bucket": "operations",
+     "id": "op-x"
+    },
+    {
+     "body": {
+      "message": {
+       "causation_id": null,
+       "correlation_id": "operation:cont-fd0b826945c91e690d6743b5",
+       "how": {
+        "acceptance_criteria": [
+         "ok"
+        ],
+        "constraints": [],
+        "context_ref": null,
+        "result_schema": "six-w.v1"
+       },
+       "message_id": "03efc5b6-ba6c-5e20-af65-0988eaf986e5",
+       "schema_version": "1.0",
+       "type": "task.assign",
+       "what": {
+        "action": "implement",
+        "details": {
+         "continuation": {
+          "family": "op-x",
+          "intent_id": "fd0b826945c91e690d6743b5ec30ef478c772c3d0d1943df93c70aa2aa0b2da6",
+          "operation_id": "cont-fd0b826945c91e690d6743b5",
+          "policy_sha256": "15b835e8fa575dfe0770c88a5f8b14e02443ce6c98b67aceee2e949fe9c7f0a3",
+          "predecessor": {
+           "candidate_revision": "cccccccccccccccccccccccccccccccccccccccc",
+           "decision_id": null,
+           "inspection_id": "insp-6c2a3953-f1e8-57cc-abd7-a85a4057ee02",
+           "job_id": "op-x",
+           "review_execution_ref": null,
+           "task_id": "6c2a3953-f1e8-57cc-abd7-a85a4057ee02"
+          },
+          "route": "evidence_repair",
+          "schema": "urn:zeus:continuation-binding:1",
+          "session": null,
+          "workspace": {
+           "base": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+           "head": "cccccccccccccccccccccccccccccccccccccccc",
+           "origin_task_id": "6c2a3953-f1e8-57cc-abd7-a85a4057ee02"
+          }
+         },
+         "operation": {
+          "base_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "goal": {
+           "criterion": "crit",
+           "path": "docs/GOAL.md",
+           "rationale": "fixture goal",
+           "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+          },
+          "id": "cont-fd0b826945c91e690d6743b5",
+          "manifest_sha256": "0f5f6ff6a21919d95984c84fb3caae06f77878e46f18be2ab88b23f39dd23d13"
+         },
+         "plan": {
+          "acceptance_criteria": [
+           "ok"
+          ],
+          "allowed_paths": [
+           "docs/a.md"
+          ],
+          "objective": "Evidence repair of the preserved candidate (continuation). Re-run and report the declared checks exactly; change code only where a check proves it necessary.\nContinuation references: candidate_revision=cccccccccccccccccccccccccccccccccccccccc, candidate_tree=7777777777777777777777777777777777777777, inspection=insp-6c2a3953-f1e8-57cc-abd7-a85a4057ee02, predecessor_job=op-x\n\nImplement CANARY-continuation-objective-never-projected"
+         }
+        }
+       },
+       "when": {
+        "after": [],
+        "created_at": "2026-01-01T00:00:00+00:00",
+        "deadline": null
+       },
+       "where": {
+        "allowed_paths": [
+         "docs/a.md"
+        ],
+        "environment": "local",
+        "repository": "codex-harness",
+        "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+       },
+       "who": {
+        "owner": "worker:implementation",
+        "recipient": "worker:implementation",
+        "sender": "lead:improvement"
+       },
+       "why": {
+        "evidence_refs": [],
+        "objective": "Evidence repair of the preserved candidate (continuation). Re-run and report the declared checks exactly; change code only where a check proves it necessary.\nContinuation references: candidate_revision=cccccccccccccccccccccccccccccccccccccccc, candidate_tree=7777777777777777777777777777777777777777, inspection=insp-6c2a3953-f1e8-57cc-abd7-a85a4057ee02, predecessor_job=op-x\n\nImplement CANARY-continuation-objective-never-projected"
+       }
+      },
+      "sent": true
+     },
+     "bucket": "outbox",
+     "id": "03efc5b6-ba6c-5e20-af65-0988eaf986e5"
+    },
+    {
+     "body": {
+      "message": {
+       "causation_id": null,
+       "correlation_id": "operation:op-x",
+       "how": {
+        "acceptance_criteria": [
+         "Preserve normal behavior"
+        ],
+        "constraints": [],
+        "context_ref": null,
+        "result_schema": "six-w.v1"
+       },
+       "message_id": "5eed0000-0000-4000-8000-000000000005",
+       "schema_version": "1.0",
+       "type": "task.result",
+       "what": {
+        "action": "implement",
+        "details": {
+         "result": {
+          "candidate": {
+           "base": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+           "diff_hash": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+           "path": "D:/secret/CANARY-must-never-be-emitted",
+           "revision": "cccccccccccccccccccccccccccccccccccccccc",
+           "tree": "7777777777777777777777777777777777777777"
+          },
+          "evidence_inspection": {
+           "inspection_id": "insp-6c2a3953-f1e8-57cc-abd7-a85a4057ee02",
+           "verdict": "all_checked"
+          },
+          "execution_ref": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+          "summary": "CANARY-must-never-be-emitted"
+         },
+         "task_id": "6c2a3953-f1e8-57cc-abd7-a85a4057ee02"
+        }
+       },
+       "when": {
+        "after": [],
+        "created_at": "2026-01-01T00:00:00+00:00",
+        "deadline": null
+       },
+       "where": {
+        "allowed_paths": [],
+        "environment": "local",
+        "repository": "codex-harness",
+        "revision": "bootstrap"
+       },
+       "who": {
+        "owner": "lead:improvement",
+        "recipient": "lead:improvement",
+        "sender": "worker:implementation"
+       },
+       "why": {
+        "evidence_refs": [],
+        "objective": "Improve harness reliability from verified evidence"
+       }
+      },
+      "sent": true
+     },
+     "bucket": "outbox",
+     "id": "5eed0000-0000-4000-8000-000000000005"
+    },
+    {
+     "body": {
+      "message": {
+       "causation_id": null,
+       "correlation_id": "operation:cont-fd0b826945c91e690d6743b5",
+       "how": {
+        "acceptance_criteria": [
+         "Preserve normal behavior"
+        ],
+        "constraints": [],
+        "context_ref": null,
+        "result_schema": "six-w.v1"
+       },
+       "message_id": "5eed0000-0000-4000-8000-00000000000a",
+       "schema_version": "1.0",
+       "type": "task.result",
+       "what": {
+        "action": "implement",
+        "details": {
+         "result": {
+          "candidate": {
+           "base": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+           "diff_hash": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+           "path": "D:/secret/CANARY-must-never-be-emitted",
+           "revision": "cccccccccccccccccccccccccccccccccccccccc",
+           "tree": "7777777777777777777777777777777777777777"
+          },
+          "evidence_inspection": {
+           "inspection_id": "insp-03efc5b6-ba6c-5e20-af65-0988eaf986e5",
+           "verdict": "all_checked"
+          },
+          "execution_ref": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+          "summary": "CANARY-must-never-be-emitted"
+         },
+         "task_id": "03efc5b6-ba6c-5e20-af65-0988eaf986e5"
+        }
+       },
+       "when": {
+        "after": [],
+        "created_at": "2026-01-01T00:00:00+00:00",
+        "deadline": null
+       },
+       "where": {
+        "allowed_paths": [],
+        "environment": "local",
+        "repository": "codex-harness",
+        "revision": "bootstrap"
+       },
+       "who": {
+        "owner": "lead:improvement",
+        "recipient": "lead:improvement",
+        "sender": "worker:implementation"
+       },
+       "why": {
+        "evidence_refs": [],
+        "objective": "Improve harness reliability from verified evidence"
+       }
+      },
+      "sent": true
+     },
+     "bucket": "outbox",
+     "id": "5eed0000-0000-4000-8000-00000000000a"
+    },
+    {
+     "body": {
+      "message": {
+       "causation_id": null,
+       "correlation_id": "operation:op-x",
+       "how": {
+        "acceptance_criteria": [
+         "ok"
+        ],
+        "constraints": [],
+        "context_ref": null,
+        "result_schema": "six-w.v1"
+       },
+       "message_id": "6c2a3953-f1e8-57cc-abd7-a85a4057ee02",
+       "schema_version": "1.0",
+       "type": "task.assign",
+       "what": {
+        "action": "implement",
+        "details": {
+         "continuation": {
+          "family": "op-x",
+          "intent_id": null,
+          "operation_id": "op-x",
+          "policy_sha256": "15b835e8fa575dfe0770c88a5f8b14e02443ce6c98b67aceee2e949fe9c7f0a3",
+          "predecessor": null,
+          "route": null,
+          "schema": "urn:zeus:continuation-binding:1",
+          "session": {
+           "repository": "6890bdf5e15cfc1b2f95aab0bb1962cfb5a69dd190dcedfafbc8ad30fa600ce7",
+           "task_id": "op-x"
+          },
+          "workspace": null
+         },
+         "operation": {
+          "base_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "goal": {
+           "criterion": "crit",
+           "path": "docs/GOAL.md",
+           "rationale": "fixture goal",
+           "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+          },
+          "id": "op-x",
+          "manifest_sha256": "27971c5040ecf33fb58281adb718b95a9c0b139425606c9b0d5bc5077b562ab9"
+         },
+         "plan": {
+          "acceptance_criteria": [
+           "ok"
+          ],
+          "allowed_paths": [
+           "docs/a.md"
+          ],
+          "objective": "Implement CANARY-continuation-objective-never-projected"
+         }
+        }
+       },
+       "when": {
+        "after": [],
+        "created_at": "2026-01-01T00:00:00+00:00",
+        "deadline": null
+       },
+       "where": {
+        "allowed_paths": [
+         "docs/a.md"
+        ],
+        "environment": "local",
+        "repository": "codex-harness",
+        "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+       },
+       "who": {
+        "owner": "worker:implementation",
+        "recipient": "worker:implementation",
+        "sender": "lead:improvement"
+       },
+       "why": {
+        "evidence_refs": [],
+        "objective": "Implement CANARY-continuation-objective-never-projected"
+       }
+      },
+      "sent": true
+     },
+     "bucket": "outbox",
+     "id": "6c2a3953-f1e8-57cc-abd7-a85a4057ee02"
+    },
+    {
+     "body": {
+      "entry_id": "1-0",
+      "finished_at": "2026-01-01T00:00:00+00:00",
+      "id": "5eed0000-0000-4000-8000-000000000004",
+      "message_hash": "9d4845c06069d4c76ae23163ddf86b68121831c652e8f8757918750471f1206a",
+      "number": 1,
+      "outbox_id": "6c2a3953-f1e8-57cc-abd7-a85a4057ee02",
+      "started_at": "2026-01-01T00:00:00+00:00",
+      "status": "delivered"
+     },
+     "bucket": "outbox_attempts",
+     "id": "5eed0000-0000-4000-8000-000000000004"
+    },
+    {
+     "body": {
+      "entry_id": "2-0",
+      "finished_at": "2026-01-01T00:00:00+00:00",
+      "id": "5eed0000-0000-4000-8000-000000000006",
+      "message_hash": "c85cdbb46176b5bcca5157136d0b4f3baae7806da78b0742dabb0eaef496f9f9",
+      "number": 1,
+      "outbox_id": "5eed0000-0000-4000-8000-000000000005",
+      "started_at": "2026-01-01T00:00:00+00:00",
+      "status": "delivered"
+     },
+     "bucket": "outbox_attempts",
+     "id": "5eed0000-0000-4000-8000-000000000006"
+    },
+    {
+     "body": {
+      "entry_id": "1-0",
+      "finished_at": "2026-01-01T00:00:00+00:00",
+      "id": "5eed0000-0000-4000-8000-000000000009",
+      "message_hash": "229a39e71a645aadb5cc8148e4fcee4faae737c099af2b6cde8dbb9364e018f9",
+      "number": 1,
+      "outbox_id": "03efc5b6-ba6c-5e20-af65-0988eaf986e5",
+      "started_at": "2026-01-01T00:00:00+00:00",
+      "status": "delivered"
+     },
+     "bucket": "outbox_attempts",
+     "id": "5eed0000-0000-4000-8000-000000000009"
+    },
+    {
+     "body": {
+      "entry_id": "2-0",
+      "finished_at": "2026-01-01T00:00:00+00:00",
+      "id": "5eed0000-0000-4000-8000-00000000000b",
+      "message_hash": "700227423ead290e96d0714f925aaaac95277cb9f36f63d1ce2305f7d30ce196",
+      "number": 1,
+      "outbox_id": "5eed0000-0000-4000-8000-00000000000a",
+      "started_at": "2026-01-01T00:00:00+00:00",
+      "status": "delivered"
+     },
+     "bucket": "outbox_attempts",
+     "id": "5eed0000-0000-4000-8000-00000000000b"
+    },
+    {
+     "body": {
+      "attempts": 1,
+      "bound_message_hash": "229a39e71a645aadb5cc8148e4fcee4faae737c099af2b6cde8dbb9364e018f9",
+      "delivered_entry_id": "1-0",
+      "id": "03efc5b6-ba6c-5e20-af65-0988eaf986e5",
+      "last_attempt_id": "5eed0000-0000-4000-8000-000000000009",
+      "source_hash": "9de93f4604c8c7abb4d84d7d5c366779487fcd9c5dcfa0102c28f5a1c58e2e2a",
+      "status": "delivered",
+      "updated_at": "2026-01-01T00:00:00+00:00"
+     },
+     "bucket": "outbox_delivery",
+     "id": "03efc5b6-ba6c-5e20-af65-0988eaf986e5"
+    },
+    {
+     "body": {
+      "attempts": 1,
+      "bound_message_hash": "c85cdbb46176b5bcca5157136d0b4f3baae7806da78b0742dabb0eaef496f9f9",
+      "delivered_entry_id": "2-0",
+      "id": "5eed0000-0000-4000-8000-000000000005",
+      "last_attempt_id": "5eed0000-0000-4000-8000-000000000006",
+      "source_hash": "19ce1114b41e0de530781d64d60307ddb91705326231eac2c94a04148b9536bc",
+      "status": "delivered",
+      "updated_at": "2026-01-01T00:00:00+00:00"
+     },
+     "bucket": "outbox_delivery",
+     "id": "5eed0000-0000-4000-8000-000000000005"
+    },
+    {
+     "body": {
+      "attempts": 1,
+      "bound_message_hash": "700227423ead290e96d0714f925aaaac95277cb9f36f63d1ce2305f7d30ce196",
+      "delivered_entry_id": "2-0",
+      "id": "5eed0000-0000-4000-8000-00000000000a",
+      "last_attempt_id": "5eed0000-0000-4000-8000-00000000000b",
+      "source_hash": "68bb0a25bb2a43a136f3d0eb1ce0fdfe5c9b9b1249e28591521d9a6a2cdae285",
+      "status": "delivered",
+      "updated_at": "2026-01-01T00:00:00+00:00"
+     },
+     "bucket": "outbox_delivery",
+     "id": "5eed0000-0000-4000-8000-00000000000a"
+    },
+    {
+     "body": {
+      "attempts": 1,
+      "bound_message_hash": "9d4845c06069d4c76ae23163ddf86b68121831c652e8f8757918750471f1206a",
+      "delivered_entry_id": "1-0",
+      "id": "6c2a3953-f1e8-57cc-abd7-a85a4057ee02",
+      "last_attempt_id": "5eed0000-0000-4000-8000-000000000004",
+      "source_hash": "242b64dffa8912ca54b9fa7f738dd6fbd16a4d9d9582bf8dffb2b54788b87238",
+      "status": "delivered",
+      "updated_at": "2026-01-01T00:00:00+00:00"
+     },
+     "bucket": "outbox_delivery",
+     "id": "6c2a3953-f1e8-57cc-abd7-a85a4057ee02"
+    },
+    {
+     "body": {
+      "agent": "worker:implementation",
+      "attempt": 1,
+      "created_at": "2026-01-01T00:00:00+00:00",
+      "error": null,
+      "generation": 1,
+      "id": "03efc5b6-ba6c-5e20-af65-0988eaf986e5",
+      "input_hash": "229a39e71a645aadb5cc8148e4fcee4faae737c099af2b6cde8dbb9364e018f9",
+      "lease_owner": "fixture",
+      "lease_until": null,
+      "message": {
+       "causation_id": null,
+       "correlation_id": "operation:cont-fd0b826945c91e690d6743b5",
+       "how": {
+        "acceptance_criteria": [
+         "ok"
+        ],
+        "constraints": [],
+        "context_ref": null,
+        "result_schema": "six-w.v1"
+       },
+       "message_id": "03efc5b6-ba6c-5e20-af65-0988eaf986e5",
+       "schema_version": "1.0",
+       "type": "task.assign",
+       "what": {
+        "action": "implement",
+        "details": {
+         "continuation": {
+          "family": "op-x",
+          "intent_id": "fd0b826945c91e690d6743b5ec30ef478c772c3d0d1943df93c70aa2aa0b2da6",
+          "operation_id": "cont-fd0b826945c91e690d6743b5",
+          "policy_sha256": "15b835e8fa575dfe0770c88a5f8b14e02443ce6c98b67aceee2e949fe9c7f0a3",
+          "predecessor": {
+           "candidate_revision": "cccccccccccccccccccccccccccccccccccccccc",
+           "decision_id": null,
+           "inspection_id": "insp-6c2a3953-f1e8-57cc-abd7-a85a4057ee02",
+           "job_id": "op-x",
+           "review_execution_ref": null,
+           "task_id": "6c2a3953-f1e8-57cc-abd7-a85a4057ee02"
+          },
+          "route": "evidence_repair",
+          "schema": "urn:zeus:continuation-binding:1",
+          "session": null,
+          "workspace": {
+           "base": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+           "head": "cccccccccccccccccccccccccccccccccccccccc",
+           "origin_task_id": "6c2a3953-f1e8-57cc-abd7-a85a4057ee02"
+          }
+         },
+         "operation": {
+          "base_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "goal": {
+           "criterion": "crit",
+           "path": "docs/GOAL.md",
+           "rationale": "fixture goal",
+           "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+          },
+          "id": "cont-fd0b826945c91e690d6743b5",
+          "manifest_sha256": "0f5f6ff6a21919d95984c84fb3caae06f77878e46f18be2ab88b23f39dd23d13"
+         },
+         "plan": {
+          "acceptance_criteria": [
+           "ok"
+          ],
+          "allowed_paths": [
+           "docs/a.md"
+          ],
+          "objective": "Evidence repair of the preserved candidate (continuation). Re-run and report the declared checks exactly; change code only where a check proves it necessary.\nContinuation references: candidate_revision=cccccccccccccccccccccccccccccccccccccccc, candidate_tree=7777777777777777777777777777777777777777, inspection=insp-6c2a3953-f1e8-57cc-abd7-a85a4057ee02, predecessor_job=op-x\n\nImplement CANARY-continuation-objective-never-projected"
+         }
+        }
+       },
+       "when": {
+        "after": [],
+        "created_at": "2026-01-01T00:00:00+00:00",
+        "deadline": null
+       },
+       "where": {
+        "allowed_paths": [
+         "docs/a.md"
+        ],
+        "environment": "local",
+        "repository": "codex-harness",
+        "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+       },
+       "who": {
+        "owner": "worker:implementation",
+        "recipient": "worker:implementation",
+        "sender": "lead:improvement"
+       },
+       "why": {
+        "evidence_refs": [],
+        "objective": "Evidence repair of the preserved candidate (continuation). Re-run and report the declared checks exactly; change code only where a check proves it necessary.\nContinuation references: candidate_revision=cccccccccccccccccccccccccccccccccccccccc, candidate_tree=7777777777777777777777777777777777777777, inspection=insp-6c2a3953-f1e8-57cc-abd7-a85a4057ee02, predecessor_job=op-x\n\nImplement CANARY-continuation-objective-never-projected"
+       }
+      },
+      "result": {
+       "candidate": {
+        "base": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "diff_hash": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "path": "D:/secret/CANARY-must-never-be-emitted",
+        "revision": "cccccccccccccccccccccccccccccccccccccccc",
+        "tree": "7777777777777777777777777777777777777777"
+       },
+       "evidence_inspection": {
+        "inspection_id": "insp-03efc5b6-ba6c-5e20-af65-0988eaf986e5",
+        "verdict": "all_checked"
+       },
+       "execution_ref": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+       "summary": "CANARY-must-never-be-emitted"
+      },
+      "status": "succeeded"
+     },
+     "bucket": "tasks",
+     "id": "03efc5b6-ba6c-5e20-af65-0988eaf986e5"
+    },
+    {
+     "body": {
+      "agent": "worker:implementation",
+      "attempt": 1,
+      "created_at": "2026-01-01T00:00:00+00:00",
+      "error": null,
+      "generation": 1,
+      "id": "6c2a3953-f1e8-57cc-abd7-a85a4057ee02",
+      "input_hash": "9d4845c06069d4c76ae23163ddf86b68121831c652e8f8757918750471f1206a",
+      "lease_owner": "fixture",
+      "lease_until": null,
+      "message": {
+       "causation_id": null,
+       "correlation_id": "operation:op-x",
+       "how": {
+        "acceptance_criteria": [
+         "ok"
+        ],
+        "constraints": [],
+        "context_ref": null,
+        "result_schema": "six-w.v1"
+       },
+       "message_id": "6c2a3953-f1e8-57cc-abd7-a85a4057ee02",
+       "schema_version": "1.0",
+       "type": "task.assign",
+       "what": {
+        "action": "implement",
+        "details": {
+         "continuation": {
+          "family": "op-x",
+          "intent_id": null,
+          "operation_id": "op-x",
+          "policy_sha256": "15b835e8fa575dfe0770c88a5f8b14e02443ce6c98b67aceee2e949fe9c7f0a3",
+          "predecessor": null,
+          "route": null,
+          "schema": "urn:zeus:continuation-binding:1",
+          "session": {
+           "repository": "6890bdf5e15cfc1b2f95aab0bb1962cfb5a69dd190dcedfafbc8ad30fa600ce7",
+           "task_id": "op-x"
+          },
+          "workspace": null
+         },
+         "operation": {
+          "base_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "goal": {
+           "criterion": "crit",
+           "path": "docs/GOAL.md",
+           "rationale": "fixture goal",
+           "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+          },
+          "id": "op-x",
+          "manifest_sha256": "27971c5040ecf33fb58281adb718b95a9c0b139425606c9b0d5bc5077b562ab9"
+         },
+         "plan": {
+          "acceptance_criteria": [
+           "ok"
+          ],
+          "allowed_paths": [
+           "docs/a.md"
+          ],
+          "objective": "Implement CANARY-continuation-objective-never-projected"
+         }
+        }
+       },
+       "when": {
+        "after": [],
+        "created_at": "2026-01-01T00:00:00+00:00",
+        "deadline": null
+       },
+       "where": {
+        "allowed_paths": [
+         "docs/a.md"
+        ],
+        "environment": "local",
+        "repository": "codex-harness",
+        "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+       },
+       "who": {
+        "owner": "worker:implementation",
+        "recipient": "worker:implementation",
+        "sender": "lead:improvement"
+       },
+       "why": {
+        "evidence_refs": [],
+        "objective": "Implement CANARY-continuation-objective-never-projected"
+       }
+      },
+      "result": {
+       "candidate": {
+        "base": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "diff_hash": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "path": "D:/secret/CANARY-must-never-be-emitted",
+        "revision": "cccccccccccccccccccccccccccccccccccccccc",
+        "tree": "7777777777777777777777777777777777777777"
+       },
+       "evidence_inspection": {
+        "inspection_id": "insp-6c2a3953-f1e8-57cc-abd7-a85a4057ee02",
+        "verdict": "all_checked"
+       },
+       "execution_ref": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+       "summary": "CANARY-must-never-be-emitted"
+      },
+      "status": "succeeded"
+     },
+     "bucket": "tasks",
+     "id": "6c2a3953-f1e8-57cc-abd7-a85a4057ee02"
+    },
+    {
+     "body": {
+      "hash": "c85cdbb46176b5bcca5157136d0b4f3baae7806da78b0742dabb0eaef496f9f9",
+      "result": {
+       "handled": true,
+       "next_message": null
+      }
+     },
+     "bucket": "workflow_inbox",
+     "id": "5eed0000-0000-4000-8000-000000000005"
+    },
+    {
+     "body": {
+      "hash": "700227423ead290e96d0714f925aaaac95277cb9f36f63d1ce2305f7d30ce196",
+      "result": {
+       "handled": true,
+       "next_message": null
+      }
+     },
+     "bucket": "workflow_inbox",
+     "id": "5eed0000-0000-4000-8000-00000000000a"
+    }
+   ],
+   "pin": {
+    "lane": "a",
+    "path": "ops/continuation.json",
+    "revision": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+    "sha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+   },
+   "policy_document": {
+    "acceptance_criteria": [
+     "ok"
+    ],
+    "allowed_paths": [
+     "docs/a.md",
+     "docs/b.md",
+     "docs/c.md"
+    ],
+    "delivery_target": "fleet-host",
+    "enabled": true,
+    "goals": [
+     {
+      "criterion": "crit",
+      "path": "docs/GOAL.md",
+      "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+     }
+    ],
+    "id": "policy-1",
+    "lanes": [
+     "a"
+    ],
+    "max_corrections": 3,
+    "qualified": {
+     "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "model": "claude-fixture-model",
+     "profile": "worker-v1"
+    },
+    "repository": "6890bdf5e15cfc1b2f95aab0bb1962cfb5a69dd190dcedfafbc8ad30fa600ce7",
+    "schema": "urn:zeus:continuation-policy:1",
+    "session_archive_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+   },
+   "runtime": {
+    "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "profile": "worker-v1",
+    "session_archive_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+   }
+  }
+ },
+ "generator": "compare/fixtures/s6/generate_research.py",
+ "labelled": true,
+ "schema": "zeus:rebuild-s6-fixture:1",
+ "source_commit": "e38aa722"
+}
