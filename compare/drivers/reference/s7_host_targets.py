@@ -14,10 +14,12 @@ It also holds these M7 domain and adapter names the cases use:
 - `ContractError` (`domain.model`) and `MergeRefused` (`adapters.git`).
 
 `PACKAGE_DIR` is the directory of the imported `codex_harness` package: the launched child's runtime root links to
-it, so the child runs this side's OWN `service`. `advance(seconds)` moves the driver's fake clock, because
+it, so the child runs this side's OWN `service`. `SOURCE_PACKAGE` is the SOURCE archive's `src/codex_harness` (the attested fixture root copies it) and
+`effective_profile_digest` is M7's `adapters.host_delivery.effective_profile_digest`. `advance(seconds)` moves the driver's fake clock, because
 `determinism.install` freezes `time.monotonic` and M7's bounded lock wait reads it. The module reads no other
 clock and no id source."""
 
+import os
 import sys
 from pathlib import Path
 
@@ -52,7 +54,9 @@ API = SimpleNamespace(
     consumption_verdict=domain.consumption_verdict, DeliveryRefused=domain.DeliveryRefused,
     LifecycleInterrupted=domain.LifecycleInterrupted, DESCRIPTOR_SCHEMA=domain.DESCRIPTOR_SCHEMA,
     RECEIPT_SCHEMA=domain.RECEIPT_SCHEMA, ContractError=ContractError, MergeRefused=MergeRefused,
-    PACKAGE_DIR=Path(codex_harness.__file__).resolve().parent, advance=CLOCK.advance)
+    PACKAGE_DIR=Path(codex_harness.__file__).resolve().parent, advance=CLOCK.advance,
+    SOURCE_PACKAGE=Path(os.environ["ZEUS_REBUILD_SOURCE_ROOT"]).resolve() / "src" / "codex_harness",
+    effective_profile_digest=host_delivery.effective_profile_digest)
 
 if __name__ == "__main__":
     driver.finish("reference", "delivery.host_targets", s7_host_targets.run(API))

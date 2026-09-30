@@ -9,6 +9,8 @@ Eight case groups, each case labelled in the result:
 - `drain`: pause, running and work reports.
 - `observe_identity`: the `observe` and `identity` projections.
 - `service_child`: `serve`, `main` and `startup_receipt` in this process and as a child process.
+- `real_recognition`: REAL children over the ATTESTED runtime root (below): recognition, authorized replacement,
+  unauthorized replacement and a stale controller.
 - `github`: `GitHubDelivery` over a recording runner and workspace double.
 
 **Fixtures (all LABELLED).**
@@ -25,13 +27,19 @@ Eight case groups, each case labelled in the result:
 - `worker_image` of a real child's receipt is what its `settings()` reads (the inherited environment and the host
   `.env`), so it is recorded `<absent>` (`none`) or `<present>`. `profile_digest` comes from the packaged worker
   profile, which reads no environment, and is recorded literally.
+- The ATTESTED runtime root `<root>/attested` (built once, LABELLED) is a git repository holding a COPY of the
+  SOURCE package (`api.SOURCE_PACKAGE`, no bytecode), committed once under pinned author/committer identity and
+  dates and empty git configuration files. It is built twice and the two commits must be identical; the revision
+  is recorded literally. A child of this root reports a valid receipt (`runtime_root` `<root>/attested`), and its
+  descriptor binds the effective worker image (`none` unless the environment sets one; recorded `<absent>`/
+  `<present>`) and the packaged profile digest (`api.effective_profile_digest`).
 - The GitHub runner and workspace are recording doubles: no `gh`, no git, no network.
 
 `api` supplies `ProcessHostTarget`, `HostTargetBase`, `GitHubDelivery`, `serve`, `main`, `startup_receipt`, `reaped`,
 `alive`, the file names `DESCRIPTOR_FILE`, `RECEIPT_FILE`, `STATE_FILE`, `WORK_FILE`, `STOP_FILE`, `PAUSE_FILE`,
 `LOCK_DIR`, `validate_descriptor`, `descriptor_digest`, `consumption_verdict`, `DeliveryRefused`,
 `LifecycleInterrupted`, `DESCRIPTOR_SCHEMA`, `RECEIPT_SCHEMA`, `ContractError`, `MergeRefused`, `PACKAGE_DIR` and
-`advance(seconds)` (the fake clock, which only the bounded waits of the in-process cases need).
+`SOURCE_PACKAGE`, `effective_profile_digest` and `advance(seconds)` (the fake clock, which only the bounded waits of the in-process cases need).
 
 **Normalization is explicit, done here and identical on both sides:**
 - `sys.executable` → `<python>`;
@@ -53,6 +61,7 @@ import io
 import json
 import os
 import re
+import shutil
 import signal
 import subprocess
 import sys
@@ -81,6 +90,10 @@ WATCHING_SLEEPER = (
     "signal.signal(signal.SIGTERM, term)\n"
     "open(marker + '.ready', 'w').close()\n"
     "time.sleep(60)\n")
+GIT_FIXED = {"GIT_AUTHOR_NAME": "Fixture", "GIT_AUTHOR_EMAIL": "fixture@localhost",
+             "GIT_COMMITTER_NAME": "Fixture", "GIT_COMMITTER_EMAIL": "fixture@localhost",
+             "GIT_AUTHOR_DATE": "2026-01-01T00:00:00+00:00", "GIT_COMMITTER_DATE": "2026-01-01T00:00:00+00:00",
+             "GIT_CONFIG_NOSYSTEM": "1", "GIT_TERMINAL_PROMPT": "0"}
 SMALL = 20  # max_seconds of every real child: a driver crash orphans it for at most this long
 
 
@@ -132,6 +145,7 @@ class Fixture:
         self.bare = base / "bare-root"
         self.bare.mkdir()
         self.children, self.sleepers, self.popens, self.digests, self.serial = set(), set(), [], {}, 0
+        self.revisions, self.attested_root, self.attested_image = {}, None, None
         loaded = Path(api.PACKAGE_DIR).resolve()
         loaded_root = loaded.parent.parent if loaded.parent.name == "src" else loaded.parent
         pairs = [(str(loaded), "<package>"), (str(api.PACKAGE_DIR), "<package>"), (PY, "<python>"),
@@ -190,10 +204,11 @@ class Fixture:
         state = self.base / "states" / f"{self.serial:03d}-{name}"
         return {"target_id": name, "state_dir": str(state), "root": str(root or self.runtime)}
 
-    def descriptor(self, target, label, revision, *, predecessor=None, root=None) -> dict:
+    def descriptor(self, target, label, revision, *, predecessor=None, root=None, image=IMAGE,
+                   profile=PROFILE) -> dict:
         document = {"schema": self.api.DESCRIPTOR_SCHEMA, "target_id": target["target_id"],
-                    "root": str(root or target["root"]), "revision": REVISIONS[revision], "worker_image": IMAGE,
-                    "profile_digest": PROFILE, "predecessor": predecessor}
+                    "root": str(root or target["root"]), "revision": REVISIONS.get(revision, revision),
+                    "worker_image": image, "profile_digest": profile, "predecessor": predecessor}
         self.digests[self.api.descriptor_digest(document)] = label
         return document
 
@@ -292,6 +307,58 @@ class Fixture:
         started = host.start(target, first, authorize=lambda: None)
         self.launched(target)
         return host, target, first, started, self.await_receipt(target)
+
+    # --- the ATTESTED runtime root ---------------------------------------------------------------------
+    def attested_repository(self, name: str) -> Path:
+        """LABELLED: `<root>/<name>` is a git repository holding a COPY of SOURCE `src/codex_harness` (no bytecode),
+        committed once under the pinned identity, dates and empty git configuration files."""
+        root = self.base / name
+        shutil.copytree(self.api.SOURCE_PACKAGE, root / "src" / "codex_harness",
+                        ignore=shutil.ignore_patterns("__pycache__", "*.pyc"))
+        empty = self.base / "empty-gitconfig"
+        empty.write_text("", encoding="utf-8")
+        environment = {**os.environ, **GIT_FIXED, "GIT_CONFIG_GLOBAL": str(empty), "GIT_CONFIG_SYSTEM": str(empty)}
+
+        def git(*args):
+            done = subprocess.run(["git", "-c", "commit.gpgsign=false", *args], cwd=str(root), env=environment,
+                                  capture_output=True, text=True, timeout=120)
+            assert done.returncode == 0, done.stderr[-500:]
+            return done.stdout.strip()
+
+        git("init", "-q", "-b", "main")
+        git("add", "--all")
+        git("commit", "-q", "--no-verify", "-m", "attested runtime fixture")
+        self.revisions[name] = git("rev-parse", "HEAD")
+        return root
+
+    def attested(self):
+        """Built once per run; a second build in another directory must give the identical commit."""
+        if self.attested_root is None:
+            self.attested_root = self.attested_repository("attested")
+            check = self.attested_repository("attested-rebuild")
+            assert self.revisions["attested"] == self.revisions["attested-rebuild"], "the attested commit varies"
+            shutil.rmtree(check)
+            self.attested_image = (os.environ.get("ZEUS_WORKER_IMAGE") or os.environ.get("HARNESS_WORKER_IMAGE")
+                                   or "").strip() or "none"
+        return self.attested_root
+
+    def attested_start(self, name):
+        """A clean start of a REAL child over the attested root; its receipt must be consumed by M7's own check."""
+        root = self.attested()
+        host, target = self.host(), self.target(name, root=root)
+        first = self.descriptor(target, name + "-1", self.revisions["attested"], image=self.attested_image,
+                                profile=self.api.effective_profile_digest())
+        host.switch(target, first, expected=None)
+        started = host.start(target, first, authorize=lambda: None)
+        self.launched(target)
+        receipt = self.await_receipt(target)
+        assert self.api.consumption_verdict(first, receipt)["consumed"], "the attested child is not consumed"
+        return host, target, first, started, receipt
+
+    def successor(self, target, first, label):
+        document = self.descriptor(target, label, "2" * 40, predecessor=self.digest(first), image=first["worker_image"],
+                                   profile=first["profile_digest"])
+        return document
 
     def sweep(self, case) -> int:
         """End the labelled sleepers, and fail the run if a child the TARGET started is still alive."""
@@ -688,6 +755,69 @@ def group_start(fx):
     out["resumes_a_known_dead_instance"] = {
         "start": resumed, "new_instance_differs": new_receipt["instance_id"] != INSTANCE_A,
         "listing": fx.listing(target)}
+    host.stop(target)
+    return out
+
+
+# ======================================================================================================
+# 3b. real recognition over the ATTESTED root (REAL children, M7 1790, 1916, 2092)
+# ======================================================================================================
+def group_real_recognition(fx):
+    api, out = fx.api, {}
+
+    def alive_children():
+        return sorted(pid for pid in fx.children if proc_alive(pid))
+
+    host, target, d1, started, receipt = fx.attested_start("rr-recognize")
+    launch = fx.read(target, api.STATE_FILE)
+    assert len(alive_children()) == 1
+    again = host.start(target, d1, authorize=lambda: None)
+    fx.launched(target)
+    assert len(alive_children()) == 1
+    out["start_twice_recognizes_the_live_child"] = {
+        "attested_revision": fx.revisions["attested"], "first_start": fx.n(started),
+        "receipt": fx.n(receipt), "consumption_verdict": fx.n(api.consumption_verdict(d1, receipt)),
+        "second_start": fx.n(again), "second_is_recovered": again["recovered"] is True and again["started"] is False,
+        "launch_record_is_the_first": again["launch"] == launch == started["launch"],
+        "instance_is_the_childs": again["instance_id"] == receipt["instance_id"],
+        "live_children": len(alive_children()), "child_pid_is_the_launch_pid": receipt["pid"] == launch["pid"],
+        "no_stop_file": not fx.state(target, "stop.json").exists(), "listing": fx.listing(target)}
+    host.stop(target)
+
+    host, target, d1, _, receipt = fx.attested_start("rr-replace")
+    launch, old = fx.read(target, api.STATE_FILE), receipt["pid"]
+    d2 = fx.successor(target, d1, "rr-replace-2")
+    host.switch(target, d2, expected=fx.digest(d1))
+    authority = {"descriptor_sha256": fx.digest(d1), "instance_id": receipt["instance_id"], "launch": launch}
+    replaced = host.start(target, d2, authorize=lambda: None, replaces=authority)
+    fx.launched(target)
+    new_receipt = fx.await_receipt(target)
+    assert len(alive_children()) == 1 and not proc_alive(old)
+    out["authorized_successor_replaces_the_live_child"] = {
+        "start": fx.n(replaced), "old_child_gone": not proc_alive(old), "old_child_reaped": proc_state(old) is None,
+        "old_receipt_retired": new_receipt["instance_id"] != receipt["instance_id"],
+        "new_receipt_is_consumed": api.consumption_verdict(d2, new_receipt)["consumed"],
+        "new_receipt": fx.n(new_receipt), "live_children": len(alive_children()),
+        "new_launch_pid_is_the_new_child": fx.read(target, api.STATE_FILE)["pid"] == new_receipt["pid"] != old,
+        "listing": fx.listing(target)}
+    host.stop(target)
+
+    host, target, d1, _, receipt = fx.attested_start("rr-unauthorized")
+    d2 = fx.successor(target, d1, "rr-unauthorized-2")
+    host.switch(target, d2, expected=fx.digest(d1))
+    files = fx.listing(target)
+    out["unauthorized_replacement_is_refused_before_any_stop"] = {
+        "no_authority": fx.attempt(lambda: host.start(target, d2, authorize=lambda: None)),
+        "another_instance": fx.attempt(lambda: host.start(target, d2, authorize=lambda: None, replaces={
+            "descriptor_sha256": fx.digest(d1), "instance_id": INSTANCE_B, "launch": None})),
+        "child_alive": proc_alive(receipt["pid"]), "live_children": len(alive_children()),
+        "no_stop_file": not fx.state(target, "stop.json").exists(), "files_unchanged": fx.listing(target) == files,
+        "receipt_instance_unchanged": fx.read(target, api.RECEIPT_FILE)["instance_id"] == receipt["instance_id"]}
+    fence = stale_fence()
+    out["stale_controller_over_the_live_child"] = {
+        "start": fx.attempt(lambda: host.start(target, d2, authorize=fence)), "fence_calls": fence.calls,
+        "child_alive": proc_alive(receipt["pid"]), "no_stop_file": not fx.state(target, "stop.json").exists(),
+        "lock_released": not fx.state(target, api.LOCK_DIR).exists()}
     host.stop(target)
     return out
 
@@ -1120,7 +1250,7 @@ def group_github(fx):
 GROUPS = (("switch", group_switch), ("guard", group_guard), ("start", group_start),
           ("stop_reaping", group_stop_reaping), ("drain", group_drain),
           ("observe_identity", group_observe_identity), ("service_child", group_service_child),
-          ("github", group_github))
+          ("github", group_github), ("real_recognition", group_real_recognition))
 
 
 def run(api) -> dict:

@@ -4,6 +4,7 @@
   "github": 32,
   "guard": 3,
   "observe_identity": 14,
+  "real_recognition": 4,
   "service_child": 17,
   "start": 13,
   "stop_reaping": 11,
@@ -1210,6 +1211,191 @@
      "type": "NotImplementedError"
     }
    }
+  }
+ },
+ "real_recognition": {
+  "authorized_successor_replaces_the_live_child": {
+   "listing": {
+    "controller-state.json": {
+     "descriptor_sha256": "<digest:rr-replace-2>",
+     "pid": "<pid>",
+     "started_at": "<time>"
+    },
+    "descriptor.json": {
+     "predecessor": "<digest:rr-replace-1>",
+     "profile_digest": "cc7150678052ad3d4636a930a7fef34f5a991cfe85b633ada5dc49b830b93bda",
+     "revision": "2222222222222222222222222222222222222222",
+     "root": "<root>/attested",
+     "schema": "urn:zeus:host-descriptor:1",
+     "target_id": "rr-replace",
+     "worker_image": "<absent>"
+    },
+    "startup-receipt.json": {
+     "descriptor_sha256": "<digest:rr-replace-2>",
+     "instance_id": "<instance>",
+     "module_root": "<root>/attested/src/codex_harness",
+     "pid": "<pid>",
+     "profile_digest": "cc7150678052ad3d4636a930a7fef34f5a991cfe85b633ada5dc49b830b93bda",
+     "revision": "8ec894c2672c24c95d317f496ae3635d4c63a361",
+     "runtime_root": "<root>/attested",
+     "schema": "urn:zeus:host-startup-receipt:1",
+     "started_at": "<time>",
+     "target_id": "rr-replace",
+     "worker_image": "<absent>"
+    },
+    "work.json": {
+     "active": 0,
+     "at": "<time>",
+     "unconfirmed": 0
+    }
+   },
+   "live_children": 1,
+   "new_launch_pid_is_the_new_child": true,
+   "new_receipt": {
+    "descriptor_sha256": "<digest:rr-replace-2>",
+    "instance_id": "<instance>",
+    "module_root": "<root>/attested/src/codex_harness",
+    "pid": "<pid>",
+    "profile_digest": "cc7150678052ad3d4636a930a7fef34f5a991cfe85b633ada5dc49b830b93bda",
+    "revision": "8ec894c2672c24c95d317f496ae3635d4c63a361",
+    "runtime_root": "<root>/attested",
+    "schema": "urn:zeus:host-startup-receipt:1",
+    "started_at": "<time>",
+    "target_id": "rr-replace",
+    "worker_image": "<absent>"
+   },
+   "new_receipt_is_consumed": false,
+   "old_child_gone": true,
+   "old_child_reaped": true,
+   "old_receipt_retired": true,
+   "start": {
+    "launch": {
+     "descriptor_sha256": "<digest:rr-replace-2>",
+     "pid": "<pid>",
+     "started_at": "<time>"
+    },
+    "pid": "<pid>",
+    "started": true
+   }
+  },
+  "stale_controller_over_the_live_child": {
+   "child_alive": true,
+   "fence_calls": 1,
+   "lock_released": true,
+   "no_stop_file": true,
+   "start": {
+    "raised": {
+     "message": "injected: stale release controller",
+     "type": "ContractError"
+    }
+   }
+  },
+  "start_twice_recognizes_the_live_child": {
+   "attested_revision": "8ec894c2672c24c95d317f496ae3635d4c63a361",
+   "child_pid_is_the_launch_pid": true,
+   "consumption_verdict": {
+    "consumed": true,
+    "instance_id": "<instance>",
+    "module_root": "<root>/attested/src/codex_harness",
+    "pid": "<pid>",
+    "reason_code": null,
+    "revision": "8ec894c2672c24c95d317f496ae3635d4c63a361",
+    "runtime_root": "<root>/attested"
+   },
+   "first_start": {
+    "launch": {
+     "descriptor_sha256": "<digest:rr-recognize-1>",
+     "pid": "<pid>",
+     "started_at": "<time>"
+    },
+    "pid": "<pid>",
+    "started": true
+   },
+   "instance_is_the_childs": true,
+   "launch_record_is_the_first": true,
+   "listing": {
+    "controller-state.json": {
+     "descriptor_sha256": "<digest:rr-recognize-1>",
+     "pid": "<pid>",
+     "started_at": "<time>"
+    },
+    "descriptor.json": {
+     "predecessor": null,
+     "profile_digest": "cc7150678052ad3d4636a930a7fef34f5a991cfe85b633ada5dc49b830b93bda",
+     "revision": "8ec894c2672c24c95d317f496ae3635d4c63a361",
+     "root": "<root>/attested",
+     "schema": "urn:zeus:host-descriptor:1",
+     "target_id": "rr-recognize",
+     "worker_image": "<absent>"
+    },
+    "startup-receipt.json": {
+     "descriptor_sha256": "<digest:rr-recognize-1>",
+     "instance_id": "<instance>",
+     "module_root": "<root>/attested/src/codex_harness",
+     "pid": "<pid>",
+     "profile_digest": "cc7150678052ad3d4636a930a7fef34f5a991cfe85b633ada5dc49b830b93bda",
+     "revision": "8ec894c2672c24c95d317f496ae3635d4c63a361",
+     "runtime_root": "<root>/attested",
+     "schema": "urn:zeus:host-startup-receipt:1",
+     "started_at": "<time>",
+     "target_id": "rr-recognize",
+     "worker_image": "<absent>"
+    },
+    "work.json": {
+     "active": 0,
+     "at": "<time>",
+     "unconfirmed": 0
+    }
+   },
+   "live_children": 1,
+   "no_stop_file": true,
+   "receipt": {
+    "descriptor_sha256": "<digest:rr-recognize-1>",
+    "instance_id": "<instance>",
+    "module_root": "<root>/attested/src/codex_harness",
+    "pid": "<pid>",
+    "profile_digest": "cc7150678052ad3d4636a930a7fef34f5a991cfe85b633ada5dc49b830b93bda",
+    "revision": "8ec894c2672c24c95d317f496ae3635d4c63a361",
+    "runtime_root": "<root>/attested",
+    "schema": "urn:zeus:host-startup-receipt:1",
+    "started_at": "<time>",
+    "target_id": "rr-recognize",
+    "worker_image": "<absent>"
+   },
+   "second_is_recovered": true,
+   "second_start": {
+    "instance_id": "<instance>",
+    "launch": {
+     "descriptor_sha256": "<digest:rr-recognize-1>",
+     "pid": "<pid>",
+     "started_at": "<time>"
+    },
+    "recovered": true,
+    "started": false
+   }
+  },
+  "unauthorized_replacement_is_refused_before_any_stop": {
+   "another_instance": {
+    "raised": {
+     "field": "target_id",
+     "message": "host delivery refused: instance_not_authorized (target_id)",
+     "reason_code": "instance_not_authorized",
+     "type": "DeliveryRefused"
+    }
+   },
+   "child_alive": true,
+   "files_unchanged": true,
+   "live_children": 1,
+   "no_authority": {
+    "raised": {
+     "field": "target_id",
+     "message": "host delivery refused: instance_not_authorized (target_id)",
+     "reason_code": "instance_not_authorized",
+     "type": "DeliveryRefused"
+    }
+   },
+   "no_stop_file": true,
+   "receipt_instance_unchanged": true
   }
  },
  "service_child": {
