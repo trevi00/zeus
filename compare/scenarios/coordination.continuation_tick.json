@@ -1,0 +1,9 @@
+{
+ "family": "coordination.continuation_tick",
+ "description": "S6 Continuation policy pass over labelled lane rows (DESIGN-s6 §7; Codex S6 entry conditions): unregistered/disabled; initial session binding; pin-change drain (no new effect, dispatched launch settled); admission closed (drain only, no lane read when idle); unknown-cleanup hold (unit held, hold written once, never relaunched, across a restart); fair bounded pass (unavailable read spends no slot, per-lane failure cap, lane-wide runtime outage, durable progress orders the pass after a restart); owned_elsewhere",
+ "reference_driver": "drivers/reference/s6_tick.py",
+ "target_driver": null,
+ "target_status": "pending: S6 Continuation split",
+ "golden": "goldens/reference/coordination.continuation_tick.json",
+ "slice": "S6"
+}
