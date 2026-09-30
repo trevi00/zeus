@@ -1,0 +1,985 @@
+{
+ "after_failures": {
+  "value": {
+   "complete": true,
+   "correlation_id": "corr-r",
+   "error": 0,
+   "examined": 3,
+   "legacy_sent": 0,
+   "limit": 100,
+   "out_of_scope": 0,
+   "published": 3,
+   "quarantined": 0,
+   "quarantined_existing": 0,
+   "remaining": 0,
+   "retry": 0,
+   "skipped": 0,
+   "unfinished": 0
+  }
+ },
+ "after_failures_2": {
+  "value": {
+   "complete": true,
+   "correlation_id": "corr-r",
+   "error": 0,
+   "examined": 0,
+   "legacy_sent": 0,
+   "limit": 100,
+   "out_of_scope": 0,
+   "published": 0,
+   "quarantined": 0,
+   "quarantined_existing": 0,
+   "remaining": 0,
+   "retry": 0,
+   "skipped": 0,
+   "unfinished": 0
+  }
+ },
+ "already_delivered": {
+  "value": {
+   "complete": true,
+   "correlation_id": "corr-d",
+   "error": 0,
+   "examined": 1,
+   "legacy_sent": 0,
+   "limit": 100,
+   "out_of_scope": 0,
+   "published": 0,
+   "quarantined": 0,
+   "quarantined_existing": 0,
+   "remaining": 0,
+   "retry": 0,
+   "skipped": 1,
+   "unfinished": 0
+  }
+ },
+ "audits": [
+  [
+   "general.message_published",
+   "succeeded",
+   null,
+   [
+    "attributes",
+    "causation_id",
+    "correlation_id",
+    "identity"
+   ]
+  ],
+  [
+   "general.message_published",
+   "succeeded",
+   null,
+   [
+    "attributes",
+    "causation_id",
+    "correlation_id",
+    "identity"
+   ]
+  ],
+  [
+   "general.message_quarantined",
+   "blocked",
+   "SchemaInvalid",
+   [
+    "attributes",
+    "identity",
+    "reason_code"
+   ]
+  ],
+  [
+   "general.message_quarantined",
+   "blocked",
+   "UnauthorizedRoute",
+   [
+    "attributes",
+    "identity",
+    "reason_code"
+   ]
+  ],
+  [
+   "general.message_quarantined",
+   "blocked",
+   "OutboxMessageIdentityMismatch",
+   [
+    "attributes",
+    "identity",
+    "reason_code"
+   ]
+  ],
+  [
+   "general.message_quarantined",
+   "blocked",
+   "InvalidOutboxRecord",
+   [
+    "attributes",
+    "identity",
+    "reason_code"
+   ]
+  ],
+  [
+   "general.message_delivery_retry",
+   "failed",
+   "MessageDeliveryError",
+   [
+    "attributes",
+    "causation_id",
+    "correlation_id",
+    "identity",
+    "reason_code",
+    "severity"
+   ]
+  ],
+  [
+   "general.message_delivery_retry",
+   "failed",
+   "TransportChanged",
+   [
+    "attributes",
+    "causation_id",
+    "correlation_id",
+    "identity",
+    "reason_code",
+    "severity"
+   ]
+  ],
+  [
+   "general.message_delivery_error",
+   "unknown",
+   "RuntimeError",
+   [
+    "attributes",
+    "causation_id",
+    "correlation_id",
+    "identity",
+    "reason_code",
+    "severity"
+   ]
+  ],
+  [
+   "general.message_published",
+   "succeeded",
+   null,
+   [
+    "attributes",
+    "causation_id",
+    "correlation_id",
+    "identity"
+   ]
+  ],
+  [
+   "general.message_published",
+   "succeeded",
+   null,
+   [
+    "attributes",
+    "causation_id",
+    "correlation_id",
+    "identity"
+   ]
+  ],
+  [
+   "general.message_published",
+   "succeeded",
+   null,
+   [
+    "attributes",
+    "causation_id",
+    "correlation_id",
+    "identity"
+   ]
+  ],
+  [
+   "general.message_delivery_retry",
+   "failed",
+   "MessageDeliveryError",
+   [
+    "attributes",
+    "causation_id",
+    "correlation_id",
+    "identity",
+    "reason_code",
+    "severity"
+   ]
+  ],
+  [
+   "general.message_quarantined",
+   "blocked",
+   "AttemptedMessageIdentityReused",
+   [
+    "attributes",
+    "identity",
+    "reason_code"
+   ]
+  ],
+  [
+   "general.message_published",
+   "succeeded",
+   null,
+   [
+    "attributes",
+    "causation_id",
+    "correlation_id",
+    "identity"
+   ]
+  ],
+  [
+   "general.message_published",
+   "succeeded",
+   null,
+   [
+    "attributes",
+    "causation_id",
+    "correlation_id",
+    "identity"
+   ]
+  ],
+  [
+   "general.message_delivery_retry",
+   "failed",
+   "MessageDeliveryError",
+   [
+    "attributes",
+    "causation_id",
+    "correlation_id",
+    "identity",
+    "reason_code",
+    "severity"
+   ]
+  ],
+  [
+   "general.message_published",
+   "succeeded",
+   null,
+   [
+    "attributes",
+    "causation_id",
+    "correlation_id",
+    "identity"
+   ]
+  ],
+  [
+   "general.message_published",
+   "succeeded",
+   null,
+   [
+    "attributes",
+    "causation_id",
+    "correlation_id",
+    "identity"
+   ]
+  ],
+  [
+   "general.message_published",
+   "succeeded",
+   null,
+   [
+    "attributes",
+    "causation_id",
+    "correlation_id",
+    "identity"
+   ]
+  ],
+  [
+   "general.message_delivery_retry",
+   "failed",
+   "MessageDeliveryError",
+   [
+    "attributes",
+    "causation_id",
+    "correlation_id",
+    "identity",
+    "reason_code",
+    "severity"
+   ]
+  ]
+ ],
+ "bound": {
+  "value": {
+   "complete": true,
+   "correlation_id": "corr-b",
+   "error": 0,
+   "examined": 1,
+   "legacy_sent": 0,
+   "limit": 100,
+   "out_of_scope": 0,
+   "published": 1,
+   "quarantined": 0,
+   "quarantined_existing": 0,
+   "remaining": 0,
+   "retry": 0,
+   "skipped": 0,
+   "unfinished": 0
+  }
+ },
+ "bound_bindings": [
+  "a637679a82e01aae574e65aa7b43fd9458668c29eb3fc50dd644cfbc71718bc6"
+ ],
+ "empty_scope": {
+  "message": "Outbox scope must be a non-empty correlation id",
+  "refused": "ContractError"
+ },
+ "failures": {
+  "message": "fixture unexpected failure",
+  "refused": "RuntimeError"
+ },
+ "global_1": {
+  "value": {
+   "error": 0,
+   "examined": 7,
+   "legacy_sent": 1,
+   "limit": 100,
+   "published": 2,
+   "quarantined": 4,
+   "quarantined_existing": 0,
+   "retry": 0,
+   "skipped": 0
+  }
+ },
+ "global_2": {
+  "value": {
+   "error": 0,
+   "examined": 7,
+   "legacy_sent": 1,
+   "limit": 100,
+   "published": 0,
+   "quarantined": 0,
+   "quarantined_existing": 4,
+   "retry": 0,
+   "skipped": 2
+  }
+ },
+ "identity_unavailable": {
+  "value": {
+   "complete": false,
+   "correlation_id": "corr-u",
+   "error": 0,
+   "examined": 1,
+   "legacy_sent": 0,
+   "limit": 100,
+   "out_of_scope": 0,
+   "published": 0,
+   "quarantined": 0,
+   "quarantined_existing": 0,
+   "remaining": 1,
+   "retry": 1,
+   "skipped": 0,
+   "unfinished": 1
+  }
+ },
+ "known_scoped_without_pin": {
+  "value": {
+   "complete": false,
+   "correlation_id": "autonomous:run-x",
+   "error": 0,
+   "examined": 1,
+   "legacy_sent": 0,
+   "limit": 100,
+   "out_of_scope": 0,
+   "published": 0,
+   "quarantined": 0,
+   "quarantined_existing": 0,
+   "remaining": 1,
+   "retry": 0,
+   "route_unavailable": 1,
+   "skipped": 0,
+   "unfinished": 1
+  }
+ },
+ "limit_high": {
+  "message": "Outbox batch limit must be 1..1000",
+  "refused": "ContractError"
+ },
+ "limit_zero": {
+  "message": "Outbox batch limit must be 1..1000",
+  "refused": "ContractError"
+ },
+ "pin_conflict": {
+  "message": "route_conflict",
+  "refused": "ContractError"
+ },
+ "pin_global_bus": {
+  "value": {
+   "complete": false,
+   "correlation_id": "corr-pin",
+   "error": 0,
+   "examined": 1,
+   "legacy_sent": 0,
+   "limit": 100,
+   "out_of_scope": 0,
+   "published": 0,
+   "quarantined": 0,
+   "quarantined_existing": 0,
+   "remaining": 1,
+   "retry": 0,
+   "route_held": 1,
+   "skipped": 0,
+   "unfinished": 1
+  }
+ },
+ "pin_invalid": {
+  "message": "route_invalid",
+  "refused": "ContractError"
+ },
+ "pin_malformed": {
+  "value": {
+   "complete": false,
+   "correlation_id": "corr-malformed",
+   "error": 0,
+   "examined": 1,
+   "legacy_sent": 0,
+   "limit": 100,
+   "out_of_scope": 0,
+   "published": 0,
+   "quarantined": 0,
+   "quarantined_existing": 0,
+   "remaining": 1,
+   "retry": 0,
+   "route_unavailable": 1,
+   "skipped": 0,
+   "unfinished": 1
+  }
+ },
+ "pin_matching_route": {
+  "value": {
+   "complete": true,
+   "correlation_id": "corr-pin",
+   "error": 0,
+   "examined": 1,
+   "legacy_sent": 0,
+   "limit": 100,
+   "out_of_scope": 0,
+   "published": 1,
+   "quarantined": 0,
+   "quarantined_existing": 0,
+   "remaining": 0,
+   "retry": 0,
+   "skipped": 0,
+   "unfinished": 0
+  }
+ },
+ "pin_other_route": {
+  "value": {
+   "complete": false,
+   "correlation_id": "corr-pin",
+   "error": 0,
+   "examined": 1,
+   "legacy_sent": 0,
+   "limit": 100,
+   "out_of_scope": 0,
+   "published": 0,
+   "quarantined": 0,
+   "quarantined_existing": 0,
+   "remaining": 1,
+   "retry": 0,
+   "route_refused": 1,
+   "skipped": 0,
+   "unfinished": 1
+  }
+ },
+ "pin_route_namespace_mismatch": {
+  "value": {
+   "complete": false,
+   "correlation_id": "corr-pin",
+   "error": 0,
+   "examined": 1,
+   "legacy_sent": 0,
+   "limit": 100,
+   "out_of_scope": 0,
+   "published": 0,
+   "quarantined": 0,
+   "quarantined_existing": 0,
+   "remaining": 1,
+   "retry": 0,
+   "route_held": 1,
+   "skipped": 0,
+   "unfinished": 1
+  }
+ },
+ "pin_same": {
+  "value": "pinned"
+ },
+ "published": [
+  "5eed0000-0000-4000-8000-000000000001",
+  "5eed0000-0000-4000-8000-000000000002",
+  "5eed0000-0000-4000-8000-000000000009",
+  "5eed0000-0000-4000-8000-00000000000a",
+  "5eed0000-0000-4000-8000-00000000000b",
+  "5eed0000-0000-4000-8000-000000000015",
+  "5eed0000-0000-4000-8000-000000000016",
+  "5eed0000-0000-4000-8000-000000000017",
+  "5eed0000-0000-4000-8000-00000000001d",
+  "5eed0000-0000-4000-8000-000000000021"
+ ],
+ "records": [
+  [
+   "autonomous_runs",
+   "run-x",
+   "af2da265c1a087c1ca956545d8491a8ce4fab3e188c1f0b861d3cf8de6705aa2"
+  ],
+  [
+   "events",
+   "02d695b85d2d755a3d418f7809a2e3ddf410e47e7ccc5d8eed080d8a5393748b",
+   "09fff5c99af1b5f2c45d0228d9cf3dea4251c3c3a5773553cad69da64e45f5e4"
+  ],
+  [
+   "events",
+   "158a4d156e5a2ff3579776daf75d4df85978998a85c56846599de2b663f5eaea",
+   "db5f6ef6c92aac08de6cecfdca3336621827a9231e3f9fa3ad05eb6e13147d48"
+  ],
+  [
+   "events",
+   "4df4a78176dd8472e40bde20267610a0ceb9ac331bc39b8552e65f6f0c94776b",
+   "966484ba8de727c8fb010fa40532f32f8c14cd1eb0d492ef16b9274fc1f7fdfc"
+  ],
+  [
+   "events",
+   "5eed0000-0000-4000-8000-00000000000c",
+   "e5c66aa592a09c2240f3f4fe1ee5e8ea7d9494ec7a7623d9049e5af90f23dd84"
+  ],
+  [
+   "events",
+   "5eed0000-0000-4000-8000-00000000000d",
+   "f8a28cdc6436664234c96924ba4508914d7603f7eb1c9015335c58f0c257e7ae"
+  ],
+  [
+   "events",
+   "5eed0000-0000-4000-8000-00000000000e",
+   "bbabeb290d5c2f18135bf82bc071630c9e2965b2187f6389e76570a5a73f4779"
+  ],
+  [
+   "events",
+   "5eed0000-0000-4000-8000-000000000013",
+   "6c9124606d45c7f4aa60accc4315226284087887f5c94f8dfd97d791602dd40b"
+  ],
+  [
+   "events",
+   "5eed0000-0000-4000-8000-00000000001b",
+   "27e65330375c58ed83bb0d2738f3e9814c7f0e1cf0fe39fa393b355a7f179429"
+  ],
+  [
+   "events",
+   "5eed0000-0000-4000-8000-000000000024",
+   "3078ea7132a0b0aa0d2b8560f62045ffd2a8ee55bca4b383c79d0ff9a4485b8f"
+  ],
+  [
+   "events",
+   "91dd360b937ebc88e6367dbe01aca513c35d658bf7cdbfb5f6a9da903ac718df",
+   "017529c947e94b4b629ca13320009e6469ed68f56cef2bb35463b8e90012dc91"
+  ],
+  [
+   "events",
+   "bc0dbc10bdf0cf052cb470b766cd046b7f95e2b1c571183415e4df0a0f143dc7",
+   "5c8ab238575427bb4380427831e624631bfec3b36fb508844d507feddafe88ee"
+  ],
+  [
+   "health",
+   "outbox",
+   "a0165fd7a3d0b885fa3db9a0fce37547942e4a2d99b8c894edac50dd60691b94"
+  ],
+  [
+   "outbox",
+   "5eed0000-0000-4000-8000-000000000001",
+   "3a9d0c232da294ac70b4669b868fc0effd9450b447069306f3ce46136b278801"
+  ],
+  [
+   "outbox",
+   "5eed0000-0000-4000-8000-000000000002",
+   "5dc4e05f0dc620e21a2f8c7e7d918a846e34855298b14236ace2a9c223b8ab8e"
+  ],
+  [
+   "outbox",
+   "5eed0000-0000-4000-8000-000000000003",
+   "3490405bcf4de64050a2067dbc013ff68312dbef2304c31addc32fa45f2a9500"
+  ],
+  [
+   "outbox",
+   "5eed0000-0000-4000-8000-000000000005",
+   "58a53b6a6d3bb5cffbc6661c7ee774f40964a830ccb6ee5bd4f99580c69c0d9a"
+  ],
+  [
+   "outbox",
+   "5eed0000-0000-4000-8000-000000000006",
+   "c17522e332dec20866c48402413f00b4668fea4257b9756dc1ecba18cb233704"
+  ],
+  [
+   "outbox",
+   "5eed0000-0000-4000-8000-000000000009",
+   "d1b7c06c2d8318bcb5680b7942d21cf7f2254e55adf384ac791bc473ac27b3c5"
+  ],
+  [
+   "outbox",
+   "5eed0000-0000-4000-8000-00000000000a",
+   "eeaf563741459bc55ac103978f6ba5e13ee171c00d754f2dfba0a0795802279e"
+  ],
+  [
+   "outbox",
+   "5eed0000-0000-4000-8000-00000000000b",
+   "ee8b29b0d2ace5e61383cea15ddac5a2aa7aae48a90cce3917ee8a99199a93c7"
+  ],
+  [
+   "outbox",
+   "5eed0000-0000-4000-8000-000000000012",
+   "7eb800503b0d1c38c1bf420d1b76a91ba15e7d494a60bfd8dce84fe3f4dc87c7"
+  ],
+  [
+   "outbox",
+   "5eed0000-0000-4000-8000-000000000014",
+   "69fbf5816cf22163c27ce68f045f90e81e34c6579c7bffba2bf5f6a4b48ffec3"
+  ],
+  [
+   "outbox",
+   "5eed0000-0000-4000-8000-000000000015",
+   "41d77ecf69c45e88e2ff68a776ff4724768034255fd2e02da34c23da791a05d5"
+  ],
+  [
+   "outbox",
+   "5eed0000-0000-4000-8000-000000000016",
+   "96d6cc23e927187d54468a9a97dda0d162d66f13f60a20ddbf7b214777150554"
+  ],
+  [
+   "outbox",
+   "5eed0000-0000-4000-8000-000000000017",
+   "f2d0dd873059743e20e1e517180ad7757caf73038b02af46e9076968ac43a9e3"
+  ],
+  [
+   "outbox",
+   "5eed0000-0000-4000-8000-00000000001a",
+   "074e6e79ce8629de8deb1d5addecd0eada1033c644ff2e1c9a2d091c125bebbf"
+  ],
+  [
+   "outbox",
+   "5eed0000-0000-4000-8000-00000000001d",
+   "f118b98d286e0bf83cb2d0e6f0c5e6f5fbcdda1b69b81d5af37dbdd7152ccf15"
+  ],
+  [
+   "outbox",
+   "5eed0000-0000-4000-8000-00000000001f",
+   "27fc9ce805b0a2b6202529375371387c4485991d1c75bfdbdcdb75b5a9a388d6"
+  ],
+  [
+   "outbox",
+   "5eed0000-0000-4000-8000-000000000020",
+   "2d6fbd9dfaaeefebebe398545e05b61b4f73d317172f7333fe3382b8f6b15110"
+  ],
+  [
+   "outbox",
+   "5eed0000-0000-4000-8000-000000000021",
+   "f968213cd490bf5122bcd620f709c28316a3ca8cc39c5bdd76038e89570b44b1"
+  ],
+  [
+   "outbox",
+   "5eed0000-0000-4000-8000-000000000023",
+   "e54bde3a672c50a433ccca73032f2ac579d812635f331f21253dccb01776cf4f"
+  ],
+  [
+   "outbox",
+   "not-the-message-id",
+   "c6f5a5353f4d84dca1caae86e0e73fca95347b2855c02910d1edd67fdc36bcd1"
+  ],
+  [
+   "outbox",
+   "poison-shape",
+   "5c1ff706176dbfefc986886239bc141934c07986c2dec1f2958451c6d13e1be3"
+  ],
+  [
+   "outbox_attempts",
+   "5eed0000-0000-4000-8000-000000000007",
+   "d0ba419361c4fdca4c9d20562ef587167abfe3c9b1280c5caf1e229786ff00af"
+  ],
+  [
+   "outbox_attempts",
+   "5eed0000-0000-4000-8000-000000000008",
+   "b5679f753d920bab552f55b953dd949d0d4a0aad6774b6082ea0ac5aa1bc9fe5"
+  ],
+  [
+   "outbox_attempts",
+   "5eed0000-0000-4000-8000-00000000000c",
+   "2216997d84abb5b1eca08195031a250803abb912fb33f4458b09f7d49789bf6c"
+  ],
+  [
+   "outbox_attempts",
+   "5eed0000-0000-4000-8000-00000000000d",
+   "3a7f70112fd5721a00a7ab30d3e12b2af9cc8f24765c8e4de89ac1784f3643a5"
+  ],
+  [
+   "outbox_attempts",
+   "5eed0000-0000-4000-8000-00000000000e",
+   "bd712b788dff89a8ef830e95dca2324738ec061a5d211cc0b78ee3db1c8dbebc"
+  ],
+  [
+   "outbox_attempts",
+   "5eed0000-0000-4000-8000-00000000000f",
+   "97e19742ff04e3b1ae42b8a84ec6bcda21ab1d98ff108a0b7b344585c6fe916e"
+  ],
+  [
+   "outbox_attempts",
+   "5eed0000-0000-4000-8000-000000000010",
+   "a61692859afae9f367d8a3f9f9047b983f180e9d2a6eedec8d557c472277c9c3"
+  ],
+  [
+   "outbox_attempts",
+   "5eed0000-0000-4000-8000-000000000011",
+   "bee34cafbadcb873322477741b7c341006f2acd18551dda51d081bc153834b77"
+  ],
+  [
+   "outbox_attempts",
+   "5eed0000-0000-4000-8000-000000000013",
+   "0125fb5d0220eebdf1d6f4d25f4250cc2e8dab2bbf0b868f5691c7dd8c2613e2"
+  ],
+  [
+   "outbox_attempts",
+   "5eed0000-0000-4000-8000-000000000018",
+   "c6b539952ffd426bab0cccd41b41224ef7cf21b5aaeb7794666be2b716830184"
+  ],
+  [
+   "outbox_attempts",
+   "5eed0000-0000-4000-8000-000000000019",
+   "eeecf48d230906ef58c1f9fb866fadc511190705f8436822ee5f6c5acec33605"
+  ],
+  [
+   "outbox_attempts",
+   "5eed0000-0000-4000-8000-00000000001b",
+   "da89706799dd54d7e813464fcf574644fa3abea2b2f61a4e2c8675a83698218b"
+  ],
+  [
+   "outbox_attempts",
+   "5eed0000-0000-4000-8000-00000000001c",
+   "b0f76402b0585509c2cf70d7b599db8b684aab81787cafd396568d6c7066fd7b"
+  ],
+  [
+   "outbox_attempts",
+   "5eed0000-0000-4000-8000-00000000001e",
+   "e2ac79b8041616e78a905ce9621cec4ef3dd8125352d5269d5a7f5e5bc313b6b"
+  ],
+  [
+   "outbox_attempts",
+   "5eed0000-0000-4000-8000-000000000022",
+   "963158c3f7db1615393e07cb83ca2c6a4b0d8984cea50a9128a7b1b714c4c4c6"
+  ],
+  [
+   "outbox_attempts",
+   "5eed0000-0000-4000-8000-000000000024",
+   "6d86868178fb39fcfd703d0c2ff02323c74f2d5d937d4bdd060ba1865a1bc808"
+  ],
+  [
+   "outbox_control",
+   "relay",
+   "526ee1bfbb1768d2cc9c4cdab49eb415fbb3aff4501d4de4db16307da6348913"
+  ],
+  [
+   "outbox_delivery",
+   "5eed0000-0000-4000-8000-000000000001",
+   "3062e99613d5d19e59113a85c9e5a12fa05ae657e62a6a48cbaba5e6fc769890"
+  ],
+  [
+   "outbox_delivery",
+   "5eed0000-0000-4000-8000-000000000002",
+   "926b9e99a1428cd932328e169b7cc745a7848b8abef92d3caf057b3ec77a7a20"
+  ],
+  [
+   "outbox_delivery",
+   "5eed0000-0000-4000-8000-000000000003",
+   "97c1b54cb98d009b01ed366e538f7e31535e9babc8ea6292b3aef0532da93d43"
+  ],
+  [
+   "outbox_delivery",
+   "5eed0000-0000-4000-8000-000000000005",
+   "8ecb7a02c18b2bc28388f9db43ab5b2d2a0f25190e323a200f6c66047a889c41"
+  ],
+  [
+   "outbox_delivery",
+   "5eed0000-0000-4000-8000-000000000009",
+   "8ff42d57122d06c60f071487e7e09fe5077b43f1b3c3e5d506607ee3c0844084"
+  ],
+  [
+   "outbox_delivery",
+   "5eed0000-0000-4000-8000-00000000000a",
+   "46fc89ee543d32a4827db08e55165911913fce74170956f7505fab8dcdfafe90"
+  ],
+  [
+   "outbox_delivery",
+   "5eed0000-0000-4000-8000-00000000000b",
+   "c4b4a59bb41abf033d3597b1cedb9c7e28e89721c7d2d29ff2b17a61063a665e"
+  ],
+  [
+   "outbox_delivery",
+   "5eed0000-0000-4000-8000-000000000012",
+   "9245aaf5867b4b92a689e4f74034bf98bb9e626fc1b257ab7fc4e0dccf939a72"
+  ],
+  [
+   "outbox_delivery",
+   "5eed0000-0000-4000-8000-000000000014",
+   "ee101baa33feb3b829ee047f71400940b29b2c0cab7e90aa4a034d85886c5764"
+  ],
+  [
+   "outbox_delivery",
+   "5eed0000-0000-4000-8000-000000000015",
+   "e209a902419d4d3fe1a729c9f0267764dff587c5dac4219f7a9da1558174ed6e"
+  ],
+  [
+   "outbox_delivery",
+   "5eed0000-0000-4000-8000-000000000016",
+   "de12d12dedf4b45e5c82ea51c2d2d570720356dafa60b612bc7c0a83403420c0"
+  ],
+  [
+   "outbox_delivery",
+   "5eed0000-0000-4000-8000-000000000017",
+   "b851216b27c4e9df960fb0fd44b36b614e4c6eebea171bdbf2b0708e0a233174"
+  ],
+  [
+   "outbox_delivery",
+   "5eed0000-0000-4000-8000-00000000001a",
+   "0d8d91e54e59dbb0412384c6a24696fb55e26571c03c1d6deebfa1f149c1924a"
+  ],
+  [
+   "outbox_delivery",
+   "5eed0000-0000-4000-8000-00000000001d",
+   "64f9078cfc3e51c9a0dc6ec5a3e495d889280ac56157d463ea13cb86496de1f4"
+  ],
+  [
+   "outbox_delivery",
+   "5eed0000-0000-4000-8000-000000000021",
+   "08938b0689028db3ac55a15bbe6e1cfdc46d2169d1b3f89f12afd6ba921cda8f"
+  ],
+  [
+   "outbox_delivery",
+   "5eed0000-0000-4000-8000-000000000023",
+   "ec9c6222d918452a4dd21893df180ab817f1501d7184d2336e382b26eba09e1e"
+  ],
+  [
+   "outbox_delivery",
+   "not-the-message-id",
+   "16317c77f510065cf522f27a83d8769dc290f2d3fb9b3f744214c9a85d6361aa"
+  ],
+  [
+   "outbox_delivery",
+   "poison-shape",
+   "254c7b9037a8bcf1d75975165788f7ed1eb07d0a19e4f47e9fc8fb2a2a8705bd"
+  ],
+  [
+   "outbox_quarantine",
+   "02d695b85d2d755a3d418f7809a2e3ddf410e47e7ccc5d8eed080d8a5393748b",
+   "5ecda59a4c576768560213f02e9b3a3260f266735ccd1032cc7e6eb8a127f531"
+  ],
+  [
+   "outbox_quarantine",
+   "158a4d156e5a2ff3579776daf75d4df85978998a85c56846599de2b663f5eaea",
+   "c9e749402ca5472f2acea2cbe2fa6f584b946debd456bdf98e4d22a30bfaf5a1"
+  ],
+  [
+   "outbox_quarantine",
+   "4df4a78176dd8472e40bde20267610a0ceb9ac331bc39b8552e65f6f0c94776b",
+   "51a2a5b755c5725a4136054021af83e8fe16eeb2a2263705aa6163f348f71d9e"
+  ],
+  [
+   "outbox_quarantine",
+   "91dd360b937ebc88e6367dbe01aca513c35d658bf7cdbfb5f6a9da903ac718df",
+   "183745895fbabe2585a2bd05bfb621cde6769ab826d0e25f299082b2ba4cee17"
+  ],
+  [
+   "outbox_quarantine",
+   "bc0dbc10bdf0cf052cb470b766cd046b7f95e2b1c571183415e4df0a0f143dc7",
+   "ea5cfc7ada8f3f3b417d1ff7f7bf917fe16f68f670849b71ad0bd35c979e6cf2"
+  ],
+  [
+   "outbox_routes",
+   "corr-malformed",
+   "04b849882748291509fbaacd455577d221990959b2360566554b47df6f052b7a"
+  ],
+  [
+   "outbox_routes",
+   "corr-pin",
+   "1372d802a126cb31aebfc676081021b81dccec84c67ec2d9ae4349ef702056e7"
+  ]
+ ],
+ "reuse_changed": {
+  "value": {
+   "complete": false,
+   "correlation_id": "corr-i",
+   "error": 0,
+   "examined": 1,
+   "legacy_sent": 0,
+   "limit": 100,
+   "out_of_scope": 0,
+   "published": 0,
+   "quarantined": 1,
+   "quarantined_existing": 0,
+   "remaining": 1,
+   "retry": 0,
+   "skipped": 0,
+   "unfinished": 1
+  }
+ },
+ "reuse_first": {
+  "value": {
+   "complete": false,
+   "correlation_id": "corr-i",
+   "error": 0,
+   "examined": 1,
+   "legacy_sent": 0,
+   "limit": 100,
+   "out_of_scope": 0,
+   "published": 0,
+   "quarantined": 0,
+   "quarantined_existing": 0,
+   "remaining": 1,
+   "retry": 1,
+   "skipped": 0,
+   "unfinished": 1
+  }
+ },
+ "scoped": {
+  "value": {
+   "complete": true,
+   "correlation_id": "corr-s",
+   "error": 0,
+   "examined": 2,
+   "legacy_sent": 0,
+   "limit": 100,
+   "out_of_scope": 0,
+   "published": 2,
+   "quarantined": 0,
+   "quarantined_existing": 0,
+   "remaining": 0,
+   "retry": 0,
+   "skipped": 0,
+   "unfinished": 0
+  }
+ },
+ "scoped_incomplete": {
+  "value": {
+   "complete": false,
+   "correlation_id": "corr-s",
+   "error": 0,
+   "examined": 1,
+   "legacy_sent": 0,
+   "limit": 100,
+   "out_of_scope": 0,
+   "published": 0,
+   "quarantined": 0,
+   "quarantined_existing": 0,
+   "remaining": 1,
+   "retry": 1,
+   "skipped": 0,
+   "unfinished": 1
+  }
+ },
+ "scoped_limit": {
+  "value": {
+   "complete": true,
+   "correlation_id": "corr-f",
+   "error": 0,
+   "examined": 1,
+   "legacy_sent": 0,
+   "limit": 1,
+   "out_of_scope": 0,
+   "published": 1,
+   "quarantined": 0,
+   "quarantined_existing": 0,
+   "remaining": 0,
+   "retry": 0,
+   "skipped": 0,
+   "unfinished": 0
+  }
+ }
+}

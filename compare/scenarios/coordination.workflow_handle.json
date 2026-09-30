@@ -1,0 +1,9 @@
+{
+ "family": "coordination.workflow_handle",
+ "description": "S5 Workflow.handle/cancel/request_rebase/context (RESEARCH-S5 D1, check (a)): implement/research/review/assessment/hook/assign/notice reports once, replay, conflicting body, unproven results, terminal-operation parking and replay, cancel refusals and notice, idempotent rebase request; MemoryStore, scripted clocks and ids",
+ "reference_driver": "drivers/reference/s5_handle.py",
+ "target_driver": null,
+ "golden": "goldens/reference/coordination.workflow_handle.json",
+ "slice": "S5",
+ "target_status": "pending: the S5 Workflow remainder is not yet moved"
+}

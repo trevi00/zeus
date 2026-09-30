@@ -1,0 +1,457 @@
+{
+ "assess_minimal_proposal": {
+  "message": "Research adoption deferred: verified audit rollout is not active",
+  "refused": "ContractError"
+ },
+ "assign_via_handle": {
+  "keys": [
+   "agent",
+   "attempt",
+   "created_at",
+   "error",
+   "generation",
+   "id",
+   "input_hash",
+   "lease_owner",
+   "lease_until",
+   "message",
+   "result",
+   "status"
+  ],
+  "value": "1795dafd3f7e6c9a770247e3ad28ab6ce08d7ac5429e28a3b1fb00c22f5fbc93"
+ },
+ "cancel": {
+  "value": null
+ },
+ "cancel_again": {
+  "message": "Task already terminal",
+  "refused": "ContractError"
+ },
+ "cancel_no_reason": {
+  "message": "Task and cancellation reason required",
+  "refused": "ContractError"
+ },
+ "cancel_unauthorized": {
+  "message": "Cannot cancel task",
+  "refused": "ContractError"
+ },
+ "cancel_unknown": {
+  "message": "Task and cancellation reason required",
+  "refused": "ContractError"
+ },
+ "context": "f71c6e0cc3bd3c850a3faa7744d02a83194a0935d4bb313f3b96fede280ffc7b",
+ "hook_active": {
+  "keys": [
+   "handled",
+   "next_message"
+  ],
+  "value": "5b3766c52e6f3bb7bd7a8aa789a7598a4c9c549db45ce4435b068b10098a4202"
+ },
+ "hook_required": {
+  "keys": [
+   "handled",
+   "next_message"
+  ],
+  "value": "14aea9c6a2884b4daca4737b7480d03cd79b99e399e930733b8bed31009ace1b"
+ },
+ "hook_unknown": {
+  "message": "Unknown hook",
+  "refused": "ContractError"
+ },
+ "implement_conflict": {
+  "message": "Conflicting report identity",
+  "refused": "ContractError"
+ },
+ "implement_replay": {
+  "keys": [
+   "handled",
+   "next_message"
+  ],
+  "value": "5b3766c52e6f3bb7bd7a8aa789a7598a4c9c549db45ce4435b068b10098a4202"
+ },
+ "implement_report": {
+  "keys": [
+   "handled",
+   "next_message"
+  ],
+  "value": "5b3766c52e6f3bb7bd7a8aa789a7598a4c9c549db45ce4435b068b10098a4202"
+ },
+ "implement_unproven": {
+  "message": "Unproven task result",
+  "refused": "ContractError"
+ },
+ "notice_conflict": {
+  "message": "Conflicting execution notice delivery",
+  "refused": "ContractError"
+ },
+ "notice_handled": {
+  "keys": [
+   "authority",
+   "handled",
+   "notice_id"
+  ],
+  "value": "2d629c1878b8a27308b3c4c4fab332401370550eaaf158c0436fc33fe3549d38"
+ },
+ "notice_replay": {
+  "keys": [
+   "authority",
+   "handled",
+   "notice_id"
+  ],
+  "value": "2d629c1878b8a27308b3c4c4fab332401370550eaaf158c0436fc33fe3549d38"
+ },
+ "notices_queued": 1,
+ "outbox": [
+  [
+   "execution.notice",
+   "observe_execution",
+   false,
+   "af48282c9bc740ceb7acc582606014a549c67c96eeb1e052dacae609e4e43077"
+  ],
+  [
+   "task.result",
+   "implement",
+   false,
+   "4f0c2d521ed18de4452f8e9b1a1b9f79b60d276cbe8d53d4288bc73306e5da21"
+  ],
+  [
+   "task.result",
+   "research",
+   false,
+   "355727056b74728ca2e15addf35dcdac9396a47b1bd065ab5461ac69076810af"
+  ],
+  [
+   "task.result",
+   "research",
+   false,
+   "efb4f8410aab8c72d29e15964fc39f1bd2a64246869b7edd7dc9399f2d7253a9"
+  ],
+  [
+   "task.assign",
+   "plan",
+   false,
+   "c42a7044138c1d9f54f7193fb673c2598b51b5acf9997d6c0b2a46e8006079b8"
+  ],
+  [
+   "task.assign",
+   "rebase",
+   false,
+   "87b5fb1abd251dc368b7f4817516163dd42cbb474590c3ff41e095ea3e93cf6f"
+  ],
+  [
+   "task.assign",
+   "rebase",
+   false,
+   "ee661a8c241ae88d16731fd929fb7ccd19550f581efda3419557f0125ca18f4c"
+  ]
+ ],
+ "rebase": {
+  "keys": [
+   "causation_id",
+   "correlation_id",
+   "how",
+   "message_id",
+   "schema_version",
+   "type",
+   "what",
+   "when",
+   "where",
+   "who",
+   "why"
+  ],
+  "value": "87b5fb1abd251dc368b7f4817516163dd42cbb474590c3ff41e095ea3e93cf6f"
+ },
+ "rebase_not_candidate": {
+  "message": "Completed candidate task required",
+  "refused": "ContractError"
+ },
+ "rebase_other_base": {
+  "keys": [
+   "causation_id",
+   "correlation_id",
+   "how",
+   "message_id",
+   "schema_version",
+   "type",
+   "what",
+   "when",
+   "where",
+   "who",
+   "why"
+  ],
+  "value": "ee661a8c241ae88d16731fd929fb7ccd19550f581efda3419557f0125ca18f4c"
+ },
+ "rebase_replay": {
+  "keys": [
+   "causation_id",
+   "correlation_id",
+   "how",
+   "message_id",
+   "schema_version",
+   "type",
+   "what",
+   "when",
+   "where",
+   "who",
+   "why"
+  ],
+  "value": "87b5fb1abd251dc368b7f4817516163dd42cbb474590c3ff41e095ea3e93cf6f"
+ },
+ "records": [
+  [
+   "decisions_pending",
+   "5eed0000-0000-4000-8000-000000000002",
+   "27d58854525ebe61c112ef3de5d864ea3b7a8dd4b25812266d61404e732fe685"
+  ],
+  [
+   "decisions_pending",
+   "5eed0000-0000-4000-8000-000000000006",
+   "14672a8a477b8578299cc8ff5f210d4cf956f2036323f655613a08fb427d0fcc"
+  ],
+  [
+   "decisions_pending",
+   "5eed0000-0000-4000-8000-00000000000b",
+   "c0bca86859c6edd7d12907b45c7a351d5917b6e6897fad2942173136ecb01611"
+  ],
+  [
+   "decisions_pending",
+   "decision-1",
+   "762696e324eeec734276f26ba0a34b9f4fd78c1e8c9e7b5d9389ff439779e1bc"
+  ],
+  [
+   "decisions_pending",
+   "decision-2",
+   "6276c4fc6d101592165b3863d82e0e6276a8330f591b09071da928f193bec3e8"
+  ],
+  [
+   "events",
+   "5eed0000-0000-4000-8000-000000000003",
+   "a7cc60596ad820575d1e97024e40945ba498b929d51e439ea926345ef518ab9d"
+  ],
+  [
+   "events",
+   "5eed0000-0000-4000-8000-000000000007",
+   "c34fb4bd3526974041c7781f1c33b231a24dc5dae8ae962e66db764f7d82845e"
+  ],
+  [
+   "events",
+   "5eed0000-0000-4000-8000-00000000000a",
+   "0d07e331566acf564157ff28d890afcf6139416083551abd63c80ade7dd89d6e"
+  ],
+  [
+   "execution_fences",
+   "tasks:5eed0000-0000-4000-8000-000000000001",
+   "8c9b9ca68cb1e950594185658c39f5dd7d154f49db92f0ba3d4c8aa4e50b69a9"
+  ],
+  [
+   "execution_fences",
+   "tasks:5eed0000-0000-4000-8000-000000000005",
+   "2c8812f0603f226e349107428141d100cc6b607f85658f1bb436ab727a980371"
+  ],
+  [
+   "execution_fences",
+   "tasks:5eed0000-0000-4000-8000-000000000008",
+   "7fe13dd638b55f44866dafd9020b0aed4c6f866ebc07331855b257993faa1594"
+  ],
+  [
+   "execution_fences",
+   "tasks:5eed0000-0000-4000-8000-000000000015",
+   "514f721d94bfb942c9066820b90448dad54c4b83d254de78e88c6d481e34d17c"
+  ],
+  [
+   "execution_notices",
+   "078bf0059193ec3de678fccefd74202f7fcdfcf4f5b656bae05df5b7e75c00a3",
+   "0ffb62fb7526fc6cbdadd3f63c9bd44494223cc39716cbbc753060b1d1d54639"
+  ],
+  [
+   "hooks",
+   "hook-active",
+   "9b288f2c4690709e5560e72f3b3e7fc17447fc590adbca4a02e8f0dbdbc96eb2"
+  ],
+  [
+   "hooks",
+   "hook-required",
+   "433de2b1e9fe248e4a366b64702a2025ab6dddce881ccc28fb84e9b57d3e70e4"
+  ],
+  [
+   "operation_message_dispositions",
+   "a5d72d6362034096a76b7cc05e5d725967be7b3ec0107360b5ba4b3a5fca5923",
+   "75e5586cad8810af98173aa9b24ae32b1493b9cfbaa96e493da81b8495aaf46e"
+  ],
+  [
+   "operations",
+   "op-1",
+   "3b2b4ace74de7d568c4700897d44d3968e565d94fd33883b2781d0d0bd78b7f7"
+  ],
+  [
+   "outbox",
+   "078bf0059193ec3de678fccefd74202f7fcdfcf4f5b656bae05df5b7e75c00a3",
+   "93084caad7ca94b4ebc39c3b6b7077a8487085ab2eee9a5df57b3af655dba903"
+  ],
+  [
+   "outbox",
+   "5eed0000-0000-4000-8000-000000000002",
+   "d500bacbfaff69dfff6f6c9a9232dfbac4ecefdf467394fc24839fc314e2416d"
+  ],
+  [
+   "outbox",
+   "5eed0000-0000-4000-8000-000000000006",
+   "311fc8908fc41a2282912ea52306a6d1960f865cdb6d8e3ce0c320bdb20eea11"
+  ],
+  [
+   "outbox",
+   "5eed0000-0000-4000-8000-000000000009",
+   "69ada5df6dad9dd18f9c72e4a6ad06c4d0ae07db1786e690956ac1a7b2857de0"
+  ],
+  [
+   "outbox",
+   "5eed0000-0000-4000-8000-00000000000f",
+   "7a040852d2c9d097b54685884c6d50c5ab4c31f92e6641fc4cdaaa2cc9a5f125"
+  ],
+  [
+   "outbox",
+   "5eed0000-0000-4000-8000-000000000017",
+   "675324a4d6fef62128a16c6c676e9d14841e21d9748f21ccd2f0531018873710"
+  ],
+  [
+   "outbox",
+   "5eed0000-0000-4000-8000-000000000018",
+   "d387e6e34b6737c3298780e207e1294b2c66ed29f9cbbe4b8a3b447a609acd9a"
+  ],
+  [
+   "rebase_requests",
+   "2dda9ea63cc740a55e7ee8d6f0e717ccc697f9e40087b627161e1a2c45164aee",
+   "f2e577e0dd99281427d45c602607d189ad4cfbd51d50e8f77f69cf82e9ab96f5"
+  ],
+  [
+   "rebase_requests",
+   "d7aeb9d63ed352c9cf4a8e0a7a7235f1f39f2d7990a6d6b1f8e73c1fee68f172",
+   "e2ac57dd588c661f53ce949ea4b8d89e60e51969414503db3cedb9259b969b63"
+  ],
+  [
+   "research_discoveries",
+   "2e1cceeff77adc27d5ed206ad1b8289c002e2481be1efa4e32a75aafbfd0a42b",
+   "3f47f06410eb0289c464c38e712828f7c954af98aba7ccb2f87306570b2421bf"
+  ],
+  [
+   "research_topics",
+   "2e1cceeff77adc27d5ed206ad1b8289c002e2481be1efa4e32a75aafbfd0a42b",
+   "9e6a01f8298a9e4a785c1b03b32a8450440ebac6771032a9c73112a9c36a1a8d"
+  ],
+  [
+   "tasks",
+   "5eed0000-0000-4000-8000-000000000001",
+   "c6e14982726a00d236adc2f656c924641946536fdcdc580965928d8c8c8346e1"
+  ],
+  [
+   "tasks",
+   "5eed0000-0000-4000-8000-000000000005",
+   "2769c01c6f03b4f323d9e7eb0203bcc39042f9f4522252a226487da4681fb4cc"
+  ],
+  [
+   "tasks",
+   "5eed0000-0000-4000-8000-000000000008",
+   "73d9af448e9928277ceaf8086fb74746f98be58d796f55941376c6f80cf13724"
+  ],
+  [
+   "tasks",
+   "5eed0000-0000-4000-8000-000000000012",
+   "1795dafd3f7e6c9a770247e3ad28ab6ce08d7ac5429e28a3b1fb00c22f5fbc93"
+  ],
+  [
+   "tasks",
+   "5eed0000-0000-4000-8000-000000000015",
+   "b86986dc1002af2600f501b8eb3ca59fc6dd8b0293928eea6520e67cab529b97"
+  ],
+  [
+   "workflow_inbox",
+   "078bf0059193ec3de678fccefd74202f7fcdfcf4f5b656bae05df5b7e75c00a3",
+   "c1ac6640cb5822c4fd0cf20d5c6c4af0cdd01c187f803957205a1bd020d14d91"
+  ],
+  [
+   "workflow_inbox",
+   "5eed0000-0000-4000-8000-000000000002",
+   "d5cc6c7f7799b2baba280cd2719ea7108706c8a12807e2e16646b1866f8e1f65"
+  ],
+  [
+   "workflow_inbox",
+   "5eed0000-0000-4000-8000-000000000006",
+   "47060ebe3be9f897f0d5e8230587a8eb60a7f951fc0adce14c49ecb05cd58a84"
+  ],
+  [
+   "workflow_inbox",
+   "5eed0000-0000-4000-8000-000000000009",
+   "4704e09361567cd0dfcc5c99772943c9dde066f9da084f66cdbc3f969b744039"
+  ],
+  [
+   "workflow_inbox",
+   "5eed0000-0000-4000-8000-00000000000b",
+   "cb61051afb7bac686a2acbd5d85d03cca9d031877b56479ae7f4b3057ed07c5b"
+  ],
+  [
+   "workflow_inbox",
+   "5eed0000-0000-4000-8000-00000000000e",
+   "e06e31d2939161dd59251cce0b8fa0511a885ec8a03354e4a98399a8a73daf5f"
+  ],
+  [
+   "workflow_inbox",
+   "5eed0000-0000-4000-8000-000000000010",
+   "10ac95d7a7e16294a6e5d33d5596b3d1556508b12ce24d153321648553c9a26c"
+  ]
+ ],
+ "research_report": {
+  "keys": [
+   "handled",
+   "next_message"
+  ],
+  "value": "5b3766c52e6f3bb7bd7a8aa789a7598a4c9c549db45ce4435b068b10098a4202"
+ },
+ "research_same_topic": {
+  "keys": [
+   "handled",
+   "next_message"
+  ],
+  "value": "5b3766c52e6f3bb7bd7a8aa789a7598a4c9c549db45ce4435b068b10098a4202"
+ },
+ "review_decided": {
+  "keys": [
+   "handled",
+   "next_message"
+  ],
+  "value": "5b3766c52e6f3bb7bd7a8aa789a7598a4c9c549db45ce4435b068b10098a4202"
+ },
+ "review_unproven": {
+  "message": "Unproven decision result",
+  "refused": "ContractError"
+ },
+ "terminal_parked": {
+  "keys": [
+   "authority",
+   "disposition_id",
+   "message_id",
+   "message_type",
+   "operation_id",
+   "parked",
+   "reason_code",
+   "schema"
+  ],
+  "value": "43c1fed06aa614a939abf4e36c2fb858d4d1dd408290c9f38a15b8b74c26cb8c"
+ },
+ "terminal_parked_replay": {
+  "keys": [
+   "authority",
+   "disposition_id",
+   "message_id",
+   "message_type",
+   "operation_id",
+   "parked",
+   "reason_code",
+   "schema"
+  ],
+  "value": "43c1fed06aa614a939abf4e36c2fb858d4d1dd408290c9f38a15b8b74c26cb8c"
+ },
+ "unsupported_type": {
+  "message": "Unsupported workflow message",
+  "refused": "ContractError"
+ }
+}
