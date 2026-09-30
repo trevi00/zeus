@@ -97,6 +97,22 @@ GIT_FIXED = {"GIT_AUTHOR_NAME": "Fixture", "GIT_AUTHOR_EMAIL": "fixture@localhos
 SMALL = 20  # max_seconds of every real child: a driver crash orphans it for at most this long
 
 
+def pinned_environment(base: Path) -> dict:
+    """The pinned git environment of every fixture repository: the `GIT_FIXED` identity and dates, and empty git
+    configuration files (`<base>/empty-gitconfig`) in place of the host's."""
+    empty = base / "empty-gitconfig"
+    empty.write_text("", encoding="utf-8")
+    return {**os.environ, **GIT_FIXED, "GIT_CONFIG_GLOBAL": str(empty), "GIT_CONFIG_SYSTEM": str(empty)}
+
+
+def pinned_git(root: Path, environment: dict, *args) -> str:
+    """One git command in `root` under the pinned environment; its stripped stdout (a failure is an assertion)."""
+    done = subprocess.run(["git", "-c", "commit.gpgsign=false", *args], cwd=str(root), env=environment,
+                          capture_output=True, text=True, timeout=120)
+    assert done.returncode == 0, done.stderr[-500:]
+    return done.stdout.strip()
+
+
 def proc_state(pid):
     try:
         return Path(f"/proc/{pid}/stat").read_text().rsplit(")", 1)[1].split()[0]
@@ -315,15 +331,10 @@ class Fixture:
         root = self.base / name
         shutil.copytree(self.api.SOURCE_PACKAGE, root / "src" / "codex_harness",
                         ignore=shutil.ignore_patterns("__pycache__", "*.pyc"))
-        empty = self.base / "empty-gitconfig"
-        empty.write_text("", encoding="utf-8")
-        environment = {**os.environ, **GIT_FIXED, "GIT_CONFIG_GLOBAL": str(empty), "GIT_CONFIG_SYSTEM": str(empty)}
+        environment = pinned_environment(self.base)
 
         def git(*args):
-            done = subprocess.run(["git", "-c", "commit.gpgsign=false", *args], cwd=str(root), env=environment,
-                                  capture_output=True, text=True, timeout=120)
-            assert done.returncode == 0, done.stderr[-500:]
-            return done.stdout.strip()
+            return pinned_git(root, environment, *args)
 
         git("init", "-q", "-b", "main")
         git("add", "--all")

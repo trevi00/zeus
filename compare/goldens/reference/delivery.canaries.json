@@ -1,0 +1,4523 @@
+{
+ "canaries": {
+  "canary_checks_collect_binds_the_store": {
+   "result": {
+    "returned": {
+     "evidence": null,
+     "passed": false,
+     "reason_code": "canary_descriptor_not_observed"
+    }
+   }
+  },
+  "canary_checks_collect_rejects_a_plan_keyword": {
+   "result": {
+    "raised": {
+     "message": "canary_checks.<locals>.<lambda>() got an unexpected keyword argument 'plan'",
+     "type": "TypeError"
+    }
+   }
+  },
+  "canary_checks_collect_without_a_store": {
+   "result": {
+    "returned": {
+     "evidence": null,
+     "passed": false,
+     "reason_code": "canary_store_unavailable"
+    }
+   }
+  },
+  "canary_checks_fleet_takes_the_plan_keyword": {
+   "result": {
+    "returned": {
+     "evidence": "e",
+     "passed": true,
+     "reason_code": null
+    }
+   }
+  },
+  "canary_checks_map": {
+   "collect_is_a_binding_lambda": "<lambda>",
+   "collect_is_not_the_function": true,
+   "constants": {
+    "collect": "collect_monitor_source",
+    "fleet": "fleet_worker_operation",
+    "startup": "startup_identity"
+   },
+   "fleet_is_the_function": true,
+   "fresh_map_each_call": true,
+   "ids": [
+    "startup_identity",
+    "collect_monitor_source",
+    "fleet_worker_operation"
+   ],
+   "mirrors": "tests/test_owner_canary_plan.py (canary_checks() wired as the delivery's canaries); tests/test_host_delivery_lane_routing.py (wired.canaries[CANARY_FLEET] is owner_qualified_canary)",
+   "startup_is_the_function": true
+  },
+  "canary_checks_startup_rejects_a_plan_keyword": {
+   "result": {
+    "raised": {
+     "message": "startup_identity_canary() got an unexpected keyword argument 'plan'",
+     "type": "TypeError"
+    }
+   }
+  },
+  "canary_checks_startup_through_the_map": {
+   "result": {
+    "returned": {
+     "evidence": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+     "passed": true,
+     "reason_code": null
+    }
+   }
+  },
+  "collect_another_instance": {
+   "mirrors": "tests/test_host_delivery.py::test_the_collect_canary_refuses_a_missing_or_stale_monitor_source",
+   "result": {
+    "returned": {
+     "evidence": null,
+     "passed": false,
+     "reason_code": "canary_instance_not_observed"
+    }
+   }
+  },
+  "collect_another_revision": {
+   "mirrors": "tests/test_host_delivery.py::test_the_collect_canary_refuses_a_missing_or_stale_monitor_source",
+   "result": {
+    "returned": {
+     "evidence": null,
+     "passed": false,
+     "reason_code": "canary_runtime_not_observed"
+    }
+   }
+  },
+  "collect_another_target_is_unobserved": {
+   "result": {
+    "returned": {
+     "evidence": null,
+     "passed": false,
+     "reason_code": "canary_target_unobserved"
+    }
+   }
+  },
+  "collect_descriptor_not_observed_no_startup": {
+   "mirrors": "tests/test_host_delivery.py::test_the_collect_canary_refuses_a_missing_or_stale_monitor_source",
+   "result": {
+    "returned": {
+     "evidence": null,
+     "passed": false,
+     "reason_code": "canary_descriptor_not_observed"
+    }
+   }
+  },
+  "collect_descriptor_not_observed_stale_snapshot": {
+   "mirrors": "tests/test_host_delivery.py::test_the_collect_canary_refuses_a_missing_or_stale_monitor_source",
+   "result": {
+    "returned": {
+     "evidence": null,
+     "passed": false,
+     "reason_code": "canary_descriptor_not_observed"
+    }
+   }
+  },
+  "collect_descriptor_without_a_revision_raises_after_every_other_check": {
+   "result": {
+    "raised": {
+     "message": "'revision'",
+     "type": "KeyError"
+    }
+   }
+  },
+  "collect_passes": {
+   "mirrors": "tests/test_host_delivery.py::test_the_collect_canary_refuses_a_missing_or_stale_monitor_source",
+   "result": {
+    "returned": {
+     "evidence": "11111111111111111111111111111111",
+     "passed": true,
+     "reason_code": null
+    }
+   }
+  },
+  "collect_source_unavailable": {
+   "result": {
+    "returned": {
+     "error_type": "ConnectionError",
+     "evidence": null,
+     "passed": false,
+     "reason_code": "canary_source_unavailable"
+    }
+   }
+  },
+  "collect_startup_none": {
+   "result": {
+    "returned": {
+     "evidence": null,
+     "passed": false,
+     "reason_code": "canary_instance_not_observed"
+    }
+   }
+  },
+  "collect_startup_without_an_instance": {
+   "result": {
+    "returned": {
+     "evidence": null,
+     "passed": false,
+     "reason_code": "canary_instance_not_observed"
+    }
+   }
+  },
+  "collect_store_omitted": {
+   "result": {
+    "returned": {
+     "evidence": null,
+     "passed": false,
+     "reason_code": "canary_store_unavailable"
+    }
+   }
+  },
+  "collect_store_unavailable": {
+   "mirrors": "tests/test_host_delivery.py::test_the_collect_canary_refuses_a_missing_or_stale_monitor_source",
+   "result": {
+    "returned": {
+     "evidence": null,
+     "passed": false,
+     "reason_code": "canary_store_unavailable"
+    }
+   }
+  },
+  "collect_target_unobserved": {
+   "mirrors": "tests/test_host_delivery.py::test_the_collect_canary_refuses_a_missing_or_stale_monitor_source",
+   "result": {
+    "returned": {
+     "evidence": null,
+     "passed": false,
+     "reason_code": "canary_target_unobserved"
+    }
+   }
+  },
+  "collect_the_projection_shows_the_observed_fields": {
+   "target_row": {
+    "descriptor_sha256": "<digest:monitor-descriptor-without-revision>",
+    "observed_instance_id": "11111111111111111111111111111111",
+    "observed_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "startup_observed": true,
+    "target_id": "canary-service"
+   }
+  },
+  "owner_a_target_global_receipt_and_request_are_never_read": {
+   "mirrors": "tests/test_owner_canary_plan.py (plan-scoped files: a target-global file grants nothing)",
+   "result": {
+    "returned": {
+     "evidence": null,
+     "passed": false,
+     "reason_code": "canary_owner_receipt_missing"
+    }
+   },
+   "state_files": [
+    "owner-canary-receipt.json",
+    "owner-canary-request.json"
+   ]
+  },
+  "owner_another_plan_is_not_answered_by_this_plans_receipt": {
+   "result": {
+    "returned": {
+     "evidence": null,
+     "passed": false,
+     "reason_code": "canary_owner_receipt_missing"
+    }
+   }
+  },
+  "owner_another_plans_request_never_answers": {
+   "mirrors": "tests/test_owner_canary_plan.py::test_the_actual_first_delivery_shape_with_no_predecessor_keeps_each_plans_own_wait (H2 missing)",
+   "result": {
+    "returned": {
+     "evidence": null,
+     "passed": false,
+     "reason_code": "canary_owner_receipt_missing"
+    }
+   }
+  },
+  "owner_malformed_receipt_falls_back_to_the_request": {
+   "result": {
+    "returned": {
+     "evidence": null,
+     "passed": false,
+     "pending": true,
+     "reason_code": "canary_owner_receipt_pending"
+    }
+   }
+  },
+  "owner_matching_request_is_pending": {
+   "mirrors": "tests/test_owner_canary_plan.py::test_the_actual_first_delivery_shape_with_no_predecessor_keeps_each_plans_own_wait (H1 pending)",
+   "result": {
+    "returned": {
+     "evidence": null,
+     "passed": false,
+     "pending": true,
+     "reason_code": "canary_owner_receipt_pending"
+    }
+   }
+  },
+  "owner_no_plan": {
+   "result": {
+    "returned": {
+     "evidence": null,
+     "passed": false,
+     "reason_code": "canary_owner_receipt_missing"
+    }
+   }
+  },
+  "owner_no_receipt_no_request": {
+   "mirrors": "tests/test_host_delivery.py::test_an_owner_qualified_canary_needs_the_owners_own_receipt (missing)",
+   "result": {
+    "returned": {
+     "evidence": null,
+     "passed": false,
+     "reason_code": "canary_owner_receipt_missing"
+    }
+   }
+  },
+  "owner_plan_id_is_not_a_token_raises": {
+   "result": {
+    "raised": {
+     "message": "plan_id is not a plan token",
+     "type": "ValueError"
+    }
+   }
+  },
+  "owner_plan_not_a_dict": {
+   "result": {
+    "returned": {
+     "evidence": null,
+     "passed": false,
+     "reason_code": "canary_owner_receipt_missing"
+    }
+   }
+  },
+  "owner_plan_without_an_id_raises": {
+   "result": {
+    "raised": {
+     "message": "'plan_id'",
+     "type": "KeyError"
+    }
+   }
+  },
+  "owner_receipt_absent_instance_passes": {
+   "result": {
+    "returned": {
+     "evidence": "e",
+     "passed": true,
+     "reason_code": null
+    }
+   }
+  },
+  "owner_receipt_descriptor_digest_absent": {
+   "result": {
+    "returned": {
+     "evidence": null,
+     "passed": false,
+     "reason_code": "canary_owner_receipt_stale"
+    }
+   }
+  },
+  "owner_receipt_evidence_passes_through_unvalidated": {
+   "result": {
+    "returned": {
+     "evidence": {
+      "any": [
+       "thing"
+      ]
+     },
+     "passed": true,
+     "reason_code": null
+    }
+   }
+  },
+  "owner_receipt_failed": {
+   "result": {
+    "returned": {
+     "evidence": "e",
+     "passed": false,
+     "reason_code": "canary_owner_receipt_failed"
+    }
+   }
+  },
+  "owner_receipt_failed_and_stale": {
+   "result": {
+    "returned": {
+     "evidence": null,
+     "passed": false,
+     "reason_code": "canary_owner_receipt_stale"
+    }
+   }
+  },
+  "owner_receipt_for_another_descriptor_is_stale": {
+   "mirrors": "tests/test_host_delivery.py::test_an_owner_qualified_canary_needs_the_owners_own_receipt",
+   "result": {
+    "returned": {
+     "evidence": null,
+     "passed": false,
+     "reason_code": "canary_owner_receipt_stale"
+    }
+   }
+  },
+  "owner_receipt_for_another_instance_is_stale": {
+   "mirrors": "tests/test_host_delivery.py::test_an_owner_qualified_canary_needs_the_owners_own_receipt",
+   "result": {
+    "returned": {
+     "evidence": null,
+     "passed": false,
+     "reason_code": "canary_owner_receipt_stale"
+    }
+   }
+  },
+  "owner_receipt_null_instance_passes": {
+   "result": {
+    "returned": {
+     "evidence": "e",
+     "passed": true,
+     "reason_code": null
+    }
+   }
+  },
+  "owner_receipt_pass_needs_no_request": {
+   "result": {
+    "returned": {
+     "evidence": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "passed": true,
+     "reason_code": null
+    }
+   }
+  },
+  "owner_receipt_passed_absent_fails": {
+   "result": {
+    "returned": {
+     "evidence": null,
+     "passed": false,
+     "reason_code": "canary_owner_receipt_failed"
+    }
+   }
+  },
+  "owner_receipt_passed_empty_string_fails": {
+   "result": {
+    "returned": {
+     "evidence": null,
+     "passed": false,
+     "reason_code": "canary_owner_receipt_failed"
+    }
+   }
+  },
+  "owner_receipt_passed_one_passes": {
+   "result": {
+    "returned": {
+     "evidence": null,
+     "passed": true,
+     "reason_code": null
+    }
+   }
+  },
+  "owner_receipt_passed_zero_fails": {
+   "result": {
+    "returned": {
+     "evidence": null,
+     "passed": false,
+     "reason_code": "canary_owner_receipt_failed"
+    }
+   }
+  },
+  "owner_receipt_passes": {
+   "mirrors": "tests/test_host_delivery.py::test_an_owner_qualified_canary_needs_the_owners_own_receipt",
+   "result": {
+    "returned": {
+     "evidence": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "passed": true,
+     "reason_code": null
+    }
+   }
+  },
+  "owner_receipt_weak_null_instance_and_string_passed": {
+   "mirrors": "tests/test_host_migration_evidence.py::test_incumbent_owner_canary_is_weaker_and_unchanged",
+   "result": {
+    "returned": {
+     "evidence": null,
+     "passed": true,
+     "reason_code": null
+    }
+   }
+  },
+  "owner_request_another_plan_digest_is_missing": {
+   "result": {
+    "returned": {
+     "evidence": null,
+     "passed": false,
+     "reason_code": "canary_owner_receipt_missing"
+    }
+   }
+  },
+  "owner_request_another_plan_id_is_missing": {
+   "result": {
+    "returned": {
+     "evidence": null,
+     "passed": false,
+     "reason_code": "canary_owner_receipt_missing"
+    }
+   }
+  },
+  "owner_request_another_predecessor_is_missing": {
+   "result": {
+    "returned": {
+     "evidence": null,
+     "passed": false,
+     "reason_code": "canary_owner_receipt_missing"
+    }
+   }
+  },
+  "owner_request_another_schema_is_missing": {
+   "result": {
+    "returned": {
+     "evidence": null,
+     "passed": false,
+     "reason_code": "canary_owner_receipt_missing"
+    }
+   }
+  },
+  "owner_request_another_target_is_missing": {
+   "result": {
+    "returned": {
+     "evidence": null,
+     "passed": false,
+     "reason_code": "canary_owner_receipt_missing"
+    }
+   }
+  },
+  "owner_request_extra_field_is_missing": {
+   "result": {
+    "returned": {
+     "evidence": null,
+     "passed": false,
+     "reason_code": "canary_owner_receipt_missing"
+    }
+   }
+  },
+  "owner_request_for_another_revision_is_missing": {
+   "mirrors": "tests/test_owner_canary_plan.py::test_the_actual_first_delivery_shape_with_no_predecessor_keeps_each_plans_own_wait (another revision)",
+   "result": {
+    "returned": {
+     "evidence": null,
+     "passed": false,
+     "reason_code": "canary_owner_receipt_missing"
+    }
+   }
+  },
+  "owner_request_malformed_is_missing": {
+   "result": {
+    "returned": {
+     "evidence": null,
+     "passed": false,
+     "reason_code": "canary_owner_receipt_missing"
+    }
+   }
+  },
+  "owner_request_missing_a_field_is_missing": {
+   "result": {
+    "returned": {
+     "evidence": null,
+     "passed": false,
+     "reason_code": "canary_owner_receipt_missing"
+    }
+   }
+  },
+  "owner_startup_none_with_an_instance_on_the_receipt_is_stale": {
+   "result": {
+    "returned": {
+     "evidence": null,
+     "passed": false,
+     "reason_code": "canary_owner_receipt_stale"
+    }
+   }
+  },
+  "startup_kind_None_reads_the_receipt_pid": {
+   "launch_pid": "dead",
+   "receipt_pid": "live",
+   "result": {
+    "returned": {
+     "evidence": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+     "passed": true,
+     "reason_code": null
+    }
+   }
+  },
+  "startup_kind_None_with_a_dead_receipt_pid": {
+   "launch_pid": "live",
+   "receipt_pid": "dead",
+   "result": {
+    "returned": {
+     "evidence": null,
+     "passed": false,
+     "reason_code": "canary_process_absent"
+    }
+   }
+  },
+  "startup_kind_managed_fleet_reads_the_receipt_pid": {
+   "launch_pid": "dead",
+   "receipt_pid": "live",
+   "result": {
+    "returned": {
+     "evidence": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+     "passed": true,
+     "reason_code": null
+    }
+   }
+  },
+  "startup_kind_managed_fleet_systemd_reads_the_receipt_pid": {
+   "launch_pid": "dead",
+   "receipt_pid": "live",
+   "result": {
+    "returned": {
+     "evidence": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+     "passed": true,
+     "reason_code": null
+    }
+   }
+  },
+  "startup_kind_managed_fleet_systemd_with_a_dead_receipt_pid": {
+   "launch_pid": "live",
+   "receipt_pid": "dead",
+   "result": {
+    "returned": {
+     "evidence": null,
+     "passed": false,
+     "reason_code": "canary_process_absent"
+    }
+   }
+  },
+  "startup_kind_managed_fleet_with_a_dead_receipt_pid": {
+   "launch_pid": "live",
+   "receipt_pid": "dead",
+   "result": {
+    "returned": {
+     "evidence": null,
+     "passed": false,
+     "reason_code": "canary_process_absent"
+    }
+   }
+  },
+  "startup_kind_systemd_unit_reads_the_receipt_pid": {
+   "launch_pid": "dead",
+   "receipt_pid": "live",
+   "result": {
+    "returned": {
+     "evidence": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+     "passed": true,
+     "reason_code": null
+    }
+   }
+  },
+  "startup_kind_systemd_unit_with_a_dead_receipt_pid": {
+   "launch_pid": "live",
+   "receipt_pid": "dead",
+   "result": {
+    "returned": {
+     "evidence": null,
+     "passed": false,
+     "reason_code": "canary_process_absent"
+    }
+   }
+  },
+  "startup_kind_windows_scheduled_task_reads_the_receipt_pid": {
+   "launch_pid": "dead",
+   "receipt_pid": "live",
+   "result": {
+    "returned": {
+     "evidence": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+     "passed": true,
+     "reason_code": null
+    }
+   }
+  },
+  "startup_kind_windows_scheduled_task_with_a_dead_receipt_pid": {
+   "launch_pid": "live",
+   "receipt_pid": "dead",
+   "result": {
+    "returned": {
+     "evidence": null,
+     "passed": false,
+     "reason_code": "canary_process_absent"
+    }
+   }
+  },
+  "startup_launch_pid_is_a_boolean": {
+   "result": {
+    "returned": {
+     "evidence": null,
+     "passed": false,
+     "reason_code": "canary_process_absent"
+    }
+   }
+  },
+  "startup_launch_pid_is_a_string": {
+   "result": {
+    "returned": {
+     "evidence": null,
+     "passed": false,
+     "reason_code": "canary_process_absent"
+    }
+   }
+  },
+  "startup_launch_pid_zero": {
+   "result": {
+    "returned": {
+     "evidence": null,
+     "passed": false,
+     "reason_code": "canary_process_absent"
+    }
+   }
+  },
+  "startup_launch_record_is_a_list": {
+   "result": {
+    "raised": {
+     "message": "'list' object has no attribute 'get'",
+     "type": "AttributeError"
+    }
+   }
+  },
+  "startup_matching_receipt_and_a_live_process_passes": {
+   "mirrors": "the task spec example 3: the same canary over the matching receipt passes",
+   "result": {
+    "returned": {
+     "evidence": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+     "passed": true,
+     "reason_code": null
+    }
+   }
+  },
+  "startup_no_instance_on_either_side_passes": {
+   "result": {
+    "returned": {
+     "evidence": null,
+     "passed": true,
+     "reason_code": null
+    }
+   }
+  },
+  "startup_no_instance_on_the_receipt_only_changes": {
+   "result": {
+    "returned": {
+     "evidence": null,
+     "passed": false,
+     "reason_code": "canary_instance_changed"
+    }
+   }
+  },
+  "startup_process_kind_ignores_the_receipt_pid": {
+   "launch_pid": "live",
+   "receipt_pid": "dead",
+   "result": {
+    "returned": {
+     "evidence": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+     "passed": true,
+     "reason_code": null
+    }
+   }
+  },
+  "startup_process_kind_reads_the_pid_from_the_launch_record": {
+   "launch_pid": "dead",
+   "receipt_pid": "live",
+   "result": {
+    "returned": {
+     "evidence": null,
+     "passed": false,
+     "reason_code": "canary_process_absent"
+    }
+   }
+  },
+  "startup_process_kind_with_a_malformed_launch_record": {
+   "result": {
+    "returned": {
+     "evidence": null,
+     "passed": false,
+     "reason_code": "canary_process_absent"
+    }
+   }
+  },
+  "startup_process_kind_without_a_launch_record": {
+   "receipt_pid": "dead",
+   "result": {
+    "returned": {
+     "evidence": null,
+     "passed": false,
+     "reason_code": "canary_process_absent"
+    }
+   }
+  },
+  "startup_receipt_malformed": {
+   "result": {
+    "returned": {
+     "evidence": null,
+     "passed": false,
+     "reason_code": "canary_receipt_missing"
+    }
+   }
+  },
+  "startup_receipt_missing": {
+   "result": {
+    "returned": {
+     "evidence": null,
+     "passed": false,
+     "reason_code": "canary_receipt_missing"
+    }
+   }
+  },
+  "startup_receipt_not_an_object": {
+   "result": {
+    "returned": {
+     "evidence": null,
+     "passed": false,
+     "reason_code": "canary_receipt_missing"
+    }
+   }
+  },
+  "startup_receipt_of_another_descriptor": {
+   "mirrors": "the task spec example 3: a receipt of another descriptor names canary_descriptor_mismatch",
+   "result": {
+    "returned": {
+     "evidence": null,
+     "passed": false,
+     "reason_code": "canary_descriptor_mismatch"
+    }
+   }
+  },
+  "startup_receipt_of_another_instance": {
+   "result": {
+    "returned": {
+     "evidence": null,
+     "passed": false,
+     "reason_code": "canary_instance_changed"
+    }
+   }
+  },
+  "startup_receipt_over_the_size_bound": {
+   "result": {
+    "returned": {
+     "evidence": null,
+     "passed": false,
+     "reason_code": "canary_receipt_missing"
+    }
+   }
+  },
+  "startup_receipt_without_a_pid": {
+   "result": {
+    "returned": {
+     "evidence": null,
+     "passed": false,
+     "reason_code": "canary_process_absent"
+    }
+   }
+  },
+  "startup_startup_none_against_a_receipt_with_an_instance_is_changed": {
+   "result": {
+    "returned": {
+     "evidence": null,
+     "passed": false,
+     "reason_code": "canary_instance_changed"
+    }
+   }
+  }
+ },
+ "cases_per_group": {
+  "canaries": 85,
+  "checks": 13,
+  "files": 41,
+  "first_activation": 29,
+  "plan": 40,
+  "ports": 31,
+  "profile": 52,
+  "revisions": 69,
+  "state_json": 26
+ },
+ "checks": {
+  "mixed_rows_keep_order_duplicates_and_skip_the_unusable": {
+   "returned": [
+    {
+     "name": "b",
+     "state": "failure"
+    },
+    {
+     "name": "a",
+     "state": "success"
+    },
+    {
+     "name": "b",
+     "state": "success"
+    },
+    {
+     "name": "c",
+     "state": "pending"
+    },
+    {
+     "name": "d",
+     "state": "pending"
+    }
+   ]
+  },
+  "names": {
+   "context_only": {
+    "returned": [
+     {
+      "name": "c",
+      "state": "success"
+     }
+    ]
+   },
+   "context_when_name_is_empty": {
+    "returned": [
+     {
+      "name": "c",
+      "state": "success"
+     }
+    ]
+   },
+   "context_when_name_is_none": {
+    "returned": [
+     {
+      "name": "c",
+      "state": "success"
+     }
+    ]
+   },
+   "extra_keys_ignored": {
+    "returned": [
+     {
+      "name": "n",
+      "state": "success"
+     }
+    ]
+   },
+   "name_empty_no_context": {
+    "returned": []
+   },
+   "name_non_empty_and_context_not_a_string": {
+    "returned": [
+     {
+      "name": "n",
+      "state": "success"
+     }
+    ]
+   },
+   "name_not_a_string": {
+    "returned": []
+   },
+   "name_preferred_over_context": {
+    "returned": [
+     {
+      "name": "n",
+      "state": "success"
+     }
+    ]
+   },
+   "no_name_no_context": {
+    "returned": []
+   },
+   "whitespace_name_kept": {
+    "returned": [
+     {
+      "name": " ",
+      "state": "success"
+     }
+    ]
+   }
+  },
+  "rollups_of_test_host_delivery_cli": {
+   "completed_skipped": {
+    "returned": [
+     {
+      "name": "ci / required",
+      "state": "failure"
+     }
+    ]
+   },
+   "context_error": {
+    "returned": [
+     {
+      "name": "ci / required",
+      "state": "failure"
+     }
+    ]
+   },
+   "mirrors": "tests/test_host_delivery_cli.py::test_check_rollup_states_are_normalized_without_inventing_a_pass",
+   "nameless": {
+    "returned": []
+   },
+   "none": {
+    "returned": []
+   },
+   "queued": {
+    "returned": [
+     {
+      "name": "ci / required",
+      "state": "pending"
+     }
+    ]
+   }
+  },
+  "rows_dict_iterates_its_keys": {
+   "returned": []
+  },
+  "rows_empty_list": {
+   "returned": []
+  },
+  "rows_empty_tuple": {
+   "returned": []
+  },
+  "rows_falsy_zero": {
+   "returned": []
+  },
+  "rows_generator": {
+   "returned": [
+    {
+     "name": "a",
+     "state": "success"
+    }
+   ]
+  },
+  "rows_integer_raises": {
+   "raised": {
+    "message": "'int' object is not iterable",
+    "type": "TypeError"
+   }
+  },
+  "rows_string_iterates_characters": {
+   "returned": []
+  },
+  "rows_tuple": {
+   "returned": [
+    {
+     "name": "a",
+     "state": "success"
+    }
+   ]
+  },
+  "skipped_and_cancelled_are_never_a_pass": {
+   "context_success": {
+    "returned": [
+     {
+      "name": "ci / required",
+      "state": "success"
+     }
+    ]
+   },
+   "failures": {
+    "returned": [
+     {
+      "name": "ci / required",
+      "state": "failure"
+     },
+     {
+      "name": "ci / required",
+      "state": "failure"
+     },
+     {
+      "name": "ci / required",
+      "state": "failure"
+     },
+     {
+      "name": "ci / required",
+      "state": "failure"
+     }
+    ]
+   },
+   "in_progress": {
+    "returned": [
+     {
+      "name": "ci / required",
+      "state": "pending"
+     }
+    ]
+   },
+   "mirrors": "tests/test_host_delivery.py::test_skipped_and_cancelled_conclusions_are_never_a_pass"
+  },
+  "states": {
+   "blank_status_blank_conclusion": {
+    "returned": [
+     {
+      "name": "n",
+      "state": "pending"
+     }
+    ]
+   },
+   "blank_status_no_conclusion": {
+    "returned": [
+     {
+      "name": "n",
+      "state": "pending"
+     }
+    ]
+   },
+   "completed_action_required": {
+    "returned": [
+     {
+      "name": "n",
+      "state": "failure"
+     }
+    ]
+   },
+   "completed_blank_conclusion": {
+    "returned": [
+     {
+      "name": "n",
+      "state": "failure"
+     }
+    ]
+   },
+   "completed_failure": {
+    "returned": [
+     {
+      "name": "n",
+      "state": "failure"
+     }
+    ]
+   },
+   "completed_no_conclusion": {
+    "returned": [
+     {
+      "name": "n",
+      "state": "failure"
+     }
+    ]
+   },
+   "completed_stale": {
+    "returned": [
+     {
+      "name": "n",
+      "state": "failure"
+     }
+    ]
+   },
+   "completed_startup_failure": {
+    "returned": [
+     {
+      "name": "n",
+      "state": "failure"
+     }
+    ]
+   },
+   "completed_success": {
+    "returned": [
+     {
+      "name": "n",
+      "state": "success"
+     }
+    ]
+   },
+   "completed_success_lowercase": {
+    "returned": [
+     {
+      "name": "n",
+      "state": "success"
+     }
+    ]
+   },
+   "completed_timed_out": {
+    "returned": [
+     {
+      "name": "n",
+      "state": "failure"
+     }
+    ]
+   },
+   "completed_unknown_future_conclusion": {
+    "returned": [
+     {
+      "name": "n",
+      "state": "failure"
+     }
+    ]
+   },
+   "conclusion_only_failure": {
+    "returned": [
+     {
+      "name": "n",
+      "state": "failure"
+     }
+    ]
+   },
+   "conclusion_only_success": {
+    "returned": [
+     {
+      "name": "n",
+      "state": "success"
+     }
+    ]
+   },
+   "in_progress": {
+    "returned": [
+     {
+      "name": "n",
+      "state": "pending"
+     }
+    ]
+   },
+   "in_progress_with_failure_conclusion": {
+    "returned": [
+     {
+      "name": "n",
+      "state": "failure"
+     }
+    ]
+   },
+   "pending_status": {
+    "returned": [
+     {
+      "name": "n",
+      "state": "pending"
+     }
+    ]
+   },
+   "queued_no_conclusion": {
+    "returned": [
+     {
+      "name": "n",
+      "state": "pending"
+     }
+    ]
+   },
+   "queued_with_success_conclusion": {
+    "returned": [
+     {
+      "name": "n",
+      "state": "success"
+     }
+    ]
+   },
+   "state_absent": {
+    "returned": [
+     {
+      "name": "n",
+      "state": "failure"
+     }
+    ]
+   },
+   "state_blank": {
+    "returned": [
+     {
+      "name": "n",
+      "state": "failure"
+     }
+    ]
+   },
+   "state_error": {
+    "returned": [
+     {
+      "name": "n",
+      "state": "failure"
+     }
+    ]
+   },
+   "state_expected": {
+    "returned": [
+     {
+      "name": "n",
+      "state": "pending"
+     }
+    ]
+   },
+   "state_failure": {
+    "returned": [
+     {
+      "name": "n",
+      "state": "failure"
+     }
+    ]
+   },
+   "state_in_progress": {
+    "returned": [
+     {
+      "name": "n",
+      "state": "pending"
+     }
+    ]
+   },
+   "state_integer": {
+    "returned": [
+     {
+      "name": "n",
+      "state": "failure"
+     }
+    ]
+   },
+   "state_neutral": {
+    "returned": [
+     {
+      "name": "n",
+      "state": "failure"
+     }
+    ]
+   },
+   "state_none": {
+    "returned": [
+     {
+      "name": "n",
+      "state": "failure"
+     }
+    ]
+   },
+   "state_pending": {
+    "returned": [
+     {
+      "name": "n",
+      "state": "pending"
+     }
+    ]
+   },
+   "state_queued": {
+    "returned": [
+     {
+      "name": "n",
+      "state": "pending"
+     }
+    ]
+   },
+   "state_success": {
+    "returned": [
+     {
+      "name": "n",
+      "state": "success"
+     }
+    ]
+   },
+   "state_success_lowercase": {
+    "returned": [
+     {
+      "name": "n",
+      "state": "success"
+     }
+    ]
+   },
+   "status_none_conclusion_none_uses_state": {
+    "returned": [
+     {
+      "name": "n",
+      "state": "success"
+     }
+    ]
+   },
+   "status_present_beats_state": {
+    "returned": [
+     {
+      "name": "n",
+      "state": "pending"
+     }
+    ]
+   },
+   "waiting": {
+    "returned": [
+     {
+      "name": "n",
+      "state": "pending"
+     }
+    ]
+   }
+  }
+ },
+ "files": {
+  "constants": {
+   "DESCRIPTOR_FILE": "descriptor.json",
+   "ENABLED_SETTING": "ZEUS_HOST_DELIVERY_ENABLED",
+   "IMAGE_INSPECT_TIMEOUT": 30,
+   "IMAGE_REVISION_LABEL": "org.opencontainers.image.revision",
+   "LOCK_DIR": "switch.lock",
+   "MAX_PLAN_BYTES": 65536,
+   "MAX_STATE_BYTES": 65536,
+   "PAUSE_FILE": "pause",
+   "PROFILE_RESOURCES": "src/codex_harness/resources/",
+   "RECEIPT_FILE": "startup-receipt.json",
+   "RUNTIME_FILE": "runtime.json",
+   "STATE_FILE": "controller-state.json",
+   "STOP_FILE": "stop",
+   "TRUE_VALUES": [
+    "1",
+    "on",
+    "true",
+    "yes"
+   ],
+   "WORK_FILE": "work.json"
+  },
+  "enabled_boolean-true": {
+   "enabled": {
+    "returned": false
+   }
+  },
+  "enabled_empty-settings": {
+   "enabled": {
+    "returned": false
+   },
+   "mirrors": "tests/test_host_delivery_cli.py::test_delivery_is_opt_in_through_one_explicit_host_setting"
+  },
+  "enabled_empty-value": {
+   "enabled": {
+    "returned": false
+   }
+  },
+  "enabled_enabled-word": {
+   "enabled": {
+    "returned": false
+   }
+  },
+  "enabled_false": {
+   "enabled": {
+    "returned": false
+   }
+  },
+  "enabled_integer-one": {
+   "enabled": {
+    "returned": false
+   }
+  },
+  "enabled_labelled_settings_environment-overrides-file": {
+   "enabled": false,
+   "settings": {
+    "HARNESS_HOST_DELIVERY_ENABLED": "no",
+    "ZEUS_HOST_DELIVERY_ENABLED": "no"
+   }
+  },
+  "enabled_labelled_settings_from-file": {
+   "enabled": true,
+   "settings": {
+    "HARNESS_HOST_DELIVERY_ENABLED": "yes",
+    "ZEUS_HOST_DELIVERY_ENABLED": "yes"
+   }
+  },
+  "enabled_labelled_settings_harness-alias": {
+   "enabled": true,
+   "settings": {
+    "HARNESS_HOST_DELIVERY_ENABLED": "1",
+    "ZEUS_HOST_DELIVERY_ENABLED": "1"
+   }
+  },
+  "enabled_labelled_settings_no-file": {
+   "enabled": false,
+   "settings": {}
+  },
+  "enabled_maybe": {
+   "enabled": {
+    "returned": false
+   },
+   "mirrors": "tests/test_host_delivery_cli.py::test_delivery_is_opt_in_through_one_explicit_host_setting"
+  },
+  "enabled_none": {
+   "enabled": {
+    "returned": false
+   },
+   "mirrors": "tests/test_host_delivery_cli.py::test_delivery_is_opt_in_through_one_explicit_host_setting"
+  },
+  "enabled_none-value": {
+   "enabled": {
+    "returned": false
+   }
+  },
+  "enabled_on": {
+   "enabled": {
+    "returned": true
+   }
+  },
+  "enabled_one": {
+   "enabled": {
+    "returned": true
+   },
+   "mirrors": "tests/test_host_delivery_cli.py::test_delivery_is_opt_in_through_one_explicit_host_setting"
+  },
+  "enabled_other-key": {
+   "enabled": {
+    "returned": false
+   }
+  },
+  "enabled_padded-upper-true": {
+   "enabled": {
+    "returned": true
+   },
+   "mirrors": "tests/test_host_delivery_cli.py::test_delivery_is_opt_in_through_one_explicit_host_setting"
+  },
+  "enabled_true-lower": {
+   "enabled": {
+    "returned": true
+   }
+  },
+  "enabled_yes": {
+   "enabled": {
+    "returned": true
+   }
+  },
+  "enabled_zero": {
+   "enabled": {
+    "returned": false
+   },
+   "mirrors": "tests/test_host_delivery_cli.py::test_delivery_is_opt_in_through_one_explicit_host_setting"
+  },
+  "refused_backslash": {
+   "plan_token": {
+    "raised": {
+     "message": "plan_id is not a plan token",
+     "type": "ValueError"
+    }
+   },
+   "receipt": {
+    "raised": {
+     "message": "plan_id is not a plan token",
+     "type": "ValueError"
+    }
+   },
+   "request": {
+    "raised": {
+     "message": "plan_id is not a plan token",
+     "type": "ValueError"
+    }
+   }
+  },
+  "refused_bytes": {
+   "plan_token": {
+    "raised": {
+     "message": "plan_id is not a plan token",
+     "type": "ValueError"
+    }
+   },
+   "receipt": {
+    "raised": {
+     "message": "plan_id is not a plan token",
+     "type": "ValueError"
+    }
+   },
+   "request": {
+    "raised": {
+     "message": "plan_id is not a plan token",
+     "type": "ValueError"
+    }
+   }
+  },
+  "refused_empty": {
+   "mirrors": "tests/test_owner_canary_plan.py::test_plan_scoped_file_names_accept_only_plan_tokens",
+   "plan_token": {
+    "raised": {
+     "message": "plan_id is not a plan token",
+     "type": "ValueError"
+    }
+   },
+   "receipt": {
+    "raised": {
+     "message": "plan_id is not a plan token",
+     "type": "ValueError"
+    }
+   },
+   "request": {
+    "raised": {
+     "message": "plan_id is not a plan token",
+     "type": "ValueError"
+    }
+   }
+  },
+  "refused_integer": {
+   "plan_token": {
+    "raised": {
+     "message": "plan_id is not a plan token",
+     "type": "ValueError"
+    }
+   },
+   "receipt": {
+    "raised": {
+     "message": "plan_id is not a plan token",
+     "type": "ValueError"
+    }
+   },
+   "request": {
+    "raised": {
+     "message": "plan_id is not a plan token",
+     "type": "ValueError"
+    }
+   }
+  },
+  "refused_leading-dash": {
+   "plan_token": {
+    "raised": {
+     "message": "plan_id is not a plan token",
+     "type": "ValueError"
+    }
+   },
+   "receipt": {
+    "raised": {
+     "message": "plan_id is not a plan token",
+     "type": "ValueError"
+    }
+   },
+   "request": {
+    "raised": {
+     "message": "plan_id is not a plan token",
+     "type": "ValueError"
+    }
+   }
+  },
+  "refused_leading-dot": {
+   "mirrors": "tests/test_owner_canary_plan.py::test_plan_scoped_file_names_accept_only_plan_tokens",
+   "plan_token": {
+    "raised": {
+     "message": "plan_id is not a plan token",
+     "type": "ValueError"
+    }
+   },
+   "receipt": {
+    "raised": {
+     "message": "plan_id is not a plan token",
+     "type": "ValueError"
+    }
+   },
+   "request": {
+    "raised": {
+     "message": "plan_id is not a plan token",
+     "type": "ValueError"
+    }
+   }
+  },
+  "refused_non-ascii": {
+   "plan_token": {
+    "raised": {
+     "message": "plan_id is not a plan token",
+     "type": "ValueError"
+    }
+   },
+   "receipt": {
+    "raised": {
+     "message": "plan_id is not a plan token",
+     "type": "ValueError"
+    }
+   },
+   "request": {
+    "raised": {
+     "message": "plan_id is not a plan token",
+     "type": "ValueError"
+    }
+   }
+  },
+  "refused_none": {
+   "mirrors": "tests/test_owner_canary_plan.py::test_plan_scoped_file_names_accept_only_plan_tokens",
+   "plan_token": {
+    "raised": {
+     "message": "plan_id is not a plan token",
+     "type": "ValueError"
+    }
+   },
+   "receipt": {
+    "raised": {
+     "message": "plan_id is not a plan token",
+     "type": "ValueError"
+    }
+   },
+   "request": {
+    "raised": {
+     "message": "plan_id is not a plan token",
+     "type": "ValueError"
+    }
+   }
+  },
+  "refused_parent-traversal": {
+   "mirrors": "tests/test_owner_canary_plan.py::test_plan_scoped_file_names_accept_only_plan_tokens",
+   "plan_token": {
+    "raised": {
+     "message": "plan_id is not a plan token",
+     "type": "ValueError"
+    }
+   },
+   "receipt": {
+    "raised": {
+     "message": "plan_id is not a plan token",
+     "type": "ValueError"
+    }
+   },
+   "request": {
+    "raised": {
+     "message": "plan_id is not a plan token",
+     "type": "ValueError"
+    }
+   }
+  },
+  "refused_sixty-five": {
+   "plan_token": {
+    "raised": {
+     "message": "plan_id is not a plan token",
+     "type": "ValueError"
+    }
+   },
+   "receipt": {
+    "raised": {
+     "message": "plan_id is not a plan token",
+     "type": "ValueError"
+    }
+   },
+   "request": {
+    "raised": {
+     "message": "plan_id is not a plan token",
+     "type": "ValueError"
+    }
+   }
+  },
+  "refused_slash": {
+   "mirrors": "tests/test_owner_canary_plan.py::test_plan_scoped_file_names_accept_only_plan_tokens",
+   "plan_token": {
+    "raised": {
+     "message": "plan_id is not a plan token",
+     "type": "ValueError"
+    }
+   },
+   "receipt": {
+    "raised": {
+     "message": "plan_id is not a plan token",
+     "type": "ValueError"
+    }
+   },
+   "request": {
+    "raised": {
+     "message": "plan_id is not a plan token",
+     "type": "ValueError"
+    }
+   }
+  },
+  "refused_space": {
+   "plan_token": {
+    "raised": {
+     "message": "plan_id is not a plan token",
+     "type": "ValueError"
+    }
+   },
+   "receipt": {
+    "raised": {
+     "message": "plan_id is not a plan token",
+     "type": "ValueError"
+    }
+   },
+   "request": {
+    "raised": {
+     "message": "plan_id is not a plan token",
+     "type": "ValueError"
+    }
+   }
+  },
+  "refused_trailing-newline": {
+   "plan_token": {
+    "raised": {
+     "message": "plan_id is not a plan token",
+     "type": "ValueError"
+    }
+   },
+   "receipt": {
+    "raised": {
+     "message": "plan_id is not a plan token",
+     "type": "ValueError"
+    }
+   },
+   "request": {
+    "raised": {
+     "message": "plan_id is not a plan token",
+     "type": "ValueError"
+    }
+   }
+  },
+  "token_digit-first": {
+   "plan_token": {
+    "returned": "1abc"
+   },
+   "receipt": {
+    "returned": "owner-canary-receipt.1abc.json"
+   },
+   "request": {
+    "returned": "owner-canary-request.1abc.json"
+   }
+  },
+  "token_dots-underscores-dashes": {
+   "plan_token": {
+    "returned": "a.b_c-d"
+   },
+   "receipt": {
+    "returned": "owner-canary-receipt.a.b_c-d.json"
+   },
+   "request": {
+    "returned": "owner-canary-request.a.b_c-d.json"
+   }
+  },
+  "token_owner-action": {
+   "plan_token": {
+    "returned": "own-aaaaaaaaaaaaaaaaaaaaaaaa"
+   },
+   "receipt": {
+    "returned": "owner-canary-receipt.own-aaaaaaaaaaaaaaaaaaaaaaaa.json"
+   },
+   "request": {
+    "returned": "owner-canary-request.own-aaaaaaaaaaaaaaaaaaaaaaaa.json"
+   }
+  },
+  "token_plan-1": {
+   "plan_token": {
+    "returned": "plan-1"
+   },
+   "receipt": {
+    "returned": "owner-canary-receipt.plan-1.json"
+   },
+   "request": {
+    "returned": "owner-canary-request.plan-1.json"
+   }
+  },
+  "token_plan_1_names": {
+   "mirrors": "tests/test_owner_canary_plan.py::test_plan_scoped_file_names_accept_only_plan_tokens",
+   "receipt": true,
+   "request": true
+  },
+  "token_single-letter": {
+   "plan_token": {
+    "returned": "A"
+   },
+   "receipt": {
+    "returned": "owner-canary-receipt.A.json"
+   },
+   "request": {
+    "returned": "owner-canary-request.A.json"
+   }
+  },
+  "token_sixty-four": {
+   "plan_token": {
+    "returned": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+   },
+   "receipt": {
+    "returned": "owner-canary-receipt.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.json"
+   },
+   "request": {
+    "returned": "owner-canary-request.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.json"
+   }
+  }
+ },
+ "first_activation": {
+  "docker_is_asked_before_the_revision_is_checked": {
+   "calls": [
+    {
+     "argv": [
+      "docker",
+      "image",
+      "inspect",
+      "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "--format",
+      "{{.Id}} {{index .Config.Labels \"org.opencontainers.image.revision\"}}"
+     ],
+     "timeout": 30
+    }
+   ],
+   "note": "an invalid revision still runs the docker inspect first (the refusal order)",
+   "result": {
+    "raised": {
+     "field": "profile_digest",
+     "message": "host delivery refused: first_activation_profile_unresolved (profile_digest)",
+     "reason_code": "first_activation_profile_unresolved",
+     "type": "DeliveryRefused"
+    }
+   }
+  },
+  "docker_nonzero_exit": {
+   "docker_calls": [
+    {
+     "argv": [
+      "docker",
+      "image",
+      "inspect",
+      "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "--format",
+      "{{.Id}} {{index .Config.Labels \"org.opencontainers.image.revision\"}}"
+     ],
+     "timeout": 30
+    }
+   ],
+   "mirrors": "test_the_port_re_derives_the_image_from_settings_and_the_local_image",
+   "result": {
+    "raised": {
+     "field": "worker_image",
+     "message": "host delivery refused: first_activation_image_unavailable (worker_image)",
+     "reason_code": "first_activation_image_unavailable",
+     "type": "DeliveryRefused"
+    }
+   }
+  },
+  "docker_raises": {
+   "docker_calls": [
+    {
+     "argv": [
+      "docker",
+      "image",
+      "inspect",
+      "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "--format",
+      "{{.Id}} {{index .Config.Labels \"org.opencontainers.image.revision\"}}"
+     ],
+     "timeout": 30
+    }
+   ],
+   "result": {
+    "raised": {
+     "field": "worker_image",
+     "message": "host delivery refused: first_activation_image_unavailable (worker_image)",
+     "reason_code": "first_activation_image_unavailable",
+     "type": "DeliveryRefused"
+    }
+   }
+  },
+  "docker_raises_a_timeout": {
+   "docker_calls": [
+    {
+     "argv": [
+      "docker",
+      "image",
+      "inspect",
+      "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "--format",
+      "{{.Id}} {{index .Config.Labels \"org.opencontainers.image.revision\"}}"
+     ],
+     "timeout": 30
+    }
+   ],
+   "result": {
+    "raised": {
+     "field": "worker_image",
+     "message": "host delivery refused: first_activation_image_unavailable (worker_image)",
+     "reason_code": "first_activation_image_unavailable",
+     "type": "DeliveryRefused"
+    }
+   }
+  },
+  "docker_reports_a_short_revision": {
+   "docker_calls": [
+    {
+     "argv": [
+      "docker",
+      "image",
+      "inspect",
+      "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "--format",
+      "{{.Id}} {{index .Config.Labels \"org.opencontainers.image.revision\"}}"
+     ],
+     "timeout": 30
+    }
+   ],
+   "result": {
+    "raised": {
+     "field": "worker_image",
+     "message": "host delivery refused: first_activation_image_unavailable (worker_image)",
+     "reason_code": "first_activation_image_unavailable",
+     "type": "DeliveryRefused"
+    }
+   }
+  },
+  "docker_reports_an_uppercase_revision": {
+   "docker_calls": [
+    {
+     "argv": [
+      "docker",
+      "image",
+      "inspect",
+      "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "--format",
+      "{{.Id}} {{index .Config.Labels \"org.opencontainers.image.revision\"}}"
+     ],
+     "timeout": 30
+    }
+   ],
+   "result": {
+    "raised": {
+     "field": "worker_image",
+     "message": "host delivery refused: first_activation_image_unavailable (worker_image)",
+     "reason_code": "first_activation_image_unavailable",
+     "type": "DeliveryRefused"
+    }
+   }
+  },
+  "docker_reports_no_revision_label": {
+   "docker_calls": [
+    {
+     "argv": [
+      "docker",
+      "image",
+      "inspect",
+      "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "--format",
+      "{{.Id}} {{index .Config.Labels \"org.opencontainers.image.revision\"}}"
+     ],
+     "timeout": 30
+    }
+   ],
+   "mirrors": "test_the_port_re_derives_the_image_from_settings_and_the_local_image",
+   "result": {
+    "raised": {
+     "field": "worker_image",
+     "message": "host delivery refused: first_activation_image_unavailable (worker_image)",
+     "reason_code": "first_activation_image_unavailable",
+     "type": "DeliveryRefused"
+    }
+   }
+  },
+  "docker_reports_no_value_label": {
+   "docker_calls": [
+    {
+     "argv": [
+      "docker",
+      "image",
+      "inspect",
+      "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "--format",
+      "{{.Id}} {{index .Config.Labels \"org.opencontainers.image.revision\"}}"
+     ],
+     "timeout": 30
+    }
+   ],
+   "result": {
+    "raised": {
+     "field": "worker_image",
+     "message": "host delivery refused: first_activation_image_unavailable (worker_image)",
+     "reason_code": "first_activation_image_unavailable",
+     "type": "DeliveryRefused"
+    }
+   }
+  },
+  "docker_reports_three_fields": {
+   "docker_calls": [
+    {
+     "argv": [
+      "docker",
+      "image",
+      "inspect",
+      "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "--format",
+      "{{.Id}} {{index .Config.Labels \"org.opencontainers.image.revision\"}}"
+     ],
+     "timeout": 30
+    }
+   ],
+   "result": {
+    "raised": {
+     "field": "worker_image",
+     "message": "host delivery refused: first_activation_image_unavailable (worker_image)",
+     "reason_code": "first_activation_image_unavailable",
+     "type": "DeliveryRefused"
+    }
+   }
+  },
+  "docker_stdout_empty": {
+   "docker_calls": [
+    {
+     "argv": [
+      "docker",
+      "image",
+      "inspect",
+      "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "--format",
+      "{{.Id}} {{index .Config.Labels \"org.opencontainers.image.revision\"}}"
+     ],
+     "timeout": 30
+    }
+   ],
+   "result": {
+    "raised": {
+     "field": "worker_image",
+     "message": "host delivery refused: first_activation_image_unavailable (worker_image)",
+     "reason_code": "first_activation_image_unavailable",
+     "type": "DeliveryRefused"
+    }
+   }
+  },
+  "empty_source_is_unresolved": {
+   "docker_calls": [
+    {
+     "argv": [
+      "docker",
+      "image",
+      "inspect",
+      "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "--format",
+      "{{.Id}} {{index .Config.Labels \"org.opencontainers.image.revision\"}}"
+     ],
+     "timeout": 30
+    }
+   ],
+   "mirrors": "test_the_port_re_derives_the_image_from_settings_and_the_local_image",
+   "result": {
+    "raised": {
+     "field": "profile_digest",
+     "message": "host delivery refused: first_activation_profile_unresolved (profile_digest)",
+     "reason_code": "first_activation_profile_unresolved",
+     "type": "DeliveryRefused"
+    }
+   }
+  },
+  "facts_from_the_committed_resources": {
+   "docker_calls": [
+    {
+     "argv": [
+      "docker",
+      "image",
+      "inspect",
+      "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "--format",
+      "{{.Id}} {{index .Config.Labels \"org.opencontainers.image.revision\"}}"
+     ],
+     "timeout": 30
+    }
+   ],
+   "result": {
+    "returned": {
+     "image_source_revision": "ab12cd34efab12cd34efab12cd34efab12cd34ef",
+     "profile_digest": "cc7150678052ad3d4636a930a7fef34f5a991cfe85b633ada5dc49b830b93bda",
+     "worker_image": "<present>"
+    }
+   },
+   "revision": "6f702856b9a2d11917b7f613b17f862f177e1591"
+  },
+  "facts_with_a_source_double": {
+   "docker_calls": [
+    {
+     "argv": [
+      "docker",
+      "image",
+      "inspect",
+      "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "--format",
+      "{{.Id}} {{index .Config.Labels \"org.opencontainers.image.revision\"}}"
+     ],
+     "timeout": 30
+    }
+   ],
+   "result": {
+    "returned": {
+     "image_source_revision": "ab12cd34efab12cd34efab12cd34efab12cd34ef",
+     "profile_digest": "cc7150678052ad3d4636a930a7fef34f5a991cfe85b633ada5dc49b830b93bda",
+     "worker_image": "<present>"
+    }
+   }
+  },
+  "host_none_labelled_environment": {
+   "docker_calls": [
+    {
+     "argv": [
+      "docker",
+      "image",
+      "inspect",
+      "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "--format",
+      "{{.Id}} {{index .Config.Labels \"org.opencontainers.image.revision\"}}"
+     ],
+     "timeout": 30
+    }
+   ],
+   "result": {
+    "returned": {
+     "image_source_revision": "ab12cd34efab12cd34efab12cd34efab12cd34ef",
+     "profile_digest": "cc7150678052ad3d4636a930a7fef34f5a991cfe85b633ada5dc49b830b93bda",
+     "worker_image": "<present>"
+    }
+   }
+  },
+  "host_none_labelled_nothing": {
+   "docker_calls": [],
+   "result": {
+    "raised": {
+     "field": "worker_image",
+     "message": "host delivery refused: first_activation_image_unconfigured (worker_image)",
+     "reason_code": "first_activation_image_unconfigured",
+     "type": "DeliveryRefused"
+    }
+   }
+  },
+  "host_none_labelled_settings_file": {
+   "docker_calls": [
+    {
+     "argv": [
+      "docker",
+      "image",
+      "inspect",
+      "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "--format",
+      "{{.Id}} {{index .Config.Labels \"org.opencontainers.image.revision\"}}"
+     ],
+     "timeout": 30
+    }
+   ],
+   "result": {
+    "returned": {
+     "image_source_revision": "ab12cd34efab12cd34efab12cd34efab12cd34ef",
+     "profile_digest": "cc7150678052ad3d4636a930a7fef34f5a991cfe85b633ada5dc49b830b93bda",
+     "worker_image": "<present>"
+    }
+   }
+  },
+  "image_harness_alias": {
+   "docker_calls": [
+    {
+     "argv": [
+      "docker",
+      "image",
+      "inspect",
+      "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "--format",
+      "{{.Id}} {{index .Config.Labels \"org.opencontainers.image.revision\"}}"
+     ],
+     "timeout": 30
+    }
+   ],
+   "result": {
+    "returned": {
+     "image_source_revision": "ab12cd34efab12cd34efab12cd34efab12cd34ef",
+     "profile_digest": "cc7150678052ad3d4636a930a7fef34f5a991cfe85b633ada5dc49b830b93bda",
+     "worker_image": "<present>"
+    }
+   }
+  },
+  "image_id_padded_with_spaces": {
+   "docker_calls": [
+    {
+     "argv": [
+      "docker",
+      "image",
+      "inspect",
+      "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "--format",
+      "{{.Id}} {{index .Config.Labels \"org.opencontainers.image.revision\"}}"
+     ],
+     "timeout": 30
+    }
+   ],
+   "result": {
+    "returned": {
+     "image_source_revision": "ab12cd34efab12cd34efab12cd34efab12cd34ef",
+     "profile_digest": "cc7150678052ad3d4636a930a7fef34f5a991cfe85b633ada5dc49b830b93bda",
+     "worker_image": "<present>"
+    }
+   }
+  },
+  "image_id_uppercase_hex": {
+   "docker_calls": [],
+   "result": {
+    "raised": {
+     "field": "worker_image",
+     "message": "host delivery refused: first_activation_image_unconfigured (worker_image)",
+     "reason_code": "first_activation_image_unconfigured",
+     "type": "DeliveryRefused"
+    }
+   }
+  },
+  "image_none_token": {
+   "docker_calls": [],
+   "result": {
+    "raised": {
+     "field": "worker_image",
+     "message": "host delivery refused: first_activation_image_unconfigured (worker_image)",
+     "reason_code": "first_activation_image_unconfigured",
+     "type": "DeliveryRefused"
+    }
+   }
+  },
+  "image_not_an_immutable_id": {
+   "docker_calls": [],
+   "result": {
+    "raised": {
+     "field": "worker_image",
+     "message": "host delivery refused: first_activation_image_unconfigured (worker_image)",
+     "reason_code": "first_activation_image_unconfigured",
+     "type": "DeliveryRefused"
+    }
+   }
+  },
+  "image_tag_with_a_digest_is_not_an_id": {
+   "docker_calls": [],
+   "result": {
+    "raised": {
+     "field": "worker_image",
+     "message": "host delivery refused: first_activation_image_unconfigured (worker_image)",
+     "reason_code": "first_activation_image_unconfigured",
+     "type": "DeliveryRefused"
+    }
+   }
+  },
+  "lane_without_repository_and_a_source_double": {
+   "docker_calls": [
+    {
+     "argv": [
+      "docker",
+      "image",
+      "inspect",
+      "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "--format",
+      "{{.Id}} {{index .Config.Labels \"org.opencontainers.image.revision\"}}"
+     ],
+     "timeout": 30
+    }
+   ],
+   "result": {
+    "returned": {
+     "image_source_revision": "ab12cd34efab12cd34efab12cd34efab12cd34ef",
+     "profile_digest": "cc7150678052ad3d4636a930a7fef34f5a991cfe85b633ada5dc49b830b93bda",
+     "worker_image": "<present>"
+    }
+   }
+  },
+  "other_image_reported": {
+   "docker_calls": [
+    {
+     "argv": [
+      "docker",
+      "image",
+      "inspect",
+      "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "--format",
+      "{{.Id}} {{index .Config.Labels \"org.opencontainers.image.revision\"}}"
+     ],
+     "timeout": 30
+    }
+   ],
+   "mirrors": "test_the_port_re_derives_the_image_from_settings_and_the_local_image",
+   "result": {
+    "raised": {
+     "field": "worker_image",
+     "message": "host delivery refused: first_activation_image_unavailable (worker_image)",
+     "reason_code": "first_activation_image_unavailable",
+     "type": "DeliveryRefused"
+    }
+   }
+  },
+  "revision_not_a_hash": {
+   "docker_calls": [
+    {
+     "argv": [
+      "docker",
+      "image",
+      "inspect",
+      "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "--format",
+      "{{.Id}} {{index .Config.Labels \"org.opencontainers.image.revision\"}}"
+     ],
+     "timeout": 30
+    }
+   ],
+   "result": {
+    "raised": {
+     "field": "profile_digest",
+     "message": "host delivery refused: first_activation_profile_unresolved (profile_digest)",
+     "reason_code": "first_activation_profile_unresolved",
+     "type": "DeliveryRefused"
+    }
+   }
+  },
+  "revision_not_a_string": {
+   "docker_calls": [
+    {
+     "argv": [
+      "docker",
+      "image",
+      "inspect",
+      "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "--format",
+      "{{.Id}} {{index .Config.Labels \"org.opencontainers.image.revision\"}}"
+     ],
+     "timeout": 30
+    }
+   ],
+   "result": {
+    "raised": {
+     "field": "profile_digest",
+     "message": "host delivery refused: first_activation_profile_unresolved (profile_digest)",
+     "reason_code": "first_activation_profile_unresolved",
+     "type": "DeliveryRefused"
+    }
+   }
+  },
+  "revision_short": {
+   "docker_calls": [
+    {
+     "argv": [
+      "docker",
+      "image",
+      "inspect",
+      "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "--format",
+      "{{.Id}} {{index .Config.Labels \"org.opencontainers.image.revision\"}}"
+     ],
+     "timeout": 30
+    }
+   ],
+   "result": {
+    "raised": {
+     "field": "profile_digest",
+     "message": "host delivery refused: first_activation_profile_unresolved (profile_digest)",
+     "reason_code": "first_activation_profile_unresolved",
+     "type": "DeliveryRefused"
+    }
+   }
+  },
+  "revision_unknown_to_the_repository": {
+   "docker_calls": [
+    {
+     "argv": [
+      "docker",
+      "image",
+      "inspect",
+      "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "--format",
+      "{{.Id}} {{index .Config.Labels \"org.opencontainers.image.revision\"}}"
+     ],
+     "timeout": 30
+    }
+   ],
+   "result": {
+    "raised": {
+     "field": "profile_digest",
+     "message": "host delivery refused: first_activation_profile_unresolved (profile_digest)",
+     "reason_code": "first_activation_profile_unresolved",
+     "type": "DeliveryRefused"
+    }
+   }
+  },
+  "unconfigured_image_no_settings": {
+   "docker_calls": [],
+   "mirrors": "test_the_port_re_derives_the_image_from_settings_and_the_local_image",
+   "result": {
+    "raised": {
+     "field": "worker_image",
+     "message": "host delivery refused: first_activation_image_unconfigured (worker_image)",
+     "reason_code": "first_activation_image_unconfigured",
+     "type": "DeliveryRefused"
+    }
+   }
+  }
+ },
+ "live_children": 0,
+ "plan": {
+  "exactly_at_the_size_bound_is_accepted": {
+   "result": {
+    "returned": {
+     "bytes": 65536,
+     "pin": {
+      "path": "docs/zeus/operations/delivery.json",
+      "revision": "7d1a9a8e2c01e06f04397a10b8c0809c0342e34b",
+      "sha256": "c8005c5a30572e2945514a088d1efc39fa99581fc2e24b199e927f2a5f7875a2"
+     },
+     "plan": {
+      "canary_check_id": "startup_identity",
+      "ci_timeout_seconds": 300,
+      "consumption_timeout_seconds": 120,
+      "expected_descriptor": null,
+      "plan_id": "delivery-plan-1",
+      "policy_hash": "1111111111111111111111111111111111111111111111111111111111111111",
+      "release_id": "release-1",
+      "repository": "github:zeus-owner/zeus-harness",
+      "required_checks": [
+       "ci / required"
+      ],
+      "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "schema": "urn:zeus:host-delivery:1",
+      "target_descriptor": {
+       "profile_digest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+       "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "worker_image": "zeus-worker@sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+      },
+      "target_id": "canary-service",
+      "tree": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+     }
+    }
+   },
+   "size": 65536
+  },
+  "pinned_to_the_exact_committed_bytes": {
+   "after_a_working_tree_edit": {
+    "returned": {
+     "bytes": 826,
+     "pin": {
+      "path": "docs/zeus/operations/delivery.json",
+      "revision": "ad54b80fc21f428767b80858b751d204317d6692",
+      "sha256": "eecf7d025082925c7776c1fa05ab2eb81dbfc1fc08fdb62b09233c99d0e78ead"
+     },
+     "plan": {
+      "canary_check_id": "startup_identity",
+      "ci_timeout_seconds": 300,
+      "consumption_timeout_seconds": 120,
+      "expected_descriptor": null,
+      "plan_id": "delivery-plan-1",
+      "policy_hash": "1111111111111111111111111111111111111111111111111111111111111111",
+      "release_id": "release-1",
+      "repository": "github:zeus-owner/zeus-harness",
+      "required_checks": [
+       "ci / required"
+      ],
+      "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "schema": "urn:zeus:host-delivery:1",
+      "target_descriptor": {
+       "profile_digest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+       "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "worker_image": "zeus-worker@sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+      },
+      "target_id": "canary-service",
+      "tree": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+     }
+    }
+   },
+   "bytes": 826,
+   "loaded": {
+    "returned": {
+     "bytes": 826,
+     "pin": {
+      "path": "docs/zeus/operations/delivery.json",
+      "revision": "ad54b80fc21f428767b80858b751d204317d6692",
+      "sha256": "eecf7d025082925c7776c1fa05ab2eb81dbfc1fc08fdb62b09233c99d0e78ead"
+     },
+     "plan": {
+      "canary_check_id": "startup_identity",
+      "ci_timeout_seconds": 300,
+      "consumption_timeout_seconds": 120,
+      "expected_descriptor": null,
+      "plan_id": "delivery-plan-1",
+      "policy_hash": "1111111111111111111111111111111111111111111111111111111111111111",
+      "release_id": "release-1",
+      "repository": "github:zeus-owner/zeus-harness",
+      "required_checks": [
+       "ci / required"
+      ],
+      "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "schema": "urn:zeus:host-delivery:1",
+      "target_descriptor": {
+       "profile_digest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+       "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "worker_image": "zeus-worker@sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+      },
+      "target_id": "canary-service",
+      "tree": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+     }
+    }
+   },
+   "mirrors": "tests/test_host_delivery_cli.py::test_the_plan_is_read_from_the_commit_and_pinned_to_its_exact_bytes",
+   "pin_equals": true,
+   "revision": "ad54b80fc21f428767b80858b751d204317d6692",
+   "sha256_of_the_bytes": "eecf7d025082925c7776c1fa05ab2eb81dbfc1fc08fdb62b09233c99d0e78ead"
+  },
+  "read_abbreviated_revision": {
+   "result": {
+    "returned": {
+     "bytes": 826,
+     "pin": {
+      "path": "docs/zeus/operations/delivery.json",
+      "revision": "ad54b80fc21f",
+      "sha256": "eecf7d025082925c7776c1fa05ab2eb81dbfc1fc08fdb62b09233c99d0e78ead"
+     },
+     "plan": {
+      "canary_check_id": "startup_identity",
+      "ci_timeout_seconds": 300,
+      "consumption_timeout_seconds": 120,
+      "expected_descriptor": null,
+      "plan_id": "delivery-plan-1",
+      "policy_hash": "1111111111111111111111111111111111111111111111111111111111111111",
+      "release_id": "release-1",
+      "repository": "github:zeus-owner/zeus-harness",
+      "required_checks": [
+       "ci / required"
+      ],
+      "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "schema": "urn:zeus:host-delivery:1",
+      "target_descriptor": {
+       "profile_digest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+       "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "worker_image": "zeus-worker@sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+      },
+      "target_id": "canary-service",
+      "tree": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+     }
+    }
+   },
+   "revision": "ad54b80fc21f428767b80858b751d204317d6692"
+  },
+  "read_absolute_path": {
+   "result": {
+    "raised": {
+     "message": "host delivery refused: plan_missing_at_revision",
+     "reason_code": "plan_missing_at_revision",
+     "type": "DeliveryRefused"
+    }
+   },
+   "revision": "ad54b80fc21f428767b80858b751d204317d6692"
+  },
+  "read_backslash_path": {
+   "result": {
+    "raised": {
+     "message": "host delivery refused: plan_missing_at_revision",
+     "reason_code": "plan_missing_at_revision",
+     "type": "DeliveryRefused"
+    }
+   },
+   "revision": "ad54b80fc21f428767b80858b751d204317d6692"
+  },
+  "read_branch_name_as_the_revision": {
+   "result": {
+    "returned": {
+     "bytes": 826,
+     "pin": {
+      "path": "docs/zeus/operations/delivery.json",
+      "revision": "main",
+      "sha256": "eecf7d025082925c7776c1fa05ab2eb81dbfc1fc08fdb62b09233c99d0e78ead"
+     },
+     "plan": {
+      "canary_check_id": "startup_identity",
+      "ci_timeout_seconds": 300,
+      "consumption_timeout_seconds": 120,
+      "expected_descriptor": null,
+      "plan_id": "delivery-plan-1",
+      "policy_hash": "1111111111111111111111111111111111111111111111111111111111111111",
+      "release_id": "release-1",
+      "repository": "github:zeus-owner/zeus-harness",
+      "required_checks": [
+       "ci / required"
+      ],
+      "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "schema": "urn:zeus:host-delivery:1",
+      "target_descriptor": {
+       "profile_digest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+       "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "worker_image": "zeus-worker@sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+      },
+      "target_id": "canary-service",
+      "tree": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+     }
+    }
+   },
+   "revision": "ad54b80fc21f428767b80858b751d204317d6692"
+  },
+  "read_directory_path": {
+   "result": {
+    "raised": {
+     "message": "host delivery refused: plan_not_regular",
+     "reason_code": "plan_not_regular",
+     "type": "DeliveryRefused"
+    }
+   },
+   "revision": "ad54b80fc21f428767b80858b751d204317d6692"
+  },
+  "read_empty_path": {
+   "result": {
+    "raised": {
+     "message": "host delivery refused: plan_missing_at_revision",
+     "reason_code": "plan_missing_at_revision",
+     "type": "DeliveryRefused"
+    }
+   },
+   "revision": "ad54b80fc21f428767b80858b751d204317d6692"
+  },
+  "read_empty_revision": {
+   "result": {
+    "raised": {
+     "message": "host delivery refused: plan_revision_missing",
+     "reason_code": "plan_revision_missing",
+     "type": "DeliveryRefused"
+    }
+   },
+   "revision": "ad54b80fc21f428767b80858b751d204317d6692"
+  },
+  "read_option_like_revision": {
+   "result": {
+    "raised": {
+     "message": "host delivery refused: plan_revision_missing",
+     "reason_code": "plan_revision_missing",
+     "type": "DeliveryRefused"
+    }
+   },
+   "revision": "ad54b80fc21f428767b80858b751d204317d6692"
+  },
+  "read_path_traversal": {
+   "result": {
+    "raised": {
+     "message": "host delivery refused: plan_missing_at_revision",
+     "reason_code": "plan_missing_at_revision",
+     "type": "DeliveryRefused"
+    }
+   },
+   "revision": "ad54b80fc21f428767b80858b751d204317d6692"
+  },
+  "refused_a_committed_symlink": {
+   "result": {
+    "raised": {
+     "message": "host delivery refused: plan_not_regular",
+     "reason_code": "plan_not_regular",
+     "type": "DeliveryRefused"
+    }
+   }
+  },
+  "refused_a_directory_at_the_plan_path": {
+   "result": {
+    "raised": {
+     "message": "host delivery refused: plan_not_regular",
+     "reason_code": "plan_not_regular",
+     "type": "DeliveryRefused"
+    }
+   }
+  },
+  "refused_invalid_canary": {
+   "message_carries_no_bytes": true,
+   "mirrors": "tests/test_host_delivery_cli.py::test_a_malformed_or_oversized_plan_is_refused_by_code_without_its_bytes[invalid-canary]",
+   "result": {
+    "raised": {
+     "field": "canary_check_id",
+     "message": "host delivery refused: plan_invalid (canary_check_id)",
+     "reason_code": "plan_invalid",
+     "type": "DeliveryRefused"
+    }
+   }
+  },
+  "refused_missing_fields": {
+   "message_carries_no_bytes": true,
+   "mirrors": "tests/test_host_delivery_cli.py::test_a_malformed_or_oversized_plan_is_refused_by_code_without_its_bytes[missing-fields]",
+   "result": {
+    "raised": {
+     "field": "root",
+     "message": "host delivery refused: plan_fields (root)",
+     "reason_code": "plan_fields",
+     "type": "DeliveryRefused"
+    }
+   }
+  },
+  "refused_missing_path": {
+   "mirrors": "tests/test_host_delivery_cli.py::test_a_missing_path_or_revision_is_a_code_not_a_traceback",
+   "result": {
+    "raised": {
+     "message": "host delivery refused: plan_missing_at_revision",
+     "reason_code": "plan_missing_at_revision",
+     "type": "DeliveryRefused"
+    }
+   }
+  },
+  "refused_not_json": {
+   "message_carries_no_bytes": true,
+   "mirrors": "tests/test_host_delivery_cli.py::test_a_malformed_or_oversized_plan_is_refused_by_code_without_its_bytes[not-json]",
+   "result": {
+    "raised": {
+     "message": "host delivery refused: plan_not_json",
+     "reason_code": "plan_not_json",
+     "type": "DeliveryRefused"
+    }
+   }
+  },
+  "refused_oversized": {
+   "message_carries_no_bytes": true,
+   "mirrors": "tests/test_host_delivery_cli.py::test_a_malformed_or_oversized_plan_is_refused_by_code_without_its_bytes[oversized]",
+   "result": {
+    "raised": {
+     "message": "host delivery refused: plan_too_large",
+     "reason_code": "plan_too_large",
+     "type": "DeliveryRefused"
+    }
+   }
+  },
+  "refused_unknown_revision": {
+   "mirrors": "tests/test_host_delivery_cli.py::test_a_missing_path_or_revision_is_a_code_not_a_traceback",
+   "result": {
+    "raised": {
+     "message": "host delivery refused: plan_revision_missing",
+     "reason_code": "plan_revision_missing",
+     "type": "DeliveryRefused"
+    }
+   }
+  },
+  "shape_bad_expected_descriptor": {
+   "result": {
+    "raised": {
+     "field": "expected_descriptor",
+     "message": "host delivery refused: plan_invalid (expected_descriptor)",
+     "reason_code": "plan_invalid",
+     "type": "DeliveryRefused"
+    }
+   },
+   "size": 827
+  },
+  "shape_bad_repository": {
+   "result": {
+    "raised": {
+     "field": "repository",
+     "message": "host delivery refused: plan_invalid (repository)",
+     "reason_code": "plan_invalid",
+     "type": "DeliveryRefused"
+    }
+   },
+   "size": 806
+  },
+  "shape_bad_revision": {
+   "result": {
+    "raised": {
+     "field": "revision",
+     "message": "host delivery refused: plan_invalid (revision)",
+     "reason_code": "plan_invalid",
+     "type": "DeliveryRefused"
+    }
+   },
+   "size": 789
+  },
+  "shape_bad_timeout": {
+   "result": {
+    "raised": {
+     "field": "ci_timeout_seconds",
+     "message": "host delivery refused: plan_invalid (ci_timeout_seconds)",
+     "reason_code": "plan_invalid",
+     "type": "DeliveryRefused"
+    }
+   },
+   "size": 824
+  },
+  "shape_duplicate_checks": {
+   "result": {
+    "raised": {
+     "field": "required_checks",
+     "message": "host delivery refused: plan_duplicate (required_checks)",
+     "reason_code": "plan_duplicate",
+     "type": "DeliveryRefused"
+    }
+   },
+   "size": 843
+  },
+  "shape_each_canary_collect": {
+   "result": {
+    "returned": {
+     "bytes": 832,
+     "pin": {
+      "path": "docs/zeus/operations/delivery.json",
+      "revision": "3ec15d0a4d0a7801fd3d8027c5fac79075f9a829",
+      "sha256": "93b22cd2411a38ffd0298cd66d9d081369acb66f8c1d56ab0351174f8a4535a1"
+     },
+     "plan": {
+      "canary_check_id": "collect_monitor_source",
+      "ci_timeout_seconds": 300,
+      "consumption_timeout_seconds": 120,
+      "expected_descriptor": null,
+      "plan_id": "delivery-plan-1",
+      "policy_hash": "1111111111111111111111111111111111111111111111111111111111111111",
+      "release_id": "release-1",
+      "repository": "github:zeus-owner/zeus-harness",
+      "required_checks": [
+       "ci / required"
+      ],
+      "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "schema": "urn:zeus:host-delivery:1",
+      "target_descriptor": {
+       "profile_digest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+       "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "worker_image": "zeus-worker@sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+      },
+      "target_id": "canary-service",
+      "tree": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+     }
+    }
+   },
+   "size": 832
+  },
+  "shape_each_canary_fleet": {
+   "result": {
+    "returned": {
+     "bytes": 832,
+     "pin": {
+      "path": "docs/zeus/operations/delivery.json",
+      "revision": "7d909cbafe1ddf0ff16f61905acde366beb241d8",
+      "sha256": "962bfa76b6fffc017d5c512d10fd598ebae42b2fb5c834f6c38fbeedb7e6598a"
+     },
+     "plan": {
+      "canary_check_id": "fleet_worker_operation",
+      "ci_timeout_seconds": 300,
+      "consumption_timeout_seconds": 120,
+      "expected_descriptor": null,
+      "plan_id": "delivery-plan-1",
+      "policy_hash": "1111111111111111111111111111111111111111111111111111111111111111",
+      "release_id": "release-1",
+      "repository": "github:zeus-owner/zeus-harness",
+      "required_checks": [
+       "ci / required"
+      ],
+      "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "schema": "urn:zeus:host-delivery:1",
+      "target_descriptor": {
+       "profile_digest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+       "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "worker_image": "zeus-worker@sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+      },
+      "target_id": "canary-service",
+      "tree": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+     }
+    }
+   },
+   "size": 832
+  },
+  "shape_empty_file": {
+   "result": {
+    "raised": {
+     "message": "host delivery refused: plan_not_json",
+     "reason_code": "plan_not_json",
+     "type": "DeliveryRefused"
+    }
+   },
+   "size": 0
+  },
+  "shape_json_list": {
+   "result": {
+    "raised": {
+     "message": "host delivery refused: plan_schema",
+     "reason_code": "plan_schema",
+     "type": "DeliveryRefused"
+    }
+   },
+   "size": 2
+  },
+  "shape_json_null": {
+   "result": {
+    "raised": {
+     "message": "host delivery refused: plan_schema",
+     "reason_code": "plan_schema",
+     "type": "DeliveryRefused"
+    }
+   },
+   "size": 4
+  },
+  "shape_json_string": {
+   "result": {
+    "raised": {
+     "message": "host delivery refused: plan_schema",
+     "reason_code": "plan_schema",
+     "type": "DeliveryRefused"
+    }
+   },
+   "size": 6
+  },
+  "shape_missing_one_field": {
+   "result": {
+    "raised": {
+     "field": "root",
+     "message": "host delivery refused: plan_fields (root)",
+     "reason_code": "plan_fields",
+     "type": "DeliveryRefused"
+    }
+   },
+   "size": 750
+  },
+  "shape_no_checks": {
+   "result": {
+    "raised": {
+     "field": "required_checks",
+     "message": "host delivery refused: plan_invalid (required_checks)",
+     "reason_code": "plan_invalid",
+     "type": "DeliveryRefused"
+    }
+   },
+   "size": 811
+  },
+  "shape_not_utf8": {
+   "result": {
+    "raised": {
+     "message": "host delivery refused: plan_not_json",
+     "reason_code": "plan_not_json",
+     "type": "DeliveryRefused"
+    }
+   },
+   "size": 828
+  },
+  "shape_nul_bytes": {
+   "result": {
+    "raised": {
+     "message": "host delivery refused: plan_not_json",
+     "reason_code": "plan_not_json",
+     "type": "DeliveryRefused"
+    }
+   },
+   "size": 827
+  },
+  "shape_other_schema": {
+   "result": {
+    "raised": {
+     "message": "host delivery refused: plan_schema",
+     "reason_code": "plan_schema",
+     "type": "DeliveryRefused"
+    }
+   },
+   "size": 811
+  },
+  "shape_trailing_garbage": {
+   "result": {
+    "raised": {
+     "message": "host delivery refused: plan_not_json",
+     "reason_code": "plan_not_json",
+     "type": "DeliveryRefused"
+    }
+   },
+   "size": 827
+  },
+  "shape_unicode_plan_id": {
+   "result": {
+    "raised": {
+     "field": "plan_id",
+     "message": "host delivery refused: plan_invalid (plan_id)",
+     "reason_code": "plan_invalid",
+     "type": "DeliveryRefused"
+    }
+   },
+   "size": 820
+  },
+  "shape_unknown_field": {
+   "result": {
+    "raised": {
+     "field": "root",
+     "message": "host delivery refused: plan_fields (root)",
+     "reason_code": "plan_fields",
+     "type": "DeliveryRefused"
+    }
+   },
+   "size": 847
+  },
+  "shape_utf8_bom_is_accepted": {
+   "result": {
+    "returned": {
+     "bytes": 829,
+     "pin": {
+      "path": "docs/zeus/operations/delivery.json",
+      "revision": "01dbb9d7541f5a3ba690dc170a189924fdbb0895",
+      "sha256": "5de4cfe195f4e6b965cbbe66d75c8fdac0a2314c865e030d857029b1894b0c74"
+     },
+     "plan": {
+      "canary_check_id": "startup_identity",
+      "ci_timeout_seconds": 300,
+      "consumption_timeout_seconds": 120,
+      "expected_descriptor": null,
+      "plan_id": "delivery-plan-1",
+      "policy_hash": "1111111111111111111111111111111111111111111111111111111111111111",
+      "release_id": "release-1",
+      "repository": "github:zeus-owner/zeus-harness",
+      "required_checks": [
+       "ci / required"
+      ],
+      "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "schema": "urn:zeus:host-delivery:1",
+      "target_descriptor": {
+       "profile_digest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+       "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "worker_image": "zeus-worker@sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+      },
+      "target_id": "canary-service",
+      "tree": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+     }
+    }
+   },
+   "size": 829
+  },
+  "shape_whitespace_padded": {
+   "result": {
+    "returned": {
+     "bytes": 829,
+     "pin": {
+      "path": "docs/zeus/operations/delivery.json",
+      "revision": "6e4ef19f6db09ca8a2a3a7c46448e4ae4692b978",
+      "sha256": "c10f1c9b29aa0d5e4234eb70c94fea3ea059beff976a6703ff81100b3f3c4be7"
+     },
+     "plan": {
+      "canary_check_id": "startup_identity",
+      "ci_timeout_seconds": 300,
+      "consumption_timeout_seconds": 120,
+      "expected_descriptor": null,
+      "plan_id": "delivery-plan-1",
+      "policy_hash": "1111111111111111111111111111111111111111111111111111111111111111",
+      "release_id": "release-1",
+      "repository": "github:zeus-owner/zeus-harness",
+      "required_checks": [
+       "ci / required"
+      ],
+      "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "schema": "urn:zeus:host-delivery:1",
+      "target_descriptor": {
+       "profile_digest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+       "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "worker_image": "zeus-worker@sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+      },
+      "target_id": "canary-service",
+      "tree": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+     }
+    }
+   },
+   "size": 829
+  }
+ },
+ "ports": {
+  "control_dir_blank_string": {
+   "returned": {
+    "control_dir": null,
+    "reason_code": "control_dir_unconfigured"
+   }
+  },
+  "control_dir_bytes_value": {
+   "returned": {
+    "control_dir": null,
+    "reason_code": "control_dir_unconfigured"
+   }
+  },
+  "control_dir_control_is_a_file": {
+   "result": {
+    "returned": {
+     "control_dir": null,
+     "reason_code": "control_dir_invalid"
+    }
+   }
+  },
+  "control_dir_control_is_a_symlink": {
+   "result": {
+    "returned": {
+     "control_dir": null,
+     "reason_code": "control_dir_invalid"
+    }
+   }
+  },
+  "control_dir_control_missing": {
+   "result": {
+    "returned": {
+     "control_dir": null,
+     "reason_code": "control_dir_invalid"
+    }
+   }
+  },
+  "control_dir_dot_component": {
+   "returned": {
+    "control_dir": "<root>/cases/104-aibox/runtime/control",
+    "reason_code": null
+   }
+  },
+  "control_dir_empty_settings": {
+   "returned": {
+    "control_dir": null,
+    "reason_code": "control_dir_unconfigured"
+   }
+  },
+  "control_dir_empty_string": {
+   "returned": {
+    "control_dir": null,
+    "reason_code": "control_dir_unconfigured"
+   }
+  },
+  "control_dir_harness_alias_is_not_read": {
+   "returned": {
+    "control_dir": null,
+    "reason_code": "control_dir_unconfigured"
+   }
+  },
+  "control_dir_integer_value": {
+   "returned": {
+    "control_dir": null,
+    "reason_code": "control_dir_unconfigured"
+   }
+  },
+  "control_dir_missing_root": {
+   "returned": {
+    "control_dir": null,
+    "reason_code": "control_dir_invalid"
+   }
+  },
+  "control_dir_none": {
+   "returned": {
+    "control_dir": null,
+    "reason_code": "control_dir_unconfigured"
+   }
+  },
+  "control_dir_none_value": {
+   "returned": {
+    "control_dir": null,
+    "reason_code": "control_dir_unconfigured"
+   }
+  },
+  "control_dir_other_key_only": {
+   "returned": {
+    "control_dir": null,
+    "reason_code": "control_dir_unconfigured"
+   }
+  },
+  "control_dir_padded_value": {
+   "returned": {
+    "control_dir": null,
+    "reason_code": "control_dir_invalid"
+   }
+  },
+  "control_dir_parent_component": {
+   "returned": {
+    "control_dir": null,
+    "reason_code": "control_dir_invalid"
+   }
+  },
+  "control_dir_relative_path": {
+   "returned": {
+    "control_dir": null,
+    "reason_code": "control_dir_invalid"
+   }
+  },
+  "control_dir_root_is_a_symlink": {
+   "result": {
+    "returned": {
+     "control_dir": null,
+     "reason_code": "control_dir_invalid"
+    }
+   }
+  },
+  "control_dir_runtime_is_a_symlink": {
+   "result": {
+    "returned": {
+     "control_dir": null,
+     "reason_code": "control_dir_invalid"
+    }
+   }
+  },
+  "control_dir_runtime_missing": {
+   "result": {
+    "returned": {
+     "control_dir": null,
+     "reason_code": "control_dir_invalid"
+    }
+   }
+  },
+  "control_dir_trailing_slash": {
+   "returned": {
+    "control_dir": "<root>/cases/104-aibox/runtime/control",
+    "reason_code": null
+   }
+  },
+  "control_dir_valid": {
+   "result": {
+    "returned": {
+     "control_dir": "<root>/cases/104-aibox/runtime/control",
+     "reason_code": null
+    }
+   }
+  },
+  "default": {
+   "distinct_instances": true,
+   "fleet": {
+    "managed_fleet": null,
+    "managed_fleet_systemd": null,
+    "process": "<absent>",
+    "systemd_unit": "<absent>",
+    "windows_scheduled_task": "<absent>"
+   },
+   "kind_constants": {
+    "managed": "managed_fleet",
+    "managed_systemd": "managed_fleet_systemd",
+    "process": "process",
+    "scheduled_task": "windows_scheduled_task",
+    "systemd": "systemd_unit"
+   },
+   "kinds": [
+    "process",
+    "windows_scheduled_task",
+    "managed_fleet",
+    "managed_fleet_systemd",
+    "systemd_unit"
+   ],
+   "ports": {
+    "managed_fleet": {
+     "bases": [
+      "ProcessHostTarget",
+      "HostTargetBase"
+     ],
+     "class": "ManagedFleetTarget",
+     "control_dir": "<absent>",
+     "control_reason": "<absent>",
+     "heartbeat_max_age": 30.0,
+     "kind": "managed_fleet",
+     "lock_timeout": 20.0,
+     "max_seconds": 900,
+     "python": "<python>",
+     "stop_timeout": 20.0,
+     "timeout": "<absent>",
+     "workload": "fleet"
+    },
+    "managed_fleet_systemd": {
+     "bases": [
+      "ManagedFleetTarget",
+      "ProcessHostTarget",
+      "HostTargetBase"
+     ],
+     "class": "SystemdManagedFleetTarget",
+     "control_dir": "<absent>",
+     "control_reason": "<absent>",
+     "heartbeat_max_age": 30.0,
+     "kind": "managed_fleet_systemd",
+     "lock_timeout": 20.0,
+     "max_seconds": 900,
+     "python": "<python>",
+     "stop_timeout": 20.0,
+     "timeout": 60,
+     "workload": "fleet"
+    },
+    "process": {
+     "bases": [
+      "HostTargetBase"
+     ],
+     "class": "ProcessHostTarget",
+     "control_dir": "<absent>",
+     "control_reason": "<absent>",
+     "heartbeat_max_age": "<absent>",
+     "kind": "process",
+     "lock_timeout": 20.0,
+     "max_seconds": 900,
+     "python": "<python>",
+     "stop_timeout": "<absent>",
+     "timeout": "<absent>",
+     "workload": "<absent>"
+    },
+    "systemd_unit": {
+     "bases": [
+      "HostTargetBase"
+     ],
+     "class": "SystemdHostTarget",
+     "control_dir": null,
+     "control_reason": "control_dir_unconfigured",
+     "heartbeat_max_age": "<absent>",
+     "kind": "systemd_unit",
+     "lock_timeout": 20.0,
+     "max_seconds": "<absent>",
+     "python": "<absent>",
+     "stop_timeout": "<absent>",
+     "timeout": 60,
+     "workload": "<absent>"
+    },
+    "windows_scheduled_task": {
+     "bases": [
+      "HostTargetBase"
+     ],
+     "class": "ScheduledTaskHostTarget",
+     "control_dir": "<absent>",
+     "control_reason": "<absent>",
+     "heartbeat_max_age": "<absent>",
+     "kind": "windows_scheduled_task",
+     "lock_timeout": 20.0,
+     "max_seconds": "<absent>",
+     "python": "<absent>",
+     "stop_timeout": "<absent>",
+     "timeout": 60,
+     "workload": "<absent>"
+    }
+   }
+  },
+  "fleet_bound_to_the_managed_kinds_only": {
+   "managed_fleet": true,
+   "managed_fleet_systemd": true,
+   "process": "<absent>",
+   "systemd_unit": "<absent>",
+   "windows_scheduled_task": "<absent>"
+  },
+  "kwargs_reach_the_process_target_only": {
+   "note": "the process kind receives python, max_seconds and lock_timeout; the managed kinds construct with none",
+   "ports": {
+    "managed_fleet": {
+     "bases": [
+      "ProcessHostTarget",
+      "HostTargetBase"
+     ],
+     "class": "ManagedFleetTarget",
+     "kind": "managed_fleet",
+     "lock_timeout": 20.0,
+     "max_seconds": 900,
+     "python": "<python>"
+    },
+    "managed_fleet_systemd": {
+     "bases": [
+      "ManagedFleetTarget",
+      "ProcessHostTarget",
+      "HostTargetBase"
+     ],
+     "class": "SystemdManagedFleetTarget",
+     "kind": "managed_fleet_systemd",
+     "lock_timeout": 20.0,
+     "max_seconds": 900,
+     "python": "<python>"
+    },
+    "process": {
+     "bases": [
+      "HostTargetBase"
+     ],
+     "class": "ProcessHostTarget",
+     "kind": "process",
+     "lock_timeout": 3.5,
+     "max_seconds": 7,
+     "python": "<python>"
+    },
+    "systemd_unit": {
+     "bases": [
+      "HostTargetBase"
+     ],
+     "class": "SystemdHostTarget",
+     "kind": "systemd_unit",
+     "lock_timeout": 20.0,
+     "max_seconds": "<absent>",
+     "python": "<absent>"
+    },
+    "windows_scheduled_task": {
+     "bases": [
+      "HostTargetBase"
+     ],
+     "class": "ScheduledTaskHostTarget",
+     "kind": "windows_scheduled_task",
+     "lock_timeout": 20.0,
+     "max_seconds": "<absent>",
+     "python": "<absent>"
+    }
+   }
+  },
+  "positional_argument_is_refused": {
+   "result": {
+    "raised": {
+     "message": "host_ports() takes 0 positional arguments but 1 was given",
+     "type": "TypeError"
+    }
+   }
+  },
+  "systemd_control_empty_mapping": {
+   "returned": {
+    "bases": [
+     "HostTargetBase"
+    ],
+    "class": "SystemdHostTarget",
+    "control_dir": null,
+    "control_reason": "control_dir_unconfigured",
+    "kind": "systemd_unit"
+   }
+  },
+  "systemd_control_invalid": {
+   "returned": {
+    "bases": [
+     "HostTargetBase"
+    ],
+    "class": "SystemdHostTarget",
+    "control_dir": null,
+    "control_reason": "control_dir_invalid",
+    "kind": "systemd_unit"
+   }
+  },
+  "systemd_control_none": {
+   "returned": {
+    "bases": [
+     "HostTargetBase"
+    ],
+    "class": "SystemdHostTarget",
+    "control_dir": null,
+    "control_reason": "control_dir_unconfigured",
+    "kind": "systemd_unit"
+   }
+  },
+  "systemd_control_valid": {
+   "returned": {
+    "bases": [
+     "HostTargetBase"
+    ],
+    "class": "SystemdHostTarget",
+    "control_dir": "/fixture/aibox/runtime/control",
+    "control_reason": null,
+    "kind": "systemd_unit"
+   }
+  },
+  "unknown_keyword_is_refused": {
+   "result": {
+    "raised": {
+     "message": "HostTargetBase.__init__() got an unexpected keyword argument 'bogus'",
+     "type": "TypeError"
+    }
+   }
+  }
+ },
+ "profile": {
+  "committed_digest_blobs_double_is_the_same_digest": {
+   "result": {
+    "returned": "cc7150678052ad3d4636a930a7fef34f5a991cfe85b633ada5dc49b830b93bda"
+   }
+  },
+  "committed_digest_document_changed": {
+   "result": {
+    "raised": {
+     "field": "profile_digest",
+     "message": "host delivery refused: first_activation_profile_unresolved (profile_digest)",
+     "reason_code": "first_activation_profile_unresolved",
+     "type": "DeliveryRefused"
+    }
+   }
+  },
+  "committed_digest_document_crlf_is_normalized": {
+   "result": {
+    "returned": "cc7150678052ad3d4636a930a7fef34f5a991cfe85b633ada5dc49b830b93bda"
+   }
+  },
+  "committed_digest_document_missing": {
+   "result": {
+    "raised": {
+     "field": "profile_digest",
+     "message": "host delivery refused: first_activation_profile_unresolved (profile_digest)",
+     "reason_code": "first_activation_profile_unresolved",
+     "type": "DeliveryRefused"
+    }
+   }
+  },
+  "committed_digest_document_name_empty": {
+   "result": {
+    "raised": {
+     "field": "profile_digest",
+     "message": "host delivery refused: first_activation_profile_unresolved (profile_digest)",
+     "reason_code": "first_activation_profile_unresolved",
+     "type": "DeliveryRefused"
+    }
+   }
+  },
+  "committed_digest_document_name_is_a_path": {
+   "result": {
+    "raised": {
+     "field": "profile_digest",
+     "message": "host delivery refused: first_activation_profile_unresolved (profile_digest)",
+     "reason_code": "first_activation_profile_unresolved",
+     "type": "DeliveryRefused"
+    }
+   }
+  },
+  "committed_digest_document_name_not_a_string": {
+   "result": {
+    "raised": {
+     "field": "profile_digest",
+     "message": "host delivery refused: first_activation_profile_unresolved (profile_digest)",
+     "reason_code": "first_activation_profile_unresolved",
+     "type": "DeliveryRefused"
+    }
+   }
+  },
+  "committed_digest_document_not_utf8": {
+   "result": {
+    "raised": {
+     "field": "profile_digest",
+     "message": "host delivery refused: first_activation_profile_unresolved (profile_digest)",
+     "reason_code": "first_activation_profile_unresolved",
+     "type": "DeliveryRefused"
+    }
+   }
+  },
+  "committed_digest_document_too_long": {
+   "result": {
+    "raised": {
+     "field": "profile_digest",
+     "message": "host delivery refused: first_activation_profile_unresolved (profile_digest)",
+     "reason_code": "first_activation_profile_unresolved",
+     "type": "DeliveryRefused"
+    }
+   }
+  },
+  "committed_digest_empty_blobs": {
+   "mirrors": "test_the_committed_profile_digest_equals_the_incumbent_packaged_digest (the Blobs({}) refusal)",
+   "result": {
+    "raised": {
+     "field": "profile_digest",
+     "message": "host delivery refused: first_activation_profile_unresolved (profile_digest)",
+     "reason_code": "first_activation_profile_unresolved",
+     "type": "DeliveryRefused"
+    }
+   }
+  },
+  "committed_digest_from_a_real_repository": {
+   "equals_the_packaged_digest": true,
+   "mirrors": "tests/test_host_delivery_first_activation.py::test_the_committed_profile_digest_equals_the_incumbent_packaged_digest (the fixture commits the SOURCE archive's resources, not the checkout's, so the case is reproducible)",
+   "result": {
+    "returned": "cc7150678052ad3d4636a930a7fef34f5a991cfe85b633ada5dc49b830b93bda"
+   },
+   "revision": "6f702856b9a2d11917b7f613b17f862f177e1591"
+  },
+  "committed_digest_hook_changed": {
+   "result": {
+    "raised": {
+     "field": "profile_digest",
+     "message": "host delivery refused: first_activation_profile_unresolved (profile_digest)",
+     "reason_code": "first_activation_profile_unresolved",
+     "type": "DeliveryRefused"
+    }
+   }
+  },
+  "committed_digest_hook_missing": {
+   "result": {
+    "raised": {
+     "field": "profile_digest",
+     "message": "host delivery refused: first_activation_profile_unresolved (profile_digest)",
+     "reason_code": "first_activation_profile_unresolved",
+     "type": "DeliveryRefused"
+    }
+   }
+  },
+  "committed_digest_manifest_missing": {
+   "result": {
+    "raised": {
+     "field": "profile_digest",
+     "message": "host delivery refused: first_activation_profile_unresolved (profile_digest)",
+     "reason_code": "first_activation_profile_unresolved",
+     "type": "DeliveryRefused"
+    }
+   }
+  },
+  "committed_digest_manifest_not_an_object": {
+   "result": {
+    "raised": {
+     "field": "profile_digest",
+     "message": "host delivery refused: first_activation_profile_unresolved (profile_digest)",
+     "reason_code": "first_activation_profile_unresolved",
+     "type": "DeliveryRefused"
+    }
+   }
+  },
+  "committed_digest_manifest_not_json": {
+   "result": {
+    "raised": {
+     "field": "profile_digest",
+     "message": "host delivery refused: first_activation_profile_unresolved (profile_digest)",
+     "reason_code": "first_activation_profile_unresolved",
+     "type": "DeliveryRefused"
+    }
+   }
+  },
+  "committed_digest_manifest_not_utf8": {
+   "result": {
+    "raised": {
+     "field": "profile_digest",
+     "message": "host delivery refused: first_activation_profile_unresolved (profile_digest)",
+     "reason_code": "first_activation_profile_unresolved",
+     "type": "DeliveryRefused"
+    }
+   }
+  },
+  "committed_digest_manifest_other_id": {
+   "result": {
+    "raised": {
+     "field": "profile_digest",
+     "message": "host delivery refused: first_activation_profile_unresolved (profile_digest)",
+     "reason_code": "first_activation_profile_unresolved",
+     "type": "DeliveryRefused"
+    }
+   }
+  },
+  "committed_digest_manifest_without_hook_sha": {
+   "result": {
+    "raised": {
+     "field": "profile_digest",
+     "message": "host delivery refused: first_activation_profile_unresolved (profile_digest)",
+     "reason_code": "first_activation_profile_unresolved",
+     "type": "DeliveryRefused"
+    }
+   }
+  },
+  "committed_digest_manifest_without_version": {
+   "result": {
+    "raised": {
+     "field": "profile_digest",
+     "message": "host delivery refused: first_activation_profile_unresolved (profile_digest)",
+     "reason_code": "first_activation_profile_unresolved",
+     "type": "DeliveryRefused"
+    }
+   }
+  },
+  "committed_digest_permission_not_a_string": {
+   "result": {
+    "raised": {
+     "field": "profile_digest",
+     "message": "host delivery refused: first_activation_profile_unresolved (profile_digest)",
+     "reason_code": "first_activation_profile_unresolved",
+     "type": "DeliveryRefused"
+    }
+   }
+  },
+  "committed_digest_permission_not_bash": {
+   "result": {
+    "raised": {
+     "field": "profile_digest",
+     "message": "host delivery refused: first_activation_profile_unresolved (profile_digest)",
+     "reason_code": "first_activation_profile_unresolved",
+     "type": "DeliveryRefused"
+    }
+   }
+  },
+  "committed_digest_permissions_absent_is_allowed": {
+   "result": {
+    "returned": "2f7d78f9e3368e6e7e14bb8f8d530f60446b4cd6eecf93ac4f80f808b6784edd"
+   }
+  },
+  "committed_digest_resources_absent_at_the_revision": {
+   "result": {
+    "raised": {
+     "field": "profile_digest",
+     "message": "host delivery refused: first_activation_profile_unresolved (profile_digest)",
+     "reason_code": "first_activation_profile_unresolved",
+     "type": "DeliveryRefused"
+    }
+   }
+  },
+  "committed_digest_unknown_revision": {
+   "result": {
+    "raised": {
+     "field": "profile_digest",
+     "message": "host delivery refused: first_activation_profile_unresolved (profile_digest)",
+     "reason_code": "first_activation_profile_unresolved",
+     "type": "DeliveryRefused"
+    }
+   }
+  },
+  "committed_digest_version_is_stringified": {
+   "result": {
+    "returned": "cde49906a3e5c4a7ffb892e1b85b8a1573f24a797b6995f59e10bd55f39e340e"
+   }
+  },
+  "effective_profile_digest": {
+   "digest": "cc7150678052ad3d4636a930a7fef34f5a991cfe85b633ada5dc49b830b93bda",
+   "is_sha256_hex": true
+  },
+  "effective_profile_digest_when_the_profile_cannot_load": {
+   "result": {
+    "returned": null
+   },
+   "seam": "codex_harness.adapters.worker_profile.load_profile replaced by a raising function, then restored"
+  },
+  "host_settings_failure_is_empty": {
+   "configuration_raises": {
+    "returned": {}
+   },
+   "note": "a malformed host configuration yields {} (M7 `_host_settings`), not an invented one",
+   "well_formed": [
+    "HARNESS_WORKER_IMAGE",
+    "ZEUS_WORKER_IMAGE"
+   ]
+  },
+  "image_config_both_blank": {
+   "image": {
+    "returned": "none"
+   }
+  },
+  "image_config_empty": {
+   "image": {
+    "returned": "none"
+   },
+   "mirrors": "test_the_effective_worker_image_is_configuration_and_never_a_claim"
+  },
+  "image_config_empty_mapping_is_not_the_host": {
+   "image": {
+    "returned": "none"
+   },
+   "note": "`{}` is an explicit empty configuration: it does not fall back to the host settings"
+  },
+  "image_config_empty_zeus_falls_to_harness": {
+   "image": {
+    "returned": "harness-second"
+   }
+  },
+  "image_config_harness_alias": {
+   "image": {
+    "returned": "zeus-worker@sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+   },
+   "mirrors": "test_the_effective_worker_image_is_configuration_and_never_a_claim"
+  },
+  "image_config_integer_value": {
+   "image": {
+    "returned": "5"
+   }
+  },
+  "image_config_none_zeus_falls_to_harness": {
+   "image": {
+    "returned": "harness-second"
+   }
+  },
+  "image_config_padded_value": {
+   "image": {
+    "returned": "img"
+   }
+  },
+  "image_config_unrelated_keys": {
+   "image": {
+    "returned": "none"
+   }
+  },
+  "image_config_whitespace_only": {
+   "image": {
+    "returned": "none"
+   }
+  },
+  "image_config_zeus_beats_harness": {
+   "image": {
+    "returned": "zeus-first"
+   }
+  },
+  "image_config_zeus_name": {
+   "image": {
+    "returned": "zeus-worker@sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+   },
+   "mirrors": "test_the_effective_worker_image_is_configuration_and_never_a_claim"
+  },
+  "image_labelled_settings_environment_harness": {
+   "effective_worker_image": "zeus-worker@sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+   "host_settings": {
+    "HARNESS_WORKER_IMAGE": "zeus-worker@sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+    "ZEUS_WORKER_IMAGE": "zeus-worker@sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+   },
+   "repository_is_the_labelled_directory": true
+  },
+  "image_labelled_settings_environment_overrides_file": {
+   "effective_worker_image": "zeus-worker@sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+   "host_settings": {
+    "HARNESS_WORKER_IMAGE": "zeus-worker@sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+    "ZEUS_WORKER_IMAGE": "zeus-worker@sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+   },
+   "repository_is_the_labelled_directory": true
+  },
+  "image_labelled_settings_environment_zeus": {
+   "effective_worker_image": "zeus-worker@sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+   "host_settings": {
+    "HARNESS_WORKER_IMAGE": "zeus-worker@sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+    "ZEUS_WORKER_IMAGE": "zeus-worker@sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+   },
+   "mirrors": "test_the_effective_worker_image_is_configuration_and_never_a_claim (monkeypatch.setenv)",
+   "repository_is_the_labelled_directory": true
+  },
+  "image_labelled_settings_file_blank_value_with_environment_harness": {
+   "effective_worker_image": "h",
+   "host_settings": {
+    "HARNESS_WORKER_IMAGE": "h",
+    "ZEUS_WORKER_IMAGE": "h"
+   },
+   "repository_is_the_labelled_directory": true
+  },
+  "image_labelled_settings_file_export_prefix": {
+   "effective_worker_image": "exported",
+   "host_settings": {
+    "HARNESS_WORKER_IMAGE": "exported",
+    "ZEUS_WORKER_IMAGE": "exported"
+   },
+   "repository_is_the_labelled_directory": true
+  },
+  "image_labelled_settings_file_harness_alias": {
+   "effective_worker_image": "zeus-worker@sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+   "host_settings": {
+    "HARNESS_WORKER_IMAGE": "zeus-worker@sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+    "ZEUS_WORKER_IMAGE": "zeus-worker@sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+   },
+   "repository_is_the_labelled_directory": true
+  },
+  "image_labelled_settings_file_quoted_and_commented": {
+   "effective_worker_image": "quoted-image",
+   "host_settings": {
+    "HARNESS_WORKER_IMAGE": "quoted-image",
+    "ZEUS_WORKER_IMAGE": "quoted-image"
+   },
+   "repository_is_the_labelled_directory": true
+  },
+  "image_labelled_settings_file_zeus": {
+   "effective_worker_image": "zeus-worker@sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+   "host_settings": {
+    "HARNESS_WORKER_IMAGE": "zeus-worker@sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+    "ZEUS_WORKER_IMAGE": "zeus-worker@sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+   },
+   "repository_is_the_labelled_directory": true
+  },
+  "image_labelled_settings_malformed_file_discards_the_environment": {
+   "effective_worker_image": "none",
+   "host_settings": {},
+   "repository_is_the_labelled_directory": false
+  },
+  "image_labelled_settings_malformed_quoting_discards_the_file": {
+   "effective_worker_image": "none",
+   "host_settings": {},
+   "repository_is_the_labelled_directory": false
+  },
+  "image_labelled_settings_nothing_configured": {
+   "effective_worker_image": "none",
+   "host_settings": {},
+   "repository_is_the_labelled_directory": true
+  }
+ },
+ "revisions": {
+  "a_checkout_with_no_commit_falls_back_to_the_attestation": {
+   "result": {
+    "returned": "8888888888888888888888888888888888888888"
+   }
+  },
+  "attestation_extra_fields_ignored": {
+   "returned": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  },
+  "attestation_is_a_directory": {
+   "returned": null
+  },
+  "attestation_list_document": {
+   "returned": null
+  },
+  "attestation_malformed_json": {
+   "returned": null
+  },
+  "attestation_malformed_revision": {
+   "mirrors": "test_a_root_that_is_no_checkout_uses_the_owners_attestation_and_nothing_else",
+   "result": {
+    "returned": null
+   }
+  },
+  "attestation_over_the_bound": {
+   "returned": null
+  },
+  "attestation_revision_integer": {
+   "returned": null
+  },
+  "attestation_revision_long": {
+   "returned": null
+  },
+  "attestation_revision_missing": {
+   "returned": null
+  },
+  "attestation_revision_null": {
+   "returned": null
+  },
+  "attestation_revision_short": {
+   "returned": null
+  },
+  "attestation_revision_uppercase": {
+   "returned": null
+  },
+  "attestation_scalar": {
+   "returned": null
+  },
+  "attestation_valid": {
+   "mirrors": "test_a_root_that_is_no_checkout_uses_the_owners_attestation_and_nothing_else",
+   "result": {
+    "returned": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+   }
+  },
+  "branch_with_no_commit": {
+   "mirrors": "test_a_runtime_root_attests_its_own_revision_from_its_own_refs",
+   "result": {
+    "returned": null
+   },
+   "runtime": {
+    "returned": null
+   }
+  },
+  "detached_head": {
+   "mirrors": "test_a_runtime_root_attests_its_own_revision_from_its_own_refs",
+   "result": {
+    "returned": "cc243a1d136d7daa33ba16912e10a8eb91309890"
+   }
+  },
+  "git_directory_head_empty": {
+   "checkout_revision": {
+    "returned": null
+   },
+   "runtime_revision": {
+    "returned": null
+   }
+  },
+  "git_directory_head_hash_with_spaces_around": {
+   "checkout_revision": {
+    "returned": "a1b2c3d4e5a1b2c3d4e5a1b2c3d4e5a1b2c3d4e5"
+   },
+   "runtime_revision": {
+    "returned": "a1b2c3d4e5a1b2c3d4e5a1b2c3d4e5a1b2c3d4e5"
+   }
+  },
+  "git_directory_head_names_a_ref_with_a_path": {
+   "checkout_revision": {
+    "returned": "a1b2c3d4e5a1b2c3d4e5a1b2c3d4e5a1b2c3d4e5"
+   },
+   "runtime_revision": {
+    "returned": "a1b2c3d4e5a1b2c3d4e5a1b2c3d4e5a1b2c3d4e5"
+   }
+  },
+  "git_directory_head_not_a_ref_nor_a_hash": {
+   "checkout_revision": {
+    "returned": null
+   },
+   "runtime_revision": {
+    "returned": null
+   }
+  },
+  "git_directory_head_ref_loose": {
+   "checkout_revision": {
+    "returned": "a1b2c3d4e5a1b2c3d4e5a1b2c3d4e5a1b2c3d4e5"
+   },
+   "runtime_revision": {
+    "returned": "a1b2c3d4e5a1b2c3d4e5a1b2c3d4e5a1b2c3d4e5"
+   }
+  },
+  "git_directory_head_ref_loose_invalid_hash": {
+   "checkout_revision": {
+    "returned": null
+   },
+   "runtime_revision": {
+    "returned": null
+   }
+  },
+  "git_directory_head_ref_loose_short_hash": {
+   "checkout_revision": {
+    "returned": null
+   },
+   "runtime_revision": {
+    "returned": null
+   }
+  },
+  "git_directory_head_ref_no_space_after_colon": {
+   "checkout_revision": {
+    "returned": "a1b2c3d4e5a1b2c3d4e5a1b2c3d4e5a1b2c3d4e5"
+   },
+   "runtime_revision": {
+    "returned": "a1b2c3d4e5a1b2c3d4e5a1b2c3d4e5a1b2c3d4e5"
+   }
+  },
+  "git_directory_head_ref_traversal_reads_outside_refs": {
+   "checkout_revision": {
+    "returned": null
+   },
+   "runtime_revision": {
+    "returned": null
+   }
+  },
+  "git_directory_head_ref_unresolved_anywhere": {
+   "checkout_revision": {
+    "returned": null
+   },
+   "runtime_revision": {
+    "returned": null
+   }
+  },
+  "git_directory_head_short_hash": {
+   "checkout_revision": {
+    "returned": null
+   },
+   "runtime_revision": {
+    "returned": null
+   }
+  },
+  "git_directory_head_uppercase_hash": {
+   "checkout_revision": {
+    "returned": null
+   },
+   "runtime_revision": {
+    "returned": null
+   }
+  },
+  "git_directory_invalid_loose_ref_does_not_fall_through_to_packed": {
+   "checkout_revision": {
+    "returned": null
+   },
+   "runtime_revision": {
+    "returned": null
+   }
+  },
+  "git_directory_loose_ref_wins_over_packed": {
+   "checkout_revision": {
+    "returned": "a1b2c3d4e5a1b2c3d4e5a1b2c3d4e5a1b2c3d4e5"
+   },
+   "runtime_revision": {
+    "returned": "a1b2c3d4e5a1b2c3d4e5a1b2c3d4e5a1b2c3d4e5"
+   }
+  },
+  "git_directory_missing_head_file": {
+   "checkout_revision": {
+    "returned": null
+   },
+   "runtime_revision": {
+    "returned": null
+   }
+  },
+  "git_directory_packed_refs_crlf": {
+   "checkout_revision": {
+    "returned": "a1b2c3d4e5a1b2c3d4e5a1b2c3d4e5a1b2c3d4e5"
+   },
+   "runtime_revision": {
+    "returned": "a1b2c3d4e5a1b2c3d4e5a1b2c3d4e5a1b2c3d4e5"
+   }
+  },
+  "git_directory_packed_refs_invalid_hash": {
+   "checkout_revision": {
+    "returned": null
+   },
+   "runtime_revision": {
+    "returned": null
+   }
+  },
+  "git_directory_packed_refs_other_ref_only": {
+   "checkout_revision": {
+    "returned": null
+   },
+   "runtime_revision": {
+    "returned": null
+   }
+  },
+  "git_directory_packed_refs_peeled_and_comment_lines": {
+   "checkout_revision": {
+    "returned": "a1b2c3d4e5a1b2c3d4e5a1b2c3d4e5a1b2c3d4e5"
+   },
+   "runtime_revision": {
+    "returned": "a1b2c3d4e5a1b2c3d4e5a1b2c3d4e5a1b2c3d4e5"
+   }
+  },
+  "git_directory_packed_refs_three_fields_do_not_match": {
+   "checkout_revision": {
+    "returned": null
+   },
+   "runtime_revision": {
+    "returned": null
+   }
+  },
+  "linked_worktree_branch_after_the_main_repository_packs_its_refs": {
+   "loose_ref_left": false,
+   "result": {
+    "returned": "cca25ed5b990bc9af0d5a47a1d366db0bfa9739f"
+   }
+  },
+  "linked_worktree_branch_resolves_through_commondir": {
+   "commondir": "../..",
+   "feature_head": "cca25ed5b990bc9af0d5a47a1d366db0bfa9739f",
+   "git_directory": {
+    "returned": "<root>/cases/042-main-for-worktrees/.git/worktrees/043-linked-branch"
+   },
+   "main_checkout": {
+    "returned": "cc243a1d136d7daa33ba16912e10a8eb91309890"
+   },
+   "main_head": "cc243a1d136d7daa33ba16912e10a8eb91309890",
+   "mirrors": "tests/test_host_delivery_cli.py::test_a_worktree_pointer_resolves_to_the_git_directory_it_names (a real `git worktree add`, which the M7 test only approximates with a pointer to the main git dir)",
+   "ref_directories": {
+    "returned": [
+     "<root>/cases/042-main-for-worktrees/.git/worktrees/043-linked-branch",
+     "<root>/cases/042-main-for-worktrees/.git/worktrees/043-linked-branch/../.."
+    ]
+   },
+   "result": {
+    "returned": "cca25ed5b990bc9af0d5a47a1d366db0bfa9739f"
+   },
+   "runtime": {
+    "returned": "cca25ed5b990bc9af0d5a47a1d366db0bfa9739f"
+   }
+  },
+  "linked_worktree_detached": {
+   "head_text": "cc243a1d136d7daa33ba16912e10a8eb91309890",
+   "result": {
+    "returned": "cc243a1d136d7daa33ba16912e10a8eb91309890"
+   }
+  },
+  "loaded_runtime": {
+   "keys": [
+    "module_root",
+    "runtime_root"
+   ],
+   "mirrors": "tests/test_host_delivery.py (receipt['module_root'] == loaded_runtime()['module_root'])",
+   "module_root_is_the_package": true,
+   "value": {
+    "module_root": "<package>",
+    "runtime_root": "<package-root>"
+   }
+  },
+  "no_checkout_no_attestation": {
+   "checkout": {
+    "returned": null
+   },
+   "mirrors": "test_a_root_that_is_no_checkout_uses_the_owners_attestation_and_nothing_else",
+   "result": {
+    "returned": null
+   }
+  },
+  "packed_refs_hand_written": {
+   "mirrors": "test_a_runtime_root_attests_its_own_revision_from_its_own_refs",
+   "result": {
+    "returned": "cc243a1d136d7daa33ba16912e10a8eb91309890"
+   }
+  },
+  "packed_refs_written_by_git": {
+   "loose_ref_left": false,
+   "packed_refs_present": true,
+   "result": {
+    "returned": "cc243a1d136d7daa33ba16912e10a8eb91309890"
+   }
+  },
+  "plain_repository": {
+   "git_directory": {
+    "returned": "<root>/cases/007-plain/.git"
+   },
+   "mirrors": "test_a_runtime_root_attests_its_own_revision_from_its_own_refs",
+   "ref_directories": {
+    "returned": [
+     "<root>/cases/007-plain/.git"
+    ]
+   },
+   "result": {
+    "returned": "cc243a1d136d7daa33ba16912e10a8eb91309890"
+   },
+   "runtime": {
+    "returned": "cc243a1d136d7daa33ba16912e10a8eb91309890"
+   }
+  },
+  "pointer_empty_pointer_file": {
+   "checkout_revision": {
+    "returned": null
+   },
+   "git_directory": {
+    "returned": null
+   }
+  },
+  "pointer_gitdir_empty": {
+   "checkout_revision": {
+    "returned": null
+   },
+   "git_directory": {
+    "returned": "<root>/cases/038-pointer-gitdir_empty"
+   }
+  },
+  "pointer_gitdir_to_a_file": {
+   "checkout_revision": {
+    "returned": null
+   },
+   "git_directory": {
+    "returned": null
+   }
+  },
+  "pointer_gitdir_to_a_missing_directory": {
+   "checkout_revision": {
+    "returned": null
+   },
+   "git_directory": {
+    "returned": null
+   }
+  },
+  "pointer_gitdir_with_extra_spaces": {
+   "checkout_revision": {
+    "returned": "cc243a1d136d7daa33ba16912e10a8eb91309890"
+   },
+   "git_directory": {
+    "returned": "<root>/cases/007-plain/.git"
+   }
+  },
+  "pointer_gitdir_without_space": {
+   "checkout_revision": {
+    "returned": "cc243a1d136d7daa33ba16912e10a8eb91309890"
+   },
+   "git_directory": {
+    "returned": "<root>/cases/007-plain/.git"
+   }
+  },
+  "pointer_leading_whitespace_before_gitdir": {
+   "checkout_revision": {
+    "returned": null
+   },
+   "git_directory": {
+    "returned": null
+   }
+  },
+  "pointer_not_gitdir_text": {
+   "checkout_revision": {
+    "returned": null
+   },
+   "git_directory": {
+    "returned": null
+   }
+  },
+  "pointer_relative_to_the_root": {
+   "git_directory": {
+    "returned": "<root>/cases/033-pointer-relative/../007-plain/.git"
+   },
+   "result": {
+    "returned": "cc243a1d136d7daa33ba16912e10a8eb91309890"
+   }
+  },
+  "ref_directories_commondir_absolute_existing": {
+   "returned": [
+    "<root>/cases/045-commondir-absolute_existing",
+    "<root>/cases/042-main-for-worktrees/.git"
+   ]
+  },
+  "ref_directories_commondir_empty": {
+   "returned": [
+    "<root>/cases/047-commondir-empty"
+   ]
+  },
+  "ref_directories_commondir_missing_directory": {
+   "returned": [
+    "<root>/cases/048-commondir-missing_directory"
+   ]
+  },
+  "ref_directories_commondir_padded": {
+   "returned": [
+    "<root>/cases/050-commondir-padded",
+    "<root>/cases/042-main-for-worktrees/.git"
+   ]
+  },
+  "ref_directories_commondir_relative_existing": {
+   "returned": [
+    "<root>/cases/046-commondir-relative_existing",
+    "<root>/cases/046-commondir-relative_existing/../.."
+   ]
+  },
+  "ref_directories_commondir_whitespace_only": {
+   "returned": [
+    "<root>/cases/049-commondir-whitespace_only"
+   ]
+  },
+  "ref_directories_no_commondir_file": {
+   "returned": [
+    "<root>/cases/051-commondir-none"
+   ]
+  },
+  "root_does_not_exist": {
+   "result": {
+    "returned": null
+   },
+   "runtime": {
+    "returned": null
+   }
+  },
+  "root_given_as_a_str": {
+   "result": {
+    "returned": "cc243a1d136d7daa33ba16912e10a8eb91309890"
+   },
+   "runtime": {
+    "returned": "cc243a1d136d7daa33ba16912e10a8eb91309890"
+   }
+  },
+  "root_is_not_a_checkout": {
+   "result": {
+    "returned": null
+   },
+   "runtime": {
+    "returned": null
+   }
+  },
+  "the_checkout_wins_over_the_attestation": {
+   "checkout_revision": "cc243a1d136d7daa33ba16912e10a8eb91309890",
+   "result": {
+    "returned": "cc243a1d136d7daa33ba16912e10a8eb91309890"
+   }
+  },
+  "the_running_checkout": {
+   "mirrors": "tests/test_evaluator_code_guard.py::test_the_running_revision_is_this_checkout_by_the_runtime_revision_ssot",
+   "unreachable": "the running checkout is the side's own tree (the reference wheel has no .git, the target a worktree), so its revision differs per side by construction; its `runtime_revision` is compared with `controller_code_revision` in `delivery.release_runner` (pin group), and the function itself is recorded over fixture checkouts above"
+  },
+  "worktree_own_directory_shadows_the_common_one": {
+   "result": {
+    "returned": "7777777777777777777777777777777777777777"
+   }
+  },
+  "worktree_own_invalid_ref_does_not_fall_back_to_the_common_one": {
+   "result": {
+    "returned": null
+   }
+  },
+  "worktree_pointer_to_the_git_directory": {
+   "git_directory": {
+    "returned": "<root>/cases/007-plain/.git"
+   },
+   "mirrors": "test_a_worktree_pointer_resolves_to_the_git_directory_it_names",
+   "result": {
+    "returned": "cc243a1d136d7daa33ba16912e10a8eb91309890"
+   }
+  }
+ },
+ "state_json": {
+  "byte_order_mark": {
+   "result": {
+    "returned": null
+   }
+  },
+  "custom_limit_one_under": {
+   "result": {
+    "returned": null
+   }
+  },
+  "custom_limit_reads": {
+   "result": {
+    "returned": {
+     "a": 1,
+     "b": [
+      1,
+      2
+     ],
+     "c": null
+    }
+   }
+  },
+  "directory_path": {
+   "result": {
+    "returned": null
+   }
+  },
+  "empty_file": {
+   "result": {
+    "returned": null
+   }
+  },
+  "exactly_at_the_bound": {
+   "result": {
+    "returned": {
+     "a": 1,
+     "b": [
+      1,
+      2
+     ],
+     "c": null
+    }
+   },
+   "size": 65536
+  },
+  "malformed": {
+   "result": {
+    "returned": null
+   }
+  },
+  "missing_directory": {
+   "result": {
+    "returned": null
+   }
+  },
+  "missing_file": {
+   "result": {
+    "returned": null
+   }
+  },
+  "non_utf8": {
+   "result": {
+    "returned": null
+   }
+  },
+  "one_over_the_bound": {
+   "result": {
+    "returned": null
+   },
+   "size": 65537
+  },
+  "oversized_is_never_a_partial_document": {
+   "result": {
+    "returned": null
+   }
+  },
+  "str_path_is_not_a_path": {
+   "result": {
+    "raised": {
+     "message": "'str' object has no attribute 'stat'",
+     "type": "AttributeError"
+    }
+   }
+  },
+  "truncated_document": {
+   "result": {
+    "returned": null
+   }
+  },
+  "valid_document": {
+   "result": {
+    "returned": {
+     "a": 1,
+     "b": [
+      1,
+      2
+     ],
+     "c": null
+    }
+   }
+  },
+  "valid_list_document": {
+   "result": {
+    "returned": [
+     1,
+     2
+    ]
+   }
+  },
+  "valid_scalar_documents": {
+   "null": {
+    "returned": null
+   },
+   "number": {
+    "returned": 7
+   },
+   "string": {
+    "returned": "text"
+   },
+   "true": {
+    "returned": true
+   }
+  },
+  "write_creates_parents_and_replaces_atomically": {
+   "directory": [
+    "descriptor.json"
+   ],
+   "fsync_calls": 0,
+   "g4_no_fsync": true,
+   "parents_created": true,
+   "replace": [
+    {
+     "destination_existed": false,
+     "from": "descriptor.json.tmp-<8hex>",
+     "text": "{\"a\": {\"y\": [3], \"z\": 1}, \"b\": 2}",
+     "to": "descriptor.json"
+    }
+   ],
+   "text": "{\"a\": {\"y\": [3], \"z\": 1}, \"b\": 2}"
+  },
+  "write_over_a_directory_fails_and_leaks_the_temporary_file": {
+   "directory": [
+    "asdir.json",
+    "asdir.json.tmp-<8hex>"
+   ],
+   "result": {
+    "raised": {
+     "message": "[Errno 21] Is a directory: '<root>/cases/005-state/asdir.json.tmp-<8hex>' -> '<root>/cases/005-state/asdir.json'",
+     "type": "IsADirectoryError"
+    }
+   }
+  },
+  "write_overwrites_an_existing_file": {
+   "directory": [
+    "descriptor.json"
+   ],
+   "fsync_calls": 0,
+   "replace": [
+    {
+     "destination_existed": true,
+     "from": "descriptor.json.tmp-<8hex>",
+     "text": "{\"replaced\": true}",
+     "to": "descriptor.json"
+    }
+   ],
+   "text": "{\"replaced\": true}"
+  },
+  "write_parent_is_a_file": {
+   "result": {
+    "raised": {
+     "message": "[Errno 17] File exists: '<root>/cases/005-state/blocker'",
+     "type": "FileExistsError"
+    }
+   }
+  },
+  "write_serializes_any_json_value": {
+   "fsync_calls": 0,
+   "text": "[1, \"two\", null, true, 1.5]"
+  },
+  "write_then_read_round_trips": {
+   "non_ascii_text": "{\"k\": \"\\u00e4\\u2603\"}",
+   "read": {
+    "returned": {
+     "replaced": true
+    }
+   }
+  },
+  "write_unserializable_leaves_nothing": {
+   "directory": [
+    "nested",
+    "scalars.json",
+    "unicode.json"
+   ],
+   "result": {
+    "raised": {
+     "message": "Object of type set is not JSON serializable",
+     "type": "TypeError"
+    }
+   }
+  },
+  "write_with_a_str_path": {
+   "result": {
+    "raised": {
+     "message": "'str' object has no attribute 'parent'",
+     "type": "AttributeError"
+    }
+   }
+  },
+  "zero_limit": {
+   "result": {
+    "returned": null
+   }
+  }
+ }
+}
