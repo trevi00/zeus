@@ -175,7 +175,7 @@ def stopped_observation(desc, **overrides) -> dict:
 def recognized_observation(desc, **overrides) -> dict:
     """The one launch bound to THIS request already happened: new controller-state, new invocation."""
     launch = new_launch(desc)
-    return observation(desc, **{"launch": launch, "launch_request_requested_at": "2026-09-29T00:00:03+00:00",
+    return observation(desc, **{"launch": launch, "launch_request_requested_at": REQUESTED_AT,
                                 "receipt": receipt_for(desc, NEW_INSTANCE, pid=201,
                                                        started_at="2026-09-29T00:00:06+00:00"),
                                 "unit": {"invocation_id": NEW_INVOCATION, "main_pid": 200, "exec_main_pid": 200},
@@ -388,6 +388,10 @@ def _cases(desc):
             ("maintenance_launch_unconfirmed", "launch")),
         "changed_launch_request_outside_window": (
             recognized_observation(desc, launch_request_requested_at="2026-09-28T12:00:00+00:00"),
+            ("maintenance_launch_unconfirmed", "launch")),
+        # S2R F1: a launch request inside the old window but not THIS request's own time is not this attempt.
+        "changed_launch_request_not_this_attempt": (
+            recognized_observation(desc, launch_request_requested_at="2026-09-29T00:00:03+00:00"),
             ("maintenance_launch_unconfirmed", "launch")),
         "changed_launch_foreign_descriptor": (
             recognized_observation(desc, launch={**changed_launch, "descriptor_sha256": "0" * 64}),
@@ -789,3 +793,73 @@ def test_owner_canary_reads_are_bounded_and_read_only(tmp_path):
     with pytest.raises(DeliveryRefused) as invalid:
         host.owner_canary(target, "../plan")
     assert refusal_of(invalid) == ("maintenance_invalid", "plan_id")
+
+
+# ----- S2R F1 (Codex round 1): a start whose outcome is unproven is held and never launched a second time -------
+class LaunchRunner(UnitShow):
+    """LABELLED `systemctl` for the REAL `SystemdManagedFleetTarget._launch` boundary: `start` takes effect (or its
+    outcome is unknown: it raises), and the `show` that follows may lose its response. Records every argv."""
+
+    def __init__(self, *, start_error=None, show_error=None, **values):
+        super().__init__(**values)
+        self.start_error, self.show_error, self.starts = start_error, show_error, 0
+
+    def __call__(self, argv, timeout=None, **_):
+        if argv[:2] == ["systemctl", "start"]:
+            self.calls.append(list(argv))
+            self.starts += 1
+            if self.start_error is not None:
+                raise self.start_error
+            return SimpleNamespace(returncode=0, stdout="", stderr="")
+        if self.show_error is not None:
+            self.calls.append(list(argv))
+            raise self.show_error
+        return super().__call__(argv, timeout=timeout)
+
+
+@pytest.mark.parametrize("fault", ["show lost after the start took effect", "start outcome unknown"])
+def test_the_real_launch_persists_this_requests_launch_request_before_its_one_start(tmp_path, fault):
+    target, desc, receipt, launch, request = live_state(tmp_path)
+    state = Path(target["state_dir"])
+    (state / RECEIPT_FILE).unlink()                       # `_retire` retired the incumbent's receipt
+    lost = TimeoutError("response lost (labelled injected fault)")
+    runner = LaunchRunner(start_error=lost if fault == "start outcome unknown" else None,
+                          show_error=None if fault == "start outcome unknown" else lost)
+    host = SystemdManagedFleetTarget(fleet=None, runner=runner, process_reader=processes(receipt["started_at"]))
+    with pytest.raises(Exception):
+        host._launch(target, desc, {"manifest": {"id": "labelled-manifest"}, "requested_at": REQUESTED_AT})
+    assert runner.starts == 1
+    written = json.loads((state / LAUNCH_REQUEST_FILE).read_text(encoding="utf-8"))
+    assert written["requested_at"] == REQUESTED_AT and written["requested_at"] != request["requested_at"]
+    # The controller-state is still the retiring launch: nothing recorded the unproven start.
+    assert json.loads((state / STATE_FILE).read_text(encoding="utf-8")) == launch
+    # Without a maintenance request time every other launch is stamped now, exactly as before.
+    other = LaunchRunner()
+    SystemdManagedFleetTarget(fleet=None, runner=other)._launch(target, desc, {"manifest": {"id": "labelled"}})
+    assert json.loads((state / LAUNCH_REQUEST_FILE).read_text(encoding="utf-8"))["requested_at"] > REQUESTED_AT
+
+
+def unconfirmed_after_lost_start(desc, **overrides) -> dict:
+    """What a replay observes after the one start took effect but nothing recorded it and the new generation
+    exited before any receipt: the retiring controller-state, no receipt, a stopped unit with no invocation, and
+    the launch request of THIS attempt (its time is the request's own)."""
+    return stopped_observation(desc, **{"receipt": None, "receipt_present": False,
+                                        "launch_request_requested_at": REQUESTED_AT,
+                                        "launch_request_sha256": "e" * 64, **overrides})
+
+
+@pytest.mark.parametrize("request_at", [REQUESTED_AT, "2026-09-29T00:00:05+00:00", None])
+def test_a_replay_after_an_unconfirmed_start_is_held_and_launches_nothing(tmp_path, request_at):
+    target = managed_target(tmp_path)
+    desc = descriptor_for(target)
+    overrides = {"launch_request_requested_at": request_at}
+    if request_at is None:
+        overrides["launch_request_sha256"] = None
+    host = RecordingTarget([unconfirmed_after_lost_start(desc, **overrides)])
+    with pytest.raises(DeliveryRefused) as held:
+        host.start(target, desc, authorize=authorizer(host.events), restarts=restarts_for(desc))
+    assert (held.value.reason_code, held.value.field) == ("maintenance_launch_unconfirmed", "launch")
+    assert host.launches == 0 and effects(host.events) == []
+    # The positive control stays: stopped before the launch (the incumbent's own older request) launches once.
+    control = RecordingTarget([unconfirmed_after_lost_start(desc, launch_request_requested_at="2026-09-27T23:59:59+00:00")])
+    assert control.start(target, desc, restarts=restarts_for(desc))["path"] == "launch" and control.launches == 1
