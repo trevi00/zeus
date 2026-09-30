@@ -1,0 +1,472 @@
+{
+ "admit_after": {
+  "value": {
+   "blocked": {},
+   "budget_exhausted": false,
+   "job": {
+    "calls": {
+     "reserved": null,
+     "settled": null
+    },
+    "created_at": "2026-09-21T00:00:00.000004+00:00",
+    "dependencies": [],
+    "dispatched_at": "2026-09-21T00:00:00.000010+00:00",
+    "error_type": null,
+    "exit_code": null,
+    "finished_at": null,
+    "goal": {
+     "base_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "criterion": "c",
+     "path": "docs/GOAL.md",
+     "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    },
+    "id": "op-2",
+    "lane": "a",
+    "manifest": {
+     "base_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "budget": {
+      "per_host": 4,
+      "total": 8
+     },
+     "claude": {
+      "max_budget_usd": 1.0,
+      "model": "claude-fixture-model",
+      "timeout_seconds": 120
+     },
+     "goal": {
+      "criterion": "crit op-2",
+      "path": "docs/GOAL.md",
+      "rationale": "r",
+      "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+     },
+     "id": "op-2",
+     "plan": {
+      "acceptance_criteria": [
+       "ok"
+      ],
+      "allowed_paths": [
+       "docs/y.md"
+      ],
+      "objective": "o"
+     },
+     "schema": "urn:zeus:operation:1"
+    },
+    "manifest_sha256": "c6799d971fbb08d3e4a0576369629a4baa906c4f088d4e409d43672c83445c59",
+    "operation_id": "op-2",
+    "owner_token": "00000000000000000000000000000002",
+    "reason_code": null,
+    "receipt": null,
+    "repository": "9e377ee5cd2188635c894e5b4a0f92a33c298ee9d0f50f303dc57cd60f91e7df",
+    "status": "dispatching",
+    "team": "alpha",
+    "updated_at": "2026-09-21T00:00:00.000010+00:00"
+   },
+   "paused": false
+  }
+ },
+ "before_records": [
+  [
+   "fleet_control",
+   "admission",
+   "97738d9b6e3f8269089d9513ef0e50d96dbc57fd0d228d14960e6d1bc55d137f"
+  ],
+  [
+   "fleet_jobs",
+   "op-1",
+   "28172166eba023051a7058c2236806cbd05565fa2cc1fdd88a92c9324b3cb8b9"
+  ],
+  [
+   "fleet_jobs",
+   "op-2",
+   "d70bf08eaad39a7e2c39281c5e9947dc74d94a8056c89510738cc55ab652d37a"
+  ],
+  [
+   "fleet_registry",
+   "fleet-1",
+   "3f9d4ad96986b89e30f1452284d78dead1e91d65da44924d250767d579c486c7"
+  ]
+ ],
+ "config_mismatch": {
+  "message": "fleet refused: config_expected_mismatch (expected.config_sha256)",
+  "reason_code": "config_expected_mismatch",
+  "refused": "FleetRefused"
+ },
+ "conflict": {
+  "message": "fleet refused: recovery_conflict",
+  "reason_code": "recovery_conflict",
+  "refused": "FleetRefused"
+ },
+ "evidence_container_name": {
+  "message": "fleet refused: recovery_invalid (container.name)",
+  "reason_code": "recovery_invalid",
+  "refused": "FleetRefused"
+ },
+ "evidence_extra": {
+  "message": "fleet refused: recovery_invalid_fields (root)",
+  "reason_code": "recovery_invalid_fields",
+  "refused": "FleetRefused"
+ },
+ "evidence_invocation_open": {
+  "message": "fleet refused: recovery_invalid (invocation.status)",
+  "reason_code": "recovery_invalid",
+  "refused": "FleetRefused"
+ },
+ "evidence_job_id": {
+  "message": "fleet refused: recovery_invalid (job_id)",
+  "reason_code": "recovery_invalid",
+  "refused": "FleetRefused"
+ },
+ "evidence_schema": {
+  "message": "fleet refused: recovery_schema",
+  "reason_code": "recovery_schema",
+  "refused": "FleetRefused"
+ },
+ "evidence_status": {
+  "message": "fleet refused: recovery_invalid (expected.status)",
+  "reason_code": "recovery_invalid",
+  "refused": "FleetRefused"
+ },
+ "lane_mismatch": {
+  "message": "fleet refused: lane_mismatch (expected.lane)",
+  "reason_code": "lane_mismatch",
+  "refused": "FleetRefused"
+ },
+ "no_observation": {
+  "message": "Fleet recovery needs an observation",
+  "reason_code": null,
+  "refused": "ContractError"
+ },
+ "not_paused": {
+  "message": "fleet refused: fleet_not_paused",
+  "reason_code": "fleet_not_paused",
+  "refused": "FleetRefused"
+ },
+ "observed": [
+  "observe",
+  "reread"
+ ],
+ "operation_mismatch": {
+  "message": "fleet refused: operation_mismatch (lane_operation.id)",
+  "reason_code": "operation_mismatch",
+  "refused": "FleetRefused"
+ },
+ "owner_mismatch": {
+  "message": "fleet refused: owner_mismatch (expected.owner_token)",
+  "reason_code": "owner_mismatch",
+  "refused": "FleetRefused"
+ },
+ "proof_changed": {
+  "message": "fleet refused: proof_changed",
+  "reason_code": "proof_changed",
+  "refused": "FleetRefused"
+ },
+ "proof_container_running": {
+  "message": "fleet refused: container_not_stopped (container.state)",
+  "reason_code": "container_not_stopped",
+  "refused": "FleetRefused"
+ },
+ "proof_container_unbound": {
+  "message": "fleet refused: container_binding_missing (container.bound_worktree)",
+  "reason_code": "container_binding_missing",
+  "refused": "FleetRefused"
+ },
+ "proof_invocation_mismatch": {
+  "message": "fleet refused: proof_mismatch (invocation)",
+  "reason_code": "proof_mismatch",
+  "refused": "FleetRefused"
+ },
+ "proof_lease_live": {
+  "message": "fleet refused: task_lease_live (task.lease_live)",
+  "reason_code": "task_lease_live",
+  "refused": "FleetRefused"
+ },
+ "proof_schema": {
+  "message": "fleet refused: proof_schema",
+  "reason_code": "proof_schema",
+  "refused": "FleetRefused"
+ },
+ "proof_slot_open": {
+  "message": "fleet refused: machine_slot_open (machine_slot.status)",
+  "reason_code": "machine_slot_open",
+  "refused": "FleetRefused"
+ },
+ "proof_slot_unbound": {
+  "message": "fleet refused: machine_slot_unbound (machine_slot.id)",
+  "reason_code": "machine_slot_unbound",
+  "refused": "FleetRefused"
+ },
+ "proof_task_not_cancelled": {
+  "message": "fleet refused: task_not_cancelled (task.status)",
+  "reason_code": "task_not_cancelled",
+  "refused": "FleetRefused"
+ },
+ "reconciled": {
+  "value": {
+   "cached": false,
+   "job": {
+    "calls": {
+     "reserved": null,
+     "settled": null
+    },
+    "created_at": "2026-09-21T00:00:00.000003+00:00",
+    "dependencies": [],
+    "dispatched_at": "2026-09-21T00:00:00.000005+00:00",
+    "error_type": null,
+    "exit_code": null,
+    "finished_at": "2026-09-21T00:00:00.000008+00:00",
+    "goal": {
+     "base_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "criterion": "c",
+     "path": "docs/GOAL.md",
+     "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    },
+    "id": "op-1",
+    "lane": "a",
+    "manifest_sha256": "d4ffd0743d04a4b0a44f8a8a47b425bd52d55cc1ef78b9e06cff61999522afa5",
+    "operation_id": "op-1",
+    "owner_handoff": null,
+    "reason_code": "interrupted_unknown",
+    "status": "failed",
+    "team": "alpha",
+    "updated_at": "2026-09-21T00:00:00.000008+00:00"
+   },
+   "receipt": {
+    "authority": "owner_recovery; paused fleet, worker services stopped; a re-read cross-store observation, not a distributed atomic transaction",
+    "container": {
+     "run_id": "1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a",
+     "state": "exited"
+    },
+    "fleet": "fleet-1",
+    "id": "f53d43c50ffed4a175704887c6ffb31d72d69733e61c81dc4c81cc36945a28f3",
+    "invocation": {
+     "reservation_id": "d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4",
+     "status": "unsettled_unknown"
+    },
+    "job_id": "op-1",
+    "lane_operation": {
+     "correlation_id": "operation:op-1",
+     "generation": 2,
+     "id": "op-1",
+     "task_id": "task-92b13b20"
+    },
+    "machine_slot": {
+     "id": "e9e9e9e9e9e9e9e9e9e9e9e9e9e9e9e9",
+     "outcome": "unknown"
+    },
+    "operator": "owner",
+    "outcome": {
+     "calls": "preserved_as_recorded",
+     "reason_code": "interrupted_unknown",
+     "status": "failed",
+     "usage": "unknown"
+    },
+    "recorded_at": "2026-09-21T00:00:00.000008+00:00",
+    "schema": "urn:zeus:fleet-recovery-receipt:1"
+   },
+   "reconciled": true
+  }
+ },
+ "records": [
+  [
+   "fleet_control",
+   "admission",
+   "4c2aed53d73c59422d34f767a25f6fc63cd8ef393ac7d995e19627d3b86f6773"
+  ],
+  [
+   "fleet_jobs",
+   "op-1",
+   "0910b225cdea095192e3ea4bfaa3cb847031da61cb12c3b7fa6ba3ebb365eacd"
+  ],
+  [
+   "fleet_jobs",
+   "op-2",
+   "11802b42b60914c75254b11c9ddde493cb700c681694682dcea55f83a2eb3a16"
+  ],
+  [
+   "fleet_recovery_receipts",
+   "op-1",
+   "7847d587efab0d6dd1be541bf0d7c96c2422a36a1604f2e7681c1071dcc231d0"
+  ],
+  [
+   "fleet_registry",
+   "fleet-1",
+   "3f9d4ad96986b89e30f1452284d78dead1e91d65da44924d250767d579c486c7"
+  ]
+ ],
+ "recovery": {
+  "value": {
+   "authority": "owner_recovery; paused fleet, worker services stopped; a re-read cross-store observation, not a distributed atomic transaction",
+   "container": {
+    "run_id": "1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a",
+    "state": "exited"
+   },
+   "fleet": "fleet-1",
+   "id": "f53d43c50ffed4a175704887c6ffb31d72d69733e61c81dc4c81cc36945a28f3",
+   "invocation": {
+    "reservation_id": "d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4",
+    "status": "unsettled_unknown"
+   },
+   "job_id": "op-1",
+   "lane_operation": {
+    "correlation_id": "operation:op-1",
+    "generation": 2,
+    "id": "op-1",
+    "task_id": "task-92b13b20"
+   },
+   "machine_slot": {
+    "id": "e9e9e9e9e9e9e9e9e9e9e9e9e9e9e9e9",
+    "outcome": "unknown"
+   },
+   "operator": "owner",
+   "outcome": {
+    "calls": "preserved_as_recorded",
+    "reason_code": "interrupted_unknown",
+    "status": "failed",
+    "usage": "unknown"
+   },
+   "recorded_at": "2026-09-21T00:00:00.000008+00:00",
+   "schema": "urn:zeus:fleet-recovery-receipt:1"
+  }
+ },
+ "recovery_absent": {
+  "value": null
+ },
+ "replay": {
+  "value": {
+   "cached": true,
+   "job": {
+    "calls": {
+     "reserved": null,
+     "settled": null
+    },
+    "created_at": "2026-09-21T00:00:00.000003+00:00",
+    "dependencies": [],
+    "dispatched_at": "2026-09-21T00:00:00.000005+00:00",
+    "error_type": null,
+    "exit_code": null,
+    "finished_at": "2026-09-21T00:00:00.000008+00:00",
+    "goal": {
+     "base_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "criterion": "c",
+     "path": "docs/GOAL.md",
+     "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    },
+    "id": "op-1",
+    "lane": "a",
+    "manifest_sha256": "d4ffd0743d04a4b0a44f8a8a47b425bd52d55cc1ef78b9e06cff61999522afa5",
+    "operation_id": "op-1",
+    "owner_handoff": null,
+    "reason_code": "interrupted_unknown",
+    "status": "failed",
+    "team": "alpha",
+    "updated_at": "2026-09-21T00:00:00.000008+00:00"
+   },
+   "receipt": {
+    "authority": "owner_recovery; paused fleet, worker services stopped; a re-read cross-store observation, not a distributed atomic transaction",
+    "container": {
+     "run_id": "1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a",
+     "state": "exited"
+    },
+    "fleet": "fleet-1",
+    "id": "f53d43c50ffed4a175704887c6ffb31d72d69733e61c81dc4c81cc36945a28f3",
+    "invocation": {
+     "reservation_id": "d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4",
+     "status": "unsettled_unknown"
+    },
+    "job_id": "op-1",
+    "lane_operation": {
+     "correlation_id": "operation:op-1",
+     "generation": 2,
+     "id": "op-1",
+     "task_id": "task-92b13b20"
+    },
+    "machine_slot": {
+     "id": "e9e9e9e9e9e9e9e9e9e9e9e9e9e9e9e9",
+     "outcome": "unknown"
+    },
+    "operator": "owner",
+    "outcome": {
+     "calls": "preserved_as_recorded",
+     "reason_code": "interrupted_unknown",
+     "status": "failed",
+     "usage": "unknown"
+    },
+    "recorded_at": "2026-09-21T00:00:00.000008+00:00",
+    "schema": "urn:zeus:fleet-recovery-receipt:1"
+   },
+   "reconciled": true
+  }
+ },
+ "status": {
+  "value": {
+   "accounting_mode": "finite",
+   "budget": {
+    "per_host": 4,
+    "total": 8
+   },
+   "id": "fleet-1",
+   "jobs": [
+    {
+     "calls": {
+      "reserved": null,
+      "settled": null
+     },
+     "created_at": "2026-09-21T00:00:00.000004+00:00",
+     "dependencies": [],
+     "goal": {
+      "criterion": "c",
+      "path": "docs/GOAL.md"
+     },
+     "id": "op-2",
+     "lane": "a",
+     "operation_id": "op-2",
+     "reason_code": null,
+     "status": "dispatching",
+     "team": "alpha",
+     "updated_at": "2026-09-21T00:00:00.000010+00:00"
+    },
+    {
+     "calls": {
+      "reserved": null,
+      "settled": null
+     },
+     "created_at": "2026-09-21T00:00:00.000003+00:00",
+     "dependencies": [],
+     "goal": {
+      "criterion": "c",
+      "path": "docs/GOAL.md"
+     },
+     "id": "op-1",
+     "lane": "a",
+     "operation_id": "op-1",
+     "reason_code": "interrupted_unknown",
+     "status": "failed",
+     "team": "alpha",
+     "updated_at": "2026-09-21T00:00:00.000008+00:00"
+    }
+   ],
+   "lanes": [
+    {
+     "active_job": "op-2",
+     "id": "a",
+     "team": "alpha"
+    },
+    {
+     "active_job": null,
+     "id": "b",
+     "team": "beta"
+    }
+   ],
+   "max_parallel": 2,
+   "paused": false,
+   "registered": true,
+   "schema": "urn:zeus:fleet-status:1",
+   "truncated": false
+  }
+ },
+ "unregistered": {
+  "message": "fleet refused: unregistered",
+  "reason_code": "unregistered",
+  "refused": "FleetRefused"
+ }
+}
