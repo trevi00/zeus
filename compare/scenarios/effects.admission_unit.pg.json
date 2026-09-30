@@ -3,8 +3,7 @@
  "description": "§2.9 coordination units on a labelled disposable PostgreSQL (M7 PostgresStore, advisory lock, lock_timeout; durable rows read back): Workflow.handle, Operation.claim, Fleet.admit_one, Workflow.complete, Fleet.finalize; (a) injected failure at the unit's last write -> atomic rollback, (b) stale fence / stale owner token -> nothing commits, (c) replay -> no new authority write, (d) executor entered at depth 0 and the relay's bus publish recorded at its depth (G1 characterized)",
  "reference_driver": "drivers/reference/s5_units.py",
  "requires": "disposable-postgresql",
- "target_driver": null,
+ "target_driver": "drivers/target/s5_units.py",
  "golden": "goldens/reference/effects.admission_unit.pg.json",
- "slice": "S5",
- "target_status": "pending: the S5 units are not yet moved"
+ "slice": "S5"
 }
