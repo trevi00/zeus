@@ -1,0 +1,8 @@
+{
+ "family": "coordination.owner_actions_canary",
+ "description": "S7 M7 OwnerActions owner canary family characterized from SOURCE over the REAL HostDelivery of a lane store: when the canary binding is owed, _advance_canary (request once on the policy's canary lane, a lost admission response, the delivery moving, every outcome and the terminal states), recover_canary for the consumption-retry and the consumption-re-arm kinds with its _recovery_* checks (the exact document grammar, the halted-action, Fleet-job, lane and approver checks each writing nothing, the cached replay and conflict, the concurrent move, the linked restart), the ONE re-arm recovery (the exact grammar, a second re-arm, an over-long window, a re-arm without the lane's), and the scheduler discovering and advancing the owed canary next to an idle research family with status projecting it; MemoryStore, the LABELLED shared delivery doubles (s7_delivery), the owner-commands chain that produces the lane's recovery rows, and the labelled Fleet, canary lane reader, target files and clock of this family",
+ "reference_driver": "drivers/reference/s7_owner_actions_canary.py",
+ "target_driver": "drivers/target/s7_owner_actions_canary.py",
+ "golden": "goldens/reference/coordination.owner_actions_canary.json",
+ "slice": "S7"
+}
