@@ -1,0 +1,1356 @@
+{
+ "admission_records": [
+  [
+   "fleet_control",
+   "admission",
+   "99f62b5a1f5b304223549dbfa98af44fe920ae60ccfa7debf46139005dfe72ea"
+  ],
+  [
+   "fleet_jobs",
+   "op-1",
+   "3992e23cbc13163e520cd908564eef4f84134f31e7b5a86efc3682985e1ffe57"
+  ],
+  [
+   "fleet_jobs",
+   "op-2",
+   "b8e8f61bc77ead62483c60c8c677e1bf8930194b731341a6b093ae810025695f"
+  ],
+  [
+   "fleet_jobs",
+   "op-3",
+   "ef77874aa518f3d2d83e5a445bfeaf4fe055c1a7c0a8f509b95e47c932eb7ec0"
+  ],
+  [
+   "fleet_jobs",
+   "op-4",
+   "0d7b5c6910a16e400ee9fc19605e307e68168cab3d1aa12fba38126988dab5c0"
+  ],
+  [
+   "fleet_registry",
+   "fleet-1",
+   "f0643033798543179e99d24646eb072218e731a27840c0319756f3f42f5522de"
+  ]
+ ],
+ "admit_1": {
+  "value": {
+   "blocked": {
+    "op-2": "lane_busy",
+    "op-3": "dependency_waiting",
+    "op-4": "capacity"
+   },
+   "budget_exhausted": false,
+   "job": {
+    "calls": {
+     "reserved": null,
+     "settled": null
+    },
+    "created_at": "2026-09-18T00:00:00.000003+00:00",
+    "dependencies": [],
+    "dispatched_at": "2026-09-18T00:00:00.000007+00:00",
+    "error_type": null,
+    "exit_code": null,
+    "finished_at": null,
+    "goal": {
+     "base_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "criterion": "c",
+     "path": "docs/GOAL.md",
+     "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    },
+    "id": "op-1",
+    "lane": "a",
+    "manifest": {
+     "base_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "budget": {
+      "per_host": 4,
+      "total": 8
+     },
+     "claude": {
+      "max_budget_usd": 1.0,
+      "model": "claude-fixture-model",
+      "timeout_seconds": 120
+     },
+     "goal": {
+      "criterion": "crit op-1",
+      "path": "docs/GOAL.md",
+      "rationale": "CANARY-must-never-be-emitted",
+      "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+     },
+     "id": "op-1",
+     "plan": {
+      "acceptance_criteria": [
+       "ok"
+      ],
+      "allowed_paths": [
+       "docs/x.md"
+      ],
+      "objective": "CANARY-must-never-be-emitted"
+     },
+     "schema": "urn:zeus:operation:1"
+    },
+    "manifest_sha256": "8bf906db5426139d2f43f24c27e99abc229e90274dca3e4bede55fbd938eafe9",
+    "operation_id": "op-1",
+    "owner_token": "token-0001",
+    "reason_code": null,
+    "receipt": null,
+    "repository": "9e377ee5cd2188635c894e5b4a0f92a33c298ee9d0f50f303dc57cd60f91e7df",
+    "status": "dispatching",
+    "team": "alpha",
+    "updated_at": "2026-09-18T00:00:00.000007+00:00"
+   },
+   "paused": false
+  }
+ },
+ "admit_2": {
+  "value": {
+   "blocked": {
+    "op-2": "lane_busy",
+    "op-3": "dependency_waiting"
+   },
+   "budget_exhausted": false,
+   "job": {
+    "calls": {
+     "reserved": null,
+     "settled": null
+    },
+    "created_at": "2026-09-18T00:00:00.000006+00:00",
+    "dependencies": [],
+    "dispatched_at": "2026-09-18T00:00:00.000012+00:00",
+    "error_type": null,
+    "exit_code": null,
+    "finished_at": null,
+    "goal": {
+     "base_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "criterion": "c",
+     "path": "docs/GOAL.md",
+     "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    },
+    "id": "op-4",
+    "lane": "b",
+    "manifest": {
+     "base_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "budget": {
+      "per_host": 4,
+      "total": 8
+     },
+     "claude": {
+      "max_budget_usd": 1.0,
+      "model": "claude-fixture-model",
+      "timeout_seconds": 120
+     },
+     "goal": {
+      "criterion": "crit op-4",
+      "path": "docs/GOAL.md",
+      "rationale": "CANARY-must-never-be-emitted",
+      "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+     },
+     "id": "op-4",
+     "plan": {
+      "acceptance_criteria": [
+       "ok"
+      ],
+      "allowed_paths": [
+       "docs/z.md"
+      ],
+      "objective": "CANARY-must-never-be-emitted"
+     },
+     "schema": "urn:zeus:operation:1"
+    },
+    "manifest_sha256": "1bd83d80d7b012413ae4a0fb317d9f06688454c887613efeb89de8199c43b020",
+    "operation_id": "op-4",
+    "owner_token": "token-0002",
+    "reason_code": null,
+    "receipt": null,
+    "repository": "9442cdf670a230358926f4a450c748ba3e3c3ce4029a502b42934a8490fe70e6",
+    "status": "dispatching",
+    "team": "beta",
+    "updated_at": "2026-09-18T00:00:00.000012+00:00"
+   },
+   "paused": false
+  }
+ },
+ "admit_3": {
+  "value": {
+   "blocked": {
+    "op-3": "capacity"
+   },
+   "budget_exhausted": false,
+   "job": {
+    "calls": {
+     "reserved": null,
+     "settled": null
+    },
+    "created_at": "2026-09-18T00:00:00.000004+00:00",
+    "dependencies": [],
+    "dispatched_at": "2026-09-18T00:00:00.000016+00:00",
+    "error_type": null,
+    "exit_code": null,
+    "finished_at": null,
+    "goal": {
+     "base_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "criterion": "c",
+     "path": "docs/GOAL.md",
+     "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    },
+    "id": "op-2",
+    "lane": "a",
+    "manifest": {
+     "base_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "budget": {
+      "per_host": 4,
+      "total": 8
+     },
+     "claude": {
+      "max_budget_usd": 1.0,
+      "model": "claude-fixture-model",
+      "timeout_seconds": 120
+     },
+     "goal": {
+      "criterion": "crit op-2",
+      "path": "docs/GOAL.md",
+      "rationale": "CANARY-must-never-be-emitted",
+      "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+     },
+     "id": "op-2",
+     "plan": {
+      "acceptance_criteria": [
+       "ok"
+      ],
+      "allowed_paths": [
+       "docs/y.md"
+      ],
+      "objective": "CANARY-must-never-be-emitted"
+     },
+     "schema": "urn:zeus:operation:1"
+    },
+    "manifest_sha256": "16cf9244ded5def54b86364e0b86a7165407d8c49b9b2f1d807b54009591f693",
+    "operation_id": "op-2",
+    "owner_token": "token-0003",
+    "reason_code": null,
+    "receipt": null,
+    "repository": "9e377ee5cd2188635c894e5b4a0f92a33c298ee9d0f50f303dc57cd60f91e7df",
+    "status": "dispatching",
+    "team": "alpha",
+    "updated_at": "2026-09-18T00:00:00.000016+00:00"
+   },
+   "paused": false
+  }
+ },
+ "admit_4": {
+  "value": {
+   "blocked": {
+    "op-3": "lane_busy"
+   },
+   "budget_exhausted": false,
+   "job": null,
+   "paused": false
+  }
+ },
+ "admit_budget_exhausted": {
+  "value": {
+   "blocked": {
+    "op-2": "budget_exhausted",
+    "op-3": "budget_exhausted",
+    "op-4": "budget_exhausted"
+   },
+   "budget_exhausted": true,
+   "job": null,
+   "paused": false
+  }
+ },
+ "admit_full": {
+  "value": {
+   "blocked": {
+    "op-2": "capacity",
+    "op-3": "capacity"
+   },
+   "budget_exhausted": false,
+   "job": null,
+   "paused": false
+  }
+ },
+ "admit_paused": {
+  "value": {
+   "blocked": {
+    "op-2": "paused",
+    "op-3": "paused",
+    "op-4": "paused"
+   },
+   "budget_exhausted": false,
+   "job": null,
+   "paused": true
+  }
+ },
+ "canary_absent": false,
+ "config_budget": {
+  "message": "fleet refused: config_invalid (budget)",
+  "reason_code": "config_invalid",
+  "refused": "FleetRefused"
+ },
+ "config_dup_lane": {
+  "message": "fleet refused: config_duplicate (lanes[].id)",
+  "reason_code": "config_duplicate",
+  "refused": "FleetRefused"
+ },
+ "config_extra_field": {
+  "message": "fleet refused: config_fields (root)",
+  "reason_code": "config_fields",
+  "refused": "FleetRefused"
+ },
+ "config_nested_runtime": {
+  "message": "fleet refused: config_runtime_overlap (lanes[1].runtime)",
+  "reason_code": "config_runtime_overlap",
+  "refused": "FleetRefused"
+ },
+ "config_no_lanes": {
+  "message": "fleet refused: config_invalid (lanes)",
+  "reason_code": "config_invalid",
+  "refused": "FleetRefused"
+ },
+ "config_parallel_three": {
+  "message": "fleet refused: config_invalid (max_parallel)",
+  "reason_code": "config_invalid",
+  "refused": "FleetRefused"
+ },
+ "config_parallel_zero": {
+  "message": "fleet refused: config_invalid (max_parallel)",
+  "reason_code": "config_invalid",
+  "refused": "FleetRefused"
+ },
+ "config_public_schema": {
+  "message": "fleet refused: config_invalid (lanes[0].schema)",
+  "reason_code": "config_invalid",
+  "refused": "FleetRefused"
+ },
+ "config_relative_repo": {
+  "message": "fleet refused: config_invalid (lanes[0].repository)",
+  "reason_code": "config_invalid",
+  "refused": "FleetRefused"
+ },
+ "config_schema": {
+  "message": "fleet refused: config_schema",
+  "reason_code": "config_schema",
+  "refused": "FleetRefused"
+ },
+ "config_valid": {
+  "value": {
+   "budget": {
+    "per_host": 4,
+    "total": 8
+   },
+   "id": "fleet-1",
+   "lanes": [
+    {
+     "id": "a",
+     "redis_namespace": "fleet-a",
+     "repository": "/zeus-rebuild-s5-fleet/repo-a",
+     "runtime": "/zeus-rebuild-s5-fleet/rt-a",
+     "schema": "lane_a",
+     "team": "alpha"
+    },
+    {
+     "id": "b",
+     "redis_namespace": "fleet-b",
+     "repository": "/zeus-rebuild-s5-fleet/repo-b",
+     "runtime": "/zeus-rebuild-s5-fleet/rt-b",
+     "schema": "lane_b",
+     "team": "beta"
+    }
+   ],
+   "max_parallel": 2,
+   "schema": "urn:zeus:fleet:1"
+  }
+ },
+ "enqueue": {
+  "value": {
+   "cached": false,
+   "job": {
+    "calls": {
+     "reserved": null,
+     "settled": null
+    },
+    "created_at": "2026-09-18T00:00:00.000005+00:00",
+    "dependencies": [],
+    "dispatched_at": null,
+    "error_type": null,
+    "exit_code": null,
+    "finished_at": null,
+    "goal": {
+     "base_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "criterion": "c",
+     "path": "docs/GOAL.md",
+     "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    },
+    "id": "op-1",
+    "lane": "a",
+    "manifest_sha256": "8bf906db5426139d2f43f24c27e99abc229e90274dca3e4bede55fbd938eafe9",
+    "operation_id": "op-1",
+    "owner_handoff": null,
+    "reason_code": null,
+    "status": "queued",
+    "team": "alpha",
+    "updated_at": "2026-09-18T00:00:00.000005+00:00"
+   }
+  }
+ },
+ "enqueue_again": {
+  "value": {
+   "cached": true,
+   "job": {
+    "calls": {
+     "reserved": null,
+     "settled": null
+    },
+    "created_at": "2026-09-18T00:00:00.000005+00:00",
+    "dependencies": [],
+    "dispatched_at": null,
+    "error_type": null,
+    "exit_code": null,
+    "finished_at": null,
+    "goal": {
+     "base_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+     "criterion": "c",
+     "path": "docs/GOAL.md",
+     "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    },
+    "id": "op-1",
+    "lane": "a",
+    "manifest_sha256": "8bf906db5426139d2f43f24c27e99abc229e90274dca3e4bede55fbd938eafe9",
+    "operation_id": "op-1",
+    "owner_handoff": null,
+    "reason_code": null,
+    "status": "queued",
+    "team": "alpha",
+    "updated_at": "2026-09-18T00:00:00.000005+00:00"
+   }
+  }
+ },
+ "enqueue_binding_conflict_goal": {
+  "message": "fleet refused: binding_conflict",
+  "reason_code": "binding_conflict",
+  "refused": "FleetRefused"
+ },
+ "enqueue_binding_conflict_lane": {
+  "message": "fleet refused: binding_conflict",
+  "reason_code": "binding_conflict",
+  "refused": "FleetRefused"
+ },
+ "enqueue_budget_mismatch": {
+  "message": "fleet refused: budget_mismatch (budget)",
+  "reason_code": "budget_mismatch",
+  "refused": "FleetRefused"
+ },
+ "enqueue_dependency_missing": {
+  "message": "fleet refused: dependency_missing",
+  "reason_code": "dependency_missing",
+  "refused": "FleetRefused"
+ },
+ "enqueue_dependency_self": {
+  "message": "fleet refused: dependency_self",
+  "reason_code": "dependency_self",
+  "refused": "FleetRefused"
+ },
+ "enqueue_lane_unknown": {
+  "message": "fleet refused: lane_unknown",
+  "reason_code": "lane_unknown",
+  "refused": "FleetRefused"
+ },
+ "enqueue_records": [
+  [
+   "fleet_control",
+   "admission",
+   "5479ac128c7a90b84837e005de176794973c8a6db26805d409cc5a420a34cb1f"
+  ],
+  [
+   "fleet_jobs",
+   "op-1",
+   "235382cb2394d04493b3f5ec8f4a0445f943e0a1ee838e9049b86f4db35e63a3"
+  ],
+  [
+   "fleet_registry",
+   "fleet-1",
+   "f0643033798543179e99d24646eb072218e731a27840c0319756f3f42f5522de"
+  ]
+ ],
+ "finalize_accepted": {
+  "value": {
+   "calls": {
+    "reserved": 2,
+    "settled": 2
+   },
+   "created_at": "2026-09-18T00:00:00.000004+00:00",
+   "dependencies": [],
+   "dispatched_at": "2026-09-18T00:00:00.000016+00:00",
+   "error_type": null,
+   "exit_code": 0,
+   "finished_at": "2026-09-18T00:00:00.000017+00:00",
+   "goal": {
+    "base_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "criterion": "c",
+    "path": "docs/GOAL.md",
+    "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+   },
+   "id": "op-2",
+   "lane": "a",
+   "manifest_sha256": "16cf9244ded5def54b86364e0b86a7165407d8c49b9b2f1d807b54009591f693",
+   "operation_id": "op-2",
+   "owner_handoff": null,
+   "reason_code": "lead_accepted",
+   "status": "accepted",
+   "team": "alpha",
+   "updated_at": "2026-09-18T00:00:00.000017+00:00"
+  }
+ },
+ "finalize_failed": {
+  "value": {
+   "calls": {
+    "reserved": null,
+    "settled": null
+   },
+   "created_at": "2026-09-18T00:00:00.000003+00:00",
+   "dependencies": [],
+   "dispatched_at": "2026-09-18T00:00:00.000007+00:00",
+   "error_type": null,
+   "exit_code": 1,
+   "finished_at": "2026-09-18T00:00:00.000014+00:00",
+   "goal": {
+    "base_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "criterion": "c",
+    "path": "docs/GOAL.md",
+    "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+   },
+   "id": "op-1",
+   "lane": "a",
+   "manifest_sha256": "8bf906db5426139d2f43f24c27e99abc229e90274dca3e4bede55fbd938eafe9",
+   "operation_id": "op-1",
+   "owner_handoff": null,
+   "reason_code": "exception:ValueError",
+   "status": "failed",
+   "team": "alpha",
+   "updated_at": "2026-09-18T00:00:00.000014+00:00"
+  }
+ },
+ "finalize_not_dispatching": {
+  "message": "fleet refused: not_dispatching",
+  "reason_code": "not_dispatching",
+  "refused": "FleetRefused"
+ },
+ "finalize_not_terminal": {
+  "message": "Fleet outcome must be terminal",
+  "reason_code": null,
+  "refused": "ContractError"
+ },
+ "finalize_owner_mismatch": {
+  "message": "fleet refused: owner_mismatch",
+  "reason_code": "owner_mismatch",
+  "refused": "FleetRefused"
+ },
+ "finalize_unknown": {
+  "value": {
+   "calls": {
+    "reserved": null,
+    "settled": null
+   },
+   "created_at": "2026-09-18T00:00:00.000006+00:00",
+   "dependencies": [],
+   "dispatched_at": "2026-09-18T00:00:00.000012+00:00",
+   "error_type": null,
+   "exit_code": 0,
+   "finished_at": "2026-09-18T00:00:00.000015+00:00",
+   "goal": {
+    "base_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "criterion": "c",
+    "path": "docs/GOAL.md",
+    "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+   },
+   "id": "op-4",
+   "lane": "b",
+   "manifest_sha256": "1bd83d80d7b012413ae4a0fb317d9f06688454c887613efeb89de8199c43b020",
+   "operation_id": "op-4",
+   "owner_handoff": null,
+   "reason_code": "receipt_missing",
+   "status": "unknown",
+   "team": "beta",
+   "updated_at": "2026-09-18T00:00:00.000015+00:00"
+  }
+ },
+ "grant": {
+  "value": {
+   "budget": {
+    "per_host": 6,
+    "total": 12
+   },
+   "grant_id": "grant-00000001",
+   "granted": true,
+   "granted_at": "2026-09-18T00:00:00.000007+00:00",
+   "mode": "finite",
+   "paused": true,
+   "prior": {
+    "per_host": 4,
+    "total": 8
+   },
+   "prior_mode": "finite"
+  }
+ },
+ "grant_decrease": {
+  "message": "fleet refused: budget_decrease (budget)",
+  "reason_code": "budget_decrease",
+  "refused": "FleetRefused"
+ },
+ "grant_expected_mismatch": {
+  "message": "fleet refused: budget_expected_mismatch (expected_total)",
+  "reason_code": "budget_expected_mismatch",
+  "refused": "FleetRefused"
+ },
+ "grant_invalid": {
+  "message": "fleet refused: config_invalid (budget)",
+  "reason_code": "config_invalid",
+  "refused": "FleetRefused"
+ },
+ "grant_no_increase": {
+  "message": "fleet refused: budget_no_increase (budget)",
+  "reason_code": "budget_no_increase",
+  "refused": "FleetRefused"
+ },
+ "grant_not_idle": {
+  "message": "fleet refused: fleet_not_idle",
+  "reason_code": "fleet_not_idle",
+  "refused": "FleetRefused"
+ },
+ "grant_records": [
+  [
+   "fleet_budget_grants",
+   "grant-00000001",
+   "4f2c82e86310f2536f575ce816a9224bf7f42cb712c11ee753aaa7ff73e93d46"
+  ],
+  [
+   "fleet_control",
+   "admission",
+   "4139fedd5f711bc5285abc58a2f16ee5e6110931851c2d0ddd8750f915e22a2a"
+  ],
+  [
+   "fleet_jobs",
+   "op-0",
+   "861d795828041782f371165c2fd49661c79357b05147912fc747e78fb3b36c60"
+  ],
+  [
+   "fleet_registry",
+   "fleet-1",
+   "f0643033798543179e99d24646eb072218e731a27840c0319756f3f42f5522de"
+  ]
+ ],
+ "grant_resume": {
+  "value": {
+   "budget": {
+    "per_host": 6,
+    "total": 12
+   },
+   "paused": false,
+   "updated_at": "2026-09-18T00:00:00.000008+00:00"
+  }
+ },
+ "grant_stale_job": {
+  "message": "fleet refused: budget_mismatch (budget)",
+  "reason_code": "budget_mismatch",
+  "refused": "FleetRefused"
+ },
+ "grant_unregistered": {
+  "message": "fleet refused: unregistered",
+  "reason_code": "unregistered",
+  "refused": "FleetRefused"
+ },
+ "grants": {
+  "value": [
+   {
+    "budget": {
+     "per_host": 6,
+     "total": 12
+    },
+    "config_sha256": "3fcbe0b5a390e0a4d48fc974d592b6c2e8bde7216167b93cbee91a958b730756",
+    "expected_total": 8,
+    "fleet": "fleet-1",
+    "granted_at": "2026-09-18T00:00:00.000007+00:00",
+    "id": "grant-00000001",
+    "mode": "finite",
+    "prior": {
+     "per_host": 4,
+     "total": 8
+    },
+    "prior_mode": "finite"
+   }
+  ]
+ },
+ "held_after_refusals": {
+  "value": [
+   "1111111111111111111111111111111111111111111111111111111111111111"
+  ]
+ },
+ "pause": {
+  "value": {
+   "budget": {
+    "per_host": 4,
+    "total": 8
+   },
+   "paused": true,
+   "updated_at": "2026-09-18T00:00:00.000009+00:00"
+  }
+ },
+ "reconciliation_required": {
+  "value": [
+   "op-2",
+   "op-4"
+  ]
+ },
+ "register": {
+  "value": {
+   "cached": false,
+   "config": {
+    "accounting_mode": "finite",
+    "budget": {
+     "per_host": 4,
+     "total": 8
+    },
+    "id": "fleet-1",
+    "lanes": [
+     {
+      "id": "a",
+      "team": "alpha"
+     },
+     {
+      "id": "b",
+      "team": "beta"
+     }
+    ],
+    "max_parallel": 2,
+    "schema": "urn:zeus:fleet:1"
+   },
+   "config_sha256": "3fcbe0b5a390e0a4d48fc974d592b6c2e8bde7216167b93cbee91a958b730756",
+   "id": "fleet-1",
+   "registered": true
+  }
+ },
+ "register_again": {
+  "value": {
+   "cached": true,
+   "config": {
+    "accounting_mode": "finite",
+    "budget": {
+     "per_host": 4,
+     "total": 8
+    },
+    "id": "fleet-1",
+    "lanes": [
+     {
+      "id": "a",
+      "team": "alpha"
+     },
+     {
+      "id": "b",
+      "team": "beta"
+     }
+    ],
+    "max_parallel": 2,
+    "schema": "urn:zeus:fleet:1"
+   },
+   "config_sha256": "3fcbe0b5a390e0a4d48fc974d592b6c2e8bde7216167b93cbee91a958b730756",
+   "id": "fleet-1",
+   "registered": true
+  }
+ },
+ "register_conflict": {
+  "message": "fleet refused: registration_conflict",
+  "reason_code": "registration_conflict",
+  "refused": "FleetRefused"
+ },
+ "resume": {
+  "value": {
+   "budget": {
+    "per_host": 4,
+    "total": 8
+   },
+   "paused": false,
+   "updated_at": "2026-09-18T00:00:00.000011+00:00"
+  }
+ },
+ "settle": {
+  "value": {
+   "cached": false,
+   "unit": {
+    "id": "1111111111111111111111111111111111111111111111111111111111111111",
+    "kind": "conductor",
+    "lane": "b",
+    "next_action": "none",
+    "released_at": "2026-09-18T00:00:00.000010+00:00",
+    "reserved_at": "2026-09-18T00:00:00.000004+00:00",
+    "settlement": {
+     "exit_code": 0,
+     "kind": "cleanup",
+     "proof_sha256": "45ec92ae3f721bc462088c6f2fd7d60956a8ceecdefc9e18b6ea422e38df4d3c",
+     "timed_out": false
+    },
+    "state": "released",
+    "subject": "intent-1"
+   }
+  }
+ },
+ "settle_conflict": {
+  "message": "fleet refused: settlement_conflict",
+  "reason_code": "settlement_conflict",
+  "refused": "FleetRefused"
+ },
+ "settle_exit_kind": {
+  "message": "fleet refused: proof_invalid (kind)",
+  "reason_code": "proof_invalid",
+  "refused": "FleetRefused"
+ },
+ "settle_failed_commit": {
+  "message": "commit failed (injected)",
+  "reason_code": null,
+  "refused": "ConnectionError"
+ },
+ "settle_fenced": {
+  "value": {
+   "cached": false,
+   "unit": {
+    "id": "2222222222222222222222222222222222222222222222222222222222222222",
+    "kind": "conductor",
+    "lane": "a",
+    "next_action": "none",
+    "released_at": "2026-09-18T00:00:00.000004+00:00",
+    "reserved_at": "2026-09-18T00:00:00.000003+00:00",
+    "settlement": {
+     "exit_code": null,
+     "kind": "fenced",
+     "proof_sha256": "9c023f5db24bb2770dd74dbf9dc1a5698df4684a0f5bd49837f0f002b47a7e4c",
+     "timed_out": false
+    },
+    "state": "released",
+    "subject": "intent-2"
+   }
+  }
+ },
+ "settle_fenced_without_claim": {
+  "message": "fleet refused: proof_invalid (claim)",
+  "reason_code": "proof_invalid",
+  "refused": "FleetRefused"
+ },
+ "settle_none": {
+  "message": "fleet refused: proof_invalid (kind)",
+  "reason_code": "proof_invalid",
+  "refused": "FleetRefused"
+ },
+ "settle_other_token": {
+  "message": "fleet refused: proof_identity_mismatch (token)",
+  "reason_code": "proof_identity_mismatch",
+  "refused": "FleetRefused"
+ },
+ "settle_other_unit": {
+  "message": "fleet refused: proof_identity_mismatch (launch)",
+  "reason_code": "proof_identity_mismatch",
+  "refused": "FleetRefused"
+ },
+ "settle_parent_unconfirmed": {
+  "message": "fleet refused: proof_unconfirmed (confirmed)",
+  "reason_code": "proof_unconfirmed",
+  "refused": "FleetRefused"
+ },
+ "settle_replay": {
+  "value": {
+   "cached": true,
+   "unit": {
+    "id": "1111111111111111111111111111111111111111111111111111111111111111",
+    "kind": "conductor",
+    "lane": "b",
+    "next_action": "none",
+    "released_at": "2026-09-18T00:00:00.000010+00:00",
+    "reserved_at": "2026-09-18T00:00:00.000004+00:00",
+    "settlement": {
+     "exit_code": 0,
+     "kind": "cleanup",
+     "proof_sha256": "45ec92ae3f721bc462088c6f2fd7d60956a8ceecdefc9e18b6ea422e38df4d3c",
+     "timed_out": false
+    },
+    "state": "released",
+    "subject": "intent-1"
+   }
+  }
+ },
+ "settle_stale_token": {
+  "message": "fleet refused: owner_mismatch (token)",
+  "reason_code": "owner_mismatch",
+  "refused": "FleetRefused"
+ },
+ "settle_tree_unconfirmed": {
+  "message": "fleet refused: proof_unconfirmed (confirmed)",
+  "reason_code": "proof_unconfirmed",
+  "refused": "FleetRefused"
+ },
+ "settle_unconfirmed": {
+  "message": "fleet refused: proof_unconfirmed (confirmed)",
+  "reason_code": "proof_unconfirmed",
+  "refused": "FleetRefused"
+ },
+ "settle_writes": [
+  "1111111111111111111111111111111111111111111111111111111111111111"
+ ],
+ "shared_admit": [
+  {
+   "value": {
+    "blocked": {
+     "op-2": "path_conflict",
+     "op-3": "capacity"
+    },
+    "budget_exhausted": false,
+    "job": {
+     "calls": {
+      "reserved": null,
+      "settled": null
+     },
+     "created_at": "2026-09-18T00:00:00.000003+00:00",
+     "dependencies": [],
+     "dispatched_at": "2026-09-18T00:00:00.000006+00:00",
+     "error_type": null,
+     "exit_code": null,
+     "finished_at": null,
+     "goal": {
+      "base_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "criterion": "c",
+      "path": "docs/GOAL.md",
+      "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+     },
+     "id": "op-1",
+     "lane": "a",
+     "manifest": {
+      "base_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "budget": {
+       "per_host": 4,
+       "total": 8
+      },
+      "claude": {
+       "max_budget_usd": 1.0,
+       "model": "claude-fixture-model",
+       "timeout_seconds": 120
+      },
+      "goal": {
+       "criterion": "crit op-1",
+       "path": "docs/GOAL.md",
+       "rationale": "CANARY-must-never-be-emitted",
+       "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+      },
+      "id": "op-1",
+      "plan": {
+       "acceptance_criteria": [
+        "ok"
+       ],
+       "allowed_paths": [
+        "docs/guide"
+       ],
+       "objective": "CANARY-must-never-be-emitted"
+      },
+      "schema": "urn:zeus:operation:1"
+     },
+     "manifest_sha256": "9eb50611f75dad247c9f7fd2ff055c4bf7cd754b8d70e5c485e1936d46c6eedc",
+     "operation_id": "op-1",
+     "owner_token": "token-0001",
+     "reason_code": null,
+     "receipt": null,
+     "repository": "9e377ee5cd2188635c894e5b4a0f92a33c298ee9d0f50f303dc57cd60f91e7df",
+     "status": "dispatching",
+     "team": "alpha",
+     "updated_at": "2026-09-18T00:00:00.000006+00:00"
+    },
+    "paused": false
+   }
+  },
+  {
+   "value": {
+    "blocked": {
+     "op-2": "path_conflict"
+    },
+    "budget_exhausted": false,
+    "job": {
+     "calls": {
+      "reserved": null,
+      "settled": null
+     },
+     "created_at": "2026-09-18T00:00:00.000005+00:00",
+     "dependencies": [],
+     "dispatched_at": "2026-09-18T00:00:00.000007+00:00",
+     "error_type": null,
+     "exit_code": null,
+     "finished_at": null,
+     "goal": {
+      "base_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "criterion": "c",
+      "path": "docs/GOAL.md",
+      "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+     },
+     "id": "op-3",
+     "lane": "b",
+     "manifest": {
+      "base_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "budget": {
+       "per_host": 4,
+       "total": 8
+      },
+      "claude": {
+       "max_budget_usd": 1.0,
+       "model": "claude-fixture-model",
+       "timeout_seconds": 120
+      },
+      "goal": {
+       "criterion": "crit op-3",
+       "path": "docs/GOAL.md",
+       "rationale": "CANARY-must-never-be-emitted",
+       "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+      },
+      "id": "op-3",
+      "plan": {
+       "acceptance_criteria": [
+        "ok"
+       ],
+       "allowed_paths": [
+        "src/free.py"
+       ],
+       "objective": "CANARY-must-never-be-emitted"
+      },
+      "schema": "urn:zeus:operation:1"
+     },
+     "manifest_sha256": "83cee45fc1b6986b0c59c38589a56b9932d56334e6a114bd44efdae757521dcf",
+     "operation_id": "op-3",
+     "owner_token": "token-0002",
+     "reason_code": null,
+     "receipt": null,
+     "repository": "9e377ee5cd2188635c894e5b4a0f92a33c298ee9d0f50f303dc57cd60f91e7df",
+     "status": "dispatching",
+     "team": "beta",
+     "updated_at": "2026-09-18T00:00:00.000007+00:00"
+    },
+    "paused": false
+   }
+  },
+  {
+   "value": {
+    "blocked": {
+     "op-2": "capacity"
+    },
+    "budget_exhausted": false,
+    "job": null,
+    "paused": false
+   }
+  }
+ ],
+ "shared_status": {
+  "value": {
+   "accounting_mode": "finite",
+   "budget": {
+    "per_host": 4,
+    "total": 8
+   },
+   "id": "fleet-1",
+   "jobs": [
+    {
+     "calls": {
+      "reserved": null,
+      "settled": null
+     },
+     "created_at": "2026-09-18T00:00:00.000004+00:00",
+     "dependencies": [],
+     "goal": {
+      "criterion": "c",
+      "path": "docs/GOAL.md"
+     },
+     "id": "op-2",
+     "lane": "b",
+     "operation_id": "op-2",
+     "reason_code": "capacity",
+     "status": "queued",
+     "team": "beta",
+     "updated_at": "2026-09-18T00:00:00.000008+00:00"
+    },
+    {
+     "calls": {
+      "reserved": null,
+      "settled": null
+     },
+     "created_at": "2026-09-18T00:00:00.000005+00:00",
+     "dependencies": [],
+     "goal": {
+      "criterion": "c",
+      "path": "docs/GOAL.md"
+     },
+     "id": "op-3",
+     "lane": "b",
+     "operation_id": "op-3",
+     "reason_code": null,
+     "status": "dispatching",
+     "team": "beta",
+     "updated_at": "2026-09-18T00:00:00.000007+00:00"
+    },
+    {
+     "calls": {
+      "reserved": null,
+      "settled": null
+     },
+     "created_at": "2026-09-18T00:00:00.000003+00:00",
+     "dependencies": [],
+     "goal": {
+      "criterion": "c",
+      "path": "docs/GOAL.md"
+     },
+     "id": "op-1",
+     "lane": "a",
+     "operation_id": "op-1",
+     "reason_code": null,
+     "status": "dispatching",
+     "team": "alpha",
+     "updated_at": "2026-09-18T00:00:00.000006+00:00"
+    }
+   ],
+   "lanes": [
+    {
+     "active_job": "op-1",
+     "id": "a",
+     "team": "alpha"
+    },
+    {
+     "active_job": "op-3",
+     "id": "b",
+     "team": "beta"
+    }
+   ],
+   "max_parallel": 2,
+   "paused": false,
+   "registered": true,
+   "schema": "urn:zeus:fleet-status:1",
+   "truncated": false
+  }
+ },
+ "status": {
+  "value": {
+   "accounting_mode": "finite",
+   "budget": {
+    "per_host": 4,
+    "total": 8
+   },
+   "id": "fleet-1",
+   "jobs": [
+    {
+     "calls": {
+      "reserved": null,
+      "settled": null
+     },
+     "created_at": "2026-09-18T00:00:00.000005+00:00",
+     "dependencies": [
+      "op-1"
+     ],
+     "goal": {
+      "criterion": "c",
+      "path": "docs/GOAL.md"
+     },
+     "id": "op-3",
+     "lane": "b",
+     "operation_id": "op-3",
+     "reason_code": "lane_busy",
+     "status": "queued",
+     "team": "beta",
+     "updated_at": "2026-09-18T00:00:00.000018+00:00"
+    },
+    {
+     "calls": {
+      "reserved": 2,
+      "settled": 2
+     },
+     "created_at": "2026-09-18T00:00:00.000004+00:00",
+     "dependencies": [],
+     "goal": {
+      "criterion": "c",
+      "path": "docs/GOAL.md"
+     },
+     "id": "op-2",
+     "lane": "a",
+     "operation_id": "op-2",
+     "reason_code": "lead_accepted",
+     "status": "accepted",
+     "team": "alpha",
+     "updated_at": "2026-09-18T00:00:00.000017+00:00"
+    },
+    {
+     "calls": {
+      "reserved": null,
+      "settled": null
+     },
+     "created_at": "2026-09-18T00:00:00.000006+00:00",
+     "dependencies": [],
+     "goal": {
+      "criterion": "c",
+      "path": "docs/GOAL.md"
+     },
+     "id": "op-4",
+     "lane": "b",
+     "operation_id": "op-4",
+     "reason_code": "receipt_missing",
+     "status": "unknown",
+     "team": "beta",
+     "updated_at": "2026-09-18T00:00:00.000015+00:00"
+    },
+    {
+     "calls": {
+      "reserved": null,
+      "settled": null
+     },
+     "created_at": "2026-09-18T00:00:00.000003+00:00",
+     "dependencies": [],
+     "goal": {
+      "criterion": "c",
+      "path": "docs/GOAL.md"
+     },
+     "id": "op-1",
+     "lane": "a",
+     "operation_id": "op-1",
+     "reason_code": "exception:ValueError",
+     "status": "failed",
+     "team": "alpha",
+     "updated_at": "2026-09-18T00:00:00.000014+00:00"
+    }
+   ],
+   "lanes": [
+    {
+     "active_job": null,
+     "id": "a",
+     "team": "alpha"
+    },
+    {
+     "active_job": "op-4",
+     "id": "b",
+     "team": "beta"
+    }
+   ],
+   "max_parallel": 2,
+   "paused": false,
+   "registered": true,
+   "schema": "urn:zeus:fleet-status:1",
+   "truncated": false
+  }
+ },
+ "unit_after_job": {
+  "message": "fleet refused: capacity",
+  "reason_code": "capacity",
+  "refused": "FleetRefused"
+ },
+ "unit_after_unknown": {
+  "message": "fleet refused: capacity",
+  "reason_code": "capacity",
+  "refused": "FleetRefused"
+ },
+ "unit_blocks_job": {
+  "value": {
+   "blocked": {
+    "op-1": "capacity"
+   },
+   "budget_exhausted": false,
+   "job": null,
+   "paused": false
+  }
+ },
+ "unit_conflict": {
+  "message": "fleet refused: unit_conflict (id)",
+  "reason_code": "unit_conflict",
+  "refused": "FleetRefused"
+ },
+ "unit_invalid_id": {
+  "message": "fleet refused: unit_invalid (id)",
+  "reason_code": "unit_invalid",
+  "refused": "FleetRefused"
+ },
+ "unit_invalid_kind": {
+  "message": "fleet refused: unit_invalid (kind)",
+  "reason_code": "unit_invalid",
+  "refused": "FleetRefused"
+ },
+ "unit_paused": {
+  "message": "fleet refused: paused",
+  "reason_code": "paused",
+  "refused": "FleetRefused"
+ },
+ "unit_records": [
+  [
+   "fleet_control",
+   "admission",
+   "5479ac128c7a90b84837e005de176794973c8a6db26805d409cc5a420a34cb1f"
+  ],
+  [
+   "fleet_jobs",
+   "op-1",
+   "63c91c7d79ec1543b25282ca302c5f630888491fb4b421258c238686676ecbe7"
+  ],
+  [
+   "fleet_registry",
+   "fleet-1",
+   "d142b5081255cace0710c9a37d333b81c8504eeec4b957d9c1de8de1febf3a42"
+  ],
+  [
+   "fleet_units",
+   "1111111111111111111111111111111111111111111111111111111111111111",
+   "cf3bae860a922f95b83438d5de71906611cc5d29757cde8d4b5b00c773ed262b"
+  ]
+ ],
+ "unit_replay": {
+  "value": {
+   "cached": true,
+   "token": "token-0001",
+   "unit": {
+    "id": "1111111111111111111111111111111111111111111111111111111111111111",
+    "kind": "conductor",
+    "lane": "b",
+    "next_action": "settle only on a confirmed parent-and-tree cleanup receipt or a never-entered fence; unknown cleanup keeps the slot until its named owner resolves it",
+    "released_at": null,
+    "reserved_at": "2026-09-18T00:00:00.000004+00:00",
+    "settlement": null,
+    "state": "reserved",
+    "subject": "intent-1"
+   }
+  }
+ },
+ "unit_reserve": {
+  "value": {
+   "cached": false,
+   "token": "token-0001",
+   "unit": {
+    "id": "1111111111111111111111111111111111111111111111111111111111111111",
+    "kind": "conductor",
+    "lane": "b",
+    "next_action": "settle only on a confirmed parent-and-tree cleanup receipt or a never-entered fence; unknown cleanup keeps the slot until its named owner resolves it",
+    "released_at": null,
+    "reserved_at": "2026-09-18T00:00:00.000004+00:00",
+    "settlement": null,
+    "state": "reserved",
+    "subject": "intent-1"
+   }
+  }
+ },
+ "units": {
+  "value": [
+   {
+    "id": "1111111111111111111111111111111111111111111111111111111111111111",
+    "kind": "conductor",
+    "lane": "b",
+    "next_action": "none",
+    "released_at": "2026-09-18T00:00:00.000010+00:00",
+    "reserved_at": "2026-09-18T00:00:00.000004+00:00",
+    "settlement": {
+     "exit_code": 0,
+     "kind": "cleanup",
+     "proof_sha256": "45ec92ae3f721bc462088c6f2fd7d60956a8ceecdefc9e18b6ea422e38df4d3c",
+     "timed_out": false
+    },
+    "state": "released",
+    "subject": "intent-1"
+   }
+  ]
+ },
+ "unregistered_enqueue": {
+  "message": "fleet refused: unregistered",
+  "reason_code": "unregistered",
+  "refused": "FleetRefused"
+ }
+}

@@ -1,0 +1,9 @@
+{
+ "family": "coordination.fleet",
+ "description": "S5 Fleet (RESEARCH-S5 D7/D8/D11, check (e)), in the M7 test sequences: config refusals, idempotent register and conflicts; enqueue refusals, idempotence and binding conflicts; admission (path conflict across lanes of one repository, lane_busy, dependency_waiting, capacity, budget_exhausted, paused, persisted reasons), owner-only finalize, unknown keeps its lane and slot; execution units sharing capacity, replay, unit_conflict, exact cleanup/fenced proofs released once, settlement_conflict; idle-only budget grants; status reads",
+ "reference_driver": "drivers/reference/s5_fleet.py",
+ "target_driver": null,
+ "golden": "goldens/reference/coordination.fleet.json",
+ "slice": "S5",
+ "target_status": "pending: Fleet is not yet moved"
+}
