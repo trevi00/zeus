@@ -84,7 +84,8 @@ S5_IMPLEMENTED = {"coordination.fleet", "coordination.fleet_recovery", "coordina
                   "effects.admission_unit", "effects.admission_unit.pg",
                   "coordination.execution_recovery"}
 S6_FAMILIES = {"coordination.continuation_tick", "coordination.continuation_routes",
-               "coordination.continuation_owner_paths", "coordination.continuation_research"}
+               "coordination.continuation_owner_paths", "coordination.continuation_research",
+               "coordination.owner_actions_research"}
 S6_IMPLEMENTED: set = set()
 IMPLEMENTED = {**{f: "S1" for f in S1_FAMILIES}, **{f: "S2" for f in S2_FAMILIES},
                **{f: "S3" for f in S3_IMPLEMENTED}, **{f: "S4" for f in S4_IMPLEMENTED},
