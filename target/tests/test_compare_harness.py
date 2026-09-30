@@ -91,15 +91,19 @@ S6_IMPLEMENTED = {"coordination.guarded_launch", "coordination.continuation_tick
                   "coordination.continuation_routes", "coordination.continuation_owner_paths",
                   "coordination.continuation_research", "coordination.owner_actions_research",
                   "effects.continuation_units", "effects.continuation_units.pg"}
+S7_FAMILIES = {"review.releases_queue"}
+S7_IMPLEMENTED = {"review.releases_queue"}
 IMPLEMENTED = {**{f: "S1" for f in S1_FAMILIES}, **{f: "S2" for f in S2_FAMILIES},
                **{f: "S3" for f in S3_IMPLEMENTED}, **{f: "S4" for f in S4_IMPLEMENTED},
-               **{f: "S5" for f in S5_IMPLEMENTED}, **{f: "S6" for f in S6_IMPLEMENTED}}
+               **{f: "S5" for f in S5_IMPLEMENTED}, **{f: "S6" for f in S6_IMPLEMENTED},
+               **{f: "S7" for f in S7_IMPLEMENTED}}
 
 
 def test_every_scenario_has_a_reference_golden_and_only_implemented_slices_have_a_target():
     scenarios = [load(p) for p in sorted((COMPARE / "scenarios").glob("*.json"))]
     assert {s["family"] for s in scenarios} == (S0_FAMILIES | S1_FAMILIES | S2_FAMILIES | S3_FAMILIES
-                                                | S4_FAMILIES | S5_FAMILIES | S6_FAMILIES)
+                                                | S4_FAMILIES | S5_FAMILIES | S6_FAMILIES
+                                                | S7_FAMILIES)
     for s in scenarios:
         assert (COMPARE / s["reference_driver"]).is_file()
         assert (COMPARE / s["golden"]).is_file()

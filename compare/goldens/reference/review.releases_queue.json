@@ -1,0 +1,4912 @@
+{
+ "environment_reverification": {
+  "approvals": {
+   "steps": {
+    "empty_lane": {
+     "message": "environment_reverification_approval_invalid: environment reverification approval incomplete",
+     "reason_code": "environment_reverification_approval_invalid",
+     "refused": "EnvironmentReverificationRefused"
+    },
+    "extra_key": {
+     "message": "environment_reverification_approval_invalid: environment reverification approval incomplete",
+     "reason_code": "environment_reverification_approval_invalid",
+     "refused": "EnvironmentReverificationRefused"
+    },
+    "fix_evidence_no_prefix": {
+     "message": "environment_reverification_approval_invalid: environment reverification approval malformed",
+     "reason_code": "environment_reverification_approval_invalid",
+     "refused": "EnvironmentReverificationRefused"
+    },
+    "fix_evidence_short": {
+     "message": "environment_reverification_approval_invalid: environment reverification approval malformed",
+     "reason_code": "environment_reverification_approval_invalid",
+     "refused": "EnvironmentReverificationRefused"
+    },
+    "int_controller": {
+     "message": "environment_reverification_approval_invalid: environment reverification approval incomplete",
+     "reason_code": "environment_reverification_approval_invalid",
+     "refused": "EnvironmentReverificationRefused"
+    },
+    "kind": {
+     "message": "environment_reverification_approval_invalid: environment reverification approval incomplete",
+     "reason_code": "environment_reverification_approval_invalid",
+     "refused": "EnvironmentReverificationRefused"
+    },
+    "missing_lane": {
+     "message": "environment_reverification_approval_invalid: environment reverification approval incomplete",
+     "reason_code": "environment_reverification_approval_invalid",
+     "refused": "EnvironmentReverificationRefused"
+    },
+    "non_hex_controller": {
+     "message": "environment_reverification_approval_invalid: environment reverification approval malformed",
+     "reason_code": "environment_reverification_approval_invalid",
+     "refused": "EnvironmentReverificationRefused"
+    },
+    "not_a_dict": {
+     "message": "environment_reverification_approval_invalid: environment reverification approval incomplete",
+     "reason_code": "environment_reverification_approval_invalid",
+     "refused": "EnvironmentReverificationRefused"
+    },
+    "nothing_written": true,
+    "old_plan_sha_short": {
+     "message": "environment_reverification_approval_invalid: environment reverification approval malformed",
+     "reason_code": "environment_reverification_approval_invalid",
+     "refused": "EnvironmentReverificationRefused"
+    },
+    "other_release": {
+     "message": "environment_reverification_approval_invalid: environment approval names another release",
+     "reason_code": "environment_reverification_approval_invalid",
+     "refused": "EnvironmentReverificationRefused"
+    },
+    "short_controller": {
+     "message": "environment_reverification_approval_invalid: environment reverification approval malformed",
+     "reason_code": "environment_reverification_approval_invalid",
+     "refused": "EnvironmentReverificationRefused"
+    },
+    "upper_controller": {
+     "message": "environment_reverification_approval_invalid: environment reverification approval malformed",
+     "reason_code": "environment_reverification_approval_invalid",
+     "refused": "EnvironmentReverificationRefused"
+    }
+   },
+   "stores": [
+    [
+     [
+      "events/release.evaluator_migration_requested:2ea402bb45d1d1302bd682308019066b4a34375c438c5147765d8b75b84cbaae",
+      "63dbe35568022d427b2ed0b838310e15ffcdf36bd62e10fa90d81906e28c82c9"
+     ],
+     [
+      "releases/2ea402bb45d1d1302bd682308019066b4a34375c438c5147765d8b75b84cbaae",
+      "d2fcb1e636eb71710e77f8f8a60d49d8784d9e973472ea384515a2d4c80b9c21"
+     ],
+     [
+      "releases/5fd9c120110d2c399afc561b9be222e490d1da1b2777a565918e6a90e84ab3c0",
+      "d0303b045ffb08e0e9b305c1ba9afa52bb900c5144c080928ddd289f89df7eed"
+     ]
+    ]
+   ]
+  },
+  "authority": {
+   "steps": {
+    "actor": {
+     "message": "Actor lacks required role",
+     "refused": "ContractError"
+    },
+    "approval_policy_hash": {
+     "message": "environment_reverification_approval_invalid: environment approval names another evaluator",
+     "reason_code": "environment_reverification_approval_invalid",
+     "refused": "EnvironmentReverificationRefused"
+    },
+    "approver_not_conductor": {
+     "message": "Actor lacks required role",
+     "refused": "ContractError"
+    },
+    "author_cannot_approve": {
+     "message": "Environment approver is the candidate author",
+     "refused": "ContractError"
+    },
+    "author_unchanged": true,
+    "controller_running": {
+     "message": "Release controller still running",
+     "refused": "ContractError"
+    },
+    "expected_hash": {
+     "message": "environment_reverification_approval_invalid: environment approval names another evaluator",
+     "reason_code": "environment_reverification_approval_invalid",
+     "refused": "EnvironmentReverificationRefused"
+    },
+    "expected_revision": {
+     "message": "Stale candidate or evaluator",
+     "refused": "ContractError"
+    },
+    "nothing_written": {
+     "lock_only": true
+    },
+    "unknown_actor": {
+     "message": "Unknown actor",
+     "refused": "ContractError"
+    },
+    "unknown_source": {
+     "message": "Release not found",
+     "refused": "ContractError"
+    }
+   },
+   "stores": [
+    [
+     [
+      "deployment_locks/controller",
+      "acf52f9978d9892dd6cd1cc3483b2ecc86f9732e2fa4bf8fd269ca83155c796e"
+     ],
+     [
+      "events/release.evaluator_migration_requested:2ea402bb45d1d1302bd682308019066b4a34375c438c5147765d8b75b84cbaae",
+      "63dbe35568022d427b2ed0b838310e15ffcdf36bd62e10fa90d81906e28c82c9"
+     ],
+     [
+      "releases/2ea402bb45d1d1302bd682308019066b4a34375c438c5147765d8b75b84cbaae",
+      "d2fcb1e636eb71710e77f8f8a60d49d8784d9e973472ea384515a2d4c80b9c21"
+     ],
+     [
+      "releases/5fd9c120110d2c399afc561b9be222e490d1da1b2777a565918e6a90e84ab3c0",
+      "d0303b045ffb08e0e9b305c1ba9afa52bb900c5144c080928ddd289f89df7eed"
+     ]
+    ],
+    [
+     [
+      "events/release.evaluator_migration_requested:2ea402bb45d1d1302bd682308019066b4a34375c438c5147765d8b75b84cbaae",
+      "63dbe35568022d427b2ed0b838310e15ffcdf36bd62e10fa90d81906e28c82c9"
+     ],
+     [
+      "releases/2ea402bb45d1d1302bd682308019066b4a34375c438c5147765d8b75b84cbaae",
+      "d2fcb1e636eb71710e77f8f8a60d49d8784d9e973472ea384515a2d4c80b9c21"
+     ],
+     [
+      "releases/5fd9c120110d2c399afc561b9be222e490d1da1b2777a565918e6a90e84ab3c0",
+      "d0303b045ffb08e0e9b305c1ba9afa52bb900c5144c080928ddd289f89df7eed"
+     ]
+    ]
+   ]
+  },
+  "blocks": {
+   "steps": {
+    "evaluator_blocked": {
+     "message": "unsupported_evaluator_reverification: release is an evaluator-migrated successor",
+     "reason_code": "unsupported_evaluator_reverification",
+     "refused": "UnsupportedEvaluatorReverification"
+    },
+    "existing_evaluator_blocks_environment": {
+     "message": "Release already has an evaluator migration successor",
+     "refused": "ContractError"
+    },
+    "existing_evaluator_unchanged": true,
+    "existing_plain_blocks_environment": {
+     "message": "Release already has a reverification successor",
+     "refused": "ContractError"
+    },
+    "existing_plain_unchanged": true,
+    "injected_env_blocks_evaluator": {
+     "message": "Release already has an environment reverification successor",
+     "refused": "ContractError"
+    },
+    "injected_env_blocks_plain": {
+     "unreachable": "Releases.request_reverification stays for S8 and is not on the target"
+    },
+    "injected_unchanged": true,
+    "plain_blocked": {
+     "unreachable": "Releases.request_reverification stays for S8 and is not on the target"
+    },
+    "replay": true,
+    "unchanged": true
+   },
+   "stores": [
+    [
+     [
+      "events/release.environment_reverification_requested:458ba275eee426daadb07b4dc9bd765ffd4760e23714230443bea786bca94d9c",
+      "3a9b707452489190e59afa8884ae44d28ab1e2dff660969a93d8198c58281cce"
+     ],
+     [
+      "events/release.evaluator_migration_requested:2ea402bb45d1d1302bd682308019066b4a34375c438c5147765d8b75b84cbaae",
+      "63dbe35568022d427b2ed0b838310e15ffcdf36bd62e10fa90d81906e28c82c9"
+     ],
+     [
+      "releases/2ea402bb45d1d1302bd682308019066b4a34375c438c5147765d8b75b84cbaae",
+      "d2fcb1e636eb71710e77f8f8a60d49d8784d9e973472ea384515a2d4c80b9c21"
+     ],
+     [
+      "releases/458ba275eee426daadb07b4dc9bd765ffd4760e23714230443bea786bca94d9c",
+      "bdb3dffe3c4bba6bc3b6bfa588f67eaff0a32cb789a66c348d0132587dcfee57"
+     ],
+     [
+      "releases/5fd9c120110d2c399afc561b9be222e490d1da1b2777a565918e6a90e84ab3c0",
+      "d0303b045ffb08e0e9b305c1ba9afa52bb900c5144c080928ddd289f89df7eed"
+     ]
+    ],
+    [
+     [
+      "releases/5fd9c120110d2c399afc561b9be222e490d1da1b2777a565918e6a90e84ab3c0",
+      "d0303b045ffb08e0e9b305c1ba9afa52bb900c5144c080928ddd289f89df7eed"
+     ],
+     [
+      "releases/7ff7f29e5a78de8fb7ff70d061b7b57dab3e138c7797eeb1914b1b6ff6c17f42",
+      "b683704c40971640306a251a4713659f3f9c2b091a53e9bb3fd6b8de1da4c290"
+     ]
+    ],
+    [
+     [
+      "events/release.evaluator_migration_requested:2ea402bb45d1d1302bd682308019066b4a34375c438c5147765d8b75b84cbaae",
+      "63dbe35568022d427b2ed0b838310e15ffcdf36bd62e10fa90d81906e28c82c9"
+     ],
+     [
+      "releases/2405c9471bb2a20e49f8275a378384efdbced2bf129454bfa33e605682aa1134",
+      "c1ecb5538b5409e3d66e32a50bd339b1ff3a71ee79f62afb73c16ef2bd33f0b9"
+     ],
+     [
+      "releases/2ea402bb45d1d1302bd682308019066b4a34375c438c5147765d8b75b84cbaae",
+      "d2fcb1e636eb71710e77f8f8a60d49d8784d9e973472ea384515a2d4c80b9c21"
+     ],
+     [
+      "releases/5fd9c120110d2c399afc561b9be222e490d1da1b2777a565918e6a90e84ab3c0",
+      "d0303b045ffb08e0e9b305c1ba9afa52bb900c5144c080928ddd289f89df7eed"
+     ]
+    ],
+    [
+     [
+      "events/release.evaluator_migration_requested:2ea402bb45d1d1302bd682308019066b4a34375c438c5147765d8b75b84cbaae",
+      "63dbe35568022d427b2ed0b838310e15ffcdf36bd62e10fa90d81906e28c82c9"
+     ],
+     [
+      "releases/2ea402bb45d1d1302bd682308019066b4a34375c438c5147765d8b75b84cbaae",
+      "d2fcb1e636eb71710e77f8f8a60d49d8784d9e973472ea384515a2d4c80b9c21"
+     ],
+     [
+      "releases/3633269dae1b7d7398372d68ead9551ee977aab39a01716d64601478105b2eb0",
+      "2afd2dc44d958b96ff0a6126c681f4d1421bf1001ee8f1e4407cb98b0915c2ec"
+     ],
+     [
+      "releases/5fd9c120110d2c399afc561b9be222e490d1da1b2777a565918e6a90e84ab3c0",
+      "d0303b045ffb08e0e9b305c1ba9afa52bb900c5144c080928ddd289f89df7eed"
+     ]
+    ]
+   ]
+  },
+  "depth_and_checks": {
+   "steps": {
+    "again_status": "rejected",
+    "depth": {
+     "message": "environment_reverification_depth: release is already an environment successor",
+     "reason_code": "environment_reverification_depth",
+     "refused": "EnvironmentReverificationRefused"
+    },
+    "migrate_again": {
+     "message": "unsupported_evaluator_reverification: release is an evaluator-migrated successor",
+     "reason_code": "unsupported_evaluator_reverification",
+     "refused": "UnsupportedEvaluatorReverification"
+    },
+    "no_failed_check_at_all": {
+     "message": "Release is not check-rejected",
+     "refused": "ContractError"
+    },
+    "reverify_again": {
+     "unreachable": "Releases.request_reverification stays for S8 and is not on the target"
+    },
+    "skipped_only_environment_failure": {
+     "message": "No executed failed check",
+     "refused": "ContractError"
+    },
+    "tests_failed": {
+     "message": "tests_not_passed: incumbent tests did not pass",
+     "reason_code": "tests_not_passed",
+     "refused": "EnvironmentReverificationRefused"
+    },
+    "tests_failed_unchanged": true,
+    "tests_skipped": {
+     "message": "tests_not_passed: incumbent tests did not pass",
+     "reason_code": "tests_not_passed",
+     "refused": "EnvironmentReverificationRefused"
+    },
+    "tests_skipped_unchanged": true,
+    "unchanged": true
+   },
+   "stores": [
+    [
+     [
+      "events/release.environment_reverification_requested:458ba275eee426daadb07b4dc9bd765ffd4760e23714230443bea786bca94d9c",
+      "3a9b707452489190e59afa8884ae44d28ab1e2dff660969a93d8198c58281cce"
+     ],
+     [
+      "events/release.evaluator_migration_requested:2ea402bb45d1d1302bd682308019066b4a34375c438c5147765d8b75b84cbaae",
+      "63dbe35568022d427b2ed0b838310e15ffcdf36bd62e10fa90d81906e28c82c9"
+     ],
+     [
+      "releases/2ea402bb45d1d1302bd682308019066b4a34375c438c5147765d8b75b84cbaae",
+      "d2fcb1e636eb71710e77f8f8a60d49d8784d9e973472ea384515a2d4c80b9c21"
+     ],
+     [
+      "releases/458ba275eee426daadb07b4dc9bd765ffd4760e23714230443bea786bca94d9c",
+      "fefa248f1f484652980b151849d20939d4e9262c0a6c6b10f77f2ee8b1a588e7"
+     ],
+     [
+      "releases/5fd9c120110d2c399afc561b9be222e490d1da1b2777a565918e6a90e84ab3c0",
+      "d0303b045ffb08e0e9b305c1ba9afa52bb900c5144c080928ddd289f89df7eed"
+     ]
+    ],
+    [
+     [
+      "events/release.evaluator_migration_requested:2ea402bb45d1d1302bd682308019066b4a34375c438c5147765d8b75b84cbaae",
+      "63dbe35568022d427b2ed0b838310e15ffcdf36bd62e10fa90d81906e28c82c9"
+     ],
+     [
+      "releases/2ea402bb45d1d1302bd682308019066b4a34375c438c5147765d8b75b84cbaae",
+      "35bbcca0d07df272e3bc1da0d2cc7956207811b8d95d44ed173e46e47d01fa70"
+     ],
+     [
+      "releases/5fd9c120110d2c399afc561b9be222e490d1da1b2777a565918e6a90e84ab3c0",
+      "d0303b045ffb08e0e9b305c1ba9afa52bb900c5144c080928ddd289f89df7eed"
+     ]
+    ],
+    [
+     [
+      "events/release.evaluator_migration_requested:2ea402bb45d1d1302bd682308019066b4a34375c438c5147765d8b75b84cbaae",
+      "63dbe35568022d427b2ed0b838310e15ffcdf36bd62e10fa90d81906e28c82c9"
+     ],
+     [
+      "releases/2ea402bb45d1d1302bd682308019066b4a34375c438c5147765d8b75b84cbaae",
+      "5ee86ed7e4342941b4d65a0a240f7b1350a6a8ea11ff21df1e708f053337b838"
+     ],
+     [
+      "releases/5fd9c120110d2c399afc561b9be222e490d1da1b2777a565918e6a90e84ab3c0",
+      "d0303b045ffb08e0e9b305c1ba9afa52bb900c5144c080928ddd289f89df7eed"
+     ]
+    ],
+    [
+     [
+      "events/release.evaluator_migration_requested:2ea402bb45d1d1302bd682308019066b4a34375c438c5147765d8b75b84cbaae",
+      "63dbe35568022d427b2ed0b838310e15ffcdf36bd62e10fa90d81906e28c82c9"
+     ],
+     [
+      "releases/2ea402bb45d1d1302bd682308019066b4a34375c438c5147765d8b75b84cbaae",
+      "233b2f8e6b8eed6064d10bcb25c31849e0221af438c248abc21047cf98c84d83"
+     ],
+     [
+      "releases/5fd9c120110d2c399afc561b9be222e490d1da1b2777a565918e6a90e84ab3c0",
+      "d0303b045ffb08e0e9b305c1ba9afa52bb900c5144c080928ddd289f89df7eed"
+     ]
+    ],
+    [
+     [
+      "events/release.evaluator_migration_requested:2ea402bb45d1d1302bd682308019066b4a34375c438c5147765d8b75b84cbaae",
+      "63dbe35568022d427b2ed0b838310e15ffcdf36bd62e10fa90d81906e28c82c9"
+     ],
+     [
+      "releases/2ea402bb45d1d1302bd682308019066b4a34375c438c5147765d8b75b84cbaae",
+      "585c70430120fe53e860f425e78a87a31f9a002b8163a8214e2341759e08dbe9"
+     ],
+     [
+      "releases/5fd9c120110d2c399afc561b9be222e490d1da1b2777a565918e6a90e84ab3c0",
+      "d0303b045ffb08e0e9b305c1ba9afa52bb900c5144c080928ddd289f89df7eed"
+     ]
+    ]
+   ]
+  },
+  "pins_and_controller": {
+   "steps": {
+    "controller_mismatch": {
+     "message": "environment_reverification_controller_mismatch: the running controller code is not the approved revision",
+     "reason_code": "environment_reverification_controller_mismatch",
+     "refused": "EnvironmentReverificationRefused"
+    },
+    "controller_unavailable_int": {
+     "message": "environment_reverification_controller_unavailable: the running controller code is unknown",
+     "reason_code": "environment_reverification_controller_unavailable",
+     "refused": "EnvironmentReverificationRefused"
+    },
+    "controller_unavailable_none": {
+     "message": "environment_reverification_controller_unavailable: the running controller code is unknown",
+     "reason_code": "environment_reverification_controller_unavailable",
+     "refused": "EnvironmentReverificationRefused"
+    },
+    "controller_unavailable_short": {
+     "message": "environment_reverification_controller_unavailable: the running controller code is unknown",
+     "reason_code": "environment_reverification_controller_unavailable",
+     "refused": "EnvironmentReverificationRefused"
+    },
+    "controller_unavailable_upper": {
+     "message": "environment_reverification_controller_unavailable: the running controller code is unknown",
+     "reason_code": "environment_reverification_controller_unavailable",
+     "refused": "EnvironmentReverificationRefused"
+    },
+    "not_migrated_source": {
+     "message": "environment_reverification_requires_migrated_source: release is not an evaluator-migrated successor",
+     "reason_code": "environment_reverification_requires_migrated_source",
+     "refused": "EnvironmentReverificationRefused"
+    },
+    "not_migrated_unchanged": true,
+    "nothing_written": false,
+    "pin_evaluator_revision": {
+     "message": "environment_reverification_pin_mismatch: evaluator pin does not match the source",
+     "reason_code": "environment_reverification_pin_mismatch",
+     "refused": "EnvironmentReverificationRefused"
+    },
+    "pin_evaluator_tree": {
+     "message": "environment_reverification_pin_mismatch: evaluator pin does not match the source",
+     "reason_code": "environment_reverification_pin_mismatch",
+     "refused": "EnvironmentReverificationRefused"
+    },
+    "pin_missing": {
+     "value": {
+      "candidate": {
+       "author": "worker:implementation",
+       "base": "base",
+       "revision": "candidate",
+       "tree": "tree"
+      },
+      "checks": {},
+      "created_at": "2026-01-01T01:15:13+00:00",
+      "environment_reverification": {
+       "actor": "conductor",
+       "approved_by": "conductor",
+       "at": "2026-01-01T01:15:13+00:00",
+       "controller_resolved": "7777777777777777777777777777777777777777",
+       "controller_revision": "7777777777777777777777777777777777777777",
+       "fix_evidence": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+       "intent_id": "control-intent-1",
+       "kind": "environment_reverification",
+       "lane": "h1-file-canary",
+       "old_plan_id": "delivery-plan-migrated",
+       "old_plan_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+       "policy_id": "control-policy-1",
+       "source_checks_digest": "dfc6d51008c24d9c11a8b390b8c56d0950cec94e11f696886c2b5d38d114cd37",
+       "source_digest": "d2fcb1e636eb71710e77f8f8a60d49d8784d9e973472ea384515a2d4c80b9c21",
+       "source_policy_hash": "42cbaf26d85b24f7ffc39f8431fcf503f44f373517c3d1e5aa4b97de87038f55",
+       "source_release_id": "2ea402bb45d1d1302bd682308019066b4a34375c438c5147765d8b75b84cbaae",
+       "target_id": "canary-service"
+      },
+      "evaluator_migration": {
+       "actor": "conductor",
+       "approved_by": "conductor",
+       "at": "2026-01-01T01:15:13+00:00",
+       "base": "base",
+       "evaluator_revision": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+       "evaluator_tree": "ffffffffffffffffffffffffffffffffffffffff",
+       "evidence": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+       "patch_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "paths": [
+        "tests/test_fixture.py"
+       ],
+       "source_checks_digest": "821bdfe8f4ef0b9686a16fc8492f7b032874c165bb7b0e4f4f797a0683222f23",
+       "source_digest": "d0303b045ffb08e0e9b305c1ba9afa52bb900c5144c080928ddd289f89df7eed",
+       "source_policy_hash": "d92deb256a139465f152d86d596a0de988f84a2ce51278c94c322ae4b2401349",
+       "source_release_id": "5fd9c120110d2c399afc561b9be222e490d1da1b2777a565918e6a90e84ab3c0"
+      },
+      "id": "458ba275eee426daadb07b4dc9bd765ffd4760e23714230443bea786bca94d9c",
+      "inherited_reviews": {
+       "digest": "d702f89f68c2f31242b00351ab0704add6bf85bb4d243536de6a281de108fe12",
+       "release_id": "2ea402bb45d1d1302bd682308019066b4a34375c438c5147765d8b75b84cbaae"
+      },
+      "policy": {
+       "checks": [
+        "tests",
+        "cli_start",
+        "cli_file_task"
+       ],
+       "revision": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+      },
+      "policy_hash": "42cbaf26d85b24f7ffc39f8431fcf503f44f373517c3d1e5aa4b97de87038f55",
+      "reverify_of": "2ea402bb45d1d1302bd682308019066b4a34375c438c5147765d8b75b84cbaae",
+      "reviews": [
+       {
+        "accepted": true,
+        "actor": "lead:improvement",
+        "evidence": "fixture:review",
+        "revision": "candidate"
+       },
+       {
+        "accepted": true,
+        "actor": "conductor",
+        "evidence": "fixture:review",
+        "revision": "candidate"
+       }
+      ],
+      "status": "reviewed"
+     }
+    },
+    "pin_parent": {
+     "message": "environment_reverification_pin_mismatch: evaluator pin does not match the source",
+     "reason_code": "environment_reverification_pin_mismatch",
+     "refused": "EnvironmentReverificationRefused"
+    },
+    "pin_patch_sha256": {
+     "message": "environment_reverification_pin_mismatch: evaluator pin does not match the source",
+     "reason_code": "environment_reverification_pin_mismatch",
+     "refused": "EnvironmentReverificationRefused"
+    },
+    "pin_paths": {
+     "message": "environment_reverification_pin_mismatch: evaluator pin does not match the source",
+     "reason_code": "environment_reverification_pin_mismatch",
+     "refused": "EnvironmentReverificationRefused"
+    }
+   },
+   "stores": [
+    [
+     [
+      "events/release.environment_reverification_requested:458ba275eee426daadb07b4dc9bd765ffd4760e23714230443bea786bca94d9c",
+      "3a9b707452489190e59afa8884ae44d28ab1e2dff660969a93d8198c58281cce"
+     ],
+     [
+      "events/release.evaluator_migration_requested:2ea402bb45d1d1302bd682308019066b4a34375c438c5147765d8b75b84cbaae",
+      "63dbe35568022d427b2ed0b838310e15ffcdf36bd62e10fa90d81906e28c82c9"
+     ],
+     [
+      "releases/2ea402bb45d1d1302bd682308019066b4a34375c438c5147765d8b75b84cbaae",
+      "d2fcb1e636eb71710e77f8f8a60d49d8784d9e973472ea384515a2d4c80b9c21"
+     ],
+     [
+      "releases/458ba275eee426daadb07b4dc9bd765ffd4760e23714230443bea786bca94d9c",
+      "bdb3dffe3c4bba6bc3b6bfa588f67eaff0a32cb789a66c348d0132587dcfee57"
+     ],
+     [
+      "releases/5fd9c120110d2c399afc561b9be222e490d1da1b2777a565918e6a90e84ab3c0",
+      "d0303b045ffb08e0e9b305c1ba9afa52bb900c5144c080928ddd289f89df7eed"
+     ]
+    ],
+    [
+     [
+      "releases/5fd9c120110d2c399afc561b9be222e490d1da1b2777a565918e6a90e84ab3c0",
+      "d0303b045ffb08e0e9b305c1ba9afa52bb900c5144c080928ddd289f89df7eed"
+     ]
+    ]
+   ]
+  },
+  "replay": {
+   "steps": {
+    "changed_controller": {
+     "message": "Conflicting environment reverification",
+     "refused": "ContractError"
+    },
+    "changed_fix_evidence": {
+     "message": "Conflicting environment reverification",
+     "refused": "ContractError"
+    },
+    "changed_intent": {
+     "message": "Conflicting environment reverification",
+     "refused": "ContractError"
+    },
+    "changed_lane": {
+     "message": "Conflicting environment reverification",
+     "refused": "ContractError"
+    },
+    "nothing_written": true,
+    "other_policy_hash": {
+     "message": "environment_reverification_approval_invalid: environment approval names another evaluator",
+     "reason_code": "environment_reverification_approval_invalid",
+     "refused": "EnvironmentReverificationRefused"
+    },
+    "replay_equal": true,
+    "replay_wrote": false
+   },
+   "stores": [
+    [
+     [
+      "events/release.environment_reverification_requested:458ba275eee426daadb07b4dc9bd765ffd4760e23714230443bea786bca94d9c",
+      "3a9b707452489190e59afa8884ae44d28ab1e2dff660969a93d8198c58281cce"
+     ],
+     [
+      "events/release.evaluator_migration_requested:2ea402bb45d1d1302bd682308019066b4a34375c438c5147765d8b75b84cbaae",
+      "63dbe35568022d427b2ed0b838310e15ffcdf36bd62e10fa90d81906e28c82c9"
+     ],
+     [
+      "releases/2ea402bb45d1d1302bd682308019066b4a34375c438c5147765d8b75b84cbaae",
+      "d2fcb1e636eb71710e77f8f8a60d49d8784d9e973472ea384515a2d4c80b9c21"
+     ],
+     [
+      "releases/458ba275eee426daadb07b4dc9bd765ffd4760e23714230443bea786bca94d9c",
+      "bdb3dffe3c4bba6bc3b6bfa588f67eaff0a32cb789a66c348d0132587dcfee57"
+     ],
+     [
+      "releases/5fd9c120110d2c399afc561b9be222e490d1da1b2777a565918e6a90e84ab3c0",
+      "d0303b045ffb08e0e9b305c1ba9afa52bb900c5144c080928ddd289f89df7eed"
+     ]
+    ]
+   ]
+  },
+  "sequential_conflict": {
+   "steps": {
+    "results": {
+     "first": {
+      "value": {
+       "candidate": {
+        "author": "worker:implementation",
+        "base": "base",
+        "revision": "candidate",
+        "tree": "tree"
+       },
+       "checks": {},
+       "created_at": "2026-01-01T01:15:13+00:00",
+       "environment_reverification": {
+        "actor": "conductor",
+        "approved_by": "conductor",
+        "at": "2026-01-01T01:15:13+00:00",
+        "controller_resolved": "7777777777777777777777777777777777777777",
+        "controller_revision": "7777777777777777777777777777777777777777",
+        "fix_evidence": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "intent_id": "control-intent-1",
+        "kind": "environment_reverification",
+        "lane": "h1-file-canary",
+        "old_plan_id": "delivery-plan-migrated",
+        "old_plan_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "policy_id": "control-policy-1",
+        "source_checks_digest": "dfc6d51008c24d9c11a8b390b8c56d0950cec94e11f696886c2b5d38d114cd37",
+        "source_digest": "d2fcb1e636eb71710e77f8f8a60d49d8784d9e973472ea384515a2d4c80b9c21",
+        "source_policy_hash": "42cbaf26d85b24f7ffc39f8431fcf503f44f373517c3d1e5aa4b97de87038f55",
+        "source_release_id": "2ea402bb45d1d1302bd682308019066b4a34375c438c5147765d8b75b84cbaae",
+        "target_id": "canary-service"
+       },
+       "evaluator_migration": {
+        "actor": "conductor",
+        "approved_by": "conductor",
+        "at": "2026-01-01T01:15:13+00:00",
+        "base": "base",
+        "evaluator_revision": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+        "evaluator_tree": "ffffffffffffffffffffffffffffffffffffffff",
+        "evidence": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "patch_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "paths": [
+         "tests/test_fixture.py"
+        ],
+        "source_checks_digest": "821bdfe8f4ef0b9686a16fc8492f7b032874c165bb7b0e4f4f797a0683222f23",
+        "source_digest": "d0303b045ffb08e0e9b305c1ba9afa52bb900c5144c080928ddd289f89df7eed",
+        "source_policy_hash": "d92deb256a139465f152d86d596a0de988f84a2ce51278c94c322ae4b2401349",
+        "source_release_id": "5fd9c120110d2c399afc561b9be222e490d1da1b2777a565918e6a90e84ab3c0"
+       },
+       "id": "458ba275eee426daadb07b4dc9bd765ffd4760e23714230443bea786bca94d9c",
+       "inherited_reviews": {
+        "digest": "d702f89f68c2f31242b00351ab0704add6bf85bb4d243536de6a281de108fe12",
+        "release_id": "2ea402bb45d1d1302bd682308019066b4a34375c438c5147765d8b75b84cbaae"
+       },
+       "policy": {
+        "checks": [
+         "tests",
+         "cli_start",
+         "cli_file_task"
+        ],
+        "revision": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+       },
+       "policy_hash": "42cbaf26d85b24f7ffc39f8431fcf503f44f373517c3d1e5aa4b97de87038f55",
+       "reverify_of": "2ea402bb45d1d1302bd682308019066b4a34375c438c5147765d8b75b84cbaae",
+       "reviews": [
+        {
+         "accepted": true,
+         "actor": "lead:improvement",
+         "evidence": "fixture:review",
+         "revision": "candidate"
+        },
+        {
+         "accepted": true,
+         "actor": "conductor",
+         "evidence": "fixture:review",
+         "revision": "candidate"
+        }
+       ],
+       "status": "reviewed"
+      }
+     },
+     "second": {
+      "message": "Conflicting environment reverification",
+      "refused": "ContractError"
+     }
+    },
+    "successors": [
+     "458ba275eee426daadb07b4dc9bd765ffd4760e23714230443bea786bca94d9c"
+    ]
+   },
+   "stores": [
+    [
+     [
+      "events/release.environment_reverification_requested:458ba275eee426daadb07b4dc9bd765ffd4760e23714230443bea786bca94d9c",
+      "3a9b707452489190e59afa8884ae44d28ab1e2dff660969a93d8198c58281cce"
+     ],
+     [
+      "events/release.evaluator_migration_requested:2ea402bb45d1d1302bd682308019066b4a34375c438c5147765d8b75b84cbaae",
+      "63dbe35568022d427b2ed0b838310e15ffcdf36bd62e10fa90d81906e28c82c9"
+     ],
+     [
+      "releases/2ea402bb45d1d1302bd682308019066b4a34375c438c5147765d8b75b84cbaae",
+      "d2fcb1e636eb71710e77f8f8a60d49d8784d9e973472ea384515a2d4c80b9c21"
+     ],
+     [
+      "releases/458ba275eee426daadb07b4dc9bd765ffd4760e23714230443bea786bca94d9c",
+      "bdb3dffe3c4bba6bc3b6bfa588f67eaff0a32cb789a66c348d0132587dcfee57"
+     ],
+     [
+      "releases/5fd9c120110d2c399afc561b9be222e490d1da1b2777a565918e6a90e84ab3c0",
+      "d0303b045ffb08e0e9b305c1ba9afa52bb900c5144c080928ddd289f89df7eed"
+     ]
+    ]
+   ]
+  },
+  "success": {
+   "steps": {
+    "child": {
+     "candidate": {
+      "author": "worker:implementation",
+      "base": "base",
+      "revision": "candidate",
+      "tree": "tree"
+     },
+     "checks": {},
+     "created_at": "2026-01-01T01:15:13+00:00",
+     "environment_reverification": {
+      "actor": "conductor",
+      "approved_by": "conductor",
+      "at": "2026-01-01T01:15:13+00:00",
+      "controller_resolved": "7777777777777777777777777777777777777777",
+      "controller_revision": "7777777777777777777777777777777777777777",
+      "fix_evidence": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "intent_id": "control-intent-1",
+      "kind": "environment_reverification",
+      "lane": "h1-file-canary",
+      "old_plan_id": "delivery-plan-migrated",
+      "old_plan_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "policy_id": "control-policy-1",
+      "source_checks_digest": "dfc6d51008c24d9c11a8b390b8c56d0950cec94e11f696886c2b5d38d114cd37",
+      "source_digest": "d2fcb1e636eb71710e77f8f8a60d49d8784d9e973472ea384515a2d4c80b9c21",
+      "source_policy_hash": "42cbaf26d85b24f7ffc39f8431fcf503f44f373517c3d1e5aa4b97de87038f55",
+      "source_release_id": "2ea402bb45d1d1302bd682308019066b4a34375c438c5147765d8b75b84cbaae",
+      "target_id": "canary-service"
+     },
+     "evaluator_migration": {
+      "actor": "conductor",
+      "approved_by": "conductor",
+      "at": "2026-01-01T01:15:13+00:00",
+      "base": "base",
+      "evaluator_revision": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+      "evaluator_tree": "ffffffffffffffffffffffffffffffffffffffff",
+      "evidence": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "patch_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "paths": [
+       "tests/test_fixture.py"
+      ],
+      "source_checks_digest": "821bdfe8f4ef0b9686a16fc8492f7b032874c165bb7b0e4f4f797a0683222f23",
+      "source_digest": "d0303b045ffb08e0e9b305c1ba9afa52bb900c5144c080928ddd289f89df7eed",
+      "source_policy_hash": "d92deb256a139465f152d86d596a0de988f84a2ce51278c94c322ae4b2401349",
+      "source_release_id": "5fd9c120110d2c399afc561b9be222e490d1da1b2777a565918e6a90e84ab3c0"
+     },
+     "id": "458ba275eee426daadb07b4dc9bd765ffd4760e23714230443bea786bca94d9c",
+     "inherited_reviews": {
+      "digest": "d702f89f68c2f31242b00351ab0704add6bf85bb4d243536de6a281de108fe12",
+      "release_id": "2ea402bb45d1d1302bd682308019066b4a34375c438c5147765d8b75b84cbaae"
+     },
+     "policy": {
+      "checks": [
+       "tests",
+       "cli_start",
+       "cli_file_task"
+      ],
+      "revision": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+     },
+     "policy_hash": "42cbaf26d85b24f7ffc39f8431fcf503f44f373517c3d1e5aa4b97de87038f55",
+     "reverify_of": "2ea402bb45d1d1302bd682308019066b4a34375c438c5147765d8b75b84cbaae",
+     "reviews": [
+      {
+       "accepted": true,
+       "actor": "lead:improvement",
+       "evidence": "fixture:review",
+       "revision": "candidate"
+      },
+      {
+       "accepted": true,
+       "actor": "conductor",
+       "evidence": "fixture:review",
+       "revision": "candidate"
+      }
+     ],
+     "status": "reviewed"
+    },
+    "event": {
+     "actor": "conductor",
+     "at": "2026-01-01T01:15:13+00:00",
+     "controller_revision": "7777777777777777777777777777777777777777",
+     "release_id": "458ba275eee426daadb07b4dc9bd765ffd4760e23714230443bea786bca94d9c",
+     "reverify_of": "2ea402bb45d1d1302bd682308019066b4a34375c438c5147765d8b75b84cbaae",
+     "type": "release.environment_reverification_requested"
+    },
+    "id_is_environment_successor": true,
+    "new_records": [
+     "events/release.environment_reverification_requested:458ba275eee426daadb07b4dc9bd765ffd4760e23714230443bea786bca94d9c",
+     "releases/458ba275eee426daadb07b4dc9bd765ffd4760e23714230443bea786bca94d9c"
+    ],
+    "source_untouched": true,
+    "verify_empty": {
+     "message": "Missing or extra canary checks",
+     "refused": "ContractError",
+     "wrote": false
+    }
+   },
+   "stores": [
+    [
+     [
+      "events/release.environment_reverification_requested:458ba275eee426daadb07b4dc9bd765ffd4760e23714230443bea786bca94d9c",
+      "3a9b707452489190e59afa8884ae44d28ab1e2dff660969a93d8198c58281cce"
+     ],
+     [
+      "events/release.evaluator_migration_requested:2ea402bb45d1d1302bd682308019066b4a34375c438c5147765d8b75b84cbaae",
+      "63dbe35568022d427b2ed0b838310e15ffcdf36bd62e10fa90d81906e28c82c9"
+     ],
+     [
+      "releases/2ea402bb45d1d1302bd682308019066b4a34375c438c5147765d8b75b84cbaae",
+      "d2fcb1e636eb71710e77f8f8a60d49d8784d9e973472ea384515a2d4c80b9c21"
+     ],
+     [
+      "releases/458ba275eee426daadb07b4dc9bd765ffd4760e23714230443bea786bca94d9c",
+      "bdb3dffe3c4bba6bc3b6bfa588f67eaff0a32cb789a66c348d0132587dcfee57"
+     ],
+     [
+      "releases/5fd9c120110d2c399afc561b9be222e490d1da1b2777a565918e6a90e84ab3c0",
+      "d0303b045ffb08e0e9b305c1ba9afa52bb900c5144c080928ddd289f89df7eed"
+     ]
+    ]
+   ]
+  }
+ },
+ "evaluator_migration": {
+  "approvals": {
+   "steps": {
+    "approval_00": {
+     "message": "Actor lacks required role",
+     "refused": "ContractError"
+    },
+    "approval_01": {
+     "message": "Actor lacks required role",
+     "refused": "ContractError"
+    },
+    "approval_02": {
+     "message": "Unknown actor",
+     "refused": "ContractError"
+    },
+    "approval_03": {
+     "message": "Evaluator approval names another release",
+     "refused": "ContractError"
+    },
+    "approval_04": {
+     "message": "Evaluator approval base differs from candidate",
+     "refused": "ContractError"
+    },
+    "approval_05": {
+     "message": "Evaluator migration may change only tests/",
+     "refused": "ContractError"
+    },
+    "approval_06": {
+     "message": "Evaluator migration may change only tests/",
+     "refused": "ContractError"
+    },
+    "approval_07": {
+     "message": "Evaluator paths must be a sorted non-empty list",
+     "refused": "ContractError"
+    },
+    "approval_08": {
+     "message": "Evaluator paths must be a sorted non-empty list",
+     "refused": "ContractError"
+    },
+    "approval_09": {
+     "message": "Evaluator paths must be a sorted non-empty list",
+     "refused": "ContractError"
+    },
+    "approval_10": {
+     "message": "Evaluator paths must be a sorted non-empty list",
+     "refused": "ContractError"
+    },
+    "approval_11": {
+     "message": "Evaluator migration pin malformed",
+     "refused": "ContractError"
+    },
+    "approval_12": {
+     "message": "Evaluator migration pin malformed",
+     "refused": "ContractError"
+    },
+    "approval_13": {
+     "message": "Evaluator migration pin malformed",
+     "refused": "ContractError"
+    },
+    "approval_14": {
+     "message": "Evaluator migration pin malformed",
+     "refused": "ContractError"
+    },
+    "approval_15": {
+     "message": "Evaluator migration pin malformed",
+     "refused": "ContractError"
+    },
+    "approval_16": {
+     "message": "Evaluator migration approval incomplete",
+     "refused": "ContractError"
+    },
+    "approval_17": {
+     "message": "Evaluator migration approval incomplete",
+     "refused": "ContractError"
+    },
+    "approval_18": {
+     "message": "Evaluator migration approval incomplete",
+     "refused": "ContractError"
+    },
+    "extra_key": {
+     "message": "Evaluator migration approval incomplete",
+     "refused": "ContractError"
+    },
+    "missing_key": {
+     "message": "Evaluator migration approval incomplete",
+     "refused": "ContractError"
+    },
+    "not_a_dict": {
+     "message": "list indices must be integers or slices, not str",
+     "refused": "TypeError"
+    },
+    "nothing_written": true
+   },
+   "stores": [
+    [
+     [
+      "releases/5fd9c120110d2c399afc561b9be222e490d1da1b2777a565918e6a90e84ab3c0",
+      "d0303b045ffb08e0e9b305c1ba9afa52bb900c5144c080928ddd289f89df7eed"
+     ]
+    ]
+   ]
+  },
+  "blocks": {
+   "steps": {
+    "migration_blocks_plain": {
+     "unreachable": "Releases.request_reverification stays for S8 and is not on the target"
+    },
+    "migration_replay_after": {
+     "same": true,
+     "unchanged": true
+    },
+    "plain_blocks_migration": {
+     "message": "Release already has a reverification successor",
+     "refused": "ContractError",
+     "wrote": false
+    },
+    "reverify_replay": {
+     "unreachable": "Releases.request_reverification stays for S8 and is not on the target"
+    },
+    "unchanged": true
+   },
+   "stores": [
+    [
+     [
+      "releases/5fd9c120110d2c399afc561b9be222e490d1da1b2777a565918e6a90e84ab3c0",
+      "d0303b045ffb08e0e9b305c1ba9afa52bb900c5144c080928ddd289f89df7eed"
+     ],
+     [
+      "releases/b73963074c236ffed85956c6e38d83cd6203878a14d7080067c283b6ef02c6c4",
+      "2840bc8031ade90a4d1d522e35db8d53c0e1f7ad536a9084a640e9c419ea72f6"
+     ]
+    ],
+    [
+     [
+      "events/release.evaluator_migration_requested:2ea402bb45d1d1302bd682308019066b4a34375c438c5147765d8b75b84cbaae",
+      "63dbe35568022d427b2ed0b838310e15ffcdf36bd62e10fa90d81906e28c82c9"
+     ],
+     [
+      "releases/2ea402bb45d1d1302bd682308019066b4a34375c438c5147765d8b75b84cbaae",
+      "1ffa5adceff371240ca7efad172870d96cbbca2f2eddbb532a758cf1e95050b8"
+     ],
+     [
+      "releases/5fd9c120110d2c399afc561b9be222e490d1da1b2777a565918e6a90e84ab3c0",
+      "d0303b045ffb08e0e9b305c1ba9afa52bb900c5144c080928ddd289f89df7eed"
+     ]
+    ]
+   ]
+  },
+  "either_order": {
+   "steps": {
+    "migrate_first_then_plain": {
+     "migrate": "reviewed",
+     "plain": {
+      "unreachable": "Releases.request_reverification stays for S8 and is not on the target"
+     },
+     "successors": [
+      "2ea402bb45d1d1302bd682308019066b4a34375c438c5147765d8b75b84cbaae"
+     ]
+    },
+    "plain_first_then_migrate": {
+     "migrate": {
+      "message": "Release already has a reverification successor",
+      "refused": "ContractError"
+     },
+     "successors": [
+      "b73963074c236ffed85956c6e38d83cd6203878a14d7080067c283b6ef02c6c4"
+     ]
+    }
+   },
+   "stores": [
+    [
+     [
+      "releases/5fd9c120110d2c399afc561b9be222e490d1da1b2777a565918e6a90e84ab3c0",
+      "d0303b045ffb08e0e9b305c1ba9afa52bb900c5144c080928ddd289f89df7eed"
+     ],
+     [
+      "releases/b73963074c236ffed85956c6e38d83cd6203878a14d7080067c283b6ef02c6c4",
+      "2840bc8031ade90a4d1d522e35db8d53c0e1f7ad536a9084a640e9c419ea72f6"
+     ]
+    ],
+    [
+     [
+      "events/release.evaluator_migration_requested:2ea402bb45d1d1302bd682308019066b4a34375c438c5147765d8b75b84cbaae",
+      "63dbe35568022d427b2ed0b838310e15ffcdf36bd62e10fa90d81906e28c82c9"
+     ],
+     [
+      "releases/2ea402bb45d1d1302bd682308019066b4a34375c438c5147765d8b75b84cbaae",
+      "1ffa5adceff371240ca7efad172870d96cbbca2f2eddbb532a758cf1e95050b8"
+     ],
+     [
+      "releases/5fd9c120110d2c399afc561b9be222e490d1da1b2777a565918e6a90e84ab3c0",
+      "d0303b045ffb08e0e9b305c1ba9afa52bb900c5144c080928ddd289f89df7eed"
+     ]
+    ]
+   ]
+  },
+  "evaluator_rules": {
+   "steps": {
+    "author_cannot_approve": {
+     "message": "Evaluator approver is the candidate author",
+     "refused": "ContractError",
+     "wrote": false
+    },
+    "evaluator_c": {
+     "message": "Evaluator revision must differ from candidate and base",
+     "refused": "ContractError",
+     "wrote": false
+    },
+    "evaluator_d": {
+     "message": "Evaluator revision must differ from candidate and base",
+     "refused": "ContractError",
+     "wrote": false
+    }
+   },
+   "stores": [
+    [
+     [
+      "releases/5fd9c120110d2c399afc561b9be222e490d1da1b2777a565918e6a90e84ab3c0",
+      "d0303b045ffb08e0e9b305c1ba9afa52bb900c5144c080928ddd289f89df7eed"
+     ],
+     [
+      "releases/e5b9062367d162888197f4df77b95271d2999ec602baef26ab26074802494753",
+      "58d330182afa895c3819612a02d3bed598a9b1a822eb144425bd4d23ee68c506"
+     ]
+    ]
+   ]
+  },
+  "not_again": {
+   "steps": {
+    "migrate_again": {
+     "message": "unsupported_evaluator_reverification: release is an evaluator-migrated successor",
+     "reason_code": "unsupported_evaluator_reverification",
+     "refused": "UnsupportedEvaluatorReverification"
+    },
+    "migrated_source_not_again": {
+     "value": {
+      "candidate": {
+       "author": "worker:implementation",
+       "base": "base",
+       "revision": "candidate",
+       "tree": "tree"
+      },
+      "checks": {
+       "cli_file_task": {
+        "evidence": "fixture:not-run",
+        "passed": false,
+        "skipped": true
+       },
+       "cli_start": {
+        "evidence": "fixture:not-run",
+        "passed": false,
+        "skipped": true
+       },
+       "tests": {
+        "evidence": "fixture:evaluator-tests-failed",
+        "passed": false
+       }
+      },
+      "created_at": "2026-01-01T01:15:13+00:00",
+      "evaluator_migration": {
+       "actor": "conductor",
+       "approved_by": "conductor",
+       "at": "2026-01-01T01:15:13+00:00",
+       "base": "base",
+       "evaluator_revision": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+       "evaluator_tree": "ffffffffffffffffffffffffffffffffffffffff",
+       "evidence": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+       "patch_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "paths": [
+        "tests/test_fixture.py"
+       ],
+       "source_checks_digest": "821bdfe8f4ef0b9686a16fc8492f7b032874c165bb7b0e4f4f797a0683222f23",
+       "source_digest": "d0303b045ffb08e0e9b305c1ba9afa52bb900c5144c080928ddd289f89df7eed",
+       "source_policy_hash": "d92deb256a139465f152d86d596a0de988f84a2ce51278c94c322ae4b2401349",
+       "source_release_id": "5fd9c120110d2c399afc561b9be222e490d1da1b2777a565918e6a90e84ab3c0"
+      },
+      "id": "2ea402bb45d1d1302bd682308019066b4a34375c438c5147765d8b75b84cbaae",
+      "inherited_reviews": {
+       "digest": "d702f89f68c2f31242b00351ab0704add6bf85bb4d243536de6a281de108fe12",
+       "release_id": "5fd9c120110d2c399afc561b9be222e490d1da1b2777a565918e6a90e84ab3c0"
+      },
+      "policy": {
+       "checks": [
+        "tests",
+        "cli_start",
+        "cli_file_task"
+       ],
+       "revision": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+      },
+      "policy_hash": "42cbaf26d85b24f7ffc39f8431fcf503f44f373517c3d1e5aa4b97de87038f55",
+      "reverify_of": "5fd9c120110d2c399afc561b9be222e490d1da1b2777a565918e6a90e84ab3c0",
+      "reviews": [
+       {
+        "accepted": true,
+        "actor": "lead:improvement",
+        "evidence": "fixture:review",
+        "revision": "candidate"
+       },
+       {
+        "accepted": true,
+        "actor": "conductor",
+        "evidence": "fixture:review",
+        "revision": "candidate"
+       }
+      ],
+      "status": "rejected"
+     }
+    },
+    "non_base_policy_without_receipt": {
+     "message": "unsupported_evaluator_reverification: release is an evaluator-migrated successor",
+     "reason_code": "unsupported_evaluator_reverification",
+     "refused": "UnsupportedEvaluatorReverification"
+    },
+    "reverify_again": {
+     "unreachable": "Releases.request_reverification stays for S8 and is not on the target"
+    },
+    "unchanged_after": true,
+    "without_receipt_unchanged": true
+   },
+   "stores": [
+    [
+     [
+      "events/release.evaluator_migration_requested:2ea402bb45d1d1302bd682308019066b4a34375c438c5147765d8b75b84cbaae",
+      "63dbe35568022d427b2ed0b838310e15ffcdf36bd62e10fa90d81906e28c82c9"
+     ],
+     [
+      "releases/2ea402bb45d1d1302bd682308019066b4a34375c438c5147765d8b75b84cbaae",
+      "2d5b5df726205008421bc4824dc707439ccd9834c74c9e129c5e9e0a487bcf34"
+     ],
+     [
+      "releases/5fd9c120110d2c399afc561b9be222e490d1da1b2777a565918e6a90e84ab3c0",
+      "d0303b045ffb08e0e9b305c1ba9afa52bb900c5144c080928ddd289f89df7eed"
+     ]
+    ],
+    [
+     [
+      "events/release.evaluator_migration_requested:2ea402bb45d1d1302bd682308019066b4a34375c438c5147765d8b75b84cbaae",
+      "63dbe35568022d427b2ed0b838310e15ffcdf36bd62e10fa90d81906e28c82c9"
+     ],
+     [
+      "releases/2ea402bb45d1d1302bd682308019066b4a34375c438c5147765d8b75b84cbaae",
+      "47a7faaa81af3701c6a10f86c7307b65fd270ff680e6dec71410bf729cf8dd28"
+     ],
+     [
+      "releases/5fd9c120110d2c399afc561b9be222e490d1da1b2777a565918e6a90e84ab3c0",
+      "d0303b045ffb08e0e9b305c1ba9afa52bb900c5144c080928ddd289f89df7eed"
+     ]
+    ]
+   ]
+  },
+  "pins": {
+   "steps": {
+    "nothing_written": true,
+    "pin_base": {
+     "message": "Evaluator pin does not match the repository",
+     "refused": "ContractError"
+    },
+    "pin_evaluator_revision": {
+     "message": "Evaluator pin does not match the repository",
+     "refused": "ContractError"
+    },
+    "pin_evaluator_tree": {
+     "message": "Evaluator pin does not match the repository",
+     "refused": "ContractError"
+    },
+    "pin_extra": {
+     "message": "Evaluator pin does not match the repository",
+     "refused": "ContractError"
+    },
+    "pin_missing": {
+     "message": "Evaluator pin does not match the repository",
+     "refused": "ContractError"
+    },
+    "pin_parent": {
+     "message": "Evaluator pin does not match the repository",
+     "refused": "ContractError"
+    },
+    "pin_patch_sha256": {
+     "message": "Evaluator pin does not match the repository",
+     "refused": "ContractError"
+    },
+    "pin_paths": {
+     "message": "Evaluator pin does not match the repository",
+     "refused": "ContractError"
+    },
+    "required_unchanged": true,
+    "resolved_pin_required": {
+     "message": "Releases.request_evaluator_migration() missing 1 required keyword-only argument: 'resolved_pin'",
+     "refused": "TypeError"
+    },
+    "then_migrates": "reviewed"
+   },
+   "stores": [
+    [
+     [
+      "events/release.evaluator_migration_requested:2ea402bb45d1d1302bd682308019066b4a34375c438c5147765d8b75b84cbaae",
+      "63dbe35568022d427b2ed0b838310e15ffcdf36bd62e10fa90d81906e28c82c9"
+     ],
+     [
+      "releases/2ea402bb45d1d1302bd682308019066b4a34375c438c5147765d8b75b84cbaae",
+      "1ffa5adceff371240ca7efad172870d96cbbca2f2eddbb532a758cf1e95050b8"
+     ],
+     [
+      "releases/5fd9c120110d2c399afc561b9be222e490d1da1b2777a565918e6a90e84ab3c0",
+      "d0303b045ffb08e0e9b305c1ba9afa52bb900c5144c080928ddd289f89df7eed"
+     ]
+    ],
+    [
+     [
+      "releases/5fd9c120110d2c399afc561b9be222e490d1da1b2777a565918e6a90e84ab3c0",
+      "d0303b045ffb08e0e9b305c1ba9afa52bb900c5144c080928ddd289f89df7eed"
+     ]
+    ]
+   ]
+  },
+  "replay": {
+   "steps": {
+    "changed_evidence": {
+     "message": "Conflicting evaluator migration",
+     "refused": "ContractError",
+     "wrote": false
+    },
+    "changed_patch": {
+     "message": "Conflicting evaluator migration",
+     "refused": "ContractError",
+     "wrote": false
+    },
+    "changed_paths": {
+     "message": "Conflicting evaluator migration",
+     "refused": "ContractError",
+     "wrote": false
+    },
+    "changed_revision": {
+     "message": "Conflicting evaluator migration",
+     "refused": "ContractError",
+     "wrote": false
+    },
+    "conflicting_actor_replay": {
+     "message": "Conflicting evaluator migration",
+     "refused": "ContractError",
+     "wrote": false
+    },
+    "expected_policy_hash_other": {
+     "message": "Conflicting evaluator migration",
+     "refused": "ContractError",
+     "wrote": false
+    },
+    "expected_revision_other": {
+     "message": "Conflicting evaluator migration",
+     "refused": "ContractError",
+     "wrote": false
+    },
+    "replay": {
+     "value": {
+      "candidate": {
+       "author": "worker:implementation",
+       "base": "base",
+       "revision": "candidate",
+       "tree": "tree"
+      },
+      "checks": {},
+      "created_at": "2026-01-01T01:15:13+00:00",
+      "evaluator_migration": {
+       "actor": "conductor",
+       "approved_by": "conductor",
+       "at": "2026-01-01T01:15:13+00:00",
+       "base": "base",
+       "evaluator_revision": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+       "evaluator_tree": "ffffffffffffffffffffffffffffffffffffffff",
+       "evidence": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+       "patch_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "paths": [
+        "tests/test_fixture.py"
+       ],
+       "source_checks_digest": "821bdfe8f4ef0b9686a16fc8492f7b032874c165bb7b0e4f4f797a0683222f23",
+       "source_digest": "d0303b045ffb08e0e9b305c1ba9afa52bb900c5144c080928ddd289f89df7eed",
+       "source_policy_hash": "d92deb256a139465f152d86d596a0de988f84a2ce51278c94c322ae4b2401349",
+       "source_release_id": "5fd9c120110d2c399afc561b9be222e490d1da1b2777a565918e6a90e84ab3c0"
+      },
+      "id": "2ea402bb45d1d1302bd682308019066b4a34375c438c5147765d8b75b84cbaae",
+      "inherited_reviews": {
+       "digest": "d702f89f68c2f31242b00351ab0704add6bf85bb4d243536de6a281de108fe12",
+       "release_id": "5fd9c120110d2c399afc561b9be222e490d1da1b2777a565918e6a90e84ab3c0"
+      },
+      "policy": {
+       "checks": [
+        "tests",
+        "cli_start",
+        "cli_file_task"
+       ],
+       "revision": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+      },
+      "policy_hash": "42cbaf26d85b24f7ffc39f8431fcf503f44f373517c3d1e5aa4b97de87038f55",
+      "reverify_of": "5fd9c120110d2c399afc561b9be222e490d1da1b2777a565918e6a90e84ab3c0",
+      "reviews": [
+       {
+        "accepted": true,
+        "actor": "lead:improvement",
+        "evidence": "fixture:review",
+        "revision": "candidate"
+       },
+       {
+        "accepted": true,
+        "actor": "conductor",
+        "evidence": "fixture:review",
+        "revision": "candidate"
+       }
+      ],
+      "status": "reviewed"
+     },
+     "wrote": false
+    },
+    "replay_equal": true
+   },
+   "stores": [
+    [
+     [
+      "events/release.evaluator_migration_requested:2ea402bb45d1d1302bd682308019066b4a34375c438c5147765d8b75b84cbaae",
+      "63dbe35568022d427b2ed0b838310e15ffcdf36bd62e10fa90d81906e28c82c9"
+     ],
+     [
+      "releases/2ea402bb45d1d1302bd682308019066b4a34375c438c5147765d8b75b84cbaae",
+      "1ffa5adceff371240ca7efad172870d96cbbca2f2eddbb532a758cf1e95050b8"
+     ],
+     [
+      "releases/5fd9c120110d2c399afc561b9be222e490d1da1b2777a565918e6a90e84ab3c0",
+      "d0303b045ffb08e0e9b305c1ba9afa52bb900c5144c080928ddd289f89df7eed"
+     ]
+    ]
+   ]
+  },
+  "sources": {
+   "steps": {
+    "controller_running": {
+     "message": "Release controller still running",
+     "refused": "ContractError",
+     "wrote": false
+    },
+    "not_check_rejected": {
+     "message": "Release is not check-rejected",
+     "refused": "ContractError",
+     "wrote": false
+    },
+    "promotion_effects": {
+     "message": "Promotion effects exist for the release",
+     "refused": "ContractError",
+     "wrote": false
+    },
+    "queue_row_running": {
+     "message": "Release controller still running",
+     "refused": "ContractError",
+     "wrote": false
+    },
+    "stale_policy_hash": {
+     "message": "Stale candidate or evaluator",
+     "refused": "ContractError",
+     "wrote": false
+    },
+    "stale_revision": {
+     "message": "Stale candidate or evaluator",
+     "refused": "ContractError",
+     "wrote": false
+    },
+    "unknown_source": {
+     "message": "Release not found",
+     "refused": "ContractError",
+     "wrote": false
+    }
+   },
+   "stores": [
+    [
+     [
+      "deployment_locks/controller",
+      "0aebc9c050a4eb8615e12103a01884dd855c501e25325f118f5bbbba891d5e88"
+     ],
+     [
+      "promotion_intents/5fd9c120110d2c399afc561b9be222e490d1da1b2777a565918e6a90e84ab3c0",
+      "0ad617422e870d08e8e841de6d0081d19ed1b7db024e37967470c2054b29c5e3"
+     ],
+     [
+      "release_queue/5fd9c120110d2c399afc561b9be222e490d1da1b2777a565918e6a90e84ab3c0",
+      "d446d79d5a6c05e599e11f8d1d8077a9e1fb7e3e1e8cafb6f338c0352f1676cc"
+     ],
+     [
+      "releases/5fd9c120110d2c399afc561b9be222e490d1da1b2777a565918e6a90e84ab3c0",
+      "d0303b045ffb08e0e9b305c1ba9afa52bb900c5144c080928ddd289f89df7eed"
+     ],
+     [
+      "releases/7dc154b87cfec0f6316dffe54130ec8d1e5a270b585021c62cde5e7e939236bb",
+      "280d7c8f79d2c5d0e65217008d5b4efc7183326f43e051b1b3c973fbc289ca52"
+     ]
+    ]
+   ]
+  },
+  "success": {
+   "steps": {
+    "child": {
+     "candidate": {
+      "author": "worker:implementation",
+      "base": "base",
+      "revision": "candidate",
+      "tree": "tree"
+     },
+     "checks": {},
+     "created_at": "2026-01-01T01:15:13+00:00",
+     "evaluator_migration": {
+      "actor": "conductor",
+      "approved_by": "conductor",
+      "at": "2026-01-01T01:15:13+00:00",
+      "base": "base",
+      "evaluator_revision": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+      "evaluator_tree": "ffffffffffffffffffffffffffffffffffffffff",
+      "evidence": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "patch_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "paths": [
+       "tests/test_fixture.py"
+      ],
+      "source_checks_digest": "821bdfe8f4ef0b9686a16fc8492f7b032874c165bb7b0e4f4f797a0683222f23",
+      "source_digest": "d0303b045ffb08e0e9b305c1ba9afa52bb900c5144c080928ddd289f89df7eed",
+      "source_policy_hash": "d92deb256a139465f152d86d596a0de988f84a2ce51278c94c322ae4b2401349",
+      "source_release_id": "5fd9c120110d2c399afc561b9be222e490d1da1b2777a565918e6a90e84ab3c0"
+     },
+     "id": "2ea402bb45d1d1302bd682308019066b4a34375c438c5147765d8b75b84cbaae",
+     "inherited_reviews": {
+      "digest": "d702f89f68c2f31242b00351ab0704add6bf85bb4d243536de6a281de108fe12",
+      "release_id": "5fd9c120110d2c399afc561b9be222e490d1da1b2777a565918e6a90e84ab3c0"
+     },
+     "policy": {
+      "checks": [
+       "tests",
+       "cli_start",
+       "cli_file_task"
+      ],
+      "revision": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+     },
+     "policy_hash": "42cbaf26d85b24f7ffc39f8431fcf503f44f373517c3d1e5aa4b97de87038f55",
+     "reverify_of": "5fd9c120110d2c399afc561b9be222e490d1da1b2777a565918e6a90e84ab3c0",
+     "reviews": [
+      {
+       "accepted": true,
+       "actor": "lead:improvement",
+       "evidence": "fixture:review",
+       "revision": "candidate"
+      },
+      {
+       "accepted": true,
+       "actor": "conductor",
+       "evidence": "fixture:review",
+       "revision": "candidate"
+      }
+     ],
+     "status": "reviewed"
+    },
+    "event": {
+     "actor": "conductor",
+     "at": "2026-01-01T01:15:13+00:00",
+     "evaluator_revision": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+     "release_id": "2ea402bb45d1d1302bd682308019066b4a34375c438c5147765d8b75b84cbaae",
+     "reverify_of": "5fd9c120110d2c399afc561b9be222e490d1da1b2777a565918e6a90e84ab3c0",
+     "type": "release.evaluator_migration_requested"
+    },
+    "ids": {
+     "differs": true,
+     "successor": true
+    },
+    "new_records": [
+     "events/release.evaluator_migration_requested:2ea402bb45d1d1302bd682308019066b4a34375c438c5147765d8b75b84cbaae",
+     "releases/2ea402bb45d1d1302bd682308019066b4a34375c438c5147765d8b75b84cbaae"
+    ],
+    "no_queue_or_deployment_rows": true,
+    "policy_hash_changed": true,
+    "source_untouched": true,
+    "verify_with_source_hash": {
+     "message": "Stale candidate or evaluator",
+     "refused": "ContractError",
+     "wrote": false
+    },
+    "verify_with_successor_hash": {
+     "value": {
+      "candidate": {
+       "author": "worker:implementation",
+       "base": "base",
+       "revision": "candidate",
+       "tree": "tree"
+      },
+      "checks": {
+       "cli_file_task": {
+        "evidence": "fixture:cli_file_task",
+        "passed": true
+       },
+       "cli_start": {
+        "evidence": "fixture:cli_start",
+        "passed": true
+       },
+       "tests": {
+        "evidence": "fixture:tests",
+        "passed": true
+       }
+      },
+      "created_at": "2026-01-01T01:15:13+00:00",
+      "evaluator_migration": {
+       "actor": "conductor",
+       "approved_by": "conductor",
+       "at": "2026-01-01T01:15:13+00:00",
+       "base": "base",
+       "evaluator_revision": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+       "evaluator_tree": "ffffffffffffffffffffffffffffffffffffffff",
+       "evidence": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+       "patch_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "paths": [
+        "tests/test_fixture.py"
+       ],
+       "source_checks_digest": "821bdfe8f4ef0b9686a16fc8492f7b032874c165bb7b0e4f4f797a0683222f23",
+       "source_digest": "d0303b045ffb08e0e9b305c1ba9afa52bb900c5144c080928ddd289f89df7eed",
+       "source_policy_hash": "d92deb256a139465f152d86d596a0de988f84a2ce51278c94c322ae4b2401349",
+       "source_release_id": "5fd9c120110d2c399afc561b9be222e490d1da1b2777a565918e6a90e84ab3c0"
+      },
+      "id": "2ea402bb45d1d1302bd682308019066b4a34375c438c5147765d8b75b84cbaae",
+      "inherited_reviews": {
+       "digest": "d702f89f68c2f31242b00351ab0704add6bf85bb4d243536de6a281de108fe12",
+       "release_id": "5fd9c120110d2c399afc561b9be222e490d1da1b2777a565918e6a90e84ab3c0"
+      },
+      "policy": {
+       "checks": [
+        "tests",
+        "cli_start",
+        "cli_file_task"
+       ],
+       "revision": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+      },
+      "policy_hash": "42cbaf26d85b24f7ffc39f8431fcf503f44f373517c3d1e5aa4b97de87038f55",
+      "reverify_of": "5fd9c120110d2c399afc561b9be222e490d1da1b2777a565918e6a90e84ab3c0",
+      "reviews": [
+       {
+        "accepted": true,
+        "actor": "lead:improvement",
+        "evidence": "fixture:review",
+        "revision": "candidate"
+       },
+       {
+        "accepted": true,
+        "actor": "conductor",
+        "evidence": "fixture:review",
+        "revision": "candidate"
+       }
+      ],
+      "status": "verified"
+     },
+     "wrote": true
+    }
+   },
+   "stores": [
+    [
+     [
+      "events/release.evaluator_migration_requested:2ea402bb45d1d1302bd682308019066b4a34375c438c5147765d8b75b84cbaae",
+      "63dbe35568022d427b2ed0b838310e15ffcdf36bd62e10fa90d81906e28c82c9"
+     ],
+     [
+      "releases/2ea402bb45d1d1302bd682308019066b4a34375c438c5147765d8b75b84cbaae",
+      "fca7443166fedc9ea7ea23b20235c3583851a2d9051ef387d58daf0f2718cd64"
+     ],
+     [
+      "releases/5fd9c120110d2c399afc561b9be222e490d1da1b2777a565918e6a90e84ab3c0",
+      "d0303b045ffb08e0e9b305c1ba9afa52bb900c5144c080928ddd289f89df7eed"
+     ]
+    ]
+   ]
+  },
+  "unit": {
+   "steps": {
+    "committed": true,
+    "in_unit_raises": {
+     "result": {
+      "value": {
+       "candidate": {
+        "author": "worker:implementation",
+        "base": "base",
+        "revision": "candidate",
+        "tree": "tree"
+       },
+       "checks": {},
+       "created_at": "2026-01-01T01:15:13+00:00",
+       "evaluator_migration": {
+        "actor": "conductor",
+        "approved_by": "conductor",
+        "at": "2026-01-01T01:15:13+00:00",
+        "base": "base",
+        "evaluator_revision": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+        "evaluator_tree": "ffffffffffffffffffffffffffffffffffffffff",
+        "evidence": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "patch_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "paths": [
+         "tests/test_fixture.py"
+        ],
+        "source_checks_digest": "821bdfe8f4ef0b9686a16fc8492f7b032874c165bb7b0e4f4f797a0683222f23",
+        "source_digest": "d0303b045ffb08e0e9b305c1ba9afa52bb900c5144c080928ddd289f89df7eed",
+        "source_policy_hash": "d92deb256a139465f152d86d596a0de988f84a2ce51278c94c322ae4b2401349",
+        "source_release_id": "5fd9c120110d2c399afc561b9be222e490d1da1b2777a565918e6a90e84ab3c0"
+       },
+       "id": "2ea402bb45d1d1302bd682308019066b4a34375c438c5147765d8b75b84cbaae",
+       "inherited_reviews": {
+        "digest": "d702f89f68c2f31242b00351ab0704add6bf85bb4d243536de6a281de108fe12",
+        "release_id": "5fd9c120110d2c399afc561b9be222e490d1da1b2777a565918e6a90e84ab3c0"
+       },
+       "policy": {
+        "checks": [
+         "tests",
+         "cli_start",
+         "cli_file_task"
+        ],
+        "revision": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+       },
+       "policy_hash": "42cbaf26d85b24f7ffc39f8431fcf503f44f373517c3d1e5aa4b97de87038f55",
+       "reverify_of": "5fd9c120110d2c399afc561b9be222e490d1da1b2777a565918e6a90e84ab3c0",
+       "reviews": [
+        {
+         "accepted": true,
+         "actor": "lead:improvement",
+         "evidence": "fixture:review",
+         "revision": "candidate"
+        },
+        {
+         "accepted": true,
+         "actor": "conductor",
+         "evidence": "fixture:review",
+         "revision": "candidate"
+        }
+       ],
+       "status": "reviewed"
+      }
+     },
+     "written": false
+    },
+    "visible_inside": true
+   },
+   "stores": [
+    [
+     [
+      "events/release.evaluator_migration_requested:2ea402bb45d1d1302bd682308019066b4a34375c438c5147765d8b75b84cbaae",
+      "63dbe35568022d427b2ed0b838310e15ffcdf36bd62e10fa90d81906e28c82c9"
+     ],
+     [
+      "releases/2ea402bb45d1d1302bd682308019066b4a34375c438c5147765d8b75b84cbaae",
+      "1ffa5adceff371240ca7efad172870d96cbbca2f2eddbb532a758cf1e95050b8"
+     ],
+     [
+      "releases/5fd9c120110d2c399afc561b9be222e490d1da1b2777a565918e6a90e84ab3c0",
+      "d0303b045ffb08e0e9b305c1ba9afa52bb900c5144c080928ddd289f89df7eed"
+     ]
+    ]
+   ]
+  }
+ },
+ "promote_rollback": {
+  "promote": {
+   "steps": {
+    "active_changed_expected_none": {
+     "message": "Active deployment changed",
+     "refused": "ContractError",
+     "wrote": false
+    },
+    "active_changed_expected_other": {
+     "message": "Active deployment changed",
+     "refused": "ContractError",
+     "wrote": false
+    },
+    "already_active": {
+     "message": "Release not verified",
+     "refused": "ContractError",
+     "wrote": false
+    },
+    "evaluator_changed": {
+     "message": "Evaluator changed",
+     "refused": "ContractError",
+     "wrote": false
+    },
+    "events": [
+     [
+      "release.promoted",
+      "a5e1fdc4a6ae798234d7eee532eebd27962e8a69ef7b8387bd8b1fb25516d7f2"
+     ],
+     [
+      "release.promoted",
+      "d6edee0dfe308614fe4b14cca18f7f6f22265226d3fce2cc3929e5d1816e79fc"
+     ]
+    ],
+    "first_promotion": {
+     "value": {
+      "at": "2026-01-01T01:12:43+00:00",
+      "previous": null,
+      "release_id": "a5e1fdc4a6ae798234d7eee532eebd27962e8a69ef7b8387bd8b1fb25516d7f2",
+      "revision": "candidate"
+     },
+     "wrote": true
+    },
+    "first_state": {
+     "active": {
+      "at": "2026-01-01T01:12:43+00:00",
+      "previous": null,
+      "release_id": "a5e1fdc4a6ae798234d7eee532eebd27962e8a69ef7b8387bd8b1fb25516d7f2",
+      "revision": "candidate"
+     },
+     "control": null,
+     "history": null,
+     "release": "active"
+    },
+    "in_unit_active": {
+     "at": "2026-01-01T01:12:53+00:00",
+     "previous": {
+      "release_id": "d6edee0dfe308614fe4b14cca18f7f6f22265226d3fce2cc3929e5d1816e79fc"
+     },
+     "release_id": "975df7b5a3c37d79612eb893b480dde4211c53090ae129d4cac3562c26c15883",
+     "revision": "candidate"
+    },
+    "in_unit_commits": {
+     "value": {
+      "at": "2026-01-01T01:12:53+00:00",
+      "previous": {
+       "release_id": "d6edee0dfe308614fe4b14cca18f7f6f22265226d3fce2cc3929e5d1816e79fc"
+      },
+      "release_id": "975df7b5a3c37d79612eb893b480dde4211c53090ae129d4cac3562c26c15883",
+      "revision": "candidate"
+     }
+    },
+    "in_unit_raises": {
+     "result": {
+      "value": {
+       "at": "2026-01-01T01:12:53+00:00",
+       "previous": {
+        "release_id": "d6edee0dfe308614fe4b14cca18f7f6f22265226d3fce2cc3929e5d1816e79fc"
+       },
+       "release_id": "975df7b5a3c37d79612eb893b480dde4211c53090ae129d4cac3562c26c15883",
+       "revision": "candidate"
+      }
+     },
+     "written": false
+    },
+    "not_verified": {
+     "message": "Release not verified",
+     "refused": "ContractError",
+     "wrote": false
+    },
+    "second_promotion": {
+     "value": {
+      "at": "2026-01-01T01:12:53+00:00",
+      "previous": {
+       "release_id": "a5e1fdc4a6ae798234d7eee532eebd27962e8a69ef7b8387bd8b1fb25516d7f2"
+      },
+      "release_id": "d6edee0dfe308614fe4b14cca18f7f6f22265226d3fce2cc3929e5d1816e79fc",
+      "revision": "candidate"
+     },
+     "wrote": true
+    },
+    "second_state": {
+     "active": {
+      "at": "2026-01-01T01:12:53+00:00",
+      "previous": {
+       "release_id": "a5e1fdc4a6ae798234d7eee532eebd27962e8a69ef7b8387bd8b1fb25516d7f2"
+      },
+      "release_id": "d6edee0dfe308614fe4b14cca18f7f6f22265226d3fce2cc3929e5d1816e79fc",
+      "revision": "candidate"
+     },
+     "history": {
+      "at": "2026-01-01T01:12:43+00:00",
+      "previous": null,
+      "release_id": "a5e1fdc4a6ae798234d7eee532eebd27962e8a69ef7b8387bd8b1fb25516d7f2",
+      "revision": "candidate"
+     },
+     "previous": "superseded",
+     "release": "active"
+    },
+    "superseded_ticket": {
+     "message": "Ticket changed; reassessment required",
+     "refused": "TicketSuperseded",
+     "wrote": false
+    },
+    "unknown": {
+     "message": "Release not verified",
+     "refused": "ContractError",
+     "wrote": false
+    }
+   },
+   "stores": [
+    [
+     [
+      "deployment/active",
+      "dcf614d2a4fc05c02640eabea819ec648fb6c02a74fd306cb368084c6b3d3957"
+     ],
+     [
+      "deployment_history/a5e1fdc4a6ae798234d7eee532eebd27962e8a69ef7b8387bd8b1fb25516d7f2",
+      "6e21f9fc97f947e3b4e22651bd4c097aee84c58371b4e6ec49064b2b0373f9e9"
+     ],
+     [
+      "deployment_history/d6edee0dfe308614fe4b14cca18f7f6f22265226d3fce2cc3929e5d1816e79fc",
+      "25b9a690b22db73af63ef8989c04bf6083cba2919690f68875e4eaa91595fe1b"
+     ],
+     [
+      "events/5eed0000-0000-4000-8000-000000000027",
+      "7fe689fd0dd639a82bd864873fc9c5c931cd062bd1030642cbf03167e21ca51d"
+     ],
+     [
+      "events/5eed0000-0000-4000-8000-000000000028",
+      "42ea0990b9977fdfc14609ca0313b46f948785ac63da4058c8ac1fd44aaa9575"
+     ],
+     [
+      "events/5eed0000-0000-4000-8000-00000000002a",
+      "59df8a8f7eaf068e15d8383c847a62a9097c9760b282bdaf9e501c6cf21e7c68"
+     ],
+     [
+      "releases/09359573647d2f813338e5bcca7246c6f1487b0d4fe1ca4d8907ab87e69fda85",
+      "e09b23a9d94346c46c1efd2de96fc2f8f6da9337d2fc734bfe9c24d70d025ba9"
+     ],
+     [
+      "releases/12344a61d6ad4b95787fc48d51ef091ddb2db677afdfa83dd7370fa5e39ccf66",
+      "416ee52222b03b390b307b5a5dd35194a8a42da56db873247fcbf0f8c1fc0c39"
+     ],
+     [
+      "releases/2111f946432a34ca6bae2d44eea82646abe33943672a2da94ee44c71fcfbde31",
+      "f72fb05da174e452da58d15dada4c3dff037991d776590a984e034439871079d"
+     ],
+     [
+      "releases/975df7b5a3c37d79612eb893b480dde4211c53090ae129d4cac3562c26c15883",
+      "733b4b6ad4ecc510918a13b1af758cf7c327e42212fc2a40eb2b223c5e87c136"
+     ],
+     [
+      "releases/a5e1fdc4a6ae798234d7eee532eebd27962e8a69ef7b8387bd8b1fb25516d7f2",
+      "1b5ac4603e1051a9a0ee1d79ff3613125d8b2e7bde82bec1eb369ab4dfd8e5e7"
+     ],
+     [
+      "releases/d6edee0dfe308614fe4b14cca18f7f6f22265226d3fce2cc3929e5d1816e79fc",
+      "fd94ec188ee92bd8d6843b2e14e222a5d493836efa502bf8ff4bfd1a85ececd2"
+     ],
+     [
+      "ticket_revisions/ticket-1:r1",
+      "060a8f067b0a8efd4b281b0e1303a75b2612ff5220e85b0d9b80d192b921bf0d"
+     ],
+     [
+      "tickets/ticket-1",
+      "6dddd38438bd9641ab5ed95d42efc71436ea8b50e91aea6266854389020f7487"
+     ]
+    ]
+   ]
+  },
+  "promote_audit": {
+   "steps": {
+    "audit_state": {
+     "activation": {
+      "release_id": "331f93e2232db33da1163e679480f7dbba50f7098f041f72794e1cee2094974b",
+      "revision": "candidate",
+      "status": "active"
+     },
+     "graph": {
+      "organization": "5d89f6853ccfa6f7ec772e171c3207c2bfb8f54235c506f99e77d9097918fb29",
+      "revision": "candidate",
+      "tree": "tau"
+     }
+    },
+    "audit_version_2_is_not_audit": {
+     "value": {
+      "at": "2026-01-01T01:12:53+00:00",
+      "previous": null,
+      "release_id": "9110cecc74a952f12d9eaeb23884bcff09fd953a17fe2432b8e1dfa7e6bb2a4f",
+      "revision": "candidate"
+     },
+     "wrote": true
+    },
+    "audit_with_canary": {
+     "value": {
+      "at": "2026-01-01T01:12:53+00:00",
+      "previous": null,
+      "release_id": "331f93e2232db33da1163e679480f7dbba50f7098f041f72794e1cee2094974b",
+      "revision": "candidate"
+     },
+     "wrote": true
+    },
+    "audit_without_canary_checks": {
+     "message": "Audit activation requires actual CLI canary",
+     "refused": "ContractError",
+     "wrote": false
+    },
+    "audit_without_canary_state": {
+     "active": null,
+     "graph": null
+    },
+    "no_activation_row_stays_none": null,
+    "paused_activation": {
+     "reason": "active candidate does not declare audit lifecycle",
+     "status": "paused"
+    },
+    "plain_pauses_activation": {
+     "value": {
+      "at": "2026-01-01T01:12:53+00:00",
+      "previous": null,
+      "release_id": "9f649ad756dadaec07f3d51e2a768adf70e1bc131b51d9d6fa84fdb153728fda",
+      "revision": "candidate"
+     },
+     "wrote": true
+    },
+    "version_2_state": null
+   },
+   "stores": [
+    [
+     [
+      "deployment/active",
+      "7e7356d2d42947464d5c8499ecae1609a7a684aaa452e94ba0bce28f22c25f46"
+     ],
+     [
+      "events/5eed0000-0000-4000-8000-00000000002b",
+      "83318a4e28763db5f137844eff5eebdc33d36f0e0a2d395a69579794ba836e21"
+     ],
+     [
+      "releases/331f93e2232db33da1163e679480f7dbba50f7098f041f72794e1cee2094974b",
+      "949934030b9ee3bebdaee68362868e225d1d2be18e0bd9add97dc8eb7cc98c33"
+     ],
+     [
+      "research_control/activation",
+      "15f8fcf3922d6928668d8917e1d06007026d2b2b2684fea885efbae0090082d8"
+     ],
+     [
+      "research_control/graph",
+      "acc5d132769be157083a04066e89cbccf78f1e562c736cf0af53ebe8f4923d28"
+     ]
+    ],
+    [
+     [
+      "deployment/active",
+      "1054a6c05fbff6f3b872251565688f4d93443ccc9a974497b7845006b311e6c8"
+     ],
+     [
+      "events/5eed0000-0000-4000-8000-00000000002c",
+      "0f7b0ac0298ceaca682666f014a189062c6cdb2409b40308cbeddcef8d8a747d"
+     ],
+     [
+      "releases/500ac6c3b371cbc434d0909f798722a42e5683124e5e63627cf5ff5b81afe240",
+      "c4e8295a03639caa4f3380f1a6b27dfbc39a6f2ab55165b238ef752508b33173"
+     ],
+     [
+      "releases/9110cecc74a952f12d9eaeb23884bcff09fd953a17fe2432b8e1dfa7e6bb2a4f",
+      "26daa86ce33a978ba35e492d83deeb8402fe7cb4d8330e4ea8c3f7cf4f0ae552"
+     ]
+    ],
+    [
+     [
+      "deployment/active",
+      "486b1df64cafde19d0371297872192a2c90240ca452936c61c641cf2bf52878b"
+     ],
+     [
+      "events/5eed0000-0000-4000-8000-00000000002d",
+      "f48d6abe7b2ae999beb98f533637cd3c86a432cd9b35bd6821293d17f8b359ff"
+     ],
+     [
+      "releases/9f649ad756dadaec07f3d51e2a768adf70e1bc131b51d9d6fa84fdb153728fda",
+      "2460c8c920bd96e6dda93ae9058a3731d41c5cba34491cc81c08af87b8133c4d"
+     ],
+     [
+      "research_control/activation",
+      "a48638604c2e1195f25222054819029310a9894ba18368ff351195593a8209d6"
+     ]
+    ],
+    [
+     [
+      "deployment/active",
+      "486b1df64cafde19d0371297872192a2c90240ca452936c61c641cf2bf52878b"
+     ],
+     [
+      "events/5eed0000-0000-4000-8000-00000000002e",
+      "f48d6abe7b2ae999beb98f533637cd3c86a432cd9b35bd6821293d17f8b359ff"
+     ],
+     [
+      "releases/9f649ad756dadaec07f3d51e2a768adf70e1bc131b51d9d6fa84fdb153728fda",
+      "2460c8c920bd96e6dda93ae9058a3731d41c5cba34491cc81c08af87b8133c4d"
+     ]
+    ]
+   ]
+  },
+  "rollback": {
+   "steps": {
+    "active_record_missing": {
+     "message": "Active release record missing",
+     "refused": "ContractError",
+     "wrote": false
+    },
+    "empty_reason": {
+     "message": "Rollback reason required",
+     "refused": "ContractError",
+     "wrote": false
+    },
+    "events": [
+     [
+      "release.promoted",
+      "a5e1fdc4a6ae798234d7eee532eebd27962e8a69ef7b8387bd8b1fb25516d7f2",
+      null
+     ],
+     [
+      "release.promoted",
+      "d6edee0dfe308614fe4b14cca18f7f6f22265226d3fce2cc3929e5d1816e79fc",
+      null
+     ],
+     [
+      "release.rolled_back",
+      "d6edee0dfe308614fe4b14cca18f7f6f22265226d3fce2cc3929e5d1816e79fc",
+      "fixture: bad release"
+     ]
+    ],
+    "no_active": {
+     "message": "Stale rollback",
+     "refused": "ContractError",
+     "wrote": false
+    },
+    "no_history_row": {
+     "value": {
+      "release_id": "older"
+     },
+     "wrote": true
+    },
+    "no_history_state": {
+     "release_id": "older"
+    },
+    "no_known_good_previous": {
+     "message": "No known-good previous deployment",
+     "refused": "ContractError",
+     "wrote": false
+    },
+    "rollback": {
+     "value": {
+      "at": "2026-01-01T01:12:53+00:00",
+      "previous": null,
+      "release_id": "a5e1fdc4a6ae798234d7eee532eebd27962e8a69ef7b8387bd8b1fb25516d7f2",
+      "revision": "candidate"
+     },
+     "wrote": true
+    },
+    "rollback_again": {
+     "message": "Stale rollback",
+     "refused": "ContractError",
+     "wrote": false
+    },
+    "stale": {
+     "message": "Stale rollback",
+     "refused": "ContractError",
+     "wrote": false
+    },
+    "state": {
+     "a": "active",
+     "active": {
+      "at": "2026-01-01T01:12:53+00:00",
+      "previous": null,
+      "release_id": "a5e1fdc4a6ae798234d7eee532eebd27962e8a69ef7b8387bd8b1fb25516d7f2",
+      "revision": "candidate"
+     },
+     "b": {
+      "candidate": {
+       "author": "worker:implementation",
+       "base": "base",
+       "revision": "candidate",
+       "tree": "tb"
+      },
+      "checks": {
+       "cli_file_task": {
+        "evidence": "fixture:cli_file_task",
+        "passed": true
+       },
+       "cli_start": {
+        "evidence": "fixture:cli_start",
+        "passed": true
+       },
+       "tests": {
+        "evidence": "fixture:tests",
+        "passed": true
+       }
+      },
+      "created_at": "2026-01-01T01:13:03+00:00",
+      "id": "d6edee0dfe308614fe4b14cca18f7f6f22265226d3fce2cc3929e5d1816e79fc",
+      "policy": {
+       "checks": [
+        "tests",
+        "cli_start",
+        "cli_file_task"
+       ]
+      },
+      "policy_hash": "d92deb256a139465f152d86d596a0de988f84a2ce51278c94c322ae4b2401349",
+      "reviews": [
+       {
+        "accepted": true,
+        "actor": "lead:improvement",
+        "evidence": "fixture:review",
+        "revision": "candidate"
+       },
+       {
+        "accepted": true,
+        "actor": "conductor",
+        "evidence": "fixture:review",
+        "revision": "candidate"
+       }
+      ],
+      "rollback_reason": "fixture: bad release",
+      "status": "rolled_back"
+     },
+     "control": null
+    }
+   },
+   "stores": [
+    [
+     [
+      "deployment/active",
+      "d000bbe2219e403a6e3951874699a3bec39ae1c073b803f50578eeea86cda7c9"
+     ],
+     [
+      "deployment_history/a5e1fdc4a6ae798234d7eee532eebd27962e8a69ef7b8387bd8b1fb25516d7f2",
+      "d000bbe2219e403a6e3951874699a3bec39ae1c073b803f50578eeea86cda7c9"
+     ],
+     [
+      "events/5eed0000-0000-4000-8000-00000000002f",
+      "72057776118672d40129752318a00f2b51ef32b28c766f97e62bf6e74577f6f7"
+     ],
+     [
+      "events/5eed0000-0000-4000-8000-000000000030",
+      "b0dcbaaa0c42a3cf953421d703f48a2b7c86d1aaf287bd0c908d5dc22e83d096"
+     ],
+     [
+      "events/5eed0000-0000-4000-8000-000000000031",
+      "7f011ab6c646ed695e20992aebe8a10039aaf86e3119070c25f5df827bc063dc"
+     ],
+     [
+      "releases/a5e1fdc4a6ae798234d7eee532eebd27962e8a69ef7b8387bd8b1fb25516d7f2",
+      "a6d58765b52e458835e94e6480d00b113e21ee4a74f1c387bc90a1d23b3b8f87"
+     ],
+     [
+      "releases/d6edee0dfe308614fe4b14cca18f7f6f22265226d3fce2cc3929e5d1816e79fc",
+      "c78110e49ee602588711194501c77b210faee44ab2295c7cd290a48e56dd3506"
+     ]
+    ],
+    [
+     [
+      "deployment/active",
+      "646ba8283f73ca1a933f7ec775ca4a89eb0f2527b41100657e6a1829cdb4516c"
+     ]
+    ],
+    [
+     [
+      "deployment/active",
+      "b4983497dc08ec8094dd09801269d5bc22e52b6934eb8aa79f08e2462d6243e4"
+     ],
+     [
+      "events/5eed0000-0000-4000-8000-000000000032",
+      "f74a4a51cc63bf694b29323d7025ae7512993f291da5494e0fdbb276754865f1"
+     ],
+     [
+      "events/5eed0000-0000-4000-8000-000000000033",
+      "202fc10362cb6710ce2e0cf05fa026fcf0869fa3a03a64be896cac36750eba47"
+     ],
+     [
+      "releases/d6edee0dfe308614fe4b14cca18f7f6f22265226d3fce2cc3929e5d1816e79fc",
+      "f8a1d5487c6417034277e8e2a786705daa9c5639960ec52a0b4551fb2ec24748"
+     ]
+    ]
+   ]
+  },
+  "rollback_hooks": {
+   "steps": {
+    "activation_after": {
+     "activation": {
+      "reason": "fixture: audit regression",
+      "release_id": "a5e1fdc4a6ae798234d7eee532eebd27962e8a69ef7b8387bd8b1fb25516d7f2",
+      "rolled_back_release": "d1a8fadff103ca1662a4e94f612d2ef5a2b77e750fac3ba1110e93757c08f971",
+      "status": "paused"
+     },
+     "graph": {
+      "organization": "5d89f6853ccfa6f7ec772e171c3207c2bfb8f54235c506f99e77d9097918fb29",
+      "revision": "candidate",
+      "tree": "tb"
+     }
+    },
+    "activation_before": {
+     "release_id": "d1a8fadff103ca1662a4e94f612d2ef5a2b77e750fac3ba1110e93757c08f971",
+     "revision": "candidate",
+     "status": "active"
+    },
+    "activation_paused": {
+     "value": {
+      "at": "2026-01-01T01:15:13+00:00",
+      "previous": null,
+      "release_id": "a5e1fdc4a6ae798234d7eee532eebd27962e8a69ef7b8387bd8b1fb25516d7f2",
+      "revision": "candidate"
+     },
+     "wrote": true
+    },
+    "candidate_without_hook_id": {
+     "hook": {
+      "id": "h1",
+      "revision": "candidate",
+      "status": "active"
+     },
+     "rollback": {
+      "value": {
+       "at": "2026-01-01T01:14:53+00:00",
+       "previous": null,
+       "release_id": "a5e1fdc4a6ae798234d7eee532eebd27962e8a69ef7b8387bd8b1fb25516d7f2",
+       "revision": "candidate"
+      },
+      "wrote": true
+     }
+    },
+    "empty_previous_active": {
+     "hook": {
+      "id": "h1",
+      "previous_active": {},
+      "revision": "candidate",
+      "status": "rolled_back"
+     },
+     "rollback": {
+      "value": {
+       "at": "2026-01-01T01:14:13+00:00",
+       "previous": null,
+       "release_id": "a5e1fdc4a6ae798234d7eee532eebd27962e8a69ef7b8387bd8b1fb25516d7f2",
+       "revision": "candidate"
+      },
+      "wrote": true
+     }
+    },
+    "hook_row_missing": {
+     "hook": null,
+     "rollback": {
+      "value": {
+       "at": "2026-01-01T01:14:33+00:00",
+       "previous": null,
+       "release_id": "a5e1fdc4a6ae798234d7eee532eebd27962e8a69ef7b8387bd8b1fb25516d7f2",
+       "revision": "candidate"
+      },
+      "wrote": true
+     }
+    },
+    "no_previous_active": {
+     "hook": {
+      "id": "h1",
+      "revision": "candidate",
+      "status": "rolled_back"
+     },
+     "rollback": {
+      "value": {
+       "at": "2026-01-01T01:13:33+00:00",
+       "previous": null,
+       "release_id": "a5e1fdc4a6ae798234d7eee532eebd27962e8a69ef7b8387bd8b1fb25516d7f2",
+       "revision": "candidate"
+      },
+      "wrote": true
+     }
+    },
+    "other_revision_untouched": {
+     "hook": {
+      "id": "h1",
+      "previous_active": {
+       "id": "h1",
+       "marker": "previous_active",
+       "revision": "older",
+       "status": "active"
+      },
+      "revision": "other",
+      "status": "active"
+     },
+     "rollback": {
+      "value": {
+       "at": "2026-01-01T01:13:53+00:00",
+       "previous": null,
+       "release_id": "a5e1fdc4a6ae798234d7eee532eebd27962e8a69ef7b8387bd8b1fb25516d7f2",
+       "revision": "candidate"
+      },
+      "wrote": true
+     }
+    },
+    "previous_active_restored": {
+     "hook": {
+      "id": "h1",
+      "marker": "previous_active",
+      "revision": "older",
+      "status": "active"
+     },
+     "rollback": {
+      "value": {
+       "at": "2026-01-01T01:13:13+00:00",
+       "previous": null,
+       "release_id": "a5e1fdc4a6ae798234d7eee532eebd27962e8a69ef7b8387bd8b1fb25516d7f2",
+       "revision": "candidate"
+      },
+      "wrote": true
+     }
+    }
+   },
+   "stores": [
+    [],
+    [
+     [
+      "deployment/active",
+      "ee9bd222dd5c55259c8d265eece41b18c599a236129e990a7f8ab4bfd62261e1"
+     ],
+     [
+      "deployment_history/a5e1fdc4a6ae798234d7eee532eebd27962e8a69ef7b8387bd8b1fb25516d7f2",
+      "ee9bd222dd5c55259c8d265eece41b18c599a236129e990a7f8ab4bfd62261e1"
+     ],
+     [
+      "events/5eed0000-0000-4000-8000-000000000034",
+      "4302edaa307e7d5a10cc85b4712b998965efc656d4f59f0633fbb53f95613f6e"
+     ],
+     [
+      "events/5eed0000-0000-4000-8000-000000000035",
+      "087166a58b2ab5459758fef5eed65f9b84e9eb5547456eea7304ef82f9d10b5a"
+     ],
+     [
+      "events/5eed0000-0000-4000-8000-000000000036",
+      "9c2f2bea03c827306e88c6e84e38ea16a1de89ce7b5302819a74bd50d9711478"
+     ],
+     [
+      "hooks/h1",
+      "fc252b53c4533f21dd1012e428cc97ca793a4818e2cd3d8e9e2924bfaee23222"
+     ],
+     [
+      "releases/1d83bcc32e426d6ed5ddf592d16b6d1d79882103bd0113692c032380a7867bfc",
+      "05c19fe0ca8821211d8ffd3d6f0b0b2700100f1eedcc949b8da2e5651bbd685d"
+     ],
+     [
+      "releases/a5e1fdc4a6ae798234d7eee532eebd27962e8a69ef7b8387bd8b1fb25516d7f2",
+      "2e997894af5a57e50dad850bce0565996725b83d93276b54e4ac4d5a84655331"
+     ]
+    ],
+    [
+     [
+      "deployment/active",
+      "1aeb110648fd6c1aedee0560e2f8201b6d5402c25ba74dcd6276e6a0365136ce"
+     ],
+     [
+      "deployment_history/a5e1fdc4a6ae798234d7eee532eebd27962e8a69ef7b8387bd8b1fb25516d7f2",
+      "1aeb110648fd6c1aedee0560e2f8201b6d5402c25ba74dcd6276e6a0365136ce"
+     ],
+     [
+      "events/5eed0000-0000-4000-8000-000000000037",
+      "7968608600a61903857f6fe11231055e18e9a773add488611d80e7167f6210ed"
+     ],
+     [
+      "events/5eed0000-0000-4000-8000-000000000038",
+      "d3c8436ebe1bd5937dee40de208ad2420019d15d587980c12933a646be8cc6ff"
+     ],
+     [
+      "events/5eed0000-0000-4000-8000-000000000039",
+      "8fdb3c282bf72cd2b33460486c3a73ae991d73e3d8166e84b52c41b157472ce0"
+     ],
+     [
+      "hooks/h1",
+      "53dcf47523abdfbd709c9f41ff8ea5578b9f17d36df6b506b8579674c89c5adb"
+     ],
+     [
+      "releases/1d83bcc32e426d6ed5ddf592d16b6d1d79882103bd0113692c032380a7867bfc",
+      "1d8eed0df10891d63decdd30add752d389beb12d3eb1d8cecd526374e2470891"
+     ],
+     [
+      "releases/a5e1fdc4a6ae798234d7eee532eebd27962e8a69ef7b8387bd8b1fb25516d7f2",
+      "9dc39414cf69227bc54cca1f363e7c0ad84accbf8143c3f8b1120dd994509502"
+     ]
+    ],
+    [
+     [
+      "deployment/active",
+      "c26b4babb78be6ae4cc2994a1f1bc1d9c98817ca0fa453e4a1f8d34e31c6b6a2"
+     ],
+     [
+      "deployment_history/a5e1fdc4a6ae798234d7eee532eebd27962e8a69ef7b8387bd8b1fb25516d7f2",
+      "c26b4babb78be6ae4cc2994a1f1bc1d9c98817ca0fa453e4a1f8d34e31c6b6a2"
+     ],
+     [
+      "events/5eed0000-0000-4000-8000-00000000003a",
+      "eb85c354c43719a25a86b45e692224c214891cd29d980f665a75ddee5658962c"
+     ],
+     [
+      "events/5eed0000-0000-4000-8000-00000000003b",
+      "5a7406cf7097530919064f7c036c4dad12cec52886b7d791fa4e424eeb2deeea"
+     ],
+     [
+      "events/5eed0000-0000-4000-8000-00000000003c",
+      "37455fd7d0c9de2c4ea7a7b7bb9d90c9d2027bf18eff785af124ab99a6e1b201"
+     ],
+     [
+      "hooks/h1",
+      "9e05b1648222a5b66ec739d2e44a751a40b9b46aa9479644d566c5c8ed4a0ca7"
+     ],
+     [
+      "releases/1d83bcc32e426d6ed5ddf592d16b6d1d79882103bd0113692c032380a7867bfc",
+      "15bb605abd08507910f4d1d182bc40911896715dba4685bafd473f9343cb3dea"
+     ],
+     [
+      "releases/a5e1fdc4a6ae798234d7eee532eebd27962e8a69ef7b8387bd8b1fb25516d7f2",
+      "35b0eecc3cc29db434798ae04e3ac2da4d3bfba41be011cb6ea3f7d80fa3f613"
+     ]
+    ],
+    [
+     [
+      "deployment/active",
+      "be387b50b9c13ae9800a4e6bb8c22b96cde41891a331768f31a6e6d3517cc50e"
+     ],
+     [
+      "deployment_history/a5e1fdc4a6ae798234d7eee532eebd27962e8a69ef7b8387bd8b1fb25516d7f2",
+      "be387b50b9c13ae9800a4e6bb8c22b96cde41891a331768f31a6e6d3517cc50e"
+     ],
+     [
+      "events/5eed0000-0000-4000-8000-00000000003d",
+      "eac46c4d84df9fbd21c27d6cec0a9df7d02f95c1da78252fd6de69354f076246"
+     ],
+     [
+      "events/5eed0000-0000-4000-8000-00000000003e",
+      "98bc31277a40cacf7edc6f958e4f1d020d6e98a110b20bd54e83d92d212ea7c1"
+     ],
+     [
+      "events/5eed0000-0000-4000-8000-00000000003f",
+      "c24a763fdda695f57873ce289acd6661d624031ac154a7e5a09a412a442b6e95"
+     ],
+     [
+      "hooks/h1",
+      "ae32786372e879974152945b136e526dcc17ec3c83b1aa349cd3c4c6d929fe30"
+     ],
+     [
+      "releases/1d83bcc32e426d6ed5ddf592d16b6d1d79882103bd0113692c032380a7867bfc",
+      "fc3a08dc7984820cc247c4e7df6326e6b13bf14766c72dd99b14b237b0de8d7d"
+     ],
+     [
+      "releases/a5e1fdc4a6ae798234d7eee532eebd27962e8a69ef7b8387bd8b1fb25516d7f2",
+      "9560a5b813c5c4a2865d498b48fc3f240b0bf350fdfaf05c80ab08b85890675e"
+     ]
+    ],
+    [
+     [
+      "deployment/active",
+      "a706607fce9b74bad0d6b8a8036e8d749e18083c520420ea1847b632ef8c43c2"
+     ],
+     [
+      "deployment_history/a5e1fdc4a6ae798234d7eee532eebd27962e8a69ef7b8387bd8b1fb25516d7f2",
+      "a706607fce9b74bad0d6b8a8036e8d749e18083c520420ea1847b632ef8c43c2"
+     ],
+     [
+      "events/5eed0000-0000-4000-8000-000000000040",
+      "0a0f7f92188ea7131206c94a49a75282620f3d70e17f21a02a166a7250c700bf"
+     ],
+     [
+      "events/5eed0000-0000-4000-8000-000000000041",
+      "3d211e34960ebdc353a8a48cc22bb1e7125561327eed795fa4c2687061110400"
+     ],
+     [
+      "events/5eed0000-0000-4000-8000-000000000042",
+      "2658b6abd12d13870424490e62d44450bc698b8953cd35742ef48aa250b758fe"
+     ],
+     [
+      "releases/1d83bcc32e426d6ed5ddf592d16b6d1d79882103bd0113692c032380a7867bfc",
+      "3e2fb2418481e40661a576ef4cead70cf6b497794a1587c412f349a5f13a5165"
+     ],
+     [
+      "releases/a5e1fdc4a6ae798234d7eee532eebd27962e8a69ef7b8387bd8b1fb25516d7f2",
+      "12d79b70c322547530cbae4656d9c0f81822f78feb4d2a3affad9e5820f036c9"
+     ]
+    ],
+    [
+     [
+      "deployment/active",
+      "9997788a135fa6a2ee78e560b00c200a4ccc6866a8d11e09e4cbf9cb48103af0"
+     ],
+     [
+      "deployment_history/a5e1fdc4a6ae798234d7eee532eebd27962e8a69ef7b8387bd8b1fb25516d7f2",
+      "9997788a135fa6a2ee78e560b00c200a4ccc6866a8d11e09e4cbf9cb48103af0"
+     ],
+     [
+      "events/5eed0000-0000-4000-8000-000000000043",
+      "9791b778c6c1e39a3d321ae1c06b3a3d540f4ac829ff7e8f19842867dc2b3530"
+     ],
+     [
+      "events/5eed0000-0000-4000-8000-000000000044",
+      "8604a567d7dc49dc1ed64d2b3fbb8ab062bab64abc6e257ea5d8234ddd17dc4a"
+     ],
+     [
+      "events/5eed0000-0000-4000-8000-000000000045",
+      "1ecefe9a80dd06c9b47cfa6552adc7e76b56e8b1580eb16e3462a1be6f4fdcd4"
+     ],
+     [
+      "hooks/h1",
+      "18d86fb33a6f86314b88a437c3d8e87d649e01c38327695a52fac91ef78ff21a"
+     ],
+     [
+      "releases/a5e1fdc4a6ae798234d7eee532eebd27962e8a69ef7b8387bd8b1fb25516d7f2",
+      "7752ce96c6be4d6b0558d078e173efe300c3cee22e8db4885244a190409c9b35"
+     ],
+     [
+      "releases/d6edee0dfe308614fe4b14cca18f7f6f22265226d3fce2cc3929e5d1816e79fc",
+      "630ad99865750611c3217a4f19db8a6120ce84d5f92a0cdc925a904e4e58d580"
+     ]
+    ],
+    [
+     [
+      "deployment/active",
+      "d10c90a5ddafd2a562a6ac48335703d608c72ef6fcd9d2f99f46517e052c2880"
+     ],
+     [
+      "deployment_history/a5e1fdc4a6ae798234d7eee532eebd27962e8a69ef7b8387bd8b1fb25516d7f2",
+      "d10c90a5ddafd2a562a6ac48335703d608c72ef6fcd9d2f99f46517e052c2880"
+     ],
+     [
+      "events/5eed0000-0000-4000-8000-000000000046",
+      "f8f52cd64dbbf20b2c0bdd8e36abdd98d89b2306af2e409f6ef6363c65d79046"
+     ],
+     [
+      "events/5eed0000-0000-4000-8000-000000000047",
+      "56a192f3a6a10b23eedb49a301e08fe1c3c8bd868acd9cd513a19eb303b2ca21"
+     ],
+     [
+      "events/5eed0000-0000-4000-8000-000000000048",
+      "39e5319053441540813c099a7c91ba341cb54d57de17d206460f19cd24561044"
+     ],
+     [
+      "releases/a5e1fdc4a6ae798234d7eee532eebd27962e8a69ef7b8387bd8b1fb25516d7f2",
+      "cb294749ad7b57dd9d1d8c5f915beeac9b537287ba48673e0994b328ca98a14d"
+     ],
+     [
+      "releases/d1a8fadff103ca1662a4e94f612d2ef5a2b77e750fac3ba1110e93757c08f971",
+      "d0cad71e986cb15e538d8c23d512f35b4d3d4af39ab7deca3c3da9e23b2b26ac"
+     ],
+     [
+      "research_control/activation",
+      "bd318d4a537b2a534bfd178f31ff3c6f9bf432884cc3976075f69c2828b09128"
+     ],
+     [
+      "research_control/graph",
+      "d7116b23853b81e1d3b162b60b3934b2a47818afc9448aa2ced8d64b7e16466a"
+     ]
+    ]
+   ]
+  }
+ },
+ "queue": {
+  "claim": {
+   "steps": {
+    "empty": {
+     "value": null,
+     "wrote": false
+    },
+    "fence_row": {
+     "at": "2026-01-01T00:00:00+00:00",
+     "bucket": "release_queue",
+     "generation": 1,
+     "id": "release_queue:r1",
+     "owner": "5eed0000-0000-4000-8000-000000000001",
+     "row_id": "r1"
+    },
+    "held_lease": {
+     "value": null,
+     "wrote": false
+    },
+    "lease_expiring_now_is_free": {
+     "value": {
+      "at": "2026-01-01T00:00:01+00:00",
+      "attempt": 1,
+      "generation": 1,
+      "id": "r1",
+      "lease_until": "2026-01-01T00:20:00+00:00",
+      "owner": "5eed0000-0000-4000-8000-000000000001",
+      "status": "running"
+     },
+     "wrote": true
+    },
+    "lock_after": {
+     "lease_until": "2026-01-01T00:20:00+00:00",
+     "owner": "5eed0000-0000-4000-8000-000000000001",
+     "release_id": "r1"
+    },
+    "second_claim_under_one_lease": {
+     "value": null,
+     "wrote": false
+    }
+   },
+   "stores": [
+    [
+     [
+      "deployment_locks/controller",
+      "dd6bb6bc0fd504d473dc42ec9c8978a1e7fdde3fb069c4f61687f24e97270fb9"
+     ],
+     [
+      "execution_fences/release_queue:r1",
+      "16c29656b3a8fe0907eae2f0d3d0198bf88baea8723b89851e03c2ce79295b6c"
+     ],
+     [
+      "release_queue/r1",
+      "859c4eb88d9fca879b619472fee010fb2e8c02fdf8f54399466e9c44d8921325"
+     ]
+    ]
+   ]
+  },
+  "claim_budget_and_fence": {
+   "steps": {
+    "budget_exhausted_then_next": {
+     "value": {
+      "at": "2",
+      "attempt": 1,
+      "generation": 1,
+      "id": "next",
+      "lease_until": "2026-01-01T00:21:01+00:00",
+      "owner": "5eed0000-0000-4000-8000-00000000000a",
+      "status": "running"
+     },
+     "wrote": true
+    },
+    "fence_corrupted": {
+     "value": null,
+     "wrote": true
+    },
+    "fence_corrupted_lock": null,
+    "fence_corrupted_row": {
+     "at": "1",
+     "id": "r1",
+     "reason": "Execution generation regressed behind its durable fence",
+     "status": "failed"
+    },
+    "fence_regressed": {
+     "value": null,
+     "wrote": true
+    },
+    "fence_regressed_lock": null,
+    "fence_regressed_row": {
+     "at": "1",
+     "id": "r1",
+     "reason": "Execution generation regressed behind its durable fence",
+     "status": "failed"
+    },
+    "spent_row": {
+     "at": "1",
+     "attempt": 3,
+     "id": "spent",
+     "reason": "release attempt budget exhausted",
+     "status": "failed"
+    }
+   },
+   "stores": [
+    [
+     [
+      "deployment_locks/controller",
+      "b598d16211656998e1173effbfe0a1e19594fbb41586b096f6220caad28b6090"
+     ],
+     [
+      "execution_fences/release_queue:next",
+      "cff9d5cd8346e3cc4563327ee1372d5342193bbd0c76a93a5e126cb4e81a02ae"
+     ],
+     [
+      "release_queue/next",
+      "6446757319cbf23c91fbdfca95d4504cc992dc3c7b26b5873b39d55754c85b71"
+     ],
+     [
+      "release_queue/spent",
+      "83f61250284a583d5d3aee4dee5067b968bdce08dd8053369fd1968b48a7a13f"
+     ]
+    ],
+    [
+     [
+      "execution_fences/release_queue:r1",
+      "1a43ac3a13b22d8507073249839293ccd5e0c5a4f1d76c1e55d68f48262199d6"
+     ],
+     [
+      "release_queue/r1",
+      "4135b8be89df55241a386d8e2ada68c58506d5f4314fbaaae5437e74d3766e15"
+     ]
+    ],
+    [
+     [
+      "execution_fences/release_queue:r1",
+      "620bf733b9e3014bba1e4380ef4a68e7b5b7cdaf7e0b8c3b04c29ca12edcdc12"
+     ],
+     [
+      "release_queue/r1",
+      "4135b8be89df55241a386d8e2ada68c58506d5f4314fbaaae5437e74d3766e15"
+     ]
+    ]
+   ]
+  },
+  "claim_order_and_eligible": {
+   "steps": {
+    "eligible_none": {
+     "value": null,
+     "wrote": false
+    },
+    "eligible_only_b": {
+     "value": {
+      "at": "2026-01-01T00:00:02+00:00",
+      "attempt": 1,
+      "generation": 1,
+      "id": "b",
+      "lease_until": "2026-01-01T00:20:00+00:00",
+      "owner": "5eed0000-0000-4000-8000-000000000006",
+      "status": "running"
+     },
+     "wrote": true
+    },
+    "order_by_at_then_id": [
+     "z",
+     "b",
+     "c",
+     "a"
+    ],
+    "others_untouched": {
+     "a": "queued",
+     "b": "running",
+     "c": "queued"
+    },
+    "states": {
+     "a": "active",
+     "b": "active",
+     "c": "active",
+     "z": "active"
+    }
+   },
+   "stores": [
+    [
+     [
+      "deployment_locks/controller",
+      "0aebc9c050a4eb8615e12103a01884dd855c501e25325f118f5bbbba891d5e88"
+     ],
+     [
+      "execution_fences/release_queue:a",
+      "b55b8a2952ccf7e6b7992c0e6c6c6076ac5765e54d56ba8d43add0db0db55031"
+     ],
+     [
+      "execution_fences/release_queue:b",
+      "2e6bf6009d225b96ac9d1b0fe877cf40fa2ff1764113b6705a57dc410dd9c259"
+     ],
+     [
+      "execution_fences/release_queue:c",
+      "e3dfa3b39e09374ffa275a1828b6ca6809fef74831bc710fa2c33d39af65e31a"
+     ],
+     [
+      "execution_fences/release_queue:z",
+      "bd43c5d129137266fb9279bd58a02640cadcf7127ef36041623d8f539d2d9749"
+     ],
+     [
+      "release_queue/a",
+      "efbf7094ce04fa742315cf905efe8d1b782a4abfa78dcdd7c256aedcc6a06c48"
+     ],
+     [
+      "release_queue/b",
+      "8a4cc553a139241c5491210c9a407c7e4c7e52b8c394fd3f991eff7336508b10"
+     ],
+     [
+      "release_queue/c",
+      "718368bc8bb9ec62ce160c829b792fd5e069aeaa6682d189253665750084398b"
+     ],
+     [
+      "release_queue/z",
+      "6646c7d40e6131603bb62bd6dd1164ed2c82298424c34a691886bac7baf38b04"
+     ]
+    ],
+    [
+     [
+      "deployment_locks/controller",
+      "0aebc9c050a4eb8615e12103a01884dd855c501e25325f118f5bbbba891d5e88"
+     ],
+     [
+      "execution_fences/release_queue:b",
+      "0604e1ca2387074599057d0fe1bc6a48e7eab22aca6a288d98216c45bf60473f"
+     ],
+     [
+      "release_queue/a",
+      "11258f2757803e3cc236c44ebbc9926c3e36e9c406db808ce30babf76c7c49e1"
+     ],
+     [
+      "release_queue/b",
+      "2f70369d2436e1c8f5f03c74b9e88f36f1fe96521604df162cd3f4c7ce11897e"
+     ],
+     [
+      "release_queue/c",
+      "f6b4f589ba9e8a77042b6f52eb479d351329c64460ad7276c58ccd8c2ed58d71"
+     ]
+    ]
+   ]
+  },
+  "claim_skips": {
+   "steps": {
+    "after_the_backoff": {
+     "value": {
+      "at": "1",
+      "attempt": 1,
+      "generation": 1,
+      "id": "future",
+      "lease_until": "2026-01-01T00:21:01+00:00",
+      "owner": "5eed0000-0000-4000-8000-000000000008",
+      "retry_at": "2026-01-01T00:01:00+00:00",
+      "status": "running"
+     },
+     "wrote": true
+    },
+    "due_retry_at_claimed": {
+     "value": {
+      "at": "2",
+      "attempt": 1,
+      "generation": 1,
+      "id": "due",
+      "lease_until": "2026-01-01T00:20:00+00:00",
+      "owner": "5eed0000-0000-4000-8000-000000000007",
+      "retry_at": "2026-01-01T00:00:00+00:00",
+      "status": "running"
+     },
+     "wrote": true
+    },
+    "explicit_now_claims_the_queued_one": {
+     "value": {
+      "attempt": 1,
+      "generation": 1,
+      "id": "s-queued",
+      "lease_until": "2026-01-12T14:07:41+00:00",
+      "owner": "5eed0000-0000-4000-8000-000000000009",
+      "status": "running"
+     },
+     "wrote": true
+    },
+    "future_retry_at_skipped": {
+     "value": null,
+     "wrote": false
+    },
+    "terminal_rows_never_claimed": {
+     "value": null,
+     "wrote": false
+    }
+   },
+   "stores": [
+    [
+     [
+      "deployment_locks/controller",
+      "cd71e8708f921798d2922d1118b78135719c9d310a4531420fd117b48b1c425d"
+     ],
+     [
+      "execution_fences/release_queue:due",
+      "b9567a909294745cc4ec6114e085493c111a5231f696f7b4056ed8fb532c19dd"
+     ],
+     [
+      "execution_fences/release_queue:future",
+      "2db8b1e14f31a50df050ca3433d12374ce143e34316cf68730837301ecc3bc93"
+     ],
+     [
+      "release_queue/due",
+      "cadb9429b2df7cbfe9b6ab4635bda17b37d526b3d878248ed6d3dae75316de79"
+     ],
+     [
+      "release_queue/future",
+      "ef5ade83347ac9291bb1748b8f69049a9c49487b44c104d24d87e7209e97bf5a"
+     ]
+    ],
+    [
+     [
+      "deployment_locks/controller",
+      "92b71cd2e77dcf33fe2272293c3ee301602c9c849e7a96e2d1498d5340873d0f"
+     ],
+     [
+      "execution_fences/release_queue:s-queued",
+      "8492619346fdeca4c6f75f53b1324fcfae460d9c180c9ee3081656fae9e53cdd"
+     ],
+     [
+      "release_queue/s-active",
+      "98dc184bae6e3a2cf7246c61f4c69f7f7a3d7a861d18114fe0c328535c8b488e"
+     ],
+     [
+      "release_queue/s-blocked",
+      "2451bd1ba052dbe9287ea3bf12de0da674d2ed27ea6c9756ad07df9bef70565d"
+     ],
+     [
+      "release_queue/s-cancelled",
+      "76ea0e30820da2fd79c851253ae42f3c99da72b984cf68ecd40aa7a80caf3d99"
+     ],
+     [
+      "release_queue/s-done",
+      "4e88cc841c13e6930029e1bb2c8c6d377e9d6402518f31ae6f84317ad91e97b4"
+     ],
+     [
+      "release_queue/s-failed",
+      "feabf3cfc70f3a2694436e91376fbd9f2807cf9f78aa047dbf65c19f748da3ad"
+     ],
+     [
+      "release_queue/s-queued",
+      "b5baad25de8f9b9a91214190d7a82f2499b5527e216291d7b82e1fa8261b9403"
+     ],
+     [
+      "release_queue/s-rejected",
+      "9dba36ef208dda0d6681c140dc77ccb6b612b4e9cf5b44227a51b3f2a7b629fb"
+     ]
+    ]
+   ]
+  },
+  "defer": {
+   "steps": {
+    "after_string_resume": {
+     "at": "1",
+     "attempt": 0,
+     "attempts": [
+      {
+       "at": "2026-01-01T00:27:41+00:00",
+       "attempt": 1,
+       "deferred": true,
+       "result": {
+        "evidence": "fixture:ci",
+        "status": "waiting"
+       }
+      },
+      {
+       "at": "2026-01-01T00:29:11+00:00",
+       "attempt": 1,
+       "deferred": true,
+       "result": {
+        "status": "waiting"
+       }
+      },
+      {
+       "at": "2026-01-01T00:29:11+00:00",
+       "attempt": 1,
+       "deferred": true,
+       "result": {
+        "status": "waiting"
+       }
+      },
+      {
+       "at": "2026-01-01T00:29:11+00:00",
+       "attempt": 1,
+       "deferred": true,
+       "result": {
+        "status": "waiting"
+       }
+      }
+     ],
+     "generation": 4,
+     "id": "r1",
+     "lease_until": null,
+     "owner": null,
+     "result": {
+      "status": "waiting"
+     },
+     "retry_at": "2026-01-01T00:29:16+00:00",
+     "status": "queued"
+    },
+    "after_zero_resume": {
+     "at": "1",
+     "attempt": 0,
+     "attempts": [
+      {
+       "at": "2026-01-01T00:27:41+00:00",
+       "attempt": 1,
+       "deferred": true,
+       "result": {
+        "evidence": "fixture:ci",
+        "status": "waiting"
+       }
+      },
+      {
+       "at": "2026-01-01T00:29:11+00:00",
+       "attempt": 1,
+       "deferred": true,
+       "result": {
+        "status": "waiting"
+       }
+      }
+     ],
+     "generation": 2,
+     "id": "r1",
+     "lease_until": null,
+     "owner": null,
+     "result": {
+      "status": "waiting"
+     },
+     "retry_at": "2026-01-01T00:29:11+00:00",
+     "status": "queued"
+    },
+    "claim_after_resume": {
+     "at": "1",
+     "attempt": 1,
+     "attempts": [
+      {
+       "at": "2026-01-01T00:27:41+00:00",
+       "attempt": 1,
+       "deferred": true,
+       "result": {
+        "evidence": "fixture:ci",
+        "status": "waiting"
+       }
+      }
+     ],
+     "generation": 2,
+     "id": "r1",
+     "lease_until": "2026-01-01T00:49:11+00:00",
+     "owner": "5eed0000-0000-4000-8000-00000000000f",
+     "result": {
+      "evidence": "fixture:ci",
+      "status": "waiting"
+     },
+     "retry_at": "2026-01-01T00:29:11+00:00",
+     "status": "running"
+    },
+    "claim_before_resume": {
+     "value": null,
+     "wrote": false
+    },
+    "defer": {
+     "value": {
+      "at": "1",
+      "attempt": 0,
+      "attempts": [
+       {
+        "at": "2026-01-01T00:27:41+00:00",
+        "attempt": 1,
+        "deferred": true,
+        "result": {
+         "evidence": "fixture:ci",
+         "status": "waiting"
+        }
+       }
+      ],
+      "generation": 1,
+      "id": "r1",
+      "lease_until": null,
+      "owner": null,
+      "result": {
+       "evidence": "fixture:ci",
+       "status": "waiting"
+      },
+      "retry_at": "2026-01-01T00:29:11+00:00",
+      "status": "queued"
+     },
+     "wrote": true
+    },
+    "defer_again_zero_resume": {
+     "value": {
+      "at": "1",
+      "attempt": 0,
+      "attempts": [
+       {
+        "at": "2026-01-01T00:27:41+00:00",
+        "attempt": 1,
+        "deferred": true,
+        "result": {
+         "evidence": "fixture:ci",
+         "status": "waiting"
+        }
+       },
+       {
+        "at": "2026-01-01T00:29:11+00:00",
+        "attempt": 1,
+        "deferred": true,
+        "result": {
+         "status": "waiting"
+        }
+       }
+      ],
+      "generation": 2,
+      "id": "r1",
+      "lease_until": null,
+      "owner": null,
+      "result": {
+       "status": "waiting"
+      },
+      "retry_at": "2026-01-01T00:29:11+00:00",
+      "status": "queued"
+     },
+     "wrote": true
+    },
+    "lock_cleared": {
+     "lease_until": null,
+     "owner": null
+    },
+    "negative_string_resume": {
+     "value": {
+      "at": "1",
+      "attempt": 0,
+      "attempts": [
+       {
+        "at": "2026-01-01T00:27:41+00:00",
+        "attempt": 1,
+        "deferred": true,
+        "result": {
+         "evidence": "fixture:ci",
+         "status": "waiting"
+        }
+       },
+       {
+        "at": "2026-01-01T00:29:11+00:00",
+        "attempt": 1,
+        "deferred": true,
+        "result": {
+         "status": "waiting"
+        }
+       },
+       {
+        "at": "2026-01-01T00:29:11+00:00",
+        "attempt": 1,
+        "deferred": true,
+        "result": {
+         "status": "waiting"
+        }
+       }
+      ],
+      "generation": 3,
+      "id": "r1",
+      "lease_until": null,
+      "owner": null,
+      "result": {
+       "status": "waiting"
+      },
+      "retry_at": "2026-01-01T00:29:11+00:00",
+      "status": "queued"
+     },
+     "wrote": true
+    },
+    "stale_defer": {
+     "message": "Stale release controller",
+     "refused": "ContractError",
+     "wrote": false
+    },
+    "string_resume": {
+     "value": {
+      "at": "1",
+      "attempt": 0,
+      "attempts": [
+       {
+        "at": "2026-01-01T00:27:41+00:00",
+        "attempt": 1,
+        "deferred": true,
+        "result": {
+         "evidence": "fixture:ci",
+         "status": "waiting"
+        }
+       },
+       {
+        "at": "2026-01-01T00:29:11+00:00",
+        "attempt": 1,
+        "deferred": true,
+        "result": {
+         "status": "waiting"
+        }
+       },
+       {
+        "at": "2026-01-01T00:29:11+00:00",
+        "attempt": 1,
+        "deferred": true,
+        "result": {
+         "status": "waiting"
+        }
+       },
+       {
+        "at": "2026-01-01T00:29:11+00:00",
+        "attempt": 1,
+        "deferred": true,
+        "result": {
+         "status": "waiting"
+        }
+       }
+      ],
+      "generation": 4,
+      "id": "r1",
+      "lease_until": null,
+      "owner": null,
+      "result": {
+       "status": "waiting"
+      },
+      "retry_at": "2026-01-01T00:29:16+00:00",
+      "status": "queued"
+     },
+     "wrote": true
+    }
+   },
+   "stores": [
+    [
+     [
+      "deployment_locks/controller",
+      "0aebc9c050a4eb8615e12103a01884dd855c501e25325f118f5bbbba891d5e88"
+     ],
+     [
+      "execution_fences/release_queue:r1",
+      "2ce6cb31b9140c0a91f2fd74499b5281176347b03f74c288b8bde298d8537dd1"
+     ],
+     [
+      "release_queue/r1",
+      "97b3c200f36ebfbf3c648008bc026f50523317905f959ff2fe9b98feeb2d546a"
+     ]
+    ]
+   ]
+  },
+  "enqueue": {
+   "steps": {
+    "again_same": {
+     "value": {
+      "at": "2026-01-01T00:00:00+00:00",
+      "attempt": 0,
+      "id": "2ee53189adb206fb163827167915473764b8af34a77b6b468263e424790db9c1",
+      "reason": "fixture: owner queued it",
+      "status": "queued"
+     },
+     "wrote": false
+    },
+    "empty_reason": {
+     "message": "Enqueue reason required",
+     "refused": "ContractError",
+     "wrote": false
+    },
+    "existing_cancelled": {
+     "value": {
+      "attempt": 2,
+      "id": "x-cancelled",
+      "reason": "fixture",
+      "status": "cancelled"
+     },
+     "wrote": false
+    },
+    "existing_done": {
+     "value": {
+      "attempt": 2,
+      "id": "x-done",
+      "reason": "fixture",
+      "status": "done"
+     },
+     "wrote": false
+    },
+    "existing_failed": {
+     "value": {
+      "attempt": 2,
+      "id": "x-failed",
+      "reason": "fixture",
+      "status": "failed"
+     },
+     "wrote": false
+    },
+    "existing_running": {
+     "value": {
+      "attempt": 2,
+      "id": "x-running",
+      "reason": "fixture",
+      "status": "running"
+     },
+     "wrote": false
+    },
+    "in_unit_committed": {
+     "stored": {
+      "at": "2026-01-01T00:00:00+00:00",
+      "attempt": 0,
+      "id": "403c5504589b49a8e712dd96eb51292912e496cff05609ff2435d7805c3ec495",
+      "reason": "fixture: joined",
+      "status": "queued"
+     },
+     "value": {
+      "at": "2026-01-01T00:00:00+00:00",
+      "attempt": 0,
+      "id": "403c5504589b49a8e712dd96eb51292912e496cff05609ff2435d7805c3ec495",
+      "reason": "fixture: joined",
+      "status": "queued"
+     }
+    },
+    "in_unit_not_queued": null,
+    "in_unit_raises": {
+     "result": {
+      "value": {
+       "at": "2026-01-01T00:00:00+00:00",
+       "attempt": 0,
+       "id": "403c5504589b49a8e712dd96eb51292912e496cff05609ff2435d7805c3ec495",
+       "reason": "fixture: in a unit",
+       "status": "queued"
+      }
+     },
+     "written": false
+    },
+    "new_row": {
+     "value": {
+      "at": "2026-01-01T00:00:00+00:00",
+      "attempt": 0,
+      "id": "2ee53189adb206fb163827167915473764b8af34a77b6b468263e424790db9c1",
+      "reason": "fixture: owner queued it",
+      "status": "queued"
+     },
+     "wrote": true
+    },
+    "non_string_reason": {
+     "message": "Enqueue reason required",
+     "refused": "ContractError",
+     "wrote": false
+    },
+    "not_reviewed": {
+     "message": "Release is not queueable",
+     "refused": "ContractError",
+     "wrote": false
+    },
+    "status_active": {
+     "message": "Release is not queueable",
+     "refused": "ContractError",
+     "wrote": false
+    },
+    "status_rejected": {
+     "message": "Release is not queueable",
+     "refused": "ContractError",
+     "wrote": false
+    },
+    "superseded_ticket": {
+     "message": "Ticket changed; reassessment required",
+     "refused": "TicketSuperseded",
+     "wrote": false
+    },
+    "unknown_release": {
+     "message": "Release is not queueable",
+     "refused": "ContractError",
+     "wrote": false
+    },
+    "verified_release": {
+     "value": {
+      "at": "2026-01-01T00:00:00+00:00",
+      "attempt": 0,
+      "id": "v1",
+      "reason": "fixture: verified one",
+      "status": "queued"
+     },
+     "wrote": true
+    }
+   },
+   "stores": [
+    [
+     [
+      "release_queue/2ee53189adb206fb163827167915473764b8af34a77b6b468263e424790db9c1",
+      "e837db79ac1e7dff07f319f305f5cb0c9e9b80ca46db6387d23f3fa1fdb423d6"
+     ],
+     [
+      "release_queue/403c5504589b49a8e712dd96eb51292912e496cff05609ff2435d7805c3ec495",
+      "c6f93bd86d4a699bd9604a21b00966303712b6ee6fab1ca808428ce5ee460ed7"
+     ],
+     [
+      "release_queue/v1",
+      "2acdc5988f19be094079af2a378050c1c8f0dc065544db790320a046fbfd83bc"
+     ],
+     [
+      "release_queue/x-cancelled",
+      "ec1f45ce720cdc6ef13fafb26819c4bd5bbe25241ac02eade303dc4427e298fe"
+     ],
+     [
+      "release_queue/x-done",
+      "63ef11ca2a896c68300a8e3652738e6fbca8fdd547b2dfdc81e52438573e79ce"
+     ],
+     [
+      "release_queue/x-failed",
+      "7ca3616313ff30a4c78c26e78f21b0642c7a05c4967e3c9cdc8337f9a369b278"
+     ],
+     [
+      "release_queue/x-running",
+      "9be8fdf9b531f690c15bdc9b23fc70476357a2b806bcdd03a73c3c3a2b0421e7"
+     ],
+     [
+      "releases/09359573647d2f813338e5bcca7246c6f1487b0d4fe1ca4d8907ab87e69fda85",
+      "b7d4a754ea95a5f95bf05b4fa92beb76fbf4b5fe65870ce407060cc90bb57e35"
+     ],
+     [
+      "releases/12344a61d6ad4b95787fc48d51ef091ddb2db677afdfa83dd7370fa5e39ccf66",
+      "d07465bf6789f67c781b9561301476d289ce881b8357e9f9fbf0400f973f3153"
+     ],
+     [
+      "releases/2ee53189adb206fb163827167915473764b8af34a77b6b468263e424790db9c1",
+      "d4c3779d64ae11603a41a87c4f81231381947ff822cd61755af265cfa42423c9"
+     ],
+     [
+      "releases/403c5504589b49a8e712dd96eb51292912e496cff05609ff2435d7805c3ec495",
+      "c4d349894efc4b8b2fe900aefed3f58aee6b95589a8cfa9fb007b2774c6f089e"
+     ],
+     [
+      "releases/st-active",
+      "ed9b19494a6f79cc23fa89d5d1e17ddf44270189908abda6d2ea09496e931a1e"
+     ],
+     [
+      "releases/st-rejected",
+      "64d0a7c5dbaf9f31bd3468d68672da8df2bedfef06f0689f0d60b101ed40843b"
+     ],
+     [
+      "releases/v1",
+      "11de56f3bb6dcbfadde0125f5678a0f9e3c5c7b3ea01aeff87df9ef15c648208"
+     ],
+     [
+      "ticket_revisions/ticket-1:r1",
+      "060a8f067b0a8efd4b281b0e1303a75b2612ff5220e85b0d9b80d192b921bf0d"
+     ],
+     [
+      "tickets/ticket-1",
+      "6dddd38438bd9641ab5ed95d42efc71436ea8b50e91aea6266854389020f7487"
+     ]
+    ]
+   ]
+  },
+  "fence": {
+   "steps": {
+    "fence_absent_legacy": {
+     "value": null,
+     "wrote": false
+    },
+    "fence_generation": 2,
+    "fence_matches_again": {
+     "value": null,
+     "wrote": true
+    },
+    "fence_owner_differs": {
+     "message": "Execution owner differs from the durable fence",
+     "refused": "ContractError",
+     "wrote": false
+    },
+    "fence_owner_none": {
+     "value": null,
+     "wrote": false
+    },
+    "finish_current": {
+     "value": {
+      "at": "1",
+      "attempt": 2,
+      "attempts": [
+       {
+        "at": "2026-01-01T00:52:42+00:00",
+        "attempt": 2,
+        "result": {
+         "status": "complete"
+        }
+       }
+      ],
+      "generation": 2,
+      "id": "r1",
+      "lease_until": null,
+      "owner": null,
+      "result": {
+       "status": "complete"
+      },
+      "retry_at": null,
+      "status": "complete"
+     },
+     "wrote": true
+    },
+    "first": {
+     "at": "1",
+     "attempt": 1,
+     "generation": 1,
+     "id": "r1",
+     "lease_until": "2026-01-01T00:52:41+00:00",
+     "owner": "5eed0000-0000-4000-8000-000000000020",
+     "status": "running"
+    },
+    "heartbeat_current": {
+     "value": null,
+     "wrote": false
+    },
+    "reclaimed_generation": 2,
+    "recreated_row": {
+     "at": "1",
+     "id": "r1",
+     "reason": "Execution generation regressed behind its durable fence",
+     "status": "failed"
+    },
+    "recreated_row_claim": {
+     "value": null,
+     "wrote": true
+    },
+    "restored_behind_fence": {
+     "finish": {
+      "message": "Execution row is behind its durable fence",
+      "refused": "ContractError"
+     },
+     "heartbeat": {
+      "message": "Execution row is behind its durable fence",
+      "refused": "ContractError"
+     },
+     "wrote": false
+    },
+    "second": {
+     "at": "1",
+     "attempt": 2,
+     "generation": 2,
+     "id": "r1",
+     "lease_until": "2026-01-01T01:12:42+00:00",
+     "owner": "5eed0000-0000-4000-8000-000000000021",
+     "status": "running"
+    },
+    "stale_handles": {
+     "results": {
+      "first": {
+       "finish": {
+        "message": "Stale release controller",
+        "refused": "ContractError"
+       },
+       "heartbeat": {
+        "message": "Stale release controller",
+        "refused": "ContractError"
+       }
+      },
+      "first_generation_2": {
+       "finish": {
+        "message": "Stale release controller",
+        "refused": "ContractError"
+       },
+       "heartbeat": {
+        "message": "Stale release controller",
+        "refused": "ContractError"
+       }
+      },
+      "second_with_first_owner": {
+       "finish": {
+        "message": "Stale release controller",
+        "refused": "ContractError"
+       },
+       "heartbeat": {
+        "message": "Stale release controller",
+        "refused": "ContractError"
+       }
+      }
+     },
+     "wrote": false
+    }
+   },
+   "stores": [
+    [
+     [
+      "deployment_locks/controller",
+      "0aebc9c050a4eb8615e12103a01884dd855c501e25325f118f5bbbba891d5e88"
+     ],
+     [
+      "execution_fences/release_queue:r1",
+      "72fe4dfa2e03185df8d21f8e6e4e11bd1a9d99f4f54e02224d1ba6eec9948f42"
+     ],
+     [
+      "release_queue/r1",
+      "4135b8be89df55241a386d8e2ada68c58506d5f4314fbaaae5437e74d3766e15"
+     ]
+    ],
+    [
+     [
+      "deployment_locks/controller",
+      "e1c8aa843c6fa6a229e22a8dea7578b744958b7da865a755e21657f5cd28f14a"
+     ],
+     [
+      "execution_fences/release_queue:r1",
+      "c1c931e6582802931145aace2a54624e2a39bdc9e3fd8a3398c5c18e08bbf939"
+     ],
+     [
+      "release_queue/r1",
+      "25289e10bdd77c2e6140c00a043f8a393d4f3b585240bd09776c0936c39c83e0"
+     ]
+    ],
+    [
+     [
+      "deployment_locks/controller",
+      "d3ca98ddf569a06af0f126670f12cf19a3e4a7e4f18d21986ab36c0d2fb51262"
+     ],
+     [
+      "release_queue/r1",
+      "888e5136f80c743e3f7523d3f2c689f52b74cea7822935bb5f96ae047d151453"
+     ]
+    ]
+   ]
+  },
+  "finish": {
+   "steps": {
+    "after_budget": {
+     "claim": null,
+     "row": {
+      "at": "1",
+      "attempt": 3,
+      "attempts": [
+       {
+        "at": "2026-01-01T00:29:11+00:00",
+        "attempt": 1,
+        "result": {
+         "evidence": "fixture:infra",
+         "status": "retry"
+        }
+       },
+       {
+        "at": "2026-01-01T00:29:41+00:00",
+        "attempt": 2,
+        "result": {
+         "evidence": "fixture:infra",
+         "status": "retry"
+        }
+       },
+       {
+        "at": "2026-01-01T00:30:41+00:00",
+        "attempt": 3,
+        "result": {
+         "evidence": "fixture:infra",
+         "status": "retry"
+        }
+       }
+      ],
+      "generation": 3,
+      "id": "r1",
+      "lease_until": null,
+      "owner": null,
+      "preserve": "metadata",
+      "reason": "release attempt budget exhausted",
+      "result": {
+       "evidence": "fixture:infra",
+       "status": "retry"
+      },
+      "retry_at": null,
+      "status": "failed"
+     }
+    },
+    "explicit_now_walk": {
+     "claim": null,
+     "final": {
+      "attempt": 3,
+      "attempts": [
+       {
+        "at": "2026-01-01T00:32:41+00:00",
+        "attempt": 1,
+        "result": {
+         "evidence": "fixture:infra",
+         "status": "retry"
+        }
+       },
+       {
+        "at": "2026-01-01T00:33:11+00:00",
+        "attempt": 2,
+        "result": {
+         "evidence": "fixture:infra",
+         "status": "retry"
+        }
+       },
+       {
+        "at": "2026-01-01T00:34:11+00:00",
+        "attempt": 3,
+        "result": {
+         "evidence": "fixture:infra",
+         "status": "retry"
+        }
+       }
+      ],
+      "generation": 3,
+      "id": "release",
+      "lease_until": null,
+      "owner": null,
+      "preserve": "metadata",
+      "reason": "release attempt budget exhausted",
+      "result": {
+       "evidence": "fixture:infra",
+       "status": "retry"
+      },
+      "retry_at": null,
+      "status": "failed"
+     },
+     "steps": [
+      {
+       "again": null,
+       "attempt": 1
+      },
+      {
+       "claim_during_backoff": null,
+       "status": "retry"
+      },
+      {
+       "again": null,
+       "attempt": 2
+      },
+      {
+       "claim_during_backoff": null,
+       "status": "retry"
+      },
+      {
+       "again": null,
+       "attempt": 3
+      },
+      {
+       "claim_during_backoff": null,
+       "status": "failed"
+      }
+     ]
+    },
+    "lock_cleared": {
+     "lease_until": null,
+     "owner": null
+    },
+    "nothing_after": null,
+    "nothing_left": {
+     "value": null,
+     "wrote": false
+    },
+    "replacement_finishes": {
+     "value": {
+      "attempt": 2,
+      "attempts": [
+       {
+        "at": "2026-01-01T00:56:12+00:00",
+        "attempt": 2,
+        "result": {
+         "checks": {
+          "tests": {
+           "evidence": "fixture:real-failure",
+           "passed": false
+          }
+         },
+         "status": "rejected"
+        }
+       }
+      ],
+      "generation": 2,
+      "id": "new",
+      "lease_until": null,
+      "owner": null,
+      "result": {
+       "checks": {
+        "tests": {
+         "evidence": "fixture:real-failure",
+         "passed": false
+        }
+       },
+       "status": "rejected"
+      },
+      "retry_at": null,
+      "status": "rejected"
+     },
+     "wrote": true
+    },
+    "result_without_status": {
+     "message": "'status'",
+     "refused": "KeyError",
+     "wrote": false
+    },
+    "retry_to_budget": [
+     {
+      "attempt": 1,
+      "backoff": 30,
+      "claim_again": null,
+      "row": {
+       "at": "1",
+       "attempt": 1,
+       "attempts": [
+        {
+         "at": "2026-01-01T00:29:11+00:00",
+         "attempt": 1,
+         "result": {
+          "evidence": "fixture:infra",
+          "status": "retry"
+         }
+        }
+       ],
+       "generation": 1,
+       "id": "r1",
+       "lease_until": null,
+       "owner": null,
+       "preserve": "metadata",
+       "result": {
+        "evidence": "fixture:infra",
+        "status": "retry"
+       },
+       "retry_at": "2026-01-01T00:29:41+00:00",
+       "status": "retry"
+      }
+     },
+     {
+      "attempt": 2,
+      "backoff": 60,
+      "claim_again": null,
+      "row": {
+       "at": "1",
+       "attempt": 2,
+       "attempts": [
+        {
+         "at": "2026-01-01T00:29:11+00:00",
+         "attempt": 1,
+         "result": {
+          "evidence": "fixture:infra",
+          "status": "retry"
+         }
+        },
+        {
+         "at": "2026-01-01T00:29:41+00:00",
+         "attempt": 2,
+         "result": {
+          "evidence": "fixture:infra",
+          "status": "retry"
+         }
+        }
+       ],
+       "generation": 2,
+       "id": "r1",
+       "lease_until": null,
+       "owner": null,
+       "preserve": "metadata",
+       "result": {
+        "evidence": "fixture:infra",
+        "status": "retry"
+       },
+       "retry_at": "2026-01-01T00:30:41+00:00",
+       "status": "retry"
+      }
+     },
+     {
+      "attempt": 3,
+      "backoff": 120,
+      "claim_again": null,
+      "row": {
+       "at": "1",
+       "attempt": 3,
+       "attempts": [
+        {
+         "at": "2026-01-01T00:29:11+00:00",
+         "attempt": 1,
+         "result": {
+          "evidence": "fixture:infra",
+          "status": "retry"
+         }
+        },
+        {
+         "at": "2026-01-01T00:29:41+00:00",
+         "attempt": 2,
+         "result": {
+          "evidence": "fixture:infra",
+          "status": "retry"
+         }
+        },
+        {
+         "at": "2026-01-01T00:30:41+00:00",
+         "attempt": 3,
+         "result": {
+          "evidence": "fixture:infra",
+          "status": "retry"
+         }
+        }
+       ],
+       "generation": 3,
+       "id": "r1",
+       "lease_until": null,
+       "owner": null,
+       "preserve": "metadata",
+       "reason": "release attempt budget exhausted",
+       "result": {
+        "evidence": "fixture:infra",
+        "status": "retry"
+       },
+       "retry_at": null,
+       "status": "failed"
+      }
+     }
+    ],
+    "stale_after_finish": {
+     "message": "Stale release controller",
+     "refused": "ContractError",
+     "wrote": false
+    },
+    "stale_controller": {
+     "message": "Stale release controller",
+     "refused": "ContractError",
+     "wrote": false
+    },
+    "success": {
+     "value": {
+      "at": "1",
+      "attempt": 1,
+      "attempts": [
+       {
+        "at": "2026-01-01T00:29:11+00:00",
+        "attempt": 1,
+        "result": {
+         "evidence": "fixture:ok",
+         "status": "active"
+        }
+       }
+      ],
+      "generation": 1,
+      "id": "r1",
+      "lease_until": null,
+      "owner": null,
+      "preserve": "metadata",
+      "result": {
+       "evidence": "fixture:ok",
+       "status": "active"
+      },
+      "retry_at": null,
+      "status": "active"
+     },
+     "wrote": true
+    },
+    "transient_then_success": {
+     "claim": null,
+     "rows": [
+      {
+       "attempt": 1,
+       "attempts": [
+        {
+         "at": "2026-01-01T00:32:41+00:00",
+         "attempt": 1,
+         "result": {
+          "status": "retry"
+         }
+        }
+       ],
+       "generation": 1,
+       "id": "release",
+       "lease_until": null,
+       "owner": null,
+       "result": {
+        "status": "retry"
+       },
+       "retry_at": "2026-01-01T00:33:11+00:00",
+       "status": "retry"
+      },
+      {
+       "attempt": 2,
+       "attempts": [
+        {
+         "at": "2026-01-01T00:32:41+00:00",
+         "attempt": 1,
+         "result": {
+          "status": "retry"
+         }
+        },
+        {
+         "at": "2026-01-01T00:34:41+00:00",
+         "attempt": 2,
+         "result": {
+          "status": "retry"
+         }
+        }
+       ],
+       "generation": 2,
+       "id": "release",
+       "lease_until": null,
+       "owner": null,
+       "result": {
+        "status": "retry"
+       },
+       "retry_at": "2026-01-01T00:35:41+00:00",
+       "status": "retry"
+      },
+      {
+       "attempt": 3,
+       "attempts": [
+        {
+         "at": "2026-01-01T00:32:41+00:00",
+         "attempt": 1,
+         "result": {
+          "status": "retry"
+         }
+        },
+        {
+         "at": "2026-01-01T00:34:41+00:00",
+         "attempt": 2,
+         "result": {
+          "status": "retry"
+         }
+        },
+        {
+         "at": "2026-01-01T00:36:41+00:00",
+         "attempt": 3,
+         "result": {
+          "status": "active"
+         }
+        }
+       ],
+       "generation": 3,
+       "id": "release",
+       "lease_until": null,
+       "owner": null,
+       "result": {
+        "status": "active"
+       },
+       "retry_at": null,
+       "status": "active"
+      }
+     ]
+    }
+   },
+   "stores": [
+    [
+     [
+      "deployment_locks/controller",
+      "0aebc9c050a4eb8615e12103a01884dd855c501e25325f118f5bbbba891d5e88"
+     ],
+     [
+      "execution_fences/release_queue:r1",
+      "c30188151b805fecfbf5b04afccd54bdb6b1fd89d916d36659e800a7e77fa2b0"
+     ],
+     [
+      "release_queue/r1",
+      "072fa0c2d2ed75f4fefe7594b2e7bcd996b68d74da45e870651f57b1ccca6121"
+     ]
+    ],
+    [
+     [
+      "deployment_locks/controller",
+      "0aebc9c050a4eb8615e12103a01884dd855c501e25325f118f5bbbba891d5e88"
+     ],
+     [
+      "execution_fences/release_queue:r1",
+      "0abcc5a424feb2b5245d0254ed78e07a272cf7e85519ffeaeab8c1d203098bf7"
+     ],
+     [
+      "release_queue/r1",
+      "55cd4e9b07c86a2f2bffd1f280835d8dbb8383321045b1a00be90c4ea8119149"
+     ]
+    ],
+    [
+     [
+      "deployment_locks/controller",
+      "0aebc9c050a4eb8615e12103a01884dd855c501e25325f118f5bbbba891d5e88"
+     ],
+     [
+      "execution_fences/release_queue:new",
+      "f0998189322cd3f510604c747e7b4fcd4d6f523c2ca2b4d5e0147ecee11b31c4"
+     ],
+     [
+      "execution_fences/release_queue:release",
+      "378ed21b0c491a4dae59a8a62f36a932496886c34e55107905a12bea7af63e2c"
+     ],
+     [
+      "release_queue/new",
+      "76c1ce80206f46160d0f935d21ed0b86c15cec9e7dafb4b00fb40a123dd28983"
+     ],
+     [
+      "release_queue/release",
+      "d0aeaf25d64779a97a125001995a291edba8237ff2c587f0f7b98228a443be1d"
+     ]
+    ],
+    [
+     [
+      "deployment_locks/controller",
+      "0aebc9c050a4eb8615e12103a01884dd855c501e25325f118f5bbbba891d5e88"
+     ],
+     [
+      "execution_fences/release_queue:release",
+      "d5497eb4b505fc5e9a14e9a838418fc1b3568d6b668e24dddca1c5e9b5960338"
+     ],
+     [
+      "release_queue/release",
+      "c51e420592a0a7e8c5b9851aeee4ab7c59e8ddb89e77c5573db57cf77ef99b1a"
+     ]
+    ],
+    [
+     [
+      "deployment_locks/controller",
+      "92ff94f370d54113b911b80d94c0107473a9009396424141ad84fab049ff239d"
+     ],
+     [
+      "execution_fences/release_queue:r1",
+      "05c19d5c55fe01f232284f1a76e0a2846f1ef675be1ba4213d1b8fa0adb9304a"
+     ],
+     [
+      "release_queue/r1",
+      "1c74ab21afad2e80e6f09aebbb7a7f45fada63bb62e5807a46fdc8c316e727e5"
+     ]
+    ]
+   ]
+  },
+  "owned_and_heartbeat": {
+   "steps": {
+    "after_explicit": {
+     "at": "1",
+     "attempt": 1,
+     "generation": 1,
+     "id": "r1",
+     "lease_until": "2026-01-01T00:26:11+00:00",
+     "owner": "5eed0000-0000-4000-8000-00000000000d",
+     "status": "running"
+    },
+    "after_heartbeat": {
+     "lock": {
+      "lease_until": "2026-01-01T00:22:41+00:00",
+      "owner": "5eed0000-0000-4000-8000-00000000000d",
+      "release_id": "r1"
+     },
+     "row": {
+      "at": "1",
+      "attempt": 1,
+      "generation": 1,
+      "id": "r1",
+      "lease_until": "2026-01-01T00:22:41+00:00",
+      "owner": "5eed0000-0000-4000-8000-00000000000d",
+      "status": "running"
+     }
+    },
+    "claim": {
+     "at": "1",
+     "attempt": 1,
+     "generation": 1,
+     "id": "r1",
+     "lease_until": "2026-01-01T00:21:01+00:00",
+     "owner": "5eed0000-0000-4000-8000-00000000000d",
+     "status": "running"
+    },
+    "expired_lease": {
+     "message": "Stale release controller",
+     "refused": "ContractError",
+     "wrote": false
+    },
+    "fence_ahead_of_row": {
+     "message": "Execution row is behind its durable fence",
+     "refused": "ContractError",
+     "wrote": false
+    },
+    "foreign_lock_owner": {
+     "message": "Stale release controller",
+     "refused": "ContractError",
+     "wrote": false
+    },
+    "heartbeat_explicit_now": {
+     "value": null,
+     "wrote": true
+    },
+    "heartbeat_extends": {
+     "value": null,
+     "wrote": true
+    },
+    "owned_current": {
+     "result": {
+      "value": {
+       "at": "1",
+       "attempt": 1,
+       "generation": 1,
+       "id": "r1",
+       "lease_until": "2026-01-01T00:21:01+00:00",
+       "owner": "5eed0000-0000-4000-8000-00000000000d",
+       "status": "running"
+      }
+     },
+     "written": false
+    },
+    "owned_expired": {
+     "message": "Stale release controller",
+     "refused": "ContractError"
+    },
+    "owned_value": {
+     "value": {
+      "at": "1",
+      "attempt": 1,
+      "generation": 1,
+      "id": "r1",
+      "lease_until": "2026-01-01T00:21:01+00:00",
+      "owner": "5eed0000-0000-4000-8000-00000000000d",
+      "status": "running"
+     }
+    },
+    "stale_generation": {
+     "message": "Stale release controller",
+     "refused": "ContractError",
+     "wrote": false
+    },
+    "stale_id": {
+     "message": "Stale release controller",
+     "refused": "ContractError",
+     "wrote": false
+    },
+    "stale_owner": {
+     "message": "Stale release controller",
+     "refused": "ContractError",
+     "wrote": false
+    }
+   },
+   "stores": [
+    [
+     [
+      "deployment_locks/controller",
+      "1b48f6bf7331331f7e677367b67c8d16fada4bcc5cdae6742ce97809b6c1ebd8"
+     ],
+     [
+      "execution_fences/release_queue:r1",
+      "e582193c6bd055c72ec4506dbc429e52985ac4eb5bd0aa6dcd614832b211f4a2"
+     ],
+     [
+      "release_queue/r1",
+      "0136d2be7960972fa21636965a37615cbac10e184cf8535a40a68b61285235b3"
+     ]
+    ]
+   ]
+  },
+  "retry": {
+   "steps": {
+    "candidate_not_recoverable": {
+     "message": "Release is not recoverable",
+     "refused": "ContractError",
+     "wrote": false
+    },
+    "claim_after": {
+     "value": {
+      "at": "1",
+      "attempt": 1,
+      "generation": 1,
+      "id": "2ee53189adb206fb163827167915473764b8af34a77b6b468263e424790db9c1",
+      "lease_until": "2026-01-01T00:52:41+00:00",
+      "manual_retries": [
+       {
+        "at": "2026-01-01T00:32:41+00:00",
+        "previous_attempt": 3,
+        "reason": "fixture: second re-arm"
+       }
+      ],
+      "owner": "5eed0000-0000-4000-8000-00000000001f",
+      "reason": "fixture",
+      "retry_at": null,
+      "status": "running"
+     },
+     "wrote": true
+    },
+    "empty_reason": {
+     "message": "Retry reason required",
+     "refused": "ContractError",
+     "wrote": false
+    },
+    "in_unit_committed": {
+     "stored": {
+      "at": "2026-01-01T00:32:41+00:00",
+      "attempt": 0,
+      "id": "403c5504589b49a8e712dd96eb51292912e496cff05609ff2435d7805c3ec495",
+      "lease_until": null,
+      "manual_retries": [
+       {
+        "at": "2026-01-01T00:32:41+00:00",
+        "previous_attempt": 0,
+        "reason": "fixture: joined"
+       }
+      ],
+      "owner": null,
+      "retry_at": null,
+      "status": "queued"
+     },
+     "value": {
+      "at": "2026-01-01T00:32:41+00:00",
+      "attempt": 0,
+      "id": "403c5504589b49a8e712dd96eb51292912e496cff05609ff2435d7805c3ec495",
+      "lease_until": null,
+      "manual_retries": [
+       {
+        "at": "2026-01-01T00:32:41+00:00",
+        "previous_attempt": 0,
+        "reason": "fixture: joined"
+       }
+      ],
+      "owner": null,
+      "retry_at": null,
+      "status": "queued"
+     }
+    },
+    "in_unit_raises": {
+     "result": {
+      "value": {
+       "at": "2026-01-01T00:32:41+00:00",
+       "attempt": 0,
+       "id": "403c5504589b49a8e712dd96eb51292912e496cff05609ff2435d7805c3ec495",
+       "lease_until": null,
+       "manual_retries": [
+        {
+         "at": "2026-01-01T00:32:41+00:00",
+         "previous_attempt": 0,
+         "reason": "fixture: in a unit"
+        }
+       ],
+       "owner": null,
+       "retry_at": null,
+       "status": "queued"
+      }
+     },
+     "written": false
+    },
+    "lease_expired_lock_passes": {
+     "value": {
+      "at": "1",
+      "attempt": 0,
+      "generation": 1,
+      "id": "2ee53189adb206fb163827167915473764b8af34a77b6b468263e424790db9c1",
+      "lease_until": null,
+      "manual_retries": [
+       {
+        "at": "2026-01-01T00:32:41+00:00",
+        "previous_attempt": 3,
+        "reason": "fixture: second re-arm"
+       },
+       {
+        "at": "2026-01-01T00:32:41+00:00",
+        "previous_attempt": 1,
+        "reason": "fixture: third"
+       }
+      ],
+      "owner": null,
+      "reason": "fixture",
+      "retry_at": null,
+      "status": "queued"
+     },
+     "wrote": true
+    },
+    "lease_expiring_now_passes": {
+     "value": {
+      "at": "1",
+      "attempt": 0,
+      "generation": 1,
+      "id": "2ee53189adb206fb163827167915473764b8af34a77b6b468263e424790db9c1",
+      "lease_until": null,
+      "manual_retries": [
+       {
+        "at": "2026-01-01T00:32:41+00:00",
+        "previous_attempt": 3,
+        "reason": "fixture: second re-arm"
+       },
+       {
+        "at": "2026-01-01T00:32:41+00:00",
+        "previous_attempt": 1,
+        "reason": "fixture: third"
+       },
+       {
+        "at": "2026-01-01T00:32:41+00:00",
+        "previous_attempt": 0,
+        "reason": "fixture: fourth"
+       }
+      ],
+      "owner": null,
+      "reason": "fixture",
+      "retry_at": null,
+      "status": "queued"
+     },
+     "wrote": true
+    },
+    "no_row_yet": {
+     "value": {
+      "at": "2026-01-01T00:32:41+00:00",
+      "attempt": 0,
+      "id": "2ee53189adb206fb163827167915473764b8af34a77b6b468263e424790db9c1",
+      "lease_until": null,
+      "manual_retries": [
+       {
+        "at": "2026-01-01T00:32:41+00:00",
+        "previous_attempt": 0,
+        "reason": "fixture: first re-arm"
+       }
+      ],
+      "owner": null,
+      "retry_at": null,
+      "status": "queued"
+     },
+     "wrote": true
+    },
+    "non_string_reason": {
+     "message": "Retry reason required",
+     "refused": "ContractError",
+     "wrote": false
+    },
+    "re_arm_failed": {
+     "value": {
+      "at": "1",
+      "attempt": 0,
+      "id": "2ee53189adb206fb163827167915473764b8af34a77b6b468263e424790db9c1",
+      "lease_until": null,
+      "manual_retries": [
+       {
+        "at": "2026-01-01T00:32:41+00:00",
+        "previous_attempt": 3,
+        "reason": "fixture: second re-arm"
+       }
+      ],
+      "owner": null,
+      "reason": "fixture",
+      "retry_at": null,
+      "status": "queued"
+     },
+     "wrote": true
+    },
+    "running_controller": {
+     "message": "Release controller still running",
+     "refused": "ContractError",
+     "wrote": false
+    },
+    "superseded_ticket": {
+     "message": "Ticket changed; reassessment required",
+     "refused": "TicketSuperseded",
+     "wrote": false
+    },
+    "unknown_release": {
+     "message": "Release is not recoverable",
+     "refused": "ContractError",
+     "wrote": false
+    }
+   },
+   "stores": [
+    [
+     [
+      "deployment_locks/controller",
+      "d77c9932ee3cc02539f97cc70aa1fe0b60757268d4c62bc92b59b2120e6b6967"
+     ],
+     [
+      "execution_fences/release_queue:2ee53189adb206fb163827167915473764b8af34a77b6b468263e424790db9c1",
+      "59ecf6150722a7dae8927314bf0f6a85987e418e1f18096c13498377053db1a6"
+     ],
+     [
+      "release_queue/2ee53189adb206fb163827167915473764b8af34a77b6b468263e424790db9c1",
+      "86c02587f011ffdad541caa289aba750afc6ad3f27f6c7e6db214fe25947fe89"
+     ],
+     [
+      "release_queue/403c5504589b49a8e712dd96eb51292912e496cff05609ff2435d7805c3ec495",
+      "e1304cf30aa22eefec0ca88b57d55650a9ef3b7e9fb84bc48ecc8c8b1c9e19fe"
+     ],
+     [
+      "releases/09359573647d2f813338e5bcca7246c6f1487b0d4fe1ca4d8907ab87e69fda85",
+      "2a68737e8ff40b5b442b2aa363ad954fc0928e8900c8136056ec2b617d6afd0a"
+     ],
+     [
+      "releases/12344a61d6ad4b95787fc48d51ef091ddb2db677afdfa83dd7370fa5e39ccf66",
+      "eca070055344c687dbcd7becf1209a4dac546c5867bea09f7fde741a2f2c3064"
+     ],
+     [
+      "releases/2ee53189adb206fb163827167915473764b8af34a77b6b468263e424790db9c1",
+      "b6f427325bb2beb5bc834bc3f2acd0c1c9440716c0e1f5bf17e9a0e7673e5c7f"
+     ],
+     [
+      "releases/403c5504589b49a8e712dd96eb51292912e496cff05609ff2435d7805c3ec495",
+      "eca02ed57f48e2de144c6b88062c04505d2e49ccbe896020dc7b6d4d265388f6"
+     ],
+     [
+      "ticket_revisions/ticket-1:r1",
+      "060a8f067b0a8efd4b281b0e1303a75b2612ff5220e85b0d9b80d192b921bf0d"
+     ],
+     [
+      "tickets/ticket-1",
+      "6dddd38438bd9641ab5ed95d42efc71436ea8b50e91aea6266854389020f7487"
+     ]
+    ]
+   ]
+  },
+  "sequential_claims": {
+   "steps": {
+    "claimed": 1,
+    "claims": [
+     {
+      "at": "one",
+      "attempt": 1,
+      "generation": 1,
+      "id": "one",
+      "lease_until": "2026-01-01T01:32:43+00:00",
+      "owner": "5eed0000-0000-4000-8000-000000000026",
+      "status": "running"
+     },
+     null,
+     null,
+     null
+    ],
+    "lock": {
+     "lease_until": "2026-01-01T01:32:43+00:00",
+     "owner": "5eed0000-0000-4000-8000-000000000026",
+     "release_id": "one"
+    }
+   },
+   "stores": [
+    [
+     [
+      "deployment_locks/controller",
+      "f4d673ff2b9685ecdf57b7907ffb2716974087ca4644ee7fd8770fc0fb984b17"
+     ],
+     [
+      "execution_fences/release_queue:one",
+      "e113eae01d1f3ee39ecd0e0cea6a33028f744ab34085ea82cf67740132366955"
+     ],
+     [
+      "release_queue/one",
+      "78206edb5b3c444e8d678b500823ed37658472694d62345ec4a5b65578fdad92"
+     ],
+     [
+      "release_queue/two",
+      "b5fb8eb64ed640552d35143956b183ad9a8cd2d4f17d747450ac670f678b04ed"
+     ]
+    ]
+   ]
+  }
+ },
+ "verify": {
+  "verify": {
+   "steps": {
+    "check_empty_evidence": {
+     "message": "Checks require real execution evidence",
+     "refused": "ContractError",
+     "wrote": false
+    },
+    "check_no_evidence": {
+     "message": "Checks require real execution evidence",
+     "refused": "ContractError",
+     "wrote": false
+    },
+    "check_not_a_dict": {
+     "message": "Checks require real execution evidence",
+     "refused": "ContractError",
+     "wrote": false
+    },
+    "check_passed_not_bool": {
+     "message": "Checks require real execution evidence",
+     "refused": "ContractError",
+     "wrote": false
+    },
+    "extra_check": {
+     "message": "Missing or extra canary checks",
+     "refused": "ContractError",
+     "wrote": false
+    },
+    "in_unit_commits": {
+     "value": {
+      "candidate": {
+       "author": "worker:implementation",
+       "base": "base",
+       "revision": "candidate",
+       "tree": "t4"
+      },
+      "checks": {
+       "cli_file_task": {
+        "evidence": "fixture:cli_file_task",
+        "passed": true
+       },
+       "cli_start": {
+        "evidence": "fixture:cli_start",
+        "passed": true
+       },
+       "tests": {
+        "evidence": "fixture:tests",
+        "passed": true
+       }
+      },
+      "created_at": "2026-01-01T01:12:43+00:00",
+      "id": "fdc4edc131fab339fd1d52176bb328ac6e77c2737c86b0fc3cfc0bcbfc2d0b1d",
+      "policy": {
+       "checks": [
+        "tests",
+        "cli_start",
+        "cli_file_task"
+       ]
+      },
+      "policy_hash": "d92deb256a139465f152d86d596a0de988f84a2ce51278c94c322ae4b2401349",
+      "reviews": [
+       {
+        "accepted": true,
+        "actor": "lead:improvement",
+        "evidence": "fixture:review",
+        "revision": "candidate"
+       },
+       {
+        "accepted": true,
+        "actor": "conductor",
+        "evidence": "fixture:review",
+        "revision": "candidate"
+       }
+      ],
+      "status": "verified"
+     }
+    },
+    "in_unit_raises": {
+     "result": {
+      "value": {
+       "candidate": {
+        "author": "worker:implementation",
+        "base": "base",
+        "revision": "candidate",
+        "tree": "t1"
+       },
+       "checks": {
+        "cli_file_task": {
+         "evidence": "fixture:cli_file_task",
+         "passed": true
+        },
+        "cli_start": {
+         "evidence": "fixture:cli_start",
+         "passed": true
+        },
+        "tests": {
+         "evidence": "fixture:tests",
+         "passed": true
+        }
+       },
+       "created_at": "2026-01-01T01:12:43+00:00",
+       "id": "2ee53189adb206fb163827167915473764b8af34a77b6b468263e424790db9c1",
+       "policy": {
+        "checks": [
+         "tests",
+         "cli_start",
+         "cli_file_task"
+        ]
+       },
+       "policy_hash": "d92deb256a139465f152d86d596a0de988f84a2ce51278c94c322ae4b2401349",
+       "reviews": [
+        {
+         "accepted": true,
+         "actor": "lead:improvement",
+         "evidence": "fixture:review",
+         "revision": "candidate"
+        },
+        {
+         "accepted": true,
+         "actor": "conductor",
+         "evidence": "fixture:review",
+         "revision": "candidate"
+        }
+       ],
+       "status": "verified"
+      }
+     },
+     "written": false
+    },
+    "in_unit_stored": "verified",
+    "missing_check": {
+     "message": "Missing or extra canary checks",
+     "refused": "ContractError",
+     "wrote": false
+    },
+    "one_failed_rejected": {
+     "value": {
+      "candidate": {
+       "author": "worker:implementation",
+       "base": "base",
+       "revision": "candidate",
+       "tree": "t2"
+      },
+      "checks": {
+       "cli_file_task": {
+        "evidence": "fixture:cli_file_task",
+        "passed": true
+       },
+       "cli_start": {
+        "evidence": "fixture:failed",
+        "passed": false
+       },
+       "tests": {
+        "evidence": "fixture:tests",
+        "passed": true
+       }
+      },
+      "created_at": "2026-01-01T01:12:43+00:00",
+      "id": "403c5504589b49a8e712dd96eb51292912e496cff05609ff2435d7805c3ec495",
+      "policy": {
+       "checks": [
+        "tests",
+        "cli_start",
+        "cli_file_task"
+       ]
+      },
+      "policy_hash": "d92deb256a139465f152d86d596a0de988f84a2ce51278c94c322ae4b2401349",
+      "reviews": [
+       {
+        "accepted": true,
+        "actor": "lead:improvement",
+        "evidence": "fixture:review",
+        "revision": "candidate"
+       },
+       {
+        "accepted": true,
+        "actor": "conductor",
+        "evidence": "fixture:review",
+        "revision": "candidate"
+       }
+      ],
+      "status": "rejected"
+     },
+     "wrote": true
+    },
+    "reviews_incomplete": {
+     "message": "Reviews incomplete",
+     "refused": "ContractError",
+     "wrote": false
+    },
+    "skipped_check_rejected": {
+     "value": {
+      "candidate": {
+       "author": "worker:implementation",
+       "base": "base",
+       "revision": "candidate",
+       "tree": "t3"
+      },
+      "checks": {
+       "cli_file_task": {
+        "evidence": "fixture:not-run",
+        "passed": false,
+        "skipped": true
+       },
+       "cli_start": {
+        "evidence": "fixture:cli_start",
+        "passed": true
+       },
+       "tests": {
+        "evidence": "fixture:tests",
+        "passed": true
+       }
+      },
+      "created_at": "2026-01-01T01:12:43+00:00",
+      "id": "5d5074aba9e9e704a47ba3285df6a1ba33738a31193f4d0dfb7fa2cfc126525a",
+      "policy": {
+       "checks": [
+        "tests",
+        "cli_start",
+        "cli_file_task"
+       ]
+      },
+      "policy_hash": "d92deb256a139465f152d86d596a0de988f84a2ce51278c94c322ae4b2401349",
+      "reviews": [
+       {
+        "accepted": true,
+        "actor": "lead:improvement",
+        "evidence": "fixture:review",
+        "revision": "candidate"
+       },
+       {
+        "accepted": true,
+        "actor": "conductor",
+        "evidence": "fixture:review",
+        "revision": "candidate"
+       }
+      ],
+      "status": "rejected"
+     },
+     "wrote": true
+    },
+    "stale_evaluator": {
+     "message": "Stale candidate or evaluator",
+     "refused": "ContractError",
+     "wrote": false
+    },
+    "stale_revision": {
+     "message": "Stale candidate or evaluator",
+     "refused": "ContractError",
+     "wrote": false
+    },
+    "superseded_ticket": {
+     "value": {
+      "candidate": {
+       "author": "worker:implementation",
+       "base": "base",
+       "revision": "candidate",
+       "tree": "t-ticket",
+       "zeus_ticket": {
+        "content_hash": "7129f655c222b11d72b2c908d44636b7f1f0f8a064c3eb114455a2d11adf30a0",
+        "id": "ticket-1",
+        "revision": "r1"
+       }
+      },
+      "checks": {
+       "cli_file_task": {
+        "evidence": "fixture:cli_file_task",
+        "passed": true
+       },
+       "cli_start": {
+        "evidence": "fixture:cli_start",
+        "passed": true
+       },
+       "tests": {
+        "evidence": "fixture:tests",
+        "passed": true
+       }
+      },
+      "created_at": "2026-01-01T01:12:43+00:00",
+      "id": "09359573647d2f813338e5bcca7246c6f1487b0d4fe1ca4d8907ab87e69fda85",
+      "policy": {
+       "checks": [
+        "tests",
+        "cli_start",
+        "cli_file_task"
+       ]
+      },
+      "policy_hash": "d92deb256a139465f152d86d596a0de988f84a2ce51278c94c322ae4b2401349",
+      "reason": "Ticket changed; reassessment required",
+      "reviews": [
+       {
+        "accepted": true,
+        "actor": "lead:improvement",
+        "evidence": "fixture:review",
+        "revision": "candidate"
+       },
+       {
+        "accepted": true,
+        "actor": "conductor",
+        "evidence": "fixture:review",
+        "revision": "candidate"
+       }
+      ],
+      "status": "superseded_by_ticket_revision"
+     },
+     "wrote": true
+    },
+    "unknown_release": {
+     "message": "Reviews incomplete",
+     "refused": "ContractError",
+     "wrote": false
+    },
+    "verified": {
+     "value": {
+      "candidate": {
+       "author": "worker:implementation",
+       "base": "base",
+       "revision": "candidate",
+       "tree": "t1"
+      },
+      "checks": {
+       "cli_file_task": {
+        "evidence": "fixture:cli_file_task",
+        "passed": true
+       },
+       "cli_start": {
+        "evidence": "fixture:cli_start",
+        "passed": true
+       },
+       "tests": {
+        "evidence": "fixture:tests",
+        "passed": true
+       }
+      },
+      "created_at": "2026-01-01T01:12:43+00:00",
+      "id": "2ee53189adb206fb163827167915473764b8af34a77b6b468263e424790db9c1",
+      "policy": {
+       "checks": [
+        "tests",
+        "cli_start",
+        "cli_file_task"
+       ]
+      },
+      "policy_hash": "d92deb256a139465f152d86d596a0de988f84a2ce51278c94c322ae4b2401349",
+      "reviews": [
+       {
+        "accepted": true,
+        "actor": "lead:improvement",
+        "evidence": "fixture:review",
+        "revision": "candidate"
+       },
+       {
+        "accepted": true,
+        "actor": "conductor",
+        "evidence": "fixture:review",
+        "revision": "candidate"
+       }
+      ],
+      "status": "verified"
+     },
+     "wrote": true
+    },
+    "verify_again": {
+     "message": "Reviews incomplete",
+     "refused": "ContractError",
+     "wrote": false
+    }
+   },
+   "stores": [
+    [
+     [
+      "releases/09359573647d2f813338e5bcca7246c6f1487b0d4fe1ca4d8907ab87e69fda85",
+      "7030de60efda2cb112641d9f1b2ac72a7ddc457175bdea2f30fe22c69ca81b75"
+     ],
+     [
+      "releases/12344a61d6ad4b95787fc48d51ef091ddb2db677afdfa83dd7370fa5e39ccf66",
+      "a1d22dd63366816cbdf9b68426f5cb155c0a4b45c0115f30574697fba59071d9"
+     ],
+     [
+      "releases/2ee53189adb206fb163827167915473764b8af34a77b6b468263e424790db9c1",
+      "efb697863d8bb3fb9625876712fef220be5640827996ccaf3739b4c5167f2ba5"
+     ],
+     [
+      "releases/403c5504589b49a8e712dd96eb51292912e496cff05609ff2435d7805c3ec495",
+      "ad104fac20c747f575bac1b92ac31b1750744d35ecacfb301dd1bc90bdf44023"
+     ],
+     [
+      "releases/5d5074aba9e9e704a47ba3285df6a1ba33738a31193f4d0dfb7fa2cfc126525a",
+      "8afd0ec07dd83929034994096f392f0ab3e5b99247b42d2458e52100b7c0c09e"
+     ],
+     [
+      "releases/fdc4edc131fab339fd1d52176bb328ac6e77c2737c86b0fc3cfc0bcbfc2d0b1d",
+      "f69c48af322097e8fcdf0989ef7fb267553c3ebe4f4eca49b8db87e2e23a7243"
+     ],
+     [
+      "ticket_revisions/ticket-1:r1",
+      "060a8f067b0a8efd4b281b0e1303a75b2612ff5220e85b0d9b80d192b921bf0d"
+     ],
+     [
+      "tickets/ticket-1",
+      "6dddd38438bd9641ab5ed95d42efc71436ea8b50e91aea6266854389020f7487"
+     ]
+    ]
+   ]
+  }
+ }
+}

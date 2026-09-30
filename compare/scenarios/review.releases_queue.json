@@ -1,0 +1,8 @@
+{
+ "family": "review.releases_queue",
+ "description": "S7 V3 move-ahead for delivery: ReleaseQueue (enqueue, claim under the single controller lease with eligible/retry_at/(at,id) order/attempt budget/fence advance, owned, heartbeat, defer, finish with backoff, retry, the execution fence surviving lock expiry and row restoration, a caller's unit) and Releases (verify, promote with audit activation, rollback with hook restore and research pause, request_evaluator_migration, request_environment_reverification); MemoryStore, labelled rows",
+ "reference_driver": "drivers/reference/s7_releases_queue.py",
+ "target_driver": "drivers/target/s7_releases_queue.py",
+ "golden": "goldens/reference/review.releases_queue.json",
+ "slice": "S7"
+}
