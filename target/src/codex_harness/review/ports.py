@@ -16,7 +16,9 @@ from __future__ import annotations
 
 from typing import Protocol
 
-OWNED_BUCKETS = ("releases", "release_queue", "improvement_loops")  # improvement_loops: named correction (S4)
+OWNED_BUCKETS = ("releases", "release_queue", "improvement_loops",  # improvement_loops: named correction (S4)
+                 # S7 (DESIGN-s7 V3): the rows the moved-ahead Releases/ReleaseQueue write.
+                 "deployment", "deployment_locks", "deployment_history", "research_control")
 
 
 class DecisionOwnership(Protocol):
@@ -87,3 +89,17 @@ class ReviewWorkspace(Protocol):
     def inspect(self, revision: str, base: str) -> dict: ...
     def review_workspace(self, revision: str, review_id: str) -> str: ...
     def _git(self, *args: str, cwd: str | None = None, strip: bool = True) -> str: ...
+
+
+class ExecutionFences(Protocol):
+    """coordination: the execution fence rows ReleaseQueue advances and re-checks (S7 V3; coordination owns them)."""
+
+    def advance(self, tx, bucket, row_id, generation, owner=None, *, clock=None): ...
+
+    def require_current(self, tx, bucket, row_id, generation, owner=None): ...
+
+
+class HookRollback(Protocol):
+    """research: a rolled-back release's hook restored in the caller's transaction (S7 V3 R6)."""
+
+    def roll_back(self, tx, record: dict) -> None: ...
