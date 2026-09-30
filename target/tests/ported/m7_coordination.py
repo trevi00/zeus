@@ -29,6 +29,31 @@ Named adaptations (each is a construction/import adaptation, never a behaviour c
   `pin_route`, `_prepare` and `_publish` are `outbox_relay`'s (M7 `application.outbox`).
 - `ExecutionRecovery(store, org, artifacts)` is the S5 `ExecutionRecovery` with intake's `ticket_binding` injected
   and no audit binding or threshold-review port (both are research's, S8).
+- `Continuation(store, fleet=None, lanes=None, conductor=None, validate=None, observer=None, clock=utcnow,
+  evidence=None)` is a facade over the split objects of `coordination.application.continuation` (DESIGN-s6 §3), built as
+  `compare/drivers/target/s6_continuation_composition.py` builds it: the golden composition's route table, and an
+  unrouted name raises AttributeError. M7 exposed seven private methods on the one class, and the suites call or
+  override them (`_move`, `_create`, `_note`, `_emit`, `_successor_plan`, `_research_handoff`, `_verify_evidence`);
+  the facade routes each to the method of its owner (`intents.move|create|note|emit`,
+  `successors.successor_plan|research_handoff`, `research.verify_evidence`). A subclass override of one of them, and
+  an assignment to `_verify_evidence`, is installed on that owner object, which is what M7's `self._move(...)`
+  reached: the sibling objects call the owner, never the facade. `super()._move(...)` reaches the owner's own method.
+  The restart table's `Continuation._resume_<action>` methods are the tick object's, exposed as class attributes.
+  `LaneEvidence` is `coordination.application.continuation.lanes.LaneEvidence` (the M7 constructor).
+- `Fleet`'s routed methods are class attributes (each delegates to its owner at call time), so a subclass can
+  override one and call `super().enqueue(...)` as M7 tests do; an unrouted name still raises AttributeError.
+- `ResearchEvidence(root, max_bytes)` is the body of M7 `adapters.continuation.ResearchEvidence`, verbatim, over the
+  target `FileArtifacts` and the domain's `ContinuationRefused`; its target owner (`coordination.adapters.continuation`,
+  the production wiring) is not implemented yet, so the suites' one evidence reader lives here as a labelled copy.
+- `OwnerActions(store, **ports)` is a facade over the split objects of `coordination.application.owner_actions`
+  (DESIGN-s6 §4), built as `s6_owner_actions_composition.py` builds it, with the SYSTEM clock and ids the M7 class used
+  (the composition's scripted G1 ports are the golden's; a suite must never see them).
+- The `continuation_process` names of the guardian suite are `coordination.adapters.guarded_launch` (`observe`,
+  `launch_directory`), the composition's process-tree bindings `composition.guarded_launch` (`guard`, `main`,
+  `spawn_guardian` = `guarded_spawn()`), and `ConductorProcesses` = `coordination.adapters.conductor_launch` with `spawn`
+  defaulting to `spawn_guardian` (M7's default spawn). The lane environment is the caller's `environment=`, as in M7.
+- `unavailable(slice_, name)` stands for a name whose owner is in a later slice (a Portfolio, a research program, a CLI):
+  it imports as a placeholder class (subclassable at import) that raises on any use, and only skipped tests name it.
 - `organization()` is `routing.adapters.organization_source.packaged_organization` (M7 `bootstrap.organization`) and
   `packaged_policy` is `routing.adapters.provider_policy.packaged_policy` (M7 `adapters.providers.packaged_policy`).
 """
@@ -36,10 +61,24 @@ Named adaptations (each is a construction/import adaptation, never a behaviour c
 from __future__ import annotations
 
 import time
+from pathlib import Path
 from uuid import uuid4
 
+from codex_harness.composition import guarded_launch as _guarded_composition
+from codex_harness.coordination.adapters import conductor_launch as _conductor_launch
+from codex_harness.coordination.adapters import guarded_launch as _guarded_launch
 from codex_harness.coordination.application import execution_recovery as _execution_recovery
 from codex_harness.coordination.application import operation_finalization, outbox_relay
+from codex_harness.coordination.application.continuation.frames import PolicyFrames
+from codex_harness.coordination.application.continuation.grants import CapacityGrants
+from codex_harness.coordination.application.continuation.intents import IntentStore
+from codex_harness.coordination.application.continuation.lanes import LaneEvidence
+from codex_harness.coordination.application.continuation.ownership import OwnershipReconciliation
+from codex_harness.coordination.application.continuation.requalification import Requalification
+from codex_harness.coordination.application.continuation.research import ResearchAcceptance
+from codex_harness.coordination.application.continuation.settlement import LaunchSettlement
+from codex_harness.coordination.application.continuation.successors import Successors
+from codex_harness.coordination.application.continuation.tick import ContinuationTick
 from codex_harness.coordination.application.events import EventJournal
 from codex_harness.coordination.application.fleet.admission import AdmissionControl
 from codex_harness.coordination.application.fleet.pause import FleetPause
@@ -51,19 +90,34 @@ from codex_harness.coordination.application.messages import MessageHandler
 from codex_harness.coordination.application.operation import Operation as _Operation
 from codex_harness.coordination.application.outbox import Outbox
 from codex_harness.coordination.application.outbox_relay import OutboxFlusher, _prepare, _publish, pin_route
+from codex_harness.coordination.application.owner_actions.actions import ActionStore
+from codex_harness.coordination.application.owner_actions.canary import CanaryFamily
+from codex_harness.coordination.application.owner_actions.delivery_plan import DeliveryRegistrationFamily
+from codex_harness.coordination.application.owner_actions.migration import MigrationRequestFamily
+from codex_harness.coordination.application.owner_actions.requalify import RequalifyFamily
+from codex_harness.coordination.application.owner_actions.research_acceptance import ResearchAcceptanceFamily
+from codex_harness.coordination.application.owner_actions.research_dispatch import ResearchLaunchFamily
+from codex_harness.coordination.application.owner_actions.scheduler import OwnerActionScheduler
 from codex_harness.coordination.application.workflow import Workflow as _Workflow
+from codex_harness.coordination.domain.continuation import RESEARCH, ROUTE_OWNERS, ContinuationRefused
 from codex_harness.coordination.domain.fleet import LaunchRefused
 from codex_harness.evidence.application.inspections import EvidenceRecords
 from codex_harness.intake.application import tickets
+from codex_harness.intake.application.portfolio_lineage import PortfolioLineage
+from codex_harness.kernel.errors import ContractError
 from codex_harness.kernel.ids import SYSTEM_CLOCK, SYSTEM_IDS, utcnow
 from codex_harness.observation.application.health import HealthRecords
 from codex_harness.research.application.audit_gate import require_adoption
 from codex_harness.research.application.hooks import HookLifecycle
+from codex_harness.research.application.program_state import ProgramState
 from codex_harness.routing.adapters.organization_source import packaged_organization
 from codex_harness.routing.adapters.provider_policy import packaged_policy
+from codex_harness.storage.adapters.file_artifacts import FileArtifacts
 
-__all__ = ["ExecutionRecovery", "Fleet", "FleetRunner", "Harness", "LaunchRefused", "LocalCycle", "Operation",
-           "Workflow", "_prepare", "_publish", "organization", "packaged_policy", "pin_route", "relay"]
+__all__ = ["ConductorProcesses", "Continuation", "ExecutionRecovery", "Fleet", "FleetRunner", "Harness",
+           "LaneEvidence", "LaunchRefused", "LocalCycle", "Operation", "OwnerActions", "ResearchEvidence", "Workflow",
+           "_prepare", "_publish", "guard", "launch_directory", "main", "observe", "organization", "packaged_policy",
+           "pin_route", "relay", "spawn_guardian", "unavailable"]
 
 ROUTES = {
     "registry": ("register", "registered", "enqueue", "record_delivery", "delivery", "reconciliation_required",
@@ -83,12 +137,22 @@ class Fleet:
         self.pause_control = FleetPause(store, clock=clock, token=token)
         self.recovery_control = FleetRecovery(store, clock=clock, token=token)
 
-    def __getattr__(self, name):
-        owner = OWNER.get(name)
-        if owner is None:
-            raise AttributeError(name)
-        return getattr({"registry": self.registry, "admission": self.admission, "pause": self.pause_control,
-                        "recovery": self.recovery_control}[owner], name)
+    def __getattr__(self, name):  # an unrouted name is never a fallback (every routed one is a class attribute)
+        raise AttributeError(name)
+
+
+def _routed(name):
+    owner = {"registry": "registry", "admission": "admission", "pause": "pause_control",
+             "recovery": "recovery_control"}[OWNER[name]]
+
+    def method(self, *args, **kwargs):
+        return getattr(getattr(self, owner), name)(*args, **kwargs)
+    method.__name__ = name
+    return method
+
+
+for _name in OWNER:
+    setattr(Fleet, _name, _routed(_name))
 
 
 def FleetRunner(fleet, launcher, sleep=time.sleep, interval=5.0, **ports):  # noqa: N802 - the M7 constructor name
@@ -156,3 +220,172 @@ class Operation(_Operation):
 def ExecutionRecovery(store, org, artifacts):  # noqa: N802 - the M7 constructor name
     return _execution_recovery.ExecutionRecovery(store, org, artifacts, ticket_binding=tickets.ticket_binding,
                                                  clock=SYSTEM_CLOCK, ids=SYSTEM_IDS)
+
+
+# ---- S6: continuation, research evidence, owner actions, the guarded child launch ------------------------------
+CONTINUATION_ROUTES = {"register": "frames", "policy": "frames", "status": "frames", "unresolved": "frames",
+                       "accept_research": "research", "supplement_research_scope": "research",
+                       "research_facts": "research", "tick": "tick", "drain": "settlement",
+                       "reconcile_ownership": "ownership", "grant_capacity": "grants",
+                       "requalify_delivery": "requalification"}
+PRIVATE_ROUTES = {"_move": ("intents", "move"), "_create": ("intents", "create"), "_note": ("intents", "note"),
+                  "_emit": ("intents", "emit"), "_successor_plan": ("successors", "successor_plan"),
+                  "_research_handoff": ("successors", "research_handoff"),
+                  "_verify_evidence": ("research", "verify_evidence")}
+
+
+def _private(name):
+    def method(self, *args, **kwargs):  # the owner's own method: what `super()._move(...)` reaches
+        return self.originals[name](*args, **kwargs)
+    method.__name__ = name
+    return method
+
+
+class Continuation:
+    def __init__(self, store, fleet=None, lanes=None, conductor=None, validate=None, observer=None, clock=utcnow,
+                 evidence=None):
+        self.store = store
+        intents = IntentStore(store, clock=clock, observer=observer)
+        successors = Successors(store, clock=clock, validate=validate, portfolio=PortfolioLineage())
+        research = ResearchAcceptance(store, clock=clock, evidence=evidence, lanes=lanes)
+        grants = CapacityGrants(store, clock=clock, lanes=lanes, intents=intents, research=research,
+                                successors=successors)
+        requalification = Requalification(store, clock=clock, lanes=lanes, validate=validate, intents=intents,
+                                          research=research)
+        frames = PolicyFrames(store, clock=clock, grants=grants, intents=intents, requalification=requalification)
+        settlement = LaunchSettlement(store, conductor=conductor, fleet=fleet, lanes=lanes, frames=frames,
+                                      intents=intents)
+        tick = ContinuationTick(store, conductor=conductor, fleet=fleet, lanes=lanes, frames=frames, intents=intents,
+                                research=research, settlement=settlement, successors=successors)
+        self.objects = {"intents": intents, "frames": frames, "research": research, "successors": successors,
+                        "grants": grants, "requalification": requalification, "settlement": settlement,
+                        "tick": tick, "ownership": OwnershipReconciliation(store, successors=successors)}
+        self.originals = {name: getattr(self.objects[owner], target) for name, (owner, target) in
+                          PRIVATE_ROUTES.items()}
+        for name, (owner, target) in PRIVATE_ROUTES.items():
+            override = getattr(type(self), name)
+            if override is not getattr(Continuation, name):  # a subclass replaced it, as M7's `self._move` was
+                setattr(self.objects[owner], target, getattr(self, name))
+
+    def __setattr__(self, name, value):
+        if name in PRIVATE_ROUTES and "objects" in self.__dict__:
+            owner, target = PRIVATE_ROUTES[name]
+            setattr(self.objects[owner], target, value)
+        else:
+            object.__setattr__(self, name, value)
+
+    def __getattr__(self, name):
+        owner = CONTINUATION_ROUTES.get(name)
+        if owner is None:
+            raise AttributeError(name)
+        return getattr(self.objects[owner], name)
+
+
+for _name in PRIVATE_ROUTES:
+    setattr(Continuation, _name, _private(_name))
+
+
+def _resume(name):
+    def method(self, *args, **kwargs):
+        return getattr(self.objects["tick"], name)(*args, **kwargs)
+    method.__name__ = name
+    return method
+
+
+for _name in vars(ContinuationTick):  # M7's restart table names `Continuation._resume_<action>` (RESUME)
+    if _name.startswith("_resume_"):
+        setattr(Continuation, _name, _resume(_name))
+
+
+MAX_RESEARCH_EVIDENCE_BYTES = 1024 * 1024  # the FileArtifacts.text ceiling
+
+
+class ResearchEvidence:
+    """The research evidence port over ONE trusted content-addressed store (`FileArtifacts`): `verify`
+    reads at most `max_bytes` of the reference's actual bytes and checks their SHA-256. Refusals are
+    fixed codes (`research_evidence_missing|unreadable|oversized|corrupt|invalid`); no path, raw error
+    or content leaves. The root is fixed by configuration; it is never created, searched or
+    supplied by a caller, and nothing is fetched. Integrity holds at the observed read only."""
+
+    def __init__(self, root, max_bytes: int = MAX_RESEARCH_EVIDENCE_BYTES):
+        self.root, self.max_bytes, self.store = Path(root), max_bytes, None
+
+    def verify(self, reference) -> None:
+        code = None
+        try:
+            if self.store is None:
+                if not self.root.is_dir():
+                    raise FileNotFoundError
+                self.store = FileArtifacts(str(self.root))
+            self.store.text(reference, self.max_bytes)
+        except FileNotFoundError:
+            code = "research_evidence_missing"
+        except UnicodeDecodeError:
+            code = "research_evidence_invalid"  # digest matched, but not the text the store writes
+        except OSError:
+            code = "research_evidence_unreadable"
+        except ContractError as exc:
+            code = {"Artifact exceeds text budget": "research_evidence_oversized",
+                    "Artifact modified": "research_evidence_corrupt"}.get(str(exc), "research_evidence_invalid")
+        if code is not None:
+            raise ContinuationRefused(code, ROUTE_OWNERS[RESEARCH], "evidence_refs")
+
+
+OWNER_ROUTES = {"register": "scheduler", "status": "scheduler", "tick": "scheduler", "recover_canary": "canary",
+                "request_migration": "migration", "migration": "migration"}
+
+
+class OwnerActions:
+    def __init__(self, store, *, continuation=None, org=None, lanes=None, deliveries=None, publisher=None,
+                 assessments=None, targets=None, fleet=None, validate=None, first_activation=None, clock=utcnow,
+                 withdrawals=None, mainline=None, requalify=None, artifacts=None, research=None, ledger=None):
+        actions = ActionStore(store, clock=clock)
+        research_acceptance = ResearchAcceptanceFamily(store, assessments=assessments, continuation=continuation,
+                                                       lanes=lanes, org=org, message_clock=SYSTEM_CLOCK,
+                                                       ids=SYSTEM_IDS, actions=actions)
+        delivery_plan = DeliveryRegistrationFamily(store, deliveries=deliveries, first_activation=first_activation,
+                                                   publisher=publisher, targets=targets, actions=actions)
+        canary = CanaryFamily(store, clock=clock, deliveries=deliveries, fleet=fleet, lanes=lanes, org=org,
+                              targets=targets, validate=validate, actions=actions)
+        migration = MigrationRequestFamily(store, clock=clock, deliveries=deliveries, publisher=publisher,
+                                           targets=targets, delivery_plan=delivery_plan)
+        requalify_family = RequalifyFamily(store, artifacts=artifacts, clock=clock, continuation=continuation,
+                                           deliveries=deliveries, mainline=mainline, requalify=requalify,
+                                           withdrawals=withdrawals, actions=actions)
+        research_dispatch = ResearchLaunchFamily(store, clock=clock, ledger=ledger, research=research,
+                                                 programs=ProgramState(store, clock=clock), actions=actions)
+        scheduler = OwnerActionScheduler(store, clock=clock, continuation=continuation, actions=actions, canary=canary,
+                                         delivery_plan=delivery_plan, migration=migration,
+                                         requalify_family=requalify_family, research_acceptance=research_acceptance,
+                                         research_dispatch=research_dispatch)
+        self.objects = {"scheduler": scheduler, "canary": canary, "migration": migration}
+
+    def __getattr__(self, name):
+        owner = OWNER_ROUTES.get(name)
+        if owner is None:
+            raise AttributeError(name)
+        return getattr(self.objects[owner], name)
+
+
+spawn_guardian = _guarded_composition.guarded_spawn()
+guard = _guarded_composition.guard_function()
+main = _guarded_composition.guardian_command()
+observe = _guarded_launch.observe
+launch_directory = _guarded_launch.launch_directory
+
+
+def ConductorProcesses(config, host, **kwargs):  # noqa: N802 - the M7 constructor name
+    kwargs.setdefault("spawn", spawn_guardian)
+    return _conductor_launch.ConductorProcesses(config, host, **kwargs)
+
+
+class _UnavailableMeta(type):
+    def __getattr__(cls, attribute):
+        raise NotImplementedError("%s: %s is not on the S6 target" % cls.owner)
+
+
+def unavailable(slice_, name):
+    """A class placeholder: it can be subclassed at import, and any use (instantiation, call, attribute) raises."""
+    def refuse(self, *args, **kwargs):
+        raise NotImplementedError("%s: %s is not on the S6 target" % (slice_, name))
+    return _UnavailableMeta(name.rsplit(".", 1)[-1], (), {"__init__": refuse, "owner": (slice_, name)})
