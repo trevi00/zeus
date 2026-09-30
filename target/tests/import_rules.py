@@ -19,7 +19,8 @@ from pathlib import Path
 CONTEXTS = ("storage", "host_os", "routing", "context", "knowledge", "intake", "coordination",
             "execution", "credentials", "evidence", "review", "research", "delivery", "observation")
 DAG = {
-    "routing": (), "knowledge": (), "evidence": (), "credentials": (), "intake": (), "storage": (),
+    "routing": (), "knowledge": (), "evidence": (), "credentials": (), "storage": (),
+    "intake": ("routing",),
     "host_os": (),
     "context": ("routing", "knowledge"),
     "execution": ("routing", "context", "evidence", "credentials"),
