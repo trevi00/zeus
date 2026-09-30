@@ -1,0 +1,1803 @@
+{
+ "cases_per_group": {
+  "coordinated": 5,
+  "registry": 1,
+  "supervise": 10,
+  "unit_state": 1
+ },
+ "coordinated": {
+  "controller_starts_only_the_unit": {
+   "alive": {
+    "child": true,
+    "launcher": true,
+    "unit_active": true
+   },
+   "descriptor_is_the_fixtures": true,
+   "journal_events": [
+    "launch"
+   ],
+   "journal_invocation_is_the_units": true,
+   "launch_record": {
+    "invocation_is_the_units": true,
+    "pid_is_the_units_main_pid": true,
+    "service": "zeus-aibox-managed-fleet"
+   },
+   "reached_active": true,
+   "receipt": {
+    "descriptor_is_the_written_one": true,
+    "revision_is_a": true,
+    "runtime_root_ends_with_a": true
+   },
+   "request": {
+    "descriptor_sha256": "<digest:coordinated.A>",
+    "manifest_sha256": "378c6014d0a9cd4135e9de75fa2daae9aa2b4c6e60a55d6d4cda0a6fc7894604",
+    "requested_at": "<time>",
+    "schema": "urn:zeus:managed-launch-request:1",
+    "target_id": "managed-fleet",
+    "workload": "fixture"
+   },
+   "request_names_the_descriptor": true,
+   "state_dir": {
+    "controller-state.json": {
+     "descriptor_sha256": "<digest:coordinated.A>",
+     "invocation_id": "<invocation>",
+     "manifest_sha256": "378c6014d0a9cd4135e9de75fa2daae9aa2b4c6e60a55d6d4cda0a6fc7894604",
+     "pid": "<pid>",
+     "service": "zeus-aibox-managed-fleet",
+     "started_at": "<time>"
+    },
+    "descriptor.json": {
+     "predecessor": null,
+     "profile_digest": "cc7150678052ad3d4636a930a7fef34f5a991cfe85b633ada5dc49b830b93bda",
+     "revision": "30b594da7b07ad3ac42369dc5d14f4ecdff6d817",
+     "root": "<root>/coordinated-controller_starts_only_the_unit/managed/runtimes/30b594da7b07ad3ac42369dc5d14f4ecdff6d817",
+     "schema": "urn:zeus:host-descriptor:1",
+     "target_id": "managed-fleet",
+     "worker_image": "<absent>"
+    },
+    "fixture": [],
+    "heartbeat.json": {
+     "active": 0,
+     "admission": "open",
+     "at": "<time>",
+     "descriptor_sha256": "<digest:coordinated.A>",
+     "instance_id": "<instance>",
+     "pid": "<pid>",
+     "schema": "urn:zeus:managed-heartbeat:1",
+     "unresolved": 0
+    },
+    "launcher-journal.jsonl": {
+     "events": [
+      "starting",
+      "startup"
+     ],
+     "final_exit_code": null
+    },
+    "managed-launch.json": {
+     "descriptor_sha256": "<digest:coordinated.A>",
+     "manifest_sha256": "378c6014d0a9cd4135e9de75fa2daae9aa2b4c6e60a55d6d4cda0a6fc7894604",
+     "requested_at": "<time>",
+     "schema": "urn:zeus:managed-launch-request:1",
+     "target_id": "managed-fleet",
+     "workload": "fixture"
+    },
+    "managed-target.json": {
+     "environment_lock": "87637a2b861493da664b9ca92aa62d958d13861ca02f87432edd9798c5c9ee36",
+     "kind": "managed_fleet_systemd",
+     "python": "<python>",
+     "root": "<root>/coordinated-controller_starts_only_the_unit/managed",
+     "service": "zeus-aibox-managed-fleet",
+     "source": "<root>/source",
+     "state_dir": "<root>/coordinated-controller_starts_only_the_unit/state-managed-fleet",
+     "target_id": "managed-fleet"
+    },
+    "startup-receipt.json": {
+     "descriptor_sha256": "<digest:coordinated.A>",
+     "instance_id": "<instance>",
+     "module_root": "<root>/coordinated-controller_starts_only_the_unit/managed/runtimes/30b594da7b07ad3ac42369dc5d14f4ecdff6d817/src/codex_harness",
+     "pid": "<pid>",
+     "profile_digest": "cc7150678052ad3d4636a930a7fef34f5a991cfe85b633ada5dc49b830b93bda",
+     "revision": "30b594da7b07ad3ac42369dc5d14f4ecdff6d817",
+     "runtime_root": "<root>/coordinated-controller_starts_only_the_unit/managed/runtimes/30b594da7b07ad3ac42369dc5d14f4ecdff6d817",
+     "schema": "urn:zeus:host-startup-receipt:1",
+     "started_at": "<time>",
+     "target_id": "managed-fleet",
+     "worker_image": "<absent>"
+    },
+    "supervisor-journal.jsonl": [
+     {
+      "at": "<time>",
+      "descriptor_sha256": "<digest:coordinated.A>",
+      "event": "launch",
+      "invocation_id": "<invocation>",
+      "workload": "fixture"
+     }
+    ]
+   },
+   "systemctl": {
+    "distinct_show_argv": [
+     [
+      "systemctl",
+      "show",
+      "zeus-aibox-managed-fleet.service",
+      "-p",
+      "ActiveState",
+      "-p",
+      "MainPID",
+      "-p",
+      "InvocationID"
+     ]
+    ],
+    "start_argv": [
+     [
+      "systemctl",
+      "start",
+      "zeus-aibox-managed-fleet.service"
+     ]
+    ],
+    "starts": 1,
+    "verbs": [
+     "show",
+     "start"
+    ]
+   },
+   "target_snapshot_is_owner_target": true,
+   "trail": [
+    [
+     "publishing",
+     "progressed",
+     null,
+     null
+    ],
+    [
+     "awaiting_ci",
+     "progressed",
+     null,
+     null
+    ],
+    [
+     "merge_intended",
+     "progressed",
+     null,
+     null
+    ],
+    [
+     "merged",
+     "progressed",
+     null,
+     null
+    ],
+    [
+     "drain_intended",
+     "progressed",
+     null,
+     null
+    ],
+    [
+     "switching",
+     "progressed",
+     null,
+     null
+    ],
+    [
+     "awaiting_consumption",
+     "progressed",
+     null,
+     null
+    ],
+    [
+     "active",
+     "active",
+     null,
+     null
+    ]
+   ],
+   "work": "idle"
+  },
+  "failed_unit_and_requested_stop": {
+   "after_crash": {
+    "child": false,
+    "first_child": false,
+    "launcher": false,
+    "unit_active": false,
+    "unit_returncode_nonzero": true
+   },
+   "alive_end": {
+    "child": false,
+    "launcher": false,
+    "unit_active": false
+   },
+   "alive_second": {
+    "child": true,
+    "launcher": false,
+    "unit_active": true
+   },
+   "before_crash": {
+    "child": true,
+    "launcher": true,
+    "unit_active": true
+   },
+   "descriptor_is_the_fixtures": true,
+   "journal": [
+    {
+     "at": "<time>",
+     "descriptor_sha256": "<digest:coordinated.A>",
+     "event": "launch",
+     "invocation_id": "<invocation>",
+     "workload": "fixture"
+    },
+    {
+     "at": "<time>",
+     "descriptor_sha256": "<digest:coordinated.A>",
+     "event": "launch",
+     "invocation_id": "<invocation>",
+     "workload": "fixture"
+    },
+    {
+     "at": "<time>",
+     "event": "refused",
+     "invocation_id": "<invocation>",
+     "reason_code": "stop_requested"
+    }
+   ],
+   "journal_after_restart": [
+    "launch",
+    "launch"
+   ],
+   "reached_active": true,
+   "restart_after_stop": {
+    "exit": 2,
+    "starts": 3
+   },
+   "restarted": {
+    "first_child_gone": true,
+    "new_instance": true,
+    "same_revision": true,
+    "starts": 2
+   },
+   "state_dir": {
+    "controller-state.json": {
+     "descriptor_sha256": "<digest:coordinated.A>",
+     "invocation_id": "<invocation>",
+     "manifest_sha256": "378c6014d0a9cd4135e9de75fa2daae9aa2b4c6e60a55d6d4cda0a6fc7894604",
+     "pid": "<pid>",
+     "service": "zeus-aibox-managed-fleet",
+     "started_at": "<time>"
+    },
+    "descriptor.json": {
+     "predecessor": null,
+     "profile_digest": "cc7150678052ad3d4636a930a7fef34f5a991cfe85b633ada5dc49b830b93bda",
+     "revision": "30b594da7b07ad3ac42369dc5d14f4ecdff6d817",
+     "root": "<root>/coordinated-failed_unit_and_requested_stop/managed/runtimes/30b594da7b07ad3ac42369dc5d14f4ecdff6d817",
+     "schema": "urn:zeus:host-descriptor:1",
+     "target_id": "managed-fleet",
+     "worker_image": "<absent>"
+    },
+    "fixture": [],
+    "heartbeat.json": {
+     "active": 0,
+     "admission": "stopping",
+     "at": "<time>",
+     "descriptor_sha256": "<digest:coordinated.A>",
+     "instance_id": "<instance>",
+     "pid": "<pid>",
+     "schema": "urn:zeus:managed-heartbeat:1",
+     "unresolved": 0
+    },
+    "launcher-journal.jsonl": {
+     "events": [
+      "starting",
+      "startup",
+      "starting",
+      "startup",
+      "child_exited",
+      "cleanup",
+      "shutdown"
+     ],
+     "final_exit_code": 0
+    },
+    "managed-launch.json": {
+     "descriptor_sha256": "<digest:coordinated.A>",
+     "manifest_sha256": "378c6014d0a9cd4135e9de75fa2daae9aa2b4c6e60a55d6d4cda0a6fc7894604",
+     "requested_at": "<time>",
+     "schema": "urn:zeus:managed-launch-request:1",
+     "target_id": "managed-fleet",
+     "workload": "fixture"
+    },
+    "managed-target.json": {
+     "environment_lock": "87637a2b861493da664b9ca92aa62d958d13861ca02f87432edd9798c5c9ee36",
+     "kind": "managed_fleet_systemd",
+     "python": "<python>",
+     "root": "<root>/coordinated-failed_unit_and_requested_stop/managed",
+     "service": "zeus-aibox-managed-fleet",
+     "source": "<root>/source",
+     "state_dir": "<root>/coordinated-failed_unit_and_requested_stop/state-managed-fleet",
+     "target_id": "managed-fleet"
+    },
+    "pause.json": {
+     "at": "<time>",
+     "descriptor_sha256": "<digest:coordinated.A>",
+     "paused": true
+    },
+    "startup-receipt.json": {
+     "descriptor_sha256": "<digest:coordinated.A>",
+     "instance_id": "<instance>",
+     "module_root": "<root>/coordinated-failed_unit_and_requested_stop/managed/runtimes/30b594da7b07ad3ac42369dc5d14f4ecdff6d817/src/codex_harness",
+     "pid": "<pid>",
+     "profile_digest": "cc7150678052ad3d4636a930a7fef34f5a991cfe85b633ada5dc49b830b93bda",
+     "revision": "30b594da7b07ad3ac42369dc5d14f4ecdff6d817",
+     "runtime_root": "<root>/coordinated-failed_unit_and_requested_stop/managed/runtimes/30b594da7b07ad3ac42369dc5d14f4ecdff6d817",
+     "schema": "urn:zeus:host-startup-receipt:1",
+     "started_at": "<time>",
+     "target_id": "managed-fleet",
+     "worker_image": "<absent>"
+    },
+    "stop.json": {
+     "at": "<time>",
+     "stop": true
+    },
+    "supervisor-journal.jsonl": [
+     {
+      "at": "<time>",
+      "descriptor_sha256": "<digest:coordinated.A>",
+      "event": "launch",
+      "invocation_id": "<invocation>",
+      "workload": "fixture"
+     },
+     {
+      "at": "<time>",
+      "descriptor_sha256": "<digest:coordinated.A>",
+      "event": "launch",
+      "invocation_id": "<invocation>",
+      "workload": "fixture"
+     },
+     {
+      "at": "<time>",
+      "event": "refused",
+      "invocation_id": "<invocation>",
+      "reason_code": "stop_requested"
+     }
+    ]
+   },
+   "stop": {
+    "result": {
+     "pid": "<pid>",
+     "reason_code": null,
+     "stopped": true,
+     "was_running": true
+    },
+    "unit_active_after": false
+   },
+   "systemctl": {
+    "distinct_show_argv": [
+     [
+      "systemctl",
+      "show",
+      "zeus-aibox-managed-fleet.service",
+      "-p",
+      "ActiveState",
+      "-p",
+      "MainPID",
+      "-p",
+      "InvocationID"
+     ]
+    ],
+    "start_argv": [
+     [
+      "systemctl",
+      "start",
+      "zeus-aibox-managed-fleet.service"
+     ]
+    ],
+    "starts": 3,
+    "verbs": [
+     "show",
+     "start"
+    ]
+   },
+   "trail": [
+    [
+     "publishing",
+     "progressed",
+     null,
+     null
+    ],
+    [
+     "awaiting_ci",
+     "progressed",
+     null,
+     null
+    ],
+    [
+     "merge_intended",
+     "progressed",
+     null,
+     null
+    ],
+    [
+     "merged",
+     "progressed",
+     null,
+     null
+    ],
+    [
+     "drain_intended",
+     "progressed",
+     null,
+     null
+    ],
+    [
+     "switching",
+     "progressed",
+     null,
+     null
+    ],
+    [
+     "awaiting_consumption",
+     "progressed",
+     null,
+     null
+    ],
+    [
+     "active",
+     "active",
+     null,
+     null
+    ]
+   ]
+  },
+  "restarted_controller": {
+   "alive": {
+    "child": true,
+    "launcher": true,
+    "unit_active": true
+   },
+   "descriptor_is_the_fixtures": true,
+   "reached_active": true,
+   "restart": {
+    "keys": [
+     "instance_id",
+     "launch",
+     "recovered",
+     "started"
+    ],
+    "recovered": true,
+    "same_instance": true,
+    "started": false
+   },
+   "running": true,
+   "same_instance_after_replay": true,
+   "starts_after_replay": 1,
+   "starts_after_restart": 1,
+   "state_dir": {
+    "controller-state.json": {
+     "descriptor_sha256": "<digest:coordinated.A>",
+     "invocation_id": "<invocation>",
+     "manifest_sha256": "378c6014d0a9cd4135e9de75fa2daae9aa2b4c6e60a55d6d4cda0a6fc7894604",
+     "pid": "<pid>",
+     "service": "zeus-aibox-managed-fleet",
+     "started_at": "<time>"
+    },
+    "descriptor.json": {
+     "predecessor": null,
+     "profile_digest": "cc7150678052ad3d4636a930a7fef34f5a991cfe85b633ada5dc49b830b93bda",
+     "revision": "30b594da7b07ad3ac42369dc5d14f4ecdff6d817",
+     "root": "<root>/coordinated-restarted_controller/managed/runtimes/30b594da7b07ad3ac42369dc5d14f4ecdff6d817",
+     "schema": "urn:zeus:host-descriptor:1",
+     "target_id": "managed-fleet",
+     "worker_image": "<absent>"
+    },
+    "fixture": [],
+    "heartbeat.json": {
+     "active": 0,
+     "admission": "open",
+     "at": "<time>",
+     "descriptor_sha256": "<digest:coordinated.A>",
+     "instance_id": "<instance>",
+     "pid": "<pid>",
+     "schema": "urn:zeus:managed-heartbeat:1",
+     "unresolved": 0
+    },
+    "launcher-journal.jsonl": {
+     "events": [
+      "starting",
+      "startup"
+     ],
+     "final_exit_code": null
+    },
+    "managed-launch.json": {
+     "descriptor_sha256": "<digest:coordinated.A>",
+     "manifest_sha256": "378c6014d0a9cd4135e9de75fa2daae9aa2b4c6e60a55d6d4cda0a6fc7894604",
+     "requested_at": "<time>",
+     "schema": "urn:zeus:managed-launch-request:1",
+     "target_id": "managed-fleet",
+     "workload": "fixture"
+    },
+    "managed-target.json": {
+     "environment_lock": "87637a2b861493da664b9ca92aa62d958d13861ca02f87432edd9798c5c9ee36",
+     "kind": "managed_fleet_systemd",
+     "python": "<python>",
+     "root": "<root>/coordinated-restarted_controller/managed",
+     "service": "zeus-aibox-managed-fleet",
+     "source": "<root>/source",
+     "state_dir": "<root>/coordinated-restarted_controller/state-managed-fleet",
+     "target_id": "managed-fleet"
+    },
+    "startup-receipt.json": {
+     "descriptor_sha256": "<digest:coordinated.A>",
+     "instance_id": "<instance>",
+     "module_root": "<root>/coordinated-restarted_controller/managed/runtimes/30b594da7b07ad3ac42369dc5d14f4ecdff6d817/src/codex_harness",
+     "pid": "<pid>",
+     "profile_digest": "cc7150678052ad3d4636a930a7fef34f5a991cfe85b633ada5dc49b830b93bda",
+     "revision": "30b594da7b07ad3ac42369dc5d14f4ecdff6d817",
+     "runtime_root": "<root>/coordinated-restarted_controller/managed/runtimes/30b594da7b07ad3ac42369dc5d14f4ecdff6d817",
+     "schema": "urn:zeus:host-startup-receipt:1",
+     "started_at": "<time>",
+     "target_id": "managed-fleet",
+     "worker_image": "<absent>"
+    },
+    "supervisor-journal.jsonl": [
+     {
+      "at": "<time>",
+      "descriptor_sha256": "<digest:coordinated.A>",
+      "event": "launch",
+      "invocation_id": "<invocation>",
+      "workload": "fixture"
+     }
+    ]
+   },
+   "systemctl": {
+    "distinct_show_argv": [
+     [
+      "systemctl",
+      "show",
+      "zeus-aibox-managed-fleet.service",
+      "-p",
+      "ActiveState",
+      "-p",
+      "MainPID",
+      "-p",
+      "InvocationID"
+     ]
+    ],
+    "start_argv": [
+     [
+      "systemctl",
+      "start",
+      "zeus-aibox-managed-fleet.service"
+     ],
+     [
+      "systemctl",
+      "start",
+      "zeus-aibox-managed-fleet.service"
+     ]
+    ],
+    "starts": 1,
+    "verbs": [
+     "show",
+     "start"
+    ]
+   },
+   "systemctl_before_restart": {
+    "distinct_show_argv": [
+     [
+      "systemctl",
+      "show",
+      "zeus-aibox-managed-fleet.service",
+      "-p",
+      "ActiveState",
+      "-p",
+      "MainPID",
+      "-p",
+      "InvocationID"
+     ]
+    ],
+    "start_argv": [
+     [
+      "systemctl",
+      "start",
+      "zeus-aibox-managed-fleet.service"
+     ]
+    ],
+    "starts": 1,
+    "verbs": [
+     "show",
+     "start"
+    ]
+   },
+   "trail": [
+    [
+     "publishing",
+     "progressed",
+     null,
+     null
+    ],
+    [
+     "awaiting_ci",
+     "progressed",
+     null,
+     null
+    ],
+    [
+     "merge_intended",
+     "progressed",
+     null,
+     null
+    ],
+    [
+     "merged",
+     "progressed",
+     null,
+     null
+    ],
+    [
+     "drain_intended",
+     "progressed",
+     null,
+     null
+    ],
+    [
+     "switching",
+     "progressed",
+     null,
+     null
+    ],
+    [
+     "awaiting_consumption",
+     "progressed",
+     null,
+     null
+    ],
+    [
+     "active",
+     "active",
+     null,
+     null
+    ]
+   ],
+   "work": "idle"
+  },
+  "rollback_through_the_unit": {
+   "alive": {
+    "child": true,
+    "launcher": true,
+    "unit_active": true
+   },
+   "descriptor_is_the_fixtures": true,
+   "journal_events": [
+    "launch",
+    "launch",
+    "launch"
+   ],
+   "reached_active": true,
+   "restored": {
+    "candidate_descriptor_labelled": true,
+    "descriptor_is_the_predecessors": true,
+    "revision_is_a": true
+   },
+   "restored_work": "idle",
+   "rollback_trail": [
+    [
+     "publishing",
+     "progressed",
+     null,
+     null
+    ],
+    [
+     "awaiting_ci",
+     "progressed",
+     null,
+     null
+    ],
+    [
+     "merge_intended",
+     "progressed",
+     null,
+     null
+    ],
+    [
+     "merged",
+     "progressed",
+     null,
+     null
+    ],
+    [
+     "drain_intended",
+     "progressed",
+     null,
+     null
+    ],
+    [
+     "switching",
+     "progressed",
+     null,
+     null
+    ],
+    [
+     "awaiting_consumption",
+     "progressed",
+     null,
+     null
+    ],
+    [
+     "rolling_back",
+     "progressed",
+     "canary_owner_receipt_missing",
+     null
+    ],
+    [
+     "rolled_back",
+     "rolled_back",
+     "canary_owner_receipt_missing",
+     null
+    ]
+   ],
+   "rollback_verified": true,
+   "rolled_back": true,
+   "state_dir": {
+    "controller-state.json": {
+     "descriptor_sha256": "<digest:coordinated.A>",
+     "invocation_id": "<invocation>",
+     "manifest_sha256": "378c6014d0a9cd4135e9de75fa2daae9aa2b4c6e60a55d6d4cda0a6fc7894604",
+     "pid": "<pid>",
+     "service": "zeus-aibox-managed-fleet",
+     "started_at": "<time>"
+    },
+    "descriptor.json": {
+     "predecessor": null,
+     "profile_digest": "cc7150678052ad3d4636a930a7fef34f5a991cfe85b633ada5dc49b830b93bda",
+     "revision": "30b594da7b07ad3ac42369dc5d14f4ecdff6d817",
+     "root": "<root>/coordinated-rollback_through_the_unit/managed/runtimes/30b594da7b07ad3ac42369dc5d14f4ecdff6d817",
+     "schema": "urn:zeus:host-descriptor:1",
+     "target_id": "managed-fleet",
+     "worker_image": "<absent>"
+    },
+    "fixture": [],
+    "heartbeat.json": {
+     "active": 0,
+     "admission": "open",
+     "at": "<time>",
+     "descriptor_sha256": "<digest:coordinated.A>",
+     "instance_id": "<instance>",
+     "pid": "<pid>",
+     "schema": "urn:zeus:managed-heartbeat:1",
+     "unresolved": 0
+    },
+    "launcher-journal.jsonl": {
+     "events": [
+      "starting",
+      "startup",
+      "child_exited",
+      "cleanup",
+      "shutdown",
+      "starting",
+      "startup",
+      "child_exited",
+      "cleanup",
+      "shutdown",
+      "starting",
+      "startup"
+     ],
+     "final_exit_code": null
+    },
+    "managed-launch.json": {
+     "descriptor_sha256": "<digest:coordinated.A>",
+     "manifest_sha256": "378c6014d0a9cd4135e9de75fa2daae9aa2b4c6e60a55d6d4cda0a6fc7894604",
+     "requested_at": "<time>",
+     "schema": "urn:zeus:managed-launch-request:1",
+     "target_id": "managed-fleet",
+     "workload": "fixture"
+    },
+    "managed-target.json": {
+     "environment_lock": "87637a2b861493da664b9ca92aa62d958d13861ca02f87432edd9798c5c9ee36",
+     "kind": "managed_fleet_systemd",
+     "python": "<python>",
+     "root": "<root>/coordinated-rollback_through_the_unit/managed",
+     "service": "zeus-aibox-managed-fleet",
+     "source": "<root>/source",
+     "state_dir": "<root>/coordinated-rollback_through_the_unit/state-managed-fleet",
+     "target_id": "managed-fleet"
+    },
+    "startup-receipt.json": {
+     "descriptor_sha256": "<digest:coordinated.A>",
+     "instance_id": "<instance>",
+     "module_root": "<root>/coordinated-rollback_through_the_unit/managed/runtimes/30b594da7b07ad3ac42369dc5d14f4ecdff6d817/src/codex_harness",
+     "pid": "<pid>",
+     "profile_digest": "cc7150678052ad3d4636a930a7fef34f5a991cfe85b633ada5dc49b830b93bda",
+     "revision": "30b594da7b07ad3ac42369dc5d14f4ecdff6d817",
+     "runtime_root": "<root>/coordinated-rollback_through_the_unit/managed/runtimes/30b594da7b07ad3ac42369dc5d14f4ecdff6d817",
+     "schema": "urn:zeus:host-startup-receipt:1",
+     "started_at": "<time>",
+     "target_id": "managed-fleet",
+     "worker_image": "<absent>"
+    },
+    "supervisor-journal.jsonl": [
+     {
+      "at": "<time>",
+      "descriptor_sha256": "<digest:coordinated.A>",
+      "event": "launch",
+      "invocation_id": "<invocation>",
+      "workload": "fixture"
+     },
+     {
+      "at": "<time>",
+      "descriptor_sha256": "<digest:coordinated.B>",
+      "event": "launch",
+      "invocation_id": "<invocation>",
+      "workload": "fixture"
+     },
+     {
+      "at": "<time>",
+      "descriptor_sha256": "<digest:coordinated.A>",
+      "event": "launch",
+      "invocation_id": "<invocation>",
+      "workload": "fixture"
+     }
+    ]
+   },
+   "systemctl": {
+    "distinct_show_argv": [
+     [
+      "systemctl",
+      "show",
+      "zeus-aibox-managed-fleet.service",
+      "-p",
+      "ActiveState",
+      "-p",
+      "MainPID",
+      "-p",
+      "InvocationID"
+     ]
+    ],
+    "start_argv": [
+     [
+      "systemctl",
+      "start",
+      "zeus-aibox-managed-fleet.service"
+     ],
+     [
+      "systemctl",
+      "start",
+      "zeus-aibox-managed-fleet.service"
+     ],
+     [
+      "systemctl",
+      "start",
+      "zeus-aibox-managed-fleet.service"
+     ]
+    ],
+    "starts": 3,
+    "verbs": [
+     "show",
+     "start"
+    ]
+   },
+   "trail": [
+    [
+     "publishing",
+     "progressed",
+     null,
+     null
+    ],
+    [
+     "awaiting_ci",
+     "progressed",
+     null,
+     null
+    ],
+    [
+     "merge_intended",
+     "progressed",
+     null,
+     null
+    ],
+    [
+     "merged",
+     "progressed",
+     null,
+     null
+    ],
+    [
+     "drain_intended",
+     "progressed",
+     null,
+     null
+    ],
+    [
+     "switching",
+     "progressed",
+     null,
+     null
+    ],
+    [
+     "awaiting_consumption",
+     "progressed",
+     null,
+     null
+    ],
+    [
+     "active",
+     "active",
+     null,
+     null
+    ]
+   ]
+  },
+  "surviving_old_child": {
+   "alive": {
+    "child": true,
+    "launcher": false,
+    "survivor": true,
+    "unit_active": false
+   },
+   "descriptor_is_the_fixtures": true,
+   "journal": [
+    {
+     "at": "<time>",
+     "descriptor_sha256": "<digest:coordinated.A>",
+     "event": "launch",
+     "invocation_id": "<invocation>",
+     "workload": "fixture"
+    },
+    {
+     "at": "<time>",
+     "event": "refused",
+     "invocation_id": "<invocation>",
+     "reason_code": "previous_instance_alive"
+    }
+   ],
+   "no_second_instance": true,
+   "reached_active": true,
+   "restart": {
+    "exit": 2,
+    "starts": 2
+   },
+   "state_dir": {
+    "controller-state.json": {
+     "descriptor_sha256": "<digest:coordinated.A>",
+     "invocation_id": "<invocation>",
+     "manifest_sha256": "378c6014d0a9cd4135e9de75fa2daae9aa2b4c6e60a55d6d4cda0a6fc7894604",
+     "pid": "<pid>",
+     "service": "zeus-aibox-managed-fleet",
+     "started_at": "<time>"
+    },
+    "descriptor.json": {
+     "predecessor": null,
+     "profile_digest": "cc7150678052ad3d4636a930a7fef34f5a991cfe85b633ada5dc49b830b93bda",
+     "revision": "30b594da7b07ad3ac42369dc5d14f4ecdff6d817",
+     "root": "<root>/coordinated-surviving_old_child/managed/runtimes/30b594da7b07ad3ac42369dc5d14f4ecdff6d817",
+     "schema": "urn:zeus:host-descriptor:1",
+     "target_id": "managed-fleet",
+     "worker_image": "<absent>"
+    },
+    "fixture": [],
+    "heartbeat.json": {
+     "active": 0,
+     "admission": "open",
+     "at": "<time>",
+     "descriptor_sha256": "<digest:coordinated.A>",
+     "instance_id": "<instance>",
+     "pid": "<pid>",
+     "schema": "urn:zeus:managed-heartbeat:1",
+     "unresolved": 0
+    },
+    "launcher-journal.jsonl": {
+     "events": [
+      "starting",
+      "startup"
+     ],
+     "final_exit_code": null
+    },
+    "managed-launch.json": {
+     "descriptor_sha256": "<digest:coordinated.A>",
+     "manifest_sha256": "378c6014d0a9cd4135e9de75fa2daae9aa2b4c6e60a55d6d4cda0a6fc7894604",
+     "requested_at": "<time>",
+     "schema": "urn:zeus:managed-launch-request:1",
+     "target_id": "managed-fleet",
+     "workload": "fixture"
+    },
+    "managed-target.json": {
+     "environment_lock": "87637a2b861493da664b9ca92aa62d958d13861ca02f87432edd9798c5c9ee36",
+     "kind": "managed_fleet_systemd",
+     "python": "<python>",
+     "root": "<root>/coordinated-surviving_old_child/managed",
+     "service": "zeus-aibox-managed-fleet",
+     "source": "<root>/source",
+     "state_dir": "<root>/coordinated-surviving_old_child/state-managed-fleet",
+     "target_id": "managed-fleet"
+    },
+    "startup-receipt.json": {
+     "descriptor_sha256": "<digest:coordinated.A>",
+     "instance_id": "<instance>",
+     "module_root": "<root>/coordinated-surviving_old_child/managed/runtimes/30b594da7b07ad3ac42369dc5d14f4ecdff6d817/src/codex_harness",
+     "pid": "<pid>",
+     "profile_digest": "cc7150678052ad3d4636a930a7fef34f5a991cfe85b633ada5dc49b830b93bda",
+     "revision": "30b594da7b07ad3ac42369dc5d14f4ecdff6d817",
+     "runtime_root": "<root>/coordinated-surviving_old_child/managed/runtimes/30b594da7b07ad3ac42369dc5d14f4ecdff6d817",
+     "schema": "urn:zeus:host-startup-receipt:1",
+     "started_at": "<time>",
+     "target_id": "managed-fleet",
+     "worker_image": "<absent>"
+    },
+    "supervisor-journal.jsonl": [
+     {
+      "at": "<time>",
+      "descriptor_sha256": "<digest:coordinated.A>",
+      "event": "launch",
+      "invocation_id": "<invocation>",
+      "workload": "fixture"
+     },
+     {
+      "at": "<time>",
+      "event": "refused",
+      "invocation_id": "<invocation>",
+      "reason_code": "previous_instance_alive"
+     }
+    ]
+   },
+   "survivor": {
+    "alive": true,
+    "is_the_first_child": true
+   },
+   "systemctl": {
+    "distinct_show_argv": [
+     [
+      "systemctl",
+      "show",
+      "zeus-aibox-managed-fleet.service",
+      "-p",
+      "ActiveState",
+      "-p",
+      "MainPID",
+      "-p",
+      "InvocationID"
+     ]
+    ],
+    "start_argv": [
+     [
+      "systemctl",
+      "start",
+      "zeus-aibox-managed-fleet.service"
+     ]
+    ],
+    "starts": 2,
+    "verbs": [
+     "show",
+     "start"
+    ]
+   },
+   "trail": [
+    [
+     "publishing",
+     "progressed",
+     null,
+     null
+    ],
+    [
+     "awaiting_ci",
+     "progressed",
+     null,
+     null
+    ],
+    [
+     "merge_intended",
+     "progressed",
+     null,
+     null
+    ],
+    [
+     "merged",
+     "progressed",
+     null,
+     null
+    ],
+    [
+     "drain_intended",
+     "progressed",
+     null,
+     null
+    ],
+    [
+     "switching",
+     "progressed",
+     null,
+     null
+    ],
+    [
+     "awaiting_consumption",
+     "progressed",
+     null,
+     null
+    ],
+    [
+     "active",
+     "active",
+     null,
+     null
+    ]
+   ]
+  }
+ },
+ "live_children": 0,
+ "registry": {
+  "owner_fixed_unit": {
+   "descriptor_root_is_derived": true,
+   "other_units": {
+    "sshd": {
+     "raised": {
+      "field": "targets[0].service",
+      "message": "host delivery refused: target_unit_not_allowed (targets[0].service)",
+      "reason_code": "target_unit_not_allowed",
+      "type": "DeliveryRefused"
+     }
+    },
+    "zeus-aibox-fleet": {
+     "raised": {
+      "field": "targets[0].service",
+      "message": "host delivery refused: target_unit_not_allowed (targets[0].service)",
+      "reason_code": "target_unit_not_allowed",
+      "type": "DeliveryRefused"
+     }
+    },
+    "zeus-aibox-managed-fleet2": {
+     "raised": {
+      "field": "targets[0].service",
+      "message": "host delivery refused: target_unit_not_allowed (targets[0].service)",
+      "reason_code": "target_unit_not_allowed",
+      "type": "DeliveryRefused"
+     }
+    },
+    "zeus-aibox-monitor-collect": {
+     "raised": {
+      "field": "targets[0].service",
+      "message": "host delivery refused: target_unit_not_allowed (targets[0].service)",
+      "reason_code": "target_unit_not_allowed",
+      "type": "DeliveryRefused"
+     }
+    }
+   },
+   "port": "SystemdManagedFleetTarget",
+   "target": {
+    "kind": "managed_fleet_systemd",
+    "kind_is_systemd": true,
+    "service": "zeus-aibox-managed-fleet",
+    "service_is_the_fixed_unit": true,
+    "unit": "zeus-aibox-managed-fleet"
+   },
+   "unit_of_other_service": {
+    "raised": {
+     "field": "service",
+     "message": "host delivery refused: target_unit_not_allowed (service)",
+     "reason_code": "target_unit_not_allowed",
+     "type": "DeliveryRefused"
+    }
+   },
+   "unit_of_target": "zeus-aibox-managed-fleet.service"
+  }
+ },
+ "revisions": {
+  "a": "30b594da7b07ad3ac42369dc5d14f4ecdff6d817",
+  "b": "b480f63b1e1a5d9da5906a10702152a3ca5cdc09",
+  "identical_on_rebuild": true
+ },
+ "supervise": {
+  "changed_descriptor": {
+   "exit": 2,
+   "exit_is_refused": true,
+   "expected_reason": "descriptor_changed",
+   "fault": "changed_descriptor",
+   "gate_calls": [],
+   "journal": [
+    {
+     "at": "<time>",
+     "event": "refused",
+     "invocation_id": "<invocation>",
+     "reason_code": "descriptor_changed"
+    }
+   ],
+   "last_event_is_the_refusal": true,
+   "launched": [],
+   "state_dir": {
+    "descriptor.json": {
+     "predecessor": null,
+     "profile_digest": "cc7150678052ad3d4636a930a7fef34f5a991cfe85b633ada5dc49b830b93bda",
+     "revision": "30b594da7b07ad3ac42369dc5d14f4ecdff6d817",
+     "root": "<root>/supervise-changed_descriptor/managed/runtimes/30b594da7b07ad3ac42369dc5d14f4ecdff6d817",
+     "schema": "urn:zeus:host-descriptor:1",
+     "target_id": "managed-fleet",
+     "worker_image": "<absent>"
+    },
+    "managed-launch.json": {
+     "descriptor_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+     "manifest_sha256": "378c6014d0a9cd4135e9de75fa2daae9aa2b4c6e60a55d6d4cda0a6fc7894604",
+     "requested_at": "<time>",
+     "schema": "urn:zeus:managed-launch-request:1",
+     "target_id": "managed-fleet",
+     "workload": "fixture"
+    },
+    "managed-target.json": {
+     "environment_lock": "87637a2b861493da664b9ca92aa62d958d13861ca02f87432edd9798c5c9ee36",
+     "kind": "managed_fleet_systemd",
+     "python": "<python>",
+     "root": "<root>/supervise-changed_descriptor/managed",
+     "service": "zeus-aibox-managed-fleet",
+     "source": "<root>/source",
+     "state_dir": "<root>/supervise-changed_descriptor/state-managed-fleet",
+     "target_id": "managed-fleet"
+    },
+    "supervisor-journal.jsonl": [
+     {
+      "at": "<time>",
+      "event": "refused",
+      "invocation_id": "<invocation>",
+      "reason_code": "descriptor_changed"
+     }
+    ]
+   }
+  },
+  "changed_manifest": {
+   "exit": 2,
+   "exit_is_refused": true,
+   "expected_reason": "runtime_manifest_changed",
+   "fault": "changed_manifest",
+   "gate_calls": [],
+   "journal": [
+    {
+     "at": "<time>",
+     "event": "refused",
+     "invocation_id": "<invocation>",
+     "reason_code": "runtime_manifest_changed"
+    }
+   ],
+   "last_event_is_the_refusal": true,
+   "launched": [],
+   "state_dir": {
+    "descriptor.json": {
+     "predecessor": null,
+     "profile_digest": "cc7150678052ad3d4636a930a7fef34f5a991cfe85b633ada5dc49b830b93bda",
+     "revision": "30b594da7b07ad3ac42369dc5d14f4ecdff6d817",
+     "root": "<root>/supervise-changed_manifest/managed/runtimes/30b594da7b07ad3ac42369dc5d14f4ecdff6d817",
+     "schema": "urn:zeus:host-descriptor:1",
+     "target_id": "managed-fleet",
+     "worker_image": "<absent>"
+    },
+    "managed-launch.json": {
+     "descriptor_sha256": "<digest:supervise-changed_manifest.A>",
+     "manifest_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+     "requested_at": "<time>",
+     "schema": "urn:zeus:managed-launch-request:1",
+     "target_id": "managed-fleet",
+     "workload": "fixture"
+    },
+    "managed-target.json": {
+     "environment_lock": "87637a2b861493da664b9ca92aa62d958d13861ca02f87432edd9798c5c9ee36",
+     "kind": "managed_fleet_systemd",
+     "python": "<python>",
+     "root": "<root>/supervise-changed_manifest/managed",
+     "service": "zeus-aibox-managed-fleet",
+     "source": "<root>/source",
+     "state_dir": "<root>/supervise-changed_manifest/state-managed-fleet",
+     "target_id": "managed-fleet"
+    },
+    "supervisor-journal.jsonl": [
+     {
+      "at": "<time>",
+      "event": "refused",
+      "invocation_id": "<invocation>",
+      "reason_code": "runtime_manifest_changed"
+     }
+    ]
+   }
+  },
+  "debt_held": {
+   "exit": 2,
+   "exit_is_refused": true,
+   "expected_reason": "fleet_debt_held",
+   "fault": "debt_held",
+   "gate_calls": [
+    [
+     "managed-fleet",
+     "<digest:supervise-debt_held.A>"
+    ]
+   ],
+   "journal": [
+    {
+     "at": "<time>",
+     "event": "refused",
+     "invocation_id": "<invocation>",
+     "reason_code": "fleet_debt_held"
+    }
+   ],
+   "last_event_is_the_refusal": true,
+   "launched": [],
+   "state_dir": {
+    "descriptor.json": {
+     "predecessor": null,
+     "profile_digest": "cc7150678052ad3d4636a930a7fef34f5a991cfe85b633ada5dc49b830b93bda",
+     "revision": "30b594da7b07ad3ac42369dc5d14f4ecdff6d817",
+     "root": "<root>/supervise-debt_held/managed/runtimes/30b594da7b07ad3ac42369dc5d14f4ecdff6d817",
+     "schema": "urn:zeus:host-descriptor:1",
+     "target_id": "managed-fleet",
+     "worker_image": "<absent>"
+    },
+    "managed-launch.json": {
+     "descriptor_sha256": "<digest:supervise-debt_held.A>",
+     "manifest_sha256": "378c6014d0a9cd4135e9de75fa2daae9aa2b4c6e60a55d6d4cda0a6fc7894604",
+     "requested_at": "<time>",
+     "schema": "urn:zeus:managed-launch-request:1",
+     "target_id": "managed-fleet",
+     "workload": "fixture"
+    },
+    "managed-target.json": {
+     "environment_lock": "87637a2b861493da664b9ca92aa62d958d13861ca02f87432edd9798c5c9ee36",
+     "kind": "managed_fleet_systemd",
+     "python": "<python>",
+     "root": "<root>/supervise-debt_held/managed",
+     "service": "zeus-aibox-managed-fleet",
+     "source": "<root>/source",
+     "state_dir": "<root>/supervise-debt_held/state-managed-fleet",
+     "target_id": "managed-fleet"
+    },
+    "supervisor-journal.jsonl": [
+     {
+      "at": "<time>",
+      "event": "refused",
+      "invocation_id": "<invocation>",
+      "reason_code": "fleet_debt_held"
+     }
+    ]
+   }
+  },
+  "debt_unknown": {
+   "exit": 2,
+   "exit_is_refused": true,
+   "expected_reason": "fleet_debt_unknown",
+   "fault": "debt_unknown",
+   "gate_calls": [
+    [
+     "managed-fleet",
+     "<digest:supervise-debt_unknown.A>"
+    ]
+   ],
+   "journal": [
+    {
+     "at": "<time>",
+     "event": "refused",
+     "invocation_id": "<invocation>",
+     "reason_code": "fleet_debt_unknown"
+    }
+   ],
+   "last_event_is_the_refusal": true,
+   "launched": [],
+   "state_dir": {
+    "descriptor.json": {
+     "predecessor": null,
+     "profile_digest": "cc7150678052ad3d4636a930a7fef34f5a991cfe85b633ada5dc49b830b93bda",
+     "revision": "30b594da7b07ad3ac42369dc5d14f4ecdff6d817",
+     "root": "<root>/supervise-debt_unknown/managed/runtimes/30b594da7b07ad3ac42369dc5d14f4ecdff6d817",
+     "schema": "urn:zeus:host-descriptor:1",
+     "target_id": "managed-fleet",
+     "worker_image": "<absent>"
+    },
+    "managed-launch.json": {
+     "descriptor_sha256": "<digest:supervise-debt_unknown.A>",
+     "manifest_sha256": "378c6014d0a9cd4135e9de75fa2daae9aa2b4c6e60a55d6d4cda0a6fc7894604",
+     "requested_at": "<time>",
+     "schema": "urn:zeus:managed-launch-request:1",
+     "target_id": "managed-fleet",
+     "workload": "fixture"
+    },
+    "managed-target.json": {
+     "environment_lock": "87637a2b861493da664b9ca92aa62d958d13861ca02f87432edd9798c5c9ee36",
+     "kind": "managed_fleet_systemd",
+     "python": "<python>",
+     "root": "<root>/supervise-debt_unknown/managed",
+     "service": "zeus-aibox-managed-fleet",
+     "source": "<root>/source",
+     "state_dir": "<root>/supervise-debt_unknown/state-managed-fleet",
+     "target_id": "managed-fleet"
+    },
+    "supervisor-journal.jsonl": [
+     {
+      "at": "<time>",
+      "event": "refused",
+      "invocation_id": "<invocation>",
+      "reason_code": "fleet_debt_unknown"
+     }
+    ]
+   }
+  },
+  "foreign_request": {
+   "exit": 2,
+   "exit_is_refused": true,
+   "expected_reason": "launch_request_foreign",
+   "fault": "foreign_request",
+   "gate_calls": [],
+   "journal": [
+    {
+     "at": "<time>",
+     "event": "refused",
+     "invocation_id": "<invocation>",
+     "reason_code": "launch_request_foreign"
+    }
+   ],
+   "last_event_is_the_refusal": true,
+   "launched": [],
+   "state_dir": {
+    "descriptor.json": {
+     "predecessor": null,
+     "profile_digest": "cc7150678052ad3d4636a930a7fef34f5a991cfe85b633ada5dc49b830b93bda",
+     "revision": "30b594da7b07ad3ac42369dc5d14f4ecdff6d817",
+     "root": "<root>/supervise-foreign_request/managed/runtimes/30b594da7b07ad3ac42369dc5d14f4ecdff6d817",
+     "schema": "urn:zeus:host-descriptor:1",
+     "target_id": "managed-fleet",
+     "worker_image": "<absent>"
+    },
+    "managed-launch.json": {
+     "descriptor_sha256": "<digest:supervise-foreign_request.A>",
+     "manifest_sha256": "378c6014d0a9cd4135e9de75fa2daae9aa2b4c6e60a55d6d4cda0a6fc7894604",
+     "requested_at": "<time>",
+     "schema": "urn:zeus:managed-launch-request:1",
+     "target_id": "other",
+     "workload": "fixture"
+    },
+    "managed-target.json": {
+     "environment_lock": "87637a2b861493da664b9ca92aa62d958d13861ca02f87432edd9798c5c9ee36",
+     "kind": "managed_fleet_systemd",
+     "python": "<python>",
+     "root": "<root>/supervise-foreign_request/managed",
+     "service": "zeus-aibox-managed-fleet",
+     "source": "<root>/source",
+     "state_dir": "<root>/supervise-foreign_request/state-managed-fleet",
+     "target_id": "managed-fleet"
+    },
+    "supervisor-journal.jsonl": [
+     {
+      "at": "<time>",
+      "event": "refused",
+      "invocation_id": "<invocation>",
+      "reason_code": "launch_request_foreign"
+     }
+    ]
+   }
+  },
+  "gate_down": {
+   "exit": 2,
+   "exit_is_refused": true,
+   "expected_reason": "fleet_pause_unknown",
+   "fault": "gate_down",
+   "gate_calls": [
+    [
+     "managed-fleet",
+     "<digest:supervise-gate_down.A>"
+    ]
+   ],
+   "journal": [
+    {
+     "at": "<time>",
+     "event": "refused",
+     "invocation_id": "<invocation>",
+     "reason_code": "fleet_pause_unknown"
+    }
+   ],
+   "last_event_is_the_refusal": true,
+   "launched": [],
+   "state_dir": {
+    "descriptor.json": {
+     "predecessor": null,
+     "profile_digest": "cc7150678052ad3d4636a930a7fef34f5a991cfe85b633ada5dc49b830b93bda",
+     "revision": "30b594da7b07ad3ac42369dc5d14f4ecdff6d817",
+     "root": "<root>/supervise-gate_down/managed/runtimes/30b594da7b07ad3ac42369dc5d14f4ecdff6d817",
+     "schema": "urn:zeus:host-descriptor:1",
+     "target_id": "managed-fleet",
+     "worker_image": "<absent>"
+    },
+    "managed-launch.json": {
+     "descriptor_sha256": "<digest:supervise-gate_down.A>",
+     "manifest_sha256": "378c6014d0a9cd4135e9de75fa2daae9aa2b4c6e60a55d6d4cda0a6fc7894604",
+     "requested_at": "<time>",
+     "schema": "urn:zeus:managed-launch-request:1",
+     "target_id": "managed-fleet",
+     "workload": "fixture"
+    },
+    "managed-target.json": {
+     "environment_lock": "87637a2b861493da664b9ca92aa62d958d13861ca02f87432edd9798c5c9ee36",
+     "kind": "managed_fleet_systemd",
+     "python": "<python>",
+     "root": "<root>/supervise-gate_down/managed",
+     "service": "zeus-aibox-managed-fleet",
+     "source": "<root>/source",
+     "state_dir": "<root>/supervise-gate_down/state-managed-fleet",
+     "target_id": "managed-fleet"
+    },
+    "supervisor-journal.jsonl": [
+     {
+      "at": "<time>",
+      "event": "refused",
+      "invocation_id": "<invocation>",
+      "reason_code": "fleet_pause_unknown"
+     }
+    ]
+   }
+  },
+  "launches_once": {
+   "exit": 0,
+   "gate_calls": [
+    [
+     "managed-fleet",
+     "<digest:supervise-once.A>"
+    ]
+   ],
+   "gate_named_the_request": true,
+   "journal": [
+    {
+     "at": "<time>",
+     "descriptor_sha256": "<digest:supervise-once.A>",
+     "event": "launch",
+     "invocation_id": "<invocation>",
+     "workload": "fixture"
+    }
+   ],
+   "launched": [
+    [
+     "<root>/supervise-launches_once/state-managed-fleet",
+     "<digest:supervise-once.A>",
+     "fixture"
+    ]
+   ],
+   "launched_exactly_the_request": true,
+   "state_dir": {
+    "descriptor.json": {
+     "predecessor": null,
+     "profile_digest": "cc7150678052ad3d4636a930a7fef34f5a991cfe85b633ada5dc49b830b93bda",
+     "revision": "30b594da7b07ad3ac42369dc5d14f4ecdff6d817",
+     "root": "<root>/supervise-launches_once/managed/runtimes/30b594da7b07ad3ac42369dc5d14f4ecdff6d817",
+     "schema": "urn:zeus:host-descriptor:1",
+     "target_id": "managed-fleet",
+     "worker_image": "<absent>"
+    },
+    "managed-launch.json": {
+     "descriptor_sha256": "<digest:supervise-once.A>",
+     "manifest_sha256": "378c6014d0a9cd4135e9de75fa2daae9aa2b4c6e60a55d6d4cda0a6fc7894604",
+     "requested_at": "<time>",
+     "schema": "urn:zeus:managed-launch-request:1",
+     "target_id": "managed-fleet",
+     "workload": "fixture"
+    },
+    "managed-target.json": {
+     "environment_lock": "87637a2b861493da664b9ca92aa62d958d13861ca02f87432edd9798c5c9ee36",
+     "kind": "managed_fleet_systemd",
+     "python": "<python>",
+     "root": "<root>/supervise-launches_once/managed",
+     "service": "zeus-aibox-managed-fleet",
+     "source": "<root>/source",
+     "state_dir": "<root>/supervise-launches_once/state-managed-fleet",
+     "target_id": "managed-fleet"
+    },
+    "supervisor-journal.jsonl": [
+     {
+      "at": "<time>",
+      "descriptor_sha256": "<digest:supervise-once.A>",
+      "event": "launch",
+      "invocation_id": "<invocation>",
+      "workload": "fixture"
+     }
+    ]
+   }
+  },
+  "no_request": {
+   "exit": 2,
+   "exit_is_refused": true,
+   "expected_reason": "launch_request_invalid",
+   "fault": "no_request",
+   "gate_calls": [],
+   "journal": [
+    {
+     "at": "<time>",
+     "event": "refused",
+     "invocation_id": "<invocation>",
+     "reason_code": "launch_request_invalid"
+    }
+   ],
+   "last_event_is_the_refusal": true,
+   "launched": [],
+   "state_dir": {
+    "descriptor.json": {
+     "predecessor": null,
+     "profile_digest": "cc7150678052ad3d4636a930a7fef34f5a991cfe85b633ada5dc49b830b93bda",
+     "revision": "30b594da7b07ad3ac42369dc5d14f4ecdff6d817",
+     "root": "<root>/supervise-no_request/managed/runtimes/30b594da7b07ad3ac42369dc5d14f4ecdff6d817",
+     "schema": "urn:zeus:host-descriptor:1",
+     "target_id": "managed-fleet",
+     "worker_image": "<absent>"
+    },
+    "managed-target.json": {
+     "environment_lock": "87637a2b861493da664b9ca92aa62d958d13861ca02f87432edd9798c5c9ee36",
+     "kind": "managed_fleet_systemd",
+     "python": "<python>",
+     "root": "<root>/supervise-no_request/managed",
+     "service": "zeus-aibox-managed-fleet",
+     "source": "<root>/source",
+     "state_dir": "<root>/supervise-no_request/state-managed-fleet",
+     "target_id": "managed-fleet"
+    },
+    "supervisor-journal.jsonl": [
+     {
+      "at": "<time>",
+      "event": "refused",
+      "invocation_id": "<invocation>",
+      "reason_code": "launch_request_invalid"
+     }
+    ]
+   }
+  },
+  "stop_requested": {
+   "exit": 2,
+   "exit_is_refused": true,
+   "expected_reason": "stop_requested",
+   "fault": "stop_requested",
+   "gate_calls": [],
+   "journal": [
+    {
+     "at": "<time>",
+     "event": "refused",
+     "invocation_id": "<invocation>",
+     "reason_code": "stop_requested"
+    }
+   ],
+   "last_event_is_the_refusal": true,
+   "launched": [],
+   "state_dir": {
+    "descriptor.json": {
+     "predecessor": null,
+     "profile_digest": "cc7150678052ad3d4636a930a7fef34f5a991cfe85b633ada5dc49b830b93bda",
+     "revision": "30b594da7b07ad3ac42369dc5d14f4ecdff6d817",
+     "root": "<root>/supervise-stop_requested/managed/runtimes/30b594da7b07ad3ac42369dc5d14f4ecdff6d817",
+     "schema": "urn:zeus:host-descriptor:1",
+     "target_id": "managed-fleet",
+     "worker_image": "<absent>"
+    },
+    "managed-launch.json": {
+     "descriptor_sha256": "<digest:supervise-stop_requested.A>",
+     "manifest_sha256": "378c6014d0a9cd4135e9de75fa2daae9aa2b4c6e60a55d6d4cda0a6fc7894604",
+     "requested_at": "<time>",
+     "schema": "urn:zeus:managed-launch-request:1",
+     "target_id": "managed-fleet",
+     "workload": "fixture"
+    },
+    "managed-target.json": {
+     "environment_lock": "87637a2b861493da664b9ca92aa62d958d13861ca02f87432edd9798c5c9ee36",
+     "kind": "managed_fleet_systemd",
+     "python": "<python>",
+     "root": "<root>/supervise-stop_requested/managed",
+     "service": "zeus-aibox-managed-fleet",
+     "source": "<root>/source",
+     "state_dir": "<root>/supervise-stop_requested/state-managed-fleet",
+     "target_id": "managed-fleet"
+    },
+    "stop.json": {},
+    "supervisor-journal.jsonl": [
+     {
+      "at": "<time>",
+      "event": "refused",
+      "invocation_id": "<invocation>",
+      "reason_code": "stop_requested"
+     }
+    ]
+   }
+  },
+  "wrong_kind": {
+   "exit": 2,
+   "exit_is_refused": true,
+   "expected_reason": "launch_request_foreign",
+   "fault": "wrong_kind",
+   "gate_calls": [],
+   "journal": [
+    {
+     "at": "<time>",
+     "event": "refused",
+     "invocation_id": "<invocation>",
+     "reason_code": "launch_request_foreign"
+    }
+   ],
+   "last_event_is_the_refusal": true,
+   "launched": [],
+   "state_dir": {
+    "descriptor.json": {
+     "predecessor": null,
+     "profile_digest": "cc7150678052ad3d4636a930a7fef34f5a991cfe85b633ada5dc49b830b93bda",
+     "revision": "30b594da7b07ad3ac42369dc5d14f4ecdff6d817",
+     "root": "<root>/supervise-wrong_kind/managed/runtimes/30b594da7b07ad3ac42369dc5d14f4ecdff6d817",
+     "schema": "urn:zeus:host-descriptor:1",
+     "target_id": "managed-fleet",
+     "worker_image": "<absent>"
+    },
+    "managed-launch.json": {
+     "descriptor_sha256": "<digest:supervise-wrong_kind.A>",
+     "manifest_sha256": "378c6014d0a9cd4135e9de75fa2daae9aa2b4c6e60a55d6d4cda0a6fc7894604",
+     "requested_at": "<time>",
+     "schema": "urn:zeus:managed-launch-request:1",
+     "target_id": "managed-fleet",
+     "workload": "fixture"
+    },
+    "managed-target.json": {
+     "environment_lock": "87637a2b861493da664b9ca92aa62d958d13861ca02f87432edd9798c5c9ee36",
+     "kind": "managed_fleet",
+     "python": "<python>",
+     "root": "<root>/supervise-wrong_kind/managed",
+     "service": "zeus-aibox-managed-fleet",
+     "source": "<root>/source",
+     "state_dir": "<root>/supervise-wrong_kind/state-managed-fleet",
+     "target_id": "managed-fleet"
+    },
+    "supervisor-journal.jsonl": [
+     {
+      "at": "<time>",
+      "event": "refused",
+      "invocation_id": "<invocation>",
+      "reason_code": "launch_request_foreign"
+     }
+    ]
+   }
+  }
+ },
+ "unit_state": {
+  "read_never_guessed": {
+   "broken": {
+    "message": "managed unit state unavailable",
+    "raised": "RuntimeError"
+   },
+   "show_argv": [
+    "systemctl",
+    "show",
+    "zeus-aibox-managed-fleet.service",
+    "-p",
+    "ActiveState",
+    "-p",
+    "MainPID",
+    "-p",
+    "InvocationID"
+   ],
+   "states": {
+    "<empty>": {
+     "raised": {
+      "message": "managed unit state unavailable",
+      "type": "RuntimeError"
+     }
+    },
+    "activating": {
+     "returned": true
+    },
+    "active": {
+     "returned": true
+    },
+    "deactivating": {
+     "returned": true
+    },
+    "failed": {
+     "returned": false
+    },
+    "inactive": {
+     "returned": false
+    },
+    "maintenance": {
+     "raised": {
+      "message": "managed unit state unavailable",
+      "type": "RuntimeError"
+     }
+    },
+    "reloading": {
+     "returned": true
+    }
+   },
+   "timeout": 60,
+   "unknown": {
+    "message": "managed unit state unavailable",
+    "raised": "RuntimeError"
+   }
+  }
+ },
+ "unreachable": {
+  "host_cgroup": "KillMode=control-group, Restart=on-failure and the unit's real control group are systemd's own behaviour on the host: M7's docstring names them a live qualification item, and no real unit is installed, started or stopped here"
+ }
+}
