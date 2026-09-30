@@ -813,7 +813,10 @@ class HostTargetBase:
                 raise
             try:
                 self._retire(target)
-                started = self._launch(target, descriptor, context)
+                # S2R F1: the persisted launch request carries THIS maintenance request's own `requested_at`,
+                # written before the one start, so a replay after an unconfirmed start recognizes its own
+                # attempt (and never launches again) through the existing launch-request protocol.
+                started = self._launch(target, descriptor, {**context, "requested_at": restarts["requested_at"]})
             except Exception as exc:
                 # The incumbent's files are retired (and, on `replace`, it was stopped): the start's
                 # outcome is unknown and is reconciled by a same-request replay, never redone blindly.

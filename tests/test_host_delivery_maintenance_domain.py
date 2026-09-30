@@ -218,7 +218,7 @@ def launched(**overrides):
     """The observation after the one launch: the new invocation, controller-state and receipt."""
     unit = {"invocation_id": NEW_INVOCATION, **overrides.pop("unit", {})}
     return observation(**{"launch": NEW_LAUNCH, "launch_sha256": digest(NEW_LAUNCH),
-                          "launch_request_requested_at": "2026-09-22T00:00:11+00:00",
+                          "launch_request_requested_at": REQUESTED_AT,
                           "receipt": receipt(NEW_INSTANCE), "unit": unit, **overrides})
 
 
@@ -271,6 +271,19 @@ CLASSIFY_CASES = [
         launch_request_requested_at="2026-09-22T00:00:09+00:00"), (None, "maintenance_launch_unconfirmed", "launch")),
     ("launch request after the launch", launched(launch_request_requested_at="2026-09-22T00:00:13+00:00"),
      (None, "maintenance_launch_unconfirmed", "launch")),
+    ("launch request inside the window but not this attempt's",
+     launched(launch_request_requested_at="2026-09-22T00:00:11+00:00"), (None, "maintenance_launch_unconfirmed", "launch")),
+    # S2R F1: the retiring controller-state and a stopped unit, but THIS attempt's launch request persisted: the
+    # start's outcome is unproven, so a replay holds instead of launching again.
+    ("stopped, but this attempt's launch request persisted", observation(
+        running=False, receipt=None, receipt_present=False, unit={"active_state": "inactive", "invocation_id": None},
+        launch_request_requested_at=REQUESTED_AT), (None, "maintenance_launch_unconfirmed", "launch")),
+    ("stopped, a launch request after this request", observation(
+        running=False, receipt=None, receipt_present=False, unit={"active_state": "inactive", "invocation_id": None},
+        launch_request_requested_at="2026-09-22T00:00:12+00:00"), (None, "maintenance_launch_unconfirmed", "launch")),
+    ("stopped, the launch request unreadable", observation(
+        running=False, receipt=None, receipt_present=False, unit={"active_state": "inactive", "invocation_id": None},
+        launch_request_requested_at=None, launch_request_sha256=None), (None, "maintenance_launch_unconfirmed", "launch")),
     ("no launch request", launched(launch_request_requested_at=None, launch_request_sha256=None),
      (None, "maintenance_launch_unconfirmed", "launch")),
     ("unit runs yet another invocation", launched(unit={"invocation_id": "9" * 32}),

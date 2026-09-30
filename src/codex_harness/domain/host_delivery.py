@@ -1564,9 +1564,11 @@ def classify_restart(descriptor: dict, observation, restarts) -> dict:
     recorded incumbent (its consumed receipt, its unit invocation and launch, a supervisor that is the
     unit's main pid, an entry that is its child in its control group and started before its receipt, and
     idle work). `launch`: the same retiring launch, positively stopped (no other instance, receipt absent
-    or the retiring one, the unit not active under another invocation). `recognized`: the controller-state
-    changed to a launch of this descriptor under a NEW invocation, started after the request, whose
-    persisted launch request lies within [requested_at, started_at] and which the unit is running now.
+    or the retiring one, the unit not active under another invocation) and no launch request of this or a
+    later request persisted (S2R F1: such a request is a start of unproven outcome, held). `recognized`: the
+    controller-state changed to a launch of this descriptor under a NEW invocation, started after the
+    request, whose persisted launch request carries exactly this request's time, and which the unit is
+    running now.
     Anything else refuses before any effect; an arbitrary changed launch (a reboot, an unrecorded N1
     replacement) is never adopted."""
     try:
@@ -1607,15 +1609,23 @@ def classify_restart(descriptor: dict, observation, restarts) -> dict:
         absent = receipt is None and observed["receipt_state"] == "absent"
         if ((absent or names_retiring) and unit["invocation_id"] in (None, authority["invocation_id"])
                 and unit["active_state"] in (None, "inactive", "failed")):
+            # S2R F1: the one launch of THIS request persists its launch request (stamped with the request's
+            # own time) BEFORE its start. Such a request (or any launch request not older than this
+            # maintenance request) with the controller-state still the retiring launch means a start whose
+            # outcome is unproven: hold, never launch a second time. An unreadable request proves nothing.
+            request_at = _aware(observed["launch_request_requested_at"])
+            if request_at is None or request_at >= _aware(authority["requested_at"]):
+                return _decision(None, "maintenance_launch_unconfirmed", "launch")
             return _decision(RESTART_LAUNCH)
         return _decision(None, "maintenance_invocation_mismatch", "instance_id")
     requested = _aware(authority["requested_at"])
     started = _aware((launch or {}).get("started_at")) if isinstance(launch, dict) else None
     request_at = _aware(observed["launch_request_requested_at"])
+    # Recognition is bound to THIS attempt: the persisted launch request carries exactly the request's time.
     if (isinstance(launch, dict) and launch.get("descriptor_sha256") == descriptor_digest(descriptor)
             and _hex(launch.get("invocation_id"), INVOCATION) and launch["invocation_id"] != authority["invocation_id"]
             and started is not None and started >= requested and request_at is not None
-            and requested <= request_at <= started and unit["invocation_id"] == launch["invocation_id"]):
+            and request_at == requested and unit["invocation_id"] == launch["invocation_id"]):
         return _decision(RESTART_RECOGNIZED)
     return _decision(None, "maintenance_launch_unconfirmed", "launch")
 

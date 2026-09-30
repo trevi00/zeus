@@ -593,7 +593,9 @@ class SystemdManagedFleetTarget(ManagedFleetTarget):
             "schema": LAUNCH_REQUEST_SCHEMA, "target_id": target["target_id"],
             "descriptor_sha256": descriptor_digest(descriptor),
             "manifest_sha256": manifest_digest(context["manifest"]), "workload": self.workload,
-            "requested_at": _utcnow()})
+            # An active-generation maintenance binds its launch to its own request time (S2R F1); every other
+            # launch is stamped now, exactly as before.
+            "requested_at": context.get("requested_at") or _utcnow()})
         _write_json(self.path(target, LAUNCH_REQUEST_FILE), request)
         result = self.runner(["systemctl", "start", self.unit(target)], timeout=self.timeout)
         if result.returncode:
