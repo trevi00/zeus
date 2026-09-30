@@ -13,7 +13,7 @@ from __future__ import annotations
 
 from typing import Protocol
 
-OWNED_BUCKETS = ("inbox", "incidents", "hooks")
+OWNED_BUCKETS = ("inbox", "incidents", "hooks", "research_programs")  # S6: ProgramState.resume
 
 
 class OutboxAppend(Protocol):

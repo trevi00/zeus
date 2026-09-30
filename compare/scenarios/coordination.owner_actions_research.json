@@ -2,8 +2,7 @@
  "family": "coordination.owner_actions_research",
  "description": "S6 OwnerActions scheduler and research families over the recorded, labelled research rows of compare/fixtures/s6/research.json (DESIGN-s6 §7; TRACE-s6 §9): the scheduler (register replay and conflict, invalid policies, status projections, an unregistered/changed-pin/disabled policy, a missing continuation policy, a delivery target mismatch, an idle tick writing nothing and calling no port); G1 scoped research acceptance through the assessments port and Continuation.accept_research (the accepted assessment assembling the exact receipt and the continuation tick releasing the hold once, rejected and blocked terminal states, one relaunch of an unfinished or never-spawned assessment, a lost start response, restarts around the model and the receipt, exact-binding reuse, a changed attempt, no accepted research yet, a success before the launch exits, unproven cleanup or settlement); C3 research dispatch through the research port (provider unavailable refusing before any resume, the probe ok resuming the program and persisting the launch id before the start, polling only, collection-only, foreign, relaunched-once and owned-crashed cycles, every research_outcome shape over labelled cycle rows, every row of the ported RO-1 decision table from the recorded state, idempotent discovery across restarts and a second coordinator). The delivery owner actions (plan, canary, requalify, migration) are S7's",
  "reference_driver": "drivers/reference/s6_owner_actions_research.py",
- "target_driver": null,
- "target_status": "pending: S6 OwnerActions split",
+ "target_driver": "drivers/target/s6_owner_actions_research.py",
  "golden": "goldens/reference/coordination.owner_actions_research.json",
  "slice": "S6"
 }

@@ -36,7 +36,10 @@ OWNED_BUCKETS = ("tasks", "decisions_pending", "outbox", "events", "execution_fe
                  # S6 Continuation split (DESIGN-s6 §3 and §9); `continuation_bindings` is the lane store's.
                  "continuation_policies", "continuation_intents", "continuation_progress", "continuation_bindings",
                  "continuation_research_receipts", "continuation_research_supplements",
-                 "continuation_capacity_grants", "continuation_requalifications")
+                 "continuation_capacity_grants", "continuation_requalifications",
+                 # S6 OwnerActions split (DESIGN-s6 §4 and §9).
+                 "owner_action_policies", "owner_actions", "owner_action_migrations",
+                 "continuation_effective_bindings")
 
 
 class TaskRunner(Protocol):
@@ -86,3 +89,9 @@ class ResearchEvidence(Protocol):
     """The trusted research evidence reader: `verify(ref)` checks one content-addressed reference's actual bytes."""
 
     def verify(self, reference) -> None: ...
+
+
+class ResearchPrograms(Protocol):
+    """Research's program resume (S6 moved ahead: research.application.program_state.ProgramState), in its own unit."""
+
+    def resume(self, program_id: str) -> dict: ...
