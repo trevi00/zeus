@@ -92,7 +92,7 @@ S6_IMPLEMENTED = {"coordination.guarded_launch", "coordination.continuation_tick
                   "coordination.continuation_research", "coordination.owner_actions_research",
                   "effects.continuation_units", "effects.continuation_units.pg"}
 S7_FAMILIES = {"review.releases_queue", "delivery.registry", "delivery.stages", "delivery.owner_commands",
-               "delivery.migration"}
+               "delivery.migration", "delivery.host_migrations"}
 S7_IMPLEMENTED = {"review.releases_queue", "delivery.registry", "delivery.stages",
                   "delivery.owner_commands", "delivery.migration"}
 IMPLEMENTED = {**{f: "S1" for f in S1_FAMILIES}, **{f: "S2" for f in S2_FAMILIES},

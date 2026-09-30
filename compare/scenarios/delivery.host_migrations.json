@@ -1,0 +1,9 @@
+{
+ "family": "delivery.host_migrations",
+ "description": "S7 M7 HostMigrations, the store-only host-migration receipt recorder (INV-HOST-MIGRATION-001), characterized before its move: plan/status/manifest (order-independent digest, every manifest refusal by field never by value, the source public control ledger, idempotent plan and conflict, unknown migration), advance and checkpoints (the forward walk, failing/unknown/inconsistent receipts, failure and resume, checkpoint replay and conflicts, limited_active bound to the intent, the intent only in restored_paused, rollback plan R0 and R1), the PH4 managed lineage at the store level (legacy identity golden, lineage field refusals, no fallback between the two forms, receipt bindings, descriptor drift, replay, a failing transaction) and the successor rows (record, replay, CAS, evidence refusals, limited_active over the effective head, rollback successor, activation_document and activation_switch through a LABELLED effect incl. one that raises); MemoryStore, LABELLED fixtures of M7's tests",
+ "reference_driver": "drivers/reference/s7_host_migrations.py",
+ "target_driver": null,
+ "golden": "goldens/reference/delivery.host_migrations.json",
+ "slice": "S7",
+ "target_status": "pending: S7 HostMigrations move"
+}
