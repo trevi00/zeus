@@ -1,0 +1,8 @@
+{
+ "family": "coordination.owner_actions_delivery",
+ "description": "S7 M7 OwnerActions delivery families over the REAL HostDelivery of a lane store, characterized from SOURCE: G2 plan publication and registration (the domain plan builder for a first activation and an upgrade, the ordinary discovery callsite publishing and registering the concrete tuple, an upgrade keeping unchanged and never consulting the first-activation port, every missing/failing/malformed port a named wait writing nothing, a recovered port planning once, a recorded intended row without bound facts refused before publication, the migration successor of a first activation and of an upgrade, an unbound successor waiting staged then completing once bound), C1 requalify and withdraw (a blocked reviewed_base_moved plan withdrawn once and requalified once across every restart point, main moving between the persisted document and the call, a changed goal, an unobservable GitHub, the family cap, the same blocked plan one action for restarts and second coordinators, other reasons and a touched host, an unregistered target, version 1 policies, the strict version 2 blocks) and scheduler integration (the delivery families discovered and advanced by OwnerActions.tick next to an idle research family, and status projecting them); MemoryStore, LABELLED shared delivery doubles (s7_delivery) and the labelled plan publisher, target files, first-activation, withdrawal, mainline and requalify ports of this family",
+ "reference_driver": "drivers/reference/s7_owner_actions_delivery.py",
+ "target_driver": "drivers/target/s7_owner_actions_delivery.py",
+ "golden": "goldens/reference/coordination.owner_actions_delivery.json",
+ "slice": "S7"
+}
