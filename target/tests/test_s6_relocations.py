@@ -17,7 +17,9 @@ def test_v2_operation_manifest_names_are_one_object(name):
     old = importlib.import_module("codex_harness.coordination.domain.operation")
     assert getattr(old, name) is getattr(home, name)
 
-V1_NAMES = ("ContinuationRefused", "refuse", "EVIDENCE_REPAIR", "CORRECTION", "SUCCESSOR_ROUTES")
+V1_NAMES = ("ContinuationRefused", "refuse", "RESEARCH", "RESEARCH_REQUIRED", "COMPLETED", "REFUSED", "EVIDENCE_REPAIR",
+            "CORRECTION", "SUCCESSOR_ROUTES", "FAILURE_ROUTES", "ATTEMPT_SCOPE", "ATTEMPT_SCOPE_PREFIX",
+            "attempt_scope_id", "research_attempts", "accepted_candidate")
 
 
 @pytest.mark.parametrize("name", V1_NAMES)
@@ -25,3 +27,7 @@ def test_v1_research_hold_names_are_one_object(name):
     home = importlib.import_module("codex_harness.research.domain.research_hold")
     old = importlib.import_module("codex_harness.coordination.domain.continuation")
     assert getattr(old, name) is getattr(home, name)
+
+
+def test_v1_names_are_the_fifteen_the_design_names():
+    assert len(V1_NAMES) == 15 and len(set(V1_NAMES)) == 15
