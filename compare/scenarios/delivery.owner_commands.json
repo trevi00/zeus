@@ -1,0 +1,9 @@
+{
+ "family": "delivery.owner_commands",
+ "description": "S7 owner commands of M7 HostDelivery, characterized before the V8 split: withdraw (every refusal with nothing written, the same fence a tick takes, the crash between the withdrawal and the queue finish, the recorded tree mismatch, the stale predecessor, cached replay and conflict), resume (the legacy merged/unverified halt back to verifying and on to active), resume_first_activation (the bound tuple, the trusted port's facts, the approver, the replay), resume_consumption_retry and resume_consumption_rearm (the exact document grammar, the trusted live host, one anchored window, exhaustion) and resume_generation_restart (the positively stopped generation, one start under the fence, a lost start response recognized, a held fence keeping the recorded request); MemoryStore, LABELLED shared delivery doubles (s7_delivery)",
+ "reference_driver": "drivers/reference/s7_owner_commands.py",
+ "target_driver": null,
+ "golden": "goldens/reference/delivery.owner_commands.json",
+ "slice": "S7",
+ "target_status": "pending: S7 HostDelivery split (DESIGN-s7 V8)"
+}
