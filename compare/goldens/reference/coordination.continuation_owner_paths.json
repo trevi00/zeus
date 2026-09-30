@@ -1,0 +1,5365 @@
+{
+ "migration_chain": {
+  "beyond_max_hops": {
+   "again": {
+    "receipts": [
+     {
+      "value": {
+       "actions": [],
+       "outcome": "blocked",
+       "owned_elsewhere": {
+        "count": 0,
+        "jobs": []
+       },
+       "policy_id": "policy-1",
+       "reason_code": null,
+       "schema": "urn:zeus:continuation-tick:1",
+       "skipped": [
+        {
+         "next_owner": "operator",
+         "reason_code": "delivery_withdrawn",
+         "subject": "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648"
+        }
+       ]
+      }
+     },
+     {
+      "value": {
+       "actions": [],
+       "outcome": "blocked",
+       "owned_elsewhere": {
+        "count": 0,
+        "jobs": []
+       },
+       "policy_id": "policy-1",
+       "reason_code": null,
+       "schema": "urn:zeus:continuation-tick:1",
+       "skipped": [
+        {
+         "next_owner": "operator",
+         "reason_code": "delivery_withdrawn",
+         "subject": "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648"
+        }
+       ]
+      }
+     }
+    ],
+    "records_unchanged": true
+   },
+   "delivery": {
+    "binding": "bound",
+    "foreign": 0,
+    "plan_id": "own-0",
+    "plan_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+    "release_id": "rel-op-a",
+    "revision": "cccccccccccccccccccccccccccccccccccccccc",
+    "stage": "withdrawn",
+    "target_id": "fleet-host"
+   },
+   "dispatched": {
+    "value": {
+     "actions": [
+      {
+       "effect": "conductor_decided",
+       "route": "conductor_review",
+       "subject": "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66"
+      }
+     ],
+     "outcome": "progressed",
+     "owned_elsewhere": {
+      "count": 0,
+      "jobs": []
+     },
+     "policy_id": "policy-1",
+     "reason_code": null,
+     "schema": "urn:zeus:continuation-tick:1",
+     "skipped": []
+    }
+   },
+   "intents": [
+    {
+     "decision": {
+      "accepted": true,
+      "execution_ref": "sha256:9999999999999999999999999999999999999999999999999999999999999999",
+      "id": "cond-op-a",
+      "status": "succeeded"
+     },
+     "delivery_binding": null,
+     "delivery_plan": null,
+     "family": "op-a",
+     "history": [
+      [
+       "intended",
+       "lead_accepted"
+      ],
+      [
+       "dispatched",
+       "lead_accepted"
+      ],
+      [
+       "returned",
+       "lead_accepted"
+      ],
+      [
+       "completed",
+       "lead_accepted"
+      ]
+     ],
+     "hold": null,
+     "id": "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66",
+     "launch": {
+      "error_type": null,
+      "exit_code": 0,
+      "id": "f56c77bbf993bc7aee527847f925d76997b2283a67f3d66db2ad394421d3b0ef",
+      "sequence": 1,
+      "state": "exited"
+     },
+     "next_owner": "conductor",
+     "origin_job": "op-a",
+     "ownership": null,
+     "predecessor_intent": null,
+     "reason_code": "lead_accepted",
+     "route": "conductor_review",
+     "session_mode": null,
+     "state": "completed",
+     "successor_job": null,
+     "version": 5
+    },
+    {
+     "decision": null,
+     "delivery_binding": {
+      "release_id": "rel-op-a",
+      "revision": "cccccccccccccccccccccccccccccccccccccccc",
+      "target_id": "fleet-host"
+     },
+     "delivery_plan": null,
+     "family": "op-a",
+     "history": [
+      [
+       "awaiting_owner",
+       "conductor_accepted"
+      ]
+     ],
+     "hold": null,
+     "id": "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648",
+     "launch": null,
+     "next_owner": "host_delivery",
+     "origin_job": "op-a",
+     "ownership": null,
+     "predecessor_intent": null,
+     "reason_code": "conductor_accepted",
+     "route": "host_delivery",
+     "session_mode": null,
+     "state": "awaiting_owner",
+     "successor_job": null,
+     "version": 1
+    }
+   ],
+   "state": {
+    "conductor": {
+     "calls": [
+      "op-a"
+     ],
+     "running": []
+    },
+    "control": [
+     [
+      "continuation_intents",
+      "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648",
+      "e0ac1077a3ff605ab765fbe70abe23347eb4335b742cf8367a8193df1e24b0f8"
+     ],
+     [
+      "continuation_intents",
+      "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66",
+      "ff815e1e8f7ee7154e4beabdf0a3cf1aaa659893d13833dfd7de03efbe9f2c37"
+     ],
+     [
+      "continuation_policies",
+      "policy-1",
+      "8cfb30ef2891de1412f87255419afb3f748e141ea3b18a292d8e78f615da6152"
+     ],
+     [
+      "continuation_progress",
+      "policy-1",
+      "4d2d8831a65ec745efb57233d729a9abcdea7627fb7a581f61b65ca0a4680618"
+     ],
+     [
+      "fleet_control",
+      "admission",
+      "eb67ed2fb1e0fc49b3cd382387dff5fd991cc3e69025e02e911735a57313933c"
+     ],
+     [
+      "fleet_jobs",
+      "op-a",
+      "b2b62462ab68fa6a39632b4633cc1d0bca6889741cbc0ec0e88448de908d1684"
+     ],
+     [
+      "fleet_registry",
+      "fleet-1",
+      "bd6513980dc5cf8fd28101e53442a7c9bb46db2737b28b4846793e479c8b6065"
+     ],
+     [
+      "fleet_units",
+      "f56c77bbf993bc7aee527847f925d76997b2283a67f3d66db2ad394421d3b0ef",
+      "51c1075df1f2255436bf26ea5a7f09486704f298c29515c0c983cdc7017c946a"
+     ]
+    ],
+    "lane": [
+     [
+      "decisions_pending",
+      "cond-op-a",
+      "9de0bd66007ea463d90fd29088a77810bd6f31f4bbbcb752702a6012b25adb4b"
+     ],
+     [
+      "decisions_pending",
+      "dec-op-a",
+      "4997412b134c0aa279f5ae8e7846423ff12c58deb06a4047eeafb1b9e4cd3dc7"
+     ],
+     [
+      "host_delivery_intents",
+      "own-0",
+      "9760226102bea5e8e4c51523bd34615ccf046ede41ab0a42d10a0088821ab541"
+     ],
+     [
+      "host_delivery_intents",
+      "own-1",
+      "390cc0ddbeadfe3fe53821598099530dbc79fdfddad153d2657711567f0276e4"
+     ],
+     [
+      "host_delivery_intents",
+      "own-2",
+      "76cd031f787fe94fa803451fa6e670a00006412c1e25c775dff87f6f5fb5b240"
+     ],
+     [
+      "host_delivery_intents",
+      "own-3",
+      "8b488730ad1365a0269b5a5aad8ce3f7dc0dc4780b5b87d1761e761343252df1"
+     ],
+     [
+      "host_delivery_migrations",
+      "own-0",
+      "7bf64f01e685a047e45739c583eeefe4630ce6f7d83c39293f87a7a61e15ee07"
+     ],
+     [
+      "host_delivery_migrations",
+      "own-1",
+      "7b357fe5ad9961199cd39f1ae1e776e31e9ffe867462e331e6e2c2ec27efae55"
+     ],
+     [
+      "host_delivery_migrations",
+      "own-2",
+      "70599367e6c00057dd73ad3f810434264c12011200ff3066398918f3dac8b757"
+     ],
+     [
+      "operations",
+      "op-a",
+      "d3ccf9badf9694935c42b360ba3a3b155a03484310548af063c1b0a1e43c8665"
+     ],
+     [
+      "releases",
+      "rel-1",
+      "96ae0e1d6f4e5eeb947c491731639aca24de513687acef9e76f0b1a672d9459a"
+     ],
+     [
+      "releases",
+      "rel-2",
+      "f4aaa8647b30c63b5863e4f4481b15820f0065653d81f845f1bdc827a729c5fc"
+     ],
+     [
+      "releases",
+      "rel-3",
+      "cdc19c46ccf1405998555cfaaf1358a384b8e74d72f377ad423a5d7fbbb6ac5b"
+     ],
+     [
+      "releases",
+      "rel-op-a",
+      "9c36785a9d7107530f9c5b869391161028c06a60f0bab3082b61d7c74f1eadaa"
+     ],
+     [
+      "tasks",
+      "task-op-a",
+      "151c9860df297912c091cee0eb68bd32a33658b539810bb0e1f9215ff91df301"
+     ]
+    ],
+    "reads": [
+     "op-a",
+     "op-a",
+     "op-a",
+     "op-a",
+     "op-a"
+    ]
+   },
+   "tick": {
+    "value": {
+     "actions": [],
+     "outcome": "blocked",
+     "owned_elsewhere": {
+      "count": 0,
+      "jobs": []
+     },
+     "policy_id": "policy-1",
+     "reason_code": null,
+     "schema": "urn:zeus:continuation-tick:1",
+     "skipped": [
+      {
+       "next_owner": "operator",
+       "reason_code": "delivery_withdrawn",
+       "subject": "op-a"
+      }
+     ]
+    }
+   }
+  },
+  "branch": {
+   "again": {
+    "receipts": [
+     {
+      "value": {
+       "actions": [],
+       "outcome": "blocked",
+       "owned_elsewhere": {
+        "count": 0,
+        "jobs": []
+       },
+       "policy_id": "policy-1",
+       "reason_code": null,
+       "schema": "urn:zeus:continuation-tick:1",
+       "skipped": [
+        {
+         "next_owner": "operator",
+         "reason_code": "delivery_withdrawn",
+         "subject": "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648"
+        }
+       ]
+      }
+     },
+     {
+      "value": {
+       "actions": [],
+       "outcome": "blocked",
+       "owned_elsewhere": {
+        "count": 0,
+        "jobs": []
+       },
+       "policy_id": "policy-1",
+       "reason_code": null,
+       "schema": "urn:zeus:continuation-tick:1",
+       "skipped": [
+        {
+         "next_owner": "operator",
+         "reason_code": "delivery_withdrawn",
+         "subject": "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648"
+        }
+       ]
+      }
+     }
+    ],
+    "records_unchanged": true
+   },
+   "delivery": {
+    "binding": "bound",
+    "foreign": 0,
+    "plan_id": "own-0",
+    "plan_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+    "release_id": "rel-op-a",
+    "revision": "cccccccccccccccccccccccccccccccccccccccc",
+    "stage": "withdrawn",
+    "target_id": "fleet-host"
+   },
+   "dispatched": {
+    "value": {
+     "actions": [
+      {
+       "effect": "conductor_decided",
+       "route": "conductor_review",
+       "subject": "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66"
+      }
+     ],
+     "outcome": "progressed",
+     "owned_elsewhere": {
+      "count": 0,
+      "jobs": []
+     },
+     "policy_id": "policy-1",
+     "reason_code": null,
+     "schema": "urn:zeus:continuation-tick:1",
+     "skipped": []
+    }
+   },
+   "intents": [
+    {
+     "decision": {
+      "accepted": true,
+      "execution_ref": "sha256:9999999999999999999999999999999999999999999999999999999999999999",
+      "id": "cond-op-a",
+      "status": "succeeded"
+     },
+     "delivery_binding": null,
+     "delivery_plan": null,
+     "family": "op-a",
+     "history": [
+      [
+       "intended",
+       "lead_accepted"
+      ],
+      [
+       "dispatched",
+       "lead_accepted"
+      ],
+      [
+       "returned",
+       "lead_accepted"
+      ],
+      [
+       "completed",
+       "lead_accepted"
+      ]
+     ],
+     "hold": null,
+     "id": "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66",
+     "launch": {
+      "error_type": null,
+      "exit_code": 0,
+      "id": "f56c77bbf993bc7aee527847f925d76997b2283a67f3d66db2ad394421d3b0ef",
+      "sequence": 1,
+      "state": "exited"
+     },
+     "next_owner": "conductor",
+     "origin_job": "op-a",
+     "ownership": null,
+     "predecessor_intent": null,
+     "reason_code": "lead_accepted",
+     "route": "conductor_review",
+     "session_mode": null,
+     "state": "completed",
+     "successor_job": null,
+     "version": 5
+    },
+    {
+     "decision": null,
+     "delivery_binding": {
+      "release_id": "rel-op-a",
+      "revision": "cccccccccccccccccccccccccccccccccccccccc",
+      "target_id": "fleet-host"
+     },
+     "delivery_plan": null,
+     "family": "op-a",
+     "history": [
+      [
+       "awaiting_owner",
+       "conductor_accepted"
+      ]
+     ],
+     "hold": null,
+     "id": "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648",
+     "launch": null,
+     "next_owner": "host_delivery",
+     "origin_job": "op-a",
+     "ownership": null,
+     "predecessor_intent": null,
+     "reason_code": "conductor_accepted",
+     "route": "host_delivery",
+     "session_mode": null,
+     "state": "awaiting_owner",
+     "successor_job": null,
+     "version": 1
+    }
+   ],
+   "state": {
+    "conductor": {
+     "calls": [
+      "op-a"
+     ],
+     "running": []
+    },
+    "control": [
+     [
+      "continuation_intents",
+      "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648",
+      "e0ac1077a3ff605ab765fbe70abe23347eb4335b742cf8367a8193df1e24b0f8"
+     ],
+     [
+      "continuation_intents",
+      "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66",
+      "ff815e1e8f7ee7154e4beabdf0a3cf1aaa659893d13833dfd7de03efbe9f2c37"
+     ],
+     [
+      "continuation_policies",
+      "policy-1",
+      "8cfb30ef2891de1412f87255419afb3f748e141ea3b18a292d8e78f615da6152"
+     ],
+     [
+      "continuation_progress",
+      "policy-1",
+      "4d2d8831a65ec745efb57233d729a9abcdea7627fb7a581f61b65ca0a4680618"
+     ],
+     [
+      "fleet_control",
+      "admission",
+      "eb67ed2fb1e0fc49b3cd382387dff5fd991cc3e69025e02e911735a57313933c"
+     ],
+     [
+      "fleet_jobs",
+      "op-a",
+      "b2b62462ab68fa6a39632b4633cc1d0bca6889741cbc0ec0e88448de908d1684"
+     ],
+     [
+      "fleet_registry",
+      "fleet-1",
+      "bd6513980dc5cf8fd28101e53442a7c9bb46db2737b28b4846793e479c8b6065"
+     ],
+     [
+      "fleet_units",
+      "f56c77bbf993bc7aee527847f925d76997b2283a67f3d66db2ad394421d3b0ef",
+      "51c1075df1f2255436bf26ea5a7f09486704f298c29515c0c983cdc7017c946a"
+     ]
+    ],
+    "lane": [
+     [
+      "decisions_pending",
+      "cond-op-a",
+      "9de0bd66007ea463d90fd29088a77810bd6f31f4bbbcb752702a6012b25adb4b"
+     ],
+     [
+      "decisions_pending",
+      "dec-op-a",
+      "4997412b134c0aa279f5ae8e7846423ff12c58deb06a4047eeafb1b9e4cd3dc7"
+     ],
+     [
+      "host_delivery_intents",
+      "own-0",
+      "9760226102bea5e8e4c51523bd34615ccf046ede41ab0a42d10a0088821ab541"
+     ],
+     [
+      "host_delivery_intents",
+      "own-1",
+      "390cc0ddbeadfe3fe53821598099530dbc79fdfddad153d2657711567f0276e4"
+     ],
+     [
+      "host_delivery_intents",
+      "own-2",
+      "c03d2549a4bcb2889863a679458d073c2009b0653db4b7f8122e9888221e544b"
+     ],
+     [
+      "host_delivery_migrations",
+      "own-0",
+      "7bf64f01e685a047e45739c583eeefe4630ce6f7d83c39293f87a7a61e15ee07"
+     ],
+     [
+      "host_delivery_migrations",
+      "own-1",
+      "7b357fe5ad9961199cd39f1ae1e776e31e9ffe867462e331e6e2c2ec27efae55"
+     ],
+     [
+      "host_delivery_migrations",
+      "own-x",
+      "4dca20a0ae9975053d1f02a5758e7d9c4505b095531ace9805276b84dbbf9019"
+     ],
+     [
+      "operations",
+      "op-a",
+      "d3ccf9badf9694935c42b360ba3a3b155a03484310548af063c1b0a1e43c8665"
+     ],
+     [
+      "releases",
+      "rel-1",
+      "96ae0e1d6f4e5eeb947c491731639aca24de513687acef9e76f0b1a672d9459a"
+     ],
+     [
+      "releases",
+      "rel-2",
+      "f4aaa8647b30c63b5863e4f4481b15820f0065653d81f845f1bdc827a729c5fc"
+     ],
+     [
+      "releases",
+      "rel-3",
+      "cdc19c46ccf1405998555cfaaf1358a384b8e74d72f377ad423a5d7fbbb6ac5b"
+     ],
+     [
+      "releases",
+      "rel-op-a",
+      "9c36785a9d7107530f9c5b869391161028c06a60f0bab3082b61d7c74f1eadaa"
+     ],
+     [
+      "tasks",
+      "task-op-a",
+      "151c9860df297912c091cee0eb68bd32a33658b539810bb0e1f9215ff91df301"
+     ]
+    ],
+    "reads": [
+     "op-a",
+     "op-a",
+     "op-a",
+     "op-a",
+     "op-a"
+    ]
+   },
+   "tick": {
+    "value": {
+     "actions": [],
+     "outcome": "blocked",
+     "owned_elsewhere": {
+      "count": 0,
+      "jobs": []
+     },
+     "policy_id": "policy-1",
+     "reason_code": null,
+     "schema": "urn:zeus:continuation-tick:1",
+     "skipped": [
+      {
+       "next_owner": "operator",
+       "reason_code": "delivery_withdrawn",
+       "subject": "op-a"
+      }
+     ]
+    }
+   }
+  },
+  "cycle": {
+   "again": {
+    "receipts": [
+     {
+      "value": {
+       "actions": [],
+       "outcome": "blocked",
+       "owned_elsewhere": {
+        "count": 0,
+        "jobs": []
+       },
+       "policy_id": "policy-1",
+       "reason_code": null,
+       "schema": "urn:zeus:continuation-tick:1",
+       "skipped": [
+        {
+         "next_owner": "operator",
+         "reason_code": "delivery_withdrawn",
+         "subject": "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648"
+        }
+       ]
+      }
+     },
+     {
+      "value": {
+       "actions": [],
+       "outcome": "blocked",
+       "owned_elsewhere": {
+        "count": 0,
+        "jobs": []
+       },
+       "policy_id": "policy-1",
+       "reason_code": null,
+       "schema": "urn:zeus:continuation-tick:1",
+       "skipped": [
+        {
+         "next_owner": "operator",
+         "reason_code": "delivery_withdrawn",
+         "subject": "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648"
+        }
+       ]
+      }
+     }
+    ],
+    "records_unchanged": true
+   },
+   "delivery": {
+    "binding": "bound",
+    "foreign": 0,
+    "plan_id": "own-0",
+    "plan_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+    "release_id": "rel-op-a",
+    "revision": "cccccccccccccccccccccccccccccccccccccccc",
+    "stage": "withdrawn",
+    "target_id": "fleet-host"
+   },
+   "dispatched": {
+    "value": {
+     "actions": [
+      {
+       "effect": "conductor_decided",
+       "route": "conductor_review",
+       "subject": "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66"
+      }
+     ],
+     "outcome": "progressed",
+     "owned_elsewhere": {
+      "count": 0,
+      "jobs": []
+     },
+     "policy_id": "policy-1",
+     "reason_code": null,
+     "schema": "urn:zeus:continuation-tick:1",
+     "skipped": []
+    }
+   },
+   "intents": [
+    {
+     "decision": {
+      "accepted": true,
+      "execution_ref": "sha256:9999999999999999999999999999999999999999999999999999999999999999",
+      "id": "cond-op-a",
+      "status": "succeeded"
+     },
+     "delivery_binding": null,
+     "delivery_plan": null,
+     "family": "op-a",
+     "history": [
+      [
+       "intended",
+       "lead_accepted"
+      ],
+      [
+       "dispatched",
+       "lead_accepted"
+      ],
+      [
+       "returned",
+       "lead_accepted"
+      ],
+      [
+       "completed",
+       "lead_accepted"
+      ]
+     ],
+     "hold": null,
+     "id": "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66",
+     "launch": {
+      "error_type": null,
+      "exit_code": 0,
+      "id": "f56c77bbf993bc7aee527847f925d76997b2283a67f3d66db2ad394421d3b0ef",
+      "sequence": 1,
+      "state": "exited"
+     },
+     "next_owner": "conductor",
+     "origin_job": "op-a",
+     "ownership": null,
+     "predecessor_intent": null,
+     "reason_code": "lead_accepted",
+     "route": "conductor_review",
+     "session_mode": null,
+     "state": "completed",
+     "successor_job": null,
+     "version": 5
+    },
+    {
+     "decision": null,
+     "delivery_binding": {
+      "release_id": "rel-op-a",
+      "revision": "cccccccccccccccccccccccccccccccccccccccc",
+      "target_id": "fleet-host"
+     },
+     "delivery_plan": null,
+     "family": "op-a",
+     "history": [
+      [
+       "awaiting_owner",
+       "conductor_accepted"
+      ]
+     ],
+     "hold": null,
+     "id": "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648",
+     "launch": null,
+     "next_owner": "host_delivery",
+     "origin_job": "op-a",
+     "ownership": null,
+     "predecessor_intent": null,
+     "reason_code": "conductor_accepted",
+     "route": "host_delivery",
+     "session_mode": null,
+     "state": "awaiting_owner",
+     "successor_job": null,
+     "version": 1
+    }
+   ],
+   "state": {
+    "conductor": {
+     "calls": [
+      "op-a"
+     ],
+     "running": []
+    },
+    "control": [
+     [
+      "continuation_intents",
+      "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648",
+      "e0ac1077a3ff605ab765fbe70abe23347eb4335b742cf8367a8193df1e24b0f8"
+     ],
+     [
+      "continuation_intents",
+      "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66",
+      "ff815e1e8f7ee7154e4beabdf0a3cf1aaa659893d13833dfd7de03efbe9f2c37"
+     ],
+     [
+      "continuation_policies",
+      "policy-1",
+      "8cfb30ef2891de1412f87255419afb3f748e141ea3b18a292d8e78f615da6152"
+     ],
+     [
+      "continuation_progress",
+      "policy-1",
+      "4d2d8831a65ec745efb57233d729a9abcdea7627fb7a581f61b65ca0a4680618"
+     ],
+     [
+      "fleet_control",
+      "admission",
+      "eb67ed2fb1e0fc49b3cd382387dff5fd991cc3e69025e02e911735a57313933c"
+     ],
+     [
+      "fleet_jobs",
+      "op-a",
+      "b2b62462ab68fa6a39632b4633cc1d0bca6889741cbc0ec0e88448de908d1684"
+     ],
+     [
+      "fleet_registry",
+      "fleet-1",
+      "bd6513980dc5cf8fd28101e53442a7c9bb46db2737b28b4846793e479c8b6065"
+     ],
+     [
+      "fleet_units",
+      "f56c77bbf993bc7aee527847f925d76997b2283a67f3d66db2ad394421d3b0ef",
+      "51c1075df1f2255436bf26ea5a7f09486704f298c29515c0c983cdc7017c946a"
+     ]
+    ],
+    "lane": [
+     [
+      "decisions_pending",
+      "cond-op-a",
+      "9de0bd66007ea463d90fd29088a77810bd6f31f4bbbcb752702a6012b25adb4b"
+     ],
+     [
+      "decisions_pending",
+      "dec-op-a",
+      "4997412b134c0aa279f5ae8e7846423ff12c58deb06a4047eeafb1b9e4cd3dc7"
+     ],
+     [
+      "host_delivery_intents",
+      "own-0",
+      "9760226102bea5e8e4c51523bd34615ccf046ede41ab0a42d10a0088821ab541"
+     ],
+     [
+      "host_delivery_intents",
+      "own-1",
+      "298edf43217e58978fafab7b637eb8032735f991632227b889032d3f430cac1e"
+     ],
+     [
+      "host_delivery_intents",
+      "own-2",
+      "c03d2549a4bcb2889863a679458d073c2009b0653db4b7f8122e9888221e544b"
+     ],
+     [
+      "host_delivery_migrations",
+      "own-0",
+      "7bf64f01e685a047e45739c583eeefe4630ce6f7d83c39293f87a7a61e15ee07"
+     ],
+     [
+      "host_delivery_migrations",
+      "own-1",
+      "a77dae2284eba90e30890b48d719dee10391e40cf63a190dfe7e15186900dae3"
+     ],
+     [
+      "operations",
+      "op-a",
+      "d3ccf9badf9694935c42b360ba3a3b155a03484310548af063c1b0a1e43c8665"
+     ],
+     [
+      "releases",
+      "rel-1",
+      "96ae0e1d6f4e5eeb947c491731639aca24de513687acef9e76f0b1a672d9459a"
+     ],
+     [
+      "releases",
+      "rel-2",
+      "f4aaa8647b30c63b5863e4f4481b15820f0065653d81f845f1bdc827a729c5fc"
+     ],
+     [
+      "releases",
+      "rel-3",
+      "cdc19c46ccf1405998555cfaaf1358a384b8e74d72f377ad423a5d7fbbb6ac5b"
+     ],
+     [
+      "releases",
+      "rel-op-a",
+      "9c36785a9d7107530f9c5b869391161028c06a60f0bab3082b61d7c74f1eadaa"
+     ],
+     [
+      "tasks",
+      "task-op-a",
+      "151c9860df297912c091cee0eb68bd32a33658b539810bb0e1f9215ff91df301"
+     ]
+    ],
+    "reads": [
+     "op-a",
+     "op-a",
+     "op-a",
+     "op-a",
+     "op-a"
+    ]
+   },
+   "tick": {
+    "value": {
+     "actions": [],
+     "outcome": "blocked",
+     "owned_elsewhere": {
+      "count": 0,
+      "jobs": []
+     },
+     "policy_id": "policy-1",
+     "reason_code": null,
+     "schema": "urn:zeus:continuation-tick:1",
+     "skipped": [
+      {
+       "next_owner": "operator",
+       "reason_code": "delivery_withdrawn",
+       "subject": "op-a"
+      }
+     ]
+    }
+   }
+  },
+  "first_hop_not_active": {
+   "again": {
+    "receipts": [
+     {
+      "value": {
+       "actions": [],
+       "outcome": "blocked",
+       "owned_elsewhere": {
+        "count": 0,
+        "jobs": []
+       },
+       "policy_id": "policy-1",
+       "reason_code": null,
+       "schema": "urn:zeus:continuation-tick:1",
+       "skipped": [
+        {
+         "next_owner": "operator",
+         "reason_code": "delivery_withdrawn",
+         "subject": "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648"
+        }
+       ]
+      }
+     },
+     {
+      "value": {
+       "actions": [],
+       "outcome": "blocked",
+       "owned_elsewhere": {
+        "count": 0,
+        "jobs": []
+       },
+       "policy_id": "policy-1",
+       "reason_code": null,
+       "schema": "urn:zeus:continuation-tick:1",
+       "skipped": [
+        {
+         "next_owner": "operator",
+         "reason_code": "delivery_withdrawn",
+         "subject": "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648"
+        }
+       ]
+      }
+     }
+    ],
+    "records_unchanged": true
+   },
+   "delivery": {
+    "binding": "bound",
+    "foreign": 0,
+    "plan_id": "own-0",
+    "plan_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+    "release_id": "rel-op-a",
+    "revision": "cccccccccccccccccccccccccccccccccccccccc",
+    "stage": "withdrawn",
+    "target_id": "fleet-host"
+   },
+   "dispatched": {
+    "value": {
+     "actions": [
+      {
+       "effect": "conductor_decided",
+       "route": "conductor_review",
+       "subject": "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66"
+      }
+     ],
+     "outcome": "progressed",
+     "owned_elsewhere": {
+      "count": 0,
+      "jobs": []
+     },
+     "policy_id": "policy-1",
+     "reason_code": null,
+     "schema": "urn:zeus:continuation-tick:1",
+     "skipped": []
+    }
+   },
+   "intents": [
+    {
+     "decision": {
+      "accepted": true,
+      "execution_ref": "sha256:9999999999999999999999999999999999999999999999999999999999999999",
+      "id": "cond-op-a",
+      "status": "succeeded"
+     },
+     "delivery_binding": null,
+     "delivery_plan": null,
+     "family": "op-a",
+     "history": [
+      [
+       "intended",
+       "lead_accepted"
+      ],
+      [
+       "dispatched",
+       "lead_accepted"
+      ],
+      [
+       "returned",
+       "lead_accepted"
+      ],
+      [
+       "completed",
+       "lead_accepted"
+      ]
+     ],
+     "hold": null,
+     "id": "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66",
+     "launch": {
+      "error_type": null,
+      "exit_code": 0,
+      "id": "f56c77bbf993bc7aee527847f925d76997b2283a67f3d66db2ad394421d3b0ef",
+      "sequence": 1,
+      "state": "exited"
+     },
+     "next_owner": "conductor",
+     "origin_job": "op-a",
+     "ownership": null,
+     "predecessor_intent": null,
+     "reason_code": "lead_accepted",
+     "route": "conductor_review",
+     "session_mode": null,
+     "state": "completed",
+     "successor_job": null,
+     "version": 5
+    },
+    {
+     "decision": null,
+     "delivery_binding": {
+      "release_id": "rel-op-a",
+      "revision": "cccccccccccccccccccccccccccccccccccccccc",
+      "target_id": "fleet-host"
+     },
+     "delivery_plan": null,
+     "family": "op-a",
+     "history": [
+      [
+       "awaiting_owner",
+       "conductor_accepted"
+      ]
+     ],
+     "hold": null,
+     "id": "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648",
+     "launch": null,
+     "next_owner": "host_delivery",
+     "origin_job": "op-a",
+     "ownership": null,
+     "predecessor_intent": null,
+     "reason_code": "conductor_accepted",
+     "route": "host_delivery",
+     "session_mode": null,
+     "state": "awaiting_owner",
+     "successor_job": null,
+     "version": 1
+    }
+   ],
+   "state": {
+    "conductor": {
+     "calls": [
+      "op-a"
+     ],
+     "running": []
+    },
+    "control": [
+     [
+      "continuation_intents",
+      "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648",
+      "e0ac1077a3ff605ab765fbe70abe23347eb4335b742cf8367a8193df1e24b0f8"
+     ],
+     [
+      "continuation_intents",
+      "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66",
+      "ff815e1e8f7ee7154e4beabdf0a3cf1aaa659893d13833dfd7de03efbe9f2c37"
+     ],
+     [
+      "continuation_policies",
+      "policy-1",
+      "8cfb30ef2891de1412f87255419afb3f748e141ea3b18a292d8e78f615da6152"
+     ],
+     [
+      "continuation_progress",
+      "policy-1",
+      "4d2d8831a65ec745efb57233d729a9abcdea7627fb7a581f61b65ca0a4680618"
+     ],
+     [
+      "fleet_control",
+      "admission",
+      "eb67ed2fb1e0fc49b3cd382387dff5fd991cc3e69025e02e911735a57313933c"
+     ],
+     [
+      "fleet_jobs",
+      "op-a",
+      "b2b62462ab68fa6a39632b4633cc1d0bca6889741cbc0ec0e88448de908d1684"
+     ],
+     [
+      "fleet_registry",
+      "fleet-1",
+      "bd6513980dc5cf8fd28101e53442a7c9bb46db2737b28b4846793e479c8b6065"
+     ],
+     [
+      "fleet_units",
+      "f56c77bbf993bc7aee527847f925d76997b2283a67f3d66db2ad394421d3b0ef",
+      "51c1075df1f2255436bf26ea5a7f09486704f298c29515c0c983cdc7017c946a"
+     ]
+    ],
+    "lane": [
+     [
+      "decisions_pending",
+      "cond-op-a",
+      "9de0bd66007ea463d90fd29088a77810bd6f31f4bbbcb752702a6012b25adb4b"
+     ],
+     [
+      "decisions_pending",
+      "dec-op-a",
+      "4997412b134c0aa279f5ae8e7846423ff12c58deb06a4047eeafb1b9e4cd3dc7"
+     ],
+     [
+      "host_delivery_intents",
+      "own-0",
+      "9760226102bea5e8e4c51523bd34615ccf046ede41ab0a42d10a0088821ab541"
+     ],
+     [
+      "host_delivery_intents",
+      "own-1",
+      "390cc0ddbeadfe3fe53821598099530dbc79fdfddad153d2657711567f0276e4"
+     ],
+     [
+      "host_delivery_intents",
+      "own-2",
+      "c03d2549a4bcb2889863a679458d073c2009b0653db4b7f8122e9888221e544b"
+     ],
+     [
+      "host_delivery_migrations",
+      "own-0",
+      "549ec3c4460118bbecd916bbc435acb9f9e3662a35db729b052d9a5275e94617"
+     ],
+     [
+      "host_delivery_migrations",
+      "own-1",
+      "7b357fe5ad9961199cd39f1ae1e776e31e9ffe867462e331e6e2c2ec27efae55"
+     ],
+     [
+      "operations",
+      "op-a",
+      "d3ccf9badf9694935c42b360ba3a3b155a03484310548af063c1b0a1e43c8665"
+     ],
+     [
+      "releases",
+      "rel-1",
+      "96ae0e1d6f4e5eeb947c491731639aca24de513687acef9e76f0b1a672d9459a"
+     ],
+     [
+      "releases",
+      "rel-2",
+      "f4aaa8647b30c63b5863e4f4481b15820f0065653d81f845f1bdc827a729c5fc"
+     ],
+     [
+      "releases",
+      "rel-3",
+      "cdc19c46ccf1405998555cfaaf1358a384b8e74d72f377ad423a5d7fbbb6ac5b"
+     ],
+     [
+      "releases",
+      "rel-op-a",
+      "9c36785a9d7107530f9c5b869391161028c06a60f0bab3082b61d7c74f1eadaa"
+     ],
+     [
+      "tasks",
+      "task-op-a",
+      "151c9860df297912c091cee0eb68bd32a33658b539810bb0e1f9215ff91df301"
+     ]
+    ],
+    "reads": [
+     "op-a",
+     "op-a",
+     "op-a",
+     "op-a",
+     "op-a"
+    ]
+   },
+   "tick": {
+    "value": {
+     "actions": [],
+     "outcome": "blocked",
+     "owned_elsewhere": {
+      "count": 0,
+      "jobs": []
+     },
+     "policy_id": "policy-1",
+     "reason_code": null,
+     "schema": "urn:zeus:continuation-tick:1",
+     "skipped": [
+      {
+       "next_owner": "operator",
+       "reason_code": "delivery_withdrawn",
+       "subject": "op-a"
+      }
+     ]
+    }
+   }
+  },
+  "max_migration_hops": 2,
+  "no_migration_records": {
+   "again": {
+    "receipts": [
+     {
+      "value": {
+       "actions": [],
+       "outcome": "blocked",
+       "owned_elsewhere": {
+        "count": 0,
+        "jobs": []
+       },
+       "policy_id": "policy-1",
+       "reason_code": null,
+       "schema": "urn:zeus:continuation-tick:1",
+       "skipped": [
+        {
+         "next_owner": "operator",
+         "reason_code": "delivery_withdrawn",
+         "subject": "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648"
+        }
+       ]
+      }
+     },
+     {
+      "value": {
+       "actions": [],
+       "outcome": "blocked",
+       "owned_elsewhere": {
+        "count": 0,
+        "jobs": []
+       },
+       "policy_id": "policy-1",
+       "reason_code": null,
+       "schema": "urn:zeus:continuation-tick:1",
+       "skipped": [
+        {
+         "next_owner": "operator",
+         "reason_code": "delivery_withdrawn",
+         "subject": "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648"
+        }
+       ]
+      }
+     }
+    ],
+    "records_unchanged": true
+   },
+   "delivery": {
+    "binding": "bound",
+    "foreign": 0,
+    "plan_id": "own-0",
+    "plan_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+    "release_id": "rel-op-a",
+    "revision": "cccccccccccccccccccccccccccccccccccccccc",
+    "stage": "withdrawn",
+    "target_id": "fleet-host"
+   },
+   "dispatched": {
+    "value": {
+     "actions": [
+      {
+       "effect": "conductor_decided",
+       "route": "conductor_review",
+       "subject": "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66"
+      }
+     ],
+     "outcome": "progressed",
+     "owned_elsewhere": {
+      "count": 0,
+      "jobs": []
+     },
+     "policy_id": "policy-1",
+     "reason_code": null,
+     "schema": "urn:zeus:continuation-tick:1",
+     "skipped": []
+    }
+   },
+   "intents": [
+    {
+     "decision": {
+      "accepted": true,
+      "execution_ref": "sha256:9999999999999999999999999999999999999999999999999999999999999999",
+      "id": "cond-op-a",
+      "status": "succeeded"
+     },
+     "delivery_binding": null,
+     "delivery_plan": null,
+     "family": "op-a",
+     "history": [
+      [
+       "intended",
+       "lead_accepted"
+      ],
+      [
+       "dispatched",
+       "lead_accepted"
+      ],
+      [
+       "returned",
+       "lead_accepted"
+      ],
+      [
+       "completed",
+       "lead_accepted"
+      ]
+     ],
+     "hold": null,
+     "id": "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66",
+     "launch": {
+      "error_type": null,
+      "exit_code": 0,
+      "id": "f56c77bbf993bc7aee527847f925d76997b2283a67f3d66db2ad394421d3b0ef",
+      "sequence": 1,
+      "state": "exited"
+     },
+     "next_owner": "conductor",
+     "origin_job": "op-a",
+     "ownership": null,
+     "predecessor_intent": null,
+     "reason_code": "lead_accepted",
+     "route": "conductor_review",
+     "session_mode": null,
+     "state": "completed",
+     "successor_job": null,
+     "version": 5
+    },
+    {
+     "decision": null,
+     "delivery_binding": {
+      "release_id": "rel-op-a",
+      "revision": "cccccccccccccccccccccccccccccccccccccccc",
+      "target_id": "fleet-host"
+     },
+     "delivery_plan": null,
+     "family": "op-a",
+     "history": [
+      [
+       "awaiting_owner",
+       "conductor_accepted"
+      ]
+     ],
+     "hold": null,
+     "id": "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648",
+     "launch": null,
+     "next_owner": "host_delivery",
+     "origin_job": "op-a",
+     "ownership": null,
+     "predecessor_intent": null,
+     "reason_code": "conductor_accepted",
+     "route": "host_delivery",
+     "session_mode": null,
+     "state": "awaiting_owner",
+     "successor_job": null,
+     "version": 1
+    }
+   ],
+   "state": {
+    "conductor": {
+     "calls": [
+      "op-a"
+     ],
+     "running": []
+    },
+    "control": [
+     [
+      "continuation_intents",
+      "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648",
+      "e0ac1077a3ff605ab765fbe70abe23347eb4335b742cf8367a8193df1e24b0f8"
+     ],
+     [
+      "continuation_intents",
+      "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66",
+      "ff815e1e8f7ee7154e4beabdf0a3cf1aaa659893d13833dfd7de03efbe9f2c37"
+     ],
+     [
+      "continuation_policies",
+      "policy-1",
+      "8cfb30ef2891de1412f87255419afb3f748e141ea3b18a292d8e78f615da6152"
+     ],
+     [
+      "continuation_progress",
+      "policy-1",
+      "4d2d8831a65ec745efb57233d729a9abcdea7627fb7a581f61b65ca0a4680618"
+     ],
+     [
+      "fleet_control",
+      "admission",
+      "eb67ed2fb1e0fc49b3cd382387dff5fd991cc3e69025e02e911735a57313933c"
+     ],
+     [
+      "fleet_jobs",
+      "op-a",
+      "b2b62462ab68fa6a39632b4633cc1d0bca6889741cbc0ec0e88448de908d1684"
+     ],
+     [
+      "fleet_registry",
+      "fleet-1",
+      "bd6513980dc5cf8fd28101e53442a7c9bb46db2737b28b4846793e479c8b6065"
+     ],
+     [
+      "fleet_units",
+      "f56c77bbf993bc7aee527847f925d76997b2283a67f3d66db2ad394421d3b0ef",
+      "51c1075df1f2255436bf26ea5a7f09486704f298c29515c0c983cdc7017c946a"
+     ]
+    ],
+    "lane": [
+     [
+      "decisions_pending",
+      "cond-op-a",
+      "9de0bd66007ea463d90fd29088a77810bd6f31f4bbbcb752702a6012b25adb4b"
+     ],
+     [
+      "decisions_pending",
+      "dec-op-a",
+      "4997412b134c0aa279f5ae8e7846423ff12c58deb06a4047eeafb1b9e4cd3dc7"
+     ],
+     [
+      "host_delivery_intents",
+      "own-0",
+      "9760226102bea5e8e4c51523bd34615ccf046ede41ab0a42d10a0088821ab541"
+     ],
+     [
+      "operations",
+      "op-a",
+      "d3ccf9badf9694935c42b360ba3a3b155a03484310548af063c1b0a1e43c8665"
+     ],
+     [
+      "releases",
+      "rel-1",
+      "96ae0e1d6f4e5eeb947c491731639aca24de513687acef9e76f0b1a672d9459a"
+     ],
+     [
+      "releases",
+      "rel-2",
+      "f4aaa8647b30c63b5863e4f4481b15820f0065653d81f845f1bdc827a729c5fc"
+     ],
+     [
+      "releases",
+      "rel-3",
+      "cdc19c46ccf1405998555cfaaf1358a384b8e74d72f377ad423a5d7fbbb6ac5b"
+     ],
+     [
+      "releases",
+      "rel-op-a",
+      "9c36785a9d7107530f9c5b869391161028c06a60f0bab3082b61d7c74f1eadaa"
+     ],
+     [
+      "tasks",
+      "task-op-a",
+      "151c9860df297912c091cee0eb68bd32a33658b539810bb0e1f9215ff91df301"
+     ]
+    ],
+    "reads": [
+     "op-a",
+     "op-a",
+     "op-a",
+     "op-a",
+     "op-a"
+    ]
+   },
+   "tick": {
+    "value": {
+     "actions": [],
+     "outcome": "blocked",
+     "owned_elsewhere": {
+      "count": 0,
+      "jobs": []
+     },
+     "policy_id": "policy-1",
+     "reason_code": null,
+     "schema": "urn:zeus:continuation-tick:1",
+     "skipped": [
+      {
+       "next_owner": "operator",
+       "reason_code": "delivery_withdrawn",
+       "subject": "op-a"
+      }
+     ]
+    }
+   }
+  },
+  "one_hop_second_staged": {
+   "again": {
+    "receipts": [
+     {
+      "value": {
+       "actions": [],
+       "outcome": "blocked",
+       "owned_elsewhere": {
+        "count": 0,
+        "jobs": []
+       },
+       "policy_id": "policy-1",
+       "reason_code": null,
+       "schema": "urn:zeus:continuation-tick:1",
+       "skipped": [
+        {
+         "next_owner": "operator",
+         "reason_code": "delivery_withdrawn",
+         "subject": "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648"
+        }
+       ]
+      }
+     },
+     {
+      "value": {
+       "actions": [],
+       "outcome": "blocked",
+       "owned_elsewhere": {
+        "count": 0,
+        "jobs": []
+       },
+       "policy_id": "policy-1",
+       "reason_code": null,
+       "schema": "urn:zeus:continuation-tick:1",
+       "skipped": [
+        {
+         "next_owner": "operator",
+         "reason_code": "delivery_withdrawn",
+         "subject": "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648"
+        }
+       ]
+      }
+     }
+    ],
+    "records_unchanged": true
+   },
+   "delivery": {
+    "binding": "bound",
+    "effective_release_id": "rel-1",
+    "foreign": 0,
+    "hops": [
+     {
+      "migration_id": "1111111111111111111111111111111111111111111111111111111111111111",
+      "old_plan_id": "own-0",
+      "plan_id": "own-1",
+      "source_release_id": "rel-op-a",
+      "successor_release_id": "rel-1"
+     }
+    ],
+    "migration": {
+     "migration_id": "1111111111111111111111111111111111111111111111111111111111111111",
+     "old_plan_id": "own-0",
+     "plan_id": "own-1",
+     "source_release_id": "rel-op-a",
+     "successor_release_id": "rel-1"
+    },
+    "plan_id": "own-1",
+    "plan_sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+    "release_id": "rel-op-a",
+    "revision": "cccccccccccccccccccccccccccccccccccccccc",
+    "stage": "withdrawn",
+    "target_id": "fleet-host"
+   },
+   "dispatched": {
+    "value": {
+     "actions": [
+      {
+       "effect": "conductor_decided",
+       "route": "conductor_review",
+       "subject": "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66"
+      }
+     ],
+     "outcome": "progressed",
+     "owned_elsewhere": {
+      "count": 0,
+      "jobs": []
+     },
+     "policy_id": "policy-1",
+     "reason_code": null,
+     "schema": "urn:zeus:continuation-tick:1",
+     "skipped": []
+    }
+   },
+   "intents": [
+    {
+     "decision": {
+      "accepted": true,
+      "execution_ref": "sha256:9999999999999999999999999999999999999999999999999999999999999999",
+      "id": "cond-op-a",
+      "status": "succeeded"
+     },
+     "delivery_binding": null,
+     "delivery_plan": null,
+     "family": "op-a",
+     "history": [
+      [
+       "intended",
+       "lead_accepted"
+      ],
+      [
+       "dispatched",
+       "lead_accepted"
+      ],
+      [
+       "returned",
+       "lead_accepted"
+      ],
+      [
+       "completed",
+       "lead_accepted"
+      ]
+     ],
+     "hold": null,
+     "id": "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66",
+     "launch": {
+      "error_type": null,
+      "exit_code": 0,
+      "id": "f56c77bbf993bc7aee527847f925d76997b2283a67f3d66db2ad394421d3b0ef",
+      "sequence": 1,
+      "state": "exited"
+     },
+     "next_owner": "conductor",
+     "origin_job": "op-a",
+     "ownership": null,
+     "predecessor_intent": null,
+     "reason_code": "lead_accepted",
+     "route": "conductor_review",
+     "session_mode": null,
+     "state": "completed",
+     "successor_job": null,
+     "version": 5
+    },
+    {
+     "decision": null,
+     "delivery_binding": {
+      "release_id": "rel-op-a",
+      "revision": "cccccccccccccccccccccccccccccccccccccccc",
+      "target_id": "fleet-host"
+     },
+     "delivery_plan": null,
+     "family": "op-a",
+     "history": [
+      [
+       "awaiting_owner",
+       "conductor_accepted"
+      ]
+     ],
+     "hold": null,
+     "id": "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648",
+     "launch": null,
+     "next_owner": "host_delivery",
+     "origin_job": "op-a",
+     "ownership": null,
+     "predecessor_intent": null,
+     "reason_code": "conductor_accepted",
+     "route": "host_delivery",
+     "session_mode": null,
+     "state": "awaiting_owner",
+     "successor_job": null,
+     "version": 1
+    }
+   ],
+   "state": {
+    "conductor": {
+     "calls": [
+      "op-a"
+     ],
+     "running": []
+    },
+    "control": [
+     [
+      "continuation_intents",
+      "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648",
+      "e0ac1077a3ff605ab765fbe70abe23347eb4335b742cf8367a8193df1e24b0f8"
+     ],
+     [
+      "continuation_intents",
+      "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66",
+      "ff815e1e8f7ee7154e4beabdf0a3cf1aaa659893d13833dfd7de03efbe9f2c37"
+     ],
+     [
+      "continuation_policies",
+      "policy-1",
+      "8cfb30ef2891de1412f87255419afb3f748e141ea3b18a292d8e78f615da6152"
+     ],
+     [
+      "continuation_progress",
+      "policy-1",
+      "4d2d8831a65ec745efb57233d729a9abcdea7627fb7a581f61b65ca0a4680618"
+     ],
+     [
+      "fleet_control",
+      "admission",
+      "eb67ed2fb1e0fc49b3cd382387dff5fd991cc3e69025e02e911735a57313933c"
+     ],
+     [
+      "fleet_jobs",
+      "op-a",
+      "b2b62462ab68fa6a39632b4633cc1d0bca6889741cbc0ec0e88448de908d1684"
+     ],
+     [
+      "fleet_registry",
+      "fleet-1",
+      "bd6513980dc5cf8fd28101e53442a7c9bb46db2737b28b4846793e479c8b6065"
+     ],
+     [
+      "fleet_units",
+      "f56c77bbf993bc7aee527847f925d76997b2283a67f3d66db2ad394421d3b0ef",
+      "51c1075df1f2255436bf26ea5a7f09486704f298c29515c0c983cdc7017c946a"
+     ]
+    ],
+    "lane": [
+     [
+      "decisions_pending",
+      "cond-op-a",
+      "9de0bd66007ea463d90fd29088a77810bd6f31f4bbbcb752702a6012b25adb4b"
+     ],
+     [
+      "decisions_pending",
+      "dec-op-a",
+      "4997412b134c0aa279f5ae8e7846423ff12c58deb06a4047eeafb1b9e4cd3dc7"
+     ],
+     [
+      "host_delivery_intents",
+      "own-0",
+      "9760226102bea5e8e4c51523bd34615ccf046ede41ab0a42d10a0088821ab541"
+     ],
+     [
+      "host_delivery_intents",
+      "own-1",
+      "390cc0ddbeadfe3fe53821598099530dbc79fdfddad153d2657711567f0276e4"
+     ],
+     [
+      "host_delivery_intents",
+      "own-2",
+      "c03d2549a4bcb2889863a679458d073c2009b0653db4b7f8122e9888221e544b"
+     ],
+     [
+      "host_delivery_migrations",
+      "own-0",
+      "7bf64f01e685a047e45739c583eeefe4630ce6f7d83c39293f87a7a61e15ee07"
+     ],
+     [
+      "host_delivery_migrations",
+      "own-1",
+      "50c3a16eea3d306deca1519572f595aae61f854c39a2b7ab2926d62ff2cc7e56"
+     ],
+     [
+      "operations",
+      "op-a",
+      "d3ccf9badf9694935c42b360ba3a3b155a03484310548af063c1b0a1e43c8665"
+     ],
+     [
+      "releases",
+      "rel-1",
+      "96ae0e1d6f4e5eeb947c491731639aca24de513687acef9e76f0b1a672d9459a"
+     ],
+     [
+      "releases",
+      "rel-2",
+      "f4aaa8647b30c63b5863e4f4481b15820f0065653d81f845f1bdc827a729c5fc"
+     ],
+     [
+      "releases",
+      "rel-3",
+      "cdc19c46ccf1405998555cfaaf1358a384b8e74d72f377ad423a5d7fbbb6ac5b"
+     ],
+     [
+      "releases",
+      "rel-op-a",
+      "9c36785a9d7107530f9c5b869391161028c06a60f0bab3082b61d7c74f1eadaa"
+     ],
+     [
+      "tasks",
+      "task-op-a",
+      "151c9860df297912c091cee0eb68bd32a33658b539810bb0e1f9215ff91df301"
+     ]
+    ],
+    "reads": [
+     "op-a",
+     "op-a",
+     "op-a",
+     "op-a",
+     "op-a"
+    ]
+   },
+   "tick": {
+    "value": {
+     "actions": [],
+     "outcome": "blocked",
+     "owned_elsewhere": {
+      "count": 0,
+      "jobs": []
+     },
+     "policy_id": "policy-1",
+     "reason_code": null,
+     "schema": "urn:zeus:continuation-tick:1",
+     "skipped": [
+      {
+       "next_owner": "operator",
+       "reason_code": "delivery_withdrawn",
+       "subject": "op-a"
+      }
+     ]
+    }
+   }
+  },
+  "second_hop_registered": {
+   "again": {
+    "receipts": [
+     {
+      "value": {
+       "actions": [],
+       "outcome": "blocked",
+       "owned_elsewhere": {
+        "count": 0,
+        "jobs": []
+       },
+       "policy_id": "policy-1",
+       "reason_code": null,
+       "schema": "urn:zeus:continuation-tick:1",
+       "skipped": [
+        {
+         "next_owner": "operator",
+         "reason_code": "delivery_withdrawn",
+         "subject": "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648"
+        }
+       ]
+      }
+     },
+     {
+      "value": {
+       "actions": [],
+       "outcome": "blocked",
+       "owned_elsewhere": {
+        "count": 0,
+        "jobs": []
+       },
+       "policy_id": "policy-1",
+       "reason_code": null,
+       "schema": "urn:zeus:continuation-tick:1",
+       "skipped": [
+        {
+         "next_owner": "operator",
+         "reason_code": "delivery_withdrawn",
+         "subject": "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648"
+        }
+       ]
+      }
+     }
+    ],
+    "records_unchanged": true
+   },
+   "delivery": {
+    "binding": "bound",
+    "effective_release_id": "rel-1",
+    "foreign": 0,
+    "hops": [
+     {
+      "migration_id": "1111111111111111111111111111111111111111111111111111111111111111",
+      "old_plan_id": "own-0",
+      "plan_id": "own-1",
+      "source_release_id": "rel-op-a",
+      "successor_release_id": "rel-1"
+     }
+    ],
+    "migration": {
+     "migration_id": "1111111111111111111111111111111111111111111111111111111111111111",
+     "old_plan_id": "own-0",
+     "plan_id": "own-1",
+     "source_release_id": "rel-op-a",
+     "successor_release_id": "rel-1"
+    },
+    "plan_id": "own-1",
+    "plan_sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+    "release_id": "rel-op-a",
+    "revision": "cccccccccccccccccccccccccccccccccccccccc",
+    "stage": "withdrawn",
+    "target_id": "fleet-host"
+   },
+   "dispatched": {
+    "value": {
+     "actions": [
+      {
+       "effect": "conductor_decided",
+       "route": "conductor_review",
+       "subject": "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66"
+      }
+     ],
+     "outcome": "progressed",
+     "owned_elsewhere": {
+      "count": 0,
+      "jobs": []
+     },
+     "policy_id": "policy-1",
+     "reason_code": null,
+     "schema": "urn:zeus:continuation-tick:1",
+     "skipped": []
+    }
+   },
+   "intents": [
+    {
+     "decision": {
+      "accepted": true,
+      "execution_ref": "sha256:9999999999999999999999999999999999999999999999999999999999999999",
+      "id": "cond-op-a",
+      "status": "succeeded"
+     },
+     "delivery_binding": null,
+     "delivery_plan": null,
+     "family": "op-a",
+     "history": [
+      [
+       "intended",
+       "lead_accepted"
+      ],
+      [
+       "dispatched",
+       "lead_accepted"
+      ],
+      [
+       "returned",
+       "lead_accepted"
+      ],
+      [
+       "completed",
+       "lead_accepted"
+      ]
+     ],
+     "hold": null,
+     "id": "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66",
+     "launch": {
+      "error_type": null,
+      "exit_code": 0,
+      "id": "f56c77bbf993bc7aee527847f925d76997b2283a67f3d66db2ad394421d3b0ef",
+      "sequence": 1,
+      "state": "exited"
+     },
+     "next_owner": "conductor",
+     "origin_job": "op-a",
+     "ownership": null,
+     "predecessor_intent": null,
+     "reason_code": "lead_accepted",
+     "route": "conductor_review",
+     "session_mode": null,
+     "state": "completed",
+     "successor_job": null,
+     "version": 5
+    },
+    {
+     "decision": null,
+     "delivery_binding": {
+      "release_id": "rel-op-a",
+      "revision": "cccccccccccccccccccccccccccccccccccccccc",
+      "target_id": "fleet-host"
+     },
+     "delivery_plan": null,
+     "family": "op-a",
+     "history": [
+      [
+       "awaiting_owner",
+       "conductor_accepted"
+      ]
+     ],
+     "hold": null,
+     "id": "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648",
+     "launch": null,
+     "next_owner": "host_delivery",
+     "origin_job": "op-a",
+     "ownership": null,
+     "predecessor_intent": null,
+     "reason_code": "conductor_accepted",
+     "route": "host_delivery",
+     "session_mode": null,
+     "state": "awaiting_owner",
+     "successor_job": null,
+     "version": 1
+    }
+   ],
+   "state": {
+    "conductor": {
+     "calls": [
+      "op-a"
+     ],
+     "running": []
+    },
+    "control": [
+     [
+      "continuation_intents",
+      "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648",
+      "e0ac1077a3ff605ab765fbe70abe23347eb4335b742cf8367a8193df1e24b0f8"
+     ],
+     [
+      "continuation_intents",
+      "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66",
+      "ff815e1e8f7ee7154e4beabdf0a3cf1aaa659893d13833dfd7de03efbe9f2c37"
+     ],
+     [
+      "continuation_policies",
+      "policy-1",
+      "8cfb30ef2891de1412f87255419afb3f748e141ea3b18a292d8e78f615da6152"
+     ],
+     [
+      "continuation_progress",
+      "policy-1",
+      "4d2d8831a65ec745efb57233d729a9abcdea7627fb7a581f61b65ca0a4680618"
+     ],
+     [
+      "fleet_control",
+      "admission",
+      "eb67ed2fb1e0fc49b3cd382387dff5fd991cc3e69025e02e911735a57313933c"
+     ],
+     [
+      "fleet_jobs",
+      "op-a",
+      "b2b62462ab68fa6a39632b4633cc1d0bca6889741cbc0ec0e88448de908d1684"
+     ],
+     [
+      "fleet_registry",
+      "fleet-1",
+      "bd6513980dc5cf8fd28101e53442a7c9bb46db2737b28b4846793e479c8b6065"
+     ],
+     [
+      "fleet_units",
+      "f56c77bbf993bc7aee527847f925d76997b2283a67f3d66db2ad394421d3b0ef",
+      "51c1075df1f2255436bf26ea5a7f09486704f298c29515c0c983cdc7017c946a"
+     ]
+    ],
+    "lane": [
+     [
+      "decisions_pending",
+      "cond-op-a",
+      "9de0bd66007ea463d90fd29088a77810bd6f31f4bbbcb752702a6012b25adb4b"
+     ],
+     [
+      "decisions_pending",
+      "dec-op-a",
+      "4997412b134c0aa279f5ae8e7846423ff12c58deb06a4047eeafb1b9e4cd3dc7"
+     ],
+     [
+      "host_delivery_intents",
+      "own-0",
+      "9760226102bea5e8e4c51523bd34615ccf046ede41ab0a42d10a0088821ab541"
+     ],
+     [
+      "host_delivery_intents",
+      "own-1",
+      "390cc0ddbeadfe3fe53821598099530dbc79fdfddad153d2657711567f0276e4"
+     ],
+     [
+      "host_delivery_intents",
+      "own-2",
+      "c03d2549a4bcb2889863a679458d073c2009b0653db4b7f8122e9888221e544b"
+     ],
+     [
+      "host_delivery_migrations",
+      "own-0",
+      "7bf64f01e685a047e45739c583eeefe4630ce6f7d83c39293f87a7a61e15ee07"
+     ],
+     [
+      "host_delivery_migrations",
+      "own-1",
+      "bd32e16a0f95a77ad13d73f8505a97e8ff5610c14f85da79f61680a81e9b3ea6"
+     ],
+     [
+      "operations",
+      "op-a",
+      "d3ccf9badf9694935c42b360ba3a3b155a03484310548af063c1b0a1e43c8665"
+     ],
+     [
+      "releases",
+      "rel-1",
+      "96ae0e1d6f4e5eeb947c491731639aca24de513687acef9e76f0b1a672d9459a"
+     ],
+     [
+      "releases",
+      "rel-2",
+      "f4aaa8647b30c63b5863e4f4481b15820f0065653d81f845f1bdc827a729c5fc"
+     ],
+     [
+      "releases",
+      "rel-3",
+      "cdc19c46ccf1405998555cfaaf1358a384b8e74d72f377ad423a5d7fbbb6ac5b"
+     ],
+     [
+      "releases",
+      "rel-op-a",
+      "9c36785a9d7107530f9c5b869391161028c06a60f0bab3082b61d7c74f1eadaa"
+     ],
+     [
+      "tasks",
+      "task-op-a",
+      "151c9860df297912c091cee0eb68bd32a33658b539810bb0e1f9215ff91df301"
+     ]
+    ],
+    "reads": [
+     "op-a",
+     "op-a",
+     "op-a",
+     "op-a",
+     "op-a"
+    ]
+   },
+   "tick": {
+    "value": {
+     "actions": [],
+     "outcome": "blocked",
+     "owned_elsewhere": {
+      "count": 0,
+      "jobs": []
+     },
+     "policy_id": "policy-1",
+     "reason_code": null,
+     "schema": "urn:zeus:continuation-tick:1",
+     "skipped": [
+      {
+       "next_owner": "operator",
+       "reason_code": "delivery_withdrawn",
+       "subject": "op-a"
+      }
+     ]
+    }
+   }
+  },
+  "second_hop_stopped": {
+   "again": {
+    "receipts": [
+     {
+      "value": {
+       "actions": [],
+       "outcome": "blocked",
+       "owned_elsewhere": {
+        "count": 0,
+        "jobs": []
+       },
+       "policy_id": "policy-1",
+       "reason_code": null,
+       "schema": "urn:zeus:continuation-tick:1",
+       "skipped": [
+        {
+         "next_owner": "operator",
+         "reason_code": "delivery_withdrawn",
+         "subject": "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648"
+        }
+       ]
+      }
+     },
+     {
+      "value": {
+       "actions": [],
+       "outcome": "blocked",
+       "owned_elsewhere": {
+        "count": 0,
+        "jobs": []
+       },
+       "policy_id": "policy-1",
+       "reason_code": null,
+       "schema": "urn:zeus:continuation-tick:1",
+       "skipped": [
+        {
+         "next_owner": "operator",
+         "reason_code": "delivery_withdrawn",
+         "subject": "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648"
+        }
+       ]
+      }
+     }
+    ],
+    "records_unchanged": true
+   },
+   "delivery": {
+    "binding": "bound",
+    "effective_release_id": "rel-1",
+    "foreign": 0,
+    "hops": [
+     {
+      "migration_id": "1111111111111111111111111111111111111111111111111111111111111111",
+      "old_plan_id": "own-0",
+      "plan_id": "own-1",
+      "source_release_id": "rel-op-a",
+      "successor_release_id": "rel-1"
+     }
+    ],
+    "migration": {
+     "migration_id": "1111111111111111111111111111111111111111111111111111111111111111",
+     "old_plan_id": "own-0",
+     "plan_id": "own-1",
+     "source_release_id": "rel-op-a",
+     "successor_release_id": "rel-1"
+    },
+    "plan_id": "own-1",
+    "plan_sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+    "release_id": "rel-op-a",
+    "revision": "cccccccccccccccccccccccccccccccccccccccc",
+    "stage": "withdrawn",
+    "target_id": "fleet-host"
+   },
+   "dispatched": {
+    "value": {
+     "actions": [
+      {
+       "effect": "conductor_decided",
+       "route": "conductor_review",
+       "subject": "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66"
+      }
+     ],
+     "outcome": "progressed",
+     "owned_elsewhere": {
+      "count": 0,
+      "jobs": []
+     },
+     "policy_id": "policy-1",
+     "reason_code": null,
+     "schema": "urn:zeus:continuation-tick:1",
+     "skipped": []
+    }
+   },
+   "intents": [
+    {
+     "decision": {
+      "accepted": true,
+      "execution_ref": "sha256:9999999999999999999999999999999999999999999999999999999999999999",
+      "id": "cond-op-a",
+      "status": "succeeded"
+     },
+     "delivery_binding": null,
+     "delivery_plan": null,
+     "family": "op-a",
+     "history": [
+      [
+       "intended",
+       "lead_accepted"
+      ],
+      [
+       "dispatched",
+       "lead_accepted"
+      ],
+      [
+       "returned",
+       "lead_accepted"
+      ],
+      [
+       "completed",
+       "lead_accepted"
+      ]
+     ],
+     "hold": null,
+     "id": "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66",
+     "launch": {
+      "error_type": null,
+      "exit_code": 0,
+      "id": "f56c77bbf993bc7aee527847f925d76997b2283a67f3d66db2ad394421d3b0ef",
+      "sequence": 1,
+      "state": "exited"
+     },
+     "next_owner": "conductor",
+     "origin_job": "op-a",
+     "ownership": null,
+     "predecessor_intent": null,
+     "reason_code": "lead_accepted",
+     "route": "conductor_review",
+     "session_mode": null,
+     "state": "completed",
+     "successor_job": null,
+     "version": 5
+    },
+    {
+     "decision": null,
+     "delivery_binding": {
+      "release_id": "rel-op-a",
+      "revision": "cccccccccccccccccccccccccccccccccccccccc",
+      "target_id": "fleet-host"
+     },
+     "delivery_plan": null,
+     "family": "op-a",
+     "history": [
+      [
+       "awaiting_owner",
+       "conductor_accepted"
+      ]
+     ],
+     "hold": null,
+     "id": "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648",
+     "launch": null,
+     "next_owner": "host_delivery",
+     "origin_job": "op-a",
+     "ownership": null,
+     "predecessor_intent": null,
+     "reason_code": "conductor_accepted",
+     "route": "host_delivery",
+     "session_mode": null,
+     "state": "awaiting_owner",
+     "successor_job": null,
+     "version": 1
+    }
+   ],
+   "state": {
+    "conductor": {
+     "calls": [
+      "op-a"
+     ],
+     "running": []
+    },
+    "control": [
+     [
+      "continuation_intents",
+      "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648",
+      "e0ac1077a3ff605ab765fbe70abe23347eb4335b742cf8367a8193df1e24b0f8"
+     ],
+     [
+      "continuation_intents",
+      "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66",
+      "ff815e1e8f7ee7154e4beabdf0a3cf1aaa659893d13833dfd7de03efbe9f2c37"
+     ],
+     [
+      "continuation_policies",
+      "policy-1",
+      "8cfb30ef2891de1412f87255419afb3f748e141ea3b18a292d8e78f615da6152"
+     ],
+     [
+      "continuation_progress",
+      "policy-1",
+      "4d2d8831a65ec745efb57233d729a9abcdea7627fb7a581f61b65ca0a4680618"
+     ],
+     [
+      "fleet_control",
+      "admission",
+      "eb67ed2fb1e0fc49b3cd382387dff5fd991cc3e69025e02e911735a57313933c"
+     ],
+     [
+      "fleet_jobs",
+      "op-a",
+      "b2b62462ab68fa6a39632b4633cc1d0bca6889741cbc0ec0e88448de908d1684"
+     ],
+     [
+      "fleet_registry",
+      "fleet-1",
+      "bd6513980dc5cf8fd28101e53442a7c9bb46db2737b28b4846793e479c8b6065"
+     ],
+     [
+      "fleet_units",
+      "f56c77bbf993bc7aee527847f925d76997b2283a67f3d66db2ad394421d3b0ef",
+      "51c1075df1f2255436bf26ea5a7f09486704f298c29515c0c983cdc7017c946a"
+     ]
+    ],
+    "lane": [
+     [
+      "decisions_pending",
+      "cond-op-a",
+      "9de0bd66007ea463d90fd29088a77810bd6f31f4bbbcb752702a6012b25adb4b"
+     ],
+     [
+      "decisions_pending",
+      "dec-op-a",
+      "4997412b134c0aa279f5ae8e7846423ff12c58deb06a4047eeafb1b9e4cd3dc7"
+     ],
+     [
+      "host_delivery_intents",
+      "own-0",
+      "9760226102bea5e8e4c51523bd34615ccf046ede41ab0a42d10a0088821ab541"
+     ],
+     [
+      "host_delivery_intents",
+      "own-1",
+      "390cc0ddbeadfe3fe53821598099530dbc79fdfddad153d2657711567f0276e4"
+     ],
+     [
+      "host_delivery_intents",
+      "own-2",
+      "c03d2549a4bcb2889863a679458d073c2009b0653db4b7f8122e9888221e544b"
+     ],
+     [
+      "host_delivery_migrations",
+      "own-0",
+      "7bf64f01e685a047e45739c583eeefe4630ce6f7d83c39293f87a7a61e15ee07"
+     ],
+     [
+      "host_delivery_migrations",
+      "own-1",
+      "e3be7b04cb8b0618d909ea1037db54cede76d2682eef9caa360d3dbba756ca26"
+     ],
+     [
+      "operations",
+      "op-a",
+      "d3ccf9badf9694935c42b360ba3a3b155a03484310548af063c1b0a1e43c8665"
+     ],
+     [
+      "releases",
+      "rel-1",
+      "96ae0e1d6f4e5eeb947c491731639aca24de513687acef9e76f0b1a672d9459a"
+     ],
+     [
+      "releases",
+      "rel-2",
+      "f4aaa8647b30c63b5863e4f4481b15820f0065653d81f845f1bdc827a729c5fc"
+     ],
+     [
+      "releases",
+      "rel-3",
+      "cdc19c46ccf1405998555cfaaf1358a384b8e74d72f377ad423a5d7fbbb6ac5b"
+     ],
+     [
+      "releases",
+      "rel-op-a",
+      "9c36785a9d7107530f9c5b869391161028c06a60f0bab3082b61d7c74f1eadaa"
+     ],
+     [
+      "tasks",
+      "task-op-a",
+      "151c9860df297912c091cee0eb68bd32a33658b539810bb0e1f9215ff91df301"
+     ]
+    ],
+    "reads": [
+     "op-a",
+     "op-a",
+     "op-a",
+     "op-a",
+     "op-a"
+    ]
+   },
+   "tick": {
+    "value": {
+     "actions": [],
+     "outcome": "blocked",
+     "owned_elsewhere": {
+      "count": 0,
+      "jobs": []
+     },
+     "policy_id": "policy-1",
+     "reason_code": null,
+     "schema": "urn:zeus:continuation-tick:1",
+     "skipped": [
+      {
+       "next_owner": "operator",
+       "reason_code": "delivery_withdrawn",
+       "subject": "op-a"
+      }
+     ]
+    }
+   }
+  },
+  "successor_candidate_mismatch": {
+   "again": {
+    "receipts": [
+     {
+      "value": {
+       "actions": [],
+       "outcome": "blocked",
+       "owned_elsewhere": {
+        "count": 0,
+        "jobs": []
+       },
+       "policy_id": "policy-1",
+       "reason_code": null,
+       "schema": "urn:zeus:continuation-tick:1",
+       "skipped": [
+        {
+         "next_owner": "operator",
+         "reason_code": "delivery_withdrawn",
+         "subject": "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648"
+        }
+       ]
+      }
+     },
+     {
+      "value": {
+       "actions": [],
+       "outcome": "blocked",
+       "owned_elsewhere": {
+        "count": 0,
+        "jobs": []
+       },
+       "policy_id": "policy-1",
+       "reason_code": null,
+       "schema": "urn:zeus:continuation-tick:1",
+       "skipped": [
+        {
+         "next_owner": "operator",
+         "reason_code": "delivery_withdrawn",
+         "subject": "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648"
+        }
+       ]
+      }
+     }
+    ],
+    "records_unchanged": true
+   },
+   "delivery": {
+    "binding": "bound",
+    "foreign": 0,
+    "plan_id": "own-0",
+    "plan_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+    "release_id": "rel-op-a",
+    "revision": "cccccccccccccccccccccccccccccccccccccccc",
+    "stage": "withdrawn",
+    "target_id": "fleet-host"
+   },
+   "dispatched": {
+    "value": {
+     "actions": [
+      {
+       "effect": "conductor_decided",
+       "route": "conductor_review",
+       "subject": "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66"
+      }
+     ],
+     "outcome": "progressed",
+     "owned_elsewhere": {
+      "count": 0,
+      "jobs": []
+     },
+     "policy_id": "policy-1",
+     "reason_code": null,
+     "schema": "urn:zeus:continuation-tick:1",
+     "skipped": []
+    }
+   },
+   "intents": [
+    {
+     "decision": {
+      "accepted": true,
+      "execution_ref": "sha256:9999999999999999999999999999999999999999999999999999999999999999",
+      "id": "cond-op-a",
+      "status": "succeeded"
+     },
+     "delivery_binding": null,
+     "delivery_plan": null,
+     "family": "op-a",
+     "history": [
+      [
+       "intended",
+       "lead_accepted"
+      ],
+      [
+       "dispatched",
+       "lead_accepted"
+      ],
+      [
+       "returned",
+       "lead_accepted"
+      ],
+      [
+       "completed",
+       "lead_accepted"
+      ]
+     ],
+     "hold": null,
+     "id": "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66",
+     "launch": {
+      "error_type": null,
+      "exit_code": 0,
+      "id": "f56c77bbf993bc7aee527847f925d76997b2283a67f3d66db2ad394421d3b0ef",
+      "sequence": 1,
+      "state": "exited"
+     },
+     "next_owner": "conductor",
+     "origin_job": "op-a",
+     "ownership": null,
+     "predecessor_intent": null,
+     "reason_code": "lead_accepted",
+     "route": "conductor_review",
+     "session_mode": null,
+     "state": "completed",
+     "successor_job": null,
+     "version": 5
+    },
+    {
+     "decision": null,
+     "delivery_binding": {
+      "release_id": "rel-op-a",
+      "revision": "cccccccccccccccccccccccccccccccccccccccc",
+      "target_id": "fleet-host"
+     },
+     "delivery_plan": null,
+     "family": "op-a",
+     "history": [
+      [
+       "awaiting_owner",
+       "conductor_accepted"
+      ]
+     ],
+     "hold": null,
+     "id": "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648",
+     "launch": null,
+     "next_owner": "host_delivery",
+     "origin_job": "op-a",
+     "ownership": null,
+     "predecessor_intent": null,
+     "reason_code": "conductor_accepted",
+     "route": "host_delivery",
+     "session_mode": null,
+     "state": "awaiting_owner",
+     "successor_job": null,
+     "version": 1
+    }
+   ],
+   "state": {
+    "conductor": {
+     "calls": [
+      "op-a"
+     ],
+     "running": []
+    },
+    "control": [
+     [
+      "continuation_intents",
+      "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648",
+      "e0ac1077a3ff605ab765fbe70abe23347eb4335b742cf8367a8193df1e24b0f8"
+     ],
+     [
+      "continuation_intents",
+      "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66",
+      "ff815e1e8f7ee7154e4beabdf0a3cf1aaa659893d13833dfd7de03efbe9f2c37"
+     ],
+     [
+      "continuation_policies",
+      "policy-1",
+      "8cfb30ef2891de1412f87255419afb3f748e141ea3b18a292d8e78f615da6152"
+     ],
+     [
+      "continuation_progress",
+      "policy-1",
+      "4d2d8831a65ec745efb57233d729a9abcdea7627fb7a581f61b65ca0a4680618"
+     ],
+     [
+      "fleet_control",
+      "admission",
+      "eb67ed2fb1e0fc49b3cd382387dff5fd991cc3e69025e02e911735a57313933c"
+     ],
+     [
+      "fleet_jobs",
+      "op-a",
+      "b2b62462ab68fa6a39632b4633cc1d0bca6889741cbc0ec0e88448de908d1684"
+     ],
+     [
+      "fleet_registry",
+      "fleet-1",
+      "bd6513980dc5cf8fd28101e53442a7c9bb46db2737b28b4846793e479c8b6065"
+     ],
+     [
+      "fleet_units",
+      "f56c77bbf993bc7aee527847f925d76997b2283a67f3d66db2ad394421d3b0ef",
+      "51c1075df1f2255436bf26ea5a7f09486704f298c29515c0c983cdc7017c946a"
+     ]
+    ],
+    "lane": [
+     [
+      "decisions_pending",
+      "cond-op-a",
+      "9de0bd66007ea463d90fd29088a77810bd6f31f4bbbcb752702a6012b25adb4b"
+     ],
+     [
+      "decisions_pending",
+      "dec-op-a",
+      "4997412b134c0aa279f5ae8e7846423ff12c58deb06a4047eeafb1b9e4cd3dc7"
+     ],
+     [
+      "host_delivery_intents",
+      "own-0",
+      "9760226102bea5e8e4c51523bd34615ccf046ede41ab0a42d10a0088821ab541"
+     ],
+     [
+      "host_delivery_intents",
+      "own-1",
+      "390cc0ddbeadfe3fe53821598099530dbc79fdfddad153d2657711567f0276e4"
+     ],
+     [
+      "host_delivery_intents",
+      "own-2",
+      "c03d2549a4bcb2889863a679458d073c2009b0653db4b7f8122e9888221e544b"
+     ],
+     [
+      "host_delivery_migrations",
+      "own-0",
+      "7bf64f01e685a047e45739c583eeefe4630ce6f7d83c39293f87a7a61e15ee07"
+     ],
+     [
+      "host_delivery_migrations",
+      "own-1",
+      "7b357fe5ad9961199cd39f1ae1e776e31e9ffe867462e331e6e2c2ec27efae55"
+     ],
+     [
+      "operations",
+      "op-a",
+      "d3ccf9badf9694935c42b360ba3a3b155a03484310548af063c1b0a1e43c8665"
+     ],
+     [
+      "releases",
+      "rel-1",
+      "96ae0e1d6f4e5eeb947c491731639aca24de513687acef9e76f0b1a672d9459a"
+     ],
+     [
+      "releases",
+      "rel-2",
+      "b20ac4641672c5d25c06f271962bb4bd9c2ac2a04061eea649746637d8dc96eb"
+     ],
+     [
+      "releases",
+      "rel-3",
+      "cdc19c46ccf1405998555cfaaf1358a384b8e74d72f377ad423a5d7fbbb6ac5b"
+     ],
+     [
+      "releases",
+      "rel-op-a",
+      "9c36785a9d7107530f9c5b869391161028c06a60f0bab3082b61d7c74f1eadaa"
+     ],
+     [
+      "tasks",
+      "task-op-a",
+      "151c9860df297912c091cee0eb68bd32a33658b539810bb0e1f9215ff91df301"
+     ]
+    ],
+    "reads": [
+     "op-a",
+     "op-a",
+     "op-a",
+     "op-a",
+     "op-a"
+    ]
+   },
+   "tick": {
+    "value": {
+     "actions": [],
+     "outcome": "blocked",
+     "owned_elsewhere": {
+      "count": 0,
+      "jobs": []
+     },
+     "policy_id": "policy-1",
+     "reason_code": null,
+     "schema": "urn:zeus:continuation-tick:1",
+     "skipped": [
+      {
+       "next_owner": "operator",
+       "reason_code": "delivery_withdrawn",
+       "subject": "op-a"
+      }
+     ]
+    }
+   }
+  },
+  "two_hops": {
+   "again": {
+    "receipts": [
+     {
+      "value": {
+       "actions": [],
+       "outcome": "idle",
+       "owned_elsewhere": {
+        "count": 0,
+        "jobs": []
+       },
+       "policy_id": "policy-1",
+       "reason_code": null,
+       "schema": "urn:zeus:continuation-tick:1",
+       "skipped": []
+      }
+     },
+     {
+      "value": {
+       "actions": [],
+       "outcome": "idle",
+       "owned_elsewhere": {
+        "count": 0,
+        "jobs": []
+       },
+       "policy_id": "policy-1",
+       "reason_code": null,
+       "schema": "urn:zeus:continuation-tick:1",
+       "skipped": []
+      }
+     }
+    ],
+    "records_unchanged": true
+   },
+   "delivery": {
+    "binding": "bound",
+    "effective_release_id": "rel-2",
+    "foreign": 0,
+    "hops": [
+     {
+      "migration_id": "1111111111111111111111111111111111111111111111111111111111111111",
+      "old_plan_id": "own-0",
+      "plan_id": "own-1",
+      "source_release_id": "rel-op-a",
+      "successor_release_id": "rel-1"
+     },
+     {
+      "migration_id": "2222222222222222222222222222222222222222222222222222222222222222",
+      "old_plan_id": "own-1",
+      "plan_id": "own-2",
+      "source_release_id": "rel-1",
+      "successor_release_id": "rel-2"
+     }
+    ],
+    "migration": {
+     "migration_id": "2222222222222222222222222222222222222222222222222222222222222222",
+     "old_plan_id": "own-1",
+     "plan_id": "own-2",
+     "source_release_id": "rel-1",
+     "successor_release_id": "rel-2"
+    },
+    "plan_id": "own-2",
+    "plan_sha256": "2222222222222222222222222222222222222222222222222222222222222222",
+    "release_id": "rel-op-a",
+    "revision": "cccccccccccccccccccccccccccccccccccccccc",
+    "stage": "verifying",
+    "target_id": "fleet-host"
+   },
+   "dispatched": {
+    "value": {
+     "actions": [
+      {
+       "effect": "conductor_decided",
+       "route": "conductor_review",
+       "subject": "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66"
+      }
+     ],
+     "outcome": "progressed",
+     "owned_elsewhere": {
+      "count": 0,
+      "jobs": []
+     },
+     "policy_id": "policy-1",
+     "reason_code": null,
+     "schema": "urn:zeus:continuation-tick:1",
+     "skipped": []
+    }
+   },
+   "intents": [
+    {
+     "decision": {
+      "accepted": true,
+      "execution_ref": "sha256:9999999999999999999999999999999999999999999999999999999999999999",
+      "id": "cond-op-a",
+      "status": "succeeded"
+     },
+     "delivery_binding": null,
+     "delivery_plan": null,
+     "family": "op-a",
+     "history": [
+      [
+       "intended",
+       "lead_accepted"
+      ],
+      [
+       "dispatched",
+       "lead_accepted"
+      ],
+      [
+       "returned",
+       "lead_accepted"
+      ],
+      [
+       "completed",
+       "lead_accepted"
+      ]
+     ],
+     "hold": null,
+     "id": "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66",
+     "launch": {
+      "error_type": null,
+      "exit_code": 0,
+      "id": "f56c77bbf993bc7aee527847f925d76997b2283a67f3d66db2ad394421d3b0ef",
+      "sequence": 1,
+      "state": "exited"
+     },
+     "next_owner": "conductor",
+     "origin_job": "op-a",
+     "ownership": null,
+     "predecessor_intent": null,
+     "reason_code": "lead_accepted",
+     "route": "conductor_review",
+     "session_mode": null,
+     "state": "completed",
+     "successor_job": null,
+     "version": 5
+    },
+    {
+     "decision": null,
+     "delivery_binding": {
+      "release_id": "rel-op-a",
+      "revision": "cccccccccccccccccccccccccccccccccccccccc",
+      "target_id": "fleet-host"
+     },
+     "delivery_plan": null,
+     "family": "op-a",
+     "history": [
+      [
+       "awaiting_owner",
+       "conductor_accepted"
+      ]
+     ],
+     "hold": null,
+     "id": "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648",
+     "launch": null,
+     "next_owner": "host_delivery",
+     "origin_job": "op-a",
+     "ownership": null,
+     "predecessor_intent": null,
+     "reason_code": "conductor_accepted",
+     "route": "host_delivery",
+     "session_mode": null,
+     "state": "awaiting_owner",
+     "successor_job": null,
+     "version": 1
+    }
+   ],
+   "state": {
+    "conductor": {
+     "calls": [
+      "op-a"
+     ],
+     "running": []
+    },
+    "control": [
+     [
+      "continuation_intents",
+      "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648",
+      "e0ac1077a3ff605ab765fbe70abe23347eb4335b742cf8367a8193df1e24b0f8"
+     ],
+     [
+      "continuation_intents",
+      "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66",
+      "ff815e1e8f7ee7154e4beabdf0a3cf1aaa659893d13833dfd7de03efbe9f2c37"
+     ],
+     [
+      "continuation_policies",
+      "policy-1",
+      "8cfb30ef2891de1412f87255419afb3f748e141ea3b18a292d8e78f615da6152"
+     ],
+     [
+      "continuation_progress",
+      "policy-1",
+      "4d2d8831a65ec745efb57233d729a9abcdea7627fb7a581f61b65ca0a4680618"
+     ],
+     [
+      "fleet_control",
+      "admission",
+      "eb67ed2fb1e0fc49b3cd382387dff5fd991cc3e69025e02e911735a57313933c"
+     ],
+     [
+      "fleet_jobs",
+      "op-a",
+      "b2b62462ab68fa6a39632b4633cc1d0bca6889741cbc0ec0e88448de908d1684"
+     ],
+     [
+      "fleet_registry",
+      "fleet-1",
+      "bd6513980dc5cf8fd28101e53442a7c9bb46db2737b28b4846793e479c8b6065"
+     ],
+     [
+      "fleet_units",
+      "f56c77bbf993bc7aee527847f925d76997b2283a67f3d66db2ad394421d3b0ef",
+      "51c1075df1f2255436bf26ea5a7f09486704f298c29515c0c983cdc7017c946a"
+     ]
+    ],
+    "lane": [
+     [
+      "decisions_pending",
+      "cond-op-a",
+      "9de0bd66007ea463d90fd29088a77810bd6f31f4bbbcb752702a6012b25adb4b"
+     ],
+     [
+      "decisions_pending",
+      "dec-op-a",
+      "4997412b134c0aa279f5ae8e7846423ff12c58deb06a4047eeafb1b9e4cd3dc7"
+     ],
+     [
+      "host_delivery_intents",
+      "own-0",
+      "9760226102bea5e8e4c51523bd34615ccf046ede41ab0a42d10a0088821ab541"
+     ],
+     [
+      "host_delivery_intents",
+      "own-1",
+      "390cc0ddbeadfe3fe53821598099530dbc79fdfddad153d2657711567f0276e4"
+     ],
+     [
+      "host_delivery_intents",
+      "own-2",
+      "c03d2549a4bcb2889863a679458d073c2009b0653db4b7f8122e9888221e544b"
+     ],
+     [
+      "host_delivery_migrations",
+      "own-0",
+      "7bf64f01e685a047e45739c583eeefe4630ce6f7d83c39293f87a7a61e15ee07"
+     ],
+     [
+      "host_delivery_migrations",
+      "own-1",
+      "7b357fe5ad9961199cd39f1ae1e776e31e9ffe867462e331e6e2c2ec27efae55"
+     ],
+     [
+      "operations",
+      "op-a",
+      "d3ccf9badf9694935c42b360ba3a3b155a03484310548af063c1b0a1e43c8665"
+     ],
+     [
+      "releases",
+      "rel-1",
+      "96ae0e1d6f4e5eeb947c491731639aca24de513687acef9e76f0b1a672d9459a"
+     ],
+     [
+      "releases",
+      "rel-2",
+      "f4aaa8647b30c63b5863e4f4481b15820f0065653d81f845f1bdc827a729c5fc"
+     ],
+     [
+      "releases",
+      "rel-3",
+      "cdc19c46ccf1405998555cfaaf1358a384b8e74d72f377ad423a5d7fbbb6ac5b"
+     ],
+     [
+      "releases",
+      "rel-op-a",
+      "9c36785a9d7107530f9c5b869391161028c06a60f0bab3082b61d7c74f1eadaa"
+     ],
+     [
+      "tasks",
+      "task-op-a",
+      "151c9860df297912c091cee0eb68bd32a33658b539810bb0e1f9215ff91df301"
+     ]
+    ],
+    "reads": [
+     "op-a",
+     "op-a",
+     "op-a",
+     "op-a",
+     "op-a"
+    ]
+   },
+   "tick": {
+    "value": {
+     "actions": [
+      {
+       "effect": "awaiting_owner",
+       "route": "host_delivery",
+       "subject": "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648"
+      }
+     ],
+     "outcome": "progressed",
+     "owned_elsewhere": {
+      "count": 0,
+      "jobs": []
+     },
+     "policy_id": "policy-1",
+     "reason_code": null,
+     "schema": "urn:zeus:continuation-tick:1",
+     "skipped": []
+    }
+   }
+  }
+ },
+ "migration_resume": {
+  "current_missing": {
+   "message": "continuation refused: migration_source_changed (intent_id)",
+   "reason_code": "migration_source_changed",
+   "refused": "ContinuationRefused"
+  },
+  "from_awaiting": {
+   "value": null
+  },
+  "from_paused": {
+   "value": {
+    "digest": "514af79d15972cab91ad7c5dd7adbcbaeef095be4f084f31487e3905a6a5fb75",
+    "row": {
+     "attempt": 1,
+     "authorization": {
+      "acceptance_criteria": [
+       "ok"
+      ],
+      "allowed_paths": [
+       "docs/a.md"
+      ],
+      "goal": {
+       "criterion": "crit",
+       "path": "docs/GOAL.md",
+       "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+      },
+      "lane": "a",
+      "model": "claude-fixture-model",
+      "pin_sha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+      "policy_sha256": "19a0c3f00b1fb8f65250a078c08987a90fcf031749ef9e7dd960b6dfac72491c",
+      "repository": "52ab3bf5a70bd61e78ac866dfaa941115ff648b5d6ec255b87b97b83c2c553f5",
+      "runtime": {
+       "image": "zeus-worker:fixture",
+       "profile": "worker-v1",
+       "session_archive_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+      },
+      "source": {
+       "job": "op-a",
+       "manifest_sha256": "86a81d57101e84068a14219c2c17809e6268f9fc2cff95ffa7e71889f2334d78",
+       "status": "accepted"
+      }
+     },
+     "created_at": "2026-09-30T00:00:00.000014+00:00",
+     "delivery_binding": {
+      "release_id": "rel-op-a",
+      "revision": "cccccccccccccccccccccccccccccccccccccccc",
+      "target_id": "fleet-host"
+     },
+     "delivery_plan": {
+      "plan_id": "plan-1",
+      "plan_sha256": "5555555555555555555555555555555555555555555555555555555555555555",
+      "stage": "rolled_back"
+     },
+     "delivery_target": "fleet-host",
+     "evidence_refs": [
+      "sha256:9999999999999999999999999999999999999999999999999999999999999999"
+     ],
+     "evidence_sha256": "a7256f1b447b8bf4715d0a50fad313e2713bef52c3f1d3ad20e9b8f1ec863010",
+     "family": "op-a",
+     "generation": 1,
+     "history": [
+      {
+       "at": "2026-09-30T00:00:00.000014+00:00",
+       "reason_code": "conductor_accepted",
+       "state": "awaiting_owner"
+      },
+      {
+       "at": "2026-09-30T00:00:00.000015+00:00",
+       "error_type": null,
+       "previous": "awaiting_owner",
+       "reason_code": "delivery_rolled_back",
+       "state": "paused"
+      },
+      {
+       "at": "2026-09-30T00:00:00.999999+00:00",
+       "error_type": null,
+       "previous": "paused",
+       "reason_code": "migration_resumed",
+       "state": "awaiting_owner"
+      }
+     ],
+     "id": "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648",
+     "job_updated_at": "2026-09-30T00:00:00.000006+00:00",
+     "lane": "a",
+     "migration_resume": {
+      "at": "2026-09-30T00:00:00.999999+00:00",
+      "from_state": "paused",
+      "from_version": 2,
+      "migration_id": "mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm",
+      "paused_delivery_plan": {
+       "plan_id": "plan-1",
+       "plan_sha256": "5555555555555555555555555555555555555555555555555555555555555555",
+       "stage": "rolled_back"
+      },
+      "paused_next_owner": "host_delivery",
+      "paused_reason_code": "delivery_rolled_back",
+      "plan_id": "own-x"
+     },
+     "next_owner": "host_delivery",
+     "origin_job": "op-a",
+     "policy_id": "policy-1",
+     "policy_sha256": "19a0c3f00b1fb8f65250a078c08987a90fcf031749ef9e7dd960b6dfac72491c",
+     "predecessor_intent": null,
+     "reason_code": "migration_resumed",
+     "release_id": "rel-op-a",
+     "route": "host_delivery",
+     "session_mode": null,
+     "state": "awaiting_owner",
+     "successor_job": null,
+     "updated_at": "2026-09-30T00:00:00.999999+00:00",
+     "version": 3
+    }
+   }
+  },
+  "recorded_state_outside": {
+   "message": "continuation refused: migration_source_changed (intent_id)",
+   "reason_code": "migration_source_changed",
+   "refused": "ContinuationRefused"
+  },
+  "second_hop_keeps_previous": {
+   "value": {
+    "digest": "ccc9e1b5e3ee018281d75e0b946daab3aa350d3c8422a9f65766bd6b9c8f314f",
+    "row": {
+     "attempt": 1,
+     "authorization": {
+      "acceptance_criteria": [
+       "ok"
+      ],
+      "allowed_paths": [
+       "docs/a.md"
+      ],
+      "goal": {
+       "criterion": "crit",
+       "path": "docs/GOAL.md",
+       "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+      },
+      "lane": "a",
+      "model": "claude-fixture-model",
+      "pin_sha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+      "policy_sha256": "19a0c3f00b1fb8f65250a078c08987a90fcf031749ef9e7dd960b6dfac72491c",
+      "repository": "52ab3bf5a70bd61e78ac866dfaa941115ff648b5d6ec255b87b97b83c2c553f5",
+      "runtime": {
+       "image": "zeus-worker:fixture",
+       "profile": "worker-v1",
+       "session_archive_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+      },
+      "source": {
+       "job": "op-a",
+       "manifest_sha256": "86a81d57101e84068a14219c2c17809e6268f9fc2cff95ffa7e71889f2334d78",
+       "status": "accepted"
+      }
+     },
+     "created_at": "2026-09-30T00:00:00.000014+00:00",
+     "delivery_binding": {
+      "release_id": "rel-op-a",
+      "revision": "cccccccccccccccccccccccccccccccccccccccc",
+      "target_id": "fleet-host"
+     },
+     "delivery_plan": {
+      "plan_id": "plan-1",
+      "plan_sha256": "5555555555555555555555555555555555555555555555555555555555555555",
+      "stage": "rolled_back"
+     },
+     "delivery_target": "fleet-host",
+     "evidence_refs": [
+      "sha256:9999999999999999999999999999999999999999999999999999999999999999"
+     ],
+     "evidence_sha256": "a7256f1b447b8bf4715d0a50fad313e2713bef52c3f1d3ad20e9b8f1ec863010",
+     "family": "op-a",
+     "generation": 1,
+     "history": [
+      {
+       "at": "2026-09-30T00:00:00.000014+00:00",
+       "reason_code": "conductor_accepted",
+       "state": "awaiting_owner"
+      },
+      {
+       "at": "2026-09-30T00:00:00.000015+00:00",
+       "error_type": null,
+       "previous": "awaiting_owner",
+       "reason_code": "delivery_rolled_back",
+       "state": "paused"
+      },
+      {
+       "at": "2026-09-30T00:00:00.999999+00:00",
+       "error_type": null,
+       "previous": "paused",
+       "reason_code": "migration_resumed",
+       "state": "awaiting_owner"
+      },
+      {
+       "at": "2026-09-30T00:00:00.999999+00:00",
+       "error_type": null,
+       "previous": "paused",
+       "reason_code": "migration_resumed",
+       "state": "awaiting_owner"
+      }
+     ],
+     "id": "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648",
+     "job_updated_at": "2026-09-30T00:00:00.000006+00:00",
+     "lane": "a",
+     "migration_resume": {
+      "at": "2026-09-30T00:00:00.999999+00:00",
+      "from_state": "paused",
+      "from_version": 3,
+      "migration_id": "mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm",
+      "paused_delivery_plan": {
+       "plan_id": "plan-1",
+       "plan_sha256": "5555555555555555555555555555555555555555555555555555555555555555",
+       "stage": "rolled_back"
+      },
+      "paused_next_owner": "host_delivery",
+      "paused_reason_code": "migration_resumed",
+      "plan_id": "own-x",
+      "previous": {
+       "at": "2026-09-30T00:00:00.999999+00:00",
+       "from_state": "paused",
+       "from_version": 2,
+       "migration_id": "mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm",
+       "paused_delivery_plan": {
+        "plan_id": "plan-1",
+        "plan_sha256": "5555555555555555555555555555555555555555555555555555555555555555",
+        "stage": "rolled_back"
+       },
+       "paused_next_owner": "host_delivery",
+       "paused_reason_code": "delivery_rolled_back",
+       "plan_id": "own-x"
+      }
+     },
+     "next_owner": "host_delivery",
+     "origin_job": "op-a",
+     "policy_id": "policy-1",
+     "policy_sha256": "19a0c3f00b1fb8f65250a078c08987a90fcf031749ef9e7dd960b6dfac72491c",
+     "predecessor_intent": null,
+     "reason_code": "migration_resumed",
+     "release_id": "rel-op-a",
+     "route": "host_delivery",
+     "session_mode": null,
+     "state": "awaiting_owner",
+     "successor_job": null,
+     "updated_at": "2026-09-30T00:00:00.999999+00:00",
+     "version": 4
+    }
+   }
+  },
+  "source_awaiting": {
+   "delivery_target": "fleet-host",
+   "id": "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648",
+   "lane": "a",
+   "policy_id": "policy-1",
+   "release_id": "rel-op-a",
+   "route": "host_delivery",
+   "state": "awaiting_owner",
+   "version": 1
+  },
+  "source_changed_release": {
+   "message": "continuation refused: migration_source_changed (intent_id)",
+   "reason_code": "migration_source_changed",
+   "refused": "ContinuationRefused"
+  },
+  "source_changed_state": {
+   "message": "continuation refused: migration_source_changed (intent_id)",
+   "reason_code": "migration_source_changed",
+   "refused": "ContinuationRefused"
+  },
+  "source_changed_version": {
+   "message": "continuation refused: migration_source_changed (intent_id)",
+   "reason_code": "migration_source_changed",
+   "refused": "ContinuationRefused"
+  },
+  "source_paused": {
+   "delivery_target": "fleet-host",
+   "id": "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648",
+   "lane": "a",
+   "policy_id": "policy-1",
+   "release_id": "rel-op-a",
+   "route": "host_delivery",
+   "state": "paused",
+   "version": 2
+  },
+  "states": {
+   "awaiting": "awaiting_owner",
+   "paused": "paused"
+  }
+ },
+ "ownership": {
+  "admitted": {
+   "first": {
+    "value": {
+     "actions": [
+      {
+       "effect": "admitted",
+       "route": "correction",
+       "subject": "42b0f6119a702500d085eb0cf5aa410008ec63c99b54056c36e31e6796862949",
+       "successor_job": "cont-42b0f6119a702500d085eb0c"
+      }
+     ],
+     "outcome": "progressed",
+     "owned_elsewhere": {
+      "count": 0,
+      "jobs": []
+     },
+     "policy_id": "policy-1",
+     "reason_code": null,
+     "schema": "urn:zeus:continuation-tick:1",
+     "skipped": []
+    }
+   },
+   "ownership": {
+    "criterion_id": null,
+    "project_id": null,
+    "state": "origin_unbound"
+   },
+   "state": "admitted",
+   "successor": "cont-42b0f6119a702500d085eb0c"
+  },
+  "binding_conflict": {
+   "refused": {
+    "message": "continuation refused: successor_binding_conflict (binding)",
+    "reason_code": "successor_binding_conflict",
+    "records_unchanged": true,
+    "refused": "ContinuationRefused"
+   },
+   "rows": [
+    {
+     "authority": null,
+     "criterion_id": "c1",
+     "job_id": "cont-9ded40e20e02908f638611e6",
+     "lineage": null,
+     "project_id": "other",
+     "recorded_by": "owner"
+    },
+    {
+     "authority": null,
+     "criterion_id": "c1",
+     "job_id": "op-y",
+     "lineage": null,
+     "project_id": "ops",
+     "recorded_by": "owner"
+    }
+   ]
+  },
+  "binding_rows": [
+   {
+    "authority": "present ownership inherited through verified continuation lineage; not historical capture membership and not criterion acceptance",
+    "criterion_id": "c1",
+    "job_id": "cont-42b0f6119a702500d085eb0c",
+    "lineage": {
+     "intent_id": "42b0f6119a702500d085eb0cf5aa410008ec63c99b54056c36e31e6796862949",
+     "origin_job": "op-1"
+    },
+    "project_id": "ops",
+    "recorded_by": "continuation_lineage"
+   },
+   {
+    "authority": null,
+    "criterion_id": "c1",
+    "job_id": "op-1",
+    "lineage": null,
+    "project_id": "ops",
+    "recorded_by": "owner"
+   }
+  ],
+  "intent_invalid": {
+   "conductor_review": {
+    "message": "continuation refused: ownership_intent_invalid (intent_id)",
+    "reason_code": "ownership_intent_invalid",
+    "records_unchanged": true,
+    "refused": "ContinuationRefused"
+   },
+   "empty": {
+    "message": "continuation refused: ownership_intent_invalid (intent_id)",
+    "reason_code": "ownership_intent_invalid",
+    "records_unchanged": true,
+    "refused": "ContinuationRefused"
+   },
+   "host_delivery": {
+    "message": "continuation refused: ownership_intent_invalid (intent_id)",
+    "reason_code": "ownership_intent_invalid",
+    "records_unchanged": true,
+    "refused": "ContinuationRefused"
+   },
+   "not_a_string": {
+    "message": "continuation refused: ownership_intent_invalid (intent_id)",
+    "reason_code": "ownership_intent_invalid",
+    "records_unchanged": true,
+    "refused": "ContinuationRefused"
+   },
+   "unknown": {
+    "message": "continuation refused: ownership_intent_invalid (intent_id)",
+    "reason_code": "ownership_intent_invalid",
+    "records_unchanged": true,
+    "refused": "ContinuationRefused"
+   }
+  },
+  "intents_and_jobs_unchanged": true,
+  "lineage": {
+   "origin_lane_changed": {
+    "message": "continuation refused: ownership_lineage_unproven (origin_job)",
+    "reason_code": "ownership_lineage_unproven",
+    "records_unchanged": true,
+    "refused": "ContinuationRefused"
+   },
+   "restored": {
+    "value": {
+     "authority": "present ownership through continuation lineage; not historical capture membership",
+     "cached": false,
+     "criterion_id": "c1",
+     "intent_id": "226a9e76e34fbb54c6f4c2fef45d6f84f60dd2d5d62de2870cd1becb9c6f6be2",
+     "origin_job": "op-x",
+     "project_id": "ops",
+     "reconciled": true,
+     "successor_job": "cont-226a9e76e34fbb54c6f4c2fe"
+    }
+   },
+   "successor_manifest_forged": {
+    "message": "continuation refused: ownership_lineage_unproven (successor_job)",
+    "reason_code": "ownership_lineage_unproven",
+    "records_unchanged": true,
+    "refused": "ContinuationRefused"
+   }
+  },
+  "reconciled": {
+   "value": {
+    "authority": "present ownership through continuation lineage; not historical capture membership",
+    "cached": false,
+    "criterion_id": "c1",
+    "intent_id": "42b0f6119a702500d085eb0cf5aa410008ec63c99b54056c36e31e6796862949",
+    "origin_job": "op-1",
+    "project_id": "ops",
+    "reconciled": true,
+    "successor_job": "cont-42b0f6119a702500d085eb0c"
+   }
+  },
+  "replay": {
+   "value": {
+    "authority": "present ownership through continuation lineage; not historical capture membership",
+    "cached": true,
+    "criterion_id": "c1",
+    "intent_id": "42b0f6119a702500d085eb0cf5aa410008ec63c99b54056c36e31e6796862949",
+    "origin_job": "op-1",
+    "project_id": "ops",
+    "reconciled": true,
+    "successor_job": "cont-42b0f6119a702500d085eb0c"
+   }
+  },
+  "state": {
+   "conductor": {
+    "calls": [],
+    "running": []
+   },
+   "control": [
+    [
+     "continuation_intents",
+     "42b0f6119a702500d085eb0cf5aa410008ec63c99b54056c36e31e6796862949",
+     "37d47ae9aae0e6161fb0b9362ee06a4acb714d215039bb14f2b10a2d720b2d57"
+    ],
+    [
+     "continuation_policies",
+     "policy-1",
+     "8cfb30ef2891de1412f87255419afb3f748e141ea3b18a292d8e78f615da6152"
+    ],
+    [
+     "continuation_progress",
+     "policy-1",
+     "508dc08d89763c16fee9a136d881ce1768e1f0f2bc6d4f721e7acadbdfbc8796"
+    ],
+    [
+     "fleet_control",
+     "admission",
+     "eb67ed2fb1e0fc49b3cd382387dff5fd991cc3e69025e02e911735a57313933c"
+    ],
+    [
+     "fleet_jobs",
+     "cont-42b0f6119a702500d085eb0c",
+     "a69ae9d19a245a2d1c8b6245c738ce013484faac4dc764b3dfa3138c39156302"
+    ],
+    [
+     "fleet_jobs",
+     "op-1",
+     "1b25d569db14fa0b6413876be21f5042622c2d1cc40daabf56eb8c1fa2075882"
+    ],
+    [
+     "fleet_registry",
+     "fleet-1",
+     "bd6513980dc5cf8fd28101e53442a7c9bb46db2737b28b4846793e479c8b6065"
+    ],
+    [
+     "portfolio_bindings",
+     "cont-42b0f6119a702500d085eb0c",
+     "811c93932eac57d3f2dd7b948443aef23932154cc741745510289b9ff312d516"
+    ],
+    [
+     "portfolio_bindings",
+     "op-1",
+     "ebc7b5db58fe7bb820cab80da089924cbf83c99acb446b12b0c45d08f038509c"
+    ]
+   ],
+   "lane": [
+    [
+     "continuation_bindings",
+     "cont-42b0f6119a702500d085eb0c",
+     "6fc2b50c04758a079925849d4f95b788931ee28ae30a49a8fddbbbf2f7f6284e"
+    ],
+    [
+     "decisions_pending",
+     "dec-op-1",
+     "90beb3c95de1fa4b1b7ea8e5d8584e63b5b020bcfbc1d48d7717efd6c75fa5d2"
+    ],
+    [
+     "operations",
+     "op-1",
+     "8826e04953c8e3372fe48762f64de8d72671237e4a8f77ba8ef8c63edb8fea14"
+    ],
+    [
+     "tasks",
+     "task-op-1",
+     "afff1a405ab6fb0d366bac298a6f95bb58d3fd06257a1d8f29ff5dedd1840d69"
+    ]
+   ],
+   "reads": [
+    "op-1"
+   ]
+  },
+  "unbound_origin": {
+   "message": "continuation refused: ownership_origin_unbound (origin_job)",
+   "reason_code": "ownership_origin_unbound",
+   "records_unchanged": true,
+   "refused": "ContinuationRefused"
+  }
+ },
+ "requalification": {
+  "goal_migration": {
+   "accepted": {
+    "first": {
+     "records_unchanged": false,
+     "value": {
+      "authority": "owner re-derivation of one withdrawn delivery on a named main: not an acceptance, a rebase, a new goal, a budget change, a merge or a deployment",
+      "cached": false,
+      "candidate": {
+       "base": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "revision": "cccccccccccccccccccccccccccccccccccccccc",
+       "tree": "7777777777777777777777777777777777777777"
+      },
+      "document_sha256": "e8852165bea1d1c27ae19f26ffdf204cd7ab00c994dba52d5df7535334dfdb4a",
+      "goal_migration": {
+       "criterion": "crit",
+       "from": {
+        "bytes": 3,
+        "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+       },
+       "path": "docs/GOAL.md",
+       "review": "owner_reference_recorded",
+       "review_ref": "sha256:870f29fae75d76fa46ada4f8b62022cf4aa5233cc773888208ba4dd21d8d9fe9",
+       "to": {
+        "bytes": 3,
+        "revision": "9999999999999999999999999999999999999999",
+        "sha256": "3333333333333333333333333333333333333333333333333333333333333333"
+       }
+      },
+      "intent_id": "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648",
+      "main_revision": "9999999999999999999999999999999999999999",
+      "plan": {
+       "plan_id": "own-h1-plan",
+       "plan_sha256": "5555555555555555555555555555555555555555555555555555555555555555"
+      },
+      "rationale_ref": "sha256:1ebcb491849e9bff0c37500702eedaacc44d9518f626ab7f8536f6229455689f",
+      "recorded_at": "2026-09-30T00:00:00.000015+00:00",
+      "release_id": "rel-op-a",
+      "requalification_intent": "b932ab5f1f0df524fc7cddce8ea3b1ea2935a7e421fc08c1dbb3876692d7cd02",
+      "requalified": true,
+      "successor_job": "cont-b932ab5f1f0df524fc7cddce",
+      "superseded": {
+       "next_owner": "host_delivery",
+       "reason_code": "conductor_accepted",
+       "state": "awaiting_owner",
+       "updated_at": "2026-09-30T00:00:00.000014+00:00",
+       "version": 1
+      },
+      "withdrawal_reason": "reviewed_base_moved"
+     }
+    },
+    "view": {
+     "intents": [
+      {
+       "base_revision": null,
+       "binding": null,
+       "goal": null,
+       "history": [
+        [
+         "awaiting_owner",
+         "conductor_accepted"
+        ],
+        [
+         "superseded",
+         "delivery_requalification_authorized"
+        ]
+       ],
+       "id": "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648",
+       "manifest_goal": null,
+       "reason_code": "delivery_requalification_authorized",
+       "requalification": "e8852165bea1d1c27ae19f26ffdf204cd7ab00c994dba52d5df7535334dfdb4a",
+       "route": "host_delivery",
+       "session_mode": null,
+       "state": "superseded",
+       "superseded_by": "b932ab5f1f0df524fc7cddce8ea3b1ea2935a7e421fc08c1dbb3876692d7cd02",
+       "version": 2
+      },
+      {
+       "base_revision": "9999999999999999999999999999999999999999",
+       "binding": {
+        "candidate_revision": "cccccccccccccccccccccccccccccccccccccccc",
+        "intent_id": "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648",
+        "job_id": "op-a",
+        "plan_id": "own-h1-plan",
+        "release_id": "rel-op-a",
+        "withdrawal_reason": "reviewed_base_moved"
+       },
+       "goal": {
+        "base_revision": "9999999999999999999999999999999999999999",
+        "bytes": 3,
+        "criterion": "crit",
+        "path": "docs/GOAL.md",
+        "sha256": "3333333333333333333333333333333333333333333333333333333333333333"
+       },
+       "history": [
+        [
+         "intended",
+         "delivery_requalification_authorized"
+        ]
+       ],
+       "id": "b932ab5f1f0df524fc7cddce8ea3b1ea2935a7e421fc08c1dbb3876692d7cd02",
+       "manifest_goal": "3333333333333333333333333333333333333333333333333333333333333333",
+       "reason_code": "delivery_requalification_authorized",
+       "requalification": "e8852165bea1d1c27ae19f26ffdf204cd7ab00c994dba52d5df7535334dfdb4a",
+       "route": "requalification",
+       "session_mode": "fresh_workspace_requalification",
+       "state": "intended",
+       "superseded_by": null,
+       "version": 1
+      }
+     ],
+     "stored": [
+      {
+       "document_sha256": "e8852165bea1d1c27ae19f26ffdf204cd7ab00c994dba52d5df7535334dfdb4a",
+       "goal_migration": {
+        "criterion": "crit",
+        "from": {
+         "bytes": 3,
+         "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+         "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        },
+        "path": "docs/GOAL.md",
+        "review": "owner_reference_recorded",
+        "review_ref": "sha256:870f29fae75d76fa46ada4f8b62022cf4aa5233cc773888208ba4dd21d8d9fe9",
+        "to": {
+         "bytes": 3,
+         "revision": "9999999999999999999999999999999999999999",
+         "sha256": "3333333333333333333333333333333333333333333333333333333333333333"
+        }
+       },
+       "id": "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648",
+       "requalification_intent": "b932ab5f1f0df524fc7cddce8ea3b1ea2935a7e421fc08c1dbb3876692d7cd02",
+       "successor_job": "cont-b932ab5f1f0df524fc7cddce",
+       "superseded": {
+        "next_owner": "host_delivery",
+        "reason_code": "conductor_accepted",
+        "state": "awaiting_owner",
+        "updated_at": "2026-09-30T00:00:00.000014+00:00",
+        "version": 1
+       }
+      }
+     ]
+    }
+   },
+   "admission": {
+    "again": {
+     "receipts": [
+      {
+       "value": {
+        "actions": [],
+        "outcome": "idle",
+        "owned_elsewhere": {
+         "count": 0,
+         "jobs": []
+        },
+        "policy_id": "policy-1",
+        "reason_code": null,
+        "schema": "urn:zeus:continuation-tick:1",
+        "skipped": []
+       }
+      }
+     ],
+     "records_unchanged": true
+    },
+    "jobs": [
+     [
+      "cont-b932ab5f1f0df524fc7cddce",
+      "queued",
+      "a"
+     ],
+     [
+      "op-a",
+      "accepted",
+      "a"
+     ]
+    ],
+    "state": {
+     "conductor": {
+      "calls": [
+       "op-a"
+      ],
+      "running": []
+     },
+     "control": [
+      [
+       "continuation_intents",
+       "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648",
+       "dacd88f5f686ad050437112219249684537999f455efb290ce0029a8206d3d24"
+      ],
+      [
+       "continuation_intents",
+       "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66",
+       "ff815e1e8f7ee7154e4beabdf0a3cf1aaa659893d13833dfd7de03efbe9f2c37"
+      ],
+      [
+       "continuation_intents",
+       "b932ab5f1f0df524fc7cddce8ea3b1ea2935a7e421fc08c1dbb3876692d7cd02",
+       "7e430432ddbfe739f2a390d486bc8f6cf1df4d3c89f4f7a201771f76f387909a"
+      ],
+      [
+       "continuation_policies",
+       "policy-1",
+       "8cfb30ef2891de1412f87255419afb3f748e141ea3b18a292d8e78f615da6152"
+      ],
+      [
+       "continuation_progress",
+       "policy-1",
+       "4d2d8831a65ec745efb57233d729a9abcdea7627fb7a581f61b65ca0a4680618"
+      ],
+      [
+       "continuation_requalifications",
+       "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648",
+       "a5d1ce9011ebd09f8c4709971acd4b9abad0076d529d04e7fc33f5241cf4e43b"
+      ],
+      [
+       "fleet_control",
+       "admission",
+       "eb67ed2fb1e0fc49b3cd382387dff5fd991cc3e69025e02e911735a57313933c"
+      ],
+      [
+       "fleet_jobs",
+       "cont-b932ab5f1f0df524fc7cddce",
+       "585074ee3e2038c733640975a87ab5759b211dbf62c92d3cd3da846431197adc"
+      ],
+      [
+       "fleet_jobs",
+       "op-a",
+       "b2b62462ab68fa6a39632b4633cc1d0bca6889741cbc0ec0e88448de908d1684"
+      ],
+      [
+       "fleet_registry",
+       "fleet-1",
+       "bd6513980dc5cf8fd28101e53442a7c9bb46db2737b28b4846793e479c8b6065"
+      ],
+      [
+       "fleet_units",
+       "f56c77bbf993bc7aee527847f925d76997b2283a67f3d66db2ad394421d3b0ef",
+       "51c1075df1f2255436bf26ea5a7f09486704f298c29515c0c983cdc7017c946a"
+      ]
+     ],
+     "lane": [
+      [
+       "continuation_bindings",
+       "cont-b932ab5f1f0df524fc7cddce",
+       "9488e2f416ab85918da63192b31c42b62c5e03602c6fe022b5434e2342431470"
+      ],
+      [
+       "decisions_pending",
+       "cond-op-a",
+       "9de0bd66007ea463d90fd29088a77810bd6f31f4bbbcb752702a6012b25adb4b"
+      ],
+      [
+       "decisions_pending",
+       "dec-op-a",
+       "4997412b134c0aa279f5ae8e7846423ff12c58deb06a4047eeafb1b9e4cd3dc7"
+      ],
+      [
+       "host_delivery_intents",
+       "own-h1-plan",
+       "12414ec941baee92521b255f7a890c975927da8c35a2f801379f4dec2f01f875"
+      ],
+      [
+       "operations",
+       "op-a",
+       "d3ccf9badf9694935c42b360ba3a3b155a03484310548af063c1b0a1e43c8665"
+      ],
+      [
+       "releases",
+       "rel-op-a",
+       "9c36785a9d7107530f9c5b869391161028c06a60f0bab3082b61d7c74f1eadaa"
+      ],
+      [
+       "tasks",
+       "task-op-a",
+       "151c9860df297912c091cee0eb68bd32a33658b539810bb0e1f9215ff91df301"
+      ]
+     ],
+     "reads": [
+      "op-a",
+      "op-a",
+      "op-a",
+      "op-a",
+      "op-a"
+     ]
+    },
+    "tick": {
+     "value": {
+      "actions": [
+       {
+        "effect": "admitted",
+        "route": "requalification",
+        "subject": "b932ab5f1f0df524fc7cddce8ea3b1ea2935a7e421fc08c1dbb3876692d7cd02",
+        "successor_job": "cont-b932ab5f1f0df524fc7cddce"
+       }
+      ],
+      "outcome": "progressed",
+      "owned_elsewhere": {
+       "count": 0,
+       "jobs": []
+      },
+      "policy_id": "policy-1",
+      "reason_code": null,
+      "schema": "urn:zeus:continuation-tick:1",
+      "skipped": []
+     }
+    },
+    "view": {
+     "intents": [
+      {
+       "base_revision": null,
+       "binding": null,
+       "goal": null,
+       "history": [
+        [
+         "awaiting_owner",
+         "conductor_accepted"
+        ],
+        [
+         "superseded",
+         "delivery_requalification_authorized"
+        ]
+       ],
+       "id": "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648",
+       "manifest_goal": null,
+       "reason_code": "delivery_requalification_authorized",
+       "requalification": "e8852165bea1d1c27ae19f26ffdf204cd7ab00c994dba52d5df7535334dfdb4a",
+       "route": "host_delivery",
+       "session_mode": null,
+       "state": "superseded",
+       "superseded_by": "b932ab5f1f0df524fc7cddce8ea3b1ea2935a7e421fc08c1dbb3876692d7cd02",
+       "version": 2
+      },
+      {
+       "base_revision": "9999999999999999999999999999999999999999",
+       "binding": {
+        "candidate_revision": "cccccccccccccccccccccccccccccccccccccccc",
+        "intent_id": "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648",
+        "job_id": "op-a",
+        "plan_id": "own-h1-plan",
+        "release_id": "rel-op-a",
+        "withdrawal_reason": "reviewed_base_moved"
+       },
+       "goal": {
+        "base_revision": "9999999999999999999999999999999999999999",
+        "bytes": 3,
+        "criterion": "crit",
+        "path": "docs/GOAL.md",
+        "sha256": "3333333333333333333333333333333333333333333333333333333333333333"
+       },
+       "history": [
+        [
+         "intended",
+         "delivery_requalification_authorized"
+        ],
+        [
+         "published",
+         "delivery_requalification_authorized"
+        ],
+        [
+         "admitted",
+         "delivery_requalification_authorized"
+        ]
+       ],
+       "id": "b932ab5f1f0df524fc7cddce8ea3b1ea2935a7e421fc08c1dbb3876692d7cd02",
+       "manifest_goal": "3333333333333333333333333333333333333333333333333333333333333333",
+       "reason_code": "delivery_requalification_authorized",
+       "requalification": "e8852165bea1d1c27ae19f26ffdf204cd7ab00c994dba52d5df7535334dfdb4a",
+       "route": "requalification",
+       "session_mode": "fresh_workspace_requalification",
+       "state": "admitted",
+       "superseded_by": null,
+       "version": 3
+      }
+     ],
+     "stored": [
+      {
+       "document_sha256": "e8852165bea1d1c27ae19f26ffdf204cd7ab00c994dba52d5df7535334dfdb4a",
+       "goal_migration": {
+        "criterion": "crit",
+        "from": {
+         "bytes": 3,
+         "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+         "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        },
+        "path": "docs/GOAL.md",
+        "review": "owner_reference_recorded",
+        "review_ref": "sha256:870f29fae75d76fa46ada4f8b62022cf4aa5233cc773888208ba4dd21d8d9fe9",
+        "to": {
+         "bytes": 3,
+         "revision": "9999999999999999999999999999999999999999",
+         "sha256": "3333333333333333333333333333333333333333333333333333333333333333"
+        }
+       },
+       "id": "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648",
+       "requalification_intent": "b932ab5f1f0df524fc7cddce8ea3b1ea2935a7e421fc08c1dbb3876692d7cd02",
+       "successor_job": "cont-b932ab5f1f0df524fc7cddce",
+       "superseded": {
+        "next_owner": "host_delivery",
+        "reason_code": "conductor_accepted",
+        "state": "awaiting_owner",
+        "updated_at": "2026-09-30T00:00:00.000014+00:00",
+        "version": 1
+       }
+      }
+     ]
+    }
+   },
+   "conflicts": {
+    "no_block": {
+     "message": "continuation refused: requalification_conflict (intent_id)",
+     "reason_code": "requalification_conflict",
+     "records_unchanged": true,
+     "refused": "ContinuationRefused"
+    },
+    "other_review": {
+     "message": "continuation refused: requalification_conflict (intent_id)",
+     "reason_code": "requalification_conflict",
+     "records_unchanged": true,
+     "refused": "ContinuationRefused"
+    }
+   },
+   "malformed": {
+    "not_a_ref": {
+     "message": "continuation refused: requalification_invalid (goal_migration)",
+     "reason_code": "requalification_invalid",
+     "records_unchanged": true,
+     "refused": "ContinuationRefused"
+    },
+    "null": {
+     "message": "continuation refused: requalification_invalid (goal_migration)",
+     "reason_code": "requalification_invalid",
+     "records_unchanged": true,
+     "refused": "ContinuationRefused"
+    },
+    "review_is_the_rationale": {
+     "message": "continuation refused: requalification_invalid (goal_migration)",
+     "reason_code": "requalification_invalid",
+     "records_unchanged": true,
+     "refused": "ContinuationRefused"
+    },
+    "unsafe_path": {
+     "message": "continuation refused: requalification_invalid (goal_migration)",
+     "reason_code": "requalification_invalid",
+     "records_unchanged": true,
+     "refused": "ContinuationRefused"
+    }
+   },
+   "refusals": {
+    "from_not_the_origin_base_blob": {
+     "message": "continuation refused: requalification_goal_migration_origin (goal_migration)",
+     "reason_code": "requalification_goal_migration_origin",
+     "records_unchanged": true,
+     "refused": "ContinuationRefused"
+    },
+    "from_not_the_stored_binding": {
+     "message": "continuation refused: requalification_goal_migration_origin (goal_migration)",
+     "reason_code": "requalification_goal_migration_origin",
+     "records_unchanged": true,
+     "refused": "ContinuationRefused"
+    },
+    "goal_unchanged_at_main": {
+     "message": "continuation refused: requalification_goal_migration_target (goal_migration)",
+     "reason_code": "requalification_goal_migration_target",
+     "records_unchanged": true,
+     "refused": "ContinuationRefused"
+    },
+    "other_path": {
+     "message": "continuation refused: requalification_goal_migration_scope (goal_migration)",
+     "reason_code": "requalification_goal_migration_scope",
+     "records_unchanged": true,
+     "refused": "ContinuationRefused"
+    },
+    "review_missing": {
+     "message": "continuation refused: requalification_goal_review_unreadable (goal_migration)",
+     "reason_code": "requalification_goal_review_unreadable",
+     "records_unchanged": true,
+     "refused": "ContinuationRefused"
+    },
+    "same_digests": {
+     "message": "continuation refused: requalification_invalid (goal_migration)",
+     "reason_code": "requalification_invalid",
+     "records_unchanged": true,
+     "refused": "ContinuationRefused"
+    },
+    "to_not_the_main_blob": {
+     "message": "continuation refused: requalification_goal_migration_target (goal_migration)",
+     "reason_code": "requalification_goal_migration_target",
+     "records_unchanged": true,
+     "refused": "ContinuationRefused"
+    },
+    "unknown_field": {
+     "message": "continuation refused: requalification_invalid (goal_migration)",
+     "reason_code": "requalification_invalid",
+     "records_unchanged": true,
+     "refused": "ContinuationRefused"
+    },
+    "wider_criterion": {
+     "message": "continuation refused: requalification_goal_migration_scope (goal_migration)",
+     "reason_code": "requalification_goal_migration_scope",
+     "records_unchanged": true,
+     "refused": "ContinuationRefused"
+    }
+   },
+   "replay": {
+    "records_unchanged": true,
+    "value": {
+     "authority": "owner re-derivation of one withdrawn delivery on a named main: not an acceptance, a rebase, a new goal, a budget change, a merge or a deployment",
+     "cached": true,
+     "candidate": {
+      "base": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "revision": "cccccccccccccccccccccccccccccccccccccccc",
+      "tree": "7777777777777777777777777777777777777777"
+     },
+     "document_sha256": "e8852165bea1d1c27ae19f26ffdf204cd7ab00c994dba52d5df7535334dfdb4a",
+     "goal_migration": {
+      "criterion": "crit",
+      "from": {
+       "bytes": 3,
+       "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+      },
+      "path": "docs/GOAL.md",
+      "review": "owner_reference_recorded",
+      "review_ref": "sha256:870f29fae75d76fa46ada4f8b62022cf4aa5233cc773888208ba4dd21d8d9fe9",
+      "to": {
+       "bytes": 3,
+       "revision": "9999999999999999999999999999999999999999",
+       "sha256": "3333333333333333333333333333333333333333333333333333333333333333"
+      }
+     },
+     "intent_id": "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648",
+     "main_revision": "9999999999999999999999999999999999999999",
+     "plan": {
+      "plan_id": "own-h1-plan",
+      "plan_sha256": "5555555555555555555555555555555555555555555555555555555555555555"
+     },
+     "rationale_ref": "sha256:1ebcb491849e9bff0c37500702eedaacc44d9518f626ab7f8536f6229455689f",
+     "recorded_at": "2026-09-30T00:00:00.000015+00:00",
+     "release_id": "rel-op-a",
+     "requalification_intent": "b932ab5f1f0df524fc7cddce8ea3b1ea2935a7e421fc08c1dbb3876692d7cd02",
+     "requalified": true,
+     "successor_job": "cont-b932ab5f1f0df524fc7cddce",
+     "superseded": {
+      "next_owner": "host_delivery",
+      "reason_code": "conductor_accepted",
+      "state": "awaiting_owner",
+      "updated_at": "2026-09-30T00:00:00.000014+00:00",
+      "version": 1
+     },
+     "withdrawal_reason": "reviewed_base_moved"
+    }
+   },
+   "status_migration": [
+    {
+     "criterion": "crit",
+     "from": {
+      "bytes": 3,
+      "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+     },
+     "path": "docs/GOAL.md",
+     "review": "owner_reference_recorded",
+     "review_ref": "sha256:870f29fae75d76fa46ada4f8b62022cf4aa5233cc773888208ba4dd21d8d9fe9",
+     "to": {
+      "bytes": 3,
+      "revision": "9999999999999999999999999999999999999999",
+      "sha256": "3333333333333333333333333333333333333333333333333333333333333333"
+     }
+    }
+   ],
+   "without_block_refused": {
+    "message": "continuation refused: requalification_goal_changed (goal)",
+    "reason_code": "requalification_goal_changed",
+    "records_unchanged": true,
+    "refused": "ContinuationRefused"
+   }
+  },
+  "open_and_moved": {
+   "family_open": {
+    "first": {
+     "value": {
+      "authority": "owner re-derivation of one withdrawn delivery on a named main: not an acceptance, a rebase, a new goal, a budget change, a merge or a deployment",
+      "cached": false,
+      "candidate": {
+       "base": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "revision": "cccccccccccccccccccccccccccccccccccccccc",
+       "tree": "7777777777777777777777777777777777777777"
+      },
+      "document_sha256": "1ce08a987e3af45bec3a80cbe6403c67c6ff2812f3f677ce7ee832cdd8ea38d5",
+      "goal_migration": null,
+      "intent_id": "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648",
+      "main_revision": "9999999999999999999999999999999999999999",
+      "plan": {
+       "plan_id": "own-h1-plan",
+       "plan_sha256": "5555555555555555555555555555555555555555555555555555555555555555"
+      },
+      "rationale_ref": "sha256:1ebcb491849e9bff0c37500702eedaacc44d9518f626ab7f8536f6229455689f",
+      "recorded_at": "2026-09-30T00:00:00.000015+00:00",
+      "release_id": "rel-op-a",
+      "requalification_intent": "b932ab5f1f0df524fc7cddce8ea3b1ea2935a7e421fc08c1dbb3876692d7cd02",
+      "requalified": true,
+      "successor_job": "cont-b932ab5f1f0df524fc7cddce",
+      "superseded": {
+       "next_owner": "host_delivery",
+       "reason_code": "conductor_accepted",
+       "state": "awaiting_owner",
+       "updated_at": "2026-09-30T00:00:00.000014+00:00",
+       "version": 1
+      },
+      "withdrawal_reason": "reviewed_base_moved"
+     }
+    },
+    "second": {
+     "message": "continuation refused: requalification_family_open (family)",
+     "reason_code": "requalification_family_open",
+     "records_unchanged": true,
+     "refused": "ContinuationRefused",
+     "twin": "1111111111111111111111111111111111111111111111111111111111111111"
+    }
+   },
+   "moved_during_verification": {
+    "refused": {
+     "message": "continuation refused: requalification_intent_changed (intent_id)",
+     "reason_code": "requalification_intent_changed",
+     "refused": "ContinuationRefused"
+    },
+    "requalification_created": false,
+    "stored": []
+   },
+   "not_withdrawn": {
+    "delivery_state": "awaiting_owner",
+    "refused": {
+     "message": "continuation refused: requalification_plan_not_withdrawn (plan)",
+     "reason_code": "requalification_plan_not_withdrawn",
+     "records_unchanged": true,
+     "refused": "ContinuationRefused"
+    }
+   }
+  },
+  "supersede": {
+   "admission": {
+    "again": {
+     "receipts": [
+      {
+       "value": {
+        "actions": [],
+        "outcome": "idle",
+        "owned_elsewhere": {
+         "count": 0,
+         "jobs": []
+        },
+        "policy_id": "policy-1",
+        "reason_code": null,
+        "schema": "urn:zeus:continuation-tick:1",
+        "skipped": []
+       }
+      },
+      {
+       "value": {
+        "actions": [],
+        "outcome": "idle",
+        "owned_elsewhere": {
+         "count": 0,
+         "jobs": []
+        },
+        "policy_id": "policy-1",
+        "reason_code": null,
+        "schema": "urn:zeus:continuation-tick:1",
+        "skipped": []
+       }
+      }
+     ],
+     "records_unchanged": true
+    },
+    "bindings": [
+     {
+      "family": "op-a",
+      "intent_id": "b932ab5f1f0df524fc7cddce8ea3b1ea2935a7e421fc08c1dbb3876692d7cd02",
+      "operation_id": "cont-b932ab5f1f0df524fc7cddce",
+      "predecessor": {
+       "candidate_revision": "cccccccccccccccccccccccccccccccccccccccc",
+       "intent_id": "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648",
+       "job_id": "op-a",
+       "plan_id": "own-h1-plan",
+       "release_id": "rel-op-a",
+       "withdrawal_reason": "reviewed_base_moved"
+      },
+      "route": "requalification",
+      "session": null,
+      "workspace": null
+     }
+    ],
+    "jobs": [
+     [
+      "cont-b932ab5f1f0df524fc7cddce",
+      "queued",
+      "a"
+     ],
+     [
+      "op-a",
+      "accepted",
+      "a"
+     ]
+    ],
+    "state": {
+     "conductor": {
+      "calls": [
+       "op-a"
+      ],
+      "running": []
+     },
+     "control": [
+      [
+       "continuation_intents",
+       "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648",
+       "d07adce0796a157c20d9d9f323e79e149a3d829309617fe31c210d86d6d750ce"
+      ],
+      [
+       "continuation_intents",
+       "a168788a665f9bd3e3db21235bc5d6be5319cbfc6cc33a57205f3e6487447d66",
+       "ff815e1e8f7ee7154e4beabdf0a3cf1aaa659893d13833dfd7de03efbe9f2c37"
+      ],
+      [
+       "continuation_intents",
+       "b932ab5f1f0df524fc7cddce8ea3b1ea2935a7e421fc08c1dbb3876692d7cd02",
+       "8bc5e104826ce6c6805a5d92a25e873ba9c47fc49bbd18ec8b2aad8ef4be96aa"
+      ],
+      [
+       "continuation_policies",
+       "policy-1",
+       "8cfb30ef2891de1412f87255419afb3f748e141ea3b18a292d8e78f615da6152"
+      ],
+      [
+       "continuation_progress",
+       "policy-1",
+       "4d2d8831a65ec745efb57233d729a9abcdea7627fb7a581f61b65ca0a4680618"
+      ],
+      [
+       "continuation_requalifications",
+       "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648",
+       "d7384a55930896b57467e98b5b259e68883b994cc3f54b2443424808d56644c8"
+      ],
+      [
+       "fleet_control",
+       "admission",
+       "eb67ed2fb1e0fc49b3cd382387dff5fd991cc3e69025e02e911735a57313933c"
+      ],
+      [
+       "fleet_jobs",
+       "cont-b932ab5f1f0df524fc7cddce",
+       "c47aff05994789136b3aa95eb9c2bf3280e4f29221285bd1809b31713adee289"
+      ],
+      [
+       "fleet_jobs",
+       "op-a",
+       "b2b62462ab68fa6a39632b4633cc1d0bca6889741cbc0ec0e88448de908d1684"
+      ],
+      [
+       "fleet_registry",
+       "fleet-1",
+       "bd6513980dc5cf8fd28101e53442a7c9bb46db2737b28b4846793e479c8b6065"
+      ],
+      [
+       "fleet_units",
+       "f56c77bbf993bc7aee527847f925d76997b2283a67f3d66db2ad394421d3b0ef",
+       "51c1075df1f2255436bf26ea5a7f09486704f298c29515c0c983cdc7017c946a"
+      ]
+     ],
+     "lane": [
+      [
+       "continuation_bindings",
+       "cont-b932ab5f1f0df524fc7cddce",
+       "9488e2f416ab85918da63192b31c42b62c5e03602c6fe022b5434e2342431470"
+      ],
+      [
+       "decisions_pending",
+       "cond-op-a",
+       "9de0bd66007ea463d90fd29088a77810bd6f31f4bbbcb752702a6012b25adb4b"
+      ],
+      [
+       "decisions_pending",
+       "dec-op-a",
+       "4997412b134c0aa279f5ae8e7846423ff12c58deb06a4047eeafb1b9e4cd3dc7"
+      ],
+      [
+       "host_delivery_intents",
+       "own-h1-plan",
+       "12414ec941baee92521b255f7a890c975927da8c35a2f801379f4dec2f01f875"
+      ],
+      [
+       "operations",
+       "op-a",
+       "d3ccf9badf9694935c42b360ba3a3b155a03484310548af063c1b0a1e43c8665"
+      ],
+      [
+       "releases",
+       "rel-op-a",
+       "9c36785a9d7107530f9c5b869391161028c06a60f0bab3082b61d7c74f1eadaa"
+      ],
+      [
+       "tasks",
+       "task-op-a",
+       "151c9860df297912c091cee0eb68bd32a33658b539810bb0e1f9215ff91df301"
+      ]
+     ],
+     "reads": [
+      "op-a",
+      "op-a",
+      "op-a",
+      "op-a",
+      "op-a",
+      "op-a"
+     ]
+    },
+    "tick": {
+     "value": {
+      "actions": [
+       {
+        "effect": "admitted",
+        "route": "requalification",
+        "subject": "b932ab5f1f0df524fc7cddce8ea3b1ea2935a7e421fc08c1dbb3876692d7cd02",
+        "successor_job": "cont-b932ab5f1f0df524fc7cddce"
+       }
+      ],
+      "outcome": "progressed",
+      "owned_elsewhere": {
+       "count": 0,
+       "jobs": []
+      },
+      "policy_id": "policy-1",
+      "reason_code": null,
+      "schema": "urn:zeus:continuation-tick:1",
+      "skipped": []
+     }
+    },
+    "view": {
+     "intents": [
+      {
+       "base_revision": null,
+       "binding": null,
+       "goal": null,
+       "history": [
+        [
+         "awaiting_owner",
+         "conductor_accepted"
+        ],
+        [
+         "superseded",
+         "delivery_requalification_authorized"
+        ]
+       ],
+       "id": "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648",
+       "manifest_goal": null,
+       "reason_code": "delivery_requalification_authorized",
+       "requalification": "1ce08a987e3af45bec3a80cbe6403c67c6ff2812f3f677ce7ee832cdd8ea38d5",
+       "route": "host_delivery",
+       "session_mode": null,
+       "state": "superseded",
+       "superseded_by": "b932ab5f1f0df524fc7cddce8ea3b1ea2935a7e421fc08c1dbb3876692d7cd02",
+       "version": 2
+      },
+      {
+       "base_revision": "9999999999999999999999999999999999999999",
+       "binding": {
+        "candidate_revision": "cccccccccccccccccccccccccccccccccccccccc",
+        "intent_id": "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648",
+        "job_id": "op-a",
+        "plan_id": "own-h1-plan",
+        "release_id": "rel-op-a",
+        "withdrawal_reason": "reviewed_base_moved"
+       },
+       "goal": {
+        "base_revision": "9999999999999999999999999999999999999999",
+        "bytes": 3,
+        "criterion": "crit",
+        "path": "docs/GOAL.md",
+        "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+       },
+       "history": [
+        [
+         "intended",
+         "delivery_requalification_authorized"
+        ],
+        [
+         "published",
+         "delivery_requalification_authorized"
+        ],
+        [
+         "admitted",
+         "delivery_requalification_authorized"
+        ]
+       ],
+       "id": "b932ab5f1f0df524fc7cddce8ea3b1ea2935a7e421fc08c1dbb3876692d7cd02",
+       "manifest_goal": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+       "reason_code": "delivery_requalification_authorized",
+       "requalification": "1ce08a987e3af45bec3a80cbe6403c67c6ff2812f3f677ce7ee832cdd8ea38d5",
+       "route": "requalification",
+       "session_mode": "fresh_workspace_requalification",
+       "state": "admitted",
+       "superseded_by": null,
+       "version": 3
+      }
+     ],
+     "stored": [
+      {
+       "document_sha256": "1ce08a987e3af45bec3a80cbe6403c67c6ff2812f3f677ce7ee832cdd8ea38d5",
+       "goal_migration": null,
+       "id": "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648",
+       "requalification_intent": "b932ab5f1f0df524fc7cddce8ea3b1ea2935a7e421fc08c1dbb3876692d7cd02",
+       "successor_job": "cont-b932ab5f1f0df524fc7cddce",
+       "superseded": {
+        "next_owner": "host_delivery",
+        "reason_code": "conductor_accepted",
+        "state": "awaiting_owner",
+        "updated_at": "2026-09-30T00:00:00.000014+00:00",
+        "version": 1
+       }
+      }
+     ]
+    }
+   },
+   "conflict": {
+    "message": "continuation refused: requalification_conflict (intent_id)",
+    "reason_code": "requalification_conflict",
+    "records_unchanged": true,
+    "refused": "ContinuationRefused"
+   },
+   "ownership_on_requalification": {
+    "message": "continuation refused: ownership_intent_invalid (intent_id)",
+    "reason_code": "ownership_intent_invalid",
+    "records_unchanged": true,
+    "refused": "ContinuationRefused"
+   },
+   "replay": {
+    "records_unchanged": true,
+    "value": {
+     "authority": "owner re-derivation of one withdrawn delivery on a named main: not an acceptance, a rebase, a new goal, a budget change, a merge or a deployment",
+     "cached": true,
+     "candidate": {
+      "base": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "revision": "cccccccccccccccccccccccccccccccccccccccc",
+      "tree": "7777777777777777777777777777777777777777"
+     },
+     "document_sha256": "1ce08a987e3af45bec3a80cbe6403c67c6ff2812f3f677ce7ee832cdd8ea38d5",
+     "goal_migration": null,
+     "intent_id": "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648",
+     "main_revision": "9999999999999999999999999999999999999999",
+     "plan": {
+      "plan_id": "own-h1-plan",
+      "plan_sha256": "5555555555555555555555555555555555555555555555555555555555555555"
+     },
+     "rationale_ref": "sha256:1ebcb491849e9bff0c37500702eedaacc44d9518f626ab7f8536f6229455689f",
+     "recorded_at": "2026-09-30T00:00:00.000015+00:00",
+     "release_id": "rel-op-a",
+     "requalification_intent": "b932ab5f1f0df524fc7cddce8ea3b1ea2935a7e421fc08c1dbb3876692d7cd02",
+     "requalified": true,
+     "successor_job": "cont-b932ab5f1f0df524fc7cddce",
+     "superseded": {
+      "next_owner": "host_delivery",
+      "reason_code": "conductor_accepted",
+      "state": "awaiting_owner",
+      "updated_at": "2026-09-30T00:00:00.000014+00:00",
+      "version": 1
+     },
+     "withdrawal_reason": "reviewed_base_moved"
+    }
+   },
+   "requalify": {
+    "first": {
+     "records_unchanged": false,
+     "value": {
+      "authority": "owner re-derivation of one withdrawn delivery on a named main: not an acceptance, a rebase, a new goal, a budget change, a merge or a deployment",
+      "cached": false,
+      "candidate": {
+       "base": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "revision": "cccccccccccccccccccccccccccccccccccccccc",
+       "tree": "7777777777777777777777777777777777777777"
+      },
+      "document_sha256": "1ce08a987e3af45bec3a80cbe6403c67c6ff2812f3f677ce7ee832cdd8ea38d5",
+      "goal_migration": null,
+      "intent_id": "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648",
+      "main_revision": "9999999999999999999999999999999999999999",
+      "plan": {
+       "plan_id": "own-h1-plan",
+       "plan_sha256": "5555555555555555555555555555555555555555555555555555555555555555"
+      },
+      "rationale_ref": "sha256:1ebcb491849e9bff0c37500702eedaacc44d9518f626ab7f8536f6229455689f",
+      "recorded_at": "2026-09-30T00:00:00.000015+00:00",
+      "release_id": "rel-op-a",
+      "requalification_intent": "b932ab5f1f0df524fc7cddce8ea3b1ea2935a7e421fc08c1dbb3876692d7cd02",
+      "requalified": true,
+      "successor_job": "cont-b932ab5f1f0df524fc7cddce",
+      "superseded": {
+       "next_owner": "host_delivery",
+       "reason_code": "conductor_accepted",
+       "state": "awaiting_owner",
+       "updated_at": "2026-09-30T00:00:00.000014+00:00",
+       "version": 1
+      },
+      "withdrawal_reason": "reviewed_base_moved"
+     }
+    },
+    "jobs": [
+     [
+      "op-a",
+      "accepted",
+      "a"
+     ]
+    ],
+    "lane_unchanged": true,
+    "view": {
+     "intents": [
+      {
+       "base_revision": null,
+       "binding": null,
+       "goal": null,
+       "history": [
+        [
+         "awaiting_owner",
+         "conductor_accepted"
+        ],
+        [
+         "superseded",
+         "delivery_requalification_authorized"
+        ]
+       ],
+       "id": "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648",
+       "manifest_goal": null,
+       "reason_code": "delivery_requalification_authorized",
+       "requalification": "1ce08a987e3af45bec3a80cbe6403c67c6ff2812f3f677ce7ee832cdd8ea38d5",
+       "route": "host_delivery",
+       "session_mode": null,
+       "state": "superseded",
+       "superseded_by": "b932ab5f1f0df524fc7cddce8ea3b1ea2935a7e421fc08c1dbb3876692d7cd02",
+       "version": 2
+      },
+      {
+       "base_revision": "9999999999999999999999999999999999999999",
+       "binding": {
+        "candidate_revision": "cccccccccccccccccccccccccccccccccccccccc",
+        "intent_id": "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648",
+        "job_id": "op-a",
+        "plan_id": "own-h1-plan",
+        "release_id": "rel-op-a",
+        "withdrawal_reason": "reviewed_base_moved"
+       },
+       "goal": {
+        "base_revision": "9999999999999999999999999999999999999999",
+        "bytes": 3,
+        "criterion": "crit",
+        "path": "docs/GOAL.md",
+        "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+       },
+       "history": [
+        [
+         "intended",
+         "delivery_requalification_authorized"
+        ]
+       ],
+       "id": "b932ab5f1f0df524fc7cddce8ea3b1ea2935a7e421fc08c1dbb3876692d7cd02",
+       "manifest_goal": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+       "reason_code": "delivery_requalification_authorized",
+       "requalification": "1ce08a987e3af45bec3a80cbe6403c67c6ff2812f3f677ce7ee832cdd8ea38d5",
+       "route": "requalification",
+       "session_mode": "fresh_workspace_requalification",
+       "state": "intended",
+       "superseded_by": null,
+       "version": 1
+      }
+     ],
+     "stored": [
+      {
+       "document_sha256": "1ce08a987e3af45bec3a80cbe6403c67c6ff2812f3f677ce7ee832cdd8ea38d5",
+       "goal_migration": null,
+       "id": "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648",
+       "requalification_intent": "b932ab5f1f0df524fc7cddce8ea3b1ea2935a7e421fc08c1dbb3876692d7cd02",
+       "successor_job": "cont-b932ab5f1f0df524fc7cddce",
+       "superseded": {
+        "next_owner": "host_delivery",
+        "reason_code": "conductor_accepted",
+        "state": "awaiting_owner",
+        "updated_at": "2026-09-30T00:00:00.000014+00:00",
+        "version": 1
+       }
+      }
+     ]
+    }
+   },
+   "status": {
+    "requalifications": [
+     {
+      "authority": "owner re-derivation of one withdrawn delivery on a named main: not an acceptance, a rebase, a new goal, a budget change, a merge or a deployment",
+      "candidate": {
+       "base": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+       "revision": "cccccccccccccccccccccccccccccccccccccccc",
+       "tree": "7777777777777777777777777777777777777777"
+      },
+      "document_sha256": "1ce08a987e3af45bec3a80cbe6403c67c6ff2812f3f677ce7ee832cdd8ea38d5",
+      "goal_migration": null,
+      "intent_id": "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648",
+      "main_revision": "9999999999999999999999999999999999999999",
+      "plan": {
+       "plan_id": "own-h1-plan",
+       "plan_sha256": "5555555555555555555555555555555555555555555555555555555555555555"
+      },
+      "rationale_ref": "sha256:1ebcb491849e9bff0c37500702eedaacc44d9518f626ab7f8536f6229455689f",
+      "recorded_at": "2026-09-30T00:00:00.000015+00:00",
+      "release_id": "rel-op-a",
+      "requalification_intent": "b932ab5f1f0df524fc7cddce8ea3b1ea2935a7e421fc08c1dbb3876692d7cd02",
+      "successor_job": "cont-b932ab5f1f0df524fc7cddce",
+      "superseded": {
+       "next_owner": "host_delivery",
+       "reason_code": "conductor_accepted",
+       "state": "awaiting_owner",
+       "updated_at": "2026-09-30T00:00:00.000014+00:00",
+       "version": 1
+      },
+      "withdrawal_reason": "reviewed_base_moved"
+     }
+    ],
+    "superseded_by": "b932ab5f1f0df524fc7cddce8ea3b1ea2935a7e421fc08c1dbb3876692d7cd02",
+    "superseded_next_action": "superseded by the owner's delivery requalification b932ab5f1f0df524fc7cddce8ea3b1ea2935a7e421fc08c1dbb3876692d7cd02; the withdrawn delivery and this intent's history are kept"
+   },
+   "withdrawn_wait": {
+    "before": {
+     "intents": [
+      {
+       "base_revision": null,
+       "binding": null,
+       "goal": null,
+       "history": [
+        [
+         "awaiting_owner",
+         "conductor_accepted"
+        ]
+       ],
+       "id": "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648",
+       "manifest_goal": null,
+       "reason_code": "conductor_accepted",
+       "requalification": null,
+       "route": "host_delivery",
+       "session_mode": null,
+       "state": "awaiting_owner",
+       "superseded_by": null,
+       "version": 1
+      }
+     ],
+     "stored": []
+    },
+    "view": {
+     "intents": [
+      {
+       "base_revision": null,
+       "binding": null,
+       "goal": null,
+       "history": [
+        [
+         "awaiting_owner",
+         "conductor_accepted"
+        ]
+       ],
+       "id": "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648",
+       "manifest_goal": null,
+       "reason_code": "conductor_accepted",
+       "requalification": null,
+       "route": "host_delivery",
+       "session_mode": null,
+       "state": "awaiting_owner",
+       "superseded_by": null,
+       "version": 1
+      }
+     ],
+     "stored": []
+    },
+    "waits": [
+     {
+      "records_unchanged": true,
+      "tick": {
+       "value": {
+        "actions": [],
+        "outcome": "blocked",
+        "owned_elsewhere": {
+         "count": 0,
+         "jobs": []
+        },
+        "policy_id": "policy-1",
+        "reason_code": null,
+        "schema": "urn:zeus:continuation-tick:1",
+        "skipped": [
+         {
+          "next_owner": "operator",
+          "reason_code": "delivery_withdrawn",
+          "subject": "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648"
+         }
+        ]
+       }
+      }
+     },
+     {
+      "records_unchanged": true,
+      "tick": {
+       "value": {
+        "actions": [],
+        "outcome": "blocked",
+        "owned_elsewhere": {
+         "count": 0,
+         "jobs": []
+        },
+        "policy_id": "policy-1",
+        "reason_code": null,
+        "schema": "urn:zeus:continuation-tick:1",
+        "skipped": [
+         {
+          "next_owner": "operator",
+          "reason_code": "delivery_withdrawn",
+          "subject": "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648"
+         }
+        ]
+       }
+      }
+     }
+    ]
+   }
+  },
+  "tampered": {
+   "document_main_revision": {
+    "bindings": [],
+    "tick": {
+     "value": {
+      "actions": [],
+      "outcome": "blocked",
+      "owned_elsewhere": {
+       "count": 0,
+       "jobs": []
+      },
+      "policy_id": "policy-1",
+      "reason_code": null,
+      "schema": "urn:zeus:continuation-tick:1",
+      "skipped": [
+       {
+        "next_owner": "operator",
+        "reason_code": "requalification_corrupt",
+        "subject": "b932ab5f1f0df524fc7cddce8ea3b1ea2935a7e421fc08c1dbb3876692d7cd02"
+       }
+      ]
+     }
+    },
+    "view": {
+     "intents": [
+      {
+       "base_revision": null,
+       "binding": null,
+       "goal": null,
+       "history": [
+        [
+         "awaiting_owner",
+         "conductor_accepted"
+        ],
+        [
+         "superseded",
+         "delivery_requalification_authorized"
+        ]
+       ],
+       "id": "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648",
+       "manifest_goal": null,
+       "reason_code": "delivery_requalification_authorized",
+       "requalification": "1ce08a987e3af45bec3a80cbe6403c67c6ff2812f3f677ce7ee832cdd8ea38d5",
+       "route": "host_delivery",
+       "session_mode": null,
+       "state": "superseded",
+       "superseded_by": "b932ab5f1f0df524fc7cddce8ea3b1ea2935a7e421fc08c1dbb3876692d7cd02",
+       "version": 2
+      },
+      {
+       "base_revision": "9999999999999999999999999999999999999999",
+       "binding": {
+        "candidate_revision": "cccccccccccccccccccccccccccccccccccccccc",
+        "intent_id": "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648",
+        "job_id": "op-a",
+        "plan_id": "own-h1-plan",
+        "release_id": "rel-op-a",
+        "withdrawal_reason": "reviewed_base_moved"
+       },
+       "goal": {
+        "base_revision": "9999999999999999999999999999999999999999",
+        "bytes": 3,
+        "criterion": "crit",
+        "path": "docs/GOAL.md",
+        "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+       },
+       "history": [
+        [
+         "intended",
+         "delivery_requalification_authorized"
+        ]
+       ],
+       "id": "b932ab5f1f0df524fc7cddce8ea3b1ea2935a7e421fc08c1dbb3876692d7cd02",
+       "manifest_goal": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+       "reason_code": "delivery_requalification_authorized",
+       "requalification": "1ce08a987e3af45bec3a80cbe6403c67c6ff2812f3f677ce7ee832cdd8ea38d5",
+       "route": "requalification",
+       "session_mode": "fresh_workspace_requalification",
+       "state": "intended",
+       "superseded_by": null,
+       "version": 2
+      }
+     ],
+     "stored": [
+      {
+       "document_sha256": "1ce08a987e3af45bec3a80cbe6403c67c6ff2812f3f677ce7ee832cdd8ea38d5",
+       "goal_migration": null,
+       "id": "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648",
+       "requalification_intent": "b932ab5f1f0df524fc7cddce8ea3b1ea2935a7e421fc08c1dbb3876692d7cd02",
+       "successor_job": "cont-b932ab5f1f0df524fc7cddce",
+       "superseded": {
+        "next_owner": "host_delivery",
+        "reason_code": "conductor_accepted",
+        "state": "awaiting_owner",
+        "updated_at": "2026-09-30T00:00:00.000014+00:00",
+        "version": 1
+       }
+      }
+     ]
+    }
+   },
+   "goal_migration_comparison": {
+    "bindings": [],
+    "tick": {
+     "value": {
+      "actions": [],
+      "outcome": "blocked",
+      "owned_elsewhere": {
+       "count": 0,
+       "jobs": []
+      },
+      "policy_id": "policy-1",
+      "reason_code": null,
+      "schema": "urn:zeus:continuation-tick:1",
+      "skipped": [
+       {
+        "next_owner": "operator",
+        "reason_code": "requalification_corrupt",
+        "subject": "b932ab5f1f0df524fc7cddce8ea3b1ea2935a7e421fc08c1dbb3876692d7cd02"
+       }
+      ]
+     }
+    },
+    "view": {
+     "intents": [
+      {
+       "base_revision": null,
+       "binding": null,
+       "goal": null,
+       "history": [
+        [
+         "awaiting_owner",
+         "conductor_accepted"
+        ],
+        [
+         "superseded",
+         "delivery_requalification_authorized"
+        ]
+       ],
+       "id": "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648",
+       "manifest_goal": null,
+       "reason_code": "delivery_requalification_authorized",
+       "requalification": "e8852165bea1d1c27ae19f26ffdf204cd7ab00c994dba52d5df7535334dfdb4a",
+       "route": "host_delivery",
+       "session_mode": null,
+       "state": "superseded",
+       "superseded_by": "b932ab5f1f0df524fc7cddce8ea3b1ea2935a7e421fc08c1dbb3876692d7cd02",
+       "version": 2
+      },
+      {
+       "base_revision": "9999999999999999999999999999999999999999",
+       "binding": {
+        "candidate_revision": "cccccccccccccccccccccccccccccccccccccccc",
+        "intent_id": "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648",
+        "job_id": "op-a",
+        "plan_id": "own-h1-plan",
+        "release_id": "rel-op-a",
+        "withdrawal_reason": "reviewed_base_moved"
+       },
+       "goal": {
+        "base_revision": "9999999999999999999999999999999999999999",
+        "bytes": 3,
+        "criterion": "crit",
+        "path": "docs/GOAL.md",
+        "sha256": "3333333333333333333333333333333333333333333333333333333333333333"
+       },
+       "history": [
+        [
+         "intended",
+         "delivery_requalification_authorized"
+        ]
+       ],
+       "id": "b932ab5f1f0df524fc7cddce8ea3b1ea2935a7e421fc08c1dbb3876692d7cd02",
+       "manifest_goal": "3333333333333333333333333333333333333333333333333333333333333333",
+       "reason_code": "delivery_requalification_authorized",
+       "requalification": "e8852165bea1d1c27ae19f26ffdf204cd7ab00c994dba52d5df7535334dfdb4a",
+       "route": "requalification",
+       "session_mode": "fresh_workspace_requalification",
+       "state": "intended",
+       "superseded_by": null,
+       "version": 2
+      }
+     ],
+     "stored": [
+      {
+       "document_sha256": "e8852165bea1d1c27ae19f26ffdf204cd7ab00c994dba52d5df7535334dfdb4a",
+       "goal_migration": {
+        "criterion": "crit",
+        "from": {
+         "bytes": 3,
+         "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+         "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        },
+        "path": "docs/GOAL.md",
+        "review": "owner_reference_recorded",
+        "review_ref": "sha256:870f29fae75d76fa46ada4f8b62022cf4aa5233cc773888208ba4dd21d8d9fe9",
+        "to": {
+         "bytes": 3,
+         "revision": "9999999999999999999999999999999999999999",
+         "sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+        }
+       },
+       "id": "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648",
+       "requalification_intent": "b932ab5f1f0df524fc7cddce8ea3b1ea2935a7e421fc08c1dbb3876692d7cd02",
+       "successor_job": "cont-b932ab5f1f0df524fc7cddce",
+       "superseded": {
+        "next_owner": "host_delivery",
+        "reason_code": "conductor_accepted",
+        "state": "awaiting_owner",
+        "updated_at": "2026-09-30T00:00:00.000014+00:00",
+        "version": 1
+       }
+      }
+     ]
+    }
+   },
+   "goal_migration_document": {
+    "bindings": [],
+    "tick": {
+     "value": {
+      "actions": [],
+      "outcome": "blocked",
+      "owned_elsewhere": {
+       "count": 0,
+       "jobs": []
+      },
+      "policy_id": "policy-1",
+      "reason_code": null,
+      "schema": "urn:zeus:continuation-tick:1",
+      "skipped": [
+       {
+        "next_owner": "operator",
+        "reason_code": "requalification_corrupt",
+        "subject": "b932ab5f1f0df524fc7cddce8ea3b1ea2935a7e421fc08c1dbb3876692d7cd02"
+       }
+      ]
+     }
+    },
+    "view": {
+     "intents": [
+      {
+       "base_revision": null,
+       "binding": null,
+       "goal": null,
+       "history": [
+        [
+         "awaiting_owner",
+         "conductor_accepted"
+        ],
+        [
+         "superseded",
+         "delivery_requalification_authorized"
+        ]
+       ],
+       "id": "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648",
+       "manifest_goal": null,
+       "reason_code": "delivery_requalification_authorized",
+       "requalification": "e8852165bea1d1c27ae19f26ffdf204cd7ab00c994dba52d5df7535334dfdb4a",
+       "route": "host_delivery",
+       "session_mode": null,
+       "state": "superseded",
+       "superseded_by": "b932ab5f1f0df524fc7cddce8ea3b1ea2935a7e421fc08c1dbb3876692d7cd02",
+       "version": 2
+      },
+      {
+       "base_revision": "9999999999999999999999999999999999999999",
+       "binding": {
+        "candidate_revision": "cccccccccccccccccccccccccccccccccccccccc",
+        "intent_id": "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648",
+        "job_id": "op-a",
+        "plan_id": "own-h1-plan",
+        "release_id": "rel-op-a",
+        "withdrawal_reason": "reviewed_base_moved"
+       },
+       "goal": {
+        "base_revision": "9999999999999999999999999999999999999999",
+        "bytes": 3,
+        "criterion": "crit",
+        "path": "docs/GOAL.md",
+        "sha256": "3333333333333333333333333333333333333333333333333333333333333333"
+       },
+       "history": [
+        [
+         "intended",
+         "delivery_requalification_authorized"
+        ]
+       ],
+       "id": "b932ab5f1f0df524fc7cddce8ea3b1ea2935a7e421fc08c1dbb3876692d7cd02",
+       "manifest_goal": "3333333333333333333333333333333333333333333333333333333333333333",
+       "reason_code": "delivery_requalification_authorized",
+       "requalification": "e8852165bea1d1c27ae19f26ffdf204cd7ab00c994dba52d5df7535334dfdb4a",
+       "route": "requalification",
+       "session_mode": "fresh_workspace_requalification",
+       "state": "intended",
+       "superseded_by": null,
+       "version": 2
+      }
+     ],
+     "stored": [
+      {
+       "document_sha256": "e8852165bea1d1c27ae19f26ffdf204cd7ab00c994dba52d5df7535334dfdb4a",
+       "goal_migration": {
+        "criterion": "crit",
+        "from": {
+         "bytes": 3,
+         "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+         "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        },
+        "path": "docs/GOAL.md",
+        "review": "owner_reference_recorded",
+        "review_ref": "sha256:870f29fae75d76fa46ada4f8b62022cf4aa5233cc773888208ba4dd21d8d9fe9",
+        "to": {
+         "bytes": 3,
+         "revision": "9999999999999999999999999999999999999999",
+         "sha256": "3333333333333333333333333333333333333333333333333333333333333333"
+        }
+       },
+       "id": "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648",
+       "requalification_intent": "b932ab5f1f0df524fc7cddce8ea3b1ea2935a7e421fc08c1dbb3876692d7cd02",
+       "successor_job": "cont-b932ab5f1f0df524fc7cddce",
+       "superseded": {
+        "next_owner": "host_delivery",
+        "reason_code": "conductor_accepted",
+        "state": "awaiting_owner",
+        "updated_at": "2026-09-30T00:00:00.000014+00:00",
+        "version": 1
+       }
+      }
+     ]
+    }
+   },
+   "review_bytes_gone": {
+    "bindings": [],
+    "tick": {
+     "value": {
+      "actions": [],
+      "outcome": "blocked",
+      "owned_elsewhere": {
+       "count": 0,
+       "jobs": []
+      },
+      "policy_id": "policy-1",
+      "reason_code": null,
+      "schema": "urn:zeus:continuation-tick:1",
+      "skipped": [
+       {
+        "next_owner": "operator",
+        "reason_code": "requalification_goal_review_unreadable",
+        "subject": "b932ab5f1f0df524fc7cddce8ea3b1ea2935a7e421fc08c1dbb3876692d7cd02"
+       }
+      ]
+     }
+    },
+    "view": {
+     "intents": [
+      {
+       "base_revision": null,
+       "binding": null,
+       "goal": null,
+       "history": [
+        [
+         "awaiting_owner",
+         "conductor_accepted"
+        ],
+        [
+         "superseded",
+         "delivery_requalification_authorized"
+        ]
+       ],
+       "id": "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648",
+       "manifest_goal": null,
+       "reason_code": "delivery_requalification_authorized",
+       "requalification": "e8852165bea1d1c27ae19f26ffdf204cd7ab00c994dba52d5df7535334dfdb4a",
+       "route": "host_delivery",
+       "session_mode": null,
+       "state": "superseded",
+       "superseded_by": "b932ab5f1f0df524fc7cddce8ea3b1ea2935a7e421fc08c1dbb3876692d7cd02",
+       "version": 2
+      },
+      {
+       "base_revision": "9999999999999999999999999999999999999999",
+       "binding": {
+        "candidate_revision": "cccccccccccccccccccccccccccccccccccccccc",
+        "intent_id": "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648",
+        "job_id": "op-a",
+        "plan_id": "own-h1-plan",
+        "release_id": "rel-op-a",
+        "withdrawal_reason": "reviewed_base_moved"
+       },
+       "goal": {
+        "base_revision": "9999999999999999999999999999999999999999",
+        "bytes": 3,
+        "criterion": "crit",
+        "path": "docs/GOAL.md",
+        "sha256": "3333333333333333333333333333333333333333333333333333333333333333"
+       },
+       "history": [
+        [
+         "intended",
+         "delivery_requalification_authorized"
+        ]
+       ],
+       "id": "b932ab5f1f0df524fc7cddce8ea3b1ea2935a7e421fc08c1dbb3876692d7cd02",
+       "manifest_goal": "3333333333333333333333333333333333333333333333333333333333333333",
+       "reason_code": "delivery_requalification_authorized",
+       "requalification": "e8852165bea1d1c27ae19f26ffdf204cd7ab00c994dba52d5df7535334dfdb4a",
+       "route": "requalification",
+       "session_mode": "fresh_workspace_requalification",
+       "state": "intended",
+       "superseded_by": null,
+       "version": 2
+      }
+     ],
+     "stored": [
+      {
+       "document_sha256": "e8852165bea1d1c27ae19f26ffdf204cd7ab00c994dba52d5df7535334dfdb4a",
+       "goal_migration": {
+        "criterion": "crit",
+        "from": {
+         "bytes": 3,
+         "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+         "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        },
+        "path": "docs/GOAL.md",
+        "review": "owner_reference_recorded",
+        "review_ref": "sha256:870f29fae75d76fa46ada4f8b62022cf4aa5233cc773888208ba4dd21d8d9fe9",
+        "to": {
+         "bytes": 3,
+         "revision": "9999999999999999999999999999999999999999",
+         "sha256": "3333333333333333333333333333333333333333333333333333333333333333"
+        }
+       },
+       "id": "960dfac78d40f3d74800f030c0e62a7a8fb89cc8d3a445edb8b7ae9577ea3648",
+       "requalification_intent": "b932ab5f1f0df524fc7cddce8ea3b1ea2935a7e421fc08c1dbb3876692d7cd02",
+       "successor_job": "cont-b932ab5f1f0df524fc7cddce",
+       "superseded": {
+        "next_owner": "host_delivery",
+        "reason_code": "conductor_accepted",
+        "state": "awaiting_owner",
+        "updated_at": "2026-09-30T00:00:00.000014+00:00",
+        "version": 1
+       }
+      }
+     ]
+    }
+   }
+  },
+  "unproven": {
+   "image_changed": {
+    "message": "continuation refused: image_changed (image)",
+    "reason_code": "image_changed",
+    "records_unchanged": true,
+    "refused": "ContinuationRefused"
+   },
+   "requalification_candidate_mismatch": {
+    "message": "continuation refused: requalification_candidate_mismatch (candidate)",
+    "reason_code": "requalification_candidate_mismatch",
+    "records_unchanged": true,
+    "refused": "ContinuationRefused"
+   },
+   "requalification_goal_changed": {
+    "message": "continuation refused: requalification_goal_changed (goal)",
+    "reason_code": "requalification_goal_changed",
+    "records_unchanged": true,
+    "refused": "ContinuationRefused"
+   },
+   "requalification_intent_mismatch": {
+    "message": "continuation refused: requalification_intent_mismatch (intent_id)",
+    "reason_code": "requalification_intent_mismatch",
+    "records_unchanged": true,
+    "refused": "ContinuationRefused"
+   },
+   "requalification_intent_unknown": {
+    "message": "continuation refused: requalification_intent_unknown (intent_id)",
+    "reason_code": "requalification_intent_unknown",
+    "records_unchanged": true,
+    "refused": "ContinuationRefused"
+   },
+   "requalification_invalid": {
+    "message": "continuation refused: requalification_invalid (main_revision)",
+    "reason_code": "requalification_invalid",
+    "records_unchanged": true,
+    "refused": "ContinuationRefused"
+   },
+   "requalification_main_changed": {
+    "message": "continuation refused: requalification_main_changed (main_revision)",
+    "reason_code": "requalification_main_changed",
+    "records_unchanged": true,
+    "refused": "ContinuationRefused"
+   },
+   "requalification_main_missing": {
+    "message": "continuation refused: requalification_main_missing (main_revision)",
+    "reason_code": "requalification_main_missing",
+    "records_unchanged": true,
+    "refused": "ContinuationRefused"
+   },
+   "requalification_main_not_moved": {
+    "message": "continuation refused: requalification_main_not_moved (main_revision)",
+    "reason_code": "requalification_main_not_moved",
+    "records_unchanged": true,
+    "refused": "ContinuationRefused"
+   },
+   "requalification_main_unreadable": {
+    "message": "continuation refused: requalification_main_unreadable (main_revision)",
+    "reason_code": "requalification_main_unreadable",
+    "records_unchanged": true,
+    "refused": "ContinuationRefused"
+   },
+   "requalification_plan_mismatch": {
+    "message": "continuation refused: requalification_plan_mismatch (plan)",
+    "reason_code": "requalification_plan_mismatch",
+    "records_unchanged": true,
+    "refused": "ContinuationRefused"
+   },
+   "requalification_policy_foreign": {
+    "message": "continuation refused: requalification_policy_foreign (policy)",
+    "reason_code": "requalification_policy_foreign",
+    "records_unchanged": true,
+    "refused": "ContinuationRefused"
+   },
+   "requalification_rationale_missing": {
+    "message": "continuation refused: requalification_rationale_unreadable (rationale_ref)",
+    "reason_code": "requalification_rationale_unreadable",
+    "records_unchanged": true,
+    "refused": "ContinuationRefused"
+   },
+   "requalification_reason_mismatch": {
+    "message": "continuation refused: requalification_reason_mismatch (withdrawal_reason)",
+    "reason_code": "requalification_reason_mismatch",
+    "records_unchanged": true,
+    "refused": "ContinuationRefused"
+   },
+   "requalification_reason_unsupported": {
+    "message": "continuation refused: requalification_reason_unsupported (withdrawal_reason)",
+    "reason_code": "requalification_reason_unsupported",
+    "records_unchanged": true,
+    "refused": "ContinuationRefused"
+   },
+   "requalification_unverified": {
+    "message": "continuation refused: requalification_unverified (pin)",
+    "reason_code": "requalification_unverified",
+    "records_unchanged": true,
+    "refused": "ContinuationRefused"
+   }
+  }
+ }
+}
