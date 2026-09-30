@@ -19,6 +19,16 @@ Named adaptations (each is a construction/import adaptation, never a behaviour c
   `tickets.ticket_binding`/`TicketSuperseded`, research's `require_adoption`, `operation_finalization.park` as the
   terminal park and the system clock/ids. `handle`, `cancel`, `request_rebase` and `context` route to the S5
   `MessageHandler` over it (M7 had them on `Workflow`); everything else routes to the S4 Workflow.
+- `Harness(store, org)` stands for what M7's `Harness` gave the outbox, cycle and operation suites: `.store`, `.org`,
+  `flush_outbox` (an `OutboxFlusher` with observation's `HealthRecords().record`) and `record_incident` (a unit
+  opened around research's `HookLifecycle.record_incident`, or joined when a `transaction` is passed).
+- `LocalCycle(service, executor=None, bus=None, workflow=None, observer=None)` subclasses the S5 `LocalCycle` over the
+  service's store, organization, flusher and `record_incident`; `Operation(service, executor=None, bus=None,
+  workflow=None, budget=None, collector=None, observer=None)` likewise (so M7's `Operation._assignment` resolves), with `EvidenceRecords()` and no design gate.
+- `relay` is `outbox_relay.relay` with observation's `HealthRecords().record` and the system clock/ids, and
+  `pin_route`, `_prepare` and `_publish` are `outbox_relay`'s (M7 `application.outbox`).
+- `ExecutionRecovery(store, org, artifacts)` is the S5 `ExecutionRecovery` with intake's `ticket_binding` injected
+  and no audit binding or threshold-review port (both are research's, S8).
 - `organization()` is `routing.adapters.organization_source.packaged_organization` (M7 `bootstrap.organization`) and
   `packaged_policy` is `routing.adapters.provider_policy.packaged_policy` (M7 `adapters.providers.packaged_policy`).
 """
@@ -28,22 +38,32 @@ from __future__ import annotations
 import time
 from uuid import uuid4
 
-from codex_harness.coordination.application import operation_finalization
+from codex_harness.coordination.application import execution_recovery as _execution_recovery
+from codex_harness.coordination.application import operation_finalization, outbox_relay
+from codex_harness.coordination.application.events import EventJournal
 from codex_harness.coordination.application.fleet.admission import AdmissionControl
 from codex_harness.coordination.application.fleet.pause import FleetPause
 from codex_harness.coordination.application.fleet.recovery import FleetRecovery
 from codex_harness.coordination.application.fleet.registry import FleetRegistry
 from codex_harness.coordination.application.fleet.runner import FleetRunner as _FleetRunner
+from codex_harness.coordination.application.local_cycle import LocalCycle as _LocalCycle
 from codex_harness.coordination.application.messages import MessageHandler
+from codex_harness.coordination.application.operation import Operation as _Operation
+from codex_harness.coordination.application.outbox import Outbox
+from codex_harness.coordination.application.outbox_relay import OutboxFlusher, _prepare, _publish, pin_route
 from codex_harness.coordination.application.workflow import Workflow as _Workflow
 from codex_harness.coordination.domain.fleet import LaunchRefused
+from codex_harness.evidence.application.inspections import EvidenceRecords
 from codex_harness.intake.application import tickets
 from codex_harness.kernel.ids import SYSTEM_CLOCK, SYSTEM_IDS, utcnow
+from codex_harness.observation.application.health import HealthRecords
 from codex_harness.research.application.audit_gate import require_adoption
+from codex_harness.research.application.hooks import HookLifecycle
 from codex_harness.routing.adapters.organization_source import packaged_organization
 from codex_harness.routing.adapters.provider_policy import packaged_policy
 
-__all__ = ["Fleet", "FleetRunner", "LaunchRefused", "Workflow", "organization", "packaged_policy"]
+__all__ = ["ExecutionRecovery", "Fleet", "FleetRunner", "Harness", "LaunchRefused", "LocalCycle", "Operation",
+           "Workflow", "_prepare", "_publish", "organization", "packaged_policy", "pin_route", "relay"]
 
 ROUTES = {
     "registry": ("register", "registered", "enqueue", "record_delivery", "delivery", "reconciliation_required",
@@ -93,3 +113,46 @@ class Workflow:
 
 def organization():
     return packaged_organization()
+
+
+class Harness:
+    """The carrier of `.store` and `.org` with the outbox flush and incident use case M7's `Harness` had."""
+
+    def __init__(self, store, org):
+        self.store, self.org = store, org
+        self.flusher = OutboxFlusher(store, org, health=HealthRecords().record, clock=SYSTEM_CLOCK, ids=SYSTEM_IDS)
+        self.hooks = HookLifecycle(org, outbox=Outbox(), events=EventJournal(), clock=SYSTEM_CLOCK, ids=SYSTEM_IDS)
+
+    def flush_outbox(self, bus, limit=100, audit=None, correlation_id=None):
+        return self.flusher.flush(bus, limit, audit, correlation_id)
+
+    def record_incident(self, message, independent_occurrence=None, transaction=None):
+        if transaction is not None:
+            return self.hooks.record_incident(message, independent_occurrence=independent_occurrence,
+                                              transaction=transaction)
+        with self.store.transaction() as tx:  # M7 Harness.record_incident opened this unit itself
+            return self.hooks.record_incident(message, independent_occurrence=independent_occurrence,
+                                              transaction=tx)
+
+
+def relay(store, org, bus, limit=100, audit=None, correlation_id=None):
+    return outbox_relay.relay(store, org, bus, limit, audit, correlation_id, health=HealthRecords().record,
+                              clock=SYSTEM_CLOCK, ids=SYSTEM_IDS)
+
+
+class LocalCycle(_LocalCycle):
+    def __init__(self, service, executor=None, bus=None, workflow=None, observer=None):
+        super().__init__(service.store, service.org, flusher=service.flusher, incidents=service.record_incident,
+                         executor=executor, bus=bus, workflow=workflow, observer=observer, clock=SYSTEM_CLOCK)
+
+
+class Operation(_Operation):
+    def __init__(self, service, executor=None, bus=None, workflow=None, budget=None, collector=None, observer=None):
+        super().__init__(service.store, service.org, flusher=service.flusher, incidents=service.record_incident,
+                         executor=executor, bus=bus, workflow=workflow, budget=budget, collector=collector,
+                         observer=observer, evidence_records=EvidenceRecords(), clock=SYSTEM_CLOCK, ids=SYSTEM_IDS)
+
+
+def ExecutionRecovery(store, org, artifacts):  # noqa: N802 - the M7 constructor name
+    return _execution_recovery.ExecutionRecovery(store, org, artifacts, ticket_binding=tickets.ticket_binding,
+                                                 clock=SYSTEM_CLOCK, ids=SYSTEM_IDS)
