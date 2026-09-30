@@ -1,0 +1,9 @@
+{
+ "family": "delivery.stages",
+ "description": "S7 stage handlers of one M7 HostDelivery tick, characterized before the V8 split: the normal path (registered to active with each tick's settle on the queue row); _verify (verifier missing/unavailable, reconcile not clear, cleanup unconfirmed, interrupted, refused, release_<status>, release_verdict_refused, hook unsupported, a verified release entering publishing); _publish/_observe_ci/_merge (every enter/pending/halt, the lost publish and merge responses, qualification, the fast_forward merger, the predecessor binding); _prepare_switch/_drain/_switch (every refusal, the drain waits, the foreign and the lost-response descriptor); _consume/_begin_rollback/_rollback (receipt and canary verdicts, retry_instance_changed, promotion refused, every rollback reason, ROLLED_BACK); the fence (the four AmbiguousEffect raise sites, each with the fence moved between the effect and its record, then the next owner's reconciliation) and the _settle mapping of every outcome onto review's ReleaseQueue, with a coverage table of every reason reached; MemoryStore, LABELLED shared delivery doubles (s7_delivery)",
+ "reference_driver": "drivers/reference/s7_stages.py",
+ "target_driver": null,
+ "golden": "goldens/reference/delivery.stages.json",
+ "slice": "S7",
+ "target_status": "pending: S7 HostDelivery split (DESIGN-s7 V8)"
+}

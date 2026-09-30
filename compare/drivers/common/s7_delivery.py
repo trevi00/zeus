@@ -460,10 +460,12 @@ class Verifier:
     or child; `checks` are the LABELLED check results it reports. Faults: `usable` (available), `reconciled` (the
     reconcile answer), `outcome` (replaces the evaluation outcome), `prepare_error`."""
 
-    def __init__(self, api, *, checks=None, usable=True, reconciled=None, outcome=None, prepare_error=None):
+    def __init__(self, api, *, checks=None, usable=True, reconciled=None, outcome=None, prepare_error=None,
+                 evaluate_error=None):
         self.api = api
         self.checks = checks or {"tests": {"passed": True, "evidence": "fixture-incumbent-check-receipt"}}
         self.usable, self.outcome, self.prepare_error = usable, outcome, prepare_error
+        self.evaluate_error = evaluate_error
         self.reconciled = reconciled or {"state": "clear", "reason_code": None, "resolved": {}}
         self.attempts, self.prepared, self.evaluated = [], [], []
 
@@ -488,6 +490,8 @@ class Verifier:
 
     def evaluate(self, release_id, attempt, *, fence):
         self.evaluated.append(attempt["attempt_id"])
+        if self.evaluate_error is not None:
+            raise self.evaluate_error  # labelled injected evaluator crash (no fence observation in flight)
         if self.outcome is not None:
             return copy.deepcopy(self.outcome)
         fence()   # the evaluator's heartbeat through this claim's fence
